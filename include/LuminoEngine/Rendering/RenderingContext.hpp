@@ -19,7 +19,7 @@ class MeshContainer;
 class MeshArmature;
 class RenderViewPoint;
 class RenderView;
-class ImageEffect;
+class PostEffect;
 class InstancedMeshList;
 namespace detail {
 class FontRequester;
@@ -134,12 +134,12 @@ public:
     void drawScreenRectangle();
 
     // これは主に Post effect の実装で使用します。
-    // 実際に処理が行われるのはレンダリングパイプラインの ImageEffect フェーズです。
+    // 実際に処理が行われるのはレンダリングパイプラインの PostEffect フェーズです。
     // 通常、drawMesh や drawSprite とは実行されるタイミングが異なるため、Post effect の実装のみを目的として使用してください。
     //void blit(Material* material);
     //void blit(RenderTargetTexture* source, RenderTargetTexture* destination);
     //void blit(RenderTargetTexture* source, RenderTargetTexture* destination, Material* material);
-	void blit(Material* source, RenderTargetTexture* destination, RenderPhaseClass phase = RenderPhaseClass::ImageEffect);
+	void blit(Material* source, RenderTargetTexture* destination, RenderPhaseClass phase = RenderPhaseClass::PostEffect);
 
 	/** スプライトを描画します。 */
 	void drawSprite(
@@ -214,14 +214,14 @@ public:
     void setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value);
     void setRenderPriority(int value);
     void setViewPoint(RenderViewPoint* value);
-	RenderView* baseRenderView = nullptr;	// for ImageEffect
+	RenderView* baseRenderView = nullptr;	// for PostEffect
     GraphicsContext* m_frameWindowRenderingGraphicsContext = nullptr;
 	//detail::RenderDrawElement* lastRenderDrawElement() const;
 	void setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value);
-	void collectImageEffect(ImageEffect* effect) { m_imageEffects.add(effect); }
-	const List<ImageEffect*>& imageEffects() const { return m_imageEffects; }
-	void clearImageEffects() { m_imageEffects.clear(); }
-	detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;	// for ImageEffect
+	void collectPostEffect(PostEffect* effect) { m_imageEffects.add(effect); }
+	const List<PostEffect*>& imageEffects() const { return m_imageEffects; }
+	void clearPostEffects() { m_imageEffects.clear(); }
+	detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;	// for PostEffect
 	RenderTargetTexture* gbuffer(GBuffer kind) const;
 	RenderView* currentRenderView = nullptr;	// Offscreen の場合はそれ
 
@@ -235,7 +235,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 protected:  // TODO:
 	detail::RenderingManager* m_manager;
 	Ref<detail::DrawElementListBuilder> m_builder;
-	List<ImageEffect*> m_imageEffects;
+	List<PostEffect*> m_imageEffects;
 };
 
 } // namespace ln

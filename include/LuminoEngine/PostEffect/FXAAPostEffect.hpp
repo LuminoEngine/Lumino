@@ -2,38 +2,38 @@
 #include "PostEffect.hpp"
 
 namespace ln {
-namespace detail { class FXAAImageEffectInstance; }
+namespace detail { class FXAAPostEffectInstance; }
 
-class FXAAImageEffect
-    : public ImageEffect
+class FXAAPostEffect
+    : public PostEffect
 {
 public:
 
 protected:
-    virtual Ref<ImageEffectInstance> onCreateInstance() override;
+    virtual Ref<PostEffectInstance> onCreateInstance() override;
 
 LN_CONSTRUCT_ACCESS:
-    FXAAImageEffect();
+    FXAAPostEffect();
     void init();
 
 private:
-    friend class detail::FXAAImageEffectInstance;
+    friend class detail::FXAAPostEffectInstance;
 };
 
 namespace detail {
 
-class FXAAImageEffectInstance
-    : public ImageEffectInstance
+class FXAAPostEffectInstance
+    : public PostEffectInstance
 {
 protected:
     bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    FXAAImageEffectInstance();
-    bool init(FXAAImageEffect* owner);
+    FXAAPostEffectInstance();
+    bool init(FXAAPostEffect* owner);
 
 private:
-    FXAAImageEffect* m_owner;
+    FXAAPostEffect* m_owner;
     Ref<Material> m_material;
 };
 

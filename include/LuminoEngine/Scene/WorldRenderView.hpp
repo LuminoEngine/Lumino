@@ -10,9 +10,9 @@ class Camera;
 class RenderingContext;
 class StaticMeshModel;
 class MeshResource;
-class ImageEffect;
+class PostEffect;
 namespace detail {
-class ImageEffectRenderer;
+class PostEffectRenderer;
 class SceneRenderingPipeline;
 class InternalSkyBox;
 }
@@ -31,8 +31,8 @@ public:
     void setTargetWorld(World* world);
 	void setCamera(Camera* camera);
 
-	void addImageEffect(ImageEffect* effect);
-	void removeImageEffect(ImageEffect* effect);
+	void addPostEffect(PostEffect* effect);
+	void removePostEffect(PostEffect* effect);
 
 
     /** この WorldRenderView が描画する 3D シーン上に、グリッドを表示するかどうかを設定します。 */
@@ -64,7 +64,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
-    detail::ImageEffectRenderer* acquireImageEffectPresenter();
+    detail::PostEffectRenderer* acquirePostEffectPresenter();
     void createGridPlane();
     void renderGridPlane(RenderingContext* renderingContext, RenderView* renderView);
     void adjustGridPlane(const ViewFrustum& viewFrustum, RenderView* renderView);
@@ -74,7 +74,7 @@ private:
     Ref<World> m_targetWorld;
 	Ref<Camera> m_camera;
     Ref<RenderViewPoint> m_viewPoint;
-	Ref<detail::ImageEffectRenderer> m_imageEffectRenderer;
+	Ref<detail::PostEffectRenderer> m_imageEffectRenderer;
 
     Ref<Material> m_clearMaterial;
 	Ref<StaticMeshModel> m_skyProjectionPlane;

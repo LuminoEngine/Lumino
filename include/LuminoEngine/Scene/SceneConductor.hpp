@@ -4,7 +4,7 @@
 
 namespace ln {
 class Level;
-class TransitionImageEffect;
+class TransitionPostEffect;
 namespace detail {
 	
 /** Level の実行状態を管理します。 */
@@ -14,7 +14,7 @@ public:
 	SceneConductor();
 	//void init();
 
-	const Ref<TransitionImageEffect>& transitionEffect() const { return m_transitionEffect; }
+	const Ref<TransitionPostEffect>& transitionEffect() const { return m_transitionEffect; }
 
     ///** Level を読み込み、アクティブな World にアタッチします。 */
     //static Level* loadScene(const StringRef& sceneAssetFilePath);
@@ -38,7 +38,7 @@ public:
 	Level* activeScene() const;
 	bool isTransitionEffectRunning() const;
 
-	//const Ref<TransitionImageEffect>& transitionEffect() const { return m_transitionEffect;  }
+	//const Ref<TransitionPostEffect>& transitionEffect() const { return m_transitionEffect;  }
 
 	void executeCommands();
 	void releaseAndTerminateAllRunningScenes();
@@ -69,7 +69,7 @@ private:
 	std::stack<Ref<Level>> m_sceneStack;	// not contains m_activeScene
 
 	LevelTransitionEffectMode m_transitionMode;
-	Ref<TransitionImageEffect> m_transitionEffect;
+	Ref<TransitionPostEffect> m_transitionEffect;
 	float m_transitionEffectDuration;
 };
 

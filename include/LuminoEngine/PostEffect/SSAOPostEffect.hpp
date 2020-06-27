@@ -2,38 +2,38 @@
 #include "PostEffect.hpp"
 
 namespace ln {
-namespace detail { class SSAOImageEffectInstance; }
+namespace detail { class SSAOPostEffectInstance; }
 
-class SSAOImageEffect
-    : public ImageEffect
+class SSAOPostEffect
+    : public PostEffect
 {
 public:
 
 protected:
-    virtual Ref<ImageEffectInstance> onCreateInstance() override;
+    virtual Ref<PostEffectInstance> onCreateInstance() override;
 
 LN_CONSTRUCT_ACCESS:
-    SSAOImageEffect();
+    SSAOPostEffect();
     void init();
 
 private:
-    friend class detail::SSAOImageEffectInstance;
+    friend class detail::SSAOPostEffectInstance;
 };
 
 namespace detail {
 
-class SSAOImageEffectInstance
-    : public ImageEffectInstance
+class SSAOPostEffectInstance
+    : public PostEffectInstance
 {
 protected:
     bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    SSAOImageEffectInstance();
-    bool init(SSAOImageEffect* owner);
+    SSAOPostEffectInstance();
+    bool init(SSAOPostEffect* owner);
 
 private:
-    SSAOImageEffect* m_owner;
+    SSAOPostEffect* m_owner;
     Ref<SamplerState> m_samplerState;
     Ref<Material> m_occlusionMaterial;
     Ref<Material> m_blurAndCompositeMaterial;

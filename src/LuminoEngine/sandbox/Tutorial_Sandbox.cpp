@@ -8,7 +8,7 @@
 #include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
 using namespace ln;
 
-TransitionImageEffect* g_TransitionImageEffect;
+TransitionPostEffect* g_TransitionPostEffect;
 
 class TitleScene : public Level
 {
@@ -18,7 +18,7 @@ class TitleScene : public Level
 
 		Debug::print(u"TitleScene");
 		Engine::renderView()->setBackgroundColor(Color::White);
-		//g_TransitionImageEffect->start(5);
+		//g_TransitionPostEffect->start(5);
 		Scene::setTransitionEffectMode(LevelTransitionEffectMode::CrossFade);
 		Scene::setTransitionEffectColor(Color::Red);
 		Scene::setTransitionEffectMaskTexture(Texture2D::load(u"Transition1"));
@@ -37,7 +37,7 @@ class GameScene : public Level
 	{
 		Debug::print(u"GameScene");
 		Engine::renderView()->setBackgroundColor(Color::Gray);
-		//g_TransitionImageEffect->startFadeOut(5);
+		//g_TransitionPostEffect->startFadeOut(5);
 	}
 
 	void onUpdate() override
@@ -69,9 +69,9 @@ class App : public Application
 		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
 
 
-		//auto transitionImageEffect = TransitionImageEffect::create();
-	 //   Engine::renderView()->addImageEffect(transitionImageEffect);
-		//g_TransitionImageEffect = transitionImageEffect;
+		//auto transitionPostEffect = TransitionPostEffect::create();
+	 //   Engine::renderView()->addPostEffect(transitionPostEffect);
+		//g_TransitionPostEffect = transitionPostEffect;
 
 		Engine::world()->gotoScene(makeObject<TitleScene>());
 	}

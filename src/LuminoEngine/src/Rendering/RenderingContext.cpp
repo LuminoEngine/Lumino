@@ -334,7 +334,7 @@ void RenderingContext::drawScreenRectangle()
 //    auto* element = m_builder->addNewDrawElement<Blit>(
 //        m_manager->blitRenderFeature(),
 //        m_builder->blitRenderFeatureStageParameters());
-//    element->targetPhase = RenderPhaseClass::ImageEffect;
+//    element->targetPhase = RenderPhaseClass::PostEffect;
 //    element->source = source;
 //
 //    setRenderTarget(0, oldTarget);

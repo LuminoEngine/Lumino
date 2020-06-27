@@ -11,37 +11,37 @@
 namespace ln {
 
 //==============================================================================
-// SSRImageEffect
+// SSRPostEffect
 
-SSRImageEffect::SSRImageEffect()
+SSRPostEffect::SSRPostEffect()
 {
 }
 
-void SSRImageEffect::init()
+void SSRPostEffect::init()
 {
-    ImageEffect::init();
+    PostEffect::init();
 }
 
-Ref<ImageEffectInstance> SSRImageEffect::onCreateInstance()
+Ref<PostEffectInstance> SSRPostEffect::onCreateInstance()
 {
-    return makeObject<detail::SSRImageEffectInstance>(this);
+    return makeObject<detail::SSRPostEffectInstance>(this);
 }
 
 //==============================================================================
-// SSRImageEffectInstance
+// SSRPostEffectInstance
 
 namespace detail {
 
-SSRImageEffectInstance::SSRImageEffectInstance()
+SSRPostEffectInstance::SSRPostEffectInstance()
     : m_owner(nullptr)
     , m_viewWidth(0)
     , m_viewHeight(0)
 {
 }
 
-bool SSRImageEffectInstance::init(SSRImageEffect* owner)
+bool SSRPostEffectInstance::init(SSRPostEffect* owner)
 {
-    if (!ImageEffectInstance::init()) return false;
+    if (!PostEffectInstance::init()) return false;
 
     m_owner = owner;
 
@@ -72,7 +72,7 @@ bool SSRImageEffectInstance::init(SSRImageEffect* owner)
     return true;
 }
 
-bool SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool SSRPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     Texture* viewNormalMap = context->gbuffer(GBuffer::ViewNormalMap);
     Texture* viewDepthMap = context->gbuffer(GBuffer::ViewDepthMap);
@@ -113,7 +113,7 @@ bool SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
     }
 }
 
-void SSRImageEffectInstance::resetResources(int resx, int resy)
+void SSRPostEffectInstance::resetResources(int resx, int resy)
 {
     // TODO: tempolary からとっていいかも
     m_ssrTarget = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false);

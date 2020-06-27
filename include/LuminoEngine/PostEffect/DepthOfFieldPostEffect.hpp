@@ -2,38 +2,38 @@
 #include "PostEffect.hpp"
 
 namespace ln {
-namespace detail { class DepthOfFieldImageEffectInstance; }
+namespace detail { class DepthOfFieldPostEffectInstance; }
 
-class DepthOfFieldImageEffect
-    : public ImageEffect
+class DepthOfFieldPostEffect
+    : public PostEffect
 {
 public:
 
 protected:
-    virtual Ref<ImageEffectInstance> onCreateInstance() override;
+    virtual Ref<PostEffectInstance> onCreateInstance() override;
 
 LN_CONSTRUCT_ACCESS:
-    DepthOfFieldImageEffect();
+    DepthOfFieldPostEffect();
     void init();
 
 private:
-    friend class detail::DepthOfFieldImageEffectInstance;
+    friend class detail::DepthOfFieldPostEffectInstance;
 };
 
 namespace detail {
 
-class DepthOfFieldImageEffectInstance
-    : public ImageEffectInstance
+class DepthOfFieldPostEffectInstance
+    : public PostEffectInstance
 {
 protected:
     bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    DepthOfFieldImageEffectInstance();
-    bool init(DepthOfFieldImageEffect* owner);
+    DepthOfFieldPostEffectInstance();
+    bool init(DepthOfFieldPostEffect* owner);
 
 private:
-    DepthOfFieldImageEffect* m_owner;
+    DepthOfFieldPostEffect* m_owner;
     Ref<Material> m_copyMaterial;
     Ref<Material> m_dofMaterial;
     Ref<SamplerState> m_samplerState;

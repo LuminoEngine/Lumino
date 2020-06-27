@@ -5,13 +5,13 @@
 
 namespace ln {
 class Texture;
-namespace detail { class TransitionImageEffectInstance; }
+namespace detail { class TransitionPostEffectInstance; }
 
-class TransitionImageEffect
-	: public ImageEffect
+class TransitionPostEffect
+	: public PostEffect
 {
 public:
-    static Ref<TransitionImageEffect> create();
+    static Ref<TransitionPostEffect> create();
 
     void setFadeColor(const Color& value) { m_fadeColor = value; }
     const Color& fadeColor() const { return m_fadeColor; }
@@ -27,12 +27,12 @@ public:
 
 public:	// TODO: protected
     virtual void onUpdateFrame(float elapsedSeconds) override;
-    virtual Ref<ImageEffectInstance> onCreateInstance() override;
+    virtual Ref<PostEffectInstance> onCreateInstance() override;
     //virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
     //virtual void onPostRender() override;
 
 LN_CONSTRUCT_ACCESS:
-    TransitionImageEffect();
+    TransitionPostEffect();
 	void init();
 
 private:
@@ -55,27 +55,27 @@ private:
 
     int m_freezeRevision;
 
-    friend class detail::TransitionImageEffectInstance;
+    friend class detail::TransitionPostEffectInstance;
 };
 
 namespace detail {
 
-class TransitionImageEffectInstance
-    : public ImageEffectInstance
+class TransitionPostEffectInstance
+    : public PostEffectInstance
 {
 protected:
     bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    TransitionImageEffectInstance();
-    bool init(TransitionImageEffect* owner);
+    TransitionPostEffectInstance();
+    bool init(TransitionPostEffect* owner);
 
 private:
     bool preparePreviousFrameTarget(int width, int height);
     void renderFadeInOut(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination, float factor);
     void renderCrossFade(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination);
 
-    TransitionImageEffect* m_owner;
+    TransitionPostEffect* m_owner;
 
     // Rendering result of previous frame.
     Ref<RenderTargetTexture> m_previousFrameTarget;

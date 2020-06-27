@@ -8,64 +8,64 @@
 namespace ln {
 
 //==============================================================================
-// ToneImageEffect
+// TonePostEffect
 
-Ref<ToneImageEffect> ToneImageEffect::create()
+Ref<TonePostEffect> TonePostEffect::create()
 {
-    return makeObject<ToneImageEffect>();
+    return makeObject<TonePostEffect>();
 }
 
-ToneImageEffect::ToneImageEffect()
-{
-}
-
-ToneImageEffect::~ToneImageEffect()
+TonePostEffect::TonePostEffect()
 {
 }
 
-void ToneImageEffect::init()
+TonePostEffect::~TonePostEffect()
 {
-    ImageEffect::init();
 }
 
-void ToneImageEffect::play(const ColorTone& tone, double time)
+void TonePostEffect::init()
+{
+    PostEffect::init();
+}
+
+void TonePostEffect::play(const ColorTone& tone, double time)
 {
     m_toneValue.start(tone.toVector4(), time);
 }
 
-void ToneImageEffect::onUpdateFrame(float elapsedSeconds)
+void TonePostEffect::onUpdateFrame(float elapsedSeconds)
 {
     m_toneValue.advanceTime(elapsedSeconds);
 }
 
-Ref<ImageEffectInstance> ToneImageEffect::onCreateInstance()
+Ref<PostEffectInstance> TonePostEffect::onCreateInstance()
 {
-    return makeObject<detail::ToneImageEffectInstance>(this);
+    return makeObject<detail::TonePostEffectInstance>(this);
 }
 
 //==============================================================================
-// ToneImageEffectInstance
+// TonePostEffectInstance
 
 namespace detail {
 
-ToneImageEffectInstance::ToneImageEffectInstance()
+TonePostEffectInstance::TonePostEffectInstance()
 {
 }
 
-bool ToneImageEffectInstance::init(ToneImageEffect* owner)
+bool TonePostEffectInstance::init(TonePostEffect* owner)
 {
-    if (!ImageEffectInstance::init()) return false;
+    if (!PostEffectInstance::init()) return false;
 
     m_owner = owner;
 
-    auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/ToneImageEffect.fx");
+    auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/ToneEffect.fx");
     m_material = makeObject<Material>();
     m_material->setShader(shader);
 
     return true;
 }
 
-bool ToneImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool TonePostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     m_material->setMainTexture(source);
     //m_material->setMainTexture(Texture2D::whiteTexture());

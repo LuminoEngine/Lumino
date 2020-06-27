@@ -4,38 +4,38 @@
 namespace ln {
 class RenderTargetTexture;
 class RenderingContext;
-class ImageEffectInstance;
-namespace detail { class ImageEffectRenderer; }
+class PostEffectInstance;
+namespace detail { class PostEffectRenderer; }
 
 
-class ImageEffect
+class PostEffect
 	: public Object
 {
 protected:
 	virtual void onDispose(bool explicitDisposing) override;
 
-	Ref<ImageEffectInstance> createInstance();
+	Ref<PostEffectInstance> createInstance();
 
     virtual void onUpdateFrame(float elapsedSeconds);
-	virtual Ref<ImageEffectInstance> onCreateInstance() = 0;
+	virtual Ref<PostEffectInstance> onCreateInstance() = 0;
 	//virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
 	//virtual void onPostRender();
 
 LN_CONSTRUCT_ACCESS:
-	ImageEffect();
-	virtual ~ImageEffect();
+	PostEffect();
+	virtual ~PostEffect();
 	void init();
     void updateFrame(float elapsedSeconds);
 
 private:
-	//List<ImageEffectInstance*> m_instances;
+	//List<PostEffectInstance*> m_instances;
 
-    friend class detail::ImageEffectRenderer;
+    friend class detail::PostEffectRenderer;
 };
 
-//using ImageEffectInstanceRenderer = ImageEffect;
+//using PostEffectInstanceRenderer = PostEffect;
 
-class ImageEffectInstance
+class PostEffectInstance
 	: public Object
 {
 protected:
@@ -43,12 +43,12 @@ protected:
 	virtual bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
 
 private:
-	//ImageEffect* m_owner = nullptr;
-	Ref<ImageEffect> m_owner;
+	//PostEffect* m_owner = nullptr;
+	Ref<PostEffect> m_owner;
 	bool m_ownerDisposed = false;
 
-	friend class ImageEffect;
-	friend class detail::ImageEffectRenderer;
+	friend class PostEffect;
+	friend class detail::PostEffectRenderer;
 };
 
 } // namespace ln

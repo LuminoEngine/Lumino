@@ -354,7 +354,7 @@ Ref<ReadOnlyList<Ref<ShaderTechnique>>> Shader::techniques() const
 //    return makeObject<ShaderDescriptor>(this);
 //}
 
-// TODO: 名前の指定方法をもう少しいい感じにしたい。ImageEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。
+// TODO: 名前の指定方法をもう少しいい感じにしたい。PostEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。
 ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const
 {
     ShaderTechnique* defaultTech = nullptr;

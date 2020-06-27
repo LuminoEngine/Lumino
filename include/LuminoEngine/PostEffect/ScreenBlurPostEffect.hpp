@@ -3,13 +3,13 @@
 #include "../Animation/EasingFunctions.hpp"
 
 namespace ln {
-namespace detail { class ScreenBlurImageEffectInstance; }
+namespace detail { class ScreenBlurPostEffectInstance; }
 
-class ScreenBlurImageEffect
-	: public ImageEffect
+class ScreenBlurPostEffect
+	: public PostEffect
 {
 public:
-    static Ref<ScreenBlurImageEffect> create();
+    static Ref<ScreenBlurPostEffect> create();
 
     /** 画像内に残す前のフレームの量 (0.0～1.0)。値が高くなるほど、モーショントレイルが長くなります。(default:0.0) */
     void setAmount(float amount) { m_amountValue.start(amount, 0); }
@@ -24,12 +24,12 @@ public:
 
 protected:
     virtual void onUpdateFrame(float elapsedSeconds) override;
-    virtual Ref<ImageEffectInstance> onCreateInstance() override;
+    virtual Ref<PostEffectInstance> onCreateInstance() override;
     //virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    ScreenBlurImageEffect();
-	virtual ~ScreenBlurImageEffect();
+    ScreenBlurPostEffect();
+	virtual ~ScreenBlurPostEffect();
 	void init();
 
 private:
@@ -38,23 +38,23 @@ private:
     Vector2 m_center;
     float m_scale;
 
-    friend class detail::ScreenBlurImageEffectInstance;
+    friend class detail::ScreenBlurPostEffectInstance;
 };
 
 namespace detail {
 
-class ScreenBlurImageEffectInstance
-    : public ImageEffectInstance
+class ScreenBlurPostEffectInstance
+    : public PostEffectInstance
 {
 protected:
     bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    ScreenBlurImageEffectInstance();
-    bool init(ScreenBlurImageEffect* owner);
+    ScreenBlurPostEffectInstance();
+    bool init(ScreenBlurPostEffect* owner);
 
 private:
-    ScreenBlurImageEffect* m_owner;
+    ScreenBlurPostEffect* m_owner;
 
     Ref<Material> m_materialForCopySourceTo;
     Ref<Material> m_materialForCopyAccumTo;

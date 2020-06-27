@@ -2,38 +2,38 @@
 #include "PostEffect.hpp"
 
 namespace ln {
-namespace detail { class TonemapImageEffectInstance; }
+namespace detail { class TonemapPostEffectInstance; }
 
-class TonemapImageEffect
-    : public ImageEffect
+class TonemapPostEffect
+    : public PostEffect
 {
 public:
 
 protected:
-    virtual Ref<ImageEffectInstance> onCreateInstance() override;
+    virtual Ref<PostEffectInstance> onCreateInstance() override;
 
 LN_CONSTRUCT_ACCESS:
-    TonemapImageEffect();
+    TonemapPostEffect();
     void init();
 
 private:
-    friend class detail::TonemapImageEffectInstance;
+    friend class detail::TonemapPostEffectInstance;
 };
 
 namespace detail {
 
-class TonemapImageEffectInstance
-    : public ImageEffectInstance
+class TonemapPostEffectInstance
+    : public PostEffectInstance
 {
 protected:
     bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    TonemapImageEffectInstance();
-    bool init(TonemapImageEffect* owner);
+    TonemapPostEffectInstance();
+    bool init(TonemapPostEffect* owner);
 
 private:
-    TonemapImageEffect* m_owner;
+    TonemapPostEffect* m_owner;
     Ref<Material> m_material;
 };
 

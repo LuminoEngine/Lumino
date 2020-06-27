@@ -11,36 +11,36 @@
 namespace ln {
 
 //==============================================================================
-// SSAOImageEffect
+// SSAOPostEffect
 
-SSAOImageEffect::SSAOImageEffect()
+SSAOPostEffect::SSAOPostEffect()
 {
 }
 
-void SSAOImageEffect::init()
+void SSAOPostEffect::init()
 {
-    ImageEffect::init();
+    PostEffect::init();
 }
 
-Ref<ImageEffectInstance> SSAOImageEffect::onCreateInstance()
+Ref<PostEffectInstance> SSAOPostEffect::onCreateInstance()
 {
-    return makeObject<detail::SSAOImageEffectInstance>(this);
+    return makeObject<detail::SSAOPostEffectInstance>(this);
 }
 
 //==============================================================================
-// SSAOImageEffectInstance
+// SSAOPostEffectInstance
 
 namespace detail {
 
-SSAOImageEffectInstance::SSAOImageEffectInstance()
+SSAOPostEffectInstance::SSAOPostEffectInstance()
     : m_owner(nullptr)
     , m_occlusionMaterial(nullptr)
 {
 }
 
-bool SSAOImageEffectInstance::init(SSAOImageEffect* owner)
+bool SSAOPostEffectInstance::init(SSAOPostEffect* owner)
 {
-    if (!ImageEffectInstance::init()) return false;
+    if (!PostEffectInstance::init()) return false;
 
     auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSAOOcclusionMap.fx");
     m_occlusionMaterial = makeObject<Material>();
@@ -58,7 +58,7 @@ bool SSAOImageEffectInstance::init(SSAOImageEffect* owner)
     return true;
 }
 
-bool SSAOImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool SSAOPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     Ref<RenderTargetTexture> occlusionMap = RenderTargetTexture::getTemporary(source->width(), source->height(), TextureFormat::RGBA8, false);
     occlusionMap->setSamplerState(m_samplerState);

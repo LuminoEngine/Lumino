@@ -267,7 +267,7 @@ void World::prepareRender()
         scene->collectRenderObjects(this, m_renderingContext);
     }
 
-    m_renderingContext->collectImageEffect(m_sceneConductor->transitionEffect());
+    m_renderingContext->collectPostEffect(m_sceneConductor->transitionEffect());
 }
 
 void World::renderObjects()

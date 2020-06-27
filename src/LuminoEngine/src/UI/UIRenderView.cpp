@@ -111,7 +111,7 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
             m_renderingContext->setViewPoint(m_viewPoint);
             m_renderingContext->m_frameWindowRenderingGraphicsContext = graphicsContext;
             m_renderingContext->baseRenderView = this;
-            m_renderingContext->clearImageEffects();
+            m_renderingContext->clearPostEffects();
 
             //if (clearMode() == RenderViewClearMode::ColorAndDepth) {
             //    m_renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);

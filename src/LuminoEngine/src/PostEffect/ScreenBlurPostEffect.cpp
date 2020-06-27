@@ -9,14 +9,14 @@
 namespace ln {
 
 //==============================================================================
-// ScreenBlurImageEffect
+// ScreenBlurPostEffect
 
-Ref<ScreenBlurImageEffect> ScreenBlurImageEffect::create()
+Ref<ScreenBlurPostEffect> ScreenBlurPostEffect::create()
 {
-    return makeObject<ScreenBlurImageEffect>();
+    return makeObject<ScreenBlurPostEffect>();
 }
 
-ScreenBlurImageEffect::ScreenBlurImageEffect()
+ScreenBlurPostEffect::ScreenBlurPostEffect()
     : m_amountValue()
     //, m_accumTexture(nullptr)
     , m_center()
@@ -24,16 +24,16 @@ ScreenBlurImageEffect::ScreenBlurImageEffect()
 {
 }
 
-ScreenBlurImageEffect::~ScreenBlurImageEffect()
+ScreenBlurPostEffect::~ScreenBlurPostEffect()
 {
 }
 
-void ScreenBlurImageEffect::init()
+void ScreenBlurPostEffect::init()
 {
-    ImageEffect::init();
+    PostEffect::init();
 }
 
-void ScreenBlurImageEffect::play(float amount, const Vector2& center, float scale, float duration)
+void ScreenBlurPostEffect::play(float amount, const Vector2& center, float scale, float duration)
 {
     setRadialCenter(center);
     setRadialScale(scale);
@@ -46,38 +46,38 @@ void ScreenBlurImageEffect::play(float amount, const Vector2& center, float scal
     }
 }
 
-void ScreenBlurImageEffect::onUpdateFrame(float elapsedSeconds)
+void ScreenBlurPostEffect::onUpdateFrame(float elapsedSeconds)
 {
     m_amountValue.advanceTime(elapsedSeconds);
 }
 
-Ref<ImageEffectInstance> ScreenBlurImageEffect::onCreateInstance()
+Ref<PostEffectInstance> ScreenBlurPostEffect::onCreateInstance()
 {
-    return makeObject<detail::ScreenBlurImageEffectInstance>(this);
+    return makeObject<detail::ScreenBlurPostEffectInstance>(this);
 }
 
 
-//void ScreenBlurImageEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+//void ScreenBlurPostEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 //{
 //
 //}
 
 namespace detail {
 
-ScreenBlurImageEffectInstance::ScreenBlurImageEffectInstance()
+ScreenBlurPostEffectInstance::ScreenBlurPostEffectInstance()
 {
 }
 
-bool ScreenBlurImageEffectInstance::init(ScreenBlurImageEffect* owner)
+bool ScreenBlurPostEffectInstance::init(ScreenBlurPostEffect* owner)
 {
-    if (!ImageEffectInstance::init()) return false;
+    if (!PostEffectInstance::init()) return false;
 
     m_owner = owner;
 
     m_material = makeObject<Material>();
-    //m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::ScreenBlurImageEffect));
+    //m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::ScreenBlurPostEffect));
     //m_material->setBlendMode(BlendMode::Alpha);
-    auto shader = makeObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/PostEffect/Resource/ScreenBlurImageEffect.fx");
+    auto shader = makeObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/PostEffect/Resource/ScreenBlur.fx");
     m_material->setShader(shader);
 
     m_materialForCopySourceTo = makeObject<Material>();
@@ -86,7 +86,7 @@ bool ScreenBlurImageEffectInstance::init(ScreenBlurImageEffect* owner)
     return true;
 }
 
-bool ScreenBlurImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool ScreenBlurPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     m_materialForCopySourceTo->setMainTexture(source);
 

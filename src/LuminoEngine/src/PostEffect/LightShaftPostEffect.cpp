@@ -10,25 +10,25 @@
 namespace ln {
 
 //==============================================================================
-// LightShaftImageEffect
+// LightShaftPostEffect
 
-//Ref<LightShaftImageEffect> LightShaftImageEffect::create()
+//Ref<LightShaftPostEffect> LightShaftPostEffect::create()
 //{
-//    return makeObject<LightShaftImageEffect>();
+//    return makeObject<LightShaftPostEffect>();
 //}
 //
-//LightShaftImageEffect::LightShaftImageEffect()
+//LightShaftPostEffect::LightShaftPostEffect()
 //{
 //}
 //
-//void LightShaftImageEffect::init()
+//void LightShaftPostEffect::init()
 //{
-//    ImageEffect::init();
+//    PostEffect::init();
 //	m_radialBlur = makeObject<Material>();
 //	m_radialBlur->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::RadialBlur));
 //}
 //
-//void LightShaftImageEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+//void LightShaftPostEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 //{
 //	m_radialBlur->setMainTexture(source);
 //

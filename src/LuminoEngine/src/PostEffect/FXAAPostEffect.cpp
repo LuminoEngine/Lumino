@@ -11,45 +11,45 @@
 namespace ln {
 
 //==============================================================================
-// FXAAImageEffect
+// FXAAPostEffect
 
-FXAAImageEffect::FXAAImageEffect()
+FXAAPostEffect::FXAAPostEffect()
 {
 }
 
-void FXAAImageEffect::init()
+void FXAAPostEffect::init()
 {
-    ImageEffect::init();
+    PostEffect::init();
 }
 
-Ref<ImageEffectInstance> FXAAImageEffect::onCreateInstance()
+Ref<PostEffectInstance> FXAAPostEffect::onCreateInstance()
 {
-    return makeObject<detail::FXAAImageEffectInstance>(this);
+    return makeObject<detail::FXAAPostEffectInstance>(this);
 }
 
 //==============================================================================
-// FXAAImageEffectInstance
+// FXAAPostEffectInstance
 
 namespace detail {
 
-FXAAImageEffectInstance::FXAAImageEffectInstance()
+FXAAPostEffectInstance::FXAAPostEffectInstance()
     : m_owner(nullptr)
     , m_material(nullptr)
 {
 }
 
-bool FXAAImageEffectInstance::init(FXAAImageEffect* owner)
+bool FXAAPostEffectInstance::init(FXAAPostEffect* owner)
 {
-    if (!ImageEffectInstance::init()) return false;
+    if (!PostEffectInstance::init()) return false;
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FXAAImageEffect.fx");
+    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FXAA.fx");
     m_material = makeObject<Material>();
     m_material->setShader(shader1);
 
     return true;
 }
 
-bool FXAAImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool FXAAPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     m_material->setMainTexture(source);
     context->blit(m_material, destination);

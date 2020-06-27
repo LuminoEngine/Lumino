@@ -3,17 +3,17 @@
 
 namespace ln {
 
-//class LightShaftImageEffect
-//    : public ImageEffect
+//class LightShaftPostEffect
+//    : public PostEffect
 //{
 //public:
-//    static Ref<LightShaftImageEffect> create();
+//    static Ref<LightShaftPostEffect> create();
 //
 //protected:
 //    virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 //
 //LN_CONSTRUCT_ACCESS:
-//	LightShaftImageEffect();
+//	LightShaftPostEffect();
 //    void init();
 //
 //private:

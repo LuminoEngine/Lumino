@@ -3,38 +3,38 @@
 namespace ln {
 class RenderTargetTexture;
 class RenderingContext;
-class ImageEffect;
-using ImageEffectInstanceRenderer = ImageEffect;
-class ImageEffectInstance;
+class PostEffect;
+using PostEffectInstanceRenderer = PostEffect;
+class PostEffectInstance;
 namespace detail {
 
-class ImageEffectRenderer
+class PostEffectRenderer
 	: public RefObject
 {
 public:
-    ImageEffectRenderer();
+    PostEffectRenderer();
     void dispose();
-    void addImageEffect(ImageEffect* effect);
-    void removeImageEffect(ImageEffect* effect);
+    void addPostEffect(PostEffect* effect);
+    void removePostEffect(PostEffect* effect);
     void updateFrame(float elapsedSeconds);
-    void applyInSceneImageEffects(const List<ImageEffect*>& imageEffects);
+    void applyInScenePostEffects(const List<PostEffect*>& imageEffects);
     void render(RenderingContext* context, RenderTargetTexture* inout);
 
 private:
     struct Instance
     {
-        Ref<ImageEffectInstance> instance;
+        Ref<PostEffectInstance> instance;
         bool found = false;
     };
 
-    void refreshImageEffectInstances();
+    void refreshPostEffectInstances();
 
     RenderingManager* m_manager;
-    List<Ref<ImageEffect>> m_imageEffects;
-    //List<Ref<ImageEffectInstanceRenderer>> m_imageEffectRenderers;
+    List<Ref<PostEffect>> m_imageEffects;
+    //List<Ref<PostEffectInstanceRenderer>> m_imageEffectRenderers;
 
     List<Instance> m_imageEffectInstances;
-    List<Instance> m_collectedImageEffectInstances;
+    List<Instance> m_collectedPostEffectInstances;
 	Ref<Material> m_copyMaterial;
 };
 

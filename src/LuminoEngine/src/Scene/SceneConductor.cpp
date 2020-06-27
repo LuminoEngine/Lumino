@@ -47,7 +47,7 @@ SceneConductor::SceneConductor()
 	: m_transitionMode(LevelTransitionEffectMode::FadeInOut)
 	, m_transitionEffectDuration(1.0)
 {
-	m_transitionEffect = makeObject<TransitionImageEffect>();
+	m_transitionEffect = makeObject<TransitionPostEffect>();
 }
 
 //void SceneConductor::init()

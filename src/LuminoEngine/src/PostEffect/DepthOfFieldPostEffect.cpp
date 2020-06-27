@@ -11,42 +11,42 @@
 namespace ln {
 
 //==============================================================================
-// DepthOfFieldImageEffect
+// DepthOfFieldPostEffect
 
-DepthOfFieldImageEffect::DepthOfFieldImageEffect()
+DepthOfFieldPostEffect::DepthOfFieldPostEffect()
 {
 }
 
-void DepthOfFieldImageEffect::init()
+void DepthOfFieldPostEffect::init()
 {
-    ImageEffect::init();
+    PostEffect::init();
 }
 
-Ref<ImageEffectInstance> DepthOfFieldImageEffect::onCreateInstance()
+Ref<PostEffectInstance> DepthOfFieldPostEffect::onCreateInstance()
 {
-    return makeObject<detail::DepthOfFieldImageEffectInstance>(this);
+    return makeObject<detail::DepthOfFieldPostEffectInstance>(this);
 }
 
 //==============================================================================
-// DepthOfFieldImageEffectInstance
+// DepthOfFieldPostEffectInstance
 
 namespace detail {
 
-DepthOfFieldImageEffectInstance::DepthOfFieldImageEffectInstance()
+DepthOfFieldPostEffectInstance::DepthOfFieldPostEffectInstance()
     : m_owner(nullptr)
     , m_copyMaterial(nullptr)
 {
 }
 
-bool DepthOfFieldImageEffectInstance::init(DepthOfFieldImageEffect* owner)
+bool DepthOfFieldPostEffectInstance::init(DepthOfFieldPostEffect* owner)
 {
-    if (!ImageEffectInstance::init()) return false;
+    if (!PostEffectInstance::init()) return false;
 
     auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/Copy.fx");
     m_copyMaterial = makeObject<Material>();
     m_copyMaterial->setShader(shader1);
 
-    auto shader2 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/DepthOfFieldImageEffect.fx");
+    auto shader2 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/DepthOfField.fx");
     m_dofMaterial = makeObject<Material>();
     m_dofMaterial->setShader(shader2);
 
@@ -56,7 +56,7 @@ bool DepthOfFieldImageEffectInstance::init(DepthOfFieldImageEffect* owner)
     return true;
 }
 
-bool DepthOfFieldImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool DepthOfFieldPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     auto dofTexture = RenderTargetTexture::getTemporary(source->width() / 2, source->height(), TextureFormat::RGBA8, false);
     Texture* viewDepthMap = context->gbuffer(GBuffer::ViewDepthMap);

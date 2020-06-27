@@ -83,7 +83,7 @@ enum class RenderPhaseClass
     Gizmo,
 
 	// スクリーン全体にオーバーレイ描画されるもの。Zソートなど一部の不要な工程が省略される。
-    ImageEffect,
+    PostEffect,
 
 
     _Count,

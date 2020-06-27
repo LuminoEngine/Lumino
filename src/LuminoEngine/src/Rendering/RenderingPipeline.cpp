@@ -59,8 +59,8 @@ void SceneRenderingPipeline::init()
     m_sceneRenderer = makeRef<detail::ClusteredShadingSceneRenderer>();
     m_sceneRenderer->init(manager);
 
-    m_sceneRenderer_ImageEffectPhase = makeRef<detail::UnLigitingSceneRenderer>();
-    m_sceneRenderer_ImageEffectPhase->init(manager, true);
+    m_sceneRenderer_PostEffectPhase = makeRef<detail::UnLigitingSceneRenderer>();
+    m_sceneRenderer_PostEffectPhase->init(manager, true);
 
 
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
@@ -150,9 +150,9 @@ void SceneRenderingPipeline::render(
     {
         //CameraInfo camera;
         //camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
-		m_sceneRenderer_ImageEffectPhase->lightOcclusionMap = m_sceneRenderer->lightOcclusionPass()->lightOcclusionMap();
-        //m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, camera, RenderPhaseClass::ImageEffect, nullptr);
-        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, *mainCameraInfo, RenderPhaseClass::ImageEffect, nullptr);
+		m_sceneRenderer_PostEffectPhase->lightOcclusionMap = m_sceneRenderer->lightOcclusionPass()->lightOcclusionMap();
+        //m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, camera, RenderPhaseClass::PostEffect, nullptr);
+        m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, *mainCameraInfo, RenderPhaseClass::PostEffect, nullptr);
     }
 
     // Release G-Buffer
@@ -190,8 +190,8 @@ void FlatRenderingPipeline::init()
 	m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
 	m_sceneRenderer->init(manager);
 
-    m_sceneRenderer_ImageEffectPhase = makeRef<detail::UnLigitingSceneRenderer>();
-    m_sceneRenderer_ImageEffectPhase->init(manager);
+    m_sceneRenderer_PostEffectPhase = makeRef<detail::UnLigitingSceneRenderer>();
+    m_sceneRenderer_PostEffectPhase->init(manager);
 }
 
 void FlatRenderingPipeline::render(
@@ -218,7 +218,7 @@ void FlatRenderingPipeline::render(
         //ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
         CameraInfo camera;
         camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
-        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, camera, RenderPhaseClass::ImageEffect, nullptr);
+        m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, camera, RenderPhaseClass::PostEffect, nullptr);
     }
 
 	// 誤用防止

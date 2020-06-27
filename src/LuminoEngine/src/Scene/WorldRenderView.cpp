@@ -122,16 +122,16 @@ void WorldRenderView::setCamera(Camera* camera)
     }
 }
 
-void WorldRenderView::addImageEffect(ImageEffect* effect)
+void WorldRenderView::addPostEffect(PostEffect* effect)
 {
-    auto* presenter = acquireImageEffectPresenter();
-    presenter->addImageEffect(effect);
+    auto* presenter = acquirePostEffectPresenter();
+    presenter->addPostEffect(effect);
 }
 
-void WorldRenderView::removeImageEffect(ImageEffect* effect)
+void WorldRenderView::removePostEffect(PostEffect* effect)
 {
 	if (m_imageEffectRenderer) {
-		m_imageEffectRenderer->removeImageEffect(effect);
+		m_imageEffectRenderer->removePostEffect(effect);
 	}
 }
 
@@ -188,7 +188,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 			detail::WorldSceneGraphRenderingContext* renderingContext = m_targetWorld->prepareRender(m_viewPoint);
             renderingContext->baseRenderView = this;
             renderingContext->currentRenderView = this;
-            renderingContext->clearImageEffects();
+            renderingContext->clearPostEffects();
 
 
 			if (clearMode() == RenderViewClearMode::ColorAndDepth) {
@@ -382,11 +382,11 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 renderingContext->m_sceneRenderingPipeline = m_sceneRenderingPipeline;
 
                 if (!renderingContext->imageEffects().isEmpty()) {
-                    acquireImageEffectPresenter();
+                    acquirePostEffectPresenter();
                 }
 
                 if (m_imageEffectRenderer) {
-                    m_imageEffectRenderer->applyInSceneImageEffects(renderingContext->imageEffects());
+                    m_imageEffectRenderer->applyInScenePostEffects(renderingContext->imageEffects());
                     m_imageEffectRenderer->render(renderingContext, renderTarget);
                 }
 
@@ -403,10 +403,10 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 	}
 }
 
-detail::ImageEffectRenderer* WorldRenderView::acquireImageEffectPresenter()
+detail::PostEffectRenderer* WorldRenderView::acquirePostEffectPresenter()
 {
     if (!m_imageEffectRenderer) {
-        m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
+        m_imageEffectRenderer = makeRef<detail::PostEffectRenderer>();
     }
     return m_imageEffectRenderer;
 }

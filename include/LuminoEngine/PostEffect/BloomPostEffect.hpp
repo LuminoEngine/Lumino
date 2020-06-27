@@ -2,13 +2,13 @@
 #include "PostEffect.hpp"
 
 namespace ln {
-namespace detail { class BloomImageEffectInstance; }
+namespace detail { class BloomPostEffectInstance; }
 
-class BloomImageEffect
-    : public ImageEffect
+class BloomPostEffect
+    : public PostEffect
 {
 public:
-    static Ref<BloomImageEffect> create();
+    static Ref<BloomPostEffect> create();
 
     /** ブルームに影響する輝度の閾値を設定します。値が小さいほど、シーン全体がブルームに影響するようになります。(default: 0.9) */
     void setThreshold(float value);
@@ -21,11 +21,11 @@ public:
 
 protected:
     virtual void onUpdateFrame(float elapsedSeconds) override;
-    virtual Ref<ImageEffectInstance> onCreateInstance() override;
+    virtual Ref<PostEffectInstance> onCreateInstance() override;
     //virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    BloomImageEffect();
+    BloomPostEffect();
     void init();
 
 private:
@@ -35,27 +35,27 @@ private:
     float m_bloomRadius;
 
 
-    friend class detail::BloomImageEffectInstance;
+    friend class detail::BloomPostEffectInstance;
 
 };
 
 
 namespace detail {
 
-class BloomImageEffectInstance
-    : public ImageEffectInstance
+class BloomPostEffectInstance
+    : public PostEffectInstance
 {
 protected:
     bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    BloomImageEffectInstance();
-    bool init(BloomImageEffect* owner);
+    BloomPostEffectInstance();
+    bool init(BloomPostEffect* owner);
 
 private:
     void resetResources(int resx, int resy);
 
-    BloomImageEffect* m_owner;
+    BloomPostEffect* m_owner;
 
     Ref<RenderTargetTexture> m_renderTargetBright;
     List<Ref<RenderTargetTexture>> m_renderTargetsHorizontal;

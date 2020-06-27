@@ -3,46 +3,46 @@
 #include "PostEffect.hpp"
 
 namespace ln {
-namespace detail { class ToneImageEffectInstance; }
+namespace detail { class TonePostEffectInstance; }
 
-class ToneImageEffect
-	: public ImageEffect
+class TonePostEffect
+	: public PostEffect
 {
 public:
-    static Ref<ToneImageEffect> create();
+    static Ref<TonePostEffect> create();
 
     // [experimental]
     void play(const ColorTone& tone, double time);
 
 protected:
     virtual void onUpdateFrame(float elapsedSeconds) override;
-    virtual Ref<ImageEffectInstance> onCreateInstance() override;
+    virtual Ref<PostEffectInstance> onCreateInstance() override;
 
 LN_CONSTRUCT_ACCESS:
-    ToneImageEffect();
-	virtual ~ToneImageEffect();
+    TonePostEffect();
+	virtual ~TonePostEffect();
 	void init();
 
 private:
     EasingValue<Vector4> m_toneValue;
 
-    friend class detail::ToneImageEffectInstance;
+    friend class detail::TonePostEffectInstance;
 };
 
 namespace detail {
 
-class ToneImageEffectInstance
-    : public ImageEffectInstance
+class TonePostEffectInstance
+    : public PostEffectInstance
 {
 protected:
     bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    ToneImageEffectInstance();
-    bool init(ToneImageEffect* owner);
+    TonePostEffectInstance();
+    bool init(TonePostEffect* owner);
 
 private:
-    ToneImageEffect* m_owner;
+    TonePostEffect* m_owner;
     Ref<Material> m_material;
 };
 

@@ -2,40 +2,40 @@
 #include "PostEffect.hpp"
 
 namespace ln {
-namespace detail { class SSRImageEffectInstance; }
+namespace detail { class SSRPostEffectInstance; }
 
-class SSRImageEffect
-    : public ImageEffect
+class SSRPostEffect
+    : public PostEffect
 {
 public:
 
 protected:
-    virtual Ref<ImageEffectInstance> onCreateInstance() override;
+    virtual Ref<PostEffectInstance> onCreateInstance() override;
 
 LN_CONSTRUCT_ACCESS:
-    SSRImageEffect();
+    SSRPostEffect();
     void init();
 
 private:
-    friend class detail::SSRImageEffectInstance;
+    friend class detail::SSRPostEffectInstance;
 };
 
 namespace detail {
 
-class SSRImageEffectInstance
-    : public ImageEffectInstance
+class SSRPostEffectInstance
+    : public PostEffectInstance
 {
 protected:
     bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    SSRImageEffectInstance();
-    bool init(SSRImageEffect* owner);
+    SSRPostEffectInstance();
+    bool init(SSRPostEffect* owner);
 
 private:
     void resetResources(int resx, int resy);
 
-    SSRImageEffect* m_owner;
+    SSRPostEffect* m_owner;
     Ref<Material> m_ssrMaterial;
     Ref<Material> m_ssrBlurMaterial1;
     Ref<Material> m_ssrBlurMaterial2;

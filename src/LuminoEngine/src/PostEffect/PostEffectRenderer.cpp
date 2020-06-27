@@ -11,76 +11,76 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// ImageEffectRenderer
+// PostEffectRenderer
 
-ImageEffectRenderer::ImageEffectRenderer()
+PostEffectRenderer::PostEffectRenderer()
     : m_manager(detail::EngineDomain::renderingManager())
 	, m_copyMaterial(makeObject<Material>())
 {
 }
 
-void ImageEffectRenderer::dispose()
+void PostEffectRenderer::dispose()
 {
 
 }
 
-void ImageEffectRenderer::addImageEffect(ImageEffect* effect)
+void PostEffectRenderer::addPostEffect(PostEffect* effect)
 {
     if (LN_REQUIRE(effect)) return;
     m_imageEffects.add(effect);
-    refreshImageEffectInstances();
+    refreshPostEffectInstances();
 }
 
-void ImageEffectRenderer::removeImageEffect(ImageEffect* effect)
+void PostEffectRenderer::removePostEffect(PostEffect* effect)
 {
     if (LN_REQUIRE(effect)) return;
     m_imageEffects.remove(effect);
-    refreshImageEffectInstances();
+    refreshPostEffectInstances();
 }
 
-void ImageEffectRenderer::updateFrame(float elapsedSeconds)
+void PostEffectRenderer::updateFrame(float elapsedSeconds)
 {
     for (auto& imageEffect : m_imageEffects) {
         imageEffect->updateFrame(elapsedSeconds);
     }
 }
 
-void ImageEffectRenderer::applyInSceneImageEffects(const List<ImageEffect*>& imageEffects)
+void PostEffectRenderer::applyInScenePostEffects(const List<PostEffect*>& imageEffects)
 {
     //m_imageEffectRenderers.resize(imageEffects.size());
     //for (int i = 0; i < imageEffects.size(); i++) {
-    //    // TODO: ImageEffect のうち、更新部分と Render 部分を分離して、Render 部分だけここで複製する
-    //    ImageEffect* im = imageEffects[i];
+    //    // TODO: PostEffect のうち、更新部分と Render 部分を分離して、Render 部分だけここで複製する
+    //    PostEffect* im = imageEffects[i];
     //    m_imageEffectRenderers[i] = (im);
     //}
 
     for (auto& imageEffect : imageEffects) {
-        int i = m_collectedImageEffectInstances.indexOfIf([&](auto& x) { return x.instance->m_owner == imageEffect; });
+        int i = m_collectedPostEffectInstances.indexOfIf([&](auto& x) { return x.instance->m_owner == imageEffect; });
         if (i >= 0) {
-            m_collectedImageEffectInstances[i].found = true;
+            m_collectedPostEffectInstances[i].found = true;
         }
         else {
             auto instance = imageEffect->createInstance();
-            m_collectedImageEffectInstances.add({ instance, true });
+            m_collectedPostEffectInstances.add({ instance, true });
         }
     }
 
-    for (int i = m_collectedImageEffectInstances.size() - 1; i >= 0; i--) {
-        if (!m_collectedImageEffectInstances[i].found) {
-            m_collectedImageEffectInstances.removeAt(i);
+    for (int i = m_collectedPostEffectInstances.size() - 1; i >= 0; i--) {
+        if (!m_collectedPostEffectInstances[i].found) {
+            m_collectedPostEffectInstances.removeAt(i);
         }
         else {
-            m_collectedImageEffectInstances[i].found = false;
+            m_collectedPostEffectInstances[i].found = false;
         }
     }
 }
 
-void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture* inout)
+void PostEffectRenderer::render(RenderingContext* context, RenderTargetTexture* inout)
 {
 
 
 
-    if (!m_imageEffectInstances.isEmpty() || !m_collectedImageEffectInstances.isEmpty())
+    if (!m_imageEffectInstances.isEmpty() || !m_collectedPostEffectInstances.isEmpty())
     {
 		Ref<RenderTargetTexture> primaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA8, false);
 		Ref<RenderTargetTexture> secondaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA8, false);
@@ -101,7 +101,7 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
 
         bool renderd = false;
         int renderCount = 0;
-        for (auto& effect : m_collectedImageEffectInstances)
+        for (auto& effect : m_collectedPostEffectInstances)
         {
             if (renderCount == 0) {
                 renderd = effect.instance->onRender(context, inout, secondaryTarget);
@@ -144,7 +144,7 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
     }
 }
 
-void ImageEffectRenderer::refreshImageEffectInstances()
+void PostEffectRenderer::refreshPostEffectInstances()
 {
     //for (auto& i : m_imageEffectInstances) {
     //    i.found = false;

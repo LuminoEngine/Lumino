@@ -10,73 +10,73 @@
 namespace ln {
 
 //==============================================================================
-// BloomImageEffect
+// BloomPostEffect
 
 static const int MIPS = 5;
 static const Vector2 BlurDirectionX(1.0, 0.0);
 static const Vector2 BlurDirectionY(0.0, 1.0);
 
-Ref<BloomImageEffect> BloomImageEffect::create()
+Ref<BloomPostEffect> BloomPostEffect::create()
 {
-    return makeObject<BloomImageEffect>();
+    return makeObject<BloomPostEffect>();
 }
 
-BloomImageEffect::BloomImageEffect()
+BloomPostEffect::BloomPostEffect()
     : m_luminosityThreshold(0.9f)
     , m_bloomStrength(1.0f)
     , m_bloomRadius(1.0f)
 {
 }
 
-void BloomImageEffect::init()
+void BloomPostEffect::init()
 {
-    ImageEffect::init();
+    PostEffect::init();
 
 }
 
-void BloomImageEffect::setThreshold(float value)
+void BloomPostEffect::setThreshold(float value)
 {
     m_luminosityThreshold = value;
 }
 
-void BloomImageEffect::setStrength(float value)
+void BloomPostEffect::setStrength(float value)
 {
     m_bloomStrength = value;
 }
 
-void BloomImageEffect::setSize(float value)
+void BloomPostEffect::setSize(float value)
 {
     m_bloomRadius = value;
 }
 
-void BloomImageEffect::onUpdateFrame(float elapsedSeconds)
+void BloomPostEffect::onUpdateFrame(float elapsedSeconds)
 {
 }
 
-//void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+//void BloomPostEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 //{
 //}
 
-Ref<ImageEffectInstance> BloomImageEffect::onCreateInstance()
+Ref<PostEffectInstance> BloomPostEffect::onCreateInstance()
 {
-    return makeObject<detail::BloomImageEffectInstance>(this);
+    return makeObject<detail::BloomPostEffectInstance>(this);
 }
 
 //==============================================================================
-// BloomImageEffectInstance
+// BloomPostEffectInstance
 
 namespace detail {
 
-BloomImageEffectInstance::BloomImageEffectInstance()
+BloomPostEffectInstance::BloomPostEffectInstance()
     : m_owner(nullptr)
     , m_viewWidth(0)
     , m_viewHeight(0)
 {
 }
 
-bool BloomImageEffectInstance::init(BloomImageEffect* owner)
+bool BloomPostEffectInstance::init(BloomPostEffect* owner)
 {
-    if (!ImageEffectInstance::init()) return false;
+    if (!PostEffectInstance::init()) return false;
 
     m_owner = owner;
 
@@ -117,7 +117,7 @@ bool BloomImageEffectInstance::init(BloomImageEffect* owner)
     return true;
 }
 
-bool BloomImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool BloomPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     int resx = source->width();
     int resy = source->height();
@@ -164,7 +164,7 @@ bool BloomImageEffectInstance::onRender(RenderingContext* context, RenderTargetT
     return true;
 }
 
-void BloomImageEffectInstance::resetResources(int resx, int resy)
+void BloomPostEffectInstance::resetResources(int resx, int resy)
 {
     m_renderTargetsHorizontal.clear();
     m_renderTargetsVertical.clear();

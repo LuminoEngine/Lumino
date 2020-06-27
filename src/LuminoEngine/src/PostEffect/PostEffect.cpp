@@ -6,22 +6,22 @@
 namespace ln {
 
 //==============================================================================
-// ImageEffect
+// PostEffect
 
-ImageEffect::ImageEffect()
+PostEffect::PostEffect()
 {
 }
 
-ImageEffect::~ImageEffect()
+PostEffect::~PostEffect()
 {
 }
 
-void ImageEffect::init()
+void PostEffect::init()
 {
     Object::init();
 }
 
-void ImageEffect::onDispose(bool explicitDisposing)
+void PostEffect::onDispose(bool explicitDisposing)
 {
     //for (auto& i : m_instances) {
     //    i->m_ownerDisposed = true;
@@ -30,7 +30,7 @@ void ImageEffect::onDispose(bool explicitDisposing)
     Object::onDispose(explicitDisposing);
 }
 
-Ref<ImageEffectInstance> ImageEffect::createInstance()
+Ref<PostEffectInstance> PostEffect::createInstance()
 {
     auto i = onCreateInstance();
     i->m_owner = this;
@@ -38,16 +38,16 @@ Ref<ImageEffectInstance> ImageEffect::createInstance()
     return i;
 }
 
-void ImageEffect::updateFrame(float elapsedSeconds)
+void PostEffect::updateFrame(float elapsedSeconds)
 {
     onUpdateFrame(elapsedSeconds);
 }
 
-void ImageEffect::onUpdateFrame(float elapsedSeconds)
+void PostEffect::onUpdateFrame(float elapsedSeconds)
 {
 }
 
-//void ImageEffect::onPostRender()
+//void PostEffect::onPostRender()
 //{
 //}
 
