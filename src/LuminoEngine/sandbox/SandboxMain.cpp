@@ -25,7 +25,7 @@
 #include <LuminoEngine/UI/UIPropertyFields.hpp>
 #include <LuminoEngine/Tilemap/Voxel.hpp>
 #include <LuminoEngine/Scene/TransformControls.hpp>
-#include <LuminoEngine/ImageEffect/LightShaftImageEffect.hpp>
+#include <LuminoEngine/PostEffect/LightShaftPostEffect.hpp>
 #include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
 #include <LuminoEngine/Visual/EmojiComponent.hpp>
 using namespace ln;
@@ -682,15 +682,15 @@ int main(int argc, char** argv)
 	//Engine::mainUIView()->addElement(field1);
 
 
-    //auto ToneLayer = ToneImageEffect::create();
+    //auto ToneLayer = TonePostEffect::create();
     //ToneLayer->play(ColorTone(0.7, 0.5, 0.2, 1.0), 1);
-    //Engine::mainViewport()->addImageEffect(ToneLayer);
+    //Engine::mainViewport()->addPostEffect(ToneLayer);
 
-	//auto bloomEffect = BloomImageEffect ::create();
- //   Engine::mainViewport()->addImageEffect(bloomEffect);
+	//auto bloomEffect = BloomPostEffect ::create();
+ //   Engine::mainViewport()->addPostEffect(bloomEffect);
 
-	//auto lightShaft = LightShaftImageEffect::create();
-	//Engine::mainRenderView()->addImageEffect(lightShaft);
+	//auto lightShaft = LightShaftPostEffect::create();
+	//Engine::mainRenderView()->addPostEffect(lightShaft);
 
 #if 1
 	{
@@ -943,10 +943,10 @@ int main(int argc, char** argv)
     //auto sprite = makeObject<UISprite>();
     //sprite->setTexture(tex);
     //sprite->setPosition(20, 10);
-    //auto imageEffect = makeObject<ScreenBlurImageEffect>();
+    //auto imageEffect = makeObject<ScreenBlurPostEffect>();
     //imageEffect->setAmount(0.7);
     //imageEffect->setRadialScale(1.05);
-    //Engine::mainViewport()->addImageEffect(imageEffect);
+    //Engine::mainViewport()->addPostEffect(imageEffect);
 
     //auto sprite = Sprite::create(3, 3, tex);
 
@@ -955,14 +955,14 @@ int main(int argc, char** argv)
 
 
 
-    //auto ToneLayer = ToneImageEffect::create();
-    //Engine::mainViewport()->addImageEffect(ToneLayer);
+    //auto ToneLayer = TonePostEffect::create();
+    //Engine::mainViewport()->addPostEffect(ToneLayer);
 
-    //auto ToneLayer2 = ToneImageEffect::create();
-    //Engine::mainViewport()->addImageEffect(ToneLayer2);
+    //auto ToneLayer2 = TonePostEffect::create();
+    //Engine::mainViewport()->addPostEffect(ToneLayer2);
 
-    //auto BlurLayer = ScreenBlurImageEffect::create();
-    //Engine::mainViewport()->addImageEffect(BlurLayer);
+    //auto BlurLayer = ScreenBlurPostEffect::create();
+    //Engine::mainViewport()->addPostEffect(BlurLayer);
 
     //auto texture2 = Texture2D::create(100, 100);
     //texture2->clear(Color::Gray);

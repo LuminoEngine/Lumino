@@ -92,8 +92,8 @@ ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
     assert(192 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_Resolution));
     assert(208 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraPosition));
     assert(224 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraDirection));
-    assert(240 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip));
-    assert(244 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_FarClip));
+    assert(236 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip));
+    assert(240 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_FarClip));
     static_assert(256 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(336 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(48 == sizeof(LNEffectColorBuffer), "Invalid sizeof(LNRenderViewBuffer)");

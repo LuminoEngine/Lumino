@@ -10,7 +10,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include "../Graphics/GraphicsManager.hpp"
-#include "../ImageEffect/ImageEffectRenderer.hpp"
+#include "../PostEffect/PostEffectRenderer.hpp"
 #include "UIManager.hpp"
 
 namespace ln {
@@ -34,11 +34,11 @@ void UIViewport::init()
 	setHAlignment(HAlignment::Stretch);
 	setVAlignment(VAlignment::Stretch);
 
-    //m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
+    //m_imageEffectRenderer = makeRef<detail::PostEffectRenderer>();
     m_blitMaterial = makeObject<Material>();
 	m_blitMaterial->setBlendMode(BlendMode::Normal);
 
-	//auto shader = makeObject<Shader>(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.fx");
+	//auto shader = makeObject<Shader>(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TonePostEffect.fx");
 	//m_blitMaterial->setShader(shader);
 
 	//m_renderPass = makeObject<RenderPass>();
@@ -75,14 +75,14 @@ void UIViewport::removeRenderView(RenderView* view)
 	}
 }
 
-//void UIViewport::addImageEffect(ImageEffect* effect)
+//void UIViewport::addPostEffect(PostEffect* effect)
 //{
-//    m_imageEffectRenderer->addImageEffect(effect);
+//    m_imageEffectRenderer->addPostEffect(effect);
 //}
 //
-//void UIViewport::removeImageEffect(ImageEffect* effect)
+//void UIViewport::removePostEffect(PostEffect* effect)
 //{
-//    m_imageEffectRenderer->removeImageEffect(effect);
+//    m_imageEffectRenderer->removePostEffect(effect);
 //}
 
 UIElement* UIViewport::lookupMouseHoverElement(const Point& frameClientPosition)
@@ -200,7 +200,7 @@ void UIViewport::onRender(UIRenderingContext* context)
 	context->blit(m_blitMaterial, nullptr, RenderPhaseClass::Geometry);
 #else
 	// TODO: ポストプロセスの結果を転送したいので、Sprite 描画では描画できない。
-	// 現状、RenderPhaseClass::ImageEffect を使っている blit を利用する必要がある。
+	// 現状、RenderPhaseClass::PostEffect を使っている blit を利用する必要がある。
 	// なお、現時点では blit は スクリーン全体への転送を想定しているため、View Proj Matrix を受け取らないようになっている。
 	// その調整のため、ここでいろいろ変換行列を計算している。
 	// 後々、UIVew 描画の RT キャッシュとかも考えているので、blitImage(Rect, Matrial) とかにまとめたい。

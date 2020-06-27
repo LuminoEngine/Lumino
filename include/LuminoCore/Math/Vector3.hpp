@@ -116,6 +116,8 @@ public:
      */
     void transformCoord(const Matrix& mat);
 
+    void transformDirection(const Matrix& mat);
+
     /**
      * 要素のいずれかが NaN または Inf かを判別します。
      */
@@ -263,6 +265,8 @@ public:
      * ベクトルを (X, Y, Z, 1.0) として座標変換を行い、結果を w で除算します。
      */
     static Vector3 transformCoord(const Vector3& vec, const Matrix& mat);
+
+
 
     /**
      * 2 つのベクトル間の線形補間を行います。

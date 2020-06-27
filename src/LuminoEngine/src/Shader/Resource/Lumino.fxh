@@ -16,9 +16,9 @@ cbuffer LNRenderViewBuffer
 	/* [192] */ float4 ln_Resolution;
 	/* [208] */ float3 ln_CameraPosition;
 	/* [224] */ float3 ln_CameraDirection;
-	/* [240] */ float ln_NearClip;
-	/* [244] */ float ln_FarClip;
-};  /* [248(alignd:256)] */
+	/* [236] */ float ln_NearClip;
+	/* [240] */ float ln_FarClip;
+};  /* [244(alignd:256)] */
 
 cbuffer LNRenderElementBuffer
 {

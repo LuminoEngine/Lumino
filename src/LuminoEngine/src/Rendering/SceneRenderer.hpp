@@ -140,7 +140,7 @@ private:
 	int m_renderPassPoolUsed;
 
     // 1つのパイプラインの別フェーズで SceneRenderer を使うとき、
-    // viewproj 行列を分けたいことがある (Default と ImageEffect など) ため、SceneRenderer 側に実態で持つ 
+    // viewproj 行列を分けたいことがある (Default と PostEffect など) ため、SceneRenderer 側に実態で持つ 
     CameraInfo m_mainCameraInfo;
 	const DynamicLightInfo* m_mainLightInfo = nullptr;
 

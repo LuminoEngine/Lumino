@@ -1,6 +1,6 @@
 ﻿
 #include <LuminoEngine.hpp>
-#include <LuminoEngine/ImageEffect/SSRImageEffect.hpp>
+#include <LuminoEngine/PostEffect/SSRPostEffect.hpp>
 #include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 using namespace ln;
 
@@ -84,8 +84,8 @@ class App_Experiment_SSR : public Application
         m_sphere->setScale(5);
 
 
-        auto ssrImageEffect = makeObject<SSRImageEffect>();
-        Engine::renderView()->addImageEffect(ssrImageEffect);
+        auto ssrPostEffect = makeObject<SSRPostEffect>();
+        Engine::renderView()->addPostEffect(ssrPostEffect);
 
         //m_walls[0] = PlaneMesh::create(groundMaterial);
         //m_walls[0]->setPosition(0.0, 20.0, 20.0);

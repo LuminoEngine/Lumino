@@ -1,7 +1,7 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/UI/UIComboBox.hpp>
-#include <LuminoEngine/ImageEffect/SSRImageEffect.hpp>
+#include <LuminoEngine/PostEffect/SSRPostEffect.hpp>
 using namespace ln;
 
 class App_Sandbox_EmptyApp : public Application

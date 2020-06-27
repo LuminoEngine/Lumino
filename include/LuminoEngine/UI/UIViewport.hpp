@@ -3,10 +3,10 @@
 
 namespace ln {
 class RenderView;
-class ImageEffect;
+class PostEffect;
 namespace detail {
 class UIManager;
-class ImageEffectRenderer;
+class PostEffectRenderer;
 }
 
 /** Viewport の配置方法 */
@@ -27,8 +27,8 @@ public:
     void addRenderView(RenderView* view);
     void removeRenderView(RenderView* view);
 
-    //void addImageEffect(ImageEffect* effect);
-    //void removeImageEffect(ImageEffect* effect);
+    //void addPostEffect(PostEffect* effect);
+    //void removePostEffect(PostEffect* effect);
 
 
 
@@ -60,7 +60,7 @@ private:
 	static void makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
 
     detail::UIManager* m_manager;
-    //Ref<detail::ImageEffectRenderer> m_imageEffectRenderer;
+    //Ref<detail::PostEffectRenderer> m_imageEffectRenderer;
     List<Ref<RenderView>> m_renderViews;
 	//Ref<RenderPass> m_renderPass;
     Size m_actualViewboxSize;

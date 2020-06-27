@@ -6,6 +6,7 @@
 #include "NewCommand.hpp"
 #include "FxcCommand.hpp"
 #include "BuildCommand.hpp"
+#include "NewAssetCommand.hpp"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -42,7 +43,7 @@ int main(int argc, char** argv)
             //"fxc", "Assets/LineWave.fx",
             //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx",
 			//"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx",
-			"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSR.fx", "--export=tmp"
+			"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSR.fx", "--export=tmp"
 
             //"build", "assets",
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
@@ -187,6 +188,12 @@ static int processCommands(int argc, char** argv)
 
 
 	//--------------------------------------------------------------------------------
+	// new-asset command
+	auto newAssetCommand = parser.addCommand(u"new-asset", u"Create a new asset file.");
+	auto newAssetCommand_nameArg = newCommand->addPositionalArgument(u"name", u"Asset type name.");
+	auto newAssetCommand_outputArg = newCommand->addValueOption(u"o", u"output", u"Output file path.");
+
+	//--------------------------------------------------------------------------------
 	// build-assets command
 	//auto buildAssetsCommand = parser.addCommand(u"build-assets", u"Make assets archive.");
 
@@ -302,6 +309,21 @@ static int processCommands(int argc, char** argv)
 				cmd.exportDir = fxcCommand_exportArg->value();
 			}
 			return cmd.execute(fxcCommand_inputArg->value());
+		}
+		//--------------------------------------------------------------------------------
+		// new-asset command
+		else if (parser.has(newAssetCommand)) {
+			auto workspace = ln::makeObject<lna::Workspace>();
+			auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
+			if (!workspace->openMainProject(projectFile)) {
+				return 1;
+			}
+
+			NewAssetCommand cmd;
+			if (newAssetCommand_outputArg->hasValue()) {
+				cmd.filePath = newAssetCommand_outputArg->value();
+			}
+			return cmd.execute(workspace, newAssetCommand_nameArg->value());
 		}
 		//--------------------------------------------------------------------------------
 		// build-assets command

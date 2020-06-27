@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include "OpenGLDeviceContext.hpp"
 
@@ -344,6 +345,7 @@ void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps)
 	outCaps->requestedShaderTriple.version = 400;
 	outCaps->requestedShaderTriple.option = "";
 #endif
+	outCaps->imageLayoytVFlip = true;
 }
 
 Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
@@ -1836,15 +1838,38 @@ void GLRenderTargetTexture::dispose()
 
 void GLRenderTargetTexture::readData(void* outData)
 {
+	//auto buf = makeObject<Bitmap2D>(m_size.width, m_size.height, GraphicsHelper::translateToPixelFormat(m_textureFormat));
+
 #ifdef GL_GLES_PROTOTYPES
 	// OpenGL ES is glGetTexImage unsupported
 	// http://oppyen.hatenablog.com/entry/2016/10/21/071612
 #else
 	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
+	//GL_CHECK(glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, buf->data()));
 	GL_CHECK(glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, outData));
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 #endif
+
+	// Note: RenderTarget 書き込み時に上下反転するには、gl_Position.y を反転するしかない。
+	// glslangValidator や spirv-cross はオプションでこの反転コードを自動追加できるが、
+	// 本来はポストエフェクト (RTコピー時に反転) にだけ使いたくて、通常のジオメトリまで反転したくない。
+	// そのため Test_Graphics_LowLevelRendering.BasicTriangle のように上向きの三角形を描いたりすると、
+	// glGetTexImage で取り出した この時点での outData は、上下反転している状態になっている。
+
+	//BitmapHelper::blitRawSimple(outData, buf->data(), m_size.width, m_size.height, GraphicsHelper::getPixelSize(m_textureFormat), true);
+
+	//struct Color3 { uint8_t r, g, b; };
+	//const Color3* c = (const Color3*)outData;
+	//for (int y = 0; y < m_size.height; y++) {
+	//	int count = 0;
+	//	for (int x = 0; x < m_size.width; x++) {
+	//		if (c[y * m_size.height + x].g < 255) {
+	//			count++;
+	//		}
+	//	}
+	//	printf("%d\n", count);
+	//}
 }
 
 SizeI GLRenderTargetTexture::realSize()

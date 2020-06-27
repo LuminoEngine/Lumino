@@ -5,7 +5,7 @@
 namespace ln {
 namespace detail { class RenderingManager; }
 
-// ImageEffect はつかない。
+// PostEffect はつかない。
 class OffscreenWorldRenderView
 	: public RenderView
 {

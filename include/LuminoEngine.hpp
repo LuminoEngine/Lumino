@@ -58,10 +58,10 @@
 #include "LuminoEngine/Rendering/RenderFeature.hpp"
 #include "LuminoEngine/Rendering/RenderingContext.hpp"
 
-#include "LuminoEngine/ImageEffect/ImageEffect.hpp"
-#include "LuminoEngine/ImageEffect/ToneImageEffect.hpp"
-#include "LuminoEngine/ImageEffect/ScreenBlurImageEffect.hpp"
-#include "LuminoEngine/ImageEffect/BloomImageEffect.hpp"
+#include "LuminoEngine/PostEffect/PostEffect.hpp"
+#include "LuminoEngine/PostEffect/TonePostEffect.hpp"
+#include "LuminoEngine/PostEffect/ScreenBlurPostEffect.hpp"
+#include "LuminoEngine/PostEffect/BloomPostEffect.hpp"
 
 #include "LuminoEngine/Physics/CollisionShape.hpp"
 #include "LuminoEngine/Physics/PhysicsWorld.hpp"

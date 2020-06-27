@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/ImageEffect/TransitionImageEffect.hpp>
+#include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/SceneConductor.hpp>
 #include "SceneManager.hpp"
@@ -47,7 +47,7 @@ SceneConductor::SceneConductor()
 	: m_transitionMode(LevelTransitionEffectMode::FadeInOut)
 	, m_transitionEffectDuration(1.0)
 {
-	m_transitionEffect = makeObject<TransitionImageEffect>();
+	m_transitionEffect = makeObject<TransitionPostEffect>();
 }
 
 //void SceneConductor::init()

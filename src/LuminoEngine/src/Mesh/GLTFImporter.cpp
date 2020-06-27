@@ -596,7 +596,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 	//	LN_NOTIMPLEMENTED();
 	//	return nullptr;
 	//}
-	IndexBufferFormat indexForamt = detail::GraphicsResourceInternal::selectIndexBufferFormat(vertexCount);
+	IndexBufferFormat indexForamt = GraphicsHelper::selectIndexBufferFormat(vertexCount);
 
 	auto coreMesh = makeObject<Mesh>(vertexCount, indexCount, indexForamt, GraphicsResourceUsage::Static);
 

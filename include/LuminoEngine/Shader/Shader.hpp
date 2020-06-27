@@ -20,7 +20,7 @@ class ShaderHelper;
 class ShaderManager;
 class UnifiedShader;
 class IShaderPass;
-class IShaderUniformBuffer;
+//class IShaderUniformBuffer;
 class ShaderTechniqueSemanticsManager;
 }
 

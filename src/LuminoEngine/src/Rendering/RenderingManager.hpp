@@ -37,8 +37,8 @@ enum class BuiltinShader
 	// for Sky
 	SkyLowAltitudeOptimized,
 
-    ScreenBlurImageEffect,
-    ToneImageEffect,
+    ScreenBlurPostEffect,
+    TonePostEffect,
 
 	// for Bloom
 	LuminosityHighPassShader,

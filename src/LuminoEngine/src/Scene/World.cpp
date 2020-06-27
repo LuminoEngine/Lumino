@@ -4,7 +4,7 @@
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
-#include <LuminoEngine/ImageEffect/TransitionImageEffect.hpp>
+#include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/SceneConductor.hpp>
@@ -267,7 +267,7 @@ void World::prepareRender()
         scene->collectRenderObjects(this, m_renderingContext);
     }
 
-    m_renderingContext->collectImageEffect(m_sceneConductor->transitionEffect());
+    m_renderingContext->collectPostEffect(m_sceneConductor->transitionEffect());
 }
 
 void World::renderObjects()
