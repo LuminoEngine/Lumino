@@ -1,11 +1,11 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/Mesh/MeshProcessing.hpp>
-#include <LuminoEngine/PostEffect/SSRImageEffect.hpp>
-#include <LuminoEngine/PostEffect/SSAOImageEffect.hpp>
-#include <LuminoEngine/PostEffect/TonemapImageEffect.hpp>
-#include <LuminoEngine/PostEffect/DepthOfFieldImageEffect.hpp>
-#include <LuminoEngine/PostEffect/FXAAImageEffect.hpp>
+#include <LuminoEngine/PostEffect/SSRPostEffect.hpp>
+#include <LuminoEngine/PostEffect/SSAOPostEffect.hpp>
+#include <LuminoEngine/PostEffect/TonemapPostEffect.hpp>
+#include <LuminoEngine/PostEffect/DepthOfFieldPostEffect.hpp>
+#include <LuminoEngine/PostEffect/FXAAPostEffect.hpp>
 using namespace ln;
 
 class App_Sandbox_PostEffect : public Application

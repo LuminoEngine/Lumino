@@ -1,10 +1,10 @@
 ﻿#pragma once
-#include "ImageEffect.hpp"
+#include "PostEffect.hpp"
 
 namespace ln {
-namespace detail { class DepthOfFieldImageEffectInstance; }
+namespace detail { class SSAOImageEffectInstance; }
 
-class DepthOfFieldImageEffect
+class SSAOImageEffect
     : public ImageEffect
 {
 public:
@@ -13,30 +13,30 @@ protected:
     virtual Ref<ImageEffectInstance> onCreateInstance() override;
 
 LN_CONSTRUCT_ACCESS:
-    DepthOfFieldImageEffect();
+    SSAOImageEffect();
     void init();
 
 private:
-    friend class detail::DepthOfFieldImageEffectInstance;
+    friend class detail::SSAOImageEffectInstance;
 };
 
 namespace detail {
 
-class DepthOfFieldImageEffectInstance
+class SSAOImageEffectInstance
     : public ImageEffectInstance
 {
 protected:
     bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    DepthOfFieldImageEffectInstance();
-    bool init(DepthOfFieldImageEffect* owner);
+    SSAOImageEffectInstance();
+    bool init(SSAOImageEffect* owner);
 
 private:
-    DepthOfFieldImageEffect* m_owner;
-    Ref<Material> m_copyMaterial;
-    Ref<Material> m_dofMaterial;
+    SSAOImageEffect* m_owner;
     Ref<SamplerState> m_samplerState;
+    Ref<Material> m_occlusionMaterial;
+    Ref<Material> m_blurAndCompositeMaterial;
 };
 
 } // namespace detail

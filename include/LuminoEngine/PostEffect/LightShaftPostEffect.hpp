@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "ImageEffect.hpp"
+#include "PostEffect.hpp"
 
 namespace ln {
 

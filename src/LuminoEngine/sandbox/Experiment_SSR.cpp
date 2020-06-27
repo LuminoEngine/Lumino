@@ -1,6 +1,6 @@
 ﻿
 #include <LuminoEngine.hpp>
-#include <LuminoEngine/PostEffect/SSRImageEffect.hpp>
+#include <LuminoEngine/PostEffect/SSRPostEffect.hpp>
 #include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 using namespace ln;
 

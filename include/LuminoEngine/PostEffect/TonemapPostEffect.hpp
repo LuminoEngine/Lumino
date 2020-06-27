@@ -1,10 +1,10 @@
 ﻿#pragma once
-#include "ImageEffect.hpp"
+#include "PostEffect.hpp"
 
 namespace ln {
-namespace detail { class SSAOImageEffectInstance; }
+namespace detail { class TonemapImageEffectInstance; }
 
-class SSAOImageEffect
+class TonemapImageEffect
     : public ImageEffect
 {
 public:
@@ -13,30 +13,28 @@ protected:
     virtual Ref<ImageEffectInstance> onCreateInstance() override;
 
 LN_CONSTRUCT_ACCESS:
-    SSAOImageEffect();
+    TonemapImageEffect();
     void init();
 
 private:
-    friend class detail::SSAOImageEffectInstance;
+    friend class detail::TonemapImageEffectInstance;
 };
 
 namespace detail {
 
-class SSAOImageEffectInstance
+class TonemapImageEffectInstance
     : public ImageEffectInstance
 {
 protected:
     bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    SSAOImageEffectInstance();
-    bool init(SSAOImageEffect* owner);
+    TonemapImageEffectInstance();
+    bool init(TonemapImageEffect* owner);
 
 private:
-    SSAOImageEffect* m_owner;
-    Ref<SamplerState> m_samplerState;
-    Ref<Material> m_occlusionMaterial;
-    Ref<Material> m_blurAndCompositeMaterial;
+    TonemapImageEffect* m_owner;
+    Ref<Material> m_material;
 };
 
 } // namespace detail

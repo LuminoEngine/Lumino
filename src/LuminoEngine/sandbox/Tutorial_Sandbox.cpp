@@ -5,7 +5,7 @@
 #include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapLayer.hpp>
 #include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapModel.hpp>
 #include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapComponent.hpp>
-#include <LuminoEngine/PostEffect/TransitionImageEffect.hpp>
+#include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
 using namespace ln;
 
 TransitionImageEffect* g_TransitionImageEffect;

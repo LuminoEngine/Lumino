@@ -5,7 +5,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/PostEffect/DepthOfFieldImageEffect.hpp>
+#include <LuminoEngine/PostEffect/DepthOfFieldPostEffect.hpp>
 #include "../Rendering/RenderingManager.hpp"
 
 namespace ln {

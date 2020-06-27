@@ -10,7 +10,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include "../Graphics/GraphicsManager.hpp"
-#include "../PostEffect/ImageEffectRenderer.hpp"
+#include "../PostEffect/PostEffectRenderer.hpp"
 #include "UIManager.hpp"
 
 namespace ln {

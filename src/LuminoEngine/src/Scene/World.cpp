@@ -4,7 +4,7 @@
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
-#include <LuminoEngine/PostEffect/TransitionImageEffect.hpp>
+#include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/SceneConductor.hpp>
