@@ -58,6 +58,7 @@ LN_CLASS()
 class PlaneMesh
 	: public VisualObject
 {
+	LN_OBJECT;
 public:
 	static Ref<PlaneMesh> create();
 	static Ref<PlaneMesh> create(Material* material);
@@ -65,6 +66,7 @@ public:
 	PlaneMeshComponent* planeMeshComponent() const;
 
 protected:
+	void serialize2(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	PlaneMesh();
@@ -77,6 +79,7 @@ LN_CONSTRUCT_ACCESS:
 	bool init(Material* material);
 
 private:
+
 	Ref<PlaneMeshComponent> m_component;
 };
 

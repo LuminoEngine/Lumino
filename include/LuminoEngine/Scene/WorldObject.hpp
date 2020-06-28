@@ -173,6 +173,8 @@ public:
 	LN_METHOD()
     void addComponent(Component* component);
 
+	void removeAllComponents();
+
     void addTag(const StringRef& tag) { m_tags->add(tag); }
     void removeTag(const StringRef& tag) { m_tags->remove(tag); }
     bool hasTag(const StringRef& tag) const { return m_tags->contains(tag); }

@@ -173,6 +173,13 @@ void WorldObject::addComponent(Component* component)
     component->onAttached(this);
 }
 
+void WorldObject::removeAllComponents()
+{
+    if (m_components) {
+        m_components->clear();
+    }
+}
+
 void WorldObject::destroy()
 {
 	m_destroyed = true;

@@ -15,6 +15,8 @@
 #include <LuminoEngine/Tilemap/TilemapComponent.hpp>
 #include <LuminoEngine/Tilemap/Tilemap.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMesh.hpp>
+#include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
+#include <LuminoEngine/Scene/Shapes/MeshPrimitives.hpp>
 
 namespace ln {
 namespace detail {
@@ -68,6 +70,9 @@ void SceneManager::init()
     EngineDomain::registerType<Tilemap>();
 
 	EngineDomain::registerType<StaticMesh>();
+
+	EngineDomain::registerType<PlaneMesh>();
+	EngineDomain::registerType<PlaneMeshComponent>();
 
     LN_LOG_DEBUG << "SceneManager Initialization ended.";
 }
