@@ -2,6 +2,7 @@
 #pragma once
 
 namespace ln {
+class Assets;
 
 /** アセットが保存されている場所へのアクセス優先度 */
 enum class AssetStorageAccessPriority

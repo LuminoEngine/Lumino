@@ -19,7 +19,7 @@ protected:
     const Path& assetPath() const { return m_assetFilePath; }
     void setAssetPath(const Path& value);
     void reload();
-    virtual void onLoadSourceFile() = 0;
+    virtual void onLoadSourceFile();
 
 LN_CONSTRUCT_ACCESS:
     AssetObject();
@@ -33,6 +33,8 @@ private:
     // リロードのたびに findAssetPath() で AssetPath に解決して使う。
     // この性質上、開発中のみ使用し、リリースランタイムでは使用しない。
     Path m_assetFilePath;
+
+    friend class Assets;
 };
 
 } // namespace ln

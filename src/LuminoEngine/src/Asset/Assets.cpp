@@ -14,6 +14,21 @@ namespace ln {
 //=============================================================================
 // Assets
 
+void Assets::setAssetPath(AssetObject* obj, const String& filePath)
+{
+    obj->setAssetPath(filePath);
+}
+
+void Assets::save(AssetObject* obj)
+{
+    Assets::saveAsset(obj, obj->m_assetFilePath);
+}
+
+void Assets::reload(AssetObject* obj)
+{
+    obj->reload();
+}
+
 void Assets::saveAssetToLocalFile(AssetModel* asset, const String& filePath)
 {
     detail::EngineDomain::assetManager()->saveAssetModelToLocalFile(asset, filePath);

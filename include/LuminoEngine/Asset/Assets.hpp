@@ -6,11 +6,17 @@ namespace ln {
 class Shader;
 class Texture2D;
 class AssetModel;
+class AssetObject;
 
 LN_CLASS(Static)
 class Assets
 {
 public:
+
+    static void setAssetPath(AssetObject* obj, const String& filePath);
+    static void save(AssetObject* obj);
+    static void reload(AssetObject* obj);
+
 
     /** Internal */
     LN_METHOD()

@@ -28,7 +28,7 @@ namespace ln {
 //==============================================================================
 // Level
 
-LN_OBJECT_IMPLEMENT(Level, Object) {}
+LN_OBJECT_IMPLEMENT(Level, AssetObject) {}
 
 Level::Level()
     : m_ownerWorld(nullptr)
@@ -42,9 +42,9 @@ Level::~Level()
 {
 }
 
-void Level::init()
+bool Level::init()
 {
-
+    return AssetObject::init();
 }
 
 void Level::onStart()
@@ -234,7 +234,11 @@ void Level::renderGizmos(RenderingContext* context)
 
 void Level::serialize2(Serializer2& ar)
 {
-    Object::serialize2(ar);
+    AssetObject::serialize2(ar);
+
+    if (ar.isLoading()) {
+        removeAllObjects();
+    }
 
     ar & ln::makeNVP(u"children", *m_rootWorldObjectList);
 

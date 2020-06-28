@@ -3,6 +3,7 @@
 #include "Common.hpp"
 #include "../Rendering/Common.hpp"
 #include "../Asset/AssetModel.hpp"
+#include "../Asset/AssetObject.hpp"
 
 template <class T>
 void staticFactory2();
@@ -23,7 +24,7 @@ namespace detail {
 // Note: Level はひとつの World に属し、World からの通知により onUpdate() や m_rootWorldObjectList の Object へさらに通知したりする。
 LN_CLASS()
 class Level
-	: public Object
+	: public AssetObject
 {
 	LN_OBJECT;
 public:
@@ -75,7 +76,7 @@ LN_CONSTRUCT_ACCESS:
 
 	/** Initialize */
 	LN_METHOD()
-	void init();
+	bool init();
 
 public: // TODO: internal
 	void update(float elapsedSeconds);
