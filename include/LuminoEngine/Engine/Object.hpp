@@ -45,6 +45,7 @@ class AssetPath
 public:
     static const String FileSchemeName;
     static const String AssetSchemeName;
+    static const AssetPath Null;
 
     // 相対パスの場合は Path::canonicalize() でフルパスに解決する。
     // 絶対パスでも .. が含まれている場合は解決する。

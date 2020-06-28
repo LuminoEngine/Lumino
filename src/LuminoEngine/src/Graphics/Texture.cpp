@@ -375,7 +375,7 @@ void Texture2D::serialize2(Serializer2& ar)
     if (ar.isSaving() && !m_sourceFilePath.isNull()) {
         // save to relative path.
         // TODO: 毎回 parseAssetPath するのはアレなので、ar.basePath() の型を AssetPath にしたいところ。
-        path = detail::AssetPath::makeRelativePath(detail::AssetPath::parseAssetPath(ar.basePath()), m_sourceFilePath);
+        path = detail::AssetPath::makeRelativePath(ar.basePath(), m_sourceFilePath);
     }
 
     ar & makeNVP(u"file", path);
@@ -384,7 +384,7 @@ void Texture2D::serialize2(Serializer2& ar)
         if (!path.isEmpty()) {
             // convert relative path to full path.
             m_sourceFilePath = detail::AssetPath::resolveAssetPath(
-                detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), path),
+                detail::AssetPath::combineAssetPath(ar.basePath(), path),
                 s_Texture2D_candidateExts);
         }
     }

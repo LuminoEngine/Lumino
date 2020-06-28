@@ -781,7 +781,7 @@ Ref<Object> Serializer2::readObjectInteral(std::function<Ref<Object>()> knownTyp
 #endif
 }
 
-String Serializer2::serialize(AssetModel* value, const String& basePath)
+String Serializer2::serialize(AssetModel* value, const detail::AssetPath& basePath)
 {
 	//YAML::Node n;
 	//n["a"] = 10;
@@ -810,7 +810,7 @@ String Serializer2::serialize(AssetModel* value, const String& basePath)
 	return ns_to_str(sr->m_store->str());
 }
 
-Ref<AssetModel> Serializer2::deserialize(const String& str, const String& basePath)
+Ref<AssetModel> Serializer2::deserialize(const String& str, const detail::AssetPath& basePath)
 {
 	Ref<AssetModel> asset;
 
@@ -834,7 +834,7 @@ Ref<AssetModel> Serializer2::deserialize(const String& str, const String& basePa
 	}
 }
 
-void Serializer2::deserializeInstance(AssetModel* asset, const String& str, const String& basePath)
+void Serializer2::deserializeInstance(AssetModel* asset, const String& str, const detail::AssetPath& basePath)
 {
 	try {
 		ObjectInitializeContext::Default->autoAdd = false;

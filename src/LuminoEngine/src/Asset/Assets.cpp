@@ -155,6 +155,7 @@ namespace detail {
 
 const String AssetPath::FileSchemeName = u"file";
 const String AssetPath::AssetSchemeName = u"asset";
+const AssetPath AssetPath::Null;
 
 AssetPath AssetPath::makeFromLocalFilePath(const Path& filePath)
 {

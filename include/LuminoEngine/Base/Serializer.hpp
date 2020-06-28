@@ -133,7 +133,7 @@ public:
 
 	bool isLoading() const { return m_mode == ArchiveMode::Load; }
 
-	const String& basePath() const { return m_basePath; }
+	const detail::AssetPath& basePath() const { return m_basePath; }
 
 
 	void writeName(const StringRef& name);
@@ -236,13 +236,13 @@ public:
 	
 	/** serialize */
 	//LN_METHOD()
-	static String serialize(AssetModel* value, const String& basePath);
+	static String serialize(AssetModel* value, const detail::AssetPath& basePath);
 	
 	/** serialize */
 	//LN_METHOD()
-	static Ref<AssetModel> deserialize(const String& str, const String& basePath);
+	static Ref<AssetModel> deserialize(const String& str, const detail::AssetPath& basePath);
 
-	static void deserializeInstance(AssetModel* asset, const String& str, const String& basePath);
+	static void deserializeInstance(AssetModel* asset, const String& str, const detail::AssetPath& basePath);
 
 
 	// C++ utils
@@ -347,7 +347,7 @@ private:
 	void readValue(T& outValue) { ln::serialize2(*this, outValue); }
 
 	ArchiveMode m_mode;
-	String m_basePath;
+	detail::AssetPath m_basePath;
 	Ref<detail::SerializerStore2> m_store;
 };
 #endif

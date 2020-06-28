@@ -34,6 +34,7 @@ void PlaneMeshComponent::setMaterial(Material* material)
 
 void PlaneMeshComponent::serialize2(Serializer2& ar)
 {
+    VisualComponent::serialize2(ar);
     ar & makeNVP(u"size", m_size);
     ar & makeNVP(u"uvParUnit", m_uvParUnit);
     ar & makeNVP(u"material", m_material);
