@@ -35,18 +35,6 @@ Level::Level()
 	, m_rootWorldObjectList(makeList<Ref<WorldObject>>())
 	, m_initialUpdate(true)
 {
-	m_sceneGlobalRenderParams.lowerHeight = -100.0f;
-	m_sceneGlobalRenderParams.upperHeight = 10.0f;
-	m_sceneGlobalRenderParams.startDistance = 20.0f;
-	m_sceneGlobalRenderParams.fogColor = Color(0.686, 0.678, 0.666);//Color::White;
-	m_sceneGlobalRenderParams.fogDensity = 1.0f / 50.0f;
-	m_sceneGlobalRenderParams.heightFogDensity = 1.0f / 10.0f;
-
-
-	m_sceneGlobalRenderParams.lowerHeight = -500.0f;
-	m_sceneGlobalRenderParams.upperHeight = 50.0f;
-	m_sceneGlobalRenderParams.fogDensity = 1.0f / 200.0f;
-	m_sceneGlobalRenderParams.heightFogDensity = 1.0f / 100.0f;
 
 }
 
@@ -356,6 +344,56 @@ void Scene::startCrossFade()
 {
     auto& sc = detail::EngineDomain::engineManager()->mainWorld()->sceneConductor();
     sc->transitionEffect()->startCrossFade(sc->transitionEffectDuration());
+}
+
+void Scene::setFogStartDistance(float value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.startDistance = value;
+}
+
+void Scene::setFogColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.fogColor = value;
+}
+
+void Scene::setFogDensity(float value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.fogDensity = value;
+}
+
+void Scene::setFogHeightDensity(float value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.heightFogDensity = value;
+}
+
+void Scene::setFogLowerHeight(float value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.lowerHeight = value;
+}
+
+void Scene::setFogUpperHeight(float value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.upperHeight = value;
+}
+
+void Scene::setSkydomeSkyColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.skydomeSkyColor = value;
+}
+
+void Scene::setSkydomeHorizonColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.skydomeHorizonColor = value;
+}
+
+void Scene::setSkydomeCloudColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.skydomeCloudColor = value;
+}
+
+void Scene::setSkydomeOverlayColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.skydomeOverlayColor = value;
 }
 
 ////==============================================================================

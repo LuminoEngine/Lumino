@@ -163,6 +163,9 @@ float3 Uncharted2Tonemap( float3 x ) {
 
 float3 LN_FogColor(float3 vWorldPosition)
 {
+	return ln_FogColorAndDensity.rgb;
+
+#if 0	// 大気散乱シミュレーションに合わせる (Proto)
 	float3 cameraPos = ln_CameraPosition;
 	float3 vSunDirection = -ln_MainLightDirection;
 	float3 sunPosition = vSunDirection * 400000.0;
@@ -229,6 +232,7 @@ float3 LN_FogColor(float3 vWorldPosition)
 
 	//float3 Lin = pow( input.vSunE * ( ( betaRTheta + betaMTheta ) / ( input.vBetaR + input.vBetaM ) ) * ( 1.0 - Fex ), float3( 1.5 ) );
 	//Lin *= lerp( float3( 1.0 ), pow( input.vSunE * ( ( betaRTheta + betaMTheta ) / ( input.vBetaR + input.vBetaM ) ) * Fex, float3( 1.0 / 2.0 ) ), clamp( pow( 1.0 - dot( up, input.vSunDirection ), 5.0 ), 0.0, 1.0 ) );
+#endif
 }
 
 
@@ -287,14 +291,13 @@ float4 _LN_PS_ClusteredForward_Default(
     //outgoingLight *= LN_CalculateShadow(posInLight);
 	
 	// Fog
-	float viewLength = length(ln_CameraPosition - worldPos);
-	//result.rgb = lerp(ln_FogParams.rgb, result.rgb, _LN_CalcFogFactor(viewPos.z));
-	//result.rgb = lerp(result.rgb, ln_FogParams.rgb, _LN_CalcFogFactor2(viewPos.z, worldPos.y));
-	//result.rgb = lerp(result.rgb, ln_FogColorAndDensity.rgb, _LN_CalcFogFactor2(viewLength, worldPos.y));
-	//result.rgb = lerp(result.rgb, ln_FogColorAndDensity.rgb, _LN_CalcFogFactor2(length(worldPos), worldPos.y));
-	result.rgb = lerp(result.rgb, LN_FogColor(worldPos), _LN_CalcFogFactor2(viewLength, worldPos.y));
-	//result.rgb = lerp(saturate(result.rgb), LN_FogColor(worldPos), _LN_CalcFogFactor2(viewLength, worldPos.y));
-	//result.rgb = LN_FogColor(worldPos);
+	{
+		float viewLength = length(ln_CameraPosition - worldPos);
+		float fogFactor = _LN_CalcFogFactor2(viewLength, worldPos.y);
+		result.rgb = lerp(result.rgb, LN_FogColor(worldPos), fogFactor);
+		//opacity *= 1.0f - fogFactor;	// try
+		opacity = 0.5;
+	}
 
 	//result.r = _LN_CalcFogFactor2(viewLength, worldPos.y);
 	//result.g = 0;
@@ -542,7 +545,7 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 	
 	_lngs_PSOutput o;
 	o.color0 = _LN_PS_ClusteredForward_Default(input.WorldPos, input.VertexPos, surface);
-	o.color0.a = surface.Albedo.a;
+	o.color0.a *= surface.Albedo.a;
 	o.color0 = LN_GetBuiltinEffectColor(o.color0);
 
 	

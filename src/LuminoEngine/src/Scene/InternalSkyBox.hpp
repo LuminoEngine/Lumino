@@ -29,7 +29,15 @@ class InternalSkyDome
 public:
 	InternalSkyDome();
 	bool init();
+
+    void setSkyColor(const Color& value) { m_skyColor = value.toVector4(); }
+    void setHorizonColor(const Color& value) { m_horizonColor = value.toVector4(); }
+    void setCloudColor(const Color& value) { m_cloudColor = value.toVector4(); }
+    void setOverlayColor(const Color& value) { m_overlayColor = value.toVector4(); }
+
+    void update(float elapsedTimer);
 	void render(RenderingContext* context, const RenderViewPoint* viewPoint);
+    const Color& sceneColor() const { return m_sceneColor; }
 
 private:
 	Ref<StaticMeshModel> m_model;
@@ -55,6 +63,16 @@ private:
     Ref<KeyFrameAnimationCurve> m_baseCloudColorAndIntensityA;
 
     float m_timeOfDay;
+    Vector4 m_skyColor;
+    Vector4 m_horizonColor;
+    Vector4 m_cloudColor;
+    Vector4 m_overlayColor;
+
+    Color m_fixedBackGroundSkyDomeColor;
+    Color m_fixedBackGroundHorizonColor;
+    Color m_fixedBaseCloudColorAndIntensity;
+    Color m_fixedAllOverlayColor;
+    Color m_sceneColor;
 };
 
 } // namespace detail

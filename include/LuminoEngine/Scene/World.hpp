@@ -104,6 +104,9 @@ public: // TODO: internal
     Ref<AmbientLight> m_mainAmbientLight;
     Ref<DirectionalLight> m_mainDirectionalLight;
 
+    // TODO: Master-scene と Sub-scene の値を統合したうえで、SceneRenderer に流したい。
+    detail::SceneGlobalRenderParams m_sceneGlobalRenderParams;
+
     Ref<List<Ref<Level>>> m_sceneList;
  //   Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
 	//List<WorldObject*> m_destroyList;

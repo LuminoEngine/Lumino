@@ -186,6 +186,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             clearInfo.flags = ClearFlags::Depth | ClearFlags::Stencil;
         }
 
+        detail::SceneGlobalRenderParams sceneGlobalRenderParams = m_targetWorld->m_sceneGlobalRenderParams;
+
 
         m_sceneRenderingPipeline->prepare(renderTarget);
 
@@ -343,7 +345,15 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 renderingContext->popState();
 			}
             else if (clearMode() == RenderViewClearMode::SkyDome) {
+                m_internalSkyDome->setSkyColor(sceneGlobalRenderParams.skydomeSkyColor);
+                m_internalSkyDome->setHorizonColor(sceneGlobalRenderParams.skydomeHorizonColor);
+                m_internalSkyDome->setCloudColor(sceneGlobalRenderParams.skydomeCloudColor);
+                m_internalSkyDome->setOverlayColor(sceneGlobalRenderParams.skydomeOverlayColor);
+
+                m_internalSkyDome->update(0.016);   // TODO:
                 m_internalSkyDome->render(renderingContext, m_viewPoint);
+
+                //sceneGlobalRenderParams.fogColor = m_internalSkyDome->sceneColor();
             }
 
 
@@ -407,7 +417,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
 
         assert(elementListManagers().size() == 1);
-		m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, elementListManagers().front(), &m_targetWorld->masterScene()->m_sceneGlobalRenderParams);
+		m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, elementListManagers().front(), &sceneGlobalRenderParams);
         
 		//graphicsContext->resetState();
 	}

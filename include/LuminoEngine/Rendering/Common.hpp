@@ -329,6 +329,12 @@ struct SceneGlobalRenderParams
 	Color fogColor;
 	float fogDensity = 0.0f;
 	float heightFogDensity = 0.0f;
+
+	Color skydomeSkyColor = Color(0, 0, 0, 0);
+	Color skydomeHorizonColor = Color(0, 0, 0, 0);
+	Color skydomeCloudColor = Color(0, 0, 0, 0);
+	Color skydomeOverlayColor = Color(0, 0, 0, 0);
+
 };
 
 } // namespace detail

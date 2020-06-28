@@ -330,48 +330,87 @@ bool InternalSkyDome::init()
     }
 
     m_timeOfDay = 12.0;
+    m_skyColor.w = 0.0f;
+    m_horizonColor.w = 0.0f;
+    m_cloudColor.w = 0.0f;
+    m_overlayColor.w = 0.0f;
 
     return true;
 }
 
-void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* viewPoint)
+void InternalSkyDome::update(float elapsedTimer)
 {
-    m_timeOfDay += 0.016;
+    m_timeOfDay += 0.016;   // TODO:
     m_timeOfDay = std::fmod(m_timeOfDay, 24.0f);
 
-    {
-        float timeOfDay = m_timeOfDay;
+    float timeOfDay = m_timeOfDay;
+    auto skyColor = Vector3(
+        m_backGroundHorizonColorR->evaluate(timeOfDay),
+        m_backGroundHorizonColorG->evaluate(timeOfDay),
+        m_backGroundHorizonColorB->evaluate(timeOfDay));
+    auto horizonColor = Vector3(
+        m_backGroundHorizonColorR->evaluate(timeOfDay),
+        m_backGroundHorizonColorG->evaluate(timeOfDay),
+        m_backGroundHorizonColorB->evaluate(timeOfDay));
+    auto baseCloudColorAndIntensity = Vector4(
+        m_baseCloudColorAndIntensityR->evaluate(timeOfDay),
+        m_baseCloudColorAndIntensityG->evaluate(timeOfDay),
+        m_baseCloudColorAndIntensityB->evaluate(timeOfDay),
+        m_baseCloudColorAndIntensityA->evaluate(timeOfDay));
+    auto overlayColor = Vector4(
+        m_allOverlayColorR->evaluate(timeOfDay),
+        m_allOverlayColorG->evaluate(timeOfDay),
+        m_allOverlayColorB->evaluate(timeOfDay),
+        m_allOverlayColorA->evaluate(timeOfDay));
 
-        auto BackGroundSkyDomeColor = ln::Color(
-            m_backGroundSkyDomeColorR->evaluate(timeOfDay),
-            m_backGroundSkyDomeColorG->evaluate(timeOfDay),
-            m_backGroundSkyDomeColorB->evaluate(timeOfDay),
-            1.0f);
-        auto BackGroundHorizonColor = ln::Color(
-            m_backGroundHorizonColorR->evaluate(timeOfDay),
-            m_backGroundHorizonColorG->evaluate(timeOfDay),
-            m_backGroundHorizonColorB->evaluate(timeOfDay),
-            1.0f);
-        auto AllOverlayColor = ln::Color(
-            m_allOverlayColorR->evaluate(timeOfDay),
-            m_allOverlayColorG->evaluate(timeOfDay),
-            m_allOverlayColorB->evaluate(timeOfDay),
-            m_allOverlayColorA->evaluate(timeOfDay));
-        auto BaseCloudColorAndIntensity = ln::Color(
-            m_baseCloudColorAndIntensityR->evaluate(timeOfDay),
-            m_baseCloudColorAndIntensityG->evaluate(timeOfDay),
-            m_baseCloudColorAndIntensityB->evaluate(timeOfDay),
-            m_baseCloudColorAndIntensityA->evaluate(timeOfDay));
+
+    //c *= overlayColor.xyz() * (overlayColor.w + 1.0);
+
+    //c.mutatingNormalize();
+    //m_sceneColor = Color(c.x, c.y, c.z, 1.0f);
+
+
+    m_fixedBackGroundSkyDomeColor = Color(Vector3::lerp(skyColor, m_skyColor.xyz(), m_skyColor.w), 1.0f);
+    m_fixedBackGroundHorizonColor = Color(Vector3::lerp(horizonColor, m_horizonColor.xyz(), m_horizonColor.w), 1.0f);
+    m_fixedBaseCloudColorAndIntensity = Color(Vector3::lerp(baseCloudColorAndIntensity.xyz(), m_cloudColor.xyz(), m_cloudColor.w), baseCloudColorAndIntensity.w);
+    m_fixedAllOverlayColor = Color(Vector3::lerp(overlayColor.xyz(), m_overlayColor.xyz(), m_overlayColor.w), overlayColor.w);
+}
+
+void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* viewPoint)
+{
+    {
+        //float timeOfDay = m_timeOfDay;
+
+        //auto BackGroundSkyDomeColor = ln::Color(
+        //    m_backGroundSkyDomeColorR->evaluate(timeOfDay),
+        //    m_backGroundSkyDomeColorG->evaluate(timeOfDay),
+        //    m_backGroundSkyDomeColorB->evaluate(timeOfDay),
+        //    1.0f);
+        //auto BackGroundHorizonColor = ln::Color(
+        //    m_backGroundHorizonColorR->evaluate(timeOfDay),
+        //    m_backGroundHorizonColorG->evaluate(timeOfDay),
+        //    m_backGroundHorizonColorB->evaluate(timeOfDay),
+        //    1.0f);
+        //auto AllOverlayColor = ln::Color(
+        //    m_allOverlayColorR->evaluate(timeOfDay),
+        //    m_allOverlayColorG->evaluate(timeOfDay),
+        //    m_allOverlayColorB->evaluate(timeOfDay),
+        //    m_allOverlayColorA->evaluate(timeOfDay));
+        //auto BaseCloudColorAndIntensity = ln::Color(
+        //    m_baseCloudColorAndIntensityR->evaluate(timeOfDay),
+        //    m_baseCloudColorAndIntensityG->evaluate(timeOfDay),
+        //    m_baseCloudColorAndIntensityB->evaluate(timeOfDay),
+        //    m_baseCloudColorAndIntensityA->evaluate(timeOfDay));
 
         //BackGroundSkyDomeColor = Color::Gray;
         //BackGroundHorizonColor = Color::Gray;
-        //AllOverlayColor = Color::Gray;
+        ////AllOverlayColor = Color::Gray;
         //BaseCloudColorAndIntensity = Color::Gray;
 
-        m_material->setColor(u"_Curve_BackGroundSkyDomeColor", BackGroundSkyDomeColor);
-        m_material->setColor(u"_Curve_BackGroundHorizonColor", BackGroundHorizonColor);
-        m_material->setColor(u"_Curve_AllOverlayColor", AllOverlayColor);
-        m_material->setColor(u"_Curve_BaseCloudColorAndIntensity", BaseCloudColorAndIntensity);
+        m_material->setColor(u"_Curve_BackGroundSkyDomeColor", m_fixedBackGroundSkyDomeColor);
+        m_material->setColor(u"_Curve_BackGroundHorizonColor", m_fixedBackGroundHorizonColor);
+        m_material->setColor(u"_Curve_AllOverlayColor", m_fixedAllOverlayColor);
+        m_material->setColor(u"_Curve_BaseCloudColorAndIntensity", m_fixedBaseCloudColorAndIntensity);
 
         //m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 3.0);
         //m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 4.0);
