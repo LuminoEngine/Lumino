@@ -40,6 +40,7 @@ public:
 } // namespace detail
 
 template<typename T> void serialize2(Serializer2& sr, List<T>& value);
+void serialize2(Serializer2& ar, Path& value);
 void serialize2(Serializer2& ar, detail::AssetPath& value);
 void serialize2(Serializer2& ar, Vector2& value);
 void serialize2(Serializer2& ar, Vector3& value);
@@ -225,6 +226,7 @@ public:
 
 	void beginReadObject();
 	void endReadObject();
+	bool readingValueIsObject() const;
 	bool beginReadList(int* outItemCount);
 	void endReadList();
 	
@@ -371,6 +373,16 @@ void serialize2(Serializer2& ar, List<T>& value)
 			}
 			ar.endReadList();
 		}
+	}
+}
+
+inline void serialize2(Serializer2& ar, Path& value)
+{
+	if (ar.isSaving()) {
+		ar.writeString(value.str());
+	}
+	else {
+		value = ar.readString();
 	}
 }
 

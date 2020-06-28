@@ -19,6 +19,11 @@ void Assets::setAssetPath(AssetObject* obj, const String& filePath)
     obj->setAssetPath(filePath);
 }
 
+const Path& Assets::getAssetPath(AssetObject* obj)
+{
+    return obj->assetPath();
+}
+
 void Assets::save(AssetObject* obj)
 {
     Assets::saveAsset(obj, obj->m_assetFilePath);
@@ -90,8 +95,8 @@ Ref<Stream> Assets::openFileStream(const StringRef& filePath)
 {
     return detail::EngineDomain::assetManager()->openFileStream(filePath);
 }
-
-//void Assets::serializeAsAssetPathInternal(Archive& ar, const StringRef& name, Ref<Object>& value)
+//
+//void Assets::serializeAssetObjectInternal(Archive& ar, const StringRef& name, Ref<Object>& value)
 //{
 //    String localPath;
 //    if (ar.isSaving()) {
@@ -111,7 +116,7 @@ Ref<Stream> Assets::openFileStream(const StringRef& filePath)
 //        }
 //    }
 //}
-//
+
 
 const String& Assets::engineAssetsDirectory()
 {

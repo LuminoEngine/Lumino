@@ -302,7 +302,13 @@ Ref<Texture> GraphicsManager::requestTexture(const AssetPath& assetPath)
 
 Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
 {
-	return makeObject<Texture2D>(filePath);
+	// TODO: find cache
+
+	auto ptr = makeObject<Texture2D>(filePath);
+
+	detail::AssetObjectInternal::setAssetPath(ptr, filePath);
+
+	return ptr;
 }
 
 Ref<Texture2DPromise> GraphicsManager::loadTexture2DAsync(const StringRef& filePath)

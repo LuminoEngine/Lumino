@@ -569,6 +569,11 @@ void Serializer2::endReadObject()
 	m_store->popRead();
 }
 
+bool Serializer2::readingValueIsObject() const
+{
+	return m_store->current().readingNode.IsMap();
+}
+
 bool Serializer2::beginReadList(int* outItemCount)
 {
 	return m_store->pushRead(detail::SerializerStore2::ContainerType::List, outItemCount);
