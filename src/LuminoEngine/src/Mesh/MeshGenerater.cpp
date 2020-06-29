@@ -56,6 +56,15 @@ MeshGenerater::~MeshGenerater()
 //==============================================================================
 // CylinderMeshFactory
 
+void CylinderMeshFactory::copyFrom(const CylinderMeshFactory* other)
+{
+	MeshGenerater::copyFrom(other);
+	m_radius = other->m_radius;
+	m_height = other->m_height;
+	m_slices = other->m_slices;
+	m_stacks = other->m_stacks;
+}
+
 bool CylinderMeshFactory::init(float radius, float height, int slices, int stacks)
 {
 	if (LN_REQUIRE(slices >= 3)) return false;
@@ -104,6 +113,78 @@ void CylinderMeshFactory::onGenerate(MeshGeneraterBuffer* buf)
 
 	// faces
 	int stacks = m_stacks + 2;
+	for (int iSlice = 0; iSlice < m_slices; ++iSlice)	// x
+	{
+		for (int iStack = 0; iStack < stacks; ++iStack)	// y
+		{
+			int p1 = (iStack + 0) + (iSlice + 0) * (stacks + 1);	// ┏
+			int p2 = (iStack + 0) + (iSlice + 1) * (stacks + 1);	// ┓
+			int p3 = (iStack + 1) + (iSlice + 0) * (stacks + 1);	// ┗
+			int p4 = (iStack + 1) + (iSlice + 1) * (stacks + 1);	// ┛
+			buf->setI(iI + 0, p1);
+			buf->setI(iI + 1, p2);
+			buf->setI(iI + 2, p3);
+			buf->setI(iI + 3, p3);
+			buf->setI(iI + 4, p2);
+			buf->setI(iI + 5, p4);
+			iI += 6;
+		}
+	}
+}
+
+//==============================================================================
+// ConeMeshFactory
+
+void ConeMeshFactory::copyFrom(const ConeMeshFactory* other)
+{
+	MeshGenerater::copyFrom(other);
+	m_radius = other->m_radius;
+	m_height = other->m_height;
+	m_slices = other->m_slices;
+}
+
+bool ConeMeshFactory::init(float radius, float height, int slices)
+{
+	if (LN_REQUIRE(slices >= 3)) return false;
+	m_radius = radius;
+	m_height = height;
+	m_slices = slices;
+	return true;
+}
+
+void ConeMeshFactory::onGenerate(MeshGeneraterBuffer* buf)
+{
+	uint32_t iV = 0;
+	uint32_t iI = 0;
+
+	for (int iSlice = m_slices; iSlice >= 0; iSlice--)
+	{
+		Vector3 n = MeshHelper::getXZCirclePoint(iSlice, m_slices);
+		Vector3 xz = n * m_radius;
+
+		// top
+		{
+			buf->setV(iV, Vector3(0, m_height, 0), Vector2(0, 0), Vector3::UnitY); iV++;
+		}
+		// side
+		const float y = 0;
+		{
+			Vertex v;
+			v.position.set(xz.x, y, xz.z);
+			v.normal = n;
+			buf->setV(iV, v); iV++;
+		}
+		// lower base
+		{
+			Vertex v;
+			v.position.set(0, y, 0);
+			v.normal = -Vector3::UnitY;
+			buf->setV(iV, v); iV++;
+		}
+	}
+
+	// faces
+	int stacks = 2;
 	for (int iSlice = 0; iSlice < m_slices; ++iSlice)	// x
 	{
 		for (int iStack = 0; iStack < stacks; ++iStack)	// y

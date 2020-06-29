@@ -13,7 +13,9 @@ class MeshGeometryBuilder
 public:
 	void setTransform(const AttitudeTransform& value);
 	void setPosition(const Vector3& value);
+	void setPosition(float x, float y, float z) { setPosition(Vector3(x, y, z)); }
 	void setRotation(const Vector3& value);
+	void setRotation(float x, float y, float z) { setRotation(Vector3(x, y, z)); }
 	void setScale(const Vector3& value);
 
 	void setColor(const Color& value);
@@ -28,6 +30,8 @@ public:
 	void addSphere(float radius, int sliceH, int sliceV);
 
 	void addCylinder(float radius, float height, int slices, int stacks);
+
+	void addCone(float radius, float height, int slices);
 
 	void endSection();
 

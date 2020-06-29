@@ -12,7 +12,8 @@ namespace ln {
 
 const float TransformControls::CenterBoxSize = 0.15f;
 const float TransformControls::BarRadius = 0.05f;
-const float TransformControls::BarLendth = 1.0f;
+const float TransformControls::BarLendth = 2.0f;
+const float ArrowCapHeight = 0.25f;
 const float TransformControls::OnPlaneBoxSize = 0.4f;
 const float TransformControls::RotationRingInner = 0.9f;
 const float TransformControls::RotationRingOuter = 1.0f;
@@ -48,12 +49,21 @@ void TransformControls::init()
     m_activeColorMaterial = makeObject<Material>();
     m_activeColorMaterial->setColor(Color::Yellow);
 
-    auto builder = makeObject<MeshGeometryBuilder>();
-    builder->beginSection();
-    //builder->addBox(Vector3(2, 0.5, 1));
-    builder->addCylinder(0.1, 5, 8, 1);
-    builder->endSection();
-    m_translationGizmoMesh = builder->buildMesh();
+    {
+        auto builder = makeObject<MeshGeometryBuilder>();
+
+
+
+        builder->beginSection();
+        builder->setPosition(BarLendth / 2, 0, 0);
+        builder->setRotation(0, 0, -Math::PI / 2);
+        builder->addCylinder(BarRadius, BarLendth, 8, 1);
+        builder->setPosition(BarLendth - ArrowCapHeight, 0, 0);
+        builder->addCone(0.05, ArrowCapHeight, 8);
+        builder->endSection();
+
+        m_translationGizmoMesh = builder->buildMesh();
+    }
 }
 
 void TransformControls::setTarget(WorldObject* value)
@@ -76,6 +86,7 @@ void TransformControls::onRender(RenderingContext* context)
     if (!enabled()) return;
 
     context->pushState();
+    context->setRenderPhase(RenderPhaseClass::Gizmo);
     context->setBaseTransfrom(m_gizmoTransform);
     context->setDepthTestEnabled(false);
     context->setDepthWriteEnabled(false);

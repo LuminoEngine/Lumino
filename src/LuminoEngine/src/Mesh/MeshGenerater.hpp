@@ -526,14 +526,7 @@ public:	// MeshGenerater interface
 	int vertexCount() const override { return (m_slices + 1) * (m_stacks + 3); }
 	int indexCount() const override { return m_slices * (m_stacks + 2) * 6; }
 	PrimitiveTopology primitiveType() const override { return PrimitiveTopology::TriangleList; }
-	void copyFrom(const CylinderMeshFactory* other)
-	{
-		MeshGenerater::copyFrom(other);
-		m_radius = other->m_radius;
-		m_height = other->m_height;
-		m_slices = other->m_slices;
-		m_stacks = other->m_stacks;
-	}
+    void copyFrom(const CylinderMeshFactory* other);
 	LN_MESHGENERATOR_CLONE_IMPLEMENT(CylinderMeshFactory);
 
 public:
@@ -545,6 +538,26 @@ private:
 	float m_height;
 	int m_slices;
 	int m_stacks;
+};
+
+class ConeMeshFactory
+	: public MeshGenerater
+{
+public:	// MeshGenerater interface
+	int vertexCount() const override { return (m_slices + 1) * 3; }
+	int indexCount() const override { return m_slices * 3 * 6; }
+	PrimitiveTopology primitiveType() const override { return PrimitiveTopology::TriangleList; }
+	void copyFrom(const ConeMeshFactory* other);
+	LN_MESHGENERATOR_CLONE_IMPLEMENT(ConeMeshFactory);
+
+public:
+	bool init(float radius, float height, int slices);
+	void onGenerate(MeshGeneraterBuffer* buf) override;
+
+private:
+	float m_radius;
+	float m_height;
+	int m_slices;
 };
 
 } // namespace detail

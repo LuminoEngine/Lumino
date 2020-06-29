@@ -94,6 +94,12 @@ void MeshGeometryBuilder::addCylinder(float radius, float height, int slices, in
 	g->init(radius, height, slices, stacks);
 }
 
+void MeshGeometryBuilder::addCone(float radius, float height, int slices)
+{
+	auto* g = newMeshGenerater<detail::ConeMeshFactory>();
+	g->init(radius, height, slices);
+}
+
 void MeshGeometryBuilder::endSection()
 {
 	Section& s = m_currentMeshSections.back();
