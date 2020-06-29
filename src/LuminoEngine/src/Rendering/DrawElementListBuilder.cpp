@@ -380,7 +380,7 @@ void DrawElementListBuilder::prepareRenderDrawElement(RenderDrawElement* newElem
 
     // transform
     if (primaryState()->baseTransform.hasValue()) {
-        newElement->m_combinedWorldMatrix = primaryState()->baseTransform.value() * primaryState()->transform;
+        newElement->m_combinedWorldMatrix = primaryState()->transform * primaryState()->baseTransform.value();
     }
     else {
         newElement->m_combinedWorldMatrix = primaryState()->transform;

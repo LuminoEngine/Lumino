@@ -458,14 +458,14 @@ int main(int argc, char** argv)
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_MainLoop();
-		//Example_MeshViewer();
+		Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
         //Example_Sprite();
         //Example_UIControls();
 		//Example_Tilemap();
-        Experiment_Editor();
+        //Experiment_Editor();
         //Experiment_Reflector();
         //Experiment_SerializeLevel();
         //Experiment_SSR();
