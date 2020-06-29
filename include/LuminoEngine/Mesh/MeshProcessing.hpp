@@ -27,6 +27,8 @@ public:
 
 	void addSphere(float radius, int sliceH, int sliceV);
 
+	void addCylinder(float radius, float height, int slices, int stacks);
+
 	void endSection();
 
 	Ref<Mesh> buildMesh();

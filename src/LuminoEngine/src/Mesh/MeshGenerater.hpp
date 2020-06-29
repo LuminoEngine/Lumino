@@ -6,6 +6,28 @@ namespace ln {
 namespace detail {
 class MeshGenerater;
 
+class MeshHelper
+{
+public:
+
+	static Vector3 getXZCirclePoint(int i, int slices)
+	{
+		float angle = i * Math::PI2 / slices;
+		float dx, dz;
+		Math::sinCos(angle, &dx, &dz);
+		return Vector3(dx, 0, dz);
+	}
+
+	static Vector3 getXZArcPoint(float startAngle, float endAngle, int i, int slices)
+	{
+		float da = endAngle - startAngle;
+		float angle = (i * da / slices) + startAngle;
+		float dx, dz;
+		Math::sinCos(angle, &dx, &dz);
+		return Vector3(dx, 0, dz);
+	}
+};
+
 class MeshGeneraterBuffer
 {
 public:
@@ -419,21 +441,19 @@ class RegularBoxMeshFactory
 public:
 	Vector3	m_size;
 
+public:	// MeshGenerater interface
 	virtual int vertexCount() const override { return 24; }
 	virtual int indexCount() const override { return 36; }
 	virtual PrimitiveTopology primitiveType() const override { return PrimitiveTopology::TriangleList; }
-	virtual MeshGenerater* clone(LinearAllocator* allocator) const override
-	{
-		void* ptr = allocator->allocate(sizeof(RegularBoxMeshFactory));
-		return new (ptr)RegularBoxMeshFactory(*this);
-	}
 	void copyFrom(const RegularBoxMeshFactory* other)
 	{
 		MeshGenerater::copyFrom(other);
 		m_size = other->m_size;
 	}
+	LN_MESHGENERATOR_CLONE_IMPLEMENT(RegularBoxMeshFactory);
 
 
+public:
 	void setIndices(MeshGeneraterBuffer* buf, uint16_t index, uint16_t begin)
 	{
 		buf->setI(index + 0, begin + 0);
@@ -499,6 +519,33 @@ public:
 	}
 };
 
+class CylinderMeshFactory
+	: public MeshGenerater
+{
+public:	// MeshGenerater interface
+	int vertexCount() const override { return (m_slices + 1) * (m_stacks + 3); }
+	int indexCount() const override { return m_slices * (m_stacks + 2) * 6; }
+	PrimitiveTopology primitiveType() const override { return PrimitiveTopology::TriangleList; }
+	void copyFrom(const CylinderMeshFactory* other)
+	{
+		MeshGenerater::copyFrom(other);
+		m_radius = other->m_radius;
+		m_height = other->m_height;
+		m_slices = other->m_slices;
+		m_stacks = other->m_stacks;
+	}
+	LN_MESHGENERATOR_CLONE_IMPLEMENT(CylinderMeshFactory);
+
+public:
+	bool init(float radius, float height, int slices, int stacks);
+	void onGenerate(MeshGeneraterBuffer* buf) override;
+
+private:
+	float m_radius;
+	float m_height;
+	int m_slices;
+	int m_stacks;
+};
 
 } // namespace detail
 } // namespace ln

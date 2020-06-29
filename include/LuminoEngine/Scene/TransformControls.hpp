@@ -7,6 +7,7 @@ namespace ln {
 class RenderingContext;
 class UIEventArgs;
 class WorldObject;
+class Mesh;
 
 enum class TransformControlsType
 {
@@ -105,6 +106,8 @@ private:
     Ref<Material> m_yColorMaterial;
     Ref<Material> m_zColorMaterial;
     Ref<Material> m_activeColorMaterial;
+
+    Ref<Mesh> m_translationGizmoMesh;
 
 };
 

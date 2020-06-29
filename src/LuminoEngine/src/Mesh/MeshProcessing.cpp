@@ -88,6 +88,12 @@ void MeshGeometryBuilder::addSphere(float radius, int sliceH, int sliceV)
 	g->m_stacks = sliceV;
 }
 
+void MeshGeometryBuilder::addCylinder(float radius, float height, int slices, int stacks)
+{
+	auto* g = newMeshGenerater<detail::CylinderMeshFactory>();
+	g->init(radius, height, slices, stacks);
+}
+
 void MeshGeometryBuilder::endSection()
 {
 	Section& s = m_currentMeshSections.back();

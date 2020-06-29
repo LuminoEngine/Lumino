@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIEvents.hpp>
+#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/MeshProcessing.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
@@ -45,6 +47,13 @@ void TransformControls::init()
 
     m_activeColorMaterial = makeObject<Material>();
     m_activeColorMaterial->setColor(Color::Yellow);
+
+    auto builder = makeObject<MeshGeometryBuilder>();
+    builder->beginSection();
+    //builder->addBox(Vector3(2, 0.5, 1));
+    builder->addCylinder(0.1, 5, 8, 1);
+    builder->endSection();
+    m_translationGizmoMesh = builder->buildMesh();
 }
 
 void TransformControls::setTarget(WorldObject* value)
@@ -81,6 +90,8 @@ void TransformControls::onRender(RenderingContext* context)
 	context->drawLine(Vector3(0, 0, 0), Color::White, Vector3(0, 0, 1), Color::White);
 
 
+    context->drawMesh(m_translationGizmoMesh, 0);
+    
 
 	//const float i1 = RotationRingInner;
 	//const float o1 = RotationRingOuter;
