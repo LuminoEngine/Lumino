@@ -1,6 +1,9 @@
 ﻿
 #include "AssetBrowserNavigator.hpp"
 #include "StandardPluginModule.hpp"
+#include "../App/EditorContext.hpp"
+#include "../App/Application.hpp"
+#include "../App/NavigatorManager.hpp"
 
 namespace lna {
 
@@ -53,10 +56,12 @@ StandardPluginModule::StandardPluginModule()
     //    m_editorExtensionInstances.add(ext);
     //    m_editorExtensions.add(ext);
     //}
+    m_navigator = ln::makeObject<AssetBrowserNavigator>();
 }
 
 void StandardPluginModule::onActivate(lna::EditorContext* context)
 {
+    context->navigatorManager()->addNavigator(m_navigator);
 }
 
 void StandardPluginModule::onDeactivate(lna::EditorContext* context)

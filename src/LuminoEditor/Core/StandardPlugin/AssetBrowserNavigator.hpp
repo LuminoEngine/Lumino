@@ -2,8 +2,10 @@
 #include <LuminoEditor/Plugin.hpp>
 #include "../UIExtension.hpp"
 #include "../AssetEditor/AssetEditorModel.hpp"
+#include "../App/NavigatorManager.hpp"
 
 class AssetBrowserNavigatorExtension;
+namespace lna {
 
 class AssetBrowserTreeViewModel
     : public ln::UIFileSystemCollectionModel
@@ -103,3 +105,27 @@ private:
 //
 //private:
 //};
+
+class AssetBrowserPane
+    : public ln::UIControl
+{
+public:
+    bool init();
+
+private:
+};
+
+class AssetBrowserNavigator
+    : public Navigator
+{
+public:
+    void init();
+    ln::UIElement* getNavigationMenuItem() override;
+    ln::UIElement* getNavigationPane() override;
+
+private:
+    Ref<ln::UIIcon> m_navigationItem;
+    Ref<AssetBrowserPane> m_mainPane;
+};
+
+} // namespace lna

@@ -7,6 +7,8 @@
 #include "../App/MainWindow.hpp"
 #include "AssetBrowserNavigator.hpp"
 
+namespace lna {
+
 //==============================================================================
 // AssetBrowserTreeViewModel
 
@@ -198,3 +200,41 @@ void AssetBrowserNavigatorExtension::onImport()
 //}
 
 #endif
+
+
+//==============================================================================
+// AssetBrowserPane
+
+bool AssetBrowserPane::init()
+{
+    if (!UIControl::init()) return false;
+
+    return true;
+}
+
+//==============================================================================
+// AssetBrowserNavigator
+
+void AssetBrowserNavigator::init()
+{
+    m_navigationItem = ln::makeObject<ln::UIIcon>();
+    m_navigationItem->setIconName(u"file");
+    m_navigationItem->setHAlignment(ln::HAlignment::Center);
+    m_navigationItem->setVAlignment(ln::VAlignment::Center);
+    m_navigationItem->setFontSize(24);
+
+    m_mainPane = ln::makeObject<AssetBrowserPane>();
+    m_mainPane->setBackgroundColor(ln::Color::Green);
+}
+
+ln::UIElement* AssetBrowserNavigator::getNavigationMenuItem()
+{
+    return m_navigationItem;
+}
+
+ln::UIElement* AssetBrowserNavigator::getNavigationPane()
+{
+    return m_mainPane;
+}
+
+} // namespace lna
