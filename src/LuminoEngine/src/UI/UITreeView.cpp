@@ -655,7 +655,7 @@ void UITreeItem2::setSelectedInternal(bool selected)
 // UITreeView2
 
 /*
-    [2020/6/23] ViewModel 無しの方向に再設計してみる
+    [2020/6/23] ViewModel はオプションの方向に再設計してみる
 
     そもそもなんで ViewModel を使いたくない？
     - Item ごとに ViewModel クラスが必要になるため。ListView ならルートにひとつあれば足りるが、Tree はそうもいかない。
@@ -674,6 +674,15 @@ void UITreeItem2::setSelectedInternal(bool selected)
         - GenerateItemContent コールバックで TreeItem の handle をもらう。これに データを示す整数値と、子要素数を set する。
         - 必要に応じてこの handle に TextBlock や Button を add.
     
+    [2020/6/30] TreeView は ViewModel 在り無しどちらを推奨する？
+
+    ViewModel 在り: 動的な、データ "編集"
+    ViewModel 無し: 静的な、データ "閲覧"
+
+    閲覧は周辺の他の View 含めて完全に readonly な場合のみを想定している。
+    例えば、Treeは静的でもプロパティビューから名前を変更したら TreeItem を変えたい、という場合は ViewModel を使う。
+
+
 */
 
 UITreeView2::UITreeView2()

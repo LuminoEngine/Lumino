@@ -205,9 +205,27 @@ void AssetBrowserNavigatorExtension::onImport()
 //==============================================================================
 // AssetBrowserPane
 
-bool AssetBrowserPane::init()
+bool AssetBrowserPane::init(Project* project)
 {
     if (!UIControl::init()) return false;
+
+    auto mainLauout = ln::makeObject<ln::UIGridLayout>();
+    mainLauout->setColumnCount(4);
+    addChild(mainLauout);
+
+    auto model1 = ln::makeObject<ln::UIFileSystemCollectionModel>();
+    model1->setRootPath(project->assetsDir());
+
+    auto treeview1 = ln::makeObject<ln::UITreeView2>();
+    //treeview1->setHeight(200);
+    //treeview1->setBackgroundColor(Color::Red);
+    treeview1->setViewModel(model1);
+    treeview1->connectOnChecked([model1](ln::UIEventArgs* e) {
+        auto* item = static_cast<ln::UITreeItem2*>(e->sender());
+        auto path = model1->filePath(ln::static_pointer_cast<ln::UICollectionItemViewModel>(item->m_viewModel));
+        ln::Debug::print(u"Item clicked. " + path);
+    });
+    mainLauout->addChild(treeview1);
 
     return true;
 }
@@ -215,16 +233,20 @@ bool AssetBrowserPane::init()
 //==============================================================================
 // AssetBrowserNavigator
 
-void AssetBrowserNavigator::init()
+bool AssetBrowserNavigator::init(lna::EditorContext* context)
 {
+    if (!Navigator::init()) return false;
+
     m_navigationItem = ln::makeObject<ln::UIIcon>();
     m_navigationItem->setIconName(u"file");
     m_navigationItem->setHAlignment(ln::HAlignment::Center);
     m_navigationItem->setVAlignment(ln::VAlignment::Center);
     m_navigationItem->setFontSize(24);
 
-    m_mainPane = ln::makeObject<AssetBrowserPane>();
-    m_mainPane->setBackgroundColor(ln::Color::Green);
+    m_mainPane = ln::makeObject<AssetBrowserPane>(context->mainProject());
+    m_mainPane->setBackgroundColor(ln::Color::Red);
+
+    return true;
 }
 
 ln::UIElement* AssetBrowserNavigator::getNavigationMenuItem()

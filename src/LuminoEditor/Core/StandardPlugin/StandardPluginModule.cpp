@@ -56,11 +56,11 @@ StandardPluginModule::StandardPluginModule()
     //    m_editorExtensionInstances.add(ext);
     //    m_editorExtensions.add(ext);
     //}
-    m_navigator = ln::makeObject<AssetBrowserNavigator>();
 }
 
 void StandardPluginModule::onActivate(lna::EditorContext* context)
 {
+    m_navigator = ln::makeObject<AssetBrowserNavigator>(context);
     context->navigatorManager()->addNavigator(m_navigator);
 }
 

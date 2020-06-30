@@ -6,6 +6,7 @@
 
 class AssetBrowserNavigatorExtension;
 namespace lna {
+class Project;
 
 class AssetBrowserTreeViewModel
     : public ln::UIFileSystemCollectionModel
@@ -110,7 +111,7 @@ class AssetBrowserPane
     : public ln::UIControl
 {
 public:
-    bool init();
+    bool init(Project* project);
 
 private:
 };
@@ -119,7 +120,7 @@ class AssetBrowserNavigator
     : public Navigator
 {
 public:
-    void init();
+    bool init(lna::EditorContext* context);
     ln::UIElement* getNavigationMenuItem() override;
     ln::UIElement* getNavigationPane() override;
 
