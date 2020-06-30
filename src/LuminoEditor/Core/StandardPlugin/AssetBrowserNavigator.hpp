@@ -56,50 +56,50 @@ private:
 
 
 
-class AssetBrowserNavigatorExtension
-    : public ln::Object
-    , public ln::IAssetNavigatorExtension
-{
-public:
-    void init();
-    void setAssetListPathFromTreeClick(const ln::Path& path);
-
-protected:
-    virtual const ln::Char* id() const { return u"AD796B88-7EAA-4AC9-B9F8-22CB366823E2"; }
-    virtual const ln::Char* displayName() const { return u"AssetBrowserNavigatorExtension"; }
-    virtual void onAttached() override;
-    virtual void onDetached() override;
-    virtual ln::NavigationMenuItem* getNavigationMenuItem() override;
-	virtual ln::UIElement* getNavigationPane() override;
-
-private:
-    void onImport();
-
-    Ref<ln::NavigationMenuItem> m_navbarItemContent;
-    Ref<ln::UISplitter> m_splitter;
-    Ref<AssetBrowserTreeView> m_treeView;
-    Ref<ln::UIVBoxLayout2> m_layout2;
-    Ref<ln::UIButton> m_importButton;
-    Ref<AssetBrowserListView> m_listView;
-};
-
-class AssetBrowserEditor : public lna::AssetEditorModel
-{
-public:
-    virtual void onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame) override;
-    virtual void onClosed() override;
-};
-
-class AssetBrowserEditorExtension
-    : public ln::Object
-    , public ln::IAssetEditorExtension
-{
-public:
-    AssetBrowserEditorExtension();
-    virtual const ln::Char* id() const { return u"769E40B5-AB4D-45A0-94BC-21F84F958DE6"; }
-    virtual const ln::Char* displayName() const { return u"AssetBrowserEditorExtension"; }
-    virtual const ln::Char* typeKeyword() const { return nullptr; }
-    virtual ln::Ref<lna::AssetEditorModel> createEditor() override;
-
-private:
-};
+//class AssetBrowserNavigatorExtension
+//    : public ln::Object
+//    , public ln::IAssetNavigatorExtension
+//{
+//public:
+//    void init();
+//    void setAssetListPathFromTreeClick(const ln::Path& path);
+//
+//protected:
+//    virtual const ln::Char* id() const { return u"AD796B88-7EAA-4AC9-B9F8-22CB366823E2"; }
+//    virtual const ln::Char* displayName() const { return u"AssetBrowserNavigatorExtension"; }
+//    virtual void onAttached() override;
+//    virtual void onDetached() override;
+//    virtual ln::NavigationMenuItem* getNavigationMenuItem() override;
+//	virtual ln::UIElement* getNavigationPane() override;
+//
+//private:
+//    void onImport();
+//
+//    Ref<ln::NavigationMenuItem> m_navbarItemContent;
+//    Ref<ln::UISplitter> m_splitter;
+//    Ref<AssetBrowserTreeView> m_treeView;
+//    Ref<ln::UIVBoxLayout2> m_layout2;
+//    Ref<ln::UIButton> m_importButton;
+//    Ref<AssetBrowserListView> m_listView;
+//};
+//
+//class AssetBrowserEditor : public lna::AssetEditorModel
+//{
+//public:
+//    virtual void onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame) override;
+//    virtual void onClosed() override;
+//};
+//
+//class AssetBrowserEditorExtension
+//    : public ln::Object
+//    , public ln::IAssetEditorExtension
+//{
+//public:
+//    AssetBrowserEditorExtension();
+//    virtual const ln::Char* id() const { return u"769E40B5-AB4D-45A0-94BC-21F84F958DE6"; }
+//    virtual const ln::Char* displayName() const { return u"AssetBrowserEditorExtension"; }
+//    virtual const ln::Char* typeKeyword() const { return nullptr; }
+//    virtual ln::Ref<lna::AssetEditorModel> createEditor() override;
+//
+//private:
+//};

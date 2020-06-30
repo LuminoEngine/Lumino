@@ -15,7 +15,7 @@ bool AssetBrowserTreeViewModel::onTestFilter(const ln::Path& path)
     return ln::FileSystem::existsDirectory(path);
 }
 
-    
+#if 0
 //==============================================================================
 // AssetBrowserTreeView
 
@@ -196,3 +196,5 @@ void AssetBrowserNavigatorExtension::onImport()
 //
 //    return m_treeView;
 //}
+
+#endif

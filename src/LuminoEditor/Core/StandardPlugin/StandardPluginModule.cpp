@@ -55,4 +55,12 @@ StandardPluginModule::StandardPluginModule()
     //}
 }
 
+void StandardPluginModule::onActivate(lna::EditorContext* context)
+{
+}
+
+void StandardPluginModule::onDeactivate(lna::EditorContext* context)
+{
+}
+
 } // namespace lna

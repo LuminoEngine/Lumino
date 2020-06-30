@@ -40,10 +40,11 @@ public:
 class IPluginModule : public IModuleInterface
 {
 public:
-    virtual int getEditorExtensionCount() { return 0; }
-    virtual IEditorExtension* getEditorExtension(int index) { return nullptr; }
+    //virtual int getEditorExtensionCount() { return 0; }
+    //virtual IEditorExtension* getEditorExtension(int index) { return nullptr; }
 
-    // メインプロジェクトが開かれ、関係するプラグインがロードされたときに呼び出される
+    // メインプロジェクトが開かれ、関係するプラグインがロードされたときに呼び出される。
+    // この中で、Navigator や AssetEditorModelFactory の登録を行う。
     virtual void onActivate(lna::EditorContext* context) = 0;
 
     virtual void onDeactivate(lna::EditorContext* context) = 0;
@@ -57,49 +58,49 @@ public:
     virtual EditorExtensionType getExtensionType() const = 0;
 };
 
-// depreceted
-class IAssetNavigatorExtension : public IEditorExtension
-{
-public:
-    virtual EditorExtensionType getExtensionType() const { return EditorExtensionType::AssetNavigator; }
-    virtual void onAttached() = 0;
-    virtual void onDetached() = 0;
-    virtual NavigationMenuItem* getNavigationMenuItem() = 0;
-	virtual UIElement* getNavigationPane() = 0;
-};
+//// depreceted
+//class IAssetNavigatorExtension : public IEditorExtension
+//{
+//public:
+//    virtual EditorExtensionType getExtensionType() const { return EditorExtensionType::AssetNavigator; }
+//    virtual void onAttached() = 0;
+//    virtual void onDetached() = 0;
+//    virtual NavigationMenuItem* getNavigationMenuItem() = 0;
+//	virtual UIElement* getNavigationPane() = 0;
+//};
+//
+//
+//class IAssetImporterEditorExtension : public IEditorExtension
+//{
+//public:
+//    static const int BasePriority = 100;
+//
+//    virtual EditorExtensionType getExtensionType() const { return EditorExtensionType::AssetImporter; }
+//
+//    // 指定したファイルパスが、この PluginModule で扱える可能性があるかどうかを判断する。
+//    // filePath : 相対パスの場合、プロジェクトの Assets フォルダの中のファイルである。Assets フォルダからの相対パス。
+//    //             絶対パスの場合、プロジェクトの外側のファイルである。
+//    // return: 扱えない場合は 0. 拡張子が全く違う場合など。
+//    //          拡張子だけ一致している場合は BasePriority.
+//    //          保存フォルダも一致している場合は BasePriority + 1
+//    //          完全一致は BasePriority + 10、など。
+//    virtual int matchFilePath(const Path& filePath) = 0;
+//
+//    virtual Ref<AssetImporter> createImporter(const Char* assetSourceFilePath) = 0;
+//};
+//
 
-
-class IAssetImporterEditorExtension : public IEditorExtension
-{
-public:
-    static const int BasePriority = 100;
-
-    virtual EditorExtensionType getExtensionType() const { return EditorExtensionType::AssetImporter; }
-
-    // 指定したファイルパスが、この PluginModule で扱える可能性があるかどうかを判断する。
-    // filePath : 相対パスの場合、プロジェクトの Assets フォルダの中のファイルである。Assets フォルダからの相対パス。
-    //             絶対パスの場合、プロジェクトの外側のファイルである。
-    // return: 扱えない場合は 0. 拡張子が全く違う場合など。
-    //          拡張子だけ一致している場合は BasePriority.
-    //          保存フォルダも一致している場合は BasePriority + 1
-    //          完全一致は BasePriority + 10、など。
-    virtual int matchFilePath(const Path& filePath) = 0;
-
-    virtual Ref<AssetImporter> createImporter(const Char* assetSourceFilePath) = 0;
-};
-
-
-
-class IAssetEditorExtension : public IEditorExtension
-{
-public:
-    virtual EditorExtensionType getExtensionType() const { return EditorExtensionType::AssetEditor; }
-
-    /** この DocumentEditor が編集対象とするオブジェクトの種別。asset ファイルに埋め込まれる種類。 */
-    virtual const Char* typeKeyword() const = 0;
-
-    virtual Ref<lna::AssetEditorModel> createEditor() = 0;
-};
+//
+//class IAssetEditorExtension : public IEditorExtension
+//{
+//public:
+//    virtual EditorExtensionType getExtensionType() const { return EditorExtensionType::AssetEditor; }
+//
+//    /** この DocumentEditor が編集対象とするオブジェクトの種別。asset ファイルに埋め込まれる種類。 */
+//    virtual const Char* typeKeyword() const = 0;
+//
+//    virtual Ref<lna::AssetEditorModel> createEditor() = 0;
+//};
 
 // 型名と、それを編集するための AssetEditorModel を生成するファクトリ
 class AssetEditorModelFactory

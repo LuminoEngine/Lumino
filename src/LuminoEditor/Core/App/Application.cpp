@@ -57,6 +57,7 @@ ln::Result EditorApplication::init()
     lna::AppData::current()->load();
 
 	ln::EngineSettings::setMainWindowSize(1600, 800);
+    ln::EngineSettings::setDefaultUITheme(u"Chocotelier");
 	//ln::EngineSettings::setMainBackBufferSize(1600, 800);
     //ln::EngineSettings::setAssetStorageAccessPriority(ln::AssetStorageAccessPriority::AllowLocalDirectory);
     ln::EngineSettings::setGraphicsAPI(ln::GraphicsAPI::Vulkan);
@@ -75,7 +76,7 @@ ln::Result EditorApplication::init()
     m_editorContext->m_mainWindow = mainWindow();
 
     // TODO: test
-    openProject(u"C:/Proj/LN/PrivateProjects/HC0/HC0.lnproj");
+    openProject(u"C:/Proj/LN/PrivateProjects/HC4/HC4.lnproj");
 
     return true;
 }
@@ -118,6 +119,7 @@ lna::Project* EditorApplication::mainProject() const
     return m_workspace->mainProject();
 }
 
+#if 0
 // deprecated
 void EditorApplication::importFile(const ln::Path& filePath)
 {
@@ -133,6 +135,7 @@ void EditorApplication::importFile(const ln::Path& filePath)
         exts[0].second->import(filePath);
     }
 }
+#endif
 
 void EditorApplication::openAssetFile(const ln::Path& filePath)
 {

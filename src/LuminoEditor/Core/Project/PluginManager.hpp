@@ -24,9 +24,9 @@ public:
     void registerAssetEditorFactory(ln::AssetEditorModelFactory* value);
     void unregisterAssetEditorFactory(ln::AssetEditorModelFactory* value);
 
-    ln::List<ln::IAssetNavigatorExtension*> getAssetNavigatorExtensions() const;
-    ln::List<std::pair<ln::IAssetImporterEditorExtension*, Ref<ln::AssetImporter>>> getAssetImporterExtensions(const ln::Path& assetSourceFilePath) const;
-    ln::List<std::pair<ln::IAssetEditorExtension*, Ref<lna::AssetEditorModel>>> geAssetEditorExtensions(const ln::String& assetType) const;
+    //ln::List<ln::IAssetNavigatorExtension*> getAssetNavigatorExtensions() const;
+    //ln::List<std::pair<ln::IAssetImporterEditorExtension*, Ref<ln::AssetImporter>>> getAssetImporterExtensions(const ln::Path& assetSourceFilePath) const;
+    //ln::List<std::pair<ln::IAssetEditorExtension*, Ref<lna::AssetEditorModel>>> geAssetEditorExtensions(const ln::String& assetType) const;
     ln::List<ln::AssetEditorModelFactory*> geAssetEditorPloxy(const ln::String& assetType) const;
 
 private:
