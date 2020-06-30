@@ -4,6 +4,15 @@
 namespace lna {
 class AssetBrowserNavigator;
 
+
+class LevelEditorModelFactory
+    : public ln::AssetEditorModelFactory
+{
+public:
+    bool checkTargetType(const ln::TypeInfo* assetType) override;
+    Ref<lna::AssetEditorModel> createAssetEditorModel() override;
+};
+
 class StandardPluginModule
     : public ln::Object
     , public ln::IPluginModule
@@ -17,6 +26,7 @@ public:
 
 private:
     Ref<AssetBrowserNavigator> m_navigator;
+    Ref<LevelEditorModelFactory> m_levelEditorModelFactory;
     //ln::List<Ref<ln::Object>> m_editorExtensionInstances;
     //ln::List<ln::IEditorExtension*> m_editorExtensions;
 };

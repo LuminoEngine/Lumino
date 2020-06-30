@@ -1719,8 +1719,9 @@ void UITheme::buildLumitelier()
 	m_lineSpacing = m_lineContentHeight + spacing(1);
 
 	// Background
-	//setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::parse(u"#303030"));
-	setColor(UIThemeConstantPalette::DefaultBackgroundColor, UIColors::get(UIColorHues::Grey, 8));
+	setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::parse(u"#1E1E1E"));
+	setColor(UIThemeConstantPalette::ControlBackgroundColor, Color::parse(u"#303030"));
+	//setColor(UIThemeConstantPalette::DefaultBackgroundColor, UIColors::get(UIColorHues::Grey, 8));
 	setColor(UIThemeConstantPalette::PaperBackgroundColor, Color::parse(u"#424242"));
 
 	// Intentions

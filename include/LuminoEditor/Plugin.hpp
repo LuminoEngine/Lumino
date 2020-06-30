@@ -107,7 +107,7 @@ class AssetEditorModelFactory
 	: public ln::Object
 {
 public:
-    virtual ln::String targetTypeName() = 0;
+    virtual bool checkTargetType(const ln::TypeInfo* assetType) = 0;
     virtual Ref<lna::AssetEditorModel> createAssetEditorModel() = 0;
 };
 

@@ -1,9 +1,11 @@
 ﻿
-#include "AssetBrowserNavigator.hpp"
-#include "StandardPluginModule.hpp"
 #include "../App/EditorContext.hpp"
 #include "../App/Application.hpp"
 #include "../App/NavigatorManager.hpp"
+#include "../Project/PluginManager.hpp"
+#include "AssetBrowserNavigator.hpp"
+#include "StandardPluginModule.hpp"
+#include "LevelEditor.hpp"
 
 namespace lna {
 
@@ -30,6 +32,16 @@ namespace lna {
 //    return importer;
 //}
 //
+
+bool LevelEditorModelFactory::checkTargetType(const ln::TypeInfo* assetType)
+{
+    return assetType == ln::TypeInfo::getTypeInfo<ln::Level>();
+}
+
+Ref<lna::AssetEditorModel> LevelEditorModelFactory::createAssetEditorModel()
+{
+    return ln::makeObject<lna::LevelEditor>();
+}
 
 //==============================================================================
 // StandardPluginModule
@@ -62,10 +74,15 @@ void StandardPluginModule::onActivate(lna::EditorContext* context)
 {
     m_navigator = ln::makeObject<AssetBrowserNavigator>(context);
     context->navigatorManager()->addNavigator(m_navigator);
+
+    m_levelEditorModelFactory = ln::makeObject<LevelEditorModelFactory>();
+    context->pluginManager()->registerAssetEditorFactory(m_levelEditorModelFactory);
 }
 
 void StandardPluginModule::onDeactivate(lna::EditorContext* context)
 {
+    context->navigatorManager()->removeNavigator(m_navigator);
+    context->pluginManager()->unregisterAssetEditorFactory(m_levelEditorModelFactory);
 }
 
 } // namespace lna

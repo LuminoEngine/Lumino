@@ -108,7 +108,7 @@ private:
 //};
 
 class AssetBrowserPane
-    : public ln::UIControl
+    : public NavigatorContentPane
 {
 public:
     bool init(Project* project);

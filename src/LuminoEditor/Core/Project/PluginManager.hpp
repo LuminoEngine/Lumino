@@ -27,7 +27,7 @@ public:
     //ln::List<ln::IAssetNavigatorExtension*> getAssetNavigatorExtensions() const;
     //ln::List<std::pair<ln::IAssetImporterEditorExtension*, Ref<ln::AssetImporter>>> getAssetImporterExtensions(const ln::Path& assetSourceFilePath) const;
     //ln::List<std::pair<ln::IAssetEditorExtension*, Ref<lna::AssetEditorModel>>> geAssetEditorExtensions(const ln::String& assetType) const;
-    ln::List<ln::AssetEditorModelFactory*> geAssetEditorPloxy(const ln::String& assetType) const;
+    ln::List<ln::AssetEditorModelFactory*> findAssetEditorModelFactory(const ln::TypeInfo* assetType) const;
 
 private:
     Project* m_ownerProject;

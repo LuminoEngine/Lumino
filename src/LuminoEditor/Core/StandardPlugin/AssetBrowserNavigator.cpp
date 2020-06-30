@@ -207,7 +207,7 @@ void AssetBrowserNavigatorExtension::onImport()
 
 bool AssetBrowserPane::init(Project* project)
 {
-    if (!UIControl::init()) return false;
+    if (!NavigatorContentPane::init()) return false;
 
     auto mainLauout = ln::makeObject<ln::UIGridLayout>();
     mainLauout->setColumnCount(4);
@@ -217,13 +217,11 @@ bool AssetBrowserPane::init(Project* project)
     model1->setRootPath(project->assetsDir());
 
     auto treeview1 = ln::makeObject<ln::UITreeView2>();
-    //treeview1->setHeight(200);
-    //treeview1->setBackgroundColor(Color::Red);
     treeview1->setViewModel(model1);
     treeview1->connectOnChecked([model1](ln::UIEventArgs* e) {
         auto* item = static_cast<ln::UITreeItem2*>(e->sender());
         auto path = model1->filePath(ln::static_pointer_cast<ln::UICollectionItemViewModel>(item->m_viewModel));
-        ln::Debug::print(u"Item clicked. " + path);
+        EditorApplication::instance()->openAssetFile(path);
     });
     mainLauout->addChild(treeview1);
 
@@ -244,7 +242,7 @@ bool AssetBrowserNavigator::init(lna::EditorContext* context)
     m_navigationItem->setFontSize(24);
 
     m_mainPane = ln::makeObject<AssetBrowserPane>(context->mainProject());
-    m_mainPane->setBackgroundColor(ln::Color::Red);
+    //m_mainPane->setBackgroundColor(ln::Color::Red);
 
     return true;
 }

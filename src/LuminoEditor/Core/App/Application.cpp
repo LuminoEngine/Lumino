@@ -142,13 +142,13 @@ void EditorApplication::openAssetFile(const ln::Path& filePath)
     if (m_workspace->mainProject())
     {
         auto asset = m_workspace->mainAssetDatabase()->openAsset(filePath);
-        auto proxies = m_workspace->mainPluginManager()->geAssetEditorPloxy(asset->assetType());
-        if (proxies.size() != 1) {
+        auto factories = m_workspace->mainPluginManager()->findAssetEditorModelFactory(asset->assetType());
+        if (factories.size() != 1) {
             LN_NOTIMPLEMENTED();
             return;
         }
 
-        auto editor = proxies[0]->createAssetEditorModel();
+        auto editor = factories[0]->createAssetEditorModel();
         editor->m_editorContext = m_editorContext;
         mainWindow()->documentManager()->addDocument(ln::makeObject<AssetEditorDocument>(asset, editor));
     }

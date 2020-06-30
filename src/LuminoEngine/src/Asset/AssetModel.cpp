@@ -38,7 +38,11 @@ void AssetModel::init(Object* target)
 {
 	init();
 	m_target = target;
-    m_assetType = TypeInfo::getTypeInfo(target)->name();
+}
+
+const ln::TypeInfo* AssetModel::assetType() const
+{
+    return TypeInfo::getTypeInfo(m_target);
 }
 
 //ln::Result AssetModel::loadInternal(const ln::Path& filePath)
@@ -57,23 +61,23 @@ void AssetModel::init(Object* target)
 //    return true;
 //}
 
-void AssetModel::serialize(Archive& ar)
-{
-    //String assetId;
-    //if (ar.isSaving()) {
-    //    assetId = m_target->assetPath();
-    //}
-    //ar & makeNVP(u"AssetId", assetId);
-
-    ar & makeNVP(u"AssetType", m_assetType);
-    ar & makeNVP(u"Object", m_target);
-    //ar & makeNVP(u"Children", m_children);
-
-    //if (ar.isLoading()) {
-    //    m_target->setAssetPath(assetId);
-    //}
-}
-
+//void AssetModel::serialize(Archive& ar)
+//{
+//    //String assetId;
+//    //if (ar.isSaving()) {
+//    //    assetId = m_target->assetPath();
+//    //}
+//    //ar & makeNVP(u"AssetId", assetId);
+//
+//    ar & makeNVP(u"AssetType", m_assetType);
+//    ar & makeNVP(u"Object", m_target);
+//    //ar & makeNVP(u"Children", m_children);
+//
+//    //if (ar.isLoading()) {
+//    //    m_target->setAssetPath(assetId);
+//    //}
+//}
+//
 void AssetModel::onSerialize2(Serializer2* sr)
 {
     if (sr->isSaving()) {
@@ -88,7 +92,6 @@ void AssetModel::onSerialize2(Serializer2* sr)
         else {
             if (sr->readName(u"object")) m_target = sr->readObject();
         }
-        //m_target = sr->readObject(u"value1");
     }
 }
 

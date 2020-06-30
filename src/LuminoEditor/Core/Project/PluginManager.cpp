@@ -2,8 +2,8 @@
 #include "PluginManager.hpp"
 #include "StandardPlugin/AssetBrowserNavigator.hpp"
 #include "StandardPlugin/StandardPluginModule.hpp"
-#include "TilemapPlugin/TilesetExtensionModule.hpp"
-#include "TilemapSceneExtension/TilemapSceneEditorModule.hpp"
+//#include "TilemapPlugin/TilesetExtensionModule.hpp"
+//#include "TilemapSceneExtension/TilemapSceneEditorModule.hpp"
 
 namespace lna {
 
@@ -136,12 +136,12 @@ void PluginManager::unregisterAssetEditorFactory(ln::AssetEditorModelFactory* va
 //    return result;
 //}
 //
-ln::List<ln::AssetEditorModelFactory*> PluginManager::geAssetEditorPloxy(const ln::String& assetType) const
+ln::List<ln::AssetEditorModelFactory*> PluginManager::findAssetEditorModelFactory(const ln::TypeInfo* assetType) const
 {
     ln::List<ln::AssetEditorModelFactory*> result;
-    for (auto& ploxy : m_assetEditorFactories) {
-        if (assetType == ploxy->targetTypeName()) {
-            result.add(ploxy);
+    for (auto& factory : m_assetEditorFactories) {
+        if (factory->checkTargetType(assetType)) {
+            result.add(factory);
         }
     }
     return result;

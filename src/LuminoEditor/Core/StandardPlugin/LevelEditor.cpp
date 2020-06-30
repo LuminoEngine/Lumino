@@ -1,0 +1,119 @@
+﻿
+#include <Workspace.hpp>
+#include "../Project/Project.hpp"
+#include "../Project/AssetDatabase.hpp"
+#include "../Project/PluginManager.hpp"
+#include "../UIExtension.hpp"
+#include "../App/Application.hpp"
+#include "../App/MainWindow.hpp"
+#include "LevelEditor.hpp"
+
+namespace lna {
+   
+//==============================================================================
+// LevelEditor
+
+bool LevelEditor::init()
+{
+    AssetEditorModel::init();
+
+    //m_modePane = ln::makeObject<TilemapSceneModePane>(m_model);
+    //m_inspectorPane = ln::makeObject<ln::EditorPane>();
+    //m_inspectorPane->setBackgroundColor(ln::Color::LightGray);
+
+    //m_modePanes = ln::makeList<Ref<ln::EditorPane>>({ ln::static_pointer_cast<ln::EditorPane>(m_modePane) });
+    //m_inspectorPanes = ln::makeList<Ref<ln::EditorPane>>({ m_inspectorPane });
+    //m_toolPanes = ln::makeList<Ref<ln::EditorPane>>();
+
+    return true;
+}
+
+void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
+{
+    m_assetModel = asset;
+    m_mainLayout = ln::makeObject<ln::UIVBoxLayout3>();
+    m_mainLayout->setName(u"---");
+    frame->addElement(m_mainLayout);
+    {
+        auto t = ln::UITextBlock::create(u"test");
+		t->getGridLayoutInfo()->layoutWeight = 0;
+		//t->setVAlignment(ln::VAlignment::Center);
+        m_mainLayout->addChild(t);
+    }
+
+
+	m_mainViewport = ln::makeObject<ln::UIViewport>();
+    //m_mainViewport->setVAlignment(ln::VAlignment::Stretch);
+	m_mainViewport->getGridLayoutInfo()->layoutWeight = 1;
+    m_mainLayout->addChild(m_mainViewport);
+    //frame->addElement(m_mainViewport);
+    //m_mainViewport->setBackgroundColor(ln::Color::Blue);// ln::Color(ln::Random::randFloat(), ln::Random::randFloat(), ln::Random::randFloat(), 1));
+
+
+    //auto m_mainWorld = dynamic_cast<ln::World*>(asset->target());//ln::makeObject<ln::World>(); //
+    //if (LN_REQUIRE(m_mainWorld)) return;
+    //auto m_mainWorldAsset = ln::AssetModel::create(m_mainWorld);
+
+    // create world and view
+    {
+        m_mainWorld = ln::makeObject<ln::World>();
+        m_mainCamera = ln::makeObject<ln::Camera>();
+        m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
+        m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+        m_mainWorldRenderView->setCamera(m_mainCamera);
+        //m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::Sky);
+        m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
+        m_mainWorldRenderView->setBackgroundColor(ln::Color::Gray);
+        m_mainWorldRenderView->connectOnUIEvent(ln::bind(this, &LevelEditor::WorldRenderView_OnUIEvent));
+		m_mainWorldRenderView->setPhysicsDebugDrawEnabled(true);
+        m_mainWorldRenderView->setGizmoEnabled(true);
+        m_mainViewport->addRenderView(m_mainWorldRenderView);
+
+        m_mainCamera->addComponent(ln::makeObject<ln::CameraOrbitControlComponent>());
+    }
+
+    // attach as main scene
+    auto scene = dynamic_cast<ln::Level*>(asset->target());
+    m_mainWorld->addScene(scene);
+
+	m_timer = ln::makeObject<ln::UIActiveTimer>();
+	m_timer->connectOnTick(ln::bind(this, &LevelEditor::handleTickEvent));
+	m_mainViewport->registerActiveTimer(m_timer);
+
+
+    frame->addAction(ln::makeObject<ln::UIAction>(EditorApplication::SaveCommand, [this](ln::UICommandEventArgs* x) {
+        printf("Save");
+        this->editorContext()->assetDatabase()->saveAsset(this->m_assetModel);
+    }));
+
+}
+
+void LevelEditor::onClosed()
+{
+}
+
+Ref<ln::List<Ref<ln::EditorPane>>> LevelEditor::getEditorPanes(lna::EditorPaneKind kind)
+{
+    switch (kind)
+    {
+    case lna::EditorPaneKind::Mode:
+        return m_modePanes;
+    case lna::EditorPaneKind::Inspector:
+        return m_inspectorPanes;
+    case lna::EditorPaneKind::Tool:
+        return m_toolPanes;
+    }
+    return nullptr;
+}
+
+void LevelEditor::WorldRenderView_OnUIEvent(ln::UIEventArgs* e)
+{
+}
+
+void LevelEditor::handleTickEvent(ln::UITimerEventArgs* e)
+{
+	m_mainWorld->updateFrame(e->elapsedSeconds());
+}
+
+} // namespace lna
+
