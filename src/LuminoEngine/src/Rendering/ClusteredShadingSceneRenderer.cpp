@@ -82,6 +82,7 @@ void ForwardGBufferPrepass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsCo
 	m_renderPass->setRenderTarget(0, renderingPipeline->viweNormalAndDepthBuffer());
 	m_renderPass->setRenderTarget(1, renderingPipeline->viweDepthBuffer());
 	m_renderPass->setRenderTarget(2, renderingPipeline->materialBuffer());
+	m_renderPass->setRenderTarget(3, renderingPipeline->objectIdBuffer());
 	m_renderPass->setDepthBuffer(m_depthBuffer);
 	m_renderPass->setClearValues(ClearFlags::Depth, Color::Gray, 1.0f, 0);
 }
@@ -499,11 +500,11 @@ SceneRendererPass* ClusteredShadingSceneRenderer::mainRenderPass() const
 	return m_geometryPass;
 }
 
-void ClusteredShadingSceneRenderer::collect(const detail::CameraInfo& cameraInfo)
+void ClusteredShadingSceneRenderer::collect(RenderingPipeline* renderingPipeline, const detail::CameraInfo& cameraInfo, RenderPhaseClass targetPhase)
 {
 	m_lightClusters.beginMakeClusters(cameraInfo.viewMatrix, cameraInfo.projMatrix, cameraInfo.viewPosition, cameraInfo.nearClip, cameraInfo.farClip);
 
-	SceneRenderer::collect(cameraInfo);
+	SceneRenderer::collect(renderingPipeline, cameraInfo, targetPhase);
 
 	m_lightClusters.endMakeClusters();
 }

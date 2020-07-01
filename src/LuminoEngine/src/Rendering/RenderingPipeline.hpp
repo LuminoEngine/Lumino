@@ -53,6 +53,7 @@ public:
     const Ref<RenderTargetTexture>& viweNormalAndDepthBuffer() const { return m_viweNormalAndDepthBuffer; }
     const Ref<RenderTargetTexture>& viweDepthBuffer() const { return m_viweDepthBuffer; }
     const Ref<RenderTargetTexture>& materialBuffer() const { return m_materialBuffer; }
+    const Ref<RenderTargetTexture>& objectIdBuffer() const { return m_objectIdBuffer; }
 
 private:
     // Note: 複数の SceneRenderer を持っているのは、描画フェーズの大きなまとまりごとに、Element の扱いを変えることで最適化するため。
@@ -79,6 +80,8 @@ private:
 
     // 
     Ref<RenderTargetTexture> m_materialBuffer;
+
+    Ref<RenderTargetTexture> m_objectIdBuffer;
 
     Ref<SamplerState> m_samplerState;	// TODO: 共通化
     Ref<RenderPass> m_renderPass;

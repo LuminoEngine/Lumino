@@ -82,12 +82,14 @@ class SceneRenderer
 	: public RefObject
 {
 public:
+	// render の前準備として、効率的な描画を行うためのZソートなどを実施した Element リストを作成する。
+	void prepare(RenderingPipeline* renderingPipeline, const detail::CameraInfo& mainCameraInfo, RenderPhaseClass targetPhase);
+
 	void render(
 		GraphicsContext* graphicsContext,
         RenderingPipeline* renderingPipeline,
 		RenderTargetTexture* renderTarget,
         const detail::CameraInfo& mainCameraInfo,
-        RenderPhaseClass targetPhase,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
 	virtual SceneRendererPass* mainRenderPass() const = 0;
@@ -109,7 +111,7 @@ protected:
 	void renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass);
 
 	// レンダリング準備として、描画に関係する各種オブジェクト (DrawElement や Light) を収集するフェーズ
-	virtual void collect(const CameraInfo& cameraInfo);
+	virtual void collect(RenderingPipeline* renderingPipeline, const CameraInfo& cameraInfo, RenderPhaseClass targetPhase);
 
 	// レンダリング準備として、効率的な描画を行うために収集した各種オブジェクトのソートなどを行う
 	void prepare();
@@ -144,7 +146,7 @@ private:
     CameraInfo m_mainCameraInfo;
 	const DynamicLightInfo* m_mainLightInfo = nullptr;
 
-    RenderPhaseClass m_targetPhase;
+    //RenderPhaseClass m_targetPhase;
 
 	// build by collect().
 	List<RenderDrawElement*> m_renderingElementList;

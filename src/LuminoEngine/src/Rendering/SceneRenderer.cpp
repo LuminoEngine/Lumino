@@ -112,12 +112,18 @@ void SceneRenderer::init()
     m_skinningLocalQuaternionsTexture->setSamplerState(samperState);
 }
 
+void SceneRenderer::prepare(RenderingPipeline* renderingPipeline, const detail::CameraInfo& mainCameraInfo, RenderPhaseClass targetPhase)
+{
+	m_renderingElementList.clear();
+	collect(renderingPipeline, mainCameraInfo, targetPhase);
+	prepare();
+}
+
 void SceneRenderer::render(
 	GraphicsContext* graphicsContext,
     RenderingPipeline* renderingPipeline,
 	RenderTargetTexture* renderTarget,
     const CameraInfo& mainCameraInfo,
-    RenderPhaseClass targetPhase,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
     graphicsContext->resetState();
@@ -125,7 +131,7 @@ void SceneRenderer::render(
 	m_renderingPipeline = renderingPipeline;
 	//m_defaultFrameBuffer = &defaultFrameBuffer;
     m_mainCameraInfo = mainCameraInfo;
-    m_targetPhase = targetPhase;
+    //m_targetPhase = targetPhase;
 	m_sceneGlobalRenderParams = sceneGlobalParams;
 
 	//detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
@@ -234,7 +240,7 @@ void SceneRenderer::addPass(SceneRendererPass* pass)
 
 void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass)
 {
-	m_renderingElementList.clear();
+	//m_renderingElementList.clear();
 
 	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
 	pass->onBeginPass(this, graphicsContext, renderTarget, depthBuffer);
@@ -243,9 +249,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 	//pass->overrideCameraInfo(&cameraInfo);
 
-	collect(/*pass, */cameraInfo);
+	//collect(/*pass, */cameraInfo);
 
-	prepare();
+	//prepare();
 
 	for (auto& renderFeature : m_manager->renderFeatures()) {
 		renderFeature->beginRendering();
@@ -533,14 +539,14 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
     m_renderPassPoolUsed = 0;
 }
 
-void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo)
+void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo, RenderPhaseClass targetPhase)
 {
 	//InternalContext* context = m_manager->getInternalContext();
 	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
 
 
 #if 1
-    for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
+    for (auto& elementList : renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
     {
         for (auto& light : elementList->dynamicLightInfoList())
         {
@@ -551,7 +557,7 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
         }
     }
 
-    const auto& classifiedElements = m_renderingPipeline->elementListCollector()->classifiedElements(m_targetPhase);
+    const auto& classifiedElements = renderingPipeline->elementListCollector()->classifiedElements(targetPhase);
     for (RenderDrawElement* element : classifiedElements)
     {
 #if 0		// TODO: 視錘台カリング
