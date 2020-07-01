@@ -154,7 +154,7 @@ void SceneRenderingPipeline::render(
     {
         //CameraInfo camera;
         //camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
-		m_sceneRenderer_PostEffectPhase->lightOcclusionMap = m_sceneRenderer->lightOcclusionPass()->lightOcclusionMap();
+		//m_sceneRenderer_PostEffectPhase->lightOcclusionMap = m_sceneRenderer->lightOcclusionPass()->lightOcclusionMap();
         m_sceneRenderer_PostEffectPhase->prepare(this, *mainCameraInfo, RenderPhaseClass::PostEffect);  // TODO: PostEffect なので ZSort 要らないモード追加していいかも
         m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, *mainCameraInfo, nullptr);
     }

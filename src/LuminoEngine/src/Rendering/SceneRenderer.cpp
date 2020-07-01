@@ -32,7 +32,7 @@ void SceneRendererPass::init()
 {
 }
 
-void SceneRendererPass::onBeginRender(SceneRenderer* sceneRenderer)
+void SceneRendererPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 }
 
@@ -51,9 +51,9 @@ bool SceneRendererPass::filterElement(RenderDrawElement* element) const
 }
 
 //void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
-void SceneRendererPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
-}
+//void SceneRendererPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+//{
+//}
 
 //ShaderTechnique* SceneRendererPass::selectShaderTechniqueHelper(
 //	const ShaderTechniqueRequestClasses& requester,
@@ -199,20 +199,20 @@ void SceneRenderer::render(
 	}
 
 
-	for (SceneRendererPass* pass : m_renderingActualPassList)
-	{
-		pass->onBeginRender(this);
-	}
+	//for (SceneRendererPass* pass : m_renderingActualPassList)
+	//{
+	//	pass->onBeginRender(this);
+	//}
 
 	for (SceneRendererPass* pass : m_renderingActualPassList)
 	{
         renderPass(graphicsContext, renderTarget, depthBuffer, pass);
 	}
 
-	for (SceneRendererPass* pass : m_renderingActualPassList)
-	{
-		pass->onEndRender(this);
-    }
+	//for (SceneRendererPass* pass : m_renderingActualPassList)
+	//{
+	//	pass->onEndRender(this);
+ //   }
 
 	// TODO: scoped
 	DepthBuffer::releaseTemporary(depthBuffer);
@@ -243,7 +243,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	//m_renderingElementList.clear();
 
 	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
-	pass->onBeginPass(this, graphicsContext, renderTarget, depthBuffer);
+	pass->onBeginRender(this, graphicsContext, renderTarget, depthBuffer);
 
 	const detail::CameraInfo& cameraInfo = mainCameraInfo();
 
@@ -537,6 +537,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	}
 
     m_renderPassPoolUsed = 0;
+
+	pass->onEndRender(this);
 }
 
 void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo, RenderPhaseClass targetPhase)

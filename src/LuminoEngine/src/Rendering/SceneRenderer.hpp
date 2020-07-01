@@ -39,13 +39,13 @@ public:
 	void setClearInfo(const ClearInfo& value) { m_clearInfo = value; }
 	const ClearInfo& clearInfo() const { return m_clearInfo; }
 
-	virtual void onBeginRender(SceneRenderer* sceneRenderer);
+	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 	virtual void onEndRender(SceneRenderer* sceneRenderer);
 
 	// このパスのデフォルトの RenderPass を構築する。
 	// renderTarget と depthBuffer は、シーンレンダリングの最終出力先。
 	// もし G-Buffer を作るときなど、内部的な RenderTarget に書きたい場合はこれらは使用せずに派生側で各種バッファを用意する。
-	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
+	//virtual void onBeginPass(SceneRenderer* sceneRenderer) = 0;
 
 	// このパスを実行するときのデフォルトの RenderPass を取得する。
 	// インスタンスは、このパスの実行側の onBeginPass() で作っておく。

@@ -24,7 +24,7 @@ void UnLigitingSceneRendererPass::init(RenderingManager* manager, bool forPostEf
 	m_renderPass = makeObject<RenderPass>();
 }
 
-void UnLigitingSceneRendererPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void UnLigitingSceneRendererPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	m_renderPass->setRenderTarget(0, renderTarget);
 	m_renderPass->setDepthBuffer(depthBuffer);
