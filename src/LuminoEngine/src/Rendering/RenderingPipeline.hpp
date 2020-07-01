@@ -81,6 +81,10 @@ private:
     // 
     Ref<RenderTargetTexture> m_materialBuffer;
 
+    // RT にオブジェクトIDを書いて読み出す手法は "GPU picking" というらしい
+    // https://stackoverflow.com/questions/55462615/three-js-raycast-on-skinning-mesh
+    // R32S を利用しているが、RGBでオブジェクトIDを作ることもできる。
+    // https://riptutorial.com/three-js/example/17089/object-picking---gpu
     Ref<RenderTargetTexture> m_objectIdBuffer;
 
     Ref<SamplerState> m_samplerState;	// TODO: 共通化

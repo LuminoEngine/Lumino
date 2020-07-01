@@ -119,13 +119,13 @@ void TransformControls::onRoutedEvent(UIEventArgs* e)
     if (!enabled()) return;
 
     if (e->type() == UIEvents::MouseDownEvent) {
-        e->handled = handleMouseDown(static_cast<UIMouseEventArgs*>(e)->getPosition());
+        e->handled = handleMouseDown(static_cast<UIMouseEventArgs*>(e)->getPosition(e->sender()));
     }
     else if (e->type() == UIEvents::MouseUpEvent) {
-        e->handled = handleMouseUp(static_cast<UIMouseEventArgs*>(e)->getPosition());
+        e->handled = handleMouseUp(static_cast<UIMouseEventArgs*>(e)->getPosition(e->sender()));
     }
     else if (e->type() == UIEvents::MouseMoveEvent) {
-        e->handled = handleMouseMove(static_cast<UIMouseEventArgs*>(e)->getPosition());
+        e->handled = handleMouseMove(static_cast<UIMouseEventArgs*>(e)->getPosition(e->sender()));
         //auto me = static_cast<UIMouseEventArgs*>(e);
         //auto pt = me->getPosition();
         //m_operationType = getDirectionOperationType(pt.x, pt.y, nullptr);

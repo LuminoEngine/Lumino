@@ -56,6 +56,8 @@ public:
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
     const Ref<detail::SceneRenderingPipeline>& sceneRenderingPipeline() const { return m_sceneRenderingPipeline; }
 
+    WorldObject* findObjectInPoint(int x, int y);
+
 protected:
 	virtual void onUpdateFrame(float elapsedSeconds) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;

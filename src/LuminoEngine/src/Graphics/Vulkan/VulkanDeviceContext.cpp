@@ -1591,8 +1591,10 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 	// パフォーマンを考えなければ常に VK_ATTACHMENT_STORE_OP_STORE のままで構わない。
 
 	// MaxRenderTargets + depthbuffer
-	VkAttachmentDescription attachmentDescs[MaxMultiRenderTargets/* + 1*/] = {};
-	VkAttachmentReference attachmentRefs[MaxMultiRenderTargets/* + 1*/] = {};
+	//VkAttachmentDescription attachmentDescs[MaxMultiRenderTargets/* + 1*/] = {};
+	//VkAttachmentReference attachmentRefs[MaxMultiRenderTargets/* + 1*/] = {};
+    std::array<VkAttachmentDescription, MaxMultiRenderTargets + 1> attachmentDescs;
+    std::array<VkAttachmentReference, MaxMultiRenderTargets + 1> attachmentRefs;
 	VkAttachmentReference* depthAttachmentRef = nullptr;
 	int attachmentCount = 0;
 	int colorAttachmentCount = 0;
@@ -1668,7 +1670,7 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 	subpass.inputAttachmentCount = 0;
 	subpass.pInputAttachments = nullptr;
 	subpass.colorAttachmentCount = colorAttachmentCount;
-	subpass.pColorAttachments = attachmentRefs;
+	subpass.pColorAttachments = attachmentRefs.data();
 	subpass.pResolveAttachments = nullptr;
 	subpass.pDepthStencilAttachment = depthAttachmentRef;
 	subpass.preserveAttachmentCount = 0;
@@ -1700,7 +1702,7 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 	renderPassInfo.pNext = nullptr;
 	renderPassInfo.flags = 0;
 	renderPassInfo.attachmentCount = attachmentCount;
-	renderPassInfo.pAttachments = attachmentDescs;
+	renderPassInfo.pAttachments = attachmentDescs.data();
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subpass;
 	//renderPassInfo.dependencyCount = 1;
@@ -1716,8 +1718,8 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 	}
 
 #ifdef LN_DEBUG
-    memcpy(m_attachmentDescs, attachmentDescs, sizeof(m_attachmentDescs));
-    memcpy(m_attachmentRefs, attachmentRefs, sizeof(m_attachmentRefs));
+    memcpy(m_attachmentDescs, attachmentDescs.data(), sizeof(m_attachmentDescs));
+    memcpy(m_attachmentRefs, attachmentRefs.data(), sizeof(m_attachmentRefs));
 #endif
 
 	return true;
@@ -2739,6 +2741,9 @@ void VulkanRenderTarget::readData(void* outData)
             else {
                 memcpy(outData, rawData, height * width * 4);
             }
+        }
+        else if (m_image->vulkanFormat() == VK_FORMAT_R32_SINT) {
+            memcpy(outData, rawData, height * width * 4);
         }
         else {
             LN_NOTIMPLEMENTED();

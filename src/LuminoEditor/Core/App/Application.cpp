@@ -3,6 +3,7 @@
 #include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
 #include "../../LuminoEngine/src/Platform/PlatformManager.hpp"
 #include "../../LuminoEngine/src/UI/UIManager.hpp"
+#include "../../LuminoEngine/src/Scene/SceneManager.hpp"
 #include <AppData.hpp>
 #include <EnvironmentSettings.hpp>
 #include <Workspace.hpp>
@@ -64,6 +65,7 @@ ln::Result EditorApplication::init()
     ln::detail::EngineManager::s_settings.defaultObjectsCreation = false;
 	ln::detail::EngineDomain::engineContext()->initializeEngineManager();
     ln::detail::EngineDomain::engineContext()->engineManager()->initializeAllManagers();
+    ln::detail::EngineDomain::sceneManager()->m_editorMode = true;
 
 	auto root = ln::detail::EngineManager::findRepositoryRootForTesting();
     ln::Font::registerFontFromFile(ln::Path(root, u"tools/mplus-font/mplus-1c-regular.ttf"));

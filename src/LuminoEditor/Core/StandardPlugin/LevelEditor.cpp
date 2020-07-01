@@ -108,6 +108,16 @@ Ref<ln::List<Ref<ln::EditorPane>>> LevelEditor::getEditorPanes(lna::EditorPaneKi
 
 void LevelEditor::WorldRenderView_OnUIEvent(ln::UIEventArgs* e)
 {
+    if (e->type() == ln::UIEvents::MouseDownEvent) {
+        auto me = static_cast<ln::UIMouseEventArgs*>(e);
+        if (me->getMouseButtons() == ln::MouseButtons::Left) {
+            auto point = me->getPosition(m_mainViewport);
+            if (auto obj = m_mainWorldRenderView->findObjectInPoint(point.x, point.y)) {
+                printf("select\n");
+                m_mainWorldRenderView->transformControls()->setTarget(obj);
+            }
+        }
+    }
 }
 
 void LevelEditor::handleTickEvent(ln::UITimerEventArgs* e)

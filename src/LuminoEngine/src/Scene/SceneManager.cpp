@@ -103,6 +103,24 @@ void SceneManager::updateFrame()
 	//}
 }
 
+int SceneManager::getWorldObjectId()
+{
+	if (!m_objectIndexStack.empty()) {
+		int newId = m_objectIndexStack.top();
+		m_objectIndexStack.pop();
+		return newId;
+	}
+	else {
+		m_objectIndexCount++;
+		return m_objectIndexCount;
+	}
+}
+
+void SceneManager::releaseWorldObjectId(int id)
+{
+	m_objectIndexStack.push(id);
+}
+
 
 } // namespace detail
 } // namespace ln

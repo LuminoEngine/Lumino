@@ -224,7 +224,7 @@ public:
 	detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;	// for PostEffect
 	RenderTargetTexture* gbuffer(GBuffer kind) const;
 	RenderView* currentRenderView = nullptr;	// Offscreen の場合はそれ
-
+	void setObjectId(int value);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();

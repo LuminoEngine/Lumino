@@ -430,6 +430,19 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 	}
 }
 
+WorldObject* WorldRenderView::findObjectInPoint(int x, int y)
+{
+    auto bitmap = detail::TextureInternal::readData(m_sceneRenderingPipeline->objectIdBuffer(), nullptr);
+    auto data = (uint32_t*)bitmap->data();
+    int id = data[bitmap->height() * y + x];
+    if (id > 0) {
+        return m_targetWorld->findObjectById(id);
+    }
+    else {
+        return nullptr;
+    }
+}
+
 detail::PostEffectRenderer* WorldRenderView::acquirePostEffectPresenter()
 {
     if (!m_imageEffectRenderer) {

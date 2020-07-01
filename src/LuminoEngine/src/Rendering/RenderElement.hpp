@@ -40,7 +40,6 @@ public:
     int priority = 0;
 
 
-
     // 将来的に CommandBuffer をサポートするとき、次のような書き方をすることがある。
     //   buf->setRenderTarget(x);
     //   buf->clear(all);

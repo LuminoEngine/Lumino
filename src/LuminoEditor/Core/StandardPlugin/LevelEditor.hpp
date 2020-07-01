@@ -26,7 +26,7 @@ private:
     Ref<ln::List<Ref<ln::EditorPane>>> m_toolPanes;
     Ref<ln::UIVBoxLayout3> m_mainLayout;
 
-    // Tilemap
+    // Scene
 	Ref<ln::UIActiveTimer> m_timer;
     Ref<ln::World> m_mainWorld;
 	Ref<ln::UIViewport> m_mainViewport;

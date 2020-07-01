@@ -101,6 +101,7 @@ public:
 	RectI						m_viewportRect;		// isEmpty() == true の場合は不使用
 	RectI						m_scissorRect;		// isEmpty() == true の場合は不使用
 
+
 	FrameBufferStageParameters()
 	{
 		reset();
@@ -155,6 +156,7 @@ public:
 	Optional<bool>				m_depthWriteEnabled;
 	Optional<ShadingModel>		shadingModel;
 	PrimitiveTopology primitiveTopology;
+	//int m_objectId = 0;
 
 	GeometryStageParameters()
 	{
@@ -171,18 +173,20 @@ public:
 		shadingModel = nullptr;
 		primitiveTopology = PrimitiveTopology::TriangleList;
 		//builtinEffectData.reset();
+		//m_objectId = 0;
 	}
 
 	bool equals(const GeometryStageParameters* other) const
 	{
-        return
-            m_material == other->m_material &&  // TODO: Material が一致することはまずない。ちゃんと中身かhashを見ること。
-            m_blendMode == other->m_blendMode &&
-            m_cullingMode == other->m_cullingMode &&
-            m_depthTestEnabled == other->m_depthTestEnabled &&
-            m_depthWriteEnabled == other->m_depthWriteEnabled &&
-            shadingModel == other->shadingModel &&
-			primitiveTopology == other->primitiveTopology;// &&
+		return
+			m_material == other->m_material &&  // TODO: Material が一致することはまずない。ちゃんと中身かhashを見ること。
+			m_blendMode == other->m_blendMode &&
+			m_cullingMode == other->m_cullingMode &&
+			m_depthTestEnabled == other->m_depthTestEnabled &&
+			m_depthWriteEnabled == other->m_depthWriteEnabled &&
+			shadingModel == other->shadingModel &&
+			primitiveTopology == other->primitiveTopology;//&&
+			//m_objectId == other->m_objectId;// &&
 			//builtinEffectData.equals(&other->builtinEffectData);
 	}
 
@@ -222,6 +226,7 @@ public:
 	// VisualNode と RenderingContext のステートはマージ済みの状態である。
 	GeometryStageParameters* geometryStageParameters;
 
+	int m_objectId = 0;
 
 
 	// これは Manager が持っているインスタンスを指す。ユーザー定義の場合はそっち。インスタンスは RenderStage モジュール内では管理しない。参照のみ。

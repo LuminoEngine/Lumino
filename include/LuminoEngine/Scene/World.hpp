@@ -61,6 +61,9 @@ public:
     void returnScene();
     Level* activeScene() const;
 
+    void traverse(detail::IWorldObjectVisitor* visitor) const;
+    WorldObject* findObjectById(int id) const;
+
 protected:
     // update sequence
     virtual void onPreUpdate(float elapsedSeconds);

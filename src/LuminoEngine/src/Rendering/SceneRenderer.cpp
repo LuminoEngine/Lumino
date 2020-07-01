@@ -455,6 +455,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			}
 			else {
 				ElementInfo elementInfo;
+				elementInfo.objectId = stage->m_objectId;
 				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
 				elementInfo.WorldMatrix = (batch->worldTransformPtr()) ? *batch->worldTransformPtr() : Matrix::Identity;
 				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);

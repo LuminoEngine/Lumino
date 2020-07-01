@@ -134,6 +134,8 @@ struct ElementInfo
 
     Texture2D* boneTexture = nullptr;
     Texture2D* boneLocalQuaternionTexture = nullptr;
+
+    int objectId = 0;
 };
 
 // サブセット単位のデータに関する情報

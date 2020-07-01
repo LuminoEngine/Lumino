@@ -256,6 +256,7 @@ public: // TODO:
 	Ref<ComponentList> m_components;
     Ref<List<Ref<WorldObject>>> m_children;
     Flags<DirtyFlags> m_dirtyFlags;
+	int m_id = 0;
     Matrix m_worldMatrix;
     bool m_isSpecialObject;
 	bool m_destroyed;

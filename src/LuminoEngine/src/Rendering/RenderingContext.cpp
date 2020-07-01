@@ -778,6 +778,11 @@ RenderTargetTexture* RenderingContext::gbuffer(GBuffer kind) const
 	}
 }
 
+void RenderingContext::setObjectId(int value)
+{
+	m_builder->setObjectId(value);
+}
+
 //detail::RenderDrawElement* RenderingContext::lastRenderDrawElement() const
 //{
 //	return m_builder->targetList()->lastElement();
