@@ -112,8 +112,16 @@ void SceneRenderer::init()
     m_skinningLocalQuaternionsTexture->setSamplerState(samperState);
 }
 
-void SceneRenderer::prepare(RenderingPipeline* renderingPipeline, const detail::CameraInfo& mainCameraInfo, RenderPhaseClass targetPhase)
+void SceneRenderer::prepare(
+	RenderingPipeline* renderingPipeline,
+	const detail::CameraInfo& mainCameraInfo,
+	RenderPhaseClass targetPhase,
+	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
+	m_renderingPipeline = renderingPipeline;
+    m_mainCameraInfo = mainCameraInfo;
+	m_sceneGlobalRenderParams = sceneGlobalParams;
+
 	m_renderingElementList.clear();
 	collect(renderingPipeline, mainCameraInfo, targetPhase);
 	prepare();
@@ -123,16 +131,11 @@ void SceneRenderer::render(
 	GraphicsContext* graphicsContext,
     RenderingPipeline* renderingPipeline,
 	RenderTargetTexture* renderTarget,
-    const CameraInfo& mainCameraInfo,
-	const detail::SceneGlobalRenderParams* sceneGlobalParams)
+    const CameraInfo& mainCameraInfo)
 {
-    graphicsContext->resetState();
 
-	m_renderingPipeline = renderingPipeline;
 	//m_defaultFrameBuffer = &defaultFrameBuffer;
-    m_mainCameraInfo = mainCameraInfo;
     //m_targetPhase = targetPhase;
-	m_sceneGlobalRenderParams = sceneGlobalParams;
 
 	//detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
 	//coreRenderer->begin();
@@ -240,6 +243,8 @@ void SceneRenderer::addPass(SceneRendererPass* pass)
 
 void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass)
 {
+	graphicsContext->resetState();
+
 	//m_renderingElementList.clear();
 
 	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;

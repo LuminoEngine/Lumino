@@ -83,14 +83,17 @@ class SceneRenderer
 {
 public:
 	// render の前準備として、効率的な描画を行うためのZソートなどを実施した Element リストを作成する。
-	void prepare(RenderingPipeline* renderingPipeline, const detail::CameraInfo& mainCameraInfo, RenderPhaseClass targetPhase);
+	void prepare(
+		RenderingPipeline* renderingPipeline,
+		const detail::CameraInfo& mainCameraInfo,
+		RenderPhaseClass targetPhase,
+		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
 	void render(
 		GraphicsContext* graphicsContext,
         RenderingPipeline* renderingPipeline,
 		RenderTargetTexture* renderTarget,
-        const detail::CameraInfo& mainCameraInfo,
-		const detail::SceneGlobalRenderParams* sceneGlobalParams);
+        const detail::CameraInfo& mainCameraInfo);
 
 	virtual SceneRendererPass* mainRenderPass() const = 0;
 

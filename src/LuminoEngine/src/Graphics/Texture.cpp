@@ -306,7 +306,7 @@ detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* ou
             SizeI bmpSize(m_bitmap->width(), m_bitmap->height());
             detail::RenderBulkData bmpRawData = detail::GraphicsContextInternal::getRenderingCommandList(context)->allocateBulkData(bmpBuffer->size());
             detail::BitmapHelper::blitRawSimple(
-                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
+                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), GraphicsHelper::getPixelSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
 
             if (!m_rhiObject || m_usage != m_rhiObject->usage() || mipmap() != m_rhiObject->mipmap()) {
                 m_rhiObject = deviceContext->createTexture2D(m_usage, width(), height(), format(), mipmap(), bmpRawData.data());
@@ -669,7 +669,7 @@ detail::ITexture* Texture3D::resolveRHIObject(GraphicsContext* context, bool* ou
             BoxSizeI bmpSize = {m_bitmap->width(), m_bitmap->height(), m_bitmap->depth()};
             detail::RenderBulkData bmpRawData = detail::GraphicsContextInternal::getRenderingCommandList(context)->allocateBulkData(bmpBuffer->size());
             detail::BitmapHelper::blitRawSimple3D(
-                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
+                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), GraphicsHelper::getPixelSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
 
             if (!m_rhiObject || m_usage != m_rhiObject->usage()) {
                 m_rhiObject = deviceContext->createTexture3D(m_usage, width(), height(), depth(), format(), mipmap(), m_bitmap->data());

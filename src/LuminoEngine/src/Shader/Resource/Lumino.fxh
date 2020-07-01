@@ -18,7 +18,7 @@ cbuffer LNRenderViewBuffer
 	/* [224] */ float3 ln_CameraDirection;
 	/* [236] */ float ln_NearClip;
 	/* [240] */ float ln_FarClip;
-};  /* [244(alignd:256)] */
+};  /* [244(alignd:16)] */
 
 cbuffer LNRenderElementBuffer
 {
@@ -28,7 +28,8 @@ cbuffer LNRenderElementBuffer
 	/* [192] */ float4x4 ln_WorldView;
 	/* [256] */ float4x4 ln_WorldViewIT;
 	/* [320] */ float4 ln_BoneTextureReciprocalSize;
-};  /* [336] */
+	/* [336] */	int ln_objectId;
+};  /* [352(alignd:16)] */
 
 // Builtin effect colors
 cbuffer LNEffectColorBuffer

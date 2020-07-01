@@ -159,7 +159,8 @@ public:
 			{ TextureFormat::RGBA32F, GL_RGBA32F, GL_RGBA, GL_FLOAT },
 			{ TextureFormat::R16F, GL_R16F, GL_RED, GL_HALF_FLOAT },
 			{ TextureFormat::R32F, GL_R32UI, GL_RED, GL_FLOAT },
-			{ TextureFormat::R32U, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT },
+			{ TextureFormat::R32S, GL_R32I, GL_RED_INTEGER, GL_INT },
+			//{ TextureFormat::R32U, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT },
 			//{ GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE }, // TextureFormat::D24S8,               ///< 32 ビットの Z バッファフォーマット
 		};
 
@@ -174,7 +175,8 @@ public:
 			{ TextureFormat::RGBA32F, GL_RGBA32F, GL_RGBA, GL_FLOAT },
 			{ TextureFormat::R16F, GL_R16F, GL_RED, GL_HALF_FLOAT },
 			{ TextureFormat::R32F, GL_R32UI, GL_RED, GL_FLOAT },
-			{ TextureFormat::R32U, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT },
+			{ TextureFormat::R32S, GL_R32I, GL_RED_INTEGER, GL_INT },
+			//{ TextureFormat::R32U, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT },
 			//{ GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE }, // TextureFormat::D24S8,               ///< 32 ビットの Z バッファフォーマット
 		};
 #endif

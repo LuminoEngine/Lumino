@@ -54,6 +54,7 @@ public:
 
     // TODO: internal
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
+    const Ref<detail::SceneRenderingPipeline>& sceneRenderingPipeline() const { return m_sceneRenderingPipeline; }
 
 protected:
 	virtual void onUpdateFrame(float elapsedSeconds) override;

@@ -213,7 +213,7 @@ public:
 
     void blit(const RectI& destRect, const Bitmap2D* srcBitmap, const RectI& srcRect, const ColorI& color, BitmapBlitOptions options);
 
-	static int getPixelFormatByteSize(PixelFormat format);
+	//static int getPixelFormatByteSize(PixelFormat format);
 	static int getBitmapByteSize(int width, int height, int depth, PixelFormat format);
 
 LN_CONSTRUCT_ACCESS:

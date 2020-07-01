@@ -69,8 +69,8 @@ PixelFormat GraphicsHelper::translateToPixelFormat(TextureFormat format)
 		return PixelFormat::Unknown;
 	case TextureFormat::R32F:
 		return PixelFormat::Unknown;
-	case TextureFormat::R32U:
-		return PixelFormat::Unknown;
+	case TextureFormat::R32S:
+		return PixelFormat::R32S;
 	default:
 		return PixelFormat::Unknown;
 	}
@@ -113,12 +113,34 @@ size_t GraphicsHelper::getPixelSize(TextureFormat format)
         return 2;
     case TextureFormat::R32F:
         return 4;
-    case TextureFormat::R32U:
+    case TextureFormat::R32S:
         return 4;
     default:
         LN_UNREACHABLE();
         return 0;
     }
+}
+
+size_t GraphicsHelper::getPixelSize(PixelFormat format)
+{
+	switch (format)
+	{
+	case PixelFormat::Unknown:
+		return 0;
+	case PixelFormat::A8:
+		return 1;
+	case PixelFormat::RGBA8:
+		return 4;
+	case PixelFormat::RGB8:
+		return 3;
+	case PixelFormat::RGBA32F:
+		return 16;
+	case PixelFormat::R32S:
+		return 4;
+	default:
+		LN_UNREACHABLE();
+		return 0;
+	}
 }
 
 

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
@@ -420,6 +421,12 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 		m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, elementListManagers().front(), &sceneGlobalRenderParams);
         
 		//graphicsContext->resetState();
+
+#if 0
+        auto bitmap = detail::TextureInternal::readData(m_sceneRenderingPipeline->objectIdBuffer(), graphicsContext);
+        auto d = (uint32_t*)bitmap->data();
+        printf("%u\n", d[0]);
+#endif
 	}
 }
 

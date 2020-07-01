@@ -363,7 +363,7 @@ void Bitmap2D::flipVerticalFlow()
 	if (LN_REQUIRE(m_format != PixelFormat::Unknown)) return;
 	//if (LN_REQUIRE(m_format != PixelFormat::A1)) return;
 
-	int pixelSize = getPixelFormatByteSize(m_format);
+	int pixelSize = GraphicsHelper::getPixelSize(m_format);
 	if (pixelSize == 1)
 	{
 		// XOR で工夫すると演算回数が少なくなるとか最適化の余地はあるけど、
@@ -477,23 +477,9 @@ void Bitmap2D::blit(const RectI& destRect, const Bitmap2D* srcBitmap, const Rect
     detail::BlitHelper::bitBltInternal(this, destRect, srcBitmap, srcRect, detail::ClColor{ color.r, color.g, color.b, color.a }, testFlag(options, BitmapBlitOptions::AlphaBlend));
 }
 
-int Bitmap2D::getPixelFormatByteSize(PixelFormat format)
-{
-	const int table[] =
-	{
-		0,	// Unknown,
-		//1,	// A1,
-		1,	// A8,
-		4,	// RGBA32,
-        3,	// RGB24,
-		16,	// R32G32B32A32Float,
-	};
-	return table[(int)format];
-}
-
 int Bitmap2D::getBitmapByteSize(int width, int height, int depth, PixelFormat format)
 {
-	return getPixelFormatByteSize(format) * width * height * depth;
+	return GraphicsHelper::getPixelSize(format) * width * height * depth;
 }
 
 //==============================================================================

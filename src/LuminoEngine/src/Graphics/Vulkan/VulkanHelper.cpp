@@ -290,7 +290,7 @@ static FormatConversionItem s_formatConversionTable[] =
 	{VK_FORMAT_R32G32B32A32_SFLOAT, 128, TextureFormat::RGBA32F, false},
 	{VK_FORMAT_R16_SFLOAT, 16, TextureFormat::R16F, false},
 	{VK_FORMAT_R32_SFLOAT, 32, TextureFormat::R32F, false},
-	{VK_FORMAT_R32_UINT, 32, TextureFormat::R32U, false},
+	{VK_FORMAT_R32_SINT, 32, TextureFormat::R32S, false},
 };
 
 static const BlendFactorConversionItem s_blendFactorConversionTable[] =

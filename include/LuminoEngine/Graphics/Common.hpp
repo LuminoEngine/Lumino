@@ -216,6 +216,8 @@ enum class PixelFormat : uint8_t
 
     /** RGBA オーダーの各要素 32bit 浮動小数点フォーマット */
     RGBA32F,
+
+    R32S,
 };
 
 /** テクスチャのピクセルフォーマット */
@@ -243,8 +245,8 @@ enum class TextureFormat : uint8_t
     /** 32bit 浮動小数点フォーマット */
     R32F,
 
-    /** 32bit の符号なし整数フォーマット */
-    R32U,
+    /** 32bit の符号あり整数フォーマット */
+    R32S,
 };
 
 /** 深度バッファのフォーマット */
@@ -339,6 +341,7 @@ public:
     static PixelFormat translateToPixelFormat(TextureFormat format);
     static TextureFormat translateToTextureFormat(PixelFormat format);
     static size_t getPixelSize(TextureFormat format);
+    static size_t getPixelSize(PixelFormat format);
     static IndexBufferFormat selectIndexBufferFormat(int vertexCount) { return (vertexCount > 0xFFFF) ? IndexBufferFormat::UInt32 : IndexBufferFormat::UInt16; }
     static size_t getIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat::UInt16) ? 2 : 4; }
 

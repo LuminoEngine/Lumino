@@ -95,7 +95,7 @@ ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
     assert(236 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip));
     assert(240 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_FarClip));
     static_assert(256 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
-    static_assert(336 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    static_assert(352 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(48 == sizeof(LNEffectColorBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(BuiltinShaderParameters__Count < 64, "Invalid BuiltinShaderParameters__Count");
 
@@ -198,6 +198,7 @@ void ShaderTechniqueSemanticsManager::updateElementVariables(const CameraInfo& c
         if (hasParameter(BuiltinShaderParameters_ln_BoneTextureReciprocalSize) && info.boneTexture)
             data.ln_BoneTextureReciprocalSize = Vector4(1.0f / info.boneTexture->width(), 1.0f / info.boneTexture->height(), 0, 0);
 
+        data.ln_objectId = 10;
         m_descriptor->setData(index, &data, sizeof(data));
     }
 

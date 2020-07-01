@@ -31,7 +31,8 @@ struct alignas(16) LNRenderElementBuffer
     alignas(16) Matrix ln_WorldViewProjection;
     alignas(16) Matrix ln_WorldView;
     alignas(16) Matrix ln_WorldViewIT;
-    alignas(8) Vector4 ln_BoneTextureReciprocalSize;
+    alignas(16) Vector4 ln_BoneTextureReciprocalSize;
+    alignas(4) int32_t ln_objectId;
 };
 
 // cbuffer LNEffectColorBuffer
