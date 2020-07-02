@@ -171,6 +171,8 @@ set(LN_SOURCES_UI
 set(LN_IMGUI_INCLUDE_DIRECTORY ${LUMINO_ROOT_PATH}/build/BuildCache/imgui)
 file(GLOB LN_SOURCES_Tilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/*.hpp src/Tilemap/*.cpp src/Tilemap/*.hpp)
 
+file(GLOB LN_SOURCES_Scripting ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scripting/*.hpp src/Scripting/*.cpp src/Scripting/*.hpp src/Scripting/*.md)
+
 file(GLOB LN_SOURCES_Runtime
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.h
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.hpp
@@ -235,6 +237,7 @@ source_group("Scene\\MeshVoxelmap" FILES ${LN_SOURCES_Scene_MeshVoxelmap})
 source_group("Scene\\Reflection" FILES ${LN_SOURCES_Scene_Reflection})
 source_group("UI" FILES ${LN_SOURCES_UI})
 source_group("Tilemap" FILES ${LN_SOURCES_Tilemap})
+source_group("Scripting" FILES ${LN_SOURCES_Scripting})
 source_group("Runtime" FILES ${LN_SOURCES_Runtime})
 
 set(LN_SOURCES
@@ -274,6 +277,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Scene_Reflection}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_Tilemap}
+    ${LN_SOURCES_Scripting}
     ${LN_SOURCES_Runtime}
     ${LN_COMMON_META_FILES}
 )

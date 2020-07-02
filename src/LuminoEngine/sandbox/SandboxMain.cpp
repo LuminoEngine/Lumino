@@ -272,6 +272,7 @@ void Example_UIControls();
 void Example_Tilemap();
 void Experiment_Editor();
 void Experiment_Reflector();
+void Experiment_Scripting();
 void Experiment_SelectObject();
 void Experiment_SerializeLevel();
 void Experiment_SSR();
@@ -468,7 +469,8 @@ int main(int argc, char** argv)
 		//Example_Tilemap();
         //Experiment_Editor();
         //Experiment_Reflector();
-        Experiment_SelectObject();
+        Experiment_Scripting();
+        //Experiment_SelectObject();
         //Experiment_SerializeLevel();
         //Experiment_SSR();
 		//Sandbox_MeshTilemap();
