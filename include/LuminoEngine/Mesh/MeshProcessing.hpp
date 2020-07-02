@@ -33,6 +33,8 @@ public:
 
 	void addCone(float radius, float height, int slices);
 
+	void addArc(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices);
+
 	void endSection();
 
 	Ref<Mesh> buildMesh();

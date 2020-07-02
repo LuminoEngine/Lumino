@@ -560,6 +560,30 @@ private:
 	int m_slices;
 };
 
+// XZ 平面上に、Y+正面で作成する
+class ArcMeshFactory
+	: public MeshGenerater
+{
+public:	// MeshGenerater interface
+	int vertexCount() const override { return (m_slices + 1) * 2; }
+	int indexCount() const override { return m_slices * 6; }
+	PrimitiveTopology primitiveType() const override { return PrimitiveTopology::TriangleList; }
+	void copyFrom(const ArcMeshFactory* other);
+	LN_MESHGENERATOR_CLONE_IMPLEMENT(ArcMeshFactory);
+
+public:
+	ArcMeshFactory();
+	bool init(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices);
+	void onGenerate(MeshGeneraterBuffer* buf) override;
+
+private:
+	float	m_startAngle;
+	float	m_endAngle;
+	float 	m_innerRadius;
+	float	m_outerRadius;
+	int		m_slices;
+};
+
 } // namespace detail
 } // namespace ln
 

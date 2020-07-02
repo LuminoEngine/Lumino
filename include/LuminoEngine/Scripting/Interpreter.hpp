@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "../Base/Delegate.hpp"
 #include "../Base/Serializer.hpp"
 
@@ -30,12 +30,12 @@ public:
 	}
 };
 
-using InterpreterCommandHandler = Delegate<bool(InterpreterCommandList* cmd)>;
+using InterpreterCommandHandler = Delegate<bool(InterpreterCommand* cmd)>;
 
 /**
- * ƒRƒ‹[ƒ`ƒ“ƒx[ƒX‚ÌƒXƒNƒŠƒvƒgƒCƒ“ƒ^ƒvƒŠƒ^B
+ * ã‚³ãƒ«ãƒ¼ãƒãƒ³ãƒ™ãƒ¼ã‚¹ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚¤ãƒ³ã‚¿ãƒ—ãƒªã‚¿ã€‚
  *
- * ƒcƒN[ƒ‹‚Ì‚Æ“¯‚¶d‘g‚İB‚½‚¾ƒXƒNƒŠƒvƒgÀs‚·‚é‚È‚ç Lua ‚Æ‚©g‚Á‚Ä‚à‚æ‚¢‚Ì‚¾‚ªA‚±‚ê‚Ìd—v‚È—vŒ‚ÍuÀsó‘Ô‚ğ•Û‘¶‚Å‚«‚é‚æ‚¤‚É‚·‚é‚±‚Æv
+ * ãƒ„ã‚¯ãƒ¼ãƒ«ã®ã¨åŒã˜ä»•çµ„ã¿ã€‚ãŸã ã‚¹ã‚¯ãƒªãƒ—ãƒˆå®Ÿè¡Œã™ã‚‹ãªã‚‰ Lua ã¨ã‹ä½¿ã£ã¦ã‚‚ã‚ˆã„ã®ã ãŒã€ã“ã‚Œã®é‡è¦ãªè¦ä»¶ã¯ã€Œå®Ÿè¡ŒçŠ¶æ…‹ã‚’ä¿å­˜ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹ã“ã¨ã€
  */
 class Interpreter : public Object
 {
@@ -43,15 +43,15 @@ public:
 	Interpreter();
 	virtual ~Interpreter() = default;
 
-	/** ƒRƒ}ƒ“ƒhƒŠƒXƒg‚ğİ’è‚µAÀs‚ğŠJn‚·‚é */
+	/** ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã‚’è¨­å®šã—ã€å®Ÿè¡Œã‚’é–‹å§‹ã™ã‚‹ */
 	void run(const Ref<InterpreterCommandList>& commandList);
 
-	/** ƒRƒ}ƒ“ƒhƒŠƒXƒg‚ÌÀs’†‚Å‚ ‚é‚© */
+	/** ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã®å®Ÿè¡Œä¸­ã§ã‚ã‚‹ã‹ */
 	bool isRunning() const;
 
 	void update();
 
-	/* ƒRƒ}ƒ“ƒhƒŠƒXƒg‚ÌÀs‚ğI—¹‚·‚é */
+	/* ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã®å®Ÿè¡Œã‚’çµ‚äº†ã™ã‚‹ */
 	void terminate();
 
 	void registerCommandHandler(const StringRef& name, Ref<InterpreterCommandHandler> handler);
@@ -64,7 +64,7 @@ protected:
 	/**  */
 	const Ref<InterpreterCommand>& getCurrentCommand() const;
 
-	/** Wait ’†‚È‚ç true ‚ğ•Ô‚· */
+	/** Wait ä¸­ãªã‚‰ true ã‚’è¿”ã™ */
 	virtual bool onUpdateWait(const String& waitMode);
 
 
@@ -74,10 +74,10 @@ private:
 	bool updateWait();
 	bool checkFreeze();
 
-	/** ƒRƒ}ƒ“ƒh‚ğ1‚ÂÀs‚·‚é */
+	/** ã‚³ãƒãƒ³ãƒ‰ã‚’1ã¤å®Ÿè¡Œã™ã‚‹ */
 	bool executeCommand();
 
-	/** ƒRƒ}ƒ“ƒh‚ğ1‚ÂÀs‚·‚é */
+	/** ã‚³ãƒãƒ³ãƒ‰ã‚’1ã¤å®Ÿè¡Œã™ã‚‹ */
 	virtual bool onExecuteCommand(InterpreterCommand* cmd);
 
 	List<Ref<InterpreterCommand>> m_commandList;

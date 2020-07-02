@@ -25,6 +25,7 @@ public:
 
     void setViewInfo(const Vector3& viewPosition, const Matrix& view, const Matrix& proj, const Size& viewPixelSize);
 
+    void setTransformType(TransformControlsType value);
 
     virtual void onRender(RenderingContext* context) /*override*/;
     virtual void onRoutedEvent(UIEventArgs* e) /*override*/;

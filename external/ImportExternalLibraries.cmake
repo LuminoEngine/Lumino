@@ -432,6 +432,19 @@ set_target_properties(yamlcpp PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${yamlcpp
 list(APPEND LN_EXTERNAL_LIBS yamlcpp)
 
 #--------------------------------------
+# lua
+ln_make_external_find_path(lua_ROOT "lua")
+
+find_library(lua_LIBRARY_RELEASE NAMES lua PATHS ${lua_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(lua_LIBRARY_DEBUG NAMES luad lua PATHS ${lua_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+add_library(lua STATIC IMPORTED)
+set_target_properties(lua PROPERTIES IMPORTED_LOCATION_RELEASE "${lua_LIBRARY_RELEASE}")
+set_target_properties(lua PROPERTIES IMPORTED_LOCATION_DEBUG "${lua_LIBRARY_DEBUG}")
+set_target_properties(lua PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${lua_ROOT}/include)
+list(APPEND LN_EXTERNAL_LIBS lua)
+
+#--------------------------------------
 # FBX SDK
 
 if (LN_USE_FBX_IMPORTER)

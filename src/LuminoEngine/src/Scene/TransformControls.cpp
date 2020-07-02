@@ -11,8 +11,9 @@
 namespace ln {
 
 const float TransformControls::CenterBoxSize = 0.15f;
-const float TransformControls::BarRadius = 0.05f;
-const float TransformControls::BarLendth = 2.0f;
+const float TransformControls::BarRadius = 0.02f;
+const float TransformControls::BarLendth = 1.0f;
+const float RotationRingWidth = 0.05f;
 const float ArrowCapHeight = 0.25f;
 const float TransformControls::OnPlaneBoxSize = 0.4f;
 const float TransformControls::RotationRingInner = 0.9f;
@@ -39,27 +40,105 @@ void TransformControls::init()
 
     m_xColorMaterial = makeObject<Material>();
     m_xColorMaterial->setColor(Color::Red);
+    m_xColorMaterial->shadingModel = ShadingModel::Unlit;
 
     m_yColorMaterial = makeObject<Material>();
     m_yColorMaterial->setColor(Color::Green);
+    m_yColorMaterial->shadingModel = ShadingModel::Unlit;
 
     m_zColorMaterial = makeObject<Material>();
     m_zColorMaterial->setColor(Color::Blue);
+    m_zColorMaterial->shadingModel = ShadingModel::Unlit;
 
     m_activeColorMaterial = makeObject<Material>();
     m_activeColorMaterial->setColor(Color::Yellow);
+    m_activeColorMaterial->shadingModel = ShadingModel::Unlit;
 
     {
         auto builder = makeObject<MeshGeometryBuilder>();
 
 
-
+        // Section:0 Translation-X
         builder->beginSection();
         builder->setPosition(BarLendth / 2, 0, 0);
         builder->setRotation(0, 0, -Math::PI / 2);
         builder->addCylinder(BarRadius, BarLendth, 8, 1);
-        builder->setPosition(BarLendth - ArrowCapHeight, 0, 0);
-        builder->addCone(0.05, ArrowCapHeight, 8);
+        builder->setPosition(BarLendth, 0, 0);
+        builder->addCone(BarRadius*2, ArrowCapHeight, 8);
+        builder->endSection();
+
+        // Section:1 Translation-Y
+        builder->beginSection();
+        builder->setPosition(0, BarLendth / 2, 0);
+        builder->setRotation(0, 0, 0);
+        builder->addCylinder(BarRadius, BarLendth, 8, 1);
+        builder->setPosition(0, BarLendth, 0);
+        builder->addCone(BarRadius * 2, ArrowCapHeight, 8);
+        builder->endSection();
+
+        // Section:2 Translation-Z
+        builder->beginSection();
+        builder->setPosition(0, 0, BarLendth / 2);
+        builder->setRotation(Math::PI / 2, 0, 0);
+        builder->addCylinder(BarRadius, BarLendth, 8, 1);
+        builder->setPosition(0, 0, BarLendth);
+        builder->addCone(BarRadius * 2, ArrowCapHeight, 8);
+        builder->endSection();
+
+        // Section:3 Rotation-X
+        builder->beginSection();
+        builder->setPosition(0, 0, 0);
+        builder->setRotation(0, 0, -Math::PI / 2);
+        builder->addArc(0, Math::PI2, BarLendth, BarLendth + RotationRingWidth, 16);
+        builder->endSection();
+
+        // Section:4 Rotation-Y
+        builder->beginSection();
+        builder->setPosition(0, 0, 0);
+        builder->setRotation(0, 0, 0);
+        builder->addArc(0, Math::PI2, BarLendth, BarLendth + RotationRingWidth, 16);
+        builder->endSection();
+
+        // Section:5 Rotation-Z
+        builder->beginSection();
+        builder->setPosition(0, 0, 0);
+        builder->setRotation(Math::PI / 2, 0, 0);
+        builder->addArc(0, Math::PI2, BarLendth, BarLendth + RotationRingWidth, 16);
+        builder->endSection();
+
+        // Section:6 ring
+        builder->beginSection();
+        builder->setPosition(0, 0, 0);
+        builder->setRotation(-Math::PI / 2, 0, 0);
+        builder->addArc(0, Math::PI2, BarLendth, BarLendth + RotationRingWidth, 16);
+        builder->endSection();
+
+
+        // Section:7 Scaling-X
+        builder->beginSection();
+        builder->setPosition(BarLendth / 2, 0, 0);
+        builder->setRotation(0, 0, -Math::PI / 2);
+        builder->addCylinder(BarRadius, BarLendth, 8, 1);
+        builder->setPosition(BarLendth, 0, 0);
+        builder->addBox(Vector3(ArrowCapHeight, ArrowCapHeight, ArrowCapHeight));
+        builder->endSection();
+
+        // Section:8 Scaling-Y
+        builder->beginSection();
+        builder->setPosition(0, BarLendth / 2, 0);
+        builder->setRotation(0, 0, 0);
+        builder->addCylinder(BarRadius, BarLendth, 8, 1);
+        builder->setPosition(0, BarLendth, 0);
+        builder->addBox(Vector3(ArrowCapHeight, ArrowCapHeight, ArrowCapHeight));
+        builder->endSection();
+
+        // Section:9 Translation-Z
+        builder->beginSection();
+        builder->setPosition(0, 0, BarLendth / 2);
+        builder->setRotation(Math::PI / 2, 0, 0);
+        builder->addCylinder(BarRadius, BarLendth, 8, 1);
+        builder->setPosition(0, 0, BarLendth);
+        builder->addBox(Vector3(ArrowCapHeight, ArrowCapHeight, ArrowCapHeight));
         builder->endSection();
 
         m_translationGizmoMesh = builder->buildMesh();
@@ -81,35 +160,71 @@ void TransformControls::setViewInfo(const Vector3& viewPosition, const Matrix& v
     makeScreenFactor();
 }
 
+void TransformControls::setTransformType(TransformControlsType value)
+{
+    m_transformType = value;
+}
+
 void TransformControls::onRender(RenderingContext* context)
 {
     if (!enabled()) return;
 
+    auto transform = Matrix::multiply(Matrix::makeScaling(m_screenFactor), m_gizmoTransform);
+
     context->pushState();
     context->setRenderPhase(RenderPhaseClass::Gizmo);
-    context->setBaseTransfrom(m_gizmoTransform);
+    context->setBaseTransfrom(transform);
     context->setDepthTestEnabled(false);
     context->setDepthWriteEnabled(false);
 
-    context->setMaterial((m_operationType == OperationType::X) ? m_activeColorMaterial : m_xColorMaterial);
-    context->drawLine(Vector3(0, 0, 0), Color::White, Vector3(1, 0, 0), Color::White);
 
-    context->setMaterial((m_operationType == OperationType::Y) ? m_activeColorMaterial : m_yColorMaterial);
-	context->drawLine(Vector3(0, 0, 0), Color::White, Vector3(0, 1, 0), Color::White);
+    switch (m_transformType)
+    {
+        case TransformControlsType::Translation:
+        {
+            context->setMaterial((m_operationType == OperationType::X) ? m_activeColorMaterial : m_xColorMaterial);
+            context->drawMesh(m_translationGizmoMesh, 0);
+            //context->drawLine(Vector3(0, 0, 0), Color::White, Vector3(1, 0, 0), Color::White);
 
-    context->setMaterial((m_operationType == OperationType::Z) ? m_activeColorMaterial : m_zColorMaterial);
-	context->drawLine(Vector3(0, 0, 0), Color::White, Vector3(0, 0, 1), Color::White);
+            context->setMaterial((m_operationType == OperationType::Y) ? m_activeColorMaterial : m_yColorMaterial);
+            context->drawMesh(m_translationGizmoMesh, 1);
+            //context->drawLine(Vector3(0, 0, 0), Color::White, Vector3(0, 1, 0), Color::White);
+
+            context->setMaterial((m_operationType == OperationType::Z) ? m_activeColorMaterial : m_zColorMaterial);
+            context->drawMesh(m_translationGizmoMesh, 2);
+            //context->drawLine(Vector3(0, 0, 0), Color::White, Vector3(0, 0, 1), Color::White);
 
 
-    context->drawMesh(m_translationGizmoMesh, 0);
-    
+            break;
+        }
+        case TransformControlsType::Rotation:
+        {
+            context->setMaterial((m_operationType == OperationType::X) ? m_activeColorMaterial : m_xColorMaterial);
+            context->drawMesh(m_translationGizmoMesh, 3);
+            context->setMaterial((m_operationType == OperationType::Y) ? m_activeColorMaterial : m_yColorMaterial);
+            context->drawMesh(m_translationGizmoMesh, 4);
+            context->setMaterial((m_operationType == OperationType::Z) ? m_activeColorMaterial : m_zColorMaterial);
+            context->drawMesh(m_translationGizmoMesh, 5);
 
-	//const float i1 = RotationRingInner;
-	//const float o1 = RotationRingOuter;
-	//Color c;
-	//// Z
-	//c = (m_operationType == OperationType::Z) ? Color::White : Color(0, 0, 1, BaseOpacity);
-	//context->drawArc(0, Math::PI2, i1, o1, 32, c, Matrix::makeRotationX(Math::PIDiv2), m_tmat);
+            Matrix viewInv = Matrix::makeScaling(m_screenFactor) * Matrix::makeInverse(m_view);
+            viewInv.m41 = m_gizmoTransform.m41;
+            viewInv.m42 = m_gizmoTransform.m42;
+            viewInv.m43 = m_gizmoTransform.m43;
+            context->setBaseTransfrom(viewInv);
+            context->drawMesh(m_translationGizmoMesh, 6);
+            break;
+        }
+        case TransformControlsType::Scaling:
+        {
+            context->setMaterial((m_operationType == OperationType::X) ? m_activeColorMaterial : m_xColorMaterial);
+            context->drawMesh(m_translationGizmoMesh, 7);
+            context->setMaterial((m_operationType == OperationType::Y) ? m_activeColorMaterial : m_yColorMaterial);
+            context->drawMesh(m_translationGizmoMesh, 8);
+            context->setMaterial((m_operationType == OperationType::Z) ? m_activeColorMaterial : m_zColorMaterial);
+            context->drawMesh(m_translationGizmoMesh, 9);
+            break;
+        }
+    }
 
     context->popState();
 }
@@ -126,9 +241,17 @@ void TransformControls::onRoutedEvent(UIEventArgs* e)
     }
     else if (e->type() == UIEvents::MouseMoveEvent) {
         e->handled = handleMouseMove(static_cast<UIMouseEventArgs*>(e)->getPosition(e->sender()));
-        //auto me = static_cast<UIMouseEventArgs*>(e);
-        //auto pt = me->getPosition();
-        //m_operationType = getDirectionOperationType(pt.x, pt.y, nullptr);
+    }
+    else if (e->type() == UIEvents::KeyDownEvent) {
+        if (static_cast<UIKeyEventArgs*>(e)->getKey() == Keys::T) {
+            setTransformType(TransformControlsType::Translation);
+        }
+        else if (static_cast<UIKeyEventArgs*>(e)->getKey() == Keys::R) {
+            setTransformType(TransformControlsType::Rotation);
+        }
+        else if (static_cast<UIKeyEventArgs*>(e)->getKey() == Keys::S) {
+            setTransformType(TransformControlsType::Scaling);
+        }
     }
 }
 

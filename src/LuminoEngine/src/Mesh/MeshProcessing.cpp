@@ -100,6 +100,12 @@ void MeshGeometryBuilder::addCone(float radius, float height, int slices)
 	g->init(radius, height, slices);
 }
 
+void MeshGeometryBuilder::addArc(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices)
+{
+	auto* g = newMeshGenerater<detail::ArcMeshFactory>();
+	g->init(startAngle, endAngle, innerRadius, outerRadius, slices);
+}
+
 void MeshGeometryBuilder::endSection()
 {
 	Section& s = m_currentMeshSections.back();

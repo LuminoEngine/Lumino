@@ -121,7 +121,7 @@ void Interpreter::terminate()
 }
 
 //------------------------------------------------------------------------------
-void Interpreter::registerCommandHandler(const ln::StringRef& name, Ref<ln::Delegate<bool()>> handler)
+void Interpreter::registerCommandHandler(const ln::StringRef& name, Ref<InterpreterCommandHandler> handler)
 {
 	m_commandDelegateMap[name] = handler;
 }
@@ -195,7 +195,7 @@ bool Interpreter::onExecuteCommand(InterpreterCommand* cmd)
 {
 	auto itr = m_commandDelegateMap.find(cmd->code);
 	if (itr != m_commandDelegateMap.end()) {
-		return itr->second->call();
+		return itr->second->call(cmd);
 	}
 	else {
 		LN_NOTIMPLEMENTED();

@@ -169,17 +169,11 @@ void ConeMeshFactory::onGenerate(MeshGeneraterBuffer* buf)
 		// side
 		const float y = 0;
 		{
-			Vertex v;
-			v.position.set(xz.x, y, xz.z);
-			v.normal = n;
-			buf->setV(iV, v); iV++;
+			buf->setV(iV, Vector3(xz.x, y, xz.z), Vector2(0, 0), n); iV++;
 		}
 		// lower base
 		{
-			Vertex v;
-			v.position.set(0, y, 0);
-			v.normal = -Vector3::UnitY;
-			buf->setV(iV, v); iV++;
+			buf->setV(iV, Vector3(0, y, 0), Vector2(0, 0), -Vector3::UnitY); iV++;
 		}
 	}
 
@@ -201,6 +195,75 @@ void ConeMeshFactory::onGenerate(MeshGeneraterBuffer* buf)
 			buf->setI(iI + 5, p4);
 			iI += 6;
 		}
+	}
+}
+
+//==============================================================================
+// ArcMeshFactory
+
+ArcMeshFactory::ArcMeshFactory()
+	: m_startAngle(0)
+	, m_endAngle(0)
+	, m_innerRadius(0)
+	, m_outerRadius(0)
+	, m_slices(0)
+{
+}
+
+bool ArcMeshFactory::init(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices)
+{
+	if (LN_REQUIRE(slices >= 1)) return false;
+	m_startAngle = startAngle;
+	m_endAngle = endAngle;
+	m_innerRadius = innerRadius;
+	m_outerRadius = outerRadius;
+	m_slices = slices;
+	return true;
+}
+
+void ArcMeshFactory::copyFrom(const ArcMeshFactory* other)
+{
+	MeshGenerater::copyFrom(other);
+	m_startAngle = other->m_startAngle;
+	m_endAngle = other->m_endAngle;
+	m_innerRadius = other->m_innerRadius;
+	m_outerRadius = other->m_outerRadius;
+	m_slices = other->m_slices;
+}
+
+void ArcMeshFactory::onGenerate(MeshGeneraterBuffer* buf)
+{
+	uint32_t iV = 0;
+	uint32_t iI = 0;
+
+	for (int iSlice = 0; iSlice < m_slices + 1; iSlice++)
+	{
+		Vector3 n = MeshHelper::getXZArcPoint(m_startAngle, m_endAngle, iSlice, m_slices);
+
+		// outer
+		{
+			buf->setV(iV, n * m_outerRadius, Vector2(0, 0), Vector3::UnitY); iV++;
+		}
+		// inner
+		{
+			buf->setV(iV, n * m_innerRadius, Vector2(0, 0), Vector3::UnitY); iV++;
+		}
+	}
+
+	// faces
+	for (int iSlice = 0; iSlice < m_slices; iSlice++)
+	{
+		int p1 = ((iSlice + 0) * 2 + 0);	// ┏
+		int p2 = ((iSlice + 1) * 2 + 0);	// ┓
+		int p3 = ((iSlice + 0) * 2 + 1);	// ┗
+		int p4 = ((iSlice + 1) * 2 + 1);	// ┛
+		buf->setI(iI + 0, p1);
+		buf->setI(iI + 1, p2);
+		buf->setI(iI + 2, p3);
+		buf->setI(iI + 3, p3);
+		buf->setI(iI + 4, p2);
+		buf->setI(iI + 5, p4);
+		iI += 6;
 	}
 }
 
