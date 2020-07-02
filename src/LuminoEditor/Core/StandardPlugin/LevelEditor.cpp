@@ -73,8 +73,8 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
     }
 
     // attach as main scene
-    auto scene = dynamic_cast<ln::Level*>(asset->target());
-    m_mainWorld->addScene(scene);
+    m_editingLevel = dynamic_cast<ln::Level*>(asset->target());
+    m_mainWorld->addScene(m_editingLevel);
 
 	m_timer = ln::makeObject<ln::UIActiveTimer>();
 	m_timer->connectOnTick(ln::bind(this, &LevelEditor::handleTickEvent));
@@ -83,7 +83,8 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
 
     frame->addAction(ln::makeObject<ln::UIAction>(EditorApplication::SaveCommand, [this](ln::UICommandEventArgs* x) {
         printf("Save");
-        this->editorContext()->assetDatabase()->saveAsset(this->m_assetModel);
+        //this->editorContext()->assetDatabase()->saveAsset(this->m_assetModel);
+        ln::Assets::save(m_editingLevel);
     }));
 
 }

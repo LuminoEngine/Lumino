@@ -435,6 +435,7 @@ WorldObject* WorldRenderView::findObjectInPoint(int x, int y)
     auto bitmap = detail::TextureInternal::readData(m_sceneRenderingPipeline->objectIdBuffer(), nullptr);
     auto data = (uint32_t*)bitmap->data();
     int id = data[bitmap->height() * y + x];
+    //printf("id:%d\n", id);
     if (id > 0) {
         return m_targetWorld->findObjectById(id);
     }
@@ -630,9 +631,9 @@ void WorldRenderView::onUpdateFrame(float elapsedSeconds)
 
 void WorldRenderView::onRoutedEvent(UIEventArgs* e)
 {
-    if (m_transformControls)
-    {
+    if (m_transformControls) {
         m_transformControls->onRoutedEvent(e);
+        if (e->handled) return;
     }
 
     RenderView::onRoutedEvent(e);

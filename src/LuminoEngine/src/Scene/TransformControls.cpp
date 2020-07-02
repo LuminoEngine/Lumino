@@ -148,6 +148,7 @@ void TransformControls::init()
 void TransformControls::setTarget(WorldObject* value)
 {
     m_target = value;
+    startEditing();
 }
 
 void TransformControls::setViewInfo(const Vector3& viewPosition, const Matrix& view, const Matrix& proj, const Size& viewPixelSize)
@@ -243,14 +244,21 @@ void TransformControls::onRoutedEvent(UIEventArgs* e)
         e->handled = handleMouseMove(static_cast<UIMouseEventArgs*>(e)->getPosition(e->sender()));
     }
     else if (e->type() == UIEvents::KeyDownEvent) {
-        if (static_cast<UIKeyEventArgs*>(e)->getKey() == Keys::T) {
-            setTransformType(TransformControlsType::Translation);
-        }
-        else if (static_cast<UIKeyEventArgs*>(e)->getKey() == Keys::R) {
-            setTransformType(TransformControlsType::Rotation);
-        }
-        else if (static_cast<UIKeyEventArgs*>(e)->getKey() == Keys::S) {
-            setTransformType(TransformControlsType::Scaling);
+        auto ke = static_cast<UIKeyEventArgs*>(e);
+        if (ke->getModifierKeys() == ModifierKeys::None) {
+
+            if (ke->getKey() == Keys::T) {
+                setTransformType(TransformControlsType::Translation);
+                e->handled = true;
+            }
+            else if (ke->getKey() == Keys::R) {
+                setTransformType(TransformControlsType::Rotation);
+                e->handled = true;
+            }
+            else if (ke->getKey() == Keys::S) {
+                setTransformType(TransformControlsType::Scaling);
+                e->handled = true;
+            }
         }
     }
 }
@@ -417,6 +425,8 @@ void TransformControls::startEditing()
     m_targetTransform.rotation = m_target->transform()->rotation();
     m_targetTransform.scale = m_target->transform()->scale();
     m_targetInitialTransform = m_targetTransform;
+    m_gizmoTransform = Matrix::makeTranslation(m_targetTransform.translation);
+    m_gizmoInitialTransform = m_gizmoTransform;
 }
 
 void TransformControls::onTargetTransformChanged()

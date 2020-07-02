@@ -32,6 +32,8 @@ private:
 	Ref<ln::UIViewport> m_mainViewport;
 	Ref<ln::WorldRenderView> m_mainWorldRenderView;
 	Ref<ln::Camera> m_mainCamera;
+
+    Ref<ln::Level> m_editingLevel;
 };
 
 } // namespace lna 
