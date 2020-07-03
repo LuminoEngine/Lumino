@@ -293,7 +293,7 @@ Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& cons
         //       return Size::max(layoutSize, localSize);
            //}
            //else {
-        return UIFrameLayout2::staticMeasureOverride(layoutContext, this, constraint);
+        return UIFrameLayout2::staticMeasureLogicalChildren(layoutContext, this, constraint);
 
         //}
     }

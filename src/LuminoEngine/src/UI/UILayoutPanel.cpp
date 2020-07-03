@@ -131,7 +131,7 @@ Size UIFrameLayout2::measureOverride(UILayoutContext* layoutContext, const Size&
 
     //return Size::min(constraint, Size::max(size, childMaxSize));
     //return UIElement::measureOverride(constraint);
-	return UIFrameLayout2::staticMeasureOverride(layoutContext, this, constraint);
+	return UIFrameLayout2::staticMeasureLogicalChildren(layoutContext, this, constraint);
 }
 
 Size UIFrameLayout2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
@@ -259,39 +259,39 @@ Size UIFrameLayout2::arrangeOverride(UILayoutContext* layoutContext, const Size&
     //return finalSize;
 }
 
-Size UIFrameLayout2::staticMeasureChildrenAreaSize(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint)
-{
-    int childrenCount = ownerElement->getVisualChildrenCount();
-    Size childMaxSize(0, 0);
-    for (int i = 0; i < childrenCount; i++)
-    {
-        UIElement* child = ownerElement->getVisualChild(i);
-		if (layoutContext->testLayoutEnabled(child)) {
-			child->measureLayout(layoutContext, constraint);
-			const Size& desiredSize = child->desiredSize();
-			childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
-			childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
-		}
-    }
-    return childMaxSize;
-}
+//Size UIFrameLayout2::staticMeasureChildrenAreaSize(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint)
+//{
+//    int childrenCount = ownerElement->getVisualChildrenCount();
+//    Size childMaxSize(0, 0);
+//    for (int i = 0; i < childrenCount; i++)
+//    {
+//        UIElement* child = ownerElement->getVisualChild(i);
+//		if (layoutContext->testLayoutEnabled(child)) {
+//			child->measureLayout(layoutContext, constraint);
+//			const Size& desiredSize = child->desiredSize();
+//			childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
+//			childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
+//		}
+//    }
+//    return childMaxSize;
+//}
 
-Size UIFrameLayout2::staticMeasureOverride(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint)
-{
-    Size childMaxSize = staticMeasureChildrenAreaSize(layoutContext, ownerElement, constraint);
-
-    return layoutContext->makeDesiredSize(ownerElement, childMaxSize);
-    //return detail::LayoutHelper::measureElement(ownerElement, constraint, childMaxSize);
-
-    //auto selfSize = ownerElement->UIElement::measureOverride(constraint);
-    //return Size::max(selfSize, childMaxSize);
-
-    //Size size = Size(ownerElement->width(), ownerElement->height());
-    //size.width = Math::isNaN(size.width) ? 0.0 : size.width;
-    //size.height = Math::isNaN(size.height) ? 0.0 : size.height;
-    //return Size::min(constraint, Size::max(size, childMaxSize));
-}
-
+//Size UIFrameLayout2::staticMeasureOverride(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint)
+//{
+//    Size childMaxSize = staticMeasureChildrenAreaSize(layoutContext, ownerElement, constraint);
+//
+//    return layoutContext->makeDesiredSize(ownerElement, childMaxSize);
+//    //return detail::LayoutHelper::measureElement(ownerElement, constraint, childMaxSize);
+//
+//    //auto selfSize = ownerElement->UIElement::measureOverride(constraint);
+//    //return Size::max(selfSize, childMaxSize);
+//
+//    //Size size = Size(ownerElement->width(), ownerElement->height());
+//    //size.width = Math::isNaN(size.width) ? 0.0 : size.width;
+//    //size.height = Math::isNaN(size.height) ? 0.0 : size.height;
+//    //return Size::min(constraint, Size::max(size, childMaxSize));
+//}
+//
 //Size UIFrameLayout2::staticArrangeLogicalChildrenArea(UILayoutContext* layoutContext, UIElement* ownerElement, const Rect& finalArea)
 //{
 //    int childrenCount = ownerElement->m_logicalChildren.;////getVisualChildrenCount();

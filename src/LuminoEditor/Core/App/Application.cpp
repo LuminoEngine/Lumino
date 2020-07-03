@@ -54,6 +54,7 @@ ln::Result EditorApplication::init()
 {
 #ifdef LN_DEBUG
     lna::Workspace::developMode = true;
+    ln::EngineSettings::setGraphicsDebugEnabled(true);
 #endif
     lna::AppData::current()->load();
 

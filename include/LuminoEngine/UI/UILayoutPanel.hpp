@@ -175,17 +175,37 @@ public:
     static Ref<UIFrameLayout2> create();
 
     // TODO: internal
-    //static Size staticMeasureChildrenAreaSize(const List<Ref<UIElement>>& elements, const Size& constraint);
-    static Size staticMeasureChildrenAreaSize(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint);
-    static Size staticMeasureOverride(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint);
-    //static Size staticArrangeChildrenArea(UILayoutContext* layoutContext, UIElement* ownerElement, const List<Ref<UIElement>>& elements, const Rect& finalArea);
-    
+    template<class TElement>
+    static Size staticMeasureLogicalChildrenAreaSize(UILayoutContext* layoutContext, TElement* ownerElement, const Size& constraint)
+    {
+        int childrenCount = (ownerElement->m_logicalChildren) ? ownerElement->m_logicalChildren->size() : 0;//->getVisualChildrenCount();
+        Size childMaxSize(0, 0);
+        for (int i = 0; i < childrenCount; i++)
+        {
+            UIElement* child = ownerElement->m_logicalChildren->at(i);//ownerElement->getVisualChild(i);
+            if (layoutContext->testLayoutEnabled(child)) {
+                child->measureLayout(layoutContext, constraint);
+                const Size& desiredSize = child->desiredSize();
+                childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
+                childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
+            }
+        }
+        return childMaxSize;
+    }
 
+
+    template<class TElement>
+    static Size staticMeasureLogicalChildren(UILayoutContext* layoutContext, TElement* ownerElement, const Size& constraint)
+    {
+        Size childMaxSize = staticMeasureLogicalChildrenAreaSize(layoutContext, ownerElement, constraint);
+        return layoutContext->makeDesiredSize(ownerElement, childMaxSize);
+    }
+    
     // finalArea: padding 適用済み
     template<class TElement>
     static Size staticArrangeLogicalChildrenArea(UILayoutContext* layoutContext, TElement* ownerElement, const Rect& finalArea)
     {
-        int childrenCount = ownerElement->m_logicalChildren->size();////getVisualChildrenCount();
+        int childrenCount = (ownerElement->m_logicalChildren) ? ownerElement->m_logicalChildren->size() : 0;////getVisualChildrenCount();
         for (int i = 0; i < childrenCount; i++)
         {
             UIElement* child = ownerElement->m_logicalChildren->at(i);//getVisualChild(i);

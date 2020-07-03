@@ -223,10 +223,10 @@ bool AssetBrowserPane::init(Project* project)
         EditorApplication::instance()->openAssetFile(path);
     });
     treeview1->setGenerateTreeItemHandler([](ln::UITreeItem2* item) {
-        //auto button = ln::UIButton::create(u">");
-        //button->setSize(20, 20);
-        //button->setAlignments(ln::HAlignment::Right, ln::VAlignment::Center);
-        //item->addChild(button);
+        auto button = ln::UIButton::create(u">");
+        button->setSize(20, 20);
+        button->setAlignments(ln::HAlignment::Right, ln::VAlignment::Center);
+        item->addChild(button);
     });
     treeview1->setViewModel(model1);
     mainLauout->addChild(treeview1);
