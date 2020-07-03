@@ -30,6 +30,7 @@ class App_Experiment_SerializeLevel : public Application
 
 
             level1->addObject(mesh1);
+            level1->acquireRenderParameters()->m_fogColor = Color::Gray;
 
             Assets::saveAsset(level1, u"Level1");
         }

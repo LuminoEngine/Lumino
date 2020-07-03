@@ -345,6 +345,9 @@ public:
     static IndexBufferFormat selectIndexBufferFormat(int vertexCount) { return (vertexCount > 0xFFFF) ? IndexBufferFormat::UInt32 : IndexBufferFormat::UInt16; }
     static size_t getIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat::UInt16) ? 2 : 4; }
 
+
+
+    static const Char* CandidateExts_Texture2D[5];
 };
 
 namespace detail {

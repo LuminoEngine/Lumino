@@ -39,7 +39,8 @@ public:
 
 } // namespace detail
 
-template<typename T> void serialize2(Serializer2& sr, List<T>& value);
+template<typename T> void serialize2(Serializer2& ar, List<T>& value);
+template<typename T> void serialize2(Serializer2& ar, Optional<T>& value);
 void serialize2(Serializer2& ar, Path& value);
 void serialize2(Serializer2& ar, detail::AssetPath& value);
 void serialize2(Serializer2& ar, Vector2& value);
@@ -153,6 +154,7 @@ public:
 	void writeUInt64(uint64_t value);
 	void writeFloat(float value);
 	void writeDouble(double value);
+	void writeNull();
 
 	/** write */
 	//LN_METHOD()
@@ -227,6 +229,7 @@ public:
 	void beginReadObject();
 	void endReadObject();
 	bool readingValueIsObject() const;
+	bool readingValueIsNull() const;
 	bool beginReadList(int* outItemCount);
 	void endReadList();
 	
@@ -372,6 +375,31 @@ void serialize2(Serializer2& ar, List<T>& value)
 				ar & v;
 			}
 			ar.endReadList();
+		}
+	}
+}
+
+template<typename T>
+void serialize2(Serializer2& ar, Optional<T>& value)
+{
+	if (ar.isSaving()) {
+		if (!value) {
+			ar.writeNull();
+		}
+		else {
+			T v = *value;
+			ar & v;
+		}
+	}
+	else {
+		// ※そもそも key が存在しない場合は、値の serialize() 自体呼ばれない
+		if (ar.readingValueIsNull()) {
+			value = nullptr;
+		}
+		else {
+			T v;
+			ar & v;
+			value = v;
 		}
 	}
 }

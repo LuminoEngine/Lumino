@@ -591,11 +591,13 @@ void UITreeItem2::attemptCreateChildItemsInstance()
     if (m_logicalChildren->size() != count) {
         removeAllChildren();
 
+        UITreeView2* treeView = getTreeView();
+        if (LN_ENSURE(treeView)) return;
+
         for (int i = 0; i < count; i++) {
             auto childModel = m_model->getItem(i);
 
-            auto item = makeObject<UITreeItem2>();
-            item->setViewModel(childModel);
+            auto item = treeView->generateTreeItem(childModel);
 
             m_logicalChildren->add(item);
             item->m_logicalParent = this;
@@ -655,6 +657,14 @@ void UITreeItem2::setSelectedInternal(bool selected)
 // UITreeView2
 
 /*
+    [2020/7/3] UITreeItem2 と setContent()
+
+    いまのところ、setContent() は WPF でいうところの Header を set するもの。
+    ただ addChild で追加できる子要素と別管理になっているのでちょっとまぎらわしい。
+    Windows とかと同じように、LogicalChildren を配置する ClientArea を、Header 扱いする、でいいと思う。
+    ExpandButton は VisualParent として　ClientArea の外におく。
+
+
     [2020/6/23] ViewModel はオプションの方向に再設計してみる
 
     そもそもなんで ViewModel を使いたくない？
@@ -715,6 +725,11 @@ bool UITreeView2::init()
 Ref<EventConnection> UITreeView2::connectOnChecked(Ref<UIGeneralEventHandler> handler)
 {
     return m_onItemSubmitted.connect(handler);
+}
+
+void UITreeView2::setGenerateTreeItemHandler(Ref<UIGenerateTreeItemHandler> handler)
+{
+    m_onGenerateTreeItem = handler;
 }
 
 void UITreeView2::onSelectionChanged(UISelectionChangedEventArgs* e)
@@ -829,8 +844,7 @@ void UITreeView2::rebuildTreeFromViewModel()
     for (int i = 0; i < count; i++) {
         auto childModel = m_model->getItem(i);
 
-        auto item = makeObject<UITreeItem2>();
-        item->setViewModel(childModel);
+        auto item = generateTreeItem(childModel);
 
         addItemAsLogicalChildren(item);
     }
@@ -873,6 +887,17 @@ void UITreeView2::notifyItemClicked(UITreeItem2* item)
     selectItemExclusive(item);
 }
 
+Ref<UITreeItem2> UITreeView2::generateTreeItem(UICollectionItemViewModel* viewModel)
+{
+    auto item = makeObject<UITreeItem2>();
+    item->setViewModel(viewModel);
+
+    if (m_onGenerateTreeItem) {
+        m_onGenerateTreeItem->call(item);
+    }
+
+    return item;
+}
 
 } // namespace ln
 

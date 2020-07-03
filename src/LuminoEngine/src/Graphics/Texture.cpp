@@ -73,8 +73,6 @@ void Texture::setSamplerState(SamplerState* value)
 //==============================================================================
 // Texture2D
 
-static const Char* s_Texture2D_candidateExts[] = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
-
 LN_OBJECT_IMPLEMENT(Texture2D, Texture) {}
 
 Ref<Texture2D> Texture2D::create(int width, int height)
@@ -189,7 +187,7 @@ bool Texture2D::init(const Path& assetPath)
     if (detail::AssetPath::isAssetFilePath(assetPath))
         setAssetPath(assetPath);
     else
-        m_sourceFilePath = detail::AssetPath::resolveAssetPath(assetPath, s_Texture2D_candidateExts);
+        m_sourceFilePath = detail::AssetPath::resolveAssetPath(assetPath, GraphicsHelper::CandidateExts_Texture2D);
     
     reload();
 
@@ -385,7 +383,7 @@ void Texture2D::serialize2(Serializer2& ar)
             // convert relative path to full path.
             m_sourceFilePath = detail::AssetPath::resolveAssetPath(
                 detail::AssetPath::combineAssetPath(ar.basePath(), path),
-                s_Texture2D_candidateExts);
+                GraphicsHelper::CandidateExts_Texture2D);
         }
     }
 }

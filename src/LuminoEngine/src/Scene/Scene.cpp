@@ -26,6 +26,39 @@
 namespace ln {
 
 //==============================================================================
+// LevelRenderParameters
+
+void LevelRenderParameters::serialize2(Serializer2& ar)
+{
+    ar & ln::makeNVP(u"fogStartDistance", m_fogStartDistance);
+    ar & ln::makeNVP(u"fogColor", m_fogColor);
+    ar & ln::makeNVP(u"fogDensity", m_fogDensity);
+    ar & ln::makeNVP(u"fogHeightDensity", m_fogHeightDensity);
+    ar & ln::makeNVP(u"fogLowerHeight", m_fogLowerHeight);
+    ar & ln::makeNVP(u"fogUpperHeight", m_fogUpperHeight);
+    
+    ar & ln::makeNVP(u"skydomeSkyColor", m_skydomeSkyColor);
+    ar & ln::makeNVP(u"skydomeHorizonColor", m_skydomeHorizonColor);
+    ar & ln::makeNVP(u"skydomeCloudColor", m_skydomeCloudColor);
+    ar & ln::makeNVP(u"skydomeOverlayColor", m_skydomeOverlayColor);
+}
+
+void LevelRenderParameters::mergeToRenderParams(detail::SceneGlobalRenderParams* params) const
+{
+    if (m_fogStartDistance) params->startDistance = m_fogStartDistance.value();
+    if (m_fogColor) params->fogColor = m_fogColor.value();
+    if (m_fogDensity) params->fogDensity = m_fogDensity.value();
+    if (m_fogHeightDensity) params->heightFogDensity = m_fogHeightDensity.value();
+    if (m_fogLowerHeight) params->lowerHeight = m_fogLowerHeight.value();
+    if (m_fogUpperHeight) params->upperHeight = m_fogUpperHeight.value();
+
+    if (m_skydomeSkyColor) params->skydomeSkyColor = m_skydomeSkyColor.value();
+    if (m_skydomeHorizonColor) params->skydomeHorizonColor = m_skydomeHorizonColor.value();
+    if (m_skydomeCloudColor) params->skydomeCloudColor = m_skydomeCloudColor.value();
+    if (m_skydomeOverlayColor) params->skydomeOverlayColor = m_skydomeOverlayColor.value();
+}
+
+//==============================================================================
 // Level
 
 LN_OBJECT_IMPLEMENT(Level, AssetObject) {}
@@ -157,17 +190,17 @@ void Level::removeAllObjects()
 
 void Level::mergeToRenderParams(detail::SceneGlobalRenderParams* params) const
 {
-    if (m_fogStartDistance) params->startDistance = m_fogStartDistance.value();
-    if (m_fogColor) params->fogColor = m_fogColor.value();
-    if (m_fogDensity) params->fogDensity = m_fogDensity.value();
-    if (m_fogHeightDensity) params->heightFogDensity = m_fogHeightDensity.value();
-    if (m_fogLowerHeight) params->lowerHeight = m_fogLowerHeight.value();
-    if (m_fogUpperHeight) params->upperHeight = m_fogUpperHeight.value();
+    if (m_levelRenderParameters) {
+        m_levelRenderParameters->mergeToRenderParams(params);
+    }
+}
 
-    if (m_skydomeSkyColor) params->skydomeSkyColor = m_skydomeSkyColor.value();
-    if (m_skydomeHorizonColor) params->skydomeHorizonColor = m_skydomeHorizonColor.value();
-    if (m_skydomeCloudColor) params->skydomeCloudColor = m_skydomeCloudColor.value();
-    if (m_skydomeOverlayColor) params->skydomeOverlayColor = m_skydomeOverlayColor.value();
+LevelRenderParameters* Level::acquireRenderParameters()
+{
+    if (!m_levelRenderParameters) {
+        m_levelRenderParameters = makeObject<LevelRenderParameters>();
+    }
+    return m_levelRenderParameters;
 }
 
 // Multi-Lang 対応のため、テンプレートではなく基本は TypeInfo で検索する
@@ -254,6 +287,8 @@ void Level::serialize2(Serializer2& ar)
     if (ar.isLoading()) {
         removeAllObjects();
     }
+
+    ar & ln::makeNVP(u"renderParams", m_levelRenderParameters);
 
     ar & ln::makeNVP(u"children", *m_rootWorldObjectList);
 
@@ -368,52 +403,52 @@ void Scene::startCrossFade()
 void Scene::setFogStartDistance(float value)
 {
     // TODO: Conductor が activeLevel を持ってたらそっちに設定したいかも
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_fogStartDistance = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_fogStartDistance = value;
 }
 
 void Scene::setFogColor(const Color& value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_fogColor = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_fogColor = value;
 }
 
 void Scene::setFogDensity(float value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_fogDensity = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_fogDensity = value;
 }
 
 void Scene::setFogHeightDensity(float value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_fogHeightDensity = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_fogHeightDensity = value;
 }
 
 void Scene::setFogLowerHeight(float value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_fogLowerHeight = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_fogLowerHeight = value;
 }
 
 void Scene::setFogUpperHeight(float value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_fogUpperHeight= value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_fogUpperHeight= value;
 }
 
 void Scene::setSkydomeSkyColor(const Color& value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_skydomeSkyColor = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeSkyColor = value;
 }
 
 void Scene::setSkydomeHorizonColor(const Color& value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_skydomeHorizonColor = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeHorizonColor = value;
 }
 
 void Scene::setSkydomeCloudColor(const Color& value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_skydomeCloudColor = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeCloudColor = value;
 }
 
 void Scene::setSkydomeOverlayColor(const Color& value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_skydomeOverlayColor = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeOverlayColor = value;
 }
 
 ////==============================================================================

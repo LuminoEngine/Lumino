@@ -18,6 +18,26 @@ namespace detail {
 	class SceneManager; class SceneConductor;
 }
 
+class LevelRenderParameters
+	: public Object
+{
+public:
+	void serialize2(Serializer2& ar) override;
+	void mergeToRenderParams(detail::SceneGlobalRenderParams* params) const;
+
+	Optional<float> m_fogStartDistance;
+	Optional<Color> m_fogColor;
+	Optional<float> m_fogDensity;
+	Optional<float> m_fogHeightDensity;
+	Optional<float> m_fogLowerHeight;
+	Optional<float> m_fogUpperHeight;
+
+	Optional<Color> m_skydomeSkyColor;
+	Optional<Color> m_skydomeHorizonColor;
+	Optional<Color> m_skydomeCloudColor;
+	Optional<Color> m_skydomeOverlayColor;
+};
+
 /**
  * シーンのベースクラスです。
  */
@@ -83,6 +103,7 @@ public: // TODO: internal
     void removeRootObject(WorldObject* obj);
     void removeAllObjects();
 	void mergeToRenderParams(detail::SceneGlobalRenderParams* params) const;
+	LevelRenderParameters* acquireRenderParameters();
 
 	World* m_ownerWorld;
     Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
@@ -96,18 +117,7 @@ public: // TODO: internal
 
 	bool m_initialUpdate;
 
-	Optional<float> m_fogStartDistance;
-	Optional<Color> m_fogColor;
-	Optional<float> m_fogDensity = 0.0f;
-	Optional<float> m_fogHeightDensity = 0.0f;
-	Optional<float> m_fogLowerHeight;
-	Optional<float> m_fogUpperHeight;
-
-	Optional<Color> m_skydomeSkyColor;
-	Optional<Color> m_skydomeHorizonColor;
-	Optional<Color> m_skydomeCloudColor;
-	Optional<Color> m_skydomeOverlayColor;
-
+	Ref<LevelRenderParameters> m_levelRenderParameters;
 
     friend class ed::SceneAsset;
 	friend class detail::SceneManager;

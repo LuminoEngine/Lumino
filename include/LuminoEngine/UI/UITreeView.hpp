@@ -184,6 +184,8 @@ private:
     friend class UITreeView2;
 };
 
+using UIGenerateTreeItemHandler = Delegate<void(UITreeItem2* item)>;
+
 // - WPF だと、ListView は Selector の派生だが、TreeView はそうではない。ItemsControl の直接のサブクラス。
 // - いったん UICollectionControl の派生にはしないようにしてみる。ほかの ListView とかとうまいこと共通化できる部分が少ないかもしれない。
 //   ListView 実装後、共通化できそうなものがあれば作っていく。
@@ -194,6 +196,8 @@ class UITreeView2
 public:
     /** ItemSubmitted イベントの通知を受け取るコールバックを登録します。*/
     Ref<EventConnection> connectOnChecked(Ref<UIGeneralEventHandler> handler);
+
+    void setGenerateTreeItemHandler(Ref<UIGenerateTreeItemHandler> handler);
 
 protected:
     virtual void onSelectionChanged(UISelectionChangedEventArgs* e);
@@ -231,6 +235,7 @@ private:
     void selectItemExclusive(UITreeItem2* item);
     void notifyItemClicked(UITreeItem2* item);
 
+    Ref<UITreeItem2> generateTreeItem(UICollectionItemViewModel* viewModel);
 
     Ref<UICollectionViewModel> m_model;
     Ref<UILayoutPanel2> m_itemsHostLayout;
@@ -241,6 +246,7 @@ private:
     List<UITreeItem2*> m_selectedItems;
 
     Event<UIGeneralEventHandler> m_onItemSubmitted;
+    Ref<UIGenerateTreeItemHandler> m_onGenerateTreeItem;
 
     friend class UITreeItem2;
 };

@@ -217,12 +217,18 @@ bool AssetBrowserPane::init(Project* project)
     model1->setRootPath(project->assetsDir());
 
     auto treeview1 = ln::makeObject<ln::UITreeView2>();
-    treeview1->setViewModel(model1);
     treeview1->connectOnChecked([model1](ln::UIEventArgs* e) {
         auto* item = static_cast<ln::UITreeItem2*>(e->sender());
         auto path = model1->filePath(ln::static_pointer_cast<ln::UICollectionItemViewModel>(item->m_viewModel));
         EditorApplication::instance()->openAssetFile(path);
     });
+    treeview1->setGenerateTreeItemHandler([](ln::UITreeItem2* item) {
+        //auto button = ln::UIButton::create(u">");
+        //button->setSize(20, 20);
+        //button->setAlignments(ln::HAlignment::Right, ln::VAlignment::Center);
+        //item->addChild(button);
+    });
+    treeview1->setViewModel(model1);
     mainLauout->addChild(treeview1);
 
     return true;

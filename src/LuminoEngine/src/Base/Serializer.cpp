@@ -499,6 +499,12 @@ void Serializer2::writeDouble(double value)
 	m_store->writePrimitive(value);
 }
 
+void Serializer2::writeNull()
+{
+	if (LN_REQUIRE(isSaving())) return;
+	m_store->writeNull();
+}
+
 void Serializer2::writeInt(int value)
 {
 	if (LN_REQUIRE(isSaving())) return;
@@ -572,6 +578,11 @@ void Serializer2::endReadObject()
 bool Serializer2::readingValueIsObject() const
 {
 	return m_store->current().readingNode.IsMap();
+}
+
+bool Serializer2::readingValueIsNull() const
+{
+	return m_store->current().readingNode.IsNull();
 }
 
 bool Serializer2::beginReadList(int* outItemCount)

@@ -49,6 +49,8 @@ public:
 	void releaseWorldObjectId(int id);
 	bool m_editorMode = false;	// ObjectId の書き込みを有効にすると実質バッチ描画ができなくなるので、通常は切っておく
 
+	Ref<WorldObject> instantiateObjectFromAnyFile(const Path& filePath) const;
+
 private:
     World* m_activeWorld;
     Ref<Shader> m_atmosphereShader;

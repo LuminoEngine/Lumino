@@ -14,6 +14,7 @@
 #include <LuminoEngine/Tilemap/TilemapModel.hpp>
 #include <LuminoEngine/Tilemap/TilemapComponent.hpp>
 #include <LuminoEngine/Tilemap/Tilemap.hpp>
+#include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMesh.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitives.hpp>
@@ -121,6 +122,18 @@ void SceneManager::releaseWorldObjectId(int id)
 	m_objectIndexStack.push(id);
 }
 
+Ref<WorldObject> SceneManager::instantiateObjectFromAnyFile(const Path& filePath) const
+{
+	const StringRef& ext = filePath.extension();
+	
+	if (std::find_if(
+		MeshHelper::CandidateExtensions_MeshModel.begin(), MeshHelper::CandidateExtensions_MeshModel.end(),
+		[&](const Char* x) { return ext.endsWith(x, CaseSensitivity::CaseInsensitive); }) != MeshHelper::CandidateExtensions_MeshModel.end()) {
+		return StaticMesh::create(filePath);
+	}
+
+	return nullptr;
+}
 
 } // namespace detail
 } // namespace ln

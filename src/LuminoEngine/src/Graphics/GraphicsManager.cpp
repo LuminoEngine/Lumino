@@ -20,6 +20,8 @@ namespace ln {
 //==============================================================================
 // GraphicsHelper
 
+const Char* GraphicsHelper::CandidateExts_Texture2D[5] = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
+
 size_t GraphicsHelper::getVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex)
 {
     int size = 0;
