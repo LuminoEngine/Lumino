@@ -566,24 +566,24 @@ Size UITreeItem2::arrangeOverride(UILayoutContext* layoutContext, const Size& fi
         headerContentHeight = m_headerContent->actualSize().height;
     }
 
-    Rect finalArea = contentSlotRect;
-    {   // TODO: UIControl::arrangeOverride そのままになっている。arrangeOverride は Rect もらうようにしていいかも
+    //Rect finalArea = contentSlotRect;
+    //{   // TODO: UIControl::arrangeOverride そのままになっている。arrangeOverride は Rect もらうようにしていいかも
 
-        if (m_aligned3x3GridLayoutArea) {
-            // padding, border を考慮した領域を計算
-            Rect clientArea = detail::LayoutHelper::arrangeClientArea(this, finalArea);
-            // Inline 要素を arrange & 論理子要素の領域 (content area) を計算
-            Rect contentArea;
-            m_aligned3x3GridLayoutArea->arrange(layoutContext, m_inlineElements, clientArea, &contentArea);
-            // 論理子要素を arrange
-            detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(layoutContext, this, m_logicalChildren, contentArea);
-            //UIFrameLayout2::staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
+    //    if (m_aligned3x3GridLayoutArea) {
+    //        // padding, border を考慮した領域を計算
+    //        Rect clientArea = detail::LayoutHelper::arrangeClientArea(this, finalArea);
+    //        // Inline 要素を arrange & 論理子要素の領域 (content area) を計算
+    //        Rect contentArea;
+    //        m_aligned3x3GridLayoutArea->arrange(layoutContext, m_inlineElements, clientArea, &contentArea);
+    //        // 論理子要素を arrange
+    //        detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(layoutContext, this, m_logicalChildren, contentArea);
+    //        //UIFrameLayout2::staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
 
-        }
-        else {
-            UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, finalArea);
-        }
-    }
+    //    }
+    //    else {
+    //        UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, finalArea);
+    //    }
+    //}
 
     return finalSize;
 }

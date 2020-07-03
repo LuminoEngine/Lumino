@@ -120,7 +120,43 @@ class UITreeView2;
  * | Selected       | Selection      |  |
  *
  * @note UITreeItem は深いネストを持っていても、アイテムの左側は UITreeView の左側まで Fill されてレイアウトされます。
+ * 
+ * UITreeItem はデータ構造の関係性として別の UITreeItem との親子関係を持ちますが、
+ * UI の LogicalTree 及び VisualTree としては親子関係は持ちません。
+ * つまり、UITreeItem の LogicalParent と VisualParent は常に UITreeView です。
  *
+ */
+/*
+[2020/7/4] LogicalChildren は、Content にするべきか、子 UITreeItem にするべきか
+----------
+WPF の場合は TreeItem は HeaderdItemsControl であり、Header(Content) と Items は明確に分かれている。
+
+Lumino の場合は
+- カスタマイズをコードファーストで簡単にできるようにしたい
+- 処理速度のため、レイアウトのためだけのネストを増やしたくない
+という要求がある。
+
+カスタマイズ容易性については、例えば Item の右側に Button をつけたい場合は次のようにしたい。
+```
+treeview1->setGenerateTreeItemHandler([](ln::UITreeItem2* item) {
+    auto button = ln::UIButton::create(u">");
+    button->setSize(20, 20);
+    button->setAlignments(ln::HAlignment::Right, ln::VAlignment::Center);
+    item->addChild(button);     // UIElement デフォルトの addChild フレームワークで追加する場合
+    item->addChild(1, button);  // 別のカラムに追加したい場合はこんな感じ
+});
+```
+
+処理速度については、もし WPF で同じことをやるなら、Header に StackPanel 追加し、
+StackPanel の子として TextBlock と Button を追加する必要がある。
+構造としては正しいだろうけど、これはユーザプログラムとしても面倒 & 処理速度も増える。
+右揃えするくらいなら UIControl デフォルトのレイアウトでやりたい。
+
+こんな感じなので、UITreeView は考え方としては、「ツリーの格好をした ListView」と考えたほうが良い。
+WPF の TreeItem は子 TreeItem を完全に内包するようにレイアウトも行われるが、それとはまた違った形になる。
+→ そっちの考え方は "UITreeBox" みたいなのをよういしていいかも。
+古くからある GUIToolKit では "TreeListView" とか呼ばれてそうなもの。
+
  */
 class UITreeItem2
     : public UIControl
