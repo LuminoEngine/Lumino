@@ -29,18 +29,6 @@ World::World()
     m_masterScene->m_ownerWorld = this;
     m_masterScene->m_initialUpdate = true;
 
-    m_sceneGlobalRenderParams.lowerHeight = -100.0f;
-    m_sceneGlobalRenderParams.upperHeight = 10.0f;
-    m_sceneGlobalRenderParams.startDistance = 20.0f;
-    m_sceneGlobalRenderParams.fogColor = Color(0.686, 0.678, 0.666);//Color::White;
-    m_sceneGlobalRenderParams.fogDensity = 1.0f / 50.0f;
-    m_sceneGlobalRenderParams.heightFogDensity = 1.0f / 10.0f;
-
-
-    m_sceneGlobalRenderParams.lowerHeight = -500.0f;
-    m_sceneGlobalRenderParams.upperHeight = 50.0f;
-    m_sceneGlobalRenderParams.fogDensity = 1.0f / 200.0f;
-    m_sceneGlobalRenderParams.heightFogDensity = 1.0f / 100.0f;
 }
 
 World::~World()
@@ -229,12 +217,18 @@ void World::onPreUpdate(float elapsedSeconds)
 {
     m_effectContext->update(elapsedSeconds);
 
+    m_combinedSceneGlobalRenderParams.reset();
+
     m_masterScene->onPreUpdate(elapsedSeconds);
-    for (auto& scene : m_sceneList) {
-        scene->onPreUpdate(elapsedSeconds);
+    m_masterScene->mergeToRenderParams(&m_combinedSceneGlobalRenderParams);
+
+    for (auto& level : m_sceneList) {
+        level->onPreUpdate(elapsedSeconds);
+        level->mergeToRenderParams(&m_combinedSceneGlobalRenderParams);
     }
-    if (auto* scene = m_sceneConductor->activeScene()) {
-        scene->onPreUpdate(elapsedSeconds);
+    if (auto* level = m_sceneConductor->activeScene()) {
+        level->onPreUpdate(elapsedSeconds);
+        level->mergeToRenderParams(&m_combinedSceneGlobalRenderParams);
     }
 }
 

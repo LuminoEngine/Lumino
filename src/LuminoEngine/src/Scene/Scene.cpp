@@ -155,6 +155,21 @@ void Level::removeAllObjects()
     }
 }
 
+void Level::mergeToRenderParams(detail::SceneGlobalRenderParams* params) const
+{
+    if (m_fogStartDistance) params->startDistance = m_fogStartDistance.value();
+    if (m_fogColor) params->fogColor = m_fogColor.value();
+    if (m_fogDensity) params->fogDensity = m_fogDensity.value();
+    if (m_fogHeightDensity) params->heightFogDensity = m_fogHeightDensity.value();
+    if (m_fogLowerHeight) params->lowerHeight = m_fogLowerHeight.value();
+    if (m_fogUpperHeight) params->upperHeight = m_fogUpperHeight.value();
+
+    if (m_skydomeSkyColor) params->skydomeSkyColor = m_skydomeSkyColor.value();
+    if (m_skydomeHorizonColor) params->skydomeHorizonColor = m_skydomeHorizonColor.value();
+    if (m_skydomeCloudColor) params->skydomeCloudColor = m_skydomeCloudColor.value();
+    if (m_skydomeOverlayColor) params->skydomeOverlayColor = m_skydomeOverlayColor.value();
+}
+
 // Multi-Lang 対応のため、テンプレートではなく基本は TypeInfo で検索する
 WorldObject* Level::findObjectByComponentType(const TypeInfo* type) const
 {
@@ -352,52 +367,53 @@ void Scene::startCrossFade()
 
 void Scene::setFogStartDistance(float value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.startDistance = value;
+    // TODO: Conductor が activeLevel を持ってたらそっちに設定したいかも
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_fogStartDistance = value;
 }
 
 void Scene::setFogColor(const Color& value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.fogColor = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_fogColor = value;
 }
 
 void Scene::setFogDensity(float value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.fogDensity = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_fogDensity = value;
 }
 
 void Scene::setFogHeightDensity(float value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.heightFogDensity = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_fogHeightDensity = value;
 }
 
 void Scene::setFogLowerHeight(float value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.lowerHeight = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_fogLowerHeight = value;
 }
 
 void Scene::setFogUpperHeight(float value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.upperHeight = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_fogUpperHeight= value;
 }
 
 void Scene::setSkydomeSkyColor(const Color& value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.skydomeSkyColor = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_skydomeSkyColor = value;
 }
 
 void Scene::setSkydomeHorizonColor(const Color& value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.skydomeHorizonColor = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_skydomeHorizonColor = value;
 }
 
 void Scene::setSkydomeCloudColor(const Color& value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.skydomeCloudColor = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_skydomeCloudColor = value;
 }
 
 void Scene::setSkydomeOverlayColor(const Color& value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->m_sceneGlobalRenderParams.skydomeOverlayColor = value;
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->m_skydomeOverlayColor = value;
 }
 
 ////==============================================================================

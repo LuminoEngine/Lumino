@@ -187,7 +187,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             clearInfo.flags = ClearFlags::Depth | ClearFlags::Stencil;
         }
 
-        detail::SceneGlobalRenderParams sceneGlobalRenderParams = m_targetWorld->m_sceneGlobalRenderParams;
+        detail::SceneGlobalRenderParams sceneGlobalRenderParams = m_targetWorld->m_combinedSceneGlobalRenderParams;
 
 
         m_sceneRenderingPipeline->prepare(renderTarget);

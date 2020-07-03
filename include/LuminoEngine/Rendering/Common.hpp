@@ -335,6 +335,22 @@ struct SceneGlobalRenderParams
 	Color skydomeCloudColor = Color(0, 0, 0, 0);
 	Color skydomeOverlayColor = Color(0, 0, 0, 0);
 
+	void reset()
+	{
+		lowerHeight = -100.0f;
+		upperHeight = 10.0f;
+		startDistance = 20.0f;
+		fogColor = Color(0.686, 0.678, 0.666);//Color::White;
+		fogDensity = 1.0f / 50.0f;
+		heightFogDensity = 1.0f / 10.0f;
+
+
+		lowerHeight = -500.0f;
+		upperHeight = 50.0f;
+		fogDensity = 1.0f / 200.0f;
+		heightFogDensity = 1.0f / 100.0f;
+
+	}
 };
 
 } // namespace detail

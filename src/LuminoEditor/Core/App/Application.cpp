@@ -78,7 +78,7 @@ ln::Result EditorApplication::init()
     m_editorContext->m_mainWindow = mainWindow();
 
     // TODO: test
-    openProject(u"C:/Proj/LN/PrivateProjects/HC4/HC4.lnproj");
+    //openProject(u"C:/Proj/LN/PrivateProjects/HC4/HC4.lnproj");
 
     return true;
 }
@@ -176,6 +176,13 @@ void EditorApplication::onInit()
 
 
     ln::Engine::mainUIContext()->styleContext()->addStyleSheet(sheet);
+}
+
+void EditorApplication::onRoutedEvent(ln::UIEventArgs* e)
+{
+    if (e->type() == ln::UIEvents::RequestNavigate) {
+        openProject(static_cast<ln::UIRequestNavigateEventArgs*>(e)->url());
+    }
 }
 
 void EditorApplication::newProject(const ln::Path& dirPath, const ln::String& projectName)

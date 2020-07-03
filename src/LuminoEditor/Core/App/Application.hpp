@@ -34,7 +34,8 @@ public:
     void openAssetFile(const ln::Path& filePath);
 
 protected:
-    virtual void onInit() override;
+    void onInit() override;
+    void onRoutedEvent(ln::UIEventArgs* e) override;
 
 private:
 	void postProjectLoaded();

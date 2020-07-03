@@ -23,6 +23,23 @@ class SceneConductor;
 }
 
 /** 3D シーンを表すクラスです。 */
+/*
+    Note: Levelの構成
+    MasterLevel
+        - SubLevel
+        - UserLevel
+            - SubLevel
+            - UserLevel
+                - SubLevel
+
+    MasterLevel は Engine によって作成され、常に1つ存在している。
+    プログラム上で作成された WorldObject はここに追加される。
+
+    UserLevel は SceneConductor で遷移する単位。
+
+    SubLevel はオープンワールドなどシームレスなマップ移動や、先行ロードなどで利用する単位。
+        
+*/
 LN_CLASS()
 class World
 	: public Object
@@ -106,9 +123,7 @@ public: // TODO: internal
 
     Ref<AmbientLight> m_mainAmbientLight;
     Ref<DirectionalLight> m_mainDirectionalLight;
-
-    // TODO: Master-scene と Sub-scene の値を統合したうえで、SceneRenderer に流したい。
-    detail::SceneGlobalRenderParams m_sceneGlobalRenderParams;
+    detail::SceneGlobalRenderParams m_combinedSceneGlobalRenderParams;
 
     Ref<List<Ref<Level>>> m_sceneList;
  //   Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;

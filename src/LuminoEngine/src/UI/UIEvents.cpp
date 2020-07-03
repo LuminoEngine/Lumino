@@ -56,6 +56,8 @@ const UIEventType   UIEvents::NotifyPropertyChanged = 301;
 const UIEventType	UIEvents::RequestVisualUpdateEvent = 101;
 const UIEventType	UIEvents::RequestVisualRedrawEvent = 102;
 
+const UIEventType	UIEvents::RequestNavigate = 103;
+
 //==============================================================================
 // UIEventArgs
 
@@ -703,6 +705,43 @@ bool UITimerEventArgs::init(UIElement* sender, UIEventType type, float elapsedSe
 	if (!UIEventArgs::init(sender, type)) return false;
 	m_elapsedSeconds = elapsedSeconds;
 	return true;
+}
+
+//==============================================================================
+// UIRequestNavigateEventArgs
+
+LN_OBJECT_IMPLEMENT(UIRequestNavigateEventArgs, UIEventArgs) {}
+
+Ref<UIRequestNavigateEventArgs> UIRequestNavigateEventArgs::create(UIElement* sender, UIEventType type, const String& url, bool caching)
+{
+    if (caching)
+    {
+        auto& pool = detail::EngineDomain::uiManager()->eventArgsPool();
+        Ref<UIRequestNavigateEventArgs> ptr(pool->create<UIRequestNavigateEventArgs>(sender, type, url), false);
+        return ptr;
+    }
+    else
+    {
+        LN_NOTIMPLEMENTED();
+        return nullptr;
+    }
+}
+
+UIRequestNavigateEventArgs::UIRequestNavigateEventArgs()
+    : m_url()
+{
+}
+
+bool UIRequestNavigateEventArgs::init()
+{
+    return UIEventArgs::init();
+}
+
+bool UIRequestNavigateEventArgs::init(UIElement* sender, UIEventType type, const String& url)
+{
+    if (!UIEventArgs::init(sender, type)) return false;
+    m_url = url;
+    return true;
 }
 
 } // namespace ln

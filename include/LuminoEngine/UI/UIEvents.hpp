@@ -114,6 +114,8 @@ public:
     static const UIEventType	RequestVisualUpdateEvent;
     static const UIEventType	RequestVisualRedrawEvent;
 
+	static const UIEventType	RequestNavigate;
+	
 };
 
 /**
@@ -446,6 +448,27 @@ LN_CONSTRUCT_ACCESS:
 private:
 	float m_elapsedSeconds;
 };
+
+/** RequestNavigate イベントの引数です。 */
+class UIRequestNavigateEventArgs
+	: public UIEventArgs
+{
+	LN_OBJECT;
+public:
+	/** UITimerEventArgs のインスタンスを作成します。*/
+	static Ref<UIRequestNavigateEventArgs> create(UIElement* sender, UIEventType type, const String& url, bool caching = true);
+
+	const String& url() const { return m_url; }
+
+LN_CONSTRUCT_ACCESS:
+	UIRequestNavigateEventArgs();
+	bool init();
+	bool init(UIElement* sender, UIEventType type, const String& url);
+
+private:
+	String m_url;
+};
+
 
 /**
 	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。

@@ -82,6 +82,7 @@ public: // TODO: internal
 	void update(float elapsedSeconds);
     void removeRootObject(WorldObject* obj);
     void removeAllObjects();
+	void mergeToRenderParams(detail::SceneGlobalRenderParams* params) const;
 
 	World* m_ownerWorld;
     Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
@@ -94,6 +95,19 @@ public: // TODO: internal
 	ln::Path m_filePath;
 
 	bool m_initialUpdate;
+
+	Optional<float> m_fogStartDistance;
+	Optional<Color> m_fogColor;
+	Optional<float> m_fogDensity = 0.0f;
+	Optional<float> m_fogHeightDensity = 0.0f;
+	Optional<float> m_fogLowerHeight;
+	Optional<float> m_fogUpperHeight;
+
+	Optional<Color> m_skydomeSkyColor;
+	Optional<Color> m_skydomeHorizonColor;
+	Optional<Color> m_skydomeCloudColor;
+	Optional<Color> m_skydomeOverlayColor;
+
 
     friend class ed::SceneAsset;
 	friend class detail::SceneManager;
