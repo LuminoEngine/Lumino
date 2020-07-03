@@ -199,14 +199,16 @@ private:
     void attemptCreateChildItemsInstance();
     UITreeView2* getTreeView();
     void dirtyVisualItemCount();
-    void traverse(IVisitor* visitor);
+    void traverseTreeItems(IVisitor* visitor);
 
     // Selector
     void setSelectedInternal(bool selected);
 
     //UITreeView* m_ownerTreeView;
+    UITreeItem2* m_parentItem;
+    List<Ref<UITreeItem2>> m_childItems;
     Ref<UIToggleButton> m_expanderButton;
-    Ref<UIElement> m_headerContent;
+    UIElement* m_headerContent; // LogicalChild として追加されている、setContent で追加された要素
     //List<Ref<UITreeItem>> m_items;
     //Ref<UILayoutPanel> m_itemsLayout;
     Ref<UICollectionItemViewModel> m_model;
@@ -214,7 +216,7 @@ private:
     // measure/arrange 中のみで使える。
     // レイアウト中に TreeView が持つ情報にアクセスするのに、いちいち祖先を
     // 再帰的に検索するのは効率悪いため設けたもの。
-    UITreeView2* m_layoutingOwnerTreeView = nullptr;
+    //UITreeView2* m_layoutingOwnerTreeView = nullptr;
     int m_layoutDepth = 0;
 
     bool m_isSelected = false;
@@ -266,7 +268,7 @@ private:
     bool isVirtualize() const { return m_model != nullptr; }
     void rebuildTreeFromViewModel();
     void addItemAsLogicalChildren(UITreeItem2* item);
-    void addItemAsVisualChildren(UITreeItem2* item);
+    //void addItemAsVisualChildren(UITreeItem2* item);
 
     // Selector
     void clearSelection();
@@ -279,6 +281,9 @@ private:
     Ref<UILayoutPanel2> m_itemsHostLayout;
     Ref<UIScrollViewHelper> m_scrollViewHelper;
     bool m_dirtyItemVisualTree = true;
+
+    // LogicalChidren 内の root item
+    List<UITreeItem2*> m_rootItems;
 
     // Selector
     List<UITreeItem2*> m_selectedItems;

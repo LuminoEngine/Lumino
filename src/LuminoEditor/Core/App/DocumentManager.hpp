@@ -4,6 +4,7 @@ namespace lna { class AssetEditorModel; }
 class StartupView;
 class ToolPanesArea;
 class DocumentManager;
+class AssetEditorDocument;
 
 // Tab-Document だけではなく、Inspector や AssetBrowerToolPane など、複数の View から参照・編集されるデータを扱うクラス。
 // 様々な View の中央に位置して各 View とメッセージをやり取りしたりする。
@@ -53,6 +54,8 @@ public:
     const Ref<ToolPanesArea>& modePanesArea() const { return m_modePanesArea; }
     const Ref<ToolPanesArea>& toolPanesArea() const { return m_toolPanesArea; }
     const Ref<ToolPanesArea>& inspectorPanesArea() const { return m_inspectorPanesArea; }
+
+    AssetEditorDocument* activeDocument() const;
 
 	// Model controls
     void addDocument(Document* doc);

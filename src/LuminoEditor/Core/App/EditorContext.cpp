@@ -5,6 +5,7 @@
 #include "EditorContext.hpp"
 #include "MainWindow.hpp"
 #include "NavigatorManager.hpp"
+#include "DocumentManager.hpp"
 #include "Application.hpp"
 
 namespace lna {
@@ -17,6 +18,11 @@ EditorContext* EditorContext::current()
 NavigatorManager* EditorContext::navigatorManager() const
 {
 	return mainWindow()->navigatorManager();
+}
+
+DocumentManager* EditorContext::documentManager() const
+{
+	return mainWindow()->documentManager();
 }
 
 Project* EditorContext::mainProject() const

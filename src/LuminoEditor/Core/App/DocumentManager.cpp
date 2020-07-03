@@ -78,6 +78,13 @@ ln::Result DocumentManager::init()
     return true;
 }
 
+AssetEditorDocument* DocumentManager::activeDocument() const
+{
+    auto d = dynamic_cast<AssetEditorDocument*>(m_activeDocument);
+    assert(d);  // TODO: もう AssetEditorDocument しか作らない
+    return d;
+}
+
 void DocumentManager::addDocument(Document* doc)
 {
     if (m_documents.size() == 0) {

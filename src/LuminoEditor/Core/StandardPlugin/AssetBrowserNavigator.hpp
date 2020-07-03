@@ -111,7 +111,7 @@ class AssetBrowserPane
     : public NavigatorContentPane
 {
 public:
-    bool init(Project* project);
+    bool init(lna::EditorContext* context);
 
 private:
 };

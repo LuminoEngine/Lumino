@@ -8,6 +8,9 @@
 #include "../App/MainWindow.hpp"
 #include "LevelEditor.hpp"
 
+#include "../src/LuminoEngine/src/Engine/EngineDomain.hpp"   // TODO:
+#include "../src/LuminoEngine/src/Scene/SceneManager.hpp"   // TODO:
+
 namespace lna {
    
 //==============================================================================
@@ -87,6 +90,9 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
         ln::Assets::save(m_editingLevel);
     }));
 
+
+    //auto a = ln::StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Models/WARZONE/2-OverpassBroken_grp.gltf");
+    //m_editingLevel->addObject(a);
 }
 
 void LevelEditor::onClosed()
@@ -105,6 +111,13 @@ Ref<ln::List<Ref<ln::EditorPane>>> LevelEditor::getEditorPanes(lna::EditorPaneKi
         return m_toolPanes;
     }
     return nullptr;
+}
+
+void LevelEditor::tryInstantiateObjectFromAnyFile(const ln::Path& filePath)
+{
+    if (auto obj = ln::detail::EngineDomain::sceneManager()->instantiateObjectFromAnyFile(filePath)) {
+        m_editingLevel->addObject(obj);
+    }
 }
 
 void LevelEditor::WorldRenderView_OnUIEvent(ln::UIEventArgs* e)

@@ -15,6 +15,8 @@ public:
     void onClosed() override;
     Ref<ln::List<Ref<ln::EditorPane>>> getEditorPanes(lna::EditorPaneKind kind) override;
 
+    void tryInstantiateObjectFromAnyFile(const ln::Path& filePath);
+
 private:
 	void WorldRenderView_OnUIEvent(ln::UIEventArgs* e);
 	void handleTickEvent(ln::UITimerEventArgs* e);
