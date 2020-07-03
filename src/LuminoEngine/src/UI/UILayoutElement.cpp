@@ -408,14 +408,14 @@ Size LayoutHelper::measureElement(UILayoutElement* element, const Size& constrai
 	return Size::min(desiredSize, constraint);
 }
 
-Rect LayoutHelper::arrangeClientArea(UILayoutElement* element, const Size& finalSize)
+Rect LayoutHelper::arrangeClientArea(UILayoutElement* element, const Rect& finalArea)
 {
 	Rect area;
 
-	area.x = element->m_finalStyle->padding.left;
-	area.y = element->m_finalStyle->padding.top;
-	area.width = finalSize.width - element->m_finalStyle->padding.width();
-	area.height = finalSize.height - element->m_finalStyle->padding.height();
+	area.x = finalArea.x + element->m_finalStyle->padding.left;
+	area.y = finalArea.y + element->m_finalStyle->padding.top;
+	area.width = finalArea.width - element->m_finalStyle->padding.width();
+	area.height = finalArea.height - element->m_finalStyle->padding.height();
 
 	// arrange では inset に関わらず border が影響する (inset=true のとき、最終サイズが width,height 直接指定と矛盾すると見切れたりするが、それでよい (WPF))
 	area = area.makeDeflate(element->m_finalStyle->borderThickness);

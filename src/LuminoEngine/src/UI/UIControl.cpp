@@ -302,9 +302,11 @@ Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& cons
 
 Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
+    Rect finalArea(0, 0, finalSize);
+
     if (m_aligned3x3GridLayoutArea) {
         // padding, border を考慮した領域を計算
-        Rect clientArea = detail::LayoutHelper::arrangeClientArea(this, finalSize);
+        Rect clientArea = detail::LayoutHelper::arrangeClientArea(this, finalArea);
         // Inline 要素を arrange & 論理子要素の領域 (content area) を計算
         Rect contentArea;
         m_aligned3x3GridLayoutArea->arrange(layoutContext, m_inlineElements, clientArea, &contentArea);
@@ -315,40 +317,7 @@ Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Size& fina
         return finalSize;
     }
     else {
-        //UILayoutPanel* layout = layoutPanel();
-
-     //   Rect contentSlotRect;
-     //   if (m_enabledDirectChildrenContentAlignment) {
-     //       detail::LayoutHelper::adjustAlignment(Rect(0, 0, finalSize), layout->desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
-     //   }
-     //   else {
-     //       contentSlotRect = Rect(0, 0, finalSize);
-     //   }
-
-     //   contentSlotRect = contentSlotRect.makeDeflate(m_finalStyle->padding);
-     //   
-
-     //   struct ElementList : public IUIElementList {
-     //       List<Ref<UIElement>>* list;
-     //       virtual int getElementCount() const { return list->size(); }
-     //       virtual UIElement* getElement(int i) const { return list->at(i); }
-     //   } list;
-     //   list.list = &m_logicalChildren;
-
-        //layout->arrangeLayout(&list, contentSlotRect);
-     //   return finalSize;
-
-     //   Rect contentSlotRect(0, 0, finalSize);
-     //   detail::LayoutHelper::adjustAlignment(Rect(0, 0, finalSize), desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
-
-        ////if (m_logicalChildrenHost) {
-     ////       m_logicalChildrenHost->arrangeLayout(contentSlotRect.makeDeflate(finalStyle()->padding));
-        ////	return finalSize;
-        ////}
-        ////else {
-        //	return UIFrameLayout2::staticArrangeOverride(this, contentSlotRect.getSize());
-        ////}
-        return UIFrameLayout2::staticArrangeOverride(layoutContext, this, finalSize);
+        return UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, finalArea);
     }
 }
 

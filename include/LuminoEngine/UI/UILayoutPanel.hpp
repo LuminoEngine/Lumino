@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "../Base/Collection.hpp"
 #include "UIElement.hpp"
 #include "UILayoutElement.hpp"
 
@@ -159,7 +160,8 @@ protected:
     virtual float getVerticalOffset() const;
 
 public:	// TODO:
-    List<Ref<UIElement>> m_logicalChildren;
+    Ref<Collection<Ref<UIElement>>> m_logicalChildren;
+    //List<Ref<UIElement>> m_logicalChildren;
     Vector2 m_scrollOffset;
     UIItemsControl* m_ownerItemsControl;
 
@@ -176,9 +178,41 @@ public:
     //static Size staticMeasureChildrenAreaSize(const List<Ref<UIElement>>& elements, const Size& constraint);
     static Size staticMeasureChildrenAreaSize(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint);
     static Size staticMeasureOverride(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint);
-    static Size staticArrangeChildrenArea(UILayoutContext* layoutContext, UIElement* ownerElement, const List<Ref<UIElement>>& elements, const Rect& finalArea);
-    static Size staticArrangeChildrenArea(UILayoutContext* layoutContext, UIElement* ownerElement, const Rect& finalArea);
-    static Size staticArrangeOverride(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& finalSize);
+    //static Size staticArrangeChildrenArea(UILayoutContext* layoutContext, UIElement* ownerElement, const List<Ref<UIElement>>& elements, const Rect& finalArea);
+    
+
+    // finalArea: padding 適用済み
+    template<class TElement>
+    static Size staticArrangeLogicalChildrenArea(UILayoutContext* layoutContext, TElement* ownerElement, const Rect& finalArea)
+    {
+        int childrenCount = ownerElement->m_logicalChildren->size();////getVisualChildrenCount();
+        for (int i = 0; i < childrenCount; i++)
+        {
+            UIElement* child = ownerElement->m_logicalChildren->at(i);//getVisualChild(i);
+            if (layoutContext->testLayoutEnabled(child)) {
+
+                Rect slotRect;
+                detail::LayoutHelper::adjustAlignment(
+                    finalArea, child->desiredSize(),
+                    ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
+
+                child->arrangeLayout(layoutContext, slotRect);
+            }
+        }
+        return finalArea.getSize();
+    }
+    
+    template<class TElement>
+    static Size staticArrangeLogicalChildren(UILayoutContext* layoutContext, TElement* ownerElement, const Rect& finalArea)
+    {
+        // padding 等を適用する
+        Rect contentArea = detail::LayoutHelper::arrangeClientArea(ownerElement, finalArea);
+
+        staticArrangeLogicalChildrenArea(layoutContext, ownerElement, contentArea);
+
+        // ローカルオフセットも含めて、消費した領域全体を返す
+        return Size(contentArea.x + contentArea.width, contentArea.y + contentArea.height);
+    }
 
 LN_PROTECTED_INTERNAL_ACCESS:
     UIFrameLayout2();

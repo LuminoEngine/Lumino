@@ -119,6 +119,8 @@ class UITreeView2;
  * | Unselected     | Selection      |  |
  * | Selected       | Selection      |  |
  *
+ * @note UITreeItem は深いネストを持っていても、アイテムの左側は UITreeView の左側まで Fill されてレイアウトされます。
+ *
  */
 class UITreeItem2
     : public UIControl

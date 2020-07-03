@@ -40,7 +40,8 @@ Ref<Object> UILayoutPanel2::Builder::Details::build()
 */
 
 UILayoutPanel2::UILayoutPanel2()
-    : m_ownerItemsControl(nullptr)
+    : m_logicalChildren(nullptr)    // Deferred construction
+    , m_ownerItemsControl(nullptr)
 {
 	m_hitTestMode = detail::UIHitTestMode::InvisiblePanel;
 }
@@ -53,16 +54,20 @@ void UILayoutPanel2::init()
 void UILayoutPanel2::removeChild(UIElement* child)
 {
     if (LN_REQUIRE(child)) return;
-    m_logicalChildren.remove(child);
-    removeVisualChild(child);
+    if (m_logicalChildren) {
+        m_logicalChildren->remove(child);
+        removeVisualChild(child);
+    }
 }
 
 void UILayoutPanel2::removeAllChildren()
 {
-    for (auto& child : m_logicalChildren) {
-        removeVisualChild(child);
+    if (m_logicalChildren) {
+        for (auto& child : *m_logicalChildren) {
+            removeVisualChild(child);
+        }
+        m_logicalChildren->clear();
     }
-    m_logicalChildren.clear();
 }
 
 void UILayoutPanel2::onDispose(bool explicitDisposing)
@@ -75,11 +80,15 @@ void UILayoutPanel2::onAddChild(UIElement* child)
 {
     if (LN_REQUIRE(child)) return;
 
+    if (!m_logicalChildren) {
+        m_logicalChildren = makeCollection<Ref<UIElement>>();
+    }
+
     if (child->logicalParent()) {
         child->removeFromLogicalParent();
     }
 
-    m_logicalChildren.add(child);
+    m_logicalChildren->add(child);
     addVisualChild(child);
 }
 
@@ -246,7 +255,7 @@ Size UIFrameLayout2::arrangeOverride(UILayoutContext* layoutContext, const Size&
     }
 #endif
 
-	return UIFrameLayout2::staticArrangeOverride(layoutContext, this, finalSize);
+	return UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, Rect(0, 0, finalSize));
     //return finalSize;
 }
 
@@ -283,36 +292,29 @@ Size UIFrameLayout2::staticMeasureOverride(UILayoutContext* layoutContext, UIEle
     //return Size::min(constraint, Size::max(size, childMaxSize));
 }
 
-Size UIFrameLayout2::staticArrangeChildrenArea(UILayoutContext* layoutContext, UIElement* ownerElement, const Rect& finalArea)
-{
-    int childrenCount = ownerElement->getVisualChildrenCount();
-    for (int i = 0; i < childrenCount; i++)
-    {
-        UIElement* child = ownerElement->getVisualChild(i);
-		if (layoutContext->testLayoutEnabled(child)) {
+//Size UIFrameLayout2::staticArrangeLogicalChildrenArea(UILayoutContext* layoutContext, UIElement* ownerElement, const Rect& finalArea)
+//{
+//    int childrenCount = ownerElement->m_logicalChildren.;////getVisualChildrenCount();
+//    for (int i = 0; i < childrenCount; i++)
+//    {
+//        UIElement* child = ownerElement->getVisualChild(i);
+//		if (layoutContext->testLayoutEnabled(child)) {
+//
+//			Rect slotRect;
+//			detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
+//
+//			child->arrangeLayout(layoutContext, slotRect);
+//		}
+//    }
+//    return finalArea.getSize();
+//}
 
-			Rect slotRect;
-			detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
-
-			child->arrangeLayout(layoutContext, slotRect);
-		}
-    }
-    return finalArea.getSize();
-}
-
-Size UIFrameLayout2::staticArrangeOverride(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& finalSize)
-{
-    //const Thickness& padding = ownerElement->finalStyle()->padding;
-    //Point childrenOffset(padding.left, padding.top);
-    ////Size childrenBoundSize = finalSize;//(finalSize.width - padding.right, finalSize.height - padding.bottom);
-    //Size childrenBoundSize(finalSize.width - padding.width(), finalSize.height - padding.height());
-    //Rect bounds(childrenOffset, childrenBoundSize);
-	Rect contentArea = detail::LayoutHelper::arrangeClientArea(ownerElement, finalSize);
-
-    staticArrangeChildrenArea(layoutContext, ownerElement, contentArea);
-
-    return finalSize;
-}
+//Size UIFrameLayout2::staticArrangeLogicalChildren(UILayoutContext* layoutContext, UIElement* ownerElement, const Rect& finalArea)
+//{
+//	Rect contentArea = detail::LayoutHelper::arrangeClientArea(ownerElement, finalArea);
+//    staticArrangeLogicalChildrenArea(layoutContext, ownerElement, contentArea);
+//    return contentArea.getSize();
+//}
 
 //==============================================================================
 // UIStackLayout2_Obsolete
@@ -594,7 +596,7 @@ Size UIBoxLayout3::arrangeOverride(UILayoutContext* layoutContext, const Size& f
 {
     const Thickness& padding = finalStyle()->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
-    int actualCellCount = m_logicalChildren.size();
+    int actualCellCount = (m_logicalChildren) ? m_logicalChildren->size() : 0;
 
     float boundSize = 0.0f;
     if (isHorizontal())
@@ -672,7 +674,9 @@ Size UIBoxLayout3::arrangeOverride(UILayoutContext* layoutContext, const Size& f
 
 UILayoutLengthType UIBoxLayout3::layoutType(int index) const
 {
-    auto& child = m_logicalChildren[index];
+    if (LN_REQUIRE(m_logicalChildren)) return UILayoutLengthType::Ratio;
+
+    auto& child = m_logicalChildren->at(index);
 
     if (isHorizontal()) {
         if (!Math::isNaN(child->m_finalStyle->width)) {
@@ -696,7 +700,9 @@ UILayoutLengthType UIBoxLayout3::layoutType(int index) const
 
 float UIBoxLayout3::layoutWeight(int index) const
 {
-    auto& child = m_logicalChildren[index];
+    if (LN_REQUIRE(m_logicalChildren)) return 1.0f;
+
+    auto& child = m_logicalChildren->at(index);
     if (child->m_gridLayoutInfo)
         return child->m_gridLayoutInfo->layoutWeight;
     else
@@ -705,7 +711,9 @@ float UIBoxLayout3::layoutWeight(int index) const
 
 float UIBoxLayout3::layoutDirectSize(int index) const
 {
-    auto& child = m_logicalChildren[index];
+    if (LN_REQUIRE(m_logicalChildren)) return 1.0f;
+
+    auto& child = m_logicalChildren->at(index);
     if (isHorizontal()) {
         if (!Math::isNaN(child->m_finalStyle->width)) {
             return child->m_finalStyle->width;
@@ -724,7 +732,9 @@ void UIBoxLayout3::getLayoutMinMaxSize(int index, float* minSize, float* maxSize
     *minSize = 0.0f;
     *maxSize = std::numeric_limits<float>::max();
 
-    auto& child = m_logicalChildren[index];
+    if (LN_REQUIRE(m_logicalChildren)) return;
+
+    auto& child = m_logicalChildren->at(index);
     if (isHorizontal()) {
         if (!Math::isNaN(child->m_finalStyle->minWidth))
             *minSize = child->m_finalStyle->minWidth;
@@ -773,7 +783,8 @@ void UISwitchLayout::setActiveIndex(int index)
 
 void UISwitchLayout::setActive(UIElement* child)
 {
-    m_activeIndex = m_logicalChildren.indexOf(child);
+    if (LN_REQUIRE(m_logicalChildren)) return;
+    m_activeIndex = m_logicalChildren->indexOf(child);
     invalidateLayout();
 }
 
@@ -784,11 +795,12 @@ void UISwitchLayout::init()
 
 Size UISwitchLayout::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-	for (int i = 0; i < m_logicalChildren.size(); i++) {
+    int count = (m_logicalChildren) ? m_logicalChildren->size() : 0;
+	for (int i = 0; i < count; i++) {
 		if (i == m_activeIndex)
-			m_logicalChildren[i]->m_internalVisibility = UIVisibility::Visible;
+			m_logicalChildren->at(i)->m_internalVisibility = UIVisibility::Visible;
 		else
-			m_logicalChildren[i]->m_internalVisibility = UIVisibility::Collapsed;
+			m_logicalChildren->at(i)->m_internalVisibility = UIVisibility::Collapsed;
 	}
 
 	return UIFrameLayout2::measureOverride(layoutContext, constraint);
@@ -1070,7 +1082,7 @@ Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const Size& 
 {
     const Thickness& padding = finalStyle()->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
-    int actualCellCount = m_logicalChildren.size();
+    //int actualCellCount = m_logicalChildren.size();
     Rect finalSlotRect(padding.left, padding.top, childrenBoundSize.width, childrenBoundSize.height);
 
     //Size childrenBoundSize(finalSlotRect.width, finalSlotRect.height);
