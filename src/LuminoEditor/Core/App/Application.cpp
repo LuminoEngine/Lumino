@@ -183,7 +183,11 @@ void EditorApplication::onRoutedEvent(ln::UIEventArgs* e)
 {
     if (e->type() == ln::UIEvents::RequestNavigate) {
         openProject(static_cast<ln::UIRequestNavigateEventArgs*>(e)->url());
+        e->handled = true;
+        return;
     }
+
+    Application::onRoutedEvent(e);
 }
 
 void EditorApplication::newProject(const ln::Path& dirPath, const ln::String& projectName)
