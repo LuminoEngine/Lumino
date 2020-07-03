@@ -333,7 +333,11 @@ namespace LuminoBuild.Tasks
                 Utils.CallProcess("git", "checkout 4edff1fa5dbfca16fc72d89870841bee89f8ef89");
                 Directory.SetCurrentDirectory(reposDir);
             }
-
+            if (!Directory.Exists("lua"))
+            {
+                Utils.CallProcess("git", "clone --depth 1 -b v5.4.0 https://github.com/lua/lua.git");
+                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "lua", "CMakeLists.txt"), "lua");
+            }
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
 
@@ -353,6 +357,7 @@ namespace LuminoBuild.Tasks
                     var altRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
                     var cppyamlRuntime = "-DYAML_MSVC_SHARED_RT=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
 
+                    BuildProjectMSVC(builder, "lua", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "yaml-cpp", reposDir, targetName, targetFullName, configuration, $"{cppyamlRuntime} -DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF");
                     BuildProjectMSVC(builder, "zlib", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "libpng", reposDir, targetName, targetFullName, configuration, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
