@@ -114,16 +114,16 @@ void SceneRenderer::init()
 
 void SceneRenderer::prepare(
 	RenderingPipeline* renderingPipeline,
-	const detail::CameraInfo& mainCameraInfo,
+	const detail::RenderViewInfo& mainRenderViewInfo,
 	RenderPhaseClass targetPhase,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
 	m_renderingPipeline = renderingPipeline;
-    m_mainCameraInfo = mainCameraInfo;
+    m_mainRenderViewInfo = mainRenderViewInfo;
 	m_sceneGlobalRenderParams = sceneGlobalParams;
 
 	m_renderingElementList.clear();
-	collect(renderingPipeline, mainCameraInfo, targetPhase);
+	collect(renderingPipeline, m_mainRenderViewInfo.cameraInfo, targetPhase);
 	prepare();
 }
 
@@ -250,7 +250,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
 	pass->onBeginRender(this, graphicsContext, renderTarget, depthBuffer);
 
-	const detail::CameraInfo& cameraInfo = mainCameraInfo();
+	const detail::RenderViewInfo& cameraInfo = mainRenderViewInfo();
 
 	//pass->overrideCameraInfo(&cameraInfo);
 
@@ -267,7 +267,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
     // TODO: とりいそぎ
     m_renderFeatureBatchList.renderTarget = renderTarget;
     m_renderFeatureBatchList.depthBuffer = depthBuffer;
-	m_renderFeatureBatchList.m_mainCameraInfo = &m_mainCameraInfo;
+	m_renderFeatureBatchList.m_mainCameraInfo = &m_mainRenderViewInfo.cameraInfo;
 
 	RenderPass* defaultRenderPass = pass->renderPass();
 	assert(defaultRenderPass);
@@ -456,7 +456,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			else {
 				ElementInfo elementInfo;
 				elementInfo.objectId = stage->m_objectId;
-				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
+				elementInfo.viewProjMatrix = &cameraInfo.cameraInfo.viewProjMatrix;
 				elementInfo.WorldMatrix = (batch->worldTransformPtr()) ? *batch->worldTransformPtr() : Matrix::Identity;
 				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
 				elementInfo.boneLocalQuaternionTexture = nullptr;	// TODO: (MMD SDEF)
@@ -510,7 +510,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				//else
 				// TODO: ↑SpriteTextRenderer が Font 取るのに使ってる。これは Batch に持っていくべきだろう。
 				{
-					RenderFeature::updateRenderParametersDefault(tech, cameraInfo, elementInfo, localSubsetInfo);
+					RenderFeature::updateRenderParametersDefault(tech, m_mainRenderViewInfo, elementInfo, localSubsetInfo);
 				}
 
 				if (finalMaterial) {

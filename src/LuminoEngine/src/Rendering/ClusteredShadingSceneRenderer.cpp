@@ -379,15 +379,13 @@ ShadowCasterPass::~ShadowCasterPass()
 {
 }
 
-//RenderTargetTexture* g_m_shadowMap  = nullptr;
+RenderTargetTexture* g_m_shadowMap  = nullptr;
 void ShadowCasterPass::init()
 {
 	SceneRendererPass::init();
 
 	m_defaultShader = manager()->builtinShader(BuiltinShader::ShadowCaster);
 
-	m_shadowMap = makeObject<RenderTargetTexture>(1024, 1024, TextureFormat::RGBA32F, false);
-	m_depthBuffer = makeObject<DepthBuffer>(1024, 1024);
 	m_renderPass = makeObject<RenderPass>();
 
 	//g_m_shadowMap = m_shadowMap;
@@ -400,9 +398,31 @@ void ShadowCasterPass::init()
 
 void ShadowCasterPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
-	m_renderPass->setRenderTarget(0, m_shadowMap);
-	m_renderPass->setDepthBuffer(m_depthBuffer);
+	const auto* renderingPipeline = static_cast<SceneRenderingPipeline*>(sceneRenderer->renderingPipeline());
+	//RenderTargetTexture* shadowMap = 
+
+	g_m_shadowMap = renderingPipeline->shadowMap();
+
+	m_renderPass->setRenderTarget(0, renderingPipeline->shadowMap());
+	m_renderPass->setDepthBuffer(renderingPipeline->shadowMapDepthBuffer());
 	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
+
+	if (auto param = m_defaultShader->findParameter(u"ln_ViewProjection_Light0")) {
+		const auto* mainLight = sceneRenderer->mainLightInfo();
+		const auto pos = Vector3(10, 10, 10);
+		const auto view = Matrix::makeLookAtLH(
+			pos,
+			pos + mainLight->m_direction,
+			Vector3::UnitY);
+		const auto proj = Matrix::makePerspectiveFovLH(
+			Math::PI / 2.0f,
+			1024.0 / 1024.0,	// TODO: LightMapSize
+			0.5f, 100.0f);	// TODO: clip range
+
+		param->setMatrix(Matrix::multiply(view, proj));
+	}
+
+	//sceneRenderer->m_mainCameraInfo.mainLightShadowMapPixelSize = 
 }
 
 //void ShadowCasterPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
@@ -460,6 +480,10 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 {
 	SceneRenderer::init();
 
+	auto shadowPass = makeObject<ShadowCasterPass>();
+	addPass(shadowPass);
+
+
 	m_depthPrepass = makeObject<ForwardGBufferPrepass>();
 	addPass(m_depthPrepass);
 
@@ -515,7 +539,7 @@ static Vector3 transformDirection(const Vector3& vec, const Matrix& mat)
 
 void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light)
 {
-	const CameraInfo& view = mainCameraInfo();
+	const CameraInfo& view = mainRenderViewInfo().cameraInfo;
 
 	Color color = light.m_color;
 	color *= light.m_intensity;
@@ -584,6 +608,22 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderTec
 	//if (v) {
 	//	v->setTexture(m_lightOcclusionPass->m_lensflareOcclusionMap);
 	//}
+
+	// TODO: Test
+	if (auto param = shader->findParameter(u"ln_ViewProjection_Light0")) {
+		//const auto* mainLight = sceneRenderer->mainLightInfo();
+		const auto pos = Vector3(10, 10, 10);
+		const auto view = Matrix::makeLookAtLH(
+			pos,
+			Vector3::Zero ,
+			Vector3::UnitY);
+		const auto proj = Matrix::makePerspectiveFovLH(
+			Math::PI / 2.0f,
+			1024.0 / 1024.0,	// TODO: LightMapSize
+			0.5f, 100.0f);	// TODO: clip range
+
+		param->setMatrix(Matrix::multiply(view, proj));
+	}
 
 #if 1
 

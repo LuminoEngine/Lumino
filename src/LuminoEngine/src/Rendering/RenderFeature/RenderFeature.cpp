@@ -215,16 +215,16 @@ bool RenderFeature::drawElementTransformNegate() const
     return false;
 }
 
-void RenderFeature::updateRenderParameters(detail::RenderDrawElement* element, ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo)
+void RenderFeature::updateRenderParameters(detail::RenderDrawElement* element, ShaderTechnique* tech, const detail::RenderViewInfo& renderViewInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo)
 {
-    updateRenderParametersDefault(tech, cameraInfo, elementInfo, subsetInfo);
+    updateRenderParametersDefault(tech, renderViewInfo, elementInfo, subsetInfo);
 }
 
-void RenderFeature::updateRenderParametersDefault(ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo)
+void RenderFeature::updateRenderParametersDefault(ShaderTechnique* tech, const detail::RenderViewInfo& renderViewInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo)
 {
 	detail::ShaderTechniqueSemanticsManager* semanticsManager = tech->semanticsManager2();
-	semanticsManager->updateCameraVariables(cameraInfo);	// TODO: ここだと element ごとに呼ばれるのでかなり無駄が多い。事前計算しておいて、memcpy で済ませたい
-	semanticsManager->updateElementVariables(cameraInfo, elementInfo);
+	semanticsManager->updateRenderViewVariables(renderViewInfo);	// TODO: ここだと element ごとに呼ばれるのでかなり無駄が多い。事前計算しておいて、memcpy で済ませたい
+	semanticsManager->updateElementVariables(renderViewInfo.cameraInfo, elementInfo);
 	semanticsManager->updateSubsetVariables(subsetInfo);
 }
 

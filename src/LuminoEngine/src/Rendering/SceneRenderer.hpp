@@ -85,7 +85,7 @@ public:
 	// render の前準備として、効率的な描画を行うためのZソートなどを実施した Element リストを作成する。
 	void prepare(
 		RenderingPipeline* renderingPipeline,
-		const detail::CameraInfo& mainCameraInfo,
+		const detail::RenderViewInfo& mainRenderViewInfo,
 		RenderPhaseClass targetPhase,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
@@ -99,7 +99,7 @@ public:
 
     RenderingPipeline* renderingPipeline() const { return m_renderingPipeline; }
 	const detail::SceneGlobalRenderParams* sceneGlobalParams() const { return m_sceneGlobalRenderParams; }
-    const detail::CameraInfo& mainCameraInfo() const { return m_mainCameraInfo; }
+    const detail::RenderViewInfo& mainRenderViewInfo() const { return m_mainRenderViewInfo; }
 	const detail::DynamicLightInfo* mainLightInfo() const { return m_mainLightInfo; }
 
 
@@ -126,7 +126,7 @@ protected:
 	virtual void onSetAdditionalShaderPassVariables(ShaderTechnique* technique);
 
 
-private:
+public:	// TODO
 	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderPass* defaultRenderPass /*RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer*//*, const ClearInfo& clearInfo*/);
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
@@ -146,7 +146,7 @@ private:
 
     // 1つのパイプラインの別フェーズで SceneRenderer を使うとき、
     // viewproj 行列を分けたいことがある (Default と PostEffect など) ため、SceneRenderer 側に実態で持つ 
-    CameraInfo m_mainCameraInfo;
+	RenderViewInfo m_mainRenderViewInfo;
 	const DynamicLightInfo* m_mainLightInfo = nullptr;
 
     //RenderPhaseClass m_targetPhase;

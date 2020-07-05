@@ -241,6 +241,7 @@ float4 _LN_PS_ClusteredForward_Default(
 	//LN_PSInput_ClusteredForward extra,
 	float3 worldPos,
 	float3 vertexPos,
+	float4 vInLightPosition,
 	LN_SurfaceOutput surface)
 {
 	// ビュー平面からの水平距離。視点からの距離ではないので注意
@@ -283,12 +284,15 @@ float4 _LN_PS_ClusteredForward_Default(
 	float opacity = 1.0;
 	float3 outgoingLight = _LN_ComputePBRLocalLights(localLightContext, geometry, material);
 
+
+	// Shadow
+    float4 posInLight = vInLightPosition;
+	float shadow = LN_CalculateShadow(posInLight);
+    outgoingLight *= shadow;
+
 	//return float4(surface.Emission + outgoingLight, opacity);
 	result.rgb = surface.Emission + outgoingLight;
 	
-	// Shadow
-    //float4 posInLight = extra.vInLightPosition;
-    //outgoingLight *= LN_CalculateShadow(posInLight);
 	
 	// Fog
 	{
@@ -298,6 +302,8 @@ float4 _LN_PS_ClusteredForward_Default(
 		//opacity *= 1.0f - fogFactor;	// try
 		opacity = 0.5;
 	}
+
+	//result.rgb = float3(shadow, 0, 0);
 
 	//result.r = _LN_CalcFogFactor2(viewLength, worldPos.y);
 	//result.g = 0;
@@ -375,6 +381,8 @@ struct _lngs_VSOutput
 	float2	UV			: TEXCOORD0;
 	float4	Color		: COLOR0;
 
+
+	float4	vInLightPosition 	: TEXCOORD9;
 	// clustered forward
 	float3	WorldPos	: TEXCOORD10;
 	float3	VertexPos	: TEXCOORD11;
@@ -400,6 +408,7 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
 	output.Color = common.Color;
 	output.WorldPos = extra.WorldPos;
 	output.VertexPos = extra.VertexPos;
+	output.vInLightPosition = extra.vInLightPosition;
 
 	
 #ifdef LN_USE_NORMALMAP
@@ -485,6 +494,7 @@ struct _lngs_PSInput
 	float2	UV			: TEXCOORD0;
 	float4	Color		: COLOR0;
 	
+	float4	vInLightPosition 	: TEXCOORD9;
 	// clustered forward
 	float3	WorldPos	: TEXCOORD10;
 	float3	VertexPos	: TEXCOORD11;
@@ -544,11 +554,11 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 	surface.Emission = (ln_MaterialEmissive.rgb * ln_MaterialEmissive.a);
 	
 	_lngs_PSOutput o;
-	o.color0 = _LN_PS_ClusteredForward_Default(input.WorldPos, input.VertexPos, surface);
+	o.color0 = _LN_PS_ClusteredForward_Default(input.WorldPos, input.VertexPos, input.vInLightPosition, surface);
 	o.color0.a *= surface.Albedo.a;
 	o.color0 = LN_GetBuiltinEffectColor(o.color0);
 
-	
+	//o.color0 = float4(input.vInLightPosition.z / input.vInLightPosition.w, 0, 0, 1);
 	//o.color0 = float4(input.viewspaceNormal, 1);
 	//o.color0 = float4(input.Debug, 1);
 	return o;

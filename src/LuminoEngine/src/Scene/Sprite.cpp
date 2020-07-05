@@ -39,6 +39,11 @@ Ref<Sprite> Sprite::Builder::buildInMainWorld()
 
 LN_OBJECT_IMPLEMENT(Sprite, VisualObject) {}
 
+Ref<Sprite> Sprite::create()
+{
+    return makeObject<Sprite>();
+}
+
 Ref<Sprite> Sprite::create(Texture* texture)
 {
 	return makeObject<Sprite>(texture, -1, -1);

@@ -275,6 +275,7 @@ void Experiment_Reflector();
 void Experiment_Scripting();
 void Experiment_SelectObject();
 void Experiment_SerializeLevel();
+void Experiment_Shadow();
 void Experiment_SSR();
 void Tutorial_Sandbox();
 void Sandbox_MeshTilemap();
@@ -472,6 +473,7 @@ int main(int argc, char** argv)
         //Experiment_Scripting();
         //Experiment_SelectObject();
         //Experiment_SerializeLevel();
+        Experiment_Shadow();
         //Experiment_SSR();
 		//Sandbox_MeshTilemap();
         //Sandbox_Particle();
@@ -479,7 +481,7 @@ int main(int argc, char** argv)
         //Sandbox_Sky();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
-		UISandboxMain();
+		//UISandboxMain();
         return 0;
     }
 

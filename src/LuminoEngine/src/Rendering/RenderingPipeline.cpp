@@ -76,6 +76,9 @@ void SceneRenderingPipeline::init()
     g_viewMaterialMap = m_materialBuffer;
 #endif 
 
+    m_shadowMap = makeObject<RenderTargetTexture>(1024, 1024, TextureFormat::RGBA32F, false);
+    m_shadowMap->setSamplerState(m_samplerState);
+    m_shadowMapDepthBuffer = makeObject<DepthBuffer>(1024, 1024);
 
     m_renderPass = makeObject<RenderPass>();
 }
@@ -133,6 +136,10 @@ void SceneRenderingPipeline::render(
         graphicsContext->endRenderPass();
     }
 
+    RenderViewInfo renderViewInfo;
+    renderViewInfo.cameraInfo = *mainCameraInfo;
+    renderViewInfo.mainLightShadowMap = m_shadowMap;
+    renderViewInfo.mainLightShadowMapPixelSize = Size(m_shadowMap->width(), m_shadowMap->height());
 
     //clear(graphicsContext, renderTarget, clearInfo);
 
@@ -141,21 +148,21 @@ void SceneRenderingPipeline::render(
     //m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPhaseClass::BackgroundSky, nullptr);
 
     m_sceneRenderer->mainRenderPass()->setClearInfo(mainPassClearInfo);
-    m_sceneRenderer->prepare(this, *mainCameraInfo, RenderPhaseClass::Geometry, sceneGlobalParams);
+    m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Geometry, sceneGlobalParams);
     m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo);
 
 
     // TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
     ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
     m_sceneRenderer->mainRenderPass()->setClearInfo(localClearInfo); // 2回目の描画になるので、最初の結果が消えないようにしておく。
-    m_sceneRenderer->prepare(this, *mainCameraInfo, RenderPhaseClass::Gizmo, nullptr);
+    m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Gizmo, nullptr);
     m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo);
 
     {
         //CameraInfo camera;
         //camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
 		//m_sceneRenderer_PostEffectPhase->lightOcclusionMap = m_sceneRenderer->lightOcclusionPass()->lightOcclusionMap();
-        m_sceneRenderer_PostEffectPhase->prepare(this, *mainCameraInfo, RenderPhaseClass::PostEffect, nullptr);  // TODO: PostEffect なので ZSort 要らないモード追加していいかも
+        m_sceneRenderer_PostEffectPhase->prepare(this, renderViewInfo, RenderPhaseClass::PostEffect, nullptr);  // TODO: PostEffect なので ZSort 要らないモード追加していいかも
         m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, *mainCameraInfo);
     }
 
@@ -210,9 +217,12 @@ void FlatRenderingPipeline::render(
 
 	m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
 
+    RenderViewInfo renderViewInfo;
+    renderViewInfo.cameraInfo = *mainCameraInfo;
+
     //clear(graphicsContext, renderTarget, clearInfo);
     m_sceneRenderer->mainRenderPass()->setClearInfo(mainPassClearInfo);
-    m_sceneRenderer->prepare(this, *mainCameraInfo, RenderPhaseClass::Geometry, nullptr);
+    m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Geometry, nullptr);
 	m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo);
 
 	// TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
@@ -220,10 +230,12 @@ void FlatRenderingPipeline::render(
 
     {
         //ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
-        CameraInfo camera;
-        camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
-        m_sceneRenderer_PostEffectPhase->prepare(this, camera, RenderPhaseClass::PostEffect, nullptr);
-        m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, camera);
+
+        RenderViewInfo renderViewInfo;
+        //CameraInfo camera;
+        renderViewInfo.cameraInfo.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
+        m_sceneRenderer_PostEffectPhase->prepare(this, renderViewInfo, RenderPhaseClass::PostEffect, nullptr);
+        m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, renderViewInfo.cameraInfo);
     }
 
 	// 誤用防止

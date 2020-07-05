@@ -6,7 +6,7 @@ using namespace ln;
 class App_Sandbox_Voxel : public Application
 {
 
-    virtual void onInit() override
+    void onInit() override
     {
 		Engine::renderView()->setGuideGridEnabled(true);
 		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
@@ -19,7 +19,7 @@ class App_Sandbox_Voxel : public Application
 		// 組み合わせの数は 2**(8+9+9) = ‭67,108,863‬
 	}
 
-    virtual void onUpdate() override
+    void onUpdate() override
     {
     }
 };

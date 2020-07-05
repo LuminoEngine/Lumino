@@ -54,6 +54,8 @@ public:
     const Ref<RenderTargetTexture>& viweDepthBuffer() const { return m_viweDepthBuffer; }
     const Ref<RenderTargetTexture>& materialBuffer() const { return m_materialBuffer; }
     const Ref<RenderTargetTexture>& objectIdBuffer() const { return m_objectIdBuffer; }
+    const Ref<RenderTargetTexture>& shadowMap() const { return m_shadowMap; }
+    const Ref<DepthBuffer>& shadowMapDepthBuffer() const { return m_shadowMapDepthBuffer; }
 
 private:
     // Note: 複数の SceneRenderer を持っているのは、描画フェーズの大きなまとまりごとに、Element の扱いを変えることで最適化するため。
@@ -86,6 +88,9 @@ private:
     // R32S を利用しているが、RGBでオブジェクトIDを作ることもできる。
     // https://riptutorial.com/three-js/example/17089/object-picking---gpu
     Ref<RenderTargetTexture> m_objectIdBuffer;
+
+    Ref<RenderTargetTexture> m_shadowMap;
+    Ref<DepthBuffer> m_shadowMapDepthBuffer;
 
     Ref<SamplerState> m_samplerState;	// TODO: 共通化
     Ref<RenderPass> m_renderPass;

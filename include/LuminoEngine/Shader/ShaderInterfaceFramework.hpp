@@ -17,9 +17,10 @@ struct alignas(16) LNRenderViewBuffer
     alignas(16) Matrix ln_Projection;
     alignas(16) Matrix ln_ProjectionI;
     alignas(16) Vector4 ln_Resolution;
+    alignas(16) Vector4 ln_mainLightShadowMapPixelSizeResolution;
     alignas(16) Vector3 ln_CameraPosition;
     alignas(16) Vector3 ln_CameraDirection;
-    alignas(4) float ln_NearClip;
+    alignas(16) float ln_NearClip;
     alignas(4) float ln_FarClip;
 };
 
@@ -124,6 +125,13 @@ struct CameraInfo
     void makePerspective(const Vector3& viewPos, const Vector3& viewDir, float fovY, const Size& size, float n, float f);
 };
 
+struct RenderViewInfo
+{
+    CameraInfo cameraInfo;
+    Size mainLightShadowMapPixelSize;
+    Texture* mainLightShadowMap = nullptr;
+};
+
 // 描画要素単位のデータに関する情報
 struct ElementInfo
 {
@@ -197,6 +205,7 @@ enum BuiltinShaderParameters
     BuiltinShaderParameters_ln_Projection,
     BuiltinShaderParameters_ln_ProjectionI,
     BuiltinShaderParameters_ln_Resolution,
+    BuiltinShaderParameters_ln_mainLightShadowMapResolution,
     BuiltinShaderParameters_ln_CameraPosition,
     BuiltinShaderParameters_ln_CameraDirection,
     BuiltinShaderParameters_ln_NearClip,
@@ -240,6 +249,7 @@ enum BuiltinShaderTextures
     BuiltinShaderTextures_ln_MaterialTexture, // TODO: MaterialMainTexture
     BuiltinShaderTextures_ln_NormalMap, // TODO: MaterialNormalMap
     BuiltinShaderTextures_ln_MaterialRoughnessMap,
+    BuiltinShaderTextures_ln_mainLightShadowMap,
     BuiltinShaderTextures_ln_BoneTexture,
     BuiltinShaderTextures_ln_BoneLocalQuaternionTexture,
 
@@ -261,7 +271,7 @@ public:
 
     // call by rendering time.
     void updateSceneVariables(const SceneInfo& info);
-    void updateCameraVariables(const CameraInfo& info);
+    void updateRenderViewVariables(const RenderViewInfo& info);
     void updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info);
     void updateSubsetVariables(const SubsetInfo& info);
     void updateSubsetVariables_PBR(const PbrMaterialData& materialData);
