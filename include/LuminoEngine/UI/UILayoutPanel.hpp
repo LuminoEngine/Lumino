@@ -231,7 +231,8 @@ public:
         staticArrangeLogicalChildrenArea(layoutContext, ownerElement, contentArea);
 
         // ローカルオフセットも含めて、消費した領域全体を返す
-        return Size(contentArea.x + contentArea.width, contentArea.y + contentArea.height);
+        //return Size(contentArea.x + contentArea.width, contentArea.y + contentArea.height);
+        return finalArea.getSize();
     }
 
 LN_PROTECTED_INTERNAL_ACCESS:
