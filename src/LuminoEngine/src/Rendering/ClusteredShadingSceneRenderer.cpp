@@ -485,7 +485,7 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 
 
 	m_depthPrepass = makeObject<ForwardGBufferPrepass>();
-	addPass(m_depthPrepass);
+	//addPass(m_depthPrepass);
 
 
 	//m_lightOcclusionPass = makeObject<LightOcclusionPass>();
@@ -493,7 +493,7 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 
 	// pass "Geometry"
 	m_geometryPass = makeObject<ClusteredShadingGeometryRenderingPass>(this);
-	addPass(m_geometryPass);
+	//addPass(m_geometryPass);
 
 	m_lightClusters.init();
 

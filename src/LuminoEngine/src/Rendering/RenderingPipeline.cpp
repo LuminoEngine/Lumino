@@ -62,8 +62,8 @@ void SceneRenderingPipeline::init()
     m_sceneRenderer_PostEffectPhase = makeRef<detail::SceneRenderer>();
     m_sceneRenderer_PostEffectPhase->init();
 
-    m_flatShadingRendererPass = makeRef<UnLigitingSceneRendererPass>();
-    m_flatShadingRendererPass->init(manager, true);
+    m_unlitRendererPass = makeRef<UnLigitingSceneRendererPass>();
+    m_unlitRendererPass->init(manager, true);
 
 
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
@@ -156,9 +156,11 @@ void SceneRenderingPipeline::render(
     m_sceneRenderer->mainRenderPass()->setClearInfo(mainPassClearInfo);
     m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Geometry, sceneGlobalParams);
     //m_sceneRenderer->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
-    for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
-        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, pass);
-    }
+    //for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
+    //    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, pass);
+    //}
+    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->gbufferPass());
+    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
 
 
     // TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
@@ -166,9 +168,11 @@ void SceneRenderingPipeline::render(
     m_sceneRenderer->mainRenderPass()->setClearInfo(localClearInfo); // 2回目の描画になるので、最初の結果が消えないようにしておく。
     m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Gizmo, nullptr);
     //m_sceneRenderer->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
-    for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
-        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, pass);
-    }
+    //for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
+    //    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, pass);
+    //}
+    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->gbufferPass());
+    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
 
     {
         //CameraInfo camera;
@@ -177,7 +181,7 @@ void SceneRenderingPipeline::render(
         m_sceneRenderer_PostEffectPhase->prepare(this, renderViewInfo, RenderPhaseClass::PostEffect, nullptr);  // TODO: PostEffect なので ZSort 要らないモード追加していいかも
         //m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
         //for (SceneRendererPass* pass : m_sceneRenderer_PostEffectPhase->m_renderingPassList) {
-            m_sceneRenderer_PostEffectPhase->renderPass(graphicsContext, renderTarget, depthBuffer, m_flatShadingRendererPass);
+            m_sceneRenderer_PostEffectPhase->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass);
         //}
     }
 
@@ -222,11 +226,11 @@ void FlatRenderingPipeline::init()
     //m_sceneRenderer_PostEffectPhase = makeRef<detail::SceneRenderer>();
     //m_sceneRenderer_PostEffectPhase->init();
 
-    m_flatShadingRendererPass = makeRef<UnLigitingSceneRendererPass>();
-    m_flatShadingRendererPass->init(manager, false);
+    m_unlitRendererPass = makeRef<UnLigitingSceneRendererPass>();
+    m_unlitRendererPass->init(manager, false);
 
-    m_flatShadingRendererPass_PostEffect = makeRef<UnLigitingSceneRendererPass>();
-    m_flatShadingRendererPass_PostEffect->init(manager, true);
+    m_unlitRendererPass_PostEffect = makeRef<UnLigitingSceneRendererPass>();
+    m_unlitRendererPass_PostEffect->init(manager, true);
 }
 
 void FlatRenderingPipeline::render(
@@ -247,11 +251,11 @@ void FlatRenderingPipeline::render(
     auto depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
 
     //clear(graphicsContext, renderTarget, clearInfo);
-    m_flatShadingRendererPass->setClearInfo(mainPassClearInfo);
+    m_unlitRendererPass->setClearInfo(mainPassClearInfo);
     m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Geometry, nullptr);
 	//m_sceneRenderer->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
     //for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
-        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_flatShadingRendererPass);
+        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass);
     //}
 
 	// TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
@@ -266,7 +270,7 @@ void FlatRenderingPipeline::render(
         m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::PostEffect, nullptr);
         //m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, depthBuffer, renderViewInfo.cameraInfo);
         //for (SceneRendererPass* pass : m_sceneRenderer_PostEffectPhase->m_renderingPassList) {
-        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_flatShadingRendererPass_PostEffect);
+        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass_PostEffect);
         //}
     }
 

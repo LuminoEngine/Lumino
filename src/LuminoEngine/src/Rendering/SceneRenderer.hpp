@@ -116,7 +116,7 @@ protected:
 
 	//void setDefaultMaterial(Material* material);
 
-	void addPass(SceneRendererPass* pass);
+	//void addPass(SceneRendererPass* pass);
 
 
 	// レンダリング準備として、描画に関係する各種オブジェクト (DrawElement や Light) を収集するフェーズ
@@ -137,7 +137,7 @@ public:	// TODO
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
 	detail::RenderingManager* m_manager;
-	List<Ref<SceneRendererPass>> m_renderingPassList;
+	//List<Ref<SceneRendererPass>> m_renderingPassList;
 	RenderFeatureBatchList m_renderFeatureBatchList;
 
     RenderingPipeline* m_renderingPipeline;
@@ -160,7 +160,7 @@ public:	// TODO
 	// build by collect().
 	List<RenderDrawElement*> m_renderingElementList;
 
-	List<SceneRendererPass*>	m_renderingActualPassList;
+	//List<SceneRendererPass*>	m_renderingActualPassList;
 
 	// TODO: ちゃんとした置き場は SkinnedMesh 実装時に考える
 	Ref<Texture2D>    m_skinningMatricesTexture;            // GPU スキニング用のテクスチャ

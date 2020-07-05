@@ -236,10 +236,10 @@ void SceneRenderer::render(
 //	m_defaultMaterial = material;
 //}
 
-void SceneRenderer::addPass(SceneRendererPass* pass)
-{
-	m_renderingPassList.add(pass);
-}
+//void SceneRenderer::addPass(SceneRendererPass* pass)
+//{
+//	m_renderingPassList.add(pass);
+//}
 
 void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass)
 {
