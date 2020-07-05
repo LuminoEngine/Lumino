@@ -130,6 +130,7 @@ struct RenderViewInfo
     CameraInfo cameraInfo;
     Size mainLightShadowMapPixelSize;
     Texture* mainLightShadowMap = nullptr;
+    Matrix mainLightViewProjection;
 };
 
 // 描画要素単位のデータに関する情報

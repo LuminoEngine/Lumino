@@ -144,6 +144,30 @@ void SceneRenderingPipeline::render(
     renderViewInfo.mainLightShadowMap = m_shadowMap;
     renderViewInfo.mainLightShadowMapPixelSize = Size(m_shadowMap->width(), m_shadowMap->height());
 
+    if (const auto* light = m_sceneRenderer->mainLightInfo()) {
+        const float shadowFar = 30; // だいたいどのくらいまでの距離に Shadow を生成するか？
+        const float shadowDepthRange = 200;  // ライト空間内の far - near
+
+        const auto& camera = renderViewInfo.cameraInfo;
+
+        // ↑のパラメータで指定された範囲を Ortho に収めるような視点情報を作る
+        const auto lookAt = camera.viewPosition + camera.viewDirection * (shadowFar / 2);
+        const auto lightPos = lookAt - light->m_direction * (shadowDepthRange / 2);
+        const auto view = Matrix::makeLookAtLH(lightPos, lookAt, Vector3::UnitY);
+        const auto proj = Matrix::makeOrthoLH(shadowFar, shadowFar, 0.5, shadowDepthRange);
+
+
+        //const auto pos = Vector3(10, 10, 10);
+        //const auto view = Matrix::makeLookAtLH(
+        //    pos,
+        //    Vector3::Zero,
+        //    Vector3::UnitY);
+        //const auto proj = Matrix::makePerspectiveFovLH(
+        //    Math::PI / 2.0f,
+        //    1024.0 / 1024.0,	// TODO: LightMapSize
+        //    0.5f, 100.0f);	// TODO: clip range
+        renderViewInfo.mainLightViewProjection = Matrix::multiply(view, proj);
+    }
 
     auto depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
 

@@ -408,18 +408,19 @@ void ShadowCasterPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsConte
 	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
 
 	if (auto param = m_defaultShader->findParameter(u"ln_ViewProjection_Light0")) {
-		const auto* mainLight = sceneRenderer->mainLightInfo();
-		const auto pos = Vector3(10, 10, 10);
-		const auto view = Matrix::makeLookAtLH(
-			pos,
-			pos + mainLight->m_direction,
-			Vector3::UnitY);
-		const auto proj = Matrix::makePerspectiveFovLH(
-			Math::PI / 2.0f,
-			1024.0 / 1024.0,	// TODO: LightMapSize
-			0.5f, 100.0f);	// TODO: clip range
+		//const auto* mainLight = sceneRenderer->mainLightInfo();
+		//const auto pos = Vector3(10, 10, 10);
+		//const auto view = Matrix::makeLookAtLH(
+		//	pos,
+		//	pos + mainLight->m_direction,
+		//	Vector3::UnitY);
+		//const auto proj = Matrix::makePerspectiveFovLH(
+		//	Math::PI / 2.0f,
+		//	1024.0 / 1024.0,	// TODO: LightMapSize
+		//	0.5f, 100.0f);	// TODO: clip range
 
-		param->setMatrix(Matrix::multiply(view, proj));
+		//param->setMatrix(Matrix::multiply(view, proj));
+		param->setMatrix(sceneRenderer->m_mainRenderViewInfo.mainLightViewProjection);
 	}
 
 	//sceneRenderer->m_mainCameraInfo.mainLightShadowMapPixelSize = 
@@ -611,18 +612,21 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderTec
 
 	// TODO: Test
 	if (auto param = shader->findParameter(u"ln_ViewProjection_Light0")) {
-		//const auto* mainLight = sceneRenderer->mainLightInfo();
-		const auto pos = Vector3(10, 10, 10);
-		const auto view = Matrix::makeLookAtLH(
-			pos,
-			Vector3::Zero ,
-			Vector3::UnitY);
-		const auto proj = Matrix::makePerspectiveFovLH(
-			Math::PI / 2.0f,
-			1024.0 / 1024.0,	// TODO: LightMapSize
-			0.5f, 100.0f);	// TODO: clip range
+		if (const auto* mainLight = mainLightInfo()) {
 
-		param->setMatrix(Matrix::multiply(view, proj));
+			//const auto pos = Vector3(10, 10, 10);
+			//const auto view = Matrix::makeLookAtLH(
+			//	pos,
+			//	Vector3::Zero,
+			//	Vector3::UnitY);
+			//const auto proj = Matrix::makePerspectiveFovLH(
+			//	Math::PI / 2.0f,
+			//	1024.0 / 1024.0,	// TODO: LightMapSize
+			//	0.5f, 100.0f);	// TODO: clip range
+
+			//param->setMatrix(Matrix::multiply(view, proj))
+			param->setMatrix(m_mainRenderViewInfo.mainLightViewProjection);
+		}
 	}
 
 #if 1
