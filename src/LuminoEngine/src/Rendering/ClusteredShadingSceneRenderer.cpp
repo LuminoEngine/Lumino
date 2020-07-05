@@ -480,8 +480,8 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 {
 	SceneRenderer::init();
 
-	auto shadowPass = makeObject<ShadowCasterPass>();
-	addPass(shadowPass);
+	//auto shadowPass = makeObject<ShadowCasterPass>();
+	//addPass(shadowPass);
 
 
 	m_depthPrepass = makeObject<ForwardGBufferPrepass>();

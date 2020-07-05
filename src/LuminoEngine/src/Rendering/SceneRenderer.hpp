@@ -93,6 +93,7 @@ public:
 		GraphicsContext* graphicsContext,
         RenderingPipeline* renderingPipeline,
 		RenderTargetTexture* renderTarget,
+		DepthBuffer* depthBuffer,
         const detail::CameraInfo& mainCameraInfo);
 
 	virtual SceneRendererPass* mainRenderPass() const = 0;

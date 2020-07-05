@@ -141,6 +141,9 @@ void SceneRenderingPipeline::render(
     renderViewInfo.mainLightShadowMap = m_shadowMap;
     renderViewInfo.mainLightShadowMapPixelSize = Size(m_shadowMap->width(), m_shadowMap->height());
 
+
+    auto depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
+
     //clear(graphicsContext, renderTarget, clearInfo);
 
     //ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
@@ -149,21 +152,21 @@ void SceneRenderingPipeline::render(
 
     m_sceneRenderer->mainRenderPass()->setClearInfo(mainPassClearInfo);
     m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Geometry, sceneGlobalParams);
-    m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo);
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
 
 
     // TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
     ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
     m_sceneRenderer->mainRenderPass()->setClearInfo(localClearInfo); // 2回目の描画になるので、最初の結果が消えないようにしておく。
     m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Gizmo, nullptr);
-    m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo);
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
 
     {
         //CameraInfo camera;
         //camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
 		//m_sceneRenderer_PostEffectPhase->lightOcclusionMap = m_sceneRenderer->lightOcclusionPass()->lightOcclusionMap();
         m_sceneRenderer_PostEffectPhase->prepare(this, renderViewInfo, RenderPhaseClass::PostEffect, nullptr);  // TODO: PostEffect なので ZSort 要らないモード追加していいかも
-        m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, *mainCameraInfo);
+        m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
     }
 
     // Release G-Buffer
@@ -178,6 +181,9 @@ void SceneRenderingPipeline::render(
 
 #endif
     }
+
+    // TODO: scoped
+    DepthBuffer::releaseTemporary(depthBuffer);
 
     // 誤用防止
     m_renderingFrameBufferSize = SizeI();
@@ -220,10 +226,12 @@ void FlatRenderingPipeline::render(
     RenderViewInfo renderViewInfo;
     renderViewInfo.cameraInfo = *mainCameraInfo;
 
+    auto depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
+
     //clear(graphicsContext, renderTarget, clearInfo);
     m_sceneRenderer->mainRenderPass()->setClearInfo(mainPassClearInfo);
     m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Geometry, nullptr);
-	m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo);
+	m_sceneRenderer->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
 
 	// TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
 	//m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPhaseClass::Gizmo, nullptr);
@@ -235,8 +243,11 @@ void FlatRenderingPipeline::render(
         //CameraInfo camera;
         renderViewInfo.cameraInfo.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
         m_sceneRenderer_PostEffectPhase->prepare(this, renderViewInfo, RenderPhaseClass::PostEffect, nullptr);
-        m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, renderViewInfo.cameraInfo);
+        m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, depthBuffer, renderViewInfo.cameraInfo);
     }
+
+    // TODO: scoped
+    DepthBuffer::releaseTemporary(depthBuffer);
 
 	// 誤用防止
 	m_renderingFrameBufferSize = SizeI();

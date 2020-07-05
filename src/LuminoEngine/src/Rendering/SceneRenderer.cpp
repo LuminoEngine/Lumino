@@ -131,6 +131,7 @@ void SceneRenderer::render(
 	GraphicsContext* graphicsContext,
     RenderingPipeline* renderingPipeline,
 	RenderTargetTexture* renderTarget,
+	DepthBuffer* depthBuffer,
     const CameraInfo& mainCameraInfo)
 {
 
@@ -193,8 +194,6 @@ void SceneRenderer::render(
 	//m_renderingActualPassList.addRange(m_renderingPassList);
 
 
-	auto depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
-
 	m_renderingActualPassList.clear();
 	for (SceneRendererPass* pass : m_renderingPassList)
 	{
@@ -217,8 +216,7 @@ void SceneRenderer::render(
 	//	pass->onEndRender(this);
  //   }
 
-	// TODO: scoped
-	DepthBuffer::releaseTemporary(depthBuffer);
+
 
 	//// Flush
 	//{
