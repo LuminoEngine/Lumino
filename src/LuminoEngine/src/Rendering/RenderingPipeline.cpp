@@ -159,6 +159,9 @@ void SceneRenderingPipeline::render(
     //for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
     //    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, pass);
     //}
+    if (m_sceneRenderer->mainLightInfo()) {
+        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->shadowCasterPass());
+    }
     m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->gbufferPass());
     m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
 

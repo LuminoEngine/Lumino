@@ -480,7 +480,7 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 {
 	SceneRenderer::init();
 
-	//auto shadowPass = makeObject<ShadowCasterPass>();
+	m_shadowCasterPass = makeObject<ShadowCasterPass>();
 	//addPass(shadowPass);
 
 

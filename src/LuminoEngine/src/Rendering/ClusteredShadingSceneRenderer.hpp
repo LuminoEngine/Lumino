@@ -152,6 +152,7 @@ public:
 	SceneRendererPass* mainRenderPass() const override;
 	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
 	//void setFogParams(const FogParams& params) { m_fogParams = params; }
+	ShadowCasterPass* shadowCasterPass() const { return m_shadowCasterPass; }
 	ForwardGBufferPrepass* gbufferPass() const { return m_depthPrepass; }
 	ClusteredShadingGeometryRenderingPass* geometryPass() const { return m_geometryPass; }
 	//const Ref<LightOcclusionPass>& lightOcclusionPass() const { return m_lightOcclusionPass; }
@@ -170,6 +171,7 @@ private:
 	LightClusters				m_lightClusters;
 	//SceneGlobalRenderSettings	m_renderSettings;
 	//FogParams					m_fogParams;
+	Ref<ShadowCasterPass> m_shadowCasterPass;
 	Ref<ForwardGBufferPrepass>			m_depthPrepass;
 	//Ref<LightOcclusionPass> m_lightOcclusionPass;
 	Ref<ClusteredShadingGeometryRenderingPass> m_geometryPass;
