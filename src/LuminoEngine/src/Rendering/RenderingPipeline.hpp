@@ -6,6 +6,7 @@ class GraphicsContext;
 namespace detail {
 class ClusteredShadingSceneRenderer;
 class UnLigitingSceneRenderer;
+class UnLigitingSceneRendererPass;
 
 /*
  * 描画リストやポストエフェクトなど描画に関わる全てのパラメータを受け取り、
@@ -67,7 +68,8 @@ private:
     // - 最後の UIRenderer は 2D スプライトの考え方でソートしたい。(今はサポートしてないけど)
 
     Ref<detail::ClusteredShadingSceneRenderer> m_sceneRenderer;
-    Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer_PostEffectPhase;
+    Ref<detail::SceneRenderer> m_sceneRenderer_PostEffectPhase;
+    Ref<UnLigitingSceneRendererPass> m_flatShadingRendererPass;
 
     // rgb: Packed view space normal, a: depth (near=0.0 ~ far=1.0)
     // TODO: UE4 や Unity など、多くは WorldSpace の normal を G-Buffer に書き込んでいる。
@@ -111,8 +113,10 @@ public:
         detail::DrawElementListCollector* elementListCollector);
 
 private:
-	Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
-    Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer_PostEffectPhase;
+	//Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
+    Ref<detail::SceneRenderer> m_sceneRenderer;
+    Ref<UnLigitingSceneRendererPass> m_flatShadingRendererPass;
+    Ref<UnLigitingSceneRendererPass> m_flatShadingRendererPass_PostEffect;
 };
 
 } // namespace detail

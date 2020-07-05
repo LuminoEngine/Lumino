@@ -64,6 +64,7 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 	}
 }
 
+#if 0
 //==============================================================================
 // UnLigitingSceneRenderer
 
@@ -90,6 +91,7 @@ void UnLigitingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderTechnique
 		v->setTexture(lightOcclusionMap);
 	}
 }
+#endif
 
 } // namespace detail
 } // namespace ln

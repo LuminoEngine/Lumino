@@ -102,17 +102,17 @@ public:
 		DepthBuffer* depthBuffer,
 		SceneRendererPass* pass);
 
-	virtual SceneRendererPass* mainRenderPass() const = 0;
+	virtual SceneRendererPass* mainRenderPass() const { return nullptr; }
 
     RenderingPipeline* renderingPipeline() const { return m_renderingPipeline; }
 	const detail::SceneGlobalRenderParams* sceneGlobalParams() const { return m_sceneGlobalRenderParams; }
     const detail::RenderViewInfo& mainRenderViewInfo() const { return m_mainRenderViewInfo; }
 	const detail::DynamicLightInfo* mainLightInfo() const { return m_mainLightInfo; }
 
-
-protected:
 	SceneRenderer();
 	void init();
+
+protected:
 
 	//void setDefaultMaterial(Material* material);
 
