@@ -127,6 +127,7 @@ void SceneRenderer::prepare(
 	prepare();
 }
 
+#if 0
 void SceneRenderer::render(
 	GraphicsContext* graphicsContext,
     RenderingPipeline* renderingPipeline,
@@ -228,6 +229,7 @@ void SceneRenderer::render(
 
 	//coreRenderer->end();
 }
+#endif
 
 //void SceneRenderer::setDefaultMaterial(Material* material)
 //{

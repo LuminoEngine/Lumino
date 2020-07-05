@@ -89,12 +89,18 @@ public:
 		RenderPhaseClass targetPhase,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
-	void render(
+	//void render(
+	//	GraphicsContext* graphicsContext,
+ //       RenderingPipeline* renderingPipeline,
+	//	RenderTargetTexture* renderTarget,
+	//	DepthBuffer* depthBuffer,
+ //       const detail::CameraInfo& mainCameraInfo);
+
+	void renderPass(
 		GraphicsContext* graphicsContext,
-        RenderingPipeline* renderingPipeline,
 		RenderTargetTexture* renderTarget,
 		DepthBuffer* depthBuffer,
-        const detail::CameraInfo& mainCameraInfo);
+		SceneRendererPass* pass);
 
 	virtual SceneRendererPass* mainRenderPass() const = 0;
 
@@ -112,7 +118,6 @@ protected:
 
 	void addPass(SceneRendererPass* pass);
 
-	void renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass);
 
 	// レンダリング準備として、描画に関係する各種オブジェクト (DrawElement や Light) を収集するフェーズ
 	virtual void collect(RenderingPipeline* renderingPipeline, const CameraInfo& cameraInfo, RenderPhaseClass targetPhase);
