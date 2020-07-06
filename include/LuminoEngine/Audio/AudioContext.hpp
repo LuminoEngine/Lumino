@@ -40,11 +40,6 @@ public:
 
 	detail::AudioDevice* coreObject();
 
-	void sendConnect(AudioNode* outputSide, AudioNode* inputSide);
-	void sendDisconnect(AudioNode* outputSide, AudioNode* inputSide);
-	//void sendDisconnectAllAndDispose(AudioNode* node);
-	void sendDisconnectAll(AudioNode* node);
-
     void addSound(Sound* sound);
 
 LN_INTERNAL_ACCESS:
@@ -55,23 +50,8 @@ LN_INTERNAL_ACCESS:
 	//void tryRemoveAudioNode(AudioNode* node);
 
 private:
-	enum class OperationCode
-	{
-		AddNode,
-		RemoveNode,
-		Connection,
-		Disconnection,
-		//DisconnectionAllAndDispose,
-		DisconnectionAll,
-	};
-
-	struct ConnectionCommand
-	{
-		OperationCode code;
-		Ref<detail::AudioNodeCore> outputSide;
-		Ref<detail::AudioNodeCore> inputSide;
-	};
-
+	void addAudioNodeInternal(const Ref<detail::AudioNodeCore>& node);
+	void removeAudioNodeInternal(const Ref<detail::AudioNodeCore>& node);
 
 	// call by aduio thread.
 	void commitGraphs(float elapsedSeconds);
@@ -96,10 +76,10 @@ private:
 	// commitGraphs() 中、m_allAudioNodes の AudioNode のインスタンスが消えないように参照を持っておくための list
 	//List<Ref<AudioNode>> m_allAudioNodes_onCommit;
 
-	// TODO: Manager に持って行った方がいい。後々複数 context とかなった時にそれが必要。
-	std::vector<ConnectionCommand> m_commands;
 
     List<WeakRefPtr<Sound>> m_soundList;
+
+	friend class detail::AudioManager;
 };
 
 } // namespace ln

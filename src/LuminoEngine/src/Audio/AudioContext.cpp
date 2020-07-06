@@ -166,12 +166,7 @@ void AudioContext::addAudioNode(AudioNode* node)
 	if (LN_REQUIRE(node)) return;
 	m_audioNodes.add(node);
 	node->m_context = this;
-
-	{
-		// TODO: command mutex にして少しでも占有時間減らしたい
-		detail::ScopedWriteLock lock(commitMutex());
-		m_commands.push_back({ OperationCode::AddNode, node->coreNode(), nullptr });
-	}
+	m_manager->postAddAudioNode(this, node);
 }
 
 void AudioContext::removeAudioNode(AudioNode* node)
@@ -180,12 +175,7 @@ void AudioContext::removeAudioNode(AudioNode* node)
 	if (LN_REQUIRE(node->m_context == this)) return;
 	m_audioNodes.remove(node);
 	node->m_context = nullptr;
-
-	{
-		// TODO: command mutex にして少しでも占有時間減らしたい
-		detail::ScopedWriteLock lock(commitMutex());
-		m_commands.push_back({ OperationCode::AddNode, node->coreNode(), nullptr });
-	}
+	m_manager->postRemoveAudioNode(this, node);
 }
 
 //void AudioContext::markGC(detail::AudioNodeCore* node)
@@ -198,6 +188,17 @@ detail::AudioDevice* AudioContext::coreObject()
 	return m_audioDevice;
 }
 
+void AudioContext::addAudioNodeInternal(const Ref<detail::AudioNodeCore>& node)
+{
+	m_coreAudioNodes.add(node);
+}
+
+void AudioContext::removeAudioNodeInternal(const Ref<detail::AudioNodeCore>& node)
+{
+	m_coreAudioNodes.remove(node);
+}
+
+#if 0
 void AudioContext::sendConnect(AudioNode* outputSide, AudioNode* inputSide)
 {
 	if (LN_REQUIRE(outputSide)) return;
@@ -253,6 +254,7 @@ void AudioContext::sendDisconnectAll(AudioNode* node)
 		m_commands.push_back({ OperationCode::DisconnectionAll, node->coreNode(), nullptr });
 	}
 }
+#endif
 
 void AudioContext::addSound(Sound* sound)
 {
@@ -280,44 +282,6 @@ void AudioContext::commitGraphs(float elapsedSeconds)
 	//}
 
 	//
-
-	if (!m_commands.empty()) {
-		for (const auto& cmd : m_commands) {
-			switch (cmd.code) {
-				case OperationCode::AddNode:
-					m_coreAudioNodes.add(cmd.outputSide);
-					break;
-				case OperationCode::RemoveNode:
-					m_coreAudioNodes.remove(cmd.outputSide);
-					break;
-
-				case OperationCode::Connection:
-					//cmd.outputSide->m_alived = true;
-					//cmd.inputSide->m_alived = true;
-					detail::AudioNodeCore::connect(cmd.outputSide, cmd.inputSide);
-					break;
-				case OperationCode::Disconnection:
-					LN_NOTIMPLEMENTED();
-					break;
-				case OperationCode::DisconnectionAll://AndDispose:
-				{
-					detail::AudioNodeCore* node = cmd.outputSide;
-					node->disconnectAllInputSide();
-					node->disconnectAllOutputSide();
-					//if (node->frontNode()) {
-					//	node->frontNode()->m_alived = false;
-					//}
-					//node->dispose();
-					break;
-				}
-				default:
-					LN_UNREACHABLE();
-					break;
-			}
-		}
-		m_commands.clear();
-	}
-
 	for (const auto& node : m_coreAudioNodes) {
 		node->onCommit();
 

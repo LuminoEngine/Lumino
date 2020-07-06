@@ -4,9 +4,11 @@
 #include "../Asset/AssetManager.hpp"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Audio/AudioContext.hpp>
+#include <LuminoEngine/Audio/AudioNode.hpp>
 #include <LuminoEngine/Audio/Sound.hpp>
 #include "Decoder/WaveAudioDecoder.hpp"
 #include "Decoder/OggAudioDecoder.hpp"
+#include "ARIS/CoreAudioNode.hpp"
 #include "GameAudioImpl.hpp"
 #include "AudioManager.hpp"
 
@@ -97,6 +99,7 @@ void AudioManager::update(float elapsedSeconds)
 
 	if (!m_audioThread) {
 		// not thread processing.
+		commitCommands();
 		if (m_primaryContext) {
 			m_primaryContext->processOnAudioThread(elapsedSeconds);
 		}
@@ -179,6 +182,89 @@ void AudioManager::removeSoundManagement(Sound* value)
 	m_soundManagementList.remove(value);
 }
 
+
+void AudioManager::postAddAudioNode(AudioContext* targetContext, AudioNode* node)
+{
+	std::lock_guard<std::mutex> lock(m_commandsMutex);
+	m_commands.push_back({ OperationCode::AddNode, targetContext, node->coreNode(), nullptr });
+}
+
+void AudioManager::postRemoveAudioNode(AudioContext* targetContext, AudioNode* node)
+{
+	std::lock_guard<std::mutex> lock(m_commandsMutex);
+	m_commands.push_back({ OperationCode::AddNode, targetContext, node->coreNode(), nullptr });
+}
+
+void AudioManager::postConnect(AudioNode* outputSide, AudioNode* inputSide)
+{
+	if (LN_REQUIRE(outputSide)) return;
+	if (LN_REQUIRE(inputSide)) return;
+	if (LN_REQUIRE(outputSide->context())) return;
+	if (LN_REQUIRE(inputSide->context())) return;
+	std::lock_guard<std::mutex> lock(m_commandsMutex);
+	m_commands.push_back({ OperationCode::Connection, nullptr, outputSide->coreNode(), inputSide->coreNode() });
+}
+
+void AudioManager::postDisconnect(AudioNode* outputSide, AudioNode* inputSide)
+{
+	if (LN_REQUIRE(outputSide)) return;
+	if (LN_REQUIRE(inputSide)) return;
+	if (LN_REQUIRE(outputSide->context())) return;
+	if (LN_REQUIRE(inputSide->context())) return;
+	std::lock_guard<std::mutex> lock(m_commandsMutex);
+	m_commands.push_back({ OperationCode::Disconnection, nullptr, outputSide->coreNode(), inputSide->coreNode() });
+}
+
+void AudioManager::postDisconnectAll(AudioNode* node)
+{
+	if (LN_REQUIRE(node)) return;
+	if (LN_REQUIRE(node->context())) return;
+	std::lock_guard<std::mutex> lock(m_commandsMutex);
+	m_commands.push_back({ OperationCode::DisconnectionAll, nullptr, node->coreNode(), nullptr });
+}
+
+void AudioManager::commitCommands()
+{
+
+	if (!m_commands.empty()) {
+		for (const auto& cmd : m_commands) {
+			switch (cmd.code) {
+			case OperationCode::AddNode:
+				cmd.context->addAudioNodeInternal(cmd.outputSide);
+				break;
+			case OperationCode::RemoveNode:
+				cmd.context->removeAudioNodeInternal(cmd.outputSide);
+				break;
+
+			case OperationCode::Connection:
+				//cmd.outputSide->m_alived = true;
+				//cmd.inputSide->m_alived = true;
+				detail::AudioNodeCore::connect(cmd.outputSide, cmd.inputSide);
+				break;
+			case OperationCode::Disconnection:
+				LN_NOTIMPLEMENTED();
+				break;
+			case OperationCode::DisconnectionAll://AndDispose:
+			{
+				detail::AudioNodeCore* node = cmd.outputSide;
+				node->disconnectAllInputSide();
+				node->disconnectAllOutputSide();
+				//if (node->frontNode()) {
+				//	node->frontNode()->m_alived = false;
+				//}
+				//node->dispose();
+				break;
+			}
+			default:
+				LN_UNREACHABLE();
+				break;
+			}
+		}
+		m_commands.clear();
+	}
+
+}
+
 void AudioManager::processThread()
 {
 	LN_LOG_DEBUG << "Audio thread started.";
@@ -186,6 +272,8 @@ void AudioManager::processThread()
 	{
 		while (!m_endRequested)
 		{
+			commitCommands();
+
 			if (m_primaryContext) {
 				m_primaryContext->processOnAudioThread(0.02);
 			}

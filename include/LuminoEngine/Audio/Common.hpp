@@ -7,6 +7,7 @@
 //#endif
 
 namespace ln {
+class AudioNode;
 class Sound;
 
 enum class PlayingState	// TODO: AudioPlayingState
@@ -27,6 +28,8 @@ using ScopedWriteLock = std::lock_guard<ln::detail::AudioRWMutex>;
 } // namespace detail
 
 namespace detail {
+class AudioManager;
+class AudioNodeCore;
 
 struct AudioListenerParams
 {

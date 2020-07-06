@@ -89,6 +89,7 @@ private:
     detail::AudioRWMutex m_propertyMutex;
 
 	friend class AudioContext;
+	friend class detail::AudioManager;
 };
 
 } // namespace ln

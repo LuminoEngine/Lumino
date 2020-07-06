@@ -62,9 +62,35 @@ public:
 	void addSoundManagement(Sound* value);
 	void removeSoundManagement(Sound* value);
 
-	void postAddCommand();
+	//void postAddCommand();
+
+	void postAddAudioNode(AudioContext* targetContext, AudioNode* node);
+	void postRemoveAudioNode(AudioContext* targetContext, AudioNode* node);
+	void postConnect(AudioNode* outputSide, AudioNode* inputSide);
+	void postDisconnect(AudioNode* outputSide, AudioNode* inputSide);
+	//void sendDisconnectAllAndDispose(AudioNode* node);
+	void postDisconnectAll(AudioNode* node);
 
 private:
+	enum class OperationCode
+	{
+		AddNode,
+		RemoveNode,
+		Connection,
+		Disconnection,
+		//DisconnectionAllAndDispose,
+		DisconnectionAll,
+	};
+
+	struct ConnectionCommand
+	{
+		OperationCode code;
+		Ref<AudioContext> context;
+		Ref<detail::AudioNodeCore> outputSide;
+		Ref<detail::AudioNodeCore> inputSide;
+	};
+
+	void commitCommands();
     // processThread は少しでも遅れると音声に影響するので、できる限り Mixing に集中する。
     // 音声データの非同期ロードなどそれ以外は dispatheThread で行う。
 	void processThread();
@@ -84,6 +110,8 @@ private:
 	std::unique_ptr<std::thread> m_dispatheThread;
 	std::unique_ptr<Exception> m_audioThreadException;
 	std::atomic<bool> m_endRequested;
+	std::vector<ConnectionCommand> m_commands;
+	std::mutex m_commandsMutex;
 };
 
 } // namespace detail

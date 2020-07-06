@@ -113,7 +113,7 @@ detail::AudioRWMutex& AudioNode::commitMutex()
 void AudioNode::connect(AudioNode * outputSide, AudioNode * inputSide)
 {
 	if (LN_REQUIRE(outputSide)) return;
-	outputSide->context()->sendConnect(outputSide, inputSide);
+	outputSide->context()->manager()->postConnect(outputSide, inputSide);
 	//outputSide->addConnectionOutput(inputSide);
 	//inputSide->addConnectionInput(outputSide);
 }
@@ -121,7 +121,8 @@ void AudioNode::connect(AudioNode * outputSide, AudioNode * inputSide)
 void AudioNode::disconnect(AudioNode* outputSide, AudioNode* inputSide)
 {
 	if (LN_REQUIRE(outputSide)) return;
-	outputSide->context()->sendDisconnect(outputSide, inputSide);
+	outputSide->context()->manager()->postDisconnect(outputSide, inputSide);
+	//outputSide->context()->sendDisconnect(outputSide, inputSide);
 	//outputSide->removeConnectionOutput(inputSide);
 	//inputSide->removeConnectionInput(outputSide);
 }
@@ -129,7 +130,7 @@ void AudioNode::disconnect(AudioNode* outputSide, AudioNode* inputSide)
 void AudioNode::disconnect()
 {
 	if (context()) {
-		context()->sendDisconnectAll(this);
+		context()->manager()->postDisconnectAll(this);
 	}
 }
 
