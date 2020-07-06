@@ -34,7 +34,7 @@ V-Flow なら "Github Actions visual" とかで画像検索すると参考にな
 
 */
 #include "Internal.hpp"
-#include <LuminoEngine\Scripting\Interpreter.hpp>
+#include <LuminoEngine/Scripting/Interpreter.hpp>
 
 namespace ln {
 
