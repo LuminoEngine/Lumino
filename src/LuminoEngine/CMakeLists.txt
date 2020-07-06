@@ -83,7 +83,7 @@ set(LN_SOURCES_Input
 
 file(GLOB LN_SOURCES_Audio ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/*.hpp src/Audio/*.cpp src/Audio/*.hpp src/Audio/*.md)
 file(GLOB LN_SOURCES_Audio_Decoder src/Audio/Decoder/*.cpp src/Audio/Decoder/*.hpp)
-file(GLOB LN_SOURCES_Audio_Core src/Audio/Core/*.cpp src/Audio/Core/*.hpp src/Audio/Core/*.h)
+file(GLOB LN_SOURCES_Audio_ARIS src/Audio/ARIS/*.cpp src/Audio/ARIS/*.hpp src/Audio/ARIS/*.h)
 
 set(LN_SOURCES_Audio_Device
     src/Audio/ALAudioDevice.cpp
@@ -214,7 +214,7 @@ source_group("Animation" FILES ${LN_SOURCES_Animation})
 source_group("Audio" FILES ${LN_SOURCES_Audio})
 source_group("Audio\\Decoder" FILES ${LN_SOURCES_Audio_Decoder})
 source_group("Audio\\Device" FILES ${LN_SOURCES_Audio_Device})
-source_group("Audio\\Core" FILES ${LN_SOURCES_Audio_Core})
+source_group("Audio\\Core" FILES ${LN_SOURCES_Audio_ARIS})
 source_group("Shader" FILES ${LN_SOURCES_Shader})
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 source_group("Graphics\\Vulkan" FILES ${LN_SOURCES_Graphics_Vulkan})
@@ -254,7 +254,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Audio}
     ${LN_SOURCES_Audio_Decoder}
     ${LN_SOURCES_Audio_Device}
-    ${LN_SOURCES_Audio_Core}
+    ${LN_SOURCES_Audio_ARIS}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Graphics_Vulkan}

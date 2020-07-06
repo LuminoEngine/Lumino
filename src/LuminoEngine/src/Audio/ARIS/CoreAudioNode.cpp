@@ -3,7 +3,7 @@
 #include "CoreAudioNode.hpp"
 #include "../Decoder/AudioDecoder.hpp"	// for AudioSourceNodeCore
 #include "ChromiumWebCore.hpp"
-#include "../Core/VectorMath.h"
+#include "../ARIS/VectorMath.h"
 
 namespace ln {
 namespace detail {
