@@ -22,8 +22,8 @@ AudioNode::AudioNode()
 void AudioNode::init()
 {
 	Object::init();
-	m_context =	detail::EngineDomain::audioManager()->primaryContext();
-	m_context->addAudioNode(this);
+	//m_context =	detail::EngineDomain::audioManager()->primaryContext();
+	//m_context->addAudioNode(this);
 }
 
 void AudioNode::onDispose(bool explicitDisposing)

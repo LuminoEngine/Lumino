@@ -36,7 +36,10 @@ void Sound::init(const StringRef& filePath)
 
     Ref<detail::AudioDecoder> decoder = detail::EngineDomain::audioManager()->createAudioDecoder(filePath);
     m_sourceNode = makeObject<AudioSourceNode>(decoder);
+    m_manager->primaryContext()->addAudioNode(m_sourceNode);
+
     m_gainNode = makeObject<AudioGainNode>();
+    m_manager->primaryContext()->addAudioNode(m_gainNode);
 
 
     //AudioNode::connect(m_sourceNode, manager->primaryContext()->destination());
