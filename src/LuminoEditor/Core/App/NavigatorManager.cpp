@@ -88,6 +88,16 @@ void NavigationBar::removeNavigator(Navigator* navigator)
 }
 
 //==============================================================================
+// NavigatorContentPane
+
+void NavigatorContentPane::onUpdateStyle(const ln::UIStyleContext* styleContext, const ln::detail::UIStyleInstance* finalStyle)
+{
+    UIElement::onUpdateStyle(styleContext, finalStyle);
+
+    setBackgroundColor(styleContext->mainTheme->color(ln::UIThemeConstantPalette::ControlBackgroundColor));
+}
+
+//==============================================================================
 // NavigatorManager
 
 NavigatorManager::NavigatorManager()
@@ -145,6 +155,13 @@ void NavigatorManager::addNavigator(Navigator* navigator)
     m_navigationBar->addNavigator(navigator);
     m_switchLayout->addChild(navigator->getNavigationPane());
     m_navigators.add(navigator);
+}
+
+void NavigatorManager::removeNavigator(Navigator* navigator)
+{
+    m_navigationBar->removeNavigator(navigator);
+    m_switchLayout->removeChild(navigator->getNavigationPane());
+    m_navigators.remove(navigator);
 }
 
 void NavigatorManager::unloadAdditionalNavigators()

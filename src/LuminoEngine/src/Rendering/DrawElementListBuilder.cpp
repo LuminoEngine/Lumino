@@ -91,6 +91,15 @@ void DrawElementListBuilder::setScissorRect(const RectI & value)
 	}
 }
 
+void DrawElementListBuilder::setObjectId(int value)
+{
+    //if (primaryGeometryStageParameters().m_objectId != value) {
+    //    primaryGeometryStageParameters().m_objectId = value;
+    //    m_modified = true;
+    //}
+    m_objectId = value;
+}
+
 void DrawElementListBuilder::setBlendMode(const Optional<BlendMode>& value)
 {
 	if (primaryGeometryStageParameters().m_blendMode != value) {
@@ -345,6 +354,8 @@ RenderStage* DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFea
 			*newStage->geometryStageParameters = primaryGeometryStageParameters();
 		}
 
+        newStage->m_objectId = m_objectId;
+
 		return newStage;
 	}
 	else {
@@ -380,7 +391,7 @@ void DrawElementListBuilder::prepareRenderDrawElement(RenderDrawElement* newElem
 
     // transform
     if (primaryState()->baseTransform.hasValue()) {
-        newElement->m_combinedWorldMatrix = primaryState()->baseTransform.value() * primaryState()->transform;
+        newElement->m_combinedWorldMatrix = primaryState()->transform * primaryState()->baseTransform.value();
     }
     else {
         newElement->m_combinedWorldMatrix = primaryState()->transform;

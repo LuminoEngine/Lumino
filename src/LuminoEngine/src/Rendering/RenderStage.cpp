@@ -40,7 +40,8 @@ bool RenderStage::equals(const RenderStage* other) const
 	return
 		frameBufferStageParameters->equals(other->frameBufferStageParameters) &&
 		geometryStageParameters->equals(other->geometryStageParameters) &&
-		renderFeature == other->renderFeature;
+		renderFeature == other->renderFeature && 
+		m_objectId == other->m_objectId;
 }
 
 void RenderStage::flush(GraphicsContext* context)

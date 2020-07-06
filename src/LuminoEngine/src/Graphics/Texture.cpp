@@ -73,8 +73,6 @@ void Texture::setSamplerState(SamplerState* value)
 //==============================================================================
 // Texture2D
 
-static const Char* s_Texture2D_candidateExts[] = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
-
 LN_OBJECT_IMPLEMENT(Texture2D, Texture) {}
 
 Ref<Texture2D> Texture2D::create(int width, int height)
@@ -189,7 +187,7 @@ bool Texture2D::init(const Path& assetPath)
     if (detail::AssetPath::isAssetFilePath(assetPath))
         setAssetPath(assetPath);
     else
-        m_sourceFilePath = detail::AssetPath::resolveAssetPath(assetPath, s_Texture2D_candidateExts);
+        m_sourceFilePath = detail::AssetPath::resolveAssetPath(assetPath, GraphicsHelper::CandidateExts_Texture2D);
     
     reload();
 
@@ -306,7 +304,7 @@ detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* ou
             SizeI bmpSize(m_bitmap->width(), m_bitmap->height());
             detail::RenderBulkData bmpRawData = detail::GraphicsContextInternal::getRenderingCommandList(context)->allocateBulkData(bmpBuffer->size());
             detail::BitmapHelper::blitRawSimple(
-                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
+                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), GraphicsHelper::getPixelSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
 
             if (!m_rhiObject || m_usage != m_rhiObject->usage() || mipmap() != m_rhiObject->mipmap()) {
                 m_rhiObject = deviceContext->createTexture2D(m_usage, width(), height(), format(), mipmap(), bmpRawData.data());
@@ -375,7 +373,7 @@ void Texture2D::serialize2(Serializer2& ar)
     if (ar.isSaving() && !m_sourceFilePath.isNull()) {
         // save to relative path.
         // TODO: 毎回 parseAssetPath するのはアレなので、ar.basePath() の型を AssetPath にしたいところ。
-        path = detail::AssetPath::makeRelativePath(detail::AssetPath::parseAssetPath(ar.basePath()), m_sourceFilePath);
+        path = detail::AssetPath::makeRelativePath(ar.basePath(), m_sourceFilePath);
     }
 
     ar & makeNVP(u"file", path);
@@ -384,8 +382,8 @@ void Texture2D::serialize2(Serializer2& ar)
         if (!path.isEmpty()) {
             // convert relative path to full path.
             m_sourceFilePath = detail::AssetPath::resolveAssetPath(
-                detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), path),
-                s_Texture2D_candidateExts);
+                detail::AssetPath::combineAssetPath(ar.basePath(), path),
+                GraphicsHelper::CandidateExts_Texture2D);
         }
     }
 }
@@ -669,7 +667,7 @@ detail::ITexture* Texture3D::resolveRHIObject(GraphicsContext* context, bool* ou
             BoxSizeI bmpSize = {m_bitmap->width(), m_bitmap->height(), m_bitmap->depth()};
             detail::RenderBulkData bmpRawData = detail::GraphicsContextInternal::getRenderingCommandList(context)->allocateBulkData(bmpBuffer->size());
             detail::BitmapHelper::blitRawSimple3D(
-                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
+                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), GraphicsHelper::getPixelSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
 
             if (!m_rhiObject || m_usage != m_rhiObject->usage()) {
                 m_rhiObject = deviceContext->createTexture3D(m_usage, width(), height(), depth(), format(), mipmap(), m_bitmap->data());

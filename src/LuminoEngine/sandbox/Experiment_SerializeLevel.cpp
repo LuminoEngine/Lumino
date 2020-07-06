@@ -11,7 +11,7 @@ class App_Experiment_SerializeLevel : public Application
 
     };
 
-    virtual void onInit() override
+    void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
@@ -30,6 +30,7 @@ class App_Experiment_SerializeLevel : public Application
 
 
             level1->addObject(mesh1);
+            level1->acquireRenderParameters()->m_fogColor = Color::Gray;
 
             Assets::saveAsset(level1, u"Level1");
         }
@@ -42,7 +43,7 @@ class App_Experiment_SerializeLevel : public Application
         }
 	}
 
-    virtual void onUpdate() override
+    void onUpdate() override
     {
     }
 };

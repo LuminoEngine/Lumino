@@ -46,18 +46,18 @@ void ForwardGBufferPrepass::init()
 	m_renderPass = makeObject<RenderPass>();
 }
 
-void ForwardGBufferPrepass::onBeginRender(SceneRenderer* sceneRenderer)
+void ForwardGBufferPrepass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
-	const auto* renderingPipeline = sceneRenderer->renderingPipeline();
-
+	const auto* renderingPipeline = static_cast<SceneRenderingPipeline*>(sceneRenderer->renderingPipeline());
 	auto size = renderingPipeline->renderingFrameBufferSize();
-	if (!Debug) {
-		//m_depthMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
-		//m_normalMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
-		//m_materialMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
-	}
 	m_depthBuffer = DepthBuffer::getTemporary(size.width, size.height);
 
+	m_renderPass->setRenderTarget(0, renderingPipeline->viweNormalAndDepthBuffer());
+	m_renderPass->setRenderTarget(1, renderingPipeline->viweDepthBuffer());
+	m_renderPass->setRenderTarget(2, renderingPipeline->materialBuffer());
+	m_renderPass->setRenderTarget(3, renderingPipeline->objectIdBuffer());
+	m_renderPass->setDepthBuffer(m_depthBuffer);
+	m_renderPass->setClearValues(ClearFlags::Depth, Color::Gray, 1.0f, 0);
 }
 
 void ForwardGBufferPrepass::onEndRender(SceneRenderer* sceneRenderer)
@@ -76,15 +76,9 @@ void ForwardGBufferPrepass::onEndRender(SceneRenderer* sceneRenderer)
 	m_depthBuffer = nullptr;
 }
 
-void ForwardGBufferPrepass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
-	const auto* renderingPipeline = static_cast<SceneRenderingPipeline*>(sceneRenderer->renderingPipeline());
-	m_renderPass->setRenderTarget(0, renderingPipeline->viweNormalAndDepthBuffer());
-	m_renderPass->setRenderTarget(1, renderingPipeline->viweDepthBuffer());
-	m_renderPass->setRenderTarget(2, renderingPipeline->materialBuffer());
-	m_renderPass->setDepthBuffer(m_depthBuffer);
-	m_renderPass->setClearValues(ClearFlags::Depth, Color::Gray, 1.0f, 0);
-}
+//void ForwardGBufferPrepass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+//{
+//}
 
 //void ForwardGBufferPrepass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
 //{
@@ -130,7 +124,7 @@ ShaderTechnique* ForwardGBufferPrepass::selectShaderTechnique(
 
 //==============================================================================
 // LightOcclusionPass
-
+#if 0
 LightOcclusionPass::LightOcclusionPass()
 {
 }
@@ -219,6 +213,7 @@ void LightOcclusionPass::acquireBuffers(int width, int height)
 	//	m_depthBuffer = DepthBuffer::getTemporary(width, height);
 	//}
 }
+#endif
 
 //==============================================================================
 // ClusteredShadingGeometryRenderingPass
@@ -259,7 +254,7 @@ void ClusteredShadingGeometryRenderingPass::init(ClusteredShadingSceneRenderer* 
 	m_renderPass = makeObject<RenderPass>();
 }
 
-void ClusteredShadingGeometryRenderingPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void ClusteredShadingGeometryRenderingPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	m_renderPass->setRenderTarget(0, renderTarget);
 	m_renderPass->setDepthBuffer(depthBuffer);
@@ -384,15 +379,13 @@ ShadowCasterPass::~ShadowCasterPass()
 {
 }
 
-//RenderTargetTexture* g_m_shadowMap  = nullptr;
+RenderTargetTexture* g_m_shadowMap  = nullptr;
 void ShadowCasterPass::init()
 {
 	SceneRendererPass::init();
 
 	m_defaultShader = manager()->builtinShader(BuiltinShader::ShadowCaster);
 
-	m_shadowMap = makeObject<RenderTargetTexture>(1024, 1024, TextureFormat::RGBA32F, false);
-	m_depthBuffer = makeObject<DepthBuffer>(1024, 1024);
 	m_renderPass = makeObject<RenderPass>();
 
 	//g_m_shadowMap = m_shadowMap;
@@ -403,11 +396,34 @@ void ShadowCasterPass::init()
 //	return m_defaultShader;
 //}
 
-void ShadowCasterPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void ShadowCasterPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
-	m_renderPass->setRenderTarget(0, m_shadowMap);
-	m_renderPass->setDepthBuffer(m_depthBuffer);
+	const auto* renderingPipeline = static_cast<SceneRenderingPipeline*>(sceneRenderer->renderingPipeline());
+	//RenderTargetTexture* shadowMap = 
+
+	g_m_shadowMap = renderingPipeline->shadowMap();
+
+	m_renderPass->setRenderTarget(0, renderingPipeline->shadowMap());
+	m_renderPass->setDepthBuffer(renderingPipeline->shadowMapDepthBuffer());
 	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
+
+	if (auto param = m_defaultShader->findParameter(u"ln_ViewProjection_Light0")) {
+		//const auto* mainLight = sceneRenderer->mainLightInfo();
+		//const auto pos = Vector3(10, 10, 10);
+		//const auto view = Matrix::makeLookAtLH(
+		//	pos,
+		//	pos + mainLight->m_direction,
+		//	Vector3::UnitY);
+		//const auto proj = Matrix::makePerspectiveFovLH(
+		//	Math::PI / 2.0f,
+		//	1024.0 / 1024.0,	// TODO: LightMapSize
+		//	0.5f, 100.0f);	// TODO: clip range
+
+		//param->setMatrix(Matrix::multiply(view, proj));
+		param->setMatrix(sceneRenderer->m_mainRenderViewInfo.mainLightViewProjection);
+	}
+
+	//sceneRenderer->m_mainCameraInfo.mainLightShadowMapPixelSize = 
 }
 
 //void ShadowCasterPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
@@ -465,16 +481,20 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 {
 	SceneRenderer::init();
 
+	m_shadowCasterPass = makeObject<ShadowCasterPass>();
+	//addPass(shadowPass);
+
+
 	m_depthPrepass = makeObject<ForwardGBufferPrepass>();
-	addPass(m_depthPrepass);
+	//addPass(m_depthPrepass);
 
 
-	m_lightOcclusionPass = makeObject<LightOcclusionPass>();
-	addPass(m_lightOcclusionPass);
+	//m_lightOcclusionPass = makeObject<LightOcclusionPass>();
+	//addPass(m_lightOcclusionPass);
 
 	// pass "Geometry"
 	m_geometryPass = makeObject<ClusteredShadingGeometryRenderingPass>(this);
-	addPass(m_geometryPass);
+	//addPass(m_geometryPass);
 
 	m_lightClusters.init();
 
@@ -499,11 +519,11 @@ SceneRendererPass* ClusteredShadingSceneRenderer::mainRenderPass() const
 	return m_geometryPass;
 }
 
-void ClusteredShadingSceneRenderer::collect(const detail::CameraInfo& cameraInfo)
+void ClusteredShadingSceneRenderer::collect(RenderingPipeline* renderingPipeline, const detail::CameraInfo& cameraInfo, RenderPhaseClass targetPhase)
 {
 	m_lightClusters.beginMakeClusters(cameraInfo.viewMatrix, cameraInfo.projMatrix, cameraInfo.viewPosition, cameraInfo.nearClip, cameraInfo.farClip);
 
-	SceneRenderer::collect(cameraInfo);
+	SceneRenderer::collect(renderingPipeline, cameraInfo, targetPhase);
 
 	m_lightClusters.endMakeClusters();
 }
@@ -520,7 +540,7 @@ static Vector3 transformDirection(const Vector3& vec, const Matrix& mat)
 
 void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light)
 {
-	const CameraInfo& view = mainCameraInfo();
+	const CameraInfo& view = mainRenderViewInfo().cameraInfo;
 
 	Color color = light.m_color;
 	color *= light.m_intensity;
@@ -584,10 +604,29 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderTec
 
 	ssm->updateClusteredShadingVariables(info);
 
+	//// TODO: Test
+	//v = shader->findParameter(u"_LensflareOcclusionMap");
+	//if (v) {
+	//	v->setTexture(m_lightOcclusionPass->m_lensflareOcclusionMap);
+	//}
+
 	// TODO: Test
-	v = shader->findParameter(u"_LensflareOcclusionMap");
-	if (v) {
-		v->setTexture(m_lightOcclusionPass->m_lensflareOcclusionMap);
+	if (auto param = shader->findParameter(u"ln_ViewProjection_Light0")) {
+		if (const auto* mainLight = mainLightInfo()) {
+
+			//const auto pos = Vector3(10, 10, 10);
+			//const auto view = Matrix::makeLookAtLH(
+			//	pos,
+			//	Vector3::Zero,
+			//	Vector3::UnitY);
+			//const auto proj = Matrix::makePerspectiveFovLH(
+			//	Math::PI / 2.0f,
+			//	1024.0 / 1024.0,	// TODO: LightMapSize
+			//	0.5f, 100.0f);	// TODO: clip range
+
+			//param->setMatrix(Matrix::multiply(view, proj))
+			param->setMatrix(m_mainRenderViewInfo.mainLightViewProjection);
+		}
 	}
 
 #if 1

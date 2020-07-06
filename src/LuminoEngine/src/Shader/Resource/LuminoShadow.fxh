@@ -2,18 +2,18 @@
 #ifndef LUMINO_SHADOW_INCLUDED
 #define LUMINO_SHADOW_INCLUDED
 
-sampler2D         ln_DirectionalShadowMap;
-//Texture2D         ln_DirectionalShadowMap;
-//SamplerState    ln_DirectionalShadowMapSamplerState;
-float2          ln_DirectionalShadowMapPixelSize;
+sampler2D         ln_mainLightShadowMap;
+//Texture2D         ln_mainLightShadowMap;
+//SamplerState    ln_mainLightShadowMapSamplerState;
+//float2          ln_mainLightShadowMapResolution;
 
-static float2   ln_BlurPixelStep = float2(1.0, 1.0) / ln_DirectionalShadowMapPixelSize;
-static float2   ln_DX9ShadowMapHalfPixelStep = float2(0.5, 0.5) / ln_DirectionalShadowMapPixelSize;
+//static float2   ln_BlurPixelStep = float2(1.0, 1.0) / ln_mainLightShadowMapResolution;
+static float2   ln_DX9ShadowMapHalfPixelStep = float2(0.5, 0.5) / ln_mainLightShadowMapResolution;
 
 /*
-sampler2D ln_DirectionalShadowMap_Sampler = sampler_state
+sampler2D ln_mainLightShadowMap_Sampler = sampler_state
 {
-    Texture = <ln_DirectionalShadowMap>;
+    Texture = <ln_mainLightShadowMap>;
     MinFilter = Point; 
     MagFilter = Point;
     MipFilter = None;
@@ -25,8 +25,8 @@ sampler2D ln_DirectionalShadowMap_Sampler = sampler_state
 // シャドウマップからサンプリングした値が compare より奥にあれば 1(影をつける)、そうでなければ 0
 float LN_CompareShadowTexture(float2 uv, float compareZ)
 {
-	//return step(compareZ, (ln_DirectionalShadowMap.Sample(ln_DirectionalShadowMapSamplerState, uv).r));
-	return step(compareZ, (tex2D(ln_DirectionalShadowMap, uv).r));
+	//return step(compareZ, (ln_mainLightShadowMap.Sample(ln_mainLightShadowMapSamplerState, uv).r));
+	return step(compareZ, (tex2D(ln_mainLightShadowMap, uv).r));
 }
 
 // posInLight : Position in viewport coord of light
@@ -40,7 +40,7 @@ float LN_CalculateShadow(float4 posInLight)
 #endif
 
 #if 1
-    float2 s2 = ln_BlurPixelStep;
+    float2 s2 = ln_mainLightShadowMapResolution.zw;
     float depth = posInLight.z/ posInLight.w;
     float compareZ = depth - 0.0065;
     float shadow = (
@@ -58,15 +58,16 @@ float LN_CalculateShadow(float4 posInLight)
     return lerp(0.5, 1.0, shadow);
 
 #else
-    //float shadow = ln_DirectionalShadowMap.Sample(ln_DirectionalShadowMapSamplerState, shadowUV).r;
-    float shadow = tex2D(ln_DirectionalShadowMap, shadowUV).r;
+    //float shadow = ln_mainLightShadowMap.Sample(ln_mainLightShadowMapSamplerState, shadowUV).r;
+    float shadow = tex2D(ln_mainLightShadowMap, shadowUV).r;
 
     float depth = posInLight.z/ posInLight.w;
 
     if (depth > shadow + 0.0065)
     {
-        outgoingLight *= 0.5;
+        return 0.5;
     }
+    return 1.0;
 #endif
 }
 

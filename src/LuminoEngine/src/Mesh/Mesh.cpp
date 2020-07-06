@@ -1262,6 +1262,8 @@ Box MeshHelper::makeAABB(const Vertex* vertices, uint32_t vertexCount)
 	return Box(aabbMin, aabbMax);
 }
 
+std::array<const Char*, 1> MeshHelper::CandidateExtensions_MeshModel = { u".gltf" };
+
 namespace detail {
 
 

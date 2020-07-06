@@ -1,5 +1,6 @@
 object:
   class.Level:
+    renderParams: ~
     children:
       - class.Sprite:
           position: [0, 0, 0]
@@ -9,7 +10,5 @@ object:
             - class.SpriteComponent:
                 material:
                   class.Material:
-                    mainTexture:
-                      class.Texture2D:
-                        file: dir/Sprite1.png
+                    mainTexture: Assets/dir/Sprite1.png
           children: ~

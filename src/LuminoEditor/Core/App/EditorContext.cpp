@@ -3,6 +3,9 @@
 #include "../Project/PluginManager.hpp"
 #include "../Project/AssetDatabase.hpp"
 #include "EditorContext.hpp"
+#include "MainWindow.hpp"
+#include "NavigatorManager.hpp"
+#include "DocumentManager.hpp"
 #include "Application.hpp"
 
 namespace lna {
@@ -10,6 +13,16 @@ namespace lna {
 EditorContext* EditorContext::current()
 {
 	return EditorApplication::instance()->editorContext();
+}
+
+NavigatorManager* EditorContext::navigatorManager() const
+{
+	return mainWindow()->navigatorManager();
+}
+
+DocumentManager* EditorContext::documentManager() const
+{
+	return mainWindow()->documentManager();
 }
 
 Project* EditorContext::mainProject() const

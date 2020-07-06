@@ -15,6 +15,7 @@ class App_Sandbox_PostEffect : public Application
         //Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
+		Engine::renderView()->setClearMode(RenderViewClearMode::SkyDome);
 		//Engine::ambientLight()->setIntensity(0.5);
 
 		Engine::camera()->setFarClip(100);

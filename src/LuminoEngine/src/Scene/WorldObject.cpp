@@ -129,6 +129,10 @@ WorldObject::WorldObject()
     , m_isSpecialObject(false)
 	, m_destroyed(false)
 {
+    if (detail::EngineDomain::sceneManager()->m_editorMode) {
+        m_id = detail::EngineDomain::sceneManager()->getWorldObjectId();
+
+    }
 }
 
 WorldObject::~WorldObject()
@@ -155,6 +159,12 @@ void WorldObject::onDispose(bool explicitDisposing)
 	if (m_components) {
 		m_components->clear();
 	}
+
+    if (m_id > 0) {
+        detail::EngineDomain::sceneManager()->releaseWorldObjectId(m_id);
+        m_id = 0;
+    }
+
 	Object::onDispose(explicitDisposing);
 }
 
@@ -171,6 +181,13 @@ void WorldObject::addComponent(Component* component)
     component->m_object = this;
     m_components->add(component);
     component->onAttached(this);
+}
+
+void WorldObject::removeAllComponents()
+{
+    if (m_components) {
+        m_components->clear();
+    }
 }
 
 void WorldObject::destroy()
@@ -331,6 +348,7 @@ void WorldObject::updateFrame(float elapsedSeconds)
 
 void WorldObject::render(RenderingContext* context)
 {
+    context->setObjectId(m_id);
     onRender(context);
 }
 

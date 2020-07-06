@@ -28,9 +28,9 @@ TEST_F(Test_Base_Serializer, Basic)
 	auto obj1 = makeObject<TestObject1>();
 	obj1->m_value = 500;
 	auto asset1 = makeObject<AssetModel>(obj1);
-	String text = Serializer2::serialize(asset1, u"");
+	String text = Serializer2::serialize(asset1, detail::AssetPath::Null);
 
-	auto asset2 = Serializer2::deserialize(text, u"");
+	auto asset2 = Serializer2::deserialize(text, detail::AssetPath::Null);
 	auto obj2 = dynamic_cast<TestObject1*>(asset2->target());
 
 	ASSERT_EQ(true, obj2 != nullptr);
@@ -71,9 +71,9 @@ TEST_F(Test_Base_Serializer, List)
 	auto obj1 = makeObject<Test_Base_Serializer_TestObject1>();
 	obj1->m_list = { 1, 2, 3 };
 	auto asset1 = makeObject<AssetModel>(obj1);
-	String text = Serializer2::serialize(asset1, u"");
+	String text = Serializer2::serialize(asset1, detail::AssetPath::Null);
 
-	auto asset2 = Serializer2::deserialize(text, u"");
+	auto asset2 = Serializer2::deserialize(text, detail::AssetPath::Null);
 	auto obj2 = dynamic_cast<Test_Base_Serializer_TestObject1*>(asset2->target());
 
 	ASSERT_EQ(true, obj2 != nullptr);
@@ -122,9 +122,9 @@ TEST_F(Test_Base_Serializer, ObjectList)
 	obj1->m_list[1]->m_value = 200;
 	obj1->m_list[2]->m_value = 300;
 	auto asset1 = makeObject<AssetModel>(obj1);
-	String text = Serializer2::serialize(asset1, u"");
+	String text = Serializer2::serialize(asset1, detail::AssetPath::Null);
 
-	auto asset2 = Serializer2::deserialize(text, u"");
+	auto asset2 = Serializer2::deserialize(text, detail::AssetPath::Null);
 	auto obj2 = dynamic_cast<Test_Base_Serializer_ObjectList1*>(asset2->target());
 
 	ASSERT_EQ(true, obj2 != nullptr);
@@ -202,9 +202,9 @@ TEST_F(Test_Base_Serializer, Values)
 	obj1->m_double = 1000;
 	obj1->m_string = u"test";
 	auto asset1 = makeObject<AssetModel>(obj1);
-	String text = Serializer2::serialize(asset1, u"");
+	String text = Serializer2::serialize(asset1, detail::AssetPath::Null);
 
-	auto asset2 = Serializer2::deserialize(text, u"");
+	auto asset2 = Serializer2::deserialize(text, detail::AssetPath::Null);
 	auto obj2 = dynamic_cast<Test_Base_Serializer_Values_TestObject1*>(asset2->target());
 
 	ASSERT_EQ(true, obj2 != nullptr);
@@ -257,9 +257,9 @@ TEST_F(Test_Base_Serializer, CppUtils)
 	obj1->m_list2[1]->m_value = 200;
 	obj1->m_list2[2]->m_value = 300;
 	auto asset1 = makeObject<AssetModel>(obj1);
-	String text = Serializer2::serialize(asset1, u"");
+	String text = Serializer2::serialize(asset1, detail::AssetPath::Null);
 
-	auto asset2 = Serializer2::deserialize(text, u"");
+	auto asset2 = Serializer2::deserialize(text, detail::AssetPath::Null);
 	auto obj2 = dynamic_cast<Test_Base_Serializer_CppUtils_TestObject1*>(asset2->target());
 
 	ASSERT_EQ(true, obj2 != nullptr);

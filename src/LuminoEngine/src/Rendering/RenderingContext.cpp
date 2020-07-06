@@ -696,9 +696,9 @@ void RenderingContext::addHemisphereLight(const Color& skyColor, const Color& gr
 	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeHemisphereLightInfo(skyColor, groundColor, intensity));
 }
 
-void RenderingContext::addDirectionalLight(const Color& color, float intensity, const Vector3& direction, bool mainLight)
+void RenderingContext::addDirectionalLight(const Color& color, float intensity, const Vector3& direction, bool mainLight, float shadowCameraZFar, float shadowLightZFar)
 {
-	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeDirectionalLightInfo(color, intensity, direction, mainLight));
+	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeDirectionalLightInfo(color, intensity, direction, mainLight, shadowCameraZFar, shadowLightZFar));
 }
 
 void RenderingContext::addPointLight(const Color& color, float intensity, const Vector3& position, float range, float attenuation)
@@ -776,6 +776,11 @@ RenderTargetTexture* RenderingContext::gbuffer(GBuffer kind) const
 		LN_UNREACHABLE();
 		return nullptr;
 	}
+}
+
+void RenderingContext::setObjectId(int value)
+{
+	m_builder->setObjectId(value);
 }
 
 //detail::RenderDrawElement* RenderingContext::lastRenderDrawElement() const

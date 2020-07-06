@@ -39,7 +39,9 @@ public:
 
 } // namespace detail
 
-template<typename T> void serialize2(Serializer2& sr, List<T>& value);
+template<typename T> void serialize2(Serializer2& ar, List<T>& value);
+template<typename T> void serialize2(Serializer2& ar, Optional<T>& value);
+void serialize2(Serializer2& ar, Path& value);
 void serialize2(Serializer2& ar, detail::AssetPath& value);
 void serialize2(Serializer2& ar, Vector2& value);
 void serialize2(Serializer2& ar, Vector3& value);
@@ -133,7 +135,7 @@ public:
 
 	bool isLoading() const { return m_mode == ArchiveMode::Load; }
 
-	const String& basePath() const { return m_basePath; }
+	const detail::AssetPath& basePath() const { return m_basePath; }
 
 
 	void writeName(const StringRef& name);
@@ -152,6 +154,7 @@ public:
 	void writeUInt64(uint64_t value);
 	void writeFloat(float value);
 	void writeDouble(double value);
+	void writeNull();
 
 	/** write */
 	//LN_METHOD()
@@ -225,6 +228,8 @@ public:
 
 	void beginReadObject();
 	void endReadObject();
+	bool readingValueIsObject() const;
+	bool readingValueIsNull() const;
 	bool beginReadList(int* outItemCount);
 	void endReadList();
 	
@@ -236,13 +241,13 @@ public:
 	
 	/** serialize */
 	//LN_METHOD()
-	static String serialize(AssetModel* value, const String& basePath);
+	static String serialize(AssetModel* value, const detail::AssetPath& basePath);
 	
 	/** serialize */
 	//LN_METHOD()
-	static Ref<AssetModel> deserialize(const String& str, const String& basePath);
+	static Ref<AssetModel> deserialize(const String& str, const detail::AssetPath& basePath);
 
-	static void deserializeInstance(AssetModel* asset, const String& str, const String& basePath);
+	static void deserializeInstance(AssetModel* asset, const String& str, const detail::AssetPath& basePath);
 
 
 	// C++ utils
@@ -347,7 +352,7 @@ private:
 	void readValue(T& outValue) { ln::serialize2(*this, outValue); }
 
 	ArchiveMode m_mode;
-	String m_basePath;
+	detail::AssetPath m_basePath;
 	Ref<detail::SerializerStore2> m_store;
 };
 #endif
@@ -371,6 +376,41 @@ void serialize2(Serializer2& ar, List<T>& value)
 			}
 			ar.endReadList();
 		}
+	}
+}
+
+template<typename T>
+void serialize2(Serializer2& ar, Optional<T>& value)
+{
+	if (ar.isSaving()) {
+		if (!value) {
+			ar.writeNull();
+		}
+		else {
+			T v = *value;
+			ar & v;
+		}
+	}
+	else {
+		// ※そもそも key が存在しない場合は、値の serialize() 自体呼ばれない
+		if (ar.readingValueIsNull()) {
+			value = nullptr;
+		}
+		else {
+			T v;
+			ar & v;
+			value = v;
+		}
+	}
+}
+
+inline void serialize2(Serializer2& ar, Path& value)
+{
+	if (ar.isSaving()) {
+		ar.writeString(value.str());
+	}
+	else {
+		value = ar.readString();
 	}
 }
 

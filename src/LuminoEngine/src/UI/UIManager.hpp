@@ -89,6 +89,9 @@ public:
 	const CommonInputCommands& commonInputCommands() const { return m_commonInputCommands; }
 	bool handleCommonInputCommands(UIEventArgs* e);
 
+	// ルートまで到達した Bubble イベントを処理する
+	void handleRootBubbleEvent(UIEventArgs* e);
+
 private:
     struct EventQueueItem
     {

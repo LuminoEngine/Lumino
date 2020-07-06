@@ -416,6 +416,8 @@ void UITreeView::onItemAdded(UICollectionItem* item)
 // UITreeItem2
 
 UITreeItem2::UITreeItem2()
+    : m_parentItem(nullptr)
+    , m_headerContent(nullptr)
 {
     m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
 }
@@ -435,6 +437,7 @@ bool UITreeItem2::init()
     m_expanderButton->connectOnChecked(bind(this, &UITreeItem2::expander_Checked));
     m_expanderButton->connectOnUnchecked(bind(this, &UITreeItem2::expander_Unchecked));
 
+    //setBackgroundColor(Color::Red);
     //m_expanderButton->setBackgroundColor(Color::Red);
 
     addVisualChild(m_expanderButton);
@@ -459,9 +462,9 @@ void UITreeItem2::onUnselected(UIEventArgs* e)
 
 void UITreeItem2::setContent(UIElement* value)
 {
-    assert(!m_headerContent);    // TODO
+    assert(!m_headerContent);    // TODO: 多重追加対策
     m_headerContent = value;
-    addVisualChild(m_headerContent);
+    addChild(value);
 }
 
 void UITreeItem2::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)
@@ -509,10 +512,10 @@ void UITreeItem2::onRoutedEvent(UIEventArgs* e)
 
 Size UITreeItem2::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-    for (auto& item : *m_logicalChildren) {
-        static_pointer_cast<UITreeItem2>(item)->m_layoutingOwnerTreeView = m_layoutingOwnerTreeView;
-        static_pointer_cast<UITreeItem2>(item)->m_layoutDepth = m_layoutDepth + 1;
-    }
+    //for (auto& item : *m_logicalChildren) {
+    //    static_pointer_cast<UITreeItem2>(item)->m_layoutingOwnerTreeView = m_layoutingOwnerTreeView;
+    //    static_pointer_cast<UITreeItem2>(item)->m_layoutDepth = m_layoutDepth + 1;
+    //}
     //if (layoutContext->collectingTreeItem) {
     //    layoutContext->treeView->addItemAsVisualChildren(this);
     //}
@@ -542,6 +545,8 @@ Size UITreeItem2::measureOverride(UILayoutContext* layoutContext, const Size& co
 
 Size UITreeItem2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
+    UITreeView2* treeView = getTreeView();
+
     float headerHeight = m_finalStyle->minHeight;
     Size expanderSlotAreaSize(headerHeight, headerHeight);
     float offset = expanderSlotAreaSize.width * (m_layoutDepth);
@@ -550,20 +555,38 @@ Size UITreeItem2::arrangeOverride(UILayoutContext* layoutContext, const Size& fi
     Rect expanderSlot(offset, 0, expanderSlotAreaSize);
     m_expanderButton->arrangeLayout(layoutContext, expanderSlot); // TODO: actualsize 返すようにしていいかも
 
-    Rect area = Rect(expanderSlot.getRight(), 0, finalSize.width - expanderSlot.width, expanderSlot.height);
+    Rect contentArea = Rect(expanderSlot.getRight(), 0, finalSize.width - expanderSlot.getRight(), expanderSlot.height);
+
+    Rect contentSlotRect;
+    detail::LayoutHelper::adjustAlignment(
+        contentArea, m_headerContent->desiredSize(),
+        treeView->m_finalStyle->horizontalContentAlignment,
+        treeView->m_finalStyle->verticalContentAlignment, &contentSlotRect);
 
     // header
-    float headerContentHeight = 0;
-    if (m_headerContent) {
-        Rect contentSlotRect;
-        detail::LayoutHelper::adjustAlignment(
-            area, m_headerContent->desiredSize(),
-            m_layoutingOwnerTreeView->m_finalStyle->horizontalContentAlignment,
-            m_layoutingOwnerTreeView->m_finalStyle->verticalContentAlignment, &contentSlotRect);
+    //float headerContentHeight = 0;
+    //if (m_headerContent) {
+    //    m_headerContent->arrangeLayout(layoutContext, contentSlotRect);
+    //    headerContentHeight = m_headerContent->actualSize().height;
+    //}
 
+    Rect finalArea = contentSlotRect;
+    {   // TODO: UIControl::arrangeOverride そのままになっている。arrangeOverride は Rect もらうようにしていいかも
 
-        m_headerContent->arrangeLayout(layoutContext, contentSlotRect);
-        headerContentHeight = m_headerContent->actualSize().height;
+        if (m_aligned3x3GridLayoutArea) {
+            // padding, border を考慮した領域を計算
+            Rect clientArea = detail::LayoutHelper::arrangeClientArea(this, finalArea);
+            // Inline 要素を arrange & 論理子要素の領域 (content area) を計算
+            Rect contentArea;
+            m_aligned3x3GridLayoutArea->arrange(layoutContext, m_inlineElements, clientArea, &contentArea);
+            // 論理子要素を arrange
+            detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(layoutContext, this, m_logicalChildren, contentArea);
+            //UIFrameLayout2::staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
+
+        }
+        else {
+            UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, finalArea);
+        }
     }
 
     return finalSize;
@@ -573,14 +596,14 @@ void UITreeItem2::expander_Checked(UIEventArgs* e)
 {
     attemptCreateChildItemsInstance();
 
-    for (auto& child : *m_logicalChildren) {
+    for (auto& child : m_childItems) {
         child->m_internalVisibility = UIVisibility::Visible;
     }
 }
 
 void UITreeItem2::expander_Unchecked(UIEventArgs* e)
 {
-    for (auto& child : *m_logicalChildren) {
+    for (auto& child : m_childItems) {
         child->m_internalVisibility = UIVisibility::Collapsed;
     }
 }
@@ -588,19 +611,28 @@ void UITreeItem2::expander_Unchecked(UIEventArgs* e)
 void UITreeItem2::attemptCreateChildItemsInstance()
 {
     int count = m_model->getChildrenCount();
-    if (m_logicalChildren->size() != count) {
-        removeAllChildren();
+    if (m_childItems.size() != count) {
+        //removeAllChildren();
+
+        // TODO: 完全再構築じゃなくて、Model に新規で追加されたものだけ追加したい。
+        // そうしないとメモリ効率の問題もあるし、Expanded プロパティにバインドしていないときの展開状態の保存とかできない。
+        for (auto& item : m_childItems) {
+            removeVisualChild(item);
+        }
+        m_childItems.clear();
+
+
+        UITreeView2* treeView = getTreeView();
+        if (LN_ENSURE(treeView)) return;
 
         for (int i = 0; i < count; i++) {
             auto childModel = m_model->getItem(i);
 
-            auto item = makeObject<UITreeItem2>();
-            item->setViewModel(childModel);
+            auto item = treeView->generateTreeItem(childModel);
 
-            m_logicalChildren->add(item);
-            item->m_logicalParent = this;
-            //getTreeView()->addItemAsVisualChildren(item);
-            //addChild(item);
+            m_childItems.add(item);
+            item->m_parentItem = this;
+            treeView->addItemAsLogicalChildren(item);
         }
 
         dirtyVisualItemCount();
@@ -609,6 +641,7 @@ void UITreeItem2::attemptCreateChildItemsInstance()
 
 UITreeView2* UITreeItem2::getTreeView()
 {
+    // TODO: 直接の親要素を TreeView ということにしたので、再帰は不要
     // TODO: dynamic_cast じゃなくて flags 確認で。
     if (auto* t = dynamic_cast<UITreeView2*>(m_logicalParent))
         return t;
@@ -623,13 +656,13 @@ void UITreeItem2::dirtyVisualItemCount()
     getTreeView()->m_dirtyItemVisualTree = true;
 }
 
-void UITreeItem2::traverse(IVisitor* visitor)
+void UITreeItem2::traverseTreeItems(IVisitor* visitor)
 {
     //if (isRenderVisible()) {
         visitor->visit(this);
         if (isExpanded()) {
-            for (auto& child : *m_logicalChildren) {
-                static_pointer_cast<UITreeItem2>(child)->traverse(visitor);
+            for (auto& child : m_childItems) {
+                child->traverseTreeItems(visitor);
             }
         }
     //}
@@ -655,7 +688,15 @@ void UITreeItem2::setSelectedInternal(bool selected)
 // UITreeView2
 
 /*
-    [2020/6/23] ViewModel 無しの方向に再設計してみる
+    [2020/7/3] UITreeItem2 と setContent()
+
+    いまのところ、setContent() は WPF でいうところの Header を set するもの。
+    ただ addChild で追加できる子要素と別管理になっているのでちょっとまぎらわしい。
+    Windows とかと同じように、LogicalChildren を配置する ClientArea を、Header 扱いする、でいいと思う。
+    ExpandButton は VisualParent として　ClientArea の外におく。
+
+
+    [2020/6/23] ViewModel はオプションの方向に再設計してみる
 
     そもそもなんで ViewModel を使いたくない？
     - Item ごとに ViewModel クラスが必要になるため。ListView ならルートにひとつあれば足りるが、Tree はそうもいかない。
@@ -674,6 +715,15 @@ void UITreeItem2::setSelectedInternal(bool selected)
         - GenerateItemContent コールバックで TreeItem の handle をもらう。これに データを示す整数値と、子要素数を set する。
         - 必要に応じてこの handle に TextBlock や Button を add.
     
+    [2020/6/30] TreeView は ViewModel 在り無しどちらを推奨する？
+
+    ViewModel 在り: 動的な、データ "編集"
+    ViewModel 無し: 静的な、データ "閲覧"
+
+    閲覧は周辺の他の View 含めて完全に readonly な場合のみを想定している。
+    例えば、Treeは静的でもプロパティビューから名前を変更したら TreeItem を変えたい、という場合は ViewModel を使う。
+
+
 */
 
 UITreeView2::UITreeView2()
@@ -708,6 +758,11 @@ Ref<EventConnection> UITreeView2::connectOnChecked(Ref<UIGeneralEventHandler> ha
     return m_onItemSubmitted.connect(handler);
 }
 
+void UITreeView2::setGenerateTreeItemHandler(Ref<UIGenerateTreeItemHandler> handler)
+{
+    m_onGenerateTreeItem = handler;
+}
+
 void UITreeView2::onSelectionChanged(UISelectionChangedEventArgs* e)
 {
 }
@@ -733,19 +788,29 @@ void UITreeView2::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* old
 
 void UITreeView2::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
 {
+    // Item の数が変化していたらツリーを再捜査して LayoutPanel を再構築する。
+    // 何も対策しないと Expand をうけて add された Item がリストの一番下についかされてしまうので、
+    // 親子関係を考慮して順序正しく構築するために必要。もうちょっと高速化する方法ありそうだが…。
     if (m_dirtyItemVisualTree) {
         class LocalVisitor : public UITreeItem2::IVisitor
         {
         public:
             UITreeView2* self;
-            void visit(UITreeItem2* item) override { self->addItemAsVisualChildren(item); }
+            void visit(UITreeItem2* item) override
+            {
+                if (item->m_parentItem)
+                    item->m_layoutDepth = item->m_parentItem->m_layoutDepth + 1;
+                else
+                    item->m_layoutDepth = 0;
+                self->m_itemsHostLayout->addVisualChild(item);
+            }
         };
         LocalVisitor v;
         v.self = this;
         m_itemsHostLayout->removeAllVisualChild();
 
-        for (auto& item : *m_logicalChildren) {
-            static_pointer_cast<UITreeItem2>(item)->traverse(&v);
+        for (UITreeItem2* item : m_rootItems) {
+            item->traverseTreeItems(&v);
         }
 
         m_dirtyItemVisualTree = false;
@@ -768,10 +833,10 @@ Size UITreeView2::measureOverride(UILayoutContext* layoutContext, const Size& co
     //    m_dirtyItemVisualTree = false;
     //}
 
-    for (auto& item : *m_logicalChildren) {
-        static_pointer_cast<UITreeItem2>(item)->m_layoutingOwnerTreeView = this;
-        static_pointer_cast<UITreeItem2>(item)->m_layoutDepth = 0;
-    }
+    //for (auto& item : *m_logicalChildren) {
+    //    static_pointer_cast<UITreeItem2>(item)->m_layoutingOwnerTreeView = this;
+    //    static_pointer_cast<UITreeItem2>(item)->m_layoutDepth = 0;
+    //}
 
 
     m_itemsHostLayout->measureLayout(layoutContext, constraint);
@@ -815,15 +880,17 @@ void UITreeView2::onRoutedEvent(UIEventArgs* e)
 void UITreeView2::rebuildTreeFromViewModel()
 {
     LN_CHECK(m_model);
+    LN_CHECK(m_rootItems.isEmpty());  // TODO: 再構築は未実装
+    m_rootItems.clear();
 
     int count = m_model->getItemCount();
     for (int i = 0; i < count; i++) {
         auto childModel = m_model->getItem(i);
 
-        auto item = makeObject<UITreeItem2>();
-        item->setViewModel(childModel);
+        auto item = generateTreeItem(childModel);
 
         addItemAsLogicalChildren(item);
+        m_rootItems.add(item);
     }
 }
 
@@ -835,11 +902,11 @@ void UITreeView2::addItemAsLogicalChildren(UITreeItem2* item)
     m_itemsHostLayout->addVisualChild(item);
 }
 
-void UITreeView2::addItemAsVisualChildren(UITreeItem2* item)
-{
-    LN_CHECK(item);
-    m_itemsHostLayout->addVisualChild(item);
-}
+//void UITreeView2::addItemAsVisualChildren(UITreeItem2* item)
+//{
+//    LN_CHECK(item);
+//    m_itemsHostLayout->addVisualChild(item);
+//}
 
 void UITreeView2::clearSelection()
 {
@@ -864,6 +931,17 @@ void UITreeView2::notifyItemClicked(UITreeItem2* item)
     selectItemExclusive(item);
 }
 
+Ref<UITreeItem2> UITreeView2::generateTreeItem(UICollectionItemViewModel* viewModel)
+{
+    auto item = makeObject<UITreeItem2>();
+    item->setViewModel(viewModel);
+
+    if (m_onGenerateTreeItem) {
+        m_onGenerateTreeItem->call(item);
+    }
+
+    return item;
+}
 
 } // namespace ln
 

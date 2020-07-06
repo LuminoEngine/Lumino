@@ -508,6 +508,7 @@ class MeshHelper
 {
 public:
 	static Box makeAABB(const Vertex* vertices, uint32_t vertexCount);
+	static std::array<const Char*, 1> CandidateExtensions_MeshModel;
 };
 
 } // namespace ln

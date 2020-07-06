@@ -5,6 +5,7 @@
 namespace ln {
 class UILayoutPanel;
 class UIActiveTimer;
+class UIFrameLayout2;
 
 namespace detail {
 class UIAligned3x3GridLayoutArea;
@@ -208,6 +209,7 @@ private:
     Event<UIEventHandler> m_onDeactivated;
 
     friend class detail::UIManager;
+    friend class UIFrameLayout2;
 };
 
 

@@ -3,6 +3,7 @@
 #include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
 #include "../../LuminoEngine/src/Platform/PlatformManager.hpp"
 #include "../../LuminoEngine/src/UI/UIManager.hpp"
+#include "../../LuminoEngine/src/Scene/SceneManager.hpp"
 #include <AppData.hpp>
 #include <EnvironmentSettings.hpp>
 #include <Workspace.hpp>
@@ -53,16 +54,19 @@ ln::Result EditorApplication::init()
 {
 #ifdef LN_DEBUG
     lna::Workspace::developMode = true;
+    ln::EngineSettings::setGraphicsDebugEnabled(true);
 #endif
     lna::AppData::current()->load();
 
 	ln::EngineSettings::setMainWindowSize(1600, 800);
+    ln::EngineSettings::setDefaultUITheme(u"Chocotelier");
 	//ln::EngineSettings::setMainBackBufferSize(1600, 800);
     //ln::EngineSettings::setAssetStorageAccessPriority(ln::AssetStorageAccessPriority::AllowLocalDirectory);
     ln::EngineSettings::setGraphicsAPI(ln::GraphicsAPI::Vulkan);
     ln::detail::EngineManager::s_settings.defaultObjectsCreation = false;
 	ln::detail::EngineDomain::engineContext()->initializeEngineManager();
     ln::detail::EngineDomain::engineContext()->engineManager()->initializeAllManagers();
+    ln::detail::EngineDomain::sceneManager()->m_editorMode = true;
 
 	auto root = ln::detail::EngineManager::findRepositoryRootForTesting();
     ln::Font::registerFontFromFile(ln::Path(root, u"tools/mplus-font/mplus-1c-regular.ttf"));
@@ -75,7 +79,7 @@ ln::Result EditorApplication::init()
     m_editorContext->m_mainWindow = mainWindow();
 
     // TODO: test
-    openProject(u"C:/Proj/LN/PrivateProjects/HC0/HC0.lnproj");
+    //openProject(u"C:/Proj/LN/PrivateProjects/HC4/HC4.lnproj");
 
     return true;
 }
@@ -118,6 +122,7 @@ lna::Project* EditorApplication::mainProject() const
     return m_workspace->mainProject();
 }
 
+#if 0
 // deprecated
 void EditorApplication::importFile(const ln::Path& filePath)
 {
@@ -133,19 +138,20 @@ void EditorApplication::importFile(const ln::Path& filePath)
         exts[0].second->import(filePath);
     }
 }
+#endif
 
 void EditorApplication::openAssetFile(const ln::Path& filePath)
 {
     if (m_workspace->mainProject())
     {
         auto asset = m_workspace->mainAssetDatabase()->openAsset(filePath);
-        auto proxies = m_workspace->mainPluginManager()->geAssetEditorPloxy(asset->assetType());
-        if (proxies.size() != 1) {
+        auto factories = m_workspace->mainPluginManager()->findAssetEditorModelFactory(asset->assetType());
+        if (factories.size() != 1) {
             LN_NOTIMPLEMENTED();
             return;
         }
 
-        auto editor = proxies[0]->createAssetEditorModel();
+        auto editor = factories[0]->createAssetEditorModel();
         editor->m_editorContext = m_editorContext;
         mainWindow()->documentManager()->addDocument(ln::makeObject<AssetEditorDocument>(asset, editor));
     }
@@ -171,6 +177,17 @@ void EditorApplication::onInit()
 
 
     ln::Engine::mainUIContext()->styleContext()->addStyleSheet(sheet);
+}
+
+void EditorApplication::onRoutedEvent(ln::UIEventArgs* e)
+{
+    if (e->type() == ln::UIEvents::RequestNavigate) {
+        openProject(static_cast<ln::UIRequestNavigateEventArgs*>(e)->url());
+        e->handled = true;
+        return;
+    }
+
+    Application::onRoutedEvent(e);
 }
 
 void EditorApplication::newProject(const ln::Path& dirPath, const ln::String& projectName)

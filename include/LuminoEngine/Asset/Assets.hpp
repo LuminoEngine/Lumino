@@ -6,11 +6,18 @@ namespace ln {
 class Shader;
 class Texture2D;
 class AssetModel;
+class AssetObject;
 
 LN_CLASS(Static)
 class Assets
 {
 public:
+
+    static void setAssetPath(AssetObject* obj, const String& filePath);
+    static const Path& getAssetPath(AssetObject* obj);
+    static void save(AssetObject* obj);
+    static void reload(AssetObject* obj);
+
 
     /** Internal */
     LN_METHOD()
@@ -69,11 +76,13 @@ public:
     //static String combineAssetPath(const String& assetFullBasePath, const String& localAssetPath);  // localAssetPath が asset:// から始まる場合はそれを採用。相対パスの場合は結合する。
     //static String makeRelativeAssetPath(const String& assetFullBasePath, const String& assetFullPath);
 
-    //static void serializeAsAssetPathInternal(Archive& ar, const StringRef& name, Ref<Object>& value);
+    //static void serializeAssetObjectInternal(Archive& ar, const StringRef& name, Ref<Object>& value);
 
-    //// TODO: internal
+    // TODO: internal
+    // assetPath() をキャッシュキーのソースとして、扱うような AssetObject を serialize する。
+    // 
     //template<typename TValue>
-    //static void serializeAsAssetPath(Archive& ar, const StringRef& name, Ref<TValue>& value)
+    //static void serializeAssetObject(Serializer2& ar, const StringRef& name, Ref<TValue>& value)
     //{
     //    if (ar.isSaving()) {
     //        Ref<Object> local = value;
@@ -86,6 +95,7 @@ public:
     //    }
     //}
 
+    static const String& engineAssetsDirectory();
 };
 
 class AssetImporter

@@ -276,7 +276,8 @@ public:
 	static Size measureElement(UILayoutElement* element, const Size& constraint, const Size& childrenDesiredSize);
 
     // padding, border の分を減じた領域を計算する
-	static Rect arrangeClientArea(UILayoutElement* element, const Size& finalSize);
+	// Note: TreeItem や Window で、クライアント領域のオフセットをつけるため、final は size ではなく area
+	static Rect arrangeClientArea(UILayoutElement* element, const Rect& finalArea);
 
 	//static void forEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
 	//{
@@ -365,19 +366,19 @@ public:
         switch (halign)
         {
         case HAlignment::Left:
-            outRect->x = 0;
+            outRect->x = area.x;
             outRect->width = desiredSize.width;
             break;
         case HAlignment::Center:
-            outRect->x = (area.width - desiredSize.width) / 2;
+            outRect->x = ((area.x + area.width) - desiredSize.width) / 2;
             outRect->width = desiredSize.width;
             break;
         case HAlignment::Right:
-            outRect->x = area.width - desiredSize.width;
+            outRect->x = area.x + (area.width - desiredSize.width);
             outRect->width = desiredSize.width;
             break;
         case HAlignment::Stretch:
-            outRect->x = 0;
+            outRect->x = area.x;
             outRect->width = area.width;
             break;
         default:
@@ -388,28 +389,25 @@ public:
         switch (valign)
         {
         case VAlignment::Top:
-            outRect->y = 0;
+            outRect->y = area.y;
             outRect->height = desiredSize.height;
             break;
         case VAlignment::Center:
-            outRect->y = (area.height - desiredSize.height) / 2;
+            outRect->y = ((area.y + area.height) - desiredSize.height) / 2;
             outRect->height = desiredSize.height;
             break;
         case VAlignment::Bottom:
-            outRect->y = area.height - desiredSize.height;
+            outRect->y = area.y + (area.height - desiredSize.height);
             outRect->height = desiredSize.height;
             break;
         case VAlignment::Stretch:
-            outRect->y = 0;
+            outRect->y = area.y;
             outRect->height = area.height;
             break;
         default:
             LN_UNREACHABLE();
             break;
         }
-
-        outRect->x += area.x;
-        outRect->y += area.y;
     }
 
 	//static Size measureInnerSpace(const Thickness& padding, const Thickness& border, bool borderInset)

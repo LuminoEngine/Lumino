@@ -189,7 +189,7 @@ public:
 
 	void addHemisphereLight(const Color& skyColor, const Color& groundColor, float intensity);
 
-	void addDirectionalLight(const Color& color, float intensity, const Vector3& direction, bool mainLight);
+	void addDirectionalLight(const Color& color, float intensity, const Vector3& direction, bool mainLight, float shadowCameraZFar, float shadowLightZFar);
 
 	void addPointLight(const Color& color, float intensity, const Vector3& position, float range, float attenuation);
 
@@ -224,7 +224,7 @@ public:
 	detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;	// for PostEffect
 	RenderTargetTexture* gbuffer(GBuffer kind) const;
 	RenderView* currentRenderView = nullptr;	// Offscreen の場合はそれ
-
+	void setObjectId(int value);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();

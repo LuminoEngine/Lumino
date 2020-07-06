@@ -6,6 +6,7 @@ struct Vector3;
 struct Vector4;
 struct Color;
 struct ColorI;
+class Serializer2;
 
 /**
  * 各要素を 0.0～1.0 の範囲で表す RGBA カラーを定義します。
@@ -271,6 +272,8 @@ public:
     const Vector4& toVector4() const { return *reinterpret_cast<const Vector4*>(this); }
 
     Vector3 rgb() const LN_NOEXCEPT { return Vector3(r, g, b); }
+
+    void serialize2(Serializer2& ar);
 
 #define LN_OP_TYPE Color
 #include <LuminoCore/Math/Vector4OpDeclareTemplate.inl>

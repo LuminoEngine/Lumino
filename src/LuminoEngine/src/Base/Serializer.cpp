@@ -499,6 +499,12 @@ void Serializer2::writeDouble(double value)
 	m_store->writePrimitive(value);
 }
 
+void Serializer2::writeNull()
+{
+	if (LN_REQUIRE(isSaving())) return;
+	m_store->writeNull();
+}
+
 void Serializer2::writeInt(int value)
 {
 	if (LN_REQUIRE(isSaving())) return;
@@ -567,6 +573,16 @@ void Serializer2::beginReadObject()
 void Serializer2::endReadObject()
 {
 	m_store->popRead();
+}
+
+bool Serializer2::readingValueIsObject() const
+{
+	return m_store->current().readingNode.IsMap();
+}
+
+bool Serializer2::readingValueIsNull() const
+{
+	return m_store->current().readingNode.IsNull();
 }
 
 bool Serializer2::beginReadList(int* outItemCount)
@@ -781,7 +797,7 @@ Ref<Object> Serializer2::readObjectInteral(std::function<Ref<Object>()> knownTyp
 #endif
 }
 
-String Serializer2::serialize(AssetModel* value, const String& basePath)
+String Serializer2::serialize(AssetModel* value, const detail::AssetPath& basePath)
 {
 	//YAML::Node n;
 	//n["a"] = 10;
@@ -810,7 +826,7 @@ String Serializer2::serialize(AssetModel* value, const String& basePath)
 	return ns_to_str(sr->m_store->str());
 }
 
-Ref<AssetModel> Serializer2::deserialize(const String& str, const String& basePath)
+Ref<AssetModel> Serializer2::deserialize(const String& str, const detail::AssetPath& basePath)
 {
 	Ref<AssetModel> asset;
 
@@ -834,7 +850,7 @@ Ref<AssetModel> Serializer2::deserialize(const String& str, const String& basePa
 	}
 }
 
-void Serializer2::deserializeInstance(AssetModel* asset, const String& str, const String& basePath)
+void Serializer2::deserializeInstance(AssetModel* asset, const String& str, const detail::AssetPath& basePath)
 {
 	try {
 		ObjectInitializeContext::Default->autoAdd = false;

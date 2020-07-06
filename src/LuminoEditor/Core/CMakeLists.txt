@@ -18,11 +18,11 @@ source_group("AssetEditor" FILES ${LN_SOURCES_AssetEditor})
 file(GLOB LN_SOURCES_StandardPlugin StandardPlugin/*.hpp StandardPlugin/*.cpp)
 source_group("StandardPlugin" FILES ${LN_SOURCES_StandardPlugin})
 
-file(GLOB LN_SOURCES_TilemapPlugin TilemapPlugin/*.hpp TilemapPlugin/*.cpp)
-source_group("TilemapPlugin" FILES ${LN_SOURCES_TilemapPlugin})
+#file(GLOB LN_SOURCES_TilemapPlugin TilemapPlugin/*.hpp TilemapPlugin/*.cpp)
+#source_group("TilemapPlugin" FILES ${LN_SOURCES_TilemapPlugin})
 
-file(GLOB LN_SOURCES_TilemapSceneExtension TilemapSceneExtension/*.hpp TilemapSceneExtension/*.cpp)
-source_group("TilemapSceneExtension" FILES ${LN_SOURCES_TilemapSceneExtension})
+#file(GLOB LN_SOURCES_TilemapSceneExtension TilemapSceneExtension/*.hpp TilemapSceneExtension/*.cpp)
+#source_group("TilemapSceneExtension" FILES ${LN_SOURCES_TilemapSceneExtension})
 
 file(GLOB LN_SOURCES_Controls Controls/*.hpp Controls/*.cpp)
 source_group("Controls" FILES ${LN_SOURCES_Controls})

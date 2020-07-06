@@ -55,6 +55,13 @@ private:
 	ln::List<Ref<NavigationBarItem>> m_navigatorContainers;
 };
 
+class NavigatorContentPane
+    : public ln::UIControl
+{
+public:
+    void onUpdateStyle(const ln::UIStyleContext* styleContext, const ln::detail::UIStyleInstance* finalStyle) override;
+};
+
 
 class NavigatorManager
     : public ln::UIControl
@@ -67,6 +74,7 @@ public:
     void init();
     void resetNavigators();
     void addNavigator(Navigator* navigator);
+    void removeNavigator(Navigator* navigator);
 	void unloadAdditionalNavigators();
 	void setCurrent(Navigator* navigator);
 

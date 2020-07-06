@@ -7,6 +7,7 @@ namespace ln {
 class RenderingContext;
 class UIEventArgs;
 class WorldObject;
+class Mesh;
 
 enum class TransformControlsType
 {
@@ -24,6 +25,7 @@ public:
 
     void setViewInfo(const Vector3& viewPosition, const Matrix& view, const Matrix& proj, const Size& viewPixelSize);
 
+    void setTransformType(TransformControlsType value);
 
     virtual void onRender(RenderingContext* context) /*override*/;
     virtual void onRoutedEvent(UIEventArgs* e) /*override*/;
@@ -105,6 +107,8 @@ private:
     Ref<Material> m_yColorMaterial;
     Ref<Material> m_zColorMaterial;
     Ref<Material> m_activeColorMaterial;
+
+    Ref<Mesh> m_translationGizmoMesh;
 
 };
 

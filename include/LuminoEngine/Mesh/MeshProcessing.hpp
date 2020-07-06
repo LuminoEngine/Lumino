@@ -13,7 +13,9 @@ class MeshGeometryBuilder
 public:
 	void setTransform(const AttitudeTransform& value);
 	void setPosition(const Vector3& value);
+	void setPosition(float x, float y, float z) { setPosition(Vector3(x, y, z)); }
 	void setRotation(const Vector3& value);
+	void setRotation(float x, float y, float z) { setRotation(Vector3(x, y, z)); }
 	void setScale(const Vector3& value);
 
 	void setColor(const Color& value);
@@ -27,6 +29,12 @@ public:
 
 	void addSphere(float radius, int sliceH, int sliceV);
 
+	void addCylinder(float radius, float height, int slices, int stacks);
+
+	void addCone(float radius, float height, int slices);
+
+	void addArc(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices);
+
 	void endSection();
 
 	Ref<Mesh> buildMesh();
@@ -38,16 +46,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	template<class T>
-	T* newMeshGenerater()
-	{
-		void* buffer = m_allocator->allocate(sizeof(T));
-		T* data = new (buffer)T();
-		data->setTransform(Matrix(m_transform));
-		data->setColor(m_color);
-		m_generators.add(Geometry{ data });
-		//allocateNextTransform();
-		return data;
-	}
+	T* newMeshGenerater();
 
 	//void allocateNextTransform();
 

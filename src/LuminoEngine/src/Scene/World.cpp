@@ -28,6 +28,7 @@ World::World()
 {
     m_masterScene->m_ownerWorld = this;
     m_masterScene->m_initialUpdate = true;
+
 }
 
 World::~World()
@@ -153,6 +154,40 @@ Level* World::activeScene() const
     return m_sceneConductor->activeScene();
 }
 
+void World::traverse(detail::IWorldObjectVisitor* visitor) const
+{
+    for (auto& scene : m_sceneList) {
+        for (auto& obj : scene->m_rootWorldObjectList) {
+            if (!obj->traverse(visitor)) {
+                return;
+            }
+        }
+    }
+}
+
+WorldObject* World::findObjectById(int id) const
+{
+    class LocalVisitor : public detail::IWorldObjectVisitor
+    {
+    public:
+        int id;
+        WorldObject* result = nullptr;
+        bool visit(WorldObject* obj) override
+        {
+            if (obj->m_id == id) {
+                result = obj;
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    } visitor;
+    visitor.id = id;
+    traverse(&visitor);
+    return visitor.result;
+}
+
 void World::updateObjectsWorldMatrix()
 {
     m_masterScene->updateObjectsWorldMatrix();
@@ -182,12 +217,18 @@ void World::onPreUpdate(float elapsedSeconds)
 {
     m_effectContext->update(elapsedSeconds);
 
+    m_combinedSceneGlobalRenderParams.reset();
+
     m_masterScene->onPreUpdate(elapsedSeconds);
-    for (auto& scene : m_sceneList) {
-        scene->onPreUpdate(elapsedSeconds);
+    m_masterScene->mergeToRenderParams(&m_combinedSceneGlobalRenderParams);
+
+    for (auto& level : m_sceneList) {
+        level->onPreUpdate(elapsedSeconds);
+        level->mergeToRenderParams(&m_combinedSceneGlobalRenderParams);
     }
-    if (auto* scene = m_sceneConductor->activeScene()) {
-        scene->onPreUpdate(elapsedSeconds);
+    if (auto* level = m_sceneConductor->activeScene()) {
+        level->onPreUpdate(elapsedSeconds);
+        level->mergeToRenderParams(&m_combinedSceneGlobalRenderParams);
     }
 }
 
@@ -287,6 +328,7 @@ void World::renderObjects()
 	m_renderingContext->pushState(true);
     m_effectContext->render(m_renderingContext);
     m_renderingContext->popState();
+    m_renderingContext->setObjectId(0);
 
 }
 

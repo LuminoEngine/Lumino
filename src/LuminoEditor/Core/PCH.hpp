@@ -31,6 +31,7 @@
 #include <LuminoEngine/UI/UIActiveTimer.hpp>
 #include <LuminoEngine/UI/UIListBox.hpp>
 #include <LuminoEngine/UI/UIDialog.hpp>
+#include <LuminoEngine/UI/UILinkLabel.hpp>
 
 #include "CLI.hpp"
 

@@ -50,6 +50,7 @@ public:
 	void setViewportRect(const RectI& value);
 	void setScissorRect(const RectI& value);
 
+	void setObjectId(int value);
 	void setBlendMode(const Optional<BlendMode>& value);
 	void setCullingMode(const Optional<CullMode>& value);
 	void setDepthTestEnabled(const Optional<bool>& value);
@@ -95,6 +96,8 @@ public:
         prepareRenderDrawElement(element, m_targetList->lastElement(), stage);
 		return element;
 	}
+
+	//
 
 private:
     class State : public RefObject
@@ -147,6 +150,8 @@ private:
     Ref<Material> m_defaultMaterial;
     Flags<DirtyFlags> m_dirtyFlags;
 	bool m_modified;
+
+	int m_objectId = 0;
 
 };
 

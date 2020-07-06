@@ -14,7 +14,7 @@ public:
 
 
 
-	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	virtual RenderPass* renderPass() const;
 
 	virtual ShaderTechnique* selectShaderTechnique(
@@ -28,6 +28,7 @@ private:
 	Ref<RenderPass> m_renderPass;
 };
 
+#if 0
 class UnLigitingSceneRenderer
 	: public SceneRenderer
 {
@@ -45,6 +46,7 @@ public:
 private:
 	Ref<UnLigitingSceneRendererPass> m_rendererPass;
 };
+#endif
 
 } // namespace detail
 } // namespace ln

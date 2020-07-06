@@ -142,40 +142,48 @@ public:
 
 	static void getGLTextureFormat(TextureFormat format, GLenum* internalFormat, GLenum* pixelFormat, GLenum* elementType)
 	{
-#if defined(LN_GRAPHICS_OPENGLES)
-		static GLenum table[][3] =
+		struct TextureFormatConversionItem
 		{
-			// internalFormat,		pixelFormat,		elementType
-			{ GL_NONE,				GL_NONE,			GL_NONE },			// TextureFormat::Unknown
-			{ GL_RGBA,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8A8,            ///< 32 ビットのアルファ付きフォーマット (uint32_t アクセス時の表現。lnByte[4] にすると、ABGR)
-			{ GL_RGBA,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8X8,	※元々 GL_RGB だったが、それだと glGetTexImage で強制終了
-			{ GL_RGBA16F,			GL_RGBA,			GL_HALF_FLOAT },	// TextureFormat::A16B16G16R16F,       ///< 64 ビットの浮動小数点フォーマット
-			{ GL_RGBA32F,			GL_RGBA,			GL_FLOAT },			// TextureFormat::A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
-			{ GL_R16F,				GL_RED,				GL_HALF_FLOAT },	// TextureFormat::R16F,
-			{ GL_R32UI,				GL_RED,				GL_FLOAT },			// TextureFormat::R32F,
-																			//{ GL_R32UI,				GL_RED_INTEGER,		GL_INT },			// TextureFormat::R32_UInt,
+			TextureFormat format;
+			GLenum internalFormat;
+			GLenum pixelFormat;
+			GLenum elementType;
+		};
+#if defined(LN_GRAPHICS_OPENGLES)
+		static const TextureFormatConversionItem table[] =
+		{
+			{ TextureFormat::Unknown, GL_NONE, GL_NONE, GL_NONE },
+			{ TextureFormat::RGBA8, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE },
+			{ TextureFormat::RGB8, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE },
+			{ TextureFormat::RGBA16F, GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT },
+			{ TextureFormat::RGBA32F, GL_RGBA32F, GL_RGBA, GL_FLOAT },
+			{ TextureFormat::R16F, GL_R16F, GL_RED, GL_HALF_FLOAT },
+			{ TextureFormat::R32F, GL_R32UI, GL_RED, GL_FLOAT },
+			{ TextureFormat::R32S, GL_R32I, GL_RED_INTEGER, GL_INT },
+			//{ TextureFormat::R32U, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT },
 			//{ GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE }, // TextureFormat::D24S8,               ///< 32 ビットの Z バッファフォーマット
 		};
 
 #else
 		// http://angra.blog31.fc2.com/blog-entry-11.html
-		static GLenum table[][3] =
+		static const TextureFormatConversionItem table[] =
 		{
-			// internalFormat,		pixelFormat,		elementType
-			{ GL_NONE,				GL_NONE,			GL_NONE },			// TextureFormat::Unknown
-			{ GL_RGBA8,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8A8,            ///< 32 ビットのアルファ付きフォーマット (uint32_t アクセス時の表現。lnByte[4] にすると、ABGR)
-			{ GL_RGB8,				GL_RGB,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8X8,	※元々 GL_RGB だったが、それだと glGetTexImage で強制終了
-			{ GL_RGBA16F,			GL_RGBA,			GL_HALF_FLOAT },	// TextureFormat::A16B16G16R16F,       ///< 64 ビットの浮動小数点フォーマット
-			{ GL_RGBA32F,			GL_RGBA,			GL_FLOAT },			// TextureFormat::A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
-			{ GL_R16F,				GL_RED,				GL_HALF_FLOAT },	// TextureFormat::R16F,
-			{ GL_R32UI,				GL_RED,				GL_FLOAT },			// TextureFormat::R32F,
-																			//{ GL_R32UI,				GL_RED_INTEGER,		GL_INT },			// TextureFormat::R32_UInt,
+			{ TextureFormat::Unknown, GL_NONE, GL_NONE, GL_NONE },
+			{ TextureFormat::RGBA8, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE },
+			{ TextureFormat::RGB8, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE },
+			{ TextureFormat::RGBA16F, GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT },
+			{ TextureFormat::RGBA32F, GL_RGBA32F, GL_RGBA, GL_FLOAT },
+			{ TextureFormat::R16F, GL_R16F, GL_RED, GL_HALF_FLOAT },
+			{ TextureFormat::R32F, GL_R32UI, GL_RED, GL_FLOAT },
+			{ TextureFormat::R32S, GL_R32I, GL_RED_INTEGER, GL_INT },
+			//{ TextureFormat::R32U, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT },
 			//{ GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE }, // TextureFormat::D24S8,               ///< 32 ビットの Z バッファフォーマット
 		};
 #endif
-		*internalFormat = table[(int)format][0];
-		*pixelFormat = table[(int)format][1];
-		*elementType = table[(int)format][2];
+		assert(table[(int)format].format == format);
+		*internalFormat = table[(int)format].internalFormat;
+		*pixelFormat = table[(int)format].pixelFormat;
+		*elementType = table[(int)format].elementType;
 	}
 
 	static void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)

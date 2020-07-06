@@ -98,15 +98,19 @@ partition "User program interface" {
     (*) --> "XXXX::loadAsync()"
 
     (*) --> "Asset::reload(XXXX)"
+
+    (*) --> "Asset::serializeAssetObject()"
 }
 
 "XXXX::load()" --> "YYYYManager::loadXXXX()"
 "XXXX::loadAsync()" --> "YYYYManager::loadXXXXAsync()"
 "YYYYManager::loadXXXXAsync()" --> "YYYYManager::loadXXXX()"
+"Asset::serializeAssetObject()" --> "YYYYManager::loadXXXX()"
 
 
 note left
-makeObject
+・キャッシュ検索
+・キャッシュミスしたら新規makeObject
 end note
 "YYYYManager::loadXXXX()" --> "XXXX::init(AssetPath)"
 

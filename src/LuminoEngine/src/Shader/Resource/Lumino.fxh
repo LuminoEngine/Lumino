@@ -14,11 +14,12 @@ cbuffer LNRenderViewBuffer
 	/* [64]  */ float4x4 ln_Projection;
 	/* [128] */ float4x4 ln_ProjectionI;
 	/* [192] */ float4 ln_Resolution;
-	/* [208] */ float3 ln_CameraPosition;
-	/* [224] */ float3 ln_CameraDirection;
-	/* [236] */ float ln_NearClip;
-	/* [240] */ float ln_FarClip;
-};  /* [244(alignd:256)] */
+	/* [208] */ float4 ln_mainLightShadowMapResolution;	// Note: ここに入れるべきじゃないかもしれないけど、Shadow パラメータこれ一つのために cbuffer 用意するのもアレなので
+	/* [224] */ float3 ln_CameraPosition;
+	/* [240] */ float3 ln_CameraDirection;
+	/* [256] */ float ln_NearClip;
+	/* [260] */ float ln_FarClip;
+};  /* [272(alignd:16)] */
 
 cbuffer LNRenderElementBuffer
 {
@@ -28,7 +29,8 @@ cbuffer LNRenderElementBuffer
 	/* [192] */ float4x4 ln_WorldView;
 	/* [256] */ float4x4 ln_WorldViewIT;
 	/* [320] */ float4 ln_BoneTextureReciprocalSize;
-};  /* [336] */
+	/* [336] */	int ln_objectId;
+};  /* [352(alignd:16)] */
 
 // Builtin effect colors
 cbuffer LNEffectColorBuffer

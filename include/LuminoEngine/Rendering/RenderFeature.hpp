@@ -148,9 +148,9 @@ public:
     // 基本的にこのベースメソッドを呼び出すだけでよい。
     // SpritetextRenderFerture など、RenderFeature 固有のパラメータ (グリフテクスチャなど) で
     // パラメータをオーバーライドしたい場合はここで処理する。
-    virtual void updateRenderParameters(detail::RenderDrawElement* element, ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo);
+    virtual void updateRenderParameters(detail::RenderDrawElement* element, ShaderTechnique* tech, const detail::RenderViewInfo& renderViewInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo);
 
-    static void updateRenderParametersDefault(ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo);
+    static void updateRenderParametersDefault(ShaderTechnique* tech, const detail::RenderViewInfo& renderViewInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo);
 
 private:
 };

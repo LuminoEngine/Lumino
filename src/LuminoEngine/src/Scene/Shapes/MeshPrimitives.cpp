@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitives.hpp>
@@ -69,6 +70,8 @@ SphereMeshComponent* SphereMesh::sphereMeshComponent() const
 //==============================================================================
 // PlaneMesh
 
+LN_OBJECT_IMPLEMENT(PlaneMesh, VisualObject) {}
+
 Ref<PlaneMesh> PlaneMesh::create()
 {
 	return makeObject<PlaneMesh>();
@@ -102,6 +105,19 @@ bool PlaneMesh::init(Material* material)
 PlaneMeshComponent* PlaneMesh::planeMeshComponent() const
 {
 	return m_component;
+}
+
+void PlaneMesh::serialize2(Serializer2& ar)
+{
+	VisualObject::serialize2(ar);
+	//ar & makeNVP(u"component", m_component);
+
+	if (ar.isLoading()) {
+		if (auto* c = findComponent<PlaneMeshComponent>()) {
+			m_component = c;
+			setMainVisualComponent(m_component);
+		}
+	}
 }
 
 } // namespace ln

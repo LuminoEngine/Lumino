@@ -2,6 +2,8 @@
 
 class EditorApplication;
 class MainWindow;
+class NavigatorManager;
+class DocumentManager;
 
 namespace lna {
 class Project;
@@ -16,6 +18,8 @@ public:
 
     EditorApplication* application() const { return m_application; }
     MainWindow* mainWindow() const { return m_mainWindow; }
+    NavigatorManager* navigatorManager() const;
+    DocumentManager* documentManager() const;
     Project* mainProject() const;
     PluginManager* pluginManager() const;
 	AssetDatabase* assetDatabase() const;

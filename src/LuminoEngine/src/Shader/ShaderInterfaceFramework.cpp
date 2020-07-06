@@ -38,6 +38,7 @@ static const std::unordered_map<String, BuiltinShaderParameters> s_BuiltinShader
     {_LT("ln_Projection"), BuiltinShaderParameters_ln_Projection},
     {_LT("ln_ProjectionI"), BuiltinShaderParameters_ln_ProjectionI},
     {_LT("ln_Resolution"), BuiltinShaderParameters_ln_Resolution},
+    {_LT("ln_mainLightShadowMapResolution"), BuiltinShaderParameters_ln_mainLightShadowMapResolution},
     {_LT("ln_CameraPosition"), BuiltinShaderParameters_ln_CameraPosition},
     {_LT("ln_CameraDirection"), BuiltinShaderParameters_ln_CameraDirection},
     {_LT("ln_NearClip"), BuiltinShaderParameters_ln_NearClip},
@@ -76,6 +77,7 @@ static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTe
     {_LT("ln_MaterialRoughnessMap"), BuiltinShaderTextures_ln_MaterialRoughnessMap},
     {_LT("ln_BoneTexture"), BuiltinShaderTextures_ln_BoneTexture},
     {_LT("ln_BoneLocalQuaternionTexture"), BuiltinShaderTextures_ln_BoneLocalQuaternionTexture},
+    {_LT("ln_mainLightShadowMap"), BuiltinShaderTextures_ln_mainLightShadowMap},
     
     {_LT("ln_clustersTexture"), BuiltinShaderTextures_ln_ClustersTexture},
     {_LT("ln_GlobalLightInfoTexture"), BuiltinShaderTextures_ln_GlobalLightInfoTexture},
@@ -88,14 +90,15 @@ ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
     , m_builtinUniformBuffers({})
     , m_builtinShaderTextures({})
 {
+    //auto a = LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip);
     // メモリレイアウトそのまま ConstantBuffer に転送するため、オフセットを検証しておく
     assert(192 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_Resolution));
-    assert(208 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraPosition));
-    assert(224 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraDirection));
-    assert(236 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip));
-    assert(240 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_FarClip));
-    static_assert(256 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
-    static_assert(336 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    assert(224 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraPosition));
+    assert(240 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraDirection));
+    assert(256 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip));
+    assert(260 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_FarClip));
+    static_assert(272 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    static_assert(352 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(48 == sizeof(LNEffectColorBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(BuiltinShaderParameters__Count < 64, "Invalid BuiltinShaderParameters__Count");
 
@@ -162,21 +165,31 @@ void ShaderTechniqueSemanticsManager::updateSceneVariables(const SceneInfo& info
 {
 }
 
-void ShaderTechniqueSemanticsManager::updateCameraVariables(const CameraInfo& info)
+void ShaderTechniqueSemanticsManager::updateRenderViewVariables(const RenderViewInfo& info)
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNRenderViewBuffer];
     if (index >= 0) {
+        const CameraInfo& c = info.cameraInfo;
+
         LNRenderViewBuffer data;
-        data.ln_View = info.viewMatrix;
-        data.ln_Projection = info.projMatrix;
+        data.ln_View = c.viewMatrix;
+        data.ln_Projection = c.projMatrix;
         if (hasParameter(BuiltinShaderParameters_ln_ProjectionI))
-            data.ln_ProjectionI = Matrix::makeInverse(info.projMatrix);
-        data.ln_Resolution = Vector4(info.viewPixelSize, 1.0f / info.viewPixelSize.width, 1.0f / info.viewPixelSize.height);
-        data.ln_NearClip = info.nearClip;
-        data.ln_FarClip = info.farClip;
-        data.ln_CameraPosition = info.viewPosition;
-        data.ln_CameraDirection = info.viewDirection;
+            data.ln_ProjectionI = Matrix::makeInverse(c.projMatrix);
+        data.ln_Resolution = Vector4(c.viewPixelSize, 1.0f / c.viewPixelSize.width, 1.0f / c.viewPixelSize.height);
+        data.ln_mainLightShadowMapPixelSizeResolution = Vector4(info.mainLightShadowMapPixelSize, 1.0f / info.mainLightShadowMapPixelSize.width, 1.0f / info.mainLightShadowMapPixelSize.height);
+        data.ln_NearClip = c.nearClip;
+        data.ln_FarClip = c.farClip;
+        data.ln_CameraPosition = c.viewPosition;
+        data.ln_CameraDirection = c.viewDirection;
         m_descriptor->setData(index, &data, sizeof(data));
+    }
+
+
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_mainLightShadowMap];
+    if (index >= 0) {
+        LN_DCHECK(info.mainLightShadowMap);
+        m_descriptor->setTexture(index, info.mainLightShadowMap);
     }
 }
 
@@ -198,6 +211,7 @@ void ShaderTechniqueSemanticsManager::updateElementVariables(const CameraInfo& c
         if (hasParameter(BuiltinShaderParameters_ln_BoneTextureReciprocalSize) && info.boneTexture)
             data.ln_BoneTextureReciprocalSize = Vector4(1.0f / info.boneTexture->width(), 1.0f / info.boneTexture->height(), 0, 0);
 
+        data.ln_objectId = info.objectId;
         m_descriptor->setData(index, &data, sizeof(data));
     }
 
@@ -222,7 +236,6 @@ void ShaderTechniqueSemanticsManager::updateSubsetVariables(const SubsetInfo& in
         };
         m_descriptor->setData(index, &data, sizeof(data));
     }
-
 
 
     index = m_builtinShaderTextures[BuiltinShaderTextures_ln_MaterialTexture];

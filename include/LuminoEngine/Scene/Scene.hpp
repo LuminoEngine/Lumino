@@ -3,6 +3,7 @@
 #include "Common.hpp"
 #include "../Rendering/Common.hpp"
 #include "../Asset/AssetModel.hpp"
+#include "../Asset/AssetObject.hpp"
 
 template <class T>
 void staticFactory2();
@@ -17,13 +18,33 @@ namespace detail {
 	class SceneManager; class SceneConductor;
 }
 
+class LevelRenderParameters
+	: public Object
+{
+public:
+	void serialize2(Serializer2& ar) override;
+	void mergeToRenderParams(detail::SceneGlobalRenderParams* params) const;
+
+	Optional<float> m_fogStartDistance;
+	Optional<Color> m_fogColor;
+	Optional<float> m_fogDensity;
+	Optional<float> m_fogHeightDensity;
+	Optional<float> m_fogLowerHeight;
+	Optional<float> m_fogUpperHeight;
+
+	Optional<Color> m_skydomeSkyColor;
+	Optional<Color> m_skydomeHorizonColor;
+	Optional<Color> m_skydomeCloudColor;
+	Optional<Color> m_skydomeOverlayColor;
+};
+
 /**
  * シーンのベースクラスです。
  */
 // Note: Level はひとつの World に属し、World からの通知により onUpdate() や m_rootWorldObjectList の Object へさらに通知したりする。
 LN_CLASS()
 class Level
-	: public Object
+	: public AssetObject
 {
 	LN_OBJECT;
 public:
@@ -60,7 +81,7 @@ public:	// TODO: Editor integration
 	void addObject(WorldObject* obj);
 	void removeObject(WorldObject* obj);
     WorldObject* findObjectByComponentType(const TypeInfo* type) const;
-    void updateObjectsWorldMatrix();
+	void updateObjectsWorldMatrix();
     virtual void onPreUpdate(float elapsedSeconds);
     void collectRenderObjects(World* world, RenderingContext* context);
     void renderGizmos(RenderingContext* context);
@@ -75,24 +96,28 @@ LN_CONSTRUCT_ACCESS:
 
 	/** Initialize */
 	LN_METHOD()
-	void init();
+	bool init();
 
 public: // TODO: internal
 	void update(float elapsedSeconds);
     void removeRootObject(WorldObject* obj);
     void removeAllObjects();
+	void mergeToRenderParams(detail::SceneGlobalRenderParams* params) const;
+	LevelRenderParameters* acquireRenderParameters();
 
 	World* m_ownerWorld;
     Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
     List<WorldObject*> m_destroyList;
 
 	// TODO: Master-scene と Sub-scene の値を統合したうえで、SceneRenderer に流したい。
-	detail::SceneGlobalRenderParams m_sceneGlobalRenderParams;
+	//detail::SceneGlobalRenderParams m_sceneGlobalRenderParams;
 
 	// TODO: Editor integration
 	ln::Path m_filePath;
 
 	bool m_initialUpdate;
+
+	Ref<LevelRenderParameters> m_levelRenderParameters;
 
     friend class ed::SceneAsset;
 	friend class detail::SceneManager;
@@ -174,6 +199,49 @@ public:
 	LN_METHOD()
 	static void startCrossFade();
 
+	//----------------------------------------------------------------------------
+	/** @name Fog */
+	/** @{ */
+
+	// 指数関数的高さフォグ
+
+	/** フォグを開始するカメラからの距離を設定します。 */
+	static void setFogStartDistance(float value);
+
+	/** フォグのメインカラーを設定します。 */
+	static void setFogColor(const Color& value);
+
+	/** フォグの濃さを設定します。 */
+	static void setFogDensity(float value);
+
+	/** 高さフォグの濃さを設定します。 */
+	static void setFogHeightDensity(float value);
+
+	/** フォグの高さの下限を設定します。 */
+	static void setFogLowerHeight(float value);
+
+	/** フォグの高さの上限を設定します。 */
+	static void setFogUpperHeight(float value);
+
+	/** @} */
+
+	//----------------------------------------------------------------------------
+	/** @name Skydome */
+	/** @{ */
+
+	/** Skydome の空の基本色を設定します。アルファ値は、設定した色の適用率です。 */
+	static void setSkydomeSkyColor(const Color& value);
+
+	/** Skydome の地平の基本色を設定します。アルファ値は、設定した色の適用率です。 */
+	static void setSkydomeHorizonColor(const Color& value);
+
+	/** Skydome の雲の基本色を設定します。アルファ値は、設定した色の適用率です。 */
+	static void setSkydomeCloudColor(const Color& value);
+
+	/** Skydome 全体に影響する色を設定します。アルファ値は、設定した色の適用率です。 */
+	static void setSkydomeOverlayColor(const Color& value);
+
+	/** @} */
 };
 
 //namespace ed {

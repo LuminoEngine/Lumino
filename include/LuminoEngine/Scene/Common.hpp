@@ -37,4 +37,7 @@ protected:
 	friend class World;
 };
 
+namespace detail {
+class IWorldObjectVisitor;
+} // namespace detail
 } // namespace ln

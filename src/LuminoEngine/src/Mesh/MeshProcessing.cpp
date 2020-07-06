@@ -15,6 +15,18 @@ namespace ln {
 //==============================================================================
 // MeshGeometryBuilder
 
+template<class T>
+T* MeshGeometryBuilder::newMeshGenerater()
+{
+	void* buffer = m_allocator->allocate(sizeof(T));
+	T* data = new (buffer)T();
+	data->setTransform(Matrix(m_transform));
+	data->setColor(m_color);
+	m_generators.add(Geometry{ data });
+	//allocateNextTransform();
+	return data;
+}
+
 MeshGeometryBuilder::MeshGeometryBuilder()
 	//: m_transform(nullptr)
 {
@@ -86,6 +98,24 @@ void MeshGeometryBuilder::addSphere(float radius, int sliceH, int sliceV)
 	g->m_radius = radius;
 	g->m_slices = sliceH;
 	g->m_stacks = sliceV;
+}
+
+void MeshGeometryBuilder::addCylinder(float radius, float height, int slices, int stacks)
+{
+	auto* g = newMeshGenerater<detail::CylinderMeshFactory>();
+	g->init(radius, height, slices, stacks);
+}
+
+void MeshGeometryBuilder::addCone(float radius, float height, int slices)
+{
+	auto* g = newMeshGenerater<detail::ConeMeshFactory>();
+	g->init(radius, height, slices);
+}
+
+void MeshGeometryBuilder::addArc(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices)
+{
+	auto* g = newMeshGenerater<detail::ArcMeshFactory>();
+	g->init(startAngle, endAngle, innerRadius, outerRadius, slices);
 }
 
 void MeshGeometryBuilder::endSection()

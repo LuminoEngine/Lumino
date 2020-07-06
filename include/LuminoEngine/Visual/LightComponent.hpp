@@ -232,11 +232,17 @@ public:
 	/** ライトの明るさを取得します。 */
 	float getIntensity() const { return m_intensity; }
 
-	/** 影の有無を設定します。(default: false) */
-	void setShadowCast(bool enabled);
+	/** 視点からの、影を生成できる距離を指定します。 (default: 0.0f) */
+	void setShadowEffectiveDistance(float value) { m_shadowEffectiveDistance = value; }
 
-	/** 影の有無を取得します。 */
-	bool isShadowCast() const;
+	/** 視点からの、影を生成できる距離を取得します。 */
+	float shadowEffectiveDistance() const { return m_shadowEffectiveDistance; }
+
+	/** 光源方向からの、影を生成できる距離を指定します。 (default: 0.0f) ※これはシャドウマップの深度値の範囲となります。 */
+	void setShadowEffectiveDepth(float value) { m_shadowEffectiveDepth = value; }
+
+	/** 光源方向からの、影を生成できる距離を指定します。 */
+	float shadowEffectiveDepth() const { return m_shadowEffectiveDepth; }
 
 protected:
 	virtual void onPrepareRender(RenderingContext* context) override;
@@ -251,6 +257,8 @@ private:
 	Color m_color;
 	float m_intensity;
 	bool m_enabled;
+	float m_shadowEffectiveDistance;
+	float m_shadowEffectiveDepth;
 
 	Ref<Material> m_material;
 	Ref<Material> m_spriteMaterial;

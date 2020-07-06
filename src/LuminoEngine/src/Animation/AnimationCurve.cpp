@@ -129,10 +129,10 @@ float KeyFrameAnimationCurve::onEvaluate(float time)
 	{
 		return m_defaultValue;
 	}
-	// time が最初のフレーム位置より前の場合はデフォルト値
+	// time が最初のフレーム位置より前の場合は Clamp
 	if (time < m_keyFrames.front().time)
 	{
-		return m_defaultValue;
+		return m_keyFrames.front().value;
 	}
 	// キーがひとつだけの場合はそのキーの値
 	else if (m_keyFrames.size() == 1)

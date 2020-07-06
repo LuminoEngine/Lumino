@@ -44,6 +44,7 @@ struct PSOutput
     float4 Normal : SV_TARGET0;
     float4 Depth: SV_TARGET1;
     float4 Material: SV_TARGET2;
+    int4 ObjectId: SV_TARGET3;
 };
 
 VSOutput VS_WriteLinearDepth(VSInput input)
@@ -91,6 +92,9 @@ PSOutput PS_WriteLinearDepth(PSInput input)
 #endif
     output.Material = float4(ln_MaterialMetallic, linearZ, roughness, 1);
     //output.Material = float4(0, z, 0, 1);
+
+
+    output.ObjectId = uint4(ln_objectId, 0, 0, 0);
 
     return output;
 }

@@ -2,6 +2,7 @@
 #include "Application.hpp"
 #include "StartupView.hpp"
 #include "../Controls/AssetPicker.hpp"  // TODO: Test
+#include "AppData.hpp"
 
 //==============================================================================
 // RecentProjectListView
@@ -113,6 +114,14 @@ ln::Result StartupView::init()
  //   sprite->setSourceRect(0, 0, 16, 16);
  //   sprite->setPosition(0, 2, 0);
  //   m_mainWorld->addObject(sprite);
+
+    for (auto& file : lna::AppData::current()->recentProjectFiles) {
+        auto link = ln::makeObject<ln::UILinkLabel>();
+        link->setText(file.fileName());
+        link->setUrl(file);
+        layout->addChild(link);
+    }
+    
 
     return true;
 }

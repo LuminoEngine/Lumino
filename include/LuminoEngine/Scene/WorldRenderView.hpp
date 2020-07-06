@@ -15,6 +15,7 @@ namespace detail {
 class PostEffectRenderer;
 class SceneRenderingPipeline;
 class InternalSkyBox;
+class InternalSkyDome;
 }
 
 /**
@@ -53,6 +54,9 @@ public:
 
     // TODO: internal
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
+    const Ref<detail::SceneRenderingPipeline>& sceneRenderingPipeline() const { return m_sceneRenderingPipeline; }
+
+    WorldObject* findObjectInPoint(int x, int y);
 
 protected:
 	virtual void onUpdateFrame(float elapsedSeconds) override;
@@ -86,6 +90,7 @@ private:
     bool m_gizmoEnabled;
 
 	Ref<detail::InternalSkyBox> m_internalSkyBox;
+    Ref<detail::InternalSkyDome> m_internalSkyDome;
     Ref<TransformControls> m_transformControls; // TODO: gizmo でまとめる？
 };
 

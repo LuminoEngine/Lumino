@@ -779,7 +779,8 @@ public:
 enum class UIThemeConstantPalette
 {
 	// Background
-	DefaultBackgroundColor,
+	DefaultBackgroundColor, // 最奥。Dark なら、最も暗い色。FrameWindow の背景色
+    ControlBackgroundColor,
 	PaperBackgroundColor,
 
 	// Intentions

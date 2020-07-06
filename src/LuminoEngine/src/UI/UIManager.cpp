@@ -401,6 +401,13 @@ bool UIManager::handleCommonInputCommands(UIEventArgs* e)
     return false;
 }
 
+//void UIManager::handleRootBubbleEvent(UIEventArgs* e)
+//{
+//    if (m_application) {
+//
+//    }
+//}
+
 } // namespace detail
 } // namespace ln
 

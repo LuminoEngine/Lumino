@@ -14,6 +14,26 @@ namespace ln {
 //=============================================================================
 // Assets
 
+void Assets::setAssetPath(AssetObject* obj, const String& filePath)
+{
+    obj->setAssetPath(filePath);
+}
+
+const Path& Assets::getAssetPath(AssetObject* obj)
+{
+    return obj->assetPath();
+}
+
+void Assets::save(AssetObject* obj)
+{
+    Assets::saveAsset(obj, obj->m_assetFilePath);
+}
+
+void Assets::reload(AssetObject* obj)
+{
+    obj->reload();
+}
+
 void Assets::saveAssetToLocalFile(AssetModel* asset, const String& filePath)
 {
     detail::EngineDomain::assetManager()->saveAssetModelToLocalFile(asset, filePath);
@@ -75,8 +95,8 @@ Ref<Stream> Assets::openFileStream(const StringRef& filePath)
 {
     return detail::EngineDomain::assetManager()->openFileStream(filePath);
 }
-
-//void Assets::serializeAsAssetPathInternal(Archive& ar, const StringRef& name, Ref<Object>& value)
+//
+//void Assets::serializeAssetObjectInternal(Archive& ar, const StringRef& name, Ref<Object>& value)
 //{
 //    String localPath;
 //    if (ar.isSaving()) {
@@ -96,7 +116,13 @@ Ref<Stream> Assets::openFileStream(const StringRef& filePath)
 //        }
 //    }
 //}
-//
+
+
+const String& Assets::engineAssetsDirectory()
+{
+    return AssetModel::EngineAssetsDirectory;
+}
+
 //=============================================================================
 // AssetImporter
 
@@ -149,6 +175,7 @@ namespace detail {
 
 const String AssetPath::FileSchemeName = u"file";
 const String AssetPath::AssetSchemeName = u"asset";
+const AssetPath AssetPath::Null;
 
 AssetPath AssetPath::makeFromLocalFilePath(const Path& filePath)
 {

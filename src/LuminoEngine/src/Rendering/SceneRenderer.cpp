@@ -32,7 +32,7 @@ void SceneRendererPass::init()
 {
 }
 
-void SceneRendererPass::onBeginRender(SceneRenderer* sceneRenderer)
+void SceneRendererPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 }
 
@@ -51,9 +51,9 @@ bool SceneRendererPass::filterElement(RenderDrawElement* element) const
 }
 
 //void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
-void SceneRendererPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
-}
+//void SceneRendererPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+//{
+//}
 
 //ShaderTechnique* SceneRendererPass::selectShaderTechniqueHelper(
 //	const ShaderTechniqueRequestClasses& requester,
@@ -112,21 +112,32 @@ void SceneRenderer::init()
     m_skinningLocalQuaternionsTexture->setSamplerState(samperState);
 }
 
+void SceneRenderer::prepare(
+	RenderingPipeline* renderingPipeline,
+	const detail::RenderViewInfo& mainRenderViewInfo,
+	RenderPhaseClass targetPhase,
+	const detail::SceneGlobalRenderParams* sceneGlobalParams)
+{
+	m_renderingPipeline = renderingPipeline;
+    m_mainRenderViewInfo = mainRenderViewInfo;
+	m_sceneGlobalRenderParams = sceneGlobalParams;
+
+	m_renderingElementList.clear();
+	collect(renderingPipeline, m_mainRenderViewInfo.cameraInfo, targetPhase);
+	prepare();
+}
+
+#if 0
 void SceneRenderer::render(
 	GraphicsContext* graphicsContext,
     RenderingPipeline* renderingPipeline,
 	RenderTargetTexture* renderTarget,
-    const CameraInfo& mainCameraInfo,
-    RenderPhaseClass targetPhase,
-	const detail::SceneGlobalRenderParams* sceneGlobalParams)
+	DepthBuffer* depthBuffer,
+    const CameraInfo& mainCameraInfo)
 {
-    graphicsContext->resetState();
 
-	m_renderingPipeline = renderingPipeline;
 	//m_defaultFrameBuffer = &defaultFrameBuffer;
-    m_mainCameraInfo = mainCameraInfo;
-    m_targetPhase = targetPhase;
-	m_sceneGlobalRenderParams = sceneGlobalParams;
+    //m_targetPhase = targetPhase;
 
 	//detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
 	//coreRenderer->begin();
@@ -184,8 +195,6 @@ void SceneRenderer::render(
 	//m_renderingActualPassList.addRange(m_renderingPassList);
 
 
-	auto depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
-
 	m_renderingActualPassList.clear();
 	for (SceneRendererPass* pass : m_renderingPassList)
 	{
@@ -193,23 +202,22 @@ void SceneRenderer::render(
 	}
 
 
-	for (SceneRendererPass* pass : m_renderingActualPassList)
-	{
-		pass->onBeginRender(this);
-	}
+	//for (SceneRendererPass* pass : m_renderingActualPassList)
+	//{
+	//	pass->onBeginRender(this);
+	//}
 
 	for (SceneRendererPass* pass : m_renderingActualPassList)
 	{
         renderPass(graphicsContext, renderTarget, depthBuffer, pass);
 	}
 
-	for (SceneRendererPass* pass : m_renderingActualPassList)
-	{
-		pass->onEndRender(this);
-    }
+	//for (SceneRendererPass* pass : m_renderingActualPassList)
+	//{
+	//	pass->onEndRender(this);
+ //   }
 
-	// TODO: scoped
-	DepthBuffer::releaseTemporary(depthBuffer);
+
 
 	//// Flush
 	//{
@@ -221,31 +229,34 @@ void SceneRenderer::render(
 
 	//coreRenderer->end();
 }
+#endif
 
 //void SceneRenderer::setDefaultMaterial(Material* material)
 //{
 //	m_defaultMaterial = material;
 //}
 
-void SceneRenderer::addPass(SceneRendererPass* pass)
-{
-	m_renderingPassList.add(pass);
-}
+//void SceneRenderer::addPass(SceneRendererPass* pass)
+//{
+//	m_renderingPassList.add(pass);
+//}
 
 void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass)
 {
-	m_renderingElementList.clear();
+	graphicsContext->resetState();
+
+	//m_renderingElementList.clear();
 
 	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
-	pass->onBeginPass(this, graphicsContext, renderTarget, depthBuffer);
+	pass->onBeginRender(this, graphicsContext, renderTarget, depthBuffer);
 
-	const detail::CameraInfo& cameraInfo = mainCameraInfo();
+	const detail::RenderViewInfo& cameraInfo = mainRenderViewInfo();
 
 	//pass->overrideCameraInfo(&cameraInfo);
 
-	collect(/*pass, */cameraInfo);
+	//collect(/*pass, */cameraInfo);
 
-	prepare();
+	//prepare();
 
 	for (auto& renderFeature : m_manager->renderFeatures()) {
 		renderFeature->beginRendering();
@@ -256,7 +267,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
     // TODO: とりいそぎ
     m_renderFeatureBatchList.renderTarget = renderTarget;
     m_renderFeatureBatchList.depthBuffer = depthBuffer;
-	m_renderFeatureBatchList.m_mainCameraInfo = &m_mainCameraInfo;
+	m_renderFeatureBatchList.m_mainCameraInfo = &m_mainRenderViewInfo.cameraInfo;
 
 	RenderPass* defaultRenderPass = pass->renderPass();
 	assert(defaultRenderPass);
@@ -444,7 +455,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			}
 			else {
 				ElementInfo elementInfo;
-				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
+				elementInfo.objectId = stage->m_objectId;
+				elementInfo.viewProjMatrix = &cameraInfo.cameraInfo.viewProjMatrix;
 				elementInfo.WorldMatrix = (batch->worldTransformPtr()) ? *batch->worldTransformPtr() : Matrix::Identity;
 				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
 				elementInfo.boneLocalQuaternionTexture = nullptr;	// TODO: (MMD SDEF)
@@ -498,7 +510,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				//else
 				// TODO: ↑SpriteTextRenderer が Font 取るのに使ってる。これは Batch に持っていくべきだろう。
 				{
-					RenderFeature::updateRenderParametersDefault(tech, cameraInfo, elementInfo, localSubsetInfo);
+					RenderFeature::updateRenderParametersDefault(tech, m_mainRenderViewInfo, elementInfo, localSubsetInfo);
 				}
 
 				if (finalMaterial) {
@@ -531,16 +543,18 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	}
 
     m_renderPassPoolUsed = 0;
+
+	pass->onEndRender(this);
 }
 
-void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo)
+void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo, RenderPhaseClass targetPhase)
 {
 	//InternalContext* context = m_manager->getInternalContext();
 	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
 
 
 #if 1
-    for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
+    for (auto& elementList : renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
     {
         for (auto& light : elementList->dynamicLightInfoList())
         {
@@ -551,7 +565,7 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
         }
     }
 
-    const auto& classifiedElements = m_renderingPipeline->elementListCollector()->classifiedElements(m_targetPhase);
+    const auto& classifiedElements = renderingPipeline->elementListCollector()->classifiedElements(targetPhase);
     for (RenderDrawElement* element : classifiedElements)
     {
 #if 0		// TODO: 視錘台カリング

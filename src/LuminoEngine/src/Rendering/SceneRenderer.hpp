@@ -39,13 +39,13 @@ public:
 	void setClearInfo(const ClearInfo& value) { m_clearInfo = value; }
 	const ClearInfo& clearInfo() const { return m_clearInfo; }
 
-	virtual void onBeginRender(SceneRenderer* sceneRenderer);
+	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 	virtual void onEndRender(SceneRenderer* sceneRenderer);
 
 	// このパスのデフォルトの RenderPass を構築する。
 	// renderTarget と depthBuffer は、シーンレンダリングの最終出力先。
 	// もし G-Buffer を作るときなど、内部的な RenderTarget に書きたい場合はこれらは使用せずに派生側で各種バッファを用意する。
-	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
+	//virtual void onBeginPass(SceneRenderer* sceneRenderer) = 0;
 
 	// このパスを実行するときのデフォルトの RenderPass を取得する。
 	// インスタンスは、このパスの実行側の onBeginPass() で作っておく。
@@ -82,34 +82,45 @@ class SceneRenderer
 	: public RefObject
 {
 public:
-	void render(
-		GraphicsContext* graphicsContext,
-        RenderingPipeline* renderingPipeline,
-		RenderTargetTexture* renderTarget,
-        const detail::CameraInfo& mainCameraInfo,
-        RenderPhaseClass targetPhase,
+	// render の前準備として、効率的な描画を行うためのZソートなどを実施した Element リストを作成する。
+	void prepare(
+		RenderingPipeline* renderingPipeline,
+		const detail::RenderViewInfo& mainRenderViewInfo,
+		RenderPhaseClass targetPhase,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
-	virtual SceneRendererPass* mainRenderPass() const = 0;
+	//void render(
+	//	GraphicsContext* graphicsContext,
+ //       RenderingPipeline* renderingPipeline,
+	//	RenderTargetTexture* renderTarget,
+	//	DepthBuffer* depthBuffer,
+ //       const detail::CameraInfo& mainCameraInfo);
+
+	void renderPass(
+		GraphicsContext* graphicsContext,
+		RenderTargetTexture* renderTarget,
+		DepthBuffer* depthBuffer,
+		SceneRendererPass* pass);
+
+	virtual SceneRendererPass* mainRenderPass() const { return nullptr; }
 
     RenderingPipeline* renderingPipeline() const { return m_renderingPipeline; }
 	const detail::SceneGlobalRenderParams* sceneGlobalParams() const { return m_sceneGlobalRenderParams; }
-    const detail::CameraInfo& mainCameraInfo() const { return m_mainCameraInfo; }
+    const detail::RenderViewInfo& mainRenderViewInfo() const { return m_mainRenderViewInfo; }
 	const detail::DynamicLightInfo* mainLightInfo() const { return m_mainLightInfo; }
 
-
-protected:
 	SceneRenderer();
 	void init();
 
+protected:
+
 	//void setDefaultMaterial(Material* material);
 
-	void addPass(SceneRendererPass* pass);
+	//void addPass(SceneRendererPass* pass);
 
-	void renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass);
 
 	// レンダリング準備として、描画に関係する各種オブジェクト (DrawElement や Light) を収集するフェーズ
-	virtual void collect(const CameraInfo& cameraInfo);
+	virtual void collect(RenderingPipeline* renderingPipeline, const CameraInfo& cameraInfo, RenderPhaseClass targetPhase);
 
 	// レンダリング準備として、効率的な描画を行うために収集した各種オブジェクトのソートなどを行う
 	void prepare();
@@ -121,12 +132,12 @@ protected:
 	virtual void onSetAdditionalShaderPassVariables(ShaderTechnique* technique);
 
 
-private:
+public:	// TODO
 	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderPass* defaultRenderPass /*RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer*//*, const ClearInfo& clearInfo*/);
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
 	detail::RenderingManager* m_manager;
-	List<Ref<SceneRendererPass>> m_renderingPassList;
+	//List<Ref<SceneRendererPass>> m_renderingPassList;
 	RenderFeatureBatchList m_renderFeatureBatchList;
 
     RenderingPipeline* m_renderingPipeline;
@@ -141,15 +152,15 @@ private:
 
     // 1つのパイプラインの別フェーズで SceneRenderer を使うとき、
     // viewproj 行列を分けたいことがある (Default と PostEffect など) ため、SceneRenderer 側に実態で持つ 
-    CameraInfo m_mainCameraInfo;
+	RenderViewInfo m_mainRenderViewInfo;
 	const DynamicLightInfo* m_mainLightInfo = nullptr;
 
-    RenderPhaseClass m_targetPhase;
+    //RenderPhaseClass m_targetPhase;
 
 	// build by collect().
 	List<RenderDrawElement*> m_renderingElementList;
 
-	List<SceneRendererPass*>	m_renderingActualPassList;
+	//List<SceneRendererPass*>	m_renderingActualPassList;
 
 	// TODO: ちゃんとした置き場は SkinnedMesh 実装時に考える
 	Ref<Texture2D>    m_skinningMatricesTexture;            // GPU スキニング用のテクスチャ

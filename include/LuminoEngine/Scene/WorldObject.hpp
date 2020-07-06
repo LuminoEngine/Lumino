@@ -173,6 +173,8 @@ public:
 	LN_METHOD()
     void addComponent(Component* component);
 
+	void removeAllComponents();
+
     void addTag(const StringRef& tag) { m_tags->add(tag); }
     void removeTag(const StringRef& tag) { m_tags->remove(tag); }
     bool hasTag(const StringRef& tag) const { return m_tags->contains(tag); }
@@ -254,6 +256,7 @@ public: // TODO:
 	Ref<ComponentList> m_components;
     Ref<List<Ref<WorldObject>>> m_children;
     Flags<DirtyFlags> m_dirtyFlags;
+	int m_id = 0;
     Matrix m_worldMatrix;
     bool m_isSpecialObject;
 	bool m_destroyed;

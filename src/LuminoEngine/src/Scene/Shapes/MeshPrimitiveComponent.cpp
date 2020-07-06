@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
 #include "../SceneManager.hpp"
@@ -8,6 +9,8 @@ namespace ln {
 
 //=============================================================================
 // PlaneMeshComponent
+
+LN_OBJECT_IMPLEMENT(PlaneMeshComponent, VisualComponent) {}
 
 PlaneMeshComponent::PlaneMeshComponent()
     : m_size(10.0f, 10.0f)
@@ -27,6 +30,14 @@ void PlaneMeshComponent::init()
 void PlaneMeshComponent::setMaterial(Material* material)
 {
     m_material = material;
+}
+
+void PlaneMeshComponent::serialize2(Serializer2& ar)
+{
+    VisualComponent::serialize2(ar);
+    ar & makeNVP(u"size", m_size);
+    ar & makeNVP(u"uvParUnit", m_uvParUnit);
+    ar & makeNVP(u"material", m_material);
 }
 
 void PlaneMeshComponent::onRender(RenderingContext* context)

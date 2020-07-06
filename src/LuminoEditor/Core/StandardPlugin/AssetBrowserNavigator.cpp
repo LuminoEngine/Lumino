@@ -5,7 +5,11 @@
 #include "../Project/AssetDatabase.hpp"
 #include "../App/Application.hpp"
 #include "../App/MainWindow.hpp"
+#include "../App/DocumentManager.hpp"
 #include "AssetBrowserNavigator.hpp"
+#include "LevelEditor.hpp"  // TODO:
+
+namespace lna {
 
 //==============================================================================
 // AssetBrowserTreeViewModel
@@ -15,7 +19,7 @@ bool AssetBrowserTreeViewModel::onTestFilter(const ln::Path& path)
     return ln::FileSystem::existsDirectory(path);
 }
 
-    
+#if 0
 //==============================================================================
 // AssetBrowserTreeView
 
@@ -196,3 +200,81 @@ void AssetBrowserNavigatorExtension::onImport()
 //
 //    return m_treeView;
 //}
+
+#endif
+
+
+//==============================================================================
+// AssetBrowserPane
+
+bool AssetBrowserPane::init(lna::EditorContext* context)
+{
+    if (!NavigatorContentPane::init()) return false;
+    Project* project = context->mainProject();
+    DocumentManager* documentManager = context->documentManager();
+
+    auto mainLauout = ln::makeObject<ln::UIGridLayout>();
+    mainLauout->setColumnCount(4);
+    addChild(mainLauout);
+
+    auto model1 = ln::makeObject<ln::UIFileSystemCollectionModel>();
+    model1->setRootPath(project->assetsDir());
+
+    auto treeview1 = ln::makeObject<ln::UITreeView2>();
+    treeview1->connectOnChecked([model1](ln::UIEventArgs* e) {
+        auto* item = static_cast<ln::UITreeItem2*>(e->sender());
+        auto path = model1->filePath(ln::static_pointer_cast<ln::UICollectionItemViewModel>(item->m_viewModel));
+        EditorApplication::instance()->openAssetFile(path);
+    });
+    treeview1->setGenerateTreeItemHandler([documentManager, model1](ln::UITreeItem2* item) {
+
+        // TODO: とりいそぎ LevelEditor に追加したい臨時ボタン
+        auto button = ln::UIButton::create(u">");
+        button->setAlignments(ln::HAlignment::Right, ln::VAlignment::Center);
+        button->setMargin(1);
+        item->addChild(button);
+
+        button->connectOnClicked([documentManager, model1, item]() {
+            if (auto d = dynamic_cast<LevelEditor*>(documentManager->activeDocument()->editor().get())) {
+                auto path = model1->filePath(ln::static_pointer_cast<ln::UICollectionItemViewModel>(item->m_viewModel));
+                d->tryInstantiateObjectFromAnyFile(path);
+            }
+        });
+    });
+
+    treeview1->setViewModel(model1);
+    mainLauout->addChild(treeview1);
+
+    return true;
+}
+
+//==============================================================================
+// AssetBrowserNavigator
+
+bool AssetBrowserNavigator::init(lna::EditorContext* context)
+{
+    if (!Navigator::init()) return false;
+
+    m_navigationItem = ln::makeObject<ln::UIIcon>();
+    m_navigationItem->setIconName(u"file");
+    m_navigationItem->setHAlignment(ln::HAlignment::Center);
+    m_navigationItem->setVAlignment(ln::VAlignment::Center);
+    m_navigationItem->setFontSize(24);
+
+    m_mainPane = ln::makeObject<AssetBrowserPane>(context);
+    //m_mainPane->setBackgroundColor(ln::Color::Red);
+
+    return true;
+}
+
+ln::UIElement* AssetBrowserNavigator::getNavigationMenuItem()
+{
+    return m_navigationItem;
+}
+
+ln::UIElement* AssetBrowserNavigator::getNavigationPane()
+{
+    return m_mainPane;
+}
+
+} // namespace lna

@@ -98,7 +98,7 @@ void OffscreenWorldRenderView::render(GraphicsContext* graphicsContext, World* t
     targetWorld->renderObjects();
 
     assert(elementListManagers().size() == 1);
-    m_sceneRenderingPipeline->render(graphicsContext, m_renderTarget, clearInfo, &m_cameraInfo, elementListManagers().front(), &targetWorld->masterScene()->m_sceneGlobalRenderParams);
+    m_sceneRenderingPipeline->render(graphicsContext, m_renderTarget, clearInfo, &m_cameraInfo, elementListManagers().front(), &targetWorld->m_combinedSceneGlobalRenderParams);
 
 }
 

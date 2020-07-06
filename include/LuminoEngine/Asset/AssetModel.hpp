@@ -43,6 +43,7 @@ class AssetModel
 	LN_OBJECT;
 public:
     static const String AssetFileExtension; // ".lnasset"
+    static const String EngineAssetsDirectory;
 
     // TODO: テスト用の一時機能。Asset の作成は AssetDatabase を使わなけばならない
 	//static Ref<AssetModel> create(Object* target);
@@ -50,7 +51,7 @@ public:
 	//static Ref<AssetModel> load(const ln::Path& filePath);
 	//static void save(Object* target, const ln::Path& filePath);
 
-    const ln::String& assetType() const { return m_assetType; }
+    const ln::TypeInfo* assetType() const;
 
     /** target */
     LN_METHOD()
@@ -90,11 +91,11 @@ private:
     //ln::Result loadInternal(const ln::Path& filePath);
     //ln::Result saveInternal(const ln::Path& filePath);
 
-    LN_SERIALIZE_CLASS_VERSION(1);
-    void serialize(Archive& ar);
+    //LN_SERIALIZE_CLASS_VERSION(1);
+    //void serialize(Archive& ar);
 
 
-    String m_assetType;
+    //String m_assetType;
 	Ref<Object> m_target;
     Ref<AssetModel> m_parent;
     List<Ref<AssetModel>> m_children;

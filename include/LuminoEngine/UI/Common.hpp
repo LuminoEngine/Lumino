@@ -13,6 +13,7 @@ class UIViewport;
 class UIControl;
 class UIListItemsControl;
 class UIListBox;
+class UITextBlock;
 
 /** コントロールのレイアウト方向を示します。*/
 enum class Orientation  // TODO: name LayoutOrientation

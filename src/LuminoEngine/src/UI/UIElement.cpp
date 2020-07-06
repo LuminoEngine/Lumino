@@ -1071,8 +1071,13 @@ void UIElement::raiseEventInternal(UIEventArgs* e, UIEventRoutingStrategy strate
     if (e->handled) return;
 
     // routing
-    if (strategy == UIEventRoutingStrategy::Bubble && m_visualParent) {
-        m_visualParent->raiseEventInternal(e, strategy);
+    if (strategy == UIEventRoutingStrategy::Bubble) {
+        if (m_visualParent) {
+            m_visualParent->raiseEventInternal(e, strategy);
+        }
+        //else {
+        //    m_manager->handleRootBubbleEvent(e);
+        //}
     }
 }
 

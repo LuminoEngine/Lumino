@@ -23,10 +23,9 @@ public:
 	void init();
 
 
-	virtual void onBeginRender(SceneRenderer* sceneRenderer) override;
+	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	virtual void onEndRender(SceneRenderer* sceneRenderer) override;
 
-	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
 	virtual RenderPass* renderPass() const;
 
@@ -47,7 +46,7 @@ public:	// TODO:
 	Ref<RenderPass> m_renderPass;
 };
 
-
+#if 0
 class LightOcclusionPass
 	: public SceneRendererPass
 {
@@ -76,6 +75,7 @@ public:
 	Ref<DepthBuffer> m_depthBuffer;
 	Ref<RenderPass> m_renderPass;
 };
+#endif
 
 class ClusteredShadingGeometryRenderingPass
 	: public SceneRendererPass
@@ -85,7 +85,7 @@ public:
 	virtual ~ClusteredShadingGeometryRenderingPass();
 	void init(ClusteredShadingSceneRenderer* ownerRenderer);
 
-	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
 	virtual RenderPass* renderPass() const;
 
@@ -122,7 +122,7 @@ public:
 
 	//virtual Shader* getDefaultShader() const override;
 
-	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
 	virtual RenderPass* renderPass() const;
 
@@ -139,8 +139,6 @@ protected:
 
 public:	// TODO:
 	Ref<Shader>		m_defaultShader;
-	Ref<RenderTargetTexture>	m_shadowMap;
-	Ref<DepthBuffer>	m_depthBuffer;
 	Ref<RenderPass> m_renderPass;
 };
 
@@ -154,8 +152,10 @@ public:
 	SceneRendererPass* mainRenderPass() const override;
 	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
 	//void setFogParams(const FogParams& params) { m_fogParams = params; }
-	ForwardGBufferPrepass* getDepthPrepass() const { return m_depthPrepass; }
-	const Ref<LightOcclusionPass>& lightOcclusionPass() const { return m_lightOcclusionPass; }
+	ShadowCasterPass* shadowCasterPass() const { return m_shadowCasterPass; }
+	ForwardGBufferPrepass* gbufferPass() const { return m_depthPrepass; }
+	ClusteredShadingGeometryRenderingPass* geometryPass() const { return m_geometryPass; }
+	//const Ref<LightOcclusionPass>& lightOcclusionPass() const { return m_lightOcclusionPass; }
 
 	const LightClusters& lightClusters() const { return m_lightClusters; }
 
@@ -163,7 +163,7 @@ protected:
 	//virtual void onBeginRender() override;
 	//virtual void onEndRender() override;
 
-	virtual void collect(const detail::CameraInfo& cameraInfo) override;
+	virtual void collect(RenderingPipeline* renderingPipeline, const detail::CameraInfo& cameraInfo, RenderPhaseClass targetPhase) override;
 	virtual void onCollectLight(const DynamicLightInfo& light) override;
 	virtual void onSetAdditionalShaderPassVariables(ShaderTechnique* technique) override;
 
@@ -171,8 +171,9 @@ private:
 	LightClusters				m_lightClusters;
 	//SceneGlobalRenderSettings	m_renderSettings;
 	//FogParams					m_fogParams;
+	Ref<ShadowCasterPass> m_shadowCasterPass;
 	Ref<ForwardGBufferPrepass>			m_depthPrepass;
-	Ref<LightOcclusionPass> m_lightOcclusionPass;
+	//Ref<LightOcclusionPass> m_lightOcclusionPass;
 	Ref<ClusteredShadingGeometryRenderingPass> m_geometryPass;
 };
 #endif

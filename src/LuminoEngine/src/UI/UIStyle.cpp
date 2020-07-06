@@ -131,7 +131,7 @@ const Thickness UIStyle::DefaultMargin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
 const Thickness UIStyle::DefaultPadding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
 const HAlignment UIStyle::DefaultHorizontalAlignment = HAlignment::Stretch;	// WPF FrameworkElement default
 const VAlignment UIStyle::DefaultVerticalAlignment = VAlignment::Stretch;
-const HAlignment UIStyle::DefaultHorizontalContentAlignment = HAlignment::Stretch;
+const HAlignment UIStyle::DefaultHorizontalContentAlignment = HAlignment::Stretch;	// デフォルト Stretch. WPF は Left だが、ListItem が Fill されずにカスタム Item 作るときに毎回混乱していたので。
 const VAlignment UIStyle::DefaultVerticalContentAlignment = VAlignment::Stretch;
 const float UIStyle::DefaultMinWidth = std::numeric_limits<float>::quiet_NaN();
 const float UIStyle::DefaultMinHeight = std::numeric_limits<float>::quiet_NaN();
@@ -1719,8 +1719,9 @@ void UITheme::buildLumitelier()
 	m_lineSpacing = m_lineContentHeight + spacing(1);
 
 	// Background
-	//setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::parse(u"#303030"));
-	setColor(UIThemeConstantPalette::DefaultBackgroundColor, UIColors::get(UIColorHues::Grey, 8));
+	setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::parse(u"#1E1E1E"));
+	setColor(UIThemeConstantPalette::ControlBackgroundColor, Color::parse(u"#303030"));
+	//setColor(UIThemeConstantPalette::DefaultBackgroundColor, UIColors::get(UIColorHues::Grey, 8));
 	setColor(UIThemeConstantPalette::PaperBackgroundColor, Color::parse(u"#424242"));
 
 	// Intentions
@@ -1840,7 +1841,7 @@ void UITheme::buildLumitelier()
 	// UITreeView
 	{
 		if (auto s = sheet->obtainStyle(u"UITreeView")) {
-			s->horizontalContentAlignment = HAlignment::Left;
+			//s->horizontalContentAlignment = HAlignment::Left;
 		}
 	}
 	//--------------------------------

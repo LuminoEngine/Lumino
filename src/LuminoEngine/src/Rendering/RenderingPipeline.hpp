@@ -6,22 +6,18 @@ class GraphicsContext;
 namespace detail {
 class ClusteredShadingSceneRenderer;
 class UnLigitingSceneRenderer;
+class UnLigitingSceneRendererPass;
 
-/*
- * 描画リストやポストエフェクトなど描画に関わる全てのパラメータを受け取り、
+/**
+ * 描画リストや視点情報、ポストエフェクトなど描画に関わる全てのパラメータを受け取り、
  * RenderView から覗くことができる 1 枚の絵を描き上げる。
- *
- * 将来的な話だが、Deffered と Forward 混在のような複数の SceneRenderer をコントロールするのはこのクラスの役目。
  */
 class RenderingPipeline
 	: public RefObject
 {
 public:
     void init();
-
     const SizeI& renderingFrameBufferSize() const { return m_renderingFrameBufferSize; }
-    //const Ref<detail::FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
-
     const detail::DrawElementListCollector* elementListCollector() const { return m_elementListCollector; }
 
 protected:
@@ -53,6 +49,9 @@ public:
     const Ref<RenderTargetTexture>& viweNormalAndDepthBuffer() const { return m_viweNormalAndDepthBuffer; }
     const Ref<RenderTargetTexture>& viweDepthBuffer() const { return m_viweDepthBuffer; }
     const Ref<RenderTargetTexture>& materialBuffer() const { return m_materialBuffer; }
+    const Ref<RenderTargetTexture>& objectIdBuffer() const { return m_objectIdBuffer; }
+    const Ref<RenderTargetTexture>& shadowMap() const { return m_shadowMap; }
+    const Ref<DepthBuffer>& shadowMapDepthBuffer() const { return m_shadowMapDepthBuffer; }
 
 private:
     // Note: 複数の SceneRenderer を持っているのは、描画フェーズの大きなまとまりごとに、Element の扱いを変えることで最適化するため。
@@ -64,7 +63,8 @@ private:
     // - 最後の UIRenderer は 2D スプライトの考え方でソートしたい。(今はサポートしてないけど)
 
     Ref<detail::ClusteredShadingSceneRenderer> m_sceneRenderer;
-    Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer_PostEffectPhase;
+    Ref<detail::SceneRenderer> m_sceneRenderer_PostEffectPhase;
+    Ref<UnLigitingSceneRendererPass> m_unlitRendererPass;
 
     // rgb: Packed view space normal, a: depth (near=0.0 ~ far=1.0)
     // TODO: UE4 や Unity など、多くは WorldSpace の normal を G-Buffer に書き込んでいる。
@@ -79,6 +79,15 @@ private:
 
     // 
     Ref<RenderTargetTexture> m_materialBuffer;
+
+    // RT にオブジェクトIDを書いて読み出す手法は "GPU picking" というらしい
+    // https://stackoverflow.com/questions/55462615/three-js-raycast-on-skinning-mesh
+    // R32S を利用しているが、RGBでオブジェクトIDを作ることもできる。
+    // https://riptutorial.com/three-js/example/17089/object-picking---gpu
+    Ref<RenderTargetTexture> m_objectIdBuffer;
+
+    Ref<RenderTargetTexture> m_shadowMap;
+    Ref<DepthBuffer> m_shadowMapDepthBuffer;
 
     Ref<SamplerState> m_samplerState;	// TODO: 共通化
     Ref<RenderPass> m_renderPass;
@@ -99,8 +108,10 @@ public:
         detail::DrawElementListCollector* elementListCollector);
 
 private:
-	Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
-    Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer_PostEffectPhase;
+	//Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
+    Ref<detail::SceneRenderer> m_sceneRenderer;
+    Ref<UnLigitingSceneRendererPass> m_unlitRendererPass;
+    Ref<UnLigitingSceneRendererPass> m_unlitRendererPass_PostEffect;
 };
 
 } // namespace detail

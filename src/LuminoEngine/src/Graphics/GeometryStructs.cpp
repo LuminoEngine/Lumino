@@ -19,6 +19,25 @@ const Size Size::Zero(0, 0);
 const Size Size::MinValue(std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
 const Size Size::MaxValue(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
 
+void Size::serialize2(Serializer2& ar)
+{
+    int size = 0;
+    if (ar.isSaving())
+        ar.beginWriteList();
+    else {
+        ar.beginReadList(&size);
+        assert(size == 2);	// TODO: error handling
+    }
+
+    ar.process(width);
+    ar.process(height);
+
+    if (ar.isSaving())
+        ar.endWriteList();
+    else
+        ar.endReadList();
+}
+
 //==============================================================================
 // PointI
 

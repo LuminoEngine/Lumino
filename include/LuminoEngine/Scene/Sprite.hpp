@@ -45,6 +45,7 @@ public:
         friend class Sprite;
     };
 
+    static Ref<Sprite> create();
 	static Ref<Sprite> create(Texture* texture);
     static Ref<Sprite> create(Texture* texture, float width, float height);
 	static Ref<Sprite> create(SpriteSheet* frameSet);

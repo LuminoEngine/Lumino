@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
@@ -90,7 +91,13 @@ void WorldRenderView::init()
 #endif
     }
 
+    // TODO: 遅延作成
 	m_internalSkyBox = makeObject<detail::InternalSkyBox>();
+    m_internalSkyDome = makeRef<detail::InternalSkyDome>();
+    if (!m_internalSkyDome->init()) {
+        LN_ERROR();
+        return;
+    }
 
     m_transformControls = makeObject<TransformControls>();
 }
@@ -179,6 +186,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         else {
             clearInfo.flags = ClearFlags::Depth | ClearFlags::Stencil;
         }
+
+        detail::SceneGlobalRenderParams sceneGlobalRenderParams = m_targetWorld->m_combinedSceneGlobalRenderParams;
 
 
         m_sceneRenderingPipeline->prepare(renderTarget);
@@ -336,6 +345,18 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 #endif
                 renderingContext->popState();
 			}
+            else if (clearMode() == RenderViewClearMode::SkyDome) {
+                m_internalSkyDome->setSkyColor(sceneGlobalRenderParams.skydomeSkyColor);
+                m_internalSkyDome->setHorizonColor(sceneGlobalRenderParams.skydomeHorizonColor);
+                m_internalSkyDome->setCloudColor(sceneGlobalRenderParams.skydomeCloudColor);
+                m_internalSkyDome->setOverlayColor(sceneGlobalRenderParams.skydomeOverlayColor);
+
+                m_internalSkyDome->update(0.016);   // TODO:
+                m_internalSkyDome->render(renderingContext, m_viewPoint);
+
+                //sceneGlobalRenderParams.fogColor = m_internalSkyDome->sceneColor();
+            }
+
 
             m_targetWorld->prepareRender();
 
@@ -397,10 +418,30 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
 
         assert(elementListManagers().size() == 1);
-		m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, elementListManagers().front(), &m_targetWorld->masterScene()->m_sceneGlobalRenderParams);
+		m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, elementListManagers().front(), &sceneGlobalRenderParams);
         
 		//graphicsContext->resetState();
+
+#if 0
+        auto bitmap = detail::TextureInternal::readData(m_sceneRenderingPipeline->objectIdBuffer(), graphicsContext);
+        auto d = (uint32_t*)bitmap->data();
+        printf("%u\n", d[0]);
+#endif
 	}
+}
+
+WorldObject* WorldRenderView::findObjectInPoint(int x, int y)
+{
+    auto bitmap = detail::TextureInternal::readData(m_sceneRenderingPipeline->objectIdBuffer(), nullptr);
+    auto data = (uint32_t*)bitmap->data();
+    int id = data[bitmap->width() * y + x];
+    printf("id:%d\n", id);
+    if (id > 0) {
+        return m_targetWorld->findObjectById(id);
+    }
+    else {
+        return nullptr;
+    }
 }
 
 detail::PostEffectRenderer* WorldRenderView::acquirePostEffectPresenter()
@@ -590,9 +631,9 @@ void WorldRenderView::onUpdateFrame(float elapsedSeconds)
 
 void WorldRenderView::onRoutedEvent(UIEventArgs* e)
 {
-    if (m_transformControls)
-    {
+    if (m_transformControls) {
         m_transformControls->onRoutedEvent(e);
+        if (e->handled) return;
     }
 
     RenderView::onRoutedEvent(e);

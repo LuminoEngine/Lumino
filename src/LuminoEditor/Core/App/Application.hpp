@@ -30,11 +30,12 @@ public:
 	void newProject(const ln::Path& dirPath, const ln::String& projectName);
     void openProject(const ln::Path& filePath);
     bool closeProject();
-    void importFile(const ln::Path& filePath);
+    //void importFile(const ln::Path& filePath);
     void openAssetFile(const ln::Path& filePath);
 
 protected:
-    virtual void onInit() override;
+    void onInit() override;
+    void onRoutedEvent(ln::UIEventArgs* e) override;
 
 private:
 	void postProjectLoaded();

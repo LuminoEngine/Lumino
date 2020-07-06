@@ -279,9 +279,7 @@ void UIFrameWindow::init()
         m_renderView = Ref<UIRenderView>(LN_NEW UIRenderView(), false);
         m_renderView->init();
 		m_renderView->setRootElement(this);
-		//m_renderView = makeObject<UIFrameRenderView>();
-		//m_renderView->setClearMode(RenderViewClearMode::ColorAndDepth);
-	}
+    }
 }
 
 void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
@@ -442,6 +440,13 @@ Size UIFrameWindow::arrangeOverride(UILayoutContext* layoutContext, const Size& 
 	//}
 
 	//return UIElement::arrangeOverride(desiredSize());
+}
+
+void UIFrameWindow::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
+{
+    UIDomainProvidor::onUpdateStyle(styleContext, finalStyle);
+
+    m_renderView->setBackgroundColor(styleContext->mainTheme->color(UIThemeConstantPalette::DefaultBackgroundColor));
 }
 
 void UIFrameWindow::render(UIRenderingContext* context, const Matrix& parentTransform)

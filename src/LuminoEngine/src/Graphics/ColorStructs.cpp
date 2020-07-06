@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoCore/Math/Vector3.hpp>
 #include <LuminoCore/Math/Vector4.hpp>
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 
 namespace ln {
@@ -288,6 +289,27 @@ Color Color::parse(const StringRef& str)
 {
     ColorI c = ColorI::parse(str);
     return Color(c);
+}
+
+void Color::serialize2(Serializer2& ar)
+{
+    int size = 0;
+    if (ar.isSaving())
+        ar.beginWriteList();
+    else {
+        ar.beginReadList(&size);
+        assert(size == 4);	// TODO: error handling
+    }
+
+    ar.process(r);
+    ar.process(g);
+    ar.process(b);
+    ar.process(a);
+
+    if (ar.isSaving())
+        ar.endWriteList();
+    else
+        ar.endReadList();
 }
 
 //==============================================================================

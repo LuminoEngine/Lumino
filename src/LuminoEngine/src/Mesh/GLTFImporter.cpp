@@ -557,6 +557,9 @@ void flipFaceIndex_Triangle(T* indices, int count)
 
 Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 {
+	ElapsedTimer timer;
+
+
 	bool hasTangentAttribute = false;
 
 	// Validation and count vertices.
@@ -840,6 +843,8 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 	auto aabb = MeshHelper::makeAABB(
 		static_cast<const Vertex*>(coreMesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main)),
 		vertexCount);
+
+	std::cout << "GenerateMesh: " << timer.elapsedMilliseconds() << "[ms]" << std::endl;
 
 	return coreMesh;
 }

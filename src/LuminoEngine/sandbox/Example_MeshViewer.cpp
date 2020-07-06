@@ -60,7 +60,12 @@ class App_Example_MeshViewer : public Application
         
         
         //mesh->skinnedMeshComponent()->model()->animationController()->play(u"animation_AnimatedCube");
-
+        //auto mesh = StaticMesh::create("D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/BldgMedTallC_grp.gltf");
+        //auto mesh = StaticMesh::create("D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/2-OverpassBroken_grp.gltf");
+        auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/27-BldgRubbleB_grp.gltf");
+        
+        //mesh->setPosition(0, 10, 0);
+#if 0
     
         m_mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
         m_model = m_mesh->skinnedMeshComponent()->model();
@@ -78,25 +83,12 @@ class App_Example_MeshViewer : public Application
         m_idle = m_model->animationController()->addClip(clip1);
         m_walk = m_model->animationController()->addClip(clip2);
         m_model->animationController()->play(m_idle);
-
-
-        //auto model = mesh->skinnedMeshComponent()->model();
-        //auto skeleton = model->skeleton(0);
-        //auto node = model->meshNodes()[3];
-        //node->setRotation(0, 0, 0.3);
-
-        //auto li = SpotLight::create();
-        //li->setPosition(0, 0.1, 0);
-
-        //auto window = UIWindow::create();
-        //window->setSize(200, 200);
-        //window->setAlignments(HAlignment::Left, VAlignment::Top);
-
-
+#endif
     }
 
     virtual void onUpdate() override
     {
+#if 0
         //m_node->setRotation(0, 0, Engine::time());
         //m_node->setRotation(Quaternion(0.00719260797, -0.0159967896, -0.317227066, 0.948187351));
 
@@ -132,6 +124,7 @@ class App_Example_MeshViewer : public Application
         Engine::camera()->lookAt(lookat);
 
         m_mesh->setPosition(pos);
+#endif
     }
 };
 
