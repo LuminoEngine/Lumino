@@ -9,6 +9,14 @@
 namespace ln {
 class Sound;
 
+enum class PlayingState	// TODO: AudioPlayingState
+{
+	NoChanged,
+	Stop,
+	Play,
+	Pause,
+};
+
 namespace detail {
 class internal_shared_mutex;
 using AudioRWMutex = internal_shared_mutex;

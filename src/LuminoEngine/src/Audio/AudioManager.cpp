@@ -98,7 +98,7 @@ void AudioManager::update(float elapsedSeconds)
 	if (!m_audioThread) {
 		// not thread processing.
 		if (m_primaryContext) {
-			m_primaryContext->process(elapsedSeconds);
+			m_primaryContext->processOnAudioThread(elapsedSeconds);
 		}
         m_dispatcher->executeTasks(1);
 	}
@@ -187,7 +187,7 @@ void AudioManager::processThread()
 		while (!m_endRequested)
 		{
 			if (m_primaryContext) {
-				m_primaryContext->process(0.02);
+				m_primaryContext->processOnAudioThread(0.02);
 			}
 
             Thread::sleep(20);

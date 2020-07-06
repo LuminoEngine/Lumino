@@ -13,6 +13,24 @@ class AudioDecoder;
 class AssetManager;
 class GameAudioImpl;
 
+
+//enum class OperationCode
+//{
+//	AddNode,
+//	RemoveNode,
+//	Connection,
+//	Disconnection,
+//	//DisconnectionAllAndDispose,
+//	DisconnectionAll,
+//};
+//
+//struct ConnectionCommand
+//{
+//	OperationCode code;
+//	Ref<AudioNode> outputSide;
+//	Ref<AudioNode> inputSide;
+//};
+
 class AudioManager
 	: public RefObject
 {
@@ -33,12 +51,18 @@ public:
 	//RenderingType renderingType() const { return RenderingType::Immediate; }
 	//const Ref<RenderingCommandList>& primaryRenderingCommandList() const { return m_primaryRenderingCommandList; }
 
+	//// AudioNode インスタンス作成&
+	//void addAudioNode(AudioNode* node);
+	//void removeAudioNode(AudioNode* node);
+
 	Ref<AudioDecoder> createAudioDecoder(const StringRef& filePath);
 	void createAudioDecoderAsync(const StringRef& filePath, const std::function<void(AudioDecoder* decoder)>& postAction);
 	void releaseAudioDecoder(AudioDecoder* decoder);
 
 	void addSoundManagement(Sound* value);
 	void removeSoundManagement(Sound* value);
+
+	void postAddCommand();
 
 private:
     // processThread は少しでも遅れると音声に影響するので、できる限り Mixing に集中する。

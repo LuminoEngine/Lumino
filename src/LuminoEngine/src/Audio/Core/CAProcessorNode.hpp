@@ -13,7 +13,8 @@ public:
     void init(int numberOfInputChannels, int numberOfOutputChannels);
 
 protected:
-	virtual void process() override;
+    void onCommit() override;
+	void process() override;
 
 private:
     AudioProcessorNode* m_ownerNode;

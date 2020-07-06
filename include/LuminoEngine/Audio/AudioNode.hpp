@@ -35,7 +35,9 @@ class AudioNodeCore;
  内部的に参照カウントを監視して自動開放したりはしない。
  → 以前はそのような想定だったが、マルチスレッドの難易度が跳ね上がるのと、AudioNode を積極的にユーザープログラムで書くことは少ない
    (それよりも Sound クラスを使ってね) なスタイルなので、ちょっと凝ったことする人は気を付けてね、な方向にしてみる。
- 
+ ↑
+ よく考えたらこれだけじゃだめ。Binding の件で、Object の派生は必ずメインスレッドで開放しなければならない。
+
 
 
 
@@ -68,7 +70,7 @@ protected:
     // 逆に言うと、AudioNode のサブクラスは他のモジュールのように init() は一切実装してはならない。
     //virtual void onInitialize() = 0;
 	virtual detail::AudioNodeCore* coreNode() = 0;
-	virtual void commit();	// ロック済みの状態で呼ばれる
+	//virtual void commit();	// ロック済みの状態で呼ばれる
 
 	detail::AudioRWMutex& commitMutex();
     detail::AudioRWMutex& propertyMutex() { return m_propertyMutex; }

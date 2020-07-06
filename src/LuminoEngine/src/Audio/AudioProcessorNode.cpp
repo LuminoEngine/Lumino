@@ -33,13 +33,13 @@ detail::AudioNodeCore* AudioProcessorNode::coreNode()
 	return m_coreObject;
 }
 
-void AudioProcessorNode::commit()
-{
-    AudioNode::commit();
-
-    detail::ScopedReadLock lock(propertyMutex());
-    //m_coreObject->setGain(m_gain);
-}
+//void AudioProcessorNode::commit()
+//{
+//    //AudioNode::commit();
+//
+//    //detail::ScopedReadLock lock(propertyMutex());
+//    ////m_coreObject->setGain(m_gain);
+//}
 
 void AudioProcessorNode::onAudioProcess(AudioBus* input, AudioBus* output)
 {

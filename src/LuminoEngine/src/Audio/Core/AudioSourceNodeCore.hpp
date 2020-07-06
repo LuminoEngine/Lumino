@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CoreAudioNode.hpp"
+#include <LuminoEngine/Audio/InternalSharedMutex.inc>
 
 namespace ln {
 namespace detail {
@@ -8,9 +9,19 @@ class AudioSourceNodeCore
 	: public AudioNodeCore
 {
 public:
+	struct StagingData
+	{
+		float playbackRate;
+		ln::PlayingState requestedState;
+		bool loop;
+		bool resetRequire;
+
+		AudioRWMutex m_mutex;
+	} staging;
 
 protected:
-	virtual void process() override;
+	void onCommit() override;
+	void process() override;
 
 public:
     // scheduling

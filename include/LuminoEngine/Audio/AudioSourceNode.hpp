@@ -7,13 +7,6 @@ class AudioSourceNode
 	: public AudioNode
 {
 public:
-    enum class PlayingState
-    {
-        NoChanged,
-        Stop,
-        Play,
-        Pause,
-    };
 
 	void setPlaybackRate(float rate);
 
@@ -31,7 +24,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~AudioSourceNode() = default;
 	void init(detail::AudioDecoder* decoder);
 	virtual detail::AudioNodeCore* coreNode() override;
-	virtual void commit() override;
+	//virtual void commit() override;
 
 private:
 
@@ -44,7 +37,7 @@ private:
 	};
 
 	Ref<detail::AudioSourceNodeCore> m_coreObject;
-	CommitState m_commitState;
+	//CommitState m_commitState;
 };
 
 } // namespace ln

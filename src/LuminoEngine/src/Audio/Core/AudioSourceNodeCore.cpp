@@ -126,6 +126,38 @@ double AudioSourceNodeCore::calculatePitchRate()
 	return totalRate;
 }
 
+void AudioSourceNodeCore::onCommit()
+{
+	detail::ScopedWriteLock lock(staging.m_mutex);
+
+	if (staging.resetRequire) {
+		reset();
+		staging.resetRequire = false;
+	}
+
+	switch (staging.requestedState)
+	{
+	case ln::PlayingState::NoChanged:
+		break;
+	case  ln::PlayingState::Stop:
+		stop();
+		break;
+	case  ln::PlayingState::Play:
+		reset();
+		start();
+		break;
+	case  ln::PlayingState::Pause:
+		LN_NOTIMPLEMENTED();
+		break;
+	default:
+		break;
+	}
+	staging.requestedState = ln::PlayingState::NoChanged;
+
+	setPlaybackRate(staging.playbackRate);
+	setLoop(staging.loop);
+}
+
 // https://github.com/chromium/chromium/blob/ba96c018682416a7b2ec77876404b14322aa1b54/third_party/blink/renderer/modules/webaudio/audio_buffer_source_node.cc
 void AudioSourceNodeCore::process()
 {

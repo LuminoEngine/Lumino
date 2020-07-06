@@ -246,6 +246,10 @@ void CoreAudioPannerNode::init()
 	m_coneEffect = std::make_shared<blink::ConeEffect>();
 }
 
+void CoreAudioPannerNode::onCommit()
+{
+}
+
 void CoreAudioPannerNode::process()
 {
 	//test
@@ -323,6 +327,15 @@ void CoreAudioDestinationNode::init()
 	addInputPin(2);
 }
 
+void CoreAudioDestinationNode::onCommit()
+{
+}
+
+void CoreAudioDestinationNode::process()
+{
+	LN_UNREACHABLE();
+}
+
 void CoreAudioDestinationNode::render(float * outputBuffer, int length)
 {
 	m_marked = true;
@@ -355,11 +368,6 @@ void CoreAudioDestinationNode::render(float * outputBuffer, int length)
 	}
 
 	bus->mergeToChannelBuffers(outputBuffer, length);
-}
-
-void CoreAudioDestinationNode::process()
-{
-	LN_UNREACHABLE();
 }
 
 

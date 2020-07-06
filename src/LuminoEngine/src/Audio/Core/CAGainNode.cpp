@@ -23,6 +23,11 @@ void CAGainNode::init()
     addInputPin(numChannels);
 }
 
+void CAGainNode::onCommit()
+{
+    m_gain = staging.gain;
+}
+
 void CAGainNode::process()
 {
     AudioBus* destination = outputPin(0)->bus();

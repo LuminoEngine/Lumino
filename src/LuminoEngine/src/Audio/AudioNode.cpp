@@ -47,27 +47,27 @@ void AudioNode::onDispose(bool explicitDisposing)
 	Object::onDispose(explicitDisposing);
 }
 
-void AudioNode::commit()
-{
-
-	//if (m_inputConnectionsDirty)
-	//{
-	//	coreNode()->disconnectAllInputSide();
-	//	for (auto& node : m_inputConnections) {
-	//		detail::AudioNodeCore::connect(node->coreNode(), coreNode());
-	//	}
-	//	m_inputConnectionsDirty = false;
-	//}
-
-	//if (m_outputConnectionsDirty)
-	//{
-	//	coreNode()->disconnectAllOutputSide();
-	//	for (auto& node : m_outputConnections) {
-	//		detail::AudioNodeCore::connect(coreNode(), node->coreNode());
-	//	}
-	//	m_outputConnectionsDirty = false;
-	//}
-}
+//void AudioNode::commit()
+//{
+//
+//	//if (m_inputConnectionsDirty)
+//	//{
+//	//	coreNode()->disconnectAllInputSide();
+//	//	for (auto& node : m_inputConnections) {
+//	//		detail::AudioNodeCore::connect(node->coreNode(), coreNode());
+//	//	}
+//	//	m_inputConnectionsDirty = false;
+//	//}
+//
+//	//if (m_outputConnectionsDirty)
+//	//{
+//	//	coreNode()->disconnectAllOutputSide();
+//	//	for (auto& node : m_outputConnections) {
+//	//		detail::AudioNodeCore::connect(coreNode(), node->coreNode());
+//	//	}
+//	//	m_outputConnectionsDirty = false;
+//	//}
+//}
 
 detail::AudioRWMutex& AudioNode::commitMutex()
 {

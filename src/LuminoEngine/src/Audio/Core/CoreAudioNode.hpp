@@ -105,11 +105,22 @@ private:
 	List<Ref<CoreAudioInputPin>> m_connectedInputPins;
 };
 
+ 
 
 class AudioNodeCore
 	: public Object
 {
 public:
+	//class StagingData
+	//{
+	//protected:
+	//	detail::AudioRWMutex& mutex() { return m_mutex; }
+
+	//private:
+	//	detail::AudioRWMutex m_mutex;
+	//};
+
+
 	// 1度の process で処理するサンプル数。
 	// = 各 Audio API に送り込む 1 回分のサンプル数。
 	// 1 チャンネル分。
@@ -147,6 +158,8 @@ protected:
 
 	void pullInputs();
 
+	virtual void onCommit() = 0;
+
 	// output(x) へ書き込む。要素数は自分で addOutputPin() した数だけ。
 	// input は pull 済み。データを取り出すだけでよい。
 	// output(x) のバッファクリアは process() の実装側で行う。例えば消音したい場合は必ず process 無いでクリア (setSilentAndZero() を呼び出す)
@@ -157,6 +170,8 @@ private:
 	AudioNode* m_frontNode;
 	List<Ref<CoreAudioInputPin>> m_inputPins;
 	List<Ref<CoreAudioOutputPin>> m_outputPins;
+
+	friend class AudioContext;	// for onCcommit
 };
 
 class CoreAudioPannerNode
@@ -165,7 +180,8 @@ class CoreAudioPannerNode
 public:
 
 protected:
-	virtual void process() override;
+	void onCommit() override;
+	void process() override;
 
 public:
 	CoreAudioPannerNode(AudioDevice* context, AudioNode* frontNode);
@@ -193,8 +209,9 @@ public:
 	void init();
 
 protected:
-	virtual void render(float* outputBuffer, int length) override;
-	virtual void process() override;
+	void onCommit() override;
+	void process() override;
+	void render(float* outputBuffer, int length) override;
 
 private:
 	PropagationParameters m_propagationParameters;

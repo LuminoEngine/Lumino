@@ -190,12 +190,12 @@ SoundPlayingState Sound::playingState() const
 {
     switch (m_sourceNode->playingState())
     {
-    case AudioSourceNode::PlayingState::NoChanged:
-    case AudioSourceNode::PlayingState::Stop:
+    case ln::PlayingState::NoChanged:
+    case ln::PlayingState::Stop:
         return SoundPlayingState::Stopped;
-    case AudioSourceNode::PlayingState::Play:
+    case ln::PlayingState::Play:
         return SoundPlayingState::Playing;
-    case AudioSourceNode::PlayingState::Pause:
+    case ln::PlayingState::Pause:
         return SoundPlayingState::Pausing;
     default:
         LN_UNREACHABLE();

@@ -22,6 +22,10 @@ void CAProcessorNode::init(int numberOfInputChannels, int numberOfOutputChannels
     addOutputPin(numberOfOutputChannels);
 }
 
+void CAProcessorNode::onCommit()
+{
+}
+
 void CAProcessorNode::process()
 {
     AudioBus* source = inputPin(0)->bus();
