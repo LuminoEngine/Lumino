@@ -11,7 +11,7 @@ class App_Example_SoundControl : public Application
     virtual void onInit() override
     {
 		sound = makeObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
-		sound->setVolume(0.05);
+		//sound->setVolume(0.05);
 		sound->play();
 		//sound = nullptr;
 
@@ -31,7 +31,9 @@ class App_Example_SoundControl : public Application
 		auto size = Engine::mainWindow()->actualSize();
 
 		if (Mouse::pressed(MouseButtons::Left)) {
+			float volume = Mouse::position().y / size.height;
 			float pitch = Mouse::position().x / size.width;
+			sound->setVolume(volume);
 			sound->setPitch(pitch + 0.5);
 		}
     }

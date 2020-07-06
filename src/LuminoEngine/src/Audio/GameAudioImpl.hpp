@@ -7,6 +7,17 @@ class Sound;
 namespace detail {
 class AudioManager;
 
+
+// Note:
+// 内部で使用する Sound たちは外部に公開禁止 & 外部から受け取ることも禁止。
+// playSE() とかでは内部的に Sound を生成するが、これの解放責任を UserProgram にやらせるのは使い勝手良くない。
+// さらに Audio モジュールは他のモジュールと異なっていて、Engine::update() は無くても動作させたい。
+// そうするとフェードアウトや再生停止後の自動開放は、AudioThread でやりたい。
+// ここで問題になってくるのは、Binding に公開してしまったときの対処。特に AudioThread で Object を dispose してしまったとき。
+// C++ 側だけならまだしも、別言語の Wrapper 側にも排他処理が必要になってしまう。
+// そもそもネイティブマルチスレッドを扱えない言語も多くある。
+// なので全面的に公開禁止。
+// もし既存の Sound を使いたい場合は、playSE(sound) とかしたときに Sound のクローンを作ること。
 class GameAudioImpl
 	: public RefObject
 {
@@ -44,9 +55,11 @@ private:
     AudioManager*				mManager;
     std::mutex						mLock;
     ReleaseAtPlayEndList        mReleaseAtPlayEndList;  ///< 再生終了時に解放する音声リスト
+
     Ref<Sound>		                mBGM;
     Ref<Sound>		                mBGS;
     Ref<Sound>						mME;
+
     String			            mBGMName;
     String				        mBGSName;
     float						mBGMVolume;
