@@ -81,19 +81,19 @@ public:
     // TODO: internal
     // assetPath() をキャッシュキーのソースとして、扱うような AssetObject を serialize する。
     // 
-    template<typename TValue>
-    static void serializeAssetObject(Serializer2& ar, const StringRef& name, Ref<TValue>& value)
-    {
-        if (ar.isSaving()) {
-            Ref<Object> local = value;
-            serializeAsAssetPathInternal(ar, name, local);
-        }
-        else {
-            Ref<Object> local;
-            serializeAsAssetPathInternal(ar, name, local);
-            value = dynamic_pointer_cast<TValue>(local);
-        }
-    }
+    //template<typename TValue>
+    //static void serializeAssetObject(Serializer2& ar, const StringRef& name, Ref<TValue>& value)
+    //{
+    //    if (ar.isSaving()) {
+    //        Ref<Object> local = value;
+    //        serializeAsAssetPathInternal(ar, name, local);
+    //    }
+    //    else {
+    //        Ref<Object> local;
+    //        serializeAsAssetPathInternal(ar, name, local);
+    //        value = dynamic_pointer_cast<TValue>(local);
+    //    }
+    //}
 
     static const String& engineAssetsDirectory();
 };

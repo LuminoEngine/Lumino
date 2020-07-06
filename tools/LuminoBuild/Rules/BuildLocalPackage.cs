@@ -32,7 +32,7 @@ namespace LuminoBuild.Rules
 
             if (BuildEnvironment.IsAndroidTarget && AndoridBuildEnv.AndroidStudioFound)
             {
-                builder.DoTask("BuildEngine_AndroidJNI");
+                builder.DoTask("BuildEngine_Android");
             }
 
             builder.DoTask("BuildDocuments");

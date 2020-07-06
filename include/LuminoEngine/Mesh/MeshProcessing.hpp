@@ -46,16 +46,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	template<class T>
-	T* newMeshGenerater()
-	{
-		void* buffer = m_allocator->allocate(sizeof(T));
-		T* data = new (buffer)T();
-		data->setTransform(Matrix(m_transform));
-		data->setColor(m_color);
-		m_generators.add(Geometry{ data });
-		//allocateNextTransform();
-		return data;
-	}
+	T* newMeshGenerater();
 
 	//void allocateNextTransform();
 

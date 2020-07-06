@@ -150,7 +150,7 @@ public:
 			GLenum elementType;
 		};
 #if defined(LN_GRAPHICS_OPENGLES)
-		static GLenum table[][3] =
+		static const TextureFormatConversionItem table[] =
 		{
 			{ TextureFormat::Unknown, GL_NONE, GL_NONE, GL_NONE },
 			{ TextureFormat::RGBA8, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE },

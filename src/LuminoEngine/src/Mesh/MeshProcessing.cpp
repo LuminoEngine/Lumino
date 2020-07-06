@@ -15,6 +15,18 @@ namespace ln {
 //==============================================================================
 // MeshGeometryBuilder
 
+template<class T>
+T* MeshGeometryBuilder::newMeshGenerater()
+{
+	void* buffer = m_allocator->allocate(sizeof(T));
+	T* data = new (buffer)T();
+	data->setTransform(Matrix(m_transform));
+	data->setColor(m_color);
+	m_generators.add(Geometry{ data });
+	//allocateNextTransform();
+	return data;
+}
+
 MeshGeometryBuilder::MeshGeometryBuilder()
 	//: m_transform(nullptr)
 {
