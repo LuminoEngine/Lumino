@@ -392,8 +392,9 @@ void Bitmap2D::flipVerticalFlow()
 	{
 		uint32_t* pixels = (uint32_t*)m_buffer->data();
 		for (int y = 0; y < (m_size.height / 2); ++y) {
+            int ry = (m_size.height - 1 - y);
 			for (int x = 0; x < m_size.width; ++x) {
-				std::swap(pixels[(y * m_size.width) + x], pixels[((m_size.height - 1 - y) * m_size.width) + x]);
+				std::swap(pixels[(y * m_size.width) + x], pixels[(ry * m_size.width) + x]);
 			}
 		}
 	}

@@ -156,6 +156,22 @@ public:
 	LN_METHOD(Property)
 	float getIntensity() const { return m_component->getIntensity(); }
 
+	/** 視点からの、影を生成できる距離を指定します。 (default: 0.0f) */
+	LN_METHOD(Property)
+	void setShadowEffectiveDistance(float value) { m_component->setShadowEffectiveDistance(value); }
+
+	/** 視点からの、影を生成できる距離を取得します。 */
+	LN_METHOD(Property)
+	float shadowEffectiveDistance() const { return m_component->shadowEffectiveDistance(); }
+
+	/** 光源方向からの、影を生成できる距離を指定します。 (default: 0.0f) ※これはシャドウマップの深度値の範囲となります。 */
+	LN_METHOD(Property)
+	void setShadowEffectiveDepth(float value) { m_component->setShadowEffectiveDepth(value); }
+
+	/** 光源方向からの、影を生成できる距離を指定します。 */
+	LN_METHOD(Property)
+	float shadowEffectiveDepth() const { return m_component->shadowEffectiveDepth(); }
+
 	/** コンポーネントを取得します。 */
 	DirectionalLightComponent* getDirectionalLightComponent() const;
 

@@ -11,9 +11,6 @@
 #include "RenderingManager.hpp"
 
 namespace ln {
-    Texture* g_viewNormalMap = nullptr;
-    Texture* g_viewDepthMap = nullptr;
-    Texture* g_viewMaterialMap = nullptr;
 namespace detail {
 
 //==============================================================================
@@ -40,8 +37,6 @@ void RenderingPipeline::init()
 //==============================================================================
 // SceneRenderingPipeline
 
-#define USE_TMP 1
-
 SceneRenderingPipeline::SceneRenderingPipeline()
     : m_sceneRenderer(nullptr)
 {
@@ -67,17 +62,6 @@ void SceneRenderingPipeline::init()
 
 
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
-#ifndef USE_TMP
-    m_viweNormalAndDepthBuffer = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
-    m_viweNormalAndDepthBuffer->setSamplerState(m_samplerState);
-    m_viweDepthBuffer = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
-    m_viweDepthBuffer->setSamplerState(m_samplerState);
-    m_materialBuffer = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
-    m_materialBuffer->setSamplerState(m_samplerState);
-    g_viewNormalMap = m_viweNormalAndDepthBuffer;
-    g_viewDepthMap = m_viweDepthBuffer;
-    g_viewMaterialMap = m_materialBuffer;
-#endif 
 
     m_shadowMap = makeObject<RenderTargetTexture>(1024, 1024, TextureFormat::RGBA32F, false);
     m_shadowMap->setSamplerState(m_samplerState);
@@ -94,14 +78,9 @@ void SceneRenderingPipeline::prepare(RenderTargetTexture* renderTarget)
 
     // Prepare G-Buffers
     {
-#ifdef USE_TMP
         m_viweNormalAndDepthBuffer = RenderTargetTexture::realloc(m_viweNormalAndDepthBuffer, m_renderingFrameBufferSize.width, m_renderingFrameBufferSize.height, TextureFormat::RGBA8, false, m_samplerState);
         m_viweDepthBuffer = RenderTargetTexture::realloc(m_viweDepthBuffer, m_renderingFrameBufferSize.width, m_renderingFrameBufferSize.height, TextureFormat::RGBA32F, false, m_samplerState);
         m_materialBuffer = RenderTargetTexture::realloc(m_materialBuffer, m_renderingFrameBufferSize.width, m_renderingFrameBufferSize.height, TextureFormat::RGBA8, false, m_samplerState);
-        g_viewNormalMap = m_viweNormalAndDepthBuffer;
-        g_viewDepthMap = m_viweDepthBuffer;
-        g_viewMaterialMap = m_materialBuffer;
-#endif
 
         m_objectIdBuffer = RenderTargetTexture::realloc(m_objectIdBuffer, m_renderingFrameBufferSize.width, m_renderingFrameBufferSize.height, TextureFormat::R32S, false, m_samplerState);
 
@@ -141,32 +120,30 @@ void SceneRenderingPipeline::render(
 
     RenderViewInfo renderViewInfo;
     renderViewInfo.cameraInfo = *mainCameraInfo;
-    renderViewInfo.mainLightShadowMap = m_shadowMap;
-    renderViewInfo.mainLightShadowMapPixelSize = Size(m_shadowMap->width(), m_shadowMap->height());
 
-    if (const auto* light = m_sceneRenderer->mainLightInfo()) {
-        const float shadowFar = 30; // だいたいどのくらいまでの距離に Shadow を生成するか？
-        const float shadowDepthRange = 200;  // ライト空間内の far - near
+    {
+        const auto* light = m_sceneRenderer->mainLightInfo();
 
-        const auto& camera = renderViewInfo.cameraInfo;
+        if (light && light->shadowEnabled()) {
+            const auto& camera = renderViewInfo.cameraInfo;
 
-        // ↑のパラメータで指定された範囲を Ortho に収めるような視点情報を作る
-        const auto lookAt = camera.viewPosition + camera.viewDirection * (shadowFar / 2);
-        const auto lightPos = lookAt - light->m_direction * (shadowDepthRange / 2);
-        const auto view = Matrix::makeLookAtLH(lightPos, lookAt, Vector3::UnitY);
-        const auto proj = Matrix::makeOrthoLH(shadowFar, shadowFar, 0.5, shadowDepthRange);
+            // ↑のパラメータで指定された範囲を Ortho に収めるような視点情報を作る
+            const auto lookAt = camera.viewPosition + camera.viewDirection * (light->shadowCameraZFar / 2);
+            const auto lightPos = lookAt - light->m_direction * (light->shadowLightZFar / 2);
+            const auto view = Matrix::makeLookAtLH(lightPos, lookAt, Vector3::UnitY);
+            const auto proj = Matrix::makeOrthoLH(light->shadowCameraZFar, light->shadowCameraZFar, 0.5, light->shadowLightZFar);
 
-
-        //const auto pos = Vector3(10, 10, 10);
-        //const auto view = Matrix::makeLookAtLH(
-        //    pos,
-        //    Vector3::Zero,
-        //    Vector3::UnitY);
-        //const auto proj = Matrix::makePerspectiveFovLH(
-        //    Math::PI / 2.0f,
-        //    1024.0 / 1024.0,	// TODO: LightMapSize
-        //    0.5f, 100.0f);	// TODO: clip range
-        renderViewInfo.mainLightViewProjection = Matrix::multiply(view, proj);
+            renderViewInfo.mainLightViewProjection = Matrix::multiply(view, proj);
+            renderViewInfo.mainLightShadowMap = m_shadowMap;
+            renderViewInfo.mainLightShadowMapPixelSize = Size(renderViewInfo.mainLightShadowMap->width(), renderViewInfo.mainLightShadowMap->height());
+        }
+        else {
+            // TODO: 今はダミーテクスチャを使うことで影を生成しないようにしているが、
+            // ソフトシャドウの処理は動いているので無駄がある。シャドウの濃さみたいなパラメータを用意して、
+            // 0 なら PS でシャドウ作らないみたいな対応が欲しい。
+            renderViewInfo.mainLightShadowMap = Texture2D::whiteTexture();
+            renderViewInfo.mainLightShadowMapPixelSize = Size(renderViewInfo.mainLightShadowMap->width(), renderViewInfo.mainLightShadowMap->height());
+        }
     }
 
     auto depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
@@ -210,19 +187,6 @@ void SceneRenderingPipeline::render(
         //for (SceneRendererPass* pass : m_sceneRenderer_PostEffectPhase->m_renderingPassList) {
             m_sceneRenderer_PostEffectPhase->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass);
         //}
-    }
-
-    // Release G-Buffer
-    {
-#ifdef USE_TMP
-        //RenderTargetTexture::releaseTemporary(m_viweNormalAndDepthBuffer);
-        //m_viweNormalAndDepthBuffer = nullptr;
-        //RenderTargetTexture::releaseTemporary(m_viweDepthBuffer);
-        //m_viweDepthBuffer = nullptr;
-        //RenderTargetTexture::releaseTemporary(m_materialBuffer);
-        //m_materialBuffer = nullptr;
-
-#endif
     }
 
     // TODO: scoped

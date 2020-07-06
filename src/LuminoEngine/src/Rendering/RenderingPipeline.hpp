@@ -8,21 +8,16 @@ class ClusteredShadingSceneRenderer;
 class UnLigitingSceneRenderer;
 class UnLigitingSceneRendererPass;
 
-/*
- * 描画リストやポストエフェクトなど描画に関わる全てのパラメータを受け取り、
+/**
+ * 描画リストや視点情報、ポストエフェクトなど描画に関わる全てのパラメータを受け取り、
  * RenderView から覗くことができる 1 枚の絵を描き上げる。
- *
- * 将来的な話だが、Deffered と Forward 混在のような複数の SceneRenderer をコントロールするのはこのクラスの役目。
  */
 class RenderingPipeline
 	: public RefObject
 {
 public:
     void init();
-
     const SizeI& renderingFrameBufferSize() const { return m_renderingFrameBufferSize; }
-    //const Ref<detail::FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
-
     const detail::DrawElementListCollector* elementListCollector() const { return m_elementListCollector; }
 
 protected:

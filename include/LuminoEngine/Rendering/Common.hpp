@@ -222,8 +222,10 @@ struct DynamicLightInfo
 		, m_attenuation(1.0f)
 		, m_spotAngle(Math::PI / 3)
 		, m_spotPenumbra(0.1f)
-		, castShadow(false)
+		//, castShadow(false)
 		//, m_shadowCasterPass(nullptr)
+		, shadowCameraZFar(0.0f)
+		, shadowLightZFar(0.0f)
 	{}
 
 	LightType	m_type;				// ライトの種類
@@ -247,8 +249,9 @@ struct DynamicLightInfo
 	float		m_spotAngle;		// [Spot]
 	float		m_spotPenumbra;		// [Spot]
 
-	bool castShadow;	// [Directional, Point, Spot]
-	//float		m_shadowZFar;
+	//bool castShadow;	// [Directional, Point, Spot]
+	float shadowCameraZFar;	// どのくらいまでの距離に Shadow を生成するか？
+	float shadowLightZFar;	// ライト空間内の far - near
 
 	//detail::ShadowCasterPass*	m_shadowCasterPass;
 	//Matrix		transform;
@@ -258,6 +261,8 @@ struct DynamicLightInfo
 	//static const int MaxLights = 3;		// MMD based
 
 	bool mainLight = false;
+
+	bool shadowEnabled() const { return shadowCameraZFar > 0.0f && shadowLightZFar > 0.0f; }
 
 	static DynamicLightInfo makeAmbientLightInfo(const Color& color, float intensity)
 	{
@@ -278,7 +283,7 @@ struct DynamicLightInfo
 		return info;
 	}
 
-	static DynamicLightInfo makeDirectionalLightInfo(const Color& color, float intensity, const Vector3& direction, bool mainLight)
+	static DynamicLightInfo makeDirectionalLightInfo(const Color& color, float intensity, const Vector3& direction, bool mainLight, float shadowCameraZFar, float shadowLightZFar)
 	{
 		DynamicLightInfo info;
 		info.m_type = LightType::Directional;
@@ -286,6 +291,8 @@ struct DynamicLightInfo
 		info.m_direction = direction;
 		info.m_intensity = intensity;
 		info.mainLight = mainLight;
+		info.shadowCameraZFar = shadowCameraZFar;
+		info.shadowLightZFar = shadowLightZFar;
 		return info;
 	}
 

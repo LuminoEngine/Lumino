@@ -164,6 +164,8 @@ DirectionalLightComponent::DirectionalLightComponent()
 	: m_color(Color::White)
 	, m_intensity(1.0f)
 	, m_enabled(true)
+	, m_shadowEffectiveDistance(0.0f)
+	, m_shadowEffectiveDepth(0.0f)
 {
 }
 
@@ -189,44 +191,17 @@ void DirectionalLightComponent::init()
 #endif
 }
 
-void DirectionalLightComponent::setShadowCast(bool enabled)
-{
-    LN_NOTIMPLEMENTED();
-	//if (enabled)
-	//{
-	//	m_shadowCasterPass = makeObject<detail::ShadowCasterPass>();
-	//}
-	//else
-	//{
-	//	m_shadowCasterPass.safeRelease();
-	//}
-}
-
-bool DirectionalLightComponent::isShadowCast() const
-{
-	LN_NOTIMPLEMENTED();
-	return false;
-	//return m_shadowCasterPass != nullptr;
-}
-
 void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 {
 	if (m_enabled)
 	{
 		if (context->world->mainDirectionalLight()) {
 			const Matrix& t = worldObject()->worldMatrix();
-			context->addDirectionalLight(m_color, m_intensity, t.front(), context->world->mainDirectionalLight()->getDirectionalLightComponent() == this);
+			context->addDirectionalLight(
+				m_color, m_intensity, t.front(),
+				context->world->mainDirectionalLight()->getDirectionalLightComponent() == this,
+				m_shadowEffectiveDistance, m_shadowEffectiveDepth);
 		}
-
-		//if (m_shadowCasterPass != nullptr)
-		//{
-		//	m_shadowCasterPass->view.makePerspective(
-		//		m_lightInfo->m_position, m_lightInfo->m_direction,
-		//		Math::PI / 2.0f,
-		//		//m_shadowCasterPass->m_shadowMap->getSize().toFloatSize(),
-		//		Size(1024.0/8, 1024.0 / 8),	// TODO: LightMapSize
-		//		0.5f, 100.0f);	// TODO: clip range
-		//}
 	}
 }
 

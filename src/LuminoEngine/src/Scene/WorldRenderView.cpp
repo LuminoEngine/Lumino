@@ -434,8 +434,8 @@ WorldObject* WorldRenderView::findObjectInPoint(int x, int y)
 {
     auto bitmap = detail::TextureInternal::readData(m_sceneRenderingPipeline->objectIdBuffer(), nullptr);
     auto data = (uint32_t*)bitmap->data();
-    int id = data[bitmap->height() * y + x];
-    //printf("id:%d\n", id);
+    int id = data[bitmap->width() * y + x];
+    printf("id:%d\n", id);
     if (id > 0) {
         return m_targetWorld->findObjectById(id);
     }
