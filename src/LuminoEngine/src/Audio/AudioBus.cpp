@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioBus.hpp>
-#include "ARIS/ChromiumWebCore.hpp"
-#include "ARIS/VectorMath.h"
+#include "ARIs/ChromiumWebCore.hpp"
+#include "ARIs/VectorMath.h"
 
 namespace ln {
 

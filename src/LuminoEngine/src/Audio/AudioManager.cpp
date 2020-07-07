@@ -8,7 +8,7 @@
 #include <LuminoEngine/Audio/Sound.hpp>
 #include "Decoder/WaveAudioDecoder.hpp"
 #include "Decoder/OggAudioDecoder.hpp"
-#include "ARIS/CoreAudioNode.hpp"
+#include "ARIs/ARINode.hpp"
 #include "GameAudioImpl.hpp"
 #include "AudioManager.hpp"
 

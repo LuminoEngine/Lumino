@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "CoreAudioNode.hpp"
+#include "ARINode.hpp"
 
 namespace ln {
 class AudioProcessorNode;

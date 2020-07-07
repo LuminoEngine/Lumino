@@ -1,7 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioProcessorNode.hpp>
-#include "CAProcessorNode.hpp"
+#include "ARIInputPin.hpp"
+#include "ARIOutputPin.hpp"
+#include "ARIProcessorNode.hpp"
 
 namespace ln {
 namespace detail {

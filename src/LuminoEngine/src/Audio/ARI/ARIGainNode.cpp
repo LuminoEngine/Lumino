@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include "CAGainNode.hpp"
+#include "ARIInputPin.hpp"
+#include "ARIOutputPin.hpp"
+#include "ARIGainNode.hpp"
 
 namespace ln {
 namespace detail {

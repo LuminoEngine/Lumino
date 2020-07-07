@@ -3,7 +3,7 @@
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/AudioSourceNode.hpp>
 #include "Decoder/AudioDecoder.hpp"
-#include "ARIS/AudioSourceNodeCore.hpp"
+#include "ARIs/ARISourceNode.hpp"
 #include "AudioManager.hpp"
 
 namespace ln {

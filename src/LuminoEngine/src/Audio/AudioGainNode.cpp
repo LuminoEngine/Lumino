@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/AudioGainNode.hpp>
-#include "ARIS/CAGainNode.hpp"
+#include "ARIs/ARIGainNode.hpp"
 #include "AudioManager.hpp"
 
 namespace ln {

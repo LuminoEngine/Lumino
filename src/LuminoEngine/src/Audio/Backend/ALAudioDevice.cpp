@@ -2,7 +2,7 @@
 #ifdef LN_USE_OPENAL
 #include "Internal.hpp"
 #include "ALAudioDevice.hpp"
-#include "../ARIS/CoreAudioNode.hpp"
+#include "../ARIs/ARINode.hpp"
 
 namespace ln {
 namespace detail {

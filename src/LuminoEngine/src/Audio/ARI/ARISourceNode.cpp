@@ -2,7 +2,8 @@
 #include "Internal.hpp"
 #include "../Decoder/AudioDecoder.hpp"
 #include "ChromiumWebCore.hpp"
-#include "AudioSourceNodeCore.hpp"
+#include "ARIOutputPin.hpp"
+#include "ARISourceNode.hpp"
 
 namespace ln {
 namespace detail {

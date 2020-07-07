@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "CoreAudioNode.hpp"	// TODO: AudioBus
+#include "ARINode.hpp"	// TODO: AudioBus
 
 #define PLATFORM_EXPORT
 #define USING_FAST_MALLOC(x)

@@ -4,7 +4,7 @@
 #include <LuminoEngine/Audio/AudioNode.hpp>
 #include "Decoder/AudioDecoder.hpp"
 #include "AudioManager.hpp"
-#include "ARIS/CoreAudioNode.hpp"
+#include "ARIs/ARINode.hpp"
 #include <LuminoEngine/Engine/RenderingCommandList.hpp>
 
 namespace ln {

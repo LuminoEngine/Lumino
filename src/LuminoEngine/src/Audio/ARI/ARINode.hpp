@@ -35,78 +35,6 @@ namespace blink {
 //	AudioListenerParams m_listener;
 //};
 
-class PropagationParameters
-{
-public:
-	PropagationParameters();
-
-	int finalSamplingRate() const { return m_finalSamplingRate; }
-
-	void setFinalSamplingRate(int rate) { m_finalSamplingRate = rate; }
-
-private:
-	int m_finalSamplingRate;
-};
-
-class CoreAudioInputPin
-	: public RefObject
-{
-public:
-	CoreAudioInputPin(int channels);
-	virtual ~CoreAudioInputPin() = default;
-
-	AudioBus* bus() const;
-
-	AudioBus* pull();
-
-	// TODO: internal
-	void setOwnerNode(AudioNodeCore* node) { m_ownerNode = node; }
-	void addLinkOutput(CoreAudioOutputPin* output);
-	void removeLinkOutput(CoreAudioOutputPin* output);
-	bool isConnected() const { return !m_connectedOutputPins.isEmpty(); }
-
-	const List<Ref<CoreAudioOutputPin>>& connectedOutputPins() const { return m_connectedOutputPins; }
-	void disconnect(int index);
-	void disconnectAll();
-
-private:
-
-	AudioNodeCore * m_ownerNode;
-	Ref<AudioBus> m_summingBus;	// Total output
-	List<Ref<CoreAudioOutputPin>> m_connectedOutputPins;
-};
-
-class CoreAudioOutputPin
-	: public RefObject
-{
-public:
-	CoreAudioOutputPin(int channels);
-	virtual ~CoreAudioOutputPin() = default;
-
-	AudioBus* bus() const;
-
-	// process() から呼び出してはならない
-	AudioBus* pull();
-
-
-	// TODO: internal
-	void setOwnerNode(AudioNodeCore* node) { m_ownerNode = node; }
-	void addLinkInput(CoreAudioInputPin* input);
-	void removeLinkInput(CoreAudioInputPin* input);
-	bool isConnected() const { return !m_connectedInputPins.isEmpty(); }
-
-	const List<Ref<CoreAudioInputPin>>& connectedInputPins() const { return m_connectedInputPins; }
-	void disconnect(int index);
-	void disconnectAll();
-
-private:
-	AudioNodeCore* m_ownerNode;
-	Ref<AudioBus> m_resultBus;	// result of m_ownerNode->process()
-	List<Ref<CoreAudioInputPin>> m_connectedInputPins;
-};
-
- 
-
 class AudioNodeCore
 	: public Object
 {
@@ -136,8 +64,8 @@ public:
 	AudioDevice* context() const { return m_context; }
 	AudioNode* frontNode() const { return m_frontNode; }
 
-	bool isInputConnected() const { return m_inputPins.findIf([](auto& x) { return x->isConnected(); }).hasValue(); }
-	bool isOutputConnected() const { return m_outputPins.findIf([](auto& x) { return x->isConnected(); }).hasValue(); }
+	bool isInputConnected() const;
+	bool isOutputConnected() const;
 	CoreAudioInputPin* inputPin(int index) const;
 	CoreAudioOutputPin* outputPin(int index) const;
 	void processIfNeeded();
@@ -172,49 +100,6 @@ private:
 	List<Ref<CoreAudioOutputPin>> m_outputPins;
 
 	friend class AudioContext;	// for onCcommit
-};
-
-class CoreAudioPannerNode
-	: public AudioNodeCore
-{
-public:
-
-protected:
-	void onCommit() override;
-	void process() override;
-
-public:
-	CoreAudioPannerNode(AudioDevice* context, AudioNode* frontNode);
-	virtual ~CoreAudioPannerNode() = default;
-	void init();
-
-private:
-	void azimuthElevation(double* outAzimuth, double* outElevation);
-	float distanceConeGain();
-
-	AudioEmitterParams m_emitter;
-
-	std::shared_ptr<blink::Panner> m_panner;
-	std::shared_ptr<blink::DistanceEffect> m_distanceEffect;
-	std::shared_ptr<blink::ConeEffect> m_coneEffect;
-};
-
-class CoreAudioDestinationNode
-	: public AudioNodeCore
-	, public IAudioDeviceRenderCallback
-{
-public:
-	CoreAudioDestinationNode(AudioDevice* context, AudioNode* frontNode);
-	virtual ~CoreAudioDestinationNode() = default;
-	void init();
-
-protected:
-	void onCommit() override;
-	void process() override;
-	void render(float* outputBuffer, int length) override;
-
-private:
-	PropagationParameters m_propagationParameters;
 };
 
 class Audio3DModule

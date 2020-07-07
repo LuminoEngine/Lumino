@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "ARIS/CoreAudioNode.hpp"
+#include "ARIs/ARIDestinationNode.hpp"
 #include <LuminoEngine/Audio/AudioDestinationNode.hpp>
 
 namespace ln {
