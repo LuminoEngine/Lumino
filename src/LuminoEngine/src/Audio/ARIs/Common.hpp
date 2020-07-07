@@ -1,6 +1,9 @@
 #pragma once
 
 namespace ln {
+class AudioContext;
+class AudioNode;
+
 namespace detail {
 class ARIAudioBus;
 class ARINode;

@@ -6,8 +6,6 @@
 #include <float.h>	// for FLT_EPSILON
 
 namespace ln {
-class AudioNode;
-
 namespace detail {
 
 namespace blink {
@@ -97,7 +95,7 @@ private:
 	List<Ref<ARIInputPin>> m_inputPins;
 	List<Ref<ARIOutputPin>> m_outputPins;
 
-	friend class AudioContext;	// for onCcommit
+	friend class ::ln::AudioContext;	// for onCcommit
 };
 
 class Audio3DModule
