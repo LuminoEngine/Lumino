@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#if 0
 namespace ln {
 
 //namespace blink {
@@ -18,6 +17,8 @@ namespace ln {
 //	SurroundLeft = 4,
 //	SurroundRight = 5,
 //};
+
+namespace detail {
 
 // The buffer used for data stream between a audio nodes.
 // Data is floating point, and range is -1.0 ~ +1.0
@@ -128,6 +129,6 @@ private:
 	int m_layout = kLayoutCanonical;
 };
 
+} // namespace detail
 } // namespace ln
 
-#endif

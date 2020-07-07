@@ -2,8 +2,6 @@
 #include "ARINode.hpp"
 
 namespace ln {
-class AudioNode;
-
 namespace detail {
 
 class PropagationParameters

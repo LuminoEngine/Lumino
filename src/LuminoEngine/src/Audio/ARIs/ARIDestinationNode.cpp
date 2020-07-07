@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "VectorMath.h"
+#include "ARIAudioBus.hpp"
 #include "ARIInputPin.hpp"
 #include "ARIDestinationNode.hpp"
 
@@ -57,7 +58,7 @@ void CoreAudioDestinationNode::render(float * outputBuffer, int length)
     //return;
 
 
-	AudioBus* bus = inputPin(0)->pull();
+	ARIAudioBus* bus = inputPin(0)->pull();
 
 	// Clamp values at 0db (i.e., [-1.0, 1.0])
 	const float kLowThreshold = -1.0f;

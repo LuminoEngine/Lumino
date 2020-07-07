@@ -35,6 +35,7 @@ using namespace ln;
 //#pragma comment(lib, "D:/Program Files/Autodesk/FBX/FBX SDK/2020.1/lib/vs2017/x64/debug/libfbxsdk-mt.lib")
 //#pragma comment(lib, "D:/Program Files/Autodesk/FBX/FBX SDK/2020.1/lib/vs2017/x64/debug/libxml2-mt.lib")
 
+#if 0
 class TestProcessorNode : public AudioProcessorNode
 {
 public:
@@ -100,6 +101,7 @@ public:
         }
     }
 };
+#endif
 
 
 

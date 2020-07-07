@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "../Decoder/AudioDecoder.hpp"
 #include "ChromiumWebCore.hpp"
+#include "ARIAudioBus.hpp"
 #include "ARIOutputPin.hpp"
 #include "ARISourceNode.hpp"
 
@@ -102,11 +103,11 @@ void AudioSourceNodeCore::resetSourceBuffers()
 
 	m_readBuffer.resize(m_readFrames * numChannels);
 	if (m_resampler) {
-		m_resamplingBus = makeRef<AudioBus>();
+		m_resamplingBus = makeRef<ARIAudioBus>();
 		m_resamplingBus->initialize2(numChannels, m_readFrames, m_decoder->audioDataInfo().sampleRate);
 	}
 
-	m_sourceBus = makeRef<AudioBus>();
+	m_sourceBus = makeRef<ARIAudioBus>();
 	m_sourceBus->initialize2(numChannels, baseFrames);
 
 
@@ -165,7 +166,7 @@ void AudioSourceNodeCore::process()
 	updatePlayingState();
 
 
-	AudioBus* result = outputPin(0)->bus();
+	ARIAudioBus* result = outputPin(0)->bus();
 
 	if (m_playingState != PlayingState::Playing) {
 		result->setSilentAndZero();
@@ -322,7 +323,7 @@ void AudioSourceNodeCore::process()
 	m_virtualReadIndex = virtualReadIndex;
 }
 
-bool AudioSourceNodeCore::renderSilenceAndFinishIfNotLooping(AudioBus * bus, unsigned index, size_t framesToProcess)
+bool AudioSourceNodeCore::renderSilenceAndFinishIfNotLooping(ARIAudioBus * bus, unsigned index, size_t framesToProcess)
 {
 	if (!loop())
 	{

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include "ARIAudioBus.hpp"
 #include "ARINode.hpp"
 #include "ARIInputPin.hpp"
 #include "ARIOutputPin.hpp"
@@ -13,16 +14,16 @@ namespace detail {
 CoreAudioOutputPin::CoreAudioOutputPin(int channels)
 	: m_ownerNode(nullptr)
 {
-	m_resultBus = makeRef<AudioBus>();
+	m_resultBus = makeRef<ARIAudioBus>();
 	m_resultBus->initialize2(channels, AudioNodeCore::ProcessingSizeInFrames);
 }
 
-AudioBus* CoreAudioOutputPin::bus() const
+ARIAudioBus* CoreAudioOutputPin::bus() const
 {
 	return m_resultBus;
 }
 
-AudioBus* CoreAudioOutputPin::pull()
+ARIAudioBus* CoreAudioOutputPin::pull()
 {
 	m_ownerNode->processIfNeeded();
 	return m_resultBus;

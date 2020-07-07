@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "ChromiumWebCore.hpp"
+#include "ARIAudioBus.hpp"
 #include "ARIInputPin.hpp"
 #include "ARIOutputPin.hpp"
 #include "ARIPannerNode.hpp"
@@ -42,14 +43,14 @@ void CoreAudioPannerNode::process()
 
 
 
-	AudioBus* destination = outputPin(0)->bus();
+	ARIAudioBus* destination = outputPin(0)->bus();
 
 	if (!m_panner.get()) {
 		destination->setSilentAndZero();
 		return;
 	}
 
-	AudioBus* source = inputPin(0)->bus();
+	ARIAudioBus* source = inputPin(0)->bus();
 	if (!source) {
 		destination->setSilentAndZero();
 		return;
@@ -60,7 +61,7 @@ void CoreAudioPannerNode::process()
 	azimuthElevation(&azimuth, &elevation);
 	//printf("azimuth:%f\n", azimuth);
 
-	m_panner->Pan(azimuth, elevation, source, destination, destination->length(), AudioBus::kSpeakers);
+	m_panner->Pan(azimuth, elevation, source, destination, destination->length(), ARIAudioBus::kSpeakers);
 
 	float total_gain = distanceConeGain();
 	//printf("tt:%f\n", total_gain);

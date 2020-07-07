@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoEngine/Audio/AudioBus.hpp>
+#include "Common.hpp"
 
 namespace ln {
 namespace detail {
@@ -13,9 +13,9 @@ public:
 	CoreAudioInputPin(int channels);
 	virtual ~CoreAudioInputPin() = default;
 
-	AudioBus* bus() const;
+	ARIAudioBus* bus() const;
 
-	AudioBus* pull();
+	ARIAudioBus* pull();
 
 	// TODO: internal
 	void setOwnerNode(AudioNodeCore* node) { m_ownerNode = node; }
@@ -29,8 +29,8 @@ public:
 
 private:
 
-	AudioNodeCore * m_ownerNode;
-	Ref<AudioBus> m_summingBus;	// Total output
+	AudioNodeCore* m_ownerNode;
+	Ref<ARIAudioBus> m_summingBus;	// Total output
 	List<Ref<CoreAudioOutputPin>> m_connectedOutputPins;
 };
 

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoEngine/Audio/AudioBus.hpp>
+#include "Common.hpp"
 
 namespace ln {
 class AudioNode;
@@ -15,10 +15,10 @@ public:
 	CoreAudioOutputPin(int channels);
 	virtual ~CoreAudioOutputPin() = default;
 
-	AudioBus* bus() const;
+	ARIAudioBus* bus() const;
 
 	// process() から呼び出してはならない
-	AudioBus* pull();
+	ARIAudioBus* pull();
 
 
 	// TODO: internal
@@ -33,7 +33,7 @@ public:
 
 private:
 	AudioNodeCore* m_ownerNode;
-	Ref<AudioBus> m_resultBus;	// result of m_ownerNode->process()
+	Ref<ARIAudioBus> m_resultBus;	// result of m_ownerNode->process()
 	List<Ref<CoreAudioInputPin>> m_connectedInputPins;
 };
 

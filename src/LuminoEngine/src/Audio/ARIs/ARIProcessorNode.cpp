@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioProcessorNode.hpp>
+#include "ARIAudioBus.hpp"
 #include "ARIInputPin.hpp"
 #include "ARIOutputPin.hpp"
 #include "ARIProcessorNode.hpp"
@@ -30,9 +31,10 @@ void CAProcessorNode::onCommit()
 
 void CAProcessorNode::process()
 {
-    AudioBus* source = inputPin(0)->bus();
-    AudioBus* destination = outputPin(0)->bus();
-    m_ownerNode->onAudioProcess(source, destination);
+    ARIAudioBus* source = inputPin(0)->bus();
+    ARIAudioBus* destination = outputPin(0)->bus();
+    LN_NOTIMPLEMENTED();
+    //m_ownerNode->onAudioProcess(source, destination);
 }
 
 } // namespace detail

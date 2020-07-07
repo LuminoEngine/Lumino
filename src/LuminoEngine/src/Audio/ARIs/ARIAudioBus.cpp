@@ -1,12 +1,11 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Audio/AudioBus.hpp>
-#include "ARIs/ChromiumWebCore.hpp"
-#include "ARIs/VectorMath.h"
-
-#if 0
+#include "ARIAudioBus.hpp"
+#include "ChromiumWebCore.hpp"
+#include "VectorMath.h"
 
 namespace ln {
+namespace detail {
 
 //==============================================================================
 // AudioChannel
@@ -96,7 +95,7 @@ void AudioChannel::fillZero(size_t start, size_t length)
 }
 
 //==============================================================================
-// AudioBus
+// ARIAudioBus
 
 const unsigned kMaxBusChannels = 32;
 
@@ -367,15 +366,15 @@ void ARIAudioBus::copyBySampleRateConverting(
 	if (source_sample_rate == destination_sample_rate) {
 		// No sample-rate conversion is necessary.
 		//if (mix_to_mono)
-		//	return AudioBus::CreateByMixingToMono(source_bus);
+		//	return ARIAudioBus::CreateByMixingToMono(source_bus);
 
 		// Return exact copy.
-		//return AudioBus::CreateBufferFromRange(source_bus, 0, source_bus->length());
+		//return ARIAudioBus::CreateBufferFromRange(source_bus, 0, source_bus->length());
 		LN_NOTIMPLEMENTED();return;
 	}
 
 	if (source_bus->isSilent()) {
-		//scoped_refptr<AudioBus> silent_bus = Create(
+		//scoped_refptr<ARIAudioBus> silent_bus = Create(
 		//	number_of_source_channels, source_bus->length() / sample_rate_ratio);
 		//silent_bus->SetSampleRate(new_sample_rate);
 		//return silent_bus;
@@ -383,10 +382,10 @@ void ARIAudioBus::copyBySampleRateConverting(
 	}
 
 	// First, mix to mono (if necessary) then sample-rate convert.
-/*	const AudioBus* resampler_source_bus;
-	scoped_refptr<AudioBus> mixed_mono_bus;
+/*	const ARIAudioBus* resampler_source_bus;
+	scoped_refptr<ARIAudioBus> mixed_mono_bus;
 	if (mix_to_mono) {
-		mixed_mono_bus = AudioBus::CreateByMixingToMono(source_bus);
+		mixed_mono_bus = ARIAudioBus::CreateByMixingToMono(source_bus);
 		resampler_source_bus = mixed_mono_bus.get();
 	}
 	else {
@@ -406,7 +405,7 @@ void ARIAudioBus::copyBySampleRateConverting(
 	// Create destination bus with same number of channels.
 	unsigned number_of_destination_channels =
 		resampler_source_bus->NumberOfChannels();
-	//scoped_refptr<AudioBus> destination_bus =
+	//scoped_refptr<ARIAudioBus> destination_bus =
 	//	Create(number_of_destination_channels, destination_length);
 
 	// Sample-rate convert each channel.
@@ -516,8 +515,8 @@ void ARIAudioBus::sumFromByDownMixing(const ARIAudioBus* sourceBus)
         float* destination = channelByType(kChannelLeft)->MutableData();
         float scale = 0.5;
 
-        blink::VectorMath::vsma(source_l, 1, &scale, destination, 1, length());
-        blink::VectorMath::vsma(source_r, 1, &scale, destination, 1, length());
+        ::blink::VectorMath::vsma(source_l, 1, &scale, destination, 1, length());
+        ::blink::VectorMath::vsma(source_r, 1, &scale, destination, 1, length());
     }
     else if (number_of_source_channels == 4 &&
         number_of_destination_channels == 1) {
@@ -532,11 +531,10 @@ void ARIAudioBus::sumFromByDownMixing(const ARIAudioBus* sourceBus)
 
         float* destination = channelByType(kChannelLeft)->MutableData();
         float scale = 0.25;
-
-        blink::VectorMath::vsma(source_l, 1, &scale, destination, 1, length());
-        blink::VectorMath::vsma(source_r, 1, &scale, destination, 1, length());
-        blink::VectorMath::vsma(source_sl, 1, &scale, destination, 1, length());
-        blink::VectorMath::vsma(source_sr, 1, &scale, destination, 1, length());
+        ::blink::VectorMath::vsma(source_l, 1, &scale, destination, 1, length());
+        ::blink::VectorMath::vsma(source_r, 1, &scale, destination, 1, length());
+        ::blink::VectorMath::vsma(source_sl, 1, &scale, destination, 1, length());
+        ::blink::VectorMath::vsma(source_sr, 1, &scale, destination, 1, length());
     }
     else if (number_of_source_channels == 6 &&
         number_of_destination_channels == 1) {
@@ -555,11 +553,11 @@ void ARIAudioBus::sumFromByDownMixing(const ARIAudioBus* sourceBus)
         float scale_sqrt_half = sqrtf(0.5);
         float scale_half = 0.5;
 
-        blink::VectorMath::vsma(source_l, 1, &scale_sqrt_half, destination, 1, length());
-        blink::VectorMath::vsma(source_r, 1, &scale_sqrt_half, destination, 1, length());
-        blink::VectorMath::vadd(source_c, 1, destination, 1, destination, 1, length());
-        blink::VectorMath::vsma(source_sl, 1, &scale_half, destination, 1, length());
-        blink::VectorMath::vsma(source_sr, 1, &scale_half, destination, 1, length());
+        ::blink::VectorMath::vsma(source_l, 1, &scale_sqrt_half, destination, 1, length());
+        ::blink::VectorMath::vsma(source_r, 1, &scale_sqrt_half, destination, 1, length());
+        ::blink::VectorMath::vadd(source_c, 1, destination, 1, destination, 1, length());
+        ::blink::VectorMath::vsma(source_sl, 1, &scale_half, destination, 1, length());
+        ::blink::VectorMath::vsma(source_sr, 1, &scale_half, destination, 1, length());
     }
     else if (number_of_source_channels == 4 &&
         number_of_destination_channels == 2) {
@@ -577,10 +575,10 @@ void ARIAudioBus::sumFromByDownMixing(const ARIAudioBus* sourceBus)
         float* destination_r = channelByType(kChannelRight)->MutableData();
         float scale_half = 0.5;
 
-        blink::VectorMath::vsma(source_l, 1, &scale_half, destination_l, 1, length());
-        blink::VectorMath::vsma(source_sl, 1, &scale_half, destination_l, 1, length());
-        blink::VectorMath::vsma(source_r, 1, &scale_half, destination_r, 1, length());
-        blink::VectorMath::vsma(source_sr, 1, &scale_half, destination_r, 1, length());
+        ::blink::VectorMath::vsma(source_l, 1, &scale_half, destination_l, 1, length());
+        ::blink::VectorMath::vsma(source_sl, 1, &scale_half, destination_l, 1, length());
+        ::blink::VectorMath::vsma(source_r, 1, &scale_half, destination_r, 1, length());
+        ::blink::VectorMath::vsma(source_sr, 1, &scale_half, destination_r, 1, length());
     }
     else if (number_of_source_channels == 6 &&
         number_of_destination_channels == 2) {
@@ -599,12 +597,12 @@ void ARIAudioBus::sumFromByDownMixing(const ARIAudioBus* sourceBus)
         float* destination_r = channelByType(kChannelRight)->MutableData();
         float scale_sqrt_half = sqrtf(0.5);
 
-        blink::VectorMath::vadd(source_l, 1, destination_l, 1, destination_l, 1, length());
-        blink::VectorMath::vsma(source_c, 1, &scale_sqrt_half, destination_l, 1, length());
-        blink::VectorMath::vsma(source_sl, 1, &scale_sqrt_half, destination_l, 1, length());
-        blink::VectorMath::vadd(source_r, 1, destination_r, 1, destination_r, 1, length());
-        blink::VectorMath::vsma(source_c, 1, &scale_sqrt_half, destination_r, 1, length());
-        blink::VectorMath::vsma(source_sr, 1, &scale_sqrt_half, destination_r, 1, length());
+        ::blink::VectorMath::vadd(source_l, 1, destination_l, 1, destination_l, 1, length());
+        ::blink::VectorMath::vsma(source_c, 1, &scale_sqrt_half, destination_l, 1, length());
+        ::blink::VectorMath::vsma(source_sl, 1, &scale_sqrt_half, destination_l, 1, length());
+        ::blink::VectorMath::vadd(source_r, 1, destination_r, 1, destination_r, 1, length());
+        ::blink::VectorMath::vsma(source_c, 1, &scale_sqrt_half, destination_r, 1, length());
+        ::blink::VectorMath::vsma(source_sr, 1, &scale_sqrt_half, destination_r, 1, length());
     }
     else if (number_of_source_channels == 6 &&
         number_of_destination_channels == 4) {
@@ -621,10 +619,10 @@ void ARIAudioBus::sumFromByDownMixing(const ARIAudioBus* sourceBus)
         float* destination_r = channelByType(kChannelRight)->MutableData();
         float scale_sqrt_half = sqrtf(0.5);
 
-        blink::VectorMath::vadd(source_l, 1, destination_l, 1, destination_l, 1, length());
-        blink::VectorMath::vsma(source_c, 1, &scale_sqrt_half, destination_l, 1, length());
-        blink::VectorMath::vadd(source_r, 1, destination_r, 1, destination_r, 1, length());
-        blink::VectorMath::vsma(source_c, 1, &scale_sqrt_half, destination_r, 1, length());
+        ::blink::VectorMath::vadd(source_l, 1, destination_l, 1, destination_l, 1, length());
+        ::blink::VectorMath::vsma(source_c, 1, &scale_sqrt_half, destination_l, 1, length());
+        ::blink::VectorMath::vadd(source_r, 1, destination_r, 1, destination_r, 1, length());
+        ::blink::VectorMath::vsma(source_c, 1, &scale_sqrt_half, destination_r, 1, length());
         channel(2)->sumFrom(sourceBus->channel(4));
         channel(3)->sumFrom(sourceBus->channel(5));
     }
@@ -654,7 +652,6 @@ void ARIAudioBus::discreteSumFrom(const ARIAudioBus* sourceBus)
     }
 }
 
+} // namespace detail
 } // namespace ln
-
-#endif
 

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include "ARIAudioBus.hpp"
 #include "ARIInputPin.hpp"
 #include "ARIOutputPin.hpp"
 #include "ARIGainNode.hpp"
@@ -32,8 +33,8 @@ void CAGainNode::onCommit()
 
 void CAGainNode::process()
 {
-    AudioBus* destination = outputPin(0)->bus();
-    AudioBus* source = inputPin(0)->bus();
+    ARIAudioBus* destination = outputPin(0)->bus();
+    ARIAudioBus* source = inputPin(0)->bus();
     destination->copyWithGainFrom(*source, Math::clamp01(m_gain));
 }
 

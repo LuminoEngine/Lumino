@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "ARINode.hpp"	// TODO: AudioBus
+#include "ARIAudioBus.hpp"
 
 #define PLATFORM_EXPORT
 #define USING_FAST_MALLOC(x)
@@ -29,7 +29,6 @@
 #define CHECK_GT(x, y) CHECK((x) > (y))
 
 namespace ln {
-class AudioBus;
 namespace detail {
 
 namespace WTF {
@@ -45,6 +44,7 @@ namespace WTF {
 }
 
 namespace blink {
+using AudioBus = ARIAudioBus;
 
 class HRTFDatabaseLoader;
 

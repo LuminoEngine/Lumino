@@ -53,14 +53,14 @@ private:
 	unsigned numberOfChannels() const;
 	void resetSourceBuffers();
 	double calculatePitchRate();
-	bool renderSilenceAndFinishIfNotLooping(AudioBus * bus, unsigned index, size_t framesToProcess);
+	bool renderSilenceAndFinishIfNotLooping(ARIAudioBus * bus, unsigned index, size_t framesToProcess);
 	void updatePlayingState();
 
 	Ref<AudioDecoder> m_decoder;
 	std::vector<float> m_readBuffer;
-	Ref<AudioBus> m_sourceBus;	// resampled
+	Ref<ARIAudioBus> m_sourceBus;	// resampled
 	std::unique_ptr<blink::SincResampler> m_resampler;
-	Ref<AudioBus> m_resamplingBus;
+	Ref<ARIAudioBus> m_resamplingBus;
 	//std::vector<float> m_resamplingBuffer;
 
 	// Current playback position.
