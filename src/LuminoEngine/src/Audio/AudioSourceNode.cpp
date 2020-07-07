@@ -17,7 +17,7 @@ AudioSourceNode::AudioSourceNode()
 
 void AudioSourceNode::init(detail::AudioDecoder* decoder)
 {
-	m_coreObject = makeRef<detail::AudioSourceNodeCore>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
+	m_coreObject = makeRef<detail::ARISourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
 	m_coreObject->init(decoder);
 
 
@@ -30,7 +30,7 @@ void AudioSourceNode::setPlaybackRate(float rate)
 	m_coreObject->staging.playbackRate = rate;
 	//LN_ENQUEUE_RENDER_COMMAND_2(
 	//	start, context()->manager(),
-	//	Ref<detail::AudioSourceNodeCore>, m_coreObject,
+	//	Ref<detail::ARISourceNode>, m_coreObject,
 	//	float, rate,
 	//	{
 	//		m_coreObject->setPlaybackRate(rate);
@@ -53,7 +53,7 @@ void AudioSourceNode::start()
 	m_coreObject->staging.requestedState = PlayingState::Play;
 	//LN_ENQUEUE_RENDER_COMMAND_1(
 	//	start, context()->manager(),
-	//	Ref<detail::AudioSourceNodeCore>, m_coreObject,
+	//	Ref<detail::ARISourceNode>, m_coreObject,
 	//	{
 	//		m_coreObject->start();
 	//	});
@@ -65,7 +65,7 @@ void AudioSourceNode::stop()
 	m_coreObject->staging.requestedState = PlayingState::Stop;
 	//LN_ENQUEUE_RENDER_COMMAND_1(
 	//	start, context()->manager(),
-	//	Ref<detail::AudioSourceNodeCore>, m_coreObject,
+	//	Ref<detail::ARISourceNode>, m_coreObject,
 	//	{
 	//		m_coreObject->stop();
 	//	});
@@ -90,12 +90,12 @@ PlayingState AudioSourceNode::playingState() const
 {
     switch (m_coreObject->playingState())
     {
-    case detail::AudioSourceNodeCore::PlayingState::None:
-    case detail::AudioSourceNodeCore::PlayingState::Stopped:
+    case detail::ARISourceNode::PlayingState::None:
+    case detail::ARISourceNode::PlayingState::Stopped:
         return PlayingState::Stop;
-    case detail::AudioSourceNodeCore::PlayingState::Playing:
+    case detail::ARISourceNode::PlayingState::Playing:
         return PlayingState::Play;
-    case detail::AudioSourceNodeCore::PlayingState::Pausing:
+    case detail::ARISourceNode::PlayingState::Pausing:
         return PlayingState::Pause;
     default:
         LN_UNREACHABLE();

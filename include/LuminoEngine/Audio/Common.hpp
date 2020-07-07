@@ -30,7 +30,7 @@ using ScopedWriteLock = std::lock_guard<ln::detail::AudioRWMutex>;
 namespace detail {
 class AudioManager;
 class ARINode;
-class AudioSourceNodeCore;
+class ARISourceNode;
 class ARIGainNode;
 
 struct AudioListenerParams
@@ -63,9 +63,9 @@ struct AudioConeParams
 	AudioConeParams();
 };
 
-class AudioSourceNodeCore;
+class ARISourceNode;
 class ARIDestinationNode;
-class CoreAudioPannerNode;
+class ARIPannerNode;
 
 } // namespace detail
 } // namespace ln

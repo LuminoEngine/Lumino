@@ -15,7 +15,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual detail::ARINode* coreNode() override;
 
 private:
-	Ref<detail::CoreAudioPannerNode> m_coreObject;
+	Ref<detail::ARIPannerNode> m_coreObject;
 };
 
 } // namespace ln

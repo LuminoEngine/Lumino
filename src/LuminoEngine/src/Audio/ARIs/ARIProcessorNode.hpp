@@ -5,11 +5,11 @@ namespace ln {
 class AudioProcessorNode;
 namespace detail {
 
-class CAProcessorNode
+class ARIProcessorNode
 	: public ARINode
 {
 public:
-    CAProcessorNode(AudioDevice* context, AudioProcessorNode* frontNode);
+    ARIProcessorNode(AudioDevice* context, AudioProcessorNode* frontNode);
     void init(int numberOfInputChannels, int numberOfOutputChannels);
 
 protected:

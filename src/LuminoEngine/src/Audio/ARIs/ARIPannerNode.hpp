@@ -4,7 +4,7 @@
 namespace ln {
 namespace detail {
 
-class CoreAudioPannerNode
+class ARIPannerNode
 	: public ARINode
 {
 public:
@@ -14,8 +14,8 @@ protected:
 	void process() override;
 
 public:
-	CoreAudioPannerNode(AudioDevice* context, AudioNode* frontNode);
-	virtual ~CoreAudioPannerNode() = default;
+	ARIPannerNode(AudioDevice* context, AudioNode* frontNode);
+	virtual ~ARIPannerNode() = default;
 	void init();
 
 private:

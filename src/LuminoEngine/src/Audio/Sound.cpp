@@ -43,7 +43,7 @@ void Sound::init(const StringRef& filePath)
     m_core = makeRef<detail::SoundCore>();
     m_core->m_context = context;
 
-    m_core->m_sourceNode = makeRef<detail::AudioSourceNodeCore>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), nullptr);
+    m_core->m_sourceNode = makeRef<detail::ARISourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), nullptr);
     m_core->m_sourceNode->init(decoder);
     m_manager->postAddAudioNode(context, m_core->m_sourceNode);
 
@@ -223,12 +223,12 @@ SoundPlayingState Sound::playingState() const
 
     switch (m_core->m_sourceNode->playingState())
     {
-    case ln::detail::AudioSourceNodeCore::PlayingState::None:
-    case ln::detail::AudioSourceNodeCore::PlayingState::Stopped:
+    case ln::detail::ARISourceNode::PlayingState::None:
+    case ln::detail::ARISourceNode::PlayingState::Stopped:
         return SoundPlayingState::Stopped;
-    case ln::detail::AudioSourceNodeCore::PlayingState::Playing:
+    case ln::detail::ARISourceNode::PlayingState::Playing:
         return SoundPlayingState::Playing;
-    case ln::detail::AudioSourceNodeCore::PlayingState::Pausing:
+    case ln::detail::ARISourceNode::PlayingState::Pausing:
         return SoundPlayingState::Pausing;
     default:
         LN_UNREACHABLE();

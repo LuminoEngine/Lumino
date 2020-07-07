@@ -5,7 +5,7 @@
 namespace ln {
 namespace detail {
 
-class AudioSourceNodeCore
+class ARISourceNode
 	: public ARINode
 {
 public:
@@ -33,8 +33,8 @@ public:
         Pausing,
     };
 
-	AudioSourceNodeCore(AudioDevice* context, AudioNode* frontNode);
-	virtual ~AudioSourceNodeCore() = default;
+	ARISourceNode(AudioDevice* context, AudioNode* frontNode);
+	virtual ~ARISourceNode() = default;
 	void init(const Ref<AudioDecoder>& decoder);
 
 	void setPlaybackRate(float rate);

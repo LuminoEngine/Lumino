@@ -17,7 +17,7 @@ AudioPannerNode::AudioPannerNode()
 void AudioPannerNode::init()
 {
 	AudioNode::init();
-	m_coreObject = makeRef<detail::CoreAudioPannerNode>(context()->coreObject(), this);
+	m_coreObject = makeRef<detail::ARIPannerNode>(context()->coreObject(), this);
 	m_coreObject->init();
 }
 

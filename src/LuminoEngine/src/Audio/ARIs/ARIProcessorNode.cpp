@@ -10,26 +10,26 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// CAProcessorNode
+// ARIProcessorNode
 
-CAProcessorNode::CAProcessorNode(AudioDevice* context, AudioProcessorNode* frontNode)
+ARIProcessorNode::ARIProcessorNode(AudioDevice* context, AudioProcessorNode* frontNode)
 	: ARINode(context, frontNode)
     , m_ownerNode(frontNode)
 {
 }
 
-void CAProcessorNode::init(int numberOfInputChannels, int numberOfOutputChannels)
+void ARIProcessorNode::init(int numberOfInputChannels, int numberOfOutputChannels)
 {
     ARINode::init();
     addInputPin(numberOfInputChannels);
     addOutputPin(numberOfOutputChannels);
 }
 
-void CAProcessorNode::onCommit()
+void ARIProcessorNode::onCommit()
 {
 }
 
-void CAProcessorNode::process()
+void ARIProcessorNode::process()
 {
     ARIAudioBus* source = inputPin(0)->bus();
     ARIAudioBus* destination = outputPin(0)->bus();

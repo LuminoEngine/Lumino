@@ -10,14 +10,14 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// CoreAudioPannerNode
+// ARIPannerNode
 
-CoreAudioPannerNode::CoreAudioPannerNode(AudioDevice* context, AudioNode* frontNode)
+ARIPannerNode::ARIPannerNode(AudioDevice* context, AudioNode* frontNode)
 	: ARINode(context, frontNode)
 {
 }
 
-void CoreAudioPannerNode::init()
+void ARIPannerNode::init()
 {
 	ARINode::init();
 
@@ -30,11 +30,11 @@ void CoreAudioPannerNode::init()
 	m_coneEffect = std::make_shared<blink::ConeEffect>();
 }
 
-void CoreAudioPannerNode::onCommit()
+void ARIPannerNode::onCommit()
 {
 }
 
-void CoreAudioPannerNode::process()
+void ARIPannerNode::process()
 {
 	//test
 	static float count = 0;
@@ -69,7 +69,7 @@ void CoreAudioPannerNode::process()
 	destination->copyWithGainFrom(*destination, total_gain);
 }
 
-void CoreAudioPannerNode::azimuthElevation(double* outAzimuth, double* outElevation)
+void ARIPannerNode::azimuthElevation(double* outAzimuth, double* outElevation)
 {
 	double cached_azimuth_;
 	double cached_elevation_;
@@ -85,7 +85,7 @@ void CoreAudioPannerNode::azimuthElevation(double* outAzimuth, double* outElevat
 	*outElevation = cached_elevation_;
 }
 
-float CoreAudioPannerNode::distanceConeGain()
+float ARIPannerNode::distanceConeGain()
 {
 	// TODO: dirty and cache
 

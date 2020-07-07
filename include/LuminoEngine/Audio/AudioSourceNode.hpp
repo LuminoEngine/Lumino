@@ -36,7 +36,7 @@ private:
 		bool resetRequire;
 	};
 
-	Ref<detail::AudioSourceNodeCore> m_coreObject;
+	Ref<detail::ARISourceNode> m_coreObject;
 	//CommitState m_commitState;
 };
 

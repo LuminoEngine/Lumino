@@ -3,7 +3,7 @@
 #include "ARINode.hpp"
 #include "ARIInputPin.hpp"
 #include "ARIOutputPin.hpp"
-#include "../Decoder/AudioDecoder.hpp"	// for AudioSourceNodeCore
+#include "../Decoder/AudioDecoder.hpp"	// for ARISourceNode
 #include "ChromiumWebCore.hpp"
 #include "../ARIs/VectorMath.h"
 

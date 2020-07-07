@@ -10,9 +10,9 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// AudioSourceNodeCore
+// ARISourceNode
 
-AudioSourceNodeCore::AudioSourceNodeCore(AudioDevice* context, AudioNode* frontNode)
+ARISourceNode::ARISourceNode(AudioDevice* context, AudioNode* frontNode)
 	: ARINode(context, frontNode)
 	, m_virtualReadIndex(0)
 	, m_playbackRate(1.0f)
@@ -24,7 +24,7 @@ AudioSourceNodeCore::AudioSourceNodeCore(AudioDevice* context, AudioNode* frontN
 {
 }
 
-void AudioSourceNodeCore::init(const Ref<AudioDecoder>& decoder)
+void ARISourceNode::init(const Ref<AudioDecoder>& decoder)
 {
 	ARINode::init();
 
@@ -48,42 +48,42 @@ void AudioSourceNodeCore::init(const Ref<AudioDecoder>& decoder)
 	resetSourceBuffers();
 }
 
-void AudioSourceNodeCore::setPlaybackRate(float rate)
+void ARISourceNode::setPlaybackRate(float rate)
 {
 	m_playbackRate = rate;
 	resetSourceBuffers();
 }
 
-void AudioSourceNodeCore::start()
+void ARISourceNode::start()
 {
     m_playingState = PlayingState::Playing;
 	//m_requestedPlayingState = PlayingState::Playing;
 }
 
-void AudioSourceNodeCore::stop()
+void ARISourceNode::stop()
 {
     m_playingState = PlayingState::Stopped;
 	//m_requestedPlayingState = PlayingState::Stopped;
 	m_resetRequested = true;
 }
 
-void AudioSourceNodeCore::reset()
+void ARISourceNode::reset()
 {
 	m_seekFrame = 0;
 }
 
-void AudioSourceNodeCore::finish()
+void ARISourceNode::finish()
 {
     m_playingState = PlayingState::Stopped;
 	//m_requestedPlayingState = PlayingState::Stopped;
 }
 
-unsigned AudioSourceNodeCore::numberOfChannels() const
+unsigned ARISourceNode::numberOfChannels() const
 {
 	return outputPin(0)->bus()->channelCount();
 }
 
-void AudioSourceNodeCore::resetSourceBuffers()
+void ARISourceNode::resetSourceBuffers()
 {
 	ARIOutputPin* pin = outputPin(0);
 
@@ -118,7 +118,7 @@ void AudioSourceNodeCore::resetSourceBuffers()
 
 }
 
-double AudioSourceNodeCore::calculatePitchRate()
+double ARISourceNode::calculatePitchRate()
 {
 	// TODO: doppler from associatd panner.
 	
@@ -132,7 +132,7 @@ double AudioSourceNodeCore::calculatePitchRate()
 	return totalRate;
 }
 
-void AudioSourceNodeCore::onCommit()
+void ARISourceNode::onCommit()
 {
 	detail::ScopedWriteLock lock(staging.m_mutex);
 
@@ -165,7 +165,7 @@ void AudioSourceNodeCore::onCommit()
 }
 
 // https://github.com/chromium/chromium/blob/ba96c018682416a7b2ec77876404b14322aa1b54/third_party/blink/renderer/modules/webaudio/audio_buffer_source_node.cc
-void AudioSourceNodeCore::process()
+void ARISourceNode::process()
 {
 	updatePlayingState();
 
@@ -327,7 +327,7 @@ void AudioSourceNodeCore::process()
 	m_virtualReadIndex = virtualReadIndex;
 }
 
-bool AudioSourceNodeCore::renderSilenceAndFinishIfNotLooping(ARIAudioBus * bus, unsigned index, size_t framesToProcess)
+bool ARISourceNode::renderSilenceAndFinishIfNotLooping(ARIAudioBus * bus, unsigned index, size_t framesToProcess)
 {
 	if (!loop())
 	{
@@ -349,7 +349,7 @@ bool AudioSourceNodeCore::renderSilenceAndFinishIfNotLooping(ARIAudioBus * bus, 
 	return false;
 }
 
-void AudioSourceNodeCore::updatePlayingState()
+void ARISourceNode::updatePlayingState()
 {
 	if (m_resetRequested) {
 		reset();

@@ -286,7 +286,7 @@ public:
 	AudioContext* m_context = nullptr;
 	std::mutex m_mutex;
 
-	Ref<detail::AudioSourceNodeCore> m_sourceNode;
+	Ref<detail::ARISourceNode> m_sourceNode;
 	Ref<detail::ARIGainNode> m_gainNode;
 
 	std::atomic<SoundCoreLifecycleState> lifecycleState = SoundCoreLifecycleState::Valid;
