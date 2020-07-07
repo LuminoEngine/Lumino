@@ -72,6 +72,7 @@ public:
 
 	void disconnectAllInputSide();
 	void disconnectAllOutputSide();
+	void disconnectAll();
 
 	bool m_marked = false;
 

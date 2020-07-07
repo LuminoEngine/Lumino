@@ -283,6 +283,7 @@ public:
 	void setGameAudioFlags(uint32_t flags) { m_gameAudioFlags = flags; }
 	uint32_t gameAudioFlags() const { return m_gameAudioFlags; }
 
+	AudioContext* m_context = nullptr;
 	std::mutex m_mutex;
 
 	Ref<detail::AudioSourceNodeCore> m_sourceNode;
@@ -301,6 +302,8 @@ public:
 		, m_fading(false)
 	{
 	}
+
+	void dispose();	// call by audio thread.
 };
 
 } // namespace detail

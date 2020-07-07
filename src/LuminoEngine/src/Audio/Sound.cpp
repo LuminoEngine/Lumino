@@ -41,6 +41,7 @@ void Sound::init(const StringRef& filePath)
     Ref<detail::AudioDecoder> decoder = detail::EngineDomain::audioManager()->createAudioDecoder(filePath);
    
     m_core = makeRef<detail::SoundCore>();
+    m_core->m_context = context;
 
     m_core->m_sourceNode = makeRef<detail::AudioSourceNodeCore>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), nullptr);
     m_core->m_sourceNode->init(decoder);
@@ -359,6 +360,19 @@ void SoundCore::update(float elapsedSeconds)
                 setVolume(m_fadeValue.startValue());
             }
         }
+    }
+}
+
+void SoundCore::dispose()
+{
+    if (m_context) {
+        m_gainNode->disconnectAll();
+        m_sourceNode->disconnectAll();
+        m_context->removeAudioNodeInternal(m_gainNode);
+        m_context->removeAudioNodeInternal(m_sourceNode);
+        m_gainNode = nullptr;
+        m_sourceNode = nullptr;
+        m_context = nullptr;
     }
 }
 

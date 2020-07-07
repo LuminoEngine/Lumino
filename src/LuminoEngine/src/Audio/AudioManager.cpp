@@ -265,8 +265,7 @@ void AudioManager::commitCommands()
 			case OperationCode::DisconnectionAll://AndDispose:
 			{
 				detail::ARINode* node = cmd.outputSide;
-				node->disconnectAllInputSide();
-				node->disconnectAllOutputSide();
+				node->disconnectAll();
 				//if (node->frontNode()) {
 				//	node->frontNode()->m_alived = false;
 				//}
@@ -299,6 +298,7 @@ void AudioManager::updateSoundCores(float elapsedSeconds)
 
 				break;
 			case SoundCoreLifecycleState::Disposed:
+				sound->dispose();
 				m_soundCoreList.removeAt(i);
 				break;
 			case SoundCoreLifecycleState::DisposeAfterStop:

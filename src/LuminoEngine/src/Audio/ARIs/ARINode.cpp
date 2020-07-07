@@ -116,6 +116,12 @@ void ARINode::disconnectAllOutputSide()
 	}
 }
 
+void ARINode::disconnectAll()
+{
+	disconnectAllInputSide();
+	disconnectAllOutputSide();
+}
+
 ARIInputPin* ARINode::addInputPin(int channels)
 {
 	auto pin = makeRef<ARIInputPin>(channels);

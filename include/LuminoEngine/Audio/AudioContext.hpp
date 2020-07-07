@@ -7,6 +7,7 @@ class AudioManager;
 class AudioDevice;
 class ARIDestinationNode;
 class ARINode;
+class SoundCore;
 } // namespace detail
 class AudioNode;
 class AudioDestinationNode;
@@ -81,6 +82,7 @@ private:
     //List<WeakRefPtr<Sound>> m_soundList;
 
 	friend class detail::AudioManager;
+	friend class detail::SoundCore;
 };
 
 } // namespace ln
