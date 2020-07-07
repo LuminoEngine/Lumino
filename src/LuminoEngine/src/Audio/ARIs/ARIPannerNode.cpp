@@ -13,13 +13,13 @@ namespace detail {
 // CoreAudioPannerNode
 
 CoreAudioPannerNode::CoreAudioPannerNode(AudioDevice* context, AudioNode* frontNode)
-	: AudioNodeCore(context, frontNode)
+	: ARINode(context, frontNode)
 {
 }
 
 void CoreAudioPannerNode::init()
 {
-	AudioNodeCore::init();
+	ARINode::init();
 
 	unsigned numChannels = 2;
 	addOutputPin(numChannels);

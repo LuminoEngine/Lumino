@@ -7,7 +7,7 @@ namespace ln {
 class AudioContext;
 namespace detail {
 class AudioDecoder;
-class AudioNodeCore;
+class ARINode;
 } // namespace detail
 
 /**
@@ -69,7 +69,7 @@ protected:
     // onInitialize() はそういった事情を考慮して、セーフティなタイミングで初期化を行うためのコールバック。
     // 逆に言うと、AudioNode のサブクラスは他のモジュールのように init() は一切実装してはならない。
     //virtual void onInitialize() = 0;
-	virtual detail::AudioNodeCore* coreNode() = 0;
+	virtual detail::ARINode* coreNode() = 0;
 	//virtual void commit();	// ロック済みの状態で呼ばれる
 
 	detail::AudioRWMutex& commitMutex();

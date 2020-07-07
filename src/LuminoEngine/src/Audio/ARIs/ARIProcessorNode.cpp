@@ -13,14 +13,14 @@ namespace detail {
 // CAProcessorNode
 
 CAProcessorNode::CAProcessorNode(AudioDevice* context, AudioProcessorNode* frontNode)
-	: AudioNodeCore(context, frontNode)
+	: ARINode(context, frontNode)
     , m_ownerNode(frontNode)
 {
 }
 
 void CAProcessorNode::init(int numberOfInputChannels, int numberOfOutputChannels)
 {
-    AudioNodeCore::init();
+    ARINode::init();
     addInputPin(numberOfInputChannels);
     addOutputPin(numberOfOutputChannels);
 }

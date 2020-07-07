@@ -9,11 +9,11 @@ class AudioDestinationNode
 LN_CONSTRUCT_ACCESS:
 	AudioDestinationNode();
 	virtual ~AudioDestinationNode() = default;
-	void init(detail::CoreAudioDestinationNode* core);
-	virtual detail::AudioNodeCore* coreNode() override;
+	void init(detail::ARIDestinationNode* core);
+	virtual detail::ARINode* coreNode() override;
 
 private:
-	Ref<detail::CoreAudioDestinationNode> m_coreObject;
+	Ref<detail::ARIDestinationNode> m_coreObject;
 };
 
 } // namespace ln

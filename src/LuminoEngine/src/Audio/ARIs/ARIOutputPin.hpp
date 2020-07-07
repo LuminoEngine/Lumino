@@ -5,15 +5,15 @@ namespace ln {
 class AudioNode;
 
 namespace detail {
-class AudioNodeCore;
-class CoreAudioInputPin;
+class ARINode;
+class ARIInputPin;
 
-class CoreAudioOutputPin
+class ARIOutputPin
 	: public RefObject
 {
 public:
-	CoreAudioOutputPin(int channels);
-	virtual ~CoreAudioOutputPin() = default;
+	ARIOutputPin(int channels);
+	virtual ~ARIOutputPin() = default;
 
 	ARIAudioBus* bus() const;
 
@@ -22,19 +22,19 @@ public:
 
 
 	// TODO: internal
-	void setOwnerNode(AudioNodeCore* node) { m_ownerNode = node; }
-	void addLinkInput(CoreAudioInputPin* input);
-	void removeLinkInput(CoreAudioInputPin* input);
+	void setOwnerNode(ARINode* node) { m_ownerNode = node; }
+	void addLinkInput(ARIInputPin* input);
+	void removeLinkInput(ARIInputPin* input);
 	bool isConnected() const { return !m_connectedInputPins.isEmpty(); }
 
-	const List<Ref<CoreAudioInputPin>>& connectedInputPins() const { return m_connectedInputPins; }
+	const List<Ref<ARIInputPin>>& connectedInputPins() const { return m_connectedInputPins; }
 	void disconnect(int index);
 	void disconnectAll();
 
 private:
-	AudioNodeCore* m_ownerNode;
+	ARINode* m_ownerNode;
 	Ref<ARIAudioBus> m_resultBus;	// result of m_ownerNode->process()
-	List<Ref<CoreAudioInputPin>> m_connectedInputPins;
+	List<Ref<ARIInputPin>> m_connectedInputPins;
 };
 
 } // namespace detail

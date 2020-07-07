@@ -9,21 +9,21 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// CoreAudioInputPin
+// ARIInputPin
 
-CoreAudioInputPin::CoreAudioInputPin(int channels)
+ARIInputPin::ARIInputPin(int channels)
 	: m_ownerNode(nullptr)
 {
 	m_summingBus = makeRef<ARIAudioBus>();
-	m_summingBus->initialize2(channels, AudioNodeCore::ProcessingSizeInFrames);
+	m_summingBus->initialize2(channels, ARINode::ProcessingSizeInFrames);
 }
 
-ARIAudioBus* CoreAudioInputPin::bus() const
+ARIAudioBus* ARIInputPin::bus() const
 {
 	return m_summingBus;
 }
 
-ARIAudioBus* CoreAudioInputPin::pull()
+ARIAudioBus* ARIInputPin::pull()
 {
 	m_summingBus->setSilentAndZero();
 
@@ -36,24 +36,24 @@ ARIAudioBus* CoreAudioInputPin::pull()
 	return m_summingBus;
 }
 
-void CoreAudioInputPin::addLinkOutput(CoreAudioOutputPin * output)
+void ARIInputPin::addLinkOutput(ARIOutputPin * output)
 {
 	m_connectedOutputPins.add(output);
 }
 
-void CoreAudioInputPin::removeLinkOutput(CoreAudioOutputPin * output)
+void ARIInputPin::removeLinkOutput(ARIOutputPin * output)
 {
 	m_connectedOutputPins.remove(output);
 }
 
-void CoreAudioInputPin::disconnect(int index)
+void ARIInputPin::disconnect(int index)
 {
 	auto& otherPin = m_connectedOutputPins[index];
 	otherPin->removeLinkInput(this);
 	m_connectedOutputPins.removeAt(index);
 }
 
-void CoreAudioInputPin::disconnectAll()
+void ARIInputPin::disconnectAll()
 {
 	for (auto& otherPin : m_connectedOutputPins) {
 		otherPin->removeLinkInput(this);

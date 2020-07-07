@@ -22,12 +22,12 @@ namespace detail {
 
 // The buffer used for data stream between a audio nodes.
 // Data is floating point, and range is -1.0 ~ +1.0
-class AudioChannel
+class ARIChannel
 	: public RefObject
 {
 public:
-	AudioChannel(size_t length);
-	virtual ~AudioChannel() = default;
+	ARIChannel(size_t length);
+	virtual ~ARIChannel() = default;
 
 	float* mutableData() { clearSilentFlag();  return m_data.data(); }	// Direct access to PCM sample data. clears silent flag.
 	const float* constData() const { return m_data.data(); }
@@ -40,8 +40,8 @@ public:
 	//void clear();
 	void copyTo(float* buffer, size_t bufferLength, size_t stride) const;
 	void copyFrom(const float* buffer, size_t bufferLength, size_t stride);
-	void copyFrom(const AudioChannel* ch);
-	void sumFrom(const AudioChannel* ch);
+	void copyFrom(const ARIChannel* ch);
+	void sumFrom(const ARIChannel* ch);
     void fillZero(size_t start, size_t length); // isSilent は変化しない
 
 	// chromium interface
@@ -93,9 +93,9 @@ public:
 	int channelCount() const { return m_channels.size(); }
 	int numberOfChannels() const { return m_channels.size(); }
 
-	AudioChannel* channel(int index) const { return m_channels[index]; }
-	AudioChannel* channelByType(unsigned  type);
-	const AudioChannel* channelByType(unsigned  type) const;
+	ARIChannel* channel(int index) const { return m_channels[index]; }
+	ARIChannel* channelByType(unsigned  type);
+	const ARIChannel* channelByType(unsigned  type) const;
 
 	void setSilentAndZero();	// set silent flag, and zero clear buffers if needed. if set a valid samples in process(), please call clearSilentFlag()
 	void clearSilentFlag();
@@ -113,8 +113,8 @@ public:
 
 	// chromium interface
 	int NumberOfChannels() const { return m_channels.size(); }
-	AudioChannel* Channel(int index) const { return channel(index); }
-	AudioChannel* ChannelByType(unsigned  type) { return channelByType(type); }
+	ARIChannel* Channel(int index) const { return channel(index); }
+	ARIChannel* ChannelByType(unsigned  type) { return channelByType(type); }
 
 
 private:
@@ -122,7 +122,7 @@ private:
     void sumFromByDownMixing(const ARIAudioBus* sourceBus);
     void discreteSumFrom(const ARIAudioBus* sourceBus);
 
-	List<Ref<AudioChannel>> m_channels;
+	List<Ref<ARIChannel>> m_channels;
 	size_t m_validLength;
 	int m_sampleRate;
 

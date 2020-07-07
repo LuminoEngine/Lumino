@@ -8,15 +8,15 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// AudioChannel
+// ARIChannel
 
-AudioChannel::AudioChannel(size_t length)
+ARIChannel::ARIChannel(size_t length)
 	: m_isSilent(true)
 {
 	m_data.resize(length);
 }
 
-void AudioChannel::setSilentAndZero()
+void ARIChannel::setSilentAndZero()
 {
     memset(mutableData(), 0, sizeof(float) * length());
 	if (!m_isSilent)
@@ -25,7 +25,7 @@ void AudioChannel::setSilentAndZero()
 	}
 }
 
-void AudioChannel::copyTo(float* buffer, size_t bufferLength, size_t stride) const
+void ARIChannel::copyTo(float* buffer, size_t bufferLength, size_t stride) const
 {
 	const float* src = constData();
 	if (stride == 1) {
@@ -41,7 +41,7 @@ void AudioChannel::copyTo(float* buffer, size_t bufferLength, size_t stride) con
 	}
 }
 
-void AudioChannel::copyFrom(const float * buffer, size_t bufferLength, size_t stride)
+void ARIChannel::copyFrom(const float * buffer, size_t bufferLength, size_t stride)
 {
 	float* dst = mutableData();
 	if (stride == 1) {
@@ -57,7 +57,7 @@ void AudioChannel::copyFrom(const float * buffer, size_t bufferLength, size_t st
 	}
 }
 
-void AudioChannel::copyFrom(const AudioChannel* ch)
+void ARIChannel::copyFrom(const ARIChannel* ch)
 {
 	bool isSafe = (ch && ch->length() >= length());
 	assert(isSafe);
@@ -73,7 +73,7 @@ void AudioChannel::copyFrom(const AudioChannel* ch)
 	memcpy(mutableData(), ch->constData(), sizeof(float) * length());
 }
 
-void AudioChannel::sumFrom(const AudioChannel * ch)
+void ARIChannel::sumFrom(const ARIChannel * ch)
 {
 	if (ch->isSilent()) {
 		return;
@@ -88,7 +88,7 @@ void AudioChannel::sumFrom(const AudioChannel * ch)
 	}
 }
 
-void AudioChannel::fillZero(size_t start, size_t length)
+void ARIChannel::fillZero(size_t start, size_t length)
 {
     if (LN_REQUIRE(start + length <= m_data.size())) return;
     memset(m_data.data() + start, 0, sizeof(float) * length);
@@ -107,13 +107,13 @@ void ARIAudioBus::initialize2(int channelCount, size_t length, int sampleRate)
 {
 	for (int i = 0; i < channelCount; ++i)
 	{
-		m_channels.add(makeRef<AudioChannel>(length));
+		m_channels.add(makeRef<ARIChannel>(length));
 	}
 	m_validLength = length;
 	m_sampleRate = sampleRate;
 }
 
-AudioChannel* ARIAudioBus::channelByType(unsigned channel_type)
+ARIChannel* ARIAudioBus::channelByType(unsigned channel_type)
 {
 	// For now we only support canonical channel layouts...
 	if (m_layout != kLayoutCanonical)
@@ -188,7 +188,7 @@ AudioChannel* ARIAudioBus::channelByType(unsigned channel_type)
 	return nullptr;
 }
 
-const AudioChannel* ARIAudioBus::channelByType(unsigned type) const
+const ARIChannel* ARIAudioBus::channelByType(unsigned type) const
 {
 	return const_cast<ARIAudioBus*>(this)->channelByType(type);
 }
@@ -449,7 +449,7 @@ void ARIAudioBus::sumFromByUpMixing(const ARIAudioBus* sourceBus)
         //   output.R = input
         //   output.SL = 0 (in the case of 1 -> 4)
         //   output.SR = 0 (in the case of 1 -> 4)
-        const AudioChannel* source_l = sourceBus->channelByType(kChannelLeft);
+        const ARIChannel* source_l = sourceBus->channelByType(kChannelLeft);
         channelByType(kChannelLeft)->sumFrom(source_l);
         channelByType(kChannelRight)->sumFrom(source_l);
     }

@@ -9,29 +9,29 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// CAGainNode
+// ARIGainNode
 
-CAGainNode::CAGainNode(AudioDevice* context, AudioNode* frontNode)
-	: AudioNodeCore(context, frontNode)
+ARIGainNode::ARIGainNode(AudioDevice* context, AudioNode* frontNode)
+	: ARINode(context, frontNode)
     , m_gain(1.0f)
 {
 }
 
-void CAGainNode::init()
+void ARIGainNode::init()
 {
-    AudioNodeCore::init();
+    ARINode::init();
 
     int numChannels = 2;
     addOutputPin(numChannels);
     addInputPin(numChannels);
 }
 
-void CAGainNode::onCommit()
+void ARIGainNode::onCommit()
 {
     m_gain = staging.gain;
 }
 
-void CAGainNode::process()
+void ARIGainNode::process()
 {
     ARIAudioBus* destination = outputPin(0)->bus();
     ARIAudioBus* source = inputPin(0)->bus();

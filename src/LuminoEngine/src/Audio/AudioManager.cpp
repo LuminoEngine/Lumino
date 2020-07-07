@@ -239,14 +239,14 @@ void AudioManager::commitCommands()
 			case OperationCode::Connection:
 				//cmd.outputSide->m_alived = true;
 				//cmd.inputSide->m_alived = true;
-				detail::AudioNodeCore::connect(cmd.outputSide, cmd.inputSide);
+				detail::ARINode::connect(cmd.outputSide, cmd.inputSide);
 				break;
 			case OperationCode::Disconnection:
 				LN_NOTIMPLEMENTED();
 				break;
 			case OperationCode::DisconnectionAll://AndDispose:
 			{
-				detail::AudioNodeCore* node = cmd.outputSide;
+				detail::ARINode* node = cmd.outputSide;
 				node->disconnectAllInputSide();
 				node->disconnectAllOutputSide();
 				//if (node->frontNode()) {

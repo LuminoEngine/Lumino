@@ -3,35 +3,35 @@
 
 namespace ln {
 namespace detail {
-class AudioNodeCore;
-class CoreAudioOutputPin;
+class ARINode;
+class ARIOutputPin;
 
-class CoreAudioInputPin
+class ARIInputPin
 	: public RefObject
 {
 public:
-	CoreAudioInputPin(int channels);
-	virtual ~CoreAudioInputPin() = default;
+	ARIInputPin(int channels);
+	virtual ~ARIInputPin() = default;
 
 	ARIAudioBus* bus() const;
 
 	ARIAudioBus* pull();
 
 	// TODO: internal
-	void setOwnerNode(AudioNodeCore* node) { m_ownerNode = node; }
-	void addLinkOutput(CoreAudioOutputPin* output);
-	void removeLinkOutput(CoreAudioOutputPin* output);
+	void setOwnerNode(ARINode* node) { m_ownerNode = node; }
+	void addLinkOutput(ARIOutputPin* output);
+	void removeLinkOutput(ARIOutputPin* output);
 	bool isConnected() const { return !m_connectedOutputPins.isEmpty(); }
 
-	const List<Ref<CoreAudioOutputPin>>& connectedOutputPins() const { return m_connectedOutputPins; }
+	const List<Ref<ARIOutputPin>>& connectedOutputPins() const { return m_connectedOutputPins; }
 	void disconnect(int index);
 	void disconnectAll();
 
 private:
 
-	AudioNodeCore* m_ownerNode;
+	ARINode* m_ownerNode;
 	Ref<ARIAudioBus> m_summingBus;	// Total output
-	List<Ref<CoreAudioOutputPin>> m_connectedOutputPins;
+	List<Ref<ARIOutputPin>> m_connectedOutputPins;
 };
 
 } // namespace detail

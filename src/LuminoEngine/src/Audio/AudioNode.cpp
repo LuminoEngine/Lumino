@@ -54,7 +54,7 @@ void AudioNode::onDispose(bool explicitDisposing)
 //	//{
 //	//	coreNode()->disconnectAllInputSide();
 //	//	for (auto& node : m_inputConnections) {
-//	//		detail::AudioNodeCore::connect(node->coreNode(), coreNode());
+//	//		detail::ARINode::connect(node->coreNode(), coreNode());
 //	//	}
 //	//	m_inputConnectionsDirty = false;
 //	//}
@@ -63,7 +63,7 @@ void AudioNode::onDispose(bool explicitDisposing)
 //	//{
 //	//	coreNode()->disconnectAllOutputSide();
 //	//	for (auto& node : m_outputConnections) {
-//	//		detail::AudioNodeCore::connect(coreNode(), node->coreNode());
+//	//		detail::ARINode::connect(coreNode(), node->coreNode());
 //	//	}
 //	//	m_outputConnectionsDirty = false;
 //	//}

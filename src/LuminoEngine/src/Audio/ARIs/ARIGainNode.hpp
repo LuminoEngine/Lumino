@@ -4,11 +4,11 @@
 namespace ln {
 namespace detail {
 
-class CAGainNode
-	: public AudioNodeCore
+class ARIGainNode
+	: public ARINode
 {
 public:
-    struct StagingData// : public AudioNodeCore::StagingData
+    struct StagingData// : public ARINode::StagingData
     {
         std::atomic<float> gain;
     //    void setGain(float value);
@@ -17,7 +17,7 @@ public:
     //    float m_gain;
     } staging;
 
-    CAGainNode(AudioDevice* context, AudioNode* frontNode);
+    ARIGainNode(AudioDevice* context, AudioNode* frontNode);
     void init();
     void setGain(float value) { m_gain = value; }
     float gain() const { return m_gain; }

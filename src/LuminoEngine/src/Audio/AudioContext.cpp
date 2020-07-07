@@ -36,13 +36,13 @@ void AudioContext::init()
 
 #if defined(LN_OS_MAC) || defined(LN_OS_IOS)
 	auto device = makeRef<detail::ALAudioDevice>();
-	device->init(detail::AudioNodeCore::ProcessingSizeInFrames);
+	device->init(detail::ARINode::ProcessingSizeInFrames);
 	m_audioDevice = device;
 	
 #elif defined(LN_EMSCRIPTEN)
 	{
 		auto device = makeRef<detail::ALAudioDevice>();
-		device->init(detail::AudioNodeCore::ProcessingSizeInFrames);
+		device->init(detail::ARINode::ProcessingSizeInFrames);
 		m_audioDevice = device;
 	}
 #elif defined(LN_USE_SDL)
@@ -54,14 +54,14 @@ void AudioContext::init()
 
 	//{
 	//	auto device = makeRef<detail::ALAudioDevice>();
-	//	device->init(detail::AudioNodeCore::ProcessingSizeInFrames);
+	//	device->init(detail::ARINode::ProcessingSizeInFrames);
 	//	m_audioDevice = device;
 	//}
 
 	if (!m_audioDevice) {
 		bool noDevice = false;
 		auto device = makeRef<detail::DSoundAudioDevice>();
-		device->init(detail::AudioNodeCore::ProcessingSizeInFrames, &noDevice);
+		device->init(detail::ARINode::ProcessingSizeInFrames, &noDevice);
 		if (noDevice) {
 			device->dispose();
 		}
@@ -76,7 +76,7 @@ void AudioContext::init()
         LN_LOG_INFO << "Use NullAudioDevice";
     }
         
-	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioDevice, nullptr);
+	m_coreDestinationNode = makeRef<detail::ARIDestinationNode>(m_audioDevice, nullptr);
 	m_coreDestinationNode->init();
 	m_audioDevice->setRenderCallback(m_coreDestinationNode);
 
@@ -178,7 +178,7 @@ void AudioContext::removeAudioNode(AudioNode* node)
 	m_manager->postRemoveAudioNode(this, node);
 }
 
-//void AudioContext::markGC(detail::AudioNodeCore* node)
+//void AudioContext::markGC(detail::ARINode* node)
 //{
 //	//m_markedNodes.add(node->frontNode());
 //}
@@ -188,12 +188,12 @@ detail::AudioDevice* AudioContext::coreObject()
 	return m_audioDevice;
 }
 
-void AudioContext::addAudioNodeInternal(const Ref<detail::AudioNodeCore>& node)
+void AudioContext::addAudioNodeInternal(const Ref<detail::ARINode>& node)
 {
 	m_coreAudioNodes.add(node);
 }
 
-void AudioContext::removeAudioNodeInternal(const Ref<detail::AudioNodeCore>& node)
+void AudioContext::removeAudioNodeInternal(const Ref<detail::ARINode>& node)
 {
 	m_coreAudioNodes.remove(node);
 }

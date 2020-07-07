@@ -21,7 +21,7 @@ void AudioPannerNode::init()
 	m_coreObject->init();
 }
 
-detail::AudioNodeCore* AudioPannerNode::coreNode()
+detail::ARINode* AudioPannerNode::coreNode()
 {
 	return m_coreObject;
 }

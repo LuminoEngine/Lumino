@@ -41,40 +41,40 @@ namespace detail {
 //
 
 //==============================================================================
-// AudioNodeCore
+// ARINode
 
-AudioNodeCore::AudioNodeCore(AudioDevice* context, AudioNode* frontNode)
+ARINode::ARINode(AudioDevice* context, AudioNode* frontNode)
 	: m_context(context)
 	, m_frontNode(frontNode)
 {
 }
 
-void AudioNodeCore::init()
+void ARINode::init()
 {
 	Object::init();
 }
 
-bool AudioNodeCore::isInputConnected() const
+bool ARINode::isInputConnected() const
 {
 	return m_inputPins.findIf([](auto& x) { return x->isConnected(); }).hasValue();
 }
 
-bool AudioNodeCore::isOutputConnected() const
+bool ARINode::isOutputConnected() const
 {
 	return m_outputPins.findIf([](auto& x) { return x->isConnected(); }).hasValue();
 }
 
-CoreAudioInputPin* AudioNodeCore::inputPin(int index) const
+ARIInputPin* ARINode::inputPin(int index) const
 {
 	return m_inputPins[index];
 }
 
-CoreAudioOutputPin* AudioNodeCore::outputPin(int index) const
+ARIOutputPin* ARINode::outputPin(int index) const
 {
 	return m_outputPins[index];
 }
 
-void AudioNodeCore::pullInputs()
+void ARINode::pullInputs()
 {
 	for (auto & in : m_inputPins)
 	{
@@ -82,7 +82,7 @@ void AudioNodeCore::pullInputs()
 	}
 }
 
-void AudioNodeCore::processIfNeeded()
+void ARINode::processIfNeeded()
 {
 	m_marked = true;
 
@@ -96,37 +96,37 @@ void AudioNodeCore::processIfNeeded()
 	process();
 }
 
-void AudioNodeCore::connect(AudioNodeCore * outputSide, AudioNodeCore * inputSide)
+void ARINode::connect(ARINode * outputSide, ARINode * inputSide)
 {
 	outputSide->outputPin(0)->addLinkInput(inputSide->inputPin(0));
 	inputSide->inputPin(0)->addLinkOutput(outputSide->outputPin(0));
 }
 
-void AudioNodeCore::disconnectAllInputSide()
+void ARINode::disconnectAllInputSide()
 {
 	for (auto& pin : m_inputPins) {
 		pin->disconnectAll();
 	}
 }
 
-void AudioNodeCore::disconnectAllOutputSide()
+void ARINode::disconnectAllOutputSide()
 {
 	for (auto& pin : m_outputPins) {
 		pin->disconnectAll();
 	}
 }
 
-CoreAudioInputPin* AudioNodeCore::addInputPin(int channels)
+ARIInputPin* ARINode::addInputPin(int channels)
 {
-	auto pin = makeRef<CoreAudioInputPin>(channels);
+	auto pin = makeRef<ARIInputPin>(channels);
 	pin->setOwnerNode(this);
 	m_inputPins.add(pin);
 	return pin;
 }
 
-CoreAudioOutputPin* AudioNodeCore::addOutputPin(int channels)
+ARIOutputPin* ARINode::addOutputPin(int channels)
 {
-	auto pin = makeRef<CoreAudioOutputPin>(channels);
+	auto pin = makeRef<ARIOutputPin>(channels);
 	pin->setOwnerNode(this);
 	m_outputPins.add(pin);
 	return pin;

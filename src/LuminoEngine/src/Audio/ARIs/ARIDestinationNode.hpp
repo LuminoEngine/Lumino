@@ -4,10 +4,10 @@
 namespace ln {
 namespace detail {
 
-class PropagationParameters
+class ARIPropagationParameters
 {
 public:
-	PropagationParameters();
+	ARIPropagationParameters();
 
 	int finalSamplingRate() const { return m_finalSamplingRate; }
 
@@ -17,13 +17,13 @@ private:
 	int m_finalSamplingRate;
 };
 
-class CoreAudioDestinationNode
-	: public AudioNodeCore
+class ARIDestinationNode
+	: public ARINode
 	, public IAudioDeviceRenderCallback
 {
 public:
-	CoreAudioDestinationNode(AudioDevice* context, AudioNode* frontNode);
-	virtual ~CoreAudioDestinationNode() = default;
+	ARIDestinationNode(AudioDevice* context, AudioNode* frontNode);
+	virtual ~ARIDestinationNode() = default;
 	void init();
 
 protected:
@@ -32,7 +32,7 @@ protected:
 	void render(float* outputBuffer, int length) override;
 
 private:
-	PropagationParameters m_propagationParameters;
+	ARIPropagationParameters m_propagationParameters;
 };
 
 } // namespace detail

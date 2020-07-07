@@ -13,7 +13,7 @@ namespace detail {
 // AudioSourceNodeCore
 
 AudioSourceNodeCore::AudioSourceNodeCore(AudioDevice* context, AudioNode* frontNode)
-	: AudioNodeCore(context, frontNode)
+	: ARINode(context, frontNode)
 	, m_virtualReadIndex(0)
 	, m_playbackRate(1.0f)
 	, m_seekFrame(0)
@@ -26,13 +26,13 @@ AudioSourceNodeCore::AudioSourceNodeCore(AudioDevice* context, AudioNode* frontN
 
 void AudioSourceNodeCore::init(const Ref<AudioDecoder>& decoder)
 {
-	AudioNodeCore::init();
+	ARINode::init();
 
 	// TODO:
 	//auto decoder = makeRef<WaveDecoder>();
 	//decoder->init(FileStream::create(filePath), diag);
 	m_decoder = decoder;
-	//tmpBuffer.resize(AudioNodeCore::ProcessingSizeInFrames * m_masterChannels);
+	//tmpBuffer.resize(ARINode::ProcessingSizeInFrames * m_masterChannels);
 
 	unsigned numChannels = m_decoder->audioDataInfo().channelCount;
 	auto* pin = addOutputPin(numChannels);
@@ -81,7 +81,7 @@ unsigned AudioSourceNodeCore::numberOfChannels() const
 
 void AudioSourceNodeCore::resetSourceBuffers()
 {
-	CoreAudioOutputPin* pin = outputPin(0);
+	ARIOutputPin* pin = outputPin(0);
 
 	size_t baseFrames = pin->bus()->length();
 	m_readFrames = baseFrames;

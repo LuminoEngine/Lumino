@@ -85,7 +85,7 @@ void AudioSourceNode::resume()
 	LN_NOTIMPLEMENTED();
 }
 
-detail::AudioNodeCore * AudioSourceNode::coreNode()
+detail::ARINode * AudioSourceNode::coreNode()
 {
 	return m_coreObject;
 }

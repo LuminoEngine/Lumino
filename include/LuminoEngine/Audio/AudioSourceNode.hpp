@@ -23,7 +23,7 @@ LN_CONSTRUCT_ACCESS:
 	AudioSourceNode();
 	virtual ~AudioSourceNode() = default;
 	void init(detail::AudioDecoder* decoder);
-	virtual detail::AudioNodeCore* coreNode() override;
+	virtual detail::ARINode* coreNode() override;
 	//virtual void commit() override;
 
 private:

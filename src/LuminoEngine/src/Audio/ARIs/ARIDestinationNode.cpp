@@ -9,41 +9,41 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// PropagationParameters
+// ARIPropagationParameters
 
-PropagationParameters::PropagationParameters()
+ARIPropagationParameters::ARIPropagationParameters()
 	: m_finalSamplingRate(0)
 {}
 
 //==============================================================================
-// CoreAudioDestinationNode
+// ARIDestinationNode
 
-CoreAudioDestinationNode::CoreAudioDestinationNode(AudioDevice* context, AudioNode* frontNode)
-	: AudioNodeCore(context, frontNode)
+ARIDestinationNode::ARIDestinationNode(AudioDevice* context, AudioNode* frontNode)
+	: ARINode(context, frontNode)
 {
 }
 
-void CoreAudioDestinationNode::init()
+void ARIDestinationNode::init()
 {
-	AudioNodeCore::init();
+	ARINode::init();
 	addInputPin(2);
 }
 
-void CoreAudioDestinationNode::onCommit()
+void ARIDestinationNode::onCommit()
 {
 }
 
-void CoreAudioDestinationNode::process()
+void ARIDestinationNode::process()
 {
 	LN_UNREACHABLE();
 }
 
-void CoreAudioDestinationNode::render(float * outputBuffer, int length)
+void ARIDestinationNode::render(float * outputBuffer, int length)
 {
 	m_marked = true;
 
-    ////AudioChannel* ch1 = output->channel(0);
-    ////AudioChannel* ch2 = output->channel(1);
+    ////ARIChannel* ch1 = output->channel(0);
+    ////ARIChannel* ch2 = output->channel(1);
     ////float* data1 = ch1->mutableData();
     ////float* data2 = ch2->mutableData();
     //static float step = 0.0;
@@ -65,7 +65,7 @@ void CoreAudioDestinationNode::render(float * outputBuffer, int length)
 	const float kHighThreshold = 1.0f;
 	for (unsigned i = 0; i < bus->numberOfChannels(); ++i)
 	{
-		AudioChannel * channel = bus->channel(i);
+		ARIChannel * channel = bus->channel(i);
 		::blink::VectorMath::vclip(channel->constData(), 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, channel->length());
 	}
 

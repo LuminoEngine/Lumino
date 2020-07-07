@@ -28,7 +28,7 @@ void AudioProcessorNode::init(int numberOfInputChannels, int numberOfOutputChann
 	AudioNode::init();
 }
 
-detail::AudioNodeCore* AudioProcessorNode::coreNode()
+detail::ARINode* AudioProcessorNode::coreNode()
 {
 	return m_coreObject;
 }

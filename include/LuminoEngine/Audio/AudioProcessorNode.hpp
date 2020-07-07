@@ -19,7 +19,7 @@ LN_CONSTRUCT_ACCESS:
     AudioProcessorNode();
     virtual ~AudioProcessorNode();
 	void init(int numberOfInputChannels, int numberOfOutputChannels);
-	virtual detail::AudioNodeCore* coreNode() override;
+	virtual detail::ARINode* coreNode() override;
     //virtual void commit() override;
 
 private:

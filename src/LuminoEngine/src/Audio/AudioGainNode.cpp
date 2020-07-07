@@ -23,7 +23,7 @@ void AudioGainNode::init()
 {
     // TODO: AudioNode::init() の後にしたい。
     // detail::EngineDomain::audioManager()->primaryContext() じゃなくて context() にしたい
-    m_coreObject = makeRef<detail::CAGainNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
+    m_coreObject = makeRef<detail::ARIGainNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
     m_coreObject->init();
     m_coreObject->staging.gain = 1.0f;
 
@@ -43,7 +43,7 @@ float AudioGainNode::gain() const
     return m_coreObject->staging.gain;
 }
 
-detail::AudioNodeCore* AudioGainNode::coreNode()
+detail::ARINode* AudioGainNode::coreNode()
 {
 	return m_coreObject;
 }

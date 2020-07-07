@@ -5,7 +5,7 @@ namespace ln {
 namespace detail {
 
 class CoreAudioPannerNode
-	: public AudioNodeCore
+	: public ARINode
 {
 public:
 

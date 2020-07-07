@@ -86,8 +86,8 @@ private:
 	{
 		OperationCode code;
 		Ref<AudioContext> context;
-		Ref<detail::AudioNodeCore> outputSide;
-		Ref<detail::AudioNodeCore> inputSide;
+		Ref<detail::ARINode> outputSide;
+		Ref<detail::ARINode> inputSide;
 	};
 
 	void commitCommands();

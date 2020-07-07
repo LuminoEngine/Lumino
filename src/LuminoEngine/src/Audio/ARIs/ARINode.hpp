@@ -9,10 +9,6 @@ namespace ln {
 class AudioNode;
 
 namespace detail {
-class AudioNodeCore;
-class CoreAudioInputPin;
-class CoreAudioOutputPin;
-class AudioDecoder;
 
 namespace blink {
 	class Panner;
@@ -36,7 +32,7 @@ namespace blink {
 //	AudioListenerParams m_listener;
 //};
 
-class AudioNodeCore
+class ARINode
 	: public Object
 {
 public:
@@ -58,8 +54,8 @@ public:
 	// 値を小さくするほど (高レベルAPIとしての) 演奏開始から実際に音が鳴るまでの遅延が少なくなるが、process の回数 (ノードをたどる回数) が増えるので処理は重くなる。
 	static const int ProcessingSizeInFrames = 2048;
 
-	AudioNodeCore(AudioDevice* context, AudioNode* frontNode);
-	virtual ~AudioNodeCore() = default;
+	ARINode(AudioDevice* context, AudioNode* frontNode);
+	virtual ~ARINode() = default;
 	void init();
 
 	AudioDevice* context() const { return m_context; }
@@ -67,12 +63,12 @@ public:
 
 	bool isInputConnected() const;
 	bool isOutputConnected() const;
-	CoreAudioInputPin* inputPin(int index) const;
-	CoreAudioOutputPin* outputPin(int index) const;
+	ARIInputPin* inputPin(int index) const;
+	ARIOutputPin* outputPin(int index) const;
 	void processIfNeeded();
 
 	// in=1, out=1 用のユーティリティ
-	static void connect(AudioNodeCore* outputSide, AudioNodeCore* inputSide);
+	static void connect(ARINode* outputSide, ARINode* inputSide);
 
 	void disconnectAllInputSide();
 	void disconnectAllOutputSide();
@@ -81,9 +77,9 @@ public:
 
 protected:
 	// Do not call after object initialzation.
-	CoreAudioInputPin* addInputPin(int channels);
+	ARIInputPin* addInputPin(int channels);
 	// Do not call after object initialzation.
-	CoreAudioOutputPin* addOutputPin(int channels);
+	ARIOutputPin* addOutputPin(int channels);
 
 	void pullInputs();
 
@@ -97,8 +93,8 @@ protected:
 private:
 	AudioDevice* m_context;
 	AudioNode* m_frontNode;
-	List<Ref<CoreAudioInputPin>> m_inputPins;
-	List<Ref<CoreAudioOutputPin>> m_outputPins;
+	List<Ref<ARIInputPin>> m_inputPins;
+	List<Ref<ARIOutputPin>> m_outputPins;
 
 	friend class AudioContext;	// for onCcommit
 };

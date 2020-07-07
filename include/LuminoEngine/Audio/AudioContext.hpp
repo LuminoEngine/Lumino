@@ -5,8 +5,8 @@ namespace ln {
 namespace detail {
 class AudioManager;
 class AudioDevice;
-class CoreAudioDestinationNode;
-class AudioNodeCore;
+class ARIDestinationNode;
+class ARINode;
 } // namespace detail
 class AudioNode;
 class AudioDestinationNode;
@@ -36,7 +36,7 @@ public:
 
 	// TODO: internal
 	detail::AudioManager* manager() const { return m_manager; }
-	//void markGC(detail::AudioNodeCore* node);	// call only audio thread.
+	//void markGC(detail::ARINode* node);	// call only audio thread.
 
 	detail::AudioDevice* coreObject();
 
@@ -50,15 +50,15 @@ LN_INTERNAL_ACCESS:
 	//void tryRemoveAudioNode(AudioNode* node);
 
 private:
-	void addAudioNodeInternal(const Ref<detail::AudioNodeCore>& node);
-	void removeAudioNodeInternal(const Ref<detail::AudioNodeCore>& node);
+	void addAudioNodeInternal(const Ref<detail::ARINode>& node);
+	void removeAudioNodeInternal(const Ref<detail::ARINode>& node);
 
 	// call by aduio thread.
 	void commitGraphs(float elapsedSeconds);
 
 	detail::AudioManager* m_manager;
 	Ref<detail::AudioDevice> m_audioDevice;
-	Ref<detail::CoreAudioDestinationNode> m_coreDestinationNode;
+	Ref<detail::ARIDestinationNode> m_coreDestinationNode;
 	Ref<AudioDestinationNode> m_destinationNode;
 
 	// 強参照。ユーザープログラムからの明示的な破棄が必要。
@@ -66,7 +66,7 @@ private:
 	List<Ref<AudioNode>> m_audioNodes;
 
 	// 強参照。AudioThread で受信したコマンドによって add/remove
-	List<Ref<detail::AudioNodeCore>> m_coreAudioNodes;
+	List<Ref<detail::ARINode>> m_coreAudioNodes;
 
 
 	//List<AudioNode*> m_allAudioNodes;

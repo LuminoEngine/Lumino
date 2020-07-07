@@ -6,7 +6,7 @@ namespace ln {
 namespace detail {
 
 class AudioSourceNodeCore
-	: public AudioNodeCore
+	: public ARINode
 {
 public:
 	struct StagingData

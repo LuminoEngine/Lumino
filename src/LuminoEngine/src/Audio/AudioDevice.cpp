@@ -19,7 +19,7 @@ AudioDevice::AudioDevice()
 
 void AudioDevice::init(int frames, int channels)
 {
-	//AudioNodeCore::ProcessingSizeInFrames
+	//ARINode::ProcessingSizeInFrames
 	m_masterChannels = channels;
 	m_renderdBuffer.resize(frames * m_masterChannels);
 

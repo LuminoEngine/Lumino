@@ -6,7 +6,7 @@ class AudioProcessorNode;
 namespace detail {
 
 class CAProcessorNode
-	: public AudioNodeCore
+	: public ARINode
 {
 public:
     CAProcessorNode(AudioDevice* context, AudioProcessorNode* frontNode);
