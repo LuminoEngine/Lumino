@@ -178,6 +178,13 @@ void AudioContext::removeAudioNode(AudioNode* node)
 	m_manager->postRemoveAudioNode(this, node);
 }
 
+void AudioContext::removeAllNodes()
+{
+	for (int i = m_audioNodes.size() - 1; i >= 0; i--) {
+		removeAudioNode(m_audioNodes[i]);
+	}
+}
+
 //void AudioContext::markGC(detail::ARINode* node)
 //{
 //	//m_markedNodes.add(node->frontNode());

@@ -2,11 +2,7 @@
 #include "Common.hpp"
 
 namespace ln {
-class AudioNode;
-
 namespace detail {
-class ARINode;
-class ARIInputPin;
 
 class ARIOutputPin
 	: public RefObject

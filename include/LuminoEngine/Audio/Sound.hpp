@@ -26,6 +26,34 @@ enum class SoundFadeBehavior
     PauseReset,			/**< 一時停止して、次の再生に備えてサウンドの音量を元の値に戻す */
 };
 
+/*
+	[2020/7/7] Note: Sound のライフサイクル問題
+	UserProgram から直接 Sound を作る場合…
+		考え方的には Unity の AudioSource が近い。Sound 自体が座標なども持っている。
+		この使い方の時は、解放は Ref に任せてよい。明示的に削除したいときは dispose。
+		つまりこのケースでは、内部的には Sound を弱参照のリストで管理する、ということになる。
+		ただし Sound::dispose 時点で AudioThread から更新中、ということもあるので、ただ弱参照にするだけだと null アクセスしてしまう。
+	playSE() などで内部管理する場合…
+		こちらの場合は Sound のインスタンス管理を内部 (AudioManager あたり) が行う。
+		Audio モジュールは updateFrame() 無しでも動くようにしたいので、dispose は AudioThread から行う必要がある。
+		しかし MainThread 以外からの dispose は、Binding モジュール側への影響が非常に大きいため、このパターンの Sound は外部に公開したくないところ。
+	↓
+	総じてやっぱり ARI を分離した動機と同じ原因の問題となる。
+
+	同じように内部的なインスタンスを分離しようか。
+	UserProgram から直接 Sound を作る場合…
+		Sound::init で data をコマンドに乗せて AudioThread へ add。
+		Sound::dispose で remove… でもいいんだけど、↓の兼もあるので lifesycleState みたいなフラグ監視がいいかも。
+	playSE() などで内部管理する場合…
+		playSE() の戻り値は Sound を返したい。Effect とかと同じく。
+		でも多くの場合は不要で、すぐインスタンスは消える。
+		でもその場合でも、音の最後までは再生したい。
+		そのため Sound::dispose に合わせていきなり remove されるのはちょっと困る。
+
+
+
+*/
+
 class Sound
 	: public Object
 {
@@ -225,5 +253,25 @@ private:
     friend class AudioContext;
 };
 
+namespace detail {
+
+enum class SoundCoreLifecycleState
+{
+	Valid,				// 再生中。Sound オブジェクトも有効。
+	Disposed,			// 対応する Sound オブジェクトは破棄されているため、SoundCore も破棄するべき。
+	DisposeAfterStop,	// 再生中の音声が終わったら破棄する。
+};
+
+class SoundCore
+	: public RefObject
+{
+public:
+	std::mutex m_mutex;
+	std::atomic<SoundCoreLifecycleState> lifecycleState = SoundCoreLifecycleState::Valid;
+	EasingValue<float> m_fadeValue;
+	SoundFadeBehavior m_fadeBehavior;
+};
+
+} // namespace ln
 } // namespace ln
 

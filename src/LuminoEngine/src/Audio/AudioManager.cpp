@@ -68,6 +68,11 @@ void AudioManager::dispose()
 		}
 	}
 
+	if (m_primaryContext) {
+		m_primaryContext->removeAllNodes();
+	}
+
+
 #ifdef LN_AUDIO_THREAD_ENABLED
 	m_endRequested = true;
 	if (m_dispatheThread) {
@@ -84,6 +89,9 @@ void AudioManager::dispose()
         m_dispatcher->executeTasks();   // 残っているものを実行してしまう
         m_dispatcher = nullptr;
     }
+
+	// 残っているコマンドを全て実行する
+	commitCommands();
 
 	if (m_primaryContext) {
 		m_primaryContext->dispose();

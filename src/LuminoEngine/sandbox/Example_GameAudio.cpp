@@ -18,8 +18,8 @@ class App_Example_GameAudio : public Application
 
 		auto addButton = ln::UIButton::create(u"Play BGM");
 		addButton->connectOnClicked([this]() {
-			GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav", 0.5, 1.0/*, 3.0*/);
-			//GameAudio::playBGM(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Audio/sin_440_3s_S16L_48000_2ch.wav", 0.1);
+			//GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav", 0.5, 1.0/*, 3.0*/);
+			GameAudio::playBGM(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Audio/sin_440_3s_S16L_48000_2ch.wav", 0.1);
 		});
 		//Engine::mainUIView()->addChild(addButton);
 

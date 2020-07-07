@@ -33,6 +33,7 @@ public:
 
 	void addAudioNode(AudioNode* node);
 	void removeAudioNode(AudioNode* node);
+	void removeAllNodes();
 
 	// TODO: internal
 	detail::AudioManager* manager() const { return m_manager; }

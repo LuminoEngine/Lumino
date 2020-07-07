@@ -3,8 +3,6 @@
 
 namespace ln {
 namespace detail {
-class ARINode;
-class ARIOutputPin;
 
 class ARIInputPin
 	: public RefObject
@@ -28,7 +26,6 @@ public:
 	void disconnectAll();
 
 private:
-
 	ARINode* m_ownerNode;
 	Ref<ARIAudioBus> m_summingBus;	// Total output
 	List<Ref<ARIOutputPin>> m_connectedOutputPins;
