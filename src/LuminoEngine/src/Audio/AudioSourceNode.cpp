@@ -20,10 +20,6 @@ void AudioSourceNode::init(detail::AudioDecoder* decoder)
 	m_coreObject = makeRef<detail::AudioSourceNodeCore>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
 	m_coreObject->init(decoder);
 
-	m_coreObject->staging.playbackRate = 1.0f;
-	m_coreObject->staging.requestedState = PlayingState::NoChanged;
-	m_coreObject->staging.resetRequire = false;
-	m_coreObject->staging.loop = false;
 
 	AudioNode::init();
 }

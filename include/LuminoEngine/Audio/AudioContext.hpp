@@ -41,7 +41,7 @@ public:
 
 	detail::AudioDevice* coreObject();
 
-    void addSound(Sound* sound);
+    //void addSound(Sound* sound);
 
 LN_INTERNAL_ACCESS:
 	detail::AudioRWMutex m_commitMutex;
@@ -78,7 +78,7 @@ private:
 	//List<Ref<AudioNode>> m_allAudioNodes_onCommit;
 
 
-    List<WeakRefPtr<Sound>> m_soundList;
+    //List<WeakRefPtr<Sound>> m_soundList;
 
 	friend class detail::AudioManager;
 };

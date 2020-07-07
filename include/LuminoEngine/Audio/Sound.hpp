@@ -6,7 +6,10 @@ namespace ln {
 class AudioContext;
 class AudioSourceNode;
 class AudioGainNode;
-namespace detail { class GameAudioImpl; }
+namespace detail {
+	class GameAudioImpl; class SoundCore
+		;
+}
 
 /** 音声の再生状態を表します。*/
 enum class SoundPlayingState
@@ -70,7 +73,7 @@ public:
 	 * @param[in]	volume	: 音量 (0.0～1.0。初期値は 1.0)
 	 */
 	LN_METHOD(Property)
-	void setVolume(float volume);
+	void setVolume(float value);
 
 	/**
 	 * この Sound の音量を取得します。
@@ -83,7 +86,7 @@ public:
 	 * @param[in]	volume	: ピッチ (0.5～2.0。初期値は 1.0)
 	 */
 	LN_METHOD(Property)
-	void setPitch(float pitch);
+	void setPitch(float value);
 
 	/**
 	 * この Sound のピッチ (音高) を取得します。
@@ -230,23 +233,24 @@ LN_CONSTRUCT_ACCESS:
     virtual void onDispose(bool explicitDisposing) override;
 
 private:
-    void setGameAudioFlags(uint32_t flags) { m_gameAudioFlags = flags; }
-    uint32_t gameAudioFlags() const { return m_gameAudioFlags; }
-    void process(float elapsedSeconds);
-    void playInternal();
-    void stopInternal();
-    void pauseInternal();
+	const Ref<detail::SoundCore>& core() const { return m_core; }
+    //void setGameAudioFlags(uint32_t flags) { m_gameAudioFlags = flags; }
+    //uint32_t gameAudioFlags() const { return m_gameAudioFlags; }
+    //void process(float elapsedSeconds);
+    //void playInternal();
+    //void stopInternal();
+    //void pauseInternal();
     void setVolumeInternal(float volume);
 
 	detail::AudioManager* m_manager;
-    Ref<AudioSourceNode> m_sourceNode;
-    Ref<AudioGainNode> m_gainNode;
-    uint32_t m_gameAudioFlags;
+    //Ref<AudioSourceNode> m_sourceNode;
+    //Ref<AudioGainNode> m_gainNode;
+	Ref<detail::SoundCore> m_core;
 
-    std::mutex m_playerStateLock;    // TODO: 性質上、スピンロックの方が効率がいいかもしれない
-    EasingValue<float> m_fadeValue;
-    SoundFadeBehavior m_fadeBehavior;
-    bool m_fading;
+    //std::mutex m_playerStateLock;    // TODO: 性質上、スピンロックの方が効率がいいかもしれない
+    //EasingValue<float> m_fadeValue;
+    //SoundFadeBehavior m_fadeBehavior;
+    //bool m_fading;
 	
 	friend class detail::AudioManager;
     friend class detail::GameAudioImpl;
@@ -266,12 +270,39 @@ class SoundCore
 	: public RefObject
 {
 public:
+	void setVolume(float value);
+	float volume() const;
+	void setPitch(float value);
+	void setLoopEnabled(bool value);
+	void play();
+	void stop();
+	void pause();
+	void fadeVolume(float targetVolume, double time, SoundFadeBehavior behavior);
+	void update(float elapsedSeconds);
+
+	void setGameAudioFlags(uint32_t flags) { m_gameAudioFlags = flags; }
+	uint32_t gameAudioFlags() const { return m_gameAudioFlags; }
+
 	std::mutex m_mutex;
+
+	Ref<detail::AudioSourceNodeCore> m_sourceNode;
+	Ref<detail::ARIGainNode> m_gainNode;
+
 	std::atomic<SoundCoreLifecycleState> lifecycleState = SoundCoreLifecycleState::Valid;
 	EasingValue<float> m_fadeValue;
 	SoundFadeBehavior m_fadeBehavior;
+	uint32_t m_gameAudioFlags;
+	bool m_fading;
+
+	SoundCore()
+		: m_gameAudioFlags(0)
+		, m_fadeValue()
+		, m_fadeBehavior(SoundFadeBehavior::Continue)
+		, m_fading(false)
+	{
+	}
 };
 
-} // namespace ln
+} // namespace detail
 } // namespace ln
 

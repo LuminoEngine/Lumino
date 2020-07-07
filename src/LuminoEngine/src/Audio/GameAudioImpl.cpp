@@ -143,7 +143,7 @@ void GameAudioImpl::playSE(const StringRef& filePath, float volume, float pitch)
     sound->setPitch(pitch);
 
     // 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
-    sound->setGameAudioFlags(GameAudioFlags_SE);
+    sound->core()->setGameAudioFlags(GameAudioFlags_SE);
     pushReleaseAtPlayEndList(sound);
 
     // 再生
@@ -164,7 +164,7 @@ void GameAudioImpl::playSE3D(const StringRef& filePath, const Vector3& position,
     sound->setPitch(pitch);
 
     // 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
-    sound->setGameAudioFlags(GameAudioFlags_SE);
+    sound->core()->setGameAudioFlags(GameAudioFlags_SE);
     pushReleaseAtPlayEndList(sound);
 
     // 再生
@@ -178,7 +178,7 @@ void GameAudioImpl::stopSE()
     ReleaseAtPlayEndList::iterator end = mReleaseAtPlayEndList.end();
     for (; itr != end; ++itr)
     {
-        if ((*itr)->gameAudioFlags() & GameAudioFlags_SE)
+        if ((*itr)->core()->gameAudioFlags() & GameAudioFlags_SE)
         {
             (*itr)->stop();
         }

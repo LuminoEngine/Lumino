@@ -12,7 +12,7 @@ namespace detail {
 class AudioDecoder;
 class AssetManager;
 class GameAudioImpl;
-
+class SoundCore;
 
 //enum class OperationCode
 //{
@@ -64,12 +64,13 @@ public:
 
 	//void postAddCommand();
 
-	void postAddAudioNode(AudioContext* targetContext, AudioNode* node);
-	void postRemoveAudioNode(AudioContext* targetContext, AudioNode* node);
-	void postConnect(AudioNode* outputSide, AudioNode* inputSide);
-	void postDisconnect(AudioNode* outputSide, AudioNode* inputSide);
+	void postAddAudioNode(AudioContext* targetContext, ARINode* node);
+	void postRemoveAudioNode(AudioContext* targetContext, ARINode* node);
+	void postConnect(ARINode* outputSide, ARINode* inputSide);
+	void postDisconnect(ARINode* outputSide, ARINode* inputSide);
 	//void sendDisconnectAllAndDispose(AudioNode* node);
-	void postDisconnectAll(AudioNode* node);
+	void postDisconnectAll(ARINode* node);
+	void postAddSoundCore(SoundCore* soundCore);
 
 private:
 	enum class OperationCode
@@ -80,17 +81,20 @@ private:
 		Disconnection,
 		//DisconnectionAllAndDispose,
 		DisconnectionAll,
+		AddSoundCore,
 	};
 
 	struct ConnectionCommand
 	{
 		OperationCode code;
 		Ref<AudioContext> context;
-		Ref<detail::ARINode> outputSide;
-		Ref<detail::ARINode> inputSide;
+		Ref<ARINode> outputSide;
+		Ref<ARINode> inputSide;
+		Ref<SoundCore> soundCore;
 	};
 
 	void commitCommands();
+	void updateSoundCores(float elapsedSeconds);
     // processThread は少しでも遅れると音声に影響するので、できる限り Mixing に集中する。
     // 音声データの非同期ロードなどそれ以外は dispatheThread で行う。
 	void processThread();
@@ -112,6 +116,7 @@ private:
 	std::atomic<bool> m_endRequested;
 	std::vector<ConnectionCommand> m_commands;
 	std::mutex m_commandsMutex;
+	List<Ref<SoundCore>> m_soundCoreList;
 };
 
 } // namespace detail

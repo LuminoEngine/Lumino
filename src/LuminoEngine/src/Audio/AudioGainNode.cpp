@@ -25,7 +25,6 @@ void AudioGainNode::init()
     // detail::EngineDomain::audioManager()->primaryContext() じゃなくて context() にしたい
     m_coreObject = makeRef<detail::ARIGainNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
     m_coreObject->init();
-    m_coreObject->staging.gain = 1.0f;
 
 	AudioNode::init();
 }

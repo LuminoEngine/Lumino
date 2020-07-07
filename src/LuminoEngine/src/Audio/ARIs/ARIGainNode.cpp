@@ -21,6 +21,8 @@ void ARIGainNode::init()
 {
     ARINode::init();
 
+    staging.gain = 1.0f;
+
     int numChannels = 2;
     addOutputPin(numChannels);
     addInputPin(numChannels);

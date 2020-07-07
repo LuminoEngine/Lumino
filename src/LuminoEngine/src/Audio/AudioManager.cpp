@@ -92,6 +92,7 @@ void AudioManager::dispose()
 
 	// 残っているコマンドを全て実行する
 	commitCommands();
+	updateSoundCores(1.0f);
 
 	if (m_primaryContext) {
 		m_primaryContext->dispose();
@@ -108,6 +109,7 @@ void AudioManager::update(float elapsedSeconds)
 	if (!m_audioThread) {
 		// not thread processing.
 		commitCommands();
+		updateSoundCores(elapsedSeconds);
 		if (m_primaryContext) {
 			m_primaryContext->processOnAudioThread(elapsedSeconds);
 		}
@@ -191,48 +193,56 @@ void AudioManager::removeSoundManagement(Sound* value)
 }
 
 
-void AudioManager::postAddAudioNode(AudioContext* targetContext, AudioNode* node)
+void AudioManager::postAddAudioNode(AudioContext* targetContext, ARINode* node)
 {
 	std::lock_guard<std::mutex> lock(m_commandsMutex);
-	m_commands.push_back({ OperationCode::AddNode, targetContext, node->coreNode(), nullptr });
+	m_commands.push_back({ OperationCode::AddNode, targetContext, node, nullptr });
 }
 
-void AudioManager::postRemoveAudioNode(AudioContext* targetContext, AudioNode* node)
+void AudioManager::postRemoveAudioNode(AudioContext* targetContext, ARINode* node)
 {
 	std::lock_guard<std::mutex> lock(m_commandsMutex);
-	m_commands.push_back({ OperationCode::AddNode, targetContext, node->coreNode(), nullptr });
+	m_commands.push_back({ OperationCode::AddNode, targetContext, node, nullptr });
 }
 
-void AudioManager::postConnect(AudioNode* outputSide, AudioNode* inputSide)
-{
-	if (LN_REQUIRE(outputSide)) return;
-	if (LN_REQUIRE(inputSide)) return;
-	if (LN_REQUIRE(outputSide->context())) return;
-	if (LN_REQUIRE(inputSide->context())) return;
-	std::lock_guard<std::mutex> lock(m_commandsMutex);
-	m_commands.push_back({ OperationCode::Connection, nullptr, outputSide->coreNode(), inputSide->coreNode() });
-}
-
-void AudioManager::postDisconnect(AudioNode* outputSide, AudioNode* inputSide)
+void AudioManager::postConnect(ARINode* outputSide, ARINode* inputSide)
 {
 	if (LN_REQUIRE(outputSide)) return;
 	if (LN_REQUIRE(inputSide)) return;
 	if (LN_REQUIRE(outputSide->context())) return;
 	if (LN_REQUIRE(inputSide->context())) return;
 	std::lock_guard<std::mutex> lock(m_commandsMutex);
-	m_commands.push_back({ OperationCode::Disconnection, nullptr, outputSide->coreNode(), inputSide->coreNode() });
+	m_commands.push_back({ OperationCode::Connection, nullptr, outputSide, inputSide });
 }
 
-void AudioManager::postDisconnectAll(AudioNode* node)
+void AudioManager::postDisconnect(ARINode* outputSide, ARINode* inputSide)
+{
+	if (LN_REQUIRE(outputSide)) return;
+	if (LN_REQUIRE(inputSide)) return;
+	if (LN_REQUIRE(outputSide->context())) return;
+	if (LN_REQUIRE(inputSide->context())) return;
+	std::lock_guard<std::mutex> lock(m_commandsMutex);
+	m_commands.push_back({ OperationCode::Disconnection, nullptr, outputSide, inputSide });
+}
+
+void AudioManager::postDisconnectAll(ARINode* node)
 {
 	if (LN_REQUIRE(node)) return;
 	if (LN_REQUIRE(node->context())) return;
 	std::lock_guard<std::mutex> lock(m_commandsMutex);
-	m_commands.push_back({ OperationCode::DisconnectionAll, nullptr, node->coreNode(), nullptr });
+	m_commands.push_back({ OperationCode::DisconnectionAll, nullptr, node, nullptr });
+}
+
+void AudioManager::postAddSoundCore(SoundCore* soundCore)
+{
+	if (LN_REQUIRE(soundCore)) return;
+	std::lock_guard<std::mutex> lock(m_commandsMutex);
+	m_commands.push_back({ OperationCode::AddSoundCore, nullptr, nullptr, nullptr, soundCore });
 }
 
 void AudioManager::commitCommands()
 {
+	std::lock_guard<std::mutex> lock(m_commandsMutex);
 
 	if (!m_commands.empty()) {
 		for (const auto& cmd : m_commands) {
@@ -263,6 +273,9 @@ void AudioManager::commitCommands()
 				//node->dispose();
 				break;
 			}
+			case OperationCode::AddSoundCore:
+				m_soundCoreList.add(cmd.soundCore);
+				break;
 			default:
 				LN_UNREACHABLE();
 				break;
@@ -270,7 +283,31 @@ void AudioManager::commitCommands()
 		}
 		m_commands.clear();
 	}
+}
 
+void AudioManager::updateSoundCores(float elapsedSeconds)
+{
+	for (int i = m_soundCoreList.size() - 1; i >= 0; i--) {
+		const auto& sound = m_soundCoreList[i];
+		sound->update(elapsedSeconds);
+
+
+		const auto state = sound->lifecycleState.load();
+		switch (state)
+		{
+			case SoundCoreLifecycleState::Valid:
+
+				break;
+			case SoundCoreLifecycleState::Disposed:
+				m_soundCoreList.removeAt(i);
+				break;
+			case SoundCoreLifecycleState::DisposeAfterStop:
+				break;
+			default:
+				LN_UNREACHABLE();
+				break;
+		}
+	}
 }
 
 void AudioManager::processThread()
@@ -280,10 +317,11 @@ void AudioManager::processThread()
 	{
 		while (!m_endRequested)
 		{
+			const float elapsedSeconds = 0.02f;
 			commitCommands();
-
+			updateSoundCores(elapsedSeconds);
 			if (m_primaryContext) {
-				m_primaryContext->processOnAudioThread(0.02);
+				m_primaryContext->processOnAudioThread(elapsedSeconds);
 			}
 
             Thread::sleep(20);

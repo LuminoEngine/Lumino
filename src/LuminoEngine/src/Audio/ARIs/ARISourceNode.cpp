@@ -39,6 +39,10 @@ void AudioSourceNodeCore::init(const Ref<AudioDecoder>& decoder)
 	//m_readBuffer.resize(pin->bus()->length() * numChannels);
 
 
+	staging.playbackRate = 1.0f;
+	staging.requestedState = ln::PlayingState::NoChanged;
+	staging.resetRequire = false;
+	staging.loop = false;
 	
 
 	resetSourceBuffers();
