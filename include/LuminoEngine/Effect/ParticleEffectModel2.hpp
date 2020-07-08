@@ -108,6 +108,7 @@ public:
 	RadomRangeValue<float> m_forwardScale;	// default:1 進行方向に対するスケール値。通常、Z軸
 	RadomRangeValue<float> m_crossScale;	// default:1 進行方向以外に対するスケール値。XとY軸
 
+	float m_trailSeconds = 0.0f; //1.0f;	// Trail を生成する時間
 
 	ParticleSortMode m_sortMode = ParticleSortMode::None;
 

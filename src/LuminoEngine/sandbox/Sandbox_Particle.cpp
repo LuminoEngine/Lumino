@@ -41,7 +41,7 @@ class App_Sandbox_Particle : public Application
         obj1->addComponent(cmp1);
 #endif
 
-#if 1
+#if 0
         auto material = Material::create();
         material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
         material->shadingModel = ShadingModel::Unlit;
@@ -91,7 +91,7 @@ class App_Sandbox_Particle : public Application
         auto obj1 = makeObject<WorldObject>();
         obj1->addComponent(cmp1);
 #endif
-#if 0	// 雨
+#if 1	// 雨
         auto particleModel = makeObject<ParticleModel2>();
         auto m1 = particleModel->emitters()[0];
         m1->m_maxParticles = 10000;

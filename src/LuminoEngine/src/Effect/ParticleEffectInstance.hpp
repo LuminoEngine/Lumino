@@ -236,7 +236,8 @@ class TrailParticleModuleInstance
 	: public ln::Object
 {
 public:
-	float m_trailSeconds = 1.0f;	// input param
+	ParticleEmitterModel2* m_emitterModel = nullptr;
+	//float m_trailSeconds = 1.0f;	// input param
 	float m_trailRateTime = 0;	// 1s間に生成できる Node 数
 
 	using TrailDataId = int64_t;
@@ -267,7 +268,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	TrailParticleModuleInstance();
-	bool init(ParticleEmitterInstance2* emitterInstance);
+	bool init(ParticleEmitterInstance2* emitterInstance, ParticleEmitterModel2* emitterModel);
 
 private:
 

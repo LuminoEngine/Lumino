@@ -461,7 +461,7 @@ int main(int argc, char** argv)
 
     if (1) {
 		//Sandbox_EmptyApp();
-		Example_GameAudio();
+		//Example_GameAudio();
         //Example_MainLoop();
 		//Example_MeshViewer();
         //Example_MessageWindow();
@@ -478,7 +478,7 @@ int main(int argc, char** argv)
         //Experiment_Shadow();
         //Experiment_SSR();
 		//Sandbox_MeshTilemap();
-        //Sandbox_Particle();
+        Sandbox_Particle();
         //Sandbox_PostEffect();
         //Sandbox_Sky();
 		//Tutorial_Sandbox();

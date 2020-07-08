@@ -106,7 +106,9 @@ bool ParticleEmitterInstance2::init(ParticleInstance2* particleInstance, Particl
 
     m_particleStorage.resize(m_emitterModel->m_maxParticles);
 
-    m_moduleInsances = makeObject<TrailParticleModuleInstance>(this);
+    if (emitterModel->m_trailSeconds > 0.0f) {
+        m_moduleInsances = makeObject<TrailParticleModuleInstance>(this, emitterModel);
+    }
 
 
     return true;
@@ -399,16 +401,17 @@ TrailParticleModuleInstance::TrailParticleModuleInstance()
 {
 }
 
-bool TrailParticleModuleInstance::init(ParticleEmitterInstance2* emitterInstance)
+bool TrailParticleModuleInstance::init(ParticleEmitterInstance2* emitterInstance, ParticleEmitterModel2* emitterModel)
 {
     if (!Object::init()) return false;
+    m_emitterModel = emitterModel;
 
     // Trail
     {
         int frameRate = 60;
-        int estimationNodeCount = (m_trailSeconds * frameRate) * emitterInstance->emitterModel()->m_maxParticles;
+        int estimationNodeCount = (m_emitterModel->m_trailSeconds * frameRate) * emitterInstance->emitterModel()->m_maxParticles;
         resizeTrailData(estimationNodeCount);
-        m_trailRateTime = m_trailSeconds / frameRate;
+        m_trailRateTime = m_emitterModel->m_trailSeconds / frameRate;
 
         m_ribbonRenderer = makeRef<RibbonRenderer>();
         if (!m_ribbonRenderer->init(estimationNodeCount)) {
@@ -473,7 +476,7 @@ void TrailParticleModuleInstance::onUpdateParticles(int count, const ParticleDat
             ParticleTrailNode* node = &m_trailNodeStorage.data(dataId);
 
             node->time += deltaTime;
-            if (node->time >= m_trailSeconds) {
+            if (node->time >= m_emitterModel->m_trailSeconds) {
                 // kill
 
                 // Remove from linked-list
