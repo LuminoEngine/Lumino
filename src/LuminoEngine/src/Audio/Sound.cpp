@@ -281,6 +281,15 @@ void Sound::fadeVolume(float targetVolume, double time, SoundFadeBehavior behavi
 
 namespace detail {
 
+SoundCore::SoundCore()
+    : m_gameAudioFlags(0)
+    , m_fadeValue()
+    , lifecycleState(SoundCoreLifecycleState::Valid)
+    , m_fadeBehavior(SoundFadeBehavior::Continue)
+    , m_fading(false)
+{
+}
+
 bool SoundCore::init(AudioManager* manager, AudioContext* context, detail::AudioDecoder* decoder)
 {
     m_sourceNode = makeRef<detail::ARISourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), nullptr);

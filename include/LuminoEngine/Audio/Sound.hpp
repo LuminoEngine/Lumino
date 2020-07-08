@@ -290,20 +290,13 @@ public:
 	Ref<detail::ARISourceNode> m_sourceNode;
 	Ref<detail::ARIGainNode> m_gainNode;
 
-	std::atomic<SoundCoreLifecycleState> lifecycleState = SoundCoreLifecycleState::Valid;
+	std::atomic<SoundCoreLifecycleState> lifecycleState;
 	EasingValue<float> m_fadeValue;
 	SoundFadeBehavior m_fadeBehavior;
 	uint32_t m_gameAudioFlags;
 	bool m_fading;
 
-	SoundCore()
-		: m_gameAudioFlags(0)
-		, m_fadeValue()
-		, m_fadeBehavior(SoundFadeBehavior::Continue)
-		, m_fading(false)
-	{
-	}
-
+	SoundCore();
 	bool init(AudioManager* manager, AudioContext* context, AudioDecoder* decoder);
 	void dispose();	// call by audio thread.
 };
