@@ -90,12 +90,12 @@ PlayingState AudioSourceNode::playingState() const
 {
     switch (m_coreObject->playingState())
     {
-    case detail::ARISourceNode::PlayingState::None:
-    case detail::ARISourceNode::PlayingState::Stopped:
+    //case detail::ARISourceNode::PlayingState::None:
+    case detail::ARISourceNode::State::Stopped:
         return PlayingState::Stop;
-    case detail::ARISourceNode::PlayingState::Playing:
+    case detail::ARISourceNode::State::Playing:
         return PlayingState::Play;
-    case detail::ARISourceNode::PlayingState::Pausing:
+    case detail::ARISourceNode::State::Pausing:
         return PlayingState::Pause;
     default:
         LN_UNREACHABLE();

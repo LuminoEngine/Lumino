@@ -17,8 +17,8 @@ ARISourceNode::ARISourceNode(AudioDevice* context, AudioNode* frontNode)
 	, m_virtualReadIndex(0)
 	, m_playbackRate(1.0f)
 	, m_seekFrame(0)
-	, m_playingState(PlayingState::Stopped)
-	//, m_requestedPlayingState(PlayingState::None)
+	, m_playingState(State::Stopped)
+	//, m_requestedPlayingState(State::None)
 	, m_resetRequested(false)
     , m_loop(false)
 {
@@ -56,14 +56,14 @@ void ARISourceNode::setPlaybackRate(float rate)
 
 void ARISourceNode::start()
 {
-    m_playingState = PlayingState::Playing;
-	//m_requestedPlayingState = PlayingState::Playing;
+    m_playingState = State::Playing;
+	//m_requestedPlayingState = State::Playing;
 }
 
 void ARISourceNode::stop()
 {
-    m_playingState = PlayingState::Stopped;
-	//m_requestedPlayingState = PlayingState::Stopped;
+    m_playingState = State::Stopped;
+	//m_requestedPlayingState = State::Stopped;
 	m_resetRequested = true;
 }
 
@@ -74,8 +74,8 @@ void ARISourceNode::reset()
 
 void ARISourceNode::finish()
 {
-    m_playingState = PlayingState::Stopped;
-	//m_requestedPlayingState = PlayingState::Stopped;
+    m_playingState = State::Stopped;
+	//m_requestedPlayingState = State::Stopped;
 }
 
 unsigned ARISourceNode::numberOfChannels() const
@@ -172,7 +172,7 @@ void ARISourceNode::process()
 
 	ARIAudioBus* result = outputPin(0)->bus();
 
-	if (m_playingState != PlayingState::Playing) {
+	if (m_playingState != State::Playing) {
 		result->setSilentAndZero();
 		return;
 	}
@@ -246,11 +246,12 @@ void ARISourceNode::process()
 			result->separateFrom(m_readBuffer.data(), readSamples, numChannels);
 		}
 
-        //int remain = result->length() - bufferLength;
+        int remain = result->length() - readFrames;
+		renderSilenceAndFinishIfNotLooping(result, readFrames, remain);
         //if (remain > 0) {
         //    //result->fillZero(bufferLength, remain);
-        //    result->fillZero(0, result->length());
-        //    printf("eof\n");
+        //    //result->fillZero(0, result->length());
+        //    //printf("eof\n");
         //}
 	}
 	else
@@ -327,7 +328,10 @@ void ARISourceNode::process()
 	m_virtualReadIndex = virtualReadIndex;
 }
 
-bool ARISourceNode::renderSilenceAndFinishIfNotLooping(ARIAudioBus * bus, unsigned index, size_t framesToProcess)
+// bus が持っているすべての Channel のバッファを、
+// startIndex から framesToProcess 個分、0 で埋める。
+// 非ループ再生時に要求された bus サイズに対して Decoder から呼んだサイズが足りないときに、足りない分を埋めるのに使う。
+bool ARISourceNode::renderSilenceAndFinishIfNotLooping(ARIAudioBus* bus, unsigned startIndex, size_t framesToProcess)
 {
 	if (!loop())
 	{
@@ -339,7 +343,7 @@ bool ARISourceNode::renderSilenceAndFinishIfNotLooping(ARIAudioBus * bus, unsign
 			// so generate silence for the remaining.
 			for (unsigned i = 0; i < numberOfChannels(); ++i)
 			{
-				memset(bus->channel(i)->mutableData() + index, 0, sizeof(float) * framesToProcess);
+				memset(bus->channel(i)->mutableData() + startIndex, 0, sizeof(float) * framesToProcess);
 			}
 			finish();
 		}

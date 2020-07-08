@@ -271,14 +271,14 @@ class SoundCore
 	: public RefObject
 {
 public:
-	void setVolume(float value);
+	void setVolume(float value, float fadeTime, SoundFadeBehavior behavior);
 	float volume() const;
 	void setPitch(float value);
 	void setLoopEnabled(bool value);
 	void play();
-	void stop();
+	void stop(float fadeTime);
 	void pause();
-	void fadeVolume(float targetVolume, double time, SoundFadeBehavior behavior);
+	void fadeVolume(float targetVolume, float fadeTime, SoundFadeBehavior behavior);
 	void update(float elapsedSeconds);
 
 	void setGameAudioFlags(uint32_t flags) { m_gameAudioFlags = flags; }

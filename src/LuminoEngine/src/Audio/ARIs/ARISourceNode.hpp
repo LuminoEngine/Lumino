@@ -25,9 +25,9 @@ protected:
 
 public:
     // scheduling
-    enum class PlayingState
+    enum class State
     {
-        None,
+        //None,
         Stopped,
         Playing,
         Pausing,
@@ -47,13 +47,13 @@ public:
 	void stop();
 	void reset();	// TODO: internal
 	void finish();	// TODO: internal
-    PlayingState playingState() const { return m_playingState; }
+    State playingState() const { return m_playingState; }
 
 private:
 	unsigned numberOfChannels() const;
 	void resetSourceBuffers();
 	double calculatePitchRate();
-	bool renderSilenceAndFinishIfNotLooping(ARIAudioBus * bus, unsigned index, size_t framesToProcess);
+	bool renderSilenceAndFinishIfNotLooping(ARIAudioBus * bus, unsigned startIndex, size_t framesToProcess);
 	void updatePlayingState();
 
 	Ref<AudioDecoder> m_decoder;
@@ -71,8 +71,8 @@ private:
 	size_t m_readFrames;
 	size_t m_seekFrame;
 
-	PlayingState m_playingState;
-	//PlayingState m_requestedPlayingState;
+	State m_playingState;
+	//State m_requestedPlayingState;
 	bool m_resetRequested;
     bool m_loop;
 };

@@ -3,6 +3,7 @@
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/Sound.hpp>
 #include "Decoder/AudioDecoder.hpp"
+#include "ARIs/ARISourceNode.hpp"
 #include "GameAudioImpl.hpp"
 #include "AudioManager.hpp"
 
@@ -632,21 +633,25 @@ void GameAudioImpl2::update(float elapsedSeconds)
         for (const auto& cmd : m_commands) {
             switch (cmd.type) {
                 case CommandType::PlayBGM:
+                    // TODO: cross-fade
                     m_bgm = cmd.sound;
                     m_bgm->setLoopEnabled(true);
-                    m_bgm->setVolume(cmd.volume);
+                    m_bgm->setVolume(cmd.volume, cmd.fadeTime, SoundFadeBehavior::stop);
                     m_bgm->setPitch(cmd.pitch);
                     m_bgm->play();
-                    //m_bgm->fadeVolume(cmd.volume, cmd.fadeTime, SoundFadeBehavior::Continue);
                     break;
                 case CommandType::StopBGM:
-                    LN_NOTIMPLEMENTED();
+                    m_bgm->stop(cmd.fadeTime);
                     break;
                 case CommandType::PlayBGS:
-                    LN_NOTIMPLEMENTED();
+                    m_bgs = cmd.sound;
+                    m_bgs->setLoopEnabled(true);
+                    m_bgs->setVolume(cmd.volume, cmd.fadeTime, SoundFadeBehavior::stop);
+                    m_bgs->setPitch(cmd.pitch);
+                    m_bgs->play();
                     break;
                 case CommandType::StopBGS:
-                    LN_NOTIMPLEMENTED();
+                    m_bgs->stop(cmd.fadeTime);
                     break;
                 case CommandType::PlayME:
                     LN_NOTIMPLEMENTED();
@@ -655,13 +660,19 @@ void GameAudioImpl2::update(float elapsedSeconds)
                     LN_NOTIMPLEMENTED();
                     break;
                 case CommandType::PlaySE:
-                    LN_NOTIMPLEMENTED();
+                    cmd.sound->setVolume(cmd.volume, 0.0f, SoundFadeBehavior::Continue);
+                    cmd.sound->setPitch(cmd.pitch);
+                    cmd.sound->setLoopEnabled(false);
+                    cmd.sound->play();
+                    m_seList.add(cmd.sound);
                     break;
                 case CommandType::PlaySE3D:
                     LN_NOTIMPLEMENTED();
                     break;
                 case CommandType::StopSE:
-                    LN_NOTIMPLEMENTED();
+                    for (const auto& se : m_seList) {
+                        se->stop(0.0f);
+                    }
                     break;
                 default:
                     LN_UNREACHABLE();
@@ -669,6 +680,14 @@ void GameAudioImpl2::update(float elapsedSeconds)
             }
         }
         m_commands.clear();
+    }
+
+    for (int i = m_seList.size() - 1; i >= 0; i--) {
+        if (m_seList[i]->m_sourceNode->playingState() == ARISourceNode::State::Stopped) {
+            m_seList.removeAt(i);
+            // ここではリストから外すだけ。
+            // dispose はメインの管理リスト (AudioManager::m_soundCoreList) の polling から行われる。
+        }
     }
 }
 

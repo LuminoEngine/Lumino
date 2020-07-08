@@ -102,7 +102,7 @@ void Sound::onDispose(bool explicitDisposing)
 
 void Sound::setVolume(float value)
 {
-    m_core->setVolume(value);
+    m_core->setVolume(value, 0, SoundFadeBehavior::Continue);
     //std::lock_guard<std::mutex> lock(m_playerStateLock);
     //setVolumeInternal(volume);
 }
@@ -150,7 +150,7 @@ void Sound::play()
 
 void Sound::stop()
 {
-    m_core->stop();
+    m_core->stop(0.0f);
     //std::lock_guard<std::mutex> lock(m_playerStateLock);
     //stopInternal();
 }
@@ -229,12 +229,12 @@ SoundPlayingState Sound::playingState() const
 
     switch (m_core->m_sourceNode->playingState())
     {
-    case ln::detail::ARISourceNode::PlayingState::None:
-    case ln::detail::ARISourceNode::PlayingState::Stopped:
+    //case ln::detail::ARISourceNode::PlayingState::None:
+    case ln::detail::ARISourceNode::State::Stopped:
         return SoundPlayingState::Stopped;
-    case ln::detail::ARISourceNode::PlayingState::Playing:
+    case ln::detail::ARISourceNode::State::Playing:
         return SoundPlayingState::Playing;
-    case ln::detail::ARISourceNode::PlayingState::Pausing:
+    case ln::detail::ARISourceNode::State::Pausing:
         return SoundPlayingState::Pausing;
     default:
         LN_UNREACHABLE();
@@ -244,7 +244,7 @@ SoundPlayingState Sound::playingState() const
 
 void Sound::fadeVolume(float targetVolume, double time, SoundFadeBehavior behavior)
 {
-    m_core->fadeVolume(targetVolume, time, behavior);
+    m_core->setVolume(targetVolume, time, behavior);
     //std::lock_guard<std::mutex> lock(m_playerStateLock);
 
     //// 現在の音量から targetVolume への遷移
@@ -318,9 +318,15 @@ void SoundCore::dispose()
     }
 }
 
-void SoundCore::setVolume(float value)
+void SoundCore::setVolume(float value, float fadeTime, SoundFadeBehavior behavior)
 {
-    m_gainNode->staging.gain = value;
+    std::lock_guard<std::mutex> lock(m_mutex);
+    if (fadeTime > 0.0f) {
+        fadeVolume(value, fadeTime, behavior);
+    }
+    else {
+        m_gainNode->staging.gain = value;
+    }
 }
 
 float SoundCore::volume() const
@@ -343,9 +349,14 @@ void SoundCore::play()
     m_sourceNode->start();
 }
 
-void SoundCore::stop()
+void SoundCore::stop(float fadeTime)
 {
-    m_sourceNode->stop();
+    if (fadeTime > 0.0f) {
+        fadeVolume(0.0f, fadeTime, SoundFadeBehavior::StopReset);
+    }
+    else {
+        m_sourceNode->stop();
+    }
 }
 
 void SoundCore::pause()
@@ -353,13 +364,10 @@ void SoundCore::pause()
     LN_NOTIMPLEMENTED();
 }
 
-void SoundCore::fadeVolume(float targetVolume, double time, SoundFadeBehavior behavior)
+void SoundCore::fadeVolume(float targetVolume, float fadeTime, SoundFadeBehavior behavior)
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
-
     // 現在の音量から targetVolume への遷移
-    targetVolume = Math::clamp(targetVolume, 0.0f, 1.0f);
-    m_fadeValue.start(volume(), targetVolume, time);
+    m_fadeValue.start(volume(), Math::clamp(targetVolume, 0.0f, 1.0f), fadeTime);
     m_fadeBehavior = behavior;
     m_fading = true;
 }
@@ -372,7 +380,7 @@ void SoundCore::update(float elapsedSeconds)
     if (m_fading)
     {
         m_fadeValue.advanceTime(elapsedSeconds);
-        setVolume(m_fadeValue.value());
+        m_gainNode->staging.gain = m_fadeValue.value();
 
         // フェード完了
         if (m_fadeValue.isFinished())
@@ -388,7 +396,7 @@ void SoundCore::update(float elapsedSeconds)
                 // 停止する場合
             case SoundFadeBehavior::stop:
             case SoundFadeBehavior::StopReset:
-                stop();
+                m_sourceNode->stop();
                 break;
                 // 一時停止する場合
             case SoundFadeBehavior::pause:
@@ -400,7 +408,7 @@ void SoundCore::update(float elapsedSeconds)
             // 音量を元に戻す
             if (m_fadeBehavior == SoundFadeBehavior::StopReset || SoundFadeBehavior::StopReset == SoundFadeBehavior::PauseReset)
             {
-                setVolume(m_fadeValue.startValue());
+                m_gainNode->staging.gain = m_fadeValue.startValue();
             }
         }
     }

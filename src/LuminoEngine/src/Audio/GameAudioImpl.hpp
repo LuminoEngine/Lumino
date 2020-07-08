@@ -107,6 +107,7 @@ private:
         PlayME,
         StopME,
         PlaySE,
+        PlaySE3D,
         StopSE,
     };
 
@@ -129,6 +130,8 @@ private:
     std::vector<Command> m_commands;
 
     Ref<SoundCore> m_bgm;
+    Ref<SoundCore> m_bgs;
+    List<Ref<SoundCore>> m_seList;
 
 
     String			            mBGMName;
