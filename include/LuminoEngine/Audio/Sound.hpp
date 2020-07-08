@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <mutex>
+#include "Common.hpp"
 #include "../Animation/EasingFunctions.hpp"
 
 namespace ln {
@@ -303,6 +304,7 @@ public:
 	{
 	}
 
+	bool init(AudioManager* manager, AudioContext* context, AudioDecoder* decoder);
 	void dispose();	// call by audio thread.
 };
 

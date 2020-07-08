@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <float.h>
 #include "ChromiumWebCore.hpp"
 
 

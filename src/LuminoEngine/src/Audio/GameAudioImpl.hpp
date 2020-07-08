@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <mutex>
 #include <list>
+#include <LuminoEngine/Audio/Common.hpp>
 
 namespace ln {
 class Sound;
@@ -72,6 +73,83 @@ private:
     bool                        mBGMRestart;
     bool                        mBGSRestart;
 };
+
+// AudioManager と同じくコマンドを AudioThread に送ることで各処理を行う。
+// こうしておかないと、例えば playBGM() したときに MEがフェード中か？ といった判定をするときに、
+// AudioThread で更新されるパラメータを監視する必要があり、複雑度が上がってしまう。
+class GameAudioImpl2
+    : public RefObject
+{
+public:
+    GameAudioImpl2(AudioManager* mamager);
+    void dispose();
+
+    void playBGM(const StringRef& filePath, float volume, float pitch, double fadeTime);
+    void stopBGM(double fadeTime);
+    void playBGS(const StringRef& filePath, float volume, float pitch, double fadeTime);
+    void stopBGS(double fadeTime);
+    void playME(const StringRef& filePath, float volume, float pitch);
+    void stopME();
+    void playSE(const StringRef& filePath, float volume, float pitch);
+    void playSE3D(const StringRef& filePath, const Vector3& position, float distance, float volume, float pitch);
+    void stopSE();
+    void setMEFadeTimes(float bgmFadeoutTime, float bgmFadeinTime);
+
+    void update(float elapsedSeconds);  // call by AudioThread
+
+private:
+    enum class CommandType
+    {
+        PlayBGM,
+        StopBGM,
+        PlayBGS,
+        StopBGS,
+        PlayME,
+        StopME,
+        PlaySE,
+        StopSE,
+    };
+
+    struct Command
+    {
+        CommandType type;
+        detail::SoundCore* sound;
+        float volume;
+        float pitch;
+        float fadeTime;
+        Vector3 position;
+        float distance;
+        // FIXME: これ以上増えるなら union にしたほうがいいかも
+    };
+
+    Ref<SoundCore> createSoundCore(const StringRef& filePath);
+
+    AudioManager* m_manager;
+    std::mutex m_mutex;
+    std::vector<Command> m_commands;
+
+    Ref<SoundCore> m_bgm;
+
+
+    String			            mBGMName;
+    String				        mBGSName;
+    float						mBGMVolume;
+    float						mBGMPitch;
+    float						mBGSVolume;
+    float						mBGSPitch;
+    float						m_bgmFadeOutTimeForME;
+    float						m_bgmFadeInTimeForME;
+    bool                        mMEPlaying;
+    bool                        mBGMRestart;
+    bool                        mBGSRestart;
+
+    std::mutex						mLock;
+    //ReleaseAtPlayEndList        mReleaseAtPlayEndList;  ///< 再生終了時に解放する音声リスト
+
+    Ref<SoundCore>		                mBGS;
+    Ref<SoundCore>						mME;
+};
+
 
 } // namespace detail
 } // namespace ln

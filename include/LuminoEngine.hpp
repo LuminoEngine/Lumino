@@ -32,6 +32,7 @@
 #include "LuminoEngine/Audio/AudioProcessorNode.hpp"
 #include "LuminoEngine/Audio/Sound.hpp"
 #include "LuminoEngine/Audio/GameAudio.hpp"
+#include "LuminoEngine/Audio/Audio.hpp"
 
 #include "LuminoEngine/Shader/Shader.hpp"
 

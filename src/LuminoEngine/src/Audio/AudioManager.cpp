@@ -50,6 +50,7 @@ void AudioManager::init(const Settings& settings)
 #endif
 
     m_gameAudio = makeRef<GameAudioImpl>(this);
+	m_gameAudio2 = makeRef<GameAudioImpl2>(this);
 
     LN_LOG_DEBUG << "AudioManager Initialization ended.";
 }
@@ -60,6 +61,10 @@ void AudioManager::dispose()
         m_gameAudio->dispose();
         m_gameAudio = nullptr;
     }
+	if (m_gameAudio2) {
+		m_gameAudio2->dispose();
+		m_gameAudio2 = nullptr;
+	}
 
 	{
 		auto disposeList = m_soundManagementList;
@@ -307,6 +312,10 @@ void AudioManager::updateSoundCores(float elapsedSeconds)
 				LN_UNREACHABLE();
 				break;
 		}
+	}
+
+	if (m_gameAudio2) {
+		m_gameAudio2->update(elapsedSeconds);
 	}
 }
 

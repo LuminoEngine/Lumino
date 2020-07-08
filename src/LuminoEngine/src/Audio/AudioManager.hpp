@@ -12,6 +12,7 @@ namespace detail {
 class AudioDecoder;
 class AssetManager;
 class GameAudioImpl;
+class GameAudioImpl2;
 class SoundCore;
 
 //enum class OperationCode
@@ -48,6 +49,7 @@ public:
 
 	const Ref<AudioContext>& primaryContext() const { return m_primaryContext; }
     const Ref<GameAudioImpl>& gameAudio() const { return m_gameAudio; }
+	const Ref<GameAudioImpl2>& gameAudio2() const { return m_gameAudio2; }
 	//RenderingType renderingType() const { return RenderingType::Immediate; }
 	//const Ref<RenderingCommandList>& primaryRenderingCommandList() const { return m_primaryRenderingCommandList; }
 
@@ -103,6 +105,7 @@ private:
     AssetManager* m_assetManager;
 	Ref<AudioContext> m_primaryContext;
     Ref<GameAudioImpl> m_gameAudio;
+	Ref<GameAudioImpl2> m_gameAudio2;
 	List<Sound*> m_soundManagementList;
 	ObjectCache<String, AudioDecoder> m_decoderCache;
 	//Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;

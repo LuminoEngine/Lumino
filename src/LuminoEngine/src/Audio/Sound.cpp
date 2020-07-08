@@ -41,27 +41,33 @@ void Sound::init(const StringRef& filePath)
     Ref<detail::AudioDecoder> decoder = detail::EngineDomain::audioManager()->createAudioDecoder(filePath);
    
     m_core = makeRef<detail::SoundCore>();
-    m_core->m_context = context;
-
-    m_core->m_sourceNode = makeRef<detail::ARISourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), nullptr);
-    m_core->m_sourceNode->init(decoder);
-    m_manager->postAddAudioNode(context, m_core->m_sourceNode);
-
-    m_core->m_gainNode = makeRef<detail::ARIGainNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), nullptr);
-    m_core->m_gainNode->init();
-    m_manager->postAddAudioNode(context, m_core->m_gainNode);
-
-
-
-    //m_sourceNode = makeObject<AudioSourceNode>(decoder);
-    //m_manager->primaryContext()->addAudioNode(m_sourceNode);
-
-    //m_gainNode = makeObject<AudioGainNode>();
-    //m_manager->primaryContext()->addAudioNode(m_gainNode);
-
-    m_manager->postConnect(m_core->m_sourceNode, m_core->m_gainNode);
-    m_manager->postConnect(m_core->m_gainNode, m_manager->primaryContext()->destination()->coreNode());
+    if (!m_core->init(m_manager, context, decoder)) {
+        LN_ERROR();
+        return;
+    }
     m_manager->postAddSoundCore(m_core);
+
+    //m_core->m_context = context;
+
+    //m_core->m_sourceNode = makeRef<detail::ARISourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), nullptr);
+    //m_core->m_sourceNode->init(decoder);
+    //m_manager->postAddAudioNode(context, m_core->m_sourceNode);
+
+    //m_core->m_gainNode = makeRef<detail::ARIGainNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), nullptr);
+    //m_core->m_gainNode->init();
+    //m_manager->postAddAudioNode(context, m_core->m_gainNode);
+
+
+
+    ////m_sourceNode = makeObject<AudioSourceNode>(decoder);
+    ////m_manager->primaryContext()->addAudioNode(m_sourceNode);
+
+    ////m_gainNode = makeObject<AudioGainNode>();
+    ////m_manager->primaryContext()->addAudioNode(m_gainNode);
+
+    //m_manager->postConnect(m_core->m_sourceNode, m_core->m_gainNode);
+    //m_manager->postConnect(m_core->m_gainNode, m_manager->primaryContext()->destination()->coreNode());
+    //m_manager->postAddSoundCore(m_core);
 
     //AudioNode::connect(m_sourceNode, manager->primaryContext()->destination());
     //AudioNode::connect(m_sourceNode, m_gainNode);
@@ -275,6 +281,43 @@ void Sound::fadeVolume(float targetVolume, double time, SoundFadeBehavior behavi
 
 namespace detail {
 
+bool SoundCore::init(AudioManager* manager, AudioContext* context, detail::AudioDecoder* decoder)
+{
+    m_sourceNode = makeRef<detail::ARISourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), nullptr);
+    m_sourceNode->init(decoder);
+    manager->postAddAudioNode(context, m_sourceNode);
+
+    m_gainNode = makeRef<detail::ARIGainNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), nullptr);
+    m_gainNode->init();
+    manager->postAddAudioNode(context, m_gainNode);
+
+
+
+    //m_sourceNode = makeObject<AudioSourceNode>(decoder);
+    //m_manager->primaryContext()->addAudioNode(m_sourceNode);
+
+    //m_gainNode = makeObject<AudioGainNode>();
+    //m_manager->primaryContext()->addAudioNode(m_gainNode);
+
+    manager->postConnect(m_sourceNode, m_gainNode);
+    manager->postConnect(m_gainNode, manager->primaryContext()->destination()->coreNode());
+
+    return true;
+}
+
+void SoundCore::dispose()
+{
+    if (m_context) {
+        m_gainNode->disconnectAll();
+        m_sourceNode->disconnectAll();
+        m_context->removeAudioNodeInternal(m_gainNode);
+        m_context->removeAudioNodeInternal(m_sourceNode);
+        m_gainNode = nullptr;
+        m_sourceNode = nullptr;
+        m_context = nullptr;
+    }
+}
+
 void SoundCore::setVolume(float value)
 {
     m_gainNode->staging.gain = value;
@@ -360,19 +403,6 @@ void SoundCore::update(float elapsedSeconds)
                 setVolume(m_fadeValue.startValue());
             }
         }
-    }
-}
-
-void SoundCore::dispose()
-{
-    if (m_context) {
-        m_gainNode->disconnectAll();
-        m_sourceNode->disconnectAll();
-        m_context->removeAudioNodeInternal(m_gainNode);
-        m_context->removeAudioNodeInternal(m_sourceNode);
-        m_gainNode = nullptr;
-        m_sourceNode = nullptr;
-        m_context = nullptr;
     }
 }
 
