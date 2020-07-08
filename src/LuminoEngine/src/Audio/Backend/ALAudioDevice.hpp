@@ -10,7 +10,7 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 #endif
-#include "../AudioDevice.hpp"
+#include "AudioDevice.hpp"
 
 namespace ln {
 namespace detail {

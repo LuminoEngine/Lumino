@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "../Decoder/AudioDecoder.hpp"
+#include "../Backend/AudioDevice.hpp"
 #include "ChromiumWebCore.hpp"
 #include "ARIAudioBus.hpp"
 #include "ARIOutputPin.hpp"

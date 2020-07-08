@@ -2,7 +2,7 @@
 #ifdef LN_USE_SDL
 #include "Internal.hpp"
 #include "SDLAudioDevice.hpp"
-#include "../Core/CoreAudioNode.hpp"
+#include "../ARIs/ARINode.hpp"
 
 //#pragma comment(lib, "D:/Tech/Graphics/SDL2-2.0.8/lib/x86/SDL2.lib")
 

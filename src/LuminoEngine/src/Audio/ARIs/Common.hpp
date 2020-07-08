@@ -5,6 +5,7 @@ class AudioContext;
 class AudioNode;
 
 namespace detail {
+class AudioDevice;
 class ARIAudioBus;
 class ARINode;
 class ARIInputPin;

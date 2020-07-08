@@ -3,7 +3,7 @@
 #ifdef LN_OS_WIN32
 
 #include <dsound.h>
-#include "../AudioDevice.hpp"
+#include "AudioDevice.hpp"
 
 namespace ln {
 namespace detail {

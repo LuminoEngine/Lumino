@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "../Backend/AudioDevice.hpp"	// for IAudioDeviceRenderCallback
 #include "ARINode.hpp"
 
 namespace ln {

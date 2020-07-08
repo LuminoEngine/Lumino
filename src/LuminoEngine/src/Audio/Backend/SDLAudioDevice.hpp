@@ -6,7 +6,7 @@
 #else
 #include <SDL2/SDL.h>
 #endif
-#include "../AudioDevice.hpp"
+#include "AudioDevice.hpp"
 
 namespace ln {
 namespace detail {

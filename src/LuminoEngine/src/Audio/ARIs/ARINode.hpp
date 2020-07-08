@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "Common.hpp"
-#include "../AudioDevice.hpp"	// for IAudioDeviceRenderCallback
 #include <LuminoEngine/Audio/AudioBus.hpp>
 
 #include <float.h>	// for FLT_EPSILON
