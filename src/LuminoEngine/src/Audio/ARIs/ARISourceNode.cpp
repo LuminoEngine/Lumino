@@ -1,85 +1,92 @@
 ﻿
 #include "Internal.hpp"
 #include "../Decoder/AudioDecoder.hpp"
+#include "../Backend/AudioDevice.hpp"
 #include "ChromiumWebCore.hpp"
-#include "AudioSourceNodeCore.hpp"
+#include "ARIAudioBus.hpp"
+#include "ARIOutputPin.hpp"
+#include "ARISourceNode.hpp"
 
 namespace ln {
 namespace detail {
 
 //==============================================================================
-// AudioSourceNodeCore
+// ARISourceNode
 
-AudioSourceNodeCore::AudioSourceNodeCore(AudioDevice* context, AudioNode* frontNode)
-	: AudioNodeCore(context, frontNode)
+ARISourceNode::ARISourceNode(AudioDevice* context, AudioNode* frontNode)
+	: ARINode(context, frontNode)
 	, m_virtualReadIndex(0)
 	, m_playbackRate(1.0f)
 	, m_seekFrame(0)
-	, m_playingState(PlayingState::Stopped)
-	//, m_requestedPlayingState(PlayingState::None)
+	, m_playingState(State::Stopped)
+	//, m_requestedPlayingState(State::None)
 	, m_resetRequested(false)
     , m_loop(false)
 {
 }
 
-void AudioSourceNodeCore::init(const Ref<AudioDecoder>& decoder)
+void ARISourceNode::init(const Ref<AudioDecoder>& decoder)
 {
-	AudioNodeCore::init();
+	ARINode::init();
 
 	// TODO:
 	//auto decoder = makeRef<WaveDecoder>();
 	//decoder->init(FileStream::create(filePath), diag);
 	m_decoder = decoder;
-	//tmpBuffer.resize(AudioNodeCore::ProcessingSizeInFrames * m_masterChannels);
+	//tmpBuffer.resize(ARINode::ProcessingSizeInFrames * m_masterChannels);
 
 	unsigned numChannels = m_decoder->audioDataInfo().channelCount;
 	auto* pin = addOutputPin(numChannels);
 	//m_readBuffer.resize(pin->bus()->length() * numChannels);
 
 
+	staging.playbackRate = 1.0f;
+	staging.requestedState = ln::PlayingState::NoChanged;
+	staging.resetRequire = false;
+	staging.loop = false;
 	
 
 	resetSourceBuffers();
 }
 
-void AudioSourceNodeCore::setPlaybackRate(float rate)
+void ARISourceNode::setPlaybackRate(float rate)
 {
 	m_playbackRate = rate;
 	resetSourceBuffers();
 }
 
-void AudioSourceNodeCore::start()
+void ARISourceNode::start()
 {
-    m_playingState = PlayingState::Playing;
-	//m_requestedPlayingState = PlayingState::Playing;
+    m_playingState = State::Playing;
+	//m_requestedPlayingState = State::Playing;
 }
 
-void AudioSourceNodeCore::stop()
+void ARISourceNode::stop()
 {
-    m_playingState = PlayingState::Stopped;
-	//m_requestedPlayingState = PlayingState::Stopped;
+    m_playingState = State::Stopped;
+	//m_requestedPlayingState = State::Stopped;
 	m_resetRequested = true;
 }
 
-void AudioSourceNodeCore::reset()
+void ARISourceNode::reset()
 {
 	m_seekFrame = 0;
 }
 
-void AudioSourceNodeCore::finish()
+void ARISourceNode::finish()
 {
-    m_playingState = PlayingState::Stopped;
-	//m_requestedPlayingState = PlayingState::Stopped;
+    m_playingState = State::Stopped;
+	//m_requestedPlayingState = State::Stopped;
 }
 
-unsigned AudioSourceNodeCore::numberOfChannels() const
+unsigned ARISourceNode::numberOfChannels() const
 {
 	return outputPin(0)->bus()->channelCount();
 }
 
-void AudioSourceNodeCore::resetSourceBuffers()
+void ARISourceNode::resetSourceBuffers()
 {
-	CoreAudioOutputPin* pin = outputPin(0);
+	ARIOutputPin* pin = outputPin(0);
 
 	size_t baseFrames = pin->bus()->length();
 	m_readFrames = baseFrames;
@@ -101,18 +108,18 @@ void AudioSourceNodeCore::resetSourceBuffers()
 
 	m_readBuffer.resize(m_readFrames * numChannels);
 	if (m_resampler) {
-		m_resamplingBus = makeRef<AudioBus>();
+		m_resamplingBus = makeRef<ARIAudioBus>();
 		m_resamplingBus->initialize2(numChannels, m_readFrames, m_decoder->audioDataInfo().sampleRate);
 	}
 
-	m_sourceBus = makeRef<AudioBus>();
+	m_sourceBus = makeRef<ARIAudioBus>();
 	m_sourceBus->initialize2(numChannels, baseFrames);
 
 
 
 }
 
-double AudioSourceNodeCore::calculatePitchRate()
+double ARISourceNode::calculatePitchRate()
 {
 	// TODO: doppler from associatd panner.
 	
@@ -126,15 +133,47 @@ double AudioSourceNodeCore::calculatePitchRate()
 	return totalRate;
 }
 
+void ARISourceNode::onCommit()
+{
+	detail::ScopedWriteLock lock(staging.m_mutex);
+
+	if (staging.resetRequire) {
+		reset();
+		staging.resetRequire = false;
+	}
+
+	switch (staging.requestedState)
+	{
+	case ln::PlayingState::NoChanged:
+		break;
+	case  ln::PlayingState::Stop:
+		stop();
+		break;
+	case  ln::PlayingState::Play:
+		reset();
+		start();
+		break;
+	case  ln::PlayingState::Pause:
+		LN_NOTIMPLEMENTED();
+		break;
+	default:
+		break;
+	}
+	staging.requestedState = ln::PlayingState::NoChanged;
+
+	setPlaybackRate(staging.playbackRate);
+	setLoop(staging.loop);
+}
+
 // https://github.com/chromium/chromium/blob/ba96c018682416a7b2ec77876404b14322aa1b54/third_party/blink/renderer/modules/webaudio/audio_buffer_source_node.cc
-void AudioSourceNodeCore::process()
+void ARISourceNode::process()
 {
 	updatePlayingState();
 
 
-	AudioBus* result = outputPin(0)->bus();
+	ARIAudioBus* result = outputPin(0)->bus();
 
-	if (m_playingState != PlayingState::Playing) {
+	if (m_playingState != State::Playing) {
 		result->setSilentAndZero();
 		return;
 	}
@@ -208,11 +247,12 @@ void AudioSourceNodeCore::process()
 			result->separateFrom(m_readBuffer.data(), readSamples, numChannels);
 		}
 
-        //int remain = result->length() - bufferLength;
+        int remain = result->length() - readFrames;
+		renderSilenceAndFinishIfNotLooping(result, readFrames, remain);
         //if (remain > 0) {
         //    //result->fillZero(bufferLength, remain);
-        //    result->fillZero(0, result->length());
-        //    printf("eof\n");
+        //    //result->fillZero(0, result->length());
+        //    //printf("eof\n");
         //}
 	}
 	else
@@ -289,7 +329,10 @@ void AudioSourceNodeCore::process()
 	m_virtualReadIndex = virtualReadIndex;
 }
 
-bool AudioSourceNodeCore::renderSilenceAndFinishIfNotLooping(AudioBus * bus, unsigned index, size_t framesToProcess)
+// bus が持っているすべての Channel のバッファを、
+// startIndex から framesToProcess 個分、0 で埋める。
+// 非ループ再生時に要求された bus サイズに対して Decoder から呼んだサイズが足りないときに、足りない分を埋めるのに使う。
+bool ARISourceNode::renderSilenceAndFinishIfNotLooping(ARIAudioBus* bus, unsigned startIndex, size_t framesToProcess)
 {
 	if (!loop())
 	{
@@ -301,7 +344,7 @@ bool AudioSourceNodeCore::renderSilenceAndFinishIfNotLooping(AudioBus * bus, uns
 			// so generate silence for the remaining.
 			for (unsigned i = 0; i < numberOfChannels(); ++i)
 			{
-				memset(bus->channel(i)->mutableData() + index, 0, sizeof(float) * framesToProcess);
+				memset(bus->channel(i)->mutableData() + startIndex, 0, sizeof(float) * framesToProcess);
 			}
 			finish();
 		}
@@ -311,7 +354,7 @@ bool AudioSourceNodeCore::renderSilenceAndFinishIfNotLooping(AudioBus * bus, uns
 	return false;
 }
 
-void AudioSourceNodeCore::updatePlayingState()
+void ARISourceNode::updatePlayingState()
 {
 	if (m_resetRequested) {
 		reset();

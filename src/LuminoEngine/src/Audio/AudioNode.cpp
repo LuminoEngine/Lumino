@@ -4,7 +4,7 @@
 #include <LuminoEngine/Audio/AudioNode.hpp>
 #include "Decoder/AudioDecoder.hpp"
 #include "AudioManager.hpp"
-#include "Core/CoreAudioNode.hpp"
+#include "ARIs/ARINode.hpp"
 #include <LuminoEngine/Engine/RenderingCommandList.hpp>
 
 namespace ln {
@@ -22,8 +22,8 @@ AudioNode::AudioNode()
 void AudioNode::init()
 {
 	Object::init();
-	m_context =	detail::EngineDomain::audioManager()->primaryContext();
-	m_context->addAudioNode(this);
+	//m_context =	detail::EngineDomain::audioManager()->primaryContext();
+	//m_context->addAudioNode(this);
 }
 
 void AudioNode::onDispose(bool explicitDisposing)
@@ -47,27 +47,27 @@ void AudioNode::onDispose(bool explicitDisposing)
 	Object::onDispose(explicitDisposing);
 }
 
-void AudioNode::commit()
-{
-
-	//if (m_inputConnectionsDirty)
-	//{
-	//	coreNode()->disconnectAllInputSide();
-	//	for (auto& node : m_inputConnections) {
-	//		detail::AudioNodeCore::connect(node->coreNode(), coreNode());
-	//	}
-	//	m_inputConnectionsDirty = false;
-	//}
-
-	//if (m_outputConnectionsDirty)
-	//{
-	//	coreNode()->disconnectAllOutputSide();
-	//	for (auto& node : m_outputConnections) {
-	//		detail::AudioNodeCore::connect(coreNode(), node->coreNode());
-	//	}
-	//	m_outputConnectionsDirty = false;
-	//}
-}
+//void AudioNode::commit()
+//{
+//
+//	//if (m_inputConnectionsDirty)
+//	//{
+//	//	coreNode()->disconnectAllInputSide();
+//	//	for (auto& node : m_inputConnections) {
+//	//		detail::ARINode::connect(node->coreNode(), coreNode());
+//	//	}
+//	//	m_inputConnectionsDirty = false;
+//	//}
+//
+//	//if (m_outputConnectionsDirty)
+//	//{
+//	//	coreNode()->disconnectAllOutputSide();
+//	//	for (auto& node : m_outputConnections) {
+//	//		detail::ARINode::connect(coreNode(), node->coreNode());
+//	//	}
+//	//	m_outputConnectionsDirty = false;
+//	//}
+//}
 
 detail::AudioRWMutex& AudioNode::commitMutex()
 {
@@ -113,7 +113,7 @@ detail::AudioRWMutex& AudioNode::commitMutex()
 void AudioNode::connect(AudioNode * outputSide, AudioNode * inputSide)
 {
 	if (LN_REQUIRE(outputSide)) return;
-	outputSide->context()->sendConnect(outputSide, inputSide);
+	outputSide->context()->manager()->postConnect(outputSide->coreNode(), inputSide->coreNode());
 	//outputSide->addConnectionOutput(inputSide);
 	//inputSide->addConnectionInput(outputSide);
 }
@@ -121,7 +121,8 @@ void AudioNode::connect(AudioNode * outputSide, AudioNode * inputSide)
 void AudioNode::disconnect(AudioNode* outputSide, AudioNode* inputSide)
 {
 	if (LN_REQUIRE(outputSide)) return;
-	outputSide->context()->sendDisconnect(outputSide, inputSide);
+	outputSide->context()->manager()->postDisconnect(outputSide->coreNode(), inputSide->coreNode());
+	//outputSide->context()->sendDisconnect(outputSide, inputSide);
 	//outputSide->removeConnectionOutput(inputSide);
 	//inputSide->removeConnectionInput(outputSide);
 }
@@ -129,7 +130,7 @@ void AudioNode::disconnect(AudioNode* outputSide, AudioNode* inputSide)
 void AudioNode::disconnect()
 {
 	if (context()) {
-		context()->sendDisconnectAll(this);
+		context()->manager()->postDisconnectAll(this->coreNode());
 	}
 }
 

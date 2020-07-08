@@ -4,11 +4,11 @@
 #include <LuminoEngine/Audio/AudioDestinationNode.hpp>
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/Sound.hpp>
-#include "Core/CoreAudioNode.hpp"
+#include "ARIs/ARIDestinationNode.hpp"
 #include "AudioManager.hpp"
-#include "DSoundAudioDevice.hpp"
-#include "ALAudioDevice.hpp"
-#include "SDLAudioDevice.hpp"
+#include "Backend/DSoundAudioDevice.hpp"
+#include "Backend/ALAudioDevice.hpp"
+#include "Backend/SDLAudioDevice.hpp"
 
 namespace ln {
 
@@ -25,7 +25,6 @@ AudioContext::AudioContext()
 	, m_audioDevice(nullptr)
 	, m_coreDestinationNode(nullptr)
 	, m_destinationNode(nullptr)
-	, m_allAudioNodes()
 {
 }
 
@@ -37,13 +36,13 @@ void AudioContext::init()
 
 #if defined(LN_OS_MAC) || defined(LN_OS_IOS)
 	auto device = makeRef<detail::ALAudioDevice>();
-	device->init(detail::AudioNodeCore::ProcessingSizeInFrames);
+	device->init(detail::ARINode::ProcessingSizeInFrames);
 	m_audioDevice = device;
 	
 #elif defined(LN_EMSCRIPTEN)
 	{
 		auto device = makeRef<detail::ALAudioDevice>();
-		device->init(detail::AudioNodeCore::ProcessingSizeInFrames);
+		device->init(detail::ARINode::ProcessingSizeInFrames);
 		m_audioDevice = device;
 	}
 #elif defined(LN_USE_SDL)
@@ -55,14 +54,14 @@ void AudioContext::init()
 
 	//{
 	//	auto device = makeRef<detail::ALAudioDevice>();
-	//	device->init(detail::AudioNodeCore::ProcessingSizeInFrames);
+	//	device->init(detail::ARINode::ProcessingSizeInFrames);
 	//	m_audioDevice = device;
 	//}
 
 	if (!m_audioDevice) {
 		bool noDevice = false;
 		auto device = makeRef<detail::DSoundAudioDevice>();
-		device->init(detail::AudioNodeCore::ProcessingSizeInFrames, &noDevice);
+		device->init(detail::ARINode::ProcessingSizeInFrames, &noDevice);
 		if (noDevice) {
 			device->dispose();
 		}
@@ -77,11 +76,12 @@ void AudioContext::init()
         LN_LOG_INFO << "Use NullAudioDevice";
     }
         
-	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioDevice, nullptr);
+	m_coreDestinationNode = makeRef<detail::ARIDestinationNode>(m_audioDevice, nullptr);
 	m_coreDestinationNode->init();
 	m_audioDevice->setRenderCallback(m_coreDestinationNode);
 
 	m_destinationNode = makeObject<AudioDestinationNode>(m_coreDestinationNode);
+	addAudioNode(m_destinationNode);
 
     LN_LOG_DEBUG << "AudioContext Initialization ended.";
 }
@@ -98,10 +98,10 @@ void AudioContext::dispose()
 	commitGraphs(0);
 
 
-	List<AudioNode*> removeList = m_allAudioNodes;
-	for (AudioNode* node : removeList) {
-		node->dispose();
-	}
+	//List<AudioNode*> removeList = m_allAudioNodes;
+	//for (AudioNode* node : removeList) {
+	//	node->dispose();
+	//}
 
 	if (m_audioDevice) {
 		m_audioDevice->dispose();
@@ -111,23 +111,21 @@ void AudioContext::dispose()
 
 void AudioContext::updateFrame()
 {
-	for (int i = m_aliveNodes.size() - 1; i >= 0; i--) {
-		if (!m_aliveNodes[i]->m_alived) {
-			m_aliveNodes.removeAt(i);
-		}
-	}
+	//for (int i = m_aliveNodes.size() - 1; i >= 0; i--) {
+	//	if (!m_aliveNodes[i]->m_alived) {
+	//		m_aliveNodes.removeAt(i);
+	//	}
+	//}
 }
 
-void AudioContext::process(float elapsedSeconds)
+void AudioContext::processOnAudioThread(float elapsedSeconds)
 {
 	if (m_audioDevice) {
         //ElapsedTimer timer;
 
 		//m_markedNodes.clear();
-		for (auto& node : m_allAudioNodes) {
-			if (auto* core = node->coreNode()) {
-				core->m_marked = false;
-			}
+		for (auto& coreNode : m_coreAudioNodes) {
+			coreNode->m_marked = false;
 		}
 		m_coreDestinationNode->m_marked = true;
 
@@ -138,15 +136,15 @@ void AudioContext::process(float elapsedSeconds)
 
 
 		// sweep
-		if (1/* GCEnabled */) {
-			for (int i = m_allAudioNodes.size() - 1; i >= 0; i--) {
-				if (auto* core = m_allAudioNodes[i]->coreNode()) {
-					//if (RefObjectHelper::getReferenceCount(m_allAudioNodes[i]) == 1 && !core->m_marked) {
-					//	m_allAudioNodes.removeAt(i);
-					//}
-				}
-			}
-		}
+		//if (1/* GCEnabled */) {
+		//	for (int i = m_allAudioNodes.size() - 1; i >= 0; i--) {
+		//		if (auto* core = m_allAudioNodes[i]->coreNode()) {
+		//			//if (RefObjectHelper::getReferenceCount(m_allAudioNodes[i]) == 1 && !core->m_marked) {
+		//			//	m_allAudioNodes.removeAt(i);
+		//			//}
+		//		}
+		//	}
+		//}
 
         //std::cout << "time:" << timer.elapsedMilliseconds() << std::endl;
         
@@ -163,7 +161,31 @@ AudioDestinationNode* AudioContext::destination() const
 	return m_destinationNode;
 }
 
-//void AudioContext::markGC(detail::AudioNodeCore* node)
+void AudioContext::addAudioNode(AudioNode* node)
+{
+	if (LN_REQUIRE(node)) return;
+	m_audioNodes.add(node);
+	node->m_context = this;
+	m_manager->postAddAudioNode(this, node->coreNode());
+}
+
+void AudioContext::removeAudioNode(AudioNode* node)
+{
+	if (LN_REQUIRE(node)) return;
+	if (LN_REQUIRE(node->m_context == this)) return;
+	m_audioNodes.remove(node);
+	node->m_context = nullptr;
+	m_manager->postRemoveAudioNode(this, node->coreNode());
+}
+
+void AudioContext::removeAllNodes()
+{
+	for (int i = m_audioNodes.size() - 1; i >= 0; i--) {
+		removeAudioNode(m_audioNodes[i]);
+	}
+}
+
+//void AudioContext::markGC(detail::ARINode* node)
 //{
 //	//m_markedNodes.add(node->frontNode());
 //}
@@ -173,6 +195,17 @@ detail::AudioDevice* AudioContext::coreObject()
 	return m_audioDevice;
 }
 
+void AudioContext::addAudioNodeInternal(const Ref<detail::ARINode>& node)
+{
+	m_coreAudioNodes.add(node);
+}
+
+void AudioContext::removeAudioNodeInternal(const Ref<detail::ARINode>& node)
+{
+	m_coreAudioNodes.remove(node);
+}
+
+#if 0
 void AudioContext::sendConnect(AudioNode* outputSide, AudioNode* inputSide)
 {
 	if (LN_REQUIRE(outputSide)) return;
@@ -180,18 +213,20 @@ void AudioContext::sendConnect(AudioNode* outputSide, AudioNode* inputSide)
 	if (LN_REQUIRE(outputSide->context() == this)) return;
 	if (LN_REQUIRE(inputSide->context() == this)) return;
 
-	if (!inputSide->m_alived) {
-		inputSide->m_alived = true;
-		m_aliveNodes.add(inputSide);
-	}
+	//if (!inputSide->m_alived) {
+	//	inputSide->m_alived = true;
+	//	m_aliveNodes.add(inputSide);
+	//}
 
-	if (!outputSide->m_alived) {
-		outputSide->m_alived = true;
-		m_aliveNodes.add(outputSide);
-	}
+	//if (!outputSide->m_alived) {
+	//	outputSide->m_alived = true;
+	//	m_aliveNodes.add(outputSide);
+	//}
 
-    detail::ScopedWriteLock lock(commitMutex());
-	m_connectionCommands.push_back({ OperationCode::Connection, outputSide, inputSide });
+	{
+		detail::ScopedWriteLock lock(commitMutex());
+		m_commands.push_back({ OperationCode::Connection, outputSide->coreNode(), inputSide->coreNode() });
+	}
 }
 
 void AudioContext::sendDisconnect(AudioNode* outputSide, AudioNode* inputSide)
@@ -201,8 +236,10 @@ void AudioContext::sendDisconnect(AudioNode* outputSide, AudioNode* inputSide)
 	if (LN_REQUIRE(outputSide->context() == this)) return;
 	if (LN_REQUIRE(inputSide->context() == this)) return;
 
-    detail::ScopedWriteLock lock(commitMutex());
-	m_connectionCommands.push_back({ OperationCode::Disconnection, outputSide, inputSide });
+	{
+		detail::ScopedWriteLock lock(commitMutex());
+		m_commands.push_back({ OperationCode::Disconnection, outputSide->coreNode(), inputSide->coreNode() });
+	}
 }
 
 //void AudioContext::sendDisconnectAllAndDispose(AudioNode* node)
@@ -219,31 +256,18 @@ void AudioContext::sendDisconnectAll(AudioNode* node)
 	if (LN_REQUIRE(node)) return;
 	if (LN_REQUIRE(node->context() == this)) return;
 
-	detail::ScopedWriteLock lock(commitMutex());
-	m_connectionCommands.push_back({ OperationCode::DisconnectionAll, node });
+	{
+		detail::ScopedWriteLock lock(commitMutex());
+		m_commands.push_back({ OperationCode::DisconnectionAll, node->coreNode(), nullptr });
+	}
 }
+#endif
 
-void AudioContext::addSound(Sound* sound)
-{
-    detail::ScopedWriteLock lock(commitMutex());
-    m_soundList.add(sound);
-}
-
-void AudioContext::addAudioNode(AudioNode* node)
-{
-	if (LN_REQUIRE(node)) return;
-    //detail::ScopedWriteLock lock(commitMutex());
-	m_allAudioNodes.add(node);
-	node->m_context = this;
-}
-
-void AudioContext::removeAudioNode(AudioNode* node)
-{
-	if (LN_REQUIRE(node)) return;
-	if (LN_REQUIRE(node->m_context == this)) return;
-	m_allAudioNodes.remove(node);
-	node->m_context = nullptr;
-}
+//void AudioContext::addSound(Sound* sound)
+//{
+//    detail::ScopedWriteLock lock(commitMutex());
+//    m_soundList.add(sound);
+//}
 
 //void AudioContext::disposeNodeOnGenericThread(AudioNode* node)
 //{
@@ -265,58 +289,23 @@ void AudioContext::commitGraphs(float elapsedSeconds)
 	//}
 
 	//
+	for (const auto& node : m_coreAudioNodes) {
+		node->onCommit();
 
-	if (!m_connectionCommands.empty())
-	{
-		for (auto& cmd : m_connectionCommands)
-		{
-			switch (cmd.code)
-			{
-			case OperationCode::Connection:
-				//cmd.outputSide->m_alived = true;
-				//cmd.inputSide->m_alived = true;
-				detail::AudioNodeCore::connect(cmd.outputSide->coreNode(), cmd.inputSide->coreNode());
-				break;
-			case OperationCode::Disconnection:
-				LN_NOTIMPLEMENTED();
-				break;
-			case OperationCode::DisconnectionAll://AndDispose:
-			{
-				detail::AudioNodeCore* node = cmd.outputSide->coreNode();
-				node->disconnectAllInputSide();
-				node->disconnectAllOutputSide();
-				//if (node->frontNode()) {
-				//	node->frontNode()->m_alived = false;
-				//}
-				//node->dispose();
-				break;
-			}
-			default:
-				LN_UNREACHABLE();
-				break;
-			}
-		}
-		m_connectionCommands.clear();
+		//if (node != m_destinationNode) {
+		//	if (auto* core = node->coreNode()) {
+		//		node->m_alived = core->isInputConnected() || core->isOutputConnected();
+		//	}
+		//}
 	}
 
-	for (AudioNode* node : m_allAudioNodes)
-	{
-		node->commit();
-
-		if (node != m_destinationNode) {
-			if (auto* core = node->coreNode()) {
-				node->m_alived = core->isInputConnected() || core->isOutputConnected();
-			}
-		}
-	}
-
-    for (auto& ref : m_soundList)
-    {
-        auto sound = ref.resolve();
-        if (sound) {
-            sound->process(elapsedSeconds);
-        }
-    }
+    //for (auto& ref : m_soundList)
+    //{
+    //    auto sound = ref.resolve();
+    //    if (sound) {
+    //        sound->process(elapsedSeconds);
+    //    }
+    //}
 }
 
 } // namespace ln

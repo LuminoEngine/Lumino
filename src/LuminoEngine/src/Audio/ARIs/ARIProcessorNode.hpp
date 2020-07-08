@@ -1,19 +1,20 @@
 ﻿#pragma once
-#include "CoreAudioNode.hpp"
+#include "ARINode.hpp"
 
 namespace ln {
 class AudioProcessorNode;
 namespace detail {
 
-class CAProcessorNode
-	: public AudioNodeCore
+class ARIProcessorNode
+	: public ARINode
 {
 public:
-    CAProcessorNode(AudioDevice* context, AudioProcessorNode* frontNode);
+    ARIProcessorNode(AudioDevice* context, AudioProcessorNode* frontNode);
     void init(int numberOfInputChannels, int numberOfOutputChannels);
 
 protected:
-	virtual void process() override;
+    void onCommit() override;
+	void process() override;
 
 private:
     AudioProcessorNode* m_ownerNode;

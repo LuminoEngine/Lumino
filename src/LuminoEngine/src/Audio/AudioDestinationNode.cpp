@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "Core/CoreAudioNode.hpp"
+#include "ARIs/ARIDestinationNode.hpp"
 #include <LuminoEngine/Audio/AudioDestinationNode.hpp>
 
 namespace ln {
@@ -12,13 +12,13 @@ AudioDestinationNode::AudioDestinationNode()
 {
 }
 
-void AudioDestinationNode::init(detail::CoreAudioDestinationNode* core)
+void AudioDestinationNode::init(detail::ARIDestinationNode* core)
 {
 	AudioNode::init();
 	m_coreObject = core;
 }
 
-detail::AudioNodeCore* AudioDestinationNode::coreNode()
+detail::ARINode* AudioDestinationNode::coreNode()
 {
 	return m_coreObject;
 }

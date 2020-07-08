@@ -1,12 +1,16 @@
 ﻿#pragma once
 #include <mutex>
+#include "Common.hpp"
 #include "../Animation/EasingFunctions.hpp"
 
 namespace ln {
 class AudioContext;
 class AudioSourceNode;
 class AudioGainNode;
-namespace detail { class GameAudioImpl; }
+namespace detail {
+	class GameAudioImpl; class SoundCore
+		;
+}
 
 /** 音声の再生状態を表します。*/
 enum class SoundPlayingState
@@ -26,6 +30,34 @@ enum class SoundFadeBehavior
     PauseReset,			/**< 一時停止して、次の再生に備えてサウンドの音量を元の値に戻す */
 };
 
+/*
+	[2020/7/7] Note: Sound のライフサイクル問題
+	UserProgram から直接 Sound を作る場合…
+		考え方的には Unity の AudioSource が近い。Sound 自体が座標なども持っている。
+		この使い方の時は、解放は Ref に任せてよい。明示的に削除したいときは dispose。
+		つまりこのケースでは、内部的には Sound を弱参照のリストで管理する、ということになる。
+		ただし Sound::dispose 時点で AudioThread から更新中、ということもあるので、ただ弱参照にするだけだと null アクセスしてしまう。
+	playSE() などで内部管理する場合…
+		こちらの場合は Sound のインスタンス管理を内部 (AudioManager あたり) が行う。
+		Audio モジュールは updateFrame() 無しでも動くようにしたいので、dispose は AudioThread から行う必要がある。
+		しかし MainThread 以外からの dispose は、Binding モジュール側への影響が非常に大きいため、このパターンの Sound は外部に公開したくないところ。
+	↓
+	総じてやっぱり ARI を分離した動機と同じ原因の問題となる。
+
+	同じように内部的なインスタンスを分離しようか。
+	UserProgram から直接 Sound を作る場合…
+		Sound::init で data をコマンドに乗せて AudioThread へ add。
+		Sound::dispose で remove… でもいいんだけど、↓の兼もあるので lifesycleState みたいなフラグ監視がいいかも。
+	playSE() などで内部管理する場合…
+		playSE() の戻り値は Sound を返したい。Effect とかと同じく。
+		でも多くの場合は不要で、すぐインスタンスは消える。
+		でもその場合でも、音の最後までは再生したい。
+		そのため Sound::dispose に合わせていきなり remove されるのはちょっと困る。
+
+
+
+*/
+
 class Sound
 	: public Object
 {
@@ -42,7 +74,7 @@ public:
 	 * @param[in]	volume	: 音量 (0.0～1.0。初期値は 1.0)
 	 */
 	LN_METHOD(Property)
-	void setVolume(float volume);
+	void setVolume(float value);
 
 	/**
 	 * この Sound の音量を取得します。
@@ -55,7 +87,7 @@ public:
 	 * @param[in]	volume	: ピッチ (0.5～2.0。初期値は 1.0)
 	 */
 	LN_METHOD(Property)
-	void setPitch(float pitch);
+	void setPitch(float value);
 
 	/**
 	 * この Sound のピッチ (音高) を取得します。
@@ -202,28 +234,73 @@ LN_CONSTRUCT_ACCESS:
     virtual void onDispose(bool explicitDisposing) override;
 
 private:
-    void setGameAudioFlags(uint32_t flags) { m_gameAudioFlags = flags; }
-    uint32_t gameAudioFlags() const { return m_gameAudioFlags; }
-    void process(float elapsedSeconds);
-    void playInternal();
-    void stopInternal();
-    void pauseInternal();
+	const Ref<detail::SoundCore>& core() const { return m_core; }
+    //void setGameAudioFlags(uint32_t flags) { m_gameAudioFlags = flags; }
+    //uint32_t gameAudioFlags() const { return m_gameAudioFlags; }
+    //void process(float elapsedSeconds);
+    //void playInternal();
+    //void stopInternal();
+    //void pauseInternal();
     void setVolumeInternal(float volume);
 
 	detail::AudioManager* m_manager;
-    Ref<AudioSourceNode> m_sourceNode;
-    Ref<AudioGainNode> m_gainNode;
-    uint32_t m_gameAudioFlags;
+    //Ref<AudioSourceNode> m_sourceNode;
+    //Ref<AudioGainNode> m_gainNode;
+	Ref<detail::SoundCore> m_core;
 
-    std::mutex m_playerStateLock;    // TODO: 性質上、スピンロックの方が効率がいいかもしれない
-    EasingValue<float> m_fadeValue;
-    SoundFadeBehavior m_fadeBehavior;
-    bool m_fading;
+    //std::mutex m_playerStateLock;    // TODO: 性質上、スピンロックの方が効率がいいかもしれない
+    //EasingValue<float> m_fadeValue;
+    //SoundFadeBehavior m_fadeBehavior;
+    //bool m_fading;
 	
 	friend class detail::AudioManager;
     friend class detail::GameAudioImpl;
     friend class AudioContext;
 };
 
+namespace detail {
+
+enum class SoundCoreLifecycleState
+{
+	Valid,				// 再生中。Sound オブジェクトも有効。
+	Disposed,			// 対応する Sound オブジェクトは破棄されているため、SoundCore も破棄するべき。
+	DisposeAfterStop,	// 再生中の音声が終わったら破棄する。
+};
+
+class SoundCore
+	: public RefObject
+{
+public:
+	void setVolume(float value, float fadeTime, SoundFadeBehavior behavior);
+	float volume() const;
+	void setPitch(float value);
+	void setLoopEnabled(bool value);
+	void play();
+	void stop(float fadeTime);
+	void pause();
+	void fadeVolume(float targetVolume, float fadeTime, SoundFadeBehavior behavior);
+	void update(float elapsedSeconds);
+
+	void setGameAudioFlags(uint32_t flags) { m_gameAudioFlags = flags; }
+	uint32_t gameAudioFlags() const { return m_gameAudioFlags; }
+
+	AudioContext* m_context = nullptr;
+	std::mutex m_mutex;
+
+	Ref<detail::ARISourceNode> m_sourceNode;
+	Ref<detail::ARIGainNode> m_gainNode;
+
+	std::atomic<SoundCoreLifecycleState> lifecycleState;
+	EasingValue<float> m_fadeValue;
+	SoundFadeBehavior m_fadeBehavior;
+	uint32_t m_gameAudioFlags;
+	bool m_fading;
+
+	SoundCore();
+	bool init(AudioManager* manager, AudioContext* context, AudioDecoder* decoder);
+	void dispose();	// call by audio thread.
+};
+
+} // namespace detail
 } // namespace ln
 

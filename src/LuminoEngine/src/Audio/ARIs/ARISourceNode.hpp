@@ -1,29 +1,40 @@
 ﻿#pragma once
-#include "CoreAudioNode.hpp"
+#include "ARINode.hpp"
+#include <LuminoEngine/Audio/InternalSharedMutex.inc>
 
 namespace ln {
 namespace detail {
 
-class AudioSourceNodeCore
-	: public AudioNodeCore
+class ARISourceNode
+	: public ARINode
 {
 public:
+	struct StagingData
+	{
+		float playbackRate;
+		ln::PlayingState requestedState;
+		bool loop;
+		bool resetRequire;
+
+		AudioRWMutex m_mutex;
+	} staging;
 
 protected:
-	virtual void process() override;
+	void onCommit() override;
+	void process() override;
 
 public:
     // scheduling
-    enum class PlayingState
+    enum class State
     {
-        None,
+        //None,
         Stopped,
         Playing,
         Pausing,
     };
 
-	AudioSourceNodeCore(AudioDevice* context, AudioNode* frontNode);
-	virtual ~AudioSourceNodeCore() = default;
+	ARISourceNode(AudioDevice* context, AudioNode* frontNode);
+	virtual ~ARISourceNode() = default;
 	void init(const Ref<AudioDecoder>& decoder);
 
 	void setPlaybackRate(float rate);
@@ -36,20 +47,20 @@ public:
 	void stop();
 	void reset();	// TODO: internal
 	void finish();	// TODO: internal
-    PlayingState playingState() const { return m_playingState; }
+    State playingState() const { return m_playingState; }
 
 private:
 	unsigned numberOfChannels() const;
 	void resetSourceBuffers();
 	double calculatePitchRate();
-	bool renderSilenceAndFinishIfNotLooping(AudioBus * bus, unsigned index, size_t framesToProcess);
+	bool renderSilenceAndFinishIfNotLooping(ARIAudioBus * bus, unsigned startIndex, size_t framesToProcess);
 	void updatePlayingState();
 
 	Ref<AudioDecoder> m_decoder;
 	std::vector<float> m_readBuffer;
-	Ref<AudioBus> m_sourceBus;	// resampled
+	Ref<ARIAudioBus> m_sourceBus;	// resampled
 	std::unique_ptr<blink::SincResampler> m_resampler;
-	Ref<AudioBus> m_resamplingBus;
+	Ref<ARIAudioBus> m_resamplingBus;
 	//std::vector<float> m_resamplingBuffer;
 
 	// Current playback position.
@@ -60,8 +71,8 @@ private:
 	size_t m_readFrames;
 	size_t m_seekFrame;
 
-	PlayingState m_playingState;
-	//PlayingState m_requestedPlayingState;
+	State m_playingState;
+	//State m_requestedPlayingState;
 	bool m_resetRequested;
     bool m_loop;
 };

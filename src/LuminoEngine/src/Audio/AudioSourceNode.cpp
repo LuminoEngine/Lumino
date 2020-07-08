@@ -3,7 +3,7 @@
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/AudioSourceNode.hpp>
 #include "Decoder/AudioDecoder.hpp"
-#include "Core/AudioSourceNodeCore.hpp"
+#include "ARIs/ARISourceNode.hpp"
 #include "AudioManager.hpp"
 
 namespace ln {
@@ -13,19 +13,24 @@ namespace ln {
 
 AudioSourceNode::AudioSourceNode()
 {
-	m_commitState.playbackRate = 1.0f;
-	m_commitState.requestedState = PlayingState::NoChanged;
-	m_commitState.resetRequire = false;
-	m_commitState.loop = false;
+}
+
+void AudioSourceNode::init(detail::AudioDecoder* decoder)
+{
+	m_coreObject = makeRef<detail::ARISourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
+	m_coreObject->init(decoder);
+
+
+	AudioNode::init();
 }
 
 void AudioSourceNode::setPlaybackRate(float rate)
 {
     detail::ScopedWriteLock lock(propertyMutex());
-	m_commitState.playbackRate = rate;
+	m_coreObject->staging.playbackRate = rate;
 	//LN_ENQUEUE_RENDER_COMMAND_2(
 	//	start, context()->manager(),
-	//	Ref<detail::AudioSourceNodeCore>, m_coreObject,
+	//	Ref<detail::ARISourceNode>, m_coreObject,
 	//	float, rate,
 	//	{
 	//		m_coreObject->setPlaybackRate(rate);
@@ -34,21 +39,21 @@ void AudioSourceNode::setPlaybackRate(float rate)
 
 void AudioSourceNode::setLoop(bool value)
 {
-    m_commitState.loop = value;
+	m_coreObject->staging.loop = value;
 }
 
 bool AudioSourceNode::loop() const
 {
-    return m_commitState.loop;
+    return m_coreObject->staging.loop;
 }
 
 void AudioSourceNode::start()
 {
-	m_commitState.resetRequire = true;
-	m_commitState.requestedState = PlayingState::Play;
+	m_coreObject->staging.resetRequire = true;
+	m_coreObject->staging.requestedState = PlayingState::Play;
 	//LN_ENQUEUE_RENDER_COMMAND_1(
 	//	start, context()->manager(),
-	//	Ref<detail::AudioSourceNodeCore>, m_coreObject,
+	//	Ref<detail::ARISourceNode>, m_coreObject,
 	//	{
 	//		m_coreObject->start();
 	//	});
@@ -56,11 +61,11 @@ void AudioSourceNode::start()
 
 void AudioSourceNode::stop()
 {
-	m_commitState.resetRequire = true;
-	m_commitState.requestedState = PlayingState::Stop;
+	m_coreObject->staging.resetRequire = true;
+	m_coreObject->staging.requestedState = PlayingState::Stop;
 	//LN_ENQUEUE_RENDER_COMMAND_1(
 	//	start, context()->manager(),
-	//	Ref<detail::AudioSourceNodeCore>, m_coreObject,
+	//	Ref<detail::ARISourceNode>, m_coreObject,
 	//	{
 	//		m_coreObject->stop();
 	//	});
@@ -76,29 +81,21 @@ void AudioSourceNode::resume()
 	LN_NOTIMPLEMENTED();
 }
 
-void AudioSourceNode::init(detail::AudioDecoder* decoder)
-{
-	m_coreObject = makeRef<detail::AudioSourceNodeCore>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
-	m_coreObject->init(decoder);
-
-    AudioNode::init();
-}
-
-detail::AudioNodeCore * AudioSourceNode::coreNode()
+detail::ARINode * AudioSourceNode::coreNode()
 {
 	return m_coreObject;
 }
 
-AudioSourceNode::PlayingState AudioSourceNode::playingState() const
+PlayingState AudioSourceNode::playingState() const
 {
     switch (m_coreObject->playingState())
     {
-    case detail::AudioSourceNodeCore::PlayingState::None:
-    case detail::AudioSourceNodeCore::PlayingState::Stopped:
+    //case detail::ARISourceNode::PlayingState::None:
+    case detail::ARISourceNode::State::Stopped:
         return PlayingState::Stop;
-    case detail::AudioSourceNodeCore::PlayingState::Playing:
+    case detail::ARISourceNode::State::Playing:
         return PlayingState::Play;
-    case detail::AudioSourceNodeCore::PlayingState::Pausing:
+    case detail::ARISourceNode::State::Pausing:
         return PlayingState::Pause;
     default:
         LN_UNREACHABLE();
@@ -106,39 +103,39 @@ AudioSourceNode::PlayingState AudioSourceNode::playingState() const
     }
 }
 
-void AudioSourceNode::commit()
-{
-	AudioNode::commit();
-
-    detail::ScopedReadLock lock(propertyMutex());
-
-	if (m_commitState.resetRequire) {
-		m_coreObject->reset();
-		m_commitState.resetRequire = false;
-	}
-
-	switch (m_commitState.requestedState)
-	{
-	case PlayingState::NoChanged:
-		break;
-	case  PlayingState::Stop:
-		m_coreObject->stop();
-		break;
-	case  PlayingState::Play:
-		m_coreObject->reset();
-		m_coreObject->start();
-		break;
-	case  PlayingState::Pause:
-		LN_NOTIMPLEMENTED();
-		break;
-	default:
-		break;
-	}
-	m_commitState.requestedState = PlayingState::NoChanged;
-
-	m_coreObject->setPlaybackRate(m_commitState.playbackRate);
-    m_coreObject->setLoop(m_commitState.loop);
-}
+//void AudioSourceNode::commit()
+//{
+//	AudioNode::commit();
+//
+//    detail::ScopedReadLock lock(propertyMutex());
+//
+//	if (m_commitState.resetRequire) {
+//		m_coreObject->reset();
+//		m_commitState.resetRequire = false;
+//	}
+//
+//	switch (m_commitState.requestedState)
+//	{
+//	case PlayingState::NoChanged:
+//		break;
+//	case  PlayingState::Stop:
+//		m_coreObject->stop();
+//		break;
+//	case  PlayingState::Play:
+//		m_coreObject->reset();
+//		m_coreObject->start();
+//		break;
+//	case  PlayingState::Pause:
+//		LN_NOTIMPLEMENTED();
+//		break;
+//	default:
+//		break;
+//	}
+//	m_commitState.requestedState = PlayingState::NoChanged;
+//
+//	m_coreObject->setPlaybackRate(m_commitState.playbackRate);
+//    m_coreObject->setLoop(m_commitState.loop);
+//}
 
 } // namespace ln
 

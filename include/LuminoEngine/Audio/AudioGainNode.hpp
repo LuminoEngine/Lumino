@@ -3,7 +3,7 @@
 
 namespace ln {
 namespace detail {
-class CAGainNode;
+class ARIGainNode;
 }
 
 class AudioGainNode
@@ -11,18 +11,18 @@ class AudioGainNode
 {
 public:
     void setGain(float value);
-    float gain() const { return m_gain; }
+    float gain() const;
 
 LN_CONSTRUCT_ACCESS:
     AudioGainNode();
     virtual ~AudioGainNode();
 	void init();
-	virtual detail::AudioNodeCore* coreNode() override;
-    virtual void commit() override;
+	virtual detail::ARINode* coreNode() override;
+    //virtual void commit() override;
 
 private:
-	Ref<detail::CAGainNode> m_coreObject;
-    float m_gain;
+	Ref<detail::ARIGainNode> m_coreObject;
+    //float m_gain;
 };
 
 } // namespace ln

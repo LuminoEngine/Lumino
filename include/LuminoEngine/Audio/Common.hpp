@@ -7,7 +7,16 @@
 //#endif
 
 namespace ln {
+class AudioNode;
 class Sound;
+
+enum class PlayingState	// TODO: AudioPlayingState
+{
+	NoChanged,
+	Stop,
+	Play,
+	Pause,
+};
 
 namespace detail {
 class internal_shared_mutex;
@@ -19,6 +28,12 @@ using ScopedWriteLock = std::lock_guard<ln::detail::AudioRWMutex>;
 } // namespace detail
 
 namespace detail {
+class AudioManager;
+class AudioDecoder;
+class ARINode;
+class ARISourceNode;
+class ARIGainNode;
+class SoundCore;
 
 struct AudioListenerParams
 {
@@ -50,9 +65,9 @@ struct AudioConeParams
 	AudioConeParams();
 };
 
-class AudioSourceNodeCore;
-class CoreAudioDestinationNode;
-class CoreAudioPannerNode;
+class ARISourceNode;
+class ARIDestinationNode;
+class ARIPannerNode;
 
 } // namespace detail
 } // namespace ln

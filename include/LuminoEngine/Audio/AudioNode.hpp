@@ -7,7 +7,7 @@ namespace ln {
 class AudioContext;
 namespace detail {
 class AudioDecoder;
-class AudioNodeCore;
+class ARINode;
 } // namespace detail
 
 /**
@@ -26,6 +26,21 @@ class AudioNodeCore;
  * → Binding で公開するクラスなので、別スレッドからの削除は非常に危険。
  * もともと Audio モジュールは Engine::update() 無しでも使いたいコンセプトだったけど、AudioGraph はかなり難しい。
  * 「従来通り Sound クラスだけ使ってるなら Engine::update() は不要だけど、AudioGraph 使うなら必須だよ」 くらいの仕様にしたほうがよさそう。
+
+ [2020/7/6] AudioNode のライフサイクル
+ ----------
+ create() した後、AudioContext に追加するのはユーザープログラムの役目とする。
+ ちょうど、ノードエディタのキャンバス上に Node を置くイメージ。
+ なので、Context から Node を外すのもユーザープログラムの役目。
+ 内部的に参照カウントを監視して自動開放したりはしない。
+ → 以前はそのような想定だったが、マルチスレッドの難易度が跳ね上がるのと、AudioNode を積極的にユーザープログラムで書くことは少ない
+   (それよりも Sound クラスを使ってね) なスタイルなので、ちょっと凝ったことする人は気を付けてね、な方向にしてみる。
+ ↑
+ よく考えたらこれだけじゃだめ。Binding の件で、Object の派生は必ずメインスレッドで開放しなければならない。
+
+
+
+
  */
 class AudioNode
 	: public Object
@@ -54,8 +69,8 @@ protected:
     // onInitialize() はそういった事情を考慮して、セーフティなタイミングで初期化を行うためのコールバック。
     // 逆に言うと、AudioNode のサブクラスは他のモジュールのように init() は一切実装してはならない。
     //virtual void onInitialize() = 0;
-	virtual detail::AudioNodeCore* coreNode() = 0;
-	virtual void commit();	// ロック済みの状態で呼ばれる
+	virtual detail::ARINode* coreNode() = 0;
+	//virtual void commit();	// ロック済みの状態で呼ばれる
 
 	detail::AudioRWMutex& commitMutex();
     detail::AudioRWMutex& propertyMutex() { return m_propertyMutex; }
@@ -74,6 +89,7 @@ private:
     detail::AudioRWMutex m_propertyMutex;
 
 	friend class AudioContext;
+	friend class detail::AudioManager;
 };
 
 } // namespace ln

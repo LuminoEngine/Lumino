@@ -81,18 +81,10 @@ set(LN_SOURCES_Input
     src/Input/Win32JoystickDriver.hpp
 )
 
-file(GLOB LN_SOURCES_Audio ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/*.hpp src/Audio/*.cpp src/Audio/*.hpp)
+file(GLOB LN_SOURCES_Audio ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/*.hpp src/Audio/*.cpp src/Audio/*.hpp src/Audio/*.md)
 file(GLOB LN_SOURCES_Audio_Decoder src/Audio/Decoder/*.cpp src/Audio/Decoder/*.hpp)
-file(GLOB LN_SOURCES_Audio_Core src/Audio/Core/*.cpp src/Audio/Core/*.hpp src/Audio/Core/*.h)
-
-set(LN_SOURCES_Audio_Device
-    src/Audio/ALAudioDevice.cpp
-    src/Audio/ALAudioDevice.hpp
-    src/Audio/DSoundAudioDevice.cpp
-    src/Audio/DSoundAudioDevice.hpp
-    src/Audio/SDLAudioDevice.cpp
-    src/Audio/SDLAudioDevice.hpp
-)
+file(GLOB LN_SOURCES_Audio_ARIs src/Audio/ARIs/*.cpp src/Audio/ARIs/*.hpp src/Audio/ARIs/*.h)
+file(GLOB LN_SOURCES_Audio_Backend src/Audio/Backend/*.cpp src/Audio/Backend/*.hpp)
 
 file(GLOB LN_SOURCES_Shader ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/*.hpp src/Shader/*.cpp src/Shader/*.hpp src/Shader/*.md)
 
@@ -213,8 +205,8 @@ source_group("Grammar" FILES ${LN_SOURCES_Grammar})
 source_group("Animation" FILES ${LN_SOURCES_Animation})
 source_group("Audio" FILES ${LN_SOURCES_Audio})
 source_group("Audio\\Decoder" FILES ${LN_SOURCES_Audio_Decoder})
-source_group("Audio\\Device" FILES ${LN_SOURCES_Audio_Device})
-source_group("Audio\\Core" FILES ${LN_SOURCES_Audio_Core})
+source_group("Audio\\Backend" FILES ${LN_SOURCES_Audio_Backend})
+source_group("Audio\\ARIs" FILES ${LN_SOURCES_Audio_ARIs})
 source_group("Shader" FILES ${LN_SOURCES_Shader})
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 source_group("Graphics\\Vulkan" FILES ${LN_SOURCES_Graphics_Vulkan})
@@ -253,8 +245,8 @@ set(LN_SOURCES
     ${LN_SOURCES_Input}
     ${LN_SOURCES_Audio}
     ${LN_SOURCES_Audio_Decoder}
-    ${LN_SOURCES_Audio_Device}
-    ${LN_SOURCES_Audio_Core}
+    ${LN_SOURCES_Audio_Backend}
+    ${LN_SOURCES_Audio_ARIs}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Graphics_Vulkan}

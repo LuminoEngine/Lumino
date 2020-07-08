@@ -12,10 +12,10 @@ LN_CONSTRUCT_ACCESS:
 	AudioPannerNode();
 	virtual ~AudioPannerNode() = default;
 	void init();
-	virtual detail::AudioNodeCore* coreNode() override;
+	virtual detail::ARINode* coreNode() override;
 
 private:
-	Ref<detail::CoreAudioPannerNode> m_coreObject;
+	Ref<detail::ARIPannerNode> m_coreObject;
 };
 
 } // namespace ln

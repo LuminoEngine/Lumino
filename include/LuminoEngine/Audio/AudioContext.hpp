@@ -5,8 +5,9 @@ namespace ln {
 namespace detail {
 class AudioManager;
 class AudioDevice;
-class CoreAudioDestinationNode;
-class AudioNodeCore;
+class ARIDestinationNode;
+class ARINode;
+class SoundCore;
 } // namespace detail
 class AudioNode;
 class AudioDestinationNode;
@@ -24,68 +25,64 @@ public:
 	virtual void dispose();
 	void updateFrame();
 
-	void process(float elapsedSeconds);
+	void processOnAudioThread(float elapsedSeconds);
 
     /** この AudioContext 内でベースとして使われるサンプルレート(1秒あたりのサンプル数)を取得します。 */
     int sampleRate() const;
 
 	AudioDestinationNode* destination() const;
 
+	void addAudioNode(AudioNode* node);
+	void removeAudioNode(AudioNode* node);
+	void removeAllNodes();
+
 	// TODO: internal
 	detail::AudioManager* manager() const { return m_manager; }
-	//void markGC(detail::AudioNodeCore* node);	// call only audio thread.
+	//void markGC(detail::ARINode* node);	// call only audio thread.
 
 	detail::AudioDevice* coreObject();
 
-	void sendConnect(AudioNode* outputSide, AudioNode* inputSide);
-	void sendDisconnect(AudioNode* outputSide, AudioNode* inputSide);
-	//void sendDisconnectAllAndDispose(AudioNode* node);
-	void sendDisconnectAll(AudioNode* node);
-
-    void addSound(Sound* sound);
+    //void addSound(Sound* sound);
 
 LN_INTERNAL_ACCESS:
 	detail::AudioRWMutex m_commitMutex;
 	detail::AudioRWMutex& commitMutex() { return m_commitMutex; }
 
-	void addAudioNode(AudioNode* node);
-	void removeAudioNode(AudioNode* node);
 	//void disposeNodeOnGenericThread(AudioNode* node);	// Audio Thread 以外での AudioNode::dispose
 	//void tryRemoveAudioNode(AudioNode* node);
 
 private:
-	enum class OperationCode
-	{
-		Connection,
-		Disconnection,
-		//DisconnectionAllAndDispose,
-		DisconnectionAll,
-	};
-
-	struct ConnectionCommand
-	{
-		OperationCode code;
-		Ref<AudioNode> outputSide;
-		Ref<AudioNode> inputSide;
-	};
+	void addAudioNodeInternal(const Ref<detail::ARINode>& node);
+	void removeAudioNodeInternal(const Ref<detail::ARINode>& node);
 
 	// call by aduio thread.
 	void commitGraphs(float elapsedSeconds);
 
 	detail::AudioManager* m_manager;
 	Ref<detail::AudioDevice> m_audioDevice;
-	Ref<detail::CoreAudioDestinationNode> m_coreDestinationNode;
+	Ref<detail::ARIDestinationNode> m_coreDestinationNode;
 	Ref<AudioDestinationNode> m_destinationNode;
 
-	List<AudioNode*> m_allAudioNodes;
-	List<Ref<AudioNode>> m_aliveNodes;
+	// 強参照。ユーザープログラムからの明示的な破棄が必要。
+	// Non-ThreadSafe.
+	List<Ref<AudioNode>> m_audioNodes;
+
+	// 強参照。AudioThread で受信したコマンドによって add/remove
+	List<Ref<detail::ARINode>> m_coreAudioNodes;
+
+
+	//List<AudioNode*> m_allAudioNodes;
+	//List<Ref<AudioNode>> m_aliveNodes;
 	//List<AudioNode*> m_markedNodes;
-	std::vector<ConnectionCommand> m_connectionCommands;
 
 	// commitGraphs() 中、m_allAudioNodes の AudioNode のインスタンスが消えないように参照を持っておくための list
 	//List<Ref<AudioNode>> m_allAudioNodes_onCommit;
 
-    List<WeakRefPtr<Sound>> m_soundList;
+
+    //List<WeakRefPtr<Sound>> m_soundList;
+
+	friend class detail::AudioManager;
+	friend class detail::SoundCore;
 };
 
 } // namespace ln

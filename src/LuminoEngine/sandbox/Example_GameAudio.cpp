@@ -5,6 +5,8 @@ using namespace ln;
 
 class App_Example_GameAudio : public Application
 {
+	int m_count = 0;
+
     virtual void onInit() override
     {
 		auto sprite = UISprite::load(u"picture1.jpg");
@@ -16,7 +18,12 @@ class App_Example_GameAudio : public Application
 
 		auto addButton = ln::UIButton::create(u"Play BGM");
 		addButton->connectOnClicked([this]() {
-			GameAudio::playBGM(u"/Users/lriki/Proj/02 - momentum.wav", 0.5, 1.0/*, 3.0*/);
+			Audio::playBGM(u"D:/Music/momentum/02 - momentum.wav", 0.5, 1.0/*, 3.0*/);
+			//Audio::playBGM(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Audio/sin_440_3s_S16L_48000_2ch.wav", 0.2);
+		});
+		auto button2 = ln::UIButton::create(u"Play BGS");
+		button2->connectOnClicked([this]() {
+			Audio::playBGS(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Audio/water02.wav");
 		});
 		//Engine::mainUIView()->addChild(addButton);
 
@@ -26,6 +33,14 @@ class App_Example_GameAudio : public Application
 
     virtual void onUpdate() override
     {
+		m_count++;
+
+
+		if (m_count > 60) {
+			Audio::playSE(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Audio/ln_cursor_1.wav", 0.1);
+			m_count = 0;
+		}
+
     }
 };
 

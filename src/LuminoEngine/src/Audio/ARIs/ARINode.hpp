@@ -1,17 +1,11 @@
 ﻿#pragma once
-#include "../AudioDevice.hpp"	// for IAudioDeviceRenderCallback
+#include "Common.hpp"
 #include <LuminoEngine/Audio/AudioBus.hpp>
 
 #include <float.h>	// for FLT_EPSILON
 
 namespace ln {
-class AudioNode;
-
 namespace detail {
-class AudioNodeCore;
-class CoreAudioInputPin;
-class CoreAudioOutputPin;
-class AudioDecoder;
 
 namespace blink {
 	class Panner;
@@ -35,81 +29,20 @@ namespace blink {
 //	AudioListenerParams m_listener;
 //};
 
-class PropagationParameters
-{
-public:
-	PropagationParameters();
-
-	int finalSamplingRate() const { return m_finalSamplingRate; }
-
-	void setFinalSamplingRate(int rate) { m_finalSamplingRate = rate; }
-
-private:
-	int m_finalSamplingRate;
-};
-
-class CoreAudioInputPin
-	: public RefObject
-{
-public:
-	CoreAudioInputPin(int channels);
-	virtual ~CoreAudioInputPin() = default;
-
-	AudioBus* bus() const;
-
-	AudioBus* pull();
-
-	// TODO: internal
-	void setOwnerNode(AudioNodeCore* node) { m_ownerNode = node; }
-	void addLinkOutput(CoreAudioOutputPin* output);
-	void removeLinkOutput(CoreAudioOutputPin* output);
-	bool isConnected() const { return !m_connectedOutputPins.isEmpty(); }
-
-	const List<Ref<CoreAudioOutputPin>>& connectedOutputPins() const { return m_connectedOutputPins; }
-	void disconnect(int index);
-	void disconnectAll();
-
-private:
-
-	AudioNodeCore * m_ownerNode;
-	Ref<AudioBus> m_summingBus;	// Total output
-	List<Ref<CoreAudioOutputPin>> m_connectedOutputPins;
-};
-
-class CoreAudioOutputPin
-	: public RefObject
-{
-public:
-	CoreAudioOutputPin(int channels);
-	virtual ~CoreAudioOutputPin() = default;
-
-	AudioBus* bus() const;
-
-	// process() から呼び出してはならない
-	AudioBus* pull();
-
-
-	// TODO: internal
-	void setOwnerNode(AudioNodeCore* node) { m_ownerNode = node; }
-	void addLinkInput(CoreAudioInputPin* input);
-	void removeLinkInput(CoreAudioInputPin* input);
-	bool isConnected() const { return !m_connectedInputPins.isEmpty(); }
-
-	const List<Ref<CoreAudioInputPin>>& connectedInputPins() const { return m_connectedInputPins; }
-	void disconnect(int index);
-	void disconnectAll();
-
-private:
-	AudioNodeCore* m_ownerNode;
-	Ref<AudioBus> m_resultBus;	// result of m_ownerNode->process()
-	List<Ref<CoreAudioInputPin>> m_connectedInputPins;
-};
-
-
-class AudioNodeCore
+class ARINode
 	: public Object
 {
 public:
+	//class StagingData
+	//{
+	//protected:
+	//	detail::AudioRWMutex& mutex() { return m_mutex; }
+
+	//private:
+	//	detail::AudioRWMutex m_mutex;
+	//};
+
+
 	// 1度の process で処理するサンプル数。
 	// = 各 Audio API に送り込む 1 回分のサンプル数。
 	// 1 チャンネル分。
@@ -118,34 +51,37 @@ public:
 	// 値を小さくするほど (高レベルAPIとしての) 演奏開始から実際に音が鳴るまでの遅延が少なくなるが、process の回数 (ノードをたどる回数) が増えるので処理は重くなる。
 	static const int ProcessingSizeInFrames = 2048;
 
-	AudioNodeCore(AudioDevice* context, AudioNode* frontNode);
-	virtual ~AudioNodeCore() = default;
+	ARINode(AudioDevice* context, AudioNode* frontNode);
+	virtual ~ARINode() = default;
 	void init();
 
 	AudioDevice* context() const { return m_context; }
 	AudioNode* frontNode() const { return m_frontNode; }
 
-	bool isInputConnected() const { return m_inputPins.findIf([](auto& x) { return x->isConnected(); }).hasValue(); }
-	bool isOutputConnected() const { return m_outputPins.findIf([](auto& x) { return x->isConnected(); }).hasValue(); }
-	CoreAudioInputPin* inputPin(int index) const;
-	CoreAudioOutputPin* outputPin(int index) const;
+	bool isInputConnected() const;
+	bool isOutputConnected() const;
+	ARIInputPin* inputPin(int index) const;
+	ARIOutputPin* outputPin(int index) const;
 	void processIfNeeded();
 
 	// in=1, out=1 用のユーティリティ
-	static void connect(AudioNodeCore* outputSide, AudioNodeCore* inputSide);
+	static void connect(ARINode* outputSide, ARINode* inputSide);
 
 	void disconnectAllInputSide();
 	void disconnectAllOutputSide();
+	void disconnectAll();
 
 	bool m_marked = false;
 
 protected:
 	// Do not call after object initialzation.
-	CoreAudioInputPin* addInputPin(int channels);
+	ARIInputPin* addInputPin(int channels);
 	// Do not call after object initialzation.
-	CoreAudioOutputPin* addOutputPin(int channels);
+	ARIOutputPin* addOutputPin(int channels);
 
 	void pullInputs();
+
+	virtual void onCommit() = 0;
 
 	// output(x) へ書き込む。要素数は自分で addOutputPin() した数だけ。
 	// input は pull 済み。データを取り出すだけでよい。
@@ -155,49 +91,10 @@ protected:
 private:
 	AudioDevice* m_context;
 	AudioNode* m_frontNode;
-	List<Ref<CoreAudioInputPin>> m_inputPins;
-	List<Ref<CoreAudioOutputPin>> m_outputPins;
-};
+	List<Ref<ARIInputPin>> m_inputPins;
+	List<Ref<ARIOutputPin>> m_outputPins;
 
-class CoreAudioPannerNode
-	: public AudioNodeCore
-{
-public:
-
-protected:
-	virtual void process() override;
-
-public:
-	CoreAudioPannerNode(AudioDevice* context, AudioNode* frontNode);
-	virtual ~CoreAudioPannerNode() = default;
-	void init();
-
-private:
-	void azimuthElevation(double* outAzimuth, double* outElevation);
-	float distanceConeGain();
-
-	AudioEmitterParams m_emitter;
-
-	std::shared_ptr<blink::Panner> m_panner;
-	std::shared_ptr<blink::DistanceEffect> m_distanceEffect;
-	std::shared_ptr<blink::ConeEffect> m_coneEffect;
-};
-
-class CoreAudioDestinationNode
-	: public AudioNodeCore
-	, public IAudioDeviceRenderCallback
-{
-public:
-	CoreAudioDestinationNode(AudioDevice* context, AudioNode* frontNode);
-	virtual ~CoreAudioDestinationNode() = default;
-	void init();
-
-protected:
-	virtual void render(float* outputBuffer, int length) override;
-	virtual void process() override;
-
-private:
-	PropagationParameters m_propagationParameters;
+	friend class ::ln::AudioContext;	// for onCcommit
 };
 
 class Audio3DModule

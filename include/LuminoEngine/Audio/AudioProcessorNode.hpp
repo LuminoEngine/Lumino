@@ -4,7 +4,7 @@
 namespace ln {
 class AudioBus;
 namespace detail {
-class CAProcessorNode;
+class ARIProcessorNode;
 }
 
 class AudioProcessorNode
@@ -19,15 +19,15 @@ LN_CONSTRUCT_ACCESS:
     AudioProcessorNode();
     virtual ~AudioProcessorNode();
 	void init(int numberOfInputChannels, int numberOfOutputChannels);
-	virtual detail::AudioNodeCore* coreNode() override;
-    virtual void commit() override;
+	virtual detail::ARINode* coreNode() override;
+    //virtual void commit() override;
 
 private:
-	Ref<detail::CAProcessorNode> m_coreObject;
+	Ref<detail::ARIProcessorNode> m_coreObject;
 
     //Event<PhysicsObjectComponent*>	m_onAudioProcess;
 
-    friend class detail::CAProcessorNode;
+    friend class detail::ARIProcessorNode;
 };
 
 } // namespace ln

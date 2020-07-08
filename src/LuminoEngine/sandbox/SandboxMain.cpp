@@ -35,6 +35,7 @@ using namespace ln;
 //#pragma comment(lib, "D:/Program Files/Autodesk/FBX/FBX SDK/2020.1/lib/vs2017/x64/debug/libfbxsdk-mt.lib")
 //#pragma comment(lib, "D:/Program Files/Autodesk/FBX/FBX SDK/2020.1/lib/vs2017/x64/debug/libxml2-mt.lib")
 
+#if 0
 class TestProcessorNode : public AudioProcessorNode
 {
 public:
@@ -100,6 +101,7 @@ public:
         }
     }
 };
+#endif
 
 
 
@@ -459,7 +461,7 @@ int main(int argc, char** argv)
 
     if (1) {
 		//Sandbox_EmptyApp();
-		//Example_GameAudio();
+		Example_GameAudio();
         //Example_MainLoop();
 		//Example_MeshViewer();
         //Example_MessageWindow();
@@ -468,7 +470,7 @@ int main(int argc, char** argv)
         //Example_Sprite();
         //Example_UIControls();
 		//Example_Tilemap();
-        Experiment_Editor();
+        //Experiment_Editor();
         //Experiment_Reflector();
         //Experiment_Scripting();
         //Experiment_SelectObject();

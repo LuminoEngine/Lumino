@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/AudioProcessorNode.hpp>
-#include "Core/CAProcessorNode.hpp"
+#include "ARIs/ARIProcessorNode.hpp"
 #include "AudioManager.hpp"
 
 namespace ln {
@@ -22,24 +22,24 @@ void AudioProcessorNode::init(int numberOfInputChannels, int numberOfOutputChann
 {
     // TODO: AudioNode::init() の後にしたい。
     // detail::EngineDomain::audioManager()->primaryContext() じゃなくて context() にしたい
-    m_coreObject = makeRef<detail::CAProcessorNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
+    m_coreObject = makeRef<detail::ARIProcessorNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
     m_coreObject->init(numberOfInputChannels, numberOfOutputChannels);
 
 	AudioNode::init();
 }
 
-detail::AudioNodeCore* AudioProcessorNode::coreNode()
+detail::ARINode* AudioProcessorNode::coreNode()
 {
 	return m_coreObject;
 }
 
-void AudioProcessorNode::commit()
-{
-    AudioNode::commit();
-
-    detail::ScopedReadLock lock(propertyMutex());
-    //m_coreObject->setGain(m_gain);
-}
+//void AudioProcessorNode::commit()
+//{
+//    //AudioNode::commit();
+//
+//    //detail::ScopedReadLock lock(propertyMutex());
+//    ////m_coreObject->setGain(m_gain);
+//}
 
 void AudioProcessorNode::onAudioProcess(AudioBus* input, AudioBus* output)
 {

@@ -1,6 +1,9 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/Sound.hpp>
+#include "Decoder/AudioDecoder.hpp"
+#include "ARIs/ARISourceNode.hpp"
 #include "GameAudioImpl.hpp"
 #include "AudioManager.hpp"
 
@@ -143,7 +146,7 @@ void GameAudioImpl::playSE(const StringRef& filePath, float volume, float pitch)
     sound->setPitch(pitch);
 
     // 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
-    sound->setGameAudioFlags(GameAudioFlags_SE);
+    sound->core()->setGameAudioFlags(GameAudioFlags_SE);
     pushReleaseAtPlayEndList(sound);
 
     // 再生
@@ -164,7 +167,7 @@ void GameAudioImpl::playSE3D(const StringRef& filePath, const Vector3& position,
     sound->setPitch(pitch);
 
     // 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
-    sound->setGameAudioFlags(GameAudioFlags_SE);
+    sound->core()->setGameAudioFlags(GameAudioFlags_SE);
     pushReleaseAtPlayEndList(sound);
 
     // 再生
@@ -178,7 +181,7 @@ void GameAudioImpl::stopSE()
     ReleaseAtPlayEndList::iterator end = mReleaseAtPlayEndList.end();
     for (; itr != end; ++itr)
     {
-        if ((*itr)->gameAudioFlags() & GameAudioFlags_SE)
+        if ((*itr)->core()->gameAudioFlags() & GameAudioFlags_SE)
         {
             (*itr)->stop();
         }
@@ -499,6 +502,207 @@ void GameAudioImpl::pushReleaseAtPlayEndList(Sound* sound)
 Ref<Sound> GameAudioImpl::createSound(const StringRef& filePath)
 {
     return makeObject<Sound>(filePath);
+}
+
+//==============================================================================
+// GameAudioImpl
+
+GameAudioImpl2::GameAudioImpl2(AudioManager* mamager)
+    : m_manager(mamager)
+{
+}
+
+void GameAudioImpl2::dispose()
+{
+    // Flush commands
+    update(1.0f);
+
+    if (m_bgm) {
+        m_bgm->lifecycleState = SoundCoreLifecycleState::Disposed;
+        m_bgm = nullptr;
+    }
+}
+
+void GameAudioImpl2::playBGM(const StringRef& filePath, float volume, float pitch, double fadeTime)
+{
+    Command cmd;
+    cmd.type = CommandType::PlayBGM;
+    cmd.sound = createSoundCore(filePath);
+    cmd.volume = volume;
+    cmd.pitch = pitch;
+    cmd.fadeTime = fadeTime;
+    if (cmd.sound) {
+        m_commands.push_back(std::move(cmd));
+    }
+}
+
+void GameAudioImpl2::stopBGM(double fadeTime)
+{
+    Command cmd;
+    cmd.type = CommandType::StopBGM;
+    cmd.fadeTime = fadeTime;
+    m_commands.push_back(std::move(cmd));
+}
+
+void GameAudioImpl2::playBGS(const StringRef& filePath, float volume, float pitch, double fadeTime)
+{
+    Command cmd;
+    cmd.type = CommandType::PlayBGS;
+    cmd.sound = createSoundCore(filePath);
+    cmd.volume = volume;
+    cmd.pitch = pitch;
+    cmd.fadeTime = fadeTime;
+    if (cmd.sound) {
+        m_commands.push_back(std::move(cmd));
+    }
+}
+
+void GameAudioImpl2::stopBGS(double fadeTime)
+{
+    Command cmd;
+    cmd.type = CommandType::StopBGS;
+    cmd.fadeTime = fadeTime;
+    m_commands.push_back(std::move(cmd));
+}
+
+void GameAudioImpl2::playME(const StringRef& filePath, float volume, float pitch)
+{
+    Command cmd;
+    cmd.type = CommandType::PlayME;
+    cmd.sound = createSoundCore(filePath);
+    cmd.volume = volume;
+    cmd.pitch = pitch;
+    if (cmd.sound) {
+        m_commands.push_back(std::move(cmd));
+    }
+}
+
+void GameAudioImpl2::stopME()
+{
+    Command cmd;
+    cmd.type = CommandType::StopME;
+    m_commands.push_back(std::move(cmd));
+}
+
+void GameAudioImpl2::playSE(const StringRef& filePath, float volume, float pitch)
+{
+    Command cmd;
+    cmd.type = CommandType::PlaySE;
+    cmd.sound = createSoundCore(filePath);
+    cmd.volume = volume;
+    cmd.pitch = pitch;
+    if (cmd.sound) {
+        m_commands.push_back(std::move(cmd));
+    }
+}
+
+void GameAudioImpl2::playSE3D(const StringRef& filePath, const Vector3& position, float distance, float volume, float pitch)
+{
+    Command cmd;
+    cmd.type = CommandType::PlaySE3D;
+    cmd.sound = createSoundCore(filePath);
+    cmd.volume = volume;
+    cmd.pitch = pitch;
+    cmd.position = position;
+    cmd.distance = distance;
+    if (cmd.sound) {
+        m_commands.push_back(std::move(cmd));
+    }
+}
+
+void GameAudioImpl2::stopSE()
+{
+    Command cmd;
+    cmd.type = CommandType::StopSE;
+    m_commands.push_back(std::move(cmd));
+}
+
+void GameAudioImpl2::setMEFadeTimes(float bgmFadeoutTime, float bgmFadeinTime)
+{
+    if (LN_REQUIRE(bgmFadeoutTime >= 0)) return;
+    if (LN_REQUIRE(bgmFadeinTime >= 0)) return;
+    m_bgmFadeOutTimeForME = bgmFadeoutTime;
+    m_bgmFadeInTimeForME = bgmFadeinTime;
+}
+
+void GameAudioImpl2::update(float elapsedSeconds)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+
+    if (!m_commands.empty()) {
+        for (const auto& cmd : m_commands) {
+            switch (cmd.type) {
+                case CommandType::PlayBGM:
+                    // TODO: cross-fade
+                    m_bgm = cmd.sound;
+                    m_bgm->setLoopEnabled(true);
+                    m_bgm->setVolume(cmd.volume, cmd.fadeTime, SoundFadeBehavior::stop);
+                    m_bgm->setPitch(cmd.pitch);
+                    m_bgm->play();
+                    break;
+                case CommandType::StopBGM:
+                    m_bgm->stop(cmd.fadeTime);
+                    break;
+                case CommandType::PlayBGS:
+                    m_bgs = cmd.sound;
+                    m_bgs->setLoopEnabled(true);
+                    m_bgs->setVolume(cmd.volume, cmd.fadeTime, SoundFadeBehavior::stop);
+                    m_bgs->setPitch(cmd.pitch);
+                    m_bgs->play();
+                    break;
+                case CommandType::StopBGS:
+                    m_bgs->stop(cmd.fadeTime);
+                    break;
+                case CommandType::PlayME:
+                    LN_NOTIMPLEMENTED();
+                    break;
+                case CommandType::StopME:
+                    LN_NOTIMPLEMENTED();
+                    break;
+                case CommandType::PlaySE:
+                    cmd.sound->setVolume(cmd.volume, 0.0f, SoundFadeBehavior::Continue);
+                    cmd.sound->setPitch(cmd.pitch);
+                    cmd.sound->setLoopEnabled(false);
+                    cmd.sound->play();
+                    m_seList.add(cmd.sound);
+                    break;
+                case CommandType::PlaySE3D:
+                    LN_NOTIMPLEMENTED();
+                    break;
+                case CommandType::StopSE:
+                    for (const auto& se : m_seList) {
+                        se->stop(0.0f);
+                    }
+                    break;
+                default:
+                    LN_UNREACHABLE();
+                    break;
+            }
+        }
+        m_commands.clear();
+    }
+
+    for (int i = m_seList.size() - 1; i >= 0; i--) {
+        if (m_seList[i]->m_sourceNode->playingState() == ARISourceNode::State::Stopped) {
+            m_seList.removeAt(i);
+            // ここではリストから外すだけ。
+            // dispose はメインの管理リスト (AudioManager::m_soundCoreList) の polling から行われる。
+        }
+    }
+}
+
+Ref<SoundCore> GameAudioImpl2::createSoundCore(const StringRef& filePath)
+{
+    Ref<detail::AudioDecoder> decoder = m_manager->createAudioDecoder(filePath);
+
+    AudioContext* context = m_manager->primaryContext();
+    auto soundCore = makeRef<detail::SoundCore>();
+    if (!soundCore->init(m_manager, context, decoder)) {
+        return nullptr;
+    }
+    m_manager->postAddSoundCore(soundCore);
+
+    return soundCore;
 }
 
 } // namespace detail
