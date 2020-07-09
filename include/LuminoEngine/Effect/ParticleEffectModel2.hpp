@@ -109,7 +109,7 @@ public:
 	ParticleEmitterShapeType m_shapeType = ParticleEmitterShapeType::Sphere;
 	Vector3 m_shapeParam;	// Coneの場合、.x が有効角度。0~PI。Boxの場合は各辺の幅
 	RadomRangeValue<float> m_forwardPosition;
-	RadomRangeValue<float> m_forwardVelocity = { 1, 1 };
+	RadomRangeValue<float> m_forwardVelocity;// = { 1, 1 };
 	RadomRangeValue<float> m_forwardAccel;
 	// ↑ forwardXXXX は、 ShapeType で決まった正面方向に対する Dynamics.
 	// Sphere,Cone の場合は放射方向、Box の場合は Y+.

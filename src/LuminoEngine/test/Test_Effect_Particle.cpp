@@ -63,7 +63,7 @@ TEST_F(Test_Effect_Particle, SingleSprite)
 	Engine::camera()->setPosition(0, 0, -2);
 
 	auto material = Material::create();
-	material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/ColorGrid.png"));
+	material->setMainTexture(Texture2D::load("Effect/ColorGrid.png"));
 	material->shadingModel = ShadingModel::Unlit;
 	material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
@@ -80,13 +80,13 @@ TEST_F(Test_Effect_Particle, SingleSprite)
 
 	// 1フレーム更新 -> 表示される
 	TestEnv::updateFrame();
-	ASSERT_SCREEN_S(LN_ASSETFILE("Effect/Expects/Test_Effect_Particle-SingleSprite-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("Effect/Expects/Test_Effect_Particle-SingleSprite-1.png"));
 
 	// 1秒以上経過させてみる -> 消える
 	for (int i = 0; i < 100; i++) {
 		TestEnv::updateFrame();
 	}
-	ASSERT_SCREEN_S(LN_ASSETFILE("Effect/Expects/Test_Effect_Particle-SingleSprite-2.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("Effect/Expects/Test_Effect_Particle-SingleSprite-2.png"));
 
 	LN_TEST_CLEAN_SCENE;
 }
