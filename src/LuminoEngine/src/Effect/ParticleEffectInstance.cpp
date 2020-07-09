@@ -23,6 +23,11 @@ bool ParticleInstance2::init(ParticleModel2* model)
 
     m_model = model;
 
+    if (m_model->seed != 0) {
+        m_rand.setSeed(m_model->seed);
+    }
+    
+
     for (auto& emitterModel : m_model->emitters()) {
         auto instance = makeObject<ParticleEmitterInstance2>(this, emitterModel);
         m_emitterInstances.add(instance);

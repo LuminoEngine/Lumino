@@ -126,6 +126,7 @@ class ParticleModel2
 {
 public:
 	bool m_loop = true;
+	int seed = 0;
 
 	const List<Ref<ParticleEmitterModel2>>& emitters() const { return m_emitters; }
 

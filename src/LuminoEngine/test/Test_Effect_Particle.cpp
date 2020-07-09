@@ -197,6 +197,10 @@ TEST_F(Test_Effect_Particle, BoxShape)
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, Trail)
 {
+	// TODO: このテストは、プロトで作った Trail のテスト用。Trail 正式対応後、直した方がいいかも。
+
+	Engine::camera()->setPosition(0, 0, -5);
+
 	auto material = Material::create();
 	material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/ColorGrid.png"));
 	material->shadingModel = ShadingModel::Unlit;
@@ -204,22 +208,15 @@ TEST_F(Test_Effect_Particle, Trail)
 
 
 	auto particleModel = makeObject<ParticleModel2>();
+	particleModel->seed = 8888;
 	auto m1 = particleModel->emitters()[0];
 	m1->setSpriteModule(material);
 	m1->setLifeTime(10);
-	m1->setMaxParticles(1);
+	m1->setMaxParticles(10);
 	m1->setSpawnRate(1);
-	m1->m_forwardVelocity.set(0);
-	m1->m_velocity.set(Vector3(0, 0, 1));
+	m1->m_acceleration.set(Vector3(0, -0.5, 0));
 	m1->m_trailSeconds = 1.0f;
 
-	//m1->setMaterial(material);
-	//m1->setSpawnRate(1);
-	//m1->setLifeTime(2.0f);
-	//m1->m_maxParticles = 1;
-	//m1->m_shapeType = ParticleEmitterShapeType::Cone;
-	//m1->m_shapeParam.x = Math::PI * 0.1;
-	//m1->m_shapeParam.y = 2;
 	auto cmp1 = makeObject<ParticleEmitterComponent2>(particleModel);
 	cmp1->setCullMode(CullMode::None);
 	cmp1->setBlendMode(BlendMode::Alpha);
