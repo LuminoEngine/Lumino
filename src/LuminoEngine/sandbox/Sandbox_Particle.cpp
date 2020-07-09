@@ -12,7 +12,7 @@ class App_Sandbox_Particle : public Application
         Engine::renderView()->setBackgroundColor(Color::Gray);
 #if 0
         auto material = Material::create();
-        material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
+        material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/ColorGrid.png"));
         material->shadingModel = ShadingModel::Unlit;
         material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
         
@@ -41,9 +41,9 @@ class App_Sandbox_Particle : public Application
         obj1->addComponent(cmp1);
 #endif
 
-#if 0
+#if 1
         auto material = Material::create();
-        material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
+        material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/ColorGrid.png"));
         material->shadingModel = ShadingModel::Unlit;
         material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
@@ -57,6 +57,7 @@ class App_Sandbox_Particle : public Application
         //m1->m_forwardVelocity.set(0);
         //m1->m_velocity.set(Vector3(0, 0, 1));
         m1->m_acceleration.set(Vector3(0, -0.5, 0));
+        m1->m_trailSeconds = 1.0f;
 
         //m1->setMaterial(material);
         //m1->setSpawnRate(1);
@@ -91,7 +92,7 @@ class App_Sandbox_Particle : public Application
         auto obj1 = makeObject<WorldObject>();
         obj1->addComponent(cmp1);
 #endif
-#if 1	// 雨
+#if 0	// 雨
         auto particleModel = makeObject<ParticleModel2>();
         auto m1 = particleModel->emitters()[0];
         m1->m_maxParticles = 10000;

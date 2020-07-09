@@ -1,10 +1,10 @@
 ﻿#include "Common.hpp"
 #include <LuminoEngine/Effect/ParticleEffectModel2.hpp>
 #include "../src/Effect/ParticleEffectInstance.hpp"
+#include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 
 class Test_Effect_Particle : public ::testing::Test {};
 
-#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, Lifetime)
 {
@@ -44,14 +44,20 @@ TEST_F(Test_Effect_Particle, Lifetime)
 			particleInstance->updateFrame(0.016);
 			ASSERT_EQ(true, emitterInstance->particleData(0).isActive());
 		}
-		// さらに0.9秒進める。Particle 新しいものが生成されている。1秒経ってないのでまだ存在している
+		// さらに0.9秒進める。1秒経ってないのでまだ存在している
 		{
 			particleInstance->updateFrame(0.9);
+			ASSERT_EQ(true, emitterInstance->particleData(0).isActive());
+		}
+		// さらに1秒進める。Particle は新しいものが生成されている。
+		{
+			particleInstance->updateFrame(1.0);
 			ASSERT_EQ(true, emitterInstance->particleData(0).isActive());
 		}
 	}
 }
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, SpawnRate)
 {
@@ -187,3 +193,43 @@ TEST_F(Test_Effect_Particle, BoxShape)
 //}
 
 #endif
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Effect_Particle, Trail)
+{
+	auto material = Material::create();
+	material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/ColorGrid.png"));
+	material->shadingModel = ShadingModel::Unlit;
+	material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+
+
+	auto particleModel = makeObject<ParticleModel2>();
+	auto m1 = particleModel->emitters()[0];
+	m1->setSpriteModule(material);
+	m1->setLifeTime(10);
+	m1->setMaxParticles(1);
+	m1->setSpawnRate(1);
+	m1->m_forwardVelocity.set(0);
+	m1->m_velocity.set(Vector3(0, 0, 1));
+	m1->m_trailSeconds = 1.0f;
+
+	//m1->setMaterial(material);
+	//m1->setSpawnRate(1);
+	//m1->setLifeTime(2.0f);
+	//m1->m_maxParticles = 1;
+	//m1->m_shapeType = ParticleEmitterShapeType::Cone;
+	//m1->m_shapeParam.x = Math::PI * 0.1;
+	//m1->m_shapeParam.y = 2;
+	auto cmp1 = makeObject<ParticleEmitterComponent2>(particleModel);
+	cmp1->setCullMode(CullMode::None);
+	cmp1->setBlendMode(BlendMode::Alpha);
+
+	auto obj1 = makeObject<WorldObject>();
+	obj1->addComponent(cmp1);
+
+	for (int i = 0; i < 60; i++) {
+		TestEnv::updateFrame();
+	}
+	ASSERT_SCREEN(LN_ASSETFILE("Effect/Expects/Test_Effect_Particle-Trail-1.png"));
+	LN_TEST_CLEAN_SCENE;
+}
