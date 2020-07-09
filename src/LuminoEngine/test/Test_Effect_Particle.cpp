@@ -57,6 +57,40 @@ TEST_F(Test_Effect_Particle, Lifetime)
 	}
 }
 
+//------------------------------------------------------------------------------
+TEST_F(Test_Effect_Particle, SingleSprite)
+{
+	Engine::camera()->setPosition(0, 0, -2);
+
+	auto material = Material::create();
+	material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/ColorGrid.png"));
+	material->shadingModel = ShadingModel::Unlit;
+	material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+
+	auto particleModel = makeObject<ParticleModel2>();
+	auto emitter1 = particleModel->emitters()[0];
+	emitter1->setSpriteModule(material);
+	emitter1->setLifeTime(1);
+	emitter1->setMaxParticles(1);
+	emitter1->setSpawnRate(1);
+
+	auto cmp1 = makeObject<ParticleEmitterComponent2>(particleModel);
+	auto obj1 = makeObject<WorldObject>();
+	obj1->addComponent(cmp1);
+
+	// 1フレーム更新 -> 表示される
+	TestEnv::updateFrame();
+	ASSERT_SCREEN_S(LN_ASSETFILE("Effect/Expects/Test_Effect_Particle-SingleSprite-1.png"));
+
+	// 1秒以上経過させてみる -> 消える
+	for (int i = 0; i < 100; i++) {
+		TestEnv::updateFrame();
+	}
+	ASSERT_SCREEN_S(LN_ASSETFILE("Effect/Expects/Test_Effect_Particle-SingleSprite-2.png"));
+
+	LN_TEST_CLEAN_SCENE;
+}
+
 #if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, SpawnRate)
@@ -216,6 +250,7 @@ TEST_F(Test_Effect_Particle, Trail)
 	m1->setSpawnRate(1);
 	m1->m_acceleration.set(Vector3(0, -0.5, 0));
 	m1->m_trailSeconds = 1.0f;
+	m1->m_geometryDirection = ParticleGeometryDirection::Top;
 
 	auto cmp1 = makeObject<ParticleEmitterComponent2>(particleModel);
 	cmp1->setCullMode(CullMode::None);

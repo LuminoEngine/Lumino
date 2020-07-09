@@ -148,9 +148,9 @@ void SpriteParticleGeometry::setMaterial(Material* material)
     m_material = material;
 }
 
-uint64_t SpriteParticleGeometry::calculateRendererHashKey() const
+uint64_t SpriteParticleGeometry::calculateRendererHashKey(ParticleEmitterModel2* emitterModel) const
 {
-    return reinterpret_cast<uint64_t>(m_material.get());
+    return reinterpret_cast<uint64_t>(m_material.get()) + static_cast<uint16_t>(emitterModel->m_geometryDirection);
 }
 
 //==============================================================================

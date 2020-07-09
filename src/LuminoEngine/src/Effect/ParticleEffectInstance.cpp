@@ -63,9 +63,10 @@ void ParticleInstance2::render(RenderingContext* context)
     }
 }
 
-ParticleRenderer2* ParticleInstance2::acquireRenderer(ParticleGeometry* geometry)
+ParticleRenderer2* ParticleInstance2::acquireRenderer(ParticleEmitterModel2* emitterModel)
 {
-    uint64_t hashKey = geometry->calculateRendererHashKey();
+    ParticleGeometry* geometry = emitterModel->geometry();
+    uint64_t hashKey = geometry->calculateRendererHashKey(emitterModel);
 
     for (auto& renderer : m_renderers) {
         if (renderer->type() == geometry->type() && renderer->hashKey() == hashKey) {
@@ -75,7 +76,7 @@ ParticleRenderer2* ParticleInstance2::acquireRenderer(ParticleGeometry* geometry
 
     if (geometry->type() == ParticleGeometryType::Sprite) {
         auto* g = static_cast<SpriteParticleGeometry*>(geometry);
-        auto renderer = makeObject<SpriteParticleRenderer>(hashKey, g->material());
+        auto renderer = makeObject<SpriteParticleRenderer>(hashKey, g->material(), emitterModel->m_geometryDirection);
         m_renderers.add(renderer);
         return renderer;
     }
@@ -107,7 +108,7 @@ bool ParticleEmitterInstance2::init(ParticleInstance2* particleInstance, Particl
     m_particleInstance = particleInstance;
     m_emitterModel = emitterModel;
 
-    m_renderer = particleInstance->acquireRenderer(m_emitterModel->geometry());
+    m_renderer = particleInstance->acquireRenderer(m_emitterModel);
 
     m_particleStorage.resize(m_emitterModel->m_maxParticles);
 

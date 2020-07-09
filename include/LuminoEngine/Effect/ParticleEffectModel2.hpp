@@ -6,10 +6,22 @@
 
 namespace ln {
 class Material;
+class ParticleEmitterModel2;
 
 enum class ParticleGeometryType
 {
 	Sprite,
+};
+
+enum class ParticleGeometryDirection
+{
+	//Default,
+
+	/** 常に視点方向を向く */
+	ToView,
+
+	/** 進行方向を軸に、表面 (Y+) が視点から見えるようにする */
+	Top,
 };
 
 /** パーティクルのソート方法 */
@@ -32,7 +44,7 @@ class ParticleGeometry
 {
 public:
 	ParticleGeometryType type() const { return m_type; }
-	virtual uint64_t calculateRendererHashKey() const = 0;
+	virtual uint64_t calculateRendererHashKey(ParticleEmitterModel2* emitterModel) const = 0;
 
 LN_CONSTRUCT_ACCESS:
 	ParticleGeometry(ParticleGeometryType type);
@@ -48,7 +60,7 @@ class SpriteParticleGeometry
 public:
 	void setMaterial(Material* material);
 	const Ref<Material>& material() const { return m_material; }
-	uint64_t calculateRendererHashKey() const override;
+	uint64_t calculateRendererHashKey(ParticleEmitterModel2* emitterModel) const override;
 
 LN_CONSTRUCT_ACCESS:
 	SpriteParticleGeometry();
@@ -105,8 +117,10 @@ public:
 
 
 	RadomRangeValue<float> m_size;			// default:1 ベースの geom 対するスケール値。
-	RadomRangeValue<float> m_forwardScale;	// default:1 進行方向に対するスケール値。通常、Z軸
-	RadomRangeValue<float> m_crossScale;	// default:1 進行方向以外に対するスケール値。XとY軸
+	RadomRangeValue<float> m_forwardScale;	// default:1 進行方向に対するスケール値。通常、Z軸。ParticleGeometryDirection::ToView では Y scale
+	RadomRangeValue<float> m_crossScale;	// default:1 進行方向以外に対するスケール値。XとY軸。ParticleGeometryDirection::ToView では X scale
+
+	ParticleGeometryDirection m_geometryDirection = ParticleGeometryDirection::ToView;
 
 	float m_trailSeconds = 0.0f; //1.0f;	// Trail を生成する時間
 

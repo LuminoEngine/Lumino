@@ -159,7 +159,7 @@ public:
 
 	void render(RenderingContext* context);
 
-	ParticleRenderer2* acquireRenderer(ParticleGeometry* geometry);
+	ParticleRenderer2* acquireRenderer(ParticleEmitterModel2* emitterModel);
 
 LN_CONSTRUCT_ACCESS:
 	ParticleInstance2();

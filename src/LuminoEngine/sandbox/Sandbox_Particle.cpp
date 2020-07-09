@@ -10,7 +10,7 @@ class App_Sandbox_Particle : public Application
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
-#if 0
+#if 1
         auto material = Material::create();
         material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/ColorGrid.png"));
         material->shadingModel = ShadingModel::Unlit;
@@ -41,7 +41,7 @@ class App_Sandbox_Particle : public Application
         obj1->addComponent(cmp1);
 #endif
 
-#if 1
+#if 0
         auto material = Material::create();
         material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/ColorGrid.png"));
         material->shadingModel = ShadingModel::Unlit;
@@ -114,7 +114,7 @@ class App_Sandbox_Particle : public Application
         m1->m_sortMode = ParticleSortMode::DistanceToView;
 
         auto material = Material::create();
-        material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
+        material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
         material->shadingModel = ShadingModel::Unlit;
         material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
         m1->setSpriteModule(material);
