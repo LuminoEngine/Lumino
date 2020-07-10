@@ -167,7 +167,7 @@ ParticleEmitterModel2::ParticleEmitterModel2()
 
 bool ParticleEmitterModel2::init()
 {
-    if (!EffectResource::init()) return false;
+    if (!Object::init()) return false;
 
     //auto geom = makeObject<SpriteParticleGeometry>();
     //m_geometry = geom;
@@ -179,13 +179,10 @@ bool ParticleEmitterModel2::init()
 
 void ParticleEmitterModel2::serialize2(Serializer2& ar)
 {
-    EffectResource::serialize2(ar);
+    Object::serialize2(ar);
     ar & makeNVP(u"maxParticles", m_spawnRate);
     ar & makeNVP(u"spawnRate", m_maxParticles);
     ar & makeNVP(u"burstCount", m_burstCount);
-
-
-
 }
 
 void ParticleEmitterModel2::setSpriteModule(Material* material)
@@ -210,6 +207,13 @@ bool ParticleModel2::init()
     m_emitters.add(emitter);
 
     return true;
+}
+
+void ParticleModel2::serialize2(Serializer2& ar)
+{
+    EffectResource::serialize2(ar);
+    ar & makeNVP(u"emitters", m_emitters);
+
 }
 
 } // namespace ln

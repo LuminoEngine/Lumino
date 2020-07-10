@@ -93,9 +93,9 @@ void Object::serialize(Archive& ar)
     printf("[Engine] end onSerialize\n");
 }
 
-void Object::serialize2(Serializer2& sr)
+void Object::serialize2(Serializer2& ar)
 {
-	onSerialize2(&sr);
+	onSerialize2(&ar);
 }
 
 void Object::onSerialize(Serializer* ar)

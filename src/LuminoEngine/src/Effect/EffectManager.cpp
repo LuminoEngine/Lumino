@@ -382,18 +382,18 @@ void EffectManager::dispose()
 #endif
 }
 
-Ref<ParticleEmitterModel2> EffectManager::loadParticleEmitterModel(const StringRef& filePath)
+Ref<ParticleModel2> EffectManager::loadParticleModel(const StringRef& filePath)
 {
     // TODO: find cache
 
-    auto obj = makeObject<ParticleEmitterModel2>();
+    auto obj = makeObject<ParticleModel2>();
     detail::AssetObjectInternal::setAssetPath(obj, filePath);
     detail::AssetObjectInternal::reload(obj);
 
     return obj;
 }
 
-Ref<ParticleEmitterModel2Promise> EffectManager::loadParticleEmitterModelAsync(const StringRef& filePath)
+Ref<ParticleModelPromise> EffectManager::loadParticleModelAsync(const StringRef& filePath)
 {
     LN_NOTIMPLEMENTED();
     return nullptr;

@@ -72,7 +72,7 @@ private:
 
 
 class ParticleEmitterModel2
-	: public EffectResource
+	: public Object
 {
 public:
 	const Ref<ParticleGeometry>& geometry() const { return m_geometry; }
@@ -127,7 +127,7 @@ public:
 	ParticleSortMode m_sortMode = ParticleSortMode::None;
 
 protected:
-	virtual void serialize2(Serializer2& ar);
+	void serialize2(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	ParticleEmitterModel2();
@@ -145,6 +145,9 @@ public:
 	int seed = 0;
 
 	const List<Ref<ParticleEmitterModel2>>& emitters() const { return m_emitters; }
+
+protected:
+	void serialize2(Serializer2& ar) override;
 
 
 LN_CONSTRUCT_ACCESS:
