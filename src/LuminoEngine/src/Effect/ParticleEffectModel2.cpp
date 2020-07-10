@@ -166,7 +166,7 @@ ParticleEmitterModel2::ParticleEmitterModel2()
 
 bool ParticleEmitterModel2::init()
 {
-    if (!Object::init()) return false;
+    if (!EffectResource::init()) return false;
 
     //auto geom = makeObject<SpriteParticleGeometry>();
     //m_geometry = geom;
@@ -174,6 +174,11 @@ bool ParticleEmitterModel2::init()
     m_geometry = detail::EngineDomain::effectManager()->defaultSpriteParticleGeometry();
 
     return true;
+}
+
+void ParticleEmitterModel2::serialize2(Serializer2& ar)
+{
+    EffectResource::serialize2(ar);
 }
 
 void ParticleEmitterModel2::setSpriteModule(Material* material)

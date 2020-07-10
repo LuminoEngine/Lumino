@@ -126,6 +126,8 @@ public:
 
 	ParticleSortMode m_sortMode = ParticleSortMode::None;
 
+protected:
+	virtual void serialize2(Serializer2& ar);
 
 LN_CONSTRUCT_ACCESS:
 	ParticleEmitterModel2();

@@ -370,7 +370,7 @@ public:
             outRect->width = desiredSize.width;
             break;
         case HAlignment::Center:
-            outRect->x = ((area.x + area.width) - desiredSize.width) / 2;
+            outRect->x = area.x + ((area.width - desiredSize.width) / 2);
             outRect->width = desiredSize.width;
             break;
         case HAlignment::Right:
@@ -393,7 +393,7 @@ public:
             outRect->height = desiredSize.height;
             break;
         case VAlignment::Center:
-            outRect->y = ((area.y + area.height) - desiredSize.height) / 2;
+            outRect->y = area.y + ((area.height - desiredSize.height) / 2);
             outRect->height = desiredSize.height;
             break;
         case VAlignment::Bottom:

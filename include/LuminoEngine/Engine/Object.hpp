@@ -214,7 +214,7 @@ protected:
 	LN_SERIALIZE_CLASS_VERSION(1);
     virtual void serialize(Archive& ar);
 
-    virtual void serialize2(Serializer2& sr);
+    virtual void serialize2(Serializer2& ar);
 
     /** onSerialize */
     LN_METHOD()

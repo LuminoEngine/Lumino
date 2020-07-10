@@ -44,6 +44,7 @@ public:
 		Engine::ui()->addChild(mainLauout);
 
 		int margin = 8;
+
 #if 1
 		// Button
 		{
@@ -209,8 +210,8 @@ public:
 				layout1->addChild(layout2);
 			}
 		}
-#endif
 
+#endif
 
 		// TabBar
 		{
@@ -246,8 +247,9 @@ public:
 
 			tab1->setData(makeVariant(e1));
 			tab2->setData(makeVariant(e2));
-			tabbar1->connectOnSelectedTabChanged([tabbar1, switch1](UIEventArgs* e) {
-				switch1->setActive(tabbar1->selectedTab()->data()->getAsObject<UIElement>());
+			tabbar1->connectOnSelectedTabChanged([/*tabbar1, */switch1](UIEventArgs* e) {	// tabbar1 をキャプチャすると循環参照になるので注意
+				auto tab = static_cast<UITabBar2*>(e->sender())->selectedTab()->data()->getAsObject<UIElement>();
+				switch1->setActive(tab);
 			});
 		}
     }
