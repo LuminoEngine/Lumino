@@ -44,46 +44,37 @@ public:
 
 	VulkanDevice();
 	bool init(const Settings& settings, bool* outIsDriverSupported);
-	virtual void dispose() override;
+	void dispose() override;
 
     VkInstance vulkanInstance() const { return m_instance; }
     VkPhysicalDevice vulkanPhysicalDevice() const { return m_physicalDevice; }
     VkDevice vulkanDevice() const { return m_device; }
-    const VkAllocationCallbacks* vulkanAllocator() const { return nullptr; }// return m_allocator.vulkanAllocator();
+    const VkAllocationCallbacks* vulkanAllocator() const { return nullptr; }// TODO: return m_allocator.vulkanAllocator();
     VkCommandPool vulkanCommandPool() const { return m_commandPool; }
     uint32_t graphicsQueueFamilyIndex() const { return m_graphicsQueueFamilyIndex; }
-    //uint32_t m_graphicsQueueFamilyIndex;
-    //VkQueue m_graphicsQueue;
-     
     Result findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
-
-    //VulkanRenderPassCache* renderPassCache() { return &m_renderPassCache; }
-    //VulkanFramebufferCache* framebufferCache() { return &m_framebufferCache; }
-    //VulkanPipelineCache* pipelineCache() { return &m_pipelineCache; }
-	//const Ref<VulkanGraphicsContext>& graphicsContext() const { return m_graphicsContext; }
     VulkanNativeGraphicsInterface* vulkanNativeGraphicsInterface() const { return m_nativeInterface.get(); }
 
 protected:
-	virtual INativeGraphicsInterface* getNativeInterface() const;
-    //virtual ICommandList* getGraphicsContext() const { return nullptr; }
-	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
-	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
-	virtual Ref<ICommandList> onCreateCommandList() override;
-	virtual Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) override;
-	virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;
-	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
-	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
-	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
-	virtual Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
-	virtual Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
-	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
-    virtual Ref<ITexture> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) override { LN_NOTIMPLEMENTED(); return nullptr; }
-    virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
-	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
-	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
-	virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override;
-	virtual ICommandQueue* getGraphicsCommandQueue() override;
-	virtual ICommandQueue* getComputeCommandQueue() override;
+	INativeGraphicsInterface* getNativeInterface() const override;
+	void onGetCaps(GraphicsDeviceCaps* outCaps) override;
+	Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
+	Ref<ICommandList> onCreateCommandList() override;
+	Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) override;
+	Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;
+	Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
+	Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
+	Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
+	Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
+	Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
+	Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
+    Ref<ITexture> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) override { LN_NOTIMPLEMENTED(); return nullptr; }
+    Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
+	Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
+	Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
+	void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override;
+	ICommandQueue* getGraphicsCommandQueue() override;
+	ICommandQueue* getComputeCommandQueue() override;
 
 public: // TODO:
     struct PhysicalDeviceInfo
@@ -141,34 +132,34 @@ class VulkanGraphicsContext
 {
 public:
 	VulkanGraphicsContext();
-	Result init(VulkanDevice* owner);
+    bool init(VulkanDevice* owner);
 	void dispose();
 
-	const Ref<VulkanCommandBuffer>& recodingCommandBuffer() const { return m_recodingCommandBuffer; }
-	void setRecodingCommandBuffer(const Ref<VulkanCommandBuffer>& value) { m_recodingCommandBuffer = value; }
+    const Ref<VulkanCommandBuffer>& recodingCommandBuffer() const { return m_recodingCommandBuffer; }
+    void setRecodingCommandBuffer(const Ref<VulkanCommandBuffer>& value) { m_recodingCommandBuffer = value; }
 
 protected:
-	virtual void onSaveExternalRenderState() override {}
-	virtual void onRestoreExternalRenderState() override {}
-	virtual void onBeginCommandRecoding() override;
-	virtual void onEndCommandRecoding() override;
-	virtual void onBeginRenderPass(IRenderPass* renderPass) override;
-	virtual void onEndRenderPass(IRenderPass* renderPass) override;
-	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) override;
-	virtual void* onMapResource(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size) override;
-	virtual void onUnmapResource(IGraphicsRHIBuffer* resource) override;
-	virtual void onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length) override;
-	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
-	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
-    virtual void onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data) override;
-	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
-	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
-	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount) override;
-	virtual void onDrawExtension(INativeGraphicsExtension* extension) override;
+    void onSaveExternalRenderState() override;
+    void onRestoreExternalRenderState() override;
+	void onBeginCommandRecoding() override;
+	void onEndCommandRecoding() override;
+	void onBeginRenderPass(IRenderPass* renderPass) override;
+	void onEndRenderPass(IRenderPass* renderPass) override;
+	void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) override;
+	void* onMapResource(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size) override;
+	void onUnmapResource(IGraphicsRHIBuffer* resource) override;
+	void onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length) override;
+	void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
+	void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
+    void onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data) override;
+	void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
+	void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
+	void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount) override;
+	void onDrawExtension(INativeGraphicsExtension* extension) override;
 
 private:
 	VulkanDevice* m_device;
-	Ref<VulkanCommandBuffer> m_recodingCommandBuffer;
+    Ref<VulkanCommandBuffer> m_recodingCommandBuffer;
 };
 
 class VulkanSwapChain
@@ -177,13 +168,12 @@ class VulkanSwapChain
 public:
 	VulkanSwapChain();
 	Result init(VulkanDevice* deviceContext, PlatformWindow* window, const SizeI& backbufferSize);
-    virtual void dispose() override;
-	virtual uint32_t getBackbufferCount() override { return m_swapChainImageViews.size(); }
-    virtual void acquireNextImage(int* outImageIndex) override;
-	virtual ITexture* getRenderTarget(int imageIndex) const override;
-	virtual Result resizeBackbuffer(uint32_t width, uint32_t height) override;
-	virtual void present() override;
-
+    void dispose() override;
+    uint32_t getBackbufferCount() override;
+    void acquireNextImage(int* outImageIndex) override;
+    ITexture* getRenderTarget(int imageIndex) const override;
+    Result resizeBackbuffer(uint32_t width, uint32_t height) override;
+    void present() override;
 
     VkSwapchainKHR vulkanSwapchain() const { return m_swapchain; }
     VkFormat vulkanSwapchainImageFormat() const { return m_swapchainImageFormat; }
@@ -192,8 +182,6 @@ public:
     uint32_t imageIndex() const { return m_imageIndex; }
 
     uint32_t maxFrameCount() const { return m_swapchainRenderTargets.size(); }
-    //VkSemaphore imageAvailableSemaphore() const { return m_imageAvailableSemaphores[m_currentFrame]; }
-    //VkSemaphore renderFinishedSemaphore() const { return m_renderFinishedSemaphores[m_currentFrame]; }
 
     static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     static VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
@@ -233,7 +221,7 @@ class VulkanRenderPass2
 public:
 	VulkanRenderPass2();
 	Result init(VulkanDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
-	void dispose();
+	void dispose() override;
 	VkRenderPass nativeRenderPass() const { return m_nativeRenderPass; }
 	const Ref<VulkanFramebuffer2>& framebuffer() const { return m_framebuffer; }
 
@@ -288,7 +276,7 @@ class VulkanPipeline2
 public:
 	VulkanPipeline2();
 	Result init(VulkanDevice* deviceContext, const DevicePipelineStateDesc& state);
-	void dispose();
+	void dispose() override;
 	VkPipeline nativePipeline() const { return m_pipeline; }
 
 private:
@@ -315,7 +303,7 @@ public:
 
     VulkanVertexDeclaration();
     Result init(const VertexElement* elements, int elementsCount);
-    virtual void dispose() override;
+    void dispose() override;
 
     const std::vector<VertexElement>& elements() const { return m_elements; }
     const std::vector<VkVertexInputBindingDescription>& vertexBindingDescriptions() const { return m_bindings; }
@@ -336,11 +324,11 @@ class VulkanVertexBuffer
 public:
     VulkanVertexBuffer();
     Result init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
-    virtual void dispose() override;
-    virtual size_t getBytesSize() override { return m_buffer.size(); }
-    virtual GraphicsResourceUsage usage() const override { return m_usage; }
-	virtual void* map() override { return m_buffer.map(); }
-	virtual void unmap() override { m_buffer.unmap(); }
+    void dispose() override;
+    size_t getBytesSize() override;
+    GraphicsResourceUsage usage() const override;
+    void* map() override;
+    void unmap() override;
 
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.nativeBuffer(); }
@@ -360,11 +348,11 @@ class VulkanIndexBuffer
 public:
     VulkanIndexBuffer();
     Result init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
-    virtual void dispose() override;
-    virtual size_t getBytesSize() override { return m_buffer.size(); }
-    virtual GraphicsResourceUsage usage() const override { return m_usage; }
-	virtual void* map() override { return m_buffer.map(); }
-	virtual void unmap() override { m_buffer.unmap(); }
+    void dispose() override;
+    size_t getBytesSize() override;
+    GraphicsResourceUsage usage() const override;
+    void* map() override;
+    void unmap() override;
 
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.nativeBuffer(); }

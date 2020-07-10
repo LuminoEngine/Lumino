@@ -863,7 +863,7 @@ VulkanGraphicsContext::VulkanGraphicsContext()
 {
 }
 
-Result VulkanGraphicsContext::init(VulkanDevice* owner)
+bool VulkanGraphicsContext::init(VulkanDevice* owner)
 {
 	LN_CHECK(owner);
 	ICommandList::init(owner);
@@ -885,6 +885,14 @@ void VulkanGraphicsContext::dispose()
 	}
 
     ICommandList::dispose();
+}
+
+void VulkanGraphicsContext::onSaveExternalRenderState()
+{
+}
+
+void VulkanGraphicsContext::onRestoreExternalRenderState()
+{
 }
 
 void VulkanGraphicsContext::onBeginCommandRecoding()
@@ -951,8 +959,7 @@ void VulkanGraphicsContext::onEndRenderPass(IRenderPass* renderPass)
 
 void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline)
 {
-	// TODO: modify チェック (以下の CmdSet や Bind は inside RenderPass である必要はない)
-	{
+    if (stateDirtyFlags & GraphicsContextStateDirtyFlags_RegionRects) {
 		VkViewport viewport;
 		viewport.x = state.regionRects.viewportRect.x;
 		viewport.y = state.regionRects.viewportRect.height + state.regionRects.viewportRect.y;
@@ -1259,6 +1266,11 @@ void VulkanSwapChain::dispose()
     }
 
     ISwapChain::dispose();
+}
+
+uint32_t VulkanSwapChain::getBackbufferCount()
+{
+    return m_swapChainImageViews.size();
 }
 
 bool VulkanSwapChain::createNativeSwapchain(const SizeI& backbufferSize)
@@ -2220,6 +2232,26 @@ void VulkanVertexBuffer::dispose()
     IVertexBuffer::dispose();
 }
 
+size_t VulkanVertexBuffer::getBytesSize()
+{
+    return m_buffer.size();
+}
+
+GraphicsResourceUsage VulkanVertexBuffer::usage() const
+{
+    return m_usage;
+}
+
+void* VulkanVertexBuffer::map()
+{
+    return m_buffer.map();
+}
+
+void VulkanVertexBuffer::unmap()
+{
+    m_buffer.unmap();
+}
+
 //==============================================================================
 // VulkanIndexBuffer
 
@@ -2268,6 +2300,26 @@ void VulkanIndexBuffer::dispose()
 {
     m_buffer.dispose();
     IIndexBuffer::dispose();
+}
+
+size_t VulkanIndexBuffer::getBytesSize()
+{
+    return m_buffer.size();
+}
+
+GraphicsResourceUsage VulkanIndexBuffer::usage() const
+{
+    return m_usage;
+}
+
+void* VulkanIndexBuffer::map()
+{
+    return m_buffer.map();
+}
+
+void VulkanIndexBuffer::unmap()
+{
+    m_buffer.unmap();
 }
 
 //==============================================================================

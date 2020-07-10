@@ -774,6 +774,18 @@ detail::ICommandList* GraphicsContext::commitState()
 
     //}
 
+
+    //{
+    //    detail::DevicePipelineStateDesc pipelineDesc;
+    //    pipelineDesc.blendState = m_staging.blendState;
+    //    pipelineDesc.rasterizerState = m_staging.rasterizerState;
+    //    pipelineDesc.depthStencilState = m_staging.depthStencilState;
+    //    pipelineDesc.topology = m_staging.topology;
+    //    pipelineDesc.vertexDeclaration = vertexLayoutRHI;
+    //    pipelineDesc.shaderPass = shaderPassRHI;
+    //    pipelineDesc.renderPass = ;
+    //}
+
     return m_rhiCommandList;
 }
 

@@ -182,6 +182,7 @@ endif()
 
 
 if (WIN32)
+    file(GLOB LN_SOURCES_Graphics_DirectX12 src/Graphics/DirectX12/*.cpp src/Graphics/DirectX12/*.hpp)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
         ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
@@ -210,6 +211,7 @@ source_group("Audio\\ARIs" FILES ${LN_SOURCES_Audio_ARIs})
 source_group("Shader" FILES ${LN_SOURCES_Shader})
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 source_group("Graphics\\Vulkan" FILES ${LN_SOURCES_Graphics_Vulkan})
+source_group("Graphics\\DirectX12" FILES ${LN_SOURCES_Graphics_DirectX12})
 source_group("Graphics\\OpenGL" FILES ${LN_SOURCES_Graphics_OpenGL})
 source_group("Font" FILES ${LN_SOURCES_Font})
 source_group("Mesh" FILES ${LN_SOURCES_Mesh})
@@ -250,6 +252,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Graphics_Vulkan}
+    ${LN_SOURCES_Graphics_DirectX12}
     ${LN_SOURCES_Graphics_OpenGL}
     ${LN_SOURCES_Font}
     ${LN_SOURCES_Mesh}
