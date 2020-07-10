@@ -7,7 +7,7 @@ namespace ln {
 namespace detail { class AssetObjectInternal; }
 
 /**
- * アセットファイルやその他の外部ファイルをインポートして構築されるオブジェクトのベースクラスです。
+ * アセットファイルやその他の外部ファイルをインポートして構築可能なオブジェクトのベースクラスです。
  */
 LN_CLASS()
 class AssetObject
@@ -47,6 +47,7 @@ class AssetObjectInternal
 {
 public:
     static void setAssetPath(AssetObject* obj, const Path& value) { obj->setAssetPath(value); }
+    static void reload(AssetObject* obj) { obj->reload(); }
 };
 }
 } // namespace ln

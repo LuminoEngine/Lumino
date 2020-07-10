@@ -1,11 +1,12 @@
 ﻿#pragma once
 #include "Common.hpp"
+#include "../Asset/AssetObject.hpp"
 
 namespace ln {
 class RenderingContext;
 
 class EffectResource
-    : public Object
+    : public AssetObject
 {
 public:
 

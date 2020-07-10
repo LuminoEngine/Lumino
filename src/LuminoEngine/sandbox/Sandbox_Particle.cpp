@@ -119,6 +119,10 @@ class App_Sandbox_Particle : public Application
         material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
         m1->setSpriteModule(material);
 
+        detail::AssetObjectInternal::setAssetPath(particleModel, u"Particle.yml");
+        Assets::save(particleModel);
+        
+
         auto particle1 = makeObject<ParticleEmitterComponent2>(particleModel);
         //particle1->setBlendMode(BlendMode::Add);
         particle1->setBlendMode(BlendMode::Alpha);

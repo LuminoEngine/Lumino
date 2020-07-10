@@ -99,6 +99,7 @@
 
 */
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
@@ -179,6 +180,12 @@ bool ParticleEmitterModel2::init()
 void ParticleEmitterModel2::serialize2(Serializer2& ar)
 {
     EffectResource::serialize2(ar);
+    ar & makeNVP(u"maxParticles", m_spawnRate);
+    ar & makeNVP(u"spawnRate", m_maxParticles);
+    ar & makeNVP(u"burstCount", m_burstCount);
+
+
+
 }
 
 void ParticleEmitterModel2::setSpriteModule(Material* material)
