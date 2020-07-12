@@ -177,7 +177,7 @@ void SceneRenderingPipeline::render(
     //for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
     //    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, pass);
     //}
-    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->gbufferPass());
+    //m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->gbufferPass());
     m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
 
     {

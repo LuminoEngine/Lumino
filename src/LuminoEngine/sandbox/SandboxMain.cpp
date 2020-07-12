@@ -475,11 +475,11 @@ int main(int argc, char** argv)
         //Experiment_Scripting();
         //Experiment_SelectObject();
         //Experiment_SerializeLevel();
-        Experiment_Shadow();
+        //Experiment_Shadow();
         //Experiment_SSR();
 		//Sandbox_MeshTilemap();
         //Sandbox_Particle();
-        //Sandbox_PostEffect();
+        Sandbox_PostEffect();
         //Sandbox_Sky();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
