@@ -17,7 +17,6 @@ struct alignas(16) LNRenderViewBuffer
     alignas(16) Matrix ln_Projection;
     alignas(16) Matrix ln_ProjectionI;
     alignas(16) Vector4 ln_Resolution;
-    alignas(16) Vector4 ln_mainLightShadowMapPixelSizeResolution;
     alignas(16) Vector3 ln_CameraPosition;
     alignas(16) Vector3 ln_CameraDirection;
     alignas(16) float ln_NearClip;
@@ -61,6 +60,13 @@ struct alignas(16) LNClusteredShadingParameters
     alignas(16) Vector3 ln_MainLightDirection;
     alignas(4) float ln_NearClip;
     alignas(4) float ln_FarClip;
+};
+
+// cbuffer LNShadowParameters
+struct alignas(16) LNShadowParameters
+{
+    alignas(16) Vector4 ln_mainLightShadowMapResolution;
+    alignas(16) Vector4 ln_shadowDensity;
 };
 
 // Note: specular は簡単のため無し。
@@ -131,6 +137,7 @@ struct RenderViewInfo
     Size mainLightShadowMapPixelSize;
     Texture* mainLightShadowMap = nullptr;
     Matrix mainLightViewProjection;
+    float mainLightShadowDensity = 0.0f;
 };
 
 // 描画要素単位のデータに関する情報
@@ -241,6 +248,7 @@ enum BuiltinShaderUniformBuffers
     BuiltinShaderUniformBuffers_LNEffectColorBuffer,
     BuiltinShaderUniformBuffers_LNPBRMaterialParameter,
     BuiltinShaderUniformBuffers_LNClusteredShadingParameters,
+    BuiltinShaderUniformBuffers_LNShadowParameters,
     
     BuiltinShaderUniformBuffers__Count,
 };

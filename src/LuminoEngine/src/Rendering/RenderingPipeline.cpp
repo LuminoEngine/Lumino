@@ -136,6 +136,7 @@ void SceneRenderingPipeline::render(
             renderViewInfo.mainLightViewProjection = Matrix::multiply(view, proj);
             renderViewInfo.mainLightShadowMap = m_shadowMap;
             renderViewInfo.mainLightShadowMapPixelSize = Size(renderViewInfo.mainLightShadowMap->width(), renderViewInfo.mainLightShadowMap->height());
+            renderViewInfo.mainLightShadowDensity = 0.5f;
         }
         else {
             // TODO: 今はダミーテクスチャを使うことで影を生成しないようにしているが、
@@ -143,6 +144,7 @@ void SceneRenderingPipeline::render(
             // 0 なら PS でシャドウ作らないみたいな対応が欲しい。
             renderViewInfo.mainLightShadowMap = Texture2D::whiteTexture();
             renderViewInfo.mainLightShadowMapPixelSize = Size(renderViewInfo.mainLightShadowMap->width(), renderViewInfo.mainLightShadowMap->height());
+            renderViewInfo.mainLightShadowDensity = 0.0f;
         }
     }
 
