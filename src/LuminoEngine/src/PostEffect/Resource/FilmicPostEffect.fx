@@ -50,7 +50,6 @@ float4 blur9(float2 uv, float2 resolution, float2 direction) {
 
 float4 PSMain(PSInput input) : SV_TARGET0
 {
-	return float4(1, 0, 0, 1);
 	float4 c = clamp(tex2D(ln_MaterialTexture, input.uv), float4(0,0,0,0), float4(1,1,1,1)) + 0.4;
 	//float4 c1 = blur9(_occlusionMap, input.uv, ln_Resolution.xy, float2(0.75, 0.0));
 	float4 c2 = blur9(input.uv, ln_Resolution.xy, float2(0.0, 0.95));

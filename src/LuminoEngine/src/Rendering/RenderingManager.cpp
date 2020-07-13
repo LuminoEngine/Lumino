@@ -1,5 +1,6 @@
 
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
@@ -94,6 +95,16 @@ void RenderingManager::init(const Settings& settings)
 
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
+
+	{
+		static const unsigned char data[] = {
+#include "Resource/Random.png.inl"
+		};
+		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
+		auto bmp = makeObject<Bitmap2D>();
+		bmp->load(&stream);
+		m_randomTexture = makeObject<Texture2D>(bmp, TextureFormat::RGBA8);
+	}
 
 //	// CopyScreen
 //	{
