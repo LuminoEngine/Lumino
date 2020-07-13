@@ -11,6 +11,7 @@ class RenderingContext;
 class StaticMeshModel;
 class MeshResource;
 class PostEffect;
+class FilmicPostEffect;
 namespace detail {
 class PostEffectRenderer;
 class SceneRenderingPipeline;
@@ -55,6 +56,7 @@ public:
     // TODO: internal
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
     const Ref<detail::SceneRenderingPipeline>& sceneRenderingPipeline() const { return m_sceneRenderingPipeline; }
+    const Ref<FilmicPostEffect>& finishingProcess() const { return m_finishingProcess; }
 
     WorldObject* findObjectInPoint(int x, int y);
 
@@ -91,6 +93,7 @@ private:
 
 	Ref<detail::InternalSkyBox> m_internalSkyBox;
     Ref<detail::InternalSkyDome> m_internalSkyDome;
+    Ref<FilmicPostEffect> m_finishingProcess;
     Ref<TransformControls> m_transformControls; // TODO: gizmo でまとめる？
 };
 

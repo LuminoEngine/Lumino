@@ -10,7 +10,11 @@
 
 sampler2D _screenSampler;   // normalDepth
 sampler2D _viewDepthMap;
-
+// TODO: move to lib
+float3 LN_PackNormal(float3 normal)
+{
+	return (normal.xyz + 1.0) / 2.0;
+}
 
 const float bb = 1.00;
 const float2 sampOffset[6] = {  // px 単位
@@ -103,12 +107,70 @@ float3x3 _LN_MakeLazyToRot(float3 lookAt)
 
 float GetDepth(float2 uv)
 {
-    //tex2D(_screenSampler, input.UV).r
-    return tex2D(_viewDepthMap, uv).g;
+    return tex2D(_viewDepthMap, uv).r;
+}
+
+float3 GetNormal(float2 uv)
+{
+    float3 n = tex2D(_screenSampler, uv).xyz;
+    return LN_UnpackNormal(n);
+}
+
+float random(float2 uv) {
+	return frac(sin(dot(uv, float2(12.9898f, 78.233f)))*43758.5453f);
 }
 
 float4 PSMain(PSInput input) : SV_TARGET0
 {
+#if 1
+    // UV 位置の深度。ProjI で ViewPos を求めるのにも使いたいので、Linear ではない。
+    float projectedDepth = GetDepth(input.UV);
+
+    // ViewSpace 上の点を求める
+    float4 clipPos = float4(LN_UVToClipSpacePosition(input.UV), projectedDepth, 1.0);
+    float3 viewPos = mul(clipPos, ln_ProjectionI);
+
+    //return float4(viewPos, 1);
+    float4 respos = float4(viewPos, 1.0);
+    {
+        float dp = projectedDepth;
+        float dx = ln_Resolution.z;
+        float dy = ln_Resolution.w;
+        
+        float div = 0.0f;
+        float ao = 0.0f;
+        float3 norm = GetNormal(input.UV);
+        const int trycnt = 16;//シェーダコンパイルが遅い場合はこの数値を小さくしてください。
+        const float radius = 0.5f;
+        if (dp < 1.0f) {
+            for (int i = 0; i < trycnt; ++i) {
+                float rnd1 = random(float2(i*dx, i*dy)) * 2 - 1;
+                float rnd2 = random(float2(rnd1, i*dy)) * 2 - 1;
+                float rnd3 = random(float2(rnd2, rnd1)) * 2 - 1;
+                float3 omega = normalize(float3(rnd1,rnd2,rnd3));
+                omega = normalize(omega);
+                //乱数の結果法線の反対側に向いてたら反転する
+                float dt = dot(norm, omega);
+                float sgn = sign(dt);
+                omega *= sign(dt);
+                //結果の座標を再び射影変換する
+                float4 rpos = mul(float4(respos.xyz + omega * radius, 1), ln_Projection);
+                rpos.xyz /= rpos.w;
+                dt *= sgn;
+                div += dt;
+                //計算結果が現在の場所の深度より奥に入ってるなら遮蔽されているという事なので加算
+                float2 uv2 = LN_ClipSpacePositionToUV(rpos.xy);
+                ao += step(GetDepth(uv2), rpos.z)*dt;
+            }
+            ao /= div;
+        }
+        float result = 1.0f - ao;
+        //return float4(LN_PackNormal(norm), 1.0);
+        return float4(result, result, result, 1.0);
+    }
+    
+
+#else
     //return float4(ln_FarClip / 200, ln_NearClip, 0, 1);
     //return float4(ln_ViewportPixelSize.x / 1280, ln_ViewportPixelSize.y / 960, 0, 1);
 	//float4 nd = tex2D(normalDepthSampler, input.UV);
@@ -168,6 +230,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
 	return float4((1.0-d), (1.0-d), (1.0-d), 1.0);
 	//return float4((1.0-d) * (1.0-depth), (1.0-d) * (1.0-depth), (1.0-d) * (1.0-depth), 1.0);
 	//LN_CalculateToneColor(tex2D(_screenSampler, texUV), _Tone);
+#endif
 }
 
 //==============================================================================

@@ -107,7 +107,7 @@ public: // TODO: internal
     void updateObjectsWorldMatrix();
     void updateFrame(float elapsedSeconds);
 	detail::WorldSceneGraphRenderingContext* prepareRender(RenderViewPoint* viewPoint);
-    void prepareRender();
+    void prepareRender(const WorldRenderView* renderView);
     void renderObjects();  // call by WorldRenderView
     void renderGizmos(RenderingContext* context);
     void enqueueWorldRenderingElement(IWorldRenderingElement* element);

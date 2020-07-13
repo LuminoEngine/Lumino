@@ -10,6 +10,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
+#include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
@@ -98,6 +99,8 @@ void WorldRenderView::init()
         LN_ERROR();
         return;
     }
+
+    m_finishingProcess = makeObject<FilmicPostEffect>();
 
     m_transformControls = makeObject<TransformControls>();
 }
@@ -358,7 +361,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             }
 
 
-            m_targetWorld->prepareRender();
+            m_targetWorld->prepareRender(this);
 
             for (auto& offscreen : m_targetWorld->collectedOffscreenRenderViews()) {
                 renderingContext->currentRenderView = offscreen;

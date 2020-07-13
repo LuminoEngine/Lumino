@@ -4,6 +4,7 @@
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
+#include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
@@ -11,6 +12,7 @@
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
 #include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderElement.hpp"
 
@@ -294,7 +296,7 @@ detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* v
 
 // Offscreen 描画など、何回か描画を行うものを List に集める。
 // ビューカリングなどはこの時点では行わない。
-void World::prepareRender()
+void World::prepareRender(const WorldRenderView* renderView)
 {
     m_renderingContext->world = this;
     m_worldRenderingElement.clear();
@@ -308,6 +310,7 @@ void World::prepareRender()
         scene->collectRenderObjects(this, m_renderingContext);
     }
 
+    m_renderingContext->collectPostEffect(renderView->finishingProcess());
     m_renderingContext->collectPostEffect(m_sceneConductor->transitionEffect());
 }
 
