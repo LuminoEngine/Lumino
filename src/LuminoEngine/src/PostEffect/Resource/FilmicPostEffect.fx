@@ -36,6 +36,23 @@ struct PSInput
     float2 uv : TEXCOORD0;
 };
 
+float4 LN_5x5AverageBlur(sampler2D s, float2 resolution, float2 uv)
+{
+    float2 texelSize = (1.0 / resolution);
+    float4 result = float4(0.0);
+
+    for (int i=-2; i<=2; i++) {
+        for (int j=-2; j<=2; j++) {
+            float2 offset = ((float2(float(i),float(j)))*texelSize);
+            result += tex2D(s, uv + offset);
+        }
+    }
+
+    return result / (5.0*5.0);
+}
+
+
+
 float4 blur9(float2 uv, float2 resolution, float2 direction) {
   float4 color = float4(0, 0, 0, 0);
   float2 off1 = float2(1.3846153846, 1.3846153846) * direction;
@@ -52,7 +69,8 @@ float4 PSMain(PSInput input) : SV_TARGET0
 {
 	float4 c = clamp(tex2D(ln_MaterialTexture, input.uv), float4(0,0,0,0), float4(1,1,1,1)) + 0.4;
 	//float4 c1 = blur9(_occlusionMap, input.uv, ln_Resolution.xy, float2(0.75, 0.0));
-	float4 c2 = blur9(input.uv, ln_Resolution.xy, float2(0.0, 0.95));
+	//float4 c2 = blur9(input.uv, ln_Resolution.xy, float2(0.0, 0.95));
+    float4 c2 = LN_5x5AverageBlur(_occlusionMap, ln_Resolution.xy, input.uv);
 	return c * c2* c2;
 	//return c1 * c2;
 	//return tex2D(_occlusionMap, input.uv);

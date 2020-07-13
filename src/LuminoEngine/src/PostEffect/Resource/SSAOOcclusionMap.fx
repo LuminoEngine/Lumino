@@ -10,7 +10,9 @@
 
 // https://qiita.com/mebiusbox2/items/2a18994a5caa6d584099#%E5%9F%BA%E6%9C%AC%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0
 // ViewSpace 上の、↑の図の最大半径
-const float SamplingRange = 0.5;
+const float SamplingRange = 0.7;
+
+const float radius = 0.005;
 
 sampler2D _screenSampler;   // normalDepth
 sampler2D _viewDepthMap;
@@ -252,8 +254,8 @@ float ExSdSSAO_GetZ(float2 uv) {
 
 const float rad = 0.05;
 const float density = 2.0;
-const float strength = 1.0;
-const float falloff = 1.0;
+const float strength = 5.0;
+const float falloff = 0.1;//1.0;
 const float scaling = 0.1;
 const float3 ObjXYZ = float3(1, 1, 1);
 #define invSamples (1.0f / SAMPLES)
@@ -324,6 +326,12 @@ float4 PSMain(PSInput input) : SV_TARGET0
     float3 viewPos = GetViewPosition(input.UV, projectedDepth);
     float3 viewNormal = GetNormal(input.UV);
 
+#if 0
+    float  w1 = 1.0 / (GetDepth(input.UV));/* projectedZ ぽい*/ //tex2D(DepthMap, inTex).g;
+    float  w2 = pow(max(0.5, w1), 0.4);
+    float falloff_e = (w1 * 0.005 + w2 * 0.05) * falloff;// * ObjXYZ.y;
+    float strength_e = (w1 * 0.05 + w2 * 2) * strength;// * ObjXYZ.x;
+#endif
 
     float ao = 0.0f;
     float div = 0.0f;   // 平均計算のための分母
@@ -373,11 +381,23 @@ float4 PSMain(PSInput input) : SV_TARGET0
 
             float depthDifference = samplingClipPos.z - samplingDepth;  // ↓のstepで負値は一律 0 になるので、正の値だけ考えればよい
 
-            ao += step(samplingDepth, samplingClipPos.z) *   // step は、samplingClipPos.z の方が大きけ(奥にあれ)れば 1
-            smoothstep(0.0, 1, samplingDepth) *
+    // TODO: Range check
+    // https://learnopengl.com/Advanced-Lighting/SSAO
+            float rangeCheck = smoothstep(0.0, 1.0, radius / abs(depthDifference));
+#if 0
+            ao +=
+                smoothstep(0, falloff_e, depthDifference) *
+                (1.0f - pow(smoothstep(falloff_e, strength_e, depthDifference), 0.5)) *
+                dt;
+#else
+            ao += 
+            step(samplingDepth, samplingClipPos.z) *   // step は、samplingClipPos.z の方が大きけ(奥にあれ)れば 1
+            smoothstep(0.0, 1.2, samplingDepth) * // 濃さ調整。ちゃんと考えたほうがいいかも
              //(1.0 - pow(smoothstep(0.0, 5.0, samplingDepth), 0.5)) *
+             rangeCheck*
              dt;
             //div += dt;
+#endif
         }
         //ao /= div;
         ao /= SamplingCount;
