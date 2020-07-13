@@ -8,6 +8,10 @@
 
 #define ln_ViewportPixelSize ln_Resolution.xy
 
+// https://qiita.com/mebiusbox2/items/2a18994a5caa6d584099#%E5%9F%BA%E6%9C%AC%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0
+// ViewSpace 上の、↑の図の最大半径
+const float SamplingRange = 1.0;
+
 sampler2D _screenSampler;   // normalDepth
 sampler2D _viewDepthMap;
 // TODO: move to lib
@@ -16,8 +20,10 @@ float3 LN_PackNormal(float3 normal)
 	return (normal.xyz + 1.0) / 2.0;
 }
 
-const float bb = 1.00;
-const float2 sampOffset[6] = {  // px 単位
+const int SamplingCount = 8;
+
+const float bb = 1.0 / SamplingCount;//1.0;
+const float2 sampOffset[SamplingCount] = {  // px 単位
 	//float2(-1.0,  0.0) / ln_ViewportPixelSize,
 	//float2(-0.5, -0.5) / ln_ViewportPixelSize,
 	//float2( 0.5, -0.5) / ln_ViewportPixelSize,
@@ -25,13 +31,24 @@ const float2 sampOffset[6] = {  // px 単位
 	//float2( 0.5,  0.5) / ln_ViewportPixelSize,
 	//float2(-0.5,  0.5) / ln_ViewportPixelSize,
 	
+    /*
 	float2(-1.0,  0.0),// * bb,
 	float2(-0.7,  0.7) * bb * 2,
 	float2( 0.0,  1.0) * bb * 4,
 	float2( 0.7,  0.7) * bb * 6,
 	float2( 1.0,  0.0) * bb * 8,
 	float2( 1.0,  1.0) * bb * 10,
-};    // サンプリング点のオフセット値 
+    */
+
+    float2( 0.0, -1.0) * bb * 1,
+    float2( 0.7, -0.7) * bb * 2,
+    float2( 1.0,  0.0) * bb * 3,
+    float2( 0.7,  0.7) * bb * 4,
+    float2( 0.0,  1.0) * bb * 5,
+    float2(-0.7,  0.7) * bb * 6,
+    float2(-1.0,  0.0) * bb * 7,
+    float2(-0.7, -0.7) * bb * 8,
+};    // サンプリング点のオフセット値。最大距離だいたい 1.0
 
 //==============================================================================
 // Vertex shader
@@ -81,7 +98,8 @@ float3 _LN_UnpackColorToNormal(float3 c)
 float3x3 _LN_MakeLazyToRot(float3 lookAt)
 {
 	//Matrix Matrix::makeLookAtLH(const Vector3& position, const Vector3& lookAt, const Vector3& up)
-	float3 up = float3(lookAt.y, lookAt.z, lookAt.x);	// なんでもいい
+	//float3 up = float3(lookAt.y, lookAt.z, lookAt.x);	// なんでもいい
+    const float3 up = float3(0.0, 1.0, 0.0);
 
 	//Vector3 xaxis, yaxis, zaxis;
 	// 注視点からカメラ位置までのベクトルをZ軸とする
@@ -105,6 +123,16 @@ float3x3 _LN_MakeLazyToRot(float3 lookAt)
 
 }
 
+float3x3 MakeRotation2DMatrix(float r)
+{
+    float s, c;
+    sincos(r, s, c);
+	return float3x3(
+        c, s, 0.0,
+        -s, c, 0.0,
+        0.0, 0.0, 1.0);
+}
+
 float GetDepth(float2 uv)
 {
     return tex2D(_viewDepthMap, uv).r;
@@ -114,6 +142,13 @@ float3 GetNormal(float2 uv)
 {
     float3 n = tex2D(_screenSampler, uv).xyz;
     return LN_UnpackNormal(n);
+}
+
+float3 GetViewPosition(float2 inputUV, float projectedZ) {
+    // ClipSpace 上の座標を求める
+    float4 clipPosition = float4(LN_UVToClipSpacePosition(inputUV), projectedZ, 1.0);
+    float4 pos = (mul(clipPosition, ln_ProjectionI));
+    return pos.xyz / pos.w;
 }
 
 float random(float2 uv) {
@@ -127,10 +162,55 @@ float4 PSMain(PSInput input) : SV_TARGET0
     float projectedDepth = GetDepth(input.UV);
 
     // ViewSpace 上の点を求める
-    float4 clipPos = float4(LN_UVToClipSpacePosition(input.UV), projectedDepth, 1.0);
-    float3 viewPos = mul(clipPos, ln_ProjectionI);
+    //float4 clipPos = float4(LN_UVToClipSpacePosition(input.UV), projectedDepth, 1.0);
+    //float3 viewPos = mul(clipPos, ln_ProjectionI);
+    float3 viewPos = GetViewPosition(input.UV, projectedDepth);
+    float3 viewNormal = GetNormal(input.UV);
 
-    //return float4(viewPos, 1);
+    float ao = 0.0f;
+    float div = 0.0f;   // 平均計算のための分母
+    if (projectedDepth < 1.0f) {
+        for (int i = 0; i < SamplingCount; ++i) {
+            // XY 平面上の offset を適当に回転する (TODO: 乱数にできるとよい)
+            const float3 samplingOffset = mul(float3(sampOffset[i] * SamplingRange, 1.0), MakeRotation2DMatrix((float)i));
+
+            // viewNormal が軸になるように samplingOffset を変換する
+            float3 samplingViewNormal = normalize(mul(samplingOffset, _LN_MakeLazyToRot(viewNormal)));
+            //float3 samplingViewNormal = normalize(float3(sampOffset[i], viewNormal.z));
+            // TODO: samplingViewNormal を、viewNormal を軸にランダム回転する
+
+
+
+            // 法線の反対側に向いてた (始点ジオメトリの内側になっていたら) ら外側へ反転する
+            float dt = dot(viewNormal, samplingViewNormal);
+            float s = sign(dt);
+            samplingViewNormal *= s;
+            dt *= s;    // これで viewNormal と samplingViewNormal の向きの差を示す dt は、負値であることが無くなる。
+                        // (同一方向なら1, 90度違っていれば0) -> 濃さとして使えるようになる。
+            
+            // サンプリング位置の clipPos を求める
+            float3 samplingViewPos = float3(viewPos + samplingViewNormal);
+            float4 samplingClipPos = mul(float4(samplingViewPos, 1.0), ln_Projection);
+            samplingClipPos.xyz /= samplingClipPos.w;
+
+            // 計算結果が現在の場所の深度より奥に入ってるなら遮蔽されているという事なので加算
+            float2 uv2 = LN_ClipSpacePositionToUV(samplingClipPos.xy);
+            //return float4(GetDepth(uv2), 0, 0, 1);
+            float samplingDepth = GetDepth(uv2);
+            //float d = 1.0 - (abs(samplingDepth - samplingClipPos.z) / SamplingRange);
+            //dt *= d;
+
+            ao += step(samplingDepth, samplingClipPos.z) * dt;   // step は、rpos.z の方が大きけ(奥にあれ)れば 1
+            //div += dt;
+        }
+        //ao /= div;
+        ao /= SamplingCount;
+    }
+    float result = 1.0f - ao;
+    //return float4(LN_PackNormal(norm), 1.0);
+    return float4(result, result, result, 1.0);
+
+#if 0
     float4 respos = float4(viewPos, 1.0);
     {
         float dp = projectedDepth;
@@ -141,13 +221,14 @@ float4 PSMain(PSInput input) : SV_TARGET0
         float ao = 0.0f;
         float3 norm = GetNormal(input.UV);
         const int trycnt = 16;//シェーダコンパイルが遅い場合はこの数値を小さくしてください。
-        const float radius = 0.5f;
+        const float radius = 0.05f;
         if (dp < 1.0f) {
             for (int i = 0; i < trycnt; ++i) {
                 float rnd1 = random(float2(i*dx, i*dy)) * 2 - 1;
                 float rnd2 = random(float2(rnd1, i*dy)) * 2 - 1;
                 float rnd3 = random(float2(rnd2, rnd1)) * 2 - 1;
                 float3 omega = normalize(float3(rnd1,rnd2,rnd3));
+                //return float4(LN_PackNormal(omega), 1.0);
                 omega = normalize(omega);
                 //乱数の結果法線の反対側に向いてたら反転する
                 float dt = dot(norm, omega);
@@ -160,7 +241,8 @@ float4 PSMain(PSInput input) : SV_TARGET0
                 div += dt;
                 //計算結果が現在の場所の深度より奥に入ってるなら遮蔽されているという事なので加算
                 float2 uv2 = LN_ClipSpacePositionToUV(rpos.xy);
-                ao += step(GetDepth(uv2), rpos.z)*dt;
+                //return float4(GetDepth(uv2), 0, 0, 1);
+                ao += step(GetDepth(uv2), rpos.z)*dt;   // step は、rpos.z の方が大きけ(奥にあれ)れば 1
             }
             ao /= div;
         }
@@ -168,7 +250,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
         //return float4(LN_PackNormal(norm), 1.0);
         return float4(result, result, result, 1.0);
     }
-    
+#endif
 
 #else
     //return float4(ln_FarClip / 200, ln_NearClip, 0, 1);

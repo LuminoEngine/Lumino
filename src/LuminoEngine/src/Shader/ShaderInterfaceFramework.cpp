@@ -180,8 +180,8 @@ void ShaderTechniqueSemanticsManager::updateRenderViewVariables(const RenderView
         data.ln_Resolution = Vector4(c.viewPixelSize, 1.0f / c.viewPixelSize.width, 1.0f / c.viewPixelSize.height);
         data.ln_NearClip = c.nearClip;
         data.ln_FarClip = c.farClip;
-        data.ln_CameraPosition = c.viewPosition;
-        data.ln_CameraDirection = c.viewDirection;
+        data.ln_CameraPosition = Vector4(c.viewPosition, 1.0f);
+        data.ln_CameraDirection = Vector4(c.viewDirection, 1.0f);
         m_descriptor->setData(index, &data, sizeof(data));
     }
 
