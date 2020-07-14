@@ -8,12 +8,6 @@
 #include <LuminoForward.fxh>
 #include <LuminoPBR.fxh>
 
-// TODO: move to lib
-float3 LN_PackNormal(float3 normal)
-{
-	return (normal.xyz + 1.0) / 2.0;
-}
-
 struct VSInput
 {
     float3 Pos : POSITION0;

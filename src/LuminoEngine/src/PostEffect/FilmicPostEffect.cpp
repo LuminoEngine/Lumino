@@ -66,17 +66,27 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     Texture* viewDepthMap = context->gbuffer(GBuffer::ViewDepthMap);
     Texture* randomTexture = EngineDomain::renderingManager()->randomTexture();
 
-    m_ssaoMaterial->setTexture(u"_screenSampler", viewNormalMap);
+    struct LocalBuffer
+    {
+        float density;
+        float scaling;
+    };
+    LocalBuffer buf;
+    buf.density = 0.5;
+    buf.scaling = 0.1;
+    m_ssaoMaterial->setBufferData(u"LocalBuffer", &buf, sizeof(buf));
+
+    m_ssaoMaterial->setTexture(u"_viewSpaceNormalMap", viewNormalMap);
     m_ssaoMaterial->setTexture(u"_viewDepthMap", viewDepthMap);
     m_ssaoMaterial->setTexture(u"_randomSampler", randomTexture);
     m_ssaoMaterial->setMainTexture(source);
     context->blit(m_ssaoMaterial, occlusionMap);
-    //context->blit(m_ssaoMaterial, destination);
+    context->blit(m_ssaoMaterial, destination);
 
 
-    m_material->setTexture(u"_occlusionMap", occlusionMap);
-    m_material->setMainTexture(source);
-    context->blit(m_material, destination);
+    //m_material->setTexture(u"_occlusionMap", occlusionMap);
+    //m_material->setMainTexture(source);
+    //context->blit(m_material, destination);
 
     //m_material->setMainTexture(source);
     //context->blit(m_material, destination);

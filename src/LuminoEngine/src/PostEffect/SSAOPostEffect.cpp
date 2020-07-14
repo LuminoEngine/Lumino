@@ -66,7 +66,7 @@ bool SSAOPostEffectInstance::onRender(RenderingContext* context, RenderTargetTex
     Texture* viewNormalMap = context->gbuffer(GBuffer::ViewNormalMap);
     Texture* viewDepthMap = context->gbuffer(GBuffer::ViewDepthMap);
 
-    m_occlusionMaterial->setTexture(u"_screenSampler", viewNormalMap);
+    m_occlusionMaterial->setTexture(u"_viewSpaceNormalMap", viewNormalMap);
     m_occlusionMaterial->setTexture(u"_viewDepthMap", viewDepthMap);
     m_occlusionMaterial->setMainTexture(source);
     context->blit(m_occlusionMaterial, occlusionMap);

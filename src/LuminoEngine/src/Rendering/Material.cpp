@@ -180,6 +180,26 @@ void Material::setColor(const StringRef& name, const Color& value)
 	param->setVector(value.toVector4());
 }
 
+void Material::setBufferData(const StringRef& uniformBufferName, const void* data, int size)
+{
+    ByteBuffer* buffer;
+
+    const auto itr = std::find_if(
+        m_uniformBufferData.begin(), m_uniformBufferData.end(), [&](const auto& pair) {
+            return pair.first == uniformBufferName;
+        });
+    if (itr != m_uniformBufferData.end()) {
+        buffer = itr->second;
+    }
+    else {
+        auto newBuf = makeRef<ByteBuffer>();
+        m_uniformBufferData.push_back({ uniformBufferName, newBuf });
+        buffer = newBuf;
+    }
+
+    buffer->assign(data, size);
+}
+
 void Material::setBlendMode(Optional<BlendMode> mode)
 {
     blendMode = mode;
@@ -218,7 +238,7 @@ void Material::updateShaderVariables(Shader* target) const
     // Material から Shader へ検索をかける。
     // Shader はビルトインの変数がいくつか含まれているので、この方が高速に検索できる。
 
-    for (auto& pair : m_values) {
+    for (const auto& pair : m_values) {
         auto* param = target->findParameter(pair.first);
         if (param) {
             switch (pair.second->type())
@@ -262,6 +282,13 @@ void Material::updateShaderVariables(Shader* target) const
             default:
                 break;
             }
+        }
+    }
+
+    for (const auto& pair : m_uniformBufferData) {
+        int index = target->descriptorLayout()->findUniformBufferRegisterIndex(pair.first);
+        if (index >= 0) {
+            target->descriptor()->setData(index, pair.second->data(), pair.second->size());
         }
     }
 }

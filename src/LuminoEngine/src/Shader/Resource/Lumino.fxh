@@ -161,6 +161,14 @@ float4 LN_GetBuiltinEffectColor(float4 inColor)
 }
 
 /**
+ * 正規化された法線を、整数型の RGB テクスチャなどに書き込ムために 0.0 ~ 1.0 にパックします。
+ */
+float3 LN_PackNormal(float3 normal)
+{
+	return (normal.xyz + 1.0) / 2.0;
+}
+
+/**
  * 整数型の RGB テクスチャなどに書き込まれている 0.0 ~ 1.0 にパックされた法線を -1.0 ~ 1.0 に展開します。
  */
 float3 LN_UnpackNormal(float3 packednormal)
