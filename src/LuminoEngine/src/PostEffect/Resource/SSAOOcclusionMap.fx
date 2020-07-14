@@ -181,37 +181,28 @@ float4 PSMain(PSInput input) : SV_TARGET0
     if (projectedDepth < 1.0f) {
         for (int i = 0; i < SamplingCount; ++i) {
             float3 fres = tex2D(_randomSampler, input.UV + float2(0.01 * i, 0.0)).rgb;
-#if 1
+
             //float3 samplingViewNormal = normalize(mul(SamplingOffsets[i], _LN_MakeLazyToRot(viewNormal)));
             //float3 samplingOffset = SamplingOffsets[i];
-            float3 samplingViewNormal = normalize(SamplingOffsets[i]);
-#elif 0
-            const float3 samplingOffset = mul(float3(SamplingOffsets[i].xy, 0.0f), MakeRotation2DMatrix((float)i));
-            float3 samplingViewNormal = normalize(float3(samplingOffset.xy, fres.z + 1.0f));
-            //float3 samplingViewNormal = reflect(samples[i], fres);
-#else
-            // XY 平面上の offset を適当に回転する (TODO: 乱数にできるとよい)
-            const float3 samplingOffset = mul(float3(SamplingOffsets[i] * _scaling, 1.0), MakeRotation2DMatrix((float)i));
 
-            // viewNormal が軸になるように samplingOffset を変換する
-            float3 samplingViewNormal = normalize(mul(samplingOffset, _LN_MakeLazyToRot(viewNormal)));
-            //float3 samplingViewNormal = normalize(float3(SamplingOffsets[i], viewNormal.z));
-            // TODO: samplingViewNormal を、viewNormal を軸にランダム回転する
-#endif
+            //float3 samplingOffset = SamplingOffsets[i] * (fres.z * 0.5 + 0.5);
+            float3 samplingOffset = SamplingOffsets[i] * (fres);
+            float3 samplingViewNormal = normalize(samplingOffset);
+
 
 
             // 法線の反対側に向いてた (始点ジオメトリの内側になっていたら) ら外側へ反転する
             float dt = dot(viewNormal, samplingViewNormal);
             float s = sign(dt);
             samplingViewNormal *= s;
-            //samplingOffset *= s;
+            samplingOffset *= s;
             dt *= s;    // これで viewNormal と samplingViewNormal の向きの差を示す dt は、負値であることが無くなる。
                         // (同一方向なら1, 90度違っていれば0) -> 濃さとして使えるようになる。
             
             // サンプリング位置の clipPos を求める
             //float3 samplingViewPos = float3(viewPos + samplingViewNormal * fres);
             //float3 samplingViewPos = reflect(samplingViewNormal, fres);
-            float3 samplingViewPos = float3(viewPos + (samplingViewNormal * (fres.z * 0.5 + 0.5)) * _scaling);
+            float3 samplingViewPos = float3(viewPos + samplingOffset * _scaling);
             float4 samplingClipPos = mul(float4(samplingViewPos, 1.0), ln_Projection);
             samplingClipPos.xyz /= samplingClipPos.w;
 

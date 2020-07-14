@@ -69,8 +69,8 @@ float4 PSMain(PSInput input) : SV_TARGET0
 {
 	float4 c = clamp(tex2D(ln_MaterialTexture, input.uv), float4(0,0,0,0), float4(1,1,1,1)) + 0.4;
 	//float4 c1 = blur9(_occlusionMap, input.uv, ln_Resolution.xy, float2(0.75, 0.0));
-	//float4 c2 = blur9(input.uv, ln_Resolution.xy, float2(0.0, 0.95));
-    float4 c2 = LN_5x5AverageBlur(_occlusionMap, ln_Resolution.xy, input.uv);
+	float4 c2 = blur9(input.uv, ln_Resolution.xy, float2(0.0, 0.95));
+    //float4 c2 = LN_5x5AverageBlur(_occlusionMap, ln_Resolution.xy, input.uv);
 	return c * c2* c2;
 	//return c1 * c2;
 	//return tex2D(_occlusionMap, input.uv);

@@ -158,14 +158,15 @@ void Shader::init(const StringRef& filePath, ShaderCompilationProperties* proper
     if (properties) localDiag = properties->m_diag;
     if (!localDiag) localDiag = makeObject<DiagnosticsManager>();
 
-    if (Path(filePath).hasExtension(detail::UnifiedShader::FileExt)) {
+    Path path = filePath;
+    if (path.hasExtension(detail::UnifiedShader::FileExt)) {
         auto file = FileStream::create(filePath, FileOpenMode::Read);
         createFromStream(file, localDiag);
     } else {
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 		ByteBuffer buffer = FileSystem::readAllBytes(filePath);
 
-		List<Path> includeDirs;
+        List<Path> includeDirs = { path.parent() };
 		List<String> definitions;
 		if (properties) {
 			for (auto& path : properties->m_includeDirectories) includeDirs.add(path);
@@ -188,7 +189,7 @@ void Shader::init(const StringRef& filePath, ShaderCompilationProperties* proper
 #endif
     }
 
-    m_name = Path(filePath).fileNameWithoutExtension();
+    m_name = path.fileNameWithoutExtension();
 
     if (!properties || !properties->m_diag) {
         if (localDiag->hasError()) {
