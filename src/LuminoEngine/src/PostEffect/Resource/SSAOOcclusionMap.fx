@@ -17,14 +17,15 @@ sampler2D _randomSampler;
 
 cbuffer LocalBuffer
 {
-    float density;
-    float scaling;
+    float _density;
+    
+    // https://qiita.com/mebiusbox2/items/2a18994a5caa6d584099#%E5%9F%BA%E6%9C%AC%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0
+    // ViewSpace 上の、↑の図の最大半径
+    float _scaling;
 }
 
 //==============================================================================
 
-// https://qiita.com/mebiusbox2/items/2a18994a5caa6d584099#%E5%9F%BA%E6%9C%AC%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0
-// ViewSpace 上の、↑の図の最大半径
 const float SamplingRange = 0.7;
 
 const int SamplingCount = 16;
@@ -165,7 +166,7 @@ const float3 ObjXYZ = float3(1, 1, 1);
 
 float4 PSMain(PSInput input) : SV_TARGET0
 {
-    return float4(density, scaling, 0, 1);
+    //return float4(_density, _scaling, 0, 1);
 #if 1
     // UV 位置の深度。ProjI で ViewPos を求めるのにも使いたいので、Linear ではない。
     float projectedDepth = GetDepth(input.UV);
@@ -173,6 +174,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
     // ViewSpace 上の点を求める
     float3 viewPos = GetViewPosition(input.UV, projectedDepth);
     float3 viewNormal = GetNormal(input.UV);
+    //return float4(viewNormal, 1);
 
     float ao = 0.0f;
     float div = 0.0f;   // 平均計算のための分母
@@ -189,7 +191,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
             //float3 samplingViewNormal = reflect(samples[i], fres);
 #else
             // XY 平面上の offset を適当に回転する (TODO: 乱数にできるとよい)
-            const float3 samplingOffset = mul(float3(SamplingOffsets[i] * SamplingRange, 1.0), MakeRotation2DMatrix((float)i));
+            const float3 samplingOffset = mul(float3(SamplingOffsets[i] * _scaling, 1.0), MakeRotation2DMatrix((float)i));
 
             // viewNormal が軸になるように samplingOffset を変換する
             float3 samplingViewNormal = normalize(mul(samplingOffset, _LN_MakeLazyToRot(viewNormal)));
@@ -209,7 +211,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
             // サンプリング位置の clipPos を求める
             //float3 samplingViewPos = float3(viewPos + samplingViewNormal * fres);
             //float3 samplingViewPos = reflect(samplingViewNormal, fres);
-            float3 samplingViewPos = float3(viewPos + (samplingViewNormal * (fres.z * 0.5 + 0.5)) * SamplingRange);
+            float3 samplingViewPos = float3(viewPos + (samplingViewNormal * (fres.z * 0.5 + 0.5)) * _scaling);
             float4 samplingClipPos = mul(float4(samplingViewPos, 1.0), ln_Projection);
             samplingClipPos.xyz /= samplingClipPos.w;
 
@@ -224,7 +226,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
 
     // TODO: Range check
     // https://learnopengl.com/Advanced-Lighting/SSAO
-            float rangeCheck = smoothstep(0.0, 1.0, SamplingRange / abs(depthDifference));
+            float rangeCheck = smoothstep(0.0, 1.0, _scaling / abs(depthDifference));
 #if 0
             ao +=
                 smoothstep(0, falloff_e, depthDifference) *
@@ -246,7 +248,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
     
     ao = max(0, ao);
     ao = pow(ao * 1.5, max(0.5, 1.5 - ao)) / 1.5; //やわらか関数
-
+    ao *= _density;
 
 
     float result = 1.0f - ao;

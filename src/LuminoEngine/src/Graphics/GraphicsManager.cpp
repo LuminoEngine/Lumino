@@ -227,6 +227,12 @@ void GraphicsManager::init(const Settings& settings)
 
 		m_linearSamplerState = makeObject<SamplerState>(TextureFilterMode::Linear);
 		m_linearSamplerState->setFrozen(true);
+
+		m_pointClampSamplerState = makeObject<SamplerState>(TextureFilterMode::Point, TextureAddressMode::Clamp);
+		m_pointClampSamplerState->setFrozen(true);
+
+		m_linearClampSamplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+		m_pointClampSamplerState->setFrozen(true);
 	}
 
 

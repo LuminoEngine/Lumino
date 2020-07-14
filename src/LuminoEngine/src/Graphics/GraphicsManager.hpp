@@ -71,6 +71,8 @@ public:
 	const Ref<Texture2D>& defaultNormalMap() const { return m_defaultNormalMap; }
 	const Ref<SamplerState>& defaultSamplerState() const { return m_defaultSamplerState; }
 	const Ref<SamplerState>& linearSamplerState() const { return m_linearSamplerState; }
+	const Ref<SamplerState>& pointClampSamplerState() const { return m_pointClampSamplerState; }
+	const Ref<SamplerState>& linearClampSamplerState() const { return m_linearClampSamplerState; }
 
 	static bool checkVulkanSupported();
 
@@ -103,6 +105,9 @@ private:
 	Ref<Texture2D> m_defaultNormalMap;
 	Ref<SamplerState> m_defaultSamplerState;
 	Ref<SamplerState> m_linearSamplerState;
+	Ref<SamplerState> m_pointClampSamplerState;
+	Ref<SamplerState> m_linearClampSamplerState;
+	
 };
 
 } // namespace detail

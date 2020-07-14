@@ -66,8 +66,8 @@ class App_Sandbox_PostEffect : public Application
         auto obj = makeObject<StaticMesh>(model);
 
 
-		auto effect2 = makeObject<SSRPostEffect>();
-		Engine::renderView()->addPostEffect(effect2);
+		//auto effect2 = makeObject<SSRPostEffect>();
+		//Engine::renderView()->addPostEffect(effect2);
 
 		//auto effect1 = makeObject<SSAOPostEffect>();
 		//Engine::renderView()->addPostEffect(effect1);

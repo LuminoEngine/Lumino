@@ -36,6 +36,16 @@ Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressM
     return makeObject<SamplerState>(filter, address, anisotropyEnabled);
 }
 
+SamplerState* SamplerState::pointClamp()
+{
+    return detail::EngineDomain::graphicsManager()->pointClampSamplerState();
+}
+
+SamplerState* SamplerState::linearClamp()
+{
+    return detail::EngineDomain::graphicsManager()->linearClampSamplerState();
+}
+
 SamplerState::SamplerState()
     : m_manager(nullptr)
     , m_rhiObject(nullptr)
