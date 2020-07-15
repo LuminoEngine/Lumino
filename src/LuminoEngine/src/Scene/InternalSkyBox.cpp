@@ -345,9 +345,9 @@ void InternalSkyDome::update(float elapsedTimer)
 
     float timeOfDay = m_timeOfDay;
     auto skyColor = Vector3(
-        m_backGroundHorizonColorR->evaluate(timeOfDay),
-        m_backGroundHorizonColorG->evaluate(timeOfDay),
-        m_backGroundHorizonColorB->evaluate(timeOfDay));
+        m_backGroundSkyDomeColorR->evaluate(timeOfDay),
+        m_backGroundSkyDomeColorG->evaluate(timeOfDay),
+        m_backGroundSkyDomeColorB->evaluate(timeOfDay));
     auto horizonColor = Vector3(
         m_backGroundHorizonColorR->evaluate(timeOfDay),
         m_backGroundHorizonColorG->evaluate(timeOfDay),
@@ -417,11 +417,11 @@ void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* v
         m_material->setColor(u"_Curve_BaseCloudColorAndIntensity", m_fixedBaseCloudColorAndIntensity);
 
 
-        //m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 0.8);
-        //m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 0.8);
-        //m_material->setFloat(u"_ThirdCloudsIntensity", 0.25);
-        //m_material->setFloat(u"_AllCloudsFalloffIntensity", 0.95);
-        //m_material->setFloat(u"_AllCloudsIntensity", 1.1);
+        m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 0.8);
+        m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 0.8);
+        m_material->setFloat(u"_ThirdCloudsIntensity", 0.25);
+        m_material->setFloat(u"_AllCloudsFalloffIntensity", 0.95);
+        m_material->setFloat(u"_AllCloudsIntensity", 1.1);
 
         //m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 4.0);
         //m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 4.0);
@@ -430,11 +430,11 @@ void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* v
         //m_material->setFloat(u"_AllCloudsIntensity", 0.6);
 
 
-        m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 0.0);
-        m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 0.0);
-        m_material->setFloat(u"_ThirdCloudsIntensity", 0.0);
-        m_material->setFloat(u"_AllCloudsFalloffIntensity", 0.0);
-        m_material->setFloat(u"_AllCloudsIntensity", 0.0);
+        //m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 0.0);
+        //m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 0.0);
+        //m_material->setFloat(u"_ThirdCloudsIntensity", 0.0);
+        //m_material->setFloat(u"_AllCloudsFalloffIntensity", 0.0);
+        //m_material->setFloat(u"_AllCloudsIntensity", 0.0);
 
         //m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 3.0);
         //m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 4.0);
