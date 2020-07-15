@@ -32,18 +32,14 @@ Ref<PostEffectInstance> SSRPostEffect::onCreateInstance()
 
 namespace detail {
 
-SSRPostEffectInstance::SSRPostEffectInstance()
-    : m_owner(nullptr)
-    , m_viewWidth(0)
+SSRPostEffectCore::SSRPostEffectCore()
+    : m_viewWidth(0)
     , m_viewHeight(0)
 {
 }
 
-bool SSRPostEffectInstance::init(SSRPostEffect* owner)
+bool SSRPostEffectCore::init(Material* compositeMaterial)
 {
-    if (!PostEffectInstance::init()) return false;
-
-    m_owner = owner;
 
     auto shader1 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SSRRayTracing);
     m_ssrMaterial = makeObject<Material>();
@@ -60,11 +56,13 @@ bool SSRPostEffectInstance::init(SSRPostEffect* owner)
     m_ssrBlurMaterial2 = makeObject<Material>();
     m_ssrBlurMaterial2->setShader(shader2);
 
-    auto shader3 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SSRComposite);
-    m_ssrCompositeMaterial = makeObject<Material>();
-    m_ssrCompositeMaterial->setShader(shader3);
-    m_paramColorSampler = shader3->findParameter(u"_ColorSampler");
-    m_paramSSRSampler = shader3->findParameter(u"_SSRSampler");
+    if (!compositeMaterial) {
+        auto shader3 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SSRComposite);
+        m_ssrCompositeMaterial = makeObject<Material>();
+        m_ssrCompositeMaterial->setShader(shader3);
+        m_paramColorSampler = shader3->findParameter(u"_ColorSampler");
+        m_paramSSRSampler = shader3->findParameter(u"_SSRSampler");
+    }
 
     // TODO: 他と共有したいところ
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
@@ -72,7 +70,7 @@ bool SSRPostEffectInstance::init(SSRPostEffect* owner)
     return true;
 }
 
-bool SSRPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool SSRPostEffectCore::prepare(RenderingContext* context, RenderTargetTexture* source)
 {
     Texture* viewNormalMap = context->gbuffer(GBuffer::ViewNormalMap);
     Texture* viewDepthMap = context->gbuffer(GBuffer::ViewDepthMap);
@@ -102,10 +100,6 @@ bool SSRPostEffectInstance::onRender(RenderingContext* context, RenderTargetText
         m_ssrBlurMaterial2->setMainTexture(m_blurTarget1);
         context->blit(m_ssrBlurMaterial2, m_blurTarget2);
 
-        m_paramColorSampler->setTexture(source);
-        m_paramSSRSampler->setTexture(m_blurTarget2);
-        context->blit(m_ssrCompositeMaterial, destination);
-
         return true;
     }
     else {
@@ -113,7 +107,14 @@ bool SSRPostEffectInstance::onRender(RenderingContext* context, RenderTargetText
     }
 }
 
-void SSRPostEffectInstance::resetResources(int resx, int resy)
+void SSRPostEffectCore::render(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+{
+    m_paramColorSampler->setTexture(source);
+    m_paramSSRSampler->setTexture(m_blurTarget2);
+    context->blit(m_ssrCompositeMaterial, destination);
+}
+
+void SSRPostEffectCore::resetResources(int resx, int resy)
 {
     // TODO: tempolary からとっていいかも
     m_ssrTarget = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false);
@@ -127,6 +128,42 @@ void SSRPostEffectInstance::resetResources(int resx, int resy)
 
     m_viewWidth = resx;
     m_viewHeight = resy;
+}
+
+} // namespace detail
+
+//==============================================================================
+// SSRPostEffectInstance
+
+namespace detail {
+
+SSRPostEffectInstance::SSRPostEffectInstance()
+    : m_owner(nullptr)
+{
+}
+
+bool SSRPostEffectInstance::init(SSRPostEffect* owner)
+{
+    if (!PostEffectInstance::init()) return false;
+
+    m_owner = owner;
+
+    if (!m_effect.init(nullptr)) {
+        return false;
+    }
+
+    return true;
+}
+
+bool SSRPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+{
+    if (m_effect.prepare(context, source)) {
+        m_effect.render(context, source, destination);
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 } // namespace detail

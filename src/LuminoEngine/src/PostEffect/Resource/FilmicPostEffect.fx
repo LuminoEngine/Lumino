@@ -2,6 +2,7 @@
 #include <Lumino.fxh>
 #include "lib/Common.fxh"
 #include "lib/BloomComposite.fxh"
+#include "lib/SSRComposite.fxh"
 
 //==============================================================================
 
@@ -10,6 +11,7 @@ sampler2D _occlusionMap;
 cbuffer EffectSettings
 {
     int _antialiasEnabled;
+    int _ssrEnabled;
     int _ssaoEnabled;
     int _bloomEnabled;
     int _dofEnabled;
@@ -140,6 +142,12 @@ float4 PSMain(PSInput input) : SV_TARGET0
     }
     else {
         result = tex2D(ln_MaterialTexture, input.uv.xy);
+    }
+
+    //--------------------
+    // SSR
+    if (_ssrEnabled) {
+        result = CompositeSSR(result, input.uv.xy);
     }
 
     //--------------------

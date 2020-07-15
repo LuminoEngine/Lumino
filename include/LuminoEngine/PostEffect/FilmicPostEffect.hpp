@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/PostEffect/SSRPostEffect.hpp>
 #include <LuminoEngine/PostEffect/BloomPostEffect.hpp>
 #include <LuminoEngine/PostEffect/DepthOfFieldPostEffect.hpp>
 
@@ -43,10 +44,12 @@ private:
     Ref<Material> m_integrationMaterial;
     Ref<Material> m_ssaoMaterial;
     Ref<SamplerState> m_samplerState;
+    SSRPostEffectCore m_ssrEffect;
     BloomPostEffectCore m_bloomEffect;
     DepthOfFieldPostEffectCore m_dofEffect;
 
     bool m_antialiasEnabled = false;
+    bool m_ssrEnabled = true;
     bool m_ssaoEnabled = false;
     bool m_bloomEnabled = false;
     bool m_dofEnabled = false;

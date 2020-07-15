@@ -57,6 +57,10 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
     // TODO: 他と共有したいところ
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
+    if (!m_ssrEffect.init(m_integrationMaterial)) {
+        return false;
+    }
+
     if (!m_bloomEffect.init(m_integrationMaterial)) {
         return false;
     }
@@ -70,8 +74,14 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
 
 bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
-    if (!m_antialiasEnabled && !m_ssaoEnabled && !m_bloomEnabled && !m_dofEnabled) {
+    if (!m_antialiasEnabled && !m_ssrEnabled && !m_ssaoEnabled && !m_bloomEnabled && !m_dofEnabled) {
         return false;
+    }
+
+    bool actualSSREnabled = false;
+    if (m_ssrEnabled) {
+        actualSSREnabled = m_ssrEffect.prepare(context, source);
+        m_integrationMaterial->setTexture(u"_SSRSampler", m_ssrEffect.ssrResultTexture());
     }
 
     if (m_bloomEnabled) {
@@ -88,6 +98,7 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     struct EffectSettings
     {
         int antialiasEnabled;
+        int ssrEnabled;
         int ssaoEnabled;
         int bloomEnabled;
         int dofEnabled;
@@ -95,6 +106,7 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
 
     EffectSettings settings;
     settings.antialiasEnabled = m_antialiasEnabled ? 1 : 0;
+    settings.ssrEnabled = actualSSREnabled ? 1 : 0;
     settings.ssaoEnabled = m_ssaoEnabled ? 1 : 0;
     settings.bloomEnabled = m_bloomEnabled ? 1 : 0;
     settings.dofEnabled = m_dofEnabled ? 1 : 0;
