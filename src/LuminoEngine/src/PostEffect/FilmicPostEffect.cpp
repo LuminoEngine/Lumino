@@ -95,6 +95,25 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
         m_dofEffect.prepare(context, source);
     }
 
+    if (m_tonemapEnabled) {
+        const float linearWhite = 5.0f;
+        const float shoulderStrength = 0.015f;
+        const float linearStrength = 0.5;
+        const float linearAngle = 0.1;
+        const float toeStrength = 0.2f;
+        const float toeNumerator = 0.02;
+        const float toeDenominator = 0.3;
+        const float Exposure = 0.0f;// 2.0f;//5.0f;// 
+        const ColorTone tone(0, 0, 0, 0);
+
+        TonemapPostEffectParams params;
+        params.setup(
+            linearWhite, shoulderStrength, linearStrength, linearAngle,
+            toeStrength, toeNumerator, toeDenominator, Exposure, tone);
+        m_integrationMaterial->setBufferData(u"TonemapPostEffectParams", &params, sizeof(params));
+    }
+
+    // cbuffer EffectSettings
     struct EffectSettings
     {
         int antialiasEnabled;
@@ -102,6 +121,9 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
         int ssaoEnabled;
         int bloomEnabled;
         int dofEnabled;
+        int tonemapEnabled;
+        int _vignetteEnabled;
+        int gammaEnabled;
     };
 
     EffectSettings settings;
@@ -110,6 +132,9 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     settings.ssaoEnabled = m_ssaoEnabled ? 1 : 0;
     settings.bloomEnabled = m_bloomEnabled ? 1 : 0;
     settings.dofEnabled = m_dofEnabled ? 1 : 0;
+    settings.tonemapEnabled = m_tonemapEnabled ? 1 : 0;
+    settings._vignetteEnabled = m_vignetteEnabled ? 1 : 0;
+    settings.gammaEnabled = m_gammaEnabled ? 1 : 0;
 
 
     Ref<RenderTargetTexture> occlusionMap = RenderTargetTexture::getTemporary(source->width(), source->height(), TextureFormat::RGBA8, false);

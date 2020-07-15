@@ -3,6 +3,9 @@
 #include "ShaderLib/Common.fxh"
 #include "ShaderLib/BloomComposite.fxh"
 #include "ShaderLib/SSRComposite.fxh"
+#include "ShaderLib/Tonemap.part.fxh"
+#include "ShaderLib/Vignette.part.fxh"
+
 
 //==============================================================================
 
@@ -15,6 +18,9 @@ cbuffer EffectSettings
     int _ssaoEnabled;
     int _bloomEnabled;
     int _dofEnabled;
+    int _tonemapEnabled;
+    int _vignetteEnabled;
+    int _gammaEnabled;
 };
 
 
@@ -94,38 +100,38 @@ float2 Blur(float2 uv, float2 texScale) {
 float4 GaussianFilteredColor5x5(sampler2D tex, float2 invTextureSize, float2 uv) {
     float dx = invTextureSize.x;
     float dy = invTextureSize.y;
-	float4 center = tex2D(tex, uv);
-	float4 ret =
-		tex2D(tex, uv + float2(-dx * 2, -dy * 2)) +
-		tex2D(tex, uv + float2(-dx * 1, -dy * 2)) * 4 +
-		tex2D(tex, uv + float2(-dx * 0, -dy * 2)) * 6 +
-		tex2D(tex, uv + float2(dx * 1, -dy * 2)) * 4 +
-		tex2D(tex, uv + float2(dx * 2, -dy * 2)) +
+    float4 center = tex2D(tex, uv);
+    float4 ret =
+        tex2D(tex, uv + float2(-dx * 2, -dy * 2)) +
+        tex2D(tex, uv + float2(-dx * 1, -dy * 2)) * 4 +
+        tex2D(tex, uv + float2(-dx * 0, -dy * 2)) * 6 +
+        tex2D(tex, uv + float2(dx * 1, -dy * 2)) * 4 +
+        tex2D(tex, uv + float2(dx * 2, -dy * 2)) +
 
-		tex2D(tex, uv + float2(-dx * 2, -dy * 1)) * 4 +
-		tex2D(tex, uv + float2(-dx * 1, -dy * 1)) * 16 +
-		tex2D(tex, uv + float2(-dx * 0, -dy * 1)) * 24 +
-		tex2D(tex, uv + float2(dx * 1, -dy * 1)) * 16 +
-		tex2D(tex, uv + float2(dx * 2, -dy * 1)) * 4 +
+        tex2D(tex, uv + float2(-dx * 2, -dy * 1)) * 4 +
+        tex2D(tex, uv + float2(-dx * 1, -dy * 1)) * 16 +
+        tex2D(tex, uv + float2(-dx * 0, -dy * 1)) * 24 +
+        tex2D(tex, uv + float2(dx * 1, -dy * 1)) * 16 +
+        tex2D(tex, uv + float2(dx * 2, -dy * 1)) * 4 +
 
-		tex2D(tex, uv + float2(-dx * 2, dy * 0)) * 6 +
-		tex2D(tex, uv + float2(-dx * 1, dy * 0)) * 24 +
-		center * 36 +
-		tex2D(tex, uv + float2(dx * 1, dy * 0)) * 24 +
-		tex2D(tex, uv + float2(dx * 2, dy * 0)) * 6 +
+        tex2D(tex, uv + float2(-dx * 2, dy * 0)) * 6 +
+        tex2D(tex, uv + float2(-dx * 1, dy * 0)) * 24 +
+        center * 36 +
+        tex2D(tex, uv + float2(dx * 1, dy * 0)) * 24 +
+        tex2D(tex, uv + float2(dx * 2, dy * 0)) * 6 +
 
-		tex2D(tex, uv + float2(-dx * 2, dy * 1)) * 4 +
-		tex2D(tex, uv + float2(-dx * 1, dy * 1)) * 16 +
-		tex2D(tex, uv + float2(-dx * 0, dy * 1)) * 24 +
-		tex2D(tex, uv + float2(dx * 1, dy * 1)) * 16 +
-		tex2D(tex, uv + float2(dx * 2, dy * 1)) * 4 +
+        tex2D(tex, uv + float2(-dx * 2, dy * 1)) * 4 +
+        tex2D(tex, uv + float2(-dx * 1, dy * 1)) * 16 +
+        tex2D(tex, uv + float2(-dx * 0, dy * 1)) * 24 +
+        tex2D(tex, uv + float2(dx * 1, dy * 1)) * 16 +
+        tex2D(tex, uv + float2(dx * 2, dy * 1)) * 4 +
 
-		tex2D(tex, uv + float2(-dx * 2, dy * 2)) +
-		tex2D(tex, uv + float2(-dx * 1, dy * 2)) * 4 +
-		tex2D(tex, uv + float2(-dx * 0, dy * 2)) * 6 +
-		tex2D(tex, uv + float2(dx * 1, dy * 2)) * 4 +
-		tex2D(tex, uv + float2(dx * 2, dy * 2));
-	return float4((ret.rgb / 256.0f), ret.a);
+        tex2D(tex, uv + float2(-dx * 2, dy * 2)) +
+        tex2D(tex, uv + float2(-dx * 1, dy * 2)) * 4 +
+        tex2D(tex, uv + float2(-dx * 0, dy * 2)) * 6 +
+        tex2D(tex, uv + float2(dx * 1, dy * 2)) * 4 +
+        tex2D(tex, uv + float2(dx * 2, dy * 2));
+    return float4((ret.rgb / 256.0f), ret.a);
 
 }
 
@@ -213,10 +219,30 @@ float4 PSMain(PSInput input) : SV_TARGET0
         result.rgb = lerp(colA, colB, alpha);
     }
 
+    //--------------------
+    // Tone
+    if (_tonemapEnabled) {
+        result.rgb = Tonemap(result.rgb);
+    }
+
+    //--------------------
+    // Vignette
+    if (_vignetteEnabled) {
+        result.rgb = Vignette(result.rgb, input.uv.xy);
+    }
+    
+
+
+    //--------------------
+    // Gamma
+    if (_gammaEnabled) {
+        result.rgb = pow(result.rgb, 1.0 / 2.2);
+    }
+
     //float c2 = Blur(input.uv, BlurParams.xy);
-	//float4 result = c * c2* c2;
-	//return c1 * c2;
-	//return tex2D(_occlusionMap, input.uv);
+    //float4 result = c * c2* c2;
+    //return c1 * c2;
+    //return tex2D(_occlusionMap, input.uv);
 
 
     return result;

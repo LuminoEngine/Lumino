@@ -32,6 +32,30 @@ Ref<PostEffectInstance> TonemapPostEffect::onCreateInstance()
 
 namespace detail {
 
+void TonemapPostEffectParams::setup(
+    const float linearWhite,
+    const float shoulderStrength,
+    const float linearStrength,
+    const float linearAngle,
+    const float toeStrength,
+    const float toeNumerator,
+    const float toeDenominator,
+    const float exposure,
+    const ColorTone& tone)
+{
+    _paramA = shoulderStrength;
+    _paramB = linearStrength;
+    _paramCB = linearStrength * linearAngle;
+    _paramDE = toeStrength * toeNumerator;
+    _paramDF = toeStrength * toeDenominator;
+    _paramEperF = toeNumerator / toeDenominator;
+    float w = linearWhite;
+    _paramF_White = ((w * (_paramA * w + _paramCB) + _paramDE)
+        / (w * (_paramA * w + _paramB) + _paramDF))
+        - _paramEperF;
+    _exposure = exposure;
+}
+
 TonemapPostEffectInstance::TonemapPostEffectInstance()
     : m_owner(nullptr)
     , m_material(nullptr)
@@ -51,8 +75,8 @@ bool TonemapPostEffectInstance::init(TonemapPostEffect* owner)
 
 bool TonemapPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
-    const float linearWhite = 11.2;
-    const float shoulderStrength = 0.15f;
+    const float linearWhite = 5.0f;//11.2;
+    const float shoulderStrength = 0.015f;// 0.15f;
     const float linearStrength = 0.5;
     const float linearAngle = 0.1;
     const float toeStrength = 0.2f;
@@ -62,39 +86,19 @@ bool TonemapPostEffectInstance::onRender(RenderingContext* context, RenderTarget
     const ColorTone tone(0, 0, 0, 0);
     //const ColorTone tone(-0.0, -0.01, -0.02, 0);
 
-    struct Data
-    {
-        float	paramA;  // shoulderStrength
-        float	paramB;  // linearStrength
-        float	paramCB;    // param.linearStrength * param.linearAngle
-        float	paramDE;    // param.toeStrength * param.toeNumerator
-        float	paramDF;    // param.toeStrength * param.toeDenominator
-        float	paramEperF;  // param.toeNumerator / param.toeDenominator
-        float	paramF_White;//
-        float Exposure;
-    };
+    TonemapPostEffectParams d;
+    d.setup(
+        linearWhite, shoulderStrength, linearStrength, linearAngle,
+        toeStrength, toeNumerator, toeDenominator, Exposure, tone);
 
-    Data d;
-    d.paramA = shoulderStrength;
-    d.paramB = linearStrength;
-    d.paramCB = linearStrength * linearAngle;
-    d.paramDE = toeStrength * toeNumerator;
-    d.paramDF = toeStrength * toeDenominator;
-    d.paramEperF = toeNumerator / toeDenominator;
-    float	w = linearWhite;
-    d.paramF_White = ((w * (d.paramA * w + d.paramCB) + d.paramDE)
-        / (w * (d.paramA * w + d.paramB) + d.paramDF))
-        - d.paramEperF;
-    d.Exposure = Exposure;
-
-    m_material->setFloat(u"paramA", d.paramA);
-    m_material->setFloat(u"paramB", d.paramB);
-    m_material->setFloat(u"paramCB", d.paramCB);
-    m_material->setFloat(u"paramDE", d.paramDE);
-    m_material->setFloat(u"paramDF", d.paramDF);
-    m_material->setFloat(u"paramEperF", d.paramEperF);
-    m_material->setFloat(u"paramF_White", d.paramF_White);
-    m_material->setFloat(u"Exposure", d.Exposure);
+    m_material->setFloat(u"paramA", d._paramA);
+    m_material->setFloat(u"paramB", d._paramB);
+    m_material->setFloat(u"paramCB", d._paramCB);
+    m_material->setFloat(u"paramDE", d._paramDE);
+    m_material->setFloat(u"paramDF", d._paramDF);
+    m_material->setFloat(u"paramEperF", d._paramEperF);
+    m_material->setFloat(u"paramF_White", d._paramF_White);
+    m_material->setFloat(u"Exposure", d._exposure);
     m_material->setVector(u"_Tone", tone.toVector4());
 
     m_material->setMainTexture(source);
