@@ -165,10 +165,6 @@ void BloomPostEffectCore::render(RenderingContext* context, RenderTargetTexture*
 {
     // Composite All the mips
     m_compositeMaterial->setMainTexture(source);
-    //Vector4 bloomTintColors[] = { Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1) };
-    //m_compositeMaterial->setFloat(u"_BloomStrength", m_bloomStrength);
-    //m_compositeMaterial->setFloat(u"_BloomRadius", m_bloomRadius);
-    //m_compositeMaterial->setVectorArray(u"_BloomTintColors", bloomTintColors, MIPS);
     m_compositeMaterial->setBufferData(u"BloomCompositeParams", &m_bloomCompositeParams, sizeof(m_bloomCompositeParams));
     context->blit(m_compositeMaterial, destination);
 }
