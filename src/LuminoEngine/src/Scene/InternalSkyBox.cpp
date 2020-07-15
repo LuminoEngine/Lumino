@@ -369,11 +369,15 @@ void InternalSkyDome::update(float elapsedTimer)
     //c.mutatingNormalize();
     //m_sceneColor = Color(c.x, c.y, c.z, 1.0f);
 
+    //skyColor.mutatingNormalize();
+    //horizonColor.mutatingNormalize();
 
     m_fixedBackGroundSkyDomeColor = Color(Vector3::lerp(skyColor, m_skyColor.xyz(), m_skyColor.w), 1.0f);
     m_fixedBackGroundHorizonColor = Color(Vector3::lerp(horizonColor, m_horizonColor.xyz(), m_horizonColor.w), 1.0f);
     m_fixedBaseCloudColorAndIntensity = Color(Vector3::lerp(baseCloudColorAndIntensity.xyz(), m_cloudColor.xyz(), m_cloudColor.w), baseCloudColorAndIntensity.w);
     m_fixedAllOverlayColor = Color(Vector3::lerp(overlayColor.xyz(), m_overlayColor.xyz(), m_overlayColor.w), overlayColor.w);
+
+
 }
 
 void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* viewPoint)
@@ -412,15 +416,30 @@ void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* v
         m_material->setColor(u"_Curve_AllOverlayColor", m_fixedAllOverlayColor);
         m_material->setColor(u"_Curve_BaseCloudColorAndIntensity", m_fixedBaseCloudColorAndIntensity);
 
+
+        //m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 0.8);
+        //m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 0.8);
+        //m_material->setFloat(u"_ThirdCloudsIntensity", 0.25);
+        //m_material->setFloat(u"_AllCloudsFalloffIntensity", 0.95);
+        //m_material->setFloat(u"_AllCloudsIntensity", 1.1);
+
+        //m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 4.0);
+        //m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 4.0);
+        //m_material->setFloat(u"_ThirdCloudsIntensity", 0.0);
+        //m_material->setFloat(u"_AllCloudsFalloffIntensity", 1.4);
+        //m_material->setFloat(u"_AllCloudsIntensity", 0.6);
+
+
+        m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 0.0);
+        m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 0.0);
+        m_material->setFloat(u"_ThirdCloudsIntensity", 0.0);
+        m_material->setFloat(u"_AllCloudsFalloffIntensity", 0.0);
+        m_material->setFloat(u"_AllCloudsIntensity", 0.0);
+
         //m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 3.0);
         //m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 4.0);
         //m_material->setFloat(u"_AllCloudsFalloffIntensity", 1.15);
         //m_material->setFloat(u"_AllCloudsIntensity", 0.85);
-        m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 0.8);
-        m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 0.8);
-        m_material->setFloat(u"_ThirdCloudsIntensity", 0.25);
-        m_material->setFloat(u"_AllCloudsFalloffIntensity", 0.95);
-        m_material->setFloat(u"_AllCloudsIntensity", 1.1);
 
         /*
             Super Heavy:
@@ -455,6 +474,7 @@ void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* v
               All Clouds Intensity: 0.0
         */
     }
+
 
     Matrix transform = Matrix::makeScaling(viewPoint->farClip - 0.0001);    // 視界最遠まで拡大してみる
     transform.translate(viewPoint->viewPosition);
