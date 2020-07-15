@@ -1,6 +1,7 @@
 
 #include <Lumino.fxh>
 #include "lib/Common.fxh"
+#include "lib/BloomComposite.fxh"
 
 //==============================================================================
 
@@ -105,6 +106,11 @@ float4 PSMain(PSInput input) : SV_TARGET0
         result.rgb *= ao.rgb;
     }
 
+    //--------------------
+    // Bloom
+    if (_bloomEnabled){
+        result.rgb += Bloom(input.uv.xy);
+    }
 
     //float c2 = Blur(input.uv, BlurParams.xy);
 	//float4 result = c * c2* c2;

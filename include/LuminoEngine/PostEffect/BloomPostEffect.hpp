@@ -2,6 +2,7 @@
 #include "PostEffect.hpp"
 
 namespace ln {
+class SamplerState;
 namespace detail { class BloomPostEffectInstance; }
 
 class BloomPostEffect

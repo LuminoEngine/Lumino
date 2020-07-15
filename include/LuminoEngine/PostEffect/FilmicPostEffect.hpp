@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "PostEffect.hpp"
+#include <LuminoEngine/PostEffect/BloomPostEffect.hpp>
 
 namespace ln {
 class SamplerState;
@@ -42,10 +42,11 @@ private:
     Ref<Material> m_integrationMaterial;
     Ref<Material> m_ssaoMaterial;
     Ref<SamplerState> m_samplerState;
+    BloomPostEffectCore m_bloomEffect;
 
-    bool m_antialiasEnabled = false;
-    bool m_ssaoEnabled = false;
-    bool m_bloomEnabled = false;
+    bool m_antialiasEnabled = true;
+    bool m_ssaoEnabled = true;
+    bool m_bloomEnabled = true;
     bool m_dofEnabled = false;
 };
 

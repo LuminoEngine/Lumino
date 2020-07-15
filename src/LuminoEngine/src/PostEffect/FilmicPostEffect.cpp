@@ -44,6 +44,7 @@ FilmicPostEffectInstance::FilmicPostEffectInstance()
 bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
 {
     if (!PostEffectInstance::init()) return false;
+    m_owner = owner;
 
     auto shader2 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSAOOcclusionMap.fx");
     m_ssaoMaterial = makeObject<Material>();
@@ -56,6 +57,10 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
     // TODO: 他と共有したいところ
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
+    if (!m_bloomEffect.init(m_integrationMaterial)) {
+        return false;
+    }
+
     return true;
 }
 
@@ -63,6 +68,13 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
 {
     if (!m_antialiasEnabled && !m_ssaoEnabled && !m_bloomEnabled && !m_dofEnabled) {
         return false;
+    }
+
+    if (m_bloomEnabled) {
+        m_bloomEffect.setLuminosityThreshold(m_owner->m_luminosityThreshold);
+        m_bloomEffect.setBloomStrength(m_owner->m_bloomStrength);
+        m_bloomEffect.setBloomRadius(m_owner->m_bloomRadius);
+        m_bloomEffect.prepare(context, source);
     }
 
     struct EffectSettings

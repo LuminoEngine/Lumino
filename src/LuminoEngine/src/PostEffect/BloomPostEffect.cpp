@@ -159,13 +159,13 @@ void BloomPostEffectCore::prepare(RenderingContext* context, RenderTargetTexture
     // Composite params
     m_bloomCompositeParams._BloomStrength = m_bloomStrength;
     m_bloomCompositeParams._BloomRadius = m_bloomRadius;
+    m_compositeMaterial->setBufferData(u"BloomCompositeParams", &m_bloomCompositeParams, sizeof(m_bloomCompositeParams));
 }
 
 void BloomPostEffectCore::render(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     // Composite All the mips
     m_compositeMaterial->setMainTexture(source);
-    m_compositeMaterial->setBufferData(u"BloomCompositeParams", &m_bloomCompositeParams, sizeof(m_bloomCompositeParams));
     context->blit(m_compositeMaterial, destination);
 }
 
