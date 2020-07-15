@@ -1,8 +1,8 @@
 
 #include <Lumino.fxh>
-#include "lib/Common.fxh"
-#include "lib/BloomComposite.fxh"
-#include "lib/SSRComposite.fxh"
+#include "ShaderLib/Common.fxh"
+#include "ShaderLib/BloomComposite.fxh"
+#include "ShaderLib/SSRComposite.fxh"
 
 //==============================================================================
 

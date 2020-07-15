@@ -1,6 +1,6 @@
 
 #include <Lumino.fxh>
-#include "lib/BloomComposite.fxh"
+#include "ShaderLib/BloomComposite.fxh"
 
 //==============================================================================
 // Vertex shader
