@@ -15,6 +15,16 @@ cbuffer EffectSettings
     int _dofEnabled;
 };
 
+
+
+sampler2D _depthTexture;
+sampler2D _dofTexture0;
+sampler2D _dofTexture1;
+sampler2D _dofTexture2;
+sampler2D _dofTexture3;
+const float _focusedDepth = 10.0 / 100.0;
+const int MaxDOFMips = 4;
+
 //==============================================================================
 // Vertex shader
 
@@ -79,6 +89,46 @@ float2 Blur(float2 uv, float2 texScale) {
 #endif
 
 
+float4 GaussianFilteredColor5x5(sampler2D tex, float2 invTextureSize, float2 uv) {
+    float dx = invTextureSize.x;
+    float dy = invTextureSize.y;
+	float4 center = tex2D(tex, uv);
+	float4 ret =
+		tex2D(tex, uv + float2(-dx * 2, -dy * 2)) +
+		tex2D(tex, uv + float2(-dx * 1, -dy * 2)) * 4 +
+		tex2D(tex, uv + float2(-dx * 0, -dy * 2)) * 6 +
+		tex2D(tex, uv + float2(dx * 1, -dy * 2)) * 4 +
+		tex2D(tex, uv + float2(dx * 2, -dy * 2)) +
+
+		tex2D(tex, uv + float2(-dx * 2, -dy * 1)) * 4 +
+		tex2D(tex, uv + float2(-dx * 1, -dy * 1)) * 16 +
+		tex2D(tex, uv + float2(-dx * 0, -dy * 1)) * 24 +
+		tex2D(tex, uv + float2(dx * 1, -dy * 1)) * 16 +
+		tex2D(tex, uv + float2(dx * 2, -dy * 1)) * 4 +
+
+		tex2D(tex, uv + float2(-dx * 2, dy * 0)) * 6 +
+		tex2D(tex, uv + float2(-dx * 1, dy * 0)) * 24 +
+		center * 36 +
+		tex2D(tex, uv + float2(dx * 1, dy * 0)) * 24 +
+		tex2D(tex, uv + float2(dx * 2, dy * 0)) * 6 +
+
+		tex2D(tex, uv + float2(-dx * 2, dy * 1)) * 4 +
+		tex2D(tex, uv + float2(-dx * 1, dy * 1)) * 16 +
+		tex2D(tex, uv + float2(-dx * 0, dy * 1)) * 24 +
+		tex2D(tex, uv + float2(dx * 1, dy * 1)) * 16 +
+		tex2D(tex, uv + float2(dx * 2, dy * 1)) * 4 +
+
+		tex2D(tex, uv + float2(-dx * 2, dy * 2)) +
+		tex2D(tex, uv + float2(-dx * 1, dy * 2)) * 4 +
+		tex2D(tex, uv + float2(-dx * 0, dy * 2)) * 6 +
+		tex2D(tex, uv + float2(dx * 1, dy * 2)) * 4 +
+		tex2D(tex, uv + float2(dx * 2, dy * 2));
+	return float4((ret.rgb / 256.0f), ret.a);
+
+}
+
+
+
 float4 PSMain(PSInput input) : SV_TARGET0
 {
     float4 result = float4(0, 0, 0, 1);
@@ -110,6 +160,49 @@ float4 PSMain(PSInput input) : SV_TARGET0
     // Bloom
     if (_bloomEnabled){
         result.rgb += Bloom(input.uv.xy);
+    }
+
+    //--------------------
+    // DOF
+    if (_dofEnabled) {
+        float2 uv = input.uv.xy;
+
+        //sampler2D dofTextures[MaxDOFMips] = { _dofTexture0, _dofTexture1, _dofTexture2, _dofTexture3 };
+
+
+        float linearDepth = tex2D(_depthTexture, uv).g;
+        float d = distance(_focusedDepth, linearDepth);
+
+        float t = pow(d, 1.05);//1.25);
+
+        //return float4(t, 0, 0, 1);
+
+        //t *= 0.5;
+
+        t *= (float)MaxDOFMips;
+        float alpha, no;
+        alpha = modf(t, no);
+
+        int dofIndex = (int)no;
+        float3 colA, colB;
+        // TODO: TextureArray でうけとりたい。
+        if (dofIndex == 0) {
+            colA = result.rgb;
+            colB = GaussianFilteredColor5x5(_dofTexture0, ln_Resolution.zw, uv);
+        }
+        else if (dofIndex == 1) {
+            colA = GaussianFilteredColor5x5(_dofTexture0, ln_Resolution.zw, uv);
+            colB = GaussianFilteredColor5x5(_dofTexture1, ln_Resolution.zw, uv);
+        }
+        else if (dofIndex == 2) {
+            colA = GaussianFilteredColor5x5(_dofTexture1, ln_Resolution.zw, uv);
+            colB = GaussianFilteredColor5x5(_dofTexture2, ln_Resolution.zw, uv);
+        }
+        else {
+            colA = GaussianFilteredColor5x5(_dofTexture2, ln_Resolution.zw, uv);
+            colB = GaussianFilteredColor5x5(_dofTexture3, ln_Resolution.zw, uv);
+        }
+        result.rgb = lerp(colA, colB, alpha);
     }
 
     //float c2 = Blur(input.uv, BlurParams.xy);

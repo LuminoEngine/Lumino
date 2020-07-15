@@ -78,7 +78,7 @@ class App_Sandbox_PostEffect : public Application
 
 		//auto effect5 = makeObject<DepthOfFieldPostEffect>();
 		//Engine::renderView()->addPostEffect(effect5);
-		//
+		
 
 		//auto effect4 = makeObject<BloomPostEffect>();
 		//effect4->setStrength(0.1);

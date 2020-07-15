@@ -28,6 +28,70 @@ Ref<PostEffectInstance> DepthOfFieldPostEffect::onCreateInstance()
 }
 
 //==============================================================================
+// DepthOfFieldPostEffectCore
+
+namespace detail {
+
+DepthOfFieldPostEffectCore::DepthOfFieldPostEffectCore()
+    : m_viewWidth(0)
+    , m_viewHeight(0)
+{
+}
+
+bool DepthOfFieldPostEffectCore::init(Material* compositeMaterial)
+{
+    m_compositeMaterial = compositeMaterial;
+
+    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/Copy.fx");
+    m_copyMaterial = makeObject<Material>();
+    m_copyMaterial->setShader(shader1);
+
+    // TODO: 他と共有したいところ
+    m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+
+    return true;
+}
+
+void DepthOfFieldPostEffectCore::prepare(RenderingContext* context, RenderTargetTexture* source)
+{
+    int resx = source->width();
+    int resy = source->height();
+    if (m_viewWidth != resx || m_viewHeight != resy) {
+        resetResources(resx, resy);
+    }
+
+    // down sampling.
+    m_copyMaterial->setMainTexture(source);
+    for (int i = 0; i < MaxMips; i++) {
+        context->blit(m_copyMaterial, m_mipTargets[i]);
+    }
+
+    Texture* viewDepthMap = context->gbuffer(GBuffer::ViewDepthMap);
+    m_compositeMaterial->setTexture(u"_depthTexture", viewDepthMap);
+    m_compositeMaterial->setTexture(u"_dofTexture0", m_mipTargets[0]);
+    m_compositeMaterial->setTexture(u"_dofTexture1", m_mipTargets[1]);
+    m_compositeMaterial->setTexture(u"_dofTexture2", m_mipTargets[2]);
+    m_compositeMaterial->setTexture(u"_dofTexture3", m_mipTargets[3]);
+}
+
+void DepthOfFieldPostEffectCore::resetResources(int resx, int resy)
+{
+    // Create render targets for down sampling.
+    auto rx = std::round(resx / 2);
+    auto ry = std::round(resy / 2);
+    for (int i = 0; i < MaxMips; i++) {
+        auto renderTargetHorizonal = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false);
+        renderTargetHorizonal->setSamplerState(m_samplerState);
+        m_mipTargets.add(renderTargetHorizonal);
+
+        rx = std::round(resx / 2);
+        ry = std::round(resy / 2);
+    }
+}
+
+} // namespace detail
+
+//==============================================================================
 // DepthOfFieldPostEffectInstance
 
 namespace detail {

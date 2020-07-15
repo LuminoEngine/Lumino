@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/PostEffect/BloomPostEffect.hpp>
+#include <LuminoEngine/PostEffect/DepthOfFieldPostEffect.hpp>
 
 namespace ln {
 class SamplerState;
@@ -43,11 +44,13 @@ private:
     Ref<Material> m_ssaoMaterial;
     Ref<SamplerState> m_samplerState;
     BloomPostEffectCore m_bloomEffect;
+    DepthOfFieldPostEffectCore m_dofEffect;
 
-    bool m_antialiasEnabled = true;
-    bool m_ssaoEnabled = true;
-    bool m_bloomEnabled = true;
+    bool m_antialiasEnabled = false;
+    bool m_ssaoEnabled = false;
+    bool m_bloomEnabled = false;
     bool m_dofEnabled = false;
+    bool m_tonemapEnabled = false;
 };
 
 } // namespace detail

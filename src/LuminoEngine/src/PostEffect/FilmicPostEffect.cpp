@@ -61,6 +61,10 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
         return false;
     }
 
+    if (!m_dofEffect.init(m_integrationMaterial)) {
+        return false;
+    }
+    
     return true;
 }
 
@@ -75,6 +79,10 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
         m_bloomEffect.setBloomStrength(m_owner->m_bloomStrength);
         m_bloomEffect.setBloomRadius(m_owner->m_bloomRadius);
         m_bloomEffect.prepare(context, source);
+    }
+
+    if (m_dofEnabled) {
+        m_dofEffect.prepare(context, source);
     }
 
     struct EffectSettings

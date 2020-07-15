@@ -4,6 +4,8 @@
 sampler2D _depthTex;
 sampler2D _dofTex;
 
+const float MaxMips = 8.0;
+
 const float baseDepth = 10.0 / 100.0;
 
 
@@ -82,13 +84,16 @@ float4 PSMain(PSInput input) : SV_TARGET0
 {
     float4 retcol = tex2D(ln_MaterialTexture, input.UV);
 
-    float d = distance(baseDepth, tex2D(_depthTex, input.UV).g);
+    float linearDepth = tex2D(_depthTex, input.UV).g;
+    float d = distance(baseDepth, linearDepth);
 
     float t = pow(d, 1.05);//1.25);
 
     //return float4(t, 0, 0, 1);
 
-    t *= 8.0f;
+    t *= 0.5;
+
+    t *= MaxMips;
     float alpha, no;
     alpha = modf(t, no);
 

@@ -70,9 +70,9 @@ BloomPostEffectCore::BloomPostEffectCore()
     : m_viewWidth(0)
     , m_viewHeight(0)
 {
-    static_assert(offsetof(BloomCompositeParams, _BloomTintColorsAndFactors) == 0, "Invalid offset: _BloomTintColors");
-    static_assert(offsetof(BloomCompositeParams, _BloomStrength) == 128, "Invalid offset: _BloomStrength");
-    static_assert(offsetof(BloomCompositeParams, _BloomRadius) == 132, "Invalid offset: _BloomRadius");
+    static_assert(offsetof(BloomCompositeParams, _BloomTintColorsAndFactors) == 0, "Invalid offset: BloomCompositeParams._BloomTintColors");
+    static_assert(offsetof(BloomCompositeParams, _BloomStrength) == 128, "Invalid offset: BloomCompositeParams._BloomStrength");
+    static_assert(offsetof(BloomCompositeParams, _BloomRadius) == 132, "Invalid offset: BloomCompositeParams._BloomRadius");
     static_assert(sizeof(BloomCompositeParams) == 136, "Invalid size: BloomCompositeParams");
 }
 
@@ -206,7 +206,6 @@ void BloomPostEffectCore::resetResources(int resx, int resy)
     m_compositeMaterial->setTexture(u"_BlurTexture3", m_renderTargetsVertical[2]);
     m_compositeMaterial->setTexture(u"_BlurTexture4", m_renderTargetsVertical[3]);
     m_compositeMaterial->setTexture(u"_BlurTexture5", m_renderTargetsVertical[4]);
-    //m_compositeMaterial->setFloatArray(u"_BloomFactors", bloomFactors, MIPS);
 
     m_viewWidth = resx;
     m_viewHeight = resy;
