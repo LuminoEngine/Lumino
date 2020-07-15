@@ -14,6 +14,9 @@ namespace ln {
 // FilmicPostEffect
 
 FilmicPostEffect::FilmicPostEffect()
+    : m_luminosityThreshold(0.9f)
+    , m_bloomStrength(1.0f)
+    , m_bloomRadius(1.0f)
 {
 }
 
@@ -34,7 +37,7 @@ namespace detail {
 
 FilmicPostEffectInstance::FilmicPostEffectInstance()
     : m_owner(nullptr)
-    , m_material(nullptr)
+    , m_integrationMaterial(nullptr)
 {
 }
 
@@ -47,8 +50,8 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
     m_ssaoMaterial->setShader(shader2);
 
     auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.fx");
-    m_material = makeObject<Material>();
-    m_material->setShader(shader1);
+    m_integrationMaterial = makeObject<Material>();
+    m_integrationMaterial->setShader(shader1);
 
     // TODO: 他と共有したいところ
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
@@ -58,6 +61,24 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
 
 bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
+    if (!m_antialiasEnabled && !m_ssaoEnabled && !m_bloomEnabled && !m_dofEnabled) {
+        return false;
+    }
+
+    struct EffectSettings
+    {
+        int antialiasEnabled;
+        int ssaoEnabled;
+        int bloomEnabled;
+        int dofEnabled;
+    };
+
+    EffectSettings settings;
+    settings.antialiasEnabled = m_antialiasEnabled ? 1 : 0;
+    settings.ssaoEnabled = m_ssaoEnabled ? 1 : 0;
+    settings.bloomEnabled = m_bloomEnabled ? 1 : 0;
+    settings.dofEnabled = m_dofEnabled ? 1 : 0;
+
 
     Ref<RenderTargetTexture> occlusionMap = RenderTargetTexture::getTemporary(source->width(), source->height(), TextureFormat::RGBA8, false);
     occlusionMap->setSamplerState(m_samplerState);
@@ -87,9 +108,10 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     //context->blit(m_ssaoMaterial, destination);
 
 
-    m_material->setTexture(u"_occlusionMap", occlusionMap);
-    m_material->setMainTexture(source);
-    context->blit(m_material, destination);
+    m_integrationMaterial->setBufferData(u"EffectSettings", &settings, sizeof(settings));
+    m_integrationMaterial->setTexture(u"_occlusionMap", occlusionMap);
+    m_integrationMaterial->setMainTexture(source);
+    context->blit(m_integrationMaterial, destination);
 
     //m_material->setMainTexture(source);
     //context->blit(m_material, destination);

@@ -553,7 +553,7 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 			info.offset = m_program->getUniformBufferOffset(i);
 
 			info.vectorElements = type->getVectorSize();
-			info.arrayElements = m_program->getUniformArraySize(i);
+			info.arrayElements = m_program->getUniformArraySize(i); // 実際に使っている範囲だけ出てくる。
 			info.matrixRows = type->getMatrixRows();
 			info.matrixColumns = type->getMatrixCols();
 

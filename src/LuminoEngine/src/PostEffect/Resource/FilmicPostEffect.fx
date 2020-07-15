@@ -1,9 +1,18 @@
 
 #include <Lumino.fxh>
+#include "lib/Common.fxh"
 
 //==============================================================================
 
 sampler2D _occlusionMap;
+
+cbuffer EffectSettings
+{
+    int _antialiasEnabled;
+    int _ssaoEnabled;
+    int _bloomEnabled;
+    int _dofEnabled;
+};
 
 //==============================================================================
 // Vertex shader
@@ -17,14 +26,16 @@ struct VSInput
 struct VSOutput
 {
     float4 pos : SV_POSITION;
-    float2 uv  : TEXCOORD0;
+    float4 uv  : TEXCOORD0;
 };
 
 VSOutput VSMain(VSInput input)
 {
     VSOutput output;
     output.pos = float4(input.pos, 1.0);
-    output.uv = input.uv;
+    output.uv = float4(
+        input.uv,
+        input.uv.xy - (ln_Resolution.zw * (0.5 + FxaaSubpixShift)));
     return output;
 }
 
@@ -33,47 +44,75 @@ VSOutput VSMain(VSInput input)
 
 struct PSInput
 {
-    float2 uv : TEXCOORD0;
+    float4 uv : TEXCOORD0;
 };
 
-float4 LN_5x5AverageBlur(sampler2D s, float2 resolution, float2 uv)
-{
-    float2 texelSize = (1.0 / resolution);
-    float4 result = float4(0.0);
+#if 0   // バイラテラルフィルタ。TODO: 2パス必要なので後で。
+#define KERNEL_RADIUS 15
+uniform vec4 BlurParams;    // https://github.com/mebiusbox/ssao/blob/master/hbao.html
 
-    for (int i=-2; i<=2; i++) {
-        for (int j=-2; j<=2; j++) {
-            float2 offset = ((float2(float(i),float(j)))*texelSize);
-            result += tex2D(s, uv + offset);
-        }
+float CrossBilateralWeight(float r, float ddiff, inout float weightTotal) {
+    float w = exp(-r*r*BlurParams.z) * (ddiff < BlurParams.w ? 1.0 : 0.0);
+    weightTotal += w;
+    return w;
+}
+
+// Perform a gaussian blur in one direction
+float2 Blur(float2 uv, float2 texScale) {
+    float2 centerCoord = uv;
+    float weightTotal = 1.0;
+    float2 aoDepth = tex2D(_occlusionMap, centerCoord).xy;
+    float totalAO = aoDepth.x;
+    float centerZ = aoDepth.y;
+    // [unroll]
+    for (int i=-KERNEL_RADIUS; i<KERNEL_RADIUS; i++) {
+        float2 texCoord = centerCoord + (float(i)*texScale);
+        float2 sampleAOZ = tex2D(_occlusionMap, texCoord).xy;
+        float diff = abs(sampleAOZ.y - centerZ);
+        float weight = CrossBilateralWeight(float(i), diff, weightTotal);
+        totalAO += sampleAOZ.x * weight;
     }
 
-    return result / (5.0*5.0);
+    return float2(totalAO / weightTotal, centerZ);
 }
+#endif
 
-
-
-float4 blur9(float2 uv, float2 resolution, float2 direction) {
-  float4 color = float4(0, 0, 0, 0);
-  float2 off1 = float2(1.3846153846, 1.3846153846) * direction;
-  float2 off2 = float2(3.2307692308, 3.2307692308) * direction;
-  color += tex2D(_occlusionMap, uv) * 0.2270270270;
-  color += tex2D(_occlusionMap, uv + (off1 / resolution)) * 0.3162162162;
-  color += tex2D(_occlusionMap, uv - (off1 / resolution)) * 0.3162162162;
-  color += tex2D(_occlusionMap, uv + (off2 / resolution)) * 0.0702702703;
-  color += tex2D(_occlusionMap, uv - (off2 / resolution)) * 0.0702702703;
-  return color;
-}
 
 float4 PSMain(PSInput input) : SV_TARGET0
 {
-	float4 c = clamp(tex2D(ln_MaterialTexture, input.uv), float4(0,0,0,0), float4(1,1,1,1)) + 0.4;
-	//float4 c1 = blur9(_occlusionMap, input.uv, ln_Resolution.xy, float2(0.75, 0.0));
-	float4 c2 = blur9(input.uv, ln_Resolution.xy, float2(0.0, 0.95));
-    //float4 c2 = LN_5x5AverageBlur(_occlusionMap, ln_Resolution.xy, input.uv);
-	return c * c2* c2;
+    float4 result = float4(0, 0, 0, 1);
+
+    //--------------------
+    // FXAA
+    if (_antialiasEnabled) {
+        result = FxaaPixelShader(ln_MaterialTexture, input.uv, ln_Resolution.zw, ln_Resolution.zw);
+    }
+    else {
+        result = tex2D(ln_MaterialTexture, input.uv.xy);
+    }
+
+    //--------------------
+    // SSAO
+    if (_ssaoEnabled) {
+#if 1
+        float4 c1 = LN_GaussianBlur5(_occlusionMap, ln_Resolution.zw, input.uv, float2(0.75, 0.0));
+        float4 c2 = LN_GaussianBlur5(_occlusionMap, ln_Resolution.zw, input.uv, float2(0.0, 0.95));
+        float4 ao = c1 * c2;
+#else
+        // 単純な平均ブラー
+        float4 ao = LN_AverageBlur5x5(_occlusionMap, ln_Resolution.zw, input.uv.xy);
+#endif
+        result.rgb *= ao.rgb;
+    }
+
+
+    //float c2 = Blur(input.uv, BlurParams.xy);
+	//float4 result = c * c2* c2;
 	//return c1 * c2;
 	//return tex2D(_occlusionMap, input.uv);
+
+
+    return result;
 }
 
 //==============================================================================

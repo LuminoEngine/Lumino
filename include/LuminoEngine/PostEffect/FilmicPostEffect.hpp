@@ -18,6 +18,10 @@ LN_CONSTRUCT_ACCESS:
     void init();
 
 private:
+    float m_luminosityThreshold;
+    float m_bloomStrength;
+    float m_bloomRadius;
+
     friend class detail::FilmicPostEffectInstance;
 };
 
@@ -35,9 +39,14 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     FilmicPostEffect* m_owner;
-    Ref<Material> m_material;
+    Ref<Material> m_integrationMaterial;
     Ref<Material> m_ssaoMaterial;
     Ref<SamplerState> m_samplerState;
+
+    bool m_antialiasEnabled = false;
+    bool m_ssaoEnabled = false;
+    bool m_bloomEnabled = false;
+    bool m_dofEnabled = false;
 };
 
 } // namespace detail

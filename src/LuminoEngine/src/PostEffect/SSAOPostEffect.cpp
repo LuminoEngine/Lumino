@@ -60,6 +60,9 @@ bool SSAOPostEffectInstance::init(SSAOPostEffect* owner)
 
 bool SSAOPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
+    LN_NOTIMPLEMENTED();
+    // TODO: density などのパラメータを渡していない
+
     Ref<RenderTargetTexture> occlusionMap = RenderTargetTexture::getTemporary(source->width(), source->height(), TextureFormat::RGBA8, false);
     occlusionMap->setSamplerState(m_samplerState);
 
