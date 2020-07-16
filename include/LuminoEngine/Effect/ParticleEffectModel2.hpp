@@ -22,6 +22,9 @@ enum class ParticleGeometryDirection
 
 	/** 進行方向を軸に、表面 (Y+) が視点から見えるようにする */
 	Top,
+
+	/** Y 軸方向に直立し、カメラの方を向きます。 */
+	VerticalBillboard,
 };
 
 /** パーティクルのソート方法 */

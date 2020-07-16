@@ -110,11 +110,12 @@ class App_Sandbox_Particle : public Application
         //m1->m_size.set(0.5f);
         m1->m_forwardScale.set(20);
 
-        //m1->m_particleDirection = ParticleDirectionType::MovementDirection;
+        m1->m_geometryDirection = ParticleGeometryDirection::VerticalBillboard;
         m1->m_sortMode = ParticleSortMode::DistanceToView;
 
         auto material = Material::create();
         material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
+        material->setMainTexture(Texture2D::load("C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/WaterDrop-1.png"));
         material->shadingModel = ShadingModel::Unlit;
         material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
         m1->setSpriteModule(material);

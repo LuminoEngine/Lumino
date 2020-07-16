@@ -165,6 +165,13 @@ void World::traverse(detail::IWorldObjectVisitor* visitor) const
             }
         }
     }
+    if (auto* scene = m_sceneConductor->activeScene()) {
+        for (auto& obj : scene->m_rootWorldObjectList) {
+            if (!obj->traverse(visitor)) {
+                return;
+            }
+        }
+    }
 }
 
 WorldObject* World::findObjectById(int id) const
@@ -186,6 +193,29 @@ WorldObject* World::findObjectById(int id) const
         }
     } visitor;
     visitor.id = id;
+    traverse(&visitor);
+    return visitor.result;
+}
+
+WorldObject* World::findObjectByName(const StringRef& name) const
+{
+    class LocalVisitor : public detail::IWorldObjectVisitor
+    {
+    public:
+        StringRef name;
+        WorldObject* result = nullptr;
+        bool visit(WorldObject* obj) override
+        {
+            if (obj->name() == name) {
+                result = obj;
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    } visitor;
+    visitor.name = name;
     traverse(&visitor);
     return visitor.result;
 }

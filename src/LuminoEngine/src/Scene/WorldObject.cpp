@@ -287,9 +287,9 @@ bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
 void WorldObject::serialize2(Serializer2& ar)
 {
 	Object::serialize2(ar);
+    ar& ln::makeNVP(u"name", m_name);
 
     Vector3 eularAngles = m_transform->m_rotation.toEulerAngles();
-    
 	ar & ln::makeNVP(u"position", m_transform->m_position);
 	ar & ln::makeNVP(u"angles", eularAngles);   // Unity は Quaternion だけど、こっちは手打ち想定なので人が見やすい表現にする
 	ar & ln::makeNVP(u"scale", m_transform->m_scale);

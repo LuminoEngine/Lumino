@@ -103,6 +103,10 @@ class WorldObject
 {
     LN_OBJECT;
 public:
+
+	const String& name() const { return m_name; }
+	void setName(const String& value) { m_name = value; }
+
 	/** このオブジェクトの位置を設定します。 */
 	LN_METHOD(Property)
 	void setPosition(const Vector3& pos) { m_transform->setPosition(pos); }
@@ -250,6 +254,7 @@ public: // TODO:
 
     Level* m_scene;
     WorldObject* m_parent;
+	String m_name;
     Ref<detail::WorldObjectTransform> m_transform;
     Ref<List<String>> m_tags;
     //Ref<List<Ref<Component>>> m_components;

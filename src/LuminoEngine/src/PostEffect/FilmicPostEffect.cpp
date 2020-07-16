@@ -97,8 +97,8 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     }
 
     if (m_tonemapEnabled) {
-        const float linearWhite = 5.0f;
-        const float shoulderStrength = 0.015f;
+        const float linearWhite = 1.2; //5.0f;
+        const float shoulderStrength = 0.15f;
         const float linearStrength = 0.5;
         const float linearAngle = 0.1;
         const float toeStrength = 0.2f;

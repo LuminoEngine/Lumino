@@ -51,6 +51,7 @@ bool SpriteParticleRenderer::init(uint64_t hashKey, Material* material, Particle
     switch (m_geometryDirection)
     {
     case ln::ParticleGeometryDirection::ToView:
+    case ln::ParticleGeometryDirection::VerticalBillboard:
         //// Front: Z-
         //vertices[0] = Vertex{ Vector3(-0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(0, 0), Color::White };
         //vertices[1] = Vertex{ Vector3( 0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(1, 0), Color::White };
@@ -119,6 +120,43 @@ void SpriteParticleRenderer::draw(RenderingContext* context, const ParticleData2
             Vector3 f = Vector3::normalize(viewPoint->viewDirection * d);
             Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
             Vector3 u = Vector3::cross(f, r);
+            const auto transform = Matrix(
+                scale.x * r.x, scale.x * r.y, scale.x * r.z, 0.0f,
+                scale.y * u.x, scale.y * u.y, scale.y * u.z, 0.0f,
+                scale.z * f.x, scale.z * f.y, scale.z * f.z, 0.0f,
+                pos.x, pos.y, pos.z, 1.0f);
+
+            m_batch->setTransform(transform);
+            m_batch->drawMesh();
+            break;
+        }
+        
+        case ln::ParticleGeometryDirection::VerticalBillboard:
+        {
+            const auto scale = Vector3(particle->size * particle->crossScale, particle->size * particle->forwardScale, 1.0f);
+            const auto pos = particle->position;
+            const RenderViewPoint* viewPoint = context->viewPoint();
+
+            // ビュー平面との距離
+            const auto viewDir = Vector3::normalize(viewPoint->viewDirection.x, 0, viewPoint->viewDirection.z);
+            const auto viewPos = Vector3(viewPoint->viewPosition.x, 0, viewPoint->viewPosition.z);
+            const auto p = Vector3(particle->position.x, 0, particle->position.z);
+            //float d = Vector3::dot(viewDir -p, viewDir);
+
+            // left-hand coord
+            Vector3 f = Vector3::normalize(viewDir - p);
+            Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
+            Vector3 u = Vector3::cross(f, r);
+            //const auto transform = Matrix(
+            //    1, scale.x * r.y, 0, 0.0f,
+            //    0, scale.y * u.y, 0, 0.0f,
+            //    0, scale.z * f.y, 1, 0.0f,
+            //    pos.x, pos.y, pos.z, 1.0f);
+            //const auto transform = Matrix(
+            //    1, 0,0, 0.0f,
+            //    scale.y * u.x, scale.y * u.y, scale.y * u.z, 0.0f,
+            //    0, 0, 1, 0.0f,
+            //    pos.x, pos.y, pos.z, 1.0f);
             const auto transform = Matrix(
                 scale.x * r.x, scale.x * r.y, scale.x * r.z, 0.0f,
                 scale.y * u.x, scale.y * u.y, scale.y * u.z, 0.0f,

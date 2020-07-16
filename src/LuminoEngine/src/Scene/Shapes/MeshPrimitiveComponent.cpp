@@ -32,6 +32,11 @@ void PlaneMeshComponent::setMaterial(Material* material)
     m_material = material;
 }
 
+Material* PlaneMeshComponent::material() const
+{
+    return m_material;
+}
+
 void PlaneMeshComponent::serialize2(Serializer2& ar)
 {
     VisualComponent::serialize2(ar);

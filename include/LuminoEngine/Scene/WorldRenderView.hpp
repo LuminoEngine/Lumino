@@ -100,7 +100,7 @@ private:
     // HDR ON/OFF の画面を同時にバックバッファに書いたりできる。
     // 実際のところそんな用途があるかはわからないけど、ひとまず同じ実装にしておく。
     Ref<RenderTargetTexture> m_hdrRenderTarget;
-    bool m_hdrEnabled = true;
+    bool m_hdrEnabled = false;
 };
 
 } // namespace ln
