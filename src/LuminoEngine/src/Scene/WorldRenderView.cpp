@@ -195,6 +195,12 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
         m_sceneRenderingPipeline->prepare(renderTarget);
 
+
+        if (m_hdrEnabled) {
+            m_hdrRenderTarget = RenderTargetTexture::realloc(m_hdrRenderTarget, m_viewPoint->viewPixelSize.width, m_viewPoint->viewPixelSize.height, TextureFormat::RGBA32F, false, SamplerState::pointClamp());
+        }
+
+
         // DrawList 構築
         if (m_targetWorld) {
 			detail::WorldSceneGraphRenderingContext* renderingContext = m_targetWorld->prepareRender(m_viewPoint);
@@ -411,17 +417,21 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
                 if (m_imageEffectRenderer) {
                     m_imageEffectRenderer->applyInScenePostEffects(renderingContext->imageEffects());
-                    m_imageEffectRenderer->render(renderingContext, renderTarget);
+
+                    RenderTargetTexture* actualInput = (m_hdrRenderTarget) ? m_hdrRenderTarget : renderTarget;
+                    m_imageEffectRenderer->render(renderingContext, actualInput, renderTarget);
                 }
 
                 renderingContext->m_sceneRenderingPipeline = nullptr;
             }
         }
 
+        std::vector<std::unique_ptr<std::string>> listf;
 
 
         assert(elementListManagers().size() == 1);
-		m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, elementListManagers().front(), &sceneGlobalRenderParams);
+        RenderTargetTexture* actualTarget = (m_hdrRenderTarget) ? m_hdrRenderTarget : renderTarget;
+		m_sceneRenderingPipeline->render(graphicsContext, actualTarget, clearInfo, &camera, elementListManagers().front(), &sceneGlobalRenderParams);
         
 		//graphicsContext->resetState();
 

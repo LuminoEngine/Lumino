@@ -54,7 +54,7 @@ private:
     bool m_ssaoEnabled = false;
     bool m_bloomEnabled = false;
     bool m_dofEnabled = false;
-    bool m_tonemapEnabled = false;
+    bool m_tonemapEnabled = true;
     bool m_vignetteEnabled = false;
     bool m_gammaEnabled = false;
 };

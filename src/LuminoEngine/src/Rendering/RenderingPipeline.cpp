@@ -89,7 +89,6 @@ void SceneRenderingPipeline::prepare(RenderTargetTexture* renderTarget)
         assert(m_materialBuffer->format() == TextureFormat::RGBA8);
         assert(m_objectIdBuffer->format() == TextureFormat::R32S);
     }
-
 }
 
 void SceneRenderingPipeline::render(

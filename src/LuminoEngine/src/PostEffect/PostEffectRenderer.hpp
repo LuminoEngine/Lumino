@@ -18,7 +18,7 @@ public:
     void removePostEffect(PostEffect* effect);
     void updateFrame(float elapsedSeconds);
     void applyInScenePostEffects(const List<PostEffect*>& imageEffects);
-    void render(RenderingContext* context, RenderTargetTexture* inout);
+    void render(RenderingContext* context, RenderTargetTexture* input, RenderTargetTexture* output);
 
 private:
     struct Instance

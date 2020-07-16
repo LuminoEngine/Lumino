@@ -74,7 +74,8 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
 
 bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
-    if (!m_antialiasEnabled && !m_ssrEnabled && !m_ssaoEnabled && !m_bloomEnabled && !m_dofEnabled) {
+    if (!m_antialiasEnabled && !m_ssrEnabled && !m_ssaoEnabled && !m_bloomEnabled && !m_dofEnabled &&
+        !m_tonemapEnabled && !m_vignetteEnabled && !m_gammaEnabled) {
         return false;
     }
 
