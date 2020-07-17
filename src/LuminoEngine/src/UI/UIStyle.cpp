@@ -1972,6 +1972,26 @@ void UITheme::buildLumitelier()
 	//}
 
 	//--------------------------------
+	// UIComboBox
+	{
+		if (auto s = sheet->obtainStyle(u"UIComboBox")) {
+			s->minWidth = 64;
+			s->minHeight = lineContentHeight();
+			s->margin = Thickness(8);   // TODO: spacing?
+			s->padding = Thickness(spacing(2), 0);
+			s->hAlignment = HAlignment::Center;
+			s->vAlignment = VAlignment::Center;
+			s->horizontalContentAlignment = HAlignment::Center;
+			s->verticalContentAlignment = VAlignment::Center;
+			s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
+			s->cornerRadius = CornerRadius(4);
+			s->shadowBlurRadius = 1;
+			s->shadowOffsetY = 1;
+			s->shadowColor = Color(0, 0, 0, 0.5);
+		}
+	}
+
+	//--------------------------------
 	// UITabBarItem
 	{
 		if (auto s = sheet->obtainStyle(u"UITabBarItem")) {

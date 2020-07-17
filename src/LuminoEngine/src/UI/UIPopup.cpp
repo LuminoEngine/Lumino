@@ -129,7 +129,8 @@ Size UIPopupAdorner::arrangeOverride(UILayoutContext* layoutContext, const Size&
 	{
 		case PlacementMode::Bottom:
 			// TODO: 簡易 bottom
-			m_popup->arrangeLayout(layoutContext, Rect(0, finalSize.height, finalSize));
+            //m_popup->placementTarget()->
+			m_popup->arrangeLayout(layoutContext, Rect(20, finalSize.height, finalSize));
 			break;
 
 		default:	// overray

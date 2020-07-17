@@ -68,8 +68,8 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
         m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
         m_mainWorldRenderView->setTargetWorld(m_mainWorld);
         m_mainWorldRenderView->setCamera(m_mainCamera);
-        //m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::Sky);
-        m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
+        m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::SkyDome);
+        //m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
         m_mainWorldRenderView->setBackgroundColor(ln::Color::Gray);
         m_mainWorldRenderView->connectOnUIEvent(ln::bind(this, &LevelEditor::WorldRenderView_OnUIEvent));
 		m_mainWorldRenderView->setPhysicsDebugDrawEnabled(true);

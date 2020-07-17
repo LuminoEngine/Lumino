@@ -12,6 +12,7 @@
 #include <LuminoEngine/UI/UIIcon.hpp>
 #include <LuminoEngine/UI/UITabBar.hpp>
 #include <LuminoEngine/UI/UIPropertyFields.hpp>
+#include <LuminoEngine/UI/UIComboBox.hpp>
 using namespace ln;
 
 
@@ -270,6 +271,19 @@ public:
 			layout1->addChild(field2);
 			
 		}
+
+		// ComboBox
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+			layout1->addChild(makeObject<UITextBlock>(u"ComboBox"));
+
+			auto comboBox1 = makeObject<UIComboBox>();
+			comboBox1->addChild(u"Item1");
+			comboBox1->addChild(u"Item2");
+			layout1->addChild(comboBox1);
+		}
     }
 
 private:
@@ -280,7 +294,7 @@ private:
 void UISandboxMain()
 {
 	UISandboxApp app;
-	EngineSettings::setMainWindowSize(1000, 600);
+	EngineSettings::setMainWindowSize(1000, 800);
 	detail::ApplicationHelper::run(&app);
 }
 
