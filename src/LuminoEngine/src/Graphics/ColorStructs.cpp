@@ -325,6 +325,73 @@ void ColorTone::addClamp(const ColorTone& tone)
     s = Math::clamp(s + tone.s, 0.0f, 1.0f);
 }
 
+//==============================================================================
+// HSVColor
+
+
+static HSVColor RGBAToHSV(float r, float g, float b, float a) noexcept
+{
+    float K = 0.0;
+
+    if (g < b)
+    {
+        std::swap(g, b);
+        K = -360.0;
+    }
+
+    if (r < g)
+    {
+        std::swap(r, g);
+        K = -720.0 / 6.0 - K;
+    }
+
+    const float delta = (g - b) * (360.0 / 6.0);
+    const float chroma = r - std::min(g, b);
+    return HSVColor(std::fabs(K + delta / (chroma + 1e-20)), chroma / (r + 1e-20), r, a);
+}
+
+inline static float Fraction(const float x)
+{
+    return (x - std::floor(x));
+}
+
+Color HSVColor::toColor() const
+{
+    static constexpr size_t conversionTable[6][3] =
+    {
+        { 3, 2, 0 },
+        { 1, 3, 0 },
+        { 0, 3, 2 },
+        { 0, 1, 3 },
+        { 2, 0, 3 },
+        { 3, 0, 1 },
+    };
+
+    const float hue01 = Fraction(h / 360.0);
+    const float hueF = hue01 * 6.0;
+    const int hueI = static_cast<int>(hueF);
+    const float fr = hueF - hueI;
+    const float vals[4] =
+    {
+        v * (1.0 - s),
+        v * (1.0 - s * fr),
+        v * (1.0 - s * (1.0 - fr)),
+        v
+    };
+
+    return Color(
+        vals[conversionTable[hueI][0]],
+        vals[conversionTable[hueI][1]],
+        vals[conversionTable[hueI][2]],
+        a);
+}
+
+// http://lol.zoy.org/blog/2013/01/13/fast-rgb-to-hsv
+HSVColor HSVColor::fromColor(const Color& color)
+{
+    return RGBAToHSV(color.r, color.g, color.b, color.a);
+}
+
 #if 0
 //==============================================================================
 // HSVColor

@@ -1017,7 +1017,11 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 void UIElement::onRoutedEvent(UIEventArgs* e)
 {
 	if (e->type() == UIEvents::MouseDownEvent) {
-		focus();
+        if (m_focusable) {
+            focus();
+            e->handled = true;
+            return;
+        }
 	}
 }
 

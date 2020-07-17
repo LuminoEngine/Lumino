@@ -105,6 +105,7 @@
 #include "LuminoEngine/UI/UIButton.hpp"
 #include "LuminoEngine/UI/UIListBox.hpp"
 #include "LuminoEngine/UI/UIListView.hpp"
+#include "LuminoEngine/UI/UI.hpp"
 
 #include "LuminoEngine/Asset/Assets.hpp"
 

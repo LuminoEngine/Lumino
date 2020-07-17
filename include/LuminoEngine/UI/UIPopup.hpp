@@ -12,7 +12,7 @@ enum class PlacementMode
 };
 
 
-// TODO: レイアウトや描画は行わず、イベントルーティングだけ行うフラグとか用意してみる
+// TODO: レイアウトは行わず、イベントルーティングだけ行うフラグとか用意してみる
 class UIPopup
     : public UIContainerElement
 {

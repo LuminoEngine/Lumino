@@ -6,6 +6,7 @@
 
 namespace ln {
 class Material;
+class UITheme;
 class UIStyleContext;
 class UICommand;
 class UIDomainProvidor;
@@ -14,6 +15,7 @@ class UIControl;
 class UIListItemsControl;
 class UIListBox;
 class UITextBlock;
+class UIPopup;
 
 /** コントロールのレイアウト方向を示します。*/
 enum class Orientation  // TODO: name LayoutOrientation

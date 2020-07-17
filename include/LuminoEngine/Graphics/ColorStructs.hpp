@@ -485,11 +485,32 @@ public:
     bool operator!=(const ColorI& obj) const { return !operator==(obj); }
 };
 
+class HSVColor
+{
+public:
+    float h;    ///< 色相 Hue Saturation (0.0 ~ 360.0)
+    float s;    ///< 彩度 Saturation (0.0 ~ 1.0)
+    float v;    ///< 明度 Value (0.0 ~ 1.0)
+    float a;    ///< 不透明度 (0.0 ~ 1.0)
+
+public:
+    HSVColor() : h(0.0f), s(0.0f), v(0.0f), a(1.0f) { }
+    HSVColor(float h_, float s_, float v_, float a_) : h(h_), s(s_), v(v_), a(a_) { }
+
+    Color toColor() const;
+
+    static HSVColor fromColor(const Color& color);
+
+
+public:
+};
+
+
 #if 0
 /**
     @brief    各要素を整数値で表す HSV カラーを定義します。
 */
-class HSVColor
+class HSVColorI
 {
 public:
     uint32_t    H;    ///< 色相 0～360

@@ -11,6 +11,7 @@
 #include <LuminoEngine/UI/UISplitter.hpp>
 #include <LuminoEngine/UI/UIIcon.hpp>
 #include <LuminoEngine/UI/UITabBar.hpp>
+#include <LuminoEngine/UI/UIPropertyFields.hpp>
 using namespace ln;
 
 
@@ -37,7 +38,7 @@ public:
 		//	}
 		//}
 
-		Engine::renderView()->setBackgroundColor(Color::Gray);
+		Engine::renderView()->setBackgroundColor(UI::mainTheme()->color(UIThemeConstantPalette::DefaultBackgroundColor));
 
 		auto mainLauout = makeObject<UIGridLayout>();
 		mainLauout->setColumnCount(4);
@@ -251,6 +252,23 @@ public:
 				auto tab = static_cast<UITabBar2*>(e->sender())->selectedTab()->data()->getAsObject<UIElement>();
 				switch1->setActive(tab);
 			});
+		}
+
+
+		// PropertyFields
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+			layout1->addChild(makeObject<UITextBlock>(u"PropertyFields"));
+
+			auto field1 = makeObject<UISliderField>();
+			field1->setChanged([](float v) { ln::Debug::print(String::fromNumber(v)); });
+			layout1->addChild(field1);
+
+			auto field2 = makeObject<UIColorField>();
+			layout1->addChild(field2);
+			
 		}
     }
 

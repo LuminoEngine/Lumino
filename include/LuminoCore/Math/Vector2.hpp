@@ -58,6 +58,8 @@ public:
     /** Returns pointer to the first element. */
     const float* data() const LN_NOEXCEPT { return &x; }
 
+    bool isZero() const { return x == 0.0f && y == 0.0f; }
+
     /**
      * このベクトルの長さを返します。
      */
@@ -105,6 +107,14 @@ public:
     static Vector2 normalize(const Vector2& vec);
 
 	static Vector2 safeNormalize(const Vector2& vec, const Vector2& alt);
+
+    /**
+     * 2つのベクトル間の距離を計算します。
+     * @param[in]   vec1    : 処理の基になるベクトル
+     * @param[in]   vec2    : 処理の基になるベクトル
+     * @return      2つのベクトル間の距離
+     */
+    static float distance(const Vector2& vec1, const Vector2& vec2);
 
     /**
      * 2つのベクトルの内積を計算します。

@@ -1720,7 +1720,7 @@ void UITheme::buildLumitelier()
 
 	// Background
 	setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::parse(u"#1E1E1E"));
-	setColor(UIThemeConstantPalette::ControlBackgroundColor, Color::parse(u"#303030"));
+	setColor(UIThemeConstantPalette::ControlBackgroundColor, UIColors::get(UIColorHues::Grey, 7));// Color::parse(u"#303030"));
 	//setColor(UIThemeConstantPalette::DefaultBackgroundColor, UIColors::get(UIColorHues::Grey, 8));
 	setColor(UIThemeConstantPalette::PaperBackgroundColor, Color::parse(u"#424242"));
 
@@ -1984,6 +1984,17 @@ void UITheme::buildLumitelier()
 		}
 	}
 
+	//--------------------------------
+	// UITreeView
+	{
+		if (auto s = sheet->obtainStyle(u"UIPropertyField")) {
+			s->backgroundColor = color(UIThemeConstantPalette::ControlBackgroundColor);
+			s->cornerRadius = CornerRadius(2);
+			s->shadowBlurRadius = 1;
+			s->shadowOffsetY = 1;
+			s->shadowColor = Color(0, 0, 0, 0.5);
+		}
+	}
 
 	m_styleSheet = sheet;
 }

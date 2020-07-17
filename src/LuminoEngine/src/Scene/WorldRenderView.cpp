@@ -426,9 +426,6 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             }
         }
 
-        std::vector<std::unique_ptr<std::string>> listf;
-
-
         assert(elementListManagers().size() == 1);
         RenderTargetTexture* actualTarget = (m_hdrRenderTarget) ? m_hdrRenderTarget : renderTarget;
 		m_sceneRenderingPipeline->render(graphicsContext, actualTarget, clearInfo, &camera, elementListManagers().front(), &sceneGlobalRenderParams);

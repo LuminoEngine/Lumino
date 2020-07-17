@@ -264,13 +264,15 @@ void UIControl::onRoutedEvent(UIEventArgs* e)
 
 Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
+    Size size;
+
     if (m_aligned3x3GridLayoutArea) {
         // 論理子要素の領域 (content area)
 		Size childrenAreaSize = detail::LayoutHelper::UIFrameLayout_staticMeasureChildrenAreaSize(layoutContext, m_logicalChildren, constraint);//UIFrameLayout2::staticMeasureChildrenAreaSize(m_logicalChildren, constraint);
         // Inline 要素も含めた領域 (client area)
         Size clientAreaSize = m_aligned3x3GridLayoutArea->measure(layoutContext, m_inlineElements, constraint, childrenAreaSize);
         // padding, border も含めたサイズ (client は、this と clientAreaSize のうち大きい方を採用)
-        return layoutContext->makeDesiredSize(this, clientAreaSize);
+        size = layoutContext->makeDesiredSize(this, clientAreaSize);
     }
     else {
         //   struct ElementList : public IUIElementList {
@@ -293,11 +295,16 @@ Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& cons
         //       return Size::max(layoutSize, localSize);
            //}
            //else {
-        return UIFrameLayout2::staticMeasureLogicalChildren(layoutContext, this, constraint);
+        size = UIFrameLayout2::staticMeasureLogicalChildren(layoutContext, this, constraint);
 
         //}
     }
 
+    // デフォルトの最小サイズ
+    if (const UITheme* theme = layoutContext->styleContext()->mainTheme) {
+        size.height = std::max(size.height, theme->lineContentHeight());
+    }
+    return size;
 }
 
 Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)

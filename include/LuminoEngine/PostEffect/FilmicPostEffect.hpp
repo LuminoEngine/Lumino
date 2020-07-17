@@ -49,6 +49,16 @@ private:
     BloomPostEffectCore m_bloomEffect;
     DepthOfFieldPostEffectCore m_dofEffect;
 
+#if 1
+    bool m_antialiasEnabled = false;
+    bool m_ssrEnabled = false;
+    bool m_ssaoEnabled = false;
+    bool m_bloomEnabled = false;
+    bool m_dofEnabled = false;
+    bool m_tonemapEnabled = false;
+    bool m_vignetteEnabled = false;
+    bool m_gammaEnabled = false;
+#else
     bool m_antialiasEnabled = true;
     bool m_ssrEnabled = true;
     bool m_ssaoEnabled = true;
@@ -57,6 +67,7 @@ private:
     bool m_tonemapEnabled = true;
     bool m_vignetteEnabled = true;
     bool m_gammaEnabled = true;
+#endif
 };
 
 } // namespace detail

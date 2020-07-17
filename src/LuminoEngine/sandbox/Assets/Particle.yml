@@ -1,0 +1,7 @@
+object:
+  class.AssetObject:
+    emitters:
+      - class.Object:
+          maxParticles: 1000
+          spawnRate: 10000
+          burstCount: 1
