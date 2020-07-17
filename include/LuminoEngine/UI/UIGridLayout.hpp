@@ -118,7 +118,7 @@ private:
 				return Math::clamp(size, minSize, maxSize);
 			}
 			else {
-				return 0;
+				return desiredSize;
 			}
 		}
 

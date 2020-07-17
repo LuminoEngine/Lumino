@@ -171,10 +171,10 @@ Size UIGridLayout::measureOverride(UILayoutContext* layoutContext, const Size& c
 		auto& col = m_columnDefinitions[info->actualLayoutColumn];
 
 		const auto& childDesiredSize = child->desiredSize();
-		if (row.type == UILayoutLengthType::Auto) {
+		if (row.type == UILayoutLengthType::Auto || row.type == UILayoutLengthType::Ratio) {
 			row.desiredSize = std::max(row.desiredSize, childDesiredSize.height);
 		}
-		if (col.type == UILayoutLengthType::Auto) {
+		if (col.type == UILayoutLengthType::Auto || row.type == UILayoutLengthType::Ratio) {
 			col.desiredSize = std::max(col.desiredSize, childDesiredSize.width);
 		}
 	}

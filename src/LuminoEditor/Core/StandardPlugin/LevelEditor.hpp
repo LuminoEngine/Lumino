@@ -6,17 +6,23 @@
 
 namespace lna {
 class LevelEditorHierarchyPane;
+class LevelEditorPropertyPane;
 
 class LevelEditor
     : public lna::AssetEditorModel
 {
 public:
     bool init();
+
+    const Ref<ln::Level>& editingLevel() const { return m_editingLevel; }
+
+    void tryInstantiateObjectFromAnyFile(const ln::Path& filePath);
+
+protected:
     void onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame) override;
     void onClosed() override;
     Ref<ln::List<Ref<ln::EditorPane>>> getEditorPanes(lna::EditorPaneKind kind) override;
 
-    void tryInstantiateObjectFromAnyFile(const ln::Path& filePath);
 
 private:
 	void WorldRenderView_OnUIEvent(ln::UIEventArgs* e);
@@ -25,6 +31,7 @@ private:
     Ref<ln::AssetModel> m_assetModel;
 
     Ref<LevelEditorHierarchyPane> m_hierarchyPane;
+    Ref<LevelEditorPropertyPane> m_propertyPane;
 
     Ref<ln::List<Ref<ln::EditorPane>>> m_modePanes;
     Ref<ln::List<Ref<ln::EditorPane>>> m_inspectorPanes;
