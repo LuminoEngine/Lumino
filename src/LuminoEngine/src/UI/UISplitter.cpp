@@ -138,6 +138,15 @@ Size UISplitter::measureOverride(UILayoutContext* layoutContext, const Size& con
 
 Size UISplitter::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
+	if (m_lastArrangeFinalSize != finalSize) {
+		// 最後に actualSize を決定した時と比べてサイズが変わっていたら再計算されるようにする
+		for (int i = 0; i < m_cellDefinitions.size(); i++) {
+			m_cellDefinitions[i].actualSize = Math::NaN;
+		}
+		m_lastArrangeFinalSize = finalSize;
+	}
+
+
     float boundSize = 0.0f;
     if (isHorizontal())
         boundSize = finalSize.width;

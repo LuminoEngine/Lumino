@@ -53,6 +53,8 @@ private:
     List<Ref<UIThumb>> m_thumbs;
 	float m_dragStartSize1;
 	float m_dragStartSize2;
+
+	Size m_lastArrangeFinalSize;
 };
 
 } // namespace ln

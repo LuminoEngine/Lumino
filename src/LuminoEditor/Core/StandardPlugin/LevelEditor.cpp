@@ -6,6 +6,7 @@
 #include "../UIExtension.hpp"
 #include "../App/Application.hpp"
 #include "../App/MainWindow.hpp"
+#include "LevelEditorHierarchyPane.hpp"
 #include "LevelEditor.hpp"
 
 #include "../src/LuminoEngine/src/Engine/EngineDomain.hpp"   // TODO:
@@ -20,11 +21,13 @@ bool LevelEditor::init()
 {
     AssetEditorModel::init();
 
-    //m_modePane = ln::makeObject<TilemapSceneModePane>(m_model);
+    m_hierarchyPane = ln::makeObject<LevelEditorHierarchyPane>(this);
+
+
     //m_inspectorPane = ln::makeObject<ln::EditorPane>();
     //m_inspectorPane->setBackgroundColor(ln::Color::LightGray);
 
-    //m_modePanes = ln::makeList<Ref<ln::EditorPane>>({ ln::static_pointer_cast<ln::EditorPane>(m_modePane) });
+    m_modePanes = ln::makeList<Ref<ln::EditorPane>>({ ln::static_pointer_cast<ln::EditorPane>(m_hierarchyPane) });
     //m_inspectorPanes = ln::makeList<Ref<ln::EditorPane>>({ m_inspectorPane });
     //m_toolPanes = ln::makeList<Ref<ln::EditorPane>>();
 
@@ -43,6 +46,11 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
 		//t->setVAlignment(ln::VAlignment::Center);
         m_mainLayout->addChild(t);
     }
+
+
+    frame->setBorderThickness(1);
+    frame->setBorderColor(ln::Color::Red);
+
 
 
 	m_mainViewport = ln::makeObject<ln::UIViewport>();

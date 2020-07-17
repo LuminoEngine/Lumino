@@ -5,6 +5,7 @@
 #include "../AssetEditor/AssetEditorModel.hpp"
 
 namespace lna {
+class LevelEditorHierarchyPane;
 
 class LevelEditor
     : public lna::AssetEditorModel
@@ -22,6 +23,8 @@ private:
 	void handleTickEvent(ln::UITimerEventArgs* e);
 
     Ref<ln::AssetModel> m_assetModel;
+
+    Ref<LevelEditorHierarchyPane> m_hierarchyPane;
 
     Ref<ln::List<Ref<ln::EditorPane>>> m_modePanes;
     Ref<ln::List<Ref<ln::EditorPane>>> m_inspectorPanes;

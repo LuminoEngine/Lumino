@@ -127,6 +127,14 @@ Level* World::masterScene() const
     return m_masterScene;
 }
 
+Level* World::activeLevel() const
+{
+    if (Level* active = m_sceneConductor->activeScene())
+        return active;
+    else
+        return m_masterScene;
+}
+
 void World::addScene(Level* scene)
 {
 	if (LN_REQUIRE(scene)) return;
@@ -151,10 +159,10 @@ void World::returnScene()
     m_sceneConductor->returnScene();
 }
 
-Level* World::activeScene() const
-{
-    return m_sceneConductor->activeScene();
-}
+//Level* World::activeScene() const
+//{
+//    return m_sceneConductor->activeScene();
+//}
 
 void World::traverse(detail::IWorldObjectVisitor* visitor) const
 {
