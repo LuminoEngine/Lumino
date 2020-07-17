@@ -758,6 +758,26 @@ Size UIElement::arrangeOverride(UILayoutContext* layoutContext, const Size& fina
 	return UILayoutElement::arrangeOverride(layoutContext, finalSize);
 }
 
+void UIElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect)
+{
+    UILayoutElement::arrangeLayout(layoutContext, localSlotRect);
+
+
+    updateFinalRects(layoutContext, (m_visualParent) ? m_visualParent->m_combinedFinalRenderTransform : Matrix::Identity);
+
+    //// child elements
+    //int count = getVisualChildrenCount();
+    //for (int i = 0; i < count; i++) {
+    //    getVisualChild(i)->updateFinalLayoutHierarchical(layoutContext, m_combinedFinalRenderTransform);
+    //}
+
+    m_dirtyFlags.unset(detail::UIElementDirtyFlags::Layout);
+
+    // Re-draw
+    // TODO: 本当に描画に影響するプロパティが変わったときだけにしたい
+    invalidate(detail::UIElementDirtyFlags::Render, true);
+}
+
 void UIElement::onRender(UIRenderingContext* context)
 {
 }
@@ -811,10 +831,12 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	// Re-layout
     // TODO: 本当にレイアウトに影響するプロパティが変わったときだけにしたい
 	invalidate(detail::UIElementDirtyFlags::Layout, true);
+
 }
 
 void UIElement::updateFinalLayoutHierarchical(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform)
 {
+#if 0   // NOTE: 行列更新パスはいったん arrangeLayout でやることにしてみる。Popup でターゲットの位置を知りたいときに、グローバル座標が決定していないと計算が大変になるので。
     updateFinalRects(layoutContext, parentCombinedRenderTransform);
 
     // child elements
@@ -828,6 +850,7 @@ void UIElement::updateFinalLayoutHierarchical(UILayoutContext* layoutContext, co
 	// Re-draw
     // TODO: 本当に描画に影響するプロパティが変わったときだけにしたい
 	invalidate(detail::UIElementDirtyFlags::Render, true);
+#endif
 }
 
 //void UIElement::updateLayoutHierarchical(const Rect& parentFinalGlobalRect)

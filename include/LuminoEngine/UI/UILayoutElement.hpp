@@ -182,7 +182,7 @@ protected:
 
 public:	//TODO: internal
 	void measureLayout(UILayoutContext* layoutContext, const Size& availableSize);
-	void arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect);
+	virtual void arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect);
 	///*virtual*/ void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
     void updateFinalRects(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform);
 

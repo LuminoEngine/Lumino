@@ -471,6 +471,7 @@ public:	// TODO: internal protected
     */
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
+	virtual void arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect) override;
 
 	/** この要素内の子ビジュアル要素の数を取得します。 */
 	//virtual int getVisualChildrenCount() const;
