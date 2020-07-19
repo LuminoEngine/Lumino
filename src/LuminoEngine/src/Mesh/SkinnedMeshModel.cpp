@@ -336,6 +336,139 @@ void SkinnedMeshModel::writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion*
 //}
 
 
+// name だけじゃ多分求めきれない。子ボーンの数なども必要になりそうなので MeshBone を受け取る。
+HumanoidBones SkinnedMeshModel::mapToHumanoidBones(const MeshBone* bone)
+{
+	struct NamePair
+	{
+		HumanoidBones kind;
+		String name;
+	};
+
+	static const NamePair standardNameMap[] = {
+		{ HumanoidBones::Hips, u"Hips" },
+		{ HumanoidBones::Spine, u"Spine" },
+		{ HumanoidBones::Chest, u"Chest" },
+		{ HumanoidBones::UpperChest, u"UpperChest" },
+
+		{ HumanoidBones::LeftShoulder, u"LeftShoulder" },
+		{ HumanoidBones::LeftUpperArm, u"LeftUpperArm" },
+		{ HumanoidBones::LeftLowerArm, u"LeftLowerArm" },
+		{ HumanoidBones::LeftHand, u"LeftHand" },
+
+		{ HumanoidBones::RightShoulder, u"RightShoulder" },
+		{ HumanoidBones::RightUpperArm, u"RightUpperArm" },
+		{ HumanoidBones::RightLowerArm, u"RightLowerArm" },
+		{ HumanoidBones::RightHand, u"RightHand" },
+
+		{ HumanoidBones::LeftUpperLeg, u"LeftUpperLeg" },
+		{ HumanoidBones::LeftLowerLeg, u"LeftLowerLeg" },
+		{ HumanoidBones::LeftFoot, u"LeftFoot" },
+		{ HumanoidBones::LeftToes, u"LeftToes" },
+
+		{ HumanoidBones::RightUpperLeg, u"RightUpperLeg" },
+		{ HumanoidBones::RightLowerLeg, u"RightLowerLeg" },
+		{ HumanoidBones::RightFoot, u"RightFoot" },
+		{ HumanoidBones::RightToes, u"RightToes" },
+
+		{ HumanoidBones::Neck, u"Neck" },
+		{ HumanoidBones::Head, u"Head" },
+		{ HumanoidBones::LeftEye, u"LeftEye" },
+		{ HumanoidBones::RightEye, u"RightEye" },
+		{ HumanoidBones::Jaw, u"Jaw" },
+
+		{ HumanoidBones::LeftThumbProximal, u"LeftThumbProximal" },
+		{ HumanoidBones::LeftThumbIntermediate, u"LeftThumbIntermediate" },
+		{ HumanoidBones::LeftThumbDistal, u"" },
+		{ HumanoidBones::LeftIndexProximal, u"" },
+		{ HumanoidBones::LeftIndexIntermediate, u"" },
+		{ HumanoidBones::LeftIndexDistal, u"" },
+		{ HumanoidBones::LeftMiddleProximal, u"" },
+		{ HumanoidBones::LeftMiddleIntermediate, u"" },
+		{ HumanoidBones::LeftMiddleDistal, u"" },
+		{ HumanoidBones::LeftRingProximal, u"" },
+		{ HumanoidBones::LeftRingIntermediate, u"" },
+		{ HumanoidBones::LeftRingDistal, u"" },
+		{ HumanoidBones::LeftLittleProximal, u"" },
+		{ HumanoidBones::LeftLittleIntermediate, u"" },
+		{ HumanoidBones::LeftLittleDistal, u"" },
+
+		{ HumanoidBones::RightThumbProximal, u"" },
+		{ HumanoidBones::RightThumbIntermediate, u"" },
+		{ HumanoidBones::RightThumbDistal, u"" },
+		{ HumanoidBones::RightIndexProximal, u"" },
+		{ HumanoidBones::RightIndexIntermediate, u"" },
+		{ HumanoidBones::RightIndexDistal, u"" },
+		{ HumanoidBones::RightMiddleProximal, u"" },
+		{ HumanoidBones::RightMiddleIntermediate, u"" },
+		{ HumanoidBones::RightMiddleDistal, u"" },
+		{ HumanoidBones::RightRingProximal, u"" },
+		{ HumanoidBones::RightRingIntermediate, u"" },
+		{ HumanoidBones::RightRingDistal, u"" },
+		{ HumanoidBones::RightLittleProximal, u"" },
+		{ HumanoidBones::RightLittleIntermediate, u"" },
+		{ HumanoidBones::RightLittleDistal,	u"" },
+	};
+
+	/*
+		AliciaSolid
+			Up -> Upper
+
+			LeftLeg-> LeftLowerLeg
+
+			Spine->Spine
+			Spine1->Chest
+			Spine3->UpperChest	// 多分Shoulderの付け根
+
+			LeftArm -> LeftUpperArm
+			LeftForeArm -> LeftLowerArm
+
+			LeftToeBase -> LeftToe
+
+			eye_L -> LeftEye
+
+			mouth ->Jaw
+
+			LeftHandThumb1 -> LeftThumbProximal
+			LeftHandThumb2 -> LeftThumbIntermediate
+			LeftHandThumb3 -> LeftThumbDistal
+
+			LeftHandIndex1-> LeftIndexProximal
+
+			LeftHandPinky1 -> LeftLittleProximal
+
+		PronamaChan
+			center -> Hips
+			foot_L -> LeftUpperLeg		// bone の「深さ」も観ないとダメかも
+			knee_L -> LeftLowerLeg
+			ankle_L -> LeftFoot
+			upper_body-> Spine
+			upper_body2 -> Chest
+			shoulder_L -> LeftShoulder
+			arm_L -> LeftUpperArm
+			elbow_L -> LeftLowerArm
+			wrist_L -> LeftHand
+			toe2_L -> LeftToes	// toe2_L_end が実際の先端。最初に "toe" っぽいものを集めた後、一番深さの小さいのを選択する必要がある
+			eye_L -> LeftEye
+			thumb_L0 -> LeftThumbProximal
+			thumb_L1 -> LeftThumbIntermediate
+			thumb_L2 -> LeftThumbDistal
+			indexF_L1 -> LeftIndexProximal
+
+		実装方針：
+			- まず大分類して、ネストを測る。分類は、まずはブランチ間。ここは名前検索する。
+				- 胴体 (Hips~UpperChest)
+				- 腕 (Shoulder~Hand) 左右
+				- 手 (各種指) 左右
+				- 足 (UpperLeg~Toes) 左右
+				- 頭 (Neck~Jaw)
+			- 胴体、ネストの小さい方から埋めていく (Chest, UpperChest が opt なので) 数が多い場合は UpperChest が必ず Branch を持つようにする
+			- 腕は、ネストの大きい方から埋めていく （Shoulder が opt なので）
+			- 足は、ネストの小さい方から埋めていく (Toes が opt なので)
+			- 手は全部 opt なので、ネストの小さい方から埋めていく
+	*/
+}
+
 //==============================================================================
 // AnimationController
 
