@@ -13,6 +13,7 @@
 #include "FbxImporter.hpp"
 #include "ObjMeshImporter.hpp"
 #include "PmxImporter.hpp"
+#include "MeshBoneMapper.hpp"
 #include "MeshManager.hpp"
 
 namespace ln {
@@ -323,6 +324,9 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 			}
 
 		}
+
+		MeshBoneMapper boneMapper;
+		boneMapper.map(mesh->skeleton(0));
 
 		diag->dumpToLog();
 		return mesh;

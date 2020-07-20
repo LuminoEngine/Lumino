@@ -46,19 +46,22 @@ private:
 	struct NodeInfo
 	{
 		MeshNode* node;
-		int depth = 0;
-		MajorKind majorKind;
-		HumanoidBones nameMached;
 		int boneIndex = -1;
 	};
 
 	struct BoneInfo
 	{
 		MeshBone* bone;
+		int boneIndex;
+		int depth = 0;
+		MajorKind majorKind;
+		HumanoidBones nameMached;
 	};
 
-	void calculateNodeDepthHieratical(NodeInfo* node, int depth);
-	void makeMajorKindByName(NodeInfo* info, const String& name);
+	MeshNode* getMeshNodeByBone(int boneIndex) const { return m_skeleton->bone(boneIndex)->node(); }
+
+	void calculateNodeDepthHieratical(BoneInfo* bone, int depth);
+	void makeMajorKindByName(BoneInfo* info, const String& name);
 	const List<StringRef>& splitWords(const String& name);
 	void resolveBodyBones();
 	void resolveLegs();
@@ -68,7 +71,7 @@ private:
 	List<NodeInfo> m_nodes;
 	List<BoneInfo> m_bones;
 	List<StringRef> m_splitCache;
-	std::array<List<NodeInfo*>, 9> m_majorGroups;
+	std::array<List<BoneInfo*>, 9> m_majorGroups;
 	int m_lowerBranchNodeDepth = -1;
 	int m_upperBranchNodeDepth = -1;
 };

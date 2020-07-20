@@ -62,9 +62,10 @@ class App_Example_MeshViewer : public Application
         //mesh->skinnedMeshComponent()->model()->animationController()->play(u"animation_AnimatedCube");
         //auto mesh = StaticMesh::create("D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/BldgMedTallC_grp.gltf");
         //auto mesh = StaticMesh::create("D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/2-OverpassBroken_grp.gltf");
-        auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/27-BldgRubbleB_grp.gltf");
+        //auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/27-BldgRubbleB_grp.gltf");
         
         //mesh->setPosition(0, 10, 0);
+        m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
 #if 0
     
         m_mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");

@@ -14,9 +14,10 @@ MeshBoneMapper::MeshBoneMapper()
 
 void MeshBoneMapper::map(MeshArmature* skeleton)
 {
+	m_skeleton = skeleton;
 	m_model = skeleton->m_model;
 
-	int nodeCount = skeleton->boneCount();
+	int nodeCount = m_model->m_nodes.size();
 	m_nodes.resize(nodeCount);
 	for (int i = 0; i < nodeCount; i++) {
 		m_nodes[i].node = m_model->m_nodes[i];
@@ -26,33 +27,45 @@ void MeshBoneMapper::map(MeshArmature* skeleton)
 	m_bones.resize(boneCount);
 	for (int i = 0; i < boneCount; i++) {
 		m_bones[i].bone = skeleton->bone(i);
-		m_nodes[skeleton->bone(i)->nodeIndex()].boneIndex = i;
+		m_bones[i].boneIndex = i;
+
+		int nodeIndex = skeleton->bone(i)->nodeIndex();
+		if (LN_REQUIRE(m_nodes[nodeIndex].boneIndex == -1)) return;
+		m_nodes[nodeIndex].boneIndex = i;
 	}
 
 	// 深さを測る
-	for (int i = 0; i < m_model->m_rootNodes.size(); i++) {
-		calculateNodeDepthHieratical(&m_nodes[m_model->m_rootNodes[i]], 0);
+	for (BoneInfo& bone : m_bones) {
+		if (getMeshNodeByBone(bone.boneIndex)->parentNodeIndex() == -1) {
+			calculateNodeDepthHieratical(&bone, 0);
+
+		}
+
+		//int boneIndex = m_nodes[m_model->m_rootNodes[i]].boneIndex;
+		//if (boneIndex >= 0) {
+		//}
 	}
 
 	// 大分類
-	for (int i = 0; i < m_model->m_nodes.size(); i++) {
-		makeMajorKindByName(&m_nodes[i], m_nodes[i].node->name());
+	for (int i = 0; i < boneCount; i++) {
+		makeMajorKindByName(&m_bones[i], getMeshNodeByBone(i)->name());
 	}
 
 	resolveBodyBones();
 
 }
 
-void MeshBoneMapper::calculateNodeDepthHieratical(NodeInfo* node, int depth)
+void MeshBoneMapper::calculateNodeDepthHieratical(BoneInfo* bone, int depth)
 {
-	node->depth = depth;
+	bone->depth = depth;
 
-	for (int child : node->node->children()) {
-		calculateNodeDepthHieratical(&m_nodes[child], depth + 1);
+	MeshNode* node = m_nodes[bone->bone->nodeIndex()].node;
+	for (int childIndex : node->children()) {
+		calculateNodeDepthHieratical(&m_bones[m_nodes[childIndex].boneIndex], depth + 1);
 	}
 }
 
-void MeshBoneMapper::makeMajorKindByName(NodeInfo* info, const String& name)
+void MeshBoneMapper::makeMajorKindByName(BoneInfo* info, const String& name)
 {
 	struct NamePair
 	{
@@ -128,9 +141,10 @@ void MeshBoneMapper::makeMajorKindByName(NodeInfo* info, const String& name)
 		}
 		else {
 			for (int i = 0; i < LN_ARRAY_SIZE_OF(nameMap); i++) {
+				const auto e = nameMap[i];
 				// 単語先頭の一致を評価する
-				if (StringHelper::indexOf(word.data(), word.length(), nameMap[i].name.c_str(), nameMap[i].name.length(), 0, CaseSensitivity::CaseInsensitive) == 0) {
-					info->majorKind = nameMap[i].kind;
+				if (StringHelper::indexOf(word.data(), e.name.length(), e.name.c_str(), e.name.length(), 0, CaseSensitivity::CaseInsensitive) == 0) {
+					info->majorKind = e.kind;
 					break;
 				}
 			}
@@ -185,35 +199,40 @@ const List<StringRef>& MeshBoneMapper::splitWords(const String& name)
 
 void MeshBoneMapper::resolveBodyBones()
 {
-	auto& nodes = m_majorGroups[static_cast<int>(MajorKind::Body)];
+	auto& bones = m_majorGroups[static_cast<int>(MajorKind::Body)];
 
 	// 深さの順に並び変える
-	std::sort(nodes.begin(), nodes.end(), [](const NodeInfo* a, const NodeInfo* b) { return a->depth < b->depth; });
+	std::sort(bones.begin(), bones.end(), [](const BoneInfo* a, const BoneInfo* b) { return a->depth < b->depth; });
 
-	if (nodes.size() == 1) {
+	if (bones.size() == 1) {
 		// Require の数以下は強制設定
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Hips, nodes[0]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Hips, bones[0]->boneIndex);
 	}
-	else if (nodes.size() == 2) {
+	else if (bones.size() == 2) {
 		// Require の数以下は強制設定
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Hips, nodes[0]->boneIndex);
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Spine, nodes[1]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Hips, bones[0]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Spine, bones[1]->boneIndex);
 	}
-	else if (nodes.size() == 3) {
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Hips, nodes[0]->boneIndex);
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Spine, nodes[1]->boneIndex);
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Chest, nodes[2]->boneIndex);
+	else if (bones.size() == 3) {
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Hips, bones[0]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Spine, bones[1]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Chest, bones[2]->boneIndex);
 	}
-	else if (nodes.size() == 4) {
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Hips, nodes[0]->boneIndex);
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Spine, nodes[1]->boneIndex);
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Chest, nodes[2]->boneIndex);
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::UpperChest, nodes[3]->boneIndex);
+	else if (bones.size() == 4) {
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Hips, bones[0]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Spine, bones[1]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Chest, bones[2]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::UpperChest, bones[3]->boneIndex);
 	}
 	else {
+#if 1	// Debug
+		for (auto& bone : bones) {
+			std::cout << bone->bone->node()->name() << std::endl;
+		}
+#endif
 		// まず Hips と UpperChest を、Depth から決める
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Hips, nodes.front()->boneIndex);
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::UpperChest, nodes.back()->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Hips, bones.front()->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::UpperChest, bones.back()->boneIndex);
 
 		// TODO: 名前で優先度を決める
 		LN_NOTIMPLEMENTED();
@@ -229,22 +248,20 @@ void MeshBoneMapper::resolveBodyBones()
 	for (int i = 0; i < LN_ARRAY_SIZE_OF(bodyBones); i++) {
 		int boneIndex = m_skeleton->humanoidBoneIndex(bodyBones[i]);
 		if (boneIndex >= 0 && !m_skeleton->bone(boneIndex)->node()->children().isEmpty()) {
-			m_lowerBranchNodeDepth = m_nodes[m_skeleton->bone(boneIndex)->nodeIndex()].depth;
+			m_lowerBranchNodeDepth = m_bones[boneIndex].depth;
 		}
 	}
 	// 上から見ていって、最初に見つかった分岐を持つ Bone を、m_lowerBranchNodeIndex にする (通常、胸など)
 	for (int i = LN_ARRAY_SIZE_OF(bodyBones) - 1; i >= 0; i--) {
 		int boneIndex = m_skeleton->humanoidBoneIndex(bodyBones[i]);
 		if (boneIndex >= 0 && !m_skeleton->bone(boneIndex)->node()->children().isEmpty()) {
-			m_upperBranchNodeDepth = m_nodes[m_skeleton->bone(boneIndex)->nodeIndex()].depth;
+			m_upperBranchNodeDepth = m_bones[boneIndex].depth;
 		}
 	}
 }
 
 void MeshBoneMapper::resolveLegs()
 {
-	const auto& nodes = m_majorGroups[static_cast<int>(MajorKind::LeftLeg)];
-	auto min = std::min_element(nodes.begin(), nodes.end(), [](const NodeInfo* a, const NodeInfo* b) { return a->depth < b->depth; });
 
 
 }

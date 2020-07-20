@@ -121,13 +121,32 @@ bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
 		meshModel->addMeshContainer(meshContainer);
 	}
 
+	// 先に MeshNode のインスタンスを作っておく。親子関係を結ぶときに参照したい。
 	for (auto& node : m_model->nodes) {
-		auto meshNode = readNode(node);
-		if (!meshNode) {
-			return false;
-		}
+		auto meshNode = makeObject<MeshNode>();
 		meshModel->addNode(meshNode);
 	}
+
+	for (int i = 0; i < m_model->nodes.size(); i++) {
+		if (!readNode(meshModel->m_nodes[i], m_model->nodes[i])) {
+			return false;
+		}
+
+		//auto coreNode = makeObject<MeshNode>();
+		//auto meshNode = readNode(node);
+		//if (!meshNode) {
+		//	return false;
+		//}
+		//meshModel->addNode(meshNode);
+	}
+
+	// MeshNode のインスタンスを作った後、親子関係を結ぶ
+	//for (auto& node : m_model->nodes) {
+	//	for (size_t i = 0; i < node.children.size(); i++) {
+	//		assert(node.children[i] < m_model->nodes.size());
+	//		coreNode->addChildIndex(node.children[i]);
+	//	}
+	//}
 
 	int scene_to_display = m_model->defaultScene > -1 ? m_model->defaultScene : 0;
 	const tinygltf::Scene& scene = m_model->scenes[scene_to_display];
@@ -226,7 +245,8 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
     return coreMaterial;
 }
 
-Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
+//Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
+bool GLTFImporter::readNode(MeshNode* coreNode, const tinygltf::Node& node)
 {
 	Matrix nodeTransform;
 	if (node.matrix.size() == 16) {
@@ -260,7 +280,6 @@ Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
 		}
 	}
 
-    auto coreNode = makeObject<MeshNode>();
 	coreNode->setName(String::fromStdString(node.name));
     coreNode->setInitialLocalTransform(nodeTransform);
 	coreNode->skeletonIndex = node.skin;
@@ -272,10 +291,10 @@ Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
 
 	for (size_t i = 0; i < node.children.size(); i++) {
 		assert(node.children[i] < m_model->nodes.size());
-        coreNode->addChildIndex(node.children[i]);
+		coreNode->addChildIndex(node.children[i]);
 	}
 
-	return coreNode;
+	return true;
 }
 
 // glTF の Mesh は小単位として Primitive というデータを持っている。
