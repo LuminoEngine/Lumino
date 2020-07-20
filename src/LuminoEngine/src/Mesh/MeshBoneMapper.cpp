@@ -8,6 +8,79 @@ namespace detail {
 //==============================================================================
 // MeshBoneMapper
 
+struct HumanoidBoneNamePair
+{
+	HumanoidBones key;
+	String name;
+};
+
+static const HumanoidBoneNamePair s_humanoidBoneNames[] = {
+	{ HumanoidBones::None, u"None" },
+
+	{ HumanoidBones::Hips, u"Hips" },
+	{ HumanoidBones::Spine, u"Spine" },
+	{ HumanoidBones::Chest, u"Chest" },
+	{ HumanoidBones::UpperChest, u"UpperChest" },
+
+	{ HumanoidBones::LeftShoulder, u"LeftShoulder" },
+	{ HumanoidBones::LeftUpperArm, u"LeftUpperArm" },
+	{ HumanoidBones::LeftLowerArm, u"LeftLowerArm" },
+	{ HumanoidBones::LeftHand, u"LeftHand" },
+
+	{ HumanoidBones::RightShoulder, u"RightShoulder" },
+	{ HumanoidBones::RightUpperArm, u"RightUpperArm" },
+	{ HumanoidBones::RightLowerArm, u"RightLowerArm" },
+	{ HumanoidBones::RightHand, u"RightHand" },
+
+	{ HumanoidBones::LeftUpperLeg, u"LeftUpperLeg" },
+	{ HumanoidBones::LeftLowerLeg, u"LeftLowerLeg" },
+	{ HumanoidBones::LeftFoot, u"LeftFoot" },
+	{ HumanoidBones::LeftToes, u"LeftToes" },
+
+	{ HumanoidBones::RightUpperLeg, u"RightUpperLeg" },
+	{ HumanoidBones::RightLowerLeg, u"RightLowerLeg" },
+	{ HumanoidBones::RightFoot, u"RightFoot" },
+	{ HumanoidBones::RightToes, u"RightToes" },
+
+	{ HumanoidBones::Neck, u"Neck" },
+	{ HumanoidBones::Head, u"Head" },
+	{ HumanoidBones::LeftEye, u"LeftEye" },
+	{ HumanoidBones::RightEye, u"RightEye" },
+	{ HumanoidBones::Jaw, u"Jaw" },
+
+	{ HumanoidBones::LeftThumbProximal, u"LeftThumbProximal" },
+	{ HumanoidBones::LeftThumbIntermediate, u"LeftThumbIntermediate" },
+	{ HumanoidBones::LeftThumbDistal, u"LeftThumbDistal" },
+	{ HumanoidBones::LeftIndexProximal, u"LeftIndexProximal" },
+	{ HumanoidBones::LeftIndexIntermediate, u"LeftIndexIntermediate" },
+	{ HumanoidBones::LeftIndexDistal, u"LeftIndexDistal" },
+	{ HumanoidBones::LeftMiddleProximal, u"LeftMiddleProximal" },
+	{ HumanoidBones::LeftMiddleIntermediate, u"LeftMiddleIntermediate" },
+	{ HumanoidBones::LeftMiddleDistal, u"LeftMiddleDistal" },
+	{ HumanoidBones::LeftRingProximal, u"LeftRingProximal" },
+	{ HumanoidBones::LeftRingIntermediate, u"LeftRingIntermediate" },
+	{ HumanoidBones::LeftRingDistal, u"LeftRingDistal" },
+	{ HumanoidBones::LeftLittleProximal, u"LeftLittleProximal" },
+	{ HumanoidBones::LeftLittleIntermediate, u"LeftLittleIntermediate" },
+	{ HumanoidBones::LeftLittleDistal, u"LeftLittleDistal" },
+
+	{ HumanoidBones::RightThumbProximal, u"RightThumbProximal" },
+	{ HumanoidBones::RightThumbIntermediate, u"RightThumbIntermediate" },
+	{ HumanoidBones::RightThumbDistal, u"RightThumbDistal" },
+	{ HumanoidBones::RightIndexProximal, u"RightIndexProximal" },
+	{ HumanoidBones::RightIndexIntermediate, u"RightIndexIntermediate" },
+	{ HumanoidBones::RightIndexDistal, u"RightIndexDistal" },
+	{ HumanoidBones::RightMiddleProximal, u"RightMiddleProximal" },
+	{ HumanoidBones::RightMiddleIntermediate, u"RightMiddleIntermediate" },
+	{ HumanoidBones::RightMiddleDistal, u"RightMiddleDistal" },
+	{ HumanoidBones::RightRingProximal, u"RightRingProximal" },
+	{ HumanoidBones::RightRingIntermediate, u"RightRingIntermediate" },
+	{ HumanoidBones::RightRingDistal, u"RightRingDistal" },
+	{ HumanoidBones::RightLittleProximal, u"RightLittleProximal" },
+	{ HumanoidBones::RightLittleIntermediate, u"RightLittleIntermediate" },
+	{ HumanoidBones::RightLittleDistal, u"RightLittleDistal" },
+};
+
 MeshBoneMapper::MeshBoneMapper()
 {
 }
@@ -35,15 +108,8 @@ void MeshBoneMapper::map(MeshArmature* skeleton)
 	}
 
 	// 深さを測る
-	for (BoneInfo& bone : m_bones) {
-		if (getMeshNodeByBone(bone.boneIndex)->parentNodeIndex() == -1) {
-			calculateNodeDepthHieratical(&bone, 0);
-
-		}
-
-		//int boneIndex = m_nodes[m_model->m_rootNodes[i]].boneIndex;
-		//if (boneIndex >= 0) {
-		//}
+	for (int i : m_model->m_rootNodes) {
+		calculateNodeDepthHieratical(&m_nodes[i], 0);
 	}
 
 	// 大分類
@@ -53,15 +119,24 @@ void MeshBoneMapper::map(MeshArmature* skeleton)
 
 	resolveBodyBones();
 
+
+#if 1	// Debug
+	for (int i = 0; i < m_skeleton->m_humanoidBoneIndices.size(); i++) {
+		int boneIndex = m_skeleton->m_humanoidBoneIndices[i];
+		if (boneIndex >= 0)
+			std::cout << s_humanoidBoneNames[i].name << ": " << boneIndex << " " << getMeshNodeByBone(boneIndex)->name() << std::endl;
+		else
+			std::cout << i << ": -" << std::endl;
+	}
+#endif
 }
 
-void MeshBoneMapper::calculateNodeDepthHieratical(BoneInfo* bone, int depth)
+void MeshBoneMapper::calculateNodeDepthHieratical(NodeInfo* node, int depth)
 {
-	bone->depth = depth;
+	node->depth = depth;
 
-	MeshNode* node = m_nodes[bone->bone->nodeIndex()].node;
-	for (int childIndex : node->children()) {
-		calculateNodeDepthHieratical(&m_bones[m_nodes[childIndex].boneIndex], depth + 1);
+	for (int childIndex : node->node->children()) {
+		calculateNodeDepthHieratical(&m_nodes[childIndex], depth + 1);
 	}
 }
 
@@ -202,7 +277,7 @@ void MeshBoneMapper::resolveBodyBones()
 	auto& bones = m_majorGroups[static_cast<int>(MajorKind::Body)];
 
 	// 深さの順に並び変える
-	std::sort(bones.begin(), bones.end(), [](const BoneInfo* a, const BoneInfo* b) { return a->depth < b->depth; });
+	std::sort(bones.begin(), bones.end(), [this](const BoneInfo* a, const BoneInfo* b) { return getDepth(a) < getDepth(b); });
 
 	if (bones.size() == 1) {
 		// Require の数以下は強制設定
@@ -231,14 +306,36 @@ void MeshBoneMapper::resolveBodyBones()
 		}
 #endif
 		// まず Hips と UpperChest を、Depth から決める
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Hips, bones.front()->boneIndex);
-		m_skeleton->setHumanoidBoneIndex(HumanoidBones::UpperChest, bones.back()->boneIndex);
+		//m_skeleton->setHumanoidBoneIndex(HumanoidBones::Hips, bones.front()->boneIndex);
+		//m_skeleton->setHumanoidBoneIndex(HumanoidBones::UpperChest, bones.back()->boneIndex);
 
-		// TODO: 名前で優先度を決める
-		LN_NOTIMPLEMENTED();
+		// Branch となっている Bone を上下から検索する
+		int firstBranch = bones.indexOfIf([this](const BoneInfo* x) { return getMeshNodeByBone(x)->children().size() >= 2; });
+		int lastBranch = bones.lastIndexOfIf([this](const BoneInfo* x) { return getMeshNodeByBone(x)->children().size() >= 2; });
+		if (LN_REQUIRE(firstBranch >= 0 && lastBranch >= 0 && firstBranch < lastBranch)) return;
+
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::Hips, bones[firstBranch]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(HumanoidBones::UpperChest, bones[lastBranch]->boneIndex);
+
+		const HumanoidBones spineOrChest[] = {
+			HumanoidBones::Spine,
+			HumanoidBones::Chest,
+		};
+		for (int i = 0; i < std::min(2, (lastBranch - firstBranch)); i++) {
+			m_skeleton->setHumanoidBoneIndex(spineOrChest[i], bones[firstBranch + 1 + i]->boneIndex);
+		}
+
+		/*
+			AliciaSolid
+			- Hips->Hips
+			- Spine->Spine
+			- Spine1->Chest
+			- Spine2->なし
+			- Spine3->UpperChest	// 多分Shoulderの付け根
+		*/
 	}
 
-	HumanoidBones bodyBones[] = {
+	const HumanoidBones bodyBones[] = {
 		HumanoidBones::Hips,
 		HumanoidBones::Spine,
 		HumanoidBones::Chest,
@@ -248,14 +345,14 @@ void MeshBoneMapper::resolveBodyBones()
 	for (int i = 0; i < LN_ARRAY_SIZE_OF(bodyBones); i++) {
 		int boneIndex = m_skeleton->humanoidBoneIndex(bodyBones[i]);
 		if (boneIndex >= 0 && !m_skeleton->bone(boneIndex)->node()->children().isEmpty()) {
-			m_lowerBranchNodeDepth = m_bones[boneIndex].depth;
+			m_lowerBranchNodeDepth = getDepth(&m_bones[boneIndex]);
 		}
 	}
 	// 上から見ていって、最初に見つかった分岐を持つ Bone を、m_lowerBranchNodeIndex にする (通常、胸など)
 	for (int i = LN_ARRAY_SIZE_OF(bodyBones) - 1; i >= 0; i--) {
 		int boneIndex = m_skeleton->humanoidBoneIndex(bodyBones[i]);
 		if (boneIndex >= 0 && !m_skeleton->bone(boneIndex)->node()->children().isEmpty()) {
-			m_upperBranchNodeDepth = m_bones[boneIndex].depth;
+			m_upperBranchNodeDepth = getDepth(&m_bones[boneIndex]);
 		}
 	}
 }

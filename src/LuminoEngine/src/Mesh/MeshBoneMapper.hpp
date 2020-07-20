@@ -47,20 +47,22 @@ private:
 	{
 		MeshNode* node;
 		int boneIndex = -1;
+		int depth = 0;
 	};
 
 	struct BoneInfo
 	{
 		MeshBone* bone;
 		int boneIndex;
-		int depth = 0;
 		MajorKind majorKind;
 		HumanoidBones nameMached;
 	};
 
 	MeshNode* getMeshNodeByBone(int boneIndex) const { return m_skeleton->bone(boneIndex)->node(); }
+	MeshNode* getMeshNodeByBone(const BoneInfo* bone) const { return getMeshNodeByBone(bone->boneIndex); }
+	int getDepth(const BoneInfo* info) const { return m_nodes[m_skeleton->bone(info->boneIndex)->nodeIndex()].depth; }
 
-	void calculateNodeDepthHieratical(BoneInfo* bone, int depth);
+	void calculateNodeDepthHieratical(NodeInfo* node, int depth);
 	void makeMajorKindByName(BoneInfo* info, const String& name);
 	const List<StringRef>& splitWords(const String& name);
 	void resolveBodyBones();
