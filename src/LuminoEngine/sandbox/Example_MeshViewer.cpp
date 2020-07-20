@@ -66,6 +66,8 @@ class App_Example_MeshViewer : public Application
         
         //mesh->setPosition(0, 10, 0);
         m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
+        auto clip2 = AnimationClip::load(u"D:/Materials/MMD/Motion/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd");
+
 #if 0
     
         m_mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");

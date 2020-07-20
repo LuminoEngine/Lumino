@@ -4,6 +4,7 @@
 #include <LuminoEngine/Animation/AnimationTrack.hpp>
 #include <LuminoEngine/Animation/AnimationClip.hpp>
 #include <LuminoEngine/Animation/AnimationContext.hpp>
+#include <LuminoEngine/Mesh/Common.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "../Scene/SceneManager.hpp"
 #include "VmdLoader.hpp"
@@ -26,6 +27,8 @@ public:
 
 	virtual void evaluate(float time, AnimationValue* outResult) override;
 
+	static HumanoidBones mapHumanoidBone(const String& boneName);
+
 private:
 	const detail::MotionFrameTrack* m_vmdTrack;
 };
@@ -45,6 +48,7 @@ void VMDBezierTransformAnimationTrack::init(const detail::MotionFrameTrack& trac
 	AnimationTrack::init();
 	m_vmdTrack = &track;
 	setTargetName(m_vmdTrack->boneName);
+	//std::cout << m_vmdTrack->boneName << std::endl;
 }
 
 void VMDBezierTransformAnimationTrack::evaluate(float time, AnimationValue* outResult)
@@ -104,6 +108,80 @@ void VMDBezierTransformAnimationTrack::evaluate(float time, AnimationValue* outR
 	//}
 
 	outResult->setTransform(result);
+}
+
+HumanoidBones mapHumanoidBone(const String& boneName)
+{
+	static const std::unordered_map<String, HumanoidBones> table = {
+		{ u"下半身", HumanoidBones::Hips },
+		{ u"上半身", HumanoidBones::Spine },
+		{ u"上半身2", HumanoidBones::Chest },
+		//{ u"", HumanoidBones::UpperChest },
+
+		{ u"", HumanoidBones::LeftShoulder },
+		{ u"", HumanoidBones::LeftUpperArm },
+		{ u"", HumanoidBones::LeftLowerArm },
+		{ u"", HumanoidBones::LeftHand },
+
+		{ u"右肩", HumanoidBones::RightShoulder },
+		{ u"右腕", HumanoidBones::RightUpperArm },
+		{ u"右ひじ", HumanoidBones::RightLowerArm },
+		{ u"右手首", HumanoidBones::RightHand },
+
+		{ u"", HumanoidBones::LeftUpperLeg },
+		{ u"", HumanoidBones::LeftLowerLeg },
+		{ u"", HumanoidBones::LeftFoot },
+		{ u"", HumanoidBones::LeftToes },
+
+		{ u"右足", HumanoidBones::RightUpperLeg },
+		{ u"右ひざ", HumanoidBones::RightLowerLeg },
+		{ u"右足首", HumanoidBones::RightFoot },	// FIXME: "右足ＩＫ" にしたほうがいいかも。
+		{ u"右つま先ＩＫ", HumanoidBones::RightToes },
+
+		{ u"", HumanoidBones::Neck },
+		{ u"", HumanoidBones::Head },
+		{ u"", HumanoidBones::LeftEye },
+		{ u"", HumanoidBones::RightEye },
+		{ u"", HumanoidBones::Jaw },
+
+		{ u"", HumanoidBones::LeftThumbProximal },
+		{ u"", HumanoidBones::LeftThumbIntermediate },
+		{ u"", HumanoidBones::LeftThumbDistal },
+		{ u"", HumanoidBones::LeftIndexProximal },
+		{ u"", HumanoidBones::LeftIndexIntermediate },
+		{ u"", HumanoidBones::LeftIndexDistal },
+		{ u"", HumanoidBones::LeftMiddleProximal },
+		{ u"", HumanoidBones::LeftMiddleIntermediate },
+		{ u"", HumanoidBones::LeftMiddleDistal },
+		{ u"", HumanoidBones::LeftRingProximal },
+		{ u"", HumanoidBones::LeftRingIntermediate },
+		{ u"", HumanoidBones::LeftRingDistal },
+		{ u"", HumanoidBones::LeftLittleProximal },
+		{ u"", HumanoidBones::LeftLittleIntermediate },
+		{ u"", HumanoidBones::LeftLittleDistal },
+
+		{ u"", HumanoidBones::RightThumbProximal },
+		{ u"", HumanoidBones::RightThumbIntermediate },
+		{ u"", HumanoidBones::RightThumbDistal },
+		{ u"", HumanoidBones::RightIndexProximal },
+		{ u"", HumanoidBones::RightIndexIntermediate },
+		{ u"", HumanoidBones::RightIndexDistal },
+		{ u"", HumanoidBones::RightMiddleProximal },
+		{ u"", HumanoidBones::RightMiddleIntermediate },
+		{ u"", HumanoidBones::RightMiddleDistal },
+		{ u"", HumanoidBones::RightRingProximal },
+		{ u"", HumanoidBones::RightRingIntermediate },
+		{ u"", HumanoidBones::RightRingDistal },
+		{ u"", HumanoidBones::RightLittleProximal },
+		{ u"", HumanoidBones::RightLittleIntermediate },
+		{ u"", HumanoidBones::RightLittleDistal },
+	};
+
+	const auto itr = table.find(boneName);
+	if (itr != table.end())
+		return itr->second;
+	else
+		return HumanoidBones::None;
 }
 
 //==============================================================================
