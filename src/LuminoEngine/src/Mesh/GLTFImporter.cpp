@@ -91,6 +91,10 @@ bool GLTFImporter::GLTFImporter::importAsSkinnedMesh(SkinnedMeshModel* model, As
 			return false;
 		}
 		model->addSkeleton(meshSkeleton);
+
+		// Note: skins->skeleton は将来的に使われなくなるみたいなプロパティ。
+		// どうもルートボーンを示すための値らしいのだが、Three.js とかでは無視されているようだ。
+		// https://tkaaad97.hatenablog.com/entry/2019/07/28/175737
 	}
 
 	for (const auto& animation : m_model->animations) {
@@ -888,8 +892,11 @@ Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 	const Matrix* inverseBindMatrices = (const Matrix*)(buffer.data.data() + accessor.byteOffset + bufferView.byteOffset);
 	auto armature = makeObject<MeshArmature>(static_cast<SkinnedMeshModel*>(m_meshModel));
 	for (int i = 0; i < skin.joints.size(); i++) {
+		std::cout << "bone: " << m_model->nodes[skin.joints[i]].name << std::endl;
+
 		armature->addBone(skin.joints[i], inverseBindMatrices[i]);
 	}
+	std::cout << "----" << std::endl;
 
 	return armature;
 }

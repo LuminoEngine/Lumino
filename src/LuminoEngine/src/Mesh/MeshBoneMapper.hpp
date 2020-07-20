@@ -55,9 +55,11 @@ private:
 		MeshBone* bone;
 		int boneIndex;
 		MajorKind majorKind;
+		int majorKindPriority = -1;
 		HumanoidBones nameMached;
 	};
 
+	NodeInfo* getNodeInfo(int boneIndex) { return &m_nodes[m_skeleton->bone(boneIndex)->nodeIndex()]; }
 	MeshNode* getMeshNodeByBone(int boneIndex) const { return m_skeleton->bone(boneIndex)->node(); }
 	MeshNode* getMeshNodeByBone(const BoneInfo* bone) const { return getMeshNodeByBone(bone->boneIndex); }
 	int getDepth(const BoneInfo* info) const { return m_nodes[m_skeleton->bone(info->boneIndex)->nodeIndex()].depth; }
@@ -66,7 +68,8 @@ private:
 	void makeMajorKindByName(BoneInfo* info, const String& name);
 	const List<StringRef>& splitWords(const String& name);
 	void resolveBodyBones();
-	void resolveLegs();
+	void resolveArmBones(bool isRight);
+	void resolveLegBones(bool isRight);
 
 	SkinnedMeshModel* m_model;
 	MeshArmature* m_skeleton;

@@ -142,6 +142,8 @@ enum class HumanoidBones
 
 // MeshNode を参照するためのデータ構造。
 // Node と Bone は似ているが異なるものなので注意。頂点の BLEND_INDICES から参照されるのはこのインスタンス。
+// ひとつの Node を複数の Bone が参照する。
+// 正直、Bone という名前はやめた方がいい気がする。
 // SkinnedMesh でのみ使用する。
 class MeshBone
 	: public Object
@@ -193,6 +195,7 @@ public:
 
 // Bone をまとめるデータ構造。
 // BoneTexture を生成する単位。
+// ひとつの Model に対して複数インスタンスを持つことがあるが、MeshContainer がどの Skeleton を使って描画するのかを参照する。
 // TODO: 名前、skelton のほうがいいかも
 class MeshArmature
 	: public Object

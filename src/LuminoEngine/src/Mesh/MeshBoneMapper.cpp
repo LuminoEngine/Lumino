@@ -118,13 +118,17 @@ void MeshBoneMapper::map(MeshArmature* skeleton)
 	}
 
 	resolveBodyBones();
-
+	resolveArmBones(false);
+	resolveArmBones(true);
+	resolveLegBones(false);
+	resolveLegBones(true);
 
 #if 1	// Debug
 	for (int i = 0; i < m_skeleton->m_humanoidBoneIndices.size(); i++) {
 		int boneIndex = m_skeleton->m_humanoidBoneIndices[i];
 		if (boneIndex >= 0)
-			std::cout << s_humanoidBoneNames[i].name << ": " << boneIndex << " " << getMeshNodeByBone(boneIndex)->name() << std::endl;
+			std::cout << s_humanoidBoneNames[i].name << ": " << boneIndex << " " << getMeshNodeByBone(boneIndex)->name() 
+				<< " (depth:" << getNodeInfo(boneIndex)->depth << ")" << std::endl;
 		else
 			std::cout << i << ": -" << std::endl;
 	}
@@ -144,41 +148,43 @@ void MeshBoneMapper::makeMajorKindByName(BoneInfo* info, const String& name)
 {
 	struct NamePair
 	{
+		int priority;
 		String name;
 		MajorKind kind;
 		HumanoidBones boneKind;
 	};
 
 	static const NamePair nameMap[] = {
-		{ u"Hips", MajorKind::Body, HumanoidBones::Hips },
-		{ u"Spine", MajorKind::Body, HumanoidBones::Spine },	// Spine,Spine1,Spine3
-		{ u"Chest", MajorKind::Body, HumanoidBones::Chest },	// Chest,UpperChest
-		{ u"Center", MajorKind::Body, HumanoidBones::None },	// (PronamaChan)
+		{ 0, u"Hips", MajorKind::Body, HumanoidBones::Hips },
+		{ 0, u"Spine", MajorKind::Body, HumanoidBones::Spine },	// Spine,Spine1,Spine3
+		{ 0, u"Chest", MajorKind::Body, HumanoidBones::Chest },	// Chest,UpperChest
+		{ 0, u"Center", MajorKind::Body, HumanoidBones::None },	// (PronamaChan)
 
-		{ u"Neck", MajorKind::Head, HumanoidBones::Neck },
-		{ u"Head", MajorKind::Head, HumanoidBones::Head },
-		{ u"Eye", MajorKind::Head, HumanoidBones::LeftEye },	// LeftEye,RightEye
-		{ u"Jaw", MajorKind::Head, HumanoidBones::Jaw },
-		{ u"Mouth", MajorKind::Head, HumanoidBones::Jaw },	// (AliciaSolid)
+		{ 0, u"Neck", MajorKind::Head, HumanoidBones::Neck },
+		{ 0, u"Head", MajorKind::Head, HumanoidBones::Head },
+		{ 0, u"Eye", MajorKind::Head, HumanoidBones::LeftEye },	// LeftEye,RightEye
+		{ 0, u"Jaw", MajorKind::Head, HumanoidBones::Jaw },
+		{ 0, u"Mouth", MajorKind::Head, HumanoidBones::Jaw },	// (AliciaSolid)
 
-		{ u"Shoulder", MajorKind::LeftArm, HumanoidBones::LeftShoulder },	// 左右を伴うものは一度 Left に集める
-		{ u"Arm", MajorKind::LeftArm, HumanoidBones::None },	// UpperArm,LowerArm,ForeArm
-		{ u"Hand", MajorKind::LeftArm, HumanoidBones::LeftHand },
-		{ u"Elbow", MajorKind::LeftArm, HumanoidBones::LeftLowerArm },	// (PronamaChan)
-		{ u"Wrist", MajorKind::LeftArm, HumanoidBones::LeftHand },	// (PronamaChan)
-		
-		{ u"Thumb", MajorKind::LeftHand },	// Thumb1,ThumbProximal,ThumbIntermediate,ThumbDistal
-		{ u"Index", MajorKind::LeftHand },	// Index1,IndexProximal,IndexIntermediate,IndexDistal
-		{ u"Middle", MajorKind::LeftHand },	// Middle1,MiddleProximal,MiddleIntermediate,MiddleDistal
-		{ u"Ring", MajorKind::LeftHand },	// Ring1,RingProximal,RingIntermediate,RingDistal
-		{ u"Little", MajorKind::LeftHand },	// Little1,LittleProximal,LittleIntermediate,LittleDistal
-		{ u"Pinky", MajorKind::LeftHand },	// (AliciaSolid) 
+		{ 0, u"Shoulder", MajorKind::LeftArm, HumanoidBones::LeftShoulder },	// 左右を伴うものは一度 Left に集める
+		{ 0, u"Arm", MajorKind::LeftArm, HumanoidBones::None },	// UpperArm,LowerArm,ForeArm
+		{ 0, u"Hand", MajorKind::LeftArm, HumanoidBones::LeftHand },
+		{ 0, u"Elbow", MajorKind::LeftArm, HumanoidBones::LeftLowerArm },	// (PronamaChan)
+		{ 0, u"Wrist", MajorKind::LeftArm, HumanoidBones::LeftHand },	// (PronamaChan)
 
-		{ u"Leg", MajorKind::LeftLeg },	// UpperLeg,LowerLeg,Leg
-		{ u"Foot", MajorKind::LeftLeg },
-		{ u"Knee", MajorKind::LeftLeg },	// (PronamaChan)
-		{ u"Ankle", MajorKind::LeftLeg },	// (PronamaChan)
-		{ u"Toe", MajorKind::LeftLeg },
+		// "LeftHandThumb" というように、大体 "Hand" を含むため、Hand よりは優先度高くする
+		{ 1, u"Thumb", MajorKind::LeftHand },	// Thumb1,ThumbProximal,ThumbIntermediate,ThumbDistal
+		{ 1, u"Index", MajorKind::LeftHand },	// Index1,IndexProximal,IndexIntermediate,IndexDistal
+		{ 1, u"Middle", MajorKind::LeftHand },	// Middle1,MiddleProximal,MiddleIntermediate,MiddleDistal
+		{ 1, u"Ring", MajorKind::LeftHand },	// Ring1,RingProximal,RingIntermediate,RingDistal
+		{ 1, u"Little", MajorKind::LeftHand },	// Little1,LittleProximal,LittleIntermediate,LittleDistal
+		{ 1, u"Pinky", MajorKind::LeftHand },	// (AliciaSolid) 
+
+		{ 0, u"Leg", MajorKind::LeftLeg },	// UpperLeg,LowerLeg,Leg
+		{ 0, u"Foot", MajorKind::LeftLeg },
+		{ 0, u"Knee", MajorKind::LeftLeg },	// (PronamaChan)
+		{ 0, u"Ankle", MajorKind::LeftLeg },	// (PronamaChan)
+		{ 0, u"Toe", MajorKind::LeftLeg },
 
 
 
@@ -211,16 +217,20 @@ void MeshBoneMapper::makeMajorKindByName(BoneInfo* info, const String& name)
 		if (StringHelper::indexOf(word.data(), word.length(), u"right", 5, 0, CaseSensitivity::CaseInsensitive) == 0) {
 			isRight = true;
 		}
-		else if (word.length() >= 1 && (word[0] == 'R' || word[0] == 'r')) {
+		else if (word.length() == 1 && (word[0] == 'R' || word[0] == 'r')) {
+			// "thumb_R1" のようなケース。"Ring" と衝突しないようにする
 			isRight = true;
 		}
 		else {
 			for (int i = 0; i < LN_ARRAY_SIZE_OF(nameMap); i++) {
 				const auto e = nameMap[i];
-				// 単語先頭の一致を評価する
-				if (StringHelper::indexOf(word.data(), e.name.length(), e.name.c_str(), e.name.length(), 0, CaseSensitivity::CaseInsensitive) == 0) {
-					info->majorKind = e.kind;
-					break;
+				if (e.priority > info->majorKindPriority) {
+					// 単語先頭の一致を評価する
+					if (StringHelper::indexOf(word.data(), e.name.length(), e.name.c_str(), e.name.length(), 0, CaseSensitivity::CaseInsensitive) == 0) {
+						info->majorKind = e.kind;
+						info->majorKindPriority = e.priority;
+						break;
+					}
 				}
 			}
 		}
@@ -244,15 +254,20 @@ const List<StringRef>& MeshBoneMapper::splitWords(const String& name)
 	const Char* begin = name.c_str();
 	const Char* pos = name.c_str();
 	for (; *pos; pos++) {
-		if (isupper(*pos)) {
-			m_splitCache.add(StringRef(begin, pos - begin));
-			begin = pos;
+		if (begin < pos) {
+			if (isupper(*pos)) {
+				m_splitCache.add(StringRef(begin, pos - begin));
+				begin = pos;
+			}
+			else if (*pos == '_') {
+				m_splitCache.add(StringRef(begin, pos - begin));
+				begin = pos;
+				pos++;
+			}
 		}
-		else if (*pos == '_') {
-			m_splitCache.add(StringRef(begin, pos - begin));
-			begin = pos;
-			pos++;
-		}
+	}
+	if (begin < pos) {
+		m_splitCache.add(StringRef(begin, pos - begin));
 	}
 
 	// thumb_L0 や Body2 など、単語末尾に続く数字を除く
@@ -300,7 +315,7 @@ void MeshBoneMapper::resolveBodyBones()
 		m_skeleton->setHumanoidBoneIndex(HumanoidBones::UpperChest, bones[3]->boneIndex);
 	}
 	else {
-#if 1	// Debug
+#if 0	// Debug
 		for (auto& bone : bones) {
 			std::cout << bone->bone->node()->name() << std::endl;
 		}
@@ -357,9 +372,88 @@ void MeshBoneMapper::resolveBodyBones()
 	}
 }
 
-void MeshBoneMapper::resolveLegs()
+void MeshBoneMapper::resolveArmBones(bool isRight)
 {
+	auto& bones = m_majorGroups[static_cast<int>(isRight ? MajorKind::RightArm : MajorKind::LeftArm)];
 
+	// 深さの順に並び変える
+	std::sort(bones.begin(), bones.end(), [this](const BoneInfo* a, const BoneInfo* b) { return getDepth(a) < getDepth(b); });
+
+	const HumanoidBones kindMap[2][4] =
+	{
+		{ HumanoidBones::LeftShoulder, HumanoidBones::LeftUpperArm, HumanoidBones::LeftLowerArm, HumanoidBones::LeftHand, },
+		{ HumanoidBones::RightShoulder, HumanoidBones::RightUpperArm, HumanoidBones::RightLowerArm, HumanoidBones::RightHand, },
+	};
+	const HumanoidBones* armBoneKinds = kindMap[isRight ? 1 : 0];
+
+	if (bones.size() == 1) {
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[1], bones[0]->boneIndex);
+	}
+	else if (bones.size() == 2) {
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[1], bones[0]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[2], bones[1]->boneIndex);
+	}
+	else if (bones.size() == 3) {
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[1], bones[0]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[2], bones[1]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[3], bones[2]->boneIndex);
+	}
+	else if (bones.size() == 4) {
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[0], bones[0]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[1], bones[1]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[2], bones[2]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[3], bones[3]->boneIndex);
+	}
+	else {
+#if 1	// Debug
+		for (auto& bone : bones) {
+			std::cout << bone->bone->node()->name() << std::endl;
+		}
+#endif
+		LN_NOTIMPLEMENTED();
+	}
+}
+
+void MeshBoneMapper::resolveLegBones(bool isRight)
+{
+	auto& bones = m_majorGroups[static_cast<int>(isRight ? MajorKind::RightLeg : MajorKind::LeftLeg)];
+
+	// 深さの順に並び変える
+	std::sort(bones.begin(), bones.end(), [this](const BoneInfo* a, const BoneInfo* b) { return getDepth(a) < getDepth(b); });
+
+	const HumanoidBones kindMap[2][4] =
+	{
+		{ HumanoidBones::LeftUpperLeg, HumanoidBones::LeftLowerLeg, HumanoidBones::LeftFoot, HumanoidBones::LeftToes, },
+		{ HumanoidBones::RightUpperLeg, HumanoidBones::RightLowerLeg, HumanoidBones::RightFoot, HumanoidBones::RightToes, },
+	};
+	const HumanoidBones* armBoneKinds = kindMap[isRight ? 1 : 0];
+
+	if (bones.size() == 1) {
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[0], bones[0]->boneIndex);
+	}
+	else if (bones.size() == 2) {
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[0], bones[0]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[1], bones[1]->boneIndex);
+	}
+	else if (bones.size() == 3) {
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[0], bones[0]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[1], bones[1]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[2], bones[2]->boneIndex);
+	}
+	else if (bones.size() == 4) {
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[0], bones[0]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[1], bones[1]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[2], bones[2]->boneIndex);
+		m_skeleton->setHumanoidBoneIndex(armBoneKinds[3], bones[3]->boneIndex);
+	}
+	else {
+#if 1	// Debug
+		for (auto& bone : bones) {
+			std::cout << bone->bone->node()->name() << std::endl;
+		}
+#endif
+		LN_NOTIMPLEMENTED();
+	}
 
 }
 
