@@ -9,7 +9,7 @@ class MeshBoneMapper
 {
 public:
 	MeshBoneMapper();
-	void map(MeshArmature* skeleton);
+	void map(SkinnedMeshModel* model);
 
 private:
 	enum class MajorKind
@@ -17,6 +17,8 @@ private:
 		None,
 		Body,
 		Head,
+		LeftEye,
+		RightEye,
 		LeftArm,
 		RightArm,
 		LeftHand,
@@ -27,6 +29,8 @@ private:
 
 	enum class PriorityKind
 	{
+		None,
+
 		Hips,
 		Spine,
 		Chest,
@@ -46,37 +50,35 @@ private:
 	struct NodeInfo
 	{
 		MeshNode* node;
-		int boneIndex = -1;
+		int nodeIndex = -1;
 		int depth = 0;
-	};
-
-	struct BoneInfo
-	{
-		MeshBone* bone;
-		int boneIndex;
 		MajorKind majorKind;
 		int majorKindPriority = -1;
 		HumanoidBones nameMached;
+		bool isRight = false;
+		int wordCount = 0;
 	};
 
-	NodeInfo* getNodeInfo(int boneIndex) { return &m_nodes[m_skeleton->bone(boneIndex)->nodeIndex()]; }
-	MeshNode* getMeshNodeByBone(int boneIndex) const { return m_skeleton->bone(boneIndex)->node(); }
-	MeshNode* getMeshNodeByBone(const BoneInfo* bone) const { return getMeshNodeByBone(bone->boneIndex); }
-	int getDepth(const BoneInfo* info) const { return m_nodes[m_skeleton->bone(info->boneIndex)->nodeIndex()].depth; }
+	//NodeInfo* getNodeInfo(int boneIndex) { return &m_nodes[m_skeleton->bone(boneIndex)->nodeIndex()]; }
+	//MeshNode* getMeshNodeByBone(int boneIndex) const { return m_skeleton->bone(boneIndex)->node(); }
+	//MeshNode* getMeshNodeByBone(const BoneInfo* bone) const { return getMeshNodeByBone(bone->boneIndex); }
+	//int getDepth(const BoneInfo* info) const { return m_nodes[m_skeleton->bone(info->boneIndex)->nodeIndex()].depth; }
 
 	void calculateNodeDepthHieratical(NodeInfo* node, int depth);
-	void makeMajorKindByName(BoneInfo* info, const String& name);
+	void makeMajorKindByName(NodeInfo* info, const String& name);
 	const List<StringRef>& splitWords(const String& name);
 	void resolveBodyBones();
 	void resolveArmBones(bool isRight);
 	void resolveLegBones(bool isRight);
+	void resolveHeadBones();
+	void resolveEyeBones();
 
 	SkinnedMeshModel* m_model;
-	MeshArmature* m_skeleton;
+	//MeshArmature* m_skeleton;
 	List<NodeInfo> m_nodes;
-	List<BoneInfo> m_bones;
+	//List<BoneInfo> m_bones;
 	List<StringRef> m_splitCache;
-	std::array<List<BoneInfo*>, 9> m_majorGroups;
+	std::array<List<NodeInfo*>, 11> m_majorGroups;
 	int m_lowerBranchNodeDepth = -1;
 	int m_upperBranchNodeDepth = -1;
 };

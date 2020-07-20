@@ -223,9 +223,6 @@ public:	// TODO:
 	List<MeshBone*> m_rootBones;
 	Ref<Texture2D> m_skinningMatricesTexture;
 
-	std::array<int, 56> m_humanoidBoneIndices;	// Index of m_bones
-	void setHumanoidBoneIndex(HumanoidBones kind, int boneIndex) { m_humanoidBoneIndices[static_cast<int>(kind)] = boneIndex; }
-	int humanoidBoneIndex(HumanoidBones kind) const { return m_humanoidBoneIndices[static_cast<int>(kind)]; }
 };
 
 class SkinnedMeshModel
@@ -275,6 +272,11 @@ public:
 //	virtual const String& getAnimationTargetElementName(int index) const override;
 //	virtual AnimationValueType getAnimationTargetElementValueType(int index) const override;
 //	virtual void setAnimationTargetElementValue(int index, const AnimationValue& value) override;
+
+	std::array<int, 56> m_humanoidBoneNodeIndices;	// Index of m_bones
+	void setHumanoidBoneIndex(HumanoidBones kind, int boneIndex) { m_humanoidBoneNodeIndices[static_cast<int>(kind)] = boneIndex; }
+	int humanoidBoneIndex(HumanoidBones kind) const { return m_humanoidBoneNodeIndices[static_cast<int>(kind)]; }
+
 
 LN_CONSTRUCT_ACCESS:
     SkinnedMeshModel();

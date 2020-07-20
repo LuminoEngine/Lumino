@@ -96,8 +96,6 @@ bool MeshArmature::init(SkinnedMeshModel* model)
 {
 	if (!Object::init()) return false;
 
-	std::fill(m_humanoidBoneIndices.begin(), m_humanoidBoneIndices.end(), -1);
-
 	m_model = model;
 	return true;
 }
@@ -122,6 +120,7 @@ void MeshArmature::addBone(int linkNode, const Matrix& inverseInitialMatrix)
 	if (bone->node()->parentNodeIndex() >= 0) {
 		m_rootBones.add(bone);
 	}
+	bone->node()->m_boneNode = true;
 }
 
 void MeshArmature::updateSkinningMatrices(SkinnedMeshModel* model)
@@ -170,6 +169,8 @@ Ref<SkinnedMeshModel> SkinnedMeshModel::load(const StringRef& filePath)
 SkinnedMeshModel::SkinnedMeshModel()
     : StaticMeshModel(detail::InternalMeshModelType::SkinnedMesh)
 {
+
+	std::fill(m_humanoidBoneNodeIndices.begin(), m_humanoidBoneNodeIndices.end(), -1);
 }
 
 void SkinnedMeshModel::addSkeleton(MeshArmature* skeleton)

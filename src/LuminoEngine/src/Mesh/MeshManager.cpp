@@ -326,7 +326,7 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		}
 
 		MeshBoneMapper boneMapper;
-		boneMapper.map(mesh->skeleton(0));
+		boneMapper.map(mesh);
 
 		diag->dumpToLog();
 		return mesh;

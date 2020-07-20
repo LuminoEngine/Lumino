@@ -356,6 +356,7 @@ public:
     int meshContainerIndex() const { return m_meshContainerIndex; }
 
 	int skeletonIndex = -1;
+	bool m_boneNode = false;	// いずれかの Bone から参照されているか
 
     void addChildIndex(int value);
 	const List<int>& children() const { return m_children; }
