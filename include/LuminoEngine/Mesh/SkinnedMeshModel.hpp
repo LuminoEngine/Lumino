@@ -66,6 +66,8 @@ public:
 // 標準ボーン
 enum class HumanoidBones
 {
+	None,
+
 	// Body
 	Hips,
 	Spine,
@@ -139,7 +141,7 @@ enum class HumanoidBones
 };
 
 // MeshNode を参照するためのデータ構造。
-// 頂点の BLEND_INDICES から参照されるのはこのインスタンス。
+// Node と Bone は似ているが異なるものなので注意。頂点の BLEND_INDICES から参照されるのはこのインスタンス。
 // SkinnedMesh でのみ使用する。
 class MeshBone
 	: public Object
@@ -148,6 +150,7 @@ public:
 	//const String& name() const;
 
 	MeshNode* node() const;
+	int nodeIndex() const { return m_node; }
 
 	//const AttitudeTransform& localTransform() const;
 
@@ -195,7 +198,11 @@ class MeshArmature
 	: public Object
 {
 public:
+	int boneCount() const { return m_bones.size(); }
 	MeshBone* bone(int index) const;
+
+
+	const List<MeshBone*>& rootBones() const { return m_rootBones; }
 
 public:
 	// TODO: internal
@@ -210,7 +217,12 @@ LN_CONSTRUCT_ACCESS:
 public:	// TODO:
 	SkinnedMeshModel* m_model = nullptr;
 	List<Ref<MeshBone>> m_bones;
-	Ref<Texture2D> m_skinningMatricesTexture; 
+	List<MeshBone*> m_rootBones;
+	Ref<Texture2D> m_skinningMatricesTexture;
+
+	std::array<int, 56> m_humanoidBoneIndices;	// Index of m_bones
+	void setHumanoidBoneIndex(HumanoidBones kind, int boneIndex) { m_humanoidBoneIndices[static_cast<int>(kind)] = boneIndex; }
+	int humanoidBoneIndex(HumanoidBones kind) const { return m_humanoidBoneIndices[static_cast<int>(kind)]; }
 };
 
 class SkinnedMeshModel
@@ -253,7 +265,7 @@ public:
 
 	Ref<AnimationController> m_animationController;
 
-	static HumanoidBones mapToHumanoidBones(const MeshBone* bone);
+	//static HumanoidBones mapToHumanoidBones(const MeshBone* bone);
 
 //protected:
 //	virtual int getAnimationTargetElementCount() const override;
