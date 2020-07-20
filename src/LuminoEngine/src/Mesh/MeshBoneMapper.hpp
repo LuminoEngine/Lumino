@@ -17,6 +17,7 @@ private:
 		None,
 		Body,
 		Head,
+		Jaw,
 		LeftEye,
 		RightEye,
 		LeftArm,
@@ -25,6 +26,18 @@ private:
 		RightHand,
 		LeftLeg,
 		RightLeg,
+
+		LeftThumb,
+		LeftIndex,
+		LeftMiddle,
+		LeftRing,
+		LeftLittle,
+
+		RightThumb,
+		RightIndex,
+		RightMiddle,
+		RightRing,
+		RightLittle,
 	};
 
 	enum class PriorityKind
@@ -59,11 +72,20 @@ private:
 		int wordCount = 0;
 	};
 
+	struct HumanoidBoneInfo
+	{
+		int nodeIndex = -1;
+		int accuracy = 0;
+	};
+
 	//NodeInfo* getNodeInfo(int boneIndex) { return &m_nodes[m_skeleton->bone(boneIndex)->nodeIndex()]; }
 	//MeshNode* getMeshNodeByBone(int boneIndex) const { return m_skeleton->bone(boneIndex)->node(); }
 	//MeshNode* getMeshNodeByBone(const BoneInfo* bone) const { return getMeshNodeByBone(bone->boneIndex); }
 	//int getDepth(const BoneInfo* info) const { return m_nodes[m_skeleton->bone(info->boneIndex)->nodeIndex()].depth; }
 
+	void setHumanoidBoneIndex(HumanoidBones kind, int accuracy, int nodeIndex) { m_humanoidBoneNodeIndices[static_cast<int>(kind)].nodeIndex = nodeIndex; m_humanoidBoneNodeIndices[static_cast<int>(kind)].accuracy = accuracy; }
+	int humanoidBoneAccuracy(HumanoidBones kind) const { return m_humanoidBoneNodeIndices[static_cast<int>(kind)].accuracy; }
+	int humanoidBoneIndex(HumanoidBones kind) const { return m_humanoidBoneNodeIndices[static_cast<int>(kind)].nodeIndex; }
 	void calculateNodeDepthHieratical(NodeInfo* node, int depth);
 	void makeMajorKindByName(NodeInfo* info, const String& name);
 	const List<StringRef>& splitWords(const String& name);
@@ -72,15 +94,18 @@ private:
 	void resolveLegBones(bool isRight);
 	void resolveHeadBones();
 	void resolveEyeBones();
+	void resolveJawBones();
+	void resolveFingerBones();
 
 	SkinnedMeshModel* m_model;
 	//MeshArmature* m_skeleton;
 	List<NodeInfo> m_nodes;
 	//List<BoneInfo> m_bones;
 	List<StringRef> m_splitCache;
-	std::array<List<NodeInfo*>, 11> m_majorGroups;
+	std::array<List<NodeInfo*>, 22> m_majorGroups;
 	int m_lowerBranchNodeDepth = -1;
 	int m_upperBranchNodeDepth = -1;
+	std::array<HumanoidBoneInfo, 56> m_humanoidBoneNodeIndices;
 };
 
 } // namespace detail

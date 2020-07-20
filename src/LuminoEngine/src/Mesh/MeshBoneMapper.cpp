@@ -89,6 +89,8 @@ void MeshBoneMapper::map(SkinnedMeshModel* model)
 {
 	m_model = model;
 
+	std::fill(m_humanoidBoneNodeIndices.begin(), m_humanoidBoneNodeIndices.end(), HumanoidBoneInfo{ -1, 0 });
+
 	int nodeCount = m_model->m_nodes.size();
 	m_nodes.resize(nodeCount);
 	for (int i = 0; i < nodeCount; i++) {
@@ -126,10 +128,16 @@ void MeshBoneMapper::map(SkinnedMeshModel* model)
 	resolveLegBones(true);
 	resolveHeadBones();
 	resolveEyeBones();
+	resolveJawBones();
+	resolveFingerBones();
+
+	for (int i = 0; i < m_humanoidBoneNodeIndices.size(); i++) {
+		m_model->m_humanoidBoneNodeIndices[i] = m_humanoidBoneNodeIndices[i].nodeIndex;
+	}
 
 #if 1	// Debug
-	for (int i = 0; i < m_model->m_humanoidBoneNodeIndices.size(); i++) {
-		int nodeIndex = m_model->m_humanoidBoneNodeIndices[i];
+	for (int i = 0; i < m_humanoidBoneNodeIndices.size(); i++) {
+		int nodeIndex = m_humanoidBoneNodeIndices[i].nodeIndex;
 		if (nodeIndex >= 0)
 			std::cout << s_humanoidBoneNames[i].name << ": " << nodeIndex << " " << m_model->m_nodes[nodeIndex]->name()
 				<< " (depth:" << m_nodes[nodeIndex].depth << ")" << std::endl;
@@ -167,8 +175,8 @@ void MeshBoneMapper::makeMajorKindByName(NodeInfo* info, const String& name)
 		{ 0, u"Neck", MajorKind::Head, HumanoidBones::Neck },
 		{ 0, u"Head", MajorKind::Head, HumanoidBones::Head },
 		{ 0, u"Eye", MajorKind::LeftEye, HumanoidBones::LeftEye },	// LeftEye,RightEye
-		{ 0, u"Jaw", MajorKind::Head, HumanoidBones::Jaw },
-		{ 0, u"Mouth", MajorKind::Head, HumanoidBones::Jaw },	// (AliciaSolid)
+		{ 0, u"Jaw", MajorKind::Jaw, HumanoidBones::Jaw },
+		{ 0, u"Mouth", MajorKind::Jaw, HumanoidBones::Jaw },	// (AliciaSolid)
 
 		{ 0, u"Shoulder", MajorKind::LeftArm, HumanoidBones::LeftShoulder },	// 左右を伴うものは一度 Left に集める
 		{ 0, u"Arm", MajorKind::LeftArm, HumanoidBones::None },	// UpperArm,LowerArm,ForeArm
@@ -177,12 +185,12 @@ void MeshBoneMapper::makeMajorKindByName(NodeInfo* info, const String& name)
 		{ 0, u"Wrist", MajorKind::LeftArm, HumanoidBones::LeftHand },	// (PronamaChan)
 
 		// "LeftHandThumb" というように、大体 "Hand" を含むため、Hand よりは優先度高くする
-		{ 1, u"Thumb", MajorKind::LeftHand, HumanoidBones::None },	// Thumb1,ThumbProximal,ThumbIntermediate,ThumbDistal
-		{ 1, u"Index", MajorKind::LeftHand, HumanoidBones::None },	// Index1,IndexProximal,IndexIntermediate,IndexDistal
-		{ 1, u"Middle", MajorKind::LeftHand, HumanoidBones::None },	// Middle1,MiddleProximal,MiddleIntermediate,MiddleDistal
-		{ 1, u"Ring", MajorKind::LeftHand, HumanoidBones::None },	// Ring1,RingProximal,RingIntermediate,RingDistal
-		{ 1, u"Little", MajorKind::LeftHand, HumanoidBones::None },	// Little1,LittleProximal,LittleIntermediate,LittleDistal
-		{ 1, u"Pinky", MajorKind::LeftHand, HumanoidBones::None },	// (AliciaSolid) 
+		{ 1, u"Thumb", MajorKind::LeftThumb, HumanoidBones::None },	// Thumb1,ThumbProximal,ThumbIntermediate,ThumbDistal
+		{ 1, u"Index", MajorKind::LeftIndex, HumanoidBones::None },	// Index1,IndexProximal,IndexIntermediate,IndexDistal
+		{ 1, u"Middle", MajorKind::LeftMiddle, HumanoidBones::None },	// Middle1,MiddleProximal,MiddleIntermediate,MiddleDistal
+		{ 1, u"Ring", MajorKind::LeftRing, HumanoidBones::None },	// Ring1,RingProximal,RingIntermediate,RingDistal
+		{ 1, u"Little", MajorKind::LeftLittle, HumanoidBones::None },	// Little1,LittleProximal,LittleIntermediate,LittleDistal
+		{ 1, u"Pinky", MajorKind::LeftLittle, HumanoidBones::None },	// (AliciaSolid) 
 
 		{ 0, u"Leg", MajorKind::LeftLeg, HumanoidBones::None },	// UpperLeg,LowerLeg,Leg
 		{ 0, u"Foot", MajorKind::LeftLeg, HumanoidBones::None },
@@ -262,6 +270,12 @@ void MeshBoneMapper::makeMajorKindByName(NodeInfo* info, const String& name)
 		if (info->majorKind == MajorKind::LeftHand) info->majorKind = MajorKind::RightHand;
 		if (info->majorKind == MajorKind::LeftLeg) info->majorKind = MajorKind::RightLeg;
 		if (info->majorKind == MajorKind::LeftEye) info->majorKind = MajorKind::RightEye;
+
+		if (info->majorKind == MajorKind::LeftThumb) info->majorKind = MajorKind::RightThumb;
+		if (info->majorKind == MajorKind::LeftIndex) info->majorKind = MajorKind::RightIndex;
+		if (info->majorKind == MajorKind::LeftMiddle) info->majorKind = MajorKind::RightMiddle;
+		if (info->majorKind == MajorKind::LeftRing) info->majorKind = MajorKind::RightRing;
+		if (info->majorKind == MajorKind::LeftLittle) info->majorKind = MajorKind::RightLittle;
 	}
 
 	if (info->majorKind != MajorKind::None) {
@@ -318,23 +332,23 @@ void MeshBoneMapper::resolveBodyBones()
 
 	if (bones.size() == 1) {
 		// Require の数以下は強制設定
-		m_model->setHumanoidBoneIndex(HumanoidBones::Hips, bones[0]->nodeIndex);
+		setHumanoidBoneIndex(HumanoidBones::Hips, 0, bones[0]->nodeIndex);
 	}
 	else if (bones.size() == 2) {
 		// Require の数以下は強制設定
-		m_model->setHumanoidBoneIndex(HumanoidBones::Hips, bones[0]->nodeIndex);
-		m_model->setHumanoidBoneIndex(HumanoidBones::Spine, bones[1]->nodeIndex);
+		setHumanoidBoneIndex(HumanoidBones::Hips, 0, bones[0]->nodeIndex);
+		setHumanoidBoneIndex(HumanoidBones::Spine, 0, bones[1]->nodeIndex);
 	}
 	else if (bones.size() == 3) {
-		m_model->setHumanoidBoneIndex(HumanoidBones::Hips, bones[0]->nodeIndex);
-		m_model->setHumanoidBoneIndex(HumanoidBones::Spine, bones[1]->nodeIndex);
-		m_model->setHumanoidBoneIndex(HumanoidBones::Chest, bones[2]->nodeIndex);
+		setHumanoidBoneIndex(HumanoidBones::Hips, 0, bones[0]->nodeIndex);
+		setHumanoidBoneIndex(HumanoidBones::Spine, 0, bones[1]->nodeIndex);
+		setHumanoidBoneIndex(HumanoidBones::Chest, 0, bones[2]->nodeIndex);
 	}
 	else if (bones.size() == 4) {
-		m_model->setHumanoidBoneIndex(HumanoidBones::Hips, bones[0]->nodeIndex);
-		m_model->setHumanoidBoneIndex(HumanoidBones::Spine, bones[1]->nodeIndex);
-		m_model->setHumanoidBoneIndex(HumanoidBones::Chest, bones[2]->nodeIndex);
-		m_model->setHumanoidBoneIndex(HumanoidBones::UpperChest, bones[3]->nodeIndex);
+		setHumanoidBoneIndex(HumanoidBones::Hips, 0, bones[0]->nodeIndex);
+		setHumanoidBoneIndex(HumanoidBones::Spine, 0, bones[1]->nodeIndex);
+		setHumanoidBoneIndex(HumanoidBones::Chest, 0, bones[2]->nodeIndex);
+		setHumanoidBoneIndex(HumanoidBones::UpperChest, 0, bones[3]->nodeIndex);
 	}
 	else {
 #if 0	// Debug
@@ -343,23 +357,23 @@ void MeshBoneMapper::resolveBodyBones()
 		}
 #endif
 		// まず Hips と UpperChest を、Depth から決める
-		//m_model->setHumanoidBoneIndex(HumanoidBones::Hips, bones.front()->boneIndex);
-		//m_model->setHumanoidBoneIndex(HumanoidBones::UpperChest, bones.back()->boneIndex);
+		//setHumanoidBoneIndex(HumanoidBones::Hips, bones.front()->boneIndex);
+		//setHumanoidBoneIndex(HumanoidBones::UpperChest, bones.back()->boneIndex);
 
 		// Branch となっている Bone を上下から検索する
 		int firstBranch = bones.indexOfIf([this](const NodeInfo* x) { return x->node->children().size() >= 2; });
 		int lastBranch = bones.lastIndexOfIf([this](const NodeInfo* x) { return x->node->children().size() >= 2; });
 		if (LN_REQUIRE(firstBranch >= 0 && lastBranch >= 0 && firstBranch < lastBranch)) return;
 
-		m_model->setHumanoidBoneIndex(HumanoidBones::Hips, bones[firstBranch]->nodeIndex);
-		m_model->setHumanoidBoneIndex(HumanoidBones::UpperChest, bones[lastBranch]->nodeIndex);
+		setHumanoidBoneIndex(HumanoidBones::Hips, 0, bones[firstBranch]->nodeIndex);
+		setHumanoidBoneIndex(HumanoidBones::UpperChest, 0, bones[lastBranch]->nodeIndex);
 
 		const HumanoidBones spineOrChest[] = {
 			HumanoidBones::Spine,
 			HumanoidBones::Chest,
 		};
 		for (int i = 0; i < std::min(2, (lastBranch - firstBranch)); i++) {
-			m_model->setHumanoidBoneIndex(spineOrChest[i], bones[firstBranch + 1 + i]->nodeIndex);
+			setHumanoidBoneIndex(spineOrChest[i], 0, bones[firstBranch + 1 + i]->nodeIndex);
 		}
 
 		/*
@@ -380,14 +394,14 @@ void MeshBoneMapper::resolveBodyBones()
 	};
 	// 下から見ていって、最初に見つかった分岐を持つ Bone を、m_lowerBranchNodeIndex にする (通常、腰など)
 	for (int i = 0; i < LN_ARRAY_SIZE_OF(bodyBones); i++) {
-		int nodeIndex = m_model->humanoidBoneIndex(bodyBones[i]);
+		int nodeIndex = humanoidBoneIndex(bodyBones[i]);
 		if (nodeIndex >= 0 && !m_nodes[nodeIndex].node->children().isEmpty()) {
 			m_lowerBranchNodeDepth = m_nodes[nodeIndex].depth;
 		}
 	}
 	// 上から見ていって、最初に見つかった分岐を持つ Bone を、m_lowerBranchNodeIndex にする (通常、胸など)
 	for (int i = LN_ARRAY_SIZE_OF(bodyBones) - 1; i >= 0; i--) {
-		int nodeIndex = m_model->humanoidBoneIndex(bodyBones[i]);
+		int nodeIndex = humanoidBoneIndex(bodyBones[i]);
 		if (nodeIndex >= 0 && !m_nodes[nodeIndex].node->children().isEmpty()) {
 			m_upperBranchNodeDepth = m_nodes[nodeIndex].depth;
 		}
@@ -409,22 +423,22 @@ void MeshBoneMapper::resolveArmBones(bool isRight)
 	const HumanoidBones* armBoneKinds = kindMap[isRight ? 1 : 0];
 
 	if (bones.size() == 1) {
-		m_model->setHumanoidBoneIndex(armBoneKinds[1], bones[0]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[1], 0, bones[0]->nodeIndex);
 	}
 	else if (bones.size() == 2) {
-		m_model->setHumanoidBoneIndex(armBoneKinds[1], bones[0]->nodeIndex);
-		m_model->setHumanoidBoneIndex(armBoneKinds[2], bones[1]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[1], 0, bones[0]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[2], 0, bones[1]->nodeIndex);
 	}
 	else if (bones.size() == 3) {
-		m_model->setHumanoidBoneIndex(armBoneKinds[1], bones[0]->nodeIndex);
-		m_model->setHumanoidBoneIndex(armBoneKinds[2], bones[1]->nodeIndex);
-		m_model->setHumanoidBoneIndex(armBoneKinds[3], bones[2]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[1], 0, bones[0]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[2], 0, bones[1]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[3], 0, bones[2]->nodeIndex);
 	}
 	else if (bones.size() == 4) {
-		m_model->setHumanoidBoneIndex(armBoneKinds[0], bones[0]->nodeIndex);
-		m_model->setHumanoidBoneIndex(armBoneKinds[1], bones[1]->nodeIndex);
-		m_model->setHumanoidBoneIndex(armBoneKinds[2], bones[2]->nodeIndex);
-		m_model->setHumanoidBoneIndex(armBoneKinds[3], bones[3]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[0], 0, bones[0]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[1], 0, bones[1]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[2], 0, bones[2]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[3], 0, bones[3]->nodeIndex);
 	}
 	else {
 #if 1	// Debug
@@ -451,22 +465,22 @@ void MeshBoneMapper::resolveLegBones(bool isRight)
 	const HumanoidBones* armBoneKinds = kindMap[isRight ? 1 : 0];
 
 	if (bones.size() == 1) {
-		m_model->setHumanoidBoneIndex(armBoneKinds[0], bones[0]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[0], 0, bones[0]->nodeIndex);
 	}
 	else if (bones.size() == 2) {
-		m_model->setHumanoidBoneIndex(armBoneKinds[0], bones[0]->nodeIndex);
-		m_model->setHumanoidBoneIndex(armBoneKinds[1], bones[1]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[0], 0, bones[0]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[1], 0, bones[1]->nodeIndex);
 	}
 	else if (bones.size() == 3) {
-		m_model->setHumanoidBoneIndex(armBoneKinds[0], bones[0]->nodeIndex);
-		m_model->setHumanoidBoneIndex(armBoneKinds[1], bones[1]->nodeIndex);
-		m_model->setHumanoidBoneIndex(armBoneKinds[2], bones[2]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[0], 0, bones[0]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[1], 0, bones[1]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[2], 0, bones[2]->nodeIndex);
 	}
 	else if (bones.size() == 4) {
-		m_model->setHumanoidBoneIndex(armBoneKinds[0], bones[0]->nodeIndex);
-		m_model->setHumanoidBoneIndex(armBoneKinds[1], bones[1]->nodeIndex);
-		m_model->setHumanoidBoneIndex(armBoneKinds[2], bones[2]->nodeIndex);
-		m_model->setHumanoidBoneIndex(armBoneKinds[3], bones[3]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[0], 0, bones[0]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[1], 0, bones[1]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[2], 0, bones[2]->nodeIndex);
+		setHumanoidBoneIndex(armBoneKinds[3], 0, bones[3]->nodeIndex);
 	}
 	else {
 #if 0	// Debug
@@ -475,7 +489,7 @@ void MeshBoneMapper::resolveLegBones(bool isRight)
 		}
 #endif
 		for (int i = 0; i < 4; i++) {
-			m_model->setHumanoidBoneIndex(armBoneKinds[i], bones[i]->nodeIndex);
+			setHumanoidBoneIndex(armBoneKinds[i], 0, bones[i]->nodeIndex);
 		}
 
 		/*
@@ -503,34 +517,44 @@ void MeshBoneMapper::resolveHeadBones()
 	}
 #endif
 
-
-
-	for (const auto& node : bones) {
-		if (node->nameMached == HumanoidBones::Jaw) {
-			m_model->setHumanoidBoneIndex(HumanoidBones::Jaw, node->nodeIndex);
-		}
-		//else if (node->nameMached == HumanoidBones::LeftEye) {
-		//	if (!node->isRight)
-		//		m_model->setHumanoidBoneIndex(HumanoidBones::LeftEye, node->nodeIndex);
-		//	else
-		//		m_model->setHumanoidBoneIndex(HumanoidBones::RightEye, node->nodeIndex);
-		//}
-		else {
-			if (m_model->humanoidBoneIndex(HumanoidBones::Head) < 0) {
-				// Head (Require) が無ければ Head 扱いする
-				m_model->setHumanoidBoneIndex(HumanoidBones::Head, node->nodeIndex);
-			}
-			else if (m_model->humanoidBoneIndex(HumanoidBones::Neck) < 0) {
-				// 既に Head が見つかっている場合、それを Neck に落とした後、node を Head 扱いする。
-				// node は depth でソートされているので、Neck の方が必ず浅くなる。
-				m_model->setHumanoidBoneIndex(HumanoidBones::Neck, m_model->humanoidBoneIndex(HumanoidBones::Head));
-				m_model->setHumanoidBoneIndex(HumanoidBones::Head, node->nodeIndex);
-			}
-			else {
-				// Neck->Head の上にさらに Bone があるようだが、これはとりださない
-			}
-		}
+	// Neck 側からたどっていって、最初に見つかった Branch を Head にしてみる
+	int headIndex = bones.indexOfIf([](const NodeInfo* x) { return x->node->children().size() >= 2; });
+	if (headIndex >= 0) {
+		setHumanoidBoneIndex(HumanoidBones::Head, 0, bones[headIndex]->nodeIndex);
 	}
+
+	// 少なくとも Head よりは Depth が浅いことを確認して、front を Neck にする
+	if (headIndex >= 1) {
+		setHumanoidBoneIndex(HumanoidBones::Neck, 0, bones.front()->nodeIndex);
+	}
+
+
+	//for (const auto& node : bones) {
+	//	//if (node->nameMached == HumanoidBones::Jaw) {
+	//	//	setHumanoidBoneIndex(HumanoidBones::Jaw, 0, node->nodeIndex);
+	//	//}
+	//	//else if (node->nameMached == HumanoidBones::LeftEye) {
+	//	//	if (!node->isRight)
+	//	//		setHumanoidBoneIndex(HumanoidBones::LeftEye, node->nodeIndex);
+	//	//	else
+	//	//		setHumanoidBoneIndex(HumanoidBones::RightEye, node->nodeIndex);
+	//	//}
+	//	//else {
+	//		if (humanoidBoneIndex(HumanoidBones::Head) < 0) {
+	//			// Head (Require) が無ければ Head 扱いする
+	//			setHumanoidBoneIndex(HumanoidBones::Head, 0, node->nodeIndex);
+	//		}
+	//		else if (humanoidBoneIndex(HumanoidBones::Neck) < 0) {
+	//			// 既に Head が見つかっている場合、それを Neck に落とした後、node を Head 扱いする。
+	//			// node は depth でソートされているので、Neck の方が必ず浅くなる。
+	//			setHumanoidBoneIndex(HumanoidBones::Neck, 0, humanoidBoneIndex(HumanoidBones::Head));
+	//			setHumanoidBoneIndex(HumanoidBones::Head, 0, node->nodeIndex);
+	//		}
+	//		else {
+	//			// Neck->Head の上にさらに Bone があるようだが、これはとりださない
+	//		}
+	//	//}
+	//}
 }
 
 void MeshBoneMapper::resolveEyeBones()
@@ -543,7 +567,7 @@ void MeshBoneMapper::resolveEyeBones()
 		const auto& nodes = m_majorGroups[static_cast<int>(MajorKind::LeftEye)];
 		if (!nodes.isEmpty()) {
 			const auto& itr = std::min_element(nodes.begin(), nodes.end(), [](const NodeInfo* a, const NodeInfo* b) { return a->wordCount < b->wordCount; });
-			m_model->setHumanoidBoneIndex(HumanoidBones::LeftEye, (*itr)->nodeIndex);
+			setHumanoidBoneIndex(HumanoidBones::LeftEye, 0, (*itr)->nodeIndex);
 		}
 	}
 	// Right
@@ -551,9 +575,74 @@ void MeshBoneMapper::resolveEyeBones()
 		const auto& nodes = m_majorGroups[static_cast<int>(MajorKind::RightEye)];
 		if (!nodes.isEmpty()) {
 			const auto& itr = std::min_element(nodes.begin(), nodes.end(), [](const NodeInfo* a, const NodeInfo* b) { return a->wordCount < b->wordCount; });
-			m_model->setHumanoidBoneIndex(HumanoidBones::RightEye, (*itr)->nodeIndex);
+			setHumanoidBoneIndex(HumanoidBones::RightEye, 0, (*itr)->nodeIndex);
 		}
 	}
+}
+
+void MeshBoneMapper::resolveJawBones()
+{
+	const auto& nodes = m_majorGroups[static_cast<int>(MajorKind::Jaw)];
+	if (!nodes.isEmpty()) {
+		const auto& itr = std::min_element(nodes.begin(), nodes.end(), [](const NodeInfo* a, const NodeInfo* b) { return a->wordCount < b->wordCount; });
+		setHumanoidBoneIndex(HumanoidBones::Jaw, 0, (*itr)->nodeIndex);
+	}
+}
+
+void MeshBoneMapper::resolveFingerBones()
+{
+	// 各グループを Depth 順にソートして詰めるだけ
+
+	const auto proc = [this](MajorKind majorKind, const std::array<HumanoidBones, 3>& boneKinds) {
+		auto& nodes = m_majorGroups[static_cast<int>(majorKind)];
+		std::sort(nodes.begin(), nodes.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < a->depth; });
+
+		const int count = std::min(nodes.size(), (int)boneKinds.size());
+		for (int i = 0; i < count; i++) {
+			setHumanoidBoneIndex(boneKinds[i], 0, nodes[i]->nodeIndex);
+		}
+	};
+
+	proc(MajorKind::LeftThumb, {
+		HumanoidBones::LeftThumbProximal,
+		HumanoidBones::LeftThumbIntermediate,
+		HumanoidBones::LeftThumbDistal });
+	proc(MajorKind::LeftIndex, {
+		HumanoidBones::LeftIndexProximal,
+		HumanoidBones::LeftIndexIntermediate,
+		HumanoidBones::LeftIndexDistal });
+	proc(MajorKind::LeftMiddle, {
+		HumanoidBones::LeftMiddleProximal,
+		HumanoidBones::LeftMiddleIntermediate,
+		HumanoidBones::LeftMiddleDistal });
+	proc(MajorKind::LeftRing, {
+		HumanoidBones::LeftRingProximal,
+		HumanoidBones::LeftRingIntermediate,
+		HumanoidBones::LeftRingDistal });
+	proc(MajorKind::LeftLittle, {
+		HumanoidBones::LeftLittleProximal,
+		HumanoidBones::LeftLittleIntermediate,
+		HumanoidBones::LeftLittleDistal });
+	proc(MajorKind::RightThumb, {
+		HumanoidBones::RightThumbProximal,
+		HumanoidBones::RightThumbIntermediate,
+		HumanoidBones::RightThumbDistal });
+	proc(MajorKind::RightIndex, {
+		HumanoidBones::RightIndexProximal,
+		HumanoidBones::RightIndexIntermediate,
+		HumanoidBones::RightIndexDistal });
+	proc(MajorKind::RightMiddle, {
+		HumanoidBones::RightMiddleProximal,
+		HumanoidBones::RightMiddleIntermediate,
+		HumanoidBones::RightMiddleDistal });
+	proc(MajorKind::RightRing, {
+		HumanoidBones::RightRingProximal,
+		HumanoidBones::RightRingIntermediate,
+		HumanoidBones::RightRingDistal });
+	proc(MajorKind::RightLittle, {
+		HumanoidBones::RightLittleProximal,
+		HumanoidBones::RightLittleIntermediate,
+		HumanoidBones::RightLittleDistal });
 }
 
 #if 0
