@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Input/InputController.hpp>
 #include <LuminoEngine/Scene/CharacterController.hpp>
 #include "../Input/InputManager.hpp"
 
@@ -25,7 +26,16 @@ bool CharacterController::init()
 
 void CharacterController::onUpdate(float elapsedSeconds)
 {
+	m_inputState.forwardVelocity = -m_inputController->getAxisValue(u"left") + m_inputController->getAxisValue(u"right");
+	m_inputState.turnVelocity = -m_inputController->getAxisValue(u"up") + m_inputController->getAxisValue(u"down");
 
+
+	//if (m_inputController->pressed(u"up")) {
+	//	m_inputState.moveForward = true;
+	//}
+	//else {
+	//	m_inputState.moveForward = back;
+	//}
 }
 
 CharacterController::InputState::InputState()
@@ -35,11 +45,13 @@ CharacterController::InputState::InputState()
 
 void CharacterController::InputState::reset()
 {
-	moveForward = false;
-	moveBack = false;
-	turnRight = false;
-	turnLeft = false;
-	sneak = false;
+	forwardVelocity = 0.0f;
+	turnVelocity = 0.0f;
+	//moveForward = false;
+	//moveBack = false;
+	//turnRight = false;
+	//turnLeft = false;
+	//sneak = false;
 }
 } // namespace ln
 

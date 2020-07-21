@@ -11,6 +11,9 @@ class CharacterController
 public:
 
 protected:
+	// CharacterController を継承してカスタマイズする場合、
+	// この onUpdate はキャラクターが操作を受け付ける時のみ呼び出すべき。
+	// 例えば攻撃を受けてのけぞっている途中は、よびだすべきではない。
 	void onUpdate(float elapsedSeconds) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -20,11 +23,9 @@ LN_CONSTRUCT_ACCESS:
 private:
 	struct InputState
 	{
-		bool moveForward;
-		bool moveBack;
-		bool turnRight;
-		bool turnLeft;
-		bool sneak;
+		float forwardVelocity;
+		float turnVelocity;
+		//bool sneak;
 
 		InputState();
 		void reset();
