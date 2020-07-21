@@ -138,9 +138,12 @@ void MeshBoneMapper::map(SkinnedMeshModel* model)
 #if 1	// Debug
 	for (int i = 0; i < m_humanoidBoneNodeIndices.size(); i++) {
 		int nodeIndex = m_humanoidBoneNodeIndices[i].nodeIndex;
-		if (nodeIndex >= 0)
-			std::cout << s_humanoidBoneNames[i].name << ": " << nodeIndex << " " << m_model->m_nodes[nodeIndex]->name()
-				<< " (depth:" << m_nodes[nodeIndex].depth << ")" << std::endl;
+		if (nodeIndex >= 0) {
+			const MeshNode* meshNode = m_model->m_nodes[nodeIndex];
+			const auto& node = m_nodes[nodeIndex];
+			std::cout << s_humanoidBoneNames[i].name << ": " << nodeIndex << " " << meshNode->name()
+				<< " (depth:" << node.depth << ", x:" << meshNode->initialLocalTransform().position().x << ")" << std::endl;
+		}
 		else
 			std::cout << i << ": -" << std::endl;
 	}

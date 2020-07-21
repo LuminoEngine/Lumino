@@ -845,11 +845,11 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 
 
-	//for (int vi = 0; vi < 100/*coreMesh->vertexCount()*/; vi++) {
+	//for (int vi = 0; vi < coreMesh->vertexCount(); vi++) {
 	//	auto v = coreMesh->vertex(vi);
 	//	//v.position.y = 0;
 	//	//coreMesh->setVertex(vi, v);
-	//	printf("");
+	//	printf("%f, %f, %f\n", v.position.x, v.position.y, v.position.z);
 	//}
 	//for (int vi = 0; vi < coreMesh->indexCount(); vi++) {
 	//	auto v = coreMesh->index(vi);

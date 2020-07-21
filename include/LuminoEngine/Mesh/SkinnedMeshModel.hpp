@@ -167,6 +167,8 @@ public:
 	//const List<Ref<Material>>& materials() const { return m_materials; }
 
 
+	MeshNode* findHumanoidBone(HumanoidBones boneKind) const;
+
     // TODO: internal
 	void addSkeleton(MeshArmature* skeleton);
 	const Ref<MeshArmature>& skeleton(int index) const { return m_skeletons[index]; }

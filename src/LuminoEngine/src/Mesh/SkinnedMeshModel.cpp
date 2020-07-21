@@ -173,6 +173,15 @@ SkinnedMeshModel::SkinnedMeshModel()
 	std::fill(m_humanoidBoneNodeIndices.begin(), m_humanoidBoneNodeIndices.end(), -1);
 }
 
+MeshNode* SkinnedMeshModel::findHumanoidBone(HumanoidBones boneKind) const
+{
+	int index = humanoidBoneIndex(boneKind);
+	if (index >= 0)
+		return m_nodes[index];
+	else
+		return nullptr;
+}
+
 void SkinnedMeshModel::addSkeleton(MeshArmature* skeleton)
 {
 	m_skeletons.add(skeleton);

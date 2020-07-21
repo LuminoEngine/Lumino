@@ -65,14 +65,20 @@ class App_Example_MeshViewer : public Application
         //auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/27-BldgRubbleB_grp.gltf");
         
         //mesh->setPosition(0, 10, 0);
+		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Models/Axis.glb");
 
 #if 1
 
-        m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
         //m_mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
+        m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
         m_model = m_mesh->skinnedMeshComponent()->model();
+
         //m_node = m_model->findNode(u"左腕");
-        //m_node->setRotation(0, 0, Math::PI / 8);
+        m_node = m_model->findHumanoidBone(HumanoidBones::LeftUpperArm);
+        //auto mat = m_node->initialLocalTransform();
+        //m_node->setInitialLocalTransform();
+        //m_node->setRotation(0, 0, -Math::PI);
+        // Note: ここで m_node->setRotation しても、次のフレーム更新時にリセットされるので意味なし
 
         m_mesh->setShadingModel(ShadingModel::Unlit);
 
@@ -84,16 +90,18 @@ class App_Example_MeshViewer : public Application
         
         m_idle = m_model->animationController()->addClip(clip1);
         m_walk = m_model->animationController()->addClip(clip2);
-        m_model->animationController()->play(m_idle);
+        //m_model->animationController()->play(m_idle);
 #endif
     }
 
     virtual void onUpdate() override
     {
-#if 1
-        //m_node->setRotation(0, 0, Engine::time());
-        //m_node->setRotation(Quaternion(0.00719260797, -0.0159967896, -0.317227066, 0.948187351));
+        if (m_node) {
+            m_node->setRotation(0, 0, Engine::time());
+            //m_node->setRotation(Quaternion(0.00719260797, -0.0159967896, -0.317227066, 0.948187351));
+        }
 
+#if 0
         float velocity = 0.15;
 
         auto pos = m_mesh->position();
