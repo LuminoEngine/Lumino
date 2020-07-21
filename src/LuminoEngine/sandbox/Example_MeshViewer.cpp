@@ -90,14 +90,14 @@ class App_Example_MeshViewer : public Application
         
         m_idle = m_model->animationController()->addClip(clip1);
         m_walk = m_model->animationController()->addClip(clip2);
-        //m_model->animationController()->play(m_idle);
+        m_model->animationController()->play(m_idle);
 #endif
     }
 
     virtual void onUpdate() override
     {
         if (m_node) {
-            m_node->setRotation(0, 0, Engine::time());
+            //m_node->setRotation(0, 0, Engine::time());
             //m_node->setRotation(Quaternion(0.00719260797, -0.0159967896, -0.317227066, 0.948187351));
         }
 

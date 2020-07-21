@@ -83,6 +83,7 @@ class GLTFImporter
     : public MeshImporter
 {
 public:
+	GLTFImporter();
     bool importAsStaticMesh(StaticMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
 	bool importAsSkinnedMesh(SkinnedMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
 
@@ -142,6 +143,8 @@ private:
 	DiagnosticsManager* m_diag;
 	std::shared_ptr<tinygltf::Model> m_model;
 	StaticMeshModel* m_meshModel;
+	bool m_flipZ;
+	bool m_flipX;
 
 	List<Ref<AnimationClip>> m_animationClips;
 };

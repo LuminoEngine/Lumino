@@ -264,6 +264,12 @@ Ref<VmdData> VmdFile::load(Stream* stream)
 			angles.z *= -1;
 			frame.quaternion = Quaternion::makeFromEulerAngles(angles);
 		}
+		//if (String(vmdMotion.szBoneName) == u"左腕") {
+		//	Vector3 angles = frame.quaternion.toEulerAngles();
+		//	angles.z -= Math::PI/6;
+		//	frame.quaternion = Quaternion::makeFromEulerAngles(angles);
+
+		//}
 
 		// add frame to track
 		auto itr = m_boneTrackMap.find(vmdMotion.szBoneName);
