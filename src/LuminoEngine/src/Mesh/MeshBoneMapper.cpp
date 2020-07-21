@@ -411,6 +411,9 @@ void MeshBoneMapper::resolveBodyBones()
 void MeshBoneMapper::resolveArmBones(bool isRight)
 {
 	auto& bones = m_majorGroups[static_cast<int>(isRight ? MajorKind::RightArm : MajorKind::LeftArm)];
+	if (bones.size() == 0) {
+		return;
+	}
 
 	// 深さの順に並び変える
 	std::sort(bones.begin(), bones.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < a->depth; });
@@ -453,6 +456,9 @@ void MeshBoneMapper::resolveArmBones(bool isRight)
 void MeshBoneMapper::resolveLegBones(bool isRight)
 {
 	auto& bones = m_majorGroups[static_cast<int>(isRight ? MajorKind::RightLeg : MajorKind::LeftLeg)];
+	if (bones.size() == 0) {
+		return;
+	}
 
 	// 深さの順に並び変える
 	std::sort(bones.begin(), bones.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < a->depth; });
@@ -507,6 +513,9 @@ void MeshBoneMapper::resolveLegBones(bool isRight)
 void MeshBoneMapper::resolveHeadBones()
 {
 	auto& bones = m_majorGroups[static_cast<int>(MajorKind::Head)];
+	if (bones.size() == 0) {
+		return;
+	}
 
 	// 深さの順に並び変える
 	std::sort(bones.begin(), bones.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < a->depth; });

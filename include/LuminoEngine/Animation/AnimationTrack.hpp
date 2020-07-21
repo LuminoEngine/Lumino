@@ -59,12 +59,14 @@ class AnimationTrack
 {
 public:
 	/** このトラックのアニメーションが適用される要素の名前。（スキンメッシュアニメーションではボーン名、UIElement のアニメーションではプロパティ名など） */
-	const String& targetName() const { return m_targetName; }
+	//const String& targetName() const { return m_targetName; }
+	const AnimationTrackTargetKey& targetKey() const { return m_targetKey; }
 
 	/** このトラックのアニメーション値の型を取得します。 */
 	AnimationValueType type() const { return m_type; }
 
-    void setTargetName(const StringRef& name) { m_targetName = name; }
+    void setTargetName(const StringRef& value) { m_targetKey.name = value; }
+	void setTargetHumanoidBone(HumanoidBones value) { m_targetKey.bone = value; }
 
     virtual float lastFrameTime() const { return 0; }
 
@@ -76,7 +78,7 @@ protected:
 	//void setTargetName(const String& name) { m_targetName = name; }
 
 private:
-	String m_targetName;
+	AnimationTrackTargetKey m_targetKey;
 	AnimationValueType m_type;
 
 	friend class AnimationState;

@@ -266,7 +266,7 @@ LN_CONSTRUCT_ACCESS:
 	bool init(SkinnedMeshModel* model);
 
 protected:
-	detail::AnimationTargetElementBlendLink* onRequireBinidng(const String& name) override;
+	detail::AnimationTargetElementBlendLink* onRequireBinidng(const AnimationTrackTargetKey& key) override;
 	void onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* binding) override;
 
 private:

@@ -53,7 +53,7 @@ void AnimationValue::clearValue()
 // AnimationTrack
 
 AnimationTrack::AnimationTrack(AnimationValueType type)
-    : m_targetName()
+    : m_targetKey()
     , m_type(type)
 {
 }

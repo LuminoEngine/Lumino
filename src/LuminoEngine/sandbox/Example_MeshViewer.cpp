@@ -65,11 +65,10 @@ class App_Example_MeshViewer : public Application
         //auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/27-BldgRubbleB_grp.gltf");
         
         //mesh->setPosition(0, 10, 0);
-        m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
-        auto clip2 = AnimationClip::load(u"D:/Materials/MMD/Motion/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd");
 
-#if 0
-    
+#if 1
+
+        //m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
         m_mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
         m_model = m_mesh->skinnedMeshComponent()->model();
         m_node = m_model->findNode(u"左腕");
@@ -91,7 +90,7 @@ class App_Example_MeshViewer : public Application
 
     virtual void onUpdate() override
     {
-#if 0
+#if 1
         //m_node->setRotation(0, 0, Engine::time());
         //m_node->setRotation(Quaternion(0.00719260797, -0.0159967896, -0.317227066, 0.948187351));
 

@@ -4,7 +4,6 @@
 #include <LuminoEngine/Animation/AnimationTrack.hpp>
 #include <LuminoEngine/Animation/AnimationClip.hpp>
 #include <LuminoEngine/Animation/AnimationContext.hpp>
-#include <LuminoEngine/Mesh/Common.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "../Scene/SceneManager.hpp"
 #include "VmdLoader.hpp"
@@ -110,7 +109,7 @@ void VMDBezierTransformAnimationTrack::evaluate(float time, AnimationValue* outR
 	outResult->setTransform(result);
 }
 
-HumanoidBones mapHumanoidBone(const String& boneName)
+HumanoidBones VMDBezierTransformAnimationTrack::mapHumanoidBone(const String& boneName)
 {
 	static const std::unordered_map<String, HumanoidBones> table = {
 		{ u"下半身", HumanoidBones::Hips },
@@ -118,63 +117,63 @@ HumanoidBones mapHumanoidBone(const String& boneName)
 		{ u"上半身2", HumanoidBones::Chest },
 		//{ u"", HumanoidBones::UpperChest },
 
-		{ u"", HumanoidBones::LeftShoulder },
-		{ u"", HumanoidBones::LeftUpperArm },
-		{ u"", HumanoidBones::LeftLowerArm },
-		{ u"", HumanoidBones::LeftHand },
+		{ u"左肩", HumanoidBones::LeftShoulder },
+		{ u"左腕", HumanoidBones::LeftUpperArm },
+		{ u"左ひじ", HumanoidBones::LeftLowerArm },
+		{ u"左手首", HumanoidBones::LeftHand },
 
 		{ u"右肩", HumanoidBones::RightShoulder },
 		{ u"右腕", HumanoidBones::RightUpperArm },
 		{ u"右ひじ", HumanoidBones::RightLowerArm },
 		{ u"右手首", HumanoidBones::RightHand },
 
-		{ u"", HumanoidBones::LeftUpperLeg },
-		{ u"", HumanoidBones::LeftLowerLeg },
-		{ u"", HumanoidBones::LeftFoot },
-		{ u"", HumanoidBones::LeftToes },
+		{ u"左足", HumanoidBones::LeftUpperLeg },
+		{ u"左ひざ", HumanoidBones::LeftLowerLeg },
+		{ u"左足首", HumanoidBones::LeftFoot },
+		{ u"左つま先ＩＫ", HumanoidBones::LeftToes },
 
 		{ u"右足", HumanoidBones::RightUpperLeg },
 		{ u"右ひざ", HumanoidBones::RightLowerLeg },
 		{ u"右足首", HumanoidBones::RightFoot },	// FIXME: "右足ＩＫ" にしたほうがいいかも。
 		{ u"右つま先ＩＫ", HumanoidBones::RightToes },
 
-		{ u"", HumanoidBones::Neck },
-		{ u"", HumanoidBones::Head },
-		{ u"", HumanoidBones::LeftEye },
-		{ u"", HumanoidBones::RightEye },
-		{ u"", HumanoidBones::Jaw },
+		{ u"首", HumanoidBones::Neck },
+		{ u"頭", HumanoidBones::Head },
+		{ u"左目", HumanoidBones::LeftEye },
+		{ u"右目", HumanoidBones::RightEye },
+		{ u"あご", HumanoidBones::Jaw },
 
-		{ u"", HumanoidBones::LeftThumbProximal },
-		{ u"", HumanoidBones::LeftThumbIntermediate },
-		{ u"", HumanoidBones::LeftThumbDistal },
-		{ u"", HumanoidBones::LeftIndexProximal },
-		{ u"", HumanoidBones::LeftIndexIntermediate },
-		{ u"", HumanoidBones::LeftIndexDistal },
-		{ u"", HumanoidBones::LeftMiddleProximal },
-		{ u"", HumanoidBones::LeftMiddleIntermediate },
-		{ u"", HumanoidBones::LeftMiddleDistal },
-		{ u"", HumanoidBones::LeftRingProximal },
-		{ u"", HumanoidBones::LeftRingIntermediate },
-		{ u"", HumanoidBones::LeftRingDistal },
-		{ u"", HumanoidBones::LeftLittleProximal },
-		{ u"", HumanoidBones::LeftLittleIntermediate },
-		{ u"", HumanoidBones::LeftLittleDistal },
+		{ u"左親指０", HumanoidBones::LeftThumbProximal },
+		{ u"左親指１", HumanoidBones::LeftThumbIntermediate },
+		{ u"左親指２", HumanoidBones::LeftThumbDistal },
+		{ u"左人指１", HumanoidBones::LeftIndexProximal },
+		{ u"左人指２", HumanoidBones::LeftIndexIntermediate },
+		{ u"左人指３", HumanoidBones::LeftIndexDistal },
+		{ u"左中指１", HumanoidBones::LeftMiddleProximal },
+		{ u"左中指２", HumanoidBones::LeftMiddleIntermediate },
+		{ u"左中指３", HumanoidBones::LeftMiddleDistal },
+		{ u"左薬指１", HumanoidBones::LeftRingProximal },
+		{ u"左薬指２", HumanoidBones::LeftRingIntermediate },
+		{ u"左薬指３", HumanoidBones::LeftRingDistal },
+		{ u"左小指１", HumanoidBones::LeftLittleProximal },
+		{ u"左小指２", HumanoidBones::LeftLittleIntermediate },
+		{ u"左小指３", HumanoidBones::LeftLittleDistal },
 
-		{ u"", HumanoidBones::RightThumbProximal },
-		{ u"", HumanoidBones::RightThumbIntermediate },
-		{ u"", HumanoidBones::RightThumbDistal },
-		{ u"", HumanoidBones::RightIndexProximal },
-		{ u"", HumanoidBones::RightIndexIntermediate },
-		{ u"", HumanoidBones::RightIndexDistal },
-		{ u"", HumanoidBones::RightMiddleProximal },
-		{ u"", HumanoidBones::RightMiddleIntermediate },
-		{ u"", HumanoidBones::RightMiddleDistal },
-		{ u"", HumanoidBones::RightRingProximal },
-		{ u"", HumanoidBones::RightRingIntermediate },
-		{ u"", HumanoidBones::RightRingDistal },
-		{ u"", HumanoidBones::RightLittleProximal },
-		{ u"", HumanoidBones::RightLittleIntermediate },
-		{ u"", HumanoidBones::RightLittleDistal },
+		{ u"右親指０", HumanoidBones::RightThumbProximal },
+		{ u"右親指１", HumanoidBones::RightThumbIntermediate },
+		{ u"右親指２", HumanoidBones::RightThumbDistal },
+		{ u"右人指１", HumanoidBones::RightIndexProximal },
+		{ u"右人指２", HumanoidBones::RightIndexIntermediate },
+		{ u"右人指３", HumanoidBones::RightIndexDistal },
+		{ u"右中指１", HumanoidBones::RightMiddleProximal },
+		{ u"右中指２", HumanoidBones::RightMiddleIntermediate },
+		{ u"右中指３", HumanoidBones::RightMiddleDistal },
+		{ u"右薬指１", HumanoidBones::RightRingProximal },
+		{ u"右薬指２", HumanoidBones::RightRingIntermediate },
+		{ u"右薬指３", HumanoidBones::RightRingDistal },
+		{ u"右小指１", HumanoidBones::RightLittleProximal },
+		{ u"右小指２", HumanoidBones::RightLittleIntermediate },
+		{ u"右小指３", HumanoidBones::RightLittleDistal },
 	};
 
 	const auto itr = table.find(boneName);

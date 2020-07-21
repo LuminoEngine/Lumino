@@ -22,9 +22,9 @@ TEST_F(Test_Animation_Mixer, Basic)
 		Ref<detail::AnimationTargetElementBlendLink> m_bone1Binding;
 		float m_bone1Value;
 
-		detail::AnimationTargetElementBlendLink* onRequireBinidng(const String& name) override
+		detail::AnimationTargetElementBlendLink* onRequireBinidng(const AnimationTrackTargetKey& key) override
 		{
-			if (name == u"Bone.1") {
+			if (key.name == u"Bone.1") {
 				m_bone1Binding = makeRef<detail::AnimationTargetElementBlendLink>(AnimationValueType::Float);
 				return m_bone1Binding;
 			}

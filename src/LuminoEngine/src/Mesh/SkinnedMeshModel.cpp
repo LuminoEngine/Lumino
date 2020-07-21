@@ -367,18 +367,28 @@ void AnimationController::advanceTime(float elapsedTime)
 	m_core->advanceTime(elapsedTime);
 }
 
-detail::AnimationTargetElementBlendLink* AnimationController::onRequireBinidng(const String& name)
+detail::AnimationTargetElementBlendLink* AnimationController::onRequireBinidng(const AnimationTrackTargetKey& key)
 {
-	auto tb = m_bindings.findIf([&](const auto& x) { return x->name == name; });
+	auto tb = m_bindings.findIf([&](const auto& x) { return AnimationTrackTargetKey::equals(x->key, key); });
 	if (tb) {
 		return *tb;
 	}
 
+	int index = -1;
+	
+	// まず HumanoidBones を検索
+	if (key.bone != HumanoidBones::None) {
+		index = m_model->humanoidBoneIndex(key.bone);
+	}
 
-	int index = m_model->findNodeIndex(name);
+	// 無ければ名前検索
+	if (index < 0) {
+		index = m_model->findNodeIndex(key.name);
+	}
+
 	if (index >= 0) {
 		auto binding = makeRef<detail::AnimationTargetElementBlendLink>(AnimationValueType::Transform);
-		binding->name = name;
+		binding->key = key;
 		binding->targetIndex = index;
 		m_bindings.add(binding);
 		return binding;
