@@ -314,7 +314,8 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 			bool result = importer.importAsSkinnedMesh(mesh, m_assetManager, *path, diag);
 
 
-			if (!importer.animationClips().isEmpty()) {
+			//if (!importer.animationClips().isEmpty()) {
+			if (!mesh->skeletons().isEmpty()) {
 				//auto mixer = makeObject<AnimationMixerCore>();
 				mesh->m_animationController = makeObject<AnimationController>(mesh);
 

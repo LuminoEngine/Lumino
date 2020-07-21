@@ -379,6 +379,9 @@ detail::AnimationTargetElementBlendLink* AnimationController::onRequireBinidng(c
 	// まず HumanoidBones を検索
 	if (key.bone != HumanoidBones::None) {
 		index = m_model->humanoidBoneIndex(key.bone);
+		if (index >= 0) {
+			std::cout << "map:" << (int)key.bone << std::endl;
+		}
 	}
 
 	// 無ければ名前検索

@@ -47,6 +47,7 @@ void VMDBezierTransformAnimationTrack::init(const detail::MotionFrameTrack& trac
 	AnimationTrack::init();
 	m_vmdTrack = &track;
 	setTargetName(m_vmdTrack->boneName);
+	setTargetHumanoidBone(mapHumanoidBone(m_vmdTrack->boneName));
 	//std::cout << m_vmdTrack->boneName << std::endl;
 }
 

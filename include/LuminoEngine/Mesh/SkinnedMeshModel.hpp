@@ -202,6 +202,7 @@ public:
 	void setHumanoidBoneIndex(HumanoidBones kind, int boneIndex) { m_humanoidBoneNodeIndices[static_cast<int>(kind)] = boneIndex; }
 	int humanoidBoneIndex(HumanoidBones kind) const { return m_humanoidBoneNodeIndices[static_cast<int>(kind)]; }
 
+	const List<Ref<MeshArmature>>& skeletons() const { return m_skeletons; }
 
 LN_CONSTRUCT_ACCESS:
     SkinnedMeshModel();

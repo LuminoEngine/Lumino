@@ -68,11 +68,11 @@ class App_Example_MeshViewer : public Application
 
 #if 1
 
-        //m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
-        m_mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
+        m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
+        //m_mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
         m_model = m_mesh->skinnedMeshComponent()->model();
-        m_node = m_model->findNode(u"左腕");
-        m_node->setRotation(0, 0, Math::PI / 8);
+        //m_node = m_model->findNode(u"左腕");
+        //m_node->setRotation(0, 0, Math::PI / 8);
 
         m_mesh->setShadingModel(ShadingModel::Unlit);
 
@@ -102,6 +102,9 @@ class App_Example_MeshViewer : public Application
         //    pos.x -= 0.01;
         //}
 
+        const float cameraFocusDistance = 2;    // 10
+        const float cameraDistance = 3;
+
         float h = -Input::getAxisValue(u"left") + Input::getAxisValue(u"right");
         float v = -Input::getAxisValue(u"up") + Input::getAxisValue(u"down");
         pos.x += h * velocity;
@@ -113,7 +116,7 @@ class App_Example_MeshViewer : public Application
             m_model->animationController()->play(m_walk);
 
 
-            m_targetPos = pos - dir * 10;
+            m_targetPos = pos - dir * cameraFocusDistance;
         }
         else {
             m_model->animationController()->play(m_idle);
@@ -121,8 +124,9 @@ class App_Example_MeshViewer : public Application
 
         m_lookPos += (m_targetPos - m_lookPos) / 60;
 
-        Vector3 lookat = m_lookPos +Vector3(0, 10, 0);
-        Engine::camera()->setPosition(lookat + Vector3(0, 15, -30));
+
+        Vector3 lookat = m_lookPos + Vector3(0, 1, 0);
+        Engine::camera()->setPosition(lookat + Vector3::normalize(0, 15, -30) * cameraDistance);
         Engine::camera()->lookAt(lookat);
 
         m_mesh->setPosition(pos);

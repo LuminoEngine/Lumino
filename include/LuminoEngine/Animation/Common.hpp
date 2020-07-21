@@ -60,7 +60,7 @@ struct AnimationTrackTargetKey
 
 	static bool equals(const AnimationTrackTargetKey& a, const AnimationTrackTargetKey& b)
 	{
-		return a.bone == b.bone || a.name == b.name;
+		return (a.bone != HumanoidBones::None && a.bone == b.bone) || a.name == b.name;
 	}
 };
 
