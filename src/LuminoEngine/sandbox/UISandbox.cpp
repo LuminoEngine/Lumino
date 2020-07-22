@@ -213,7 +213,6 @@ public:
 			}
 		}
 
-#endif
 
 		// TabBar
 		{
@@ -271,6 +270,7 @@ public:
 			layout1->addChild(field2);
 			
 		}
+#endif
 
 		// ComboBox
 		{
@@ -280,8 +280,9 @@ public:
 			layout1->addChild(makeObject<UITextBlock>(u"ComboBox"));
 
 			auto comboBox1 = makeObject<UIComboBox>();
-			comboBox1->addChild(u"Item1");
-			comboBox1->addChild(u"Item2");
+			comboBox1->setHAlignment(HAlignment::Left);
+			comboBox1->addChild(u"CItem1");
+			comboBox1->addChild(u"CItem2");
 			layout1->addChild(comboBox1);
 		}
     }

@@ -884,7 +884,7 @@ void UIElement::render(UIRenderingContext* context, const Matrix& parentTransfor
 		Matrix combinedTransform = parentTransform * m_localTransform;
 
 		context->m_theme = m_finalStyle->theme;
-		renderClient(context, combinedTransform);
+		renderClient(context, m_combinedFinalRenderTransform);
 
     }
 
@@ -1092,6 +1092,8 @@ void UIElement::attemptAddToPrimaryElement()
 void UIElement::raiseEventInternal(UIEventArgs* e, UIEventRoutingStrategy strategy)
 {
     if (LN_REQUIRE(e)) return;
+
+    e->strategy = strategy;
 
     // まずは this に通知
     onRoutedEvent(e);

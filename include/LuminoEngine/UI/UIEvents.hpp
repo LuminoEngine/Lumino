@@ -115,7 +115,8 @@ public:
     static const UIEventType	RequestVisualRedrawEvent;
 
 	static const UIEventType	RequestNavigate;
-	
+
+	//static const UIEventType	ComboBoxItemClicked;
 };
 
 /**
@@ -136,6 +137,8 @@ public:
 	UIEventType type() const { return m_type; }
 	
     static bool testInputGesture(UIEventArgs* e, InputGesture* gesture);
+
+	UIEventRoutingStrategy strategy = UIEventRoutingStrategy::Bubble;
 
 LN_CONSTRUCT_ACCESS:
 	UIEventArgs();

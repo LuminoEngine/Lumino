@@ -169,6 +169,9 @@ public:
     //LN_METHOD(Event)
     Ref<EventConnection> connectOnDeactivated(Ref<UIEventHandler> handler);
 
+    // UIComboBoxItem は UIComboBox(UIControl) の子としてレイアウトしてほしくないので、その回避に用意したもの。
+    bool m_autoLayoutLogicalChildren = true;
+
 protected:
     virtual void onActivated();
     virtual void onDeactivated();

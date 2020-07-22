@@ -11,23 +11,56 @@ namespace ln {
 // UIComboBoxItem
 
 UIComboBoxItem::UIComboBoxItem()
+	: m_ownerComboBox(nullptr)
 {
+	m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
 }
 
-void UIComboBoxItem::init()
+bool UIComboBoxItem::init()
 {
-    UICollectionItem::init();
+	if (!UIControl::init()) return false;
 
 	static int cc = 0;
 	setBackgroundColor((cc == 0) ? Color::Red : Color::Blue);
 	cc++;
+
+	return true;
+}
+
+void UIComboBoxItem::onRoutedEvent(UIEventArgs* e)
+{
+	if (e->type() == UIEvents::MouseDownEvent) {
+		e->handled = true;
+
+		if (m_ownerComboBox) {
+			m_ownerComboBox->selectItem(this);
+		}
+		//raiseEvent(UIEventArgs::create(this, UIEvents::ComboBoxItemClicked));
+
+		return;
+	}
+
+	UIControl::onRoutedEvent(e);
 }
 
 //==============================================================================
 // UIComboBox
 
 /*
-[2020/7/28] カスタマイズについて考察
+
+[2020/7/22] UIComboBox.Items を持つべきか？UIComboBoxItem.Parent を作るべきか？
+----------
+あえて持たせないようにすると、UIComboBoxItem は親 UIComboBox がどこにあるかを気にせず自由にレイアウトすることができるようになる。
+UIComboBox への addItem/addChild は不要。
+
+ユーザプログラムはちょっとシンプルになるが、実装はかなり難易度高くなるので止めた方がいいかも…。
+UIComboBox というよりその中の ListBox の実装だが、
+- 要素を列挙するような操作が難しくなる。
+- ↓キーで「次のItem」を選択するときの検索処理がすごく重くなる。まず 親 UIComboBox を探して、次にその子をすべて走査して、選択中の「次」を調べないとならない。
+- カスタマイズが難しくなる。やっぱり論理的な親子関係を明示的に持っていてほしい。聞けばなるほどだけど、驚きの方が多いか。
+
+[2020/7/18] カスタマイズについて考察
+----------
 ListBox も同じような感じであるが…
 
 例えば、Blender みたいなグループ化されたわりと自由なアイテム配置を実現したいことがある。
@@ -73,13 +106,14 @@ UIComboBox::UIComboBox()
 
 void UIComboBox::init()
 {
-    UIItemsControl::init();
-	m_layoutItemsHostLayoutEnabled = false;
+    UIControl::init();
+	m_autoLayoutLogicalChildren = false;
+	//m_layoutItemsHostLayoutEnabled = false;
 
-	auto itemsHost = makeObject<UIStackLayout2_Obsolete>();
+	auto itemsHost = makeObject<UIStackLayout>();
 	itemsHost->setOrientation(Orientation::Vertical);
 	m_itemsHost = itemsHost;
-	setItemsLayoutPanel(m_itemsHost, false);
+	//setItemsLayoutPanel(m_itemsHost, false);
 
 	// TODO: test
 	//m_itemsHost->setBackgroundColor(Color::BlueViolet);
@@ -97,14 +131,31 @@ void UIComboBox::init()
 	// TODO: test
 	//addChild(u"test1");
 	//addChild(u"test2");
+
+
+	// dummy for single select mode
+	m_selectedItems.add(nullptr);
 }
 
 void UIComboBox::onAddChild(UIElement* child)
 {
     auto item = ln::makeObject<UIComboBoxItem>();
+	item->m_ownerComboBox = this;
     item->addElement(child);
 
-    UIItemsControl::addItem(item);
+
+	m_logicalChildren->add(item);
+	item->setLogicalParent(this);
+
+	if (m_itemsHost) {
+		m_itemsHost->addVisualChild(item);
+	}
+
+	/*
+		Note: UIContorl が LogicalChildren に対して Layout を実行してしまっているため、UIComboBoxItem が Adorner からではなく UIComboBox からレイアウトされてしまっている。
+	*/
+
+    //UIControl::addItem(item);
 }
 
 void UIComboBox::onRoutedEvent(UIEventArgs* e)
@@ -120,21 +171,55 @@ void UIComboBox::onRoutedEvent(UIEventArgs* e)
         return;
     }
     else if (e->type() == UIEvents::MouseUpEvent) {
+		e->handled = true;
         return;
     }
+	//else if (e->type() == UIEvents::ComboBoxItemClicked) {
 
-	UIItemsControl::onRoutedEvent(e);
+	//	selectItem(static_cast<UIComboBoxItem*>(e->sender()));
+
+	//	e->handled = true;
+	//	return;
+	//}
+
+	UIControl::onRoutedEvent(e);
 }
 
+//Size UIComboBox::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+//{
+//	if (m_itemsHost) {
+//		m_itemsHost->measureLayout(layoutContext, constraint);
+//		Size layoutSize = m_itemsHost->desiredSize();
+//		Size localSize = UIElement::measureOverride(layoutContext, constraint);
+//		return Size::max(layoutSize, localSize);
+//	}
+//	else {
+//		return UIControl::measureOverride(layoutContext, constraint);
+//	}
+//}
+//
+//Size UIComboBox::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+//{
+//	Rect contentSlotRect = detail::LayoutHelper::makePaddingRect(this, finalSize);
+//
+//	if (m_itemsHost) {
+//		m_itemsHost->arrangeLayout(layoutContext, contentSlotRect);
+//		return finalSize;
+//	}
+//	else {
+//		return UIControl::arrangeOverride(layoutContext, finalSize);
+//	}
+//}
+//
 void UIComboBox::onUpdateLayout(UILayoutContext* layoutContext)
 {
-	UIItemsControl::onUpdateLayout(layoutContext);
+	UIControl::onUpdateLayout(layoutContext);
 	m_popup->setWidth(actualSize().width);
 }
 
 void UIComboBox::onRender(UIRenderingContext* context)
 {
-	UIItemsControl::onRender(context);
+	UIControl::onRender(context);
 
 
 	auto area = detail::LayoutHelper::makePaddingRect(this, actualSize());
@@ -153,11 +238,25 @@ void UIComboBox::onRender(UIRenderingContext* context)
 	}
 }
 
-void UIComboBox::onItemClick(UICollectionItem* item, UIClickEventArgs* e)
+void UIComboBox::selectItem(UIComboBoxItem* item)
 {
-	UIItemsControl::onItemClick(item, e);
+	//if (m_selectedItems[0]) {
+	//	m_selectedItems[0]->setSelectedInternal(false);
+	//}
+
+	m_selectedItems[0] = item;
+	//item->setSelectedInternal(true);
+
+	//onSelectionChanged(UISelectionChangedEventArgs::create(this, UIEvents::SelectionChanged));
+	
 	m_popup->close();
 }
+
+//void UIComboBox::onItemClick(UICollectionItem* item, UIClickEventArgs* e)
+//{
+//	UIItemsControl::onItemClick(item, e);
+//	m_popup->close();
+//}
 
 } // namespace ln
 

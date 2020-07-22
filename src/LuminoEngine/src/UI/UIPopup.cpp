@@ -83,7 +83,15 @@ void UIPopup::onRoutedEvent(UIEventArgs* e)
 {
     if (e->type() == UIEvents::LostFocusEvent) {
         close();
+        e->handled = true;
+        return;
     }
+    //else {
+    //    if (m_placementTarget && e->strategy == UIEventRoutingStrategy::Bubble) {
+    //        m_placementTarget->raiseEvent(e, UIEventRoutingStrategy::Bubble);
+    //        if (e->handled) return;
+    //    }
+    //}
 
     UIContainerElement::onRoutedEvent(e);
 }

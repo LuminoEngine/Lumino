@@ -274,7 +274,7 @@ Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& cons
         // padding, border も含めたサイズ (client は、this と clientAreaSize のうち大きい方を採用)
         size = layoutContext->makeDesiredSize(this, clientAreaSize);
     }
-    else {
+    else if (m_autoLayoutLogicalChildren) {
         //   struct ElementList : public IUIElementList {
         //       List<Ref<UIElement>>* list;
         //       virtual int getElementCount() const { return list->size(); }
@@ -298,6 +298,9 @@ Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& cons
         size = UIFrameLayout2::staticMeasureLogicalChildren(layoutContext, this, constraint);
 
         //}
+    }
+    else {
+        size = UIElement::measureOverride(layoutContext, constraint);
     }
 
     // デフォルトの最小サイズ
@@ -323,8 +326,11 @@ Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Size& fina
 
         return finalSize;
     }
-    else {
+    else if (m_autoLayoutLogicalChildren) {
         return UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, finalArea);
+    }
+    else {
+        return UIElement::arrangeOverride(layoutContext, finalSize);
     }
 }
 
