@@ -8,7 +8,7 @@
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/UI/UIAdorner.hpp>
-#include <LuminoEngine/UI/UIDialog.hpp>
+#include <LuminoEngine/UI/Controls/UIDialog.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderElement.hpp"

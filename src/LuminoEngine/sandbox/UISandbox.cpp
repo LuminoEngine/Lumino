@@ -1,18 +1,18 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
-#include <LuminoEngine/UI/UIButton.hpp>
-#include <LuminoEngine/UI/UIScrollView.hpp>
+#include <LuminoEngine/UI/Controls/UIButton.hpp>
+#include <LuminoEngine/UI/Controls/UIScrollView.hpp>
 #include <LuminoEngine/UI/UIItemsModel.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIListBox.hpp>
-#include <LuminoEngine/UI/UITreeView.hpp>
-#include <LuminoEngine/UI/UISplitter.hpp>
+#include <LuminoEngine/UI/Controls/UIListBox.hpp>
+#include <LuminoEngine/UI/Controls/UITreeView.hpp>
+#include <LuminoEngine/UI/Controls/UISplitter.hpp>
 #include <LuminoEngine/UI/UIIcon.hpp>
 #include <LuminoEngine/UI/UITabBar.hpp>
-#include <LuminoEngine/UI/UIPropertyFields.hpp>
-#include <LuminoEngine/UI/UIComboBox.hpp>
+#include <LuminoEngine/UI/Controls/UIPropertyFields.hpp>
+#include <LuminoEngine/UI/Controls/UIComboBox.hpp>
 using namespace ln;
 
 

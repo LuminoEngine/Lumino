@@ -11,7 +11,7 @@
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
-#include <LuminoEngine/UI/UIControl.hpp>
+#include <LuminoEngine/UI/Controls/UIControl.hpp>
 #include <LuminoEngine/UI/UITextBlock.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "UIManager.hpp"

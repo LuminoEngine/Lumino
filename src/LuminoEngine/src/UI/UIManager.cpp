@@ -5,7 +5,7 @@
 #include <LuminoEngine/UI/UIContainerElement.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
-#include <LuminoEngine/UI/UILayoutPanel.hpp>
+#include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIActiveTimer.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>

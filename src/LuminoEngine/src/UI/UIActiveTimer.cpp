@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/UI/UIControl.hpp>
+#include <LuminoEngine/UI/Controls/UIControl.hpp>
 #include <LuminoEngine/UI/UIActiveTimer.hpp>
 
 namespace ln {

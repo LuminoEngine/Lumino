@@ -19,10 +19,10 @@
 #include "../src/Asset/AssetArchive.hpp"
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
-#include <LuminoEngine/UI/UIButton.hpp>
+#include <LuminoEngine/UI/Controls/UIButton.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
-#include <LuminoEngine/UI/UIPropertyFields.hpp>
+#include <LuminoEngine/UI/Controls/UIPropertyFields.hpp>
 #include <LuminoEngine/Tilemap/Voxel.hpp>
 #include <LuminoEngine/Scene/TransformControls.hpp>
 #include <LuminoEngine/PostEffect/LightShaftPostEffect.hpp>
@@ -463,7 +463,7 @@ int main(int argc, char** argv)
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_MainLoop();
-		Example_MeshViewer();
+		//Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
@@ -483,7 +483,7 @@ int main(int argc, char** argv)
         //Sandbox_Sky();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
-		//UISandboxMain();
+		UISandboxMain();
         return 0;
     }
 

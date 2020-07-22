@@ -1,5 +1,5 @@
 ﻿
-#include <LuminoEngine/UI/UIPropertyFields.hpp>
+#include <LuminoEngine/UI/Controls/UIPropertyFields.hpp>
 #include "LevelEditorPropertyPane.hpp"
 #include "LevelEditor.hpp"
 

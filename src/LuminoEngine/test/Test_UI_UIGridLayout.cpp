@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <LuminoEngine/UI/UIGridLayout.hpp>
+#include <LuminoEngine/UI/Layout/UIGridLayout.hpp>
 
 //==============================================================================
 //# Testing Test_UI_UIGridLayout

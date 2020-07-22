@@ -1,6 +1,6 @@
 ﻿
 #include <LuminoEngine.hpp>
-#include <LuminoEngine/UI/UIComboBox.hpp>
+#include <LuminoEngine/UI/Controls/UIComboBox.hpp>
 #include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelset.hpp>
 #include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapLayer.hpp>
 #include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapModel.hpp>
