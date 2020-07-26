@@ -1,21 +1,21 @@
 ﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Scene/RigidBodyComponent.hpp>
+#include "../Internal.hpp"
+#include <LuminoEngine/Scene/Physics/RigidBody2DComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include "Engine/EngineManager.hpp"
 
 namespace ln {
 
 //=============================================================================
-// Collision
+// Collision2D
 
-Collision::Collision()
+Collision2D::Collision2D()
     : m_worldObject(nullptr)
     , m_physicsObject(nullptr)
 {
 }
 
-void Collision::init(WorldObject* worldObject/*, RigidBody2DComponent* component*/, PhysicsObject2D* physicsObject)
+void Collision2D::init(WorldObject* worldObject/*, RigidBody2DComponent* component*/, PhysicsObject2D* physicsObject)
 {
     Object::init();
     m_worldObject = worldObject;
@@ -90,17 +90,17 @@ RigidBody2D* RigidBody2DComponent::rigidBody() const
     return m_body;
 }
 
-Ref<EventConnection> RigidBody2DComponent::connectOnCollisionEnter(Ref<CollisionEventHandler> handler)
+Ref<EventConnection> RigidBody2DComponent::connectOnCollisionEnter(Ref<Collision2DEventHandler> handler)
 {
     return m_onCollisionEnter.connect(handler);
 }
 
-Ref<EventConnection> RigidBody2DComponent::connectOnCollisionLeave(Ref<CollisionEventHandler> handler)
+Ref<EventConnection> RigidBody2DComponent::connectOnCollisionLeave(Ref<Collision2DEventHandler> handler)
 {
     return m_onCollisionLeave.connect(handler);
 }
 
-Ref<EventConnection> RigidBody2DComponent::connectOnCollisionStay(Ref<CollisionEventHandler> handler)
+Ref<EventConnection> RigidBody2DComponent::connectOnCollisionStay(Ref<Collision2DEventHandler> handler)
 {
     return m_onCollisionStay.connect(handler);
 }
@@ -111,7 +111,7 @@ void RigidBody2DComponent::onCollisionEnter(PhysicsObject2D* otherObject, Contac
     auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
 	// TODO: Cache
-	auto c = makeObject<Collision>(worldObject, otherObject);
+	auto c = makeObject<Collision2D>(worldObject, otherObject);
 	m_onCollisionEnter.raise(c);
 }
 
@@ -121,7 +121,7 @@ void RigidBody2DComponent::onCollisionLeave(PhysicsObject2D* otherObject, Contac
     auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
 	// TODO: Cache
-	auto c = makeObject<Collision>(worldObject, otherObject);
+	auto c = makeObject<Collision2D>(worldObject, otherObject);
 	m_onCollisionLeave.raise(c);
 }
 
@@ -131,7 +131,7 @@ void RigidBody2DComponent::onCollisionStay(PhysicsObject2D* otherObject, Contact
     auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
     // TODO: Cache
-    auto c = makeObject<Collision>(worldObject, otherObject);
+    auto c = makeObject<Collision2D>(worldObject, otherObject);
     m_onCollisionStay.raise(c);
 }
 
@@ -192,17 +192,17 @@ void TriggerBody2DComponent::onAfterStepSimulation()
 {
 }
 
-Ref<EventConnection> TriggerBody2DComponent::connectOnCollisionEnter(Ref<CollisionEventHandler> handler)
+Ref<EventConnection> TriggerBody2DComponent::connectOnCollisionEnter(Ref<Collision2DEventHandler> handler)
 {
     return m_onCollisionEnter.connect(handler);
 }
 
-Ref<EventConnection> TriggerBody2DComponent::connectOnCollisionLeave(Ref<CollisionEventHandler> handler)
+Ref<EventConnection> TriggerBody2DComponent::connectOnCollisionLeave(Ref<Collision2DEventHandler> handler)
 {
     return m_onCollisionLeave.connect(handler);
 }
 
-Ref<EventConnection> TriggerBody2DComponent::connectOnCollisionStay(Ref<CollisionEventHandler> handler)
+Ref<EventConnection> TriggerBody2DComponent::connectOnCollisionStay(Ref<Collision2DEventHandler> handler)
 {
     return m_onCollisionStay.connect(handler);
 }
@@ -213,7 +213,7 @@ void TriggerBody2DComponent::onCollisionEnter(PhysicsObject2D* otherObject, Cont
     auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
     // TODO: Cache
-    auto c = makeObject<Collision>(worldObject, otherObject);
+    auto c = makeObject<Collision2D>(worldObject, otherObject);
     m_onCollisionEnter.raise(c);
 }
 
@@ -223,7 +223,7 @@ void TriggerBody2DComponent::onCollisionLeave(PhysicsObject2D* otherObject, Cont
     auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
     // TODO: Cache
-    auto c = makeObject<Collision>(worldObject, otherObject);
+    auto c = makeObject<Collision2D>(worldObject, otherObject);
     m_onCollisionLeave.raise(c);
 }
 
@@ -233,7 +233,7 @@ void TriggerBody2DComponent::onCollisionStay(PhysicsObject2D* otherObject, Conta
     auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
     // TODO: Cache
-    auto c = makeObject<Collision>(worldObject, otherObject);
+    auto c = makeObject<Collision2D>(worldObject, otherObject);
     m_onCollisionStay.raise(c);
 }
 

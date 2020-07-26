@@ -63,7 +63,7 @@ TEST_F(Test_Physics_2D, Compound)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Physics_2D, Collision)
+TEST_F(Test_Physics_2D, Collision2D)
 {
 	auto texture1 = Assets::loadTexture(u"Sprite1");
 
@@ -93,7 +93,7 @@ TEST_F(Test_Physics_2D, Collision)
 
 	bool contact = false;
 	body1->connectOnCollisionEnter(
-		[&](Collision* collision) {
+		[&](Collision2D* collision) {
 			if (collision->worldObject()->hasTag(u"item")) {
 				contact = true;
 				collision->worldObject()->destroy();

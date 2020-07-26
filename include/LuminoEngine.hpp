@@ -81,7 +81,9 @@
 #include "LuminoEngine/Scene/Raycaster.hpp"
 #include "LuminoEngine/Scene/Light.hpp"
 #include "LuminoEngine/Scene/Sprite.hpp"
-#include "LuminoEngine/Scene/RigidBodyComponent.hpp"
+#include "LuminoEngine/Scene/CharacterController.hpp"
+#include "LuminoEngine/Scene/Physics/RigidBodyComponent.hpp"
+#include "LuminoEngine/Scene/Physics/RigidBody2DComponent.hpp"
 #include "LuminoEngine/Scene/Text/Text.hpp"
 #include "LuminoEngine/Scene/Mesh/StaticMeshComponent.hpp"
 #include "LuminoEngine/Scene/Mesh/StaticMesh.hpp"
@@ -90,6 +92,7 @@
 #include "LuminoEngine/Scene/Shapes/MeshPrimitives.hpp"
 #include "LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp"
 
+#include "LuminoEngine/Scene/Level.hpp"
 #include "LuminoEngine/Scene/Scene.hpp"
 #include "LuminoEngine/Scene/SceneConductor.hpp"
 

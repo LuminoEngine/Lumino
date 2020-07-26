@@ -617,6 +617,9 @@ void EngineManager::initializeDefaultObjects()
 
 			m_mainCamera = makeObject<Camera>();
 			m_mainWorld->add(m_mainCamera);
+			if (m_sceneManager) {
+				m_sceneManager->setDefaultCamera(m_mainCamera);
+			}
 
 			if (m_settings.createMainLights) {
 

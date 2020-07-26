@@ -85,6 +85,10 @@ public:
     /** キネマティックモードを設定します。 キネマティックモードでは、剛体に力はかかりません。 */
     void setKinematic(bool enabled);
 
+    bool isDynamic() const { return !isStatic() && !isKinematic(); }
+    bool isStatic() const { return m_mass == 0.0f; }
+    bool isKinematic() const { return m_kinematicObject; }
+
     /** 衝突グループを設定します。デフォルトは 0x00000001 で、0番のグループに属することを示します。 */
     void setCollisionGroup(uint32_t group);
 

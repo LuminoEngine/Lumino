@@ -31,6 +31,8 @@ private:
 		void reset();
 	};
 
+	Camera* camera() const;
+
 	// 複数プレイヤーをマルチビューで操作するときなどを考慮すると、
 	// UIViewport の onKeyDown とかにアタッチするよりは
 	// VirtualController に直接アタッチしてしまった方がシンプルに実装できる。
@@ -38,6 +40,11 @@ private:
 	InputController* m_inputController;
 
 	InputState m_inputState;
+
+	Ref<Camera> m_targetCamera;
+
+	float m_sneakVelocity = 1.0f;
+	float m_walkVelocity = 5.0f;
 };
 
 } // namespace ln

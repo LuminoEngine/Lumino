@@ -145,6 +145,8 @@ file(GLOB LN_SOURCES_Scene_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Mesh
 file(GLOB LN_SOURCES_Scene_MeshTilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/MeshTilemap/*.hpp src/Scene/MeshTilemap/*.cpp src/Scene/MeshTilemap/*.hpp)
 file(GLOB LN_SOURCES_Scene_MeshVoxelmap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/MeshVoxelmap/*.hpp src/Scene/MeshVoxelmap/*.cpp src/Scene/MeshVoxelmap/*.hpp)
 file(GLOB LN_SOURCES_Scene_Reflection ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Reflection/*.hpp src/Scene/Reflection/*.cpp src/Scene/Reflection/*.hpp)
+file(GLOB LN_SOURCES_Scene_Physics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Physics/*.hpp src/Scene/Physics/*.cpp src/Scene/Physics/*.hpp)
+
 
 file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
 file(GLOB LN_SOURCES_UI_Controls ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Controls/*.hpp src/UI/Controls/*.cpp src/UI/Controls/*.hpp)
@@ -231,6 +233,7 @@ source_group("Scene\\Mesh" FILES ${LN_SOURCES_Scene_Mesh})
 source_group("Scene\\MeshTilemap" FILES ${LN_SOURCES_Scene_MeshTilemap})
 source_group("Scene\\MeshVoxelmap" FILES ${LN_SOURCES_Scene_MeshVoxelmap})
 source_group("Scene\\Reflection" FILES ${LN_SOURCES_Scene_Reflection})
+source_group("Scene\\Physics" FILES ${LN_SOURCES_Scene_Physics})
 source_group("UI" FILES ${LN_SOURCES_UI})
 source_group("UI\\Controls" FILES ${LN_SOURCES_UI_Controls})
 source_group("UI\\Layout" FILES ${LN_SOURCES_UI_Layout})
@@ -274,6 +277,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Scene_MeshTilemap}
     ${LN_SOURCES_Scene_MeshVoxelmap}
     ${LN_SOURCES_Scene_Reflection}
+    ${LN_SOURCES_Scene_Physics}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_UI_Controls}
     ${LN_SOURCES_UI_Layout}

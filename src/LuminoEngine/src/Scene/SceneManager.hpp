@@ -36,6 +36,9 @@ public:
     const Ref<Shader>& atmosphereShader() const { return m_atmosphereShader; }
 	const Ref<Raycaster>& raycasterCache() const { return m_raycasterCache; }
 
+	void setDefaultCamera(Camera* value) { m_defaultCamera = value; }
+	Camera* defaultCamera() const { return m_defaultCamera; }
+
 	const Ref<Material>& primitiveMeshDefaultMaterial() const { return m_primitiveMeshDefaultMaterial; };
 
     // テスト用の設定。
@@ -53,6 +56,7 @@ public:
 
 private:
     World* m_activeWorld;
+	Camera* m_defaultCamera = nullptr;
     Ref<Shader> m_atmosphereShader;
 	Ref<Raycaster> m_raycasterCache;
 

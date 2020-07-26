@@ -26,12 +26,26 @@ struct btCollisionObjectWrapper;
 class btGeneric6DofSpringConstraint;
 
 namespace ln {
+class PhysicsObject;
+class ContactPoint;
 class ContactPoint2D;
 class PhysicsObject2D;
 class RigidBody2D;
 namespace detail {
-
+    
 class IPhysicsObjectEventListener
+{
+protected:
+	virtual void onBeforeStepSimulation() = 0;
+	virtual void onAfterStepSimulation() = 0;
+    virtual void onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact) = 0;
+    virtual void onCollisionLeave(PhysicsObject* otherObject, ContactPoint* contact) = 0;
+    virtual void onCollisionStay(PhysicsObject* otherObject, ContactPoint* contact) = 0;
+
+    friend class ::ln::PhysicsObject;
+};
+
+class IPhysicsObject2DEventListener
 {
 protected:
 	virtual void onBeforeStepSimulation() = 0;
