@@ -4,6 +4,17 @@
 
 namespace ln {
 class InputController;
+class UIEventArgs;
+class EventConnection;
+
+enum class CharacterControllerMode
+{
+	// 視点優先。
+	ViewMajor,
+
+	// キャラクター位置優先。カメラは鎖のようにキャラクターの背後に追従しようと位置調整される。
+	CharacterMajor,
+};
 
 class CharacterController
 	: public Component
@@ -27,11 +38,16 @@ private:
 		float turnVelocity;
 		//bool sneak;
 
+		float cameraH;
+		float cameraV;
+
 		InputState();
 		void reset();
 	};
-
-	Camera* camera() const;
+	void resetCameraPosition();
+	void prepareViewCamera();
+	Camera* viewCamera() const;
+	void handleUIEvent(UIEventArgs* e);
 
 	// 複数プレイヤーをマルチビューで操作するときなどを考慮すると、
 	// UIViewport の onKeyDown とかにアタッチするよりは
@@ -39,12 +55,30 @@ private:
 	// キーコンフィグも有効になるし。
 	InputController* m_inputController;
 
+	// イベントハンドラなど、入力はいったんここにすべて集めて、次の onUpdate() で処理する
 	InputState m_inputState;
 
 	Ref<Camera> m_targetCamera;
 
+	CharacterControllerMode m_mode = CharacterControllerMode::ViewMajor;
+
 	float m_sneakVelocity = 1.0f;
 	float m_walkVelocity = 5.0f;
+
+	// https://docs.unity3d.com/ja/2019.4/Manual/class-CharacterController.html
+	float m_height = 2.0f;
+
+	// キャラクターとカメラの最大距離。
+	// 鎖の要領で、この範囲内でキャラクターが動いても、カメラは位置を更新しない。
+	float m_cameraRadius = 5.0f;
+
+
+	Camera* m_lastCamera = nullptr;
+	Ref<EventConnection> m_renderViewEventConnection;
+
+	Vector2 m_lastMousePos;
+
+	bool m_resetCameraPosition = true;
 };
 
 } // namespace ln
