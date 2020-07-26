@@ -31,15 +31,63 @@ void CharacterController::onUpdate(float elapsedSeconds)
 {
 	prepareViewCamera();
 
+	WorldObject* character = worldObject();
 	Camera* camera = viewCamera();
 
 	m_inputState.turnVelocity = -m_inputController->getAxisValue(u"left") + m_inputController->getAxisValue(u"right");
 	m_inputState.forwardVelocity = -m_inputController->getAxisValue(u"down") + m_inputController->getAxisValue(u"up");
 
-	const auto front = Vector3::transform(Vector3::UnitZ, camera->rotation());
-	const auto frontXZ = Vector3::safeNormalize(Vector3(front.x, 0, front.z), Vector3::UnitZ);
-	const auto rightXZ = Vector3::cross(Vector3::UnitY, frontXZ);
-	const auto unitDir = (rightXZ * m_inputState.turnVelocity) + (frontXZ * m_inputState.forwardVelocity);
+	const auto characterCurrentFront = Vector3::transform(Vector3::UnitZ, camera->rotation());
+	
+
+	if (m_resetCameraPosition) {
+		// Character を真後ろから見るようにカメラを移動する。
+		// この後の計算で、カメラ正面方向を使い、位置と注視点は再設定されるため、オフセットは気にしなくてよい。
+		camera->setPosition(character->position() - characterCurrentFront);
+		camera->lookAt(character->position());
+		//m_cameraLookAt = cameraCenter;
+		//m_characterTargetFrontDirXZ = Vector3::safeNormalize(Vector3(characterTargetFrontDir.x, 0, characterTargetFrontDir.z), Vector3::UnitZ);
+		m_resetCameraPosition = false;
+	}
+
+
+
+
+	const auto cameraCurrentFront = Vector3::transform(Vector3::UnitZ, camera->rotation());
+	const auto cameraCurrentFrontXZ = Vector3::safeNormalize(Vector3(cameraCurrentFront.x, 0, cameraCurrentFront.z), Vector3::UnitZ);
+	const auto cameraCurrentHorizontalDir = Vector3::cross(Vector3::UnitY, cameraCurrentFrontXZ);
+	const auto moveVector = (cameraCurrentHorizontalDir * m_inputState.turnVelocity) + (cameraCurrentFrontXZ * m_inputState.forwardVelocity);
+	const auto moveOffset = moveVector * (m_walkVelocity * elapsedSeconds);
+
+
+	// TODO: 物理移動
+	character->setPosition(character->position() + moveOffset);
+	character->lookAt(character->position() + cameraCurrentFrontXZ);
+
+
+
+
+	const auto characterEyePos = character->position() + Vector3(0, m_height, 0);
+	const auto cameraFocusPos = characterEyePos;
+
+
+
+
+
+
+
+
+
+	camera->setPosition(cameraFocusPos - cameraCurrentFrontXZ * m_cameraRadius);
+	camera->lookAt(cameraFocusPos);
+
+#if 0
+
+	const auto cameraCurrentFront = Vector3::transform(Vector3::UnitZ, camera->rotation());
+	const auto cameraCurrentFrontXZ = Vector3::safeNormalize(Vector3(cameraCurrentFront.x, 0, cameraCurrentFront.z), Vector3::UnitZ);
+	const auto rightXZ = Vector3::cross(Vector3::UnitY, cameraCurrentFrontXZ);
+	const auto cameraCurrentHorizontalDir = rightXZ;
+	const auto unitDir = (rightXZ * m_inputState.turnVelocity) + (cameraCurrentFrontXZ * m_inputState.forwardVelocity);
 
 	const auto moveOffset = unitDir * (m_walkVelocity * elapsedSeconds);
 	WorldObject* character = worldObject();
@@ -98,7 +146,13 @@ void CharacterController::onUpdate(float elapsedSeconds)
 
 
 	// キャラクターの頭辺りの高さの、正面をカメラの注視点とする
-	const auto cameraCenter = Vector3(pos.x, pos.y/* + m_height*/, pos.z) + m_characterTargetFrontDirXZ;
+	const auto cameraCenter = Vector3(pos.x, pos.y + m_height, pos.z) +
+		cameraCurrentFront +			// カメラから見て、キャラクターの少し向こう側を注視点とする。
+		(cameraCurrentHorizontalDir * m_inputState.turnVelocity);	// 左右入力があれば、少し視点をずらす
+	//if (m_inputState.forwardVelocity != 0.0f) {
+	//	cameraCenter
+	//}
+
 
 	if (m_resetCameraPosition) {
 		camera->setPosition(cameraCenter - characterCurrentFrontDirXZ * m_cameraRadius);
@@ -193,6 +247,7 @@ void CharacterController::onUpdate(float elapsedSeconds)
 	//else {
 	//	m_inputState.moveForward = back;
 	//}
+#endif
 
 	m_inputState.reset();
 }

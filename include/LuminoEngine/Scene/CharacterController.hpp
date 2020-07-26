@@ -67,7 +67,7 @@ private:
 	float m_turnTime = 0.25f;	// 何秒で振り向きを完了するか
 
 	// https://docs.unity3d.com/ja/2019.4/Manual/class-CharacterController.html
-	float m_height = 2.0f;
+	float m_height = 0.5f;//2.0f;
 
 	// キャラクターとカメラの最大距離。
 	// 鎖の要領で、この範囲内でキャラクターが動いても、カメラは位置を更新しない。
@@ -78,6 +78,8 @@ private:
 
 	// キャラクター及びカメラの目標注視点方向
 	Vector3 m_characterTargetFrontDirXZ;
+
+	Vector3 m_characterTargetFrontCenterXZ;
 	
 	Vector3 m_cameraLookAt;
 

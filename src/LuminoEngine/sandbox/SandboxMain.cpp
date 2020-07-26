@@ -272,6 +272,7 @@ void Example_SoundControl();
 void Example_Sprite();
 void Example_UIControls();
 void Example_Tilemap();
+void Experiment_CharacterController();
 void Experiment_Editor();
 void Experiment_Reflector();
 void Experiment_Scripting();
@@ -470,6 +471,7 @@ int main(int argc, char** argv)
         //Example_Sprite();
         //Example_UIControls();
 		//Example_Tilemap();
+        Experiment_CharacterController();
         //Experiment_Editor();
         //Experiment_Reflector();
         //Experiment_Scripting();
@@ -483,7 +485,7 @@ int main(int argc, char** argv)
         //Sandbox_Sky();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
-		UISandboxMain();
+		//UISandboxMain();
         return 0;
     }
 
