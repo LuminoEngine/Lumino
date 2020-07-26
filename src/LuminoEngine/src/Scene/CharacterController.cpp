@@ -41,20 +41,69 @@ void CharacterController::onUpdate(float elapsedSeconds)
 	const auto rightXZ = Vector3::cross(Vector3::UnitY, frontXZ);
 	const auto unitDir = (rightXZ * m_inputState.turnVelocity) + (frontXZ * m_inputState.forwardVelocity);
 
-	WorldObject* obj = worldObject();
-	Vector3 pos = obj->position();
-	pos += unitDir * (m_walkVelocity * elapsedSeconds);
-	obj->setPosition(pos);
+	const auto moveOffset = unitDir * (m_walkVelocity * elapsedSeconds);
+	WorldObject* character = worldObject();
+	Vector3 pos = character->position();
+	pos += moveOffset;
+	character->setPosition(pos);
 
-	const auto characterFront = Vector3::transform(Vector3::UnitZ, obj->rotation());
-	const auto characterFrontXZ = Vector3::safeNormalize(Vector3(characterFront.x, 0, characterFront.z), Vector3::UnitZ);
+
+	if (1) {
+		// カメラも同じだけ移動する (平行移動)
+		Vector3 pos = camera->position();
+		pos += moveOffset;
+		m_cameraLookAt += moveOffset;
+		camera->setPosition(pos);
+	}
+
+
+
+	const auto characterCurrentFrontDir = Vector3::transform(Vector3::UnitZ, character->rotation());
+	const auto characterCurrentFrontDirXZ = Vector3::safeNormalize(Vector3(characterCurrentFrontDir.x, 0, characterCurrentFrontDir.z), Vector3::UnitZ);
+
+
+	auto characterTargetFrontDir = characterCurrentFrontDir;
+	if (!unitDir.isZero()) {
+		characterTargetFrontDir = Vector3::normalize(unitDir);
+		m_characterTargetFrontDirXZ = Vector3::safeNormalize(Vector3(characterTargetFrontDir.x, 0, characterTargetFrontDir.z), Vector3::UnitZ);
+
+
+
+		const float rot = Math::PI * (1.0f / m_turnTime) * elapsedSeconds;
+
+		if (std::acos(Vector3::dot(characterCurrentFrontDirXZ, m_characterTargetFrontDirXZ)) < rot) {
+			character->lookAt(pos + (characterCurrentFrontDirXZ * m_frontFocusPointOffset));
+		}
+		else {
+
+
+			// .y の符号で、characterCurrentFrontDirXZ を characterTargetFrontDirXZ に向けるにはどちらに回転するのが最短なのかわかる。
+			// そのまま回転軸にもできる。
+			const auto cross = Vector3::cross(characterCurrentFrontDirXZ, m_characterTargetFrontDirXZ);
+			const auto newDir = Vector3::transform(characterCurrentFrontDirXZ, Quaternion::makeFromRotationAxis(cross, rot));
+
+
+			//const auto characterTargetFrontPos = pos + (characterTargetFrontDir * m_frontFocusPointOffset);
+			const auto characterTargetFrontPos = pos + (newDir * m_frontFocusPointOffset);
+			character->lookAt(characterTargetFrontPos);
+		}
+
+	}
+
+
+
+
+
+
 
 
 	// キャラクターの頭辺りの高さの、正面をカメラの注視点とする
-	const auto cameraCenter = Vector3(pos.x, pos.y/* + m_height*/, pos.z) + characterFrontXZ;
+	const auto cameraCenter = Vector3(pos.x, pos.y/* + m_height*/, pos.z) + m_characterTargetFrontDirXZ;
 
 	if (m_resetCameraPosition) {
-		camera->setPosition(cameraCenter - characterFrontXZ * m_cameraRadius);
+		camera->setPosition(cameraCenter - characterCurrentFrontDirXZ * m_cameraRadius);
+		m_cameraLookAt = cameraCenter;
+		m_characterTargetFrontDirXZ = Vector3::safeNormalize(Vector3(characterTargetFrontDir.x, 0, characterTargetFrontDir.z), Vector3::UnitZ);
 		m_resetCameraPosition = false;
 	}
 
@@ -133,7 +182,10 @@ void CharacterController::onUpdate(float elapsedSeconds)
 	}
 
 
-	camera->lookAt(cameraCenter);
+	m_cameraLookAt += (cameraCenter - m_cameraLookAt) / 60.0f;
+
+
+	camera->lookAt(m_cameraLookAt);
 
 	//if (m_inputController->pressed(u"up")) {
 	//	m_inputState.moveForward = true;
