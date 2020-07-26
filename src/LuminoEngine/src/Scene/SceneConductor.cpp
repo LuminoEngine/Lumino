@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
-#include <LuminoEngine/Scene/Scene.hpp>
+#include <LuminoEngine/Scene/Level.hpp>
 #include <LuminoEngine/Scene/SceneConductor.hpp>
 #include "SceneManager.hpp"
 

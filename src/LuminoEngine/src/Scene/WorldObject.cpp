@@ -4,7 +4,7 @@
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/World.hpp>
-#include <LuminoEngine/Scene/Scene.hpp>
+#include <LuminoEngine/Scene/Level.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include "SceneManager.hpp"
 

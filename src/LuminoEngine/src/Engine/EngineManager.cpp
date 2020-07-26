@@ -15,7 +15,7 @@
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Scene/World.hpp>
-#include <LuminoEngine/Scene/Scene.hpp>
+#include <LuminoEngine/Scene/Level.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
