@@ -134,8 +134,9 @@ void CharacterController::onUpdate(float elapsedSeconds)
 
 		const float rotDelta = Math::PI * (1.0f / m_turnTime) * elapsedSeconds;
 
-		const float rotDiff = std::acos(Vector3::dot(characterCurrentFrontDirXZ, characterTargetFrontDirXZ));
-		printf("rotDiff:%f, d:%f\n", rotDiff, Vector3::dot(characterCurrentFrontDirXZ, characterTargetFrontDirXZ));
+		const float dot = Vector3::dot(characterCurrentFrontDirXZ, characterTargetFrontDirXZ);
+		const float rotDiff = (dot > 1.0f) ? 0.0f : std::acos(dot);	// (dot > 1.0f) は誤差対策。角度差なしとする
+		printf("rotDiff:%f, d:%f\n", rotDiff, dot);
 
 		if (rotDiff < rotDelta) {
 			character->lookAt(character->position() + (characterTargetFrontDirXZ));

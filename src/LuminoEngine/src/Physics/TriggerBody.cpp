@@ -78,7 +78,7 @@ TriggerBody::TriggerBody()
 
 void TriggerBody::init()
 {
-    Object::init();
+	PhysicsObject::init();
 }
 
 void TriggerBody::init(CollisionShape* shape)
@@ -124,6 +124,8 @@ void TriggerBody::setCollisionGroupMask(uint32_t value)
 
 void TriggerBody::onBeforeStepSimulation()
 {
+	PhysicsObject::onBeforeStepSimulation();
+
 	if (!m_btGhostObject || (m_dirtyFlags & (DirtyFlags_InitialUpdate))) {
 		createBtObject();
 		m_dirtyFlags &= ~DirtyFlags_Shapes;	// createBtObject() の中でまとめて処理されるため、↓で処理する必要はない
@@ -151,6 +153,7 @@ void TriggerBody::onBeforeStepSimulation()
 
 void TriggerBody::onAfterStepSimulation()
 {
+	PhysicsObject::onAfterStepSimulation();
 }
 
 void TriggerBody::createBtObject()

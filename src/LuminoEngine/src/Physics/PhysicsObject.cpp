@@ -59,10 +59,16 @@ void PhysicsObject::onCollisionStay(PhysicsObject* otherObject, ContactPoint* co
 
 void PhysicsObject::onBeforeStepSimulation()
 {
+	if (m_listener) {
+		m_listener->onBeforeStepSimulation();
+	}
 }
 
 void PhysicsObject::onAfterStepSimulation()
 {
+	if (m_listener) {
+		m_listener->onAfterStepSimulation();
+	}
 }
 
 } // namespace ln
