@@ -189,7 +189,7 @@ void TriggerBodyComponent::onDetachedScene(Level* oldOwner)
 
 void TriggerBodyComponent::onBeforeStepSimulation()
 {
-    m_body->setPosition(worldObject()->position());
+    m_body->setTransform(worldObject()->worldMatrix());
 }
 
 void TriggerBodyComponent::onAfterStepSimulation()
