@@ -25,8 +25,8 @@ static void glfwSetWindowCenter(GLFWwindow* window) {
     glfwGetWindowSize(window, &window_width, &window_height);
 
     // Halve the window size and use it to adjust the window position to the center of the window
-    window_width *= 0.5;
-    window_height *= 0.5;
+    window_width /= 2;
+    window_height /= 2;
 
     window_x += window_width;
     window_y += window_height;
@@ -336,6 +336,16 @@ PointI GLFWPlatformWindow::pointToScreen(const PointI& clientPoint)
 #endif
 }
 
+void GLFWPlatformWindow::grabCursor()
+{
+	glfwSetInputMode(m_glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void GLFWPlatformWindow::releaseCursor()
+{
+	glfwSetInputMode(m_glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
 void* GLFWPlatformWindow::getWin32Window() const
 {
 #ifdef _WIN32
@@ -445,12 +455,34 @@ void GLFWPlatformWindow::window_mousePos_callback(GLFWwindow* window, double xpo
 {
 	GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
 
+	short grabOffsetX = 0;
+	short grabOffsetY = 0;
+	if (glfwGetInputMode(thisWindow->m_glfwWindow, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
+		//int w, h;
+		//glfwGetWindowSize(thisWindow->m_glfwWindow, &w, &h);
+		//const auto clientPos = PointI(xpos, ypos);// thisWindow->pointFromScreen(PointI(xpos, ypos));
+		//grabOffsetX = clientPos.x - (w / 2);
+		//grabOffsetY = clientPos.y - (h / 2);
+		grabOffsetX = xpos;
+		grabOffsetY = ypos;
+	}
+
 #if defined(LN_EMSCRIPTEN)
 	thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseMoveEvent(thisWindow, PlatformEventType::MouseMove, (short)xpos, (short)ypos));
 #elif defined(LN_OS_WIN32)
 	POINT pt;
 	::GetCursorPos(&pt);
-	thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseMoveEvent(thisWindow, PlatformEventType::MouseMove, pt.x, pt.y));
+
+	PointI grabOffset;
+	if (glfwGetInputMode(thisWindow->m_glfwWindow, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
+		const auto clientPos = thisWindow->pointFromScreen(PointI(pt.x, pt.y));
+		SizeI size;
+		thisWindow->getSize(&size);
+		grabOffsetX = clientPos.x - (size.width / 2);
+		grabOffsetY = clientPos.y - (size.height / 2);
+	}
+
+	thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseMoveEvent(thisWindow, PlatformEventType::MouseMove, pt.x, pt.y, grabOffsetX, grabOffsetY));
 #elif defined(LN_OS_MAC)
 	int x = 0;
 	int y = 0;

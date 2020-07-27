@@ -53,6 +53,17 @@ PointI AbstractWin32PlatformWindow::pointToScreen(const PointI& clientPoint)
     ::ClientToScreen(m_hWnd, &pt);
     return PointI(pt.x, pt.y);
 }
+
+void AbstractWin32PlatformWindow::grabCursor()
+{
+    LN_NOTIMPLEMENTED();
+}
+
+void AbstractWin32PlatformWindow::releaseCursor()
+{
+    LN_NOTIMPLEMENTED();
+}
+
 LRESULT AbstractWin32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)
 {
     *handled = false;

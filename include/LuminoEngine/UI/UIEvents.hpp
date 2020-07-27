@@ -182,6 +182,9 @@ public:
 	Point getPosition(UIElement* relativeTo) const;
 	//Point getPosition(RenderView* relativeTo) const;
 
+	float grabOffsetX = 0;
+	float grabOffsetY = 0;
+
 LN_CONSTRUCT_ACCESS:
 	UIMouseEventArgs();
 	virtual ~UIMouseEventArgs();

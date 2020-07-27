@@ -24,6 +24,8 @@ public:
 	virtual void getFramebufferSize(int* width, int* height) override;
 	virtual PointI pointFromScreen(const PointI& screenPoint) override;
 	virtual PointI pointToScreen(const PointI& clientPoint) override;
+	virtual void grabCursor() override;
+	virtual void releaseCursor() override;
 
 	GLFWwindow* glfwWindow() const { return m_glfwWindow; }
 

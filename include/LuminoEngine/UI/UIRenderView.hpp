@@ -37,7 +37,7 @@ protected:
     void init();
 
 private:
-    UIViewport* m_ownerViewport;
+    UIViewport* m_ownerViewport;    // TODO: obsolete. ベースクラスに追加した
     Ref<UIDomainProvidor> m_rootElement;
     Ref<UIRenderingContext> m_renderingContext;
 	//Ref<UIRenderingContext> m_debugRenderingContext;

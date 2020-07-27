@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Application.hpp>
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIContainerElement.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
@@ -262,6 +263,20 @@ void UIManager::releaseCapture(UIElement* element)
 	if (m_capturedElement == element) {
 		m_capturedElement = nullptr;
 	}
+}
+
+void UIManager::grabCursor(UIElement* element)
+{
+    if (UIFrameWindow* window = static_cast<UIFrameWindow*>(element->getFrameWindow())) {
+        window->platformWindow()->grabCursor();
+    }
+}
+
+void UIManager::releaseCursor(UIElement* element)
+{
+    if (UIFrameWindow* window = static_cast<UIFrameWindow*>(element->getFrameWindow())) {
+        window->platformWindow()->releaseCursor();
+    }
 }
 
 void UIManager::tryGetInputFocus(UIElement* element)

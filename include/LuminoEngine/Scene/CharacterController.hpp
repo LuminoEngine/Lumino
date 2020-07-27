@@ -73,22 +73,33 @@ private:
 	// 鎖の要領で、この範囲内でキャラクターが動いても、カメラは位置を更新しない。
 	float m_cameraRadius = 5.0f;
 
+	// Character の EyePoint からの、カメラ注視点のオフセット
+	Vector3 m_lookAtOffset = Vector3(0.25, 0, 0);
+
+
 	// キャラクター位置から前方向にどれだけ移動したところを注視点とするか
 	float m_frontFocusPointOffset = 1.0f;
 
 	// キャラクター及びカメラの目標注視点方向
-	Vector3 m_characterTargetFrontDirXZ;
+	//Vector3 m_characterTargetFrontDirXZ;
 
 	Vector3 m_characterTargetFrontCenterXZ;
 	
 	Vector3 m_cameraLookAt;
 
 
+	//// Z+ 方向を角度 0 とする XZ 平面 (Y軸角度。PI で、Z- 方向に配置。ワールド座標系)
+	//float m_theta = Math::PI;
+
+	//// (X軸角度)
+	//float m_phi = 0.0f;
+
+
+
+
 	Camera* m_lastCamera = nullptr;
 	Ref<EventConnection> m_renderViewEventConnection;
-
 	Vector2 m_lastMousePos;
-
 	bool m_resetCameraPosition = true;
 };
 

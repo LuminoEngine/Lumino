@@ -407,6 +407,8 @@ public:	// TODO: internal protected
     void focus();
 	void retainCapture();
 	void releaseCapture();
+	void grabCursor();
+	void releaseCursor();
 
 	// element を、この要素の Visual 子要素として追加する。
 	// Visual 子要素は次のワークフローに組み込まれる。

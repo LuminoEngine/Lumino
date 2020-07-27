@@ -11,6 +11,7 @@ class GraphicsContext;
 class UIEventArgs;
 class UIStyleContext;
 class UILayoutContext;
+class UIViewport;
 namespace detail {
 class RenderingManager;
 class FrameBufferCache;
@@ -36,6 +37,8 @@ public:
 	RenderView();
 	virtual ~RenderView();
 	void init();
+
+	UIViewport* viewport() const { return m_parentViewport; }
 
 	// World の描画などでは RenderView のインスタンスを持ち回り、描画してほしい人が Manager を ここに add していく。
 	void clearDrawElementListManagers();
@@ -76,6 +79,8 @@ LN_INTERNAL_ACCESS:
 
 private:
 	detail::RenderingManager* m_manager;
+	UIViewport* m_parentViewport = nullptr;
+
 
     // TODO: これ List じゃなくていい気がする、というか、List じゃないほうが安全
 	List<detail::DrawElementListCollector*> m_elementListManagers;
@@ -86,6 +91,8 @@ private:
     Size m_actualSize;
 
     Event<UIGeneralEventHandler> m_onUIEvent;
+
+	friend class UIViewport;
 };
 
 

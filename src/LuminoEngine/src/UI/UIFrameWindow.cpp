@@ -32,7 +32,7 @@ UIInputInjector::UIInputInjector(UIFrameWindow* owner)
 {
 }
 
-bool UIInputInjector::injectMouseMove(float clientX, float clientY)
+bool UIInputInjector::injectMouseMove(float clientX, float clientY, float grabOffsetX, float grabOffsetY)
 {
     m_mousePosition.set(clientX, clientY);
 
@@ -42,6 +42,8 @@ bool UIInputInjector::injectMouseMove(float clientX, float clientY)
     if (sender)
     {
         auto args = UIMouseEventArgs::create(sender, UIEvents::MouseMoveEvent, m_pressedButton, clientX, clientY, 0, m_modifierKeys, true);
+        args->grabOffsetX = grabOffsetX;
+        args->grabOffsetY = grabOffsetY;
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -52,6 +54,8 @@ bool UIInputInjector::injectMouseMove(float clientX, float clientY)
     if (sender)
     {
         auto args = UIMouseEventArgs::create(sender, UIEvents::MouseMoveEvent, m_pressedButton, clientX, clientY, 0, m_modifierKeys, true);
+        args->grabOffsetX = grabOffsetX;
+        args->grabOffsetY = grabOffsetY;
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -497,7 +501,7 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
     case PlatformEventType::MouseMove:
     {
         auto pt = m_platformWindow->pointFromScreen(PointI(e.mouseMove.screenX, e.mouseMove.screenY));
-        if (m_inputInjector->injectMouseMove(pt.x, pt.y)) return true;
+        if (m_inputInjector->injectMouseMove(pt.x, pt.y, e.mouseMove.grabOffsetX, e.mouseMove.grabOffsetY)) return true;
         break;
     }
     case PlatformEventType::MouseWheel:

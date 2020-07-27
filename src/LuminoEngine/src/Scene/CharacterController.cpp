@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/Input/InputController.hpp>
 #include <LuminoEngine/Scene/CharacterController.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
@@ -45,6 +46,8 @@ void CharacterController::onUpdate(float elapsedSeconds)
 		// この後の計算で、カメラ正面方向を使い、位置と注視点は再設定されるため、オフセットは気にしなくてよい。
 		camera->setPosition(character->position() - characterCurrentFront);
 		camera->lookAt(character->position());
+		//m_theta = Math::PI;
+		//m_phi = 0.0f;
 		//m_cameraLookAt = cameraCenter;
 		//m_characterTargetFrontDirXZ = Vector3::safeNormalize(Vector3(characterTargetFrontDir.x, 0, characterTargetFrontDir.z), Vector3::UnitZ);
 		m_resetCameraPosition = false;
@@ -55,31 +58,87 @@ void CharacterController::onUpdate(float elapsedSeconds)
 
 	const auto cameraCurrentFront = Vector3::transform(Vector3::UnitZ, camera->rotation());
 	const auto cameraCurrentFrontXZ = Vector3::safeNormalize(Vector3(cameraCurrentFront.x, 0, cameraCurrentFront.z), Vector3::UnitZ);
-	const auto cameraCurrentHorizontalDir = Vector3::cross(Vector3::UnitY, cameraCurrentFrontXZ);
-	const auto moveVector = (cameraCurrentHorizontalDir * m_inputState.turnVelocity) + (cameraCurrentFrontXZ * m_inputState.forwardVelocity);
+	const auto cameraCurrentRightDirXZ = Vector3::cross(Vector3::UnitY, cameraCurrentFrontXZ);
+	const auto moveVector = (cameraCurrentRightDirXZ * m_inputState.turnVelocity) + (cameraCurrentFrontXZ * m_inputState.forwardVelocity);
 	const auto moveOffset = moveVector * (m_walkVelocity * elapsedSeconds);
 
 
 	// TODO: 物理移動
 	character->setPosition(character->position() + moveOffset);
-	character->lookAt(character->position() + cameraCurrentFrontXZ);
 
 
 
 
+	// カメラの注視点を決める
 	const auto characterEyePos = character->position() + Vector3(0, m_height, 0);
-	const auto cameraFocusPos = characterEyePos;
+	const auto cameraLookAtPos =
+		characterEyePos +
+		cameraCurrentRightDirXZ * m_lookAtOffset.x +
+		Vector3(0, m_lookAtOffset.y, 0) +
+		cameraCurrentFrontXZ * m_lookAtOffset.z;
+
+
+
+	{
+
+		const auto cameraPos = camera->position();
+		const auto dir = Vector3::safeNormalize(cameraPos - cameraLookAtPos, Vector3::UnitZ);
+		const auto lengthXZ = Vector2(dir.x, dir.z).length();
+		float theta = std::atan2(dir.x, dir.z);		// Z+ 方向を角度 0 とする XZ 平面 (Y軸角度)
+		float phi = -std::atan2(dir.y, lengthXZ);	// X軸角度。-PI:真上から見下ろす ~ 0:水平 ~ PI:直下から見上げる
+
+
+		theta += m_inputState.cameraH * 0.01;
+		phi += m_inputState.cameraV * 0.01;
+
+
+
+		//const auto newDir = Vector3::transform(Vector3::UnitZ, Quaternion::makeFromYawPitchRoll(theta, phi, 0.0f));
+		const auto newDir = Vector3::transform(Vector3::UnitZ, Quaternion::makeFromEulerAngles(Vector3(phi, theta, 0), RotationOrder::XYZ));
+		const auto newPos = cameraLookAtPos + (newDir * m_cameraRadius);//Vector3::distance(cameraPos, cameraCenter);
+		camera->setPosition(newPos);
+	}
 
 
 
 
 
+	//camera->setPosition(cameraLookAtPos - cameraCurrentFrontXZ * m_cameraRadius);
+	camera->lookAt(cameraLookAtPos);
+
+
+	// キャラクターの向きを決める
+	if (!moveVector.isZero()) {
+		// 確定したカメラ姿勢から、キャラクターが向くべき方向を求める
+		const auto characterTargetFrontDir = Vector3::transform(Vector3::UnitZ, camera->rotation());
+		const auto characterTargetFrontDirXZ = Vector3::safeNormalize(Vector3(characterTargetFrontDir.x, 0, characterTargetFrontDir.z), Vector3::UnitZ);
+
+		const auto characterCurrentFrontDir = Vector3::transform(Vector3::UnitZ, character->rotation());
+		const auto characterCurrentFrontDirXZ = Vector3::safeNormalize(Vector3(characterCurrentFrontDir.x, 0, characterCurrentFrontDir.z), Vector3::UnitZ);
+
+		const float rot = Math::PI * (1.0f / m_turnTime) * elapsedSeconds;
+
+		if (std::acos(Vector3::dot(characterCurrentFrontDirXZ, characterTargetFrontDirXZ)) < rot) {
+			character->lookAt(character->position() + (characterCurrentFrontDirXZ));
+		}
+		else {
+
+
+			// .y の符号で、characterCurrentFrontDirXZ を characterTargetFrontDirXZ に向けるにはどちらに回転するのが最短なのかわかる。
+			// そのまま回転軸にもできる。
+			const auto cross = Vector3::cross(characterCurrentFrontDirXZ, characterTargetFrontDirXZ);
+			const auto newDir = Vector3::transform(characterCurrentFrontDirXZ, Quaternion::makeFromRotationAxis(cross, rot));
+
+
+			//const auto characterTargetFrontPos = pos + (characterTargetFrontDir * m_frontFocusPointOffset);
+			const auto characterTargetFrontPos = character->position() + (newDir);
+			character->lookAt(characterTargetFrontPos);
+		}
 
 
 
-
-	camera->setPosition(cameraFocusPos - cameraCurrentFrontXZ * m_cameraRadius);
-	camera->lookAt(cameraFocusPos);
+		//character->lookAt(character->position() + cameraCurrentFrontXZ);
+	}
 
 #if 0
 
@@ -265,7 +324,9 @@ void CharacterController::prepareViewCamera()
 			m_renderViewEventConnection->disconnect();
 		}
 
-		m_renderViewEventConnection = camera->renderView()->connectOnUIEvent(ln::bind(this, &CharacterController::handleUIEvent));
+		WorldRenderView* renderView = camera->renderView();
+		m_renderViewEventConnection = renderView->connectOnUIEvent(ln::bind(this, &CharacterController::handleUIEvent));
+		renderView->viewport()->grabCursor();
 
 		m_lastCamera = camera;
 	}
@@ -283,13 +344,18 @@ void CharacterController::handleUIEvent(UIEventArgs* e)
 {
 	if (e->type() == UIEvents::MouseMoveEvent) {
 		const auto* me = static_cast<UIMouseEventArgs*>(e);
-		const auto pos = me->getPosition();
-		const auto diff = pos - m_lastMousePos;
+		//const auto pos = me->getPosition();
+		//const auto diff = pos - m_lastMousePos;
 
-		m_inputState.cameraH = diff.x;
-		m_inputState.cameraV = -diff.y;
+		//std::cout << pos.x << "," << pos.y << std::endl;
+		//std::cout << me->grabOffsetX << "," << me->grabOffsetY << std::endl;
 
-		m_lastMousePos = pos;
+		//m_inputState.cameraH = diff.x;
+		//m_inputState.cameraV = -diff.y;
+		m_inputState.cameraH = me->grabOffsetX;
+		m_inputState.cameraV = -me->grabOffsetY;
+
+		//m_lastMousePos = pos;
 
 		e->handled = true;
 	}

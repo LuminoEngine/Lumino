@@ -633,6 +633,20 @@ void UIElement::releaseCapture()
 	m_manager->releaseCapture(this);
 }
 
+// NOTE: このあたりの grab/release はプロパティにしないの？
+// → get で現在のキャプチャされているかどうかを知ることができない。(OS によって厳しく制御されるため)
+//   なのでふるまいではなく状態として扱っても、その状態を取り合わせる仕組みが無い。
+//   プロパティとしてはちょっと不自然。
+void UIElement::grabCursor()
+{
+    m_manager->grabCursor(this);
+}
+
+void UIElement::releaseCursor()
+{
+    m_manager->releaseCursor(this);
+}
+
 // Note: 結局 WPF のように getVisualChildCount() と getVisualChild() をオーバーライドする方式はやめた。
 // 全ての Element は parent を持つ必要があるし、それの主な理由は Event の Bubble 実装のため。
 // なので、この parent は visual-parent でなければならない。
