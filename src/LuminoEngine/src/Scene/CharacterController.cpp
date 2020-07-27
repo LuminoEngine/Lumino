@@ -46,8 +46,8 @@ void CharacterController::onUpdate(float elapsedSeconds)
 		// この後の計算で、カメラ正面方向を使い、位置と注視点は再設定されるため、オフセットは気にしなくてよい。
 		camera->setPosition(character->position() - characterCurrentFront);
 		camera->lookAt(character->position());
-		//m_theta = Math::PI;
-		//m_phi = 0.0f;
+		m_theta = Math::PI;
+		m_phi = 0.0f;
 		//m_cameraLookAt = cameraCenter;
 		//m_characterTargetFrontDirXZ = Vector3::safeNormalize(Vector3(characterTargetFrontDir.x, 0, characterTargetFrontDir.z), Vector3::UnitZ);
 		m_resetCameraPosition = false;
@@ -63,13 +63,12 @@ void CharacterController::onUpdate(float elapsedSeconds)
 	const auto moveOffset = moveVector * (m_walkVelocity * elapsedSeconds);
 
 
+
 	// TODO: 物理移動
 	character->setPosition(character->position() + moveOffset);
 
 
-
-
-	// カメラの注視点を決める
+	// 移動後のキャラ位置をベースに、カメラの注視点を決める
 	const auto characterEyePos = character->position() + Vector3(0, m_height, 0);
 	const auto cameraLookAtPos =
 		characterEyePos +
@@ -78,7 +77,23 @@ void CharacterController::onUpdate(float elapsedSeconds)
 		cameraCurrentFrontXZ * m_lookAtOffset.z;
 
 
+#if 1
+	{
 
+
+		m_theta += m_inputState.cameraH * 0.01;
+		m_phi += m_inputState.cameraV * 0.01;
+
+
+
+		//const auto newDir = Vector3::transform(Vector3::UnitZ, Quaternion::makeFromYawPitchRoll(theta, phi, 0.0f));
+		const auto newDir = Vector3::transform(Vector3::UnitZ, Quaternion::makeFromEulerAngles(Vector3(m_phi, m_theta, 0), RotationOrder::XYZ));
+		const auto newPos = cameraLookAtPos + (newDir * m_cameraRadius);//Vector3::distance(cameraPos, cameraCenter);
+		camera->setPosition(newPos);
+	}
+
+#else	// 毎フレーム、現在位置から theta と phi を求める方式。この場合キャラ移動に併せて徐々に背面に近づいていくので、
+		// ジョイパッドで操作するようなときに自然に追従していくように動く。
 	{
 
 		const auto cameraPos = camera->position();
@@ -98,6 +113,8 @@ void CharacterController::onUpdate(float elapsedSeconds)
 		const auto newPos = cameraLookAtPos + (newDir * m_cameraRadius);//Vector3::distance(cameraPos, cameraCenter);
 		camera->setPosition(newPos);
 	}
+#endif
+
 
 
 
@@ -107,27 +124,31 @@ void CharacterController::onUpdate(float elapsedSeconds)
 	camera->lookAt(cameraLookAtPos);
 
 
-	// キャラクターの向きを決める
+	// 確定したカメラ向きから、キャラクターが向くべき方向を求める
 	if (!moveVector.isZero()) {
-		// 確定したカメラ姿勢から、キャラクターが向くべき方向を求める
 		const auto characterTargetFrontDir = Vector3::transform(Vector3::UnitZ, camera->rotation());
 		const auto characterTargetFrontDirXZ = Vector3::safeNormalize(Vector3(characterTargetFrontDir.x, 0, characterTargetFrontDir.z), Vector3::UnitZ);
 
 		const auto characterCurrentFrontDir = Vector3::transform(Vector3::UnitZ, character->rotation());
 		const auto characterCurrentFrontDirXZ = Vector3::safeNormalize(Vector3(characterCurrentFrontDir.x, 0, characterCurrentFrontDir.z), Vector3::UnitZ);
 
-		const float rot = Math::PI * (1.0f / m_turnTime) * elapsedSeconds;
+		const float rotDelta = Math::PI * (1.0f / m_turnTime) * elapsedSeconds;
 
-		if (std::acos(Vector3::dot(characterCurrentFrontDirXZ, characterTargetFrontDirXZ)) < rot) {
-			character->lookAt(character->position() + (characterCurrentFrontDirXZ));
+		const float rotDiff = std::acos(Vector3::dot(characterCurrentFrontDirXZ, characterTargetFrontDirXZ));
+		printf("rotDiff:%f, d:%f\n", rotDiff, Vector3::dot(characterCurrentFrontDirXZ, characterTargetFrontDirXZ));
+
+		if (rotDiff < rotDelta) {
+			character->lookAt(character->position() + (characterTargetFrontDirXZ));
+			printf("fixed\n");
 		}
 		else {
+			printf("rotationg\n");
 
 
 			// .y の符号で、characterCurrentFrontDirXZ を characterTargetFrontDirXZ に向けるにはどちらに回転するのが最短なのかわかる。
 			// そのまま回転軸にもできる。
 			const auto cross = Vector3::cross(characterCurrentFrontDirXZ, characterTargetFrontDirXZ);
-			const auto newDir = Vector3::transform(characterCurrentFrontDirXZ, Quaternion::makeFromRotationAxis(cross, rot));
+			const auto newDir = Vector3::transform(characterCurrentFrontDirXZ, Quaternion::makeFromRotationAxis(cross, rotDelta));
 
 
 			//const auto characterTargetFrontPos = pos + (characterTargetFrontDir * m_frontFocusPointOffset);
@@ -135,6 +156,7 @@ void CharacterController::onUpdate(float elapsedSeconds)
 			character->lookAt(characterTargetFrontPos);
 		}
 
+		character->lookAt(character->position() + (characterTargetFrontDirXZ));
 
 
 		//character->lookAt(character->position() + cameraCurrentFrontXZ);

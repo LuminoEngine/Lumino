@@ -88,11 +88,11 @@ private:
 	Vector3 m_cameraLookAt;
 
 
-	//// Z+ 方向を角度 0 とする XZ 平面 (Y軸角度。PI で、Z- 方向に配置。ワールド座標系)
-	//float m_theta = Math::PI;
+	// Z+ 方向を角度 0 とする XZ 平面 (Y軸角度。PI で、Z- 方向に配置。ワールド座標系)
+	float m_theta = Math::PI;
 
-	//// (X軸角度)
-	//float m_phi = 0.0f;
+	// (X軸角度)
+	float m_phi = 0.0f;
 
 
 
