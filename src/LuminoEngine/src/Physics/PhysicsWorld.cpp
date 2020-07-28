@@ -257,7 +257,7 @@ void PhysicsWorld::removePhysicsObject(PhysicsObject* physicsObject)
     if (LN_REQUIRE(physicsObject)) return;
     if (LN_REQUIRE(physicsObject->physicsWorld() == this)) return;
     m_physicsObjectList.remove(physicsObject);
-    removeObjectInternal(physicsObject);
+    physicsObject->onRemoveFromPhysicsWorld();
     physicsObject->setPhysicsWorld(nullptr);
 }
 
@@ -314,19 +314,19 @@ void PhysicsWorld::addObjectInternal(PhysicsObject* obj)
     }
 }
 
-void PhysicsWorld::removeObjectInternal(PhysicsObject* obj)
-{
-    switch (obj->physicsObjectType())
-    {
-    case PhysicsObjectType::RigidBody:
-        m_btWorld->addRigidBody(static_cast<RigidBody*>(obj)->body());
-        break;
-    default:
-        LN_UNREACHABLE();
-        break;
-    }
-}
-
+//void PhysicsWorld::removeObjectInternal(PhysicsObject* obj)
+//{
+//    switch (obj->physicsObjectType())
+//    {
+//    case PhysicsObjectType::RigidBody:
+//        m_btWorld->addRigidBody(static_cast<RigidBody*>(obj)->body());
+//        break;
+//    default:
+//        LN_UNREACHABLE();
+//        break;
+//    }
+//}
+//
 void PhysicsWorld::postBeginContact(PhysicsObject* self, PhysicsObject* other)
 {
     if (LN_REQUIRE(self)) return;

@@ -145,6 +145,13 @@ void TriggerBody::onAfterStepSimulation()
 	PhysicsObject::onAfterStepSimulation();
 }
 
+void TriggerBody::onRemoveFromPhysicsWorld()
+{
+	if (m_btWorldAdded) {
+		physicsWorld()->getBtWorld()->removeCollisionObject(m_btGhostObject);
+	}
+}
+
 void TriggerBody::createBtObject()
 {
 	deleteBtObject();
@@ -171,12 +178,12 @@ void TriggerBody::createBtObject()
 	m_btGhostObject->setWorldTransform(transform);
 
 	physicsWorld()->getBtWorld()->addCollisionObject(m_btGhostObject, m_group, m_groupMask);
+	m_btWorldAdded = true;
 }
 
 void TriggerBody::deleteBtObject()
 {
 	if (m_btGhostObject) {
-		physicsWorld()->getBtWorld()->removeCollisionObject(m_btGhostObject);
 		delete m_btGhostObject;
 		m_btGhostObject = nullptr;
 	}

@@ -41,6 +41,8 @@ protected:
     virtual void onBeforeStepSimulation();
     virtual void onAfterStepSimulation();
 
+    virtual void onRemoveFromPhysicsWorld() = 0;
+
 LN_CONSTRUCT_ACCESS:
     PhysicsObject(PhysicsObjectType type);
     virtual ~PhysicsObject();

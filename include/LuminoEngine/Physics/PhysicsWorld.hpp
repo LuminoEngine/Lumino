@@ -43,7 +43,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     void addObjectInternal(PhysicsObject* obj);
-    void removeObjectInternal(PhysicsObject* obj);
+    //void removeObjectInternal(PhysicsObject* obj);
 
     enum class ContactCommandType
     {
@@ -75,7 +75,7 @@ private:
 
 
 class SpringJoint
-    : public PhysicsObject
+    : public PhysicsObject  // TODO: Joint は　PhysicsObject　じゃない気がする
 {
 public:
     static Ref<SpringJoint> create();
@@ -104,6 +104,7 @@ protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onBeforeStepSimulation() override;
     virtual void onAfterStepSimulation() override;
+    virtual void onRemoveFromPhysicsWorld() override  { LN_NOTIMPLEMENTED(); }
 
 LN_CONSTRUCT_ACCESS:
     SpringJoint();

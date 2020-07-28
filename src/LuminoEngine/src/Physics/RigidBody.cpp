@@ -415,6 +415,11 @@ void RigidBody::onAfterStepSimulation()
     }
 }
 
+void RigidBody::onRemoveFromPhysicsWorld()
+{
+    physicsWorld()->getBtWorld()->addRigidBody(m_btRigidBody);
+}
+
 void RigidBody::createBtRigidBody()
 {
     btCollisionShape* shape = m_btShapeManager.getBtCollisionShape();

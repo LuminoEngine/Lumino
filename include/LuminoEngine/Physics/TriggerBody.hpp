@@ -31,6 +31,7 @@ public:
 protected:
     void onBeforeStepSimulation() override;
     void onAfterStepSimulation() override;
+    void onRemoveFromPhysicsWorld() override;
 
 LN_CONSTRUCT_ACCESS:
     TriggerBody();
@@ -62,6 +63,7 @@ private:
     Matrix m_transform;
 
     LocalGhostObject* m_btGhostObject = nullptr;
+    bool m_btWorldAdded = false;
 
     detail::BtShapeManager m_shapeManager;
 };
