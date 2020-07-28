@@ -22,6 +22,9 @@ class App_Experiment_CharacterController : public Application
 		auto shape1 = BoxCollisionShape::create(2, 2, 2);
 		auto body1 = TriggerBodyComponent::create();
 		body1->addCollisionShape(shape1);
+		body1->setOnCollisionEnter([](Collision* collision) {
+			printf("hit\n");
+		});
 		box->addComponent(body1);
 
 

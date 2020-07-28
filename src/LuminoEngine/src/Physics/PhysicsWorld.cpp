@@ -338,7 +338,7 @@ void PhysicsWorld::postEndContact(PhysicsObject* self, PhysicsObject* other)
 {
     if (LN_REQUIRE(self)) return;
     if (LN_REQUIRE(other)) return;
-    m_contactCommands.push_back({ ContactCommandType::Begin, self, other });
+    m_contactCommands.push_back({ ContactCommandType::End, self, other });
 }
 
 void PhysicsWorld::processContactCommands()

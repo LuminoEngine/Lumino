@@ -116,8 +116,9 @@ void TriggerBody::onBeforeStepSimulation()
 
 	if (!m_btGhostObject || (m_dirtyFlags & (DirtyFlags_InitialUpdate))) {
 		createBtObject();
-		m_dirtyFlags &= ~DirtyFlags_Shapes;	// createBtObject() の中でまとめて処理されるため、↓で処理する必要はない
-		m_dirtyFlags &= ~DirtyFlags_Group;	// createBtObject() の中でまとめて処理されるため、↓で処理する必要はない
+		m_dirtyFlags &= ~DirtyFlags_Shapes;		// createBtObject() の中でまとめて処理されるため、↓で処理する必要はない
+		m_dirtyFlags &= ~DirtyFlags_Group;		// createBtObject() の中でまとめて処理されるため、↓で処理する必要はない
+		m_dirtyFlags &= ~DirtyFlags_Transform;	// createBtObject() の中でまとめて処理されるため、↓で処理する必要はない
 	}
 
 	if (m_dirtyFlags & DirtyFlags_Shapes) {
@@ -164,6 +165,10 @@ void TriggerBody::createBtObject()
 
 	//m_btGhostObject->setWorldTransform(detail::BulletUtil::LNMatrixToBtTransform(mtmp));
 
+	// addCollisionObject() した瞬間に周囲のオブジェクトと衝突判定が行われるため、初期姿勢を addCollisionObject() の前に設定しておく必要がある。
+	btTransform transform;
+	transform.setFromOpenGLMatrix((btScalar*)&m_transform);
+	m_btGhostObject->setWorldTransform(transform);
 
 	physicsWorld()->getBtWorld()->addCollisionObject(m_btGhostObject, m_group, m_groupMask);
 }

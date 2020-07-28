@@ -131,14 +131,13 @@ public:
 
 
     /** CollisionEnter イベントの通知を受け取るコールバックを登録します。*/
-	void setCollisionEnter(Ref<CollisionEventHandler> handler);
+	void setOnCollisionEnter(Ref<CollisionEventHandler> handler);
 
     /** CollisionLeave イベントの通知を受け取るコールバックを登録します。*/
-	void setCollisionLeave(Ref<CollisionEventHandler> handler);
+	void setOnCollisionLeave(Ref<CollisionEventHandler> handler);
 
-    /** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
-    //LN_METHOD(Event)
-	Ref<EventConnection> connectOnCollisionStay(Ref<CollisionEventHandler> handler);
+    /** CollisionStay イベントの通知を受け取るコールバックを登録します。*/
+	void setOnCollisionStay(Ref<CollisionEventHandler> handler);
 
 LN_CONSTRUCT_ACCESS:
     TriggerBodyComponent();

@@ -196,19 +196,19 @@ void TriggerBodyComponent::onAfterStepSimulation()
 {
 }
 
-Ref<EventConnection> TriggerBodyComponent::connectOnCollisionEnter(Ref<CollisionEventHandler> handler)
+void TriggerBodyComponent::setOnCollisionEnter(Ref<CollisionEventHandler> handler)
 {
-    return m_onCollisionEnter.connect(handler);
+    m_onCollisionEnter.setPrimaryHandler(handler);
 }
 
-Ref<EventConnection> TriggerBodyComponent::connectOnCollisionLeave(Ref<CollisionEventHandler> handler)
+void TriggerBodyComponent::setOnCollisionLeave(Ref<CollisionEventHandler> handler)
 {
-    return m_onCollisionLeave.connect(handler);
+    m_onCollisionEnter.setPrimaryHandler(handler);
 }
 
-Ref<EventConnection> TriggerBodyComponent::connectOnCollisionStay(Ref<CollisionEventHandler> handler)
+void TriggerBodyComponent::setOnCollisionStay(Ref<CollisionEventHandler> handler)
 {
-    return m_onCollisionStay.connect(handler);
+    m_onCollisionEnter.setPrimaryHandler(handler);
 }
 
 void TriggerBodyComponent::onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact)
