@@ -44,17 +44,23 @@ void PhysicsObject::removeFromPhysicsWorld()
 
 void PhysicsObject::onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact)
 {
-	m_listener->onCollisionEnter(otherObject, contact);
+	if (m_listener) {
+		m_listener->onCollisionEnter(otherObject, contact);
+	}
 }
 
 void PhysicsObject::onCollisionLeave(PhysicsObject* otherObject, ContactPoint* contact)
 {
-	m_listener->onCollisionLeave(otherObject, contact);
+	if (m_listener) {
+		m_listener->onCollisionLeave(otherObject, contact);
+	}
 }
 
 void PhysicsObject::onCollisionStay(PhysicsObject* otherObject, ContactPoint* contact)
 {
-	m_listener->onCollisionStay(otherObject, contact);
+	if (m_listener) {
+		m_listener->onCollisionStay(otherObject, contact);
+	}
 }
 
 void PhysicsObject::onBeforeStepSimulation()
@@ -69,6 +75,18 @@ void PhysicsObject::onAfterStepSimulation()
 	if (m_listener) {
 		m_listener->onAfterStepSimulation();
 	}
+}
+
+void PhysicsObject::beginContact(PhysicsObject* otherObject)
+{
+	m_contactBodies.add(otherObject);
+	onCollisionEnter(otherObject, nullptr);
+}
+
+void PhysicsObject::endContact(PhysicsObject* otherObject)
+{
+	if (LN_REQUIRE(m_contactBodies.remove(otherObject))) return;
+	onCollisionLeave(otherObject, nullptr);
 }
 
 } // namespace ln

@@ -64,7 +64,7 @@ private:
 
 	float m_sneakVelocity = 1.0f;
 	float m_walkVelocity = 5.0f;
-	float m_turnTime = 0.25f;	// 何秒で振り向きを完了するか
+	float m_turnTime = 0.5f;	// 何秒で振り向きを完了するか
 
 	// https://docs.unity3d.com/ja/2019.4/Manual/class-CharacterController.html
 	float m_height = 0.5f;//2.0f;

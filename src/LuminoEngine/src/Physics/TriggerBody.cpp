@@ -21,9 +21,6 @@ public:
 		: m_owner(owner)
 	{}
 
-	virtual ~LocalGhostObject()
-	{}
-
 	virtual void addOverlappingObjectInternal(btBroadphaseProxy* otherProxy, btBroadphaseProxy* thisProxy = 0) override
 	{
 		btCollisionObject* otherObject = (btCollisionObject*)otherProxy->m_clientObject;
@@ -31,15 +28,10 @@ public:
 		int index = m_overlappingObjects.findLinearSearch(otherObject);
 		if (index == m_overlappingObjects.size())
 		{
-			//not found
 			m_overlappingObjects.push_back(otherObject);
 
-			// 通知
-			//if (m_owner->isTrigger() && otherObject->getUserPointer() != nullptr)
-			//{
-			//	m_owner->m_contactObjects.add(reinterpret_cast<PhysicsObjectComponent*>(otherObject->getUserPointer()));
-			//	m_owner->onTriggerEnter(reinterpret_cast<PhysicsObjectComponent*>(otherObject->getUserPointer()));
-			//}
+			auto* world = m_owner->physicsWorld();
+			world->postBeginContact(m_owner, static_cast<PhysicsObject*>(otherObject->getUserPointer()));
 		}
 	}
 
@@ -53,12 +45,8 @@ public:
 			m_overlappingObjects[index] = m_overlappingObjects[m_overlappingObjects.size() - 1];
 			m_overlappingObjects.pop_back();
 
-			// 通知
-			//if (m_owner->isTrigger() && otherObject->getUserPointer() != nullptr)
-			//{
-			//	m_owner->m_contactObjects.remove(reinterpret_cast<PhysicsObjectComponent*>(otherObject->getUserPointer()));
-			//	m_owner->onTriggerLeave(reinterpret_cast<PhysicsObjectComponent*>(otherObject->getUserPointer()));
-			//}
+			auto* world = m_owner->physicsWorld();
+			world->postEndContact(m_owner, static_cast<PhysicsObject*>(otherObject->getUserPointer()));
 		}
 	}
 };

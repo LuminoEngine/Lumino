@@ -31,6 +31,10 @@ public: // TODO: internal
     void stepSimulation(float elapsedSeconds);
     void renderDebug(RenderingContext* context);
 
+    void postBeginContact(PhysicsObject* self, PhysicsObject* other);
+    void postEndContact(PhysicsObject* self, PhysicsObject* other);
+    void processContactCommands();
+
 LN_CONSTRUCT_ACCESS:
     PhysicsWorld();
 	virtual ~PhysicsWorld();
@@ -40,6 +44,19 @@ LN_CONSTRUCT_ACCESS:
 private:
     void addObjectInternal(PhysicsObject* obj);
     void removeObjectInternal(PhysicsObject* obj);
+
+    enum class ContactCommandType
+    {
+        Begin,
+        End,
+    };
+
+    struct ContactCommand
+    {
+        ContactCommandType type;
+        Ref<PhysicsObject> self;
+        Ref<PhysicsObject> other;
+    };
 
     btDefaultCollisionConfiguration*		m_btCollisionConfig;
     btCollisionDispatcher*					m_btCollisionDispatcher;
@@ -53,6 +70,7 @@ private:
     std::unique_ptr<detail::PhysicsDebugRenderer3D> m_debugRenderer;
 
     List<Ref<PhysicsObject>> m_physicsObjectList;
+    std::vector<ContactCommand> m_contactCommands;
 };
 
 

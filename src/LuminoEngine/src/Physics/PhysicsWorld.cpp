@@ -284,6 +284,8 @@ void PhysicsWorld::stepSimulation(float elapsedSeconds)
     // 遅れるほど計算回数が増えるので、最終的に破綻するかもしれない。
     //m_btWorld->stepSimulation(m_elapsedTime, 1 + (int)(m_elapsedTime / internalUnit), internalUnit);
 
+    processContactCommands();
+
     for (auto& obj : m_physicsObjectList) {
         obj->onAfterStepSimulation();
     }
@@ -325,8 +327,46 @@ void PhysicsWorld::removeObjectInternal(PhysicsObject* obj)
     }
 }
 
+void PhysicsWorld::postBeginContact(PhysicsObject* self, PhysicsObject* other)
+{
+    if (LN_REQUIRE(self)) return;
+    if (LN_REQUIRE(other)) return;
+    m_contactCommands.push_back({ ContactCommandType::Begin, self, other });
+}
 
+void PhysicsWorld::postEndContact(PhysicsObject* self, PhysicsObject* other)
+{
+    if (LN_REQUIRE(self)) return;
+    if (LN_REQUIRE(other)) return;
+    m_contactCommands.push_back({ ContactCommandType::Begin, self, other });
+}
 
+void PhysicsWorld::processContactCommands()
+{
+    if (!m_contactCommands.empty()) {
+        for (const auto& command : m_contactCommands) {
+            switch (command.type)
+            {
+            case ContactCommandType::Begin:
+                command.self->beginContact(command.other);
+                break;
+            case ContactCommandType::End:
+                command.self->endContact(command.other);
+                break;
+            default:
+                LN_UNREACHABLE();
+                break;
+            }
+        }
+        m_contactCommands.clear();
+    }
+
+    for (auto& obj : m_physicsObjectList) {
+        for (auto& other : obj->m_contactBodies) {
+            obj->onCollisionStay(other, nullptr);
+        }
+    }
+}
 
 //==============================================================================
 // SpringJoint
