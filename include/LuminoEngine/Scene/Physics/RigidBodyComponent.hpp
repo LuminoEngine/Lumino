@@ -130,13 +130,11 @@ public:
 
 
 
-    /** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
-    //LN_METHOD(Event)
-	Ref<EventConnection> connectOnCollisionEnter(Ref<CollisionEventHandler> handler);
+    /** CollisionEnter イベントの通知を受け取るコールバックを登録します。*/
+	void setCollisionEnter(Ref<CollisionEventHandler> handler);
 
-    /** onTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
-    //LN_METHOD(Event)
-	Ref<EventConnection> connectOnCollisionLeave(Ref<CollisionEventHandler> handler);
+    /** CollisionLeave イベントの通知を受け取るコールバックを登録します。*/
+	void setCollisionLeave(Ref<CollisionEventHandler> handler);
 
     /** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
