@@ -2,6 +2,7 @@
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoEngine/UI/Controls/UIButton.hpp>
+#include <LuminoEngine/UI/Controls/UICheckBox.hpp>
 #include <LuminoEngine/UI/Controls/UIScrollView.hpp>
 #include <LuminoEngine/UI/UIItemsModel.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>
@@ -60,26 +61,29 @@ public:
 			button1->setText(u"Button");
 			layout1->addChild(button1);
 		}
-		// RadioButton
-		{
-			auto layout1 = makeObject<UIStackLayout>();
-			layout1->setMargin(margin);
-			mainLauout->addChild(layout1);
-
-			layout1->addChild(makeObject<UITextBlock>(u"RadioButton"));
-
-			layout1->addChild(makeObject<UIButton>(u"dummy"));
-		}
-		//// CheckBox
+		//// RadioButton
 		//{
 		//	auto layout1 = makeObject<UIStackLayout>();
 		//	layout1->setMargin(margin);
 		//	mainLauout->addChild(layout1);
 
-		//	layout1->addChild(makeObject<UITextBlock>(u"CheckBox"));
+		//	layout1->addChild(makeObject<UITextBlock>(u"RadioButton"));
 
 		//	layout1->addChild(makeObject<UIButton>(u"dummy"));
 		//}
+		// CheckBox
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+
+			layout1->addChild(makeObject<UITextBlock>(u"CheckBox"));
+
+			auto checkbox1 = makeObject<UICheckBox>();
+			checkbox1->setSize(100, 30);
+			checkbox1->setBackgroundColor(Color::Green);
+			layout1->addChild(checkbox1);
+		}
 		//// ComboBox
 		//{
 		//	auto layout1 = makeObject<UIStackLayout>();
