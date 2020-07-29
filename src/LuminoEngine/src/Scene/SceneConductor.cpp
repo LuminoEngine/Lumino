@@ -86,40 +86,46 @@ float SceneConductor::transitionEffectVague() const
 	return m_transitionEffect->vague();
 }
 
-void SceneConductor::gotoScene(Level* scene)
+void SceneConductor::gotoScene(Level* scene, bool withEffect)
 {
 	if (LN_REQUIRE(scene != nullptr)) return;
-	//if (LN_REQUIRE(!isTransitionEffectRunning())) return;
 	EventCommsnd c;
 	c.type = EventType::Goto;
 	c.scene = scene;
+	c.withEffect = withEffect;
 	m_eventQueue.push_back(c);
 
-	attemptFadeOutTransition();
+	if (withEffect) {
+		attemptFadeOutTransition();
+	}
 }
 
-void SceneConductor::callScene(Level* scene)
+void SceneConductor::callScene(Level* scene, bool withEffect)
 {
 	if (LN_REQUIRE(scene != nullptr)) return;
-	//if (LN_REQUIRE(!isTransitionEffectRunning())) return;
 	EventCommsnd c;
 	c.type = EventType::Call;
 	c.scene = scene;
+	c.withEffect = withEffect;
 	m_eventQueue.push_back(c);
 
-	attemptFadeOutTransition();
+	if (withEffect) {
+		attemptFadeOutTransition();
+	}
 }
 
-void SceneConductor::returnScene()
+void SceneConductor::returnScene(bool withEffect)
 {
 	if (LN_REQUIRE(m_activeScene != nullptr)) return;
-	//if (LN_REQUIRE(!isTransitionEffectRunning())) return;
 	EventCommsnd c;
 	c.type = EventType::Return;
 	c.scene = nullptr;
+	c.withEffect = withEffect;
 	m_eventQueue.push_back(c);
 
-	attemptFadeOutTransition();
+	if (withEffect) {
+		attemptFadeOutTransition();
+	}
 }
 
 Level* SceneConductor::activeScene() const
@@ -146,49 +152,50 @@ void SceneConductor::executeCommands()
 		switch (cmd.type)
 		{
 			/////////////// 直接遷移
-		case EventType::Goto:
-		{
-			// 現在の全てのシーンを解放 (onTerminate() 呼び出し)
-			releaseAndTerminateAllRunningScenes();
-
-			m_activeScene = cmd.scene;
-			if (m_activeScene != nullptr)
+			case EventType::Goto:
 			{
+				// 現在の全てのシーンを解放 (onTerminate() 呼び出し)
+				releaseAndTerminateAllRunningScenes();
+
+				m_activeScene = cmd.scene;
+				if (m_activeScene != nullptr)
+				{
+					m_activeScene->onStart();
+					m_activeScene->onActivated();
+				}
+
+				if (cmd.withEffect) {
+					attemptFadeInTransition();
+				}
+				break;
+			}
+			/////////////// 呼び出し
+			case EventType::Call:
+			{
+				m_sceneStack.push_back(m_activeScene);
+				m_activeScene = cmd.scene;
 				m_activeScene->onStart();
 				m_activeScene->onActivated();
-			}
 
-			if (fadein) {
-				attemptFadeInTransition();
+				if (cmd.withEffect) {
+					attemptFadeInTransition();
+				}
+				break;
 			}
-			break;
-		}
-		/////////////// 呼び出し
-		case EventType::Call:
-		{
-			m_sceneStack.push(m_activeScene);
-			m_activeScene = cmd.scene;
-			m_activeScene->onStart();
-			m_activeScene->onActivated();
+			/////////////// 呼び出し元へ戻る
+			case EventType::Return:
+			{
+				Ref<Level> oldScene = m_activeScene;
+				m_activeScene = m_sceneStack.back();
+				m_sceneStack.pop_back();
+				oldScene->onDeactivated();
+				oldScene->onClosed();
 
-			if (fadein) {
-				attemptFadeInTransition();
+				if (cmd.withEffect) {
+					attemptFadeInTransition();
+				}
+				break;
 			}
-			break;
-		}
-		/////////////// 呼び出し元へ戻る
-		case EventType::Return:
-		{
-			Ref<Level> oldScene = m_activeScene;
-			m_activeScene = m_sceneStack.top();
-			oldScene->onDeactivated();
-			oldScene->onClosed();
-
-			if (fadein) {
-				attemptFadeInTransition();
-			}
-			break;
-		}
 		}
 
 		m_eventQueue.pop_front();
@@ -203,10 +210,92 @@ void SceneConductor::releaseAndTerminateAllRunningScenes()
 		m_activeScene = nullptr;
 	}
 
-	while (!m_sceneStack.empty())
-	{
-		m_sceneStack.top()->onClosed();
-		m_sceneStack.pop();
+	for (int i = m_sceneStack.size() - 1; i >= 0; i--) {
+		m_sceneStack[i]->onClosed();
+	}
+	m_sceneStack.clear();
+}
+
+bool SceneConductor::traverse(detail::IWorldObjectVisitor* visitor) const
+{
+	for (const auto& level : m_sceneStack) {
+		if (!level->traverse(visitor)) {
+			return false;
+		}
+	}
+
+	if (m_activeScene) {
+		if (!m_activeScene->traverse(visitor)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void SceneConductor::updateObjectsWorldMatrix() const
+{
+	for (const auto& level : m_sceneStack) {
+		level->updateObjectsWorldMatrix();
+	}
+
+	if (m_activeScene) {
+		m_activeScene->updateObjectsWorldMatrix();
+	}
+}
+
+void SceneConductor::preUpdate(float elapsedSeconds)
+{
+	for (const auto& level : m_sceneStack) {
+		level->onPreUpdate(elapsedSeconds);
+	}
+
+	if (m_activeScene) {
+		m_activeScene->onPreUpdate(elapsedSeconds);
+	}
+}
+
+void SceneConductor::update(float elapsedSeconds)
+{
+	for (const auto& level : m_sceneStack) {
+		level->update(elapsedSeconds);
+	}
+
+	if (m_activeScene) {
+		m_activeScene->update(elapsedSeconds);
+	}
+}
+
+void SceneConductor::postUpdate(float elapsedSeconds)
+{
+	for (const auto& level : m_sceneStack) {
+		level->onPostUpdate(elapsedSeconds);
+	}
+
+	if (m_activeScene) {
+		m_activeScene->onPostUpdate(elapsedSeconds);
+	}
+}
+
+void SceneConductor::collectRenderObjects(World* world, RenderingContext* context)
+{
+	for (const auto& level : m_sceneStack) {
+		level->collectRenderObjects(world, context);
+	}
+
+	if (m_activeScene) {
+		m_activeScene->collectRenderObjects(world, context);
+	}
+}
+
+void SceneConductor::renderGizmos(RenderingContext* context)
+{
+	for (const auto& level : m_sceneStack) {
+		level->renderGizmos(context);
+	}
+
+	if (m_activeScene) {
+		m_activeScene->renderGizmos(context);
 	}
 }
 

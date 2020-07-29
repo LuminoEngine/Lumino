@@ -84,10 +84,12 @@ public:	// TODO: Editor integration
 	void addObject(WorldObject* obj);
 	void removeObject(WorldObject* obj);
     WorldObject* findObjectByComponentType(const TypeInfo* type) const;
-	void updateObjectsWorldMatrix();
+	void updateObjectsWorldMatrix() const;
     virtual void onPreUpdate(float elapsedSeconds);
     void collectRenderObjects(World* world, RenderingContext* context);
     void renderGizmos(RenderingContext* context);
+	bool traverse(detail::IWorldObjectVisitor* visitor) const;
+	//void updateObjectsWorldMatrix() const;
 
 protected:
 	void serialize2(Serializer2& ar) override;

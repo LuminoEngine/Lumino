@@ -255,7 +255,7 @@ WorldObject* Level::findObjectByComponentType(const TypeInfo* type) const
     return visitor.result;
 }
 
-void Level::updateObjectsWorldMatrix()
+void Level::updateObjectsWorldMatrix() const
 {
     for (auto& obj : m_rootWorldObjectList)
     {
@@ -308,6 +308,16 @@ void Level::renderGizmos(RenderingContext* context)
             c->renderGizmo(context);
         }
     }
+}
+
+bool Level::traverse(detail::IWorldObjectVisitor* visitor) const
+{
+    for (auto& obj : m_rootWorldObjectList) {
+        if (!obj->traverse(visitor)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void Level::serialize2(Serializer2& ar)

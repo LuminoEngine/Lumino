@@ -145,20 +145,20 @@ void World::addScene(Level* scene)
 	scene->m_initialUpdate = true;
 }
 
-void World::gotoScene(Level* scene)
-{
-    m_sceneConductor->gotoScene(scene);
-}
-
-void World::callScene(Level* scene)
-{
-    m_sceneConductor->callScene(scene);
-}
-
-void World::returnScene()
-{
-    m_sceneConductor->returnScene();
-}
+//void World::gotoScene(Level* scene)
+//{
+//    m_sceneConductor->gotoScene(scene);
+//}
+//
+//void World::callScene(Level* scene)
+//{
+//    m_sceneConductor->callScene(scene);
+//}
+//
+//void World::returnScene()
+//{
+//    m_sceneConductor->returnScene();
+//}
 
 //Level* World::activeScene() const
 //{
@@ -174,12 +174,9 @@ void World::traverse(detail::IWorldObjectVisitor* visitor) const
             }
         }
     }
-    if (auto* scene = m_sceneConductor->activeScene()) {
-        for (auto& obj : scene->m_rootWorldObjectList) {
-            if (!obj->traverse(visitor)) {
-                return;
-            }
-        }
+
+    if (m_sceneConductor) {
+        m_sceneConductor->traverse(visitor);
     }
 }
 
@@ -236,8 +233,8 @@ void World::updateObjectsWorldMatrix()
         scene->updateObjectsWorldMatrix();
     }
 
-    if (auto* scene = m_sceneConductor->activeScene()) {
-        scene->updateObjectsWorldMatrix();
+    if (m_sceneConductor) {
+        m_sceneConductor->updateObjectsWorldMatrix();
     }
 }
 
@@ -267,9 +264,11 @@ void World::onPreUpdate(float elapsedSeconds)
         level->onPreUpdate(elapsedSeconds);
         level->mergeToRenderParams(&m_combinedSceneGlobalRenderParams);
     }
-    if (auto* level = m_sceneConductor->activeScene()) {
-        level->onPreUpdate(elapsedSeconds);
-        level->mergeToRenderParams(&m_combinedSceneGlobalRenderParams);
+    if (m_sceneConductor) {
+        m_sceneConductor->preUpdate(elapsedSeconds);
+        if (auto* level = m_sceneConductor->activeScene()) {
+            level->mergeToRenderParams(&m_combinedSceneGlobalRenderParams);
+        }
     }
 }
 
@@ -293,8 +292,8 @@ void World::onUpdate(float elapsedSeconds)
     for (auto& scene : m_sceneList) {
         scene->update(elapsedSeconds);
     }
-    if (auto* scene = m_sceneConductor->activeScene()) {
-        scene->update(elapsedSeconds);
+    if (m_sceneConductor) {
+        m_sceneConductor->update(elapsedSeconds);
     }
 }
 
@@ -308,8 +307,8 @@ void World::onPostUpdate(float elapsedSeconds)
     for (auto& scene : m_sceneList) {
         scene->onPostUpdate(elapsedSeconds);
     }
-    if (auto* scene = m_sceneConductor->activeScene()) {
-        scene->onPostUpdate(elapsedSeconds);
+    if (m_sceneConductor) {
+        m_sceneConductor->postUpdate(elapsedSeconds);
     }
 }
 
@@ -345,8 +344,8 @@ void World::prepareRender(const WorldRenderView* renderView)
     for (auto& scene : m_sceneList) {
         scene->collectRenderObjects(this, m_renderingContext);
     }
-    if (auto* scene = m_sceneConductor->activeScene()) {
-        scene->collectRenderObjects(this, m_renderingContext);
+    if (m_sceneConductor) {
+        m_sceneConductor->collectRenderObjects(this, m_renderingContext);
     }
 
     m_renderingContext->collectPostEffect(renderView->finishingProcess());
@@ -380,8 +379,8 @@ void World::renderGizmos(RenderingContext* context)
     for (auto& scene : m_sceneList) {
         scene->renderGizmos(context);
     }
-    if (auto* scene = m_sceneConductor->activeScene()) {
-        scene->renderGizmos(context);
+    if (m_sceneConductor) {
+        m_sceneConductor->renderGizmos(context);
     }
 }
 

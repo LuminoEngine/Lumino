@@ -75,9 +75,9 @@ public:
 	void addScene(Level* scene);
 
 
-    void gotoScene(Level* scene);
-    void callScene(Level* scene);
-    void returnScene();
+    //void gotoScene(Level* scene);
+    //void callScene(Level* scene);
+    //void returnScene();
     //Level* activeScene() const;
 
     void traverse(detail::IWorldObjectVisitor* visitor) const;

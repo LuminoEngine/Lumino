@@ -73,7 +73,7 @@ class App : public Application
 	 //   Engine::renderView()->addPostEffect(transitionPostEffect);
 		//g_TransitionPostEffect = transitionPostEffect;
 
-		Engine::world()->gotoScene(makeObject<TitleScene>());
+		Scene::gotoLevel(makeObject<TitleScene>());
 	}
 
 	void onUpdate() override

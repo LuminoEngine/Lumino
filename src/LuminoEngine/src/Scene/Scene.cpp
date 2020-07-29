@@ -29,19 +29,19 @@ namespace ln {
 //==============================================================================
 // Scene
 
-void Scene::gotoLevel(Level* level)
+void Scene::gotoLevel(Level* level, bool withEffect)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->gotoScene(level);
+    detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->gotoScene(level, withEffect);
 }
 
-void Scene::callLevel(Level* level)
+void Scene::callLevel(Level* level, bool withEffect)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->callScene(level);
+    detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->callScene(level, withEffect);
 }
 
-void Scene::returnLevel()
+void Scene::returnLevel(bool withEffect)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->returnScene();
+    detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->returnScene(withEffect);
 }
 
 Level* Scene::activeLevel()

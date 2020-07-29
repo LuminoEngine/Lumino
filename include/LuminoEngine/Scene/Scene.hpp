@@ -24,11 +24,11 @@ class Scene
 public:
 	/** 指定したレベルへ遷移します。既存の全てのレベルは非アクティブ化または削除されます。 */
 	LN_METHOD()
-	static void gotoLevel(Level* level);
+	static void gotoLevel(Level* level, bool withEffect = true);
 
-	static void callLevel(Level* level);
+	static void callLevel(Level* level, bool withEffect = true);
 
-	static void returnLevel();
+	static void returnLevel(bool withEffect = true);
 
 	/** 現在のアクティブなレベルを取得します。 */
 	LN_METHOD()
