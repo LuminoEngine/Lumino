@@ -222,7 +222,7 @@ protected:
     virtual void onRender(RenderingContext* context);
 
 
-	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
+	bool traverseRefrection(ReflectionObjectVisitor* visitor) override;
 
 
 	void serialize2(Serializer2& ar) override;
@@ -280,7 +280,7 @@ public:
 
 protected:
 	LN_SERIALIZE_CLASS_VERSION(1);
-	void serialize(Archive& ar);
+	void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	WorldObjectAsset();

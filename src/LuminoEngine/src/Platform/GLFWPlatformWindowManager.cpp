@@ -468,7 +468,7 @@ void GLFWPlatformWindow::window_mousePos_callback(GLFWwindow* window, double xpo
 	}
 
 #if defined(LN_EMSCRIPTEN)
-	thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseMoveEvent(thisWindow, PlatformEventType::MouseMove, (short)xpos, (short)ypos));
+	thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseMoveEvent(thisWindow, PlatformEventType::MouseMove, (short)xpos, (short)ypos, 0, 0));
 #elif defined(LN_OS_WIN32)
 	POINT pt;
 	::GetCursorPos(&pt);
@@ -487,7 +487,7 @@ void GLFWPlatformWindow::window_mousePos_callback(GLFWwindow* window, double xpo
 	int x = 0;
 	int y = 0;
 	Cocoa_getScreenMousePosition(&x, &y);
-	thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseMoveEvent(thisWindow, PlatformEventType::MouseMove, x, y));
+	thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseMoveEvent(thisWindow, PlatformEventType::MouseMove, x, y, 0, 0));
 #else
 	LN_NOTIMPLEMENTED();
 #endif

@@ -16,10 +16,19 @@
 
 namespace ln {
 
+#ifndef ERANGE
 #define EINVAL          22
+#endif
+
+#ifndef ERANGE
 #define ERANGE          34
+#endif
+
 //#define EILSEQ          42
+#ifndef STRUNCATE
 #define STRUNCATE       80
+#endif
+
 #define _TRUNCATE ((size_t)-1)
 
 typedef int errno_t;

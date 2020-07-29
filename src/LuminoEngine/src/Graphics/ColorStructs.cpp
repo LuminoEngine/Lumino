@@ -367,15 +367,15 @@ Color HSVColor::toColor() const
         { 3, 0, 1 },
     };
 
-    const float hue01 = Fraction(h / 360.0);
-    const float hueF = hue01 * 6.0;
+    const float hue01 = Fraction(h / 360.0f);
+    const float hueF = hue01 * 6.0f;
     const int hueI = static_cast<int>(hueF);
     const float fr = hueF - hueI;
     const float vals[4] =
     {
-        v * (1.0 - s),
-        v * (1.0 - s * fr),
-        v * (1.0 - s * (1.0 - fr)),
+        v * (1.0f - s),
+        v * (1.0f - s * fr),
+        v * (1.0f - s * (1.0f - fr)),
         v
     };
 

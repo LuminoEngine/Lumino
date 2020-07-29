@@ -49,7 +49,7 @@ public:
     //bool m_mainVisualComponent = false; // TODO: flags
 
 private:
-    virtual void render(RenderingContext* context);
+    void render(RenderingContext* context) override;
     void renderGizmo(RenderingContext* context);
 
     friend class Level;

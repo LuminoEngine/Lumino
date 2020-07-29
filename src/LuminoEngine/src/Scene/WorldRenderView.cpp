@@ -418,7 +418,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 if (m_imageEffectRenderer) {
                     m_imageEffectRenderer->applyInScenePostEffects(renderingContext->imageEffects());
 
-                    RenderTargetTexture* actualInput = (m_hdrRenderTarget) ? m_hdrRenderTarget : renderTarget;
+                    RenderTargetTexture* actualInput = (m_hdrRenderTarget) ? m_hdrRenderTarget.get() : renderTarget;
                     m_imageEffectRenderer->render(renderingContext, actualInput, renderTarget);
                 }
 
@@ -427,7 +427,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         }
 
         assert(elementListManagers().size() == 1);
-        RenderTargetTexture* actualTarget = (m_hdrRenderTarget) ? m_hdrRenderTarget : renderTarget;
+        RenderTargetTexture* actualTarget = (m_hdrRenderTarget) ? m_hdrRenderTarget.get() : renderTarget;
 		m_sceneRenderingPipeline->render(graphicsContext, actualTarget, clearInfo, &camera, elementListManagers().front(), &sceneGlobalRenderParams);
         
 		//graphicsContext->resetState();
