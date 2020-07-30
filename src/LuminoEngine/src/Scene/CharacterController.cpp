@@ -28,6 +28,22 @@ bool CharacterController::init()
     return true;
 }
 
+void CharacterController::retainCursorGrab()
+{
+	if (Camera* camera = viewCamera()) {
+		WorldRenderView* renderView = camera->renderView();
+		renderView->viewport()->grabCursor();
+	}
+}
+
+void CharacterController::releaseCursorGrab()
+{
+	if (Camera* camera = viewCamera()) {
+		WorldRenderView* renderView = camera->renderView();
+		renderView->viewport()->releaseCursor();
+	}
+}
+
 void CharacterController::onUpdate(float elapsedSeconds)
 {
 	prepareViewCamera();

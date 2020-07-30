@@ -49,6 +49,7 @@ LN_OBJECT_IMPLEMENT(Level, AssetObject) {}
 Level::Level()
     : m_ownerWorld(nullptr)
 	, m_rootWorldObjectList(makeList<Ref<WorldObject>>())
+    , m_updateMode(LevelUpdateMode::PauseWhenInactive)
 	, m_initialUpdate(true)
 {
 
@@ -88,19 +89,21 @@ void Level::removeAllSubLevels()
     manager->removeAllSubLevels();
 }
 
+// Note: このあたりの命名規則は Tkool からとっている。
+
 void Level::onStart()
 {
 }
 
-void Level::onClosed()
+void Level::onStop()
 {
 }
 
-void Level::onActivated()
+void Level::onResume()
 {
 }
 
-void Level::onDeactivated()
+void Level::onPause()
 {
 }
 
@@ -367,19 +370,16 @@ void Level::SubLevelManager::executeCommands()
                 case CommandType::AddSubLevel: {
                     m_subLevels.add(command.level);
                     command.level->onStart();
-                    command.level->onActivated();
                     break;
                 }
                 case CommandType::RemoveSubLevel: {
-                    command.level->onDeactivated();
-                    command.level->onClosed();
+                    command.level->onStop();
                     m_subLevels.remove(command.level);
                     break;
                 }
                 case CommandType::RemoveAllSubLevels: {
                     for (const auto& level : m_subLevels) {
-                        command.level->onDeactivated();
-                        command.level->onClosed();
+                        command.level->onStop();
                     }
                     m_subLevels.clear();
                     break;

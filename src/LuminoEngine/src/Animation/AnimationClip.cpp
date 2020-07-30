@@ -1,10 +1,13 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Animation/AnimationCurve.hpp>
 #include <LuminoEngine/Animation/AnimationTrack.hpp>
 #include <LuminoEngine/Animation/AnimationClip.hpp>
+#include "../Asset/AssetManager.hpp"
 #include "AnimationManager.hpp"
 #include "VmdLoader.hpp"
+#include "BvhImporter.hpp"
 
 namespace ln {
 
@@ -18,11 +21,12 @@ Ref<AnimationClip> AnimationClip::create(/*const StringRef& name, */const String
 
 Ref<AnimationClip> AnimationClip::load(const StringRef& filePath)
 {
-	const Char* candidateExts[] = { u".vmd" };
-	if (const auto assetPath = detail::AssetPath::resolveAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts)))
-		return detail::EngineDomain::animationManager()->acquireAnimationClip(assetPath);
-	else
-		return nullptr;
+	return detail::EngineDomain::animationManager()->loadAnimationClip(filePath);
+	//const Char* candidateExts[] = { u".vmd" };
+	//if (const auto assetPath = detail::AssetPath::resolveAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts)))
+	//	return detail::EngineDomain::animationManager()->acquireAnimationClip(assetPath);
+	//else
+	//	return nullptr;
 }
 
 AnimationClip::AnimationClip()
@@ -37,7 +41,15 @@ AnimationClip::~AnimationClip()
 
 void AnimationClip::init()
 {
-	Object::init();
+	AssetObject::init();
+}
+
+bool AnimationClip::init(const detail::AssetPath& assetSourcePath)
+{
+	if (!AssetObject::init()) return false;
+	m_assetSourcePath = assetSourcePath;
+	reload();
+	return true;
 }
 
 void AnimationClip::init(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes)
@@ -67,8 +79,26 @@ void AnimationClip::addTrack(AnimationTrack* track)
     m_lastFrameTime = track->lastFrameTime();
 }
 
+void AnimationClip::onLoadSourceFile()
+{
+	if (LN_REQUIRE(!m_assetSourcePath.isNull())) return;
 
+	auto assetManager = detail::EngineDomain::assetManager();
 
+	if (m_assetSourcePath.path().hasExtension(u".bvh")) {
+		auto diag = makeObject<DiagnosticsManager>();
+		detail::BvhImporter importer(assetManager, diag);
+		importer.import(this, m_assetSourcePath);
+		diag->dumpToLog();
+	}
+	else if (m_assetSourcePath.path().hasExtension(u".vmd")) {
+		LN_NOTIMPLEMENTED();
+	}
+	else {
+		// TODO: 拡張子省略時の対策
+		LN_NOTIMPLEMENTED();
+	}
+}
 
 ////==============================================================================
 //// VmdAnimationClip

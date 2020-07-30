@@ -37,6 +37,12 @@ public:
 	Optional<Color> m_skydomeOverlayColor;
 };
 
+enum class LevelUpdateMode
+{
+	PauseWhenInactive,
+	Always,
+};
+
 /**
  * シーンのベースクラスです。
  */
@@ -53,6 +59,9 @@ public:
 	void removeSubLevel(Level* level);
 	void removeAllSubLevels();
 
+	void setUpdateMode(LevelUpdateMode value) { m_updateMode = value; }
+	LevelUpdateMode updateMode() const { return m_updateMode; }
+
 protected:
 	/** 開始処理 */
 	LN_METHOD()
@@ -60,15 +69,15 @@ protected:
 
 	/** 終了処理 */
 	LN_METHOD()
-	virtual void onClosed();
-
-	/** Called when activated. */
-	LN_METHOD()
-	virtual void onActivated();
+	virtual void onStop();
 
 	/** Called when deactivated. */
 	LN_METHOD()
-	virtual void onDeactivated();
+	virtual void onPause();
+
+	/** Called when activated. */
+	LN_METHOD()
+	virtual void onResume();
 
 	/** フレーム更新 */
 	LN_METHOD()
@@ -150,6 +159,8 @@ public: // TODO: internal
 
 	// TODO: Editor integration
 	ln::Path m_filePath;
+
+	LevelUpdateMode m_updateMode;
 
 	bool m_initialUpdate;
 

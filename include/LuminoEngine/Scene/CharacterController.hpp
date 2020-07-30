@@ -20,6 +20,10 @@ class CharacterController
 	: public Component
 {
 public:
+	void retainCursorGrab();
+	void releaseCursorGrab();
+
+
 
 protected:
 	// CharacterController を継承してカスタマイズする場合、

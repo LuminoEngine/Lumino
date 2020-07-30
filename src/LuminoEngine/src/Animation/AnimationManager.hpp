@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Animation/Common.hpp>
+#include <LuminoEngine/Animation/AnimationClip.hpp>
 #include "../Base/RefObjectCache.hpp"
 
 namespace ln {
@@ -24,8 +25,10 @@ public:
 
     void addClockToAffiliation(AnimationClock* clock, AnimationClockAffiliation affiliation);
 
-	Ref<AnimationClip> acquireAnimationClip(const AssetPath& assetPath);
-	void loadAnimationClip(AnimationClip* clip, const AssetPath& assetPath);
+	Ref<AnimationClip> loadAnimationClip(const StringRef& filePath);
+	Ref<AnimationClipPromise> loadAnimationClipAsync(const StringRef& filePath);
+	//Ref<AnimationClip> acquireAnimationClip(const AssetPath& assetPath);
+	//void loadAnimationClip(AnimationClip* clip, const AssetPath& assetPath);
 
     void updateFrame(float elapsedSeconds);
 

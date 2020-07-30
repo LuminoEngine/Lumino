@@ -228,40 +228,63 @@ void AnimationManager::addClockToAffiliation(AnimationClock* clock, AnimationClo
     }
 }
 
-Ref<AnimationClip> AnimationManager::acquireAnimationClip(const AssetPath& assetPath)
+Ref<AnimationClip> AnimationManager::loadAnimationClip(const StringRef& filePath)
 {
-    uint64_t key = assetPath.calculateHash();
-    auto obj = m_animationClipCache.findObject(key);
-    if (obj) {
-        return obj;
-    }
-    else {
-        obj = makeObject<AnimationClip>();
-        loadAnimationClip(obj, assetPath);
-        m_animationClipCache.registerObject(key, obj, 0);
-        return obj;
-    }
+	// TODO: find cache
+
+	// TODO: やっぱり拡張子は本当のリロード時に解決したい。
+	// なので、AssetPath 自体の仕様として、拡張子無し（未解決）を許可するようにしたい。
+	// → でもそれなら Path で持っておけばいいだけか。ちゃんとドキュメントに書いておこう
+	const Char* exts[] = { u".bvh", u".vmd" };
+	auto assetPath = detail::AssetPath::resolveAssetPath(filePath, exts);
+
+	auto obj = makeObject<AnimationClip>(assetPath);
+
+	detail::AssetObjectInternal::setAssetPath(obj, filePath);
+
+	return obj;
 }
 
-void AnimationManager::loadAnimationClip(AnimationClip* clip, const AssetPath& assetPath)
+Ref<AnimationClipPromise> AnimationManager::loadAnimationClipAsync(const StringRef& filePath)
 {
-    auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
-
-    detail::VmdFile vmdFile;
-    auto vmdData = vmdFile.load(stream);
-    if (vmdData)
-    {
-        for (auto& track : vmdData->MotionData)
-        {
-            clip->m_tracks.add(makeObject<VMDBezierTransformAnimationTrack>(track));
-        }
-
-		clip->m_lastFrameTime = vmdData->lastFrameTime;
-
-        // VmdData が持っているトラックの情報を後で使いたいので、参照を持っておく
-		clip->m_srcData = vmdData;
-    }
+	LN_NOTIMPLEMENTED();
+	return nullptr;
 }
+
+//Ref<AnimationClip> AnimationManager::acquireAnimationClip(const AssetPath& assetPath)
+//{
+//    uint64_t key = assetPath.calculateHash();
+//    auto obj = m_animationClipCache.findObject(key);
+//    if (obj) {
+//        return obj;
+//    }
+//    else {
+//        obj = makeObject<AnimationClip>();
+//        loadAnimationClip(obj, assetPath);
+//        m_animationClipCache.registerObject(key, obj, 0);
+//        return obj;
+//    }
+//}
+//
+//void AnimationManager::loadAnimationClip(AnimationClip* clip, const AssetPath& assetPath)
+//{
+//    auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
+//
+//    detail::VmdFile vmdFile;
+//    auto vmdData = vmdFile.load(stream);
+//    if (vmdData)
+//    {
+//        for (auto& track : vmdData->MotionData)
+//        {
+//            clip->m_tracks.add(makeObject<VMDBezierTransformAnimationTrack>(track));
+//        }
+//
+//		clip->m_lastFrameTime = vmdData->lastFrameTime;
+//
+//        // VmdData が持っているトラックの情報を後で使いたいので、参照を持っておく
+//		clip->m_srcData = vmdData;
+//    }
+//}
 
 void AnimationManager::updateFrame(float elapsedSeconds)
 {

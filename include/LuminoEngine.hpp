@@ -97,6 +97,7 @@
 #include "LuminoEngine/Scene/SceneConductor.hpp"
 
 #include "LuminoEngine/UI/UIEvents.hpp"
+#include "LuminoEngine/UI/UIStyle.hpp"
 #include "LuminoEngine/UI/UIRenderView.hpp"
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
 #include "LuminoEngine/UI/UIViewport.hpp"
@@ -109,6 +110,8 @@
 #include "LuminoEngine/UI/Controls/UIListBox.hpp"
 #include "LuminoEngine/UI/Controls/UIListView.hpp"
 #include "LuminoEngine/UI/UI.hpp"
+
+#include "LuminoEngine/UI/UIFlexMessageTextArea.hpp"
 
 #include "LuminoEngine/Asset/Assets.hpp"
 

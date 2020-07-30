@@ -158,10 +158,8 @@ void SceneConductor::executeCommands()
 				releaseAndTerminateAllRunningScenes();
 
 				m_activeScene = cmd.scene;
-				if (m_activeScene != nullptr)
-				{
+				if (m_activeScene) {
 					m_activeScene->onStart();
-					m_activeScene->onActivated();
 				}
 
 				if (cmd.withEffect) {
@@ -172,10 +170,13 @@ void SceneConductor::executeCommands()
 			/////////////// 呼び出し
 			case EventType::Call:
 			{
+				if (m_activeScene && m_activeScene->updateMode() == LevelUpdateMode::PauseWhenInactive) {
+					m_activeScene->onPause();
+				}
+
 				m_sceneStack.push_back(m_activeScene);
 				m_activeScene = cmd.scene;
 				m_activeScene->onStart();
-				m_activeScene->onActivated();
 
 				if (cmd.withEffect) {
 					attemptFadeInTransition();
@@ -188,8 +189,11 @@ void SceneConductor::executeCommands()
 				Ref<Level> oldScene = m_activeScene;
 				m_activeScene = m_sceneStack.back();
 				m_sceneStack.pop_back();
-				oldScene->onDeactivated();
-				oldScene->onClosed();
+				oldScene->onStop();
+
+				if (m_activeScene && m_activeScene->updateMode() == LevelUpdateMode::PauseWhenInactive) {
+					m_activeScene->onResume();
+				}
 
 				if (cmd.withEffect) {
 					attemptFadeInTransition();
@@ -206,12 +210,12 @@ void SceneConductor::releaseAndTerminateAllRunningScenes()
 {
 	if (m_activeScene != nullptr)
 	{
-		m_activeScene->onClosed();
+		m_activeScene->onStop();
 		m_activeScene = nullptr;
 	}
 
 	for (int i = m_sceneStack.size() - 1; i >= 0; i--) {
-		m_sceneStack[i]->onClosed();
+		m_sceneStack[i]->onStop();
 	}
 	m_sceneStack.clear();
 }
@@ -247,7 +251,9 @@ void SceneConductor::updateObjectsWorldMatrix() const
 void SceneConductor::preUpdate(float elapsedSeconds)
 {
 	for (const auto& level : m_sceneStack) {
-		level->onPreUpdate(elapsedSeconds);
+		if (level->updateMode() == LevelUpdateMode::Always) {
+			level->onPreUpdate(elapsedSeconds);
+		}
 	}
 
 	if (m_activeScene) {
@@ -258,7 +264,9 @@ void SceneConductor::preUpdate(float elapsedSeconds)
 void SceneConductor::update(float elapsedSeconds)
 {
 	for (const auto& level : m_sceneStack) {
-		level->update(elapsedSeconds);
+		if (level->updateMode() == LevelUpdateMode::Always) {
+			level->update(elapsedSeconds);
+		}
 	}
 
 	if (m_activeScene) {
@@ -269,7 +277,9 @@ void SceneConductor::update(float elapsedSeconds)
 void SceneConductor::postUpdate(float elapsedSeconds)
 {
 	for (const auto& level : m_sceneStack) {
-		level->onPostUpdate(elapsedSeconds);
+		if (level->updateMode() == LevelUpdateMode::Always) {
+			level->onPostUpdate(elapsedSeconds);
+		}
 	}
 
 	if (m_activeScene) {
