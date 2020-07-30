@@ -68,7 +68,7 @@ class App_Example_MeshViewer : public Application
 		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Models/Axis.glb");
 
 #if 1
-        auto cliptest = AnimationClip::load(u"D:/Materials/VRM/walk.bvh");
+        auto cliptest = AnimationClip::load(u"D:/Materials/VRM/walk2.bvh");
 
         //m_mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
         m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");

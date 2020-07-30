@@ -78,6 +78,7 @@ private:
 		X_POSITION, Y_POSITION, Z_POSITION
 	};
 
+	// TODO: 結局 index しか要らなくなったので class 化不要
 	struct Channel
 	{
 		int index;

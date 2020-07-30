@@ -132,6 +132,7 @@ void AsciiLineReader::splitLineTokens()
 // BvhImporter
 // http://www.dcs.shef.ac.uk/intranet/research/public/resmes/CS0111.pdf
 // https://sites.google.com/a/cgspeed.com/cgspeed/motion-capture/cmu-bvh-conversion
+// motion.hahasoha.netBVH
 
 BvhImporter::BvhImporter(AssetManager* assetManager, DiagnosticsManager* diag)
 	: m_assetManager(assetManager)
@@ -141,6 +142,8 @@ BvhImporter::BvhImporter(AssetManager* assetManager, DiagnosticsManager* diag)
 
 bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath)
 {
+    const bool flipZ = true;
+
 	auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
     m_reader.reset(stream);
 
@@ -186,6 +189,12 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath)
             rot.x = Math::degreesToRadians(rot.x);
             rot.y = Math::degreesToRadians(rot.y);
             rot.z = Math::degreesToRadians(rot.z);
+            if (flipZ) {
+
+                //rot.x *= -1;
+                rot.y *= -1;
+                rot.z *= -1;
+            }
             track->setDataTQ(iFrame, m_frameTime * iFrame, pos, rot);
 #else
             const auto rot = Quaternion::makeFromEulerAngles(

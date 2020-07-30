@@ -23,8 +23,8 @@ namespace ln {
 namespace detail {
 
 GLTFImporter::GLTFImporter()
-	: m_flipZ(false)
-	, m_flipX(true)
+	: m_flipZ(true)
+	, m_flipX(false)
 {
 }
 
