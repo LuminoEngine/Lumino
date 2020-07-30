@@ -82,7 +82,7 @@ private:
 	{
 		int index;
 		//int joint;
-		ChannelEnum type;
+		//ChannelEnum type;
 	};
 
 	struct Joint
@@ -91,7 +91,8 @@ private:
 		int index;
 		//int parent;
 		//std::vector<int> children;
-		std::vector<int> channels;
+		//std::vector<int> channels;
+		std::array<int8_t, 6> channels;	// 要素番号は ChannelEnum
 		Vector3 offset;
 		Vector3 site;
 		bool hasSite;
@@ -101,6 +102,8 @@ private:
 	bool readMotion();
 	Joint* currentJoint() const { return m_joints.back().get(); }
 	void setFrameData(int frame, int ch, float v) { m_frameData[frame * m_channels.size() + ch] = v; }
+	float rameData(int frame, int ch) { return m_frameData[frame * m_channels.size() + ch]; }
+	static HumanoidBones mapHumanoidBonesMixamoUnity(const String& name);
 
 	AssetManager* m_assetManager;
 	DiagnosticsManager* m_diag;

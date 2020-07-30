@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoEngine/Animation/AnimationClip.hpp>
+#include <LuminoEngine/Animation/AnimationTrack.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "BvhImporter.hpp"
 
@@ -129,6 +131,7 @@ void AsciiLineReader::splitLineTokens()
 //==============================================================================
 // BvhImporter
 // http://www.dcs.shef.ac.uk/intranet/research/public/resmes/CS0111.pdf
+// https://sites.google.com/a/cgspeed.com/cgspeed/motion-capture/cmu-bvh-conversion
 
 BvhImporter::BvhImporter(AssetManager* assetManager, DiagnosticsManager* diag)
 	: m_assetManager(assetManager)
@@ -153,6 +156,28 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath)
                 return false;
             }
         }
+    }
+
+    for (const auto& joint : m_joints) {
+        auto track = makeObject<TransformAnimationTrack>();
+        track->resizeFramesTQ(m_frames);
+        for (int iFrame = 0; iFrame < m_frames; iFrame++) {
+            const auto pos = Vector3(
+                (joint->channels[X_POSITION] >= 0) ? rameData(iFrame, joint->channels[X_POSITION]) : 0.0f,
+                (joint->channels[Y_POSITION] >= 0) ? rameData(iFrame, joint->channels[Y_POSITION]) : 0.0f,
+                (joint->channels[Z_POSITION] >= 0) ? rameData(iFrame, joint->channels[Z_POSITION]) : 0.0f) * 0.01f;
+            const auto rot = Quaternion::makeFromEulerAngles(
+                (joint->channels[X_ROTATION] >= 0) ? rameData(iFrame, joint->channels[X_ROTATION]) : 0.0f,
+                (joint->channels[Y_ROTATION] >= 0) ? rameData(iFrame, joint->channels[Y_ROTATION]) : 0.0f,
+                (joint->channels[Z_ROTATION] >= 0) ? rameData(iFrame, joint->channels[Z_ROTATION]) : 0.0f,
+                RotationOrder::ZXY);    // https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html
+            track->setDataTQ(iFrame, m_frameTime * iFrame, pos, rot);
+
+            const auto name = String::fromStdString(joint->name);
+            track->setTargetName(name);
+            track->setTargetHumanoidBone(mapHumanoidBonesMixamoUnity(name));
+        }
+        clip->addTrack(track);
     }
 
 	return true;
@@ -180,6 +205,7 @@ bool BvhImporter::readHierarchy()
             auto joint = std::make_shared<Joint>();
             joint->name = std::string(m_reader.token().begin, m_reader.token().length);
             joint->index = m_joints.size();
+            std::fill(joint->channels.begin(), joint->channels.end(), -1);
 
             m_joints.push_back(joint);
         }
@@ -226,7 +252,6 @@ bool BvhImporter::readHierarchy()
 
             int count = m_reader.token().toInt();
             Joint* joint = currentJoint();
-            joint->channels.resize(count);
             for (int i = 0; i < count; i++) {
                 auto channel = std::make_shared<Channel>();
                 channel->index = m_channels.size();
@@ -238,17 +263,17 @@ bool BvhImporter::readHierarchy()
                 }
 
                 if (m_reader.token().is("Xrotation", 9))
-                    channel->type = X_ROTATION;
+                    joint->channels[X_ROTATION] = channel->index;
                 else if (m_reader.token().is("Yrotation", 9))
-                    channel->type = Y_ROTATION;
+                    joint->channels[Y_ROTATION] = channel->index;
                 else if (m_reader.token().is("Zrotation", 9))
-                    channel->type = Z_ROTATION;
+                    joint->channels[Z_ROTATION] = channel->index;
                 else if (m_reader.token().is("Xposition", 9))
-                    channel->type = X_POSITION;
+                    joint->channels[X_POSITION] = channel->index;
                 else if (m_reader.token().is("Yposition", 9))
-                    channel->type = Y_POSITION;
+                    joint->channels[Y_POSITION] = channel->index;
                 else if (m_reader.token().is("Zposition", 9))
-                    channel->type = Z_POSITION;
+                    joint->channels[Z_POSITION] = channel->index;
             }
         }
         else if (m_reader.token().is("{", 1)) {
@@ -328,6 +353,52 @@ bool BvhImporter::readMotion()
     }
 
     return true;
+}
+
+HumanoidBones BvhImporter::mapHumanoidBonesMixamoUnity(const String& name)
+{
+    static const std::unordered_map<String, HumanoidBones> table = {
+        { u"Hips", HumanoidBones::Hips },
+        { u"Spine", HumanoidBones::Spine },
+        { u"Spine1", HumanoidBones::Chest },
+        { u"Spine2", HumanoidBones::UpperChest },
+
+        { u"LeftShoulder", HumanoidBones::LeftShoulder },
+        { u"LeftArm", HumanoidBones::LeftUpperArm },
+        { u"LeftForeArm", HumanoidBones::LeftLowerArm },
+        { u"LeftHand", HumanoidBones::LeftHand },
+
+        { u"RightShoulder", HumanoidBones::RightShoulder },
+        { u"RightArm", HumanoidBones::RightUpperArm },
+        { u"RightForeArm", HumanoidBones::RightLowerArm },
+        { u"RightHand", HumanoidBones::RightHand },
+
+        { u"LeftUpLeg", HumanoidBones::LeftUpperLeg },
+        { u"LeftLeg", HumanoidBones::LeftLowerLeg },
+        { u"LeftFoot", HumanoidBones::LeftFoot },
+        { u"LeftToeBase", HumanoidBones::LeftToes },
+
+        { u"RightUpLeg", HumanoidBones::RightUpperLeg },
+        { u"RightLeg", HumanoidBones::RightLowerLeg },
+        { u"RightFoot", HumanoidBones::RightFoot },
+        { u"RightToeBase", HumanoidBones::RightToes },
+
+        { u"Neck", HumanoidBones::Neck },
+        { u"Head", HumanoidBones::Head },
+        { u"LeftEye", HumanoidBones::LeftEye },
+        { u"RightEye", HumanoidBones::RightEye },
+    };
+
+    int index = name.indexOf(u"mixamorig:");
+    if (index < 0) return HumanoidBones::None;
+
+    const auto n = name.substr(10);
+
+    const auto itr = table.find(n);
+    if (itr != table.end())
+        return itr->second;
+    else
+        return HumanoidBones::None;
 }
 
 } // namespace detail

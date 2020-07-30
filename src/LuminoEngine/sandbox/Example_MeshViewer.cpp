@@ -86,12 +86,15 @@ class App_Example_MeshViewer : public Application
 
 
         //auto clip = AnimationClip::load(u"D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");
-        auto clip1 = AnimationClip::load(u"D:/Materials/MMD/Motion/MMO用stand/stand2.vmd");
-        auto clip2 = AnimationClip::load(u"D:/Materials/MMD/Motion/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd");
-        
-        m_idle = m_model->animationController()->addClip(clip1);
-        m_walk = m_model->animationController()->addClip(clip2);
-        m_model->animationController()->play(m_idle);
+        //auto clip1 = AnimationClip::load(u"D:/Materials/MMD/Motion/MMO用stand/stand2.vmd");
+        //auto clip2 = AnimationClip::load(u"D:/Materials/MMD/Motion/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd");
+        //
+        //m_idle = m_model->animationController()->addClip(clip1);
+        //m_walk = m_model->animationController()->addClip(clip2);
+        //m_model->animationController()->play(m_idle);
+
+        auto state = m_model->animationController()->addClip(cliptest);
+        m_model->animationController()->play(state);
 #endif
     }
 

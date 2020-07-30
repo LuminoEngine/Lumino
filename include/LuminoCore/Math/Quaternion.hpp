@@ -229,6 +229,7 @@ public:
      * @return      演算結果のクォータニオン
      */
     static Quaternion makeFromEulerAngles(const Vector3& angles, RotationOrder order = RotationOrder::ZXY);
+    static Quaternion makeFromEulerAngles(float x, float y, float z, RotationOrder order = RotationOrder::ZXY) { return makeFromEulerAngles(Vector3(x, y, z), order); }
 
     /**
      * 球面線形補間を使用して、2 つのクオータニオン間を補間します。

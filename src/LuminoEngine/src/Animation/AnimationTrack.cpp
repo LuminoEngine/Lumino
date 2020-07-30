@@ -151,6 +151,19 @@ void TransformAnimationTrack::setupScales(int frames, const float* times, const 
 	m_scaleInterpolation = interpolation;
 }
 
+void TransformAnimationTrack::resizeFramesTQ(int frames)
+{
+	m_translationKeys.resize(frames);
+	m_rotationKeys.resize(frames);
+}
+
+void TransformAnimationTrack::setDataTQ(int frame, float time, const Vector3& pos, const Quaternion& rot)
+{
+	m_translationKeys[frame] = { time, pos };
+	m_rotationKeys[frame] = { time, rot };
+	m_lastTime = std::max(m_lastTime, time);
+}
+
 bool TransformAnimationTrack::init()
 {
 	if (!AnimationTrack::init()) return false;

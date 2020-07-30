@@ -127,6 +127,7 @@ public:
 
 /** (スキニングでは、ボーンアニメーションで使用) */
 // translation, rotation, scale をまとめて扱う。
+// 理由：
 // - 個々の要素を Curve にすると、10 個も Curve ができる。さらに Key(AnimationKeyFrame) というやや大きめのデータもたくさんできる。
 //   AnimationKeyFrame は UI アニメやシネマなど、Editor から編集するようなものに対してメインに使う。
 //   対して skin mesh animation は基本的に外部のモデラーで変種したデータを扱う。↑に比べて大量のキーフレームができる傾向にある。
@@ -161,6 +162,10 @@ public:
 	void setupTranslations(int frames, const float* times, const Vector3* values, Interpolation interpolation);
 	void setupRotations(int frames, const float* times, const Quaternion* values);
 	void setupScales(int frames, const float* times, const Vector3* values, Interpolation interpolation);
+
+	// for BVH
+	void resizeFramesTQ(int frames);
+	void setDataTQ(int frame, float time, const Vector3& pos, const Quaternion& rot);
 
 LN_CONSTRUCT_ACCESS:
 	TransformAnimationTrack();
