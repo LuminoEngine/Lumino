@@ -160,23 +160,45 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath)
 
     for (const auto& joint : m_joints) {
         auto track = makeObject<TransformAnimationTrack>();
+
+        const auto name = String::fromStdString(joint->name);
+        track->setTargetName(name);
+        track->setTargetHumanoidBone(mapHumanoidBonesMixamoUnity(name));
+
+        //if (track->targetKey().bone == HumanoidBones::LeftUpperArm) {
+        //    printf("");
+        //}
+        //if (track->targetKey().bone == HumanoidBones::RightUpperArm) {
+        //    printf("");
+        //}
+
         track->resizeFramesTQ(m_frames);
         for (int iFrame = 0; iFrame < m_frames; iFrame++) {
             const auto pos = Vector3(
                 (joint->channels[X_POSITION] >= 0) ? rameData(iFrame, joint->channels[X_POSITION]) : 0.0f,
                 (joint->channels[Y_POSITION] >= 0) ? rameData(iFrame, joint->channels[Y_POSITION]) : 0.0f,
-                (joint->channels[Z_POSITION] >= 0) ? rameData(iFrame, joint->channels[Z_POSITION]) : 0.0f) * 0.01f;
+                (joint->channels[Z_POSITION] >= 0) ? rameData(iFrame, joint->channels[Z_POSITION]) : 0.0f) * 0.00f;
+#if 1
+            auto rot = Vector3(
+                (joint->channels[X_ROTATION] >= 0) ? rameData(iFrame, joint->channels[X_ROTATION]) : 0.0f,
+                (joint->channels[Y_ROTATION] >= 0) ? rameData(iFrame, joint->channels[Y_ROTATION]) : 0.0f,
+                (joint->channels[Z_ROTATION] >= 0) ? rameData(iFrame, joint->channels[Z_ROTATION]) : 0.0f);
+            rot.x = Math::degreesToRadians(rot.x);
+            rot.y = Math::degreesToRadians(rot.y);
+            rot.z = Math::degreesToRadians(rot.z);
+            track->setDataTQ(iFrame, m_frameTime * iFrame, pos, rot);
+#else
             const auto rot = Quaternion::makeFromEulerAngles(
                 (joint->channels[X_ROTATION] >= 0) ? rameData(iFrame, joint->channels[X_ROTATION]) : 0.0f,
                 (joint->channels[Y_ROTATION] >= 0) ? rameData(iFrame, joint->channels[Y_ROTATION]) : 0.0f,
                 (joint->channels[Z_ROTATION] >= 0) ? rameData(iFrame, joint->channels[Z_ROTATION]) : 0.0f,
                 RotationOrder::ZXY);    // https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html
+                //RotationOrder::XYZ);
+                //RotationOrder::YZX);
             track->setDataTQ(iFrame, m_frameTime * iFrame, pos, rot);
-
-            const auto name = String::fromStdString(joint->name);
-            track->setTargetName(name);
-            track->setTargetHumanoidBone(mapHumanoidBonesMixamoUnity(name));
+#endif
         }
+
         clip->addTrack(track);
     }
 

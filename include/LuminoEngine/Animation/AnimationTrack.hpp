@@ -165,7 +165,8 @@ public:
 
 	// for BVH
 	void resizeFramesTQ(int frames);
-	void setDataTQ(int frame, float time, const Vector3& pos, const Quaternion& rot);
+	//void setDataTQ(int frame, float time, const Vector3& pos, const Quaternion& rot);
+	void setDataTQ(int frame, float time, const Vector3& pos, const Vector3& rot);
 
 LN_CONSTRUCT_ACCESS:
 	TransformAnimationTrack();
@@ -183,6 +184,9 @@ private:
 	Interpolation m_translationInterpolation;
 	Interpolation m_scaleInterpolation;
 	float m_lastTime;
+
+	// exp
+	std::vector<Vector3Key> m_rotationKeys2;
 };
 
 } // namespace ln

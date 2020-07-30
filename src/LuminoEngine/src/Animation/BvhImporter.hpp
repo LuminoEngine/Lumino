@@ -92,7 +92,7 @@ private:
 		//int parent;
 		//std::vector<int> children;
 		//std::vector<int> channels;
-		std::array<int8_t, 6> channels;	// 要素番号は ChannelEnum
+		std::array<int16_t, 6> channels;	// 要素番号は ChannelEnum
 		Vector3 offset;
 		Vector3 site;
 		bool hasSite;

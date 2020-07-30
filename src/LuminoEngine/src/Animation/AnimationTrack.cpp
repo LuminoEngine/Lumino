@@ -154,13 +154,13 @@ void TransformAnimationTrack::setupScales(int frames, const float* times, const 
 void TransformAnimationTrack::resizeFramesTQ(int frames)
 {
 	m_translationKeys.resize(frames);
-	m_rotationKeys.resize(frames);
+	m_rotationKeys2.resize(frames);
 }
 
-void TransformAnimationTrack::setDataTQ(int frame, float time, const Vector3& pos, const Quaternion& rot)
+void TransformAnimationTrack::setDataTQ(int frame, float time, const Vector3& pos, const Vector3& rot)
 {
 	m_translationKeys[frame] = { time, pos };
-	m_rotationKeys[frame] = { time, rot };
+	m_rotationKeys2[frame] = { time, rot };
 	m_lastTime = std::max(m_lastTime, time);
 }
 
@@ -266,10 +266,26 @@ void TransformAnimationTrack::evaluate(float time, AnimationValue* outResult)
 	AttitudeTransform transform;
 
 	transform.translation = interpolateVector3(m_translationKeys, time, Vector3::Zero, m_translationInterpolation);
-	transform.rotation = interpolateQuaternion(m_rotationKeys, time, Quaternion::Identity);
+
+	if (!m_rotationKeys2.empty()) {
+		auto rot = interpolateVector3(m_rotationKeys2, time, Vector3::Zero, m_translationInterpolation);
+
+		transform.rotation = Quaternion::makeFromEulerAngles(rot,
+			RotationOrder::ZXY);    // https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html
+
+	}
+	else
+		transform.rotation = interpolateQuaternion(m_rotationKeys, time, Quaternion::Identity);
 	transform.scale = interpolateVector3(m_scaleKeys, time, Vector3::Ones, m_scaleInterpolation);
 
 	outResult->setTransform(transform);
+
+	//if (targetKey().bone == HumanoidBones::LeftUpperArm) {
+	//	printf("");
+	//}
+	//if (targetKey().bone == HumanoidBones::RightUpperArm) {
+	//	printf("");
+	//}
 }
 
 } // namespace ln
