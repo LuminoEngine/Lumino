@@ -28,6 +28,16 @@ bool UICheckBox::init()
     return true;
 }
 
+Size UICheckBox::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+{
+	return UIToggleButton::measureOverride(layoutContext, constraint);
+}
+
+Size UICheckBox::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+{
+	return UIToggleButton::arrangeOverride(layoutContext, finalSize);
+}
+
 void UICheckBox::onRender(UIRenderingContext* context)
 {
 	if (m_checkMarkFont && m_checkMarkCodePoint > 0) {
