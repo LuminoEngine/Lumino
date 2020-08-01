@@ -57,12 +57,17 @@ void UIViewport::onDispose(bool explicitDisposing)
 
 void UIViewport::addRenderView(RenderView* view)
 {
+	if (LN_REQUIRE(view)) return;
+	if (LN_REQUIRE(!view->m_parentViewport)) return;
+
     m_renderViews.add(view);
 
 	// TODO: dynamic_cast じゃなくて flag とか で判定
 	if (auto* uiRenderView = dynamic_cast<UIFrameRenderView*>(view)) {
 		uiRenderView->m_ownerViewport = this;
 	}
+
+	view->m_parentViewport = this;
 }
 
 void UIViewport::removeRenderView(RenderView* view)

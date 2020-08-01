@@ -36,7 +36,7 @@ class UIInputInjector
 {
 public:
     UIInputInjector(UIFrameWindow* owner);
-    bool injectMouseMove(float clientX, float clientY);
+    bool injectMouseMove(float clientX, float clientY, float grabOffsetX, float grabOffsetY);
     bool injectMouseButtonDown(MouseButtons button);
     bool injectMouseButtonUp(MouseButtons button);
     bool injectMouseWheel(int delta);

@@ -65,6 +65,8 @@ public:
 
 	void retainCapture(UIElement* element);
 	void releaseCapture(UIElement* element);
+	void grabCursor(UIElement* element);
+	void releaseCursor(UIElement* element);
 	const Ref<UIElement>& capturedElement() const { return m_capturedElement; }
 
     void tryGetInputFocus(UIElement* element);

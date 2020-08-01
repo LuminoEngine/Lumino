@@ -39,6 +39,9 @@ float dotL;
 float3 position: POSITION;  // struct or cbuffer member.
 ```
 
+### 定数
+
+
 ### 公開シンボル (uniform 変数)
 
 - `camelCase` を使い、`_` プレフィックスを付けます。

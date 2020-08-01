@@ -1,14 +1,16 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Application.hpp>
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIContainerElement.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
-#include <LuminoEngine/UI/UILayoutPanel.hpp>
+#include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIActiveTimer.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
+#include <LuminoEngine/UI/UITextBlock.hpp>
 #include "UIEventArgsPool.hpp"
 #include "UIManager.hpp"
 
@@ -181,6 +183,13 @@ void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& fr
             auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseEnterEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, ModifierKeys::None, true);
             m_mouseHoverElement->raiseEvent(args);
         }
+
+        //if (m_mouseHoverElement) {
+        //    printf("m_mouseHoverElement: %p %s\n", m_mouseHoverElement, typeid(*(m_mouseHoverElement.get())).name());
+        //    if (auto tt = dynamic_cast<UITextBlock*>(m_mouseHoverElement.get())) {
+        //        std::cout << tt->text() << std::endl;
+        //    }
+        //}
     }
 
 
@@ -254,6 +263,20 @@ void UIManager::releaseCapture(UIElement* element)
 	if (m_capturedElement == element) {
 		m_capturedElement = nullptr;
 	}
+}
+
+void UIManager::grabCursor(UIElement* element)
+{
+    if (UIFrameWindow* window = static_cast<UIFrameWindow*>(element->getFrameWindow())) {
+        window->platformWindow()->grabCursor();
+    }
+}
+
+void UIManager::releaseCursor(UIElement* element)
+{
+    if (UIFrameWindow* window = static_cast<UIFrameWindow*>(element->getFrameWindow())) {
+        window->platformWindow()->releaseCursor();
+    }
 }
 
 void UIManager::tryGetInputFocus(UIElement* element)

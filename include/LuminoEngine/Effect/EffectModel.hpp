@@ -1,11 +1,12 @@
 ﻿#pragma once
 #include "Common.hpp"
+#include "../Asset/AssetObject.hpp"
 
 namespace ln {
 class RenderingContext;
 
 class EffectResource
-    : public Object
+    : public AssetObject
 {
 public:
 
@@ -15,7 +16,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     EffectResource();
     virtual ~EffectResource();
-    void init();
+    bool init();
 
 private:
 };

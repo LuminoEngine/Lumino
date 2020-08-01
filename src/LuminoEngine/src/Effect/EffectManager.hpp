@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Effect/Common.hpp>
+#include <LuminoEngine/Base/Promise.hpp>
 #include "../src/Base/RefObjectCache.hpp"
 
 namespace Effekseer {
@@ -11,6 +12,14 @@ namespace ln {
 class EffectEmitter;
 class GraphicsContext;
 class RenderingContext;
+class ParticleModel2;
+
+/**
+ * Texture2DPromise
+ */
+LN_PROMISE()
+using ParticleModelPromise = Promise<Ref<ParticleModel2>>;
+
 namespace detail {
 class GraphicsManager;
 class RenderingManager;
@@ -35,8 +44,12 @@ public:
 	void init(const Settings& settings);
 	void dispose();
 
+    Ref<ParticleModel2> loadParticleModel(const StringRef& filePath);
+    Ref<ParticleModelPromise> loadParticleModelAsync(const StringRef& filePath);
+
     void testDraw(RenderingContext* renderingContext);
     //void testDraw2(GraphicsContext* graphicsContext);
+
 
     Ref<EffectEmitter> createEmitterFromFile(const Path& filePath);
 

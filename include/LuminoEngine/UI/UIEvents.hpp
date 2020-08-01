@@ -115,7 +115,8 @@ public:
     static const UIEventType	RequestVisualRedrawEvent;
 
 	static const UIEventType	RequestNavigate;
-	
+
+	//static const UIEventType	ComboBoxItemClicked;
 };
 
 /**
@@ -136,6 +137,8 @@ public:
 	UIEventType type() const { return m_type; }
 	
     static bool testInputGesture(UIEventArgs* e, InputGesture* gesture);
+
+	UIEventRoutingStrategy strategy = UIEventRoutingStrategy::Bubble;
 
 LN_CONSTRUCT_ACCESS:
 	UIEventArgs();
@@ -178,6 +181,9 @@ public:
 	/** 指定した要素から見た相対的なマウス ポインターの位置を返します。*/
 	Point getPosition(UIElement* relativeTo) const;
 	//Point getPosition(RenderView* relativeTo) const;
+
+	float grabOffsetX = 0;
+	float grabOffsetY = 0;
 
 LN_CONSTRUCT_ACCESS:
 	UIMouseEventArgs();

@@ -42,13 +42,15 @@ PlatformEventArgs PlatformEventArgs::makeMouseButtonEvent(PlatformWindow* sender
 	return e;
 }
 
-PlatformEventArgs PlatformEventArgs::makeMouseMoveEvent(PlatformWindow* sender, PlatformEventType type, short screenX, short screenY)
+PlatformEventArgs PlatformEventArgs::makeMouseMoveEvent(PlatformWindow* sender, PlatformEventType type, short screenX, short screenY, short grabOffsetX, short grabOffsetY)
 {
 	PlatformEventArgs e;
 	e.sender = sender;
 	e.type = type;
 	e.mouseMove.screenX = screenX;
 	e.mouseMove.screenY = screenY;
+	e.mouseMove.grabOffsetX = grabOffsetX;
+	e.mouseMove.grabOffsetY = grabOffsetY;
 	return e;
 }
 

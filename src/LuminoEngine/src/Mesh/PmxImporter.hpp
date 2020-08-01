@@ -556,6 +556,9 @@ struct PmxIK
     */
 };
 
+/*
+ * MMD モデルは Z- 方向が基本の正面。VMR とは逆なので注意。
+ */
 class PmxLoader
 {
 public:

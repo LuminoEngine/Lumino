@@ -2,6 +2,7 @@
 #include "PostEffect.hpp"
 
 namespace ln {
+class SamplerState;
 namespace detail { class BloomPostEffectInstance; }
 
 class BloomPostEffect
@@ -29,33 +30,46 @@ LN_CONSTRUCT_ACCESS:
     void init();
 
 private:
-
     float m_luminosityThreshold;
     float m_bloomStrength;
     float m_bloomRadius;
 
-
     friend class detail::BloomPostEffectInstance;
-
 };
 
 
 namespace detail {
 
-class BloomPostEffectInstance
-    : public PostEffectInstance
+// cbuffer BloomCompositeParams
+struct BloomCompositeParams
 {
-protected:
-    bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+    /* [0] */   Vector4 _BloomTintColorsAndFactors[8];
+    /* [128] */ float _BloomStrength;
+    /* [132] */ float _BloomRadius;
+};  /* size:136 */
 
-LN_CONSTRUCT_ACCESS:
-    BloomPostEffectInstance();
-    bool init(BloomPostEffect* owner);
+// Filmic でも使いたいのでクラス化したもの
+class BloomPostEffectCore
+{
+public:
+    BloomPostEffectCore();
+    bool init(Material* compositeMaterial);
+
+    void setLuminosityThreshold(float value) { m_luminosityThreshold = value; }
+    void setBloomStrength(float value) { m_bloomStrength = value; }
+    void setBloomRadius(float value) { m_bloomRadius = value; }
+
+    void prepare(RenderingContext* context, RenderTargetTexture* source);
+    void render(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination);
 
 private:
     void resetResources(int resx, int resy);
 
-    BloomPostEffect* m_owner;
+    float m_luminosityThreshold;
+    float m_bloomStrength;
+    float m_bloomRadius;
+
+    BloomCompositeParams m_bloomCompositeParams;
 
     Ref<RenderTargetTexture> m_renderTargetBright;
     List<Ref<RenderTargetTexture>> m_renderTargetsHorizontal;
@@ -68,6 +82,21 @@ private:
     List<Ref<Material>> m_separableBlurMaterialsH;
     List<Ref<Material>> m_separableBlurMaterialsV;
     Ref<Material> m_materialHighPassFilter;
+};
+
+class BloomPostEffectInstance
+    : public PostEffectInstance
+{
+protected:
+    bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+
+LN_CONSTRUCT_ACCESS:
+    BloomPostEffectInstance();
+    bool init(BloomPostEffect* owner);
+
+private:
+    BloomPostEffect* m_owner;
+    BloomPostEffectCore m_effect;
 };
 
 } // namespace detail

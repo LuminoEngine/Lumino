@@ -59,12 +59,14 @@ class AnimationTrack
 {
 public:
 	/** このトラックのアニメーションが適用される要素の名前。（スキンメッシュアニメーションではボーン名、UIElement のアニメーションではプロパティ名など） */
-	const String& targetName() const { return m_targetName; }
+	//const String& targetName() const { return m_targetName; }
+	const AnimationTrackTargetKey& targetKey() const { return m_targetKey; }
 
 	/** このトラックのアニメーション値の型を取得します。 */
 	AnimationValueType type() const { return m_type; }
 
-    void setTargetName(const StringRef& name) { m_targetName = name; }
+    void setTargetName(const StringRef& value) { m_targetKey.name = value; }
+	void setTargetHumanoidBone(HumanoidBones value) { m_targetKey.bone = value; }
 
     virtual float lastFrameTime() const { return 0; }
 
@@ -76,7 +78,7 @@ protected:
 	//void setTargetName(const String& name) { m_targetName = name; }
 
 private:
-	String m_targetName;
+	AnimationTrackTargetKey m_targetKey;
 	AnimationValueType m_type;
 
 	friend class AnimationState;
@@ -125,6 +127,7 @@ public:
 
 /** (スキニングでは、ボーンアニメーションで使用) */
 // translation, rotation, scale をまとめて扱う。
+// 理由：
 // - 個々の要素を Curve にすると、10 個も Curve ができる。さらに Key(AnimationKeyFrame) というやや大きめのデータもたくさんできる。
 //   AnimationKeyFrame は UI アニメやシネマなど、Editor から編集するようなものに対してメインに使う。
 //   対して skin mesh animation は基本的に外部のモデラーで変種したデータを扱う。↑に比べて大量のキーフレームができる傾向にある。
@@ -160,6 +163,11 @@ public:
 	void setupRotations(int frames, const float* times, const Quaternion* values);
 	void setupScales(int frames, const float* times, const Vector3* values, Interpolation interpolation);
 
+	// for BVH
+	void resizeFramesTQ(int frames);
+	//void setDataTQ(int frame, float time, const Vector3& pos, const Quaternion& rot);
+	void setDataTQ(int frame, float time, const Vector3& pos, const Vector3& rot);
+
 LN_CONSTRUCT_ACCESS:
 	TransformAnimationTrack();
 
@@ -176,6 +184,9 @@ private:
 	Interpolation m_translationInterpolation;
 	Interpolation m_scaleInterpolation;
 	float m_lastTime;
+
+	// exp
+	std::vector<Vector3Key> m_rotationKeys2;
 };
 
 } // namespace ln

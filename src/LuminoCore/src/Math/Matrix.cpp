@@ -1167,7 +1167,10 @@ Matrix Matrix::makeRotationZ(float r)
     float c, s;
     Asm::sincos(r, &s, &c);
     return Matrix(
-        c, s, 0.0f, 0.0f, -s, c, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+        c, s, 0.0f, 0.0f,
+        -s, c, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 // static

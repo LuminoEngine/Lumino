@@ -89,7 +89,6 @@ void SceneRenderingPipeline::prepare(RenderTargetTexture* renderTarget)
         assert(m_materialBuffer->format() == TextureFormat::RGBA8);
         assert(m_objectIdBuffer->format() == TextureFormat::R32S);
     }
-
 }
 
 void SceneRenderingPipeline::render(
@@ -136,6 +135,7 @@ void SceneRenderingPipeline::render(
             renderViewInfo.mainLightViewProjection = Matrix::multiply(view, proj);
             renderViewInfo.mainLightShadowMap = m_shadowMap;
             renderViewInfo.mainLightShadowMapPixelSize = Size(renderViewInfo.mainLightShadowMap->width(), renderViewInfo.mainLightShadowMap->height());
+            renderViewInfo.mainLightShadowDensity = 0.5f;
         }
         else {
             // TODO: 今はダミーテクスチャを使うことで影を生成しないようにしているが、
@@ -143,6 +143,7 @@ void SceneRenderingPipeline::render(
             // 0 なら PS でシャドウ作らないみたいな対応が欲しい。
             renderViewInfo.mainLightShadowMap = Texture2D::whiteTexture();
             renderViewInfo.mainLightShadowMapPixelSize = Size(renderViewInfo.mainLightShadowMap->width(), renderViewInfo.mainLightShadowMap->height());
+            renderViewInfo.mainLightShadowDensity = 0.0f;
         }
     }
 
@@ -175,7 +176,7 @@ void SceneRenderingPipeline::render(
     //for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
     //    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, pass);
     //}
-    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->gbufferPass());
+    //m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->gbufferPass());
     m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
 
     {

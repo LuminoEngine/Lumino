@@ -1,8 +1,8 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
-#include <LuminoEngine/UI/UIButton.hpp>
-#include <LuminoEngine/UI/UIScrollView.hpp>
+#include <LuminoEngine/UI/Controls/UIButton.hpp>
+#include <LuminoEngine/UI/Controls/UIScrollView.hpp>
 #include <LuminoEngine/UI/UIItemsModel.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>

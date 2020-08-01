@@ -11,6 +11,7 @@ class RenderingContext;
 class StaticMeshModel;
 class MeshResource;
 class PostEffect;
+class FilmicPostEffect;
 namespace detail {
 class PostEffectRenderer;
 class SceneRenderingPipeline;
@@ -55,6 +56,7 @@ public:
     // TODO: internal
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
     const Ref<detail::SceneRenderingPipeline>& sceneRenderingPipeline() const { return m_sceneRenderingPipeline; }
+    const Ref<FilmicPostEffect>& finishingProcess() const { return m_finishingProcess; }
 
     WorldObject* findObjectInPoint(int x, int y);
 
@@ -91,7 +93,14 @@ private:
 
 	Ref<detail::InternalSkyBox> m_internalSkyBox;
     Ref<detail::InternalSkyDome> m_internalSkyDome;
+    Ref<FilmicPostEffect> m_finishingProcess;
     Ref<TransformControls> m_transformControls; // TODO: gizmo でまとめる？
+
+    // Unity だと HDR の設定は Camera につく。Viewport を使って画面を分割したとき、
+    // HDR ON/OFF の画面を同時にバックバッファに書いたりできる。
+    // 実際のところそんな用途があるかはわからないけど、ひとまず同じ実装にしておく。
+    Ref<RenderTargetTexture> m_hdrRenderTarget;
+    bool m_hdrEnabled = false;
 };
 
 } // namespace ln

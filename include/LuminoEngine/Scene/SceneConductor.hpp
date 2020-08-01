@@ -32,9 +32,9 @@ public:
 	float transitionEffectDuration() const { return m_transitionEffectDuration; }
 	void setTransitionEffectVague(float value);
 	float transitionEffectVague() const;
-	void gotoScene(Level* scene);
-	void callScene(Level* scene);
-	void returnScene();
+	void gotoScene(Level* scene, bool withEffect);
+	void callScene(Level* scene, bool withEffect);
+	void returnScene(bool withEffect);
 	Level* activeScene() const;
 	bool isTransitionEffectRunning() const;
 
@@ -42,6 +42,14 @@ public:
 
 	void executeCommands();
 	void releaseAndTerminateAllRunningScenes();
+
+	bool traverse(detail::IWorldObjectVisitor* visitor) const;
+	void updateObjectsWorldMatrix() const;
+	void preUpdate(float elapsedSeconds);
+	void update(float elapsedSeconds);
+	void postUpdate(float elapsedSeconds);
+	void collectRenderObjects(World* world, RenderingContext* context);
+	void renderGizmos(RenderingContext* context);
 
 private:
 	enum class EventType
@@ -59,6 +67,7 @@ private:
 	{
 		EventType type;
 		Ref<Level> scene;
+		bool withEffect;
 	};
 
 	void attemptFadeOutTransition();
@@ -66,7 +75,7 @@ private:
 
 	Ref<Level> m_activeScene;
 	std::deque<EventCommsnd> m_eventQueue;
-	std::stack<Ref<Level>> m_sceneStack;	// not contains m_activeScene
+	std::vector<Ref<Level>> m_sceneStack;	// not contains m_activeScene
 
 	LevelTransitionEffectMode m_transitionMode;
 	Ref<TransitionPostEffect> m_transitionEffect;

@@ -56,6 +56,7 @@ void MainWindow::onLoaded()
         {
             {
                 auto documentHSplitter = ln::makeObject<ln::UISplitter>();
+                documentHSplitter->setName(u"documentHSplitter");
                 documentHSplitter->setOrientation(ln::Orientation::Horizontal);
                 documentHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Direct, 300);
                 

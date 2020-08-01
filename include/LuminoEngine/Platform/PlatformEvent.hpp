@@ -205,6 +205,8 @@ struct PlatformEventArgs
 		{
 			short			screenX;				/** マウスイベント生成時のマウスの X 座標 (スクリーン座標) */
 			short			screenY;				/** マウスイベント生成時のマウスの Y 座標 (スクリーン座標) */
+			short grabOffsetX;
+			short grabOffsetY;
 
 		} mouseMove;
 
@@ -250,7 +252,7 @@ public:
 	static PlatformEventArgs makeWindowSizeChangedEvent(PlatformWindow* sender, int width, int height);
 	static PlatformEventArgs makeActivateChangedEvent(PlatformWindow* sender, bool active);
 	static PlatformEventArgs makeMouseButtonEvent(PlatformWindow* sender, PlatformEventType type, MouseButtons button/*, short screenX, short screenY*/, ModifierKeys modifierKeys);
-	static PlatformEventArgs makeMouseMoveEvent(PlatformWindow* sender, PlatformEventType type, short screenX, short screenY);
+	static PlatformEventArgs makeMouseMoveEvent(PlatformWindow* sender, PlatformEventType type, short screenX, short screenY, short grabOffsetX, short grabOffsetY);
 	static PlatformEventArgs makeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, Char keyChar);
 	static PlatformEventArgs makeMouseWheelEvent(PlatformWindow* sender, int delta);
 	static PlatformEventArgs makeDragDropEvent(PlatformWindow* sender, PlatformEventType type, DataObject* data, DragDropEffects* effect);

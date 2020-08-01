@@ -7,7 +7,7 @@
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
-#include <LuminoEngine/Scene/RigidBodyComponent.hpp>
+#include <LuminoEngine/Scene/Physics/RigidBody2DComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include "../Rendering/RenderingManager.hpp"
 #include "PhysicsManager.hpp"
@@ -218,17 +218,17 @@ void PhysicsObject2D::removeFromPhysicsWorld()
 	}
 }
 
-Ref<EventConnection> PhysicsObject2D::connectOnCollisionEnter(Ref<Collision2DEventHandler> handler)
+Ref<EventConnection> PhysicsObject2D::connectOnCollisionEnter(Ref<Contact2DEventHandler> handler)
 {
     return m_onCollisionEnter.connect(handler);
 }
 
-Ref<EventConnection> PhysicsObject2D::connectOnCollisionLeave(Ref<Collision2DEventHandler> handler)
+Ref<EventConnection> PhysicsObject2D::connectOnCollisionLeave(Ref<Contact2DEventHandler> handler)
 {
     return m_onCollisionLeave.connect(handler);
 }
 
-Ref<EventConnection> PhysicsObject2D::connectOnCollisionStay(Ref<Collision2DEventHandler> handler)
+Ref<EventConnection> PhysicsObject2D::connectOnCollisionStay(Ref<Contact2DEventHandler> handler)
 {
     return m_onCollisionStay.connect(handler);
 }

@@ -99,6 +99,7 @@
 
 */
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
@@ -148,9 +149,9 @@ void SpriteParticleGeometry::setMaterial(Material* material)
     m_material = material;
 }
 
-uint64_t SpriteParticleGeometry::calculateRendererHashKey() const
+uint64_t SpriteParticleGeometry::calculateRendererHashKey(ParticleEmitterModel2* emitterModel) const
 {
-    return reinterpret_cast<uint64_t>(m_material.get());
+    return reinterpret_cast<uint64_t>(m_material.get()) + static_cast<uint16_t>(emitterModel->m_geometryDirection);
 }
 
 //==============================================================================
@@ -176,6 +177,14 @@ bool ParticleEmitterModel2::init()
     return true;
 }
 
+void ParticleEmitterModel2::serialize2(Serializer2& ar)
+{
+    Object::serialize2(ar);
+    ar & makeNVP(u"maxParticles", m_spawnRate);
+    ar & makeNVP(u"spawnRate", m_maxParticles);
+    ar & makeNVP(u"burstCount", m_burstCount);
+}
+
 void ParticleEmitterModel2::setSpriteModule(Material* material)
 {
     auto geom = makeObject<SpriteParticleGeometry>();
@@ -198,6 +207,13 @@ bool ParticleModel2::init()
     m_emitters.add(emitter);
 
     return true;
+}
+
+void ParticleModel2::serialize2(Serializer2& ar)
+{
+    EffectResource::serialize2(ar);
+    ar & makeNVP(u"emitters", m_emitters);
+
 }
 
 } // namespace ln

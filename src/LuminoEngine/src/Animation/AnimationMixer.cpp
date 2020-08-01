@@ -47,7 +47,7 @@ void AnimationState::attachToTarget(AnimationMixerCore* animatorController)
 	// Curve の適用先を element から探し、見つかれば t に持っておく
 	for (auto& track : m_clip->tracks())
 	{
-		auto link = animatorController->requireAnimationTargetElementBlendLink(track->targetName());
+		auto link = animatorController->requireAnimationTargetElementBlendLink(track->targetKey());
 		if (link && link->rootValue.type() == track->type())
 		{
 			AnimationTrackInstance t;
@@ -413,14 +413,16 @@ void AnimationMixerCore::updateTargetElements()
 }
 
 // 複数の Track があるとき、ターゲット名が同じ Track は同じところに値を書き込みたい。
-detail::AnimationTargetElementBlendLink* AnimationMixerCore::requireAnimationTargetElementBlendLink(const StringRef& name)
+detail::AnimationTargetElementBlendLink* AnimationMixerCore::requireAnimationTargetElementBlendLink(const AnimationTrackTargetKey& key)
 {
-	auto data = m_targetElementBlendLinks.findIf([name](const Ref<detail::AnimationTargetElementBlendLink>& data) { return data->name == name; });
+	auto data = m_targetElementBlendLinks.findIf([&](const Ref<detail::AnimationTargetElementBlendLink>& data) { 
+		return AnimationTrackTargetKey::equals(data->key, key);
+	});
 	if (data) {
 		return (*data);
 	}
 	else {
-		detail::AnimationTargetElementBlendLink* newBinding = m_owner->onRequireBinidng(name);
+		detail::AnimationTargetElementBlendLink* newBinding = m_owner->onRequireBinidng(key);
 		if (newBinding) {
 			m_targetElementBlendLinks.add(newBinding);
 			return newBinding;

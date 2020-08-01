@@ -2,6 +2,7 @@
 #include "PostEffect.hpp"
 
 namespace ln {
+class ColorTone;
 namespace detail { class TonemapPostEffectInstance; }
 
 class TonemapPostEffect
@@ -21,6 +22,29 @@ private:
 };
 
 namespace detail {
+
+struct TonemapPostEffectParams
+{
+    float _paramA;  // shoulderStrength
+    float _paramB;  // linearStrength
+    float _paramCB;    // param.linearStrength * param.linearAngle
+    float _paramDE;    // param.toeStrength * param.toeNumerator
+    float _paramDF;    // param.toeStrength * param.toeDenominator
+    float _paramEperF;  // param.toeNumerator / param.toeDenominator
+    float _paramF_White;//
+    float _exposure;
+
+    void setup(
+        const float linearWhite,
+        const float shoulderStrength,
+        const float linearStrength,
+        const float linearAngle,
+        const float toeStrength,
+        const float toeNumerator,
+        const float toeDenominator,
+        const float exposure,
+        const ColorTone& tone);
+};
 
 class TonemapPostEffectInstance
     : public PostEffectInstance

@@ -227,6 +227,12 @@ void GraphicsManager::init(const Settings& settings)
 
 		m_linearSamplerState = makeObject<SamplerState>(TextureFilterMode::Linear);
 		m_linearSamplerState->setFrozen(true);
+
+		m_pointClampSamplerState = makeObject<SamplerState>(TextureFilterMode::Point, TextureAddressMode::Clamp);
+		m_pointClampSamplerState->setFrozen(true);
+
+		m_linearClampSamplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+		m_pointClampSamplerState->setFrozen(true);
 	}
 
 
@@ -328,11 +334,11 @@ Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
 {
 	// TODO: find cache
 
-	auto ptr = makeObject<Texture2D>(filePath);
+	auto obj = makeObject<Texture2D>(filePath);
 
-	detail::AssetObjectInternal::setAssetPath(ptr, filePath);
+	detail::AssetObjectInternal::setAssetPath(obj, filePath);
 
-	return ptr;
+	return obj;
 }
 
 Ref<Texture2DPromise> GraphicsManager::loadTexture2DAsync(const StringRef& filePath)

@@ -44,11 +44,12 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	SpriteParticleRenderer();
-	bool init(uint64_t hashKey, Material* material);
+	bool init(uint64_t hashKey, Material* material, ParticleGeometryDirection geometryDirection);
 
 private:
 	Ref<InstancedMeshList> m_batch;
 	Ref<Material> m_material;
+	ParticleGeometryDirection m_geometryDirection;
 
 	//Ref<RibbonRenderer> m_ribbonRenderer;	// TODO: tmp
 };

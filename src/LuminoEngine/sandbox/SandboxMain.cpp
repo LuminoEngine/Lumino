@@ -19,10 +19,10 @@
 #include "../src/Asset/AssetArchive.hpp"
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
-#include <LuminoEngine/UI/UIButton.hpp>
+#include <LuminoEngine/UI/Controls/UIButton.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
-#include <LuminoEngine/UI/UIPropertyFields.hpp>
+#include <LuminoEngine/UI/Controls/UIPropertyFields.hpp>
 #include <LuminoEngine/Tilemap/Voxel.hpp>
 #include <LuminoEngine/Scene/TransformControls.hpp>
 #include <LuminoEngine/PostEffect/LightShaftPostEffect.hpp>
@@ -272,6 +272,7 @@ void Example_SoundControl();
 void Example_Sprite();
 void Example_UIControls();
 void Example_Tilemap();
+void Experiment_CharacterController();
 void Experiment_Editor();
 void Experiment_Reflector();
 void Experiment_Scripting();
@@ -461,15 +462,16 @@ int main(int argc, char** argv)
 
     if (1) {
 		//Sandbox_EmptyApp();
-		Example_GameAudio();
+		//Example_GameAudio();
         //Example_MainLoop();
-		//Example_MeshViewer();
+		Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
         //Example_Sprite();
         //Example_UIControls();
 		//Example_Tilemap();
+        //Experiment_CharacterController();
         //Experiment_Editor();
         //Experiment_Reflector();
         //Experiment_Scripting();

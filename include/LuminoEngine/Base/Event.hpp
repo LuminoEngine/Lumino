@@ -76,13 +76,19 @@ public:
     using DelegateType = Ref<Delegate<TReturn(TArgs...)>>;
 
     Event()
-        : m_internalData(std::make_shared<EventInternalData>())
+        : m_internalData()
     {
     }
 
     ~Event()
     {
         clear();
+    }
+
+    /** このイベントからの通知を受けるコールバックを登録します。 */
+    void setPrimaryHandler(const DelegateType& handler)
+    {
+        m_primaryHandler = handler;
     }
 
     /** このイベントからの通知を受けるコールバックを登録します。 */
@@ -94,19 +100,29 @@ public:
     /** このイベントに登録されているコールバックをすべてクリアします。 */
     void clear() LN_NOEXCEPT
     {
-        m_internalData->connectionDataList.clear();
+        if (m_internalData) {
+            m_internalData->connectionDataList.clear();
+        }
     }
 
     /** このイベントに登録されているコールバックがあるかを確認します。 */
     bool isEmpty() const
     {
-        return m_internalData->connectionDataList.empty();
+        if (m_primaryHandler) return false;
+        if (m_internalData)
+            return m_internalData->connectionDataList.empty();
+        else
+            return true;
     }
 
     /** 登録されているすべてのコールバックへイベントを通知します。 */
     void raise(TArgs... args)
     {
-        if (!isEmpty()) {
+        if (m_primaryHandler) {
+            m_primaryHandler->call(std::forward<TArgs>(args)...);
+        }
+
+        if (m_internalData) {
             for (auto& data : m_internalData->connectionDataList) {
                 if (data->m_active)
                     data->handler->call(std::forward<TArgs>(args)...);
@@ -152,6 +168,10 @@ private:
 
     Ref<EventConnection> connectInternal(const DelegateType& handler)
     {
+        if (!m_internalData) {
+            m_internalData = std::make_shared<EventInternalData>();
+        }
+
         auto connectionData = requestFreeConnectionData();
         connectionData->handler = handler;
 
@@ -170,7 +190,14 @@ private:
         return newData;
     }
 
+    DelegateType m_primaryHandler;
     std::shared_ptr<EventInternalData> m_internalData;
+
+    // Note: ほとんどのケースではひとつのイベントに対してひとつのハンドラを登録して使うことになる。
+    // この Event クラスは複数のハンドラを登録でき、それぞれ登録解除したいときは EventConnection を利用するが、
+    // EventConnection を使うことはほぼ無かった。
+    // それよりも通常の get/set のように単一登録でもかまわないので単純な設定ができるようにしたい要求が出てきた。(null セットで解除など)
+    // m_primaryHandler はこのような単純な設定をしたいときに使う。
 };
 
 /** クラスメンバ関数を this で束縛するユーティリティです。 */

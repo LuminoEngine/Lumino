@@ -75,15 +75,15 @@ void PostEffectRenderer::applyInScenePostEffects(const List<PostEffect*>& imageE
     }
 }
 
-void PostEffectRenderer::render(RenderingContext* context, RenderTargetTexture* inout)
+void PostEffectRenderer::render(RenderingContext* context, RenderTargetTexture* input, RenderTargetTexture* output)
 {
 
 
 
     if (!m_imageEffectInstances.isEmpty() || !m_collectedPostEffectInstances.isEmpty())
     {
-		Ref<RenderTargetTexture> primaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA8, false);
-		Ref<RenderTargetTexture> secondaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA8, false);
+		Ref<RenderTargetTexture> primaryTarget = RenderTargetTexture::getTemporary(input->width(), input->height(), input->format(), false);
+		Ref<RenderTargetTexture> secondaryTarget = RenderTargetTexture::getTemporary(input->width(), input->height(), input->format(), false);
 
 
 #if 0
@@ -104,7 +104,7 @@ void PostEffectRenderer::render(RenderingContext* context, RenderTargetTexture* 
         for (auto& effect : m_collectedPostEffectInstances)
         {
             if (renderCount == 0) {
-                renderd = effect.instance->onRender(context, inout, secondaryTarget);
+                renderd = effect.instance->onRender(context, input, secondaryTarget);
             }
             else {
                 renderd = effect.instance->onRender(context, primaryTarget, secondaryTarget);
@@ -118,7 +118,7 @@ void PostEffectRenderer::render(RenderingContext* context, RenderTargetTexture* 
         for (auto& effect : m_imageEffectInstances)
         {
             if (renderCount == 0) {
-                renderd = effect.instance->onRender(context, inout, secondaryTarget);
+                renderd = effect.instance->onRender(context, input, secondaryTarget);
             }
             else {
                 renderd = effect.instance->onRender(context, primaryTarget, secondaryTarget);
@@ -134,7 +134,7 @@ void PostEffectRenderer::render(RenderingContext* context, RenderTargetTexture* 
 
         if (renderCount >= 1) {
             m_copyMaterial->setMainTexture(primaryTarget);
-            context->blit(m_copyMaterial, inout);
+            context->blit(m_copyMaterial, output);
         }
 
         context->popState();

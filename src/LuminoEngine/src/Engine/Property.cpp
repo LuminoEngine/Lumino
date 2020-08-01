@@ -70,6 +70,11 @@ Ref<Object> TypeInfo::createInstance(const String& typeName)
 	}
 }
 
+TypeInfo* TypeInfo::getTypeInfo(const Object* obj)
+{
+	return obj->_lnref_getThisTypeInfo();
+}
+
 void TypeInfo::initializeObjectProperties(Object* obj)
 {
     // TODO: ベースクラス

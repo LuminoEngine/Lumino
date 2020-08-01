@@ -89,14 +89,14 @@ template wchar_t StringHelper::toLower<wchar_t>(wchar_t ch);
 //template UTF32 StringHelper::toLower<UTF32>(UTF32 ch);
 template char16_t StringHelper::toLower<char16_t>(char16_t ch);
 
-template<typename TChar>
-bool StringHelper::isSpace(TChar ch)
-{
-	return isspace((uint8_t)ch) != 0;
-}
-template bool StringHelper::isSpace(UTF8 ch);
-template bool StringHelper::isSpace(UTF16 ch);
-template bool StringHelper::isSpace(UTF32 ch);
+//template<typename TChar>
+//bool StringHelper::isSpace(TChar ch)
+//{
+//	return isspace((uint8_t)ch) != 0;
+//}
+//template bool StringHelper::isSpace(UTF8 ch);
+//template bool StringHelper::isSpace(UTF16 ch);
+//template bool StringHelper::isSpace(UTF32 ch);
 
 
 template<typename TChar>

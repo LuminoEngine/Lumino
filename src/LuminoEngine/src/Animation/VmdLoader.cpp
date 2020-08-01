@@ -206,7 +206,7 @@ Ref<VmdData> VmdFile::load(Stream* stream)
 	static const float FrameRate = 30.0f;
 	static const Point DefaultInterpolA = Point(20.0f / 127.0f, 20.0f / 127.0f);
 	static const Point DefaultInterpolB = Point(107.0f / 127.0f, 107.0f / 127.0f);
-	static const bool rotateY180 = false;	// MMD モデルは Z- が正面になっていて、モーションもこれを前提としている。それを Z+ に直す
+	static const bool rotateY180 = false;	// MMD モデルは Z- が正面になっていて、モーションもこれを前提としている。それを Z+ に直すかどうか
 	static const Matrix adjustMatrix = Matrix::makeRotationY(Math::PI);
 	static const uint8_t name_AllParents[] = { 0x91, 0x53, 0x82, 0xc4, 0x82, 0xcc, 0x90, 0x65, 0x00 };	// "全ての親"
 
@@ -264,6 +264,12 @@ Ref<VmdData> VmdFile::load(Stream* stream)
 			angles.z *= -1;
 			frame.quaternion = Quaternion::makeFromEulerAngles(angles);
 		}
+		//if (String(vmdMotion.szBoneName) == u"左腕") {
+		//	Vector3 angles = frame.quaternion.toEulerAngles();
+		//	angles.z -= Math::PI/6;
+		//	frame.quaternion = Quaternion::makeFromEulerAngles(angles);
+
+		//}
 
 		// add frame to track
 		auto itr = m_boneTrackMap.find(vmdMotion.szBoneName);

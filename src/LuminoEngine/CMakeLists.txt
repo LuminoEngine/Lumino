@@ -115,9 +115,9 @@ file(GLOB LN_SOURCES_Rendering_RenderFeature ${LN_ENGINE_INCLUDE_DIR}/LuminoEngi
 
 file(GLOB LN_SOURCES_PostEffect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/PostEffect/*.hpp src/PostEffect/*.cpp src/PostEffect/*.hpp)
 
-file(GLOB LN_SOURCES_Effect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/*.hpp src/Effect/*.cpp src/Effect/*.hpp)
+file(GLOB LN_SOURCES_Effect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/*.hpp src/Effect/*.cpp src/Effect/*.hpp src/Effect/*.md)
 
-file(GLOB LN_SOURCES_Physics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/*.hpp src/Physics/*.cpp src/Physics/*.hpp)
+file(GLOB LN_SOURCES_Physics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/*.hpp src/Physics/*.cpp src/Physics/*.hpp  src/Physics/*.md)
 
 file(GLOB LN_SOURCES_Asset ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/*.hpp src/Asset/*.cpp src/Asset/*.hpp src/Asset/*.md)
 
@@ -145,8 +145,12 @@ file(GLOB LN_SOURCES_Scene_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Mesh
 file(GLOB LN_SOURCES_Scene_MeshTilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/MeshTilemap/*.hpp src/Scene/MeshTilemap/*.cpp src/Scene/MeshTilemap/*.hpp)
 file(GLOB LN_SOURCES_Scene_MeshVoxelmap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/MeshVoxelmap/*.hpp src/Scene/MeshVoxelmap/*.cpp src/Scene/MeshVoxelmap/*.hpp)
 file(GLOB LN_SOURCES_Scene_Reflection ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Reflection/*.hpp src/Scene/Reflection/*.cpp src/Scene/Reflection/*.hpp)
+file(GLOB LN_SOURCES_Scene_Physics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Physics/*.hpp src/Scene/Physics/*.cpp src/Scene/Physics/*.hpp)
+
 
 file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
+file(GLOB LN_SOURCES_UI_Controls ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Controls/*.hpp src/UI/Controls/*.cpp src/UI/Controls/*.hpp)
+file(GLOB LN_SOURCES_UI_Layout ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Layout/*.hpp src/UI/Layout/*.cpp src/UI/Layout/*.hpp)
 
 set(LN_SOURCES_UI
     ${LN_SOURCES_UI}
@@ -182,6 +186,7 @@ endif()
 
 
 if (WIN32)
+    file(GLOB LN_SOURCES_Graphics_DirectX12 src/Graphics/DirectX12/*.cpp src/Graphics/DirectX12/*.hpp)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
         ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
@@ -210,6 +215,7 @@ source_group("Audio\\ARIs" FILES ${LN_SOURCES_Audio_ARIs})
 source_group("Shader" FILES ${LN_SOURCES_Shader})
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 source_group("Graphics\\Vulkan" FILES ${LN_SOURCES_Graphics_Vulkan})
+source_group("Graphics\\DirectX12" FILES ${LN_SOURCES_Graphics_DirectX12})
 source_group("Graphics\\OpenGL" FILES ${LN_SOURCES_Graphics_OpenGL})
 source_group("Font" FILES ${LN_SOURCES_Font})
 source_group("Mesh" FILES ${LN_SOURCES_Mesh})
@@ -227,7 +233,10 @@ source_group("Scene\\Mesh" FILES ${LN_SOURCES_Scene_Mesh})
 source_group("Scene\\MeshTilemap" FILES ${LN_SOURCES_Scene_MeshTilemap})
 source_group("Scene\\MeshVoxelmap" FILES ${LN_SOURCES_Scene_MeshVoxelmap})
 source_group("Scene\\Reflection" FILES ${LN_SOURCES_Scene_Reflection})
+source_group("Scene\\Physics" FILES ${LN_SOURCES_Scene_Physics})
 source_group("UI" FILES ${LN_SOURCES_UI})
+source_group("UI\\Controls" FILES ${LN_SOURCES_UI_Controls})
+source_group("UI\\Layout" FILES ${LN_SOURCES_UI_Layout})
 source_group("Tilemap" FILES ${LN_SOURCES_Tilemap})
 source_group("Scripting" FILES ${LN_SOURCES_Scripting})
 source_group("Runtime" FILES ${LN_SOURCES_Runtime})
@@ -250,6 +259,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Graphics_Vulkan}
+    ${LN_SOURCES_Graphics_DirectX12}
     ${LN_SOURCES_Graphics_OpenGL}
     ${LN_SOURCES_Font}
     ${LN_SOURCES_Mesh}
@@ -267,7 +277,10 @@ set(LN_SOURCES
     ${LN_SOURCES_Scene_MeshTilemap}
     ${LN_SOURCES_Scene_MeshVoxelmap}
     ${LN_SOURCES_Scene_Reflection}
+    ${LN_SOURCES_Scene_Physics}
     ${LN_SOURCES_UI}
+    ${LN_SOURCES_UI_Controls}
+    ${LN_SOURCES_UI_Layout}
     ${LN_SOURCES_Tilemap}
     ${LN_SOURCES_Scripting}
     ${LN_SOURCES_Runtime}

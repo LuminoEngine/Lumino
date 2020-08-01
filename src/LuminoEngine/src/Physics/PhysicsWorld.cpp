@@ -257,7 +257,7 @@ void PhysicsWorld::removePhysicsObject(PhysicsObject* physicsObject)
     if (LN_REQUIRE(physicsObject)) return;
     if (LN_REQUIRE(physicsObject->physicsWorld() == this)) return;
     m_physicsObjectList.remove(physicsObject);
-    removeObjectInternal(physicsObject);
+    physicsObject->onRemoveFromPhysicsWorld();
     physicsObject->setPhysicsWorld(nullptr);
 }
 
@@ -283,6 +283,8 @@ void PhysicsWorld::stepSimulation(float elapsedSeconds)
     // m_elapsedTime が 16ms より大きい場合は、1回 16ms 分のシミュレーションを可能な限り繰り返して m_elapsedTime に追いついていく設定。
     // 遅れるほど計算回数が増えるので、最終的に破綻するかもしれない。
     //m_btWorld->stepSimulation(m_elapsedTime, 1 + (int)(m_elapsedTime / internalUnit), internalUnit);
+
+    processContactCommands();
 
     for (auto& obj : m_physicsObjectList) {
         obj->onAfterStepSimulation();
@@ -312,21 +314,59 @@ void PhysicsWorld::addObjectInternal(PhysicsObject* obj)
     }
 }
 
-void PhysicsWorld::removeObjectInternal(PhysicsObject* obj)
+//void PhysicsWorld::removeObjectInternal(PhysicsObject* obj)
+//{
+//    switch (obj->physicsObjectType())
+//    {
+//    case PhysicsObjectType::RigidBody:
+//        m_btWorld->addRigidBody(static_cast<RigidBody*>(obj)->body());
+//        break;
+//    default:
+//        LN_UNREACHABLE();
+//        break;
+//    }
+//}
+//
+void PhysicsWorld::postBeginContact(PhysicsObject* self, PhysicsObject* other)
 {
-    switch (obj->physicsObjectType())
-    {
-    case PhysicsObjectType::RigidBody:
-        m_btWorld->addRigidBody(static_cast<RigidBody*>(obj)->body());
-        break;
-    default:
-        LN_UNREACHABLE();
-        break;
-    }
+    if (LN_REQUIRE(self)) return;
+    if (LN_REQUIRE(other)) return;
+    m_contactCommands.push_back({ ContactCommandType::Begin, self, other });
 }
 
+void PhysicsWorld::postEndContact(PhysicsObject* self, PhysicsObject* other)
+{
+    if (LN_REQUIRE(self)) return;
+    if (LN_REQUIRE(other)) return;
+    m_contactCommands.push_back({ ContactCommandType::End, self, other });
+}
 
+void PhysicsWorld::processContactCommands()
+{
+    if (!m_contactCommands.empty()) {
+        for (const auto& command : m_contactCommands) {
+            switch (command.type)
+            {
+            case ContactCommandType::Begin:
+                command.self->beginContact(command.other);
+                break;
+            case ContactCommandType::End:
+                command.self->endContact(command.other);
+                break;
+            default:
+                LN_UNREACHABLE();
+                break;
+            }
+        }
+        m_contactCommands.clear();
+    }
 
+    for (auto& obj : m_physicsObjectList) {
+        for (auto& other : obj->m_contactBodies) {
+            obj->onCollisionStay(other, nullptr);
+        }
+    }
+}
 
 //==============================================================================
 // SpringJoint

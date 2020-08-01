@@ -13,6 +13,7 @@
 #include "FbxImporter.hpp"
 #include "ObjMeshImporter.hpp"
 #include "PmxImporter.hpp"
+#include "MeshBoneMapper.hpp"
 #include "MeshManager.hpp"
 
 namespace ln {
@@ -313,7 +314,8 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 			bool result = importer.importAsSkinnedMesh(mesh, m_assetManager, *path, diag);
 
 
-			if (!importer.animationClips().isEmpty()) {
+			//if (!importer.animationClips().isEmpty()) {
+			if (!mesh->skeletons().isEmpty()) {
 				//auto mixer = makeObject<AnimationMixerCore>();
 				mesh->m_animationController = makeObject<AnimationController>(mesh);
 
@@ -323,6 +325,9 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 			}
 
 		}
+
+		MeshBoneMapper boneMapper;
+		boneMapper.map(mesh);
 
 		diag->dumpToLog();
 		return mesh;

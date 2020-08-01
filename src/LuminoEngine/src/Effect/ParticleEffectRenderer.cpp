@@ -38,29 +38,45 @@ SpriteParticleRenderer::SpriteParticleRenderer()
 {
 }
 
-bool SpriteParticleRenderer::init(uint64_t hashKey, Material* material)
+bool SpriteParticleRenderer::init(uint64_t hashKey, Material* material, ParticleGeometryDirection geometryDirection)
 {
     if (!ParticleRenderer2::init(hashKey)) return false;
     m_material = material;
+    m_geometryDirection = geometryDirection;
 
     auto mesh = makeObject<Mesh>(4, 6, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
     auto vertices = reinterpret_cast<Vertex*>(mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
     auto indices = reinterpret_cast<uint16_t*>(mesh->acquireMappedIndexBuffer());
 
-    // Front: Z-
-    //vertices[0] = Vertex{ Vector3(-0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(0, 0), Color::White };
-    //vertices[1] = Vertex{ Vector3( 0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(1, 0), Color::White };
-    //vertices[2] = Vertex{ Vector3(-0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(0, 1), Color::White };
-    //vertices[3] = Vertex{ Vector3( 0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(1, 1), Color::White };
-    //indices[0] = 0; indices[1] = 1; indices[2] = 2; indices[3] = 2; indices[4] = 1; indices[5] = 3;
-
-    // Front: Y+, 進行方向を Z+ と考えたパターン。
-    vertices[0] = Vertex{ Vector3( 0.5, 0.0, -0.5), Vector3::UnitZ, Vector2(0, 0), Color::White };
-    vertices[1] = Vertex{ Vector3(-0.5, 0.0, -0.5), Vector3::UnitZ, Vector2(1, 0), Color::White };
-    vertices[2] = Vertex{ Vector3( 0.5, 0.0,  0.5), Vector3::UnitZ, Vector2(0, 1), Color::White };
-    vertices[3] = Vertex{ Vector3(-0.5, 0.0,  0.5), Vector3::UnitZ, Vector2(1, 1), Color::White };
-    indices[0] = 0; indices[1] = 1; indices[2] = 2; indices[3] = 2; indices[4] = 1; indices[5] = 3;
-
+    switch (m_geometryDirection)
+    {
+    case ln::ParticleGeometryDirection::ToView:
+    case ln::ParticleGeometryDirection::VerticalBillboard:
+        //// Front: Z-
+        //vertices[0] = Vertex{ Vector3(-0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(0, 0), Color::White };
+        //vertices[1] = Vertex{ Vector3( 0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(1, 0), Color::White };
+        //vertices[2] = Vertex{ Vector3(-0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(0, 1), Color::White };
+        //vertices[3] = Vertex{ Vector3( 0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(1, 1), Color::White };
+        //indices[0] = 0; indices[1] = 1; indices[2] = 2; indices[3] = 2; indices[4] = 1; indices[5] = 3;
+        // Front: Z+
+        vertices[0] = Vertex{ Vector3( 0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(0, 0), Color::White };
+        vertices[1] = Vertex{ Vector3(-0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(1, 0), Color::White };
+        vertices[2] = Vertex{ Vector3( 0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(0, 1), Color::White };
+        vertices[3] = Vertex{ Vector3(-0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(1, 1), Color::White };
+        indices[0] = 0; indices[1] = 1; indices[2] = 2; indices[3] = 2; indices[4] = 1; indices[5] = 3;
+        break;
+    case ln::ParticleGeometryDirection::Top:
+        // Front: Y+, 進行方向を Z+ と考えたパターン。
+        vertices[0] = Vertex{ Vector3(0.5, 0.0, -0.5), Vector3::UnitZ, Vector2(0, 0), Color::White };
+        vertices[1] = Vertex{ Vector3(-0.5, 0.0, -0.5), Vector3::UnitZ, Vector2(1, 0), Color::White };
+        vertices[2] = Vertex{ Vector3(0.5, 0.0,  0.5), Vector3::UnitZ, Vector2(0, 1), Color::White };
+        vertices[3] = Vertex{ Vector3(-0.5, 0.0,  0.5), Vector3::UnitZ, Vector2(1, 1), Color::White };
+        indices[0] = 0; indices[1] = 1; indices[2] = 2; indices[3] = 2; indices[4] = 1; indices[5] = 3;
+        break;
+    default:
+        LN_UNREACHABLE();
+        break;
+    }
 
 
     mesh->addSection(0, 2, 0, PrimitiveTopology::TriangleList);
@@ -79,54 +95,138 @@ bool SpriteParticleRenderer::init(uint64_t hashKey, Material* material)
 
 void SpriteParticleRenderer::draw(RenderingContext* context, const ParticleData2* particle)
 {
-    // Scale
-    const auto scale = Vector3(
-        particle->size * particle->crossScale,
-        particle->size * particle->crossScale,
-        particle->size * particle->forwardScale);
+    switch (m_geometryDirection)
+    {
+        case ln::ParticleGeometryDirection::ToView:
+        {
+            const auto scale = Vector3(particle->size * particle->crossScale, particle->size * particle->forwardScale, 1.0f);
+            const auto pos = particle->position;
+#if 0
+            const auto rotMat = Matrix::makeAffineLookAtLH(particle->position, context->viewPoint()->viewPosition, Vector3::UnitY);
 
-    // Position
-    const auto pos = particle->position;
+            const auto transform = Matrix(
+                scale.x * rotMat(0, 0), scale.x * rotMat(0, 1), scale.x * rotMat(0, 2), 0.0f,
+                scale.y * rotMat(1, 0), scale.y * rotMat(1, 1), scale.y * rotMat(1, 2), 0.0f,
+                scale.z * rotMat(2, 0), scale.z * rotMat(2, 1), scale.z * rotMat(2, 2), 0.0f,
+                pos.x, pos.y, pos.z, 1.0f
+            );
+#endif
+            const RenderViewPoint* viewPoint = context->viewPoint();
+
+            // ビュー平面との距離
+            float d = Vector3::dot(viewPoint->viewPosition - particle->position, viewPoint->viewDirection);
+
+            // left-hand coord
+            Vector3 f = Vector3::normalize(viewPoint->viewDirection * d);
+            Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
+            Vector3 u = Vector3::cross(f, r);
+            const auto transform = Matrix(
+                scale.x * r.x, scale.x * r.y, scale.x * r.z, 0.0f,
+                scale.y * u.x, scale.y * u.y, scale.y * u.z, 0.0f,
+                scale.z * f.x, scale.z * f.y, scale.z * f.z, 0.0f,
+                pos.x, pos.y, pos.z, 1.0f);
+
+            m_batch->setTransform(transform);
+            m_batch->drawMesh();
+            break;
+        }
+        
+        case ln::ParticleGeometryDirection::VerticalBillboard:
+        {
+            const auto scale = Vector3(particle->size * particle->crossScale, particle->size * particle->forwardScale, 1.0f);
+            const auto pos = particle->position;
+            const RenderViewPoint* viewPoint = context->viewPoint();
+
+            // ビュー平面との距離
+            const auto viewDir = Vector3::normalize(viewPoint->viewDirection.x, 0, viewPoint->viewDirection.z);
+            const auto viewPos = Vector3(viewPoint->viewPosition.x, 0, viewPoint->viewPosition.z);
+            const auto p = Vector3(particle->position.x, 0, particle->position.z);
+            //float d = Vector3::dot(viewDir -p, viewDir);
+
+            // left-hand coord
+            Vector3 f = Vector3::normalize(viewDir - p);
+            Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
+            Vector3 u = Vector3::cross(f, r);
+            //const auto transform = Matrix(
+            //    1, scale.x * r.y, 0, 0.0f,
+            //    0, scale.y * u.y, 0, 0.0f,
+            //    0, scale.z * f.y, 1, 0.0f,
+            //    pos.x, pos.y, pos.z, 1.0f);
+            //const auto transform = Matrix(
+            //    1, 0,0, 0.0f,
+            //    scale.y * u.x, scale.y * u.y, scale.y * u.z, 0.0f,
+            //    0, 0, 1, 0.0f,
+            //    pos.x, pos.y, pos.z, 1.0f);
+            const auto transform = Matrix(
+                scale.x * r.x, scale.x * r.y, scale.x * r.z, 0.0f,
+                scale.y * u.x, scale.y * u.y, scale.y * u.z, 0.0f,
+                scale.z * f.x, scale.z * f.y, scale.z * f.z, 0.0f,
+                pos.x, pos.y, pos.z, 1.0f);
+
+            m_batch->setTransform(transform);
+            m_batch->drawMesh();
+            break;
+        }
+
+
+    case ln::ParticleGeometryDirection::Top:
+    {
+
+        // Scale
+        const auto scale = Vector3(
+            particle->size * particle->crossScale,
+            particle->size * particle->crossScale,
+            particle->size * particle->forwardScale);
+
+        // Position
+        const auto pos = particle->position;
 
 #if 1
 
-    // Rotation
-    const auto& viewPosition = context->viewPoint()->viewPosition;
-    auto rotMat = makeRotationMatrix(viewPosition, particle->position, particle->linearVelocity);
+        // Rotation
+        const auto& viewPosition = context->viewPoint()->viewPosition;
+        auto rotMat = makeRotationMatrix(viewPosition, particle->position, particle->linearVelocity);
 
-    const auto transform = Matrix(
-        scale.x * rotMat(0, 0), scale.x * rotMat(0, 1), scale.x * rotMat(0, 2), 0.0f,
-        scale.y * rotMat(1, 0), scale.y * rotMat(1, 1), scale.y * rotMat(1, 2), 0.0f,
-        scale.z * rotMat(2, 0), scale.z * rotMat(2, 1), scale.z * rotMat(2, 2), 0.0f,
-        pos.x, pos.y, pos.z, 1.0f
-    );
+        const auto transform = Matrix(
+            scale.x * rotMat(0, 0), scale.x * rotMat(0, 1), scale.x * rotMat(0, 2), 0.0f,
+            scale.y * rotMat(1, 0), scale.y * rotMat(1, 1), scale.y * rotMat(1, 2), 0.0f,
+            scale.z * rotMat(2, 0), scale.z * rotMat(2, 1), scale.z * rotMat(2, 2), 0.0f,
+            pos.x, pos.y, pos.z, 1.0f
+        );
 
 #else
-    // Rotation
-    //  やってることは WorldObjectTransform::lookAt() とかと同じ。
-    //  View 行列の回転成分を作るのと同じ要領で、Front を進行方向、Up をカメラへの方向と考えて計算する。
-    const auto& viewPosition = context->viewPoint()->viewPosition;
-    const auto rotUp = Vector3::safeNormalize(viewPosition - particle->position, Vector3::UnitZ);
-    const auto rotFront = Vector3::safeNormalize(particle->linearVelocity, Vector3::UnitY); // 速度を持っていない場合は Y+ に進んでいることにする (Z+ だと Lumino デフォルト状態で表示できない)
-    auto rotRight = Vector3::cross(rotUp, rotFront);
-    if (Vector3::nearEqual(rotRight, Vector3::Zero)) {
-        rotRight = Vector3::cross(Vector3::UnitZ, rotFront);
-    }
-    rotRight.mutatingNormalize();
+        // Rotation
+        //  やってることは WorldObjectTransform::lookAt() とかと同じ。
+        //  View 行列の回転成分を作るのと同じ要領で、Front を進行方向、Up をカメラへの方向と考えて計算する。
+        const auto& viewPosition = context->viewPoint()->viewPosition;
+        const auto rotUp = Vector3::safeNormalize(viewPosition - particle->position, Vector3::UnitZ);
+        const auto rotFront = Vector3::safeNormalize(particle->linearVelocity, Vector3::UnitY); // 速度を持っていない場合は Y+ に進んでいることにする (Z+ だと Lumino デフォルト状態で表示できない)
+        auto rotRight = Vector3::cross(rotUp, rotFront);
+        if (Vector3::nearEqual(rotRight, Vector3::Zero)) {
+            rotRight = Vector3::cross(Vector3::UnitZ, rotFront);
+        }
+        rotRight.mutatingNormalize();
 
 
-    // 愚直に Scale * Rotation * Position の行列乗算をパーティクルごとに繰り返すと
-    // 計算負荷が馬鹿にならなくなるので、各要素を直接設定してしまう。
-    const auto transform = Matrix(
-        scale.x * rotRight.x, scale.x * rotRight.y, scale.x * rotRight.z, 0.0f,
-        scale.y * rotUp.x, scale.y * rotUp.y, scale.y * rotUp.z, 0.0f,
-        scale.z * rotFront.x, scale.z * rotFront.y, scale.z * rotFront.z, 0.0f,
-        pos.x, pos.y, pos.z, 1.0f
-    );
+        // 愚直に Scale * Rotation * Position の行列乗算をパーティクルごとに繰り返すと
+        // 計算負荷が馬鹿にならなくなるので、各要素を直接設定してしまう。
+        const auto transform = Matrix(
+            scale.x * rotRight.x, scale.x * rotRight.y, scale.x * rotRight.z, 0.0f,
+            scale.y * rotUp.x, scale.y * rotUp.y, scale.y * rotUp.z, 0.0f,
+            scale.z * rotFront.x, scale.z * rotFront.y, scale.z * rotFront.z, 0.0f,
+            pos.x, pos.y, pos.z, 1.0f
+        );
 #endif
 
-    m_batch->setTransform(transform);
-    m_batch->drawMesh();
+        m_batch->setTransform(transform);
+        m_batch->drawMesh();
+
+    }
+        break;
+    default:
+        LN_UNREACHABLE();
+        break;
+    }
 }
 
 void SpriteParticleRenderer::resetBatch()

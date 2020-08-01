@@ -411,12 +411,12 @@ protected:
 		raiseCollectionChanged(&e);
 	}
 
-	virtual int getItemCount() const
+	int getItemCount() const override
 	{
 		return static_cast<int>(m_data.size());
 	}
 
-	virtual const Variant* getItemAsVariant(int index)
+	const Variant* getItemAsVariant(int index) override
 	{
 		m_newItemCache->assign(m_data[index]);
 		return m_newItemCache;

@@ -6,10 +6,25 @@
 
 namespace ln {
 class Material;
+class ParticleEmitterModel2;
 
 enum class ParticleGeometryType
 {
 	Sprite,
+};
+
+enum class ParticleGeometryDirection
+{
+	//Default,
+
+	/** 常に視点方向を向く */
+	ToView,
+
+	/** 進行方向を軸に、表面 (Y+) が視点から見えるようにする */
+	Top,
+
+	/** Y 軸方向に直立し、カメラの方を向きます。 */
+	VerticalBillboard,
 };
 
 /** パーティクルのソート方法 */
@@ -32,7 +47,7 @@ class ParticleGeometry
 {
 public:
 	ParticleGeometryType type() const { return m_type; }
-	virtual uint64_t calculateRendererHashKey() const = 0;
+	virtual uint64_t calculateRendererHashKey(ParticleEmitterModel2* emitterModel) const = 0;
 
 LN_CONSTRUCT_ACCESS:
 	ParticleGeometry(ParticleGeometryType type);
@@ -48,7 +63,7 @@ class SpriteParticleGeometry
 public:
 	void setMaterial(Material* material);
 	const Ref<Material>& material() const { return m_material; }
-	uint64_t calculateRendererHashKey() const override;
+	uint64_t calculateRendererHashKey(ParticleEmitterModel2* emitterModel) const override;
 
 LN_CONSTRUCT_ACCESS:
 	SpriteParticleGeometry();
@@ -60,7 +75,7 @@ private:
 
 
 class ParticleEmitterModel2
-	: public EffectResource
+	: public Object
 {
 public:
 	const Ref<ParticleGeometry>& geometry() const { return m_geometry; }
@@ -97,7 +112,7 @@ public:
 	ParticleEmitterShapeType m_shapeType = ParticleEmitterShapeType::Sphere;
 	Vector3 m_shapeParam;	// Coneの場合、.x が有効角度。0~PI。Boxの場合は各辺の幅
 	RadomRangeValue<float> m_forwardPosition;
-	RadomRangeValue<float> m_forwardVelocity = { 1, 1 };
+	RadomRangeValue<float> m_forwardVelocity;// = { 1, 1 };
 	RadomRangeValue<float> m_forwardAccel;
 	// ↑ forwardXXXX は、 ShapeType で決まった正面方向に対する Dynamics.
 	// Sphere,Cone の場合は放射方向、Box の場合は Y+.
@@ -105,12 +120,17 @@ public:
 
 
 	RadomRangeValue<float> m_size;			// default:1 ベースの geom 対するスケール値。
-	RadomRangeValue<float> m_forwardScale;	// default:1 進行方向に対するスケール値。通常、Z軸
-	RadomRangeValue<float> m_crossScale;	// default:1 進行方向以外に対するスケール値。XとY軸
+	RadomRangeValue<float> m_forwardScale;	// default:1 進行方向に対するスケール値。通常、Z軸。ParticleGeometryDirection::ToView では Y scale
+	RadomRangeValue<float> m_crossScale;	// default:1 進行方向以外に対するスケール値。XとY軸。ParticleGeometryDirection::ToView では X scale
 
+	ParticleGeometryDirection m_geometryDirection = ParticleGeometryDirection::ToView;
+
+	float m_trailSeconds = 0.0f; //1.0f;	// Trail を生成する時間
 
 	ParticleSortMode m_sortMode = ParticleSortMode::None;
 
+protected:
+	void serialize2(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	ParticleEmitterModel2();
@@ -125,8 +145,12 @@ class ParticleModel2
 {
 public:
 	bool m_loop = true;
+	int seed = 0;
 
 	const List<Ref<ParticleEmitterModel2>>& emitters() const { return m_emitters; }
+
+protected:
+	void serialize2(Serializer2& ar) override;
 
 
 LN_CONSTRUCT_ACCESS:

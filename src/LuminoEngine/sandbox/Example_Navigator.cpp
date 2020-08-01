@@ -1,10 +1,10 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
-#include <LuminoEngine/UI/UIButton.hpp>
+#include <LuminoEngine/UI/Controls/UIButton.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
-#include <LuminoEngine/UI/UIListBox.hpp>
+#include <LuminoEngine/UI/Controls/UIListBox.hpp>
 #include <LuminoEngine/Engine/VMProperty.hpp>
 using namespace ln;
 

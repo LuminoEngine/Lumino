@@ -11,7 +11,7 @@
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
-#include <LuminoEngine/UI/UIControl.hpp>
+#include <LuminoEngine/UI/Controls/UIControl.hpp>
 #include <LuminoEngine/UI/UITextBlock.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "UIManager.hpp"
@@ -633,6 +633,20 @@ void UIElement::releaseCapture()
 	m_manager->releaseCapture(this);
 }
 
+// NOTE: このあたりの grab/release はプロパティにしないの？
+// → get で現在のキャプチャされているかどうかを知ることができない。(OS によって厳しく制御されるため)
+//   なのでふるまいではなく状態として扱っても、その状態を取り合わせる仕組みが無い。
+//   プロパティとしてはちょっと不自然。
+void UIElement::grabCursor()
+{
+    m_manager->grabCursor(this);
+}
+
+void UIElement::releaseCursor()
+{
+    m_manager->releaseCursor(this);
+}
+
 // Note: 結局 WPF のように getVisualChildCount() と getVisualChild() をオーバーライドする方式はやめた。
 // 全ての Element は parent を持つ必要があるし、それの主な理由は Event の Bubble 実装のため。
 // なので、この parent は visual-parent でなければならない。
@@ -758,6 +772,26 @@ Size UIElement::arrangeOverride(UILayoutContext* layoutContext, const Size& fina
 	return UILayoutElement::arrangeOverride(layoutContext, finalSize);
 }
 
+void UIElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect)
+{
+    UILayoutElement::arrangeLayout(layoutContext, localSlotRect);
+
+
+    updateFinalRects(layoutContext, (m_visualParent) ? m_visualParent->m_combinedFinalRenderTransform : Matrix::Identity);
+
+    //// child elements
+    //int count = getVisualChildrenCount();
+    //for (int i = 0; i < count; i++) {
+    //    getVisualChild(i)->updateFinalLayoutHierarchical(layoutContext, m_combinedFinalRenderTransform);
+    //}
+
+    m_dirtyFlags.unset(detail::UIElementDirtyFlags::Layout);
+
+    // Re-draw
+    // TODO: 本当に描画に影響するプロパティが変わったときだけにしたい
+    invalidate(detail::UIElementDirtyFlags::Render, true);
+}
+
 void UIElement::onRender(UIRenderingContext* context)
 {
 }
@@ -811,10 +845,12 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	// Re-layout
     // TODO: 本当にレイアウトに影響するプロパティが変わったときだけにしたい
 	invalidate(detail::UIElementDirtyFlags::Layout, true);
+
 }
 
 void UIElement::updateFinalLayoutHierarchical(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform)
 {
+#if 0   // NOTE: 行列更新パスはいったん arrangeLayout でやることにしてみる。Popup でターゲットの位置を知りたいときに、グローバル座標が決定していないと計算が大変になるので。
     updateFinalRects(layoutContext, parentCombinedRenderTransform);
 
     // child elements
@@ -828,6 +864,7 @@ void UIElement::updateFinalLayoutHierarchical(UILayoutContext* layoutContext, co
 	// Re-draw
     // TODO: 本当に描画に影響するプロパティが変わったときだけにしたい
 	invalidate(detail::UIElementDirtyFlags::Render, true);
+#endif
 }
 
 //void UIElement::updateLayoutHierarchical(const Rect& parentFinalGlobalRect)
@@ -861,7 +898,7 @@ void UIElement::render(UIRenderingContext* context, const Matrix& parentTransfor
 		Matrix combinedTransform = parentTransform * m_localTransform;
 
 		context->m_theme = m_finalStyle->theme;
-		renderClient(context, combinedTransform);
+		renderClient(context, m_combinedFinalRenderTransform);
 
     }
 
@@ -1017,7 +1054,11 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 void UIElement::onRoutedEvent(UIEventArgs* e)
 {
 	if (e->type() == UIEvents::MouseDownEvent) {
-		focus();
+        if (m_focusable) {
+            focus();
+            e->handled = true;
+            return;
+        }
 	}
 }
 
@@ -1065,6 +1106,8 @@ void UIElement::attemptAddToPrimaryElement()
 void UIElement::raiseEventInternal(UIEventArgs* e, UIEventRoutingStrategy strategy)
 {
     if (LN_REQUIRE(e)) return;
+
+    e->strategy = strategy;
 
     // まずは this に通知
     onRoutedEvent(e);

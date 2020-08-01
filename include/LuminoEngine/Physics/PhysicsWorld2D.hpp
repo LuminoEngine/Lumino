@@ -29,7 +29,7 @@ class LocalContactListener; // TODO: detail
 class ContactPoint2D;
 class WorldObject;
 
-using Collision2DEventHandler = Delegate<void(PhysicsObject2D*, ContactPoint2D*)>;
+using Contact2DEventHandler = Delegate<void(PhysicsObject2D*, ContactPoint2D*)>;
 using Trigger2DEventHandler = Delegate<void(PhysicsObject2D*)>;
 
 /** 2D 物理演算用の衝突判定形状です。 */
@@ -171,21 +171,21 @@ public:
 
     /** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-    Ref<EventConnection> connectOnCollisionEnter(Ref<Collision2DEventHandler> handler);
+    Ref<EventConnection> connectOnCollisionEnter(Ref<Contact2DEventHandler> handler);
 
     /** onTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-	Ref<EventConnection> connectOnCollisionLeave(Ref<Collision2DEventHandler> handler);
+	Ref<EventConnection> connectOnCollisionLeave(Ref<Contact2DEventHandler> handler);
 
     /** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-	Ref<EventConnection> connectOnCollisionStay(Ref<Collision2DEventHandler> handler);
+	Ref<EventConnection> connectOnCollisionStay(Ref<Contact2DEventHandler> handler);
 
 
 public: // TODO: internal
 	Vector2 m_position;
 	b2Body* m_body;
-    void setEventListener(detail::IPhysicsObjectEventListener* listener) { m_listener = listener; }
+    void setEventListener(detail::IPhysicsObject2DEventListener* listener) { m_listener = listener; }
     void setOwnerData(void* data) { m_ownerData = data; }
     void* ownerData() const { return m_ownerData; }
     void setCollisionEmitter(Object* value) { m_collisionEmitter = value; }
@@ -193,7 +193,7 @@ public: // TODO: internal
 
 protected:
     // TODO: internal
-    //detail::IPhysicsObjectEventListener* eventListener() const { return m_listener; }
+    //detail::IPhysicsObject2DEventListener* eventListener() const { return m_listener; }
 
     /** 他の PhysicsObject2D が、この CollisionBody との接触を開始したときに呼び出されます。*/
     virtual void onCollisionEnter(PhysicsObject2D* otherObject, ContactPoint2D* contact);
@@ -221,10 +221,10 @@ private:
 
 	PhysicsWorld2D* m_ownerWorld;
     List<PhysicsObject2D*> m_contactBodies;
-    detail::IPhysicsObjectEventListener* m_listener;
-    Event<Collision2DEventHandler> m_onCollisionEnter;
-    Event<Collision2DEventHandler> m_onCollisionLeave;
-    Event<Collision2DEventHandler> m_onCollisionStay;
+    detail::IPhysicsObject2DEventListener* m_listener;
+    Event<Contact2DEventHandler> m_onCollisionEnter;
+    Event<Contact2DEventHandler> m_onCollisionLeave;
+    Event<Contact2DEventHandler> m_onCollisionStay;
     void* m_ownerData;
     Ref<Object> m_collisionEmitter;
 

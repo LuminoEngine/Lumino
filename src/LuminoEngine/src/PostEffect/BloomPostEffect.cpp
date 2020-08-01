@@ -64,22 +64,20 @@ Ref<PostEffectInstance> BloomPostEffect::onCreateInstance()
 
 //==============================================================================
 // BloomPostEffectInstance
-
 namespace detail {
 
-BloomPostEffectInstance::BloomPostEffectInstance()
-    : m_owner(nullptr)
-    , m_viewWidth(0)
+BloomPostEffectCore::BloomPostEffectCore()
+    : m_viewWidth(0)
     , m_viewHeight(0)
 {
+    static_assert(offsetof(BloomCompositeParams, _BloomTintColorsAndFactors) == 0, "Invalid offset: BloomCompositeParams._BloomTintColors");
+    static_assert(offsetof(BloomCompositeParams, _BloomStrength) == 128, "Invalid offset: BloomCompositeParams._BloomStrength");
+    static_assert(offsetof(BloomCompositeParams, _BloomRadius) == 132, "Invalid offset: BloomCompositeParams._BloomRadius");
+    static_assert(sizeof(BloomCompositeParams) == 136, "Invalid size: BloomCompositeParams");
 }
 
-bool BloomPostEffectInstance::init(BloomPostEffect* owner)
+bool BloomPostEffectCore::init(Material* compositeMaterial)
 {
-    if (!PostEffectInstance::init()) return false;
-
-    m_owner = owner;
-
     const auto* manager = detail::EngineDomain::renderingManager();
 
     auto luminosityHighPassShader = manager->builtinShader(detail::BuiltinShader::LuminosityHighPassShader);
@@ -107,17 +105,22 @@ bool BloomPostEffectInstance::init(BloomPostEffect* owner)
         m_separableBlurMaterialsV.add(materialV);
     }
 
-    auto bloomCompositeShader = manager->builtinShader(detail::BuiltinShader::BloomComposite);
-    m_compositeMaterial = makeObject<Material>();
-    m_compositeMaterial->setBlendMode(BlendMode::Normal);
-    m_compositeMaterial->setShader(bloomCompositeShader);
+    if (compositeMaterial) {
+        m_compositeMaterial = compositeMaterial;
+    }
+    else {
+        auto bloomCompositeShader = manager->builtinShader(detail::BuiltinShader::BloomComposite);
+        m_compositeMaterial = makeObject<Material>();
+        m_compositeMaterial->setBlendMode(BlendMode::Normal);
+        m_compositeMaterial->setShader(bloomCompositeShader);
+    }
 
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
     return true;
 }
 
-bool BloomPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+void BloomPostEffectCore::prepare(RenderingContext* context, RenderTargetTexture* source)
 {
     int resx = source->width();
     int resy = source->height();
@@ -134,7 +137,7 @@ bool BloomPostEffectInstance::onRender(RenderingContext* context, RenderTargetTe
     {
         m_materialHighPassFilter->setVector(u"_Color", Vector4(0.0f, 0.0f, 0.0f, 0.0f));
         m_materialHighPassFilter->setFloat(u"_Opacity", 0.0f);
-        m_materialHighPassFilter->setFloat(u"_LuminosityThreshold", m_owner->m_luminosityThreshold);
+        m_materialHighPassFilter->setFloat(u"_LuminosityThreshold", m_luminosityThreshold);
         m_materialHighPassFilter->setFloat(u"_SmoothWidth", 0.01);
 
         m_materialHighPassFilter->setMainTexture(source);
@@ -153,18 +156,20 @@ bool BloomPostEffectInstance::onRender(RenderingContext* context, RenderTargetTe
         inputRenderTarget = m_renderTargetsVertical[i];
     }
 
-    // Composite All the mips
-    m_compositeMaterial->setMainTexture(source);
-    Vector4 bloomTintColors[] = { Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1) };
-    m_compositeMaterial->setFloat(u"_BloomStrength", m_owner->m_bloomStrength);
-    m_compositeMaterial->setFloat(u"_BloomRadius", m_owner->m_bloomRadius);
-    m_compositeMaterial->setVectorArray(u"_BloomTintColors", bloomTintColors, MIPS);
-    context->blit(m_compositeMaterial, destination);
-
-    return true;
+    // Composite params
+    m_bloomCompositeParams._BloomStrength = m_bloomStrength;
+    m_bloomCompositeParams._BloomRadius = m_bloomRadius;
+    m_compositeMaterial->setBufferData(u"BloomCompositeParams", &m_bloomCompositeParams, sizeof(m_bloomCompositeParams));
 }
 
-void BloomPostEffectInstance::resetResources(int resx, int resy)
+void BloomPostEffectCore::render(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+{
+    // Composite All the mips
+    m_compositeMaterial->setMainTexture(source);
+    context->blit(m_compositeMaterial, destination);
+}
+
+void BloomPostEffectCore::resetResources(int resx, int resy)
 {
     m_renderTargetsHorizontal.clear();
     m_renderTargetsVertical.clear();
@@ -188,17 +193,59 @@ void BloomPostEffectInstance::resetResources(int resx, int resy)
         ry = std::round(resy / 2);
     }
 
+    // Composite params
+    m_bloomCompositeParams._BloomTintColorsAndFactors[0] = Vector4(1.0, 1.0, 1.0, 1.0);
+    m_bloomCompositeParams._BloomTintColorsAndFactors[1] = Vector4(1.0, 1.0, 1.0, 0.8);
+    m_bloomCompositeParams._BloomTintColorsAndFactors[2] = Vector4(1.0, 1.0, 1.0, 0.6);
+    m_bloomCompositeParams._BloomTintColorsAndFactors[3] = Vector4(1.0, 1.0, 1.0, 0.4);
+    m_bloomCompositeParams._BloomTintColorsAndFactors[4] = Vector4(1.0, 1.0, 1.0, 0.2);
+
     // Composite material
-    float bloomFactors[] = { 1.0, 0.8, 0.6, 0.4, 0.2 };
     m_compositeMaterial->setTexture(u"_BlurTexture1", m_renderTargetsVertical[0]);
     m_compositeMaterial->setTexture(u"_BlurTexture2", m_renderTargetsVertical[1]);
     m_compositeMaterial->setTexture(u"_BlurTexture3", m_renderTargetsVertical[2]);
     m_compositeMaterial->setTexture(u"_BlurTexture4", m_renderTargetsVertical[3]);
     m_compositeMaterial->setTexture(u"_BlurTexture5", m_renderTargetsVertical[4]);
-    m_compositeMaterial->setFloatArray(u"_BloomFactors", bloomFactors, MIPS);
 
     m_viewWidth = resx;
     m_viewHeight = resy;
+}
+
+} // namespace detail
+
+//==============================================================================
+// BloomPostEffectInstance
+
+namespace detail {
+
+BloomPostEffectInstance::BloomPostEffectInstance()
+    : m_owner(nullptr)
+{
+}
+
+bool BloomPostEffectInstance::init(BloomPostEffect* owner)
+{
+    if (!PostEffectInstance::init()) return false;
+
+    m_owner = owner;
+
+    if (!m_effect.init(nullptr)) {
+        return false;
+    }
+
+    return true;
+}
+
+bool BloomPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+{
+    m_effect.setLuminosityThreshold(m_owner->m_luminosityThreshold);
+    m_effect.setBloomStrength(m_owner->m_bloomStrength);
+    m_effect.setBloomRadius(m_owner->m_bloomRadius);
+
+    m_effect.prepare(context, source);
+    m_effect.render(context, source, destination);
+
+    return true;
 }
 
 } // namespace detail

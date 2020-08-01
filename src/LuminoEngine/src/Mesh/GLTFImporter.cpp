@@ -22,6 +22,12 @@
 namespace ln {
 namespace detail {
 
+GLTFImporter::GLTFImporter()
+	: m_flipZ(true)
+	, m_flipX(false)
+{
+}
+
 bool GLTFImporter::openGLTFModel(const AssetPath& assetPath)
 {
 	m_basedir = assetPath.getParentAssetPath();
@@ -91,6 +97,10 @@ bool GLTFImporter::GLTFImporter::importAsSkinnedMesh(SkinnedMeshModel* model, As
 			return false;
 		}
 		model->addSkeleton(meshSkeleton);
+
+		// Note: skins->skeleton は将来的に使われなくなるみたいなプロパティ。
+		// どうもルートボーンを示すための値らしいのだが、Three.js とかでは無視されているようだ。
+		// https://tkaaad97.hatenablog.com/entry/2019/07/28/175737
 	}
 
 	for (const auto& animation : m_model->animations) {
@@ -121,13 +131,32 @@ bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
 		meshModel->addMeshContainer(meshContainer);
 	}
 
+	// 先に MeshNode のインスタンスを作っておく。親子関係を結ぶときに参照したい。
 	for (auto& node : m_model->nodes) {
-		auto meshNode = readNode(node);
-		if (!meshNode) {
-			return false;
-		}
+		auto meshNode = makeObject<MeshNode>();
 		meshModel->addNode(meshNode);
 	}
+
+	for (int i = 0; i < m_model->nodes.size(); i++) {
+		if (!readNode(meshModel->m_nodes[i], m_model->nodes[i])) {
+			return false;
+		}
+
+		//auto coreNode = makeObject<MeshNode>();
+		//auto meshNode = readNode(node);
+		//if (!meshNode) {
+		//	return false;
+		//}
+		//meshModel->addNode(meshNode);
+	}
+
+	// MeshNode のインスタンスを作った後、親子関係を結ぶ
+	//for (auto& node : m_model->nodes) {
+	//	for (size_t i = 0; i < node.children.size(); i++) {
+	//		assert(node.children[i] < m_model->nodes.size());
+	//		coreNode->addChildIndex(node.children[i]);
+	//	}
+	//}
 
 	int scene_to_display = m_model->defaultScene > -1 ? m_model->defaultScene : 0;
 	const tinygltf::Scene& scene = m_model->scenes[scene_to_display];
@@ -226,7 +255,8 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
     return coreMaterial;
 }
 
-Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
+//Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
+bool GLTFImporter::readNode(MeshNode* coreNode, const tinygltf::Node& node)
 {
 	Matrix nodeTransform;
 	if (node.matrix.size() == 16) {
@@ -260,7 +290,20 @@ Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
 		}
 	}
 
-    auto coreNode = makeObject<MeshNode>();
+
+	//if (m_flipZ) {
+	//	//nodeTransform(2, 0) = -nodeTransform(2, 0);
+	//	//nodeTransform(2, 1) = -nodeTransform(2, 1);
+	//	//nodeTransform(2, 2) = -nodeTransform(2, 2);
+	//	nodeTransform(3, 2) = -nodeTransform(3, 2);
+	//}
+	if (m_flipX) {
+		//nodeTransform(0, 0) = -nodeTransform(0, 0);
+		//nodeTransform(0, 1) = -nodeTransform(0, 1);
+		//nodeTransform(0, 2) = -nodeTransform(0, 2);
+		nodeTransform(3, 0) = -nodeTransform(3, 0);
+	}
+
 	coreNode->setName(String::fromStdString(node.name));
     coreNode->setInitialLocalTransform(nodeTransform);
 	coreNode->skeletonIndex = node.skin;
@@ -272,10 +315,10 @@ Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
 
 	for (size_t i = 0; i < node.children.size(); i++) {
 		assert(node.children[i] < m_model->nodes.size());
-        coreNode->addChildIndex(node.children[i]);
+		coreNode->addChildIndex(node.children[i]);
 	}
 
-	return coreNode;
+	return true;
 }
 
 // glTF の Mesh は小単位として Primitive というデータを持っている。
@@ -628,24 +671,24 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 				else if (vbView.usage == VertexElementUsage::Color) offset = LN_MEMBER_OFFSETOF(Vertex, color);
 				else if (vbView.usage == VertexElementUsage::Tangent) offset = LN_MEMBER_OFFSETOF(Vertex, tangent);
 				else {
-					LN_ERROR();
+				LN_ERROR();
 				}
 			}
 			else if (reservedGroup == InterleavedVertexGroup::Skinning) {
-				stride = sizeof(VertexBlendWeight);
-				if (vbView.usage == VertexElementUsage::BlendIndices) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, indices);
-				else if (vbView.usage == VertexElementUsage::BlendWeight) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, weights);
-				else {
-					LN_ERROR();
-				}
+			stride = sizeof(VertexBlendWeight);
+			if (vbView.usage == VertexElementUsage::BlendIndices) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, indices);
+			else if (vbView.usage == VertexElementUsage::BlendWeight) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, weights);
+			else {
+				LN_ERROR();
+			}
 			}
 			else {
-				stride = GraphicsHelper::getVertexElementTypeSize(vbView.type);
-				//int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
-				//for (int i = 0; i < vertexCountInSection; i++) {
-				//	memcpy(&buf[(vertexOffset + i) * size], src + (vbView.byteStride * i), size);
-				//	//memcpy(&buf[(vertexOffset + i) * size], src + (vbView.byteStride * i), size);
-				//}
+			stride = GraphicsHelper::getVertexElementTypeSize(vbView.type);
+			//int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
+			//for (int i = 0; i < vertexCountInSection; i++) {
+			//	memcpy(&buf[(vertexOffset + i) * size], src + (vbView.byteStride * i), size);
+			//	//memcpy(&buf[(vertexOffset + i) * size], src + (vbView.byteStride * i), size);
+			//}
 			}
 
 			if (destType != vbView.type) {
@@ -689,41 +732,58 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 
 
-			// Flip Z (RH to LH)
-			{
-#if 0	// 単に z 反転しただけだと、Node 行列との齟齬がでるのか、正しい位置に描画されなくなる
-				if (reservedGroup == InterleavedVertexGroup::Main && vbView.usage == VertexElementUsage::Position) {
-					if (vbView.type == VertexElementType::Float3) {
-						auto* p = reinterpret_cast<Vertex*>(rawbuf);
-						for (int i = 0; i < vertexCountInSection; i++) {
-							p[i].position.z *= -1.0f;
-						}
-					}
-					else {
-						LN_NOTIMPLEMENTED();
-						return nullptr;
-					}
-				}
-				else
-				if (reservedGroup == InterleavedVertexGroup::Main && vbView.usage == VertexElementUsage::Normal) {
-					if (vbView.type == VertexElementType::Float3) {
-						auto* p = reinterpret_cast<Vertex*>(rawbuf);
-						for (int i = 0; i < vertexCountInSection; i++) {
-							p[i].normal.z *= -1.0f;
-						}
-					}
-					else {
-						LN_NOTIMPLEMENTED();
-						return nullptr;
-					}
-				}
-#endif
-			}
-            // TODO: unmap 無いとめんどい以前に怖い
-        }
+			//// Flip Z (RH to LH)
+			//if (m_flipZ)
+			//{
+			//	if (reservedGroup == InterleavedVertexGroup::Main && vbView.usage == VertexElementUsage::Position) {
+			//		if (vbView.type == VertexElementType::Float3) {
+			//			auto* p = reinterpret_cast<Vertex*>(rawbuf);
+			//			for (int i = 0; i < vertexCountInSection; i++) {
+			//				p[i].position.z *= -1.0f;
+			//			}
+			//		}
+			//		else {
+			//			LN_NOTIMPLEMENTED();
+			//			return nullptr;
+			//		}
+			//	}
+			//	else
+			//	if (reservedGroup == InterleavedVertexGroup::Main && vbView.usage == VertexElementUsage::Normal) {
+			//		if (vbView.type == VertexElementType::Float3) {
+			//			auto* p = reinterpret_cast<Vertex*>(rawbuf);
+			//			for (int i = 0; i < vertexCountInSection; i++) {
+			//				p[i].normal.z *= -1.0f;
+			//			}
+			//		}
+			//		else {
+			//			LN_NOTIMPLEMENTED();
+			//			return nullptr;
+			//		}
+			//	}
+			//}
+   //         // TODO: unmap 無いとめんどい以前に怖い
+		}
 
-        vertexOffset += vertexCountInSection;
-    }
+		vertexOffset += vertexCountInSection;
+	}
+
+	// Flip Z (RH to LH)
+	if (m_flipZ)  {
+		auto* vertices = static_cast<Vertex*>(coreMesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
+		const int count = coreMesh->vertexCount();
+		for (int i = 0; i < count; i++) {
+			vertices[i].position.z *= -1.0f;
+			vertices[i].normal.z *= -1.0f;
+		}
+	}
+	if (m_flipX) {
+		auto* vertices = static_cast<Vertex*>(coreMesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
+		const int count = coreMesh->vertexCount();
+		for (int i = 0; i < count; i++) {
+			vertices[i].position.x *= -1.0f;
+			vertices[i].normal.x *= -1.0f;
+		}
+	}
 
 
 
@@ -799,6 +859,32 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 			assert(section.topology == PrimitiveTopology::TriangleList);
 
+			if (m_flipZ || m_flipX) {
+				switch (indexForamt) {
+					case ln::IndexBufferFormat::UInt16: {
+						auto* b = static_cast<uint16_t*>(buf) + indexOffset;
+						const int count = section.indexCount / 3;
+						for (int i = 0; i < count; i++) {
+							std::swap(b[i * 3 + 1], b[i * 3 + 2]);
+						}
+						break;
+					}
+					case ln::IndexBufferFormat::UInt32: {
+						auto* b = static_cast<uint32_t*>(buf) + indexOffset;
+						const int count = section.indexCount / 3;
+						for (int i = 0; i < count; i++) {
+							std::swap(b[i * 3 + 1], b[i * 3 + 2]);
+						}
+						break;
+					}
+					default:
+						LN_UNREACHABLE();
+						break;
+				}
+
+			}
+
+
 			// make mesh section
 			// TODO: tri only
 			coreMesh->addSection(indexOffset, section.indexCount / 3, section.materialIndex, section.topology);
@@ -822,11 +908,11 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 
 
-	//for (int vi = 0; vi < 100/*coreMesh->vertexCount()*/; vi++) {
+	//for (int vi = 0; vi < coreMesh->vertexCount(); vi++) {
 	//	auto v = coreMesh->vertex(vi);
 	//	//v.position.y = 0;
 	//	//coreMesh->setVertex(vi, v);
-	//	printf("");
+	//	printf("%f, %f, %f\n", v.position.x, v.position.y, v.position.z);
 	//}
 	//for (int vi = 0; vi < coreMesh->indexCount(); vi++) {
 	//	auto v = coreMesh->index(vi);
@@ -869,7 +955,17 @@ Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 	const Matrix* inverseBindMatrices = (const Matrix*)(buffer.data.data() + accessor.byteOffset + bufferView.byteOffset);
 	auto armature = makeObject<MeshArmature>(static_cast<SkinnedMeshModel*>(m_meshModel));
 	for (int i = 0; i < skin.joints.size(); i++) {
-		armature->addBone(skin.joints[i], inverseBindMatrices[i]);
+
+		if (m_flipX) {
+			// TODO: ちょっと処理重いか…
+			Matrix t = Matrix::makeInverse(inverseBindMatrices[i]);
+			t(3, 0) *= -1.0f;
+			armature->addBone(skin.joints[i], Matrix::makeInverse(t));
+		}
+		else {
+			armature->addBone(skin.joints[i], inverseBindMatrices[i]);
+		}
+
 	}
 
 	return armature;

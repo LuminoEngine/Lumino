@@ -254,6 +254,9 @@ public:
     template<typename TPred>
     int indexOfIf(TPred pred, int startIndex = 0) const;
 
+    template<typename TPred>
+    int lastIndexOfIf(TPred pred) const;
+
     /** 指定した要素と一致する最初の要素を検索し、その要素を指す Optional を返します。見つからなければ値を保持していません。 */
     Optional<T> find(const value_type& item) const;
 
@@ -562,6 +565,18 @@ int List<T>::indexOfIf(TPred pred, int startIndex) const
     const_iterator itr = std::find_if(m_data.begin() + startIndex, m_data.end(), pred);
     if (itr != m_data.end()) {
         return static_cast<int>(itr - m_data.begin());
+    }
+    return -1;
+}
+
+template<typename T>
+template<typename TPred>
+int List<T>::lastIndexOfIf(TPred pred) const
+{
+    if (isEmpty()) return -1;
+
+    for (int i = size() - 1; i >= 0; i--) {
+        if (pred(m_data[i])) return i;
     }
     return -1;
 }

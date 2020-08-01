@@ -70,12 +70,12 @@ void SkinnedMeshComponent::onUpdate(float elapsedSeconds)
 	//}
 
 
-
-	m_model->postUpdate();
 }
 
 void SkinnedMeshComponent::onRender(RenderingContext* context)
 {
+
+	m_model->postUpdate();
 //#if 1
 //	LN_NOTIMPLEMENTED();
 //#else

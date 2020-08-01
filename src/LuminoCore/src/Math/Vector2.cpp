@@ -78,6 +78,13 @@ Vector2 Vector2::safeNormalize(const Vector2& vec, const Vector2& alt)
 		vec.y * t);
 }
 
+float Vector2::distance(const Vector2& vec1, const Vector2& vec2)
+{
+    float x = vec1.x - vec2.x;
+    float y = vec1.y - vec2.y;
+    return Asm::sqrt((x * x) + (y * y));
+}
+
 // static
 float Vector2::dot(const Vector2& vec1, const Vector2& vec2)
 {

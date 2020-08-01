@@ -14,12 +14,14 @@ cbuffer LNRenderViewBuffer
 	/* [64]  */ float4x4 ln_Projection;
 	/* [128] */ float4x4 ln_ProjectionI;
 	/* [192] */ float4 ln_Resolution;
-	/* [208] */ float4 ln_mainLightShadowMapResolution;	// Note: ここに入れるべきじゃないかもしれないけど、Shadow パラメータこれ一つのために cbuffer 用意するのもアレなので
-	/* [224] */ float3 ln_CameraPosition;
-	/* [240] */ float3 ln_CameraDirection;
-	/* [256] */ float ln_NearClip;
-	/* [260] */ float ln_FarClip;
-};  /* [272(alignd:16)] */
+	/* [208] */ float4 ln_CameraPosition_;
+	/* [224] */ float4 ln_CameraDirection_;
+	/* [240] */ float ln_NearClip;
+	/* [244] */ float ln_FarClip;
+};  /* [256(alignd:16)] */
+
+#define ln_CameraPosition (ln_CameraPosition_.xyz)
+#define ln_CameraDirection (ln_CameraDirection_.xyz)
 
 cbuffer LNRenderElementBuffer
 {
@@ -156,6 +158,14 @@ float4 LN_GetBuiltinEffectColor(float4 inColor)
 
 	// apply tone. (NTSC Coef method)
 	return LN_CalculateToneColor(outColor, ln_ToneColor);
+}
+
+/**
+ * 正規化された法線を、整数型の RGB テクスチャなどに書き込ムために 0.0 ~ 1.0 にパックします。
+ */
+float3 LN_PackNormal(float3 normal)
+{
+	return (normal.xyz + 1.0) / 2.0;
 }
 
 /**

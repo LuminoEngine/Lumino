@@ -1,5 +1,6 @@
 
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
@@ -94,6 +95,16 @@ void RenderingManager::init(const Settings& settings)
 
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
+
+	{
+		static const unsigned char data[] = {
+#include "Resource/Random.png.inl"
+		};
+		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
+		auto bmp = makeObject<Bitmap2D>();
+		bmp->load(&stream);
+		m_randomTexture = makeObject<Texture2D>(bmp, TextureFormat::RGBA8);
+	}
 
 //	// CopyScreen
 //	{
@@ -221,6 +232,10 @@ void RenderingManager::init(const Settings& settings)
 	//m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx");
 	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
 	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.fx");
+
+	m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/LuminosityHighPassShader.fx");
+	m_builtinShaders[(int)BuiltinShader::BloomComposite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/BloomComposite.fx");
+
 #if 0
     m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
     m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ForwardGBufferPrepass.fx");

@@ -10,6 +10,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
+#include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
@@ -98,6 +99,8 @@ void WorldRenderView::init()
         LN_ERROR();
         return;
     }
+
+    m_finishingProcess = makeObject<FilmicPostEffect>();
 
     m_transformControls = makeObject<TransformControls>();
 }
@@ -191,6 +194,12 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
 
         m_sceneRenderingPipeline->prepare(renderTarget);
+
+
+        if (m_hdrEnabled) {
+            m_hdrRenderTarget = RenderTargetTexture::realloc(m_hdrRenderTarget, m_viewPoint->viewPixelSize.width, m_viewPoint->viewPixelSize.height, TextureFormat::RGBA32F, false, SamplerState::pointClamp());
+        }
+
 
         // DrawList 構築
         if (m_targetWorld) {
@@ -358,7 +367,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             }
 
 
-            m_targetWorld->prepareRender();
+            m_targetWorld->prepareRender(this);
 
             for (auto& offscreen : m_targetWorld->collectedOffscreenRenderViews()) {
                 renderingContext->currentRenderView = offscreen;
@@ -408,17 +417,18 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
                 if (m_imageEffectRenderer) {
                     m_imageEffectRenderer->applyInScenePostEffects(renderingContext->imageEffects());
-                    m_imageEffectRenderer->render(renderingContext, renderTarget);
+
+                    RenderTargetTexture* actualInput = (m_hdrRenderTarget) ? m_hdrRenderTarget.get() : renderTarget;
+                    m_imageEffectRenderer->render(renderingContext, actualInput, renderTarget);
                 }
 
                 renderingContext->m_sceneRenderingPipeline = nullptr;
             }
         }
 
-
-
         assert(elementListManagers().size() == 1);
-		m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, elementListManagers().front(), &sceneGlobalRenderParams);
+        RenderTargetTexture* actualTarget = (m_hdrRenderTarget) ? m_hdrRenderTarget.get() : renderTarget;
+		m_sceneRenderingPipeline->render(graphicsContext, actualTarget, clearInfo, &camera, elementListManagers().front(), &sceneGlobalRenderParams);
         
 		//graphicsContext->resetState();
 

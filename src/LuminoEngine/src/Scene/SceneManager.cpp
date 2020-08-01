@@ -6,6 +6,7 @@
 // for registerType
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/Level.hpp>
 #include <LuminoEngine/Scene/Sprite.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>

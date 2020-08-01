@@ -47,6 +47,18 @@ protected:
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual void onRender(UIRenderingContext* context) override;
 
+
+    bool onHitTest(const Point& frameClientPosition) override
+    {
+        bool r = UIElement::onHitTest(frameClientPosition);
+        if (r) {
+            UIElement::onHitTest(frameClientPosition);
+            printf("");
+        }
+        return r;
+    }
+
+
 private:
     String m_text;
 };

@@ -37,6 +37,9 @@ public:
      */
     static Ref<SamplerState> create(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled);
 
+    static SamplerState* pointClamp();
+    static SamplerState* linearClamp();
+
     /** テクスチャフィルタモードを設定します。(default: Point) */
     void setFilterMode(TextureFilterMode value);
 

@@ -58,6 +58,9 @@ const UIEventType	UIEvents::RequestVisualRedrawEvent = 102;
 
 const UIEventType	UIEvents::RequestNavigate = 103;
 
+//const UIEventType	UIEvents::ComboBoxItemClicked = 1001;
+
+
 //==============================================================================
 // UIEventArgs
 

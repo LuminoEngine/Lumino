@@ -26,6 +26,8 @@ public:
 
 	virtual void evaluate(float time, AnimationValue* outResult) override;
 
+	static HumanoidBones mapHumanoidBone(const String& boneName);
+
 private:
 	const detail::MotionFrameTrack* m_vmdTrack;
 };
@@ -45,6 +47,8 @@ void VMDBezierTransformAnimationTrack::init(const detail::MotionFrameTrack& trac
 	AnimationTrack::init();
 	m_vmdTrack = &track;
 	setTargetName(m_vmdTrack->boneName);
+	setTargetHumanoidBone(mapHumanoidBone(m_vmdTrack->boneName));
+	//std::cout << m_vmdTrack->boneName << std::endl;
 }
 
 void VMDBezierTransformAnimationTrack::evaluate(float time, AnimationValue* outResult)
@@ -106,6 +110,80 @@ void VMDBezierTransformAnimationTrack::evaluate(float time, AnimationValue* outR
 	outResult->setTransform(result);
 }
 
+HumanoidBones VMDBezierTransformAnimationTrack::mapHumanoidBone(const String& boneName)
+{
+	static const std::unordered_map<String, HumanoidBones> table = {
+		{ u"下半身", HumanoidBones::Hips },
+		{ u"上半身", HumanoidBones::Spine },
+		{ u"上半身2", HumanoidBones::Chest },
+		//{ u"", HumanoidBones::UpperChest },
+
+		{ u"左肩", HumanoidBones::LeftShoulder },
+		{ u"左腕", HumanoidBones::LeftUpperArm },
+		{ u"左ひじ", HumanoidBones::LeftLowerArm },
+		{ u"左手首", HumanoidBones::LeftHand },
+
+		{ u"右肩", HumanoidBones::RightShoulder },
+		{ u"右腕", HumanoidBones::RightUpperArm },
+		{ u"右ひじ", HumanoidBones::RightLowerArm },
+		{ u"右手首", HumanoidBones::RightHand },
+
+		{ u"左足", HumanoidBones::LeftUpperLeg },
+		{ u"左ひざ", HumanoidBones::LeftLowerLeg },
+		{ u"左足首", HumanoidBones::LeftFoot },
+		{ u"左つま先ＩＫ", HumanoidBones::LeftToes },
+
+		{ u"右足", HumanoidBones::RightUpperLeg },
+		{ u"右ひざ", HumanoidBones::RightLowerLeg },
+		{ u"右足首", HumanoidBones::RightFoot },	// FIXME: "右足ＩＫ" にしたほうがいいかも。
+		{ u"右つま先ＩＫ", HumanoidBones::RightToes },
+
+		{ u"首", HumanoidBones::Neck },
+		{ u"頭", HumanoidBones::Head },
+		{ u"左目", HumanoidBones::LeftEye },
+		{ u"右目", HumanoidBones::RightEye },
+		{ u"あご", HumanoidBones::Jaw },
+
+		{ u"左親指０", HumanoidBones::LeftThumbProximal },
+		{ u"左親指１", HumanoidBones::LeftThumbIntermediate },
+		{ u"左親指２", HumanoidBones::LeftThumbDistal },
+		{ u"左人指１", HumanoidBones::LeftIndexProximal },
+		{ u"左人指２", HumanoidBones::LeftIndexIntermediate },
+		{ u"左人指３", HumanoidBones::LeftIndexDistal },
+		{ u"左中指１", HumanoidBones::LeftMiddleProximal },
+		{ u"左中指２", HumanoidBones::LeftMiddleIntermediate },
+		{ u"左中指３", HumanoidBones::LeftMiddleDistal },
+		{ u"左薬指１", HumanoidBones::LeftRingProximal },
+		{ u"左薬指２", HumanoidBones::LeftRingIntermediate },
+		{ u"左薬指３", HumanoidBones::LeftRingDistal },
+		{ u"左小指１", HumanoidBones::LeftLittleProximal },
+		{ u"左小指２", HumanoidBones::LeftLittleIntermediate },
+		{ u"左小指３", HumanoidBones::LeftLittleDistal },
+
+		{ u"右親指０", HumanoidBones::RightThumbProximal },
+		{ u"右親指１", HumanoidBones::RightThumbIntermediate },
+		{ u"右親指２", HumanoidBones::RightThumbDistal },
+		{ u"右人指１", HumanoidBones::RightIndexProximal },
+		{ u"右人指２", HumanoidBones::RightIndexIntermediate },
+		{ u"右人指３", HumanoidBones::RightIndexDistal },
+		{ u"右中指１", HumanoidBones::RightMiddleProximal },
+		{ u"右中指２", HumanoidBones::RightMiddleIntermediate },
+		{ u"右中指３", HumanoidBones::RightMiddleDistal },
+		{ u"右薬指１", HumanoidBones::RightRingProximal },
+		{ u"右薬指２", HumanoidBones::RightRingIntermediate },
+		{ u"右薬指３", HumanoidBones::RightRingDistal },
+		{ u"右小指１", HumanoidBones::RightLittleProximal },
+		{ u"右小指２", HumanoidBones::RightLittleIntermediate },
+		{ u"右小指３", HumanoidBones::RightLittleDistal },
+	};
+
+	const auto itr = table.find(boneName);
+	if (itr != table.end())
+		return itr->second;
+	else
+		return HumanoidBones::None;
+}
+
 //==============================================================================
 // AssetManager
 
@@ -150,40 +228,63 @@ void AnimationManager::addClockToAffiliation(AnimationClock* clock, AnimationClo
     }
 }
 
-Ref<AnimationClip> AnimationManager::acquireAnimationClip(const AssetPath& assetPath)
+Ref<AnimationClip> AnimationManager::loadAnimationClip(const StringRef& filePath)
 {
-    uint64_t key = assetPath.calculateHash();
-    auto obj = m_animationClipCache.findObject(key);
-    if (obj) {
-        return obj;
-    }
-    else {
-        obj = makeObject<AnimationClip>();
-        loadAnimationClip(obj, assetPath);
-        m_animationClipCache.registerObject(key, obj, 0);
-        return obj;
-    }
+	// TODO: find cache
+
+	// TODO: やっぱり拡張子は本当のリロード時に解決したい。
+	// なので、AssetPath 自体の仕様として、拡張子無し（未解決）を許可するようにしたい。
+	// → でもそれなら Path で持っておけばいいだけか。ちゃんとドキュメントに書いておこう
+	const Char* exts[] = { u".bvh", u".vmd" };
+	auto assetPath = detail::AssetPath::resolveAssetPath(filePath, exts);
+
+	auto obj = makeObject<AnimationClip>(assetPath);
+
+	detail::AssetObjectInternal::setAssetPath(obj, filePath);
+
+	return obj;
 }
 
-void AnimationManager::loadAnimationClip(AnimationClip* clip, const AssetPath& assetPath)
+Ref<AnimationClipPromise> AnimationManager::loadAnimationClipAsync(const StringRef& filePath)
 {
-    auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
-
-    detail::VmdFile vmdFile;
-    auto vmdData = vmdFile.load(stream);
-    if (vmdData)
-    {
-        for (auto& track : vmdData->MotionData)
-        {
-            clip->m_tracks.add(makeObject<VMDBezierTransformAnimationTrack>(track));
-        }
-
-		clip->m_lastFrameTime = vmdData->lastFrameTime;
-
-        // VmdData が持っているトラックの情報を後で使いたいので、参照を持っておく
-		clip->m_srcData = vmdData;
-    }
+	LN_NOTIMPLEMENTED();
+	return nullptr;
 }
+
+//Ref<AnimationClip> AnimationManager::acquireAnimationClip(const AssetPath& assetPath)
+//{
+//    uint64_t key = assetPath.calculateHash();
+//    auto obj = m_animationClipCache.findObject(key);
+//    if (obj) {
+//        return obj;
+//    }
+//    else {
+//        obj = makeObject<AnimationClip>();
+//        loadAnimationClip(obj, assetPath);
+//        m_animationClipCache.registerObject(key, obj, 0);
+//        return obj;
+//    }
+//}
+//
+//void AnimationManager::loadAnimationClip(AnimationClip* clip, const AssetPath& assetPath)
+//{
+//    auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
+//
+//    detail::VmdFile vmdFile;
+//    auto vmdData = vmdFile.load(stream);
+//    if (vmdData)
+//    {
+//        for (auto& track : vmdData->MotionData)
+//        {
+//            clip->m_tracks.add(makeObject<VMDBezierTransformAnimationTrack>(track));
+//        }
+//
+//		clip->m_lastFrameTime = vmdData->lastFrameTime;
+//
+//        // VmdData が持っているトラックの情報を後で使いたいので、参照を持っておく
+//		clip->m_srcData = vmdData;
+//    }
+//}
 
 void AnimationManager::updateFrame(float elapsedSeconds)
 {

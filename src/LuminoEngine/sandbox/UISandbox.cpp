@@ -1,16 +1,19 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
-#include <LuminoEngine/UI/UIButton.hpp>
-#include <LuminoEngine/UI/UIScrollView.hpp>
+#include <LuminoEngine/UI/Controls/UIButton.hpp>
+#include <LuminoEngine/UI/Controls/UICheckBox.hpp>
+#include <LuminoEngine/UI/Controls/UIScrollView.hpp>
 #include <LuminoEngine/UI/UIItemsModel.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIListBox.hpp>
-#include <LuminoEngine/UI/UITreeView.hpp>
-#include <LuminoEngine/UI/UISplitter.hpp>
+#include <LuminoEngine/UI/Controls/UIListBox.hpp>
+#include <LuminoEngine/UI/Controls/UITreeView.hpp>
+#include <LuminoEngine/UI/Controls/UISplitter.hpp>
 #include <LuminoEngine/UI/UIIcon.hpp>
 #include <LuminoEngine/UI/UITabBar.hpp>
+#include <LuminoEngine/UI/Controls/UIPropertyFields.hpp>
+#include <LuminoEngine/UI/Controls/UIComboBox.hpp>
 using namespace ln;
 
 
@@ -37,13 +40,14 @@ public:
 		//	}
 		//}
 
-		Engine::renderView()->setBackgroundColor(Color::Gray);
+		Engine::renderView()->setBackgroundColor(UI::mainTheme()->color(UIThemeConstantPalette::DefaultBackgroundColor));
 
 		auto mainLauout = makeObject<UIGridLayout>();
 		mainLauout->setColumnCount(4);
 		Engine::ui()->addChild(mainLauout);
 
 		int margin = 8;
+
 #if 1
 		// Button
 		{
@@ -57,26 +61,29 @@ public:
 			button1->setText(u"Button");
 			layout1->addChild(button1);
 		}
-		// RadioButton
-		{
-			auto layout1 = makeObject<UIStackLayout>();
-			layout1->setMargin(margin);
-			mainLauout->addChild(layout1);
-
-			layout1->addChild(makeObject<UITextBlock>(u"RadioButton"));
-
-			layout1->addChild(makeObject<UIButton>(u"dummy"));
-		}
-		//// CheckBox
+		//// RadioButton
 		//{
 		//	auto layout1 = makeObject<UIStackLayout>();
 		//	layout1->setMargin(margin);
 		//	mainLauout->addChild(layout1);
 
-		//	layout1->addChild(makeObject<UITextBlock>(u"CheckBox"));
+		//	layout1->addChild(makeObject<UITextBlock>(u"RadioButton"));
 
 		//	layout1->addChild(makeObject<UIButton>(u"dummy"));
 		//}
+		// CheckBox
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+
+			layout1->addChild(makeObject<UITextBlock>(u"CheckBox"));
+
+			auto checkbox1 = makeObject<UICheckBox>();
+			checkbox1->setSize(100, 30);
+			checkbox1->setBackgroundColor(Color::Green);
+			layout1->addChild(checkbox1);
+		}
 		//// ComboBox
 		//{
 		//	auto layout1 = makeObject<UIStackLayout>();
@@ -209,7 +216,6 @@ public:
 				layout1->addChild(layout2);
 			}
 		}
-#endif
 
 
 		// TabBar
@@ -246,9 +252,42 @@ public:
 
 			tab1->setData(makeVariant(e1));
 			tab2->setData(makeVariant(e2));
-			tabbar1->connectOnSelectedTabChanged([tabbar1, switch1](UIEventArgs* e) {
-				switch1->setActive(tabbar1->selectedTab()->data()->getAsObject<UIElement>());
+			tabbar1->connectOnSelectedTabChanged([/*tabbar1, */switch1](UIEventArgs* e) {	// tabbar1 をキャプチャすると循環参照になるので注意
+				auto tab = static_cast<UITabBar2*>(e->sender())->selectedTab()->data()->getAsObject<UIElement>();
+				switch1->setActive(tab);
 			});
+		}
+
+
+		// PropertyFields
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+			layout1->addChild(makeObject<UITextBlock>(u"PropertyFields"));
+
+			auto field1 = makeObject<UISliderField>();
+			field1->setChanged([](float v) { ln::Debug::print(String::fromNumber(v)); });
+			layout1->addChild(field1);
+
+			auto field2 = makeObject<UIColorField>();
+			layout1->addChild(field2);
+			
+		}
+#endif
+
+		// ComboBox
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+			layout1->addChild(makeObject<UITextBlock>(u"ComboBox"));
+
+			auto comboBox1 = makeObject<UIComboBox>();
+			comboBox1->setHAlignment(HAlignment::Left);
+			comboBox1->addChild(u"CItem1");
+			comboBox1->addChild(u"CItem2");
+			layout1->addChild(comboBox1);
 		}
     }
 
@@ -260,7 +299,7 @@ private:
 void UISandboxMain()
 {
 	UISandboxApp app;
-	EngineSettings::setMainWindowSize(1000, 600);
+	EngineSettings::setMainWindowSize(1000, 800);
 	detail::ApplicationHelper::run(&app);
 }
 

@@ -1720,7 +1720,7 @@ void UITheme::buildLumitelier()
 
 	// Background
 	setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::parse(u"#1E1E1E"));
-	setColor(UIThemeConstantPalette::ControlBackgroundColor, Color::parse(u"#303030"));
+	setColor(UIThemeConstantPalette::ControlBackgroundColor, UIColors::get(UIColorHues::Grey, 7));// Color::parse(u"#303030"));
 	//setColor(UIThemeConstantPalette::DefaultBackgroundColor, UIColors::get(UIColorHues::Grey, 8));
 	setColor(UIThemeConstantPalette::PaperBackgroundColor, Color::parse(u"#424242"));
 
@@ -1972,6 +1972,26 @@ void UITheme::buildLumitelier()
 	//}
 
 	//--------------------------------
+	// UIComboBox
+	{
+		if (auto s = sheet->obtainStyle(u"UIComboBox")) {
+			s->minWidth = 64;
+			s->minHeight = lineContentHeight();
+			s->margin = Thickness(8);   // TODO: spacing?
+			s->padding = Thickness(spacing(2), 0);
+			s->hAlignment = HAlignment::Center;
+			s->vAlignment = VAlignment::Center;
+			s->horizontalContentAlignment = HAlignment::Center;
+			s->verticalContentAlignment = VAlignment::Center;
+			s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
+			s->cornerRadius = CornerRadius(4);
+			s->shadowBlurRadius = 1;
+			s->shadowOffsetY = 1;
+			s->shadowColor = Color(0, 0, 0, 0.5);
+		}
+	}
+
+	//--------------------------------
 	// UITabBarItem
 	{
 		if (auto s = sheet->obtainStyle(u"UITabBarItem")) {
@@ -1984,6 +2004,17 @@ void UITheme::buildLumitelier()
 		}
 	}
 
+	//--------------------------------
+	// UITreeView
+	{
+		if (auto s = sheet->obtainStyle(u"UIPropertyField")) {
+			s->backgroundColor = color(UIThemeConstantPalette::ControlBackgroundColor);
+			s->cornerRadius = CornerRadius(2);
+			s->shadowBlurRadius = 1;
+			s->shadowOffsetY = 1;
+			s->shadowColor = Color(0, 0, 0, 0.5);
+		}
+	}
 
 	m_styleSheet = sheet;
 }

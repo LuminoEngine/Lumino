@@ -23,6 +23,9 @@ public:
 	virtual PointI pointFromScreen(const PointI& screenPoint) = 0;
 	virtual PointI pointToScreen(const PointI& clientPoint) = 0;
 
+	virtual void grabCursor() = 0;
+	virtual void releaseCursor() = 0;
+
 	void attachEventListener(IPlatforEventListener* listener);
 	void detachEventListener(IPlatforEventListener* listener);
 	bool sendEventToAllListener(const PlatformEventArgs& e);	// return : isHandled

@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Mesh/Common.hpp"
 
 namespace ln {
 class AnimationClip;
@@ -50,6 +51,19 @@ enum class EasingMode
 	EaseOutCirc,
 	EaseInOutCirc,
 };
+
+
+struct AnimationTrackTargetKey
+{
+	HumanoidBones bone = HumanoidBones::None;
+	String name;
+
+	static bool equals(const AnimationTrackTargetKey& a, const AnimationTrackTargetKey& b)
+	{
+		return (a.bone != HumanoidBones::None && a.bone == b.bone) || a.name == b.name;
+	}
+};
+
 namespace detail {
 class AnimationManager;
 } // namespace detail

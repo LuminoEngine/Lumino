@@ -2,6 +2,8 @@
 #include "PostEffect.hpp"
 
 namespace ln {
+class SamplerState;
+class ShaderParameter2;
 namespace detail { class SSRPostEffectInstance; }
 
 class SSRPostEffect
@@ -22,20 +24,21 @@ private:
 
 namespace detail {
 
-class SSRPostEffectInstance
-    : public PostEffectInstance
-{
-protected:
-    bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
-LN_CONSTRUCT_ACCESS:
-    SSRPostEffectInstance();
-    bool init(SSRPostEffect* owner);
+// Filmic でも使いたいのでクラス化したもの
+class SSRPostEffectCore
+{
+public:
+    SSRPostEffectCore();
+    bool init(Material* compositeMaterial);
+    bool prepare(RenderingContext* context, RenderTargetTexture* source);
+    void render(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination);
+
+    Ref<RenderTargetTexture> ssrResultTexture() const { return m_blurTarget2; }
 
 private:
     void resetResources(int resx, int resy);
 
-    SSRPostEffect* m_owner;
     Ref<Material> m_ssrMaterial;
     Ref<Material> m_ssrBlurMaterial1;
     Ref<Material> m_ssrBlurMaterial2;
@@ -56,6 +59,21 @@ private:
     ShaderParameter2* m_ssrMaterial_MetalRoughSampler;
     ShaderParameter2* m_paramColorSampler;
     ShaderParameter2* m_paramSSRSampler;
+};
+
+class SSRPostEffectInstance
+    : public PostEffectInstance
+{
+protected:
+    bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+
+LN_CONSTRUCT_ACCESS:
+    SSRPostEffectInstance();
+    bool init(SSRPostEffect* owner);
+
+private:
+    SSRPostEffect* m_owner;
+    SSRPostEffectCore m_effect;
 };
 
 } // namespace detail

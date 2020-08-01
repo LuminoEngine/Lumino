@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "UIControl.hpp"
-#include "UIScrollView.hpp"
+#include "Controls/UIControl.hpp"
+#include "Controls/UIScrollView.hpp"
 #include "UIItemsModel.hpp"
 
 namespace ln {

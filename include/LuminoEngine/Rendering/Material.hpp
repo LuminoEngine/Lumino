@@ -68,6 +68,8 @@ public:
 	void setTexture(const StringRef& name, Texture* value);
 	void setColor(const StringRef& name, const Color& value);
 
+	void setBufferData(const StringRef& uniformBufferName, const void* data, int size);
+
 	//--------------------------------------------------------------------------
 	/** @name RenderState */
 	/** @{ */
@@ -180,6 +182,7 @@ protected:  // TODO:
 	Ref<Texture> m_normalMap;
 	Ref<Texture> m_roughnessMap;
 	std::vector<std::pair<String, std::shared_ptr<detail::ShaderParameterValue>>> m_values;
+	std::vector<std::pair<String, Ref<ByteBuffer>>> m_uniformBufferData;
 
 protected:
 

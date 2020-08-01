@@ -28,7 +28,7 @@ public:
 	}
 
 	// Bone animation 用
-	String name;		// AnimationTargetElement の名前 (ボーン名など)
+	AnimationTrackTargetKey key;		// AnimationTargetElement の名前 (ボーン名など)
 	int targetIndex = -1;
 
 	// Property animation 用
@@ -45,7 +45,7 @@ public:
 	// AnimationClip を add したとき、登録済みの Binding が無い場合に呼び出される。
 	// 派生側で new して返すが、対応する名前のボーンやプロパティを持っていない場合は null を返す。
 	// インスタンスは IAnimationMixerCoreHolder の実装側で管理する。
-	virtual detail::AnimationTargetElementBlendLink* onRequireBinidng(const String& name) = 0;
+	virtual detail::AnimationTargetElementBlendLink* onRequireBinidng(const AnimationTrackTargetKey& key) = 0;
 
 	virtual void onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* binding) = 0;
 };
@@ -241,7 +241,7 @@ public:
 
 	void advanceTime(float elapsedTime);
 	void updateTargetElements();
-	detail::AnimationTargetElementBlendLink* requireAnimationTargetElementBlendLink(const StringRef& name);
+	detail::AnimationTargetElementBlendLink* requireAnimationTargetElementBlendLink(const AnimationTrackTargetKey& key);
 
 protected:
 

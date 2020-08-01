@@ -382,6 +382,23 @@ void EffectManager::dispose()
 #endif
 }
 
+Ref<ParticleModel2> EffectManager::loadParticleModel(const StringRef& filePath)
+{
+    // TODO: find cache
+
+    auto obj = makeObject<ParticleModel2>();
+    detail::AssetObjectInternal::setAssetPath(obj, filePath);
+    detail::AssetObjectInternal::reload(obj);
+
+    return obj;
+}
+
+Ref<ParticleModelPromise> EffectManager::loadParticleModelAsync(const StringRef& filePath)
+{
+    LN_NOTIMPLEMENTED();
+    return nullptr;
+}
+
 void EffectManager::testDraw(RenderingContext* renderingContext)
 {
 #if LN_EFFEKSEER_ENABLED

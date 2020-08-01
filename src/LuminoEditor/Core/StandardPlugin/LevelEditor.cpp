@@ -6,6 +6,8 @@
 #include "../UIExtension.hpp"
 #include "../App/Application.hpp"
 #include "../App/MainWindow.hpp"
+#include "LevelEditorHierarchyPane.hpp"
+#include "LevelEditorPropertyPane.hpp"
 #include "LevelEditor.hpp"
 
 #include "../src/LuminoEngine/src/Engine/EngineDomain.hpp"   // TODO:
@@ -20,12 +22,14 @@ bool LevelEditor::init()
 {
     AssetEditorModel::init();
 
-    //m_modePane = ln::makeObject<TilemapSceneModePane>(m_model);
+    m_hierarchyPane = ln::makeObject<LevelEditorHierarchyPane>(this);
+    m_propertyPane = ln::makeObject<LevelEditorPropertyPane>(this);
+
     //m_inspectorPane = ln::makeObject<ln::EditorPane>();
     //m_inspectorPane->setBackgroundColor(ln::Color::LightGray);
 
-    //m_modePanes = ln::makeList<Ref<ln::EditorPane>>({ ln::static_pointer_cast<ln::EditorPane>(m_modePane) });
-    //m_inspectorPanes = ln::makeList<Ref<ln::EditorPane>>({ m_inspectorPane });
+    m_modePanes = ln::makeList<Ref<ln::EditorPane>>({ ln::static_pointer_cast<ln::EditorPane>(m_hierarchyPane) });
+    m_inspectorPanes = ln::makeList<Ref<ln::EditorPane>>({ m_propertyPane });
     //m_toolPanes = ln::makeList<Ref<ln::EditorPane>>();
 
     return true;
@@ -64,8 +68,8 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
         m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
         m_mainWorldRenderView->setTargetWorld(m_mainWorld);
         m_mainWorldRenderView->setCamera(m_mainCamera);
-        //m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::Sky);
-        m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
+        m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::SkyDome);
+        //m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
         m_mainWorldRenderView->setBackgroundColor(ln::Color::Gray);
         m_mainWorldRenderView->connectOnUIEvent(ln::bind(this, &LevelEditor::WorldRenderView_OnUIEvent));
 		m_mainWorldRenderView->setPhysicsDebugDrawEnabled(true);

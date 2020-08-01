@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "../Animation/AnimationMixer.hpp"
+#include "Common.hpp"
 #include "Mesh.hpp"
 
 namespace ln {
@@ -63,8 +64,11 @@ public:
 };
 #endif
 
+
 // MeshNode を参照するためのデータ構造。
-// 頂点の BLEND_INDICES から参照されるのはこのインスタンス。
+// Node と Bone は似ているが異なるものなので注意。頂点の BLEND_INDICES から参照されるのはこのインスタンス。
+// ひとつの Node を複数の Bone が参照する。
+// 正直、Bone という名前はやめた方がいい気がする。
 // SkinnedMesh でのみ使用する。
 class MeshBone
 	: public Object
@@ -73,6 +77,7 @@ public:
 	//const String& name() const;
 
 	MeshNode* node() const;
+	int nodeIndex() const { return m_node; }
 
 	//const AttitudeTransform& localTransform() const;
 
@@ -115,12 +120,17 @@ public:
 
 // Bone をまとめるデータ構造。
 // BoneTexture を生成する単位。
+// ひとつの Model に対して複数インスタンスを持つことがあるが、MeshContainer がどの Skeleton を使って描画するのかを参照する。
 // TODO: 名前、skelton のほうがいいかも
 class MeshArmature
 	: public Object
 {
 public:
+	int boneCount() const { return m_bones.size(); }
 	MeshBone* bone(int index) const;
+
+
+	const List<MeshBone*>& rootBones() const { return m_rootBones; }
 
 public:
 	// TODO: internal
@@ -135,7 +145,9 @@ LN_CONSTRUCT_ACCESS:
 public:	// TODO:
 	SkinnedMeshModel* m_model = nullptr;
 	List<Ref<MeshBone>> m_bones;
-	Ref<Texture2D> m_skinningMatricesTexture; 
+	List<MeshBone*> m_rootBones;
+	Ref<Texture2D> m_skinningMatricesTexture;
+
 };
 
 class SkinnedMeshModel
@@ -154,6 +166,8 @@ public:
 	//const List<Ref<MeshContainer>>& meshContainers() const { return m_meshContainers; }
 	//const List<Ref<Material>>& materials() const { return m_materials; }
 
+
+	MeshNode* findHumanoidBone(HumanoidBones boneKind) const;
 
     // TODO: internal
 	void addSkeleton(MeshArmature* skeleton);
@@ -178,12 +192,19 @@ public:
 
 	Ref<AnimationController> m_animationController;
 
+	//static HumanoidBones mapToHumanoidBones(const MeshBone* bone);
 
 //protected:
 //	virtual int getAnimationTargetElementCount() const override;
 //	virtual const String& getAnimationTargetElementName(int index) const override;
 //	virtual AnimationValueType getAnimationTargetElementValueType(int index) const override;
 //	virtual void setAnimationTargetElementValue(int index, const AnimationValue& value) override;
+
+	std::array<int, 56> m_humanoidBoneNodeIndices;	// Index of m_bones
+	void setHumanoidBoneIndex(HumanoidBones kind, int boneIndex) { m_humanoidBoneNodeIndices[static_cast<int>(kind)] = boneIndex; }
+	int humanoidBoneIndex(HumanoidBones kind) const { return m_humanoidBoneNodeIndices[static_cast<int>(kind)]; }
+
+	const List<Ref<MeshArmature>>& skeletons() const { return m_skeletons; }
 
 LN_CONSTRUCT_ACCESS:
     SkinnedMeshModel();
@@ -242,12 +263,13 @@ public:
 	///// AnimationTargetEntity の検索 (見つからなければ NULL)
 	//detail::AnimationTargetAttributeEntity* findAnimationTargetAttributeEntity(const String& name);
 
+
 LN_CONSTRUCT_ACCESS:
 	AnimationController();
 	bool init(SkinnedMeshModel* model);
 
 protected:
-	detail::AnimationTargetElementBlendLink* onRequireBinidng(const String& name) override;
+	detail::AnimationTargetElementBlendLink* onRequireBinidng(const AnimationTrackTargetKey& key) override;
 	void onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* binding) override;
 
 private:

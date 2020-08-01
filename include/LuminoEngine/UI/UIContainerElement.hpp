@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "UIControl.hpp"
+#include "Controls/UIControl.hpp"
 
 namespace ln {
 class UICommand;

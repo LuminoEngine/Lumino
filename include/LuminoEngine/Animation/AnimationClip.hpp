@@ -1,10 +1,19 @@
 ﻿
 #pragma once
+#include "../Base/Promise.hpp"
+#include "../Asset/AssetObject.hpp"
 #include "Common.hpp"
 
 namespace ln {
 struct AnimationKeyFrame;
 class AnimationTrack;
+class AnimationClip;
+
+/**
+ * AnimationClipPromise
+ */
+LN_PROMISE()
+using AnimationClipPromise = Promise<Ref<AnimationClip>>;
 
 /**
  * オブジェクトやそのプロパティに影響を与えるアニメーションデータです。
@@ -12,7 +21,7 @@ class AnimationTrack;
  * スキンメッシュアニメーションでは、「歩く」「走る」といった 1 モーションの単位です。
  */
 class AnimationClip
-	: public Object
+	: public AssetObject
 {
 public:
     /** ひとつの AnimationTrack を持つ AnimationClip を作成します。 */
@@ -35,10 +44,14 @@ public:
 	void setName(const String& value) { m_name = value; }
 	const String& name() const { return m_name; }
 
+protected:
+	void onLoadSourceFile() override;
+
 LN_CONSTRUCT_ACCESS:
 	AnimationClip();
 	virtual ~AnimationClip();
 	void init();
+	bool init(const detail::AssetPath& assetSourcePath);
 	void init(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
 
 protected:
@@ -47,6 +60,7 @@ protected:
 	Ref<RefObject> m_srcData;
 	float m_lastFrameTime;
 	AnimationWrapMode m_wrapMode;
+	detail::AssetPath m_assetSourcePath;
 
 	friend class detail::AnimationManager;
 };

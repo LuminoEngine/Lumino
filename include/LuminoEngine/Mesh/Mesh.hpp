@@ -332,6 +332,8 @@ private:
 class MeshNode : public Object
 {
 public:
+	int parentNodeIndex() const { return m_parent; }
+
 	void setPosition(const Vector3& value);
 	void setPosition(float x, float y, float z) { setPosition(Vector3(x, y, z)); }
 
@@ -354,8 +356,10 @@ public:
     int meshContainerIndex() const { return m_meshContainerIndex; }
 
 	int skeletonIndex = -1;
+	bool m_boneNode = false;	// いずれかの Bone から参照されているか
 
     void addChildIndex(int value);
+	const List<int>& children() const { return m_children; }
 
     void setInitialLocalTransform(const Matrix& value);
 	void resetLocalTransform();

@@ -17,6 +17,7 @@ public:
     void setUVParUnit(const Vector2& value) { m_uvParUnit = value; }
 
     void setMaterial(Material* material);
+    Material* material() const;
 
 protected:
     void serialize2(Serializer2& ar) override;

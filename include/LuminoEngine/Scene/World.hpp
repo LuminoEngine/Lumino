@@ -69,17 +69,20 @@ public:
     /** この World に含まれている WorldObject のうち、指定した型のコンポーネントを持っている最初の WorldObject を返します。 */
     WorldObject* findObjectByComponentType(const TypeInfo* type) const;
 
-    Level* masterScene() const;
+    Level* masterScene() const; // 必ず存在するルート Level
+    Level* activeLevel() const; // シーン遷移でアクティブになっているものがあればそれを返す。無ければ masterScene
+
 	void addScene(Level* scene);
 
 
-    void gotoScene(Level* scene);
-    void callScene(Level* scene);
-    void returnScene();
-    Level* activeScene() const;
+    //void gotoScene(Level* scene);
+    //void callScene(Level* scene);
+    //void returnScene();
+    //Level* activeScene() const;
 
     void traverse(detail::IWorldObjectVisitor* visitor) const;
     WorldObject* findObjectById(int id) const;
+    WorldObject* findObjectByName(const StringRef& name) const;
 
 protected:
     // update sequence
@@ -107,7 +110,7 @@ public: // TODO: internal
     void updateObjectsWorldMatrix();
     void updateFrame(float elapsedSeconds);
 	detail::WorldSceneGraphRenderingContext* prepareRender(RenderViewPoint* viewPoint);
-    void prepareRender();
+    void prepareRender(const WorldRenderView* renderView);
     void renderObjects();  // call by WorldRenderView
     void renderGizmos(RenderingContext* context);
     void enqueueWorldRenderingElement(IWorldRenderingElement* element);

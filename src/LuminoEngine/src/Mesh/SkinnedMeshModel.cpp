@@ -95,6 +95,7 @@ MeshArmature::MeshArmature()
 bool MeshArmature::init(SkinnedMeshModel* model)
 {
 	if (!Object::init()) return false;
+
 	m_model = model;
 	return true;
 }
@@ -115,6 +116,11 @@ void MeshArmature::addBone(int linkNode, const Matrix& inverseInitialMatrix)
 	bone->m_node = linkNode;
 	bone->m_inverseInitialMatrix = inverseInitialMatrix;
 	m_bones.add(bone);
+
+	if (bone->node()->parentNodeIndex() >= 0) {
+		m_rootBones.add(bone);
+	}
+	bone->node()->m_boneNode = true;
 }
 
 void MeshArmature::updateSkinningMatrices(SkinnedMeshModel* model)
@@ -163,6 +169,17 @@ Ref<SkinnedMeshModel> SkinnedMeshModel::load(const StringRef& filePath)
 SkinnedMeshModel::SkinnedMeshModel()
     : StaticMeshModel(detail::InternalMeshModelType::SkinnedMesh)
 {
+
+	std::fill(m_humanoidBoneNodeIndices.begin(), m_humanoidBoneNodeIndices.end(), -1);
+}
+
+MeshNode* SkinnedMeshModel::findHumanoidBone(HumanoidBones boneKind) const
+{
+	int index = humanoidBoneIndex(boneKind);
+	if (index >= 0)
+		return m_nodes[index];
+	else
+		return nullptr;
 }
 
 void SkinnedMeshModel::addSkeleton(MeshArmature* skeleton)
@@ -336,6 +353,7 @@ void SkinnedMeshModel::writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion*
 //}
 
 
+
 //==============================================================================
 // AnimationController
 
@@ -358,18 +376,31 @@ void AnimationController::advanceTime(float elapsedTime)
 	m_core->advanceTime(elapsedTime);
 }
 
-detail::AnimationTargetElementBlendLink* AnimationController::onRequireBinidng(const String& name)
+detail::AnimationTargetElementBlendLink* AnimationController::onRequireBinidng(const AnimationTrackTargetKey& key)
 {
-	auto tb = m_bindings.findIf([&](const auto& x) { return x->name == name; });
+	auto tb = m_bindings.findIf([&](const auto& x) { return AnimationTrackTargetKey::equals(x->key, key); });
 	if (tb) {
 		return *tb;
 	}
 
+	int index = -1;
+	
+	// まず HumanoidBones を検索
+	if (key.bone != HumanoidBones::None) {
+		index = m_model->humanoidBoneIndex(key.bone);
+		if (index >= 0) {
+			std::cout << "map:" << (int)key.bone << std::endl;
+		}
+	}
 
-	int index = m_model->findNodeIndex(name);
+	// 無ければ名前検索
+	if (index < 0) {
+		index = m_model->findNodeIndex(key.name);
+	}
+
 	if (index >= 0) {
 		auto binding = makeRef<detail::AnimationTargetElementBlendLink>(AnimationValueType::Transform);
-		binding->name = name;
+		binding->key = key;
 		binding->targetIndex = index;
 		m_bindings.add(binding);
 		return binding;

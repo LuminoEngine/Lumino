@@ -4,13 +4,16 @@
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
+#include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
+#include <LuminoEngine/Scene/Level.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/SceneConductor.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
 #include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderElement.hpp"
 
@@ -125,6 +128,14 @@ Level* World::masterScene() const
     return m_masterScene;
 }
 
+Level* World::activeLevel() const
+{
+    if (Level* active = m_sceneConductor->activeScene())
+        return active;
+    else
+        return m_masterScene;
+}
+
 void World::addScene(Level* scene)
 {
 	if (LN_REQUIRE(scene)) return;
@@ -134,25 +145,25 @@ void World::addScene(Level* scene)
 	scene->m_initialUpdate = true;
 }
 
-void World::gotoScene(Level* scene)
-{
-    m_sceneConductor->gotoScene(scene);
-}
+//void World::gotoScene(Level* scene)
+//{
+//    m_sceneConductor->gotoScene(scene);
+//}
+//
+//void World::callScene(Level* scene)
+//{
+//    m_sceneConductor->callScene(scene);
+//}
+//
+//void World::returnScene()
+//{
+//    m_sceneConductor->returnScene();
+//}
 
-void World::callScene(Level* scene)
-{
-    m_sceneConductor->callScene(scene);
-}
-
-void World::returnScene()
-{
-    m_sceneConductor->returnScene();
-}
-
-Level* World::activeScene() const
-{
-    return m_sceneConductor->activeScene();
-}
+//Level* World::activeScene() const
+//{
+//    return m_sceneConductor->activeScene();
+//}
 
 void World::traverse(detail::IWorldObjectVisitor* visitor) const
 {
@@ -162,6 +173,10 @@ void World::traverse(detail::IWorldObjectVisitor* visitor) const
                 return;
             }
         }
+    }
+
+    if (m_sceneConductor) {
+        m_sceneConductor->traverse(visitor);
     }
 }
 
@@ -188,6 +203,29 @@ WorldObject* World::findObjectById(int id) const
     return visitor.result;
 }
 
+WorldObject* World::findObjectByName(const StringRef& name) const
+{
+    class LocalVisitor : public detail::IWorldObjectVisitor
+    {
+    public:
+        StringRef name;
+        WorldObject* result = nullptr;
+        bool visit(WorldObject* obj) override
+        {
+            if (obj->name() == name) {
+                result = obj;
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    } visitor;
+    visitor.name = name;
+    traverse(&visitor);
+    return visitor.result;
+}
+
 void World::updateObjectsWorldMatrix()
 {
     m_masterScene->updateObjectsWorldMatrix();
@@ -195,8 +233,8 @@ void World::updateObjectsWorldMatrix()
         scene->updateObjectsWorldMatrix();
     }
 
-    if (auto* scene = m_sceneConductor->activeScene()) {
-        scene->updateObjectsWorldMatrix();
+    if (m_sceneConductor) {
+        m_sceneConductor->updateObjectsWorldMatrix();
     }
 }
 
@@ -226,9 +264,11 @@ void World::onPreUpdate(float elapsedSeconds)
         level->onPreUpdate(elapsedSeconds);
         level->mergeToRenderParams(&m_combinedSceneGlobalRenderParams);
     }
-    if (auto* level = m_sceneConductor->activeScene()) {
-        level->onPreUpdate(elapsedSeconds);
-        level->mergeToRenderParams(&m_combinedSceneGlobalRenderParams);
+    if (m_sceneConductor) {
+        m_sceneConductor->preUpdate(elapsedSeconds);
+        if (auto* level = m_sceneConductor->activeScene()) {
+            level->mergeToRenderParams(&m_combinedSceneGlobalRenderParams);
+        }
     }
 }
 
@@ -252,8 +292,8 @@ void World::onUpdate(float elapsedSeconds)
     for (auto& scene : m_sceneList) {
         scene->update(elapsedSeconds);
     }
-    if (auto* scene = m_sceneConductor->activeScene()) {
-        scene->update(elapsedSeconds);
+    if (m_sceneConductor) {
+        m_sceneConductor->update(elapsedSeconds);
     }
 }
 
@@ -267,8 +307,8 @@ void World::onPostUpdate(float elapsedSeconds)
     for (auto& scene : m_sceneList) {
         scene->onPostUpdate(elapsedSeconds);
     }
-    if (auto* scene = m_sceneConductor->activeScene()) {
-        scene->onPostUpdate(elapsedSeconds);
+    if (m_sceneConductor) {
+        m_sceneConductor->postUpdate(elapsedSeconds);
     }
 }
 
@@ -294,7 +334,7 @@ detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* v
 
 // Offscreen 描画など、何回か描画を行うものを List に集める。
 // ビューカリングなどはこの時点では行わない。
-void World::prepareRender()
+void World::prepareRender(const WorldRenderView* renderView)
 {
     m_renderingContext->world = this;
     m_worldRenderingElement.clear();
@@ -304,10 +344,11 @@ void World::prepareRender()
     for (auto& scene : m_sceneList) {
         scene->collectRenderObjects(this, m_renderingContext);
     }
-    if (auto* scene = m_sceneConductor->activeScene()) {
-        scene->collectRenderObjects(this, m_renderingContext);
+    if (m_sceneConductor) {
+        m_sceneConductor->collectRenderObjects(this, m_renderingContext);
     }
 
+    m_renderingContext->collectPostEffect(renderView->finishingProcess());
     m_renderingContext->collectPostEffect(m_sceneConductor->transitionEffect());
 }
 
@@ -338,8 +379,8 @@ void World::renderGizmos(RenderingContext* context)
     for (auto& scene : m_sceneList) {
         scene->renderGizmos(context);
     }
-    if (auto* scene = m_sceneConductor->activeScene()) {
-        scene->renderGizmos(context);
+    if (m_sceneConductor) {
+        m_sceneConductor->renderGizmos(context);
     }
 }
 

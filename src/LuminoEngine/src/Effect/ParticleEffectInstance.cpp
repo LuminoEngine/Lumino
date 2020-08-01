@@ -23,6 +23,11 @@ bool ParticleInstance2::init(ParticleModel2* model)
 
     m_model = model;
 
+    if (m_model->seed != 0) {
+        m_rand.setSeed(m_model->seed);
+    }
+    
+
     for (auto& emitterModel : m_model->emitters()) {
         auto instance = makeObject<ParticleEmitterInstance2>(this, emitterModel);
         m_emitterInstances.add(instance);
@@ -58,9 +63,10 @@ void ParticleInstance2::render(RenderingContext* context)
     }
 }
 
-ParticleRenderer2* ParticleInstance2::acquireRenderer(ParticleGeometry* geometry)
+ParticleRenderer2* ParticleInstance2::acquireRenderer(ParticleEmitterModel2* emitterModel)
 {
-    uint64_t hashKey = geometry->calculateRendererHashKey();
+    ParticleGeometry* geometry = emitterModel->geometry();
+    uint64_t hashKey = geometry->calculateRendererHashKey(emitterModel);
 
     for (auto& renderer : m_renderers) {
         if (renderer->type() == geometry->type() && renderer->hashKey() == hashKey) {
@@ -70,7 +76,7 @@ ParticleRenderer2* ParticleInstance2::acquireRenderer(ParticleGeometry* geometry
 
     if (geometry->type() == ParticleGeometryType::Sprite) {
         auto* g = static_cast<SpriteParticleGeometry*>(geometry);
-        auto renderer = makeObject<SpriteParticleRenderer>(hashKey, g->material());
+        auto renderer = makeObject<SpriteParticleRenderer>(hashKey, g->material(), emitterModel->m_geometryDirection);
         m_renderers.add(renderer);
         return renderer;
     }
@@ -102,11 +108,13 @@ bool ParticleEmitterInstance2::init(ParticleInstance2* particleInstance, Particl
     m_particleInstance = particleInstance;
     m_emitterModel = emitterModel;
 
-    m_renderer = particleInstance->acquireRenderer(m_emitterModel->geometry());
+    m_renderer = particleInstance->acquireRenderer(m_emitterModel);
 
     m_particleStorage.resize(m_emitterModel->m_maxParticles);
 
-    m_moduleInsances = makeObject<TrailParticleModuleInstance>(this);
+    if (emitterModel->m_trailSeconds > 0.0f) {
+        m_moduleInsances = makeObject<TrailParticleModuleInstance>(this, emitterModel);
+    }
 
 
     return true;
@@ -399,16 +407,17 @@ TrailParticleModuleInstance::TrailParticleModuleInstance()
 {
 }
 
-bool TrailParticleModuleInstance::init(ParticleEmitterInstance2* emitterInstance)
+bool TrailParticleModuleInstance::init(ParticleEmitterInstance2* emitterInstance, ParticleEmitterModel2* emitterModel)
 {
     if (!Object::init()) return false;
+    m_emitterModel = emitterModel;
 
     // Trail
     {
         int frameRate = 60;
-        int estimationNodeCount = (m_trailSeconds * frameRate) * emitterInstance->emitterModel()->m_maxParticles;
+        int estimationNodeCount = (m_emitterModel->m_trailSeconds * frameRate) * emitterInstance->emitterModel()->m_maxParticles;
         resizeTrailData(estimationNodeCount);
-        m_trailRateTime = m_trailSeconds / frameRate;
+        m_trailRateTime = m_emitterModel->m_trailSeconds / frameRate;
 
         m_ribbonRenderer = makeRef<RibbonRenderer>();
         if (!m_ribbonRenderer->init(estimationNodeCount)) {
@@ -473,7 +482,7 @@ void TrailParticleModuleInstance::onUpdateParticles(int count, const ParticleDat
             ParticleTrailNode* node = &m_trailNodeStorage.data(dataId);
 
             node->time += deltaTime;
-            if (node->time >= m_trailSeconds) {
+            if (node->time >= m_emitterModel->m_trailSeconds) {
                 // kill
 
                 // Remove from linked-list

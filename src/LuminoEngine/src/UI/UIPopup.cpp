@@ -83,7 +83,15 @@ void UIPopup::onRoutedEvent(UIEventArgs* e)
 {
     if (e->type() == UIEvents::LostFocusEvent) {
         close();
+        e->handled = true;
+        return;
     }
+    //else {
+    //    if (m_placementTarget && e->strategy == UIEventRoutingStrategy::Bubble) {
+    //        m_placementTarget->raiseEvent(e, UIEventRoutingStrategy::Bubble);
+    //        if (e->handled) return;
+    //    }
+    //}
 
     UIContainerElement::onRoutedEvent(e);
 }
@@ -113,7 +121,12 @@ Size UIPopupAdorner::measureOverride(UILayoutContext* layoutContext, const Size&
 {
     m_popup->measureLayout(layoutContext, constraint);
 
-    return Size::max(m_popup->placementTarget()->desiredSize(), UIElement::measureOverride(layoutContext, constraint));
+    Size contentSize;
+    if (m_popup->placementTarget()) {
+        contentSize = m_popup->placementTarget()->desiredSize();
+    }
+
+    return Size::max(contentSize, UIElement::measureOverride(layoutContext, constraint));
 }
 
 Size UIPopupAdorner::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
@@ -123,9 +136,15 @@ Size UIPopupAdorner::arrangeOverride(UILayoutContext* layoutContext, const Size&
 	switch (m_popup->placementMode())
 	{
 		case PlacementMode::Bottom:
-			// TODO: 簡易 bottom
-			m_popup->arrangeLayout(layoutContext, Rect(0, finalSize.height, finalSize));
-			break;
+        {
+            // TODO: 簡易 bottom
+            const auto& p1 = m_combinedFinalRenderTransform.position();
+            const auto& p2 = m_popup->placementTarget()->m_combinedFinalRenderTransform.position();
+            const auto& pos = p2 - p1;
+
+            m_popup->arrangeLayout(layoutContext, Rect(pos.x, pos.y + finalSize.height, finalSize));
+            break;
+        }
 
 		default:	// overray
 		{

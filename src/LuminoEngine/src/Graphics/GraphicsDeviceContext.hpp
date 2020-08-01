@@ -24,9 +24,6 @@ class ITexture;
 class IDepthBuffer;
 class ISamplerState;
 class IShaderPass;
-//class IShaderUniformBuffer;
-//class IShaderUniform;
-//class IShaderSamplerBuffer;
 class IShaderDescriptorTable;
 class IPipeline;
 class NativeRenderPassCache;
@@ -282,11 +279,6 @@ public:
     void setShaderPass(IShaderPass* value);
     void setPrimitiveTopology(PrimitiveTopology value);
 
-	//IVertexDeclaration* vertexDeclaration() const { return m_staging.pipelineState.vertexDeclaration; }
-	//IVertexBuffer* vertexBuffer(int streamIndex) const { return m_staging.primitive.vertexBuffers[streamIndex]; }
-	//IIndexBuffer* indexBuffer() const { return m_staging.primitive.indexBuffer; }
-	//PrimitiveTopology primitiveTopology() const { return m_staging.pipelineState.topology; }
-
     // write only
     void* map(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size);
     void unmap(IGraphicsRHIBuffer* resource);
@@ -407,7 +399,6 @@ public:
 
 	uint64_t hash() const { return m_hash; }
 	static uint64_t computeHash(const VertexElement* elements, int count);
-	//const VertexElement* findElement(AttributeUsage usage, int usageIndex) const;
 
 	virtual void dispose();
 
@@ -418,9 +409,6 @@ protected:
 
 private:
 	IGraphicsDevice* m_device = nullptr;
-
-	//std::vector<VertexElement> m_elements;
-
 	friend class IGraphicsDevice;
 };
 
@@ -528,48 +516,6 @@ private:
 	friend class IGraphicsDevice;
 };
 
-//class IShaderUniformBuffer
-//	: public IGraphicsDeviceObject
-//{
-//public:
-//	virtual const std::string& name() const = 0;
-//	virtual int getUniformCount() const = 0;
-//	virtual IShaderUniform* getUniform(int index) const = 0;
-//	virtual size_t bufferSize() const = 0;
-//	virtual void setData(const void* data, size_t size) = 0;
-//
-//protected:
-//	IShaderUniformBuffer();
-//	virtual ~IShaderUniformBuffer() = default;
-//};
-//
-//class IShaderUniform
-//	: public IGraphicsDeviceObject
-//{
-//public:
-//	virtual const ShaderUniformTypeDesc& desc() const = 0;
-//	virtual const std::string& name() const = 0;
-//
-//protected:
-//	IShaderUniform();
-//	virtual ~IShaderUniform() = default;
-//};
-//
-//class IShaderSamplerBuffer
-//	: public IGraphicsDeviceObject
-//{
-//public:
-//	virtual int registerCount() const = 0;
-//	virtual const std::string& getTextureRegisterName(int registerIndex) const = 0;
-//	//virtual const std::string& getSamplerRegisterName(int registerIndex) const = 0;
-//	virtual void setTexture(int registerIndex, ITexture* texture) = 0;
-//	virtual void setSamplerState(int registerIndex, ISamplerState* state) = 0;
-//
-//protected:
-//	IShaderSamplerBuffer();
-//	virtual ~IShaderSamplerBuffer() = default;
-//};
-
 // 実装は Backend ごとに結構変わるが、RHI としての使い方は VertexBuffer と同じにしたい。
 // 基本的に CommandBuffer 経由でデータをセットすることになる。
 // IShaderDescriptorTable は IShaderPass と 1:1 で存在する。
@@ -579,14 +525,6 @@ class IShaderDescriptorTable
 	: public IGraphicsDeviceObject
 {
 public:
-	//// 'b' register
-	//virtual void setData(int bindingIndex, const void* data, size_t size) = 0;
-
-	//// 't' register        TODO: 今は CombinedSampler もこっちだけど、それは DirectX12 に合わせて s にしたほうがいいかも。
-	//virtual void setTexture(int bindingIndex, ITexture* texture) = 0;
-
-	//// 's' register
-	//virtual void setSamplerState(int bindingIndex, ISamplerState* samplerState) = 0;
 
 protected:
 };
@@ -606,7 +544,6 @@ protected:
 	virtual ~IPipeline() = default;
 
 private:
-	//IGraphicsDevice* m_device = nullptr;
 	const IVertexDeclaration* m_sourceVertexLayout = nullptr;
 	const IRenderPass* m_sourceRenderPass = nullptr;
 	const IShaderPass* m_sourceShaderPass = nullptr;
@@ -615,8 +552,6 @@ private:
 	friend class IGraphicsDevice;
 	friend class NativePipelineCache;
 };
-
-
 
 // IRenderPass のライフサイクル (createとdispose) はこの中で管理する
 class NativeRenderPassCache
@@ -654,11 +589,6 @@ private:
 class NativePipelineCache
 {
 public:
-	//struct FindKey
-	//{
-	//	const GraphicsContextState& state;
-	//	IRenderPass* renderPass;
-	//};
 	using FindKey = DevicePipelineStateDesc;
 
 	NativePipelineCache(IGraphicsDevice* device);
@@ -702,8 +632,6 @@ private:
 		auto commandListRHI = device->getCommandList(VkCommandList など);
 		auto commandList = GraphicsCommandList::get(commandListRHI);
 		commandList->・・・Rendering モジュールで使う
-
-
 	*/
 };
 

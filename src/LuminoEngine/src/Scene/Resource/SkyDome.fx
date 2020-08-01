@@ -246,6 +246,8 @@ float4 psMain(PS_INPUT input) : SV_TARGET
 {
     float3 result = CalculateSkyDome(input.TexUV);
 
+    //result.rgb *= 0.5;
+
     // gamma
     result = pow(result, float3(1.0 / 2.2));
 

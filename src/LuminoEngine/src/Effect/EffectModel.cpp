@@ -15,9 +15,9 @@ EffectResource::~EffectResource()
 {
 }
 
-void EffectResource::init()
+bool EffectResource::init()
 {
-    Object::init();
+    return Object::init();
 }
 
 //void EffectResource::onDraw(RenderingContext* context)

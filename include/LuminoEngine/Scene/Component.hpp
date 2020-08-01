@@ -33,6 +33,7 @@ protected:
     virtual void onDetaching(WorldObject* owner);
 	virtual void onAttachedScene(Level* newOwner);	// obsolete
 	virtual void onDetachedScene(Level* oldOwner);	// obsolete
+    //virtual void onPreUpdate();
     virtual void onUpdate(float elapsedSeconds);
     virtual void onPrepareRender(RenderingContext* context);
     virtual void onRender(RenderingContext* context);
@@ -48,7 +49,7 @@ public:
     //bool m_mainVisualComponent = false; // TODO: flags
 
 private:
-    virtual void render(RenderingContext* context);
+    void render(RenderingContext* context) override;
     void renderGizmo(RenderingContext* context);
 
     friend class Level;

@@ -14,7 +14,7 @@ class App_Sandbox_PostEffect : public Application
     {
         //Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
-        Engine::renderView()->setBackgroundColor(Color::Gray);
+        Engine::renderView()->setBackgroundColor(Color::Black);
 		Engine::renderView()->setClearMode(RenderViewClearMode::SkyDome);
 		//Engine::ambientLight()->setIntensity(0.5);
 
@@ -66,26 +66,26 @@ class App_Sandbox_PostEffect : public Application
         auto obj = makeObject<StaticMesh>(model);
 
 
-		auto effect2 = makeObject<SSRPostEffect>();
-		Engine::renderView()->addPostEffect(effect2);
+		//auto effect2 = makeObject<SSRPostEffect>();
+		//Engine::renderView()->addPostEffect(effect2);
 
-		auto effect1 = makeObject<SSAOPostEffect>();
-		Engine::renderView()->addPostEffect(effect1);
+		//auto effect1 = makeObject<SSAOPostEffect>();
+		//Engine::renderView()->addPostEffect(effect1);
 
-		auto effect6 = makeObject<FXAAPostEffect>();
-		Engine::renderView()->addPostEffect(effect6);
+		//auto effect6 = makeObject<FXAAPostEffect>();
+		//Engine::renderView()->addPostEffect(effect6);
 
 
-		auto effect5 = makeObject<DepthOfFieldPostEffect>();
-		Engine::renderView()->addPostEffect(effect5);
+		//auto effect5 = makeObject<DepthOfFieldPostEffect>();
+		//Engine::renderView()->addPostEffect(effect5);
 		
 
-		auto effect4 = makeObject<BloomPostEffect>();
-		effect4->setStrength(0.1);
-		Engine::renderView()->addPostEffect(effect4);
+		//auto effect4 = makeObject<BloomPostEffect>();
+		//effect4->setStrength(0.1);
+		//Engine::renderView()->addPostEffect(effect4);
 
-        auto effect3 = makeObject<TonemapPostEffect>();
-        Engine::renderView()->addPostEffect(effect3);
+  //      auto effect3 = makeObject<TonemapPostEffect>();
+  //      Engine::renderView()->addPostEffect(effect3);
 
 
     }

@@ -7,7 +7,7 @@ namespace ln {
 namespace detail { class AssetObjectInternal; }
 
 /**
- * アセットファイルやその他の外部ファイルをインポートして構築されるオブジェクトのベースクラスです。
+ * アセットファイルやその他の外部ファイルをインポートして構築可能なオブジェクトのベースクラスです。
  */
 LN_CLASS()
 class AssetObject
@@ -27,15 +27,18 @@ LN_CONSTRUCT_ACCESS:
     bool init();
 
 private:
-    // アセットファイルのファイルパス。リロードのために使用する。
+    // アセットファイル (.yml) のファイルパス。Object をアセットファイルに保存したり、リロードのために使用する。
     // また、serialize 時に basePath と結合して、キャッシュを検索するキーを生成したりもする。
-    // 通常は .yml ファイルだが、テクスチャなどが .png 等から直接ロードされた場合はそのファイルパスとなることもある。
+    // ×→ 通常は .yml ファイルだが、テクスチャなどが .png 等から直接ロードされた場合はそのファイルパスとなることもある。
     //
     // 絶対パスまたは相対パスで、相対パスの場合は Asset フォルダからの相対パス。
     // m_assetFilePath はユーザープログラムから指定されたパスをそのまま覚えておいてリロードで使用するためのものであって、
-    // 何かファイルに保存したりするものではない。
+    // 何かファイルに保存したりするものではない。(※1)
     // リロードのたびに findAssetPath() で AssetPath に解決して使う。
     // この性質上、開発中のみ使用し、リリースランタイムでは使用しない。
+    //
+    // ※1: というか、できない。m_assetFilePath は AssetObject と対になる .yml を指すものであって、
+    //      .yml の中に m_assetFilePath を保存しても、それは自分自身のパスを保存することになるので意味がない。
     Path m_assetFilePath;
 
     friend class Assets;
@@ -47,6 +50,7 @@ class AssetObjectInternal
 {
 public:
     static void setAssetPath(AssetObject* obj, const Path& value) { obj->setAssetPath(value); }
+    static void reload(AssetObject* obj) { obj->reload(); }
 };
 }
 } // namespace ln
