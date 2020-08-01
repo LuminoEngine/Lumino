@@ -144,7 +144,7 @@ void SpriteParticleRenderer::draw(RenderingContext* context, const ParticleData2
             //float d = Vector3::dot(viewDir -p, viewDir);
 
             // left-hand coord
-            Vector3 f = Vector3::normalize(viewDir - p);
+            Vector3 f = Vector3::normalize(viewPos - p);
             Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
             Vector3 u = Vector3::cross(f, r);
             //const auto transform = Matrix(
