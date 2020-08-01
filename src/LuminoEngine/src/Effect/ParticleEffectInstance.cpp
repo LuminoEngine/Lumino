@@ -306,7 +306,7 @@ void ParticleEmitterInstance2::spawnParticle(float delayTime)
     // Emitter shape
     {
         Vector3 localPosition = Vector3::Zero;
-        Vector3 localFront = Vector3::UnitZ;
+        Vector3 localFront = Vector3::UnitZ;    // ローカル空間上での進行方向
         const auto& shapeParam = m_emitterModel->m_shapeParam;
 
         switch (m_emitterModel->m_shapeType)
@@ -348,7 +348,10 @@ void ParticleEmitterInstance2::spawnParticle(float delayTime)
         }
 
         const Matrix& emitterTransform = worldTransform();
-        Vector3 worldFront = Vector3::transformCoord(localFront, emitterTransform);
+
+        // ワールド空間上の進行方向
+        Vector3 worldFront = localFront;
+        worldFront.transformDirection(emitterTransform);
         //Vector3 worldPosition = Vector3::transformCoord(localFront, emitterTransform);
 
         particle->position = localPosition + localFront * makeRandom(particle, m_emitterModel->m_forwardPosition);

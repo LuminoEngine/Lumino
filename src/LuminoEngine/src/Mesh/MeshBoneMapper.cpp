@@ -299,9 +299,9 @@ const List<StringRef>& MeshBoneMapper::splitWords(const String& name)
 				begin = pos;
 			}
 			else if (*pos == '_') {
-				pos++;
 				m_splitCache.add(StringRef(begin, pos - begin));
-				begin = pos;
+				begin = pos + 1;
+				//pos++;
 			}
 		}
 	}

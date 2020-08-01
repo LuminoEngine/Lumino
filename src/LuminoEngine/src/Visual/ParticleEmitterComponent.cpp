@@ -86,6 +86,7 @@ void ParticleEmitterComponent2::onUpdate(float deltaTime)
 
 void ParticleEmitterComponent2::onRender(RenderingContext* context)
 {
+	context->setBaseTransfrom(Matrix::Identity);
 	m_instance->render(context);
 	//Vector3 dir = renderer->viewPoint()->viewDirection;
 	//m_model->render(

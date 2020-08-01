@@ -5,6 +5,8 @@ using namespace ln;
 
 class App_Sandbox_Particle : public Application
 {
+    Ref<WorldObject> m_particleObj;
+
     void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
@@ -103,8 +105,8 @@ class App_Sandbox_Particle : public Application
 
         m1->m_shapeType = ParticleEmitterShapeType::Box;
         m1->m_shapeParam.set(20, 0, 20);
-        m1->m_forwardVelocity.minValue = -3;
-        m1->m_forwardVelocity.maxValue = -3;
+        m1->m_forwardVelocity.minValue = -10;
+        m1->m_forwardVelocity.maxValue = -10;
 
         m1->m_size.set(0.05f);
         //m1->m_size.set(0.5f);
@@ -114,8 +116,9 @@ class App_Sandbox_Particle : public Application
         m1->m_sortMode = ParticleSortMode::DistanceToView;
 
         auto material = Material::create();
-        material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
-        material->setMainTexture(Texture2D::load("C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/WaterDrop-1.png"));
+        //material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
+        material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
+        //material->setMainTexture(Texture2D::load("C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/WaterDrop-1.png"));
         material->shadingModel = ShadingModel::Unlit;
         material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
         m1->setSpriteModule(material);
@@ -127,9 +130,9 @@ class App_Sandbox_Particle : public Application
         auto particle1 = makeObject<ParticleEmitterComponent2>(particleModel);
         //particle1->setBlendMode(BlendMode::Add);
         particle1->setBlendMode(BlendMode::Alpha);
-        auto obj1 = makeObject<WorldObject>();
-        obj1->addComponent(particle1);
-        obj1->setPosition(0, 10, 0);
+        m_particleObj = makeObject<WorldObject>();
+        m_particleObj->addComponent(particle1);
+        m_particleObj->setPosition(0, 10, 0);
         //particle1->setAngles(Math::PI, 0, 0);
 
 
@@ -217,6 +220,16 @@ class App_Sandbox_Particle : public Application
 
     void onUpdate() override
     {
+        if (m_particleObj) {
+            auto pos = Engine::camera()->position();
+            pos.y = 10;
+
+            //pos.x = std::cos(Engine::time()) * 10;
+            //pos.z = std::sin(Engine::time()) * 10;
+
+            m_particleObj->setPosition(pos);
+            //m_particleObj->setPosition(10, 0, 0);
+        }
     }
 };
 
