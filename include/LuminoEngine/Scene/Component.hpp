@@ -33,7 +33,7 @@ protected:
     virtual void onDetaching(WorldObject* owner);
 	virtual void onAttachedScene(Level* newOwner);	// obsolete
 	virtual void onDetachedScene(Level* oldOwner);	// obsolete
-    //virtual void onPreUpdate();
+    virtual void onPreUpdate(float elapsedSeconds);
     virtual void onUpdate(float elapsedSeconds);
     virtual void onPrepareRender(RenderingContext* context);
     virtual void onRender(RenderingContext* context);

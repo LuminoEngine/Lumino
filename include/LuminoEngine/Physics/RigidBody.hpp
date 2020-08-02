@@ -54,7 +54,7 @@ public:
     /** 質量を設定します。0 を設定すると静的なボディとなります。 */
     void setMass(float mass);
 
-    /** 速度を設定します。 */
+    /** 速度を設定します。単位は m/s です。 */
     void setVelocity(const Vector3& velocity);
 
     //const Vector3& velocity() const;

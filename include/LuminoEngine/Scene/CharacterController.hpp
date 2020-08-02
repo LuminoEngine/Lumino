@@ -28,6 +28,7 @@ public:
 
 
 protected:
+	void onPreUpdate(float elapsedSeconds) override;
 	// CharacterController を継承してカスタマイズする場合、
 	// この onUpdate はキャラクターが操作を受け付ける時のみ呼び出すべき。
 	// 例えば攻撃を受けてのけぞっている途中は、よびだすべきではない。

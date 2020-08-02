@@ -86,7 +86,7 @@ PlaneCollisionShape::~PlaneCollisionShape()
 
 bool PlaneCollisionShape::init()
 {
-	return CollisionShape::init();
+	return init(Vector3::UnitY);
 }
 
 //------------------------------------------------------------------------------

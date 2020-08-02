@@ -282,6 +282,7 @@ void Experiment_Shadow();
 void Experiment_SSR();
 void Tutorial_Sandbox();
 void Sandbox_MeshTilemap();
+void Sandbox_Physics();
 void Sandbox_Particle();
 void Sandbox_PostEffect();
 void Sandbox_Sky();
@@ -480,7 +481,8 @@ int main(int argc, char** argv)
         //Experiment_Shadow();
         //Experiment_SSR();
 		//Sandbox_MeshTilemap();
-        Sandbox_Particle();
+        Sandbox_Physics();
+        //Sandbox_Particle();
         //Sandbox_PostEffect();
         //Sandbox_Sky();
 		//Tutorial_Sandbox();

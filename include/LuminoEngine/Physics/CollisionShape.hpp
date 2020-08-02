@@ -69,7 +69,7 @@ public:
 	*/
 	static Ref<PlaneCollisionShape> create(const Vector3& direction = Vector3::UnitY);
 	
-LN_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
 	PlaneCollisionShape();
 	virtual ~PlaneCollisionShape();
 	bool init();
