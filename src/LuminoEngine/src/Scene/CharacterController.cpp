@@ -101,13 +101,13 @@ void CharacterController::onBeforeStepSimulation()
 
 
 	// Sync transform from WorldObject to Body
-	m_rigidBody->setTransform(worldObject()->worldMatrix());
+	//m_rigidBody->setTransform(worldObject()->worldMatrix());
 }
 
 void CharacterController::onAfterStepSimulation()
 {
 	// Sync transform from Body to WorldObject
-	worldObject()->setRotation(Quaternion::makeFromRotationMatrix(m_rigidBody->transform()));
+	//worldObject()->setRotation(Quaternion::makeFromRotationMatrix(m_rigidBody->transform()));
 	worldObject()->setPosition(m_rigidBody->transform().position());
 }
 
