@@ -259,6 +259,10 @@ void RigidBody::activate()
 
 void RigidBody::onBeforeStepSimulation()
 {
+    // RigidBodyComponent::onBeforeStepSimulation() で WorldObject の姿勢を this に同期した後
+    // 以降の処理を行いたいので、先に実行しておく。
+    PhysicsObject::onBeforeStepSimulation();
+
     // TODO: KinematicObject が Component と関連づいている場合、ここで transform を設定
     //auto* transform = getTransform();
     //if (transform != nullptr)
@@ -413,6 +417,8 @@ void RigidBody::onAfterStepSimulation()
         m_btRigidBody->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix((btScalar*)&m_transform);
     }
+
+    PhysicsObject::onAfterStepSimulation();
 }
 
 void RigidBody::onRemoveFromPhysicsWorld()

@@ -2,6 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/Input/InputController.hpp>
+#include <LuminoEngine/Physics/CollisionShape.hpp>
+#include <LuminoEngine/Physics/RigidBody.hpp>
 #include <LuminoEngine/Scene/CharacterController.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
@@ -350,6 +352,33 @@ void CharacterController::onUpdate(float elapsedSeconds)
 	m_inputState.reset();
 }
 
+void CharacterController::onBeforeStepSimulation()
+{
+	prepareRigidBody();
+
+	// Sync transform from WorldObject to Body
+	m_rigidBody->setTransform(worldObject()->worldMatrix());
+}
+
+void CharacterController::onAfterStepSimulation()
+{
+	// Sync transform from Body to WorldObject
+	worldObject()->setRotation(Quaternion::makeFromRotationMatrix(m_rigidBody->transform()));
+	worldObject()->setPosition(m_rigidBody->transform().position());
+}
+
+void CharacterController::onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact)
+{
+}
+
+void CharacterController::onCollisionLeave(PhysicsObject* otherObject, ContactPoint* contact)
+{
+}
+
+void CharacterController::onCollisionStay(PhysicsObject* otherObject, ContactPoint* contact)
+{
+}
+
 void CharacterController::resetCameraPosition()
 {
 	m_resetCameraPosition = true;
@@ -368,6 +397,14 @@ void CharacterController::prepareViewCamera()
 		renderView->viewport()->grabCursor();
 
 		m_lastCamera = camera;
+	}
+}
+
+void CharacterController::prepareRigidBody()
+{
+	if (!m_rigidBody) {
+		m_rigidBody = makeObject<RigidBody>();
+		m_rigidBody->addCollisionShape(makeObject<CapsuleCollisionShape>(m_height, 1.0f));
 	}
 }
 
