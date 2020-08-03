@@ -38,10 +38,10 @@ Size UITextField::measureOverride(UILayoutContext* layoutContext, const Size& co
 		UIElement::measureOverride(layoutContext, constraint));
 }
 
-Size UITextField::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UITextField::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	m_textArea->arrangeLayout(layoutContext, Rect(0, 0, finalSize));
-	return UIElement::arrangeOverride(layoutContext, finalSize);
+	m_textArea->arrangeLayout(layoutContext, finalArea);
+	return UIElement::arrangeOverride(layoutContext, finalArea);
 }
 
 void UITextField::onRender(UIRenderingContext* context)

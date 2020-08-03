@@ -628,10 +628,10 @@ Size UITextArea::measureOverride(UILayoutContext* layoutContext, const Size& con
 	return Size::max(m_textLayout->measure(), UIElement::measureOverride(layoutContext, constraint));
 }
 
-Size UITextArea::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UITextArea::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	m_textLayout->arrange(finalSize);
-	return UIElement::arrangeOverride(layoutContext, finalSize);
+	m_textLayout->arrange(finalArea.getSize());
+	return UIElement::arrangeOverride(layoutContext, finalArea);
 }
 
 void UITextArea::onRender(UIRenderingContext* context)
@@ -661,9 +661,9 @@ Size UIEditableTextArea::measureOverride(UILayoutContext* layoutContext, const S
 	return UITextArea::measureOverride(layoutContext, constraint);
 }
 
-Size UIEditableTextArea::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIEditableTextArea::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	return UITextArea::arrangeOverride(layoutContext, finalSize);
+	return UITextArea::arrangeOverride(layoutContext, finalArea);
 }
 
 void UIEditableTextArea::onRender(UIRenderingContext* context)

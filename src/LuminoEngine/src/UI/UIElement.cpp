@@ -767,9 +767,9 @@ Size UIElement::measureOverride(UILayoutContext* layoutContext, const Size& cons
     return size;
 }
 
-Size UIElement::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIElement::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	return UILayoutElement::arrangeOverride(layoutContext, finalSize);
+	return UILayoutElement::arrangeOverride(layoutContext, finalArea);
 }
 
 void UIElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect)

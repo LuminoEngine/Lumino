@@ -8,9 +8,9 @@ Size NavigationMenuItem::measureOverride(UILayoutContext* layoutContext, const S
     return UIIcon::measureOverride(layoutContext, constraint);
 }
 
-Size NavigationMenuItem::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size NavigationMenuItem::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-    return UIIcon::arrangeOverride(layoutContext, finalSize);
+    return UIIcon::arrangeOverride(layoutContext, finalArea);
 }
 
 NavigationMenuItem::NavigationMenuItem()

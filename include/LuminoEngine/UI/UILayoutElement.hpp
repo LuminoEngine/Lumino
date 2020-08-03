@@ -171,7 +171,7 @@ protected:
 	virtual ~UILayoutElement();
 
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint);
-	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize);
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea);
 
 	//virtual int getChildLayoutItemCount() const = 0;
 	//virtual ILayoutElement* getChildLayoutItem(int index) const = 0;

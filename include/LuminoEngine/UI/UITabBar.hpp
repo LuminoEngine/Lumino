@@ -84,7 +84,7 @@ protected:
 	const String& elementName() const override { static String name = u"UITabBar"; return name; }
 	void onAddChild(UIElement* child) override;
 	Size measureOverride(UILayoutContext* context, const Size& constraint) override;
-	Size arrangeOverride(UILayoutContext* context, const Size& finalSize) override;
+	Size arrangeOverride(UILayoutContext* context, const Rect& finalArea) override;
 
 private:
 	void selectItem(UITabBarItem2* item);

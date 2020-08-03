@@ -47,7 +47,7 @@ protected:
     virtual UIElement* lookupMouseHoverElement(const Point& frameClientPosition) override;
 	virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
-    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 	virtual void onUpdateLayout(UILayoutContext* layoutContext) override;
     //virtual void render(UIRenderingContext* context);
 	virtual void onRender(UIRenderingContext* context) override;

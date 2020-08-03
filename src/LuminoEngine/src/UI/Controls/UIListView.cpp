@@ -118,9 +118,9 @@ Size UIListView::measureOverride(UILayoutContext* layoutContext, const Size& con
     return UIItemsControl::measureOverride(layoutContext, constraint);
 }
 
-Size UIListView::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIListView::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-    return UIItemsControl::arrangeOverride(layoutContext, finalSize);
+    return UIItemsControl::arrangeOverride(layoutContext, finalArea);
 }
 
 void UIListView::addItemInternal(UIListViewItem* item)
@@ -172,11 +172,11 @@ void UIListViewItem2::setText(int columnId, const ln::String& text)
     setContent(columnId, ln::UITextBlock::create(text));
 }
 
-Size UIListViewItem2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIListViewItem2::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
     // TODO: m_columnContents をカラムごとにレイアウトする
 
-    return UIListItem::arrangeOverride(layoutContext, finalSize);
+    return UIListItem::arrangeOverride(layoutContext, finalArea);
 }
 
 void UIListViewItem2::onLogicalChildRemoved(UIElement* removedElement)
@@ -245,8 +245,9 @@ void UIListView2::onUpdateStyle(const UIStyleContext* styleContext, const detail
     UIListItemsControl::onUpdateStyle(styleContext, finalStyle);
 }
 
-Size UIListView2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIListView2::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+    const auto finalSize = finalArea.getSize();
     attemptRefreshItemInstance(layoutContext, finalSize);
 
     if (attemptRefreshContents()) {
@@ -257,7 +258,7 @@ Size UIListView2::arrangeOverride(UILayoutContext* layoutContext, const Size& fi
         }
     }
 
-    return UIListItemsControl::arrangeOverride(layoutContext, finalSize);
+    return UIListItemsControl::arrangeOverride(layoutContext, finalArea);
 }
 
 int UIListView2::getModelItemCount() const

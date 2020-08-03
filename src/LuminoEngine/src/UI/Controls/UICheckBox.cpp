@@ -33,9 +33,9 @@ Size UICheckBox::measureOverride(UILayoutContext* layoutContext, const Size& con
 	return UIToggleButton::measureOverride(layoutContext, constraint);
 }
 
-Size UICheckBox::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UICheckBox::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	return UIToggleButton::arrangeOverride(layoutContext, finalSize);
+	return UIToggleButton::arrangeOverride(layoutContext, finalArea);
 }
 
 void UICheckBox::onRender(UIRenderingContext* context)

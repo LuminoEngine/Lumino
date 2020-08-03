@@ -46,7 +46,7 @@ public:
 protected:
     virtual const String& elementName() const  override { static String name = u"UIDialog"; return name; }
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIDialog();
@@ -87,7 +87,7 @@ class UIDialogAdorner
 protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
     virtual void onUpdateLayout(UILayoutContext* layoutContext) override;
 	virtual UIElement* lookupMouseHoverElement(const Point& frameClientPosition) override;
     virtual void render(UIRenderingContext* context, const Matrix& parentTransform) override;

@@ -42,7 +42,7 @@ protected:
     virtual const String& elementName() const  override { static String name = u"UITreeItem"; return name; }
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -81,7 +81,7 @@ protected:
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
     virtual void onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e) override;
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 LN_CONSTRUCT_ACCESS:
     UITreeView();
@@ -181,7 +181,7 @@ protected:
     virtual const String& elementName() const  override { static String name = u"UITreeItem"; return name; }
     virtual void onRoutedEvent(UIEventArgs* e) override;
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 LN_CONSTRUCT_ACCESS:
     UITreeItem2();
@@ -247,17 +247,13 @@ protected:
 
     //virtual void onItemClick(UITreeItem* item, UIMouseEventArgs* e);
     //virtual Ref<UITreeItem> onRenderItem(UICollectionItemModel* viewModel);
-
-    // base interface
-    //virtual void onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e) override;
-    //virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
     
     // base interface
     const String& elementName() const override { static String name = u"UITreeView"; return name; }
     void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
     void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
     Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-    Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
     void onRoutedEvent(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:

@@ -26,9 +26,9 @@ public:
 
 protected:
     void onRoutedEvent(UIEventArgs* e) override;
-    Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override
+    Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override
     {
-        return UIControl::arrangeOverride(layoutContext, finalSize);
+        return UIControl::arrangeOverride(layoutContext, finalArea);
     }
     void onRender(UIRenderingContext* context) override
     {

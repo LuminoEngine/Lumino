@@ -42,7 +42,7 @@ protected:
     virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
     virtual void onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e) override;
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIListView();
@@ -81,7 +81,7 @@ public:
 protected:
     // base interface
     const String& elementName() const override { static String name = u"UIListBoxItem"; return name; }
-    Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
     void onLogicalChildRemoved(UIElement* removedElement) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -110,7 +110,7 @@ protected:
     void onAddChild(UIElement* child) override;
     void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
     void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
-    Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 LN_CONSTRUCT_ACCESS:
     UIListView2();

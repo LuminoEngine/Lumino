@@ -462,16 +462,20 @@ public:	// TODO: internal protected
 
     /**
         @brief		Visual 子要素の配置を確定し、この要素の最終サイズを返します。
-        @param[in]	finalSize	: 親要素がこの要素に対して割り当てた領域のサイズ。
+        @param[in]	finalArea	: 親要素がこの要素に対して割り当てた領域のサイズ。
         @return		要素の最終サイズ。要素の描画時にこのサイズを使用します。
-        @details	派生クラスは finalSize よりも大きいサイズを返すと、描画時に見切れが発生します。
-                    また、finalSize には padding および border プロパティの余白は考慮されません。
+        @details	派生クラスは finalArea よりも大きいサイズを返すと、描画時に見切れが発生します。
+                    
+					finalArea には padding および border プロパティの余白は考慮されません。
                     余白を正しく反映するためには派生クラスで padding および border プロパティを参照し、子要素の位置を計算します。
+
+					finalArea.x と finalArea.y は、MarginedArea を基準としたオフセットで、通常は (0, 0) です。
+					派生クラスで、ベースクラスのレイアウト処理をある特定のローカルエリア内で行いたい場合に指定されます。
 
                     親要素は、各子要素の Arrange を呼び出し、適切に配置する必要があります。
                     そうでない場合、子要素はレンダリングされません。(UIElement::arrangeOverride() は、子要素の配置は行いません)
     */
-    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 	virtual void arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect) override;
 

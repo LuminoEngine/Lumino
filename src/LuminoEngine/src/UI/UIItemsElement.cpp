@@ -53,9 +53,9 @@ Size UICollectionItem::measureOverride(UILayoutContext* layoutContext, const Siz
     return UIControl::measureOverride(layoutContext, constraint);
 }
 
-Size UICollectionItem::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UICollectionItem::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-    return UIControl::arrangeOverride(layoutContext, finalSize);
+    return UIControl::arrangeOverride(layoutContext, finalArea);
 }
 
 void UICollectionItem::onRoutedEvent(UIEventArgs* e)
@@ -260,8 +260,9 @@ Size UIItemsControl::measureOverride(UILayoutContext* layoutContext, const Size&
     }
 }
 
-Size UIItemsControl::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIItemsControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+    const auto finalSize = finalArea.getSize();
 	Rect contentSlotRect = detail::LayoutHelper::makePaddingRect(this, finalSize);
 
     if (m_layoutItemsHostLayoutEnabled && m_itemssHostLayout) {
@@ -269,7 +270,7 @@ Size UIItemsControl::arrangeOverride(UILayoutContext* layoutContext, const Size&
     	return finalSize;
     }
     else {
-        return UIControl::arrangeOverride(layoutContext, finalSize);
+        return UIControl::arrangeOverride(layoutContext, finalArea);
     }
 }
 

@@ -129,9 +129,10 @@ Size UIPopupAdorner::measureOverride(UILayoutContext* layoutContext, const Size&
     return Size::max(contentSize, UIElement::measureOverride(layoutContext, constraint));
 }
 
-Size UIPopupAdorner::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIPopupAdorner::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-    UIElement::arrangeOverride(layoutContext, finalSize);
+    const auto finalSize = finalArea.getSize();
+    UIElement::arrangeOverride(layoutContext, finalArea);
 
 	switch (m_popup->placementMode())
 	{

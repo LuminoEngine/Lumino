@@ -142,7 +142,7 @@ void UILayoutElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& 
 	//Size contentAreaSize(
 	//	std::max(arrangeRect.width - padding.getWidth(), 0.0f),
 	//	std::max(arrangeRect.height - padding.getHeight(), 0.0f));
-	Size finalContentAreaSize = arrangeOverride(layoutContext, contentAreaSize);
+	Size finalContentAreaSize = arrangeOverride(layoutContext, Rect(0, 0, contentAreaSize));
 
     
 
@@ -232,9 +232,9 @@ Size UILayoutElement::measureOverride(UILayoutContext* layoutContext, const Size
 	return detail::LayoutHelper::measureElement(this, constraint, Size::Zero);
 }
 
-Size UILayoutElement::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UILayoutElement::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	return finalSize;
+	return finalArea.getSize();
 }
 
 void UILayoutElement::onUpdateLayout(UILayoutContext* layoutContext)

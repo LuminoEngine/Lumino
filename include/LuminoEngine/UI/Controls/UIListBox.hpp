@@ -71,7 +71,7 @@ protected:
 	// base interfaces
 	void onRoutedEvent(UIEventArgs* e) override;
 	Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-	Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+	Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 LN_CONSTRUCT_ACCESS:
     UIListItemsControl();
