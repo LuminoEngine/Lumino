@@ -7,9 +7,12 @@
 
 
 #include "Internal.hpp"
+#include <LuminoEngine/Font/Font.hpp>	// for UILayoutContext
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutElement.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
+#include "../Font/TextLayoutEngine.hpp"	// for UILayoutContext
+#include "../Font/FontManager.hpp"	// for UILayoutContext
 
 namespace ln {
 
@@ -340,6 +343,32 @@ Rect UILayoutContext::makeContentRect(const UIElement* element, const Size& fina
 	}
 
 	return result;
+}
+
+Size UILayoutContext::measureTextSize(Font* font, const StringRef& text)
+{
+	auto fc = detail::FontHelper::resolveFontCore(font, m_dpiScale);
+	detail::FontGlobalMetrics gm;
+	fc->getGlobalMetrics(&gm);
+	return font->measureRenderSize(text, m_dpiScale);
+}
+
+Size UILayoutContext::measureTextSize(Font* font, uint32_t codePoint)
+{
+	auto fc = detail::FontHelper::resolveFontCore(font, m_dpiScale);
+	detail::FontGlobalMetrics gm;
+	fc->getGlobalMetrics(&gm);
+	return font->measureRenderSize(codePoint, m_dpiScale);
+}
+
+Size UILayoutContext::measureTextSize(const UIElement* element, const StringRef& text)
+{
+	return measureTextSize(element->finalStyle()->font, text);
+}
+
+Size UILayoutContext::measureTextSize(const UIElement* element, uint32_t codePoint)
+{
+	return measureTextSize(element->finalStyle()->font, codePoint);
 }
 
 //==============================================================================

@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/Controls/UICheckBox.hpp>
 #include "../../Font/FontManager.hpp"
 
@@ -22,20 +23,44 @@ bool UICheckBox::init()
 {
     if (!UIControl::init()) return false;
 
-    m_checkMarkFont = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(u"Reguler", 20);
-    m_checkMarkCodePoint = 0xF00C;//detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeCodePoint(value);
+	//auto vsm = getVisualStateManager();
+	//vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Pressed);
+
+	m_checkMark = makeObject<UIElement>(UICreationContext::DisabledAutoAddToPrimaryElement);
+	m_checkMark->addClass(u"UICheckBox-CheckMark");
+	addVisualChild(m_checkMark);
+
+
+    m_checkMarkFont = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(u"Solid", 20);
+	m_checkMarkCodePoint = 0xF00C;
+
+	m_squareCodePoint = 0xF0C8;
 
     return true;
 }
 
 Size UICheckBox::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-	return UIToggleButton::measureOverride(layoutContext, constraint);
+	m_checkMark->measureLayout(layoutContext, constraint);
+	m_boxSize = m_checkMark->desiredSize();
+	//m_boxSize = layoutContext->measureTextSize(m_checkMarkFont, m_squareCodePoint);
+
+	Size baseSize = UIToggleButton::measureOverride(layoutContext, constraint);
+
+
+	
+	Size desiredSize(baseSize.width + m_boxSize.width, m_boxSize.height);
+
+	return desiredSize;
 }
 
 Size UICheckBox::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	return UIToggleButton::arrangeOverride(layoutContext, finalArea);
+	m_checkMark->arrangeLayout(layoutContext, Rect(finalArea.x, finalArea.y, m_boxSize));
+
+	Rect baseArea(m_boxSize.width, 0, finalArea.width - m_boxSize.width, finalArea.height);
+
+	return UIToggleButton::arrangeOverride(layoutContext, baseArea);
 }
 
 void UICheckBox::onRender(UIRenderingContext* context)
@@ -56,7 +81,19 @@ void UICheckBox::onRender(UIRenderingContext* context)
 		//Matrix transform = Matrix::makeTranslation(localRect.x, localRect.y, 0);
 
 		//context->setTransfrom(transform);
-		context->drawChar(m_checkMarkCodePoint, Color::Blue, m_checkMarkFont);
+
+		//BoxElementShapeBaseStyle baseStyle;
+		//baseStyle.baseRect = Rect(0, 0, 20, 20);
+
+		//BoxElementShapeBackgroundStyle backbroundStyle;
+		//backbroundStyle.color = Color::Gray;
+
+		//context->drawBoxElement(baseStyle, const BoxElementShapeBackgroundStyle * backbroundStyle = nullptr, const BoxElementShapeBorderStyle * borderStyle = nullptr, const BoxElementShapeShadowStyle * shadowStyle = nullptr);
+
+		
+
+		//context->drawChar(m_squareCodePoint, Color::Gray, m_checkMarkFont);
+		//context->drawChar(m_checkMarkCodePoint, Color::Blue, m_checkMarkFont);
 	}
 }
 

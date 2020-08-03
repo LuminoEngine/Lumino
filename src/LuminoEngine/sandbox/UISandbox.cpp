@@ -82,6 +82,7 @@ public:
 			auto checkbox1 = makeObject<UICheckBox>();
 			checkbox1->setSize(100, 30);
 			checkbox1->setBackgroundColor(Color::Green);
+			checkbox1->addChild(u"Test");
 			layout1->addChild(checkbox1);
 		}
 		//// ComboBox

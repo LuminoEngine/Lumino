@@ -422,7 +422,8 @@ public:	// TODO: internal protected
 	void removeVisualChild(UIElement* element);
 	void removeAllVisualChild();
 
-    virtual const String& elementName() const { return String::Empty; }
+    //virtual const String& elementName() const { return String::Empty; }
+	virtual const String& elementName() const { static String name = u"UIElement"; return name; }
 
     virtual void onDispose(bool explicitDisposing) override;
 

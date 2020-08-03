@@ -20,8 +20,11 @@ protected:
 	void onRender(UIRenderingContext* context) override;
 
 private:
+	Ref<UIElement> m_checkMark;
 	Font* m_checkMarkFont;
 	uint32_t m_checkMarkCodePoint;
+	uint32_t m_squareCodePoint;
+	Size m_boxSize;
 };
 
 } // namespace ln

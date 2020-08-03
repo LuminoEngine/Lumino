@@ -246,6 +246,11 @@ public:
 	// arrangeOverride() のユーティリティ
 	Rect makeContentRect(const UIElement* element, const Size& finalSize) const;
 
+	Size measureTextSize(Font* font, const StringRef& text);
+	Size measureTextSize(Font* font, uint32_t codePoint);
+	Size measureTextSize(const UIElement* element, const StringRef& text);
+	Size measureTextSize(const UIElement* element, uint32_t codePoint);
+
 LN_CONSTRUCT_ACCESS:
 	UILayoutContext();
 	void init();

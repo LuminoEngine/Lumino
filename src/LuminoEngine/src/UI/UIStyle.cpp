@@ -1792,6 +1792,21 @@ void UITheme::buildLumitelier()
 	}
 
 	//--------------------------------
+	// UICheckBox-CheckMark
+	{
+		if (auto s = sheet->obtainStyle(u"UIElement.UICheckBox-CheckMark:Checked")) {
+			s->backgroundColor = color(UIThemeConstantPalette::ControlBackgroundColor);
+			s->cornerRadius = CornerRadius(4);
+			s->width = 14;
+			s->height = 14;
+
+			auto icon = makeObject<UIStyleDecorator>();
+			icon->setIconName(u"check", 12);
+			icon->m_color = color(UIThemeConstantPalette::PrimaryMainColor);
+			s->decorators.add(icon);
+		}
+	}
+	//--------------------------------
 	// UIWindow
 	{
 		//auto e = sheet->addStyleSet(u"UIWindow");
