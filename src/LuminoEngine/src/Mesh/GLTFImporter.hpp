@@ -19,6 +19,10 @@ namespace detail {
 
 /*
 
+[2020/8/4]
+----------
+Blender メモ: bone を出力するには glTF エクスポータで "Skinning" を ON にする必要がある。
+
 [2020/7/21-3]
 ----------
 Bone は、Left が X-, Right が X+ だった。ここからもう一回考察しなおしたほうがいいかも。
@@ -145,6 +149,7 @@ private:
 	StaticMeshModel* m_meshModel;
 	bool m_flipZ;
 	bool m_flipX;
+	bool m_disableBoneRotation;
 
 	List<Ref<AnimationClip>> m_animationClips;
 };

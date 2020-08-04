@@ -25,6 +25,7 @@ namespace detail {
 GLTFImporter::GLTFImporter()
 	: m_flipZ(true)
 	, m_flipX(false)
+	, m_disableBoneRotation(true)
 {
 }
 
@@ -281,8 +282,13 @@ bool GLTFImporter::readNode(MeshNode* coreNode, const tinygltf::Node& node)
 		}
 
 		if (node.rotation.size() == 4) {
-			nodeTransform.rotateQuaternion(
-				Quaternion(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]));
+			//if (m_disableBoneRotation) {
+
+			//}
+			//else {
+				nodeTransform.rotateQuaternion(
+					Quaternion(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]));
+			//}
 		}
 
 		if (node.translation.size() == 3) {
@@ -956,14 +962,21 @@ Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 	auto armature = makeObject<MeshArmature>(static_cast<SkinnedMeshModel*>(m_meshModel));
 	for (int i = 0; i < skin.joints.size(); i++) {
 
-		if (m_flipX) {
-			// TODO: ちょっと処理重いか…
-			Matrix t = Matrix::makeInverse(inverseBindMatrices[i]);
-			t(3, 0) *= -1.0f;
-			armature->addBone(skin.joints[i], Matrix::makeInverse(t));
-		}
-		else {
-			armature->addBone(skin.joints[i], inverseBindMatrices[i]);
+		//if (m_disableBoneRotation) {
+		//	const auto& mat = m_meshModel->m_nodes[skin.joints[i]]->initialLocalTransform();
+		//	armature->addBone(skin.joints[i], Matrix::makeInverse(mat));
+		//}
+		//else
+		{
+			if (m_flipX) {
+				// TODO: ちょっと処理重いか…
+				Matrix t = Matrix::makeInverse(inverseBindMatrices[i]);
+				t(3, 0) *= -1.0f;
+				armature->addBone(skin.joints[i], Matrix::makeInverse(t));
+			}
+			else {
+				armature->addBone(skin.joints[i], inverseBindMatrices[i]);
+			}
 		}
 
 	}

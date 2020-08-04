@@ -199,9 +199,7 @@ void SkinnedMeshModel::beginUpdate()
     //		(IKはその時点のLocalTransformに対して処理を行うため、回転角度がどんどん増えたりする)
     //		なお、一連の更新の最後で行っているのは、アニメーションからの更新を外部で行っているため。
     // TODO: できれば一連の処理の中で必ず通るところに移動したい
-    for (auto& node : meshNodes()) {
-		node->resetLocalTransform();
-    }
+	resetNodeLocalTransforms();
 
 }
 
@@ -432,6 +430,31 @@ void AnimationController::onUpdateTargetElement(const detail::AnimationTargetEle
 	//}
 
 }
+
+//==============================================================================
+// MeshDiag
+
+void MeshDiag::printNodes(const SkinnedMeshModel* model)
+{
+	bool hasRotationOrScale = false;
+
+	for (const auto& node : model->m_nodes) {
+		std::cout << node->name() << std::endl;
+		const auto& t = node->initialLocalTransform();
+		printf("  %f, %f, %f, %f\n", t.m[0][0], t.m[0][1], t.m[0][2], t.m[0][3]);
+		printf("  %f, %f, %f, %f\n", t.m[1][0], t.m[1][1], t.m[1][2], t.m[1][3]);
+		printf("  %f, %f, %f, %f\n", t.m[2][0], t.m[2][1], t.m[2][2], t.m[2][3]);
+		printf("  %f, %f, %f, %f\n", t.m[3][0], t.m[3][1], t.m[3][2], t.m[3][3]);
+
+		if (!Math::nearEqual(t.m[0][0], 1.0f) || !Math::nearEqual(t.m[0][1], 0.0f) || !Math::nearEqual(t.m[0][2], 0.0f) ||
+			!Math::nearEqual(t.m[1][0], 0.0f) || !Math::nearEqual(t.m[1][1], 1.0f) || !Math::nearEqual(t.m[1][2], 0.0f) ||
+			!Math::nearEqual(t.m[2][0], 0.0f) || !Math::nearEqual(t.m[2][1], 0.0f) || !Math::nearEqual(t.m[2][2], 1.0f)) {
+			hasRotationOrScale = true;
+		}
+	}
+	std::cout << "hasRotationOrScale: " << hasRotationOrScale << std::endl;
+}
+
 
 } // namespace ln
 

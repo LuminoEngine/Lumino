@@ -278,5 +278,11 @@ private:
 	List<Ref<detail::AnimationTargetElementBlendLink>> m_bindings;
 };
 
+class MeshDiag
+{
+public:
+	static void printNodes(const SkinnedMeshModel* model);
+};
+
 } // namespace ln
 

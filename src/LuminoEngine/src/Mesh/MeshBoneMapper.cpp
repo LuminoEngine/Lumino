@@ -145,7 +145,7 @@ void MeshBoneMapper::map(SkinnedMeshModel* model)
 				<< " (depth:" << node.depth << ", x:" << meshNode->initialLocalTransform().position().x << ")" << std::endl;
 		}
 		else
-			std::cout << i << ": -" << std::endl;
+			std::cout << s_humanoidBoneNames[i].name << ": -" << std::endl;
 	}
 #endif
 }
@@ -331,7 +331,7 @@ void MeshBoneMapper::resolveBodyBones()
 	auto& bones = m_majorGroups[static_cast<int>(MajorKind::Body)];
 
 	// 深さの順に並び変える
-	std::sort(bones.begin(), bones.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < a->depth; });
+	std::sort(bones.begin(), bones.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < b->depth; });
 
 	if (bones.size() == 1) {
 		// Require の数以下は強制設定
@@ -419,7 +419,7 @@ void MeshBoneMapper::resolveArmBones(bool isRight)
 	}
 
 	// 深さの順に並び変える
-	std::sort(bones.begin(), bones.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < a->depth; });
+	std::sort(bones.begin(), bones.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < b->depth; });
 
 	const HumanoidBones kindMap[2][4] =
 	{
@@ -464,7 +464,7 @@ void MeshBoneMapper::resolveLegBones(bool isRight)
 	}
 
 	// 深さの順に並び変える
-	std::sort(bones.begin(), bones.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < a->depth; });
+	std::sort(bones.begin(), bones.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < b->depth; });
 
 	const HumanoidBones kindMap[2][4] =
 	{
@@ -521,7 +521,7 @@ void MeshBoneMapper::resolveHeadBones()
 	}
 
 	// 深さの順に並び変える
-	std::sort(bones.begin(), bones.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < a->depth; });
+	std::sort(bones.begin(), bones.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < b->depth; });
 
 #if 1	// Debug
 	for (auto& bone : bones) {
@@ -607,7 +607,7 @@ void MeshBoneMapper::resolveFingerBones()
 
 	const auto proc = [this](MajorKind majorKind, const std::array<HumanoidBones, 3>& boneKinds) {
 		auto& nodes = m_majorGroups[static_cast<int>(majorKind)];
-		std::sort(nodes.begin(), nodes.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < a->depth; });
+		std::sort(nodes.begin(), nodes.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < b->depth; });
 
 		const int count = std::min(nodes.size(), (int)boneKinds.size());
 		for (int i = 0; i < count; i++) {

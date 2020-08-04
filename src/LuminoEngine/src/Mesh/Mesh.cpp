@@ -1096,6 +1096,13 @@ void StaticMeshModel::addRootNode(int index)
     m_rootNodes.add(index);
 }
 
+void StaticMeshModel::resetNodeLocalTransforms()
+{
+	for (auto& node : meshNodes()) {
+		node->resetLocalTransform();
+	}
+}
+
 void StaticMeshModel::updateNodeTransforms()
 {
     m_nodeGlobalTransforms.resize(m_nodes.size());
