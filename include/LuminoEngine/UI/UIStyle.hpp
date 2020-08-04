@@ -714,8 +714,8 @@ public:
     }
 
     //UIStyle* combineStyle(const UIStyleContext* styleContext, const ln::String& elementName);
-	void combineStyle(UIStyle* style, const UIStyleContext* styleContext, const ln::String& elementName, const List<String>* classList);
-    void combineStyle(UIStyle* style, const UIStyleClass* styleClass);
+	void combineStyle(UIStyle* style, const UIStyleContext* styleContext, const ln::String& elementName, const List<String>* classList) const;
+    void combineStyle(UIStyle* style, const UIStyleClass* styleClass) const;
     //detail::UIStyleInstance* resolveStyle(const UIStyleContext* styleContext, const ln::String& className);
 
     void printActive()

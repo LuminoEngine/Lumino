@@ -21,13 +21,15 @@ UICheckBox::UICheckBox()
 
 bool UICheckBox::init()
 {
-    if (!UIControl::init()) return false;
+    if (!UIToggleButton::init()) return false;
 
 	//auto vsm = getVisualStateManager();
 	//vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Pressed);
 
 	m_checkMark = makeObject<UIElement>(UICreationContext::DisabledAutoAddToPrimaryElement);
+	m_checkMark->setVAlignment(VAlignment::Center);
 	m_checkMark->addClass(u"UICheckBox-CheckMark");
+	m_checkMark->setPartParent(this);
 	addVisualChild(m_checkMark);
 
 
@@ -49,14 +51,14 @@ Size UICheckBox::measureOverride(UILayoutContext* layoutContext, const Size& con
 
 
 	
-	Size desiredSize(baseSize.width + m_boxSize.width, m_boxSize.height);
+	Size desiredSize(baseSize.width + m_boxSize.width, std::max(baseSize.height, m_boxSize.height));
 
 	return desiredSize;
 }
 
 Size UICheckBox::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	m_checkMark->arrangeLayout(layoutContext, Rect(finalArea.x, finalArea.y, m_boxSize));
+	m_checkMark->arrangeLayout(layoutContext, Rect(finalArea.x, finalArea.y, m_boxSize.width, finalArea.height));
 
 	Rect baseArea(m_boxSize.width, 0, finalArea.width - m_boxSize.width, finalArea.height);
 

@@ -80,10 +80,16 @@ public:
 			layout1->addChild(makeObject<UITextBlock>(u"CheckBox"));
 
 			auto checkbox1 = makeObject<UICheckBox>();
-			checkbox1->setSize(100, 30);
-			checkbox1->setBackgroundColor(Color::Green);
-			checkbox1->addChild(u"Test");
+			checkbox1->addChild(u"CheckBox1");
 			layout1->addChild(checkbox1);
+
+			auto checkbox2 = makeObject<UICheckBox>();
+			checkbox2->addChild(u"CheckBox2");
+			layout1->addChild(checkbox2);
+
+			auto checkbox3 = makeObject<UICheckBox>();
+			checkbox3->addChild(u"CheckBox3");
+			layout1->addChild(checkbox3);
 		}
 		//// ComboBox
 		//{

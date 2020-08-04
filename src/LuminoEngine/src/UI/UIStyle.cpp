@@ -1530,7 +1530,7 @@ void UIVisualStateManager::init(UIElement* ownerElement)
 //    return m_combinedStyle;
 //}
 //
-void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* styleContext, const ln::String& elementName, const List<String>* classList)
+void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* styleContext, const ln::String& elementName, const List<String>* classList) const
 {
 	// TODO: これキャッシュできると思う
 	auto set = styleContext->findStyleSet(elementName);
@@ -1607,7 +1607,7 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* st
 #endif
 }
 
-void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleClass* styleClass)
+void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleClass* styleClass) const
 {
     style->mergeFrom(styleClass->mainStyle());
 
@@ -1792,14 +1792,19 @@ void UITheme::buildLumitelier()
 	}
 
 	//--------------------------------
-	// UICheckBox-CheckMark
+	// UICheckBox
 	{
-		if (auto s = sheet->obtainStyle(u"UIElement.UICheckBox-CheckMark:Checked")) {
+		if (auto s = sheet->obtainStyle(u"UICheckBox")) {
+			s->minHeight = lineContentHeight();
+		}
+		if (auto s = sheet->obtainStyle(u"UIElement.UICheckBox-CheckMark")) {
 			s->backgroundColor = color(UIThemeConstantPalette::ControlBackgroundColor);
 			s->cornerRadius = CornerRadius(4);
 			s->width = 14;
 			s->height = 14;
-
+			s->margin = 4;
+		}
+		if (auto s = sheet->obtainStyle(u"UIElement.UICheckBox-CheckMark:Checked")) {
 			auto icon = makeObject<UIStyleDecorator>();
 			icon->setIconName(u"check", 12);
 			icon->m_color = color(UIThemeConstantPalette::PrimaryMainColor);

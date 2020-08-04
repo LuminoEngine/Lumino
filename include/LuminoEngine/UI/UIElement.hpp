@@ -402,6 +402,7 @@ public: // TODO: internal
 	const Ref<detail::UIStyleInstance>& finalStyle() const { return m_finalStyle; }
 	UIElement* getFrameWindow();
     UIFrameRenderView* getRenderView();
+	void setPartParent(UIElement* e) { m_partParent = e; }
 
 public:	// TODO: internal protected
     void focus();
@@ -561,6 +562,12 @@ public: // TODO: internal
     Ref<List<String>> m_classList;
 	Ref<UIViewModel> m_viewModel;
     std::unique_ptr<detail::GridLayoutInfo> m_gridLayoutInfo;
+
+	// CheckBox や TreeItem、ScrollBar など、複数のサブパーツ要素からひとつの要素が構成される際の親要素。
+	// m_partParent を持つ要素は、親の VisualState を引き継ぐ。
+	// これは内部実装の量やメモリ効率を狙ったもので、この仕組みが無いと、すべてのサブパーツごとに VisualState の定義が必要になってしまう。
+	// 必ずしも VisualTree 上での直接の親子関係とはかぎらない。(多くの場合、間に LayoutPanel が挟まる)
+	UIElement* m_partParent = nullptr;
 
     Ref<UIVisualStateManager> m_visualStateManager;
     Ref<UIStyleClass> m_localStyle;
