@@ -77,7 +77,9 @@ class App_Example_MeshViewer : public Application
         m_mesh = SkinnedMesh::load(u"D:/Documents/Modeling/HC4-1.glb");
 
         m_model = m_mesh->skinnedMeshComponent()->model();
-        MeshDiag::printNodes(m_model );
+        MeshDiag::printNodes(m_model);
+        MeshDiag::clearBoneInitialRotations(m_model);
+        MeshDiag::printNodes(m_model);
 
         //m_node = m_model->findNode(u"左腕");
         m_node = m_model->findHumanoidBone(HumanoidBones::LeftUpperArm);
@@ -99,7 +101,7 @@ class App_Example_MeshViewer : public Application
         //m_model->animationController()->play(m_idle);
 
         auto state = m_model->animationController()->addClip(cliptest);
-        //m_model->animationController()->play(state);
+        m_model->animationController()->play(state);
 #endif
     }
 

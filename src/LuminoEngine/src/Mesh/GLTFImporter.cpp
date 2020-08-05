@@ -23,7 +23,7 @@ namespace ln {
 namespace detail {
 
 GLTFImporter::GLTFImporter()
-	: m_flipZ(true)
+	: m_flipZ(false)
 	, m_flipX(false)
 	, m_disableBoneRotation(true)
 {

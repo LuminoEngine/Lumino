@@ -137,13 +137,15 @@ void AsciiLineReader::splitLineTokens()
 BvhImporter::BvhImporter(AssetManager* assetManager, DiagnosticsManager* diag)
 	: m_assetManager(assetManager)
 	, m_diag(diag)
+    , m_flipZ(false)    // BVH の座標系は右手、Y up。それと、Z+ を正面とする。もし VRM モデルに適用したい場合は反転が必要
+    // https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html
+    // BVH階層に関する最後の注意点として、ワールド空間は、Y軸をワールドアップベクトルとする右手系の座標系として定義されます。
+    // したがって、通常、BVHの骨格セグメントがY軸または負のY軸に沿って整列していることがわかります（キャラクターは多くの場合、キャラクターがまっすぐに立ち、腕を横にまっすぐに伸ばした状態でゼロポーズをとります）。
 {
 }
 
 bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath)
 {
-    const bool flipZ = true;
-
 	auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
     m_reader.reset(stream);
 
@@ -189,7 +191,7 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath)
             rot.x = Math::degreesToRadians(rot.x);
             rot.y = Math::degreesToRadians(rot.y);
             rot.z = Math::degreesToRadians(rot.z);
-            if (flipZ) {
+            if (m_flipZ) {
 
                 //rot.x *= -1;
                 rot.y *= -1;

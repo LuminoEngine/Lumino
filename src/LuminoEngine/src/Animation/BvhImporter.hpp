@@ -117,6 +117,8 @@ private:
 	int m_frames;
 	float m_frameTime;
 	std::vector<float> m_frameData;
+
+	bool m_flipZ;
 };
 
 } // namespace detail

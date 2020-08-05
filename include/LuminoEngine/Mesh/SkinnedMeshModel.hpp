@@ -83,7 +83,7 @@ public:
 
 	//const Matrix& globalMatrix() const;
 
-private:
+public:	// TODO
 	MeshArmature* m_skeleton;
 	int m_node = -1;
 
@@ -282,6 +282,7 @@ class MeshDiag
 {
 public:
 	static void printNodes(const SkinnedMeshModel* model);
+	static void clearBoneInitialRotations(SkinnedMeshModel* model);
 };
 
 } // namespace ln

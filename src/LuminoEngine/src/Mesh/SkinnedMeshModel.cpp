@@ -455,6 +455,58 @@ void MeshDiag::printNodes(const SkinnedMeshModel* model)
 	std::cout << "hasRotationOrScale: " << hasRotationOrScale << std::endl;
 }
 
+void MeshDiag::clearBoneInitialRotations(SkinnedMeshModel* model)
+{
+	model->updateNodeTransforms();
+
+
+	for (const auto& skeleton : model->skeletons()) {
+		for (const auto& bone : skeleton->m_bones) {
+			MeshNode* node = bone->node();
+			auto t = node->globalMatrix();
+
+			// 逆行列で InitialLocalTransform とする。
+			// ただ回転は行わないので、移動ベクトルを反転するだけでよい。
+			bone->m_inverseInitialMatrix = Matrix::makeTranslation(-t.position());
+
+			//if (node->parentNodeIndex() >= 0) {
+			//	// 親からの相対位置を InitialLocalTransform とする。
+			//	const auto& parent = model->m_nodes[node->parentNodeIndex()]->globalMatrix();
+			//	const auto relPos = t.position() - parent.position();
+			//	node->setInitialLocalTransform(Matrix::makeTranslation(relPos));
+			//}
+			//else {
+			//	node->setInitialLocalTransform(Matrix::makeTranslation(t.position()));
+			//}
+		}
+	}
+
+
+	for (const auto& node : model->m_nodes) {
+		if (node->m_boneNode) {
+			auto t = node->globalMatrix();
+			
+			// 作業用変数として、回転成分を消して再設定
+			//t.setRow(0, Vector4(1, 0, 0, 1));
+			//t.setRow(1, Vector4(0, 1, 0, 1));
+			//t.setRow(2, Vector4(0, 0, 1, 1));
+			//node->setGlobalTransform(t);
+
+			// 逆行列で InitialLocalTransform とする。
+			// ただ回転は行わないので、移動ベクトルを反転するだけでよい。
+			node->setInitialLocalTransform(Matrix::makeTranslation(-t.position()));
+
+			if (node->parentNodeIndex() >= 0) {
+				// 親からの相対位置を InitialLocalTransform とする。
+				const auto& parent = model->m_nodes[node->parentNodeIndex()]->globalMatrix();
+				const auto relPos = t.position() - parent.position();
+				node->setInitialLocalTransform(Matrix::makeTranslation(relPos));
+
+			}
+		}
+	}
+}
+
 
 } // namespace ln
 

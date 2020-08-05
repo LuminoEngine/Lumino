@@ -986,6 +986,11 @@ const Matrix& MeshNode::globalMatrix() const
 	return m_model->m_nodeGlobalTransforms[m_index];
 }
 
+void MeshNode::setGlobalTransform(const Matrix& value)
+{
+	m_model->m_nodeGlobalTransforms[m_index] = value;
+}
+
 void MeshNode::updateGlobalTransform(bool hierarchical)
 {
 	m_model->updateNodeTransformsHierarchical(m_index, m_model->m_nodes[m_parent]->globalMatrix(), hierarchical);

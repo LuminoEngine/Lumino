@@ -254,7 +254,7 @@ void MeshBoneMapper::makeMajorKindByName(NodeInfo* info, const String& name)
 				const auto e = nameMap[i];
 				if (e.priority > info->majorKindPriority) {
 					// 単語先頭の一致を評価する
-					if (StringHelper::indexOf(word.data(), e.name.length(), e.name.c_str(), e.name.length(), 0, CaseSensitivity::CaseInsensitive) == 0) {
+					if (StringHelper::indexOf(word.data(), e.name.length(), e.name.c_str(), e.name.length(), 0, CaseSensitivity::CaseInsensitive) >= 0) {
 						info->majorKind = e.kind;
 						info->majorKindPriority = e.priority;
 						info->nameMached = e.boneKind;
