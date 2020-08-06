@@ -93,14 +93,19 @@ struct ParticleData2
 	//float		m_forwardVelocity;
 	//float		m_forwardAccel;
 
+
 	float size;
+	float sizeVelocity;
+	float sizeAccel;
+
 	float forwardScale;
+	float forwardScaleVelocity;
+	float forwardScaleAccel;
+
 	float crossScale;
+	float crossScaleVelocity;
+	float crossScaleAccel;
 
-
-	//float		size;
-	//float		sizeVelocity;
-	//float		sizeAccel;
 
 	//Quaternion	rotation;
 	//Color		color;

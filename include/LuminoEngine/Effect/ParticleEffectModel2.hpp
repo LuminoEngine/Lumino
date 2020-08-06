@@ -25,6 +25,9 @@ enum class ParticleGeometryDirection
 
 	/** Y 軸方向に直立し、カメラの方を向きます。 */
 	VerticalBillboard,
+
+	/** XZ 軸上の「床」平面と平行になります。 */
+	HorizontalBillboard,
 };
 
 /** パーティクルのソート方法 */

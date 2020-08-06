@@ -94,7 +94,7 @@ class App_Sandbox_Particle : public Application
         auto obj1 = makeObject<WorldObject>();
         obj1->addComponent(cmp1);
 #endif
-#if 1	// 雨
+#if 0	// 雨
         auto particleModel = makeObject<ParticleModel2>();
         auto m1 = particleModel->emitters()[0];
         m1->m_maxParticles = 10000;
@@ -137,7 +137,42 @@ class App_Sandbox_Particle : public Application
 
 
 
-        /*
+#endif
+#if 1
+
+        auto material2 = Material::create();
+        //material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
+        material2->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
+        //material->setMainTexture(Texture2D::load("C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/WaterDrop-1.png"));
+        material2->shadingModel = ShadingModel::Unlit;
+        material2->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+
+
+        // 波紋
+        auto particleModel2 = makeObject<ParticleModel2>();
+        auto m2 = particleModel2->emitters()[0];
+        m2->m_maxParticles = 1000;
+        m2->setSpawnRate(200);
+        m2->setLifeTime(0.2);
+        particleModel2->m_loop = true;
+        m2->m_size.set(1);
+        //m2->m_size.set(0.1);
+        //m2->m_minSizeVelocity = 3;
+        //m2->m_maxSizeVelocity = 3;
+        m2->m_shapeType = ParticleEmitterShapeType::Box;
+        m2->m_shapeParam.set(10, 0, 10);
+        m2->m_geometryDirection = ParticleGeometryDirection::HorizontalBillboard;
+        m2->setSpriteModule(material2);
+
+        //auto particle2 = ParticleEmitter3D::create(m2);
+        //particle2->SetBlendMode(BlendMode::Add);
+        auto particle2 = makeObject<ParticleEmitterComponent2>(particleModel2);
+        particle2->setBlendMode(BlendMode::Add);
+        auto obj2 = makeObject<WorldObject>();
+        obj2->addComponent(particle2);
+        //obj2->setPosition(0, 12, 0);
+#endif
+#if 0
         // 波紋
         auto m2 = SpriteParticleModel::create();
         m2->m_maxParticles = 1000;
@@ -159,7 +194,6 @@ class App_Sandbox_Particle : public Application
         auto obj2 = makeObject<WorldObject>();
         obj2->addComponent(particle2);
         //obj2->setPosition(0, 12, 0);
-        */
 #endif
 #if 0	// 旧雨
         auto m1 = SpriteParticleModel::create();
