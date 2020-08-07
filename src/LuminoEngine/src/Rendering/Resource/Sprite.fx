@@ -31,6 +31,7 @@ struct LN_VSIInput
     float4 InstanceTransform2 : POSITION3;
     float4 InstanceTransform3 : POSITION4;
 	float4 InstanceUVOffset: TEXCOORD2;
+	float4 InstanceColorScale: COLOR1;
 };
 
 struct LN_VSIOutput
@@ -77,7 +78,7 @@ LN_VSIOutput VSI_Main(LN_VSIInput input)
     o.svPos			= mul(o.svPos, ln_Projection);
 	o.Normal		= mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
 	o.UV			= input.UV + input.InstanceUVOffset.xy;
-	o.Color			= input.Color;// * float4(input.UV.xy, 1, 1);
+	o.Color			= input.Color * input.InstanceColorScale;
 	return o;
 }
 

@@ -479,6 +479,7 @@ public:
 	void reset();
 	void setTransform(const Matrix& transform);
 	void setUVOffset(const Vector4& value);
+	void setColorScale(const Color& value);
 	void drawMesh();
 
 
@@ -500,6 +501,7 @@ private:
 		Vector4 transform2;
 		Vector4 transform3;
 		Vector4 uvOffset;
+		Vector4 colorScale;
 	};
 
 	Ref<Mesh> m_mesh;
