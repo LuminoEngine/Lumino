@@ -123,14 +123,22 @@ public:
 
 
 	RadomRangeValue<float> m_size;			// default:1 ベースの geom 対するスケール値。
+	RadomRangeValue<float> m_sizeVelocity;
+	RadomRangeValue<float> m_sizeAcceleration;
+
 	RadomRangeValue<float> m_forwardScale;	// default:1 進行方向に対するスケール値。通常、Z軸。ParticleGeometryDirection::ToView では Y scale
+	RadomRangeValue<float> m_forwardScaleVelocity;
+	RadomRangeValue<float> m_forwardScaleAcceleration;
+
 	RadomRangeValue<float> m_crossScale;	// default:1 進行方向以外に対するスケール値。XとY軸。ParticleGeometryDirection::ToView では X scale
+	RadomRangeValue<float> m_crossScaleVelocity;
+	RadomRangeValue<float> m_crossScaleAcceleration;
 
 	ParticleGeometryDirection m_geometryDirection = ParticleGeometryDirection::ToView;
 
 	float m_trailSeconds = 0.0f; //1.0f;	// Trail を生成する時間
 
-	ParticleSortMode m_sortMode = ParticleSortMode::None;
+	ParticleSortMode m_sortMode = ParticleSortMode::DistanceToView;
 
 protected:
 	void serialize2(Serializer2& ar) override;

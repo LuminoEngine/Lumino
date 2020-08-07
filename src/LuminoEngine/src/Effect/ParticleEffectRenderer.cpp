@@ -170,7 +170,17 @@ void SpriteParticleRenderer::draw(RenderingContext* context, const ParticleData2
         }
         case ln::ParticleGeometryDirection::HorizontalBillboard:
         {
-            m_batch->setTransform(Matrix::makeTranslation(particle->position));
+            const auto scale = Vector3(
+                particle->size * particle->crossScale,
+                particle->size * particle->crossScale,
+                particle->size * particle->forwardScale);
+            const auto pos = particle->position;
+            const auto transform = Matrix(
+                scale.x, 0.0f, 0.0f, 0.0f,
+                0.0f, scale.y, 0.0f, 0.0f,
+                0.0f, 0.0f, scale.z, 0.0f,
+                pos.x, pos.y, pos.z, 1.0f);
+            m_batch->setTransform(transform);
             m_batch->drawMesh();
             break;
         }

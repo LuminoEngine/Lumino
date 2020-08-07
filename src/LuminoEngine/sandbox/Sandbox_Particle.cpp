@@ -155,10 +155,10 @@ class App_Sandbox_Particle : public Application
         m2->setSpawnRate(200);
         m2->setLifeTime(0.2);
         particleModel2->m_loop = true;
-        m2->m_size.set(1);
-        //m2->m_size.set(0.1);
-        //m2->m_minSizeVelocity = 3;
-        //m2->m_maxSizeVelocity = 3;
+        //m2->m_size.set(1);
+        m2->m_size.set(0.1);
+        m2->m_sizeVelocity.set(3);
+        m2->m_sizeAcceleration.set(3);
         m2->m_shapeType = ParticleEmitterShapeType::Box;
         m2->m_shapeParam.set(10, 0, 10);
         m2->m_geometryDirection = ParticleGeometryDirection::HorizontalBillboard;

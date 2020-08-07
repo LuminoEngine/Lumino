@@ -298,16 +298,16 @@ void ParticleEmitterInstance2::spawnParticle(float delayTime)
         particle->endLifeTime = makeRandom(particle, m_emitterModel->m_lifeTime.minValue, m_emitterModel->m_lifeTime.maxValue, m_emitterModel->m_lifeTime.randomSource);
     
         particle->size = makeRandom(particle, m_emitterModel->m_size);
-        particle->sizeVelocity = 0.0f;
-        particle->sizeAccel = 0.0f;
+        particle->sizeVelocity = makeRandom(particle, m_emitterModel->m_sizeVelocity);
+        particle->sizeAccel = makeRandom(particle, m_emitterModel->m_sizeAcceleration);
 
         particle->forwardScale = makeRandom(particle, m_emitterModel->m_forwardScale);
-        particle->forwardScaleVelocity = 0.0f;
-        particle->forwardScaleAccel = 0.0f;
+        particle->forwardScaleVelocity = makeRandom(particle, m_emitterModel->m_forwardScaleVelocity);
+        particle->forwardScaleAccel = makeRandom(particle, m_emitterModel->m_forwardScaleAcceleration);
 
         particle->crossScale = makeRandom(particle, m_emitterModel->m_crossScale);
-        particle->crossScaleVelocity = 0.0f;
-        particle->crossScaleAccel = 0.0f;
+        particle->crossScaleVelocity = makeRandom(particle, m_emitterModel->m_crossScaleVelocity);
+        particle->crossScaleAccel = makeRandom(particle, m_emitterModel->m_crossScaleAcceleration);
     }
 
     // Emitter shape
@@ -408,6 +408,14 @@ void ParticleEmitterInstance2::simulateParticle(ParticleData2* particle, float d
 
 
 
+    particle->sizeVelocity += particle->sizeAccel * deltaTime;
+    particle->size += particle->sizeVelocity * deltaTime;
+
+    particle->forwardScaleVelocity += particle->forwardScaleAccel * deltaTime;
+    particle->forwardScale += particle->forwardScaleVelocity * deltaTime;
+
+    particle->crossScaleVelocity += particle->crossScaleAccel * deltaTime;
+    particle->crossScale += particle->crossScaleVelocity * deltaTime;
 }
 
 //==============================================================================
