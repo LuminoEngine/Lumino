@@ -1,4 +1,8 @@
-﻿
+﻿/*
+ * NamingNote: RigidBodyLimitFlags vs RigidBodyConstraintFlags
+ *  UE4 参考。
+ *  https://docs.unrealengine.com/ja/Engine/Physics/Constraints/ConstraintsReference/index.html
+ */
 #include "Internal.hpp"
 #include <BulletCollision/CollisionShapes/btCollisionShape.h>
 #include <btBulletDynamicsCommon.h>
@@ -130,13 +134,13 @@ void RigidBody::setAngularVelocity(const Vector3& velocity)
 void RigidBody::setLinearLimits(Flags<RigidBodyLimitFlags> flags)
 {
     m_linearLimits = flags;
-    m_modifiedFlags |= Modified_RigidBodyConstraintFlags;
+    m_modifiedFlags |= Modified_LimittFlags;
 }
 
 void RigidBody::setAngularLimits(Flags<RigidBodyLimitFlags> flags)
 {
     m_angularLimits = flags;
-    m_modifiedFlags |= Modified_RigidBodyConstraintFlags;
+    m_modifiedFlags |= Modified_LimittFlags;
 }
 
 void RigidBody::setLinearDamping(float damping)
@@ -316,7 +320,7 @@ void RigidBody::onBeforeStepSimulation()
     if (m_btRigidBody != nullptr)
     {
         // RigidbodyConstraints
-        if ((m_modifiedFlags & Modified_RigidBodyConstraintFlags) != 0)
+        if ((m_modifiedFlags & Modified_LimittFlags) != 0)
         {
             m_btRigidBody->setLinearFactor(detail::BulletUtil::LNVector3ToBtVector3(getLinearFactor()));
             m_btRigidBody->setAngularFactor(detail::BulletUtil::LNVector3ToBtVector3(getAngularFactor()));
@@ -538,17 +542,17 @@ void RigidBody::readdToWorld()
 Vector3 RigidBody::getLinearFactor() const
 {
     return Vector3(
-        m_linearLimits.hasFlag(RigidBodyLimitFlags::LockedX) ? 0.0f : 1.0f,
-        m_linearLimits.hasFlag(RigidBodyLimitFlags::LockedY) ? 0.0f : 1.0f,
-        m_linearLimits.hasFlag(RigidBodyLimitFlags::LockedZ) ? 0.0f : 1.0f);
+        m_linearLimits.hasFlag(RigidBodyLimitFlags::LockedPositionX) ? 0.0f : 1.0f,
+        m_linearLimits.hasFlag(RigidBodyLimitFlags::LockedPositionY) ? 0.0f : 1.0f,
+        m_linearLimits.hasFlag(RigidBodyLimitFlags::LockedPositionZ) ? 0.0f : 1.0f);
 }
 
 Vector3 RigidBody::getAngularFactor() const
 {
     return Vector3(
-        m_angularLimits.hasFlag(RigidBodyLimitFlags::LockedX) ? 0.0f : 1.0f,
-        m_angularLimits.hasFlag(RigidBodyLimitFlags::LockedY) ? 0.0f : 1.0f,
-        m_angularLimits.hasFlag(RigidBodyLimitFlags::LockedZ) ? 0.0f : 1.0f);
+        m_angularLimits.hasFlag(RigidBodyLimitFlags::LockedRotationX) ? 0.0f : 1.0f,
+        m_angularLimits.hasFlag(RigidBodyLimitFlags::LockedRotationY) ? 0.0f : 1.0f,
+        m_angularLimits.hasFlag(RigidBodyLimitFlags::LockedRotationZ) ? 0.0f : 1.0f);
 }
 
 } // namespace ln

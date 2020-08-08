@@ -86,8 +86,9 @@ void CharacterController::onPreUpdate(float elapsedSeconds)
 		const auto moveVector = (cameraCurrentRightDirXZ * m_inputState.turnVelocity) + (cameraCurrentFrontXZ * m_inputState.forwardVelocity);
 		const auto moveOffset = moveVector * (m_walkVelocity/* * elapsedSeconds*/);
 
-
-		m_rigidBody->setVelocity(moveOffset);
+		if (m_rigidBody) {
+			m_rigidBody->setVelocity(moveOffset);
+		}
 
 		// TODO: 物理移動
 		//character->setPosition(character->position() + moveOffset);
@@ -106,9 +107,11 @@ void CharacterController::onBeforeStepSimulation()
 
 void CharacterController::onAfterStepSimulation()
 {
-	// Sync transform from Body to WorldObject
-	//worldObject()->setRotation(Quaternion::makeFromRotationMatrix(m_rigidBody->transform()));
-	worldObject()->setPosition(m_rigidBody->transform().position());
+	if (m_rigidBody) {
+		// Sync transform from Body to WorldObject
+		//worldObject()->setRotation(Quaternion::makeFromRotationMatrix(m_rigidBody->transform()));
+		worldObject()->setPosition(m_rigidBody->transform().position());
+	}
 }
 
 void CharacterController::onUpdate(float elapsedSeconds)
@@ -258,9 +261,13 @@ void CharacterController::prepareViewCamera()
 void CharacterController::prepareRigidBody()
 {
 	if (!m_rigidBody) {
+		auto shape = makeObject<CapsuleCollisionShape>(0.25, m_height);
+		shape->setPosition(Vector3(0, m_height * 0.5f, 0));
+
 		m_rigidBody = makeObject<RigidBody>();
-		m_rigidBody->addCollisionShape(makeObject<CapsuleCollisionShape>(m_height, 1.0f));
+		m_rigidBody->addCollisionShape(shape);
 		m_rigidBody->setMass(50.0f);
+		m_rigidBody->setAngularLimits(RigidBodyLimitFlags::LockedRotation);
 		m_rigidBody->setEventListener(this);
 		m_rigidBody->setOwnerData(this);
 
