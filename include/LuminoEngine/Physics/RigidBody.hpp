@@ -42,6 +42,9 @@ enum class RigidBodyLimitFlags
 };
 LN_FLAGS_OPERATORS(RigidBodyLimitFlags);
 
+
+// Note: onCollisionEnter() などの 衝突コールバックは RigidBody vs RigidBody でも使用できるが、
+// 移動中は物理エンジンによって通常、接触⇔押し出し が繰り返されるため、毎フレーム Enter, Leave, Stay が 呼ばれる点に注意。
 class RigidBody
 	: public PhysicsObject
 {

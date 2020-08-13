@@ -56,12 +56,12 @@ void CharacterController::setCollisionEnter(Ref<CollisionEventHandler> handler)
 
 void CharacterController::setCollisionLeave(Ref<CollisionEventHandler> handler)
 {
-	m_onCollisionEnter.setPrimaryHandler(handler);
+	m_onCollisionLeave.setPrimaryHandler(handler);
 }
 
 void CharacterController::setCollisionStay(Ref<CollisionEventHandler> handler)
 {
-	m_onCollisionEnter.setPrimaryHandler(handler);
+	m_onCollisionStay.setPrimaryHandler(handler);
 }
 
 void CharacterController::onPreUpdate(float elapsedSeconds)

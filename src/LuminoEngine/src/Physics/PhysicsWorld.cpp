@@ -54,7 +54,7 @@ static void ContactStartedCallback(btPersistentManifold* const& manifold)
     if (ownerA && ownerB) {
         auto* world = ownerA->physicsWorld();
         world->postBeginContact(ownerA, ownerB);
-        printf("start %p : %p\n", ownerA, ownerB);
+        //printf("start %p : %p\n", ownerA, ownerB);
     }
 }
 
@@ -67,7 +67,7 @@ static void ContactEndedCallback(btPersistentManifold* const& manifold)
     if (ownerA && ownerB) {
         auto* world = ownerA->physicsWorld();
         world->postEndContact(ownerA, ownerB);
-        printf("end %p : %p\n", ownerA, ownerB);
+        //printf("end %p : %p\n", ownerA, ownerB);
     }
 }
 

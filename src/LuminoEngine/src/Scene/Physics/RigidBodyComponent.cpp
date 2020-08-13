@@ -188,12 +188,12 @@ void TriggerBodyComponent::setCollisionEnter(Ref<CollisionEventHandler> handler)
 
 void TriggerBodyComponent::setCollisionLeave(Ref<CollisionEventHandler> handler)
 {
-    m_onCollisionEnter.setPrimaryHandler(handler);
+    m_onCollisionLeave.setPrimaryHandler(handler);
 }
 
 void TriggerBodyComponent::setCollisionStay(Ref<CollisionEventHandler> handler)
 {
-    m_onCollisionEnter.setPrimaryHandler(handler);
+    m_onCollisionStay.setPrimaryHandler(handler);
 }
 
 void TriggerBodyComponent::onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact)
