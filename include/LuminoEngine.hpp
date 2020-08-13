@@ -82,6 +82,7 @@
 #include "LuminoEngine/Scene/Light.hpp"
 #include "LuminoEngine/Scene/Sprite.hpp"
 #include "LuminoEngine/Scene/CharacterController.hpp"
+#include "LuminoEngine/Scene/Physics/Collision.hpp"
 #include "LuminoEngine/Scene/Physics/RigidBodyComponent.hpp"
 #include "LuminoEngine/Scene/Physics/RigidBody2DComponent.hpp"
 #include "LuminoEngine/Scene/Text/Text.hpp"

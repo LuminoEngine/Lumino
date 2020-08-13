@@ -1,27 +1,12 @@
 ﻿
 #include "../Internal.hpp""
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include <LuminoEngine/Scene/Physics/Collision.hpp>
 #include <LuminoEngine/Scene/Physics/RigidBodyComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include "Engine/EngineManager.hpp"
 
 namespace ln {
-
-//=============================================================================
-// Collision
-
-Collision::Collision()
-    : m_worldObject(nullptr)
-    , m_physicsObject(nullptr)
-{
-}
-
-void Collision::init(WorldObject* worldObject/*, RigidBodyComponent* component*/, PhysicsObject* physicsObject)
-{
-    Object::init();
-    m_worldObject = worldObject;
-    m_physicsObject = physicsObject;
-}
 
 //=============================================================================
 // RigidBodyComponent
@@ -196,17 +181,17 @@ void TriggerBodyComponent::onAfterStepSimulation()
 {
 }
 
-void TriggerBodyComponent::setOnCollisionEnter(Ref<CollisionEventHandler> handler)
+void TriggerBodyComponent::setCollisionEnter(Ref<CollisionEventHandler> handler)
 {
     m_onCollisionEnter.setPrimaryHandler(handler);
 }
 
-void TriggerBodyComponent::setOnCollisionLeave(Ref<CollisionEventHandler> handler)
+void TriggerBodyComponent::setCollisionLeave(Ref<CollisionEventHandler> handler)
 {
     m_onCollisionEnter.setPrimaryHandler(handler);
 }
 
-void TriggerBodyComponent::setOnCollisionStay(Ref<CollisionEventHandler> handler)
+void TriggerBodyComponent::setCollisionStay(Ref<CollisionEventHandler> handler)
 {
     m_onCollisionEnter.setPrimaryHandler(handler);
 }

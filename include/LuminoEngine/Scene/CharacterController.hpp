@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "Common.hpp"
 #include "Component.hpp"
 
 namespace ln {
@@ -25,7 +26,18 @@ public:
 	void retainCursorGrab();
 	void releaseCursorGrab();
 
+	const Ref<RigidBody>& rigidBody() const { return m_rigidBody; }
 
+
+
+	/** CollisionEnter イベントの通知を受け取るコールバックを登録します。*/
+	void setCollisionEnter(Ref<CollisionEventHandler> handler);
+
+	/** CollisionLeave イベントの通知を受け取るコールバックを登録します。*/
+	void setCollisionLeave(Ref<CollisionEventHandler> handler);
+
+	/** CollisionStay イベントの通知を受け取るコールバックを登録します。*/
+	void setCollisionStay(Ref<CollisionEventHandler> handler);
 
 protected:
 	void onPreUpdate(float elapsedSeconds) override;
@@ -116,6 +128,9 @@ private:
 	Vector2 m_lastMousePos;
 	bool m_resetCameraPosition = true;
 
+	Event<CollisionEventHandler> m_onCollisionEnter;
+	Event<CollisionEventHandler> m_onCollisionLeave;
+	Event<CollisionEventHandler> m_onCollisionStay;
 
 	Ref<RigidBody> m_rigidBody;
 };

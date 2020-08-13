@@ -5,6 +5,7 @@
 #include <LuminoEngine/Physics/CollisionShape.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include <LuminoEngine/Scene/Physics/Collision.hpp>
 #include <LuminoEngine/Scene/CharacterController.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
@@ -46,6 +47,21 @@ void CharacterController::releaseCursorGrab()
 		WorldRenderView* renderView = camera->renderView();
 		renderView->viewport()->releaseCursor();
 	}
+}
+
+void CharacterController::setCollisionEnter(Ref<CollisionEventHandler> handler)
+{
+	m_onCollisionEnter.setPrimaryHandler(handler);
+}
+
+void CharacterController::setCollisionLeave(Ref<CollisionEventHandler> handler)
+{
+	m_onCollisionEnter.setPrimaryHandler(handler);
+}
+
+void CharacterController::setCollisionStay(Ref<CollisionEventHandler> handler)
+{
+	m_onCollisionEnter.setPrimaryHandler(handler);
 }
 
 void CharacterController::onPreUpdate(float elapsedSeconds)
@@ -227,14 +243,32 @@ void CharacterController::onUpdate(float elapsedSeconds)
 
 void CharacterController::onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact)
 {
+	auto* ownerComponent = reinterpret_cast<CharacterController*>(otherObject->ownerData());
+	auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
+
+	// TODO: Cache
+	auto c = makeObject<Collision>(worldObject, otherObject);
+	m_onCollisionEnter.raise(c);
 }
 
 void CharacterController::onCollisionLeave(PhysicsObject* otherObject, ContactPoint* contact)
 {
+	auto* ownerComponent = reinterpret_cast<CharacterController*>(otherObject->ownerData());
+	auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
+
+	// TODO: Cache
+	auto c = makeObject<Collision>(worldObject, otherObject);
+	m_onCollisionLeave.raise(c);
 }
 
 void CharacterController::onCollisionStay(PhysicsObject* otherObject, ContactPoint* contact)
 {
+	auto* ownerComponent = reinterpret_cast<CharacterController*>(otherObject->ownerData());
+	auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
+
+	// TODO: Cache
+	auto c = makeObject<Collision>(worldObject, otherObject);
+	m_onCollisionStay.raise(c);
 }
 
 void CharacterController::resetCameraPosition()
