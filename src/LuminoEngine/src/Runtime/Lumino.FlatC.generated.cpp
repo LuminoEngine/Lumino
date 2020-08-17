@@ -7,13 +7,15 @@
 class LNWS_ln_Object : public ln::Object
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnObject_OverridePrototypes
     {
         LnObject_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnObject_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnObject_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnObject_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnObject_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnObject_SubclassRegistrationInfo* subclassInfo() { static LnObject_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -72,13 +74,15 @@ LnObject_OnSerialize2_OverrideCallback LNWS_ln_Object::s_LnObject_OnSerialize2_O
 class LNWS_ln_EventConnection : public ln::EventConnection
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnEventConnection_OverridePrototypes
     {
         LnEventConnection_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnEventConnection_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnEventConnection_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnEventConnection_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnEventConnection_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnEventConnection_SubclassRegistrationInfo* subclassInfo() { static LnEventConnection_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -137,11 +141,13 @@ LnEventConnection_OnSerialize2_OverrideCallback LNWS_ln_EventConnection::s_LnEve
 class LNWS_ln_PromiseFailureDelegate : public ln::PromiseFailureDelegate
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnPromiseFailureDelegate_OverridePrototypes
     {
 
     };
-
+    std::unique_ptr<LnPromiseFailureDelegate_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnPromiseFailureDelegate_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnPromiseFailureDelegate_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnPromiseFailureDelegate_SubclassRegistrationInfo* subclassInfo() { static LnPromiseFailureDelegate_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -197,11 +203,13 @@ LN_FLAT_API LnResult LnPromiseFailureDelegate_Create(LnPromiseFailureDelegateCal
 class LNWS_ln_ZVTestDelegate1 : public ln::ZVTestDelegate1
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnZVTestDelegate1_OverridePrototypes
     {
 
     };
-
+    std::unique_ptr<LnZVTestDelegate1_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnZVTestDelegate1_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnZVTestDelegate1_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnZVTestDelegate1_SubclassRegistrationInfo* subclassInfo() { static LnZVTestDelegate1_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -257,11 +265,13 @@ LN_FLAT_API LnResult LnZVTestDelegate1_Create(LnZVTestDelegate1Callback callback
 class LNWS_ln_ZVTestDelegate2 : public ln::ZVTestDelegate2
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnZVTestDelegate2_OverridePrototypes
     {
 
     };
-
+    std::unique_ptr<LnZVTestDelegate2_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnZVTestDelegate2_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnZVTestDelegate2_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnZVTestDelegate2_SubclassRegistrationInfo* subclassInfo() { static LnZVTestDelegate2_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -319,11 +329,13 @@ LN_FLAT_API LnResult LnZVTestDelegate2_Create(LnZVTestDelegate2Callback callback
 class LNWS_ln_ZVTestDelegate3 : public ln::ZVTestDelegate3
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnZVTestDelegate3_OverridePrototypes
     {
 
     };
-
+    std::unique_ptr<LnZVTestDelegate3_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnZVTestDelegate3_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnZVTestDelegate3_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnZVTestDelegate3_SubclassRegistrationInfo* subclassInfo() { static LnZVTestDelegate3_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -379,11 +391,13 @@ LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback
 class LNWS_ln_ZVTestEventHandler1 : public ln::ZVTestEventHandler1
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnZVTestEventHandler1_OverridePrototypes
     {
 
     };
-
+    std::unique_ptr<LnZVTestEventHandler1_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnZVTestEventHandler1_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnZVTestEventHandler1_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnZVTestEventHandler1_SubclassRegistrationInfo* subclassInfo() { static LnZVTestEventHandler1_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -439,11 +453,13 @@ LN_FLAT_API LnResult LnZVTestEventHandler1_Create(LnZVTestEventHandler1Callback 
 class LNWS_ln_ZVTestEventHandler2 : public ln::ZVTestEventHandler2
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnZVTestEventHandler2_OverridePrototypes
     {
 
     };
-
+    std::unique_ptr<LnZVTestEventHandler2_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnZVTestEventHandler2_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnZVTestEventHandler2_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnZVTestEventHandler2_SubclassRegistrationInfo* subclassInfo() { static LnZVTestEventHandler2_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -499,11 +515,13 @@ LN_FLAT_API LnResult LnZVTestEventHandler2_Create(LnZVTestEventHandler2Callback 
 class LNWS_ln_ZVTestPromise1 : public ln::ZVTestPromise1
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnZVTestPromise1_OverridePrototypes
     {
 
     };
-
+    std::unique_ptr<LnZVTestPromise1_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnZVTestPromise1_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnZVTestPromise1_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnZVTestPromise1_SubclassRegistrationInfo* subclassInfo() { static LnZVTestPromise1_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -538,11 +556,13 @@ public:
 class LNWS_ln_ZVTestPromise2 : public ln::ZVTestPromise2
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnZVTestPromise2_OverridePrototypes
     {
 
     };
-
+    std::unique_ptr<LnZVTestPromise2_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnZVTestPromise2_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnZVTestPromise2_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnZVTestPromise2_SubclassRegistrationInfo* subclassInfo() { static LnZVTestPromise2_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -577,13 +597,15 @@ public:
 class LNWS_ln_ZVTestClass1 : public ln::ZVTestClass1
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnZVTestClass1_OverridePrototypes
     {
         LnZVTestClass1_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnZVTestClass1_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnZVTestClass1_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnZVTestClass1_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnZVTestClass1_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnZVTestClass1_SubclassRegistrationInfo* subclassInfo() { static LnZVTestClass1_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -642,13 +664,15 @@ LnZVTestClass1_OnSerialize2_OverrideCallback LNWS_ln_ZVTestClass1::s_LnZVTestCla
 class LNWS_ln_ZVTestEventArgs1 : public ln::ZVTestEventArgs1
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnZVTestEventArgs1_OverridePrototypes
     {
         LnZVTestEventArgs1_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnZVTestEventArgs1_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnZVTestEventArgs1_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnZVTestEventArgs1_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnZVTestEventArgs1_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnZVTestEventArgs1_SubclassRegistrationInfo* subclassInfo() { static LnZVTestEventArgs1_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -707,13 +731,15 @@ LnZVTestEventArgs1_OnSerialize2_OverrideCallback LNWS_ln_ZVTestEventArgs1::s_LnZ
 class LNWS_ln_Serializer : public ln::Serializer
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnSerializer_OverridePrototypes
     {
         LnSerializer_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnSerializer_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnSerializer_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnSerializer_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnSerializer_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnSerializer_SubclassRegistrationInfo* subclassInfo() { static LnSerializer_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -772,13 +798,15 @@ LnSerializer_OnSerialize2_OverrideCallback LNWS_ln_Serializer::s_LnSerializer_On
 class LNWS_ln_Serializer2 : public ln::Serializer2
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnSerializer2_OverridePrototypes
     {
         LnSerializer2_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnSerializer2_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnSerializer2_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnSerializer2_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnSerializer2_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnSerializer2_SubclassRegistrationInfo* subclassInfo() { static LnSerializer2_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -837,13 +865,15 @@ LnSerializer2_OnSerialize2_OverrideCallback LNWS_ln_Serializer2::s_LnSerializer2
 class LNWS_ln_AssetModel : public ln::AssetModel
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnAssetModel_OverridePrototypes
     {
         LnAssetModel_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnAssetModel_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnAssetModel_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnAssetModel_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnAssetModel_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnAssetModel_SubclassRegistrationInfo* subclassInfo() { static LnAssetModel_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -908,11 +938,13 @@ public:
 class LNWS_ln_Texture2DDelegate : public ln::Texture2DDelegate
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnTexture2DDelegate_OverridePrototypes
     {
 
     };
-
+    std::unique_ptr<LnTexture2DDelegate_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnTexture2DDelegate_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnTexture2DDelegate_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnTexture2DDelegate_SubclassRegistrationInfo* subclassInfo() { static LnTexture2DDelegate_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -968,11 +1000,13 @@ LN_FLAT_API LnResult LnTexture2DDelegate_Create(LnTexture2DDelegateCallback call
 class LNWS_ln_Texture2DPromise : public ln::Texture2DPromise
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnTexture2DPromise_OverridePrototypes
     {
 
     };
-
+    std::unique_ptr<LnTexture2DPromise_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnTexture2DPromise_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnTexture2DPromise_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnTexture2DPromise_SubclassRegistrationInfo* subclassInfo() { static LnTexture2DPromise_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1007,13 +1041,15 @@ public:
 class LNWS_ln_Texture : public ln::Texture
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnTexture_OverridePrototypes
     {
         LnTexture_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnTexture_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnTexture_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnTexture_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnTexture_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnTexture_SubclassRegistrationInfo* subclassInfo() { static LnTexture_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1072,13 +1108,15 @@ LnTexture_OnSerialize2_OverrideCallback LNWS_ln_Texture::s_LnTexture_OnSerialize
 class LNWS_ln_Texture2D : public ln::Texture2D
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnTexture2D_OverridePrototypes
     {
         LnTexture2D_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnTexture2D_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnTexture2D_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnTexture2D_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnTexture2D_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnTexture2D_SubclassRegistrationInfo* subclassInfo() { static LnTexture2D_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1137,13 +1175,15 @@ LnTexture2D_OnSerialize2_OverrideCallback LNWS_ln_Texture2D::s_LnTexture2D_OnSer
 class LNWS_ln_RenderView : public ln::RenderView
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnRenderView_OverridePrototypes
     {
         LnRenderView_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnRenderView_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnRenderView_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnRenderView_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnRenderView_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnRenderView_SubclassRegistrationInfo* subclassInfo() { static LnRenderView_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1202,13 +1242,15 @@ LnRenderView_OnSerialize2_OverrideCallback LNWS_ln_RenderView::s_LnRenderView_On
 class LNWS_ln_Component : public ln::Component
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnComponent_OverridePrototypes
     {
         LnComponent_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnComponent_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnComponent_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnComponent_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnComponent_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnComponent_SubclassRegistrationInfo* subclassInfo() { static LnComponent_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1267,13 +1309,15 @@ LnComponent_OnSerialize2_OverrideCallback LNWS_ln_Component::s_LnComponent_OnSer
 class LNWS_ln_VisualComponent : public ln::VisualComponent
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnVisualComponent_OverridePrototypes
     {
         LnVisualComponent_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnVisualComponent_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnVisualComponent_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnVisualComponent_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnVisualComponent_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnVisualComponent_SubclassRegistrationInfo* subclassInfo() { static LnVisualComponent_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1332,13 +1376,15 @@ LnVisualComponent_OnSerialize2_OverrideCallback LNWS_ln_VisualComponent::s_LnVis
 class LNWS_ln_SpriteComponent : public ln::SpriteComponent
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnSpriteComponent_OverridePrototypes
     {
         LnSpriteComponent_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnSpriteComponent_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnSpriteComponent_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnSpriteComponent_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnSpriteComponent_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnSpriteComponent_SubclassRegistrationInfo* subclassInfo() { static LnSpriteComponent_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1397,13 +1443,15 @@ LnSpriteComponent_OnSerialize2_OverrideCallback LNWS_ln_SpriteComponent::s_LnSpr
 class LNWS_ln_World : public ln::World
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnWorld_OverridePrototypes
     {
         LnWorld_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnWorld_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnWorld_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnWorld_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnWorld_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnWorld_SubclassRegistrationInfo* subclassInfo() { static LnWorld_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1462,13 +1510,15 @@ LnWorld_OnSerialize2_OverrideCallback LNWS_ln_World::s_LnWorld_OnSerialize2_Over
 class LNWS_ln_ComponentList : public ln::ComponentList
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnComponentList_OverridePrototypes
     {
         LnComponentList_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnComponentList_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnComponentList_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnComponentList_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnComponentList_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnComponentList_SubclassRegistrationInfo* subclassInfo() { static LnComponentList_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1527,6 +1577,7 @@ LnComponentList_OnSerialize2_OverrideCallback LNWS_ln_ComponentList::s_LnCompone
 class LNWS_ln_WorldObject : public ln::WorldObject
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnWorldObject_OverridePrototypes
     {
         LnWorldObject_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
@@ -1534,7 +1585,8 @@ public:
         LnWorldObject_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnWorldObject_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnWorldObject_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnWorldObject_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnWorldObject_SubclassRegistrationInfo* subclassInfo() { static LnWorldObject_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1605,6 +1657,7 @@ LnWorldObject_OnUpdate_OverrideCallback LNWS_ln_WorldObject::s_LnWorldObject_OnU
 class LNWS_ln_VisualObject : public ln::VisualObject
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnVisualObject_OverridePrototypes
     {
         LnVisualObject_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
@@ -1612,7 +1665,8 @@ public:
         LnVisualObject_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnVisualObject_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnVisualObject_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnVisualObject_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnVisualObject_SubclassRegistrationInfo* subclassInfo() { static LnVisualObject_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1683,6 +1737,7 @@ LnVisualObject_OnUpdate_OverrideCallback LNWS_ln_VisualObject::s_LnVisualObject_
 class LNWS_ln_Camera : public ln::Camera
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnCamera_OverridePrototypes
     {
         LnCamera_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
@@ -1690,7 +1745,8 @@ public:
         LnCamera_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnCamera_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnCamera_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnCamera_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnCamera_SubclassRegistrationInfo* subclassInfo() { static LnCamera_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1761,6 +1817,7 @@ LnCamera_OnUpdate_OverrideCallback LNWS_ln_Camera::s_LnCamera_OnUpdate_OverrideC
 class LNWS_ln_DirectionalLight : public ln::DirectionalLight
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnDirectionalLight_OverridePrototypes
     {
         LnDirectionalLight_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
@@ -1768,7 +1825,8 @@ public:
         LnDirectionalLight_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnDirectionalLight_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnDirectionalLight_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnDirectionalLight_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnDirectionalLight_SubclassRegistrationInfo* subclassInfo() { static LnDirectionalLight_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1839,6 +1897,7 @@ LnDirectionalLight_OnUpdate_OverrideCallback LNWS_ln_DirectionalLight::s_LnDirec
 class LNWS_ln_PointLight : public ln::PointLight
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnPointLight_OverridePrototypes
     {
         LnPointLight_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
@@ -1846,7 +1905,8 @@ public:
         LnPointLight_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnPointLight_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnPointLight_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnPointLight_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnPointLight_SubclassRegistrationInfo* subclassInfo() { static LnPointLight_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1917,6 +1977,7 @@ LnPointLight_OnUpdate_OverrideCallback LNWS_ln_PointLight::s_LnPointLight_OnUpda
 class LNWS_ln_SpotLight : public ln::SpotLight
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnSpotLight_OverridePrototypes
     {
         LnSpotLight_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
@@ -1924,7 +1985,8 @@ public:
         LnSpotLight_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnSpotLight_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnSpotLight_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnSpotLight_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnSpotLight_SubclassRegistrationInfo* subclassInfo() { static LnSpotLight_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -1995,11 +2057,13 @@ LnSpotLight_OnUpdate_OverrideCallback LNWS_ln_SpotLight::s_LnSpotLight_OnUpdate_
 class LNWS_ln_TestDelegate : public ln::TestDelegate
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnTestDelegate_OverridePrototypes
     {
 
     };
-
+    std::unique_ptr<LnTestDelegate_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnTestDelegate_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnTestDelegate_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnTestDelegate_SubclassRegistrationInfo* subclassInfo() { static LnTestDelegate_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2057,6 +2121,7 @@ LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHa
 class LNWS_ln_Sprite : public ln::Sprite
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnSprite_OverridePrototypes
     {
         LnSprite_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
@@ -2064,7 +2129,8 @@ public:
         LnSprite_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnSprite_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnSprite_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnSprite_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnSprite_SubclassRegistrationInfo* subclassInfo() { static LnSprite_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2135,13 +2201,15 @@ LnSprite_OnUpdate_OverrideCallback LNWS_ln_Sprite::s_LnSprite_OnUpdate_OverrideC
 class LNWS_ln_CameraOrbitControlComponent : public ln::CameraOrbitControlComponent
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnCameraOrbitControlComponent_OverridePrototypes
     {
         LnCameraOrbitControlComponent_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnCameraOrbitControlComponent_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnCameraOrbitControlComponent_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnCameraOrbitControlComponent_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnCameraOrbitControlComponent_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnCameraOrbitControlComponent_SubclassRegistrationInfo* subclassInfo() { static LnCameraOrbitControlComponent_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2200,13 +2268,15 @@ LnCameraOrbitControlComponent_OnSerialize2_OverrideCallback LNWS_ln_CameraOrbitC
 class LNWS_ln_Raycaster : public ln::Raycaster
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnRaycaster_OverridePrototypes
     {
         LnRaycaster_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnRaycaster_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnRaycaster_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnRaycaster_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnRaycaster_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnRaycaster_SubclassRegistrationInfo* subclassInfo() { static LnRaycaster_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2265,13 +2335,15 @@ LnRaycaster_OnSerialize2_OverrideCallback LNWS_ln_Raycaster::s_LnRaycaster_OnSer
 class LNWS_ln_RaycastResult : public ln::RaycastResult
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnRaycastResult_OverridePrototypes
     {
         LnRaycastResult_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnRaycastResult_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnRaycastResult_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnRaycastResult_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnRaycastResult_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnRaycastResult_SubclassRegistrationInfo* subclassInfo() { static LnRaycastResult_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2330,13 +2402,15 @@ LnRaycastResult_OnSerialize2_OverrideCallback LNWS_ln_RaycastResult::s_LnRaycast
 class LNWS_ln_WorldRenderView : public ln::WorldRenderView
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnWorldRenderView_OverridePrototypes
     {
         LnWorldRenderView_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnWorldRenderView_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnWorldRenderView_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnWorldRenderView_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnWorldRenderView_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnWorldRenderView_SubclassRegistrationInfo* subclassInfo() { static LnWorldRenderView_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2395,6 +2469,7 @@ LnWorldRenderView_OnSerialize2_OverrideCallback LNWS_ln_WorldRenderView::s_LnWor
 class LNWS_ln_BoxMesh : public ln::BoxMesh
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnBoxMesh_OverridePrototypes
     {
         LnBoxMesh_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
@@ -2402,7 +2477,8 @@ public:
         LnBoxMesh_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnBoxMesh_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnBoxMesh_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnBoxMesh_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnBoxMesh_SubclassRegistrationInfo* subclassInfo() { static LnBoxMesh_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2473,6 +2549,7 @@ LnBoxMesh_OnUpdate_OverrideCallback LNWS_ln_BoxMesh::s_LnBoxMesh_OnUpdate_Overri
 class LNWS_ln_PlaneMesh : public ln::PlaneMesh
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnPlaneMesh_OverridePrototypes
     {
         LnPlaneMesh_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
@@ -2480,7 +2557,8 @@ public:
         LnPlaneMesh_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnPlaneMesh_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnPlaneMesh_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnPlaneMesh_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnPlaneMesh_SubclassRegistrationInfo* subclassInfo() { static LnPlaneMesh_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2551,13 +2629,15 @@ LnPlaneMesh_OnUpdate_OverrideCallback LNWS_ln_PlaneMesh::s_LnPlaneMesh_OnUpdate_
 class LNWS_ln_UIEventArgs : public ln::UIEventArgs
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnUIEventArgs_OverridePrototypes
     {
         LnUIEventArgs_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnUIEventArgs_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnUIEventArgs_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnUIEventArgs_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnUIEventArgs_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnUIEventArgs_SubclassRegistrationInfo* subclassInfo() { static LnUIEventArgs_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2616,11 +2696,13 @@ LnUIEventArgs_OnSerialize2_OverrideCallback LNWS_ln_UIEventArgs::s_LnUIEventArgs
 class LNWS_ln_UIGeneralEventHandler : public ln::UIGeneralEventHandler
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnUIGeneralEventHandler_OverridePrototypes
     {
 
     };
-
+    std::unique_ptr<LnUIGeneralEventHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnUIGeneralEventHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnUIGeneralEventHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnUIGeneralEventHandler_SubclassRegistrationInfo* subclassInfo() { static LnUIGeneralEventHandler_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2676,11 +2758,13 @@ LN_FLAT_API LnResult LnUIGeneralEventHandler_Create(LnUIGeneralEventHandlerCallb
 class LNWS_ln_UIEventHandler : public ln::UIEventHandler
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnUIEventHandler_OverridePrototypes
     {
 
     };
-
+    std::unique_ptr<LnUIEventHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnUIEventHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnUIEventHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnUIEventHandler_SubclassRegistrationInfo* subclassInfo() { static LnUIEventHandler_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2736,13 +2820,15 @@ LN_FLAT_API LnResult LnUIEventHandler_Create(LnUIEventHandlerCallback callback, 
 class LNWS_ln_UILayoutElement : public ln::UILayoutElement
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnUILayoutElement_OverridePrototypes
     {
         LnUILayoutElement_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnUILayoutElement_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnUILayoutElement_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnUILayoutElement_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnUILayoutElement_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnUILayoutElement_SubclassRegistrationInfo* subclassInfo() { static LnUILayoutElement_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2801,13 +2887,15 @@ LnUILayoutElement_OnSerialize2_OverrideCallback LNWS_ln_UILayoutElement::s_LnUIL
 class LNWS_ln_UIElement : public ln::UIElement
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnUIElement_OverridePrototypes
     {
         LnUIElement_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnUIElement_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnUIElement_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnUIElement_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnUIElement_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnUIElement_SubclassRegistrationInfo* subclassInfo() { static LnUIElement_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2866,13 +2954,15 @@ LnUIElement_OnSerialize2_OverrideCallback LNWS_ln_UIElement::s_LnUIElement_OnSer
 class LNWS_ln_UITextBlock : public ln::UITextBlock
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnUITextBlock_OverridePrototypes
     {
         LnUITextBlock_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnUITextBlock_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnUITextBlock_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnUITextBlock_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnUITextBlock_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnUITextBlock_SubclassRegistrationInfo* subclassInfo() { static LnUITextBlock_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -2931,13 +3021,15 @@ LnUITextBlock_OnSerialize2_OverrideCallback LNWS_ln_UITextBlock::s_LnUITextBlock
 class LNWS_ln_UISprite : public ln::UISprite
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnUISprite_OverridePrototypes
     {
         LnUISprite_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
         LnUISprite_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnUISprite_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnUISprite_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnUISprite_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnUISprite_SubclassRegistrationInfo* subclassInfo() { static LnUISprite_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
@@ -3020,6 +3112,7 @@ public:
 class LNWS_ln_Application : public ln::Application
 {
 public:
+    // Override functions per instance for FlatAPI User.
     struct LnApplication_OverridePrototypes
     {
         LnApplication_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
@@ -3028,7 +3121,8 @@ public:
         LnApplication_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
 
     };
-
+    std::unique_ptr<LnApplication_OverridePrototypes> m_overridePrototypes = nullptr;
+    LnApplication_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LnApplication_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
     static LnApplication_SubclassRegistrationInfo* subclassInfo() { static LnApplication_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;

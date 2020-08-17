@@ -557,8 +557,12 @@ ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 		code.IncreaseIndent();
 		if (!classSymbol->isStatic())
 		{
-			code.AppendLine(makeOverridePrototypesStructDecl(classSymbol)).NewLine();
-
+			// stuct XXXX_OverridePrototypes
+			code.AppendLine(u"// Override functions per instance for FlatAPI User.");
+			code.AppendLine(makeOverridePrototypesStructDecl(classSymbol));
+			code.AppendLine(u"std::unique_ptr<{0}> m_overridePrototypes = nullptr;", makeFlatAPIName_OverridePrototypesStruct(classSymbol));
+			code.AppendLine(u"{0}* acquireOverridePrototypes() {{ if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<{0}>(); return m_overridePrototypes.get(); }}", makeFlatAPIName_OverridePrototypesStruct(classSymbol));
+			code.NewLine();
 
 			// subclassInfo
 			code.AppendLine(u"static {0}* subclassInfo() {{ static {0} info; return &info; }}", makeFlatAPIName_SubclassRegistrationInfo(classSymbol));
@@ -771,7 +775,7 @@ ln::String FlatCSourceGenerator::makeOverridePrototypesStructDecl(const TypeSymb
 	}
 	code.DecreaseIndent();
 	code.AppendLine(u"};");
-	return code.toString();
+	return code.toString().trim();
 }
 
 ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset)
