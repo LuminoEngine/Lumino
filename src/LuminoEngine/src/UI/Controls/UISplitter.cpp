@@ -136,8 +136,10 @@ Size UISplitter::measureOverride(UILayoutContext* layoutContext, const Size& con
     return Size::max(selfSize, childrenSize);
 }
 
-Size UISplitter::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UISplitter::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+	const auto finalSize = finalArea.getSize();
+
 	if (m_lastArrangeFinalSize != finalSize) {
 		// 最後に actualSize を決定した時と比べてサイズが変わっていたら再計算されるようにする
 		for (int i = 0; i < m_cellDefinitions.size(); i++) {
@@ -251,7 +253,7 @@ Size UISplitter::arrangeOverride(UILayoutContext* layoutContext, const Size& fin
 	}
 
     // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
-    Size selfSize = UIElement::arrangeOverride(layoutContext, finalSize);
+    Size selfSize = UIElement::arrangeOverride(layoutContext, finalArea);
     return selfSize;
 }
 

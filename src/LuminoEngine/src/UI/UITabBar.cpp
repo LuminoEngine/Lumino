@@ -180,10 +180,10 @@ Size UITabBar2::measureOverride(UILayoutContext* context, const Size& constraint
 	return UIControl::measureOverride(context, constraint);
 }
 
-Size UITabBar2::arrangeOverride(UILayoutContext* context, const Size& finalSize)
+Size UITabBar2::arrangeOverride(UILayoutContext* context, const Rect& finalArea)
 {
-	m_itemsHostLayout->arrangeLayout(context, Rect(0, 0, finalSize));
-	return UIControl::arrangeOverride(context, finalSize);
+	m_itemsHostLayout->arrangeLayout(context, Rect(0, 0, finalArea.getSize()));
+	return UIControl::arrangeOverride(context, finalArea);
 }
 
 void UITabBar2::selectItem(UITabBarItem2* item)

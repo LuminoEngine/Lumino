@@ -171,7 +171,7 @@ protected:
 	virtual ~UILayoutElement();
 
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint);
-	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize);
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea);
 
 	//virtual int getChildLayoutItemCount() const = 0;
 	//virtual ILayoutElement* getChildLayoutItem(int index) const = 0;
@@ -245,6 +245,11 @@ public:
 
 	// arrangeOverride() のユーティリティ
 	Rect makeContentRect(const UIElement* element, const Size& finalSize) const;
+
+	Size measureTextSize(Font* font, const StringRef& text);
+	Size measureTextSize(Font* font, uint32_t codePoint);
+	Size measureTextSize(const UIElement* element, const StringRef& text);
+	Size measureTextSize(const UIElement* element, uint32_t codePoint);
 
 LN_CONSTRUCT_ACCESS:
 	UILayoutContext();

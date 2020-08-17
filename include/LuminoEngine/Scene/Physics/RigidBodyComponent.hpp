@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Common.hpp"
 #include "../Component.hpp"
 #include "../../Physics/RigidBody.hpp"
 #include "../../Physics/TriggerBody.hpp"
@@ -7,28 +8,6 @@
 namespace ln {
 class Collision;
 class RigidBodyComponent;
-
-using CollisionEventHandler = Delegate<void(Collision*)>;
-
-class Collision
-    : public Object
-{
-public:
-	/** 自分自身と衝突している他の WorldObject */
-    WorldObject* worldObject() const { return m_worldObject; }
-
-    /** 自分自身と衝突している他の PhysicsObject */
-    PhysicsObject* physicsObject() const { return m_physicsObject; }
-
-LN_CONSTRUCT_ACCESS:
-    Collision();
-    virtual ~Collision() = default;
-    void init(WorldObject* worldObject, PhysicsObject* physicsObject);
-
-private:
-    WorldObject* m_worldObject;
-    PhysicsObject* m_physicsObject;
-};
 
 class RigidBodyComponent
 	: public Component
@@ -131,13 +110,13 @@ public:
 
 
     /** CollisionEnter イベントの通知を受け取るコールバックを登録します。*/
-	void setOnCollisionEnter(Ref<CollisionEventHandler> handler);
+	void setCollisionEnter(Ref<CollisionEventHandler> handler);
 
     /** CollisionLeave イベントの通知を受け取るコールバックを登録します。*/
-	void setOnCollisionLeave(Ref<CollisionEventHandler> handler);
+	void setCollisionLeave(Ref<CollisionEventHandler> handler);
 
     /** CollisionStay イベントの通知を受け取るコールバックを登録します。*/
-	void setOnCollisionStay(Ref<CollisionEventHandler> handler);
+	void setCollisionStay(Ref<CollisionEventHandler> handler);
 
 LN_CONSTRUCT_ACCESS:
     TriggerBodyComponent();

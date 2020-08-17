@@ -192,8 +192,9 @@ Size UIGridLayout::measureOverride(UILayoutContext* layoutContext, const Size& c
 	return Size::max(desiredSize, cellsDesiredSize);
 }
 
-Size UIGridLayout::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIGridLayout::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+	const auto finalSize = finalArea.getSize();
 	const Thickness& padding = finalStyle()->padding;
 	Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
 

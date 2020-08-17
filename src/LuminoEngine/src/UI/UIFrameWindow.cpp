@@ -433,9 +433,9 @@ Size UIFrameWindow::measureOverride(UILayoutContext* layoutContext, const Size& 
 }
 
 // 強制的にウィンドウサイズとする
-Size UIFrameWindow::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIFrameWindow::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	return UIDomainProvidor::arrangeOverride(layoutContext, desiredSize());
+	return UIDomainProvidor::arrangeOverride(layoutContext, Rect(0, 0, desiredSize()));
 	//int childCount = logicalChildren().size();
 	//for (int i = 0; i < childCount; i++)
 	//{

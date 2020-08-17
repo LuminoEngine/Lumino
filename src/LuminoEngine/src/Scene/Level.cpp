@@ -276,9 +276,12 @@ void Level::onPreUpdate(float elapsedSeconds)
 	}
 
 
-    for (auto& obj : m_rootWorldObjectList)
-    {
+    for (auto& obj : m_rootWorldObjectList) {
         obj->onPreUpdate();
+
+        for (auto& component : *(obj->m_components)) {
+            component->onPreUpdate(elapsedSeconds);
+        }
     }
 }
 

@@ -134,7 +134,7 @@ Size UIFrameLayout2::measureOverride(UILayoutContext* layoutContext, const Size&
 	return UIFrameLayout2::staticMeasureLogicalChildren(layoutContext, this, constraint);
 }
 
-Size UIFrameLayout2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIFrameLayout2::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
 #if 0
     //Thickness canvas;
@@ -255,7 +255,7 @@ Size UIFrameLayout2::arrangeOverride(UILayoutContext* layoutContext, const Size&
     }
 #endif
 
-	return UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, Rect(0, 0, finalSize));
+	return UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, finalArea);
     //return finalSize;
 }
 
@@ -388,8 +388,9 @@ Size UIStackLayout2_Obsolete::measureOverride(UILayoutContext* layoutContext, co
     return desiredSize;
 }
 
-Size UIStackLayout2_Obsolete::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIStackLayout2_Obsolete::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+    const auto finalSize = finalArea.getSize();
     const Thickness& padding = finalStyle()->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
 
@@ -466,7 +467,7 @@ Size UIStackLayout2_Obsolete::arrangeOverride(UILayoutContext* layoutContext, co
     }
 
     // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
-    Size selfSize = UIElement::arrangeOverride(layoutContext, finalSize);
+    Size selfSize = UIElement::arrangeOverride(layoutContext, finalArea);
     return selfSize;
 
 #if 0
@@ -592,8 +593,9 @@ Size UIBoxLayout3::measureOverride(UILayoutContext* layoutContext, const Size& c
     return desiredSize;
 }
 
-Size UIBoxLayout3::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIBoxLayout3::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+    const auto finalSize = finalArea.getSize();
     const Thickness& padding = finalStyle()->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
     int actualCellCount = (m_logicalChildren) ? m_logicalChildren->size() : 0;
@@ -668,7 +670,7 @@ Size UIBoxLayout3::arrangeOverride(UILayoutContext* layoutContext, const Size& f
     }
 
     // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
-    Size selfSize = UIElement::arrangeOverride(layoutContext, finalSize);
+    Size selfSize = UIElement::arrangeOverride(layoutContext, finalArea);
     return selfSize;
 }
 
@@ -1078,8 +1080,9 @@ Size UIStackLayout::measureOverride(UILayoutContext* layoutContext, const Size& 
     return desiredSize;
 }
 
-Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+    const auto finalSize = finalArea.getSize();
     const Thickness& padding = finalStyle()->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
     //int actualCellCount = m_logicalChildren.size();

@@ -986,6 +986,11 @@ const Matrix& MeshNode::globalMatrix() const
 	return m_model->m_nodeGlobalTransforms[m_index];
 }
 
+void MeshNode::setGlobalTransform(const Matrix& value)
+{
+	m_model->m_nodeGlobalTransforms[m_index] = value;
+}
+
 void MeshNode::updateGlobalTransform(bool hierarchical)
 {
 	m_model->updateNodeTransformsHierarchical(m_index, m_model->m_nodes[m_parent]->globalMatrix(), hierarchical);
@@ -1096,6 +1101,13 @@ void StaticMeshModel::addRootNode(int index)
     m_rootNodes.add(index);
 }
 
+void StaticMeshModel::resetNodeLocalTransforms()
+{
+	for (auto& node : meshNodes()) {
+		node->resetLocalTransform();
+	}
+}
+
 void StaticMeshModel::updateNodeTransforms()
 {
     m_nodeGlobalTransforms.resize(m_nodes.size());
@@ -1185,6 +1197,12 @@ void InstancedMeshList::reset()
 	m_instanceData.clear();
 	m_instanceCount = 0;
 	m_dirty = true;
+	m_stagingData.transform0 = Vector4(1.0f, 0.0f, 0.0f, 0.0f);
+	m_stagingData.transform1 = Vector4(0.0f, 1.0f, 0.0f, 0.0f);
+	m_stagingData.transform2 = Vector4(0.0f, 0.0f, 1.0f, 0.0f);
+	m_stagingData.transform3 = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+	m_stagingData.uvOffset = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+	m_stagingData.colorScale = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void InstancedMeshList::setTransform(const Matrix& transform)
@@ -1193,6 +1211,11 @@ void InstancedMeshList::setTransform(const Matrix& transform)
 	m_stagingData.transform1 = transform.row(1);
 	m_stagingData.transform2 = transform.row(2);
 	m_stagingData.transform3 = transform.row(3);
+}
+
+void InstancedMeshList::setColorScale(const Color& value)
+{
+	m_stagingData.colorScale = value.toVector4();
 }
 
 void InstancedMeshList::setUVOffset(const Vector4& value)
@@ -1225,6 +1248,7 @@ void InstancedMeshList::commitRenderData(MeshSection2* outSection, VertexLayout*
 			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Position, 3, VertexInputRate::Instance);
 			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Position, 4, VertexInputRate::Instance);
 			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::TexCoord, 2, VertexInputRate::Instance);
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Color, 1, VertexInputRate::Instance);
 		}
 
 		if (!m_instanceBuffer || (m_instanceBuffer->size() / sizeof(InstanceData)) < m_instanceCount) {

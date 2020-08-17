@@ -86,7 +86,7 @@ PlaneCollisionShape::~PlaneCollisionShape()
 
 bool PlaneCollisionShape::init()
 {
-	return CollisionShape::init();
+	return init(Vector3::UnitY);
 }
 
 //------------------------------------------------------------------------------
@@ -195,7 +195,8 @@ bool CapsuleCollisionShape::init()
 //------------------------------------------------------------------------------
 bool CapsuleCollisionShape::init(float radius, float height)
 {
-	return CollisionShape::init(new btCapsuleShape(radius, height));
+	// Bullet の Capsule の height は 円筒部分のみを示すので、Unity とかの動作と合わせて、全体が height になるようにする
+	return CollisionShape::init(new btCapsuleShape(radius, height - (radius * 2.0f)));
 }
 
 //==============================================================================

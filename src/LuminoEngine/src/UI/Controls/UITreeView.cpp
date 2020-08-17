@@ -145,8 +145,10 @@ Size UITreeItem::measureOverride(UILayoutContext* layoutContext, const Size& con
     return Size::max(size, desiredSize);
 }
 
-Size UITreeItem::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UITreeItem::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+    const auto finalSize = finalArea.getSize();
+
     struct ElementList : public IUIElementList {
         List<Ref<UITreeItem>>* list;
         virtual int getElementCount() const { return list->size(); }
@@ -335,7 +337,7 @@ Size UITreeView::measureOverride(UILayoutContext* layoutContext, const Size& con
     return UIItemsControl::measureOverride(layoutContext, constraint);
 }
 
-Size UITreeView::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UITreeView::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
 #if 0
     if (m_layoutMode == UITreeViewLayoutMode::IndentedList) {
@@ -353,7 +355,7 @@ Size UITreeView::arrangeOverride(UILayoutContext* layoutContext, const Size& fin
     }
 #endif
 
-    return UIItemsControl::arrangeOverride(layoutContext, finalSize);
+    return UIItemsControl::arrangeOverride(layoutContext, finalArea);
 }
 
 void UITreeView::addItemInternal(UITreeItem* item)
@@ -543,8 +545,9 @@ Size UITreeItem2::measureOverride(UILayoutContext* layoutContext, const Size& co
     return Size::max(size, desiredSize);
 }
 
-Size UITreeItem2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UITreeItem2::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+    const auto finalSize = finalArea.getSize();
     UITreeView2* treeView = getTreeView();
 
     float headerHeight = m_finalStyle->minHeight;
@@ -570,12 +573,12 @@ Size UITreeItem2::arrangeOverride(UILayoutContext* layoutContext, const Size& fi
     //    headerContentHeight = m_headerContent->actualSize().height;
     //}
 
-    Rect finalArea = contentSlotRect;
+    //Rect finalArea = contentSlotRect;
     {   // TODO: UIControl::arrangeOverride そのままになっている。arrangeOverride は Rect もらうようにしていいかも
 
         if (m_aligned3x3GridLayoutArea) {
             // padding, border を考慮した領域を計算
-            Rect clientArea = detail::LayoutHelper::arrangeClientArea(this, finalArea);
+            Rect clientArea = detail::LayoutHelper::arrangeClientArea(this, contentSlotRect);
             // Inline 要素を arrange & 論理子要素の領域 (content area) を計算
             Rect contentArea;
             m_aligned3x3GridLayoutArea->arrange(layoutContext, m_inlineElements, clientArea, &contentArea);
@@ -585,7 +588,7 @@ Size UITreeItem2::arrangeOverride(UILayoutContext* layoutContext, const Size& fi
 
         }
         else {
-            UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, finalArea);
+            UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, contentSlotRect);
         }
     }
 
@@ -853,8 +856,9 @@ Size UITreeView2::measureOverride(UILayoutContext* layoutContext, const Size& co
     return desiredSize;
 }
 
-Size UITreeView2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UITreeView2::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+    const auto finalSize = finalArea.getSize();
     //Size scrollHSize = m_scrollBarV->desiredSize();
     //Rect scrollHArea(finalSize.width - scrollHSize.width, 0, scrollHSize.width, finalSize.height);
     //m_scrollBarV->arrangeLayout(layoutContext, scrollHArea);

@@ -314,8 +314,10 @@ Size UITrack::measureOverride(UILayoutContext* layoutContext, const Size& constr
 	return UIElement::measureOverride(layoutContext, constraint);
 }
 
-Size UITrack::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UITrack::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+	const auto finalSize = finalArea.getSize();
+
 	float decreaseButtonLength;
 	float thumbLength;
 	float increaseButtonLength;
@@ -647,8 +649,9 @@ Size UIScrollBar::measureOverride(UILayoutContext* layoutContext, const Size& co
     return UIElement::measureOverride(layoutContext, constraint);
 }
 
-Size UIScrollBar::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIScrollBar::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+	const auto finalSize = finalArea.getSize();
     Size upSize;
     Size downSize;
     Orientation orientation = getOrientation();
@@ -684,7 +687,7 @@ Size UIScrollBar::arrangeOverride(UILayoutContext* layoutContext, const Size& fi
         break;
     }
 
-    return UIElement::arrangeOverride(layoutContext, finalSize);
+    return UIElement::arrangeOverride(layoutContext, finalArea);
 }
 
 void UIScrollBar::updateValue(float horizontalDragDelta, float verticalDragDelta)
@@ -955,8 +958,9 @@ Size UIScrollViewer::measureOverride(UILayoutContext* layoutContext, const Size&
     return desiredSize;
 }
 
-Size UIScrollViewer::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIScrollViewer::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+	const auto finalSize = finalArea.getSize();
 	Rect rc;
 	float barWidth = 0;
 	float barHeight = 0;
@@ -982,7 +986,7 @@ Size UIScrollViewer::arrangeOverride(UILayoutContext* layoutContext, const Size&
 
 
 
-    Size childArea(finalSize.width - barWidth, finalSize.height - barHeight);
+    Rect childArea(0, 0, finalSize.width - barWidth, finalSize.height - barHeight);
     Size actualSize = UIControl::arrangeOverride(layoutContext, childArea);
 
 

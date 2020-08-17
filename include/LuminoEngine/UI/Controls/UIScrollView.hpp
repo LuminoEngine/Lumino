@@ -159,7 +159,7 @@ protected:
 
 	// UIElement interface
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 private:
 	void coerceLength(float& componentLength, float trackLength);
@@ -252,7 +252,7 @@ protected:
 	virtual const String& elementName() const  override { static String name = u"UIScrollBar"; return name; }
     virtual void onRoutedEvent(UIEventArgs* e) override;
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 private:
     void updateValue(float horizontalDragDelta, float verticalDragDelta);
@@ -312,7 +312,7 @@ LN_CONSTRUCT_ACCESS:
 protected:
     // UIElement interface
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
     // UIControl interface

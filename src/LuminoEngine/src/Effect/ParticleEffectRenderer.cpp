@@ -65,6 +65,7 @@ bool SpriteParticleRenderer::init(uint64_t hashKey, Material* material, Particle
         vertices[3] = Vertex{ Vector3(-0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(1, 1), Color::White };
         indices[0] = 0; indices[1] = 1; indices[2] = 2; indices[3] = 2; indices[4] = 1; indices[5] = 3;
         break;
+    case ln::ParticleGeometryDirection::HorizontalBillboard:
     case ln::ParticleGeometryDirection::Top:
         // Front: Y+, 進行方向を Z+ と考えたパターン。
         vertices[0] = Vertex{ Vector3(0.5, 0.0, -0.5), Vector3::UnitZ, Vector2(0, 0), Color::White };
@@ -144,7 +145,7 @@ void SpriteParticleRenderer::draw(RenderingContext* context, const ParticleData2
             //float d = Vector3::dot(viewDir -p, viewDir);
 
             // left-hand coord
-            Vector3 f = Vector3::normalize(viewDir - p);
+            Vector3 f = Vector3::normalize(viewPos - p);
             Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
             Vector3 u = Vector3::cross(f, r);
             //const auto transform = Matrix(
@@ -167,61 +168,77 @@ void SpriteParticleRenderer::draw(RenderingContext* context, const ParticleData2
             m_batch->drawMesh();
             break;
         }
-
-
-    case ln::ParticleGeometryDirection::Top:
-    {
-
-        // Scale
-        const auto scale = Vector3(
-            particle->size * particle->crossScale,
-            particle->size * particle->crossScale,
-            particle->size * particle->forwardScale);
-
-        // Position
-        const auto pos = particle->position;
-
-#if 1
-
-        // Rotation
-        const auto& viewPosition = context->viewPoint()->viewPosition;
-        auto rotMat = makeRotationMatrix(viewPosition, particle->position, particle->linearVelocity);
-
-        const auto transform = Matrix(
-            scale.x * rotMat(0, 0), scale.x * rotMat(0, 1), scale.x * rotMat(0, 2), 0.0f,
-            scale.y * rotMat(1, 0), scale.y * rotMat(1, 1), scale.y * rotMat(1, 2), 0.0f,
-            scale.z * rotMat(2, 0), scale.z * rotMat(2, 1), scale.z * rotMat(2, 2), 0.0f,
-            pos.x, pos.y, pos.z, 1.0f
-        );
-
-#else
-        // Rotation
-        //  やってることは WorldObjectTransform::lookAt() とかと同じ。
-        //  View 行列の回転成分を作るのと同じ要領で、Front を進行方向、Up をカメラへの方向と考えて計算する。
-        const auto& viewPosition = context->viewPoint()->viewPosition;
-        const auto rotUp = Vector3::safeNormalize(viewPosition - particle->position, Vector3::UnitZ);
-        const auto rotFront = Vector3::safeNormalize(particle->linearVelocity, Vector3::UnitY); // 速度を持っていない場合は Y+ に進んでいることにする (Z+ だと Lumino デフォルト状態で表示できない)
-        auto rotRight = Vector3::cross(rotUp, rotFront);
-        if (Vector3::nearEqual(rotRight, Vector3::Zero)) {
-            rotRight = Vector3::cross(Vector3::UnitZ, rotFront);
+        case ln::ParticleGeometryDirection::HorizontalBillboard:
+        {
+            const auto scale = Vector3(
+                particle->size * particle->crossScale,
+                particle->size * particle->crossScale,
+                particle->size * particle->forwardScale);
+            const auto pos = particle->position;
+            const auto transform = Matrix(
+                scale.x, 0.0f, 0.0f, 0.0f,
+                0.0f, scale.y, 0.0f, 0.0f,
+                0.0f, 0.0f, scale.z, 0.0f,
+                pos.x, pos.y, pos.z, 1.0f);
+            m_batch->setTransform(transform);
+            m_batch->setColorScale(Color::Red);
+            m_batch->drawMesh();
+            break;
         }
-        rotRight.mutatingNormalize();
+
+        case ln::ParticleGeometryDirection::Top:
+        {
+
+            // Scale
+            const auto scale = Vector3(
+                particle->size * particle->crossScale,
+                particle->size * particle->crossScale,
+                particle->size * particle->forwardScale);
+
+            // Position
+            const auto pos = particle->position;
+
+    #if 1
+
+            // Rotation
+            const auto& viewPosition = context->viewPoint()->viewPosition;
+            auto rotMat = makeRotationMatrix(viewPosition, particle->position, particle->linearVelocity);
+
+            const auto transform = Matrix(
+                scale.x * rotMat(0, 0), scale.x * rotMat(0, 1), scale.x * rotMat(0, 2), 0.0f,
+                scale.y * rotMat(1, 0), scale.y * rotMat(1, 1), scale.y * rotMat(1, 2), 0.0f,
+                scale.z * rotMat(2, 0), scale.z * rotMat(2, 1), scale.z * rotMat(2, 2), 0.0f,
+                pos.x, pos.y, pos.z, 1.0f
+            );
+
+    #else
+            // Rotation
+            //  やってることは WorldObjectTransform::lookAt() とかと同じ。
+            //  View 行列の回転成分を作るのと同じ要領で、Front を進行方向、Up をカメラへの方向と考えて計算する。
+            const auto& viewPosition = context->viewPoint()->viewPosition;
+            const auto rotUp = Vector3::safeNormalize(viewPosition - particle->position, Vector3::UnitZ);
+            const auto rotFront = Vector3::safeNormalize(particle->linearVelocity, Vector3::UnitY); // 速度を持っていない場合は Y+ に進んでいることにする (Z+ だと Lumino デフォルト状態で表示できない)
+            auto rotRight = Vector3::cross(rotUp, rotFront);
+            if (Vector3::nearEqual(rotRight, Vector3::Zero)) {
+                rotRight = Vector3::cross(Vector3::UnitZ, rotFront);
+            }
+            rotRight.mutatingNormalize();
 
 
-        // 愚直に Scale * Rotation * Position の行列乗算をパーティクルごとに繰り返すと
-        // 計算負荷が馬鹿にならなくなるので、各要素を直接設定してしまう。
-        const auto transform = Matrix(
-            scale.x * rotRight.x, scale.x * rotRight.y, scale.x * rotRight.z, 0.0f,
-            scale.y * rotUp.x, scale.y * rotUp.y, scale.y * rotUp.z, 0.0f,
-            scale.z * rotFront.x, scale.z * rotFront.y, scale.z * rotFront.z, 0.0f,
-            pos.x, pos.y, pos.z, 1.0f
-        );
-#endif
+            // 愚直に Scale * Rotation * Position の行列乗算をパーティクルごとに繰り返すと
+            // 計算負荷が馬鹿にならなくなるので、各要素を直接設定してしまう。
+            const auto transform = Matrix(
+                scale.x * rotRight.x, scale.x * rotRight.y, scale.x * rotRight.z, 0.0f,
+                scale.y * rotUp.x, scale.y * rotUp.y, scale.y * rotUp.z, 0.0f,
+                scale.z * rotFront.x, scale.z * rotFront.y, scale.z * rotFront.z, 0.0f,
+                pos.x, pos.y, pos.z, 1.0f
+            );
+    #endif
 
-        m_batch->setTransform(transform);
-        m_batch->drawMesh();
+            m_batch->setTransform(transform);
+            m_batch->drawMesh();
 
-    }
+        }
         break;
     default:
         LN_UNREACHABLE();

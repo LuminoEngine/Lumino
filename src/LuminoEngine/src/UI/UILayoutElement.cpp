@@ -7,9 +7,12 @@
 
 
 #include "Internal.hpp"
+#include <LuminoEngine/Font/Font.hpp>	// for UILayoutContext
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutElement.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
+#include "../Font/TextLayoutEngine.hpp"	// for UILayoutContext
+#include "../Font/FontManager.hpp"	// for UILayoutContext
 
 namespace ln {
 
@@ -142,7 +145,7 @@ void UILayoutElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& 
 	//Size contentAreaSize(
 	//	std::max(arrangeRect.width - padding.getWidth(), 0.0f),
 	//	std::max(arrangeRect.height - padding.getHeight(), 0.0f));
-	Size finalContentAreaSize = arrangeOverride(layoutContext, contentAreaSize);
+	Size finalContentAreaSize = arrangeOverride(layoutContext, Rect(0, 0, contentAreaSize));
 
     
 
@@ -232,9 +235,9 @@ Size UILayoutElement::measureOverride(UILayoutContext* layoutContext, const Size
 	return detail::LayoutHelper::measureElement(this, constraint, Size::Zero);
 }
 
-Size UILayoutElement::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UILayoutElement::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	return finalSize;
+	return finalArea.getSize();
 }
 
 void UILayoutElement::onUpdateLayout(UILayoutContext* layoutContext)
@@ -340,6 +343,32 @@ Rect UILayoutContext::makeContentRect(const UIElement* element, const Size& fina
 	}
 
 	return result;
+}
+
+Size UILayoutContext::measureTextSize(Font* font, const StringRef& text)
+{
+	auto fc = detail::FontHelper::resolveFontCore(font, m_dpiScale);
+	detail::FontGlobalMetrics gm;
+	fc->getGlobalMetrics(&gm);
+	return font->measureRenderSize(text, m_dpiScale);
+}
+
+Size UILayoutContext::measureTextSize(Font* font, uint32_t codePoint)
+{
+	auto fc = detail::FontHelper::resolveFontCore(font, m_dpiScale);
+	detail::FontGlobalMetrics gm;
+	fc->getGlobalMetrics(&gm);
+	return font->measureRenderSize(codePoint, m_dpiScale);
+}
+
+Size UILayoutContext::measureTextSize(const UIElement* element, const StringRef& text)
+{
+	return measureTextSize(element->finalStyle()->font, text);
+}
+
+Size UILayoutContext::measureTextSize(const UIElement* element, uint32_t codePoint)
+{
+	return measureTextSize(element->finalStyle()->font, codePoint);
 }
 
 //==============================================================================

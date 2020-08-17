@@ -22,6 +22,8 @@ public:
     /** このオブジェクトが属している PhysicsWorld2D からこのオブジェクトを除外します。 */
     void removeFromPhysicsWorld();
 
+    const List<PhysicsObject*>& contactBodies() const { return m_contactBodies; }
+
 public: // TODO: internal
     void setEventListener(detail::IPhysicsObjectEventListener* listener) { m_listener = listener; }
     void setOwnerData(void* data) { m_ownerData = data; }

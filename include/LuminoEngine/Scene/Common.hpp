@@ -7,6 +7,7 @@ namespace ln {
 class StaticMeshModel;
 class StaticMeshComponent;
 
+class WorldObject;
 class World;
 class Level;
 class Camera;
@@ -16,6 +17,10 @@ class Material;
 class RenderingContext;
 class OffscreenWorldRenderView;
 class ReflectorComponent;
+class Collision;
+
+
+using CollisionEventHandler = Delegate<void(Collision*)>;
 
 enum class LevelTransitionEffectMode
 {

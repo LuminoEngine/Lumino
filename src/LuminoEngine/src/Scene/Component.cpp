@@ -63,6 +63,10 @@ void Component::onDetachedScene(Level* oldOwner)
 //{
 //}
 
+void Component::onPreUpdate(float elapsedSeconds)
+{
+}
+
 void Component::onUpdate(float elapsedSeconds)
 {
 }

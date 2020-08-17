@@ -198,7 +198,7 @@ void UIComboBox::onRoutedEvent(UIEventArgs* e)
 //	}
 //}
 //
-//Size UIComboBox::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+//Size UIComboBox::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 //{
 //	Rect contentSlotRect = detail::LayoutHelper::makePaddingRect(this, finalSize);
 //

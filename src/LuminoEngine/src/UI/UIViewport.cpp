@@ -115,10 +115,10 @@ void UIViewport::onUpdateStyle(const UIStyleContext* styleContext, const detail:
 	}
 }
 
-Size UIViewport::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIViewport::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
 	if (isViewBoxRenderTargetAutoResize()) {
-		m_actualViewboxSize = finalSize;
+		m_actualViewboxSize = finalArea.getSize();
 	}
 	else {
 		m_actualViewboxSize = m_viewBoxSize;
@@ -129,7 +129,7 @@ Size UIViewport::arrangeOverride(UILayoutContext* layoutContext, const Size& fin
         rv->setActualSize(m_actualViewboxSize);
     }
 
-    return UIContainerElement::arrangeOverride(layoutContext, finalSize);
+    return UIContainerElement::arrangeOverride(layoutContext, finalArea);
 }
 
 

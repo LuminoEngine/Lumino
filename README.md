@@ -43,7 +43,7 @@ Screenshots
 
 ![](docs/Gallery/32-scene.png)
 
-#### VMR + BVH
+#### VRM + BVH
 
 ![](docs/Gallery/31-vmr.gif)
 

@@ -243,6 +243,7 @@ void World::updateFrame(float elapsedSeconds)
     m_sceneConductor->transitionEffect()->onUpdateFrame(elapsedSeconds);
     m_sceneConductor->executeCommands();
 
+    // TODO: イベントの実行順序はこれで決定。ドキュメントに書いておく
     float t = elapsedSeconds * m_timeScale;
     onPreUpdate(t);
     onInternalPhysicsUpdate(t);

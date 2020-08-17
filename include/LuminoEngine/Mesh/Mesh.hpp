@@ -367,6 +367,7 @@ public:
     const Matrix& initialLocalTransform() const { return m_initialLocalTransform; }
     
 	const Matrix& globalMatrix() const;
+	void setGlobalTransform(const Matrix& value);
 
 	void updateGlobalTransform(bool hierarchical);
 
@@ -429,12 +430,16 @@ public:
 
     void addRootNode(int index);
 
+	/** 全ノードの Local Transform をリセットします。(アニメーション適用前の、デフォルトの姿勢に戻します) */
+	void resetNodeLocalTransforms();
+
+	/** 現在の Local Transform をもとに、全ノードの Global Transform を更新します。 */
+	void updateNodeTransforms();
 
     // TODO: internal
     detail::InternalMeshModelType meshModelType() const { return m_type; }
     //Matrix* nodeGlobalTransformPtr(int nodeIndex) { return &m_nodeGlobalTransforms[nodeIndex]; }
     const Matrix& nodeGlobalTransform(int nodeIndex) { return m_nodeGlobalTransforms[nodeIndex]; }
-    void updateNodeTransforms();
 
 protected:
 	void serialize2(Serializer2& ar) override;
@@ -474,6 +479,7 @@ public:
 	void reset();
 	void setTransform(const Matrix& transform);
 	void setUVOffset(const Vector4& value);
+	void setColorScale(const Color& value);
 	void drawMesh();
 
 
@@ -495,6 +501,7 @@ private:
 		Vector4 transform2;
 		Vector4 transform3;
 		Vector4 uvOffset;
+		Vector4 colorScale;
 	};
 
 	Ref<Mesh> m_mesh;

@@ -297,16 +297,23 @@ void ParticleEmitterInstance2::spawnParticle(float delayTime)
 
         particle->endLifeTime = makeRandom(particle, m_emitterModel->m_lifeTime.minValue, m_emitterModel->m_lifeTime.maxValue, m_emitterModel->m_lifeTime.randomSource);
     
-    
         particle->size = makeRandom(particle, m_emitterModel->m_size);
+        particle->sizeVelocity = makeRandom(particle, m_emitterModel->m_sizeVelocity);
+        particle->sizeAccel = makeRandom(particle, m_emitterModel->m_sizeAcceleration);
+
         particle->forwardScale = makeRandom(particle, m_emitterModel->m_forwardScale);
+        particle->forwardScaleVelocity = makeRandom(particle, m_emitterModel->m_forwardScaleVelocity);
+        particle->forwardScaleAccel = makeRandom(particle, m_emitterModel->m_forwardScaleAcceleration);
+
         particle->crossScale = makeRandom(particle, m_emitterModel->m_crossScale);
+        particle->crossScaleVelocity = makeRandom(particle, m_emitterModel->m_crossScaleVelocity);
+        particle->crossScaleAccel = makeRandom(particle, m_emitterModel->m_crossScaleAcceleration);
     }
 
     // Emitter shape
     {
         Vector3 localPosition = Vector3::Zero;
-        Vector3 localFront = Vector3::UnitZ;
+        Vector3 localFront = Vector3::UnitZ;    // ローカル空間上での進行方向
         const auto& shapeParam = m_emitterModel->m_shapeParam;
 
         switch (m_emitterModel->m_shapeType)
@@ -348,7 +355,10 @@ void ParticleEmitterInstance2::spawnParticle(float delayTime)
         }
 
         const Matrix& emitterTransform = worldTransform();
-        Vector3 worldFront = Vector3::transformCoord(localFront, emitterTransform);
+
+        // ワールド空間上の進行方向
+        Vector3 worldFront = localFront;
+        worldFront.transformDirection(emitterTransform);
         //Vector3 worldPosition = Vector3::transformCoord(localFront, emitterTransform);
 
         particle->position = localPosition + localFront * makeRandom(particle, m_emitterModel->m_forwardPosition);
@@ -398,6 +408,14 @@ void ParticleEmitterInstance2::simulateParticle(ParticleData2* particle, float d
 
 
 
+    particle->sizeVelocity += particle->sizeAccel * deltaTime;
+    particle->size += particle->sizeVelocity * deltaTime;
+
+    particle->forwardScaleVelocity += particle->forwardScaleAccel * deltaTime;
+    particle->forwardScale += particle->forwardScaleVelocity * deltaTime;
+
+    particle->crossScaleVelocity += particle->crossScaleAccel * deltaTime;
+    particle->crossScale += particle->crossScaleVelocity * deltaTime;
 }
 
 //==============================================================================

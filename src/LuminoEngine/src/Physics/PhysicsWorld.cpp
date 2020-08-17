@@ -25,7 +25,51 @@
 #include "PhysicsDebugRenderer.hpp"
 #include "BulletUtils.hpp"
 
+//extern ContactProcessedCallback gContactProcessedCallback;
+extern ContactStartedCallback gContactStartedCallback;
+extern ContactEndedCallback gContactEndedCallback;
+
+//static bool HandleContactProcess(btManifoldPoint& p, void* a, void* b) {
+//    btCollisionObject* pBody0 = (btCollisionObject*)a;
+//    btCollisionObject* pBody1 = (btCollisionObject*)b;
+//
+//    //TestData* pUserData0 = (TestData*)pBody0->getUserPointer();
+//    //TestData* pUserData1 = (TestData*)pBody1->getUserPointer();
+//
+//    //// カウント
+//    //if (pUserData0) pUserData0->count++;
+//    //if (pUserData1) pUserData1->count++;
+//    printf("");
+//    return true;
+//}
+
 namespace ln {
+
+static void ContactStartedCallback(btPersistentManifold* const& manifold)
+{
+    const auto* bodyA = static_cast<const btCollisionObject*>(manifold->getBody0());
+    const auto* bodyB = static_cast<const btCollisionObject*>(manifold->getBody1());
+    auto* ownerA = static_cast<PhysicsObject*>(bodyA->getUserPointer());
+    auto* ownerB = static_cast<PhysicsObject*>(bodyB->getUserPointer());
+    if (ownerA && ownerB) {
+        auto* world = ownerA->physicsWorld();
+        world->postBeginContact(ownerA, ownerB);
+        //printf("start %p : %p\n", ownerA, ownerB);
+    }
+}
+
+static void ContactEndedCallback(btPersistentManifold* const& manifold)
+{
+    const auto* bodyA = static_cast<const btCollisionObject*>(manifold->getBody0());
+    const auto* bodyB = static_cast<const btCollisionObject*>(manifold->getBody1());
+    auto* ownerA = static_cast<PhysicsObject*>(bodyA->getUserPointer());
+    auto* ownerB = static_cast<PhysicsObject*>(bodyB->getUserPointer());
+    if (ownerA && ownerB) {
+        auto* world = ownerA->physicsWorld();
+        world->postEndContact(ownerA, ownerB);
+        //printf("end %p : %p\n", ownerA, ownerB);
+    }
+}
 
 //==============================================================================
 // PhysicsDebugRenderer
@@ -204,9 +248,9 @@ void PhysicsWorld::init()
 
 
 
-
-
-
+    //gContactProcessedCallback = HandleContactProcess;
+    gContactStartedCallback = ContactStartedCallback;
+    gContactEndedCallback = ContactEndedCallback;
 
 
     //// 地面作成、ワールドに追加

@@ -241,7 +241,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
     // UIElement interface
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 private:
 };
@@ -267,7 +267,7 @@ LN_CONSTRUCT_ACCESS:
 
     // UIElement interface
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 private:
     bool isHorizontal() const { return m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal; }
@@ -327,7 +327,7 @@ LN_CONSTRUCT_ACCESS:
 
     // UIElement interface
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 private:
     bool isHorizontal() const { return m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal; }
@@ -505,7 +505,7 @@ LN_CONSTRUCT_ACCESS:
     bool init(Orientation orientation);
 
     Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-    Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 private:
     Orientation m_orientation;

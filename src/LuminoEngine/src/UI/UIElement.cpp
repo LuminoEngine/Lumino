@@ -767,9 +767,9 @@ Size UIElement::measureOverride(UILayoutContext* layoutContext, const Size& cons
     return size;
 }
 
-Size UIElement::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIElement::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	return UILayoutElement::arrangeOverride(layoutContext, finalSize);
+	return UILayoutElement::arrangeOverride(layoutContext, finalArea);
 }
 
 void UIElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect)
@@ -804,10 +804,20 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 
 	m_combinedStyle->reset();
 	styleContext->combineStyle(m_combinedStyle, elementName(), m_classList);
-	if (m_visualStateManager) {
-		m_visualStateManager->combineStyle(m_combinedStyle, styleContext, elementName(), m_classList);
-        m_visualStateManager->combineStyle(m_combinedStyle, m_localStyle);
-        //m_visualStateManager->printActive();
+
+    const UIVisualStateManager* actualVisualStateManager = nullptr;
+    if (m_partParent && m_partParent->m_visualStateManager) {
+        actualVisualStateManager = m_partParent->m_visualStateManager;
+    }
+    else if (m_visualStateManager) {
+        actualVisualStateManager = m_visualStateManager;
+    }
+
+
+	if (actualVisualStateManager) {
+        actualVisualStateManager->combineStyle(m_combinedStyle, styleContext, elementName(), m_classList);
+        actualVisualStateManager->combineStyle(m_combinedStyle, m_localStyle);
+        //actualVisualStateManager->printActive();
 	}
     else {
         m_combinedStyle->mergeFrom(m_localStyle->mainStyle());

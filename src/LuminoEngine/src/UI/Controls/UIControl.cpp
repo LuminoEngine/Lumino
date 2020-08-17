@@ -310,9 +310,9 @@ Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& cons
     return size;
 }
 
-Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-    Rect finalArea(0, 0, finalSize);
+    //Rect finalArea(0, 0, finalSize);
 
     if (m_aligned3x3GridLayoutArea) {
         // padding, border を考慮した領域を計算
@@ -324,13 +324,13 @@ Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Size& fina
 		detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(layoutContext, this, m_logicalChildren, contentArea);
         //UIFrameLayout2::staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
 
-        return finalSize;
+        return finalArea.getSize();
     }
     else if (m_autoLayoutLogicalChildren) {
         return UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, finalArea);
     }
     else {
-        return UIElement::arrangeOverride(layoutContext, finalSize);
+        return UIElement::arrangeOverride(layoutContext, finalArea);
     }
 }
 

@@ -82,7 +82,7 @@ TEST_F(Test_Physics, TriggerBody)
 	box2->addComponent(body2);
 
 	bool contact = false;
-	body2->setOnCollisionEnter([&](Collision* collision) {
+	body2->setCollisionEnter([&](Collision* collision) {
 		contact = true;
 		collision->worldObject()->destroy();
 	});

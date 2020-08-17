@@ -270,8 +270,9 @@ Size UIListItemsControl::measureOverride(UILayoutContext* layoutContext, const S
 	}
 }
 
-Size UIListItemsControl::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIListItemsControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+	const auto finalSize = finalArea.getSize();
 	Rect contentRect = layoutContext->makeContentRect(this, finalSize);
 
 	if (m_itemsHostLayout) {
@@ -280,7 +281,7 @@ Size UIListItemsControl::arrangeOverride(UILayoutContext* layoutContext, const S
 	}
 	else {
 		LN_NOTIMPLEMENTED();
-		return UIControl::arrangeOverride(layoutContext, finalSize);
+		return UIControl::arrangeOverride(layoutContext, finalArea);
 	}
 }
 

@@ -1,11 +1,13 @@
 ﻿
 #pragma once
+#include "Common.hpp"
 #include "Component.hpp"
 
 namespace ln {
 class InputController;
 class UIEventArgs;
 class EventConnection;
+class RigidBody;
 
 enum class CharacterControllerMode
 {
@@ -18,18 +20,37 @@ enum class CharacterControllerMode
 
 class CharacterController
 	: public Component
+	, protected detail::IPhysicsObjectEventListener
 {
 public:
 	void retainCursorGrab();
 	void releaseCursorGrab();
 
+	const Ref<RigidBody>& rigidBody() const { return m_rigidBody; }
 
+
+
+	/** CollisionEnter イベントの通知を受け取るコールバックを登録します。*/
+	void setCollisionEnter(Ref<CollisionEventHandler> handler);
+
+	/** CollisionLeave イベントの通知を受け取るコールバックを登録します。*/
+	void setCollisionLeave(Ref<CollisionEventHandler> handler);
+
+	/** CollisionStay イベントの通知を受け取るコールバックを登録します。*/
+	void setCollisionStay(Ref<CollisionEventHandler> handler);
 
 protected:
+	void onPreUpdate(float elapsedSeconds) override;
 	// CharacterController を継承してカスタマイズする場合、
 	// この onUpdate はキャラクターが操作を受け付ける時のみ呼び出すべき。
 	// 例えば攻撃を受けてのけぞっている途中は、よびだすべきではない。
 	void onUpdate(float elapsedSeconds) override;
+
+	void onBeforeStepSimulation() override;
+	void onAfterStepSimulation() override;
+	void onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact) override;
+	void onCollisionLeave(PhysicsObject* otherObject, ContactPoint* contact) override;
+	void onCollisionStay(PhysicsObject* otherObject, ContactPoint* contact) override;
 
 LN_CONSTRUCT_ACCESS:
 	CharacterController();
@@ -50,6 +71,7 @@ private:
 	};
 	void resetCameraPosition();
 	void prepareViewCamera();
+	void prepareRigidBody();
 	Camera* viewCamera() const;
 	void handleUIEvent(UIEventArgs* e);
 
@@ -71,7 +93,7 @@ private:
 	float m_turnTime = 0.5f;	// 何秒で振り向きを完了するか
 
 	// https://docs.unity3d.com/ja/2019.4/Manual/class-CharacterController.html
-	float m_height = 0.5f;//2.0f;
+	float m_height = 2.0f; //0.5f;//
 
 	// キャラクターとカメラの最大距離。
 	// 鎖の要領で、この範囲内でキャラクターが動いても、カメラは位置を更新しない。
@@ -105,6 +127,12 @@ private:
 	Ref<EventConnection> m_renderViewEventConnection;
 	Vector2 m_lastMousePos;
 	bool m_resetCameraPosition = true;
+
+	Event<CollisionEventHandler> m_onCollisionEnter;
+	Event<CollisionEventHandler> m_onCollisionLeave;
+	Event<CollisionEventHandler> m_onCollisionStay;
+
+	Ref<RigidBody> m_rigidBody;
 };
 
 } // namespace ln

@@ -13,20 +13,38 @@ enum class RigidBodyLimitFlags
     /** 制限なし */
     None = 0x0000,
 
-    /** X 軸の動作に制約を持たせる */
-    LockedX = 0x0001,
+    /** X 軸の移動をさせない */
+    LockedPositionX = 0x0001,
 
-    /** Y 軸の動作に制約を持たせる */
-    LockedY = 0x0002,
+    /** Y 軸の移動をさせない */
+    LockedPositionY = 0x0002,
 
-    /** Z 軸の動作に制約を持たせる */
-    LockedZ = 0x0004,
+    /** Z 軸の移動をさせない */
+    LockedPositionZ = 0x0004,
 
-    /** 全ての軸の動作に制約を持たせる */
-    LockedAll = 0x007,
+    /** X 軸の回転をさせない */
+    LockedRotationX = 0x0010,
+
+    /** Y 軸の回転をさせない */
+    LockedRotationY = 0x0020,
+
+    /** Z 軸の回転をさせない */
+    LockedRotationZ = 0x0040,
+
+    /** 移動させない */
+    LockedPosition = LockedPositionX | LockedPositionY | LockedPositionZ,
+
+    /** 回転させない */
+    LockedRotation = LockedRotationX | LockedRotationY | LockedRotationZ,
+
+    /** 移動と回転をさせない */
+    LockedAll = LockedPosition | LockedRotation,
 };
 LN_FLAGS_OPERATORS(RigidBodyLimitFlags);
 
+
+// Note: onCollisionEnter() などの 衝突コールバックは RigidBody vs RigidBody でも使用できるが、
+// 移動中は物理エンジンによって通常、接触⇔押し出し が繰り返されるため、毎フレーム Enter, Leave, Stay が 呼ばれる点に注意。
 class RigidBody
 	: public PhysicsObject
 {
@@ -54,7 +72,7 @@ public:
     /** 質量を設定します。0 を設定すると静的なボディとなります。 */
     void setMass(float mass);
 
-    /** 速度を設定します。 */
+    /** 速度を設定します。単位は m/s です。 */
     void setVelocity(const Vector3& velocity);
 
     //const Vector3& velocity() const;
@@ -157,7 +175,7 @@ private:
         Modified_WorldTransform = 0x0002,
         Modified_ClearForces = 0x0004,
         Modified_Mass = 0x0008,
-        Modified_RigidBodyConstraintFlags = 0x0040,
+        Modified_LimittFlags = 0x0040,
         Modified_Colliders = 0x0080,
         Modified_LinearVelocity = 0x1000,
         Modified_AngularVelocity = 0x2000,

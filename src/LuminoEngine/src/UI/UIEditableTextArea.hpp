@@ -348,7 +348,7 @@ LN_CONSTRUCT_ACCESS:
 protected:
     virtual void onRoutedEvent(UIEventArgs* e) override;
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 	virtual void onRender(UIRenderingContext* context) override;
 
 private:
@@ -370,7 +370,7 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 	virtual void onRender(UIRenderingContext* context) override;
 
 private:

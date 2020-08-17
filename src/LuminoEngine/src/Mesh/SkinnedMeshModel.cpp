@@ -199,9 +199,7 @@ void SkinnedMeshModel::beginUpdate()
     //		(IKはその時点のLocalTransformに対して処理を行うため、回転角度がどんどん増えたりする)
     //		なお、一連の更新の最後で行っているのは、アニメーションからの更新を外部で行っているため。
     // TODO: できれば一連の処理の中で必ず通るところに移動したい
-    for (auto& node : meshNodes()) {
-		node->resetLocalTransform();
-    }
+	resetNodeLocalTransforms();
 
 }
 
@@ -432,6 +430,83 @@ void AnimationController::onUpdateTargetElement(const detail::AnimationTargetEle
 	//}
 
 }
+
+//==============================================================================
+// MeshDiag
+
+void MeshDiag::printNodes(const SkinnedMeshModel* model)
+{
+	bool hasRotationOrScale = false;
+
+	for (const auto& node : model->m_nodes) {
+		std::cout << node->name() << std::endl;
+		const auto& t = node->initialLocalTransform();
+		printf("  %f, %f, %f, %f\n", t.m[0][0], t.m[0][1], t.m[0][2], t.m[0][3]);
+		printf("  %f, %f, %f, %f\n", t.m[1][0], t.m[1][1], t.m[1][2], t.m[1][3]);
+		printf("  %f, %f, %f, %f\n", t.m[2][0], t.m[2][1], t.m[2][2], t.m[2][3]);
+		printf("  %f, %f, %f, %f\n", t.m[3][0], t.m[3][1], t.m[3][2], t.m[3][3]);
+
+		if (!Math::nearEqual(t.m[0][0], 1.0f) || !Math::nearEqual(t.m[0][1], 0.0f) || !Math::nearEqual(t.m[0][2], 0.0f) ||
+			!Math::nearEqual(t.m[1][0], 0.0f) || !Math::nearEqual(t.m[1][1], 1.0f) || !Math::nearEqual(t.m[1][2], 0.0f) ||
+			!Math::nearEqual(t.m[2][0], 0.0f) || !Math::nearEqual(t.m[2][1], 0.0f) || !Math::nearEqual(t.m[2][2], 1.0f)) {
+			hasRotationOrScale = true;
+		}
+	}
+	std::cout << "hasRotationOrScale: " << hasRotationOrScale << std::endl;
+}
+
+void MeshDiag::clearBoneInitialRotations(SkinnedMeshModel* model)
+{
+	model->updateNodeTransforms();
+
+
+	for (const auto& skeleton : model->skeletons()) {
+		for (const auto& bone : skeleton->m_bones) {
+			MeshNode* node = bone->node();
+			auto t = node->globalMatrix();
+
+			// 逆行列で InitialLocalTransform とする。
+			// ただ回転は行わないので、移動ベクトルを反転するだけでよい。
+			bone->m_inverseInitialMatrix = Matrix::makeTranslation(-t.position());
+
+			//if (node->parentNodeIndex() >= 0) {
+			//	// 親からの相対位置を InitialLocalTransform とする。
+			//	const auto& parent = model->m_nodes[node->parentNodeIndex()]->globalMatrix();
+			//	const auto relPos = t.position() - parent.position();
+			//	node->setInitialLocalTransform(Matrix::makeTranslation(relPos));
+			//}
+			//else {
+			//	node->setInitialLocalTransform(Matrix::makeTranslation(t.position()));
+			//}
+		}
+	}
+
+
+	for (const auto& node : model->m_nodes) {
+		if (node->m_boneNode) {
+			auto t = node->globalMatrix();
+			
+			// 作業用変数として、回転成分を消して再設定
+			//t.setRow(0, Vector4(1, 0, 0, 1));
+			//t.setRow(1, Vector4(0, 1, 0, 1));
+			//t.setRow(2, Vector4(0, 0, 1, 1));
+			//node->setGlobalTransform(t);
+
+			// 逆行列で InitialLocalTransform とする。
+			// ただ回転は行わないので、移動ベクトルを反転するだけでよい。
+			node->setInitialLocalTransform(Matrix::makeTranslation(-t.position()));
+
+			if (node->parentNodeIndex() >= 0) {
+				// 親からの相対位置を InitialLocalTransform とする。
+				const auto& parent = model->m_nodes[node->parentNodeIndex()]->globalMatrix();
+				const auto relPos = t.position() - parent.position();
+				node->setInitialLocalTransform(Matrix::makeTranslation(relPos));
+
+			}
+		}
+	}
+}
+
 
 } // namespace ln
 

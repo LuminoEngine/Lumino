@@ -433,10 +433,11 @@ Size UIMessageTextArea::measureOverride(UILayoutContext* layoutContext, const Si
 	return Size::min(m_document->measureLayout(layoutContext, constraint), baseArea);
 }
 
-Size UIMessageTextArea::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIMessageTextArea::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+    const auto finalSize = finalArea.getSize();
 
-	auto size = Size::min(m_document->arrangeLayout(layoutContext, finalSize), UIElement::arrangeOverride(layoutContext, finalSize));
+	auto size = Size::min(m_document->arrangeLayout(layoutContext, finalSize), UIElement::arrangeOverride(layoutContext, finalArea));
     //if (m_viewportLineCount > 0) {
     //    size.height = m_viewportFitSize;
     //}
@@ -495,10 +496,10 @@ Size UIMessageTextWindow::measureOverride(UILayoutContext* layoutContext, const 
     return Size::min(m_document->measureLayout(layoutContext, constraint), baseArea);
 }
 
-Size UIMessageTextWindow::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIMessageTextWindow::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
 
-    auto size = Size::min(m_document->arrangeLayout(layoutContext, finalSize), UIElement::arrangeOverride(layoutContext, finalSize));
+    auto size = Size::min(m_document->arrangeLayout(layoutContext, finalArea.getSize()), UIElement::arrangeOverride(layoutContext, finalArea));
 
 
     return size;
