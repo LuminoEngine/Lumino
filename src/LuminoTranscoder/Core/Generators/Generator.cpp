@@ -122,6 +122,11 @@ ln::String Generator::makeFlatAPIName_GetSubinstanceId(const TypeSymbol* classSy
 	return makeFlatClassName(classSymbol) + u"_GetSubinstanceId";
 }
 
+ln::String Generator::makeFlatAPIName_OverridePrototypesStruct(const TypeSymbol* classSymbol) const
+{
+	return makeFlatClassName(classSymbol) + u"_OverridePrototypes";
+}
+
 ln::String Generator::makeFlatVirutalCallbackFuncPtrName(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const
 {
 	return ln::String::format(u"{0}_{1}_OverrideCallback", makeFlatClassName(leafClass), makeFlatShortFuncName(method, charset));

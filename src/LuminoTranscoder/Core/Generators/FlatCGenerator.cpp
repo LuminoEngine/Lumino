@@ -543,11 +543,9 @@ ln::String FlatCSourceGenerator::generateDelegateObjects() const
 	return code.toString();
 }
 
-#if 1
 ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 {
 	OutputBuffer code;
-
 
 	for (auto& classSymbol : db()->classes()) {
 		auto className = makeWrapSubclassName(classSymbol);
@@ -559,6 +557,9 @@ ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 		code.IncreaseIndent();
 		if (!classSymbol->isStatic())
 		{
+			code.AppendLine(makeOverridePrototypesStructDecl(classSymbol)).NewLine();
+
+
 			// subclassInfo
 			code.AppendLine(u"static {0}* subclassInfo() {{ static {0} info; return &info; }}", makeFlatAPIName_SubclassRegistrationInfo(classSymbol));
 			code.AppendLine(u"LnSubinstanceId m_subinstance = 0;").NewLine();
@@ -732,134 +733,6 @@ ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 	return code.toString();
 }
 
-#else
-ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
-{
-	OutputBuffer code;
-
-	code.AppendLines(generateDelegateObjects());
-
-	for (auto& classSymbol : db()->classes()) {
-
-		if (classSymbol->isDelegateObject()) {
-			// generateDelegateObjects で。
-		}
-		else {
-
-			OutputBuffer overrideCallbackDecl;
-			OutputBuffer overrideCallbackImpl;
-			OutputBuffer overrideMethod;
-
-			if (!classSymbol->isStatic()) {
-				overrideCallbackDecl.AppendLine(u"static {0}* subclassInfo() {{ static {0} info; return &info; }}", makeFlatAPIName_SubclassRegistrationInfo(classSymbol));
-				overrideCallbackDecl.AppendLine(u"LnSubinstanceId m_subinstance = 0;");
-			}
-
-
-			for (auto& method : classSymbol->virtualMethods()) {
-				// field decl
-				overrideCallbackDecl.AppendLine(u"static {0} s_{0}; // deprecated", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode));
-				// field impl
-				overrideCallbackImpl.AppendLine(u"{0} {1}::s_{0} = nullptr;", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), makeWrapSubclassName(classSymbol));
-
-				// override method parameter list
-				OutputBuffer paramList;
-				for (auto& param : method->parameters()) {
-					paramList.AppendCommad(u"{0} {1}", param->getFullQualTypeName(), param->name());
-				}
-
-				// override
-				{
-					overrideMethod.AppendLine(u"virtual {0} {1}({2}) override", method->returnType().type->fullName(), method->shortName(), paramList.toString());
-					overrideMethod.AppendLine(u"{");
-					overrideMethod.IncreaseIndent();
-					OutputBuffer argList;
-					argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE(this)");
-					for (auto& param : method->parameters()) {
-						if (param->type()->isClass())
-							argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE({0})", param->name());
-						else
-							argList.AppendCommad(param->name());
-					}
-					overrideMethod.AppendLine(u"if (s_{0}) s_{0}({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), argList.toString());
-					overrideMethod.DecreaseIndent();
-					overrideMethod.AppendLine(u"}");
-					overrideMethod.NewLine();
-				}
-
-				// base caller
-				{
-					overrideMethod.AppendLine(u"{0} {1}_CallBase({2})", method->returnType().type->fullName(), method->shortName(), paramList.toString());
-					overrideMethod.AppendLine(u"{");
-					overrideMethod.IncreaseIndent();
-					OutputBuffer argList;
-					for (auto& param : method->parameters()) {
-						argList.AppendCommad(param->name());
-					}
-					overrideMethod.AppendLine(u"{0}::{1}({2});", classSymbol->fullName(), method->shortName(), argList.toString());
-					overrideMethod.DecreaseIndent();
-					overrideMethod.AppendLine(u"}");
-				}
-			}
-
-
-			// TypeInfo
-			if (!classSymbol->isStatic()) {
-				ln::String baseClassName = u"Object";
-				if (classSymbol->baseClass()) baseClassName = classSymbol->baseClass()->shortName();
-				overrideCallbackDecl.AppendLine(u"ln::TypeInfo* m_typeInfoOverride = nullptr;");
-				overrideCallbackDecl.AppendLine(u"virtual void setTypeInfoOverride(ln::TypeInfo* value) override");
-				overrideCallbackDecl.AppendLine(u"{");
-				overrideCallbackDecl.AppendLine(u"    m_typeInfoOverride = value;");
-				overrideCallbackDecl.AppendLine(u"}");
-				overrideCallbackDecl.AppendLine(u"virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override");
-				overrideCallbackDecl.AppendLine(u"{");
-				overrideCallbackDecl.AppendLine(u"    if (m_typeInfoOverride)");
-				overrideCallbackDecl.AppendLine(u"        return m_typeInfoOverride;");
-				overrideCallbackDecl.AppendLine(u"    else");
-				overrideCallbackDecl.AppendLine(u"        return ln::TypeInfo::getTypeInfo<{0}>();", baseClassName);
-				overrideCallbackDecl.AppendLine(u"}");
-				overrideCallbackDecl.NewLine();
-			}
-
-
-			code.AppendLine(u"class {0} : public {1}", makeWrapSubclassName(classSymbol), classSymbol->fullName());
-			code.AppendLine(u"{");
-			code.AppendLine(u"public:");
-			code.IncreaseIndent();
-			{	
-				// Constructor
-				code.AppendLine(u"{0}()", makeWrapSubclassName(classSymbol));
-				code.AppendLine(u"{");
-				code.IncreaseIndent();
-				{
-					code.AppendLine(makeSubinstanceAllocStmt());
-				}
-				code.DecreaseIndent();
-				code.AppendLine(u"}");
-
-				// Destructor
-				code.AppendLine(u"~{0}()", makeWrapSubclassName(classSymbol));
-				code.AppendLine(u"{");
-				code.IncreaseIndent();
-				{
-					code.AppendLine(makeSubinstanceFreeStmt());
-				}
-				code.DecreaseIndent();
-				code.AppendLine(u"}");
-			}
-			code.AppendLine(overrideCallbackDecl.toString());
-			code.AppendLine(overrideMethod.toString());
-			code.DecreaseIndent();
-			code.AppendLine(u"};");
-			code.AppendLine(overrideCallbackImpl.toString());
-			code.NewLine();
-		}
-	}
-	return code.toString();
-}
-#endif
-
 ln::String FlatCSourceGenerator::makeNativeParamList(const MethodSymbol* method) const
 {
 	OutputBuffer params;
@@ -880,6 +753,25 @@ ln::String FlatCSourceGenerator::makeNativeArgList(const MethodSymbol* method) c
 			argList.AppendCommad(param->name());
 	}
 	return argList.toString();
+}
+
+ln::String FlatCSourceGenerator::makeOverridePrototypesStructDecl(const TypeSymbol* classSymbol) const
+{
+	OutputBuffer code;
+	code.AppendLine(u"struct " + makeFlatAPIName_OverridePrototypesStruct(classSymbol));
+	code.AppendLine(u"{");
+	code.IncreaseIndent();
+	{
+		for (auto& method : classSymbol->virtualMethods()) {
+			code.AppendLine(u"{0} {1};",
+				makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode),
+				makeFlatAPIName_OverrideFunc(method, FlatCharset::Unicode));
+		}
+		code.NewLine();
+	}
+	code.DecreaseIndent();
+	code.AppendLine(u"};");
+	return code.toString();
 }
 
 ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset)

@@ -174,6 +174,11 @@ typedef enum tagLnPixelFormat
     */
     LN_PIXEL_FORMAT_RGBA32F = 4,
 
+    /**
+        @brief RGBA オーダーの各要素 32bit 浮動小数点フォーマット
+    */
+    LN_PIXEL_FORMAT_R32S = 5,
+
 } LnPixelFormat;
 
 /**
@@ -217,9 +222,9 @@ typedef enum tagLnTextureFormat
     LN_TEXTURE_FORMAT_R32F = 6,
 
     /**
-        @brief 32bit の符号なし整数フォーマット
+        @brief 32bit の符号あり整数フォーマット
     */
-    LN_TEXTURE_FORMAT_R32U = 7,
+    LN_TEXTURE_FORMAT_R32S = 7,
 
 } LnTextureFormat;
 
@@ -296,6 +301,7 @@ typedef LnResult(*LnZVTestDelegate2Callback)(LnHandle zvtestdelegate2, int p1, i
 typedef LnResult(*LnZVTestDelegate3Callback)(LnHandle zvtestdelegate3, LnHandle p1);
 typedef LnResult(*LnZVTestEventHandler1Callback)(LnHandle zvtesteventhandler1);
 typedef LnResult(*LnZVTestEventHandler2Callback)(LnHandle zvtesteventhandler2, LnHandle p1);
+typedef LnResult(*LnTexture2DDelegateCallback)(LnHandle texture2ddelegate, LnHandle p1);
 typedef LnResult(*LnTestDelegateCallback)(LnHandle testdelegate, int p1, int* outReturn);
 typedef LnResult(*LnUIGeneralEventHandlerCallback)(LnHandle uigeneraleventhandler, LnHandle p1);
 typedef LnResult(*LnUIEventHandlerCallback)(LnHandle uieventhandler);
@@ -1105,6 +1111,50 @@ LN_FLAT_API LnResult LnAssets_ReloadAssetA(const char* filePath, LnHandle obj);
 
 
 //==============================================================================
+// ln::Texture2DDelegate
+
+LN_FLAT_API LnResult LnTexture2DDelegate_Create(LnTexture2DDelegateCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnTexture2DDelegate_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLnTexture2DDelegate_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LnSubinstanceAllocFunc subinstanceAllocFunc;
+    LnSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LnTexture2DDelegate_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LnTexture2DDelegate_RegisterSubclassTypeInfo(const LnTexture2DDelegate_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LnSubinstanceId LnTexture2DDelegate_GetSubinstanceId(LnHandle handle);
+
+//==============================================================================
+// ln::Texture2DPromise
+
+/**
+    @brief 
+    @param[in] texture2dpromise : instance
+*/
+LN_FLAT_API LnResult LnTexture2DPromise_ThenWith(LnHandle texture2dpromise, LnHandle callback);
+
+/**
+    @brief 
+    @param[in] texture2dpromise : instance
+*/
+LN_FLAT_API LnResult LnTexture2DPromise_CatchWith(LnHandle texture2dpromise, LnHandle callback);
+
+extern LN_FLAT_API int LnTexture2DPromise_GetTypeInfoId();
+LN_FLAT_API void LnTexture2DPromise_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLnTexture2DPromise_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LnSubinstanceAllocFunc subinstanceAllocFunc;
+    LnSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LnTexture2DPromise_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LnTexture2DPromise_RegisterSubclassTypeInfo(const LnTexture2DPromise_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LnSubinstanceId LnTexture2DPromise_GetSubinstanceId(LnHandle handle);
+
+//==============================================================================
 // ln::Texture
 
 typedef LnResult(*LnTexture_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
@@ -1166,16 +1216,6 @@ LN_FLAT_API LnResult LnTexture2D_Create(int width, int height, LnHandle* outText
     @param[out] outTexture2D : instance.
 */
 LN_FLAT_API LnResult LnTexture2D_CreateWithFormat(int width, int height, LnTextureFormat format, LnHandle* outTexture2D);
-
-/**
-    @brief ローカルのファイルを読み込み、テクスチャを作成します。
-    @param[in] filePath : 読み込むファイルのパス
-    @param[in] format : ピクセルフォーマット
-    @param[out] outTexture2D : instance.
-    @details このメソッドは TextureImporter のユーティリティです。
-*/
-LN_FLAT_API LnResult LnTexture2D_CreateFromFile(const LnChar* filePath, LnTextureFormat format, LnHandle* outTexture2D);
-LN_FLAT_API LnResult LnTexture2D_CreateFromFileA(const char* filePath, LnTextureFormat format, LnHandle* outTexture2D);
 
 typedef LnResult(*LnTexture2D_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnTexture2D_OnSerialize_SetOverrideCallback(LnTexture2D_OnSerialize_OverrideCallback callback);
@@ -1636,6 +1676,32 @@ LN_FLAT_API LnResult LnDirectionalLight_SetIntensity(LnHandle directionallight, 
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnDirectionalLight_GetIntensity(LnHandle directionallight, float* outReturn);
+
+/**
+    @brief 視点からの、影を生成できる距離を指定します。 (default: 0.0f)
+    @param[in] directionallight : instance
+*/
+LN_FLAT_API LnResult LnDirectionalLight_SetShadowEffectiveDistance(LnHandle directionallight, float value);
+
+/**
+    @brief 視点からの、影を生成できる距離を取得します。
+    @param[in] directionallight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnDirectionalLight_GetShadowEffectiveDistance(LnHandle directionallight, float* outReturn);
+
+/**
+    @brief 光源方向からの、影を生成できる距離を指定します。 (default: 0.0f) ※これはシャドウマップの深度値の範囲となります。
+    @param[in] directionallight : instance
+*/
+LN_FLAT_API LnResult LnDirectionalLight_SetShadowEffectiveDepth(LnHandle directionallight, float value);
+
+/**
+    @brief 光源方向からの、影を生成できる距離を指定します。
+    @param[in] directionallight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnDirectionalLight_GetShadowEffectiveDepth(LnHandle directionallight, float* outReturn);
 
 /**
     @brief 既定の設定でディレクショナルライトを作成します。
@@ -2474,108 +2540,6 @@ typedef struct tagLnUIElement_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LnUIElement_RegisterSubclassTypeInfo(const LnUIElement_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LnSubinstanceId LnUIElement_GetSubinstanceId(LnHandle handle);
-
-//==============================================================================
-// ln::UIControl
-
-typedef LnResult(*LnUIControl_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
-LN_FLAT_API LnResult LnUIControl_OnSerialize_SetOverrideCallback(LnUIControl_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LnResult LnUIControl_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
-typedef LnResult(*LnUIControl_OnSerialize2_OverrideCallback)(LnHandle object, LnHandle ar);
-LN_FLAT_API LnResult LnUIControl_OnSerialize2_SetOverrideCallback(LnUIControl_OnSerialize2_OverrideCallback callback);
-LN_FLAT_API LnResult LnUIControl_OnSerialize2_CallOverrideBase(LnHandle object, LnHandle ar);
-
-extern LN_FLAT_API int LnUIControl_GetTypeInfoId();
-LN_FLAT_API void LnUIControl_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLnUIControl_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LnSubinstanceAllocFunc subinstanceAllocFunc;
-    LnSubinstanceFreeFunc subinstanceFreeFunc;
-    LnUIControl_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
-    LnUIControl_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
-
-} LnUIControl_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LnUIControl_RegisterSubclassTypeInfo(const LnUIControl_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LnSubinstanceId LnUIControl_GetSubinstanceId(LnHandle handle);
-
-//==============================================================================
-// ln::UIButtonBase
-
-/**
-    @brief set text.
-    @param[in] uibuttonbase : instance
-*/
-LN_FLAT_API LnResult LnUIButtonBase_SetText(LnHandle uibuttonbase, const LnChar* text);
-LN_FLAT_API LnResult LnUIButtonBase_SetTextA(LnHandle uibuttonbase, const char* text);
-
-typedef LnResult(*LnUIButtonBase_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
-LN_FLAT_API LnResult LnUIButtonBase_OnSerialize_SetOverrideCallback(LnUIButtonBase_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LnResult LnUIButtonBase_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
-typedef LnResult(*LnUIButtonBase_OnSerialize2_OverrideCallback)(LnHandle object, LnHandle ar);
-LN_FLAT_API LnResult LnUIButtonBase_OnSerialize2_SetOverrideCallback(LnUIButtonBase_OnSerialize2_OverrideCallback callback);
-LN_FLAT_API LnResult LnUIButtonBase_OnSerialize2_CallOverrideBase(LnHandle object, LnHandle ar);
-
-extern LN_FLAT_API int LnUIButtonBase_GetTypeInfoId();
-LN_FLAT_API void LnUIButtonBase_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLnUIButtonBase_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LnSubinstanceAllocFunc subinstanceAllocFunc;
-    LnSubinstanceFreeFunc subinstanceFreeFunc;
-    LnUIButtonBase_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
-    LnUIButtonBase_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
-
-} LnUIButtonBase_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LnUIButtonBase_RegisterSubclassTypeInfo(const LnUIButtonBase_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LnSubinstanceId LnUIButtonBase_GetSubinstanceId(LnHandle handle);
-
-//==============================================================================
-// ln::UIButton
-
-/**
-    @brief init.
-    @param[out] outUIButton : instance.
-*/
-LN_FLAT_API LnResult LnUIButton_Create(LnHandle* outUIButton);
-
-/**
-    @brief 表示文字列を指定して UIButton を作成します。
-    @param[out] outUIButton : instance.
-*/
-LN_FLAT_API LnResult LnUIButton_CreateWithText(const LnChar* text, LnHandle* outUIButton);
-LN_FLAT_API LnResult LnUIButton_CreateWithTextA(const char* text, LnHandle* outUIButton);
-
-/**
-    @brief Clicked イベントの通知を受け取るコールバックを登録します。
-    @param[in] uibutton : instance
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
-*/
-LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnHandle handler, LnHandle* outReturn);
-
-typedef LnResult(*LnUIButton_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
-LN_FLAT_API LnResult LnUIButton_OnSerialize_SetOverrideCallback(LnUIButton_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LnResult LnUIButton_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
-typedef LnResult(*LnUIButton_OnSerialize2_OverrideCallback)(LnHandle object, LnHandle ar);
-LN_FLAT_API LnResult LnUIButton_OnSerialize2_SetOverrideCallback(LnUIButton_OnSerialize2_OverrideCallback callback);
-LN_FLAT_API LnResult LnUIButton_OnSerialize2_CallOverrideBase(LnHandle object, LnHandle ar);
-
-extern LN_FLAT_API int LnUIButton_GetTypeInfoId();
-LN_FLAT_API void LnUIButton_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLnUIButton_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LnSubinstanceAllocFunc subinstanceAllocFunc;
-    LnSubinstanceFreeFunc subinstanceFreeFunc;
-    LnUIButton_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
-    LnUIButton_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
-
-} LnUIButton_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LnUIButton_RegisterSubclassTypeInfo(const LnUIButton_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LnSubinstanceId LnUIButton_GetSubinstanceId(LnHandle handle);
 
 //==============================================================================
 // ln::UITextBlock
