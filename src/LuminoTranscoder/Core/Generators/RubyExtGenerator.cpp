@@ -224,7 +224,7 @@ void RubyExtGenerator::generate()
 			}
 
 			// override callbacks
-			for (auto& method : classSymbol->virtualMethods()) {
+			for (auto& method : classSymbol->leafVirtualMethods()) {
 				moduleInitializer.AppendLine(u"{0}({1});", makeFlatAPIName_SetOverrideCallback(classSymbol, method, FlatCharset::Unicode), makeWrapFuncName_OverrideCallback(classSymbol, method));
 			}
 
@@ -940,7 +940,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const Typ
 {
 	OutputBuffer code;
 
-	for (auto& method : classSymbol->virtualMethods()) {
+	for (auto& method : classSymbol->leafVirtualMethods()) {
 		if (method->isVirtual()) {
 			// Func header
 			{

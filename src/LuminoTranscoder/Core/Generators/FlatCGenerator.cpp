@@ -99,8 +99,8 @@ void FlatCHeaderGenerator::generate()
 			}
 
 			// virtual callback
-			if (!classSymbol->virtualMethods().isEmpty()) {
-				for (auto& method : classSymbol->virtualMethods()) {
+			if (!classSymbol->leafVirtualMethods().isEmpty()) {
+				for (auto& method : classSymbol->leafVirtualMethods()) {
 					// make params
 					OutputBuffer params;
 					for (auto& param : method->flatParameters()) {
@@ -272,7 +272,7 @@ ln::String FlatCHeaderGenerator::makeSubClassRegistrationInfo(const TypeSymbol* 
 		code.AppendLine(u"LnSubinstanceAllocFunc subinstanceAllocFunc;");
 		code.AppendLine(u"LnSubinstanceFreeFunc subinstanceFreeFunc;");
 
-		for (auto& method : classSymbol->virtualMethods()) {
+		for (auto& method : classSymbol->leafVirtualMethods()) {
 			//// make params
 			//OutputBuffer params;
 			//for (auto& param : method->flatParameters()) {
@@ -337,7 +337,7 @@ void FlatCSourceGenerator::generate()
 			}
 
 			// virtual
-			for (auto& method : classSymbol->virtualMethods()) {
+			for (auto& method : classSymbol->leafVirtualMethods()) {
 				OutputBuffer args;
 				for (auto& param : method->parameters()) {
 					args.AppendCommad(param->name());
@@ -653,7 +653,7 @@ ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 			//--------------------
 			// overrides
 			code.AppendLine(u"// Overrides");
-			for (auto& method : classSymbol->virtualMethods()) {
+			for (auto& method : classSymbol->leafVirtualMethods()) {
 				// field decl
 				code.AppendLine(u"static {0} s_{0}; // deprecated", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode));
 
@@ -739,7 +739,7 @@ ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 
 		//--------------------
 		// Virtuals
-		for (auto& method : classSymbol->virtualMethods()) {
+		for (auto& method : classSymbol->leafVirtualMethods()) {
 			code.AppendLine(u"{0} {1}::s_{0} = nullptr;", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), makeWrapSubclassName(classSymbol));
 		}
 		code.NewLine();
@@ -794,7 +794,7 @@ ln::String FlatCSourceGenerator::makeOverridePrototypesStructDecl(const TypeSymb
 	code.AppendLine(u"{");
 	code.IncreaseIndent();
 	{
-		for (auto& method : classSymbol->virtualMethods()) {
+		for (auto& method : classSymbol->leafVirtualMethods()) {
 			code.AppendLine(u"{0} {1};",
 				makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode),
 				makeFlatAPIName_OverrideFunc(method, FlatCharset::Unicode));

@@ -303,7 +303,7 @@ ln::String HSPCommandsGenerator::makeRegisterTypeFunc() const
                     code.AppendLine(u"info.subinstanceAllocFunc = {0};", makeName_SubinstanceAlloc(classSymbol));
                     code.AppendLine(u"info.subinstanceFreeFunc = {0};", makeName_SubinstanceFree(classSymbol));
 
-                    for (const auto& methodSymbol : classSymbol->virtualMethods()) {
+                    for (const auto& methodSymbol : classSymbol->leafVirtualMethods()) {
                         code.AppendLine(u"//info.{0} = {1};", makeFlatAPIName_OverrideFunc(methodSymbol, FlatCharset::Ascii), u"????");
                     }
 

@@ -4259,6 +4259,14 @@ LnSubinstanceId LnZVTestPromise2_GetSubinstanceId(LnHandle handle)
     return 0;
 }
 
+LN_FLAT_API LnResult LnZVTestClass1_Create(LnHandle* outZVTestClass1)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outZVTestClass1, LNWS_ln_ZVTestClass1, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LnResult LnZVTestClass1_SetTestDelegate1(LnHandle zvtestclass1, LnHandle value)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -4427,14 +4435,6 @@ LN_FLAT_API LnResult LnZVTestClass1_RaiseEvent2(LnHandle zvtestclass1)
 }
 
 
-LN_FLAT_API LnResult LnZVTestClass1_Create(LnHandle* outZVTestClass1)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outZVTestClass1, LNWS_ln_ZVTestClass1, init, );
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
 LN_FLAT_API LnResult LnZVTestClass1_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -4497,20 +4497,6 @@ LnSubinstanceId LnZVTestClass1_GetSubinstanceId(LnHandle handle)
     return 0;
 }
 
-LN_FLAT_API LnResult LnZVTestEventArgs1_GetValue(LnHandle zvtesteventargs1, int* outReturn)
-{
-    LNI_FUNC_TRY_BEGIN;
-    if (outReturn) {
-        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestEventArgs1, zvtesteventargs1)->value());
-    }
-    else {
-        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestEventArgs1, zvtesteventargs1)->value());
-    }
-
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
 LN_FLAT_API LnResult LnZVTestEventArgs1_Create(LnHandle* outZVTestEventArgs1)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -4523,6 +4509,20 @@ LN_FLAT_API LnResult LnZVTestEventArgs1_CreateWithValue(int v, LnHandle* outZVTe
 {
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outZVTestEventArgs1, LNWS_ln_ZVTestEventArgs1, init, v);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestEventArgs1_GetValue(LnHandle zvtesteventargs1, int* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestEventArgs1, zvtesteventargs1)->value());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestEventArgs1, zvtesteventargs1)->value());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -4989,6 +4989,14 @@ LnSubinstanceId LnSerializer2_GetSubinstanceId(LnHandle handle)
     return 0;
 }
 
+LN_FLAT_API LnResult LnAssetModel_Create(LnHandle target, LnHandle* outAssetModel)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outAssetModel, LNWS_ln_AssetModel, init, LNI_HANDLE_TO_OBJECT(ln::Object, target));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LnResult LnAssetModel_Target(LnHandle assetmodel, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -4999,14 +5007,6 @@ LN_FLAT_API LnResult LnAssetModel_Target(LnHandle assetmodel, LnHandle* outRetur
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetModel, assetmodel)->target());
     }
 
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnAssetModel_Create(LnHandle target, LnHandle* outAssetModel)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outAssetModel, LNWS_ln_AssetModel, init, LNI_HANDLE_TO_OBJECT(ln::Object, target));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -5290,6 +5290,22 @@ LnSubinstanceId LnTexture_GetSubinstanceId(LnHandle handle)
     return 0;
 }
 
+LN_FLAT_API LnResult LnTexture2D_Create(int width, int height, LnHandle* outTexture2D)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outTexture2D, LNWS_ln_Texture2D, init, width, height);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnTexture2D_CreateWithFormat(int width, int height, LnTextureFormat format, LnHandle* outTexture2D)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outTexture2D, LNWS_ln_Texture2D, init, width, height, static_cast<ln::TextureFormat>(format));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -5342,22 +5358,6 @@ LN_FLAT_API LnResult LnTexture2D_LoadEmojiA(const char* code, LnHandle* outRetur
         (ln::Texture2D::loadEmoji(LNI_UTF8STRPTR_TO_STRING(code)));
     }
 
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnTexture2D_Create(int width, int height, LnHandle* outTexture2D)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outTexture2D, LNWS_ln_Texture2D, init, width, height);
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnTexture2D_CreateWithFormat(int width, int height, LnTextureFormat format, LnHandle* outTexture2D)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outTexture2D, LNWS_ln_Texture2D, init, width, height, static_cast<ln::TextureFormat>(format));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -6287,6 +6287,22 @@ LnSubinstanceId LnCamera_GetSubinstanceId(LnHandle handle)
     return 0;
 }
 
+LN_FLAT_API LnResult LnDirectionalLight_Create(LnHandle* outDirectionalLight)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDirectionalLight, LNWS_ln_DirectionalLight, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDirectionalLight_CreateWithColor(const LnColor* color, LnHandle* outDirectionalLight)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDirectionalLight, LNWS_ln_DirectionalLight, init, *reinterpret_cast<const ln::Color*>(color));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LnResult LnDirectionalLight_SetEnabled(LnHandle directionallight, LnBool enabled)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -6397,22 +6413,6 @@ LN_FLAT_API LnResult LnDirectionalLight_GetShadowEffectiveDepth(LnHandle directi
 }
 
 
-LN_FLAT_API LnResult LnDirectionalLight_Create(LnHandle* outDirectionalLight)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outDirectionalLight, LNWS_ln_DirectionalLight, init, );
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnDirectionalLight_CreateWithColor(const LnColor* color, LnHandle* outDirectionalLight)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outDirectionalLight, LNWS_ln_DirectionalLight, init, *reinterpret_cast<const ln::Color*>(color));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
 LN_FLAT_API LnResult LnDirectionalLight_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -6491,6 +6491,22 @@ LnSubinstanceId LnDirectionalLight_GetSubinstanceId(LnHandle handle)
     }
     return 0;
 }
+
+LN_FLAT_API LnResult LnPointLight_Create(LnHandle* outPointLight)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outPointLight, LNWS_ln_PointLight, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPointLight_CreateWithColorAndRange(const LnColor* color, float range, LnHandle* outPointLight)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outPointLight, LNWS_ln_PointLight, init, *reinterpret_cast<const ln::Color*>(color), range);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 LN_FLAT_API LnResult LnPointLight_SetEnabled(LnHandle pointlight, LnBool enabled)
 {
@@ -6602,22 +6618,6 @@ LN_FLAT_API LnResult LnPointLight_GetAttenuation(LnHandle pointlight, float* out
 }
 
 
-LN_FLAT_API LnResult LnPointLight_Create(LnHandle* outPointLight)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outPointLight, LNWS_ln_PointLight, init, );
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnPointLight_CreateWithColorAndRange(const LnColor* color, float range, LnHandle* outPointLight)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outPointLight, LNWS_ln_PointLight, init, *reinterpret_cast<const ln::Color*>(color), range);
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
 LN_FLAT_API LnResult LnPointLight_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -6696,6 +6696,22 @@ LnSubinstanceId LnPointLight_GetSubinstanceId(LnHandle handle)
     }
     return 0;
 }
+
+LN_FLAT_API LnResult LnSpotLight_Create(LnHandle* outSpotLight)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outSpotLight, LNWS_ln_SpotLight, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_CreateWithColorAndRange(const LnColor* color, float range, float angle, LnHandle* outSpotLight)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outSpotLight, LNWS_ln_SpotLight, init, *reinterpret_cast<const ln::Color*>(color), range, angle);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 LN_FLAT_API LnResult LnSpotLight_SetEnabled(LnHandle spotlight, LnBool enabled)
 {
@@ -6851,22 +6867,6 @@ LN_FLAT_API LnResult LnSpotLight_GetPenumbra(LnHandle spotlight, float* outRetur
 }
 
 
-LN_FLAT_API LnResult LnSpotLight_Create(LnHandle* outSpotLight)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outSpotLight, LNWS_ln_SpotLight, init, );
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnSpotLight_CreateWithColorAndRange(const LnColor* color, float range, float angle, LnHandle* outSpotLight)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outSpotLight, LNWS_ln_SpotLight, init, *reinterpret_cast<const ln::Color*>(color), range, angle);
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
 LN_FLAT_API LnResult LnSpotLight_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -6969,6 +6969,30 @@ LnSubinstanceId LnTestDelegate_GetSubinstanceId(LnHandle handle)
     return 0;
 }
 
+LN_FLAT_API LnResult LnSprite_Create(LnHandle* outSprite)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, LnHandle* outSprite)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, LNI_HANDLE_TO_OBJECT(ln::Texture, texture));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSprite_CreateWithTextureAndSize(LnHandle texture, float width, float height, LnHandle* outSprite)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, LNI_HANDLE_TO_OBJECT(ln::Texture, texture), width, height);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle value)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -7005,30 +7029,6 @@ LN_FLAT_API LnResult LnSprite_SetCallerTest(LnHandle sprite, LnHandle callback)
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, sprite)->setCallerTest(LNI_HANDLE_TO_OBJECT(ln::TestDelegate, callback)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnSprite_Create(LnHandle* outSprite)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, );
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, LnHandle* outSprite)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, LNI_HANDLE_TO_OBJECT(ln::Texture, texture));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnSprite_CreateWithTextureAndSize(LnHandle texture, float width, float height, LnHandle* outSprite)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, LNI_HANDLE_TO_OBJECT(ln::Texture, texture), width, height);
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -8170,6 +8170,22 @@ LnSubinstanceId LnUITextBlock_GetSubinstanceId(LnHandle handle)
     return 0;
 }
 
+LN_FLAT_API LnResult LnUISprite_Create(LnHandle* outUISprite)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUISprite, LNWS_ln_UISprite, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUISprite_CreateWithTexture(LnHandle texture, LnHandle* outUISprite)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUISprite, LNWS_ln_UISprite, init, LNI_HANDLE_TO_OBJECT(ln::Texture, texture));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LnResult LnUISprite_SetTexture(LnHandle uisprite, LnHandle texture)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -8204,22 +8220,6 @@ LN_FLAT_API LnResult LnUISprite_GetSourceRect(LnHandle uisprite, LnRect* outRetu
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_UISprite, uisprite)->sourceRect());
     }
 
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnUISprite_Create(LnHandle* outUISprite)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outUISprite, LNWS_ln_UISprite, init, );
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnUISprite_CreateWithTexture(LnHandle texture, LnHandle* outUISprite)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outUISprite, LNWS_ln_UISprite, init, LNI_HANDLE_TO_OBJECT(ln::Texture, texture));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -8694,6 +8694,14 @@ LN_FLAT_API LnResult LnEngine_GetRenderView(LnHandle* outReturn)
 }
 
 
+LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outApplication, LNWS_ln_Application, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -8720,14 +8728,6 @@ LN_FLAT_API LnResult LnApplication_World(LnHandle application, LnHandle* outRetu
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
     }
 
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outApplication, LNWS_ln_Application, init, );
     LNI_FUNC_TRY_END_RETURN;
 }
 

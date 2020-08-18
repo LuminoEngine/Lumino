@@ -145,27 +145,9 @@ private:
 	int m_symbolId = 0;
 };
 
-//
-//class ParameterDocumentSymbol : public ln::RefObject
-//{
-//public:
-//	ln::String name;
-//	ln::String io;
-//	ln::String description;
-//};
-//
-
-
-
 class FieldSymbol : public Symbol
 {
 public:
-	//ln::Ref<DocumentSymbol> document;
-	//ln::String name;
-
-	//// parsing data (link source)
-	//ln::String	typeRawName;
-
 	TypeSymbol* type() const { return m_type; }
 	const ln::String& name() const { return m_pi->name; }
 
@@ -375,7 +357,8 @@ public:
 	TypeSymbol(SymbolDatabase* db);
 	ln::Result init(PITypeInfo* piType);
 	ln::Result init(const ln::String& primitveRawFullName, TypeKind typeKind, TypeClass typeClass);
-	ln::Result initAsFunctionType(const ln::String& fullName, MethodSymbol* signeture);
+	ln::Result initAsFunctionType(const ln::String& fullName, MethodSymbol* signeture);	// delegate のコンストラクタに指定する関数ポインタ型を作るために使う
+	ln::Result initAsDelegate(const ln::String& fullName, MethodSymbol* signeture);		// 仮想関数コールバック用の Delegate を内部生成する時に使う
 	ln::Result link();
 
 	TypeKind kind() const { return m_kind; }//{ return (m_piType) ? m_piType->kindAsEnum() : TypeKind::Primitive; };
@@ -387,7 +370,8 @@ public:
 	const ln::List<Ref<MethodSymbol>>& publicMethods() const { return m_publicMethods; }	// クラス外から普通にコールできる public メソッド。virutal は含むが、protected virtual は含まない。
 	const ln::List<Ref<MethodOverloadInfo>>& overloads() const { return m_overloads; }
 	const ln::List<Ref<PropertySymbol>>& properties() const { return m_properties; }
-	const ln::List<Ref<MethodSymbol>>& virtualMethods() const { return m_virtualMethods; }	// ベースクラスも含めた、すべての末端レベル virtual method
+	const ln::List<Ref<MethodSymbol>>& leafVirtualMethods() const { return m_leafVirtualMethods; }	// ベースクラスも含めた、すべての末端レベル virtual method
+	const ln::List<Ref<MethodSymbol>>& virtualMethods() const { return m_virtualMethods; }	// このクラスで定義されている仮想関数。isVirtual()==true であるもの
 	//const ln::List<Ref<MethodSymbol>>& eventMethods() const { return m_eventMethods; }
 	TypeSymbol* baseClass() const { return m_baseClass; }
 	TypeSymbol* collectionItemType() const { return m_collectionItemType; }
@@ -417,7 +401,8 @@ private:
 	ln::Result linkOverload();
 	ln::Result linkProperties();
 	ln::Result createSpecialSymbols();
-	void collectVirtualMethods(ln::List<Ref<MethodSymbol>>* virtualMethods);
+	void collectLeafVirtualMethods(ln::List<Ref<MethodSymbol>>* virtualMethods);
+	bool addDelegateConstructorMethod();
 
 	Ref<PITypeInfo> m_piType;
 	TypeKind m_kind = TypeKind::Primitive;
@@ -431,7 +416,10 @@ private:
 	ln::List<Ref<MethodSymbol>> m_declaredMethods;	// このクラス内で宣言されたすべてメソッド。ベースクラスは含まない。
 	ln::List<Ref<MethodOverloadInfo>> m_overloads;
 	ln::List<Ref<PropertySymbol>> m_properties;
+	ln::List<Ref<MethodSymbol>> m_leafVirtualMethods;
 	ln::List<Ref<MethodSymbol>> m_virtualMethods;
+
+
 	//ln::List<Ref<MethodSymbol>> m_eventMethods;
 	TypeSymbol* m_baseClass = nullptr;
 	TypeSymbol* m_collectionItemType = nullptr;

@@ -668,8 +668,32 @@ ln::Result TypeSymbol::initAsFunctionType(const ln::String& fullName, MethodSymb
 	return true;
 }
 
+ln::Result TypeSymbol::initAsDelegate(const ln::String& fullName, MethodSymbol* signeture)
+{
+	if (LN_REQUIRE(signeture)) return false;
+	m_kind = TypeKind::Delegate;
+	m_typeClass = TypeClass::DelegateObject;
+	m_functionSignature = signeture;
+	setFullName(fullName);
+	if (!addDelegateConstructorMethod()) {
+		return false;
+	}
+	return true;
+}
+
 ln::Result TypeSymbol::link()
 {
+	// "init" を、順序を保ちつつ先頭に移動する
+	ln::List<Ref<MethodSymbol>> initMethods;
+	for (int i = m_declaredMethods.size() - 1; i >= 0; i--) {
+		if (m_declaredMethods[i]->shortName().indexOf(u"init") == 0) {
+			initMethods.insert(0, m_declaredMethods[i]);
+			m_declaredMethods.removeAt(i);
+		}
+	}
+	m_declaredMethods.insertRange(0, initMethods);
+
+
 	if (m_functionSignature) {
 		if (!m_functionSignature->link()) {
 			return false;
@@ -745,14 +769,14 @@ ln::Result TypeSymbol::link()
 	if (!linkProperties()) return false;
 
 	if (typeClass() == TypeClass::None) {
-		collectVirtualMethods(&m_virtualMethods);
+		collectLeafVirtualMethods(&m_leafVirtualMethods);
 	}
 
-	//for (auto& method : m_declaredMethods) {
-	//	if (method->isEventConnector()) {
-	//		m_eventMethods.add(method);
-	//	}
-	//}
+	for (auto& method : m_declaredMethods) {
+		if (method->isVirtual()) {
+			m_virtualMethods.add(method);
+		}
+	}
 
 	return true;
 }
@@ -908,16 +932,7 @@ ln::Result TypeSymbol::createSpecialSymbols()
 	}
 
 	if (isDelegateObject()) {
-		auto functonType = ln::makeRef<TypeSymbol>(db());
-		if (!functonType->initAsFunctionType(fullName() + u"_Function", m_functionSignature)) return false;
-		db()->registerTypeSymbol(functonType);
-
-		auto param = ln::makeRef<MethodParameterSymbol>(db());
-		if (!param->init({ functonType, false }, u"callback")) return false;
-
-		auto s = ln::makeRef<MethodSymbol>(db());
-		if (!s->init(this, u"init", { PredefinedTypes::voidType, false }, { param })) return false;
-		m_declaredMethods.add(s);
+		addDelegateConstructorMethod();
 	}
 
 	if (isPromise()) {
@@ -954,10 +969,10 @@ ln::Result TypeSymbol::createSpecialSymbols()
 	return true;
 }
 
-void TypeSymbol::collectVirtualMethods(ln::List<Ref<MethodSymbol>>* virtualMethods)
+void TypeSymbol::collectLeafVirtualMethods(ln::List<Ref<MethodSymbol>>* virtualMethods)
 {
 	if (m_baseClass) {
-		m_baseClass->collectVirtualMethods(virtualMethods);
+		m_baseClass->collectLeafVirtualMethods(virtualMethods);
 	}
 
 	for (auto& method : m_declaredMethods) {
@@ -971,6 +986,22 @@ void TypeSymbol::collectVirtualMethods(ln::List<Ref<MethodSymbol>>* virtualMetho
 			}
 		}
 	}
+}
+
+bool TypeSymbol::addDelegateConstructorMethod()
+{
+	auto functonType = ln::makeRef<TypeSymbol>(db());
+	if (!functonType->initAsFunctionType(fullName() + u"_Function", m_functionSignature)) return false;
+	db()->registerTypeSymbol(functonType);
+
+	auto param = ln::makeRef<MethodParameterSymbol>(db());
+	if (!param->init({ functonType, false }, u"callback")) return false;
+
+	auto s = ln::makeRef<MethodSymbol>(db());
+	if (!s->init(this, u"init", { PredefinedTypes::voidType, false }, { param })) return false;
+	m_declaredMethods.add(s);
+
+	return true;
 }
 
 #if 0
@@ -1054,6 +1085,18 @@ ln::Result SymbolDatabase::linkTypes()
 	for (int i = 0; i < count; i++) {	// iterate 中に m_allTypes へ新しい Type が add されることもある
 		if (!m_allTypes[i]->link()) return false;
 	}
+
+#if 0	// prototype で仮想関数をオーバーライドする場合、Delegate によってコールバックを登録したい。
+	// その Delegate を自動生成する。
+	for (auto& type : m_allTypes) {
+		for (auto& method : type->virtualMethods()) {
+			auto d = ln::makeRef<TypeSymbol>(this);
+			if (!d->initAsDelegate(type->shortName() + method->shortName() + u"Delegate", method)) return false;
+			if (d->link()) return false;
+			m_allTypes.add(d);
+		}
+	}
+#endif
 
 	return true;
 }

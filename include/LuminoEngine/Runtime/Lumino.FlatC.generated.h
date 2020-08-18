@@ -749,6 +749,12 @@ extern LN_FLAT_API LnSubinstanceId LnZVTestPromise2_GetSubinstanceId(LnHandle ha
 // ln::ZVTestClass1
 
 /**
+    @brief init method.
+    @param[out] outZVTestClass1 : instance.
+*/
+LN_FLAT_API LnResult LnZVTestClass1_Create(LnHandle* outZVTestClass1);
+
+/**
     @brief setTestDelegate1 method.
     @param[in] zvtestclass1 : instance
 */
@@ -833,12 +839,6 @@ LN_FLAT_API LnResult LnZVTestClass1_ConnectOnEvent2(LnHandle zvtestclass1, LnHan
 */
 LN_FLAT_API LnResult LnZVTestClass1_RaiseEvent2(LnHandle zvtestclass1);
 
-/**
-    @brief init method.
-    @param[out] outZVTestClass1 : instance.
-*/
-LN_FLAT_API LnResult LnZVTestClass1_Create(LnHandle* outZVTestClass1);
-
 typedef LnResult(*LnZVTestClass1_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnZVTestClass1_OnSerialize_SetOverrideCallback(LnZVTestClass1_OnSerialize_OverrideCallback callback);
 LN_FLAT_API LnResult LnZVTestClass1_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
@@ -867,13 +867,6 @@ extern LN_FLAT_API LnSubinstanceId LnZVTestClass1_GetSubinstanceId(LnHandle hand
 // ln::ZVTestEventArgs1
 
 /**
-    @brief value method.
-    @param[in] zvtesteventargs1 : instance
-    @param[out] outReturn : instance.
-*/
-LN_FLAT_API LnResult LnZVTestEventArgs1_GetValue(LnHandle zvtesteventargs1, int* outReturn);
-
-/**
     @brief init method.
     @param[out] outZVTestEventArgs1 : instance.
 */
@@ -884,6 +877,13 @@ LN_FLAT_API LnResult LnZVTestEventArgs1_Create(LnHandle* outZVTestEventArgs1);
     @param[out] outZVTestEventArgs1 : instance.
 */
 LN_FLAT_API LnResult LnZVTestEventArgs1_CreateWithValue(int v, LnHandle* outZVTestEventArgs1);
+
+/**
+    @brief value method.
+    @param[in] zvtesteventargs1 : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnZVTestEventArgs1_GetValue(LnHandle zvtesteventargs1, int* outReturn);
 
 typedef LnResult(*LnZVTestEventArgs1_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnZVTestEventArgs1_OnSerialize_SetOverrideCallback(LnZVTestEventArgs1_OnSerialize_OverrideCallback callback);
@@ -1056,17 +1056,17 @@ extern LN_FLAT_API LnSubinstanceId LnSerializer2_GetSubinstanceId(LnHandle handl
 // ln::AssetModel
 
 /**
+    @brief init
+    @param[out] outAssetModel : instance.
+*/
+LN_FLAT_API LnResult LnAssetModel_Create(LnHandle target, LnHandle* outAssetModel);
+
+/**
     @brief target
     @param[in] assetmodel : instance
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnAssetModel_Target(LnHandle assetmodel, LnHandle* outReturn);
-
-/**
-    @brief init
-    @param[out] outAssetModel : instance.
-*/
-LN_FLAT_API LnResult LnAssetModel_Create(LnHandle target, LnHandle* outAssetModel);
 
 typedef LnResult(*LnAssetModel_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnAssetModel_OnSerialize_SetOverrideCallback(LnAssetModel_OnSerialize_OverrideCallback callback);
@@ -1199,23 +1199,6 @@ extern LN_FLAT_API LnSubinstanceId LnTexture_GetSubinstanceId(LnHandle handle);
 // ln::Texture2D
 
 /**
-    @brief アセットからテクスチャを読み込みます。
-    @param[in] filePath : 読み込むファイルのパス
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
-    @details サポートしているフォーマットは次の通りです。PNG(.png), JPG(.jpg), TGA(.tga), BMP(.bmp), GIF(.gif)
-*/
-LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn);
-LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn);
-
-/**
-    @brief loadEmoji
-    @param[in] code : xxxx
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
-*/
-LN_FLAT_API LnResult LnTexture2D_LoadEmoji(const LnChar* code, LnHandle* outReturn);
-LN_FLAT_API LnResult LnTexture2D_LoadEmojiA(const char* code, LnHandle* outReturn);
-
-/**
     @brief テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
     @param[in] width : 幅 (px 単位)
     @param[in] height : 高さ (px 単位)
@@ -1232,6 +1215,23 @@ LN_FLAT_API LnResult LnTexture2D_Create(int width, int height, LnHandle* outText
     @param[out] outTexture2D : instance.
 */
 LN_FLAT_API LnResult LnTexture2D_CreateWithFormat(int width, int height, LnTextureFormat format, LnHandle* outTexture2D);
+
+/**
+    @brief アセットからテクスチャを読み込みます。
+    @param[in] filePath : 読み込むファイルのパス
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+    @details サポートしているフォーマットは次の通りです。PNG(.png), JPG(.jpg), TGA(.tga), BMP(.bmp), GIF(.gif)
+*/
+LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn);
+LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn);
+
+/**
+    @brief loadEmoji
+    @param[in] code : xxxx
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LnResult LnTexture2D_LoadEmoji(const LnChar* code, LnHandle* outReturn);
+LN_FLAT_API LnResult LnTexture2D_LoadEmojiA(const char* code, LnHandle* outReturn);
 
 typedef LnResult(*LnTexture2D_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnTexture2D_OnSerialize_SetOverrideCallback(LnTexture2D_OnSerialize_OverrideCallback callback);
@@ -1678,6 +1678,18 @@ extern LN_FLAT_API LnSubinstanceId LnCamera_GetSubinstanceId(LnHandle handle);
 // ln::DirectionalLight
 
 /**
+    @brief 既定の設定でディレクショナルライトを作成します。
+    @param[out] outDirectionalLight : instance.
+*/
+LN_FLAT_API LnResult LnDirectionalLight_Create(LnHandle* outDirectionalLight);
+
+/**
+    @brief 色を指定してディレクショナルライトを作成します。
+    @param[out] outDirectionalLight : instance.
+*/
+LN_FLAT_API LnResult LnDirectionalLight_CreateWithColor(const LnColor* color, LnHandle* outDirectionalLight);
+
+/**
     @brief ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
     @param[in] directionallight : instance
 */
@@ -1742,18 +1754,6 @@ LN_FLAT_API LnResult LnDirectionalLight_SetShadowEffectiveDepth(LnHandle directi
 */
 LN_FLAT_API LnResult LnDirectionalLight_GetShadowEffectiveDepth(LnHandle directionallight, float* outReturn);
 
-/**
-    @brief 既定の設定でディレクショナルライトを作成します。
-    @param[out] outDirectionalLight : instance.
-*/
-LN_FLAT_API LnResult LnDirectionalLight_Create(LnHandle* outDirectionalLight);
-
-/**
-    @brief 色を指定してディレクショナルライトを作成します。
-    @param[out] outDirectionalLight : instance.
-*/
-LN_FLAT_API LnResult LnDirectionalLight_CreateWithColor(const LnColor* color, LnHandle* outDirectionalLight);
-
 typedef LnResult(*LnDirectionalLight_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnDirectionalLight_OnSerialize_SetOverrideCallback(LnDirectionalLight_OnSerialize_OverrideCallback callback);
 LN_FLAT_API LnResult LnDirectionalLight_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
@@ -1785,6 +1785,18 @@ extern LN_FLAT_API LnSubinstanceId LnDirectionalLight_GetSubinstanceId(LnHandle 
 
 //==============================================================================
 // ln::PointLight
+
+/**
+    @brief 既定の設定でポイントライトを作成します。
+    @param[out] outPointLight : instance.
+*/
+LN_FLAT_API LnResult LnPointLight_Create(LnHandle* outPointLight);
+
+/**
+    @brief 色と範囲を指定してポイントライトを作成します。
+    @param[out] outPointLight : instance.
+*/
+LN_FLAT_API LnResult LnPointLight_CreateWithColorAndRange(const LnColor* color, float range, LnHandle* outPointLight);
 
 /**
     @brief ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
@@ -1851,18 +1863,6 @@ LN_FLAT_API LnResult LnPointLight_SetAttenuation(LnHandle pointlight, float atte
 */
 LN_FLAT_API LnResult LnPointLight_GetAttenuation(LnHandle pointlight, float* outReturn);
 
-/**
-    @brief 既定の設定でポイントライトを作成します。
-    @param[out] outPointLight : instance.
-*/
-LN_FLAT_API LnResult LnPointLight_Create(LnHandle* outPointLight);
-
-/**
-    @brief 色と範囲を指定してポイントライトを作成します。
-    @param[out] outPointLight : instance.
-*/
-LN_FLAT_API LnResult LnPointLight_CreateWithColorAndRange(const LnColor* color, float range, LnHandle* outPointLight);
-
 typedef LnResult(*LnPointLight_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnPointLight_OnSerialize_SetOverrideCallback(LnPointLight_OnSerialize_OverrideCallback callback);
 LN_FLAT_API LnResult LnPointLight_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
@@ -1894,6 +1894,18 @@ extern LN_FLAT_API LnSubinstanceId LnPointLight_GetSubinstanceId(LnHandle handle
 
 //==============================================================================
 // ln::SpotLight
+
+/**
+    @brief 既定の設定でスポットライトを作成します。
+    @param[out] outSpotLight : instance.
+*/
+LN_FLAT_API LnResult LnSpotLight_Create(LnHandle* outSpotLight);
+
+/**
+    @brief 色と範囲を指定してスポットライトを作成します。
+    @param[out] outSpotLight : instance.
+*/
+LN_FLAT_API LnResult LnSpotLight_CreateWithColorAndRange(const LnColor* color, float range, float angle, LnHandle* outSpotLight);
 
 /**
     @brief ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
@@ -1986,18 +1998,6 @@ LN_FLAT_API LnResult LnSpotLight_SetPenumbra(LnHandle spotlight, float penumbra)
 */
 LN_FLAT_API LnResult LnSpotLight_GetPenumbra(LnHandle spotlight, float* outReturn);
 
-/**
-    @brief 既定の設定でスポットライトを作成します。
-    @param[out] outSpotLight : instance.
-*/
-LN_FLAT_API LnResult LnSpotLight_Create(LnHandle* outSpotLight);
-
-/**
-    @brief 色と範囲を指定してスポットライトを作成します。
-    @param[out] outSpotLight : instance.
-*/
-LN_FLAT_API LnResult LnSpotLight_CreateWithColorAndRange(const LnColor* color, float range, float angle, LnHandle* outSpotLight);
-
 typedef LnResult(*LnSpotLight_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnSpotLight_OnSerialize_SetOverrideCallback(LnSpotLight_OnSerialize_OverrideCallback callback);
 LN_FLAT_API LnResult LnSpotLight_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
@@ -2047,6 +2047,24 @@ extern LN_FLAT_API LnSubinstanceId LnTestDelegate_GetSubinstanceId(LnHandle hand
 // ln::Sprite
 
 /**
+    @brief init
+    @param[out] outSprite : instance.
+*/
+LN_FLAT_API LnResult LnSprite_Create(LnHandle* outSprite);
+
+/**
+    @brief init
+    @param[out] outSprite : instance.
+*/
+LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, LnHandle* outSprite);
+
+/**
+    @brief init
+    @param[out] outSprite : instance.
+*/
+LN_FLAT_API LnResult LnSprite_CreateWithTextureAndSize(LnHandle texture, float width, float height, LnHandle* outSprite);
+
+/**
     @brief スプライトが表示するテクスチャを設定します。
     @param[in] sprite : instance
 */
@@ -2075,24 +2093,6 @@ LN_FLAT_API LnResult LnSprite_SetSourceRectXYWH(LnHandle sprite, float x, float 
     @param[in] sprite : instance
 */
 LN_FLAT_API LnResult LnSprite_SetCallerTest(LnHandle sprite, LnHandle callback);
-
-/**
-    @brief init
-    @param[out] outSprite : instance.
-*/
-LN_FLAT_API LnResult LnSprite_Create(LnHandle* outSprite);
-
-/**
-    @brief init
-    @param[out] outSprite : instance.
-*/
-LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, LnHandle* outSprite);
-
-/**
-    @brief init
-    @param[out] outSprite : instance.
-*/
-LN_FLAT_API LnResult LnSprite_CreateWithTextureAndSize(LnHandle texture, float width, float height, LnHandle* outSprite);
 
 typedef LnResult(*LnSprite_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnSprite_OnSerialize_SetOverrideCallback(LnSprite_OnSerialize_OverrideCallback callback);
@@ -2657,6 +2657,18 @@ extern LN_FLAT_API LnSubinstanceId LnUITextBlock_GetSubinstanceId(LnHandle handl
 // ln::UISprite
 
 /**
+    @brief UISprite を作成します。
+    @param[out] outUISprite : instance.
+*/
+LN_FLAT_API LnResult LnUISprite_Create(LnHandle* outUISprite);
+
+/**
+    @brief テクスチャを指定して UISprite を作成します。
+    @param[out] outUISprite : instance.
+*/
+LN_FLAT_API LnResult LnUISprite_CreateWithTexture(LnHandle texture, LnHandle* outUISprite);
+
+/**
     @brief スプライトが表示するテクスチャを設定します。
     @param[in] uisprite : instance
 */
@@ -2680,18 +2692,6 @@ LN_FLAT_API LnResult LnUISprite_SetSourceRectXYWH(LnHandle uisprite, float x, fl
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnUISprite_GetSourceRect(LnHandle uisprite, LnRect* outReturn);
-
-/**
-    @brief UISprite を作成します。
-    @param[out] outUISprite : instance.
-*/
-LN_FLAT_API LnResult LnUISprite_Create(LnHandle* outUISprite);
-
-/**
-    @brief テクスチャを指定して UISprite を作成します。
-    @param[out] outUISprite : instance.
-*/
-LN_FLAT_API LnResult LnUISprite_CreateWithTexture(LnHandle texture, LnHandle* outUISprite);
 
 typedef LnResult(*LnUISprite_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnUISprite_OnSerialize_SetOverrideCallback(LnUISprite_OnSerialize_OverrideCallback callback);
@@ -2897,6 +2897,12 @@ LN_FLAT_API LnResult LnEngine_GetRenderView(LnHandle* outReturn);
 // ln::Application
 
 /**
+    @brief 
+    @param[out] outApplication : instance.
+*/
+LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication);
+
+/**
     @brief エンジンの初期化処理が完了した後に呼び出されます。
     @param[in] application : instance
 */
@@ -2914,12 +2920,6 @@ LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application);
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnApplication_World(LnHandle application, LnHandle* outReturn);
-
-/**
-    @brief 
-    @param[out] outApplication : instance.
-*/
-LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication);
 
 typedef LnResult(*LnApplication_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnApplication_OnSerialize_SetOverrideCallback(LnApplication_OnSerialize_OverrideCallback callback);
