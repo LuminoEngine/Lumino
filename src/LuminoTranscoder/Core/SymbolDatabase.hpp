@@ -358,7 +358,7 @@ public:
 	ln::Result init(PITypeInfo* piType);
 	ln::Result init(const ln::String& primitveRawFullName, TypeKind typeKind, TypeClass typeClass);
 	ln::Result initAsFunctionType(const ln::String& fullName, MethodSymbol* signeture);	// delegate のコンストラクタに指定する関数ポインタ型を作るために使う
-	ln::Result initAsDelegate(const ln::String& fullName, MethodSymbol* signeture);		// 仮想関数コールバック用の Delegate を内部生成する時に使う
+	ln::Result initAsVirtualDelegate(const ln::String& fullName, MethodSymbol* signeture);		// 仮想関数コールバック用の Delegate を内部生成する時に使う
 	ln::Result link();
 
 	TypeKind kind() const { return m_kind; }//{ return (m_piType) ? m_piType->kindAsEnum() : TypeKind::Primitive; };
@@ -382,7 +382,7 @@ public:
 	bool isStruct() const { return kind() == TypeKind::Struct; }
 	bool isEnum() const { return kind() == TypeKind::Enum; }
 	bool isFunction() const { return kind() == TypeKind::Function; }
-	bool isDelegate() const { return kind() == TypeKind::Delegate && !isDelegateObject(); }	// deprecated
+	//bool isDelegate() const { return kind() == TypeKind::Delegate && !isDelegateObject(); }	// deprecated
 	bool isStatic() const { return metadata() ? metadata()->hasKey(u"Static") : false; }	// static-class
 
 
@@ -395,6 +395,7 @@ public:
 
 	// LnHandle として扱うものかどうか
 	bool isObjectGroup() const { return isClass() || isDelegateObject(); }
+	bool isVirtualHandlerDelegate() const { return m_virtualDelegateType; }
 
 private:
 	void setFullName(const ln::String& value);
@@ -423,6 +424,8 @@ private:
 	//ln::List<Ref<MethodSymbol>> m_eventMethods;
 	TypeSymbol* m_baseClass = nullptr;
 	TypeSymbol* m_collectionItemType = nullptr;
+
+	bool m_virtualDelegateType = false;
 
 //	struct SoueceData
 //	{
@@ -493,7 +496,7 @@ public:
 	stream::Stream<Ref<TypeSymbol>> enums() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Enum; }); }
 	stream::Stream<Ref<TypeSymbol>> structs() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Struct; }); }
 	stream::Stream<Ref<TypeSymbol>> classes() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Class/* && (x->isRootObjectClass())*/; }); }
-	stream::Stream<Ref<TypeSymbol>> delegates() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->isDelegate(); }); }
+	//stream::Stream<Ref<TypeSymbol>> delegates() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->isDelegate(); }); }
     stream::Stream<Ref<TypeSymbol>> delegateObjects() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->isDelegateObject(); }); }
 
 	const Ref<PIDatabase>& pidb() const { return m_pidb; }

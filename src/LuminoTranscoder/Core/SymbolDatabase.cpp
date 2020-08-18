@@ -369,6 +369,8 @@ const MethodParameterSymbol* MethodSymbol::findFlatParameter(const ln::StringRef
 ln::Result MethodSymbol::makeFlatParameters()
 {
     auto doc = document();
+	doc->m_flatParams.clear();
+	m_flatParameters.clear();
 
 	// static でなければ、第1引数は this などになる
 	if (!isStatic())
@@ -408,17 +410,17 @@ ln::Result MethodSymbol::makeFlatParameters()
 		}
 	}
 	
-	if (m_ownerType->kind() == TypeKind::Delegate)
-	{
-		auto s = ln::makeRef<MethodParameterSymbol>(db());
-		if (!s->init(QualType{ db()->rootObjectClass() }, u"__eventOwner")) return false;
-		m_flatParameters.add(s);
+	//if (m_ownerType->kind() == TypeKind::Delegate)
+	//{
+	//	auto s = ln::makeRef<MethodParameterSymbol>(db());
+	//	if (!s->init(QualType{ db()->rootObjectClass() }, u"__eventOwner")) return false;
+	//	m_flatParameters.add(s);
 
-        // documetation
-        auto param = ln::makeRef<ParameterDocumentInfo>();
-        if (!param->init(u"eventOwner", u"in", "event owner")) return false;
-        doc->m_flatParams.add(param);
-	}
+ //       // documetation
+ //       auto param = ln::makeRef<ParameterDocumentInfo>();
+ //       if (!param->init(u"eventOwner", u"in", "event owner")) return false;
+ //       doc->m_flatParams.add(param);
+	//}
 
 	// params
 	for (auto& paramInfo : m_parameters) {
@@ -668,16 +670,17 @@ ln::Result TypeSymbol::initAsFunctionType(const ln::String& fullName, MethodSymb
 	return true;
 }
 
-ln::Result TypeSymbol::initAsDelegate(const ln::String& fullName, MethodSymbol* signeture)
+ln::Result TypeSymbol::initAsVirtualDelegate(const ln::String& fullName, MethodSymbol* signeture)
 {
 	if (LN_REQUIRE(signeture)) return false;
-	m_kind = TypeKind::Delegate;
+	m_kind = TypeKind::Class;
 	m_typeClass = TypeClass::DelegateObject;
 	m_functionSignature = signeture;
+	m_virtualDelegateType = true;
 	setFullName(fullName);
-	if (!addDelegateConstructorMethod()) {
-		return false;
-	}
+	//if (!addDelegateConstructorMethod()) {
+	//	return false;
+	//}
 	return true;
 }
 
@@ -795,7 +798,7 @@ void TypeSymbol::setFullName(const ln::String& value)
 ln::Result TypeSymbol::linkOverload()
 {
 	// Not required for delegates
-	if (isDelegate()) return true;
+	//if (isDelegate()) return true;
 
 	for (auto& method1 : m_declaredMethods)
 	{
@@ -1086,17 +1089,22 @@ ln::Result SymbolDatabase::linkTypes()
 		if (!m_allTypes[i]->link()) return false;
 	}
 
-#if 0	// prototype で仮想関数をオーバーライドする場合、Delegate によってコールバックを登録したい。
+	// prototype で仮想関数をオーバーライドする場合、Delegate によってコールバックを登録したい。
 	// その Delegate を自動生成する。
-	for (auto& type : m_allTypes) {
-		for (auto& method : type->virtualMethods()) {
+	for (int i = 0; i < count; i++) {
+		for (auto& method : m_allTypes[i]->virtualMethods()) {
+			auto className = method->shortName();
+			if (className.indexOf(u"on") == 0) {
+				className = className.substr(2);	// onUpdate のような先頭の "on" を除外
+			}
+			className = m_allTypes[i]->shortName() + className + u"Handler";
+
 			auto d = ln::makeRef<TypeSymbol>(this);
-			if (!d->initAsDelegate(type->shortName() + method->shortName() + u"Delegate", method)) return false;
-			if (d->link()) return false;
+			if (!d->initAsVirtualDelegate(className, method)) return false;
+			if (!d->link()) return false;
 			m_allTypes.add(d);
 		}
 	}
-#endif
 
 	return true;
 }

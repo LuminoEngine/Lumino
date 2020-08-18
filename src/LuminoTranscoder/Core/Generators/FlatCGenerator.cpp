@@ -27,10 +27,10 @@ void FlatCHeaderGenerator::generate()
 {
 	// delegates
 	OutputBuffer delegatesText;
-	for (auto& delegateSymbol : db()->delegates()) {
-		delegatesText.AppendLine(makeDelegateFuncPtrDecl(delegateSymbol));
-	}
-    delegatesText.NewLine();
+	//for (auto& delegateSymbol : db()->delegates()) {
+	//	delegatesText.AppendLine(makeDelegateFuncPtrDecl(delegateSymbol));
+	//}
+ //   delegatesText.NewLine();
 
 	// structs
 	OutputBuffer structsText;
@@ -561,6 +561,20 @@ ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 	for (auto& classSymbol : db()->classes()) {
 		auto className = makeWrapSubclassName(classSymbol);
 		auto baseclassName = classSymbol->fullName();
+
+
+
+		// 内部的に作成されたものは Delegate の typedef を作っておく
+		if (classSymbol->isVirtualHandlerDelegate()) {
+			code.AppendLine(u"// Auto generated override handler");
+			const auto& signatue = classSymbol->delegateProtoType();
+			OutputBuffer params;
+			for (const auto& param : signatue->parameters()) {
+				params.AppendCommad(u"{0} {1}", param->getFullQualTypeName(), param->name());
+			}
+			code.AppendLine(u"using {0} = ln::Delegate<{1}({2})>;", baseclassName, signatue->returnType().type->fullName(), params.toString());
+			code.NewLine();
+		}
 
 		code.AppendLine(u"class {0} : public {1}", className, baseclassName);
 		code.AppendLine(u"{");

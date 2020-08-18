@@ -16,7 +16,7 @@ enum class TypeKind
 	Struct,
 	Class,
 	Enum,
-	Delegate,	// deprecated
+	//Delegate,	// deprecated
 	Function,	// raw function signature.
 };
 
@@ -51,8 +51,8 @@ inline TypeKind kindAsEnum(const ln::String& kind)
 		return TypeKind::Struct;
 	if (ln::String::compare(kind, u"Class", ln::CaseSensitivity::CaseInsensitive) == 0)
 		return TypeKind::Class;
-	if (ln::String::compare(kind, u"Delegate_deprecated", ln::CaseSensitivity::CaseInsensitive) == 0)
-		return TypeKind::Delegate;
+	//if (ln::String::compare(kind, u"Delegate_deprecated", ln::CaseSensitivity::CaseInsensitive) == 0)
+	//	return TypeKind::Delegate;
 	if (ln::String::compare(kind, u"Collection", ln::CaseSensitivity::CaseInsensitive) == 0)
 		return TypeKind::Class;
     if (ln::String::compare(kind, u"DelegateObject", ln::CaseSensitivity::CaseInsensitive) == 0)

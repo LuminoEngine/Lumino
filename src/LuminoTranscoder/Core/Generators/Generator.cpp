@@ -237,10 +237,10 @@ ln::String Generator::makeFlatCParamQualTypeName(const MethodSymbol* methodInfo,
 		else
 			return ln::String::format(u"const {0}*", makeFlatCharTypeName(charset));
 	}
-	else if (typeInfo->isDelegate())
-	{
-		return makeDelegateCallbackFuncPtrName(typeInfo, FlatCharset::Unicode);
-	}
+	//else if (typeInfo->isDelegate())
+	//{
+	//	return makeDelegateCallbackFuncPtrName(typeInfo, FlatCharset::Unicode);
+	//}
 	else
 	{
 		ln::String name;

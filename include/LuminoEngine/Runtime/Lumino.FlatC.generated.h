@@ -294,7 +294,6 @@ typedef enum tagLnHAlignment
 
 } LnHAlignment;
 
-
 typedef LnResult(*LnPromiseFailureDelegateCallback)(LnHandle promisefailuredelegate);
 typedef LnResult(*LnZVTestDelegate1Callback)(LnHandle zvtestdelegate1, int p1);
 typedef LnResult(*LnZVTestDelegate2Callback)(LnHandle zvtestdelegate2, int p1, int p2, int* outReturn);
@@ -305,6 +304,11 @@ typedef LnResult(*LnTexture2DDelegateCallback)(LnHandle texture2ddelegate, LnHan
 typedef LnResult(*LnTestDelegateCallback)(LnHandle testdelegate, int p1, int* outReturn);
 typedef LnResult(*LnUIGeneralEventHandlerCallback)(LnHandle uigeneraleventhandler, LnHandle p1);
 typedef LnResult(*LnUIEventHandlerCallback)(LnHandle uieventhandler);
+typedef LnResult(*LnObjectSerializeHandlerCallback)(LnHandle object, LnHandle ar);
+typedef LnResult(*LnObjectSerialize2HandlerCallback)(LnHandle object, LnHandle ar);
+typedef LnResult(*LnWorldObjectUpdateHandlerCallback)(LnHandle worldobject, float elapsedSeconds);
+typedef LnResult(*LnApplicationInitHandlerCallback)(LnHandle application);
+typedef LnResult(*LnApplicationUpdateHandlerCallback)(LnHandle application);
 
 
 //==============================================================================
@@ -2982,6 +2986,86 @@ LN_FLAT_API LnResult LnDebug_PrintWithTimeA(float time, const char* str);
 LN_FLAT_API LnResult LnDebug_PrintWithTimeAndColor(float time, const LnColor* color, const LnChar* str);
 LN_FLAT_API LnResult LnDebug_PrintWithTimeAndColorA(float time, const LnColor* color, const char* str);
 
+
+//==============================================================================
+// ObjectSerializeHandler
+
+LN_FLAT_API LnResult LnObjectSerializeHandler_Create(LnObjectSerializeHandlerCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnObjectSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLnObjectSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LnSubinstanceAllocFunc subinstanceAllocFunc;
+    LnSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LnObjectSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LnObjectSerializeHandler_RegisterSubclassTypeInfo(const LnObjectSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LnSubinstanceId LnObjectSerializeHandler_GetSubinstanceId(LnHandle handle);
+
+//==============================================================================
+// ObjectSerialize2Handler
+
+LN_FLAT_API LnResult LnObjectSerialize2Handler_Create(LnObjectSerialize2HandlerCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnObjectSerialize2Handler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLnObjectSerialize2Handler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LnSubinstanceAllocFunc subinstanceAllocFunc;
+    LnSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LnObjectSerialize2Handler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LnObjectSerialize2Handler_RegisterSubclassTypeInfo(const LnObjectSerialize2Handler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LnSubinstanceId LnObjectSerialize2Handler_GetSubinstanceId(LnHandle handle);
+
+//==============================================================================
+// WorldObjectUpdateHandler
+
+LN_FLAT_API LnResult LnWorldObjectUpdateHandler_Create(LnWorldObjectUpdateHandlerCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnWorldObjectUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLnWorldObjectUpdateHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LnSubinstanceAllocFunc subinstanceAllocFunc;
+    LnSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LnWorldObjectUpdateHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LnWorldObjectUpdateHandler_RegisterSubclassTypeInfo(const LnWorldObjectUpdateHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LnSubinstanceId LnWorldObjectUpdateHandler_GetSubinstanceId(LnHandle handle);
+
+//==============================================================================
+// ApplicationInitHandler
+
+LN_FLAT_API LnResult LnApplicationInitHandler_Create(LnApplicationInitHandlerCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnApplicationInitHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLnApplicationInitHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LnSubinstanceAllocFunc subinstanceAllocFunc;
+    LnSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LnApplicationInitHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LnApplicationInitHandler_RegisterSubclassTypeInfo(const LnApplicationInitHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LnSubinstanceId LnApplicationInitHandler_GetSubinstanceId(LnHandle handle);
+
+//==============================================================================
+// ApplicationUpdateHandler
+
+LN_FLAT_API LnResult LnApplicationUpdateHandler_Create(LnApplicationUpdateHandlerCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnApplicationUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLnApplicationUpdateHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LnSubinstanceAllocFunc subinstanceAllocFunc;
+    LnSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LnApplicationUpdateHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LnApplicationUpdateHandler_RegisterSubclassTypeInfo(const LnApplicationUpdateHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LnSubinstanceId LnApplicationUpdateHandler_GetSubinstanceId(LnHandle handle);
 
 
 
