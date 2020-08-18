@@ -85,6 +85,8 @@ public:
 	ln::String makeFlatAPIName_RegisterSubclassTypeInfo(const TypeSymbol* classSymbol) const;
 	ln::String makeFlatAPIName_GetSubinstanceId(const TypeSymbol* classSymbol) const;
 	ln::String makeFlatAPIName_OverridePrototypesStruct(const TypeSymbol* classSymbol) const;
+	ln::String makeFlatAPIName_SetOverridePrototype(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
+	ln::String makeFlatAPIDecl_SetOverridePrototype(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
 	
 	ln::String makeFlatVirutalCallbackFuncPtrName(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
 	ln::String makeDelegateCallbackFuncPtrName(const TypeSymbol* delegateSymbol, FlatCharset charset) const;

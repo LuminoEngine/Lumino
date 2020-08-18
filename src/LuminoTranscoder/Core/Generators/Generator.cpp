@@ -127,6 +127,19 @@ ln::String Generator::makeFlatAPIName_OverridePrototypesStruct(const TypeSymbol*
 	return makeFlatClassName(classSymbol) + u"_OverridePrototypes";
 }
 
+ln::String Generator::makeFlatAPIName_SetOverridePrototype(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const
+{
+	return ln::String::format(u"{0}_SetPrototype_{1}", makeFlatClassName(leafClass), makeFlatShortFuncName(method, charset));
+}
+
+ln::String Generator::makeFlatAPIDecl_SetOverridePrototype(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const
+{
+	return ln::String::format(u"LN_FLAT_API LnResult {0}(LnHandle {1}, {2} func)",
+		makeFlatAPIName_SetOverridePrototype(leafClass, method, charset),
+		method->flatParameters()[0]->name(),
+		makeFlatVirutalCallbackFuncPtrName(leafClass, method, FlatCharset::Unicode));
+}
+
 ln::String Generator::makeFlatVirutalCallbackFuncPtrName(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const
 {
 	return ln::String::format(u"{0}_{1}_OverrideCallback", makeFlatClassName(leafClass), makeFlatShortFuncName(method, charset));

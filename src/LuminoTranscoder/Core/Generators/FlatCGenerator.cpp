@@ -109,6 +109,7 @@ void FlatCHeaderGenerator::generate()
 					classMemberFuncDeclsText.AppendLine(u"typedef LnResult(*{0})({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), params.toString());
 					classMemberFuncDeclsText.AppendLine(makeFlatAPIDecl_SetOverrideCallback(classSymbol, method, FlatCharset::Unicode) + u";");
 					classMemberFuncDeclsText.AppendLine(makeFlatAPIDecl_CallOverrideBase(classSymbol, method, FlatCharset::Unicode) + u";");
+					classMemberFuncDeclsText.AppendLine(makeFlatAPIDecl_SetOverridePrototype(classSymbol, method, FlatCharset::Unicode) + u";");
 				}
 				classMemberFuncDeclsText.NewLine();
 			}
@@ -358,6 +359,16 @@ void FlatCSourceGenerator::generate()
 				funcImpl.IncreaseIndent();
 				funcImpl.AppendLine(u"{0}::s_{1} = callback;", makeWrapSubclassName(classSymbol), makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode));
 				funcImpl.AppendLine(u"return LN_SUCCESS;");
+				funcImpl.DecreaseIndent();
+				funcImpl.AppendLine(u"}");
+
+				funcImpl.AppendLine(makeFlatAPIDecl_SetOverridePrototype(classSymbol, method, FlatCharset::Unicode));
+				funcImpl.AppendLine(u"{");
+				funcImpl.IncreaseIndent();
+				{
+					funcImpl.AppendLine(u"LNI_HANDLE_TO_OBJECT({0}, {1})->acquireOverridePrototypes()->{2} = func;", makeWrapSubclassName(classSymbol), method->flatParameters()[0]->name(), makeFlatAPIName_OverrideFunc(method, FlatCharset::Unicode));
+					funcImpl.AppendLine(u"return LN_SUCCESS;");
+				}
 				funcImpl.DecreaseIndent();
 				funcImpl.AppendLine(u"}");
 
@@ -639,9 +650,10 @@ ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 				code.AppendLine(u"}").NewLine();
 			}
 
+			//--------------------
+			// overrides
+			code.AppendLine(u"// Overrides");
 			for (auto& method : classSymbol->virtualMethods()) {
-				code.AppendLine(u"// Virtual");
-
 				// field decl
 				code.AppendLine(u"static {0} s_{0}; // deprecated", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode));
 
@@ -664,6 +676,22 @@ ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 						else
 							argList.AppendCommad(param->name());
 					}
+
+					code.AppendLine(u"if (m_overridePrototypes) {");
+					code.IncreaseIndent();
+					{
+						code.AppendLine(u"if (auto func = m_overridePrototypes->{0}) {{", makeFlatAPIName_OverrideFunc(method, FlatCharset::Unicode));
+						code.IncreaseIndent();
+						{
+							code.AppendLine(u"func({0});", argList.toString());
+							code.AppendLine(u"return;");
+						}
+						code.DecreaseIndent();
+						code.AppendLine(u"}");
+					}
+					code.DecreaseIndent();
+					code.AppendLine(u"}");
+
 					code.AppendLine(u"if (s_{0}) s_{0}({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), argList.toString());
 					code.DecreaseIndent();
 					code.AppendLine(u"}");
@@ -685,7 +713,7 @@ ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 				}
 			}
 
-
+			//--------------------
 			// TypeInfo
 			if (!classSymbol->isStatic()) {
 				ln::String baseClassName = u"Object";
