@@ -53,7 +53,7 @@ public:
 	void generate();
 
 private:
-	ln::String generateDelegateObjects() const;
+	//ln::String generateDelegateObjects() const;
 	ln::String generateWrapSubclassDecls() const;
 
 	ln::String makeFlatFullName(const TypeSymbol* type) const { return type->fullName().replace(u"::", u"_"); }	// ln::Texture -> ln_Texture
