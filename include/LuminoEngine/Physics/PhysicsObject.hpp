@@ -29,6 +29,7 @@ public: // TODO: internal
     void setOwnerData(void* data) { m_ownerData = data; }
     void* ownerData() const { return m_ownerData; }
 
+    PhysicsObjectType physicsObjectType() const { return m_resourceType; }
 protected:
     /** 他の PhysicsObject が、この PhysicsObject との接触を開始したときに呼び出されます。*/
     virtual void onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact);
@@ -53,7 +54,6 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     void setPhysicsWorld(PhysicsWorld* owner);
-    PhysicsObjectType physicsObjectType() const { return m_resourceType; }
     //bool isRemovingFromWorld() const { return m_removingFromWorld; }
     //void setRemovingFromWorld(bool value) { m_removingFromWorld = value; }
     void beginContact(PhysicsObject* otherObject);

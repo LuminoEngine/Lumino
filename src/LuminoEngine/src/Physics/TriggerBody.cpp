@@ -21,7 +21,6 @@ public:
 		: m_owner(owner)
 	{}
 
-#if 0
 	virtual void addOverlappingObjectInternal(btBroadphaseProxy* otherProxy, btBroadphaseProxy* thisProxy = 0) override
 	{
 		btCollisionObject* otherObject = (btCollisionObject*)otherProxy->m_clientObject;
@@ -50,7 +49,6 @@ public:
 			world->postEndContact(m_owner, static_cast<PhysicsObject*>(otherObject->getUserPointer()));
 		}
 	}
-#endif
 };
 
 //==============================================================================

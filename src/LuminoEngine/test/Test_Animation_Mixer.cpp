@@ -53,14 +53,14 @@ TEST_F(Test_Animation_Mixer, Basic)
 	ASSERT_FLOAT_EQ(10.0f, ctrl.m_bone1Value);
 }
 
-//------------------------------------------------------------------------------
-TEST_F(Test_Animation_Mixer, VMD)
-{
-	auto clip = AnimationClip::load(LN_ASSETFILE("Animation/Move1.vmd"));
-
-	//for (auto& track : clip->tracks()) {
-	//	std::cout << track->targetName() << std::endl;
-	//}
-
-	//printf("");
-}
+////------------------------------------------------------------------------------
+//TEST_F(Test_Animation_Mixer, VMD)
+//{
+//	auto clip = AnimationClip::load(LN_ASSETFILE("Animation/Move1.vmd"));
+//
+//	//for (auto& track : clip->tracks()) {
+//	//	std::cout << track->targetName() << std::endl;
+//	//}
+//
+//	//printf("");
+//}
