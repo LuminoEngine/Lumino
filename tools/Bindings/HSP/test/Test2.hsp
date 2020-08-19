@@ -1,5 +1,6 @@
 #include "lumino.as"
 
+LnEngineSettings_SetEngineLogEnabled LN_TRUE
 LnEngine_Initialize
 
 

@@ -461,7 +461,7 @@ int main(int argc, char** argv)
 #endif
 
 
-    if (1) {
+    if (0) {
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_MainLoop();
@@ -559,18 +559,6 @@ int main(int argc, char** argv)
 
     //LnLog_PrintA(LN_LOG_LEVEL_INFO, "RubyRuntime", "Usesr type registering. (class: 20, typeInfoId: 16, baseTypeInfoId: 10)");
 
-    //auto texture1 = Texture2D::load(u"logo.png");
-    //auto sprite1 = Sprite::create(texture1, 2, 2);
-    //auto asset = makeObject<AssetModel>(sprite1);
-    //Assets::saveAssetToLocalFile(asset, "test.json");
-    //auto asset = Assets::loadAssetFromLocalFile("test.json");
-
-	//{
-	//	auto ss = makeObject<ed::SceneAsset>();
-	//	ss->setup("SceneTest1.json");
-	//	ss->addNewWorldObject();
-	//	ss->save();
-	//}
     
     //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
 

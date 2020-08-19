@@ -59,7 +59,7 @@ ln::String HSPHeaderGenerator::makeStructs() const
 {
     OutputBuffer code;
     for (const auto& structSymbol : db()->structs()) {
-        code.AppendLine("#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), getCommandId(structSymbol, 0));
+        code.AppendLine("#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), getCommandId(structSymbol));
     }
     return code.toString();
 }
@@ -69,12 +69,12 @@ ln::String HSPHeaderGenerator::makeClasses() const
     OutputBuffer code;
     for (const auto& classSymbol : db()->classes()) {
         for (const auto& methodSymbol : classSymbol->publicMethods()) {
-            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii), getCommandId(methodSymbol, 0));
+            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii), getCommandId(methodSymbol));
         }
 
         const auto virtualMethods = classSymbol->virtualPrototypeSetters();
         for (int i = 0; i < virtualMethods.size(); i++) {
-            code.AppendLine("#cmd {0} ${1:X}", makeFlatAPIName_SetPrototype(classSymbol, virtualMethods[i], FlatCharset::Ascii), getCommandId(virtualMethods[i], i + 1));
+            code.AppendLine("#cmd {0} ${1:X}", makeFlatAPIName_SetPrototype(classSymbol, virtualMethods[i], FlatCharset::Ascii), getCommandId(virtualMethods[i]));
         }
     }
     return code.toString();
@@ -409,7 +409,7 @@ ln::String HSPCommandsGenerator::make_reffunc() const
         {
             for (const auto& structSymbol : db()->structs()) {
                 code.AppendLine(u"// " + makeFlatTypeName2(structSymbol));
-                code.AppendLine(u"case 0x{0:X} : {{", getCommandId(structSymbol, 0));
+                code.AppendLine(u"case 0x{0:X} : {{", getCommandId(structSymbol));
                 code.IncreaseIndent();
 
                 code.AppendLines(u"hsp{0}_reffunc(typeRes, retValPtr);", makeFlatTypeName2(structSymbol));
@@ -457,7 +457,7 @@ ln::String HSPCommandsGenerator::make_cmdfunc() const
         methods.addRange(classSymbol->virtualPrototypeSetters());
         for (const auto& methodSymbol : methods) {
             code.AppendLine(u"// " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii));
-            code.AppendLine(u"case 0x{0:X} : {{", getCommandId(methodSymbol, 0));
+            code.AppendLine(u"case 0x{0:X} : {{", getCommandId(methodSymbol));
             code.IncreaseIndent();
 
             code.AppendLines(makeCallCommandBlock(methodSymbol));
