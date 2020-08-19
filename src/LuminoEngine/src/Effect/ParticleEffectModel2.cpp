@@ -177,9 +177,9 @@ bool ParticleEmitterModel2::init()
     return true;
 }
 
-void ParticleEmitterModel2::serialize2(Serializer2& ar)
+void ParticleEmitterModel2::serialize(Serializer2& ar)
 {
-    Object::serialize2(ar);
+    Object::serialize(ar);
     ar & makeNVP(u"maxParticles", m_spawnRate);
     ar & makeNVP(u"spawnRate", m_maxParticles);
     ar & makeNVP(u"burstCount", m_burstCount);
@@ -209,9 +209,9 @@ bool ParticleModel2::init()
     return true;
 }
 
-void ParticleModel2::serialize2(Serializer2& ar)
+void ParticleModel2::serialize(Serializer2& ar)
 {
-    EffectResource::serialize2(ar);
+    EffectResource::serialize(ar);
     ar & makeNVP(u"emitters", m_emitters);
 
 }

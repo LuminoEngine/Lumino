@@ -63,9 +63,9 @@ StaticMeshComponent* StaticMesh::staticMeshComponent() const
     return m_component;
 }
 
-void StaticMesh::serialize2(Serializer2& ar)
+void StaticMesh::serialize(Serializer2& ar)
 {
-    VisualObject::serialize2(ar);
+    VisualObject::serialize(ar);
 
     
 

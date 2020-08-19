@@ -284,9 +284,9 @@ bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
 	return false;
 }
 
-void WorldObject::serialize2(Serializer2& ar)
+void WorldObject::serialize(Serializer2& ar)
 {
-	Object::serialize2(ar);
+	Object::serialize(ar);
     ar& ln::makeNVP(u"name", m_name);
 
     Vector3 eularAngles = m_transform->m_rotation.toEulerAngles();

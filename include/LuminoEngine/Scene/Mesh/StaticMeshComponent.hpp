@@ -14,7 +14,7 @@ public:
     StaticMeshModel* model() const;
 
 protected:
-    void serialize2(Serializer2& ar) override;
+    void serialize(Serializer2& ar) override;
     void onRender(RenderingContext* context);
 
 LN_CONSTRUCT_ACCESS:

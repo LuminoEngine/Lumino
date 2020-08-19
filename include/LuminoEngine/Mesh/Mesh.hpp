@@ -442,7 +442,7 @@ public:
     const Matrix& nodeGlobalTransform(int nodeIndex) { return m_nodeGlobalTransforms[nodeIndex]; }
 
 protected:
-	void serialize2(Serializer2& ar) override;
+	void serialize(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
     StaticMeshModel();

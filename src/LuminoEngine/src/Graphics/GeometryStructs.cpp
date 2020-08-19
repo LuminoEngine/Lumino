@@ -19,7 +19,7 @@ const Size Size::Zero(0, 0);
 const Size Size::MinValue(std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
 const Size Size::MaxValue(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
 
-void Size::serialize2(Serializer2& ar)
+void Size::serialize(Serializer2& ar)
 {
     int size = 0;
     if (ar.isSaving())
@@ -96,7 +96,7 @@ void Rect::serialize(Archive& ar)
     ar.process(height);
 }
 
-void Rect::serialize2(Serializer2& ar)
+void Rect::serialize(Serializer2& ar)
 {
     int size = 0;
     if (ar.isSaving())

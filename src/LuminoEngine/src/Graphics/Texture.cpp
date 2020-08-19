@@ -336,9 +336,9 @@ detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* ou
     return m_rhiObject;
 }
 
-void Texture2D::serialize2(Serializer2& ar)
+void Texture2D::serialize(Serializer2& ar)
 {
-    Texture::serialize2(ar);
+    Texture::serialize(ar);
 
 
     // TODO: Object::assetPath 使いたい

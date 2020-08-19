@@ -58,12 +58,12 @@ void Object::onDispose(bool explicitDisposing)
 {
 }
 
-void Object::serialize2(Serializer2& ar)
+void Object::serialize(Serializer2& ar)
 {
-	onSerialize2(&ar);
+	onSerialize(&ar);
 }
 
-void Object::onSerialize2(Serializer2* ar)
+void Object::onSerialize(Serializer2* ar)
 {
 }
 

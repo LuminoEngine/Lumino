@@ -66,7 +66,7 @@ public:
 	PlaneMeshComponent* planeMeshComponent() const;
 
 protected:
-	void serialize2(Serializer2& ar) override;
+	void serialize(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	PlaneMesh();

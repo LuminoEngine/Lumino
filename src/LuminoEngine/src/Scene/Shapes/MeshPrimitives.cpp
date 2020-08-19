@@ -107,9 +107,9 @@ PlaneMeshComponent* PlaneMesh::planeMeshComponent() const
 	return m_component;
 }
 
-void PlaneMesh::serialize2(Serializer2& ar)
+void PlaneMesh::serialize(Serializer2& ar)
 {
-	VisualObject::serialize2(ar);
+	VisualObject::serialize(ar);
 	//ar & makeNVP(u"component", m_component);
 
 	if (ar.isLoading()) {

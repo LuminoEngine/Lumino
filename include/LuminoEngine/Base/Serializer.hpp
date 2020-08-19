@@ -15,7 +15,7 @@ class has_member_serialize2_function
 {
 private:
 	template<typename U>
-	static auto check(U&& v) -> decltype(v.serialize2(*reinterpret_cast<Serializer2*>(0)), std::true_type());
+	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Serializer2*>(0)), std::true_type());
 	static auto check(...) -> decltype(std::false_type());
 
 public:
@@ -29,7 +29,7 @@ class non_member_serialize2_function
 {
 private:
 	template<typename U>
-	static auto check(U&& v) -> decltype(v.serialize2(*reinterpret_cast<Serializer2*>(0)), std::true_type());
+	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Serializer2*>(0)), std::true_type());
 	static auto check(...) -> decltype(std::false_type());
 
 public:
@@ -39,84 +39,13 @@ public:
 
 } // namespace detail
 
-template<typename T> void serialize2(Serializer2& ar, List<T>& value);
-template<typename T> void serialize2(Serializer2& ar, Optional<T>& value);
-void serialize2(Serializer2& ar, Path& value);
-void serialize2(Serializer2& ar, detail::AssetPath& value);
-void serialize2(Serializer2& ar, Vector2& value);
-void serialize2(Serializer2& ar, Vector3& value);
+template<typename T> void serialize(Serializer2& ar, List<T>& value);
+template<typename T> void serialize(Serializer2& ar, Optional<T>& value);
+void serialize(Serializer2& ar, Path& value);
+void serialize(Serializer2& ar, detail::AssetPath& value);
+void serialize(Serializer2& ar, Vector2& value);
+void serialize(Serializer2& ar, Vector3& value);
 
-#if 0
-/** */
-LN_CLASS()
-class Serializer
-	: public Object
-{
-	LN_OBJECT;
-public:
-	
-	/** write */
-	LN_METHOD()
-	void writeBool(const StringRef& name, bool value);
-
-	/** write */
-	LN_METHOD()
-	void writeInt(const StringRef& name, int value);
-
-	/** write */
-	LN_METHOD()
-	void writeFloat(const StringRef& name, float value);
-
-	/** write */
-	LN_METHOD()
-	void writeString(const StringRef& name, const StringRef& value);
-
-	/** write */
-	LN_METHOD()
-	void writeObject(const StringRef& name, Object* value);
-
-	
-	/** read */
-	LN_METHOD()
-	bool readBool(const StringRef& name);
-
-	/** read */
-	LN_METHOD()
-	int readInt(const StringRef& name);
-
-	/** read */
-	LN_METHOD()
-	float readFloat(const StringRef& name);
-
-	/** read */
-	LN_METHOD()
-	String readString(const StringRef& name);
-
-	/** read */
-	LN_METHOD()
-	Ref<Object> readObject(const StringRef& name);
-
-	
-	/** serialize */
-	LN_METHOD()
-	static String serialize(Object* value, const String& basePath);
-	
-	/** serialize */
-	LN_METHOD()
-	static Ref<Object> deserialize(const String& str, const String& basePath);
-
-LN_CONSTRUCT_ACCESS:
-	Serializer();
-	virtual ~Serializer() = default;
-	void init(/*ArchiveMode mode, const String& basePath*/);
-
-private:
-	void processSave();
-	void processLoad();
-
-	std::unique_ptr<Archive> m_archive;
-};
-#endif
 
 namespace detail {
 class SerializerStore2;
@@ -316,9 +245,9 @@ private:
 	template<typename T, typename std::enable_if<std::is_enum<T>::value, std::nullptr_t>::type = nullptr>
 	void writeValue(T& value) { writeInt32((int)value); }
 	template<typename T, typename std::enable_if<detail::has_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
-	void writeValue(T& value) { value.serialize2(*this); }
+	void writeValue(T& value) { value.serialize(*this); }
 	template<typename T, typename std::enable_if<detail::non_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
-	void writeValue(T& value) { ln::serialize2(*this, value); }
+	void writeValue(T& value) { ln::serialize(*this, value); }
 
 	template<typename T>
 	void processLoad(NameValuePair<T>& nvp)
@@ -349,9 +278,9 @@ private:
 	template<typename T, typename std::enable_if<std::is_enum<T>::value, std::nullptr_t>::type = nullptr>
 	void readValue(T& value) { value = (T)readInt32(); }
 	template<typename T, typename std::enable_if<detail::has_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
-	void readValue(T& outValue) { outValue.serialize2(*this); }
+	void readValue(T& outValue) { outValue.serialize(*this); }
 	template<typename T, typename std::enable_if<detail::non_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
-	void readValue(T& outValue) { ln::serialize2(*this, outValue); }
+	void readValue(T& outValue) { ln::serialize(*this, outValue); }
 
 	ArchiveMode m_mode;
 	detail::AssetPath m_basePath;
@@ -360,7 +289,7 @@ private:
 #endif
 
 template<typename T>
-void serialize2(Serializer2& ar, List<T>& value)
+void serialize(Serializer2& ar, List<T>& value)
 {
 	if (ar.isSaving()) {
 		ar.beginWriteList();
@@ -382,7 +311,7 @@ void serialize2(Serializer2& ar, List<T>& value)
 }
 
 template<typename T>
-void serialize2(Serializer2& ar, Optional<T>& value)
+void serialize(Serializer2& ar, Optional<T>& value)
 {
 	if (ar.isSaving()) {
 		if (!value) {
@@ -406,7 +335,7 @@ void serialize2(Serializer2& ar, Optional<T>& value)
 	}
 }
 
-inline void serialize2(Serializer2& ar, Path& value)
+inline void serialize(Serializer2& ar, Path& value)
 {
 	if (ar.isSaving()) {
 		ar.writeString(value.str());
@@ -416,7 +345,7 @@ inline void serialize2(Serializer2& ar, Path& value)
 	}
 }
 
-inline void serialize2(Serializer2& ar, detail::AssetPath& value)
+inline void serialize(Serializer2& ar, detail::AssetPath& value)
 {
 	if (ar.isSaving()) {
 		ar.writeString(value.toString());
@@ -426,7 +355,7 @@ inline void serialize2(Serializer2& ar, detail::AssetPath& value)
 	}
 }
 
-inline void serialize2(Serializer2& ar, Vector2& value)
+inline void serialize(Serializer2& ar, Vector2& value)
 {
 	int size = 0;
 	ar.beginList(&size);
@@ -438,7 +367,7 @@ inline void serialize2(Serializer2& ar, Vector2& value)
 	ar.endList();
 }
 
-inline void serialize2(Serializer2& ar, Vector3& value)
+inline void serialize(Serializer2& ar, Vector3& value)
 {
 	int size = 0;
 	ar.beginList(&size);

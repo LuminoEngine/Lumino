@@ -12,7 +12,7 @@ public:
 	String code;
 	List<String> params;
 
-	void serialize2(Serializer2& ar) override
+	void serialize(Serializer2& ar) override
 	{
 		ar & makeNVP(u"code", code);
 		ar & makeNVP(u"params", params);
@@ -24,7 +24,7 @@ class InterpreterCommandList : public Object
 public:
 	List<Ref<InterpreterCommand>> commands;
 
-	void serialize2(Serializer2& ar) override
+	void serialize(Serializer2& ar) override
 	{
 		ar & makeNVP(u"commands", commands);
 	}

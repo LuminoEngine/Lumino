@@ -407,7 +407,7 @@ protected:
 		return m_newItemCache;
 	}
 
-	void serialize2(Serializer2& ar) override
+	void serialize(Serializer2& ar) override
 	{
 		if (ar.isSaving()) {
 			ar.beginWriteList();

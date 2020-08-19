@@ -210,11 +210,11 @@ protected:
 	virtual void finalize() override;
 	virtual void onDispose(bool explicitDisposing);
 
-    virtual void serialize2(Serializer2& ar);
+    virtual void serialize(Serializer2& ar);
 
     /** onSerialize */
     LN_METHOD()
-    virtual void onSerialize2(Serializer2* ar);
+    virtual void onSerialize(Serializer2* ar);
 
 public:
 	/**

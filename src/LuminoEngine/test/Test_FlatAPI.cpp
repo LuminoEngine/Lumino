@@ -1,6 +1,7 @@
 ﻿#include "Common.hpp"
 #include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
 
+#if 0
 //==============================================================================
 class Test_FlatAPI : public LuminoSceneTest {};
 
@@ -39,3 +40,4 @@ TEST_F(Test_FlatAPI, Basic)
 	ASSERT_EQ(g_count, 1);
 }
 
+#endif

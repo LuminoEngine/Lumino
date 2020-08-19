@@ -17,7 +17,7 @@ LN_CLASS()
 class ComponentList : public Collection<Ref<Component>>
 {
 public:
-	void serialize2(Serializer2& ar) override { Collection<Ref<Component>>::serialize2(ar); }
+	void serialize(Serializer2& ar) override { Collection<Ref<Component>>::serialize(ar); }
 
 };
 
@@ -225,7 +225,7 @@ protected:
 	bool traverseRefrection(ReflectionObjectVisitor* visitor) override;
 
 
-	void serialize2(Serializer2& ar) override;
+	void serialize(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	WorldObject();
