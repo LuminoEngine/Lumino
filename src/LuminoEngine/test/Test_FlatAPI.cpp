@@ -7,7 +7,7 @@ class Test_FlatAPI : public LuminoSceneTest {};
 //------------------------------------------------------------------------------
 static int g_count = 0;
 
-static LnResult Sprite_OnUpdate(LnHandle worldobject, float elapsedSeconds)
+static LnResult Sprite_OnUpdate(LnHandle delegate, LnHandle self, float elapsedSeconds)
 {
 	g_count++;
 	return LN_SUCCESS;
@@ -18,10 +18,13 @@ TEST_F(Test_FlatAPI, Basic)
 	LnHandle texture;
 	LnTexture2D_Load(LN_ASSETFILE("Sprite1.png"), &texture);
 
+	LnHandle delegate;
+	LnSpriteUpdateHandler_Create(Sprite_OnUpdate, &delegate);
+
 	LnHandle sprite;
 	LnSprite_CreateWithTexture(texture, &sprite);
 	LnWorldObject_SetScaleS(sprite, 5);
-	LnSprite_SetPrototype_OnUpdate(sprite, Sprite_OnUpdate);
+	LnSprite_SetPrototype_OnUpdate(sprite, delegate);
 
 	g_count = 0;
 

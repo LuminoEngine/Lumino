@@ -255,6 +255,7 @@ public:
 	MethodSymbol(SymbolDatabase* db);
 	ln::Result init(PIMethod* pi, TypeSymbol* ownerType);
 	ln::Result init(TypeSymbol* ownerType, const ln::String& shortName, const QualType& returnType, const ln::List<Ref<MethodParameterSymbol>>& params);
+	ln::Result initAsVirtualPrototype(TypeSymbol* ownerType, MethodSymbol* sourceMethod, TypeSymbol* delegateType);
 	ln::Result link();
 
 	AccessLevel accessLevel() const { return m_accessLevel; }
@@ -292,6 +293,10 @@ public:
     bool isFieldAccessor() const { return m_linkedField != nullptr; }
     FieldSymbol* linkedField() const { return m_linkedField; }
 
+	bool isVirtualPototypeSetter() const { return m_virtualPototypeDelegate != nullptr; }
+	MethodSymbol* virtualPototypeSouceMethod() const { return m_virtualPototypeSouceMethod; }
+	TypeSymbol* virtualPototypeDelegate() const { return m_virtualPototypeDelegate; }
+
 private:
 	ln::Result makeFlatParameters();
 
@@ -307,6 +312,8 @@ private:
 	MethodOverloadInfo* m_overloadInfo = nullptr;		// このメソッドが属するオーバーロードグループ
 	PropertySymbol* m_ownerProperty = nullptr;
     FieldSymbol* m_linkedField = nullptr;
+	MethodSymbol* m_virtualPototypeSouceMethod = nullptr;
+	TypeSymbol* m_virtualPototypeDelegate = nullptr;
 
 	bool m_isConst = false;
 	bool m_isStatic = false;
@@ -315,6 +322,7 @@ private:
 	bool m_hasStringDecl = false;
 
 	friend class TypeSymbol;
+	friend class SymbolDatabase;
 };
 
 class PropertySymbol : public Symbol
@@ -358,7 +366,7 @@ public:
 	ln::Result init(PITypeInfo* piType);
 	ln::Result init(const ln::String& primitveRawFullName, TypeKind typeKind, TypeClass typeClass);
 	ln::Result initAsFunctionType(const ln::String& fullName, MethodSymbol* signeture);	// delegate のコンストラクタに指定する関数ポインタ型を作るために使う
-	ln::Result initAsVirtualDelegate(const ln::String& fullName, MethodSymbol* signeture);		// 仮想関数コールバック用の Delegate を内部生成する時に使う
+	ln::Result initAsVirtualDelegate(const ln::String& fullName, MethodSymbol* signeture, TypeSymbol* virtualMethodDefinedClass);		// 仮想関数コールバック用の Delegate を内部生成する時に使う
 	ln::Result link();
 
 	TypeKind kind() const { return m_kind; }//{ return (m_piType) ? m_piType->kindAsEnum() : TypeKind::Primitive; };
@@ -372,6 +380,7 @@ public:
 	const ln::List<Ref<PropertySymbol>>& properties() const { return m_properties; }
 	const ln::List<Ref<MethodSymbol>>& leafVirtualMethods() const { return m_leafVirtualMethods; }	// ベースクラスも含めた、すべての末端レベル virtual method
 	const ln::List<Ref<MethodSymbol>>& virtualMethods() const { return m_virtualMethods; }	// このクラスで定義されている仮想関数。isVirtual()==true であるもの
+	const ln::List<Ref<MethodSymbol>>& vitualPrototypeSetters() const { return m_vitualPrototypeSetters; }
 	//const ln::List<Ref<MethodSymbol>>& eventMethods() const { return m_eventMethods; }
 	TypeSymbol* baseClass() const { return m_baseClass; }
 	TypeSymbol* collectionItemType() const { return m_collectionItemType; }
@@ -397,6 +406,8 @@ public:
 	bool isObjectGroup() const { return isClass() || isDelegateObject(); }
 	bool isVirtualHandlerDelegate() const { return m_virtualDelegateType; }
 
+	bool createOverridePrototype(MethodSymbol* sourceMethod, TypeSymbol* delegateType);
+
 private:
 	void setFullName(const ln::String& value);
 	ln::Result linkOverload();
@@ -419,13 +430,41 @@ private:
 	ln::List<Ref<PropertySymbol>> m_properties;
 	ln::List<Ref<MethodSymbol>> m_leafVirtualMethods;
 	ln::List<Ref<MethodSymbol>> m_virtualMethods;
-
+	ln::List<Ref<MethodSymbol>> m_vitualPrototypeSetters;
 
 	//ln::List<Ref<MethodSymbol>> m_eventMethods;
 	TypeSymbol* m_baseClass = nullptr;
 	TypeSymbol* m_collectionItemType = nullptr;
 
 	bool m_virtualDelegateType = false;
+	// Note: prototype は delegate にする必要ある？生の関数ポインタでいいのでは？
+	//
+	// Delegate を使うのは、Lumino 内で Delegate が要求されているから。
+	// Lumino 内では、std::function のように static 関数とメンバ関数の区別なくコールバックを実装するために使っている。
+	// それだけなら std::function でもよいのだが、Binding に公開するインターフェイスとしては「参照カウントを持った std::function」が無いと都合が悪い。
+	// 代表的なところだと、すべてが動的な Ruby の関数オブジェクトをラップして、Lumino 無いから呼び出せるようにするのに使う。
+	// もし Delegate が無い場合、std::function と Proc を対応付ける他の仕組みが必要になるが、
+	// 関連するオブジェクトがかなり離れたところで管理されることになるので、プログラムが複雑になる。
+	// 寿命管理として正しく動作するのかも未検証。
+	// 
+	// それで prototype に話を戻すと、こちらは static 関数のみでかまわない。
+	// 
+	// もし Lumino が対応していない言語で使いたい、となった時は、FlatAPI を直叩きするか、ラップしたクラスライブラリを使うことになる。
+	// で、FlatAPI を直叩きのときでも Delegate はそのままでは使えず、Delegate のコンストラクタに static なコールバックを登録し、
+	// そこから Managed 側のメンバ関数などをコールする仕組みを作らなければならない。
+	//
+	// また、porototype はオブジェクト志向の仕組みを持たない言語でにおいて、仮想関数のオーバーライドを実現する仕組みである。
+	// そのため C# などオブジェクト指向の仕組みを持つ言語向けのクラスライブラリを作るときは、SetPrototype ではなくて SetOverrideCallback を使うべき。
+	// そもそも prototype は overrideCallback よりもメモリ消費が大きい。
+	//
+	// で、オブジェクト指向の仕組みを持たない言語の多くは「メンバ関数」という考え方もあんまり無くて、
+	// そういう意味で全部 static 関数と考えてもほとんど問題ない。
+	// ちなみに、対応しようとしてるそんな感じの言語は C と HSP.
+	//
+	// ...と思ったけど、やっぱり Delegate が必要そうだった。
+	// HSP で実装するとき、結局 FlatAPI に登録する関数ポインタと、Labelポインタの対応を覚えておかないとならない。
+	// Labelポインタは prototype 関数単位で覚えておく必要があるので、Delegate と全く同じ仕組みが必要になる。
+
 
 //	struct SoueceData
 //	{
@@ -468,6 +507,7 @@ private:
 //	void ResolveCopyDoc();
 //
 //	ln::String m_shortName;
+
 };
 
 class SymbolDatabase : public ln::RefObject

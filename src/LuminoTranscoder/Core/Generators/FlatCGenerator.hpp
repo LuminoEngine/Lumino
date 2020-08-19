@@ -23,7 +23,7 @@ public:
 	static ln::String makeFlatCQualTypeName(TypeSymbol* typeInfo);
 	static ln::String makeInstanceParamName(TypeSymbol* type);	// this にあたる引数名
 
-    ln::String makeCreateDelegateObjectFuncHeader(TypeSymbol* delegateSymbol) const;
+    ln::String makeCreateDelegateObjectFuncHeader(const TypeSymbol* delegateSymbol) const;
     ln::String makeGetTypeInfoIdFuncName(TypeSymbol* classType) const { return makeFlatClassName(classType) + u"_GetTypeInfoId"; }
     ln::String makeGetTypeInfoIdFuncHeader(TypeSymbol* classType) const { return u"extern LN_FLAT_API int " + makeGetTypeInfoIdFuncName(classType) + u"()"; }
 };
@@ -55,6 +55,7 @@ public:
 private:
 	//ln::String generateDelegateObjects() const;
 	ln::String generateWrapSubclassDecls() const;
+	ln::String makeWrapSubclassDecl(const TypeSymbol* classSymbol) const;
 
 	ln::String makeFlatFullName(const TypeSymbol* type) const { return type->fullName().replace(u"::", u"_"); }	// ln::Texture -> ln_Texture
 

@@ -2,6 +2,54 @@
 ==========
 
 
+[2020/8/19] SetPrototype の API はどのクラスに属する？
+----------
+
+例えば
+
+- Component::OnRender()
+- SpriteComponent::OnRender()
+
+があり、ユーザープログラムで SpriteComponent::OnRender() をオーバーライドしたい場合、次のどちらがいいだろう？
+
+```cpp
+LnSpriteComponent_Create(&obj);
+
+LnComponent_SetPototype_OnRender(obj, callback);        // (A)
+LnSpriteComponent_SetPototype_OnRender(obj, callback);  // (B)
+```
+
+(B) の方がいいかもしれない。というのも、基本的に callback の実装は次のように、ベースクラスのメソッドを呼び出すことになる。
+
+```cpp
+LnResult callback(LnHandle self, LnHandle context) {
+    LnSpriteComponent_CallSuper_OnRender(self, context);
+    retun LN_OK;
+}
+```
+
+ここで LnComponent_CallSuper_OnRender を呼び出すのは基本的に NG だし、
+LnSpriteComponent_SetPototype_OnRender と LnSpriteComponent_CallSuper_OnRender は対応してるんだよ、という意思表示のために、(B) の方がいいだろう。
+
+使用イメージはこんな感じかな↓
+
+```cpp
+LnSpriteOnUpdateHandler_Create(func, &callback);
+LnSprite_Create(&obj);
+LnSprite_SetPototype_OnUpdate(obj, callback);
+```
+
+今は ~Handler がほとんど同じシグネチャ持っててあんまり良くない気がしてるけど、共通化するなら↓の感じか。
+
+```cpp
+LnWorldObjectOnUpdateHandler_Create(func, &callback);
+LnSprite_Create(&obj);
+LnSprite_SetPototype_OnUpdate(obj, callback);
+```
+
+読むときのリズムが崩れそうなので、将来的に共通化するにしても、マクロとかで LnSpriteOnUpdateHandler_Create は残した方がいい気がする。
+
+
 Strong reference について
 ----------
 

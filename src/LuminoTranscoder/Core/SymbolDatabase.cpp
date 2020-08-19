@@ -326,6 +326,28 @@ ln::Result MethodSymbol::init(TypeSymbol* ownerType, const ln::String& shortName
 	return true;
 }
 
+ln::Result MethodSymbol::initAsVirtualPrototype(TypeSymbol* ownerType, MethodSymbol* sourceMethod, TypeSymbol* delegateType)
+{
+	if (!Symbol::init()) return false;
+	auto name = sourceMethod->shortName();
+	name[0] = toupper(name[0]);
+
+	m_ownerType = ownerType;	// LeafVirtuals からとっているので、sourceMethod->ownerType() は禁止
+	m_accessLevel = AccessLevel::Public;
+	m_shortName = u"setPrototype_" + name;
+	m_fullName = m_ownerType->fullName() + u"::" + m_shortName;
+	m_returnType = { PredefinedTypes::voidType, false };
+
+	auto param = ln::makeRef<MethodParameterSymbol>(db());
+	if (!param->init({ delegateType, false }, u"callback")) return false;
+	m_parameters = { param };
+
+	m_virtualPototypeSouceMethod = sourceMethod;
+	m_virtualPototypeDelegate = delegateType;
+
+	return link();
+}
+
 ln::Result MethodSymbol::link()
 {
 	if (!isStatic() && m_shortName == u"init") {
@@ -670,17 +692,26 @@ ln::Result TypeSymbol::initAsFunctionType(const ln::String& fullName, MethodSymb
 	return true;
 }
 
-ln::Result TypeSymbol::initAsVirtualDelegate(const ln::String& fullName, MethodSymbol* signeture)
+ln::Result TypeSymbol::initAsVirtualDelegate(const ln::String& fullName, MethodSymbol* signeture, TypeSymbol* virtualMethodDefinedClass)
 {
 	if (LN_REQUIRE(signeture)) return false;
 	m_kind = TypeKind::Class;
 	m_typeClass = TypeClass::DelegateObject;
-	m_functionSignature = signeture;
 	m_virtualDelegateType = true;
 	setFullName(fullName);
 	//if (!addDelegateConstructorMethod()) {
 	//	return false;
 	//}
+
+	auto param1 = ln::makeRef<MethodParameterSymbol>(db());
+	if (!param1->init({ virtualMethodDefinedClass, false }, u"self")) return false;
+
+	// 第1引数に this を受け取るようにして、新しい signature とする
+	ln::List<Ref<MethodParameterSymbol>> params = { param1 };
+	params.addRange(signeture->parameters());
+	m_functionSignature = ln::makeRef<MethodSymbol>(db());
+	if (!m_functionSignature->init(this, signeture->shortName(), signeture->returnType(), params)) return false;
+
 	return true;
 }
 
@@ -1007,6 +1038,20 @@ bool TypeSymbol::addDelegateConstructorMethod()
 	return true;
 }
 
+bool TypeSymbol::createOverridePrototype(MethodSymbol* sourceMethod, TypeSymbol* delegateType)
+{
+	if (LN_REQUIRE(sourceMethod)) return false;
+	if (LN_REQUIRE(delegateType)) return false;
+
+	auto method = ln::makeRef<MethodSymbol>(db());
+	if (!method->initAsVirtualPrototype(this, sourceMethod, delegateType)) return false;
+
+	//m_declaredMethods.add(method);
+	m_vitualPrototypeSetters.add(method);
+
+	return true;
+}
+
 #if 0
 void TypeSymbol::Link(SymbolDatabase* db)
 {
@@ -1092,7 +1137,7 @@ ln::Result SymbolDatabase::linkTypes()
 	// prototype で仮想関数をオーバーライドする場合、Delegate によってコールバックを登録したい。
 	// その Delegate を自動生成する。
 	for (int i = 0; i < count; i++) {
-		for (auto& method : m_allTypes[i]->virtualMethods()) {
+		for (auto& method : m_allTypes[i]->leafVirtualMethods()) {
 			auto className = method->shortName();
 			if (className.indexOf(u"on") == 0) {
 				className = className.substr(2);	// onUpdate のような先頭の "on" を除外
@@ -1100,9 +1145,11 @@ ln::Result SymbolDatabase::linkTypes()
 			className = m_allTypes[i]->shortName() + className + u"Handler";
 
 			auto d = ln::makeRef<TypeSymbol>(this);
-			if (!d->initAsVirtualDelegate(className, method)) return false;
+			if (!d->initAsVirtualDelegate(className, method, m_allTypes[i])) return false;
 			if (!d->link()) return false;
 			m_allTypes.add(d);
+
+			m_allTypes[i]->createOverridePrototype(method, d);
 		}
 	}
 

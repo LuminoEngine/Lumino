@@ -59,7 +59,7 @@ ln::String HSPHeaderGenerator::makeStructs() const
 {
     OutputBuffer code;
     for (const auto& structSymbol : db()->structs()) {
-        code.AppendLine("#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), getCommandId(structSymbol));
+        code.AppendLine("#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), getCommandId(structSymbol, 0));
     }
     return code.toString();
 }
@@ -69,8 +69,13 @@ ln::String HSPHeaderGenerator::makeClasses() const
     OutputBuffer code;
     for (const auto& classSymbol : db()->classes()) {
         for (const auto& methodSymbol : classSymbol->publicMethods()) {
-            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii), getCommandId(methodSymbol));
+            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii), getCommandId(methodSymbol, 0));
         }
+
+        //const auto virtualMethods = classSymbol->virtualMethods();
+        //for (int i = 0; i < virtualMethods.size(); i++) {
+        //    code.AppendLine("#cmd {0} ${1:X}", makeFlatAPIName_SetPrototype(classSymbol, virtualMethods[i], FlatCharset::Ascii), getCommandId(virtualMethods[i], i + 1));
+        //}
     }
     return code.toString();
 }
@@ -404,7 +409,7 @@ ln::String HSPCommandsGenerator::make_reffunc() const
         {
             for (const auto& structSymbol : db()->structs()) {
                 code.AppendLine(u"// " + makeFlatTypeName2(structSymbol));
-                code.AppendLine(u"case 0x{0:X} : {{", getCommandId(structSymbol));
+                code.AppendLine(u"case 0x{0:X} : {{", getCommandId(structSymbol, 0));
                 code.IncreaseIndent();
 
                 code.AppendLines(u"hsp{0}_reffunc(typeRes, retValPtr);", makeFlatTypeName2(structSymbol));
@@ -444,7 +449,7 @@ ln::String HSPCommandsGenerator::make_cmdfunc() const
     for (const auto& classSymbol : db()->classes()) {
         for (const auto& methodSymbol : classSymbol->publicMethods()) {
             code.AppendLine(u"// " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii));
-            code.AppendLine(u"case 0x{0:X} : {{", getCommandId(methodSymbol));
+            code.AppendLine(u"case 0x{0:X} : {{", getCommandId(methodSymbol, 0));
             code.IncreaseIndent();
 
             code.AppendLines(makeCallCommandBlock(methodSymbol));
@@ -453,6 +458,18 @@ ln::String HSPCommandsGenerator::make_cmdfunc() const
             code.DecreaseIndent();
             code.AppendLine(u"}");
         }
+
+        //const auto virtualMethods = classSymbol->virtualMethods();
+        //for (int i = 0; i < virtualMethods.size(); i++) {
+        //    const auto& methodSymbol = virtualMethods[i];
+        //    code.AppendLine(u"// " + makeFlatAPIName_SetPrototype(classSymbol, virtualMethods[i], FlatCharset::Ascii));
+        //    code.AppendLine(u"case 0x{0:X} : {{", getCommandId(methodSymbol, 1 + i));
+        //    code.IncreaseIndent();
+
+        //    code.AppendLine(u"return true;");
+        //    code.DecreaseIndent();
+        //    code.AppendLine(u"}");
+        //}
     }
 
     code.DecreaseIndent();
