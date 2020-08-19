@@ -1,0 +1,29 @@
+#include "lumino.as"
+
+LnEngine_Initialize
+
+
+LnTexture2D_LoadA "C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Sprite1.png", texture
+
+
+LnSprite_CreateWithTexture texture, sprite
+
+LnWorldObject_SetScaleS sprite, 5
+
+
+repeat
+	running = 0
+	LnEngine_Update running
+
+	if running == LN_FALSE: break
+
+	await 1000/60
+loop
+
+LnEngine_Finalize
+end
+
+*delegate1_callback
+	mes ln_args(0)
+	mes ln_args(1)
+	return

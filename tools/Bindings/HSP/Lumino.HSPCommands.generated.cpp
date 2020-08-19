@@ -944,9 +944,9 @@ static void HSPSubclass_LnPromiseFailureDelegate_SubinstanceFree(LnHandle handle
 static LnResult HSPSubclass_LnPromiseFailureDelegate_DelegateLabelCaller(LnHandle promisefailuredelegate)
 {
     setCallbackArg(0, promisefailuredelegate);
-    auto* self = reinterpret_cast<HSPSubclass_LnPromiseFailureDelegate*>(LnPromiseFailureDelegate_GetSubinstanceId(promisefailuredelegate));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnPromiseFailureDelegate*>(LnPromiseFailureDelegate_GetSubinstanceId(promisefailuredelegate));
     stat = 0;
-    code_call(self->labelPointer);
+    code_call(localSelf->labelPointer);
     return static_cast<LnResult>(stat);
 }
 
@@ -974,9 +974,9 @@ static LnResult HSPSubclass_LnZVTestDelegate1_DelegateLabelCaller(LnHandle zvtes
 {
     setCallbackArg(0, zvtestdelegate1);
     setCallbackArg(1, p1);
-    auto* self = reinterpret_cast<HSPSubclass_LnZVTestDelegate1*>(LnZVTestDelegate1_GetSubinstanceId(zvtestdelegate1));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestDelegate1*>(LnZVTestDelegate1_GetSubinstanceId(zvtestdelegate1));
     stat = 0;
-    code_call(self->labelPointer);
+    code_call(localSelf->labelPointer);
     return static_cast<LnResult>(stat);
 }
 
@@ -1005,9 +1005,9 @@ static LnResult HSPSubclass_LnZVTestDelegate2_DelegateLabelCaller(LnHandle zvtes
     setCallbackArg(0, zvtestdelegate2);
     setCallbackArg(1, p1);
     setCallbackArg(2, p2);
-    auto* self = reinterpret_cast<HSPSubclass_LnZVTestDelegate2*>(LnZVTestDelegate2_GetSubinstanceId(zvtestdelegate2));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestDelegate2*>(LnZVTestDelegate2_GetSubinstanceId(zvtestdelegate2));
     stat = 0;
-    code_call(self->labelPointer);
+    code_call(localSelf->labelPointer);
     setCallbackOutput(3, outReturn);
     return static_cast<LnResult>(stat);
 }
@@ -1036,9 +1036,9 @@ static LnResult HSPSubclass_LnZVTestDelegate3_DelegateLabelCaller(LnHandle zvtes
 {
     setCallbackArg(0, zvtestdelegate3);
     setCallbackArg(1, p1);
-    auto* self = reinterpret_cast<HSPSubclass_LnZVTestDelegate3*>(LnZVTestDelegate3_GetSubinstanceId(zvtestdelegate3));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestDelegate3*>(LnZVTestDelegate3_GetSubinstanceId(zvtestdelegate3));
     stat = 0;
-    code_call(self->labelPointer);
+    code_call(localSelf->labelPointer);
     return static_cast<LnResult>(stat);
 }
 
@@ -1065,9 +1065,9 @@ static void HSPSubclass_LnZVTestEventHandler1_SubinstanceFree(LnHandle handle, L
 static LnResult HSPSubclass_LnZVTestEventHandler1_DelegateLabelCaller(LnHandle zvtesteventhandler1)
 {
     setCallbackArg(0, zvtesteventhandler1);
-    auto* self = reinterpret_cast<HSPSubclass_LnZVTestEventHandler1*>(LnZVTestEventHandler1_GetSubinstanceId(zvtesteventhandler1));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventHandler1*>(LnZVTestEventHandler1_GetSubinstanceId(zvtesteventhandler1));
     stat = 0;
-    code_call(self->labelPointer);
+    code_call(localSelf->labelPointer);
     return static_cast<LnResult>(stat);
 }
 
@@ -1095,9 +1095,9 @@ static LnResult HSPSubclass_LnZVTestEventHandler2_DelegateLabelCaller(LnHandle z
 {
     setCallbackArg(0, zvtesteventhandler2);
     setCallbackArg(1, p1);
-    auto* self = reinterpret_cast<HSPSubclass_LnZVTestEventHandler2*>(LnZVTestEventHandler2_GetSubinstanceId(zvtesteventhandler2));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventHandler2*>(LnZVTestEventHandler2_GetSubinstanceId(zvtesteventhandler2));
     stat = 0;
-    code_call(self->labelPointer);
+    code_call(localSelf->labelPointer);
     return static_cast<LnResult>(stat);
 }
 
@@ -1277,9 +1277,9 @@ static LnResult HSPSubclass_LnTexture2DDelegate_DelegateLabelCaller(LnHandle tex
 {
     setCallbackArg(0, texture2ddelegate);
     setCallbackArg(1, p1);
-    auto* self = reinterpret_cast<HSPSubclass_LnTexture2DDelegate*>(LnTexture2DDelegate_GetSubinstanceId(texture2ddelegate));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnTexture2DDelegate*>(LnTexture2DDelegate_GetSubinstanceId(texture2ddelegate));
     stat = 0;
-    code_call(self->labelPointer);
+    code_call(localSelf->labelPointer);
     return static_cast<LnResult>(stat);
 }
 
@@ -1592,9 +1592,9 @@ static LnResult HSPSubclass_LnTestDelegate_DelegateLabelCaller(LnHandle testdele
 {
     setCallbackArg(0, testdelegate);
     setCallbackArg(1, p1);
-    auto* self = reinterpret_cast<HSPSubclass_LnTestDelegate*>(LnTestDelegate_GetSubinstanceId(testdelegate));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnTestDelegate*>(LnTestDelegate_GetSubinstanceId(testdelegate));
     stat = 0;
-    code_call(self->labelPointer);
+    code_call(localSelf->labelPointer);
     setCallbackOutput(2, outReturn);
     return static_cast<LnResult>(stat);
 }
@@ -1775,9 +1775,9 @@ static LnResult HSPSubclass_LnUIGeneralEventHandler_DelegateLabelCaller(LnHandle
 {
     setCallbackArg(0, uigeneraleventhandler);
     setCallbackArg(1, p1);
-    auto* self = reinterpret_cast<HSPSubclass_LnUIGeneralEventHandler*>(LnUIGeneralEventHandler_GetSubinstanceId(uigeneraleventhandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnUIGeneralEventHandler*>(LnUIGeneralEventHandler_GetSubinstanceId(uigeneraleventhandler));
     stat = 0;
-    code_call(self->labelPointer);
+    code_call(localSelf->labelPointer);
     return static_cast<LnResult>(stat);
 }
 
@@ -1804,9 +1804,9 @@ static void HSPSubclass_LnUIEventHandler_SubinstanceFree(LnHandle handle, LnSubi
 static LnResult HSPSubclass_LnUIEventHandler_DelegateLabelCaller(LnHandle uieventhandler)
 {
     setCallbackArg(0, uieventhandler);
-    auto* self = reinterpret_cast<HSPSubclass_LnUIEventHandler*>(LnUIEventHandler_GetSubinstanceId(uieventhandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnUIEventHandler*>(LnUIEventHandler_GetSubinstanceId(uieventhandler));
     stat = 0;
-    code_call(self->labelPointer);
+    code_call(localSelf->labelPointer);
     return static_cast<LnResult>(stat);
 }
 
@@ -1998,6 +1998,2454 @@ static void HSPSubclass_LnDebug_SubinstanceFree(LnHandle handle, LnSubinstanceId
 {
     free(reinterpret_cast<void*>(subinstance));
 }
+
+
+//==============================================================================
+// ObjectSerializeHandler
+
+struct HSPSubclass_LnObjectSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnObjectSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnObjectSerializeHandler)));
+}
+
+static void HSPSubclass_LnObjectSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnObjectSerializeHandler_DelegateLabelCaller(LnHandle objectserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, objectserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnObjectSerializeHandler*>(LnObjectSerializeHandler_GetSubinstanceId(objectserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// ObjectSerialize2Handler
+
+struct HSPSubclass_LnObjectSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnObjectSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnObjectSerialize2Handler)));
+}
+
+static void HSPSubclass_LnObjectSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnObjectSerialize2Handler_DelegateLabelCaller(LnHandle objectserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, objectserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnObjectSerialize2Handler*>(LnObjectSerialize2Handler_GetSubinstanceId(objectserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// EventConnectionSerializeHandler
+
+struct HSPSubclass_LnEventConnectionSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnEventConnectionSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnEventConnectionSerializeHandler)));
+}
+
+static void HSPSubclass_LnEventConnectionSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnEventConnectionSerializeHandler_DelegateLabelCaller(LnHandle eventconnectionserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, eventconnectionserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnEventConnectionSerializeHandler*>(LnEventConnectionSerializeHandler_GetSubinstanceId(eventconnectionserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// EventConnectionSerialize2Handler
+
+struct HSPSubclass_LnEventConnectionSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnEventConnectionSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnEventConnectionSerialize2Handler)));
+}
+
+static void HSPSubclass_LnEventConnectionSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnEventConnectionSerialize2Handler_DelegateLabelCaller(LnHandle eventconnectionserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, eventconnectionserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnEventConnectionSerialize2Handler*>(LnEventConnectionSerialize2Handler_GetSubinstanceId(eventconnectionserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// ZVTestClass1SerializeHandler
+
+struct HSPSubclass_LnZVTestClass1SerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnZVTestClass1SerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestClass1SerializeHandler)));
+}
+
+static void HSPSubclass_LnZVTestClass1SerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnZVTestClass1SerializeHandler_DelegateLabelCaller(LnHandle zvtestclass1serializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, zvtestclass1serializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestClass1SerializeHandler*>(LnZVTestClass1SerializeHandler_GetSubinstanceId(zvtestclass1serializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// ZVTestClass1Serialize2Handler
+
+struct HSPSubclass_LnZVTestClass1Serialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnZVTestClass1Serialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestClass1Serialize2Handler)));
+}
+
+static void HSPSubclass_LnZVTestClass1Serialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnZVTestClass1Serialize2Handler_DelegateLabelCaller(LnHandle zvtestclass1serialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, zvtestclass1serialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestClass1Serialize2Handler*>(LnZVTestClass1Serialize2Handler_GetSubinstanceId(zvtestclass1serialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// ZVTestEventArgs1SerializeHandler
+
+struct HSPSubclass_LnZVTestEventArgs1SerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnZVTestEventArgs1SerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestEventArgs1SerializeHandler)));
+}
+
+static void HSPSubclass_LnZVTestEventArgs1SerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnZVTestEventArgs1SerializeHandler_DelegateLabelCaller(LnHandle zvtesteventargs1serializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, zvtesteventargs1serializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventArgs1SerializeHandler*>(LnZVTestEventArgs1SerializeHandler_GetSubinstanceId(zvtesteventargs1serializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// ZVTestEventArgs1Serialize2Handler
+
+struct HSPSubclass_LnZVTestEventArgs1Serialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnZVTestEventArgs1Serialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestEventArgs1Serialize2Handler)));
+}
+
+static void HSPSubclass_LnZVTestEventArgs1Serialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnZVTestEventArgs1Serialize2Handler_DelegateLabelCaller(LnHandle zvtesteventargs1serialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, zvtesteventargs1serialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventArgs1Serialize2Handler*>(LnZVTestEventArgs1Serialize2Handler_GetSubinstanceId(zvtesteventargs1serialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// SerializerSerializeHandler
+
+struct HSPSubclass_LnSerializerSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnSerializerSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSerializerSerializeHandler)));
+}
+
+static void HSPSubclass_LnSerializerSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnSerializerSerializeHandler_DelegateLabelCaller(LnHandle serializerserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, serializerserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnSerializerSerializeHandler*>(LnSerializerSerializeHandler_GetSubinstanceId(serializerserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// SerializerSerialize2Handler
+
+struct HSPSubclass_LnSerializerSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnSerializerSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSerializerSerialize2Handler)));
+}
+
+static void HSPSubclass_LnSerializerSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnSerializerSerialize2Handler_DelegateLabelCaller(LnHandle serializerserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, serializerserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnSerializerSerialize2Handler*>(LnSerializerSerialize2Handler_GetSubinstanceId(serializerserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// Serializer2SerializeHandler
+
+struct HSPSubclass_LnSerializer2SerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnSerializer2SerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSerializer2SerializeHandler)));
+}
+
+static void HSPSubclass_LnSerializer2SerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnSerializer2SerializeHandler_DelegateLabelCaller(LnHandle serializer2serializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, serializer2serializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnSerializer2SerializeHandler*>(LnSerializer2SerializeHandler_GetSubinstanceId(serializer2serializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// Serializer2Serialize2Handler
+
+struct HSPSubclass_LnSerializer2Serialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnSerializer2Serialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSerializer2Serialize2Handler)));
+}
+
+static void HSPSubclass_LnSerializer2Serialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnSerializer2Serialize2Handler_DelegateLabelCaller(LnHandle serializer2serialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, serializer2serialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnSerializer2Serialize2Handler*>(LnSerializer2Serialize2Handler_GetSubinstanceId(serializer2serialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// AssetModelSerializeHandler
+
+struct HSPSubclass_LnAssetModelSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnAssetModelSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnAssetModelSerializeHandler)));
+}
+
+static void HSPSubclass_LnAssetModelSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnAssetModelSerializeHandler_DelegateLabelCaller(LnHandle assetmodelserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, assetmodelserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnAssetModelSerializeHandler*>(LnAssetModelSerializeHandler_GetSubinstanceId(assetmodelserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// AssetModelSerialize2Handler
+
+struct HSPSubclass_LnAssetModelSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnAssetModelSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnAssetModelSerialize2Handler)));
+}
+
+static void HSPSubclass_LnAssetModelSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnAssetModelSerialize2Handler_DelegateLabelCaller(LnHandle assetmodelserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, assetmodelserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnAssetModelSerialize2Handler*>(LnAssetModelSerialize2Handler_GetSubinstanceId(assetmodelserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// TextureSerializeHandler
+
+struct HSPSubclass_LnTextureSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnTextureSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnTextureSerializeHandler)));
+}
+
+static void HSPSubclass_LnTextureSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnTextureSerializeHandler_DelegateLabelCaller(LnHandle textureserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, textureserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnTextureSerializeHandler*>(LnTextureSerializeHandler_GetSubinstanceId(textureserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// TextureSerialize2Handler
+
+struct HSPSubclass_LnTextureSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnTextureSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnTextureSerialize2Handler)));
+}
+
+static void HSPSubclass_LnTextureSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnTextureSerialize2Handler_DelegateLabelCaller(LnHandle textureserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, textureserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnTextureSerialize2Handler*>(LnTextureSerialize2Handler_GetSubinstanceId(textureserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// Texture2DSerializeHandler
+
+struct HSPSubclass_LnTexture2DSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnTexture2DSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnTexture2DSerializeHandler)));
+}
+
+static void HSPSubclass_LnTexture2DSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnTexture2DSerializeHandler_DelegateLabelCaller(LnHandle texture2dserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, texture2dserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnTexture2DSerializeHandler*>(LnTexture2DSerializeHandler_GetSubinstanceId(texture2dserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// Texture2DSerialize2Handler
+
+struct HSPSubclass_LnTexture2DSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnTexture2DSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnTexture2DSerialize2Handler)));
+}
+
+static void HSPSubclass_LnTexture2DSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnTexture2DSerialize2Handler_DelegateLabelCaller(LnHandle texture2dserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, texture2dserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnTexture2DSerialize2Handler*>(LnTexture2DSerialize2Handler_GetSubinstanceId(texture2dserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// RenderViewSerializeHandler
+
+struct HSPSubclass_LnRenderViewSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnRenderViewSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnRenderViewSerializeHandler)));
+}
+
+static void HSPSubclass_LnRenderViewSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnRenderViewSerializeHandler_DelegateLabelCaller(LnHandle renderviewserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, renderviewserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnRenderViewSerializeHandler*>(LnRenderViewSerializeHandler_GetSubinstanceId(renderviewserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// RenderViewSerialize2Handler
+
+struct HSPSubclass_LnRenderViewSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnRenderViewSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnRenderViewSerialize2Handler)));
+}
+
+static void HSPSubclass_LnRenderViewSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnRenderViewSerialize2Handler_DelegateLabelCaller(LnHandle renderviewserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, renderviewserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnRenderViewSerialize2Handler*>(LnRenderViewSerialize2Handler_GetSubinstanceId(renderviewserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// ComponentSerializeHandler
+
+struct HSPSubclass_LnComponentSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnComponentSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnComponentSerializeHandler)));
+}
+
+static void HSPSubclass_LnComponentSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnComponentSerializeHandler_DelegateLabelCaller(LnHandle componentserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, componentserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnComponentSerializeHandler*>(LnComponentSerializeHandler_GetSubinstanceId(componentserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// ComponentSerialize2Handler
+
+struct HSPSubclass_LnComponentSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnComponentSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnComponentSerialize2Handler)));
+}
+
+static void HSPSubclass_LnComponentSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnComponentSerialize2Handler_DelegateLabelCaller(LnHandle componentserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, componentserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnComponentSerialize2Handler*>(LnComponentSerialize2Handler_GetSubinstanceId(componentserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// VisualComponentSerializeHandler
+
+struct HSPSubclass_LnVisualComponentSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnVisualComponentSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnVisualComponentSerializeHandler)));
+}
+
+static void HSPSubclass_LnVisualComponentSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnVisualComponentSerializeHandler_DelegateLabelCaller(LnHandle visualcomponentserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, visualcomponentserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualComponentSerializeHandler*>(LnVisualComponentSerializeHandler_GetSubinstanceId(visualcomponentserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// VisualComponentSerialize2Handler
+
+struct HSPSubclass_LnVisualComponentSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnVisualComponentSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnVisualComponentSerialize2Handler)));
+}
+
+static void HSPSubclass_LnVisualComponentSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnVisualComponentSerialize2Handler_DelegateLabelCaller(LnHandle visualcomponentserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, visualcomponentserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualComponentSerialize2Handler*>(LnVisualComponentSerialize2Handler_GetSubinstanceId(visualcomponentserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// SpriteComponentSerializeHandler
+
+struct HSPSubclass_LnSpriteComponentSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnSpriteComponentSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpriteComponentSerializeHandler)));
+}
+
+static void HSPSubclass_LnSpriteComponentSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnSpriteComponentSerializeHandler_DelegateLabelCaller(LnHandle spritecomponentserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, spritecomponentserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteComponentSerializeHandler*>(LnSpriteComponentSerializeHandler_GetSubinstanceId(spritecomponentserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// SpriteComponentSerialize2Handler
+
+struct HSPSubclass_LnSpriteComponentSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnSpriteComponentSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpriteComponentSerialize2Handler)));
+}
+
+static void HSPSubclass_LnSpriteComponentSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnSpriteComponentSerialize2Handler_DelegateLabelCaller(LnHandle spritecomponentserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, spritecomponentserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteComponentSerialize2Handler*>(LnSpriteComponentSerialize2Handler_GetSubinstanceId(spritecomponentserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// WorldSerializeHandler
+
+struct HSPSubclass_LnWorldSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnWorldSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorldSerializeHandler)));
+}
+
+static void HSPSubclass_LnWorldSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnWorldSerializeHandler_DelegateLabelCaller(LnHandle worldserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, worldserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldSerializeHandler*>(LnWorldSerializeHandler_GetSubinstanceId(worldserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// WorldSerialize2Handler
+
+struct HSPSubclass_LnWorldSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnWorldSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorldSerialize2Handler)));
+}
+
+static void HSPSubclass_LnWorldSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnWorldSerialize2Handler_DelegateLabelCaller(LnHandle worldserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, worldserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldSerialize2Handler*>(LnWorldSerialize2Handler_GetSubinstanceId(worldserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// ComponentListSerializeHandler
+
+struct HSPSubclass_LnComponentListSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnComponentListSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnComponentListSerializeHandler)));
+}
+
+static void HSPSubclass_LnComponentListSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnComponentListSerializeHandler_DelegateLabelCaller(LnHandle componentlistserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, componentlistserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnComponentListSerializeHandler*>(LnComponentListSerializeHandler_GetSubinstanceId(componentlistserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// ComponentListSerialize2Handler
+
+struct HSPSubclass_LnComponentListSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnComponentListSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnComponentListSerialize2Handler)));
+}
+
+static void HSPSubclass_LnComponentListSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnComponentListSerialize2Handler_DelegateLabelCaller(LnHandle componentlistserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, componentlistserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnComponentListSerialize2Handler*>(LnComponentListSerialize2Handler_GetSubinstanceId(componentlistserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// WorldObjectSerializeHandler
+
+struct HSPSubclass_LnWorldObjectSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnWorldObjectSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorldObjectSerializeHandler)));
+}
+
+static void HSPSubclass_LnWorldObjectSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnWorldObjectSerializeHandler_DelegateLabelCaller(LnHandle worldobjectserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, worldobjectserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldObjectSerializeHandler*>(LnWorldObjectSerializeHandler_GetSubinstanceId(worldobjectserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// WorldObjectSerialize2Handler
+
+struct HSPSubclass_LnWorldObjectSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnWorldObjectSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorldObjectSerialize2Handler)));
+}
+
+static void HSPSubclass_LnWorldObjectSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnWorldObjectSerialize2Handler_DelegateLabelCaller(LnHandle worldobjectserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, worldobjectserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldObjectSerialize2Handler*>(LnWorldObjectSerialize2Handler_GetSubinstanceId(worldobjectserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// WorldObjectUpdateHandler
+
+struct HSPSubclass_LnWorldObjectUpdateHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnWorldObjectUpdateHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorldObjectUpdateHandler)));
+}
+
+static void HSPSubclass_LnWorldObjectUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnWorldObjectUpdateHandler_DelegateLabelCaller(LnHandle worldobjectupdatehandler, LnHandle self, float elapsedSeconds)
+{
+    setCallbackArg(0, worldobjectupdatehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, elapsedSeconds);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldObjectUpdateHandler*>(LnWorldObjectUpdateHandler_GetSubinstanceId(worldobjectupdatehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// VisualObjectSerializeHandler
+
+struct HSPSubclass_LnVisualObjectSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnVisualObjectSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnVisualObjectSerializeHandler)));
+}
+
+static void HSPSubclass_LnVisualObjectSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnVisualObjectSerializeHandler_DelegateLabelCaller(LnHandle visualobjectserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, visualobjectserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualObjectSerializeHandler*>(LnVisualObjectSerializeHandler_GetSubinstanceId(visualobjectserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// VisualObjectSerialize2Handler
+
+struct HSPSubclass_LnVisualObjectSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnVisualObjectSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnVisualObjectSerialize2Handler)));
+}
+
+static void HSPSubclass_LnVisualObjectSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnVisualObjectSerialize2Handler_DelegateLabelCaller(LnHandle visualobjectserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, visualobjectserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualObjectSerialize2Handler*>(LnVisualObjectSerialize2Handler_GetSubinstanceId(visualobjectserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// VisualObjectUpdateHandler
+
+struct HSPSubclass_LnVisualObjectUpdateHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnVisualObjectUpdateHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnVisualObjectUpdateHandler)));
+}
+
+static void HSPSubclass_LnVisualObjectUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnVisualObjectUpdateHandler_DelegateLabelCaller(LnHandle visualobjectupdatehandler, LnHandle self, float elapsedSeconds)
+{
+    setCallbackArg(0, visualobjectupdatehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, elapsedSeconds);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualObjectUpdateHandler*>(LnVisualObjectUpdateHandler_GetSubinstanceId(visualobjectupdatehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// CameraSerializeHandler
+
+struct HSPSubclass_LnCameraSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnCameraSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnCameraSerializeHandler)));
+}
+
+static void HSPSubclass_LnCameraSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnCameraSerializeHandler_DelegateLabelCaller(LnHandle cameraserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, cameraserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraSerializeHandler*>(LnCameraSerializeHandler_GetSubinstanceId(cameraserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// CameraSerialize2Handler
+
+struct HSPSubclass_LnCameraSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnCameraSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnCameraSerialize2Handler)));
+}
+
+static void HSPSubclass_LnCameraSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnCameraSerialize2Handler_DelegateLabelCaller(LnHandle cameraserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, cameraserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraSerialize2Handler*>(LnCameraSerialize2Handler_GetSubinstanceId(cameraserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// CameraUpdateHandler
+
+struct HSPSubclass_LnCameraUpdateHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnCameraUpdateHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnCameraUpdateHandler)));
+}
+
+static void HSPSubclass_LnCameraUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnCameraUpdateHandler_DelegateLabelCaller(LnHandle cameraupdatehandler, LnHandle self, float elapsedSeconds)
+{
+    setCallbackArg(0, cameraupdatehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, elapsedSeconds);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraUpdateHandler*>(LnCameraUpdateHandler_GetSubinstanceId(cameraupdatehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// DirectionalLightSerializeHandler
+
+struct HSPSubclass_LnDirectionalLightSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnDirectionalLightSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnDirectionalLightSerializeHandler)));
+}
+
+static void HSPSubclass_LnDirectionalLightSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnDirectionalLightSerializeHandler_DelegateLabelCaller(LnHandle directionallightserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, directionallightserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnDirectionalLightSerializeHandler*>(LnDirectionalLightSerializeHandler_GetSubinstanceId(directionallightserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// DirectionalLightSerialize2Handler
+
+struct HSPSubclass_LnDirectionalLightSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnDirectionalLightSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnDirectionalLightSerialize2Handler)));
+}
+
+static void HSPSubclass_LnDirectionalLightSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnDirectionalLightSerialize2Handler_DelegateLabelCaller(LnHandle directionallightserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, directionallightserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnDirectionalLightSerialize2Handler*>(LnDirectionalLightSerialize2Handler_GetSubinstanceId(directionallightserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// DirectionalLightUpdateHandler
+
+struct HSPSubclass_LnDirectionalLightUpdateHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnDirectionalLightUpdateHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnDirectionalLightUpdateHandler)));
+}
+
+static void HSPSubclass_LnDirectionalLightUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnDirectionalLightUpdateHandler_DelegateLabelCaller(LnHandle directionallightupdatehandler, LnHandle self, float elapsedSeconds)
+{
+    setCallbackArg(0, directionallightupdatehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, elapsedSeconds);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnDirectionalLightUpdateHandler*>(LnDirectionalLightUpdateHandler_GetSubinstanceId(directionallightupdatehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// PointLightSerializeHandler
+
+struct HSPSubclass_LnPointLightSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnPointLightSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnPointLightSerializeHandler)));
+}
+
+static void HSPSubclass_LnPointLightSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnPointLightSerializeHandler_DelegateLabelCaller(LnHandle pointlightserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, pointlightserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnPointLightSerializeHandler*>(LnPointLightSerializeHandler_GetSubinstanceId(pointlightserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// PointLightSerialize2Handler
+
+struct HSPSubclass_LnPointLightSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnPointLightSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnPointLightSerialize2Handler)));
+}
+
+static void HSPSubclass_LnPointLightSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnPointLightSerialize2Handler_DelegateLabelCaller(LnHandle pointlightserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, pointlightserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnPointLightSerialize2Handler*>(LnPointLightSerialize2Handler_GetSubinstanceId(pointlightserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// PointLightUpdateHandler
+
+struct HSPSubclass_LnPointLightUpdateHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnPointLightUpdateHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnPointLightUpdateHandler)));
+}
+
+static void HSPSubclass_LnPointLightUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnPointLightUpdateHandler_DelegateLabelCaller(LnHandle pointlightupdatehandler, LnHandle self, float elapsedSeconds)
+{
+    setCallbackArg(0, pointlightupdatehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, elapsedSeconds);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnPointLightUpdateHandler*>(LnPointLightUpdateHandler_GetSubinstanceId(pointlightupdatehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// SpotLightSerializeHandler
+
+struct HSPSubclass_LnSpotLightSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnSpotLightSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpotLightSerializeHandler)));
+}
+
+static void HSPSubclass_LnSpotLightSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnSpotLightSerializeHandler_DelegateLabelCaller(LnHandle spotlightserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, spotlightserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnSpotLightSerializeHandler*>(LnSpotLightSerializeHandler_GetSubinstanceId(spotlightserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// SpotLightSerialize2Handler
+
+struct HSPSubclass_LnSpotLightSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnSpotLightSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpotLightSerialize2Handler)));
+}
+
+static void HSPSubclass_LnSpotLightSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnSpotLightSerialize2Handler_DelegateLabelCaller(LnHandle spotlightserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, spotlightserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnSpotLightSerialize2Handler*>(LnSpotLightSerialize2Handler_GetSubinstanceId(spotlightserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// SpotLightUpdateHandler
+
+struct HSPSubclass_LnSpotLightUpdateHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnSpotLightUpdateHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpotLightUpdateHandler)));
+}
+
+static void HSPSubclass_LnSpotLightUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnSpotLightUpdateHandler_DelegateLabelCaller(LnHandle spotlightupdatehandler, LnHandle self, float elapsedSeconds)
+{
+    setCallbackArg(0, spotlightupdatehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, elapsedSeconds);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnSpotLightUpdateHandler*>(LnSpotLightUpdateHandler_GetSubinstanceId(spotlightupdatehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// SpriteSerializeHandler
+
+struct HSPSubclass_LnSpriteSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnSpriteSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpriteSerializeHandler)));
+}
+
+static void HSPSubclass_LnSpriteSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnSpriteSerializeHandler_DelegateLabelCaller(LnHandle spriteserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, spriteserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteSerializeHandler*>(LnSpriteSerializeHandler_GetSubinstanceId(spriteserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// SpriteSerialize2Handler
+
+struct HSPSubclass_LnSpriteSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnSpriteSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpriteSerialize2Handler)));
+}
+
+static void HSPSubclass_LnSpriteSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnSpriteSerialize2Handler_DelegateLabelCaller(LnHandle spriteserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, spriteserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteSerialize2Handler*>(LnSpriteSerialize2Handler_GetSubinstanceId(spriteserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// SpriteUpdateHandler
+
+struct HSPSubclass_LnSpriteUpdateHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnSpriteUpdateHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpriteUpdateHandler)));
+}
+
+static void HSPSubclass_LnSpriteUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnSpriteUpdateHandler_DelegateLabelCaller(LnHandle spriteupdatehandler, LnHandle self, float elapsedSeconds)
+{
+    setCallbackArg(0, spriteupdatehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, elapsedSeconds);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteUpdateHandler*>(LnSpriteUpdateHandler_GetSubinstanceId(spriteupdatehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// CameraOrbitControlComponentSerializeHandler
+
+struct HSPSubclass_LnCameraOrbitControlComponentSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnCameraOrbitControlComponentSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnCameraOrbitControlComponentSerializeHandler)));
+}
+
+static void HSPSubclass_LnCameraOrbitControlComponentSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnCameraOrbitControlComponentSerializeHandler_DelegateLabelCaller(LnHandle cameraorbitcontrolcomponentserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, cameraorbitcontrolcomponentserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraOrbitControlComponentSerializeHandler*>(LnCameraOrbitControlComponentSerializeHandler_GetSubinstanceId(cameraorbitcontrolcomponentserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// CameraOrbitControlComponentSerialize2Handler
+
+struct HSPSubclass_LnCameraOrbitControlComponentSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnCameraOrbitControlComponentSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnCameraOrbitControlComponentSerialize2Handler)));
+}
+
+static void HSPSubclass_LnCameraOrbitControlComponentSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnCameraOrbitControlComponentSerialize2Handler_DelegateLabelCaller(LnHandle cameraorbitcontrolcomponentserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, cameraorbitcontrolcomponentserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraOrbitControlComponentSerialize2Handler*>(LnCameraOrbitControlComponentSerialize2Handler_GetSubinstanceId(cameraorbitcontrolcomponentserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// RaycasterSerializeHandler
+
+struct HSPSubclass_LnRaycasterSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnRaycasterSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnRaycasterSerializeHandler)));
+}
+
+static void HSPSubclass_LnRaycasterSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnRaycasterSerializeHandler_DelegateLabelCaller(LnHandle raycasterserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, raycasterserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnRaycasterSerializeHandler*>(LnRaycasterSerializeHandler_GetSubinstanceId(raycasterserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// RaycasterSerialize2Handler
+
+struct HSPSubclass_LnRaycasterSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnRaycasterSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnRaycasterSerialize2Handler)));
+}
+
+static void HSPSubclass_LnRaycasterSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnRaycasterSerialize2Handler_DelegateLabelCaller(LnHandle raycasterserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, raycasterserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnRaycasterSerialize2Handler*>(LnRaycasterSerialize2Handler_GetSubinstanceId(raycasterserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// RaycastResultSerializeHandler
+
+struct HSPSubclass_LnRaycastResultSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnRaycastResultSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnRaycastResultSerializeHandler)));
+}
+
+static void HSPSubclass_LnRaycastResultSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnRaycastResultSerializeHandler_DelegateLabelCaller(LnHandle raycastresultserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, raycastresultserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnRaycastResultSerializeHandler*>(LnRaycastResultSerializeHandler_GetSubinstanceId(raycastresultserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// RaycastResultSerialize2Handler
+
+struct HSPSubclass_LnRaycastResultSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnRaycastResultSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnRaycastResultSerialize2Handler)));
+}
+
+static void HSPSubclass_LnRaycastResultSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnRaycastResultSerialize2Handler_DelegateLabelCaller(LnHandle raycastresultserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, raycastresultserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnRaycastResultSerialize2Handler*>(LnRaycastResultSerialize2Handler_GetSubinstanceId(raycastresultserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// WorldRenderViewSerializeHandler
+
+struct HSPSubclass_LnWorldRenderViewSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnWorldRenderViewSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorldRenderViewSerializeHandler)));
+}
+
+static void HSPSubclass_LnWorldRenderViewSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnWorldRenderViewSerializeHandler_DelegateLabelCaller(LnHandle worldrenderviewserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, worldrenderviewserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldRenderViewSerializeHandler*>(LnWorldRenderViewSerializeHandler_GetSubinstanceId(worldrenderviewserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// WorldRenderViewSerialize2Handler
+
+struct HSPSubclass_LnWorldRenderViewSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnWorldRenderViewSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorldRenderViewSerialize2Handler)));
+}
+
+static void HSPSubclass_LnWorldRenderViewSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnWorldRenderViewSerialize2Handler_DelegateLabelCaller(LnHandle worldrenderviewserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, worldrenderviewserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldRenderViewSerialize2Handler*>(LnWorldRenderViewSerialize2Handler_GetSubinstanceId(worldrenderviewserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// BoxMeshSerializeHandler
+
+struct HSPSubclass_LnBoxMeshSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnBoxMeshSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnBoxMeshSerializeHandler)));
+}
+
+static void HSPSubclass_LnBoxMeshSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnBoxMeshSerializeHandler_DelegateLabelCaller(LnHandle boxmeshserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, boxmeshserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnBoxMeshSerializeHandler*>(LnBoxMeshSerializeHandler_GetSubinstanceId(boxmeshserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// BoxMeshSerialize2Handler
+
+struct HSPSubclass_LnBoxMeshSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnBoxMeshSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnBoxMeshSerialize2Handler)));
+}
+
+static void HSPSubclass_LnBoxMeshSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnBoxMeshSerialize2Handler_DelegateLabelCaller(LnHandle boxmeshserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, boxmeshserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnBoxMeshSerialize2Handler*>(LnBoxMeshSerialize2Handler_GetSubinstanceId(boxmeshserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// BoxMeshUpdateHandler
+
+struct HSPSubclass_LnBoxMeshUpdateHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnBoxMeshUpdateHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnBoxMeshUpdateHandler)));
+}
+
+static void HSPSubclass_LnBoxMeshUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnBoxMeshUpdateHandler_DelegateLabelCaller(LnHandle boxmeshupdatehandler, LnHandle self, float elapsedSeconds)
+{
+    setCallbackArg(0, boxmeshupdatehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, elapsedSeconds);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnBoxMeshUpdateHandler*>(LnBoxMeshUpdateHandler_GetSubinstanceId(boxmeshupdatehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// PlaneMeshSerializeHandler
+
+struct HSPSubclass_LnPlaneMeshSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnPlaneMeshSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnPlaneMeshSerializeHandler)));
+}
+
+static void HSPSubclass_LnPlaneMeshSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnPlaneMeshSerializeHandler_DelegateLabelCaller(LnHandle planemeshserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, planemeshserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnPlaneMeshSerializeHandler*>(LnPlaneMeshSerializeHandler_GetSubinstanceId(planemeshserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// PlaneMeshSerialize2Handler
+
+struct HSPSubclass_LnPlaneMeshSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnPlaneMeshSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnPlaneMeshSerialize2Handler)));
+}
+
+static void HSPSubclass_LnPlaneMeshSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnPlaneMeshSerialize2Handler_DelegateLabelCaller(LnHandle planemeshserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, planemeshserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnPlaneMeshSerialize2Handler*>(LnPlaneMeshSerialize2Handler_GetSubinstanceId(planemeshserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// PlaneMeshUpdateHandler
+
+struct HSPSubclass_LnPlaneMeshUpdateHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnPlaneMeshUpdateHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnPlaneMeshUpdateHandler)));
+}
+
+static void HSPSubclass_LnPlaneMeshUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnPlaneMeshUpdateHandler_DelegateLabelCaller(LnHandle planemeshupdatehandler, LnHandle self, float elapsedSeconds)
+{
+    setCallbackArg(0, planemeshupdatehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, elapsedSeconds);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnPlaneMeshUpdateHandler*>(LnPlaneMeshUpdateHandler_GetSubinstanceId(planemeshupdatehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// UIEventArgsSerializeHandler
+
+struct HSPSubclass_LnUIEventArgsSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnUIEventArgsSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUIEventArgsSerializeHandler)));
+}
+
+static void HSPSubclass_LnUIEventArgsSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnUIEventArgsSerializeHandler_DelegateLabelCaller(LnHandle uieventargsserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, uieventargsserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnUIEventArgsSerializeHandler*>(LnUIEventArgsSerializeHandler_GetSubinstanceId(uieventargsserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// UIEventArgsSerialize2Handler
+
+struct HSPSubclass_LnUIEventArgsSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnUIEventArgsSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUIEventArgsSerialize2Handler)));
+}
+
+static void HSPSubclass_LnUIEventArgsSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnUIEventArgsSerialize2Handler_DelegateLabelCaller(LnHandle uieventargsserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, uieventargsserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnUIEventArgsSerialize2Handler*>(LnUIEventArgsSerialize2Handler_GetSubinstanceId(uieventargsserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// UILayoutElementSerializeHandler
+
+struct HSPSubclass_LnUILayoutElementSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnUILayoutElementSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUILayoutElementSerializeHandler)));
+}
+
+static void HSPSubclass_LnUILayoutElementSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnUILayoutElementSerializeHandler_DelegateLabelCaller(LnHandle uilayoutelementserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, uilayoutelementserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnUILayoutElementSerializeHandler*>(LnUILayoutElementSerializeHandler_GetSubinstanceId(uilayoutelementserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// UILayoutElementSerialize2Handler
+
+struct HSPSubclass_LnUILayoutElementSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnUILayoutElementSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUILayoutElementSerialize2Handler)));
+}
+
+static void HSPSubclass_LnUILayoutElementSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnUILayoutElementSerialize2Handler_DelegateLabelCaller(LnHandle uilayoutelementserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, uilayoutelementserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnUILayoutElementSerialize2Handler*>(LnUILayoutElementSerialize2Handler_GetSubinstanceId(uilayoutelementserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// UIElementSerializeHandler
+
+struct HSPSubclass_LnUIElementSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnUIElementSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUIElementSerializeHandler)));
+}
+
+static void HSPSubclass_LnUIElementSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnUIElementSerializeHandler_DelegateLabelCaller(LnHandle uielementserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, uielementserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnUIElementSerializeHandler*>(LnUIElementSerializeHandler_GetSubinstanceId(uielementserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// UIElementSerialize2Handler
+
+struct HSPSubclass_LnUIElementSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnUIElementSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUIElementSerialize2Handler)));
+}
+
+static void HSPSubclass_LnUIElementSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnUIElementSerialize2Handler_DelegateLabelCaller(LnHandle uielementserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, uielementserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnUIElementSerialize2Handler*>(LnUIElementSerialize2Handler_GetSubinstanceId(uielementserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// UITextBlockSerializeHandler
+
+struct HSPSubclass_LnUITextBlockSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnUITextBlockSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUITextBlockSerializeHandler)));
+}
+
+static void HSPSubclass_LnUITextBlockSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnUITextBlockSerializeHandler_DelegateLabelCaller(LnHandle uitextblockserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, uitextblockserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnUITextBlockSerializeHandler*>(LnUITextBlockSerializeHandler_GetSubinstanceId(uitextblockserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// UITextBlockSerialize2Handler
+
+struct HSPSubclass_LnUITextBlockSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnUITextBlockSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUITextBlockSerialize2Handler)));
+}
+
+static void HSPSubclass_LnUITextBlockSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnUITextBlockSerialize2Handler_DelegateLabelCaller(LnHandle uitextblockserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, uitextblockserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnUITextBlockSerialize2Handler*>(LnUITextBlockSerialize2Handler_GetSubinstanceId(uitextblockserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// UISpriteSerializeHandler
+
+struct HSPSubclass_LnUISpriteSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnUISpriteSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUISpriteSerializeHandler)));
+}
+
+static void HSPSubclass_LnUISpriteSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnUISpriteSerializeHandler_DelegateLabelCaller(LnHandle uispriteserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, uispriteserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnUISpriteSerializeHandler*>(LnUISpriteSerializeHandler_GetSubinstanceId(uispriteserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// UISpriteSerialize2Handler
+
+struct HSPSubclass_LnUISpriteSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnUISpriteSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUISpriteSerialize2Handler)));
+}
+
+static void HSPSubclass_LnUISpriteSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnUISpriteSerialize2Handler_DelegateLabelCaller(LnHandle uispriteserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, uispriteserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnUISpriteSerialize2Handler*>(LnUISpriteSerialize2Handler_GetSubinstanceId(uispriteserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// ApplicationSerializeHandler
+
+struct HSPSubclass_LnApplicationSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnApplicationSerializeHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnApplicationSerializeHandler)));
+}
+
+static void HSPSubclass_LnApplicationSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnApplicationSerializeHandler_DelegateLabelCaller(LnHandle applicationserializehandler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, applicationserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationSerializeHandler*>(LnApplicationSerializeHandler_GetSubinstanceId(applicationserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// ApplicationSerialize2Handler
+
+struct HSPSubclass_LnApplicationSerialize2Handler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnApplicationSerialize2Handler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnApplicationSerialize2Handler)));
+}
+
+static void HSPSubclass_LnApplicationSerialize2Handler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnApplicationSerialize2Handler_DelegateLabelCaller(LnHandle applicationserialize2handler, LnHandle self, LnHandle ar)
+{
+    setCallbackArg(0, applicationserialize2handler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationSerialize2Handler*>(LnApplicationSerialize2Handler_GetSubinstanceId(applicationserialize2handler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// ApplicationInitHandler
+
+struct HSPSubclass_LnApplicationInitHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnApplicationInitHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnApplicationInitHandler)));
+}
+
+static void HSPSubclass_LnApplicationInitHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnApplicationInitHandler_DelegateLabelCaller(LnHandle applicationinithandler, LnHandle self)
+{
+    setCallbackArg(0, applicationinithandler);
+    setCallbackArg(1, self);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationInitHandler*>(LnApplicationInitHandler_GetSubinstanceId(applicationinithandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
+
+//==============================================================================
+// ApplicationUpdateHandler
+
+struct HSPSubclass_LnApplicationUpdateHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LnSubinstanceId HSPSubclass_LnApplicationUpdateHandler_SubinstanceAlloc(LnHandle handle)
+{
+    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnApplicationUpdateHandler)));
+}
+
+static void HSPSubclass_LnApplicationUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LnResult HSPSubclass_LnApplicationUpdateHandler_DelegateLabelCaller(LnHandle applicationupdatehandler, LnHandle self)
+{
+    setCallbackArg(0, applicationupdatehandler);
+    setCallbackArg(1, self);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationUpdateHandler*>(LnApplicationUpdateHandler_GetSubinstanceId(applicationupdatehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LnResult>(stat);
+}
 bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr)
 {
     g_leadSupport = false;
@@ -2061,11 +4509,51 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     *retVal = RUNMODE_RUN;
     switch (cmd) {
         // LnObject_SetPrototype_OnSerialize
-        case 0x4E21 : {
+        case 0x4BB20 : {
+            // Fetch object
+            const auto local_object = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnObject_SetPrototype_OnSerialize(local_object, local_callback);
+
+
             return true;
         }
         // LnObject_SetPrototype_OnSerialize2
-        case 0x5022 : {
+        case 0x4C620 : {
+            // Fetch object
+            const auto local_object = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnObject_SetPrototype_OnSerialize2(local_object, local_callback);
+
+
+            return true;
+        }
+        // LnEventConnection_SetPrototype_OnSerialize
+        case 0x4D120 : {
+            // Fetch eventconnection
+            const auto local_eventconnection = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnEventConnection_SetPrototype_OnSerialize(local_eventconnection, local_callback);
+
+
+            return true;
+        }
+        // LnEventConnection_SetPrototype_OnSerialize2
+        case 0x4DC20 : {
+            // Fetch eventconnection
+            const auto local_eventconnection = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnEventConnection_SetPrototype_OnSerialize2(local_eventconnection, local_callback);
+
+
             return true;
         }
         // LnPromiseFailureDelegate_Create
@@ -2078,8 +4566,8 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             LnHandle local_outPromiseFailureDelegate;
 
             stat = LnPromiseFailureDelegate_Create(HSPSubclass_LnPromiseFailureDelegate_DelegateLabelCaller, &local_outPromiseFailureDelegate);
-            auto* self = reinterpret_cast<HSPSubclass_LnPromiseFailureDelegate*>(LnPromiseFailureDelegate_GetSubinstanceId(local_outPromiseFailureDelegate));
-            self->labelPointer = local_callback;
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnPromiseFailureDelegate*>(LnPromiseFailureDelegate_GetSubinstanceId(local_outPromiseFailureDelegate));
+            localSelf->labelPointer = local_callback;
             setVAInt(pval_outPromiseFailureDelegate, aptr_outPromiseFailureDelegate, local_outPromiseFailureDelegate);
 
             return true;
@@ -2094,8 +4582,8 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             LnHandle local_outZVTestDelegate1;
 
             stat = LnZVTestDelegate1_Create(HSPSubclass_LnZVTestDelegate1_DelegateLabelCaller, &local_outZVTestDelegate1);
-            auto* self = reinterpret_cast<HSPSubclass_LnZVTestDelegate1*>(LnZVTestDelegate1_GetSubinstanceId(local_outZVTestDelegate1));
-            self->labelPointer = local_callback;
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestDelegate1*>(LnZVTestDelegate1_GetSubinstanceId(local_outZVTestDelegate1));
+            localSelf->labelPointer = local_callback;
             setVAInt(pval_outZVTestDelegate1, aptr_outZVTestDelegate1, local_outZVTestDelegate1);
 
             return true;
@@ -2110,8 +4598,8 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             LnHandle local_outZVTestDelegate2;
 
             stat = LnZVTestDelegate2_Create(HSPSubclass_LnZVTestDelegate2_DelegateLabelCaller, &local_outZVTestDelegate2);
-            auto* self = reinterpret_cast<HSPSubclass_LnZVTestDelegate2*>(LnZVTestDelegate2_GetSubinstanceId(local_outZVTestDelegate2));
-            self->labelPointer = local_callback;
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestDelegate2*>(LnZVTestDelegate2_GetSubinstanceId(local_outZVTestDelegate2));
+            localSelf->labelPointer = local_callback;
             setVAInt(pval_outZVTestDelegate2, aptr_outZVTestDelegate2, local_outZVTestDelegate2);
 
             return true;
@@ -2126,8 +4614,8 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             LnHandle local_outZVTestDelegate3;
 
             stat = LnZVTestDelegate3_Create(HSPSubclass_LnZVTestDelegate3_DelegateLabelCaller, &local_outZVTestDelegate3);
-            auto* self = reinterpret_cast<HSPSubclass_LnZVTestDelegate3*>(LnZVTestDelegate3_GetSubinstanceId(local_outZVTestDelegate3));
-            self->labelPointer = local_callback;
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestDelegate3*>(LnZVTestDelegate3_GetSubinstanceId(local_outZVTestDelegate3));
+            localSelf->labelPointer = local_callback;
             setVAInt(pval_outZVTestDelegate3, aptr_outZVTestDelegate3, local_outZVTestDelegate3);
 
             return true;
@@ -2142,8 +4630,8 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             LnHandle local_outZVTestEventHandler1;
 
             stat = LnZVTestEventHandler1_Create(HSPSubclass_LnZVTestEventHandler1_DelegateLabelCaller, &local_outZVTestEventHandler1);
-            auto* self = reinterpret_cast<HSPSubclass_LnZVTestEventHandler1*>(LnZVTestEventHandler1_GetSubinstanceId(local_outZVTestEventHandler1));
-            self->labelPointer = local_callback;
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventHandler1*>(LnZVTestEventHandler1_GetSubinstanceId(local_outZVTestEventHandler1));
+            localSelf->labelPointer = local_callback;
             setVAInt(pval_outZVTestEventHandler1, aptr_outZVTestEventHandler1, local_outZVTestEventHandler1);
 
             return true;
@@ -2158,8 +4646,8 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             LnHandle local_outZVTestEventHandler2;
 
             stat = LnZVTestEventHandler2_Create(HSPSubclass_LnZVTestEventHandler2_DelegateLabelCaller, &local_outZVTestEventHandler2);
-            auto* self = reinterpret_cast<HSPSubclass_LnZVTestEventHandler2*>(LnZVTestEventHandler2_GetSubinstanceId(local_outZVTestEventHandler2));
-            self->labelPointer = local_callback;
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventHandler2*>(LnZVTestEventHandler2_GetSubinstanceId(local_outZVTestEventHandler2));
+            localSelf->labelPointer = local_callback;
             setVAInt(pval_outZVTestEventHandler2, aptr_outZVTestEventHandler2, local_outZVTestEventHandler2);
 
             return true;
@@ -2394,6 +4882,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnZVTestClass1_SetPrototype_OnSerialize
+        case 0x4E720 : {
+            // Fetch zvtestclass1
+            const auto local_zvtestclass1 = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnZVTestClass1_SetPrototype_OnSerialize(local_zvtestclass1, local_callback);
+
+
+            return true;
+        }
+        // LnZVTestClass1_SetPrototype_OnSerialize2
+        case 0x4F220 : {
+            // Fetch zvtestclass1
+            const auto local_zvtestclass1 = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnZVTestClass1_SetPrototype_OnSerialize2(local_zvtestclass1, local_callback);
+
+
+            return true;
+        }
         // LnZVTestEventArgs1_Create
         case 0x8020 : {
             // Fetch outZVTestEventArgs1
@@ -2431,6 +4943,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             stat = LnZVTestEventArgs1_GetValue(local_zvtesteventargs1, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
+
+            return true;
+        }
+        // LnZVTestEventArgs1_SetPrototype_OnSerialize
+        case 0x4FD20 : {
+            // Fetch zvtesteventargs1
+            const auto local_zvtesteventargs1 = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnZVTestEventArgs1_SetPrototype_OnSerialize(local_zvtesteventargs1, local_callback);
+
+
+            return true;
+        }
+        // LnZVTestEventArgs1_SetPrototype_OnSerialize2
+        case 0x50820 : {
+            // Fetch zvtesteventargs1
+            const auto local_zvtesteventargs1 = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnZVTestEventArgs1_SetPrototype_OnSerialize2(local_zvtesteventargs1, local_callback);
+
 
             return true;
         }
@@ -2616,6 +5152,54 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnSerializer_SetPrototype_OnSerialize
+        case 0x51320 : {
+            // Fetch serializer
+            const auto local_serializer = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnSerializer_SetPrototype_OnSerialize(local_serializer, local_callback);
+
+
+            return true;
+        }
+        // LnSerializer_SetPrototype_OnSerialize2
+        case 0x51E20 : {
+            // Fetch serializer
+            const auto local_serializer = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnSerializer_SetPrototype_OnSerialize2(local_serializer, local_callback);
+
+
+            return true;
+        }
+        // LnSerializer2_SetPrototype_OnSerialize
+        case 0x52920 : {
+            // Fetch serializer2
+            const auto local_serializer2 = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnSerializer2_SetPrototype_OnSerialize(local_serializer2, local_callback);
+
+
+            return true;
+        }
+        // LnSerializer2_SetPrototype_OnSerialize2
+        case 0x53420 : {
+            // Fetch serializer2
+            const auto local_serializer2 = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnSerializer2_SetPrototype_OnSerialize2(local_serializer2, local_callback);
+
+
+            return true;
+        }
         // LnAssetModel_Create
         case 0xAD20 : {
             // Fetch target
@@ -2641,6 +5225,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             stat = LnAssetModel_Target(local_assetmodel, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
+
+            return true;
+        }
+        // LnAssetModel_SetPrototype_OnSerialize
+        case 0x53F20 : {
+            // Fetch assetmodel
+            const auto local_assetmodel = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnAssetModel_SetPrototype_OnSerialize(local_assetmodel, local_callback);
+
+
+            return true;
+        }
+        // LnAssetModel_SetPrototype_OnSerialize2
+        case 0x54A20 : {
+            // Fetch assetmodel
+            const auto local_assetmodel = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnAssetModel_SetPrototype_OnSerialize2(local_assetmodel, local_callback);
+
 
             return true;
         }
@@ -2706,8 +5314,8 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             LnHandle local_outTexture2DDelegate;
 
             stat = LnTexture2DDelegate_Create(HSPSubclass_LnTexture2DDelegate_DelegateLabelCaller, &local_outTexture2DDelegate);
-            auto* self = reinterpret_cast<HSPSubclass_LnTexture2DDelegate*>(LnTexture2DDelegate_GetSubinstanceId(local_outTexture2DDelegate));
-            self->labelPointer = local_callback;
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnTexture2DDelegate*>(LnTexture2DDelegate_GetSubinstanceId(local_outTexture2DDelegate));
+            localSelf->labelPointer = local_callback;
             setVAInt(pval_outTexture2DDelegate, aptr_outTexture2DDelegate, local_outTexture2DDelegate);
 
             return true;
@@ -2732,6 +5340,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const auto local_callback = fetchVAInt();
 
             stat = LnTexture2DPromise_CatchWith(local_texture2dpromise, local_callback);
+
+
+            return true;
+        }
+        // LnTexture_SetPrototype_OnSerialize
+        case 0x55520 : {
+            // Fetch texture
+            const auto local_texture = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnTexture_SetPrototype_OnSerialize(local_texture, local_callback);
+
+
+            return true;
+        }
+        // LnTexture_SetPrototype_OnSerialize2
+        case 0x56020 : {
+            // Fetch texture
+            const auto local_texture = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnTexture_SetPrototype_OnSerialize2(local_texture, local_callback);
 
 
             return true;
@@ -2798,6 +5430,78 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnTexture2D_SetPrototype_OnSerialize
+        case 0x56B20 : {
+            // Fetch texture2d
+            const auto local_texture2d = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnTexture2D_SetPrototype_OnSerialize(local_texture2d, local_callback);
+
+
+            return true;
+        }
+        // LnTexture2D_SetPrototype_OnSerialize2
+        case 0x57620 : {
+            // Fetch texture2d
+            const auto local_texture2d = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnTexture2D_SetPrototype_OnSerialize2(local_texture2d, local_callback);
+
+
+            return true;
+        }
+        // LnRenderView_SetPrototype_OnSerialize
+        case 0x58120 : {
+            // Fetch renderview
+            const auto local_renderview = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnRenderView_SetPrototype_OnSerialize(local_renderview, local_callback);
+
+
+            return true;
+        }
+        // LnRenderView_SetPrototype_OnSerialize2
+        case 0x58C20 : {
+            // Fetch renderview
+            const auto local_renderview = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnRenderView_SetPrototype_OnSerialize2(local_renderview, local_callback);
+
+
+            return true;
+        }
+        // LnComponent_SetPrototype_OnSerialize
+        case 0x59720 : {
+            // Fetch component
+            const auto local_component = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnComponent_SetPrototype_OnSerialize(local_component, local_callback);
+
+
+            return true;
+        }
+        // LnComponent_SetPrototype_OnSerialize2
+        case 0x5A220 : {
+            // Fetch component
+            const auto local_component = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnComponent_SetPrototype_OnSerialize2(local_component, local_callback);
+
+
+            return true;
+        }
         // LnVisualComponent_SetVisible
         case 0x11320 : {
             // Fetch visualcomponent
@@ -2824,6 +5528,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnVisualComponent_SetPrototype_OnSerialize
+        case 0x5AD20 : {
+            // Fetch visualcomponent
+            const auto local_visualcomponent = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnVisualComponent_SetPrototype_OnSerialize(local_visualcomponent, local_callback);
+
+
+            return true;
+        }
+        // LnVisualComponent_SetPrototype_OnSerialize2
+        case 0x5B820 : {
+            // Fetch visualcomponent
+            const auto local_visualcomponent = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnVisualComponent_SetPrototype_OnSerialize2(local_visualcomponent, local_callback);
+
+
+            return true;
+        }
         // LnSpriteComponent_SetTexture
         case 0x11720 : {
             // Fetch spritecomponent
@@ -2836,6 +5564,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnSpriteComponent_SetPrototype_OnSerialize
+        case 0x5C320 : {
+            // Fetch spritecomponent
+            const auto local_spritecomponent = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnSpriteComponent_SetPrototype_OnSerialize(local_spritecomponent, local_callback);
+
+
+            return true;
+        }
+        // LnSpriteComponent_SetPrototype_OnSerialize2
+        case 0x5CE20 : {
+            // Fetch spritecomponent
+            const auto local_spritecomponent = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnSpriteComponent_SetPrototype_OnSerialize2(local_spritecomponent, local_callback);
+
+
+            return true;
+        }
         // LnWorld_Add
         case 0x11A20 : {
             // Fetch world
@@ -2844,6 +5596,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const auto local_obj = fetchVAInt();
 
             stat = LnWorld_Add(local_world, local_obj);
+
+
+            return true;
+        }
+        // LnWorld_SetPrototype_OnSerialize
+        case 0x5D920 : {
+            // Fetch world
+            const auto local_world = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnWorld_SetPrototype_OnSerialize(local_world, local_callback);
+
+
+            return true;
+        }
+        // LnWorld_SetPrototype_OnSerialize2
+        case 0x5E420 : {
+            // Fetch world
+            const auto local_world = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnWorld_SetPrototype_OnSerialize2(local_world, local_callback);
 
 
             return true;
@@ -2875,6 +5651,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             stat = LnComponentList_GetItem(local_componentlist, local_index, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
+
+            return true;
+        }
+        // LnComponentList_SetPrototype_OnSerialize
+        case 0x5EF20 : {
+            // Fetch componentlist
+            const auto local_componentlist = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnComponentList_SetPrototype_OnSerialize(local_componentlist, local_callback);
+
+
+            return true;
+        }
+        // LnComponentList_SetPrototype_OnSerialize2
+        case 0x5FA20 : {
+            // Fetch componentlist
+            const auto local_componentlist = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnComponentList_SetPrototype_OnSerialize2(local_componentlist, local_callback);
+
 
             return true;
         }
@@ -3117,15 +5917,42 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
-        //// LnWorldObject_SetPrototype_OnUpdate
-        //case 0x14521 : {
-        //    const auto local_worldobject = fetchVAInt();
+        // LnWorldObject_SetPrototype_OnSerialize
+        case 0x60520 : {
+            // Fetch worldobject
+            const auto local_worldobject = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
 
-        //    const auto local_callback = fetchVALabelPointer();
+            stat = LnWorldObject_SetPrototype_OnSerialize(local_worldobject, local_callback);
 
-        //    LnWorldObject_SetPrototype_OnUpdate(local_worldobject, [](LnHandle self, float t) -> LnResult { return LN_SUCCESS; });
-        //    return true;
-        //}
+
+            return true;
+        }
+        // LnWorldObject_SetPrototype_OnSerialize2
+        case 0x61020 : {
+            // Fetch worldobject
+            const auto local_worldobject = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnWorldObject_SetPrototype_OnSerialize2(local_worldobject, local_callback);
+
+
+            return true;
+        }
+        // LnWorldObject_SetPrototype_OnUpdate
+        case 0x61B20 : {
+            // Fetch worldobject
+            const auto local_worldobject = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnWorldObject_SetPrototype_OnUpdate(local_worldobject, local_callback);
+
+
+            return true;
+        }
         // LnVisualObject_SetVisible
         case 0x14820 : {
             // Fetch visualobject
@@ -3149,6 +5976,78 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             stat = LnVisualObject_IsVisible(local_visualobject, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
+
+            return true;
+        }
+        // LnVisualObject_SetPrototype_OnSerialize
+        case 0x62620 : {
+            // Fetch visualobject
+            const auto local_visualobject = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnVisualObject_SetPrototype_OnSerialize(local_visualobject, local_callback);
+
+
+            return true;
+        }
+        // LnVisualObject_SetPrototype_OnSerialize2
+        case 0x63120 : {
+            // Fetch visualobject
+            const auto local_visualobject = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnVisualObject_SetPrototype_OnSerialize2(local_visualobject, local_callback);
+
+
+            return true;
+        }
+        // LnVisualObject_SetPrototype_OnUpdate
+        case 0x63C20 : {
+            // Fetch visualobject
+            const auto local_visualobject = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnVisualObject_SetPrototype_OnUpdate(local_visualobject, local_callback);
+
+
+            return true;
+        }
+        // LnCamera_SetPrototype_OnSerialize
+        case 0x64720 : {
+            // Fetch camera
+            const auto local_camera = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnCamera_SetPrototype_OnSerialize(local_camera, local_callback);
+
+
+            return true;
+        }
+        // LnCamera_SetPrototype_OnSerialize2
+        case 0x65220 : {
+            // Fetch camera
+            const auto local_camera = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnCamera_SetPrototype_OnSerialize2(local_camera, local_callback);
+
+
+            return true;
+        }
+        // LnCamera_SetPrototype_OnUpdate
+        case 0x65D20 : {
+            // Fetch camera
+            const auto local_camera = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnCamera_SetPrototype_OnUpdate(local_camera, local_callback);
+
 
             return true;
         }
@@ -3310,6 +6209,42 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnDirectionalLight_SetPrototype_OnSerialize
+        case 0x66820 : {
+            // Fetch directionallight
+            const auto local_directionallight = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnDirectionalLight_SetPrototype_OnSerialize(local_directionallight, local_callback);
+
+
+            return true;
+        }
+        // LnDirectionalLight_SetPrototype_OnSerialize2
+        case 0x67320 : {
+            // Fetch directionallight
+            const auto local_directionallight = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnDirectionalLight_SetPrototype_OnSerialize2(local_directionallight, local_callback);
+
+
+            return true;
+        }
+        // LnDirectionalLight_SetPrototype_OnUpdate
+        case 0x67E20 : {
+            // Fetch directionallight
+            const auto local_directionallight = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnDirectionalLight_SetPrototype_OnUpdate(local_directionallight, local_callback);
+
+
+            return true;
+        }
         // LnPointLight_Create
         case 0x16F20 : {
             // Fetch outPointLight
@@ -3467,6 +6402,42 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             stat = LnPointLight_GetAttenuation(local_pointlight, &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
+
+            return true;
+        }
+        // LnPointLight_SetPrototype_OnSerialize
+        case 0x68920 : {
+            // Fetch pointlight
+            const auto local_pointlight = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnPointLight_SetPrototype_OnSerialize(local_pointlight, local_callback);
+
+
+            return true;
+        }
+        // LnPointLight_SetPrototype_OnSerialize2
+        case 0x69420 : {
+            // Fetch pointlight
+            const auto local_pointlight = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnPointLight_SetPrototype_OnSerialize2(local_pointlight, local_callback);
+
+
+            return true;
+        }
+        // LnPointLight_SetPrototype_OnUpdate
+        case 0x69F20 : {
+            // Fetch pointlight
+            const auto local_pointlight = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnPointLight_SetPrototype_OnUpdate(local_pointlight, local_callback);
+
 
             return true;
         }
@@ -3684,6 +6655,42 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnSpotLight_SetPrototype_OnSerialize
+        case 0x6AA20 : {
+            // Fetch spotlight
+            const auto local_spotlight = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnSpotLight_SetPrototype_OnSerialize(local_spotlight, local_callback);
+
+
+            return true;
+        }
+        // LnSpotLight_SetPrototype_OnSerialize2
+        case 0x6B520 : {
+            // Fetch spotlight
+            const auto local_spotlight = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnSpotLight_SetPrototype_OnSerialize2(local_spotlight, local_callback);
+
+
+            return true;
+        }
+        // LnSpotLight_SetPrototype_OnUpdate
+        case 0x6C020 : {
+            // Fetch spotlight
+            const auto local_spotlight = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnSpotLight_SetPrototype_OnUpdate(local_spotlight, local_callback);
+
+
+            return true;
+        }
         // LnTestDelegate_Create
         case 0x43920 : {
             // Fetch callback
@@ -3694,8 +6701,8 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             LnHandle local_outTestDelegate;
 
             stat = LnTestDelegate_Create(HSPSubclass_LnTestDelegate_DelegateLabelCaller, &local_outTestDelegate);
-            auto* self = reinterpret_cast<HSPSubclass_LnTestDelegate*>(LnTestDelegate_GetSubinstanceId(local_outTestDelegate));
-            self->labelPointer = local_callback;
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnTestDelegate*>(LnTestDelegate_GetSubinstanceId(local_outTestDelegate));
+            localSelf->labelPointer = local_callback;
             setVAInt(pval_outTestDelegate, aptr_outTestDelegate, local_outTestDelegate);
 
             return true;
@@ -3813,6 +6820,42 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnSprite_SetPrototype_OnSerialize
+        case 0x6CB20 : {
+            // Fetch sprite
+            const auto local_sprite = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnSprite_SetPrototype_OnSerialize(local_sprite, local_callback);
+
+
+            return true;
+        }
+        // LnSprite_SetPrototype_OnSerialize2
+        case 0x6D620 : {
+            // Fetch sprite
+            const auto local_sprite = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnSprite_SetPrototype_OnSerialize2(local_sprite, local_callback);
+
+
+            return true;
+        }
+        // LnSprite_SetPrototype_OnUpdate
+        case 0x6E120 : {
+            // Fetch sprite
+            const auto local_sprite = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnSprite_SetPrototype_OnUpdate(local_sprite, local_callback);
+
+
+            return true;
+        }
         // LnCameraOrbitControlComponent_Create
         case 0x1A820 : {
             // Fetch outCameraOrbitControlComponent
@@ -3822,6 +6865,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             stat = LnCameraOrbitControlComponent_Create(&local_outCameraOrbitControlComponent);
             setVAInt(pval_outCameraOrbitControlComponent, aptr_outCameraOrbitControlComponent, local_outCameraOrbitControlComponent);
+
+            return true;
+        }
+        // LnCameraOrbitControlComponent_SetPrototype_OnSerialize
+        case 0x6EC20 : {
+            // Fetch cameraorbitcontrolcomponent
+            const auto local_cameraorbitcontrolcomponent = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnCameraOrbitControlComponent_SetPrototype_OnSerialize(local_cameraorbitcontrolcomponent, local_callback);
+
+
+            return true;
+        }
+        // LnCameraOrbitControlComponent_SetPrototype_OnSerialize2
+        case 0x6F720 : {
+            // Fetch cameraorbitcontrolcomponent
+            const auto local_cameraorbitcontrolcomponent = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnCameraOrbitControlComponent_SetPrototype_OnSerialize2(local_cameraorbitcontrolcomponent, local_callback);
+
 
             return true;
         }
@@ -3860,6 +6927,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnRaycaster_SetPrototype_OnSerialize
+        case 0x70220 : {
+            // Fetch raycaster
+            const auto local_raycaster = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnRaycaster_SetPrototype_OnSerialize(local_raycaster, local_callback);
+
+
+            return true;
+        }
+        // LnRaycaster_SetPrototype_OnSerialize2
+        case 0x70D20 : {
+            // Fetch raycaster
+            const auto local_raycaster = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnRaycaster_SetPrototype_OnSerialize2(local_raycaster, local_callback);
+
+
+            return true;
+        }
         // LnRaycastResult_GetPoint
         case 0x1B120 : {
             // Fetch raycastresult
@@ -3871,6 +6962,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             stat = LnRaycastResult_GetPoint(local_raycastresult, &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
+
+            return true;
+        }
+        // LnRaycastResult_SetPrototype_OnSerialize
+        case 0x71820 : {
+            // Fetch raycastresult
+            const auto local_raycastresult = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnRaycastResult_SetPrototype_OnSerialize(local_raycastresult, local_callback);
+
+
+            return true;
+        }
+        // LnRaycastResult_SetPrototype_OnSerialize2
+        case 0x72320 : {
+            // Fetch raycastresult
+            const auto local_raycastresult = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnRaycastResult_SetPrototype_OnSerialize2(local_raycastresult, local_callback);
+
 
             return true;
         }
@@ -3900,6 +7015,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnWorldRenderView_SetPrototype_OnSerialize
+        case 0x72E20 : {
+            // Fetch worldrenderview
+            const auto local_worldrenderview = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnWorldRenderView_SetPrototype_OnSerialize(local_worldrenderview, local_callback);
+
+
+            return true;
+        }
+        // LnWorldRenderView_SetPrototype_OnSerialize2
+        case 0x73920 : {
+            // Fetch worldrenderview
+            const auto local_worldrenderview = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnWorldRenderView_SetPrototype_OnSerialize2(local_worldrenderview, local_callback);
+
+
+            return true;
+        }
         // LnBoxMesh_Create
         case 0x1B720 : {
             // Fetch outBoxMesh
@@ -3912,6 +7051,42 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnBoxMesh_SetPrototype_OnSerialize
+        case 0x74420 : {
+            // Fetch boxmesh
+            const auto local_boxmesh = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnBoxMesh_SetPrototype_OnSerialize(local_boxmesh, local_callback);
+
+
+            return true;
+        }
+        // LnBoxMesh_SetPrototype_OnSerialize2
+        case 0x74F20 : {
+            // Fetch boxmesh
+            const auto local_boxmesh = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnBoxMesh_SetPrototype_OnSerialize2(local_boxmesh, local_callback);
+
+
+            return true;
+        }
+        // LnBoxMesh_SetPrototype_OnUpdate
+        case 0x75A20 : {
+            // Fetch boxmesh
+            const auto local_boxmesh = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnBoxMesh_SetPrototype_OnUpdate(local_boxmesh, local_callback);
+
+
+            return true;
+        }
         // LnPlaneMesh_Create
         case 0x1B920 : {
             // Fetch outPlaneMesh
@@ -3921,6 +7096,42 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             stat = LnPlaneMesh_Create(&local_outPlaneMesh);
             setVAInt(pval_outPlaneMesh, aptr_outPlaneMesh, local_outPlaneMesh);
+
+            return true;
+        }
+        // LnPlaneMesh_SetPrototype_OnSerialize
+        case 0x76520 : {
+            // Fetch planemesh
+            const auto local_planemesh = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnPlaneMesh_SetPrototype_OnSerialize(local_planemesh, local_callback);
+
+
+            return true;
+        }
+        // LnPlaneMesh_SetPrototype_OnSerialize2
+        case 0x77020 : {
+            // Fetch planemesh
+            const auto local_planemesh = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnPlaneMesh_SetPrototype_OnSerialize2(local_planemesh, local_callback);
+
+
+            return true;
+        }
+        // LnPlaneMesh_SetPrototype_OnUpdate
+        case 0x77B20 : {
+            // Fetch planemesh
+            const auto local_planemesh = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnPlaneMesh_SetPrototype_OnUpdate(local_planemesh, local_callback);
+
 
             return true;
         }
@@ -3938,6 +7149,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnUIEventArgs_SetPrototype_OnSerialize
+        case 0x78620 : {
+            // Fetch uieventargs
+            const auto local_uieventargs = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnUIEventArgs_SetPrototype_OnSerialize(local_uieventargs, local_callback);
+
+
+            return true;
+        }
+        // LnUIEventArgs_SetPrototype_OnSerialize2
+        case 0x79120 : {
+            // Fetch uieventargs
+            const auto local_uieventargs = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnUIEventArgs_SetPrototype_OnSerialize2(local_uieventargs, local_callback);
+
+
+            return true;
+        }
         // LnUIGeneralEventHandler_Create
         case 0x45820 : {
             // Fetch callback
@@ -3948,8 +7183,8 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             LnHandle local_outUIGeneralEventHandler;
 
             stat = LnUIGeneralEventHandler_Create(HSPSubclass_LnUIGeneralEventHandler_DelegateLabelCaller, &local_outUIGeneralEventHandler);
-            auto* self = reinterpret_cast<HSPSubclass_LnUIGeneralEventHandler*>(LnUIGeneralEventHandler_GetSubinstanceId(local_outUIGeneralEventHandler));
-            self->labelPointer = local_callback;
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnUIGeneralEventHandler*>(LnUIGeneralEventHandler_GetSubinstanceId(local_outUIGeneralEventHandler));
+            localSelf->labelPointer = local_callback;
             setVAInt(pval_outUIGeneralEventHandler, aptr_outUIGeneralEventHandler, local_outUIGeneralEventHandler);
 
             return true;
@@ -3964,9 +7199,33 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             LnHandle local_outUIEventHandler;
 
             stat = LnUIEventHandler_Create(HSPSubclass_LnUIEventHandler_DelegateLabelCaller, &local_outUIEventHandler);
-            auto* self = reinterpret_cast<HSPSubclass_LnUIEventHandler*>(LnUIEventHandler_GetSubinstanceId(local_outUIEventHandler));
-            self->labelPointer = local_callback;
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnUIEventHandler*>(LnUIEventHandler_GetSubinstanceId(local_outUIEventHandler));
+            localSelf->labelPointer = local_callback;
             setVAInt(pval_outUIEventHandler, aptr_outUIEventHandler, local_outUIEventHandler);
+
+            return true;
+        }
+        // LnUILayoutElement_SetPrototype_OnSerialize
+        case 0x79C20 : {
+            // Fetch uilayoutelement
+            const auto local_uilayoutelement = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnUILayoutElement_SetPrototype_OnSerialize(local_uilayoutelement, local_callback);
+
+
+            return true;
+        }
+        // LnUILayoutElement_SetPrototype_OnSerialize2
+        case 0x7A720 : {
+            // Fetch uilayoutelement
+            const auto local_uilayoutelement = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnUILayoutElement_SetPrototype_OnSerialize2(local_uilayoutelement, local_callback);
+
 
             return true;
         }
@@ -4284,6 +7543,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnUIElement_SetPrototype_OnSerialize
+        case 0x7B220 : {
+            // Fetch uielement
+            const auto local_uielement = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnUIElement_SetPrototype_OnSerialize(local_uielement, local_callback);
+
+
+            return true;
+        }
+        // LnUIElement_SetPrototype_OnSerialize2
+        case 0x7BD20 : {
+            // Fetch uielement
+            const auto local_uielement = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnUIElement_SetPrototype_OnSerialize2(local_uielement, local_callback);
+
+
+            return true;
+        }
         // LnUITextBlock_Create
         case 0x1FC20 : {
             // Fetch outUITextBlock
@@ -4307,6 +7590,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             stat = LnUITextBlock_CreateWithTextA(local_text, &local_outUITextBlock);
             setVAInt(pval_outUITextBlock, aptr_outUITextBlock, local_outUITextBlock);
+
+            return true;
+        }
+        // LnUITextBlock_SetPrototype_OnSerialize
+        case 0x7C820 : {
+            // Fetch uitextblock
+            const auto local_uitextblock = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnUITextBlock_SetPrototype_OnSerialize(local_uitextblock, local_callback);
+
+
+            return true;
+        }
+        // LnUITextBlock_SetPrototype_OnSerialize2
+        case 0x7D320 : {
+            // Fetch uitextblock
+            const auto local_uitextblock = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnUITextBlock_SetPrototype_OnSerialize2(local_uitextblock, local_callback);
+
 
             return true;
         }
@@ -4390,6 +7697,30 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             stat = LnUISprite_GetSourceRect(local_uisprite, &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLnRect_typeid(), &local_outReturn);
+
+            return true;
+        }
+        // LnUISprite_SetPrototype_OnSerialize
+        case 0x7DE20 : {
+            // Fetch uisprite
+            const auto local_uisprite = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnUISprite_SetPrototype_OnSerialize(local_uisprite, local_callback);
+
+
+            return true;
+        }
+        // LnUISprite_SetPrototype_OnSerialize2
+        case 0x7E920 : {
+            // Fetch uisprite
+            const auto local_uisprite = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnUISprite_SetPrototype_OnSerialize2(local_uisprite, local_callback);
+
 
             return true;
         }
@@ -4757,12 +8088,52 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LnApplication_SetPrototype_OnSerialize
+        case 0x7F420 : {
+            // Fetch application
+            const auto local_application = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnApplication_SetPrototype_OnSerialize(local_application, local_callback);
+
+
+            return true;
+        }
+        // LnApplication_SetPrototype_OnSerialize2
+        case 0x7FF20 : {
+            // Fetch application
+            const auto local_application = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnApplication_SetPrototype_OnSerialize2(local_application, local_callback);
+
+
+            return true;
+        }
         // LnApplication_SetPrototype_OnInit
-        case 0x24221 : {
+        case 0x80A20 : {
+            // Fetch application
+            const auto local_application = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnApplication_SetPrototype_OnInit(local_application, local_callback);
+
+
             return true;
         }
         // LnApplication_SetPrototype_OnUpdate
-        case 0x24322 : {
+        case 0x81520 : {
+            // Fetch application
+            const auto local_application = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LnApplication_SetPrototype_OnUpdate(local_application, local_callback);
+
+
             return true;
         }
         // LnDebug_PrintA
@@ -4799,6 +8170,1270 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             stat = LnDebug_PrintWithTimeAndColorA(local_time, reinterpret_cast<const LnColor*>(pval_color->pt), local_str);
 
+
+            return true;
+        }
+        // LnObjectSerializeHandler_Create
+        case 0x4B920 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outObjectSerializeHandler
+            PVal* pval_outObjectSerializeHandler;
+            const APTR aptr_outObjectSerializeHandler = code_getva(&pval_outObjectSerializeHandler);
+            LnHandle local_outObjectSerializeHandler;
+
+            stat = LnObjectSerializeHandler_Create(HSPSubclass_LnObjectSerializeHandler_DelegateLabelCaller, &local_outObjectSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnObjectSerializeHandler*>(LnObjectSerializeHandler_GetSubinstanceId(local_outObjectSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outObjectSerializeHandler, aptr_outObjectSerializeHandler, local_outObjectSerializeHandler);
+
+            return true;
+        }
+        // LnObjectSerialize2Handler_Create
+        case 0x4C420 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outObjectSerialize2Handler
+            PVal* pval_outObjectSerialize2Handler;
+            const APTR aptr_outObjectSerialize2Handler = code_getva(&pval_outObjectSerialize2Handler);
+            LnHandle local_outObjectSerialize2Handler;
+
+            stat = LnObjectSerialize2Handler_Create(HSPSubclass_LnObjectSerialize2Handler_DelegateLabelCaller, &local_outObjectSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnObjectSerialize2Handler*>(LnObjectSerialize2Handler_GetSubinstanceId(local_outObjectSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outObjectSerialize2Handler, aptr_outObjectSerialize2Handler, local_outObjectSerialize2Handler);
+
+            return true;
+        }
+        // LnEventConnectionSerializeHandler_Create
+        case 0x4CF20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outEventConnectionSerializeHandler
+            PVal* pval_outEventConnectionSerializeHandler;
+            const APTR aptr_outEventConnectionSerializeHandler = code_getva(&pval_outEventConnectionSerializeHandler);
+            LnHandle local_outEventConnectionSerializeHandler;
+
+            stat = LnEventConnectionSerializeHandler_Create(HSPSubclass_LnEventConnectionSerializeHandler_DelegateLabelCaller, &local_outEventConnectionSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnEventConnectionSerializeHandler*>(LnEventConnectionSerializeHandler_GetSubinstanceId(local_outEventConnectionSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outEventConnectionSerializeHandler, aptr_outEventConnectionSerializeHandler, local_outEventConnectionSerializeHandler);
+
+            return true;
+        }
+        // LnEventConnectionSerialize2Handler_Create
+        case 0x4DA20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outEventConnectionSerialize2Handler
+            PVal* pval_outEventConnectionSerialize2Handler;
+            const APTR aptr_outEventConnectionSerialize2Handler = code_getva(&pval_outEventConnectionSerialize2Handler);
+            LnHandle local_outEventConnectionSerialize2Handler;
+
+            stat = LnEventConnectionSerialize2Handler_Create(HSPSubclass_LnEventConnectionSerialize2Handler_DelegateLabelCaller, &local_outEventConnectionSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnEventConnectionSerialize2Handler*>(LnEventConnectionSerialize2Handler_GetSubinstanceId(local_outEventConnectionSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outEventConnectionSerialize2Handler, aptr_outEventConnectionSerialize2Handler, local_outEventConnectionSerialize2Handler);
+
+            return true;
+        }
+        // LnZVTestClass1SerializeHandler_Create
+        case 0x4E520 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outZVTestClass1SerializeHandler
+            PVal* pval_outZVTestClass1SerializeHandler;
+            const APTR aptr_outZVTestClass1SerializeHandler = code_getva(&pval_outZVTestClass1SerializeHandler);
+            LnHandle local_outZVTestClass1SerializeHandler;
+
+            stat = LnZVTestClass1SerializeHandler_Create(HSPSubclass_LnZVTestClass1SerializeHandler_DelegateLabelCaller, &local_outZVTestClass1SerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestClass1SerializeHandler*>(LnZVTestClass1SerializeHandler_GetSubinstanceId(local_outZVTestClass1SerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outZVTestClass1SerializeHandler, aptr_outZVTestClass1SerializeHandler, local_outZVTestClass1SerializeHandler);
+
+            return true;
+        }
+        // LnZVTestClass1Serialize2Handler_Create
+        case 0x4F020 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outZVTestClass1Serialize2Handler
+            PVal* pval_outZVTestClass1Serialize2Handler;
+            const APTR aptr_outZVTestClass1Serialize2Handler = code_getva(&pval_outZVTestClass1Serialize2Handler);
+            LnHandle local_outZVTestClass1Serialize2Handler;
+
+            stat = LnZVTestClass1Serialize2Handler_Create(HSPSubclass_LnZVTestClass1Serialize2Handler_DelegateLabelCaller, &local_outZVTestClass1Serialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestClass1Serialize2Handler*>(LnZVTestClass1Serialize2Handler_GetSubinstanceId(local_outZVTestClass1Serialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outZVTestClass1Serialize2Handler, aptr_outZVTestClass1Serialize2Handler, local_outZVTestClass1Serialize2Handler);
+
+            return true;
+        }
+        // LnZVTestEventArgs1SerializeHandler_Create
+        case 0x4FB20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outZVTestEventArgs1SerializeHandler
+            PVal* pval_outZVTestEventArgs1SerializeHandler;
+            const APTR aptr_outZVTestEventArgs1SerializeHandler = code_getva(&pval_outZVTestEventArgs1SerializeHandler);
+            LnHandle local_outZVTestEventArgs1SerializeHandler;
+
+            stat = LnZVTestEventArgs1SerializeHandler_Create(HSPSubclass_LnZVTestEventArgs1SerializeHandler_DelegateLabelCaller, &local_outZVTestEventArgs1SerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventArgs1SerializeHandler*>(LnZVTestEventArgs1SerializeHandler_GetSubinstanceId(local_outZVTestEventArgs1SerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outZVTestEventArgs1SerializeHandler, aptr_outZVTestEventArgs1SerializeHandler, local_outZVTestEventArgs1SerializeHandler);
+
+            return true;
+        }
+        // LnZVTestEventArgs1Serialize2Handler_Create
+        case 0x50620 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outZVTestEventArgs1Serialize2Handler
+            PVal* pval_outZVTestEventArgs1Serialize2Handler;
+            const APTR aptr_outZVTestEventArgs1Serialize2Handler = code_getva(&pval_outZVTestEventArgs1Serialize2Handler);
+            LnHandle local_outZVTestEventArgs1Serialize2Handler;
+
+            stat = LnZVTestEventArgs1Serialize2Handler_Create(HSPSubclass_LnZVTestEventArgs1Serialize2Handler_DelegateLabelCaller, &local_outZVTestEventArgs1Serialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventArgs1Serialize2Handler*>(LnZVTestEventArgs1Serialize2Handler_GetSubinstanceId(local_outZVTestEventArgs1Serialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outZVTestEventArgs1Serialize2Handler, aptr_outZVTestEventArgs1Serialize2Handler, local_outZVTestEventArgs1Serialize2Handler);
+
+            return true;
+        }
+        // LnSerializerSerializeHandler_Create
+        case 0x51120 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outSerializerSerializeHandler
+            PVal* pval_outSerializerSerializeHandler;
+            const APTR aptr_outSerializerSerializeHandler = code_getva(&pval_outSerializerSerializeHandler);
+            LnHandle local_outSerializerSerializeHandler;
+
+            stat = LnSerializerSerializeHandler_Create(HSPSubclass_LnSerializerSerializeHandler_DelegateLabelCaller, &local_outSerializerSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnSerializerSerializeHandler*>(LnSerializerSerializeHandler_GetSubinstanceId(local_outSerializerSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outSerializerSerializeHandler, aptr_outSerializerSerializeHandler, local_outSerializerSerializeHandler);
+
+            return true;
+        }
+        // LnSerializerSerialize2Handler_Create
+        case 0x51C20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outSerializerSerialize2Handler
+            PVal* pval_outSerializerSerialize2Handler;
+            const APTR aptr_outSerializerSerialize2Handler = code_getva(&pval_outSerializerSerialize2Handler);
+            LnHandle local_outSerializerSerialize2Handler;
+
+            stat = LnSerializerSerialize2Handler_Create(HSPSubclass_LnSerializerSerialize2Handler_DelegateLabelCaller, &local_outSerializerSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnSerializerSerialize2Handler*>(LnSerializerSerialize2Handler_GetSubinstanceId(local_outSerializerSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outSerializerSerialize2Handler, aptr_outSerializerSerialize2Handler, local_outSerializerSerialize2Handler);
+
+            return true;
+        }
+        // LnSerializer2SerializeHandler_Create
+        case 0x52720 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outSerializer2SerializeHandler
+            PVal* pval_outSerializer2SerializeHandler;
+            const APTR aptr_outSerializer2SerializeHandler = code_getva(&pval_outSerializer2SerializeHandler);
+            LnHandle local_outSerializer2SerializeHandler;
+
+            stat = LnSerializer2SerializeHandler_Create(HSPSubclass_LnSerializer2SerializeHandler_DelegateLabelCaller, &local_outSerializer2SerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnSerializer2SerializeHandler*>(LnSerializer2SerializeHandler_GetSubinstanceId(local_outSerializer2SerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outSerializer2SerializeHandler, aptr_outSerializer2SerializeHandler, local_outSerializer2SerializeHandler);
+
+            return true;
+        }
+        // LnSerializer2Serialize2Handler_Create
+        case 0x53220 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outSerializer2Serialize2Handler
+            PVal* pval_outSerializer2Serialize2Handler;
+            const APTR aptr_outSerializer2Serialize2Handler = code_getva(&pval_outSerializer2Serialize2Handler);
+            LnHandle local_outSerializer2Serialize2Handler;
+
+            stat = LnSerializer2Serialize2Handler_Create(HSPSubclass_LnSerializer2Serialize2Handler_DelegateLabelCaller, &local_outSerializer2Serialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnSerializer2Serialize2Handler*>(LnSerializer2Serialize2Handler_GetSubinstanceId(local_outSerializer2Serialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outSerializer2Serialize2Handler, aptr_outSerializer2Serialize2Handler, local_outSerializer2Serialize2Handler);
+
+            return true;
+        }
+        // LnAssetModelSerializeHandler_Create
+        case 0x53D20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outAssetModelSerializeHandler
+            PVal* pval_outAssetModelSerializeHandler;
+            const APTR aptr_outAssetModelSerializeHandler = code_getva(&pval_outAssetModelSerializeHandler);
+            LnHandle local_outAssetModelSerializeHandler;
+
+            stat = LnAssetModelSerializeHandler_Create(HSPSubclass_LnAssetModelSerializeHandler_DelegateLabelCaller, &local_outAssetModelSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnAssetModelSerializeHandler*>(LnAssetModelSerializeHandler_GetSubinstanceId(local_outAssetModelSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outAssetModelSerializeHandler, aptr_outAssetModelSerializeHandler, local_outAssetModelSerializeHandler);
+
+            return true;
+        }
+        // LnAssetModelSerialize2Handler_Create
+        case 0x54820 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outAssetModelSerialize2Handler
+            PVal* pval_outAssetModelSerialize2Handler;
+            const APTR aptr_outAssetModelSerialize2Handler = code_getva(&pval_outAssetModelSerialize2Handler);
+            LnHandle local_outAssetModelSerialize2Handler;
+
+            stat = LnAssetModelSerialize2Handler_Create(HSPSubclass_LnAssetModelSerialize2Handler_DelegateLabelCaller, &local_outAssetModelSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnAssetModelSerialize2Handler*>(LnAssetModelSerialize2Handler_GetSubinstanceId(local_outAssetModelSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outAssetModelSerialize2Handler, aptr_outAssetModelSerialize2Handler, local_outAssetModelSerialize2Handler);
+
+            return true;
+        }
+        // LnTextureSerializeHandler_Create
+        case 0x55320 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outTextureSerializeHandler
+            PVal* pval_outTextureSerializeHandler;
+            const APTR aptr_outTextureSerializeHandler = code_getva(&pval_outTextureSerializeHandler);
+            LnHandle local_outTextureSerializeHandler;
+
+            stat = LnTextureSerializeHandler_Create(HSPSubclass_LnTextureSerializeHandler_DelegateLabelCaller, &local_outTextureSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnTextureSerializeHandler*>(LnTextureSerializeHandler_GetSubinstanceId(local_outTextureSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outTextureSerializeHandler, aptr_outTextureSerializeHandler, local_outTextureSerializeHandler);
+
+            return true;
+        }
+        // LnTextureSerialize2Handler_Create
+        case 0x55E20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outTextureSerialize2Handler
+            PVal* pval_outTextureSerialize2Handler;
+            const APTR aptr_outTextureSerialize2Handler = code_getva(&pval_outTextureSerialize2Handler);
+            LnHandle local_outTextureSerialize2Handler;
+
+            stat = LnTextureSerialize2Handler_Create(HSPSubclass_LnTextureSerialize2Handler_DelegateLabelCaller, &local_outTextureSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnTextureSerialize2Handler*>(LnTextureSerialize2Handler_GetSubinstanceId(local_outTextureSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outTextureSerialize2Handler, aptr_outTextureSerialize2Handler, local_outTextureSerialize2Handler);
+
+            return true;
+        }
+        // LnTexture2DSerializeHandler_Create
+        case 0x56920 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outTexture2DSerializeHandler
+            PVal* pval_outTexture2DSerializeHandler;
+            const APTR aptr_outTexture2DSerializeHandler = code_getva(&pval_outTexture2DSerializeHandler);
+            LnHandle local_outTexture2DSerializeHandler;
+
+            stat = LnTexture2DSerializeHandler_Create(HSPSubclass_LnTexture2DSerializeHandler_DelegateLabelCaller, &local_outTexture2DSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnTexture2DSerializeHandler*>(LnTexture2DSerializeHandler_GetSubinstanceId(local_outTexture2DSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outTexture2DSerializeHandler, aptr_outTexture2DSerializeHandler, local_outTexture2DSerializeHandler);
+
+            return true;
+        }
+        // LnTexture2DSerialize2Handler_Create
+        case 0x57420 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outTexture2DSerialize2Handler
+            PVal* pval_outTexture2DSerialize2Handler;
+            const APTR aptr_outTexture2DSerialize2Handler = code_getva(&pval_outTexture2DSerialize2Handler);
+            LnHandle local_outTexture2DSerialize2Handler;
+
+            stat = LnTexture2DSerialize2Handler_Create(HSPSubclass_LnTexture2DSerialize2Handler_DelegateLabelCaller, &local_outTexture2DSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnTexture2DSerialize2Handler*>(LnTexture2DSerialize2Handler_GetSubinstanceId(local_outTexture2DSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outTexture2DSerialize2Handler, aptr_outTexture2DSerialize2Handler, local_outTexture2DSerialize2Handler);
+
+            return true;
+        }
+        // LnRenderViewSerializeHandler_Create
+        case 0x57F20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outRenderViewSerializeHandler
+            PVal* pval_outRenderViewSerializeHandler;
+            const APTR aptr_outRenderViewSerializeHandler = code_getva(&pval_outRenderViewSerializeHandler);
+            LnHandle local_outRenderViewSerializeHandler;
+
+            stat = LnRenderViewSerializeHandler_Create(HSPSubclass_LnRenderViewSerializeHandler_DelegateLabelCaller, &local_outRenderViewSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnRenderViewSerializeHandler*>(LnRenderViewSerializeHandler_GetSubinstanceId(local_outRenderViewSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outRenderViewSerializeHandler, aptr_outRenderViewSerializeHandler, local_outRenderViewSerializeHandler);
+
+            return true;
+        }
+        // LnRenderViewSerialize2Handler_Create
+        case 0x58A20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outRenderViewSerialize2Handler
+            PVal* pval_outRenderViewSerialize2Handler;
+            const APTR aptr_outRenderViewSerialize2Handler = code_getva(&pval_outRenderViewSerialize2Handler);
+            LnHandle local_outRenderViewSerialize2Handler;
+
+            stat = LnRenderViewSerialize2Handler_Create(HSPSubclass_LnRenderViewSerialize2Handler_DelegateLabelCaller, &local_outRenderViewSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnRenderViewSerialize2Handler*>(LnRenderViewSerialize2Handler_GetSubinstanceId(local_outRenderViewSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outRenderViewSerialize2Handler, aptr_outRenderViewSerialize2Handler, local_outRenderViewSerialize2Handler);
+
+            return true;
+        }
+        // LnComponentSerializeHandler_Create
+        case 0x59520 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outComponentSerializeHandler
+            PVal* pval_outComponentSerializeHandler;
+            const APTR aptr_outComponentSerializeHandler = code_getva(&pval_outComponentSerializeHandler);
+            LnHandle local_outComponentSerializeHandler;
+
+            stat = LnComponentSerializeHandler_Create(HSPSubclass_LnComponentSerializeHandler_DelegateLabelCaller, &local_outComponentSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnComponentSerializeHandler*>(LnComponentSerializeHandler_GetSubinstanceId(local_outComponentSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outComponentSerializeHandler, aptr_outComponentSerializeHandler, local_outComponentSerializeHandler);
+
+            return true;
+        }
+        // LnComponentSerialize2Handler_Create
+        case 0x5A020 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outComponentSerialize2Handler
+            PVal* pval_outComponentSerialize2Handler;
+            const APTR aptr_outComponentSerialize2Handler = code_getva(&pval_outComponentSerialize2Handler);
+            LnHandle local_outComponentSerialize2Handler;
+
+            stat = LnComponentSerialize2Handler_Create(HSPSubclass_LnComponentSerialize2Handler_DelegateLabelCaller, &local_outComponentSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnComponentSerialize2Handler*>(LnComponentSerialize2Handler_GetSubinstanceId(local_outComponentSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outComponentSerialize2Handler, aptr_outComponentSerialize2Handler, local_outComponentSerialize2Handler);
+
+            return true;
+        }
+        // LnVisualComponentSerializeHandler_Create
+        case 0x5AB20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outVisualComponentSerializeHandler
+            PVal* pval_outVisualComponentSerializeHandler;
+            const APTR aptr_outVisualComponentSerializeHandler = code_getva(&pval_outVisualComponentSerializeHandler);
+            LnHandle local_outVisualComponentSerializeHandler;
+
+            stat = LnVisualComponentSerializeHandler_Create(HSPSubclass_LnVisualComponentSerializeHandler_DelegateLabelCaller, &local_outVisualComponentSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualComponentSerializeHandler*>(LnVisualComponentSerializeHandler_GetSubinstanceId(local_outVisualComponentSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outVisualComponentSerializeHandler, aptr_outVisualComponentSerializeHandler, local_outVisualComponentSerializeHandler);
+
+            return true;
+        }
+        // LnVisualComponentSerialize2Handler_Create
+        case 0x5B620 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outVisualComponentSerialize2Handler
+            PVal* pval_outVisualComponentSerialize2Handler;
+            const APTR aptr_outVisualComponentSerialize2Handler = code_getva(&pval_outVisualComponentSerialize2Handler);
+            LnHandle local_outVisualComponentSerialize2Handler;
+
+            stat = LnVisualComponentSerialize2Handler_Create(HSPSubclass_LnVisualComponentSerialize2Handler_DelegateLabelCaller, &local_outVisualComponentSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualComponentSerialize2Handler*>(LnVisualComponentSerialize2Handler_GetSubinstanceId(local_outVisualComponentSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outVisualComponentSerialize2Handler, aptr_outVisualComponentSerialize2Handler, local_outVisualComponentSerialize2Handler);
+
+            return true;
+        }
+        // LnSpriteComponentSerializeHandler_Create
+        case 0x5C120 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outSpriteComponentSerializeHandler
+            PVal* pval_outSpriteComponentSerializeHandler;
+            const APTR aptr_outSpriteComponentSerializeHandler = code_getva(&pval_outSpriteComponentSerializeHandler);
+            LnHandle local_outSpriteComponentSerializeHandler;
+
+            stat = LnSpriteComponentSerializeHandler_Create(HSPSubclass_LnSpriteComponentSerializeHandler_DelegateLabelCaller, &local_outSpriteComponentSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteComponentSerializeHandler*>(LnSpriteComponentSerializeHandler_GetSubinstanceId(local_outSpriteComponentSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outSpriteComponentSerializeHandler, aptr_outSpriteComponentSerializeHandler, local_outSpriteComponentSerializeHandler);
+
+            return true;
+        }
+        // LnSpriteComponentSerialize2Handler_Create
+        case 0x5CC20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outSpriteComponentSerialize2Handler
+            PVal* pval_outSpriteComponentSerialize2Handler;
+            const APTR aptr_outSpriteComponentSerialize2Handler = code_getva(&pval_outSpriteComponentSerialize2Handler);
+            LnHandle local_outSpriteComponentSerialize2Handler;
+
+            stat = LnSpriteComponentSerialize2Handler_Create(HSPSubclass_LnSpriteComponentSerialize2Handler_DelegateLabelCaller, &local_outSpriteComponentSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteComponentSerialize2Handler*>(LnSpriteComponentSerialize2Handler_GetSubinstanceId(local_outSpriteComponentSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outSpriteComponentSerialize2Handler, aptr_outSpriteComponentSerialize2Handler, local_outSpriteComponentSerialize2Handler);
+
+            return true;
+        }
+        // LnWorldSerializeHandler_Create
+        case 0x5D720 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outWorldSerializeHandler
+            PVal* pval_outWorldSerializeHandler;
+            const APTR aptr_outWorldSerializeHandler = code_getva(&pval_outWorldSerializeHandler);
+            LnHandle local_outWorldSerializeHandler;
+
+            stat = LnWorldSerializeHandler_Create(HSPSubclass_LnWorldSerializeHandler_DelegateLabelCaller, &local_outWorldSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldSerializeHandler*>(LnWorldSerializeHandler_GetSubinstanceId(local_outWorldSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outWorldSerializeHandler, aptr_outWorldSerializeHandler, local_outWorldSerializeHandler);
+
+            return true;
+        }
+        // LnWorldSerialize2Handler_Create
+        case 0x5E220 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outWorldSerialize2Handler
+            PVal* pval_outWorldSerialize2Handler;
+            const APTR aptr_outWorldSerialize2Handler = code_getva(&pval_outWorldSerialize2Handler);
+            LnHandle local_outWorldSerialize2Handler;
+
+            stat = LnWorldSerialize2Handler_Create(HSPSubclass_LnWorldSerialize2Handler_DelegateLabelCaller, &local_outWorldSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldSerialize2Handler*>(LnWorldSerialize2Handler_GetSubinstanceId(local_outWorldSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outWorldSerialize2Handler, aptr_outWorldSerialize2Handler, local_outWorldSerialize2Handler);
+
+            return true;
+        }
+        // LnComponentListSerializeHandler_Create
+        case 0x5ED20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outComponentListSerializeHandler
+            PVal* pval_outComponentListSerializeHandler;
+            const APTR aptr_outComponentListSerializeHandler = code_getva(&pval_outComponentListSerializeHandler);
+            LnHandle local_outComponentListSerializeHandler;
+
+            stat = LnComponentListSerializeHandler_Create(HSPSubclass_LnComponentListSerializeHandler_DelegateLabelCaller, &local_outComponentListSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnComponentListSerializeHandler*>(LnComponentListSerializeHandler_GetSubinstanceId(local_outComponentListSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outComponentListSerializeHandler, aptr_outComponentListSerializeHandler, local_outComponentListSerializeHandler);
+
+            return true;
+        }
+        // LnComponentListSerialize2Handler_Create
+        case 0x5F820 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outComponentListSerialize2Handler
+            PVal* pval_outComponentListSerialize2Handler;
+            const APTR aptr_outComponentListSerialize2Handler = code_getva(&pval_outComponentListSerialize2Handler);
+            LnHandle local_outComponentListSerialize2Handler;
+
+            stat = LnComponentListSerialize2Handler_Create(HSPSubclass_LnComponentListSerialize2Handler_DelegateLabelCaller, &local_outComponentListSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnComponentListSerialize2Handler*>(LnComponentListSerialize2Handler_GetSubinstanceId(local_outComponentListSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outComponentListSerialize2Handler, aptr_outComponentListSerialize2Handler, local_outComponentListSerialize2Handler);
+
+            return true;
+        }
+        // LnWorldObjectSerializeHandler_Create
+        case 0x60320 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outWorldObjectSerializeHandler
+            PVal* pval_outWorldObjectSerializeHandler;
+            const APTR aptr_outWorldObjectSerializeHandler = code_getva(&pval_outWorldObjectSerializeHandler);
+            LnHandle local_outWorldObjectSerializeHandler;
+
+            stat = LnWorldObjectSerializeHandler_Create(HSPSubclass_LnWorldObjectSerializeHandler_DelegateLabelCaller, &local_outWorldObjectSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldObjectSerializeHandler*>(LnWorldObjectSerializeHandler_GetSubinstanceId(local_outWorldObjectSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outWorldObjectSerializeHandler, aptr_outWorldObjectSerializeHandler, local_outWorldObjectSerializeHandler);
+
+            return true;
+        }
+        // LnWorldObjectSerialize2Handler_Create
+        case 0x60E20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outWorldObjectSerialize2Handler
+            PVal* pval_outWorldObjectSerialize2Handler;
+            const APTR aptr_outWorldObjectSerialize2Handler = code_getva(&pval_outWorldObjectSerialize2Handler);
+            LnHandle local_outWorldObjectSerialize2Handler;
+
+            stat = LnWorldObjectSerialize2Handler_Create(HSPSubclass_LnWorldObjectSerialize2Handler_DelegateLabelCaller, &local_outWorldObjectSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldObjectSerialize2Handler*>(LnWorldObjectSerialize2Handler_GetSubinstanceId(local_outWorldObjectSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outWorldObjectSerialize2Handler, aptr_outWorldObjectSerialize2Handler, local_outWorldObjectSerialize2Handler);
+
+            return true;
+        }
+        // LnWorldObjectUpdateHandler_Create
+        case 0x61920 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outWorldObjectUpdateHandler
+            PVal* pval_outWorldObjectUpdateHandler;
+            const APTR aptr_outWorldObjectUpdateHandler = code_getva(&pval_outWorldObjectUpdateHandler);
+            LnHandle local_outWorldObjectUpdateHandler;
+
+            stat = LnWorldObjectUpdateHandler_Create(HSPSubclass_LnWorldObjectUpdateHandler_DelegateLabelCaller, &local_outWorldObjectUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldObjectUpdateHandler*>(LnWorldObjectUpdateHandler_GetSubinstanceId(local_outWorldObjectUpdateHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outWorldObjectUpdateHandler, aptr_outWorldObjectUpdateHandler, local_outWorldObjectUpdateHandler);
+
+            return true;
+        }
+        // LnVisualObjectSerializeHandler_Create
+        case 0x62420 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outVisualObjectSerializeHandler
+            PVal* pval_outVisualObjectSerializeHandler;
+            const APTR aptr_outVisualObjectSerializeHandler = code_getva(&pval_outVisualObjectSerializeHandler);
+            LnHandle local_outVisualObjectSerializeHandler;
+
+            stat = LnVisualObjectSerializeHandler_Create(HSPSubclass_LnVisualObjectSerializeHandler_DelegateLabelCaller, &local_outVisualObjectSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualObjectSerializeHandler*>(LnVisualObjectSerializeHandler_GetSubinstanceId(local_outVisualObjectSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outVisualObjectSerializeHandler, aptr_outVisualObjectSerializeHandler, local_outVisualObjectSerializeHandler);
+
+            return true;
+        }
+        // LnVisualObjectSerialize2Handler_Create
+        case 0x62F20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outVisualObjectSerialize2Handler
+            PVal* pval_outVisualObjectSerialize2Handler;
+            const APTR aptr_outVisualObjectSerialize2Handler = code_getva(&pval_outVisualObjectSerialize2Handler);
+            LnHandle local_outVisualObjectSerialize2Handler;
+
+            stat = LnVisualObjectSerialize2Handler_Create(HSPSubclass_LnVisualObjectSerialize2Handler_DelegateLabelCaller, &local_outVisualObjectSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualObjectSerialize2Handler*>(LnVisualObjectSerialize2Handler_GetSubinstanceId(local_outVisualObjectSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outVisualObjectSerialize2Handler, aptr_outVisualObjectSerialize2Handler, local_outVisualObjectSerialize2Handler);
+
+            return true;
+        }
+        // LnVisualObjectUpdateHandler_Create
+        case 0x63A20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outVisualObjectUpdateHandler
+            PVal* pval_outVisualObjectUpdateHandler;
+            const APTR aptr_outVisualObjectUpdateHandler = code_getva(&pval_outVisualObjectUpdateHandler);
+            LnHandle local_outVisualObjectUpdateHandler;
+
+            stat = LnVisualObjectUpdateHandler_Create(HSPSubclass_LnVisualObjectUpdateHandler_DelegateLabelCaller, &local_outVisualObjectUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualObjectUpdateHandler*>(LnVisualObjectUpdateHandler_GetSubinstanceId(local_outVisualObjectUpdateHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outVisualObjectUpdateHandler, aptr_outVisualObjectUpdateHandler, local_outVisualObjectUpdateHandler);
+
+            return true;
+        }
+        // LnCameraSerializeHandler_Create
+        case 0x64520 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outCameraSerializeHandler
+            PVal* pval_outCameraSerializeHandler;
+            const APTR aptr_outCameraSerializeHandler = code_getva(&pval_outCameraSerializeHandler);
+            LnHandle local_outCameraSerializeHandler;
+
+            stat = LnCameraSerializeHandler_Create(HSPSubclass_LnCameraSerializeHandler_DelegateLabelCaller, &local_outCameraSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraSerializeHandler*>(LnCameraSerializeHandler_GetSubinstanceId(local_outCameraSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outCameraSerializeHandler, aptr_outCameraSerializeHandler, local_outCameraSerializeHandler);
+
+            return true;
+        }
+        // LnCameraSerialize2Handler_Create
+        case 0x65020 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outCameraSerialize2Handler
+            PVal* pval_outCameraSerialize2Handler;
+            const APTR aptr_outCameraSerialize2Handler = code_getva(&pval_outCameraSerialize2Handler);
+            LnHandle local_outCameraSerialize2Handler;
+
+            stat = LnCameraSerialize2Handler_Create(HSPSubclass_LnCameraSerialize2Handler_DelegateLabelCaller, &local_outCameraSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraSerialize2Handler*>(LnCameraSerialize2Handler_GetSubinstanceId(local_outCameraSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outCameraSerialize2Handler, aptr_outCameraSerialize2Handler, local_outCameraSerialize2Handler);
+
+            return true;
+        }
+        // LnCameraUpdateHandler_Create
+        case 0x65B20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outCameraUpdateHandler
+            PVal* pval_outCameraUpdateHandler;
+            const APTR aptr_outCameraUpdateHandler = code_getva(&pval_outCameraUpdateHandler);
+            LnHandle local_outCameraUpdateHandler;
+
+            stat = LnCameraUpdateHandler_Create(HSPSubclass_LnCameraUpdateHandler_DelegateLabelCaller, &local_outCameraUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraUpdateHandler*>(LnCameraUpdateHandler_GetSubinstanceId(local_outCameraUpdateHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outCameraUpdateHandler, aptr_outCameraUpdateHandler, local_outCameraUpdateHandler);
+
+            return true;
+        }
+        // LnDirectionalLightSerializeHandler_Create
+        case 0x66620 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outDirectionalLightSerializeHandler
+            PVal* pval_outDirectionalLightSerializeHandler;
+            const APTR aptr_outDirectionalLightSerializeHandler = code_getva(&pval_outDirectionalLightSerializeHandler);
+            LnHandle local_outDirectionalLightSerializeHandler;
+
+            stat = LnDirectionalLightSerializeHandler_Create(HSPSubclass_LnDirectionalLightSerializeHandler_DelegateLabelCaller, &local_outDirectionalLightSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnDirectionalLightSerializeHandler*>(LnDirectionalLightSerializeHandler_GetSubinstanceId(local_outDirectionalLightSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outDirectionalLightSerializeHandler, aptr_outDirectionalLightSerializeHandler, local_outDirectionalLightSerializeHandler);
+
+            return true;
+        }
+        // LnDirectionalLightSerialize2Handler_Create
+        case 0x67120 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outDirectionalLightSerialize2Handler
+            PVal* pval_outDirectionalLightSerialize2Handler;
+            const APTR aptr_outDirectionalLightSerialize2Handler = code_getva(&pval_outDirectionalLightSerialize2Handler);
+            LnHandle local_outDirectionalLightSerialize2Handler;
+
+            stat = LnDirectionalLightSerialize2Handler_Create(HSPSubclass_LnDirectionalLightSerialize2Handler_DelegateLabelCaller, &local_outDirectionalLightSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnDirectionalLightSerialize2Handler*>(LnDirectionalLightSerialize2Handler_GetSubinstanceId(local_outDirectionalLightSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outDirectionalLightSerialize2Handler, aptr_outDirectionalLightSerialize2Handler, local_outDirectionalLightSerialize2Handler);
+
+            return true;
+        }
+        // LnDirectionalLightUpdateHandler_Create
+        case 0x67C20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outDirectionalLightUpdateHandler
+            PVal* pval_outDirectionalLightUpdateHandler;
+            const APTR aptr_outDirectionalLightUpdateHandler = code_getva(&pval_outDirectionalLightUpdateHandler);
+            LnHandle local_outDirectionalLightUpdateHandler;
+
+            stat = LnDirectionalLightUpdateHandler_Create(HSPSubclass_LnDirectionalLightUpdateHandler_DelegateLabelCaller, &local_outDirectionalLightUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnDirectionalLightUpdateHandler*>(LnDirectionalLightUpdateHandler_GetSubinstanceId(local_outDirectionalLightUpdateHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outDirectionalLightUpdateHandler, aptr_outDirectionalLightUpdateHandler, local_outDirectionalLightUpdateHandler);
+
+            return true;
+        }
+        // LnPointLightSerializeHandler_Create
+        case 0x68720 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outPointLightSerializeHandler
+            PVal* pval_outPointLightSerializeHandler;
+            const APTR aptr_outPointLightSerializeHandler = code_getva(&pval_outPointLightSerializeHandler);
+            LnHandle local_outPointLightSerializeHandler;
+
+            stat = LnPointLightSerializeHandler_Create(HSPSubclass_LnPointLightSerializeHandler_DelegateLabelCaller, &local_outPointLightSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnPointLightSerializeHandler*>(LnPointLightSerializeHandler_GetSubinstanceId(local_outPointLightSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outPointLightSerializeHandler, aptr_outPointLightSerializeHandler, local_outPointLightSerializeHandler);
+
+            return true;
+        }
+        // LnPointLightSerialize2Handler_Create
+        case 0x69220 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outPointLightSerialize2Handler
+            PVal* pval_outPointLightSerialize2Handler;
+            const APTR aptr_outPointLightSerialize2Handler = code_getva(&pval_outPointLightSerialize2Handler);
+            LnHandle local_outPointLightSerialize2Handler;
+
+            stat = LnPointLightSerialize2Handler_Create(HSPSubclass_LnPointLightSerialize2Handler_DelegateLabelCaller, &local_outPointLightSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnPointLightSerialize2Handler*>(LnPointLightSerialize2Handler_GetSubinstanceId(local_outPointLightSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outPointLightSerialize2Handler, aptr_outPointLightSerialize2Handler, local_outPointLightSerialize2Handler);
+
+            return true;
+        }
+        // LnPointLightUpdateHandler_Create
+        case 0x69D20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outPointLightUpdateHandler
+            PVal* pval_outPointLightUpdateHandler;
+            const APTR aptr_outPointLightUpdateHandler = code_getva(&pval_outPointLightUpdateHandler);
+            LnHandle local_outPointLightUpdateHandler;
+
+            stat = LnPointLightUpdateHandler_Create(HSPSubclass_LnPointLightUpdateHandler_DelegateLabelCaller, &local_outPointLightUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnPointLightUpdateHandler*>(LnPointLightUpdateHandler_GetSubinstanceId(local_outPointLightUpdateHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outPointLightUpdateHandler, aptr_outPointLightUpdateHandler, local_outPointLightUpdateHandler);
+
+            return true;
+        }
+        // LnSpotLightSerializeHandler_Create
+        case 0x6A820 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outSpotLightSerializeHandler
+            PVal* pval_outSpotLightSerializeHandler;
+            const APTR aptr_outSpotLightSerializeHandler = code_getva(&pval_outSpotLightSerializeHandler);
+            LnHandle local_outSpotLightSerializeHandler;
+
+            stat = LnSpotLightSerializeHandler_Create(HSPSubclass_LnSpotLightSerializeHandler_DelegateLabelCaller, &local_outSpotLightSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnSpotLightSerializeHandler*>(LnSpotLightSerializeHandler_GetSubinstanceId(local_outSpotLightSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outSpotLightSerializeHandler, aptr_outSpotLightSerializeHandler, local_outSpotLightSerializeHandler);
+
+            return true;
+        }
+        // LnSpotLightSerialize2Handler_Create
+        case 0x6B320 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outSpotLightSerialize2Handler
+            PVal* pval_outSpotLightSerialize2Handler;
+            const APTR aptr_outSpotLightSerialize2Handler = code_getva(&pval_outSpotLightSerialize2Handler);
+            LnHandle local_outSpotLightSerialize2Handler;
+
+            stat = LnSpotLightSerialize2Handler_Create(HSPSubclass_LnSpotLightSerialize2Handler_DelegateLabelCaller, &local_outSpotLightSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnSpotLightSerialize2Handler*>(LnSpotLightSerialize2Handler_GetSubinstanceId(local_outSpotLightSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outSpotLightSerialize2Handler, aptr_outSpotLightSerialize2Handler, local_outSpotLightSerialize2Handler);
+
+            return true;
+        }
+        // LnSpotLightUpdateHandler_Create
+        case 0x6BE20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outSpotLightUpdateHandler
+            PVal* pval_outSpotLightUpdateHandler;
+            const APTR aptr_outSpotLightUpdateHandler = code_getva(&pval_outSpotLightUpdateHandler);
+            LnHandle local_outSpotLightUpdateHandler;
+
+            stat = LnSpotLightUpdateHandler_Create(HSPSubclass_LnSpotLightUpdateHandler_DelegateLabelCaller, &local_outSpotLightUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnSpotLightUpdateHandler*>(LnSpotLightUpdateHandler_GetSubinstanceId(local_outSpotLightUpdateHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outSpotLightUpdateHandler, aptr_outSpotLightUpdateHandler, local_outSpotLightUpdateHandler);
+
+            return true;
+        }
+        // LnSpriteSerializeHandler_Create
+        case 0x6C920 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outSpriteSerializeHandler
+            PVal* pval_outSpriteSerializeHandler;
+            const APTR aptr_outSpriteSerializeHandler = code_getva(&pval_outSpriteSerializeHandler);
+            LnHandle local_outSpriteSerializeHandler;
+
+            stat = LnSpriteSerializeHandler_Create(HSPSubclass_LnSpriteSerializeHandler_DelegateLabelCaller, &local_outSpriteSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteSerializeHandler*>(LnSpriteSerializeHandler_GetSubinstanceId(local_outSpriteSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outSpriteSerializeHandler, aptr_outSpriteSerializeHandler, local_outSpriteSerializeHandler);
+
+            return true;
+        }
+        // LnSpriteSerialize2Handler_Create
+        case 0x6D420 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outSpriteSerialize2Handler
+            PVal* pval_outSpriteSerialize2Handler;
+            const APTR aptr_outSpriteSerialize2Handler = code_getva(&pval_outSpriteSerialize2Handler);
+            LnHandle local_outSpriteSerialize2Handler;
+
+            stat = LnSpriteSerialize2Handler_Create(HSPSubclass_LnSpriteSerialize2Handler_DelegateLabelCaller, &local_outSpriteSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteSerialize2Handler*>(LnSpriteSerialize2Handler_GetSubinstanceId(local_outSpriteSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outSpriteSerialize2Handler, aptr_outSpriteSerialize2Handler, local_outSpriteSerialize2Handler);
+
+            return true;
+        }
+        // LnSpriteUpdateHandler_Create
+        case 0x6DF20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outSpriteUpdateHandler
+            PVal* pval_outSpriteUpdateHandler;
+            const APTR aptr_outSpriteUpdateHandler = code_getva(&pval_outSpriteUpdateHandler);
+            LnHandle local_outSpriteUpdateHandler;
+
+            stat = LnSpriteUpdateHandler_Create(HSPSubclass_LnSpriteUpdateHandler_DelegateLabelCaller, &local_outSpriteUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteUpdateHandler*>(LnSpriteUpdateHandler_GetSubinstanceId(local_outSpriteUpdateHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outSpriteUpdateHandler, aptr_outSpriteUpdateHandler, local_outSpriteUpdateHandler);
+
+            return true;
+        }
+        // LnCameraOrbitControlComponentSerializeHandler_Create
+        case 0x6EA20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outCameraOrbitControlComponentSerializeHandler
+            PVal* pval_outCameraOrbitControlComponentSerializeHandler;
+            const APTR aptr_outCameraOrbitControlComponentSerializeHandler = code_getva(&pval_outCameraOrbitControlComponentSerializeHandler);
+            LnHandle local_outCameraOrbitControlComponentSerializeHandler;
+
+            stat = LnCameraOrbitControlComponentSerializeHandler_Create(HSPSubclass_LnCameraOrbitControlComponentSerializeHandler_DelegateLabelCaller, &local_outCameraOrbitControlComponentSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraOrbitControlComponentSerializeHandler*>(LnCameraOrbitControlComponentSerializeHandler_GetSubinstanceId(local_outCameraOrbitControlComponentSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outCameraOrbitControlComponentSerializeHandler, aptr_outCameraOrbitControlComponentSerializeHandler, local_outCameraOrbitControlComponentSerializeHandler);
+
+            return true;
+        }
+        // LnCameraOrbitControlComponentSerialize2Handler_Create
+        case 0x6F520 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outCameraOrbitControlComponentSerialize2Handler
+            PVal* pval_outCameraOrbitControlComponentSerialize2Handler;
+            const APTR aptr_outCameraOrbitControlComponentSerialize2Handler = code_getva(&pval_outCameraOrbitControlComponentSerialize2Handler);
+            LnHandle local_outCameraOrbitControlComponentSerialize2Handler;
+
+            stat = LnCameraOrbitControlComponentSerialize2Handler_Create(HSPSubclass_LnCameraOrbitControlComponentSerialize2Handler_DelegateLabelCaller, &local_outCameraOrbitControlComponentSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraOrbitControlComponentSerialize2Handler*>(LnCameraOrbitControlComponentSerialize2Handler_GetSubinstanceId(local_outCameraOrbitControlComponentSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outCameraOrbitControlComponentSerialize2Handler, aptr_outCameraOrbitControlComponentSerialize2Handler, local_outCameraOrbitControlComponentSerialize2Handler);
+
+            return true;
+        }
+        // LnRaycasterSerializeHandler_Create
+        case 0x70020 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outRaycasterSerializeHandler
+            PVal* pval_outRaycasterSerializeHandler;
+            const APTR aptr_outRaycasterSerializeHandler = code_getva(&pval_outRaycasterSerializeHandler);
+            LnHandle local_outRaycasterSerializeHandler;
+
+            stat = LnRaycasterSerializeHandler_Create(HSPSubclass_LnRaycasterSerializeHandler_DelegateLabelCaller, &local_outRaycasterSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnRaycasterSerializeHandler*>(LnRaycasterSerializeHandler_GetSubinstanceId(local_outRaycasterSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outRaycasterSerializeHandler, aptr_outRaycasterSerializeHandler, local_outRaycasterSerializeHandler);
+
+            return true;
+        }
+        // LnRaycasterSerialize2Handler_Create
+        case 0x70B20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outRaycasterSerialize2Handler
+            PVal* pval_outRaycasterSerialize2Handler;
+            const APTR aptr_outRaycasterSerialize2Handler = code_getva(&pval_outRaycasterSerialize2Handler);
+            LnHandle local_outRaycasterSerialize2Handler;
+
+            stat = LnRaycasterSerialize2Handler_Create(HSPSubclass_LnRaycasterSerialize2Handler_DelegateLabelCaller, &local_outRaycasterSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnRaycasterSerialize2Handler*>(LnRaycasterSerialize2Handler_GetSubinstanceId(local_outRaycasterSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outRaycasterSerialize2Handler, aptr_outRaycasterSerialize2Handler, local_outRaycasterSerialize2Handler);
+
+            return true;
+        }
+        // LnRaycastResultSerializeHandler_Create
+        case 0x71620 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outRaycastResultSerializeHandler
+            PVal* pval_outRaycastResultSerializeHandler;
+            const APTR aptr_outRaycastResultSerializeHandler = code_getva(&pval_outRaycastResultSerializeHandler);
+            LnHandle local_outRaycastResultSerializeHandler;
+
+            stat = LnRaycastResultSerializeHandler_Create(HSPSubclass_LnRaycastResultSerializeHandler_DelegateLabelCaller, &local_outRaycastResultSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnRaycastResultSerializeHandler*>(LnRaycastResultSerializeHandler_GetSubinstanceId(local_outRaycastResultSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outRaycastResultSerializeHandler, aptr_outRaycastResultSerializeHandler, local_outRaycastResultSerializeHandler);
+
+            return true;
+        }
+        // LnRaycastResultSerialize2Handler_Create
+        case 0x72120 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outRaycastResultSerialize2Handler
+            PVal* pval_outRaycastResultSerialize2Handler;
+            const APTR aptr_outRaycastResultSerialize2Handler = code_getva(&pval_outRaycastResultSerialize2Handler);
+            LnHandle local_outRaycastResultSerialize2Handler;
+
+            stat = LnRaycastResultSerialize2Handler_Create(HSPSubclass_LnRaycastResultSerialize2Handler_DelegateLabelCaller, &local_outRaycastResultSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnRaycastResultSerialize2Handler*>(LnRaycastResultSerialize2Handler_GetSubinstanceId(local_outRaycastResultSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outRaycastResultSerialize2Handler, aptr_outRaycastResultSerialize2Handler, local_outRaycastResultSerialize2Handler);
+
+            return true;
+        }
+        // LnWorldRenderViewSerializeHandler_Create
+        case 0x72C20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outWorldRenderViewSerializeHandler
+            PVal* pval_outWorldRenderViewSerializeHandler;
+            const APTR aptr_outWorldRenderViewSerializeHandler = code_getva(&pval_outWorldRenderViewSerializeHandler);
+            LnHandle local_outWorldRenderViewSerializeHandler;
+
+            stat = LnWorldRenderViewSerializeHandler_Create(HSPSubclass_LnWorldRenderViewSerializeHandler_DelegateLabelCaller, &local_outWorldRenderViewSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldRenderViewSerializeHandler*>(LnWorldRenderViewSerializeHandler_GetSubinstanceId(local_outWorldRenderViewSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outWorldRenderViewSerializeHandler, aptr_outWorldRenderViewSerializeHandler, local_outWorldRenderViewSerializeHandler);
+
+            return true;
+        }
+        // LnWorldRenderViewSerialize2Handler_Create
+        case 0x73720 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outWorldRenderViewSerialize2Handler
+            PVal* pval_outWorldRenderViewSerialize2Handler;
+            const APTR aptr_outWorldRenderViewSerialize2Handler = code_getva(&pval_outWorldRenderViewSerialize2Handler);
+            LnHandle local_outWorldRenderViewSerialize2Handler;
+
+            stat = LnWorldRenderViewSerialize2Handler_Create(HSPSubclass_LnWorldRenderViewSerialize2Handler_DelegateLabelCaller, &local_outWorldRenderViewSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldRenderViewSerialize2Handler*>(LnWorldRenderViewSerialize2Handler_GetSubinstanceId(local_outWorldRenderViewSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outWorldRenderViewSerialize2Handler, aptr_outWorldRenderViewSerialize2Handler, local_outWorldRenderViewSerialize2Handler);
+
+            return true;
+        }
+        // LnBoxMeshSerializeHandler_Create
+        case 0x74220 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outBoxMeshSerializeHandler
+            PVal* pval_outBoxMeshSerializeHandler;
+            const APTR aptr_outBoxMeshSerializeHandler = code_getva(&pval_outBoxMeshSerializeHandler);
+            LnHandle local_outBoxMeshSerializeHandler;
+
+            stat = LnBoxMeshSerializeHandler_Create(HSPSubclass_LnBoxMeshSerializeHandler_DelegateLabelCaller, &local_outBoxMeshSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnBoxMeshSerializeHandler*>(LnBoxMeshSerializeHandler_GetSubinstanceId(local_outBoxMeshSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outBoxMeshSerializeHandler, aptr_outBoxMeshSerializeHandler, local_outBoxMeshSerializeHandler);
+
+            return true;
+        }
+        // LnBoxMeshSerialize2Handler_Create
+        case 0x74D20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outBoxMeshSerialize2Handler
+            PVal* pval_outBoxMeshSerialize2Handler;
+            const APTR aptr_outBoxMeshSerialize2Handler = code_getva(&pval_outBoxMeshSerialize2Handler);
+            LnHandle local_outBoxMeshSerialize2Handler;
+
+            stat = LnBoxMeshSerialize2Handler_Create(HSPSubclass_LnBoxMeshSerialize2Handler_DelegateLabelCaller, &local_outBoxMeshSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnBoxMeshSerialize2Handler*>(LnBoxMeshSerialize2Handler_GetSubinstanceId(local_outBoxMeshSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outBoxMeshSerialize2Handler, aptr_outBoxMeshSerialize2Handler, local_outBoxMeshSerialize2Handler);
+
+            return true;
+        }
+        // LnBoxMeshUpdateHandler_Create
+        case 0x75820 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outBoxMeshUpdateHandler
+            PVal* pval_outBoxMeshUpdateHandler;
+            const APTR aptr_outBoxMeshUpdateHandler = code_getva(&pval_outBoxMeshUpdateHandler);
+            LnHandle local_outBoxMeshUpdateHandler;
+
+            stat = LnBoxMeshUpdateHandler_Create(HSPSubclass_LnBoxMeshUpdateHandler_DelegateLabelCaller, &local_outBoxMeshUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnBoxMeshUpdateHandler*>(LnBoxMeshUpdateHandler_GetSubinstanceId(local_outBoxMeshUpdateHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outBoxMeshUpdateHandler, aptr_outBoxMeshUpdateHandler, local_outBoxMeshUpdateHandler);
+
+            return true;
+        }
+        // LnPlaneMeshSerializeHandler_Create
+        case 0x76320 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outPlaneMeshSerializeHandler
+            PVal* pval_outPlaneMeshSerializeHandler;
+            const APTR aptr_outPlaneMeshSerializeHandler = code_getva(&pval_outPlaneMeshSerializeHandler);
+            LnHandle local_outPlaneMeshSerializeHandler;
+
+            stat = LnPlaneMeshSerializeHandler_Create(HSPSubclass_LnPlaneMeshSerializeHandler_DelegateLabelCaller, &local_outPlaneMeshSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnPlaneMeshSerializeHandler*>(LnPlaneMeshSerializeHandler_GetSubinstanceId(local_outPlaneMeshSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outPlaneMeshSerializeHandler, aptr_outPlaneMeshSerializeHandler, local_outPlaneMeshSerializeHandler);
+
+            return true;
+        }
+        // LnPlaneMeshSerialize2Handler_Create
+        case 0x76E20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outPlaneMeshSerialize2Handler
+            PVal* pval_outPlaneMeshSerialize2Handler;
+            const APTR aptr_outPlaneMeshSerialize2Handler = code_getva(&pval_outPlaneMeshSerialize2Handler);
+            LnHandle local_outPlaneMeshSerialize2Handler;
+
+            stat = LnPlaneMeshSerialize2Handler_Create(HSPSubclass_LnPlaneMeshSerialize2Handler_DelegateLabelCaller, &local_outPlaneMeshSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnPlaneMeshSerialize2Handler*>(LnPlaneMeshSerialize2Handler_GetSubinstanceId(local_outPlaneMeshSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outPlaneMeshSerialize2Handler, aptr_outPlaneMeshSerialize2Handler, local_outPlaneMeshSerialize2Handler);
+
+            return true;
+        }
+        // LnPlaneMeshUpdateHandler_Create
+        case 0x77920 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outPlaneMeshUpdateHandler
+            PVal* pval_outPlaneMeshUpdateHandler;
+            const APTR aptr_outPlaneMeshUpdateHandler = code_getva(&pval_outPlaneMeshUpdateHandler);
+            LnHandle local_outPlaneMeshUpdateHandler;
+
+            stat = LnPlaneMeshUpdateHandler_Create(HSPSubclass_LnPlaneMeshUpdateHandler_DelegateLabelCaller, &local_outPlaneMeshUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnPlaneMeshUpdateHandler*>(LnPlaneMeshUpdateHandler_GetSubinstanceId(local_outPlaneMeshUpdateHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outPlaneMeshUpdateHandler, aptr_outPlaneMeshUpdateHandler, local_outPlaneMeshUpdateHandler);
+
+            return true;
+        }
+        // LnUIEventArgsSerializeHandler_Create
+        case 0x78420 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outUIEventArgsSerializeHandler
+            PVal* pval_outUIEventArgsSerializeHandler;
+            const APTR aptr_outUIEventArgsSerializeHandler = code_getva(&pval_outUIEventArgsSerializeHandler);
+            LnHandle local_outUIEventArgsSerializeHandler;
+
+            stat = LnUIEventArgsSerializeHandler_Create(HSPSubclass_LnUIEventArgsSerializeHandler_DelegateLabelCaller, &local_outUIEventArgsSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnUIEventArgsSerializeHandler*>(LnUIEventArgsSerializeHandler_GetSubinstanceId(local_outUIEventArgsSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outUIEventArgsSerializeHandler, aptr_outUIEventArgsSerializeHandler, local_outUIEventArgsSerializeHandler);
+
+            return true;
+        }
+        // LnUIEventArgsSerialize2Handler_Create
+        case 0x78F20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outUIEventArgsSerialize2Handler
+            PVal* pval_outUIEventArgsSerialize2Handler;
+            const APTR aptr_outUIEventArgsSerialize2Handler = code_getva(&pval_outUIEventArgsSerialize2Handler);
+            LnHandle local_outUIEventArgsSerialize2Handler;
+
+            stat = LnUIEventArgsSerialize2Handler_Create(HSPSubclass_LnUIEventArgsSerialize2Handler_DelegateLabelCaller, &local_outUIEventArgsSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnUIEventArgsSerialize2Handler*>(LnUIEventArgsSerialize2Handler_GetSubinstanceId(local_outUIEventArgsSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outUIEventArgsSerialize2Handler, aptr_outUIEventArgsSerialize2Handler, local_outUIEventArgsSerialize2Handler);
+
+            return true;
+        }
+        // LnUILayoutElementSerializeHandler_Create
+        case 0x79A20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outUILayoutElementSerializeHandler
+            PVal* pval_outUILayoutElementSerializeHandler;
+            const APTR aptr_outUILayoutElementSerializeHandler = code_getva(&pval_outUILayoutElementSerializeHandler);
+            LnHandle local_outUILayoutElementSerializeHandler;
+
+            stat = LnUILayoutElementSerializeHandler_Create(HSPSubclass_LnUILayoutElementSerializeHandler_DelegateLabelCaller, &local_outUILayoutElementSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnUILayoutElementSerializeHandler*>(LnUILayoutElementSerializeHandler_GetSubinstanceId(local_outUILayoutElementSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outUILayoutElementSerializeHandler, aptr_outUILayoutElementSerializeHandler, local_outUILayoutElementSerializeHandler);
+
+            return true;
+        }
+        // LnUILayoutElementSerialize2Handler_Create
+        case 0x7A520 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outUILayoutElementSerialize2Handler
+            PVal* pval_outUILayoutElementSerialize2Handler;
+            const APTR aptr_outUILayoutElementSerialize2Handler = code_getva(&pval_outUILayoutElementSerialize2Handler);
+            LnHandle local_outUILayoutElementSerialize2Handler;
+
+            stat = LnUILayoutElementSerialize2Handler_Create(HSPSubclass_LnUILayoutElementSerialize2Handler_DelegateLabelCaller, &local_outUILayoutElementSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnUILayoutElementSerialize2Handler*>(LnUILayoutElementSerialize2Handler_GetSubinstanceId(local_outUILayoutElementSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outUILayoutElementSerialize2Handler, aptr_outUILayoutElementSerialize2Handler, local_outUILayoutElementSerialize2Handler);
+
+            return true;
+        }
+        // LnUIElementSerializeHandler_Create
+        case 0x7B020 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outUIElementSerializeHandler
+            PVal* pval_outUIElementSerializeHandler;
+            const APTR aptr_outUIElementSerializeHandler = code_getva(&pval_outUIElementSerializeHandler);
+            LnHandle local_outUIElementSerializeHandler;
+
+            stat = LnUIElementSerializeHandler_Create(HSPSubclass_LnUIElementSerializeHandler_DelegateLabelCaller, &local_outUIElementSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnUIElementSerializeHandler*>(LnUIElementSerializeHandler_GetSubinstanceId(local_outUIElementSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outUIElementSerializeHandler, aptr_outUIElementSerializeHandler, local_outUIElementSerializeHandler);
+
+            return true;
+        }
+        // LnUIElementSerialize2Handler_Create
+        case 0x7BB20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outUIElementSerialize2Handler
+            PVal* pval_outUIElementSerialize2Handler;
+            const APTR aptr_outUIElementSerialize2Handler = code_getva(&pval_outUIElementSerialize2Handler);
+            LnHandle local_outUIElementSerialize2Handler;
+
+            stat = LnUIElementSerialize2Handler_Create(HSPSubclass_LnUIElementSerialize2Handler_DelegateLabelCaller, &local_outUIElementSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnUIElementSerialize2Handler*>(LnUIElementSerialize2Handler_GetSubinstanceId(local_outUIElementSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outUIElementSerialize2Handler, aptr_outUIElementSerialize2Handler, local_outUIElementSerialize2Handler);
+
+            return true;
+        }
+        // LnUITextBlockSerializeHandler_Create
+        case 0x7C620 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outUITextBlockSerializeHandler
+            PVal* pval_outUITextBlockSerializeHandler;
+            const APTR aptr_outUITextBlockSerializeHandler = code_getva(&pval_outUITextBlockSerializeHandler);
+            LnHandle local_outUITextBlockSerializeHandler;
+
+            stat = LnUITextBlockSerializeHandler_Create(HSPSubclass_LnUITextBlockSerializeHandler_DelegateLabelCaller, &local_outUITextBlockSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnUITextBlockSerializeHandler*>(LnUITextBlockSerializeHandler_GetSubinstanceId(local_outUITextBlockSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outUITextBlockSerializeHandler, aptr_outUITextBlockSerializeHandler, local_outUITextBlockSerializeHandler);
+
+            return true;
+        }
+        // LnUITextBlockSerialize2Handler_Create
+        case 0x7D120 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outUITextBlockSerialize2Handler
+            PVal* pval_outUITextBlockSerialize2Handler;
+            const APTR aptr_outUITextBlockSerialize2Handler = code_getva(&pval_outUITextBlockSerialize2Handler);
+            LnHandle local_outUITextBlockSerialize2Handler;
+
+            stat = LnUITextBlockSerialize2Handler_Create(HSPSubclass_LnUITextBlockSerialize2Handler_DelegateLabelCaller, &local_outUITextBlockSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnUITextBlockSerialize2Handler*>(LnUITextBlockSerialize2Handler_GetSubinstanceId(local_outUITextBlockSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outUITextBlockSerialize2Handler, aptr_outUITextBlockSerialize2Handler, local_outUITextBlockSerialize2Handler);
+
+            return true;
+        }
+        // LnUISpriteSerializeHandler_Create
+        case 0x7DC20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outUISpriteSerializeHandler
+            PVal* pval_outUISpriteSerializeHandler;
+            const APTR aptr_outUISpriteSerializeHandler = code_getva(&pval_outUISpriteSerializeHandler);
+            LnHandle local_outUISpriteSerializeHandler;
+
+            stat = LnUISpriteSerializeHandler_Create(HSPSubclass_LnUISpriteSerializeHandler_DelegateLabelCaller, &local_outUISpriteSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnUISpriteSerializeHandler*>(LnUISpriteSerializeHandler_GetSubinstanceId(local_outUISpriteSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outUISpriteSerializeHandler, aptr_outUISpriteSerializeHandler, local_outUISpriteSerializeHandler);
+
+            return true;
+        }
+        // LnUISpriteSerialize2Handler_Create
+        case 0x7E720 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outUISpriteSerialize2Handler
+            PVal* pval_outUISpriteSerialize2Handler;
+            const APTR aptr_outUISpriteSerialize2Handler = code_getva(&pval_outUISpriteSerialize2Handler);
+            LnHandle local_outUISpriteSerialize2Handler;
+
+            stat = LnUISpriteSerialize2Handler_Create(HSPSubclass_LnUISpriteSerialize2Handler_DelegateLabelCaller, &local_outUISpriteSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnUISpriteSerialize2Handler*>(LnUISpriteSerialize2Handler_GetSubinstanceId(local_outUISpriteSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outUISpriteSerialize2Handler, aptr_outUISpriteSerialize2Handler, local_outUISpriteSerialize2Handler);
+
+            return true;
+        }
+        // LnApplicationSerializeHandler_Create
+        case 0x7F220 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outApplicationSerializeHandler
+            PVal* pval_outApplicationSerializeHandler;
+            const APTR aptr_outApplicationSerializeHandler = code_getva(&pval_outApplicationSerializeHandler);
+            LnHandle local_outApplicationSerializeHandler;
+
+            stat = LnApplicationSerializeHandler_Create(HSPSubclass_LnApplicationSerializeHandler_DelegateLabelCaller, &local_outApplicationSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationSerializeHandler*>(LnApplicationSerializeHandler_GetSubinstanceId(local_outApplicationSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outApplicationSerializeHandler, aptr_outApplicationSerializeHandler, local_outApplicationSerializeHandler);
+
+            return true;
+        }
+        // LnApplicationSerialize2Handler_Create
+        case 0x7FD20 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outApplicationSerialize2Handler
+            PVal* pval_outApplicationSerialize2Handler;
+            const APTR aptr_outApplicationSerialize2Handler = code_getva(&pval_outApplicationSerialize2Handler);
+            LnHandle local_outApplicationSerialize2Handler;
+
+            stat = LnApplicationSerialize2Handler_Create(HSPSubclass_LnApplicationSerialize2Handler_DelegateLabelCaller, &local_outApplicationSerialize2Handler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationSerialize2Handler*>(LnApplicationSerialize2Handler_GetSubinstanceId(local_outApplicationSerialize2Handler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outApplicationSerialize2Handler, aptr_outApplicationSerialize2Handler, local_outApplicationSerialize2Handler);
+
+            return true;
+        }
+        // LnApplicationInitHandler_Create
+        case 0x80820 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outApplicationInitHandler
+            PVal* pval_outApplicationInitHandler;
+            const APTR aptr_outApplicationInitHandler = code_getva(&pval_outApplicationInitHandler);
+            LnHandle local_outApplicationInitHandler;
+
+            stat = LnApplicationInitHandler_Create(HSPSubclass_LnApplicationInitHandler_DelegateLabelCaller, &local_outApplicationInitHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationInitHandler*>(LnApplicationInitHandler_GetSubinstanceId(local_outApplicationInitHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outApplicationInitHandler, aptr_outApplicationInitHandler, local_outApplicationInitHandler);
+
+            return true;
+        }
+        // LnApplicationUpdateHandler_Create
+        case 0x81320 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outApplicationUpdateHandler
+            PVal* pval_outApplicationUpdateHandler;
+            const APTR aptr_outApplicationUpdateHandler = code_getva(&pval_outApplicationUpdateHandler);
+            LnHandle local_outApplicationUpdateHandler;
+
+            stat = LnApplicationUpdateHandler_Create(HSPSubclass_LnApplicationUpdateHandler_DelegateLabelCaller, &local_outApplicationUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationUpdateHandler*>(LnApplicationUpdateHandler_GetSubinstanceId(local_outApplicationUpdateHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outApplicationUpdateHandler, aptr_outApplicationUpdateHandler, local_outApplicationUpdateHandler);
 
             return true;
         }
@@ -5177,6 +9812,480 @@ void RegisterTypes(HSP3TYPEINFO * info)
         //info.OnInit_OverrideFunc = ????;
         //info.OnUpdate_OverrideFunc = ????;
         LnApplication_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnObjectSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnObjectSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnObjectSerializeHandler_SubinstanceFree;
+        LnObjectSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnObjectSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnObjectSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnObjectSerialize2Handler_SubinstanceFree;
+        LnObjectSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnEventConnectionSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnEventConnectionSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnEventConnectionSerializeHandler_SubinstanceFree;
+        LnEventConnectionSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnEventConnectionSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnEventConnectionSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnEventConnectionSerialize2Handler_SubinstanceFree;
+        LnEventConnectionSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnZVTestClass1SerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnZVTestClass1SerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnZVTestClass1SerializeHandler_SubinstanceFree;
+        LnZVTestClass1SerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnZVTestClass1Serialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnZVTestClass1Serialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnZVTestClass1Serialize2Handler_SubinstanceFree;
+        LnZVTestClass1Serialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnZVTestEventArgs1SerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnZVTestEventArgs1SerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnZVTestEventArgs1SerializeHandler_SubinstanceFree;
+        LnZVTestEventArgs1SerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnZVTestEventArgs1Serialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnZVTestEventArgs1Serialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnZVTestEventArgs1Serialize2Handler_SubinstanceFree;
+        LnZVTestEventArgs1Serialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnSerializerSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnSerializerSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnSerializerSerializeHandler_SubinstanceFree;
+        LnSerializerSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnSerializerSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnSerializerSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnSerializerSerialize2Handler_SubinstanceFree;
+        LnSerializerSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnSerializer2SerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnSerializer2SerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnSerializer2SerializeHandler_SubinstanceFree;
+        LnSerializer2SerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnSerializer2Serialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnSerializer2Serialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnSerializer2Serialize2Handler_SubinstanceFree;
+        LnSerializer2Serialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnAssetModelSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnAssetModelSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnAssetModelSerializeHandler_SubinstanceFree;
+        LnAssetModelSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnAssetModelSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnAssetModelSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnAssetModelSerialize2Handler_SubinstanceFree;
+        LnAssetModelSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnTextureSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnTextureSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnTextureSerializeHandler_SubinstanceFree;
+        LnTextureSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnTextureSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnTextureSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnTextureSerialize2Handler_SubinstanceFree;
+        LnTextureSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnTexture2DSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnTexture2DSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnTexture2DSerializeHandler_SubinstanceFree;
+        LnTexture2DSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnTexture2DSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnTexture2DSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnTexture2DSerialize2Handler_SubinstanceFree;
+        LnTexture2DSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnRenderViewSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnRenderViewSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnRenderViewSerializeHandler_SubinstanceFree;
+        LnRenderViewSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnRenderViewSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnRenderViewSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnRenderViewSerialize2Handler_SubinstanceFree;
+        LnRenderViewSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnComponentSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnComponentSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnComponentSerializeHandler_SubinstanceFree;
+        LnComponentSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnComponentSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnComponentSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnComponentSerialize2Handler_SubinstanceFree;
+        LnComponentSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnVisualComponentSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnVisualComponentSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnVisualComponentSerializeHandler_SubinstanceFree;
+        LnVisualComponentSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnVisualComponentSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnVisualComponentSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnVisualComponentSerialize2Handler_SubinstanceFree;
+        LnVisualComponentSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnSpriteComponentSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnSpriteComponentSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnSpriteComponentSerializeHandler_SubinstanceFree;
+        LnSpriteComponentSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnSpriteComponentSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnSpriteComponentSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnSpriteComponentSerialize2Handler_SubinstanceFree;
+        LnSpriteComponentSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnWorldSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnWorldSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnWorldSerializeHandler_SubinstanceFree;
+        LnWorldSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnWorldSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnWorldSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnWorldSerialize2Handler_SubinstanceFree;
+        LnWorldSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnComponentListSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnComponentListSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnComponentListSerializeHandler_SubinstanceFree;
+        LnComponentListSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnComponentListSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnComponentListSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnComponentListSerialize2Handler_SubinstanceFree;
+        LnComponentListSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnWorldObjectSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnWorldObjectSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnWorldObjectSerializeHandler_SubinstanceFree;
+        LnWorldObjectSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnWorldObjectSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnWorldObjectSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnWorldObjectSerialize2Handler_SubinstanceFree;
+        LnWorldObjectSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnWorldObjectUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnWorldObjectUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnWorldObjectUpdateHandler_SubinstanceFree;
+        LnWorldObjectUpdateHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnVisualObjectSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnVisualObjectSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnVisualObjectSerializeHandler_SubinstanceFree;
+        LnVisualObjectSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnVisualObjectSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnVisualObjectSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnVisualObjectSerialize2Handler_SubinstanceFree;
+        LnVisualObjectSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnVisualObjectUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnVisualObjectUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnVisualObjectUpdateHandler_SubinstanceFree;
+        LnVisualObjectUpdateHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnCameraSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnCameraSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnCameraSerializeHandler_SubinstanceFree;
+        LnCameraSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnCameraSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnCameraSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnCameraSerialize2Handler_SubinstanceFree;
+        LnCameraSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnCameraUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnCameraUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnCameraUpdateHandler_SubinstanceFree;
+        LnCameraUpdateHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnDirectionalLightSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnDirectionalLightSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnDirectionalLightSerializeHandler_SubinstanceFree;
+        LnDirectionalLightSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnDirectionalLightSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnDirectionalLightSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnDirectionalLightSerialize2Handler_SubinstanceFree;
+        LnDirectionalLightSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnDirectionalLightUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnDirectionalLightUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnDirectionalLightUpdateHandler_SubinstanceFree;
+        LnDirectionalLightUpdateHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnPointLightSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnPointLightSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnPointLightSerializeHandler_SubinstanceFree;
+        LnPointLightSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnPointLightSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnPointLightSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnPointLightSerialize2Handler_SubinstanceFree;
+        LnPointLightSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnPointLightUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnPointLightUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnPointLightUpdateHandler_SubinstanceFree;
+        LnPointLightUpdateHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnSpotLightSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnSpotLightSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnSpotLightSerializeHandler_SubinstanceFree;
+        LnSpotLightSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnSpotLightSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnSpotLightSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnSpotLightSerialize2Handler_SubinstanceFree;
+        LnSpotLightSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnSpotLightUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnSpotLightUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnSpotLightUpdateHandler_SubinstanceFree;
+        LnSpotLightUpdateHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnSpriteSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnSpriteSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnSpriteSerializeHandler_SubinstanceFree;
+        LnSpriteSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnSpriteSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnSpriteSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnSpriteSerialize2Handler_SubinstanceFree;
+        LnSpriteSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnSpriteUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnSpriteUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnSpriteUpdateHandler_SubinstanceFree;
+        LnSpriteUpdateHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnCameraOrbitControlComponentSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnCameraOrbitControlComponentSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnCameraOrbitControlComponentSerializeHandler_SubinstanceFree;
+        LnCameraOrbitControlComponentSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnCameraOrbitControlComponentSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnCameraOrbitControlComponentSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnCameraOrbitControlComponentSerialize2Handler_SubinstanceFree;
+        LnCameraOrbitControlComponentSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnRaycasterSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnRaycasterSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnRaycasterSerializeHandler_SubinstanceFree;
+        LnRaycasterSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnRaycasterSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnRaycasterSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnRaycasterSerialize2Handler_SubinstanceFree;
+        LnRaycasterSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnRaycastResultSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnRaycastResultSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnRaycastResultSerializeHandler_SubinstanceFree;
+        LnRaycastResultSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnRaycastResultSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnRaycastResultSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnRaycastResultSerialize2Handler_SubinstanceFree;
+        LnRaycastResultSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnWorldRenderViewSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnWorldRenderViewSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnWorldRenderViewSerializeHandler_SubinstanceFree;
+        LnWorldRenderViewSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnWorldRenderViewSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnWorldRenderViewSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnWorldRenderViewSerialize2Handler_SubinstanceFree;
+        LnWorldRenderViewSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnBoxMeshSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnBoxMeshSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnBoxMeshSerializeHandler_SubinstanceFree;
+        LnBoxMeshSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnBoxMeshSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnBoxMeshSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnBoxMeshSerialize2Handler_SubinstanceFree;
+        LnBoxMeshSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnBoxMeshUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnBoxMeshUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnBoxMeshUpdateHandler_SubinstanceFree;
+        LnBoxMeshUpdateHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnPlaneMeshSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnPlaneMeshSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnPlaneMeshSerializeHandler_SubinstanceFree;
+        LnPlaneMeshSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnPlaneMeshSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnPlaneMeshSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnPlaneMeshSerialize2Handler_SubinstanceFree;
+        LnPlaneMeshSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnPlaneMeshUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnPlaneMeshUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnPlaneMeshUpdateHandler_SubinstanceFree;
+        LnPlaneMeshUpdateHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnUIEventArgsSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnUIEventArgsSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnUIEventArgsSerializeHandler_SubinstanceFree;
+        LnUIEventArgsSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnUIEventArgsSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnUIEventArgsSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnUIEventArgsSerialize2Handler_SubinstanceFree;
+        LnUIEventArgsSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnUILayoutElementSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnUILayoutElementSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnUILayoutElementSerializeHandler_SubinstanceFree;
+        LnUILayoutElementSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnUILayoutElementSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnUILayoutElementSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnUILayoutElementSerialize2Handler_SubinstanceFree;
+        LnUILayoutElementSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnUIElementSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnUIElementSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnUIElementSerializeHandler_SubinstanceFree;
+        LnUIElementSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnUIElementSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnUIElementSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnUIElementSerialize2Handler_SubinstanceFree;
+        LnUIElementSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnUITextBlockSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnUITextBlockSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnUITextBlockSerializeHandler_SubinstanceFree;
+        LnUITextBlockSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnUITextBlockSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnUITextBlockSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnUITextBlockSerialize2Handler_SubinstanceFree;
+        LnUITextBlockSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnUISpriteSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnUISpriteSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnUISpriteSerializeHandler_SubinstanceFree;
+        LnUISpriteSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnUISpriteSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnUISpriteSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnUISpriteSerialize2Handler_SubinstanceFree;
+        LnUISpriteSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnApplicationSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnApplicationSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnApplicationSerializeHandler_SubinstanceFree;
+        LnApplicationSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnApplicationSerialize2Handler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnApplicationSerialize2Handler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnApplicationSerialize2Handler_SubinstanceFree;
+        LnApplicationSerialize2Handler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnApplicationInitHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnApplicationInitHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnApplicationInitHandler_SubinstanceFree;
+        LnApplicationInitHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LnApplicationUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LnApplicationUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LnApplicationUpdateHandler_SubinstanceFree;
+        LnApplicationUpdateHandler_RegisterSubclassTypeInfo(&info);
     }
 }
 

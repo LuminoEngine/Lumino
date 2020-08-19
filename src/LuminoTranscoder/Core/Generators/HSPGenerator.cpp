@@ -72,10 +72,10 @@ ln::String HSPHeaderGenerator::makeClasses() const
             code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii), getCommandId(methodSymbol, 0));
         }
 
-        //const auto virtualMethods = classSymbol->virtualMethods();
-        //for (int i = 0; i < virtualMethods.size(); i++) {
-        //    code.AppendLine("#cmd {0} ${1:X}", makeFlatAPIName_SetPrototype(classSymbol, virtualMethods[i], FlatCharset::Ascii), getCommandId(virtualMethods[i], i + 1));
-        //}
+        const auto virtualMethods = classSymbol->virtualPrototypeSetters();
+        for (int i = 0; i < virtualMethods.size(); i++) {
+            code.AppendLine("#cmd {0} ${1:X}", makeFlatAPIName_SetPrototype(classSymbol, virtualMethods[i], FlatCharset::Ascii), getCommandId(virtualMethods[i], i + 1));
+        }
     }
     return code.toString();
 }
@@ -376,9 +376,9 @@ static void HSPSubclass_%%FlatClassName%%_SubinstanceFree(LnHandle handle, LnSub
                     }
                 }
 
-                code.AppendLine(u"auto* self = reinterpret_cast<{0}*>({1}({2}));", makeName_HSPSubclassType(classSymbol), makeFlatAPIName_GetSubinstanceId(classSymbol), selfParamName);
+                code.AppendLine(u"auto* localSelf = reinterpret_cast<{0}*>({1}({2}));", makeName_HSPSubclassType(classSymbol), makeFlatAPIName_GetSubinstanceId(classSymbol), selfParamName);
                 code.AppendLine(u"stat = 0;");
-                code.AppendLine(u"code_call(self->labelPointer);");
+                code.AppendLine(u"code_call(localSelf->labelPointer);");
 
                 for (int i = 0; i < params.size(); i++) {
                     if (params[i]->isOut()) {
@@ -447,7 +447,15 @@ ln::String HSPCommandsGenerator::make_cmdfunc() const
     code.IncreaseIndent();
     
     for (const auto& classSymbol : db()->classes()) {
-        for (const auto& methodSymbol : classSymbol->publicMethods()) {
+
+
+        //auto methods = stream::MakeStream::from(classSymbol->publicMethods())
+        //    | stream::op::concat(stream::MakeStream::from(classSymbol->virtualPrototypeSetters()));
+
+        //for (const auto& methodSymbol : methods) {
+        auto methods = classSymbol->publicMethods();
+        methods.addRange(classSymbol->virtualPrototypeSetters());
+        for (const auto& methodSymbol : methods) {
             code.AppendLine(u"// " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii));
             code.AppendLine(u"case 0x{0:X} : {{", getCommandId(methodSymbol, 0));
             code.IncreaseIndent();
@@ -496,8 +504,8 @@ ln::String HSPCommandsGenerator::makeCallCommandBlock(const MethodSymbol* method
 
             prologue.AppendLine(makeGetVAExpr(param));
             args.AppendCommad(makeName_DelegateLabelCaller(classSymbol));
-            epilogue.AppendLine(u"auto* self = reinterpret_cast<{0}*>({1}(local_{2}));", makeName_HSPSubclassType(classSymbol), makeFlatAPIName_GetSubinstanceId(classSymbol), methodSymbol->flatConstructorOutputThisParam()->name());
-            epilogue.AppendLine(u"self->labelPointer = {0};", localVarName);
+            epilogue.AppendLine(u"auto* localSelf = reinterpret_cast<{0}*>({1}(local_{2}));", makeName_HSPSubclassType(classSymbol), makeFlatAPIName_GetSubinstanceId(classSymbol), methodSymbol->flatConstructorOutputThisParam()->name());
+            epilogue.AppendLine(u"localSelf->labelPointer = {0};", localVarName);
         }
         else if (param->isOut() || param->isReturn()) {
             prologue.AppendLine(u"PVal* pval_{0};", param->name());

@@ -114,8 +114,8 @@ void FlatCHeaderGenerator::generate()
 				classMemberFuncDeclsText.NewLine();
 			}
 
-			// vitualPrototypeSetters
-			for (auto& method : classSymbol->vitualPrototypeSetters()) {
+			// virtualPrototypeSetters
+			for (auto& method : classSymbol->virtualPrototypeSetters()) {
 				// comment
 				classMemberFuncDeclsText.AppendLine(makeMethodDocumentComment(method));
 				// decl
@@ -385,7 +385,7 @@ void FlatCSourceGenerator::generate()
 			}
 
 			// virtual prototypes
-			for (auto& method : classSymbol->vitualPrototypeSetters()) {
+			for (auto& method : classSymbol->virtualPrototypeSetters()) {
 
 				classMemberFuncImplsText.AppendLine(makeFuncHeader(method, FlatCharset::Unicode));
 				classMemberFuncImplsText.AppendLine(u"{");
@@ -863,7 +863,7 @@ ln::String FlatCSourceGenerator::makeOverridePrototypesStructDecl(const TypeSymb
 		//}
 
 
-		for (auto& method : classSymbol->vitualPrototypeSetters()) {
+		for (auto& method : classSymbol->virtualPrototypeSetters()) {
 			code.AppendLine(u"ln::Ref<{0}> {1};",
 				makeWrapSubclassName(method->virtualPototypeDelegate()),
 				makeFlatAPIName_OverrideFunc(method->virtualPototypeSouceMethod(), FlatCharset::Unicode));

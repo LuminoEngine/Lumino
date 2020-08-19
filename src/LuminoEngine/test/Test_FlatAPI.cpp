@@ -33,6 +33,7 @@ TEST_F(Test_FlatAPI, Basic)
 	LN_TEST_CLEAN_SCENE;
 
 	LnObject_Release(sprite);
+	LnObject_Release(delegate);
 	LnObject_Release(texture);
 
 	ASSERT_EQ(g_count, 1);

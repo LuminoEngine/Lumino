@@ -380,7 +380,7 @@ public:
 	const ln::List<Ref<PropertySymbol>>& properties() const { return m_properties; }
 	const ln::List<Ref<MethodSymbol>>& leafVirtualMethods() const { return m_leafVirtualMethods; }	// ベースクラスも含めた、すべての末端レベル virtual method
 	const ln::List<Ref<MethodSymbol>>& virtualMethods() const { return m_virtualMethods; }	// このクラスで定義されている仮想関数。isVirtual()==true であるもの
-	const ln::List<Ref<MethodSymbol>>& vitualPrototypeSetters() const { return m_vitualPrototypeSetters; }
+	const ln::List<Ref<MethodSymbol>>& virtualPrototypeSetters() const { return m_vitualPrototypeSetters; }
 	//const ln::List<Ref<MethodSymbol>>& eventMethods() const { return m_eventMethods; }
 	TypeSymbol* baseClass() const { return m_baseClass; }
 	TypeSymbol* collectionItemType() const { return m_collectionItemType; }
