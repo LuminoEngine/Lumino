@@ -154,7 +154,6 @@ protected:
     void onDispose(bool explicitDisposing) override;
     void onChangeDevice(detail::IGraphicsDevice* device) override;
     detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
-    void serialize(Archive& ar) override;
     void serialize2(Serializer2& ar) override;
     void onLoadSourceFile() override;
 

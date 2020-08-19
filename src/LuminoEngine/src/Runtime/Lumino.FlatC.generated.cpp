@@ -4,6 +4,8 @@
 #include <LuminoEngine.hpp>
 #include "BindingValidation.hpp"
 
+#if 0
+
 // Auto generated override handler
 using ObjectSerializeHandler = ln::Delegate<void(ln::Object* self, ln::Serializer* ar)>;
 
@@ -16042,3 +16044,5 @@ LnSubinstanceId LnApplicationUpdateHandler_GetSubinstanceId(LnHandle handle)
 
 	
 } // extern "C"
+
+#endif

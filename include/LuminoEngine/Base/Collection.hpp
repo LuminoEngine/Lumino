@@ -335,21 +335,6 @@ public:
 
 	/** @} */
 
-
-    virtual void serialize(Archive& ar) override
-    {
-        int size = 0;
-        ar.makeArrayTag(&size);
-
-        if (ar.isLoading()) {
-            m_data.resize(size);
-        }
-
-        for (T& v : m_data) {
-            ar.process(v);
-        }
-    }
-
 LN_CONSTRUCT_ACCESS:
 	/** 空の配列で新しい配列を構築します。 */
 	Collection()

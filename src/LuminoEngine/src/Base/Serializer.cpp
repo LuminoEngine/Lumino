@@ -8,6 +8,7 @@
 
 namespace ln {
 	
+#if 0
 //==============================================================================
 // Serializer
 LN_OBJECT_IMPLEMENT(Serializer, Object) {}
@@ -118,6 +119,7 @@ Ref<Object> Serializer::deserialize(const String& str, const String& basePath)
 
 	return asset->target();
 }
+#endif
 
 //==============================================================================
 // 

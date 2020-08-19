@@ -28,8 +28,6 @@ public:
 	bool hasAnchorPoint() const { return Math::isNaN(m_anchorPoint.x) || Math::isNaN(m_anchorPoint.y); }
 
 protected:
-    LN_SERIALIZE_CLASS_VERSION(1);
-    void serialize(Archive& ar) override;
 	void serialize2(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -65,8 +63,6 @@ public: // TODO: internal
 	SpriteFrame* frame(int index) const;
 
 protected:
-    LN_SERIALIZE_CLASS_VERSION(1);
-    void serialize(Archive& ar) override;
 	void serialize2(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:

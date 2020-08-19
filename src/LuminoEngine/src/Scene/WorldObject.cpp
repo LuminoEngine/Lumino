@@ -405,13 +405,6 @@ void WorldObjectAsset::init()
     AssetModel::init();
 }
 
-void WorldObjectAsset::serialize(Archive& ar)
-{
-	//ar & makeNVP(u"position", m_position);
-	//ar & makeNVP(u"angles", m_angles);
-	//ar & makeNVP(u"scale", m_scale);
-}
-
 } // namespace ed
 } // namespace ln
 

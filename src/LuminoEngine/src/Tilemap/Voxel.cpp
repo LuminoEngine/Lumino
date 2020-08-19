@@ -53,11 +53,6 @@ void VoxelmapModel::render(RenderingContext* context)
 
 }
 
-void VoxelmapModel::serialize(Archive& ar)
-{
-    Object::serialize(ar);
-}
-
 } // namespace ln
 
 
@@ -83,11 +78,6 @@ void VoxelmapComponent::init()
 void VoxelmapComponent::onRender(RenderingContext* context)
 {
     m_model->render(context);
-}
-
-void VoxelmapComponent::serialize(Archive& ar)
-{
-    VisualComponent::serialize(ar);
 }
 
 } // namespace ln

@@ -15,7 +15,6 @@ public:
     void render(RenderingContext* context);
 
 protected:
-    virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
     VoxelmapModel();
@@ -52,7 +51,6 @@ public:
 
 protected:
     virtual void onRender(RenderingContext* context) override;
-    virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
     VoxelmapComponent();

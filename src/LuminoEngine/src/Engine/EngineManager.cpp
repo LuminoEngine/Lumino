@@ -159,7 +159,6 @@ void EngineManager::init(const EngineSettings& settings)
     // register types
     {
         EngineDomain::registerType<Application>();
-		EngineDomain::registerType<Serializer>();
 		EngineDomain::registerType<ZVTestClass1>();
     }
 

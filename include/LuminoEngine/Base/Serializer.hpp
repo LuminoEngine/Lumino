@@ -46,6 +46,7 @@ void serialize2(Serializer2& ar, detail::AssetPath& value);
 void serialize2(Serializer2& ar, Vector2& value);
 void serialize2(Serializer2& ar, Vector3& value);
 
+#if 0
 /** */
 LN_CLASS()
 class Serializer
@@ -115,6 +116,7 @@ private:
 
 	std::unique_ptr<Archive> m_archive;
 };
+#endif
 
 namespace detail {
 class SerializerStore2;

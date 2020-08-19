@@ -24,9 +24,6 @@ protected:
     virtual void onRender(RenderingContext* context) override;
     virtual void onRenderGizmo(RenderingContext* context) override;
 
-	LN_SERIALIZE_CLASS_VERSION(1);
-	virtual void serialize(Archive& ar) override;
-
 LN_CONSTRUCT_ACCESS:
     TilemapComponent();
 	virtual ~TilemapComponent();

@@ -7,7 +7,6 @@ class EngineContext;
 class TypeInfo;
 class PropertyInfo;
 class ReflectionObjectVisitor;
-class Serializer;
 class Serializer2;
 class ViewProperty;
 class ViewPropertyInfo;
@@ -211,14 +210,7 @@ protected:
 	virtual void finalize() override;
 	virtual void onDispose(bool explicitDisposing);
 
-	LN_SERIALIZE_CLASS_VERSION(1);
-    virtual void serialize(Archive& ar);
-
     virtual void serialize2(Serializer2& ar);
-
-    /** onSerialize */
-    LN_METHOD()
-    virtual void onSerialize(Serializer* ar);
 
     /** onSerialize */
     LN_METHOD()
