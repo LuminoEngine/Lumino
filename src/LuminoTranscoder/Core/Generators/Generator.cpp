@@ -127,20 +127,20 @@ ln::String Generator::makeFlatAPIName_OverridePrototypesStruct(const TypeSymbol*
 	return makeFlatClassName(classSymbol) + u"_OverridePrototypes";
 }
 
-// deprecated
-ln::String Generator::makeFlatAPIName_SetPrototype(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const
-{
-	return ln::String::format(u"{0}_SetPrototype_{1}", makeFlatClassName(leafClass), makeFlatShortFuncName(method, charset));
-}
-
-// deprecated
-ln::String Generator::makeFlatAPIDecl_SetPrototype(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const
-{
-	return ln::String::format(u"LN_FLAT_API LNResult {0}(LNHandle {1}, {2} func)",
-		makeFlatAPIName_SetPrototype(leafClass, method, charset),
-		method->flatParameters()[0]->name(),
-		makeFlatVirutalCallbackFuncPtrName(leafClass, method, FlatCharset::Unicode));
-}
+//// deprecated
+//ln::String Generator::makeFlatAPIName_SetPrototype(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const
+//{
+//	return ln::String::format(u"{0}_SetPrototype_{1}", makeFlatClassName(leafClass), makeFlatShortFuncName(method, charset));
+//}
+//
+//// deprecated
+//ln::String Generator::makeFlatAPIDecl_SetPrototype(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const
+//{
+//	return ln::String::format(u"LN_FLAT_API LNResult {0}(LNHandle {1}, {2} func)",
+//		makeFlatAPIName_SetPrototype(leafClass, method, charset),
+//		method->flatParameters()[0]->name(),
+//		makeFlatVirutalCallbackFuncPtrName(leafClass, method, FlatCharset::Unicode));
+//}
 
 ln::String Generator::makeFlatVirutalCallbackFuncPtrName(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const
 {

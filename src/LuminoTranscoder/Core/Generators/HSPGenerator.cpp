@@ -1,6 +1,9 @@
 ﻿
 #include "HSPGenerator.hpp"
 
+// Delegate のハンドルを指定するところに直接ラベルを指定できるようにする (Delegate は使用不可能)
+static const bool LabelSyntax = true;
+
 //==============================================================================
 // HSPGeneratorBase
 
@@ -69,12 +72,12 @@ ln::String HSPHeaderGenerator::makeClasses() const
     OutputBuffer code;
     for (const auto& classSymbol : db()->classes()) {
         for (const auto& methodSymbol : classSymbol->publicMethods()) {
-            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii), getCommandId(methodSymbol));
+            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode), getCommandId(methodSymbol));
         }
 
         const auto virtualMethods = classSymbol->virtualPrototypeSetters();
         for (int i = 0; i < virtualMethods.size(); i++) {
-            code.AppendLine("#cmd {0} ${1:X}", makeFlatAPIName_SetPrototype(classSymbol, virtualMethods[i], FlatCharset::Ascii), getCommandId(virtualMethods[i]));
+            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(virtualMethods[i], FlatCharset::Unicode), getCommandId(virtualMethods[i]));
         }
     }
     return code.toString();
@@ -500,8 +503,30 @@ ln::String HSPCommandsGenerator::makeCallCommandBlock(const MethodSymbol* method
         auto localVarName = u"local_" + param->name();
         prologue.AppendLine(u"// Fetch " + param->name());
 
-        if (classSymbol->isDelegateObject() && methodSymbol->isConstructor() && param->type()->isFunction() && param->isIn()) {
+        if (LabelSyntax && !classSymbol->isDelegateObject() && param->type()->isDelegateObject() && param->isIn()) {
+            prologue.AppendLine(makeGetVAExpr(param));
 
+            // Create temp delegate
+            {
+                auto localDelegateName = u"localDelegate_" + param->name();
+                prologue.NewLine();
+                prologue.AppendLine(u"LNHandle {0};", localDelegateName);
+                prologue.AppendLine(u"{");
+                prologue.IncreaseIndent();
+                prologue.AppendLine(u"stat = {0}({1}, &{2});", makeFlatFullFuncName(param->type()->publicMethods()[0], FlatCharset::Ascii), makeName_DelegateLabelCaller(param->type()), localDelegateName);
+                prologue.AppendLine(u"if (stat != LN_SUCCESS) return true;");
+                prologue.AppendLine(u"auto* localSelf = reinterpret_cast<{0}*>({1}({2}));", makeName_HSPSubclassType(param->type()), makeFlatAPIName_GetSubinstanceId(param->type()), localDelegateName);
+                prologue.AppendLine(u"localSelf->labelPointer = {0};", localVarName);
+                prologue.DecreaseIndent();
+                prologue.AppendLine(u"}");
+
+                args.AppendCommad(localDelegateName);
+
+                epilogue.AppendLine(u"LNObject_Release({0});", localDelegateName);
+            }
+
+        }
+        else if (classSymbol->isDelegateObject() && methodSymbol->isConstructor() && param->type()->isFunction() && param->isIn()) {
             prologue.AppendLine(makeGetVAExpr(param));
             args.AppendCommad(makeName_DelegateLabelCaller(classSymbol));
             epilogue.AppendLine(u"auto* localSelf = reinterpret_cast<{0}*>({1}(local_{2}));", makeName_HSPSubclassType(classSymbol), makeFlatAPIName_GetSubinstanceId(classSymbol), methodSymbol->flatConstructorOutputThisParam()->name());
@@ -542,6 +567,12 @@ ln::String HSPCommandsGenerator::makeCallCommandBlock(const MethodSymbol* method
 ln::String HSPCommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, bool reffunc) const
 {
     const ln::Char* postfix = (reffunc) ? u"_reffunc" : u"";
+
+    if (LabelSyntax) {
+        if (typeSymbol->isDelegateObject()) {
+            return ln::String::format(u"fetchVALabelPointer{0}()", postfix);
+        }
+    }
 
     if (typeSymbol == PredefinedTypes::boolType) {
         return ln::String::format(u"static_cast<LNBool>(fetchVAInt{0}())", postfix);
