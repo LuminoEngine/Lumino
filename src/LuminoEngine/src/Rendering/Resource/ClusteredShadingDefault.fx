@@ -29,213 +29,7 @@ float4	ln_AmbientGroundColor;
 
 
 
-//float2 ln_BoneTextureReciprocalSize;
-
-float _LN_CalcFogFactor(float depth)
-{
-	float f = ln_FogParams.a * depth;
-	return exp2(-f);
-	//return exp2(-f*f);
-}
-
-
-float smoothstep(float a, float b, float x)
-{
-  float t = saturate((x - a)/(b - a));
-  return t * t * (3.0 - (2.0 * t));
-}
-
-// return: fog density (0.0~)
-float _LN_CalcFogFactor2(float depth, float samplePointY)
-{
-	float lower = ln_FogParams.y;//-30.0;
-	float upper = ln_FogParams.z;//100.0;
-	float lengthH = ln_FogParams.x;//5.0;	// 水平方向、どのあたりから Fog を生成するか
-	float fogDensity = ln_FogColorAndDensity.a;//1.0 / 10.0;// 1.0;	// Fog の濃さ。1.0 の場合、2^(x*1.0) で、座標1進むと完全に Fog になる。
-								// 0.5 だと座標2、0.25だと座標4という具合に、逆数で入力すると距離を測ることができる。
-
-	// g(x)=-2^(x*x)+2
-	float halfVolumeHeight = (upper - lower) / 2;
-	float center = lower + halfVolumeHeight;
-	//float d = abs(samplePointY - center) / halfVolumeHeight;	// Fog volume 中央からどれだけ離れているか (0.0中央 1.0:上端または下端 1.0~:Fogの外)
-	//float density = -exp2(d * 0.5) + 2;
-	//float density = -exp2(d*d) + 2;
-	//float d = 1.0 - (abs(samplePointY - center) / halfVolumeHeight);	// Fog volume 外側境界からどれだけ離れているか (0.0:上端または下端, 1.0:中央 1.0~)
-	float d = (halfVolumeHeight - abs(samplePointY - center));// / lengthH;
-	//d = saturate(d);
-	float densityV = exp2(d * ln_FogParams.w) - 1.0;
-	//return saturate(densityV);
-
-	// h(x)=2^((x+2)*0.5)
-	float f = ((depth - lengthH));	// 0.0:視点位置, 1.0:フォグの出始め
-	//ln_FogParams.a * depth;
 	
-	float densityH = exp2(f * fogDensity) - 1.0;
-
-	// Input-density が小さいと境界が少し不自然に明るくなるが、ほとんどのケースでは問題ないのでこのままとする。
-	// TODO: 何かいい補完方法思いついたら修正するかも。
-	return saturate(densityH) * saturate(densityV);
-
-	//float mu = saturate(densityH * densityV);
-	//return saturate(mu * saturate(densityV));
-
-	//return saturate(max(densityH, 0.0) * densityV);
-	//return saturate(smoothstep(0.1, 0.9, densityH) * densityV);
-	//return lerp(saturate(densityH * densityV), densityV, saturate(densityH));
-	//return saturate(densityH * densityV);
-
-	
-	//return saturate(densityH) * saturate(densityV);
-
-	//return saturate(densityH);
-
-	//return saturate(density);
-
-
-	//float lower = -5.0;
-	//float upper = 0.0;
-    //float d =  abs(height - lerp(upper, lower, 0.5));
-    //float f = 0.5 * d;
-	//return exp2(-f);
-	//return exp2(-f*f);
-}
-
-
-const float3 _RayleighColorScale = float3(0.5, 0.2, 0.5);
-const float turbidity = 1.0;
-const float rayleigh = 0.5;
-const float mieCoefficient = 0.005;
-const float mieDirectionalG = 0.8;
-const float luminance = 1.0;
-const float3 up = float3( 0, 1, 0 );
-
-const float e = 2.71828182845904523536028747135266249775724709369995957;
-
-
-const float3 totalRayleigh = float3( 0.0000001, 0.0000001, 0.0000001);
-
-
-const float3 lambda = float3( 680E-9, 550E-9, 450E-9 );
-const float v = 4.0;
-const float3 K = float3( 0.686, 0.678, 0.666 );
-const float3 MieConst = LN_PI * pow( ( 2.0 * LN_PI ) / lambda, float3( v - 2.0 ) ) * K;
-const float mieZenithLength = 1.25E3;
-const float rayleighZenithLength = 8.4E3;
-
-const float cutoffAngle = 1.6110731556870734;
-const float steepness = 1.5;
-const float EE = 1000.0;
-float sunIntensity( float zenithAngleCos ) {
-	zenithAngleCos = clamp( zenithAngleCos, -1.0, 1.0 );
-	return EE * max( 0.0, 1.0 - pow( e, -( ( cutoffAngle - acos( zenithAngleCos ) ) / steepness ) ) );
-}
-
-// 3.0 / ( 16.0 * pi )
-const float THREE_OVER_SIXTEENPI = 0.05968310365946075;
-float rayleighPhase( float cosTheta ) {
-	return THREE_OVER_SIXTEENPI * ( 1.0 + pow( cosTheta, 2.0 ) );
-}
-
-float3 totalMie( float T ) {
-	float c = ( 0.2 * T ) * 10E-18;
-	return 0.434 * c * MieConst;
-}
-
-// 1.0 / ( 4.0 * pi )
-const float ONE_OVER_FOURPI = 0.07957747154594767;
-float hgPhase( float cosTheta, float g ) {
-	float g2 = pow( g, 2.0 );
-	float inverse = 1.0 / pow( 1.0 - 2.0 * g * cosTheta + g2, 1.5 );
-	return ONE_OVER_FOURPI * ( ( 1.0 - g2 ) * inverse );
-}
-
-// Filmic ToneMapping http://filmicgames.com/archives/75
-const float A = 0.15;
-const float B = 0.50;
-const float C = 0.10;
-const float D = 0.20;
-const float E = 0.02;
-const float F = 0.30;
-const float whiteScale = 1.0748724675633854; // 1.0 / Uncharted2Tonemap(1000.0)
-float3 Uncharted2Tonemap( float3 x ) {
-	return ( ( x * ( A * x + C * B ) + D * E ) / ( x * ( A * x + B ) + D * F ) ) - E / F;
-}
-
-float3 LN_FogColor(float3 vWorldPosition)
-{
-	return ln_FogColorAndDensity.rgb;
-
-#if 0	// 大気散乱シミュレーションに合わせる (Proto)
-	float3 cameraPos = ln_CameraPosition;
-	float3 vSunDirection = -ln_MainLightDirection;
-	float3 sunPosition = vSunDirection * 400000.0;
-
-	float vSunfade = 1.0 - clamp( 1.0 - exp( ( sunPosition.y / 450000.0 ) ), 0.0, 1.0 );
-	float vSunE = sunIntensity( dot( vSunDirection, up ) );
-	float rayleighCoefficient = rayleigh - ( 1.0 * ( 1.0 - vSunfade ) );
-	float vBetaR = (totalRayleigh * (float3(500.0, 500.0, 500.0) * _RayleighColorScale)) * rayleighCoefficient;
-	float vBetaM = totalMie( turbidity ) * mieCoefficient;
-
-
-
-
-
-
-	//float zenithAngle = acos( max( 0.0, dot( up, normalize( vWorldPosition - cameraPos ) ) ) );
-	//float inverse = 1.0 / ( cos( zenithAngle ) + 0.15 * pow( 93.885 - ( ( zenithAngle * 180.0 ) / LN_PI ), -1.253 ) );
-	//float sR = rayleighZenithLength * inverse;
-	//float sM = mieZenithLength * inverse;
-	float zenithAngle = acos( max( 0.0, dot( up, normalize( vWorldPosition - cameraPos ) ) ) );
-	float inverse = 1.0 / ( cos( zenithAngle ) + 0.15 * pow( 93.885 - ( ( zenithAngle * 180.0 ) / LN_PI ), -1.253 ) );
-	float sR = rayleighZenithLength * inverse;
-	float sM = mieZenithLength * inverse;
-
-	//float3 Fex = exp( -(vBetaM * sM ) );
-	float3 Fex = exp( -( vBetaR * sR + vBetaM * sM ) );
-
-	// in scattering
-	float cosTheta = dot( normalize( vWorldPosition - cameraPos ), vSunDirection );
-
-	float rPhase = rayleighPhase( cosTheta * 0.5 + 0.5 );
-	float3 betaRTheta = vBetaR * rPhase;
-
-	float mPhase = hgPhase( cosTheta, mieDirectionalG );
-	float3 betaMTheta = vBetaM * mPhase;
-
-	float3 Lin = pow( vSunE * ( ( betaRTheta + betaMTheta ) / ( vBetaR + vBetaM ) ) * ( 1.0 - Fex ), float3( 1.5 ) );
-	Lin *= lerp( float3( 1.0 ), pow( vSunE * ( ( betaRTheta + betaMTheta ) / ( vBetaR + vBetaM ) ) * Fex, float3( 1.0 / 2.0 ) ), clamp( pow( 1.0 - dot( up, vSunDirection ), 5.0 ), 0.0, 1.0 ) );
-
-
-
-
-	float3 texColor = ( Lin ) * 0.04;// + float3( 0.0, 0.0003, 0.00075 );
-
-	float3 curr = Uncharted2Tonemap( ( log2( 2.0 / pow( luminance, 4.0 ) ) ) * texColor );
-	float3 color = curr * whiteScale;
-
-	float3 retColor = pow( color, float3( 1.0 / ( 1.2 + ( 1.2 * vSunfade ) ) ) );
-
-	return float4( retColor, 1.0 );
-
-
-
-
-
-
-
-
-	//return ln_FogColorAndDensity.rgb;
-	return ln_MainLightDirection;
-	return float3(1,0,0);
-	//float mPhase = hgPhase( cosTheta, mieDirectionalG );
-	//float3 betaMTheta = input.vBetaM * mPhase;
-
-	//float3 Lin = pow( input.vSunE * ( ( betaRTheta + betaMTheta ) / ( input.vBetaR + input.vBetaM ) ) * ( 1.0 - Fex ), float3( 1.5 ) );
-	//Lin *= lerp( float3( 1.0 ), pow( input.vSunE * ( ( betaRTheta + betaMTheta ) / ( input.vBetaR + input.vBetaM ) ) * Fex, float3( 1.0 / 2.0 ) ), clamp( pow( 1.0 - dot( up, input.vSunDirection ), 5.0 ), 0.0, 1.0 ) );
-#endif
-}
-
-
 
 float4 _LN_PS_ClusteredForward_Default(
 	//LN_PSInput_ClusteredForward extra,
@@ -294,27 +88,18 @@ float4 _LN_PS_ClusteredForward_Default(
 	result.rgb = surface.Emission + outgoingLight;
 	
 	
-	// Fog
-	{
-		float viewLength = length(ln_CameraPosition - worldPos);
-		float fogFactor = _LN_CalcFogFactor2(viewLength, worldPos.y);
-		result.rgb = lerp(result.rgb, LN_FogColor(worldPos), fogFactor);
-		//opacity *= 1.0f - fogFactor;	// try
-		opacity = 0.5;
-	}
+	result.rgb = LN_ApplyFog(result.rgb, worldPos);
+	
+	// TODO: ?
+	opacity = 0.5;
 
-	//result.rgb = float3(shadow, 0, 0);
-
-	//result.r = _LN_CalcFogFactor2(viewLength, worldPos.y);
-	//result.g = 0;
-	//result.b = 0;
 	return float4(result.rgb, opacity);
 	
 	
 	
-	
-	
-	
+	// TODO: ambient light
+#if 0
+
 	result.rgb = mc.rgb * result.rgb;
 	
 	// calc ambient color
@@ -336,6 +121,7 @@ float4 _LN_PS_ClusteredForward_Default(
 	
 	
 	return float4(result.rgb, 1.0);
+#endif
 }
 
 //------------------------------------------------------------------------------

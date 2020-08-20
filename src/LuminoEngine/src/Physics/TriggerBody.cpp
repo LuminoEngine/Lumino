@@ -30,8 +30,15 @@ public:
 		{
 			m_overlappingObjects.push_back(otherObject);
 
+			auto* bodyB = static_cast<PhysicsObject*>(otherObject->getUserPointer());
+
 			auto* world = m_owner->physicsWorld();
-			world->postBeginContact(m_owner, static_cast<PhysicsObject*>(otherObject->getUserPointer()));
+			world->postBeginContact(m_owner, bodyB);
+
+			// RigidBody 自体は衝突検知機能を持たないので、TiggerBody 側から通知を送る
+			if (bodyB->physicsObjectType() == PhysicsObjectType::RigidBody) {
+				world->postBeginContact(bodyB, m_owner);
+			}
 		}
 	}
 
@@ -45,8 +52,15 @@ public:
 			m_overlappingObjects[index] = m_overlappingObjects[m_overlappingObjects.size() - 1];
 			m_overlappingObjects.pop_back();
 
+			auto* bodyB = static_cast<PhysicsObject*>(otherObject->getUserPointer());
+
 			auto* world = m_owner->physicsWorld();
-			world->postEndContact(m_owner, static_cast<PhysicsObject*>(otherObject->getUserPointer()));
+			world->postEndContact(m_owner, bodyB);
+
+			// RigidBody 自体は衝突検知機能を持たないので、TiggerBody 側から通知を送る
+			if (bodyB->physicsObjectType() == PhysicsObjectType::RigidBody) {
+				world->postEndContact(bodyB, m_owner);
+			}
 		}
 	}
 };

@@ -43,6 +43,8 @@ public:
 	Interpreter();
 	virtual ~Interpreter() = default;
 
+	void clear();
+
 	/** コマンドリストを設定し、実行を開始する */
 	void run(const Ref<InterpreterCommandList>& commandList);
 

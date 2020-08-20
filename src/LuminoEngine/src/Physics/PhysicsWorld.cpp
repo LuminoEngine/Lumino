@@ -54,6 +54,8 @@ static void ContactStartedCallback(btPersistentManifold* const& manifold)
     const auto* bodyB = static_cast<const btCollisionObject*>(manifold->getBody1());
     auto* ownerA = static_cast<PhysicsObject*>(bodyA->getUserPointer());
     auto* ownerB = static_cast<PhysicsObject*>(bodyB->getUserPointer());
+
+    // RigidBody vs TiggerBody が来ることもあるので、制限しておく
     if (ownerA && ownerB && 
         ownerA->physicsObjectType() == PhysicsObjectType::RigidBody &&
         ownerB->physicsObjectType() == PhysicsObjectType::RigidBody) {
