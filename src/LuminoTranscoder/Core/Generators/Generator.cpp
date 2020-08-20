@@ -54,11 +54,11 @@ ln::String Generator::makeFlatTypeName2(const TypeSymbol* type) const
         return u"const char*";
     }
     else if (type->isPrimitive()) {
-		if (type == PredefinedTypes::boolType) return u"LnBool";
+		if (type == PredefinedTypes::boolType) return u"LNBool";
 		return type->shortName();
 	}
     else if (type->isClass()) {
-        return u"LnHandle";
+        return u"LNHandle";
     }
 	else {
 		return m_config->flatCOutputModuleName + type->shortName();
@@ -83,7 +83,7 @@ ln::String Generator::makeFlatAPIName_SetOverrideCallback(const TypeSymbol* leaf
 
 ln::String Generator::makeFlatAPIDecl_SetOverrideCallback(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const
 {
-	return ln::String::format(u"LN_FLAT_API LnResult {0}({1} callback)", makeFlatAPIName_SetOverrideCallback(leafClass, method, charset), makeFlatVirutalCallbackFuncPtrName(leafClass, method, charset));
+	return ln::String::format(u"LN_FLAT_API LNResult {0}({1} callback)", makeFlatAPIName_SetOverrideCallback(leafClass, method, charset), makeFlatVirutalCallbackFuncPtrName(leafClass, method, charset));
 }
 
 ln::String Generator::makeFlatAPIName_CallOverrideBase(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const
@@ -99,7 +99,7 @@ ln::String Generator::makeFlatAPIDecl_CallOverrideBase(const TypeSymbol* leafCla
 		params.AppendCommad("{0} {1}", makeFlatCParamQualTypeName(method, paramInfo, charset), paramInfo->name());
 	}
 
-	return ln::String::format(u"LN_FLAT_API LnResult {0}({1})", makeFlatAPIName_CallOverrideBase(leafClass, method, charset), params.toString());
+	return ln::String::format(u"LN_FLAT_API LNResult {0}({1})", makeFlatAPIName_CallOverrideBase(leafClass, method, charset), params.toString());
 }
 
 ln::String Generator::makeFlatAPIName_OverrideFunc(const MethodSymbol* method, FlatCharset charset) const
@@ -136,7 +136,7 @@ ln::String Generator::makeFlatAPIName_SetPrototype(const TypeSymbol* leafClass, 
 // deprecated
 ln::String Generator::makeFlatAPIDecl_SetPrototype(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const
 {
-	return ln::String::format(u"LN_FLAT_API LnResult {0}(LnHandle {1}, {2} func)",
+	return ln::String::format(u"LN_FLAT_API LNResult {0}(LNHandle {1}, {2} func)",
 		makeFlatAPIName_SetPrototype(leafClass, method, charset),
 		method->flatParameters()[0]->name(),
 		makeFlatVirutalCallbackFuncPtrName(leafClass, method, FlatCharset::Unicode));
@@ -204,7 +204,7 @@ ln::String Generator::makeFlatFullFuncName(const TypeSymbol* classSymbol, const 
 ln::String Generator::makeFuncHeader(const MethodSymbol* methodInfo, FlatCharset charset) const
 {
 	static const ln::String funcHeaderTemplate =
-		u"LN_FLAT_API LnResult %%FuncName%%(%%ParamList%%)";
+		u"LN_FLAT_API LNResult %%FuncName%%(%%ParamList%%)";
 
 	return funcHeaderTemplate
 		.replace(u"%%FuncName%%", makeFlatFullFuncName(methodInfo, charset))
@@ -247,9 +247,9 @@ ln::String Generator::makeFlatCParamQualTypeName(const MethodSymbol* methodInfo,
 	{
 		ln::String name;
 		if (typeInfo == PredefinedTypes::boolType)
-			name = u"LnBool";
+			name = u"LNBool";
 		else if (typeInfo->isObjectGroup())
-			name = u"LnHandle";
+			name = u"LNHandle";
 		else
 			name = typeInfo->shortName();
 
@@ -287,7 +287,7 @@ ln::String Generator::makeFlatCParamQualTypeName(const MethodSymbol* methodInfo,
 ln::String Generator::makeFlatCharTypeName(FlatCharset charset) const
 {
 	if (charset == FlatCharset::Unicode)
-		return u"LnChar";
+		return u"LNChar";
 	else
 		return u"char";
 }

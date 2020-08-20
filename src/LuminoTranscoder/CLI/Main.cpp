@@ -120,22 +120,22 @@ int main(int argc, char** argv)
 	config->outputDir = LN_LOCALFILE("../../../tools/Bindings");
 	config->templateDir = LN_LOCALFILE("../Core/Generators/Templates");
 	config->targetNamespace = u"ln";
-	config->flatCOutputModuleName = u"Ln";
+	config->flatCOutputModuleName = u"LN";
 	config->flatCCommonHeader = LN_LOCALFILE("../../../include/LuminoEngine/Runtime/FlatCommon.h");
 	config->flatCHeaderString = u"#include <LuminoEngine.hpp>\n#include \"BindingValidation.hpp\"";
     config->flatCHeaderOutputDirOverride = LN_LOCALFILE("../../../include/LuminoEngine/Runtime");
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
 
-	//{
-	//	FlatCHeaderGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-	//{
-	//	FlatCSourceGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
+	{
+		FlatCHeaderGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
+	{
+		FlatCSourceGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
 	//{
 	//	RubyExtGenerator g;
 	//	g.setup(db, config);

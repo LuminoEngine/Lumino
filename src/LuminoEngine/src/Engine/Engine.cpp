@@ -4,6 +4,7 @@
 //#include "EngineDomain.hpp"
 #include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Engine/EngineSettings.hpp>
+#include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
@@ -168,8 +169,9 @@ void Engine::finalize()
 
 bool Engine::update()
 {
-
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
+    if (LN_REQUIRE(!manager->application())) return false;
+
     if (manager->settings().externalMainLoop) {
         endFrame();
         beginFrame();
@@ -180,6 +182,11 @@ bool Engine::update()
     }
 
 	return !manager->isExitRequested();
+}
+
+void Engine::run(Application* app)
+{
+    detail::ApplicationHelper::run(app);
 }
 
 void Engine::quit()

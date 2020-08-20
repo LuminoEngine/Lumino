@@ -9,8 +9,8 @@ namespace detail {
 
 RuntimeManager::Settings RuntimeManager::s_globalSettings;
 
-//LnReferenceCountTrackerCallback RuntimeManager::m_referenceCountTracker = nullptr;
-//LnRuntimeFinalizedCallback RuntimeManager::m_runtimeFinalizedCallback = nullptr;
+//LNReferenceCountTrackerCallback RuntimeManager::m_referenceCountTracker = nullptr;
+//LNRuntimeFinalizedCallback RuntimeManager::m_runtimeFinalizedCallback = nullptr;
 
 RuntimeManager::RuntimeManager()
 	: m_systemAliving(false)
@@ -78,7 +78,7 @@ void RuntimeManager::dispose()
 	LN_LOG_DEBUG << "RuntimeManager finalization finished.";
 }
 
-LnHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate)
+LNHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate)
 {
 	if (!m_systemAliving) return LN_NULL_HANDLE;
 	if (obj == nullptr) return LN_NULL_HANDLE;
@@ -136,7 +136,7 @@ LnHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate)
 	}
 }
 
-void RuntimeManager::retainObjectExplicitly(LnHandle handle)
+void RuntimeManager::retainObjectExplicitly(LNHandle handle)
 {
 	auto& e = m_objectEntryList[static_cast<int>(handle)];
 	RefObjectHelper::retain(e.object);
@@ -160,7 +160,7 @@ void RuntimeManager::retainObjectExplicitly(LnHandle handle)
 #endif
 }
 
-void RuntimeManager::releaseObjectExplicitly(LnHandle handle)
+void RuntimeManager::releaseObjectExplicitly(LNHandle handle)
 {
 	if (!m_systemAliving) return;
 
@@ -195,56 +195,56 @@ void RuntimeManager::onDestructObject(Object* obj)
 	}
 }
 
-ObjectEntry* RuntimeManager::getObjectEntry(LnHandle handle)
+ObjectEntry* RuntimeManager::getObjectEntry(LNHandle handle)
 {
 	return &m_objectEntryList[static_cast<int>(handle)];
 }
 
-Object* RuntimeManager::getObjectFromHandle(LnHandle handle)
+Object* RuntimeManager::getObjectFromHandle(LNHandle handle)
 {
     return m_objectEntryList[static_cast<int>(handle)].object;
 }
 
-void RuntimeManager::setManagedObjectId(LnHandle handle, int64_t id)
+void RuntimeManager::setManagedObjectId(LNHandle handle, int64_t id)
 {
 	auto runtimeData = detail::ObjectHelper::getRuntimeData(m_objectEntryList[static_cast<int>(handle)].object);
 	runtimeData->managedObjectId = id;
 }
 
-int64_t RuntimeManager::getManagedObjectId(LnHandle handle)
+int64_t RuntimeManager::getManagedObjectId(LNHandle handle)
 {
 	auto runtimeData = detail::ObjectHelper::getRuntimeData(m_objectEntryList[static_cast<int>(handle)].object);
 	return runtimeData->managedObjectId;
 }
 
-int64_t RuntimeManager::getManagedTypeInfoId(LnHandle handle)
+int64_t RuntimeManager::getManagedTypeInfoId(LNHandle handle)
 {
 	auto obj = m_objectEntryList[static_cast<int>(handle)].object;
 	auto typeInfo = TypeInfo::getTypeInfo(obj);
 	return detail::TypeInfoInternal::getManagedTypeInfoId(typeInfo);
 }
 
-//void RuntimeManager::setReferenceCountTracker(LnReferenceCountTrackerCallback callback)
+//void RuntimeManager::setReferenceCountTracker(LNReferenceCountTrackerCallback callback)
 //{
 //	m_referenceCountTracker = callback;
 //}
 //
-//void RuntimeManager::setRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback)
+//void RuntimeManager::setRuntimeFinalizedCallback(LNRuntimeFinalizedCallback callback)
 //{
 //    m_runtimeFinalizedCallback = callback;
 //}
 
-//void RuntimeManager::setRuntimeCreateInstanceCallback(LnRuntimeCreateInstanceCallback callback)
+//void RuntimeManager::setRuntimeCreateInstanceCallback(LNRuntimeCreateInstanceCallback callback)
 //{
 //    LN_NOTIMPLEMENTED();
 //}
 //
-//void RuntimeManager::setRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback)
+//void RuntimeManager::setRuntimeGetTypeInfoIdCallback(LNRuntimeGetTypeInfoIdCallback callback)
 //{
 //    LN_NOTIMPLEMENTED();
 //}
 
-void RuntimeManager::setReferenceTrackEnabled(LnHandle handle)
+void RuntimeManager::setReferenceTrackEnabled(LNHandle handle)
 {
 	RefObjectInternal::setObjectFlag(m_objectEntryList[static_cast<int>(handle)].object, RefObjectFlags_ReferenceTracking, true);
 }
@@ -267,7 +267,7 @@ void RuntimeManager::onReleasedObject(Object* obj)
 	}
 }
 
-LnResult RuntimeManager::processException(Exception* e)
+LNResult RuntimeManager::processException(Exception* e)
 {
 	return LN_ERROR_UNKNOWN;
 }

@@ -50,7 +50,8 @@ static void* reffunc(int* type_res, int cmd)
 
 static int termfunc(int option)
 {
-	LnEngine_Finalize();
+	LNEngine_Finalize();
+	LNRuntime_Finalize();
 	return 0;
 }
 
@@ -77,6 +78,13 @@ EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO* info)
 	*/
 
 	RegisterTypes(info);
+
+	// Lumino のランタイムを初期化し、Engine 初期化前に Application を作れるようにする。
+	LNRuntimeSettings settings;
+	settings.runtimeFinalizedCallback = nullptr;
+	settings.referenceCountTrackerCallback = nullptr;
+	settings.runtimeGetTypeInfoIdCallback = nullptr;
+	LNRuntime_Initialize(&settings);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule,

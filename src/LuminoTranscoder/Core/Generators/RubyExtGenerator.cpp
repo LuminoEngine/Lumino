@@ -583,8 +583,8 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 	code.IncreaseIndent();
 
 	code.AppendLine(callerArgDecls.toString().trim());
-	code.AppendLine("LnResult errorCode = {0}({1});", funcName, callerArgList.toString());
-	code.AppendLine(u"if (errorCode < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", errorCode, LnRuntime_GetLastErrorMessage());");
+	code.AppendLine("LNResult errorCode = {0}({1});", funcName, callerArgList.toString());
+	code.AppendLine(u"if (errorCode < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", errorCode, LNRuntime_GetLastErrorMessage());");
     if (!callerPostStmt.isEmpty()) {
         code.AppendLine(callerPostStmt.toString());
     }
@@ -657,8 +657,8 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock_DelegateObjectConstructor(con
 		code.AppendLine(u"rb_scan_args(argc, argv, \"01&\", &proc, &block); // (handler=nil, &block)");
 		code.AppendLine(u"if (proc != Qnil) selfObj->m_proc = proc;");
 		code.AppendLine(u"if (block != Qnil) selfObj->m_proc = block;");
-		code.AppendLine(u"LnResult result = {0}({1}, &selfObj->handle);", makeFlatFullFuncName(method, FlatCharset::Ascii), makeWrapFuncName_ProcCaller(classSymbol, classSymbol->delegateProtoType()));
-		code.AppendLine(u"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LnRuntime_GetLastErrorMessage());");
+		code.AppendLine(u"LNResult result = {0}({1}, &selfObj->handle);", makeFlatFullFuncName(method, FlatCharset::Ascii), makeWrapFuncName_ProcCaller(classSymbol, classSymbol->delegateProtoType()));
+		code.AppendLine(u"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LNRuntime_GetLastErrorMessage());");
 		code.AppendLine(u"LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);");
 		code.AppendLine(u"return Qnil;");
 	}
@@ -683,17 +683,17 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock_DelegateObjectSetter(const Ty
 			if (method->hasReturnType()) {
 				// とりいそぎ、戻り値 EventConnection 固定
 				code.AppendLine(u"VALUE value = rb_funcall({0}, rb_intern(\"new\"), 1, block);", makeRubyClassInfoVariableName(param->type()));
-				code.AppendLine(u"LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);");
-				code.AppendLine(u"LnHandle _outReturn;");
-				code.AppendLine(u"LnResult result = {0}(selfObj->handle, _value, &_outReturn);", makeFlatFullFuncName(method, FlatCharset::Ascii));
-				code.AppendLine(u"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LnRuntime_GetLastErrorMessage());");
+				code.AppendLine(u"LNHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);");
+				code.AppendLine(u"LNHandle _outReturn;");
+				code.AppendLine(u"LNResult result = {0}(selfObj->handle, _value, &_outReturn);", makeFlatFullFuncName(method, FlatCharset::Ascii));
+				code.AppendLine(u"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LNRuntime_GetLastErrorMessage());");
 				code.AppendLine(u"return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);");
 			}
 			else {
 				code.AppendLine(u"VALUE value = rb_funcall({0}, rb_intern(\"new\"), 1, block);", makeRubyClassInfoVariableName(param->type()));
-				code.AppendLine(u"LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);");
-				code.AppendLine(u"LnResult result = {0}(selfObj->handle, _value);", makeFlatFullFuncName(method, FlatCharset::Ascii));
-				code.AppendLine(u"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LnRuntime_GetLastErrorMessage());");
+				code.AppendLine(u"LNHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);");
+				code.AppendLine(u"LNResult result = {0}(selfObj->handle, _value);", makeFlatFullFuncName(method, FlatCharset::Ascii));
+				code.AppendLine(u"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LNRuntime_GetLastErrorMessage());");
 				code.AppendLine(u"return Qnil;");
 			}
 		}
@@ -839,14 +839,14 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymb
 	ln::String castExpr = makeVALUEToNativeCastExpr(param, param->name());
 
 	if (type->isClass() || type->isDelegateObject()) {
-		declExpr = ln::String::format(u"LnHandle {0}", varName);
+		declExpr = ln::String::format(u"LNHandle {0}", varName);
 	}
 	else if (type->isEnum()) {
 		declExpr = ln::String::format(u"{0} {1}", makeFlatClassName(type), varName);
 	}
 	else {
 		if (type == PredefinedTypes::boolType) {
-			declExpr = u"LnBool " + varName;
+			declExpr = u"LNBool " + varName;
 		}
 		else if (
 			type == PredefinedTypes::intType ||
@@ -914,7 +914,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_ProcCaller(const MethodSymbol
 	}
 
 	OutputBuffer code;
-	code.AppendLine(u"static LnResult {0}({1})", procCallerName, makeFlatParamList(delegateProtoType, FlatCharset::Ascii));
+	code.AppendLine(u"static LNResult {0}({1})", procCallerName, makeFlatParamList(delegateProtoType, FlatCharset::Ascii));
 	code.AppendLine("{");
 	code.IncreaseIndent();
 	{
@@ -935,7 +935,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_ProcCaller(const MethodSymbol
 
 }
 
-// LnWorldObject_OnUpdate_SetOverrideCallback() などに登録するコールバック関数の生成
+// LNWorldObject_OnUpdate_SetOverrideCallback() などに登録するコールバック関数の生成
 ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const TypeSymbol* classSymbol) const
 {
 	OutputBuffer code;
@@ -949,7 +949,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const Typ
 				for (auto& param : method->flatParameters()) {
 					params.AppendCommad("{0} {1}", makeFlatCParamQualTypeName(method, param, FlatCharset::Unicode), param->name());
 				}
-				code.AppendLine(u"LnResult {0}({1})", makeWrapFuncName_OverrideCallback(classSymbol, method), params.toString());
+				code.AppendLine(u"LNResult {0}({1})", makeWrapFuncName_OverrideCallback(classSymbol, method), params.toString());
 			}
 
 			// begin body
@@ -988,7 +988,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SignalCaller(const MethodSymb
 	auto signalValueName = makeSignalValueName(method);
 
 	OutputBuffer code;
-	code.AppendLine(u"static void {0}(LnHandle self, LnHandle e)", signalCallerName);
+	code.AppendLine(u"static void {0}(LNHandle self, LNHandle e)", signalCallerName);
 	code.AppendLine("{");
 	code.IncreaseIndent();
 	{
@@ -1011,7 +1011,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SignalCaller(const MethodSymb
 //	auto eventConnectValueName = makeEventConnectValueName(method);
 //	
 //	OutputBuffer code;
-//	code.AppendLine(u"static VALUE Wrap_LnUIButton_{0}(int argc, VALUE* argv, VALUE self)", connectorName);
+//	code.AppendLine(u"static VALUE Wrap_LNUIButton_{0}(int argc, VALUE* argv, VALUE self)", connectorName);
 //	code.AppendLine(u"{");
 //	code.IncreaseIndent();
 //	{

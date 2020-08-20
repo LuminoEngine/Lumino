@@ -7,27 +7,27 @@
 
 namespace ln {
 
-LnHandle Runtime::makeObjectWrap(Object* obj, bool fromCreate)
+LNHandle Runtime::makeObjectWrap(Object* obj, bool fromCreate)
 {
 	return detail::EngineDomain::runtimeManager()->makeObjectWrap(obj, fromCreate);
 }
 
-Object* Runtime::getObject(LnHandle handle)
+Object* Runtime::getObject(LNHandle handle)
 {
 	return detail::EngineDomain::runtimeManager()->getObjectEntry(handle)->object;
 }
 
-void Runtime::setManagedObjectId(LnHandle handle, int64_t id)
+void Runtime::setManagedObjectId(LNHandle handle, int64_t id)
 {
 	detail::EngineDomain::runtimeManager()->setManagedObjectId(handle, id);
 }
 
-int64_t Runtime::getManagedObjectId(LnHandle handle)
+int64_t Runtime::getManagedObjectId(LNHandle handle)
 {
 	return detail::EngineDomain::runtimeManager()->getManagedObjectId(handle);
 }
 
-LnResult Runtime::processException(Exception* e)
+LNResult Runtime::processException(Exception* e)
 {
 	return detail::EngineDomain::runtimeManager()->processException(e);
 }
@@ -104,7 +104,7 @@ static std::string std_string_vprintf(const char* format, std::va_list arg)
 
 extern "C" {
 
-void LnRuntime_Initialize(const tagLnRuntimeSettings* settings)
+void LNRuntime_Initialize(const tagLNRuntimeSettings* settings)
 {
     if (settings) {
         auto& s = ln::detail::RuntimeManager::s_globalSettings;
@@ -114,76 +114,73 @@ void LnRuntime_Initialize(const tagLnRuntimeSettings* settings)
     }
 
 	ln::EngineContext::current()->initializeRuntimeManager();
-    //ln::detail::EngineDomain::runtimeManager();
-    //auto manager = ln::detail::EngineDomain::engineManager();
-    //manager->initializeRuntimeManager();
 }
 
-void LnRuntime_Finalize()
+void LNRuntime_Finalize()
 {
 	ln::EngineContext::current()->disposeRuntimeManager();
 }
 
-void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id)
+void LNRuntime_SetManagedObjectId(LNHandle handle, int64_t id)
 {
 	ln::detail::EngineDomain::runtimeManager()->setManagedObjectId(handle, id);
 }
 
-int64_t LnRuntime_GetManagedObjectId(LnHandle handle)
+int64_t LNRuntime_GetManagedObjectId(LNHandle handle)
 {
 	return ln::detail::EngineDomain::runtimeManager()->getManagedObjectId(handle);
 }
 
-int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle)
+int64_t LNRuntime_GetManagedTypeInfoId(LNHandle handle)
 {
 	return ln::detail::EngineDomain::runtimeManager()->getManagedTypeInfoId(handle);
 }
 
-//void LnRuntime_SetReferenceCountTracker(LnReferenceCountTrackerCallback callback)
+//void LNRuntime_SetReferenceCountTracker(LNReferenceCountTrackerCallback callback)
 //{
 //	return ln::detail::RuntimeManager::setReferenceCountTracker(callback);
 //}
 
-void LnRuntime_SetReferenceTrackEnabled(LnHandle handle)
+void LNRuntime_SetReferenceTrackEnabled(LNHandle handle)
 {
 	return ln::detail::EngineDomain::runtimeManager()->setReferenceTrackEnabled(handle);
 }
 
-//void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback)
+//void LNRuntime_SetRuntimeFinalizedCallback(LNRuntimeFinalizedCallback callback)
 //{
 //    return ln::detail::RuntimeManager::setRuntimeFinalizedCallback(callback);
 //}
 
-//void LnRuntime_SetRuntimeCreateInstanceCallback(LnRuntimeCreateInstanceCallback callback)
+//void LNRuntime_SetRuntimeCreateInstanceCallback(LNRuntimeCreateInstanceCallback callback)
 //{
 //    return ln::detail::RuntimeManager::setRuntimeCreateInstanceCallback(callback);
 //}
 
-//void LnRuntime_SetRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback)
+//void LNRuntime_SetRuntimeGetTypeInfoIdCallback(LNRuntimeGetTypeInfoIdCallback callback)
 //{
 //    return ln::detail::RuntimeManager::setRuntimeGetTypeInfoIdCallback(callback);
 //}
 
-void LnRuntime_RunAppInternal(LnHandle app)
+void LNRuntime_RunAppInternal(LNHandle app)
 {
     ln::detail::ApplicationHelper::run(
         static_cast<ln::Application*>(ln::detail::EngineDomain::runtimeManager()->getObjectFromHandle(app)));
 }
 
-void LnRuntime_DumpInfo()
+void LNRuntime_DumpInfo()
 {
     ln::detail::EngineDomain::runtimeManager()->dumpInfo();
 }
 
-void LnInternalEngineSettings_SetEngineResourcesPathA(const char* path)
+void LNInternalEngineSettings_SetEngineResourcesPathA(const char* path)
 {
 	ln::detail::EngineManager::s_settings.engineResourcesPath = ln::String::fromCString(path);
 }
 
 //==============================================================================
-// LnTypeInfo
+// LNTypeInfo
 
-LnResult LnTypeInfo_Acquire(const LnChar* typeName, int* outTypeInfoId)
+LNResult LNTypeInfo_Acquire(const LNChar* typeName, int* outTypeInfoId)
 {
     LNI_FUNC_TRY_BEGIN;
     if (LN_REQUIRE(outTypeInfoId)) return LN_ERROR_UNKNOWN;
@@ -197,12 +194,12 @@ LnResult LnTypeInfo_Acquire(const LnChar* typeName, int* outTypeInfoId)
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LnResult LnTypeInfo_AcquireA(const char* typeName, int* outTypeInfoId)
+LNResult LNTypeInfo_AcquireA(const char* typeName, int* outTypeInfoId)
 {
-    return LnTypeInfo_Acquire(ln::String::fromCString(typeName).c_str(), outTypeInfoId);
+    return LNTypeInfo_Acquire(ln::String::fromCString(typeName).c_str(), outTypeInfoId);
 }
 
-LnResult LnTypeInfo_Find(const LnChar* typeName, int* outTypeInfoId)
+LNResult LNTypeInfo_Find(const LNChar* typeName, int* outTypeInfoId)
 {
     LNI_FUNC_TRY_BEGIN;
     if (LN_REQUIRE(outTypeInfoId)) return LN_ERROR_UNKNOWN;
@@ -216,12 +213,12 @@ LnResult LnTypeInfo_Find(const LnChar* typeName, int* outTypeInfoId)
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LnResult LnTypeInfo_FindA(const char* typeName, int* outTypeInfoId)
+LNResult LNTypeInfo_FindA(const char* typeName, int* outTypeInfoId)
 {
-    return LnTypeInfo_Find(ln::String::fromCString(typeName).c_str(), outTypeInfoId);
+    return LNTypeInfo_Find(ln::String::fromCString(typeName).c_str(), outTypeInfoId);
 }
 
-LnResult LnTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId)
+LNResult LNTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId)
 {
     LNI_FUNC_TRY_BEGIN;
     ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId);
@@ -236,12 +233,12 @@ LnResult LnTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId)
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LnResult LnTypeInfo_SetCreateInstanceCallback(int typeInfoId, LnTypeInfoCreateInstanceCallback callback)
+LNResult LNTypeInfo_SetCreateInstanceCallback(int typeInfoId, LNTypeInfoCreateInstanceCallback callback)
 {
     LNI_FUNC_TRY_BEGIN;
     if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
         t->m_factory = [callback](const ln::TypeInfo* typeInfo) -> ln::Ref<ln::Object> {
-            LnHandle handle = LN_NULL_HANDLE;
+            LNHandle handle = LN_NULL_HANDLE;
             callback(typeInfo->id(), &handle);
             if (handle == LN_NULL_HANDLE) {
                 LN_ERROR("Faild creation managed instance.");
@@ -260,7 +257,7 @@ LnResult LnTypeInfo_SetCreateInstanceCallback(int typeInfoId, LnTypeInfoCreateIn
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LnResult LnTypeInfo_SetManagedTypeInfoId(int typeInfoId, int managedTypeInfoId)
+LNResult LNTypeInfo_SetManagedTypeInfoId(int typeInfoId, int managedTypeInfoId)
 {
     LNI_FUNC_TRY_BEGIN;
     if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
@@ -273,7 +270,7 @@ LnResult LnTypeInfo_SetManagedTypeInfoId(int typeInfoId, int managedTypeInfoId)
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LnResult LnTypeInfo_GetManagedTypeInfoId(int typeInfoId, int* outManagedTypeInfoId)
+LNResult LNTypeInfo_GetManagedTypeInfoId(int typeInfoId, int* outManagedTypeInfoId)
 {
     LNI_FUNC_TRY_BEGIN;
     if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
@@ -287,9 +284,9 @@ LnResult LnTypeInfo_GetManagedTypeInfoId(int typeInfoId, int* outManagedTypeInfo
 }
 
 //==============================================================================
-// LnObject
+// LNObject
 
-LnResult LnObject_Release(LnHandle obj)
+LNResult LNObject_Release(LNHandle obj)
 {
     if (auto m = ln::detail::EngineDomain::runtimeManager()) {
         m->releaseObjectExplicitly(obj);
@@ -300,7 +297,7 @@ LnResult LnObject_Release(LnHandle obj)
 	}
 }
 
-LnResult LnObject_Retain(LnHandle obj)
+LNResult LNObject_Retain(LNHandle obj)
 {
 	if (auto m = ln::detail::EngineDomain::runtimeManager()) {
 		m->retainObjectExplicitly(obj);
@@ -311,7 +308,7 @@ LnResult LnObject_Retain(LnHandle obj)
 	}
 }
 
-int32_t LnObject_GetReferenceCount(LnHandle obj)
+int32_t LNObject_GetReferenceCount(LNHandle obj)
 {
 	if (auto t = LNI_HANDLE_TO_OBJECT(ln::Object, obj))
 		return ln::RefObjectHelper::getReferenceCount(t);
@@ -319,7 +316,7 @@ int32_t LnObject_GetReferenceCount(LnHandle obj)
 		return 0;
 }
 
-LnResult LnObject_SetTypeInfoId(LnHandle obj, int typeInfoId)
+LNResult LNObject_SetTypeInfoId(LNHandle obj, int typeInfoId)
 {
     LNI_FUNC_TRY_BEGIN;
     if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
@@ -334,30 +331,30 @@ LnResult LnObject_SetTypeInfoId(LnHandle obj, int typeInfoId)
 
 //==============================================================================
 
-void LnLog_SetLevel(LnLogLevel level)
+void LNLog_SetLevel(LNLogLevel level)
 {
 	ln::Logger::addStdErrAdapter();	// TODO: とりいそぎ
     ln::Logger::setLevel(static_cast<ln::LogLevel>(level));
 }
 
-void LnLog_Write(LnLogLevel level, const LnChar* tag, const LnChar* text)
+void LNLog_Write(LNLogLevel level, const LNChar* tag, const LNChar* text)
 {
     LN_LOG(static_cast<ln::LogLevel>(level), ln::String(tag).toStdString().c_str()) << ln::String(text);
 }
 
-void LnLog_WriteA(LnLogLevel level, const char* tag, const char* text)
+void LNLog_WriteA(LNLogLevel level, const char* tag, const char* text)
 {
     LN_LOG(static_cast<ln::LogLevel>(level), tag) << ln::String::fromCString(text);
 }
 
-void LnLog_PrintA(LnLogLevel level, const char* tag, const char* format, ...)
+void LNLog_PrintA(LNLogLevel level, const char* tag, const char* format, ...)
 {
     if (::ln::detail::LoggerInterface::getInstance()->checkLevel(static_cast<ln::LogLevel>(level))) {
         std::va_list arg;
         va_start(arg, format);
         auto str = ln::detail::std_string_vprintf(format, arg);
         va_end(arg);
-        LnLog_WriteA(level, tag, str.c_str());
+        LNLog_WriteA(level, tag, str.c_str());
     }
 }
 
@@ -373,21 +370,21 @@ void LnLog_PrintA(LnLogLevel level, const char* tag, const char* format, ...)
     @param[in]	stringBuffer : StringBuffer
     @param[out]	outReturn    : string
 */
-LN_FLAT_API LnResult LnStringBuffer_GetUTF16String(LnHandle stringBuffer, const LnChar** outReturn);
+LN_FLAT_API LNResult LNStringBuffer_GetUTF16String(LNHandle stringBuffer, const LNChar** outReturn);
 
 /**
     @brief		文字列を UTF8 エンコーディングとして取得します。
     @param[in]	stringBuffer : StringBuffer
     @param[out]	outReturn    : string
 */
-LN_FLAT_API LnResult LnStringBuffer_GetUTF8String(LnHandle stringBuffer, const char** outReturn);
+LN_FLAT_API LNResult LNStringBuffer_GetUTF8String(LNHandle stringBuffer, const char** outReturn);
 
-LN_FLAT_API LnResult LnStringBuffer_GetUTF16String(LnHandle stringBuffer, const LnChar** outReturn)
+LN_FLAT_API LNResult LNStringBuffer_GetUTF16String(LNHandle stringBuffer, const LNChar** outReturn)
 {
     *outReturn = LNI_HANDLE_TO_OBJECT(ln::RuntimeStringBuffer, stringBuffer)->getUtf16();
 }
 
-LN_FLAT_API LnResult LnStringBuffer_GetUTF8String(LnHandle stringBuffer, const char** outReturn)
+LN_FLAT_API LNResult LNStringBuffer_GetUTF8String(LNHandle stringBuffer, const char** outReturn)
 {
     *outReturn = LNI_HANDLE_TO_OBJECT(ln::RuntimeStringBuffer, stringBuffer)->getUtf8();
 }

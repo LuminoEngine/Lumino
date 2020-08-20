@@ -1,0 +1,23 @@
+#include "lumino.as"
+
+LnEngineSettings_SetEngineLogEnabled LN_TRUE
+
+
+LNApplicationInitHandler_Create *App_OnInit, handler_App_OnInit
+LNApplicationUpdateHandler_Create *App_OnUpdate, handler_App_OnUpdate
+
+LNApplication_Create app
+LNApplication_SetPrototype_SetPrototype_OnInit app, handler_App_OnInit
+LNApplication_SetPrototype_SetPrototype_OnUpdate app, handler_App_OnUpdate
+
+LnEngine_Run app
+
+end
+
+*App_OnInit
+	mes "Init"
+	return
+	
+*App_OnUpdate
+	mes "OnUpdate"
+	return

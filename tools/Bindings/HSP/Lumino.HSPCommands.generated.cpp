@@ -1,33 +1,33 @@
 #include "LuminoHSP.h"
 
 //-----------------------------------------------------------------------------
-// struct LnVector3
+// struct LNVector3
 
-static int g_LnVector3_typeid = 0;
+static int g_LNVector3_typeid = 0;
 
-int hspLnVector3_typeid()
+int hspLNVector3_typeid()
 {
-    return g_LnVector3_typeid;
+    return g_LNVector3_typeid;
 }
 
-static int hspLnVector3_GetVarSize(PVal *pval)
+static int hspLNVector3_GetVarSize(PVal *pval)
 {
     int size;
     size = pval->len[1];
     if (pval->len[2]) size *= pval->len[2];
     if (pval->len[3]) size *= pval->len[3];
     if (pval->len[4]) size *= pval->len[4];
-    size *= sizeof(LnVector3);
+    size *= sizeof(LNVector3);
     return size;
 }
 
-static void hspLnVector3_Alloc(PVal *pval, const PVal *pval2)
+static void hspLNVector3_Alloc(PVal *pval, const PVal *pval2)
 {
     if (pval->len[1] < 1) pval->len[1] = 1;
-    int size = hspLnVector3_GetVarSize(pval);
+    int size = hspLNVector3_GetVarSize(pval);
     pval->mode = HSPVAR_MODE_MALLOC;
     char* pt = sbAlloc(size);
-    LnVector3* fv = (LnVector3 *)pt;
+    LNVector3* fv = (LNVector3 *)pt;
     memset(fv, 0, size);
     if (pval2 != NULL) {
         memcpy(pt, pval->pt, pval->size);
@@ -37,50 +37,50 @@ static void hspLnVector3_Alloc(PVal *pval, const PVal *pval2)
     pval->size = size;
 }
 
-static void hspLnVector3_Free(PVal* pval)
+static void hspLNVector3_Free(PVal* pval)
 {
     if (pval->mode == HSPVAR_MODE_MALLOC) { sbFree(pval->pt); }
     pval->pt = NULL;
     pval->mode = HSPVAR_MODE_NONE;
 }
 
-static PDAT* hspLnVector3_GetPtr(PVal* pval)
+static PDAT* hspLNVector3_GetPtr(PVal* pval)
 {
-    return (PDAT*)(((LnVector3*)(pval->pt)) + pval->offset);
+    return (PDAT*)(((LNVector3*)(pval->pt)) + pval->offset);
 }
 
-static int hspLnVector3_GetSize(const PDAT *pdatl)
+static int hspLNVector3_GetSize(const PDAT *pdatl)
 {
-    return sizeof(LnVector3);
+    return sizeof(LNVector3);
 }
 
-static void hspLnVector3_Set(PVal* pval, PDAT* pdat, const void* in)
+static void hspLNVector3_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *reinterpret_cast<LnVector3*>(pdat) = *reinterpret_cast<const LnVector3*>(in);
+    *reinterpret_cast<LNVector3*>(pdat) = *reinterpret_cast<const LNVector3*>(in);
 }
 
-static void hspLnVector3_Init(HspVarProc* p)
+static void hspLNVector3_Init(HspVarProc* p)
 {
-    p->Alloc = hspLnVector3_Alloc;
-    p->Free = hspLnVector3_Free;
+    p->Alloc = hspLNVector3_Alloc;
+    p->Free = hspLNVector3_Free;
     
-    p->GetPtr = hspLnVector3_GetPtr;
-    p->GetSize = hspLnVector3_GetSize;
+    p->GetPtr = hspLNVector3_GetPtr;
+    p->GetSize = hspLNVector3_GetSize;
     p->GetBlockSize = hspCommon_GetBlockSize;
     p->AllocBlock = hspCommon_AllocBlock;
 
-    p->Set = hspLnVector3_Set;
+    p->Set = hspLNVector3_Set;
 
-    p->vartype_name = "LnVector3";
+    p->vartype_name = "LNVector3";
     p->version = 0x001;
     p->support = HSPVAR_SUPPORT_STORAGE | HSPVAR_SUPPORT_FLEXARRAY;
-    p->basesize = sizeof(LnVector3);
-    g_LnVector3_typeid = p->flag;
+    p->basesize = sizeof(LNVector3);
+    g_LNVector3_typeid = p->flag;
 }
 
-static void hspLnVector3_reffunc(int* typeRes, void** retValPtr)
+static void hspLNVector3_reffunc(int* typeRes, void** retValPtr)
 {
-    static LnVector3 returnValue;
+    static LNVector3 returnValue;
 
     if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
@@ -92,38 +92,38 @@ static void hspLnVector3_reffunc(int* typeRes, void** retValPtr)
 
 
     *retValPtr = &returnValue;
-    *typeRes = hspLnVector3_typeid();
+    *typeRes = hspLNVector3_typeid();
 }
 
 
 //-----------------------------------------------------------------------------
-// struct LnVector4
+// struct LNVector4
 
-static int g_LnVector4_typeid = 0;
+static int g_LNVector4_typeid = 0;
 
-int hspLnVector4_typeid()
+int hspLNVector4_typeid()
 {
-    return g_LnVector4_typeid;
+    return g_LNVector4_typeid;
 }
 
-static int hspLnVector4_GetVarSize(PVal *pval)
+static int hspLNVector4_GetVarSize(PVal *pval)
 {
     int size;
     size = pval->len[1];
     if (pval->len[2]) size *= pval->len[2];
     if (pval->len[3]) size *= pval->len[3];
     if (pval->len[4]) size *= pval->len[4];
-    size *= sizeof(LnVector4);
+    size *= sizeof(LNVector4);
     return size;
 }
 
-static void hspLnVector4_Alloc(PVal *pval, const PVal *pval2)
+static void hspLNVector4_Alloc(PVal *pval, const PVal *pval2)
 {
     if (pval->len[1] < 1) pval->len[1] = 1;
-    int size = hspLnVector4_GetVarSize(pval);
+    int size = hspLNVector4_GetVarSize(pval);
     pval->mode = HSPVAR_MODE_MALLOC;
     char* pt = sbAlloc(size);
-    LnVector4* fv = (LnVector4 *)pt;
+    LNVector4* fv = (LNVector4 *)pt;
     memset(fv, 0, size);
     if (pval2 != NULL) {
         memcpy(pt, pval->pt, pval->size);
@@ -133,147 +133,50 @@ static void hspLnVector4_Alloc(PVal *pval, const PVal *pval2)
     pval->size = size;
 }
 
-static void hspLnVector4_Free(PVal* pval)
+static void hspLNVector4_Free(PVal* pval)
 {
     if (pval->mode == HSPVAR_MODE_MALLOC) { sbFree(pval->pt); }
     pval->pt = NULL;
     pval->mode = HSPVAR_MODE_NONE;
 }
 
-static PDAT* hspLnVector4_GetPtr(PVal* pval)
+static PDAT* hspLNVector4_GetPtr(PVal* pval)
 {
-    return (PDAT*)(((LnVector4*)(pval->pt)) + pval->offset);
+    return (PDAT*)(((LNVector4*)(pval->pt)) + pval->offset);
 }
 
-static int hspLnVector4_GetSize(const PDAT *pdatl)
+static int hspLNVector4_GetSize(const PDAT *pdatl)
 {
-    return sizeof(LnVector4);
+    return sizeof(LNVector4);
 }
 
-static void hspLnVector4_Set(PVal* pval, PDAT* pdat, const void* in)
+static void hspLNVector4_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *reinterpret_cast<LnVector4*>(pdat) = *reinterpret_cast<const LnVector4*>(in);
+    *reinterpret_cast<LNVector4*>(pdat) = *reinterpret_cast<const LNVector4*>(in);
 }
 
-static void hspLnVector4_Init(HspVarProc* p)
+static void hspLNVector4_Init(HspVarProc* p)
 {
-    p->Alloc = hspLnVector4_Alloc;
-    p->Free = hspLnVector4_Free;
+    p->Alloc = hspLNVector4_Alloc;
+    p->Free = hspLNVector4_Free;
     
-    p->GetPtr = hspLnVector4_GetPtr;
-    p->GetSize = hspLnVector4_GetSize;
+    p->GetPtr = hspLNVector4_GetPtr;
+    p->GetSize = hspLNVector4_GetSize;
     p->GetBlockSize = hspCommon_GetBlockSize;
     p->AllocBlock = hspCommon_AllocBlock;
 
-    p->Set = hspLnVector4_Set;
+    p->Set = hspLNVector4_Set;
 
-    p->vartype_name = "LnVector4";
+    p->vartype_name = "LNVector4";
     p->version = 0x001;
     p->support = HSPVAR_SUPPORT_STORAGE | HSPVAR_SUPPORT_FLEXARRAY;
-    p->basesize = sizeof(LnVector4);
-    g_LnVector4_typeid = p->flag;
+    p->basesize = sizeof(LNVector4);
+    g_LNVector4_typeid = p->flag;
 }
 
-static void hspLnVector4_reffunc(int* typeRes, void** retValPtr)
+static void hspLNVector4_reffunc(int* typeRes, void** retValPtr)
 {
-    static LnVector4 returnValue;
-
-    if (checkAndFetchDefault()) {
-        memset(&returnValue, 0, sizeof(returnValue));
-    } else {
-        returnValue.x = fetchVADouble_reffunc();
-        returnValue.y = fetchVADouble_reffunc();
-        returnValue.z = fetchVADouble_reffunc();
-        returnValue.w = fetchVADouble_reffunc();
-    }
-
-
-    *retValPtr = &returnValue;
-    *typeRes = hspLnVector4_typeid();
-}
-
-
-//-----------------------------------------------------------------------------
-// struct LnQuaternion
-
-static int g_LnQuaternion_typeid = 0;
-
-int hspLnQuaternion_typeid()
-{
-    return g_LnQuaternion_typeid;
-}
-
-static int hspLnQuaternion_GetVarSize(PVal *pval)
-{
-    int size;
-    size = pval->len[1];
-    if (pval->len[2]) size *= pval->len[2];
-    if (pval->len[3]) size *= pval->len[3];
-    if (pval->len[4]) size *= pval->len[4];
-    size *= sizeof(LnQuaternion);
-    return size;
-}
-
-static void hspLnQuaternion_Alloc(PVal *pval, const PVal *pval2)
-{
-    if (pval->len[1] < 1) pval->len[1] = 1;
-    int size = hspLnQuaternion_GetVarSize(pval);
-    pval->mode = HSPVAR_MODE_MALLOC;
-    char* pt = sbAlloc(size);
-    LnQuaternion* fv = (LnQuaternion *)pt;
-    memset(fv, 0, size);
-    if (pval2 != NULL) {
-        memcpy(pt, pval->pt, pval->size);
-        sbFree(pval->pt);
-    }
-    pval->pt = pt;
-    pval->size = size;
-}
-
-static void hspLnQuaternion_Free(PVal* pval)
-{
-    if (pval->mode == HSPVAR_MODE_MALLOC) { sbFree(pval->pt); }
-    pval->pt = NULL;
-    pval->mode = HSPVAR_MODE_NONE;
-}
-
-static PDAT* hspLnQuaternion_GetPtr(PVal* pval)
-{
-    return (PDAT*)(((LnQuaternion*)(pval->pt)) + pval->offset);
-}
-
-static int hspLnQuaternion_GetSize(const PDAT *pdatl)
-{
-    return sizeof(LnQuaternion);
-}
-
-static void hspLnQuaternion_Set(PVal* pval, PDAT* pdat, const void* in)
-{
-    *reinterpret_cast<LnQuaternion*>(pdat) = *reinterpret_cast<const LnQuaternion*>(in);
-}
-
-static void hspLnQuaternion_Init(HspVarProc* p)
-{
-    p->Alloc = hspLnQuaternion_Alloc;
-    p->Free = hspLnQuaternion_Free;
-    
-    p->GetPtr = hspLnQuaternion_GetPtr;
-    p->GetSize = hspLnQuaternion_GetSize;
-    p->GetBlockSize = hspCommon_GetBlockSize;
-    p->AllocBlock = hspCommon_AllocBlock;
-
-    p->Set = hspLnQuaternion_Set;
-
-    p->vartype_name = "LnQuaternion";
-    p->version = 0x001;
-    p->support = HSPVAR_SUPPORT_STORAGE | HSPVAR_SUPPORT_FLEXARRAY;
-    p->basesize = sizeof(LnQuaternion);
-    g_LnQuaternion_typeid = p->flag;
-}
-
-static void hspLnQuaternion_reffunc(int* typeRes, void** retValPtr)
-{
-    static LnQuaternion returnValue;
+    static LNVector4 returnValue;
 
     if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
@@ -286,38 +189,38 @@ static void hspLnQuaternion_reffunc(int* typeRes, void** retValPtr)
 
 
     *retValPtr = &returnValue;
-    *typeRes = hspLnQuaternion_typeid();
+    *typeRes = hspLNVector4_typeid();
 }
 
 
 //-----------------------------------------------------------------------------
-// struct LnMatrix
+// struct LNQuaternion
 
-static int g_LnMatrix_typeid = 0;
+static int g_LNQuaternion_typeid = 0;
 
-int hspLnMatrix_typeid()
+int hspLNQuaternion_typeid()
 {
-    return g_LnMatrix_typeid;
+    return g_LNQuaternion_typeid;
 }
 
-static int hspLnMatrix_GetVarSize(PVal *pval)
+static int hspLNQuaternion_GetVarSize(PVal *pval)
 {
     int size;
     size = pval->len[1];
     if (pval->len[2]) size *= pval->len[2];
     if (pval->len[3]) size *= pval->len[3];
     if (pval->len[4]) size *= pval->len[4];
-    size *= sizeof(LnMatrix);
+    size *= sizeof(LNQuaternion);
     return size;
 }
 
-static void hspLnMatrix_Alloc(PVal *pval, const PVal *pval2)
+static void hspLNQuaternion_Alloc(PVal *pval, const PVal *pval2)
 {
     if (pval->len[1] < 1) pval->len[1] = 1;
-    int size = hspLnMatrix_GetVarSize(pval);
+    int size = hspLNQuaternion_GetVarSize(pval);
     pval->mode = HSPVAR_MODE_MALLOC;
     char* pt = sbAlloc(size);
-    LnMatrix* fv = (LnMatrix *)pt;
+    LNQuaternion* fv = (LNQuaternion *)pt;
     memset(fv, 0, size);
     if (pval2 != NULL) {
         memcpy(pt, pval->pt, pval->size);
@@ -327,54 +230,151 @@ static void hspLnMatrix_Alloc(PVal *pval, const PVal *pval2)
     pval->size = size;
 }
 
-static void hspLnMatrix_Free(PVal* pval)
+static void hspLNQuaternion_Free(PVal* pval)
 {
     if (pval->mode == HSPVAR_MODE_MALLOC) { sbFree(pval->pt); }
     pval->pt = NULL;
     pval->mode = HSPVAR_MODE_NONE;
 }
 
-static PDAT* hspLnMatrix_GetPtr(PVal* pval)
+static PDAT* hspLNQuaternion_GetPtr(PVal* pval)
 {
-    return (PDAT*)(((LnMatrix*)(pval->pt)) + pval->offset);
+    return (PDAT*)(((LNQuaternion*)(pval->pt)) + pval->offset);
 }
 
-static int hspLnMatrix_GetSize(const PDAT *pdatl)
+static int hspLNQuaternion_GetSize(const PDAT *pdatl)
 {
-    return sizeof(LnMatrix);
+    return sizeof(LNQuaternion);
 }
 
-static void hspLnMatrix_Set(PVal* pval, PDAT* pdat, const void* in)
+static void hspLNQuaternion_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *reinterpret_cast<LnMatrix*>(pdat) = *reinterpret_cast<const LnMatrix*>(in);
+    *reinterpret_cast<LNQuaternion*>(pdat) = *reinterpret_cast<const LNQuaternion*>(in);
 }
 
-static void hspLnMatrix_Init(HspVarProc* p)
+static void hspLNQuaternion_Init(HspVarProc* p)
 {
-    p->Alloc = hspLnMatrix_Alloc;
-    p->Free = hspLnMatrix_Free;
+    p->Alloc = hspLNQuaternion_Alloc;
+    p->Free = hspLNQuaternion_Free;
     
-    p->GetPtr = hspLnMatrix_GetPtr;
-    p->GetSize = hspLnMatrix_GetSize;
+    p->GetPtr = hspLNQuaternion_GetPtr;
+    p->GetSize = hspLNQuaternion_GetSize;
     p->GetBlockSize = hspCommon_GetBlockSize;
     p->AllocBlock = hspCommon_AllocBlock;
 
-    p->Set = hspLnMatrix_Set;
+    p->Set = hspLNQuaternion_Set;
 
-    p->vartype_name = "LnMatrix";
+    p->vartype_name = "LNQuaternion";
     p->version = 0x001;
     p->support = HSPVAR_SUPPORT_STORAGE | HSPVAR_SUPPORT_FLEXARRAY;
-    p->basesize = sizeof(LnMatrix);
-    g_LnMatrix_typeid = p->flag;
+    p->basesize = sizeof(LNQuaternion);
+    g_LNQuaternion_typeid = p->flag;
 }
 
-static void hspLnMatrix_reffunc(int* typeRes, void** retValPtr)
+static void hspLNQuaternion_reffunc(int* typeRes, void** retValPtr)
 {
-    static LnMatrix returnValue;
+    static LNQuaternion returnValue;
+
+    if (checkAndFetchDefault()) {
+        memset(&returnValue, 0, sizeof(returnValue));
+    } else {
+        returnValue.x = fetchVADouble_reffunc();
+        returnValue.y = fetchVADouble_reffunc();
+        returnValue.z = fetchVADouble_reffunc();
+        returnValue.w = fetchVADouble_reffunc();
+    }
+
+
+    *retValPtr = &returnValue;
+    *typeRes = hspLNQuaternion_typeid();
+}
+
+
+//-----------------------------------------------------------------------------
+// struct LNMatrix
+
+static int g_LNMatrix_typeid = 0;
+
+int hspLNMatrix_typeid()
+{
+    return g_LNMatrix_typeid;
+}
+
+static int hspLNMatrix_GetVarSize(PVal *pval)
+{
+    int size;
+    size = pval->len[1];
+    if (pval->len[2]) size *= pval->len[2];
+    if (pval->len[3]) size *= pval->len[3];
+    if (pval->len[4]) size *= pval->len[4];
+    size *= sizeof(LNMatrix);
+    return size;
+}
+
+static void hspLNMatrix_Alloc(PVal *pval, const PVal *pval2)
+{
+    if (pval->len[1] < 1) pval->len[1] = 1;
+    int size = hspLNMatrix_GetVarSize(pval);
+    pval->mode = HSPVAR_MODE_MALLOC;
+    char* pt = sbAlloc(size);
+    LNMatrix* fv = (LNMatrix *)pt;
+    memset(fv, 0, size);
+    if (pval2 != NULL) {
+        memcpy(pt, pval->pt, pval->size);
+        sbFree(pval->pt);
+    }
+    pval->pt = pt;
+    pval->size = size;
+}
+
+static void hspLNMatrix_Free(PVal* pval)
+{
+    if (pval->mode == HSPVAR_MODE_MALLOC) { sbFree(pval->pt); }
+    pval->pt = NULL;
+    pval->mode = HSPVAR_MODE_NONE;
+}
+
+static PDAT* hspLNMatrix_GetPtr(PVal* pval)
+{
+    return (PDAT*)(((LNMatrix*)(pval->pt)) + pval->offset);
+}
+
+static int hspLNMatrix_GetSize(const PDAT *pdatl)
+{
+    return sizeof(LNMatrix);
+}
+
+static void hspLNMatrix_Set(PVal* pval, PDAT* pdat, const void* in)
+{
+    *reinterpret_cast<LNMatrix*>(pdat) = *reinterpret_cast<const LNMatrix*>(in);
+}
+
+static void hspLNMatrix_Init(HspVarProc* p)
+{
+    p->Alloc = hspLNMatrix_Alloc;
+    p->Free = hspLNMatrix_Free;
+    
+    p->GetPtr = hspLNMatrix_GetPtr;
+    p->GetSize = hspLNMatrix_GetSize;
+    p->GetBlockSize = hspCommon_GetBlockSize;
+    p->AllocBlock = hspCommon_AllocBlock;
+
+    p->Set = hspLNMatrix_Set;
+
+    p->vartype_name = "LNMatrix";
+    p->version = 0x001;
+    p->support = HSPVAR_SUPPORT_STORAGE | HSPVAR_SUPPORT_FLEXARRAY;
+    p->basesize = sizeof(LNMatrix);
+    g_LNMatrix_typeid = p->flag;
+}
+
+static void hspLNMatrix_reffunc(int* typeRes, void** retValPtr)
+{
+    static LNMatrix returnValue;
 
 
     if (checkAndFetchDefault()) {
-        LnMatrix_SetZeros(&returnValue);
+        LNMatrix_SetZeros(&returnValue);
     }
     else {
         returnValue.row0.x = fetchVADouble_reffunc();
@@ -398,38 +398,38 @@ static void hspLnMatrix_reffunc(int* typeRes, void** retValPtr)
 
 
     *retValPtr = &returnValue;
-    *typeRes = hspLnMatrix_typeid();
+    *typeRes = hspLNMatrix_typeid();
 }
 
 
 //-----------------------------------------------------------------------------
-// struct LnColor
+// struct LNColor
 
-static int g_LnColor_typeid = 0;
+static int g_LNColor_typeid = 0;
 
-int hspLnColor_typeid()
+int hspLNColor_typeid()
 {
-    return g_LnColor_typeid;
+    return g_LNColor_typeid;
 }
 
-static int hspLnColor_GetVarSize(PVal *pval)
+static int hspLNColor_GetVarSize(PVal *pval)
 {
     int size;
     size = pval->len[1];
     if (pval->len[2]) size *= pval->len[2];
     if (pval->len[3]) size *= pval->len[3];
     if (pval->len[4]) size *= pval->len[4];
-    size *= sizeof(LnColor);
+    size *= sizeof(LNColor);
     return size;
 }
 
-static void hspLnColor_Alloc(PVal *pval, const PVal *pval2)
+static void hspLNColor_Alloc(PVal *pval, const PVal *pval2)
 {
     if (pval->len[1] < 1) pval->len[1] = 1;
-    int size = hspLnColor_GetVarSize(pval);
+    int size = hspLNColor_GetVarSize(pval);
     pval->mode = HSPVAR_MODE_MALLOC;
     char* pt = sbAlloc(size);
-    LnColor* fv = (LnColor *)pt;
+    LNColor* fv = (LNColor *)pt;
     memset(fv, 0, size);
     if (pval2 != NULL) {
         memcpy(pt, pval->pt, pval->size);
@@ -439,50 +439,50 @@ static void hspLnColor_Alloc(PVal *pval, const PVal *pval2)
     pval->size = size;
 }
 
-static void hspLnColor_Free(PVal* pval)
+static void hspLNColor_Free(PVal* pval)
 {
     if (pval->mode == HSPVAR_MODE_MALLOC) { sbFree(pval->pt); }
     pval->pt = NULL;
     pval->mode = HSPVAR_MODE_NONE;
 }
 
-static PDAT* hspLnColor_GetPtr(PVal* pval)
+static PDAT* hspLNColor_GetPtr(PVal* pval)
 {
-    return (PDAT*)(((LnColor*)(pval->pt)) + pval->offset);
+    return (PDAT*)(((LNColor*)(pval->pt)) + pval->offset);
 }
 
-static int hspLnColor_GetSize(const PDAT *pdatl)
+static int hspLNColor_GetSize(const PDAT *pdatl)
 {
-    return sizeof(LnColor);
+    return sizeof(LNColor);
 }
 
-static void hspLnColor_Set(PVal* pval, PDAT* pdat, const void* in)
+static void hspLNColor_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *reinterpret_cast<LnColor*>(pdat) = *reinterpret_cast<const LnColor*>(in);
+    *reinterpret_cast<LNColor*>(pdat) = *reinterpret_cast<const LNColor*>(in);
 }
 
-static void hspLnColor_Init(HspVarProc* p)
+static void hspLNColor_Init(HspVarProc* p)
 {
-    p->Alloc = hspLnColor_Alloc;
-    p->Free = hspLnColor_Free;
+    p->Alloc = hspLNColor_Alloc;
+    p->Free = hspLNColor_Free;
     
-    p->GetPtr = hspLnColor_GetPtr;
-    p->GetSize = hspLnColor_GetSize;
+    p->GetPtr = hspLNColor_GetPtr;
+    p->GetSize = hspLNColor_GetSize;
     p->GetBlockSize = hspCommon_GetBlockSize;
     p->AllocBlock = hspCommon_AllocBlock;
 
-    p->Set = hspLnColor_Set;
+    p->Set = hspLNColor_Set;
 
-    p->vartype_name = "LnColor";
+    p->vartype_name = "LNColor";
     p->version = 0x001;
     p->support = HSPVAR_SUPPORT_STORAGE | HSPVAR_SUPPORT_FLEXARRAY;
-    p->basesize = sizeof(LnColor);
-    g_LnColor_typeid = p->flag;
+    p->basesize = sizeof(LNColor);
+    g_LNColor_typeid = p->flag;
 }
 
-static void hspLnColor_reffunc(int* typeRes, void** retValPtr)
+static void hspLNColor_reffunc(int* typeRes, void** retValPtr)
 {
-    static LnColor returnValue;
+    static LNColor returnValue;
 
     if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
@@ -495,38 +495,38 @@ static void hspLnColor_reffunc(int* typeRes, void** retValPtr)
 
 
     *retValPtr = &returnValue;
-    *typeRes = hspLnColor_typeid();
+    *typeRes = hspLNColor_typeid();
 }
 
 
 //-----------------------------------------------------------------------------
-// struct LnPoint
+// struct LNPoint
 
-static int g_LnPoint_typeid = 0;
+static int g_LNPoint_typeid = 0;
 
-int hspLnPoint_typeid()
+int hspLNPoint_typeid()
 {
-    return g_LnPoint_typeid;
+    return g_LNPoint_typeid;
 }
 
-static int hspLnPoint_GetVarSize(PVal *pval)
+static int hspLNPoint_GetVarSize(PVal *pval)
 {
     int size;
     size = pval->len[1];
     if (pval->len[2]) size *= pval->len[2];
     if (pval->len[3]) size *= pval->len[3];
     if (pval->len[4]) size *= pval->len[4];
-    size *= sizeof(LnPoint);
+    size *= sizeof(LNPoint);
     return size;
 }
 
-static void hspLnPoint_Alloc(PVal *pval, const PVal *pval2)
+static void hspLNPoint_Alloc(PVal *pval, const PVal *pval2)
 {
     if (pval->len[1] < 1) pval->len[1] = 1;
-    int size = hspLnPoint_GetVarSize(pval);
+    int size = hspLNPoint_GetVarSize(pval);
     pval->mode = HSPVAR_MODE_MALLOC;
     char* pt = sbAlloc(size);
-    LnPoint* fv = (LnPoint *)pt;
+    LNPoint* fv = (LNPoint *)pt;
     memset(fv, 0, size);
     if (pval2 != NULL) {
         memcpy(pt, pval->pt, pval->size);
@@ -536,50 +536,50 @@ static void hspLnPoint_Alloc(PVal *pval, const PVal *pval2)
     pval->size = size;
 }
 
-static void hspLnPoint_Free(PVal* pval)
+static void hspLNPoint_Free(PVal* pval)
 {
     if (pval->mode == HSPVAR_MODE_MALLOC) { sbFree(pval->pt); }
     pval->pt = NULL;
     pval->mode = HSPVAR_MODE_NONE;
 }
 
-static PDAT* hspLnPoint_GetPtr(PVal* pval)
+static PDAT* hspLNPoint_GetPtr(PVal* pval)
 {
-    return (PDAT*)(((LnPoint*)(pval->pt)) + pval->offset);
+    return (PDAT*)(((LNPoint*)(pval->pt)) + pval->offset);
 }
 
-static int hspLnPoint_GetSize(const PDAT *pdatl)
+static int hspLNPoint_GetSize(const PDAT *pdatl)
 {
-    return sizeof(LnPoint);
+    return sizeof(LNPoint);
 }
 
-static void hspLnPoint_Set(PVal* pval, PDAT* pdat, const void* in)
+static void hspLNPoint_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *reinterpret_cast<LnPoint*>(pdat) = *reinterpret_cast<const LnPoint*>(in);
+    *reinterpret_cast<LNPoint*>(pdat) = *reinterpret_cast<const LNPoint*>(in);
 }
 
-static void hspLnPoint_Init(HspVarProc* p)
+static void hspLNPoint_Init(HspVarProc* p)
 {
-    p->Alloc = hspLnPoint_Alloc;
-    p->Free = hspLnPoint_Free;
+    p->Alloc = hspLNPoint_Alloc;
+    p->Free = hspLNPoint_Free;
     
-    p->GetPtr = hspLnPoint_GetPtr;
-    p->GetSize = hspLnPoint_GetSize;
+    p->GetPtr = hspLNPoint_GetPtr;
+    p->GetSize = hspLNPoint_GetSize;
     p->GetBlockSize = hspCommon_GetBlockSize;
     p->AllocBlock = hspCommon_AllocBlock;
 
-    p->Set = hspLnPoint_Set;
+    p->Set = hspLNPoint_Set;
 
-    p->vartype_name = "LnPoint";
+    p->vartype_name = "LNPoint";
     p->version = 0x001;
     p->support = HSPVAR_SUPPORT_STORAGE | HSPVAR_SUPPORT_FLEXARRAY;
-    p->basesize = sizeof(LnPoint);
-    g_LnPoint_typeid = p->flag;
+    p->basesize = sizeof(LNPoint);
+    g_LNPoint_typeid = p->flag;
 }
 
-static void hspLnPoint_reffunc(int* typeRes, void** retValPtr)
+static void hspLNPoint_reffunc(int* typeRes, void** retValPtr)
 {
-    static LnPoint returnValue;
+    static LNPoint returnValue;
 
     if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
@@ -590,38 +590,38 @@ static void hspLnPoint_reffunc(int* typeRes, void** retValPtr)
 
 
     *retValPtr = &returnValue;
-    *typeRes = hspLnPoint_typeid();
+    *typeRes = hspLNPoint_typeid();
 }
 
 
 //-----------------------------------------------------------------------------
-// struct LnSize
+// struct LNSize
 
-static int g_LnSize_typeid = 0;
+static int g_LNSize_typeid = 0;
 
-int hspLnSize_typeid()
+int hspLNSize_typeid()
 {
-    return g_LnSize_typeid;
+    return g_LNSize_typeid;
 }
 
-static int hspLnSize_GetVarSize(PVal *pval)
+static int hspLNSize_GetVarSize(PVal *pval)
 {
     int size;
     size = pval->len[1];
     if (pval->len[2]) size *= pval->len[2];
     if (pval->len[3]) size *= pval->len[3];
     if (pval->len[4]) size *= pval->len[4];
-    size *= sizeof(LnSize);
+    size *= sizeof(LNSize);
     return size;
 }
 
-static void hspLnSize_Alloc(PVal *pval, const PVal *pval2)
+static void hspLNSize_Alloc(PVal *pval, const PVal *pval2)
 {
     if (pval->len[1] < 1) pval->len[1] = 1;
-    int size = hspLnSize_GetVarSize(pval);
+    int size = hspLNSize_GetVarSize(pval);
     pval->mode = HSPVAR_MODE_MALLOC;
     char* pt = sbAlloc(size);
-    LnSize* fv = (LnSize *)pt;
+    LNSize* fv = (LNSize *)pt;
     memset(fv, 0, size);
     if (pval2 != NULL) {
         memcpy(pt, pval->pt, pval->size);
@@ -631,50 +631,50 @@ static void hspLnSize_Alloc(PVal *pval, const PVal *pval2)
     pval->size = size;
 }
 
-static void hspLnSize_Free(PVal* pval)
+static void hspLNSize_Free(PVal* pval)
 {
     if (pval->mode == HSPVAR_MODE_MALLOC) { sbFree(pval->pt); }
     pval->pt = NULL;
     pval->mode = HSPVAR_MODE_NONE;
 }
 
-static PDAT* hspLnSize_GetPtr(PVal* pval)
+static PDAT* hspLNSize_GetPtr(PVal* pval)
 {
-    return (PDAT*)(((LnSize*)(pval->pt)) + pval->offset);
+    return (PDAT*)(((LNSize*)(pval->pt)) + pval->offset);
 }
 
-static int hspLnSize_GetSize(const PDAT *pdatl)
+static int hspLNSize_GetSize(const PDAT *pdatl)
 {
-    return sizeof(LnSize);
+    return sizeof(LNSize);
 }
 
-static void hspLnSize_Set(PVal* pval, PDAT* pdat, const void* in)
+static void hspLNSize_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *reinterpret_cast<LnSize*>(pdat) = *reinterpret_cast<const LnSize*>(in);
+    *reinterpret_cast<LNSize*>(pdat) = *reinterpret_cast<const LNSize*>(in);
 }
 
-static void hspLnSize_Init(HspVarProc* p)
+static void hspLNSize_Init(HspVarProc* p)
 {
-    p->Alloc = hspLnSize_Alloc;
-    p->Free = hspLnSize_Free;
+    p->Alloc = hspLNSize_Alloc;
+    p->Free = hspLNSize_Free;
     
-    p->GetPtr = hspLnSize_GetPtr;
-    p->GetSize = hspLnSize_GetSize;
+    p->GetPtr = hspLNSize_GetPtr;
+    p->GetSize = hspLNSize_GetSize;
     p->GetBlockSize = hspCommon_GetBlockSize;
     p->AllocBlock = hspCommon_AllocBlock;
 
-    p->Set = hspLnSize_Set;
+    p->Set = hspLNSize_Set;
 
-    p->vartype_name = "LnSize";
+    p->vartype_name = "LNSize";
     p->version = 0x001;
     p->support = HSPVAR_SUPPORT_STORAGE | HSPVAR_SUPPORT_FLEXARRAY;
-    p->basesize = sizeof(LnSize);
-    g_LnSize_typeid = p->flag;
+    p->basesize = sizeof(LNSize);
+    g_LNSize_typeid = p->flag;
 }
 
-static void hspLnSize_reffunc(int* typeRes, void** retValPtr)
+static void hspLNSize_reffunc(int* typeRes, void** retValPtr)
 {
-    static LnSize returnValue;
+    static LNSize returnValue;
 
     if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
@@ -685,38 +685,38 @@ static void hspLnSize_reffunc(int* typeRes, void** retValPtr)
 
 
     *retValPtr = &returnValue;
-    *typeRes = hspLnSize_typeid();
+    *typeRes = hspLNSize_typeid();
 }
 
 
 //-----------------------------------------------------------------------------
-// struct LnRect
+// struct LNRect
 
-static int g_LnRect_typeid = 0;
+static int g_LNRect_typeid = 0;
 
-int hspLnRect_typeid()
+int hspLNRect_typeid()
 {
-    return g_LnRect_typeid;
+    return g_LNRect_typeid;
 }
 
-static int hspLnRect_GetVarSize(PVal *pval)
+static int hspLNRect_GetVarSize(PVal *pval)
 {
     int size;
     size = pval->len[1];
     if (pval->len[2]) size *= pval->len[2];
     if (pval->len[3]) size *= pval->len[3];
     if (pval->len[4]) size *= pval->len[4];
-    size *= sizeof(LnRect);
+    size *= sizeof(LNRect);
     return size;
 }
 
-static void hspLnRect_Alloc(PVal *pval, const PVal *pval2)
+static void hspLNRect_Alloc(PVal *pval, const PVal *pval2)
 {
     if (pval->len[1] < 1) pval->len[1] = 1;
-    int size = hspLnRect_GetVarSize(pval);
+    int size = hspLNRect_GetVarSize(pval);
     pval->mode = HSPVAR_MODE_MALLOC;
     char* pt = sbAlloc(size);
-    LnRect* fv = (LnRect *)pt;
+    LNRect* fv = (LNRect *)pt;
     memset(fv, 0, size);
     if (pval2 != NULL) {
         memcpy(pt, pval->pt, pval->size);
@@ -726,50 +726,50 @@ static void hspLnRect_Alloc(PVal *pval, const PVal *pval2)
     pval->size = size;
 }
 
-static void hspLnRect_Free(PVal* pval)
+static void hspLNRect_Free(PVal* pval)
 {
     if (pval->mode == HSPVAR_MODE_MALLOC) { sbFree(pval->pt); }
     pval->pt = NULL;
     pval->mode = HSPVAR_MODE_NONE;
 }
 
-static PDAT* hspLnRect_GetPtr(PVal* pval)
+static PDAT* hspLNRect_GetPtr(PVal* pval)
 {
-    return (PDAT*)(((LnRect*)(pval->pt)) + pval->offset);
+    return (PDAT*)(((LNRect*)(pval->pt)) + pval->offset);
 }
 
-static int hspLnRect_GetSize(const PDAT *pdatl)
+static int hspLNRect_GetSize(const PDAT *pdatl)
 {
-    return sizeof(LnRect);
+    return sizeof(LNRect);
 }
 
-static void hspLnRect_Set(PVal* pval, PDAT* pdat, const void* in)
+static void hspLNRect_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *reinterpret_cast<LnRect*>(pdat) = *reinterpret_cast<const LnRect*>(in);
+    *reinterpret_cast<LNRect*>(pdat) = *reinterpret_cast<const LNRect*>(in);
 }
 
-static void hspLnRect_Init(HspVarProc* p)
+static void hspLNRect_Init(HspVarProc* p)
 {
-    p->Alloc = hspLnRect_Alloc;
-    p->Free = hspLnRect_Free;
+    p->Alloc = hspLNRect_Alloc;
+    p->Free = hspLNRect_Free;
     
-    p->GetPtr = hspLnRect_GetPtr;
-    p->GetSize = hspLnRect_GetSize;
+    p->GetPtr = hspLNRect_GetPtr;
+    p->GetSize = hspLNRect_GetSize;
     p->GetBlockSize = hspCommon_GetBlockSize;
     p->AllocBlock = hspCommon_AllocBlock;
 
-    p->Set = hspLnRect_Set;
+    p->Set = hspLNRect_Set;
 
-    p->vartype_name = "LnRect";
+    p->vartype_name = "LNRect";
     p->version = 0x001;
     p->support = HSPVAR_SUPPORT_STORAGE | HSPVAR_SUPPORT_FLEXARRAY;
-    p->basesize = sizeof(LnRect);
-    g_LnRect_typeid = p->flag;
+    p->basesize = sizeof(LNRect);
+    g_LNRect_typeid = p->flag;
 }
 
-static void hspLnRect_reffunc(int* typeRes, void** retValPtr)
+static void hspLNRect_reffunc(int* typeRes, void** retValPtr)
 {
-    static LnRect returnValue;
+    static LNRect returnValue;
 
     if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
@@ -782,38 +782,38 @@ static void hspLnRect_reffunc(int* typeRes, void** retValPtr)
 
 
     *retValPtr = &returnValue;
-    *typeRes = hspLnRect_typeid();
+    *typeRes = hspLNRect_typeid();
 }
 
 
 //-----------------------------------------------------------------------------
-// struct LnThickness
+// struct LNThickness
 
-static int g_LnThickness_typeid = 0;
+static int g_LNThickness_typeid = 0;
 
-int hspLnThickness_typeid()
+int hspLNThickness_typeid()
 {
-    return g_LnThickness_typeid;
+    return g_LNThickness_typeid;
 }
 
-static int hspLnThickness_GetVarSize(PVal *pval)
+static int hspLNThickness_GetVarSize(PVal *pval)
 {
     int size;
     size = pval->len[1];
     if (pval->len[2]) size *= pval->len[2];
     if (pval->len[3]) size *= pval->len[3];
     if (pval->len[4]) size *= pval->len[4];
-    size *= sizeof(LnThickness);
+    size *= sizeof(LNThickness);
     return size;
 }
 
-static void hspLnThickness_Alloc(PVal *pval, const PVal *pval2)
+static void hspLNThickness_Alloc(PVal *pval, const PVal *pval2)
 {
     if (pval->len[1] < 1) pval->len[1] = 1;
-    int size = hspLnThickness_GetVarSize(pval);
+    int size = hspLNThickness_GetVarSize(pval);
     pval->mode = HSPVAR_MODE_MALLOC;
     char* pt = sbAlloc(size);
-    LnThickness* fv = (LnThickness *)pt;
+    LNThickness* fv = (LNThickness *)pt;
     memset(fv, 0, size);
     if (pval2 != NULL) {
         memcpy(pt, pval->pt, pval->size);
@@ -823,50 +823,50 @@ static void hspLnThickness_Alloc(PVal *pval, const PVal *pval2)
     pval->size = size;
 }
 
-static void hspLnThickness_Free(PVal* pval)
+static void hspLNThickness_Free(PVal* pval)
 {
     if (pval->mode == HSPVAR_MODE_MALLOC) { sbFree(pval->pt); }
     pval->pt = NULL;
     pval->mode = HSPVAR_MODE_NONE;
 }
 
-static PDAT* hspLnThickness_GetPtr(PVal* pval)
+static PDAT* hspLNThickness_GetPtr(PVal* pval)
 {
-    return (PDAT*)(((LnThickness*)(pval->pt)) + pval->offset);
+    return (PDAT*)(((LNThickness*)(pval->pt)) + pval->offset);
 }
 
-static int hspLnThickness_GetSize(const PDAT *pdatl)
+static int hspLNThickness_GetSize(const PDAT *pdatl)
 {
-    return sizeof(LnThickness);
+    return sizeof(LNThickness);
 }
 
-static void hspLnThickness_Set(PVal* pval, PDAT* pdat, const void* in)
+static void hspLNThickness_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *reinterpret_cast<LnThickness*>(pdat) = *reinterpret_cast<const LnThickness*>(in);
+    *reinterpret_cast<LNThickness*>(pdat) = *reinterpret_cast<const LNThickness*>(in);
 }
 
-static void hspLnThickness_Init(HspVarProc* p)
+static void hspLNThickness_Init(HspVarProc* p)
 {
-    p->Alloc = hspLnThickness_Alloc;
-    p->Free = hspLnThickness_Free;
+    p->Alloc = hspLNThickness_Alloc;
+    p->Free = hspLNThickness_Free;
     
-    p->GetPtr = hspLnThickness_GetPtr;
-    p->GetSize = hspLnThickness_GetSize;
+    p->GetPtr = hspLNThickness_GetPtr;
+    p->GetSize = hspLNThickness_GetSize;
     p->GetBlockSize = hspCommon_GetBlockSize;
     p->AllocBlock = hspCommon_AllocBlock;
 
-    p->Set = hspLnThickness_Set;
+    p->Set = hspLNThickness_Set;
 
-    p->vartype_name = "LnThickness";
+    p->vartype_name = "LNThickness";
     p->version = 0x001;
     p->support = HSPVAR_SUPPORT_STORAGE | HSPVAR_SUPPORT_FLEXARRAY;
-    p->basesize = sizeof(LnThickness);
-    g_LnThickness_typeid = p->flag;
+    p->basesize = sizeof(LNThickness);
+    g_LNThickness_typeid = p->flag;
 }
 
-static void hspLnThickness_reffunc(int* typeRes, void** retValPtr)
+static void hspLNThickness_reffunc(int* typeRes, void** retValPtr)
 {
-    static LnThickness returnValue;
+    static LNThickness returnValue;
 
     if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
@@ -879,24 +879,24 @@ static void hspLnThickness_reffunc(int* typeRes, void** retValPtr)
 
 
     *retValPtr = &returnValue;
-    *typeRes = hspLnThickness_typeid();
+    *typeRes = hspLNThickness_typeid();
 }
 
 
 //==============================================================================
 // ln::Object
 
-struct HSPSubclass_LnObject
+struct HSPSubclass_LNObject
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnObject_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNObject_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnObject)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNObject)));
 }
 
-static void HSPSubclass_LnObject_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNObject_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -905,17 +905,17 @@ static void HSPSubclass_LnObject_SubinstanceFree(LnHandle handle, LnSubinstanceI
 //==============================================================================
 // ln::EventConnection
 
-struct HSPSubclass_LnEventConnection
+struct HSPSubclass_LNEventConnection
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnEventConnection_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNEventConnection_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnEventConnection)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNEventConnection)));
 }
 
-static void HSPSubclass_LnEventConnection_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNEventConnection_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -924,197 +924,197 @@ static void HSPSubclass_LnEventConnection_SubinstanceFree(LnHandle handle, LnSub
 //==============================================================================
 // ln::PromiseFailureDelegate
 
-struct HSPSubclass_LnPromiseFailureDelegate
+struct HSPSubclass_LNPromiseFailureDelegate
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnPromiseFailureDelegate_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNPromiseFailureDelegate_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnPromiseFailureDelegate)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNPromiseFailureDelegate)));
 }
 
-static void HSPSubclass_LnPromiseFailureDelegate_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNPromiseFailureDelegate_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnPromiseFailureDelegate_DelegateLabelCaller(LnHandle promisefailuredelegate)
+static LNResult HSPSubclass_LNPromiseFailureDelegate_DelegateLabelCaller(LNHandle promisefailuredelegate)
 {
     setCallbackArg(0, promisefailuredelegate);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnPromiseFailureDelegate*>(LnPromiseFailureDelegate_GetSubinstanceId(promisefailuredelegate));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNPromiseFailureDelegate*>(LNPromiseFailureDelegate_GetSubinstanceId(promisefailuredelegate));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ln::ZVTestDelegate1
 
-struct HSPSubclass_LnZVTestDelegate1
+struct HSPSubclass_LNZVTestDelegate1
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnZVTestDelegate1_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNZVTestDelegate1_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestDelegate1)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNZVTestDelegate1)));
 }
 
-static void HSPSubclass_LnZVTestDelegate1_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNZVTestDelegate1_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnZVTestDelegate1_DelegateLabelCaller(LnHandle zvtestdelegate1, int p1)
+static LNResult HSPSubclass_LNZVTestDelegate1_DelegateLabelCaller(LNHandle zvtestdelegate1, int p1)
 {
     setCallbackArg(0, zvtestdelegate1);
     setCallbackArg(1, p1);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestDelegate1*>(LnZVTestDelegate1_GetSubinstanceId(zvtestdelegate1));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestDelegate1*>(LNZVTestDelegate1_GetSubinstanceId(zvtestdelegate1));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ln::ZVTestDelegate2
 
-struct HSPSubclass_LnZVTestDelegate2
+struct HSPSubclass_LNZVTestDelegate2
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnZVTestDelegate2_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNZVTestDelegate2_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestDelegate2)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNZVTestDelegate2)));
 }
 
-static void HSPSubclass_LnZVTestDelegate2_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNZVTestDelegate2_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnZVTestDelegate2_DelegateLabelCaller(LnHandle zvtestdelegate2, int p1, int p2, int* outReturn)
+static LNResult HSPSubclass_LNZVTestDelegate2_DelegateLabelCaller(LNHandle zvtestdelegate2, int p1, int p2, int* outReturn)
 {
     setCallbackArg(0, zvtestdelegate2);
     setCallbackArg(1, p1);
     setCallbackArg(2, p2);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestDelegate2*>(LnZVTestDelegate2_GetSubinstanceId(zvtestdelegate2));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestDelegate2*>(LNZVTestDelegate2_GetSubinstanceId(zvtestdelegate2));
     stat = 0;
     code_call(localSelf->labelPointer);
     setCallbackOutput(3, outReturn);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ln::ZVTestDelegate3
 
-struct HSPSubclass_LnZVTestDelegate3
+struct HSPSubclass_LNZVTestDelegate3
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnZVTestDelegate3_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNZVTestDelegate3_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestDelegate3)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNZVTestDelegate3)));
 }
 
-static void HSPSubclass_LnZVTestDelegate3_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNZVTestDelegate3_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnZVTestDelegate3_DelegateLabelCaller(LnHandle zvtestdelegate3, LnHandle p1)
+static LNResult HSPSubclass_LNZVTestDelegate3_DelegateLabelCaller(LNHandle zvtestdelegate3, LNHandle p1)
 {
     setCallbackArg(0, zvtestdelegate3);
     setCallbackArg(1, p1);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestDelegate3*>(LnZVTestDelegate3_GetSubinstanceId(zvtestdelegate3));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestDelegate3*>(LNZVTestDelegate3_GetSubinstanceId(zvtestdelegate3));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ln::ZVTestEventHandler1
 
-struct HSPSubclass_LnZVTestEventHandler1
+struct HSPSubclass_LNZVTestEventHandler1
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnZVTestEventHandler1_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNZVTestEventHandler1_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestEventHandler1)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNZVTestEventHandler1)));
 }
 
-static void HSPSubclass_LnZVTestEventHandler1_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNZVTestEventHandler1_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnZVTestEventHandler1_DelegateLabelCaller(LnHandle zvtesteventhandler1)
+static LNResult HSPSubclass_LNZVTestEventHandler1_DelegateLabelCaller(LNHandle zvtesteventhandler1)
 {
     setCallbackArg(0, zvtesteventhandler1);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventHandler1*>(LnZVTestEventHandler1_GetSubinstanceId(zvtesteventhandler1));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestEventHandler1*>(LNZVTestEventHandler1_GetSubinstanceId(zvtesteventhandler1));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ln::ZVTestEventHandler2
 
-struct HSPSubclass_LnZVTestEventHandler2
+struct HSPSubclass_LNZVTestEventHandler2
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnZVTestEventHandler2_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNZVTestEventHandler2_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestEventHandler2)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNZVTestEventHandler2)));
 }
 
-static void HSPSubclass_LnZVTestEventHandler2_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNZVTestEventHandler2_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnZVTestEventHandler2_DelegateLabelCaller(LnHandle zvtesteventhandler2, LnHandle p1)
+static LNResult HSPSubclass_LNZVTestEventHandler2_DelegateLabelCaller(LNHandle zvtesteventhandler2, LNHandle p1)
 {
     setCallbackArg(0, zvtesteventhandler2);
     setCallbackArg(1, p1);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventHandler2*>(LnZVTestEventHandler2_GetSubinstanceId(zvtesteventhandler2));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestEventHandler2*>(LNZVTestEventHandler2_GetSubinstanceId(zvtesteventhandler2));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ln::ZVTestPromise1
 
-struct HSPSubclass_LnZVTestPromise1
+struct HSPSubclass_LNZVTestPromise1
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnZVTestPromise1_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNZVTestPromise1_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestPromise1)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNZVTestPromise1)));
 }
 
-static void HSPSubclass_LnZVTestPromise1_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNZVTestPromise1_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1123,17 +1123,17 @@ static void HSPSubclass_LnZVTestPromise1_SubinstanceFree(LnHandle handle, LnSubi
 //==============================================================================
 // ln::ZVTestPromise2
 
-struct HSPSubclass_LnZVTestPromise2
+struct HSPSubclass_LNZVTestPromise2
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnZVTestPromise2_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNZVTestPromise2_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestPromise2)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNZVTestPromise2)));
 }
 
-static void HSPSubclass_LnZVTestPromise2_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNZVTestPromise2_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1142,17 +1142,17 @@ static void HSPSubclass_LnZVTestPromise2_SubinstanceFree(LnHandle handle, LnSubi
 //==============================================================================
 // ln::ZVTestClass1
 
-struct HSPSubclass_LnZVTestClass1
+struct HSPSubclass_LNZVTestClass1
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnZVTestClass1_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNZVTestClass1_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestClass1)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNZVTestClass1)));
 }
 
-static void HSPSubclass_LnZVTestClass1_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNZVTestClass1_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1161,17 +1161,17 @@ static void HSPSubclass_LnZVTestClass1_SubinstanceFree(LnHandle handle, LnSubins
 //==============================================================================
 // ln::ZVTestEventArgs1
 
-struct HSPSubclass_LnZVTestEventArgs1
+struct HSPSubclass_LNZVTestEventArgs1
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnZVTestEventArgs1_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNZVTestEventArgs1_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestEventArgs1)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNZVTestEventArgs1)));
 }
 
-static void HSPSubclass_LnZVTestEventArgs1_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNZVTestEventArgs1_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1180,17 +1180,17 @@ static void HSPSubclass_LnZVTestEventArgs1_SubinstanceFree(LnHandle handle, LnSu
 //==============================================================================
 // ln::Serializer2
 
-struct HSPSubclass_LnSerializer2
+struct HSPSubclass_LNSerializer2
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnSerializer2_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNSerializer2_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSerializer2)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNSerializer2)));
 }
 
-static void HSPSubclass_LnSerializer2_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNSerializer2_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1199,17 +1199,17 @@ static void HSPSubclass_LnSerializer2_SubinstanceFree(LnHandle handle, LnSubinst
 //==============================================================================
 // ln::AssetModel
 
-struct HSPSubclass_LnAssetModel
+struct HSPSubclass_LNAssetModel
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnAssetModel_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNAssetModel_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnAssetModel)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNAssetModel)));
 }
 
-static void HSPSubclass_LnAssetModel_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNAssetModel_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1218,17 +1218,17 @@ static void HSPSubclass_LnAssetModel_SubinstanceFree(LnHandle handle, LnSubinsta
 //==============================================================================
 // ln::Assets
 
-struct HSPSubclass_LnAssets
+struct HSPSubclass_LNAssets
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnAssets_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNAssets_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnAssets)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNAssets)));
 }
 
-static void HSPSubclass_LnAssets_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNAssets_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1237,47 +1237,47 @@ static void HSPSubclass_LnAssets_SubinstanceFree(LnHandle handle, LnSubinstanceI
 //==============================================================================
 // ln::Texture2DDelegate
 
-struct HSPSubclass_LnTexture2DDelegate
+struct HSPSubclass_LNTexture2DDelegate
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnTexture2DDelegate_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNTexture2DDelegate_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnTexture2DDelegate)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNTexture2DDelegate)));
 }
 
-static void HSPSubclass_LnTexture2DDelegate_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNTexture2DDelegate_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnTexture2DDelegate_DelegateLabelCaller(LnHandle texture2ddelegate, LnHandle p1)
+static LNResult HSPSubclass_LNTexture2DDelegate_DelegateLabelCaller(LNHandle texture2ddelegate, LNHandle p1)
 {
     setCallbackArg(0, texture2ddelegate);
     setCallbackArg(1, p1);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnTexture2DDelegate*>(LnTexture2DDelegate_GetSubinstanceId(texture2ddelegate));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNTexture2DDelegate*>(LNTexture2DDelegate_GetSubinstanceId(texture2ddelegate));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ln::Texture2DPromise
 
-struct HSPSubclass_LnTexture2DPromise
+struct HSPSubclass_LNTexture2DPromise
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnTexture2DPromise_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNTexture2DPromise_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnTexture2DPromise)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNTexture2DPromise)));
 }
 
-static void HSPSubclass_LnTexture2DPromise_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNTexture2DPromise_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1286,17 +1286,17 @@ static void HSPSubclass_LnTexture2DPromise_SubinstanceFree(LnHandle handle, LnSu
 //==============================================================================
 // ln::Texture
 
-struct HSPSubclass_LnTexture
+struct HSPSubclass_LNTexture
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnTexture_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNTexture_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnTexture)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNTexture)));
 }
 
-static void HSPSubclass_LnTexture_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNTexture_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1305,17 +1305,17 @@ static void HSPSubclass_LnTexture_SubinstanceFree(LnHandle handle, LnSubinstance
 //==============================================================================
 // ln::Texture2D
 
-struct HSPSubclass_LnTexture2D
+struct HSPSubclass_LNTexture2D
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnTexture2D_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNTexture2D_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnTexture2D)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNTexture2D)));
 }
 
-static void HSPSubclass_LnTexture2D_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNTexture2D_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1324,17 +1324,17 @@ static void HSPSubclass_LnTexture2D_SubinstanceFree(LnHandle handle, LnSubinstan
 //==============================================================================
 // ln::RenderView
 
-struct HSPSubclass_LnRenderView
+struct HSPSubclass_LNRenderView
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnRenderView_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNRenderView_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnRenderView)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNRenderView)));
 }
 
-static void HSPSubclass_LnRenderView_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNRenderView_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1343,17 +1343,17 @@ static void HSPSubclass_LnRenderView_SubinstanceFree(LnHandle handle, LnSubinsta
 //==============================================================================
 // ln::Component
 
-struct HSPSubclass_LnComponent
+struct HSPSubclass_LNComponent
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnComponent_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNComponent_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnComponent)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNComponent)));
 }
 
-static void HSPSubclass_LnComponent_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNComponent_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1362,17 +1362,17 @@ static void HSPSubclass_LnComponent_SubinstanceFree(LnHandle handle, LnSubinstan
 //==============================================================================
 // ln::VisualComponent
 
-struct HSPSubclass_LnVisualComponent
+struct HSPSubclass_LNVisualComponent
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnVisualComponent_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNVisualComponent_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnVisualComponent)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNVisualComponent)));
 }
 
-static void HSPSubclass_LnVisualComponent_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNVisualComponent_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1381,17 +1381,17 @@ static void HSPSubclass_LnVisualComponent_SubinstanceFree(LnHandle handle, LnSub
 //==============================================================================
 // ln::SpriteComponent
 
-struct HSPSubclass_LnSpriteComponent
+struct HSPSubclass_LNSpriteComponent
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnSpriteComponent_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNSpriteComponent_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpriteComponent)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNSpriteComponent)));
 }
 
-static void HSPSubclass_LnSpriteComponent_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNSpriteComponent_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1400,17 +1400,17 @@ static void HSPSubclass_LnSpriteComponent_SubinstanceFree(LnHandle handle, LnSub
 //==============================================================================
 // ln::World
 
-struct HSPSubclass_LnWorld
+struct HSPSubclass_LNWorld
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnWorld_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNWorld_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorld)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNWorld)));
 }
 
-static void HSPSubclass_LnWorld_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNWorld_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1419,17 +1419,17 @@ static void HSPSubclass_LnWorld_SubinstanceFree(LnHandle handle, LnSubinstanceId
 //==============================================================================
 // ln::ComponentList
 
-struct HSPSubclass_LnComponentList
+struct HSPSubclass_LNComponentList
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnComponentList_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNComponentList_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnComponentList)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNComponentList)));
 }
 
-static void HSPSubclass_LnComponentList_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNComponentList_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1438,17 +1438,17 @@ static void HSPSubclass_LnComponentList_SubinstanceFree(LnHandle handle, LnSubin
 //==============================================================================
 // ln::WorldObject
 
-struct HSPSubclass_LnWorldObject
+struct HSPSubclass_LNWorldObject
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnWorldObject_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNWorldObject_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorldObject)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNWorldObject)));
 }
 
-static void HSPSubclass_LnWorldObject_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNWorldObject_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1457,17 +1457,17 @@ static void HSPSubclass_LnWorldObject_SubinstanceFree(LnHandle handle, LnSubinst
 //==============================================================================
 // ln::VisualObject
 
-struct HSPSubclass_LnVisualObject
+struct HSPSubclass_LNVisualObject
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnVisualObject_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNVisualObject_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnVisualObject)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNVisualObject)));
 }
 
-static void HSPSubclass_LnVisualObject_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNVisualObject_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1476,17 +1476,17 @@ static void HSPSubclass_LnVisualObject_SubinstanceFree(LnHandle handle, LnSubins
 //==============================================================================
 // ln::Camera
 
-struct HSPSubclass_LnCamera
+struct HSPSubclass_LNCamera
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnCamera_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNCamera_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnCamera)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNCamera)));
 }
 
-static void HSPSubclass_LnCamera_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNCamera_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1495,17 +1495,17 @@ static void HSPSubclass_LnCamera_SubinstanceFree(LnHandle handle, LnSubinstanceI
 //==============================================================================
 // ln::DirectionalLight
 
-struct HSPSubclass_LnDirectionalLight
+struct HSPSubclass_LNDirectionalLight
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnDirectionalLight_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNDirectionalLight_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnDirectionalLight)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNDirectionalLight)));
 }
 
-static void HSPSubclass_LnDirectionalLight_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNDirectionalLight_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1514,17 +1514,17 @@ static void HSPSubclass_LnDirectionalLight_SubinstanceFree(LnHandle handle, LnSu
 //==============================================================================
 // ln::PointLight
 
-struct HSPSubclass_LnPointLight
+struct HSPSubclass_LNPointLight
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnPointLight_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNPointLight_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnPointLight)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNPointLight)));
 }
 
-static void HSPSubclass_LnPointLight_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNPointLight_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1533,17 +1533,17 @@ static void HSPSubclass_LnPointLight_SubinstanceFree(LnHandle handle, LnSubinsta
 //==============================================================================
 // ln::SpotLight
 
-struct HSPSubclass_LnSpotLight
+struct HSPSubclass_LNSpotLight
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnSpotLight_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNSpotLight_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpotLight)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNSpotLight)));
 }
 
-static void HSPSubclass_LnSpotLight_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNSpotLight_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1552,48 +1552,48 @@ static void HSPSubclass_LnSpotLight_SubinstanceFree(LnHandle handle, LnSubinstan
 //==============================================================================
 // ln::TestDelegate
 
-struct HSPSubclass_LnTestDelegate
+struct HSPSubclass_LNTestDelegate
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnTestDelegate_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNTestDelegate_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnTestDelegate)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNTestDelegate)));
 }
 
-static void HSPSubclass_LnTestDelegate_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNTestDelegate_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnTestDelegate_DelegateLabelCaller(LnHandle testdelegate, int p1, int* outReturn)
+static LNResult HSPSubclass_LNTestDelegate_DelegateLabelCaller(LNHandle testdelegate, int p1, int* outReturn)
 {
     setCallbackArg(0, testdelegate);
     setCallbackArg(1, p1);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnTestDelegate*>(LnTestDelegate_GetSubinstanceId(testdelegate));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNTestDelegate*>(LNTestDelegate_GetSubinstanceId(testdelegate));
     stat = 0;
     code_call(localSelf->labelPointer);
     setCallbackOutput(2, outReturn);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ln::Sprite
 
-struct HSPSubclass_LnSprite
+struct HSPSubclass_LNSprite
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnSprite_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNSprite_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSprite)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNSprite)));
 }
 
-static void HSPSubclass_LnSprite_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNSprite_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1602,17 +1602,17 @@ static void HSPSubclass_LnSprite_SubinstanceFree(LnHandle handle, LnSubinstanceI
 //==============================================================================
 // ln::CameraOrbitControlComponent
 
-struct HSPSubclass_LnCameraOrbitControlComponent
+struct HSPSubclass_LNCameraOrbitControlComponent
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnCameraOrbitControlComponent_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNCameraOrbitControlComponent_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnCameraOrbitControlComponent)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNCameraOrbitControlComponent)));
 }
 
-static void HSPSubclass_LnCameraOrbitControlComponent_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNCameraOrbitControlComponent_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1621,17 +1621,17 @@ static void HSPSubclass_LnCameraOrbitControlComponent_SubinstanceFree(LnHandle h
 //==============================================================================
 // ln::Raycaster
 
-struct HSPSubclass_LnRaycaster
+struct HSPSubclass_LNRaycaster
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnRaycaster_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNRaycaster_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnRaycaster)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNRaycaster)));
 }
 
-static void HSPSubclass_LnRaycaster_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNRaycaster_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1640,17 +1640,17 @@ static void HSPSubclass_LnRaycaster_SubinstanceFree(LnHandle handle, LnSubinstan
 //==============================================================================
 // ln::RaycastResult
 
-struct HSPSubclass_LnRaycastResult
+struct HSPSubclass_LNRaycastResult
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnRaycastResult_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNRaycastResult_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnRaycastResult)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNRaycastResult)));
 }
 
-static void HSPSubclass_LnRaycastResult_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNRaycastResult_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1659,17 +1659,17 @@ static void HSPSubclass_LnRaycastResult_SubinstanceFree(LnHandle handle, LnSubin
 //==============================================================================
 // ln::WorldRenderView
 
-struct HSPSubclass_LnWorldRenderView
+struct HSPSubclass_LNWorldRenderView
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnWorldRenderView_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNWorldRenderView_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorldRenderView)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNWorldRenderView)));
 }
 
-static void HSPSubclass_LnWorldRenderView_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNWorldRenderView_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1678,17 +1678,17 @@ static void HSPSubclass_LnWorldRenderView_SubinstanceFree(LnHandle handle, LnSub
 //==============================================================================
 // ln::BoxMesh
 
-struct HSPSubclass_LnBoxMesh
+struct HSPSubclass_LNBoxMesh
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnBoxMesh_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNBoxMesh_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnBoxMesh)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNBoxMesh)));
 }
 
-static void HSPSubclass_LnBoxMesh_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNBoxMesh_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1697,17 +1697,17 @@ static void HSPSubclass_LnBoxMesh_SubinstanceFree(LnHandle handle, LnSubinstance
 //==============================================================================
 // ln::PlaneMesh
 
-struct HSPSubclass_LnPlaneMesh
+struct HSPSubclass_LNPlaneMesh
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnPlaneMesh_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNPlaneMesh_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnPlaneMesh)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNPlaneMesh)));
 }
 
-static void HSPSubclass_LnPlaneMesh_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNPlaneMesh_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1716,17 +1716,17 @@ static void HSPSubclass_LnPlaneMesh_SubinstanceFree(LnHandle handle, LnSubinstan
 //==============================================================================
 // ln::UIEventArgs
 
-struct HSPSubclass_LnUIEventArgs
+struct HSPSubclass_LNUIEventArgs
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnUIEventArgs_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNUIEventArgs_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUIEventArgs)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNUIEventArgs)));
 }
 
-static void HSPSubclass_LnUIEventArgs_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNUIEventArgs_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1735,76 +1735,76 @@ static void HSPSubclass_LnUIEventArgs_SubinstanceFree(LnHandle handle, LnSubinst
 //==============================================================================
 // ln::UIGeneralEventHandler
 
-struct HSPSubclass_LnUIGeneralEventHandler
+struct HSPSubclass_LNUIGeneralEventHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnUIGeneralEventHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNUIGeneralEventHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUIGeneralEventHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNUIGeneralEventHandler)));
 }
 
-static void HSPSubclass_LnUIGeneralEventHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNUIGeneralEventHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnUIGeneralEventHandler_DelegateLabelCaller(LnHandle uigeneraleventhandler, LnHandle p1)
+static LNResult HSPSubclass_LNUIGeneralEventHandler_DelegateLabelCaller(LNHandle uigeneraleventhandler, LNHandle p1)
 {
     setCallbackArg(0, uigeneraleventhandler);
     setCallbackArg(1, p1);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnUIGeneralEventHandler*>(LnUIGeneralEventHandler_GetSubinstanceId(uigeneraleventhandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNUIGeneralEventHandler*>(LNUIGeneralEventHandler_GetSubinstanceId(uigeneraleventhandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ln::UIEventHandler
 
-struct HSPSubclass_LnUIEventHandler
+struct HSPSubclass_LNUIEventHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnUIEventHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNUIEventHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUIEventHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNUIEventHandler)));
 }
 
-static void HSPSubclass_LnUIEventHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNUIEventHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnUIEventHandler_DelegateLabelCaller(LnHandle uieventhandler)
+static LNResult HSPSubclass_LNUIEventHandler_DelegateLabelCaller(LNHandle uieventhandler)
 {
     setCallbackArg(0, uieventhandler);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnUIEventHandler*>(LnUIEventHandler_GetSubinstanceId(uieventhandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNUIEventHandler*>(LNUIEventHandler_GetSubinstanceId(uieventhandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ln::UILayoutElement
 
-struct HSPSubclass_LnUILayoutElement
+struct HSPSubclass_LNUILayoutElement
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnUILayoutElement_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNUILayoutElement_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUILayoutElement)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNUILayoutElement)));
 }
 
-static void HSPSubclass_LnUILayoutElement_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNUILayoutElement_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1813,17 +1813,17 @@ static void HSPSubclass_LnUILayoutElement_SubinstanceFree(LnHandle handle, LnSub
 //==============================================================================
 // ln::UIElement
 
-struct HSPSubclass_LnUIElement
+struct HSPSubclass_LNUIElement
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnUIElement_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNUIElement_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUIElement)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNUIElement)));
 }
 
-static void HSPSubclass_LnUIElement_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNUIElement_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1832,17 +1832,17 @@ static void HSPSubclass_LnUIElement_SubinstanceFree(LnHandle handle, LnSubinstan
 //==============================================================================
 // ln::UITextBlock
 
-struct HSPSubclass_LnUITextBlock
+struct HSPSubclass_LNUITextBlock
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnUITextBlock_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNUITextBlock_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUITextBlock)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNUITextBlock)));
 }
 
-static void HSPSubclass_LnUITextBlock_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNUITextBlock_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1851,17 +1851,17 @@ static void HSPSubclass_LnUITextBlock_SubinstanceFree(LnHandle handle, LnSubinst
 //==============================================================================
 // ln::UISprite
 
-struct HSPSubclass_LnUISprite
+struct HSPSubclass_LNUISprite
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnUISprite_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNUISprite_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUISprite)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNUISprite)));
 }
 
-static void HSPSubclass_LnUISprite_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNUISprite_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1870,17 +1870,17 @@ static void HSPSubclass_LnUISprite_SubinstanceFree(LnHandle handle, LnSubinstanc
 //==============================================================================
 // ln::Input
 
-struct HSPSubclass_LnInput
+struct HSPSubclass_LNInput
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnInput_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNInput_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnInput)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNInput)));
 }
 
-static void HSPSubclass_LnInput_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNInput_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1889,17 +1889,17 @@ static void HSPSubclass_LnInput_SubinstanceFree(LnHandle handle, LnSubinstanceId
 //==============================================================================
 // ln::Mouse
 
-struct HSPSubclass_LnMouse
+struct HSPSubclass_LNMouse
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnMouse_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNMouse_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnMouse)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNMouse)));
 }
 
-static void HSPSubclass_LnMouse_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNMouse_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1908,17 +1908,17 @@ static void HSPSubclass_LnMouse_SubinstanceFree(LnHandle handle, LnSubinstanceId
 //==============================================================================
 // ln::EngineSettings
 
-struct HSPSubclass_LnEngineSettings
+struct HSPSubclass_LNEngineSettings
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnEngineSettings_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNEngineSettings_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnEngineSettings)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNEngineSettings)));
 }
 
-static void HSPSubclass_LnEngineSettings_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNEngineSettings_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1927,17 +1927,17 @@ static void HSPSubclass_LnEngineSettings_SubinstanceFree(LnHandle handle, LnSubi
 //==============================================================================
 // ln::Engine
 
-struct HSPSubclass_LnEngine
+struct HSPSubclass_LNEngine
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnEngine_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNEngine_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnEngine)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNEngine)));
 }
 
-static void HSPSubclass_LnEngine_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNEngine_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1946,17 +1946,17 @@ static void HSPSubclass_LnEngine_SubinstanceFree(LnHandle handle, LnSubinstanceI
 //==============================================================================
 // ln::Application
 
-struct HSPSubclass_LnApplication
+struct HSPSubclass_LNApplication
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnApplication_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNApplication_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnApplication)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNApplication)));
 }
 
-static void HSPSubclass_LnApplication_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNApplication_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1965,17 +1965,17 @@ static void HSPSubclass_LnApplication_SubinstanceFree(LnHandle handle, LnSubinst
 //==============================================================================
 // ln::Debug
 
-struct HSPSubclass_LnDebug
+struct HSPSubclass_LNDebug
 {
 };
 
 
-static LnSubinstanceId HSPSubclass_LnDebug_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNDebug_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnDebug)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNDebug)));
 }
 
-static void HSPSubclass_LnDebug_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNDebug_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1984,1411 +1984,1411 @@ static void HSPSubclass_LnDebug_SubinstanceFree(LnHandle handle, LnSubinstanceId
 //==============================================================================
 // ObjectSerializeHandler
 
-struct HSPSubclass_LnObjectSerializeHandler
+struct HSPSubclass_LNObjectSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnObjectSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNObjectSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnObjectSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNObjectSerializeHandler)));
 }
 
-static void HSPSubclass_LnObjectSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNObjectSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnObjectSerializeHandler_DelegateLabelCaller(LnHandle objectserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNObjectSerializeHandler_DelegateLabelCaller(LNHandle objectserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, objectserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnObjectSerializeHandler*>(LnObjectSerializeHandler_GetSubinstanceId(objectserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNObjectSerializeHandler*>(LNObjectSerializeHandler_GetSubinstanceId(objectserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // EventConnectionSerializeHandler
 
-struct HSPSubclass_LnEventConnectionSerializeHandler
+struct HSPSubclass_LNEventConnectionSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnEventConnectionSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNEventConnectionSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnEventConnectionSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNEventConnectionSerializeHandler)));
 }
 
-static void HSPSubclass_LnEventConnectionSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNEventConnectionSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnEventConnectionSerializeHandler_DelegateLabelCaller(LnHandle eventconnectionserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNEventConnectionSerializeHandler_DelegateLabelCaller(LNHandle eventconnectionserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, eventconnectionserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnEventConnectionSerializeHandler*>(LnEventConnectionSerializeHandler_GetSubinstanceId(eventconnectionserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNEventConnectionSerializeHandler*>(LNEventConnectionSerializeHandler_GetSubinstanceId(eventconnectionserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ZVTestClass1SerializeHandler
 
-struct HSPSubclass_LnZVTestClass1SerializeHandler
+struct HSPSubclass_LNZVTestClass1SerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnZVTestClass1SerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNZVTestClass1SerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestClass1SerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNZVTestClass1SerializeHandler)));
 }
 
-static void HSPSubclass_LnZVTestClass1SerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNZVTestClass1SerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnZVTestClass1SerializeHandler_DelegateLabelCaller(LnHandle zvtestclass1serializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNZVTestClass1SerializeHandler_DelegateLabelCaller(LNHandle zvtestclass1serializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, zvtestclass1serializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestClass1SerializeHandler*>(LnZVTestClass1SerializeHandler_GetSubinstanceId(zvtestclass1serializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestClass1SerializeHandler*>(LNZVTestClass1SerializeHandler_GetSubinstanceId(zvtestclass1serializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ZVTestEventArgs1SerializeHandler
 
-struct HSPSubclass_LnZVTestEventArgs1SerializeHandler
+struct HSPSubclass_LNZVTestEventArgs1SerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnZVTestEventArgs1SerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNZVTestEventArgs1SerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnZVTestEventArgs1SerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNZVTestEventArgs1SerializeHandler)));
 }
 
-static void HSPSubclass_LnZVTestEventArgs1SerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNZVTestEventArgs1SerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnZVTestEventArgs1SerializeHandler_DelegateLabelCaller(LnHandle zvtesteventargs1serializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNZVTestEventArgs1SerializeHandler_DelegateLabelCaller(LNHandle zvtesteventargs1serializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, zvtesteventargs1serializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventArgs1SerializeHandler*>(LnZVTestEventArgs1SerializeHandler_GetSubinstanceId(zvtesteventargs1serializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestEventArgs1SerializeHandler*>(LNZVTestEventArgs1SerializeHandler_GetSubinstanceId(zvtesteventargs1serializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // Serializer2SerializeHandler
 
-struct HSPSubclass_LnSerializer2SerializeHandler
+struct HSPSubclass_LNSerializer2SerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnSerializer2SerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNSerializer2SerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSerializer2SerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNSerializer2SerializeHandler)));
 }
 
-static void HSPSubclass_LnSerializer2SerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNSerializer2SerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnSerializer2SerializeHandler_DelegateLabelCaller(LnHandle serializer2serializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNSerializer2SerializeHandler_DelegateLabelCaller(LNHandle serializer2serializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, serializer2serializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnSerializer2SerializeHandler*>(LnSerializer2SerializeHandler_GetSubinstanceId(serializer2serializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNSerializer2SerializeHandler*>(LNSerializer2SerializeHandler_GetSubinstanceId(serializer2serializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // AssetModelSerializeHandler
 
-struct HSPSubclass_LnAssetModelSerializeHandler
+struct HSPSubclass_LNAssetModelSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnAssetModelSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNAssetModelSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnAssetModelSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNAssetModelSerializeHandler)));
 }
 
-static void HSPSubclass_LnAssetModelSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNAssetModelSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnAssetModelSerializeHandler_DelegateLabelCaller(LnHandle assetmodelserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNAssetModelSerializeHandler_DelegateLabelCaller(LNHandle assetmodelserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, assetmodelserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnAssetModelSerializeHandler*>(LnAssetModelSerializeHandler_GetSubinstanceId(assetmodelserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNAssetModelSerializeHandler*>(LNAssetModelSerializeHandler_GetSubinstanceId(assetmodelserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // TextureSerializeHandler
 
-struct HSPSubclass_LnTextureSerializeHandler
+struct HSPSubclass_LNTextureSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnTextureSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNTextureSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnTextureSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNTextureSerializeHandler)));
 }
 
-static void HSPSubclass_LnTextureSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNTextureSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnTextureSerializeHandler_DelegateLabelCaller(LnHandle textureserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNTextureSerializeHandler_DelegateLabelCaller(LNHandle textureserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, textureserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnTextureSerializeHandler*>(LnTextureSerializeHandler_GetSubinstanceId(textureserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNTextureSerializeHandler*>(LNTextureSerializeHandler_GetSubinstanceId(textureserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // Texture2DSerializeHandler
 
-struct HSPSubclass_LnTexture2DSerializeHandler
+struct HSPSubclass_LNTexture2DSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnTexture2DSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNTexture2DSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnTexture2DSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNTexture2DSerializeHandler)));
 }
 
-static void HSPSubclass_LnTexture2DSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNTexture2DSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnTexture2DSerializeHandler_DelegateLabelCaller(LnHandle texture2dserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNTexture2DSerializeHandler_DelegateLabelCaller(LNHandle texture2dserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, texture2dserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnTexture2DSerializeHandler*>(LnTexture2DSerializeHandler_GetSubinstanceId(texture2dserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNTexture2DSerializeHandler*>(LNTexture2DSerializeHandler_GetSubinstanceId(texture2dserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // RenderViewSerializeHandler
 
-struct HSPSubclass_LnRenderViewSerializeHandler
+struct HSPSubclass_LNRenderViewSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnRenderViewSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNRenderViewSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnRenderViewSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNRenderViewSerializeHandler)));
 }
 
-static void HSPSubclass_LnRenderViewSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNRenderViewSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnRenderViewSerializeHandler_DelegateLabelCaller(LnHandle renderviewserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNRenderViewSerializeHandler_DelegateLabelCaller(LNHandle renderviewserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, renderviewserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnRenderViewSerializeHandler*>(LnRenderViewSerializeHandler_GetSubinstanceId(renderviewserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNRenderViewSerializeHandler*>(LNRenderViewSerializeHandler_GetSubinstanceId(renderviewserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ComponentSerializeHandler
 
-struct HSPSubclass_LnComponentSerializeHandler
+struct HSPSubclass_LNComponentSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnComponentSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNComponentSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnComponentSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNComponentSerializeHandler)));
 }
 
-static void HSPSubclass_LnComponentSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNComponentSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnComponentSerializeHandler_DelegateLabelCaller(LnHandle componentserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNComponentSerializeHandler_DelegateLabelCaller(LNHandle componentserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, componentserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnComponentSerializeHandler*>(LnComponentSerializeHandler_GetSubinstanceId(componentserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNComponentSerializeHandler*>(LNComponentSerializeHandler_GetSubinstanceId(componentserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // VisualComponentSerializeHandler
 
-struct HSPSubclass_LnVisualComponentSerializeHandler
+struct HSPSubclass_LNVisualComponentSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnVisualComponentSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNVisualComponentSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnVisualComponentSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNVisualComponentSerializeHandler)));
 }
 
-static void HSPSubclass_LnVisualComponentSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNVisualComponentSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnVisualComponentSerializeHandler_DelegateLabelCaller(LnHandle visualcomponentserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNVisualComponentSerializeHandler_DelegateLabelCaller(LNHandle visualcomponentserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, visualcomponentserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualComponentSerializeHandler*>(LnVisualComponentSerializeHandler_GetSubinstanceId(visualcomponentserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNVisualComponentSerializeHandler*>(LNVisualComponentSerializeHandler_GetSubinstanceId(visualcomponentserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // SpriteComponentSerializeHandler
 
-struct HSPSubclass_LnSpriteComponentSerializeHandler
+struct HSPSubclass_LNSpriteComponentSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnSpriteComponentSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNSpriteComponentSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpriteComponentSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNSpriteComponentSerializeHandler)));
 }
 
-static void HSPSubclass_LnSpriteComponentSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNSpriteComponentSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnSpriteComponentSerializeHandler_DelegateLabelCaller(LnHandle spritecomponentserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNSpriteComponentSerializeHandler_DelegateLabelCaller(LNHandle spritecomponentserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, spritecomponentserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteComponentSerializeHandler*>(LnSpriteComponentSerializeHandler_GetSubinstanceId(spritecomponentserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNSpriteComponentSerializeHandler*>(LNSpriteComponentSerializeHandler_GetSubinstanceId(spritecomponentserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // WorldSerializeHandler
 
-struct HSPSubclass_LnWorldSerializeHandler
+struct HSPSubclass_LNWorldSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnWorldSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNWorldSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorldSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNWorldSerializeHandler)));
 }
 
-static void HSPSubclass_LnWorldSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNWorldSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnWorldSerializeHandler_DelegateLabelCaller(LnHandle worldserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNWorldSerializeHandler_DelegateLabelCaller(LNHandle worldserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, worldserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldSerializeHandler*>(LnWorldSerializeHandler_GetSubinstanceId(worldserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNWorldSerializeHandler*>(LNWorldSerializeHandler_GetSubinstanceId(worldserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ComponentListSerializeHandler
 
-struct HSPSubclass_LnComponentListSerializeHandler
+struct HSPSubclass_LNComponentListSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnComponentListSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNComponentListSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnComponentListSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNComponentListSerializeHandler)));
 }
 
-static void HSPSubclass_LnComponentListSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNComponentListSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnComponentListSerializeHandler_DelegateLabelCaller(LnHandle componentlistserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNComponentListSerializeHandler_DelegateLabelCaller(LNHandle componentlistserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, componentlistserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnComponentListSerializeHandler*>(LnComponentListSerializeHandler_GetSubinstanceId(componentlistserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNComponentListSerializeHandler*>(LNComponentListSerializeHandler_GetSubinstanceId(componentlistserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // WorldObjectSerializeHandler
 
-struct HSPSubclass_LnWorldObjectSerializeHandler
+struct HSPSubclass_LNWorldObjectSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnWorldObjectSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNWorldObjectSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorldObjectSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNWorldObjectSerializeHandler)));
 }
 
-static void HSPSubclass_LnWorldObjectSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNWorldObjectSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnWorldObjectSerializeHandler_DelegateLabelCaller(LnHandle worldobjectserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNWorldObjectSerializeHandler_DelegateLabelCaller(LNHandle worldobjectserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, worldobjectserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldObjectSerializeHandler*>(LnWorldObjectSerializeHandler_GetSubinstanceId(worldobjectserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNWorldObjectSerializeHandler*>(LNWorldObjectSerializeHandler_GetSubinstanceId(worldobjectserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // WorldObjectUpdateHandler
 
-struct HSPSubclass_LnWorldObjectUpdateHandler
+struct HSPSubclass_LNWorldObjectUpdateHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnWorldObjectUpdateHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNWorldObjectUpdateHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorldObjectUpdateHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNWorldObjectUpdateHandler)));
 }
 
-static void HSPSubclass_LnWorldObjectUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNWorldObjectUpdateHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnWorldObjectUpdateHandler_DelegateLabelCaller(LnHandle worldobjectupdatehandler, LnHandle self, float elapsedSeconds)
+static LNResult HSPSubclass_LNWorldObjectUpdateHandler_DelegateLabelCaller(LNHandle worldobjectupdatehandler, LNHandle self, float elapsedSeconds)
 {
     setCallbackArg(0, worldobjectupdatehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, elapsedSeconds);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldObjectUpdateHandler*>(LnWorldObjectUpdateHandler_GetSubinstanceId(worldobjectupdatehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNWorldObjectUpdateHandler*>(LNWorldObjectUpdateHandler_GetSubinstanceId(worldobjectupdatehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // VisualObjectSerializeHandler
 
-struct HSPSubclass_LnVisualObjectSerializeHandler
+struct HSPSubclass_LNVisualObjectSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnVisualObjectSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNVisualObjectSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnVisualObjectSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNVisualObjectSerializeHandler)));
 }
 
-static void HSPSubclass_LnVisualObjectSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNVisualObjectSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnVisualObjectSerializeHandler_DelegateLabelCaller(LnHandle visualobjectserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNVisualObjectSerializeHandler_DelegateLabelCaller(LNHandle visualobjectserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, visualobjectserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualObjectSerializeHandler*>(LnVisualObjectSerializeHandler_GetSubinstanceId(visualobjectserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNVisualObjectSerializeHandler*>(LNVisualObjectSerializeHandler_GetSubinstanceId(visualobjectserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // VisualObjectUpdateHandler
 
-struct HSPSubclass_LnVisualObjectUpdateHandler
+struct HSPSubclass_LNVisualObjectUpdateHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnVisualObjectUpdateHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNVisualObjectUpdateHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnVisualObjectUpdateHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNVisualObjectUpdateHandler)));
 }
 
-static void HSPSubclass_LnVisualObjectUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNVisualObjectUpdateHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnVisualObjectUpdateHandler_DelegateLabelCaller(LnHandle visualobjectupdatehandler, LnHandle self, float elapsedSeconds)
+static LNResult HSPSubclass_LNVisualObjectUpdateHandler_DelegateLabelCaller(LNHandle visualobjectupdatehandler, LNHandle self, float elapsedSeconds)
 {
     setCallbackArg(0, visualobjectupdatehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, elapsedSeconds);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualObjectUpdateHandler*>(LnVisualObjectUpdateHandler_GetSubinstanceId(visualobjectupdatehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNVisualObjectUpdateHandler*>(LNVisualObjectUpdateHandler_GetSubinstanceId(visualobjectupdatehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // CameraSerializeHandler
 
-struct HSPSubclass_LnCameraSerializeHandler
+struct HSPSubclass_LNCameraSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnCameraSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNCameraSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnCameraSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNCameraSerializeHandler)));
 }
 
-static void HSPSubclass_LnCameraSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNCameraSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnCameraSerializeHandler_DelegateLabelCaller(LnHandle cameraserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNCameraSerializeHandler_DelegateLabelCaller(LNHandle cameraserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, cameraserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraSerializeHandler*>(LnCameraSerializeHandler_GetSubinstanceId(cameraserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNCameraSerializeHandler*>(LNCameraSerializeHandler_GetSubinstanceId(cameraserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // CameraUpdateHandler
 
-struct HSPSubclass_LnCameraUpdateHandler
+struct HSPSubclass_LNCameraUpdateHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnCameraUpdateHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNCameraUpdateHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnCameraUpdateHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNCameraUpdateHandler)));
 }
 
-static void HSPSubclass_LnCameraUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNCameraUpdateHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnCameraUpdateHandler_DelegateLabelCaller(LnHandle cameraupdatehandler, LnHandle self, float elapsedSeconds)
+static LNResult HSPSubclass_LNCameraUpdateHandler_DelegateLabelCaller(LNHandle cameraupdatehandler, LNHandle self, float elapsedSeconds)
 {
     setCallbackArg(0, cameraupdatehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, elapsedSeconds);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraUpdateHandler*>(LnCameraUpdateHandler_GetSubinstanceId(cameraupdatehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNCameraUpdateHandler*>(LNCameraUpdateHandler_GetSubinstanceId(cameraupdatehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // DirectionalLightSerializeHandler
 
-struct HSPSubclass_LnDirectionalLightSerializeHandler
+struct HSPSubclass_LNDirectionalLightSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnDirectionalLightSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNDirectionalLightSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnDirectionalLightSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNDirectionalLightSerializeHandler)));
 }
 
-static void HSPSubclass_LnDirectionalLightSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNDirectionalLightSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnDirectionalLightSerializeHandler_DelegateLabelCaller(LnHandle directionallightserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNDirectionalLightSerializeHandler_DelegateLabelCaller(LNHandle directionallightserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, directionallightserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnDirectionalLightSerializeHandler*>(LnDirectionalLightSerializeHandler_GetSubinstanceId(directionallightserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNDirectionalLightSerializeHandler*>(LNDirectionalLightSerializeHandler_GetSubinstanceId(directionallightserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // DirectionalLightUpdateHandler
 
-struct HSPSubclass_LnDirectionalLightUpdateHandler
+struct HSPSubclass_LNDirectionalLightUpdateHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnDirectionalLightUpdateHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNDirectionalLightUpdateHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnDirectionalLightUpdateHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNDirectionalLightUpdateHandler)));
 }
 
-static void HSPSubclass_LnDirectionalLightUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNDirectionalLightUpdateHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnDirectionalLightUpdateHandler_DelegateLabelCaller(LnHandle directionallightupdatehandler, LnHandle self, float elapsedSeconds)
+static LNResult HSPSubclass_LNDirectionalLightUpdateHandler_DelegateLabelCaller(LNHandle directionallightupdatehandler, LNHandle self, float elapsedSeconds)
 {
     setCallbackArg(0, directionallightupdatehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, elapsedSeconds);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnDirectionalLightUpdateHandler*>(LnDirectionalLightUpdateHandler_GetSubinstanceId(directionallightupdatehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNDirectionalLightUpdateHandler*>(LNDirectionalLightUpdateHandler_GetSubinstanceId(directionallightupdatehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // PointLightSerializeHandler
 
-struct HSPSubclass_LnPointLightSerializeHandler
+struct HSPSubclass_LNPointLightSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnPointLightSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNPointLightSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnPointLightSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNPointLightSerializeHandler)));
 }
 
-static void HSPSubclass_LnPointLightSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNPointLightSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnPointLightSerializeHandler_DelegateLabelCaller(LnHandle pointlightserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNPointLightSerializeHandler_DelegateLabelCaller(LNHandle pointlightserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, pointlightserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnPointLightSerializeHandler*>(LnPointLightSerializeHandler_GetSubinstanceId(pointlightserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNPointLightSerializeHandler*>(LNPointLightSerializeHandler_GetSubinstanceId(pointlightserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // PointLightUpdateHandler
 
-struct HSPSubclass_LnPointLightUpdateHandler
+struct HSPSubclass_LNPointLightUpdateHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnPointLightUpdateHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNPointLightUpdateHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnPointLightUpdateHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNPointLightUpdateHandler)));
 }
 
-static void HSPSubclass_LnPointLightUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNPointLightUpdateHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnPointLightUpdateHandler_DelegateLabelCaller(LnHandle pointlightupdatehandler, LnHandle self, float elapsedSeconds)
+static LNResult HSPSubclass_LNPointLightUpdateHandler_DelegateLabelCaller(LNHandle pointlightupdatehandler, LNHandle self, float elapsedSeconds)
 {
     setCallbackArg(0, pointlightupdatehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, elapsedSeconds);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnPointLightUpdateHandler*>(LnPointLightUpdateHandler_GetSubinstanceId(pointlightupdatehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNPointLightUpdateHandler*>(LNPointLightUpdateHandler_GetSubinstanceId(pointlightupdatehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // SpotLightSerializeHandler
 
-struct HSPSubclass_LnSpotLightSerializeHandler
+struct HSPSubclass_LNSpotLightSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnSpotLightSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNSpotLightSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpotLightSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNSpotLightSerializeHandler)));
 }
 
-static void HSPSubclass_LnSpotLightSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNSpotLightSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnSpotLightSerializeHandler_DelegateLabelCaller(LnHandle spotlightserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNSpotLightSerializeHandler_DelegateLabelCaller(LNHandle spotlightserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, spotlightserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnSpotLightSerializeHandler*>(LnSpotLightSerializeHandler_GetSubinstanceId(spotlightserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNSpotLightSerializeHandler*>(LNSpotLightSerializeHandler_GetSubinstanceId(spotlightserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // SpotLightUpdateHandler
 
-struct HSPSubclass_LnSpotLightUpdateHandler
+struct HSPSubclass_LNSpotLightUpdateHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnSpotLightUpdateHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNSpotLightUpdateHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpotLightUpdateHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNSpotLightUpdateHandler)));
 }
 
-static void HSPSubclass_LnSpotLightUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNSpotLightUpdateHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnSpotLightUpdateHandler_DelegateLabelCaller(LnHandle spotlightupdatehandler, LnHandle self, float elapsedSeconds)
+static LNResult HSPSubclass_LNSpotLightUpdateHandler_DelegateLabelCaller(LNHandle spotlightupdatehandler, LNHandle self, float elapsedSeconds)
 {
     setCallbackArg(0, spotlightupdatehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, elapsedSeconds);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnSpotLightUpdateHandler*>(LnSpotLightUpdateHandler_GetSubinstanceId(spotlightupdatehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNSpotLightUpdateHandler*>(LNSpotLightUpdateHandler_GetSubinstanceId(spotlightupdatehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // SpriteSerializeHandler
 
-struct HSPSubclass_LnSpriteSerializeHandler
+struct HSPSubclass_LNSpriteSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnSpriteSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNSpriteSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpriteSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNSpriteSerializeHandler)));
 }
 
-static void HSPSubclass_LnSpriteSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNSpriteSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnSpriteSerializeHandler_DelegateLabelCaller(LnHandle spriteserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNSpriteSerializeHandler_DelegateLabelCaller(LNHandle spriteserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, spriteserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteSerializeHandler*>(LnSpriteSerializeHandler_GetSubinstanceId(spriteserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNSpriteSerializeHandler*>(LNSpriteSerializeHandler_GetSubinstanceId(spriteserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // SpriteUpdateHandler
 
-struct HSPSubclass_LnSpriteUpdateHandler
+struct HSPSubclass_LNSpriteUpdateHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnSpriteUpdateHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNSpriteUpdateHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnSpriteUpdateHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNSpriteUpdateHandler)));
 }
 
-static void HSPSubclass_LnSpriteUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNSpriteUpdateHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnSpriteUpdateHandler_DelegateLabelCaller(LnHandle spriteupdatehandler, LnHandle self, float elapsedSeconds)
+static LNResult HSPSubclass_LNSpriteUpdateHandler_DelegateLabelCaller(LNHandle spriteupdatehandler, LNHandle self, float elapsedSeconds)
 {
     setCallbackArg(0, spriteupdatehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, elapsedSeconds);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteUpdateHandler*>(LnSpriteUpdateHandler_GetSubinstanceId(spriteupdatehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNSpriteUpdateHandler*>(LNSpriteUpdateHandler_GetSubinstanceId(spriteupdatehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // CameraOrbitControlComponentSerializeHandler
 
-struct HSPSubclass_LnCameraOrbitControlComponentSerializeHandler
+struct HSPSubclass_LNCameraOrbitControlComponentSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnCameraOrbitControlComponentSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNCameraOrbitControlComponentSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnCameraOrbitControlComponentSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNCameraOrbitControlComponentSerializeHandler)));
 }
 
-static void HSPSubclass_LnCameraOrbitControlComponentSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNCameraOrbitControlComponentSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnCameraOrbitControlComponentSerializeHandler_DelegateLabelCaller(LnHandle cameraorbitcontrolcomponentserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNCameraOrbitControlComponentSerializeHandler_DelegateLabelCaller(LNHandle cameraorbitcontrolcomponentserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, cameraorbitcontrolcomponentserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraOrbitControlComponentSerializeHandler*>(LnCameraOrbitControlComponentSerializeHandler_GetSubinstanceId(cameraorbitcontrolcomponentserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNCameraOrbitControlComponentSerializeHandler*>(LNCameraOrbitControlComponentSerializeHandler_GetSubinstanceId(cameraorbitcontrolcomponentserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // RaycasterSerializeHandler
 
-struct HSPSubclass_LnRaycasterSerializeHandler
+struct HSPSubclass_LNRaycasterSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnRaycasterSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNRaycasterSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnRaycasterSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNRaycasterSerializeHandler)));
 }
 
-static void HSPSubclass_LnRaycasterSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNRaycasterSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnRaycasterSerializeHandler_DelegateLabelCaller(LnHandle raycasterserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNRaycasterSerializeHandler_DelegateLabelCaller(LNHandle raycasterserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, raycasterserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnRaycasterSerializeHandler*>(LnRaycasterSerializeHandler_GetSubinstanceId(raycasterserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNRaycasterSerializeHandler*>(LNRaycasterSerializeHandler_GetSubinstanceId(raycasterserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // RaycastResultSerializeHandler
 
-struct HSPSubclass_LnRaycastResultSerializeHandler
+struct HSPSubclass_LNRaycastResultSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnRaycastResultSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNRaycastResultSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnRaycastResultSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNRaycastResultSerializeHandler)));
 }
 
-static void HSPSubclass_LnRaycastResultSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNRaycastResultSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnRaycastResultSerializeHandler_DelegateLabelCaller(LnHandle raycastresultserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNRaycastResultSerializeHandler_DelegateLabelCaller(LNHandle raycastresultserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, raycastresultserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnRaycastResultSerializeHandler*>(LnRaycastResultSerializeHandler_GetSubinstanceId(raycastresultserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNRaycastResultSerializeHandler*>(LNRaycastResultSerializeHandler_GetSubinstanceId(raycastresultserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // WorldRenderViewSerializeHandler
 
-struct HSPSubclass_LnWorldRenderViewSerializeHandler
+struct HSPSubclass_LNWorldRenderViewSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnWorldRenderViewSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNWorldRenderViewSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnWorldRenderViewSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNWorldRenderViewSerializeHandler)));
 }
 
-static void HSPSubclass_LnWorldRenderViewSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNWorldRenderViewSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnWorldRenderViewSerializeHandler_DelegateLabelCaller(LnHandle worldrenderviewserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNWorldRenderViewSerializeHandler_DelegateLabelCaller(LNHandle worldrenderviewserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, worldrenderviewserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldRenderViewSerializeHandler*>(LnWorldRenderViewSerializeHandler_GetSubinstanceId(worldrenderviewserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNWorldRenderViewSerializeHandler*>(LNWorldRenderViewSerializeHandler_GetSubinstanceId(worldrenderviewserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // BoxMeshSerializeHandler
 
-struct HSPSubclass_LnBoxMeshSerializeHandler
+struct HSPSubclass_LNBoxMeshSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnBoxMeshSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNBoxMeshSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnBoxMeshSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNBoxMeshSerializeHandler)));
 }
 
-static void HSPSubclass_LnBoxMeshSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNBoxMeshSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnBoxMeshSerializeHandler_DelegateLabelCaller(LnHandle boxmeshserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNBoxMeshSerializeHandler_DelegateLabelCaller(LNHandle boxmeshserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, boxmeshserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnBoxMeshSerializeHandler*>(LnBoxMeshSerializeHandler_GetSubinstanceId(boxmeshserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNBoxMeshSerializeHandler*>(LNBoxMeshSerializeHandler_GetSubinstanceId(boxmeshserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // BoxMeshUpdateHandler
 
-struct HSPSubclass_LnBoxMeshUpdateHandler
+struct HSPSubclass_LNBoxMeshUpdateHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnBoxMeshUpdateHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNBoxMeshUpdateHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnBoxMeshUpdateHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNBoxMeshUpdateHandler)));
 }
 
-static void HSPSubclass_LnBoxMeshUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNBoxMeshUpdateHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnBoxMeshUpdateHandler_DelegateLabelCaller(LnHandle boxmeshupdatehandler, LnHandle self, float elapsedSeconds)
+static LNResult HSPSubclass_LNBoxMeshUpdateHandler_DelegateLabelCaller(LNHandle boxmeshupdatehandler, LNHandle self, float elapsedSeconds)
 {
     setCallbackArg(0, boxmeshupdatehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, elapsedSeconds);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnBoxMeshUpdateHandler*>(LnBoxMeshUpdateHandler_GetSubinstanceId(boxmeshupdatehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNBoxMeshUpdateHandler*>(LNBoxMeshUpdateHandler_GetSubinstanceId(boxmeshupdatehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // PlaneMeshSerializeHandler
 
-struct HSPSubclass_LnPlaneMeshSerializeHandler
+struct HSPSubclass_LNPlaneMeshSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnPlaneMeshSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNPlaneMeshSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnPlaneMeshSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNPlaneMeshSerializeHandler)));
 }
 
-static void HSPSubclass_LnPlaneMeshSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNPlaneMeshSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnPlaneMeshSerializeHandler_DelegateLabelCaller(LnHandle planemeshserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNPlaneMeshSerializeHandler_DelegateLabelCaller(LNHandle planemeshserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, planemeshserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnPlaneMeshSerializeHandler*>(LnPlaneMeshSerializeHandler_GetSubinstanceId(planemeshserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNPlaneMeshSerializeHandler*>(LNPlaneMeshSerializeHandler_GetSubinstanceId(planemeshserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // PlaneMeshUpdateHandler
 
-struct HSPSubclass_LnPlaneMeshUpdateHandler
+struct HSPSubclass_LNPlaneMeshUpdateHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnPlaneMeshUpdateHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNPlaneMeshUpdateHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnPlaneMeshUpdateHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNPlaneMeshUpdateHandler)));
 }
 
-static void HSPSubclass_LnPlaneMeshUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNPlaneMeshUpdateHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnPlaneMeshUpdateHandler_DelegateLabelCaller(LnHandle planemeshupdatehandler, LnHandle self, float elapsedSeconds)
+static LNResult HSPSubclass_LNPlaneMeshUpdateHandler_DelegateLabelCaller(LNHandle planemeshupdatehandler, LNHandle self, float elapsedSeconds)
 {
     setCallbackArg(0, planemeshupdatehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, elapsedSeconds);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnPlaneMeshUpdateHandler*>(LnPlaneMeshUpdateHandler_GetSubinstanceId(planemeshupdatehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNPlaneMeshUpdateHandler*>(LNPlaneMeshUpdateHandler_GetSubinstanceId(planemeshupdatehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // UIEventArgsSerializeHandler
 
-struct HSPSubclass_LnUIEventArgsSerializeHandler
+struct HSPSubclass_LNUIEventArgsSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnUIEventArgsSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNUIEventArgsSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUIEventArgsSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNUIEventArgsSerializeHandler)));
 }
 
-static void HSPSubclass_LnUIEventArgsSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNUIEventArgsSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnUIEventArgsSerializeHandler_DelegateLabelCaller(LnHandle uieventargsserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNUIEventArgsSerializeHandler_DelegateLabelCaller(LNHandle uieventargsserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, uieventargsserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnUIEventArgsSerializeHandler*>(LnUIEventArgsSerializeHandler_GetSubinstanceId(uieventargsserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNUIEventArgsSerializeHandler*>(LNUIEventArgsSerializeHandler_GetSubinstanceId(uieventargsserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // UILayoutElementSerializeHandler
 
-struct HSPSubclass_LnUILayoutElementSerializeHandler
+struct HSPSubclass_LNUILayoutElementSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnUILayoutElementSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNUILayoutElementSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUILayoutElementSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNUILayoutElementSerializeHandler)));
 }
 
-static void HSPSubclass_LnUILayoutElementSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNUILayoutElementSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnUILayoutElementSerializeHandler_DelegateLabelCaller(LnHandle uilayoutelementserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNUILayoutElementSerializeHandler_DelegateLabelCaller(LNHandle uilayoutelementserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, uilayoutelementserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnUILayoutElementSerializeHandler*>(LnUILayoutElementSerializeHandler_GetSubinstanceId(uilayoutelementserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNUILayoutElementSerializeHandler*>(LNUILayoutElementSerializeHandler_GetSubinstanceId(uilayoutelementserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // UIElementSerializeHandler
 
-struct HSPSubclass_LnUIElementSerializeHandler
+struct HSPSubclass_LNUIElementSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnUIElementSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNUIElementSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUIElementSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNUIElementSerializeHandler)));
 }
 
-static void HSPSubclass_LnUIElementSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNUIElementSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnUIElementSerializeHandler_DelegateLabelCaller(LnHandle uielementserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNUIElementSerializeHandler_DelegateLabelCaller(LNHandle uielementserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, uielementserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnUIElementSerializeHandler*>(LnUIElementSerializeHandler_GetSubinstanceId(uielementserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNUIElementSerializeHandler*>(LNUIElementSerializeHandler_GetSubinstanceId(uielementserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // UITextBlockSerializeHandler
 
-struct HSPSubclass_LnUITextBlockSerializeHandler
+struct HSPSubclass_LNUITextBlockSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnUITextBlockSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNUITextBlockSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUITextBlockSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNUITextBlockSerializeHandler)));
 }
 
-static void HSPSubclass_LnUITextBlockSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNUITextBlockSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnUITextBlockSerializeHandler_DelegateLabelCaller(LnHandle uitextblockserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNUITextBlockSerializeHandler_DelegateLabelCaller(LNHandle uitextblockserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, uitextblockserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnUITextBlockSerializeHandler*>(LnUITextBlockSerializeHandler_GetSubinstanceId(uitextblockserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNUITextBlockSerializeHandler*>(LNUITextBlockSerializeHandler_GetSubinstanceId(uitextblockserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // UISpriteSerializeHandler
 
-struct HSPSubclass_LnUISpriteSerializeHandler
+struct HSPSubclass_LNUISpriteSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnUISpriteSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNUISpriteSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnUISpriteSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNUISpriteSerializeHandler)));
 }
 
-static void HSPSubclass_LnUISpriteSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNUISpriteSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnUISpriteSerializeHandler_DelegateLabelCaller(LnHandle uispriteserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNUISpriteSerializeHandler_DelegateLabelCaller(LNHandle uispriteserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, uispriteserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnUISpriteSerializeHandler*>(LnUISpriteSerializeHandler_GetSubinstanceId(uispriteserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNUISpriteSerializeHandler*>(LNUISpriteSerializeHandler_GetSubinstanceId(uispriteserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ApplicationSerializeHandler
 
-struct HSPSubclass_LnApplicationSerializeHandler
+struct HSPSubclass_LNApplicationSerializeHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnApplicationSerializeHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNApplicationSerializeHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnApplicationSerializeHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNApplicationSerializeHandler)));
 }
 
-static void HSPSubclass_LnApplicationSerializeHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNApplicationSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnApplicationSerializeHandler_DelegateLabelCaller(LnHandle applicationserializehandler, LnHandle self, LnHandle ar)
+static LNResult HSPSubclass_LNApplicationSerializeHandler_DelegateLabelCaller(LNHandle applicationserializehandler, LNHandle self, LNHandle ar)
 {
     setCallbackArg(0, applicationserializehandler);
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationSerializeHandler*>(LnApplicationSerializeHandler_GetSubinstanceId(applicationserializehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNApplicationSerializeHandler*>(LNApplicationSerializeHandler_GetSubinstanceId(applicationserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ApplicationInitHandler
 
-struct HSPSubclass_LnApplicationInitHandler
+struct HSPSubclass_LNApplicationInitHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnApplicationInitHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNApplicationInitHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnApplicationInitHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNApplicationInitHandler)));
 }
 
-static void HSPSubclass_LnApplicationInitHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNApplicationInitHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnApplicationInitHandler_DelegateLabelCaller(LnHandle applicationinithandler, LnHandle self)
+static LNResult HSPSubclass_LNApplicationInitHandler_DelegateLabelCaller(LNHandle applicationinithandler, LNHandle self)
 {
     setCallbackArg(0, applicationinithandler);
     setCallbackArg(1, self);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationInitHandler*>(LnApplicationInitHandler_GetSubinstanceId(applicationinithandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNApplicationInitHandler*>(LNApplicationInitHandler_GetSubinstanceId(applicationinithandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 
 //==============================================================================
 // ApplicationUpdateHandler
 
-struct HSPSubclass_LnApplicationUpdateHandler
+struct HSPSubclass_LNApplicationUpdateHandler
 {
     unsigned short* labelPointer = nullptr;
 };
 
 
-static LnSubinstanceId HSPSubclass_LnApplicationUpdateHandler_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_LNApplicationUpdateHandler_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_LnApplicationUpdateHandler)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNApplicationUpdateHandler)));
 }
 
-static void HSPSubclass_LnApplicationUpdateHandler_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_LNApplicationUpdateHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
 
 
-static LnResult HSPSubclass_LnApplicationUpdateHandler_DelegateLabelCaller(LnHandle applicationupdatehandler, LnHandle self)
+static LNResult HSPSubclass_LNApplicationUpdateHandler_DelegateLabelCaller(LNHandle applicationupdatehandler, LNHandle self)
 {
     setCallbackArg(0, applicationupdatehandler);
     setCallbackArg(1, self);
-    auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationUpdateHandler*>(LnApplicationUpdateHandler_GetSubinstanceId(applicationupdatehandler));
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNApplicationUpdateHandler*>(LNApplicationUpdateHandler_GetSubinstanceId(applicationupdatehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
-    return static_cast<LnResult>(stat);
+    return static_cast<LNResult>(stat);
 }
 bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr)
 {
     g_leadSupport = false;
     switch (cmd) {
-        // LnVector3
+        // LNVector3
         case 0x2B : {
-            hspLnVector3_reffunc(typeRes, retValPtr);
+            hspLNVector3_reffunc(typeRes, retValPtr);
             return true;
         }
-        // LnVector4
+        // LNVector4
         case 0x3D : {
-            hspLnVector4_reffunc(typeRes, retValPtr);
+            hspLNVector4_reffunc(typeRes, retValPtr);
             return true;
         }
-        // LnQuaternion
+        // LNQuaternion
         case 0x48 : {
-            hspLnQuaternion_reffunc(typeRes, retValPtr);
+            hspLNQuaternion_reffunc(typeRes, retValPtr);
             return true;
         }
-        // LnMatrix
+        // LNMatrix
         case 0x56 : {
-            hspLnMatrix_reffunc(typeRes, retValPtr);
+            hspLNMatrix_reffunc(typeRes, retValPtr);
             return true;
         }
-        // LnColor
+        // LNColor
         case 0xCE : {
-            hspLnColor_reffunc(typeRes, retValPtr);
+            hspLNColor_reffunc(typeRes, retValPtr);
             return true;
         }
-        // LnPoint
+        // LNPoint
         case 0xD9 : {
-            hspLnPoint_reffunc(typeRes, retValPtr);
+            hspLNPoint_reffunc(typeRes, retValPtr);
             return true;
         }
-        // LnSize
+        // LNSize
         case 0xE0 : {
-            hspLnSize_reffunc(typeRes, retValPtr);
+            hspLNSize_reffunc(typeRes, retValPtr);
             return true;
         }
-        // LnRect
+        // LNRect
         case 0xE7 : {
-            hspLnRect_reffunc(typeRes, retValPtr);
+            hspLNRect_reffunc(typeRes, retValPtr);
             return true;
         }
-        // LnThickness
+        // LNThickness
         case 0xF6 : {
-            hspLnThickness_reffunc(typeRes, retValPtr);
+            hspLNThickness_reffunc(typeRes, retValPtr);
             return true;
         }
         // ln_args
@@ -3404,235 +3404,235 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 {
     *retVal = RUNMODE_RUN;
     switch (cmd) {
-        // LnObject_SetPrototype_OnSerialize
-        case 0x4A7 : {
+        // LNObject_SetPrototype_OnSerialize
+        case 0x4A9 : {
             // Fetch object
             const auto local_object = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnObject_SetPrototype_OnSerialize(local_object, local_callback);
+            stat = LNObject_SetPrototype_OnSerialize(local_object, local_callback);
 
 
             return true;
         }
-        // LnEventConnection_SetPrototype_OnSerialize
-        case 0x4B2 : {
+        // LNEventConnection_SetPrototype_OnSerialize
+        case 0x4B4 : {
             // Fetch eventconnection
             const auto local_eventconnection = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnEventConnection_SetPrototype_OnSerialize(local_eventconnection, local_callback);
+            stat = LNEventConnection_SetPrototype_OnSerialize(local_eventconnection, local_callback);
 
 
             return true;
         }
-        // LnPromiseFailureDelegate_Create
-        case 0x2CB : {
+        // LNPromiseFailureDelegate_Create
+        case 0x2CD : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outPromiseFailureDelegate
             PVal* pval_outPromiseFailureDelegate;
             const APTR aptr_outPromiseFailureDelegate = code_getva(&pval_outPromiseFailureDelegate);
-            LnHandle local_outPromiseFailureDelegate;
+            LNHandle local_outPromiseFailureDelegate;
 
-            stat = LnPromiseFailureDelegate_Create(HSPSubclass_LnPromiseFailureDelegate_DelegateLabelCaller, &local_outPromiseFailureDelegate);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnPromiseFailureDelegate*>(LnPromiseFailureDelegate_GetSubinstanceId(local_outPromiseFailureDelegate));
+            stat = LNPromiseFailureDelegate_Create(HSPSubclass_LNPromiseFailureDelegate_DelegateLabelCaller, &local_outPromiseFailureDelegate);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNPromiseFailureDelegate*>(LNPromiseFailureDelegate_GetSubinstanceId(local_outPromiseFailureDelegate));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outPromiseFailureDelegate, aptr_outPromiseFailureDelegate, local_outPromiseFailureDelegate);
 
             return true;
         }
-        // LnZVTestDelegate1_Create
-        case 0x2D0 : {
+        // LNZVTestDelegate1_Create
+        case 0x2D2 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestDelegate1
             PVal* pval_outZVTestDelegate1;
             const APTR aptr_outZVTestDelegate1 = code_getva(&pval_outZVTestDelegate1);
-            LnHandle local_outZVTestDelegate1;
+            LNHandle local_outZVTestDelegate1;
 
-            stat = LnZVTestDelegate1_Create(HSPSubclass_LnZVTestDelegate1_DelegateLabelCaller, &local_outZVTestDelegate1);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestDelegate1*>(LnZVTestDelegate1_GetSubinstanceId(local_outZVTestDelegate1));
+            stat = LNZVTestDelegate1_Create(HSPSubclass_LNZVTestDelegate1_DelegateLabelCaller, &local_outZVTestDelegate1);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestDelegate1*>(LNZVTestDelegate1_GetSubinstanceId(local_outZVTestDelegate1));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outZVTestDelegate1, aptr_outZVTestDelegate1, local_outZVTestDelegate1);
 
             return true;
         }
-        // LnZVTestDelegate2_Create
-        case 0x2D6 : {
+        // LNZVTestDelegate2_Create
+        case 0x2D8 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestDelegate2
             PVal* pval_outZVTestDelegate2;
             const APTR aptr_outZVTestDelegate2 = code_getva(&pval_outZVTestDelegate2);
-            LnHandle local_outZVTestDelegate2;
+            LNHandle local_outZVTestDelegate2;
 
-            stat = LnZVTestDelegate2_Create(HSPSubclass_LnZVTestDelegate2_DelegateLabelCaller, &local_outZVTestDelegate2);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestDelegate2*>(LnZVTestDelegate2_GetSubinstanceId(local_outZVTestDelegate2));
+            stat = LNZVTestDelegate2_Create(HSPSubclass_LNZVTestDelegate2_DelegateLabelCaller, &local_outZVTestDelegate2);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestDelegate2*>(LNZVTestDelegate2_GetSubinstanceId(local_outZVTestDelegate2));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outZVTestDelegate2, aptr_outZVTestDelegate2, local_outZVTestDelegate2);
 
             return true;
         }
-        // LnZVTestDelegate3_Create
-        case 0x2DB : {
+        // LNZVTestDelegate3_Create
+        case 0x2DD : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestDelegate3
             PVal* pval_outZVTestDelegate3;
             const APTR aptr_outZVTestDelegate3 = code_getva(&pval_outZVTestDelegate3);
-            LnHandle local_outZVTestDelegate3;
+            LNHandle local_outZVTestDelegate3;
 
-            stat = LnZVTestDelegate3_Create(HSPSubclass_LnZVTestDelegate3_DelegateLabelCaller, &local_outZVTestDelegate3);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestDelegate3*>(LnZVTestDelegate3_GetSubinstanceId(local_outZVTestDelegate3));
+            stat = LNZVTestDelegate3_Create(HSPSubclass_LNZVTestDelegate3_DelegateLabelCaller, &local_outZVTestDelegate3);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestDelegate3*>(LNZVTestDelegate3_GetSubinstanceId(local_outZVTestDelegate3));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outZVTestDelegate3, aptr_outZVTestDelegate3, local_outZVTestDelegate3);
 
             return true;
         }
-        // LnZVTestEventHandler1_Create
-        case 0x2E0 : {
+        // LNZVTestEventHandler1_Create
+        case 0x2E2 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestEventHandler1
             PVal* pval_outZVTestEventHandler1;
             const APTR aptr_outZVTestEventHandler1 = code_getva(&pval_outZVTestEventHandler1);
-            LnHandle local_outZVTestEventHandler1;
+            LNHandle local_outZVTestEventHandler1;
 
-            stat = LnZVTestEventHandler1_Create(HSPSubclass_LnZVTestEventHandler1_DelegateLabelCaller, &local_outZVTestEventHandler1);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventHandler1*>(LnZVTestEventHandler1_GetSubinstanceId(local_outZVTestEventHandler1));
+            stat = LNZVTestEventHandler1_Create(HSPSubclass_LNZVTestEventHandler1_DelegateLabelCaller, &local_outZVTestEventHandler1);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestEventHandler1*>(LNZVTestEventHandler1_GetSubinstanceId(local_outZVTestEventHandler1));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outZVTestEventHandler1, aptr_outZVTestEventHandler1, local_outZVTestEventHandler1);
 
             return true;
         }
-        // LnZVTestEventHandler2_Create
-        case 0x2E5 : {
+        // LNZVTestEventHandler2_Create
+        case 0x2E7 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestEventHandler2
             PVal* pval_outZVTestEventHandler2;
             const APTR aptr_outZVTestEventHandler2 = code_getva(&pval_outZVTestEventHandler2);
-            LnHandle local_outZVTestEventHandler2;
+            LNHandle local_outZVTestEventHandler2;
 
-            stat = LnZVTestEventHandler2_Create(HSPSubclass_LnZVTestEventHandler2_DelegateLabelCaller, &local_outZVTestEventHandler2);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventHandler2*>(LnZVTestEventHandler2_GetSubinstanceId(local_outZVTestEventHandler2));
+            stat = LNZVTestEventHandler2_Create(HSPSubclass_LNZVTestEventHandler2_DelegateLabelCaller, &local_outZVTestEventHandler2);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestEventHandler2*>(LNZVTestEventHandler2_GetSubinstanceId(local_outZVTestEventHandler2));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outZVTestEventHandler2, aptr_outZVTestEventHandler2, local_outZVTestEventHandler2);
 
             return true;
         }
-        // LnZVTestPromise1_ThenWith
-        case 0x2E8 : {
-            // Fetch zvtestpromise1
-            const auto local_zvtestpromise1 = fetchVAInt();
-            // Fetch callback
-            const auto local_callback = fetchVAInt();
-
-            stat = LnZVTestPromise1_ThenWith(local_zvtestpromise1, local_callback);
-
-
-            return true;
-        }
-        // LnZVTestPromise1_CatchWith
+        // LNZVTestPromise1_ThenWith
         case 0x2EA : {
             // Fetch zvtestpromise1
             const auto local_zvtestpromise1 = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnZVTestPromise1_CatchWith(local_zvtestpromise1, local_callback);
+            stat = LNZVTestPromise1_ThenWith(local_zvtestpromise1, local_callback);
 
 
             return true;
         }
-        // LnZVTestPromise2_ThenWith
-        case 0x2EE : {
-            // Fetch zvtestpromise2
-            const auto local_zvtestpromise2 = fetchVAInt();
+        // LNZVTestPromise1_CatchWith
+        case 0x2EC : {
+            // Fetch zvtestpromise1
+            const auto local_zvtestpromise1 = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnZVTestPromise2_ThenWith(local_zvtestpromise2, local_callback);
+            stat = LNZVTestPromise1_CatchWith(local_zvtestpromise1, local_callback);
 
 
             return true;
         }
-        // LnZVTestPromise2_CatchWith
+        // LNZVTestPromise2_ThenWith
         case 0x2F0 : {
             // Fetch zvtestpromise2
             const auto local_zvtestpromise2 = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnZVTestPromise2_CatchWith(local_zvtestpromise2, local_callback);
+            stat = LNZVTestPromise2_ThenWith(local_zvtestpromise2, local_callback);
 
 
             return true;
         }
-        // LnZVTestClass1_Create
+        // LNZVTestPromise2_CatchWith
+        case 0x2F2 : {
+            // Fetch zvtestpromise2
+            const auto local_zvtestpromise2 = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LNZVTestPromise2_CatchWith(local_zvtestpromise2, local_callback);
+
+
+            return true;
+        }
+        // LNZVTestClass1_Create
         case 0x9B : {
             // Fetch outZVTestClass1
             PVal* pval_outZVTestClass1;
             const APTR aptr_outZVTestClass1 = code_getva(&pval_outZVTestClass1);
-            LnHandle local_outZVTestClass1;
+            LNHandle local_outZVTestClass1;
 
-            stat = LnZVTestClass1_Create(&local_outZVTestClass1);
+            stat = LNZVTestClass1_Create(&local_outZVTestClass1);
             setVAInt(pval_outZVTestClass1, aptr_outZVTestClass1, local_outZVTestClass1);
 
             return true;
         }
-        // LnZVTestClass1_SetTestDelegate1
+        // LNZVTestClass1_SetTestDelegate1
         case 0x85 : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LnZVTestClass1_SetTestDelegate1(local_zvtestclass1, local_value);
+            stat = LNZVTestClass1_SetTestDelegate1(local_zvtestclass1, local_value);
 
 
             return true;
         }
-        // LnZVTestClass1_SetTestDelegate2
+        // LNZVTestClass1_SetTestDelegate2
         case 0x87 : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LnZVTestClass1_SetTestDelegate2(local_zvtestclass1, local_value);
+            stat = LNZVTestClass1_SetTestDelegate2(local_zvtestclass1, local_value);
 
 
             return true;
         }
-        // LnZVTestClass1_SetTestDelegate3
+        // LNZVTestClass1_SetTestDelegate3
         case 0x89 : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LnZVTestClass1_SetTestDelegate3(local_zvtestclass1, local_value);
+            stat = LNZVTestClass1_SetTestDelegate3(local_zvtestclass1, local_value);
 
 
             return true;
         }
-        // LnZVTestClass1_CallTestDelegate1
+        // LNZVTestClass1_CallTestDelegate1
         case 0x8B : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
             // Fetch a
             const auto local_a = fetchVAInt();
 
-            stat = LnZVTestClass1_CallTestDelegate1(local_zvtestclass1, local_a);
+            stat = LNZVTestClass1_CallTestDelegate1(local_zvtestclass1, local_a);
 
 
             return true;
         }
-        // LnZVTestClass1_CallTestDelegate2
+        // LNZVTestClass1_CallTestDelegate2
         case 0x8D : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
@@ -3645,50 +3645,50 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
-            stat = LnZVTestClass1_CallTestDelegate2(local_zvtestclass1, local_a, local_b, &local_outReturn);
+            stat = LNZVTestClass1_CallTestDelegate2(local_zvtestclass1, local_a, local_b, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnZVTestClass1_CallTestDelegate3
+        // LNZVTestClass1_CallTestDelegate3
         case 0x90 : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
 
-            stat = LnZVTestClass1_CallTestDelegate3(local_zvtestclass1);
+            stat = LNZVTestClass1_CallTestDelegate3(local_zvtestclass1);
 
 
             return true;
         }
-        // LnZVTestClass1_LoadAsyncA
+        // LNZVTestClass1_LoadAsyncA
         case 0x91 : {
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnZVTestClass1_LoadAsyncA(local_filePath, &local_outReturn);
+            stat = LNZVTestClass1_LoadAsyncA(local_filePath, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnZVTestClass1_ExecuteAsync
+        // LNZVTestClass1_ExecuteAsync
         case 0x93 : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnZVTestClass1_ExecuteAsync(local_zvtestclass1, &local_outReturn);
+            stat = LNZVTestClass1_ExecuteAsync(local_zvtestclass1, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnZVTestClass1_GetFilePathA
+        // LNZVTestClass1_GetFilePathA
         case 0x94 : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
@@ -3697,12 +3697,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             const char* local_outReturn;
 
-            stat = LnZVTestClass1_GetFilePathA(local_zvtestclass1, &local_outReturn);
+            stat = LNZVTestClass1_GetFilePathA(local_zvtestclass1, &local_outReturn);
             setVAStr(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnZVTestClass1_ConnectOnEvent1
+        // LNZVTestClass1_ConnectOnEvent1
         case 0x95 : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
@@ -3711,24 +3711,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnZVTestClass1_ConnectOnEvent1(local_zvtestclass1, local_handler, &local_outReturn);
+            stat = LNZVTestClass1_ConnectOnEvent1(local_zvtestclass1, local_handler, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnZVTestClass1_RaiseEvent1
+        // LNZVTestClass1_RaiseEvent1
         case 0x97 : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
 
-            stat = LnZVTestClass1_RaiseEvent1(local_zvtestclass1);
+            stat = LNZVTestClass1_RaiseEvent1(local_zvtestclass1);
 
 
             return true;
         }
-        // LnZVTestClass1_ConnectOnEvent2
+        // LNZVTestClass1_ConnectOnEvent2
         case 0x98 : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
@@ -3737,62 +3737,62 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnZVTestClass1_ConnectOnEvent2(local_zvtestclass1, local_handler, &local_outReturn);
+            stat = LNZVTestClass1_ConnectOnEvent2(local_zvtestclass1, local_handler, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnZVTestClass1_RaiseEvent2
+        // LNZVTestClass1_RaiseEvent2
         case 0x9A : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
 
-            stat = LnZVTestClass1_RaiseEvent2(local_zvtestclass1);
+            stat = LNZVTestClass1_RaiseEvent2(local_zvtestclass1);
 
 
             return true;
         }
-        // LnZVTestClass1_SetPrototype_OnSerialize
-        case 0x4BD : {
+        // LNZVTestClass1_SetPrototype_OnSerialize
+        case 0x4BF : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnZVTestClass1_SetPrototype_OnSerialize(local_zvtestclass1, local_callback);
+            stat = LNZVTestClass1_SetPrototype_OnSerialize(local_zvtestclass1, local_callback);
 
 
             return true;
         }
-        // LnZVTestEventArgs1_Create
+        // LNZVTestEventArgs1_Create
         case 0x9E : {
             // Fetch outZVTestEventArgs1
             PVal* pval_outZVTestEventArgs1;
             const APTR aptr_outZVTestEventArgs1 = code_getva(&pval_outZVTestEventArgs1);
-            LnHandle local_outZVTestEventArgs1;
+            LNHandle local_outZVTestEventArgs1;
 
-            stat = LnZVTestEventArgs1_Create(&local_outZVTestEventArgs1);
+            stat = LNZVTestEventArgs1_Create(&local_outZVTestEventArgs1);
             setVAInt(pval_outZVTestEventArgs1, aptr_outZVTestEventArgs1, local_outZVTestEventArgs1);
 
             return true;
         }
-        // LnZVTestEventArgs1_CreateWithValue
+        // LNZVTestEventArgs1_CreateWithValue
         case 0x9F : {
             // Fetch v
             const auto local_v = fetchVAInt();
             // Fetch outZVTestEventArgs1
             PVal* pval_outZVTestEventArgs1;
             const APTR aptr_outZVTestEventArgs1 = code_getva(&pval_outZVTestEventArgs1);
-            LnHandle local_outZVTestEventArgs1;
+            LNHandle local_outZVTestEventArgs1;
 
-            stat = LnZVTestEventArgs1_CreateWithValue(local_v, &local_outZVTestEventArgs1);
+            stat = LNZVTestEventArgs1_CreateWithValue(local_v, &local_outZVTestEventArgs1);
             setVAInt(pval_outZVTestEventArgs1, aptr_outZVTestEventArgs1, local_outZVTestEventArgs1);
 
             return true;
         }
-        // LnZVTestEventArgs1_GetValue
+        // LNZVTestEventArgs1_GetValue
         case 0x9D : {
             // Fetch zvtesteventargs1
             const auto local_zvtesteventargs1 = fetchVAInt();
@@ -3801,180 +3801,180 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
-            stat = LnZVTestEventArgs1_GetValue(local_zvtesteventargs1, &local_outReturn);
+            stat = LNZVTestEventArgs1_GetValue(local_zvtesteventargs1, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnZVTestEventArgs1_SetPrototype_OnSerialize
-        case 0x4C8 : {
+        // LNZVTestEventArgs1_SetPrototype_OnSerialize
+        case 0x4CA : {
             // Fetch zvtesteventargs1
             const auto local_zvtesteventargs1 = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnZVTestEventArgs1_SetPrototype_OnSerialize(local_zvtesteventargs1, local_callback);
+            stat = LNZVTestEventArgs1_SetPrototype_OnSerialize(local_zvtesteventargs1, local_callback);
 
 
             return true;
         }
-        // LnSerializer2_SetPrototype_OnSerialize
-        case 0x4D3 : {
+        // LNSerializer2_SetPrototype_OnSerialize
+        case 0x4D5 : {
             // Fetch serializer2
             const auto local_serializer2 = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnSerializer2_SetPrototype_OnSerialize(local_serializer2, local_callback);
+            stat = LNSerializer2_SetPrototype_OnSerialize(local_serializer2, local_callback);
 
 
             return true;
         }
-        // LnAssetModel_Create
+        // LNAssetModel_Create
         case 0xAB : {
             // Fetch target
             const auto local_target = fetchVAInt();
             // Fetch outAssetModel
             PVal* pval_outAssetModel;
             const APTR aptr_outAssetModel = code_getva(&pval_outAssetModel);
-            LnHandle local_outAssetModel;
+            LNHandle local_outAssetModel;
 
-            stat = LnAssetModel_Create(local_target, &local_outAssetModel);
+            stat = LNAssetModel_Create(local_target, &local_outAssetModel);
             setVAInt(pval_outAssetModel, aptr_outAssetModel, local_outAssetModel);
 
             return true;
         }
-        // LnAssetModel_Target
+        // LNAssetModel_Target
         case 0xAA : {
             // Fetch assetmodel
             const auto local_assetmodel = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnAssetModel_Target(local_assetmodel, &local_outReturn);
+            stat = LNAssetModel_Target(local_assetmodel, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnAssetModel_SetPrototype_OnSerialize
-        case 0x4DE : {
+        // LNAssetModel_SetPrototype_OnSerialize
+        case 0x4E0 : {
             // Fetch assetmodel
             const auto local_assetmodel = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnAssetModel_SetPrototype_OnSerialize(local_assetmodel, local_callback);
+            stat = LNAssetModel_SetPrototype_OnSerialize(local_assetmodel, local_callback);
 
 
             return true;
         }
-        // LnAssets_SaveAssetToLocalFileA
+        // LNAssets_SaveAssetToLocalFileA
         case 0xAE : {
             // Fetch asset
             const auto local_asset = fetchVAInt();
             // Fetch filePath
             const auto local_filePath = fetchVAString();
 
-            stat = LnAssets_SaveAssetToLocalFileA(local_asset, local_filePath);
+            stat = LNAssets_SaveAssetToLocalFileA(local_asset, local_filePath);
 
 
             return true;
         }
-        // LnAssets_LoadAssetFromLocalFileA
+        // LNAssets_LoadAssetFromLocalFileA
         case 0xB1 : {
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnAssets_LoadAssetFromLocalFileA(local_filePath, &local_outReturn);
+            stat = LNAssets_LoadAssetFromLocalFileA(local_filePath, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnAssets_LoadAssetA
+        // LNAssets_LoadAssetA
         case 0xB3 : {
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnAssets_LoadAssetA(local_filePath, &local_outReturn);
+            stat = LNAssets_LoadAssetA(local_filePath, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnAssets_ReloadAssetA
+        // LNAssets_ReloadAssetA
         case 0xB5 : {
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch obj
             const auto local_obj = fetchVAInt();
 
-            stat = LnAssets_ReloadAssetA(local_filePath, local_obj);
+            stat = LNAssets_ReloadAssetA(local_filePath, local_obj);
 
 
             return true;
         }
-        // LnTexture2DDelegate_Create
-        case 0x314 : {
+        // LNTexture2DDelegate_Create
+        case 0x316 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outTexture2DDelegate
             PVal* pval_outTexture2DDelegate;
             const APTR aptr_outTexture2DDelegate = code_getva(&pval_outTexture2DDelegate);
-            LnHandle local_outTexture2DDelegate;
+            LNHandle local_outTexture2DDelegate;
 
-            stat = LnTexture2DDelegate_Create(HSPSubclass_LnTexture2DDelegate_DelegateLabelCaller, &local_outTexture2DDelegate);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnTexture2DDelegate*>(LnTexture2DDelegate_GetSubinstanceId(local_outTexture2DDelegate));
+            stat = LNTexture2DDelegate_Create(HSPSubclass_LNTexture2DDelegate_DelegateLabelCaller, &local_outTexture2DDelegate);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNTexture2DDelegate*>(LNTexture2DDelegate_GetSubinstanceId(local_outTexture2DDelegate));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outTexture2DDelegate, aptr_outTexture2DDelegate, local_outTexture2DDelegate);
 
             return true;
         }
-        // LnTexture2DPromise_ThenWith
-        case 0x317 : {
-            // Fetch texture2dpromise
-            const auto local_texture2dpromise = fetchVAInt();
-            // Fetch callback
-            const auto local_callback = fetchVAInt();
-
-            stat = LnTexture2DPromise_ThenWith(local_texture2dpromise, local_callback);
-
-
-            return true;
-        }
-        // LnTexture2DPromise_CatchWith
+        // LNTexture2DPromise_ThenWith
         case 0x319 : {
             // Fetch texture2dpromise
             const auto local_texture2dpromise = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnTexture2DPromise_CatchWith(local_texture2dpromise, local_callback);
+            stat = LNTexture2DPromise_ThenWith(local_texture2dpromise, local_callback);
 
 
             return true;
         }
-        // LnTexture_SetPrototype_OnSerialize
-        case 0x4E9 : {
+        // LNTexture2DPromise_CatchWith
+        case 0x31B : {
+            // Fetch texture2dpromise
+            const auto local_texture2dpromise = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVAInt();
+
+            stat = LNTexture2DPromise_CatchWith(local_texture2dpromise, local_callback);
+
+
+            return true;
+        }
+        // LNTexture_SetPrototype_OnSerialize
+        case 0x4EB : {
             // Fetch texture
             const auto local_texture = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnTexture_SetPrototype_OnSerialize(local_texture, local_callback);
+            stat = LNTexture_SetPrototype_OnSerialize(local_texture, local_callback);
 
 
             return true;
         }
-        // LnTexture2D_Create
+        // LNTexture2D_Create
         case 0x107 : {
             // Fetch width
             const auto local_width = fetchVAInt();
@@ -3983,183 +3983,183 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch outTexture2D
             PVal* pval_outTexture2D;
             const APTR aptr_outTexture2D = code_getva(&pval_outTexture2D);
-            LnHandle local_outTexture2D;
+            LNHandle local_outTexture2D;
 
-            stat = LnTexture2D_Create(local_width, local_height, &local_outTexture2D);
+            stat = LNTexture2D_Create(local_width, local_height, &local_outTexture2D);
             setVAInt(pval_outTexture2D, aptr_outTexture2D, local_outTexture2D);
 
             return true;
         }
-        // LnTexture2D_CreateWithFormat
+        // LNTexture2D_CreateWithFormat
         case 0x10A : {
             // Fetch width
             const auto local_width = fetchVAInt();
             // Fetch height
             const auto local_height = fetchVAInt();
             // Fetch format
-            const auto local_format = static_cast<LnTextureFormat>(fetchVAInt());
+            const auto local_format = static_cast<LNTextureFormat>(fetchVAInt());
             // Fetch outTexture2D
             PVal* pval_outTexture2D;
             const APTR aptr_outTexture2D = code_getva(&pval_outTexture2D);
-            LnHandle local_outTexture2D;
+            LNHandle local_outTexture2D;
 
-            stat = LnTexture2D_CreateWithFormat(local_width, local_height, local_format, &local_outTexture2D);
+            stat = LNTexture2D_CreateWithFormat(local_width, local_height, local_format, &local_outTexture2D);
             setVAInt(pval_outTexture2D, aptr_outTexture2D, local_outTexture2D);
 
             return true;
         }
-        // LnTexture2D_LoadA
+        // LNTexture2D_LoadA
         case 0x103 : {
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnTexture2D_LoadA(local_filePath, &local_outReturn);
+            stat = LNTexture2D_LoadA(local_filePath, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnTexture2D_LoadEmojiA
+        // LNTexture2D_LoadEmojiA
         case 0x105 : {
             // Fetch code
             const auto local_code = fetchVAString();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnTexture2D_LoadEmojiA(local_code, &local_outReturn);
+            stat = LNTexture2D_LoadEmojiA(local_code, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnTexture2D_SetPrototype_OnSerialize
-        case 0x4F4 : {
+        // LNTexture2D_SetPrototype_OnSerialize
+        case 0x4F6 : {
             // Fetch texture2d
             const auto local_texture2d = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnTexture2D_SetPrototype_OnSerialize(local_texture2d, local_callback);
+            stat = LNTexture2D_SetPrototype_OnSerialize(local_texture2d, local_callback);
 
 
             return true;
         }
-        // LnRenderView_SetPrototype_OnSerialize
-        case 0x4FF : {
+        // LNRenderView_SetPrototype_OnSerialize
+        case 0x501 : {
             // Fetch renderview
             const auto local_renderview = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnRenderView_SetPrototype_OnSerialize(local_renderview, local_callback);
+            stat = LNRenderView_SetPrototype_OnSerialize(local_renderview, local_callback);
 
 
             return true;
         }
-        // LnComponent_SetPrototype_OnSerialize
-        case 0x50A : {
+        // LNComponent_SetPrototype_OnSerialize
+        case 0x50C : {
             // Fetch component
             const auto local_component = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnComponent_SetPrototype_OnSerialize(local_component, local_callback);
+            stat = LNComponent_SetPrototype_OnSerialize(local_component, local_callback);
 
 
             return true;
         }
-        // LnVisualComponent_SetVisible
+        // LNVisualComponent_SetVisible
         case 0x111 : {
             // Fetch visualcomponent
             const auto local_visualcomponent = fetchVAInt();
             // Fetch value
-            const auto local_value = static_cast<LnBool>(fetchVAInt());
+            const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LnVisualComponent_SetVisible(local_visualcomponent, local_value);
+            stat = LNVisualComponent_SetVisible(local_visualcomponent, local_value);
 
 
             return true;
         }
-        // LnVisualComponent_IsVisible
+        // LNVisualComponent_IsVisible
         case 0x113 : {
             // Fetch visualcomponent
             const auto local_visualcomponent = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnVisualComponent_IsVisible(local_visualcomponent, &local_outReturn);
+            stat = LNVisualComponent_IsVisible(local_visualcomponent, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnVisualComponent_SetPrototype_OnSerialize
-        case 0x515 : {
+        // LNVisualComponent_SetPrototype_OnSerialize
+        case 0x517 : {
             // Fetch visualcomponent
             const auto local_visualcomponent = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnVisualComponent_SetPrototype_OnSerialize(local_visualcomponent, local_callback);
+            stat = LNVisualComponent_SetPrototype_OnSerialize(local_visualcomponent, local_callback);
 
 
             return true;
         }
-        // LnSpriteComponent_SetTexture
+        // LNSpriteComponent_SetTexture
         case 0x115 : {
             // Fetch spritecomponent
             const auto local_spritecomponent = fetchVAInt();
             // Fetch texture
             const auto local_texture = fetchVAInt();
 
-            stat = LnSpriteComponent_SetTexture(local_spritecomponent, local_texture);
+            stat = LNSpriteComponent_SetTexture(local_spritecomponent, local_texture);
 
 
             return true;
         }
-        // LnSpriteComponent_SetPrototype_OnSerialize
-        case 0x520 : {
+        // LNSpriteComponent_SetPrototype_OnSerialize
+        case 0x522 : {
             // Fetch spritecomponent
             const auto local_spritecomponent = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnSpriteComponent_SetPrototype_OnSerialize(local_spritecomponent, local_callback);
+            stat = LNSpriteComponent_SetPrototype_OnSerialize(local_spritecomponent, local_callback);
 
 
             return true;
         }
-        // LnWorld_Add
+        // LNWorld_Add
         case 0x118 : {
             // Fetch world
             const auto local_world = fetchVAInt();
             // Fetch obj
             const auto local_obj = fetchVAInt();
 
-            stat = LnWorld_Add(local_world, local_obj);
+            stat = LNWorld_Add(local_world, local_obj);
 
 
             return true;
         }
-        // LnWorld_SetPrototype_OnSerialize
-        case 0x52B : {
+        // LNWorld_SetPrototype_OnSerialize
+        case 0x52D : {
             // Fetch world
             const auto local_world = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnWorld_SetPrototype_OnSerialize(local_world, local_callback);
+            stat = LNWorld_SetPrototype_OnSerialize(local_world, local_callback);
 
 
             return true;
         }
-        // LnComponentList_GetLength
-        case 0x3A8 : {
+        // LNComponentList_GetLength
+        case 0x3AA : {
             // Fetch componentlist
             const auto local_componentlist = fetchVAInt();
             // Fetch outReturn
@@ -4167,13 +4167,13 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
-            stat = LnComponentList_GetLength(local_componentlist, &local_outReturn);
+            stat = LNComponentList_GetLength(local_componentlist, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnComponentList_GetItem
-        case 0x3AA : {
+        // LNComponentList_GetItem
+        case 0x3AC : {
             // Fetch componentlist
             const auto local_componentlist = fetchVAInt();
             // Fetch index
@@ -4181,39 +4181,39 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnComponentList_GetItem(local_componentlist, local_index, &local_outReturn);
+            stat = LNComponentList_GetItem(local_componentlist, local_index, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnComponentList_SetPrototype_OnSerialize
-        case 0x536 : {
+        // LNComponentList_SetPrototype_OnSerialize
+        case 0x538 : {
             // Fetch componentlist
             const auto local_componentlist = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnComponentList_SetPrototype_OnSerialize(local_componentlist, local_callback);
+            stat = LNComponentList_SetPrototype_OnSerialize(local_componentlist, local_callback);
 
 
             return true;
         }
-        // LnWorldObject_SetPosition
+        // LNWorldObject_SetPosition
         case 0x11C : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch pos
             PVal* pval_pos;
-            CodeGetVA_TypeChecked(&pval_pos, LnVector3);
+            CodeGetVA_TypeChecked(&pval_pos, LNVector3);
 
-            stat = LnWorldObject_SetPosition(local_worldobject, reinterpret_cast<const LnVector3*>(pval_pos->pt));
+            stat = LNWorldObject_SetPosition(local_worldobject, reinterpret_cast<const LNVector3*>(pval_pos->pt));
 
 
             return true;
         }
-        // LnWorldObject_SetPositionXYZ
+        // LNWorldObject_SetPositionXYZ
         case 0x11E : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
@@ -4224,39 +4224,39 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble();
 
-            stat = LnWorldObject_SetPositionXYZ(local_worldobject, local_x, local_y, local_z);
+            stat = LNWorldObject_SetPositionXYZ(local_worldobject, local_x, local_y, local_z);
 
 
             return true;
         }
-        // LnWorldObject_GetPosition
+        // LNWorldObject_GetPosition
         case 0x122 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnVector3 local_outReturn;
+            LNVector3 local_outReturn;
 
-            stat = LnWorldObject_GetPosition(local_worldobject, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
+            stat = LNWorldObject_GetPosition(local_worldobject, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnWorldObject_SetRotationQuaternion
+        // LNWorldObject_SetRotationQuaternion
         case 0x123 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch rot
             PVal* pval_rot;
-            CodeGetVA_TypeChecked(&pval_rot, LnQuaternion);
+            CodeGetVA_TypeChecked(&pval_rot, LNQuaternion);
 
-            stat = LnWorldObject_SetRotationQuaternion(local_worldobject, reinterpret_cast<const LnQuaternion*>(pval_rot->pt));
+            stat = LNWorldObject_SetRotationQuaternion(local_worldobject, reinterpret_cast<const LNQuaternion*>(pval_rot->pt));
 
 
             return true;
         }
-        // LnWorldObject_SetRotation
+        // LNWorldObject_SetRotation
         case 0x125 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
@@ -4267,51 +4267,51 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble();
 
-            stat = LnWorldObject_SetRotation(local_worldobject, local_x, local_y, local_z);
+            stat = LNWorldObject_SetRotation(local_worldobject, local_x, local_y, local_z);
 
 
             return true;
         }
-        // LnWorldObject_GetRotation
+        // LNWorldObject_GetRotation
         case 0x129 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnQuaternion local_outReturn;
+            LNQuaternion local_outReturn;
 
-            stat = LnWorldObject_GetRotation(local_worldobject, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnQuaternion_typeid(), &local_outReturn);
+            stat = LNWorldObject_GetRotation(local_worldobject, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNQuaternion_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnWorldObject_SetScale
+        // LNWorldObject_SetScale
         case 0x12A : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch scale
             PVal* pval_scale;
-            CodeGetVA_TypeChecked(&pval_scale, LnVector3);
+            CodeGetVA_TypeChecked(&pval_scale, LNVector3);
 
-            stat = LnWorldObject_SetScale(local_worldobject, reinterpret_cast<const LnVector3*>(pval_scale->pt));
+            stat = LNWorldObject_SetScale(local_worldobject, reinterpret_cast<const LNVector3*>(pval_scale->pt));
 
 
             return true;
         }
-        // LnWorldObject_SetScaleS
+        // LNWorldObject_SetScaleS
         case 0x12C : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch xyz
             const auto local_xyz = fetchVADouble();
 
-            stat = LnWorldObject_SetScaleS(local_worldobject, local_xyz);
+            stat = LNWorldObject_SetScaleS(local_worldobject, local_xyz);
 
 
             return true;
         }
-        // LnWorldObject_SetScaleXYZ
+        // LNWorldObject_SetScaleXYZ
         case 0x12E : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
@@ -4322,39 +4322,39 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble();
 
-            stat = LnWorldObject_SetScaleXYZ(local_worldobject, local_x, local_y, local_z);
+            stat = LNWorldObject_SetScaleXYZ(local_worldobject, local_x, local_y, local_z);
 
 
             return true;
         }
-        // LnWorldObject_GetScale
+        // LNWorldObject_GetScale
         case 0x132 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnVector3 local_outReturn;
+            LNVector3 local_outReturn;
 
-            stat = LnWorldObject_GetScale(local_worldobject, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
+            stat = LNWorldObject_GetScale(local_worldobject, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnWorldObject_SetCenterPoint
+        // LNWorldObject_SetCenterPoint
         case 0x133 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch value
             PVal* pval_value;
-            CodeGetVA_TypeChecked(&pval_value, LnVector3);
+            CodeGetVA_TypeChecked(&pval_value, LNVector3);
 
-            stat = LnWorldObject_SetCenterPoint(local_worldobject, reinterpret_cast<const LnVector3*>(pval_value->pt));
+            stat = LNWorldObject_SetCenterPoint(local_worldobject, reinterpret_cast<const LNVector3*>(pval_value->pt));
 
 
             return true;
         }
-        // LnWorldObject_SetCenterPointXYZ
+        // LNWorldObject_SetCenterPointXYZ
         case 0x135 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
@@ -4365,39 +4365,39 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble();
 
-            stat = LnWorldObject_SetCenterPointXYZ(local_worldobject, local_x, local_y, local_z);
+            stat = LNWorldObject_SetCenterPointXYZ(local_worldobject, local_x, local_y, local_z);
 
 
             return true;
         }
-        // LnWorldObject_GetCenterPoint
+        // LNWorldObject_GetCenterPoint
         case 0x139 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnVector3 local_outReturn;
+            LNVector3 local_outReturn;
 
-            stat = LnWorldObject_GetCenterPoint(local_worldobject, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
+            stat = LNWorldObject_GetCenterPoint(local_worldobject, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnWorldObject_LookAt
+        // LNWorldObject_LookAt
         case 0x13A : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch target
             PVal* pval_target;
-            CodeGetVA_TypeChecked(&pval_target, LnVector3);
+            CodeGetVA_TypeChecked(&pval_target, LNVector3);
 
-            stat = LnWorldObject_LookAt(local_worldobject, reinterpret_cast<const LnVector3*>(pval_target->pt));
+            stat = LNWorldObject_LookAt(local_worldobject, reinterpret_cast<const LNVector3*>(pval_target->pt));
 
 
             return true;
         }
-        // LnWorldObject_LookAtXYZ
+        // LNWorldObject_LookAtXYZ
         case 0x13C : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
@@ -4408,228 +4408,228 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble();
 
-            stat = LnWorldObject_LookAtXYZ(local_worldobject, local_x, local_y, local_z);
+            stat = LNWorldObject_LookAtXYZ(local_worldobject, local_x, local_y, local_z);
 
 
             return true;
         }
-        // LnWorldObject_AddComponent
+        // LNWorldObject_AddComponent
         case 0x140 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch component
             const auto local_component = fetchVAInt();
 
-            stat = LnWorldObject_AddComponent(local_worldobject, local_component);
+            stat = LNWorldObject_AddComponent(local_worldobject, local_component);
 
 
             return true;
         }
-        // LnWorldObject_GetComponents
+        // LNWorldObject_GetComponents
         case 0x142 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnWorldObject_GetComponents(local_worldobject, &local_outReturn);
+            stat = LNWorldObject_GetComponents(local_worldobject, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnWorldObject_SetPrototype_OnSerialize
-        case 0x541 : {
+        // LNWorldObject_SetPrototype_OnSerialize
+        case 0x543 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnWorldObject_SetPrototype_OnSerialize(local_worldobject, local_callback);
+            stat = LNWorldObject_SetPrototype_OnSerialize(local_worldobject, local_callback);
 
 
             return true;
         }
-        // LnWorldObject_SetPrototype_OnUpdate
-        case 0x54C : {
+        // LNWorldObject_SetPrototype_OnUpdate
+        case 0x54E : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnWorldObject_SetPrototype_OnUpdate(local_worldobject, local_callback);
+            stat = LNWorldObject_SetPrototype_OnUpdate(local_worldobject, local_callback);
 
 
             return true;
         }
-        // LnVisualObject_SetVisible
+        // LNVisualObject_SetVisible
         case 0x146 : {
             // Fetch visualobject
             const auto local_visualobject = fetchVAInt();
             // Fetch value
-            const auto local_value = static_cast<LnBool>(fetchVAInt());
+            const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LnVisualObject_SetVisible(local_visualobject, local_value);
+            stat = LNVisualObject_SetVisible(local_visualobject, local_value);
 
 
             return true;
         }
-        // LnVisualObject_IsVisible
+        // LNVisualObject_IsVisible
         case 0x148 : {
             // Fetch visualobject
             const auto local_visualobject = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnVisualObject_IsVisible(local_visualobject, &local_outReturn);
+            stat = LNVisualObject_IsVisible(local_visualobject, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnVisualObject_SetPrototype_OnSerialize
-        case 0x557 : {
+        // LNVisualObject_SetPrototype_OnSerialize
+        case 0x559 : {
             // Fetch visualobject
             const auto local_visualobject = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnVisualObject_SetPrototype_OnSerialize(local_visualobject, local_callback);
+            stat = LNVisualObject_SetPrototype_OnSerialize(local_visualobject, local_callback);
 
 
             return true;
         }
-        // LnVisualObject_SetPrototype_OnUpdate
-        case 0x562 : {
+        // LNVisualObject_SetPrototype_OnUpdate
+        case 0x564 : {
             // Fetch visualobject
             const auto local_visualobject = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnVisualObject_SetPrototype_OnUpdate(local_visualobject, local_callback);
+            stat = LNVisualObject_SetPrototype_OnUpdate(local_visualobject, local_callback);
 
 
             return true;
         }
-        // LnCamera_SetPrototype_OnSerialize
-        case 0x56D : {
+        // LNCamera_SetPrototype_OnSerialize
+        case 0x56F : {
             // Fetch camera
             const auto local_camera = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnCamera_SetPrototype_OnSerialize(local_camera, local_callback);
+            stat = LNCamera_SetPrototype_OnSerialize(local_camera, local_callback);
 
 
             return true;
         }
-        // LnCamera_SetPrototype_OnUpdate
-        case 0x578 : {
+        // LNCamera_SetPrototype_OnUpdate
+        case 0x57A : {
             // Fetch camera
             const auto local_camera = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnCamera_SetPrototype_OnUpdate(local_camera, local_callback);
+            stat = LNCamera_SetPrototype_OnUpdate(local_camera, local_callback);
 
 
             return true;
         }
-        // LnDirectionalLight_Create
+        // LNDirectionalLight_Create
         case 0x15A : {
             // Fetch outDirectionalLight
             PVal* pval_outDirectionalLight;
             const APTR aptr_outDirectionalLight = code_getva(&pval_outDirectionalLight);
-            LnHandle local_outDirectionalLight;
+            LNHandle local_outDirectionalLight;
 
-            stat = LnDirectionalLight_Create(&local_outDirectionalLight);
+            stat = LNDirectionalLight_Create(&local_outDirectionalLight);
             setVAInt(pval_outDirectionalLight, aptr_outDirectionalLight, local_outDirectionalLight);
 
             return true;
         }
-        // LnDirectionalLight_CreateWithColor
+        // LNDirectionalLight_CreateWithColor
         case 0x15B : {
             // Fetch color
             PVal* pval_color;
-            CodeGetVA_TypeChecked(&pval_color, LnColor);
+            CodeGetVA_TypeChecked(&pval_color, LNColor);
             // Fetch outDirectionalLight
             PVal* pval_outDirectionalLight;
             const APTR aptr_outDirectionalLight = code_getva(&pval_outDirectionalLight);
-            LnHandle local_outDirectionalLight;
+            LNHandle local_outDirectionalLight;
 
-            stat = LnDirectionalLight_CreateWithColor(reinterpret_cast<const LnColor*>(pval_color->pt), &local_outDirectionalLight);
+            stat = LNDirectionalLight_CreateWithColor(reinterpret_cast<const LNColor*>(pval_color->pt), &local_outDirectionalLight);
             setVAInt(pval_outDirectionalLight, aptr_outDirectionalLight, local_outDirectionalLight);
 
             return true;
         }
-        // LnDirectionalLight_SetEnabled
+        // LNDirectionalLight_SetEnabled
         case 0x14B : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch enabled
-            const auto local_enabled = static_cast<LnBool>(fetchVAInt());
+            const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LnDirectionalLight_SetEnabled(local_directionallight, local_enabled);
+            stat = LNDirectionalLight_SetEnabled(local_directionallight, local_enabled);
 
 
             return true;
         }
-        // LnDirectionalLight_IsEnabled
+        // LNDirectionalLight_IsEnabled
         case 0x14D : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnDirectionalLight_IsEnabled(local_directionallight, &local_outReturn);
+            stat = LNDirectionalLight_IsEnabled(local_directionallight, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnDirectionalLight_SetColor
+        // LNDirectionalLight_SetColor
         case 0x14E : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch color
             PVal* pval_color;
-            CodeGetVA_TypeChecked(&pval_color, LnColor);
+            CodeGetVA_TypeChecked(&pval_color, LNColor);
 
-            stat = LnDirectionalLight_SetColor(local_directionallight, reinterpret_cast<const LnColor*>(pval_color->pt));
+            stat = LNDirectionalLight_SetColor(local_directionallight, reinterpret_cast<const LNColor*>(pval_color->pt));
 
 
             return true;
         }
-        // LnDirectionalLight_GetColor
+        // LNDirectionalLight_GetColor
         case 0x150 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnColor local_outReturn;
+            LNColor local_outReturn;
 
-            stat = LnDirectionalLight_GetColor(local_directionallight, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnColor_typeid(), &local_outReturn);
+            stat = LNDirectionalLight_GetColor(local_directionallight, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnDirectionalLight_SetIntensity
+        // LNDirectionalLight_SetIntensity
         case 0x151 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch intensity
             const auto local_intensity = fetchVADouble();
 
-            stat = LnDirectionalLight_SetIntensity(local_directionallight, local_intensity);
+            stat = LNDirectionalLight_SetIntensity(local_directionallight, local_intensity);
 
 
             return true;
         }
-        // LnDirectionalLight_GetIntensity
+        // LNDirectionalLight_GetIntensity
         case 0x153 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
@@ -4638,24 +4638,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LnDirectionalLight_GetIntensity(local_directionallight, &local_outReturn);
+            stat = LNDirectionalLight_GetIntensity(local_directionallight, &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnDirectionalLight_SetShadowEffectiveDistance
+        // LNDirectionalLight_SetShadowEffectiveDistance
         case 0x154 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LnDirectionalLight_SetShadowEffectiveDistance(local_directionallight, local_value);
+            stat = LNDirectionalLight_SetShadowEffectiveDistance(local_directionallight, local_value);
 
 
             return true;
         }
-        // LnDirectionalLight_GetShadowEffectiveDistance
+        // LNDirectionalLight_GetShadowEffectiveDistance
         case 0x156 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
@@ -4664,24 +4664,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LnDirectionalLight_GetShadowEffectiveDistance(local_directionallight, &local_outReturn);
+            stat = LNDirectionalLight_GetShadowEffectiveDistance(local_directionallight, &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnDirectionalLight_SetShadowEffectiveDepth
+        // LNDirectionalLight_SetShadowEffectiveDepth
         case 0x157 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LnDirectionalLight_SetShadowEffectiveDepth(local_directionallight, local_value);
+            stat = LNDirectionalLight_SetShadowEffectiveDepth(local_directionallight, local_value);
 
 
             return true;
         }
-        // LnDirectionalLight_GetShadowEffectiveDepth
+        // LNDirectionalLight_GetShadowEffectiveDepth
         case 0x159 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
@@ -4690,130 +4690,130 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LnDirectionalLight_GetShadowEffectiveDepth(local_directionallight, &local_outReturn);
+            stat = LNDirectionalLight_GetShadowEffectiveDepth(local_directionallight, &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnDirectionalLight_SetPrototype_OnSerialize
-        case 0x583 : {
+        // LNDirectionalLight_SetPrototype_OnSerialize
+        case 0x585 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnDirectionalLight_SetPrototype_OnSerialize(local_directionallight, local_callback);
+            stat = LNDirectionalLight_SetPrototype_OnSerialize(local_directionallight, local_callback);
 
 
             return true;
         }
-        // LnDirectionalLight_SetPrototype_OnUpdate
-        case 0x58E : {
+        // LNDirectionalLight_SetPrototype_OnUpdate
+        case 0x590 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnDirectionalLight_SetPrototype_OnUpdate(local_directionallight, local_callback);
+            stat = LNDirectionalLight_SetPrototype_OnUpdate(local_directionallight, local_callback);
 
 
             return true;
         }
-        // LnPointLight_Create
+        // LNPointLight_Create
         case 0x16D : {
             // Fetch outPointLight
             PVal* pval_outPointLight;
             const APTR aptr_outPointLight = code_getva(&pval_outPointLight);
-            LnHandle local_outPointLight;
+            LNHandle local_outPointLight;
 
-            stat = LnPointLight_Create(&local_outPointLight);
+            stat = LNPointLight_Create(&local_outPointLight);
             setVAInt(pval_outPointLight, aptr_outPointLight, local_outPointLight);
 
             return true;
         }
-        // LnPointLight_CreateWithColorAndRange
+        // LNPointLight_CreateWithColorAndRange
         case 0x16E : {
             // Fetch color
             PVal* pval_color;
-            CodeGetVA_TypeChecked(&pval_color, LnColor);
+            CodeGetVA_TypeChecked(&pval_color, LNColor);
             // Fetch range
             const auto local_range = fetchVADouble();
             // Fetch outPointLight
             PVal* pval_outPointLight;
             const APTR aptr_outPointLight = code_getva(&pval_outPointLight);
-            LnHandle local_outPointLight;
+            LNHandle local_outPointLight;
 
-            stat = LnPointLight_CreateWithColorAndRange(reinterpret_cast<const LnColor*>(pval_color->pt), local_range, &local_outPointLight);
+            stat = LNPointLight_CreateWithColorAndRange(reinterpret_cast<const LNColor*>(pval_color->pt), local_range, &local_outPointLight);
             setVAInt(pval_outPointLight, aptr_outPointLight, local_outPointLight);
 
             return true;
         }
-        // LnPointLight_SetEnabled
+        // LNPointLight_SetEnabled
         case 0x15E : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch enabled
-            const auto local_enabled = static_cast<LnBool>(fetchVAInt());
+            const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LnPointLight_SetEnabled(local_pointlight, local_enabled);
+            stat = LNPointLight_SetEnabled(local_pointlight, local_enabled);
 
 
             return true;
         }
-        // LnPointLight_IsEnabled
+        // LNPointLight_IsEnabled
         case 0x160 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnPointLight_IsEnabled(local_pointlight, &local_outReturn);
+            stat = LNPointLight_IsEnabled(local_pointlight, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnPointLight_SetColor
+        // LNPointLight_SetColor
         case 0x161 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch color
             PVal* pval_color;
-            CodeGetVA_TypeChecked(&pval_color, LnColor);
+            CodeGetVA_TypeChecked(&pval_color, LNColor);
 
-            stat = LnPointLight_SetColor(local_pointlight, reinterpret_cast<const LnColor*>(pval_color->pt));
+            stat = LNPointLight_SetColor(local_pointlight, reinterpret_cast<const LNColor*>(pval_color->pt));
 
 
             return true;
         }
-        // LnPointLight_GetColor
+        // LNPointLight_GetColor
         case 0x163 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnColor local_outReturn;
+            LNColor local_outReturn;
 
-            stat = LnPointLight_GetColor(local_pointlight, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnColor_typeid(), &local_outReturn);
+            stat = LNPointLight_GetColor(local_pointlight, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnPointLight_SetIntensity
+        // LNPointLight_SetIntensity
         case 0x164 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch intensity
             const auto local_intensity = fetchVADouble();
 
-            stat = LnPointLight_SetIntensity(local_pointlight, local_intensity);
+            stat = LNPointLight_SetIntensity(local_pointlight, local_intensity);
 
 
             return true;
         }
-        // LnPointLight_GetIntensity
+        // LNPointLight_GetIntensity
         case 0x166 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
@@ -4822,24 +4822,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LnPointLight_GetIntensity(local_pointlight, &local_outReturn);
+            stat = LNPointLight_GetIntensity(local_pointlight, &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnPointLight_SetRange
+        // LNPointLight_SetRange
         case 0x167 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch range
             const auto local_range = fetchVADouble();
 
-            stat = LnPointLight_SetRange(local_pointlight, local_range);
+            stat = LNPointLight_SetRange(local_pointlight, local_range);
 
 
             return true;
         }
-        // LnPointLight_GetRange
+        // LNPointLight_GetRange
         case 0x169 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
@@ -4848,24 +4848,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LnPointLight_GetRange(local_pointlight, &local_outReturn);
+            stat = LNPointLight_GetRange(local_pointlight, &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnPointLight_SetAttenuation
+        // LNPointLight_SetAttenuation
         case 0x16A : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch attenuation
             const auto local_attenuation = fetchVADouble();
 
-            stat = LnPointLight_SetAttenuation(local_pointlight, local_attenuation);
+            stat = LNPointLight_SetAttenuation(local_pointlight, local_attenuation);
 
 
             return true;
         }
-        // LnPointLight_GetAttenuation
+        // LNPointLight_GetAttenuation
         case 0x16C : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
@@ -4874,52 +4874,52 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LnPointLight_GetAttenuation(local_pointlight, &local_outReturn);
+            stat = LNPointLight_GetAttenuation(local_pointlight, &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnPointLight_SetPrototype_OnSerialize
-        case 0x599 : {
+        // LNPointLight_SetPrototype_OnSerialize
+        case 0x59B : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnPointLight_SetPrototype_OnSerialize(local_pointlight, local_callback);
+            stat = LNPointLight_SetPrototype_OnSerialize(local_pointlight, local_callback);
 
 
             return true;
         }
-        // LnPointLight_SetPrototype_OnUpdate
-        case 0x5A4 : {
+        // LNPointLight_SetPrototype_OnUpdate
+        case 0x5A6 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnPointLight_SetPrototype_OnUpdate(local_pointlight, local_callback);
+            stat = LNPointLight_SetPrototype_OnUpdate(local_pointlight, local_callback);
 
 
             return true;
         }
-        // LnSpotLight_Create
+        // LNSpotLight_Create
         case 0x187 : {
             // Fetch outSpotLight
             PVal* pval_outSpotLight;
             const APTR aptr_outSpotLight = code_getva(&pval_outSpotLight);
-            LnHandle local_outSpotLight;
+            LNHandle local_outSpotLight;
 
-            stat = LnSpotLight_Create(&local_outSpotLight);
+            stat = LNSpotLight_Create(&local_outSpotLight);
             setVAInt(pval_outSpotLight, aptr_outSpotLight, local_outSpotLight);
 
             return true;
         }
-        // LnSpotLight_CreateWithColorAndRange
+        // LNSpotLight_CreateWithColorAndRange
         case 0x188 : {
             // Fetch color
             PVal* pval_color;
-            CodeGetVA_TypeChecked(&pval_color, LnColor);
+            CodeGetVA_TypeChecked(&pval_color, LNColor);
             // Fetch range
             const auto local_range = fetchVADouble();
             // Fetch angle
@@ -4927,79 +4927,79 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch outSpotLight
             PVal* pval_outSpotLight;
             const APTR aptr_outSpotLight = code_getva(&pval_outSpotLight);
-            LnHandle local_outSpotLight;
+            LNHandle local_outSpotLight;
 
-            stat = LnSpotLight_CreateWithColorAndRange(reinterpret_cast<const LnColor*>(pval_color->pt), local_range, local_angle, &local_outSpotLight);
+            stat = LNSpotLight_CreateWithColorAndRange(reinterpret_cast<const LNColor*>(pval_color->pt), local_range, local_angle, &local_outSpotLight);
             setVAInt(pval_outSpotLight, aptr_outSpotLight, local_outSpotLight);
 
             return true;
         }
-        // LnSpotLight_SetEnabled
+        // LNSpotLight_SetEnabled
         case 0x172 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch enabled
-            const auto local_enabled = static_cast<LnBool>(fetchVAInt());
+            const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LnSpotLight_SetEnabled(local_spotlight, local_enabled);
+            stat = LNSpotLight_SetEnabled(local_spotlight, local_enabled);
 
 
             return true;
         }
-        // LnSpotLight_IsEnabled
+        // LNSpotLight_IsEnabled
         case 0x174 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnSpotLight_IsEnabled(local_spotlight, &local_outReturn);
+            stat = LNSpotLight_IsEnabled(local_spotlight, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnSpotLight_SetColor
+        // LNSpotLight_SetColor
         case 0x175 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch color
             PVal* pval_color;
-            CodeGetVA_TypeChecked(&pval_color, LnColor);
+            CodeGetVA_TypeChecked(&pval_color, LNColor);
 
-            stat = LnSpotLight_SetColor(local_spotlight, reinterpret_cast<const LnColor*>(pval_color->pt));
+            stat = LNSpotLight_SetColor(local_spotlight, reinterpret_cast<const LNColor*>(pval_color->pt));
 
 
             return true;
         }
-        // LnSpotLight_GetColor
+        // LNSpotLight_GetColor
         case 0x177 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnColor local_outReturn;
+            LNColor local_outReturn;
 
-            stat = LnSpotLight_GetColor(local_spotlight, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnColor_typeid(), &local_outReturn);
+            stat = LNSpotLight_GetColor(local_spotlight, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnSpotLight_SetIntensity
+        // LNSpotLight_SetIntensity
         case 0x178 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch intensity
             const auto local_intensity = fetchVADouble();
 
-            stat = LnSpotLight_SetIntensity(local_spotlight, local_intensity);
+            stat = LNSpotLight_SetIntensity(local_spotlight, local_intensity);
 
 
             return true;
         }
-        // LnSpotLight_GetIntensity
+        // LNSpotLight_GetIntensity
         case 0x17A : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
@@ -5008,24 +5008,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LnSpotLight_GetIntensity(local_spotlight, &local_outReturn);
+            stat = LNSpotLight_GetIntensity(local_spotlight, &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnSpotLight_SetRange
+        // LNSpotLight_SetRange
         case 0x17B : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch range
             const auto local_range = fetchVADouble();
 
-            stat = LnSpotLight_SetRange(local_spotlight, local_range);
+            stat = LNSpotLight_SetRange(local_spotlight, local_range);
 
 
             return true;
         }
-        // LnSpotLight_GetRange
+        // LNSpotLight_GetRange
         case 0x17D : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
@@ -5034,24 +5034,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LnSpotLight_GetRange(local_spotlight, &local_outReturn);
+            stat = LNSpotLight_GetRange(local_spotlight, &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnSpotLight_SetAttenuation
+        // LNSpotLight_SetAttenuation
         case 0x17E : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch attenuation
             const auto local_attenuation = fetchVADouble();
 
-            stat = LnSpotLight_SetAttenuation(local_spotlight, local_attenuation);
+            stat = LNSpotLight_SetAttenuation(local_spotlight, local_attenuation);
 
 
             return true;
         }
-        // LnSpotLight_GetAttenuation
+        // LNSpotLight_GetAttenuation
         case 0x180 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
@@ -5060,24 +5060,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LnSpotLight_GetAttenuation(local_spotlight, &local_outReturn);
+            stat = LNSpotLight_GetAttenuation(local_spotlight, &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnSpotLight_SetAngle
+        // LNSpotLight_SetAngle
         case 0x181 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch angle
             const auto local_angle = fetchVADouble();
 
-            stat = LnSpotLight_SetAngle(local_spotlight, local_angle);
+            stat = LNSpotLight_SetAngle(local_spotlight, local_angle);
 
 
             return true;
         }
-        // LnSpotLight_GetAngle
+        // LNSpotLight_GetAngle
         case 0x183 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
@@ -5086,24 +5086,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LnSpotLight_GetAngle(local_spotlight, &local_outReturn);
+            stat = LNSpotLight_GetAngle(local_spotlight, &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnSpotLight_SetPenumbra
+        // LNSpotLight_SetPenumbra
         case 0x184 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch penumbra
             const auto local_penumbra = fetchVADouble();
 
-            stat = LnSpotLight_SetPenumbra(local_spotlight, local_penumbra);
+            stat = LNSpotLight_SetPenumbra(local_spotlight, local_penumbra);
 
 
             return true;
         }
-        // LnSpotLight_GetPenumbra
+        // LNSpotLight_GetPenumbra
         case 0x186 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
@@ -5112,78 +5112,78 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LnSpotLight_GetPenumbra(local_spotlight, &local_outReturn);
+            stat = LNSpotLight_GetPenumbra(local_spotlight, &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnSpotLight_SetPrototype_OnSerialize
-        case 0x5AF : {
+        // LNSpotLight_SetPrototype_OnSerialize
+        case 0x5B1 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnSpotLight_SetPrototype_OnSerialize(local_spotlight, local_callback);
+            stat = LNSpotLight_SetPrototype_OnSerialize(local_spotlight, local_callback);
 
 
             return true;
         }
-        // LnSpotLight_SetPrototype_OnUpdate
-        case 0x5BA : {
+        // LNSpotLight_SetPrototype_OnUpdate
+        case 0x5BC : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnSpotLight_SetPrototype_OnUpdate(local_spotlight, local_callback);
+            stat = LNSpotLight_SetPrototype_OnUpdate(local_spotlight, local_callback);
 
 
             return true;
         }
-        // LnTestDelegate_Create
-        case 0x425 : {
+        // LNTestDelegate_Create
+        case 0x427 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outTestDelegate
             PVal* pval_outTestDelegate;
             const APTR aptr_outTestDelegate = code_getva(&pval_outTestDelegate);
-            LnHandle local_outTestDelegate;
+            LNHandle local_outTestDelegate;
 
-            stat = LnTestDelegate_Create(HSPSubclass_LnTestDelegate_DelegateLabelCaller, &local_outTestDelegate);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnTestDelegate*>(LnTestDelegate_GetSubinstanceId(local_outTestDelegate));
+            stat = LNTestDelegate_Create(HSPSubclass_LNTestDelegate_DelegateLabelCaller, &local_outTestDelegate);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNTestDelegate*>(LNTestDelegate_GetSubinstanceId(local_outTestDelegate));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outTestDelegate, aptr_outTestDelegate, local_outTestDelegate);
 
             return true;
         }
-        // LnSprite_Create
+        // LNSprite_Create
         case 0x19E : {
             // Fetch outSprite
             PVal* pval_outSprite;
             const APTR aptr_outSprite = code_getva(&pval_outSprite);
-            LnHandle local_outSprite;
+            LNHandle local_outSprite;
 
-            stat = LnSprite_Create(&local_outSprite);
+            stat = LNSprite_Create(&local_outSprite);
             setVAInt(pval_outSprite, aptr_outSprite, local_outSprite);
 
             return true;
         }
-        // LnSprite_CreateWithTexture
+        // LNSprite_CreateWithTexture
         case 0x19F : {
             // Fetch texture
             const auto local_texture = fetchVAInt();
             // Fetch outSprite
             PVal* pval_outSprite;
             const APTR aptr_outSprite = code_getva(&pval_outSprite);
-            LnHandle local_outSprite;
+            LNHandle local_outSprite;
 
-            stat = LnSprite_CreateWithTexture(local_texture, &local_outSprite);
+            stat = LNSprite_CreateWithTexture(local_texture, &local_outSprite);
             setVAInt(pval_outSprite, aptr_outSprite, local_outSprite);
 
             return true;
         }
-        // LnSprite_CreateWithTextureAndSize
+        // LNSprite_CreateWithTextureAndSize
         case 0x1A1 : {
             // Fetch texture
             const auto local_texture = fetchVAInt();
@@ -5194,39 +5194,39 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch outSprite
             PVal* pval_outSprite;
             const APTR aptr_outSprite = code_getva(&pval_outSprite);
-            LnHandle local_outSprite;
+            LNHandle local_outSprite;
 
-            stat = LnSprite_CreateWithTextureAndSize(local_texture, local_width, local_height, &local_outSprite);
+            stat = LNSprite_CreateWithTextureAndSize(local_texture, local_width, local_height, &local_outSprite);
             setVAInt(pval_outSprite, aptr_outSprite, local_outSprite);
 
             return true;
         }
-        // LnSprite_SetTexture
+        // LNSprite_SetTexture
         case 0x190 : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LnSprite_SetTexture(local_sprite, local_value);
+            stat = LNSprite_SetTexture(local_sprite, local_value);
 
 
             return true;
         }
-        // LnSprite_SetSize
+        // LNSprite_SetSize
         case 0x192 : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
             // Fetch value
             PVal* pval_value;
-            CodeGetVA_TypeChecked(&pval_value, LnSize);
+            CodeGetVA_TypeChecked(&pval_value, LNSize);
 
-            stat = LnSprite_SetSize(local_sprite, reinterpret_cast<const LnSize*>(pval_value->pt));
+            stat = LNSprite_SetSize(local_sprite, reinterpret_cast<const LNSize*>(pval_value->pt));
 
 
             return true;
         }
-        // LnSprite_SetSizeWH
+        // LNSprite_SetSizeWH
         case 0x194 : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
@@ -5235,12 +5235,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch height
             const auto local_height = fetchVADouble();
 
-            stat = LnSprite_SetSizeWH(local_sprite, local_width, local_height);
+            stat = LNSprite_SetSizeWH(local_sprite, local_width, local_height);
 
 
             return true;
         }
-        // LnSprite_SetSourceRectXYWH
+        // LNSprite_SetSourceRectXYWH
         case 0x197 : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
@@ -5253,87 +5253,87 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch height
             const auto local_height = fetchVADouble();
 
-            stat = LnSprite_SetSourceRectXYWH(local_sprite, local_x, local_y, local_width, local_height);
+            stat = LNSprite_SetSourceRectXYWH(local_sprite, local_x, local_y, local_width, local_height);
 
 
             return true;
         }
-        // LnSprite_SetCallerTest
+        // LNSprite_SetCallerTest
         case 0x19C : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnSprite_SetCallerTest(local_sprite, local_callback);
+            stat = LNSprite_SetCallerTest(local_sprite, local_callback);
 
 
             return true;
         }
-        // LnSprite_SetPrototype_OnSerialize
-        case 0x5C5 : {
+        // LNSprite_SetPrototype_OnSerialize
+        case 0x5C7 : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnSprite_SetPrototype_OnSerialize(local_sprite, local_callback);
+            stat = LNSprite_SetPrototype_OnSerialize(local_sprite, local_callback);
 
 
             return true;
         }
-        // LnSprite_SetPrototype_OnUpdate
-        case 0x5D0 : {
+        // LNSprite_SetPrototype_OnUpdate
+        case 0x5D2 : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnSprite_SetPrototype_OnUpdate(local_sprite, local_callback);
+            stat = LNSprite_SetPrototype_OnUpdate(local_sprite, local_callback);
 
 
             return true;
         }
-        // LnCameraOrbitControlComponent_Create
+        // LNCameraOrbitControlComponent_Create
         case 0x1A6 : {
             // Fetch outCameraOrbitControlComponent
             PVal* pval_outCameraOrbitControlComponent;
             const APTR aptr_outCameraOrbitControlComponent = code_getva(&pval_outCameraOrbitControlComponent);
-            LnHandle local_outCameraOrbitControlComponent;
+            LNHandle local_outCameraOrbitControlComponent;
 
-            stat = LnCameraOrbitControlComponent_Create(&local_outCameraOrbitControlComponent);
+            stat = LNCameraOrbitControlComponent_Create(&local_outCameraOrbitControlComponent);
             setVAInt(pval_outCameraOrbitControlComponent, aptr_outCameraOrbitControlComponent, local_outCameraOrbitControlComponent);
 
             return true;
         }
-        // LnCameraOrbitControlComponent_SetPrototype_OnSerialize
-        case 0x5DB : {
+        // LNCameraOrbitControlComponent_SetPrototype_OnSerialize
+        case 0x5DD : {
             // Fetch cameraorbitcontrolcomponent
             const auto local_cameraorbitcontrolcomponent = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnCameraOrbitControlComponent_SetPrototype_OnSerialize(local_cameraorbitcontrolcomponent, local_callback);
+            stat = LNCameraOrbitControlComponent_SetPrototype_OnSerialize(local_cameraorbitcontrolcomponent, local_callback);
 
 
             return true;
         }
-        // LnRaycaster_FromScreen
+        // LNRaycaster_FromScreen
         case 0x1A8 : {
             // Fetch point
             PVal* pval_point;
-            CodeGetVA_TypeChecked(&pval_point, LnPoint);
+            CodeGetVA_TypeChecked(&pval_point, LNPoint);
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnRaycaster_FromScreen(reinterpret_cast<const LnPoint*>(pval_point->pt), &local_outReturn);
+            stat = LNRaycaster_FromScreen(reinterpret_cast<const LNPoint*>(pval_point->pt), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnRaycaster_IntersectPlane
+        // LNRaycaster_IntersectPlane
         case 0x1AA : {
             // Fetch raycaster
             const auto local_raycaster = fetchVAInt();
@@ -5346,365 +5346,365 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnRaycaster_IntersectPlane(local_raycaster, local_normalX, local_normalY, local_normalZ, &local_outReturn);
+            stat = LNRaycaster_IntersectPlane(local_raycaster, local_normalX, local_normalY, local_normalZ, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnRaycaster_SetPrototype_OnSerialize
-        case 0x5E6 : {
+        // LNRaycaster_SetPrototype_OnSerialize
+        case 0x5E8 : {
             // Fetch raycaster
             const auto local_raycaster = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnRaycaster_SetPrototype_OnSerialize(local_raycaster, local_callback);
+            stat = LNRaycaster_SetPrototype_OnSerialize(local_raycaster, local_callback);
 
 
             return true;
         }
-        // LnRaycastResult_GetPoint
+        // LNRaycastResult_GetPoint
         case 0x1AF : {
             // Fetch raycastresult
             const auto local_raycastresult = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnVector3 local_outReturn;
+            LNVector3 local_outReturn;
 
-            stat = LnRaycastResult_GetPoint(local_raycastresult, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
+            stat = LNRaycastResult_GetPoint(local_raycastresult, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnRaycastResult_SetPrototype_OnSerialize
-        case 0x5F1 : {
+        // LNRaycastResult_SetPrototype_OnSerialize
+        case 0x5F3 : {
             // Fetch raycastresult
             const auto local_raycastresult = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnRaycastResult_SetPrototype_OnSerialize(local_raycastresult, local_callback);
+            stat = LNRaycastResult_SetPrototype_OnSerialize(local_raycastresult, local_callback);
 
 
             return true;
         }
-        // LnWorldRenderView_SetGuideGridEnabled
+        // LNWorldRenderView_SetGuideGridEnabled
         case 0x1B1 : {
             // Fetch worldrenderview
             const auto local_worldrenderview = fetchVAInt();
             // Fetch value
-            const auto local_value = static_cast<LnBool>(fetchVAInt());
+            const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LnWorldRenderView_SetGuideGridEnabled(local_worldrenderview, local_value);
+            stat = LNWorldRenderView_SetGuideGridEnabled(local_worldrenderview, local_value);
 
 
             return true;
         }
-        // LnWorldRenderView_GetGuideGridEnabled
+        // LNWorldRenderView_GetGuideGridEnabled
         case 0x1B3 : {
             // Fetch worldrenderview
             const auto local_worldrenderview = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnWorldRenderView_GetGuideGridEnabled(local_worldrenderview, &local_outReturn);
+            stat = LNWorldRenderView_GetGuideGridEnabled(local_worldrenderview, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnWorldRenderView_SetPrototype_OnSerialize
-        case 0x5FC : {
+        // LNWorldRenderView_SetPrototype_OnSerialize
+        case 0x5FE : {
             // Fetch worldrenderview
             const auto local_worldrenderview = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnWorldRenderView_SetPrototype_OnSerialize(local_worldrenderview, local_callback);
+            stat = LNWorldRenderView_SetPrototype_OnSerialize(local_worldrenderview, local_callback);
 
 
             return true;
         }
-        // LnBoxMesh_Create
+        // LNBoxMesh_Create
         case 0x1B5 : {
             // Fetch outBoxMesh
             PVal* pval_outBoxMesh;
             const APTR aptr_outBoxMesh = code_getva(&pval_outBoxMesh);
-            LnHandle local_outBoxMesh;
+            LNHandle local_outBoxMesh;
 
-            stat = LnBoxMesh_Create(&local_outBoxMesh);
+            stat = LNBoxMesh_Create(&local_outBoxMesh);
             setVAInt(pval_outBoxMesh, aptr_outBoxMesh, local_outBoxMesh);
 
             return true;
         }
-        // LnBoxMesh_SetPrototype_OnSerialize
-        case 0x607 : {
+        // LNBoxMesh_SetPrototype_OnSerialize
+        case 0x609 : {
             // Fetch boxmesh
             const auto local_boxmesh = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnBoxMesh_SetPrototype_OnSerialize(local_boxmesh, local_callback);
+            stat = LNBoxMesh_SetPrototype_OnSerialize(local_boxmesh, local_callback);
 
 
             return true;
         }
-        // LnBoxMesh_SetPrototype_OnUpdate
-        case 0x612 : {
+        // LNBoxMesh_SetPrototype_OnUpdate
+        case 0x614 : {
             // Fetch boxmesh
             const auto local_boxmesh = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnBoxMesh_SetPrototype_OnUpdate(local_boxmesh, local_callback);
+            stat = LNBoxMesh_SetPrototype_OnUpdate(local_boxmesh, local_callback);
 
 
             return true;
         }
-        // LnPlaneMesh_Create
+        // LNPlaneMesh_Create
         case 0x1B7 : {
             // Fetch outPlaneMesh
             PVal* pval_outPlaneMesh;
             const APTR aptr_outPlaneMesh = code_getva(&pval_outPlaneMesh);
-            LnHandle local_outPlaneMesh;
+            LNHandle local_outPlaneMesh;
 
-            stat = LnPlaneMesh_Create(&local_outPlaneMesh);
+            stat = LNPlaneMesh_Create(&local_outPlaneMesh);
             setVAInt(pval_outPlaneMesh, aptr_outPlaneMesh, local_outPlaneMesh);
 
             return true;
         }
-        // LnPlaneMesh_SetPrototype_OnSerialize
-        case 0x61D : {
+        // LNPlaneMesh_SetPrototype_OnSerialize
+        case 0x61F : {
             // Fetch planemesh
             const auto local_planemesh = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnPlaneMesh_SetPrototype_OnSerialize(local_planemesh, local_callback);
+            stat = LNPlaneMesh_SetPrototype_OnSerialize(local_planemesh, local_callback);
 
 
             return true;
         }
-        // LnPlaneMesh_SetPrototype_OnUpdate
-        case 0x628 : {
+        // LNPlaneMesh_SetPrototype_OnUpdate
+        case 0x62A : {
             // Fetch planemesh
             const auto local_planemesh = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnPlaneMesh_SetPrototype_OnUpdate(local_planemesh, local_callback);
+            stat = LNPlaneMesh_SetPrototype_OnUpdate(local_planemesh, local_callback);
 
 
             return true;
         }
-        // LnUIEventArgs_Sender
+        // LNUIEventArgs_Sender
         case 0x1B9 : {
             // Fetch uieventargs
             const auto local_uieventargs = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnUIEventArgs_Sender(local_uieventargs, &local_outReturn);
+            stat = LNUIEventArgs_Sender(local_uieventargs, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnUIEventArgs_SetPrototype_OnSerialize
-        case 0x633 : {
+        // LNUIEventArgs_SetPrototype_OnSerialize
+        case 0x635 : {
             // Fetch uieventargs
             const auto local_uieventargs = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnUIEventArgs_SetPrototype_OnSerialize(local_uieventargs, local_callback);
+            stat = LNUIEventArgs_SetPrototype_OnSerialize(local_uieventargs, local_callback);
 
 
             return true;
         }
-        // LnUIGeneralEventHandler_Create
-        case 0x444 : {
+        // LNUIGeneralEventHandler_Create
+        case 0x446 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIGeneralEventHandler
             PVal* pval_outUIGeneralEventHandler;
             const APTR aptr_outUIGeneralEventHandler = code_getva(&pval_outUIGeneralEventHandler);
-            LnHandle local_outUIGeneralEventHandler;
+            LNHandle local_outUIGeneralEventHandler;
 
-            stat = LnUIGeneralEventHandler_Create(HSPSubclass_LnUIGeneralEventHandler_DelegateLabelCaller, &local_outUIGeneralEventHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnUIGeneralEventHandler*>(LnUIGeneralEventHandler_GetSubinstanceId(local_outUIGeneralEventHandler));
+            stat = LNUIGeneralEventHandler_Create(HSPSubclass_LNUIGeneralEventHandler_DelegateLabelCaller, &local_outUIGeneralEventHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNUIGeneralEventHandler*>(LNUIGeneralEventHandler_GetSubinstanceId(local_outUIGeneralEventHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outUIGeneralEventHandler, aptr_outUIGeneralEventHandler, local_outUIGeneralEventHandler);
 
             return true;
         }
-        // LnUIEventHandler_Create
-        case 0x449 : {
+        // LNUIEventHandler_Create
+        case 0x44B : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIEventHandler
             PVal* pval_outUIEventHandler;
             const APTR aptr_outUIEventHandler = code_getva(&pval_outUIEventHandler);
-            LnHandle local_outUIEventHandler;
+            LNHandle local_outUIEventHandler;
 
-            stat = LnUIEventHandler_Create(HSPSubclass_LnUIEventHandler_DelegateLabelCaller, &local_outUIEventHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnUIEventHandler*>(LnUIEventHandler_GetSubinstanceId(local_outUIEventHandler));
+            stat = LNUIEventHandler_Create(HSPSubclass_LNUIEventHandler_DelegateLabelCaller, &local_outUIEventHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNUIEventHandler*>(LNUIEventHandler_GetSubinstanceId(local_outUIEventHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outUIEventHandler, aptr_outUIEventHandler, local_outUIEventHandler);
 
             return true;
         }
-        // LnUILayoutElement_SetPrototype_OnSerialize
-        case 0x63E : {
+        // LNUILayoutElement_SetPrototype_OnSerialize
+        case 0x640 : {
             // Fetch uilayoutelement
             const auto local_uilayoutelement = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnUILayoutElement_SetPrototype_OnSerialize(local_uilayoutelement, local_callback);
+            stat = LNUILayoutElement_SetPrototype_OnSerialize(local_uilayoutelement, local_callback);
 
 
             return true;
         }
-        // LnUIElement_SetMargin
+        // LNUIElement_SetMargin
         case 0x1CB : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch margin
             PVal* pval_margin;
-            CodeGetVA_TypeChecked(&pval_margin, LnThickness);
+            CodeGetVA_TypeChecked(&pval_margin, LNThickness);
 
-            stat = LnUIElement_SetMargin(local_uielement, reinterpret_cast<const LnThickness*>(pval_margin->pt));
+            stat = LNUIElement_SetMargin(local_uielement, reinterpret_cast<const LNThickness*>(pval_margin->pt));
 
 
             return true;
         }
-        // LnUIElement_GetMargin
+        // LNUIElement_GetMargin
         case 0x1CD : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnThickness local_outReturn;
+            LNThickness local_outReturn;
 
-            stat = LnUIElement_GetMargin(local_uielement, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnThickness_typeid(), &local_outReturn);
+            stat = LNUIElement_GetMargin(local_uielement, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNThickness_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnUIElement_SetPadding
+        // LNUIElement_SetPadding
         case 0x1CE : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch padding
             PVal* pval_padding;
-            CodeGetVA_TypeChecked(&pval_padding, LnThickness);
+            CodeGetVA_TypeChecked(&pval_padding, LNThickness);
 
-            stat = LnUIElement_SetPadding(local_uielement, reinterpret_cast<const LnThickness*>(pval_padding->pt));
+            stat = LNUIElement_SetPadding(local_uielement, reinterpret_cast<const LNThickness*>(pval_padding->pt));
 
 
             return true;
         }
-        // LnUIElement_GetPadding
+        // LNUIElement_GetPadding
         case 0x1D0 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnThickness local_outReturn;
+            LNThickness local_outReturn;
 
-            stat = LnUIElement_GetPadding(local_uielement, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnThickness_typeid(), &local_outReturn);
+            stat = LNUIElement_GetPadding(local_uielement, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNThickness_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnUIElement_SetHAlignment
+        // LNUIElement_SetHAlignment
         case 0x1D1 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch value
-            const auto local_value = static_cast<LnHAlignment>(fetchVAInt());
+            const auto local_value = static_cast<LNHAlignment>(fetchVAInt());
 
-            stat = LnUIElement_SetHAlignment(local_uielement, local_value);
+            stat = LNUIElement_SetHAlignment(local_uielement, local_value);
 
 
             return true;
         }
-        // LnUIElement_GetHAlignment
+        // LNUIElement_GetHAlignment
         case 0x1D3 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHAlignment local_outReturn;
+            LNHAlignment local_outReturn;
 
-            stat = LnUIElement_GetHAlignment(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetHAlignment(local_uielement, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnUIElement_SetVAlignment
+        // LNUIElement_SetVAlignment
         case 0x1D4 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch value
-            const auto local_value = static_cast<LnVAlignment>(fetchVAInt());
+            const auto local_value = static_cast<LNVAlignment>(fetchVAInt());
 
-            stat = LnUIElement_SetVAlignment(local_uielement, local_value);
+            stat = LNUIElement_SetVAlignment(local_uielement, local_value);
 
 
             return true;
         }
-        // LnUIElement_GetVAlignment
+        // LNUIElement_GetVAlignment
         case 0x1D6 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnVAlignment local_outReturn;
+            LNVAlignment local_outReturn;
 
-            stat = LnUIElement_GetVAlignment(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetVAlignment(local_uielement, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnUIElement_SetAlignments
+        // LNUIElement_SetAlignments
         case 0x1D7 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch halign
-            const auto local_halign = static_cast<LnHAlignment>(fetchVAInt());
+            const auto local_halign = static_cast<LNHAlignment>(fetchVAInt());
             // Fetch valign
-            const auto local_valign = static_cast<LnVAlignment>(fetchVAInt());
+            const auto local_valign = static_cast<LNVAlignment>(fetchVAInt());
 
-            stat = LnUIElement_SetAlignments(local_uielement, local_halign, local_valign);
+            stat = LNUIElement_SetAlignments(local_uielement, local_halign, local_valign);
 
 
             return true;
         }
-        // LnUIElement_SetPosition
+        // LNUIElement_SetPosition
         case 0x1DA : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch pos
             PVal* pval_pos;
-            CodeGetVA_TypeChecked(&pval_pos, LnVector3);
+            CodeGetVA_TypeChecked(&pval_pos, LNVector3);
 
-            stat = LnUIElement_SetPosition(local_uielement, reinterpret_cast<const LnVector3*>(pval_pos->pt));
+            stat = LNUIElement_SetPosition(local_uielement, reinterpret_cast<const LNVector3*>(pval_pos->pt));
 
 
             return true;
         }
-        // LnUIElement_SetPositionXYZ
+        // LNUIElement_SetPositionXYZ
         case 0x1DC : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
@@ -5715,39 +5715,39 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble();
 
-            stat = LnUIElement_SetPositionXYZ(local_uielement, local_x, local_y, local_z);
+            stat = LNUIElement_SetPositionXYZ(local_uielement, local_x, local_y, local_z);
 
 
             return true;
         }
-        // LnUIElement_GetPosition
+        // LNUIElement_GetPosition
         case 0x1E0 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnVector3 local_outReturn;
+            LNVector3 local_outReturn;
 
-            stat = LnUIElement_GetPosition(local_uielement, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
+            stat = LNUIElement_GetPosition(local_uielement, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnUIElement_SetRotation
+        // LNUIElement_SetRotation
         case 0x1E1 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch rot
             PVal* pval_rot;
-            CodeGetVA_TypeChecked(&pval_rot, LnQuaternion);
+            CodeGetVA_TypeChecked(&pval_rot, LNQuaternion);
 
-            stat = LnUIElement_SetRotation(local_uielement, reinterpret_cast<const LnQuaternion*>(pval_rot->pt));
+            stat = LNUIElement_SetRotation(local_uielement, reinterpret_cast<const LNQuaternion*>(pval_rot->pt));
 
 
             return true;
         }
-        // LnUIElement_SetEulerAngles
+        // LNUIElement_SetEulerAngles
         case 0x1E3 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
@@ -5758,51 +5758,51 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble();
 
-            stat = LnUIElement_SetEulerAngles(local_uielement, local_x, local_y, local_z);
+            stat = LNUIElement_SetEulerAngles(local_uielement, local_x, local_y, local_z);
 
 
             return true;
         }
-        // LnUIElement_GetRotation
+        // LNUIElement_GetRotation
         case 0x1E7 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnQuaternion local_outReturn;
+            LNQuaternion local_outReturn;
 
-            stat = LnUIElement_GetRotation(local_uielement, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnQuaternion_typeid(), &local_outReturn);
+            stat = LNUIElement_GetRotation(local_uielement, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNQuaternion_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnUIElement_SetScale
+        // LNUIElement_SetScale
         case 0x1E8 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch scale
             PVal* pval_scale;
-            CodeGetVA_TypeChecked(&pval_scale, LnVector3);
+            CodeGetVA_TypeChecked(&pval_scale, LNVector3);
 
-            stat = LnUIElement_SetScale(local_uielement, reinterpret_cast<const LnVector3*>(pval_scale->pt));
+            stat = LNUIElement_SetScale(local_uielement, reinterpret_cast<const LNVector3*>(pval_scale->pt));
 
 
             return true;
         }
-        // LnUIElement_SetScaleS
+        // LNUIElement_SetScaleS
         case 0x1EA : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch xyz
             const auto local_xyz = fetchVADouble();
 
-            stat = LnUIElement_SetScaleS(local_uielement, local_xyz);
+            stat = LNUIElement_SetScaleS(local_uielement, local_xyz);
 
 
             return true;
         }
-        // LnUIElement_SetScaleXY
+        // LNUIElement_SetScaleXY
         case 0x1EC : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
@@ -5811,39 +5811,39 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch y
             const auto local_y = fetchVADouble();
 
-            stat = LnUIElement_SetScaleXY(local_uielement, local_x, local_y);
+            stat = LNUIElement_SetScaleXY(local_uielement, local_x, local_y);
 
 
             return true;
         }
-        // LnUIElement_GetScale
+        // LNUIElement_GetScale
         case 0x1EF : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnVector3 local_outReturn;
+            LNVector3 local_outReturn;
 
-            stat = LnUIElement_GetScale(local_uielement, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
+            stat = LNUIElement_GetScale(local_uielement, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnUIElement_SetCenterPoint
+        // LNUIElement_SetCenterPoint
         case 0x1F0 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch value
             PVal* pval_value;
-            CodeGetVA_TypeChecked(&pval_value, LnVector3);
+            CodeGetVA_TypeChecked(&pval_value, LNVector3);
 
-            stat = LnUIElement_SetCenterPoint(local_uielement, reinterpret_cast<const LnVector3*>(pval_value->pt));
+            stat = LNUIElement_SetCenterPoint(local_uielement, reinterpret_cast<const LNVector3*>(pval_value->pt));
 
 
             return true;
         }
-        // LnUIElement_SetCenterPointXYZ
+        // LNUIElement_SetCenterPointXYZ
         case 0x1F2 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
@@ -5854,139 +5854,139 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble();
 
-            stat = LnUIElement_SetCenterPointXYZ(local_uielement, local_x, local_y, local_z);
+            stat = LNUIElement_SetCenterPointXYZ(local_uielement, local_x, local_y, local_z);
 
 
             return true;
         }
-        // LnUIElement_GetCenterPoint
+        // LNUIElement_GetCenterPoint
         case 0x1F6 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnVector3 local_outReturn;
+            LNVector3 local_outReturn;
 
-            stat = LnUIElement_GetCenterPoint(local_uielement, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
+            stat = LNUIElement_GetCenterPoint(local_uielement, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnUIElement_AddChild
+        // LNUIElement_AddChild
         case 0x1F7 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch child
             const auto local_child = fetchVAInt();
 
-            stat = LnUIElement_AddChild(local_uielement, local_child);
+            stat = LNUIElement_AddChild(local_uielement, local_child);
 
 
             return true;
         }
-        // LnUIElement_SetPrototype_OnSerialize
-        case 0x649 : {
+        // LNUIElement_SetPrototype_OnSerialize
+        case 0x64B : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnUIElement_SetPrototype_OnSerialize(local_uielement, local_callback);
+            stat = LNUIElement_SetPrototype_OnSerialize(local_uielement, local_callback);
 
 
             return true;
         }
-        // LnUITextBlock_Create
+        // LNUITextBlock_Create
         case 0x1FA : {
             // Fetch outUITextBlock
             PVal* pval_outUITextBlock;
             const APTR aptr_outUITextBlock = code_getva(&pval_outUITextBlock);
-            LnHandle local_outUITextBlock;
+            LNHandle local_outUITextBlock;
 
-            stat = LnUITextBlock_Create(&local_outUITextBlock);
+            stat = LNUITextBlock_Create(&local_outUITextBlock);
             setVAInt(pval_outUITextBlock, aptr_outUITextBlock, local_outUITextBlock);
 
             return true;
         }
-        // LnUITextBlock_CreateWithTextA
+        // LNUITextBlock_CreateWithTextA
         case 0x1FB : {
             // Fetch text
             const auto local_text = fetchVAString();
             // Fetch outUITextBlock
             PVal* pval_outUITextBlock;
             const APTR aptr_outUITextBlock = code_getva(&pval_outUITextBlock);
-            LnHandle local_outUITextBlock;
+            LNHandle local_outUITextBlock;
 
-            stat = LnUITextBlock_CreateWithTextA(local_text, &local_outUITextBlock);
+            stat = LNUITextBlock_CreateWithTextA(local_text, &local_outUITextBlock);
             setVAInt(pval_outUITextBlock, aptr_outUITextBlock, local_outUITextBlock);
 
             return true;
         }
-        // LnUITextBlock_SetPrototype_OnSerialize
-        case 0x654 : {
+        // LNUITextBlock_SetPrototype_OnSerialize
+        case 0x656 : {
             // Fetch uitextblock
             const auto local_uitextblock = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnUITextBlock_SetPrototype_OnSerialize(local_uitextblock, local_callback);
+            stat = LNUITextBlock_SetPrototype_OnSerialize(local_uitextblock, local_callback);
 
 
             return true;
         }
-        // LnUISprite_Create
+        // LNUISprite_Create
         case 0x208 : {
             // Fetch outUISprite
             PVal* pval_outUISprite;
             const APTR aptr_outUISprite = code_getva(&pval_outUISprite);
-            LnHandle local_outUISprite;
+            LNHandle local_outUISprite;
 
-            stat = LnUISprite_Create(&local_outUISprite);
+            stat = LNUISprite_Create(&local_outUISprite);
             setVAInt(pval_outUISprite, aptr_outUISprite, local_outUISprite);
 
             return true;
         }
-        // LnUISprite_CreateWithTexture
+        // LNUISprite_CreateWithTexture
         case 0x209 : {
             // Fetch texture
             const auto local_texture = fetchVAInt();
             // Fetch outUISprite
             PVal* pval_outUISprite;
             const APTR aptr_outUISprite = code_getva(&pval_outUISprite);
-            LnHandle local_outUISprite;
+            LNHandle local_outUISprite;
 
-            stat = LnUISprite_CreateWithTexture(local_texture, &local_outUISprite);
+            stat = LNUISprite_CreateWithTexture(local_texture, &local_outUISprite);
             setVAInt(pval_outUISprite, aptr_outUISprite, local_outUISprite);
 
             return true;
         }
-        // LnUISprite_SetTexture
+        // LNUISprite_SetTexture
         case 0x1FE : {
             // Fetch uisprite
             const auto local_uisprite = fetchVAInt();
             // Fetch texture
             const auto local_texture = fetchVAInt();
 
-            stat = LnUISprite_SetTexture(local_uisprite, local_texture);
+            stat = LNUISprite_SetTexture(local_uisprite, local_texture);
 
 
             return true;
         }
-        // LnUISprite_SetSourceRect
+        // LNUISprite_SetSourceRect
         case 0x200 : {
             // Fetch uisprite
             const auto local_uisprite = fetchVAInt();
             // Fetch rect
             PVal* pval_rect;
-            CodeGetVA_TypeChecked(&pval_rect, LnRect);
+            CodeGetVA_TypeChecked(&pval_rect, LNRect);
 
-            stat = LnUISprite_SetSourceRect(local_uisprite, reinterpret_cast<const LnRect*>(pval_rect->pt));
+            stat = LNUISprite_SetSourceRect(local_uisprite, reinterpret_cast<const LNRect*>(pval_rect->pt));
 
 
             return true;
         }
-        // LnUISprite_SetSourceRectXYWH
+        // LNUISprite_SetSourceRectXYWH
         case 0x202 : {
             // Fetch uisprite
             const auto local_uisprite = fetchVAInt();
@@ -5999,94 +5999,94 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch height
             const auto local_height = fetchVADouble();
 
-            stat = LnUISprite_SetSourceRectXYWH(local_uisprite, local_x, local_y, local_width, local_height);
+            stat = LNUISprite_SetSourceRectXYWH(local_uisprite, local_x, local_y, local_width, local_height);
 
 
             return true;
         }
-        // LnUISprite_GetSourceRect
+        // LNUISprite_GetSourceRect
         case 0x207 : {
             // Fetch uisprite
             const auto local_uisprite = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnRect local_outReturn;
+            LNRect local_outReturn;
 
-            stat = LnUISprite_GetSourceRect(local_uisprite, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnRect_typeid(), &local_outReturn);
+            stat = LNUISprite_GetSourceRect(local_uisprite, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNRect_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnUISprite_SetPrototype_OnSerialize
-        case 0x65F : {
+        // LNUISprite_SetPrototype_OnSerialize
+        case 0x661 : {
             // Fetch uisprite
             const auto local_uisprite = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnUISprite_SetPrototype_OnSerialize(local_uisprite, local_callback);
+            stat = LNUISprite_SetPrototype_OnSerialize(local_uisprite, local_callback);
 
 
             return true;
         }
-        // LnInput_PressedA
+        // LNInput_PressedA
         case 0x20C : {
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnInput_PressedA(local_buttonName, &local_outReturn);
+            stat = LNInput_PressedA(local_buttonName, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnInput_TriggeredA
+        // LNInput_TriggeredA
         case 0x20E : {
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnInput_TriggeredA(local_buttonName, &local_outReturn);
+            stat = LNInput_TriggeredA(local_buttonName, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnInput_TriggeredOffA
+        // LNInput_TriggeredOffA
         case 0x210 : {
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnInput_TriggeredOffA(local_buttonName, &local_outReturn);
+            stat = LNInput_TriggeredOffA(local_buttonName, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnInput_RepeatedA
+        // LNInput_RepeatedA
         case 0x212 : {
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnInput_RepeatedA(local_buttonName, &local_outReturn);
+            stat = LNInput_RepeatedA(local_buttonName, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnInput_GetAxisValueA
+        // LNInput_GetAxisValueA
         case 0x214 : {
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
@@ -6095,1077 +6095,1087 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LnInput_GetAxisValueA(local_buttonName, &local_outReturn);
+            stat = LNInput_GetAxisValueA(local_buttonName, &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnInput_ClearAllBindings
+        // LNInput_ClearAllBindings
         case 0x216 : {
 
-            stat = LnInput_ClearAllBindings();
+            stat = LNInput_ClearAllBindings();
 
 
             return true;
         }
-        // LnMouse_Pressed
+        // LNMouse_Pressed
         case 0x218 : {
             // Fetch button
-            const auto local_button = static_cast<LnMouseButtons>(fetchVAInt());
+            const auto local_button = static_cast<LNMouseButtons>(fetchVAInt());
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnMouse_Pressed(local_button, &local_outReturn);
+            stat = LNMouse_Pressed(local_button, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnMouse_Triggered
+        // LNMouse_Triggered
         case 0x21A : {
             // Fetch button
-            const auto local_button = static_cast<LnMouseButtons>(fetchVAInt());
+            const auto local_button = static_cast<LNMouseButtons>(fetchVAInt());
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnMouse_Triggered(local_button, &local_outReturn);
+            stat = LNMouse_Triggered(local_button, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnMouse_TriggeredOff
+        // LNMouse_TriggeredOff
         case 0x21C : {
             // Fetch button
-            const auto local_button = static_cast<LnMouseButtons>(fetchVAInt());
+            const auto local_button = static_cast<LNMouseButtons>(fetchVAInt());
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnMouse_TriggeredOff(local_button, &local_outReturn);
+            stat = LNMouse_TriggeredOff(local_button, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnMouse_Repeated
+        // LNMouse_Repeated
         case 0x21E : {
             // Fetch button
-            const auto local_button = static_cast<LnMouseButtons>(fetchVAInt());
+            const auto local_button = static_cast<LNMouseButtons>(fetchVAInt());
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnMouse_Repeated(local_button, &local_outReturn);
+            stat = LNMouse_Repeated(local_button, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnMouse_Position
+        // LNMouse_Position
         case 0x220 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnPoint local_outReturn;
+            LNPoint local_outReturn;
 
-            stat = LnMouse_Position(&local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, hspLnPoint_typeid(), &local_outReturn);
+            stat = LNMouse_Position(&local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNPoint_typeid(), &local_outReturn);
 
             return true;
         }
-        // LnEngineSettings_SetMainWindowSize
+        // LNEngineSettings_SetMainWindowSize
         case 0x222 : {
             // Fetch width
             const auto local_width = fetchVAInt();
             // Fetch height
             const auto local_height = fetchVAInt();
 
-            stat = LnEngineSettings_SetMainWindowSize(local_width, local_height);
+            stat = LNEngineSettings_SetMainWindowSize(local_width, local_height);
 
 
             return true;
         }
-        // LnEngineSettings_SetMainWorldViewSize
+        // LNEngineSettings_SetMainWorldViewSize
         case 0x225 : {
             // Fetch width
             const auto local_width = fetchVAInt();
             // Fetch height
             const auto local_height = fetchVAInt();
 
-            stat = LnEngineSettings_SetMainWorldViewSize(local_width, local_height);
+            stat = LNEngineSettings_SetMainWorldViewSize(local_width, local_height);
 
 
             return true;
         }
-        // LnEngineSettings_SetMainWindowTitleA
+        // LNEngineSettings_SetMainWindowTitleA
         case 0x228 : {
             // Fetch title
             const auto local_title = fetchVAString();
 
-            stat = LnEngineSettings_SetMainWindowTitleA(local_title);
+            stat = LNEngineSettings_SetMainWindowTitleA(local_title);
 
 
             return true;
         }
-        // LnEngineSettings_AddAssetDirectoryA
+        // LNEngineSettings_AddAssetDirectoryA
         case 0x22A : {
             // Fetch path
             const auto local_path = fetchVAString();
 
-            stat = LnEngineSettings_AddAssetDirectoryA(local_path);
+            stat = LNEngineSettings_AddAssetDirectoryA(local_path);
 
 
             return true;
         }
-        // LnEngineSettings_AddAssetArchiveA
+        // LNEngineSettings_AddAssetArchiveA
         case 0x22C : {
             // Fetch fileFullPath
             const auto local_fileFullPath = fetchVAString();
             // Fetch password
             const auto local_password = fetchVAString();
 
-            stat = LnEngineSettings_AddAssetArchiveA(local_fileFullPath, local_password);
+            stat = LNEngineSettings_AddAssetArchiveA(local_fileFullPath, local_password);
 
 
             return true;
         }
-        // LnEngineSettings_SetFrameRate
+        // LNEngineSettings_SetFrameRate
         case 0x22F : {
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LnEngineSettings_SetFrameRate(local_value);
+            stat = LNEngineSettings_SetFrameRate(local_value);
 
 
             return true;
         }
-        // LnEngineSettings_SetDebugToolEnabled
+        // LNEngineSettings_SetDebugToolEnabled
         case 0x231 : {
             // Fetch enabled
-            const auto local_enabled = static_cast<LnBool>(fetchVAInt());
+            const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LnEngineSettings_SetDebugToolEnabled(local_enabled);
+            stat = LNEngineSettings_SetDebugToolEnabled(local_enabled);
 
 
             return true;
         }
-        // LnEngineSettings_SetEngineLogEnabled
+        // LNEngineSettings_SetEngineLogEnabled
         case 0x233 : {
             // Fetch enabled
-            const auto local_enabled = static_cast<LnBool>(fetchVAInt());
+            const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LnEngineSettings_SetEngineLogEnabled(local_enabled);
+            stat = LNEngineSettings_SetEngineLogEnabled(local_enabled);
 
 
             return true;
         }
-        // LnEngineSettings_SetEngineLogFilePathA
+        // LNEngineSettings_SetEngineLogFilePathA
         case 0x235 : {
             // Fetch filePath
             const auto local_filePath = fetchVAString();
 
-            stat = LnEngineSettings_SetEngineLogFilePathA(local_filePath);
+            stat = LNEngineSettings_SetEngineLogFilePathA(local_filePath);
 
 
             return true;
         }
-        // LnEngine_Initialize
+        // LNEngine_Initialize
         case 0x238 : {
 
-            stat = LnEngine_Initialize();
+            stat = LNEngine_Initialize();
 
 
             return true;
         }
-        // LnEngine_Finalize
+        // LNEngine_Finalize
         case 0x239 : {
 
-            stat = LnEngine_Finalize();
+            stat = LNEngine_Finalize();
 
 
             return true;
         }
-        // LnEngine_Update
+        // LNEngine_Update
         case 0x23A : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnBool local_outReturn;
+            LNBool local_outReturn;
 
-            stat = LnEngine_Update(&local_outReturn);
+            stat = LNEngine_Update(&local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnEngine_Time
+        // LNEngine_Run
         case 0x23B : {
+            // Fetch app
+            const auto local_app = fetchVAInt();
+
+            stat = LNEngine_Run(local_app);
+
+
+            return true;
+        }
+        // LNEngine_Time
+        case 0x23D : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             double local_outReturn;
 
-            stat = LnEngine_Time(&local_outReturn);
+            stat = LNEngine_Time(&local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnEngine_GetCamera
-        case 0x23C : {
-            // Fetch outReturn
-            PVal* pval_outReturn;
-            const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
-
-            stat = LnEngine_GetCamera(&local_outReturn);
-            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
-
-            return true;
-        }
-        // LnEngine_GetLight
-        case 0x23D : {
-            // Fetch outReturn
-            PVal* pval_outReturn;
-            const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
-
-            stat = LnEngine_GetLight(&local_outReturn);
-            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
-
-            return true;
-        }
-        // LnEngine_GetRenderView
+        // LNEngine_GetCamera
         case 0x23E : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnEngine_GetRenderView(&local_outReturn);
+            stat = LNEngine_GetCamera(&local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnApplication_Create
-        case 0x243 : {
+        // LNEngine_GetLight
+        case 0x23F : {
+            // Fetch outReturn
+            PVal* pval_outReturn;
+            const APTR aptr_outReturn = code_getva(&pval_outReturn);
+            LNHandle local_outReturn;
+
+            stat = LNEngine_GetLight(&local_outReturn);
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
+
+            return true;
+        }
+        // LNEngine_GetRenderView
+        case 0x240 : {
+            // Fetch outReturn
+            PVal* pval_outReturn;
+            const APTR aptr_outReturn = code_getva(&pval_outReturn);
+            LNHandle local_outReturn;
+
+            stat = LNEngine_GetRenderView(&local_outReturn);
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
+
+            return true;
+        }
+        // LNApplication_Create
+        case 0x245 : {
             // Fetch outApplication
             PVal* pval_outApplication;
             const APTR aptr_outApplication = code_getva(&pval_outApplication);
-            LnHandle local_outApplication;
+            LNHandle local_outApplication;
 
-            stat = LnApplication_Create(&local_outApplication);
+            stat = LNApplication_Create(&local_outApplication);
             setVAInt(pval_outApplication, aptr_outApplication, local_outApplication);
 
             return true;
         }
-        // LnApplication_OnInit
-        case 0x240 : {
-            // Fetch application
-            const auto local_application = fetchVAInt();
-
-            stat = LnApplication_OnInit(local_application);
-
-
-            return true;
-        }
-        // LnApplication_OnUpdate
-        case 0x241 : {
-            // Fetch application
-            const auto local_application = fetchVAInt();
-
-            stat = LnApplication_OnUpdate(local_application);
-
-
-            return true;
-        }
-        // LnApplication_World
+        // LNApplication_OnInit
         case 0x242 : {
+            // Fetch application
+            const auto local_application = fetchVAInt();
+
+            stat = LNApplication_OnInit(local_application);
+
+
+            return true;
+        }
+        // LNApplication_OnUpdate
+        case 0x243 : {
+            // Fetch application
+            const auto local_application = fetchVAInt();
+
+            stat = LNApplication_OnUpdate(local_application);
+
+
+            return true;
+        }
+        // LNApplication_World
+        case 0x244 : {
             // Fetch application
             const auto local_application = fetchVAInt();
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
-            LnHandle local_outReturn;
+            LNHandle local_outReturn;
 
-            stat = LnApplication_World(local_application, &local_outReturn);
+            stat = LNApplication_World(local_application, &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
         }
-        // LnApplication_SetPrototype_OnSerialize
-        case 0x66A : {
+        // LNApplication_SetPrototype_OnSerialize
+        case 0x66C : {
             // Fetch application
             const auto local_application = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnApplication_SetPrototype_OnSerialize(local_application, local_callback);
+            stat = LNApplication_SetPrototype_OnSerialize(local_application, local_callback);
 
 
             return true;
         }
-        // LnApplication_SetPrototype_OnInit
-        case 0x675 : {
+        // LNApplication_SetPrototype_OnInit
+        case 0x677 : {
             // Fetch application
             const auto local_application = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnApplication_SetPrototype_OnInit(local_application, local_callback);
+            stat = LNApplication_SetPrototype_OnInit(local_application, local_callback);
 
 
             return true;
         }
-        // LnApplication_SetPrototype_OnUpdate
-        case 0x680 : {
+        // LNApplication_SetPrototype_OnUpdate
+        case 0x682 : {
             // Fetch application
             const auto local_application = fetchVAInt();
             // Fetch callback
             const auto local_callback = fetchVAInt();
 
-            stat = LnApplication_SetPrototype_OnUpdate(local_application, local_callback);
+            stat = LNApplication_SetPrototype_OnUpdate(local_application, local_callback);
 
 
             return true;
         }
-        // LnDebug_PrintA
-        case 0x245 : {
+        // LNDebug_PrintA
+        case 0x247 : {
             // Fetch str
             const auto local_str = fetchVAString();
 
-            stat = LnDebug_PrintA(local_str);
+            stat = LNDebug_PrintA(local_str);
 
 
             return true;
         }
-        // LnDebug_PrintWithTimeA
-        case 0x247 : {
+        // LNDebug_PrintWithTimeA
+        case 0x249 : {
             // Fetch time
             const auto local_time = fetchVADouble();
             // Fetch str
             const auto local_str = fetchVAString();
 
-            stat = LnDebug_PrintWithTimeA(local_time, local_str);
+            stat = LNDebug_PrintWithTimeA(local_time, local_str);
 
 
             return true;
         }
-        // LnDebug_PrintWithTimeAndColorA
-        case 0x24A : {
+        // LNDebug_PrintWithTimeAndColorA
+        case 0x24C : {
             // Fetch time
             const auto local_time = fetchVADouble();
             // Fetch color
             PVal* pval_color;
-            CodeGetVA_TypeChecked(&pval_color, LnColor);
+            CodeGetVA_TypeChecked(&pval_color, LNColor);
             // Fetch str
             const auto local_str = fetchVAString();
 
-            stat = LnDebug_PrintWithTimeAndColorA(local_time, reinterpret_cast<const LnColor*>(pval_color->pt), local_str);
+            stat = LNDebug_PrintWithTimeAndColorA(local_time, reinterpret_cast<const LNColor*>(pval_color->pt), local_str);
 
 
             return true;
         }
-        // LnObjectSerializeHandler_Create
-        case 0x4A5 : {
+        // LNObjectSerializeHandler_Create
+        case 0x4A7 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outObjectSerializeHandler
             PVal* pval_outObjectSerializeHandler;
             const APTR aptr_outObjectSerializeHandler = code_getva(&pval_outObjectSerializeHandler);
-            LnHandle local_outObjectSerializeHandler;
+            LNHandle local_outObjectSerializeHandler;
 
-            stat = LnObjectSerializeHandler_Create(HSPSubclass_LnObjectSerializeHandler_DelegateLabelCaller, &local_outObjectSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnObjectSerializeHandler*>(LnObjectSerializeHandler_GetSubinstanceId(local_outObjectSerializeHandler));
+            stat = LNObjectSerializeHandler_Create(HSPSubclass_LNObjectSerializeHandler_DelegateLabelCaller, &local_outObjectSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNObjectSerializeHandler*>(LNObjectSerializeHandler_GetSubinstanceId(local_outObjectSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outObjectSerializeHandler, aptr_outObjectSerializeHandler, local_outObjectSerializeHandler);
 
             return true;
         }
-        // LnEventConnectionSerializeHandler_Create
-        case 0x4B0 : {
+        // LNEventConnectionSerializeHandler_Create
+        case 0x4B2 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outEventConnectionSerializeHandler
             PVal* pval_outEventConnectionSerializeHandler;
             const APTR aptr_outEventConnectionSerializeHandler = code_getva(&pval_outEventConnectionSerializeHandler);
-            LnHandle local_outEventConnectionSerializeHandler;
+            LNHandle local_outEventConnectionSerializeHandler;
 
-            stat = LnEventConnectionSerializeHandler_Create(HSPSubclass_LnEventConnectionSerializeHandler_DelegateLabelCaller, &local_outEventConnectionSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnEventConnectionSerializeHandler*>(LnEventConnectionSerializeHandler_GetSubinstanceId(local_outEventConnectionSerializeHandler));
+            stat = LNEventConnectionSerializeHandler_Create(HSPSubclass_LNEventConnectionSerializeHandler_DelegateLabelCaller, &local_outEventConnectionSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNEventConnectionSerializeHandler*>(LNEventConnectionSerializeHandler_GetSubinstanceId(local_outEventConnectionSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outEventConnectionSerializeHandler, aptr_outEventConnectionSerializeHandler, local_outEventConnectionSerializeHandler);
 
             return true;
         }
-        // LnZVTestClass1SerializeHandler_Create
-        case 0x4BB : {
+        // LNZVTestClass1SerializeHandler_Create
+        case 0x4BD : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestClass1SerializeHandler
             PVal* pval_outZVTestClass1SerializeHandler;
             const APTR aptr_outZVTestClass1SerializeHandler = code_getva(&pval_outZVTestClass1SerializeHandler);
-            LnHandle local_outZVTestClass1SerializeHandler;
+            LNHandle local_outZVTestClass1SerializeHandler;
 
-            stat = LnZVTestClass1SerializeHandler_Create(HSPSubclass_LnZVTestClass1SerializeHandler_DelegateLabelCaller, &local_outZVTestClass1SerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestClass1SerializeHandler*>(LnZVTestClass1SerializeHandler_GetSubinstanceId(local_outZVTestClass1SerializeHandler));
+            stat = LNZVTestClass1SerializeHandler_Create(HSPSubclass_LNZVTestClass1SerializeHandler_DelegateLabelCaller, &local_outZVTestClass1SerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestClass1SerializeHandler*>(LNZVTestClass1SerializeHandler_GetSubinstanceId(local_outZVTestClass1SerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outZVTestClass1SerializeHandler, aptr_outZVTestClass1SerializeHandler, local_outZVTestClass1SerializeHandler);
 
             return true;
         }
-        // LnZVTestEventArgs1SerializeHandler_Create
-        case 0x4C6 : {
+        // LNZVTestEventArgs1SerializeHandler_Create
+        case 0x4C8 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestEventArgs1SerializeHandler
             PVal* pval_outZVTestEventArgs1SerializeHandler;
             const APTR aptr_outZVTestEventArgs1SerializeHandler = code_getva(&pval_outZVTestEventArgs1SerializeHandler);
-            LnHandle local_outZVTestEventArgs1SerializeHandler;
+            LNHandle local_outZVTestEventArgs1SerializeHandler;
 
-            stat = LnZVTestEventArgs1SerializeHandler_Create(HSPSubclass_LnZVTestEventArgs1SerializeHandler_DelegateLabelCaller, &local_outZVTestEventArgs1SerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnZVTestEventArgs1SerializeHandler*>(LnZVTestEventArgs1SerializeHandler_GetSubinstanceId(local_outZVTestEventArgs1SerializeHandler));
+            stat = LNZVTestEventArgs1SerializeHandler_Create(HSPSubclass_LNZVTestEventArgs1SerializeHandler_DelegateLabelCaller, &local_outZVTestEventArgs1SerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNZVTestEventArgs1SerializeHandler*>(LNZVTestEventArgs1SerializeHandler_GetSubinstanceId(local_outZVTestEventArgs1SerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outZVTestEventArgs1SerializeHandler, aptr_outZVTestEventArgs1SerializeHandler, local_outZVTestEventArgs1SerializeHandler);
 
             return true;
         }
-        // LnSerializer2SerializeHandler_Create
-        case 0x4D1 : {
+        // LNSerializer2SerializeHandler_Create
+        case 0x4D3 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSerializer2SerializeHandler
             PVal* pval_outSerializer2SerializeHandler;
             const APTR aptr_outSerializer2SerializeHandler = code_getva(&pval_outSerializer2SerializeHandler);
-            LnHandle local_outSerializer2SerializeHandler;
+            LNHandle local_outSerializer2SerializeHandler;
 
-            stat = LnSerializer2SerializeHandler_Create(HSPSubclass_LnSerializer2SerializeHandler_DelegateLabelCaller, &local_outSerializer2SerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnSerializer2SerializeHandler*>(LnSerializer2SerializeHandler_GetSubinstanceId(local_outSerializer2SerializeHandler));
+            stat = LNSerializer2SerializeHandler_Create(HSPSubclass_LNSerializer2SerializeHandler_DelegateLabelCaller, &local_outSerializer2SerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNSerializer2SerializeHandler*>(LNSerializer2SerializeHandler_GetSubinstanceId(local_outSerializer2SerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outSerializer2SerializeHandler, aptr_outSerializer2SerializeHandler, local_outSerializer2SerializeHandler);
 
             return true;
         }
-        // LnAssetModelSerializeHandler_Create
-        case 0x4DC : {
+        // LNAssetModelSerializeHandler_Create
+        case 0x4DE : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outAssetModelSerializeHandler
             PVal* pval_outAssetModelSerializeHandler;
             const APTR aptr_outAssetModelSerializeHandler = code_getva(&pval_outAssetModelSerializeHandler);
-            LnHandle local_outAssetModelSerializeHandler;
+            LNHandle local_outAssetModelSerializeHandler;
 
-            stat = LnAssetModelSerializeHandler_Create(HSPSubclass_LnAssetModelSerializeHandler_DelegateLabelCaller, &local_outAssetModelSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnAssetModelSerializeHandler*>(LnAssetModelSerializeHandler_GetSubinstanceId(local_outAssetModelSerializeHandler));
+            stat = LNAssetModelSerializeHandler_Create(HSPSubclass_LNAssetModelSerializeHandler_DelegateLabelCaller, &local_outAssetModelSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNAssetModelSerializeHandler*>(LNAssetModelSerializeHandler_GetSubinstanceId(local_outAssetModelSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outAssetModelSerializeHandler, aptr_outAssetModelSerializeHandler, local_outAssetModelSerializeHandler);
 
             return true;
         }
-        // LnTextureSerializeHandler_Create
-        case 0x4E7 : {
+        // LNTextureSerializeHandler_Create
+        case 0x4E9 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outTextureSerializeHandler
             PVal* pval_outTextureSerializeHandler;
             const APTR aptr_outTextureSerializeHandler = code_getva(&pval_outTextureSerializeHandler);
-            LnHandle local_outTextureSerializeHandler;
+            LNHandle local_outTextureSerializeHandler;
 
-            stat = LnTextureSerializeHandler_Create(HSPSubclass_LnTextureSerializeHandler_DelegateLabelCaller, &local_outTextureSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnTextureSerializeHandler*>(LnTextureSerializeHandler_GetSubinstanceId(local_outTextureSerializeHandler));
+            stat = LNTextureSerializeHandler_Create(HSPSubclass_LNTextureSerializeHandler_DelegateLabelCaller, &local_outTextureSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNTextureSerializeHandler*>(LNTextureSerializeHandler_GetSubinstanceId(local_outTextureSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outTextureSerializeHandler, aptr_outTextureSerializeHandler, local_outTextureSerializeHandler);
 
             return true;
         }
-        // LnTexture2DSerializeHandler_Create
-        case 0x4F2 : {
+        // LNTexture2DSerializeHandler_Create
+        case 0x4F4 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outTexture2DSerializeHandler
             PVal* pval_outTexture2DSerializeHandler;
             const APTR aptr_outTexture2DSerializeHandler = code_getva(&pval_outTexture2DSerializeHandler);
-            LnHandle local_outTexture2DSerializeHandler;
+            LNHandle local_outTexture2DSerializeHandler;
 
-            stat = LnTexture2DSerializeHandler_Create(HSPSubclass_LnTexture2DSerializeHandler_DelegateLabelCaller, &local_outTexture2DSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnTexture2DSerializeHandler*>(LnTexture2DSerializeHandler_GetSubinstanceId(local_outTexture2DSerializeHandler));
+            stat = LNTexture2DSerializeHandler_Create(HSPSubclass_LNTexture2DSerializeHandler_DelegateLabelCaller, &local_outTexture2DSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNTexture2DSerializeHandler*>(LNTexture2DSerializeHandler_GetSubinstanceId(local_outTexture2DSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outTexture2DSerializeHandler, aptr_outTexture2DSerializeHandler, local_outTexture2DSerializeHandler);
 
             return true;
         }
-        // LnRenderViewSerializeHandler_Create
-        case 0x4FD : {
+        // LNRenderViewSerializeHandler_Create
+        case 0x4FF : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outRenderViewSerializeHandler
             PVal* pval_outRenderViewSerializeHandler;
             const APTR aptr_outRenderViewSerializeHandler = code_getva(&pval_outRenderViewSerializeHandler);
-            LnHandle local_outRenderViewSerializeHandler;
+            LNHandle local_outRenderViewSerializeHandler;
 
-            stat = LnRenderViewSerializeHandler_Create(HSPSubclass_LnRenderViewSerializeHandler_DelegateLabelCaller, &local_outRenderViewSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnRenderViewSerializeHandler*>(LnRenderViewSerializeHandler_GetSubinstanceId(local_outRenderViewSerializeHandler));
+            stat = LNRenderViewSerializeHandler_Create(HSPSubclass_LNRenderViewSerializeHandler_DelegateLabelCaller, &local_outRenderViewSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNRenderViewSerializeHandler*>(LNRenderViewSerializeHandler_GetSubinstanceId(local_outRenderViewSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outRenderViewSerializeHandler, aptr_outRenderViewSerializeHandler, local_outRenderViewSerializeHandler);
 
             return true;
         }
-        // LnComponentSerializeHandler_Create
-        case 0x508 : {
+        // LNComponentSerializeHandler_Create
+        case 0x50A : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outComponentSerializeHandler
             PVal* pval_outComponentSerializeHandler;
             const APTR aptr_outComponentSerializeHandler = code_getva(&pval_outComponentSerializeHandler);
-            LnHandle local_outComponentSerializeHandler;
+            LNHandle local_outComponentSerializeHandler;
 
-            stat = LnComponentSerializeHandler_Create(HSPSubclass_LnComponentSerializeHandler_DelegateLabelCaller, &local_outComponentSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnComponentSerializeHandler*>(LnComponentSerializeHandler_GetSubinstanceId(local_outComponentSerializeHandler));
+            stat = LNComponentSerializeHandler_Create(HSPSubclass_LNComponentSerializeHandler_DelegateLabelCaller, &local_outComponentSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNComponentSerializeHandler*>(LNComponentSerializeHandler_GetSubinstanceId(local_outComponentSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outComponentSerializeHandler, aptr_outComponentSerializeHandler, local_outComponentSerializeHandler);
 
             return true;
         }
-        // LnVisualComponentSerializeHandler_Create
-        case 0x513 : {
+        // LNVisualComponentSerializeHandler_Create
+        case 0x515 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outVisualComponentSerializeHandler
             PVal* pval_outVisualComponentSerializeHandler;
             const APTR aptr_outVisualComponentSerializeHandler = code_getva(&pval_outVisualComponentSerializeHandler);
-            LnHandle local_outVisualComponentSerializeHandler;
+            LNHandle local_outVisualComponentSerializeHandler;
 
-            stat = LnVisualComponentSerializeHandler_Create(HSPSubclass_LnVisualComponentSerializeHandler_DelegateLabelCaller, &local_outVisualComponentSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualComponentSerializeHandler*>(LnVisualComponentSerializeHandler_GetSubinstanceId(local_outVisualComponentSerializeHandler));
+            stat = LNVisualComponentSerializeHandler_Create(HSPSubclass_LNVisualComponentSerializeHandler_DelegateLabelCaller, &local_outVisualComponentSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNVisualComponentSerializeHandler*>(LNVisualComponentSerializeHandler_GetSubinstanceId(local_outVisualComponentSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outVisualComponentSerializeHandler, aptr_outVisualComponentSerializeHandler, local_outVisualComponentSerializeHandler);
 
             return true;
         }
-        // LnSpriteComponentSerializeHandler_Create
-        case 0x51E : {
+        // LNSpriteComponentSerializeHandler_Create
+        case 0x520 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSpriteComponentSerializeHandler
             PVal* pval_outSpriteComponentSerializeHandler;
             const APTR aptr_outSpriteComponentSerializeHandler = code_getva(&pval_outSpriteComponentSerializeHandler);
-            LnHandle local_outSpriteComponentSerializeHandler;
+            LNHandle local_outSpriteComponentSerializeHandler;
 
-            stat = LnSpriteComponentSerializeHandler_Create(HSPSubclass_LnSpriteComponentSerializeHandler_DelegateLabelCaller, &local_outSpriteComponentSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteComponentSerializeHandler*>(LnSpriteComponentSerializeHandler_GetSubinstanceId(local_outSpriteComponentSerializeHandler));
+            stat = LNSpriteComponentSerializeHandler_Create(HSPSubclass_LNSpriteComponentSerializeHandler_DelegateLabelCaller, &local_outSpriteComponentSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNSpriteComponentSerializeHandler*>(LNSpriteComponentSerializeHandler_GetSubinstanceId(local_outSpriteComponentSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outSpriteComponentSerializeHandler, aptr_outSpriteComponentSerializeHandler, local_outSpriteComponentSerializeHandler);
 
             return true;
         }
-        // LnWorldSerializeHandler_Create
-        case 0x529 : {
+        // LNWorldSerializeHandler_Create
+        case 0x52B : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outWorldSerializeHandler
             PVal* pval_outWorldSerializeHandler;
             const APTR aptr_outWorldSerializeHandler = code_getva(&pval_outWorldSerializeHandler);
-            LnHandle local_outWorldSerializeHandler;
+            LNHandle local_outWorldSerializeHandler;
 
-            stat = LnWorldSerializeHandler_Create(HSPSubclass_LnWorldSerializeHandler_DelegateLabelCaller, &local_outWorldSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldSerializeHandler*>(LnWorldSerializeHandler_GetSubinstanceId(local_outWorldSerializeHandler));
+            stat = LNWorldSerializeHandler_Create(HSPSubclass_LNWorldSerializeHandler_DelegateLabelCaller, &local_outWorldSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNWorldSerializeHandler*>(LNWorldSerializeHandler_GetSubinstanceId(local_outWorldSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outWorldSerializeHandler, aptr_outWorldSerializeHandler, local_outWorldSerializeHandler);
 
             return true;
         }
-        // LnComponentListSerializeHandler_Create
-        case 0x534 : {
+        // LNComponentListSerializeHandler_Create
+        case 0x536 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outComponentListSerializeHandler
             PVal* pval_outComponentListSerializeHandler;
             const APTR aptr_outComponentListSerializeHandler = code_getva(&pval_outComponentListSerializeHandler);
-            LnHandle local_outComponentListSerializeHandler;
+            LNHandle local_outComponentListSerializeHandler;
 
-            stat = LnComponentListSerializeHandler_Create(HSPSubclass_LnComponentListSerializeHandler_DelegateLabelCaller, &local_outComponentListSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnComponentListSerializeHandler*>(LnComponentListSerializeHandler_GetSubinstanceId(local_outComponentListSerializeHandler));
+            stat = LNComponentListSerializeHandler_Create(HSPSubclass_LNComponentListSerializeHandler_DelegateLabelCaller, &local_outComponentListSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNComponentListSerializeHandler*>(LNComponentListSerializeHandler_GetSubinstanceId(local_outComponentListSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outComponentListSerializeHandler, aptr_outComponentListSerializeHandler, local_outComponentListSerializeHandler);
 
             return true;
         }
-        // LnWorldObjectSerializeHandler_Create
-        case 0x53F : {
+        // LNWorldObjectSerializeHandler_Create
+        case 0x541 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outWorldObjectSerializeHandler
             PVal* pval_outWorldObjectSerializeHandler;
             const APTR aptr_outWorldObjectSerializeHandler = code_getva(&pval_outWorldObjectSerializeHandler);
-            LnHandle local_outWorldObjectSerializeHandler;
+            LNHandle local_outWorldObjectSerializeHandler;
 
-            stat = LnWorldObjectSerializeHandler_Create(HSPSubclass_LnWorldObjectSerializeHandler_DelegateLabelCaller, &local_outWorldObjectSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldObjectSerializeHandler*>(LnWorldObjectSerializeHandler_GetSubinstanceId(local_outWorldObjectSerializeHandler));
+            stat = LNWorldObjectSerializeHandler_Create(HSPSubclass_LNWorldObjectSerializeHandler_DelegateLabelCaller, &local_outWorldObjectSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNWorldObjectSerializeHandler*>(LNWorldObjectSerializeHandler_GetSubinstanceId(local_outWorldObjectSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outWorldObjectSerializeHandler, aptr_outWorldObjectSerializeHandler, local_outWorldObjectSerializeHandler);
 
             return true;
         }
-        // LnWorldObjectUpdateHandler_Create
-        case 0x54A : {
+        // LNWorldObjectUpdateHandler_Create
+        case 0x54C : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outWorldObjectUpdateHandler
             PVal* pval_outWorldObjectUpdateHandler;
             const APTR aptr_outWorldObjectUpdateHandler = code_getva(&pval_outWorldObjectUpdateHandler);
-            LnHandle local_outWorldObjectUpdateHandler;
+            LNHandle local_outWorldObjectUpdateHandler;
 
-            stat = LnWorldObjectUpdateHandler_Create(HSPSubclass_LnWorldObjectUpdateHandler_DelegateLabelCaller, &local_outWorldObjectUpdateHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldObjectUpdateHandler*>(LnWorldObjectUpdateHandler_GetSubinstanceId(local_outWorldObjectUpdateHandler));
+            stat = LNWorldObjectUpdateHandler_Create(HSPSubclass_LNWorldObjectUpdateHandler_DelegateLabelCaller, &local_outWorldObjectUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNWorldObjectUpdateHandler*>(LNWorldObjectUpdateHandler_GetSubinstanceId(local_outWorldObjectUpdateHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outWorldObjectUpdateHandler, aptr_outWorldObjectUpdateHandler, local_outWorldObjectUpdateHandler);
 
             return true;
         }
-        // LnVisualObjectSerializeHandler_Create
-        case 0x555 : {
+        // LNVisualObjectSerializeHandler_Create
+        case 0x557 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outVisualObjectSerializeHandler
             PVal* pval_outVisualObjectSerializeHandler;
             const APTR aptr_outVisualObjectSerializeHandler = code_getva(&pval_outVisualObjectSerializeHandler);
-            LnHandle local_outVisualObjectSerializeHandler;
+            LNHandle local_outVisualObjectSerializeHandler;
 
-            stat = LnVisualObjectSerializeHandler_Create(HSPSubclass_LnVisualObjectSerializeHandler_DelegateLabelCaller, &local_outVisualObjectSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualObjectSerializeHandler*>(LnVisualObjectSerializeHandler_GetSubinstanceId(local_outVisualObjectSerializeHandler));
+            stat = LNVisualObjectSerializeHandler_Create(HSPSubclass_LNVisualObjectSerializeHandler_DelegateLabelCaller, &local_outVisualObjectSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNVisualObjectSerializeHandler*>(LNVisualObjectSerializeHandler_GetSubinstanceId(local_outVisualObjectSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outVisualObjectSerializeHandler, aptr_outVisualObjectSerializeHandler, local_outVisualObjectSerializeHandler);
 
             return true;
         }
-        // LnVisualObjectUpdateHandler_Create
-        case 0x560 : {
+        // LNVisualObjectUpdateHandler_Create
+        case 0x562 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outVisualObjectUpdateHandler
             PVal* pval_outVisualObjectUpdateHandler;
             const APTR aptr_outVisualObjectUpdateHandler = code_getva(&pval_outVisualObjectUpdateHandler);
-            LnHandle local_outVisualObjectUpdateHandler;
+            LNHandle local_outVisualObjectUpdateHandler;
 
-            stat = LnVisualObjectUpdateHandler_Create(HSPSubclass_LnVisualObjectUpdateHandler_DelegateLabelCaller, &local_outVisualObjectUpdateHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnVisualObjectUpdateHandler*>(LnVisualObjectUpdateHandler_GetSubinstanceId(local_outVisualObjectUpdateHandler));
+            stat = LNVisualObjectUpdateHandler_Create(HSPSubclass_LNVisualObjectUpdateHandler_DelegateLabelCaller, &local_outVisualObjectUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNVisualObjectUpdateHandler*>(LNVisualObjectUpdateHandler_GetSubinstanceId(local_outVisualObjectUpdateHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outVisualObjectUpdateHandler, aptr_outVisualObjectUpdateHandler, local_outVisualObjectUpdateHandler);
 
             return true;
         }
-        // LnCameraSerializeHandler_Create
-        case 0x56B : {
+        // LNCameraSerializeHandler_Create
+        case 0x56D : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outCameraSerializeHandler
             PVal* pval_outCameraSerializeHandler;
             const APTR aptr_outCameraSerializeHandler = code_getva(&pval_outCameraSerializeHandler);
-            LnHandle local_outCameraSerializeHandler;
+            LNHandle local_outCameraSerializeHandler;
 
-            stat = LnCameraSerializeHandler_Create(HSPSubclass_LnCameraSerializeHandler_DelegateLabelCaller, &local_outCameraSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraSerializeHandler*>(LnCameraSerializeHandler_GetSubinstanceId(local_outCameraSerializeHandler));
+            stat = LNCameraSerializeHandler_Create(HSPSubclass_LNCameraSerializeHandler_DelegateLabelCaller, &local_outCameraSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNCameraSerializeHandler*>(LNCameraSerializeHandler_GetSubinstanceId(local_outCameraSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outCameraSerializeHandler, aptr_outCameraSerializeHandler, local_outCameraSerializeHandler);
 
             return true;
         }
-        // LnCameraUpdateHandler_Create
-        case 0x576 : {
+        // LNCameraUpdateHandler_Create
+        case 0x578 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outCameraUpdateHandler
             PVal* pval_outCameraUpdateHandler;
             const APTR aptr_outCameraUpdateHandler = code_getva(&pval_outCameraUpdateHandler);
-            LnHandle local_outCameraUpdateHandler;
+            LNHandle local_outCameraUpdateHandler;
 
-            stat = LnCameraUpdateHandler_Create(HSPSubclass_LnCameraUpdateHandler_DelegateLabelCaller, &local_outCameraUpdateHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraUpdateHandler*>(LnCameraUpdateHandler_GetSubinstanceId(local_outCameraUpdateHandler));
+            stat = LNCameraUpdateHandler_Create(HSPSubclass_LNCameraUpdateHandler_DelegateLabelCaller, &local_outCameraUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNCameraUpdateHandler*>(LNCameraUpdateHandler_GetSubinstanceId(local_outCameraUpdateHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outCameraUpdateHandler, aptr_outCameraUpdateHandler, local_outCameraUpdateHandler);
 
             return true;
         }
-        // LnDirectionalLightSerializeHandler_Create
-        case 0x581 : {
+        // LNDirectionalLightSerializeHandler_Create
+        case 0x583 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outDirectionalLightSerializeHandler
             PVal* pval_outDirectionalLightSerializeHandler;
             const APTR aptr_outDirectionalLightSerializeHandler = code_getva(&pval_outDirectionalLightSerializeHandler);
-            LnHandle local_outDirectionalLightSerializeHandler;
+            LNHandle local_outDirectionalLightSerializeHandler;
 
-            stat = LnDirectionalLightSerializeHandler_Create(HSPSubclass_LnDirectionalLightSerializeHandler_DelegateLabelCaller, &local_outDirectionalLightSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnDirectionalLightSerializeHandler*>(LnDirectionalLightSerializeHandler_GetSubinstanceId(local_outDirectionalLightSerializeHandler));
+            stat = LNDirectionalLightSerializeHandler_Create(HSPSubclass_LNDirectionalLightSerializeHandler_DelegateLabelCaller, &local_outDirectionalLightSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNDirectionalLightSerializeHandler*>(LNDirectionalLightSerializeHandler_GetSubinstanceId(local_outDirectionalLightSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outDirectionalLightSerializeHandler, aptr_outDirectionalLightSerializeHandler, local_outDirectionalLightSerializeHandler);
 
             return true;
         }
-        // LnDirectionalLightUpdateHandler_Create
-        case 0x58C : {
+        // LNDirectionalLightUpdateHandler_Create
+        case 0x58E : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outDirectionalLightUpdateHandler
             PVal* pval_outDirectionalLightUpdateHandler;
             const APTR aptr_outDirectionalLightUpdateHandler = code_getva(&pval_outDirectionalLightUpdateHandler);
-            LnHandle local_outDirectionalLightUpdateHandler;
+            LNHandle local_outDirectionalLightUpdateHandler;
 
-            stat = LnDirectionalLightUpdateHandler_Create(HSPSubclass_LnDirectionalLightUpdateHandler_DelegateLabelCaller, &local_outDirectionalLightUpdateHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnDirectionalLightUpdateHandler*>(LnDirectionalLightUpdateHandler_GetSubinstanceId(local_outDirectionalLightUpdateHandler));
+            stat = LNDirectionalLightUpdateHandler_Create(HSPSubclass_LNDirectionalLightUpdateHandler_DelegateLabelCaller, &local_outDirectionalLightUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNDirectionalLightUpdateHandler*>(LNDirectionalLightUpdateHandler_GetSubinstanceId(local_outDirectionalLightUpdateHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outDirectionalLightUpdateHandler, aptr_outDirectionalLightUpdateHandler, local_outDirectionalLightUpdateHandler);
 
             return true;
         }
-        // LnPointLightSerializeHandler_Create
-        case 0x597 : {
+        // LNPointLightSerializeHandler_Create
+        case 0x599 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outPointLightSerializeHandler
             PVal* pval_outPointLightSerializeHandler;
             const APTR aptr_outPointLightSerializeHandler = code_getva(&pval_outPointLightSerializeHandler);
-            LnHandle local_outPointLightSerializeHandler;
+            LNHandle local_outPointLightSerializeHandler;
 
-            stat = LnPointLightSerializeHandler_Create(HSPSubclass_LnPointLightSerializeHandler_DelegateLabelCaller, &local_outPointLightSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnPointLightSerializeHandler*>(LnPointLightSerializeHandler_GetSubinstanceId(local_outPointLightSerializeHandler));
+            stat = LNPointLightSerializeHandler_Create(HSPSubclass_LNPointLightSerializeHandler_DelegateLabelCaller, &local_outPointLightSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNPointLightSerializeHandler*>(LNPointLightSerializeHandler_GetSubinstanceId(local_outPointLightSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outPointLightSerializeHandler, aptr_outPointLightSerializeHandler, local_outPointLightSerializeHandler);
 
             return true;
         }
-        // LnPointLightUpdateHandler_Create
-        case 0x5A2 : {
+        // LNPointLightUpdateHandler_Create
+        case 0x5A4 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outPointLightUpdateHandler
             PVal* pval_outPointLightUpdateHandler;
             const APTR aptr_outPointLightUpdateHandler = code_getva(&pval_outPointLightUpdateHandler);
-            LnHandle local_outPointLightUpdateHandler;
+            LNHandle local_outPointLightUpdateHandler;
 
-            stat = LnPointLightUpdateHandler_Create(HSPSubclass_LnPointLightUpdateHandler_DelegateLabelCaller, &local_outPointLightUpdateHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnPointLightUpdateHandler*>(LnPointLightUpdateHandler_GetSubinstanceId(local_outPointLightUpdateHandler));
+            stat = LNPointLightUpdateHandler_Create(HSPSubclass_LNPointLightUpdateHandler_DelegateLabelCaller, &local_outPointLightUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNPointLightUpdateHandler*>(LNPointLightUpdateHandler_GetSubinstanceId(local_outPointLightUpdateHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outPointLightUpdateHandler, aptr_outPointLightUpdateHandler, local_outPointLightUpdateHandler);
 
             return true;
         }
-        // LnSpotLightSerializeHandler_Create
-        case 0x5AD : {
+        // LNSpotLightSerializeHandler_Create
+        case 0x5AF : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSpotLightSerializeHandler
             PVal* pval_outSpotLightSerializeHandler;
             const APTR aptr_outSpotLightSerializeHandler = code_getva(&pval_outSpotLightSerializeHandler);
-            LnHandle local_outSpotLightSerializeHandler;
+            LNHandle local_outSpotLightSerializeHandler;
 
-            stat = LnSpotLightSerializeHandler_Create(HSPSubclass_LnSpotLightSerializeHandler_DelegateLabelCaller, &local_outSpotLightSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnSpotLightSerializeHandler*>(LnSpotLightSerializeHandler_GetSubinstanceId(local_outSpotLightSerializeHandler));
+            stat = LNSpotLightSerializeHandler_Create(HSPSubclass_LNSpotLightSerializeHandler_DelegateLabelCaller, &local_outSpotLightSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNSpotLightSerializeHandler*>(LNSpotLightSerializeHandler_GetSubinstanceId(local_outSpotLightSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outSpotLightSerializeHandler, aptr_outSpotLightSerializeHandler, local_outSpotLightSerializeHandler);
 
             return true;
         }
-        // LnSpotLightUpdateHandler_Create
-        case 0x5B8 : {
+        // LNSpotLightUpdateHandler_Create
+        case 0x5BA : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSpotLightUpdateHandler
             PVal* pval_outSpotLightUpdateHandler;
             const APTR aptr_outSpotLightUpdateHandler = code_getva(&pval_outSpotLightUpdateHandler);
-            LnHandle local_outSpotLightUpdateHandler;
+            LNHandle local_outSpotLightUpdateHandler;
 
-            stat = LnSpotLightUpdateHandler_Create(HSPSubclass_LnSpotLightUpdateHandler_DelegateLabelCaller, &local_outSpotLightUpdateHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnSpotLightUpdateHandler*>(LnSpotLightUpdateHandler_GetSubinstanceId(local_outSpotLightUpdateHandler));
+            stat = LNSpotLightUpdateHandler_Create(HSPSubclass_LNSpotLightUpdateHandler_DelegateLabelCaller, &local_outSpotLightUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNSpotLightUpdateHandler*>(LNSpotLightUpdateHandler_GetSubinstanceId(local_outSpotLightUpdateHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outSpotLightUpdateHandler, aptr_outSpotLightUpdateHandler, local_outSpotLightUpdateHandler);
 
             return true;
         }
-        // LnSpriteSerializeHandler_Create
-        case 0x5C3 : {
+        // LNSpriteSerializeHandler_Create
+        case 0x5C5 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSpriteSerializeHandler
             PVal* pval_outSpriteSerializeHandler;
             const APTR aptr_outSpriteSerializeHandler = code_getva(&pval_outSpriteSerializeHandler);
-            LnHandle local_outSpriteSerializeHandler;
+            LNHandle local_outSpriteSerializeHandler;
 
-            stat = LnSpriteSerializeHandler_Create(HSPSubclass_LnSpriteSerializeHandler_DelegateLabelCaller, &local_outSpriteSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteSerializeHandler*>(LnSpriteSerializeHandler_GetSubinstanceId(local_outSpriteSerializeHandler));
+            stat = LNSpriteSerializeHandler_Create(HSPSubclass_LNSpriteSerializeHandler_DelegateLabelCaller, &local_outSpriteSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNSpriteSerializeHandler*>(LNSpriteSerializeHandler_GetSubinstanceId(local_outSpriteSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outSpriteSerializeHandler, aptr_outSpriteSerializeHandler, local_outSpriteSerializeHandler);
 
             return true;
         }
-        // LnSpriteUpdateHandler_Create
-        case 0x5CE : {
+        // LNSpriteUpdateHandler_Create
+        case 0x5D0 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSpriteUpdateHandler
             PVal* pval_outSpriteUpdateHandler;
             const APTR aptr_outSpriteUpdateHandler = code_getva(&pval_outSpriteUpdateHandler);
-            LnHandle local_outSpriteUpdateHandler;
+            LNHandle local_outSpriteUpdateHandler;
 
-            stat = LnSpriteUpdateHandler_Create(HSPSubclass_LnSpriteUpdateHandler_DelegateLabelCaller, &local_outSpriteUpdateHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnSpriteUpdateHandler*>(LnSpriteUpdateHandler_GetSubinstanceId(local_outSpriteUpdateHandler));
+            stat = LNSpriteUpdateHandler_Create(HSPSubclass_LNSpriteUpdateHandler_DelegateLabelCaller, &local_outSpriteUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNSpriteUpdateHandler*>(LNSpriteUpdateHandler_GetSubinstanceId(local_outSpriteUpdateHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outSpriteUpdateHandler, aptr_outSpriteUpdateHandler, local_outSpriteUpdateHandler);
 
             return true;
         }
-        // LnCameraOrbitControlComponentSerializeHandler_Create
-        case 0x5D9 : {
+        // LNCameraOrbitControlComponentSerializeHandler_Create
+        case 0x5DB : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outCameraOrbitControlComponentSerializeHandler
             PVal* pval_outCameraOrbitControlComponentSerializeHandler;
             const APTR aptr_outCameraOrbitControlComponentSerializeHandler = code_getva(&pval_outCameraOrbitControlComponentSerializeHandler);
-            LnHandle local_outCameraOrbitControlComponentSerializeHandler;
+            LNHandle local_outCameraOrbitControlComponentSerializeHandler;
 
-            stat = LnCameraOrbitControlComponentSerializeHandler_Create(HSPSubclass_LnCameraOrbitControlComponentSerializeHandler_DelegateLabelCaller, &local_outCameraOrbitControlComponentSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnCameraOrbitControlComponentSerializeHandler*>(LnCameraOrbitControlComponentSerializeHandler_GetSubinstanceId(local_outCameraOrbitControlComponentSerializeHandler));
+            stat = LNCameraOrbitControlComponentSerializeHandler_Create(HSPSubclass_LNCameraOrbitControlComponentSerializeHandler_DelegateLabelCaller, &local_outCameraOrbitControlComponentSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNCameraOrbitControlComponentSerializeHandler*>(LNCameraOrbitControlComponentSerializeHandler_GetSubinstanceId(local_outCameraOrbitControlComponentSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outCameraOrbitControlComponentSerializeHandler, aptr_outCameraOrbitControlComponentSerializeHandler, local_outCameraOrbitControlComponentSerializeHandler);
 
             return true;
         }
-        // LnRaycasterSerializeHandler_Create
-        case 0x5E4 : {
+        // LNRaycasterSerializeHandler_Create
+        case 0x5E6 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outRaycasterSerializeHandler
             PVal* pval_outRaycasterSerializeHandler;
             const APTR aptr_outRaycasterSerializeHandler = code_getva(&pval_outRaycasterSerializeHandler);
-            LnHandle local_outRaycasterSerializeHandler;
+            LNHandle local_outRaycasterSerializeHandler;
 
-            stat = LnRaycasterSerializeHandler_Create(HSPSubclass_LnRaycasterSerializeHandler_DelegateLabelCaller, &local_outRaycasterSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnRaycasterSerializeHandler*>(LnRaycasterSerializeHandler_GetSubinstanceId(local_outRaycasterSerializeHandler));
+            stat = LNRaycasterSerializeHandler_Create(HSPSubclass_LNRaycasterSerializeHandler_DelegateLabelCaller, &local_outRaycasterSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNRaycasterSerializeHandler*>(LNRaycasterSerializeHandler_GetSubinstanceId(local_outRaycasterSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outRaycasterSerializeHandler, aptr_outRaycasterSerializeHandler, local_outRaycasterSerializeHandler);
 
             return true;
         }
-        // LnRaycastResultSerializeHandler_Create
-        case 0x5EF : {
+        // LNRaycastResultSerializeHandler_Create
+        case 0x5F1 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outRaycastResultSerializeHandler
             PVal* pval_outRaycastResultSerializeHandler;
             const APTR aptr_outRaycastResultSerializeHandler = code_getva(&pval_outRaycastResultSerializeHandler);
-            LnHandle local_outRaycastResultSerializeHandler;
+            LNHandle local_outRaycastResultSerializeHandler;
 
-            stat = LnRaycastResultSerializeHandler_Create(HSPSubclass_LnRaycastResultSerializeHandler_DelegateLabelCaller, &local_outRaycastResultSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnRaycastResultSerializeHandler*>(LnRaycastResultSerializeHandler_GetSubinstanceId(local_outRaycastResultSerializeHandler));
+            stat = LNRaycastResultSerializeHandler_Create(HSPSubclass_LNRaycastResultSerializeHandler_DelegateLabelCaller, &local_outRaycastResultSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNRaycastResultSerializeHandler*>(LNRaycastResultSerializeHandler_GetSubinstanceId(local_outRaycastResultSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outRaycastResultSerializeHandler, aptr_outRaycastResultSerializeHandler, local_outRaycastResultSerializeHandler);
 
             return true;
         }
-        // LnWorldRenderViewSerializeHandler_Create
-        case 0x5FA : {
+        // LNWorldRenderViewSerializeHandler_Create
+        case 0x5FC : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outWorldRenderViewSerializeHandler
             PVal* pval_outWorldRenderViewSerializeHandler;
             const APTR aptr_outWorldRenderViewSerializeHandler = code_getva(&pval_outWorldRenderViewSerializeHandler);
-            LnHandle local_outWorldRenderViewSerializeHandler;
+            LNHandle local_outWorldRenderViewSerializeHandler;
 
-            stat = LnWorldRenderViewSerializeHandler_Create(HSPSubclass_LnWorldRenderViewSerializeHandler_DelegateLabelCaller, &local_outWorldRenderViewSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnWorldRenderViewSerializeHandler*>(LnWorldRenderViewSerializeHandler_GetSubinstanceId(local_outWorldRenderViewSerializeHandler));
+            stat = LNWorldRenderViewSerializeHandler_Create(HSPSubclass_LNWorldRenderViewSerializeHandler_DelegateLabelCaller, &local_outWorldRenderViewSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNWorldRenderViewSerializeHandler*>(LNWorldRenderViewSerializeHandler_GetSubinstanceId(local_outWorldRenderViewSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outWorldRenderViewSerializeHandler, aptr_outWorldRenderViewSerializeHandler, local_outWorldRenderViewSerializeHandler);
 
             return true;
         }
-        // LnBoxMeshSerializeHandler_Create
-        case 0x605 : {
+        // LNBoxMeshSerializeHandler_Create
+        case 0x607 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outBoxMeshSerializeHandler
             PVal* pval_outBoxMeshSerializeHandler;
             const APTR aptr_outBoxMeshSerializeHandler = code_getva(&pval_outBoxMeshSerializeHandler);
-            LnHandle local_outBoxMeshSerializeHandler;
+            LNHandle local_outBoxMeshSerializeHandler;
 
-            stat = LnBoxMeshSerializeHandler_Create(HSPSubclass_LnBoxMeshSerializeHandler_DelegateLabelCaller, &local_outBoxMeshSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnBoxMeshSerializeHandler*>(LnBoxMeshSerializeHandler_GetSubinstanceId(local_outBoxMeshSerializeHandler));
+            stat = LNBoxMeshSerializeHandler_Create(HSPSubclass_LNBoxMeshSerializeHandler_DelegateLabelCaller, &local_outBoxMeshSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNBoxMeshSerializeHandler*>(LNBoxMeshSerializeHandler_GetSubinstanceId(local_outBoxMeshSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outBoxMeshSerializeHandler, aptr_outBoxMeshSerializeHandler, local_outBoxMeshSerializeHandler);
 
             return true;
         }
-        // LnBoxMeshUpdateHandler_Create
-        case 0x610 : {
+        // LNBoxMeshUpdateHandler_Create
+        case 0x612 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outBoxMeshUpdateHandler
             PVal* pval_outBoxMeshUpdateHandler;
             const APTR aptr_outBoxMeshUpdateHandler = code_getva(&pval_outBoxMeshUpdateHandler);
-            LnHandle local_outBoxMeshUpdateHandler;
+            LNHandle local_outBoxMeshUpdateHandler;
 
-            stat = LnBoxMeshUpdateHandler_Create(HSPSubclass_LnBoxMeshUpdateHandler_DelegateLabelCaller, &local_outBoxMeshUpdateHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnBoxMeshUpdateHandler*>(LnBoxMeshUpdateHandler_GetSubinstanceId(local_outBoxMeshUpdateHandler));
+            stat = LNBoxMeshUpdateHandler_Create(HSPSubclass_LNBoxMeshUpdateHandler_DelegateLabelCaller, &local_outBoxMeshUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNBoxMeshUpdateHandler*>(LNBoxMeshUpdateHandler_GetSubinstanceId(local_outBoxMeshUpdateHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outBoxMeshUpdateHandler, aptr_outBoxMeshUpdateHandler, local_outBoxMeshUpdateHandler);
 
             return true;
         }
-        // LnPlaneMeshSerializeHandler_Create
-        case 0x61B : {
+        // LNPlaneMeshSerializeHandler_Create
+        case 0x61D : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outPlaneMeshSerializeHandler
             PVal* pval_outPlaneMeshSerializeHandler;
             const APTR aptr_outPlaneMeshSerializeHandler = code_getva(&pval_outPlaneMeshSerializeHandler);
-            LnHandle local_outPlaneMeshSerializeHandler;
+            LNHandle local_outPlaneMeshSerializeHandler;
 
-            stat = LnPlaneMeshSerializeHandler_Create(HSPSubclass_LnPlaneMeshSerializeHandler_DelegateLabelCaller, &local_outPlaneMeshSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnPlaneMeshSerializeHandler*>(LnPlaneMeshSerializeHandler_GetSubinstanceId(local_outPlaneMeshSerializeHandler));
+            stat = LNPlaneMeshSerializeHandler_Create(HSPSubclass_LNPlaneMeshSerializeHandler_DelegateLabelCaller, &local_outPlaneMeshSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNPlaneMeshSerializeHandler*>(LNPlaneMeshSerializeHandler_GetSubinstanceId(local_outPlaneMeshSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outPlaneMeshSerializeHandler, aptr_outPlaneMeshSerializeHandler, local_outPlaneMeshSerializeHandler);
 
             return true;
         }
-        // LnPlaneMeshUpdateHandler_Create
-        case 0x626 : {
+        // LNPlaneMeshUpdateHandler_Create
+        case 0x628 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outPlaneMeshUpdateHandler
             PVal* pval_outPlaneMeshUpdateHandler;
             const APTR aptr_outPlaneMeshUpdateHandler = code_getva(&pval_outPlaneMeshUpdateHandler);
-            LnHandle local_outPlaneMeshUpdateHandler;
+            LNHandle local_outPlaneMeshUpdateHandler;
 
-            stat = LnPlaneMeshUpdateHandler_Create(HSPSubclass_LnPlaneMeshUpdateHandler_DelegateLabelCaller, &local_outPlaneMeshUpdateHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnPlaneMeshUpdateHandler*>(LnPlaneMeshUpdateHandler_GetSubinstanceId(local_outPlaneMeshUpdateHandler));
+            stat = LNPlaneMeshUpdateHandler_Create(HSPSubclass_LNPlaneMeshUpdateHandler_DelegateLabelCaller, &local_outPlaneMeshUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNPlaneMeshUpdateHandler*>(LNPlaneMeshUpdateHandler_GetSubinstanceId(local_outPlaneMeshUpdateHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outPlaneMeshUpdateHandler, aptr_outPlaneMeshUpdateHandler, local_outPlaneMeshUpdateHandler);
 
             return true;
         }
-        // LnUIEventArgsSerializeHandler_Create
-        case 0x631 : {
+        // LNUIEventArgsSerializeHandler_Create
+        case 0x633 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIEventArgsSerializeHandler
             PVal* pval_outUIEventArgsSerializeHandler;
             const APTR aptr_outUIEventArgsSerializeHandler = code_getva(&pval_outUIEventArgsSerializeHandler);
-            LnHandle local_outUIEventArgsSerializeHandler;
+            LNHandle local_outUIEventArgsSerializeHandler;
 
-            stat = LnUIEventArgsSerializeHandler_Create(HSPSubclass_LnUIEventArgsSerializeHandler_DelegateLabelCaller, &local_outUIEventArgsSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnUIEventArgsSerializeHandler*>(LnUIEventArgsSerializeHandler_GetSubinstanceId(local_outUIEventArgsSerializeHandler));
+            stat = LNUIEventArgsSerializeHandler_Create(HSPSubclass_LNUIEventArgsSerializeHandler_DelegateLabelCaller, &local_outUIEventArgsSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNUIEventArgsSerializeHandler*>(LNUIEventArgsSerializeHandler_GetSubinstanceId(local_outUIEventArgsSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outUIEventArgsSerializeHandler, aptr_outUIEventArgsSerializeHandler, local_outUIEventArgsSerializeHandler);
 
             return true;
         }
-        // LnUILayoutElementSerializeHandler_Create
-        case 0x63C : {
+        // LNUILayoutElementSerializeHandler_Create
+        case 0x63E : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUILayoutElementSerializeHandler
             PVal* pval_outUILayoutElementSerializeHandler;
             const APTR aptr_outUILayoutElementSerializeHandler = code_getva(&pval_outUILayoutElementSerializeHandler);
-            LnHandle local_outUILayoutElementSerializeHandler;
+            LNHandle local_outUILayoutElementSerializeHandler;
 
-            stat = LnUILayoutElementSerializeHandler_Create(HSPSubclass_LnUILayoutElementSerializeHandler_DelegateLabelCaller, &local_outUILayoutElementSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnUILayoutElementSerializeHandler*>(LnUILayoutElementSerializeHandler_GetSubinstanceId(local_outUILayoutElementSerializeHandler));
+            stat = LNUILayoutElementSerializeHandler_Create(HSPSubclass_LNUILayoutElementSerializeHandler_DelegateLabelCaller, &local_outUILayoutElementSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNUILayoutElementSerializeHandler*>(LNUILayoutElementSerializeHandler_GetSubinstanceId(local_outUILayoutElementSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outUILayoutElementSerializeHandler, aptr_outUILayoutElementSerializeHandler, local_outUILayoutElementSerializeHandler);
 
             return true;
         }
-        // LnUIElementSerializeHandler_Create
-        case 0x647 : {
+        // LNUIElementSerializeHandler_Create
+        case 0x649 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIElementSerializeHandler
             PVal* pval_outUIElementSerializeHandler;
             const APTR aptr_outUIElementSerializeHandler = code_getva(&pval_outUIElementSerializeHandler);
-            LnHandle local_outUIElementSerializeHandler;
+            LNHandle local_outUIElementSerializeHandler;
 
-            stat = LnUIElementSerializeHandler_Create(HSPSubclass_LnUIElementSerializeHandler_DelegateLabelCaller, &local_outUIElementSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnUIElementSerializeHandler*>(LnUIElementSerializeHandler_GetSubinstanceId(local_outUIElementSerializeHandler));
+            stat = LNUIElementSerializeHandler_Create(HSPSubclass_LNUIElementSerializeHandler_DelegateLabelCaller, &local_outUIElementSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNUIElementSerializeHandler*>(LNUIElementSerializeHandler_GetSubinstanceId(local_outUIElementSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outUIElementSerializeHandler, aptr_outUIElementSerializeHandler, local_outUIElementSerializeHandler);
 
             return true;
         }
-        // LnUITextBlockSerializeHandler_Create
-        case 0x652 : {
+        // LNUITextBlockSerializeHandler_Create
+        case 0x654 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUITextBlockSerializeHandler
             PVal* pval_outUITextBlockSerializeHandler;
             const APTR aptr_outUITextBlockSerializeHandler = code_getva(&pval_outUITextBlockSerializeHandler);
-            LnHandle local_outUITextBlockSerializeHandler;
+            LNHandle local_outUITextBlockSerializeHandler;
 
-            stat = LnUITextBlockSerializeHandler_Create(HSPSubclass_LnUITextBlockSerializeHandler_DelegateLabelCaller, &local_outUITextBlockSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnUITextBlockSerializeHandler*>(LnUITextBlockSerializeHandler_GetSubinstanceId(local_outUITextBlockSerializeHandler));
+            stat = LNUITextBlockSerializeHandler_Create(HSPSubclass_LNUITextBlockSerializeHandler_DelegateLabelCaller, &local_outUITextBlockSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNUITextBlockSerializeHandler*>(LNUITextBlockSerializeHandler_GetSubinstanceId(local_outUITextBlockSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outUITextBlockSerializeHandler, aptr_outUITextBlockSerializeHandler, local_outUITextBlockSerializeHandler);
 
             return true;
         }
-        // LnUISpriteSerializeHandler_Create
-        case 0x65D : {
+        // LNUISpriteSerializeHandler_Create
+        case 0x65F : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUISpriteSerializeHandler
             PVal* pval_outUISpriteSerializeHandler;
             const APTR aptr_outUISpriteSerializeHandler = code_getva(&pval_outUISpriteSerializeHandler);
-            LnHandle local_outUISpriteSerializeHandler;
+            LNHandle local_outUISpriteSerializeHandler;
 
-            stat = LnUISpriteSerializeHandler_Create(HSPSubclass_LnUISpriteSerializeHandler_DelegateLabelCaller, &local_outUISpriteSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnUISpriteSerializeHandler*>(LnUISpriteSerializeHandler_GetSubinstanceId(local_outUISpriteSerializeHandler));
+            stat = LNUISpriteSerializeHandler_Create(HSPSubclass_LNUISpriteSerializeHandler_DelegateLabelCaller, &local_outUISpriteSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNUISpriteSerializeHandler*>(LNUISpriteSerializeHandler_GetSubinstanceId(local_outUISpriteSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outUISpriteSerializeHandler, aptr_outUISpriteSerializeHandler, local_outUISpriteSerializeHandler);
 
             return true;
         }
-        // LnApplicationSerializeHandler_Create
-        case 0x668 : {
+        // LNApplicationSerializeHandler_Create
+        case 0x66A : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outApplicationSerializeHandler
             PVal* pval_outApplicationSerializeHandler;
             const APTR aptr_outApplicationSerializeHandler = code_getva(&pval_outApplicationSerializeHandler);
-            LnHandle local_outApplicationSerializeHandler;
+            LNHandle local_outApplicationSerializeHandler;
 
-            stat = LnApplicationSerializeHandler_Create(HSPSubclass_LnApplicationSerializeHandler_DelegateLabelCaller, &local_outApplicationSerializeHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationSerializeHandler*>(LnApplicationSerializeHandler_GetSubinstanceId(local_outApplicationSerializeHandler));
+            stat = LNApplicationSerializeHandler_Create(HSPSubclass_LNApplicationSerializeHandler_DelegateLabelCaller, &local_outApplicationSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNApplicationSerializeHandler*>(LNApplicationSerializeHandler_GetSubinstanceId(local_outApplicationSerializeHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outApplicationSerializeHandler, aptr_outApplicationSerializeHandler, local_outApplicationSerializeHandler);
 
             return true;
         }
-        // LnApplicationInitHandler_Create
-        case 0x673 : {
+        // LNApplicationInitHandler_Create
+        case 0x675 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outApplicationInitHandler
             PVal* pval_outApplicationInitHandler;
             const APTR aptr_outApplicationInitHandler = code_getva(&pval_outApplicationInitHandler);
-            LnHandle local_outApplicationInitHandler;
+            LNHandle local_outApplicationInitHandler;
 
-            stat = LnApplicationInitHandler_Create(HSPSubclass_LnApplicationInitHandler_DelegateLabelCaller, &local_outApplicationInitHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationInitHandler*>(LnApplicationInitHandler_GetSubinstanceId(local_outApplicationInitHandler));
+            stat = LNApplicationInitHandler_Create(HSPSubclass_LNApplicationInitHandler_DelegateLabelCaller, &local_outApplicationInitHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNApplicationInitHandler*>(LNApplicationInitHandler_GetSubinstanceId(local_outApplicationInitHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outApplicationInitHandler, aptr_outApplicationInitHandler, local_outApplicationInitHandler);
 
             return true;
         }
-        // LnApplicationUpdateHandler_Create
-        case 0x67E : {
+        // LNApplicationUpdateHandler_Create
+        case 0x680 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outApplicationUpdateHandler
             PVal* pval_outApplicationUpdateHandler;
             const APTR aptr_outApplicationUpdateHandler = code_getva(&pval_outApplicationUpdateHandler);
-            LnHandle local_outApplicationUpdateHandler;
+            LNHandle local_outApplicationUpdateHandler;
 
-            stat = LnApplicationUpdateHandler_Create(HSPSubclass_LnApplicationUpdateHandler_DelegateLabelCaller, &local_outApplicationUpdateHandler);
-            auto* localSelf = reinterpret_cast<HSPSubclass_LnApplicationUpdateHandler*>(LnApplicationUpdateHandler_GetSubinstanceId(local_outApplicationUpdateHandler));
+            stat = LNApplicationUpdateHandler_Create(HSPSubclass_LNApplicationUpdateHandler_DelegateLabelCaller, &local_outApplicationUpdateHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNApplicationUpdateHandler*>(LNApplicationUpdateHandler_GetSubinstanceId(local_outApplicationUpdateHandler));
             localSelf->labelPointer = local_callback;
             setVAInt(pval_outApplicationUpdateHandler, aptr_outApplicationUpdateHandler, local_outApplicationUpdateHandler);
 
@@ -7177,598 +7187,598 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
 void RegisterTypes(HSP3TYPEINFO * info)
 {
-    registvar(-1, hspLnVector3_Init);
-    registvar(-1, hspLnVector4_Init);
-    registvar(-1, hspLnQuaternion_Init);
-    registvar(-1, hspLnMatrix_Init);
-    registvar(-1, hspLnColor_Init);
-    registvar(-1, hspLnPoint_Init);
-    registvar(-1, hspLnSize_Init);
-    registvar(-1, hspLnRect_Init);
-    registvar(-1, hspLnThickness_Init);
+    registvar(-1, hspLNVector3_Init);
+    registvar(-1, hspLNVector4_Init);
+    registvar(-1, hspLNQuaternion_Init);
+    registvar(-1, hspLNMatrix_Init);
+    registvar(-1, hspLNColor_Init);
+    registvar(-1, hspLNPoint_Init);
+    registvar(-1, hspLNSize_Init);
+    registvar(-1, hspLNRect_Init);
+    registvar(-1, hspLNThickness_Init);
     {
-        LnObject_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnObject_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnObject_SubinstanceFree;
+        LNObject_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNObject_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNObject_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnObject_RegisterSubclassTypeInfo(&info);
+        LNObject_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnEventConnection_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnEventConnection_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnEventConnection_SubinstanceFree;
+        LNEventConnection_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNEventConnection_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNEventConnection_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnEventConnection_RegisterSubclassTypeInfo(&info);
+        LNEventConnection_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnPromiseFailureDelegate_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnPromiseFailureDelegate_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnPromiseFailureDelegate_SubinstanceFree;
-        LnPromiseFailureDelegate_RegisterSubclassTypeInfo(&info);
+        LNPromiseFailureDelegate_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNPromiseFailureDelegate_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNPromiseFailureDelegate_SubinstanceFree;
+        LNPromiseFailureDelegate_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnZVTestDelegate1_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnZVTestDelegate1_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnZVTestDelegate1_SubinstanceFree;
-        LnZVTestDelegate1_RegisterSubclassTypeInfo(&info);
+        LNZVTestDelegate1_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNZVTestDelegate1_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNZVTestDelegate1_SubinstanceFree;
+        LNZVTestDelegate1_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnZVTestDelegate2_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnZVTestDelegate2_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnZVTestDelegate2_SubinstanceFree;
-        LnZVTestDelegate2_RegisterSubclassTypeInfo(&info);
+        LNZVTestDelegate2_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNZVTestDelegate2_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNZVTestDelegate2_SubinstanceFree;
+        LNZVTestDelegate2_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnZVTestDelegate3_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnZVTestDelegate3_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnZVTestDelegate3_SubinstanceFree;
-        LnZVTestDelegate3_RegisterSubclassTypeInfo(&info);
+        LNZVTestDelegate3_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNZVTestDelegate3_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNZVTestDelegate3_SubinstanceFree;
+        LNZVTestDelegate3_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnZVTestEventHandler1_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnZVTestEventHandler1_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnZVTestEventHandler1_SubinstanceFree;
-        LnZVTestEventHandler1_RegisterSubclassTypeInfo(&info);
+        LNZVTestEventHandler1_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNZVTestEventHandler1_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNZVTestEventHandler1_SubinstanceFree;
+        LNZVTestEventHandler1_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnZVTestEventHandler2_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnZVTestEventHandler2_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnZVTestEventHandler2_SubinstanceFree;
-        LnZVTestEventHandler2_RegisterSubclassTypeInfo(&info);
+        LNZVTestEventHandler2_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNZVTestEventHandler2_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNZVTestEventHandler2_SubinstanceFree;
+        LNZVTestEventHandler2_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnZVTestPromise1_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnZVTestPromise1_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnZVTestPromise1_SubinstanceFree;
-        LnZVTestPromise1_RegisterSubclassTypeInfo(&info);
+        LNZVTestPromise1_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNZVTestPromise1_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNZVTestPromise1_SubinstanceFree;
+        LNZVTestPromise1_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnZVTestPromise2_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnZVTestPromise2_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnZVTestPromise2_SubinstanceFree;
-        LnZVTestPromise2_RegisterSubclassTypeInfo(&info);
+        LNZVTestPromise2_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNZVTestPromise2_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNZVTestPromise2_SubinstanceFree;
+        LNZVTestPromise2_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnZVTestClass1_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnZVTestClass1_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnZVTestClass1_SubinstanceFree;
+        LNZVTestClass1_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNZVTestClass1_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNZVTestClass1_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnZVTestClass1_RegisterSubclassTypeInfo(&info);
+        LNZVTestClass1_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnZVTestEventArgs1_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnZVTestEventArgs1_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnZVTestEventArgs1_SubinstanceFree;
+        LNZVTestEventArgs1_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNZVTestEventArgs1_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNZVTestEventArgs1_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnZVTestEventArgs1_RegisterSubclassTypeInfo(&info);
+        LNZVTestEventArgs1_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnSerializer2_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnSerializer2_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnSerializer2_SubinstanceFree;
+        LNSerializer2_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNSerializer2_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNSerializer2_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnSerializer2_RegisterSubclassTypeInfo(&info);
+        LNSerializer2_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnAssetModel_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnAssetModel_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnAssetModel_SubinstanceFree;
+        LNAssetModel_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNAssetModel_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNAssetModel_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnAssetModel_RegisterSubclassTypeInfo(&info);
+        LNAssetModel_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnTexture2DDelegate_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnTexture2DDelegate_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnTexture2DDelegate_SubinstanceFree;
-        LnTexture2DDelegate_RegisterSubclassTypeInfo(&info);
+        LNTexture2DDelegate_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNTexture2DDelegate_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNTexture2DDelegate_SubinstanceFree;
+        LNTexture2DDelegate_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnTexture2DPromise_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnTexture2DPromise_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnTexture2DPromise_SubinstanceFree;
-        LnTexture2DPromise_RegisterSubclassTypeInfo(&info);
+        LNTexture2DPromise_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNTexture2DPromise_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNTexture2DPromise_SubinstanceFree;
+        LNTexture2DPromise_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnTexture_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnTexture_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnTexture_SubinstanceFree;
+        LNTexture_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNTexture_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNTexture_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnTexture_RegisterSubclassTypeInfo(&info);
+        LNTexture_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnTexture2D_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnTexture2D_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnTexture2D_SubinstanceFree;
+        LNTexture2D_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNTexture2D_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNTexture2D_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnTexture2D_RegisterSubclassTypeInfo(&info);
+        LNTexture2D_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnRenderView_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnRenderView_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnRenderView_SubinstanceFree;
+        LNRenderView_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNRenderView_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNRenderView_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnRenderView_RegisterSubclassTypeInfo(&info);
+        LNRenderView_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnComponent_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnComponent_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnComponent_SubinstanceFree;
+        LNComponent_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNComponent_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNComponent_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnComponent_RegisterSubclassTypeInfo(&info);
+        LNComponent_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnVisualComponent_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnVisualComponent_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnVisualComponent_SubinstanceFree;
+        LNVisualComponent_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNVisualComponent_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNVisualComponent_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnVisualComponent_RegisterSubclassTypeInfo(&info);
+        LNVisualComponent_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnSpriteComponent_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnSpriteComponent_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnSpriteComponent_SubinstanceFree;
+        LNSpriteComponent_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNSpriteComponent_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNSpriteComponent_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnSpriteComponent_RegisterSubclassTypeInfo(&info);
+        LNSpriteComponent_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnWorld_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnWorld_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnWorld_SubinstanceFree;
+        LNWorld_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNWorld_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNWorld_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnWorld_RegisterSubclassTypeInfo(&info);
+        LNWorld_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnComponentList_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnComponentList_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnComponentList_SubinstanceFree;
+        LNComponentList_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNComponentList_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNComponentList_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnComponentList_RegisterSubclassTypeInfo(&info);
+        LNComponentList_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnWorldObject_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnWorldObject_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnWorldObject_SubinstanceFree;
-        //info.OnSerialize_OverrideFunc = ????;
-        //info.OnUpdate_OverrideFunc = ????;
-        LnWorldObject_RegisterSubclassTypeInfo(&info);
-    }
-    {
-        LnVisualObject_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnVisualObject_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnVisualObject_SubinstanceFree;
+        LNWorldObject_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNWorldObject_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNWorldObject_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
         //info.OnUpdate_OverrideFunc = ????;
-        LnVisualObject_RegisterSubclassTypeInfo(&info);
+        LNWorldObject_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnCamera_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnCamera_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnCamera_SubinstanceFree;
+        LNVisualObject_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNVisualObject_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNVisualObject_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
         //info.OnUpdate_OverrideFunc = ????;
-        LnCamera_RegisterSubclassTypeInfo(&info);
+        LNVisualObject_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnDirectionalLight_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnDirectionalLight_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnDirectionalLight_SubinstanceFree;
+        LNCamera_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNCamera_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNCamera_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
         //info.OnUpdate_OverrideFunc = ????;
-        LnDirectionalLight_RegisterSubclassTypeInfo(&info);
+        LNCamera_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnPointLight_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnPointLight_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnPointLight_SubinstanceFree;
+        LNDirectionalLight_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNDirectionalLight_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNDirectionalLight_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
         //info.OnUpdate_OverrideFunc = ????;
-        LnPointLight_RegisterSubclassTypeInfo(&info);
+        LNDirectionalLight_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnSpotLight_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnSpotLight_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnSpotLight_SubinstanceFree;
+        LNPointLight_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNPointLight_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNPointLight_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
         //info.OnUpdate_OverrideFunc = ????;
-        LnSpotLight_RegisterSubclassTypeInfo(&info);
+        LNPointLight_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnTestDelegate_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnTestDelegate_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnTestDelegate_SubinstanceFree;
-        LnTestDelegate_RegisterSubclassTypeInfo(&info);
-    }
-    {
-        LnSprite_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnSprite_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnSprite_SubinstanceFree;
+        LNSpotLight_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNSpotLight_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNSpotLight_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
         //info.OnUpdate_OverrideFunc = ????;
-        LnSprite_RegisterSubclassTypeInfo(&info);
+        LNSpotLight_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnCameraOrbitControlComponent_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnCameraOrbitControlComponent_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnCameraOrbitControlComponent_SubinstanceFree;
-        //info.OnSerialize_OverrideFunc = ????;
-        LnCameraOrbitControlComponent_RegisterSubclassTypeInfo(&info);
+        LNTestDelegate_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNTestDelegate_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNTestDelegate_SubinstanceFree;
+        LNTestDelegate_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnRaycaster_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnRaycaster_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnRaycaster_SubinstanceFree;
-        //info.OnSerialize_OverrideFunc = ????;
-        LnRaycaster_RegisterSubclassTypeInfo(&info);
-    }
-    {
-        LnRaycastResult_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnRaycastResult_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnRaycastResult_SubinstanceFree;
-        //info.OnSerialize_OverrideFunc = ????;
-        LnRaycastResult_RegisterSubclassTypeInfo(&info);
-    }
-    {
-        LnWorldRenderView_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnWorldRenderView_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnWorldRenderView_SubinstanceFree;
-        //info.OnSerialize_OverrideFunc = ????;
-        LnWorldRenderView_RegisterSubclassTypeInfo(&info);
-    }
-    {
-        LnBoxMesh_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnBoxMesh_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnBoxMesh_SubinstanceFree;
+        LNSprite_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNSprite_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNSprite_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
         //info.OnUpdate_OverrideFunc = ????;
-        LnBoxMesh_RegisterSubclassTypeInfo(&info);
+        LNSprite_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnPlaneMesh_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnPlaneMesh_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnPlaneMesh_SubinstanceFree;
+        LNCameraOrbitControlComponent_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNCameraOrbitControlComponent_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNCameraOrbitControlComponent_SubinstanceFree;
+        //info.OnSerialize_OverrideFunc = ????;
+        LNCameraOrbitControlComponent_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LNRaycaster_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNRaycaster_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNRaycaster_SubinstanceFree;
+        //info.OnSerialize_OverrideFunc = ????;
+        LNRaycaster_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LNRaycastResult_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNRaycastResult_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNRaycastResult_SubinstanceFree;
+        //info.OnSerialize_OverrideFunc = ????;
+        LNRaycastResult_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LNWorldRenderView_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNWorldRenderView_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNWorldRenderView_SubinstanceFree;
+        //info.OnSerialize_OverrideFunc = ????;
+        LNWorldRenderView_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LNBoxMesh_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNBoxMesh_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNBoxMesh_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
         //info.OnUpdate_OverrideFunc = ????;
-        LnPlaneMesh_RegisterSubclassTypeInfo(&info);
+        LNBoxMesh_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnUIEventArgs_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnUIEventArgs_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnUIEventArgs_SubinstanceFree;
+        LNPlaneMesh_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNPlaneMesh_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNPlaneMesh_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnUIEventArgs_RegisterSubclassTypeInfo(&info);
+        //info.OnUpdate_OverrideFunc = ????;
+        LNPlaneMesh_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnUIGeneralEventHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnUIGeneralEventHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnUIGeneralEventHandler_SubinstanceFree;
-        LnUIGeneralEventHandler_RegisterSubclassTypeInfo(&info);
-    }
-    {
-        LnUIEventHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnUIEventHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnUIEventHandler_SubinstanceFree;
-        LnUIEventHandler_RegisterSubclassTypeInfo(&info);
-    }
-    {
-        LnUILayoutElement_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnUILayoutElement_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnUILayoutElement_SubinstanceFree;
+        LNUIEventArgs_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNUIEventArgs_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNUIEventArgs_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnUILayoutElement_RegisterSubclassTypeInfo(&info);
+        LNUIEventArgs_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnUIElement_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnUIElement_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnUIElement_SubinstanceFree;
+        LNUIGeneralEventHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNUIGeneralEventHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNUIGeneralEventHandler_SubinstanceFree;
+        LNUIGeneralEventHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LNUIEventHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNUIEventHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNUIEventHandler_SubinstanceFree;
+        LNUIEventHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LNUILayoutElement_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNUILayoutElement_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNUILayoutElement_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnUIElement_RegisterSubclassTypeInfo(&info);
+        LNUILayoutElement_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnUITextBlock_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnUITextBlock_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnUITextBlock_SubinstanceFree;
+        LNUIElement_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNUIElement_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNUIElement_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnUITextBlock_RegisterSubclassTypeInfo(&info);
+        LNUIElement_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnUISprite_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnUISprite_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnUISprite_SubinstanceFree;
+        LNUITextBlock_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNUITextBlock_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNUITextBlock_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
-        LnUISprite_RegisterSubclassTypeInfo(&info);
+        LNUITextBlock_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnApplication_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnApplication_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnApplication_SubinstanceFree;
+        LNUISprite_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNUISprite_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNUISprite_SubinstanceFree;
+        //info.OnSerialize_OverrideFunc = ????;
+        LNUISprite_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LNApplication_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNApplication_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNApplication_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
         //info.OnInit_OverrideFunc = ????;
         //info.OnUpdate_OverrideFunc = ????;
-        LnApplication_RegisterSubclassTypeInfo(&info);
+        LNApplication_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnObjectSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnObjectSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnObjectSerializeHandler_SubinstanceFree;
-        LnObjectSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNObjectSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNObjectSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNObjectSerializeHandler_SubinstanceFree;
+        LNObjectSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnEventConnectionSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnEventConnectionSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnEventConnectionSerializeHandler_SubinstanceFree;
-        LnEventConnectionSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNEventConnectionSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNEventConnectionSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNEventConnectionSerializeHandler_SubinstanceFree;
+        LNEventConnectionSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnZVTestClass1SerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnZVTestClass1SerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnZVTestClass1SerializeHandler_SubinstanceFree;
-        LnZVTestClass1SerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNZVTestClass1SerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNZVTestClass1SerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNZVTestClass1SerializeHandler_SubinstanceFree;
+        LNZVTestClass1SerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnZVTestEventArgs1SerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnZVTestEventArgs1SerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnZVTestEventArgs1SerializeHandler_SubinstanceFree;
-        LnZVTestEventArgs1SerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNZVTestEventArgs1SerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNZVTestEventArgs1SerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNZVTestEventArgs1SerializeHandler_SubinstanceFree;
+        LNZVTestEventArgs1SerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnSerializer2SerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnSerializer2SerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnSerializer2SerializeHandler_SubinstanceFree;
-        LnSerializer2SerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNSerializer2SerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNSerializer2SerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNSerializer2SerializeHandler_SubinstanceFree;
+        LNSerializer2SerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnAssetModelSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnAssetModelSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnAssetModelSerializeHandler_SubinstanceFree;
-        LnAssetModelSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNAssetModelSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNAssetModelSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNAssetModelSerializeHandler_SubinstanceFree;
+        LNAssetModelSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnTextureSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnTextureSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnTextureSerializeHandler_SubinstanceFree;
-        LnTextureSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNTextureSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNTextureSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNTextureSerializeHandler_SubinstanceFree;
+        LNTextureSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnTexture2DSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnTexture2DSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnTexture2DSerializeHandler_SubinstanceFree;
-        LnTexture2DSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNTexture2DSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNTexture2DSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNTexture2DSerializeHandler_SubinstanceFree;
+        LNTexture2DSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnRenderViewSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnRenderViewSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnRenderViewSerializeHandler_SubinstanceFree;
-        LnRenderViewSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNRenderViewSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNRenderViewSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNRenderViewSerializeHandler_SubinstanceFree;
+        LNRenderViewSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnComponentSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnComponentSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnComponentSerializeHandler_SubinstanceFree;
-        LnComponentSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNComponentSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNComponentSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNComponentSerializeHandler_SubinstanceFree;
+        LNComponentSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnVisualComponentSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnVisualComponentSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnVisualComponentSerializeHandler_SubinstanceFree;
-        LnVisualComponentSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNVisualComponentSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNVisualComponentSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNVisualComponentSerializeHandler_SubinstanceFree;
+        LNVisualComponentSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnSpriteComponentSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnSpriteComponentSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnSpriteComponentSerializeHandler_SubinstanceFree;
-        LnSpriteComponentSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNSpriteComponentSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNSpriteComponentSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNSpriteComponentSerializeHandler_SubinstanceFree;
+        LNSpriteComponentSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnWorldSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnWorldSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnWorldSerializeHandler_SubinstanceFree;
-        LnWorldSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNWorldSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNWorldSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNWorldSerializeHandler_SubinstanceFree;
+        LNWorldSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnComponentListSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnComponentListSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnComponentListSerializeHandler_SubinstanceFree;
-        LnComponentListSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNComponentListSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNComponentListSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNComponentListSerializeHandler_SubinstanceFree;
+        LNComponentListSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnWorldObjectSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnWorldObjectSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnWorldObjectSerializeHandler_SubinstanceFree;
-        LnWorldObjectSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNWorldObjectSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNWorldObjectSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNWorldObjectSerializeHandler_SubinstanceFree;
+        LNWorldObjectSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnWorldObjectUpdateHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnWorldObjectUpdateHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnWorldObjectUpdateHandler_SubinstanceFree;
-        LnWorldObjectUpdateHandler_RegisterSubclassTypeInfo(&info);
+        LNWorldObjectUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNWorldObjectUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNWorldObjectUpdateHandler_SubinstanceFree;
+        LNWorldObjectUpdateHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnVisualObjectSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnVisualObjectSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnVisualObjectSerializeHandler_SubinstanceFree;
-        LnVisualObjectSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNVisualObjectSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNVisualObjectSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNVisualObjectSerializeHandler_SubinstanceFree;
+        LNVisualObjectSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnVisualObjectUpdateHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnVisualObjectUpdateHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnVisualObjectUpdateHandler_SubinstanceFree;
-        LnVisualObjectUpdateHandler_RegisterSubclassTypeInfo(&info);
+        LNVisualObjectUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNVisualObjectUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNVisualObjectUpdateHandler_SubinstanceFree;
+        LNVisualObjectUpdateHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnCameraSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnCameraSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnCameraSerializeHandler_SubinstanceFree;
-        LnCameraSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNCameraSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNCameraSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNCameraSerializeHandler_SubinstanceFree;
+        LNCameraSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnCameraUpdateHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnCameraUpdateHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnCameraUpdateHandler_SubinstanceFree;
-        LnCameraUpdateHandler_RegisterSubclassTypeInfo(&info);
+        LNCameraUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNCameraUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNCameraUpdateHandler_SubinstanceFree;
+        LNCameraUpdateHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnDirectionalLightSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnDirectionalLightSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnDirectionalLightSerializeHandler_SubinstanceFree;
-        LnDirectionalLightSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNDirectionalLightSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNDirectionalLightSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNDirectionalLightSerializeHandler_SubinstanceFree;
+        LNDirectionalLightSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnDirectionalLightUpdateHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnDirectionalLightUpdateHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnDirectionalLightUpdateHandler_SubinstanceFree;
-        LnDirectionalLightUpdateHandler_RegisterSubclassTypeInfo(&info);
+        LNDirectionalLightUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNDirectionalLightUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNDirectionalLightUpdateHandler_SubinstanceFree;
+        LNDirectionalLightUpdateHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnPointLightSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnPointLightSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnPointLightSerializeHandler_SubinstanceFree;
-        LnPointLightSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNPointLightSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNPointLightSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNPointLightSerializeHandler_SubinstanceFree;
+        LNPointLightSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnPointLightUpdateHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnPointLightUpdateHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnPointLightUpdateHandler_SubinstanceFree;
-        LnPointLightUpdateHandler_RegisterSubclassTypeInfo(&info);
+        LNPointLightUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNPointLightUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNPointLightUpdateHandler_SubinstanceFree;
+        LNPointLightUpdateHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnSpotLightSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnSpotLightSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnSpotLightSerializeHandler_SubinstanceFree;
-        LnSpotLightSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNSpotLightSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNSpotLightSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNSpotLightSerializeHandler_SubinstanceFree;
+        LNSpotLightSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnSpotLightUpdateHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnSpotLightUpdateHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnSpotLightUpdateHandler_SubinstanceFree;
-        LnSpotLightUpdateHandler_RegisterSubclassTypeInfo(&info);
+        LNSpotLightUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNSpotLightUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNSpotLightUpdateHandler_SubinstanceFree;
+        LNSpotLightUpdateHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnSpriteSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnSpriteSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnSpriteSerializeHandler_SubinstanceFree;
-        LnSpriteSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNSpriteSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNSpriteSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNSpriteSerializeHandler_SubinstanceFree;
+        LNSpriteSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnSpriteUpdateHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnSpriteUpdateHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnSpriteUpdateHandler_SubinstanceFree;
-        LnSpriteUpdateHandler_RegisterSubclassTypeInfo(&info);
+        LNSpriteUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNSpriteUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNSpriteUpdateHandler_SubinstanceFree;
+        LNSpriteUpdateHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnCameraOrbitControlComponentSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnCameraOrbitControlComponentSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnCameraOrbitControlComponentSerializeHandler_SubinstanceFree;
-        LnCameraOrbitControlComponentSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNCameraOrbitControlComponentSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNCameraOrbitControlComponentSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNCameraOrbitControlComponentSerializeHandler_SubinstanceFree;
+        LNCameraOrbitControlComponentSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnRaycasterSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnRaycasterSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnRaycasterSerializeHandler_SubinstanceFree;
-        LnRaycasterSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNRaycasterSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNRaycasterSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNRaycasterSerializeHandler_SubinstanceFree;
+        LNRaycasterSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnRaycastResultSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnRaycastResultSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnRaycastResultSerializeHandler_SubinstanceFree;
-        LnRaycastResultSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNRaycastResultSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNRaycastResultSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNRaycastResultSerializeHandler_SubinstanceFree;
+        LNRaycastResultSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnWorldRenderViewSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnWorldRenderViewSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnWorldRenderViewSerializeHandler_SubinstanceFree;
-        LnWorldRenderViewSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNWorldRenderViewSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNWorldRenderViewSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNWorldRenderViewSerializeHandler_SubinstanceFree;
+        LNWorldRenderViewSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnBoxMeshSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnBoxMeshSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnBoxMeshSerializeHandler_SubinstanceFree;
-        LnBoxMeshSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNBoxMeshSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNBoxMeshSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNBoxMeshSerializeHandler_SubinstanceFree;
+        LNBoxMeshSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnBoxMeshUpdateHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnBoxMeshUpdateHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnBoxMeshUpdateHandler_SubinstanceFree;
-        LnBoxMeshUpdateHandler_RegisterSubclassTypeInfo(&info);
+        LNBoxMeshUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNBoxMeshUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNBoxMeshUpdateHandler_SubinstanceFree;
+        LNBoxMeshUpdateHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnPlaneMeshSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnPlaneMeshSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnPlaneMeshSerializeHandler_SubinstanceFree;
-        LnPlaneMeshSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNPlaneMeshSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNPlaneMeshSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNPlaneMeshSerializeHandler_SubinstanceFree;
+        LNPlaneMeshSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnPlaneMeshUpdateHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnPlaneMeshUpdateHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnPlaneMeshUpdateHandler_SubinstanceFree;
-        LnPlaneMeshUpdateHandler_RegisterSubclassTypeInfo(&info);
+        LNPlaneMeshUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNPlaneMeshUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNPlaneMeshUpdateHandler_SubinstanceFree;
+        LNPlaneMeshUpdateHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnUIEventArgsSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnUIEventArgsSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnUIEventArgsSerializeHandler_SubinstanceFree;
-        LnUIEventArgsSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNUIEventArgsSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNUIEventArgsSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNUIEventArgsSerializeHandler_SubinstanceFree;
+        LNUIEventArgsSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnUILayoutElementSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnUILayoutElementSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnUILayoutElementSerializeHandler_SubinstanceFree;
-        LnUILayoutElementSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNUILayoutElementSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNUILayoutElementSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNUILayoutElementSerializeHandler_SubinstanceFree;
+        LNUILayoutElementSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnUIElementSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnUIElementSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnUIElementSerializeHandler_SubinstanceFree;
-        LnUIElementSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNUIElementSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNUIElementSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNUIElementSerializeHandler_SubinstanceFree;
+        LNUIElementSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnUITextBlockSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnUITextBlockSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnUITextBlockSerializeHandler_SubinstanceFree;
-        LnUITextBlockSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNUITextBlockSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNUITextBlockSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNUITextBlockSerializeHandler_SubinstanceFree;
+        LNUITextBlockSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnUISpriteSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnUISpriteSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnUISpriteSerializeHandler_SubinstanceFree;
-        LnUISpriteSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNUISpriteSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNUISpriteSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNUISpriteSerializeHandler_SubinstanceFree;
+        LNUISpriteSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnApplicationSerializeHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnApplicationSerializeHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnApplicationSerializeHandler_SubinstanceFree;
-        LnApplicationSerializeHandler_RegisterSubclassTypeInfo(&info);
+        LNApplicationSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNApplicationSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNApplicationSerializeHandler_SubinstanceFree;
+        LNApplicationSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnApplicationInitHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnApplicationInitHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnApplicationInitHandler_SubinstanceFree;
-        LnApplicationInitHandler_RegisterSubclassTypeInfo(&info);
+        LNApplicationInitHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNApplicationInitHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNApplicationInitHandler_SubinstanceFree;
+        LNApplicationInitHandler_RegisterSubclassTypeInfo(&info);
     }
     {
-        LnApplicationUpdateHandler_SubclassRegistrationInfo info = {};
-        info.subinstanceAllocFunc = HSPSubclass_LnApplicationUpdateHandler_SubinstanceAlloc;
-        info.subinstanceFreeFunc = HSPSubclass_LnApplicationUpdateHandler_SubinstanceFree;
-        LnApplicationUpdateHandler_RegisterSubclassTypeInfo(&info);
+        LNApplicationUpdateHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNApplicationUpdateHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNApplicationUpdateHandler_SubinstanceFree;
+        LNApplicationUpdateHandler_RegisterSubclassTypeInfo(&info);
     }
 }
 

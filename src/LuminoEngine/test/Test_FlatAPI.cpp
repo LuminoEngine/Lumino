@@ -5,7 +5,7 @@
 
 #define LN_ZV_CHECK(f) \
 { \
-    LnResult r = (f); \
+    LNResult r = (f); \
 	ASSERT_EQ(LN_SUCCESS, r); \
 }
 
@@ -16,76 +16,76 @@ public:
 };
 
 static volatile int g_value = 0;
-static volatile LnHandle g_otherObject = LN_NULL_HANDLE;
+static volatile LNHandle g_otherObject = LN_NULL_HANDLE;
 
 TEST_F(Test_FlatAPI, ReferenceCount)
 {
-	LnHandle obj1;
-	LN_ZV_CHECK(LnZVTestClass1_Create(&obj1));
-	ASSERT_EQ(1, LnObject_GetReferenceCount(obj1));
-	LnObject_Release(obj1);
+	LNHandle obj1;
+	LN_ZV_CHECK(LNZVTestClass1_Create(&obj1));
+	ASSERT_EQ(1, LNObject_GetReferenceCount(obj1));
+	LNObject_Release(obj1);
 }
 
-static LnResult LnZVTestDelegate1_Callback(LnHandle selfDelegate, int a)
+static LNResult LNZVTestDelegate1_Callback(LNHandle selfDelegate, int a)
 {
 	g_value = a;
 	return LN_SUCCESS;
 }
 
-static LnResult LnZVTestDelegate2_Callback(LnHandle selfDelegate, int a, int b, int* outReturn)
+static LNResult LNZVTestDelegate2_Callback(LNHandle selfDelegate, int a, int b, int* outReturn)
 {
 	g_value++;
 	*outReturn = a + b;
 	return LN_SUCCESS;
 }
 
-static LnResult LnZVTestDelegate3_Callback(LnHandle selfDelegate, LnHandle otherObject)
+static LNResult LNZVTestDelegate3_Callback(LNHandle selfDelegate, LNHandle otherObject)
 {
-	g_value = LnObject_GetReferenceCount(otherObject);
+	g_value = LNObject_GetReferenceCount(otherObject);
 	g_otherObject = otherObject;
 	return LN_SUCCESS;
 }
 
 TEST_F(Test_FlatAPI, Delegate)
 {
-	LnHandle delegate1;
-	LnHandle delegate2;
-	LnHandle delegate3;
-	LN_ZV_CHECK(LnZVTestDelegate1_Create(LnZVTestDelegate1_Callback, &delegate1));
-	LN_ZV_CHECK(LnZVTestDelegate2_Create(LnZVTestDelegate2_Callback, &delegate2));
-	LN_ZV_CHECK(LnZVTestDelegate3_Create(LnZVTestDelegate3_Callback, &delegate3));
+	LNHandle delegate1;
+	LNHandle delegate2;
+	LNHandle delegate3;
+	LN_ZV_CHECK(LNZVTestDelegate1_Create(LNZVTestDelegate1_Callback, &delegate1));
+	LN_ZV_CHECK(LNZVTestDelegate2_Create(LNZVTestDelegate2_Callback, &delegate2));
+	LN_ZV_CHECK(LNZVTestDelegate3_Create(LNZVTestDelegate3_Callback, &delegate3));
 
-	LnHandle obj1;
-	LN_ZV_CHECK(LnZVTestClass1_Create(&obj1));
-	LN_ZV_CHECK(LnZVTestClass1_SetTestDelegate1(obj1, delegate1));
-	LN_ZV_CHECK(LnZVTestClass1_SetTestDelegate2(obj1, delegate2));
-	LN_ZV_CHECK(LnZVTestClass1_SetTestDelegate3(obj1, delegate3));
+	LNHandle obj1;
+	LN_ZV_CHECK(LNZVTestClass1_Create(&obj1));
+	LN_ZV_CHECK(LNZVTestClass1_SetTestDelegate1(obj1, delegate1));
+	LN_ZV_CHECK(LNZVTestClass1_SetTestDelegate2(obj1, delegate2));
+	LN_ZV_CHECK(LNZVTestClass1_SetTestDelegate3(obj1, delegate3));
 
 	// recive int.
 	g_value = 0;
-	LN_ZV_CHECK(LnZVTestClass1_CallTestDelegate1(obj1, 5));
+	LN_ZV_CHECK(LNZVTestClass1_CallTestDelegate1(obj1, 5));
 	ASSERT_EQ(5, g_value);
 
 	// get return value.
 	int ret = 0;
 	g_value = 0;
-	LN_ZV_CHECK(LnZVTestClass1_CallTestDelegate2(obj1, 1, 2, &ret));
+	LN_ZV_CHECK(LNZVTestClass1_CallTestDelegate2(obj1, 1, 2, &ret));
 	ASSERT_EQ(1, g_value);
 	ASSERT_EQ(3, ret);
 
 	// get internal created object. (for Promise)
 	g_value = 0;
 	g_otherObject = LN_NULL_HANDLE;
-	LN_ZV_CHECK(LnZVTestClass1_CallTestDelegate3(obj1));
+	LN_ZV_CHECK(LNZVTestClass1_CallTestDelegate3(obj1));
 	ASSERT_NE(LN_NULL_HANDLE, g_otherObject);
 	ASSERT_EQ(3, g_value);	// 作成元の stack の分と、Delegate に Ref<> で渡された分と、コールバックに強参照で渡された分
-	ASSERT_EQ(1, LnObject_GetReferenceCount(g_otherObject));	// コールバックに強参照で渡されたオブジェクトは自分で Release する必要がある。
+	ASSERT_EQ(1, LNObject_GetReferenceCount(g_otherObject));	// コールバックに強参照で渡されたオブジェクトは自分で Release する必要がある。
 
-	LnObject_Release(g_otherObject);
-	LnObject_Release(obj1);
-	LnObject_Release(delegate3);
-	LnObject_Release(delegate2);
-	LnObject_Release(delegate1);
+	LNObject_Release(g_otherObject);
+	LNObject_Release(obj1);
+	LNObject_Release(delegate3);
+	LNObject_Release(delegate2);
+	LNObject_Release(delegate1);
 }
 
 TEST_F(Test_FlatAPI, Promise)
@@ -95,29 +95,29 @@ TEST_F(Test_FlatAPI, Promise)
 	ASSERT_NE(t1, t2);
 
 
-	LnHandle delegate3;
-	LN_ZV_CHECK(LnZVTestDelegate3_Create(LnZVTestDelegate3_Callback, &delegate3));
+	LNHandle delegate3;
+	LN_ZV_CHECK(LNZVTestDelegate3_Create(LNZVTestDelegate3_Callback, &delegate3));
 
 	// Create objects asynchronously.
-	LnHandle promise1;
-	LN_ZV_CHECK(LnZVTestClass1_LoadAsync(u"test", &promise1));
+	LNHandle promise1;
+	LN_ZV_CHECK(LNZVTestClass1_LoadAsync(u"test", &promise1));
 
 	// Wait creation ending.
 	g_otherObject = LN_NULL_HANDLE;
-	LN_ZV_CHECK(LnZVTestPromise1_ThenWith(promise1, delegate3));
+	LN_ZV_CHECK(LNZVTestPromise1_ThenWith(promise1, delegate3));
 	while (g_otherObject == LN_NULL_HANDLE) TestEnv::updateFrame();
-	LnHandle obj1 = g_otherObject;
+	LNHandle obj1 = g_otherObject;
 
 	const Char* filePath;
-	LN_ZV_CHECK(LnZVTestClass1_GetFilePath(obj1, &filePath));
+	LN_ZV_CHECK(LNZVTestClass1_GetFilePath(obj1, &filePath));
 	ASSERT_EQ(u"test", String(filePath));
 
-	LnObject_Release(obj1);
-	LnObject_Release(promise1);
-	LnObject_Release(delegate3);
+	LNObject_Release(obj1);
+	LNObject_Release(promise1);
+	LNObject_Release(delegate3);
 }
 
-static LnResult LnZVPromiseFailureDelegate_Callback(LnHandle selfDelegate)
+static LNResult LNZVPromiseFailureDelegate_Callback(LNHandle selfDelegate)
 {
 	g_value = -1;
 	return LN_SUCCESS;
@@ -125,37 +125,37 @@ static LnResult LnZVPromiseFailureDelegate_Callback(LnHandle selfDelegate)
 
 TEST_F(Test_FlatAPI, Promise_Failure)
 {
-	LnHandle delegate3;
-	LN_ZV_CHECK(LnZVTestDelegate3_Create(LnZVTestDelegate3_Callback, &delegate3));
+	LNHandle delegate3;
+	LN_ZV_CHECK(LNZVTestDelegate3_Create(LNZVTestDelegate3_Callback, &delegate3));
 
-	LnHandle delegateFailure;
-	LN_ZV_CHECK(LnPromiseFailureDelegate_Create(LnZVPromiseFailureDelegate_Callback, &delegateFailure));
+	LNHandle delegateFailure;
+	LN_ZV_CHECK(LNPromiseFailureDelegate_Create(LNZVPromiseFailureDelegate_Callback, &delegateFailure));
 
 	// Create objects asynchronously.
-	LnHandle promise1;
-	LN_ZV_CHECK(LnZVTestClass1_LoadAsync(nullptr, &promise1));
-	LN_ZV_CHECK(LnZVTestPromise1_ThenWith(promise1, delegate3));
-	LN_ZV_CHECK(LnZVTestPromise1_CatchWith(promise1, delegateFailure));
+	LNHandle promise1;
+	LN_ZV_CHECK(LNZVTestClass1_LoadAsync(nullptr, &promise1));
+	LN_ZV_CHECK(LNZVTestPromise1_ThenWith(promise1, delegate3));
+	LN_ZV_CHECK(LNZVTestPromise1_CatchWith(promise1, delegateFailure));
 
 	// Wait creation ending.
 	g_value = 0;
 	while (g_value != -1) TestEnv::updateFrame();
 
-	LnObject_Release(promise1);
-	LnObject_Release(delegateFailure);
-	LnObject_Release(delegate3);
+	LNObject_Release(promise1);
+	LNObject_Release(delegateFailure);
+	LNObject_Release(delegate3);
 }
 
-static LnResult LnZVTestEventHandler1_Callback(LnHandle selfDelegate)
+static LNResult LNZVTestEventHandler1_Callback(LNHandle selfDelegate)
 {
 	g_value = 555;
 	return LN_SUCCESS;
 }
 
-static LnResult LnZVTestEventHandler2_Callback(LnHandle selfDelegate, LnHandle e)
+static LNResult LNZVTestEventHandler2_Callback(LNHandle selfDelegate, LNHandle e)
 {
 	int v;
-	LnZVTestEventArgs1_GetValue(e, &v);
+	LNZVTestEventArgs1_GetValue(e, &v);
 	g_value = v;
 	return LN_SUCCESS;
 }
@@ -164,58 +164,58 @@ TEST_F(Test_FlatAPI, Event)
 {
 	// void(void)
 	{
-		LnHandle delegate4;
-		LN_ZV_CHECK(LnZVTestEventHandler1_Create(LnZVTestEventHandler1_Callback, &delegate4));
+		LNHandle delegate4;
+		LN_ZV_CHECK(LNZVTestEventHandler1_Create(LNZVTestEventHandler1_Callback, &delegate4));
 
-		LnHandle obj1;
-		LN_ZV_CHECK(LnZVTestClass1_Create(&obj1));
+		LNHandle obj1;
+		LN_ZV_CHECK(LNZVTestClass1_Create(&obj1));
 
-		LnHandle connection;
-		LN_ZV_CHECK(LnZVTestClass1_ConnectOnEvent1(obj1, delegate4, &connection));
+		LNHandle connection;
+		LN_ZV_CHECK(LNZVTestClass1_ConnectOnEvent1(obj1, delegate4, &connection));
 
 		g_value = 0;
-		LN_ZV_CHECK(LnZVTestClass1_RaiseEvent1(obj1));
+		LN_ZV_CHECK(LNZVTestClass1_RaiseEvent1(obj1));
 		ASSERT_EQ(555, g_value);
 
-		LnObject_Release(connection);
-		LnObject_Release(obj1);
-		LnObject_Release(delegate4);
+		LNObject_Release(connection);
+		LNObject_Release(obj1);
+		LNObject_Release(delegate4);
 	}
 
 	// Omit connection
 	{
-		LnHandle delegate4;
-		LN_ZV_CHECK(LnZVTestEventHandler1_Create(LnZVTestEventHandler1_Callback, &delegate4));
+		LNHandle delegate4;
+		LN_ZV_CHECK(LNZVTestEventHandler1_Create(LNZVTestEventHandler1_Callback, &delegate4));
 
-		LnHandle obj1;
-		LN_ZV_CHECK(LnZVTestClass1_Create(&obj1));
+		LNHandle obj1;
+		LN_ZV_CHECK(LNZVTestClass1_Create(&obj1));
 
-		LN_ZV_CHECK(LnZVTestClass1_ConnectOnEvent1(obj1, delegate4, nullptr));
+		LN_ZV_CHECK(LNZVTestClass1_ConnectOnEvent1(obj1, delegate4, nullptr));
 
 		g_value = 0;
-		LN_ZV_CHECK(LnZVTestClass1_RaiseEvent1(obj1));
+		LN_ZV_CHECK(LNZVTestClass1_RaiseEvent1(obj1));
 		ASSERT_EQ(555, g_value);
 
-		LnObject_Release(obj1);
-		LnObject_Release(delegate4);
+		LNObject_Release(obj1);
+		LNObject_Release(delegate4);
 	}
 
 	// void(ZVTestEventHandler2*)
 	{
-		LnHandle delegate1;
-		LN_ZV_CHECK(LnZVTestEventHandler2_Create(LnZVTestEventHandler2_Callback, &delegate1));
+		LNHandle delegate1;
+		LN_ZV_CHECK(LNZVTestEventHandler2_Create(LNZVTestEventHandler2_Callback, &delegate1));
 
-		LnHandle obj1;
-		LN_ZV_CHECK(LnZVTestClass1_Create(&obj1));
+		LNHandle obj1;
+		LN_ZV_CHECK(LNZVTestClass1_Create(&obj1));
 
-		LN_ZV_CHECK(LnZVTestClass1_ConnectOnEvent2(obj1, delegate1, nullptr));
+		LN_ZV_CHECK(LNZVTestClass1_ConnectOnEvent2(obj1, delegate1, nullptr));
 
 		g_value = 0;
-		LN_ZV_CHECK(LnZVTestClass1_RaiseEvent2(obj1));
+		LN_ZV_CHECK(LNZVTestClass1_RaiseEvent2(obj1));
 		ASSERT_EQ(1024, g_value);
 
-		LnObject_Release(obj1);
-		LnObject_Release(delegate1);
+		LNObject_Release(obj1);
+		LNObject_Release(delegate1);
 	}
 
 }
@@ -224,7 +224,7 @@ TEST_F(Test_FlatAPI, Event)
 //------------------------------------------------------------------------------
 static int g_count = 0;
 
-static LnResult Sprite_OnUpdate(LnHandle delegate, LnHandle self, float elapsedSeconds)
+static LNResult Sprite_OnUpdate(LNHandle delegate, LNHandle self, float elapsedSeconds)
 {
 	g_count++;
 	return LN_SUCCESS;
@@ -232,16 +232,16 @@ static LnResult Sprite_OnUpdate(LnHandle delegate, LnHandle self, float elapsedS
 
 TEST_F(Test_FlatAPI, VirtualProtoType)
 {
-	LnHandle texture;
-	LnTexture2D_Load(LN_ASSETFILE("Sprite1.png"), &texture);
+	LNHandle texture;
+	LNTexture2D_Load(LN_ASSETFILE("Sprite1.png"), &texture);
 
-	LnHandle delegate;
-	LnSpriteUpdateHandler_Create(Sprite_OnUpdate, &delegate);
+	LNHandle delegate;
+	LNSpriteUpdateHandler_Create(Sprite_OnUpdate, &delegate);
 
-	LnHandle sprite;
-	LnSprite_CreateWithTexture(texture, &sprite);
-	LnWorldObject_SetScaleS(sprite, 5);
-	LnSprite_SetPrototype_OnUpdate(sprite, delegate);
+	LNHandle sprite;
+	LNSprite_CreateWithTexture(texture, &sprite);
+	LNWorldObject_SetScaleS(sprite, 5);
+	LNSprite_SetPrototype_OnUpdate(sprite, delegate);
 
 	g_count = 0;
 
@@ -249,9 +249,9 @@ TEST_F(Test_FlatAPI, VirtualProtoType)
 	ASSERT_SCREEN(LN_ASSETFILE("FlatAPI/Expects/Basic-1.png"));
 	LN_TEST_CLEAN_SCENE;
 
-	LnObject_Release(sprite);
-	LnObject_Release(delegate);
-	LnObject_Release(texture);
+	LNObject_Release(sprite);
+	LNObject_Release(delegate);
+	LNObject_Release(texture);
 
 	ASSERT_EQ(g_count, 1);
 }

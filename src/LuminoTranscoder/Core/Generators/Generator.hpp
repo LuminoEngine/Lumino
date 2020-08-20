@@ -30,10 +30,10 @@ public:
 
 	// targetModuleName に対する、出力モジュール名。
 	// 関数名、型名などの Prefix となる。定数 Prefix となる場合は大文字化される。
-	// e.g.) "Ln"
+	// e.g.) "LN"
 	ln::String flatCOutputModuleName;
 
-	// LnResult などが定義された C 用の共通ヘッダ。
+	// LNResult などが定義された C 用の共通ヘッダ。
     // ターゲットのフォルダにコピーしたり、ソースコードに埋め込んだりする。
 	ln::Path flatCCommonHeader;
 
@@ -71,11 +71,11 @@ public:
 	// Utilities
 	static ln::String makeUpperSnakeName(const ln::String& name);	// PixelFormatA8 -> PIXEL_FORMAT_A8
 	static ln::String camelToPascal(const ln::String& name);		// worldObject -> WorldObject
-	ln::String makeFlatClassName(const TypeSymbol* type) const;						// e.g) -> "LnTexture2D" ※クラス名のみ対応
-	ln::String makeFlatTypeName2(const TypeSymbol* type) const;						// e.g) -> "LnHandle", "LnBool", "int", "LnVector3"...
+	ln::String makeFlatClassName(const TypeSymbol* type) const;						// e.g) -> "LNTexture2D" ※クラス名のみ対応
+	ln::String makeFlatTypeName2(const TypeSymbol* type) const;						// e.g) -> "LNHandle", "LNBool", "int", "LNVector3"...
 
-	ln::String makeFlatAPIName_SetManagedTypeInfoId(const TypeSymbol* type) const;	// e.g) -> "LnTexture2D_SetManagedTypeInfoId"
-	ln::String makeFlatAPIDecl_SetManagedTypeInfoId(const TypeSymbol* type) const;	// e.g) -> "LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id)"
+	ln::String makeFlatAPIName_SetManagedTypeInfoId(const TypeSymbol* type) const;	// e.g) -> "LNTexture2D_SetManagedTypeInfoId"
+	ln::String makeFlatAPIDecl_SetManagedTypeInfoId(const TypeSymbol* type) const;	// e.g) -> "LN_FLAT_API void LNTexture2D_SetManagedTypeInfoId(int64_t id)"
 	ln::String makeFlatAPIName_SetOverrideCallback(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
 	ln::String makeFlatAPIDecl_SetOverrideCallback(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
 	ln::String makeFlatAPIName_CallOverrideBase(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
@@ -91,9 +91,9 @@ public:
 	ln::String makeFlatVirutalCallbackFuncPtrName(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
 	ln::String makeDelegateCallbackFuncPtrName(const TypeSymbol* delegateSymbol, FlatCharset charset) const;
 	ln::String makeFlatShortFuncName(const MethodSymbol* method, FlatCharset charset) const;		// e.g( -> "SetTexture"
-	ln::String makeFlatFullFuncName(const MethodSymbol* method, FlatCharset charset) const;		// e.g( -> "LnSprite_SetTexture"
+	ln::String makeFlatFullFuncName(const MethodSymbol* method, FlatCharset charset) const;		// e.g( -> "LNSprite_SetTexture"
 	ln::String makeFlatFullFuncName(const TypeSymbol* classSymbol, const MethodSymbol* method, FlatCharset charset) const;		// トップレベルの Visual 関数の名前を作るの使用する
-	ln::String makeFuncHeader(const MethodSymbol* methodInfo, FlatCharset charset) const;	// e.g) -> "LN_FLAT_API LnResult LnWorldObject_Seteulerangles(LnHandle worldobject, float x, float y, float z)"
+	ln::String makeFuncHeader(const MethodSymbol* methodInfo, FlatCharset charset) const;	// e.g) -> "LN_FLAT_API LNResult LNWorldObject_Seteulerangles(LNHandle worldobject, float x, float y, float z)"
 	ln::String makeFlatCParamQualTypeName(const MethodSymbol* methodInfo, const MethodParameterSymbol* paramInfo, FlatCharset charset) const;
 	ln::String makeFlatCharTypeName(FlatCharset charset) const;
 	ln::String makeFlatParamList(const MethodSymbol* method, FlatCharset charset) const;	// e.g) -> "int p1, int p2, int* outReturn"

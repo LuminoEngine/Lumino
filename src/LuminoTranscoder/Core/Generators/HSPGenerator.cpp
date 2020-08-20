@@ -225,7 +225,7 @@ ln::String HSPCommandsGenerator::makeStructStorageCores() const
             // フィールドに float を使うか Vector4 を使うかちょっと揺れてるので、直接書き込む
             static const ln::String MatrixInitializerTemplate = uR"(
 if (checkAndFetchDefault()) {
-    LnMatrix_SetZeros(&returnValue);
+    LNMatrix_SetZeros(&returnValue);
 }
 else {
     returnValue.row0.x = fetchVADouble_reffunc();
@@ -257,7 +257,7 @@ else {
             {
                 //// 関数形式の初期化で、引数が省略されている場合
                 //if (structSymbol->fullName() == u"ln::Matrix") {
-                //    initializer.AppendLine(u"LnMatrix_SetZeros(&returnValue);");   // 行列の場合は単位行列にする TODO: Reset みたいな共通の名前の初期化関数作った方がいいかも
+                //    initializer.AppendLine(u"LNMatrix_SetZeros(&returnValue);");   // 行列の場合は単位行列にする TODO: Reset みたいな共通の名前の初期化関数作った方がいいかも
                 //}
                 //else {
                     initializer.AppendLine(u"memset(&returnValue, 0, sizeof(returnValue));");
@@ -327,12 +327,12 @@ ln::String HSPCommandsGenerator::makeRegisterTypeFunc() const
 ln::String HSPCommandsGenerator::makeSubclassDefines() const
 {
     static const ln::String SubclassCommonTemplate = uR"(
-static LnSubinstanceId HSPSubclass_%%FlatClassName%%_SubinstanceAlloc(LnHandle handle)
+static LNSubinstanceId HSPSubclass_%%FlatClassName%%_SubinstanceAlloc(LNHandle handle)
 {
-    return reinterpret_cast<LnSubinstanceId>(malloc(sizeof(HSPSubclass_%%FlatClassName%%)));
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_%%FlatClassName%%)));
 }
 
-static void HSPSubclass_%%FlatClassName%%_SubinstanceFree(LnHandle handle, LnSubinstanceId subinstance)
+static void HSPSubclass_%%FlatClassName%%_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -365,7 +365,7 @@ static void HSPSubclass_%%FlatClassName%%_SubinstanceFree(LnHandle handle, LnSub
             //}
             const auto selfParamName = classSymbol->delegateProtoType()->flatThisParam()->name();
 
-            code.AppendLine(u"static LnResult {0}({1})", makeName_DelegateLabelCaller(classSymbol), makeFlatParamList(classSymbol->delegateProtoType(), FlatCharset::Ascii));
+            code.AppendLine(u"static LNResult {0}({1})", makeName_DelegateLabelCaller(classSymbol), makeFlatParamList(classSymbol->delegateProtoType(), FlatCharset::Ascii));
             code.AppendLine(u"{");
             code.IncreaseIndent();
             {
@@ -386,7 +386,7 @@ static void HSPSubclass_%%FlatClassName%%_SubinstanceFree(LnHandle handle, LnSub
                     }
                 }
 
-                code.AppendLine(u"return static_cast<LnResult>(stat);");
+                code.AppendLine(u"return static_cast<LNResult>(stat);");
             }
             code.DecreaseIndent();
             code.AppendLine(u"}").NewLine();
@@ -544,7 +544,7 @@ ln::String HSPCommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, b
     const ln::Char* postfix = (reffunc) ? u"_reffunc" : u"";
 
     if (typeSymbol == PredefinedTypes::boolType) {
-        return ln::String::format(u"static_cast<LnBool>(fetchVAInt{0}())", postfix);
+        return ln::String::format(u"static_cast<LNBool>(fetchVAInt{0}())", postfix);
     }
     if (typeSymbol == PredefinedTypes::boolType ||
         typeSymbol == PredefinedTypes::intType ||

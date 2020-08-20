@@ -162,6 +162,7 @@ public:
     //void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
 	void setMainWindow(ln::UIMainWindow* window);
 
+	Application* application() const { return m_settings.application; }
     const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
 	const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
@@ -218,7 +219,6 @@ private:
 
 	Ref<DiagnosticsManager> m_activeDiagnostics;
 
-    //Application* m_application;
 	Path m_persistentDataPath;
 	Path m_engineResourcesPath;
 

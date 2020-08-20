@@ -23,8 +23,3 @@ loop
 
 LnEngine_Finalize
 end
-
-*delegate1_callback
-	mes ln_args(0)
-	mes ln_args(1)
-	return
