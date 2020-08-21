@@ -58,28 +58,12 @@ void Object::onDispose(bool explicitDisposing)
 {
 }
 
-void Object::serialize(Archive& ar)
+void Object::serialize(Serializer2& ar)
 {
-    const List<Ref<PropertyInfo>>& props = TypeInfo::getTypeInfo(this)->properties();
-    for (auto& prop : props) {
-        prop->accessor()->serializeMember(this, ar, prop->name());
-    }
-
-    //onSerialize(ar.m_serializer);
-
-    printf("[Engine] end onSerialize\n");
+	onSerialize(&ar);
 }
 
-void Object::serialize2(Serializer2& ar)
-{
-	onSerialize2(&ar);
-}
-
-void Object::onSerialize(Serializer* ar)
-{
-}
-
-void Object::onSerialize2(Serializer2* ar)
+void Object::onSerialize(Serializer2* ar)
 {
 }
 

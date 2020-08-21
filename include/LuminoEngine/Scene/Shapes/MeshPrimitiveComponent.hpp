@@ -20,7 +20,7 @@ public:
     Material* material() const;
 
 protected:
-    void serialize2(Serializer2& ar) override;
+    void serialize(Serializer2& ar) override;
     void onRender(RenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:

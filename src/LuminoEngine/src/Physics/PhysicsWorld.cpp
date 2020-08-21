@@ -45,16 +45,22 @@ extern ContactEndedCallback gContactEndedCallback;
 
 namespace ln {
 
+// TiggerBody (CF_NO_CONTACT_RESPONSE) 同士の衝突はこのメソッドでは検出されない。
+// もともとこれは RigidBody 同士の検出をしたいために使いだしたのもなので、それだけにしておく。
+// TiggerBody vs TiggerBody や TiggerBody vs RigidBody は LocalGhostObject で行う。
 static void ContactStartedCallback(btPersistentManifold* const& manifold)
 {
     const auto* bodyA = static_cast<const btCollisionObject*>(manifold->getBody0());
     const auto* bodyB = static_cast<const btCollisionObject*>(manifold->getBody1());
     auto* ownerA = static_cast<PhysicsObject*>(bodyA->getUserPointer());
     auto* ownerB = static_cast<PhysicsObject*>(bodyB->getUserPointer());
-    if (ownerA && ownerB) {
+
+    // RigidBody vs TiggerBody が来ることもあるので、制限しておく
+    if (ownerA && ownerB && 
+        ownerA->physicsObjectType() == PhysicsObjectType::RigidBody &&
+        ownerB->physicsObjectType() == PhysicsObjectType::RigidBody) {
         auto* world = ownerA->physicsWorld();
         world->postBeginContact(ownerA, ownerB);
-        //printf("start %p : %p\n", ownerA, ownerB);
     }
 }
 
@@ -64,10 +70,11 @@ static void ContactEndedCallback(btPersistentManifold* const& manifold)
     const auto* bodyB = static_cast<const btCollisionObject*>(manifold->getBody1());
     auto* ownerA = static_cast<PhysicsObject*>(bodyA->getUserPointer());
     auto* ownerB = static_cast<PhysicsObject*>(bodyB->getUserPointer());
-    if (ownerA && ownerB) {
+    if (ownerA && ownerB &&
+        ownerA->physicsObjectType() == PhysicsObjectType::RigidBody &&
+        ownerB->physicsObjectType() == PhysicsObjectType::RigidBody) {
         auto* world = ownerA->physicsWorld();
         world->postEndContact(ownerA, ownerB);
-        //printf("end %p : %p\n", ownerA, ownerB);
     }
 }
 

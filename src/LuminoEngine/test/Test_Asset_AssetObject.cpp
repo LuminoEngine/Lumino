@@ -1,6 +1,7 @@
 ﻿#include "Common.hpp"
 #include <LuminoEngine/Asset/AssetModel.hpp>
 
+#if 0
 class Test_Asset_AssetObject : public ::testing::Test {};
 
 class Test_Asset_AssetObject_Test : public SpriteFrame
@@ -48,3 +49,5 @@ TEST_F(Test_Asset_AssetObject, Basic)
     //auto obj2 = Serializer::deserialize<SpriteFrame>(str);
     //ASSERT_EQ(v1, obj2->sourceRect());
 }
+#endif
+

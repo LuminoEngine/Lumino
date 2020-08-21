@@ -74,7 +74,7 @@ public:
     bool m_externalObjectDeserialization = false;
 
 protected:
-    void onSerialize2(Serializer2* sr) override;
+    void onSerialize(Serializer2* sr) override;
 
 LN_CONSTRUCT_ACCESS:
     AssetModel();

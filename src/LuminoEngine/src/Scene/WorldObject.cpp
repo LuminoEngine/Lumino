@@ -284,9 +284,9 @@ bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
 	return false;
 }
 
-void WorldObject::serialize2(Serializer2& ar)
+void WorldObject::serialize(Serializer2& ar)
 {
-	Object::serialize2(ar);
+	Object::serialize(ar);
     ar& ln::makeNVP(u"name", m_name);
 
     Vector3 eularAngles = m_transform->m_rotation.toEulerAngles();
@@ -403,13 +403,6 @@ WorldObjectAsset::WorldObjectAsset()
 void WorldObjectAsset::init()
 {
     AssetModel::init();
-}
-
-void WorldObjectAsset::serialize(Archive& ar)
-{
-	//ar & makeNVP(u"position", m_position);
-	//ar & makeNVP(u"angles", m_angles);
-	//ar & makeNVP(u"scale", m_scale);
 }
 
 } // namespace ed

@@ -481,6 +481,8 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
     }
 
     if (!nextTo(';')) return false;
+
+    return true;
 }
 
 bool HLSLMetadataParser::parsePass(HLSLPass* pass)

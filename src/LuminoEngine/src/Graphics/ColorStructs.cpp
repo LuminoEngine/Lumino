@@ -291,7 +291,7 @@ Color Color::parse(const StringRef& str)
     return Color(c);
 }
 
-void Color::serialize2(Serializer2& ar)
+void Color::serialize(Serializer2& ar)
 {
     int size = 0;
     if (ar.isSaving())

@@ -7,7 +7,14 @@ class HSPGeneratorBase
 {
 protected:
     // システムとして必要な定義済みコマンドの分だけオフセットを付ける
-    int getCommandId(const Symbol* symbol) const { return 32 + symbol->symbolId(); }
+    // Note: 上限はドキュメントには見当たらなかったが、0x2B020 を呼び出したりすると「サポートされていない機能を呼び出そうとしました」エラーになった
+    // << 8 をやめたら呼び出せた。short max あたりが上限？
+    int getCommandId(const Symbol* symbol) const { return symbol->symbolId() + 32; }
+    //int getCommandId(const Symbol* symbol, int subIndex) const
+    //{
+    //    if (LN_REQUIRE(subIndex < 255)) return 0;
+    //    return (symbol->symbolId() << 8) + 32 + subIndex;
+    //}
 };
 
 // .as

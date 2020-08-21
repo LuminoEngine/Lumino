@@ -253,16 +253,16 @@ void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos
 	}
 }
 
-void Tileset::serialize(Archive& ar)
-{
-    Object::serialize(ar);
-    ar & makeNVP(u"tilePixelWidth", m_tilePixelWidth);
-    ar & makeNVP(u"tilePixelHeight", m_tilePixelHeight);
-    ar & makeNVP(u"tileScale", m_tileScale);
-    ar & makeNVP(u"material", m_material);
-    ar & makeNVP(u"tiles", m_tiles);
-}
-
+//void Tileset::serialize(Archive& ar)
+//{
+//    Object::serialize(ar);
+//    ar & makeNVP(u"tilePixelWidth", m_tilePixelWidth);
+//    ar & makeNVP(u"tilePixelHeight", m_tilePixelHeight);
+//    ar & makeNVP(u"tileScale", m_tileScale);
+//    ar & makeNVP(u"material", m_material);
+//    ar & makeNVP(u"tiles", m_tiles);
+//}
+//
 void Tileset::resetInfo()
 {
     //if (!m_material) return;

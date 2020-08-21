@@ -1026,9 +1026,9 @@ void StaticMeshModel::clear()
 	m_nodeGlobalTransforms = {};
 }
 
-void StaticMeshModel::serialize2(Serializer2& ar)
+void StaticMeshModel::serialize(Serializer2& ar)
 {
-	Object::serialize2(ar);
+	Object::serialize(ar);
 	ar & makeNVP(u"filePath", m_filePath);
 
 	if (ar.isLoading()) {

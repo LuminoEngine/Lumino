@@ -83,7 +83,6 @@ EngineManager::EngineManager()
 	//, m_effectManager(nullptr)
 	//, m_modelManager(nullptr)
 	//, m_uiManager(nullptr)
-    //, m_application(nullptr)
     , m_timeScale(1.0f)
 	, m_exitRequested(false)
  //   , m_showDebugFpsEnabled(false)
@@ -159,7 +158,6 @@ void EngineManager::init(const EngineSettings& settings)
     // register types
     {
         EngineDomain::registerType<Application>();
-		EngineDomain::registerType<Serializer>();
 		EngineDomain::registerType<ZVTestClass1>();
     }
 

@@ -7,7 +7,7 @@ namespace detail {
 
 struct ObjectRuntimeData
 {
-	int index = -1;	// inded of RuntimeManager::m_objectEntryList (LnHandle)
+	int index = -1;	// inded of RuntimeManager::m_objectEntryList (LNHandle)
 	int64_t managedObjectId = -1;
 	bool fromCreate = false;
 };
@@ -15,7 +15,7 @@ struct ObjectRuntimeData
 struct ObjectEntry
 {
 	Object*	object = nullptr;
-	int index = -1;	// inded of RuntimeManager::m_objectEntryList (LnHandle)
+	int index = -1;	// inded of RuntimeManager::m_objectEntryList (LNHandle)
 
 	// 1~ である場合、fromCreate は true でなければならない。
 	// 0 になった場合、Handle を無効化し、object->release する。
@@ -30,9 +30,9 @@ class RuntimeManager
 public:
 	struct Settings
 	{
-        LnRuntimeFinalizedCallback runtimeFinalizedCallback = nullptr;
-        LnReferenceCountTrackerCallback referenceCountTrackerCallback = nullptr;
-        LnRuntimeGetTypeInfoIdCallback runtimeGetTypeInfoIdCallback = nullptr;
+        LNRuntimeFinalizedCallback runtimeFinalizedCallback = nullptr;
+        LNReferenceCountTrackerCallback referenceCountTrackerCallback = nullptr;
+        LNRuntimeGetTypeInfoIdCallback runtimeGetTypeInfoIdCallback = nullptr;
 	};
 	static Settings s_globalSettings;
 
@@ -44,29 +44,29 @@ public:
 	// create の時は想定通りの動作。externalRefCount=1 の状態で作られる。
 	// get の場合も同様に作られる。基本方針は COM と同じく、Get したものは Release で解放するべきだが、
 	// ObjectEntry は Native 側の Release を受けて強制的に解放されるため、FlatC API を直接使っているときは Get の Release は不要。
-	LnHandle makeObjectWrap(Object* obj, bool fromCreate);
+	LNHandle makeObjectWrap(Object* obj, bool fromCreate);
 
-	void retainObjectExplicitly(LnHandle handle);
-	void releaseObjectExplicitly(LnHandle handle);
+	void retainObjectExplicitly(LNHandle handle);
+	void releaseObjectExplicitly(LNHandle handle);
 	void onDestructObject(Object* obj);
 
-	ObjectEntry* getObjectEntry(LnHandle handle);
-    Object* getObjectFromHandle(LnHandle handle);
+	ObjectEntry* getObjectEntry(LNHandle handle);
+    Object* getObjectFromHandle(LNHandle handle);
 
-	void setManagedObjectId(LnHandle handle, int64_t id);
-	int64_t getManagedObjectId(LnHandle handle);
-	int64_t getManagedTypeInfoId(LnHandle handle);
+	void setManagedObjectId(LNHandle handle, int64_t id);
+	int64_t getManagedObjectId(LNHandle handle);
+	int64_t getManagedTypeInfoId(LNHandle handle);
 	
-	//static void setReferenceCountTracker(LnReferenceCountTrackerCallback callback);
-	void setReferenceTrackEnabled(LnHandle handle);
+	//static void setReferenceCountTracker(LNReferenceCountTrackerCallback callback);
+	void setReferenceTrackEnabled(LNHandle handle);
 	void onRetainedObject(Object* obj);
 	void onReleasedObject(Object* obj);
 
-    //static void setRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback);
-    //static void setRuntimeCreateInstanceCallback(LnRuntimeCreateInstanceCallback callback);
-    //static void setRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback);
+    //static void setRuntimeFinalizedCallback(LNRuntimeFinalizedCallback callback);
+    //static void setRuntimeCreateInstanceCallback(LNRuntimeCreateInstanceCallback callback);
+    //static void setRuntimeGetTypeInfoIdCallback(LNRuntimeGetTypeInfoIdCallback callback);
 
-	LnResult processException(Exception* e);
+	LNResult processException(Exception* e);
 	void dumpInfo() const;
 
     RuntimeStringBuffer* requestCommonStringBuffer() { return &m_commonStringBuffer; }
@@ -78,8 +78,8 @@ private:
 	bool m_systemAliving;
 	std::mutex m_mutex;
     RuntimeStringBuffer m_commonStringBuffer;
-	//static LnReferenceCountTrackerCallback m_referenceCountTracker;
- //   static LnRuntimeFinalizedCallback m_runtimeFinalizedCallback;
+	//static LNReferenceCountTrackerCallback m_referenceCountTracker;
+ //   static LNRuntimeFinalizedCallback m_runtimeFinalizedCallback;
 };
 
 } // namespace detail

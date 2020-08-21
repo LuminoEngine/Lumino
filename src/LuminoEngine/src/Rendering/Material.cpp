@@ -300,9 +300,9 @@ void Material::updateShaderVariables(Shader* target) const
 //}
 //
 
-void Material::serialize2(Serializer2& ar)
+void Material::serialize(Serializer2& ar)
 {
-    Object::serialize2(ar);
+    Object::serialize(ar);
 
     // TODO: ↓Assets辺りに関数化
     if (ar.isSaving()) {

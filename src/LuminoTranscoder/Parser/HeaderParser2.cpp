@@ -533,6 +533,7 @@ public:
 				SplitQualType st = typeSourceInfo->getType().split();
 				auto type = st.Ty;
 
+#if 0
 				// std::function is Elaborated
 				if (type->getTypeClass() == clang::Type::TypeClass::Elaborated) {
 					const ElaboratedType* elaboratedType = llvm::cast<clang::ElaboratedType, clang::Type const>(type);
@@ -584,8 +585,10 @@ public:
 						}
 					}
 				}
-				// ln::Delegate is TemplateSpecialization
-				else if (type->getTypeClass() == clang::Type::TypeClass::TemplateSpecialization) {
+				else 
+#endif
+					// ln::Delegate is TemplateSpecialization
+				if (type->getTypeClass() == clang::Type::TypeClass::TemplateSpecialization) {
 					const TemplateSpecializationType* templateSpecializationType = llvm::cast<clang::TemplateSpecializationType, clang::Type const>(type);
 					TemplateName templateName = templateSpecializationType->getTemplateName();	// "function"
 

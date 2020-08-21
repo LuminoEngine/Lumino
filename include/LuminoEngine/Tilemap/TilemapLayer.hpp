@@ -83,9 +83,6 @@ public:
 	// 配置できないこともある。undo 対応のため戻り値で返す。
 	bool putAutoTileSlope(int x, int y, int autoTilesetId);
 
-	LN_SERIALIZE_CLASS_VERSION(1);
-	virtual void serialize(Archive& ar) override;
-
 public: // TODO: internal
     void render(TilemapModel* model, RenderingContext* context, const Matrix& transform, const detail::TilemapBounds& bounds);
 

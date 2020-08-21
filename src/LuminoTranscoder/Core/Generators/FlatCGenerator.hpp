@@ -23,7 +23,7 @@ public:
 	static ln::String makeFlatCQualTypeName(TypeSymbol* typeInfo);
 	static ln::String makeInstanceParamName(TypeSymbol* type);	// this にあたる引数名
 
-    ln::String makeCreateDelegateObjectFuncHeader(TypeSymbol* delegateSymbol) const;
+    ln::String makeCreateDelegateObjectFuncHeader(const TypeSymbol* delegateSymbol) const;
     ln::String makeGetTypeInfoIdFuncName(TypeSymbol* classType) const { return makeFlatClassName(classType) + u"_GetTypeInfoId"; }
     ln::String makeGetTypeInfoIdFuncHeader(TypeSymbol* classType) const { return u"extern LN_FLAT_API int " + makeGetTypeInfoIdFuncName(classType) + u"()"; }
 };
@@ -53,14 +53,16 @@ public:
 	void generate();
 
 private:
-	ln::String generateDelegateObjects() const;
+	//ln::String generateDelegateObjects() const;
 	ln::String generateWrapSubclassDecls() const;
+	ln::String makeWrapSubclassDecl(const TypeSymbol* classSymbol) const;
 
 	ln::String makeFlatFullName(const TypeSymbol* type) const { return type->fullName().replace(u"::", u"_"); }	// ln::Texture -> ln_Texture
 
 	ln::String makeWrapSubclassName(const TypeSymbol* type) const { return u"LNWS_" + makeFlatFullName(type); }
 	ln::String makeNativeParamList(const MethodSymbol* method) const;
 	ln::String makeNativeArgList(const MethodSymbol* method) const;
+	ln::String makeOverridePrototypesStructDecl(const TypeSymbol* classSymbol) const;
 
 	ln::String makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset);
 	//ln::String makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset);

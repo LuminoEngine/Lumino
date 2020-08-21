@@ -125,15 +125,11 @@ class CreateFromTypeInfo_ClassA
 	LN_OBJECT;
 public:
 	int value1;
-	
-	virtual void serialize(Archive& ar) override
-	{
-		ar & LN_NVP(value1);
-	}
 };
 
 LN_OBJECT_IMPLEMENT(CreateFromTypeInfo_ClassA, Object) {}
 
+#if 0
 TEST_F(Test_Engine_Object, CreateFromTypeInfo)
 {
 	struct Test1
@@ -166,6 +162,7 @@ TEST_F(Test_Engine_Object, CreateFromTypeInfo)
 	ASSERT_EQ(100, obj2->value1);
 
 }
+#endif
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, Property)

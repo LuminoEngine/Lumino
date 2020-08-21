@@ -167,11 +167,11 @@ void TilemapComponent::onRenderGizmo(RenderingContext* context)
     }
 }
 
-void TilemapComponent::serialize(Archive& ar)
-{
-	VisualComponent::serialize(ar);
-	ar & makeNVP(u"Model", m_tilemapModel);
-}
+//void TilemapComponent::serialize(Archive& ar)
+//{
+//	VisualComponent::serialize(ar);
+//	ar & makeNVP(u"Model", m_tilemapModel);
+//}
 
 } // namespace ln
 

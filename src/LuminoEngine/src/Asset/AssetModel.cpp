@@ -78,7 +78,7 @@ const ln::TypeInfo* AssetModel::assetType() const
 //    //}
 //}
 //
-void AssetModel::onSerialize2(Serializer2* sr)
+void AssetModel::onSerialize(Serializer2* sr)
 {
     if (sr->isSaving()) {
         sr->writeName(u"object");

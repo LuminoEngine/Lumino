@@ -10,7 +10,7 @@ class TestObject1 : public Object
 public:
 	int m_value = 0;
 
-	void onSerialize2(Serializer2* sr) override
+	void onSerialize(Serializer2* sr) override
 	{
 		if (sr->isSaving()) {
 			sr->writeName(u"value1");
@@ -44,7 +44,7 @@ class Test_Base_Serializer_TestObject1 : public Object
 public:
 	List<int> m_list;
 
-	void onSerialize2(Serializer2* sr) override
+	void onSerialize(Serializer2* sr) override
 	{
 		if (sr->isSaving()) {
 			sr->writeName(u"list");
@@ -90,7 +90,7 @@ class Test_Base_Serializer_ObjectList1 : public Object
 public:
 	List<Ref<TestObject1>> m_list;
 
-	void onSerialize2(Serializer2* sr) override
+	void onSerialize(Serializer2* sr) override
 	{
 		if (sr->isSaving()) {
 			sr->writeName(u"list");
@@ -152,7 +152,7 @@ public:
 	double m_double = 0;
 	String m_string;
 
-	void onSerialize2(Serializer2* sr) override
+	void onSerialize(Serializer2* sr) override
 	{
 		if (sr->isSaving()) {
 			sr->writeName(u"m_bool"); sr->writeBool(m_bool);
@@ -233,7 +233,7 @@ public:
 	List<int> m_list1;
 	List<Ref<TestObject1>> m_list2;
 
-	void serialize2(Serializer2& sr) override
+	void serialize(Serializer2& sr) override
 	{
 		sr & makeNVP(u"m_int", m_int);
 		sr & makeNVP(u"m_string", m_string);

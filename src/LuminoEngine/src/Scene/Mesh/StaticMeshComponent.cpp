@@ -38,9 +38,9 @@ StaticMeshModel* StaticMeshComponent::model() const
     return m_model;
 }
 
-void StaticMeshComponent::serialize2(Serializer2& ar)
+void StaticMeshComponent::serialize(Serializer2& ar)
 {
-    VisualComponent::serialize2(ar);
+    VisualComponent::serialize(ar);
     ar & makeNVP(u"model", m_model);
 }
 

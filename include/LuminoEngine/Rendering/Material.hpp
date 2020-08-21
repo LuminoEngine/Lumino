@@ -190,7 +190,7 @@ protected:
 	//virtual void serialize(Archive& ar) override;
 
 
-	void serialize2(Serializer2& ar) override;
+	void serialize(Serializer2& ar) override;
 
 LN_INTERNAL_ACCESS:
 

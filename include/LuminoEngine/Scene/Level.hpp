@@ -21,7 +21,7 @@ class LevelRenderParameters
 	: public Object
 {
 public:
-	void serialize2(Serializer2& ar) override;
+	void serialize(Serializer2& ar) override;
 	void mergeToRenderParams(detail::SceneGlobalRenderParams* params) const;
 
 	Optional<float> m_fogStartDistance;
@@ -101,7 +101,7 @@ public:	// TODO: Editor integration
 	//void updateObjectsWorldMatrix() const;
 
 protected:
-	void serialize2(Serializer2& ar) override;
+	void serialize(Serializer2& ar) override;
 
 
 LN_CONSTRUCT_ACCESS:

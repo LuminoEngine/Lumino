@@ -37,9 +37,9 @@ Material* PlaneMeshComponent::material() const
     return m_material;
 }
 
-void PlaneMeshComponent::serialize2(Serializer2& ar)
+void PlaneMeshComponent::serialize(Serializer2& ar)
 {
-    VisualComponent::serialize2(ar);
+    VisualComponent::serialize(ar);
     ar & makeNVP(u"size", m_size);
     ar & makeNVP(u"uvParUnit", m_uvParUnit);
     ar & makeNVP(u"material", m_material);

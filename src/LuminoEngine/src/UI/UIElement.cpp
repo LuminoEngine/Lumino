@@ -777,7 +777,7 @@ void UIElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& localS
     UILayoutElement::arrangeLayout(layoutContext, localSlotRect);
 
 
-    updateFinalRects(layoutContext, (m_visualParent) ? m_visualParent->m_combinedFinalRenderTransform : Matrix::Identity);
+    //updateFinalRects(layoutContext, (m_visualParent) ? m_visualParent->m_combinedFinalRenderTransform : Matrix::Identity);
 
     //// child elements
     //int count = getVisualChildrenCount();
@@ -860,7 +860,15 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 
 void UIElement::updateFinalLayoutHierarchical(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform)
 {
-#if 0   // NOTE: 行列更新パスはいったん arrangeLayout でやることにしてみる。Popup でターゲットの位置を知りたいときに、グローバル座標が決定していないと計算が大変になるので。
+    // NOTE: 行列更新パスはいったん arrangeLayout でやることにしてみる。Popup でターゲットの位置を知りたいときに、グローバル座標が決定していないと計算が大変になるので。
+    // 
+    // [2020/8/19] やっぱり arrangeLayout でやるのは都合が悪かった。
+    // 親要素は子要素の arrangeLayout の結果を arrangeOverride で受け取ってからローカル位置を決定する。
+    // この時 子要素の arrangeLayout を呼んでいるので、arrangeLayoutでグローバル行列更新するということは、親のグローバル行列もこの時点で決まっている必要がある。
+    // しかし、このパスだとそれは不可能。
+    // もともとは Popup のターゲット位置のための対応だったが、やむなし。
+    // Popup なら普通は前フレームで位置は計算済みなので、それを使う、でもいいかも。
+
     updateFinalRects(layoutContext, parentCombinedRenderTransform);
 
     // child elements
@@ -874,7 +882,6 @@ void UIElement::updateFinalLayoutHierarchical(UILayoutContext* layoutContext, co
 	// Re-draw
     // TODO: 本当に描画に影響するプロパティが変わったときだけにしたい
 	invalidate(detail::UIElementDirtyFlags::Render, true);
-#endif
 }
 
 //void UIElement::updateLayoutHierarchical(const Rect& parentFinalGlobalRect)

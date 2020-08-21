@@ -34,16 +34,9 @@ void SpriteFrame::init()
 	m_anchorPoint = Vector2(Math::NaN, Math::NaN);
 }
 
-void SpriteFrame::serialize(Archive& ar)
+void SpriteFrame::serialize(Serializer2& ar)
 {
     Object::serialize(ar);
-    ar & makeNVP(u"SourceRect", m_sourceRect);
-    ar & makeNVP(u"AnchorPoint", m_anchorPoint);
-}
-
-void SpriteFrame::serialize2(Serializer2& ar)
-{
-    Object::serialize2(ar);
     ar & makeNVP(u"SourceRect", m_sourceRect);
     ar & makeNVP(u"AnchorPoint", m_anchorPoint);
 }
@@ -143,37 +136,9 @@ void SpriteSheet::splitFrames()
     }
 }
 
-void SpriteSheet::serialize(Archive& ar)
+void SpriteSheet::serialize(Serializer2& ar)
 {
-
-    if (ar.isSaving()) {
-        ar & makeNVP(u"Texture", m_texture);
-        if (m_frameWidth != 0 && m_frameHeight != 0) {
-            ar & makeNVP(u"FrameWidth", m_frameWidth);
-            ar & makeNVP(u"FrameHeight", m_frameHeight);
-            ar & makeNVP(u"AnchorPoint", m_anchorPoint);
-        }
-        else {
-            ar & makeNVP(u"Frames", m_frames);
-        }
-    }
-    else {
-        clear();
-        ar & makeNVP(u"Texture", m_texture);
-        ar & makeNVP(u"FrameWidth", m_frameWidth);
-        ar & makeNVP(u"FrameHeight", m_frameHeight);
-        ar & makeNVP(u"AnchorPoint", m_anchorPoint);
-        if (m_frameWidth != 0 && m_frameHeight != 0) {
-            splitFrames();
-        }
-        else {
-            ar & makeNVP(u"Frames", m_frames);
-        }
-    }
-}
-
-void SpriteSheet::serialize2(Serializer2& ar)
-{
+    Object::serialize(ar);
     if (ar.isSaving()) {
         ar & makeNVP(u"texture", m_texture);
         if (m_frameWidth != 0 && m_frameHeight != 0) {
@@ -387,9 +352,9 @@ void SpriteComponent::onRender(RenderingContext* context)
 //    ar & makeNVP(u"material", m_material);
 //}
 
-void SpriteComponent::serialize2(Serializer2& ar)
+void SpriteComponent::serialize(Serializer2& ar)
 {
-    VisualComponent::serialize2(ar);
+    VisualComponent::serialize(ar);
     ar & makeNVP(u"material", m_material);
 }
 

@@ -93,7 +93,7 @@ public:
     void setRenderPriority(int value);
 
 protected:
-    void serialize2(Serializer2& ar) override;
+    void serialize(Serializer2& ar) override;
     void setMainVisualComponent(VisualComponent* component);
 
 LN_CONSTRUCT_ACCESS:

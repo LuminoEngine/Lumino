@@ -273,7 +273,7 @@ public:
 
     Vector3 rgb() const LN_NOEXCEPT { return Vector3(r, g, b); }
 
-    void serialize2(Serializer2& ar);
+    void serialize(Serializer2& ar);
 
 #define LN_OP_TYPE Color
 #include <LuminoCore/Math/Vector4OpDeclareTemplate.inl>

@@ -12,7 +12,7 @@ public:
 	String code;
 	List<String> params;
 
-	void serialize2(Serializer2& ar) override
+	void serialize(Serializer2& ar) override
 	{
 		ar & makeNVP(u"code", code);
 		ar & makeNVP(u"params", params);
@@ -24,7 +24,7 @@ class InterpreterCommandList : public Object
 public:
 	List<Ref<InterpreterCommand>> commands;
 
-	void serialize2(Serializer2& ar) override
+	void serialize(Serializer2& ar) override
 	{
 		ar & makeNVP(u"commands", commands);
 	}
@@ -42,6 +42,8 @@ class Interpreter : public Object
 public:
 	Interpreter();
 	virtual ~Interpreter() = default;
+
+	void clear();
 
 	/** コマンドリストを設定し、実行を開始する */
 	void run(const Ref<InterpreterCommandList>& commandList);

@@ -13,11 +13,11 @@ ln::String FlatCCommon::makeInstanceParamName(TypeSymbol* type)
 	return type->shortName().toLower();
 }
 
-ln::String FlatCCommon::makeCreateDelegateObjectFuncHeader(TypeSymbol* delegateSymbol) const
+ln::String FlatCCommon::makeCreateDelegateObjectFuncHeader(const TypeSymbol* delegateSymbol) const
 {
     auto funcPtrType = makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode);
     auto flatClassName = makeFlatClassName(delegateSymbol);
-    return ln::String::format(u"LN_FLAT_API LnResult {0}_Create({1} callback, LnHandle* outDelegate)", flatClassName, funcPtrType);
+    return ln::String::format(u"LN_FLAT_API LNResult {0}_Create({1} callback, LNHandle* outDelegate)", flatClassName, funcPtrType);
 }
 
 //==============================================================================
@@ -27,10 +27,10 @@ void FlatCHeaderGenerator::generate()
 {
 	// delegates
 	OutputBuffer delegatesText;
-	for (auto& delegateSymbol : db()->delegates()) {
-		delegatesText.AppendLine(makeDelegateFuncPtrDecl(delegateSymbol));
-	}
-    delegatesText.NewLine();
+	//for (auto& delegateSymbol : db()->delegates()) {
+	//	delegatesText.AppendLine(makeDelegateFuncPtrDecl(delegateSymbol));
+	//}
+ //   delegatesText.NewLine();
 
 	// structs
 	OutputBuffer structsText;
@@ -99,17 +99,27 @@ void FlatCHeaderGenerator::generate()
 			}
 
 			// virtual callback
-			if (!classSymbol->virtualMethods().isEmpty()) {
-				for (auto& method : classSymbol->virtualMethods()) {
+			if (!classSymbol->leafVirtualMethods().isEmpty()) {
+				for (auto& method : classSymbol->leafVirtualMethods()) {
 					// make params
 					OutputBuffer params;
 					for (auto& param : method->flatParameters()) {
 						params.AppendCommad("{0} {1}", makeFlatCParamQualTypeName(method, param, FlatCharset::Unicode), param->name());
 					}
-					classMemberFuncDeclsText.AppendLine(u"typedef LnResult(*{0})({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), params.toString());
+					classMemberFuncDeclsText.AppendLine(u"typedef LNResult(*{0})({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), params.toString());
 					classMemberFuncDeclsText.AppendLine(makeFlatAPIDecl_SetOverrideCallback(classSymbol, method, FlatCharset::Unicode) + u";");
 					classMemberFuncDeclsText.AppendLine(makeFlatAPIDecl_CallOverrideBase(classSymbol, method, FlatCharset::Unicode) + u";");
+					//classMemberFuncDeclsText.AppendLine(makeFlatAPIDecl_SetPrototype(classSymbol, method, FlatCharset::Unicode) + u";");
 				}
+				classMemberFuncDeclsText.NewLine();
+			}
+
+			// virtualPrototypeSetters
+			for (auto& method : classSymbol->virtualPrototypeSetters()) {
+				// comment
+				classMemberFuncDeclsText.AppendLine(makeMethodDocumentComment(method));
+				// decl
+				classMemberFuncDeclsText.AppendLine(makeFuncHeader(method, FlatCharset::Unicode) + u";");
 				classMemberFuncDeclsText.NewLine();
 			}
 
@@ -195,7 +205,7 @@ ln::String FlatCHeaderGenerator::makeMethodDocumentComment(const MethodSymbol* m
 		auto desc = param->description();
 		auto paramInfo = method->findFlatParameter(param->name());
 		if (paramInfo && paramInfo->qualType().strongReference) {
-			desc += u" (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)";
+			desc += u" (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)";
 		}
 
         code.AppendLine(u"@param[{0}] {1} : {2}", param->io(), param->name(), desc);
@@ -218,12 +228,12 @@ ln::String FlatCHeaderGenerator::makeMethodDocumentComment(const MethodSymbol* m
 ln::String FlatCHeaderGenerator::makeDelegateFuncPtrDecl(const TypeSymbol* delegateSymbol) const
 {
 	// return
-	auto returnType = (delegateSymbol->isDelegateObject()) ? u"LnResult" : u"void";
+	auto returnType = (delegateSymbol->isDelegateObject()) ? u"LNResult" : u"void";
 
     // make params
     OutputBuffer params;
 	//if (delegateSymbol->isDelegateObject()) {
-	//	params.AppendCommad(u"LnHandle");
+	//	params.AppendCommad(u"LNHandle");
 	//}
     for (auto& param : delegateSymbol->delegateProtoType()->flatParameters()) {
         params.AppendCommad(u"{0} {1}", makeFlatCParamQualTypeName(nullptr, param, FlatCharset::Unicode), param->name());
@@ -268,16 +278,16 @@ ln::String FlatCHeaderGenerator::makeSubClassRegistrationInfo(const TypeSymbol* 
 	code.IncreaseIndent();
 	{
 		code.AppendLine(u"int64_t subclassId;	// ManagedTypeInfoId");
-		code.AppendLine(u"LnSubinstanceAllocFunc subinstanceAllocFunc;");
-		code.AppendLine(u"LnSubinstanceFreeFunc subinstanceFreeFunc;");
+		code.AppendLine(u"LNSubinstanceAllocFunc subinstanceAllocFunc;");
+		code.AppendLine(u"LNSubinstanceFreeFunc subinstanceFreeFunc;");
 
-		for (auto& method : classSymbol->virtualMethods()) {
+		for (auto& method : classSymbol->leafVirtualMethods()) {
 			//// make params
 			//OutputBuffer params;
 			//for (auto& param : method->flatParameters()) {
 			//	params.AppendCommad("{0} {1}", makeFlatCParamQualTypeName(method, param, FlatCharset::Unicode), param->name());
 			//}
-			////classMemberFuncDeclsText.AppendLine(u"typedef LnResult(*{0})({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), params.toString());
+			////classMemberFuncDeclsText.AppendLine(u"typedef LNResult(*{0})({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), params.toString());
 			//code.AppendLine(makeFlatAPIDecl_SetOverrideCallback(classSymbol, method, FlatCharset::Unicode) + u";");
 			//code.AppendLine(makeFlatAPIDecl_CallOverrideBase(classSymbol, method, FlatCharset::Unicode) + u";");
 
@@ -293,7 +303,7 @@ ln::String FlatCHeaderGenerator::makeSubClassRegistrationInfo(const TypeSymbol* 
 
 	code.NewLine();
 	code.AppendLine(u"extern LN_FLAT_API void {0}(const {1}* info);", makeFlatAPIName_RegisterSubclassTypeInfo(classSymbol), structName);
-	code.AppendLine(u"extern LN_FLAT_API LnSubinstanceId {0}(LnHandle handle);", makeFlatAPIName_GetSubinstanceId(classSymbol), structName);
+	code.AppendLine(u"extern LN_FLAT_API LNSubinstanceId {0}(LNHandle handle);", makeFlatAPIName_GetSubinstanceId(classSymbol), structName);
 
 
 	return code.toString().trim();
@@ -336,7 +346,7 @@ void FlatCSourceGenerator::generate()
 			}
 
 			// virtual
-			for (auto& method : classSymbol->virtualMethods()) {
+			for (auto& method : classSymbol->leafVirtualMethods()) {
 				OutputBuffer args;
 				for (auto& param : method->parameters()) {
 					args.AppendCommad(param->name());
@@ -361,7 +371,35 @@ void FlatCSourceGenerator::generate()
 				funcImpl.DecreaseIndent();
 				funcImpl.AppendLine(u"}");
 
+				//funcImpl.AppendLine(makeFlatAPIDecl_SetPrototype(classSymbol, method, FlatCharset::Unicode));
+				//funcImpl.AppendLine(u"{");
+				//funcImpl.IncreaseIndent();
+				//{
+				//	funcImpl.AppendLine(u"LNI_HANDLE_TO_OBJECT({0}, {1})->acquireOverridePrototypes()->{2} = func;", makeWrapSubclassName(classSymbol), method->flatParameters()[0]->name(), makeFlatAPIName_OverrideFunc(method, FlatCharset::Unicode));
+				//	funcImpl.AppendLine(u"return LN_SUCCESS;");
+				//}
+				//funcImpl.DecreaseIndent();
+				//funcImpl.AppendLine(u"}");
+
 				classMemberFuncImplsText.AppendLine(funcImpl.toString());
+			}
+
+			// virtual prototypes
+			for (auto& method : classSymbol->virtualPrototypeSetters()) {
+
+				classMemberFuncImplsText.AppendLine(makeFuncHeader(method, FlatCharset::Unicode));
+				classMemberFuncImplsText.AppendLine(u"{");
+				classMemberFuncImplsText.IncreaseIndent();
+				{
+					classMemberFuncImplsText.AppendLine(
+						u"LNI_HANDLE_TO_OBJECT({0}, {1})->acquireOverridePrototypes()->{2} = LNI_HANDLE_TO_OBJECT({3}, callback);", 
+						makeWrapSubclassName(classSymbol), method->flatParameters()[0]->name(),
+						makeFlatAPIName_OverrideFunc(method->virtualPototypeSouceMethod(), FlatCharset::Unicode),
+						makeWrapSubclassName(method->virtualPototypeDelegate()));
+					classMemberFuncImplsText.AppendLine(u"return LN_SUCCESS;");
+				}
+				classMemberFuncImplsText.DecreaseIndent();
+				classMemberFuncImplsText.AppendLine(u"}");
 			}
 
 			// type info
@@ -405,7 +443,7 @@ void FlatCSourceGenerator::generate()
 			classMemberFuncImplsText.NewLine();
 
 			// GetSubinstanceId
-			classMemberFuncImplsText.AppendLine(u"LnSubinstanceId {0}(LnHandle handle)", makeFlatAPIName_GetSubinstanceId(classSymbol));
+			classMemberFuncImplsText.AppendLine(u"LNSubinstanceId {0}(LNHandle handle)", makeFlatAPIName_GetSubinstanceId(classSymbol));
 			classMemberFuncImplsText.AppendLine(u"{");
 			classMemberFuncImplsText.IncreaseIndent();
 			{
@@ -447,418 +485,343 @@ void FlatCSourceGenerator::generate()
 	}
 }
 
-ln::String FlatCSourceGenerator::generateDelegateObjects() const
+//ln::String FlatCSourceGenerator::generateDelegateObjects() const
+//{
+//	OutputBuffer code;
+//
+//	for (auto& delegateSymbol : db()->classes()) {
+//		if (delegateSymbol->typeClass() == TypeClass::DelegateObject) {
+//			auto className = makeWrapSubclassName(delegateSymbol);
+//			auto baseclassName = delegateSymbol->fullName();
+//			auto funcPtrType = makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode);
+//			auto nativeReturnType = delegateSymbol->delegateProtoType()->returnType().type->fullName();
+//			auto flatClassName = makeFlatClassName(delegateSymbol);
+//
+//			code.AppendLine(u"class {0} : public {1}", className, baseclassName);
+//			code.AppendLine(u"{");
+//			code.AppendLine(u"public:");
+//			code.IncreaseIndent();
+//			{
+//				code.AppendLine(u"static {0}* subclassInfo() {{ static {0} info; return &info; }}", makeFlatAPIName_SubclassRegistrationInfo(delegateSymbol));
+//				code.AppendLine(u"LNSubinstanceId m_subinstance = 0;");
+//				code.AppendLine(u"{0} m_callback;", funcPtrType);
+//				code.NewLine();
+//
+//				// constructor
+//				code.AppendLine(u"{0}() : {1}([this]({2}) -> {3}", className, baseclassName, makeNativeParamList(delegateSymbol->delegateProtoType()), nativeReturnType);
+//				code.AppendLine(u"{");
+//				code.IncreaseIndent();
+//				{
+//					OutputBuffer args;
+//					args.AppendCommad(u"LNI_OBJECT_TO_HANDLE(this)");
+//					if (!delegateSymbol->delegateProtoType()->parameters().isEmpty())
+//						args.AppendCommad(makeFlatArgList(delegateSymbol->delegateProtoType()));
+//
+//					if (delegateSymbol->delegateProtoType()->returnType().type == PredefinedTypes::voidType) {
+//						code.AppendLine(u"auto r = m_callback({0});", args.toString());
+//						code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
+//					}
+//					else {
+//						args.AppendCommad(u"&ret");
+//						code.AppendLine(nativeReturnType + u" ret = {};");
+//						code.AppendLine(u"auto r = m_callback({0});", args.toString());
+//						code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
+//						code.AppendLine(u"return ret;");
+//					}
+//				}
+//				code.DecreaseIndent();
+//				code.AppendLine(u"})");
+//				code.AppendLine(u"{");
+//				code.IncreaseIndent();		// Constructor body.
+//				{
+//					code.AppendLine(makeSubinstanceAllocStmt());
+//				}
+//				code.DecreaseIndent();
+//				code.AppendLine(u"}");
+//				code.NewLine();
+//
+//				code.AppendLine(u"~{0}()", className);
+//				code.AppendLine(u"{");
+//				code.IncreaseIndent();		// Destructor body.
+//				{
+//					code.AppendLine(makeSubinstanceFreeStmt());
+//				}
+//				code.DecreaseIndent();
+//				code.AppendLine(u"}");
+//
+//				// init()
+//				code.AppendLine(u"void init({0} callback)", funcPtrType);
+//				code.AppendLine(u"{");
+//				code.IncreaseIndent();
+//				{
+//					code.AppendLine(u"{0}::init();", delegateSymbol->fullName());
+//					code.AppendLine(u"m_callback = callback;");
+//				}
+//				code.DecreaseIndent();
+//				code.AppendLine(u"}");
+//			}
+//			code.DecreaseIndent();
+//			code.AppendLine(u"};");
+//			code.NewLine();
+//
+//			// Create
+//			code.AppendLine(makeCreateDelegateObjectFuncHeader(delegateSymbol));
+//			code.AppendLine(u"{");
+//			code.IncreaseIndent();
+//			{
+//				code.AppendLine(u"LNI_FUNC_TRY_BEGIN;");
+//				code.AppendLine(u"LNI_CREATE_OBJECT(outDelegate, {0}, init, callback);", className);
+//				code.AppendLine(u"LNI_FUNC_TRY_END_RETURN;");
+//			}
+//			code.DecreaseIndent();
+//			code.AppendLine(u"}");
+//		}
+//	}
+//
+//	return code.toString();
+//}
+
+ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 {
 	OutputBuffer code;
 
-	for (auto& delegateSymbol : db()->classes()) {
-		if (delegateSymbol->typeClass() == TypeClass::DelegateObject) {
-			auto className = makeWrapSubclassName(delegateSymbol);
-			auto baseclassName = delegateSymbol->fullName();
-			auto funcPtrType = makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode);
-			auto nativeReturnType = delegateSymbol->delegateProtoType()->returnType().type->fullName();
-			auto flatClassName = makeFlatClassName(delegateSymbol);
+	// Delegate 宣言を先に作る
+	for (auto& classSymbol : db()->classes()) {
+		if (classSymbol->isVirtualHandlerDelegate()) {
+			code.AppendLines(makeWrapSubclassDecl(classSymbol));
+		}
+	}
 
-			code.AppendLine(u"class {0} : public {1}", className, baseclassName);
-			code.AppendLine(u"{");
-			code.AppendLine(u"public:");
-			code.IncreaseIndent();
-			{
-				code.AppendLine(u"static {0}* subclassInfo() {{ static {0} info; return &info; }}", makeFlatAPIName_SubclassRegistrationInfo(delegateSymbol));
-				code.AppendLine(u"LnSubinstanceId m_subinstance = 0;");
-				code.AppendLine(u"{0} m_callback;", funcPtrType);
-				code.NewLine();
-
-				// constructor
-				code.AppendLine(u"{0}() : {1}([this]({2}) -> {3}", className, baseclassName, makeNativeParamList(delegateSymbol->delegateProtoType()), nativeReturnType);
-				code.AppendLine(u"{");
-				code.IncreaseIndent();
-				{
-					OutputBuffer args;
-					args.AppendCommad(u"LNI_OBJECT_TO_HANDLE(this)");
-					if (!delegateSymbol->delegateProtoType()->parameters().isEmpty())
-						args.AppendCommad(makeFlatArgList(delegateSymbol->delegateProtoType()));
-
-					if (delegateSymbol->delegateProtoType()->returnType().type == PredefinedTypes::voidType) {
-						code.AppendLine(u"auto r = m_callback({0});", args.toString());
-						code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
-					}
-					else {
-						args.AppendCommad(u"&ret");
-						code.AppendLine(nativeReturnType + u" ret = {};");
-						code.AppendLine(u"auto r = m_callback({0});", args.toString());
-						code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
-						code.AppendLine(u"return ret;");
-					}
-				}
-				code.DecreaseIndent();
-				code.AppendLine(u"})");
-				code.AppendLine(u"{");
-				code.IncreaseIndent();		// Constructor body.
-				{
-					code.AppendLine(makeSubinstanceAllocStmt());
-				}
-				code.DecreaseIndent();
-				code.AppendLine(u"}");
-				code.NewLine();
-
-				code.AppendLine(u"~{0}()", className);
-				code.AppendLine(u"{");
-				code.IncreaseIndent();		// Destructor body.
-				{
-					code.AppendLine(makeSubinstanceFreeStmt());
-				}
-				code.DecreaseIndent();
-				code.AppendLine(u"}");
-
-				// init()
-				code.AppendLine(u"void init({0} callback)", funcPtrType);
-				code.AppendLine(u"{");
-				code.IncreaseIndent();
-				{
-					code.AppendLine(u"{0}::init();", delegateSymbol->fullName());
-					code.AppendLine(u"m_callback = callback;");
-				}
-				code.DecreaseIndent();
-				code.AppendLine(u"}");
-			}
-			code.DecreaseIndent();
-			code.AppendLine(u"};");
-			code.NewLine();
-
-			// Create
-			code.AppendLine(makeCreateDelegateObjectFuncHeader(delegateSymbol));
-			code.AppendLine(u"{");
-			code.IncreaseIndent();
-			{
-				code.AppendLine(u"LNI_FUNC_TRY_BEGIN;");
-				code.AppendLine(u"LNI_CREATE_OBJECT(outDelegate, {0}, init, callback);", className);
-				code.AppendLine(u"LNI_FUNC_TRY_END_RETURN;");
-			}
-			code.DecreaseIndent();
-			code.AppendLine(u"}");
+	for (auto& classSymbol : db()->classes()) {
+		if (!classSymbol->isVirtualHandlerDelegate()) {
+			code.AppendLines(makeWrapSubclassDecl(classSymbol));
 		}
 	}
 
 	return code.toString();
 }
 
-#if 1
-ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
+ln::String FlatCSourceGenerator::makeWrapSubclassDecl(const TypeSymbol* classSymbol) const
 {
 	OutputBuffer code;
 
+	auto className = makeWrapSubclassName(classSymbol);
+	auto baseclassName = classSymbol->fullName();
 
-	for (auto& classSymbol : db()->classes()) {
-		auto className = makeWrapSubclassName(classSymbol);
-		auto baseclassName = classSymbol->fullName();
-
-		code.AppendLine(u"class {0} : public {1}", className, baseclassName);
-		code.AppendLine(u"{");
-		code.AppendLine(u"public:");
-		code.IncreaseIndent();
-		if (!classSymbol->isStatic())
-		{
-			// subclassInfo
-			code.AppendLine(u"static {0}* subclassInfo() {{ static {0} info; return &info; }}", makeFlatAPIName_SubclassRegistrationInfo(classSymbol));
-			code.AppendLine(u"LnSubinstanceId m_subinstance = 0;").NewLine();
-
-			if (classSymbol->isDelegateObject()) {
-				const auto funcPtrType = makeDelegateCallbackFuncPtrName(classSymbol, FlatCharset::Unicode);
-				code.AppendLine(u"{0} m_callback;", funcPtrType).NewLine();
-			}
-
-			//--------------------
-			// Constructor
-			code.AppendLine(u"{0}()", makeWrapSubclassName(classSymbol));
-			if (classSymbol->isDelegateObject()) {
-				// initializer
-				const auto nativeReturnType = classSymbol->delegateProtoType()->returnType().type->fullName();
-				code.AppendLine(u"  : {0}([this]({1}) -> {2}", baseclassName, makeNativeParamList(classSymbol->delegateProtoType()), nativeReturnType);
-				code.AppendLine(u"{");
-				code.IncreaseIndent();
-				{
-					const auto funcPtrType = makeDelegateCallbackFuncPtrName(classSymbol, FlatCharset::Unicode);
-					OutputBuffer args;
-					args.AppendCommad(u"LNI_OBJECT_TO_HANDLE(this)");
-					if (!classSymbol->delegateProtoType()->parameters().isEmpty())
-						args.AppendCommad(makeFlatArgList(classSymbol->delegateProtoType()));
-
-					if (classSymbol->delegateProtoType()->returnType().type == PredefinedTypes::voidType) {
-						code.AppendLine(u"auto r = m_callback({0});", args.toString());
-						code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
-					}
-					else {
-						args.AppendCommad(u"&ret");
-						code.AppendLine(nativeReturnType + u" ret = {};");
-						code.AppendLine(u"auto r = m_callback({0});", args.toString());
-						code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
-						code.AppendLine(u"return ret;");
-					}
-				}
-				code.DecreaseIndent();
-				code.AppendLine(u"})");
-			}
-			code.AppendLine(u"{");	// Constructor body
-			code.IncreaseIndent();
-			{
-				code.AppendLine(makeSubinstanceAllocStmt());
-			}
-			code.DecreaseIndent();
-			code.AppendLine(u"}").NewLine();
-
-			//--------------------
-			// Destructor
-			code.AppendLine(u"~{0}()", makeWrapSubclassName(classSymbol));
-			code.AppendLine(u"{");
-			code.IncreaseIndent();
-			{
-				code.AppendLine(makeSubinstanceFreeStmt());
-			}
-			code.DecreaseIndent();
-			code.AppendLine(u"}").NewLine();
-
-			//--------------------
-			// init()
-			if (classSymbol->isDelegateObject()) {
-				const auto funcPtrType = makeDelegateCallbackFuncPtrName(classSymbol, FlatCharset::Unicode);
-				code.AppendLine(u"bool init({0} callback)", funcPtrType);
-				code.AppendLine(u"{");
-				code.IncreaseIndent();
-				{
-					code.AppendLine(u"if (!{0}::init()) return false;", classSymbol->fullName());
-					code.AppendLine(u"m_callback = callback;");
-					code.AppendLine(u"return true;");
-				}
-				code.DecreaseIndent();
-				code.AppendLine(u"}").NewLine();
-			}
-
-			for (auto& method : classSymbol->virtualMethods()) {
-				code.AppendLine(u"// Virtual");
-
-				// field decl
-				code.AppendLine(u"static {0} s_{0}; // deprecated", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode));
-
-				// override method parameter list
-				OutputBuffer paramList;
-				for (auto& param : method->parameters()) {
-					paramList.AppendCommad(u"{0} {1}", param->getFullQualTypeName(), param->name());
-				}
-
-				// override
-				{
-					code.AppendLine(u"virtual {0} {1}({2}) override", method->returnType().type->fullName(), method->shortName(), paramList.toString());
-					code.AppendLine(u"{");
-					code.IncreaseIndent();
-					OutputBuffer argList;
-					argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE(this)");
-					for (auto& param : method->parameters()) {
-						if (param->type()->isClass())
-							argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE({0})", param->name());
-						else
-							argList.AppendCommad(param->name());
-					}
-					code.AppendLine(u"if (s_{0}) s_{0}({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), argList.toString());
-					code.DecreaseIndent();
-					code.AppendLine(u"}");
-				}
-
-				// base caller
-				{
-					code.AppendLine(u"{0} {1}_CallBase({2})", method->returnType().type->fullName(), method->shortName(), paramList.toString());
-					code.AppendLine(u"{");
-					code.IncreaseIndent();
-					OutputBuffer argList;
-					for (auto& param : method->parameters()) {
-						argList.AppendCommad(param->name());
-					}
-					code.AppendLine(u"{0}::{1}({2});", classSymbol->fullName(), method->shortName(), argList.toString());
-					code.DecreaseIndent();
-					code.AppendLine(u"}");
-					code.NewLine();
-				}
-			}
-
-
-			// TypeInfo
-			if (!classSymbol->isStatic()) {
-				ln::String baseClassName = u"Object";
-				if (classSymbol->baseClass()) baseClassName = classSymbol->baseClass()->shortName();
-				code.AppendLine(u"// TypeInfo");
-				code.AppendLine(u"ln::TypeInfo* m_typeInfoOverride = nullptr;");
-				code.AppendLine(u"virtual void setTypeInfoOverride(ln::TypeInfo* value) override");
-				code.AppendLine(u"{");
-				code.AppendLine(u"    m_typeInfoOverride = value;");
-				code.AppendLine(u"}");
-				code.AppendLine(u"virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override");
-				code.AppendLine(u"{");
-				code.AppendLine(u"    if (m_typeInfoOverride)");
-				code.AppendLine(u"        return m_typeInfoOverride;");
-				code.AppendLine(u"    else");
-				code.AppendLine(u"        return ln::TypeInfo::getTypeInfo<{0}>();", baseClassName);
-				code.AppendLine(u"}");
-				code.NewLine();
-			}
+	// 内部的に作成されたものは Delegate の typedef を作っておく
+	if (classSymbol->isVirtualHandlerDelegate()) {
+		code.AppendLine(u"// Auto generated override handler");
+		const auto& signatue = classSymbol->delegateProtoType();
+		OutputBuffer params;
+		for (const auto& param : signatue->parameters()) {
+			params.AppendCommad(u"{0} {1}", param->getFullQualTypeName(), param->name());
 		}
-		code.DecreaseIndent();
-		code.AppendLine(u"};").NewLine();
+		code.AppendLine(u"using {0} = ln::Delegate<{1}({2})>;", baseclassName, signatue->returnType().type->fullName(), params.toString());
+		code.NewLine();
+	}
 
-		//--------------------
-		// Virtuals
-		for (auto& method : classSymbol->virtualMethods()) {
-			code.AppendLine(u"{0} {1}::s_{0} = nullptr;", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), makeWrapSubclassName(classSymbol));
-		}
+	code.AppendLine(u"class {0} : public {1}", className, baseclassName);
+	code.AppendLine(u"{");
+	code.AppendLine(u"public:");
+	code.IncreaseIndent();
+	if (!classSymbol->isStatic())
+	{
+		// stuct XXXX_OverridePrototypes
+		code.AppendLine(u"// Override functions per instance for FlatAPI User.");
+		code.AppendLine(makeOverridePrototypesStructDecl(classSymbol));
+		code.AppendLine(u"std::unique_ptr<{0}> m_overridePrototypes = nullptr;", makeFlatAPIName_OverridePrototypesStruct(classSymbol));
+		code.AppendLine(u"{0}* acquireOverridePrototypes() {{ if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<{0}>(); return m_overridePrototypes.get(); }}", makeFlatAPIName_OverridePrototypesStruct(classSymbol));
 		code.NewLine();
 
-		//--------------------
-		// xxxx_Create()
+		// subclassInfo
+		code.AppendLine(u"static {0}* subclassInfo() {{ static {0} info; return &info; }}", makeFlatAPIName_SubclassRegistrationInfo(classSymbol));
+		code.AppendLine(u"LNSubinstanceId m_subinstance = 0;").NewLine();
+
 		if (classSymbol->isDelegateObject()) {
-			code.AppendLine(makeCreateDelegateObjectFuncHeader(classSymbol));
+			const auto funcPtrType = makeDelegateCallbackFuncPtrName(classSymbol, FlatCharset::Unicode);
+			code.AppendLine(u"{0} m_callback;", funcPtrType).NewLine();
+		}
+
+		//--------------------
+		// Constructor
+		code.AppendLine(u"{0}()", makeWrapSubclassName(classSymbol));
+		if (classSymbol->isDelegateObject()) {
+			// initializer
+			const auto nativeReturnType = classSymbol->delegateProtoType()->returnType().type->fullName();
+			code.AppendLine(u"  : {0}([this]({1}) -> {2}", baseclassName, makeNativeParamList(classSymbol->delegateProtoType()), nativeReturnType);
 			code.AppendLine(u"{");
 			code.IncreaseIndent();
 			{
-				code.AppendLine(u"LNI_FUNC_TRY_BEGIN;");
-				code.AppendLine(u"LNI_CREATE_OBJECT(outDelegate, {0}, init, callback);", className);
-				code.AppendLine(u"LNI_FUNC_TRY_END_RETURN;");
+				const auto funcPtrType = makeDelegateCallbackFuncPtrName(classSymbol, FlatCharset::Unicode);
+				OutputBuffer args;
+				args.AppendCommad(u"LNI_OBJECT_TO_HANDLE(this)");
+				if (!classSymbol->delegateProtoType()->parameters().isEmpty())
+					args.AppendCommad(makeFlatArgList(classSymbol->delegateProtoType()));
+
+				if (classSymbol->delegateProtoType()->returnType().type == PredefinedTypes::voidType) {
+					code.AppendLine(u"auto r = m_callback({0});", args.toString());
+					code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
+				}
+				else {
+					args.AppendCommad(u"&ret");
+					code.AppendLine(nativeReturnType + u" ret = {};");
+					code.AppendLine(u"auto r = m_callback({0});", args.toString());
+					code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
+					code.AppendLine(u"return ret;");
+				}
+			}
+			code.DecreaseIndent();
+			code.AppendLine(u"})");
+		}
+		code.AppendLine(u"{");	// Constructor body
+		code.IncreaseIndent();
+		{
+			code.AppendLine(makeSubinstanceAllocStmt());
+		}
+		code.DecreaseIndent();
+		code.AppendLine(u"}").NewLine();
+
+		//--------------------
+		// Destructor
+		code.AppendLine(u"~{0}()", makeWrapSubclassName(classSymbol));
+		code.AppendLine(u"{");
+		code.IncreaseIndent();
+		{
+			code.AppendLine(makeSubinstanceFreeStmt());
+		}
+		code.DecreaseIndent();
+		code.AppendLine(u"}").NewLine();
+
+		//--------------------
+		// init()
+		if (classSymbol->isDelegateObject()) {
+			const auto funcPtrType = makeDelegateCallbackFuncPtrName(classSymbol, FlatCharset::Unicode);
+			code.AppendLine(u"bool init({0} callback)", funcPtrType);
+			code.AppendLine(u"{");
+			code.IncreaseIndent();
+			{
+				code.AppendLine(u"if (!{0}::init()) return false;", classSymbol->fullName());
+				code.AppendLine(u"m_callback = callback;");
+				code.AppendLine(u"return true;");
 			}
 			code.DecreaseIndent();
 			code.AppendLine(u"}").NewLine();
 		}
 
-	}
+		//--------------------
+		// overrides
+		code.AppendLine(u"// Overrides");
+		for (auto& method : classSymbol->leafVirtualMethods()) {
+			// field decl
+			code.AppendLine(u"static {0} s_{0}; // deprecated", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode));
 
-
-	return code.toString();
-}
-
-#else
-ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
-{
-	OutputBuffer code;
-
-	code.AppendLines(generateDelegateObjects());
-
-	for (auto& classSymbol : db()->classes()) {
-
-		if (classSymbol->isDelegateObject()) {
-			// generateDelegateObjects で。
-		}
-		else {
-
-			OutputBuffer overrideCallbackDecl;
-			OutputBuffer overrideCallbackImpl;
-			OutputBuffer overrideMethod;
-
-			if (!classSymbol->isStatic()) {
-				overrideCallbackDecl.AppendLine(u"static {0}* subclassInfo() {{ static {0} info; return &info; }}", makeFlatAPIName_SubclassRegistrationInfo(classSymbol));
-				overrideCallbackDecl.AppendLine(u"LnSubinstanceId m_subinstance = 0;");
+			// override method parameter list
+			OutputBuffer paramList;
+			for (auto& param : method->parameters()) {
+				paramList.AppendCommad(u"{0} {1}", param->getFullQualTypeName(), param->name());
 			}
 
-
-			for (auto& method : classSymbol->virtualMethods()) {
-				// field decl
-				overrideCallbackDecl.AppendLine(u"static {0} s_{0}; // deprecated", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode));
-				// field impl
-				overrideCallbackImpl.AppendLine(u"{0} {1}::s_{0} = nullptr;", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), makeWrapSubclassName(classSymbol));
-
-				// override method parameter list
-				OutputBuffer paramList;
+			// override
+			{
+				code.AppendLine(u"virtual {0} {1}({2}) override", method->returnType().type->fullName(), method->shortName(), paramList.toString());
+				code.AppendLine(u"{");
+				code.IncreaseIndent();
+				OutputBuffer nativeArgList;
+				OutputBuffer flatArgList;
+				nativeArgList.AppendCommad(u"this");
+				flatArgList.AppendCommad(u"LNI_OBJECT_TO_HANDLE(this)");
 				for (auto& param : method->parameters()) {
-					paramList.AppendCommad(u"{0} {1}", param->getFullQualTypeName(), param->name());
+					if (param->type()->isClass())
+						flatArgList.AppendCommad(u"LNI_OBJECT_TO_HANDLE({0})", param->name());
+					else
+						flatArgList.AppendCommad(param->name());
+					nativeArgList.AppendCommad(param->name());
 				}
 
-				// override
+				code.AppendLine(u"if (m_overridePrototypes) {");
+				code.IncreaseIndent();
 				{
-					overrideMethod.AppendLine(u"virtual {0} {1}({2}) override", method->returnType().type->fullName(), method->shortName(), paramList.toString());
-					overrideMethod.AppendLine(u"{");
-					overrideMethod.IncreaseIndent();
-					OutputBuffer argList;
-					argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE(this)");
-					for (auto& param : method->parameters()) {
-						if (param->type()->isClass())
-							argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE({0})", param->name());
-						else
-							argList.AppendCommad(param->name());
+					code.AppendLine(u"if (auto func = m_overridePrototypes->{0}) {{", makeFlatAPIName_OverrideFunc(method, FlatCharset::Unicode));
+					code.IncreaseIndent();
+					{
+						code.AppendLine(u"func->call({0});", nativeArgList.toString());
+						code.AppendLine(u"return;");
 					}
-					overrideMethod.AppendLine(u"if (s_{0}) s_{0}({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), argList.toString());
-					overrideMethod.DecreaseIndent();
-					overrideMethod.AppendLine(u"}");
-					overrideMethod.NewLine();
+					code.DecreaseIndent();
+					code.AppendLine(u"}");
 				}
+				code.DecreaseIndent();
+				code.AppendLine(u"}");
 
-				// base caller
-				{
-					overrideMethod.AppendLine(u"{0} {1}_CallBase({2})", method->returnType().type->fullName(), method->shortName(), paramList.toString());
-					overrideMethod.AppendLine(u"{");
-					overrideMethod.IncreaseIndent();
-					OutputBuffer argList;
-					for (auto& param : method->parameters()) {
-						argList.AppendCommad(param->name());
-					}
-					overrideMethod.AppendLine(u"{0}::{1}({2});", classSymbol->fullName(), method->shortName(), argList.toString());
-					overrideMethod.DecreaseIndent();
-					overrideMethod.AppendLine(u"}");
-				}
+				code.AppendLine(u"if (s_{0}) s_{0}({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), flatArgList.toString());
+				code.DecreaseIndent();
+				code.AppendLine(u"}");
 			}
 
-
-			// TypeInfo
-			if (!classSymbol->isStatic()) {
-				ln::String baseClassName = u"Object";
-				if (classSymbol->baseClass()) baseClassName = classSymbol->baseClass()->shortName();
-				overrideCallbackDecl.AppendLine(u"ln::TypeInfo* m_typeInfoOverride = nullptr;");
-				overrideCallbackDecl.AppendLine(u"virtual void setTypeInfoOverride(ln::TypeInfo* value) override");
-				overrideCallbackDecl.AppendLine(u"{");
-				overrideCallbackDecl.AppendLine(u"    m_typeInfoOverride = value;");
-				overrideCallbackDecl.AppendLine(u"}");
-				overrideCallbackDecl.AppendLine(u"virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override");
-				overrideCallbackDecl.AppendLine(u"{");
-				overrideCallbackDecl.AppendLine(u"    if (m_typeInfoOverride)");
-				overrideCallbackDecl.AppendLine(u"        return m_typeInfoOverride;");
-				overrideCallbackDecl.AppendLine(u"    else");
-				overrideCallbackDecl.AppendLine(u"        return ln::TypeInfo::getTypeInfo<{0}>();", baseClassName);
-				overrideCallbackDecl.AppendLine(u"}");
-				overrideCallbackDecl.NewLine();
+			// base caller
+			{
+				code.AppendLine(u"{0} {1}_CallBase({2})", method->returnType().type->fullName(), method->shortName(), paramList.toString());
+				code.AppendLine(u"{");
+				code.IncreaseIndent();
+				OutputBuffer argList;
+				for (auto& param : method->parameters()) {
+					argList.AppendCommad(param->name());
+				}
+				code.AppendLine(u"{0}::{1}({2});", classSymbol->fullName(), method->shortName(), argList.toString());
+				code.DecreaseIndent();
+				code.AppendLine(u"}");
+				code.NewLine();
 			}
+		}
 
-
-			code.AppendLine(u"class {0} : public {1}", makeWrapSubclassName(classSymbol), classSymbol->fullName());
+		//--------------------
+		// TypeInfo
+		if (!classSymbol->isStatic()) {
+			ln::String baseClassName = u"Object";
+			if (classSymbol->baseClass()) baseClassName = classSymbol->baseClass()->shortName();
+			code.AppendLine(u"// TypeInfo");
+			code.AppendLine(u"ln::TypeInfo* m_typeInfoOverride = nullptr;");
+			code.AppendLine(u"virtual void setTypeInfoOverride(ln::TypeInfo* value) override");
 			code.AppendLine(u"{");
-			code.AppendLine(u"public:");
-			code.IncreaseIndent();
-			{	
-				// Constructor
-				code.AppendLine(u"{0}()", makeWrapSubclassName(classSymbol));
-				code.AppendLine(u"{");
-				code.IncreaseIndent();
-				{
-					code.AppendLine(makeSubinstanceAllocStmt());
-				}
-				code.DecreaseIndent();
-				code.AppendLine(u"}");
-
-				// Destructor
-				code.AppendLine(u"~{0}()", makeWrapSubclassName(classSymbol));
-				code.AppendLine(u"{");
-				code.IncreaseIndent();
-				{
-					code.AppendLine(makeSubinstanceFreeStmt());
-				}
-				code.DecreaseIndent();
-				code.AppendLine(u"}");
-			}
-			code.AppendLine(overrideCallbackDecl.toString());
-			code.AppendLine(overrideMethod.toString());
-			code.DecreaseIndent();
-			code.AppendLine(u"};");
-			code.AppendLine(overrideCallbackImpl.toString());
+			code.AppendLine(u"    m_typeInfoOverride = value;");
+			code.AppendLine(u"}");
+			code.AppendLine(u"virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override");
+			code.AppendLine(u"{");
+			code.AppendLine(u"    if (m_typeInfoOverride)");
+			code.AppendLine(u"        return m_typeInfoOverride;");
+			code.AppendLine(u"    else");
+			code.AppendLine(u"        return ln::TypeInfo::getTypeInfo<{0}>();", baseClassName);
+			code.AppendLine(u"}");
 			code.NewLine();
 		}
 	}
+	code.DecreaseIndent();
+	code.AppendLine(u"};").NewLine();
+
+	//--------------------
+	// Virtuals
+	for (auto& method : classSymbol->leafVirtualMethods()) {
+		code.AppendLine(u"{0} {1}::s_{0} = nullptr;", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), makeWrapSubclassName(classSymbol));
+	}
+	code.NewLine();
+
+	//--------------------
+	// xxxx_Create()
+	if (classSymbol->isDelegateObject()) {
+		code.AppendLine(makeCreateDelegateObjectFuncHeader(classSymbol));
+		code.AppendLine(u"{");
+		code.IncreaseIndent();
+		{
+			code.AppendLine(u"LNI_FUNC_TRY_BEGIN;");
+			code.AppendLine(u"LNI_CREATE_OBJECT(outDelegate, {0}, init, callback);", className);
+			code.AppendLine(u"LNI_FUNC_TRY_END_RETURN;");
+		}
+		code.DecreaseIndent();
+		code.AppendLine(u"}").NewLine();
+	}
+
 	return code.toString();
 }
-#endif
 
 ln::String FlatCSourceGenerator::makeNativeParamList(const MethodSymbol* method) const
 {
@@ -880,6 +843,36 @@ ln::String FlatCSourceGenerator::makeNativeArgList(const MethodSymbol* method) c
 			argList.AppendCommad(param->name());
 	}
 	return argList.toString();
+}
+
+ln::String FlatCSourceGenerator::makeOverridePrototypesStructDecl(const TypeSymbol* classSymbol) const
+{
+	OutputBuffer code;
+	code.AppendLine(u"struct " + makeFlatAPIName_OverridePrototypesStruct(classSymbol));
+	code.AppendLine(u"{");
+	code.IncreaseIndent();
+	{
+		//for (auto& method : classSymbol->leafVirtualMethods()) {
+		//	code.AppendLine(u"{0} {1};",
+		//		makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode),
+		//		makeFlatAPIName_OverrideFunc(method, FlatCharset::Unicode));
+
+		//	//code.AppendLine(u"{0} {1};",
+		//	//	makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode),
+		//	//	makeFlatAPIName_OverrideFunc(method, FlatCharset::Unicode));
+		//}
+
+
+		for (auto& method : classSymbol->virtualPrototypeSetters()) {
+			code.AppendLine(u"ln::Ref<{0}> {1};",
+				makeWrapSubclassName(method->virtualPototypeDelegate()),
+				makeFlatAPIName_OverrideFunc(method->virtualPototypeSouceMethod(), FlatCharset::Unicode));
+		}
+		code.NewLine();
+	}
+	code.DecreaseIndent();
+	code.AppendLine(u"};");
+	return code.toString().trim();
 }
 
 ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset)
@@ -1068,7 +1061,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 //    ln::String postCallExpr;
 //	for (auto& param : methodInfo->flatParameters()) {
 //        if (param->isReturn() && param->type()->isString()) {
-//            returnDecl = u"const LnChar* _ret;";
+//            returnDecl = u"const LNChar* _ret;";
 //            args.AppendCommad(u"&_ret");
 //            postCallExpr = u"";
 //        }
@@ -1081,7 +1074,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 //		}
 //	}
 //
-//	auto callExpr = ln::String::format(u"LnResult result = {0}({1});", makeFlatFullFuncName(methodInfo, FlatCharset::Unicode), args.toString());
+//	auto callExpr = ln::String::format(u"LNResult result = {0}({1});", makeFlatFullFuncName(methodInfo, FlatCharset::Unicode), args.toString());
 //
 //	OutputBuffer code;
 //	code.AppendLine(makeFuncHeader(methodInfo, charset));

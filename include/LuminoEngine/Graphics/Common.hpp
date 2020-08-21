@@ -18,6 +18,12 @@ class DepthBuffer;
 class INativeGraphicsExtension;
 
 /**
+ * Texture2DDelegate
+ */
+LN_DELEGATE()
+using Texture2DDelegate = Delegate<void(Ref<Texture2D> value)>;
+
+/**
  * Texture2DPromise
  */
 LN_PROMISE()

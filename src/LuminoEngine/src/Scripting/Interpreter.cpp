@@ -151,6 +151,14 @@ Interpreter::Interpreter()
 {
 }
 
+void Interpreter::clear()
+{
+	m_commandList.clear();
+	m_index = 0;
+	m_waitMode.clear();
+	m_waitCount = 0;
+}
+
 //------------------------------------------------------------------------------
 void Interpreter::run(const Ref<InterpreterCommandList>& commandList)
 {

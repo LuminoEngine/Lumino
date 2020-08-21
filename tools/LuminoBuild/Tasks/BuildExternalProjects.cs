@@ -264,8 +264,14 @@ namespace LuminoBuild.Tasks
                 }
 
                 Utils.ExtractZipFile(zip, Path.Combine(reposDir, "SDL2-2.0.12"));
-                System.Threading.Thread.Sleep(1000);
-                Directory.Move(Path.Combine(reposDir, "SDL2-2.0.12", "SDL2-2.0.12"), Path.Combine(reposDir, "SDL2"));
+                var dst = Path.Combine(reposDir, "SDL2-2.0.12", "SDL2-2.0.12");
+                Utils.CopyDirectory(dst, Path.Combine(reposDir, "SDL2"));
+
+                //System.Threading.Thread.Sleep(1000);
+                //var dst = Path.Combine(reposDir, "SDL2-2.0.12", "SDL2-2.0.12");
+                //var dir = new DirectoryInfo(dst);
+                //dir.Attributes = dir.Attributes & ~FileAttributes.ReadOnly;
+                //Directory.Move(dst, Path.Combine(reposDir, "SDL2"));
             }
             if (!Directory.Exists("freetype2"))
             {

@@ -135,7 +135,7 @@ public:
             (size1.height > size2.height) ? size1.height : size2.height);
     }
 
-    void serialize2(Serializer2& ar);
+    void serialize(Serializer2& ar);
 
 public:
     Size& operator+=(const Size& v) noexcept { width += v.width; height += v.height; return *this; }
@@ -313,7 +313,7 @@ public:
     }
 
     void serialize(Archive& ar);
-    void serialize2(Serializer2& ar);
+    void serialize(Serializer2& ar);
 
 public:
     bool operator==(const Rect& obj) const { return (x == obj.x && y == obj.y && width == obj.width && height == obj.height); }
