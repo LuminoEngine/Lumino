@@ -795,6 +795,27 @@ void Mesh::calculateTangents()
 	}
 }
 
+VertexBuffer* Mesh::vertexBuffer(InterleavedVertexGroup group) const
+{
+	switch (group)
+	{
+	case ln::InterleavedVertexGroup::Main:
+		return m_mainVertexBuffer.buffer;
+	case ln::InterleavedVertexGroup::Skinning:
+		return m_skinningVertexBuffer.buffer;
+	case ln::InterleavedVertexGroup::AdditionalUV:
+		return m_additionalUVVertexBuffer.buffer;
+	default:
+		LN_UNREACHABLE();
+		return nullptr;
+	}
+}
+
+IndexBuffer* Mesh::indexBuffer() const
+{
+	return m_indexBuffer.buffer;
+}
+
 void Mesh::attemptResetVertexLayout()
 {
 	if (!m_vertexLayout) {

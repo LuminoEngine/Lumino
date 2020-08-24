@@ -222,6 +222,9 @@ public:
 	void calculateTangents();
 	bool isAllTriangleLists() const { return !m_sections.containsIf([](const MeshSection2& x) { return x.topology != PrimitiveTopology::TriangleList; }); }
 
+	VertexBuffer* vertexBuffer(InterleavedVertexGroup group) const;
+	IndexBuffer* indexBuffer() const;
+
 LN_CONSTRUCT_ACCESS:
 	Mesh();
 	virtual ~Mesh();
