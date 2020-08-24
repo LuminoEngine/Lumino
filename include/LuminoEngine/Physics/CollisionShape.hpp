@@ -3,7 +3,7 @@
 #include "Common.hpp"
 
 namespace ln {
-class MeshResource;
+class Mesh;
 class CollisionShape;
 class PlaneCollisionShape;
 class BoxCollisionShape;
@@ -166,13 +166,13 @@ public:
 	/**
 		@brief		MeshCollisionShape オブジェクトを作成します。
 	*/
-	static Ref<MeshCollisionShape> create(MeshResource* mesh);
+	static Ref<MeshCollisionShape> create(Mesh* mesh);
 
 LN_CONSTRUCT_ACCESS:
 	MeshCollisionShape();
 	virtual ~MeshCollisionShape();
 	bool init();
-	bool init(MeshResource* mesh);
+	bool init(Mesh* mesh);
 
 private:
 	btTriangleIndexVertexArray* m_btMeshData;

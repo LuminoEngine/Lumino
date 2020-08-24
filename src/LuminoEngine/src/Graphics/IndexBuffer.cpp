@@ -168,6 +168,11 @@ void IndexBuffer::setFormat(IndexBufferFormat format)
     }
 }
 
+int IndexBuffer::stride() const
+{
+    return GraphicsHelper::getIndexStride(m_format);
+}
+
 void IndexBuffer::setIndex(int index, int vertexIndex)
 {
     void* indexBuffer = map(MapMode::Write);

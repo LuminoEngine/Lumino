@@ -57,6 +57,9 @@ public:
     /** インデックスバッファのフォーマットを取得します。 */
     IndexBufferFormat format() const { return m_format; }
 
+    /** インデックスバッファのフォーマットを取得します。 */
+    int stride() const;
+
     /** インデックスの値を設定します。 */
     void setIndex(int index, int vertexIndex);
 

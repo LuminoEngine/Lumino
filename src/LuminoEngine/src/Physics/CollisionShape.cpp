@@ -205,7 +205,7 @@ bool CapsuleCollisionShape::init(float radius, float height)
 LN_OBJECT_IMPLEMENT(MeshCollisionShape, CollisionShape) {}
 
 //------------------------------------------------------------------------------
-Ref<MeshCollisionShape> MeshCollisionShape::create(MeshResource* mesh)
+Ref<MeshCollisionShape> MeshCollisionShape::create(Mesh* mesh)
 {
     return makeObject<MeshCollisionShape>(mesh);
 }
@@ -228,36 +228,59 @@ bool MeshCollisionShape::init()
 }
 
 //------------------------------------------------------------------------------
-bool MeshCollisionShape::init(MeshResource* mesh)
+bool MeshCollisionShape::init(Mesh* mesh)
 {
 	if (LN_REQUIRE(mesh)) return false;
-	if (LN_REQUIRE(m_btMeshData)) return false;
+	if (LN_REQUIRE(!m_btMeshData)) return false;
+	if (LN_REQUIRE(mesh->sections().size() > 0)) return false;
 
-#if 1
-    LN_NOTIMPLEMENTED();
-#else
-	IndexBuffer* indexBuffer = mesh->getIndexBuffer();
+	const MeshSection2& section = mesh->sections()[0];
+	if (LN_REQUIRE(section.topology == PrimitiveTopology::TriangleList)) return false;
 
-	void* vb = mesh->getVertexBuffer(MeshResource::VB_BasicVertices)->getMappedData();
-	void* ib = indexBuffer->getMappedData();
+
+
+	VertexBuffer* vertexBuffer = mesh->vertexBuffer(InterleavedVertexGroup::Main);
+	IndexBuffer* indexBuffer = mesh->indexBuffer();
+
+	void* vb = vertexBuffer->map(MapMode::Read);
+	void* ib = indexBuffer->map(MapMode::Read);
+
 
 	btIndexedMesh btMesh;
-	btMesh.m_numTriangles = mesh->getTriangleCount();
+	btMesh.m_numTriangles = section.primitiveCount;
 	btMesh.m_triangleIndexBase = (const unsigned char *)ib;
-	btMesh.m_triangleIndexStride = indexBuffer->getIndexStride() * 3;
-	btMesh.m_numVertices = mesh->getVertexCount();
+	btMesh.m_triangleIndexStride = indexBuffer->stride() * 3;
+	btMesh.m_numVertices = mesh->vertexCount();
 	btMesh.m_vertexBase = (const unsigned char *)vb;
 	btMesh.m_vertexStride = sizeof(Vertex);
 
+	PHY_ScalarType indexFormat;
+	switch (indexBuffer->format())
+	{
+	case IndexBufferFormat::UInt16:
+		indexFormat = PHY_SHORT;
+		break;
+	case IndexBufferFormat::UInt32:
+		indexFormat = PHY_INTEGER;
+		break;
+	default:
+		LN_UNREACHABLE();
+		return false;
+	}
+
 	m_btMeshData = new btTriangleIndexVertexArray();
-	m_btMeshData->addIndexedMesh(btMesh, (indexBuffer->getIndexStride() == 2) ? PHY_SHORT : PHY_INTEGER);
+	m_btMeshData->addIndexedMesh(btMesh, indexFormat);
 
 	//m_btMeshData = new btTriangleIndexVertexArray(
 	//	mesh->getTriangleCount(), (int*)ib, mesh->getIndexStride(),
 	//	mesh->getVertexCount(), (btScalar*)vb, sizeof(Vertex));
 	
 	CollisionShape::init(new btBvhTriangleMeshShape(m_btMeshData, true));
-#endif
+
+	// TODO: scoped
+	indexBuffer->unmap();
+	vertexBuffer->unmap();
+
 	return true;
 }
 

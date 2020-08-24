@@ -274,6 +274,7 @@ void Example_UIControls();
 void Example_Tilemap();
 void Experiment_CharacterController();
 void Experiment_Editor();
+void Experiment_MeshCollider();
 void Experiment_Reflector();
 void Experiment_Scripting();
 void Experiment_SelectObject();
@@ -461,7 +462,7 @@ int main(int argc, char** argv)
 #endif
 
 
-    if (0) {
+    if (1) {
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_MainLoop();
@@ -474,6 +475,7 @@ int main(int argc, char** argv)
 		//Example_Tilemap();
         //Experiment_CharacterController();
         //Experiment_Editor();
+        Experiment_MeshCollider();
         //Experiment_Reflector();
         //Experiment_Scripting();
         //Experiment_SelectObject();
@@ -482,7 +484,7 @@ int main(int argc, char** argv)
         //Experiment_SSR();
 		//Sandbox_MeshTilemap();
         //Sandbox_Physics();
-        Sandbox_Particle();
+        //Sandbox_Particle();
         //Sandbox_PostEffect();
         //Sandbox_Sky();
 		//Tutorial_Sandbox();
