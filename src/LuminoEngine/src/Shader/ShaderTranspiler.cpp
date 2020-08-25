@@ -1,5 +1,6 @@
 ﻿
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+#define ENABLE_HLSL
 #include "Internal.hpp"
 #include <sstream>
 #include <glad/glad.h>
@@ -16,6 +17,7 @@ namespace ln {
 namespace detail {
 
 // from glslang: StanAalone/ResourceLimits.cpp
+
 const TBuiltInResource DefaultTBuiltInResource = {
     /* .MaxLights = */ 32,
     /* .MaxClipPlanes = */ 6,
@@ -109,6 +111,7 @@ const TBuiltInResource DefaultTBuiltInResource = {
     /* .maxTaskWorkGroupSizeY_NV = */ 1,
     /* .maxTaskWorkGroupSizeZ_NV = */ 1,
     /* .maxMeshViewCountNV = */ 4,
+    /* .maxDualSourceDrawBuffersEXT = */ 1,
 
     /* .limits = */ {
         /* .nonInductiveForLoops = */ 1,

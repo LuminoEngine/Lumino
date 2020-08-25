@@ -216,7 +216,7 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("glslang"))
             {
-                Utils.CallProcess("git", "clone --depth 1 -b 7.11.3113 https://github.com/KhronosGroup/glslang.git glslang");
+                Utils.CallProcess("git", "clone --depth 1 -b SDK-candidate-26-Jul-2020 https://github.com/KhronosGroup/glslang.git glslang");
             }
             if (!Directory.Exists("SPIRV-Cross"))
             {
