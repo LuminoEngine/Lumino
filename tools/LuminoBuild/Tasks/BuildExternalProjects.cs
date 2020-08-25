@@ -220,10 +220,11 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("SPIRV-Cross"))
             {
-                Utils.CallProcess("git", "clone https://github.com/KhronosGroup/SPIRV-Cross.git SPIRV-Cross");
-                Directory.SetCurrentDirectory("SPIRV-Cross");
-                Utils.CallProcess("git", "checkout be7425ef70231ab82930331959ab487d605d0482");
-                Directory.SetCurrentDirectory(reposDir);
+                Utils.CallProcess("git", "clone --depth 1 -b 2020-06-29 https://github.com/KhronosGroup/SPIRV-Cross.git SPIRV-Cross");
+                //Utils.CallProcess("git", "clone https://github.com/KhronosGroup/SPIRV-Cross.git SPIRV-Cross");
+                //Directory.SetCurrentDirectory("SPIRV-Cross");
+                //Utils.CallProcess("git", "checkout be7425ef70231ab82930331959ab487d605d0482");
+                //Directory.SetCurrentDirectory(reposDir);
             }
             if (!Directory.Exists("glfw"))
             {

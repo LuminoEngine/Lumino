@@ -158,15 +158,30 @@ void MySSMain(MySSInput input, inout LN_SurfaceOutput output)
 // (auto generation)
 // ClusteredShading_Default.template.fx から生成する
 
+#ifdef LN_USE_NORMALMAP
+#define _LN_VARYING_DECLARE_NORMAL_MAP ; \
+    float3 vTangent     : TEXCOORD12; \
+    float3 vBitangent   : TEXCOORD13
+#else
+#define _LN_VARYING_DECLARE_NORMAL_MAP
+#endif
+
+#define LN_VS_OUTPUT_DECLARE \
+    float4 svPos    : SV_POSITION; \
+    float3 viewspaceNormal   : NORMAL0; \
+    float2 UV       : TEXCOORD0; \
+    float4 Color    : COLOR0 \
+    _LN_VARYING_DECLARE_NORMAL_MAP
+
+#define LN_PS_INPUT_DECLARE \
+    float3 viewspaceNormal   : NORMAL0; \
+    float2 UV       : TEXCOORD0; \
+    float4 Color    : COLOR0 \
+    _LN_VARYING_DECLARE_NORMAL_MAP
+
 struct _lngs_VSOutput
 {
-	float4	svPos		: SV_POSITION;
-
-	// common
-	float3	Normal		: NORMAL0;
-	float2	UV			: TEXCOORD0;
-	float4	Color		: COLOR0;
-
+	LN_VS_OUTPUT_DECLARE;
 
 	float4	vInLightPosition 	: TEXCOORD9;
 	// clustered forward
@@ -174,8 +189,8 @@ struct _lngs_VSOutput
 	float3	VertexPos	: TEXCOORD11;
 
 #ifdef LN_USE_NORMALMAP
-	float3	vTangent	: TEXCOORD12;
-	float3	vBitangent	: TEXCOORD13;
+	//float3	vTangent	: TEXCOORD12;
+	//float3	vBitangent	: TEXCOORD13;
 
 	float3	Debug	: TEXCOORD14;
 #endif
@@ -189,7 +204,7 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
 
 	_lngs_VSOutput output;
 	output.svPos = common.svPos;
-	output.Normal = common.Normal;
+	output.viewspaceNormal = common.Normal;
 	output.UV = common.UV;
 	output.Color = common.Color;
 	output.WorldPos = extra.WorldPos;
@@ -201,7 +216,7 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
 	const float3 objectTangent = vsi.tangent.xyz;
 	const float3 transformedTangent = ( ln_WorldView * float4( objectTangent, 0.0 ) ).xyz;
 	output.vTangent = normalize( transformedTangent );
-	output.vBitangent = normalize( cross( output.Normal, output.vTangent ) * vsi.tangent.w );
+	output.vBitangent = normalize( cross( output.viewspaceNormal, output.vTangent ) * vsi.tangent.w );
 	output.Debug = objectTangent;
 /*
 	float3 eyePosition = ln_CameraPosition;
@@ -247,7 +262,7 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 
 	_lngs_VSOutput output;
 	output.svPos = common.svPos;
-	output.Normal = common.Normal;
+	output.viewspaceNormal = common.Normal;
 	output.UV = common.UV;
 	output.Color = common.Color;
 	output.WorldPos = extra.WorldPos;
@@ -275,10 +290,12 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 
 struct _lngs_PSInput
 {
+	LN_PS_INPUT_DECLARE;
+
 	// common
-	float3	viewspaceNormal		: NORMAL0;
-	float2	UV			: TEXCOORD0;
-	float4	Color		: COLOR0;
+	//float3	viewspaceNormal		: NORMAL0;
+	//float2	UV			: TEXCOORD0;
+	//float4	Color		: COLOR0;
 	
 	float4	vInLightPosition 	: TEXCOORD9;
 	// clustered forward
@@ -286,8 +303,8 @@ struct _lngs_PSInput
 	float3	VertexPos	: TEXCOORD11;
 	
 #ifdef LN_USE_NORMALMAP
-	float3	vTangent	: TEXCOORD12;
-	float3	vBitangent	: TEXCOORD13;
+	//float3	vTangent	: TEXCOORD12;
+	//float3	vBitangent	: TEXCOORD13;
 	float3	Debug	: TEXCOORD14;
 #endif
 };

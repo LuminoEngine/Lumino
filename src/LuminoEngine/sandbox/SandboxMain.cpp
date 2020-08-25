@@ -462,7 +462,7 @@ int main(int argc, char** argv)
 #endif
 
 
-    if (1) {
+    if (0) {
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_MainLoop();
@@ -558,6 +558,8 @@ int main(int argc, char** argv)
 	//Engine::update();
 	//Engine::finalize();
 	//return 0;
+
+    Engine::renderView()->setGuideGridEnabled(true);
 
     //LnLog_PrintA(LN_LOG_LEVEL_INFO, "RubyRuntime", "Usesr type registering. (class: 20, typeInfoId: 16, baseTypeInfoId: 10)");
 
