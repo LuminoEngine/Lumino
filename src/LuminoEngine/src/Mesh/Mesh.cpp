@@ -592,10 +592,6 @@ void* Mesh::acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage
 		VertexBuffer* vb = nullptr;
 		auto r = m_extraVertexBuffers.findIf([&](auto& x) { return x.usage == usage && x.usageIndex == usageIndex; });
 		if (!r) {
-			if (r->type != type) {
-				LN_ERROR();
-				return nullptr;
-			}
 			auto vb = makeObject<VertexBuffer>(GraphicsHelper::getVertexElementTypeSize(type) * m_vertexCount, m_resourceUsage);
 			
 			VertexBufferEntry entry;
@@ -608,6 +604,11 @@ void* Mesh::acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage
 			return entry.mappedBuffer;
 		}
 		else {
+			if (r->type != type) {
+				LN_ERROR();
+				return nullptr;
+			}
+
 			if (!r->entry.mappedBuffer) {
 				r->entry.mappedBuffer = r->entry.buffer->map(MapMode::Write);
 			}
@@ -655,7 +656,7 @@ VertexElementType Mesh::findVertexElementType(VertexElementUsage usage, int usag
 
 	// Find extra data.
 	auto r = m_extraVertexBuffers.findIf([&](auto& x) { return x.usage == usage && x.usageIndex == usageIndex; });
-	if (!r) return r->type;
+	if (r) return r->type;
 
 	return VertexElementType::Unknown;
 }

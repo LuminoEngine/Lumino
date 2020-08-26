@@ -428,9 +428,20 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 					return nullptr;
 				}
 			}
-			else if (itr->first.compare("COLOR_0") == 0) {
+			else if (itr->first.compare(0, 6, "COLOR_") == 0) {
 				vbView.usage = VertexElementUsage::Color;
-				vbView.usageIndex = 0;
+				
+				if (itr->first.compare("COLOR_0") == 0) {
+					vbView.usageIndex = 0;
+				}
+				else if (itr->first.compare("COLOR_1") == 0) {
+					vbView.usageIndex = 1;
+				}
+				else {
+					LN_NOTIMPLEMENTED();
+					return nullptr;
+				}
+
 				if (accessor.type == TINYGLTF_TYPE_VEC3 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT) {
 					vbView.type = VertexElementType::Float3;
 				}
@@ -663,6 +674,11 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
         for (auto& vbView : section.vertexBufferViews) {
 			auto reservedGroup = coreMesh->getStandardElement(vbView.usage, vbView.usageIndex);
 			auto destType = coreMesh->findVertexElementType(vbView.usage, vbView.usageIndex);
+			if (destType == VertexElementType::Unknown) {
+				LN_WARNING("Detected unsaported vertex attibute.");
+				continue;
+			}
+
             auto* rawbuf = static_cast<byte_t*>(coreMesh->acquireMappedVertexBuffer(destType, vbView.usage, vbView.usageIndex));
             auto* src = static_cast<const byte_t*>(vbView.data);// +vbView.byteOffset;
 
@@ -681,12 +697,12 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 				}
 			}
 			else if (reservedGroup == InterleavedVertexGroup::Skinning) {
-			stride = sizeof(VertexBlendWeight);
-			if (vbView.usage == VertexElementUsage::BlendIndices) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, indices);
-			else if (vbView.usage == VertexElementUsage::BlendWeight) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, weights);
-			else {
-				LN_ERROR();
-			}
+				stride = sizeof(VertexBlendWeight);
+				if (vbView.usage == VertexElementUsage::BlendIndices) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, indices);
+				else if (vbView.usage == VertexElementUsage::BlendWeight) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, weights);
+				else {
+					LN_ERROR();
+				}
 			}
 			else {
 			stride = GraphicsHelper::getVertexElementTypeSize(vbView.type);
