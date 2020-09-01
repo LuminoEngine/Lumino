@@ -56,3 +56,35 @@ TEST_F(Test_Rendering_ClusteredShading, Basic)
 }
 
 #endif // LN_UNIT_TEST_EXPERIMENTAL
+
+
+//==============================================================================
+class Test_Rendering_Shading : public LuminoSceneTest {};
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Rendering_Shading, Fog)
+{
+	auto plane = PlaneMesh::create();
+	plane->planeMeshComponent()->setSize(1000, 1000);
+
+	auto mat1 = Material::create();
+	mat1->setColor(Color::White);
+	plane->planeMeshComponent()->setMaterial(mat1);
+
+
+	Engine::camera()->setPosition(0, 20, -40);
+	Engine::camera()->lookAt(0, 0, 0);
+
+	Scene::setFogColor(Color::Red.withAlpha(0));
+	Scene::setFogDensity(0.1);
+	//Scene::setFogStartDistance(1);
+
+	auto light = DirectionalLight::create();
+	light->lookAt(0, -1, 0);
+	Engine::world()->setMainDirectionalLight(light);
+
+	TestEnv::updateFrame();
+	ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Shading-Basic-1.png"));
+	LN_TEST_CLEAN_SCENE;
+	Engine::world()->setMainDirectionalLight(nullptr);
+}

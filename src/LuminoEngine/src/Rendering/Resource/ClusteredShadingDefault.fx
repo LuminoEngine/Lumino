@@ -1,6 +1,3 @@
-/* Lumino ShadingModel combined HLSL file (RawIR:Intermediate Representation) */
-//BEGIN_HLSL
-
 
 #include <Lumino.fxh>
 #include <LuminoForward.fxh>
