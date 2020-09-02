@@ -330,7 +330,7 @@ UTFConversionResult UnicodeUtils::getUTF8CharCount(
             return result;
         }
 
-        source += (count + 1);
+        source += (extra + 1);
         count++;
     }
 
