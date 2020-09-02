@@ -462,11 +462,11 @@ int main(int argc, char** argv)
 #endif
 
 
-    if (0) {
+    if (1) {
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_MainLoop();
-		//Example_MeshViewer();
+		Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
@@ -475,7 +475,7 @@ int main(int argc, char** argv)
 		//Example_Tilemap();
         //Experiment_CharacterController();
         //Experiment_Editor();
-        Experiment_MeshCollider();
+        //Experiment_MeshCollider();
         //Experiment_Reflector();
         //Experiment_Scripting();
         //Experiment_SelectObject();
