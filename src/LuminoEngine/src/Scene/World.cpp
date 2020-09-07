@@ -51,6 +51,8 @@ void World::init()
 
 	m_mainDirectionalLight = makeObject<DirectionalLight>();
 	add(m_mainDirectionalLight);
+    m_mainDirectionalLight->setSpecialObject(true);
+    //setMainDirectionalLight(m_mainDirectionalLight);
 	m_mainAmbientLight = makeObject<AmbientLight>();
 	add(m_mainAmbientLight);
 }

@@ -61,6 +61,7 @@ TEST_F(Test_Rendering_ClusteredShading, Basic)
 //==============================================================================
 class Test_Rendering_Shading : public LuminoSceneTest {};
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Rendering_Shading, Fog)
 {
@@ -75,16 +76,46 @@ TEST_F(Test_Rendering_Shading, Fog)
 	Engine::camera()->setPosition(0, 20, -40);
 	Engine::camera()->lookAt(0, 0, 0);
 
-	Scene::setFogColor(Color::Red.withAlpha(0));
-	Scene::setFogDensity(0.1);
-	//Scene::setFogStartDistance(1);
+	Scene::setFogColor(Color::Red);
+	Scene::setFogDensity(1);
+	Scene::setFogStartDistance(10);
+
+	// 今のところデフォルトデライトは作成せず、それ用にテストを作ってあるので assert 入れておく
+	assert(!Engine::world()->mainDirectionalLight());
 
 	auto light = DirectionalLight::create();
 	light->lookAt(0, -1, 0);
 	Engine::world()->setMainDirectionalLight(light);
 
 	TestEnv::updateFrame();
-	ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Shading-Basic-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/Shading-Basic-1.png"));
 	LN_TEST_CLEAN_SCENE;
 	Engine::world()->setMainDirectionalLight(nullptr);
+}
+#endif
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Rendering_Shading, EnvironmentLight)
+{
+	auto sphere = SphereMesh::create();
+
+	auto mat1 = Material::create();
+	mat1->setColor(Color::White);
+	sphere->sphereMeshComponent()->setMaterial(mat1);
+
+	Engine::camera()->setPosition(0, 0, -2);
+	//Engine::camera()->lookAt(0, 0, 0);
+
+	auto light2 = Engine::world()->mainDirectionalLight();
+
+	//auto light = DirectionalLight::create();
+	//light->lookAt(0, -1, 0);
+	//Engine::world()->setMainDirectionalLight(light);
+
+	//Engine::world()->mainDirectionalLight()->setEnabled(true);
+
+	TestEnv::updateFrame();
+	ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Shading-EnvironmentLight-1.png"));
+	LN_TEST_CLEAN_SCENE;
+	//Engine::world()->setMainDirectionalLight(nullptr);
 }
