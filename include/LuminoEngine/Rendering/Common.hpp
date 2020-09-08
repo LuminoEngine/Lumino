@@ -214,8 +214,8 @@ struct DynamicLightInfo
 		, m_color(Color::White)
 		, m_color2(Color::White)
 		//, m_ambient(Color::White)
-		, m_specular(Color::White)
-		, m_position(0, 0, 0)
+		, m_color3(Color::White)
+		, m_position(Vector4::Zero)
 		, m_direction(0, -1, 0)
 		, m_intensity(1.0f)
 		, m_range(10.0f)
@@ -240,8 +240,8 @@ struct DynamicLightInfo
 	Color		m_color2;		
 
 	//Color		m_ambient;			// (Phong shading でのみ使用) アンビエントカラー
-	Color		m_specular;			// (Phong shading でのみ使用) スペキュラカラー
-	Vector3		m_position;			// [Point, Spot]
+	Color		m_color3;			// (Phong shading でのみ使用) スペキュラカラー
+	Vector4		m_position;			// [Point, Spot]
 	Vector3		m_direction;		// [Directional, Spot]向き
 	float		m_intensity;		// [All] 光の強さ (Shader uniform にセットする前に、m_color と乗算する)
 	float		m_range;			// [Point, Spot] 減衰
@@ -283,6 +283,22 @@ struct DynamicLightInfo
 		return info;
 	}
 
+	static DynamicLightInfo makeEnvironmentLightInfo(const Color& color, const Color& ambientColor, const Color& skyColor, const Color& groundColor, float intensity, const Vector3& direction, bool mainLight, float shadowCameraZFar, float shadowLightZFar)
+	{
+		DynamicLightInfo info;
+		info.m_type = LightType::Directional;
+		info.m_color = color;
+		info.m_color2 = skyColor;
+		info.m_color3 = groundColor;
+		info.m_position = ambientColor.toVector4();
+		info.m_direction = direction;
+		info.m_intensity = intensity;
+		info.mainLight = mainLight;
+		info.shadowCameraZFar = shadowCameraZFar;
+		info.shadowLightZFar = shadowLightZFar;
+		return info;
+	}
+
 	static DynamicLightInfo makeDirectionalLightInfo(const Color& color, float intensity, const Vector3& direction, bool mainLight, float shadowCameraZFar, float shadowLightZFar)
 	{
 		DynamicLightInfo info;
@@ -301,7 +317,7 @@ struct DynamicLightInfo
 		DynamicLightInfo info;
 		info.m_type = LightType::Point;
 		info.m_color = color;
-		info.m_position = position;
+		info.m_position = Vector4(position, 0.0f);
 		info.m_intensity = intensity;
 		info.m_range = range;
 		info.m_attenuation = attenuation;
@@ -313,7 +329,7 @@ struct DynamicLightInfo
 		DynamicLightInfo info;
 		info.m_type = LightType::Spot;
 		info.m_color = color;
-		info.m_position = position;
+		info.m_position = Vector4(position, 0.0f);
 		info.m_direction = direction;
 		info.m_intensity = intensity;
 		info.m_range = range;

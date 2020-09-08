@@ -17,11 +17,21 @@ float3 LN_UnpackNormal(float4 packednormal)
 //------------------------------------------------------------------------------
 // Lib (ClusteredForward)
 
-
-float4	ln_AmbientColor;
-float4	ln_AmbientSkyColor;
-float4	ln_AmbientGroundColor;
-
+float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
+{
+	float3 result = float3(0, 0, 0);
+	{
+		// basic ambient light
+		result = ln_AmbientColor.xyz * ln_AmbientColor.a;
+		
+		// hemisphere ambient light
+		float hemisphere = (dot(viewNormal, float3(0, 1, 0)) + 1.0) * 0.5;
+		float4 c = lerp(ln_AmbientGroundColor, ln_AmbientSkyColor, hemisphere);
+		result = saturate(result + c.xyz * c.a);
+	}
+	
+	return result + color;
+}
 
 
 
@@ -84,6 +94,8 @@ float4 _LN_PS_ClusteredForward_Default(
 	//return float4(surface.Emission + outgoingLight, opacity);
 	result.rgb = surface.Emission + outgoingLight;
 	
+
+	result.rgb = LN_ApplyEnvironmentLight(result.rgb, surface.Normal);
 	
 	result.rgb = LN_ApplyFog(result.rgb, worldPos);
 	

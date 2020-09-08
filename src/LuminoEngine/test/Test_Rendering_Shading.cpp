@@ -101,21 +101,19 @@ TEST_F(Test_Rendering_Shading, EnvironmentLight)
 
 	auto mat1 = Material::create();
 	mat1->setColor(Color::White);
+	mat1->setRoughness(1.0);
+	mat1->setMetallic(0.0);
 	sphere->sphereMeshComponent()->setMaterial(mat1);
 
 	Engine::camera()->setPosition(0, 0, -2);
-	//Engine::camera()->lookAt(0, 0, 0);
 
-	auto light2 = Engine::world()->mainLight();
-
-	//auto light = DirectionalLight::create();
-	//light->lookAt(0, -1, 0);
-	//Engine::world()->setMainDirectionalLight(light);
-
-	//Engine::world()->mainDirectionalLight()->setEnabled(true);
+	auto light = Engine::world()->mainLight();
+	light->setIntensity(0.0f);
+	light->setAmbientColor(Color::Blue);
+	light->setSkyColor(Color::Green);
+	light->setGroundColor(Color::Red);
 
 	TestEnv::updateFrame();
-	ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Shading-EnvironmentLight-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/Shading-EnvironmentLight-1.png"));
 	LN_TEST_CLEAN_SCENE;
-	//Engine::world()->setMainDirectionalLight(nullptr);
 }

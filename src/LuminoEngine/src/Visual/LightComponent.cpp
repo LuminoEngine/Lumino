@@ -5,7 +5,6 @@
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
-//#include "../Rendering/ClusteredShadingSceneRenderer.h"
 
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
@@ -13,157 +12,16 @@
 
 namespace ln {
 
-#if 0
-//==============================================================================
-// LightComponent
-
-//------------------------------------------------------------------------------
-LightComponent::LightComponent()
-	: VisualComponent()
-	, m_lightInfo(nullptr)
-	, m_enabled(true)
-	, m_spotAngle(Math::PI * 0.25f)
-	//, m_viewMatrix(Matrix::Identity)
-	//, m_projMatrix(Matrix::Identity)
-	//, m_viewProjMatrix(Matrix::Identity)
-{
-}
-
-//------------------------------------------------------------------------------
-LightComponent::~LightComponent()
-{
-}
-
-//------------------------------------------------------------------------------
-void LightComponent::init(LightType type)
-{
-    VisualComponent::init();
-	m_lightInfo = makeRef<detail::DynamicLightInfo>();
-	//m_lightInfo->m_type = type;
-	//m_lightInfo->m_color.set(1.0f, 1.0f, 1.0f, 1.0f);
-	//m_lightInfo->m_ambient.set(1.0f, 1.0f, 1.0f, 1.0f);
-	//m_lightInfo->m_specular.set(1.0f, 1.0f, 1.0f, 1.0f);
-	//m_lightInfo->m_shadowZFar = 1000.0f;
-}
-
-//------------------------------------------------------------------------------
-//void LightComponent::updateMatrices(/*const Size& viewSize*/)
-//{
-//	const Matrix& worldMatrix = getOwnerObject()->transform.getWorldMatrix();
-//
-//	// 正面方向
-//	Vector3 direction = Vector3::transformCoord(Vector3(0, 0, 1), worldMatrix);
-//
-//	// 注視点
-//	Vector3 lookAt = worldMatrix.getPosition() + direction;
-//
-//	// ビュー行列
-//	Vector3 up = Vector3(0, 1, 0);
-//	//m_viewMatrix = Matrix::makeLookAtLH(worldMatrix.getPosition(), lookAt, up);
-//
-//	// プロジェクション行列の更新
-//	// TODO: 視野角とnear,far
-//	// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-//	//m_projMatrix = Matrix::makePerspectiveFovLH(Math::PI / 4.0f, viewSize.width / viewSize.height, 0.01f, 1000.0f);
-//
-//	//m_worldViewProjMatrix = getMatrix() * m_viewMatrix * m_projMatrix;
-//	//m_viewProjMatrix = m_viewMatrix * m_projMatrix;
-//
-//	m_lightInfo->m_direction = direction;
-//
-//	//m_viewMatrixI = Matrix::makeInverse(m_viewMatrix);
-//	//m_projMatrixI = Matrix::makeInverse(m_projMatrix);
-//	//m_viewProjMatrixI = Matrix::makeInverse(m_viewProjMatrix);
-//	//m_viewMatrixT = Matrix::makeTranspose(m_viewMatrix);
-//	//m_projMatrixT = Matrix::makeTranspose(m_projMatrix);
-//	//m_viewProjMatrixT = Matrix::makeTranspose(m_viewProjMatrix);
-//	//m_viewMatrixIT = Matrix::makeTranspose(m_viewMatrixI);
-//	//m_projMatrixIT = Matrix::makeTranspose(m_projMatrixI);
-//	//m_viewProjMatrixIT = Matrix::makeTranspose(m_viewProjMatrixI);
-//}
-//
-//------------------------------------------------------------------------------
-void LightComponent::onPreRender(DrawList* context)
-{
-	if (m_enabled)
-	{
-		//updateMatrices();
-		const Matrix& t = getOwnerObject()->transform.getWorldMatrix();
-		m_lightInfo->m_position = t.getPosition();
-		m_lightInfo->m_direction = t.getFront();
-		context->addDynamicLightInfo(m_lightInfo);
-	}
-}
-#endif
-
-//==============================================================================
-// AmbientLightComponent
-
-LN_OBJECT_IMPLEMENT(AmbientLightComponent, VisualComponent) {}
-
-AmbientLightComponent::AmbientLightComponent()
-	: m_color(Color::White)
-	, m_intensity(0.25f)
-	, m_enabled(true)
-{
-}
-
-AmbientLightComponent::~AmbientLightComponent()
-{
-}
-
-void AmbientLightComponent::init()
-{
-	VisualComponent::init();
-}
-
-void AmbientLightComponent::onPrepareRender(RenderingContext* context)
-{
-	if (m_enabled)
-	{
-		context->addAmbientLight(m_color, m_intensity);
-	}
-}
-
-//==============================================================================
-// HemisphereLightComponent
-
-LN_OBJECT_IMPLEMENT(HemisphereLightComponent, VisualComponent) {}
-
-HemisphereLightComponent::HemisphereLightComponent()
-	: m_skyColor(Color::White)
-	, m_groundColor(Color::White)
-	, m_intensity(0.5f)
-	, m_enabled(true)
-{
-}
-
-HemisphereLightComponent::~HemisphereLightComponent()
-{
-}
-
-void HemisphereLightComponent::init()
-{
-	VisualComponent::init();
-}
-
-void HemisphereLightComponent::onPrepareRender(RenderingContext* context)
-{
-	if (m_enabled)
-	{
-		context->addHemisphereLight(m_skyColor, m_groundColor, m_intensity);
-	}
-}
-
 //==============================================================================
 // EnvironmentLightComponent
 
 LN_OBJECT_IMPLEMENT(EnvironmentLightComponent, VisualComponent) {}
 
 EnvironmentLightComponent::EnvironmentLightComponent()
-	: m_ambientColor(Color::White)
-	, m_skyColor(Color::White)
-	, m_groundColor(Color::White)
+	: m_color(Color::White)
+	, m_ambientColor(Color::White)
+	, m_skyColor(Color::Black)
+	, m_groundColor(Color::Black)
 	, m_intensity(0.5f)
 	, m_shadowEffectiveDistance(0.0f)
 	, m_shadowEffectiveDepth(0.0f)
@@ -184,13 +42,10 @@ void EnvironmentLightComponent::onPrepareRender(RenderingContext* context)
 {
 	if (m_enabled)
 	{
-		context->addAmbientLight(m_ambientColor, m_intensity);
-		context->addHemisphereLight(m_skyColor, m_groundColor, m_intensity);
-
 		if (context->world->mainLight()) {
 			const Matrix& t = worldObject()->worldMatrix();
-			context->addDirectionalLight(
-				m_ambientColor, m_intensity, t.front(),
+			context->addEnvironmentLightInfo(
+				m_color, m_ambientColor, m_skyColor, m_groundColor, m_intensity, t.front(),
 				context->world->mainLight()->environmentLightComponent() == this,
 				m_shadowEffectiveDistance, m_shadowEffectiveDepth);
 		}
@@ -236,16 +91,16 @@ void DirectionalLightComponent::init()
 
 void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 {
-	//if (m_enabled)
-	//{
-	//	if (context->world->mainDirectionalLight()) {
-	//		const Matrix& t = worldObject()->worldMatrix();
-	//		context->addDirectionalLight(
-	//			m_color, m_intensity, t.front(),
-	//			context->world->mainDirectionalLight()->getDirectionalLightComponent() == this,
-	//			m_shadowEffectiveDistance, m_shadowEffectiveDepth);
-	//	}
-	//}
+	if (m_enabled)
+	{
+		//if (context->world->mainDirectionalLight()) {
+			const Matrix& t = worldObject()->worldMatrix();
+			context->addDirectionalLight(
+				m_color, m_intensity, t.front(),
+				false,
+				m_shadowEffectiveDistance, m_shadowEffectiveDepth);
+		//}
+	}
 }
 
 void DirectionalLightComponent::onRender(RenderingContext* context)

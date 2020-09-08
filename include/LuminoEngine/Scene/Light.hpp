@@ -10,113 +10,6 @@ class DirectionalLightComponent;
 class PointLightComponent;
 class SpotLightComponent;
 
-/** アンビエントライトのオブジェクトです。 */
-class AmbientLight
-	: public WorldObject
-{
-	LN_OBJECT;
-public:
-
-	/** 既定の設定でアンビエントライトを作成します。 */
-	static Ref<AmbientLight> create();
-
-	/** 色を指定してアンビエントライトを作成します。 */
-	static Ref<AmbientLight> create(const Color& color);
-
-public:
-
-	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true) */
-	void setEnabled(bool enabled) { m_component->setEnabled(enabled); }
-
-	/** ライトの有効状態を取得します。 */
-	bool isEnabled() const { return m_component->isEnabled(); }
-
-	/** ライトカラーを設定します。(default: White) */
-	void setColor(const Color& color) { m_component->setColor(color); }
-
-	/** ライトカラーを取得します。 */
-	const Color& getColor() const { return m_component->getColor(); }
-
-	/** ライトの明るさを設定します。(default: 0.5) */
-	void setIntensity(float intensity) { m_component->setIntensity(intensity); }
-
-	/** ライトの明るさを取得します。 */
-	float getIntensity() const { return m_component->getIntensity(); }
-
-	/** コンポーネントを取得します。 */
-	AmbientLightComponent* getAmbientLightComponent() const;
-
-LN_CONSTRUCT_ACCESS:
-	AmbientLight();
-	virtual ~AmbientLight();
-
-	/** 既定の設定でアンビエントライトを作成します。 */
-	void init();
-
-	/** 色を指定してアンビエントライトを作成します。 */
-	void init(const Color& color);
-
-private:
-	Ref<AmbientLightComponent>	m_component;
-};
-
-/** 半球ライトのオブジェクトです。 */
-class HemisphereLight
-	: public WorldObject
-{
-	LN_OBJECT;
-public:
-
-	/** 既定の設定で半球ライトを作成します。 */
-	static Ref<HemisphereLight> create();
-
-	/** 色を指定して半球ライトを作成します。 */
-	static Ref<HemisphereLight> create(const Color& skyColor, const Color& groundColor);
-
-public:
-
-	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true) */
-	void setEnabled(bool enabled) { m_component->setEnabled(enabled); }
-
-	/** ライトの有効状態を取得します。 */
-	bool isEnabled() const { return m_component->isEnabled(); }
-
-	/** 空の環境光の色を取得します。 */
-	const Color& getSkyColor() { return m_component->getSkyColor(); }
-
-	/** 空の環境光の色を設定します。(default: White) */
-	void setSkyColor(const Color& color) { m_component->setSkyColor(color); }
-
-	/** 地面の環境光の色を取得します。 */
-	const Color& getGroundColor() { return m_component->getGroundColor(); }
-
-	/** 地面の環境光の色を設定します。(default: White) */
-	void setGroundColor(const Color& color) { m_component->setGroundColor(color); }
-
-	/** ライトの明るさを設定します。(default: 0.5) */
-	void setIntensity(float intensity) { m_component->setIntensity(intensity); }
-
-	/** ライトの明るさを取得します。 */
-	float getIntensity() const { return m_component->getIntensity(); }
-
-	/** コンポーネントを取得します。 */
-	HemisphereLightComponent* getHemisphereLightComponent() const;
-
-LN_CONSTRUCT_ACCESS:
-	HemisphereLight();
-	virtual ~HemisphereLight();
-
-	/** 既定の設定で半球ライトを作成します。 */
-	void init();
-
-	/** 色を指定して半球ライトを作成します。 */
-	void init(const Color& skyColor, const Color& groundColor);
-
-private:
-	Ref<HemisphereLightComponent>	m_component;
-};
-
-
 /**
  * 環境ライトのオブジェクトです。
  *
@@ -152,7 +45,7 @@ public:
 	LN_METHOD(Property)
 	const Color& getSkyColor() { return m_component->getSkyColor(); }
 
-	/** 空の環境光の色を設定します。(default: White) */
+	/** 空の環境光の色を設定します。(default: Black) */
 	LN_METHOD(Property)
 	void setSkyColor(const Color& value) { m_component->setSkyColor(value); }
 
@@ -160,7 +53,7 @@ public:
 	LN_METHOD(Property)
 	const Color& getGroundColor() { return m_component->getGroundColor(); }
 
-	/** 地面の環境光の色を設定します。(default: White) */
+	/** 地面の環境光の色を設定します。(default: Black) */
 	LN_METHOD(Property)
 	void setGroundColor(const Color& value) { m_component->setGroundColor(value); }
 

@@ -96,9 +96,7 @@ ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
     assert(192 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_Resolution));
     assert(208 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraPosition));
     assert(224 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraDirection));
-    assert(240 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip));
-    assert(244 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_FarClip));
-    static_assert(256 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    static_assert(288 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(352 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(48 == sizeof(LNEffectColorBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(BuiltinShaderParameters__Count < 64, "Invalid BuiltinShaderParameters__Count");
@@ -162,11 +160,7 @@ void ShaderTechniqueSemanticsManager::reset()
     for (auto& i : m_builtinShaderTextures) i = -1;
 }
 
-void ShaderTechniqueSemanticsManager::updateSceneVariables(const SceneInfo& info)
-{
-}
-
-void ShaderTechniqueSemanticsManager::updateRenderViewVariables(const RenderViewInfo& info)
+void ShaderTechniqueSemanticsManager::updateRenderViewVariables(const RenderViewInfo& info, const SceneInfo& sceneInfo)
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNRenderViewBuffer];
     if (index >= 0) {
@@ -178,10 +172,11 @@ void ShaderTechniqueSemanticsManager::updateRenderViewVariables(const RenderView
         if (hasParameter(BuiltinShaderParameters_ln_ProjectionI))
             data.ln_ProjectionI = Matrix::makeInverse(c.projMatrix);
         data.ln_Resolution = Vector4(c.viewPixelSize, 1.0f / c.viewPixelSize.width, 1.0f / c.viewPixelSize.height);
-        data.ln_NearClip = c.nearClip;
-        data.ln_FarClip = c.farClip;
-        data.ln_CameraPosition = Vector4(c.viewPosition, 1.0f);
-        data.ln_CameraDirection = Vector4(c.viewDirection, 1.0f);
+        data.ln_CameraPosition = Vector4(c.viewPosition, c.nearClip);
+        data.ln_CameraDirection = Vector4(c.viewDirection, c.farClip);
+        data.ln_AmbientColor = sceneInfo.ambientColor.toVector4();
+        data.ln_AmbientSkyColor = sceneInfo.ambientSkyColor.toVector4();
+        data.ln_AmbientGroundColor = sceneInfo.ambientGroundColor.toVector4();
         m_descriptor->setData(index, &data, sizeof(data));
     }
 
