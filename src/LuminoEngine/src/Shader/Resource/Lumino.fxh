@@ -195,5 +195,15 @@ float2 LN_UVToClipSpacePosition(float2 uv)
     return ((uv - 0.5) * 2.0) * float2(1.0, -1.0);
 }
 
+float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
+{
+    // basic ambient light
+    const float3 ambient = ln_AmbientColor.xyz;
+    
+    // hemisphere ambient light
+    float hemisphere = (dot(viewNormal, float3(0, 1, 0)) + 1.0) * 0.5;
+    float4 c = lerp(ln_AmbientGroundColor, ln_AmbientSkyColor, hemisphere);
+    return saturate(ambient + c.xyz) + color;
+}
 
 #endif // LUMINO_INCLUDED

@@ -61,6 +61,8 @@ bool UnifiedShaderCompiler::compile(
 
 		List<String> actualDefinitions = definitions;
 		{
+			if (tech.techniqueClass.meshProcess == ShaderTechniqueClass_MeshProcess::SkinnedMesh)
+				actualDefinitions.add(u"LN_USE_SKINNING=1");
 			if (tech.techniqueClass.normalClass == ShaderTechniqueClass_Normal::NormalMap)
 				actualDefinitions.add(u"LN_USE_NORMALMAP=1");
 			if (tech.techniqueClass.roughnessClass == ShaderTechniqueClass_Roughness::RoughnessMap)
