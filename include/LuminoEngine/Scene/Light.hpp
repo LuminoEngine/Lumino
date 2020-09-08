@@ -116,6 +116,90 @@ private:
 	Ref<HemisphereLightComponent>	m_component;
 };
 
+
+/**
+ * 環境ライトのオブジェクトです。
+ *
+ * 環境ライトは、アンビエントライティング、半球ライティング、ディレクショナルライトが統合された、
+ * シーン全体のライティングをコントロールするためのオブジェクトです。
+ *
+ * World はメインライトとして、1 つの EnvironmentLight がデフォルトで存在しています。
+ * 
+ */
+LN_CLASS()
+class EnvironmentLight
+	: public WorldObject
+{
+	LN_OBJECT;
+public:
+	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true) */
+	LN_METHOD(Property)
+	void setEnabled(bool enabled) { m_component->setEnabled(enabled); }
+
+	/** ライトの有効状態を取得します。 */
+	LN_METHOD(Property)
+	bool isEnabled() const { return m_component->isEnabled(); }
+
+	/** シーン全体の環境光の色を設定します。(default: White) */
+	LN_METHOD(Property)
+	void setAmbientColor(const Color& value) { m_component->setAmbientColor(value); }
+
+	/** シーン全体の環境光の色を取得します。 */
+	LN_METHOD(Property)
+	const Color& getAmbientColor() const { return m_component->getAmbientColor(); }
+
+	/** 空の環境光の色を取得します。 */
+	LN_METHOD(Property)
+	const Color& getSkyColor() { return m_component->getSkyColor(); }
+
+	/** 空の環境光の色を設定します。(default: White) */
+	LN_METHOD(Property)
+	void setSkyColor(const Color& value) { m_component->setSkyColor(value); }
+
+	/** 地面の環境光の色を取得します。 */
+	LN_METHOD(Property)
+	const Color& getGroundColor() { return m_component->getGroundColor(); }
+
+	/** 地面の環境光の色を設定します。(default: White) */
+	LN_METHOD(Property)
+	void setGroundColor(const Color& value) { m_component->setGroundColor(value); }
+
+	/** ライトの明るさを設定します。(default: 0.5) */
+	LN_METHOD(Property)
+	void setIntensity(float intensity) { m_component->setIntensity(intensity); }
+
+	/** ライトの明るさを取得します。 */
+	LN_METHOD(Property)
+	float getIntensity() const { return m_component->getIntensity(); }
+
+	/** 視点からの、影を生成できる距離を指定します。 (default: 0.0f) */
+	LN_METHOD(Property)
+	void setShadowEffectiveDistance(float value) { m_component->setShadowEffectiveDistance(value); }
+
+	/** 視点からの、影を生成できる距離を取得します。 */
+	LN_METHOD(Property)
+	float shadowEffectiveDistance() const { return m_component->shadowEffectiveDistance(); }
+
+	/** 光源方向からの、影を生成できる距離を指定します。 (default: 0.0f) ※これはシャドウマップの深度値の範囲となります。 */
+	LN_METHOD(Property)
+	void setShadowEffectiveDepth(float value) { m_component->setShadowEffectiveDepth(value); }
+
+	/** 光源方向からの、影を生成できる距離を指定します。 */
+	LN_METHOD(Property)
+	float shadowEffectiveDepth() const { return m_component->shadowEffectiveDepth(); }
+
+	/** コンポーネントを取得します。 */
+	EnvironmentLightComponent* environmentLightComponent() const;
+
+LN_CONSTRUCT_ACCESS:
+	EnvironmentLight();
+	virtual ~EnvironmentLight();
+	void init();
+
+private:
+	Ref<EnvironmentLightComponent> m_component;
+};
+
 /** ディレクショナルライトのオブジェクトです。 */
 LN_CLASS()
 class DirectionalLight

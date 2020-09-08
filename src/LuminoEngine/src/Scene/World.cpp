@@ -49,12 +49,9 @@ void World::init()
 
     m_sceneConductor = makeRef<detail::SceneConductor>();
 
-	m_mainDirectionalLight = makeObject<DirectionalLight>();
-	add(m_mainDirectionalLight);
-    m_mainDirectionalLight->setSpecialObject(true);
-    //setMainDirectionalLight(m_mainDirectionalLight);
-	m_mainAmbientLight = makeObject<AmbientLight>();
-	add(m_mainAmbientLight);
+	m_mainLight = makeObject<EnvironmentLight>();
+    m_mainLight->setSpecialObject(true);
+	add(m_mainLight);
 }
 
 void World::onDispose(bool explicitDisposing)
@@ -65,15 +62,7 @@ void World::onDispose(bool explicitDisposing)
         m_sceneConductor->releaseAndTerminateAllRunningScenes();
     }
 
-    if (m_mainAmbientLight) {
-        //m_mainAmbientLight->dispose();
-        m_mainAmbientLight = nullptr;
-    }
-
-    if (m_mainDirectionalLight) {
-        //m_mainDirectionalLight->dispose();
-        m_mainDirectionalLight = nullptr;
-    }
+    m_mainLight = nullptr;
 
     if (m_effectContext) {
         m_effectContext->dispose();
@@ -103,15 +92,10 @@ ReadOnlyList<Ref<WorldObject>>* World::rootObjects() const
 	return masterScene()->m_rootWorldObjectList;
 }
 
-void World::setMainAmbientLight(AmbientLight* value)
-{
-	m_mainAmbientLight = value;
-}
-
-void World::setMainDirectionalLight(DirectionalLight* value)
-{
-	m_mainDirectionalLight = value;
-}
+//void World::setMainAmbientLight(AmbientLight* value)
+//{
+//	m_mainAmbientLight = value;
+//}
 
 WorldObject* World::findObjectByComponentType(const TypeInfo* type) const
 {

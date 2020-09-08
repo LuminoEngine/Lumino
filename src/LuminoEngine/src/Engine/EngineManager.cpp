@@ -622,13 +622,13 @@ void EngineManager::initializeDefaultObjects()
 			if (m_settings.createMainLights) {
 
 
-				auto mainAmbientLight = makeObject<AmbientLight>();
-				m_mainWorld->add(mainAmbientLight);
-				m_mainWorld->setMainAmbientLight(mainAmbientLight);
+				//auto mainAmbientLight = makeObject<AmbientLight>();
+				//m_mainWorld->add(mainAmbientLight);
+				//m_mainWorld->setMainAmbientLight(mainAmbientLight);
 
-				auto mainDirectionalLight = makeObject<DirectionalLight>();
-				m_mainWorld->add(mainDirectionalLight);
-				m_mainWorld->setMainDirectionalLight(mainDirectionalLight);
+				//auto mainDirectionalLight = makeObject<DirectionalLight>();
+				//m_mainWorld->add(mainDirectionalLight);
+				//m_mainWorld->setMainDirectionalLight(mainDirectionalLight);
 			}
 
 			m_mainWorldRenderView = makeObject<WorldRenderView>();

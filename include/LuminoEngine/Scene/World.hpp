@@ -6,7 +6,7 @@
 namespace ln {
 class Level;
 class AnimationContext;
-class AmbientLight;
+class EnvironmentLight;
 class DirectionalLight;
 class WorldRenderView;
 class WorldObject;
@@ -59,11 +59,8 @@ public:
     void setTimeScale(float value) { m_timeScale = value; }
     float timeScale() const { return m_timeScale; }
 
-	void setMainAmbientLight(AmbientLight* value);
-    const Ref<AmbientLight>& mainAmbientLight() const { return m_mainAmbientLight; }
-
-	void setMainDirectionalLight(DirectionalLight* value);
-    const Ref<DirectionalLight>& mainDirectionalLight() const { return m_mainDirectionalLight; }
+	//void setMainAmbientLight(AmbientLight* value);
+    const Ref<EnvironmentLight>& mainLight() const { return m_mainLight; }
 
 
     /** この World に含まれている WorldObject のうち、指定した型のコンポーネントを持っている最初の WorldObject を返します。 */
@@ -124,8 +121,7 @@ public: // TODO: internal
     Ref<Level> m_masterScene;
     Ref<detail::SceneConductor> m_sceneConductor;
 
-    Ref<AmbientLight> m_mainAmbientLight;
-    Ref<DirectionalLight> m_mainDirectionalLight;
+    Ref<EnvironmentLight> m_mainLight;
     detail::SceneGlobalRenderParams m_combinedSceneGlobalRenderParams;
 
     Ref<List<Ref<Level>>> m_sceneList;

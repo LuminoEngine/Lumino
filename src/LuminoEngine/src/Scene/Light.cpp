@@ -95,6 +95,35 @@ HemisphereLightComponent* HemisphereLight::getHemisphereLightComponent() const
 }
 
 //==============================================================================
+// EnvironmentLight
+
+LN_OBJECT_IMPLEMENT(EnvironmentLight, WorldObject) {}
+
+EnvironmentLight::EnvironmentLight()
+	: WorldObject()
+	, m_component(nullptr)
+{
+}
+
+EnvironmentLight::~EnvironmentLight()
+{
+}
+
+void EnvironmentLight::init()
+{
+	WorldObject::init();
+	m_component = makeObject<EnvironmentLightComponent>();
+	addComponent(m_component);
+	setPosition(0, 0, 0);
+	setRotation(Math::degreesToRadians(50), Math::degreesToRadians(-30), 0);	// 右上手前から照らす
+}
+
+EnvironmentLightComponent* EnvironmentLight::environmentLightComponent() const
+{
+	return m_component;
+}
+
+//==============================================================================
 // DirectionalLight
 
 LN_OBJECT_IMPLEMENT(DirectionalLight, WorldObject) {}
@@ -129,12 +158,12 @@ void DirectionalLight::init()
     //lookAt(Vector3(1, -1, 1));
 
 
-	if (detail::EngineDomain::sceneManager()->autoAddingToActiveWorld) {
-		World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
-		if (activeWorld && !activeWorld->mainDirectionalLight()) {
-			activeWorld->setMainDirectionalLight(this);
-		}
-	}
+	//if (detail::EngineDomain::sceneManager()->autoAddingToActiveWorld) {
+	//	World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
+	//	if (activeWorld && !activeWorld->mainDirectionalLight()) {
+	//		activeWorld->setMainDirectionalLight(this);
+	//	}
+	//}
 }
 
 void DirectionalLight::init(const Color& color)

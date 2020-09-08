@@ -215,8 +215,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 			else if (clearMode() == RenderViewClearMode::Sky) {
 				//renderingContext->clear(ClearFlags::Depth | ClearFlags::Stencil, Color(), 1.0f, 0x00);
 
-                if (m_targetWorld->mainDirectionalLight()) {
-                    m_internalSkyBox->setLightDirection(-Vector3::normalize(m_targetWorld->mainDirectionalLight()->worldMatrix().front()));
+                if (m_targetWorld->mainLight()) {
+                    m_internalSkyBox->setLightDirection(-Vector3::normalize(m_targetWorld->mainLight()->worldMatrix().front()));
 
                 }
 

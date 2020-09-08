@@ -156,6 +156,49 @@ void HemisphereLightComponent::onPrepareRender(RenderingContext* context)
 }
 
 //==============================================================================
+// EnvironmentLightComponent
+
+LN_OBJECT_IMPLEMENT(EnvironmentLightComponent, VisualComponent) {}
+
+EnvironmentLightComponent::EnvironmentLightComponent()
+	: m_ambientColor(Color::White)
+	, m_skyColor(Color::White)
+	, m_groundColor(Color::White)
+	, m_intensity(0.5f)
+	, m_shadowEffectiveDistance(0.0f)
+	, m_shadowEffectiveDepth(0.0f)
+	, m_enabled(true)
+{
+}
+
+EnvironmentLightComponent::~EnvironmentLightComponent()
+{
+}
+
+bool EnvironmentLightComponent::init()
+{
+	return VisualComponent::init();
+}
+
+void EnvironmentLightComponent::onPrepareRender(RenderingContext* context)
+{
+	if (m_enabled)
+	{
+		context->addAmbientLight(m_ambientColor, m_intensity);
+		context->addHemisphereLight(m_skyColor, m_groundColor, m_intensity);
+
+		if (context->world->mainLight()) {
+			const Matrix& t = worldObject()->worldMatrix();
+			context->addDirectionalLight(
+				m_ambientColor, m_intensity, t.front(),
+				context->world->mainLight()->environmentLightComponent() == this,
+				m_shadowEffectiveDistance, m_shadowEffectiveDepth);
+		}
+	}
+}
+
+
+//==============================================================================
 // DirectionalLightComponent
 
 LN_OBJECT_IMPLEMENT(DirectionalLightComponent, VisualComponent) {}
@@ -193,16 +236,16 @@ void DirectionalLightComponent::init()
 
 void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 {
-	if (m_enabled)
-	{
-		if (context->world->mainDirectionalLight()) {
-			const Matrix& t = worldObject()->worldMatrix();
-			context->addDirectionalLight(
-				m_color, m_intensity, t.front(),
-				context->world->mainDirectionalLight()->getDirectionalLightComponent() == this,
-				m_shadowEffectiveDistance, m_shadowEffectiveDepth);
-		}
-	}
+	//if (m_enabled)
+	//{
+	//	if (context->world->mainDirectionalLight()) {
+	//		const Matrix& t = worldObject()->worldMatrix();
+	//		context->addDirectionalLight(
+	//			m_color, m_intensity, t.front(),
+	//			context->world->mainDirectionalLight()->getDirectionalLightComponent() == this,
+	//			m_shadowEffectiveDistance, m_shadowEffectiveDepth);
+	//	}
+	//}
 }
 
 void DirectionalLightComponent::onRender(RenderingContext* context)

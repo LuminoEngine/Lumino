@@ -17,8 +17,8 @@ class App_Experiment_Shadow : public Application
     {
 		Engine::renderView()->setGuideGridEnabled(true);
 		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
-		Engine::light()->setShadowEffectiveDistance(50);
-		Engine::light()->setShadowEffectiveDepth(500);
+		Engine::mainLight()->setShadowEffectiveDistance(50);
+		Engine::mainLight()->setShadowEffectiveDepth(500);
 
 		auto plane1 = PlaneMesh::create();
 
@@ -32,7 +32,7 @@ class App_Experiment_Shadow : public Application
 
     void onUpdate() override
     {
-		auto light = Engine::light();
+		auto light = Engine::mainLight();
 		//light->setPosition(50, 50, 50);
 		//light->lookAt(0, 0, 0);
 

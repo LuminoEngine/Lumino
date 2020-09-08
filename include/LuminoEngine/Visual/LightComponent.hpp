@@ -207,6 +207,77 @@ private:
 	bool m_enabled;
 };
 
+
+/**
+ * 環境ライトのコンポーネントです。
+ *
+ * @see EnvironmentLight
+ */
+class EnvironmentLightComponent
+	: public VisualComponent
+{
+	LN_OBJECT;
+public:
+	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true) */
+	void setEnabled(bool value) { m_enabled = value; }
+
+	/** ライトの有効状態を取得します。 */
+	bool isEnabled() const { return m_enabled; }
+
+	/** シーン全体の環境光の色を設定します。(default: White) */
+	void setAmbientColor(const Color& value) { m_ambientColor = value; }
+
+	/** シーン全体の環境光の色を取得します。 */
+	const Color& getAmbientColor() const { return m_ambientColor; }
+
+	/** 空の環境光の色を取得します。 */
+	const Color& getSkyColor() { return m_skyColor; }
+
+	/** 空の環境光の色を設定します。(default: White) */
+	void setSkyColor(const Color& value) { m_skyColor = value; }
+
+	/** 地面の環境光の色を取得します。 */
+	const Color& getGroundColor() { return m_groundColor; }
+
+	/** 地面の環境光の色を設定します。(default: White) */
+	void setGroundColor(const Color& value) { m_groundColor = value; }
+
+	/** ライトの明るさを設定します。(default: 0.5) */
+	void setIntensity(float value) { m_intensity = value; }
+
+	/** ライトの明るさを取得します。 */
+	float getIntensity() const { return m_intensity; }
+
+	/** 視点からの、影を生成できる距離を指定します。 (default: 0.0f) */
+	void setShadowEffectiveDistance(float value) { m_shadowEffectiveDistance = value; }
+
+	/** 視点からの、影を生成できる距離を取得します。 */
+	float shadowEffectiveDistance() const { return m_shadowEffectiveDistance; }
+
+	/** 光源方向からの、影を生成できる距離を指定します。 (default: 0.0f) ※これはシャドウマップの深度値の範囲となります。 */
+	void setShadowEffectiveDepth(float value) { m_shadowEffectiveDepth = value; }
+
+	/** 光源方向からの、影を生成できる距離を指定します。 */
+	float shadowEffectiveDepth() const { return m_shadowEffectiveDepth; }
+
+protected:
+	virtual void onPrepareRender(RenderingContext* context) override;
+
+LN_CONSTRUCT_ACCESS:
+	EnvironmentLightComponent();
+	virtual ~EnvironmentLightComponent();
+	bool init();
+
+private:
+	Color m_ambientColor;
+	Color m_skyColor;
+	Color m_groundColor;
+	float m_intensity;
+	float m_shadowEffectiveDistance;
+	float m_shadowEffectiveDepth;
+	bool m_enabled;
+};
+
 /** ディレクショナルライトのコンポーネントです。 */
 class DirectionalLightComponent
 	: public VisualComponent

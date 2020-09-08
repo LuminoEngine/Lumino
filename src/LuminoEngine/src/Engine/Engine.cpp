@@ -260,15 +260,15 @@ Camera* Engine::camera()
     return detail::EngineDomain::engineManager()->mainCamera();
 }
 
-DirectionalLight* Engine::light()
+EnvironmentLight* Engine::mainLight()
 {
-	return detail::EngineDomain::engineManager()->mainWorld()->mainDirectionalLight();
+	return detail::EngineDomain::engineManager()->mainWorld()->mainLight();
 }
-
-AmbientLight* Engine::ambientLight()
-{
-	return detail::EngineDomain::engineManager()->mainWorld()->mainAmbientLight();
-}
+//
+//AmbientLight* Engine::ambientLight()
+//{
+//	return detail::EngineDomain::engineManager()->mainWorld()->mainAmbientLight();
+//}
 
 //AmbientLight* Engine::mainAmbientLight()
 //{

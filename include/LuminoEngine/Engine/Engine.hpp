@@ -14,8 +14,7 @@ class PhysicsWorld;
 class PhysicsWorld2D;
 class World;
 class Camera;
-class AmbientLight;
-class DirectionalLight;
+class EnvironmentLight;
 
 /** アプリケーション全体にかかわる処理を行います。 */
 LN_CLASS(Static)
@@ -89,13 +88,13 @@ public:
 	LN_METHOD(Property)
     static Camera* camera();
 
-	/** デフォルトで作成されるメインの DirectionalLight です。 */
+	/** デフォルトで作成されるメインの Light です。 */
 	LN_METHOD(Property)
-	static DirectionalLight* light();
+	static EnvironmentLight* mainLight();
 
-	/** デフォルトで作成されるメインの AmbientLight です。 */
-	//LN_METHOD(Property)
-	static AmbientLight* ambientLight();
+	///** デフォルトで作成されるメインの AmbientLight です。 */
+	////LN_METHOD(Property)
+	//static AmbientLight* ambientLight();
 
 	/** デフォルトで作成されるメインの RenderView です。 */
 	LN_METHOD(Property)

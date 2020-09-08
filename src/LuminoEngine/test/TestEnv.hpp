@@ -32,8 +32,8 @@ public:
     Engine::mainUIView()->removeAllChildren(); \
 	Engine::camera()->setPosition(0, 0, -10); \
 	Engine::camera()->lookAt(Vector3(0, 0, 0)); \
-	Engine::light()->lookAt(0, -1, 0); \
-	Engine::light()->setEnabled(true); \
+	Engine::mainLight()->lookAt(0, -1, 0); \
+	Engine::mainLight()->setEnabled(true); \
 
 
 #define ASSERT_SCREEN(filePath) ASSERT_TRUE(TestEnv::checkScreenShot(filePath, nullptr)) 

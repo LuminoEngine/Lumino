@@ -106,7 +106,7 @@ TEST_F(Test_Rendering_Shading, EnvironmentLight)
 	Engine::camera()->setPosition(0, 0, -2);
 	//Engine::camera()->lookAt(0, 0, 0);
 
-	auto light2 = Engine::world()->mainDirectionalLight();
+	auto light2 = Engine::world()->mainLight();
 
 	//auto light = DirectionalLight::create();
 	//light->lookAt(0, -1, 0);
