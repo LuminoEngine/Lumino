@@ -203,7 +203,10 @@ float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
     // hemisphere ambient light
     float hemisphere = (dot(viewNormal, float3(0, 1, 0)) + 1.0) * 0.5;
     float4 c = lerp(ln_AmbientGroundColor, ln_AmbientSkyColor, hemisphere);
-    return saturate(ambient + c.xyz) + color;
+
+    float3 factors = saturate(ambient + c.xyz);
+
+    return color * factors;
 }
 
 #endif // LUMINO_INCLUDED

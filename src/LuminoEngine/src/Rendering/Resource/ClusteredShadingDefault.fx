@@ -59,11 +59,14 @@ float4 _LN_PS_ClusteredForward_Default(
     float shadow = LN_CalculateShadow(posInLight);
     outgoingLight *= shadow;
 
-    result.rgb = surface.Emission + outgoingLight;
+    result.rgb = outgoingLight;
     
     // Environment light
-    result.rgb = LN_ApplyEnvironmentLight(result.rgb, surface.Normal);
+    //result.rgb = LN_ApplyEnvironmentLight(result.rgb, surface.Normal);
     
+    // Emission
+    result.rgb += surface.Emission;
+
     // Fog
     result.rgb = LN_ApplyFog(result.rgb, worldPos);
 

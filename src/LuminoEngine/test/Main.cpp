@@ -21,7 +21,7 @@ GTEST_API_ int main(int argc, char **argv)
 		char* testArgs[] = {
 			argv[0],
 			"--gtest_break_on_failure",
-			"--gtest_filter=Test_Mesh_SkinnedMesh.*"
+			"--gtest_filter=Test_Rendering_Shading.MaterialEmissive"
 		};
 		argc = sizeof(testArgs) / sizeof(char*);
 		argv = testArgs;

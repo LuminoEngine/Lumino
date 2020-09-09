@@ -19,7 +19,7 @@ LN_OBJECT_IMPLEMENT(EnvironmentLightComponent, VisualComponent) {}
 
 EnvironmentLightComponent::EnvironmentLightComponent()
 	: m_color(Color::White)
-	, m_ambientColor(Color::White)
+	, m_ambientColor(Color(0.5, 0.5, 0.5))
 	, m_skyColor(Color::Black)
 	, m_groundColor(Color::Black)
 	, m_intensity(0.5f)

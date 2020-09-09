@@ -350,6 +350,56 @@ void SkinnedMeshModel::writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion*
 //	//}
 //}
 
+// 左手座標系状、Z+を正面としたときの、各ボーンの位置関係を検証する。
+void SkinnedMeshModel::verifyHumanoidBones()
+{
+	updateNodeTransforms();
+
+	struct Pair { HumanoidBones left; HumanoidBones right; };
+	Pair sidePairs[] = {
+		{ HumanoidBones::LeftShoulder, HumanoidBones::RightShoulder },
+		{ HumanoidBones::LeftUpperArm, HumanoidBones::RightUpperArm },
+		{ HumanoidBones::LeftLowerArm, HumanoidBones::RightLowerArm },
+		{ HumanoidBones::LeftHand, HumanoidBones::RightHand },
+
+		{ HumanoidBones::LeftUpperLeg, HumanoidBones::RightUpperLeg },
+		{ HumanoidBones::LeftLowerLeg, HumanoidBones::RightLowerLeg },
+		{ HumanoidBones::LeftFoot, HumanoidBones::RightFoot },
+		{ HumanoidBones::LeftToes, HumanoidBones::RightToes },
+
+		{ HumanoidBones::LeftThumbProximal, HumanoidBones::RightThumbProximal },
+		{ HumanoidBones::LeftThumbIntermediate, HumanoidBones::RightThumbIntermediate },
+		{ HumanoidBones::LeftThumbDistal, HumanoidBones::RightThumbDistal },
+		{ HumanoidBones::LeftIndexProximal, HumanoidBones::RightIndexProximal },
+		{ HumanoidBones::LeftIndexIntermediate, HumanoidBones::RightIndexIntermediate },
+		{ HumanoidBones::LeftIndexDistal, HumanoidBones::RightIndexDistal },
+		{ HumanoidBones::LeftMiddleProximal, HumanoidBones::RightMiddleProximal },
+		{ HumanoidBones::LeftMiddleIntermediate, HumanoidBones::RightMiddleIntermediate },
+		{ HumanoidBones::LeftMiddleDistal, HumanoidBones::RightMiddleDistal },
+		{ HumanoidBones::LeftRingProximal, HumanoidBones::RightRingProximal },
+		{ HumanoidBones::LeftRingIntermediate, HumanoidBones::RightRingIntermediate },
+		{ HumanoidBones::LeftRingDistal, HumanoidBones::RightRingDistal },
+		{ HumanoidBones::LeftLittleProximal, HumanoidBones::RightLittleProximal },
+		{ HumanoidBones::LeftLittleIntermediate, HumanoidBones::RightLittleIntermediate },
+		{ HumanoidBones::LeftLittleDistal, HumanoidBones::RightLittleDistal },
+	};
+
+	for (const auto& pair : sidePairs) {
+		auto* left = findHumanoidBone(pair.left);
+		auto* right = findHumanoidBone(pair.right);
+		if (left && right) {
+			const auto& leftPos = left->globalMatrix().position();
+			const auto& rightPos = right->globalMatrix().position();
+			if (leftPos.x <= rightPos.x) {
+				// OK
+			}
+			else {
+				LN_WARNING("VerifyHumanoidBones error.");
+			}
+		}
+	}
+}
+
 
 
 //==============================================================================
@@ -446,10 +496,15 @@ void MeshDiag::printNodes(const SkinnedMeshModel* model)
 		printf("  %f, %f, %f, %f\n", t.m[2][0], t.m[2][1], t.m[2][2], t.m[2][3]);
 		printf("  %f, %f, %f, %f\n", t.m[3][0], t.m[3][1], t.m[3][2], t.m[3][3]);
 
+		
+
 		if (!Math::nearEqual(t.m[0][0], 1.0f) || !Math::nearEqual(t.m[0][1], 0.0f) || !Math::nearEqual(t.m[0][2], 0.0f) ||
 			!Math::nearEqual(t.m[1][0], 0.0f) || !Math::nearEqual(t.m[1][1], 1.0f) || !Math::nearEqual(t.m[1][2], 0.0f) ||
 			!Math::nearEqual(t.m[2][0], 0.0f) || !Math::nearEqual(t.m[2][1], 0.0f) || !Math::nearEqual(t.m[2][2], 1.0f)) {
 			hasRotationOrScale = true;
+
+			//auto a = Vector3::transformCoord(Vector3(0, 0, 0), t);
+			//printf("");
 		}
 	}
 	std::cout << "hasRotationOrScale: " << hasRotationOrScale << std::endl;
@@ -459,49 +514,97 @@ void MeshDiag::clearBoneInitialRotations(SkinnedMeshModel* model)
 {
 	model->updateNodeTransforms();
 
+	if (1) {
 
-	for (const auto& skeleton : model->skeletons()) {
-		for (const auto& bone : skeleton->m_bones) {
-			MeshNode* node = bone->node();
-			auto t = node->globalMatrix();
+		for (const auto& node : model->m_nodes) {
+			//if (node->m_boneNode) {
+				// 回転や拡縮も適用してグローバルな pos を求め、それを GlobalTransform に再設定することで位置情報のみにする
+				auto pos = Vector3::transformCoord(Vector3(0, 0, 0), node->globalMatrix());
 
-			// 逆行列で InitialLocalTransform とする。
-			// ただ回転は行わないので、移動ベクトルを反転するだけでよい。
-			bone->m_inverseInitialMatrix = Matrix::makeTranslation(-t.position());
+				if (1) {
+					pos.x *= -1.0f;
+				}
 
-			//if (node->parentNodeIndex() >= 0) {
-			//	// 親からの相対位置を InitialLocalTransform とする。
-			//	const auto& parent = model->m_nodes[node->parentNodeIndex()]->globalMatrix();
-			//	const auto relPos = t.position() - parent.position();
-			//	node->setInitialLocalTransform(Matrix::makeTranslation(relPos));
-			//}
-			//else {
-			//	node->setInitialLocalTransform(Matrix::makeTranslation(t.position()));
+				node->setGlobalTransform(Matrix::makeTranslation(pos));
 			//}
 		}
+
+		for (const auto& node : model->m_nodes) {
+			//if (node->m_boneNode) {
+				if (node->parentNodeIndex() >= 0) {
+					// 親からの相対位置を InitialLocalTransform とする。
+					// 普通は逆行列を求めるが、回転は行わなくなるので、移動ベクトルを反転するだけでよい。
+					const auto& self = node->globalMatrix();
+					const auto& parent = model->m_nodes[node->parentNodeIndex()]->globalMatrix();
+					const auto relPos = self.position() - parent.position();
+					node->setInitialLocalTransform(Matrix::makeTranslation(relPos));
+				}
+				else {
+					// 親が無ければ GlobalTransform をそのまま InitialLocalTransform とする。
+					node->setInitialLocalTransform(node->globalMatrix());
+				}
+			//}
+		}
+
+		for (const auto& skeleton : model->skeletons()) {
+			for (const auto& bone : skeleton->m_bones) {
+				MeshNode* node = bone->node();
+				auto t = node->globalMatrix();
+
+				// 逆行列で inverseInitialMatrix とする。
+				// 回転は行わなくなるので、移動ベクトルを反転するだけでよい。
+				bone->m_inverseInitialMatrix = Matrix::makeTranslation(-t.position());
+			}
+		}
 	}
+	else {
 
 
-	for (const auto& node : model->m_nodes) {
-		if (node->m_boneNode) {
-			auto t = node->globalMatrix();
-			
-			// 作業用変数として、回転成分を消して再設定
-			//t.setRow(0, Vector4(1, 0, 0, 1));
-			//t.setRow(1, Vector4(0, 1, 0, 1));
-			//t.setRow(2, Vector4(0, 0, 1, 1));
-			//node->setGlobalTransform(t);
 
-			// 逆行列で InitialLocalTransform とする。
-			// ただ回転は行わないので、移動ベクトルを反転するだけでよい。
-			node->setInitialLocalTransform(Matrix::makeTranslation(-t.position()));
 
-			if (node->parentNodeIndex() >= 0) {
-				// 親からの相対位置を InitialLocalTransform とする。
-				const auto& parent = model->m_nodes[node->parentNodeIndex()]->globalMatrix();
-				const auto relPos = t.position() - parent.position();
-				node->setInitialLocalTransform(Matrix::makeTranslation(relPos));
+		for (const auto& skeleton : model->skeletons()) {
+			for (const auto& bone : skeleton->m_bones) {
+				MeshNode* node = bone->node();
+				auto t = node->globalMatrix();
 
+				// 逆行列で InitialLocalTransform とする。
+				// ただ回転は行わないので、移動ベクトルを反転するだけでよい。
+				bone->m_inverseInitialMatrix = Matrix::makeTranslation(-t.position());
+
+				//if (node->parentNodeIndex() >= 0) {
+				//	// 親からの相対位置を InitialLocalTransform とする。
+				//	const auto& parent = model->m_nodes[node->parentNodeIndex()]->globalMatrix();
+				//	const auto relPos = t.position() - parent.position();
+				//	node->setInitialLocalTransform(Matrix::makeTranslation(relPos));
+				//}
+				//else {
+				//	node->setInitialLocalTransform(Matrix::makeTranslation(t.position()));
+				//}
+			}
+		}
+
+
+		for (const auto& node : model->m_nodes) {
+			if (node->m_boneNode) {
+				auto t = node->globalMatrix();
+
+				// 作業用変数として、回転成分を消して再設定
+				//t.setRow(0, Vector4(1, 0, 0, 1));
+				//t.setRow(1, Vector4(0, 1, 0, 1));
+				//t.setRow(2, Vector4(0, 0, 1, 1));
+				//node->setGlobalTransform(t);
+
+				// 逆行列で InitialLocalTransform とする。
+				// ただ回転は行わないので、移動ベクトルを反転するだけでよい。
+				node->setInitialLocalTransform(Matrix::makeTranslation(-t.position()));
+
+				if (node->parentNodeIndex() >= 0) {
+					// 親からの相対位置を InitialLocalTransform とする。
+					const auto& parent = model->m_nodes[node->parentNodeIndex()]->globalMatrix();
+					const auto relPos = t.position() - parent.position();
+					node->setInitialLocalTransform(Matrix::makeTranslation(relPos));
+
+				}
 			}
 		}
 	}

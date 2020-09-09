@@ -270,9 +270,18 @@ void TransformAnimationTrack::evaluate(float time, AnimationValue* outResult)
 	if (!m_rotationKeys2.empty()) {
 		auto rot = interpolateVector3(m_rotationKeys2, time, Vector3::Zero, m_translationInterpolation);
 
+		// TODO: BVH ファイルに書かれている CH 番号の順で計算する必要がある
 		transform.rotation = Quaternion::makeFromEulerAngles(rot,
-			RotationOrder::ZXY);    // https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html
+			//RotationOrder::ZXY);    // https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html
+			RotationOrder::XYZ);
+			//RotationOrder::YZX);
 
+		// bvh_player と同じ実装
+		Matrix a;
+		a.rotateAxis(Vector3(1, 0, 0), rot.x);
+		a.rotateAxis(Vector3(0, 1, 0), rot.y);
+		a.rotateAxis(Vector3(0, 0, 1), rot.z);
+		transform.rotation = Quaternion::makeFromRotationMatrix(a);
 	}
 	else
 		transform.rotation = interpolateQuaternion(m_rotationKeys, time, Quaternion::Identity);

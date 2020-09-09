@@ -193,6 +193,7 @@ public:
 	Ref<AnimationController> m_animationController;
 
 	//static HumanoidBones mapToHumanoidBones(const MeshBone* bone);
+	void verifyHumanoidBones();
 
 //protected:
 //	virtual int getAnimationTargetElementCount() const override;

@@ -385,6 +385,20 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
 	}
 	
 	float3 irradiance = float3(0, 0, 0);
+
+	// EnvironmentLight
+	{
+		// AmbientLight
+		irradiance += LN_GetAmbientLightIrradiance(ln_AmbientColor.rgb);
+
+		// HemisphereLight
+		LN_HemisphereLight tl;
+		tl.upDirection = float3(0, 1, 0);
+		tl.skyColor = ln_AmbientSkyColor.rgb;
+		tl.groundColor = ln_AmbientGroundColor.rgb;
+		irradiance += LN_GetHemisphereLightIrradiance(tl, geometry);
+	}
+	
 	{
 		float count = LN_EPSILON;
 	    for (int i = 0; i < LN_MAX_GLOBAL_LIGHTS; i++)
@@ -392,6 +406,7 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
 			GlobalLightInfo light = _LN_GetGlobalLightInfo(i);
 
 			// HemisphereLight
+			// TODO: deprecated
 			if (light.directionAndType.w >= 3.0)
 			{
 				LN_HemisphereLight tl;
@@ -401,6 +416,7 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
 				irradiance += LN_GetHemisphereLightIrradiance(tl, geometry);
 			}
 			// AmbientLight
+			// TODO: deprecated
 			else if (light.directionAndType.w >= 2.0)
 			{
 				irradiance += LN_GetAmbientLightIrradiance(light.color.rgb);
