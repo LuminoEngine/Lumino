@@ -33,6 +33,14 @@ public:
 	LN_METHOD(Property)
 	bool isEnabled() const { return m_component->isEnabled(); }
 
+	/** ディレクショナルライトの光源色を設定します。(default: White) */
+	LN_METHOD(Property)
+	void setColor(const Color& value) { m_component->setColor(value); }
+
+	/** ディレクショナルライトの光源色を取得します。 */
+	LN_METHOD(Property)
+	const Color& getColor() const { return m_component->getColor(); }
+
 	/** シーン全体の環境光の色を設定します。(default: White) */
 	LN_METHOD(Property)
 	void setAmbientColor(const Color& value) { m_component->setAmbientColor(value); }

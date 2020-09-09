@@ -521,7 +521,7 @@ void MeshDiag::clearBoneInitialRotations(SkinnedMeshModel* model)
 				// 回転や拡縮も適用してグローバルな pos を求め、それを GlobalTransform に再設定することで位置情報のみにする
 				auto pos = Vector3::transformCoord(Vector3(0, 0, 0), node->globalMatrix());
 
-				if (1) {
+				if (0) {
 					pos.x *= -1.0f;
 				}
 

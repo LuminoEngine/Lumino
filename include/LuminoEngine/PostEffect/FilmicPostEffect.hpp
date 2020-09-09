@@ -49,7 +49,7 @@ private:
     BloomPostEffectCore m_bloomEffect;
     DepthOfFieldPostEffectCore m_dofEffect;
 
-#if 1
+#if 0
     bool m_antialiasEnabled = false;
     bool m_ssrEnabled = false;
     bool m_ssaoEnabled = false;
@@ -60,10 +60,10 @@ private:
     bool m_gammaEnabled = false;
 #else
     bool m_antialiasEnabled = true;
-    bool m_ssrEnabled = true;
-    bool m_ssaoEnabled = true;
-    bool m_bloomEnabled = true;
-    bool m_dofEnabled = true;
+    bool m_ssrEnabled = false;
+    bool m_ssaoEnabled = false;
+    bool m_bloomEnabled = false;
+    bool m_dofEnabled = false;
     bool m_tonemapEnabled = true;
     bool m_vignetteEnabled = true;
     bool m_gammaEnabled = true;

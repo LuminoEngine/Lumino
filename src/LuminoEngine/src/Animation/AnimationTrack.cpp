@@ -278,9 +278,9 @@ void TransformAnimationTrack::evaluate(float time, AnimationValue* outResult)
 
 		// bvh_player と同じ実装
 		Matrix a;
-		a.rotateAxis(Vector3(1, 0, 0), rot.x);
-		a.rotateAxis(Vector3(0, 1, 0), rot.y);
 		a.rotateAxis(Vector3(0, 0, 1), rot.z);
+		a.rotateAxis(Vector3(0, 1, 0), rot.y);
+		a.rotateAxis(Vector3(1, 0, 0), rot.x);
 		transform.rotation = Quaternion::makeFromRotationMatrix(a);
 	}
 	else

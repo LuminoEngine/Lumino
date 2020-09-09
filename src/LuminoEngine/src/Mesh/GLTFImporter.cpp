@@ -104,7 +104,7 @@ AliciaSolid.vrm は、
 
 GLTFImporter::GLTFImporter()
 	: m_flipZ(false)
-	, m_flipX(true)
+	, m_flipX(false)
 	, m_disableBoneRotation(true)
 {
 }

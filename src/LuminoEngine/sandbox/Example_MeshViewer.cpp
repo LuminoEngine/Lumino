@@ -70,10 +70,14 @@ class App_Example_MeshViewer : public Application
 
 #if 1
 
-        Engine::mainLight()->setPosition(1, 1, 5);
+        Engine::mainLight()->setPosition(30, 20, 10);
         Engine::mainLight()->lookAt(0, 0, 0);
         Engine::mainLight()->setAmbientColor(Color::White);
+        Engine::mainLight()->setColor(Color::White);
         Engine::mainLight()->setIntensity(1.0);
+        Engine::mainLight()->setShadowEffectiveDepth(100);
+        Engine::mainLight()->setShadowEffectiveDistance(100);
+
 
         //m_mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
         //m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
@@ -108,7 +112,8 @@ class App_Example_MeshViewer : public Application
         //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/XYZ-Test.bvh");
         //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/XYZ-Test2.bvh");
         //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/RightArm.bvh");
-        auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleStandingPose7.bvh");
+        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleStandingPose7.bvh");
+        auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleSittingPose.bvh");
         //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/Arm_R-Test1-BoneVert.bvh");
         
         //auto clip = AnimationClip::load(u"D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");
@@ -121,6 +126,10 @@ class App_Example_MeshViewer : public Application
 
         auto state = m_model->animationController()->addClip(clip);
         m_model->animationController()->play(state);
+
+        auto box = BoxMesh::create();
+        box->setScale(7.8);
+        box->setPosition(0, 5, 0);
 #endif
     }
 
