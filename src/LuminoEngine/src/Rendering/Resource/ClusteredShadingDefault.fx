@@ -234,7 +234,7 @@ struct _lngs_PSOutput
     //float4 color1 : COLOR1;
 };
 
-_lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
+float4 _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 {
     
 #ifdef LN_USE_NORMALMAP
@@ -283,10 +283,10 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
     //o.color0 = float4(input.vInLightPosition.z / input.vInLightPosition.w, 0, 0, 1);
     //o.color0 = float4(input.viewspaceNormal, 1);
     //o.color0 = float4(input.Debug, 1);
-    return o;
+    return o.color0;
 }
 
-float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
+float4 _lngs_PS_UnLighting(_lngs_PSInput input)
 {
     //return float4(1, 0, 0, 1);
     //return float4(input.Color.rgb, 1);
@@ -301,7 +301,7 @@ float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
     return LN_GetBuiltinEffectColor(c);
 }
 
-_lngs_PSOutput PSMain(_lngs_PSInput input)
+float4 PSMain(_lngs_PSInput input) : SV_TARGET0
 {
 #if defined(LN_USE_SHADINGMODEL_DEFAULT)
     return _lngs_PS_ClusteredForward_Geometry(input);
@@ -336,6 +336,7 @@ technique Forward_Geometry_NormalMap
 
 technique Forward_Geometry_StaticMesh_UnLighting
 {
+    ShadingModel = Unlit;
     Normal = Default;
     pass Pass1
     {
@@ -356,6 +357,7 @@ technique Forward_Geometry_SkinnedMesh
 
 technique Forward_Geometry_SkinnedMesh_UnLighting
 {
+    ShadingModel = Unlit;
     Normal = Default;
     pass Pass1
     {

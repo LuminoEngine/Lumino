@@ -236,6 +236,10 @@ void RenderingManager::init(const Settings& settings)
 	m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/LuminosityHighPassShader.fx");
 	m_builtinShaders[(int)BuiltinShader::BloomComposite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/BloomComposite.fx");
 
+	m_builtinShaders[(int)BuiltinShader::SSRRayTracing] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSRRayTracing.fx");
+	m_builtinShaders[(int)BuiltinShader::SSRComposite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSRComposite.fx");
+	m_builtinShaders[(int)BuiltinShader::RadialBlur] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/RadialBlur.fx");
+
 #if 0
     m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
     m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ForwardGBufferPrepass.fx");

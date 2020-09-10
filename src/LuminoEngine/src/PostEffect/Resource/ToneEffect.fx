@@ -58,6 +58,7 @@ float4 PS_Main(LN_PSInput_Common input) : SV_TARGET
 
 technique Forward_Geometry_UnLighting
 {
+    ShadingModel = Unlit;
     pass Pass1
     {
         VertexShader = VS_ClusteredForward_Geometry;

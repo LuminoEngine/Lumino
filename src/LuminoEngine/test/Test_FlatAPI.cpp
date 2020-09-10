@@ -245,6 +245,7 @@ TEST_F(Test_FlatAPI, VirtualProtoType)
 
 	g_count = 0;
 
+	Engine::mainLight()->setEnabled(false);
 	TestEnv::updateFrame();
 	ASSERT_SCREEN(LN_ASSETFILE("FlatAPI/Expects/Basic-1.png"));
 	LN_TEST_CLEAN_SCENE;

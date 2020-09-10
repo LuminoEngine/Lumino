@@ -256,6 +256,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
 
 technique Forward_Geometry_UnLighting
 {
+    ShadingModel = Unlit;
     pass Pass1
     {
         VertexShader = VSMain;
