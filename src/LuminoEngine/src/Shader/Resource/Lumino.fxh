@@ -125,7 +125,7 @@ void _LN_InitSurfaceOutput(float2 uv, float4 color, float3 normal, inout LN_Surf
     surface.Emission = (ln_MaterialEmissive.rgb * ln_MaterialEmissive.a);
 }
 
-// deprecated
+// deprecated: see _LN_ProcessVertex_StaticMesh
 LN_VSOutput_Common LN_ProcessVertex_Common(LN_VSInput input)
 {
     //float4x4 normalMatrix  = transpose(/*inverse*/(ln_WorldView));
@@ -136,6 +136,16 @@ LN_VSOutput_Common LN_ProcessVertex_Common(LN_VSInput input)
     o.UV            = input.UV;// + (float2(0.5, 0.5) / ln_Resolution.xy);
     o.Color            = input.Color;
     return o;
+}
+
+void _LN_ProcessVertex_StaticMesh(
+    LN_VSInput input,
+    out float4 outSVPos, out float3 outViewNormal, out float2 outUV, out float4 outColor)
+{
+    outSVPos = mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
+    outViewNormal = mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
+    outUV = input.UV;
+    outColor = input.Color;
 }
 
 float LN_Square(float x)
@@ -224,21 +234,103 @@ float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
     return color * factors;
 }
 
-//------------------------------------------------------------------------------
-// Core public functions
+
+
+//==============================================================================
+// Part includes
+
+#ifdef LN_LIGHTINGMETHOD_CLUSTERED
+#include <LuminoForward.fxh>
+#endif
+
+#ifdef LN_SHADINGMODEL_DEFAULT
+#include <LuminoPBR.fxh>
+#endif
+
+#ifdef LN_USE_SKINNING
+#include <LuminoSkinning.fxh>
+#endif
+
+#ifdef LN_USE_NORMALMAP
+#include <LuminoNormalMap.fxh>
+#endif
+
+//==============================================================================
+// Part macros
+
+//-------------------------------------
+// Mesh Processing
+#ifdef LN_USE_SKINNING
+    #define _LN_VS_PROCESS_PART_MESHPROCESSING(intput, output) \
+        _LN_ProcessVertex_SkinnedMesh(intput, output.svPos, output.viewspaceNormal, output.UV, output.Color)
+#else
+    #define _LN_VS_PROCESS_PART_MESHPROCESSING(intput, output) \
+        _LN_ProcessVertex_StaticMesh(intput, output.svPos, output.viewspaceNormal, output.UV, output.Color)
+#endif
+
+//-------------------------------------
+// Normal Map
+#ifdef LN_USE_NORMALMAP
+    // Varying fileds.
+    #define _LN_VARYING_DECLARE_NORMAL_MAP ; \
+        float3 vTangent     : TEXCOORD12; \
+        float3 vBitangent   : TEXCOORD13
+
+    #define _LN_VS_PROCESS_PART_NORMALMAP(intput, output) \
+        _LN_ProcessVertex_NormalMap(intput, output.viewspaceNormal, output.vTangent, output.vBitangent)
+
+    #define LN_GetPixelNormal(input) LN_GetPixelNormalFromNormalMap(input.UV, input.vTangent, input.vBitangent, input.viewspaceNormal)
+    
+#else
+    #define _LN_VARYING_DECLARE_NORMAL_MAP
+    #define _LN_VS_PROCESS_PART_NORMALMAP
+    #define LN_GetPixelNormal(input) input.viewspaceNormal
+
+#endif
+
+//-------------------------------------
+// Clustered Lighting
+#ifdef LN_LIGHTINGMETHOD_CLUSTERED
+    // Varying fileds.
+    // vertexPos : 元の頂点データの位置情報
+    // worldPos  : World 空間上の位置 (ln_World による変換結果)
+    // viewPos   : View 空間上の位置 (ln_WorldView による変換結果)
+    #define _LN_VARYING_DECLARE_LIGHTINGMETHOD ; \
+        float3 vertexPos : POSITION0; \
+        float3 worldPos  : POSITION1; \
+        float3 viewPos   : POSITION2; \
+        float4 vInLightPosition : POSITION3
+
+    #define _LN_VS_PROCESS_PART_LIGHTING(intput, output) \
+        _LN_ProcessVertex_ClusteredForward(intput, output.worldPos, output.vertexPos, output.vInLightPosition)
+#else
+    #define _LN_VARYING_DECLARE_LIGHTINGMETHOD
+    #error "Invalid LIGHTINGMETHOD."
+#endif
+
+//==============================================================================
+// Core publics
+
+// Standard VS Output members.
+#define LN_VS_OUTPUT_DECLARE \
+    float4 svPos     : SV_POSITION; \
+    float3 viewspaceNormal   : NORMAL0; \
+    float2 UV        : TEXCOORD0; \
+    float4 Color     : COLOR0 \
+    _LN_VARYING_DECLARE_NORMAL_MAP \
+    _LN_VARYING_DECLARE_LIGHTINGMETHOD
+
+// Standard PS Input members.
+#define LN_PS_INPUT_DECLARE \
+    float3 viewspaceNormal   : NORMAL0; \
+    float2 UV        : TEXCOORD0; \
+    float4 Color     : COLOR0 \
+    _LN_VARYING_DECLARE_NORMAL_MAP \
+    _LN_VARYING_DECLARE_LIGHTINGMETHOD
 
 // LN_ProcessSurface
 #define LN_ProcessSurface(input, surface) _LN_InitSurfaceOutput(input.UV, input.Color, LN_GetPixelNormal(input), surface);
 
 
-
-//------------------------------------------------------------------------------
-
-#ifdef LN_LIGHTINGMETHOD_CLUSTERED
-#include <LuminoForward.fxh>
-#endif
-#ifdef LN_SHADINGMODEL_DEFAULT
-#include <LuminoPBR.fxh>
-#endif
 
 #endif // LUMINO_INCLUDED

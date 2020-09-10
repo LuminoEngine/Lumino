@@ -62,7 +62,7 @@ struct LN_PSInput_ClusteredForward
     float4    vInLightPosition     : TEXCOORD13;
 };
 
-// deprecated
+// deprecated: see _LN_ProcessVertex_ClusteredForward
 LN_VSOutput_ClusteredForward LN_ProcessVertex_ClusteredForward(LN_VSInput input)
 {
     LN_VSOutput_ClusteredForward output;
@@ -84,6 +84,18 @@ LN_VSOutput_ClusteredForward LN_ProcessVertex_ClusteredForward(LN_VSInput input)
 }
 
 
+void _LN_ProcessVertex_ClusteredForward(
+    LN_VSInput input,
+    out float3 outWorldPos, out float3 outVertexPos, out float4 outvInLightPosition)
+{
+    outVertexPos = input.Pos;
+    
+    float4 pos = mul(float4(input.Pos, 1.0), ln_World);
+    pos = mul(pos, ln_ViewProjection_Light0);
+    outvInLightPosition = pos;
+    
+    outWorldPos = pos.xyz;
+}
 
 
 struct GlobalLightInfo

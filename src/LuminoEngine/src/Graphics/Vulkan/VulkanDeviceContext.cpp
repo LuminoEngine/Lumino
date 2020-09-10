@@ -3361,7 +3361,8 @@ void VulkanShaderDescriptorTable::setData(const ShaderDescriptorTableUpdateInfo*
     //if (LN_REQUIRE(data->samplers.size() == m_samplers.size())) return;
 
     for (int i = 0; i < m_uniforms.size(); i++) {
-        if (LN_REQUIRE(data->uniforms[i].size == m_uniforms[i].data.size())) return;
+        if (LN_REQUIRE(data->uniforms[i].size == m_uniforms[i].data.size()))
+            return;
         memcpy(m_uniforms[i].data.data(), data->uniforms[i].data, m_uniforms[i].data.size());
     }
 
