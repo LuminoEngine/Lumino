@@ -49,7 +49,7 @@ private:
     BloomPostEffectCore m_bloomEffect;
     DepthOfFieldPostEffectCore m_dofEffect;
 
-#if 0
+#if 1
     bool m_antialiasEnabled = false;
     bool m_ssrEnabled = false;
     bool m_ssaoEnabled = false;

@@ -61,6 +61,10 @@ bool UnifiedShaderCompiler::compile(
 
 		List<String> actualDefinitions = definitions;
 		{
+			if (tech.techniqueClass.shadingModel == ShaderTechniqueClass_ShadingModel::Default)
+				actualDefinitions.add(u"LN_USE_SHADINGMODEL_DEFAULT=1");
+			if (tech.techniqueClass.shadingModel == ShaderTechniqueClass_ShadingModel::Unlit)
+				actualDefinitions.add(u"LN_USE_SHADINGMODEL_UNLIT=1");
 			if (tech.techniqueClass.meshProcess == ShaderTechniqueClass_MeshProcess::SkinnedMesh)
 				actualDefinitions.add(u"LN_USE_SKINNING=1");
 			if (tech.techniqueClass.normalClass == ShaderTechniqueClass_Normal::NormalMap)

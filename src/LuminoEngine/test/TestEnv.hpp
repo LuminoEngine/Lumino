@@ -8,6 +8,7 @@ public:
 	static void setup();
 	static void teardown();
     static void updateFrame();
+	static void resetScene();
 
 	static GraphicsContext* graphicsContext();
 	static SwapChain* mainWindowSwapChain();
@@ -27,13 +28,7 @@ public:
 	//static RenderTargetTexture* lastBackBuffer;
 };
 
-#define LN_TEST_CLEAN_SCENE \
-    Engine::world()->removeAllObjects(); \
-    Engine::mainUIView()->removeAllChildren(); \
-	Engine::camera()->setPosition(0, 0, -10); \
-	Engine::camera()->lookAt(Vector3(0, 0, 0)); \
-	Engine::mainLight()->lookAt(0, -1, 0); \
-	Engine::mainLight()->setEnabled(true); \
+#define LN_TEST_CLEAN_SCENE TestEnv::resetScene();
 
 
 #define ASSERT_SCREEN(filePath) ASSERT_TRUE(TestEnv::checkScreenShot(filePath, nullptr)) 

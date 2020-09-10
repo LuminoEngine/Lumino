@@ -105,7 +105,7 @@ TEST_F(Test_Rendering_Shading, EnvironmentLight)
 	mat1->setMetallic(0.0);
 	sphere->sphereMeshComponent()->setMaterial(mat1);
 
-	Engine::camera()->setPosition(0, 0, -2);
+	Engine::camera()->setPosition(0, 0, -1);
 
 	auto light = Engine::world()->mainLight();
 	light->setIntensity(0.0f);
@@ -116,6 +116,8 @@ TEST_F(Test_Rendering_Shading, EnvironmentLight)
 	TestEnv::updateFrame();
 	ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/Shading-EnvironmentLight-1.png"));
 	LN_TEST_CLEAN_SCENE;
+	light->setSkyColor(Color::Black);
+	light->setGroundColor(Color::Black);
 }
 
 //------------------------------------------------------------------------------
@@ -143,13 +145,13 @@ TEST_F(Test_Rendering_Shading, MaterialEmissive)
 	// NOTE: Material Color は Red だが、DirectionalLight と Ambient が Black なので、光源が無い。Red は打ち消される。
 	// そのため Emissive の Blue だけが出てくる。
 	TestEnv::updateFrame();
-	ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Shading-MaterialEmissive-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/Shading-MaterialEmissive-1.png"));
 
 	// NOTE: Ambient を White にすると、物体表面の放射照度が 1 になる。
 	// これと AlbedoColor が乗算されるため、Red が出てくるようになる。
 	light->setAmbientColor(Color::White);
 	TestEnv::updateFrame();
-	ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Shading-MaterialEmissive-2.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/Shading-MaterialEmissive-2.png"));
 
 	LN_TEST_CLEAN_SCENE;
 }

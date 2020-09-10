@@ -61,6 +61,21 @@ void TestEnv::updateFrame()
     detail::EngineDomain::engineManager()->presentFrame();
 }
 
+void TestEnv::resetScene()
+{
+	Engine::world()->removeAllObjects();
+	Engine::mainUIView()->removeAllChildren();
+	Engine::camera()->setPosition(0, 0, -10);
+	Engine::camera()->lookAt(Vector3(0, 0, 0));
+	Engine::mainLight()->lookAt(0, -1, 0);
+	Engine::mainLight()->setEnabled(true);
+	Engine::mainLight()->setSkyColor(Color::Black);
+	Engine::mainLight()->setGroundColor(Color::Black);
+	Engine::mainLight()->setAmbientColor(Color(0.5, 0.5, 0.5));
+	Engine::mainLight()->setColor(Color::White);
+	Engine::mainLight()->setIntensity(0.5f);
+}
+
 GraphicsContext* TestEnv::graphicsContext()
 {
 	return Engine::graphicsContext();

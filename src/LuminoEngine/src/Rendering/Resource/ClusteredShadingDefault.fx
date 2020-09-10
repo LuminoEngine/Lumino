@@ -301,6 +301,18 @@ float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
     return LN_GetBuiltinEffectColor(c);
 }
 
+_lngs_PSOutput PSMain(_lngs_PSInput input)
+{
+#if defined(LN_USE_SHADINGMODEL_DEFAULT)
+    return _lngs_PS_ClusteredForward_Geometry(input);
+#elif defined(LN_USE_SHADINGMODEL_UNLIT)
+    return _lngs_PS_UnLighting(input);
+#else
+#error Invalid ShadingModel.
+#endif
+}
+
+
 //------------------------------------------------------------------------------
 
 technique Forward_Geometry
@@ -309,7 +321,7 @@ technique Forward_Geometry
     pass Pass1
     {
         VertexShader = _lngs_VS_ClusteredForward_Geometry;
-        PixelShader     = _lngs_PS_ClusteredForward_Geometry;
+        PixelShader  = PSMain;
     }
 }
 technique Forward_Geometry_NormalMap
@@ -318,7 +330,7 @@ technique Forward_Geometry_NormalMap
     pass Pass1
     {
         VertexShader = _lngs_VS_ClusteredForward_Geometry;
-        PixelShader     = _lngs_PS_ClusteredForward_Geometry;
+        PixelShader  = PSMain;
     }
 }
 
@@ -328,7 +340,7 @@ technique Forward_Geometry_StaticMesh_UnLighting
     pass Pass1
     {
         VertexShader = _lngs_VS_ClusteredForward_Geometry;
-        PixelShader     = _lngs_PS_UnLighting;
+        PixelShader  = PSMain;
     }
 }
 
@@ -338,7 +350,7 @@ technique Forward_Geometry_SkinnedMesh
     pass Pass1
     {
         VertexShader = _lngs_VS_ClusteredForward_Geometry_SkinnedMesh;
-        PixelShader     = _lngs_PS_ClusteredForward_Geometry;
+        PixelShader  = PSMain;
     }
 }
 
@@ -348,7 +360,7 @@ technique Forward_Geometry_SkinnedMesh_UnLighting
     pass Pass1
     {
         VertexShader = _lngs_VS_ClusteredForward_Geometry_SkinnedMesh;
-        PixelShader     = _lngs_PS_UnLighting;
+        PixelShader  = PSMain;
     }
 }
 
