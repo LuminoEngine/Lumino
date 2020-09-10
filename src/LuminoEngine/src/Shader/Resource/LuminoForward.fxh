@@ -62,6 +62,7 @@ struct LN_PSInput_ClusteredForward
     float4    vInLightPosition     : TEXCOORD13;
 };
 
+// deprecated
 LN_VSOutput_ClusteredForward LN_ProcessVertex_ClusteredForward(LN_VSInput input)
 {
     LN_VSOutput_ClusteredForward output;

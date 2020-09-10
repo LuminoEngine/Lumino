@@ -38,13 +38,6 @@
 //------------------------------------------------------------------------------
 // Built-in Variables
 
-cbuffer LNPBRMaterialParameter
-{
-	/* [0]  */ float4	ln_MaterialColor;
-	/* [16] */ float4	ln_MaterialEmissive;
-	/* [32] */ float	ln_MaterialRoughness;
-	/* [36] */ float	ln_MaterialMetallic;
-};
 
 
 //------------------------------------------------------------------------------

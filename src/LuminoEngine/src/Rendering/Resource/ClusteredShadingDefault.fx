@@ -1,6 +1,6 @@
 
 #include <Lumino.fxh>
-#include <LuminoForward.fxh>
+//#include <LuminoForward.fxh>
 #include <LuminoPBR.fxh>
 #include <LuminoShadow.fxh>
 #include <LuminoSkinning.fxh>
@@ -15,14 +15,40 @@ float3 LN_UnpackNormal(float4 packednormal)
 
 
 //------------------------------------------------------------------------------
+// Lib (Common)
+
+
+// LN_GetPixelNormal
+#ifdef LN_USE_NORMALMAP
+#define LN_GetPixelNormal(input) LN_GetPixelNormalFromNormalMap(input.UV, input.vTangent, input.vBitangent, input.viewspaceNormal)
+#else
+#define LN_GetPixelNormal(input) input.viewspaceNormal
+#endif
+
+
+
+
+
+
+//------------------------------------------------------------------------------
 // Lib (ClusteredForward)
+
+
+
+
+
+
+
+
+
+
 
 
 float4 _LN_PS_ClusteredForward_Default(
     float3 worldPos,
     float3 vertexPos,
     float4 vInLightPosition,
-    LN_SurfaceOutput surface)
+    LN_Surface surface)
 {
     // ビュー平面からの水平距離。視点からの距離ではないので注意
     float4 viewPos = mul(float4(worldPos, 1.0f), ln_View);
@@ -73,70 +99,124 @@ float4 _LN_PS_ClusteredForward_Default(
     return float4(result.rgb, opacity);
 }
 
-//------------------------------------------------------------------------------
-// (auto generation)
-// ClusteredShading_Default.template.fx から生成する
 
-#ifdef LN_USE_NORMALMAP
-#define _LN_VARYING_DECLARE_NORMAL_MAP ; \
-    float3 vTangent     : TEXCOORD12; \
-    float3 vBitangent   : TEXCOORD13
+//==============================================================================
+// Vertex shader
+
+//-------------------------------------
+// Mesh Processing
+#ifdef LN_USE_SKINNING
+    #define _LN_VS_PROCESS_PART_MESHPROCESSING(intput, output) \
+        _LN_ProcessVertex_SkinnedMesh(intput, output.svPos, output.viewspaceNormal, output.UV, output.Color)
 #else
-#define _LN_VARYING_DECLARE_NORMAL_MAP
+    #define _LN_VS_PROCESS_PART_MESHPROCESSING(intput, output) \
+        _LN_ProcessVertex_StaticMesh(intput, output.svPos, output.viewspaceNormal, output.UV, output.Color)
 #endif
 
-#define LN_VS_OUTPUT_DECLARE \
-    float4 svPos    : SV_POSITION; \
-    float3 viewspaceNormal   : NORMAL0; \
-    float2 UV       : TEXCOORD0; \
-    float4 Color    : COLOR0 \
-    _LN_VARYING_DECLARE_NORMAL_MAP
+//-------------------------------------
+// Normal Map
+#ifdef LN_USE_NORMALMAP
+    #define _LN_VARYING_DECLARE_NORMAL_MAP ; \
+        float3 vTangent     : TEXCOORD12; \
+        float3 vBitangent   : TEXCOORD13
+    #define _LN_VS_PROCESS_PART_NORMALMAP(intput, output) \
+        _LN_ProcessVertex_NormalMap(intput, output.viewspaceNormal, output.vTangent, output.vBitangent)
+#else
+    #define _LN_VARYING_DECLARE_NORMAL_MAP
+    #define _LN_VS_PROCESS_PART_NORMALMAP
+#endif
 
+//-------------------------------------
+// Clustered Lighting
+#ifdef LN_LIGHTINGMETHOD_CLUSTERED
+    #define _LN_VS_PROCESS_PART_LIGHTING(intput, output) \
+        _LN_ProcessVertex_ClusteredForward(intput, output.worldPos, output.vertexPos, output.vInLightPosition)
+#else
+#endif
+
+
+
+// vertexPos : 元の頂点データの位置情報
+// worldPos  : World 空間上の位置 (ln_World による変換結果)
+// viewPos   : View 空間上の位置 (ln_WorldView による変換結果)
+#ifdef LN_LIGHTINGMETHOD_CLUSTERED
+#define _LN_VARYING_DECLARE_LIGHTINGMETHOD ; \
+    float3 vertexPos : POSITION0; \
+    float3 worldPos  : POSITION1; \
+    float3 viewPos   : POSITION2; \
+    float4 vInLightPosition : POSITION3
+#else
+#define _LN_VARYING_DECLARE_LIGHTINGMETHOD
+#endif
+
+// Standard VS Output members.
+#define LN_VS_OUTPUT_DECLARE \
+    float4 svPos     : SV_POSITION; \
+    float3 viewspaceNormal   : NORMAL0; \
+    float2 UV        : TEXCOORD0; \
+    float4 Color     : COLOR0 \
+    _LN_VARYING_DECLARE_NORMAL_MAP \
+    _LN_VARYING_DECLARE_LIGHTINGMETHOD
+
+// Standard PS Input members.
 #define LN_PS_INPUT_DECLARE \
     float3 viewspaceNormal   : NORMAL0; \
-    float2 UV       : TEXCOORD0; \
-    float4 Color    : COLOR0 \
-    _LN_VARYING_DECLARE_NORMAL_MAP
+    float2 UV        : TEXCOORD0; \
+    float4 Color     : COLOR0 \
+    _LN_VARYING_DECLARE_NORMAL_MAP \
+    _LN_VARYING_DECLARE_LIGHTINGMETHOD
 
 struct VSOutput
 {
     LN_VS_OUTPUT_DECLARE;
-
-    float4    vInLightPosition     : TEXCOORD9;
-    // clustered forward
-    float3    WorldPos    : TEXCOORD10;
-    float3    VertexPos    : TEXCOORD11;
-
-#ifdef LN_USE_NORMALMAP
-    //float3    vTangent    : TEXCOORD12;
-    //float3    vBitangent    : TEXCOORD13;
-
-    float3    Debug    : TEXCOORD14;
-#endif
 };
 
-// auto generation
-VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
+void _LN_ProcessVertex_StaticMesh(
+    LN_VSInput input,
+    out float4 outSVPos, out float3 outViewNormal, out float2 outUV, out float4 outColor)
 {
-    LN_VSOutput_Common common = LN_ProcessVertex_Common(vsi);
-    LN_VSOutput_ClusteredForward extra = LN_ProcessVertex_ClusteredForward(vsi);
+    outSVPos = mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
+    outViewNormal = mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
+    outUV = input.UV;
+    outColor = input.Color;
+}
 
-    VSOutput output;
-    output.svPos = common.svPos;
-    output.viewspaceNormal = common.Normal;
-    output.UV = common.UV;
-    output.Color = common.Color;
-    output.WorldPos = extra.WorldPos;
-    output.VertexPos = extra.VertexPos;
-    output.vInLightPosition = extra.vInLightPosition;
+void _LN_ProcessVertex_SkinnedMesh(
+    LN_VSInput input,
+    out float4 outSVPos, out float3 outViewNormal, out float2 outUV, out float4 outColor)
+{
+	LN_SkinningOutput local = LN_SkinningVertex(input.Pos, input.Normal, input.BlendWeight, input.BlendIndices);
 
+	LN_VSOutput_Common o;
+	outSVPos			= mul(float4(local.Position, 1.0f), ln_WorldViewProjection);
+	outViewNormal		= mul(float4(local.Normal, 1.0f), ln_WorldViewIT).xyz;
+	outUV			= input.UV + (float2(0.5, 0.5) / ln_Resolution.xy);
+	outColor			= input.Color;
+}
+
+void _LN_ProcessVertex_ClusteredForward(
+    LN_VSInput input,
+    out float3 outWorldPos, out float3 outVertexPos, out float4 outvInLightPosition)
+{
+    outVertexPos = input.Pos;
     
-#ifdef LN_USE_NORMALMAP
-    const float3 objectTangent = vsi.tangent.xyz;
+    float4 pos = mul(float4(input.Pos, 1.0), ln_World);
+    pos = mul(pos, ln_ViewProjection_Light0);
+    outvInLightPosition = pos;
+    
+    outWorldPos = pos.xyz;
+}
+
+void _LN_ProcessVertex_NormalMap(
+    LN_VSInput input, float3 viewNormal,
+    out float3 outTangent, out float3 outBitangent)
+{
+    const float3 objectTangent = input.tangent.xyz;
     const float3 transformedTangent = ( ln_WorldView * float4( objectTangent, 0.0 ) ).xyz;
-    output.vTangent = normalize( transformedTangent );
-    output.vBitangent = normalize( cross( output.viewspaceNormal, output.vTangent ) * vsi.tangent.w );
-    output.Debug = objectTangent;
+    const float3 tangent = normalize( transformedTangent );
+    outTangent = tangent;
+    outBitangent= normalize( cross( viewNormal, tangent) * input.tangent.w );
+    //output.Debug = objectTangent;
 /*
     float3 eyePosition = ln_CameraPosition;
     float3 lightPosition = float3(1, 1, -1);
@@ -145,8 +225,6 @@ VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
     float3 invLight = (ln_WorldI * float4(lightPosition, 0.0)).xyz;
     float3 eye      = invEye - common.svPos.xyz;
     float3 light    = invLight - common.svPos.xyz;
-
-
 
     // ローカル空間上での接空間ベクトルの方向を求める
     float3 normal = common.Normal;
@@ -166,61 +244,27 @@ VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
     vLightDirection.z = dot(n, light);
     output.vLightDirection = normalize(vLightDirection);
     */
-
-#endif
-
-    return output;
 }
-// auto generation
 
-VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
+#define LN_ProcessVertex(input, output) \
+    _LN_VS_PROCESS_PART_MESHPROCESSING(vsi, output); \
+    _LN_VS_PROCESS_PART_LIGHTING(vsi, output); \
+    _LN_VS_PROCESS_PART_NORMALMAP(vsi, output);
+
+VSOutput VSMain(LN_VSInput vsi)
 {
-    LN_VSOutput_Common common = LN_ProcessVertex_SkinnedCommon(vsi);
-    //LN_VSOutput_Common common = LN_ProcessVertex_Common(vsi);
-    LN_VSOutput_ClusteredForward extra = LN_ProcessVertex_ClusteredForward(vsi);
-
     VSOutput output;
-    output.svPos = common.svPos;
-    output.viewspaceNormal = common.Normal;
-    output.UV = common.UV;
-    output.Color = common.Color;
-    output.WorldPos = extra.WorldPos;
-    output.VertexPos = extra.VertexPos;
-    
-    //output.Color.rgb = vsi.BlendWeight.rgb;
-    //output.Color.rg = output.UV;
-    
-    //float x = 0.7;//2.0 / ln_BoneTextureReciprocalSize.x;
-    //float x = 1.0 * ln_BoneTextureReciprocalSize.x;
-    //float y = 0.0;// / ln_BoneTextureReciprocalSize.y;
-    //output.Color.rgb = tex2Dlod(ln_BoneTexture, float4(x, y, 0, 1)).rgb;
-    //output.Color.x = ln_NearClip + ln_FarClip + ln_CameraPosition.x + ln_CameraDirection.x;
+    LN_ProcessVertex(vsi, output);
     return output;
-
-    //VSOutput o;
-    //o.common    = LN_ProcessVertex_SkinnedCommon(vsi);
-    //o.extra        = LN_ProcessVertex_ClusteredForward(vsi);
-    // ★ Scene固有のコードはここに直接生成する (ピクセルシェーダと書き方を合わせたい)
-    //MyVFMain(vsi, o.user);    // ★ User定義呼び出し
-    //return o;
 }
 
-
+//==============================================================================
+// Pixel shader
 
 struct _lngs_PSInput
 {
     LN_PS_INPUT_DECLARE;
 
-    // common
-    //float3    viewspaceNormal        : NORMAL0;
-    //float2    UV            : TEXCOORD0;
-    //float4    Color        : COLOR0;
-    
-    float4    vInLightPosition     : TEXCOORD9;
-    // clustered forward
-    float3    WorldPos    : TEXCOORD10;
-    float3    VertexPos    : TEXCOORD11;
-    
 #ifdef LN_USE_NORMALMAP
     //float3    vTangent    : TEXCOORD12;
     //float3    vBitangent    : TEXCOORD13;
@@ -228,99 +272,64 @@ struct _lngs_PSInput
 #endif
 };
 
-struct _lngs_PSOutput
+float3 LN_GetPixelNormalFromNormalMap(float2 texUV, float3 viewSpaceTangent, float3 viewSpaceBitangent, float3 viewSpaceNormal)
 {
-    float4 color0 : COLOR0;
-    //float4 color1 : COLOR1;
-};
+    const float3 tangent = normalize(viewSpaceTangent);
+    const float3 bitangent = normalize(viewSpaceBitangent);
+    const float3 normal = normalize(viewSpaceNormal);
+    const float3 mapNormal = LN_UnpackNormal(tex2D(ln_NormalMap, texUV));
 
-float4 _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
-{
-    
-#ifdef LN_USE_NORMALMAP
-    const float3 viewSpaceTangent = normalize(input.vTangent);
-    const float3 viewSpaceBitangent = normalize(input.vBitangent);
-    const float3 viewSpaceNormal = normalize(input.viewspaceNormal);
-    const float3 mapNormal = LN_UnpackNormal(tex2D(ln_NormalMap, input.UV));
-
-    const float3x3 vTBN = float3x3( viewSpaceTangent, viewSpaceBitangent, viewSpaceNormal );
-    const float3 normal = mul(mapNormal, vTBN);
+    const float3x3 TBN = float3x3(tangent, bitangent, normal);
+    return mul(mapNormal, TBN);
 
     /*
     const float3 normal = normalize(float3(
-        dot(viewSpaceTangent, mapNormal),
-        dot(viewSpaceBitangent, mapNormal),
-        dot(viewSpaceNormal, mapNormal)));
+        dot(tangent, mapNormal),
+        dot(bitangent, mapNormal),
+        dot(normal, mapNormal)));
     const float3 normal = normalize(float3(
-        dot(mapNormal, viewSpaceTangent),
-        dot(mapNormal, viewSpaceBitangent),
-        dot(mapNormal, viewSpaceNormal)));
+        dot(mapNormal, tangent),
+        dot(mapNormal, bitangent),
+        dot(mapNormal, normal)));
     */
-#else
-    const float3 normal = input.viewspaceNormal;
-#endif
-
-    LN_SurfaceOutput surface;
-    _LN_InitSurfaceOutput(normal, surface);
-
-    //surface.Normal = input.Normal;
-    
-    // ★ライティングのコードはここに直接生成する (GBuffer生成などではマルチRT書き込みするため、戻り値も変えなければならない)
-    // ・・・というより、ピクセルシェーダ全体を生成する。フラグメントの結合じゃダメ。
-    
-
-    // TODO: SurfaceShader を入れるのはこのあたり
-    //surface.Albedo = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * input.Color;
-    surface.Albedo = tex2D(ln_MaterialTexture, input.UV) * ln_MaterialColor * input.Color;
-
-    surface.Emission = (ln_MaterialEmissive.rgb * ln_MaterialEmissive.a);
-    
-    _lngs_PSOutput o;
-    o.color0 = _LN_PS_ClusteredForward_Default(input.WorldPos, input.VertexPos, input.vInLightPosition, surface);
-    o.color0.a *= surface.Albedo.a;
-    o.color0 = LN_GetBuiltinEffectColor(o.color0);
-
-    //o.color0 = float4(input.vInLightPosition.z / input.vInLightPosition.w, 0, 0, 1);
-    //o.color0 = float4(input.viewspaceNormal, 1);
-    //o.color0 = float4(input.Debug, 1);
-    return o.color0;
 }
 
-float4 _lngs_PS_UnLighting(_lngs_PSInput input)
+float4 _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input, LN_Surface surface)
 {
-    //return float4(1, 0, 0, 1);
-    //return float4(input.Color.rgb, 1);
-    //return float4(tex2D(ln_MaterialTexture, input.UV).rgb, 1);
-    //return float4(ln_MaterialColor.rgb, 1);
-    //return float4(input.UV, 0, 1);
-    //return float4(tex2D(ln_BoneTexture, input.UV).rgb, 1);
-    float4 c = tex2D(ln_MaterialTexture, input.UV) * ln_MaterialColor * input.Color;
-    clip(c.a - 0.0001);
+    float4 color = _LN_PS_ClusteredForward_Default(input.worldPos, input.vertexPos, input.vInLightPosition, surface);
+    color.a *= surface.Albedo.a;
+    color = LN_GetBuiltinEffectColor(color);
+    return color;
+}
 
-    //return float4(c);
-    return LN_GetBuiltinEffectColor(c);
+float4 LN_ProcessPixel(_lngs_PSInput input, LN_Surface surface) : SV_TARGET0
+{
+#if defined(LN_SHADINGMODEL_DEFAULT)
+    return _lngs_PS_ClusteredForward_Geometry(input, surface);
+#elif defined(LN_SHADINGMODEL_UNLIT)
+    return LN_GetBuiltinEffectColor(surface.Albedo);
+#else
+#error "Invalid ShadingModel."
+#endif
 }
 
 float4 PSMain(_lngs_PSInput input) : SV_TARGET0
 {
-#if defined(LN_USE_SHADINGMODEL_DEFAULT)
-    return _lngs_PS_ClusteredForward_Geometry(input);
-#elif defined(LN_USE_SHADINGMODEL_UNLIT)
-    return _lngs_PS_UnLighting(input);
-#else
-#error Invalid ShadingModel.
-#endif
+    LN_Surface surface;
+    LN_ProcessSurface(input, surface);
+
+    return LN_ProcessPixel(input, surface);
 }
 
-
-//------------------------------------------------------------------------------
+//==============================================================================
+// technique
 
 technique Forward_Geometry
 {
     Normal = Default;
     pass Pass1
     {
-        VertexShader = _lngs_VS_ClusteredForward_Geometry;
+        VertexShader = VSMain;
         PixelShader  = PSMain;
     }
 }
@@ -329,7 +338,7 @@ technique Forward_Geometry_NormalMap
     Normal = NormalMap;
     pass Pass1
     {
-        VertexShader = _lngs_VS_ClusteredForward_Geometry;
+        VertexShader = VSMain;
         PixelShader  = PSMain;
     }
 }
@@ -340,7 +349,7 @@ technique Forward_Geometry_StaticMesh_UnLighting
     Normal = Default;
     pass Pass1
     {
-        VertexShader = _lngs_VS_ClusteredForward_Geometry;
+        VertexShader = VSMain;
         PixelShader  = PSMain;
     }
 }
@@ -350,7 +359,7 @@ technique Forward_Geometry_SkinnedMesh
     Normal = Default;
     pass Pass1
     {
-        VertexShader = _lngs_VS_ClusteredForward_Geometry_SkinnedMesh;
+        VertexShader = VSMain;
         PixelShader  = PSMain;
     }
 }
@@ -361,11 +370,7 @@ technique Forward_Geometry_SkinnedMesh_UnLighting
     Normal = Default;
     pass Pass1
     {
-        VertexShader = _lngs_VS_ClusteredForward_Geometry_SkinnedMesh;
+        VertexShader = VSMain;
         PixelShader  = PSMain;
     }
 }
-
-//END_HLSL
-
-

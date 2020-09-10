@@ -5,6 +5,8 @@
 //------------------------------------------------------------------------------
 // Lib
 
+#define LN_LIGHTINGMETHOD_CLUSTERED 1
+
 #define LN_EPSILON                1e-6
 #define LN_MAX_GLOBAL_LIGHTS    4
 
@@ -36,6 +38,14 @@ cbuffer LNRenderElementBuffer
     /* [320] */ float4 ln_BoneTextureReciprocalSize;
     /* [336] */ int ln_objectId;
 };  /* [352(alignd:16)] */
+
+cbuffer LNPBRMaterialParameter
+{
+    /* [0]  */ float4	ln_MaterialColor;
+    /* [16] */ float4	ln_MaterialEmissive;
+    /* [32] */ float	ln_MaterialRoughness;
+    /* [36] */ float	ln_MaterialMetallic;
+};
 
 // Builtin effect colors
 cbuffer LNEffectColorBuffer
@@ -93,7 +103,7 @@ struct LN_PSInput_Common
     float4    Color        : COLOR0;
 };
 
-struct LN_SurfaceOutput
+struct LN_Surface
 {
     float4    Albedo;        // diffuse color
     float3    Normal;        // tangent space normal, if written
@@ -102,15 +112,20 @@ struct LN_SurfaceOutput
     float3    Gloss;        // specular intensity
 };
 
-void _LN_InitSurfaceOutput(float3 normal, inout LN_SurfaceOutput surface)
+void _LN_InitSurfaceOutput(float2 uv, float4 color, float3 normal, inout LN_Surface surface)
 {
-    surface.Albedo = float4(0, 0, 0, 1);
+    //surface.Albedo = float4(0, 0, 0, 1);
     surface.Normal = normal;
-    surface.Emission = float3(0, 0, 0);
+    //surface.Emission = float3(0, 0, 0);
     surface.Specular = 0;
     surface.Gloss = float3(0, 0, 0);
+    
+    surface.Albedo = tex2D(ln_MaterialTexture, uv) * ln_MaterialColor * color;
+    clip(surface.Albedo .a - 0.0001);
+    surface.Emission = (ln_MaterialEmissive.rgb * ln_MaterialEmissive.a);
 }
 
+// deprecated
 LN_VSOutput_Common LN_ProcessVertex_Common(LN_VSInput input)
 {
     //float4x4 normalMatrix  = transpose(/*inverse*/(ln_WorldView));
@@ -208,5 +223,22 @@ float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
 
     return color * factors;
 }
+
+//------------------------------------------------------------------------------
+// Core public functions
+
+// LN_ProcessSurface
+#define LN_ProcessSurface(input, surface) _LN_InitSurfaceOutput(input.UV, input.Color, LN_GetPixelNormal(input), surface);
+
+
+
+//------------------------------------------------------------------------------
+
+#ifdef LN_LIGHTINGMETHOD_CLUSTERED
+#include <LuminoForward.fxh>
+#endif
+#ifdef LN_SHADINGMODEL_DEFAULT
+#include <LuminoPBR.fxh>
+#endif
 
 #endif // LUMINO_INCLUDED
