@@ -356,6 +356,7 @@ technique Forward_Geometry_StaticMesh_UnLighting
 
 technique Forward_Geometry_SkinnedMesh
 {
+    VertexProcessing = Skinned;
     Normal = Default;
     pass Pass1
     {
@@ -367,6 +368,7 @@ technique Forward_Geometry_SkinnedMesh
 technique Forward_Geometry_SkinnedMesh_UnLighting
 {
     ShadingModel = Unlit;
+    VertexProcessing = Skinned;
     Normal = Default;
     pass Pass1
     {

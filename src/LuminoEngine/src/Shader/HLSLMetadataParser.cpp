@@ -465,6 +465,16 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
             return false;
         }
     }
+    else if (equalString(name, "VertexProcessing", 16)) {
+        const struct { const char* name; size_t len; ShaderTechniqueClass_MeshProcess value; } table[] = {
+            {"Static", 6, ShaderTechniqueClass_MeshProcess::StaticMesh},
+            {"Skinned", 7, ShaderTechniqueClass_MeshProcess::SkinnedMesh},
+        };
+        if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.meshProcess)) {
+            m_diag->reportError(u"Normal: Invalid value: " + String::fromStdString(value));
+            return false;
+        }
+    }
     else if (equalString(name, "Normal", 6)) {
         const struct { const char* name; size_t len; ShaderTechniqueClass_Normal value; } table[] = {
             {"Default", 7, ShaderTechniqueClass_Normal::Default},
