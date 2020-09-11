@@ -245,6 +245,7 @@ float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
 
 #ifdef LN_SHADINGMODEL_DEFAULT
 #include <LuminoPBR.fxh>
+#include <LuminoShadow.fxh>
 #endif
 
 #ifdef LN_USE_SKINNING
@@ -256,7 +257,7 @@ float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
 #endif
 
 //==============================================================================
-// Part macros
+// Part combination
 
 //-------------------------------------
 // Mesh Processing
@@ -308,6 +309,69 @@ float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
     #error "Invalid LIGHTINGMETHOD."
 #endif
 
+
+//-------------------------------------
+// PS
+
+#if defined(LN_SHADINGMODEL_DEFAULT)
+float4 _LN_PS_ClusteredLighting_PBRShading(
+    float3 worldPos,
+    float3 vertexPos,
+    float4 positionInLightSpace,
+    LN_Surface surface)
+{
+    // ビュー平面からの水平距離。視点からの距離ではないので注意
+    float4 viewPos = mul(float4(worldPos, 1.0f), ln_View);
+    
+    // 頂点位置から視点位置へのベクトル
+    float3 vViewPosition = -viewPos.xyz;
+    
+    // Create Geometry infomation.
+    LN_PBRGeometry geometry;
+    geometry.position = -vViewPosition;
+    geometry.normal = normalize(surface.Normal);
+    geometry.viewDir = normalize(vViewPosition);
+
+    // Create Material infomation.
+    LN_PBRMaterial material;
+    material.diffuseColor = lerp(surface.Albedo.xyz, float3(0, 0, 0), ln_MaterialMetallic);
+    material.specularColor = lerp(float3(0.04, 0.04, 0.04), surface.Albedo.xyz, ln_MaterialMetallic);
+    material.specularRoughness = clamp(ln_MaterialRoughness, 0.04, 1.0 );
+
+    // Shading
+    _LN_LocalLightContext localLightContext;
+    _LN_InitLocalLightContext(localLightContext, vertexPos, viewPos);
+    float3 outgoingLight = _LN_ComputePBRLocalLights(localLightContext, geometry, material);
+
+    // Shadow
+    float4 posInLight = positionInLightSpace;
+    float shadow = LN_CalculateShadow(posInLight);
+    outgoingLight *= shadow;
+
+    float3 result = outgoingLight;
+
+    // Emission
+    result += surface.Emission;
+
+    // Fog
+    result = LN_ApplyFog(result, worldPos);
+
+    return float4(result, surface.Albedo.a);
+}
+#endif
+
+float4 _LN_ProcessPixel(float3 worldPos, float3 vertexPos, float4 positionInLightSpace, LN_Surface surface)
+{
+    float4 color = surface.Albedo;
+
+#if defined(LN_SHADINGMODEL_DEFAULT)
+    color = _LN_PS_ClusteredLighting_PBRShading(worldPos, vertexPos, positionInLightSpace, surface);
+#endif
+
+    color = LN_GetBuiltinEffectColor(color);
+    return color;
+}
+
 //==============================================================================
 // Core publics
 
@@ -328,9 +392,17 @@ float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
     _LN_VARYING_DECLARE_NORMAL_MAP \
     _LN_VARYING_DECLARE_LIGHTINGMETHOD
 
+// LN_ProcessVertex
+#define LN_ProcessVertex(input, output) \
+    _LN_VS_PROCESS_PART_MESHPROCESSING(vsi, output); \
+    _LN_VS_PROCESS_PART_LIGHTING(vsi, output); \
+    _LN_VS_PROCESS_PART_NORMALMAP(vsi, output);
+
 // LN_ProcessSurface
 #define LN_ProcessSurface(input, surface) _LN_InitSurfaceOutput(input.UV, input.Color, LN_GetPixelNormal(input), surface);
 
+// LN_ProcessPixel
+#define LN_ProcessPixel(input, surface) _LN_ProcessPixel(input.worldPos, input.vertexPos, input.vInLightPosition, surface)
 
 
 #endif // LUMINO_INCLUDED
