@@ -8,4 +8,11 @@
     <StringView Condition="(m_data.sso.length &amp; 1) == 0">m_data.sso.buffer</StringView>
     <StringView Condition="(m_data.sso.length &amp; 1) != 0">m_data.core->m_str</StringView>
   </Type>
+  <Type Name="ln::Ref&lt;*&gt;">
+    <SmartPointer Usage="Minimal">m_ptr</SmartPointer>
+    <DisplayString Condition="m_ptr == 0">empty</DisplayString>
+    <Expand>
+      <Item Condition="m_ptr != 0" Name="[ptr]">m_ptr</Item>
+    </Expand>
+  </Type>
 </AutoVisualizer>

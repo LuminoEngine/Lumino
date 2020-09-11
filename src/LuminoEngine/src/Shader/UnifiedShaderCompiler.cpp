@@ -83,19 +83,22 @@ bool UnifiedShaderCompiler::compile(
 
             // Vertex shader
             {
+				auto entryPointName = pass.vertexShader;
+				if (entryPointName.empty()) entryPointName = "LN_VSMain";
+
                 auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
-                transpiler->compileAndLinkFromHlsl(ShaderStage2_Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &actualDefinitions, m_diag);
+                transpiler->compileAndLinkFromHlsl(ShaderStage2_Vertex, inputCode, inputCodeLength, entryPointName, includeDirectories, &actualDefinitions, m_diag);
                 if (m_diag->hasError()) {
                     return false;
                 }
                 m_unifiedShader->setAttributes(passId, transpiler->attributes());
 				m_unifiedShader->addMergeDescriptorLayoutItem(passId, transpiler->descriptorLayout);
 				transpiler->passId = passId;
-                m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Vertex, pass.vertexShader)] = transpiler;
+                m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Vertex, entryPointName)] = transpiler;
 
                 // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
                 UnifiedShader::CodeContainerId containerId;
-                if (!m_unifiedShader->addCodeContainer(ShaderStage2_Vertex, pass.vertexShader, &containerId)) {
+                if (!m_unifiedShader->addCodeContainer(ShaderStage2_Vertex, entryPointName, &containerId)) {
                     return false;
                 }
                 m_unifiedShader->setVertexShader(passId, containerId);
@@ -103,18 +106,21 @@ bool UnifiedShaderCompiler::compile(
 
             // Pixel shader
             {
+				auto entryPointName = pass.pixelShader;
+				if (entryPointName.empty()) entryPointName = "LN_PSMain";
+
                 auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
-                transpiler->compileAndLinkFromHlsl(ShaderStage2_Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &actualDefinitions, m_diag);
+                transpiler->compileAndLinkFromHlsl(ShaderStage2_Fragment, inputCode, inputCodeLength, entryPointName, includeDirectories, &actualDefinitions, m_diag);
                 if (m_diag->hasError()) {
                     return false;
                 }
 				m_unifiedShader->addMergeDescriptorLayoutItem(passId, transpiler->descriptorLayout);
 				transpiler->passId = passId;
-                m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Fragment, pass.pixelShader)] = transpiler;
+                m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Fragment, entryPointName)] = transpiler;
 
                 // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
                 UnifiedShader::CodeContainerId containerId;
-                if (!m_unifiedShader->addCodeContainer(ShaderStage2_Fragment, pass.pixelShader, &containerId)) {
+                if (!m_unifiedShader->addCodeContainer(ShaderStage2_Fragment, entryPointName, &containerId)) {
                     return false;
                 }
                 m_unifiedShader->setPixelShader(passId, containerId);

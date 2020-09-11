@@ -19,12 +19,12 @@ VSOutput VSMain(LN_VSInput vsi)
 //==============================================================================
 // Pixel shader
 
-struct _lngs_PSInput
+struct PSInput
 {
     LN_PS_INPUT_DECLARE;
 };
 
-float4 PSMain(_lngs_PSInput input) : SV_TARGET0
+float4 PSMain(PSInput input) : SV_TARGET0
 {
     LN_Surface surface;
     LN_ProcessSurface(input, surface);

@@ -263,10 +263,10 @@ float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
 // Mesh Processing
 #ifdef LN_USE_SKINNING
     #define _LN_VS_PROCESS_PART_MESHPROCESSING(intput, output) \
-        _LN_ProcessVertex_SkinnedMesh(intput, output.svPos, output.viewspaceNormal, output.UV, output.Color)
+        _LN_ProcessVertex_SkinnedMesh(intput, output.svPos, output.viewNormal, output.UV, output.Color)
 #else
     #define _LN_VS_PROCESS_PART_MESHPROCESSING(intput, output) \
-        _LN_ProcessVertex_StaticMesh(intput, output.svPos, output.viewspaceNormal, output.UV, output.Color)
+        _LN_ProcessVertex_StaticMesh(intput, output.svPos, output.viewNormal, output.UV, output.Color)
 #endif
 
 //-------------------------------------
@@ -278,14 +278,14 @@ float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
         float3 vBitangent   : TEXCOORD13
 
     #define _LN_VS_PROCESS_PART_NORMALMAP(intput, output) \
-        _LN_ProcessVertex_NormalMap(intput, output.viewspaceNormal, output.vTangent, output.vBitangent)
+        _LN_ProcessVertex_NormalMap(intput, output.viewNormal, output.vTangent, output.vBitangent)
 
-    #define LN_GetPixelNormal(input) LN_GetPixelNormalFromNormalMap(input.UV, input.vTangent, input.vBitangent, input.viewspaceNormal)
+    #define LN_GetPixelNormal(input) LN_GetPixelNormalFromNormalMap(input.UV, input.vTangent, input.vBitangent, input.viewNormal)
     
 #else
     #define _LN_VARYING_DECLARE_NORMAL_MAP
     #define _LN_VS_PROCESS_PART_NORMALMAP
-    #define LN_GetPixelNormal(input) input.viewspaceNormal
+    #define LN_GetPixelNormal(input) input.viewNormal
 
 #endif
 
@@ -297,10 +297,10 @@ float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
     // worldPos  : World 空間上の位置 (ln_World による変換結果)
     // viewPos   : View 空間上の位置 (ln_WorldView による変換結果)
     #define _LN_VARYING_DECLARE_LIGHTINGMETHOD ; \
-        float3 vertexPos : POSITION0; \
-        float3 worldPos  : POSITION1; \
-        float3 viewPos   : POSITION2; \
-        float4 vInLightPosition : POSITION3
+        float3 vertexPos : POSITION10; \
+        float3 worldPos  : POSITION11; \
+        float3 viewPos   : POSITION12; \
+        float4 vInLightPosition : POSITION13
 
     #define _LN_VS_PROCESS_PART_LIGHTING(intput, output) \
         _LN_ProcessVertex_ClusteredForward(intput, output.worldPos, output.vertexPos, output.vInLightPosition)
@@ -377,26 +377,38 @@ float4 _LN_ProcessPixel(float3 worldPos, float3 vertexPos, float4 positionInLigh
 
 // Standard VS Output members.
 #define LN_VS_OUTPUT_DECLARE \
-    float4 svPos     : SV_POSITION; \
-    float3 viewspaceNormal   : NORMAL0; \
-    float2 UV        : TEXCOORD0; \
-    float4 Color     : COLOR0 \
+    float4 svPos        : SV_POSITION; \
+    float3 viewNormal   : NORMAL10; \
+    float2 UV           : TEXCOORD10; \
+    float4 Color        : COLOR10 \
     _LN_VARYING_DECLARE_NORMAL_MAP \
     _LN_VARYING_DECLARE_LIGHTINGMETHOD
 
 // Standard PS Input members.
 #define LN_PS_INPUT_DECLARE \
-    float3 viewspaceNormal   : NORMAL0; \
-    float2 UV        : TEXCOORD0; \
-    float4 Color     : COLOR0 \
+    float3 viewNormal   : NORMAL10; \
+    float2 UV           : TEXCOORD10; \
+    float4 Color        : COLOR10 \
     _LN_VARYING_DECLARE_NORMAL_MAP \
     _LN_VARYING_DECLARE_LIGHTINGMETHOD
 
+// LN_VSOutput
+struct LN_VSOutput
+{
+    LN_VS_OUTPUT_DECLARE;
+};
+
+// LN_PSInput
+struct LN_PSInput
+{
+    LN_PS_INPUT_DECLARE;
+};
+
 // LN_ProcessVertex
 #define LN_ProcessVertex(input, output) \
-    _LN_VS_PROCESS_PART_MESHPROCESSING(vsi, output); \
-    _LN_VS_PROCESS_PART_LIGHTING(vsi, output); \
-    _LN_VS_PROCESS_PART_NORMALMAP(vsi, output);
+    _LN_VS_PROCESS_PART_MESHPROCESSING(input, output); \
+    _LN_VS_PROCESS_PART_LIGHTING(input, output); \
+    _LN_VS_PROCESS_PART_NORMALMAP(input, output);
 
 // LN_ProcessSurface
 #define LN_ProcessSurface(input, surface) _LN_InitSurfaceOutput(input.UV, input.Color, LN_GetPixelNormal(input), surface);
@@ -404,5 +416,21 @@ float4 _LN_ProcessPixel(float3 worldPos, float3 vertexPos, float4 positionInLigh
 // LN_ProcessPixel
 #define LN_ProcessPixel(input, surface) _LN_ProcessPixel(input.worldPos, input.vertexPos, input.vInLightPosition, surface)
 
+//==============================================================================
+// Default main functions
+
+LN_VSOutput LN_VSMain(LN_VSInput input)
+{
+    LN_VSOutput output;
+    LN_ProcessVertex(input, output);
+    return output;
+}
+
+float4 LN_PSMain(LN_PSInput input) : SV_TARGET0
+{
+    LN_Surface surface;
+    LN_ProcessSurface(input, surface);
+    return LN_ProcessPixel(input, surface);
+}
 
 #endif // LUMINO_INCLUDED
