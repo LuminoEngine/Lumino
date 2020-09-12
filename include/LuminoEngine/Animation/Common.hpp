@@ -52,6 +52,12 @@ enum class EasingMode
 	EaseInOutCirc,
 };
 
+enum class TranslationClass
+{
+	Absolute,
+	Ratio,
+};
+
 
 struct AnimationTrackTargetKey
 {

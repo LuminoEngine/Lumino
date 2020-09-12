@@ -107,7 +107,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	AnimationState();
 	virtual ~AnimationState();
-	void init(AnimationClip* clip);
+	void init(AnimationLayer* owner, AnimationClip* clip);
 
 private:
 	struct AnimationTrackInstance
@@ -121,6 +121,7 @@ private:
 	void setBlendWeight(float weight) { m_blendWeight = weight; }
 	void updateTargetElements();
 
+	AnimationLayer* m_owner;
 	Ref<AnimationClip> m_clip;
 	String m_name;
 	List<AnimationTrackInstance> m_trackInstances;
@@ -137,6 +138,7 @@ class AnimationLayer
 	: public Object
 {
 public:
+	AnimationMixerCore* owner() const { return m_owner; }
 
 LN_CONSTRUCT_ACCESS:
 	AnimationLayer();
@@ -230,6 +232,7 @@ public:
 	///// 同レイヤー内のアニメーション再生速度の同期
 	//void SyncLayer(int layer);
 
+	float m_animationTranslationBasis = 1.0f;
 
 public:
 

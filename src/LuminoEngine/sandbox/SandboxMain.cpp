@@ -467,10 +467,10 @@ int main(int argc, char** argv)
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_MainLoop();
-		//Example_MeshViewer();
+		Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
-        Example_Shader();
+        //Example_Shader();
 		//Example_SoundControl();
         //Example_Sprite();
         //Example_UIControls();

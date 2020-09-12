@@ -12,7 +12,7 @@ class StaticMeshModel;
 class MeshGeometryBuilder;
 namespace detail {
 class MeshManager;
-
+class MeshImporter;
 
 }
 
@@ -523,6 +523,57 @@ class MeshHelper
 public:
 	static Box makeAABB(const Vertex* vertices, uint32_t vertexCount);
 	static std::array<const Char*, 1> CandidateExtensions_MeshModel;
+};
+
+
+
+//namespace detail {
+//struct ActualMeshImportSettings
+//{
+//	bool applyBoneTransformationsEnabled;
+//};
+//}
+
+class MeshImportSettings
+	: public Object
+{
+public:
+	/**
+	 * Bone 姿勢を平行移動成分へ適用するかどうかを設定します。(default: true)
+	 *
+	 * Bone 姿勢に含まれている回転とスケーリングを、平行移動成分へ適用し、リセットします。
+	 * これによって、すべての Bone は回転とスケーリングがリセットされ、平行移動のみで初期姿勢を表すようになります。
+	 * 
+	 * このオプションは、インポートしたモデルに共有モーションデータをアタッチする際に必須となります。
+	 *
+	 * @note
+	 * Blender からエクスポートした glTF などは Bone に回転情報がついていることがある。
+	 * 一方 BVH モーションデータはこうした初期姿勢としての回転情報は考慮されない。
+	 * このためアタッチしようとすると、Bone の初期姿勢回転の分だけ余計に回転されることになり、モーションが崩れて見える。
+	 *
+	 * また、IK などプログラム上から回転させるときも、計算後に初期姿勢分の回転を減算するような処理が必要となり、複雑になってしまう。
+	 * IK のようなエンジンの内部処理ならいいが、ユーザープログラムから Bone を操作したい場合に原因の分かりづらい問題になりやすい。
+	 */
+	void setApplyBoneTransformationsEnabled(Optional<bool> value);
+
+	const Optional<bool>& applyBoneTransformationsEnabled() const { return m_applyBoneTransformationsEnabled; }
+
+	/**
+	 * 右手座標系と左手座標系の変換を行うかどうかを設定します。(default: true)
+	 *
+	 * 変換されたモデルは Z 軸が反転します。
+	 */
+	//void setFlipZCoordinate(Optional<bool> value);
+
+	//const Optional<bool>& flipZCoordinate() const { return m_flipZCoordinate; }
+
+LN_CONSTRUCT_ACCESS:
+	MeshImportSettings();
+	bool init();
+
+private:
+	Optional<bool> m_applyBoneTransformationsEnabled;
+	//Optional<bool> m_flipZCoordinate;
 };
 
 } // namespace ln

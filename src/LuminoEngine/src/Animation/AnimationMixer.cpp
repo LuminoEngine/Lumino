@@ -9,10 +9,10 @@ namespace ln {
 
 //==============================================================================
 // AnimationState
-//==============================================================================
 
 AnimationState::AnimationState()
-	: m_clip(nullptr)
+	: m_owner(nullptr)
+	, m_clip(nullptr)
 	, m_trackInstances()
 	, m_localTime(0.0f)
 	, m_blendWeight(1.0f)
@@ -24,9 +24,10 @@ AnimationState::~AnimationState()
 {
 }
 
-void AnimationState::init(AnimationClip* clip)
+void AnimationState::init(AnimationLayer* owner, AnimationClip* clip)
 {
 	Object::init();
+	m_owner = owner;
 	m_clip = clip;
 }
 
@@ -124,7 +125,17 @@ void AnimationState::updateTargetElements()
 				AttitudeTransform& t = rootValue.v_Transform;
 				t.scale += s.scale * m_blendWeight;
 				t.rotation *= Quaternion::slerp(Quaternion::Identity, s.rotation, m_blendWeight);
-				t.translation += s.translation * m_blendWeight;
+				
+
+				if (trackInstance.track->translationClass() == TranslationClass::Absolute) {
+					t.translation += s.translation * m_blendWeight;
+				}
+				else if (trackInstance.track->translationClass() == TranslationClass::Ratio) {
+					t.translation += (s.translation * m_owner->owner()->m_animationTranslationBasis) * m_blendWeight;
+				}
+				else {
+				}
+
 				trackInstance.blendLink->affectAnimation = true;
 
 
@@ -173,7 +184,7 @@ AnimationState* AnimationLayer::addClipAndCreateState(AnimationClip* animationCl
 {
 	if (LN_REQUIRE(animationClip != nullptr)) return nullptr;
 
-	auto state = makeObject<AnimationState>(animationClip);
+	auto state = makeObject<AnimationState>(this, animationClip);
 	m_animationStatus.add(state);
 	state->attachToTarget(m_owner);
 	return state;

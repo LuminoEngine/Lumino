@@ -7,11 +7,25 @@ namespace ln {
 class Stream;
 class DiagnosticsManager;
 class AnimationClip;
+class MeshImportSettings;
 namespace detail {
 
 class MeshImporter
 {
 public:
+	MeshImporter();
+	void prepare(MeshManager* meshManager, DiagnosticsManager* diag);
+	void applySettings(const MeshImportSettings* settings);
+
+	virtual bool onImportAsStaticMesh(StaticMeshModel* model, const AssetPath& assetPath) = 0;
+	virtual bool onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath& assetPath) = 0;
+
+	MeshManager* m_meshManager;
+	AssetManager* m_assetManager;
+	DiagnosticsManager* m_diag;
+
+	bool m_applyBoneTransformationsEnabled;
+	bool m_flipZCoordinate;
 };
 
 } // namespace detail

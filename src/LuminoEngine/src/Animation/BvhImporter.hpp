@@ -97,6 +97,7 @@ private:
 		Vector3 offset;		// プレビュー用モデルの表示などで利用できる参考情報
 		Vector3 site;
 		bool hasSite;
+		bool isRoot;
 	};
 
 	bool readHierarchy();
@@ -113,10 +114,14 @@ private:
 	std::vector<std::shared_ptr<Channel>> m_channels;
 	std::vector<std::shared_ptr<Joint>> m_joints;
 	std::vector<int> m_jointStack;
+	int m_rootJointIndex = -1;
 
 	int m_frames;
 	float m_frameTime;
 	std::vector<float> m_frameData;
+
+	float m_minOffsetY;
+	float m_scale = 1.0f;
 
 	bool m_flipZ;
 	bool m_flipX;

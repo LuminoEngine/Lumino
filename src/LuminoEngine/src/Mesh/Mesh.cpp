@@ -1310,6 +1310,24 @@ Box MeshHelper::makeAABB(const Vertex* vertices, uint32_t vertexCount)
 
 std::array<const Char*, 1> MeshHelper::CandidateExtensions_MeshModel = { u".gltf" };
 
+//==============================================================================
+// InstancedMeshList
+
+MeshImportSettings::MeshImportSettings()
+	: m_applyBoneTransformationsEnabled(true)
+{
+}
+
+bool MeshImportSettings::init()
+{
+	return Object::init();
+}
+
+void MeshImportSettings::setApplyBoneTransformationsEnabled(Optional<bool> value)
+{
+	m_applyBoneTransformationsEnabled = value;
+}
+
 namespace detail {
 
 

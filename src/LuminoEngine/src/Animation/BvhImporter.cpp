@@ -176,6 +176,7 @@ BvhImporter::BvhImporter(AssetManager* assetManager, DiagnosticsManager* diag)
 	, m_diag(diag)
     , m_flipZ(false)    // BVH の座標系は右手、Y up。それと、Z+ を正面とする。もし VRM モデルに適用したい場合は反転が必要
     , m_flipX(false)
+    , m_minOffsetY(std::numeric_limits<float>::max())
     // https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html
     // BVH階層に関する最後の注意点として、ワールド空間は、Y軸をワールドアップベクトルとする右手系の座標系として定義されます。
     // したがって、通常、BVHの骨格セグメントがY軸または負のY軸に沿って整列していることがわかります（キャラクターは多くの場合、キャラクターがまっすぐに立ち、腕を横にまっすぐに伸ばした状態でゼロポーズをとります）。
@@ -201,10 +202,33 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath)
         }
     }
 
-    printf("========\n");
+    // BVH のフレームデータは offset を持っているが、基本的にすべて読み捨ててよい。
+    // ただし、ROOT の offset は適用しないと、モーションが正しく再生できないことがある。
+    // しかし一方で、モーションの種類によっては、ゲームで使うには不要な場合もある。
+    // - 歩行モーションに含まれている offset は不要。
+    // - 待機モーションに含まれている腰の重心微調整用の offset は必要。
+    // 
+    // そういうわけで何とか offset を正しく読み取る必要がある。
+    // 
+    // 問題なのは、offset はすべて絶対座標で格納されている点。
+    // ターゲットモデルのサイズは BVH によってことなるので、1.0=1m と考えた Lumino の標準構造にはそのまま適用できない。
+    // (Mixamo のものは 200.0 くらいの高さのモデル)
+    //
+    // 正式な仕様かは不明だが、手元の BVH はすべて Hips が ROOT となってる。
+    // Lumino の HumanoidBones や、これの参考元の Unity もこれが実質の Root.
+    // そこで、地面~Hipsまでの高さを 1.0 とした、平行移動"率" で offset を表すことにしてみる。
+    //
+    // ただし、BVH の中には ROOT を原点(0,0,0) に置いているものもあるので、Hips の高さをそのまま使うことはできない。
+    // すべての Joint のうち一番下にあるものとの差をとる。
+    //
+    // [2020/9/13] TODO: BVH の OFFSET は相対座標なので、再帰的に更新が必要。
+    // とりあえず Mixamo のモーションは下端 0 が基準になっているようなので、それに合わせておく。
+    //const float offsetBasis = std::abs(m_joints[m_rootJointIndex]->offset.y - m_minOffsetY);
+    const float offsetBasis = std::abs(m_joints[m_rootJointIndex]->offset.y);
+    const float offsetScale = 1.0f / offsetBasis;
 
     for (const auto& joint : m_joints) {
-        auto track = makeObject<TransformAnimationTrack>();
+        auto track = makeObject<TransformAnimationTrack>(TranslationClass::Ratio);
 
         const auto name = String::fromStdString(joint->name);
         track->setTargetName(name);
@@ -220,7 +244,16 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath)
             //pos.y += joint->offset.y;
             //pos.z += joint->offset.z;
             //auto pos = Vector3(posOrg.x, posOrg.z, posOrg.y);   // Blender
-            posOrg *= 0.0f; // 無効化。bvh_player でも使っていなかった。
+            //posOrg *= 0.0f; // 無効化。bvh_player でも使っていなかった。
+            if (!joint->isRoot) {   // bvh_player ではルート要素だけオフセットをつけていた
+                posOrg *= 0.0f;
+            }
+            else {
+                //posOrg *= 1.0f / 20.0f;
+                //posOrg *= 10.0f / 80.0f;    // HC4 Model の Hips 位置は y=10. 
+                posOrg.y -= offsetBasis;
+                posOrg *= offsetScale;
+            }
             auto pos = Vector3(posOrg.x, posOrg.y, posOrg.z);
 #if 1
             auto rotOrg = Vector3(
@@ -238,9 +271,9 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath)
             //printf("  pos: %f %f %f\n", posOrg.x, posOrg.y, posOrg.z);
             //printf("  rot: %f %f %f\n", rotOrg.x, rotOrg.y, rotOrg.z);
 
-            if (name == u"Arm_R") {
-                printf("");
-            }
+            //if (name == u"Arm_R") {
+            //    printf("");
+            //}
             if (m_flipZ) {
 
                 //rot.x *= -1;
@@ -293,6 +326,7 @@ bool BvhImporter::readHierarchy()
 
         if (m_reader.token().is("ROOT", 4) ||
             m_reader.token().is("JOINT", 5)) {
+            bool isRoot = m_reader.token().is("ROOT", 4);
 
             if (!m_reader.readToken()) {
                 m_diag->reportError(u"Expected joint name.");
@@ -302,9 +336,17 @@ bool BvhImporter::readHierarchy()
             auto joint = std::make_shared<Joint>();
             joint->name = std::string(m_reader.token().begin, m_reader.token().length);
             joint->index = m_joints.size();
+            joint->isRoot = isRoot;
             std::fill(joint->channels.begin(), joint->channels.end(), -1);
 
             m_joints.push_back(joint);
+
+            if (m_rootJointIndex < 0) {
+                m_rootJointIndex = m_joints.size() - 1;
+            }
+            else {
+                LN_WARNING(u"Multiple root joints found.");
+            }
         }
         else if (m_reader.token().is("End", 3)) {
             is_site = true;
@@ -339,6 +381,7 @@ bool BvhImporter::readHierarchy()
                 joint->offset.x = x;
                 joint->offset.y = y;
                 joint->offset.z = z;
+                m_minOffsetY = std::min(m_minOffsetY, y);
             }
         }
         else if (m_reader.token().is("CHANNELS", 8)) {

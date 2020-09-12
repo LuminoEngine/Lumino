@@ -89,11 +89,12 @@ class App_Example_MeshViewer : public Application
 
         m_model = m_mesh->skinnedMeshComponent()->model();
         MeshDiag::printNodes(m_model);
-        MeshDiag::clearBoneInitialRotations(m_model);
-        MeshDiag::printNodes(m_model);
+        //MeshDiag::clearBoneInitialRotations(m_model);
+        //MeshDiag::printNodes(m_model);
         m_model->verifyHumanoidBones();
 
         //m_node = m_model->findNode(u"左腕");
+        m_node = m_model->findHumanoidBone(HumanoidBones::Hips);
         m_node = m_model->findHumanoidBone(HumanoidBones::LeftUpperArm);
         m_node = m_model->findHumanoidBone(HumanoidBones::LeftLowerArm);
         m_node = m_model->findHumanoidBone(HumanoidBones::LeftLowerLeg);
@@ -115,6 +116,8 @@ class App_Example_MeshViewer : public Application
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleStandingPose7.bvh");
         auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleSittingPose.bvh");
         //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/Arm_R-Test1-BoneVert.bvh");
+        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh");
+        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Walk.bvh");
         
         //auto clip = AnimationClip::load(u"D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");
         //auto clip1 = AnimationClip::load(u"D:/Materials/MMD/Motion/MMO用stand/stand2.vmd");
@@ -127,9 +130,9 @@ class App_Example_MeshViewer : public Application
         auto state = m_model->animationController()->addClip(clip);
         m_model->animationController()->play(state);
 
-        auto box = BoxMesh::create();
-        box->setScale(7.8);
-        box->setPosition(0, 5, 0);
+        //auto box = BoxMesh::create();
+        //box->setScale(7.8);
+        //box->setPosition(0, 5, 0);
 #endif
     }
 

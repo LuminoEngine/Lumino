@@ -70,16 +70,20 @@ public:
 
     virtual float lastFrameTime() const { return 0; }
 
+	TranslationClass translationClass() const { return m_translationClass; }
+
 protected:
 	AnimationTrack(AnimationValueType type);
 	virtual ~AnimationTrack();
 	bool init();
+	bool init(TranslationClass translationClass);
 	virtual void evaluate(float time, AnimationValue* outResult) = 0;
 	//void setTargetName(const String& name) { m_targetName = name; }
 
 private:
 	AnimationTrackTargetKey m_targetKey;
 	AnimationValueType m_type;
+	TranslationClass m_translationClass;
 
 	friend class AnimationState;
 };
@@ -172,6 +176,9 @@ LN_CONSTRUCT_ACCESS:
 	TransformAnimationTrack();
 
 	bool init();
+	bool init(TranslationClass translationClass);
+
+	
 
 protected:
 	void evaluate(float time, AnimationValue* outResult) override;

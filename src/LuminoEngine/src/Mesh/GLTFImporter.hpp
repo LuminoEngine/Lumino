@@ -22,8 +22,8 @@ class GLTFImporter
 {
 public:
 	GLTFImporter();
-    bool importAsStaticMesh(StaticMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
-	bool importAsSkinnedMesh(SkinnedMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
+    bool onImportAsStaticMesh(StaticMeshModel* model, const AssetPath& assetPath) override;
+	bool onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath& assetPath) override;
 
 	const List<Ref<AnimationClip>> animationClips() const { return m_animationClips; }
 
@@ -76,9 +76,7 @@ private:
 	static bool ReadWholeFile(std::vector<unsigned char> *out, std::string *err, const std::string &filepath, void *user_data);
 	static bool WriteWholeFile(std::string *err, const std::string &filepath, const std::vector<unsigned char> &contents, void *user_data);
 
-	AssetManager* m_assetManager;
     AssetPath m_basedir;
-	DiagnosticsManager* m_diag;
 	std::shared_ptr<tinygltf::Model> m_model;
 	StaticMeshModel* m_meshModel;
 	bool m_flipZ;

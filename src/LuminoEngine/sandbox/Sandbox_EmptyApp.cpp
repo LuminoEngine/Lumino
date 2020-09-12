@@ -10,6 +10,9 @@ class App_Sandbox_EmptyApp : public Application
     {
         //Engine::renderView()->setGuideGridEnabled(true);
         //Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+
+
+        auto mesh = ln::SkinnedMesh::load(u"D:/Documents/Modeling/HC4-10.glb");
     }
 
     void onUpdate() override

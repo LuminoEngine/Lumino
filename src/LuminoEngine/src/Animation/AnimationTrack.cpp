@@ -55,6 +55,7 @@ void AnimationValue::clearValue()
 AnimationTrack::AnimationTrack(AnimationValueType type)
     : m_targetKey()
     , m_type(type)
+	, m_translationClass(TranslationClass::Absolute)
 {
 }
 
@@ -65,6 +66,13 @@ AnimationTrack::~AnimationTrack()
 bool AnimationTrack::init()
 {
     return Object::init();
+}
+
+bool AnimationTrack::init(TranslationClass translationClass)
+{
+	if (!init()) return false;
+	m_translationClass = translationClass;
+	return true;
 }
 
 //==============================================================================
@@ -119,6 +127,18 @@ TransformAnimationTrack::TransformAnimationTrack()
 {
 }
 
+bool TransformAnimationTrack::init()
+{
+	if (!AnimationTrack::init()) return false;
+	return true;
+}
+
+bool TransformAnimationTrack::init(TranslationClass translationClass)
+{
+	if (!AnimationTrack::init(translationClass)) return false;
+	return true;
+}
+
 void TransformAnimationTrack::setupTranslations(int frames, const float* times, const Vector3* values, Interpolation interpolation)
 {
 	m_translationKeys.resize(frames);
@@ -162,12 +182,6 @@ void TransformAnimationTrack::setDataTQ(int frame, float time, const Vector3& po
 	m_translationKeys[frame] = { time, pos };
 	m_rotationKeys2[frame] = { time, rot };
 	m_lastTime = std::max(m_lastTime, time);
-}
-
-bool TransformAnimationTrack::init()
-{
-	if (!AnimationTrack::init()) return false;
-	return true;
 }
 
 template<class TKey>

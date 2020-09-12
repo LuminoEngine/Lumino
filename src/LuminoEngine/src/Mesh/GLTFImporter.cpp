@@ -143,11 +143,8 @@ bool GLTFImporter::openGLTFModel(const AssetPath& assetPath)
 	return result;
 }
 
-bool GLTFImporter::importAsStaticMesh(StaticMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+bool GLTFImporter::onImportAsStaticMesh(StaticMeshModel* model, const AssetPath& assetPath)
 {
-	m_assetManager = assetManager;
-	m_diag = diag;
-
 	if (!openGLTFModel(assetPath)) {
 		return false;
 	}
@@ -159,11 +156,8 @@ bool GLTFImporter::importAsStaticMesh(StaticMeshModel* model, AssetManager* asse
 	return true;
 }
 
-bool GLTFImporter::GLTFImporter::importAsSkinnedMesh(SkinnedMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath& assetPath)
 {
-	m_assetManager = assetManager;
-	m_diag = diag;
-
 	if (!openGLTFModel(assetPath)) {
 		return false;
 	}
