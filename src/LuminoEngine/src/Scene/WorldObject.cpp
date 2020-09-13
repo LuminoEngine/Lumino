@@ -183,6 +183,17 @@ void WorldObject::addComponent(Component* component)
     component->onAttached(this);
 }
 
+void WorldObject::removeComponent(Component* component)
+{
+    if (LN_REQUIRE(component)) return;
+    if (LN_REQUIRE(component->m_object == this)) return;
+
+    component->m_object = nullptr;
+    if (m_components->remove(component)) {
+        component->onAttached(this);
+    }
+}
+
 void WorldObject::removeAllComponents()
 {
     if (m_components) {

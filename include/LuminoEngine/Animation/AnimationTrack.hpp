@@ -95,7 +95,7 @@ private:
 };
 
 /** (スキニングでは、モーフィングアニメーションで使用) */
-class ScalarAnimationTrack
+class ScalarAnimationTrack	// TODO: FloatAnimationTrack の方がいいかも。float?double? な感じだし、インテリセンスから直感的ん検索できないことがあった。他は Vector3 とかなのに。
 	: public AnimationTrack
 {
 public:
