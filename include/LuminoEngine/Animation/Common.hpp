@@ -18,6 +18,19 @@ enum class AnimationWrapMode
     Alternate,
 };
 
+/** 階層構造を持つアニメーションデータの動作モード */
+enum class HierarchicalAnimationMode
+{
+	/** ルートノードのみ、平行移動を有効化します。 */
+	AllowTranslationOnlyRoot,
+
+	/** すべてのノードの平行移動を有効化します。 */
+	AllowTranslation,
+
+	/** 平行移動を無効化します。 */
+	DisableTranslation,
+};
+
 enum class AnimationClockAffiliation
 {
     Standalone,
@@ -50,6 +63,12 @@ enum class EasingMode
 	EaseInCirc,
 	EaseOutCirc,
 	EaseInOutCirc,
+};
+
+enum class TranslationClass
+{
+	Absolute,
+	Ratio,
 };
 
 

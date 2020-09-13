@@ -133,11 +133,50 @@ void AsciiLineReader::splitLineTokens()
 // http://www.dcs.shef.ac.uk/intranet/research/public/resmes/CS0111.pdf
 // https://sites.google.com/a/cgspeed.com/cgspeed/motion-capture/cmu-bvh-conversion
 // motion.hahasoha.netBVH
+/*
+    [2020/9/9] Blender メモ
+    ----------
+    Blender は Z が上、Y が前方だが、Blender からエクスポートした BVH はこのままの座標系で出てくる。
+    オプションで変更したりできないので、Impoter 側でケアするしかない。
+
+    [2020/9/9] Mixamo からダウンロードした FBX から、Blender を使って BVH をエクスポートしたとき、モーションが崩れる
+    ----------
+    Blender はボーンを、Head Tail の2点で表現し、さらに回転軸も個々に設定できる。
+    これらの要素が、モーションをアタッチしたいモデルと異なっていると崩れてしまう。
+
+    例えば、Bone の Tail を変えるだけで異なる回転角度がエクスポートされる。
+
+    - Blender 上で Bone の Tailを変えても、BVH の HIERARCHY に変化は無し
+    - MOTION の回転角度が変わる
+
+    HC4-10で、右腕を頭上に向けるように曲げるとき、
+
+    右腕のボーンを横方向にすると、
+    Y: 90 (Blender座標系)
+
+    右腕のボーンを上方向にすると、
+    Z: 90 (Blender座標系)
+
+    右腕のボーンを横方向にすると、rotOrg
+            x	6.09999988e-05	float
+            y	92.5882874	float
+            z	-2.20000002e-05	float
+
+    右腕のボーンを上方向にすると、rotOrg
+            x	-99.5123901	float
+            y	76.8954086	float
+            z	91.7683716	float
+
+
+
+*/
 
 BvhImporter::BvhImporter(AssetManager* assetManager, DiagnosticsManager* diag)
 	: m_assetManager(assetManager)
 	, m_diag(diag)
     , m_flipZ(false)    // BVH の座標系は右手、Y up。それと、Z+ を正面とする。もし VRM モデルに適用したい場合は反転が必要
+    , m_flipX(false)
+    , m_minOffsetY(std::numeric_limits<float>::max())
     // https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html
     // BVH階層に関する最後の注意点として、ワールド空間は、Y軸をワールドアップベクトルとする右手系の座標系として定義されます。
     // したがって、通常、BVHの骨格セグメントがY軸または負のY軸に沿って整列していることがわかります（キャラクターは多くの場合、キャラクターがまっすぐに立ち、腕を横にまっすぐに伸ばした状態でゼロポーズをとります）。
@@ -163,39 +202,101 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath)
         }
     }
 
+    // BVH のフレームデータは offset を持っているが、基本的にすべて読み捨ててよい。
+    // ただし、ROOT の offset は適用しないと、モーションが正しく再生できないことがある。
+    // しかし一方で、モーションの種類によっては、ゲームで使うには不要な場合もある。
+    // - 歩行モーションに含まれている offset は不要。
+    // - 待機モーションに含まれている腰の重心微調整用の offset は必要。
+    // 
+    // そういうわけで何とか offset を正しく読み取る必要がある。
+    // 
+    // 問題なのは、offset はすべて絶対座標で格納されている点。
+    // ターゲットモデルのサイズは BVH によってことなるので、1.0=1m と考えた Lumino の標準構造にはそのまま適用できない。
+    // (Mixamo のものは 200.0 くらいの高さのモデル)
+    //
+    // 正式な仕様かは不明だが、手元の BVH はすべて Hips が ROOT となってる。
+    // Lumino の HumanoidBones や、これの参考元の Unity もこれが実質の Root.
+    // そこで、地面~Hipsまでの高さを 1.0 とした、平行移動"率" で offset を表すことにしてみる。
+    //
+    // ただし、BVH の中には ROOT を原点(0,0,0) に置いているものもあるので、Hips の高さをそのまま使うことはできない。
+    // すべての Joint のうち一番下にあるものとの差をとる。
+    //
+    // [2020/9/13] TODO: BVH の OFFSET は相対座標なので、再帰的に更新が必要。
+    // とりあえず Mixamo のモーションは下端 0 が基準になっているようなので、それに合わせておく。
+    //const float offsetBasis = std::abs(m_joints[m_rootJointIndex]->offset.y - m_minOffsetY);
+    const float offsetBasis = std::abs(m_joints[m_rootJointIndex]->offset.y);
+    const float offsetScale = 1.0f / offsetBasis;
+
+    // [2020/9/13] TODO: HierarchicalAnimationMode を作ったけど、それだけだと足りない。
+    // モーションによっては歩行時の bobbing のため Y オフセットだけ有効にしたいものもある。
+
     for (const auto& joint : m_joints) {
-        auto track = makeObject<TransformAnimationTrack>();
+        auto track = makeObject<TransformAnimationTrack>(TranslationClass::Ratio);
+        track->m_root = joint->isRoot;
 
         const auto name = String::fromStdString(joint->name);
         track->setTargetName(name);
         track->setTargetHumanoidBone(mapHumanoidBonesMixamoUnity(name));
 
-        //if (track->targetKey().bone == HumanoidBones::LeftUpperArm) {
-        //    printf("");
-        //}
-        //if (track->targetKey().bone == HumanoidBones::RightUpperArm) {
-        //    printf("");
-        //}
-
         track->resizeFramesTQ(m_frames);
         for (int iFrame = 0; iFrame < m_frames; iFrame++) {
-            const auto pos = Vector3(
+            auto posOrg = Vector3(
                 (joint->channels[X_POSITION] >= 0) ? rameData(iFrame, joint->channels[X_POSITION]) : 0.0f,
                 (joint->channels[Y_POSITION] >= 0) ? rameData(iFrame, joint->channels[Y_POSITION]) : 0.0f,
-                (joint->channels[Z_POSITION] >= 0) ? rameData(iFrame, joint->channels[Z_POSITION]) : 0.0f) * 0.00f;
+                (joint->channels[Z_POSITION] >= 0) ? rameData(iFrame, joint->channels[Z_POSITION]) : 0.0f);// *0.00f;
+            //pos.x += joint->offset.x;
+            //pos.y += joint->offset.y;
+            //pos.z += joint->offset.z;
+            //auto pos = Vector3(posOrg.x, posOrg.z, posOrg.y);   // Blender
+            //posOrg *= 0.0f; // 無効化。bvh_player でも使っていなかった。
+            if (!joint->isRoot) {   // bvh_player ではルート要素だけオフセットをつけていた
+                posOrg *= 0.0f;
+            }
+            else {
+                //posOrg *= 1.0f / 20.0f;
+                //posOrg *= 10.0f / 80.0f;    // HC4 Model の Hips 位置は y=10. 
+                posOrg.y -= offsetBasis;
+                posOrg *= offsetScale;
+            }
+            auto pos = Vector3(posOrg.x, posOrg.y, posOrg.z);
 #if 1
-            auto rot = Vector3(
+            auto rotOrg = Vector3(
                 (joint->channels[X_ROTATION] >= 0) ? rameData(iFrame, joint->channels[X_ROTATION]) : 0.0f,
                 (joint->channels[Y_ROTATION] >= 0) ? rameData(iFrame, joint->channels[Y_ROTATION]) : 0.0f,
                 (joint->channels[Z_ROTATION] >= 0) ? rameData(iFrame, joint->channels[Z_ROTATION]) : 0.0f);
+            //auto rot = Vector3(rotOrg.x, rotOrg.z, rotOrg.y);   // Blender
+            auto rot = Vector3(rotOrg.x, rotOrg.y, rotOrg.z);
             rot.x = Math::degreesToRadians(rot.x);
             rot.y = Math::degreesToRadians(rot.y);
             rot.z = Math::degreesToRadians(rot.z);
+
+            // インポートした各値は　bvh_player と等しかった
+            //std::cout << name << std::endl;
+            //printf("  pos: %f %f %f\n", posOrg.x, posOrg.y, posOrg.z);
+            //printf("  rot: %f %f %f\n", rotOrg.x, rotOrg.y, rotOrg.z);
+
+            //if (name == u"Arm_R") {
+            //    printf("");
+            //}
             if (m_flipZ) {
 
                 //rot.x *= -1;
                 rot.y *= -1;
                 rot.z *= -1;
+            }
+            if (m_flipX) {
+                pos.x *= -1.0f;
+                //rot.x *= -1.0f;
+                //rot.z *= -1.0f;
+
+
+                rot.y *= -1.0f;
+                rot.z *= -1.0f;
+                //rot.x *= -1.0f;   // これやると膝が逆を向く
+
+
+                //rot.y *= -1;
+                //rot.z *= -1;
             }
             track->setDataTQ(iFrame, m_frameTime * iFrame, pos, rot);
 #else
@@ -229,6 +330,7 @@ bool BvhImporter::readHierarchy()
 
         if (m_reader.token().is("ROOT", 4) ||
             m_reader.token().is("JOINT", 5)) {
+            bool isRoot = m_reader.token().is("ROOT", 4);
 
             if (!m_reader.readToken()) {
                 m_diag->reportError(u"Expected joint name.");
@@ -238,9 +340,17 @@ bool BvhImporter::readHierarchy()
             auto joint = std::make_shared<Joint>();
             joint->name = std::string(m_reader.token().begin, m_reader.token().length);
             joint->index = m_joints.size();
+            joint->isRoot = isRoot;
             std::fill(joint->channels.begin(), joint->channels.end(), -1);
 
             m_joints.push_back(joint);
+
+            if (m_rootJointIndex < 0) {
+                m_rootJointIndex = m_joints.size() - 1;
+            }
+            else {
+                LN_WARNING(u"Multiple root joints found.");
+            }
         }
         else if (m_reader.token().is("End", 3)) {
             is_site = true;
@@ -275,6 +385,7 @@ bool BvhImporter::readHierarchy()
                 joint->offset.x = x;
                 joint->offset.y = y;
                 joint->offset.z = z;
+                m_minOffsetY = std::min(m_minOffsetY, y);
             }
         }
         else if (m_reader.token().is("CHANNELS", 8)) {
@@ -328,7 +439,7 @@ bool BvhImporter::readHierarchy()
         return false;
     }
 
-#if 1
+#if 0 // Debug
     for (auto& joint : m_joints) {
         std::cout << joint->name << std::endl;
         std::cout << "  " << joint->offset.x << ", " << joint->offset.y << ", " << joint->offset.z << std::endl;
@@ -405,6 +516,15 @@ HumanoidBones BvhImporter::mapHumanoidBonesMixamoUnity(const String& name)
         { u"RightArm", HumanoidBones::RightUpperArm },
         { u"RightForeArm", HumanoidBones::RightLowerArm },
         { u"RightHand", HumanoidBones::RightHand },
+        //{ u"LeftShoulder", HumanoidBones::RightShoulder },
+        //{ u"LeftArm", HumanoidBones::RightUpperArm },
+        //{ u"LeftForeArm", HumanoidBones::RightLowerArm },
+        //{ u"LeftHand", HumanoidBones::RightHand },
+
+        //{ u"RightShoulder", HumanoidBones::LeftShoulder },
+        //{ u"RightArm", HumanoidBones::LeftUpperArm },
+        //{ u"RightForeArm", HumanoidBones::LeftLowerArm },
+        //{ u"RightHand", HumanoidBones::LeftHand },
 
         { u"LeftUpLeg", HumanoidBones::LeftUpperLeg },
         { u"LeftLeg", HumanoidBones::LeftLowerLeg },
@@ -415,6 +535,17 @@ HumanoidBones BvhImporter::mapHumanoidBonesMixamoUnity(const String& name)
         { u"RightLeg", HumanoidBones::RightLowerLeg },
         { u"RightFoot", HumanoidBones::RightFoot },
         { u"RightToeBase", HumanoidBones::RightToes },
+        //{ u"LeftUpLeg", HumanoidBones::RightUpperLeg },
+        //{ u"LeftLeg", HumanoidBones::RightLowerLeg },
+        //{ u"LeftFoot", HumanoidBones::RightFoot },
+        //{ u"LeftToeBase", HumanoidBones::RightToes },
+
+        //{ u"RightUpLeg", HumanoidBones::LeftUpperLeg },
+        //{ u"RightLeg", HumanoidBones::LeftLowerLeg },
+        //{ u"RightFoot", HumanoidBones::LeftFoot },
+        //{ u"RightToeBase", HumanoidBones::LeftToes },
+
+
 
         { u"Neck", HumanoidBones::Neck },
         { u"Head", HumanoidBones::Head },

@@ -335,7 +335,7 @@ public:
     BlendMode blendMode() const;
 
     /** 不透明度を設定します。(default: 1.0) */
-    void setOpacity(float value);
+    void setOpacity(float value);	// TODO: 子要素へ継承してほしい
 
     /** 不透明度を取得します。 */
     float opacity() const;
@@ -432,7 +432,7 @@ public:	// TODO: internal protected
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel);
     virtual void onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e);
     virtual void onLoaded();    // インスタンス作成後、UIツリーに追加されていない場合は呼ばれない
-    virtual void onUpdateFrame(float elapsedSeconds);
+	virtual void onUpdateFrame(float elapsedSeconds);	// TODO: 他モジュールと合わせ onUpdate のほうがいいかも。または、引数 void お onUpdate にしてみるとか。
 
     // この中で addVisualChild することができる。関数を抜けた後に、それらのスタイルは更新される。
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);

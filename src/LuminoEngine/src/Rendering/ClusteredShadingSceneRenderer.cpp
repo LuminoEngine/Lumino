@@ -562,10 +562,10 @@ void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light
 		break;
 	}
 	case LightType::Point:
-		m_lightClusters.addPointLight(light.m_position, light.m_range, light.m_attenuation, color);
+		m_lightClusters.addPointLight(light.m_position.xyz(), light.m_range, light.m_attenuation, color);
 		break;
 	case LightType::Spot:
-		m_lightClusters.addSpotLight(light.m_position, light.m_range, light.m_attenuation, color, light.m_direction, light.m_spotAngle, light.m_spotPenumbra);
+		m_lightClusters.addSpotLight(light.m_position.xyz(), light.m_range, light.m_attenuation, color, light.m_direction, light.m_spotAngle, light.m_spotPenumbra);
 		break;
 	default:
 		LN_UNREACHABLE();

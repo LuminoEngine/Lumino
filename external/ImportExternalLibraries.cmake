@@ -161,6 +161,10 @@ find_library(SPIRV_LIBRARY_RELEASE NAMES libSPIRV SPIRV PATHS ${GLSLANG_ROOT} PA
 find_library(SPIRV_LIBRARY_DEBUG NAMES libSPIRVd SPIRVd libSPIRV SPIRV PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
 find_library(SPVRemapper_LIBRARY_RELEASE NAMES libSPVRemapper SPVRemapper PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
 find_library(SPVRemapper_LIBRARY_DEBUG NAMES libSPVRemapperd SPVRemapperd libSPVRemapper SPVRemapper PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(GenericCodeGen_LIBRARY_RELEASE NAMES libGenericCodeGen GenericCodeGen PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(GenericCodeGen_LIBRARY_DEBUG NAMES libGenericCodeGend GenericCodeGend libGenericCodeGen GenericCodeGen PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(MachineIndependent_LIBRARY_RELEASE NAMES libMachineIndependent MachineIndependent PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(MachineIndependent_LIBRARY_DEBUG NAMES libMachineIndependentd MachineIndependentd libMachineIndependent MachineIndependent PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
 
 set(glslang_INCLUDE_DIRS "${GLSLANG_ROOT}/include")
 
@@ -199,7 +203,19 @@ add_library(${LIB_NAME} STATIC IMPORTED)
 set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
 set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
 set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
-    
+
+set(LIB_NAME GenericCodeGen)
+add_library(${LIB_NAME} STATIC IMPORTED)
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+
+set(LIB_NAME MachineIndependent)
+add_library(${LIB_NAME} STATIC IMPORTED)
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+
 if(glslang_LIBRARY_RELEASE)
     list(APPEND LN_EXTERNAL_LIBS glslang)
     list(APPEND LN_EXTERNAL_LIBS HLSL)
@@ -207,6 +223,8 @@ if(glslang_LIBRARY_RELEASE)
     list(APPEND LN_EXTERNAL_LIBS OSDependent)
     list(APPEND LN_EXTERNAL_LIBS SPIRV)
     list(APPEND LN_EXTERNAL_LIBS SPVRemapper)
+    list(APPEND LN_EXTERNAL_LIBS GenericCodeGen)
+    list(APPEND LN_EXTERNAL_LIBS MachineIndependent)
 endif()
 
 #--------------------------------------

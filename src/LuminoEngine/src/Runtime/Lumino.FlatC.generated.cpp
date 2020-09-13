@@ -10124,10 +10124,10 @@ LN_FLAT_API LNResult LNEngine_GetLight(LNHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::light());
+        *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::mainLight());
     }
     else {
-        (ln::Engine::light());
+        (ln::Engine::mainLight());
     }
 
     LNI_FUNC_TRY_END_RETURN;

@@ -2,7 +2,7 @@
 
 class Test_Mesh_SkinnedMesh : public ::testing::Test {};
 
-#if 0	// TODO: GraphicsResource 差し替えのため一時無効化
+#if 0	// TODO: App の外側から Bone 更新できる仕組みを作らないとだめ
 
 TEST_F(Test_Mesh_SkinnedMesh, Basic)
 {
@@ -18,7 +18,7 @@ TEST_F(Test_Mesh_SkinnedMesh, Basic)
     node->setRotation(0, 0, Math::PI / 2);
 
     TestEnv::updateFrame();
-    ASSERT_SCREEN(LN_ASSETFILE("Mesh/Expects/Test_Mesh_SkinnedMesh-Basic-1.png"));
+    ASSERT_SCREEN_S(LN_ASSETFILE("Mesh/Expects/Test_Mesh_SkinnedMesh-Basic-1.png"));
     LN_TEST_CLEAN_SCENE;
 }
 

@@ -268,6 +268,7 @@ void Example_MainLoop();
 void Example_MeshViewer();
 void Example_MessageWindow();
 void Example_Navigator();
+void Example_Shader();
 void Example_SoundControl();
 void Example_Sprite();
 void Example_UIControls();
@@ -466,16 +467,17 @@ int main(int argc, char** argv)
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_MainLoop();
-		//Example_MeshViewer();
+		Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
+        //Example_Shader();
 		//Example_SoundControl();
         //Example_Sprite();
         //Example_UIControls();
 		//Example_Tilemap();
         //Experiment_CharacterController();
         //Experiment_Editor();
-        Experiment_MeshCollider();
+        //Experiment_MeshCollider();
         //Experiment_Reflector();
         //Experiment_Scripting();
         //Experiment_SelectObject();
@@ -558,6 +560,8 @@ int main(int argc, char** argv)
 	//Engine::update();
 	//Engine::finalize();
 	//return 0;
+
+    Engine::renderView()->setGuideGridEnabled(true);
 
     //LnLog_PrintA(LN_LOG_LEVEL_INFO, "RubyRuntime", "Usesr type registering. (class: 20, typeInfoId: 16, baseTypeInfoId: 10)");
 

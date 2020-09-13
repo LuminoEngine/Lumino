@@ -9,10 +9,10 @@ namespace ln {
 
 //==============================================================================
 // AnimationState
-//==============================================================================
 
 AnimationState::AnimationState()
-	: m_clip(nullptr)
+	: m_owner(nullptr)
+	, m_clip(nullptr)
 	, m_trackInstances()
 	, m_localTime(0.0f)
 	, m_blendWeight(1.0f)
@@ -24,9 +24,10 @@ AnimationState::~AnimationState()
 {
 }
 
-void AnimationState::init(AnimationClip* clip)
+void AnimationState::init(AnimationLayer* owner, AnimationClip* clip)
 {
 	Object::init();
+	m_owner = owner;
 	m_clip = clip;
 }
 
@@ -96,11 +97,12 @@ void AnimationState::updateTargetElements()
 
 		for (auto& trackInstance : m_trackInstances)
 		{
-			AnimationValue value(trackInstance.track->type());
+			AnimationTrack* track = trackInstance.track;
+			AnimationValue value(track->type());
 			AnimationValue& rootValue = trackInstance.blendLink->rootValue;
 			rootValue.m_totalBlendWeights += m_blendWeight;
 
-			trackInstance.track->evaluate(localTime, &value);
+			track->evaluate(localTime, &value);
 
 			switch (value.type())
 			{
@@ -124,7 +126,37 @@ void AnimationState::updateTargetElements()
 				AttitudeTransform& t = rootValue.v_Transform;
 				t.scale += s.scale * m_blendWeight;
 				t.rotation *= Quaternion::slerp(Quaternion::Identity, s.rotation, m_blendWeight);
-				t.translation += s.translation * m_blendWeight;
+				
+
+				Vector3 translation;
+				switch (trackInstance.track->animationClip()->hierarchicalAnimationMode())
+				{
+				case HierarchicalAnimationMode::AllowTranslationOnlyRoot:
+					if (trackInstance.track->m_root) {
+						translation = s.translation;
+					}
+					break;
+				case HierarchicalAnimationMode::AllowTranslation:
+					translation = s.translation;
+					break;
+				case HierarchicalAnimationMode::DisableTranslation:
+					break;
+				default:
+					LN_UNREACHABLE();
+					break;
+				}
+				
+
+
+				if (trackInstance.track->translationClass() == TranslationClass::Absolute) {
+					t.translation += translation * m_blendWeight;
+				}
+				else if (trackInstance.track->translationClass() == TranslationClass::Ratio) {
+					t.translation += (translation * m_owner->owner()->m_animationTranslationBasis) * m_blendWeight;
+				}
+				else {
+				}
+
 				trackInstance.blendLink->affectAnimation = true;
 
 
@@ -173,7 +205,7 @@ AnimationState* AnimationLayer::addClipAndCreateState(AnimationClip* animationCl
 {
 	if (LN_REQUIRE(animationClip != nullptr)) return nullptr;
 
-	auto state = makeObject<AnimationState>(animationClip);
+	auto state = makeObject<AnimationState>(this, animationClip);
 	m_animationStatus.add(state);
 	state->attachToTarget(m_owner);
 	return state;

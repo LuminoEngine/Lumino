@@ -76,6 +76,7 @@ float4 PS_Main(PS_Input input) : COLOR0
 
 technique Forward_Geometry_UnLighting
 {
+    ShadingModel = Unlit;
     pass P0
     {
         VertexShader = VS_Main;

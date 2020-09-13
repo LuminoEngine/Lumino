@@ -510,7 +510,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				//else
 				// TODO: ↑SpriteTextRenderer が Font 取るのに使ってる。これは Batch に持っていくべきだろう。
 				{
-					RenderFeature::updateRenderParametersDefault(tech, m_mainRenderViewInfo, elementInfo, localSubsetInfo);
+					RenderFeature::updateRenderParametersDefault(tech, m_mainRenderViewInfo, m_mainSceneInfo, elementInfo, localSubsetInfo);
 				}
 
 				if (finalMaterial) {
@@ -691,6 +691,12 @@ void SceneRenderer::prepare()
 				return lhs->commandFence < rhs->commandFence;
 			}
 		});
+
+	if (m_mainLightInfo) {
+		m_mainSceneInfo.ambientColor = m_mainLightInfo->m_position;	// position フィールドを代用している
+		m_mainSceneInfo.ambientSkyColor = m_mainLightInfo->m_color2;
+		m_mainSceneInfo.ambientGroundColor = m_mainLightInfo->m_color3;
+	}
 }
 
 void SceneRenderer::onCollectLight(const DynamicLightInfo& light)

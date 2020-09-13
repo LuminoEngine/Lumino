@@ -47,6 +47,8 @@ TEST_F(Test_PostEffect, SSR)
 	auto ssrEffect = makeObject<SSRPostEffect>();
 	Engine::renderView()->addPostEffect(ssrEffect);
 
+	Engine::mainLight()->setEnabled(false);
+
 	TestEnv::updateFrame();
 	ASSERT_SCREEN(LN_ASSETFILE("PostEffect/Expects/PostEffect-SSR-1.png"));
 	Engine::renderView()->removePostEffect(ssrEffect);

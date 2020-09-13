@@ -70,22 +70,32 @@ public:
 
     virtual float lastFrameTime() const { return 0; }
 
+	TranslationClass translationClass() const { return m_translationClass; }
+
+	AnimationClip* animationClip() const { return m_owner; }
+
+	bool m_root = true;
+
 protected:
 	AnimationTrack(AnimationValueType type);
 	virtual ~AnimationTrack();
 	bool init();
+	bool init(TranslationClass translationClass);
 	virtual void evaluate(float time, AnimationValue* outResult) = 0;
 	//void setTargetName(const String& name) { m_targetName = name; }
 
 private:
+	AnimationClip* m_owner;
 	AnimationTrackTargetKey m_targetKey;
 	AnimationValueType m_type;
+	TranslationClass m_translationClass;
 
+	friend class AnimationClip;
 	friend class AnimationState;
 };
 
 /** (スキニングでは、モーフィングアニメーションで使用) */
-class ScalarAnimationTrack
+class ScalarAnimationTrack	// TODO: FloatAnimationTrack の方がいいかも。float?double? な感じだし、インテリセンスから直感的ん検索できないことがあった。他は Vector3 とかなのに。
 	: public AnimationTrack
 {
 public:
@@ -172,6 +182,9 @@ LN_CONSTRUCT_ACCESS:
 	TransformAnimationTrack();
 
 	bool init();
+	bool init(TranslationClass translationClass);
+
+	
 
 protected:
 	void evaluate(float time, AnimationValue* outResult) override;

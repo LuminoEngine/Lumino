@@ -29,12 +29,17 @@ public:
 
 	static Ref<AnimationClip> load(const StringRef& filePath);
 
+	/** アニメーションの繰り返しの動作を取得します。(default: Loop) */
+	void setWrapMode(AnimationWrapMode value) { m_wrapMode = value; }
+
 	/** アニメーションの繰り返しの動作を取得します。 */
 	AnimationWrapMode wrapMode() const { return m_wrapMode; }
 
-	/** アニメーションの繰り返しの動作を取得します。(default: Loop) */
-	void setWrapMode(AnimationWrapMode mode) { m_wrapMode = mode; }
+	/** アニメーションの繰り返しの動作を取得します。(default: AllowTranslationOnlyRoot) */
+	void setHierarchicalAnimationMode(HierarchicalAnimationMode value) { m_hierarchicalAnimationMode = value; }
 
+	/** アニメーションの繰り返しの動作を取得します。 */
+	HierarchicalAnimationMode hierarchicalAnimationMode() const { return m_hierarchicalAnimationMode; }
 
     void addTrack(AnimationTrack* track);
 	const List<Ref<AnimationTrack>>& tracks() const { return m_tracks; }
@@ -60,6 +65,7 @@ protected:
 	Ref<RefObject> m_srcData;
 	float m_lastFrameTime;
 	AnimationWrapMode m_wrapMode;
+	HierarchicalAnimationMode m_hierarchicalAnimationMode;
 	detail::AssetPath m_assetSourcePath;
 
 	friend class detail::AnimationManager;

@@ -193,6 +193,9 @@ public:
 	Ref<AnimationController> m_animationController;
 
 	//static HumanoidBones mapToHumanoidBones(const MeshBone* bone);
+	void verifyHumanoidBones();
+
+	//float m_animationTranslationBasis = 1.0f;
 
 //protected:
 //	virtual int getAnimationTargetElementCount() const override;
@@ -255,6 +258,8 @@ public:
 	///// 同レイヤー内のアニメーション再生速度の同期
 	//void SyncLayer(int layer);
 
+
+	const Ref<AnimationMixerCore>& core() const { return m_core; }
 
 public:
 	void advanceTime(float elapsedTime);

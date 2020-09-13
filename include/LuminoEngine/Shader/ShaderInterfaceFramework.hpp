@@ -17,10 +17,11 @@ struct alignas(16) LNRenderViewBuffer
     alignas(16) Matrix ln_Projection;
     alignas(16) Matrix ln_ProjectionI;
     alignas(16) Vector4 ln_Resolution;
-    alignas(16) Vector4 ln_CameraPosition;
-    alignas(16) Vector4 ln_CameraDirection;
-    alignas(4) float ln_NearClip;
-    alignas(4) float ln_FarClip;
+    alignas(16) Vector4 ln_CameraPosition;      // .w = ln_NearClip
+    alignas(16) Vector4 ln_CameraDirection;     // .w = ln_FarClip
+    alignas(16) Vector4 ln_AmbientColor;
+    alignas(16) Vector4 ln_AmbientSkyColor;
+    alignas(16) Vector4 ln_AmbientGroundColor;
 };
 
 // cbuffer LNRenderElementBuffer
@@ -96,7 +97,9 @@ struct PhongMaterialData
 // シーン単位のデータに関する情報
 struct SceneInfo
 {
-    //Matrix	ViewProjectionMatrix;
+    Color ambientColor;
+    Color ambientSkyColor;
+    Color ambientGroundColor;
 };
 
 // カメラ単位のデータに関する情報
@@ -279,8 +282,7 @@ public:
     void reset();
 
     // call by rendering time.
-    void updateSceneVariables(const SceneInfo& info);
-    void updateRenderViewVariables(const RenderViewInfo& info);
+    void updateRenderViewVariables(const RenderViewInfo& info, const SceneInfo& sceneInfo);
     void updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info);
     void updateSubsetVariables(const SubsetInfo& info);
     void updateSubsetVariables_PBR(const PbrMaterialData& materialData);

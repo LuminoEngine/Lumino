@@ -153,6 +153,7 @@ public:	// TODO
     // 1つのパイプラインの別フェーズで SceneRenderer を使うとき、
     // viewproj 行列を分けたいことがある (Default と PostEffect など) ため、SceneRenderer 側に実態で持つ 
 	RenderViewInfo m_mainRenderViewInfo;
+	SceneInfo m_mainSceneInfo;
 	const DynamicLightInfo* m_mainLightInfo = nullptr;
 
     //RenderPhaseClass m_targetPhase;

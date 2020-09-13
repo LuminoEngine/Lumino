@@ -21,6 +21,86 @@
 
 namespace ln {
 namespace detail {
+	
+/*
+
+[2020/9/9] 座標系の合わせ
+----------
+右手Z+正面のモデルを変換するには？(.vrmはZ-が正面なのでこれにはあてはまらない)
+
+ボーンの位置を合わせるためには次のどちらかが必要
+- Y軸180度回転 -> 元モデルは Z+ を向ているので、この後Z反転が必要
+- X反転
+
+メッシュの位置を合わせるには
+- X反転
+だけでよい。元モデルが Z+ を向ていることを前提としているため、Z反転は不要
+
+
+[2020/8/4]
+----------
+Blender メモ: bone を出力するには glTF エクスポータで "Skinning" を ON にする必要がある。
+
+[2020/7/21-3]
+----------
+Bone は、Left が X-, Right が X+ だった。ここからもう一回考察しなおしたほうがいいかも。
+
+よく見てみると、モデルが左右反転していた。
+AliciaSolid.vrm を見ると、アクセサリの位置が左右逆。
+Lumino と、それ以外のツール (Blender, 3Dビューア―, Unity) で。
+
+そうすると、GLTFImporter の中で左手座標系用の反転処理を入れる必要がある。
+
+そうすると、VRM モデルは次のフォーマットとなる。
+- 右手座標系
+- Z- を正面とする
+
+Lumino へ座標系変換だけしてインポートしたときは、デフォルトでは Z+ 方向を見るのが正しい。
+これは MMD モデルとは逆向きとなる。（このため、何も考えずに VMD アニメをアタッチすると、左右が逆になったりした）
+
+
+
+
+[2020/7/21-2]
+----------
+src/LuminoEngine/sandbox/Assets/Models/Axis.glb でテストした結果、
+- Blender は手前を Y- とする右手座標系
+- 3D ビューアー は手前を Z+ とする右手座標系 (OpenGL 系) ([グリッド&ビュー] では Z+ を正面と表示する)
+- Lumino は手前 Z- をとする左手座標系 (DirectX 系)
+
+また、
+- Blender はエクスポートするとき、glTF モデルの座標系を 「手前を Z+ とする右手座標系 (OpenGL 系)」に変換する。
+そのため
+- Blender と 3D ビューアー で見比べた結果は一致する。
+- Lumino と 3D ビューアー で見比べた結果は Z が反転する。
+
+AliciaSolid.vrm は、
+- Lumino で見た時は Z- 正面
+- 3D ビューアー の [グリッド&ビュー] で見ると、前後反転している。
+ということで、
+「VRM ファイルは Z- を基本の正面とするファイルフォーマット」と考えてよさそう。
+ちなみにこれは MMD モデルと一致する。
+
+[2020/7/21-1]
+----------
+ * VMR
+ * Z+ 方向が基本の正面？AliciaSolid.vrm を Windows の 3D ビューアーの [グリッド&ビュー] で見ると、前後反転している。
+ * Blender にインポートすると、モデルは Z- (下) を向いている。（Transform は全部 identity でインポートされた）
+
+   Blender でエクスポートしたものを 3Dビューアー で見ると、
+   "Blender の Y- ＝ 3Dビューアーの正面"
+   これを Lumino で見ると、
+   "Blender の Y- ＝ Lumino の Z+"
+   ※Blender から "+Y Up" でエクスポートすると、Z が反転する。→ src/LuminoEngine/sandbox/Assets/Models/Z-Box.glb
+   そうすると、
+   "3Dビューアーの正面 ＝ Lumino の Z+"
+
+
+ *
+ * ちなみに Unity ちゃんモデルは Z- が正面だった。Prefab 上で Z+ を向くように回転しているみたい。
+ *
+ * 
+ */
 
 GLTFImporter::GLTFImporter()
 	: m_flipZ(false)
@@ -63,11 +143,8 @@ bool GLTFImporter::openGLTFModel(const AssetPath& assetPath)
 	return result;
 }
 
-bool GLTFImporter::importAsStaticMesh(StaticMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+bool GLTFImporter::onImportAsStaticMesh(StaticMeshModel* model, const AssetPath& assetPath)
 {
-	m_assetManager = assetManager;
-	m_diag = diag;
-
 	if (!openGLTFModel(assetPath)) {
 		return false;
 	}
@@ -79,11 +156,8 @@ bool GLTFImporter::importAsStaticMesh(StaticMeshModel* model, AssetManager* asse
 	return true;
 }
 
-bool GLTFImporter::GLTFImporter::importAsSkinnedMesh(SkinnedMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath& assetPath)
 {
-	m_assetManager = assetManager;
-	m_diag = diag;
-
 	if (!openGLTFModel(assetPath)) {
 		return false;
 	}
@@ -173,66 +247,41 @@ bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
 Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 {
     auto coreMaterial = makeObject<Material>();
+	coreMaterial->setMetallic(1.0f);    // glTF default
+	coreMaterial->setRoughness(1.0f);    // glTF default
 
-    {
-        auto itr = material.values.find("baseColorFactor");
-        if (itr != material.values.end()) {
-            auto& c = itr->second.number_array;
-            assert(c.size() == 4);
-            coreMaterial->setColor(Color(c[0], c[1], c[2], c[3]));
-        }
-    }
-
-    {
-        auto itr = material.values.find("metallicFactor");
-        if (itr != material.values.end()) {
-            assert(itr->second.has_number_value);
-            coreMaterial->setMetallic(itr->second.number_value);
-        }
-        else {
-            coreMaterial->setMetallic(1.0f);    // glTF default
-        }
-    }
-
-    {
-        auto itr = material.values.find("roughnessFactor");
-        if (itr != material.values.end()) {
-            assert(itr->second.has_number_value);
-            coreMaterial->setRoughness(itr->second.number_value);
-        }
-        else {
-            coreMaterial->setRoughness(1.0f);    // glTF default
-        }
-    }
-
-    {
-        auto itr = material.values.find("baseColorTexture");
-        if (itr != material.values.end()) {
-            auto itr2 = itr->second.json_double_value.find("index");
-            assert(itr2 != itr->second.json_double_value.end());
-            int index = static_cast<int>(itr2->second);
-            const tinygltf::Texture& texture = m_model->textures[index];
+	for (const auto& value : material.values) {
+		if (value.first == "baseColorFactor") {
+			auto& c = value.second.number_array;
+			assert(c.size() == 4);
+			coreMaterial->setColor(Color(c[0], c[1], c[2], c[3]));
+		}
+		else if (value.first == "metallicFactor") {
+			assert(value.second.has_number_value);
+			coreMaterial->setMetallic(value.second.number_value);
+		}
+		else if (value.first == "roughnessFactor") {
+			assert(value.second.has_number_value);
+			coreMaterial->setRoughness(value.second.number_value);
+		}
+		else if (value.first == "baseColorTexture") {
+			auto itr2 = value.second.json_double_value.find("index");
+			assert(itr2 != value.second.json_double_value.end());
+			int index = static_cast<int>(itr2->second);
+			const tinygltf::Texture& texture = m_model->textures[index];
 			coreMaterial->setMainTexture(loadTexture(texture));
-        }
-    }
-
-    {
-        auto itr = material.values.find("metallicRoughnessTexture");
-        if (itr != material.values.end()) {
-            auto itr2 = itr->second.json_double_value.find("index");
-            assert(itr2 != itr->second.json_double_value.end());
-            int index = static_cast<int>(itr2->second);
-            // TODO:
+		}
+		else if (value.first == "metallicRoughnessTexture") {
+			auto itr2 = value.second.json_double_value.find("index");
+			assert(itr2 != value.second.json_double_value.end());
+			int index = static_cast<int>(itr2->second);
+			// TODO:
 			m_diag->reportWarning(u"metallicRoughnessTexture not supported.");
-        }
-    }
-
-    {
-        auto itr = material.additionalValues.find("normalTexture");
-        if (itr != material.additionalValues.end()) {
-            auto itr2 = itr->second.json_double_value.find("index");
-            assert(itr2 != itr->second.json_double_value.end());
-            int index = static_cast<int>(itr2->second);
+		}
+		else if (value.first == "normalTexture") {
+			auto itr2 = value.second.json_double_value.find("index");
+			assert(itr2 != value.second.json_double_value.end());
+			int index = static_cast<int>(itr2->second);
 			const tinygltf::Texture& texture = m_model->textures[index];
 			coreMaterial->setNormalMap(loadTexture(texture));
 
@@ -240,18 +289,20 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 			// ただし、glTF としては HeightMap はサポートされていない。
 			// https://github.com/KhronosGroup/glTF/issues/948
 			// いまは手動で直してもらうしかない。
-        }
-    }
+		}
+		else if (value.first == "occlusionTexture") {
+			auto itr2 = value.second.json_double_value.find("index");
+			assert(itr2 != value.second.json_double_value.end());
+			int index = static_cast<int>(itr2->second);
+			// TODO:
+			m_diag->reportWarning(u"occlusionTexture not supported.");
+		}
+		else {
+			m_diag->reportWarning(String::format(u"Material field '{}' is not supported.", String::fromStdString(value.first)));
+		}
+	}
 
-    {
-        auto itr = material.additionalValues.find("occlusionTexture");
-        if (itr != material.additionalValues.end()) {
-            auto itr2 = itr->second.json_double_value.find("index");
-            assert(itr2 != itr->second.json_double_value.end());
-            int index = static_cast<int>(itr2->second);
-            // TODO:
-        }
-    }
+
 
     return coreMaterial;
 }
@@ -307,7 +358,7 @@ bool GLTFImporter::readNode(MeshNode* coreNode, const tinygltf::Node& node)
 		//nodeTransform(0, 0) = -nodeTransform(0, 0);
 		//nodeTransform(0, 1) = -nodeTransform(0, 1);
 		//nodeTransform(0, 2) = -nodeTransform(0, 2);
-		nodeTransform(3, 0) = -nodeTransform(3, 0);
+		//nodeTransform(3, 0) = -nodeTransform(3, 0);
 	}
 
 	coreNode->setName(String::fromStdString(node.name));
@@ -428,9 +479,20 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 					return nullptr;
 				}
 			}
-			else if (itr->first.compare("COLOR_0") == 0) {
+			else if (itr->first.compare(0, 6, "COLOR_") == 0) {
 				vbView.usage = VertexElementUsage::Color;
-				vbView.usageIndex = 0;
+				
+				if (itr->first.compare("COLOR_0") == 0) {
+					vbView.usageIndex = 0;
+				}
+				else if (itr->first.compare("COLOR_1") == 0) {
+					vbView.usageIndex = 1;
+				}
+				else {
+					LN_NOTIMPLEMENTED();
+					return nullptr;
+				}
+
 				if (accessor.type == TINYGLTF_TYPE_VEC3 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT) {
 					vbView.type = VertexElementType::Float3;
 				}
@@ -663,6 +725,11 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
         for (auto& vbView : section.vertexBufferViews) {
 			auto reservedGroup = coreMesh->getStandardElement(vbView.usage, vbView.usageIndex);
 			auto destType = coreMesh->findVertexElementType(vbView.usage, vbView.usageIndex);
+			if (destType == VertexElementType::Unknown) {
+				LN_WARNING("Detected unsaported vertex attibute.");
+				continue;
+			}
+
             auto* rawbuf = static_cast<byte_t*>(coreMesh->acquireMappedVertexBuffer(destType, vbView.usage, vbView.usageIndex));
             auto* src = static_cast<const byte_t*>(vbView.data);// +vbView.byteOffset;
 
@@ -681,12 +748,12 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 				}
 			}
 			else if (reservedGroup == InterleavedVertexGroup::Skinning) {
-			stride = sizeof(VertexBlendWeight);
-			if (vbView.usage == VertexElementUsage::BlendIndices) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, indices);
-			else if (vbView.usage == VertexElementUsage::BlendWeight) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, weights);
-			else {
-				LN_ERROR();
-			}
+				stride = sizeof(VertexBlendWeight);
+				if (vbView.usage == VertexElementUsage::BlendIndices) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, indices);
+				else if (vbView.usage == VertexElementUsage::BlendWeight) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, weights);
+				else {
+					LN_ERROR();
+				}
 			}
 			else {
 			stride = GraphicsHelper::getVertexElementTypeSize(vbView.type);
@@ -962,11 +1029,11 @@ Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 	auto armature = makeObject<MeshArmature>(static_cast<SkinnedMeshModel*>(m_meshModel));
 	for (int i = 0; i < skin.joints.size(); i++) {
 
-		//if (m_disableBoneRotation) {
-		//	const auto& mat = m_meshModel->m_nodes[skin.joints[i]]->initialLocalTransform();
-		//	armature->addBone(skin.joints[i], Matrix::makeInverse(mat));
-		//}
-		//else
+		if (m_disableBoneRotation) {
+			const auto& mat = m_meshModel->m_nodes[skin.joints[i]]->initialLocalTransform();
+			armature->addBone(skin.joints[i], Matrix::makeInverse(mat));
+		}
+		else
 		{
 			if (m_flipX) {
 				// TODO: ちょっと処理重いか…

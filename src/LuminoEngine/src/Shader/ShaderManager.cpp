@@ -75,6 +75,16 @@ void ShaderManager::init(const Settings& settings)
         m_builtinShaderList.push_back({"LuminoSkinning.fxh", std::string((const char*)data, size)});
     }
 
+    // LuminoNormalMap.fxh.h
+    {
+        static const unsigned char data[] =
+        {
+#include "Resource/LuminoNormalMap.fxh.inl"
+        };
+        static const size_t size = LN_ARRAY_SIZE_OF(data);
+        m_builtinShaderList.push_back({ "LuminoNormalMap.fxh", std::string((const char*)data, size) });
+    }
+
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
     ShaderCodeTranspiler::initializeGlobals();
 #endif

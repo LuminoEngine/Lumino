@@ -1,11 +1,15 @@
 ﻿
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+#define ENABLE_HLSL
 #include "Internal.hpp"
 #include <sstream>
 #include <glad/glad.h>
 #include <glslang/Public/ShaderLang.h>
+#include <glslang/Include/Types.h>
+#include <glslang/Include/BaseTypes.h>
+#include <glslang/Include/intermediate.h>
 #include <glslang/Include/ResourceLimits.h>
-#include <SPIRV/GlslangToSpv.h>
+#include <glslang/SPIRV/GlslangToSpv.h>
 #include <spirv_cross/spirv_glsl.hpp>
 #include "../Grammar/CppLexer.hpp"
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
@@ -16,6 +20,7 @@ namespace ln {
 namespace detail {
 
 // from glslang: StanAalone/ResourceLimits.cpp
+
 const TBuiltInResource DefaultTBuiltInResource = {
     /* .MaxLights = */ 32,
     /* .MaxClipPlanes = */ 6,
@@ -109,6 +114,7 @@ const TBuiltInResource DefaultTBuiltInResource = {
     /* .maxTaskWorkGroupSizeY_NV = */ 1,
     /* .maxTaskWorkGroupSizeZ_NV = */ 1,
     /* .maxMeshViewCountNV = */ 4,
+    /* .maxDualSourceDrawBuffersEXT = */ 1,
 
     /* .limits = */ {
         /* .nonInductiveForLoops = */ 1,
@@ -348,58 +354,117 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
     const int ClientInputSemanticsVersion = 410; //320;
     glslang::EshTargetClientVersion OpenGLClientVersion = glslang::EShTargetOpenGL_450;
     bool forwardCompatible = true;
-    EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules | EShMsgHlslDX9Compatible);
+    EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules/* | EShMsgReadHlsl*/ | EShMsgHlslDX9Compatible);
+
 
     m_shader = std::make_unique<glslang::TShader>(LNStageToEShLanguage(m_stage));
     m_program = std::make_unique<glslang::TProgram>();
 
-    // parse
-    {
-        const char* shaderCode[1] = {code};
-        const int shaderLenght[1] = {static_cast<int>(length)};
-        const char* shaderName[1] = {"shadercode"};
-        m_shader->setStringsWithLengthsAndNames(shaderCode, shaderLenght, shaderName, 1);
-        m_shader->setEntryPoint(entryPoint.c_str());
+    m_shader->setEnvInput(sourceType, LNStageToEShLanguage(m_stage), glslang::EShClientOpenGL, ClientInputSemanticsVersion);
+    m_shader->setEnvClient(glslang::EShClientOpenGL, OpenGLClientVersion);
+    m_shader->setEntryPoint(entryPoint.c_str());
 
-        m_shader->setEnvInput(sourceType, LNStageToEShLanguage(m_stage), glslang::EShClientOpenGL, ClientInputSemanticsVersion);
-        m_shader->setEnvClient(glslang::EShClientOpenGL, OpenGLClientVersion);
-        /* Vulkan Rule
-		shader->setEnvInput((Options & EOptionReadHlsl) ? glslang::EShSourceHlsl : glslang::EShSourceGlsl,
-		compUnit.stage, glslang::EShClientVulkan, ClientInputSemanticsVersion);
-		shader->setEnvClient(glslang::EShClientVulkan, VulkanClientVersion);
-		*/
-        //m_shader->setShiftBinding(glslang::EResUbo, 0);
-  //      m_shader->setShiftBinding(glslang::EResSampler, 1);	// sampler state
-		//m_shader->setShiftBinding(glslang::EResTexture, 1);	// texture
-			//m_shader->setShiftBinding(glslang::EResImage, 1);
-			//	m_shader->setShiftBinding(glslang::EResUbo, 1);
-			//		m_shader->setShiftBinding(glslang::EResSsbo, 1);
-			//			m_shader->setShiftBinding(glslang::EResUav, 1);
-        //m_shader->setShiftBindingForSet(glslang::EResUbo, 0, 0);
-        //m_shader->setShiftBindingForSet(glslang::EResSampler, 1, 1);
+    // 実際に使われている UBO, Txture, SamplerState などに、自動的に binding 番号を振る。
+    // false の場合は、すべて未指定 (-1) となる。
+    // 値は m_program->getUniformBinding() で確認できる。
+    m_shader->setAutoMapBindings(true);
+    m_shader->setAutoMapLocations(true);
+    m_shader->setHlslIoMapping(true);
 
-		// 実際に使われている UBO, Txture, SamplerState などに、自動的に binding 番号を振る。
-		// false の場合は、すべて未指定 (-1) となる。
-		// 値は m_program->getUniformBinding() で確認できる。
-		m_shader->setAutoMapBindings(true);
-		m_shader->setAutoMapLocations(true);
-		m_shader->setHlslIoMapping(true);
+    if (preamble.isSet()) {
+        m_shader->setPreamble(preamble.get());
+    }
+    m_shader->addProcesses(preamble.prepro());
 
-        if (preamble.isSet()) {
-            m_shader->setPreamble(preamble.get());
+    /* Vulkan Rule
+    shader->setEnvInput((Options & EOptionReadHlsl) ? glslang::EShSourceHlsl : glslang::EShSourceGlsl,
+    compUnit.stage, glslang::EShClientVulkan, ClientInputSemanticsVersion);
+    shader->setEnvClient(glslang::EShClientVulkan, VulkanClientVersion);
+    */
+    //m_shader->setShiftBinding(glslang::EResUbo, 0);
+//      m_shader->setShiftBinding(glslang::EResSampler, 1);	// sampler state
+      //m_shader->setShiftBinding(glslang::EResTexture, 1);	// texture
+          //m_shader->setShiftBinding(glslang::EResImage, 1);
+          //	m_shader->setShiftBinding(glslang::EResUbo, 1);
+          //		m_shader->setShiftBinding(glslang::EResSsbo, 1);
+          //			m_shader->setShiftBinding(glslang::EResUav, 1);
+      //m_shader->setShiftBindingForSet(glslang::EResUbo, 0, 0);
+      //m_shader->setShiftBindingForSet(glslang::EResSampler, 1, 1);
+
+
+    /*  FIXME: Preprocess と Parse を分けてみる。
+        glslang のプリプロセッサに問題があるみたいで、HlslGrammar::acceptStructDeclarationList() の expected("member type"); に引っかかる。
+        glslang はマクロ展開とパースを1パスで行っているが、その巻き戻しが上手くいってないようだ。
+        ちょっと自分で追うには今は時間が無さすぎるか・・・。
+
+        ``````````
+        #define MY_DEF \
+            float3 Pos : POSITION; \
+            float2 UV : TEXCOORD0;
+
+        struct VS_Input
+        {
+            MY_DEF; // ここで、"Pos は型じゃないよ" みたいなエラーになる
+        };
+        ``````````
+        
+        以下 Issue が少し関係してそう。
+        https://github.com/KhronosGroup/glslang/issues/2233
+    */
+    if (0) {
+        // preprocess
+        std::string preprocessedCode;
+        {
+            const char* shaderCode[1] = { code };
+            const int shaderLenght[1] = { static_cast<int>(length) };
+            const char* shaderName[1] = { "preprocess" };
+            glslang::TShader preprocessor(LNStageToEShLanguage(m_stage));
+            preprocessor.setStringsWithLengthsAndNames(shaderCode, shaderLenght, shaderName, 1);
+
+            if (!preprocessor.preprocess(&DefaultTBuiltInResource, defaultVersion, EProfile::ENoProfile, false, forwardCompatible, messages, &preprocessedCode, includer)) {
+                if (!StringHelper::isNullOrEmpty(preprocessor.getInfoLog())) diag->reportError(preprocessor.getInfoLog());
+                if (!StringHelper::isNullOrEmpty(preprocessor.getInfoDebugLog())) diag->reportError(preprocessor.getInfoDebugLog());
+                return false;
+            }
         }
-        m_shader->addProcesses(preamble.prepro());
+
+        const char* shaderCode[1] = { preprocessedCode.c_str() };
+        const int shaderLenght[1] = { static_cast<int>(preprocessedCode.length()) };
+        const char* shaderName[1] = { "shadercode" };
+        m_shader->setStringsWithLengthsAndNames(shaderCode, shaderLenght, shaderName, 1);
 
         /* TODO: parse でメモリリークしてるぽい。EShLangFragment の時に発生する。
-			Dumping objects ->
-			{12053} normal block at 0x06EB1410, 8 bytes long.
-			 Data: <k       > 6B 0F 00 00 FF FF FF FF 
-		*/
+            Dumping objects ->
+            {12053} normal block at 0x06EB1410, 8 bytes long.
+                Data: <k       > 6B 0F 00 00 FF FF FF FF
+        */
         if (!m_shader->parse(&DefaultTBuiltInResource, defaultVersion, forwardCompatible, messages, includer)) {
             if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportError(m_shader->getInfoLog());
             if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportError(m_shader->getInfoDebugLog());
             return false;
-        } else if (m_shader->getInfoLog()) {
+        }
+        else if (m_shader->getInfoLog()) {
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportWarning(m_shader->getInfoLog());
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportWarning(m_shader->getInfoDebugLog());
+        }
+    }
+    else {
+        const char* shaderCode[1] = { code };
+        const int shaderLenght[1] = { static_cast<int>(length) };
+        const char* shaderName[1] = { "shadercode" };
+        m_shader->setStringsWithLengthsAndNames(shaderCode, shaderLenght, shaderName, 1);
+
+        /* TODO: parse でメモリリークしてるぽい。EShLangFragment の時に発生する。
+            Dumping objects ->
+            {12053} normal block at 0x06EB1410, 8 bytes long.
+                Data: <k       > 6B 0F 00 00 FF FF FF FF
+        */
+        if (!m_shader->parse(&DefaultTBuiltInResource, defaultVersion, forwardCompatible, messages, includer)) {
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportError(m_shader->getInfoLog());
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportError(m_shader->getInfoDebugLog());
+            return false;
+        }
+        else if (m_shader->getInfoLog()) {
             if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportWarning(m_shader->getInfoLog());
             if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportWarning(m_shader->getInfoDebugLog());
         }

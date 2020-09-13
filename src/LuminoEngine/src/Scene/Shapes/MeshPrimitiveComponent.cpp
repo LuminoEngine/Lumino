@@ -80,7 +80,7 @@ void SphereMeshComponent::setMaterial(Material* material)
 void SphereMeshComponent::onRender(RenderingContext* context)
 {
     context->setMaterial(m_material);
-    context->drawSphere(0.5, 8, 8, Color::White);
+    context->drawSphere(0.5, 16, 16, Color::White);
 }
 
 //=============================================================================

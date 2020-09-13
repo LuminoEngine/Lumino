@@ -10,110 +10,95 @@ class DirectionalLightComponent;
 class PointLightComponent;
 class SpotLightComponent;
 
-/** アンビエントライトのオブジェクトです。 */
-class AmbientLight
+/**
+ * 環境ライトのオブジェクトです。
+ *
+ * 環境ライトは、アンビエントライティング、半球ライティング、ディレクショナルライトが統合された、
+ * シーン全体のライティングをコントロールするためのオブジェクトです。
+ *
+ * World はメインライトとして、1 つの EnvironmentLight がデフォルトで存在しています。
+ * 
+ */
+LN_CLASS()
+class EnvironmentLight
 	: public WorldObject
 {
 	LN_OBJECT;
 public:
-
-	/** 既定の設定でアンビエントライトを作成します。 */
-	static Ref<AmbientLight> create();
-
-	/** 色を指定してアンビエントライトを作成します。 */
-	static Ref<AmbientLight> create(const Color& color);
-
-public:
-
 	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true) */
+	LN_METHOD(Property)
 	void setEnabled(bool enabled) { m_component->setEnabled(enabled); }
 
 	/** ライトの有効状態を取得します。 */
+	LN_METHOD(Property)
 	bool isEnabled() const { return m_component->isEnabled(); }
 
-	/** ライトカラーを設定します。(default: White) */
-	void setColor(const Color& color) { m_component->setColor(color); }
+	/** ディレクショナルライトの光源色を設定します。(default: White) */
+	LN_METHOD(Property)
+	void setColor(const Color& value) { m_component->setColor(value); }
 
-	/** ライトカラーを取得します。 */
+	/** ディレクショナルライトの光源色を取得します。 */
+	LN_METHOD(Property)
 	const Color& getColor() const { return m_component->getColor(); }
 
-	/** ライトの明るさを設定します。(default: 0.5) */
-	void setIntensity(float intensity) { m_component->setIntensity(intensity); }
+	/** シーン全体の環境光の色を設定します。(default: White) */
+	LN_METHOD(Property)
+	void setAmbientColor(const Color& value) { m_component->setAmbientColor(value); }
 
-	/** ライトの明るさを取得します。 */
-	float getIntensity() const { return m_component->getIntensity(); }
-
-	/** コンポーネントを取得します。 */
-	AmbientLightComponent* getAmbientLightComponent() const;
-
-LN_CONSTRUCT_ACCESS:
-	AmbientLight();
-	virtual ~AmbientLight();
-
-	/** 既定の設定でアンビエントライトを作成します。 */
-	void init();
-
-	/** 色を指定してアンビエントライトを作成します。 */
-	void init(const Color& color);
-
-private:
-	Ref<AmbientLightComponent>	m_component;
-};
-
-/** 半球ライトのオブジェクトです。 */
-class HemisphereLight
-	: public WorldObject
-{
-	LN_OBJECT;
-public:
-
-	/** 既定の設定で半球ライトを作成します。 */
-	static Ref<HemisphereLight> create();
-
-	/** 色を指定して半球ライトを作成します。 */
-	static Ref<HemisphereLight> create(const Color& skyColor, const Color& groundColor);
-
-public:
-
-	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true) */
-	void setEnabled(bool enabled) { m_component->setEnabled(enabled); }
-
-	/** ライトの有効状態を取得します。 */
-	bool isEnabled() const { return m_component->isEnabled(); }
+	/** シーン全体の環境光の色を取得します。 */
+	LN_METHOD(Property)
+	const Color& getAmbientColor() const { return m_component->getAmbientColor(); }
 
 	/** 空の環境光の色を取得します。 */
+	LN_METHOD(Property)
 	const Color& getSkyColor() { return m_component->getSkyColor(); }
 
-	/** 空の環境光の色を設定します。(default: White) */
-	void setSkyColor(const Color& color) { m_component->setSkyColor(color); }
+	/** 空の環境光の色を設定します。(default: Black) */
+	LN_METHOD(Property)
+	void setSkyColor(const Color& value) { m_component->setSkyColor(value); }
 
 	/** 地面の環境光の色を取得します。 */
+	LN_METHOD(Property)
 	const Color& getGroundColor() { return m_component->getGroundColor(); }
 
-	/** 地面の環境光の色を設定します。(default: White) */
-	void setGroundColor(const Color& color) { m_component->setGroundColor(color); }
+	/** 地面の環境光の色を設定します。(default: Black) */
+	LN_METHOD(Property)
+	void setGroundColor(const Color& value) { m_component->setGroundColor(value); }
 
 	/** ライトの明るさを設定します。(default: 0.5) */
+	LN_METHOD(Property)
 	void setIntensity(float intensity) { m_component->setIntensity(intensity); }
 
 	/** ライトの明るさを取得します。 */
+	LN_METHOD(Property)
 	float getIntensity() const { return m_component->getIntensity(); }
 
+	/** 視点からの、影を生成できる距離を指定します。 (default: 0.0f) */
+	LN_METHOD(Property)
+	void setShadowEffectiveDistance(float value) { m_component->setShadowEffectiveDistance(value); }
+
+	/** 視点からの、影を生成できる距離を取得します。 */
+	LN_METHOD(Property)
+	float shadowEffectiveDistance() const { return m_component->shadowEffectiveDistance(); }
+
+	/** 光源方向からの、影を生成できる距離を指定します。 (default: 0.0f) ※これはシャドウマップの深度値の範囲となります。 */
+	LN_METHOD(Property)
+	void setShadowEffectiveDepth(float value) { m_component->setShadowEffectiveDepth(value); }
+
+	/** 光源方向からの、影を生成できる距離を指定します。 */
+	LN_METHOD(Property)
+	float shadowEffectiveDepth() const { return m_component->shadowEffectiveDepth(); }
+
 	/** コンポーネントを取得します。 */
-	HemisphereLightComponent* getHemisphereLightComponent() const;
+	EnvironmentLightComponent* environmentLightComponent() const;
 
 LN_CONSTRUCT_ACCESS:
-	HemisphereLight();
-	virtual ~HemisphereLight();
-
-	/** 既定の設定で半球ライトを作成します。 */
+	EnvironmentLight();
+	virtual ~EnvironmentLight();
 	void init();
 
-	/** 色を指定して半球ライトを作成します。 */
-	void init(const Color& skyColor, const Color& groundColor);
-
 private:
-	Ref<HemisphereLightComponent>	m_component;
+	Ref<EnvironmentLightComponent> m_component;
 };
 
 /** ディレクショナルライトのオブジェクトです。 */

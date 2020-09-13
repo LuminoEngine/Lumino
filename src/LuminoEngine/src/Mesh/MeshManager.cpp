@@ -268,7 +268,8 @@ void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const AssetPath& a
 	 {
 
 			GLTFImporter importer;
-			bool result = importer.importAsStaticMesh(model, m_assetManager, assetPath, diag);
+			importer.prepare(this, diag);
+			bool result = importer.onImportAsStaticMesh(model, assetPath);
 
 			//ObjMeshImporter importer;
 			//mesh = importer.import(filePath, scale, diag);
@@ -311,7 +312,8 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		{
 
 			GLTFImporter importer;
-			bool result = importer.importAsSkinnedMesh(mesh, m_assetManager, *path, diag);
+			importer.prepare(this, diag);
+			bool result = importer.onImportAsSkinnedMesh(mesh, *path);
 
 
 			//if (!importer.animationClips().isEmpty()) {
@@ -324,10 +326,20 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 				}
 			}
 
+			if (importer.m_applyBoneTransformationsEnabled) {
+				MeshDiag::clearBoneInitialRotations(mesh);
+			}
+
 		}
 
 		MeshBoneMapper boneMapper;
 		boneMapper.map(mesh);
+
+		if (mesh->m_animationController) {
+			if (MeshNode* root = mesh->findHumanoidBone(HumanoidBones::Hips)) {
+				mesh->m_animationController->core()->m_animationTranslationBasis = root->initialLocalTransform().position().y;
+			}
+		}
 
 		diag->dumpToLog();
 		return mesh;

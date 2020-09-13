@@ -5,6 +5,8 @@
 //------------------------------------------------------------------------------
 // Lib
 
+#define LN_LIGHTINGMETHOD_CLUSTERED 1
+
 #define LN_EPSILON                1e-6
 #define LN_MAX_GLOBAL_LIGHTS    4
 
@@ -16,12 +18,15 @@ cbuffer LNRenderViewBuffer
     /* [192] */ float4 ln_Resolution;
     /* [208] */ float4 ln_CameraPosition_;
     /* [224] */ float4 ln_CameraDirection_;
-    /* [240] */ float ln_NearClip;
-    /* [244] */ float ln_FarClip;
-};  /* [256(alignd:16)] */
+    /* [240] */ float4 ln_AmbientColor;
+    /* [256] */ float4 ln_AmbientSkyColor;
+    /* [272] */ float4 ln_AmbientGroundColor;
+};  /* [288(alignd:16)] */
 
 #define ln_CameraPosition (ln_CameraPosition_.xyz)
 #define ln_CameraDirection (ln_CameraDirection_.xyz)
+#define ln_NearClip (ln_CameraPosition_.w)
+#define ln_FarClip (ln_CameraDirection_.w)
 
 cbuffer LNRenderElementBuffer
 {
@@ -31,8 +36,16 @@ cbuffer LNRenderElementBuffer
     /* [192] */ float4x4 ln_WorldView;
     /* [256] */ float4x4 ln_WorldViewIT;
     /* [320] */ float4 ln_BoneTextureReciprocalSize;
-    /* [336] */    int ln_objectId;
+    /* [336] */ int ln_objectId;
 };  /* [352(alignd:16)] */
+
+cbuffer LNPBRMaterialParameter
+{
+    /* [0]  */ float4	ln_MaterialColor;
+    /* [16] */ float4	ln_MaterialEmissive;
+    /* [32] */ float	ln_MaterialRoughness;
+    /* [36] */ float	ln_MaterialMetallic;
+};
 
 // Builtin effect colors
 cbuffer LNEffectColorBuffer
@@ -90,7 +103,7 @@ struct LN_PSInput_Common
     float4    Color        : COLOR0;
 };
 
-struct LN_SurfaceOutput
+struct LN_Surface
 {
     float4    Albedo;        // diffuse color
     float3    Normal;        // tangent space normal, if written
@@ -99,15 +112,20 @@ struct LN_SurfaceOutput
     float3    Gloss;        // specular intensity
 };
 
-void _LN_InitSurfaceOutput(float3 normal, inout LN_SurfaceOutput surface)
+void _LN_InitSurfaceOutput(float2 uv, float4 color, float3 normal, inout LN_Surface surface)
 {
-    surface.Albedo = float4(0, 0, 0, 1);
+    //surface.Albedo = float4(0, 0, 0, 1);
     surface.Normal = normal;
-    surface.Emission = float3(0, 0, 0);
+    //surface.Emission = float3(0, 0, 0);
     surface.Specular = 0;
     surface.Gloss = float3(0, 0, 0);
+    
+    surface.Albedo = tex2D(ln_MaterialTexture, uv) * ln_MaterialColor * color;
+    clip(surface.Albedo .a - 0.0001);
+    surface.Emission = (ln_MaterialEmissive.rgb * ln_MaterialEmissive.a);
 }
 
+// deprecated: see _LN_ProcessVertex_StaticMesh
 LN_VSOutput_Common LN_ProcessVertex_Common(LN_VSInput input)
 {
     //float4x4 normalMatrix  = transpose(/*inverse*/(ln_WorldView));
@@ -118,6 +136,16 @@ LN_VSOutput_Common LN_ProcessVertex_Common(LN_VSInput input)
     o.UV            = input.UV;// + (float2(0.5, 0.5) / ln_Resolution.xy);
     o.Color            = input.Color;
     return o;
+}
+
+void _LN_ProcessVertex_StaticMesh(
+    LN_VSInput input,
+    out float4 outSVPos, out float3 outViewNormal, out float2 outUV, out float4 outColor)
+{
+    outSVPos = mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
+    outViewNormal = mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
+    outUV = input.UV;
+    outColor = input.Color;
 }
 
 float LN_Square(float x)
@@ -192,5 +220,217 @@ float2 LN_UVToClipSpacePosition(float2 uv)
     return ((uv - 0.5) * 2.0) * float2(1.0, -1.0);
 }
 
+float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
+{
+    // basic ambient light
+    const float3 ambient = ln_AmbientColor.xyz;
+    
+    // hemisphere ambient light
+    float hemisphere = (dot(viewNormal, float3(0, 1, 0)) + 1.0) * 0.5;
+    float4 c = lerp(ln_AmbientGroundColor, ln_AmbientSkyColor, hemisphere);
+
+    float3 factors = saturate(ambient + c.xyz);
+
+    return color * factors;
+}
+
+
+
+//==============================================================================
+// Part includes
+
+#ifdef LN_LIGHTINGMETHOD_CLUSTERED
+#include <LuminoForward.fxh>
+#endif
+
+#ifdef LN_SHADINGMODEL_DEFAULT
+#include <LuminoPBR.fxh>
+#include <LuminoShadow.fxh>
+#endif
+
+#ifdef LN_USE_SKINNING
+#include <LuminoSkinning.fxh>
+#endif
+
+#ifdef LN_USE_NORMALMAP
+#include <LuminoNormalMap.fxh>
+#endif
+
+//==============================================================================
+// Part combination
+
+//-------------------------------------
+// Mesh Processing
+#ifdef LN_USE_SKINNING
+    #define _LN_VS_PROCESS_PART_MESHPROCESSING(intput, output) \
+        _LN_ProcessVertex_SkinnedMesh(intput, output.svPos, output.viewNormal, output.UV, output.Color)
+#else
+    #define _LN_VS_PROCESS_PART_MESHPROCESSING(intput, output) \
+        _LN_ProcessVertex_StaticMesh(intput, output.svPos, output.viewNormal, output.UV, output.Color)
+#endif
+
+//-------------------------------------
+// Normal Map
+#ifdef LN_USE_NORMALMAP
+    // Varying fileds.
+    #define _LN_VARYING_DECLARE_NORMAL_MAP ; \
+        float3 vTangent     : TEXCOORD12; \
+        float3 vBitangent   : TEXCOORD13
+
+    #define _LN_VS_PROCESS_PART_NORMALMAP(intput, output) \
+        _LN_ProcessVertex_NormalMap(intput, output.viewNormal, output.vTangent, output.vBitangent)
+
+    #define LN_GetPixelNormal(input) LN_GetPixelNormalFromNormalMap(input.UV, input.vTangent, input.vBitangent, input.viewNormal)
+    
+#else
+    #define _LN_VARYING_DECLARE_NORMAL_MAP
+    #define _LN_VS_PROCESS_PART_NORMALMAP
+    #define LN_GetPixelNormal(input) input.viewNormal
+
+#endif
+
+//-------------------------------------
+// Clustered Lighting
+#ifdef LN_LIGHTINGMETHOD_CLUSTERED
+    // Varying fileds.
+    // vertexPos : 元の頂点データの位置情報
+    // worldPos  : World 空間上の位置 (ln_World による変換結果)
+    // viewPos   : View 空間上の位置 (ln_WorldView による変換結果)
+    #define _LN_VARYING_DECLARE_LIGHTINGMETHOD ; \
+        float3 vertexPos : POSITION10; \
+        float3 worldPos  : POSITION11; \
+        float3 viewPos   : POSITION12; \
+        float4 vInLightPosition : POSITION13
+
+    #define _LN_VS_PROCESS_PART_LIGHTING(intput, output) \
+        _LN_ProcessVertex_ClusteredForward(intput, output.worldPos, output.vertexPos, output.vInLightPosition)
+#else
+    #define _LN_VARYING_DECLARE_LIGHTINGMETHOD
+    #error "Invalid LIGHTINGMETHOD."
+#endif
+
+
+//-------------------------------------
+// PS
+
+#if defined(LN_SHADINGMODEL_DEFAULT)
+float4 _LN_PS_ClusteredLighting_PBRShading(
+    float3 worldPos,
+    float3 vertexPos,
+    float4 positionInLightSpace,
+    LN_Surface surface)
+{
+    // ビュー平面からの水平距離。視点からの距離ではないので注意
+    float4 viewPos = mul(float4(worldPos, 1.0f), ln_View);
+    
+    // 頂点位置から視点位置へのベクトル
+    float3 vViewPosition = -viewPos.xyz;
+    
+    // Create Geometry infomation.
+    LN_PBRGeometry geometry;
+    geometry.position = -vViewPosition;
+    geometry.normal = normalize(surface.Normal);
+    geometry.viewDir = normalize(vViewPosition);
+
+    // Create Material infomation.
+    LN_PBRMaterial material;
+    material.diffuseColor = lerp(surface.Albedo.xyz, float3(0, 0, 0), ln_MaterialMetallic);
+    material.specularColor = lerp(float3(0.04, 0.04, 0.04), surface.Albedo.xyz, ln_MaterialMetallic);
+    material.specularRoughness = clamp(ln_MaterialRoughness, 0.04, 1.0 );
+
+    // Shading
+    _LN_LocalLightContext localLightContext;
+    _LN_InitLocalLightContext(localLightContext, vertexPos, viewPos);
+    float3 outgoingLight = _LN_ComputePBRLocalLights(localLightContext, geometry, material);
+
+    // Shadow
+    float4 posInLight = positionInLightSpace;
+    float shadow = LN_CalculateShadow(posInLight);
+    outgoingLight *= shadow;
+
+    float3 result = outgoingLight;
+
+    // Emission
+    result += surface.Emission;
+
+    // Fog
+    result = LN_ApplyFog(result, worldPos);
+
+    return float4(result, surface.Albedo.a);
+}
+#endif
+
+float4 _LN_ProcessPixel(float3 worldPos, float3 vertexPos, float4 positionInLightSpace, LN_Surface surface)
+{
+    float4 color = surface.Albedo;
+
+#if defined(LN_SHADINGMODEL_DEFAULT)
+    color = _LN_PS_ClusteredLighting_PBRShading(worldPos, vertexPos, positionInLightSpace, surface);
+#endif
+
+    color = LN_GetBuiltinEffectColor(color);
+    return color;
+}
+
+//==============================================================================
+// Core publics
+
+// Standard VS Output members.
+#define LN_VS_OUTPUT_DECLARE \
+    float4 svPos        : SV_POSITION; \
+    float3 viewNormal   : NORMAL10; \
+    float2 UV           : TEXCOORD10; \
+    float4 Color        : COLOR10 \
+    _LN_VARYING_DECLARE_NORMAL_MAP \
+    _LN_VARYING_DECLARE_LIGHTINGMETHOD
+
+// Standard PS Input members.
+#define LN_PS_INPUT_DECLARE \
+    float3 viewNormal   : NORMAL10; \
+    float2 UV           : TEXCOORD10; \
+    float4 Color        : COLOR10 \
+    _LN_VARYING_DECLARE_NORMAL_MAP \
+    _LN_VARYING_DECLARE_LIGHTINGMETHOD
+
+// LN_VSOutput
+struct LN_VSOutput
+{
+    LN_VS_OUTPUT_DECLARE;
+};
+
+// LN_PSInput
+struct LN_PSInput
+{
+    LN_PS_INPUT_DECLARE;
+};
+
+// LN_ProcessVertex
+#define LN_ProcessVertex(input, output) \
+    _LN_VS_PROCESS_PART_MESHPROCESSING(input, output); \
+    _LN_VS_PROCESS_PART_LIGHTING(input, output); \
+    _LN_VS_PROCESS_PART_NORMALMAP(input, output);
+
+// LN_ProcessSurface
+#define LN_ProcessSurface(input, surface) _LN_InitSurfaceOutput(input.UV, input.Color, LN_GetPixelNormal(input), surface);
+
+// LN_ProcessPixel
+#define LN_ProcessPixel(input, surface) _LN_ProcessPixel(input.worldPos, input.vertexPos, input.vInLightPosition, surface)
+
+//==============================================================================
+// Default main functions
+
+LN_VSOutput LN_VSMain(LN_VSInput input)
+{
+    LN_VSOutput output;
+    LN_ProcessVertex(input, output);
+    return output;
+}
+
+float4 LN_PSMain(LN_PSInput input) : SV_TARGET0
+{
+    LN_Surface surface;
+    LN_ProcessSurface(input, surface);
+    return LN_ProcessPixel(input, surface);
+}
 
 #endif // LUMINO_INCLUDED

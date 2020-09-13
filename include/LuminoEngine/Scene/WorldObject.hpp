@@ -177,6 +177,10 @@ public:
 	LN_METHOD()
     void addComponent(Component* component);
 
+	/** Component を除外します。 */
+	LN_METHOD()
+	void removeComponent(Component* component);
+
 	void removeAllComponents();
 
     void addTag(const StringRef& tag) { m_tags->add(tag); }

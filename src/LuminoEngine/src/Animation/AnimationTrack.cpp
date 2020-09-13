@@ -53,8 +53,10 @@ void AnimationValue::clearValue()
 // AnimationTrack
 
 AnimationTrack::AnimationTrack(AnimationValueType type)
-    : m_targetKey()
+    : m_owner(nullptr)
+	, m_targetKey()
     , m_type(type)
+	, m_translationClass(TranslationClass::Absolute)
 {
 }
 
@@ -65,6 +67,13 @@ AnimationTrack::~AnimationTrack()
 bool AnimationTrack::init()
 {
     return Object::init();
+}
+
+bool AnimationTrack::init(TranslationClass translationClass)
+{
+	if (!init()) return false;
+	m_translationClass = translationClass;
+	return true;
 }
 
 //==============================================================================
@@ -119,6 +128,18 @@ TransformAnimationTrack::TransformAnimationTrack()
 {
 }
 
+bool TransformAnimationTrack::init()
+{
+	if (!AnimationTrack::init()) return false;
+	return true;
+}
+
+bool TransformAnimationTrack::init(TranslationClass translationClass)
+{
+	if (!AnimationTrack::init(translationClass)) return false;
+	return true;
+}
+
 void TransformAnimationTrack::setupTranslations(int frames, const float* times, const Vector3* values, Interpolation interpolation)
 {
 	m_translationKeys.resize(frames);
@@ -162,12 +183,6 @@ void TransformAnimationTrack::setDataTQ(int frame, float time, const Vector3& po
 	m_translationKeys[frame] = { time, pos };
 	m_rotationKeys2[frame] = { time, rot };
 	m_lastTime = std::max(m_lastTime, time);
-}
-
-bool TransformAnimationTrack::init()
-{
-	if (!AnimationTrack::init()) return false;
-	return true;
 }
 
 template<class TKey>
@@ -270,9 +285,18 @@ void TransformAnimationTrack::evaluate(float time, AnimationValue* outResult)
 	if (!m_rotationKeys2.empty()) {
 		auto rot = interpolateVector3(m_rotationKeys2, time, Vector3::Zero, m_translationInterpolation);
 
+		// TODO: BVH ファイルに書かれている CH 番号の順で計算する必要がある
 		transform.rotation = Quaternion::makeFromEulerAngles(rot,
-			RotationOrder::ZXY);    // https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html
+			//RotationOrder::ZXY);    // https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html
+			RotationOrder::XYZ);
+			//RotationOrder::YZX);
 
+		// bvh_player と同じ実装
+		Matrix a;
+		a.rotateAxis(Vector3(0, 0, 1), rot.z);
+		a.rotateAxis(Vector3(0, 1, 0), rot.y);
+		a.rotateAxis(Vector3(1, 0, 0), rot.x);
+		transform.rotation = Quaternion::makeFromRotationMatrix(a);
 	}
 	else
 		transform.rotation = interpolateQuaternion(m_rotationKeys, time, Quaternion::Identity);

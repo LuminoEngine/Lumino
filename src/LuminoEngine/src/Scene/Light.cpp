@@ -8,88 +8,30 @@
 namespace ln {
 
 //==============================================================================
-// AmbientLight
+// EnvironmentLight
 
-LN_OBJECT_IMPLEMENT(AmbientLight, WorldObject) {}
+LN_OBJECT_IMPLEMENT(EnvironmentLight, WorldObject) {}
 
-Ref<AmbientLight> AmbientLight::create()
-{
-	return makeObject<AmbientLight>();
-}
-
-Ref<AmbientLight> AmbientLight::create(const Color& color)
-{
-	return makeObject<AmbientLight>(color);
-}
-
-AmbientLight::AmbientLight()
+EnvironmentLight::EnvironmentLight()
 	: WorldObject()
 	, m_component(nullptr)
 {
 }
 
-AmbientLight::~AmbientLight()
+EnvironmentLight::~EnvironmentLight()
 {
 }
 
-void AmbientLight::init()
-{
-	WorldObject::init();
-	m_component = makeObject<AmbientLightComponent>();
-	addComponent(m_component);
-}
-
-void AmbientLight::init(const Color& color)
-{
-	init();
-	setColor(color);
-}
-
-AmbientLightComponent* AmbientLight::getAmbientLightComponent() const
-{
-	return m_component;
-}
-
-//==============================================================================
-// HemisphereLight
-
-LN_OBJECT_IMPLEMENT(HemisphereLight, WorldObject) {}
-
-Ref<HemisphereLight> HemisphereLight::create()
-{
-	return makeObject<HemisphereLight>();
-}
-
-Ref<HemisphereLight> HemisphereLight::create(const Color& skyColor, const Color& groundColor)
-{
-	return makeObject<HemisphereLight>(skyColor, groundColor);
-}
-
-HemisphereLight::HemisphereLight()
-	: WorldObject()
-	, m_component(nullptr)
-{
-}
-
-HemisphereLight::~HemisphereLight()
-{
-}
-
-void HemisphereLight::init()
+void EnvironmentLight::init()
 {
 	WorldObject::init();
-	m_component = makeObject<HemisphereLightComponent>();
+	m_component = makeObject<EnvironmentLightComponent>();
 	addComponent(m_component);
+	setPosition(0, 0, 0);
+	setRotation(Math::degreesToRadians(50), Math::degreesToRadians(-30), 0);	// 右上手前から照らす
 }
 
-void HemisphereLight::init(const Color& skyColor, const Color& groundColor)
-{
-	init();
-	setSkyColor(skyColor);
-	setGroundColor(groundColor);
-}
-
-HemisphereLightComponent* HemisphereLight::getHemisphereLightComponent() const
+EnvironmentLightComponent* EnvironmentLight::environmentLightComponent() const
 {
 	return m_component;
 }
@@ -129,12 +71,12 @@ void DirectionalLight::init()
     //lookAt(Vector3(1, -1, 1));
 
 
-	if (detail::EngineDomain::sceneManager()->autoAddingToActiveWorld) {
-		World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
-		if (activeWorld && !activeWorld->mainDirectionalLight()) {
-			activeWorld->setMainDirectionalLight(this);
-		}
-	}
+	//if (detail::EngineDomain::sceneManager()->autoAddingToActiveWorld) {
+	//	World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
+	//	if (activeWorld && !activeWorld->mainDirectionalLight()) {
+	//		activeWorld->setMainDirectionalLight(this);
+	//	}
+	//}
 }
 
 void DirectionalLight::init(const Color& color)

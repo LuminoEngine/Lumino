@@ -29,7 +29,7 @@ enum class ShaderTechniqueClass_Phase : uint8_t
 enum class ShaderTechniqueClass_MeshProcess : uint8_t
 {
     StaticMesh, // default
-    SkinnedMesh,
+    SkinnedMesh,    // define LN_USE_SKINNING
 };
 
 // PixelShader

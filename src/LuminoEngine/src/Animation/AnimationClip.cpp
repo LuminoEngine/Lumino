@@ -32,6 +32,7 @@ Ref<AnimationClip> AnimationClip::load(const StringRef& filePath)
 AnimationClip::AnimationClip()
     : m_lastFrameTime(0)
 	, m_wrapMode(AnimationWrapMode::Loop)
+	, m_hierarchicalAnimationMode(HierarchicalAnimationMode::AllowTranslationOnlyRoot)
 {
 }
 
@@ -73,7 +74,10 @@ void AnimationClip::init(/*const StringRef& name, */const StringRef& targetPath,
 
 void AnimationClip::addTrack(AnimationTrack* track)
 {
+	if (LN_REQUIRE(!track->m_owner)) return;
+
     m_tracks.add(track);
+	track->m_owner = this;
 
     // TODO: とりあえず
     m_lastFrameTime = track->lastFrameTime();

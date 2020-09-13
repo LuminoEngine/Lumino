@@ -66,32 +66,60 @@ class App_Example_MeshViewer : public Application
         
         //mesh->setPosition(0, 10, 0);
 		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Models/Axis.glb");
+		//auto mesh = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Map-2.glb.gltf");
 
 #if 1
-        auto cliptest = AnimationClip::load(u"D:/Materials/VRM/walk2.bvh");
+
+        Engine::mainLight()->setPosition(30, 20, 10);
+        Engine::mainLight()->lookAt(0, 0, 0);
+        Engine::mainLight()->setAmbientColor(Color::White);
+        Engine::mainLight()->setColor(Color::White);
+        Engine::mainLight()->setIntensity(1.0);
+        Engine::mainLight()->setShadowEffectiveDepth(100);
+        Engine::mainLight()->setShadowEffectiveDistance(100);
+
 
         //m_mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
         //m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
         //m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid_BlenderGLTFExported.glb");
         //m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Sendagaya_Shibu.vrm");
-        m_mesh = SkinnedMesh::load(u"D:/Documents/Modeling/HC4-1.glb");
+        //m_mesh = SkinnedMesh::load(u"D:/Documents/Modeling/HC4-1.glb");
+        m_mesh = SkinnedMesh::load(u"D:/Documents/Modeling/HC4-10.glb");
+
 
         m_model = m_mesh->skinnedMeshComponent()->model();
         MeshDiag::printNodes(m_model);
-        MeshDiag::clearBoneInitialRotations(m_model);
-        MeshDiag::printNodes(m_model);
+        //MeshDiag::clearBoneInitialRotations(m_model);
+        //MeshDiag::printNodes(m_model);
+        m_model->verifyHumanoidBones();
 
         //m_node = m_model->findNode(u"左腕");
+        m_node = m_model->findHumanoidBone(HumanoidBones::Hips);
         m_node = m_model->findHumanoidBone(HumanoidBones::LeftUpperArm);
+        m_node = m_model->findHumanoidBone(HumanoidBones::LeftLowerArm);
+        m_node = m_model->findHumanoidBone(HumanoidBones::LeftLowerLeg);
+        //m_node = m_model->findHumanoidBone(HumanoidBones::Head);
         //auto mat = m_node->initialLocalTransform();
         //m_node->setInitialLocalTransform();
         //m_node->setRotation(0, 0, -Math::PI);
         // Note: ここで m_node->setRotation しても、次のフレーム更新時にリセットされるので意味なし
 
-        m_mesh->setShadingModel(ShadingModel::Unlit);
+        //m_mesh->setShadingModel(ShadingModel::Unlit);
+        m_mesh->setCullMode(CullMode::None);
 
 
-
+        //auto clip = AnimationClip::load(u"D:/Materials/VRM/walk2.bvh");
+        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleStandingPose5.bvh");
+        //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/XYZ-Test.bvh");
+        //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/XYZ-Test2.bvh");
+        //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/RightArm.bvh");
+        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleStandingPose7.bvh");
+        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleSittingPose.bvh");
+        //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/Arm_R-Test1-BoneVert.bvh");
+        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh");
+        auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Walk.bvh");
+        clip->setHierarchicalAnimationMode(HierarchicalAnimationMode::DisableTranslation);
+        
         //auto clip = AnimationClip::load(u"D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");
         //auto clip1 = AnimationClip::load(u"D:/Materials/MMD/Motion/MMO用stand/stand2.vmd");
         //auto clip2 = AnimationClip::load(u"D:/Materials/MMD/Motion/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd");
@@ -100,18 +128,41 @@ class App_Example_MeshViewer : public Application
         //m_walk = m_model->animationController()->addClip(clip2);
         //m_model->animationController()->play(m_idle);
 
-        auto state = m_model->animationController()->addClip(cliptest);
+        auto state = m_model->animationController()->addClip(clip);
         m_model->animationController()->play(state);
+
+        //auto box = BoxMesh::create();
+        //box->setScale(7.8);
+        //box->setPosition(0, 5, 0);
 #endif
     }
 
     virtual void onUpdate() override
     {
-        if (m_node) {
-            //m_node->setRotation(0, 0, Engine::time());
-            //m_node->setRotation(Quaternion(0.00719260797, -0.0159967896, -0.317227066, 0.948187351));
-        }
+        //if (m_node) {
+        //    //m_node->setRotation(0, 0, Engine::time());
+        //    //m_node->setRotation(Engine::time(), 0, 0);
+        //    m_node->setRotation(0, Engine::time(), 0);
+        //    //m_node->setRotation(Quaternion(0.00719260797, -0.0159967896, -0.317227066, 0.948187351));
+        //}
 
+        if (0) {
+
+            // 左右の腕を前に伸ばす
+            m_model->findHumanoidBone(HumanoidBones::LeftUpperArm)->setRotation(0, Math::PI / 2, 0);
+            m_model->findHumanoidBone(HumanoidBones::RightUpperArm)->setRotation(0, -Math::PI / 2, 0);
+
+            // かがむ
+            m_model->findHumanoidBone(HumanoidBones::Spine)->setRotation(Math::PI / 4, 0, 0);
+
+            // 右足を前に出す・膝を曲げる・内また
+            m_model->findHumanoidBone(HumanoidBones::RightUpperLeg)->setRotation(-Math::PI / 4, 0, 0);
+            m_model->findHumanoidBone(HumanoidBones::RightLowerLeg)->setRotation(Math::PI / 4, 0, 0);
+            m_model->findHumanoidBone(HumanoidBones::RightFoot)->setRotation(0, -Math::PI / 4, 0);
+
+        }
+           
+        //m_model->findHumanoidBone(HumanoidBones::Hips)->setRotation(0, 0, 0);
 #if 0
         float velocity = 0.15;
 

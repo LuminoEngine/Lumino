@@ -443,7 +443,17 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
     if (!next()) return false;
     std::string value = getString(current());
 
-    if (equalString(name, "Phase", 5)) {
+    if (equalString(name, "ShadingModel", 12)) {
+        const struct { const char* name; size_t len; ShaderTechniqueClass_ShadingModel value; } table[] = {
+            {"Default", 7, ShaderTechniqueClass_ShadingModel::Default},
+            {"Unlit", 5, ShaderTechniqueClass_ShadingModel::Unlit},
+        };
+        if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.shadingModel)) {
+            m_diag->reportError(u"Normal: Invalid value: " + String::fromStdString(value));
+            return false;
+        }
+    }
+     else if (equalString(name, "Phase", 5)) {
         const struct { const char* name; size_t len; ShaderTechniqueClass_Phase value; } table[] = {
             {"Forward", 7, ShaderTechniqueClass_Phase::Forward},
             {"LightDisc", 9, ShaderTechniqueClass_Phase::LightDisc},
@@ -452,6 +462,16 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
         };
         if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.phase)) {
             m_diag->reportError(u"Phase: Invalid value: " + String::fromStdString(value));
+            return false;
+        }
+    }
+    else if (equalString(name, "VertexProcessing", 16)) {
+        const struct { const char* name; size_t len; ShaderTechniqueClass_MeshProcess value; } table[] = {
+            {"Static", 6, ShaderTechniqueClass_MeshProcess::StaticMesh},
+            {"Skinned", 7, ShaderTechniqueClass_MeshProcess::SkinnedMesh},
+        };
+        if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.meshProcess)) {
+            m_diag->reportError(u"Normal: Invalid value: " + String::fromStdString(value));
             return false;
         }
     }
