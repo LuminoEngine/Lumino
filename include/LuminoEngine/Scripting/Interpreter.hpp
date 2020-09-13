@@ -24,6 +24,14 @@ class InterpreterCommandList : public Object
 public:
 	List<Ref<InterpreterCommand>> commands;
 
+	void addCommand(const String& code, const List<String>& params)
+	{
+		auto cmd = makeObject<InterpreterCommand>();
+		cmd->code = code;
+		cmd->params = params;
+		commands.add(cmd);
+	}
+
 	void serialize(Serializer2& ar) override
 	{
 		ar & makeNVP(u"commands", commands);
@@ -64,7 +72,7 @@ protected:
 	void setWaitCount(int count) { m_waitCount = count; }
 
 	/**  */
-	const Ref<InterpreterCommand>& getCurrentCommand() const;
+	InterpreterCommand* getCurrentCommand() const;
 
 	/** Wait 中なら true を返す */
 	virtual bool onUpdateWait(const String& waitMode);

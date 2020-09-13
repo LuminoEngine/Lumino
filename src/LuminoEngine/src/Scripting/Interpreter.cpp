@@ -211,8 +211,12 @@ void Interpreter::registerCommandHandler(const ln::StringRef& name, Ref<Interpre
 	m_commandDelegateMap[name] = handler;
 }
 
-const Ref<InterpreterCommand>& Interpreter::getCurrentCommand() const
+InterpreterCommand* Interpreter::getCurrentCommand() const
 {
+	if (m_index >= m_commandList.size()) {
+		return nullptr;
+	}
+
 	// コマンドリストの最後が Message だった場合 Enter 待ち中は nullptr を返すことになる
 	if (m_commandList.isOutOfRange(m_index)) return nullptr;
 	return m_commandList[m_index];
@@ -256,7 +260,7 @@ bool Interpreter::checkFreeze()
 //------------------------------------------------------------------------------
 bool Interpreter::executeCommand()
 {
-	auto& cmd = getCurrentCommand();
+	auto* cmd = getCurrentCommand();
 	if (cmd)
 	{
 		if (!onExecuteCommand(cmd))
