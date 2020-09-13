@@ -227,6 +227,9 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath)
     const float offsetBasis = std::abs(m_joints[m_rootJointIndex]->offset.y);
     const float offsetScale = 1.0f / offsetBasis;
 
+    // [2020/9/13] TODO: HierarchicalAnimationMode を作ったけど、それだけだと足りない。
+    // モーションによっては歩行時の bobbing のため Y オフセットだけ有効にしたいものもある。
+
     for (const auto& joint : m_joints) {
         auto track = makeObject<TransformAnimationTrack>(TranslationClass::Ratio);
         track->m_root = joint->isRoot;

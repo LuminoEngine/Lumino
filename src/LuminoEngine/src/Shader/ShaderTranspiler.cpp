@@ -5,8 +5,11 @@
 #include <sstream>
 #include <glad/glad.h>
 #include <glslang/Public/ShaderLang.h>
+#include <glslang/Include/Types.h>
+#include <glslang/Include/BaseTypes.h>
+#include <glslang/Include/intermediate.h>
 #include <glslang/Include/ResourceLimits.h>
-#include <SPIRV/GlslangToSpv.h>
+#include <glslang/SPIRV/GlslangToSpv.h>
 #include <spirv_cross/spirv_glsl.hpp>
 #include "../Grammar/CppLexer.hpp"
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
