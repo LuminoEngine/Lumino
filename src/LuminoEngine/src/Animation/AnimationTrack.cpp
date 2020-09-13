@@ -53,7 +53,8 @@ void AnimationValue::clearValue()
 // AnimationTrack
 
 AnimationTrack::AnimationTrack(AnimationValueType type)
-    : m_targetKey()
+    : m_owner(nullptr)
+	, m_targetKey()
     , m_type(type)
 	, m_translationClass(TranslationClass::Absolute)
 {

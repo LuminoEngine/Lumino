@@ -72,6 +72,10 @@ public:
 
 	TranslationClass translationClass() const { return m_translationClass; }
 
+	AnimationClip* animationClip() const { return m_owner; }
+
+	bool m_root = true;
+
 protected:
 	AnimationTrack(AnimationValueType type);
 	virtual ~AnimationTrack();
@@ -81,10 +85,12 @@ protected:
 	//void setTargetName(const String& name) { m_targetName = name; }
 
 private:
+	AnimationClip* m_owner;
 	AnimationTrackTargetKey m_targetKey;
 	AnimationValueType m_type;
 	TranslationClass m_translationClass;
 
+	friend class AnimationClip;
 	friend class AnimationState;
 };
 

@@ -229,6 +229,7 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath)
 
     for (const auto& joint : m_joints) {
         auto track = makeObject<TransformAnimationTrack>(TranslationClass::Ratio);
+        track->m_root = joint->isRoot;
 
         const auto name = String::fromStdString(joint->name);
         track->setTargetName(name);

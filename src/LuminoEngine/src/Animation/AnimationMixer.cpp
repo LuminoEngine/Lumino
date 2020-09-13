@@ -97,11 +97,12 @@ void AnimationState::updateTargetElements()
 
 		for (auto& trackInstance : m_trackInstances)
 		{
-			AnimationValue value(trackInstance.track->type());
+			AnimationTrack* track = trackInstance.track;
+			AnimationValue value(track->type());
 			AnimationValue& rootValue = trackInstance.blendLink->rootValue;
 			rootValue.m_totalBlendWeights += m_blendWeight;
 
-			trackInstance.track->evaluate(localTime, &value);
+			track->evaluate(localTime, &value);
 
 			switch (value.type())
 			{
@@ -127,11 +128,31 @@ void AnimationState::updateTargetElements()
 				t.rotation *= Quaternion::slerp(Quaternion::Identity, s.rotation, m_blendWeight);
 				
 
+				Vector3 translation;
+				switch (trackInstance.track->animationClip()->hierarchicalAnimationMode())
+				{
+				case HierarchicalAnimationMode::AllowTranslationOnlyRoot:
+					if (trackInstance.track->m_root) {
+						translation = s.translation;
+					}
+					break;
+				case HierarchicalAnimationMode::AllowTranslation:
+					translation = s.translation;
+					break;
+				case HierarchicalAnimationMode::DisableTranslation:
+					break;
+				default:
+					LN_UNREACHABLE();
+					break;
+				}
+				
+
+
 				if (trackInstance.track->translationClass() == TranslationClass::Absolute) {
-					t.translation += s.translation * m_blendWeight;
+					t.translation += translation * m_blendWeight;
 				}
 				else if (trackInstance.track->translationClass() == TranslationClass::Ratio) {
-					t.translation += (s.translation * m_owner->owner()->m_animationTranslationBasis) * m_blendWeight;
+					t.translation += (translation * m_owner->owner()->m_animationTranslationBasis) * m_blendWeight;
 				}
 				else {
 				}
