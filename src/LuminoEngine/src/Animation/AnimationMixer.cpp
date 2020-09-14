@@ -136,6 +136,11 @@ void AnimationState::updateTargetElements()
 						translation = s.translation;
 					}
 					break;
+				case HierarchicalAnimationMode::AllowTranslationOnlyRootY:
+					if (trackInstance.track->m_root) {
+						translation.set(0.0f, s.translation.y, 0.0f);
+					}
+					break;
 				case HierarchicalAnimationMode::AllowTranslation:
 					translation = s.translation;
 					break;

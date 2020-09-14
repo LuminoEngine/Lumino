@@ -28,6 +28,7 @@ public:
 
 	const Ref<RigidBody>& rigidBody() const { return m_rigidBody; }
 
+	const Vector3& velocity() const { return m_currentVelocity; }
 
 
 	/** CollisionEnter イベントの通知を受け取るコールバックを登録します。*/
@@ -133,6 +134,8 @@ private:
 	Event<CollisionEventHandler> m_onCollisionStay;
 
 	Ref<RigidBody> m_rigidBody;
+
+	Vector3 m_currentVelocity;
 };
 
 } // namespace ln

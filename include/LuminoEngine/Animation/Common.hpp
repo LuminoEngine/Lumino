@@ -24,6 +24,8 @@ enum class HierarchicalAnimationMode
 	/** ルートノードのみ、平行移動を有効化します。 */
 	AllowTranslationOnlyRoot,
 
+	AllowTranslationOnlyRootY,
+
 	/** すべてのノードの平行移動を有効化します。 */
 	AllowTranslation,
 

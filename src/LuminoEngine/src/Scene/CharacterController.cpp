@@ -75,8 +75,12 @@ void CharacterController::onPreUpdate(float elapsedSeconds)
 		WorldObject* character = worldObject();
 		Camera* camera = viewCamera();
 
-		m_inputState.turnVelocity = -m_inputController->getAxisValue(u"left") + m_inputController->getAxisValue(u"right");
-		m_inputState.forwardVelocity = -m_inputController->getAxisValue(u"down") + m_inputController->getAxisValue(u"up");
+		const auto axis = Vector2::safeNormalize(Vector2(
+			-m_inputController->getAxisValue(u"left") + m_inputController->getAxisValue(u"right"),
+			-m_inputController->getAxisValue(u"down") + m_inputController->getAxisValue(u"up")),
+			Vector2::Zero);
+		m_inputState.turnVelocity = axis.x;
+		m_inputState.forwardVelocity = axis.y;
 
 		const auto characterCurrentFront = Vector3::transform(Vector3::UnitZ, camera->rotation());
 
@@ -103,8 +107,10 @@ void CharacterController::onPreUpdate(float elapsedSeconds)
 		const auto moveOffset = moveVector * (m_walkVelocity/* * elapsedSeconds*/);
 
 		if (m_rigidBody) {
-			m_rigidBody->setVelocity(moveOffset);
+			m_rigidBody->setVelocity(Vector3(moveOffset.x, m_rigidBody->velocity().y, moveOffset.z));
 		}
+
+		m_currentVelocity = moveOffset;
 
 		// TODO: 物理移動
 		//character->setPosition(character->position() + moveOffset);

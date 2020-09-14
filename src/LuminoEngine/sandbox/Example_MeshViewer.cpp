@@ -118,7 +118,7 @@ class App_Example_MeshViewer : public Application
         //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/Arm_R-Test1-BoneVert.bvh");
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh");
         auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Walk.bvh");
-        clip->setHierarchicalAnimationMode(HierarchicalAnimationMode::DisableTranslation);
+        clip->setHierarchicalAnimationMode(HierarchicalAnimationMode::AllowTranslationOnlyRootY);
         
         //auto clip = AnimationClip::load(u"D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");
         //auto clip1 = AnimationClip::load(u"D:/Materials/MMD/Motion/MMO用stand/stand2.vmd");
