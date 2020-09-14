@@ -107,6 +107,7 @@ void CharacterController::onPreUpdate(float elapsedSeconds)
 		const auto moveOffset = moveVector * (m_walkVelocity/* * elapsedSeconds*/);
 
 		if (m_rigidBody) {
+			//m_rigidBody->setVelocity(moveOffset);
 			m_rigidBody->setVelocity(Vector3(moveOffset.x, m_rigidBody->velocity().y, moveOffset.z));
 		}
 
@@ -134,10 +135,23 @@ void CharacterController::onAfterStepSimulation()
 		//worldObject()->setRotation(Quaternion::makeFromRotationMatrix(m_rigidBody->transform()));
 		worldObject()->setPosition(m_rigidBody->transform().position());
 	}
+
+
+	//WorldObject* character = worldObject();
+	//Camera* camera = viewCamera();
+	//camera->setPosition(character->position() + Vector3(0, 0, 10));
+	//camera->lookAt(character->position());
 }
 
 void CharacterController::onUpdate(float elapsedSeconds)
 {
+	if (0) {
+		WorldObject* character = worldObject();
+		Camera* camera = viewCamera();
+		camera->setPosition(m_rigidBody->transform().position() + Vector3(0, 0, 15));
+		camera->lookAt(m_rigidBody->transform().position());
+		return;
+	}
 
 	WorldObject* character = worldObject();
 	Camera* camera = viewCamera();
@@ -244,6 +258,9 @@ void CharacterController::onUpdate(float elapsedSeconds)
 	}
 
 
+	//camera->setPosition(character->position() + Vector3(0, 0, 10));
+	//camera->lookAt(character->position());
+
 	m_inputState.reset();
 }
 
@@ -309,7 +326,7 @@ void CharacterController::prepareRigidBody()
 		m_rigidBody->setMass(50.0f);
 		m_rigidBody->setAngularLimits(RigidBodyLimitFlags::LockedRotation);
 		m_rigidBody->setEventListener(this);
-		m_rigidBody->setOwnerData(this);
+		//m_rigidBody->setOwnerData(this);
 
 		// TODO: UpdateContext みたいなの受け取って、今いる World に追加したい
 		detail::EngineDomain::engineManager()->mainPhysicsWorld()->addPhysicsObject(m_rigidBody);
