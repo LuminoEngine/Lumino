@@ -10,6 +10,7 @@ class Texture;
 class Shader;
 class ShaderTechnique;
 class ShaderPass;
+class DiagnosticsManager;
 
 /** ShaderParameter を分類します。 */
 enum class ShaderParameterClass
@@ -25,6 +26,7 @@ enum class ShaderParameterClass
 };
 
 namespace detail {
+class ShaderManager;
 
 class ShaderParameterValue
 {
@@ -163,6 +165,11 @@ public:
     static ShaderTechnique* findTechniqueByClass(const Shader* shader, const detail::ShaderTechniqueClass& techniqueClass);
     static const detail::ShaderTechniqueClass& techniqueClass(ShaderTechnique* technique);
     static bool resolveStd140Layout(const ShaderUniformInfo& info, size_t* outAligndElemenSize);
+
+    // for testing.
+    static bool buildShader(const Path& inputFile, const Path& outputFile, const Path& exportDir);
+    static bool generateShader(ShaderManager* manager, const Path& inputFile, const Path& outputFile, const Path& exportDir, DiagnosticsManager* diag);
+
 };
 
 } // namespace detail

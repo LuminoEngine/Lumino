@@ -14,7 +14,7 @@
 namespace lna {
 
 //==============================================================================
-// LanguageContext
+// BuildAssetHelper
 
 ln::Result BuildAssetHelper::buildShaderFromAutoBuild(const Project* project, const ln::Path& inputFile, ln::Path* outputFile)
 {
@@ -40,57 +40,20 @@ ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Pa
 
 	auto diag = ln::makeObject<ln::DiagnosticsManager>();
 
-	auto result = generateShader(manager, inputFile, outputFile, exportDir, diag);
+	auto result = ln::detail::ShaderHelper::generateShader(manager, inputFile, outputFile, exportDir, diag);
 
 	diag->dumpToLog();
 
 	manager->dispose();
 
-	return ((!result) || diag->hasError());
+	bool result2 = ((!result) || diag->hasError());
+
+	if (result2) {
+		CLI::info(u"");
+		CLI::info(u"Compilation succeeded; see " + outputFile);
+	}
+
+	return result;
 }
-
-ln::Result BuildAssetHelper::generateShader(ln::detail::ShaderManager* manager, const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir, ln::DiagnosticsManager* diag)
-{
-	ln::Path inputFilePath = inputFile.canonicalize();
-	ln::Path outputFilePath = outputFile;
-	if (outputFilePath.isEmpty()) {
-		outputFilePath = inputFilePath.replaceExtension(ln::detail::UnifiedShader::FileExt);
-	}
-
-	ln::List<ln::Path> includeDirectories;
-	ln::List<ln::String> definitions;
-
-	auto inputCodeBuffer = ln::FileSystem::readAllBytes(inputFilePath);
-	char* inputCode = (char*)inputCodeBuffer.data();
-	size_t inputCodeLength = inputCodeBuffer.size();
-
-
-	ln::detail::UnifiedShaderCompiler compiler(manager, diag);
-	if (!compiler.compile(inputCode, inputCodeLength, includeDirectories, definitions)) {
-		return false;
-	}
-	if (!compiler.link()) {
-		return false;
-	}
-
-
-	if (!compiler.unifiedShader()->save(outputFilePath)) {
-		return false;
-	}
-
-	// dump intermediate codes.
-	if (!exportDir.isEmpty()) {
-		ln::FileSystem::createDirectory(exportDir);
-		compiler.unifiedShader()->saveCodes(exportDir.str() + u"/");
-	}
-
-	CLI::info(u"");
-	CLI::info(u"Compilation succeeded; see " + outputFilePath);
-
-	return true;
-
-}
-
-
 
 } // namespace lna

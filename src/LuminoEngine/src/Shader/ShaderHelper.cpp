@@ -3,6 +3,8 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
+#include "UnifiedShader.hpp"
+#include "UnifiedShaderCompiler.hpp"
 
 namespace ln {
 namespace detail {
@@ -506,6 +508,58 @@ bool ShaderHelper::resolveStd140Layout(const ShaderUniformInfo& info, size_t* ou
 
     *outAligndElemenSize = aligndElemenSize;
     return true;
+}
+
+bool ShaderHelper::buildShader(const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir)
+{
+    auto diag = ln::makeObject<ln::DiagnosticsManager>();
+
+    auto result = ln::detail::ShaderHelper::generateShader(EngineDomain::shaderManager(), inputFile, outputFile, exportDir, diag);
+
+    diag->dumpToLog();
+
+    bool result2 = ((!result) || diag->hasError());
+
+    return result;
+}
+
+bool ShaderHelper::generateShader(ln::detail::ShaderManager* manager, const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir, ln::DiagnosticsManager* diag)
+{
+    ln::Path inputFilePath = inputFile.canonicalize();
+    ln::Path outputFilePath = outputFile;
+    if (outputFilePath.isEmpty()) {
+        outputFilePath = inputFilePath.replaceExtension(ln::detail::UnifiedShader::FileExt);
+    }
+
+    ln::List<ln::Path> includeDirectories;
+    ln::List<ln::String> definitions;
+
+    auto inputCodeBuffer = ln::FileSystem::readAllBytes(inputFilePath);
+    char* inputCode = (char*)inputCodeBuffer.data();
+    size_t inputCodeLength = inputCodeBuffer.size();
+
+
+    ln::detail::UnifiedShaderCompiler compiler(manager, diag);
+    if (!compiler.compile(inputCode, inputCodeLength, includeDirectories, definitions)) {
+        return false;
+    }
+    if (!compiler.link()) {
+        return false;
+    }
+
+
+    if (!compiler.unifiedShader()->save(outputFilePath)) {
+        return false;
+    }
+
+    // dump intermediate codes.
+    if (!exportDir.isEmpty()) {
+        ln::FileSystem::createDirectory(exportDir);
+        compiler.unifiedShader()->saveCodes(exportDir.str() + u"/");
+    }
+
+    return true;
+
 }
 
 } // namespace detail
