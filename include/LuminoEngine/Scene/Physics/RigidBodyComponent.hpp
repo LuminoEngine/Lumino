@@ -82,7 +82,7 @@ LN_CONSTRUCT_ACCESS:
 protected:
 	virtual void onAttachedScene(Level* newOwner) override;
 	virtual void onDetachedScene(Level* oldOwner) override;
-	virtual void onBeforeStepSimulation() override;
+	virtual void onBeforeStepSimulation_Deprecated() override;
 	virtual void onAfterStepSimulation() override;
     virtual void onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact) override;
     virtual void onCollisionLeave(PhysicsObject* otherObject, ContactPoint* contact) override;
@@ -127,7 +127,7 @@ LN_CONSTRUCT_ACCESS:
 protected:
     virtual void onAttachedScene(Level* newOwner) override;
     virtual void onDetachedScene(Level* oldOwner) override;
-    virtual void onBeforeStepSimulation() override;
+    virtual void onBeforeStepSimulation_Deprecated() override;
     virtual void onAfterStepSimulation() override;
     virtual void onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact) override;
     virtual void onCollisionLeave(PhysicsObject* otherObject, ContactPoint* contact) override;

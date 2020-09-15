@@ -47,7 +47,7 @@ protected:
 	// 例えば攻撃を受けてのけぞっている途中は、よびだすべきではない。
 	void onUpdate(float elapsedSeconds) override;
 
-	void onBeforeStepSimulation() override;
+	void onBeforeStepSimulation_Deprecated() override;
 	void onAfterStepSimulation() override;
 	void onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact) override;
 	void onCollisionLeave(PhysicsObject* otherObject, ContactPoint* contact) override;

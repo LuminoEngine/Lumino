@@ -120,7 +120,7 @@ void CharacterController::onPreUpdate(float elapsedSeconds)
 
 }
 
-void CharacterController::onBeforeStepSimulation()
+void CharacterController::onBeforeStepSimulation_Deprecated()
 {
 
 

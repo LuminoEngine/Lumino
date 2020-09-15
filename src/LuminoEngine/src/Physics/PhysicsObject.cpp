@@ -63,10 +63,10 @@ void PhysicsObject::onCollisionStay(PhysicsObject* otherObject, ContactPoint* co
 	}
 }
 
-void PhysicsObject::onBeforeStepSimulation()
+void PhysicsObject::onPrepareStepSimulation()
 {
 	if (m_listener) {
-		m_listener->onBeforeStepSimulation();
+		m_listener->onBeforeStepSimulation_Deprecated();
 	}
 }
 

@@ -58,7 +58,7 @@ void RigidBodyComponent::onDetachedScene(Level* oldOwner)
 {
 }
 
-void RigidBodyComponent::onBeforeStepSimulation()
+void RigidBodyComponent::onBeforeStepSimulation_Deprecated()
 {
     // worldObject -> body へ姿勢を同期する
     m_body->setTransform(worldObject()->worldMatrix());
@@ -172,7 +172,7 @@ void TriggerBodyComponent::onDetachedScene(Level* oldOwner)
 {
 }
 
-void TriggerBodyComponent::onBeforeStepSimulation()
+void TriggerBodyComponent::onBeforeStepSimulation_Deprecated()
 {
     m_body->setTransform(worldObject()->worldMatrix());
 }

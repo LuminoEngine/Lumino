@@ -95,6 +95,7 @@ public:	// TODO: Editor integration
     WorldObject* findObjectByComponentType(const TypeInfo* type) const;
 	void updateObjectsWorldMatrix() const;
     virtual void onPreUpdate(float elapsedSeconds);
+	void collectActiveObjects(World* world);
     void collectRenderObjects(World* world, RenderingContext* context);
     void renderGizmos(RenderingContext* context);
 	bool traverse(detail::IWorldObjectVisitor* visitor) const;

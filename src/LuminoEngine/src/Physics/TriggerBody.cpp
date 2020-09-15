@@ -124,9 +124,9 @@ void TriggerBody::setCollisionGroupMask(uint32_t value)
 //    //}
 //}
 
-void TriggerBody::onBeforeStepSimulation()
+void TriggerBody::onPrepareStepSimulation()
 {
-	PhysicsObject::onBeforeStepSimulation();
+	PhysicsObject::onPrepareStepSimulation();
 
 	if (!m_btGhostObject || (m_dirtyFlags & (DirtyFlags_InitialUpdate))) {
 		createBtObject();

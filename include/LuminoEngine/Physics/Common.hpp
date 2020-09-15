@@ -36,7 +36,7 @@ namespace detail {
 class IPhysicsObjectEventListener
 {
 protected:
-	virtual void onBeforeStepSimulation() = 0;
+	virtual void onBeforeStepSimulation_Deprecated() = 0;
 	virtual void onAfterStepSimulation() = 0;
     virtual void onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact) = 0;
     virtual void onCollisionLeave(PhysicsObject* otherObject, ContactPoint* contact) = 0;

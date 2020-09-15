@@ -71,6 +71,10 @@ void Component::onUpdate(float elapsedSeconds)
 {
 }
 
+void Component::onApplyPhysicsFeedForward()
+{
+}
+
 void Component::onPrepareRender(RenderingContext* context)
 {
 }

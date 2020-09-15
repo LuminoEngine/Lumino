@@ -316,11 +316,12 @@ void PhysicsWorld::stepSimulation(float elapsedSeconds)
 {
     //ElapsedTimer t;
     for (auto& obj : m_physicsObjectList) {
-    	obj->onBeforeStepSimulation();
+    	obj->onPrepareStepSimulation();
     }
 
     // TODO: FPS を Engine からもらう
     const float internalTimeUnit = 1.0f / 60.0f;
+
 
 
     // http://d.hatena.ne.jp/ousttrue/20100425/1272165711
@@ -328,7 +329,22 @@ void PhysicsWorld::stepSimulation(float elapsedSeconds)
     // m_elapsedTime が 1.0 を超えている場合は追いつけずに、物体の移動が遅くなる。
     // FIXME: MMD
     //m_btWorld->stepSimulation(elapsedTime, 120, 0.008333334f);
-    m_btWorld->stepSimulation(elapsedSeconds, 1, internalTimeUnit);
+
+    // NOTE:
+    //   tepSimulation(btScalar timeStep, int maxSubSteps, btScalar fixedTimeStep);
+    //     timeStep は Game 側の経過時間。
+    //     fixedTimeStep は Bullet の内部の1イテレーションの時間。
+    //     fixedTimeStep が大きい場合、Bullet は (timeStep/fixedTimeStep)+1 回イテレーションを繰り返して、Game 側の時間に追い付こうとする。
+    //     maxSubSteps はこの回数の最大数。
+    //     
+    //     例えば、fixedTimeStep が Game 側のフレームレートと一致している場合、
+    //     Game 側が遅延していない場合は常にイテレーションは1回となる。
+    //
+    // [2020/9/15] RigidBody とカメラの位置を同期させながら速度指定で移動すると、RigidBody をデバッグ描画したときに、定期的に遅延することがあった。
+    // 固定フレームレートでも発生するので、Bullet 内部で elapsedSeconds を加算していく誤差で一瞬更新されないタイミングが出たのか？という感じ。
+    // イテレーションを基本2回にしてみたところ安定したので、これで様子を見てみる。
+    const float iteration = 2.0f;   // int
+    m_btWorld->stepSimulation(elapsedSeconds, 2, internalTimeUnit / iteration);
 
 
     // m_elapsedTime が 16ms より大きい場合は、1回 16ms 分のシミュレーションを可能な限り繰り返して m_elapsedTime に追いついていく設定。
@@ -508,7 +524,7 @@ void SpringJoint::setAngularStiffness(const Vector3& value)
     m_angularStiffness = value;
 }
 
-void SpringJoint::onBeforeStepSimulation()
+void SpringJoint::onPrepareStepSimulation()
 {
     if (LN_REQUIRE(m_bodyA)) return;
     if (LN_REQUIRE(m_bodyB)) return;

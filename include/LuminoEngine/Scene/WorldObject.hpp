@@ -210,6 +210,9 @@ public:
 	template<class TComponent>
 	TComponent* findComponent() const { return static_cast<TComponent*>(findComponentByType(TypeInfo::getTypeInfo<TComponent>())); }
 
+	template<class TFunc>
+	void forEachComponents(TFunc func) const { std::for_each(m_components->begin(), m_components->end(), func); }
+
     bool traverse(detail::IWorldObjectVisitor* visitor);
 
 	LN_METHOD(Property)

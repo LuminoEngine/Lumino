@@ -29,7 +29,7 @@ public:
 
 
 protected:
-    void onBeforeStepSimulation() override;
+    void onPrepareStepSimulation() override;
     void onAfterStepSimulation() override;
     void onRemoveFromPhysicsWorld() override;
 

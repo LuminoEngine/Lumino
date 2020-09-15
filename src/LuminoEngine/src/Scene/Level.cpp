@@ -285,6 +285,11 @@ void Level::onPreUpdate(float elapsedSeconds)
     }
 }
 
+void Level::collectActiveObjects(World* world)
+{
+
+}
+
 void Level::collectRenderObjects(World* world, RenderingContext* context)
 {
     if (m_subLevelManager) {

@@ -102,7 +102,7 @@ public:
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
-    virtual void onBeforeStepSimulation() override;
+    virtual void onPrepareStepSimulation() override;
     virtual void onAfterStepSimulation() override;
     virtual void onRemoveFromPhysicsWorld() override  { LN_NOTIMPLEMENTED(); }
 

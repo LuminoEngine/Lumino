@@ -40,8 +40,8 @@ protected:
     /** 他の PhysicsObject が、この PhysicsObject との接触している間呼び出されます。*/
     virtual void onCollisionStay(PhysicsObject* otherObject, ContactPoint* contact);
 
-
-    virtual void onBeforeStepSimulation();
+    // 各プロパティの遅延評価を実行する。WorldObject からの FeedForward はここでは行わない
+    virtual void onPrepareStepSimulation();
     virtual void onAfterStepSimulation();
 
     virtual void onRemoveFromPhysicsWorld() = 0;

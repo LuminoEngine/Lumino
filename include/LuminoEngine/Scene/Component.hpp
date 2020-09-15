@@ -35,6 +35,7 @@ protected:
 	virtual void onDetachedScene(Level* oldOwner);	// obsolete
     virtual void onPreUpdate(float elapsedSeconds);
     virtual void onUpdate(float elapsedSeconds);
+    virtual void onApplyPhysicsFeedForward();
     virtual void onPrepareRender(RenderingContext* context);
     virtual void onRender(RenderingContext* context);
     virtual void onRenderGizmo(RenderingContext* context);
