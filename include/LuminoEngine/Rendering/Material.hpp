@@ -16,6 +16,8 @@ class Material
 {
 	LN_OBJECT;
 public:
+	static Material* defaultMaterial();
+
 	static Ref<Material> create();
 	static Ref<Material> create(Texture* mainTexture);
 	static Ref<Material> create(Texture* mainTexture, ShadingModel shadingModel);

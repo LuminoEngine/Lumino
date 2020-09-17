@@ -187,6 +187,7 @@ public:
 	const List<Ref<RenderFeature>>& renderFeatures() const { return m_renderFeatures; }
 
 	const Ref<LinearAllocatorPageManager>& stageDataPageManager() const { return m_stageDataPageManager; }
+	const Ref<Material>& defaultMaterial() const { return m_defaultMaterial; }
 	const Ref<Texture2D>& randomTexture() const { return m_randomTexture; }
 	const Ref<Shader>& builtinShader(BuiltinShader shader) const { return m_builtinShaders[(int)shader]; }
     const Ref<Material>& builtinMaterials(BuiltinMaterial material) const { return m_builtinMaterials[(int)material]; }
@@ -217,6 +218,7 @@ private:
 	// RenderStage 関係のデータ (ステートやコマンド) 用の LinearAllocatorPageManager
 	Ref<LinearAllocatorPageManager> m_stageDataPageManager;
 
+	Ref<Material> m_defaultMaterial;
 	Ref<Texture2D> m_randomTexture;
 	std::array<Ref<Shader>, 16> m_builtinShaders;
     std::array<Ref<Material>, 2> m_builtinMaterials;

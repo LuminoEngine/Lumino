@@ -107,6 +107,10 @@ void CharacterController::onPreUpdate(float elapsedSeconds)
 		const auto moveOffset = moveVector * (m_walkVelocity/* * elapsedSeconds*/);
 
 		if (m_rigidBody) {
+			// 外部で character->setPosition() などで姿勢が変更されている場合に備えて、
+			// 物理シミュレーション前に姿勢を剛体へ適用する。
+			m_rigidBody->setTransform(character->worldMatrix());
+
 			//m_rigidBody->setVelocity(moveOffset);
 			m_rigidBody->setVelocity(Vector3(moveOffset.x, m_rigidBody->velocity().y, moveOffset.z));
 		}

@@ -140,6 +140,7 @@ private:
     GeometryStageParameters& primaryGeometryStageParameters() { return m_aliveStateStack.front()->geometryStageParameters; }
     const GeometryStageParameters& primaryGeometryStageParameters() const { return m_aliveStateStack.front()->geometryStageParameters; }
 
+	RenderingManager* m_manager;
 	DrawElementList* m_targetList;
 	//FrameBufferStageParameters m_primaryFrameBufferStageParameters;
 	//GeometryStageParameters m_primaryGeometryStageParameters;
@@ -147,7 +148,6 @@ private:
     List<Ref<State>> m_aliveStateStack;	// size >= 1
     int m_currentCommandFence;
 
-    Ref<Material> m_defaultMaterial;
     Flags<DirtyFlags> m_dirtyFlags;
 	bool m_modified;
 

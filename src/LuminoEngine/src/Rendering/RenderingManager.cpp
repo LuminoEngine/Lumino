@@ -96,6 +96,8 @@ void RenderingManager::init(const Settings& settings)
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
+	m_defaultMaterial = makeObject<Material>();
+
 	{
 		static const unsigned char data[] = {
 #include "Resource/Random.png.inl"

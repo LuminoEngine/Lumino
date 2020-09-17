@@ -4,6 +4,7 @@
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include "RenderingManager.hpp"
 
 namespace ln {
 
@@ -19,6 +20,11 @@ static const float Material_DefaultRoughness = 0.5f;
 static const float Material_DefaultMetallic = 0.5f;
 //static const float Material_DefaultSpecular = 0.5f;
 static const Color Material_DefaultEmmisive = Color(0, 0, 0, 0);
+
+Material* Material::defaultMaterial()
+{
+    return detail::EngineDomain::renderingManager()->defaultMaterial();
+}
 
 Ref<Material> Material::create()
 {

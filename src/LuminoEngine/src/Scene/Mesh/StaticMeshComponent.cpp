@@ -79,8 +79,11 @@ void StaticMeshComponent::onRender(RenderingContext* context)
             Mesh* mesh = meshContainer->mesh();
             if (mesh) {
                 for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
-                    context->setMaterial(m_model->materials()[mesh->sections()[iSection].materialIndex]);
-                    context->drawMesh(mesh, iSection);
+                    int materialIndex = mesh->sections()[iSection].materialIndex;
+                    if (materialIndex >= 0) {
+                        context->setMaterial(m_model->materials()[materialIndex]);
+                        context->drawMesh(mesh, iSection);
+                    }
                 }
             }
         }
