@@ -90,11 +90,10 @@ void _LN_ProcessVertex_ClusteredForward(
 {
     outVertexPos = input.Pos;
     
-    float4 pos = mul(float4(input.Pos, 1.0), ln_World);
-    pos = mul(pos, ln_ViewProjection_Light0);
-    outvInLightPosition = pos;
-    
-    outWorldPos = pos.xyz;
+    float4 worldPos = mul(float4(input.Pos, 1.0), ln_World);
+    outWorldPos = worldPos.xyz;
+
+    outvInLightPosition = mul(worldPos, ln_ViewProjection_Light0);
 }
 
 
