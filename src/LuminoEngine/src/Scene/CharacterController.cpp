@@ -17,6 +17,8 @@ namespace ln {
     
 //==============================================================================
 // CharacterController
+//   https://yomotsu.net/blog/2015/01/03/tps-game-engine.html
+//   https://www.digifie.jp/blog/archives/1408
 
 CharacterController::CharacterController()
     : m_inputController(nullptr)
