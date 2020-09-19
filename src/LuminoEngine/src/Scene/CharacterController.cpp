@@ -187,6 +187,13 @@ void CharacterController::onUpdate(float elapsedSeconds)
 		m_theta += m_inputState.cameraH * 0.01;
 		m_phi += m_inputState.cameraV * 0.01;
 
+		m_phi += Math::PIDiv2;
+		m_phi = Math::clamp(m_phi, Math::PI * m_cameraMinTilt, Math::PI * m_cameraMaxTilt);
+		m_phi -= Math::PIDiv2;
+
+
+		//printf("%f %f\n", m_theta, m_phi);
+
 
 
 		//const auto newDir = Vector3::transform(Vector3::UnitZ, Quaternion::makeFromYawPitchRoll(theta, phi, 0.0f));

@@ -100,6 +100,10 @@ private:
 	// 鎖の要領で、この範囲内でキャラクターが動いても、カメラは位置を更新しない。
 	float m_cameraRadius = 5.0f;
 
+	// 真上からキャラを見下ろす角度が 0、真下から見上げる角度が 1
+	float m_cameraMinTilt = 0.001f;
+	float m_cameraMaxTilt = 0.8f;
+
 	// Character の EyePoint からの、カメラ注視点のオフセット
 	Vector3 m_lookAtOffset = Vector3(0.25, 0, 0);
 
