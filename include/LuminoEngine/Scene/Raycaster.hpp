@@ -70,6 +70,8 @@ private:
 	Vector3 m_point;
 	//bool m_isHit;
 
+
+
 	friend class Raycaster;
 };
 

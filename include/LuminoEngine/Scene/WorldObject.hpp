@@ -201,6 +201,8 @@ public:
 
     const Matrix& worldMatrix();
 
+	ln::Vector3 front() const { return Vector3::transform(Vector3::UnitZ, rotation()); }
+
 	Level* scene() const { return m_scene; }
 
 

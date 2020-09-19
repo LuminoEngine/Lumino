@@ -267,6 +267,21 @@ void CharacterController::onUpdate(float elapsedSeconds)
 	//camera->setPosition(character->position() + Vector3(0, 0, 10));
 	//camera->lookAt(character->position());
 
+
+	{
+		const auto cameraOuterDir = -camera->front();
+		
+
+		// TODO: UpdateContext みたいなの受け取って、今いる World を使いたい
+		PhysicsRaycastResult result;
+		if (detail::EngineDomain::engineManager()->mainPhysicsWorld()->raycast(
+			cameraLookAtPos, cameraOuterDir, m_cameraRadius, 0xFFFFFFFF, &result)) {
+			camera->setPosition(cameraLookAtPos + cameraOuterDir * result.distance);
+		}
+
+		//cameraLookAtPos
+	}
+
 	m_inputState.reset();
 }
 

@@ -13,6 +13,23 @@ namespace detail {
 class PhysicsDebugRenderer3D;
 }
 
+
+struct PhysicsRaycastResult
+{
+    /** レイがヒットした PhysicsObject */
+    Ref<PhysicsObject> physicsObject;
+
+    /** レイがヒットしたワールド上の位置 */
+    Vector3 point;
+
+    /** レイがヒットしたワールド上のサーフェスの法線 */
+    Vector3 normal;
+
+    /** レイの原点から衝突点までの距離 */
+    float distance;
+};
+
+
 class PhysicsWorld
 	: public Object
 {
@@ -23,6 +40,10 @@ public:
     // destory() でマーク付けて後で GC する仕組みにしておく。
     // ※前は addingList, removingList 作ってたけど複雑すぎた。
     void removePhysicsObject(PhysicsObject* physicsObject);
+
+    bool raycast(const Vector3& origin, const Vector3& direction, float maxDistance/* = Math::Inf*/, uint32_t layerMask /*= 0xFFFFFFFF*/, bool queryTrigger /*= false*/, PhysicsRaycastResult* outResult = nullptr);
+    bool raycast(const Vector3& origin, const Vector3& direction, float maxDistance, uint32_t layerMask, PhysicsRaycastResult* outResult = nullptr) { return raycast(origin, direction, maxDistance, layerMask, false, outResult); }
+
 
 public: // TODO: internal
     //btDiscreteDynamicsWorld* getBtWorld() { return m_btWorld; }

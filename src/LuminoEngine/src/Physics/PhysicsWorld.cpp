@@ -312,6 +312,32 @@ void PhysicsWorld::removePhysicsObject(PhysicsObject* physicsObject)
     physicsObject->setPhysicsWorld(nullptr);
 }
 
+bool PhysicsWorld::raycast(const Vector3& origin, const Vector3& direction, float maxDistance, uint32_t layerMask, bool queryTrigger, PhysicsRaycastResult* outResult)
+{
+    //struct Callback : public btCollisionWorld::RayResultCallback
+    //{
+    //    virtual btScalar addSingleResult(btCollisionWorld::LocalRayResult& rayResult, bool normalInWorldSpace)
+    //    {
+
+    //    }
+
+    //};
+
+    btCollisionWorld::ClosestRayResultCallback callback(
+        detail::BulletUtil::LNVector3ToBtVector3(origin),
+        detail::BulletUtil::LNVector3ToBtVector3(origin + direction * maxDistance));
+    m_btWorld->rayTest(callback.m_rayFromWorld, callback.m_rayToWorld, callback);
+
+    if (outResult && callback.hasHit()) {
+        outResult->physicsObject = static_cast<PhysicsObject*>(callback.m_collisionObject->getUserPointer());
+        outResult->point = detail::BulletUtil::btVector3ToLNVector3(callback.m_hitPointWorld);
+        outResult->normal = detail::BulletUtil::btVector3ToLNVector3(callback.m_hitNormalWorld);
+        outResult->distance = maxDistance * callback.m_closestHitFraction;
+    }
+
+    return callback.hasHit();
+}
+
 void PhysicsWorld::stepSimulation(float elapsedSeconds)
 {
     //ElapsedTimer t;
