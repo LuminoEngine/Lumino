@@ -30,6 +30,24 @@ public:
 
 	const Vector3& velocity() const { return m_currentVelocity; }
 
+	
+	/** キャラクターの高さを設定します。この値はカプセルコライダーの高さや、カメラの注視点として使用されます。 (default: 2.0) */
+	LN_METHOD(Property)
+	void setHeight(float value) { m_height = value; }
+
+	/** キャラクターの高さを取得します。 */
+	LN_METHOD(Property)
+	float height() const { return m_height; }
+
+	/** キャラクターとカメラの距離を設定します。(default: 5.0) */
+	LN_METHOD(Property)
+	void setCameraRadius(float value) { m_cameraRadius = value; }
+
+	/** キャラクターとカメラの距離を取得します。 */
+	LN_METHOD(Property)
+	float cameraRadius() const { return m_cameraRadius; }
+
+
 
 	/** CollisionEnter イベントの通知を受け取るコールバックを登録します。*/
 	void setCollisionEnter(Ref<CollisionEventHandler> handler);
@@ -97,7 +115,6 @@ private:
 	float m_height = 2.0f; //0.5f;//
 
 	// キャラクターとカメラの最大距離。
-	// 鎖の要領で、この範囲内でキャラクターが動いても、カメラは位置を更新しない。
 	float m_cameraRadius = 5.0f;
 
 	// 真上からキャラを見下ろす角度が 0、真下から見上げる角度が 1

@@ -388,7 +388,6 @@ void ShadowCasterPass::init()
 
 	m_renderPass = makeObject<RenderPass>();
 
-	//g_m_shadowMap = m_shadowMap;
 }
 
 //Shader* ShadowCasterPass::getDefaultShader() const

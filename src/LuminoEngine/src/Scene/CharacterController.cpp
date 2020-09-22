@@ -192,10 +192,6 @@ void CharacterController::onUpdate(float elapsedSeconds)
 		m_phi -= Math::PIDiv2;
 
 
-		//printf("%f %f\n", m_theta, m_phi);
-
-
-
 		//const auto newDir = Vector3::transform(Vector3::UnitZ, Quaternion::makeFromYawPitchRoll(theta, phi, 0.0f));
 		const auto newDir = Vector3::transform(Vector3::UnitZ, Quaternion::makeFromEulerAngles(Vector3(m_phi, m_theta, 0), RotationOrder::XYZ));
 		const auto newPos = cameraLookAtPos + (newDir * m_cameraRadius);//Vector3::distance(cameraPos, cameraCenter);

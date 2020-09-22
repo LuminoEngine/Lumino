@@ -46,43 +46,20 @@ void StaticMeshComponent::serialize(Serializer2& ar)
 
 void StaticMeshComponent::onRender(RenderingContext* context)
 {
-#if 0
-    const auto& containers = m_model->meshContainers();
-    for (int iContainer = 0; iContainer < containers.size(); iContainer++)
-    {
-        const auto& meshContainer = containers[iContainer];
-
-        MeshResource* meshResource = meshContainer->meshResource();
-        if (meshResource) {
-            for (int iSection = 0; iSection < meshResource->sections().size(); iSection++) {
-                context->setMaterial(m_model->materials()[meshResource->sections()[iSection].materialIndex]);
-                context->drawMesh(meshResource, iSection);
-            }
-        }
-
-
-        //Mesh* mesh = meshContainer->mesh();
-        //if (mesh) {
-        //    for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
-        //        context->setMaterial(m_model->materials()[mesh->sections()[iSection].materialIndex]);
-        //        context->drawMesh(mesh, iSection);
-        //    }
-        //}
-    }
-#endif
     for (const auto& node : m_model->meshNodes()) {
         if (node->meshContainerIndex() >= 0) {
 
             context->setTransfrom(m_model->nodeGlobalTransform(node->index()));
             const auto& meshContainer = m_model->meshContainers()[node->meshContainerIndex()];
 
-            Mesh* mesh = meshContainer->mesh();
-            if (mesh) {
-                for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
-                    int materialIndex = mesh->sections()[iSection].materialIndex;
-                    if (materialIndex >= 0) {
-                        context->setMaterial(m_model->materials()[materialIndex]);
-                        context->drawMesh(mesh, iSection);
+            if (meshContainer->isVisible()) {
+                if (Mesh* mesh = meshContainer->mesh()) {
+                    for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
+                        int materialIndex = mesh->sections()[iSection].materialIndex;
+                        if (materialIndex >= 0) {
+                            context->setMaterial(m_model->materials()[materialIndex]);
+                            context->drawMesh(mesh, iSection);
+                        }
                     }
                 }
             }

@@ -63,6 +63,7 @@
 #include "LuminoEngine/PostEffect/TonePostEffect.hpp"
 #include "LuminoEngine/PostEffect/ScreenBlurPostEffect.hpp"
 #include "LuminoEngine/PostEffect/BloomPostEffect.hpp"
+#include "LuminoEngine/PostEffect/FilmicPostEffect.hpp"
 
 #include "LuminoEngine/Physics/CollisionShape.hpp"
 #include "LuminoEngine/Physics/PhysicsWorld.hpp"
@@ -92,6 +93,7 @@
 #include "LuminoEngine/Scene/Mesh/SkinnedMesh.hpp"
 #include "LuminoEngine/Scene/Shapes/MeshPrimitives.hpp"
 #include "LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp"
+#include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 
 #include "LuminoEngine/Scene/Level.hpp"
 #include "LuminoEngine/Scene/Scene.hpp"

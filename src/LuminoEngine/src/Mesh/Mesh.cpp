@@ -853,6 +853,7 @@ void Mesh::attemptResetVertexLayout()
 MeshContainer::MeshContainer()
 	: m_name()
 	//, m_lodResources()
+	, m_visible(true)
 {
     m_lodMesh.resize(1);
 }

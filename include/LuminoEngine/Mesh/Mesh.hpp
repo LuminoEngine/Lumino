@@ -312,7 +312,14 @@ public:
 
     void setMesh(Mesh* mesh);
     Mesh* mesh() const;
+	
+	/** 可視状態を設定します。false の場合、このメッシュの描画は行われません。(default: true) */
+	LN_METHOD(Property)
+	void setVisible(bool value) { m_visible = value; }
 
+	/** 可視状態を取得します。*/
+	LN_METHOD(Property)
+	bool isVisible() const { return m_visible; }
 
 LN_CONSTRUCT_ACCESS:
 	MeshContainer();
@@ -327,6 +334,7 @@ private:
 	Box m_boundingBox;
 	//List<Ref<MeshResource>> m_lodResources; // TODO: :obsolete
     List<Ref<Mesh>> m_lodMesh;
+	bool m_visible;
 
 	friend class StaticMeshModel;
 };

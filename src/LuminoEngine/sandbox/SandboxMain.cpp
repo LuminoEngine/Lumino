@@ -485,8 +485,8 @@ int main(int argc, char** argv)
         //Experiment_Shadow();
         //Experiment_SSR();
 		//Sandbox_MeshTilemap();
-        Sandbox_Physics();
-        //Sandbox_Particle();
+        //Sandbox_Physics();
+        Sandbox_Particle();
         //Sandbox_PostEffect();
         //Sandbox_Sky();
 		//Tutorial_Sandbox();

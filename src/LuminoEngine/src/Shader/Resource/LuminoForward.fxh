@@ -303,7 +303,8 @@ float _LN_CalcFogFactor2(float depth, float samplePointY)
 
     // Input-density が小さいと境界が少し不自然に明るくなるが、ほとんどのケースでは問題ないのでこのままとする。
     // TODO: 何かいい補完方法思いついたら修正するかも。
-    return saturate(densityH) * saturate(densityV);
+    //return saturate(densityH) * saturate(densityV);
+    return saturate(densityH) + (saturate(densityH) * saturate(densityV));
 
     //float mu = saturate(densityH * densityV);
     //return saturate(mu * saturate(densityV));
