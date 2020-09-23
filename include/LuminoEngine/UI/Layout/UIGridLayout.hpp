@@ -25,6 +25,10 @@ B makeDecl(TArgs&&... args)
 
 
 
+/**
+ * 行と列から構成されるグリッド状に UI 要素をレイアウトします。
+ *
+ */
 class UIGridLayout
     : public UILayoutPanel2
 {

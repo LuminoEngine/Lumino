@@ -101,6 +101,8 @@ Cell の Default は Ratio.
 	
 UIGridLayout::UIGridLayout()
 	: m_rule(UILayoutRule::Box)
+	, m_rowDefinitions()
+	, m_columnDefinitions()
 	, m_columnCount(1)
 {
 }
