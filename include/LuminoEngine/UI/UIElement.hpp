@@ -531,6 +531,8 @@ public:	// TODO: internal protected
     void removeFromLogicalParent();
 	void attemptAddToPrimaryElement();
 
+	Point frameClientPositionToLocalPosition(const Point& frameClientPosition) const;
+
     UIVisualStateManager* getVisualStateManager();
 
 public: // TODO: internal

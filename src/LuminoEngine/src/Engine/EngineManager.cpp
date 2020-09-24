@@ -40,6 +40,7 @@
 #include "../UI/UIManager.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
+#include "RuntimeEditor.hpp"
 
 #include "../Runtime/BindingValidation.hpp"
 #include <imgui.h>
@@ -681,6 +682,10 @@ void EngineManager::initializeDefaultObjects()
 		m_mainWindow->updateLayoutTree();
 	}
 
+	if (m_settings.runtimeEditorEnabled && m_mainWindow) {
+		m_runtimeEditor = makeRef<detail::RuntimeEditor>();
+		m_runtimeEditor->init(this, m_mainWindow);
+	}
 }
 
 bool EngineManager::updateUnitily()
@@ -907,41 +912,41 @@ bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)
 
 void EngineManager::handleImGuiDebugLayer(UIEventArgs* e)
 {
-	ImGui::Begin("Statistics");
-	ImGui::Text("FPS: %.2f, Ext: %.2f", m_fpsController.totalFps(), m_fpsController.externalFps());
-	ImGui::Text("Min: %.2f, Max: %.2f", m_fpsController.minTimePerSeconds(), m_fpsController.maxTimePerSeconds());
-	ImGui::Separator();
+	//ImGui::Begin("Statistics");
+	//ImGui::Text("FPS: %.2f, Ext: %.2f", m_fpsController.totalFps(), m_fpsController.externalFps());
+	//ImGui::Text("Min: %.2f, Max: %.2f", m_fpsController.minTimePerSeconds(), m_fpsController.maxTimePerSeconds());
+	//ImGui::Separator();
 
-	if (ImGui::CollapsingHeader("RenderView debug"))
-	{
-		{
-			bool check = m_mainWorldRenderView->guideGridEnabled();
-			ImGui::Checkbox("Grid", &check);
-			m_mainWorldRenderView->setGuideGridEnabled(check);
-		}
-		{
-			bool check = m_mainWorldRenderView->physicsDebugDrawEnabled();
-			ImGui::Checkbox("Physics", &check);
-			m_mainWorldRenderView->setPhysicsDebugDrawEnabled(check);
-		}
-	}
+	//if (ImGui::CollapsingHeader("RenderView debug"))
+	//{
+	//	{
+	//		bool check = m_mainWorldRenderView->guideGridEnabled();
+	//		ImGui::Checkbox("Grid", &check);
+	//		m_mainWorldRenderView->setGuideGridEnabled(check);
+	//	}
+	//	{
+	//		bool check = m_mainWorldRenderView->physicsDebugDrawEnabled();
+	//		ImGui::Checkbox("Physics", &check);
+	//		m_mainWorldRenderView->setPhysicsDebugDrawEnabled(check);
+	//	}
+	//}
 
 
-	if (m_mainWorld) {
-		//ImGui::BeginChild("Levels");
-		Level* level = m_mainWorld->sceneConductor()->activeScene();
-		ImGui::Text("ActiveScene"); ImGui::SameLine(150);
-		if (ImGui::Button("Reload")) {
-			level->reloadAsset();
-		}
-		if (ImGui::Button("Save")) {
-			m_assetManager->saveAssetModelToLocalFile(makeObject<AssetModel>(level));
-		}
+	//if (m_mainWorld) {
+	//	//ImGui::BeginChild("Levels");
+	//	Level* level = m_mainWorld->sceneConductor()->activeScene();
+	//	ImGui::Text("ActiveScene"); ImGui::SameLine(150);
+	//	if (ImGui::Button("Reload")) {
+	//		level->reloadAsset();
+	//	}
+	//	if (ImGui::Button("Save")) {
+	//		m_assetManager->saveAssetModelToLocalFile(makeObject<AssetModel>(level));
+	//	}
 
-		//ImGui::EndChild();
-	}
+	//	//ImGui::EndChild();
+	//}
 
-	ImGui::End();
+	//ImGui::End();
 
 
 

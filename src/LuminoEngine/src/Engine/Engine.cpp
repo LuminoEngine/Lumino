@@ -106,6 +106,11 @@ void EngineSettings::setEngineFeatures(Flags<EngineFeature> features)
     detail::EngineManager::s_settings.features = features;
 }
 
+void EngineSettings::setRuntimeEditorEnabled(bool enabled)
+{
+    detail::EngineManager::s_settings.runtimeEditorEnabled = enabled;
+}
+
 void EngineSettings::setDefaultObjectsCreation(bool value)
 {
     detail::EngineManager::s_settings.defaultObjectsCreation = value;

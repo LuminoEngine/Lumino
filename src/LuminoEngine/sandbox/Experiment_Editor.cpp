@@ -7,13 +7,19 @@ using namespace ln;
 
 class App_Experiment_Editor : public Application
 {
+public:
 	Ref<TransformControls> m_transformControls;
+
+	App_Experiment_Editor()
+	{
+		EngineSettings::setRuntimeEditorEnabled(true);
+	}
 
     virtual void onInit() override
     {
 		Engine::renderView()->setGuideGridEnabled(true);
 		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
-		ln::detail::EngineDomain::sceneManager()->m_editorMode = true;
+		//ln::detail::EngineDomain::sceneManager()->m_editorMode = true;
 
 		auto box1 = BoxMesh::create();
 		box1->setPosition(-2, 0, 0);

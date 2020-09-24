@@ -27,8 +27,8 @@ FpsController::FpsController()
     , m_externalAverageTime(0)
     , m_minTime(0)
     , m_maxTime(0)
-    , m_minTimePerSeconds(0)
-    , m_maxTimePerSeconds(0)
+    , m_minFrameMillisecondsPerSeconds(0)
+    , m_maxFrameMillisecondsPerSeconds(0)
 {
     setFrameRate(60);
     //m_timer.start();
@@ -154,8 +154,8 @@ void FpsController::measureTimes(uint64_t externalElapsedTime, uint64_t frameEla
             }
 
             // get snapshot
-            m_minTimePerSeconds = m_minTime;
-            m_maxTimePerSeconds = m_maxTime;
+            m_minFrameMillisecondsPerSeconds = m_minTime;
+            m_maxFrameMillisecondsPerSeconds = m_maxTime;
             m_minTime = FLT_MAX;
             m_maxTime = FLT_MIN;
         }

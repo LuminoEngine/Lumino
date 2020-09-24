@@ -9,6 +9,7 @@ namespace ln {
 // UISplitter
 
 UISplitter::UISplitter()
+	: m_gap(6.0f)
 {
 }
 
@@ -46,6 +47,11 @@ void UISplitter::resetCellSizes()
 	}
 }
 
+void UISplitter::setBarGap(float value)
+{
+	m_gap = value;
+}
+
 //void UISplitter::resetCellSize(int index)
 //{
 //    //if (m_cellDefinitions.size() <= index) {
@@ -54,6 +60,21 @@ void UISplitter::resetCellSizes()
 //    //CellDefinition& cell = m_cellDefinitions[index];
 //    //cell.actualSize = Math::NaN;
 //}
+
+UIElement* UISplitter::lookupMouseHoverElement(const Point& frameClientPosition)
+{
+	const auto localPos = frameClientPositionToLocalPosition(frameClientPosition);
+	UIThumb* thumb;
+	float distance;
+	if (findNearThumb(localPos, &thumb, &distance)) {
+		// Gap 内の場合は、Thumb へマウスイベントを流すようにすることで D&D できるようにする
+		if (distance <= m_gap / 2) {
+			return thumb;
+		}
+	}
+
+	return UIControl::lookupMouseHoverElement(frameClientPosition);
+}
 
 void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
 {
@@ -65,12 +86,10 @@ void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail:
 		// TODO: style (-H, -V とかで分ける。)
 		thumb->addClass(u"SplitterBar");
 		if (isHorizontal()) {
-			thumb->setWidth(ThumbWidth);
 			thumb->setHAlignment(HAlignment::Stretch);
 			thumb->setVAlignment(VAlignment::Stretch);
 		}
 		else {
-			thumb->setHeight(ThumbWidth);
 			thumb->setHAlignment(HAlignment::Stretch);
 			thumb->setVAlignment(VAlignment::Stretch);
 		}
@@ -122,13 +141,20 @@ Size UISplitter::measureOverride(UILayoutContext* layoutContext, const Size& con
 		}
     }
 
-    // bar area
-    if (isHorizontal())
-        childrenSize.width += m_thumbs.size() * ThumbWidth;
-    else
-        childrenSize.height += m_thumbs.size() * ThumbWidth;
 	for (auto& thumb : m_thumbs) {
 		thumb->measureLayout(layoutContext, constraint);
+	}
+
+	// bar area
+	if (isHorizontal()) {
+		for (auto& thumb : m_thumbs) {
+			childrenSize.width += thumb->desiredSize().width;
+		}
+	}
+	else {
+		for (auto& thumb : m_thumbs) {
+			childrenSize.height += thumb->desiredSize().height;
+		}
 	}
 
     // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
@@ -259,7 +285,14 @@ Size UISplitter::arrangeOverride(UILayoutContext* layoutContext, const Rect& fin
 
 void UISplitter::onRoutedEvent(UIEventArgs* e)
 {
-    if (e->type() == UIEvents::ScrollDragStartedEvent)
+	/*if (e->type() == UIEvents::MouseDownEvent ||
+		e->type() == UIEvents::MouseUpEvent ||
+		e->type() == UIEvents::MouseMoveEvent)
+	{
+		m_thumbs[0]->raiseEvent(e, UIEventRoutingStrategy::Direct);
+		e->handled = true;
+	}
+    else */if (e->type() == UIEvents::ScrollDragStartedEvent)
     {
 		int index = m_thumbs.indexOf(static_cast<UIThumb*>(e->sender()));
 		if (index >= 0) {
@@ -298,6 +331,25 @@ void UISplitter::onRoutedEvent(UIEventArgs* e)
         e->handled = true;
     }
     UIElement::onRoutedEvent(e);
+}
+
+bool UISplitter::findNearThumb(const Point& pos, UIThumb** outThumb, float* outDistance)
+{
+	*outThumb = nullptr;
+	*outDistance = std::numeric_limits<float>::max();
+
+	const auto normal = isHorizontal() ? Vector3::UnitX : Vector3::UnitY;
+
+	for (const auto& thumb : m_thumbs) {
+		Plane plane(Vector3(thumb->localPosition(), 0.0f), normal);
+		const float d = std::abs(plane.getDistanceToPoint(Vector3(pos, 0.0f)));
+		if (d < *outDistance) {
+			*outThumb = thumb;
+			*outDistance = d;
+		}
+	}
+
+	return *outThumb != nullptr;
 }
 
 } // namespace ln

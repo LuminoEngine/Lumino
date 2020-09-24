@@ -43,6 +43,7 @@ class VisualManager;
 class SceneManager;
 class UIManager;
 class DebugInterface;
+class RuntimeEditor;
 
 struct EngineSettingsAssetArchiveEntry
 {
@@ -74,6 +75,7 @@ struct EngineSettings
 	bool createMainLights = false;
 	int frameRate = 60;
 	bool debugToolEnabled = false;
+	bool runtimeEditorEnabled = false;
 
 	String defaultUITheme;
 
@@ -242,6 +244,7 @@ private:
  //   bool m_showDebugFpsEnabled;
 	//bool m_debugToolEnabled;
 	DebugToolMode m_debugToolMode;
+	Ref<detail::RuntimeEditor> m_runtimeEditor;
 
 
 #if defined(LN_OS_WIN32)

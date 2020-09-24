@@ -96,6 +96,7 @@ public:
 
     static void setStandaloneFpsControl(bool enabled);
     static void setEngineFeatures(Flags<EngineFeature> features);
+	static void setRuntimeEditorEnabled(bool enabled);
 
     static void setDefaultObjectsCreation(bool value);
     static void setUseGLFWWindowSystem(bool value);

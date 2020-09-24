@@ -302,6 +302,11 @@ public:
 		return nullptr;
 	}
 
+	List<T> toArray() const
+	{
+		return List<T>(m_data.begin(), m_data.end());
+	}
+
 	//----------------------------------------------------------------------------
 	/** @name STL interface */
 	/** @{ */

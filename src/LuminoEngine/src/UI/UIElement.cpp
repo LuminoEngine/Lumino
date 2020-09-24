@@ -1081,8 +1081,7 @@ void UIElement::onRoutedEvent(UIEventArgs* e)
 
 bool UIElement::onHitTest(const Point& frameClientPosition)
 {
-    auto inv = Matrix::makeInverse(m_combinedFinalRenderTransform);
-    auto pos = Vector3::transformCoord(Vector3(frameClientPosition.x, frameClientPosition.y, .0f), inv);
+    const auto pos = frameClientPositionToLocalPosition(frameClientPosition);
 
     if (0 <= pos.x && pos.x < actualSize().width &&
         0 <= pos.y && pos.y < actualSize().height) {
@@ -1118,6 +1117,13 @@ void UIElement::attemptAddToPrimaryElement()
 			primaryElement->addElement(this);
 		}
 	//}
+}
+
+Point UIElement::frameClientPositionToLocalPosition(const Point& frameClientPosition) const
+{
+    auto inv = Matrix::makeInverse(m_combinedFinalRenderTransform);
+    auto pos = Vector3::transformCoord(Vector3(frameClientPosition.x, frameClientPosition.y, .0f), inv);
+    return Point(pos.x, pos.y);
 }
 
 void UIElement::raiseEventInternal(UIEventArgs* e, UIEventRoutingStrategy strategy)
