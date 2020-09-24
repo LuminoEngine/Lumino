@@ -45,7 +45,7 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 	const auto size = m_toolPane->actualSize();
 	ImGui::SetNextWindowPos(ImVec2(pos.x, pos.y));
 	ImGui::SetNextWindowSize(ImVec2(size.width, size.height));
-	ImGui::Begin("Statistics");
+	ImGui::Begin("Statistics", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 	ImGui::Text("test");
 
 
