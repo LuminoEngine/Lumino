@@ -1,7 +1,38 @@
 ﻿#pragma once
-#include <memory>
 #include "Common.hpp"
 
+namespace ln {
+
+/**
+ * Physics joint.
+ */
+class Joint
+    : public Object
+{
+public:
+    /** この Joint が含まれている PhysicsWorld を取得します。 */
+    PhysicsWorld* physicsWorld() const { return m_world; }
+
+    /** この Joint が含まれている PhysicsWorld からこの Joint を除外します。 */
+    void removeFromPhysicsWorld();
+
+LN_CONSTRUCT_ACCESS:
+    Joint();
+
+private:
+    virtual void removeFromBtWorld() = 0;
+
+    PhysicsWorld* m_world;
+    bool m_removing;
+
+    friend class PhysicsWorld;
+};
+
+} // namespace ln
+
+
+
+#if 0
 #include "PhysicsObject.hpp"    // TODO: for joint
 
 namespace ln {
@@ -35,13 +66,11 @@ class PhysicsWorld
 {
 public:
     void addPhysicsObject(PhysicsObject* physicsObject);
-    void addJoint(Joint* joint);
 
     // TODO: 衝突コールバック内から呼ばれるとNG。
     // destory() でマーク付けて後で GC する仕組みにしておく。
     // ※前は addingList, removingList 作ってたけど複雑すぎた。
     void removePhysicsObject(PhysicsObject* physicsObject);
-    void removeJoint(Joint* joint);
 
     bool raycast(const Vector3& origin, const Vector3& direction, float maxDistance/* = Math::Inf*/, uint32_t layerMask /*= 0xFFFFFFFF*/, bool queryTrigger /*= false*/, PhysicsRaycastResult* outResult = nullptr);
     bool raycast(const Vector3& origin, const Vector3& direction, float maxDistance, uint32_t layerMask, PhysicsRaycastResult* outResult = nullptr) { return raycast(origin, direction, maxDistance, layerMask, false, outResult); }
@@ -65,7 +94,6 @@ LN_CONSTRUCT_ACCESS:
     virtual void onDispose(bool explicitDisposing) override;
 
 private:
-    void updateObjectList();
     void addObjectInternal(PhysicsObject* obj);
     //void removeObjectInternal(PhysicsObject* obj);
 
@@ -93,12 +121,7 @@ private:
     btSoftBodyWorldInfo*					m_softBodyWorldInfo;
     std::unique_ptr<detail::PhysicsDebugRenderer3D> m_debugRenderer;
 
-
-    List<Ref<PhysicsObject>> m_delayAddBodies;
-    List<Ref<Joint>> m_delayAddJoints;
     List<Ref<PhysicsObject>> m_physicsObjectList;
-    List<Ref<Joint>> m_jointList;
-
     std::vector<ContactCommand> m_contactCommands;
 };
 
@@ -133,6 +156,7 @@ protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onPrepareStepSimulation() override;
     virtual void onAfterStepSimulation() override;
+    virtual void onRemoveFromPhysicsWorld() override  { LN_NOTIMPLEMENTED(); }
 
 LN_CONSTRUCT_ACCESS:
     SpringJoint();
@@ -140,8 +164,6 @@ LN_CONSTRUCT_ACCESS:
     void init();
 
 private:
-    void removeFromBtWorld() override;
-
     btGeneric6DofSpringConstraint* m_btDofSpringConstraint;
     Ref<RigidBody> m_bodyA;
     Ref<RigidBody> m_bodyB;
@@ -165,3 +187,4 @@ private:
 
 } // namespace ln
 
+#endif

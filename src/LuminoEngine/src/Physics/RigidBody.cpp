@@ -425,7 +425,7 @@ void RigidBody::onAfterStepSimulation()
     PhysicsObject::onAfterStepSimulation();
 }
 
-void RigidBody::onRemoveFromPhysicsWorld()
+void RigidBody::removeFromBtWorld()
 {
     physicsWorld()->getBtWorld()->removeRigidBody(m_btRigidBody);
 }

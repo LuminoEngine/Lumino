@@ -1,5 +1,30 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include <LuminoEngine/Physics/Joint.hpp>
+
+namespace ln {
+
+Joint::Joint()
+    : m_world(nullptr)
+    , m_removing(false)
+{
+}
+
+void Joint::removeFromPhysicsWorld()
+{
+    if (LN_REQUIRE(m_world)) return;
+    m_world->removeJoint(this);
+}
+
+//void Joint::removeFromBtWorld()
+//{
+//
+//}
+
+} // namespace ln
+
+#if 0
 #include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 #include <BulletCollision/CollisionDispatch/btManifoldResult.h>
 #include <BulletSoftBody/btSoftRigidDynamicsWorld.h>
@@ -21,7 +46,6 @@
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Physics/PhysicsObject.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
-#include <LuminoEngine/Physics/Joint.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include "PhysicsDebugRenderer.hpp"
 #include "BulletUtils.hpp"
@@ -284,12 +308,6 @@ void PhysicsWorld::init()
 
 void PhysicsWorld::onDispose(bool explicitDisposing)
 {
-    for (auto& obj : m_delayAddBodies) obj->m_removing = true;
-    for (auto& obj : m_delayAddJoints) obj->m_removing = true;
-    for (auto& obj : m_physicsObjectList) obj->m_removing = true;
-    for (auto& obj : m_jointList) obj->m_removing = true;
-    updateObjectList();
-
     LN_SAFE_DELETE(m_softBodyWorldInfo);
     LN_SAFE_DELETE(m_btGhostPairCallback);
     LN_SAFE_DELETE(m_btWorld);
@@ -305,33 +323,18 @@ void PhysicsWorld::addPhysicsObject(PhysicsObject* physicsObject)
 {
     if (LN_REQUIRE(physicsObject)) return;
     if (LN_REQUIRE(!physicsObject->physicsWorld())) return;
-    m_delayAddBodies.add(physicsObject);
+    m_physicsObjectList.add(physicsObject);
+    //addObjectInternal(physicsObject);
     physicsObject->setPhysicsWorld(this);
-}
-
-void PhysicsWorld::addJoint(Joint* joint)
-{
-    if (LN_REQUIRE(joint)) return;
-    if (LN_REQUIRE(!joint->physicsWorld())) return;
-    m_delayAddJoints.add(joint);
-    joint->m_world = this;
 }
 
 void PhysicsWorld::removePhysicsObject(PhysicsObject* physicsObject)
 {
     if (LN_REQUIRE(physicsObject)) return;
     if (LN_REQUIRE(physicsObject->physicsWorld() == this)) return;
-    physicsObject->m_removing = true;
-    //m_physicsObjectList.remove(physicsObject);
-    //physicsObject->onRemoveFromPhysicsWorld();
-    //physicsObject->setPhysicsWorld(nullptr);
-}
-
-void PhysicsWorld::removeJoint(Joint* joint)
-{
-    if (LN_REQUIRE(joint)) return;
-    if (LN_REQUIRE(joint->physicsWorld() == this)) return;
-    joint->m_removing = true;
+    m_physicsObjectList.remove(physicsObject);
+    physicsObject->onRemoveFromPhysicsWorld();
+    physicsObject->setPhysicsWorld(nullptr);
 }
 
 bool PhysicsWorld::raycast(const Vector3& origin, const Vector3& direction, float maxDistance, uint32_t layerMask, bool queryTrigger, PhysicsRaycastResult* outResult)
@@ -353,8 +356,6 @@ bool PhysicsWorld::raycast(const Vector3& origin, const Vector3& direction, floa
 
 void PhysicsWorld::stepSimulation(float elapsedSeconds)
 {
-    updateObjectList();
-
     //ElapsedTimer t;
     for (auto& obj : m_physicsObjectList) {
     	obj->onPrepareStepSimulation();
@@ -407,37 +408,6 @@ void PhysicsWorld::renderDebug(RenderingContext* context)
     m_btWorld->debugDrawWorld();
     m_debugRenderer->render(context);
     //context->popState();
-}
-
-void PhysicsWorld::updateObjectList()
-{
-    // Delayed Add
-    for (auto& obj : m_delayAddBodies) {
-        m_physicsObjectList.add(obj);
-    }
-    for (auto& obj : m_delayAddJoints) {
-        m_jointList.add(obj);
-    }
-    m_delayAddBodies.clear();
-    m_delayAddJoints.clear();
-
-    // Remove
-    for (int i = m_physicsObjectList.size() - 1; i >= 0; i--) {
-        const auto& obj = m_physicsObjectList[i];
-        if (obj->m_removing) {
-            obj->removeFromBtWorld();
-            obj->m_removing = false;
-            m_physicsObjectList.removeAt(i);
-        }
-    }
-    for (int i = m_jointList.size() - 1; i >= 0; i--) {
-        const auto& obj = m_jointList[i];
-        if (obj->m_removing) {
-            obj->removeFromBtWorld();
-            obj->m_removing = false;
-            m_jointList.removeAt(i);
-        }
-    }
 }
 
 void PhysicsWorld::addObjectInternal(PhysicsObject* obj)
@@ -663,10 +633,6 @@ void SpringJoint::onAfterStepSimulation()
 {
 }
 
-void SpringJoint::removeFromBtWorld()
-{
-    LN_NOTIMPLEMENTED();
-}
-
 } // namespace ln
 
+#endif

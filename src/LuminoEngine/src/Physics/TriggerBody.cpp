@@ -117,12 +117,11 @@ void TriggerBody::setCollisionGroupMask(uint32_t value)
     }
 }
 
-//void TriggerBody::setPosition(const Vector3& value)
-//{
-//    //if (m_position != value) {
-//    //    m_position = value;
-//    //}
-//}
+void TriggerBody::onDispose(bool explicitDisposing)
+{
+	deleteBtObject();
+	PhysicsObject::onDispose(explicitDisposing);
+}
 
 void TriggerBody::onPrepareStepSimulation()
 {
@@ -159,10 +158,16 @@ void TriggerBody::onAfterStepSimulation()
 	PhysicsObject::onAfterStepSimulation();
 }
 
-void TriggerBody::onRemoveFromPhysicsWorld()
+void TriggerBody::removeFromBtWorld()
 {
 	if (m_btWorldAdded) {
 		physicsWorld()->getBtWorld()->removeCollisionObject(m_btGhostObject);
+		m_btWorldAdded = false;
+
+		if (m_btGhostObject) {
+			delete m_btGhostObject;
+			m_btGhostObject = nullptr;
+		}
 	}
 }
 
@@ -198,6 +203,9 @@ void TriggerBody::createBtObject()
 void TriggerBody::deleteBtObject()
 {
 	if (m_btGhostObject) {
+		//if (m_btWorldAdded) {
+		//	physicsWorld()->getBtWorld()->removeCollisionObject(m_btGhostObject);
+		//}
 		delete m_btGhostObject;
 		m_btGhostObject = nullptr;
 	}

@@ -12,7 +12,7 @@ PhysicsObject::PhysicsObject(PhysicsObjectType type)
 	: Object()
 	, m_resourceType(type)
 	, m_ownerWorld(nullptr)
-	, m_removingFromWorld(false)
+	, m_removing(false)
 {
 }
 

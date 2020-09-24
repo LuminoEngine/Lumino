@@ -156,9 +156,9 @@ public:
 protected:
     void onPrepareStepSimulation() override;
     void onAfterStepSimulation() override;
-    void onRemoveFromPhysicsWorld() override;
 
 private:
+    void removeFromBtWorld() override;
     void attemptAddToActiveWorld();
     void activate();
     void createBtRigidBody();

@@ -26,7 +26,9 @@ struct btCollisionObjectWrapper;
 class btGeneric6DofSpringConstraint;
 
 namespace ln {
+class PhysicsWorld;
 class PhysicsObject;
+class Joint;
 class ContactPoint;
 class ContactPoint2D;
 class PhysicsObject2D;
