@@ -11,6 +11,7 @@
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
+#include "../Font/FontManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "../../../build/BuildCache/imgui/imgui.h"
 
@@ -38,7 +39,12 @@ bool ImGuiContext::init()
     colors[ImGuiCol_WindowBg] = ImVec4(0.94f, 0.94f, 0.94f, 0.70f);
 
 	// Load Fonts
-	io.Fonts->AddFontDefault();
+	if (ByteBuffer* data = EngineDomain::fontManager()->getDefaultFontData()) {
+		io.Fonts->AddFontFromMemoryTTF(data->data(), data->size(), 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
+	}
+	else {
+		io.Fonts->AddFontDefault();
+	}
 
 
 	unsigned char* pixels;

@@ -334,6 +334,19 @@ Font* FontManager::emojiFont() const
 	return m_emojiFont;
 }
 
+ByteBuffer* FontManager::getDefaultFontData() const
+{
+    if (!m_defaultFont) return nullptr;
+    uint32_t key = CRCHash::compute(m_defaultFont->family().c_str());
+    auto itr = m_ttfDataEntryMap.find(key);
+    if (itr != m_ttfDataEntryMap.end()) {
+        return itr->second.dataBuffer;
+    }
+    else {
+        return nullptr;
+    }
+}
+
 const FontFaceSource* FontManager::lookupFontFaceSourceFromFamilyName(const String& name)
 {
 	int index = m_famlyNameToFontFaceSourceMap.indexOfIf([&](auto& x) { return String::compare(name, x.familyName, CaseSensitivity::CaseInsensitive) == 0; });

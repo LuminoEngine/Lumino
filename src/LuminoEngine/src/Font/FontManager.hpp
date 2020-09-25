@@ -58,6 +58,7 @@ public:
     FontDesc defaultFontDesc() const;
     Font* defaultFont() const;
 	Font* emojiFont() const;
+	ByteBuffer* getDefaultFontData() const;
 	const Ref<GlyphIconFontManager>& glyphIconFontManager() const { return m_glyphIconFontManager; }
 
 	const FontFaceSource* lookupFontFaceSourceFromFamilyName(const String& name);

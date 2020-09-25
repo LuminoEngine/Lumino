@@ -894,7 +894,10 @@ bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)
 		break;
 	case PlatformEventType::KeyDown:
 		if (e.key.keyCode == Keys::F8) {
-			toggleDebugToolMode();
+			//toggleDebugToolMode();
+			if (m_runtimeEditor) {
+				m_runtimeEditor->toggleMode();
+			}
 		}
 		break;
 	default:
