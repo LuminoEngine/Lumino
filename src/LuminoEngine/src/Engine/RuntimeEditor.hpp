@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/UI/UIFrameWindow.hpp>
 
 namespace ln {
 class UIEventArgs;
@@ -7,6 +8,7 @@ class UIMainWindow;
 class UISplitter;
 
 namespace detail {
+
 
 class RuntimeEditor
     : public RefObject

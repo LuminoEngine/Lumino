@@ -3,6 +3,7 @@
 #include <imgui.h>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/Controls/UISplitter.hpp>
+#include <LuminoEngine/Scene/World.hpp>
 #include "EngineManager.hpp"
 #include "RuntimeEditor.hpp"
 
@@ -13,6 +14,7 @@ namespace detail {
 // RuntimeEditor
 
 RuntimeEditor::RuntimeEditor()
+	: m_mode(Mode::Hidden)
 {
 }
 
@@ -21,6 +23,7 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window)
 	m_manager = manager;
 
 	m_window = window;
+
 	m_window->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
 
 	m_splitter = makeObject<UISplitter>();
@@ -34,6 +37,8 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window)
 	m_toolPane->setBorderColor(Color::LightGray);
 	m_toolPane->setBorderThickness(1);
 	m_splitter->addChild(m_toolPane);
+
+	setMode(Mode::Activated);
 }
 
 void RuntimeEditor::toggleMode()
@@ -120,6 +125,20 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 		if (ImGui::BeginTabItem("Details"))
 		{
 			ImGui::Text("ID: 0123456789");
+
+
+
+
+			//const auto& world = m_manager->mainWorld();
+			//const auto& objects = world->objects
+
+
+
+
+
+
+
+
 			ImGui::EndTabItem();
 		}
 		ImGui::EndTabBar();

@@ -20,12 +20,13 @@ public:
 		Engine::renderView()->setGuideGridEnabled(true);
 		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
 		//ln::detail::EngineDomain::sceneManager()->m_editorMode = true;
+		Engine::renderView()->setClearMode(RenderViewClearMode::SkyDome);
 
-		//auto box1 = BoxMesh::create();
-		//box1->setPosition(-2, 0, 0);
+		auto box1 = BoxMesh::create();
+		box1->setPosition(-2, 0, 0);
 
-		//auto box2 = BoxMesh::create();
-		//box2->setPosition(2, 0, 0);
+		auto box2 = BoxMesh::create();
+		box2->setPosition(2, 0, 0);
 
 		//m_transformControls = Engine::renderView()->transformControls();
 		//m_transformControls->setTarget(box);

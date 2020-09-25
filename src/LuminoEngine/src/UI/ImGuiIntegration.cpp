@@ -40,7 +40,9 @@ bool ImGuiContext::init()
 
 	// Load Fonts
 	if (ByteBuffer* data = EngineDomain::fontManager()->getDefaultFontData()) {
-		io.Fonts->AddFontFromMemoryTTF(data->data(), data->size(), 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
+		void* file_data = IM_ALLOC(data->size());
+		memcpy(file_data, data->data(), data->size());
+		io.Fonts->AddFontFromMemoryTTF(file_data, data->size(), 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
 	}
 	else {
 		io.Fonts->AddFontDefault();
