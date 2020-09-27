@@ -9,6 +9,7 @@
 
 #include "LuminoEngine/Engine/EngineSettings.hpp"
 #include "LuminoEngine/Engine/Engine.hpp"
+#include "LuminoEngine/Engine/Time.hpp"
 #include "LuminoEngine/Engine/Application.hpp"
 #include "LuminoEngine/Engine/Diagnostics.hpp"
 #include "LuminoEngine/Engine/Debug.hpp"

@@ -13,6 +13,8 @@ sampler2D _occlusionMap;
 
 cbuffer EffectSettings
 {
+    float4 _blendColor;
+    float4 _colorTone;
     int _antialiasEnabled;
     int _ssrEnabled;
     int _ssaoEnabled;
@@ -220,7 +222,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
     }
 
     //--------------------
-    // Tone
+    // Tonemap
     if (_tonemapEnabled) {
         result.rgb = Tonemap(result.rgb);
     }
@@ -231,7 +233,14 @@ float4 PSMain(PSInput input) : SV_TARGET0
         result.rgb = Vignette(result.rgb, input.uv.xy);
     }
     
+    //--------------------
+    // Color Effect
 
+    // apply blend color.
+    result.rgb = lerp(result.rgb, _blendColor.rgb, _blendColor.a);
+
+    // apply tone. (NTSC Coef method)
+    result.rgb = LN_CalculateToneColor(float4(result.rgb, 1.0), _colorTone).rgb;
 
     //--------------------
     // Gamma

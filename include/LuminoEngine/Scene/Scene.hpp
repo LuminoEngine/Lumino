@@ -133,6 +133,22 @@ public:
 	static void setSkydomeOverlayColor(const Color& value);
 
 	/** @} */
+
+
+	//----------------------------------------------------------------------------
+	/** @name PostEffect */
+	/** @{ */
+
+	static void setScreenBlendColor(const Color& value);
+
+	static const Color& screenBlendColor();
+
+	// ※ RGB は「加算」される
+	static void setScreenColorTone(const ColorTone& value);
+
+	static const ColorTone& screenColorTone();
+
+	/** @} */
 };
 
 //namespace ed {

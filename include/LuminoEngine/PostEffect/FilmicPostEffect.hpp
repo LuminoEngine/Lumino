@@ -1,8 +1,9 @@
 ﻿#pragma once
-#include <LuminoEngine/PostEffect/SSRPostEffect.hpp>
-#include <LuminoEngine/PostEffect/BloomPostEffect.hpp>
-#include <LuminoEngine/PostEffect/DepthOfFieldPostEffect.hpp>
-#include <LuminoEngine/PostEffect/TonemapPostEffect.hpp>
+#include "../Graphics/ColorStructs.hpp"
+#include "SSRPostEffect.hpp"
+#include "BloomPostEffect.hpp"
+#include "DepthOfFieldPostEffect.hpp"
+#include "TonemapPostEffect.hpp"
 
 namespace ln {
 class SamplerState;
@@ -76,6 +77,15 @@ public:
 	LN_METHOD(Property)
 	bool isGammaEnabled() const { return m_gammaEnabled; }
 
+	void setScreenBlendColor(const Color& value) { m_screenBlendColor = value; }
+
+	const Color& screenBlendColor() const { return m_screenBlendColor; }
+
+	void setScreenColorTone(const ColorTone& value) { m_screenColorTone = value; }
+
+	const ColorTone& screenColorTone() const { return m_screenColorTone; }
+
+
 protected:
     virtual Ref<PostEffectInstance> onCreateInstance() override;
 
@@ -87,6 +97,9 @@ private:
     float m_luminosityThreshold;
     float m_bloomStrength;
     float m_bloomRadius;
+
+	Color m_screenBlendColor;
+	ColorTone m_screenColorTone;
 
     bool m_antialiasEnabled;
     bool m_ssrEnabled;

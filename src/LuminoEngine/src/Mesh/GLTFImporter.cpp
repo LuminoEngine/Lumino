@@ -458,6 +458,9 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 				else if (itr->first.compare("TEXCOORD_1") == 0) {
 					vbView.usageIndex = 1;
 				}
+				else if (itr->first.compare("TEXCOORD_2") == 0) {
+					vbView.usageIndex = 2;
+				}
 				else {
 					LN_NOTIMPLEMENTED();
 					return nullptr;

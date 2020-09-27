@@ -119,18 +119,20 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
         const float toeNumerator = 0.02;
         const float toeDenominator = 0.3;
         const float Exposure = 0.0f;// 2.0f;//5.0f;// 
-        const ColorTone tone(0, 0, 0, 0);
+        //const ColorTone tone(0, 0, 0, 0);
 
         TonemapPostEffectParams params;
         params.setup(
             linearWhite, shoulderStrength, linearStrength, linearAngle,
-            toeStrength, toeNumerator, toeDenominator, Exposure, tone);
+            toeStrength, toeNumerator, toeDenominator, Exposure);
         m_integrationMaterial->setBufferData(u"TonemapPostEffectParams", &params, sizeof(params));
     }
 
     // cbuffer EffectSettings
     struct EffectSettings
     {
+        Vector4 blendColor;
+        Vector4 colorTone;
         int antialiasEnabled;
         int ssrEnabled;
         int ssaoEnabled;
@@ -142,6 +144,8 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     };
 
     EffectSettings settings;
+    settings.blendColor = m_owner->m_screenBlendColor.toVector4();
+    settings.colorTone = m_owner->m_screenColorTone.toVector4();
     settings.antialiasEnabled = m_owner->m_antialiasEnabled ? 1 : 0;
     settings.ssrEnabled = actualSSREnabled ? 1 : 0;
     settings.ssaoEnabled = m_owner->m_ssaoEnabled ? 1 : 0;

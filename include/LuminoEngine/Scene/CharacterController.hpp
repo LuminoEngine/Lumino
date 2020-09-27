@@ -28,8 +28,15 @@ public:
 
 	const Ref<RigidBody>& rigidBody() const { return m_rigidBody; }
 
+	// InputControlEnabled=true の時に有効
+	void setVelocity(const Vector3& value) { m_currentVelocity = value; }
+
 	const Vector3& velocity() const { return m_currentVelocity; }
 
+
+	void setInputControlEnabled(bool value) { m_inputControlEnabled = value; }
+
+	void setCameraControlEnabled(bool value) { m_cameraControlEnabled = value; }
 	
 	/** キャラクターの高さを設定します。この値はカプセルコライダーの高さや、カメラの注視点として使用されます。 (default: 2.0) */
 	LN_METHOD(Property)
@@ -80,6 +87,7 @@ private:
 	{
 		float forwardVelocity;
 		float turnVelocity;
+		//float verticalVelocity;
 		//bool sneak;
 
 		float cameraH;
@@ -157,6 +165,9 @@ private:
 	Ref<RigidBody> m_rigidBody;
 
 	Vector3 m_currentVelocity;
+
+	bool m_inputControlEnabled;
+	bool m_cameraControlEnabled;
 };
 
 } // namespace ln

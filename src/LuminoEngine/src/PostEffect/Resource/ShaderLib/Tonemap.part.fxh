@@ -25,14 +25,12 @@ float3 CalcUncharted2FilmicPreParam( float3 rgb,
 
 float3 Tonemap(float3 color)
 {
-        
     float expBias = exp2( Exposure );
     float3 rgb = color.rgb * expBias;
+
+    rgb = CalcUncharted2FilmicPreParam(rgb,
+        paramA, paramB, paramCB, paramDE, paramDF, paramEperF, paramF_White);
     
-    rgb = LN_CalculateToneColor(float4(rgb, 1.0), _Tone).rgb;
-
-    return CalcUncharted2FilmicPreParam( rgb,
-        paramA, paramB, paramCB, paramDE, paramDF, paramEperF, paramF_White );
-
+    return rgb;
 }
 

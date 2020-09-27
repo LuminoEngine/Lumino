@@ -20,7 +20,9 @@
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/SceneConductor.hpp>
+#include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
+#include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include "../Engine/EngineManager.hpp"
 #include "SceneManager.hpp"
 
@@ -171,6 +173,26 @@ void Scene::setSkydomeCloudColor(const Color& value)
 void Scene::setSkydomeOverlayColor(const Color& value)
 {
     detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeOverlayColor = value;
+}
+
+void Scene::setScreenBlendColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setScreenBlendColor(value);
+}
+
+const Color& Scene::screenBlendColor()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->screenBlendColor();
+}
+
+void Scene::setScreenColorTone(const ColorTone& value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setScreenColorTone(value);
+}
+
+const ColorTone& Scene::screenColorTone()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->screenColorTone();
 }
 
 ////==============================================================================

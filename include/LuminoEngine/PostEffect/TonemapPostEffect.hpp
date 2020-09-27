@@ -42,8 +42,7 @@ struct TonemapPostEffectParams
         const float toeStrength,
         const float toeNumerator,
         const float toeDenominator,
-        const float exposure,
-        const ColorTone& tone);
+        const float exposure);
 };
 
 class TonemapPostEffectInstance
