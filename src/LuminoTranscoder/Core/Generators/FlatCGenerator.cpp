@@ -661,8 +661,13 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecl(const TypeSymbol* classSym
 					code.AppendLine(u"if (auto func = m_overridePrototypes->{0}) {{", makeFlatAPIName_OverrideFunc(method, FlatCharset::Unicode));
 					code.IncreaseIndent();
 					{
-						code.AppendLine(u"func->call({0});", nativeArgList.toString());
-						code.AppendLine(u"return;");
+						if (method->returnType().type == PredefinedTypes::voidType) {
+							code.AppendLine(u"func->call({0});", nativeArgList.toString());
+							code.AppendLine(u"return;");
+						}
+						else {
+							code.AppendLine(u"return func->call({0});", nativeArgList.toString());
+						}
 					}
 					code.DecreaseIndent();
 					code.AppendLine(u"}");
@@ -670,7 +675,13 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecl(const TypeSymbol* classSym
 				code.DecreaseIndent();
 				code.AppendLine(u"}");
 
-				code.AppendLine(u"if (s_{0}) s_{0}({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), flatArgList.toString());
+
+				if (method->returnType().type == PredefinedTypes::voidType)
+					code.AppendLine(u"if (s_{0}) s_{0}({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), flatArgList.toString());
+				// ↑のは deprecated なのでこれ以上対応しない
+
+				code.AppendLine(makeBaseCallerExpr(classSymbol, method));
+
 				code.DecreaseIndent();
 				code.AppendLine(u"}");
 			}
@@ -680,11 +691,7 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecl(const TypeSymbol* classSym
 				code.AppendLine(u"{0} {1}_CallBase({2})", method->returnType().type->fullName(), method->shortName(), paramList.toString());
 				code.AppendLine(u"{");
 				code.IncreaseIndent();
-				OutputBuffer argList;
-				for (auto& param : method->parameters()) {
-					argList.AppendCommad(param->name());
-				}
-				code.AppendLine(u"{0}::{1}({2});", classSymbol->fullName(), method->shortName(), argList.toString());
+				code.AppendLine(makeBaseCallerExpr(classSymbol, method));
 				code.DecreaseIndent();
 				code.AppendLine(u"}");
 				code.NewLine();
@@ -969,6 +976,17 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 	funcImpl.DecreaseIndent();
 	funcImpl.AppendLine(u"}");
 	return funcImpl.toString();
+}
+
+ln::String FlatCSourceGenerator::makeBaseCallerExpr(const TypeSymbol* classSymbol, const MethodSymbol* methodSymbol) const
+{
+	OutputBuffer argList;
+	for (auto& param : methodSymbol->parameters()) {
+		argList.AppendCommad(param->name());
+	}
+	return ln::String::format(u"{0}{1}::{2}({3});",
+		(methodSymbol->returnType().type == PredefinedTypes::voidType) ? u"" : u"return ",
+		classSymbol->fullName(), methodSymbol->shortName(), argList.toString());
 }
 
 //ln::String FlatCSourceGenerator::makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset)

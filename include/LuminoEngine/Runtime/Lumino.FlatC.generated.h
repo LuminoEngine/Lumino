@@ -357,7 +357,7 @@ typedef LNResult(*LNUISpriteSerializeHandlerCallback)(LNHandle uispriteserialize
 typedef LNResult(*LNInterpreterCommandSerializeHandlerCallback)(LNHandle interpretercommandserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNInterpreterCommandListSerializeHandlerCallback)(LNHandle interpretercommandlistserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNInterpreterSerializeHandlerCallback)(LNHandle interpreterserializehandler, LNHandle self, LNHandle ar);
-typedef LNResult(*LNInterpreterUpdateWaitHandlerCallback)(LNHandle interpreterupdatewaithandler, LNHandle self, const LNChar* waitMode, LNBool* outReturn);
+typedef LNResult(*LNInterpreterUpdateWaitHandlerCallback)(LNHandle interpreterupdatewaithandler, LNHandle self, LNBool* outReturn);
 typedef LNResult(*LNApplicationSerializeHandlerCallback)(LNHandle applicationserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNApplicationInitHandlerCallback)(LNHandle applicationinithandler, LNHandle self);
 typedef LNResult(*LNApplicationUpdateHandlerCallback)(LNHandle applicationupdatehandler, LNHandle self);
@@ -615,7 +615,7 @@ LN_FLAT_API LNResult LNObject_Retain(LNHandle object);
     @param[in] object : instance
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LNResult LNObject_ReferenceCount(LNHandle object, int* outReturn);
+LN_FLAT_API LNResult LNObject_GetReferenceCount(LNHandle object, int* outReturn);
 
 typedef LNResult(*LNObject_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNObject_OnSerialize_SetOverrideCallback(LNObject_OnSerialize_OverrideCallback callback);
@@ -3210,12 +3210,40 @@ LN_FLAT_API LNResult LNInterpreter_Terminate(LNHandle interpreter);
 LN_FLAT_API LNResult LNInterpreter_RegisterCommandHandler(LNHandle interpreter, const LNChar* name, LNHandle handler);
 LN_FLAT_API LNResult LNInterpreter_RegisterCommandHandlerA(LNHandle interpreter, const char* name, LNHandle handler);
 
+/**
+    @brief setWaitMode
+    @param[in] interpreter : instance
+*/
+LN_FLAT_API LNResult LNInterpreter_SetWaitMode(LNHandle interpreter, const LNChar* mode);
+LN_FLAT_API LNResult LNInterpreter_SetWaitModeA(LNHandle interpreter, const char* mode);
+
+/**
+    @brief waitMode
+    @param[in] interpreter : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNInterpreter_GetWaitMode(LNHandle interpreter, const LNChar** outReturn);
+LN_FLAT_API LNResult LNInterpreter_GetWaitModeA(LNHandle interpreter, const char** outReturn);
+
+/**
+    @brief setWaitCount
+    @param[in] interpreter : instance
+*/
+LN_FLAT_API LNResult LNInterpreter_SetWaitCount(LNHandle interpreter, int count);
+
+/**
+    @brief waitCount
+    @param[in] interpreter : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNInterpreter_GetWaitCount(LNHandle interpreter, int* outReturn);
+
 typedef LNResult(*LNInterpreter_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNInterpreter_OnSerialize_SetOverrideCallback(LNInterpreter_OnSerialize_OverrideCallback callback);
 LN_FLAT_API LNResult LNInterpreter_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
-typedef LNResult(*LNInterpreter_OnUpdateWait_OverrideCallback)(LNHandle interpreter, const LNChar* waitMode, LNBool* outReturn);
+typedef LNResult(*LNInterpreter_OnUpdateWait_OverrideCallback)(LNHandle interpreter, LNBool* outReturn);
 LN_FLAT_API LNResult LNInterpreter_OnUpdateWait_SetOverrideCallback(LNInterpreter_OnUpdateWait_OverrideCallback callback);
-LN_FLAT_API LNResult LNInterpreter_OnUpdateWait_CallOverrideBase(LNHandle interpreter, const LNChar* waitMode, LNBool* outReturn);
+LN_FLAT_API LNResult LNInterpreter_OnUpdateWait_CallOverrideBase(LNHandle interpreter, LNBool* outReturn);
 
 /**
     @brief 

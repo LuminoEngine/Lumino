@@ -63,6 +63,9 @@ typedef enum tagLNResult
 	/**  */
 	LN_RUNTIME_UNINITIALIZED = -2,
 
+    /**  */
+    LN_ERROR_INVALID_ARGUMENT = -3,
+
 } LNResult;
 
 /** 真偽値 */
@@ -159,7 +162,8 @@ LN_FLAT_API LNResult LNObject_Retain(LNHandle obj);
  *  @brief      ネイティブオブジェクトの参照カウントを取得します。これは内部的に使用される関数です。
  *  @param[in]  obj	: オブジェクトハンドル
  */
-LN_FLAT_API int32_t LNObject_GetReferenceCount(LNHandle obj);
+LN_FLAT_API LNResult LNObject_GetReferenceCount(LNHandle object, int* outReturn);
+LN_FLAT_API int32_t _LNObject_GetReferenceCount(LNHandle obj);
 
 // class LNWS_XXXX のインスタンスに対して set できる。
 // Engine 内部で new されたインスタンスに対して呼び出すことはできない。

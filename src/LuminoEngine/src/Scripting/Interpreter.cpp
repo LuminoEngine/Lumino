@@ -236,7 +236,7 @@ InterpreterCommand* Interpreter::getCurrentCommand() const
 	return m_commandList[m_index];
 }
 
-bool Interpreter::onUpdateWait(const ln::String& waitMode)
+bool Interpreter::onUpdateWait()
 {
 	return false;
 }
@@ -257,7 +257,7 @@ bool Interpreter::updateWait()
 		return true;
 	}
 
-	bool waiting = onUpdateWait(m_waitMode);
+	bool waiting = onUpdateWait();
 	if (!waiting) {
 		m_waitMode = u"";
 	}

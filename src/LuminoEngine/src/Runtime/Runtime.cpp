@@ -69,7 +69,7 @@ void RuntimeStringBuffer::reset(const String& str)
 
 const char* RuntimeStringBuffer::getUtf8()
 {
-    if (m_translated) {
+    if (!m_translated) {
         m_str8 = m_str.toStdString();   // TODO: encoding
         m_translated = true;
     }
@@ -308,12 +308,25 @@ LNResult LNObject_Retain(LNHandle obj)
 	}
 }
 
-int32_t LNObject_GetReferenceCount(LNHandle obj)
+LNResult LNObject_GetReferenceCount(LNHandle obj, int* outReturn)
 {
-	if (auto t = LNI_HANDLE_TO_OBJECT(ln::Object, obj))
-		return ln::RefObjectHelper::getReferenceCount(t);
+    if (!outReturn) return LN_ERROR_INVALID_ARGUMENT;
+
+    if (auto t = LNI_HANDLE_TO_OBJECT(ln::Object, obj)) {
+        *outReturn = ln::RefObjectHelper::getReferenceCount(t);
+        return LN_SUCCESS;
+    }
 	else
-		return 0;
+		return LN_ERROR_INVALID_ARGUMENT;
+}
+
+int32_t _LNObject_GetReferenceCount(LNHandle obj)
+{
+    if (auto t = LNI_HANDLE_TO_OBJECT(ln::Object, obj)) {
+        return ln::RefObjectHelper::getReferenceCount(t);
+    }
+    else
+        return 0;
 }
 
 LNResult LNObject_SetTypeInfoId(LNHandle obj, int typeInfoId)

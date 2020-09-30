@@ -252,7 +252,7 @@ public:
 
     /** オブジェクトの参照カウントを取得します。これは内部的に使用される関数です。 */
     LN_METHOD(Specialized)
-    int referenceCount() const;
+    int getReferenceCount() const;
 #endif
 
 private:

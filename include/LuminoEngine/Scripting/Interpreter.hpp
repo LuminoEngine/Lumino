@@ -114,7 +114,7 @@ public:
 	void run(InterpreterCommandList* commandList);
 
 	/** コマンドリストの実行中であるかを確認します。 */
-	LN_METHOD()
+	LN_METHOD(Property)
 	bool isRunning() const;
 
 	/* コマンドリストの実行状態を更新します。 */
@@ -129,6 +129,22 @@ public:
 	LN_METHOD()
 	void registerCommandHandler(const StringRef& name, Ref<InterpreterCommandDelegate> handler);
 
+	/** setWaitMode */
+	LN_METHOD(Property)
+	void setWaitMode(const String& mode) { m_waitMode = mode; }
+
+	/** waitMode */
+	LN_METHOD(Property)
+	const String& waitMode() const { return m_waitMode; }
+
+	/** setWaitCount */
+	LN_METHOD(Property)
+	void setWaitCount(int count) { m_waitCount = count; }
+	
+	/** waitCount */
+	LN_METHOD(Property)
+	int waitCount() const { return m_waitCount; }
+
 LN_CONSTRUCT_ACCESS:
 	Interpreter();
 	virtual ~Interpreter() = default;
@@ -139,15 +155,12 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
 
-	void setWaitMode(const String& mode) { m_waitMode = mode; }
-	void setWaitCount(int count) { m_waitCount = count; }
-
 	/**  */
 	InterpreterCommand* getCurrentCommand() const;
 
-	/** 実行停止中かを確認する (Wait 中なら true を返すこと) */
+	/** waitMode に基づいて、実行停止中かを確認する (Wait 中なら true を返すこと) */
 	LN_METHOD()
-	virtual bool onUpdateWait(const String& waitMode);
+	virtual bool onUpdateWait();
 
 
 private:

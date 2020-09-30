@@ -3489,6 +3489,75 @@ LN_FLAT_API LNResult LNInterpreterSerializeHandler_Create(LNInterpreterSerialize
 
 
 // Auto generated override handler
+using InterpreterUpdateWaitHandler = ln::Delegate<bool(ln::Interpreter* self)>;
+
+class LNWS_InterpreterUpdateWaitHandler : public InterpreterUpdateWaitHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNInterpreterUpdateWaitHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNInterpreterUpdateWaitHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNInterpreterUpdateWaitHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNInterpreterUpdateWaitHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNInterpreterUpdateWaitHandler_SubclassRegistrationInfo* subclassInfo() { static LNInterpreterUpdateWaitHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNInterpreterUpdateWaitHandlerCallback m_callback;
+
+    LNWS_InterpreterUpdateWaitHandler()
+      : InterpreterUpdateWaitHandler([this](ln::Interpreter* self) -> bool
+    {
+        LNBool ret = {};
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), &ret);
+        if (r != LN_SUCCESS) { LN_ERROR("LNInterpreterUpdateWaitHandlerCallback"); }
+        return ret != LN_FALSE;
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_InterpreterUpdateWaitHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNInterpreterUpdateWaitHandlerCallback callback)
+    {
+        if (!InterpreterUpdateWaitHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNInterpreterUpdateWaitHandler_Create(LNInterpreterUpdateWaitHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_InterpreterUpdateWaitHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
 using ApplicationSerializeHandler = ln::Delegate<void(ln::Application* self, ln::Serializer2* ar)>;
 
 class LNWS_ApplicationSerializeHandler : public ApplicationSerializeHandler
@@ -3725,6 +3794,7 @@ public:
             }
         }
         if (s_LNObject_OnSerialize_OverrideCallback) s_LNObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Object::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -3786,6 +3856,7 @@ public:
             }
         }
         if (s_LNEventConnection_OnSerialize_OverrideCallback) s_LNEventConnection_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::EventConnection::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -4319,6 +4390,7 @@ public:
             }
         }
         if (s_LNZVTestClass1_OnSerialize_OverrideCallback) s_LNZVTestClass1_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::ZVTestClass1::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -4380,6 +4452,7 @@ public:
             }
         }
         if (s_LNZVTestEventArgs1_OnSerialize_OverrideCallback) s_LNZVTestEventArgs1_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::ZVTestEventArgs1::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -4441,6 +4514,7 @@ public:
             }
         }
         if (s_LNSerializer2_OnSerialize_OverrideCallback) s_LNSerializer2_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Serializer2::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -4502,6 +4576,7 @@ public:
             }
         }
         if (s_LNAssetModel_OnSerialize_OverrideCallback) s_LNAssetModel_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::AssetModel::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -4677,6 +4752,7 @@ public:
             }
         }
         if (s_LNTexture_OnSerialize_OverrideCallback) s_LNTexture_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Texture::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -4738,6 +4814,7 @@ public:
             }
         }
         if (s_LNTexture2D_OnSerialize_OverrideCallback) s_LNTexture2D_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Texture2D::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -4799,6 +4876,7 @@ public:
             }
         }
         if (s_LNRenderView_OnSerialize_OverrideCallback) s_LNRenderView_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::RenderView::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -4860,6 +4938,7 @@ public:
             }
         }
         if (s_LNComponent_OnSerialize_OverrideCallback) s_LNComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Component::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -4921,6 +5000,7 @@ public:
             }
         }
         if (s_LNVisualComponent_OnSerialize_OverrideCallback) s_LNVisualComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::VisualComponent::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -4982,6 +5062,7 @@ public:
             }
         }
         if (s_LNSpriteComponent_OnSerialize_OverrideCallback) s_LNSpriteComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::SpriteComponent::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -5043,6 +5124,7 @@ public:
             }
         }
         if (s_LNWorld_OnSerialize_OverrideCallback) s_LNWorld_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::World::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -5104,6 +5186,7 @@ public:
             }
         }
         if (s_LNComponentList_OnSerialize_OverrideCallback) s_LNComponentList_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::ComponentList::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -5166,6 +5249,7 @@ public:
             }
         }
         if (s_LNWorldObject_OnSerialize_OverrideCallback) s_LNWorldObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::WorldObject::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -5182,6 +5266,7 @@ public:
             }
         }
         if (s_LNWorldObject_OnUpdate_OverrideCallback) s_LNWorldObject_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+        ln::WorldObject::onUpdate(elapsedSeconds);
     }
     void onUpdate_CallBase(float elapsedSeconds)
     {
@@ -5245,6 +5330,7 @@ public:
             }
         }
         if (s_LNVisualObject_OnSerialize_OverrideCallback) s_LNVisualObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::VisualObject::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -5261,6 +5347,7 @@ public:
             }
         }
         if (s_LNVisualObject_OnUpdate_OverrideCallback) s_LNVisualObject_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+        ln::VisualObject::onUpdate(elapsedSeconds);
     }
     void onUpdate_CallBase(float elapsedSeconds)
     {
@@ -5324,6 +5411,7 @@ public:
             }
         }
         if (s_LNCamera_OnSerialize_OverrideCallback) s_LNCamera_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Camera::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -5340,6 +5428,7 @@ public:
             }
         }
         if (s_LNCamera_OnUpdate_OverrideCallback) s_LNCamera_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+        ln::Camera::onUpdate(elapsedSeconds);
     }
     void onUpdate_CallBase(float elapsedSeconds)
     {
@@ -5403,6 +5492,7 @@ public:
             }
         }
         if (s_LNEnvironmentLight_OnSerialize_OverrideCallback) s_LNEnvironmentLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::EnvironmentLight::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -5419,6 +5509,7 @@ public:
             }
         }
         if (s_LNEnvironmentLight_OnUpdate_OverrideCallback) s_LNEnvironmentLight_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+        ln::EnvironmentLight::onUpdate(elapsedSeconds);
     }
     void onUpdate_CallBase(float elapsedSeconds)
     {
@@ -5482,6 +5573,7 @@ public:
             }
         }
         if (s_LNDirectionalLight_OnSerialize_OverrideCallback) s_LNDirectionalLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::DirectionalLight::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -5498,6 +5590,7 @@ public:
             }
         }
         if (s_LNDirectionalLight_OnUpdate_OverrideCallback) s_LNDirectionalLight_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+        ln::DirectionalLight::onUpdate(elapsedSeconds);
     }
     void onUpdate_CallBase(float elapsedSeconds)
     {
@@ -5561,6 +5654,7 @@ public:
             }
         }
         if (s_LNPointLight_OnSerialize_OverrideCallback) s_LNPointLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::PointLight::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -5577,6 +5671,7 @@ public:
             }
         }
         if (s_LNPointLight_OnUpdate_OverrideCallback) s_LNPointLight_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+        ln::PointLight::onUpdate(elapsedSeconds);
     }
     void onUpdate_CallBase(float elapsedSeconds)
     {
@@ -5640,6 +5735,7 @@ public:
             }
         }
         if (s_LNSpotLight_OnSerialize_OverrideCallback) s_LNSpotLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::SpotLight::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -5656,6 +5752,7 @@ public:
             }
         }
         if (s_LNSpotLight_OnUpdate_OverrideCallback) s_LNSpotLight_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+        ln::SpotLight::onUpdate(elapsedSeconds);
     }
     void onUpdate_CallBase(float elapsedSeconds)
     {
@@ -5785,6 +5882,7 @@ public:
             }
         }
         if (s_LNSprite_OnSerialize_OverrideCallback) s_LNSprite_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Sprite::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -5801,6 +5899,7 @@ public:
             }
         }
         if (s_LNSprite_OnUpdate_OverrideCallback) s_LNSprite_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+        ln::Sprite::onUpdate(elapsedSeconds);
     }
     void onUpdate_CallBase(float elapsedSeconds)
     {
@@ -5863,6 +5962,7 @@ public:
             }
         }
         if (s_LNCameraOrbitControlComponent_OnSerialize_OverrideCallback) s_LNCameraOrbitControlComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::CameraOrbitControlComponent::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -5924,6 +6024,7 @@ public:
             }
         }
         if (s_LNRaycaster_OnSerialize_OverrideCallback) s_LNRaycaster_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Raycaster::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -5985,6 +6086,7 @@ public:
             }
         }
         if (s_LNRaycastResult_OnSerialize_OverrideCallback) s_LNRaycastResult_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::RaycastResult::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -6046,6 +6148,7 @@ public:
             }
         }
         if (s_LNWorldRenderView_OnSerialize_OverrideCallback) s_LNWorldRenderView_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::WorldRenderView::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -6108,6 +6211,7 @@ public:
             }
         }
         if (s_LNBoxMesh_OnSerialize_OverrideCallback) s_LNBoxMesh_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::BoxMesh::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -6124,6 +6228,7 @@ public:
             }
         }
         if (s_LNBoxMesh_OnUpdate_OverrideCallback) s_LNBoxMesh_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+        ln::BoxMesh::onUpdate(elapsedSeconds);
     }
     void onUpdate_CallBase(float elapsedSeconds)
     {
@@ -6187,6 +6292,7 @@ public:
             }
         }
         if (s_LNPlaneMesh_OnSerialize_OverrideCallback) s_LNPlaneMesh_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::PlaneMesh::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -6203,6 +6309,7 @@ public:
             }
         }
         if (s_LNPlaneMesh_OnUpdate_OverrideCallback) s_LNPlaneMesh_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+        ln::PlaneMesh::onUpdate(elapsedSeconds);
     }
     void onUpdate_CallBase(float elapsedSeconds)
     {
@@ -6270,6 +6377,7 @@ public:
             }
         }
         if (s_LNLevel_OnSerialize_OverrideCallback) s_LNLevel_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Level::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -6286,6 +6394,7 @@ public:
             }
         }
         if (s_LNLevel_OnStart_OverrideCallback) s_LNLevel_OnStart_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+        ln::Level::onStart();
     }
     void onStart_CallBase()
     {
@@ -6302,6 +6411,7 @@ public:
             }
         }
         if (s_LNLevel_OnStop_OverrideCallback) s_LNLevel_OnStop_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+        ln::Level::onStop();
     }
     void onStop_CallBase()
     {
@@ -6318,6 +6428,7 @@ public:
             }
         }
         if (s_LNLevel_OnPause_OverrideCallback) s_LNLevel_OnPause_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+        ln::Level::onPause();
     }
     void onPause_CallBase()
     {
@@ -6334,6 +6445,7 @@ public:
             }
         }
         if (s_LNLevel_OnResume_OverrideCallback) s_LNLevel_OnResume_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+        ln::Level::onResume();
     }
     void onResume_CallBase()
     {
@@ -6350,6 +6462,7 @@ public:
             }
         }
         if (s_LNLevel_OnUpdate_OverrideCallback) s_LNLevel_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+        ln::Level::onUpdate();
     }
     void onUpdate_CallBase()
     {
@@ -6416,6 +6529,7 @@ public:
             }
         }
         if (s_LNUIEventArgs_OnSerialize_OverrideCallback) s_LNUIEventArgs_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UIEventArgs::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -6605,6 +6719,7 @@ public:
             }
         }
         if (s_LNUILayoutElement_OnSerialize_OverrideCallback) s_LNUILayoutElement_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UILayoutElement::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -6666,6 +6781,7 @@ public:
             }
         }
         if (s_LNUIElement_OnSerialize_OverrideCallback) s_LNUIElement_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UIElement::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -6727,6 +6843,7 @@ public:
             }
         }
         if (s_LNUITextBlock_OnSerialize_OverrideCallback) s_LNUITextBlock_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UITextBlock::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -6788,6 +6905,7 @@ public:
             }
         }
         if (s_LNUISprite_OnSerialize_OverrideCallback) s_LNUISprite_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UISprite::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -6863,6 +6981,7 @@ public:
             }
         }
         if (s_LNInterpreterCommand_OnSerialize_OverrideCallback) s_LNInterpreterCommand_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::InterpreterCommand::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -6924,6 +7043,7 @@ public:
             }
         }
         if (s_LNInterpreterCommandList_OnSerialize_OverrideCallback) s_LNInterpreterCommandList_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::InterpreterCommandList::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -7022,6 +7142,7 @@ public:
     struct LNInterpreter_OverridePrototypes
     {
         ln::Ref<LNWS_InterpreterSerializeHandler> OnSerialize_OverrideFunc;
+        ln::Ref<LNWS_InterpreterUpdateWaitHandler> OnUpdateWait_OverrideFunc;
 
     };
     std::unique_ptr<LNInterpreter_OverridePrototypes> m_overridePrototypes = nullptr;
@@ -7051,10 +7172,26 @@ public:
             }
         }
         if (s_LNInterpreter_OnSerialize_OverrideCallback) s_LNInterpreter_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Interpreter::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
         ln::Interpreter::onSerialize(ar);
+    }
+
+    static LNInterpreter_OnUpdateWait_OverrideCallback s_LNInterpreter_OnUpdateWait_OverrideCallback; // deprecated
+    virtual bool onUpdateWait() override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnUpdateWait_OverrideFunc) {
+                return func->call(this);
+            }
+        }
+        return ln::Interpreter::onUpdateWait();
+    }
+    bool onUpdateWait_CallBase()
+    {
+        return ln::Interpreter::onUpdateWait();
     }
 
     // TypeInfo
@@ -7074,6 +7211,7 @@ public:
 };
 
 LNInterpreter_OnSerialize_OverrideCallback LNWS_ln_Interpreter::s_LNInterpreter_OnSerialize_OverrideCallback = nullptr;
+LNInterpreter_OnUpdateWait_OverrideCallback LNWS_ln_Interpreter::s_LNInterpreter_OnUpdateWait_OverrideCallback = nullptr;
 
 
 class LNWS_ln_EngineSettings : public ln::EngineSettings
@@ -7128,6 +7266,7 @@ public:
             }
         }
         if (s_LNApplication_OnSerialize_OverrideCallback) s_LNApplication_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Application::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
@@ -7144,6 +7283,7 @@ public:
             }
         }
         if (s_LNApplication_OnInit_OverrideCallback) s_LNApplication_OnInit_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+        ln::Application::onInit();
     }
     void onInit_CallBase()
     {
@@ -7160,6 +7300,7 @@ public:
             }
         }
         if (s_LNApplication_OnUpdate_OverrideCallback) s_LNApplication_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+        ln::Application::onUpdate();
     }
     void onUpdate_CallBase()
     {
@@ -11891,6 +12032,72 @@ LN_FLAT_API LNResult LNInterpreter_RegisterCommandHandlerA(LNHandle interpreter,
 }
 
 
+LN_FLAT_API LNResult LNInterpreter_SetWaitMode(LNHandle interpreter, const LNChar* mode)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->setWaitMode(mode));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNInterpreter_SetWaitModeA(LNHandle interpreter, const char* mode)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->setWaitMode(LNI_UTF8STRPTR_TO_STRING(mode)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNInterpreter_GetWaitMode(LNHandle interpreter, const LNChar** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF16(LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->waitMode());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->waitMode());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNInterpreter_GetWaitModeA(LNHandle interpreter, const char** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->waitMode());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->waitMode());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNInterpreter_SetWaitCount(LNHandle interpreter, int count)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->setWaitCount(count));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNInterpreter_GetWaitCount(LNHandle interpreter, int* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->waitCount());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->waitCount());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNInterpreter_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -11903,9 +12110,26 @@ LN_FLAT_API LNResult LNInterpreter_OnSerialize_SetOverrideCallback(LNInterpreter
     return LN_SUCCESS;
 }
 
+LN_FLAT_API LNResult LNInterpreter_OnUpdateWait_CallOverrideBase(LNHandle interpreter, LNBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->onUpdateWait_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNInterpreter_OnUpdateWait_SetOverrideCallback(LNInterpreter_OnUpdateWait_OverrideCallback callback)
+{
+    LNWS_ln_Interpreter::s_LNInterpreter_OnUpdateWait_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
 LN_FLAT_API LNResult LNInterpreter_SetPrototype_OnSerialize(LNHandle interpreter, LNHandle callback)
 {
     LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_InterpreterSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+LN_FLAT_API LNResult LNInterpreter_SetPrototype_OnUpdateWait(LNHandle interpreter, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->acquireOverridePrototypes()->OnUpdateWait_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_InterpreterUpdateWaitHandler, callback);
     return LN_SUCCESS;
 }
 extern LN_FLAT_API int LNInterpreter_GetTypeInfoId()
@@ -13490,6 +13714,29 @@ LNSubinstanceId LNInterpreterSerializeHandler_GetSubinstanceId(LNHandle handle)
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_InterpreterSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNInterpreterUpdateWaitHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<InterpreterUpdateWaitHandler>(), id);
+}
+
+void LNInterpreterUpdateWaitHandler_RegisterSubclassTypeInfo(const LNInterpreterUpdateWaitHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<InterpreterUpdateWaitHandler>(), info->subclassId);
+        *LNWS_InterpreterUpdateWaitHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNInterpreterUpdateWaitHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_InterpreterUpdateWaitHandler, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;
