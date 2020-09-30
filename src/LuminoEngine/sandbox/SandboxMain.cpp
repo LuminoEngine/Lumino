@@ -656,7 +656,7 @@ int main(int argc, char** argv)
  //   skymesh1->setColorScale(Color(0.5, 0.5, 0.5));
  //   Engine::world()->add(skymesh1);
 
-    //Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
+    //Engine::mainRenderView()->setClearMode(SceneClearMode::Sky);
 
     //auto vvv = Vector3(5.804542996261093E-6, 1.3562911419845635E-5, 3.0265902468824876E-5);
     //auto vvv2 = Vector3(0.000005804542996261093f, 0.000013562911419845635, 0.000030265902468824876);

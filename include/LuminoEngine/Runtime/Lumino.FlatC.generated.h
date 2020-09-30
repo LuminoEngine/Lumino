@@ -324,6 +324,8 @@ typedef LNResult(*LNVisualObjectSerializeHandlerCallback)(LNHandle visualobjects
 typedef LNResult(*LNVisualObjectUpdateHandlerCallback)(LNHandle visualobjectupdatehandler, LNHandle self, float elapsedSeconds);
 typedef LNResult(*LNCameraSerializeHandlerCallback)(LNHandle cameraserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNCameraUpdateHandlerCallback)(LNHandle cameraupdatehandler, LNHandle self, float elapsedSeconds);
+typedef LNResult(*LNEnvironmentLightSerializeHandlerCallback)(LNHandle environmentlightserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNEnvironmentLightUpdateHandlerCallback)(LNHandle environmentlightupdatehandler, LNHandle self, float elapsedSeconds);
 typedef LNResult(*LNDirectionalLightSerializeHandlerCallback)(LNHandle directionallightserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNDirectionalLightUpdateHandlerCallback)(LNHandle directionallightupdatehandler, LNHandle self, float elapsedSeconds);
 typedef LNResult(*LNPointLightSerializeHandlerCallback)(LNHandle pointlightserializehandler, LNHandle self, LNHandle ar);
@@ -340,6 +342,12 @@ typedef LNResult(*LNBoxMeshSerializeHandlerCallback)(LNHandle boxmeshserializeha
 typedef LNResult(*LNBoxMeshUpdateHandlerCallback)(LNHandle boxmeshupdatehandler, LNHandle self, float elapsedSeconds);
 typedef LNResult(*LNPlaneMeshSerializeHandlerCallback)(LNHandle planemeshserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNPlaneMeshUpdateHandlerCallback)(LNHandle planemeshupdatehandler, LNHandle self, float elapsedSeconds);
+typedef LNResult(*LNLevelSerializeHandlerCallback)(LNHandle levelserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNLevelStartHandlerCallback)(LNHandle levelstarthandler, LNHandle self);
+typedef LNResult(*LNLevelStopHandlerCallback)(LNHandle levelstophandler, LNHandle self);
+typedef LNResult(*LNLevelPauseHandlerCallback)(LNHandle levelpausehandler, LNHandle self);
+typedef LNResult(*LNLevelResumeHandlerCallback)(LNHandle levelresumehandler, LNHandle self);
+typedef LNResult(*LNLevelUpdateHandlerCallback)(LNHandle levelupdatehandler, LNHandle self);
 typedef LNResult(*LNUIEventArgsSerializeHandlerCallback)(LNHandle uieventargsserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUILayoutElementSerializeHandlerCallback)(LNHandle uilayoutelementserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIElementSerializeHandlerCallback)(LNHandle uielementserializehandler, LNHandle self, LNHandle ar);
@@ -393,9 +401,9 @@ LN_FLAT_API LNResult LNVector3_MutatingNormalize(LNVector3* vector3);
 
 /**
     @brief 指定ベクトルを正規化したベクトルを返します。
-    @param[in] x : 処理の基になるベクトルの X 要
-    @param[in] y : 処理の基になるベクトルの Y 要
-    @param[in] z : 処理の基になるベクトルの Z 要
+    @param[in] x : 処理の基になるベクトルの X 要素
+    @param[in] y : 処理の基になるベクトルの Y 要素
+    @param[in] z : 処理の基になるベクトルの Z 要素
     @param[out] outReturn : instance.
     @return 正規化されたベクトル
 */
@@ -1489,6 +1497,12 @@ LN_FLAT_API LNResult LNWorldObject_LookAtXYZ(LNHandle worldobject, float x, floa
 LN_FLAT_API LNResult LNWorldObject_AddComponent(LNHandle worldobject, LNHandle component);
 
 /**
+    @brief Component を除外します。
+    @param[in] worldobject : instance
+*/
+LN_FLAT_API LNResult LNWorldObject_RemoveComponent(LNHandle worldobject, LNHandle component);
+
+/**
     @brief 
     @param[in] worldobject : instance
     @param[out] outReturn : instance.
@@ -1615,6 +1629,147 @@ typedef struct tagLNCamera_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNCamera_RegisterSubclassTypeInfo(const LNCamera_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNCamera_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::EnvironmentLight
+
+/**
+    @brief ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
+    @param[in] environmentlight : instance
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_SetEnabled(LNHandle environmentlight, LNBool enabled);
+
+/**
+    @brief ライトの有効状態を取得します。
+    @param[in] environmentlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_IsEnabled(LNHandle environmentlight, LNBool* outReturn);
+
+/**
+    @brief ディレクショナルライトの光源色を設定します。(default: White)
+    @param[in] environmentlight : instance
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_SetColor(LNHandle environmentlight, const LNColor* value);
+
+/**
+    @brief ディレクショナルライトの光源色を取得します。
+    @param[in] environmentlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_GetColor(LNHandle environmentlight, LNColor* outReturn);
+
+/**
+    @brief シーン全体の環境光の色を設定します。(default: White)
+    @param[in] environmentlight : instance
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_SetAmbientColor(LNHandle environmentlight, const LNColor* value);
+
+/**
+    @brief シーン全体の環境光の色を取得します。
+    @param[in] environmentlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_GetAmbientColor(LNHandle environmentlight, LNColor* outReturn);
+
+/**
+    @brief 空の環境光の色を取得します。
+    @param[in] environmentlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_GetSkyColor(LNHandle environmentlight, LNColor* outReturn);
+
+/**
+    @brief 空の環境光の色を設定します。(default: Black)
+    @param[in] environmentlight : instance
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_SetSkyColor(LNHandle environmentlight, const LNColor* value);
+
+/**
+    @brief 地面の環境光の色を取得します。
+    @param[in] environmentlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_GetGroundColor(LNHandle environmentlight, LNColor* outReturn);
+
+/**
+    @brief 地面の環境光の色を設定します。(default: Black)
+    @param[in] environmentlight : instance
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_SetGroundColor(LNHandle environmentlight, const LNColor* value);
+
+/**
+    @brief ライトの明るさを設定します。(default: 0.5)
+    @param[in] environmentlight : instance
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_SetIntensity(LNHandle environmentlight, float intensity);
+
+/**
+    @brief ライトの明るさを取得します。
+    @param[in] environmentlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_GetIntensity(LNHandle environmentlight, float* outReturn);
+
+/**
+    @brief 視点からの、影を生成できる距離を指定します。 (default: 0.0f)
+    @param[in] environmentlight : instance
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_SetShadowEffectiveDistance(LNHandle environmentlight, float value);
+
+/**
+    @brief 視点からの、影を生成できる距離を取得します。
+    @param[in] environmentlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_GetShadowEffectiveDistance(LNHandle environmentlight, float* outReturn);
+
+/**
+    @brief 光源方向からの、影を生成できる距離を指定します。 (default: 0.0f) ※これはシャドウマップの深度値の範囲となります。
+    @param[in] environmentlight : instance
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_SetShadowEffectiveDepth(LNHandle environmentlight, float value);
+
+/**
+    @brief 光源方向からの、影を生成できる距離を指定します。
+    @param[in] environmentlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_GetShadowEffectiveDepth(LNHandle environmentlight, float* outReturn);
+
+typedef LNResult(*LNEnvironmentLight_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNEnvironmentLight_OnSerialize_SetOverrideCallback(LNEnvironmentLight_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNEnvironmentLight_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+typedef LNResult(*LNEnvironmentLight_OnUpdate_OverrideCallback)(LNHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LNResult LNEnvironmentLight_OnUpdate_SetOverrideCallback(LNEnvironmentLight_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LNResult LNEnvironmentLight_OnUpdate_CallOverrideBase(LNHandle worldobject, float elapsedSeconds);
+
+/**
+    @brief 
+    @param[in] environmentlight : instance
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_SetPrototype_OnSerialize(LNHandle environmentlight, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] environmentlight : instance
+*/
+LN_FLAT_API LNResult LNEnvironmentLight_SetPrototype_OnUpdate(LNHandle environmentlight, LNHandle callback);
+
+extern LN_FLAT_API int LNEnvironmentLight_GetTypeInfoId();
+LN_FLAT_API void LNEnvironmentLight_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNEnvironmentLight_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNEnvironmentLight_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+    LNEnvironmentLight_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
+
+} LNEnvironmentLight_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNEnvironmentLight_RegisterSubclassTypeInfo(const LNEnvironmentLight_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNEnvironmentLight_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::DirectionalLight
@@ -2319,6 +2474,89 @@ extern LN_FLAT_API void LNPlaneMesh_RegisterSubclassTypeInfo(const LNPlaneMesh_S
 extern LN_FLAT_API LNSubinstanceId LNPlaneMesh_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// ln::Level
+
+/**
+    @brief Initialize
+    @param[out] outLevel : instance.
+*/
+LN_FLAT_API LNResult LNLevel_Create(LNHandle* outLevel);
+
+typedef LNResult(*LNLevel_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNLevel_OnSerialize_SetOverrideCallback(LNLevel_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNLevel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+typedef LNResult(*LNLevel_OnStart_OverrideCallback)(LNHandle level);
+LN_FLAT_API LNResult LNLevel_OnStart_SetOverrideCallback(LNLevel_OnStart_OverrideCallback callback);
+LN_FLAT_API LNResult LNLevel_OnStart_CallOverrideBase(LNHandle level);
+typedef LNResult(*LNLevel_OnStop_OverrideCallback)(LNHandle level);
+LN_FLAT_API LNResult LNLevel_OnStop_SetOverrideCallback(LNLevel_OnStop_OverrideCallback callback);
+LN_FLAT_API LNResult LNLevel_OnStop_CallOverrideBase(LNHandle level);
+typedef LNResult(*LNLevel_OnPause_OverrideCallback)(LNHandle level);
+LN_FLAT_API LNResult LNLevel_OnPause_SetOverrideCallback(LNLevel_OnPause_OverrideCallback callback);
+LN_FLAT_API LNResult LNLevel_OnPause_CallOverrideBase(LNHandle level);
+typedef LNResult(*LNLevel_OnResume_OverrideCallback)(LNHandle level);
+LN_FLAT_API LNResult LNLevel_OnResume_SetOverrideCallback(LNLevel_OnResume_OverrideCallback callback);
+LN_FLAT_API LNResult LNLevel_OnResume_CallOverrideBase(LNHandle level);
+typedef LNResult(*LNLevel_OnUpdate_OverrideCallback)(LNHandle level);
+LN_FLAT_API LNResult LNLevel_OnUpdate_SetOverrideCallback(LNLevel_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LNResult LNLevel_OnUpdate_CallOverrideBase(LNHandle level);
+
+/**
+    @brief 
+    @param[in] level : instance
+*/
+LN_FLAT_API LNResult LNLevel_SetPrototype_OnSerialize(LNHandle level, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] level : instance
+*/
+LN_FLAT_API LNResult LNLevel_SetPrototype_OnStart(LNHandle level, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] level : instance
+*/
+LN_FLAT_API LNResult LNLevel_SetPrototype_OnStop(LNHandle level, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] level : instance
+*/
+LN_FLAT_API LNResult LNLevel_SetPrototype_OnPause(LNHandle level, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] level : instance
+*/
+LN_FLAT_API LNResult LNLevel_SetPrototype_OnResume(LNHandle level, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] level : instance
+*/
+LN_FLAT_API LNResult LNLevel_SetPrototype_OnUpdate(LNHandle level, LNHandle callback);
+
+extern LN_FLAT_API int LNLevel_GetTypeInfoId();
+LN_FLAT_API void LNLevel_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNLevel_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNLevel_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+    LNLevel_OnStart_OverrideCallback OnStart_OverrideFunc;
+    LNLevel_OnStop_OverrideCallback OnStop_OverrideFunc;
+    LNLevel_OnPause_OverrideCallback OnPause_OverrideFunc;
+    LNLevel_OnResume_OverrideCallback OnResume_OverrideFunc;
+    LNLevel_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
+
+} LNLevel_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNLevel_RegisterSubclassTypeInfo(const LNLevel_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNLevel_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // ln::UIEventArgs
 
 /**
@@ -2859,10 +3097,10 @@ LN_FLAT_API LNResult LNEngine_Time(double* outReturn);
 LN_FLAT_API LNResult LNEngine_GetCamera(LNHandle* outReturn);
 
 /**
-    @brief デフォルトで作成されるメインの DirectionalLight です。
+    @brief デフォルトで作成されるメインの Light です。
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LNResult LNEngine_GetLight(LNHandle* outReturn);
+LN_FLAT_API LNResult LNEngine_GetMainLight(LNHandle* outReturn);
 
 /**
     @brief デフォルトで作成されるメインの RenderView です。
@@ -3292,6 +3530,38 @@ extern LN_FLAT_API void LNCameraUpdateHandler_RegisterSubclassTypeInfo(const LNC
 extern LN_FLAT_API LNSubinstanceId LNCameraUpdateHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// EnvironmentLightSerializeHandler
+
+LN_FLAT_API LNResult LNEnvironmentLightSerializeHandler_Create(LNEnvironmentLightSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNEnvironmentLightSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNEnvironmentLightSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNEnvironmentLightSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNEnvironmentLightSerializeHandler_RegisterSubclassTypeInfo(const LNEnvironmentLightSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNEnvironmentLightSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// EnvironmentLightUpdateHandler
+
+LN_FLAT_API LNResult LNEnvironmentLightUpdateHandler_Create(LNEnvironmentLightUpdateHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNEnvironmentLightUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNEnvironmentLightUpdateHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNEnvironmentLightUpdateHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNEnvironmentLightUpdateHandler_RegisterSubclassTypeInfo(const LNEnvironmentLightUpdateHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNEnvironmentLightUpdateHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // DirectionalLightSerializeHandler
 
 LN_FLAT_API LNResult LNDirectionalLightSerializeHandler_Create(LNDirectionalLightSerializeHandlerCallback callback, LNHandle* outDelegate);
@@ -3546,6 +3816,102 @@ typedef struct tagLNPlaneMeshUpdateHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNPlaneMeshUpdateHandler_RegisterSubclassTypeInfo(const LNPlaneMeshUpdateHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNPlaneMeshUpdateHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// LevelSerializeHandler
+
+LN_FLAT_API LNResult LNLevelSerializeHandler_Create(LNLevelSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNLevelSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNLevelSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNLevelSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNLevelSerializeHandler_RegisterSubclassTypeInfo(const LNLevelSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNLevelSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// LevelStartHandler
+
+LN_FLAT_API LNResult LNLevelStartHandler_Create(LNLevelStartHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNLevelStartHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNLevelStartHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNLevelStartHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNLevelStartHandler_RegisterSubclassTypeInfo(const LNLevelStartHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNLevelStartHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// LevelStopHandler
+
+LN_FLAT_API LNResult LNLevelStopHandler_Create(LNLevelStopHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNLevelStopHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNLevelStopHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNLevelStopHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNLevelStopHandler_RegisterSubclassTypeInfo(const LNLevelStopHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNLevelStopHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// LevelPauseHandler
+
+LN_FLAT_API LNResult LNLevelPauseHandler_Create(LNLevelPauseHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNLevelPauseHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNLevelPauseHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNLevelPauseHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNLevelPauseHandler_RegisterSubclassTypeInfo(const LNLevelPauseHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNLevelPauseHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// LevelResumeHandler
+
+LN_FLAT_API LNResult LNLevelResumeHandler_Create(LNLevelResumeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNLevelResumeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNLevelResumeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNLevelResumeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNLevelResumeHandler_RegisterSubclassTypeInfo(const LNLevelResumeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNLevelResumeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// LevelUpdateHandler
+
+LN_FLAT_API LNResult LNLevelUpdateHandler_Create(LNLevelUpdateHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNLevelUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNLevelUpdateHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNLevelUpdateHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNLevelUpdateHandler_RegisterSubclassTypeInfo(const LNLevelUpdateHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNLevelUpdateHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // UIEventArgsSerializeHandler

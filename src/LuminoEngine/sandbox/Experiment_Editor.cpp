@@ -20,7 +20,7 @@ public:
 		Engine::renderView()->setGuideGridEnabled(true);
 		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
 		//ln::detail::EngineDomain::sceneManager()->m_editorMode = true;
-		Engine::renderView()->setClearMode(RenderViewClearMode::SkyDome);
+		Engine::renderView()->setClearMode(SceneClearMode::SkyDome);
 
 		auto box1 = BoxMesh::create();
 		box1->setPosition(-2, 0, 0);

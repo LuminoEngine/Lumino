@@ -23,7 +23,7 @@ void MainWindow::onLoaded()
 {
 	UIMainWindow::onLoaded();
 	renderView()->setBackgroundColor(ln::Color::White);
-	renderView()->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
+	renderView()->setClearMode(ln::SceneClearMode::ColorAndDepth);
 
     m_documentManager = ln::makeObject<DocumentManager>();
 

@@ -104,7 +104,7 @@ ln::Result StartupView::init()
 	//auto m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
 	//m_mainWorldRenderView->setTargetWorld(m_mainWorld);
 	//m_mainWorldRenderView->setCamera(m_mainCamera);
-	//m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
+	//m_mainWorldRenderView->setClearMode(ln::SceneClearMode::ColorAndDepth);
 	//m_mainWorldRenderView->setBackgroundColor(ln::Color::Gray);
 	//m_mainViewport->addRenderView(m_mainWorldRenderView);
 

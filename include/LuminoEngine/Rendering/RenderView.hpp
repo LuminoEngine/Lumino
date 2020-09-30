@@ -49,8 +49,8 @@ public:
 	// TODO: internal
 	//detail::CameraInfo mainCameraInfo;
 
-	RenderViewClearMode clearMode() const { return m_clearMode; }
-	void setClearMode(RenderViewClearMode value) { m_clearMode = value; }
+	SceneClearMode clearMode() const { return m_clearMode; }
+	void setClearMode(SceneClearMode value) { m_clearMode = value; }
 
 	const Color& backgroundColor() const { return m_backgroundColor; }
 	void setBackgroundColor(const Color& value) { m_backgroundColor = value; }
@@ -85,7 +85,7 @@ private:
     // TODO: これ List じゃなくていい気がする、というか、List じゃないほうが安全
 	List<detail::DrawElementListCollector*> m_elementListManagers;
 
-	RenderViewClearMode m_clearMode;
+	SceneClearMode m_clearMode;
 	Color m_backgroundColor;
 	Point m_actualScreenOffset;
     Size m_actualSize;

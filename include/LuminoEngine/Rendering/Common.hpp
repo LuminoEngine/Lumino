@@ -64,7 +64,7 @@ enum class LightType
 	Spot,
 };
 
-enum class RenderViewClearMode
+enum class SceneClearMode
 {
 	None,
 	ColorAndDepth,

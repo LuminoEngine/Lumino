@@ -96,7 +96,7 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
         clearInfo.color = backgroundColor();
         clearInfo.depth = 1.0f;
         clearInfo.stencil = 0x00;
-        if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+        if (clearMode() == SceneClearMode::ColorAndDepth) {
             clearInfo.flags = ClearFlags::All;
         }
         else {
@@ -113,7 +113,7 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
             m_renderingContext->baseRenderView = this;
             m_renderingContext->clearPostEffects();
 
-            //if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+            //if (clearMode() == SceneClearMode::ColorAndDepth) {
             //    m_renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
             //}
             //else {

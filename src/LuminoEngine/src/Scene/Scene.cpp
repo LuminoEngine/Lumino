@@ -31,6 +31,31 @@ namespace ln {
 //==============================================================================
 // Scene
 
+void Scene::setClearMode(SceneClearMode value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->setClearMode(value);
+}
+
+void Scene::setSkyColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeSkyColor = value;
+}
+
+void Scene::setSkyHorizonColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeHorizonColor = value;
+}
+
+void Scene::setSkyCloudColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeCloudColor = value;
+}
+
+void Scene::setSkyOverlayColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeOverlayColor = value;
+}
+
 void Scene::gotoLevel(Level* level, bool withEffect)
 {
     detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->gotoScene(level, withEffect);
@@ -118,11 +143,11 @@ void Scene::startFadeIn()
     sc->transitionEffect()->startFadeIn(sc->transitionEffectDuration());
 }
 
-void Scene::startCrossFade()
-{
-    auto& sc = detail::EngineDomain::engineManager()->mainWorld()->sceneConductor();
-    sc->transitionEffect()->startCrossFade(sc->transitionEffectDuration());
-}
+//void Scene::startCrossFade()
+//{
+//    auto& sc = detail::EngineDomain::engineManager()->mainWorld()->sceneConductor();
+//    sc->transitionEffect()->startCrossFade(sc->transitionEffectDuration());
+//}
 
 void Scene::setFogStartDistance(float value)
 {
@@ -153,26 +178,6 @@ void Scene::setFogLowerHeight(float value)
 void Scene::setFogUpperHeight(float value)
 {
     detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_fogUpperHeight= value;
-}
-
-void Scene::setSkydomeSkyColor(const Color& value)
-{
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeSkyColor = value;
-}
-
-void Scene::setSkydomeHorizonColor(const Color& value)
-{
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeHorizonColor = value;
-}
-
-void Scene::setSkydomeCloudColor(const Color& value)
-{
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeCloudColor = value;
-}
-
-void Scene::setSkydomeOverlayColor(const Color& value)
-{
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeOverlayColor = value;
 }
 
 void Scene::setScreenBlendColor(const Color& value)

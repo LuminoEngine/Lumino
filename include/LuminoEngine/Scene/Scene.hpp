@@ -22,6 +22,37 @@ LN_CLASS(Static)
 class Scene
 {
 public:
+
+	//----------------------------------------------------------------------------
+	/** @name Background and Sky */
+	/** @{ */
+
+	/** シーン背景のクリア方法を設定します。 */
+	LN_METHOD()
+	static void setClearMode(SceneClearMode value);
+
+	/** ClearMode が SkyDome であるときに使用する、空の基本色を設定します。アルファ値は、設定した色の適用率です。 */
+	LN_METHOD()
+	static void setSkyColor(const Color& value);
+
+	/** ClearMode が SkyDome であるときに使用する、地平の基本色を設定します。アルファ値は、設定した色の適用率です。 */
+	LN_METHOD()
+	static void setSkyHorizonColor(const Color& value);
+
+	/** ClearMode が SkyDome であるときに使用する、雲の基本色を設定します。アルファ値は、設定した色の適用率です。 */
+	LN_METHOD()
+	static void setSkyCloudColor(const Color& value);
+
+	/** ClearMode が SkyDome であるときに使用する、空全体に影響する色を設定します。アルファ値は、設定した色の適用率です。 */
+	LN_METHOD()
+	static void setSkyOverlayColor(const Color& value);
+
+	/** @} */
+
+	//----------------------------------------------------------------------------
+	/** @name Level Transition */
+	/** @{ */
+
 	/** 指定したレベルへ遷移します。既存の全てのレベルは非アクティブ化または削除されます。 */
 	LN_METHOD()
 	static void gotoLevel(Level* level, bool withEffect = true);
@@ -86,9 +117,11 @@ public:
 	LN_METHOD()
 	static void startFadeIn();
 
-	/** クロスフェードエフェクトを開始します。 */
-	LN_METHOD()
-	static void startCrossFade();
+	///** クロスフェードエフェクトを開始します。 */
+	//LN_METHOD()
+	//static void startCrossFade();
+
+	/** @} */
 
 	//----------------------------------------------------------------------------
 	/** @name Fog */
@@ -113,24 +146,6 @@ public:
 
 	/** フォグの高さの上限を設定します。 */
 	static void setFogUpperHeight(float value);
-
-	/** @} */
-
-	//----------------------------------------------------------------------------
-	/** @name Skydome */
-	/** @{ */
-
-	/** Skydome の空の基本色を設定します。アルファ値は、設定した色の適用率です。 */
-	static void setSkydomeSkyColor(const Color& value);
-
-	/** Skydome の地平の基本色を設定します。アルファ値は、設定した色の適用率です。 */
-	static void setSkydomeHorizonColor(const Color& value);
-
-	/** Skydome の雲の基本色を設定します。アルファ値は、設定した色の適用率です。 */
-	static void setSkydomeCloudColor(const Color& value);
-
-	/** Skydome 全体に影響する色を設定します。アルファ値は、設定した色の適用率です。 */
-	static void setSkydomeOverlayColor(const Color& value);
 
 	/** @} */
 

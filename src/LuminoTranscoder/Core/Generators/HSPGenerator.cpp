@@ -15,7 +15,11 @@ static const ln::String ASFileTemplate = uR"(
 #ifndef __lumino__
 #define __lumino__
 
-#regcmd "_hsp3cmdinit@4","LuminoHSP.dll", 6
+#ifdef LUMINO_DEBUG
+    #regcmd "_hsp3cmdinit@4","LuminoHSPd.dll", 6
+#else
+    #regcmd "_hsp3cmdinit@4","LuminoHSP.dll", 6
+#endif
 
 #const global LN_TRUE 1
 #const global LN_FALSE 0

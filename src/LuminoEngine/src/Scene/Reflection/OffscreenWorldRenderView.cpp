@@ -79,14 +79,14 @@ void OffscreenWorldRenderView::render(GraphicsContext* graphicsContext, World* t
     clearInfo.color = backgroundColor();
     clearInfo.depth = 1.0f;
     clearInfo.stencil = 0x00;
-    if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+    if (clearMode() == SceneClearMode::ColorAndDepth) {
         clearInfo.flags = ClearFlags::All;
     }
     else {
         clearInfo.flags = ClearFlags::Depth | ClearFlags::Stencil;
     }
 
-    if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+    if (clearMode() == SceneClearMode::ColorAndDepth) {
     }
     else {
         LN_NOTIMPLEMENTED();

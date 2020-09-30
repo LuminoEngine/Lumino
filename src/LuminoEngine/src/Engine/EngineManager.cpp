@@ -635,7 +635,7 @@ void EngineManager::initializeDefaultObjects()
 			m_mainWorldRenderView = makeObject<WorldRenderView>();
 			m_mainWorldRenderView->setTargetWorld(m_mainWorld);
 			m_mainWorldRenderView->setCamera(m_mainCamera);
-			m_mainWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
+			m_mainWorldRenderView->setClearMode(SceneClearMode::ColorAndDepth);
 			m_mainViewport->addRenderView(m_mainWorldRenderView);
 
 
@@ -668,7 +668,7 @@ void EngineManager::initializeDefaultObjects()
 			//m_debugWorldRenderView = makeObject<WorldRenderView>();
 			//m_debugWorldRenderView->setTargetWorld(m_mainWorld);
 			//m_debugWorldRenderView->setCamera(m_debugCamera);
-			//m_debugWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
+			//m_debugWorldRenderView->setClearMode(SceneClearMode::ColorAndDepth);
 			//m_debugCamera->addComponent(makeObject<CameraOrbitControlComponent>());
 			//m_mainViewport->addRenderView(m_debugWorldRenderView);
 			//m_debugCamera->setPosition(10, 10, -10);

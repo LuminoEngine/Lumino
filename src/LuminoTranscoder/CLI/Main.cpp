@@ -59,6 +59,8 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/Scene/Raycaster.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/WorldRenderView.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Shapes/MeshPrimitives.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/Scene.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/Level.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIEvents.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UILayoutElement.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIElement.hpp",
@@ -126,16 +128,16 @@ int main(int argc, char** argv)
     config->flatCHeaderOutputDirOverride = LN_LOCALFILE("../../../include/LuminoEngine/Runtime");
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
 
-	//{
-	//	FlatCHeaderGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-	//{
-	//	FlatCSourceGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
+	{
+		FlatCHeaderGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
+	{
+		FlatCSourceGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
 	//{
 	//	RubyExtGenerator g;
 	//	g.setup(db, config);

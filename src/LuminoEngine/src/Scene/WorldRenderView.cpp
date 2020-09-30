@@ -46,7 +46,7 @@ WorldRenderView::~WorldRenderView()
 void WorldRenderView::init()
 {
     RenderView::init();
-    setClearMode(RenderViewClearMode::ColorAndDepth);
+    setClearMode(SceneClearMode::ColorAndDepth);
 
     m_sceneRenderingPipeline = makeRef<detail::SceneRenderingPipeline>();
     m_sceneRenderingPipeline->init();
@@ -183,7 +183,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         clearInfo.color = backgroundColor();
         clearInfo.depth = 1.0f;
         clearInfo.stencil = 0x00;
-        if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+        if (clearMode() == SceneClearMode::ColorAndDepth) {
             clearInfo.flags = ClearFlags::All;
         }
         else {
@@ -209,10 +209,10 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             renderingContext->clearPostEffects();
 
 
-			if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+			if (clearMode() == SceneClearMode::ColorAndDepth) {
 				//renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
 			}
-			else if (clearMode() == RenderViewClearMode::Sky) {
+			else if (clearMode() == SceneClearMode::Sky) {
 				//renderingContext->clear(ClearFlags::Depth | ClearFlags::Stencil, Color(), 1.0f, 0x00);
 
                 if (m_targetWorld->mainLight()) {
@@ -223,7 +223,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 m_internalSkyBox->render(renderingContext, m_viewPoint);
 
 			}
-			else if (clearMode() == RenderViewClearMode::Sky0) {
+			else if (clearMode() == SceneClearMode::Sky0) {
 
                 //renderingContext->setBaseTransfrom(Matrix::Identity);
                 //renderingContext->setTransfrom(Matrix::Identity);
@@ -354,7 +354,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 #endif
                 renderingContext->popState();
 			}
-            else if (clearMode() == RenderViewClearMode::SkyDome) {
+            else if (clearMode() == SceneClearMode::SkyDome) {
                 m_internalSkyDome->setSkyColor(sceneGlobalRenderParams.skydomeSkyColor);
                 m_internalSkyDome->setHorizonColor(sceneGlobalRenderParams.skydomeHorizonColor);
                 m_internalSkyDome->setCloudColor(sceneGlobalRenderParams.skydomeCloudColor);
