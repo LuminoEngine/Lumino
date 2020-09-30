@@ -304,6 +304,7 @@ typedef LNResult(*LNTexture2DDelegateCallback)(LNHandle texture2ddelegate, LNHan
 typedef LNResult(*LNTestDelegateCallback)(LNHandle testdelegate, int p1, int* outReturn);
 typedef LNResult(*LNUIGeneralEventHandlerCallback)(LNHandle uigeneraleventhandler, LNHandle p1);
 typedef LNResult(*LNUIEventHandlerCallback)(LNHandle uieventhandler);
+typedef LNResult(*LNInterpreterCommandDelegateCallback)(LNHandle interpretercommanddelegate, LNHandle p1, LNBool* outReturn);
 typedef LNResult(*LNObjectSerializeHandlerCallback)(LNHandle objectserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNEventConnectionSerializeHandlerCallback)(LNHandle eventconnectionserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNZVTestClass1SerializeHandlerCallback)(LNHandle zvtestclass1serializehandler, LNHandle self, LNHandle ar);
@@ -353,6 +354,10 @@ typedef LNResult(*LNUILayoutElementSerializeHandlerCallback)(LNHandle uilayoutel
 typedef LNResult(*LNUIElementSerializeHandlerCallback)(LNHandle uielementserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUITextBlockSerializeHandlerCallback)(LNHandle uitextblockserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUISpriteSerializeHandlerCallback)(LNHandle uispriteserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNInterpreterCommandSerializeHandlerCallback)(LNHandle interpretercommandserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNInterpreterCommandListSerializeHandlerCallback)(LNHandle interpretercommandlistserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNInterpreterSerializeHandlerCallback)(LNHandle interpreterserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNInterpreterUpdateWaitHandlerCallback)(LNHandle interpreterupdatewaithandler, LNHandle self, const LNChar* waitMode, LNBool* outReturn);
 typedef LNResult(*LNApplicationSerializeHandlerCallback)(LNHandle applicationserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNApplicationInitHandlerCallback)(LNHandle applicationinithandler, LNHandle self);
 typedef LNResult(*LNApplicationUpdateHandlerCallback)(LNHandle applicationupdatehandler, LNHandle self);
@@ -592,6 +597,25 @@ LN_FLAT_API LNResult LNThickness_Set(LNThickness* thickness, float left_, float 
 
 //==============================================================================
 // ln::Object
+
+/**
+    @brief オブジェクトの参照を開放します。
+    @param[in] object : instance
+*/
+LN_FLAT_API LNResult LNObject_Release(LNHandle object);
+
+/**
+    @brief オブジェクトの参照を取得します。
+    @param[in] object : instance
+*/
+LN_FLAT_API LNResult LNObject_Retain(LNHandle object);
+
+/**
+    @brief オブジェクトの参照カウントを取得します。これは内部的に使用される関数です。
+    @param[in] object : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNObject_ReferenceCount(LNHandle object, int* outReturn);
 
 typedef LNResult(*LNObject_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNObject_OnSerialize_SetOverrideCallback(LNObject_OnSerialize_OverrideCallback callback);
@@ -3006,6 +3030,221 @@ LN_FLAT_API LNResult LNMouse_Position(LNPoint* outReturn);
 
 
 //==============================================================================
+// ln::InterpreterCommand
+
+/**
+    @brief コマンドの実行コードを取得します。
+    @param[in] interpretercommand : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNInterpreterCommand_Code(LNHandle interpretercommand, const LNChar** outReturn);
+LN_FLAT_API LNResult LNInterpreterCommand_CodeA(LNHandle interpretercommand, const char** outReturn);
+
+/**
+    @brief コマンドのパラメータ数を取得します。
+    @param[in] interpretercommand : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNInterpreterCommand_ParamsCount(LNHandle interpretercommand, int* outReturn);
+
+/**
+    @brief コマンドのパラメータを取得します。
+    @param[in] interpretercommand : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNInterpreterCommand_Param(LNHandle interpretercommand, int index, const LNChar** outReturn);
+LN_FLAT_API LNResult LNInterpreterCommand_ParamA(LNHandle interpretercommand, int index, const char** outReturn);
+
+typedef LNResult(*LNInterpreterCommand_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNInterpreterCommand_OnSerialize_SetOverrideCallback(LNInterpreterCommand_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNInterpreterCommand_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] interpretercommand : instance
+*/
+LN_FLAT_API LNResult LNInterpreterCommand_SetPrototype_OnSerialize(LNHandle interpretercommand, LNHandle callback);
+
+extern LN_FLAT_API int LNInterpreterCommand_GetTypeInfoId();
+LN_FLAT_API void LNInterpreterCommand_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNInterpreterCommand_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNInterpreterCommand_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNInterpreterCommand_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNInterpreterCommand_RegisterSubclassTypeInfo(const LNInterpreterCommand_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNInterpreterCommand_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::InterpreterCommandList
+
+/**
+    @brief InterpreterCommandList を作成します。
+    @param[out] outInterpreterCommandList : instance.
+*/
+LN_FLAT_API LNResult LNInterpreterCommandList_Create(LNHandle* outInterpreterCommandList);
+
+/**
+    @brief コマンドを追加します。
+    @param[in] interpretercommandlist : instance
+*/
+LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand(LNHandle interpretercommandlist, const LNChar* code);
+LN_FLAT_API LNResult LNInterpreterCommandList_AddCommandA(LNHandle interpretercommandlist, const char* code);
+
+/**
+    @brief コマンドと 1 つのパラメータを追加します。
+    @param[in] interpretercommandlist : instance
+*/
+LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand1(LNHandle interpretercommandlist, const LNChar* code, const LNChar* param0);
+LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand1A(LNHandle interpretercommandlist, const char* code, const char* param0);
+
+/**
+    @brief コマンドと 2 つのパラメータを追加します。
+    @param[in] interpretercommandlist : instance
+*/
+LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand2(LNHandle interpretercommandlist, const LNChar* code, const LNChar* param0, const LNChar* param1);
+LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand2A(LNHandle interpretercommandlist, const char* code, const char* param0, const char* param1);
+
+/**
+    @brief コマンドと 3 つのパラメータを追加します。
+    @param[in] interpretercommandlist : instance
+*/
+LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand3(LNHandle interpretercommandlist, const LNChar* code, const LNChar* param0, const LNChar* param1, const LNChar* param2);
+LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand3A(LNHandle interpretercommandlist, const char* code, const char* param0, const char* param1, const char* param2);
+
+/**
+    @brief コマンドと 4 つのパラメータを追加します。
+    @param[in] interpretercommandlist : instance
+*/
+LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand4(LNHandle interpretercommandlist, const LNChar* code, const LNChar* param0, const LNChar* param1, const LNChar* param2, const LNChar* param3);
+LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand4A(LNHandle interpretercommandlist, const char* code, const char* param0, const char* param1, const char* param2, const char* param3);
+
+typedef LNResult(*LNInterpreterCommandList_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNInterpreterCommandList_OnSerialize_SetOverrideCallback(LNInterpreterCommandList_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNInterpreterCommandList_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] interpretercommandlist : instance
+*/
+LN_FLAT_API LNResult LNInterpreterCommandList_SetPrototype_OnSerialize(LNHandle interpretercommandlist, LNHandle callback);
+
+extern LN_FLAT_API int LNInterpreterCommandList_GetTypeInfoId();
+LN_FLAT_API void LNInterpreterCommandList_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNInterpreterCommandList_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNInterpreterCommandList_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNInterpreterCommandList_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNInterpreterCommandList_RegisterSubclassTypeInfo(const LNInterpreterCommandList_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNInterpreterCommandList_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::InterpreterCommandDelegate
+
+LN_FLAT_API LNResult LNInterpreterCommandDelegate_Create(LNInterpreterCommandDelegateCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNInterpreterCommandDelegate_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNInterpreterCommandDelegate_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNInterpreterCommandDelegate_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNInterpreterCommandDelegate_RegisterSubclassTypeInfo(const LNInterpreterCommandDelegate_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNInterpreterCommandDelegate_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::Interpreter
+
+/**
+    @brief Interpreter を作成します。
+    @param[out] outInterpreter : instance.
+*/
+LN_FLAT_API LNResult LNInterpreter_Create(LNHandle* outInterpreter);
+
+/**
+    @brief コマンドリストをクリアします。実行中のコマンドリストは強制的に破棄されます。
+    @param[in] interpreter : instance
+*/
+LN_FLAT_API LNResult LNInterpreter_Clear(LNHandle interpreter);
+
+/**
+    @brief コマンドリストを設定し、実行を開始します。
+    @param[in] interpreter : instance
+*/
+LN_FLAT_API LNResult LNInterpreter_Run(LNHandle interpreter, LNHandle commandList);
+
+/**
+    @brief コマンドリストの実行中であるかを確認します。
+    @param[in] interpreter : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNInterpreter_IsRunning(LNHandle interpreter, LNBool* outReturn);
+
+/**
+    @brief 
+    @param[in] interpreter : instance
+*/
+LN_FLAT_API LNResult LNInterpreter_Update(LNHandle interpreter);
+
+/**
+    @brief 
+    @param[in] interpreter : instance
+*/
+LN_FLAT_API LNResult LNInterpreter_Terminate(LNHandle interpreter);
+
+/**
+    @brief 
+    @param[in] interpreter : instance
+*/
+LN_FLAT_API LNResult LNInterpreter_RegisterCommandHandler(LNHandle interpreter, const LNChar* name, LNHandle handler);
+LN_FLAT_API LNResult LNInterpreter_RegisterCommandHandlerA(LNHandle interpreter, const char* name, LNHandle handler);
+
+typedef LNResult(*LNInterpreter_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNInterpreter_OnSerialize_SetOverrideCallback(LNInterpreter_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNInterpreter_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+typedef LNResult(*LNInterpreter_OnUpdateWait_OverrideCallback)(LNHandle interpreter, const LNChar* waitMode, LNBool* outReturn);
+LN_FLAT_API LNResult LNInterpreter_OnUpdateWait_SetOverrideCallback(LNInterpreter_OnUpdateWait_OverrideCallback callback);
+LN_FLAT_API LNResult LNInterpreter_OnUpdateWait_CallOverrideBase(LNHandle interpreter, const LNChar* waitMode, LNBool* outReturn);
+
+/**
+    @brief 
+    @param[in] interpreter : instance
+*/
+LN_FLAT_API LNResult LNInterpreter_SetPrototype_OnSerialize(LNHandle interpreter, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] interpreter : instance
+*/
+LN_FLAT_API LNResult LNInterpreter_SetPrototype_OnUpdateWait(LNHandle interpreter, LNHandle callback);
+
+extern LN_FLAT_API int LNInterpreter_GetTypeInfoId();
+LN_FLAT_API void LNInterpreter_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNInterpreter_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNInterpreter_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+    LNInterpreter_OnUpdateWait_OverrideCallback OnUpdateWait_OverrideFunc;
+
+} LNInterpreter_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNInterpreter_RegisterSubclassTypeInfo(const LNInterpreter_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNInterpreter_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // ln::EngineSettings
 
 /**
@@ -3992,6 +4231,70 @@ typedef struct tagLNUISpriteSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNUISpriteSerializeHandler_RegisterSubclassTypeInfo(const LNUISpriteSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNUISpriteSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// InterpreterCommandSerializeHandler
+
+LN_FLAT_API LNResult LNInterpreterCommandSerializeHandler_Create(LNInterpreterCommandSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNInterpreterCommandSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNInterpreterCommandSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNInterpreterCommandSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNInterpreterCommandSerializeHandler_RegisterSubclassTypeInfo(const LNInterpreterCommandSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNInterpreterCommandSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// InterpreterCommandListSerializeHandler
+
+LN_FLAT_API LNResult LNInterpreterCommandListSerializeHandler_Create(LNInterpreterCommandListSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNInterpreterCommandListSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNInterpreterCommandListSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNInterpreterCommandListSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNInterpreterCommandListSerializeHandler_RegisterSubclassTypeInfo(const LNInterpreterCommandListSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNInterpreterCommandListSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// InterpreterSerializeHandler
+
+LN_FLAT_API LNResult LNInterpreterSerializeHandler_Create(LNInterpreterSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNInterpreterSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNInterpreterSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNInterpreterSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNInterpreterSerializeHandler_RegisterSubclassTypeInfo(const LNInterpreterSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNInterpreterSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// InterpreterUpdateWaitHandler
+
+LN_FLAT_API LNResult LNInterpreterUpdateWaitHandler_Create(LNInterpreterUpdateWaitHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNInterpreterUpdateWaitHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNInterpreterUpdateWaitHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNInterpreterUpdateWaitHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNInterpreterUpdateWaitHandler_RegisterSubclassTypeInfo(const LNInterpreterUpdateWaitHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNInterpreterUpdateWaitHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ApplicationSerializeHandler

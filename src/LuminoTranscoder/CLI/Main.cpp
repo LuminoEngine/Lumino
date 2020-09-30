@@ -70,6 +70,7 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/UI/UISprite.hpp",
 			TEST_ROOT "include/LuminoEngine/Input/Input.hpp",
 			TEST_ROOT "include/LuminoEngine/Input/Mouse.hpp",
+			TEST_ROOT "include/LuminoEngine/Scripting/Interpreter.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/EngineSettings.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/Engine.hpp",
             TEST_ROOT "include/LuminoEngine/Engine/Application.hpp",

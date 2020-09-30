@@ -285,6 +285,7 @@ public:
 	bool isPropertySetter() const { return m_ownerProperty && !m_parameters.isEmpty(); }
 	bool isCollectionGetItem() const { return metadata()->hasKey(u"Collection_GetItem"); }	// AccessorCache を使うときにインデックス指定するものであるかどうか
     bool isRuntimeInitializer() const { return metadata()->hasKey(u"RuntimeInitializer"); }
+	bool isSpecialized() const { return metadata()->hasKey(u"Specialized"); }	// FlatAPI 定義を独自に作成しているかどうか。他言語側の BindingIF を作るとき、Object::release 等だけ特別扱いしたくないので用意したフラグ。
 
 	bool hasReturnType() const { return m_returnType.type != PredefinedTypes::voidType; }
 	bool hasStringDecl() const { return m_hasStringDecl; }	// いずれかの引数、戻り値に文字列型が含まれているか

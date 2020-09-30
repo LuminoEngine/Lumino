@@ -115,40 +115,55 @@ V-Flow なら "Github Actions visual" とかで画像検索すると参考にな
 
 namespace ln {
 
-//
-////------------------------------------------------------------------------------
-//ItemMenuScene::ItemMenuScene()
-//{
-//}
-//
-////------------------------------------------------------------------------------
-//void ItemMenuScene::OnStart()
-//{
-//	GameScene::OnStart();
-//}
-//
-////------------------------------------------------------------------------------
-//void ItemMenuScene::OnUpdate()
-//{
-//	GameScene::OnUpdate();
-//}
-//
-////------------------------------------------------------------------------------
-//void ItemMenuScene::OnTerminate()
-//{
-//	GameScene::OnTerminate();
-//}
+//==============================================================================
+// InterpreterCommandList
 
+InterpreterCommandList::InterpreterCommandList()
+{
+}
+
+bool InterpreterCommandList::init()
+{
+	return Object::init();
+}
+
+void InterpreterCommandList::addCommand(const String& code)
+{
+	addCommand(code, {});
+}
+
+void InterpreterCommandList::addCommand1(const String& code, const String& param0)
+{
+	addCommand(code, { param0 });
+}
+
+void InterpreterCommandList::addCommand2(const String& code, const String& param0, const String& param1)
+{
+	addCommand(code, { param0, param1 });
+}
+
+void InterpreterCommandList::addCommand3(const String& code, const String& param0, const String& param1, const String& param2)
+{
+	addCommand(code, { param0, param1, param2 });
+}
+
+void InterpreterCommandList::addCommand4(const String& code, const String& param0, const String& param1, const String& param2, const String& param3)
+{
+	addCommand(code, { param0, param1, param2, param3 });
+}
 
 //==============================================================================
 // Interpreter
-//==============================================================================
 
-//------------------------------------------------------------------------------
 Interpreter::Interpreter()
 	: m_commandList()
 	, m_index(0)
 {
+}
+
+bool Interpreter::init()
+{
+	return Object::init();
 }
 
 void Interpreter::clear()
@@ -159,8 +174,7 @@ void Interpreter::clear()
 	m_waitCount = 0;
 }
 
-//------------------------------------------------------------------------------
-void Interpreter::run(const Ref<InterpreterCommandList>& commandList)
+void Interpreter::run(InterpreterCommandList* commandList)
 {
 	m_commandList = commandList->commands;
 	m_waitCount = 0;
@@ -202,11 +216,11 @@ void Interpreter::update()
 //------------------------------------------------------------------------------
 void Interpreter::terminate()
 {
-	m_commandList.clear();
+	clear();
 }
 
 //------------------------------------------------------------------------------
-void Interpreter::registerCommandHandler(const ln::StringRef& name, Ref<InterpreterCommandHandler> handler)
+void Interpreter::registerCommandHandler(const ln::StringRef& name, Ref<InterpreterCommandDelegate> handler)
 {
 	m_commandDelegateMap[name] = handler;
 }
@@ -282,7 +296,7 @@ bool Interpreter::executeCommand()
 //------------------------------------------------------------------------------
 bool Interpreter::onExecuteCommand(InterpreterCommand* cmd)
 {
-	auto itr = m_commandDelegateMap.find(cmd->code);
+	auto itr = m_commandDelegateMap.find(cmd->m_code);
 	if (itr != m_commandDelegateMap.end()) {
 		return itr->second->call(cmd);
 	}

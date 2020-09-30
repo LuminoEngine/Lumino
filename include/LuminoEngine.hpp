@@ -127,6 +127,8 @@
 
 #include "LuminoEngine/Effect/EffectContext.hpp"
 
+#include "LuminoEngine/Scripting/Interpreter.hpp"
+
 
 
 #ifdef _DEBUG

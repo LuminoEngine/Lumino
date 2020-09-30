@@ -240,6 +240,21 @@ public:
 
     void reloadAsset();
 
+
+#if defined(LUMINO_TRANSCODER)
+    /** オブジェクトの参照を開放します。 */
+    LN_METHOD(Specialized)
+    void release();
+
+    /** オブジェクトの参照を取得します。 */
+    LN_METHOD(Specialized)
+    void retain();
+
+    /** オブジェクトの参照カウントを取得します。これは内部的に使用される関数です。 */
+    LN_METHOD(Specialized)
+    int referenceCount() const;
+#endif
+
 private:
 	virtual void onRetained() override;
 	virtual void onReleased() override;
