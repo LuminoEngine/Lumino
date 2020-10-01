@@ -111,7 +111,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();
 	virtual ~UIFrameWindow();
-    void init();    // Swapchain 無し。外部制御用
+    void init(bool mainWindow = false);    // Swapchain 無し。外部制御用
 
 public:  // TODO: internal
 	virtual bool onPlatformEvent(const detail::PlatformEventArgs& e) override;

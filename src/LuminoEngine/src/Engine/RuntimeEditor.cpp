@@ -39,6 +39,8 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window)
 	m_splitter->addChild(m_toolPane);
 
 	setMode(Mode::Activated);
+
+	//m_toolWindow = makeObject<UIFrameWindow>();
 }
 
 void RuntimeEditor::toggleMode()

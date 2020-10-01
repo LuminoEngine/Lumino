@@ -13,6 +13,7 @@
 #	include <GLFW/glfw3native.h>
 #endif
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include "PlatformManager.hpp"
 #include "GLFWPlatformWindowManager.hpp"
 
 // https://github.com/glfw/glfw/issues/310
@@ -190,7 +191,7 @@ GLFWPlatformWindow::~GLFWPlatformWindow()
 {
 }
 
-Result GLFWPlatformWindow::init(const WindowCreationSettings& settings)
+Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings)
 {
 	initKeyTable();
 
@@ -222,7 +223,7 @@ Result GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 		glfwWindowHint(GLFW_DECORATED, GL_TRUE);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// for NSGL(macOS)
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);	// for NSGL(macOS)
-        if (settings.glfwNoAPI) {
+        if (!windowManager->manager()->glfwWithOpenGLAPI()) {
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		}
 		m_glfwWindow = glfwCreateWindow(settings.clientSize.width, settings.clientSize.height, settings.title.toStdString().c_str(), NULL, NULL);
@@ -511,7 +512,8 @@ ModifierKeys GLFWPlatformWindow::glfwKeyModToLNKeyMod(int mods)
 //=============================================================================
 // GLFWPlatformWindowManager
 
-GLFWPlatformWindowManager::GLFWPlatformWindowManager()
+GLFWPlatformWindowManager::GLFWPlatformWindowManager(PlatformManager* manager)
+	: PlatformWindowManager(manager)
 {
 }
 
@@ -542,7 +544,7 @@ void GLFWPlatformWindowManager::dispose()
 Ref<PlatformWindow> GLFWPlatformWindowManager::createWindow(const WindowCreationSettings& settings)
 {
 	auto ptr = ln::makeRef<GLFWPlatformWindow>();
-    if (!ptr->init(settings)) {
+    if (!ptr->init(this, settings)) {
         return nullptr;
     }
     return ptr;

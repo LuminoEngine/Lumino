@@ -67,7 +67,7 @@ public:
     static const wchar_t* PropWinProc;
     static const DWORD FullscreenStyle;
 
-    Win32PlatformWindowManager();
+    Win32PlatformWindowManager(PlatformManager* manager);
 
     Result init();
 	virtual void dispose() override;

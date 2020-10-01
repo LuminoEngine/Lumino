@@ -380,10 +380,10 @@ void EngineManager::initializePlatformManager()
 		settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
 
 		if (m_activeGraphicsAPI == GraphicsAPI::Vulkan) {
-			settings.mainWindowSettings.glfwNoAPI = true;
+			settings.glfwWithOpenGLAPI = false;
 		}
 		else {
-			settings.mainWindowSettings.glfwNoAPI = false;
+			settings.glfwWithOpenGLAPI = true;
 		}
 
 		m_platformManager = ln::makeRef<PlatformManager>();

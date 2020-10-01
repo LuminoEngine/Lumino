@@ -566,7 +566,8 @@ const wchar_t*	Win32PlatformWindowManager::WindowClassName = L"LuminoWindow";
 const wchar_t*	Win32PlatformWindowManager::PropWinProc = L"LuminoWindowProp";
 const DWORD	Win32PlatformWindowManager::FullscreenStyle = WS_POPUP;
 
-Win32PlatformWindowManager::Win32PlatformWindowManager()
+Win32PlatformWindowManager::Win32PlatformWindowManager(PlatformManager* manager)
+    : PlatformWindowManager(manager)
 {
 }
 

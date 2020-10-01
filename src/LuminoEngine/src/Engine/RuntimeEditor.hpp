@@ -37,6 +37,7 @@ private:
     Ref<UISplitter> m_splitter;
     Ref<UIControl> m_mainContentsPane;
     Ref<UIElement> m_toolPane;
+    Ref<UIFrameWindow> m_toolWindow;
 };
 
 } // namespace detail

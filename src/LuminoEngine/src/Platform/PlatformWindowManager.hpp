@@ -14,7 +14,6 @@ struct WindowCreationSettings
 
     intptr_t	userWindow = 0;
     uint32_t    win32IconResourceId = 0;
-    bool glfwNoAPI = false;
 };
 
 enum class EventProcessingMode
@@ -27,13 +26,18 @@ class PlatformWindowManager
 	: public RefObject
 {
 public:
-	PlatformWindowManager();
+	PlatformWindowManager(PlatformManager* manager);
 	virtual ~PlatformWindowManager() = default;
+
+	PlatformManager* manager() const { return m_manager; }
 
 	virtual void dispose() = 0;
 	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings) = 0;
 	virtual void destroyWindow(PlatformWindow* window) = 0;
 	virtual void processSystemEventQueue(EventProcessingMode mode) = 0;
+
+private:
+	PlatformManager* m_manager;
 };
 
 } // namespace detail

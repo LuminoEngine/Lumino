@@ -10,6 +10,7 @@ namespace detail {
 
 PlatformManager::PlatformManager()
 	: m_windowManager()
+    , m_glfwWithOpenGLAPI(true)
 {
 }
 
@@ -18,7 +19,7 @@ Result PlatformManager::init(const Settings& settings)
 #ifdef LN_GLFW
     if (settings.useGLFWWindowSystem) {
         if (!m_windowManager) {
-            auto windowManager = ln::makeRef<GLFWPlatformWindowManager>();
+            auto windowManager = ln::makeRef<GLFWPlatformWindowManager>(this);
             if (!windowManager->init()) {
                 return false;
             }
@@ -28,7 +29,7 @@ Result PlatformManager::init(const Settings& settings)
 #endif
 #ifdef LN_OS_WIN32
     if (!m_windowManager) {
-        auto windowManager = ln::makeRef<Win32PlatformWindowManager>();
+        auto windowManager = ln::makeRef<Win32PlatformWindowManager>(this);
         if (!windowManager->init()) {
             return false;
         }
@@ -36,9 +37,11 @@ Result PlatformManager::init(const Settings& settings)
     }
 #endif
 
+    m_glfwWithOpenGLAPI = settings.glfwWithOpenGLAPI;
+
 	if (!m_windowManager)
 	{
-		auto windowManager = ln::makeRef<EmptyPlatformWindowManager>();
+		auto windowManager = ln::makeRef<EmptyPlatformWindowManager>(this);
         if (!windowManager->init()) {
             return false;
         }

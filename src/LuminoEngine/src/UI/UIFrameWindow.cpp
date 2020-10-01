@@ -271,7 +271,7 @@ UIFrameWindow::~UIFrameWindow()
 {
 }
 
-void UIFrameWindow::init()
+void UIFrameWindow::init(bool mainWindow)
 {
     UIDomainProvidor::init();
     m_manager = detail::EngineDomain::uiManager();
@@ -283,6 +283,13 @@ void UIFrameWindow::init()
         m_renderView = Ref<UIRenderView>(LN_NEW UIRenderView(), false);
         m_renderView->init();
 		m_renderView->setRootElement(this);
+    }
+
+    if (!mainWindow) {
+        detail::WindowCreationSettings settings;
+        setupPlatformWindow(
+            detail::EngineDomain::platformManager()->windowManager()->createWindow(settings),
+            settings.clientSize);
     }
 }
 
@@ -622,7 +629,7 @@ UIMainWindow::~UIMainWindow()
 
 void UIMainWindow::init()
 {
-	UIFrameWindow::init();
+	UIFrameWindow::init(true);
 
 	// TODO: ここでいい？
 	onLoaded();

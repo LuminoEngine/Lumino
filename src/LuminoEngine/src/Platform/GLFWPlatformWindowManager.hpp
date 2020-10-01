@@ -2,13 +2,13 @@
 
 #ifdef LN_GLFW
 
-//#include <GLFW/glfw3.h>
 #include "PlatformWindowManager.hpp"
 
 struct GLFWwindow;
 
 namespace ln {
 namespace detail {
+class GLFWPlatformWindowManager;
 
 class GLFWPlatformWindow
 	: public PlatformWindow
@@ -17,7 +17,7 @@ public:
 	GLFWPlatformWindow();
 	virtual ~GLFWPlatformWindow();
 
-    Result init(const WindowCreationSettings& settings);
+    Result init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings);
 	void dispose();
     virtual void setWindowTitle(const String& title) override;
 	virtual void getSize(SizeI* size) override;
@@ -50,7 +50,7 @@ class GLFWPlatformWindowManager
 	: public PlatformWindowManager
 {
 public:
-	GLFWPlatformWindowManager();
+	GLFWPlatformWindowManager(PlatformManager* manager);
 	virtual ~GLFWPlatformWindowManager();
 
     Result init();

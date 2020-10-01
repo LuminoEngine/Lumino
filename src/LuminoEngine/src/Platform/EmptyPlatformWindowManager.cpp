@@ -20,7 +20,8 @@ Result EmptyPlatformWindow::init(const WindowCreationSettings& settings)
 //=============================================================================
 // EmptyPlatformWindowManager
 
-EmptyPlatformWindowManager::EmptyPlatformWindowManager()
+EmptyPlatformWindowManager::EmptyPlatformWindowManager(PlatformManager* manager)
+    : PlatformWindowManager(manager)
 {
 }
 

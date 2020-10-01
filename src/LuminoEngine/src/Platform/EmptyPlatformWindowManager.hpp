@@ -26,7 +26,7 @@ class EmptyPlatformWindowManager
 	: public PlatformWindowManager
 {
 public:
-	EmptyPlatformWindowManager();
+	EmptyPlatformWindowManager(PlatformManager* manager);
 	virtual ~EmptyPlatformWindowManager();
 
     Result init();
