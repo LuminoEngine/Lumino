@@ -90,7 +90,7 @@ public:
 
 	// not affected locale
 	template<typename TChar>
-	static bool isSpace(TChar ch) { return isspace(ch) != 0; }
+	static bool isSpace(TChar ch) { return (0 < ch && ch <= 255) ? (isspace(ch) != 0) : false; }
 
 	template<typename TChar>
 	static bool isNullOrEmpty(const TChar* str) { return !str || str[0] == '\0'; }

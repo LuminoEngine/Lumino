@@ -241,6 +241,60 @@ typedef enum tagLNDepthBufferFormat
 } LNDepthBufferFormat;
 
 /**
+    @brief 背景のクリア方法
+*/
+typedef enum tagLNSceneClearMode
+{
+    /**
+        @brief クリアしません。
+    */
+    LN_SCENE_CLEAR_MODE_NONE = 0,
+
+    /**
+        @brief 背景色と深度バッファをクリアします。
+    */
+    LN_SCENE_CLEAR_MODE_COLOR_AND_DEPTH = 1,
+
+    /**
+        @brief (未実装)
+    */
+    LN_SCENE_CLEAR_MODE_SKY = 2,
+
+    /**
+        @brief (未実装)
+    */
+    LN_SCENE_CLEAR_MODE_SKY0 = 3,
+
+    /**
+        @brief スカイドームでクリアします。
+    */
+    LN_SCENE_CLEAR_MODE_SKY_DOME = 4,
+
+} LNSceneClearMode;
+
+/**
+    @brief レベル遷移時の画面エフェクトの種類
+*/
+typedef enum tagLNLevelTransitionEffectMode
+{
+    /**
+        @brief エフェクト無し
+    */
+    LN_LEVEL_TRANSITION_EFFECT_MODE_NONE = 0,
+
+    /**
+        @brief フェードイン・フェードアウト
+    */
+    LN_LEVEL_TRANSITION_EFFECT_MODE_FADE_IN_OUT = 1,
+
+    /**
+        @brief クロスフェード
+    */
+    LN_LEVEL_TRANSITION_EFFECT_MODE_CROSS_FADE = 2,
+
+} LNLevelTransitionEffectMode;
+
+/**
     @brief 縦方向の表示位置を示します。
 */
 typedef enum tagLNVAlignment
@@ -2496,6 +2550,117 @@ typedef struct tagLNPlaneMesh_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNPlaneMesh_RegisterSubclassTypeInfo(const LNPlaneMesh_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNPlaneMesh_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::Scene
+
+/**
+    @brief シーン背景のクリア方法を設定します。
+*/
+LN_FLAT_API LNResult LNScene_SetClearMode(LNSceneClearMode value);
+
+/**
+    @brief ClearMode が SkyDome であるときに使用する、空の基本色を設定します。アルファ値は、設定した色の適用率です。
+*/
+LN_FLAT_API LNResult LNScene_SetSkyColor(const LNColor* value);
+
+/**
+    @brief ClearMode が SkyDome であるときに使用する、地平の基本色を設定します。アルファ値は、設定した色の適用率です。
+*/
+LN_FLAT_API LNResult LNScene_SetSkyHorizonColor(const LNColor* value);
+
+/**
+    @brief ClearMode が SkyDome であるときに使用する、雲の基本色を設定します。アルファ値は、設定した色の適用率です。
+*/
+LN_FLAT_API LNResult LNScene_SetSkyCloudColor(const LNColor* value);
+
+/**
+    @brief ClearMode が SkyDome であるときに使用する、空全体に影響する色を設定します。アルファ値は、設定した色の適用率です。
+*/
+LN_FLAT_API LNResult LNScene_SetSkyOverlayColor(const LNColor* value);
+
+/**
+    @brief 指定したレベルへ遷移します。既存の全てのレベルは非アクティブ化または削除されます。
+*/
+LN_FLAT_API LNResult LNScene_GotoLevel(LNHandle level, LNBool withEffect);
+
+/**
+    @brief 現在のアクティブなレベルを取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_ActiveLevel(LNHandle* outReturn);
+
+/**
+    @brief レベルの遷移エフェクトを実行中であるかを確認します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_IsTransitionEffectRunning(LNBool* outReturn);
+
+/**
+    @brief レベル遷移時のエフェクトの種類を設定します。
+*/
+LN_FLAT_API LNResult LNScene_SetTransitionEffectMode(LNLevelTransitionEffectMode value);
+
+/**
+    @brief レベル遷移時のエフェクトの種類を取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_TransitionEffectMode(LNLevelTransitionEffectMode* outReturn);
+
+/**
+    @brief レベルの遷移にかける時間を設定します。(Unit: 秒)
+*/
+LN_FLAT_API LNResult LNScene_SetTransitionDuration(float value);
+
+/**
+    @brief レベルの遷移にかける時間を取得します。(Unit: 秒)
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_TransitionDuration(float* outReturn);
+
+/**
+    @brief レベルの遷移モードが FadeInOut である場合に使用する色を設定します。
+*/
+LN_FLAT_API LNResult LNScene_SetTransitionEffectColor(const LNColor* value);
+
+/**
+    @brief レベルの遷移モードが FadeInOut である場合に使用する色を取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_TransitionEffectColor(LNColor* outReturn);
+
+/**
+    @brief レベルの遷移エフェクトで使用するマスクテクスチャを設定します。
+*/
+LN_FLAT_API LNResult LNScene_SetTransitionEffectMaskTexture(LNHandle value);
+
+/**
+    @brief レベルの遷移エフェクトで使用するマスクテクスチャを取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_TransitionEffectMaskTexture(LNHandle* outReturn);
+
+/**
+    @brief レベルの遷移エフェクトの境界のあいまいさを設定します。
+*/
+LN_FLAT_API LNResult LNScene_SetTransitionEffectVague(float value);
+
+/**
+    @brief レベルの遷移エフェクトの境界のあいまいさを取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_TransitionEffectVague(float* outReturn);
+
+/**
+    @brief フェードアウトエフェクトを開始します。
+*/
+LN_FLAT_API LNResult LNScene_StartFadeOut();
+
+/**
+    @brief フェードインエフェクトを開始します。
+*/
+LN_FLAT_API LNResult LNScene_StartFadeIn();
+
 
 //==============================================================================
 // ln::Level

@@ -64,12 +64,23 @@ enum class LightType
 	Spot,
 };
 
+LN_ENUM()
+/** 背景のクリア方法 */
 enum class SceneClearMode
 {
+	/** クリアしません。 */
 	None,
+
+	/** 背景色と深度バッファをクリアします。 */
 	ColorAndDepth,
+
+	/** (未実装) */
 	Sky,
+
+	/** (未実装) */
 	Sky0,
+
+	/** スカイドームでクリアします。 */
 	SkyDome,
 };
 

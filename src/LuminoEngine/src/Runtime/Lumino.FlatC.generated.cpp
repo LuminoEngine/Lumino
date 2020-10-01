@@ -6336,6 +6336,13 @@ LNPlaneMesh_OnSerialize_OverrideCallback LNWS_ln_PlaneMesh::s_LNPlaneMesh_OnSeri
 LNPlaneMesh_OnUpdate_OverrideCallback LNWS_ln_PlaneMesh::s_LNPlaneMesh_OnUpdate_OverrideCallback = nullptr;
 
 
+class LNWS_ln_Scene : public ln::Scene
+{
+public:
+};
+
+
+
 class LNWS_ln_Level : public ln::Level
 {
 public:
@@ -10739,6 +10746,208 @@ LNSubinstanceId LNPlaneMesh_GetSubinstanceId(LNHandle handle)
     }
     return 0;
 }
+
+LN_FLAT_API LNResult LNScene_SetClearMode(LNSceneClearMode value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setClearMode(static_cast<ln::SceneClearMode>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetSkyColor(const LNColor* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setSkyColor(*reinterpret_cast<const ln::Color*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetSkyHorizonColor(const LNColor* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setSkyHorizonColor(*reinterpret_cast<const ln::Color*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetSkyCloudColor(const LNColor* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setSkyCloudColor(*reinterpret_cast<const ln::Color*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetSkyOverlayColor(const LNColor* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setSkyOverlayColor(*reinterpret_cast<const ln::Color*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_GotoLevel(LNHandle level, LNBool withEffect)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::gotoLevel(LNI_HANDLE_TO_OBJECT(ln::Level, level), LNI_LNBOOL_TO_BOOL(withEffect)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_ActiveLevel(LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(ln::Scene::activeLevel());
+    }
+    else {
+        (ln::Scene::activeLevel());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_IsTransitionEffectRunning(LNBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Scene::isTransitionEffectRunning());
+    }
+    else {
+        (ln::Scene::isTransitionEffectRunning());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTransitionEffectMode(LNLevelTransitionEffectMode value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTransitionEffectMode(static_cast<ln::LevelTransitionEffectMode>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_TransitionEffectMode(LNLevelTransitionEffectMode* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = static_cast<LNLevelTransitionEffectMode>(ln::Scene::transitionEffectMode());
+    }
+    else {
+        (ln::Scene::transitionEffectMode());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTransitionDuration(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTransitionDuration(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_TransitionDuration(float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (ln::Scene::transitionDuration());
+    }
+    else {
+        (ln::Scene::transitionDuration());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTransitionEffectColor(const LNColor* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTransitionEffectColor(*reinterpret_cast<const ln::Color*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_TransitionEffectColor(LNColor* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LNColor>(ln::Scene::transitionEffectColor());
+    }
+    else {
+        (ln::Scene::transitionEffectColor());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTransitionEffectMaskTexture(LNHandle value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTransitionEffectMaskTexture(LNI_HANDLE_TO_OBJECT(ln::Texture, value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_TransitionEffectMaskTexture(LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(ln::Scene::transitionEffectMaskTexture());
+    }
+    else {
+        (ln::Scene::transitionEffectMaskTexture());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTransitionEffectVague(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTransitionEffectVague(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_TransitionEffectVague(float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (ln::Scene::transitionEffectVague());
+    }
+    else {
+        (ln::Scene::transitionEffectVague());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_StartFadeOut()
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::startFadeOut());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_StartFadeIn()
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::startFadeIn());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 LN_FLAT_API LNResult LNLevel_Create(LNHandle* outLevel)
 {
