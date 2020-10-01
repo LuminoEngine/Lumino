@@ -287,8 +287,9 @@ void UIFrameWindow::init(bool mainWindow)
 
     if (!mainWindow) {
         detail::WindowCreationSettings settings;
+        auto* platformManager = detail::EngineDomain::platformManager();
         setupPlatformWindow(
-            detail::EngineDomain::platformManager()->windowManager()->createWindow(settings),
+            platformManager->windowManager()->createWindow(settings, platformManager->mainWindow()),
             settings.clientSize);
     }
 }

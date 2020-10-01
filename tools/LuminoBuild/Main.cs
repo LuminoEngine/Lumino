@@ -18,7 +18,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                //args = new string[] { "BuildLocalPackage", "MSVC2019-x64-MT" };
+                args = new string[] { "BuildLocalPackage", "MSVC2019-x64-MT" };
                 //args = new string[] { "BuildLocalPackage", "MSVC2019-x86-MT" };
                 //args = new string[] { "BuildLocalPackage", "Android-x86_64" };
                 //args = new string[] { "BuildLocalPackage", "Emscripten" };
@@ -34,7 +34,7 @@ namespace LuminoBuild
                 //args = new string[] { "BuildEngine_Android" };
                 //args = new string[] { "MakePackage_Ruby" };
                 //args = new string[] { "BuildLLVM" };
-                args = new string[] { "BuildEmbeddedResources" };
+                //args = new string[] { "BuildEmbeddedResources" };
 
                 //args = new string[] { "MakeNativePackage" };
                 //args = new string[] { "MakeInstaller_Win32" };

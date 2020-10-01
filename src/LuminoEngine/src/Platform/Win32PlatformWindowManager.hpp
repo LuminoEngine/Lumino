@@ -71,7 +71,7 @@ public:
 
     Result init();
 	virtual void dispose() override;
-	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings) override;
+	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow) override;
 	virtual void destroyWindow(PlatformWindow* window) override;
 	virtual void processSystemEventQueue(EventProcessingMode mode) override;
 

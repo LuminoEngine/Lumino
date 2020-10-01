@@ -38,7 +38,7 @@ void EmptyPlatformWindowManager::dispose()
 {
 }
 
-Ref<PlatformWindow> EmptyPlatformWindowManager::createWindow(const WindowCreationSettings& settings)
+Ref<PlatformWindow> EmptyPlatformWindowManager::createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow)
 {
 	auto ptr = ln::makeRef<EmptyPlatformWindow>();
     if (!ptr->init(settings)) {

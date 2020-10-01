@@ -32,7 +32,7 @@ public:
 	PlatformManager* manager() const { return m_manager; }
 
 	virtual void dispose() = 0;
-	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings) = 0;
+	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow) = 0;
 	virtual void destroyWindow(PlatformWindow* window) = 0;
 	virtual void processSystemEventQueue(EventProcessingMode mode) = 0;
 

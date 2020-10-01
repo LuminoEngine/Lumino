@@ -608,7 +608,7 @@ void Win32PlatformWindowManager::dispose()
     UnregisterClass(WindowClassName, m_hInst);
 }
 
-Ref<PlatformWindow> Win32PlatformWindowManager::createWindow(const WindowCreationSettings& settings)
+Ref<PlatformWindow> Win32PlatformWindowManager::createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow)
 {
     if (settings.userWindow) {
         auto ptr = makeRef<WrappedWin32PlatformWindow>();

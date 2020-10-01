@@ -17,7 +17,7 @@ public:
 	GLFWPlatformWindow();
 	virtual ~GLFWPlatformWindow();
 
-    Result init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings);
+    Result init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWPlatformWindow* sharedWindow);
 	void dispose();
     virtual void setWindowTitle(const String& title) override;
 	virtual void getSize(SizeI* size) override;
@@ -55,7 +55,7 @@ public:
 
     Result init();
 	virtual void dispose() override;
-	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings) override;
+	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow) override;
 	virtual void destroyWindow(PlatformWindow* window) override;
 	virtual void processSystemEventQueue(EventProcessingMode mode) override;
 };

@@ -191,7 +191,7 @@ GLFWPlatformWindow::~GLFWPlatformWindow()
 {
 }
 
-Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings)
+Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWPlatformWindow* sharedWindow)
 {
 	initKeyTable();
 
@@ -226,7 +226,9 @@ Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const 
         if (!windowManager->manager()->glfwWithOpenGLAPI()) {
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		}
-		m_glfwWindow = glfwCreateWindow(settings.clientSize.width, settings.clientSize.height, settings.title.toStdString().c_str(), NULL, NULL);
+		m_glfwWindow = glfwCreateWindow(
+			settings.clientSize.width, settings.clientSize.height,
+			settings.title.toStdString().c_str(), NULL, (sharedWindow) ? sharedWindow->m_glfwWindow : NULL);
 		if (LN_ENSURE(m_glfwWindow)) return false;
 
 #if defined(LN_OS_WIN32)
@@ -256,30 +258,6 @@ Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const 
 
 
 	glfwMakeContextCurrent(m_glfwWindow);
-    //glfwSwapInterval(1);
-	//glewInit();
-	////GLuint mProgram = glCreateProgram();// LN_CHECK_GLERROR();
-	//// 初回クリア (しておかないと、背景が透明なままになる)
-	//glClear(GL_COLOR_BUFFER_BIT);
-	//glfwSwapBuffers(m_glfwWindow);
-
-    //int count = 0;
-    //while (!glfwWindowShouldClose(m_glfwWindow))
-    //{
-    //    if (count == 0)
-    //    {
-    //        glClearColor(0.0, 0.0, 1.0, 1.0);
-    //        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //         Swap buffers
-    //        glfwSwapBuffers(m_glfwWindow);
-
-    //    }
-    //    count++;
-
-    //    glfwPollEvents();
-    //}
-
     return true;
 }
 
@@ -541,10 +519,15 @@ void GLFWPlatformWindowManager::dispose()
 	glfwTerminate();
 }
 
-Ref<PlatformWindow> GLFWPlatformWindowManager::createWindow(const WindowCreationSettings& settings)
+Ref<PlatformWindow> GLFWPlatformWindowManager::createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow)
 {
+	GLFWPlatformWindow* sharedWindow = nullptr;
+	if (mainWindow) {
+		sharedWindow = static_cast<GLFWPlatformWindow*>(sharedWindow);
+	}
+
 	auto ptr = ln::makeRef<GLFWPlatformWindow>();
-    if (!ptr->init(this, settings)) {
+    if (!ptr->init(this, settings, sharedWindow)) {
         return nullptr;
     }
     return ptr;

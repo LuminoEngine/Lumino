@@ -48,7 +48,7 @@ Result PlatformManager::init(const Settings& settings)
 		m_windowManager = windowManager;
 	}
 
-	m_mainWindow = m_windowManager->createWindow(settings.mainWindowSettings);
+	m_mainWindow = m_windowManager->createWindow(settings.mainWindowSettings, nullptr);
 
     return true;
 }
