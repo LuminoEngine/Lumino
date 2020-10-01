@@ -549,7 +549,7 @@ namespace LuminoBuild
 				p.WaitForExit();
 
 				if (p.ExitCode != 0)
-					throw new InvalidOperationException("Failed Process.");
+					throw new InvalidOperationException($"Failed Process. ExitCode: {p.ExitCode}");
                 return sb.ToString();
 			}
 		}

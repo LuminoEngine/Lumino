@@ -24,7 +24,7 @@ ln::Result BuildAssetHelper::buildShaderFromAutoBuild(const Project* project, co
 	auto workFile = ln::Path::combine(project->intermediateAssetsDir(), rel.parent(), inputFile.fileName().replaceExtension(ln::detail::UnifiedShader::FileExt));
 	ln::FileSystem::createDirectory(workFile.parent());
 
-	if (buildShader(inputFile, workFile, ln::Path::Empty) != 0) {
+	if (!buildShader(inputFile, workFile, ln::Path::Empty)) {
 		return false;
 	}
 
@@ -46,9 +46,7 @@ ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Pa
 
 	manager->dispose();
 
-	bool result2 = ((!result) || diag->hasError());
-
-	if (result2) {
+	if (result && !diag->hasError()) {
 		CLI::info(u"");
 		CLI::info(u"Compilation succeeded; see " + outputFile);
 	}

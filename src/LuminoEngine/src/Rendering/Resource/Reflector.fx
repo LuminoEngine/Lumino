@@ -31,11 +31,8 @@ VSOutput VSMain(VSInput input)
 {
     VSOutput output;
     output.Pos = mul(float4(input.Pos, 1.0), ln_WorldViewProjection);
-    //output.UV = input.UV;
-    //output.UV = mul(_TextureMatrix, float4(input.Pos, 1.0));
     output.UV = mul(float4(input.Pos, 1.0), _TextureMatrix);
     output.UV = ComputeNonStereoScreenPos(output.UV);
-    //output.UV.y *= -1.0;
     return output;
 }
 

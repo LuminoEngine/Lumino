@@ -45,18 +45,10 @@ VSOutput VS_WriteLinearDepth(VSInput input)
 {
     VSOutput output;
     output.ViewPos = mul(float4(input.Pos, 1.0), ln_WorldView);
-    //output.ViewPos = mul(float4(input.Pos, 1.0), ln_WorldViewProjection);
-    output.ViewSpaceNormal = mul(input.Normal, (float3x3)ln_WorldViewIT);//mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
-    //output.svPos = mul(output.ViewPos, ln_Projection);
+    output.ViewSpaceNormal = mul(input.Normal, (float3x3)ln_WorldViewIT);
     output.svPos = mul(float4(input.Pos, 1.0), ln_WorldViewProjection);
     output.UV = input.UV;
     output.ClipSpacePos = output.svPos;
-
-    //output.ClipSpacePos.xyz /= output.ClipSpacePos.w;
-    //output.ClipSpacePos.z = output.svPos.z / output.svPos.w;
-
-    //output.ViewSpaceNormal.z *= -1.0;
-
     return output;
 }
 
@@ -75,8 +67,6 @@ PSOutput PS_WriteLinearDepth(PSInput input)
     output.Normal = float4(LN_PackNormal(normalize(input.ViewSpaceNormal)), 1.0); // normalize 必須
 
     output.Depth = float4(clipSpaceZ, linearZ, 0.0, 1.0);
-    
-    //output.Depth = float4(z, z, z, 1);
 
 #ifdef LN_USE_ROUGHNESS_MAP
     float roughness = tex2D(ln_MaterialRoughnessMap, input.UV);
@@ -85,8 +75,6 @@ PSOutput PS_WriteLinearDepth(PSInput input)
     float roughness = ln_MaterialRoughness;
 #endif
     output.Material = float4(ln_MaterialMetallic, linearZ, roughness, 1);
-    //output.Material = float4(0, z, 0, 1);
-
 
     output.ObjectId = uint4(ln_objectId, 0, 0, 0);
 

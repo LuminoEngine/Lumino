@@ -531,7 +531,7 @@ bool ShaderHelper::generateShader(ln::detail::ShaderManager* manager, const ln::
         outputFilePath = inputFilePath.replaceExtension(ln::detail::UnifiedShader::FileExt);
     }
 
-    ln::List<ln::Path> includeDirectories;
+    ln::List<ln::Path> includeDirectories = { inputFilePath.parent() };
     ln::List<ln::String> definitions;
 
     auto inputCodeBuffer = ln::FileSystem::readAllBytes(inputFilePath);

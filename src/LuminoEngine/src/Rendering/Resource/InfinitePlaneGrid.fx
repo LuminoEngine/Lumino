@@ -1,10 +1,6 @@
 
 #include <Lumino.fxh>
 
-//sampler2D ln_MaterialTexture;
-//Texture2D ln_MaterialTexture;
-//SamplerState ln_MaterialTextureSamplerState;
-
 struct VS_OUTPUT
 {
 	float4	Pos		: SV_POSITION;		// 位置
