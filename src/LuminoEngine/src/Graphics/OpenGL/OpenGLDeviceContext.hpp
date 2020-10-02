@@ -89,8 +89,8 @@
 
 namespace ln {
 namespace detail {
+class OpenGLContext;
 class GLGraphicsContext;
-class GLContext;
 class GLSwapChain;
 class GLRenderPass;
 class GLCommandQueue;
@@ -107,6 +107,7 @@ class OpenGLDevice
 public:
 	struct Settings
 	{
+		PlatformManager* platformManager = nullptr;
 		PlatformWindow* mainWindow = nullptr;   // nullptr の場合、OpenGL Context の生成・管理を内部で行わない
         uint32_t defaultFramebuffer;
 	};
@@ -124,7 +125,8 @@ public:
 
 	void init(const Settings& settings);
 	virtual void dispose() override;
-	const Ref<GLContext>& glContext() const { return m_glContext; }
+	PlatformWindow* mainWindow() const { return m_mainWindow; }
+	OpenGLContext* mainGLContext() const { return m_mainGLContext; }
 	const Caps& caps() const { return m_caps; }
 
 	// uniform set の時、Vector4[] → vec2[] に変換するための一時バッファ 
@@ -155,7 +157,8 @@ protected:
 	virtual ICommandQueue* getComputeCommandQueue() override;
 
 private:
-	Ref<GLContext> m_glContext;
+	PlatformWindow* m_mainWindow;
+	OpenGLContext* m_mainGLContext;
 	MemoryStream m_uniformTempBuffer;
 	BinaryWriter m_uniformTempBufferWriter;
 	//int m_lastUsedAttribIndex;
@@ -211,18 +214,18 @@ private:
 	} m_savedState;
 };
 
-class GLContext
-	: public RefObject
-{
-public:
-    GLContext();
-	virtual ~GLContext() = default;
-
-	virtual Ref<GLSwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
-	virtual void makeCurrent(GLSwapChain* swapChain) = 0;
-	virtual void swap(GLSwapChain* swapChain) = 0;
-
-};
+//class GLContext
+//	: public RefObject
+//{
+//public:
+//    GLContext();
+//	virtual ~GLContext() = default;
+//
+//	virtual Ref<GLSwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
+//	virtual void makeCurrent(GLSwapChain* swapChain) = 0;
+//	virtual void swap(GLSwapChain* swapChain) = 0;
+//
+//};
 
 class GLSwapChain
 	: public ISwapChain
@@ -242,11 +245,15 @@ public:
 	void genBackbuffer(uint32_t width, uint32_t height);
 	GLuint fbo() const { return m_fbo; }
 
-
+	
+	OpenGLDevice* device() const { return m_device; }
     GLuint defaultFBO() const { return m_defaultFBO; }
     void setDefaultFBO(GLuint id) { m_defaultFBO = id; }
 
     void setBackendBufferSize(int width, int height);
+
+protected:
+	virtual void swap() = 0;
 
 private:
 	void releaseBuffers();
@@ -667,31 +674,31 @@ private:
 
 
 
-//=============================================================================
-// empty implementation
-
-class EmptyGLContext
-	: public GLContext
-{
-public:
-	EmptyGLContext() = default;
-	virtual ~EmptyGLContext() = default;
-
-	virtual Ref<GLSwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
-	virtual void makeCurrent(GLSwapChain* swapChain) override;
-	virtual void swap(GLSwapChain* swapChain) override;
-};
-
-class EmptyGLSwapChain
-	: public GLSwapChain
-{
-public:
-	EmptyGLSwapChain(OpenGLDevice* device) : GLSwapChain(device) {}
-	virtual ~EmptyGLSwapChain() = default;
-
-private:
-};
-
+////=============================================================================
+//// empty implementation
+//
+//class EmptyGLContext
+//	: public GLContext
+//{
+//public:
+//	EmptyGLContext() = default;
+//	virtual ~EmptyGLContext() = default;
+//
+//	virtual Ref<GLSwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
+//	virtual void makeCurrent(GLSwapChain* swapChain) override;
+//	virtual void swap(GLSwapChain* swapChain) override;
+//};
+//
+//class EmptyGLSwapChain
+//	: public GLSwapChain
+//{
+//public:
+//	EmptyGLSwapChain(OpenGLDevice* device) : GLSwapChain(device) {}
+//	virtual ~EmptyGLSwapChain() = default;
+//
+//private:
+//};
+//
 } // namespace detail
 } // namespace ln
 

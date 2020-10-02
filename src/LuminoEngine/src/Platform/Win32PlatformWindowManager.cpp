@@ -608,7 +608,12 @@ void Win32PlatformWindowManager::dispose()
     UnregisterClass(WindowClassName, m_hInst);
 }
 
-Ref<PlatformWindow> Win32PlatformWindowManager::createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow)
+Ref<PlatformWindow> Win32PlatformWindowManager::createMainWindow(const WindowCreationSettings& settings)
+{
+    return createSubWindow(settings);
+}
+
+Ref<PlatformWindow> Win32PlatformWindowManager::createSubWindow(const WindowCreationSettings& settings)
 {
     if (settings.userWindow) {
         auto ptr = makeRef<WrappedWin32PlatformWindow>();
@@ -648,6 +653,11 @@ void Win32PlatformWindowManager::processSystemEventQueue(EventProcessingMode mod
             }
         }
     }
+}
+
+OpenGLContext* Win32PlatformWindowManager::getOpenGLContext() const
+{
+    return nullptr;
 }
 
 } // namespace detail

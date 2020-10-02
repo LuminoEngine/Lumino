@@ -13,10 +13,18 @@ namespace detail {
 //=============================================================================
 // GLFWSwapChain
 
-GLFWSwapChain::GLFWSwapChain(OpenGLDevice* device, GLFWPlatformWindow* window)
+GLFWSwapChain::GLFWSwapChain(OpenGLDevice* device)
 	: GLSwapChain(device) 
-	, m_window(window)
+	, m_window(nullptr)
 {
+}
+
+bool GLFWSwapChain::init(PlatformWindow* window, const SizeI& backbufferSize)
+{
+	m_window = dynamic_cast<GLFWPlatformWindow*>(window);
+	if (LN_REQUIRE(m_window)) return false;
+	genBackbuffer(backbufferSize.width, backbufferSize.height);
+	return true;
 }
 
 void GLFWSwapChain::getBackendBufferSize(SizeI* outSize)
@@ -24,39 +32,55 @@ void GLFWSwapChain::getBackendBufferSize(SizeI* outSize)
 	m_window->getFramebufferSize(&outSize->width, &outSize->height);
 }
 
-//=============================================================================
-// GLFWContext
-
-void GLFWContext::init(OpenGLDevice* device, PlatformWindow* window)
+void GLFWSwapChain::beginMakeContext()
 {
-	m_device = device;
-	auto* glfwWindow = dynamic_cast<GLFWPlatformWindow*>(window);
-	LN_CHECK(glfwWindow);
-	m_mainWindow = glfwWindow;
-
-	glfwMakeContextCurrent(m_mainWindow->glfwWindow());
+	if (m_window == device()->mainWindow()) {
+	}
+	else {
+		glfwMakeContextCurrent(window()->glfwWindow());
+	}
 }
 
-Ref<GLSwapChain> GLFWContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
+void GLFWSwapChain::endMakeContext()
 {
-	auto* glfwWindow = dynamic_cast<GLFWPlatformWindow*>(window);
-	LN_CHECK(glfwWindow);
-
-	auto ptr = makeRef<GLFWSwapChain>(m_device, glfwWindow);
-	ptr->genBackbuffer(backbufferSize.width, backbufferSize.height);
-
-	return ptr;
+	if (m_window == device()->mainWindow()) {
+	}
+	else {
+		// MainWindow に戻す
+		const auto glfwWindow = static_cast<GLFWPlatformWindow*>(device()->mainWindow());
+		glfwMakeContextCurrent(glfwWindow->glfwWindow());
+	}
 }
 
-void GLFWContext::makeCurrent(GLSwapChain* swapChain)
+void GLFWSwapChain::swap()
 {
-	glfwMakeContextCurrent(static_cast<GLFWSwapChain*>(swapChain)->window()->glfwWindow());
+	glfwSwapBuffers(window()->glfwWindow());
 }
 
-void GLFWContext::swap(GLSwapChain* swapChain)
-{
-	glfwSwapBuffers(static_cast<GLFWSwapChain*>(swapChain)->window()->glfwWindow());
-}
+////=============================================================================
+//// GLFWContext
+//
+//void GLFWContext::init(OpenGLDevice* device, PlatformWindow* window)
+//{
+//	m_device = device;
+//	auto* glfwWindow = dynamic_cast<GLFWPlatformWindow*>(window);
+//	LN_CHECK(glfwWindow);
+//	m_mainWindow = glfwWindow;
+//
+//	glfwMakeContextCurrent(m_mainWindow->glfwWindow());
+//}
+//
+//Ref<GLSwapChain> GLFWContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
+//{
+//	auto* glfwWindow = dynamic_cast<GLFWPlatformWindow*>(window);
+//	LN_CHECK(glfwWindow);
+//
+//	auto ptr = makeRef<GLFWSwapChain>(m_device, glfwWindow);
+//	ptr->genBackbuffer(backbufferSize.width, backbufferSize.height);
+//
+//	return ptr;
+//}
+
 
 } // namespace detail
 } // namespace ln

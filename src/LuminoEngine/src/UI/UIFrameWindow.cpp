@@ -261,7 +261,7 @@ UIElement* UIInputInjector::mouseHoveredElement()
 
 UIFrameWindow::UIFrameWindow()
 	: m_autoDisposePlatformWindow(true)
-	, m_updateMode(UIFrameWindowUpdateMode::Polling)
+	, m_updateMode(UIFrameWindowUpdateMode::EventDispatches)
 	, m_ImGuiLayerEnabled(false)
     , m_layoutContext(makeObject<UILayoutContext>())
 {
@@ -289,7 +289,7 @@ void UIFrameWindow::init(bool mainWindow)
         detail::WindowCreationSettings settings;
         auto* platformManager = detail::EngineDomain::platformManager();
         setupPlatformWindow(
-            platformManager->windowManager()->createWindow(settings, platformManager->mainWindow()),
+            platformManager->windowManager()->createSubWindow(settings),
             settings.clientSize);
     }
 }
@@ -631,6 +631,8 @@ UIMainWindow::~UIMainWindow()
 void UIMainWindow::init()
 {
 	UIFrameWindow::init(true);
+
+    m_updateMode = UIFrameWindowUpdateMode::Polling;
 
 	// TODO: ここでいい？
 	onLoaded();

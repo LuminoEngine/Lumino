@@ -23,6 +23,7 @@ public:
 	struct Settings
 	{
         AssetManager* assetManager = nullptr;
+		PlatformManager* platformManager = nullptr;
 		PlatformWindow* mainWindow = nullptr;
 		GraphicsAPI graphicsAPI;
 		bool debugMode = false;
@@ -87,6 +88,7 @@ private:
 	void createVulkanContext(const Settings& settings);
 
     AssetManager* m_assetManager;
+	PlatformManager* m_platformManager;
 	Ref<IGraphicsDevice> m_deviceContext;
 	//Ref<GraphicsContext> m_graphicsContext;
 	Ref<CommandQueue> m_graphicsQueue;

@@ -18,34 +18,7 @@ set(LN_SOURCES_Engine
     src/EngineContext.cpp
 )
 
-set(LN_SOURCES_Platform
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/AndroidPlatformInterface.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/CocoaPlatformInterface.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformDialogs.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformEvent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformSupport.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformWindow.hpp
-    src/Platform/Internal.hpp
-    src/Platform/AndroidPlatformInterface.cpp
-    src/Platform/EmptyPlatformWindowManager.cpp
-    src/Platform/EmptyPlatformWindowManager.hpp
-    src/Platform/EmscriptenPlatformInterface.cpp
-    src/Platform/GLFWPlatformWindowManager.cpp
-    src/Platform/GLFWPlatformWindowManager.hpp
-    src/Platform/PlatformDialogs.cpp
-    src/Platform/PlatformEvent.cpp
-    src/Platform/PlatformManager.cpp
-    src/Platform/PlatformManager.hpp
-    src/Platform/PlatformSupport.cpp
-    src/Platform/PlatformWindow.cpp
-    src/Platform/PlatformWindowManager.cpp
-    src/Platform/PlatformWindowManager.hpp
-    src/Platform/TextInputMethodSystem.cpp
-    src/Platform/TextInputMethodSystem.hpp
-    src/Platform/Win32PlatformDialogs.hpp
-    src/Platform/Win32PlatformWindowManager.cpp
-    src/Platform/Win32PlatformWindowManager.hpp
-)
+file(GLOB LN_SOURCES_Platform ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/*.hpp src/Platform/*.cpp src/Platform/*.hpp)
 
 set(LN_SOURCES_Grammar
     src/Grammar/Internal.hpp

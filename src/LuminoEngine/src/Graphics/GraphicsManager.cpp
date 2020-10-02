@@ -153,6 +153,7 @@ namespace detail {
 
 GraphicsManager::GraphicsManager()
 	: m_assetManager(nullptr)
+	, m_platformManager(nullptr)
     , m_linearAllocatorPageManager()
 {
 }
@@ -164,6 +165,7 @@ void GraphicsManager::init(const Settings& settings)
 	if (LN_REQUIRE(settings.graphicsAPI != GraphicsAPI::Default)) return;
 
     m_assetManager = settings.assetManager;
+	m_platformManager = settings.platformManager;
 
 	// Create device context
 	{
@@ -359,6 +361,7 @@ bool GraphicsManager::checkVulkanSupported()
 void GraphicsManager::createOpenGLContext(const Settings& settings)
 {
 	OpenGLDevice::Settings openglSettings;
+	openglSettings.platformManager = m_platformManager;
 	openglSettings.mainWindow = settings.mainWindow;
 	auto ctx = makeRef<OpenGLDevice>();
 	ctx->init(openglSettings);

@@ -3,12 +3,32 @@
 #ifdef LN_GLFW
 
 #include "PlatformWindowManager.hpp"
+#include "OpenGLContext.hpp"
 
 struct GLFWwindow;
 
 namespace ln {
 namespace detail {
+class GLFWPlatformWindow;
 class GLFWPlatformWindowManager;
+
+class GLFWContext
+	: public OpenGLContext
+{
+public:
+	GLFWContext(GLFWPlatformWindow* mainWindow);
+
+	GLFWPlatformWindow* mainWindow() const { return m_mainWindow; }
+	void makeCurrentMain() override;
+	void makeCurrent(PlatformWindow* window) override;
+
+	//virtual Ref<GLSwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
+	//virtual void makeCurrent(GLSwapChain* swapChain) override;
+	//virtual void swap(GLSwapChain* swapChain) override;
+
+private:
+	GLFWPlatformWindow* m_mainWindow;
+};
 
 class GLFWPlatformWindow
 	: public PlatformWindow
@@ -17,7 +37,7 @@ public:
 	GLFWPlatformWindow();
 	virtual ~GLFWPlatformWindow();
 
-    Result init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWPlatformWindow* sharedWindow);
+    Result init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWContext* sharedContext);
 	void dispose();
     virtual void setWindowTitle(const String& title) override;
 	virtual void getSize(SizeI* size) override;
@@ -55,9 +75,14 @@ public:
 
     Result init();
 	virtual void dispose() override;
-	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow) override;
+	virtual Ref<PlatformWindow> createMainWindow(const WindowCreationSettings& settings) override;
+	virtual Ref<PlatformWindow> createSubWindow(const WindowCreationSettings& settings) override;
 	virtual void destroyWindow(PlatformWindow* window) override;
 	virtual void processSystemEventQueue(EventProcessingMode mode) override;
+	virtual OpenGLContext* getOpenGLContext() const;
+
+private:
+	Ref<GLFWContext> m_glContext;
 };
 
 } // namespace detail

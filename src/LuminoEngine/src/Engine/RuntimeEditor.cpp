@@ -24,7 +24,7 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window)
 
 	m_window = window;
 
-	m_window->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
+	//m_window->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
 
 	m_splitter = makeObject<UISplitter>();
 	m_splitter->setOrientation(Orientation::Horizontal);
@@ -38,9 +38,10 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window)
 	m_toolPane->setBorderThickness(1);
 	m_splitter->addChild(m_toolPane);
 
-	setMode(Mode::Activated);
+	m_toolWindow = makeObject<UIFrameWindow>();
+	m_toolWindow->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
 
-	//m_toolWindow = makeObject<UIFrameWindow>();
+	setMode(Mode::Activated);
 }
 
 void RuntimeEditor::toggleMode()
@@ -74,6 +75,10 @@ void RuntimeEditor::setMode(Mode mode)
 
 void RuntimeEditor::attach()
 {
+#if 1
+	m_toolWindow->setImGuiLayerEnabled(true);
+	m_toolWindow->invalidateVisual();
+#else
 	// MainWindow の子要素を m_mainContentsPane へ移動する
 	const auto mainChildren = m_window->logicalChildren()->toArray();
 	for (const auto& child : mainChildren) {
@@ -84,10 +89,14 @@ void RuntimeEditor::attach()
 	m_window->addChild(m_splitter);
 
 	m_window->setImGuiLayerEnabled(true);
+#endif
 }
 
 void RuntimeEditor::detach()
 {
+#if 1
+	m_toolWindow->setImGuiLayerEnabled(false);
+#else
 	m_window->setImGuiLayerEnabled(false);
 
 	m_window->removeElement(m_splitter);
@@ -97,6 +106,7 @@ void RuntimeEditor::detach()
 		m_mainContentsPane->removeElement(child);
 		m_window->addChild(child);
 	}
+#endif
 }
 
 void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)

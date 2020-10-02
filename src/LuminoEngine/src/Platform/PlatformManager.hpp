@@ -26,6 +26,7 @@ public:
 	const Ref<PlatformWindowManager>& windowManager() const { return m_windowManager; }
 	const Ref<PlatformWindow>& mainWindow() const { return m_mainWindow; }
 	bool glfwWithOpenGLAPI() const { return m_glfwWithOpenGLAPI; }
+	OpenGLContext* openGLContext() const;
 
 private:
 	Ref<PlatformWindowManager> m_windowManager;

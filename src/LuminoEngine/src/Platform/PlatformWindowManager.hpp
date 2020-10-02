@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/Platform/Common.hpp>
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 
@@ -32,9 +33,11 @@ public:
 	PlatformManager* manager() const { return m_manager; }
 
 	virtual void dispose() = 0;
-	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow) = 0;
+	virtual Ref<PlatformWindow> createMainWindow(const WindowCreationSettings& settings) = 0;
+	virtual Ref<PlatformWindow> createSubWindow(const WindowCreationSettings& settings) = 0;
 	virtual void destroyWindow(PlatformWindow* window) = 0;
 	virtual void processSystemEventQueue(EventProcessingMode mode) = 0;
+	virtual OpenGLContext* getOpenGLContext() const = 0;
 
 private:
 	PlatformManager* m_manager;

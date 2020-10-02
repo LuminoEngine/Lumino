@@ -48,7 +48,7 @@ Result PlatformManager::init(const Settings& settings)
 		m_windowManager = windowManager;
 	}
 
-	m_mainWindow = m_windowManager->createWindow(settings.mainWindowSettings, nullptr);
+	m_mainWindow = m_windowManager->createMainWindow(settings.mainWindowSettings);
 
     return true;
 }
@@ -63,6 +63,11 @@ void PlatformManager::dispose()
 		m_windowManager->dispose();
 		m_windowManager = nullptr;
 	}
+}
+
+OpenGLContext* PlatformManager::openGLContext() const
+{
+    return m_windowManager->getOpenGLContext();
 }
 
 } // namespace detail

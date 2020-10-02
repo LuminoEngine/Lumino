@@ -84,7 +84,32 @@ static void glfwSetWindowCenter(GLFWwindow* window) {
 
 namespace ln {
 namespace detail {
-	
+
+//=============================================================================
+// GLFWContext
+
+GLFWContext::GLFWContext(GLFWPlatformWindow* mainWindow)
+	: m_mainWindow(mainWindow)
+{
+	assert(m_mainWindow);
+}
+
+void GLFWContext::makeCurrentMain()
+{
+	makeCurrent(m_mainWindow);
+}
+
+void GLFWContext::makeCurrent(PlatformWindow* window)
+{
+	if (window) {
+		const auto w = static_cast<GLFWPlatformWindow*>(window);
+		glfwMakeContextCurrent(w->glfwWindow());
+	}
+	else {
+		glfwMakeContextCurrent(nullptr);
+	}
+}
+
 //=============================================================================
 // GLFWPlatformWindow
 
@@ -191,7 +216,7 @@ GLFWPlatformWindow::~GLFWPlatformWindow()
 {
 }
 
-Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWPlatformWindow* sharedWindow)
+Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWContext* sharedContext)
 {
 	initKeyTable();
 
@@ -228,7 +253,8 @@ Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const 
 		}
 		m_glfwWindow = glfwCreateWindow(
 			settings.clientSize.width, settings.clientSize.height,
-			settings.title.toStdString().c_str(), NULL, (sharedWindow) ? sharedWindow->m_glfwWindow : NULL);
+			settings.title.toStdString().c_str(), nullptr,
+			(sharedContext) ? sharedContext->mainWindow()->glfwWindow() : nullptr);
 		if (LN_ENSURE(m_glfwWindow)) return false;
 
 #if defined(LN_OS_WIN32)
@@ -257,7 +283,7 @@ Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const 
 	// 1インチ (= 25.4 mm) 
 
 
-	glfwMakeContextCurrent(m_glfwWindow);
+	//glfwMakeContextCurrent(m_glfwWindow);
     return true;
 }
 
@@ -492,6 +518,7 @@ ModifierKeys GLFWPlatformWindow::glfwKeyModToLNKeyMod(int mods)
 
 GLFWPlatformWindowManager::GLFWPlatformWindowManager(PlatformManager* manager)
 	: PlatformWindowManager(manager)
+	, m_glContext(nullptr)
 {
 }
 
@@ -519,18 +546,29 @@ void GLFWPlatformWindowManager::dispose()
 	glfwTerminate();
 }
 
-Ref<PlatformWindow> GLFWPlatformWindowManager::createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow)
+Ref<PlatformWindow> GLFWPlatformWindowManager::createMainWindow(const WindowCreationSettings& settings)
 {
-	GLFWPlatformWindow* sharedWindow = nullptr;
-	if (mainWindow) {
-		sharedWindow = static_cast<GLFWPlatformWindow*>(sharedWindow);
-	}
+	if (LN_REQUIRE(!m_glContext)) return nullptr;
 
 	auto ptr = ln::makeRef<GLFWPlatformWindow>();
-    if (!ptr->init(this, settings, sharedWindow)) {
-        return nullptr;
-    }
-    return ptr;
+	if (!ptr->init(this, settings, nullptr)) {
+		return nullptr;
+	}
+
+	m_glContext = ln::makeRef<GLFWContext>(ptr);
+
+	return ptr;
+}
+
+Ref<PlatformWindow> GLFWPlatformWindowManager::createSubWindow(const WindowCreationSettings& settings)
+{
+	if (LN_REQUIRE(m_glContext)) return nullptr;
+
+	auto ptr = ln::makeRef<GLFWPlatformWindow>();
+	if (!ptr->init(this, settings, m_glContext)) {
+		return nullptr;
+	}
+	return ptr;
 }
 
 void GLFWPlatformWindowManager::destroyWindow(PlatformWindow* window)
@@ -547,6 +585,11 @@ void GLFWPlatformWindowManager::processSystemEventQueue(EventProcessingMode mode
     else {
         glfwPollEvents();
     }
+}
+
+OpenGLContext* GLFWPlatformWindowManager::getOpenGLContext() const
+{
+	return m_glContext;
 }
 
 //=============================================================================
