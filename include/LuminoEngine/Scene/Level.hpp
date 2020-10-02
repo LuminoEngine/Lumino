@@ -55,8 +55,16 @@ class Level
 public:
 	World* world() const { return m_ownerWorld; }
 
-	void addSubLevel(Level* level);
-	void removeSubLevel(Level* level);
+	/** 指定した Level を、この Level の Sub-Level として追加します。 */
+	LN_METHOD()
+	void addSubLevel(Level* sublevel);
+
+	/** 指定した Level を、この Level の Sub-Level から除外します。 */
+	LN_METHOD()
+	void removeSubLevel(Level* sublevel);
+
+	/** すべての Sub-Level を除外します。 */
+	LN_METHOD()
 	void removeAllSubLevels();
 
 	void setUpdateMode(LevelUpdateMode value) { m_updateMode = value; }

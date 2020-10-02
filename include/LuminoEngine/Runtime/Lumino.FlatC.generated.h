@@ -2671,6 +2671,24 @@ LN_FLAT_API LNResult LNScene_StartFadeIn();
 */
 LN_FLAT_API LNResult LNLevel_Create(LNHandle* outLevel);
 
+/**
+    @brief 指定した Level を、この Level の Sub-Level として追加します。
+    @param[in] level : instance
+*/
+LN_FLAT_API LNResult LNLevel_AddSubLevel(LNHandle level, LNHandle sublevel);
+
+/**
+    @brief 指定した Level を、この Level の Sub-Level から除外します。
+    @param[in] level : instance
+*/
+LN_FLAT_API LNResult LNLevel_RemoveSubLevel(LNHandle level, LNHandle sublevel);
+
+/**
+    @brief すべての Sub-Level を除外します。
+    @param[in] level : instance
+*/
+LN_FLAT_API LNResult LNLevel_RemoveAllSubLevels(LNHandle level);
+
 typedef LNResult(*LNLevel_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNLevel_OnSerialize_SetOverrideCallback(LNLevel_OnSerialize_OverrideCallback callback);
 LN_FLAT_API LNResult LNLevel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);

@@ -10957,6 +10957,30 @@ LN_FLAT_API LNResult LNLevel_Create(LNHandle* outLevel)
 }
 
 
+LN_FLAT_API LNResult LNLevel_AddSubLevel(LNHandle level, LNHandle sublevel)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Level, level)->addSubLevel(LNI_HANDLE_TO_OBJECT(ln::Level, sublevel)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNLevel_RemoveSubLevel(LNHandle level, LNHandle sublevel)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Level, level)->removeSubLevel(LNI_HANDLE_TO_OBJECT(ln::Level, sublevel)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNLevel_RemoveAllSubLevels(LNHandle level)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Level, level)->removeAllSubLevels());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNLevel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;

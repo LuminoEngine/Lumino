@@ -23,6 +23,7 @@ static const ln::String ASFileTemplate = uR"(
 
 #const global LN_TRUE 1
 #const global LN_FALSE 0
+#const global LN_NULL_HANDLE 0
 
 %%Contents%%
 
