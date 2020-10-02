@@ -83,7 +83,7 @@ LN_OBJECT_IMPLEMENT(UIElement, UILayoutElement) {}
 UIElement::UIElement()
     : m_manager(nullptr)
 	, m_objectManagementFlags(detail::ObjectManagementFlags::None)
-    , m_context(nullptr)
+    //, m_context(nullptr)
     , m_visualParent(nullptr)
     , m_logicalParent(nullptr)
     , m_localStyle(nullptr)
@@ -121,7 +121,7 @@ bool UIElement::init(const UICreationContext* context)
 	UILayoutElement::init(m_finalStyle);
     context = (context) ? context : UICreationContext::Default;
     m_manager = detail::EngineDomain::uiManager();
-    if (LN_REQUIRE(m_manager->mainContext())) return false;
+    //if (LN_REQUIRE(m_manager->mainContext())) return false;
 
     m_dirtyFlags.set(detail::UIElementDirtyFlags::InitialLoading);
 
@@ -135,7 +135,7 @@ bool UIElement::init(const UICreationContext* context)
 
 
     //if (m_manager->mainContext()) {
-        m_manager->mainContext()->addElement(this);
+        //m_manager->mainContext()->addElement(this);
     //}
 
     //onSetup();
@@ -444,17 +444,17 @@ const ColorTone & UIElement::tone() const
     return m_localStyle->mainStyle()->tone.getOrDefault(detail::BuiltinEffectData::DefaultValue.tone);
 }
 
-UIContext* UIElement::getContext() const
-{
-    if (m_context) {
-        return m_context;
-    }
-    if (m_visualParent) {
-        return m_visualParent->getContext();
-    }
-    LN_ERROR();
-    return nullptr;
-}
+//UIContext* UIElement::getContext() const
+//{
+//    if (m_context) {
+//        return m_context;
+//    }
+//    if (m_visualParent) {
+//        return m_visualParent->getContext();
+//    }
+//    LN_ERROR();
+//    return nullptr;
+//}
 
 void UIElement::addClass(const StringRef& className)
 {

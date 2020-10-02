@@ -10,7 +10,7 @@ namespace ln {
 class DiagnosticsManager;
 class EngineContext;
 class Application;
-class UIContext;
+//class UIContext;
 class UIMainWindow;
 class UIViewport;
 class UIRenderView;
@@ -165,7 +165,7 @@ public:
 	void setMainWindow(ln::UIMainWindow* window);
 
 	Application* application() const { return m_settings.application; }
-    const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
+    //const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
 	const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
 	const Ref<UIDomainProvidor>& mainUIView() const { return m_mainUIRoot; }
@@ -224,7 +224,7 @@ private:
 	Path m_persistentDataPath;
 	Path m_engineResourcesPath;
 
-    Ref<UIContext> m_mainUIContext;
+    //Ref<UIContext> m_mainUIContext;
 	Ref<UIMainWindow> m_mainWindow;
 	Ref<UIViewport> m_mainViewport;
     Ref<UIRenderView> m_mainUIRenderView;   // m_mainViewport の ViewBox 内部に配置する

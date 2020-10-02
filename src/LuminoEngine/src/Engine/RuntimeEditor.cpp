@@ -26,22 +26,30 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window)
 
 	//m_window->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
 
-	m_splitter = makeObject<UISplitter>();
-	m_splitter->setOrientation(Orientation::Horizontal);
+	//m_splitter = makeObject<UISplitter>();
+	//m_splitter->setOrientation(Orientation::Horizontal);
 
-	m_mainContentsPane = makeObject<UIControl>();
-	m_splitter->addChild(m_mainContentsPane);
+	//m_mainContentsPane = makeObject<UIControl>();
+	//m_splitter->addChild(m_mainContentsPane);
 
-	m_toolPane = makeObject<UIElement>();
-	m_toolPane->setBackgroundColor(Color::White);
-	m_toolPane->setBorderColor(Color::LightGray);
-	m_toolPane->setBorderThickness(1);
-	m_splitter->addChild(m_toolPane);
+	//m_toolPane = makeObject<UIElement>();
+	//m_toolPane->setBackgroundColor(Color::White);
+	//m_toolPane->setBorderColor(Color::LightGray);
+	//m_toolPane->setBorderThickness(1);
+	//m_splitter->addChild(m_toolPane);
 
 	m_toolWindow = makeObject<UIFrameWindow>();
 	m_toolWindow->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
 
 	setMode(Mode::Activated);
+}
+
+void RuntimeEditor::dispose()
+{
+	if (m_toolWindow) {
+		m_toolWindow->dispose();
+		m_toolWindow = nullptr;
+	}
 }
 
 void RuntimeEditor::toggleMode()
@@ -111,8 +119,11 @@ void RuntimeEditor::detach()
 
 void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 {
-	const auto pos = m_toolPane->m_combinedFinalRenderTransform.position();
-	const auto size = m_toolPane->actualSize();
+	//const auto pos = m_toolPane->m_combinedFinalRenderTransform.position();
+	//const auto size = m_toolPane->actualSize();
+	const auto pos = ln::Vector2(0, 0);
+	const auto size = m_toolWindow->actualSize();
+
 	ImGui::SetNextWindowPos(ImVec2(pos.x, pos.y));
 	ImGui::SetNextWindowSize(ImVec2(size.width, size.height));
 

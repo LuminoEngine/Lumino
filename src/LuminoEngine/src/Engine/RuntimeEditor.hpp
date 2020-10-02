@@ -22,6 +22,7 @@ public:
 
     RuntimeEditor();
     void init(EngineManager* manager, UIMainWindow* window);
+    void dispose();
     void toggleMode();
     void setMode(Mode value);
 

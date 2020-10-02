@@ -12,7 +12,7 @@ namespace ln {
 
 UITheme* UI::mainTheme()
 {
-	return detail::EngineDomain::uiManager()->mainContext()->styleContext()->mainTheme;
+	return detail::EngineDomain::uiManager()->styleContext()->mainTheme;
 }
 
 } // namespace ln

@@ -178,9 +178,14 @@ void EngineManager::dispose()
 	}
 	m_debugCamera = nullptr;
 
+	if (m_runtimeEditor) {
+		m_runtimeEditor->dispose();
+		m_runtimeEditor = nullptr;
+	}
+
     if (m_uiManager) {
         m_uiManager->setPrimaryElement(nullptr);
-        m_uiManager->setMainContext(nullptr);
+        //m_uiManager->setMainContext(nullptr);
     }
 
 	if (m_platformManager) {
@@ -225,10 +230,10 @@ void EngineManager::dispose()
             m_mainWindow->dispose();
             m_mainWindow = nullptr;
         }
-        if (m_mainUIContext) {
-            m_mainUIContext->dispose();
-            m_mainUIContext = nullptr;
-        }
+        //if (m_mainUIContext) {
+        //    m_mainUIContext->dispose();
+        //    m_mainUIContext = nullptr;
+        //}
     }
 
     //if (!m_settings.externalRenderingManagement) {
@@ -583,8 +588,8 @@ void EngineManager::initializeUIManager()
 		m_uiManager = makeRef<UIManager>();
 		m_uiManager->init(settings);
 
-        m_mainUIContext = makeObject<UIContext>();
-        m_uiManager->setMainContext(m_mainUIContext);
+        //m_mainUIContext = makeObject<UIContext>();
+        //m_uiManager->setMainContext(m_mainUIContext);
 
 
 		if (m_settings.debugToolEnabled) {
@@ -678,8 +683,8 @@ void EngineManager::initializeDefaultObjects()
 	}
 
 	// init 直後にウィンドウサイズを取得したり、Camera Matrix を計算するため、ViewSize を確定させる
-	if (m_mainUIContext && m_mainWindow) {
-		m_mainUIContext->updateStyleTree();
+	if (/*m_mainUIContext && */m_mainWindow) {
+		m_mainWindow->updateStyleTree();
 		m_mainWindow->updateLayoutTree();
 	}
 
@@ -753,11 +758,11 @@ void EngineManager::updateFrame()
     // Post update phase
 
     // 大体他の updateFrame で要素位置の調整が入るので、その後にレイアウトする。
-    if (m_mainUIContext) {
+    /*if (m_mainUIContext)*/ {
         // onUpdate のユーザー処理として、2D <-> 3D 変換したいことがあるが、それには ViewPixelSize が必要になる。
         // 初期化直後や、Platform からの SizeChanged イベントの直後に一度レイアウトを更新することで、
         // ユーザー処理の前に正しい ViewPixelSize を計算しておく。
-        m_mainUIContext->updateStyleTree();
+		m_mainWindow->updateStyleTree();
         //m_mainUIContext->updateLayoutTree();
         m_mainWindow->updateLayoutTree();
     }
@@ -864,7 +869,7 @@ void EngineManager::setMainWindow(ln::UIMainWindow* window)
 	if (LN_REQUIRE(!m_mainWindow)) return;
 	m_mainWindow = window;
 	m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), m_settings.mainWindowSize);
-	m_mainUIContext->setLayoutRootElement(m_mainWindow);
+	//m_mainUIContext->setLayoutRootElement(m_mainWindow);
 
 	// TODO: SwapChain だけでいいはず
 	//m_mainWindow->m_graphicsContext = m_graphicsManager->mainWindowGraphicsContext();

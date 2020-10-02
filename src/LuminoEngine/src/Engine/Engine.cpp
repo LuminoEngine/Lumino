@@ -230,10 +230,10 @@ GraphicsContext* Engine::graphicsContext()
 	//return detail::EngineDomain::graphicsManager()->mainWindowGraphicsContext();
 }
 
-UIContext* Engine::mainUIContext()
-{
-    return detail::EngineDomain::engineManager()->mainUIContext();
-}
+//UIContext* Engine::mainUIContext()
+//{
+//    return detail::EngineDomain::engineManager()->mainUIContext();
+//}
 
 UIFrameWindow* Engine::mainWindow()
 {

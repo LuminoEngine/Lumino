@@ -8,7 +8,7 @@ namespace ln {
 class UILayoutContext;
 class UIRenderingContext;
 class UIFrameRenderView;
-class UIContext;
+//class UIContext;
 class UIEventArgs;
 class UIStyle;
 class UIStyleClass;
@@ -361,7 +361,7 @@ public:
     // TODO: ↑の WorldObject 的なものは、派生クラスの UIVisual 的なクラスにユーティリティとして持っていく。
     // UIElement としては RenderTransform, Style 扱いにしたい。
 
-    UIContext* getContext() const;
+    //UIContext* getContext() const;
 
     void addClass(const StringRef& className);
 	void setViewModel(UIViewModel* value);
@@ -554,7 +554,7 @@ public: // TODO: internal
     
     // TODO: ↓ UIRenderView にまとめてしまっていいかも
     // TODO: ↓ UILayoutContext や UIStyleContxt 経由でもらう
-    UIContext* m_context;       // ルート要素 (ほとんどの場合は UIFrameWindow) が値を持つ。それ以外は基本的に null. もしウィンドウ内で別のコンテキストに属したい場合はセットする。
+    //UIContext* m_context;       // ルート要素 (ほとんどの場合は UIFrameWindow) が値を持つ。それ以外は基本的に null. もしウィンドウ内で別のコンテキストに属したい場合はセットする。
     UIFrameRenderView* m_renderView = nullptr; // ルート要素が値を持つ。
     
     UIElement* m_visualParent;		// 必ず存在する。
@@ -582,7 +582,7 @@ public: // TODO: internal
 	bool m_focusable;			// TODO: flags
     bool m_clipToBounds;			// TODO: flags
 
-    friend class UIContext;
+    //friend class UIContext;
     friend class UIFrameRenderView;
     friend class UIFrameWindow;
     friend class UIViewModel;

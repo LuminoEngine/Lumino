@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+struct ImGuiContext;
+
 namespace ln {
 class VertexLayout;
 class VertexBuffer;
@@ -10,16 +12,18 @@ class RenderPass;
 namespace detail {
 struct PlatformEventArgs;
 
-class ImGuiContext
+class ImGuiIntegration
 {
 public:
 	bool init();
 	void dispose();
     void updateFrame(float elapsedSeconds);
+	void prepareRender(float width, float height);
 	void render(GraphicsContext* graphicsContext, RenderTargetTexture* target);
     bool handlePlatformEvent(const detail::PlatformEventArgs& e);
 
 private:
+	::ImGuiContext* m_imgui;
 	Ref<Texture2D> m_fontTexture;
 	int m_vertexBufferSize = 5000;
 	int m_indexBufferSize = 10000;

@@ -21,11 +21,13 @@ namespace detail {
 //==============================================================================
 // UIContext
 
-bool ImGuiContext::init()
+bool ImGuiIntegration::init()
 {
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
+	m_imgui = ImGui::CreateContext();
+	ImGui::SetCurrentContext(m_imgui);
+
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -72,16 +74,18 @@ bool ImGuiContext::init()
 	return true;
 }
 
-void ImGuiContext::dispose()
+void ImGuiIntegration::dispose()
 {
 	if (m_fontTexture) {
-		ImGui::DestroyContext();
+		ImGui::DestroyContext(m_imgui);
 		m_fontTexture = nullptr;
 	}
 }
 
-void ImGuiContext::updateFrame(float elapsedSeconds)
+void ImGuiIntegration::updateFrame(float elapsedSeconds)
 {
+	ImGui::SetCurrentContext(m_imgui);
+
     ImGuiIO& io = ImGui::GetIO();
     io.DeltaTime = elapsedSeconds;
 
@@ -95,8 +99,19 @@ void ImGuiContext::updateFrame(float elapsedSeconds)
     }
 }
 
-void ImGuiContext::render(GraphicsContext* graphicsContext, RenderTargetTexture* target)
+void ImGuiIntegration::prepareRender(float width, float height)
 {
+	ImGui::SetCurrentContext(m_imgui);
+
+	ImGuiIO& io = ImGui::GetIO();
+	IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
+	io.DisplaySize = ImVec2(width, height);
+}
+
+void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetTexture* target)
+{
+	ImGui::SetCurrentContext(m_imgui);
+
 	ImGui::Render();
 	ImDrawData* draw_data = ImGui::GetDrawData();
 
@@ -211,10 +226,11 @@ void ImGuiContext::render(GraphicsContext* graphicsContext, RenderTargetTexture*
 	graphicsContext->endRenderPass();	// TODO: scoped
 }
 
-bool ImGuiContext::handlePlatformEvent(const detail::PlatformEventArgs& e)
+bool ImGuiIntegration::handlePlatformEvent(const detail::PlatformEventArgs& e)
 {
-    if (!ImGui::GetCurrentContext())
-        return false;
+	if (!m_imgui) return false;
+
+	ImGui::SetCurrentContext(m_imgui);
 
 	ImGuiIO& io = ImGui::GetIO();
 

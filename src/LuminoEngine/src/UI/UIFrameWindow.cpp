@@ -260,11 +260,11 @@ UIElement* UIInputInjector::mouseHoveredElement()
 // UIFrameWindow
 
 UIFrameWindow::UIFrameWindow()
-	: m_autoDisposePlatformWindow(true)
-	, m_updateMode(UIFrameWindowUpdateMode::EventDispatches)
+	: m_updateMode(UIFrameWindowUpdateMode::EventDispatches)
 	, m_ImGuiLayerEnabled(false)
     , m_layoutContext(makeObject<UILayoutContext>())
 {
+    m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
 }
 
 UIFrameWindow::~UIFrameWindow()
@@ -297,7 +297,6 @@ void UIFrameWindow::init(bool mainWindow)
 void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
 {
     m_platformWindow = platformMainWindow;
-	m_autoDisposePlatformWindow = false;
 	m_swapChain = makeObject<SwapChain>(platformMainWindow, backbufferSize);
 
     m_platformWindow->attachEventListener(this);
@@ -334,8 +333,9 @@ void UIFrameWindow::onDispose(bool explicitDisposing)
 
 	if (m_platformWindow) {
 		m_platformWindow->detachEventListener(this);
-		if (m_autoDisposePlatformWindow) {
-			detail::EngineDomain::platformManager()->windowManager()->destroyWindow(m_platformWindow);	// TODO: dispose で破棄で。
+		if (!specialElementFlags().hasFlag(detail::UISpecialElementFlags::MainWindow)) {
+            // TODO: platformManager とるよりも m_platformWindow->dispose() で消せるようにした方がいいかも
+			detail::EngineDomain::platformManager()->windowManager()->destroyWindow(m_platformWindow);
 		}
         m_platformWindow = nullptr;
 	}
@@ -368,13 +368,7 @@ void UIFrameWindow::present()
 
 	if (m_ImGuiLayerEnabled)
 	{
-
-		// Platform NewFrame
-		{
-			ImGuiIO& io = ImGui::GetIO();
-			IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
-			io.DisplaySize = ImVec2(m_clientSize.width, m_clientSize.height);
-		}
+        m_imguiContext.prepareRender(m_clientSize.width, m_clientSize.height);
 
 		ImGui::NewFrame();
 
@@ -403,11 +397,16 @@ SwapChain* UIFrameWindow::swapChain() const
 	return m_swapChain;
 }
 
+void UIFrameWindow::updateStyleTree()
+{
+    updateStyleHierarchical(m_manager->styleContext(), m_manager->finalDefaultStyle());
+}
+
 void UIFrameWindow::updateLayoutTree()
 {
 	if (m_renderView) {
         m_layoutContext->m_dpiScale = platformWindow()->dpiFactor();
-        m_layoutContext->m_styleContext = m_context->styleContext();
+        m_layoutContext->m_styleContext = m_manager->styleContext();
 
 		//Rect clientRect(0, 0, m_clientSize);
 		m_renderView->setActualSize(m_clientSize);
@@ -571,14 +570,14 @@ void UIFrameWindow::onRoutedEvent(UIEventArgs* e)
 {
     if (e->type() == UIEvents::RequestVisualUpdateEvent) {
         if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style)) {
-            UIContext* context = getContext();
+            //UIContext* context = getContext();
             //updateStyleHierarchical(context->styleContext(), context->finalDefaultStyle());		// TODO: 直接呼ぶのではなく、RenderView 経由で読んでもらう
             //// TODO: ↑のものは↓のm_renderViewのonUpdateUILayout()でおなじことやってる。まとめたいなぁ…
             //if (m_renderView) {
             //    m_renderView->adornerLayer()->updateStyleHierarchical(context->styleContext(), context->finalDefaultStyle());
             //}
 			if (m_renderView) {
-				m_renderView->updateUIStyle(context->styleContext(), context->finalDefaultStyle());
+				m_renderView->updateUIStyle(m_manager->styleContext(), m_manager->finalDefaultStyle());
 			}
         }
         if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Layout)) {
@@ -622,6 +621,7 @@ void UIFrameWindow::invalidate(detail::UIElementDirtyFlags flags, bool toAncesto
 
 UIMainWindow::UIMainWindow()
 {
+    specialElementFlags().set(detail::UISpecialElementFlags::MainWindow);
 }
 
 UIMainWindow::~UIMainWindow()

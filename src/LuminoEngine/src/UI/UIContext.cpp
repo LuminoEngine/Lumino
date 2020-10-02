@@ -10,6 +10,7 @@
 
 namespace ln {
 
+#if 0
 //==============================================================================
 // UIContext
 
@@ -387,6 +388,7 @@ void UIContext::setupDefaultStyle()
 	m_styleContext->mainTheme = theme;
     //m_styleContext->build();
 }
+#endif
 
 } // namespace ln
 

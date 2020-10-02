@@ -62,6 +62,7 @@ enum class UICollectionChangedAction
 };
 
 namespace detail {
+class UIStyleInstance;
 
 // TODO: UI モジュールではなく共通の場所に持っていく。WorldObject も似たような管理を行う。
 enum class ObjectManagementFlags : uint8_t
@@ -73,7 +74,8 @@ enum class ObjectManagementFlags : uint8_t
 enum class UISpecialElementFlags : uint8_t
 {
 	None = 0,
-	FrameWindow = 1 << 1,
+	MainWindow = 1 << 1,
+    FrameWindow = 1 << 2,
 
     // 子 Visual 要素のレイアウトと描画を行わない。
     // イベントルーティングは通常通り行う。
@@ -81,10 +83,10 @@ enum class UISpecialElementFlags : uint8_t
     //VisualLeaf = 1 << 2,
 
     // 通常の論理ツリー上に配置され、レイアウトと描画は Adorner など別のフェーズで行う
-    Popup = 1 << 2,
+    Popup = 1 << 3,
 
     // UIControl. 
-    Control = 1 << 3,
+    Control = 1 << 4,
 
     // 
     //LayoutInvisible = 1 << 3,

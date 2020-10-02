@@ -176,7 +176,7 @@ void EditorApplication::onInit()
     }
 
 
-    ln::Engine::mainUIContext()->styleContext()->addStyleSheet(sheet);
+    ln::detail::EngineDomain::uiManager()->styleContext()->addStyleSheet(sheet);
 }
 
 void EditorApplication::onRoutedEvent(ln::UIEventArgs* e)
