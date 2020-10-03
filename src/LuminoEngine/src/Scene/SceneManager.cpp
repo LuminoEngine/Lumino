@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include "SceneManager.hpp"
+#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Scene/Raycaster.hpp>
 
 // for registerType
@@ -41,7 +43,7 @@ void SceneManager::init()
     LN_LOG_DEBUG << "SceneManager Initialization started.";
 
 
-	// ClusteredShadingDefault.lcfx.h
+	// SkyFromAtmosphere.lcfx.h
 	{
 		static const unsigned char data[] =
 		{
@@ -51,6 +53,44 @@ void SceneManager::init()
 		MemoryStream stream(data, size);
 		m_atmosphereShader = makeObject<Shader>(u"SkyFromAtmosphere", &stream);
 	}
+
+
+	auto createTexture = [](const uint8_t* data, size_t len) {
+		MemoryStream stream(data, len);
+		auto bmp = makeObject<Bitmap2D>();
+		bmp->load(&stream);
+		return makeObject<Texture2D>(bmp, TextureFormat::RGBA8);
+	};
+
+	// SkydomeCloudA
+	{
+		static const unsigned char data[] = {
+#include "Resource/SkydomeCloudA.png.inl"
+		};
+		SkydomeCloudA = createTexture(data, LN_ARRAY_SIZE_OF(data));
+	}
+	// SkydomeCloudB
+	{
+		static const unsigned char data[] = {
+#include "Resource/SkydomeCloudB.png.inl"
+		};
+		SkydomeCloudB = createTexture(data, LN_ARRAY_SIZE_OF(data));
+	}
+	// SkydomeCloudC
+	{
+		static const unsigned char data[] = {
+#include "Resource/SkydomeCloudC.png.inl"
+		};
+		SkydomeCloudC = createTexture(data, LN_ARRAY_SIZE_OF(data));
+	}
+	// SkydomeCloudR
+	{
+		static const unsigned char data[] = {
+#include "Resource/SkydomeCloudR.png.inl"
+		};
+		SkydomeCloudR = createTexture(data, LN_ARRAY_SIZE_OF(data));
+	}
+
 
 #if 0
     m_atmosphereShader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyFromAtmosphere.fx");

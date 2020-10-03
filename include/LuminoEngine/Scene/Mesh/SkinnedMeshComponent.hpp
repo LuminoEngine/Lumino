@@ -5,11 +5,18 @@
 namespace ln {
 class SkinnedMeshModel;
 
+/**
+ * SkinnedMeshComponent
+ */
+LN_CLASS()
 class SkinnedMeshComponent
 	: public VisualComponent
 {
 public:
+	/** setModel */
+	LN_METHOD()
     void setModel(SkinnedMeshModel* model);
+
     SkinnedMeshModel* model() const;
 
 protected:
@@ -19,6 +26,9 @@ protected:
 LN_CONSTRUCT_ACCESS:
     SkinnedMeshComponent();
 	virtual ~SkinnedMeshComponent();
+
+	/** init */
+	LN_METHOD()
 	void init();
 
 private:

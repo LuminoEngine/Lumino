@@ -150,11 +150,17 @@ public:	// TODO:
 
 };
 
+/**
+ * SkinnedMeshModel
+ */
+LN_CLASS()
 class SkinnedMeshModel
 	: public StaticMeshModel
 	//, public IAnimationTargetObject
 {
 public:
+	/** load */
+	LN_METHOD()
 	static Ref<SkinnedMeshModel> load(const StringRef& filePath);
 
 	AnimationController* animationController() const;

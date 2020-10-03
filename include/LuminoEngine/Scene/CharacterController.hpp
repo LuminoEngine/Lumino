@@ -18,6 +18,10 @@ enum class CharacterControllerMode
 	CharacterMajor,
 };
 
+/**
+ * CharacterController
+ */
+LN_CLASS()
 class CharacterController
 	: public Component
 	, protected detail::IPhysicsObjectEventListener
@@ -80,6 +84,9 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
 	CharacterController();
+
+	/** CharacterController を作成します。 */
+	LN_METHOD(Property)
 	bool init();
 
 private:

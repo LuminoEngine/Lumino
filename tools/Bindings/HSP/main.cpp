@@ -44,7 +44,7 @@ static void* reffunc(int* type_res, int cmd)
 	if (*val != ')') puterror(HSPERR_INVALID_FUNCPARAM);
 	code_next();
 
-	*type_res = HSPVAR_FLAG_INT;			// 返値のタイプを整数に指定する
+	//*type_res = HSPVAR_FLAG_INT;			// 返値のタイプを整数に指定する
 	return retValPtr;
 }
 

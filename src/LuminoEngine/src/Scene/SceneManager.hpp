@@ -14,6 +14,11 @@ class SceneManager
 	: public RefObject
 {
 public:
+	Ref<Texture2D> SkydomeCloudA;
+	Ref<Texture2D> SkydomeCloudB;
+	Ref<Texture2D> SkydomeCloudC;
+	Ref<Texture2D> SkydomeCloudR;
+
 	SceneManager();
 	virtual ~SceneManager();
 	void init();

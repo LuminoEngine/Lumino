@@ -183,8 +183,16 @@ public:
 
 	void removeAllComponents();
 
+	/** タグを追加します。 */
+	LN_METHOD()
     void addTag(const StringRef& tag) { m_tags->add(tag); }
+
+	/** タグを除外します。 */
+	LN_METHOD()
     void removeTag(const StringRef& tag) { m_tags->remove(tag); }
+
+	/** 指定したタグを持っているかを確認します。 */
+	LN_METHOD()
     bool hasTag(const StringRef& tag) const { return m_tags->contains(tag); }
 
 
@@ -239,7 +247,11 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	WorldObject();
 	virtual ~WorldObject();
-	bool init(/*ObjectInitializeContext* context*/);
+
+	/** WorldObject を作成します。 */
+	LN_METHOD()
+	bool init();
+
 	virtual void onDispose(bool explicitDisposing) override;
 
 public: // TODO:

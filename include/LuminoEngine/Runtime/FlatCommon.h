@@ -12,14 +12,20 @@
 
 
 #define LNI_FUNC_TRY_BEGIN    try {
+//#define LNI_FUNC_TRY_END_RETURN    } \
+//    catch (ln::Exception& e) { \
+//        return ln::Runtime::processException(&e); \
+//    } \
+//    catch (...) { \
+//        return LN_ERROR_UNKNOWN; \
+//    } \
+//	return LN_SUCCESS;
 #define LNI_FUNC_TRY_END_RETURN    } \
     catch (ln::Exception& e) { \
         return ln::Runtime::processException(&e); \
     } \
-    catch (...) { \
-        return LN_ERROR_UNKNOWN; \
-    } \
 	return LN_SUCCESS;
+// NOTE: HSP ランタイムは エラーを例外で通知していくので、catch (...) で処理してしまうとよくわからないままプロセスが終了してしまう。
 
 #define LNI_BOOL_TO_LNBOOL(x)    (x) ? LN_TRUE : LN_FALSE
 #define LNI_LNBOOL_TO_BOOL(x)    (x != LN_FALSE)
