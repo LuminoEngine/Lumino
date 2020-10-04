@@ -675,6 +675,140 @@ LN_FLAT_API LNResult LNSkinnedMeshModelSerializeHandler_Create(LNSkinnedMeshMode
 
 
 // Auto generated override handler
+using CollisionShapeSerializeHandler = ln::Delegate<void(ln::CollisionShape* self, ln::Serializer2* ar)>;
+
+class LNWS_CollisionShapeSerializeHandler : public CollisionShapeSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNCollisionShapeSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNCollisionShapeSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNCollisionShapeSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNCollisionShapeSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNCollisionShapeSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNCollisionShapeSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNCollisionShapeSerializeHandlerCallback m_callback;
+
+    LNWS_CollisionShapeSerializeHandler()
+      : CollisionShapeSerializeHandler([this](ln::CollisionShape* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNCollisionShapeSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_CollisionShapeSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNCollisionShapeSerializeHandlerCallback callback)
+    {
+        if (!CollisionShapeSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNCollisionShapeSerializeHandler_Create(LNCollisionShapeSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_CollisionShapeSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using BoxCollisionShapeSerializeHandler = ln::Delegate<void(ln::BoxCollisionShape* self, ln::Serializer2* ar)>;
+
+class LNWS_BoxCollisionShapeSerializeHandler : public BoxCollisionShapeSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNBoxCollisionShapeSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNBoxCollisionShapeSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNBoxCollisionShapeSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNBoxCollisionShapeSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNBoxCollisionShapeSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNBoxCollisionShapeSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNBoxCollisionShapeSerializeHandlerCallback m_callback;
+
+    LNWS_BoxCollisionShapeSerializeHandler()
+      : BoxCollisionShapeSerializeHandler([this](ln::BoxCollisionShape* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNBoxCollisionShapeSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_BoxCollisionShapeSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNBoxCollisionShapeSerializeHandlerCallback callback)
+    {
+        if (!BoxCollisionShapeSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNBoxCollisionShapeSerializeHandler_Create(LNBoxCollisionShapeSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_BoxCollisionShapeSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
 using ComponentSerializeHandler = ln::Delegate<void(ln::Component* self, ln::Serializer2* ar)>;
 
 class LNWS_ComponentSerializeHandler : public ComponentSerializeHandler
@@ -2685,6 +2819,140 @@ LN_FLAT_API LNResult LNPlaneMeshUpdateHandler_Create(LNPlaneMeshUpdateHandlerCal
 
 
 // Auto generated override handler
+using StaticMeshSerializeHandler = ln::Delegate<void(ln::StaticMesh* self, ln::Serializer2* ar)>;
+
+class LNWS_StaticMeshSerializeHandler : public StaticMeshSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNStaticMeshSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNStaticMeshSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNStaticMeshSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNStaticMeshSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNStaticMeshSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNStaticMeshSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNStaticMeshSerializeHandlerCallback m_callback;
+
+    LNWS_StaticMeshSerializeHandler()
+      : StaticMeshSerializeHandler([this](ln::StaticMesh* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNStaticMeshSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_StaticMeshSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNStaticMeshSerializeHandlerCallback callback)
+    {
+        if (!StaticMeshSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNStaticMeshSerializeHandler_Create(LNStaticMeshSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_StaticMeshSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using StaticMeshUpdateHandler = ln::Delegate<void(ln::StaticMesh* self, float elapsedSeconds)>;
+
+class LNWS_StaticMeshUpdateHandler : public StaticMeshUpdateHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNStaticMeshUpdateHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNStaticMeshUpdateHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNStaticMeshUpdateHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNStaticMeshUpdateHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNStaticMeshUpdateHandler_SubclassRegistrationInfo* subclassInfo() { static LNStaticMeshUpdateHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNStaticMeshUpdateHandlerCallback m_callback;
+
+    LNWS_StaticMeshUpdateHandler()
+      : StaticMeshUpdateHandler([this](ln::StaticMesh* self, float elapsedSeconds) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), elapsedSeconds);
+        if (r != LN_SUCCESS) { LN_ERROR("LNStaticMeshUpdateHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_StaticMeshUpdateHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNStaticMeshUpdateHandlerCallback callback)
+    {
+        if (!StaticMeshUpdateHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNStaticMeshUpdateHandler_Create(LNStaticMeshUpdateHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_StaticMeshUpdateHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
 using SkinnedMeshComponentSerializeHandler = ln::Delegate<void(ln::SkinnedMeshComponent* self, ln::Serializer2* ar)>;
 
 class LNWS_SkinnedMeshComponentSerializeHandler : public SkinnedMeshComponentSerializeHandler
@@ -2747,6 +3015,140 @@ LN_FLAT_API LNResult LNSkinnedMeshComponentSerializeHandler_Create(LNSkinnedMesh
 {
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outDelegate, LNWS_SkinnedMeshComponentSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using CollisionSerializeHandler = ln::Delegate<void(ln::Collision* self, ln::Serializer2* ar)>;
+
+class LNWS_CollisionSerializeHandler : public CollisionSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNCollisionSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNCollisionSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNCollisionSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNCollisionSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNCollisionSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNCollisionSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNCollisionSerializeHandlerCallback m_callback;
+
+    LNWS_CollisionSerializeHandler()
+      : CollisionSerializeHandler([this](ln::Collision* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNCollisionSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_CollisionSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNCollisionSerializeHandlerCallback callback)
+    {
+        if (!CollisionSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNCollisionSerializeHandler_Create(LNCollisionSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_CollisionSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using TriggerBodyComponentSerializeHandler = ln::Delegate<void(ln::TriggerBodyComponent* self, ln::Serializer2* ar)>;
+
+class LNWS_TriggerBodyComponentSerializeHandler : public TriggerBodyComponentSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNTriggerBodyComponentSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNTriggerBodyComponentSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNTriggerBodyComponentSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNTriggerBodyComponentSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNTriggerBodyComponentSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNTriggerBodyComponentSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNTriggerBodyComponentSerializeHandlerCallback m_callback;
+
+    LNWS_TriggerBodyComponentSerializeHandler()
+      : TriggerBodyComponentSerializeHandler([this](ln::TriggerBodyComponent* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNTriggerBodyComponentSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_TriggerBodyComponentSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNTriggerBodyComponentSerializeHandlerCallback callback)
+    {
+        if (!TriggerBodyComponentSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNTriggerBodyComponentSerializeHandler_Create(LNTriggerBodyComponentSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_TriggerBodyComponentSerializeHandler, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -5165,6 +5567,130 @@ public:
 LNSkinnedMeshModel_OnSerialize_OverrideCallback LNWS_ln_SkinnedMeshModel::s_LNSkinnedMeshModel_OnSerialize_OverrideCallback = nullptr;
 
 
+class LNWS_ln_CollisionShape : public ln::CollisionShape
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNCollisionShape_OverridePrototypes
+    {
+        ln::Ref<LNWS_CollisionShapeSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNCollisionShape_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNCollisionShape_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNCollisionShape_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNCollisionShape_SubclassRegistrationInfo* subclassInfo() { static LNCollisionShape_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_CollisionShape()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_CollisionShape()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNCollisionShape_OnSerialize_OverrideCallback s_LNCollisionShape_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNCollisionShape_OnSerialize_OverrideCallback) s_LNCollisionShape_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::CollisionShape::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::CollisionShape::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+LNCollisionShape_OnSerialize_OverrideCallback LNWS_ln_CollisionShape::s_LNCollisionShape_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_BoxCollisionShape : public ln::BoxCollisionShape
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNBoxCollisionShape_OverridePrototypes
+    {
+        ln::Ref<LNWS_BoxCollisionShapeSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNBoxCollisionShape_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNBoxCollisionShape_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNBoxCollisionShape_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNBoxCollisionShape_SubclassRegistrationInfo* subclassInfo() { static LNBoxCollisionShape_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_BoxCollisionShape()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_BoxCollisionShape()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNBoxCollisionShape_OnSerialize_OverrideCallback s_LNBoxCollisionShape_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNBoxCollisionShape_OnSerialize_OverrideCallback) s_LNBoxCollisionShape_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::BoxCollisionShape::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::BoxCollisionShape::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<CollisionShape>();
+    }
+
+};
+
+LNBoxCollisionShape_OnSerialize_OverrideCallback LNWS_ln_BoxCollisionShape::s_LNBoxCollisionShape_OnSerialize_OverrideCallback = nullptr;
+
+
 class LNWS_ln_Component : public ln::Component
 {
 public:
@@ -5349,6 +5875,70 @@ public:
 };
 
 LNSpriteComponent_OnSerialize_OverrideCallback LNWS_ln_SpriteComponent::s_LNSpriteComponent_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_CollisionEventHandler : public ln::CollisionEventHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNCollisionEventHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNCollisionEventHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNCollisionEventHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNCollisionEventHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNCollisionEventHandler_SubclassRegistrationInfo* subclassInfo() { static LNCollisionEventHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNCollisionEventHandlerCallback m_callback;
+
+    LNWS_ln_CollisionEventHandler()
+      : ln::CollisionEventHandler([this](ln::Collision* p1) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(p1));
+        if (r != LN_SUCCESS) { LN_ERROR("LNCollisionEventHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_CollisionEventHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNCollisionEventHandlerCallback callback)
+    {
+        if (!ln::CollisionEventHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNCollisionEventHandler_Create(LNCollisionEventHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_CollisionEventHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
 
 
 class LNWS_ln_CharacterController : public ln::CharacterController
@@ -6661,6 +7251,87 @@ LNPlaneMesh_OnSerialize_OverrideCallback LNWS_ln_PlaneMesh::s_LNPlaneMesh_OnSeri
 LNPlaneMesh_OnUpdate_OverrideCallback LNWS_ln_PlaneMesh::s_LNPlaneMesh_OnUpdate_OverrideCallback = nullptr;
 
 
+class LNWS_ln_StaticMesh : public ln::StaticMesh
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNStaticMesh_OverridePrototypes
+    {
+        ln::Ref<LNWS_StaticMeshSerializeHandler> OnSerialize_OverrideFunc;
+        ln::Ref<LNWS_StaticMeshUpdateHandler> OnUpdate_OverrideFunc;
+
+    };
+    std::unique_ptr<LNStaticMesh_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNStaticMesh_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNStaticMesh_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNStaticMesh_SubclassRegistrationInfo* subclassInfo() { static LNStaticMesh_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_StaticMesh()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_StaticMesh()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNStaticMesh_OnSerialize_OverrideCallback s_LNStaticMesh_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNStaticMesh_OnSerialize_OverrideCallback) s_LNStaticMesh_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::StaticMesh::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::StaticMesh::onSerialize(ar);
+    }
+
+    static LNStaticMesh_OnUpdate_OverrideCallback s_LNStaticMesh_OnUpdate_OverrideCallback; // deprecated
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnUpdate_OverrideFunc) {
+                func->call(this, elapsedSeconds);
+                return;
+            }
+        }
+        if (s_LNStaticMesh_OnUpdate_OverrideCallback) s_LNStaticMesh_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+        ln::StaticMesh::onUpdate(elapsedSeconds);
+    }
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::StaticMesh::onUpdate(elapsedSeconds);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<VisualObject>();
+    }
+
+};
+
+LNStaticMesh_OnSerialize_OverrideCallback LNWS_ln_StaticMesh::s_LNStaticMesh_OnSerialize_OverrideCallback = nullptr;
+LNStaticMesh_OnUpdate_OverrideCallback LNWS_ln_StaticMesh::s_LNStaticMesh_OnUpdate_OverrideCallback = nullptr;
+
+
 class LNWS_ln_SkinnedMeshComponent : public ln::SkinnedMeshComponent
 {
 public:
@@ -6721,6 +7392,130 @@ public:
 };
 
 LNSkinnedMeshComponent_OnSerialize_OverrideCallback LNWS_ln_SkinnedMeshComponent::s_LNSkinnedMeshComponent_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_Collision : public ln::Collision
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNCollision_OverridePrototypes
+    {
+        ln::Ref<LNWS_CollisionSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNCollision_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNCollision_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNCollision_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNCollision_SubclassRegistrationInfo* subclassInfo() { static LNCollision_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Collision()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Collision()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNCollision_OnSerialize_OverrideCallback s_LNCollision_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNCollision_OnSerialize_OverrideCallback) s_LNCollision_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Collision::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::Collision::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+LNCollision_OnSerialize_OverrideCallback LNWS_ln_Collision::s_LNCollision_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_TriggerBodyComponent : public ln::TriggerBodyComponent
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNTriggerBodyComponent_OverridePrototypes
+    {
+        ln::Ref<LNWS_TriggerBodyComponentSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNTriggerBodyComponent_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNTriggerBodyComponent_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNTriggerBodyComponent_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNTriggerBodyComponent_SubclassRegistrationInfo* subclassInfo() { static LNTriggerBodyComponent_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_TriggerBodyComponent()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_TriggerBodyComponent()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNTriggerBodyComponent_OnSerialize_OverrideCallback s_LNTriggerBodyComponent_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNTriggerBodyComponent_OnSerialize_OverrideCallback) s_LNTriggerBodyComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::TriggerBodyComponent::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::TriggerBodyComponent::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Component>();
+    }
+
+};
+
+LNTriggerBodyComponent_OnSerialize_OverrideCallback LNWS_ln_TriggerBodyComponent::s_LNTriggerBodyComponent_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_Scene : public ln::Scene
@@ -9147,6 +9942,112 @@ LNSubinstanceId LNSkinnedMeshModel_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
+LN_FLAT_API LNResult LNCollisionShape_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CollisionShape, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNCollisionShape_OnSerialize_SetOverrideCallback(LNCollisionShape_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_CollisionShape::s_LNCollisionShape_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNCollisionShape_SetPrototype_OnSerialize(LNHandle collisionshape, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_CollisionShape, collisionshape)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_CollisionShapeSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNCollisionShape_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::CollisionShape>()->id();
+}
+
+LN_FLAT_API void LNCollisionShape_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::CollisionShape>(), id);
+}
+
+void LNCollisionShape_RegisterSubclassTypeInfo(const LNCollisionShape_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::CollisionShape>(), info->subclassId);
+        *LNWS_ln_CollisionShape::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNCollisionShape_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_CollisionShape, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNBoxCollisionShape_Create(const LNVector3* size, LNHandle* outBoxCollisionShape)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outBoxCollisionShape, LNWS_ln_BoxCollisionShape, init, *reinterpret_cast<const ln::Vector3*>(size));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNBoxCollisionShape_CreateWHD(float width, float height, float depth, LNHandle* outBoxCollisionShape)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outBoxCollisionShape, LNWS_ln_BoxCollisionShape, init, width, height, depth);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNBoxCollisionShape_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_BoxCollisionShape, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNBoxCollisionShape_OnSerialize_SetOverrideCallback(LNBoxCollisionShape_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_BoxCollisionShape::s_LNBoxCollisionShape_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNBoxCollisionShape_SetPrototype_OnSerialize(LNHandle boxcollisionshape, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_BoxCollisionShape, boxcollisionshape)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_BoxCollisionShapeSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNBoxCollisionShape_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::BoxCollisionShape>()->id();
+}
+
+LN_FLAT_API void LNBoxCollisionShape_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::BoxCollisionShape>(), id);
+}
+
+void LNBoxCollisionShape_RegisterSubclassTypeInfo(const LNBoxCollisionShape_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::BoxCollisionShape>(), info->subclassId);
+        *LNWS_ln_BoxCollisionShape::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNBoxCollisionShape_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_BoxCollisionShape, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
 LN_FLAT_API LNResult LNComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -9312,6 +10213,37 @@ LNSubinstanceId LNSpriteComponent_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
+LN_FLAT_API void LNCollisionEventHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::CollisionEventHandler>(), id);
+}
+
+void LNCollisionEventHandler_RegisterSubclassTypeInfo(const LNCollisionEventHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::CollisionEventHandler>(), info->subclassId);
+        *LNWS_ln_CollisionEventHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNCollisionEventHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_CollisionEventHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNCharacterController_Create(LNHandle* outCharacterController)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outCharacterController, LNWS_ln_CharacterController, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNCharacterController_SetHeight(LNHandle charactercontroller, float value)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -9352,6 +10284,30 @@ LN_FLAT_API LNResult LNCharacterController_GetCameraRadius(LNHandle charactercon
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_CharacterController, charactercontroller)->cameraRadius());
     }
 
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNCharacterController_SetCollisionEnter(LNHandle charactercontroller, LNHandle handler)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CharacterController, charactercontroller)->setCollisionEnter(LNI_HANDLE_TO_OBJECT(ln::CollisionEventHandler, handler)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNCharacterController_SetCollisionLeave(LNHandle charactercontroller, LNHandle handler)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CharacterController, charactercontroller)->setCollisionLeave(LNI_HANDLE_TO_OBJECT(ln::CollisionEventHandler, handler)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNCharacterController_SetCollisionStay(LNHandle charactercontroller, LNHandle handler)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CharacterController, charactercontroller)->setCollisionStay(LNI_HANDLE_TO_OBJECT(ln::CollisionEventHandler, handler)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -9751,6 +10707,14 @@ LN_FLAT_API LNResult LNWorldObject_HasTagA(LNHandle worldobject, const char* tag
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->hasTag(LNI_UTF8STRPTR_TO_STRING(tag)));
     }
 
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNWorldObject_Destroy(LNHandle worldobject)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->destroy());
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -11364,6 +12328,112 @@ LNSubinstanceId LNPlaneMesh_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
+LN_FLAT_API LNResult LNStaticMesh_Load(const LNChar* filePath, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::StaticMesh::load(filePath));
+    }
+    else {
+        (ln::StaticMesh::load(filePath));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNStaticMesh_LoadA(const char* filePath, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::StaticMesh::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+    else {
+        (ln::StaticMesh::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNStaticMesh_MakeCollisionBody(LNHandle staticmesh, const LNChar* meshContainerName)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->makeCollisionBody(meshContainerName));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNStaticMesh_MakeCollisionBodyA(LNHandle staticmesh, const char* meshContainerName)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->makeCollisionBody(LNI_UTF8STRPTR_TO_STRING(meshContainerName)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNStaticMesh_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNStaticMesh_OnSerialize_SetOverrideCallback(LNStaticMesh_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_StaticMesh::s_LNStaticMesh_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNStaticMesh_OnUpdate_CallOverrideBase(LNHandle worldobject, float elapsedSeconds)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, worldobject)->onUpdate_CallBase(elapsedSeconds));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNStaticMesh_OnUpdate_SetOverrideCallback(LNStaticMesh_OnUpdate_OverrideCallback callback)
+{
+    LNWS_ln_StaticMesh::s_LNStaticMesh_OnUpdate_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNStaticMesh_SetPrototype_OnSerialize(LNHandle staticmesh, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_StaticMeshSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+LN_FLAT_API LNResult LNStaticMesh_SetPrototype_OnUpdate(LNHandle staticmesh, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->acquireOverridePrototypes()->OnUpdate_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_StaticMeshUpdateHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNStaticMesh_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::StaticMesh>()->id();
+}
+
+LN_FLAT_API void LNStaticMesh_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::StaticMesh>(), id);
+}
+
+void LNStaticMesh_RegisterSubclassTypeInfo(const LNStaticMesh_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::StaticMesh>(), info->subclassId);
+        *LNWS_ln_StaticMesh::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNStaticMesh_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
 LN_FLAT_API LNResult LNSkinnedMeshComponent_Create(LNHandle* outSkinnedMeshComponent)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -11420,6 +12490,126 @@ LNSubinstanceId LNSkinnedMeshComponent_GetSubinstanceId(LNHandle handle)
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_ln_SkinnedMeshComponent, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNCollision_GetWorldObject(LNHandle collision, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Collision, collision)->worldObject());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Collision, collision)->worldObject());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNCollision_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Collision, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNCollision_OnSerialize_SetOverrideCallback(LNCollision_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Collision::s_LNCollision_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNCollision_SetPrototype_OnSerialize(LNHandle collision, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_Collision, collision)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_CollisionSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNCollision_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Collision>()->id();
+}
+
+LN_FLAT_API void LNCollision_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Collision>(), id);
+}
+
+void LNCollision_RegisterSubclassTypeInfo(const LNCollision_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Collision>(), info->subclassId);
+        *LNWS_ln_Collision::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNCollision_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_Collision, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNTriggerBodyComponent_Create(LNHandle* outTriggerBodyComponent)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outTriggerBodyComponent, LNWS_ln_TriggerBodyComponent, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNTriggerBodyComponent_AddCollisionShape(LNHandle triggerbodycomponent, LNHandle shape)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_TriggerBodyComponent, triggerbodycomponent)->addCollisionShape(LNI_HANDLE_TO_OBJECT(ln::CollisionShape, shape)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNTriggerBodyComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_TriggerBodyComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNTriggerBodyComponent_OnSerialize_SetOverrideCallback(LNTriggerBodyComponent_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_TriggerBodyComponent::s_LNTriggerBodyComponent_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNTriggerBodyComponent_SetPrototype_OnSerialize(LNHandle triggerbodycomponent, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_TriggerBodyComponent, triggerbodycomponent)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_TriggerBodyComponentSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNTriggerBodyComponent_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::TriggerBodyComponent>()->id();
+}
+
+LN_FLAT_API void LNTriggerBodyComponent_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::TriggerBodyComponent>(), id);
+}
+
+void LNTriggerBodyComponent_RegisterSubclassTypeInfo(const LNTriggerBodyComponent_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::TriggerBodyComponent>(), info->subclassId);
+        *LNWS_ln_TriggerBodyComponent::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNTriggerBodyComponent_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_TriggerBodyComponent, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;
@@ -11631,6 +12821,22 @@ LN_FLAT_API LNResult LNLevel_Create(LNHandle* outLevel)
 {
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outLevel, LNWS_ln_Level, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNLevel_AddObject(LNHandle level, LNHandle obj)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Level, level)->addObject(LNI_HANDLE_TO_OBJECT(ln::WorldObject, obj)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNLevel_RemoveObject(LNHandle level, LNHandle obj)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Level, level)->removeObject(LNI_HANDLE_TO_OBJECT(ln::WorldObject, obj)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -13386,6 +14592,22 @@ LNSubinstanceId LNApplication_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
+LN_FLAT_API LNResult LNDebug_SetGuideGridEnabled(LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::setGuideGridEnabled(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNDebug_SetPhysicsDebugDrawEnabled(LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::setPhysicsDebugDrawEnabled(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNDebug_Print(const LNChar* str)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -13659,6 +14881,52 @@ LNSubinstanceId LNSkinnedMeshModelSerializeHandler_GetSubinstanceId(LNHandle han
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_SkinnedMeshModelSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNCollisionShapeSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<CollisionShapeSerializeHandler>(), id);
+}
+
+void LNCollisionShapeSerializeHandler_RegisterSubclassTypeInfo(const LNCollisionShapeSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<CollisionShapeSerializeHandler>(), info->subclassId);
+        *LNWS_CollisionShapeSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNCollisionShapeSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_CollisionShapeSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNBoxCollisionShapeSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<BoxCollisionShapeSerializeHandler>(), id);
+}
+
+void LNBoxCollisionShapeSerializeHandler_RegisterSubclassTypeInfo(const LNBoxCollisionShapeSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<BoxCollisionShapeSerializeHandler>(), info->subclassId);
+        *LNWS_BoxCollisionShapeSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNBoxCollisionShapeSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_BoxCollisionShapeSerializeHandler, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;
@@ -14354,6 +15622,52 @@ LNSubinstanceId LNPlaneMeshUpdateHandler_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
+LN_FLAT_API void LNStaticMeshSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<StaticMeshSerializeHandler>(), id);
+}
+
+void LNStaticMeshSerializeHandler_RegisterSubclassTypeInfo(const LNStaticMeshSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<StaticMeshSerializeHandler>(), info->subclassId);
+        *LNWS_StaticMeshSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNStaticMeshSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_StaticMeshSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNStaticMeshUpdateHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<StaticMeshUpdateHandler>(), id);
+}
+
+void LNStaticMeshUpdateHandler_RegisterSubclassTypeInfo(const LNStaticMeshUpdateHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<StaticMeshUpdateHandler>(), info->subclassId);
+        *LNWS_StaticMeshUpdateHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNStaticMeshUpdateHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_StaticMeshUpdateHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
 LN_FLAT_API void LNSkinnedMeshComponentSerializeHandler_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<SkinnedMeshComponentSerializeHandler>(), id);
@@ -14372,6 +15686,52 @@ LNSubinstanceId LNSkinnedMeshComponentSerializeHandler_GetSubinstanceId(LNHandle
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_SkinnedMeshComponentSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNCollisionSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<CollisionSerializeHandler>(), id);
+}
+
+void LNCollisionSerializeHandler_RegisterSubclassTypeInfo(const LNCollisionSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<CollisionSerializeHandler>(), info->subclassId);
+        *LNWS_CollisionSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNCollisionSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_CollisionSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNTriggerBodyComponentSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<TriggerBodyComponentSerializeHandler>(), id);
+}
+
+void LNTriggerBodyComponentSerializeHandler_RegisterSubclassTypeInfo(const LNTriggerBodyComponentSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<TriggerBodyComponentSerializeHandler>(), info->subclassId);
+        *LNWS_TriggerBodyComponentSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNTriggerBodyComponentSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_TriggerBodyComponentSerializeHandler, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;

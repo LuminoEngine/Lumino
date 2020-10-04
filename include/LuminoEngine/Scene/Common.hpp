@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Base/Delegate.hpp"
 #include "../Graphics/ColorStructs.hpp"
 #include "../Graphics/GeometryStructs.hpp"
 
@@ -20,6 +21,8 @@ class ReflectorComponent;
 class Collision;
 
 
+/** CollisionEventHandler */
+LN_DELEGATE()
 using CollisionEventHandler = Delegate<void(Collision*)>;
 
 /** レベル遷移時の画面エフェクトの種類 */

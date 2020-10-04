@@ -50,14 +50,6 @@ void RigidBodyComponent::addCollisionShape(CollisionShape* shape)
     m_body->addCollisionShape(shape);
 }
 
-void RigidBodyComponent::onAttachedScene(Level* newOwner)
-{
-}
-
-void RigidBodyComponent::onDetachedScene(Level* oldOwner)
-{
-}
-
 void RigidBodyComponent::onBeforeStepSimulation_Deprecated()
 {
     // worldObject -> body へ姿勢を同期する
@@ -129,6 +121,7 @@ void RigidBodyComponent::onCollisionStay(PhysicsObject* otherObject, ContactPoin
 
 //=============================================================================
 // TriggerBodyComponent
+LN_OBJECT_IMPLEMENT(TriggerBodyComponent, Component) {}
 
 Ref<TriggerBodyComponent> TriggerBodyComponent::create()
 {
@@ -162,14 +155,6 @@ void TriggerBodyComponent::onDispose(bool explicitDisposing)
 void TriggerBodyComponent::addCollisionShape(CollisionShape* shape)
 {
     m_body->addCollisionShape(shape);
-}
-
-void TriggerBodyComponent::onAttachedScene(Level* newOwner)
-{
-}
-
-void TriggerBodyComponent::onDetachedScene(Level* oldOwner)
-{
 }
 
 void TriggerBodyComponent::onBeforeStepSimulation_Deprecated()

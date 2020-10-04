@@ -195,15 +195,20 @@ public:
 	LN_METHOD()
     bool hasTag(const StringRef& tag) const { return m_tags->contains(tag); }
 
-
-	/** このオブジェクトを破棄します。実際の削除は、現在のフレームのアップデート処理後に行われます。 */
+	/**
+	 * WorldObject を破棄します。
+	 *
+	 * 実際の削除は、現在のフレームのアップデート処理後に行われます。
+	 * 削除された WorldObject は、親の World, Level, WorldObject からも除外されます。
+	 */
+	LN_METHOD()
 	void destroy();
 
 	/** destroy() が呼び出され、オブジェクトが破棄されようとしているか、または破棄されたかを確認します。実際の削除は、現在のフレームのアップデート処理後に行われます。 */
 	bool destroyed() const { return m_destroyed; }
 
 	/** このオブジェクトを直ちに World から除外します。このメソッドは World のアップデートシーケンス中に呼び出してはなりません。 */
-	void removeFromScene();
+	void removeFromParent();
 
 	//void addToWorld();
 
@@ -211,7 +216,7 @@ public:
 
 	ln::Vector3 front() const { return Vector3::transform(Vector3::UnitZ, rotation()); }
 
-	Level* scene() const { return m_scene; }
+	//Level* scene() const { return m_scene; }
 
 
     /** この WorldObject に含まれている Component のうち、指定した型である最初の Component を返します。 */
@@ -263,8 +268,6 @@ public: // TODO:
     void setSpecialObject(bool enalbed) { m_isSpecialObject = true; }
     bool isSpecialObject() const { return m_isSpecialObject; }
     detail::WorldObjectTransform* transform() const { return m_transform; }
-	void attachScene(Level* scene);
-	void detachScene();
 	void start();
     void preUpdateFrame();
     void updateFrame(float elapsedSeconds);
@@ -273,8 +276,9 @@ public: // TODO:
     void resolveWorldMatrix();
     void updateWorldMatrixHierarchical();
 
-    Level* m_scene;
+    Level* m_parentLevel;
     WorldObject* m_parent;
+
 	String m_name;
     Ref<detail::WorldObjectTransform> m_transform;
     Ref<List<String>> m_tags;

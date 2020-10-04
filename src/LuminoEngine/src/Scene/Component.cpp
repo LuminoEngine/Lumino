@@ -51,14 +51,6 @@ void Component::onDetaching(WorldObject* owner)
 {
 }
 
-void Component::onAttachedScene(Level* newOwner)
-{
-}
-
-void Component::onDetachedScene(Level* oldOwner)
-{
-}
-
 //void Component::onPreUpdate()
 //{
 //}

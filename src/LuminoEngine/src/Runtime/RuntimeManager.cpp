@@ -1,4 +1,5 @@
 ﻿#include <LuminoEngine/Engine/Object.hpp>
+#include <LuminoEngine/Engine/TypeInfo.hpp>
 #include "RuntimeManager.hpp"
 
 namespace ln {

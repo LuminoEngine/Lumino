@@ -82,15 +82,12 @@ void TilemapComponent::onStart()
 {
 	m_rigidBody = makeObject<RigidBody2D>();
 	m_rigidBody->addCollisionShape(detail::TilemapPhysicsObject::createTilemapCollisionShape(m_tilemapModel));
-	worldObject()->scene()->world()->physicsWorld2D()->addPhysicsObject(m_rigidBody);
-}
+	
 
-void TilemapComponent::onDetachedScene(Level* oldOwner)
-{
-	// TODO: onStop とか。
-	if (m_rigidBody) {
-		m_rigidBody->removeFromPhysicsWorld();
-	}
+    // TODO: addPhysicsObject をどうにかする
+    //worldObject()->scene()->world()->physicsWorld2D()->addPhysicsObject(m_rigidBody);
+    // TODO: m_rigidBody->removeFromPhysicsWorld(); をどうにかする
+    LN_NOTIMPLEMENTED();
 }
 
 void TilemapComponent::onRender(RenderingContext* context)

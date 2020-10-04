@@ -120,7 +120,7 @@ Matrix WorldObjectTransform::getLocalMatrix() const
 LN_OBJECT_IMPLEMENT(WorldObject, Object) {}
 
 WorldObject::WorldObject()
-    : m_scene(nullptr)
+    : m_parentLevel(nullptr)
     , m_parent(nullptr)
     , m_transform(makeRef<detail::WorldObjectTransform>(this))
     , m_tags(makeList<String>())
@@ -204,21 +204,17 @@ void WorldObject::removeAllComponents()
 void WorldObject::destroy()
 {
 	m_destroyed = true;
-	if (m_scene) {
-        m_scene->m_destroyList.add(this);
-	}
 }
 
-void WorldObject::removeFromScene()
+void WorldObject::removeFromParent()
 {
-	if (m_scene) {
-		if (m_parent) {
-			LN_NOTIMPLEMENTED();
-		}
-		else {
-            m_scene->removeRootObject(this);
-		}
-	}
+    if (m_parent) {
+        LN_NOTIMPLEMENTED();
+    }
+
+    if (m_parentLevel) {
+        m_parentLevel->removeRootObject(this);
+    }
 }
 
 //void WorldObject::addToWorld()
@@ -318,28 +314,6 @@ void WorldObject::serialize(Serializer2& ar)
 
         notifyTransformChanged();
     }
-}
-
-void WorldObject::attachScene(Level* scene)
-{
-	if (LN_REQUIRE(scene)) return;
-	if (LN_REQUIRE(!m_scene)) return;
-	m_scene = scene;
-	for (auto& c : *m_components) {
-		c->onAttachedScene(scene);
-	}
-}
-
-void WorldObject::detachScene()
-{
-	if (m_scene) {
-		Level* old = m_scene;
-		m_scene = nullptr;
-
-		for (auto& c : *m_components) {
-			c->onDetachedScene(old);
-		}
-	}
 }
 
 void WorldObject::start()

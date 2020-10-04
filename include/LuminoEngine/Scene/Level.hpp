@@ -55,6 +55,14 @@ class Level
 public:
 	World* world() const { return m_ownerWorld; }
 
+	/** 指定した WorldObject を、この Level 子オブジェクトとして追加します。 */
+	LN_METHOD()
+	void addObject(WorldObject* obj);
+
+	/** 指定した WorldObject を、この Level 子オブジェクトか除外します。 */
+	LN_METHOD()
+	void removeObject(WorldObject* obj);
+
 	/** 指定した Level を、この Level の Sub-Level として追加します。 */
 	LN_METHOD()
 	void addSubLevel(Level* sublevel);
@@ -98,8 +106,6 @@ public:	// TODO: Editor integration
 	void clear();
 	void save();
 	void load();
-	void addObject(WorldObject* obj);
-	void removeObject(WorldObject* obj);
     WorldObject* findObjectByComponentType(const TypeInfo* type) const;
 	void updateObjectsWorldMatrix() const;
     virtual void onPreUpdate(float elapsedSeconds);
@@ -159,7 +165,7 @@ public: // TODO: internal
 	World* m_ownerWorld;
 	Level* m_parentLevel = nullptr;
     Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
-    List<WorldObject*> m_destroyList;
+    //List<WorldObject*> m_destroyList;
 	std::unique_ptr<SubLevelManager> m_subLevelManager;
 	//List<Ref<Level>> m_subLevels;
 

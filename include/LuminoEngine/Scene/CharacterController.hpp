@@ -8,6 +8,8 @@ class InputController;
 class UIEventArgs;
 class EventConnection;
 class RigidBody;
+class PhysicsObject;
+class ContactPoint;
 
 enum class CharacterControllerMode
 {
@@ -58,15 +60,16 @@ public:
 	LN_METHOD(Property)
 	float cameraRadius() const { return m_cameraRadius; }
 
-
-
 	/** CollisionEnter イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD()
 	void setCollisionEnter(Ref<CollisionEventHandler> handler);
 
 	/** CollisionLeave イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD()
 	void setCollisionLeave(Ref<CollisionEventHandler> handler);
 
 	/** CollisionStay イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD()
 	void setCollisionStay(Ref<CollisionEventHandler> handler);
 
 protected:

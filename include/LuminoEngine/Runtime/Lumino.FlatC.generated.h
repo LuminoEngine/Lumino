@@ -355,6 +355,7 @@ typedef LNResult(*LNZVTestDelegate3Callback)(LNHandle zvtestdelegate3, LNHandle 
 typedef LNResult(*LNZVTestEventHandler1Callback)(LNHandle zvtesteventhandler1);
 typedef LNResult(*LNZVTestEventHandler2Callback)(LNHandle zvtesteventhandler2, LNHandle p1);
 typedef LNResult(*LNTexture2DDelegateCallback)(LNHandle texture2ddelegate, LNHandle p1);
+typedef LNResult(*LNCollisionEventHandlerCallback)(LNHandle collisioneventhandler, LNHandle p1);
 typedef LNResult(*LNTestDelegateCallback)(LNHandle testdelegate, int p1, int* outReturn);
 typedef LNResult(*LNUIGeneralEventHandlerCallback)(LNHandle uigeneraleventhandler, LNHandle p1);
 typedef LNResult(*LNUIEventHandlerCallback)(LNHandle uieventhandler);
@@ -369,6 +370,8 @@ typedef LNResult(*LNTextureSerializeHandlerCallback)(LNHandle textureserializeha
 typedef LNResult(*LNTexture2DSerializeHandlerCallback)(LNHandle texture2dserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNRenderViewSerializeHandlerCallback)(LNHandle renderviewserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNSkinnedMeshModelSerializeHandlerCallback)(LNHandle skinnedmeshmodelserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNCollisionShapeSerializeHandlerCallback)(LNHandle collisionshapeserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNBoxCollisionShapeSerializeHandlerCallback)(LNHandle boxcollisionshapeserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNComponentSerializeHandlerCallback)(LNHandle componentserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNVisualComponentSerializeHandlerCallback)(LNHandle visualcomponentserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNSpriteComponentSerializeHandlerCallback)(LNHandle spritecomponentserializehandler, LNHandle self, LNHandle ar);
@@ -399,7 +402,11 @@ typedef LNResult(*LNBoxMeshSerializeHandlerCallback)(LNHandle boxmeshserializeha
 typedef LNResult(*LNBoxMeshUpdateHandlerCallback)(LNHandle boxmeshupdatehandler, LNHandle self, float elapsedSeconds);
 typedef LNResult(*LNPlaneMeshSerializeHandlerCallback)(LNHandle planemeshserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNPlaneMeshUpdateHandlerCallback)(LNHandle planemeshupdatehandler, LNHandle self, float elapsedSeconds);
+typedef LNResult(*LNStaticMeshSerializeHandlerCallback)(LNHandle staticmeshserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNStaticMeshUpdateHandlerCallback)(LNHandle staticmeshupdatehandler, LNHandle self, float elapsedSeconds);
 typedef LNResult(*LNSkinnedMeshComponentSerializeHandlerCallback)(LNHandle skinnedmeshcomponentserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNCollisionSerializeHandlerCallback)(LNHandle collisionserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNTriggerBodyComponentSerializeHandlerCallback)(LNHandle triggerbodycomponentserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNLevelSerializeHandlerCallback)(LNHandle levelserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNLevelStartHandlerCallback)(LNHandle levelstarthandler, LNHandle self);
 typedef LNResult(*LNLevelStopHandlerCallback)(LNHandle levelstophandler, LNHandle self);
@@ -1335,6 +1342,72 @@ extern LN_FLAT_API void LNSkinnedMeshModel_RegisterSubclassTypeInfo(const LNSkin
 extern LN_FLAT_API LNSubinstanceId LNSkinnedMeshModel_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// ln::CollisionShape
+
+typedef LNResult(*LNCollisionShape_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNCollisionShape_OnSerialize_SetOverrideCallback(LNCollisionShape_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNCollisionShape_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] collisionshape : instance
+*/
+LN_FLAT_API LNResult LNCollisionShape_SetPrototype_OnSerialize(LNHandle collisionshape, LNHandle callback);
+
+extern LN_FLAT_API int LNCollisionShape_GetTypeInfoId();
+LN_FLAT_API void LNCollisionShape_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNCollisionShape_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNCollisionShape_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNCollisionShape_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNCollisionShape_RegisterSubclassTypeInfo(const LNCollisionShape_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNCollisionShape_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::BoxCollisionShape
+
+/**
+    @brief init
+    @param[out] outBoxCollisionShape : instance.
+*/
+LN_FLAT_API LNResult LNBoxCollisionShape_Create(const LNVector3* size, LNHandle* outBoxCollisionShape);
+
+/**
+    @brief init
+    @param[out] outBoxCollisionShape : instance.
+*/
+LN_FLAT_API LNResult LNBoxCollisionShape_CreateWHD(float width, float height, float depth, LNHandle* outBoxCollisionShape);
+
+typedef LNResult(*LNBoxCollisionShape_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNBoxCollisionShape_OnSerialize_SetOverrideCallback(LNBoxCollisionShape_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNBoxCollisionShape_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] boxcollisionshape : instance
+*/
+LN_FLAT_API LNResult LNBoxCollisionShape_SetPrototype_OnSerialize(LNHandle boxcollisionshape, LNHandle callback);
+
+extern LN_FLAT_API int LNBoxCollisionShape_GetTypeInfoId();
+LN_FLAT_API void LNBoxCollisionShape_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNBoxCollisionShape_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNBoxCollisionShape_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNBoxCollisionShape_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNBoxCollisionShape_RegisterSubclassTypeInfo(const LNBoxCollisionShape_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNBoxCollisionShape_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // ln::Component
 
 typedef LNResult(*LNComponent_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
@@ -1435,7 +1508,29 @@ extern LN_FLAT_API void LNSpriteComponent_RegisterSubclassTypeInfo(const LNSprit
 extern LN_FLAT_API LNSubinstanceId LNSpriteComponent_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// ln::CollisionEventHandler
+
+LN_FLAT_API LNResult LNCollisionEventHandler_Create(LNCollisionEventHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNCollisionEventHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNCollisionEventHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNCollisionEventHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNCollisionEventHandler_RegisterSubclassTypeInfo(const LNCollisionEventHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNCollisionEventHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // ln::CharacterController
+
+/**
+    @brief CharacterController を作成します。
+    @param[out] outCharacterController : instance.
+*/
+LN_FLAT_API LNResult LNCharacterController_Create(LNHandle* outCharacterController);
 
 /**
     @brief キャラクターの高さを設定します。この値はカプセルコライダーの高さや、カメラの注視点として使用されます。 (default: 2.0)
@@ -1462,6 +1557,24 @@ LN_FLAT_API LNResult LNCharacterController_SetCameraRadius(LNHandle charactercon
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LNResult LNCharacterController_GetCameraRadius(LNHandle charactercontroller, float* outReturn);
+
+/**
+    @brief CollisionEnter イベントの通知を受け取るコールバックを登録します。
+    @param[in] charactercontroller : instance
+*/
+LN_FLAT_API LNResult LNCharacterController_SetCollisionEnter(LNHandle charactercontroller, LNHandle handler);
+
+/**
+    @brief CollisionLeave イベントの通知を受け取るコールバックを登録します。
+    @param[in] charactercontroller : instance
+*/
+LN_FLAT_API LNResult LNCharacterController_SetCollisionLeave(LNHandle charactercontroller, LNHandle handler);
+
+/**
+    @brief CollisionStay イベントの通知を受け取るコールバックを登録します。
+    @param[in] charactercontroller : instance
+*/
+LN_FLAT_API LNResult LNCharacterController_SetCollisionStay(LNHandle charactercontroller, LNHandle handler);
 
 typedef LNResult(*LNCharacterController_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNCharacterController_OnSerialize_SetOverrideCallback(LNCharacterController_OnSerialize_OverrideCallback callback);
@@ -1697,6 +1810,13 @@ LN_FLAT_API LNResult LNWorldObject_RemoveTagA(LNHandle worldobject, const char* 
 */
 LN_FLAT_API LNResult LNWorldObject_HasTag(LNHandle worldobject, const LNChar* tag, LNBool* outReturn);
 LN_FLAT_API LNResult LNWorldObject_HasTagA(LNHandle worldobject, const char* tag, LNBool* outReturn);
+
+/**
+    @brief WorldObject を破棄します。
+    @param[in] worldobject : instance
+    @details 実際の削除は、現在のフレームのアップデート処理後に行われます。削除された WorldObject は、親の World, Level, WorldObject からも除外されます。
+*/
+LN_FLAT_API LNResult LNWorldObject_Destroy(LNHandle worldobject);
 
 /**
     @brief 
@@ -2670,6 +2790,57 @@ extern LN_FLAT_API void LNPlaneMesh_RegisterSubclassTypeInfo(const LNPlaneMesh_S
 extern LN_FLAT_API LNSubinstanceId LNPlaneMesh_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// ln::StaticMesh
+
+/**
+    @brief load
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LNResult LNStaticMesh_Load(const LNChar* filePath, LNHandle* outReturn);
+LN_FLAT_API LNResult LNStaticMesh_LoadA(const char* filePath, LNHandle* outReturn);
+
+/**
+    @brief 指定した名前の MeshContainer から、衝突判定用の Body を作成します。
+    @param[in] staticmesh : instance
+*/
+LN_FLAT_API LNResult LNStaticMesh_MakeCollisionBody(LNHandle staticmesh, const LNChar* meshContainerName);
+LN_FLAT_API LNResult LNStaticMesh_MakeCollisionBodyA(LNHandle staticmesh, const char* meshContainerName);
+
+typedef LNResult(*LNStaticMesh_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNStaticMesh_OnSerialize_SetOverrideCallback(LNStaticMesh_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNStaticMesh_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+typedef LNResult(*LNStaticMesh_OnUpdate_OverrideCallback)(LNHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LNResult LNStaticMesh_OnUpdate_SetOverrideCallback(LNStaticMesh_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LNResult LNStaticMesh_OnUpdate_CallOverrideBase(LNHandle worldobject, float elapsedSeconds);
+
+/**
+    @brief 
+    @param[in] staticmesh : instance
+*/
+LN_FLAT_API LNResult LNStaticMesh_SetPrototype_OnSerialize(LNHandle staticmesh, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] staticmesh : instance
+*/
+LN_FLAT_API LNResult LNStaticMesh_SetPrototype_OnUpdate(LNHandle staticmesh, LNHandle callback);
+
+extern LN_FLAT_API int LNStaticMesh_GetTypeInfoId();
+LN_FLAT_API void LNStaticMesh_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNStaticMesh_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNStaticMesh_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+    LNStaticMesh_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
+
+} LNStaticMesh_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNStaticMesh_RegisterSubclassTypeInfo(const LNStaticMesh_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNStaticMesh_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // ln::SkinnedMeshComponent
 
 /**
@@ -2707,6 +2878,79 @@ typedef struct tagLNSkinnedMeshComponent_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNSkinnedMeshComponent_RegisterSubclassTypeInfo(const LNSkinnedMeshComponent_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNSkinnedMeshComponent_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::Collision
+
+/**
+    @brief 自分自身と衝突している他の WorldObject
+    @param[in] collision : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNCollision_GetWorldObject(LNHandle collision, LNHandle* outReturn);
+
+typedef LNResult(*LNCollision_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNCollision_OnSerialize_SetOverrideCallback(LNCollision_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNCollision_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] collision : instance
+*/
+LN_FLAT_API LNResult LNCollision_SetPrototype_OnSerialize(LNHandle collision, LNHandle callback);
+
+extern LN_FLAT_API int LNCollision_GetTypeInfoId();
+LN_FLAT_API void LNCollision_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNCollision_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNCollision_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNCollision_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNCollision_RegisterSubclassTypeInfo(const LNCollision_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNCollision_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::TriggerBodyComponent
+
+/**
+    @brief init
+    @param[out] outTriggerBodyComponent : instance.
+*/
+LN_FLAT_API LNResult LNTriggerBodyComponent_Create(LNHandle* outTriggerBodyComponent);
+
+/**
+    @brief addCollisionShape
+    @param[in] triggerbodycomponent : instance
+*/
+LN_FLAT_API LNResult LNTriggerBodyComponent_AddCollisionShape(LNHandle triggerbodycomponent, LNHandle shape);
+
+typedef LNResult(*LNTriggerBodyComponent_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNTriggerBodyComponent_OnSerialize_SetOverrideCallback(LNTriggerBodyComponent_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNTriggerBodyComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] triggerbodycomponent : instance
+*/
+LN_FLAT_API LNResult LNTriggerBodyComponent_SetPrototype_OnSerialize(LNHandle triggerbodycomponent, LNHandle callback);
+
+extern LN_FLAT_API int LNTriggerBodyComponent_GetTypeInfoId();
+LN_FLAT_API void LNTriggerBodyComponent_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNTriggerBodyComponent_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNTriggerBodyComponent_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNTriggerBodyComponent_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNTriggerBodyComponent_RegisterSubclassTypeInfo(const LNTriggerBodyComponent_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNTriggerBodyComponent_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::Scene
@@ -2827,6 +3071,18 @@ LN_FLAT_API LNResult LNScene_StartFadeIn();
     @param[out] outLevel : instance.
 */
 LN_FLAT_API LNResult LNLevel_Create(LNHandle* outLevel);
+
+/**
+    @brief 指定した WorldObject を、この Level 子オブジェクトとして追加します。
+    @param[in] level : instance
+*/
+LN_FLAT_API LNResult LNLevel_AddObject(LNHandle level, LNHandle obj);
+
+/**
+    @brief 指定した WorldObject を、この Level 子オブジェクトか除外します。
+    @param[in] level : instance
+*/
+LN_FLAT_API LNResult LNLevel_RemoveObject(LNHandle level, LNHandle obj);
 
 /**
     @brief 指定した Level を、この Level の Sub-Level として追加します。
@@ -3792,6 +4048,16 @@ extern LN_FLAT_API LNSubinstanceId LNApplication_GetSubinstanceId(LNHandle handl
 // ln::Debug
 
 /**
+    @brief 3D シーン上に、グリッドを表示するかどうかを設定します。
+*/
+LN_FLAT_API LNResult LNDebug_SetGuideGridEnabled(LNBool value);
+
+/**
+    @brief 3D シーン上に、コリジョン及び物理演算の情報を表示するかどうかを設定します。
+*/
+LN_FLAT_API LNResult LNDebug_SetPhysicsDebugDrawEnabled(LNBool value);
+
+/**
     @brief ウィンドウ上にデバッグ文字列を表示します。
     @param[in] str : 表示文字列
 */
@@ -3975,6 +4241,38 @@ typedef struct tagLNSkinnedMeshModelSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNSkinnedMeshModelSerializeHandler_RegisterSubclassTypeInfo(const LNSkinnedMeshModelSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNSkinnedMeshModelSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// CollisionShapeSerializeHandler
+
+LN_FLAT_API LNResult LNCollisionShapeSerializeHandler_Create(LNCollisionShapeSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNCollisionShapeSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNCollisionShapeSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNCollisionShapeSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNCollisionShapeSerializeHandler_RegisterSubclassTypeInfo(const LNCollisionShapeSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNCollisionShapeSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// BoxCollisionShapeSerializeHandler
+
+LN_FLAT_API LNResult LNBoxCollisionShapeSerializeHandler_Create(LNBoxCollisionShapeSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNBoxCollisionShapeSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNBoxCollisionShapeSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNBoxCollisionShapeSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNBoxCollisionShapeSerializeHandler_RegisterSubclassTypeInfo(const LNBoxCollisionShapeSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNBoxCollisionShapeSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ComponentSerializeHandler
@@ -4457,6 +4755,38 @@ extern LN_FLAT_API void LNPlaneMeshUpdateHandler_RegisterSubclassTypeInfo(const 
 extern LN_FLAT_API LNSubinstanceId LNPlaneMeshUpdateHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// StaticMeshSerializeHandler
+
+LN_FLAT_API LNResult LNStaticMeshSerializeHandler_Create(LNStaticMeshSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNStaticMeshSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNStaticMeshSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNStaticMeshSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNStaticMeshSerializeHandler_RegisterSubclassTypeInfo(const LNStaticMeshSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNStaticMeshSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// StaticMeshUpdateHandler
+
+LN_FLAT_API LNResult LNStaticMeshUpdateHandler_Create(LNStaticMeshUpdateHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNStaticMeshUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNStaticMeshUpdateHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNStaticMeshUpdateHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNStaticMeshUpdateHandler_RegisterSubclassTypeInfo(const LNStaticMeshUpdateHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNStaticMeshUpdateHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // SkinnedMeshComponentSerializeHandler
 
 LN_FLAT_API LNResult LNSkinnedMeshComponentSerializeHandler_Create(LNSkinnedMeshComponentSerializeHandlerCallback callback, LNHandle* outDelegate);
@@ -4471,6 +4801,38 @@ typedef struct tagLNSkinnedMeshComponentSerializeHandler_SubclassRegistrationInf
 
 extern LN_FLAT_API void LNSkinnedMeshComponentSerializeHandler_RegisterSubclassTypeInfo(const LNSkinnedMeshComponentSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNSkinnedMeshComponentSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// CollisionSerializeHandler
+
+LN_FLAT_API LNResult LNCollisionSerializeHandler_Create(LNCollisionSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNCollisionSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNCollisionSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNCollisionSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNCollisionSerializeHandler_RegisterSubclassTypeInfo(const LNCollisionSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNCollisionSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// TriggerBodyComponentSerializeHandler
+
+LN_FLAT_API LNResult LNTriggerBodyComponentSerializeHandler_Create(LNTriggerBodyComponentSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNTriggerBodyComponentSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNTriggerBodyComponentSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNTriggerBodyComponentSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNTriggerBodyComponentSerializeHandler_RegisterSubclassTypeInfo(const LNTriggerBodyComponentSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNTriggerBodyComponentSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // LevelSerializeHandler

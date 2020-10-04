@@ -13,6 +13,11 @@ namespace ln {
 
 LN_OBJECT_IMPLEMENT(StaticMesh, VisualObject) {}
 
+Ref<StaticMesh> StaticMesh::load(const StringRef& filePath)
+{
+    return makeObject<StaticMesh>(filePath, 1.0f);
+}
+
 Ref<StaticMesh> StaticMesh::create()
 {
     return makeObject<StaticMesh>();
@@ -61,6 +66,11 @@ void StaticMesh::init(const StringRef& filePath, float scale)
 StaticMeshComponent* StaticMesh::staticMeshComponent() const
 {
     return m_component;
+}
+
+void StaticMesh::makeCollisionBody(StringRef meshContainerName)
+{
+    m_component->makeCollisionBody(meshContainerName);
 }
 
 void StaticMesh::serialize(Serializer2& ar)

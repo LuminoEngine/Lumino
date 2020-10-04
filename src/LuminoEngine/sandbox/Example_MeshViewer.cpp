@@ -84,7 +84,7 @@ class App_Example_MeshViewer : public Application
         //m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid_BlenderGLTFExported.glb");
         //m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Sendagaya_Shibu.vrm");
         //m_mesh = SkinnedMesh::load(u"D:/Documents/Modeling/HC4-1.glb");
-        m_mesh = SkinnedMesh::load(u"D:/Documents/Modeling/HC4-10.glb");
+        m_mesh = SkinnedMesh::load(u"D:/Documents/Modeling/HC5-2-export.glb");
 
 
         m_model = m_mesh->skinnedMeshComponent()->model();

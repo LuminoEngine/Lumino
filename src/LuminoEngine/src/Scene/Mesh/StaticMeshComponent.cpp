@@ -4,7 +4,11 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Physics/CollisionShape.hpp>
+#include <LuminoEngine/Physics/RigidBody.hpp>
+#include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMeshComponent.hpp>
+#include "Engine/EngineManager.hpp"
 
 namespace ln {
 
@@ -28,6 +32,20 @@ void StaticMeshComponent::init()
     VisualComponent::init();
 }
 
+void StaticMeshComponent::onDispose(bool explicitDisposing)
+{
+    deleteCollisionBody();
+    VisualComponent::onDispose(explicitDisposing);
+}
+
+void StaticMeshComponent::deleteCollisionBody()
+{
+    if (m_body) {
+        m_body->removeFromPhysicsWorld();
+        m_body = nullptr;
+    }
+}
+
 void StaticMeshComponent::setModel(StaticMeshModel* model)
 {
     m_model = model;
@@ -36,6 +54,25 @@ void StaticMeshComponent::setModel(StaticMeshModel* model)
 StaticMeshModel* StaticMeshComponent::model() const
 {
     return m_model;
+}
+
+void StaticMeshComponent::makeCollisionBody(StringRef meshContainerName)
+{
+    if (LN_REQUIRE(m_model)) return;
+
+    if (auto node = m_model->findNode(u"Lumino.Collider")) {
+        int index = node->meshContainerIndex();
+        if (index >= 0) {
+            auto meshContainer = m_model->meshContainers()[index];
+            auto shape = MeshCollisionShape::create(meshContainer->mesh());
+            m_body = makeObject<RigidBody>(shape);
+
+            // TODO: onPreUpdate で UpdateContext からとりたいことろ
+            detail::EngineDomain::engineManager()->mainPhysicsWorld()->addPhysicsObject(m_body);
+
+            meshContainer->setVisible(false);
+        }
+    }
 }
 
 void StaticMeshComponent::serialize(Serializer2& ar)

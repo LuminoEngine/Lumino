@@ -104,8 +104,13 @@ LN_CONSTRUCT_ACCESS:
 
 	bool init();
 
+	/** init */
 	LN_METHOD()
 	bool init(const Vector3& size);
+	
+	/** init */
+	LN_METHOD(OverloadPostfix = "WHD")
+	bool init(float width, float height, float depth);
 };
 
 /**

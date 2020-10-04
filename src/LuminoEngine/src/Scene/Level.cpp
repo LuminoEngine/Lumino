@@ -113,13 +113,6 @@ void Level::onUpdate()
 
 void Level::onPostUpdate(float elapsedSeconds)
 {
-    for (WorldObject* obj : m_destroyList) {
-        //obj->removeFromWorld();
-
-        obj->detachScene();
-        m_rootWorldObjectList->remove(obj);
-    }
-    m_destroyList.clear();
 }
 
 void Level::update(float elapsedSeconds)
@@ -162,29 +155,26 @@ void Level::clear()
 void Level::addObject(WorldObject* obj)
 {
 	if (LN_REQUIRE(obj)) return;
-    if (obj->m_scene) {
-        if (obj->m_scene == this) {
-            return;
-        }
-        obj->m_scene->removeObject(obj);
-    }
-
+    if (LN_REQUIRE(!obj->m_parentLevel)) return;
 	m_rootWorldObjectList->add(obj);
-    obj->attachScene(this);
+    obj->m_parentLevel = this;
 }
 
 void Level::removeObject(WorldObject* obj)
 {
+    if (LN_REQUIRE(obj)) return;
+    if (LN_REQUIRE(obj->m_parentLevel == this)) return;
 	m_rootWorldObjectList->remove(obj);
+    obj->m_parentLevel = nullptr;
 }
 
 void Level::removeRootObject(WorldObject* obj)
 {
     if (m_rootWorldObjectList->remove(obj)) {
-        if (obj->destroyed()) {
-            m_destroyList.remove(obj);
-        }
-        obj->detachScene();
+        //if (obj->destroyed()) {
+        //    m_destroyList.remove(obj);
+        //}
+        //obj->detachScene();
     }
 }
 
@@ -195,11 +185,11 @@ void Level::removeAllObjects()
         auto& obj = m_rootWorldObjectList[i];
         if (!obj->isSpecialObject())
         {
-            if (obj->destroyed()) {
-                m_destroyList.remove(obj);
-            }
+            //if (obj->destroyed()) {
+            //    m_destroyList.remove(obj);
+            //}
 
-            obj->detachScene();
+            //obj->detachScene();
             m_rootWorldObjectList->removeAt(i);
         }
     }
@@ -343,11 +333,11 @@ void Level::serialize(Serializer2& ar)
 
     ar & ln::makeNVP(u"children", *m_rootWorldObjectList);
 
-    if (ar.isLoading()) {
-        for (auto& obj : m_rootWorldObjectList) {
-            obj->attachScene(this);
-        }
-    }
+    //if (ar.isLoading()) {
+    //    for (auto& obj : m_rootWorldObjectList) {
+    //        obj->attachScene(this);
+    //    }
+    //}
 }
 
 //==============================================================================

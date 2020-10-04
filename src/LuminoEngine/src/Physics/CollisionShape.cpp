@@ -134,6 +134,11 @@ bool BoxCollisionShape::init(const Vector3& size)
 	// ※PMD の剛体サイズは bullet のと同じなので注意
 }
 
+bool BoxCollisionShape::init(float width, float height, float depth)
+{
+	return init(Vector3(width, height, depth));
+}
+
 //==============================================================================
 // SphereCollisionShape
 //==============================================================================
