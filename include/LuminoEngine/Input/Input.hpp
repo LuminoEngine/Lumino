@@ -16,25 +16,25 @@ public:
      * ボタンが現在押されているかを判定します。
      */
     LN_METHOD()
-    static bool pressed(const StringRef& buttonName);
+    static bool isPressed(const StringRef& buttonName);
 
     /**
      * ボタンが新しく押された瞬間を判定します。
      */
     LN_METHOD()
-    static bool triggered(const StringRef& buttonName);
+    static bool isTriggered(const StringRef& buttonName);
 
     /**
      * ボタンが離された瞬間を判定します。
      */
     LN_METHOD()
-    static bool triggeredOff(const StringRef& buttonName);
+    static bool isTriggeredOff(const StringRef& buttonName);
 
     /**
      * ボタンが新しく押された瞬間とリピート状態を判定します。     
      */
     LN_METHOD()
-    static bool repeated(const StringRef& buttonName);
+    static bool isRepeated(const StringRef& buttonName);
 
     /**
      * 指定した軸のアナログ値を取得します。      

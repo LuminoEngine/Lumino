@@ -13594,10 +13594,10 @@ LN_FLAT_API LNResult LNInput_Pressed(const LNChar* buttonName, LNBool* outReturn
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::pressed(buttonName));
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isPressed(buttonName));
     }
     else {
-        (ln::Input::pressed(buttonName));
+        (ln::Input::isPressed(buttonName));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -13608,10 +13608,10 @@ LN_FLAT_API LNResult LNInput_PressedA(const char* buttonName, LNBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::pressed(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isPressed(LNI_UTF8STRPTR_TO_STRING(buttonName)));
     }
     else {
-        (ln::Input::pressed(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        (ln::Input::isPressed(LNI_UTF8STRPTR_TO_STRING(buttonName)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -13622,10 +13622,10 @@ LN_FLAT_API LNResult LNInput_Triggered(const LNChar* buttonName, LNBool* outRetu
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::triggered(buttonName));
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isTriggered(buttonName));
     }
     else {
-        (ln::Input::triggered(buttonName));
+        (ln::Input::isTriggered(buttonName));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -13636,10 +13636,10 @@ LN_FLAT_API LNResult LNInput_TriggeredA(const char* buttonName, LNBool* outRetur
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::triggered(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isTriggered(LNI_UTF8STRPTR_TO_STRING(buttonName)));
     }
     else {
-        (ln::Input::triggered(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        (ln::Input::isTriggered(LNI_UTF8STRPTR_TO_STRING(buttonName)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -13650,10 +13650,10 @@ LN_FLAT_API LNResult LNInput_TriggeredOff(const LNChar* buttonName, LNBool* outR
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::triggeredOff(buttonName));
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isTriggeredOff(buttonName));
     }
     else {
-        (ln::Input::triggeredOff(buttonName));
+        (ln::Input::isTriggeredOff(buttonName));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -13664,10 +13664,10 @@ LN_FLAT_API LNResult LNInput_TriggeredOffA(const char* buttonName, LNBool* outRe
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::triggeredOff(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isTriggeredOff(LNI_UTF8STRPTR_TO_STRING(buttonName)));
     }
     else {
-        (ln::Input::triggeredOff(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        (ln::Input::isTriggeredOff(LNI_UTF8STRPTR_TO_STRING(buttonName)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -13678,10 +13678,10 @@ LN_FLAT_API LNResult LNInput_Repeated(const LNChar* buttonName, LNBool* outRetur
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::repeated(buttonName));
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isRepeated(buttonName));
     }
     else {
-        (ln::Input::repeated(buttonName));
+        (ln::Input::isRepeated(buttonName));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -13692,10 +13692,10 @@ LN_FLAT_API LNResult LNInput_RepeatedA(const char* buttonName, LNBool* outReturn
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::repeated(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isRepeated(LNI_UTF8STRPTR_TO_STRING(buttonName)));
     }
     else {
-        (ln::Input::repeated(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        (ln::Input::isRepeated(LNI_UTF8STRPTR_TO_STRING(buttonName)));
     }
 
     LNI_FUNC_TRY_END_RETURN;

@@ -1822,7 +1822,7 @@ void UITheme::buildLumitelier()
 			s->minWidth = 64;
 			s->minHeight = 64;
 			s->padding = spacing(1);
-			s->backgroundColor = color(UIThemeConstantPalette::DefaultBackgroundColor);
+			s->backgroundColor = color(UIThemeConstantPalette::DefaultBackgroundColor).withAlpha(0.5);
 			s->cornerRadius = CornerRadius(4);
 			s->borderThickness = 1;
 			s->setBorderColor(color(UIThemeConstantPalette::DefaultDivider));
@@ -1846,15 +1846,18 @@ void UITheme::buildLumitelier()
 			//s->setBackgroundColorTransition(Color::Green, 1.0f);
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Selected")) {
-			s->backgroundColor = Color::Red;
-			//s->setBackgroundColorTransition(Color::Red, 1.0f);
-			//
-			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
+			//s->backgroundColor = Color::Red;
+			////s->setBackgroundColorTransition(Color::Red, 1.0f);
+			////
+			//s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
+
+			s->setBackgroundColorAnimation(Color::White.withAlpha(0.3), Color::White.withAlpha(0.6), 0.5, EasingMode::Linear, 0.0f, AnimationWrapMode::Alternate);
+
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Focused")) {	// 後から書かれたものが優先される
 			//s->backgroundColor = Color::Blue;
 			//s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
-			s->setBackgroundColorAnimation(Color::White.withAlpha(0.3), Color::White.withAlpha(0.6), 0.5, EasingMode::Linear, 0.0f, AnimationWrapMode::Alternate);
+			//s->setBackgroundColorAnimation(Color::White.withAlpha(0.3), Color::White.withAlpha(0.6), 0.5, EasingMode::Linear, 0.0f, AnimationWrapMode::Alternate);
 		}
 	}
 	//--------------------------------

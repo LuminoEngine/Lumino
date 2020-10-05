@@ -9,13 +9,24 @@ enum class UIListSelectionMoveMode
 	EdgeStop,
 	Cyclic,
 };
+
+enum class UIListSubmitMode
+{
+	/** ゲームUI用。Hover で選択状態、シングルクリックで Submit. Hover 状態は使用されない。 */
+	Single,
+
+	/** エディタUI用。シングルクリックで選択状態、ダブルクリックで Submit. */
+	Double,
+};
 	
 /**
  * UIListItemsControl 内の選択可能な項目を表します。
  */
+LN_CLASS()
 class UIListItem
 	: public UIControl
 {
+	LN_OBJECT;
 public:
 	// TODO: group
 
@@ -55,13 +66,24 @@ private:
  * @note
  *   UIListBox, UIListView, UIMenuItem, UIComboBox, UITabBar
  */
+LN_CLASS()
 class UIListItemsControl
 	: public UIControl
 {
+	LN_OBJECT;
 public:
 	void selectItem(UIListItem* item);
 	UIListItem* selectedItem() const;
 	void setItemsLayoutPanel(UILayoutPanel2* layout);
+
+	
+    /** UIListSubmitMode (default: Single) */
+	LN_METHOD(Property)
+    void setSubmitMode(UIListSubmitMode value);
+
+    /** UIListSubmitMode */
+	LN_METHOD(Property)
+	UIListSubmitMode submitMode() const;
 
 protected:
 	void addListItem(UIListItem* item);
@@ -78,12 +100,13 @@ LN_CONSTRUCT_ACCESS:
     bool init();
 
 private:
-	void notifyItemClicked(UIListItem* item);
+	void notifyItemClicked(UIListItem* item, int clickCount);
 	void selectItemExclusive(UIListItem* item);
 
 	Ref<UILayoutPanel2> m_itemsHostLayout;
 	List<UIListItem*> m_selectedItems;
 	UIListSelectionMoveMode m_selectionMoveMode;
+	UIListSubmitMode m_submitMode;
 
 	friend class UIListItem;
 };
@@ -94,9 +117,11 @@ private:
 /**
  * UIListBox 内の選択可能な項目を表します。
  */
+LN_CLASS()
 class UIListBoxItem
     : public UIListItem
 {
+	LN_OBJECT;
 public:
 	static Ref<UIListBoxItem> create(StringRef text);
 
@@ -114,6 +139,8 @@ LN_CONSTRUCT_ACCESS:
     UIListBoxItem();
     bool init();
 	bool init(StringRef text);
+	bool init(UIElement* content);
+	
 
 private:
 };
@@ -122,14 +149,24 @@ private:
 // 任意サイズの Item をリスト形式で扱う。
 // サイズがばらばらでもいいので、仮想化は非対応。少量のフレキシブルなリストに使う。
 // 固定サイズで仮想化対応するのは UIListView
+/**
+ * UIListBox
+ */
+LN_CLASS()
 class UIListBox
 	: public UIListItemsControl
 {
+	LN_OBJECT;
 public:
     static Ref<UIListBox> create();
 
 	/** UIListBoxItem を追加し、そのインスタンスを返します。 */
+	LN_METHOD()
 	UIListBoxItem* addItem(const ln::String& text);
+
+	/** UIListBoxItem を追加し、そのインスタンスを返します。 */
+	LN_METHOD()
+	UIListBoxItem* addItem(UIElement* content);
 
 	// この UIElement のメイン要素と bind する Property を設定する。
 	// 具体的にどのような表示要素と bind するのかは実装により異なる。
@@ -148,6 +185,9 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
 	UIListBox();
+
+	/** init */
+	LN_METHOD()
 	bool init();
 
 private:

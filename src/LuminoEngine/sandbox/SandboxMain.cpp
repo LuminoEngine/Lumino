@@ -283,6 +283,7 @@ void Experiment_SerializeLevel();
 void Experiment_Shadow();
 void Experiment_SSR();
 void Tutorial_Sandbox();
+void Sandbox_GridListBox();
 void Sandbox_MeshTilemap();
 void Sandbox_Physics();
 void Sandbox_Particle();
@@ -484,6 +485,7 @@ int main(int argc, char** argv)
         //Experiment_SerializeLevel();
         //Experiment_Shadow();
         //Experiment_SSR();
+        Sandbox_GridListBox();
 		//Sandbox_MeshTilemap();
         //Sandbox_Physics();
         //Sandbox_Particle();
@@ -491,7 +493,7 @@ int main(int argc, char** argv)
         //Sandbox_Sky();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
-		UISandboxMain();
+		//UISandboxMain();
         return 0;
     }
 
@@ -1166,7 +1168,7 @@ int main(int argc, char** argv)
     int frameCount = 0;
     while (Engine::update())
     {
-        if (Input::triggered(InputButtons::Submit)) {
+        if (Input::isTriggered(InputButtons::Submit)) {
             GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/coin04_16bit_mono.wav");
             //GameAudio::playSE(u"D:/Proj/Volkoff/Assets/Data/Sound/SE/coin04.wav");
             //GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/sin_440_3s_48000_2ch.wav");

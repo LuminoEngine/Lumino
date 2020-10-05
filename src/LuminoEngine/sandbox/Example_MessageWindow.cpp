@@ -76,7 +76,7 @@ class App_Example_MessageWindow : public Application
 
     virtual void onUpdate() override
     {
-        if (Input::triggered(InputButtons::Submit)) {
+        if (Input::isTriggered(InputButtons::Submit)) {
 
             switch (m_step)
             {

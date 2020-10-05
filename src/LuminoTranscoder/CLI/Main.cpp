@@ -78,6 +78,8 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/UI/UIButton.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UITextBlock.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UISprite.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/Controls/UIWindow.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/Controls/UIListBox.hpp",
 			TEST_ROOT "include/LuminoEngine/Input/Input.hpp",
 			TEST_ROOT "include/LuminoEngine/Input/Mouse.hpp",
 			TEST_ROOT "include/LuminoEngine/Scripting/Interpreter.hpp",

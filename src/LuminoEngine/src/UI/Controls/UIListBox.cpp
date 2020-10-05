@@ -12,6 +12,8 @@ namespace ln {
 //==============================================================================
 // UIListItem
 
+LN_OBJECT_IMPLEMENT(UIListItem, UIControl) {}
+
 UIListItem::UIListItem()
 	: m_ownerListControl(nullptr)
 	, m_onSubmit()
@@ -50,13 +52,33 @@ void UIListItem::onUnselected(UIEventArgs* e)
 
 void UIListItem::onRoutedEvent(UIEventArgs* e)
 {
-	UIControl::onRoutedEvent(e);
 
 	if (e->type() == UIEvents::MouseDownEvent) {
-		m_ownerListControl->notifyItemClicked(this);
+		const auto* me = static_cast<const UIMouseEventArgs*>(e);
+		m_ownerListControl->notifyItemClicked(this, me->getClickCount());
 		e->handled = true;
 		return;
 	}
+	else if (e->type() == UIEvents::MouseMoveEvent) {
+		if (m_ownerListControl->submitMode() == UIListSubmitMode::Single) {
+			m_ownerListControl->selectItemExclusive(this);
+			e->handled = true;
+			return;
+		}
+	}
+	//if (e->type() == UIEvents::MouseEnterEvent) {
+	//	if (m_ownerListControl->submitMode() == UIListSubmitMode::Single) {
+	//		return;
+	//	}
+	//}
+	//else if (e->type() == UIEvents::MouseLeaveEvent) {
+	//	if (m_ownerListControl->submitMode() == UIListSubmitMode::Single) {
+	//		return;
+	//	}
+	//}
+
+	UIControl::onRoutedEvent(e);
+
 }
 
 void UIListItem::setSelectedInternal(bool selected)
@@ -78,10 +100,13 @@ void UIListItem::setSelectedInternal(bool selected)
 //==============================================================================
 // UIListItemsControl
 
+LN_OBJECT_IMPLEMENT(UIListItemsControl, UIControl) {}
+
 UIListItemsControl::UIListItemsControl()
 	: m_itemsHostLayout(nullptr)
 	, m_selectedItems()
 	, m_selectionMoveMode(UIListSelectionMoveMode::Cyclic)
+	, m_submitMode(UIListSubmitMode::Single)
 {
 }
 
@@ -129,6 +154,16 @@ void UIListItemsControl::setItemsLayoutPanel(UILayoutPanel2* layout)
 			m_itemsHostLayout->addVisualChild(item);
 		}
 	}
+}
+
+void UIListItemsControl::setSubmitMode(UIListSubmitMode value)
+{
+	m_submitMode = value;
+}
+
+UIListSubmitMode UIListItemsControl::submitMode() const
+{
+	return m_submitMode;
 }
 
 void UIListItemsControl::addListItem(UIListItem* item)
@@ -285,9 +320,14 @@ Size UIListItemsControl::arrangeOverride(UILayoutContext* layoutContext, const R
 	}
 }
 
-void UIListItemsControl::notifyItemClicked(UIListItem* item)
+void UIListItemsControl::notifyItemClicked(UIListItem* item, int clickCount)
 {
-	selectItemExclusive(item);
+	if (submitMode() == UIListSubmitMode::Single) {
+		item->onSubmit();
+	}
+	else {
+		selectItemExclusive(item);
+	}
 }
 
 void UIListItemsControl::selectItemExclusive(UIListItem* item)
@@ -305,6 +345,8 @@ void UIListItemsControl::selectItemExclusive(UIListItem* item)
 
 //==============================================================================
 // UIListBoxItem
+
+LN_OBJECT_IMPLEMENT(UIListBoxItem, UIListItem) {}
 
 Ref<UIListBoxItem> UIListBoxItem::create(StringRef text)
 {
@@ -324,9 +366,14 @@ bool UIListBoxItem::init()
 bool UIListBoxItem::init(StringRef text)
 {
 	if (!init()) return false;
-
 	addChild(makeObject<UITextBlock>(text));
+	return true;
+}
 
+bool UIListBoxItem::init(UIElement* content)
+{
+	if (!init()) return false;
+	addChild(content);
 	return true;
 }
 
@@ -340,6 +387,8 @@ void UIListBoxItem::bind(ObservablePropertyBase* prop)
 
 //==============================================================================
 // UIListBox
+
+LN_OBJECT_IMPLEMENT(UIListBox, UIListItemsControl) {}
 
 Ref<UIListBox> UIListBox::create()
 {
@@ -359,6 +408,13 @@ bool UIListBox::init()
 UIListBoxItem* UIListBox::addItem(const ln::String& text)
 {
 	auto item = UIListBoxItem::create(text);
+	addChild(item);
+	return item;
+}
+
+UIListBoxItem* UIListBox::addItem(UIElement* content)
+{
+	auto item = makeObject<UIListBoxItem>(content);
 	addChild(item);
 	return item;
 }
