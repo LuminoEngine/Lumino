@@ -60,6 +60,25 @@ public:
 			auto button1 = makeObject<UIButton>();
 			button1->setText(u"Button");
 			layout1->addChild(button1);
+
+
+			auto button2 = makeObject<UIButton>();
+			button2->setText(u"IconButton");
+			layout1->addChild(button2);
+			auto icon2 = ln::makeObject<ln::UIIcon>();
+			icon2->setIconName(u"file");
+			//icon->setMargin(ln::Thickness(0, 0, 0, 4));
+			button2->addInlineVisual(icon2, ln::UIInlineLayout::Top);
+
+
+			auto button3 = makeObject<UIButton>();
+			button3->setText(u"Disabled");
+			button3->setEnabled(false);
+			layout1->addChild(button3);
+			auto icon3 = ln::makeObject<ln::UIIcon>();
+			icon3->setIconName(u"file");
+			//icon->setMargin(ln::Thickness(0, 0, 0, 4));
+			button3->addInlineVisual(icon3, ln::UIInlineLayout::Top);
 		}
 		//// RadioButton
 		//{

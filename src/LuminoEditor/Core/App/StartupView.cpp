@@ -61,7 +61,7 @@ ln::Result StartupView::init()
     icon->setIconName(u"file");
     icon->setHAlignment(ln::HAlignment::Center);
     icon->setMargin(ln::Thickness(0, 0, 0, 4));
-    m_openProjectButton->addInlineElement(icon, ln::UIInlineLayout::Top);
+    m_openProjectButton->addInlineVisual(icon, ln::UIInlineLayout::Top);
 
 
 

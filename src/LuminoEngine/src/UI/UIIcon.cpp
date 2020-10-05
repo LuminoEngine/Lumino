@@ -98,7 +98,12 @@ Size UIIcon::measureOverride(UILayoutContext* layoutContext, const Size& constra
 
 void UIIcon::onRender(UIRenderingContext* context)
 {
-	context->drawChar(m_codePoint, finalStyle()->textColor, m_font, Matrix::makeTranslation(m_renderOffset.x, m_renderOffset.y, 0));
+	Color color = finalStyle()->textColor;
+	if (!enabled()) {
+		color.a = 0.5f;
+	}
+
+	context->drawChar(m_codePoint, color, m_font, Matrix::makeTranslation(m_renderOffset.x, m_renderOffset.y, 0));
 }
 
 } // namespace ln

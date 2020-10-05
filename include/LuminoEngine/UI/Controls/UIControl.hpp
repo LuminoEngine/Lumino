@@ -141,7 +141,7 @@ public:
 
     // 要素の外側に張り付くものに利用する。
     // アイコンボタンを作るとき、外側ではなく文字側に張り付くようなものは、addContent で、Icon と TextBlock を並べた BoxLayout を追加する。
-    void addInlineElement(UIElement* element, UIInlineLayout layout);
+    void addInlineVisual(UIElement* element, UIInlineLayout layout);
 
 	///**
 	//	子要素をレイアウトするための UILayoutPanel を設定します。

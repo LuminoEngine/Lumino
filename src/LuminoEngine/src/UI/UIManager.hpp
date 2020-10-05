@@ -70,6 +70,7 @@ public:
 	void releaseCursor(UIElement* element);
 	const Ref<UIElement>& capturedElement() const { return m_capturedElement; }
 
+	void clearFocus(UIElement* element);
     void tryGetInputFocus(UIElement* element);
 	const Ref<UIElement>& forcusedElement() const { return m_forcusedElement; }
 	void activateTree(UIElement* element);
@@ -106,6 +107,7 @@ private:
         Ref<UIEventArgs> args;
     };
 	
+	void deactivateElement(UIElement* element);
 	void setupDefaultStyle();
 
 	GraphicsManager* m_graphicsManager;

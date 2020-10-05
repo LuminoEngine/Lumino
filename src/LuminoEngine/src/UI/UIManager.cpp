@@ -307,6 +307,14 @@ void UIManager::releaseCursor(UIElement* element)
     }
 }
 
+void UIManager::clearFocus(UIElement* element)
+{
+    if (m_forcusedElement == element) {
+        deactivateElement(m_forcusedElement);
+        m_forcusedElement = nullptr;
+    }
+}
+
 void UIManager::tryGetInputFocus(UIElement* element)
 {
 	activateTree(element);
@@ -336,13 +344,7 @@ void UIManager::activateTree(UIElement* element)
 		}
 
         // deactivate
-        if (e->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Control)) {
-            static_cast<UIControl*>(e)->deactivateInternal();
-        }
-        if (e->focusable()) {
-            auto args = UIEventArgs::create(e, UIEvents::LostFocusEvent, true);
-            e->raiseEvent(args, UIEventRoutingStrategy::Direct);
-        }
+        deactivateElement(e);
 
 		e = e->m_visualParent;
 	}
@@ -458,6 +460,17 @@ bool UIManager::handleCommonInputCommands(UIEventArgs* e)
 //
 //    }
 //}
+
+void UIManager::deactivateElement(UIElement* element)
+{
+    if (element->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Control)) {
+        static_cast<UIControl*>(element)->deactivateInternal();
+    }
+    if (element->focusable()) {
+        auto args = UIEventArgs::create(element, UIEvents::LostFocusEvent, true);
+        element->raiseEvent(args, UIEventRoutingStrategy::Direct);
+    }
+}
 
 void UIManager::setupDefaultStyle()
 {

@@ -71,10 +71,10 @@ enum class ObjectManagementFlags : uint8_t
 	AutoAddToPrimaryElement = 1 << 1,
 };
 
-enum class UISpecialElementFlags : uint8_t
+enum class UISpecialElementFlags : uint32_t
 {
-	None = 0,
-	MainWindow = 1 << 1,
+    None = 0,
+    MainWindow = 1 << 1,
     FrameWindow = 1 << 2,
 
     // 子 Visual 要素のレイアウトと描画を行わない。
@@ -93,8 +93,11 @@ enum class UISpecialElementFlags : uint8_t
 
     DragDropSource = 1 << 5,
     DragDropTarget = 1 << 6,
-};
 
+    Enabled = 1 << 7,
+    InternalEnabled = 1 << 8,
+};
+// TODO: ↑↓統合していいかも
 enum class UIElementDirtyFlags
 {
     None = 0,

@@ -97,6 +97,8 @@ UIElement::UIElement()
 {
     m_localStyle = makeObject<UIStyleClass>(String::Empty); // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
     m_localStyle->setMainStyle(makeObject<UIStyle>());
+    m_specialElementFlags.set(detail::UISpecialElementFlags::Enabled, true);
+    m_specialElementFlags.set(detail::UISpecialElementFlags::InternalEnabled, true);
 }
 
 UIElement::~UIElement()
@@ -247,6 +249,26 @@ void UIElement::setCenterPoint(const Vector3 & value)
 const Vector3& UIElement::centerPoint() const
 {
     return m_localStyle->mainStyle()->centerPoint.getOrDefault(Vector3::Zero);
+}
+
+void UIElement::setEnabled(bool value)
+{
+    bool oldValue = enabled();
+    m_specialElementFlags.set(detail::UISpecialElementFlags::Enabled, value);
+    if (oldValue != enabled()) {
+        updateEnabledPropertyOnChildren();
+        onEnabledChanged();
+    }
+}
+
+bool UIElement::enabled() const
+{
+    if (!m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::InternalEnabled)) {
+        // Parent is disabled.
+        return false;
+    }
+
+    return m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::Enabled);
 }
 
 void UIElement::setBackgroundDrawMode(Sprite9DrawMode value)
@@ -577,6 +599,7 @@ UIFrameRenderView* UIElement::getRenderView()
 UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 {
 	if (!isRenderVisible()) return nullptr;
+    if (!enabled()) return nullptr;
 
 	if (m_hitTestMode == detail::UIHitTestMode::Visible ||
 		m_hitTestMode == detail::UIHitTestMode::InvisiblePanel)
@@ -615,7 +638,7 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 
 void UIElement::focus()
 {
-    if (m_focusable) {
+    if (focusable()) {
         UIElement* leaf = findFocusedVisualChildLeaf();
         if (LN_REQUIRE(leaf)) return;
 
@@ -676,6 +699,9 @@ void UIElement::addVisualChild(UIElement* element)
 	m_orderdVisualChildren->add(element);
 	element->m_visualParent = this;
 
+
+    updateEnabledPropertyOnChildren();
+
 	// TODO: ZOrder
 	//std::stable_sort(
 	//	m_visualChildren->begin(), m_visualChildren->end(),
@@ -702,7 +728,16 @@ void UIElement::removeVisualChild(UIElement* element)
 
     if (m_focusedVisualChild == element)
         m_focusedVisualChild = nullptr;
-    
+
+    {
+        bool oldValue = element->enabled();
+        element->m_specialElementFlags.set(detail::UISpecialElementFlags::InternalEnabled, false);
+        if (oldValue != element->enabled()) {
+            element->updateEnabledPropertyOnChildren();
+            element->onEnabledChanged();
+        }
+    }
+
     invalidateLayout();
 }
 
@@ -955,6 +990,10 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 	data.colorScale = colorScale();
 	data.blendColor = blendColor();
 	data.tone = tone();
+    //if (!enabled()) {
+    //    // Grayscale
+    //    data.tone.s = 1.0f;
+    //}
 	context->setBaseBuiltinEffectData(data);
 	context->setBlendMode(blendMode());
 	context->setRenderPriority(m_renderPriority);
@@ -1097,6 +1136,13 @@ void UIElement::onAddChild(UIElement* child)
     LN_UNREACHABLE();
 }
 
+void UIElement::onEnabledChanged()
+{
+    if (!enabled()) {
+        m_manager->clearFocus(this);
+    }
+}
+
 bool UIElement::isMouseHover() const
 {
     return m_manager->mouseHoverElement() == this;
@@ -1203,6 +1249,21 @@ UIVisualStateManager* UIElement::getVisualStateManager()
         m_visualStateManager = makeObject<UIVisualStateManager>(this);
     }
     return m_visualStateManager;
+}
+
+void UIElement::updateEnabledPropertyOnChildren()
+{
+    if (m_visualChildren) {
+        bool value = enabled();
+        for (auto& child : m_visualChildren) {
+            bool oldValue = child->enabled();
+            child->m_specialElementFlags.set(detail::UISpecialElementFlags::InternalEnabled, value);
+            if (oldValue != child->enabled()) {
+                child->updateEnabledPropertyOnChildren();
+                child->onEnabledChanged();
+            }
+        }
+    }
 }
 
 } // namespace ln

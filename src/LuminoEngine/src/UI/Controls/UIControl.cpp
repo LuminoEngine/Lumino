@@ -35,11 +35,6 @@ bool UIControl::init(const UICreationContext* context)
     vsm->gotoState(UIVisualStates::Normal);
     vsm->gotoState(UIVisualStates::Unfocused);
 
-	//setHAlignment(HAlignment::Stretch);
-	//setVAlignment(VAlignment::Stretch);
-
-    //setLayoutPanel(makeObject<UIFrameLayout>());
-
     return true;
 }
 
@@ -115,7 +110,7 @@ void UIControl::removeAllChildren()
 	//}
 }
 
-void UIControl::addInlineElement(UIElement* element, UIInlineLayout layout)
+void UIControl::addInlineVisual(UIElement* element, UIInlineLayout layout)
 {
     PointI pts[] = {
         { 0, 0 }, { 1, 0 }, { 2, 0 },

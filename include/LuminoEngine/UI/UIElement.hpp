@@ -234,6 +234,17 @@ public:
 	const Vector3& centerPoint() const;
 
 
+	
+	/** 要素の有効状態を設定します。 */
+	LN_METHOD(Property)
+	void setEnabled(bool value);
+    
+	/** 要素の有効状態を取得します。 */
+	LN_METHOD(Property)
+	bool enabled() const;
+
+
+
 
     /** 背景の描画モードを設定します。*/
     void setBackgroundDrawMode(Sprite9DrawMode value);
@@ -380,7 +391,7 @@ public:
 
 	/** 入力フォーカスを得ることができるかどうかを設定します。(default: false) */
 	void setFocusable(bool value) { m_focusable = value; }
-	bool focusable() const { return m_focusable; }
+	bool focusable() const { return enabled() && m_focusable; }
 
     void setClipToBounds(bool value) { m_clipToBounds = value; }
     bool clipToBounds() const { return m_clipToBounds; }
@@ -513,6 +524,8 @@ public:	// TODO: internal protected
 
     virtual void onAddChild(UIElement* child);
 
+	virtual void onEnabledChanged();
+
 	//virtual void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
 
     bool isMouseHover() const;
@@ -589,7 +602,9 @@ public: // TODO: internal
 
 	int getVisualChildrenCount() const { return (m_visualChildren) ? m_visualChildren->size() : 0; }
 	UIElement* getVisualChild(int index) const { return (m_visualChildren) ? m_visualChildren->at(index) : nullptr; }
+
 private:
+	void updateEnabledPropertyOnChildren();
 
     Flags<detail::UIElementDirtyFlags> m_dirtyFlags;
 };

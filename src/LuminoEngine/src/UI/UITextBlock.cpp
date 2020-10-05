@@ -121,6 +121,11 @@ void UITextBlock::onRender(UIRenderingContext* context)
     //    context->drawBoxBackground(Rect(10, 20, 100, 200), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, mat, Rect(64, 0, 64, 64));
     //}
 
+    Color color = m_finalStyle->textColor;
+    if (!enabled()) {
+        color.a = 0.5;
+    }
+    context->setTextColor(color);
 
     context->drawText(m_text);
 }
