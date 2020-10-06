@@ -135,7 +135,12 @@ public:
     const String& name() const { return m_name; }
 
 	/** 要素のサイズを設定します。サイズには、border と padding の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります) */
-	void setSize(float width, float height) { setWidth(width); setHeight(height); }
+	LN_METHOD()
+	void setSize(const Size& size) { setWidth(size.width); setHeight(size.height); }
+
+	/** 要素のサイズを設定します。サイズには、border と padding の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります) */
+	LN_METHOD(OverloadPostfix = "WH")
+	void setSize(float width, float height) { setSize(Size(width, height)); }
 
     void setWidth(float value);
     float width() const;

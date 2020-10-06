@@ -3891,6 +3891,542 @@ LN_FLAT_API LNResult LNUISpriteSerializeHandler_Create(LNUISpriteSerializeHandle
 
 
 // Auto generated override handler
+using UIControlSerializeHandler = ln::Delegate<void(ln::UIControl* self, ln::Serializer2* ar)>;
+
+class LNWS_UIControlSerializeHandler : public UIControlSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIControlSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNUIControlSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIControlSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIControlSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIControlSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNUIControlSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNUIControlSerializeHandlerCallback m_callback;
+
+    LNWS_UIControlSerializeHandler()
+      : UIControlSerializeHandler([this](ln::UIControl* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNUIControlSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_UIControlSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNUIControlSerializeHandlerCallback callback)
+    {
+        if (!UIControlSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNUIControlSerializeHandler_Create(LNUIControlSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_UIControlSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using UIButtonBaseSerializeHandler = ln::Delegate<void(ln::UIButtonBase* self, ln::Serializer2* ar)>;
+
+class LNWS_UIButtonBaseSerializeHandler : public UIButtonBaseSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIButtonBaseSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNUIButtonBaseSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIButtonBaseSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIButtonBaseSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIButtonBaseSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNUIButtonBaseSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNUIButtonBaseSerializeHandlerCallback m_callback;
+
+    LNWS_UIButtonBaseSerializeHandler()
+      : UIButtonBaseSerializeHandler([this](ln::UIButtonBase* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNUIButtonBaseSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_UIButtonBaseSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNUIButtonBaseSerializeHandlerCallback callback)
+    {
+        if (!UIButtonBaseSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNUIButtonBaseSerializeHandler_Create(LNUIButtonBaseSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_UIButtonBaseSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using UIButtonSerializeHandler = ln::Delegate<void(ln::UIButton* self, ln::Serializer2* ar)>;
+
+class LNWS_UIButtonSerializeHandler : public UIButtonSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIButtonSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNUIButtonSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIButtonSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIButtonSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIButtonSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNUIButtonSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNUIButtonSerializeHandlerCallback m_callback;
+
+    LNWS_UIButtonSerializeHandler()
+      : UIButtonSerializeHandler([this](ln::UIButton* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNUIButtonSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_UIButtonSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNUIButtonSerializeHandlerCallback callback)
+    {
+        if (!UIButtonSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNUIButtonSerializeHandler_Create(LNUIButtonSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_UIButtonSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using UIWindowSerializeHandler = ln::Delegate<void(ln::UIWindow* self, ln::Serializer2* ar)>;
+
+class LNWS_UIWindowSerializeHandler : public UIWindowSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIWindowSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNUIWindowSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIWindowSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIWindowSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIWindowSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNUIWindowSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNUIWindowSerializeHandlerCallback m_callback;
+
+    LNWS_UIWindowSerializeHandler()
+      : UIWindowSerializeHandler([this](ln::UIWindow* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNUIWindowSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_UIWindowSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNUIWindowSerializeHandlerCallback callback)
+    {
+        if (!UIWindowSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNUIWindowSerializeHandler_Create(LNUIWindowSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_UIWindowSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using UIListItemSerializeHandler = ln::Delegate<void(ln::UIListItem* self, ln::Serializer2* ar)>;
+
+class LNWS_UIListItemSerializeHandler : public UIListItemSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIListItemSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNUIListItemSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIListItemSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIListItemSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIListItemSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNUIListItemSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNUIListItemSerializeHandlerCallback m_callback;
+
+    LNWS_UIListItemSerializeHandler()
+      : UIListItemSerializeHandler([this](ln::UIListItem* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNUIListItemSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_UIListItemSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNUIListItemSerializeHandlerCallback callback)
+    {
+        if (!UIListItemSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNUIListItemSerializeHandler_Create(LNUIListItemSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_UIListItemSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using UIListItemsControlSerializeHandler = ln::Delegate<void(ln::UIListItemsControl* self, ln::Serializer2* ar)>;
+
+class LNWS_UIListItemsControlSerializeHandler : public UIListItemsControlSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIListItemsControlSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNUIListItemsControlSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIListItemsControlSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIListItemsControlSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIListItemsControlSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNUIListItemsControlSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNUIListItemsControlSerializeHandlerCallback m_callback;
+
+    LNWS_UIListItemsControlSerializeHandler()
+      : UIListItemsControlSerializeHandler([this](ln::UIListItemsControl* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNUIListItemsControlSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_UIListItemsControlSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNUIListItemsControlSerializeHandlerCallback callback)
+    {
+        if (!UIListItemsControlSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNUIListItemsControlSerializeHandler_Create(LNUIListItemsControlSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_UIListItemsControlSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using UIListBoxItemSerializeHandler = ln::Delegate<void(ln::UIListBoxItem* self, ln::Serializer2* ar)>;
+
+class LNWS_UIListBoxItemSerializeHandler : public UIListBoxItemSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIListBoxItemSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNUIListBoxItemSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIListBoxItemSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIListBoxItemSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIListBoxItemSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNUIListBoxItemSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNUIListBoxItemSerializeHandlerCallback m_callback;
+
+    LNWS_UIListBoxItemSerializeHandler()
+      : UIListBoxItemSerializeHandler([this](ln::UIListBoxItem* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNUIListBoxItemSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_UIListBoxItemSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNUIListBoxItemSerializeHandlerCallback callback)
+    {
+        if (!UIListBoxItemSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNUIListBoxItemSerializeHandler_Create(LNUIListBoxItemSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_UIListBoxItemSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using UIListBoxSerializeHandler = ln::Delegate<void(ln::UIListBox* self, ln::Serializer2* ar)>;
+
+class LNWS_UIListBoxSerializeHandler : public UIListBoxSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIListBoxSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNUIListBoxSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIListBoxSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIListBoxSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIListBoxSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNUIListBoxSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNUIListBoxSerializeHandlerCallback m_callback;
+
+    LNWS_UIListBoxSerializeHandler()
+      : UIListBoxSerializeHandler([this](ln::UIListBox* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNUIListBoxSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_UIListBoxSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNUIListBoxSerializeHandlerCallback callback)
+    {
+        if (!UIListBoxSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNUIListBoxSerializeHandler_Create(LNUIListBoxSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_UIListBoxSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
 using InterpreterCommandSerializeHandler = ln::Delegate<void(ln::InterpreterCommand* self, ln::Serializer2* ar)>;
 
 class LNWS_InterpreterCommandSerializeHandler : public InterpreterCommandSerializeHandler
@@ -8118,6 +8654,509 @@ public:
 };
 
 LNUISprite_OnSerialize_OverrideCallback LNWS_ln_UISprite::s_LNUISprite_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_UI : public ln::UI
+{
+public:
+};
+
+
+
+class LNWS_ln_UIControl : public ln::UIControl
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIControl_OverridePrototypes
+    {
+        ln::Ref<LNWS_UIControlSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNUIControl_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIControl_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIControl_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIControl_SubclassRegistrationInfo* subclassInfo() { static LNUIControl_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIControl()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIControl()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNUIControl_OnSerialize_OverrideCallback s_LNUIControl_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNUIControl_OnSerialize_OverrideCallback) s_LNUIControl_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UIControl::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIControl::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIElement>();
+    }
+
+};
+
+LNUIControl_OnSerialize_OverrideCallback LNWS_ln_UIControl::s_LNUIControl_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_UIButtonBase : public ln::UIButtonBase
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIButtonBase_OverridePrototypes
+    {
+        ln::Ref<LNWS_UIButtonBaseSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNUIButtonBase_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIButtonBase_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIButtonBase_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIButtonBase_SubclassRegistrationInfo* subclassInfo() { static LNUIButtonBase_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIButtonBase()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIButtonBase()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNUIButtonBase_OnSerialize_OverrideCallback s_LNUIButtonBase_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNUIButtonBase_OnSerialize_OverrideCallback) s_LNUIButtonBase_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UIButtonBase::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIButtonBase::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIControl>();
+    }
+
+};
+
+LNUIButtonBase_OnSerialize_OverrideCallback LNWS_ln_UIButtonBase::s_LNUIButtonBase_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_UIButton : public ln::UIButton
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIButton_OverridePrototypes
+    {
+        ln::Ref<LNWS_UIButtonSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNUIButton_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIButton_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIButton_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIButton_SubclassRegistrationInfo* subclassInfo() { static LNUIButton_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIButton()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIButton()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNUIButton_OnSerialize_OverrideCallback s_LNUIButton_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNUIButton_OnSerialize_OverrideCallback) s_LNUIButton_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UIButton::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIButton::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIButtonBase>();
+    }
+
+};
+
+LNUIButton_OnSerialize_OverrideCallback LNWS_ln_UIButton::s_LNUIButton_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_UIWindow : public ln::UIWindow
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIWindow_OverridePrototypes
+    {
+        ln::Ref<LNWS_UIWindowSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNUIWindow_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIWindow_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIWindow_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIWindow_SubclassRegistrationInfo* subclassInfo() { static LNUIWindow_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIWindow()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIWindow()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNUIWindow_OnSerialize_OverrideCallback s_LNUIWindow_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNUIWindow_OnSerialize_OverrideCallback) s_LNUIWindow_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UIWindow::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIWindow::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIControl>();
+    }
+
+};
+
+LNUIWindow_OnSerialize_OverrideCallback LNWS_ln_UIWindow::s_LNUIWindow_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_UIListItem : public ln::UIListItem
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIListItem_OverridePrototypes
+    {
+        ln::Ref<LNWS_UIListItemSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNUIListItem_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIListItem_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIListItem_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIListItem_SubclassRegistrationInfo* subclassInfo() { static LNUIListItem_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIListItem()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIListItem()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNUIListItem_OnSerialize_OverrideCallback s_LNUIListItem_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNUIListItem_OnSerialize_OverrideCallback) s_LNUIListItem_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UIListItem::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIListItem::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIControl>();
+    }
+
+};
+
+LNUIListItem_OnSerialize_OverrideCallback LNWS_ln_UIListItem::s_LNUIListItem_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_UIListItemsControl : public ln::UIListItemsControl
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIListItemsControl_OverridePrototypes
+    {
+        ln::Ref<LNWS_UIListItemsControlSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNUIListItemsControl_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIListItemsControl_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIListItemsControl_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIListItemsControl_SubclassRegistrationInfo* subclassInfo() { static LNUIListItemsControl_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIListItemsControl()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIListItemsControl()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNUIListItemsControl_OnSerialize_OverrideCallback s_LNUIListItemsControl_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNUIListItemsControl_OnSerialize_OverrideCallback) s_LNUIListItemsControl_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UIListItemsControl::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIListItemsControl::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIControl>();
+    }
+
+};
+
+LNUIListItemsControl_OnSerialize_OverrideCallback LNWS_ln_UIListItemsControl::s_LNUIListItemsControl_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_UIListBoxItem : public ln::UIListBoxItem
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIListBoxItem_OverridePrototypes
+    {
+        ln::Ref<LNWS_UIListBoxItemSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNUIListBoxItem_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIListBoxItem_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIListBoxItem_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIListBoxItem_SubclassRegistrationInfo* subclassInfo() { static LNUIListBoxItem_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIListBoxItem()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIListBoxItem()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNUIListBoxItem_OnSerialize_OverrideCallback s_LNUIListBoxItem_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNUIListBoxItem_OnSerialize_OverrideCallback) s_LNUIListBoxItem_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UIListBoxItem::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIListBoxItem::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIListItem>();
+    }
+
+};
+
+LNUIListBoxItem_OnSerialize_OverrideCallback LNWS_ln_UIListBoxItem::s_LNUIListBoxItem_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_UIListBox : public ln::UIListBox
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIListBox_OverridePrototypes
+    {
+        ln::Ref<LNWS_UIListBoxSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNUIListBox_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIListBox_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIListBox_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIListBox_SubclassRegistrationInfo* subclassInfo() { static LNUIListBox_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIListBox()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIListBox()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNUIListBox_OnSerialize_OverrideCallback s_LNUIListBox_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNUIListBox_OnSerialize_OverrideCallback) s_LNUIListBox_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UIListBox::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIListBox::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIListItemsControl>();
+    }
+
+};
+
+LNUIListBox_OnSerialize_OverrideCallback LNWS_ln_UIListBox::s_LNUIListBox_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_Input : public ln::Input
@@ -12663,6 +13702,22 @@ LN_FLAT_API LNResult LNScene_GotoLevel(LNHandle level, LNBool withEffect)
 }
 
 
+LN_FLAT_API LNResult LNScene_CallLevel(LNHandle level, LNBool withEffect)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::callLevel(LNI_HANDLE_TO_OBJECT(ln::Level, level), LNI_LNBOOL_TO_BOOL(withEffect)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_ReturnLevel(LNBool withEffect)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::returnLevel(LNI_LNBOOL_TO_BOOL(withEffect)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNScene_ActiveLevel(LNHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -13145,6 +14200,22 @@ LNSubinstanceId LNUILayoutElement_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
+LN_FLAT_API LNResult LNUIElement_SetSize(LNHandle uielement, const LNSize* size)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setSize(*reinterpret_cast<const ln::Size*>(size)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIElement_SetSizeWH(LNHandle uielement, float width, float height)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setSize(width, height));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNUIElement_SetMargin(LNHandle uielement, const LNThickness* margin)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -13363,6 +14434,28 @@ LN_FLAT_API LNResult LNUIElement_GetCenterPoint(LNHandle uielement, LNVector3* o
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIElement_SetEnabled(LNHandle uielement, LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setEnabled(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIElement_GetEnabled(LNHandle uielement, LNBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->enabled());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->enabled());
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -13590,7 +14683,481 @@ LNSubinstanceId LNUISprite_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
-LN_FLAT_API LNResult LNInput_Pressed(const LNChar* buttonName, LNBool* outReturn)
+LN_FLAT_API LNResult LNUI_Add(LNHandle element)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::UI::add(LNI_HANDLE_TO_OBJECT(ln::UIElement, element)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIControl_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIControl, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNUIControl_OnSerialize_SetOverrideCallback(LNUIControl_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIControl::s_LNUIControl_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNUIControl_SetPrototype_OnSerialize(LNHandle uicontrol, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_UIControl, uicontrol)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_UIControlSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNUIControl_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIControl>()->id();
+}
+
+LN_FLAT_API void LNUIControl_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIControl>(), id);
+}
+
+void LNUIControl_RegisterSubclassTypeInfo(const LNUIControl_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIControl>(), info->subclassId);
+        *LNWS_ln_UIControl::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIControl_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIControl, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNUIButtonBase_SetText(LNHandle uibuttonbase, const LNChar* text)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButtonBase, uibuttonbase)->setText(text));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIButtonBase_SetTextA(LNHandle uibuttonbase, const char* text)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButtonBase, uibuttonbase)->setText(LNI_UTF8STRPTR_TO_STRING(text)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIButtonBase_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButtonBase, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNUIButtonBase_OnSerialize_SetOverrideCallback(LNUIButtonBase_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIButtonBase::s_LNUIButtonBase_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNUIButtonBase_SetPrototype_OnSerialize(LNHandle uibuttonbase, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButtonBase, uibuttonbase)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_UIButtonBaseSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNUIButtonBase_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIButtonBase>()->id();
+}
+
+LN_FLAT_API void LNUIButtonBase_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButtonBase>(), id);
+}
+
+void LNUIButtonBase_RegisterSubclassTypeInfo(const LNUIButtonBase_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButtonBase>(), info->subclassId);
+        *LNWS_ln_UIButtonBase::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIButtonBase_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButtonBase, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNUIButton_Create(LNHandle* outUIButton)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUIButton, LNWS_ln_UIButton, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIButton_CreateWithText(const LNChar* text, LNHandle* outUIButton)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUIButton, LNWS_ln_UIButton, init, text);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIButton_CreateWithTextA(const char* text, LNHandle* outUIButton)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUIButton, LNWS_ln_UIButton, init, LNI_UTF8STRPTR_TO_STRING(text));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIButton_ConnectOnClicked(LNHandle uibutton, LNHandle handler, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked(LNI_HANDLE_TO_OBJECT(ln::UIEventHandler, handler)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked(LNI_HANDLE_TO_OBJECT(ln::UIEventHandler, handler)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIButton_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNUIButton_OnSerialize_SetOverrideCallback(LNUIButton_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIButton::s_LNUIButton_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNUIButton_SetPrototype_OnSerialize(LNHandle uibutton, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_UIButtonSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNUIButton_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIButton>()->id();
+}
+
+LN_FLAT_API void LNUIButton_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButton>(), id);
+}
+
+void LNUIButton_RegisterSubclassTypeInfo(const LNUIButton_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButton>(), info->subclassId);
+        *LNWS_ln_UIButton::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIButton_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNUIWindow_Create(LNHandle* outUIWindow)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUIWindow, LNWS_ln_UIWindow, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIWindow_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIWindow, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNUIWindow_OnSerialize_SetOverrideCallback(LNUIWindow_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIWindow::s_LNUIWindow_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNUIWindow_SetPrototype_OnSerialize(LNHandle uiwindow, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_UIWindow, uiwindow)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_UIWindowSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNUIWindow_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIWindow>()->id();
+}
+
+LN_FLAT_API void LNUIWindow_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIWindow>(), id);
+}
+
+void LNUIWindow_RegisterSubclassTypeInfo(const LNUIWindow_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIWindow>(), info->subclassId);
+        *LNWS_ln_UIWindow::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIWindow_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIWindow, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNUIListItem_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItem, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNUIListItem_OnSerialize_SetOverrideCallback(LNUIListItem_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIListItem::s_LNUIListItem_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNUIListItem_SetPrototype_OnSerialize(LNHandle uilistitem, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItem, uilistitem)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_UIListItemSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNUIListItem_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIListItem>()->id();
+}
+
+LN_FLAT_API void LNUIListItem_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIListItem>(), id);
+}
+
+void LNUIListItem_RegisterSubclassTypeInfo(const LNUIListItem_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIListItem>(), info->subclassId);
+        *LNWS_ln_UIListItem::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIListItem_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItem, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNUIListItemsControl_SetSubmitMode(LNHandle uilistitemscontrol, LNUIListSubmitMode value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItemsControl, uilistitemscontrol)->setSubmitMode(static_cast<ln::UIListSubmitMode>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIListItemsControl_GetSubmitMode(LNHandle uilistitemscontrol, LNUIListSubmitMode* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = static_cast<LNUIListSubmitMode>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItemsControl, uilistitemscontrol)->submitMode());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItemsControl, uilistitemscontrol)->submitMode());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIListItemsControl_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItemsControl, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNUIListItemsControl_OnSerialize_SetOverrideCallback(LNUIListItemsControl_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIListItemsControl::s_LNUIListItemsControl_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNUIListItemsControl_SetPrototype_OnSerialize(LNHandle uilistitemscontrol, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItemsControl, uilistitemscontrol)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_UIListItemsControlSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNUIListItemsControl_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIListItemsControl>()->id();
+}
+
+LN_FLAT_API void LNUIListItemsControl_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIListItemsControl>(), id);
+}
+
+void LNUIListItemsControl_RegisterSubclassTypeInfo(const LNUIListItemsControl_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIListItemsControl>(), info->subclassId);
+        *LNWS_ln_UIListItemsControl::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIListItemsControl_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItemsControl, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNUIListBoxItem_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListBoxItem, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNUIListBoxItem_OnSerialize_SetOverrideCallback(LNUIListBoxItem_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIListBoxItem::s_LNUIListBoxItem_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNUIListBoxItem_SetPrototype_OnSerialize(LNHandle uilistboxitem, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListBoxItem, uilistboxitem)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_UIListBoxItemSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNUIListBoxItem_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIListBoxItem>()->id();
+}
+
+LN_FLAT_API void LNUIListBoxItem_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIListBoxItem>(), id);
+}
+
+void LNUIListBoxItem_RegisterSubclassTypeInfo(const LNUIListBoxItem_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIListBoxItem>(), info->subclassId);
+        *LNWS_ln_UIListBoxItem::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIListBoxItem_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListBoxItem, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNUIListBox_Create(LNHandle* outUIListBox)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUIListBox, LNWS_ln_UIListBox, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIListBox_AddItem(LNHandle uilistbox, LNHandle content, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListBox, uilistbox)->addItem(LNI_HANDLE_TO_OBJECT(ln::UIElement, content)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListBox, uilistbox)->addItem(LNI_HANDLE_TO_OBJECT(ln::UIElement, content)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIListBox_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListBox, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNUIListBox_OnSerialize_SetOverrideCallback(LNUIListBox_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIListBox::s_LNUIListBox_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNUIListBox_SetPrototype_OnSerialize(LNHandle uilistbox, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListBox, uilistbox)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_UIListBoxSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNUIListBox_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIListBox>()->id();
+}
+
+LN_FLAT_API void LNUIListBox_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIListBox>(), id);
+}
+
+void LNUIListBox_RegisterSubclassTypeInfo(const LNUIListBox_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIListBox>(), info->subclassId);
+        *LNWS_ln_UIListBox::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIListBox_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListBox, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNInput_IsPressed(const LNChar* buttonName, LNBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
@@ -13604,7 +15171,7 @@ LN_FLAT_API LNResult LNInput_Pressed(const LNChar* buttonName, LNBool* outReturn
 }
 
 
-LN_FLAT_API LNResult LNInput_PressedA(const char* buttonName, LNBool* outReturn)
+LN_FLAT_API LNResult LNInput_IsPressedA(const char* buttonName, LNBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
@@ -13618,7 +15185,7 @@ LN_FLAT_API LNResult LNInput_PressedA(const char* buttonName, LNBool* outReturn)
 }
 
 
-LN_FLAT_API LNResult LNInput_Triggered(const LNChar* buttonName, LNBool* outReturn)
+LN_FLAT_API LNResult LNInput_IsTriggered(const LNChar* buttonName, LNBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
@@ -13632,7 +15199,7 @@ LN_FLAT_API LNResult LNInput_Triggered(const LNChar* buttonName, LNBool* outRetu
 }
 
 
-LN_FLAT_API LNResult LNInput_TriggeredA(const char* buttonName, LNBool* outReturn)
+LN_FLAT_API LNResult LNInput_IsTriggeredA(const char* buttonName, LNBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
@@ -13646,7 +15213,7 @@ LN_FLAT_API LNResult LNInput_TriggeredA(const char* buttonName, LNBool* outRetur
 }
 
 
-LN_FLAT_API LNResult LNInput_TriggeredOff(const LNChar* buttonName, LNBool* outReturn)
+LN_FLAT_API LNResult LNInput_IsTriggeredOff(const LNChar* buttonName, LNBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
@@ -13660,7 +15227,7 @@ LN_FLAT_API LNResult LNInput_TriggeredOff(const LNChar* buttonName, LNBool* outR
 }
 
 
-LN_FLAT_API LNResult LNInput_TriggeredOffA(const char* buttonName, LNBool* outReturn)
+LN_FLAT_API LNResult LNInput_IsTriggeredOffA(const char* buttonName, LNBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
@@ -13674,7 +15241,7 @@ LN_FLAT_API LNResult LNInput_TriggeredOffA(const char* buttonName, LNBool* outRe
 }
 
 
-LN_FLAT_API LNResult LNInput_Repeated(const LNChar* buttonName, LNBool* outReturn)
+LN_FLAT_API LNResult LNInput_IsRepeated(const LNChar* buttonName, LNBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
@@ -13688,7 +15255,7 @@ LN_FLAT_API LNResult LNInput_Repeated(const LNChar* buttonName, LNBool* outRetur
 }
 
 
-LN_FLAT_API LNResult LNInput_RepeatedA(const char* buttonName, LNBool* outReturn)
+LN_FLAT_API LNResult LNInput_IsRepeatedA(const char* buttonName, LNBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
@@ -14345,6 +15912,22 @@ LN_FLAT_API LNResult LNEngineSettings_SetFrameRate(int value)
 {
     LNI_FUNC_TRY_BEGIN;
     (ln::EngineSettings::setFrameRate(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNEngineSettings_SetDefaultUITheme(const LNChar* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setDefaultUITheme(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNEngineSettings_SetDefaultUIThemeA(const char* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setDefaultUITheme(LNI_UTF8STRPTR_TO_STRING(value)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -15985,6 +17568,190 @@ LNSubinstanceId LNUISpriteSerializeHandler_GetSubinstanceId(LNHandle handle)
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_UISpriteSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNUIControlSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIControlSerializeHandler>(), id);
+}
+
+void LNUIControlSerializeHandler_RegisterSubclassTypeInfo(const LNUIControlSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIControlSerializeHandler>(), info->subclassId);
+        *LNWS_UIControlSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIControlSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_UIControlSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNUIButtonBaseSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIButtonBaseSerializeHandler>(), id);
+}
+
+void LNUIButtonBaseSerializeHandler_RegisterSubclassTypeInfo(const LNUIButtonBaseSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIButtonBaseSerializeHandler>(), info->subclassId);
+        *LNWS_UIButtonBaseSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIButtonBaseSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_UIButtonBaseSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNUIButtonSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIButtonSerializeHandler>(), id);
+}
+
+void LNUIButtonSerializeHandler_RegisterSubclassTypeInfo(const LNUIButtonSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIButtonSerializeHandler>(), info->subclassId);
+        *LNWS_UIButtonSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIButtonSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_UIButtonSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNUIWindowSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIWindowSerializeHandler>(), id);
+}
+
+void LNUIWindowSerializeHandler_RegisterSubclassTypeInfo(const LNUIWindowSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIWindowSerializeHandler>(), info->subclassId);
+        *LNWS_UIWindowSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIWindowSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_UIWindowSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNUIListItemSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIListItemSerializeHandler>(), id);
+}
+
+void LNUIListItemSerializeHandler_RegisterSubclassTypeInfo(const LNUIListItemSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIListItemSerializeHandler>(), info->subclassId);
+        *LNWS_UIListItemSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIListItemSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_UIListItemSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNUIListItemsControlSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIListItemsControlSerializeHandler>(), id);
+}
+
+void LNUIListItemsControlSerializeHandler_RegisterSubclassTypeInfo(const LNUIListItemsControlSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIListItemsControlSerializeHandler>(), info->subclassId);
+        *LNWS_UIListItemsControlSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIListItemsControlSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_UIListItemsControlSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNUIListBoxItemSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIListBoxItemSerializeHandler>(), id);
+}
+
+void LNUIListBoxItemSerializeHandler_RegisterSubclassTypeInfo(const LNUIListBoxItemSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIListBoxItemSerializeHandler>(), info->subclassId);
+        *LNWS_UIListBoxItemSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIListBoxItemSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_UIListBoxItemSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNUIListBoxSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIListBoxSerializeHandler>(), id);
+}
+
+void LNUIListBoxSerializeHandler_RegisterSubclassTypeInfo(const LNUIListBoxSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIListBoxSerializeHandler>(), info->subclassId);
+        *LNWS_UIListBoxSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIListBoxSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_UIListBoxSerializeHandler, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;

@@ -9,6 +9,7 @@ class Material;
 class UITheme;
 class UIStyleContext;
 class UICommand;
+class UIElement;
 class UIDomainProvidor;
 class UIViewport;
 class UIControl;

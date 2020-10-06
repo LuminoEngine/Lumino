@@ -10,6 +10,8 @@ enum class UIListSelectionMoveMode
 	Cyclic,
 };
 
+/** UIListSubmitMode */
+LN_ENUM();
 enum class UIListSubmitMode
 {
 	/** ゲームUI用。Hover で選択状態、シングルクリックで Submit. Hover 状態は使用されない。 */
@@ -139,6 +141,9 @@ LN_CONSTRUCT_ACCESS:
     UIListBoxItem();
     bool init();
 	bool init(StringRef text);
+
+	/** init */
+	LN_METHOD()
 	bool init(UIElement* content);
 	
 
@@ -161,7 +166,6 @@ public:
     static Ref<UIListBox> create();
 
 	/** UIListBoxItem を追加し、そのインスタンスを返します。 */
-	LN_METHOD()
 	UIListBoxItem* addItem(const ln::String& text);
 
 	/** UIListBoxItem を追加し、そのインスタンスを返します。 */

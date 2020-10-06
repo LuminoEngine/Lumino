@@ -8,7 +8,8 @@ namespace ln {
 	
 //==============================================================================
 // UIGridLayout::Builder
-
+	
+LN_OBJECT_IMPLEMENT(UIGridLayout, UILayoutPanel2) {}
 LN_BUILDER_IMPLEMENT(UIGridLayout, UILayoutPanel2);
 
 //UIGridLayout::Builder::Builder() : Builder(makeRef<Details>()) {}

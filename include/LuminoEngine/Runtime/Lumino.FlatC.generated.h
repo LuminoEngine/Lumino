@@ -348,6 +348,23 @@ typedef enum tagLNHAlignment
 
 } LNHAlignment;
 
+/**
+    @brief 
+*/
+typedef enum tagLNUIListSubmitMode
+{
+    /**
+        @brief ゲームUI用。Hover で選択状態、シングルクリックで Submit. Hover 状態は使用されない。
+    */
+    LN_UILIST_SUBMIT_MODE_SINGLE = 0,
+
+    /**
+        @brief エディタUI用。シングルクリックで選択状態、ダブルクリックで Submit.
+    */
+    LN_UILIST_SUBMIT_MODE_DOUBLE = 1,
+
+} LNUIListSubmitMode;
+
 typedef LNResult(*LNPromiseFailureDelegateCallback)(LNHandle promisefailuredelegate);
 typedef LNResult(*LNZVTestDelegate1Callback)(LNHandle zvtestdelegate1, int p1);
 typedef LNResult(*LNZVTestDelegate2Callback)(LNHandle zvtestdelegate2, int p1, int p2, int* outReturn);
@@ -418,6 +435,14 @@ typedef LNResult(*LNUILayoutElementSerializeHandlerCallback)(LNHandle uilayoutel
 typedef LNResult(*LNUIElementSerializeHandlerCallback)(LNHandle uielementserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUITextBlockSerializeHandlerCallback)(LNHandle uitextblockserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUISpriteSerializeHandlerCallback)(LNHandle uispriteserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIControlSerializeHandlerCallback)(LNHandle uicontrolserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIButtonBaseSerializeHandlerCallback)(LNHandle uibuttonbaseserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIButtonSerializeHandlerCallback)(LNHandle uibuttonserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIWindowSerializeHandlerCallback)(LNHandle uiwindowserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIListItemSerializeHandlerCallback)(LNHandle uilistitemserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIListItemsControlSerializeHandlerCallback)(LNHandle uilistitemscontrolserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIListBoxItemSerializeHandlerCallback)(LNHandle uilistboxitemserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIListBoxSerializeHandlerCallback)(LNHandle uilistboxserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNInterpreterCommandSerializeHandlerCallback)(LNHandle interpretercommandserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNInterpreterCommandListSerializeHandlerCallback)(LNHandle interpretercommandlistserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNInterpreterSerializeHandlerCallback)(LNHandle interpreterserializehandler, LNHandle self, LNHandle ar);
@@ -2986,6 +3011,16 @@ LN_FLAT_API LNResult LNScene_SetSkyOverlayColor(const LNColor* value);
 LN_FLAT_API LNResult LNScene_GotoLevel(LNHandle level, LNBool withEffect);
 
 /**
+    @brief 現在のレベルを非アクティブ化し、指定したレベルへ遷移します。
+*/
+LN_FLAT_API LNResult LNScene_CallLevel(LNHandle level, LNBool withEffect);
+
+/**
+    @brief 現在のレベルを終了し、ひとつ前のレベルへ遷移します。
+*/
+LN_FLAT_API LNResult LNScene_ReturnLevel(LNBool withEffect);
+
+/**
     @brief 現在のアクティブなレベルを取得します。
     @param[out] outReturn : instance.
 */
@@ -3273,6 +3308,18 @@ extern LN_FLAT_API LNSubinstanceId LNUILayoutElement_GetSubinstanceId(LNHandle h
 // ln::UIElement
 
 /**
+    @brief 要素のサイズを設定します。サイズには、border と padding の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります)
+    @param[in] uielement : instance
+*/
+LN_FLAT_API LNResult LNUIElement_SetSize(LNHandle uielement, const LNSize* size);
+
+/**
+    @brief 要素のサイズを設定します。サイズには、border と padding の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります)
+    @param[in] uielement : instance
+*/
+LN_FLAT_API LNResult LNUIElement_SetSizeWH(LNHandle uielement, float width, float height);
+
+/**
     @brief 要素の margin 値 (外側の余白) を設定します。
     @param[in] uielement : instance
 */
@@ -3413,6 +3460,19 @@ LN_FLAT_API LNResult LNUIElement_SetCenterPointXYZ(LNHandle uielement, float x, 
 LN_FLAT_API LNResult LNUIElement_GetCenterPoint(LNHandle uielement, LNVector3* outReturn);
 
 /**
+    @brief 要素の有効状態を設定します。
+    @param[in] uielement : instance
+*/
+LN_FLAT_API LNResult LNUIElement_SetEnabled(LNHandle uielement, LNBool value);
+
+/**
+    @brief 要素の有効状態を取得します。
+    @param[in] uielement : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIElement_GetEnabled(LNHandle uielement, LNBool* outReturn);
+
+/**
     @brief Add element to container. 論理的な子要素として追加する。
     @param[in] uielement : instance
 */
@@ -3548,35 +3608,319 @@ extern LN_FLAT_API void LNUISprite_RegisterSubclassTypeInfo(const LNUISprite_Sub
 extern LN_FLAT_API LNSubinstanceId LNUISprite_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// ln::UI
+
+/**
+    @brief add
+*/
+LN_FLAT_API LNResult LNUI_Add(LNHandle element);
+
+
+//==============================================================================
+// ln::UIControl
+
+typedef LNResult(*LNUIControl_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIControl_OnSerialize_SetOverrideCallback(LNUIControl_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIControl_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uicontrol : instance
+*/
+LN_FLAT_API LNResult LNUIControl_SetPrototype_OnSerialize(LNHandle uicontrol, LNHandle callback);
+
+extern LN_FLAT_API int LNUIControl_GetTypeInfoId();
+LN_FLAT_API void LNUIControl_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIControl_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIControl_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIControl_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIControl_RegisterSubclassTypeInfo(const LNUIControl_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIControl_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::UIButtonBase
+
+/**
+    @brief set text.
+    @param[in] uibuttonbase : instance
+*/
+LN_FLAT_API LNResult LNUIButtonBase_SetText(LNHandle uibuttonbase, const LNChar* text);
+LN_FLAT_API LNResult LNUIButtonBase_SetTextA(LNHandle uibuttonbase, const char* text);
+
+typedef LNResult(*LNUIButtonBase_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIButtonBase_OnSerialize_SetOverrideCallback(LNUIButtonBase_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIButtonBase_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uibuttonbase : instance
+*/
+LN_FLAT_API LNResult LNUIButtonBase_SetPrototype_OnSerialize(LNHandle uibuttonbase, LNHandle callback);
+
+extern LN_FLAT_API int LNUIButtonBase_GetTypeInfoId();
+LN_FLAT_API void LNUIButtonBase_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIButtonBase_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIButtonBase_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIButtonBase_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIButtonBase_RegisterSubclassTypeInfo(const LNUIButtonBase_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIButtonBase_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::UIButton
+
+/**
+    @brief init.
+    @param[out] outUIButton : instance.
+*/
+LN_FLAT_API LNResult LNUIButton_Create(LNHandle* outUIButton);
+
+/**
+    @brief 表示文字列を指定して UIButton を作成します。
+    @param[out] outUIButton : instance.
+*/
+LN_FLAT_API LNResult LNUIButton_CreateWithText(const LNChar* text, LNHandle* outUIButton);
+LN_FLAT_API LNResult LNUIButton_CreateWithTextA(const char* text, LNHandle* outUIButton);
+
+/**
+    @brief Clicked イベントの通知を受け取るコールバックを登録します。
+    @param[in] uibutton : instance
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LNResult LNUIButton_ConnectOnClicked(LNHandle uibutton, LNHandle handler, LNHandle* outReturn);
+
+typedef LNResult(*LNUIButton_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIButton_OnSerialize_SetOverrideCallback(LNUIButton_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIButton_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uibutton : instance
+*/
+LN_FLAT_API LNResult LNUIButton_SetPrototype_OnSerialize(LNHandle uibutton, LNHandle callback);
+
+extern LN_FLAT_API int LNUIButton_GetTypeInfoId();
+LN_FLAT_API void LNUIButton_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIButton_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIButton_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIButton_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIButton_RegisterSubclassTypeInfo(const LNUIButton_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIButton_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::UIWindow
+
+/**
+    @brief init
+    @param[out] outUIWindow : instance.
+*/
+LN_FLAT_API LNResult LNUIWindow_Create(LNHandle* outUIWindow);
+
+typedef LNResult(*LNUIWindow_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIWindow_OnSerialize_SetOverrideCallback(LNUIWindow_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIWindow_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uiwindow : instance
+*/
+LN_FLAT_API LNResult LNUIWindow_SetPrototype_OnSerialize(LNHandle uiwindow, LNHandle callback);
+
+extern LN_FLAT_API int LNUIWindow_GetTypeInfoId();
+LN_FLAT_API void LNUIWindow_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIWindow_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIWindow_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIWindow_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIWindow_RegisterSubclassTypeInfo(const LNUIWindow_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIWindow_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::UIListItem
+
+typedef LNResult(*LNUIListItem_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIListItem_OnSerialize_SetOverrideCallback(LNUIListItem_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIListItem_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uilistitem : instance
+*/
+LN_FLAT_API LNResult LNUIListItem_SetPrototype_OnSerialize(LNHandle uilistitem, LNHandle callback);
+
+extern LN_FLAT_API int LNUIListItem_GetTypeInfoId();
+LN_FLAT_API void LNUIListItem_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIListItem_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIListItem_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIListItem_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIListItem_RegisterSubclassTypeInfo(const LNUIListItem_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIListItem_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::UIListItemsControl
+
+/**
+    @brief UIListSubmitMode (default: Single)
+    @param[in] uilistitemscontrol : instance
+*/
+LN_FLAT_API LNResult LNUIListItemsControl_SetSubmitMode(LNHandle uilistitemscontrol, LNUIListSubmitMode value);
+
+/**
+    @brief UIListSubmitMode
+    @param[in] uilistitemscontrol : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIListItemsControl_GetSubmitMode(LNHandle uilistitemscontrol, LNUIListSubmitMode* outReturn);
+
+typedef LNResult(*LNUIListItemsControl_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIListItemsControl_OnSerialize_SetOverrideCallback(LNUIListItemsControl_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIListItemsControl_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uilistitemscontrol : instance
+*/
+LN_FLAT_API LNResult LNUIListItemsControl_SetPrototype_OnSerialize(LNHandle uilistitemscontrol, LNHandle callback);
+
+extern LN_FLAT_API int LNUIListItemsControl_GetTypeInfoId();
+LN_FLAT_API void LNUIListItemsControl_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIListItemsControl_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIListItemsControl_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIListItemsControl_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIListItemsControl_RegisterSubclassTypeInfo(const LNUIListItemsControl_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIListItemsControl_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::UIListBoxItem
+
+typedef LNResult(*LNUIListBoxItem_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIListBoxItem_OnSerialize_SetOverrideCallback(LNUIListBoxItem_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIListBoxItem_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uilistboxitem : instance
+*/
+LN_FLAT_API LNResult LNUIListBoxItem_SetPrototype_OnSerialize(LNHandle uilistboxitem, LNHandle callback);
+
+extern LN_FLAT_API int LNUIListBoxItem_GetTypeInfoId();
+LN_FLAT_API void LNUIListBoxItem_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIListBoxItem_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIListBoxItem_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIListBoxItem_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIListBoxItem_RegisterSubclassTypeInfo(const LNUIListBoxItem_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIListBoxItem_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::UIListBox
+
+/**
+    @brief init
+    @param[out] outUIListBox : instance.
+*/
+LN_FLAT_API LNResult LNUIListBox_Create(LNHandle* outUIListBox);
+
+/**
+    @brief UIListBoxItem を追加し、そのインスタンスを返します。
+    @param[in] uilistbox : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIListBox_AddItem(LNHandle uilistbox, LNHandle content, LNHandle* outReturn);
+
+typedef LNResult(*LNUIListBox_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIListBox_OnSerialize_SetOverrideCallback(LNUIListBox_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIListBox_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uilistbox : instance
+*/
+LN_FLAT_API LNResult LNUIListBox_SetPrototype_OnSerialize(LNHandle uilistbox, LNHandle callback);
+
+extern LN_FLAT_API int LNUIListBox_GetTypeInfoId();
+LN_FLAT_API void LNUIListBox_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIListBox_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIListBox_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIListBox_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIListBox_RegisterSubclassTypeInfo(const LNUIListBox_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIListBox_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // ln::Input
 
 /**
     @brief ボタンが現在押されているかを判定します。
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LNResult LNInput_Pressed(const LNChar* buttonName, LNBool* outReturn);
-LN_FLAT_API LNResult LNInput_PressedA(const char* buttonName, LNBool* outReturn);
+LN_FLAT_API LNResult LNInput_IsPressed(const LNChar* buttonName, LNBool* outReturn);
+LN_FLAT_API LNResult LNInput_IsPressedA(const char* buttonName, LNBool* outReturn);
 
 /**
     @brief ボタンが新しく押された瞬間を判定します。
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LNResult LNInput_Triggered(const LNChar* buttonName, LNBool* outReturn);
-LN_FLAT_API LNResult LNInput_TriggeredA(const char* buttonName, LNBool* outReturn);
+LN_FLAT_API LNResult LNInput_IsTriggered(const LNChar* buttonName, LNBool* outReturn);
+LN_FLAT_API LNResult LNInput_IsTriggeredA(const char* buttonName, LNBool* outReturn);
 
 /**
     @brief ボタンが離された瞬間を判定します。
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LNResult LNInput_TriggeredOff(const LNChar* buttonName, LNBool* outReturn);
-LN_FLAT_API LNResult LNInput_TriggeredOffA(const char* buttonName, LNBool* outReturn);
+LN_FLAT_API LNResult LNInput_IsTriggeredOff(const LNChar* buttonName, LNBool* outReturn);
+LN_FLAT_API LNResult LNInput_IsTriggeredOffA(const char* buttonName, LNBool* outReturn);
 
 /**
     @brief ボタンが新しく押された瞬間とリピート状態を判定します。
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LNResult LNInput_Repeated(const LNChar* buttonName, LNBool* outReturn);
-LN_FLAT_API LNResult LNInput_RepeatedA(const char* buttonName, LNBool* outReturn);
+LN_FLAT_API LNResult LNInput_IsRepeated(const LNChar* buttonName, LNBool* outReturn);
+LN_FLAT_API LNResult LNInput_IsRepeatedA(const char* buttonName, LNBool* outReturn);
 
 /**
     @brief 指定した軸のアナログ値を取得します。
@@ -3903,6 +4247,12 @@ LN_FLAT_API LNResult LNEngineSettings_AddAssetArchiveA(const char* fileFullPath,
     @brief フレームレートを設定します。(default: 60)
 */
 LN_FLAT_API LNResult LNEngineSettings_SetFrameRate(int value);
+
+/**
+    @brief デフォルトの UI テーマ名を設定します。
+*/
+LN_FLAT_API LNResult LNEngineSettings_SetDefaultUITheme(const LNChar* value);
+LN_FLAT_API LNResult LNEngineSettings_SetDefaultUIThemeA(const char* value);
 
 /**
     @brief (default: Debug ビルドの場合true、それ以外は false)
@@ -5009,6 +5359,134 @@ typedef struct tagLNUISpriteSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNUISpriteSerializeHandler_RegisterSubclassTypeInfo(const LNUISpriteSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNUISpriteSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIControlSerializeHandler
+
+LN_FLAT_API LNResult LNUIControlSerializeHandler_Create(LNUIControlSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIControlSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIControlSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIControlSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIControlSerializeHandler_RegisterSubclassTypeInfo(const LNUIControlSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIControlSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIButtonBaseSerializeHandler
+
+LN_FLAT_API LNResult LNUIButtonBaseSerializeHandler_Create(LNUIButtonBaseSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIButtonBaseSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIButtonBaseSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIButtonBaseSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIButtonBaseSerializeHandler_RegisterSubclassTypeInfo(const LNUIButtonBaseSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIButtonBaseSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIButtonSerializeHandler
+
+LN_FLAT_API LNResult LNUIButtonSerializeHandler_Create(LNUIButtonSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIButtonSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIButtonSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIButtonSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIButtonSerializeHandler_RegisterSubclassTypeInfo(const LNUIButtonSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIButtonSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIWindowSerializeHandler
+
+LN_FLAT_API LNResult LNUIWindowSerializeHandler_Create(LNUIWindowSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIWindowSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIWindowSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIWindowSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIWindowSerializeHandler_RegisterSubclassTypeInfo(const LNUIWindowSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIWindowSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIListItemSerializeHandler
+
+LN_FLAT_API LNResult LNUIListItemSerializeHandler_Create(LNUIListItemSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIListItemSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIListItemSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIListItemSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIListItemSerializeHandler_RegisterSubclassTypeInfo(const LNUIListItemSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIListItemSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIListItemsControlSerializeHandler
+
+LN_FLAT_API LNResult LNUIListItemsControlSerializeHandler_Create(LNUIListItemsControlSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIListItemsControlSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIListItemsControlSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIListItemsControlSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIListItemsControlSerializeHandler_RegisterSubclassTypeInfo(const LNUIListItemsControlSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIListItemsControlSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIListBoxItemSerializeHandler
+
+LN_FLAT_API LNResult LNUIListBoxItemSerializeHandler_Create(LNUIListBoxItemSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIListBoxItemSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIListBoxItemSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIListBoxItemSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIListBoxItemSerializeHandler_RegisterSubclassTypeInfo(const LNUIListBoxItemSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIListBoxItemSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIListBoxSerializeHandler
+
+LN_FLAT_API LNResult LNUIListBoxSerializeHandler_Create(LNUIListBoxSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIListBoxSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIListBoxSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIListBoxSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIListBoxSerializeHandler_RegisterSubclassTypeInfo(const LNUIListBoxSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIListBoxSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // InterpreterCommandSerializeHandler

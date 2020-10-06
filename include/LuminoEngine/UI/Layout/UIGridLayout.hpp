@@ -29,9 +29,11 @@ B makeDecl(TArgs&&... args)
  * 行と列から構成されるグリッド状に UI 要素をレイアウトします。
  *
  */
+LN_CLASS()
 class UIGridLayout
     : public UILayoutPanel2
 {
+	LN_OBJECT;
 public:
 	class Builder : public UILayoutPanel2::Builder
 	{
