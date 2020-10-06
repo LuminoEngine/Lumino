@@ -19,19 +19,24 @@ class App_Sandbox_GridListBox : public Application
 
 		auto listbox1 = UIListBox::create();
 		listbox1->setItemsLayoutPanel(panel);
+		listbox1->setAlignments(HAlignment::Stretch, VAlignment::Stretch);
 		//listbox1->setSize(300, 400);
 		
 
 		{
 			auto icon = makeObject<UIIcon>();
 			icon->setIconName(u"file");
-			icon->setFontSize(30);
+			icon->setFontSize(40);
+			icon->setAlignments(HAlignment::Center, VAlignment::Top);
 
 			auto text = makeObject<UITextBlock>(u"Item1");
+			text->setAlignments(HAlignment::Center, VAlignment::Bottom);
 
 			auto item = makeObject<UIListBoxItem>();
 			item->addChild(icon);
 			item->addChild(text);
+			item->setPadding(20);
+			item->setMargin(10);
 			item->getGridLayoutInfo()->actualLayoutRow = 0;
 			item->getGridLayoutInfo()->actualLayoutColumn = 0;
 
@@ -48,9 +53,17 @@ class App_Sandbox_GridListBox : public Application
 		item4->getGridLayoutInfo()->actualLayoutRow = 1;
 		item4->getGridLayoutInfo()->actualLayoutColumn = 0;
 
+		auto text = makeObject<UITextBlock>(u"Inventory");
+		text->setAlignments(HAlignment::Left, VAlignment::Top);
+
+		auto layout = makeObject<UIBoxLayout3>();
+		layout->setOrientation(Orientation::Vertical);
+		layout->addChild(text);
+		layout->addChild(listbox1);
+
 		auto window = UIWindow::create();
 		window->setSize(400, 300);
-		window->addChild(listbox1);
+		window->addChild(layout);
 
 		UI::add(window);
     }

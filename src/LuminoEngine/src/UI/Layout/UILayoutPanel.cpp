@@ -693,12 +693,28 @@ UILayoutLengthType UIBoxLayout3::layoutType(int index) const
     }
 
     auto& info = child->m_gridLayoutInfo;
-    if (!info || info->layoutWeight < 0.0f)
-        return UILayoutLengthType::Ratio;	// default
-    if (info->layoutWeight == 0.0)
-        return UILayoutLengthType::Auto;
-    else
-        return UILayoutLengthType::Ratio;
+    if (!info) {
+        if (isHorizontal()) {
+            if (child->getLayoutHAlignment() == HAlignment::Stretch)
+                return UILayoutLengthType::Ratio;
+            else
+                return UILayoutLengthType::Auto;
+        }
+        else {
+            if (child->getLayoutVAlignment() == VAlignment::Stretch)
+                return UILayoutLengthType::Ratio;
+            else
+                return UILayoutLengthType::Auto;
+        }
+    }
+    else {
+        if (info->layoutWeight < 0.0f)
+            return UILayoutLengthType::Ratio;	// default
+        if (info->layoutWeight == 0.0)
+            return UILayoutLengthType::Auto;
+        else
+            return UILayoutLengthType::Ratio;
+    }
 }
 
 float UIBoxLayout3::layoutWeight(int index) const
