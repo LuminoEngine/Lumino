@@ -11,6 +11,7 @@
 
 #include "../Font/TextLayoutEngine.hpp"
 #include "../Font/FontManager.hpp"
+#include "UIStyleInstance.hpp"
 
 // TODO: Test
 #include <LuminoEngine/Graphics/Texture.hpp>

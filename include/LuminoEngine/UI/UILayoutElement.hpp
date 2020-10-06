@@ -440,7 +440,13 @@ public:
 	}
 
 	template<class TElement, class TUIElementList>
-	static Size UIFrameLayout_staticArrangeChildrenArea(UILayoutContext* layoutContext, TElement* ownerElement, const TUIElementList& elements, const Rect& finalArea)
+	static Size UIFrameLayout_staticArrangeChildrenArea(
+		UILayoutContext* layoutContext,
+		TElement* ownerElement,
+		HAlignment horizontalContentAlignment,
+		VAlignment verticalContentAlignment,
+		const TUIElementList& elements,
+		const Rect& finalArea)
 	{
 		for (int i = 0; i < elements->size(); i++)
 		{
@@ -448,7 +454,7 @@ public:
 			if (layoutContext->testLayoutEnabled(child)) {
 
 				Rect slotRect;
-				detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
+				detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), horizontalContentAlignment, verticalContentAlignment, &slotRect);
 
 				child->arrangeLayout(layoutContext, slotRect);
 			}

@@ -13,6 +13,7 @@
 #include <LuminoEngine/UI/UIElement.hpp>
 #include "../Font/TextLayoutEngine.hpp"	// for UILayoutContext
 #include "../Font/FontManager.hpp"	// for UILayoutContext
+#include "UIStyleInstance.hpp"
 
 namespace ln {
 

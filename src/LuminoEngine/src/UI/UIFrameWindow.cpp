@@ -10,9 +10,10 @@
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/UI/UIAdorner.hpp>
 #include <LuminoEngine/Engine/Debug.hpp>
-#include "UIManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Platform/PlatformManager.hpp"
+#include "UIStyleInstance.hpp"
+#include "UIManager.hpp"
 #include <imgui.h>
 
 #include "../Effect/EffectManager.hpp"  // TODO: tests

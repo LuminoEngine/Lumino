@@ -50,8 +50,12 @@ public:
 	LN_METHOD()
 	static void gotoLevel(Level* level, bool withEffect = true);
 
+	/** 現在のレベルを非アクティブ化し、指定したレベルへ遷移します。 */
+	LN_METHOD()
 	static void callLevel(Level* level, bool withEffect = true);
 
+	/** 現在のレベルを終了し、ひとつ前のレベルへ遷移します。 */
+	LN_METHOD()
 	static void returnLevel(bool withEffect = true);
 
 	/** 現在のアクティブなレベルを取得します。 */

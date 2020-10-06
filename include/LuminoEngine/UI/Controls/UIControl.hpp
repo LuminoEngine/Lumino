@@ -94,13 +94,16 @@ Leaf がベースでいいかな。これは普通の UIControl。
  * Visual States
  * ----------
  *
- * | Name           | Group          | Description    |
- * |----------------|----------------|----------------|
- * | Normal         | CommonGroup    | Default state. |
- * | MouseOver      | CommonGroup    | Mouse pointer is positioned over the control. |
- * | Disabled       | CommonGroup    | Control is disabled. |
- * | Focused        | FocusGroup     | Control has focus. |
- * | Unfocused      | FocusGroup     | Control does not have focus. |
+ * | Name           | Group           | Description    |
+ * |----------------|-----------------|----------------|
+ * | Normal         | CommonGroup     | Default state. |
+ * | MouseOver      | CommonGroup     | Mouse pointer is positioned over the control. |
+ * | Disabled       | CommonGroup     | Control is disabled. |
+ * | Focused        | FocusGroup      | Control has focus. |
+ * | Unfocused      | FocusGroup      | Control does not have focus. |
+ * | Visible        | VisibilityGroup | Control is visible. |
+ * | Hidden         | VisibilityGroup | Control is hidden. |
+ * | Collapsed      | VisibilityGroup | Control is collapsed. |
  *
  */
 LN_CLASS()

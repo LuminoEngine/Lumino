@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
+#include "../UIStyleInstance.hpp"
 
 namespace ln {
 

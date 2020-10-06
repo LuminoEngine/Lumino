@@ -13,6 +13,7 @@
 #include <LuminoEngine/UI/UIActiveTimer.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UITextBlock.hpp>
+#include "UIStyleInstance.hpp"
 #include "UIEventArgsPool.hpp"
 #include "UIManager.hpp"
 

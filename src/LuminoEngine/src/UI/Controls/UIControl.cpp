@@ -5,6 +5,7 @@
 #include <LuminoEngine/UI/Controls/UIControl.hpp>
 #include <LuminoEngine/UI/UIActiveTimer.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
+#include "../UIStyleInstance.hpp"
 #include "../UIManager.hpp"
 
 namespace ln {
@@ -32,8 +33,12 @@ bool UIControl::init(const UICreationContext* context)
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Disabled);
     vsm->registerState(UIVisualStates::FocusStates, UIVisualStates::Focused);
     vsm->registerState(UIVisualStates::FocusStates, UIVisualStates::Unfocused);
+    vsm->registerState(UIVisualStates::Visibility, UIVisualStates::Visible);
+    vsm->registerState(UIVisualStates::Visibility, UIVisualStates::Hidden);
+    vsm->registerState(UIVisualStates::Visibility, UIVisualStates::Collapsed);
     vsm->gotoState(UIVisualStates::Normal);
     vsm->gotoState(UIVisualStates::Unfocused);
+    vsm->gotoState(UIVisualStates::Visible);
 
     return true;
 }
@@ -316,7 +321,11 @@ Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& fina
         Rect contentArea;
         m_aligned3x3GridLayoutArea->arrange(layoutContext, m_inlineElements, clientArea, &contentArea);
         // 論理子要素を arrange
-		detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(layoutContext, this, m_logicalChildren, contentArea);
+		detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(
+            layoutContext, this,
+            m_finalStyle->horizontalContentAlignment,
+            m_finalStyle->verticalContentAlignment,
+            m_logicalChildren, contentArea);
         //UIFrameLayout2::staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
 
         return finalArea.getSize();

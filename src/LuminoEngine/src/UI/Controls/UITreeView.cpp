@@ -6,6 +6,7 @@
 #include <LuminoEngine/UI/UITextBlock.hpp>
 #include <LuminoEngine/UI/Controls/UIScrollView.hpp>
 #include <LuminoEngine/UI/Controls/UITreeView.hpp>
+#include "../UIStyleInstance.hpp"
 
 namespace ln {
 
@@ -583,7 +584,11 @@ Size UITreeItem2::arrangeOverride(UILayoutContext* layoutContext, const Rect& fi
             Rect contentArea;
             m_aligned3x3GridLayoutArea->arrange(layoutContext, m_inlineElements, clientArea, &contentArea);
             // 論理子要素を arrange
-            detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(layoutContext, this, m_logicalChildren, contentArea);
+            detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(
+                layoutContext, this,
+                m_finalStyle->horizontalContentAlignment,
+                m_finalStyle->verticalContentAlignment,
+                m_logicalChildren, contentArea);
             //UIFrameLayout2::staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
 
         }

@@ -6,6 +6,7 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIIcon.hpp>
+#include "UIStyleInstance.hpp"
 
 namespace ln {
 

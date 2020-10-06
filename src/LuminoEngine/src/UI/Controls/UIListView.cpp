@@ -4,6 +4,7 @@
 #include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UITextBlock.hpp>
 #include <LuminoEngine/UI/Controls/UIListView.hpp>
+#include "../UIStyleInstance.hpp"
 
 namespace ln {
 

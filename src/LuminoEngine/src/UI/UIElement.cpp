@@ -14,6 +14,7 @@
 #include <LuminoEngine/UI/Controls/UIControl.hpp>
 #include <LuminoEngine/UI/UITextBlock.hpp>
 #include "../Rendering/RenderStage.hpp"
+#include "UIStyleInstance.hpp"
 #include "UIManager.hpp"
 
 namespace ln {
@@ -986,15 +987,16 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 		context->setBaseTransfrom(combinedTransform);
 	}
 	detail::BuiltinEffectData data;
-	data.opacity = opacity();
-	data.colorScale = colorScale();
-	data.blendColor = blendColor();
-	data.tone = tone();
-    //if (!enabled()) {
-    //    // Grayscale
-    //    data.tone.s = 1.0f;
-    //}
+    data.opacity = m_finalStyle->opacity;//opacity();
+    data.colorScale = m_finalStyle->colorScale;//colorScale();
+    data.blendColor = m_finalStyle->blendColor;//blendColor();
+    data.tone = m_finalStyle->tone; //tone();
+    if (!enabled()) {
+        // Grayscale
+        data.tone.s = 1.0f;
+    }
 	context->setBaseBuiltinEffectData(data);
+    //context->setBaseBuiltinEffectData(m_finalStyle->builtinEffect);
 	context->setBlendMode(blendMode());
 	context->setRenderPriority(m_renderPriority);
 
