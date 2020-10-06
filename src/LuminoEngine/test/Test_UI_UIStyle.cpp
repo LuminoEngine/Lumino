@@ -19,8 +19,8 @@ protected:
 TEST_F(Test_UI_UIStyle, Background)
 {
 	auto element1 = makeObject<Test_UI_UIStyle_Element>();
-	element1->setHAlignment(HAlignment::Center);
-	element1->setVAlignment(VAlignment::Center);
+	element1->setHAlignment(UIHAlignment::Center);
+	element1->setVAlignment(UIVAlignment::Center);
 	element1->setWidth(80);
 	element1->setHeight(60);
 	Engine::mainUIView()->addElement(element1);
@@ -36,7 +36,7 @@ TEST_F(Test_UI_UIStyle, Background)
 TEST_F(Test_UI_UIStyle, BackgroundImage)
 {
 	auto element1 = makeObject<UIElement>();
-	element1->setAlignments(HAlignment::Center, VAlignment::Center);
+	element1->setAlignments(UIHAlignment::Center, UIVAlignment::Center);
 	element1->setSize(80, 60);
 	Engine::ui()->addElement(element1);
 
@@ -84,8 +84,8 @@ TEST_F(Test_UI_UIStyle, BackgroundImage)
 TEST_F(Test_UI_UIStyle, Border)
 {
 	auto element1 = makeObject<Test_UI_UIStyle_Element>();
-	element1->setHAlignment(HAlignment::Center);
-	element1->setVAlignment(VAlignment::Center);
+	element1->setHAlignment(UIHAlignment::Center);
+	element1->setVAlignment(UIVAlignment::Center);
 	element1->setWidth(80);
 	element1->setHeight(60);
 	Engine::mainUIView()->addElement(element1);
@@ -137,8 +137,8 @@ TEST_F(Test_UI_UIStyle, BoxShadow)
 	t = { 10 };
 
 	//auto element1 = makeObject<Test_UI_UIStyle_Element>();
-	//element1->setHAlignment(HAlignment::Center);
-	//element1->setVAlignment(VAlignment::Center);
+	//element1->setHAlignment(UIHAlignment::Center);
+	//element1->setVAlignment(UIVAlignment::Center);
 	//element1->setWidth(80);
 	//element1->setHeight(60);
 	//Engine::mainUIView()->addElement(element1);

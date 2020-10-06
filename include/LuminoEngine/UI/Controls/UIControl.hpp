@@ -3,7 +3,6 @@
 #include "../UIElement.hpp"
 
 namespace ln {
-class UILayoutPanel;
 class UIActiveTimer;
 class UIFrameLayout2;
 
@@ -125,16 +124,16 @@ public:
 
 
     /** コンテンツの横方向の配置方法を設定します。 */
-    void setHorizontalContentAlignment(HAlignment value);
+    void setHorizontalContentAlignment(UIHAlignment value);
 
     /** コンテンツの横方向の配置方法を取得します。 */
-    HAlignment horizontalContentAlignment() const;
+    UIHAlignment horizontalContentAlignment() const;
 
     /** コンテンツの縦方向の配置方法を設定します。 */
-    void setVerticalContentAlignment(VAlignment value);
+    void setVerticalContentAlignment(UIVAlignment value);
 
     /** コンテンツの縦方向の配置方法を取得します。 */
-    VAlignment verticalContentAlignment() const;
+    UIVAlignment verticalContentAlignment() const;
 
 
 	void addElement(UIElement* element);
@@ -145,15 +144,6 @@ public:
     // 要素の外側に張り付くものに利用する。
     // アイコンボタンを作るとき、外側ではなく文字側に張り付くようなものは、addContent で、Icon と TextBlock を並べた BoxLayout を追加する。
     void addInlineVisual(UIElement* element, UIInlineLayout layout);
-
-	///**
-	//	子要素をレイアウトするための UILayoutPanel を設定します。
-
-	//	デフォルトは nullptr です。
-	//*/
-	//void setLayoutPanel(UILayoutPanel* panel);
-
-	//UILayoutPanel* layoutPanel() const;
 
 	const Ref<Collection<Ref<UIElement>>>& logicalChildren() const { return m_logicalChildren; }
 
@@ -192,8 +182,6 @@ protected:
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
-    virtual void onLayoutPanelChanged(UILayoutPanel* newPanel);
-
     bool m_enabledDirectChildrenContentAlignment;
 
     //List<Ref<UIElement>> m_logicalChildren;
@@ -209,8 +197,6 @@ private:
 	List<Ref<UIActiveTimer>> m_activeTimers;
     Ref<List<Ref<UIAction>>> m_actions;
     Ref<Variant> m_data;
-    //Ref<UILayoutPanel> m_layout;
-	//Size m_layoutDesiredSize;	// Layout is state-less
 
     Event<UIEventHandler> m_onActivated;
     Event<UIEventHandler> m_onDeactivated;

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "../Common.hpp"
 #include "../UIItemsElement.hpp"
 
 namespace ln {
@@ -34,7 +35,7 @@ public:
 
 	/** Submit イベントの通知を受け取るコールバックを登録します。*/
 	//LN_METHOD(Event)
-	Ref<EventConnection> connectOnSubmit(Ref<UIEventHandler> handler);
+	Ref<EventConnection> connectOnSubmit(Ref<UIGeneralEventHandler> handler);
 
 
 protected:
@@ -53,7 +54,7 @@ private:
 	void setSelectedInternal(bool selected);
 
 	UIListItemsControl* m_ownerListControl;
-	Event<UIEventHandler> m_onSubmit;
+	Event<UIGeneralEventHandler> m_onSubmit;
 	bool m_isSelected;
 
 	friend class UIListItemsControl;
@@ -76,8 +77,10 @@ class UIListItemsControl
 public:
 	void selectItem(UIListItem* item);
 	UIListItem* selectedItem() const;
-	void setItemsLayoutPanel(UILayoutPanel2* layout);
 
+	/** setItemsLayoutPanel */
+	LN_METHOD(Property)
+	void setItemsLayoutPanel(UILayoutPanel* layout);
 	
     /** UIListSubmitMode (default: Single) */
 	LN_METHOD(Property)
@@ -105,7 +108,7 @@ private:
 	void notifyItemClicked(UIListItem* item, int clickCount);
 	void selectItemExclusive(UIListItem* item);
 
-	Ref<UILayoutPanel2> m_itemsHostLayout;
+	Ref<UILayoutPanel> m_itemsHostLayout;
 	List<UIListItem*> m_selectedItems;
 	UIListSelectionMoveMode m_selectionMoveMode;
 	UIListSubmitMode m_submitMode;

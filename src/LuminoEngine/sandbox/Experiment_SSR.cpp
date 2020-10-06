@@ -31,7 +31,7 @@ class App_Experiment_SSR : public Application
 
         m_sprite = Sprite::create(Texture2D::whiteTexture());
         m_sprite->setBlendMode(BlendMode::Normal);
-        //m_sprite->setAlignments(HAlignment::Left, VAlignment::Top);
+        //m_sprite->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 
         auto groundMaterial = Material::create(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-albedo.jpg"));
         groundMaterial->setRoughnessMap(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-roughness.jpg"));

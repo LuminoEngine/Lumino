@@ -13,7 +13,7 @@ NewProjectDialog::NewProjectDialog()
 	setHeight(200);
 	setBackgroundColor(ln::Color::White);
 
-	auto layout = ln::makeObject<ln::UIBoxLayout3>();
+	auto layout = ln::makeObject<ln::UIBoxLayout>();
 	layout->addChild(ln::UITextBlock::create(u"Project name:"));
 
 	m_projectName = ln::makeObject<ln::UITextField>();

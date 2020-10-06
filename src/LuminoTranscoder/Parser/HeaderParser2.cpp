@@ -404,6 +404,11 @@ public:
 								LN_NOTIMPLEMENTED();
 							}
 						}
+						else if (expr->getStmtClass() == Stmt::StmtClass::IntegerLiteralClass) {
+							auto literal = static_cast<IntegerLiteral*>(expr);
+							auto value = literal->getValue();
+							paramInfo->defaultValue = ln::makeVariant(static_cast<int>(value.getSExtValue()));
+						}
 						else if (expr->getStmtClass() == Stmt::StmtClass::FloatingLiteralClass) {
 							auto literal = static_cast<FloatingLiteral*>(expr);
 							auto value = literal->getValue();

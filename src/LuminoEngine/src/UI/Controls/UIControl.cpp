@@ -49,22 +49,22 @@ void UIControl::onDispose(bool explicitDisposing)
 	UIElement::onDispose(explicitDisposing);
 }
 
-void UIControl::setHorizontalContentAlignment(HAlignment value)
+void UIControl::setHorizontalContentAlignment(UIHAlignment value)
 {
     m_localStyle->mainStyle()->horizontalContentAlignment = value;
 }
 
-HAlignment UIControl::horizontalContentAlignment() const
+UIHAlignment UIControl::horizontalContentAlignment() const
 {
     return m_localStyle->mainStyle()->horizontalContentAlignment;
 }
 
-void UIControl::setVerticalContentAlignment(VAlignment value)
+void UIControl::setVerticalContentAlignment(UIVAlignment value)
 {
     m_localStyle->mainStyle()->verticalContentAlignment = value;
 }
 
-VAlignment UIControl::verticalContentAlignment() const
+UIVAlignment UIControl::verticalContentAlignment() const
 {
     return m_localStyle->mainStyle()->verticalContentAlignment;
 }
@@ -131,55 +131,6 @@ void UIControl::addInlineVisual(UIElement* element, UIInlineLayout layout)
         m_aligned3x3GridLayoutArea = makeObject<detail::UIAligned3x3GridLayoutArea>();
     }
 }
-
-//void UIControl::setLayoutPanel(UILayoutPanel* panel)
-//{
-//	if (m_layout != panel) {
-//		m_layout = panel;
-//		if (!m_layout) {
-//			m_layout = makeObject<UIFrameLayout>();
-//		}
-//		onLayoutPanelChanged(m_layout);
-//		//setLogicalChildrenHost(panel);
-//	}
-//}
-//
-//UILayoutPanel* UIControl::layoutPanel() const
-//{
-//	//if (m_layout)
-//		return m_layout;
-//	//else
-//	//	return m_manager->defaultLayout();
-//}
-//
-//UILayoutPanel* UIControl::layoutPanel() const
-//{
-//    return m_layout;
-//    //LN_UNREACHABLE();
-//    //return nullptr;//m_logicalChildrenHost;
-//}
-
-//int UIControl::getVisualChildrenCount() const
-//{
-//	//if (m_logicalChildrenHost) {
-//	//	return 1;
-//	//}
-//	//else {
-//		return m_logicalChildren.size();
-//	//}
-//}
-//
-//UIElement* UIControl::getVisualChild(int index) const
-//{
-//	//if (m_logicalChildrenHost) {
-//	//	return m_logicalChildrenHost;
-//	//}
-//	//else {
-//		return m_logicalChildren[index];
-//	//}
-//}
-//
-
 
 void UIControl::registerActiveTimer(UIActiveTimer* timer)
 {
@@ -282,7 +233,7 @@ Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& cons
         //   } list;
         //   list.list = &m_logicalChildren;
 
-           //UILayoutPanel* layout = layoutPanel();
+           //UILayoutPanel2_Deprecated* layout = layoutPanel();
            //layout->measureLayout(&list, constraint);
         //   Size desiredSize = layout->desiredSize();
         //   Size localSize = UIElement::measureOverride(constraint);
@@ -336,10 +287,6 @@ Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& fina
     else {
         return UIElement::arrangeOverride(layoutContext, finalArea);
     }
-}
-
-void UIControl::onLayoutPanelChanged(UILayoutPanel* newPanel)
-{
 }
 
 // activateInternal と deactivateInternal は、以前は UIElement が持っていた。しかし、

@@ -174,7 +174,7 @@ public:
 			layout1->addChild(makeObject<UITextBlock>(u"Splitter"));
 
 			auto splitter1 = makeObject<UISplitter>();
-			splitter1->setOrientation(Orientation::Horizontal);
+			splitter1->setOrientation(UILayoutOrientation::Horizontal);
 
 			auto e1 = makeObject<UIElement>();
 			e1->setHeight(100);
@@ -203,8 +203,8 @@ public:
 
 			{
 				auto layout2 = makeObject<UIStackLayout>();
-				layout2->setOrientation(Orientation::Horizontal);
-				layout2->setHAlignment(HAlignment::Center);
+				layout2->setOrientation(UILayoutOrientation::Horizontal);
+				layout2->setHAlignment(UIHAlignment::Center);
 
 				auto icon1 = makeObject<UIIcon>();
 				icon1->setIconName(u"file");
@@ -230,8 +230,8 @@ public:
 
 			{
 				auto layout2 = makeObject<UIStackLayout>();
-				layout2->setOrientation(Orientation::Horizontal);
-				layout2->setHAlignment(HAlignment::Center);
+				layout2->setOrientation(UILayoutOrientation::Horizontal);
+				layout2->setHAlignment(UIHAlignment::Center);
 
 				layout2->addChild(UIIcon::loadFontIcon(u"align-justify", 20));
 				layout2->addChild(UIIcon::loadFontIcon(u"arrow-alt-circle-up", 20));
@@ -310,7 +310,7 @@ public:
 			layout1->addChild(makeObject<UITextBlock>(u"ComboBox"));
 
 			auto comboBox1 = makeObject<UIComboBox>();
-			comboBox1->setHAlignment(HAlignment::Left);
+			comboBox1->setHAlignment(UIHAlignment::Left);
 			comboBox1->addChild(u"CItem1");
 			comboBox1->addChild(u"CItem2");
 			layout1->addChild(comboBox1);

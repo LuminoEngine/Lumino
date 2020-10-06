@@ -9,8 +9,8 @@ namespace ln {
 //==============================================================================
 // UIGridLayout::Builder
 	
-LN_OBJECT_IMPLEMENT(UIGridLayout, UILayoutPanel2) {}
-LN_BUILDER_IMPLEMENT(UIGridLayout, UILayoutPanel2);
+LN_OBJECT_IMPLEMENT(UIGridLayout, UILayoutPanel) {}
+LN_BUILDER_IMPLEMENT(UIGridLayout, UILayoutPanel);
 
 //UIGridLayout::Builder::Builder() : Builder(makeRef<Details>()) {}
 //	UIGridLayout::Builder::Builder(Details* d) : base::Builder(d) {}
@@ -109,10 +109,11 @@ UIGridLayout::UIGridLayout()
 {
 }
 
-void UIGridLayout::init()
+bool UIGridLayout::init()
 {
-	UILayoutPanel2::init();
+	if (!UILayoutPanel::init()) return false;
 	m_nextCellIndex = 0;
+	return true;
 }
 
 void UIGridLayout::setRule(UILayoutRule value)
@@ -125,6 +126,27 @@ void UIGridLayout::setColumnCount(int value)
 	m_columnCount = value;
 }
 
+void UIGridLayout::setRow(UIElement* element, int row)
+{
+	auto* info = element->getGridLayoutInfo();
+	info->actualLayoutRow = row;
+}
+
+void UIGridLayout::setColumn(UIElement* element, int column)
+{
+	auto* info = element->getGridLayoutInfo();
+	info->actualLayoutColumn = column;
+}
+
+void UIGridLayout::setPlacement(UIElement* element, int row, int column, int rowSpan, int columnSpan)
+{
+	auto* info = element->getGridLayoutInfo();
+	info->actualLayoutRow = row;
+	info->actualLayoutColumn = column;
+	info->layoutRowSpan = rowSpan;
+	info->layoutColumnSpan = columnSpan;
+}
+
 void UIGridLayout::onAddChild(UIElement* child)
 {
 	//int childCount = getVisualChildrenCount();
@@ -132,7 +154,7 @@ void UIGridLayout::onAddChild(UIElement* child)
 	//info->actualLayoutRow = childCount / actualColumnCount();
 	//info->actualLayoutColumn = childCount % actualColumnCount();
 
-	UILayoutPanel2::onAddChild(child);
+	UILayoutPanel::onAddChild(child);
 
 	auto* info = child->getGridLayoutInfo();
 	info->actualLayoutRow = m_nextCellIndex / actualColumnCount();
@@ -192,7 +214,7 @@ Size UIGridLayout::measureOverride(UILayoutContext* layoutContext, const Size& c
 		cellsDesiredSize.width += col.getAvailableDesiredSize();
 	}
 
-	Size desiredSize = UILayoutPanel2::measureOverride(layoutContext, constraint);
+	Size desiredSize = UILayoutPanel::measureOverride(layoutContext, constraint);
 	return Size::max(desiredSize, cellsDesiredSize);
 }
 

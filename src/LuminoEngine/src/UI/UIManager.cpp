@@ -523,10 +523,10 @@ void UIManager::setupDefaultStyle()
                 s->minHeight = theme->lineContentHeight();
                 s->margin = Thickness(8);   // TODO: spacing?
                 s->padding = theme->spacing(1);
-                s->hAlignment = HAlignment::Center;
-                s->vAlignment = VAlignment::Center;
-                s->horizontalContentAlignment = HAlignment::Center;
-                s->verticalContentAlignment = VAlignment::Center;
+                s->hAlignment = UIHAlignment::Center;
+                s->vAlignment = UIVAlignment::Center;
+                s->horizontalContentAlignment = UIHAlignment::Center;
+                s->verticalContentAlignment = UIVAlignment::Center;
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 3);
                 s->cornerRadius = CornerRadius(4);
                 s->shadowBlurRadius = 4;
@@ -584,8 +584,8 @@ void UIManager::setupDefaultStyle()
                 s->margin = Thickness(2);
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
                 s->cornerRadius = CornerRadius(4);
-                s->hAlignment = HAlignment::Stretch;
-                s->vAlignment = VAlignment::Stretch;
+                s->hAlignment = UIHAlignment::Stretch;
+                s->vAlignment = UIVAlignment::Stretch;
 
                 s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
                 e->mainStyleClass()->addStateStyle(u"UITrack-Thumb", s);
@@ -607,8 +607,8 @@ void UIManager::setupDefaultStyle()
                 s->cornerRadius = CornerRadius(0);
                 s->shadowBlurRadius = 0;
                 s->shadowOffsetY = 0;
-                s->hAlignment = HAlignment::Stretch;
-                s->vAlignment = VAlignment::Stretch;
+                s->hAlignment = UIHAlignment::Stretch;
+                s->vAlignment = UIVAlignment::Stretch;
             }
             if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton:MouseOver")) {	// ベース要素である UIButton の VisualState を全て上書きする必要がある。CSS と同じ動作。
                 s->backgroundColor = Color::Transparency;
@@ -621,8 +621,8 @@ void UIManager::setupDefaultStyle()
                 s->cornerRadius = CornerRadius(0);
                 s->shadowBlurRadius = 0;
                 s->shadowOffsetY = 0;
-                s->hAlignment = HAlignment::Stretch;
-                s->vAlignment = VAlignment::Stretch;
+                s->hAlignment = UIHAlignment::Stretch;
+                s->vAlignment = UIVAlignment::Stretch;
             }
             if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:MouseOver")) {
                 s->backgroundColor = Color::Transparency;
@@ -672,12 +672,12 @@ void UIManager::setupDefaultStyle()
                 s->setBorderColor(Color::Gray);
                 s->borderThickness = 1;
                 s->padding = theme->spacing(1);
-                s->hAlignment = HAlignment::Center;
-                s->vAlignment = VAlignment::Center;
+                s->hAlignment = UIHAlignment::Center;
+                s->vAlignment = UIVAlignment::Center;
 
                 auto icon = makeObject<UIStyleDecorator>();
                 icon->setIconName(u"angle-down", 15);
-                icon->m_hAlignment = HAlignment::Right;
+                icon->m_hAlignment = UIHAlignment::Right;
                 icon->m_margin = Thickness(0, 0, theme->spacing(1), 0);
                 icon->m_color = Color::Gray;
                 s->decorators.add(icon);
@@ -700,16 +700,16 @@ void UIManager::setupDefaultStyle()
         {
             if (auto s = sheet->obtainStyle(u"UITreeItem")) {
                 s->minHeight = 30;
-                s->hAlignment = HAlignment::Stretch;
-                s->vAlignment = VAlignment::Top;
+                s->hAlignment = UIHAlignment::Stretch;
+                s->vAlignment = UIVAlignment::Top;
                 //s->borderThickness = 1;
                 //s->setBorderColor(Color::Gray);
             }
             if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander")) {   // VisualState によらず常に有効。個別にしたければ:Normalを付ける。
                 s->width = 16;
                 s->height = 16;
-                s->hAlignment = HAlignment::Center;
-                s->vAlignment = VAlignment::Center;
+                s->hAlignment = UIHAlignment::Center;
+                s->vAlignment = UIVAlignment::Center;
                 s->backgroundColor = Color::Transparency;
             }
             //if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:MouseOver")) {

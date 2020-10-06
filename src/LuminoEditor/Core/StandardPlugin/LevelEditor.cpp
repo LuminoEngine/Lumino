@@ -44,13 +44,13 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
     {
         auto t = ln::UITextBlock::create(u"test");
 		t->getGridLayoutInfo()->layoutWeight = 0;
-		//t->setVAlignment(ln::VAlignment::Center);
+		//t->setVAlignment(ln::UIVAlignment::Center);
         m_mainLayout->addChild(t);
     }
 
 
 	m_mainViewport = ln::makeObject<ln::UIViewport>();
-    //m_mainViewport->setVAlignment(ln::VAlignment::Stretch);
+    //m_mainViewport->setVAlignment(ln::UIVAlignment::Stretch);
 	m_mainViewport->getGridLayoutInfo()->layoutWeight = 1;
     m_mainLayout->addChild(m_mainViewport);
     //frame->addElement(m_mainViewport);

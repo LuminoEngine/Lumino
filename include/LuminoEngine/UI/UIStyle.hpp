@@ -102,8 +102,8 @@ public:	// TODO: internal
 	float m_width = std::numeric_limits<float>::quiet_NaN();
 	float m_height = std::numeric_limits<float>::quiet_NaN();
 	Thickness m_margin;
-	HAlignment m_hAlignment = HAlignment::Center;
-	VAlignment m_vAlignment = VAlignment::Center;
+	UIHAlignment m_hAlignment = UIHAlignment::Center;
+	UIVAlignment m_vAlignment = UIVAlignment::Center;
 
 	// TODO: image
 
@@ -132,8 +132,8 @@ public:
 	//// layout
 	//Thickness margin;
 	//Thickness padding;
-	//HAlignment hAlignment;
-	//VAlignment vAlignment;
+	//UIHAlignment hAlignment;
+	//UIVAlignment vAlignment;
 	//float minWidth;
 	//float minHeight;
 	//float maxWidth;
@@ -169,10 +169,10 @@ public:
     detail::UIStyleAttribute<float> height;
     detail::UIStyleAttribute<Thickness> margin;
     detail::UIStyleAttribute<Thickness> padding;
-	detail::UIStyleAttribute<HAlignment> hAlignment;
-	detail::UIStyleAttribute<VAlignment> vAlignment;
-    detail::UIStyleAttribute<HAlignment> horizontalContentAlignment;    // UILayoutPanel をどのように配置するか
-    detail::UIStyleAttribute<VAlignment> verticalContentAlignment;
+	detail::UIStyleAttribute<UIHAlignment> hAlignment;
+	detail::UIStyleAttribute<UIVAlignment> vAlignment;
+    detail::UIStyleAttribute<UIHAlignment> horizontalContentAlignment;    // UILayoutPanel2_Deprecated をどのように配置するか
+    detail::UIStyleAttribute<UIVAlignment> verticalContentAlignment;
 	detail::UIStyleAttribute<float> minWidth;
 	detail::UIStyleAttribute<float> minHeight;
 	detail::UIStyleAttribute<float> maxWidth;
@@ -184,10 +184,10 @@ public:
     static const float DefaultHeight;
 	static const Thickness DefaultMargin;
 	static const Thickness DefaultPadding;
-	static const HAlignment DefaultHorizontalAlignment;
-	static const VAlignment DefaultVerticalAlignment;
-	static const HAlignment DefaultHorizontalContentAlignment;
-	static const VAlignment DefaultVerticalContentAlignment;
+	static const UIHAlignment DefaultHorizontalAlignment;
+	static const UIVAlignment DefaultVerticalAlignment;
+	static const UIHAlignment DefaultHorizontalContentAlignment;
+	static const UIVAlignment DefaultVerticalContentAlignment;
 	static const float DefaultMinWidth;
 	static const float DefaultMinHeight;
 	static const float DefaultMaxWidth;

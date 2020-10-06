@@ -10,6 +10,7 @@ class UITheme;
 class UIStyleContext;
 class UICommand;
 class UIElement;
+class UILayoutPanel;
 class UIDomainProvidor;
 class UIViewport;
 class UIControl;
@@ -19,12 +20,20 @@ class UITextBlock;
 class UIPopup;
 
 /** コントロールのレイアウト方向を示します。*/
-enum class Orientation  // TODO: name LayoutOrientation
+LN_ENUM()
+enum class UILayoutOrientation
 {
-	Horizontal = 0,		/**< 水平方向に配置します。*/
-	Vertical,			/**< 垂直方向に配置します。*/
-	ReverseHorizontal,	/**< 水平方向（右から左）に配置します。*/
-	ReverseVertical,	/**< 垂直方向（下から上）に配置します。*/
+    /** 水平方向に配置します。*/
+	Horizontal,
+
+    /** 垂直方向に配置します。*/
+	Vertical,
+
+    /** 水平方向（右から左）に配置します。*/
+	ReverseHorizontal,
+
+    /** 垂直方向（下から上）に配置します。*/
+	ReverseVertical,
 };
 
 /** UI要素の表示状態を指定します。 */

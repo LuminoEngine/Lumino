@@ -485,6 +485,15 @@ private:
 */
 LN_DELEGATE()
 using UIGeneralEventHandler = Delegate<void(UIEventArgs* e)>;
+// TODO: ↑ deprecated. UIEventHandler と統合し、引数無しイベントハンドラをやめる。
+//
+// Note: C や HSP などラムダ使えない Binding ではキャプチャによって任意のデータを関連付けることができない。
+// そのため UIElement の data に Variant でデータを関連付けたいことが往々にしてあるのだが、
+// そのためには UIEventArgs を引数にとるハンドラが必須となる。
+// 従来、C++ での利便性のために引数無しハンドラを作っていたが、それだとカバーできない。
+// 一応↓のように auto 使うことでこのくらいまで簡略化はできるので、これでひとまず進めてみる。
+// element->connectOnSubmit([](auto x) { ... });
+//
 
 /**
  * Test delegate 1.

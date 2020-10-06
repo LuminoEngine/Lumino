@@ -31,11 +31,11 @@ B makeDecl(TArgs&&... args)
  */
 LN_CLASS()
 class UIGridLayout
-    : public UILayoutPanel2
+    : public UILayoutPanel
 {
 	LN_OBJECT;
 public:
-	class Builder : public UILayoutPanel2::Builder
+	class Builder : public UILayoutPanel::Builder
 	{
 	public:
 		LN_BUILDER(UIGridLayout);
@@ -79,7 +79,7 @@ public:
 		//}
 
 	protected:
-		class Details : public UILayoutPanel2::Builder::Details
+		class Details : public UILayoutPanel::Builder::Details
 		{
 		public:
 			int columnCount;
@@ -90,7 +90,22 @@ public:
 	};
 
 	void setRule(UILayoutRule value);
+
+	/** setColumnCount */
+	LN_METHOD()
 	void setColumnCount(int value);
+
+	/** setRow */
+	LN_METHOD()
+	static void setRow(UIElement* element, int row);
+
+	/** setColumn */
+	LN_METHOD()
+	static void setColumn(UIElement* element, int column);
+	
+	/** setPlacement */
+	LN_METHOD()
+	static void setPlacement(UIElement* element, int row, int column, int rowSpan = 1, int columnSpan = 1);
 
 protected:
 	virtual void onAddChild(UIElement* child) override;
@@ -99,7 +114,10 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
 	UIGridLayout();
-	void init();
+
+	/** init */
+	LN_METHOD()
+	bool init();
 
 private:
 	struct GridDefinitionData

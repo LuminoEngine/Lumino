@@ -111,7 +111,7 @@ void UIComboBox::init()
 	//m_layoutItemsHostLayoutEnabled = false;
 
 	auto itemsHost = makeObject<UIStackLayout>();
-	itemsHost->setOrientation(Orientation::Vertical);
+	itemsHost->setOrientation(UILayoutOrientation::Vertical);
 	m_itemsHost = itemsHost;
 	//setItemsLayoutPanel(m_itemsHost, false);
 

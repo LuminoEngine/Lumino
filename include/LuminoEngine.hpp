@@ -107,6 +107,7 @@
 #include "LuminoEngine/UI/UIViewport.hpp"
 #include "LuminoEngine/UI/UISprite.hpp"
 #include "LuminoEngine/UI/UITextBlock.hpp"
+#include "LuminoEngine/UI/UIIcon.hpp"
 #include "LuminoEngine/UI/Layout/UILayoutPanel.hpp"
 #include "LuminoEngine/UI/Layout/UIGridLayout.hpp"
 #include "LuminoEngine/UI/Controls/UIWindow.hpp"

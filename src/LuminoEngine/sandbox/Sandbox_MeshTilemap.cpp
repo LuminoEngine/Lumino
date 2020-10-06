@@ -105,7 +105,7 @@ class Sandbox_MeshTilemap_App : public Application
 
 
 		//auto sp1 = UISprite::create(Texture2D::load(u"autotile2"));
-		//sp1->setAlignments(HAlignment::Left, VAlignment::Top);
+		//sp1->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 
 
 #if TEST_DTL

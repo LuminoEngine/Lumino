@@ -33,14 +33,14 @@ bool UIListItem::init()
 	return true;
 }
 
-Ref<EventConnection> UIListItem::connectOnSubmit(Ref<UIEventHandler> handler)
+Ref<EventConnection> UIListItem::connectOnSubmit(Ref<UIGeneralEventHandler> handler)
 {
 	return m_onSubmit.connect(handler);
 }
 
 void UIListItem::onSubmit()
 {
-	m_onSubmit.raise();
+	m_onSubmit.raise(UIEventArgs::create(this, UIEvents::Submitted));
 }
 
 void UIListItem::onSelected(UIEventArgs* e)
@@ -117,7 +117,7 @@ bool UIListItemsControl::init()
 
 	// TODO: 負荷軽減のため、デフォルトでは作成しない。その場合、StackLayout としてレイアウトする
 	auto layout = makeObject<UIStackLayout>();
-	layout->setOrientation(Orientation::Vertical);
+	layout->setOrientation(UILayoutOrientation::Vertical);
 	setItemsLayoutPanel(layout);
 
 	return true;
@@ -135,7 +135,7 @@ UIListItem* UIListItemsControl::selectedItem() const
 	return m_selectedItems.front();
 }
 
-void UIListItemsControl::setItemsLayoutPanel(UILayoutPanel2* layout)
+void UIListItemsControl::setItemsLayoutPanel(UILayoutPanel* layout)
 {
 	if (LN_REQUIRE(layout)) return;
 

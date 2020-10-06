@@ -34,7 +34,7 @@ void UISprite::init()
 {
     UIElement::init();
 
-	setAlignments(HAlignment::Center, VAlignment::Center);
+	setAlignments(UIHAlignment::Center, UIVAlignment::Center);
     m_material = makeObject<Material>();
     m_size = Size(-1, -1);
     m_sourceRect = Rect(0, 0, -1, -1);

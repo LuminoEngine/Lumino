@@ -744,8 +744,8 @@ int main(int argc, char** argv)
 		//text1->setText(u"Hello, Lumino!");
 		text2->setText(u"Hello");
 		text2->setPosition(0, 50, 0);
-		text2->setHAlignment(HAlignment::Center);
-		text2->setVAlignment(VAlignment::Center);
+		text2->setHAlignment(UIHAlignment::Center);
+		text2->setVAlignment(UIVAlignment::Center);
 		text2->setFontSize(20);
 		text2->setTextColor(Color::DimGray);
 		//Engine::mainUIView()->addElement(text2);

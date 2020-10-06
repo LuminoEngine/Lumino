@@ -43,7 +43,7 @@ void UITreeItem::init()
 
     //auto layout = makeObject<UIStackLayout_Obsolete>();
     auto layout = makeObject<UIStackLayout>();
-    layout->setOrientation(Orientation::Vertical);
+    layout->setOrientation(UILayoutOrientation::Vertical);
     m_itemsLayout = layout;
     addVisualChild(m_itemsLayout);
 }
@@ -235,11 +235,11 @@ void UITreeView::init()
     UIItemsControl::init();
 
     auto layout = makeObject<UIStackLayout>();
-    layout->setOrientation(Orientation::Vertical);
+    layout->setOrientation(UILayoutOrientation::Vertical);
     setItemsLayoutPanel(layout);
 
-    setHorizontalContentAlignment(HAlignment::Left);
-    setVerticalContentAlignment(VAlignment::Center);
+    setHorizontalContentAlignment(UIHAlignment::Left);
+    setVerticalContentAlignment(UIVAlignment::Center);
 }
 
 //void UITreeView::setModel(UICollectionViewModel* model)
@@ -744,7 +744,7 @@ bool UITreeView2::init()
     if (!UIControl::init()) return false;
 
     auto layout = makeObject<UIStackLayout>();
-    layout->setOrientation(Orientation::Vertical);
+    layout->setOrientation(UILayoutOrientation::Vertical);
     addVisualChild(layout);
     m_itemsHostLayout = layout;
 

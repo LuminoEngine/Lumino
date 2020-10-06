@@ -23,8 +23,8 @@ void UIDialog::init()
     specialElementFlags().set(detail::UISpecialElementFlags::Popup);
 
     // UIAdorner で左上を PlacementTarget と合わせてもらう
-    setHAlignment(HAlignment::Left);
-    setVAlignment(VAlignment::Top);
+    setHAlignment(UIHAlignment::Left);
+    setVAlignment(UIVAlignment::Top);
 }
 
 void UIDialog::open()
@@ -89,8 +89,8 @@ void UIDialog::setupDialogButtons(UIDialogButtons buttons)
 void UIDialog::addDialogButton(UIDialogButtonRole role, const String& text)
 {
 	if (!m_dialogButtonsLayout) {
-		m_dialogButtonsLayout = ln::makeObject<UIBoxLayout3>();
-		m_dialogButtonsLayout->setOrientation(Orientation::Horizontal);
+		m_dialogButtonsLayout = ln::makeObject<UIBoxLayout>();
+		m_dialogButtonsLayout->setOrientation(UILayoutOrientation::Horizontal);
 		addVisualChild(m_dialogButtonsLayout);
 	}
 

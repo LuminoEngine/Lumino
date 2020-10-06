@@ -95,14 +95,14 @@ void UILayoutElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& 
 	const Size& areaSize = localSlotRect.getSize();
 
 #if 1
-	HAlignment		hAlign = getLayoutHAlignment();
-	VAlignment		vAlign = getLayoutVAlignment();
+	UIHAlignment		hAlign = getLayoutHAlignment();
+	UIVAlignment		vAlign = getLayoutVAlignment();
 #else
 	UILayoutElement* parent = GetLayoutParent();
-	HAlignment		hAlign = GetLayoutHAlignment();
-	VAlignment		vAlign = GetLayoutVAlignment();
-	const HAlignment* parentHAlign = (parent != nullptr) ? parent->GetLayoutContentHAlignment() : nullptr;
-	const VAlignment* parentVAlign = (parent != nullptr) ? parent->GetLayoutContentVAlignment() : nullptr;
+	UIHAlignment		hAlign = GetLayoutHAlignment();
+	UIVAlignment		vAlign = GetLayoutVAlignment();
+	const UIHAlignment* parentHAlign = (parent != nullptr) ? parent->GetLayoutContentHAlignment() : nullptr;
+	const UIVAlignment* parentVAlign = (parent != nullptr) ? parent->GetLayoutContentVAlignment() : nullptr;
 	if (parentHAlign != nullptr) hAlign = *parentHAlign;
 	if (parentVAlign != nullptr) vAlign = *parentVAlign;
 #endif
@@ -255,12 +255,12 @@ const Thickness& UILayoutElement::getLayoutPadding() const
 	return m_finalStyle->padding;
 }
 
-HAlignment UILayoutElement::getLayoutHAlignment() const
+UIHAlignment UILayoutElement::getLayoutHAlignment() const
 {
 	return m_finalStyle->hAlignment;
 }
 
-VAlignment UILayoutElement::getLayoutVAlignment() const
+UIVAlignment UILayoutElement::getLayoutVAlignment() const
 {
 	return m_finalStyle->vAlignment;
 }

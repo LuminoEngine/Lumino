@@ -119,14 +119,20 @@ public:
 
 
 
-class UILayoutPanel2
+
+/**
+ * UILayoutPanel
+ */
+LN_CLASS()
+class UILayoutPanel
     : public UIElement
     , public IScrollInfo
 {
+    LN_OBJECT;
 public:
 	class Builder : public UIElement::Builder
 	{
-		LN_BUILDER(UILayoutPanel2);
+		LN_BUILDER(UILayoutPanel);
 	public:
 		Builder& children(std::initializer_list<UIElement::Builder> list);
 
@@ -139,8 +145,8 @@ public:
 		};
 	};
 
-    UILayoutPanel2();
-    void init();
+    UILayoutPanel();
+    bool init();
 
     void removeChild(UIElement* child);
     void removeAllChildren();
@@ -169,7 +175,7 @@ public:	// TODO:
 };
 
 class UIFrameLayout2	// TODO: BorderLayout の方がいいかも https://doc.qt.io/qt-5/qtwidgets-layouts-borderlayout-example.html
-    : public UILayoutPanel2
+    : public UILayoutPanel
 {
 public:
     static Ref<UIFrameLayout2> create();
@@ -250,13 +256,13 @@ private:
 // 一方、WPF の StackPanel のように、細かい配置の調整はせずただ並べるだけのものは LinearLayout(Andorid) にしてみる。これは指定方向のレイアウト領域が inf になる。
 // おもに ListView など用。
 class UIStackLayout2_Obsolete
-    : public UILayoutPanel2
+    : public UILayoutPanel
 {
 public:
     static Ref<UIStackLayout2_Obsolete> create();
 
-    void setOrientation(Orientation orientation) { m_orientation = orientation; }
-    Orientation getOrientation() const { return m_orientation; }
+    void setOrientation(UILayoutOrientation orientation) { m_orientation = orientation; }
+    UILayoutOrientation getOrientation() const { return m_orientation; }
 
     void addChild(UIElement* element) { addChild(element, UILayoutLengthType::Auto); }
     void addChild(UIElement* element, UILayoutLengthType type);
@@ -270,7 +276,7 @@ LN_CONSTRUCT_ACCESS:
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 private:
-    bool isHorizontal() const { return m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal; }
+    bool isHorizontal() const { return m_orientation == UILayoutOrientation::Horizontal || m_orientation == UILayoutOrientation::ReverseHorizontal; }
 
     struct CellDefinition
     {
@@ -286,7 +292,7 @@ private:
         float actualSize = Math::NaN;
     };
 
-    Orientation m_orientation;
+    UILayoutOrientation m_orientation;
     List<CellDefinition> m_cellDefinitions;
 };
 
@@ -309,20 +315,34 @@ LN_CONSTRUCT_ACCESS:
 };
 
 
-// 指定方向に無限のサイズを想定する StackLayout と異なり、こちらは有限サイズでレイアウトを行う。
-// 特に末尾の要素を下揃えしたり、指定方向への Stratch をできるようにしたりする。
-// このため ListBox などの HostPanel には向かない。
-//
-// 例：2分割で、２つ目のセルを Stretch したい場合は、そこに配置する要素の Alignment を Stretch にする。
-class UIBoxLayout3
-    : public UILayoutPanel2
+/**
+ * UIBoxLayout
+ *
+ * 指定方向に無限のサイズを想定する StackLayout と異なり、こちらは有限サイズでレイアウトを行う。
+ * 特に末尾の要素を下揃えしたり、指定方向への Stratch をできるようにしたりする。
+ * このため ListBox などの HostPanel には向かない。
+ * 
+ * 例：2分割で、２つ目のセルを Stretch したい場合は、そこに配置する要素の Alignment を Stretch にする。
+ */
+LN_CLASS()
+class UIBoxLayout
+    : public UILayoutPanel
 {
+    LN_OBJECT;
 public:
-    void setOrientation(Orientation orientation) { m_orientation = orientation; }
-    Orientation getOrientation() const { return m_orientation; }
+    /** レイアウト方向を設定します。(default: Vertical) */
+    LN_METHOD(Property)
+    void setOrientation(UILayoutOrientation orientation) { m_orientation = orientation; }
+
+    /** レイアウト方向を取得します。 */
+    LN_METHOD(Property)
+    UILayoutOrientation orientation() const { return m_orientation; }
 
 LN_CONSTRUCT_ACCESS:
-    UIBoxLayout3();
+    UIBoxLayout();
+
+    /** init */
+    LN_METHOD()
     void init();
 
     // UIElement interface
@@ -330,7 +350,7 @@ LN_CONSTRUCT_ACCESS:
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 private:
-    bool isHorizontal() const { return m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal; }
+    bool isHorizontal() const { return m_orientation == UILayoutOrientation::Horizontal || m_orientation == UILayoutOrientation::ReverseHorizontal; }
     UILayoutLengthType layoutType(int index) const;
     float layoutWeight(int index) const;
     float layoutDirectSize(int index) const;
@@ -343,12 +363,12 @@ private:
         float actualSize = Math::NaN;
     };
 
-    Orientation m_orientation;
+    UILayoutOrientation m_orientation;
     List<CellDefinition> m_cellDefinitions;
 };
 
 class UIHBoxLayout3
-    : public UIBoxLayout3
+    : public UIBoxLayout
 {
 public:
 
@@ -358,7 +378,7 @@ LN_CONSTRUCT_ACCESS:
 
 
 class UIVBoxLayout3
-    : public UIBoxLayout3
+    : public UIBoxLayout
 {
 public:
 
@@ -397,12 +417,12 @@ private:
 
 
 // TODO: ネスト
-class UILayoutPanel
+class UILayoutPanel2_Deprecated
     : public Object
     , public IScrollInfo
 {
 public:
-    UILayoutPanel();
+    UILayoutPanel2_Deprecated();
     void init();
 
     /** レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。この値は子要素が親要素へ要求する、子要素自身の最低サイズです。*/
@@ -436,7 +456,7 @@ private:
 };
 
 class UIFrameLayout	// TODO: BorderLayout の方がいいかも https://doc.qt.io/qt-5/qtwidgets-layouts-borderlayout-example.html
-    : public UILayoutPanel
+    : public UILayoutPanel2_Deprecated
 {
 public:
     static Ref<UIFrameLayout> create();
@@ -452,16 +472,16 @@ LN_CONSTRUCT_ACCESS:
 private:
 };
 
-// Orientation=H で大量アイテムを持つ ListView を配置すると、縦方向スクロールバーが表示される。
-// Orientation=V で大量アイテムを持つ ListView を配置すると、スクロールバーは表示されず、すべてのアイテムを包含するサイズが ListView の actualSize となる。（見切れる）
+// UILayoutOrientation=H で大量アイテムを持つ ListView を配置すると、縦方向スクロールバーが表示される。
+// UILayoutOrientation=V で大量アイテムを持つ ListView を配置すると、スクロールバーは表示されず、すべてのアイテムを包含するサイズが ListView の actualSize となる。（見切れる）
 class UIStackLayout_Obsolete
-    : public UILayoutPanel
+    : public UILayoutPanel2_Deprecated
 {
 public:
     static Ref<UIStackLayout_Obsolete> create();
 
-    void setOrientation(Orientation orientation) { m_orientation = orientation; }
-    Orientation getOrientation() const { return m_orientation; }
+    void setOrientation(UILayoutOrientation orientation) { m_orientation = orientation; }
+    UILayoutOrientation getOrientation() const { return m_orientation; }
 
     bool lastStretch = false;
 
@@ -474,7 +494,7 @@ LN_CONSTRUCT_ACCESS:
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Rect& finalSlotRect) override;
 
 private:
-    Orientation m_orientation;
+    UILayoutOrientation m_orientation;
 };
 
 //class UIVBoxLayout
@@ -487,28 +507,28 @@ private:
 //};
 
 class UIStackLayout
-    : public UILayoutPanel2
+    : public UILayoutPanel
 {
 public:
     static Ref<UIStackLayout> create();
-    static Ref<UIStackLayout> create(Orientation orientation);
+    static Ref<UIStackLayout> create(UILayoutOrientation orientation);
 
     // (default: Vertical)
-    void setOrientation(Orientation orientation) { m_orientation = orientation; }
-    Orientation getOrientation() const { return m_orientation; }
+    void setOrientation(UILayoutOrientation orientation) { m_orientation = orientation; }
+    UILayoutOrientation getOrientation() const { return m_orientation; }
 
     bool lastStretch = false;
 
 LN_CONSTRUCT_ACCESS:
     UIStackLayout();
     bool init();
-    bool init(Orientation orientation);
+    bool init(UILayoutOrientation orientation);
 
     Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 private:
-    Orientation m_orientation;
+    UILayoutOrientation m_orientation;
 };
 
 

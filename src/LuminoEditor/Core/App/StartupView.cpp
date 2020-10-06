@@ -29,23 +29,23 @@ ln::Result StartupView::init()
 
     auto layout = ln::makeObject<ln::UIVBoxLayout2>();
 
-    //layout->setVAlignment(ln::VAlignment::Top);
+    //layout->setVAlignment(ln::UIVAlignment::Top);
     addElement(layout);
 
     m_newProjectButton = ln::makeObject<ln::UIButton>();
     m_newProjectButton->setWidth(200);
     m_newProjectButton->setText(u"New project...");
     m_newProjectButton->setCommand(EditorApplication::NewCommand);
-    m_newProjectButton->setHorizontalContentAlignment(ln::HAlignment::Center);
-    m_newProjectButton->setVerticalContentAlignment(ln::VAlignment::Center);
+    m_newProjectButton->setHorizontalContentAlignment(ln::UIHAlignment::Center);
+    m_newProjectButton->setVerticalContentAlignment(ln::UIVAlignment::Center);
     layout->addChild(m_newProjectButton);
 
     m_openProjectButton = ln::makeObject<ln::UIButton>();
     m_openProjectButton->setWidth(200);
     m_openProjectButton->setText(u"Open project...");
     m_openProjectButton->setCommand(EditorApplication::OpenCommand);
-    m_openProjectButton->setHorizontalContentAlignment(ln::HAlignment::Center);
-    m_openProjectButton->setVerticalContentAlignment(ln::VAlignment::Center);
+    m_openProjectButton->setHorizontalContentAlignment(ln::UIHAlignment::Center);
+    m_openProjectButton->setVerticalContentAlignment(ln::UIVAlignment::Center);
     layout->addChild(m_openProjectButton);
 
     m_recentProjectListView = ln::makeObject<RecentProjectListView>();
@@ -59,7 +59,7 @@ ln::Result StartupView::init()
 
     auto icon = ln::makeObject<ln::UIIcon>();
     icon->setIconName(u"file");
-    icon->setHAlignment(ln::HAlignment::Center);
+    icon->setHAlignment(ln::UIHAlignment::Center);
     icon->setMargin(ln::Thickness(0, 0, 0, 4));
     m_openProjectButton->addInlineVisual(icon, ln::UIInlineLayout::Top);
 
@@ -79,8 +79,8 @@ ln::Result StartupView::init()
     auto popupButton = ln::makeObject<ln::UIButton>();
     popupButton->setWidth(200);
     popupButton->setText(u"Popup");
-    popupButton->setHorizontalContentAlignment(ln::HAlignment::Center);
-    popupButton->setVerticalContentAlignment(ln::VAlignment::Center);
+    popupButton->setHorizontalContentAlignment(ln::UIHAlignment::Center);
+    popupButton->setVerticalContentAlignment(ln::UIVAlignment::Center);
     popupButton->connectOnClicked([popup]() { if (!popup->isOpend()) popup->open(); else popup->close(); });
     layout->addChild(popupButton);
 

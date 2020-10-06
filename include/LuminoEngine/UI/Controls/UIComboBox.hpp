@@ -3,7 +3,7 @@
 
 namespace ln {
 class UIPopup;
-class UILayoutPanel2;
+class UILayoutPanel;
 class UIComboBox;
 
 class UIComboBoxItem
@@ -70,7 +70,7 @@ private:
     void selectItem(UIComboBoxItem* item);
 
     Ref<UIPopup> m_popup;
-	Ref<UILayoutPanel2> m_itemsHost;
+	Ref<UILayoutPanel> m_itemsHost;
     List<UIComboBoxItem*> m_selectedItems;
 
     friend class UIComboBoxItem;

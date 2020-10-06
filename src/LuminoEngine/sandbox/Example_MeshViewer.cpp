@@ -23,7 +23,7 @@ class App_Example_MeshViewer : public Application
 
         //m_sprite = Sprite::create(Texture2D::whiteTexture());
         //m_sprite->setBlendMode(BlendMode::Normal);
-        //m_sprite->setAlignments(HAlignment::Left, VAlignment::Top);
+        //m_sprite->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 
         //m_plane = PlaneMesh::create();
         //auto planeMaterial = Material::create(Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg"));

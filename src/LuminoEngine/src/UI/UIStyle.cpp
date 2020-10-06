@@ -59,7 +59,7 @@
             {
                 "Type" : "Image",
                 "Image" : "icon.png",
-                "HAlignment" : "Left"
+                "UIHAlignment" : "Left"
             }
         ]
     }
@@ -130,10 +130,10 @@ const float UIStyle::DefaultWidth = std::numeric_limits<float>::quiet_NaN();
 const float UIStyle::DefaultHeight = std::numeric_limits<float>::quiet_NaN();
 const Thickness UIStyle::DefaultMargin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
 const Thickness UIStyle::DefaultPadding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-const HAlignment UIStyle::DefaultHorizontalAlignment = HAlignment::Stretch;	// WPF FrameworkElement default
-const VAlignment UIStyle::DefaultVerticalAlignment = VAlignment::Stretch;
-const HAlignment UIStyle::DefaultHorizontalContentAlignment = HAlignment::Stretch;	// デフォルト Stretch. WPF は Left だが、ListItem が Fill されずにカスタム Item 作るときに毎回混乱していたので。
-const VAlignment UIStyle::DefaultVerticalContentAlignment = VAlignment::Stretch;
+const UIHAlignment UIStyle::DefaultHorizontalAlignment = UIHAlignment::Stretch;	// WPF FrameworkElement default
+const UIVAlignment UIStyle::DefaultVerticalAlignment = UIVAlignment::Stretch;
+const UIHAlignment UIStyle::DefaultHorizontalContentAlignment = UIHAlignment::Stretch;	// デフォルト Stretch. WPF は Left だが、ListItem が Fill されずにカスタム Item 作るときに毎回混乱していたので。
+const UIVAlignment UIStyle::DefaultVerticalContentAlignment = UIVAlignment::Stretch;
 const float UIStyle::DefaultMinWidth = std::numeric_limits<float>::quiet_NaN();
 const float UIStyle::DefaultMinHeight = std::numeric_limits<float>::quiet_NaN();
 const float UIStyle::DefaultMaxWidth = std::numeric_limits<float>::quiet_NaN();
@@ -1251,10 +1251,10 @@ void UITheme::buildLumitelier()
 			s->minHeight = lineContentHeight();
 			s->margin = Thickness(8);   // TODO: spacing?
 			s->padding = Thickness(spacing(2), 0);
-			s->hAlignment = HAlignment::Center;
-			s->vAlignment = VAlignment::Center;
-			s->horizontalContentAlignment = HAlignment::Center;
-			s->verticalContentAlignment = VAlignment::Center;
+			s->hAlignment = UIHAlignment::Center;
+			s->vAlignment = UIVAlignment::Center;
+			s->horizontalContentAlignment = UIHAlignment::Center;
+			s->verticalContentAlignment = UIVAlignment::Center;
 			s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
 			s->cornerRadius = CornerRadius(4);
 			s->shadowBlurRadius = 1;
@@ -1362,7 +1362,7 @@ void UITheme::buildLumitelier()
 	// UITreeView
 	{
 		if (auto s = sheet->obtainStyle(u"UITreeView")) {
-			//s->horizontalContentAlignment = HAlignment::Left;
+			//s->horizontalContentAlignment = UIHAlignment::Left;
 		}
 	}
 	//--------------------------------
@@ -1370,8 +1370,8 @@ void UITheme::buildLumitelier()
 	{
 		if (auto s = sheet->obtainStyle(u"UITreeItem")) {
 			s->minHeight = lineContentHeight();
-			s->hAlignment = HAlignment::Stretch;
-			s->vAlignment = VAlignment::Top;
+			s->hAlignment = UIHAlignment::Stretch;
+			s->vAlignment = UIVAlignment::Top;
 		}
 		if (auto s = sheet->obtainStyle(u"UITreeItem:MouseOver")) {
 			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
@@ -1382,8 +1382,8 @@ void UITheme::buildLumitelier()
 		if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander")) {   // VisualState によらず常に有効。個別にしたければ:Normalを付ける。
 			s->width = 16;
 			s->height = 16;
-			s->hAlignment = HAlignment::Center;
-			s->vAlignment = VAlignment::Center;
+			s->hAlignment = UIHAlignment::Center;
+			s->vAlignment = UIVAlignment::Center;
 			s->backgroundColor = Color::Transparency;
 		}
 		//if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:MouseOver")) {
@@ -1425,8 +1425,8 @@ void UITheme::buildLumitelier()
 		//	s->margin = Thickness(2);
 		//	s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
 		//	s->cornerRadius = CornerRadius(4);
-		//	s->hAlignment = HAlignment::Stretch;
-		//	s->vAlignment = VAlignment::Stretch;
+		//	s->hAlignment = UIHAlignment::Stretch;
+		//	s->vAlignment = UIVAlignment::Stretch;
 
 		//	s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
 		//	e->mainStyleClass()->addStateStyle(u"UITrack-Thumb", s);
@@ -1458,8 +1458,8 @@ void UITheme::buildLumitelier()
 		//	s->cornerRadius = CornerRadius(0);
 		//	s->shadowBlurRadius = 0;
 		//	s->shadowOffsetY = 0;
-		//	s->hAlignment = HAlignment::Stretch;
-		//	s->vAlignment = VAlignment::Stretch;
+		//	s->hAlignment = UIHAlignment::Stretch;
+		//	s->vAlignment = UIVAlignment::Stretch;
 		//}
 		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton:MouseOver")) {	// ベース要素である UIButton の VisualState を全て上書きする必要がある。CSS と同じ動作。
 		//	s->backgroundColor = Color::Transparency;
@@ -1472,8 +1472,8 @@ void UITheme::buildLumitelier()
 		//	s->cornerRadius = CornerRadius(0);
 		//	s->shadowBlurRadius = 0;
 		//	s->shadowOffsetY = 0;
-		//	s->hAlignment = HAlignment::Stretch;
-		//	s->vAlignment = VAlignment::Stretch;
+		//	s->hAlignment = UIHAlignment::Stretch;
+		//	s->vAlignment = UIVAlignment::Stretch;
 		//}
 		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:MouseOver")) {
 		//	s->backgroundColor = Color::Transparency;
@@ -1500,10 +1500,10 @@ void UITheme::buildLumitelier()
 			s->minHeight = lineContentHeight();
 			s->margin = Thickness(8);   // TODO: spacing?
 			s->padding = Thickness(spacing(2), 0);
-			s->hAlignment = HAlignment::Center;
-			s->vAlignment = VAlignment::Center;
-			s->horizontalContentAlignment = HAlignment::Center;
-			s->verticalContentAlignment = VAlignment::Center;
+			s->hAlignment = UIHAlignment::Center;
+			s->vAlignment = UIVAlignment::Center;
+			s->horizontalContentAlignment = UIHAlignment::Center;
+			s->verticalContentAlignment = UIVAlignment::Center;
 			s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
 			s->cornerRadius = CornerRadius(4);
 			s->shadowBlurRadius = 1;

@@ -27,7 +27,7 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window)
 	//m_window->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
 
 	//m_splitter = makeObject<UISplitter>();
-	//m_splitter->setOrientation(Orientation::Horizontal);
+	//m_splitter->setOrientation(UILayoutOrientation::Horizontal);
 
 	//m_mainContentsPane = makeObject<UIControl>();
 	//m_splitter->addChild(m_mainContentsPane);

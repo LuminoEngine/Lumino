@@ -20,8 +20,8 @@ void NavigationBarItem::addIcon(const ln::StringRef& iconName)
 {
     auto icon = ln::makeObject<ln::UIIcon>();
     icon->setIconName(iconName);
-    icon->setHAlignment(ln::HAlignment::Center);
-    icon->setVAlignment(ln::VAlignment::Center);
+    icon->setHAlignment(ln::UIHAlignment::Center);
+    icon->setVAlignment(ln::UIVAlignment::Center);
     icon->setFontSize(24);
     addElement(icon);
 }
@@ -48,10 +48,10 @@ void NavigationBar::init(NavigatorManager* manager)
     setItemsLayoutPanel(ln::makeObject<ln::UIVBoxLayout2>());
     setWidth(ItemSize);
     setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 8));
-    setHAlignment(ln::HAlignment::Left);
-    setVAlignment(ln::VAlignment::Stretch);
-    //setHorizontalContentAlignment(ln::HAlignment::Center);
-    //setVerticalContentAlignment(ln::VAlignment::Center);
+    setHAlignment(ln::UIHAlignment::Left);
+    setVAlignment(ln::UIVAlignment::Stretch);
+    //setHorizontalContentAlignment(ln::UIHAlignment::Center);
+    //setVerticalContentAlignment(ln::UIVAlignment::Center);
 }
 
 void NavigationBar::addNavigator(Navigator* navigator)
@@ -65,8 +65,8 @@ void NavigationBar::addNavigator(Navigator* navigator)
 
     // TODO: ContentAlignment でカバーしたい
     ln::UIElement* element = navigator->getNavigationMenuItem();
-    element->setHAlignment(ln::HAlignment::Center);
-    element->setVAlignment(ln::VAlignment::Center);
+    element->setHAlignment(ln::UIHAlignment::Center);
+    element->setVAlignment(ln::UIVAlignment::Center);
     element->setFontSize(24);
     
     auto item = ln::makeObject<NavigationBarItem>(m_navigatorManager, navigator);
@@ -109,8 +109,8 @@ void NavigatorManager::init()
 {
     UIControl::init();
 
-    m_layout = ln::makeObject<ln::UIBoxLayout3>();
-    m_layout->setOrientation(ln::Orientation::Horizontal);
+    m_layout = ln::makeObject<ln::UIBoxLayout>();
+    m_layout->setOrientation(ln::UILayoutOrientation::Horizontal);
     //m_layout->lastStretch = true;
     //setLayoutPanel(m_layout);
     addElement(m_layout);

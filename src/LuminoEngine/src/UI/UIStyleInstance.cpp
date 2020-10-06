@@ -22,10 +22,10 @@ void UIStyleInstance::setupDefault()
 {
     margin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
     padding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-    hAlignment = HAlignment::Stretch;	// Alignment は HTML のデフォルトに合わせてみる
-    vAlignment = VAlignment::Stretch;
-    horizontalContentAlignment = HAlignment::Stretch;
-    verticalContentAlignment = VAlignment::Stretch;
+    hAlignment = UIHAlignment::Stretch;	// Alignment は HTML のデフォルトに合わせてみる
+    vAlignment = UIVAlignment::Stretch;
+    horizontalContentAlignment = UIHAlignment::Stretch;
+    verticalContentAlignment = UIVAlignment::Stretch;
     minWidth = Math::NaN;
     minHeight = Math::NaN;
     maxWidth = Math::NaN;

@@ -125,7 +125,7 @@ UICollectionItem* UIItemsControl::selectedItem() const
 	return m_selectedItems[0];
 }
 
-void UIItemsControl::setItemsLayoutPanel(UILayoutPanel2* layout, bool setAsVisualChild)
+void UIItemsControl::setItemsLayoutPanel(UILayoutPanel* layout, bool setAsVisualChild)
 {
     if (LN_REQUIRE(layout)) return;
 

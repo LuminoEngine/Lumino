@@ -18,7 +18,7 @@ void UISplitter::init()
     UIControl::init(nullptr);
 }
 
-void UISplitter::setOrientation(Orientation value)
+void UISplitter::setOrientation(UILayoutOrientation value)
 {
 	if (m_cellDefinitions.size() > 0) {
 		LN_NOTIMPLEMENTED();
@@ -86,12 +86,12 @@ void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail:
 		// TODO: style (-H, -V とかで分ける。)
 		thumb->addClass(u"SplitterBar");
 		if (isHorizontal()) {
-			thumb->setHAlignment(HAlignment::Stretch);
-			thumb->setVAlignment(VAlignment::Stretch);
+			thumb->setHAlignment(UIHAlignment::Stretch);
+			thumb->setVAlignment(UIVAlignment::Stretch);
 		}
 		else {
-			thumb->setHAlignment(HAlignment::Stretch);
-			thumb->setVAlignment(VAlignment::Stretch);
+			thumb->setHAlignment(UIHAlignment::Stretch);
+			thumb->setVAlignment(UIVAlignment::Stretch);
 		}
 
         addVisualChild(thumb);

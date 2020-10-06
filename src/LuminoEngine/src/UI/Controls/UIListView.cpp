@@ -51,11 +51,11 @@ void UIListView::init()
     UIItemsControl::init();
 
     auto layout = makeObject<UIStackLayout2_Obsolete>();
-    layout->setOrientation(Orientation::Vertical);
+    layout->setOrientation(UILayoutOrientation::Vertical);
     setItemsLayoutPanel(layout);
 
-    setHorizontalContentAlignment(HAlignment::Left);
-    setVerticalContentAlignment(VAlignment::Center);
+    setHorizontalContentAlignment(UIHAlignment::Left);
+    setVerticalContentAlignment(UIVAlignment::Center);
 }
 
 void UIListView::refresh()

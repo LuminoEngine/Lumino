@@ -113,10 +113,10 @@ public:
 public:
 
 	/** Track の方向を指定します。*/
-	void setOrientation(Orientation orientation);
+	void setOrientation(UILayoutOrientation orientation);
 
-	/** Track の方向を取得します。規定値は Orientation::Horizontal です。*/
-	Orientation getOrientation() const { return m_orientation; }
+	/** Track の方向を取得します。規定値は UILayoutOrientation::Horizontal です。*/
+	UILayoutOrientation getOrientation() const { return m_orientation; }
 
 	/** スクロール位置に対する値を設定します。*/
 	void setValue(float value);
@@ -176,7 +176,7 @@ private:
 		float* outThumbLength,
 		float* outIncreaseButtonLength);
 
-	Orientation			m_orientation;
+	UILayoutOrientation			m_orientation;
 	float				m_value;
 	float				m_minimum;
 	float				m_maximum;
@@ -213,10 +213,10 @@ public:
 
 
     /** ScrollBar の方向を指定します。*/
-    void setOrientation(Orientation orientation);
+    void setOrientation(UILayoutOrientation orientation);
 
-    /** ScrollBar の方向を取得します。規定値は Orientation::Horizontal です。*/
-    Orientation getOrientation() const;
+    /** ScrollBar の方向を取得します。規定値は UILayoutOrientation::Horizontal です。*/
+    UILayoutOrientation getOrientation() const;
 
     /** スクロール位置に対する値を設定します。*/
     void setValue(float value);
@@ -314,11 +314,6 @@ protected:
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
-
-    // UIControl interface
-    //virtual void onLogicalChildrenPresenterChanged(UILayoutPanel* newPanel) override;
-
-    virtual void onLayoutPanelChanged(UILayoutPanel* newPanel) override;
 
 private:
     Ref<UIScrollBar>			m_horizontalScrollBar;

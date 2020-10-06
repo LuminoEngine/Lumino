@@ -24,8 +24,8 @@ class App_Example_MessageWindow : public Application
         auto windowSkin = Texture2D::load(u"Window1");
 
         m_window1 = UIMessageTextWindow::create();
-        m_window1->setHAlignment(HAlignment::Left);
-        m_window1->setVAlignment(VAlignment::Top);
+        m_window1->setHAlignment(UIHAlignment::Left);
+        m_window1->setVAlignment(UIVAlignment::Top);
         m_window1->setPosition(10, 10);
         m_window1->setWidth(200);
         m_window1->setHeight(80);
@@ -45,8 +45,8 @@ class App_Example_MessageWindow : public Application
 
         auto window2 = UIWindow::create();
         window2->setPosition(10, 100);
-        window2->setHAlignment(HAlignment::Left);
-        window2->setVAlignment(VAlignment::Top);
+        window2->setHAlignment(UIHAlignment::Left);
+        window2->setVAlignment(UIVAlignment::Top);
         window2->setWidth(400);
         window2->setHeight(100);
         window2->setBackgroundImage(windowSkin);
@@ -61,8 +61,8 @@ class App_Example_MessageWindow : public Application
         m_message2->setBackgroundColor(Color::DarkCyan);
         m_message2->setText(
             u"window2->setPosition(10, 10);\n"
-            u"window2->setHAlignment(HAlignment::Left);\n"
-            u"window2->setVAlignment(VAlignment::Top);\n"
+            u"window2->setHAlignment(UIHAlignment::Left);\n"
+            u"window2->setVAlignment(UIVAlignment::Top);\n"
             u"window2->setWidth(200);\n"
             u"window2->setHeight(100);\n"
             u"window2->setBackgroundImage(windowSkin);\n"

@@ -24,7 +24,7 @@ bool LevelEditorPropertyPane::init(LevelEditor* model)
 	auto mainLauout = ln::makeObject<ln::UIGridLayout>();
 	mainLauout->setName(u"PropertyPane.mainLauout");
 	mainLauout->setColumnCount(2);
-	mainLauout->setVAlignment(ln::VAlignment::Top);
+	mainLauout->setVAlignment(ln::UIVAlignment::Top);
 	addChild(mainLauout);
 
 	// FogStartDistance

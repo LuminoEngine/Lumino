@@ -19,7 +19,7 @@ class App_Sandbox_GridListBox : public Application
 
 		auto listbox1 = UIListBox::create();
 		listbox1->setItemsLayoutPanel(panel);
-		listbox1->setAlignments(HAlignment::Stretch, VAlignment::Stretch);
+		listbox1->setAlignments(UIHAlignment::Stretch, UIVAlignment::Stretch);
 		//listbox1->setSize(300, 400);
 		
 
@@ -27,37 +27,37 @@ class App_Sandbox_GridListBox : public Application
 			auto icon = makeObject<UIIcon>();
 			icon->setIconName(u"file");
 			icon->setFontSize(40);
-			icon->setAlignments(HAlignment::Center, VAlignment::Top);
+			icon->setAlignments(UIHAlignment::Center, UIVAlignment::Top);
 
 			auto text = makeObject<UITextBlock>(u"Item1");
-			text->setAlignments(HAlignment::Center, VAlignment::Bottom);
+			text->setAlignments(UIHAlignment::Center, UIVAlignment::Bottom);
 
 			auto item = makeObject<UIListBoxItem>();
 			item->addChild(icon);
 			item->addChild(text);
 			item->setPadding(20);
 			item->setMargin(10);
-			item->getGridLayoutInfo()->actualLayoutRow = 0;
-			item->getGridLayoutInfo()->actualLayoutColumn = 0;
+			item->setData(makeVariant(100));
+			item->connectOnSubmit([](const UIEventArgs* e) {
+				std::cout << "submit: " << static_cast<UIControl*>(e->sender())->dataAs<int>() << std::endl;
+			});
+			UIGridLayout::setPlacement(item, 0, 0);
 
 			listbox1->addItem(item);
 		}
 
 		auto item2 = listbox1->addItem(u"item2");
-		item2->getGridLayoutInfo()->actualLayoutRow = 0;
-		item2->getGridLayoutInfo()->actualLayoutColumn = 1;
+		UIGridLayout::setPlacement(item2, 0, 1);
 		auto item3 = listbox1->addItem(u"item3");
-		item3->getGridLayoutInfo()->actualLayoutRow = 0;
-		item3->getGridLayoutInfo()->actualLayoutColumn = 2;
+		UIGridLayout::setPlacement(item3, 0, 2);
 		auto item4 = listbox1->addItem(u"item4");
-		item4->getGridLayoutInfo()->actualLayoutRow = 1;
-		item4->getGridLayoutInfo()->actualLayoutColumn = 0;
+		UIGridLayout::setPlacement(item4, 1, 0);
 
 		auto text = makeObject<UITextBlock>(u"Inventory");
-		text->setAlignments(HAlignment::Left, VAlignment::Top);
+		text->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 
-		auto layout = makeObject<UIBoxLayout3>();
-		layout->setOrientation(Orientation::Vertical);
+		auto layout = makeObject<UIBoxLayout>();
+		layout->setOrientation(UILayoutOrientation::Vertical);
 		layout->addChild(text);
 		layout->addChild(listbox1);
 

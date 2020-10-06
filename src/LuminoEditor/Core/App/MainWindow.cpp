@@ -28,7 +28,7 @@ void MainWindow::onLoaded()
     m_documentManager = ln::makeObject<DocumentManager>();
 
 	auto layout1 = ln::makeObject<ln::UIStackLayout2_Obsolete>();
-	layout1->setOrientation(ln::Orientation::Horizontal);
+	layout1->setOrientation(ln::UILayoutOrientation::Horizontal);
     addElement(layout1);
 
 
@@ -48,7 +48,7 @@ void MainWindow::onLoaded()
 
 
         m_mainVSplitter = ln::makeObject<ln::UISplitter>();
-        m_mainVSplitter->setOrientation(ln::Orientation::Vertical);
+        m_mainVSplitter->setOrientation(ln::UILayoutOrientation::Vertical);
         m_mainVSplitter->setCellDefinition(0);
         m_mainVSplitter->setCellDefinition(1, ln::UILayoutLengthType::Direct, 200);
         m_mainHSplitter->addElement(m_mainVSplitter);
@@ -57,7 +57,7 @@ void MainWindow::onLoaded()
             {
                 auto documentHSplitter = ln::makeObject<ln::UISplitter>();
                 documentHSplitter->setName(u"documentHSplitter");
-                documentHSplitter->setOrientation(ln::Orientation::Horizontal);
+                documentHSplitter->setOrientation(ln::UILayoutOrientation::Horizontal);
                 documentHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Direct, 300);
                 
                 documentHSplitter->addElement(m_documentManager->modePanesArea());

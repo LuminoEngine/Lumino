@@ -18,7 +18,7 @@ public:
     UISplitter();
 	void init();
 
-	void setOrientation(Orientation value);
+	void setOrientation(UILayoutOrientation value);
 
 	/** セルサイズを計算するための情報を設定します。 */
     void setCellDefinition(int index, UILayoutLengthType type = UILayoutLengthType::Ratio, float size = 1.0f, float minSize = 0.0f, float maxSize = std::numeric_limits<float>::max());
@@ -37,7 +37,7 @@ protected:
     void onRoutedEvent(UIEventArgs* e) override;
 
 private:
-	bool isHorizontal() const { return m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal; }
+	bool isHorizontal() const { return m_orientation == UILayoutOrientation::Horizontal || m_orientation == UILayoutOrientation::ReverseHorizontal; }
 	bool findNearThumb(const Point& pos, UIThumb** outThumb, float* outDistance);
 
 	struct CellDefinition
@@ -54,7 +54,7 @@ private:
 		float actualSize = Math::NaN;
 	};
 
-    Orientation m_orientation = Orientation::Horizontal;
+    UILayoutOrientation m_orientation = UILayoutOrientation::Horizontal;
 	float m_gap;
 
     List<CellDefinition> m_cellDefinitions;

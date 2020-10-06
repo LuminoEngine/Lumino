@@ -10,7 +10,7 @@ class App_Example_GameAudio : public Application
     virtual void onInit() override
     {
 		auto sprite = UISprite::load(u"picture1.jpg");
-		sprite->setAlignments(HAlignment::Left, VAlignment::Top);
+		sprite->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 		sprite->setPosition(100, 50);
 		Engine::ui()->add(sprite);
 
@@ -27,7 +27,7 @@ class App_Example_GameAudio : public Application
 		});
 		//Engine::mainUIView()->addChild(addButton);
 
-		addButton->setAlignments(HAlignment::Left, VAlignment::Top);
+		addButton->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 		addButton->setPosition(0, 0);
     }
 

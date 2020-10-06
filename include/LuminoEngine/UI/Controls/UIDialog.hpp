@@ -5,7 +5,7 @@
 namespace ln {
 class UIButton;
 class UIDialogAdorner;
-class UIBoxLayout3;
+class UIBoxLayout;
 
 enum class UIDialogButtonRole
 {
@@ -64,7 +64,7 @@ private:
 
     Ref<UIAdorner> m_adorner;
 	List<DialogButton> m_dialogButtons;
-	Ref<UIBoxLayout3> m_dialogButtonsLayout;
+	Ref<UIBoxLayout> m_dialogButtonsLayout;
     bool m_opend;
 
     friend class UIDialogAdorner;

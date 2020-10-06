@@ -35,7 +35,7 @@ class App_Example_Navigator : public Application
 
 
         m_window1 = UIWindow::create();
-		m_window1->setAlignments(HAlignment::Left, VAlignment::Top);
+		m_window1->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
         m_window1->setPosition(10, 10);
         m_window1->setSize(200, 300);
 		//m_window1->setMargin(8);
@@ -44,8 +44,8 @@ class App_Example_Navigator : public Application
 
 
 		m_listbox1 = UIListBox::create();
-		//m_listbox1->setHAlignment(HAlignment::Left);
-		//m_listbox1->setVAlignment(VAlignment::Top);
+		//m_listbox1->setHAlignment(UIHAlignment::Left);
+		//m_listbox1->setVAlignment(UIVAlignment::Top);
 		auto item1 = UIListBoxItem::create(u"Item");
 		m_listbox1->addChild(item1);
 		m_listbox1->addChild(u"Skill");
@@ -61,7 +61,7 @@ class App_Example_Navigator : public Application
 
 
         m_window2 = UIWindow::create();
-		m_window2->setAlignments(HAlignment::Left, VAlignment::Top);
+		m_window2->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 		m_window2->setPosition(220, 20);
 		m_window2->setSize(200, 300);
 		//m_window2->setMargin(8);
@@ -86,7 +86,7 @@ class App_Example_Navigator : public Application
 
 
 
-		item1->connectOnSubmit([this, item2_1]() {
+		item1->connectOnSubmit([this, item2_1](auto x) {
 			static_cast<UIDomainProvidor*>(Engine::mainUIView())->focusNavigator()->pushFocus(m_window2);
 			Debug::print(u"Item clicked. ");
 			m_listbox2->selectItem(item2_1);

@@ -13,6 +13,8 @@ namespace ln {
 //==============================================================================
 // UIIcon
 
+LN_OBJECT_IMPLEMENT(UIIcon, UIElement) {}
+
 Ref<UIIcon> UIIcon::loadFontIcon(const StringRef& iconName)
 {
 	return makeObject<UIIcon>(iconName);
@@ -37,7 +39,7 @@ UIIcon::UIIcon()
 bool UIIcon::init()
 {
 	if (!UIElement::init(nullptr)) return false;
-	setAlignments(HAlignment::Center, VAlignment::Center);
+	setAlignments(UIHAlignment::Center, UIVAlignment::Center);
 	return true;
 }
 

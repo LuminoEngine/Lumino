@@ -295,58 +295,85 @@ typedef enum tagLNLevelTransitionEffectMode
 } LNLevelTransitionEffectMode;
 
 /**
+    @brief コントロールのレイアウト方向を示します。
+*/
+typedef enum tagLNUILayoutOrientation
+{
+    /**
+        @brief 水平方向に配置します。
+    */
+    LN_UILAYOUT_ORIENTATION_HORIZONTAL = 0,
+
+    /**
+        @brief 垂直方向に配置します。
+    */
+    LN_UILAYOUT_ORIENTATION_VERTICAL = 1,
+
+    /**
+        @brief 水平方向（右から左）に配置します。
+    */
+    LN_UILAYOUT_ORIENTATION_REVERSE_HORIZONTAL = 2,
+
+    /**
+        @brief 垂直方向（下から上）に配置します。
+    */
+    LN_UILAYOUT_ORIENTATION_REVERSE_VERTICAL = 3,
+
+} LNUILayoutOrientation;
+
+/**
     @brief 縦方向の表示位置を示します。
 */
-typedef enum tagLNVAlignment
+typedef enum tagLNUIVAlignment
 {
     /**
         @brief 子要素を、親のレイアウト スロットの上端に揃えて配置します。
     */
-    LN_VALIGNMENT_TOP = 0,
+    LN_UIVALIGNMENT_TOP = 0,
 
     /**
         @brief 子要素を、親のレイアウト スロットの中央に揃えて配置します。
     */
-    LN_VALIGNMENT_CENTER = 1,
+    LN_UIVALIGNMENT_CENTER = 1,
 
     /**
         @brief 子要素を、親のレイアウト スロットの下端に揃えて配置します。
     */
-    LN_VALIGNMENT_BOTTOM = 2,
+    LN_UIVALIGNMENT_BOTTOM = 2,
 
     /**
         @brief 子要素を、親のレイアウト スロット全体に引き伸ばします。
     */
-    LN_VALIGNMENT_STRETCH = 3,
+    LN_UIVALIGNMENT_STRETCH = 3,
 
-} LNVAlignment;
+} LNUIVAlignment;
 
 /**
     @brief 横方向の表示位置を示します。
 */
-typedef enum tagLNHAlignment
+typedef enum tagLNUIHAlignment
 {
     /**
         @brief 子要素を、親のレイアウト スロットの左側に揃えて配置します。
     */
-    LN_HALIGNMENT_LEFT = 0,
+    LN_UIHALIGNMENT_LEFT = 0,
 
     /**
         @brief 子要素を、親のレイアウト スロットの中央に揃えて配置します。
     */
-    LN_HALIGNMENT_CENTER = 1,
+    LN_UIHALIGNMENT_CENTER = 1,
 
     /**
         @brief 子要素を、親のレイアウト スロットの右側に揃えて配置します。
     */
-    LN_HALIGNMENT_RIGHT = 2,
+    LN_UIHALIGNMENT_RIGHT = 2,
 
     /**
         @brief 子要素を、親のレイアウト スロット全体に引き伸ばします。
     */
-    LN_HALIGNMENT_STRETCH = 3,
+    LN_UIHALIGNMENT_STRETCH = 3,
 
-} LNHAlignment;
+} LNUIHAlignment;
 
 /**
     @brief 
@@ -435,6 +462,10 @@ typedef LNResult(*LNUILayoutElementSerializeHandlerCallback)(LNHandle uilayoutel
 typedef LNResult(*LNUIElementSerializeHandlerCallback)(LNHandle uielementserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUITextBlockSerializeHandlerCallback)(LNHandle uitextblockserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUISpriteSerializeHandlerCallback)(LNHandle uispriteserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIIconSerializeHandlerCallback)(LNHandle uiiconserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUILayoutPanelSerializeHandlerCallback)(LNHandle uilayoutpanelserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIBoxLayoutSerializeHandlerCallback)(LNHandle uiboxlayoutserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIGridLayoutSerializeHandlerCallback)(LNHandle uigridlayoutserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIControlSerializeHandlerCallback)(LNHandle uicontrolserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIButtonBaseSerializeHandlerCallback)(LNHandle uibuttonbaseserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIButtonSerializeHandlerCallback)(LNHandle uibuttonserializehandler, LNHandle self, LNHandle ar);
@@ -3349,33 +3380,33 @@ LN_FLAT_API LNResult LNUIElement_GetPadding(LNHandle uielement, LNThickness* out
     @brief 要素の横方向の配置方法を設定します。
     @param[in] uielement : instance
 */
-LN_FLAT_API LNResult LNUIElement_SetHAlignment(LNHandle uielement, LNHAlignment value);
+LN_FLAT_API LNResult LNUIElement_SetHAlignment(LNHandle uielement, LNUIHAlignment value);
 
 /**
     @brief 要素の横方向の配置方法を取得します。
     @param[in] uielement : instance
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LNResult LNUIElement_GetHAlignment(LNHandle uielement, LNHAlignment* outReturn);
+LN_FLAT_API LNResult LNUIElement_GetHAlignment(LNHandle uielement, LNUIHAlignment* outReturn);
 
 /**
     @brief 要素の縦方向の配置方法を設定します。
     @param[in] uielement : instance
 */
-LN_FLAT_API LNResult LNUIElement_SetVAlignment(LNHandle uielement, LNVAlignment value);
+LN_FLAT_API LNResult LNUIElement_SetVAlignment(LNHandle uielement, LNUIVAlignment value);
 
 /**
     @brief 要素の縦方向の配置方法を取得します。
     @param[in] uielement : instance
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LNResult LNUIElement_GetVAlignment(LNHandle uielement, LNVAlignment* outReturn);
+LN_FLAT_API LNResult LNUIElement_GetVAlignment(LNHandle uielement, LNUIVAlignment* outReturn);
 
 /**
     @brief 要素の配置方法を設定します。
     @param[in] uielement : instance
 */
-LN_FLAT_API LNResult LNUIElement_SetAlignments(LNHandle uielement, LNHAlignment halign, LNVAlignment valign);
+LN_FLAT_API LNResult LNUIElement_SetAlignments(LNHandle uielement, LNUIHAlignment halign, LNUIVAlignment valign);
 
 /**
     @brief このオブジェクトの位置を設定します。
@@ -3608,6 +3639,54 @@ extern LN_FLAT_API void LNUISprite_RegisterSubclassTypeInfo(const LNUISprite_Sub
 extern LN_FLAT_API LNSubinstanceId LNUISprite_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// ln::UIIcon
+
+/**
+    @brief アイコン名を指定して UIIcon を作成します。
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LNResult LNUIIcon_LoadFontIcon(const LNChar* iconName, LNHandle* outReturn);
+LN_FLAT_API LNResult LNUIIcon_LoadFontIconA(const char* iconName, LNHandle* outReturn);
+
+/**
+    @brief アイコン名・サイズ を指定して UIIcon を作成します。
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LNResult LNUIIcon_LoadFontIconWithNameSize(const LNChar* iconName, int size, LNHandle* outReturn);
+LN_FLAT_API LNResult LNUIIcon_LoadFontIconWithNameSizeA(const char* iconName, int size, LNHandle* outReturn);
+
+/**
+    @brief アイコン名・サイズ・色 (TextColor) を指定して UIIcon を作成します。
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LNResult LNUIIcon_LoadFontIconWithNameSizeColor(const LNChar* iconName, int size, const LNColor* color, LNHandle* outReturn);
+LN_FLAT_API LNResult LNUIIcon_LoadFontIconWithNameSizeColorA(const char* iconName, int size, const LNColor* color, LNHandle* outReturn);
+
+typedef LNResult(*LNUIIcon_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIIcon_OnSerialize_SetOverrideCallback(LNUIIcon_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIIcon_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uiicon : instance
+*/
+LN_FLAT_API LNResult LNUIIcon_SetPrototype_OnSerialize(LNHandle uiicon, LNHandle callback);
+
+extern LN_FLAT_API int LNUIIcon_GetTypeInfoId();
+LN_FLAT_API void LNUIIcon_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIIcon_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIIcon_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIIcon_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIIcon_RegisterSubclassTypeInfo(const LNUIIcon_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIIcon_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // ln::UI
 
 /**
@@ -3615,6 +3694,133 @@ extern LN_FLAT_API LNSubinstanceId LNUISprite_GetSubinstanceId(LNHandle handle);
 */
 LN_FLAT_API LNResult LNUI_Add(LNHandle element);
 
+
+//==============================================================================
+// ln::UILayoutPanel
+
+typedef LNResult(*LNUILayoutPanel_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUILayoutPanel_OnSerialize_SetOverrideCallback(LNUILayoutPanel_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUILayoutPanel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uilayoutpanel : instance
+*/
+LN_FLAT_API LNResult LNUILayoutPanel_SetPrototype_OnSerialize(LNHandle uilayoutpanel, LNHandle callback);
+
+extern LN_FLAT_API int LNUILayoutPanel_GetTypeInfoId();
+LN_FLAT_API void LNUILayoutPanel_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUILayoutPanel_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUILayoutPanel_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUILayoutPanel_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUILayoutPanel_RegisterSubclassTypeInfo(const LNUILayoutPanel_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUILayoutPanel_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::UIBoxLayout
+
+/**
+    @brief init
+    @param[out] outUIBoxLayout : instance.
+*/
+LN_FLAT_API LNResult LNUIBoxLayout_Create(LNHandle* outUIBoxLayout);
+
+/**
+    @brief レイアウト方向を設定します。(default: Vertical)
+    @param[in] uiboxlayout : instance
+*/
+LN_FLAT_API LNResult LNUIBoxLayout_SetOrientation(LNHandle uiboxlayout, LNUILayoutOrientation orientation);
+
+/**
+    @brief レイアウト方向を取得します。
+    @param[in] uiboxlayout : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIBoxLayout_GetOrientation(LNHandle uiboxlayout, LNUILayoutOrientation* outReturn);
+
+typedef LNResult(*LNUIBoxLayout_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIBoxLayout_OnSerialize_SetOverrideCallback(LNUIBoxLayout_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIBoxLayout_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uiboxlayout : instance
+*/
+LN_FLAT_API LNResult LNUIBoxLayout_SetPrototype_OnSerialize(LNHandle uiboxlayout, LNHandle callback);
+
+extern LN_FLAT_API int LNUIBoxLayout_GetTypeInfoId();
+LN_FLAT_API void LNUIBoxLayout_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIBoxLayout_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIBoxLayout_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIBoxLayout_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIBoxLayout_RegisterSubclassTypeInfo(const LNUIBoxLayout_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIBoxLayout_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::UIGridLayout
+
+/**
+    @brief init
+    @param[out] outUIGridLayout : instance.
+*/
+LN_FLAT_API LNResult LNUIGridLayout_Create(LNHandle* outUIGridLayout);
+
+/**
+    @brief setColumnCount
+    @param[in] uigridlayout : instance
+*/
+LN_FLAT_API LNResult LNUIGridLayout_SetColumnCount(LNHandle uigridlayout, int value);
+
+/**
+    @brief setRow
+*/
+LN_FLAT_API LNResult LNUIGridLayout_SetRow(LNHandle element, int row);
+
+/**
+    @brief setColumn
+*/
+LN_FLAT_API LNResult LNUIGridLayout_SetColumn(LNHandle element, int column);
+
+/**
+    @brief setPlacement
+*/
+LN_FLAT_API LNResult LNUIGridLayout_SetPlacement(LNHandle element, int row, int column, int rowSpan, int columnSpan);
+
+typedef LNResult(*LNUIGridLayout_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIGridLayout_OnSerialize_SetOverrideCallback(LNUIGridLayout_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIGridLayout_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uigridlayout : instance
+*/
+LN_FLAT_API LNResult LNUIGridLayout_SetPrototype_OnSerialize(LNHandle uigridlayout, LNHandle callback);
+
+extern LN_FLAT_API int LNUIGridLayout_GetTypeInfoId();
+LN_FLAT_API void LNUIGridLayout_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIGridLayout_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIGridLayout_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIGridLayout_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIGridLayout_RegisterSubclassTypeInfo(const LNUIGridLayout_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIGridLayout_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::UIControl
@@ -3788,6 +3994,12 @@ extern LN_FLAT_API LNSubinstanceId LNUIListItem_GetSubinstanceId(LNHandle handle
 // ln::UIListItemsControl
 
 /**
+    @brief setItemsLayoutPanel
+    @param[in] uilistitemscontrol : instance
+*/
+LN_FLAT_API LNResult LNUIListItemsControl_SetItemsLayoutPanel(LNHandle uilistitemscontrol, LNHandle layout);
+
+/**
     @brief UIListSubmitMode (default: Single)
     @param[in] uilistitemscontrol : instance
 */
@@ -3826,6 +4038,12 @@ extern LN_FLAT_API LNSubinstanceId LNUIListItemsControl_GetSubinstanceId(LNHandl
 
 //==============================================================================
 // ln::UIListBoxItem
+
+/**
+    @brief init
+    @param[out] outUIListBoxItem : instance.
+*/
+LN_FLAT_API LNResult LNUIListBoxItem_Create(LNHandle content, LNHandle* outUIListBoxItem);
 
 typedef LNResult(*LNUIListBoxItem_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNUIListBoxItem_OnSerialize_SetOverrideCallback(LNUIListBoxItem_OnSerialize_OverrideCallback callback);
@@ -5359,6 +5577,70 @@ typedef struct tagLNUISpriteSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNUISpriteSerializeHandler_RegisterSubclassTypeInfo(const LNUISpriteSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNUISpriteSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIIconSerializeHandler
+
+LN_FLAT_API LNResult LNUIIconSerializeHandler_Create(LNUIIconSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIIconSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIIconSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIIconSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIIconSerializeHandler_RegisterSubclassTypeInfo(const LNUIIconSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIIconSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UILayoutPanelSerializeHandler
+
+LN_FLAT_API LNResult LNUILayoutPanelSerializeHandler_Create(LNUILayoutPanelSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUILayoutPanelSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUILayoutPanelSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUILayoutPanelSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUILayoutPanelSerializeHandler_RegisterSubclassTypeInfo(const LNUILayoutPanelSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUILayoutPanelSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIBoxLayoutSerializeHandler
+
+LN_FLAT_API LNResult LNUIBoxLayoutSerializeHandler_Create(LNUIBoxLayoutSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIBoxLayoutSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIBoxLayoutSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIBoxLayoutSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIBoxLayoutSerializeHandler_RegisterSubclassTypeInfo(const LNUIBoxLayoutSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIBoxLayoutSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIGridLayoutSerializeHandler
+
+LN_FLAT_API LNResult LNUIGridLayoutSerializeHandler_Create(LNUIGridLayoutSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIGridLayoutSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIGridLayoutSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIGridLayoutSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIGridLayoutSerializeHandler_RegisterSubclassTypeInfo(const LNUIGridLayoutSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIGridLayoutSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // UIControlSerializeHandler

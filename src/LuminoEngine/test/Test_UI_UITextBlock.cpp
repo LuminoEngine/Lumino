@@ -11,14 +11,14 @@ TEST_F(Test_UI_UITextBlock, Basic)
 	auto text1 = UITextBlock::create();
 	text1->setText(u"ABCHIJabchij");
 	text1->setTextColor(Color::White);
-	text1->setAlignments(HAlignment::Left, VAlignment::Top);
+	text1->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 	Engine::mainUIView()->addElement(text1);
 
     auto text2 = UITextBlock::create();
     text2->setText(u"ABCHIJabchij");
     text2->setTextColor(Color::White);
     text2->setPosition(0, 60, 0);
-	text2->setAlignments(HAlignment::Left, VAlignment::Top);
+	text2->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
     Engine::mainUIView()->addElement(text2);
 
 	TestEnv::updateFrame();

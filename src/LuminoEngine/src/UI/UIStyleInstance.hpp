@@ -25,10 +25,10 @@ public:
     float height;
     Thickness margin;
     Thickness padding;
-    HAlignment hAlignment;
-    VAlignment vAlignment;
-    HAlignment horizontalContentAlignment;
-    VAlignment verticalContentAlignment;
+    UIHAlignment hAlignment;
+    UIVAlignment vAlignment;
+    UIHAlignment horizontalContentAlignment;
+    UIVAlignment verticalContentAlignment;
     float minWidth;
     float minHeight;
     float maxWidth;

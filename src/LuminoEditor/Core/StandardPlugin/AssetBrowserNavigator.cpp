@@ -115,7 +115,7 @@ void AssetBrowserNavigatorExtension::init()
     m_navbarItemContent->setIconName(u"file");
 
     m_splitter = ln::makeObject<ln::UISplitter>();
-    m_splitter->setOrientation(ln::Orientation::Vertical);
+    m_splitter->setOrientation(ln::UILayoutOrientation::Vertical);
     m_splitter->setCellDefinition(0, ln::UILayoutLengthType::Ratio, 1);
     m_splitter->setCellDefinition(1, ln::UILayoutLengthType::Ratio, 1);
 
@@ -230,7 +230,7 @@ bool AssetBrowserPane::init(lna::EditorContext* context)
 
         // TODO: とりいそぎ LevelEditor に追加したい臨時ボタン
         auto button = ln::UIButton::create(u">");
-        button->setAlignments(ln::HAlignment::Right, ln::VAlignment::Center);
+        button->setAlignments(ln::UIHAlignment::Right, ln::UIVAlignment::Center);
         button->setMargin(1);
         item->addChild(button);
 
@@ -257,8 +257,8 @@ bool AssetBrowserNavigator::init(lna::EditorContext* context)
 
     m_navigationItem = ln::makeObject<ln::UIIcon>();
     m_navigationItem->setIconName(u"file");
-    m_navigationItem->setHAlignment(ln::HAlignment::Center);
-    m_navigationItem->setVAlignment(ln::VAlignment::Center);
+    m_navigationItem->setHAlignment(ln::UIHAlignment::Center);
+    m_navigationItem->setVAlignment(ln::UIVAlignment::Center);
     m_navigationItem->setFontSize(24);
 
     m_mainPane = ln::makeObject<AssetBrowserPane>(context);

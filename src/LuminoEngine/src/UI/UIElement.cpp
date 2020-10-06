@@ -186,27 +186,27 @@ const Thickness& UIElement::padding() const
     return m_localStyle->mainStyle()->padding;
 }
 
-void UIElement::setHAlignment(HAlignment value)
+void UIElement::setHAlignment(UIHAlignment value)
 {
 	m_localStyle->mainStyle()->hAlignment = value;
 }
 
-HAlignment UIElement::hAlignment() const
+UIHAlignment UIElement::hAlignment() const
 {
 	return m_localStyle->mainStyle()->hAlignment;
 }
 
-void UIElement::setVAlignment(VAlignment value)
+void UIElement::setVAlignment(UIVAlignment value)
 {
 	m_localStyle->mainStyle()->vAlignment = value;
 }
 
-VAlignment UIElement::vAlignment() const
+UIVAlignment UIElement::vAlignment() const
 {
 	return m_localStyle->mainStyle()->vAlignment;
 }
 
-void UIElement::setAlignments(HAlignment halign, VAlignment valign)
+void UIElement::setAlignments(UIHAlignment halign, UIVAlignment valign)
 {
 	setHAlignment(halign);
 	setVAlignment(valign);

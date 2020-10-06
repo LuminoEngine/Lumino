@@ -71,14 +71,14 @@ void UITextBlock::init()
     // Lumino は今後モバイル・タブレット系に寄せていきたいところ。
     // 
     // また、デフォルトが Top-Left だと表示したときぱっと目に入りづらいことがあるので、デバッグや導入的な視点からちょっとマイナスかも。
-    //setHAlignment(HAlignment::Center);
-    //setVAlignment(VAlignment::Center);
+    //setHAlignment(UIHAlignment::Center);
+    //setVAlignment(UIVAlignment::Center);
 
     // [2020/5/3] ↑やっぱりやめ。
     // 実際に UI 作ってみて思ったことだけど、センタリングしたいっていう機会よりも左寄せのほうが圧倒的に多い。
     // チュートリアル用に視認しやすさを出したとしても、実際に使うときに煩わしいのはちょっと…。
-    setHAlignment(HAlignment::Left);
-    setVAlignment(VAlignment::Top);
+    setHAlignment(UIHAlignment::Left);
+    setVAlignment(UIVAlignment::Top);
 
     setBlendMode(BlendMode::Alpha);
 

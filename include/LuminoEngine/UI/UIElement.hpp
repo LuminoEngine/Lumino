@@ -167,23 +167,23 @@ public:
 
 	/** 要素の横方向の配置方法を設定します。 */
 	LN_METHOD(Property)
-	void setHAlignment(HAlignment value);
+	void setHAlignment(UIHAlignment value);
 
 	/** 要素の横方向の配置方法を取得します。 */
 	LN_METHOD(Property)
-	HAlignment hAlignment() const;
+	UIHAlignment hAlignment() const;
 
 	/** 要素の縦方向の配置方法を設定します。 */
 	LN_METHOD(Property)
-	void setVAlignment(VAlignment value);
+	void setVAlignment(UIVAlignment value);
 
 	/** 要素の縦方向の配置方法を取得します。 */
 	LN_METHOD(Property)
-	VAlignment vAlignment() const;
+	UIVAlignment vAlignment() const;
 
 	/** 要素の配置方法を設定します。 */
 	LN_METHOD()
-	void setAlignments(HAlignment halign, VAlignment valign);
+	void setAlignments(UIHAlignment halign, UIVAlignment valign);
 
     
 	/** このオブジェクトの位置を設定します。 */
