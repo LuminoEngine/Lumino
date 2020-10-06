@@ -131,10 +131,10 @@ bool UIElement::init(const UICreationContext* context)
 	// TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
 	m_finalStyle->backgroundMaterial = makeObject<Material>();
 
-	if (context->m_autoAddToPrimaryElement &&
-        m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToPrimaryElement)) {
-		attemptAddToPrimaryElement();
-	}
+	//if (context->m_autoAddToPrimaryElement &&
+ //       m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToPrimaryElement)) {
+	//	attemptAddToPrimaryElement();
+	//}
 
 
     //if (m_manager->mainContext()) {
@@ -1140,7 +1140,7 @@ void UIElement::onAddChild(UIElement* child)
 
 void UIElement::onEnabledChanged()
 {
-    if (!enabled()) {
+    if (!enabled() && m_manager) {
         m_manager->clearFocus(this);
     }
 }

@@ -19,16 +19,25 @@ class App_Sandbox_GridListBox : public Application
 
 		auto listbox1 = UIListBox::create();
 		listbox1->setItemsLayoutPanel(panel);
-		listbox1->setSize(300, 400);
+		//listbox1->setSize(300, 400);
 		
 
-		auto icon1 = makeObject<UIIcon>();
-		icon1->setIconName(u"file");
-		icon1->setFontSize(30);
+		{
+			auto icon = makeObject<UIIcon>();
+			icon->setIconName(u"file");
+			icon->setFontSize(30);
 
-		auto item1 = listbox1->addItem(icon1);
-		item1->getGridLayoutInfo()->actualLayoutRow = 0;
-		item1->getGridLayoutInfo()->actualLayoutColumn = 0;
+			auto text = makeObject<UITextBlock>(u"Item1");
+
+			auto item = makeObject<UIListBoxItem>();
+			item->addChild(icon);
+			item->addChild(text);
+			item->getGridLayoutInfo()->actualLayoutRow = 0;
+			item->getGridLayoutInfo()->actualLayoutColumn = 0;
+
+			listbox1->addItem(item);
+		}
+
 		auto item2 = listbox1->addItem(u"item2");
 		item2->getGridLayoutInfo()->actualLayoutRow = 0;
 		item2->getGridLayoutInfo()->actualLayoutColumn = 1;
@@ -40,16 +49,10 @@ class App_Sandbox_GridListBox : public Application
 		item4->getGridLayoutInfo()->actualLayoutColumn = 0;
 
 		auto window = UIWindow::create();
+		window->setSize(400, 300);
+		window->addChild(listbox1);
 
-
-		//listbox1->addChild(u"item4");
-		//listbox1->addChild(u"item4");
-		//listbox1->addChild(u"item4");
-		//listbox1->addChild(u"item4");
-		//listbox1->addChild(u"item4");
-		//listbox1->setHeight(200);
-		//layout1->addChild(listbox1);
-		Engine::ui()->addChild(listbox1);
+		UI::add(window);
     }
 
     void onUpdate() override

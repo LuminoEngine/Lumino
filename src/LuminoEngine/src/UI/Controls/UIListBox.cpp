@@ -20,6 +20,7 @@ UIListItem::UIListItem()
 	, m_isSelected(false)
 {
 	m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
+	m_specialElementFlags.set(detail::UISpecialElementFlags::ListItem);
 }
 
 bool UIListItem::init()
@@ -414,9 +415,15 @@ UIListBoxItem* UIListBox::addItem(const ln::String& text)
 
 UIListBoxItem* UIListBox::addItem(UIElement* content)
 {
-	auto item = makeObject<UIListBoxItem>(content);
-	addChild(item);
-	return item;
+	if (content->m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::ListItem)) {
+		addChild(content);
+		return static_cast<UIListBoxItem*>(content);
+	}
+	else {
+		auto item = makeObject<UIListBoxItem>(content);
+		addChild(item);
+		return item;
+	}
 }
 
 void UIListBox::bind(ObservablePropertyBase* prop)
