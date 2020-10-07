@@ -123,7 +123,7 @@ void UITextBlock::onRender(UIRenderingContext* context)
     //}
 
     Color color = m_finalStyle->textColor;
-    if (!enabled()) {
+    if (!isEnabled()) {
         color.a = 0.5;
     }
     context->setTextColor(color);

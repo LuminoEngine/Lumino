@@ -37,6 +37,17 @@ bool CharacterController::init()
     return true;
 }
 
+void CharacterController::setCameraControlEnabled(bool value)
+{
+	if (m_cameraControlEnabled != value) {
+		if (value)
+			retainCursorGrab();
+		else
+			releaseCursorGrab();
+		m_cameraControlEnabled = value;
+	}
+}
+
 void CharacterController::retainCursorGrab()
 {
 	if (Camera* camera = viewCamera()) {
@@ -353,7 +364,10 @@ void CharacterController::prepareViewCamera()
 
 		WorldRenderView* renderView = camera->renderView();
 		m_renderViewEventConnection = renderView->connectOnUIEvent(ln::bind(this, &CharacterController::handleUIEvent));
-		renderView->viewport()->grabCursor();
+		
+		if (m_cameraControlEnabled) {
+			renderView->viewport()->grabCursor();
+		}
 
 		m_lastCamera = camera;
 	}

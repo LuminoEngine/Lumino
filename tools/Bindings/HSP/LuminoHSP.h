@@ -10,6 +10,14 @@
 #include <string>
 #include "hsp3plugin/hsp3plugin.h"
 
+// Generator を簡潔に書くための std::string の実装。c_str() を書かなくてもいいようにする。
+class ArgString : public std::string
+{
+public:
+	ArgString(const char* s) : std::string(s) {}
+	operator const char* () const { return c_str(); }
+};
+
 #define sbAlloc hspmalloc
 #define sbFree hspfree
 
@@ -25,8 +33,8 @@ int fetchVAInt();
 int fetchVAInt(int defaultValue);
 double fetchVADouble();
 double fetchVADouble(double defaultValue);
-const char* fetchVAString();
-const char* fetchVAString(const char* defaultValue);
+ArgString fetchVAString();
+ArgString fetchVAString(const char* defaultValue);
 void* fetchVARawData();
 unsigned short* fetchVALabelPointer();
 
@@ -48,11 +56,22 @@ void setCallbackArg(int index, T && value)
 	g_callbackArgs[index] = ln::makeVariant(std::forward<T>(value));
 }
 
-template<class T>
-void setCallbackOutput(int index, T* value)
+//template<class T>
+//void setCallbackOutput(int index, T* value)
+//{
+//	LN_NOTIMPLEMENTED();
+//}
+
+inline void setCallbackOutput(int index, LNBool* outValue)
 {
-	LN_NOTIMPLEMENTED();
+	*outValue = (g_callbackArgs[index]->get<int>() != 0) ? LN_TRUE : LN_FALSE;
+}
+
+inline void setCallbackOutput(int index, int* outValue)
+{
+	*outValue = g_callbackArgs[index]->get<int>();
 }
 
 void ln_args_reffunc(int* typeRes, void** retValPtr);
+void ln_set_args_cmdfunc();
 

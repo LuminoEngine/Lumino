@@ -34,6 +34,7 @@ int main(int argc, char** argv)
             TEST_ROOT "include/LuminoEngine/Engine/Object.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Event.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Promise.hpp",
+			TEST_ROOT "include/LuminoEngine/Base/Variant.hpp",
 			TEST_ROOT "src/LuminoEngine/src/Runtime/BindingValidation.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Collection.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Serializer.hpp",

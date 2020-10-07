@@ -406,6 +406,7 @@ typedef LNResult(*LNUIEventHandlerCallback)(LNHandle uieventhandler);
 typedef LNResult(*LNInterpreterCommandDelegateCallback)(LNHandle interpretercommanddelegate, LNHandle p1, LNBool* outReturn);
 typedef LNResult(*LNObjectSerializeHandlerCallback)(LNHandle objectserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNEventConnectionSerializeHandlerCallback)(LNHandle eventconnectionserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNVariantSerializeHandlerCallback)(LNHandle variantserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNZVTestClass1SerializeHandlerCallback)(LNHandle zvtestclass1serializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNZVTestEventArgs1SerializeHandlerCallback)(LNHandle zvtesteventargs1serializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNSerializer2SerializeHandlerCallback)(LNHandle serializer2serializehandler, LNHandle self, LNHandle ar);
@@ -803,6 +804,52 @@ typedef struct tagLNPromiseFailureDelegate_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNPromiseFailureDelegate_RegisterSubclassTypeInfo(const LNPromiseFailureDelegate_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNPromiseFailureDelegate_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::Variant
+
+/**
+    @brief init.
+    @param[out] outVariant : instance.
+*/
+LN_FLAT_API LNResult LNVariant_Create(LNHandle* outVariant);
+
+/**
+    @brief setInt
+    @param[in] variant : instance
+*/
+LN_FLAT_API LNResult LNVariant_SetInt(LNHandle variant, int value);
+
+/**
+    @brief getInt
+    @param[in] variant : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNVariant_GetInt(LNHandle variant, int* outReturn);
+
+typedef LNResult(*LNVariant_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNVariant_OnSerialize_SetOverrideCallback(LNVariant_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNVariant_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] variant : instance
+*/
+LN_FLAT_API LNResult LNVariant_SetPrototype_OnSerialize(LNHandle variant, LNHandle callback);
+
+extern LN_FLAT_API int LNVariant_GetTypeInfoId();
+LN_FLAT_API void LNVariant_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNVariant_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNVariant_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNVariant_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNVariant_RegisterSubclassTypeInfo(const LNVariant_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNVariant_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::ZVTestDelegate1
@@ -1587,6 +1634,19 @@ extern LN_FLAT_API LNSubinstanceId LNCollisionEventHandler_GetSubinstanceId(LNHa
     @param[out] outCharacterController : instance.
 */
 LN_FLAT_API LNResult LNCharacterController_Create(LNHandle* outCharacterController);
+
+/**
+    @brief キーボードやゲームパッドによる操作の有効状態を設定します。 (default: true)
+    @param[in] charactercontroller : instance
+*/
+LN_FLAT_API LNResult LNCharacterController_SetInputControlEnabled(LNHandle charactercontroller, LNBool value);
+
+/**
+    @brief マウスによるカメラ操作の有効状態を設定します。 (default: true)
+    @param[in] charactercontroller : instance
+    @details 有効である場合、関連付けられているカメラを通じて、描画先となるビューの MouseGrab を取得します。つまり、マウスカーソルは非表示となり UI をポイントしてクリックする等の操作はできなくなります。
+*/
+LN_FLAT_API LNResult LNCharacterController_SetCameraControlEnabled(LNHandle charactercontroller, LNBool value);
 
 /**
     @brief キャラクターの高さを設定します。この値はカプセルコライダーの高さや、カメラの注視点として使用されます。 (default: 2.0)
@@ -3128,6 +3188,17 @@ LN_FLAT_API LNResult LNScene_StartFadeOut();
 */
 LN_FLAT_API LNResult LNScene_StartFadeIn();
 
+/**
+    @brief 画面全体へのブレンドカラーを設定します。(default: Black)
+*/
+LN_FLAT_API LNResult LNScene_SetScreenBlendColor(const LNColor* value);
+
+/**
+    @brief 画面全体へのブレンドカラーを取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_ScreenBlendColor(LNColor* outReturn);
+
 
 //==============================================================================
 // ln::Level
@@ -3501,7 +3572,20 @@ LN_FLAT_API LNResult LNUIElement_SetEnabled(LNHandle uielement, LNBool value);
     @param[in] uielement : instance
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LNResult LNUIElement_GetEnabled(LNHandle uielement, LNBool* outReturn);
+LN_FLAT_API LNResult LNUIElement_IsEnabled(LNHandle uielement, LNBool* outReturn);
+
+/**
+    @brief 任意のユーザーデータを設定します。
+    @param[in] uielement : instance
+*/
+LN_FLAT_API LNResult LNUIElement_SetData(LNHandle uielement, LNHandle value);
+
+/**
+    @brief 任意のユーザーデータを取得します。
+    @param[in] uielement : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIElement_GetData(LNHandle uielement, LNHandle* outReturn);
 
 /**
     @brief Add element to container. 論理的な子要素として追加する。
@@ -3693,6 +3777,11 @@ extern LN_FLAT_API LNSubinstanceId LNUIIcon_GetSubinstanceId(LNHandle handle);
     @brief add
 */
 LN_FLAT_API LNResult LNUI_Add(LNHandle element);
+
+/**
+    @brief remove
+*/
+LN_FLAT_API LNResult LNUI_Remove(LNHandle element);
 
 
 //==============================================================================
@@ -3965,6 +4054,13 @@ extern LN_FLAT_API LNSubinstanceId LNUIWindow_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::UIListItem
+
+/**
+    @brief Submit イベントの通知を受け取るコールバックを登録します。
+    @param[in] uilistitem : instance
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LNResult LNUIListItem_ConnectOnSubmit(LNHandle uilistitem, LNHandle handler, LNHandle* outReturn);
 
 typedef LNResult(*LNUIListItem_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNUIListItem_OnSerialize_SetOverrideCallback(LNUIListItem_OnSerialize_OverrideCallback callback);
@@ -4681,6 +4777,22 @@ typedef struct tagLNEventConnectionSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNEventConnectionSerializeHandler_RegisterSubclassTypeInfo(const LNEventConnectionSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNEventConnectionSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// VariantSerializeHandler
+
+LN_FLAT_API LNResult LNVariantSerializeHandler_Create(LNVariantSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNVariantSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNVariantSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNVariantSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNVariantSerializeHandler_RegisterSubclassTypeInfo(const LNVariantSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNVariantSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ZVTestClass1SerializeHandler

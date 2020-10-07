@@ -227,6 +227,12 @@ void Variant::assign(const Ref<List<Ref<Variant>>>& value)
     new(&v_List) Ref<List<Ref<Variant>>>(value);
 }
 
+int Variant::getInt() const
+{
+	if (LN_REQUIRE(isNumeric())) return 0;
+	return detail::VariantHelper::convertToNumeric<int32_t>(*this);
+}
+
 bool Variant::changeType(VariantType newType)
 {
 	if (m_type == newType) return false;

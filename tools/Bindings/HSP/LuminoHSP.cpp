@@ -53,12 +53,13 @@ double fetchVADouble(double defaultValue)
 	return code_getdd(defaultValue);
 }
 
-const char* fetchVAString()
+// code_gets() は呼び出すたびに共通のバッファを書き換えるので、戻り値を const char* にすることはできない。
+ArgString fetchVAString()
 {
 	return code_gets();
 }
 
-const char* fetchVAString(const char* defaultValue)
+ArgString fetchVAString(const char* defaultValue)
 {
 	return code_getds(defaultValue);
 }
@@ -101,6 +102,7 @@ static std::array<int, MaxArgs> g_callbackArgsBuffer_Int = {};
 static std::array<double, MaxArgs> g_callbackArgsBuffer_Double = {};
 static std::array<std::string, MaxArgs> g_callbackArgsBuffer_String = {};
 
+// ラベル呼び出しに引数を与えるための関数定義
 void ln_args_reffunc(int* typeRes, void** retValPtr)
 {
 	int index = code_geti();
@@ -158,4 +160,14 @@ void ln_args_reffunc(int* typeRes, void** retValPtr)
 		*retValPtr = &nullValue;
 		*typeRes = HSPVAR_FLAG_INT;
 	}
+}
+
+void ln_set_args_cmdfunc()
+{
+	const int index = fetchVAInt();
+
+	// TODO: いまは int のみ
+	const int value = fetchVAInt();
+
+	g_callbackArgs[index] = ln::makeVariant(value);
 }

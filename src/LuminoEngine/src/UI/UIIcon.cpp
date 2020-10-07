@@ -102,7 +102,7 @@ Size UIIcon::measureOverride(UILayoutContext* layoutContext, const Size& constra
 void UIIcon::onRender(UIRenderingContext* context)
 {
 	Color color = finalStyle()->textColor;
-	if (!enabled()) {
+	if (!isEnabled()) {
 		color.a = 0.5f;
 	}
 

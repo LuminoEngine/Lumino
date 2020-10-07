@@ -28,6 +28,7 @@ static const ln::String ASFileTemplate = uR"(
 %%Contents%%
 
 #cmd ln_args $1
+#cmd ln_set_args $2
 
 #endif // __lumino__
 )";
@@ -434,6 +435,7 @@ ln::String HSPCommandsGenerator::make_reffunc() const
             code.AppendLine(u"return true;");
             code.DecreaseIndent();
             code.AppendLine(u"}");
+
         }
         code.DecreaseIndent();
         code.AppendLine(u"}");
@@ -453,6 +455,16 @@ ln::String HSPCommandsGenerator::make_cmdfunc() const
     code.AppendLine(u"*retVal = RUNMODE_RUN;");
     code.AppendLine(u"switch (cmd) {");
     code.IncreaseIndent();
+
+    {
+        code.AppendLine(u"// ln_set_args");
+        code.AppendLine(u"case 0x2 : {");
+        code.IncreaseIndent();
+        code.AppendLines(u"ln_set_args_cmdfunc();");
+        code.AppendLine(u"return true;");
+        code.DecreaseIndent();
+        code.AppendLine(u"}");
+    }
     
     for (const auto& classSymbol : db()->classes()) {
 

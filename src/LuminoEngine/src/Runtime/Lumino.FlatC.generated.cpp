@@ -139,6 +139,73 @@ LN_FLAT_API LNResult LNEventConnectionSerializeHandler_Create(LNEventConnectionS
 
 
 // Auto generated override handler
+using VariantSerializeHandler = ln::Delegate<void(ln::Variant* self, ln::Serializer2* ar)>;
+
+class LNWS_VariantSerializeHandler : public VariantSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNVariantSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNVariantSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNVariantSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNVariantSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNVariantSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNVariantSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNVariantSerializeHandlerCallback m_callback;
+
+    LNWS_VariantSerializeHandler()
+      : VariantSerializeHandler([this](ln::Variant* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNVariantSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_VariantSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNVariantSerializeHandlerCallback callback)
+    {
+        if (!VariantSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNVariantSerializeHandler_Create(LNVariantSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_VariantSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
 using ZVTestClass1SerializeHandler = ln::Delegate<void(ln::ZVTestClass1* self, ln::Serializer2* ar)>;
 
 class LNWS_ZVTestClass1SerializeHandler : public ZVTestClass1SerializeHandler
@@ -5353,6 +5420,68 @@ LN_FLAT_API LNResult LNPromiseFailureDelegate_Create(LNPromiseFailureDelegateCal
 }
 
 
+class LNWS_ln_Variant : public ln::Variant
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNVariant_OverridePrototypes
+    {
+        ln::Ref<LNWS_VariantSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNVariant_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNVariant_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNVariant_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNVariant_SubclassRegistrationInfo* subclassInfo() { static LNVariant_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Variant()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Variant()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNVariant_OnSerialize_OverrideCallback s_LNVariant_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNVariant_OnSerialize_OverrideCallback) s_LNVariant_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Variant::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::Variant::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+LNVariant_OnSerialize_OverrideCallback LNWS_ln_Variant::s_LNVariant_OnSerialize_OverrideCallback = nullptr;
+
+
 class LNWS_ln_ZVTestDelegate1 : public ln::ZVTestDelegate1
 {
 public:
@@ -10451,6 +10580,81 @@ LNSubinstanceId LNPromiseFailureDelegate_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
+LN_FLAT_API LNResult LNVariant_Create(LNHandle* outVariant)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outVariant, LNWS_ln_Variant, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNVariant_SetInt(LNHandle variant, int value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Variant, variant)->setInt(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNVariant_GetInt(LNHandle variant, int* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Variant, variant)->getInt());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Variant, variant)->getInt());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNVariant_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Variant, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNVariant_OnSerialize_SetOverrideCallback(LNVariant_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Variant::s_LNVariant_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNVariant_SetPrototype_OnSerialize(LNHandle variant, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_Variant, variant)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_VariantSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNVariant_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Variant>()->id();
+}
+
+LN_FLAT_API void LNVariant_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Variant>(), id);
+}
+
+void LNVariant_RegisterSubclassTypeInfo(const LNVariant_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Variant>(), info->subclassId);
+        *LNWS_ln_Variant::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNVariant_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_Variant, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
 LN_FLAT_API void LNZVTestDelegate1_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestDelegate1>(), id);
@@ -11795,6 +11999,22 @@ LN_FLAT_API LNResult LNCharacterController_Create(LNHandle* outCharacterControll
 {
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outCharacterController, LNWS_ln_CharacterController, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNCharacterController_SetInputControlEnabled(LNHandle charactercontroller, LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CharacterController, charactercontroller)->setInputControlEnabled(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNCharacterController_SetCameraControlEnabled(LNHandle charactercontroller, LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CharacterController, charactercontroller)->setCameraControlEnabled(LNI_LNBOOL_TO_BOOL(value)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -14388,6 +14608,28 @@ LN_FLAT_API LNResult LNScene_StartFadeIn()
 }
 
 
+LN_FLAT_API LNResult LNScene_SetScreenBlendColor(const LNColor* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setScreenBlendColor(*reinterpret_cast<const ln::Color*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_ScreenBlendColor(LNColor* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LNColor>(ln::Scene::screenBlendColor());
+    }
+    else {
+        (ln::Scene::screenBlendColor());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNLevel_Create(LNHandle* outLevel)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -14964,14 +15206,36 @@ LN_FLAT_API LNResult LNUIElement_SetEnabled(LNHandle uielement, LNBool value)
 }
 
 
-LN_FLAT_API LNResult LNUIElement_GetEnabled(LNHandle uielement, LNBool* outReturn)
+LN_FLAT_API LNResult LNUIElement_IsEnabled(LNHandle uielement, LNBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->enabled());
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->isEnabled());
     }
     else {
-        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->enabled());
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->isEnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIElement_SetData(LNHandle uielement, LNHandle value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setData(LNI_HANDLE_TO_OBJECT(ln::Variant, value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIElement_GetData(LNHandle uielement, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->data());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->data());
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -15332,6 +15596,14 @@ LN_FLAT_API LNResult LNUI_Add(LNHandle element)
 {
     LNI_FUNC_TRY_BEGIN;
     (ln::UI::add(LNI_HANDLE_TO_OBJECT(ln::UIElement, element)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUI_Remove(LNHandle element)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::UI::remove(LNI_HANDLE_TO_OBJECT(ln::UIElement, element)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -15782,6 +16054,20 @@ LNSubinstanceId LNUIWindow_GetSubinstanceId(LNHandle handle)
     }
     return 0;
 }
+
+LN_FLAT_API LNResult LNUIListItem_ConnectOnSubmit(LNHandle uilistitem, LNHandle handler, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItem, uilistitem)->connectOnSubmit(LNI_HANDLE_TO_OBJECT(ln::UIGeneralEventHandler, handler)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItem, uilistitem)->connectOnSubmit(LNI_HANDLE_TO_OBJECT(ln::UIGeneralEventHandler, handler)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 LN_FLAT_API LNResult LNUIListItem_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
@@ -17146,6 +17432,29 @@ LNSubinstanceId LNEventConnectionSerializeHandler_GetSubinstanceId(LNHandle hand
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_EventConnectionSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNVariantSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<VariantSerializeHandler>(), id);
+}
+
+void LNVariantSerializeHandler_RegisterSubclassTypeInfo(const LNVariantSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<VariantSerializeHandler>(), info->subclassId);
+        *LNWS_VariantSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNVariantSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_VariantSerializeHandler, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;

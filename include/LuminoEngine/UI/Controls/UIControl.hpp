@@ -118,10 +118,6 @@ public:
 
 
 
-    void setData(Variant* value) { m_data = value; }
-    Variant* data() const { return m_data; }
-    template<typename T> T dataAs() const { return m_data->get<T>(); }
-
 
     /** コンテンツの横方向の配置方法を設定します。 */
     void setHorizontalContentAlignment(UIHAlignment value);
@@ -196,7 +192,6 @@ private:
 
 	List<Ref<UIActiveTimer>> m_activeTimers;
     Ref<List<Ref<UIAction>>> m_actions;
-    Ref<Variant> m_data;
 
     Event<UIEventHandler> m_onActivated;
     Event<UIEventHandler> m_onDeactivated;

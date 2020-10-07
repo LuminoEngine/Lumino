@@ -34,7 +34,7 @@ public:
 	// TODO: group
 
 	/** Submit イベントの通知を受け取るコールバックを登録します。*/
-	//LN_METHOD(Event)
+	LN_METHOD(Event)
 	Ref<EventConnection> connectOnSubmit(Ref<UIGeneralEventHandler> handler);
 
 

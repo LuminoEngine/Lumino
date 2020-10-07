@@ -254,15 +254,15 @@ const Vector3& UIElement::centerPoint() const
 
 void UIElement::setEnabled(bool value)
 {
-    bool oldValue = enabled();
+    bool oldValue = isEnabled();
     m_specialElementFlags.set(detail::UISpecialElementFlags::Enabled, value);
-    if (oldValue != enabled()) {
+    if (oldValue != isEnabled()) {
         updateEnabledPropertyOnChildren();
         onEnabledChanged();
     }
 }
 
-bool UIElement::enabled() const
+bool UIElement::isEnabled() const
 {
     if (!m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::InternalEnabled)) {
         // Parent is disabled.
@@ -270,6 +270,16 @@ bool UIElement::enabled() const
     }
 
     return m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::Enabled);
+}
+
+void UIElement::setData(Variant* value)
+{
+    m_data = value;
+}
+
+Variant* UIElement::data() const
+{
+    return m_data;
 }
 
 void UIElement::setBackgroundDrawMode(Sprite9DrawMode value)
@@ -600,7 +610,7 @@ UIFrameRenderView* UIElement::getRenderView()
 UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 {
 	if (!isRenderVisible()) return nullptr;
-    if (!enabled()) return nullptr;
+    if (!isEnabled()) return nullptr;
 
 	if (m_hitTestMode == detail::UIHitTestMode::Visible ||
 		m_hitTestMode == detail::UIHitTestMode::InvisiblePanel)
@@ -731,9 +741,9 @@ void UIElement::removeVisualChild(UIElement* element)
         m_focusedVisualChild = nullptr;
 
     {
-        bool oldValue = element->enabled();
+        bool oldValue = element->isEnabled();
         element->m_specialElementFlags.set(detail::UISpecialElementFlags::InternalEnabled, false);
-        if (oldValue != element->enabled()) {
+        if (oldValue != element->isEnabled()) {
             element->updateEnabledPropertyOnChildren();
             element->onEnabledChanged();
         }
@@ -991,7 +1001,7 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
     data.colorScale = m_finalStyle->colorScale;//colorScale();
     data.blendColor = m_finalStyle->blendColor;//blendColor();
     data.tone = m_finalStyle->tone; //tone();
-    if (!enabled()) {
+    if (!isEnabled()) {
         // Grayscale
         data.tone.s = 1.0f;
     }
@@ -1140,7 +1150,7 @@ void UIElement::onAddChild(UIElement* child)
 
 void UIElement::onEnabledChanged()
 {
-    if (!enabled() && m_manager) {
+    if (!isEnabled() && m_manager) {
         m_manager->clearFocus(this);
     }
 }
@@ -1256,11 +1266,11 @@ UIVisualStateManager* UIElement::getVisualStateManager()
 void UIElement::updateEnabledPropertyOnChildren()
 {
     if (m_visualChildren) {
-        bool value = enabled();
+        bool value = isEnabled();
         for (auto& child : m_visualChildren) {
-            bool oldValue = child->enabled();
+            bool oldValue = child->isEnabled();
             child->m_specialElementFlags.set(detail::UISpecialElementFlags::InternalEnabled, value);
-            if (oldValue != child->enabled()) {
+            if (oldValue != child->isEnabled()) {
                 child->updateEnabledPropertyOnChildren();
                 child->onEnabledChanged();
             }

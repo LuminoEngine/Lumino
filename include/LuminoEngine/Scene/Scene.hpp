@@ -151,8 +151,12 @@ public:
 	/** @name PostEffect */
 	/** @{ */
 
+	/** 画面全体へのブレンドカラーを設定します。(default: Black) */
+	LN_METHOD()
 	static void setScreenBlendColor(const Color& value);
 
+	/** 画面全体へのブレンドカラーを取得します。 */
+	LN_METHOD()
 	static const Color& screenBlendColor();
 
 	// ※ RGB は「加算」される

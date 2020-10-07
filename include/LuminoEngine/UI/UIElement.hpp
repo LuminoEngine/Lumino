@@ -5,6 +5,7 @@
 #include "UIEvents.hpp"
 
 namespace ln {
+class Variant;
 class UILayoutContext;
 class UIRenderingContext;
 class UIFrameRenderView;
@@ -104,6 +105,7 @@ private:
 
 
 
+/** UIElement */
 LN_CLASS()
 class UIElement
 	: public UILayoutElement
@@ -246,9 +248,17 @@ public:
     
 	/** 要素の有効状態を取得します。 */
 	LN_METHOD(Property)
-	bool enabled() const;
+	bool isEnabled() const;
 
+	/** 任意のユーザーデータを設定します。 */
+	LN_METHOD(Property)
+	void setData(Variant* value);
 
+	/** 任意のユーザーデータを取得します。 */
+	LN_METHOD(Property)
+	Variant* data() const;
+
+	template<typename T> T dataAs() const { return m_data->get<T>(); }
 
 
     /** 背景の描画モードを設定します。*/
@@ -396,7 +406,7 @@ public:
 
 	/** 入力フォーカスを得ることができるかどうかを設定します。(default: false) */
 	void setFocusable(bool value) { m_focusable = value; }
-	bool focusable() const { return enabled() && m_focusable; }
+	bool focusable() const { return isEnabled() && m_focusable; }
 
     void setClipToBounds(bool value) { m_clipToBounds = value; }
     bool clipToBounds() const { return m_clipToBounds; }
@@ -612,6 +622,7 @@ private:
 	void updateEnabledPropertyOnChildren();
 
     Flags<detail::UIElementDirtyFlags> m_dirtyFlags;
+	Ref<Variant> m_data;
 };
 
 } // namespace ln

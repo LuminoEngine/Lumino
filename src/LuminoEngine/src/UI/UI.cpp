@@ -19,7 +19,14 @@ UITheme* UI::mainTheme()
 
 void UI::add(UIElement* element)
 {
+	if (LN_REQUIRE(element)) return;
 	detail::EngineDomain::engineManager()->mainUIView()->addChild(element);
+}
+
+void UI::remove(UIElement* element)
+{
+	if (LN_REQUIRE(element)) return;
+	element->removeFromLogicalParent();
 }
 
 } // namespace ln

@@ -51,7 +51,10 @@ void serialize(Archive& ar, Variant& value);
 template<typename... TArgs>
 Ref<Variant> makeVariant(TArgs&&... args);
 
-class Variant : public Object
+/** Variant */
+LN_CLASS()
+class Variant
+	: public Object
 {
 public:
 	static const Variant Empty;
@@ -103,6 +106,10 @@ LN_CONSTRUCT_ACCESS:
 			tl.add(v);
 		}
 	}
+	
+	/** init. */
+	LN_METHOD()
+	bool init() { return Object::init(); }
 
 public:
 	void clear() LN_NOEXCEPT;
@@ -324,6 +331,14 @@ public:
 	void assign(const Ref<List<Ref<Variant>>>& value);
 
 	//const void* getValueRawPtr() const { return reinterpret_cast<const void*>(&v_Bool); }
+	
+	/** setInt */
+	LN_METHOD()
+	void setInt(int value) { return assign(value); }
+	
+	/** getInt */
+	LN_METHOD()
+	int getInt() const;
 
 private:
 	bool changeType(VariantType newType);

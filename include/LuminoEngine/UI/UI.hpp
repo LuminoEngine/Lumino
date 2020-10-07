@@ -13,6 +13,10 @@ public:
 	/** add */
 	LN_METHOD()
 	static void add(UIElement* element);
+	
+	/** remove */
+	LN_METHOD()
+	static void remove(UIElement* element);
 };
 
 } // namespace ln

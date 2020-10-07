@@ -40,9 +40,18 @@ public:
 	const Vector3& velocity() const { return m_currentVelocity; }
 
 
+	/** キーボードやゲームパッドによる操作の有効状態を設定します。 (default: true) */
+	LN_METHOD(Property)
 	void setInputControlEnabled(bool value) { m_inputControlEnabled = value; }
 
-	void setCameraControlEnabled(bool value) { m_cameraControlEnabled = value; }
+	/**
+	 * マウスによるカメラ操作の有効状態を設定します。 (default: true)
+	 *
+	 * 有効である場合、関連付けられているカメラを通じて、描画先となるビューの MouseGrab を取得します。
+	 * つまり、マウスカーソルは非表示となり UI をポイントしてクリックする等の操作はできなくなります。
+	 */
+	LN_METHOD(Property)
+	void setCameraControlEnabled(bool value);
 	
 	/** キャラクターの高さを設定します。この値はカプセルコライダーの高さや、カメラの注視点として使用されます。 (default: 2.0) */
 	LN_METHOD(Property)

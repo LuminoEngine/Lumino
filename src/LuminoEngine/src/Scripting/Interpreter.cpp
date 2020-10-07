@@ -185,7 +185,6 @@ bool Interpreter::isRunning() const
 	return !m_commandList.isEmpty() || m_waitCount > 0 || !m_waitMode.isEmpty();
 }
 
-//------------------------------------------------------------------------------
 void Interpreter::update()
 {
 	while (isRunning())
@@ -258,6 +257,7 @@ bool Interpreter::updateWait()
 	}
 
 	bool waiting = onUpdateWait();
+	std::cout << "onUpdateWait:" << waiting << std::endl;
 	if (!waiting) {
 		m_waitMode = u"";
 	}
@@ -286,6 +286,7 @@ bool Interpreter::executeCommand()
 	}
 	else
 	{
+		std::cout << "m_index:" << m_index << std::endl;
 		terminate();
 	}
 
@@ -301,6 +302,7 @@ bool Interpreter::onExecuteCommand(InterpreterCommand* cmd)
 		return itr->second->call(cmd);
 	}
 	else {
+		std::cout << "code: " << cmd->m_code << std::endl;
 		LN_NOTIMPLEMENTED();
 		// continue
 		return true;
