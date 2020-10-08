@@ -259,8 +259,10 @@ Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath) const
     return findAssetPath(filePath, &ext, 1);
 }
 
-void AssetManager::loadAssetModelFromAssetPathToInstance(Object* obj, const AssetPath& assetPath) const
+bool AssetManager::loadAssetModelFromAssetPathToInstance(Object* obj, const AssetPath& assetPath) const
 {
+    // TODO: ネットワークからのダウンロードとか。失敗したら return false
+
     auto stream = openStreamFromAssetPath(assetPath);
     auto text = FileSystem::readAllText(stream);
 
@@ -268,6 +270,8 @@ void AssetManager::loadAssetModelFromAssetPathToInstance(Object* obj, const Asse
     Serializer2::deserializeInstance(asset, text, assetPath.getParentAssetPath());
 
     obj->setAssetPath(assetPath);
+
+    return true;
 }
 
 void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& filePath) const

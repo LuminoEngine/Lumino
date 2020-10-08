@@ -46,7 +46,7 @@ public:
 
     Ref<AssetModel> loadAssetModelFromLocalFile(const String& filePath) const;
     Ref<AssetModel> loadAssetModelFromAssetPath(const AssetPath& assetPath) const;
-    void loadAssetModelFromAssetPathToInstance(Object* obj, const AssetPath& assetPath) const;
+    bool loadAssetModelFromAssetPathToInstance(Object* obj, const AssetPath& assetPath) const;
     void saveAssetModelToLocalFile(AssetModel* asset, const String& filePath = String::Empty) const;  // 別名で保存するときは filePath を指定する
 
     String assetPathToLocalFullPath(const AssetPath& assetPath) const;

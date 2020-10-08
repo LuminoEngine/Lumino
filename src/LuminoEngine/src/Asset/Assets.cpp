@@ -324,6 +324,15 @@ AssetPath::AssetPath(const String& scheme, const String& host, const Path& path)
     //if (m_components->path.str()[0] != u'/') m_components->path = Path(u"/" + path.str());
 }
 
+void AssetPath::clear()
+{
+    if (m_components) {
+        m_components->scheme.clear();
+        m_components->host.clear();
+        m_components->path.clear();
+    }
+}
+
 AssetPath AssetPath::makeEmpty()
 {
     AssetPath assetPath;

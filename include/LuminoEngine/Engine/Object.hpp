@@ -39,6 +39,9 @@ class ObjectHelper;
 class EngineDomain;
 struct ObjectRuntimeData;
 
+// ファイルを一意に識別する。
+// Lumino の各 AssetObject は load() にて拡張子省略されたパスを受け入れるが、
+// AssetPath はそれが解決された後の、本当に読み込みたいファイルのパスとなる。
 class AssetPath
 {
 public:
@@ -71,6 +74,7 @@ public:
 
     AssetPath();
     AssetPath(const String& scheme, const String& host, const Path& path);
+    void clear();
 
     const String& scheme() const { return m_components->scheme; }
     const String& host() const { return m_components->host; }
@@ -80,7 +84,7 @@ public:
     static bool isAssetFilePath(const Path& path);
     AssetPath getParentAssetPath() const;  // 親フォルダ
     String toString() const;
-    bool isNull() const noexcept { return m_components == nullptr; }
+    bool isNull() const noexcept { return m_components == nullptr || m_components->scheme.isEmpty(); }
     bool hasValue() const noexcept { return !isNull(); }
     uint64_t calculateHash() const;
 

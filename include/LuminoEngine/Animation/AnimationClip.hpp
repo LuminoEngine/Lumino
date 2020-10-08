@@ -55,7 +55,7 @@ public:
 	const String& name() const { return m_name; }
 
 protected:
-	void onLoadSourceFile() override;
+	void onLoadResourceFile() override;
 
 LN_CONSTRUCT_ACCESS:
 	AnimationClip();

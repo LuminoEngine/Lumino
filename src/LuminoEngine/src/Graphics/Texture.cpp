@@ -48,7 +48,7 @@ void Texture::onDispose(bool explicitDisposing)
     AssetObject::onDispose(explicitDisposing);
 }
 
-void Texture::onLoadSourceFile()
+void Texture::onLoadResourceFile()
 {
     LN_UNREACHABLE();
 }
@@ -361,7 +361,7 @@ void Texture2D::serialize(Serializer2& ar)
     }
 }
 
-void Texture2D::onLoadSourceFile()
+void Texture2D::onLoadResourceFile()
 {
     assert(!m_sourceFilePath.isNull());
 

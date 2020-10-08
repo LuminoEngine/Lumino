@@ -43,7 +43,7 @@ protected:
     void init();
     void onDispose(bool explicitDisposing) override;
     void onManagerFinalizing() override { dispose(); }
-    void onLoadSourceFile() override;
+    void onLoadResourceFile() override;
     virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) = 0;
 
 private:
@@ -155,7 +155,7 @@ protected:
     void onChangeDevice(detail::IGraphicsDevice* device) override;
     detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
     void serialize(Serializer2& ar) override;
-    void onLoadSourceFile() override;
+    void onLoadResourceFile() override;
 
 LN_CONSTRUCT_ACCESS:
     Texture2D();

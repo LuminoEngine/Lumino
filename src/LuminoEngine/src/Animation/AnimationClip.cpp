@@ -83,7 +83,7 @@ void AnimationClip::addTrack(AnimationTrack* track)
     m_lastFrameTime = track->lastFrameTime();
 }
 
-void AnimationClip::onLoadSourceFile()
+void AnimationClip::onLoadResourceFile()
 {
 	if (LN_REQUIRE(!m_assetSourcePath.isNull())) return;
 
