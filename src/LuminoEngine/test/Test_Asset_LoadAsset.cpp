@@ -18,14 +18,20 @@ TEST_F(Test_Asset_LoadAsset, Basic)
 		archive.open(assetFile, u"pass");
 		archive.addFile(LN_ASSETFILE("Graphics/Numbers1.png"), u"x/Numbers1.png");
 		archive.addFile(LN_TEMPFILE("UniformBufferTest-1.lcfx"), u"x/Shaders/UniformBufferTest-1.lcfx");
+		archive.addFile(LN_ASSETFILE("Mesh/BoxTextured/BoxTextured.gltf"), u"x/BoxTextured/BoxTextured.gltf");
+		archive.addFile(LN_ASSETFILE("Mesh/BoxTextured/BoxTextured0.bin"), u"x/BoxTextured/BoxTextured0.bin");
+		archive.addFile(LN_ASSETFILE("Mesh/BoxTextured/CesiumLogoFlat.png"), u"x/BoxTextured/CesiumLogoFlat.png");
 		archive.close();
 	}
 
 	detail::EngineDomain::assetManager()->addAssetArchive(assetFile, u"pass");
 
-
 	{
 		auto obj = Texture2D::load(u"x/Numbers1.png");
+		ASSERT_EQ(true, obj != nullptr);
+	}
+	{
+		auto obj = StaticMeshModel::load(u"x/BoxTextured/BoxTextured.gltf");
 		ASSERT_EQ(true, obj != nullptr);
 	}
 }
