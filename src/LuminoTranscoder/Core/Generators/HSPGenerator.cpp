@@ -69,6 +69,10 @@ ln::String HSPHeaderGenerator::makeStructs() const
     OutputBuffer code;
     for (const auto& structSymbol : db()->structs()) {
         code.AppendLine("#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), getCommandId(structSymbol));
+
+        for (const auto& methodSymbol : structSymbol->publicMethods()) {
+            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode), getCommandId(methodSymbol));
+        }
     }
     return code.toString();
 }
@@ -465,14 +469,28 @@ ln::String HSPCommandsGenerator::make_cmdfunc() const
         code.DecreaseIndent();
         code.AppendLine(u"}");
     }
+
+    for (const auto& structSymbol : db()->structs()) {
+        auto methods = structSymbol->publicMethods();
+        for (const auto& methodSymbol : methods) {
+            if (methodSymbol->isFieldAccessor()) {
+                // TODO: とりあえずすぐ必要だった Vector3 は get() を用意することで逃げた
+            }
+            else {
+                code.AppendLine(u"// " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii));
+                code.AppendLine(u"case 0x{0:X} : {{", getCommandId(methodSymbol));
+                code.IncreaseIndent();
+
+                code.AppendLines(makeCallCommandBlock(methodSymbol));
+
+                code.AppendLine(u"return true;");
+                code.DecreaseIndent();
+                code.AppendLine(u"}");
+            }
+        }
+    }
     
     for (const auto& classSymbol : db()->classes()) {
-
-
-        //auto methods = stream::MakeStream::from(classSymbol->publicMethods())
-        //    | stream::op::concat(stream::MakeStream::from(classSymbol->virtualPrototypeSetters()));
-
-        //for (const auto& methodSymbol : methods) {
         auto methods = classSymbol->publicMethods();
         methods.addRange(classSymbol->virtualPrototypeSetters());
         for (const auto& methodSymbol : methods) {
@@ -561,7 +579,9 @@ ln::String HSPCommandsGenerator::makeCallCommandBlock(const MethodSymbol* method
         else if (param->type()->isStruct()) {
             prologue.AppendLine(u"PVal* pval_{0};", param->name());
             prologue.AppendLine(u"CodeGetVA_TypeChecked(&pval_{0}, {1});", param->name(), makeFlatTypeName2(param->type()));
-            args.AppendCommad(u"reinterpret_cast<const {0}*>(pval_{1}->pt)", makeFlatTypeName2(param->type()), param->name());
+
+            ln::String mod = methodSymbol->isConst() ? u"const " : u"";
+            args.AppendCommad(u"reinterpret_cast<{0}{1}*>(pval_{2}->pt)", mod, makeFlatTypeName2(param->type()), param->name());
         }
         else {
             prologue.AppendLine(makeGetVAExpr(param));

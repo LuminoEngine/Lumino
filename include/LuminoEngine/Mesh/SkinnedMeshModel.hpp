@@ -163,6 +163,8 @@ public:
 	LN_METHOD()
 	static Ref<SkinnedMeshModel> load(const StringRef& filePath);
 
+	/** animationController */
+	LN_METHOD(Property)
 	AnimationController* animationController() const;
 
 	//void addMeshContainer(MeshContainer* meshContainer);
@@ -227,13 +229,14 @@ private:
 
 
 /** スキンメッシュアニメーションにおいてキャラクターの挙動を操作するためのクラスです。 */
-class AnimationController final
+LN_CLASS()
+class AnimationController
 	: public Object
 	, public detail::IAnimationMixerCoreHolder
 {
 public:
-
 	/** アニメーションクリップを追加します。 (レイヤー0 へ追加されます) */
+	LN_METHOD()
 	AnimationState* addClip(AnimationClip* animationClip) { return m_core->addClip(animationClip); }
 
 	/** ステート名を指定してアニメーションクリップを追加します。 (レイヤー0 へ追加されます) */
@@ -247,6 +250,9 @@ public:
 
 	/// 再生
 	void play(const StringRef& stateName, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/) { m_core->play(stateName, duration); }
+
+	/** play */
+	LN_METHOD()
 	void play(AnimationState* state, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/) { m_core->play(state, duration); }
 
 	///// ブレンド (アニメーションの再生には影響しない。停止中のアニメーションがこの関数によって再生開始されることはない)

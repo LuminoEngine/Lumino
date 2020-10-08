@@ -50,6 +50,8 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/Rendering/RenderView.hpp",
 			TEST_ROOT "include/LuminoEngine/Mesh/SkinnedMeshModel.hpp",
 			TEST_ROOT "include/LuminoEngine/Physics/CollisionShape.hpp",
+			TEST_ROOT "include/LuminoEngine/Animation/AnimationClip.hpp",
+			TEST_ROOT "include/LuminoEngine/Animation/AnimationMixer.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Component.hpp",
 			TEST_ROOT "include/LuminoEngine/Visual/VisualComponent.hpp",
 			TEST_ROOT "include/LuminoEngine/Visual/SpriteComponent.hpp",

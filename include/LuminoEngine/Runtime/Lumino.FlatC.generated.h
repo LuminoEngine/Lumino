@@ -415,8 +415,11 @@ typedef LNResult(*LNTextureSerializeHandlerCallback)(LNHandle textureserializeha
 typedef LNResult(*LNTexture2DSerializeHandlerCallback)(LNHandle texture2dserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNRenderViewSerializeHandlerCallback)(LNHandle renderviewserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNSkinnedMeshModelSerializeHandlerCallback)(LNHandle skinnedmeshmodelserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNAnimationControllerSerializeHandlerCallback)(LNHandle animationcontrollerserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNCollisionShapeSerializeHandlerCallback)(LNHandle collisionshapeserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNBoxCollisionShapeSerializeHandlerCallback)(LNHandle boxcollisionshapeserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNAnimationClipSerializeHandlerCallback)(LNHandle animationclipserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNAnimationStateSerializeHandlerCallback)(LNHandle animationstateserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNComponentSerializeHandlerCallback)(LNHandle componentserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNVisualComponentSerializeHandlerCallback)(LNHandle visualcomponentserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNSpriteComponentSerializeHandlerCallback)(LNHandle spritecomponentserializehandler, LNHandle self, LNHandle ar);
@@ -499,6 +502,13 @@ LN_FLAT_API LNResult LNVector3_SetZeros(LNVector3* vector3);
     @param[in] vector3 : instance
 */
 LN_FLAT_API LNResult LNVector3_Set(LNVector3* vector3, float x, float y, float z);
+
+
+/**
+    @brief get
+    @param[in] vector3 : instance
+*/
+LN_FLAT_API LNResult LNVector3_Get(const LNVector3* vector3, float* outX, float* outY, float* outZ);
 
 
 /**
@@ -1420,6 +1430,13 @@ extern LN_FLAT_API LNSubinstanceId LNRenderView_GetSubinstanceId(LNHandle handle
 LN_FLAT_API LNResult LNSkinnedMeshModel_Load(const LNChar* filePath, LNHandle* outReturn);
 LN_FLAT_API LNResult LNSkinnedMeshModel_LoadA(const char* filePath, LNHandle* outReturn);
 
+/**
+    @brief animationController
+    @param[in] skinnedmeshmodel : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNSkinnedMeshModel_GetAnimationController(LNHandle skinnedmeshmodel, LNHandle* outReturn);
+
 typedef LNResult(*LNSkinnedMeshModel_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNSkinnedMeshModel_OnSerialize_SetOverrideCallback(LNSkinnedMeshModel_OnSerialize_OverrideCallback callback);
 LN_FLAT_API LNResult LNSkinnedMeshModel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
@@ -1443,6 +1460,46 @@ typedef struct tagLNSkinnedMeshModel_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNSkinnedMeshModel_RegisterSubclassTypeInfo(const LNSkinnedMeshModel_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNSkinnedMeshModel_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::AnimationController
+
+/**
+    @brief アニメーションクリップを追加します。 (レイヤー0 へ追加されます)
+    @param[in] animationcontroller : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNAnimationController_AddClip(LNHandle animationcontroller, LNHandle animationClip, LNHandle* outReturn);
+
+/**
+    @brief play
+    @param[in] animationcontroller : instance
+*/
+LN_FLAT_API LNResult LNAnimationController_Play(LNHandle animationcontroller, LNHandle state, float duration);
+
+typedef LNResult(*LNAnimationController_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNAnimationController_OnSerialize_SetOverrideCallback(LNAnimationController_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNAnimationController_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] animationcontroller : instance
+*/
+LN_FLAT_API LNResult LNAnimationController_SetPrototype_OnSerialize(LNHandle animationcontroller, LNHandle callback);
+
+extern LN_FLAT_API int LNAnimationController_GetTypeInfoId();
+LN_FLAT_API void LNAnimationController_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNAnimationController_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNAnimationController_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNAnimationController_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNAnimationController_RegisterSubclassTypeInfo(const LNAnimationController_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNAnimationController_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::CollisionShape
@@ -1509,6 +1566,67 @@ typedef struct tagLNBoxCollisionShape_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNBoxCollisionShape_RegisterSubclassTypeInfo(const LNBoxCollisionShape_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNBoxCollisionShape_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::AnimationClip
+
+/**
+    @brief load
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LNResult LNAnimationClip_Load(const LNChar* filePath, LNHandle* outReturn);
+LN_FLAT_API LNResult LNAnimationClip_LoadA(const char* filePath, LNHandle* outReturn);
+
+typedef LNResult(*LNAnimationClip_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNAnimationClip_OnSerialize_SetOverrideCallback(LNAnimationClip_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNAnimationClip_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] animationclip : instance
+*/
+LN_FLAT_API LNResult LNAnimationClip_SetPrototype_OnSerialize(LNHandle animationclip, LNHandle callback);
+
+extern LN_FLAT_API int LNAnimationClip_GetTypeInfoId();
+LN_FLAT_API void LNAnimationClip_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNAnimationClip_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNAnimationClip_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNAnimationClip_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNAnimationClip_RegisterSubclassTypeInfo(const LNAnimationClip_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNAnimationClip_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::AnimationState
+
+typedef LNResult(*LNAnimationState_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNAnimationState_OnSerialize_SetOverrideCallback(LNAnimationState_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNAnimationState_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] animationstate : instance
+*/
+LN_FLAT_API LNResult LNAnimationState_SetPrototype_OnSerialize(LNHandle animationstate, LNHandle callback);
+
+extern LN_FLAT_API int LNAnimationState_GetTypeInfoId();
+LN_FLAT_API void LNAnimationState_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNAnimationState_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNAnimationState_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNAnimationState_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNAnimationState_RegisterSubclassTypeInfo(const LNAnimationState_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNAnimationState_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::Component
@@ -1634,6 +1752,19 @@ extern LN_FLAT_API LNSubinstanceId LNCollisionEventHandler_GetSubinstanceId(LNHa
     @param[out] outCharacterController : instance.
 */
 LN_FLAT_API LNResult LNCharacterController_Create(LNHandle* outCharacterController);
+
+/**
+    @brief setVelocity
+    @param[in] charactercontroller : instance
+*/
+LN_FLAT_API LNResult LNCharacterController_SetVelocity(LNHandle charactercontroller, const LNVector3* value);
+
+/**
+    @brief velocity
+    @param[in] charactercontroller : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNCharacterController_GetVelocity(LNHandle charactercontroller, LNVector3* outReturn);
 
 /**
     @brief キーボードやゲームパッドによる操作の有効状態を設定します。 (default: true)
@@ -4923,6 +5054,22 @@ extern LN_FLAT_API void LNSkinnedMeshModelSerializeHandler_RegisterSubclassTypeI
 extern LN_FLAT_API LNSubinstanceId LNSkinnedMeshModelSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// AnimationControllerSerializeHandler
+
+LN_FLAT_API LNResult LNAnimationControllerSerializeHandler_Create(LNAnimationControllerSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNAnimationControllerSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNAnimationControllerSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNAnimationControllerSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNAnimationControllerSerializeHandler_RegisterSubclassTypeInfo(const LNAnimationControllerSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNAnimationControllerSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // CollisionShapeSerializeHandler
 
 LN_FLAT_API LNResult LNCollisionShapeSerializeHandler_Create(LNCollisionShapeSerializeHandlerCallback callback, LNHandle* outDelegate);
@@ -4953,6 +5100,38 @@ typedef struct tagLNBoxCollisionShapeSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNBoxCollisionShapeSerializeHandler_RegisterSubclassTypeInfo(const LNBoxCollisionShapeSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNBoxCollisionShapeSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// AnimationClipSerializeHandler
+
+LN_FLAT_API LNResult LNAnimationClipSerializeHandler_Create(LNAnimationClipSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNAnimationClipSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNAnimationClipSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNAnimationClipSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNAnimationClipSerializeHandler_RegisterSubclassTypeInfo(const LNAnimationClipSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNAnimationClipSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// AnimationStateSerializeHandler
+
+LN_FLAT_API LNResult LNAnimationStateSerializeHandler_Create(LNAnimationStateSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNAnimationStateSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNAnimationStateSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNAnimationStateSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNAnimationStateSerializeHandler_RegisterSubclassTypeInfo(const LNAnimationStateSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNAnimationStateSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ComponentSerializeHandler

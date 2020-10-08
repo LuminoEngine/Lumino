@@ -35,8 +35,12 @@ public:
 	const Ref<RigidBody>& rigidBody() const { return m_rigidBody; }
 
 	// InputControlEnabled=true の時に有効
+	/** setVelocity */
+	LN_METHOD(Property)
 	void setVelocity(const Vector3& value) { m_currentVelocity = value; }
 
+	/** velocity */
+	LN_METHOD(Property)
 	const Vector3& velocity() const { return m_currentVelocity; }
 
 

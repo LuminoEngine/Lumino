@@ -12,7 +12,7 @@ class AnimationClip;
 /**
  * AnimationClipPromise
  */
-LN_PROMISE()
+//LN_PROMISE()
 using AnimationClipPromise = Promise<Ref<AnimationClip>>;
 
 /**
@@ -20,6 +20,7 @@ using AnimationClipPromise = Promise<Ref<AnimationClip>>;
  *
  * スキンメッシュアニメーションでは、「歩く」「走る」といった 1 モーションの単位です。
  */
+LN_CLASS()
 class AnimationClip
 	: public AssetObject
 {
@@ -27,6 +28,8 @@ public:
     /** ひとつの AnimationTrack を持つ AnimationClip を作成します。 */
 	static Ref<AnimationClip> create(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
 
+	/** load */
+	LN_METHOD()
 	static Ref<AnimationClip> load(const StringRef& filePath);
 
 	/** アニメーションの繰り返しの動作を取得します。(default: Loop) */
