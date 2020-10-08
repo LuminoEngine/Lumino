@@ -361,9 +361,11 @@ public:
     BlendMode blendMode() const;
 
     /** 不透明度を設定します。(default: 1.0) */
+	LN_METHOD(Property)
     void setOpacity(float value);	// TODO: 子要素へ継承してほしい
 
     /** 不透明度を取得します。 */
+	LN_METHOD(Property)
     float opacity() const;
 
     /** カラースケールを設定します。(default: Color(1, 1, 1, 1)) */

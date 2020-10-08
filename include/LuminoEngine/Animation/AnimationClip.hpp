@@ -38,10 +38,12 @@ public:
 	/** アニメーションの繰り返しの動作を取得します。 */
 	AnimationWrapMode wrapMode() const { return m_wrapMode; }
 
-	/** アニメーションの繰り返しの動作を取得します。(default: AllowTranslationOnlyRoot) */
+	/** 階層構造を持つアニメーションデータの動作モード。(default: AllowTranslationOnlyRoot) */
+	LN_METHOD()
 	void setHierarchicalAnimationMode(HierarchicalAnimationMode value) { m_hierarchicalAnimationMode = value; }
 
-	/** アニメーションの繰り返しの動作を取得します。 */
+	/** 階層構造を持つアニメーションデータの動作モード。 */
+	LN_METHOD()
 	HierarchicalAnimationMode hierarchicalAnimationMode() const { return m_hierarchicalAnimationMode; }
 
     void addTrack(AnimationTrack* track);

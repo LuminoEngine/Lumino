@@ -273,6 +273,33 @@ typedef enum tagLNSceneClearMode
 } LNSceneClearMode;
 
 /**
+    @brief 階層構造を持つアニメーションデータの動作モード
+*/
+typedef enum tagLNHierarchicalAnimationMode
+{
+    /**
+        @brief ルートノードのみ、平行移動を有効化します。
+    */
+    LN_HIERARCHICAL_ANIMATION_MODE_ALLOW_TRANSLATION_ONLY_ROOT = 0,
+
+    /**
+        @brief AllowTranslationOnlyRootY
+    */
+    LN_HIERARCHICAL_ANIMATION_MODE_ALLOW_TRANSLATION_ONLY_ROOT_Y = 1,
+
+    /**
+        @brief すべてのノードの平行移動を有効化します。
+    */
+    LN_HIERARCHICAL_ANIMATION_MODE_ALLOW_TRANSLATION = 2,
+
+    /**
+        @brief 平行移動を無効化します。
+    */
+    LN_HIERARCHICAL_ANIMATION_MODE_DISABLE_TRANSLATION = 3,
+
+} LNHierarchicalAnimationMode;
+
+/**
     @brief レベル遷移時の画面エフェクトの種類
 */
 typedef enum tagLNLevelTransitionEffectMode
@@ -1261,6 +1288,60 @@ LN_FLAT_API LNResult LNAssets_ReloadAssetA(const char* filePath, LNHandle obj);
 
 
 //==============================================================================
+// ln::Audio
+
+/**
+    @brief BGM を演奏する
+*/
+LN_FLAT_API LNResult LNAudio_PlayBGM(const LNChar* filePath, float volume, float pitch, double fadeTime);
+LN_FLAT_API LNResult LNAudio_PlayBGMA(const char* filePath, float volume, float pitch, double fadeTime);
+
+/**
+    @brief BGM の演奏を停止する
+*/
+LN_FLAT_API LNResult LNAudio_StopBGM(double fadeTime);
+
+/**
+    @brief BGS (環境音) を演奏する
+*/
+LN_FLAT_API LNResult LNAudio_PlayBGS(const LNChar* filePath, float volume, float pitch, double fadeTime);
+LN_FLAT_API LNResult LNAudio_PlayBGSA(const char* filePath, float volume, float pitch, double fadeTime);
+
+/**
+    @brief BGS の演奏を停止する
+*/
+LN_FLAT_API LNResult LNAudio_StopBGS(double fadeTime);
+
+/**
+    @brief ME (効果音楽) を演奏する
+*/
+LN_FLAT_API LNResult LNAudio_PlayME(const LNChar* filePath, float volume, float pitch);
+LN_FLAT_API LNResult LNAudio_PlayMEA(const char* filePath, float volume, float pitch);
+
+/**
+    @brief ME の演奏を停止する
+*/
+LN_FLAT_API LNResult LNAudio_StopME();
+
+/**
+    @brief SE を演奏する
+*/
+LN_FLAT_API LNResult LNAudio_PlaySE(const LNChar* filePath, float volume, float pitch);
+LN_FLAT_API LNResult LNAudio_PlaySEA(const char* filePath, float volume, float pitch);
+
+/**
+    @brief SE を 3D 空間上で演奏する
+*/
+LN_FLAT_API LNResult LNAudio_PlaySE3D(const LNChar* filePath, const LNVector3* position, float distance, float volume, float pitch);
+LN_FLAT_API LNResult LNAudio_PlaySE3DA(const char* filePath, const LNVector3* position, float distance, float volume, float pitch);
+
+/**
+    @brief 全ての SE の演奏を停止する
+*/
+LN_FLAT_API LNResult LNAudio_StopSE();
+
+
+//==============================================================================
 // ln::Texture2DDelegate
 
 LN_FLAT_API LNResult LNTexture2DDelegate_Create(LNTexture2DDelegateCallback callback, LNHandle* outDelegate);
@@ -1576,6 +1657,19 @@ extern LN_FLAT_API LNSubinstanceId LNBoxCollisionShape_GetSubinstanceId(LNHandle
 */
 LN_FLAT_API LNResult LNAnimationClip_Load(const LNChar* filePath, LNHandle* outReturn);
 LN_FLAT_API LNResult LNAnimationClip_LoadA(const char* filePath, LNHandle* outReturn);
+
+/**
+    @brief 階層構造を持つアニメーションデータの動作モード。(default: AllowTranslationOnlyRoot)
+    @param[in] animationclip : instance
+*/
+LN_FLAT_API LNResult LNAnimationClip_SetHierarchicalAnimationMode(LNHandle animationclip, LNHierarchicalAnimationMode value);
+
+/**
+    @brief 階層構造を持つアニメーションデータの動作モード。
+    @param[in] animationclip : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNAnimationClip_HierarchicalAnimationMode(LNHandle animationclip, LNHierarchicalAnimationMode* outReturn);
 
 typedef LNResult(*LNAnimationClip_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNAnimationClip_OnSerialize_SetOverrideCallback(LNAnimationClip_OnSerialize_OverrideCallback callback);
@@ -3717,6 +3811,19 @@ LN_FLAT_API LNResult LNUIElement_SetData(LNHandle uielement, LNHandle value);
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LNResult LNUIElement_GetData(LNHandle uielement, LNHandle* outReturn);
+
+/**
+    @brief 不透明度を設定します。(default: 1.0)
+    @param[in] uielement : instance
+*/
+LN_FLAT_API LNResult LNUIElement_SetOpacity(LNHandle uielement, float value);
+
+/**
+    @brief 不透明度を取得します。
+    @param[in] uielement : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIElement_GetOpacity(LNHandle uielement, float* outReturn);
 
 /**
     @brief Add element to container. 論理的な子要素として追加する。

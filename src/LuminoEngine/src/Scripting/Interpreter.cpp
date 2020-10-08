@@ -257,7 +257,6 @@ bool Interpreter::updateWait()
 	}
 
 	bool waiting = onUpdateWait();
-	std::cout << "onUpdateWait:" << waiting << std::endl;
 	if (!waiting) {
 		m_waitMode = u"";
 	}

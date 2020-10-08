@@ -82,6 +82,8 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
 
 bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
+    const bool toneEnabled = m_owner->m_screenBlendColor.a > 0.0f || !m_owner->m_screenColorTone.isZero();
+
     if (!m_owner->m_antialiasEnabled &&
         !m_owner->m_ssrEnabled &&
         !m_owner->m_ssaoEnabled &&
@@ -89,7 +91,8 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
         !m_owner->m_dofEnabled &&
         !m_owner->m_tonemapEnabled &&
         !m_owner->m_vignetteEnabled &&
-        !m_owner->m_gammaEnabled) {
+        !m_owner->m_gammaEnabled &&
+        !toneEnabled) {
         return false;
     }
 
@@ -154,6 +157,8 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     settings.tonemapEnabled = m_owner->m_tonemapEnabled ? 1 : 0;
     settings._vignetteEnabled = m_owner->m_vignetteEnabled ? 1 : 0;
     settings.gammaEnabled = m_owner->m_gammaEnabled ? 1 : 0;
+
+    std::cout << "col:" << settings.blendColor.w << std::endl;
 
 
     Ref<RenderTargetTexture> occlusionMap = RenderTargetTexture::getTemporary(source->width(), source->height(), TextureFormat::RGBA8, false);

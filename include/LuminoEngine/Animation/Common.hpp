@@ -19,11 +19,13 @@ enum class AnimationWrapMode
 };
 
 /** 階層構造を持つアニメーションデータの動作モード */
+LN_ENUM()
 enum class HierarchicalAnimationMode
 {
 	/** ルートノードのみ、平行移動を有効化します。 */
 	AllowTranslationOnlyRoot,
 
+	/** AllowTranslationOnlyRootY */
 	AllowTranslationOnlyRootY,
 
 	/** すべてのノードの平行移動を有効化します。 */

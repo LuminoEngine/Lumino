@@ -6346,6 +6346,13 @@ public:
 
 
 
+class LNWS_ln_Audio : public ln::Audio
+{
+public:
+};
+
+
+
 class LNWS_ln_Texture2DDelegate : public ln::Texture2DDelegate
 {
 public:
@@ -11749,6 +11756,118 @@ LN_FLAT_API LNResult LNAssets_ReloadAssetA(const char* filePath, LNHandle obj)
 }
 
 
+LN_FLAT_API LNResult LNAudio_PlayBGM(const LNChar* filePath, float volume, float pitch, double fadeTime)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::playBGM(filePath, volume, pitch, fadeTime));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAudio_PlayBGMA(const char* filePath, float volume, float pitch, double fadeTime)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::playBGM(LNI_UTF8STRPTR_TO_STRING(filePath), volume, pitch, fadeTime));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAudio_StopBGM(double fadeTime)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::stopBGM(fadeTime));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAudio_PlayBGS(const LNChar* filePath, float volume, float pitch, double fadeTime)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::playBGS(filePath, volume, pitch, fadeTime));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAudio_PlayBGSA(const char* filePath, float volume, float pitch, double fadeTime)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::playBGS(LNI_UTF8STRPTR_TO_STRING(filePath), volume, pitch, fadeTime));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAudio_StopBGS(double fadeTime)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::stopBGS(fadeTime));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAudio_PlayME(const LNChar* filePath, float volume, float pitch)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::playME(filePath, volume, pitch));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAudio_PlayMEA(const char* filePath, float volume, float pitch)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::playME(LNI_UTF8STRPTR_TO_STRING(filePath), volume, pitch));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAudio_StopME()
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::stopME());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAudio_PlaySE(const LNChar* filePath, float volume, float pitch)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::playSE(filePath, volume, pitch));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAudio_PlaySEA(const char* filePath, float volume, float pitch)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::playSE(LNI_UTF8STRPTR_TO_STRING(filePath), volume, pitch));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAudio_PlaySE3D(const LNChar* filePath, const LNVector3* position, float distance, float volume, float pitch)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::playSE3D(filePath, *reinterpret_cast<const ln::Vector3*>(position), distance, volume, pitch));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAudio_PlaySE3DA(const char* filePath, const LNVector3* position, float distance, float volume, float pitch)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::playSE3D(LNI_UTF8STRPTR_TO_STRING(filePath), *reinterpret_cast<const ln::Vector3*>(position), distance, volume, pitch));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAudio_StopSE()
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Audio::stopSE());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API void LNTexture2DDelegate_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture2DDelegate>(), id);
@@ -12305,6 +12424,28 @@ LN_FLAT_API LNResult LNAnimationClip_LoadA(const char* filePath, LNHandle* outRe
     }
     else {
         (ln::AnimationClip::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAnimationClip_SetHierarchicalAnimationMode(LNHandle animationclip, LNHierarchicalAnimationMode value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationClip, animationclip)->setHierarchicalAnimationMode(static_cast<ln::HierarchicalAnimationMode>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAnimationClip_HierarchicalAnimationMode(LNHandle animationclip, LNHierarchicalAnimationMode* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = static_cast<LNHierarchicalAnimationMode>(LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationClip, animationclip)->hierarchicalAnimationMode());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationClip, animationclip)->hierarchicalAnimationMode());
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -15852,6 +15993,28 @@ LN_FLAT_API LNResult LNUIElement_GetData(LNHandle uielement, LNHandle* outReturn
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->data());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIElement_SetOpacity(LNHandle uielement, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setOpacity(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIElement_GetOpacity(LNHandle uielement, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->opacity());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->opacity());
     }
 
     LNI_FUNC_TRY_END_RETURN;
