@@ -525,6 +525,7 @@ bool ShaderHelper::buildShader(const ln::Path& inputFile, const ln::Path& output
 
 bool ShaderHelper::generateShader(ln::detail::ShaderManager* manager, const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir, ln::DiagnosticsManager* diag)
 {
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
     ln::Path inputFilePath = inputFile.canonicalize();
     ln::Path outputFilePath = outputFile;
     if (outputFilePath.isEmpty()) {
@@ -559,7 +560,10 @@ bool ShaderHelper::generateShader(ln::detail::ShaderManager* manager, const ln::
     }
 
     return true;
-
+#else
+    LN_NOTIMPLEMENTED();
+    return false;
+#endif
 }
 
 } // namespace detail

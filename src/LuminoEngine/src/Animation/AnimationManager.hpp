@@ -35,7 +35,7 @@ public:
 private:
 	AssetManager* m_assetManager;
     SceneManager* m_sceneManager;
-	ObjectCache<uint64_t, AnimationClip> m_animationClipCache;
+	ObjectCache<String, AnimationClip> m_animationClipCache;
 };
 
 } // namespace detail

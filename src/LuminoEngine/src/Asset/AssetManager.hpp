@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <LuminoEngine/Asset/Common.hpp>
+#include "../Base/RefObjectCache.hpp"
 
 namespace ln {
 //class Texture2D;
@@ -65,6 +66,36 @@ public:
 
     // TODO: for develop & debug
     void buildAssetIndexFromLocalFiles(const ln::Path& assetDir);
+
+    template<class TObject, class TCache>
+    static Ref<TObject> loadObjectWithCacheHelper(
+        TCache* cache,
+        const std::vector<const Char*> exts,
+        const StringRef& filePath)
+    {
+        auto pathSet = std::make_unique<AssetRequiredPathSet>();
+        if (!AssetObject::_resolveAssetRequiredPathSet(filePath, exts, pathSet.get())) {
+            return nullptr;
+        }
+
+        // finalResourceAssetFilePath から拡張子を除いたものを CacheKey とする
+        // > CacheKey はどの Archive に入っているファイルであるかまで区別できるものでなければダメ。
+        // > Archive 名と、それを基準とした相対パス(または絶対パス) で表す必要がある。
+        // > 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
+        const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
+
+        if (auto obj = cache->findObject(cacheKey)) {
+            return obj;
+        }
+
+        auto obj = makeObject<TObject>();
+        obj->m_data = std::move(pathSet);
+        obj->reload();
+
+        cache->registerObject(cacheKey, obj);
+
+        return obj;
+    }
 
 private:
 	void refreshActualArchives();

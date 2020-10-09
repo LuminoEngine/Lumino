@@ -230,8 +230,9 @@ void AnimationManager::addClockToAffiliation(AnimationClock* clock, AnimationClo
 
 Ref<AnimationClip> AnimationManager::loadAnimationClip(const StringRef& filePath)
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+	static const std::vector<const Char*> exts = { u".bvh", u".vmd" };
+	return AssetManager::loadObjectWithCacheHelper<AnimationClip>(&m_animationClipCache, exts, filePath);
+
 	//// TODO: find cache
 
 	//// TODO: やっぱり拡張子は本当のリロード時に解決したい。

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Engine/RenderingCommandList.hpp>
+#include "../Base/RefObjectCache.hpp"
 
 namespace ln {
 class GraphicsContext; 
@@ -99,6 +100,7 @@ private:
 	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
 	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
 	Ref<FrameBufferCache> m_frameBufferCache;
+	ObjectCache<String, Texture2D> m_texture2DCache;
 	List<IGraphicsResource*> m_graphicsResources;
 	List<INativeGraphicsExtension*> m_extensions;
 

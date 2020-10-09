@@ -167,6 +167,8 @@ void GraphicsManager::init(const Settings& settings)
     m_assetManager = settings.assetManager;
 	m_platformManager = settings.platformManager;
 
+	m_texture2DCache.init(64);
+
 	// Create device context
 	{
 
@@ -249,6 +251,8 @@ void GraphicsManager::dispose()
 		m_renderingQueue->dispose();
 		m_renderingQueue = nullptr;
 	}
+
+	m_texture2DCache.dispose();
 
 	// default objects
 	{
@@ -334,11 +338,11 @@ Ref<Texture> GraphicsManager::requestTexture(const AssetPath& assetPath)
 
 Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
 {
-
-
-	// TODO: find cache
-
 	static const std::vector<const Char*> exts = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
+
+#if 1
+	return AssetManager::loadObjectWithCacheHelper<Texture2D>(&m_texture2DCache, exts, filePath);
+#else
 	auto pathSet = std::make_unique<AssetRequiredPathSet>();
 	if (!AssetObject::_resolveAssetRequiredPathSet(filePath, exts, pathSet.get())) {
 		return nullptr;
@@ -348,21 +352,31 @@ Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
 	// > CacheKey はどの Archive に入っているファイルであるかまで区別できるものでなければダメ。
 	// > Archive 名と、それを基準とした相対パス(または絶対パス) で表す必要がある。
 	// > 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
-	auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
+	const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
 
+	if (auto obj = m_texture2DCache.findObject(cacheKey)) {
+		return obj;
+	}
 
 	auto obj = makeObject<Texture2D>();
 	obj->m_data = std::move(pathSet);
 	obj->reload();
 
-	//detail::AssetObjectInternal::setAssetPath(obj, filePath);
+	m_texture2DCache.registerObject(cacheKey, obj);
 
 	return obj;
+#endif
 }
 
 Ref<Texture2DPromise> GraphicsManager::loadTexture2DAsync(const StringRef& filePath)
 {
+	// TODO: 排他処理が必要
 	LN_NOTIMPLEMENTED();
+
+	return Texture2DPromise::run([this, filePath](Texture2DPromise* p) {
+		p->resolve(loadTexture2D(filePath));
+	});
+
 	return nullptr;
 }
 

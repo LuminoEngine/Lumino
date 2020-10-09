@@ -33,6 +33,9 @@ struct AssetRequiredPathSet
     // ネットワーク上のファイルの場合は、このパスで GET リクエストするまで結果はわからない。
     // ただし、少なくとも「優先的に .yml を読み込みたい」状態であると考えることはできる。
     //
+    // Tileset 内の Texture2D など、他のアセットの .yml に別アセットの serialize も含める場合、
+    // このフィールドは Empty となる。
+    //
     // このフィールドはシリアライズには含まない。
     detail::AssetPath assetFilePath;
 
@@ -46,7 +49,10 @@ struct AssetRequiredPathSet
     //
     // この値は、
     // - m_requiredLoadPath が絶対パスの場合、絶対パスとなる。
-    // - m_assetFilePath が Empty の場合、Assets フォルダからの相対パスを表す。
+    // - m_assetFilePath が Empty の場合、
+    //   - Tileset 内の Texture2D など、他アセットの .yml からの読み込みの場合は
+    //     Serialize が持っているルートパスからの相対パスを表す。(★TODO: 未実装)
+    //   - それ以外は Assets フォルダからの相対パスを表す。
     // - m_assetFilePath に値がある場合、.yml ファイルからの相対パスを表す。
     // Note: 常に m_assetFilePath 空の相対パスにした方がシンプルなのだが、
     //       特にテクスチャや音声は .yml を使わずにロードすることがほとんどで、

@@ -9,6 +9,7 @@ namespace detail {
 // RefObject を作りたいときは、まず先に findObject を呼び出してキャッシュ探す。なければ呼び出し側で作って registerObject()。
 // RefObject は普通に makeRef で作ってよい。また、作った直後は registerObject() で登録しておく。
 // 定期的に collectUnreferenceObjects() を呼び出すことで、aliveList からしか参照されていない Object を freeList に移動する。
+// ※frameUpdate で呼ばなくても、オブジェクトを new する時でも構わない。
 // RefObject を release するとき、その直前で releaseObject() に指定して呼び出しておくと、明示的に freeList に入れることができる。
 // 最大オブジェクト数とメモリ量は free オブジェクトの条件。alive は影響しない。
 // 最大オブジェクト数とメモリ量は or 条件。どちらかが満たされたら古いオブジェクトを削除する。0 の場合は無視。
@@ -55,6 +56,8 @@ public:
 				m_freeObjectMemory -= itr->memorySize;
 				m_aliveList.splice(m_aliveList.end(), std::move(m_freeList), itr);	// move to tail
 
+				m_aliveListItr = m_aliveList.end();
+
 				return m_aliveList.back().obj;
 			}
 		}
@@ -68,6 +71,7 @@ public:
 
 		if (obj) {
 			m_aliveList.push_back({ key, obj, memorySize });
+			m_aliveListItr = m_aliveList.end();
 		}
 	}
 
@@ -84,6 +88,8 @@ public:
 			}
 			if (LN_REQUIRE(itr != m_aliveList.end())) return;   // not contained m_aliveList
 
+			m_aliveListItr = m_aliveList.end();
+
 			if (itr->memorySize > m_maxCacheMemory) {
 				// キャッシュに入らない大きなオブジェクトはここで削除
 				m_aliveList.erase(itr);
@@ -97,26 +103,59 @@ public:
 		}
 	}
 
-	void collectUnreferenceObjects()
+	void collectUnreferenceObjects(bool all)
 	{
-		for (auto itr = m_aliveList.begin(); itr != m_aliveList.end();)
-		{
-			if (RefObjectHelper::getReferenceCount(itr->obj) == 1)	// m_aliveList からのみ参照されている
+		auto stepCollect = [this]() {
+			if (RefObjectHelper::getReferenceCount(m_aliveListItr->obj) == 1)	// m_aliveList からのみ参照されている
 			{
-				if (itr->memorySize > m_maxCacheMemory) {
+				if (m_aliveListItr->memorySize > m_maxCacheMemory) {
 					// キャッシュに入らない大きなオブジェクトはここで削除
-					itr = m_aliveList.erase(itr);
+					m_aliveListItr = m_aliveList.erase(m_aliveListItr);
 				}
 				else {
-					m_freeList.push_back(*itr);
-					m_freeObjectMemory += itr->memorySize;
-					itr = m_aliveList.erase(itr);
-
+					m_freeList.push_back(*m_aliveListItr);
+					m_freeObjectMemory += m_aliveListItr->memorySize;
+					m_aliveListItr = m_aliveList.erase(m_aliveListItr);
 					collectOldObject();
 				}
 			}
 			else {
-				++itr;
+				++m_aliveListItr;
+			}
+		};
+
+		if (all) {
+			m_aliveListItr = m_aliveList.begin();
+
+			for (; m_aliveListItr != m_aliveList.end();)
+			{
+				stepCollect();
+				//if (RefObjectHelper::getReferenceCount(itr->obj) == 1)	// m_aliveList からのみ参照されている
+				//{
+				//	if (itr->memorySize > m_maxCacheMemory) {
+				//		// キャッシュに入らない大きなオブジェクトはここで削除
+				//		itr = m_aliveList.erase(itr);
+				//	}
+				//	else {
+				//		m_freeList.push_back(*itr);
+				//		m_freeObjectMemory += itr->memorySize;
+				//		itr = m_aliveList.erase(itr);
+				//		collectOldObject();
+				//	}
+				//}
+				//else {
+				//	++itr;
+				//}
+			}
+		}
+		else {
+			if (m_aliveListItr == m_aliveList.end()) {
+				// restart
+				m_aliveListItr = m_aliveList.begin();
+			}
+
+			if (m_aliveListItr != m_aliveList.end()) {
+				stepCollect();
 			}
 		}
 	}
@@ -170,10 +209,14 @@ private:
 		uint32_t memorySize;
 	};
 
+	typedef typename std::list<Entry> EntryList;
+	typedef typename std::list<Entry>::iterator EntryListIterator;
+
 	uint32_t m_maxCacheObjectCount;
 	uint32_t m_maxCacheMemory;
-	std::list<Entry> m_aliveList;
-	std::list<Entry> m_freeList;    // front:oldest, back:newest
+	EntryList m_aliveList;
+	EntryList m_freeList;    // front:oldest, back:newest
+	EntryListIterator m_aliveListItr;
 	size_t m_freeObjectMemory;
 };
 

@@ -158,7 +158,8 @@ if (LN_USE_VULKAN)
 endif()
 
 
-if (WIN32)
+if (LN_EMSCRIPTEN)
+elseif (WIN32)
     file(GLOB LN_SOURCES_Graphics_DirectX12 src/Graphics/DirectX12/*.cpp src/Graphics/DirectX12/*.hpp)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
