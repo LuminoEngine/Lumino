@@ -55,23 +55,28 @@ public:
 	const String& name() const { return m_name; }
 
 protected:
-	void onLoadResourceFile() override;
+
 
 LN_CONSTRUCT_ACCESS:
 	AnimationClip();
 	virtual ~AnimationClip();
-	void init();
-	bool init(const detail::AssetPath& assetSourcePath);
+	bool init();
+	bool init(const Path& assetPath);
+	//bool init(const detail::AssetPath& assetSourcePath);
 	void init(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
 
-protected:
+protected:	// TODO:
 	String m_name;
 	List<Ref<AnimationTrack>> m_tracks;
 	Ref<RefObject> m_srcData;
 	float m_lastFrameTime;
 	AnimationWrapMode m_wrapMode;
 	HierarchicalAnimationMode m_hierarchicalAnimationMode;
-	detail::AssetPath m_assetSourcePath;
+	//detail::AssetPath m_assetSourcePath;
+
+private:
+	const std::vector<const Char*>& resourceExtensions() const override;
+	void onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath) override;
 
 	friend class detail::AnimationManager;
 };

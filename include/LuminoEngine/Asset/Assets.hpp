@@ -13,8 +13,8 @@ class Assets
 {
 public:
 
-    static void setAssetPath(AssetObject* obj, const String& filePath);
-    static const Path& getAssetPath(AssetObject* obj);
+    //static void setAssetPath(AssetObject* obj, const String& filePath);
+    //static const Path& getAssetPath(AssetObject* obj);
     static void save(AssetObject* obj);
     static void reload(AssetObject* obj);
 

@@ -38,7 +38,7 @@ public:
     // "asset://local/dir/file.txt"    => Unix 形式の絶対パス。 ファイルシステム上のファイルを指す。
     // "asset:///dir/file.txt"         => ローカルファイルパス。登録されているいずれかの AssetArchive 内のファイルを指す。
     // TODO: "asset://ArchiveName/" とかで AssetArchive を明示できるようにしてもいい気がする
-    Optional<AssetPath> findAssetPath(const StringRef& filePath, const Char** exts, int extsCount) const;
+    Optional<AssetPath> findAssetPath(const StringRef& filePath, const Char* const* exts, int extsCount) const;
     Optional<AssetPath> findAssetPath(const StringRef& filePath) const;
     bool existsAsset(const AssetPath& assetPath) const;
     Ref<Stream> openStreamFromAssetPath(const AssetPath& assetPath) const;
@@ -70,7 +70,7 @@ private:
 	void refreshActualArchives();
 	bool existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const;
     Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount, Path* outPath);
-	void makeFindPaths(const StringRef& filePath, const Char** exts, int extsCount, List<Path>* paths) const;
+	void makeFindPaths(const StringRef& filePath, const Char* const* exts, int extsCount, List<Path>* paths) const;
     static bool tryParseAssetPath(const String& assetPath, String* outArchiveName, Path* outLocalPath);
     FileSystemReader* primaryAssetDirectoryArchive() const { return m_fileSystemArchives[0]; }
 

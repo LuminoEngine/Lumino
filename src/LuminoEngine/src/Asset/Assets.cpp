@@ -14,19 +14,20 @@ namespace ln {
 //=============================================================================
 // Assets
 
-void Assets::setAssetPath(AssetObject* obj, const String& filePath)
-{
-    obj->setAssetPath(filePath);
-}
-
-const Path& Assets::getAssetPath(AssetObject* obj)
-{
-    return obj->assetPath();
-}
-
+//void Assets::setAssetPath(AssetObject* obj, const String& filePath)
+//{
+//    obj->setAssetPath(filePath);
+//}
+//
+//const Path& Assets::getAssetPath(AssetObject* obj)
+//{
+//    return obj->assetPath();
+//}
+//
 void Assets::save(AssetObject* obj)
 {
-    Assets::saveAsset(obj, obj->m_assetFilePath);
+    LN_NOTIMPLEMENTED();
+    //Assets::saveAsset(obj, obj->m_assetFilePath);
 }
 
 void Assets::reload(AssetObject* obj)

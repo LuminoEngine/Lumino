@@ -106,7 +106,7 @@ void AssetManager::removeAllAssetDirectory()
 //    }
 //}
 
-Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath, const Char** exts, int extsCount) const
+Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath, const Char* const* exts, int extsCount) const
 {
     List<Path> paths;
     paths.reserve(extsCount);
@@ -541,7 +541,7 @@ Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, cons
 	return nullptr;
 }
 
-void AssetManager::makeFindPaths(const StringRef& filePath, const Char** exts, int extsCount, List<Path>* paths) const
+void AssetManager::makeFindPaths(const StringRef& filePath, const Char* const* exts, int extsCount, List<Path>* paths) const
 {
 	const Char* begin = filePath.data();
 	const Char* end = filePath.data() + filePath.length();

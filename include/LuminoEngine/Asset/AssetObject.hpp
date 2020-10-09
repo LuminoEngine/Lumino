@@ -6,6 +6,15 @@
 namespace ln {
 namespace detail { class AssetObjectInternal; }
 
+namespace detail {
+
+struct AssetRequiredPathSet
+{
+
+};
+
+} // namespace detail
+
 /**
  * アセットファイルやその他の外部ファイルをインポートして構築可能なオブジェクトのベースクラスです。
  */
@@ -16,18 +25,25 @@ class AssetObject
 	LN_OBJECT;
 public:
 
+    // TODO: internal
+    static bool resolveAssetRequiredPathSet(detail::AssetRequiredPathSet* outPathSet);
+
 protected:
+    void serialize(Serializer2& ar) override;
+
     const detail::AssetPath& assetPath() const { return m_assetFilePath; }
     //void setAssetPath(const detail::AssetPath& value);
     void reload();
     //virtual 
-    virtual void resolveResourcePath();
-    virtual void onLoadResourceFile(const Path& requiredLoadPath);
+    virtual const std::vector<const Char*>& resourceExtensions() const;
+    // ファイルが見つからない場合、警告をレポートした後 stream=nullptr で呼び出される
+    // ファイルが見つかった場合、assetPath そのファイルのパスを示す。glTF など、相対パスで格納されているテクスチャなどを検索するための基準として使う。
+    virtual void onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath);
 
 LN_CONSTRUCT_ACCESS:
     AssetObject();
     bool init();
-    bool init(const Path& requiredLoadPath);
+    bool initLoad(const Path& requiredLoadPath);
 
 private:
     // ユーザープログラムから指定されたパス。
@@ -35,7 +51,7 @@ private:
     // 絶対パスまたは相対パスで、相対パスの場合は Assets フォルダからの相対パス。
     // 初回ロードの他、リロードでも使用し、ロードのたびに AssetPath に解決して使う。
     //
-    // load 時の処理としては、拡張子が無い場合は、まず .yml であると仮定してファイルを探しに行く。
+    // load 時の処理としては、拡張子が無い場合はまず .yml であると仮定してファイルを探しに行く。
     // - ローカルファイル・アーカイブファイルの場合は exists() するだけ
     // - ネットワークファイルの場合は .yml で GET リクエストして、失敗するようなら候補拡張子使って繰り返す。
     //   - パフォーマンスかなり悪くなるが、「Web アプリにするなら拡張子まで明示することを推奨」でまずは行ってみる。

@@ -48,11 +48,6 @@ void Texture::onDispose(bool explicitDisposing)
     AssetObject::onDispose(explicitDisposing);
 }
 
-void Texture::onLoadResourceFile()
-{
-    LN_UNREACHABLE();
-}
-
 void Texture::setDesc(int width, int height, TextureFormat format)
 {
     m_width = width;
@@ -182,16 +177,21 @@ void Texture2D::init(int width, int height, TextureFormat format)
 
 bool Texture2D::init(const Path& assetPath)
 {
+    // TODO: 2回initやめたほうがいい
     if (!init()) return false;
-
-    if (detail::AssetPath::isAssetFilePath(assetPath))
-        setAssetPath(assetPath);
-    else
-        m_sourceFilePath = detail::AssetPath::resolveAssetPath(assetPath, GraphicsHelper::CandidateExts_Texture2D);
-    
-    reload();
-
+    if (!initLoad(assetPath)) return false;
     return true;
+
+    //if (!init()) return false;
+
+    //if (detail::AssetPath::isAssetFilePath(assetPath))
+    //    setAssetPath(assetPath);
+    //else
+    //    m_sourceFilePath = detail::AssetPath::resolveAssetPath(assetPath, GraphicsHelper::CandidateExts_Texture2D);
+    //
+    //reload();
+
+    //return true;
 }
 
 void Texture2D::init(Stream* stream, TextureFormat format)
@@ -341,49 +341,70 @@ void Texture2D::serialize(Serializer2& ar)
     Texture::serialize(ar);
 
 
-    // TODO: Object::assetPath 使いたい
-    String path;// =// m_assetSourcePath;
-    if (ar.isSaving() && !m_sourceFilePath.isNull()) {
-        // save to relative path.
-        // TODO: 毎回 parseAssetPath するのはアレなので、ar.basePath() の型を AssetPath にしたいところ。
-        path = detail::AssetPath::makeRelativePath(ar.basePath(), m_sourceFilePath);
-    }
+    //// TODO: Object::assetPath 使いたい
+    //String path;// =// m_assetSourcePath;
+    //if (ar.isSaving() && !m_sourceFilePath.isNull()) {
+    //    // save to relative path.
+    //    // TODO: 毎回 parseAssetPath するのはアレなので、ar.basePath() の型を AssetPath にしたいところ。
+    //    path = detail::AssetPath::makeRelativePath(ar.basePath(), m_sourceFilePath);
+    //}
 
-    ar & makeNVP(u"file", path);
+    //ar & makeNVP(u"file", path);
 
-    if (ar.isLoading()) {
-        if (!path.isEmpty()) {
-            // convert relative path to full path.
-            m_sourceFilePath = detail::AssetPath::resolveAssetPath(
-                detail::AssetPath::combineAssetPath(ar.basePath(), path),
-                GraphicsHelper::CandidateExts_Texture2D);
-        }
-    }
+    //if (ar.isLoading()) {
+    //    if (!path.isEmpty()) {
+    //        // convert relative path to full path.
+    //        m_sourceFilePath = detail::AssetPath::resolveAssetPath(
+    //            detail::AssetPath::combineAssetPath(ar.basePath(), path),
+    //            GraphicsHelper::CandidateExts_Texture2D);
+    //    }
+    //}
 }
 
-void Texture2D::onLoadResourceFile()
+const std::vector<const Char*>& Texture2D::resourceExtensions() const
 {
-    assert(!m_sourceFilePath.isNull());
-
-    auto assetManager = detail::GraphicsResourceInternal::manager(this)->assetManager();
-    auto stream = assetManager->openStreamFromAssetPath(m_sourceFilePath);
-    if (stream) {
-        auto bitmap = makeObject<Bitmap2D>();
-        bitmap->load(stream);
-
-        m_bitmap = bitmap;
-
-        // TODO: format
-        detail::TextureInternal::setDesc(this, m_bitmap->width(), m_bitmap->height(), TextureFormat::RGBA8);
-        // TODO: check and convert format
-
-        m_initialUpdate = true;
-        m_modified = true;
-    }
-    else {
-        LN_WARNING(u"Asset not found: " + m_sourceFilePath.toString());    // TODO: operator
-    }
+    static const std::vector<const Char*> exts = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
+    return exts;
 }
+
+void Texture2D::onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath)
+{
+    auto bitmap = makeObject<Bitmap2D>();
+    bitmap->load(stream);
+
+    m_bitmap = bitmap;
+
+    // TODO: format
+    detail::TextureInternal::setDesc(this, m_bitmap->width(), m_bitmap->height(), TextureFormat::RGBA8);
+    // TODO: check and convert format
+
+    m_initialUpdate = true;
+    m_modified = true;
+}
+
+//void Texture2D::onLoadResourceFile()
+//{
+//    assert(!m_sourceFilePath.isNull());
+//
+//    auto assetManager = detail::GraphicsResourceInternal::manager(this)->assetManager();
+//    auto stream = assetManager->openStreamFromAssetPath(m_sourceFilePath);
+//    if (stream) {
+//        auto bitmap = makeObject<Bitmap2D>();
+//        bitmap->load(stream);
+//
+//        m_bitmap = bitmap;
+//
+//        // TODO: format
+//        detail::TextureInternal::setDesc(this, m_bitmap->width(), m_bitmap->height(), TextureFormat::RGBA8);
+//        // TODO: check and convert format
+//
+//        m_initialUpdate = true;
+//        m_modified = true;
+//    }
+//    else {
+//        LN_WARNING(u"Asset not found: " + m_sourceFilePath.toString());    // TODO: operator
+//    }
+//}
 
 //==============================================================================
 // RenderTargetTexture

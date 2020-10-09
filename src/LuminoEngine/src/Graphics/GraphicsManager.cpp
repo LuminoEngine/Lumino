@@ -336,9 +336,15 @@ Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
 {
 	// TODO: find cache
 
+	// CacheKey はどの Archive に入っているファイルであるかまで区別できるものでなければダメ。
+	// Archive 名と、それを基準とした相対パス(または絶対パス) で表す必要がある。
+	// 拡張子は？
+	// 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
+
+
 	auto obj = makeObject<Texture2D>(filePath);
 
-	detail::AssetObjectInternal::setAssetPath(obj, filePath);
+	//detail::AssetObjectInternal::setAssetPath(obj, filePath);
 
 	return obj;
 }

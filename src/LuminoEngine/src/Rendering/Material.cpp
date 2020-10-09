@@ -309,34 +309,35 @@ void Material::updateShaderVariables(Shader* target) const
 void Material::serialize(Serializer2& ar)
 {
     Object::serialize(ar);
+    LN_NOTIMPLEMENTED();
 
-    // TODO: ↓Assets辺りに関数化
-    if (ar.isSaving()) {
-        Path path = Assets::getAssetPath(m_mainTexture);
-        if (path.isEmpty()) {
-            // assetPath が空であればインスタンスを serialize する
-            ar & makeNVP(u"mainTexture", m_mainTexture);
-        }
-        else {
-            // assetPath を持っているときは assetPath を serialize する
-            ar & makeNVP(u"mainTexture", path);
-        }
-    }
-    else {
-        if (ar.readName(u"mainTexture")) {
-            if (ar.readingValueIsObject()) {
-                Path path = ar.readString();
-                LN_NOTIMPLEMENTED();
-            }
-            else {
-                Path path = ar.readString();
-                m_mainTexture = Texture2D::load(path);
-            }
-        }
-        else {
-            m_mainTexture = nullptr;
-        }
-    }
+    //// TODO: ↓Assets辺りに関数化
+    //if (ar.isSaving()) {
+    //    Path path = Assets::getAssetPath(m_mainTexture);
+    //    if (path.isEmpty()) {
+    //        // assetPath が空であればインスタンスを serialize する
+    //        ar & makeNVP(u"mainTexture", m_mainTexture);
+    //    }
+    //    else {
+    //        // assetPath を持っているときは assetPath を serialize する
+    //        ar & makeNVP(u"mainTexture", path);
+    //    }
+    //}
+    //else {
+    //    if (ar.readName(u"mainTexture")) {
+    //        if (ar.readingValueIsObject()) {
+    //            Path path = ar.readString();
+    //            LN_NOTIMPLEMENTED();
+    //        }
+    //        else {
+    //            Path path = ar.readString();
+    //            m_mainTexture = Texture2D::load(path);
+    //        }
+    //    }
+    //    else {
+    //        m_mainTexture = nullptr;
+    //    }
+    //}
 
 }
 

@@ -27,6 +27,17 @@ TEST_F(Test_Asset_LoadAsset, Basic)
 	detail::EngineDomain::assetManager()->addAssetArchive(assetFile, u"pass");
 
 	{
+		// 絶対パスで読み込み
+		auto obj = Texture2D::load(LN_ASSETFILE("Graphics/Numbers1.png"));
+		ASSERT_EQ(true, obj != nullptr);
+	}
+	{
+		// 相対パスで読み込み
+		auto obj = Texture2D::load(u"Graphics/Numbers1.png");
+		ASSERT_EQ(true, obj != nullptr);
+	}
+	{
+		// 相対パスで Archive 内のファイルを読み込み
 		auto obj = Texture2D::load(u"x/Numbers1.png");
 		ASSERT_EQ(true, obj != nullptr);
 	}
