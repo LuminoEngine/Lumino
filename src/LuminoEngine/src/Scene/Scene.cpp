@@ -200,6 +200,86 @@ const ColorTone& Scene::screenColorTone()
     return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->screenColorTone();
 }
 
+void Scene::setAntialiasEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setAntialiasEnabled(value);
+}
+
+bool Scene::isAntialiasEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isAntialiasEnabled();
+}
+
+void Scene::setSSREnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setSSREnabled(value);
+}
+
+bool Scene::isSSREnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isSSREnabled();
+}
+
+void Scene::setSSAOEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setSSAOEnabled(value);
+}
+
+bool Scene::isSSAOEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isSSAOEnabled();
+}
+
+void Scene::setBloomEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setBloomEnabled(value);
+}
+
+bool Scene::isBloomEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isBloomEnabled();
+}
+
+void Scene::setDOFEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setDOFEnabled(value);
+}
+
+bool Scene::isDOFEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isDOFEnabled();
+}
+
+void Scene::setTonemapEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setTonemapEnabled(value);
+}
+
+bool Scene::isTonemapEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isTonemapEnabled();
+}
+
+void Scene::setVignetteEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setVignetteEnabled(value);
+}
+
+bool Scene::isVignetteEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isVignetteEnabled();
+}
+
+void Scene::setGammaEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setGammaEnabled(value);
+}
+
+bool Scene::isGammaEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isGammaEnabled();
+}
+
 ////==============================================================================
 //// SceneAsset
 //

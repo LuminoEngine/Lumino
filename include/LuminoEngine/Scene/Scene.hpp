@@ -164,6 +164,71 @@ public:
 
 	static const ColorTone& screenColorTone();
 
+	
+	/** アンチエイリアスの有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setAntialiasEnabled(bool value);
+
+	/** アンチエイリアスの有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isAntialiasEnabled();
+    
+	/** SSR (Screen Space Reflection) の有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setSSREnabled(bool value);
+
+	/** SSR の有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isSSREnabled();
+    
+	/** SSAO (Screen Space Ambient Occlusion) の有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setSSAOEnabled(bool value);
+
+	/** SSAO の有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isSSAOEnabled();
+    
+	/** ブルームエフェクトの有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setBloomEnabled(bool value);
+
+	/** ブルームエフェクトの有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isBloomEnabled();
+    
+	/** 被写界深度の有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setDOFEnabled(bool value);
+
+	/** 被写界深度の有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isDOFEnabled();
+    
+	/** トーンマッピングの有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setTonemapEnabled(bool value);
+
+	/** トーンマッピングの有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isTonemapEnabled();
+    
+	/** ビネットエフェクトの有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setVignetteEnabled(bool value);
+
+	/** ビネットエフェクトの有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isVignetteEnabled();
+    
+	/** ガンマ補正の有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setGammaEnabled(bool value);
+
+	/** ガンマ補正の有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isGammaEnabled();
+
 	/** @} */
 };
 

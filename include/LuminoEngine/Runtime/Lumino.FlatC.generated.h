@@ -3424,6 +3424,94 @@ LN_FLAT_API LNResult LNScene_SetScreenBlendColor(const LNColor* value);
 */
 LN_FLAT_API LNResult LNScene_ScreenBlendColor(LNColor* outReturn);
 
+/**
+    @brief アンチエイリアスの有無を設定します。(default: false)
+*/
+LN_FLAT_API LNResult LNScene_SetAntialiasEnabled(LNBool value);
+
+/**
+    @brief アンチエイリアスの有無を取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_IsAntialiasEnabled(LNBool* outReturn);
+
+/**
+    @brief SSR (Screen Space Reflection) の有無を設定します。(default: false)
+*/
+LN_FLAT_API LNResult LNScene_SetSSREnabled(LNBool value);
+
+/**
+    @brief SSR の有無を取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_IsSSREnabled(LNBool* outReturn);
+
+/**
+    @brief SSAO (Screen Space Ambient Occlusion) の有無を設定します。(default: false)
+*/
+LN_FLAT_API LNResult LNScene_SetSSAOEnabled(LNBool value);
+
+/**
+    @brief SSAO の有無を取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_IsSSAOEnabled(LNBool* outReturn);
+
+/**
+    @brief ブルームエフェクトの有無を設定します。(default: false)
+*/
+LN_FLAT_API LNResult LNScene_SetBloomEnabled(LNBool value);
+
+/**
+    @brief ブルームエフェクトの有無を取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_IsBloomEnabled(LNBool* outReturn);
+
+/**
+    @brief 被写界深度の有無を設定します。(default: false)
+*/
+LN_FLAT_API LNResult LNScene_SetDOFEnabled(LNBool value);
+
+/**
+    @brief 被写界深度の有無を取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_IsDOFEnabled(LNBool* outReturn);
+
+/**
+    @brief トーンマッピングの有無を設定します。(default: false)
+*/
+LN_FLAT_API LNResult LNScene_SetTonemapEnabled(LNBool value);
+
+/**
+    @brief トーンマッピングの有無を取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_IsTonemapEnabled(LNBool* outReturn);
+
+/**
+    @brief ビネットエフェクトの有無を設定します。(default: false)
+*/
+LN_FLAT_API LNResult LNScene_SetVignetteEnabled(LNBool value);
+
+/**
+    @brief ビネットエフェクトの有無を取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_IsVignetteEnabled(LNBool* outReturn);
+
+/**
+    @brief ガンマ補正の有無を設定します。(default: false)
+*/
+LN_FLAT_API LNResult LNScene_SetGammaEnabled(LNBool value);
+
+/**
+    @brief ガンマ補正の有無を取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_IsGammaEnabled(LNBool* outReturn);
+
 
 //==============================================================================
 // ln::Level

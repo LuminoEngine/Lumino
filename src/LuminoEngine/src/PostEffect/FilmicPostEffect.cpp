@@ -158,9 +158,6 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     settings._vignetteEnabled = m_owner->m_vignetteEnabled ? 1 : 0;
     settings.gammaEnabled = m_owner->m_gammaEnabled ? 1 : 0;
 
-    std::cout << "col:" << settings.blendColor.w << std::endl;
-
-
     Ref<RenderTargetTexture> occlusionMap = RenderTargetTexture::getTemporary(source->width(), source->height(), TextureFormat::RGBA8, false);
     occlusionMap->setSamplerState(m_samplerState);
 

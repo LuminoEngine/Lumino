@@ -15387,6 +15387,182 @@ LN_FLAT_API LNResult LNScene_ScreenBlendColor(LNColor* outReturn)
 }
 
 
+LN_FLAT_API LNResult LNScene_SetAntialiasEnabled(LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setAntialiasEnabled(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_IsAntialiasEnabled(LNBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Scene::isAntialiasEnabled());
+    }
+    else {
+        (ln::Scene::isAntialiasEnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetSSREnabled(LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setSSREnabled(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_IsSSREnabled(LNBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Scene::isSSREnabled());
+    }
+    else {
+        (ln::Scene::isSSREnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetSSAOEnabled(LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setSSAOEnabled(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_IsSSAOEnabled(LNBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Scene::isSSAOEnabled());
+    }
+    else {
+        (ln::Scene::isSSAOEnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetBloomEnabled(LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setBloomEnabled(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_IsBloomEnabled(LNBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Scene::isBloomEnabled());
+    }
+    else {
+        (ln::Scene::isBloomEnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetDOFEnabled(LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setDOFEnabled(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_IsDOFEnabled(LNBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Scene::isDOFEnabled());
+    }
+    else {
+        (ln::Scene::isDOFEnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTonemapEnabled(LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTonemapEnabled(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_IsTonemapEnabled(LNBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Scene::isTonemapEnabled());
+    }
+    else {
+        (ln::Scene::isTonemapEnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetVignetteEnabled(LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setVignetteEnabled(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_IsVignetteEnabled(LNBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Scene::isVignetteEnabled());
+    }
+    else {
+        (ln::Scene::isVignetteEnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetGammaEnabled(LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setGammaEnabled(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_IsGammaEnabled(LNBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Scene::isGammaEnabled());
+    }
+    else {
+        (ln::Scene::isGammaEnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNLevel_Create(LNHandle* outLevel)
 {
     LNI_FUNC_TRY_BEGIN;

@@ -3,7 +3,7 @@
 
 const float4 _Vignette_Color = float4(0, 0, 0, 1); 
 const float2 _Vignette_Center = float2(0.5, 0.5);
-const float4 _Vignette_Settings = float4(0.5, 0.5, 1.0, 0); // x: intensity, y: smoothness, z: roundness, w: rounded
+const float4 _Vignette_Settings = float4(0.6, 0.5, 1.0, 0); // x: intensity, y: smoothness, z: roundness, w: rounded
 
 float3 Vignette(float3 color, float2 uv)
 {
