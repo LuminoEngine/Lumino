@@ -334,15 +334,26 @@ Ref<Texture> GraphicsManager::requestTexture(const AssetPath& assetPath)
 
 Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
 {
+
+
 	// TODO: find cache
 
-	// CacheKey はどの Archive に入っているファイルであるかまで区別できるものでなければダメ。
-	// Archive 名と、それを基準とした相対パス(または絶対パス) で表す必要がある。
-	// 拡張子は？
-	// 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
+	static const std::vector<const Char*> exts = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
+	auto pathSet = std::make_unique<AssetRequiredPathSet>();
+	if (!AssetObject::_resolveAssetRequiredPathSet(filePath, exts, pathSet.get())) {
+		return nullptr;
+	}
+
+	// finalResourceAssetFilePath から拡張子を除いたものを CacheKey とする
+	// > CacheKey はどの Archive に入っているファイルであるかまで区別できるものでなければダメ。
+	// > Archive 名と、それを基準とした相対パス(または絶対パス) で表す必要がある。
+	// > 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
+	auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
 
 
-	auto obj = makeObject<Texture2D>(filePath);
+	auto obj = makeObject<Texture2D>();
+	obj->m_data = std::move(pathSet);
+	obj->reload();
 
 	//detail::AssetObjectInternal::setAssetPath(obj, filePath);
 

@@ -170,7 +170,7 @@ LN_CONSTRUCT_ACCESS:
     LN_METHOD(OverloadPostfix = "WithFormat")
     void init(int width, int height, TextureFormat format);
 
-    bool init(const Path& assetPath);
+    //bool init(const Path& assetPath);
 
     void init(Stream* stream, TextureFormat format = TextureFormat::RGBA8);
     void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA8);

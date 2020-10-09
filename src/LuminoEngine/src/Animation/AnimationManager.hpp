@@ -25,7 +25,7 @@ public:
 
     void addClockToAffiliation(AnimationClock* clock, AnimationClockAffiliation affiliation);
 
-	//Ref<AnimationClip> loadAnimationClip(const StringRef& filePath);
+	Ref<AnimationClip> loadAnimationClip(const StringRef& filePath);
 	//Ref<AnimationClipPromise> loadAnimationClipAsync(const StringRef& filePath);
 	//Ref<AnimationClip> acquireAnimationClip(const AssetPath& assetPath);
 	//void loadAnimationClip(AnimationClip* clip, const AssetPath& assetPath);

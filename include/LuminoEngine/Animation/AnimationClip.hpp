@@ -61,7 +61,7 @@ LN_CONSTRUCT_ACCESS:
 	AnimationClip();
 	virtual ~AnimationClip();
 	bool init();
-	bool init(const Path& assetPath);
+	//bool init(const Path& assetPath);
 	//bool init(const detail::AssetPath& assetSourcePath);
 	void init(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
 

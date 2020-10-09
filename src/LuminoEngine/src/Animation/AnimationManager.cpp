@@ -228,23 +228,25 @@ void AnimationManager::addClockToAffiliation(AnimationClock* clock, AnimationClo
     }
 }
 
-//Ref<AnimationClip> AnimationManager::loadAnimationClip(const StringRef& filePath)
-//{
-//	// TODO: find cache
-//
-//	// TODO: やっぱり拡張子は本当のリロード時に解決したい。
-//	// なので、AssetPath 自体の仕様として、拡張子無し（未解決）を許可するようにしたい。
-//	// → でもそれなら Path で持っておけばいいだけか。ちゃんとドキュメントに書いておこう
-//	const Char* exts[] = { u".bvh", u".vmd" };
-//	auto assetPath = detail::AssetPath::resolveAssetPath(filePath, exts);
-//
-//	auto obj = makeObject<AnimationClip>(assetPath);
-//
-//	detail::AssetObjectInternal::setAssetPath(obj, filePath);
-//
-//	return obj;
-//}
-//
+Ref<AnimationClip> AnimationManager::loadAnimationClip(const StringRef& filePath)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+	//// TODO: find cache
+
+	//// TODO: やっぱり拡張子は本当のリロード時に解決したい。
+	//// なので、AssetPath 自体の仕様として、拡張子無し（未解決）を許可するようにしたい。
+	//// → でもそれなら Path で持っておけばいいだけか。ちゃんとドキュメントに書いておこう
+	//const Char* exts[] = { u".bvh", u".vmd" };
+	//auto assetPath = detail::AssetPath::resolveAssetPath(filePath, exts);
+
+	//auto obj = makeObject<AnimationClip>(assetPath);
+
+	//detail::AssetObjectInternal::setAssetPath(obj, filePath);
+
+	//return obj;
+}
+
 //Ref<AnimationClipPromise> AnimationManager::loadAnimationClipAsync(const StringRef& filePath)
 //{
 //	LN_NOTIMPLEMENTED();

@@ -21,9 +21,9 @@ Ref<AnimationClip> AnimationClip::create(/*const StringRef& name, */const String
 
 Ref<AnimationClip> AnimationClip::load(const StringRef& filePath)
 {
-	return makeObject<AnimationClip>(filePath);
+	//return makeObject<AnimationClip>(filePath);
 
-	//return detail::EngineDomain::animationManager()->loadAnimationClip(filePath);
+	return detail::EngineDomain::animationManager()->loadAnimationClip(filePath);
 
 	//const Char* candidateExts[] = { u".vmd" };
 	//if (const auto assetPath = detail::AssetPath::resolveAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts)))
@@ -48,13 +48,13 @@ bool AnimationClip::init()
 	return AssetObject::init();
 }
 
-bool AnimationClip::init(const Path& assetPath)
-{
-	// TODO: 2回initやめたほうがいい
-	if (!init()) return false;
-	if (!initLoad(assetPath)) return false;
-	return true;
-}
+//bool AnimationClip::init(const Path& assetPath)
+//{
+//	// TODO: 2回initやめたほうがいい
+//	if (!init()) return false;
+//	if (!initLoad(assetPath)) return false;
+//	return true;
+//}
 
 //bool AnimationClip::init(const detail::AssetPath& assetSourcePath)
 //{

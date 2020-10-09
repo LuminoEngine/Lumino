@@ -22,13 +22,13 @@ bool AssetObject::init()
 	return Object::init();
 }
 
-bool AssetObject::initLoad(const Path& requiredLoadPath)
-{
-	if (!Object::init()) return false;
-	m_requiredLoadPath = requiredLoadPath;
-	reload();
-	return true;
-}
+//bool AssetObject::initLoad(const Path& requiredLoadPath)
+//{
+//	if (!Object::init()) return false;
+//	m_requiredLoadPath = requiredLoadPath;
+//	reload();
+//	return true;
+//}
 
 //void AssetObject::setAssetPath(const detail::AssetPath& value)
 //{
@@ -45,43 +45,53 @@ bool AssetObject::initLoad(const Path& requiredLoadPath)
 void AssetObject::serialize(Serializer2& ar)
 {
 	Object::serialize(ar);
-	ar & makeNVP(u"file", m_resourceFilePath);
+
+	String file = (m_data) ? m_data->resourceFilePath : String::Empty;
+
+	ar & makeNVP(u"file", file);
+
+	if (ar.isLoading()) {
+		LN_NOTIMPLEMENTED();
+		// TODO: .yml から読み込んだということなので、他のフィールドも設定できる
+		m_data->resourceFilePath = file;
+	}
 }
 
-void AssetObject::reload()
+bool AssetObject::_resolveAssetRequiredPathSet(const Path& requiredLoadPath, const std::vector<const Char*> candidateExts, detail::AssetRequiredPathSet* outPathSet)
 {
 	auto* manager = detail::EngineDomain::assetManager();
 
-	m_assetFilePath.clear();
+	outPathSet->requiredLoadPath = requiredLoadPath;
+	outPathSet->assetFilePath.clear();
 
-	if (m_requiredLoadPath.isAbsolute()) {
+	if (requiredLoadPath.isAbsolute()) {
 		// フルパスの場合は File スキーマで AssetPath を作る。
 		// 必ずローカルファイルとして扱うので、ファイルの存在確認をする。
-		if (detail::AssetPath::isAssetFilePath(m_requiredLoadPath) &&
-			FileSystem::existsFile(m_requiredLoadPath)) {
+		if (detail::AssetPath::isAssetFilePath(requiredLoadPath) &&
+			FileSystem::existsFile(requiredLoadPath)) {
 			// 拡張子まで明示されていればそのまま使う
-			m_assetFilePath = detail::AssetPath::makeFromLocalFilePath(m_requiredLoadPath);
+			outPathSet->assetFilePath = detail::AssetPath::makeFromLocalFilePath(requiredLoadPath);
 		}
-		else if (!m_requiredLoadPath.hasExtension()) {
+		else if (!requiredLoadPath.hasExtension()) {
 			// 拡張子を持っていない場合は .yml を付けて存在確認
-			Path actualPath = m_requiredLoadPath.replaceExtension(AssetModel::AssetFileExtension);
+			Path actualPath = requiredLoadPath.replaceExtension(AssetModel::AssetFileExtension);
 			if (FileSystem::existsFile(actualPath)) {
-				m_assetFilePath = detail::AssetPath::makeFromLocalFilePath(m_requiredLoadPath);
+				outPathSet->assetFilePath = detail::AssetPath::makeFromLocalFilePath(requiredLoadPath);
 			}
 		}
 	}
 	else {
-		if (m_requiredLoadPath.hasExtension(AssetModel::AssetFileExtension)) {
+		if (requiredLoadPath.hasExtension(AssetModel::AssetFileExtension)) {
 			// 相対パスの場合は Archive から .yml を検索する
-			auto path = manager->findAssetPath(m_requiredLoadPath);
+			auto path = manager->findAssetPath(requiredLoadPath);
 			if (path) {
-				m_assetFilePath = *path;
+				outPathSet->assetFilePath = *path;
 			}
 			else {
 				// .yml が明示的に指定されていたが、Archive 内に見つからなかった。
 				// ネットワークファイルかもしれないが、これは未対応。TODO:
 				LN_ERROR("Network file not supported.");
-				return;
+				return false;
 			}
 		}
 		else {
@@ -89,49 +99,59 @@ void AssetObject::reload()
 		}
 	}
 
+	outPathSet->finalResourceAssetFilePath.clear();
+	detail::AssetPath assetPath;
+	if (outPathSet->assetFilePath.hasValue()) {
+		// .yml のパスが特定できていれば、それを基準に AssetPath を作る
+		outPathSet->finalResourceAssetFilePath = detail::AssetPath::combineAssetPath(outPathSet->assetFilePath.getParentAssetPath(), outPathSet->resourceFilePath);
+	}
+	else {
+		// 候補を検索
+		const Char* const* d = candidateExts.data();
+		const auto path = manager->findAssetPath(requiredLoadPath, d, candidateExts.size());
+		if (path) {
+			outPathSet->finalResourceAssetFilePath = *path;
+		}
+		else {
+			// TODO: Archive 内にはないのでネットワークファイルとしてパスを作る
+			LN_ERROR("Network file not supported.");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void AssetObject::reload()
+{
+	if (LN_REQUIRE(m_data)) return;
+
+	auto* manager = detail::EngineDomain::assetManager();
+
 	// .yml が要求されていれば、deserialize を試してみる
-	bool loaded = false;
-	if (m_assetFilePath.hasValue()) {
-		loaded = manager->loadAssetModelFromAssetPathToInstance(this, m_assetFilePath);
+	if (m_data->assetFilePath.hasValue()) {
+		manager->loadAssetModelFromAssetPathToInstance(this, m_data->assetFilePath);
+
+		// serialize 完了していれば m_data->finalResourceAssetFilePath 等が更新されている
 	}
 
 	// .png 等のリソース読み込み
 	{
-		detail::AssetPath assetPath;
-		if (m_assetFilePath.hasValue()) {
-			// .yml のパスが特定できていれば、それを基準に AssetPath を作る
-			assetPath = detail::AssetPath::combineAssetPath(m_assetFilePath.getParentAssetPath(), m_resourceFilePath);
-		}
-		else {
-			// 候補を検索
-			const std::vector<const Char*> candidateExts = resourceExtensions();
-			const Char* const* d = candidateExts.data();
-			const auto path = manager->findAssetPath(m_requiredLoadPath, d, candidateExts.size());
-			if (path) {
-				assetPath = *path;
-			}
-			else {
-				// TODO: Archive 内にはないのでネットワークファイルとしてパスを作る
-				LN_ERROR("Network file not supported.");
-				return;
-			}
-		}
-
 		// Open Stream
 		Ref<Stream> stream;
-		if (!assetPath.isNull()) {
-			stream = manager->openStreamFromAssetPath(assetPath);
+		if (!m_data->finalResourceAssetFilePath.isNull()) {
+			stream = manager->openStreamFromAssetPath(m_data->finalResourceAssetFilePath);
 		}
 		else {
-			LN_WARNING(u"Asset not found: " + m_resourceFilePath.str());    // TODO: operator
+			LN_WARNING(u"Asset not found: " + m_data->resourceFilePath.str());    // TODO: operator
 		}
 
 		// Load Resource
 		if (stream) {
-			onLoadResourceFile(stream, assetPath);
+			onLoadResourceFile(stream, m_data->finalResourceAssetFilePath);
 		}
 		else {
-			LN_WARNING(u"Asset access denied: " + m_resourceFilePath.str());    // TODO: operator
+			LN_WARNING(u"Asset access denied: " + m_data->resourceFilePath.str());    // TODO: operator
 		}
 	}
 }

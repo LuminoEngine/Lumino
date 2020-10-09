@@ -175,25 +175,25 @@ void Texture2D::init(int width, int height, TextureFormat format)
     detail::TextureInternal::setDesc(this, width, height, format);
 }
 
-bool Texture2D::init(const Path& assetPath)
-{
-    // TODO: 2回initやめたほうがいい
-    if (!init()) return false;
-    if (!initLoad(assetPath)) return false;
-    return true;
-
-    //if (!init()) return false;
-
-    //if (detail::AssetPath::isAssetFilePath(assetPath))
-    //    setAssetPath(assetPath);
-    //else
-    //    m_sourceFilePath = detail::AssetPath::resolveAssetPath(assetPath, GraphicsHelper::CandidateExts_Texture2D);
-    //
-    //reload();
-
-    //return true;
-}
-
+//bool Texture2D::init(const Path& assetPath)
+//{
+//    // TODO: 2回initやめたほうがいい
+//    if (!init()) return false;
+//    if (!initLoad(assetPath)) return false;
+//    return true;
+//
+//    //if (!init()) return false;
+//
+//    //if (detail::AssetPath::isAssetFilePath(assetPath))
+//    //    setAssetPath(assetPath);
+//    //else
+//    //    m_sourceFilePath = detail::AssetPath::resolveAssetPath(assetPath, GraphicsHelper::CandidateExts_Texture2D);
+//    //
+//    //reload();
+//
+//    //return true;
+//}
+//
 void Texture2D::init(Stream* stream, TextureFormat format)
 {
     auto bitmap = makeObject<Bitmap2D>();

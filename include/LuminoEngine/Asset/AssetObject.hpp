@@ -10,42 +10,6 @@ namespace detail {
 
 struct AssetRequiredPathSet
 {
-
-};
-
-} // namespace detail
-
-/**
- * アセットファイルやその他の外部ファイルをインポートして構築可能なオブジェクトのベースクラスです。
- */
-LN_CLASS()
-class AssetObject
-    : public Object
-{
-	LN_OBJECT;
-public:
-
-    // TODO: internal
-    static bool resolveAssetRequiredPathSet(detail::AssetRequiredPathSet* outPathSet);
-
-protected:
-    void serialize(Serializer2& ar) override;
-
-    const detail::AssetPath& assetPath() const { return m_assetFilePath; }
-    //void setAssetPath(const detail::AssetPath& value);
-    void reload();
-    //virtual 
-    virtual const std::vector<const Char*>& resourceExtensions() const;
-    // ファイルが見つからない場合、警告をレポートした後 stream=nullptr で呼び出される
-    // ファイルが見つかった場合、assetPath そのファイルのパスを示す。glTF など、相対パスで格納されているテクスチャなどを検索するための基準として使う。
-    virtual void onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath);
-
-LN_CONSTRUCT_ACCESS:
-    AssetObject();
-    bool init();
-    bool initLoad(const Path& requiredLoadPath);
-
-private:
     // ユーザープログラムから指定されたパス。
     //
     // 絶対パスまたは相対パスで、相対パスの場合は Assets フォルダからの相対パス。
@@ -57,7 +21,7 @@ private:
     //   - パフォーマンスかなり悪くなるが、「Web アプリにするなら拡張子まで明示することを推奨」でまずは行ってみる。
     //
     // このフィールドはシリアライズには含まない。
-    Path m_requiredLoadPath;
+    Path requiredLoadPath;
 
     // アセットファイル (.yml) のパス。
     //
@@ -70,7 +34,7 @@ private:
     // ただし、少なくとも「優先的に .yml を読み込みたい」状態であると考えることはできる。
     //
     // このフィールドはシリアライズには含まない。
-    detail::AssetPath m_assetFilePath;
+    detail::AssetPath assetFilePath;
 
     // この AssetObject が参照するメインのリソースファイルのパス。
     // .png, .gltf, .wav など様々な外部ファイルで、読み取りのみで使用される。
@@ -89,7 +53,57 @@ private:
     //       これらのために m_assetFilePath を構築するとかなりのメモリの無駄になる。
     //
     // このフィールドはシリアライズに `含める` 。
-    Path m_resourceFilePath;
+    Path resourceFilePath;
+
+    detail::AssetPath finalResourceAssetFilePath;
+};
+
+} // namespace detail
+
+/**
+ * アセットファイルやその他の外部ファイルをインポートして構築可能なオブジェクトのベースクラスです。
+ */
+LN_CLASS()
+class AssetObject
+    : public Object
+{
+	LN_OBJECT;
+public:
+
+    // TODO: internal
+    //// CacheKey のために resourceFilePath が
+    //template<class T>
+    //static Ref<T> resolveAssetRequiredPathSet(const Path& requiredLoadPath, detail::AssetRequiredPathSet* outPathSet)
+    //{
+    //    auto obj = makeObject<T>();
+    //    _resolveAssetRequiredPathSet(obj, requiredLoadPath)
+    //    return obj;
+    //}
+    
+    static bool _resolveAssetRequiredPathSet(const Path& requiredLoadPath, const std::vector<const Char*> candidateExts, detail::AssetRequiredPathSet* outPathSet);
+
+
+    std::unique_ptr<detail::AssetRequiredPathSet> m_data;
+    void reload();
+
+protected:
+    void serialize(Serializer2& ar) override;
+
+    //const detail::AssetPath& assetPath() const { return m_assetFilePath; }
+    //void setAssetPath(const detail::AssetPath& value);
+    
+    //virtual 
+    virtual const std::vector<const Char*>& resourceExtensions() const;
+    // ファイルが見つからない場合、警告をレポートした後 stream=nullptr で呼び出される
+    // ファイルが見つかった場合、assetPath そのファイルのパスを示す。glTF など、相対パスで格納されているテクスチャなどを検索するための基準として使う。
+    virtual void onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath);
+
+LN_CONSTRUCT_ACCESS:
+    AssetObject();
+    bool init();
+    //bool initLoad(const Path& requiredLoadPath);
+
+private:
 
     friend class Assets;
     friend class detail::AssetObjectInternal;
