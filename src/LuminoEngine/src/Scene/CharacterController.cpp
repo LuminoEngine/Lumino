@@ -108,7 +108,7 @@ void CharacterController::onPreUpdate(float elapsedSeconds)
 		const auto characterCurrentFront = Vector3::transform(Vector3::UnitZ, camera->rotation());
 
 
-		if (m_resetCameraPosition) {
+		if (m_cameraControlEnabled && m_resetCameraPosition) {
 			// Character を真後ろから見るようにカメラを移動する。
 			// この後の計算で、カメラ正面方向を使い、位置と注視点は再設定されるため、オフセットは気にしなくてよい。
 			camera->setPosition(character->position() - characterCurrentFront);
@@ -302,7 +302,9 @@ void CharacterController::onUpdate(float elapsedSeconds)
 	//camera->lookAt(character->position());
 
 
-	{
+	// カメラの地形との接触判定。めり込まないようにする
+	if (m_cameraControlEnabled) {
+	
 		const auto cameraOuterDir = -camera->front();
 		
 
