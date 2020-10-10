@@ -83,6 +83,8 @@ void StaticMeshComponent::serialize(Serializer2& ar)
 
 void StaticMeshComponent::onRender(RenderingContext* context)
 {
+    if (!m_model) return;
+
     for (const auto& node : m_model->meshNodes()) {
         if (node->meshContainerIndex() >= 0) {
 

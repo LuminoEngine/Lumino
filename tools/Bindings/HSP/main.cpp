@@ -64,8 +64,6 @@ EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO* info)
 	ln::Logger::addStdErrAdapter();
 	ln::Console::allocate();
 
-	printf("max_varhpi: %d\n", info->hspctx->hsphed->max_varhpi);
-
 	//		プラグイン初期化 (実行・終了処理を登録します)
 	//
 	hsp3sdk_init(info);			// SDKの初期化(最初に行なって下さい)

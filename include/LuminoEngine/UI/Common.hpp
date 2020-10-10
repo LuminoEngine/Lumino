@@ -37,6 +37,7 @@ enum class UILayoutOrientation
 };
 
 /** UI要素の表示状態を指定します。 */
+LN_ENUM()
 enum class UIVisibility : uint8_t
 {
     /** 要素を表示します。 */

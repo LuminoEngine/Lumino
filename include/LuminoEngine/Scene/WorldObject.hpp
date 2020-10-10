@@ -234,7 +234,8 @@ public:
 	ComponentList* components() const { return m_components; }
 
 protected:
-    // 物理演算・衝突判定の前
+	/** 物理演算・衝突判定の前 (onCollisionStay() などはこの後) */
+	LN_METHOD()
     virtual void onPreUpdate();
 
 	/** フレーム更新 */

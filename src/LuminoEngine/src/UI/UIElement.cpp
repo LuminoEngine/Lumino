@@ -427,7 +427,7 @@ void UIElement::setVisibility(UIVisibility value)
     m_localStyle->mainStyle()->visible = value;
 }
 
-UIVisibility UIElement::isVisibility() const
+UIVisibility UIElement::visibility() const
 {
     return m_localStyle->mainStyle()->visible.getOrDefault(UIVisibility::Visible);
 }
