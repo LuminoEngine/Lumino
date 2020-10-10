@@ -16,9 +16,9 @@ static const ln::String ASFileTemplate = uR"(
 #define __lumino__
 
 #ifdef LUMINO_DEBUG
-    #regcmd "_hsp3cmdinit@4","LuminoHSPd.dll", 6
+    #regcmd "_hsp3cmdinit@4","LuminoHSPd.dll", %%varhpi%%
 #else
-    #regcmd "_hsp3cmdinit@4","LuminoHSP.dll", 6
+    #regcmd "_hsp3cmdinit@4","LuminoHSP.dll", %%varhpi%%
 #endif
 
 #const global LN_TRUE 1
@@ -47,7 +47,9 @@ void HSPHeaderGenerator::generate()
 
         ln::String fileName = ln::String::format("{0}.as", config()->moduleName);
 
-        ln::String src = ASFileTemplate.replace(u"%%Contents%%", code.toString());
+        ln::String src = ASFileTemplate
+            .replace(u"%%Contents%%", code.toString())
+            .replace(u"%%varhpi%%", ln::String::fromNumber((db()->structs()) | stream::op::count()));
 
         ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), src);
     }
@@ -689,7 +691,11 @@ void HSPHelpGenerator::generate()
 
         ln::String fileName = ln::String::format("{0}.hs", config()->moduleName);
 
-        ln::String src = ASFileTemplate.replace(u"%%Contents%%", code.toString());
+        ln::String src = ASFileTemplate
+            .replace(u"%%Contents%%", code.toString())
+            .replace(u"%%varhpi%%", ln::String::fromNumber((db()->structs()) | stream::op::count()));
+
+
 
         ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), src);
     }

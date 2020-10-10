@@ -551,6 +551,17 @@ HumanoidBones BvhImporter::mapHumanoidBonesMixamoUnity(const String& name)
         { u"Head", HumanoidBones::Head },
         { u"LeftEye", HumanoidBones::LeftEye },
         { u"RightEye", HumanoidBones::RightEye },
+
+
+        // VRM Bone
+        { u"shoulder_L", HumanoidBones::LeftShoulder },
+        { u"Arm_L", HumanoidBones::LeftUpperArm },
+        { u"forearm_L", HumanoidBones::LeftLowerArm },
+        { u"hand_L", HumanoidBones::LeftHand },
+        { u"shoulder_R", HumanoidBones::RightShoulder },
+        { u"Arm_R", HumanoidBones::RightUpperArm },
+        { u"forearm_R", HumanoidBones::RightLowerArm },
+        { u"hand_R", HumanoidBones::RightHand },
     };
 
     int index = name.indexOf(u"mixamorig:");

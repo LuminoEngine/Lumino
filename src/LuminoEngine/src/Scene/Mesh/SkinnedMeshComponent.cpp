@@ -21,9 +21,9 @@ SkinnedMeshComponent::~SkinnedMeshComponent()
 {
 }
 
-void SkinnedMeshComponent::init()
+bool SkinnedMeshComponent::init()
 {
-    VisualComponent::init();
+    return VisualComponent::init();
 }
 
 void SkinnedMeshComponent::setModel(SkinnedMeshModel* model)

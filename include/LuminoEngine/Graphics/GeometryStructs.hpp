@@ -391,31 +391,38 @@ public:
 };
 
 /** 四角形の角の半径を表します。 */
+LN_STRUCT()
 struct CornerRadius
 {
 public:
 	static const CornerRadius Zero;
 
     /** 左上角の半径 */
+    LN_FIELD()
     float topLeft;
 
     /** 右上角の半径 */
+    LN_FIELD()
     float topRight;
 
     /** 右下角の半径 */
+    LN_FIELD()
     float bottomRight;
 
     /** 左下角の半径 */
+    LN_FIELD()
     float bottomLeft;
 
 public:
     /** すべての要素を 0 で初期化します。 */
+    LN_METHOD(OverloadPostfix = "Zeros")
     CornerRadius();
 
     /** すべての要素を uniformRadius で初期化します。 */
     CornerRadius(float uniformRadius);
 
     /** 各要素の値を指定して初期化します。 */
+    LN_METHOD()
     CornerRadius(float topLeft, float topRight, float bottomRight, float bottomLeft);
 
     bool operator==(const CornerRadius& rhs) const { return topLeft == rhs.topLeft && topRight == rhs.topRight && bottomRight == rhs.bottomRight && bottomLeft == rhs.bottomLeft; }

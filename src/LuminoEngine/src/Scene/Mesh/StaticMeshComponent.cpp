@@ -3,7 +3,7 @@
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
 #include <LuminoEngine/Physics/CollisionShape.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
@@ -27,9 +27,9 @@ StaticMeshComponent::~StaticMeshComponent()
 {
 }
 
-void StaticMeshComponent::init()
+bool StaticMeshComponent::init()
 {
-    VisualComponent::init();
+    return VisualComponent::init();
 }
 
 void StaticMeshComponent::onDispose(bool explicitDisposing)

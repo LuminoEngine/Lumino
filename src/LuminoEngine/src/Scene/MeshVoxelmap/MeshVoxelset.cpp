@@ -6,7 +6,7 @@
 #include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelset.hpp>
 
 #include <LuminoEngine/Graphics/Texture.hpp>
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 

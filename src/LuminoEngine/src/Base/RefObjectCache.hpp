@@ -36,6 +36,7 @@ public:
 	{
 		m_aliveList.clear();
 		m_freeList.clear();
+		m_aliveListItr = m_aliveList.begin();
 		m_maxCacheObjectCount = 0;
 		m_maxCacheMemory = 0;
 		m_freeObjectMemory = 0;

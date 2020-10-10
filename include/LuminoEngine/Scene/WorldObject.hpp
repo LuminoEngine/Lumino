@@ -243,7 +243,6 @@ protected:
 
     virtual void onRender(RenderingContext* context);
 
-
 	bool traverseRefrection(ReflectionObjectVisitor* visitor) override;
 
 

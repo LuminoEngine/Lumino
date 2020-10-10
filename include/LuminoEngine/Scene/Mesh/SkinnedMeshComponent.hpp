@@ -29,7 +29,7 @@ LN_CONSTRUCT_ACCESS:
 
 	/** init */
 	LN_METHOD()
-	void init();
+	bool init();
 
 private:
     Ref<SkinnedMeshModel> m_model;

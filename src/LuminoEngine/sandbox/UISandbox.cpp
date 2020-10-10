@@ -68,7 +68,7 @@ public:
 			auto icon2 = ln::makeObject<ln::UIIcon>();
 			icon2->setIconName(u"file");
 			//icon->setMargin(ln::Thickness(0, 0, 0, 4));
-			button2->addInlineVisual(icon2, ln::UIInlineLayout::Top);
+			button2->addInlineVisual(icon2, ln::UIInlinePlacement::Top);
 
 
 			auto button3 = makeObject<UIButton>();
@@ -78,7 +78,7 @@ public:
 			auto icon3 = ln::makeObject<ln::UIIcon>();
 			icon3->setIconName(u"file");
 			//icon->setMargin(ln::Thickness(0, 0, 0, 4));
-			button3->addInlineVisual(icon3, ln::UIInlineLayout::Top);
+			button3->addInlineVisual(icon3, ln::UIInlinePlacement::Top);
 		}
 		//// RadioButton
 		//{

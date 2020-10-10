@@ -268,9 +268,11 @@ public:
 	Sprite9DrawMode backgroundDrawMode() const;
 
 	/** 背景の色を設定します。 */
+	LN_METHOD(Property)
 	void setBackgroundColor(const Color& value);
 
 	/** 背景の色を取得します。 */
+	LN_METHOD(Property)
 	const Color& backgroundColor() const;
 
 	/** 背景の描画に使用する画像を設定します。 */
@@ -300,17 +302,28 @@ public:
 
 
 	/** 枠線の太さを設定します。 */
+	LN_METHOD(Property)
 	void setBorderThickness(const Thickness& value);
 
 	/** 枠線の太さを取得します。 */
+	LN_METHOD(Property)
 	const Thickness& borderThickness() const;
 
 	/** 枠線の色を設定します。 */
+	LN_METHOD(Property)
 	void setBorderColor(const Color& value);
 
 	/** 枠線の色を取得します。 */
+	LN_METHOD(Property)
 	const Color& borderColor() const;
+	
+	/** 四角形の角の半径を設定します。 */
+	LN_METHOD(Property)
+	void setCornerRadius(const CornerRadius& value);
 
+	/** 四角形の角の半径を取得します。 */
+	LN_METHOD(Property)
+	const CornerRadius& cornerRadius() const;
 
 
 	/** テキストの色を設定します。*/

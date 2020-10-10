@@ -883,6 +883,103 @@ static void hspLNThickness_reffunc(int* typeRes, void** retValPtr)
 }
 
 
+//-----------------------------------------------------------------------------
+// struct LNCornerRadius
+
+static int g_LNCornerRadius_typeid = 0;
+
+int hspLNCornerRadius_typeid()
+{
+    return g_LNCornerRadius_typeid;
+}
+
+static int hspLNCornerRadius_GetVarSize(PVal *pval)
+{
+    int size;
+    size = pval->len[1];
+    if (pval->len[2]) size *= pval->len[2];
+    if (pval->len[3]) size *= pval->len[3];
+    if (pval->len[4]) size *= pval->len[4];
+    size *= sizeof(LNCornerRadius);
+    return size;
+}
+
+static void hspLNCornerRadius_Alloc(PVal *pval, const PVal *pval2)
+{
+    if (pval->len[1] < 1) pval->len[1] = 1;
+    int size = hspLNCornerRadius_GetVarSize(pval);
+    pval->mode = HSPVAR_MODE_MALLOC;
+    char* pt = sbAlloc(size);
+    LNCornerRadius* fv = (LNCornerRadius *)pt;
+    memset(fv, 0, size);
+    if (pval2 != NULL) {
+        memcpy(pt, pval->pt, pval->size);
+        sbFree(pval->pt);
+    }
+    pval->pt = pt;
+    pval->size = size;
+}
+
+static void hspLNCornerRadius_Free(PVal* pval)
+{
+    if (pval->mode == HSPVAR_MODE_MALLOC) { sbFree(pval->pt); }
+    pval->pt = NULL;
+    pval->mode = HSPVAR_MODE_NONE;
+}
+
+static PDAT* hspLNCornerRadius_GetPtr(PVal* pval)
+{
+    return (PDAT*)(((LNCornerRadius*)(pval->pt)) + pval->offset);
+}
+
+static int hspLNCornerRadius_GetSize(const PDAT *pdatl)
+{
+    return sizeof(LNCornerRadius);
+}
+
+static void hspLNCornerRadius_Set(PVal* pval, PDAT* pdat, const void* in)
+{
+    *reinterpret_cast<LNCornerRadius*>(pdat) = *reinterpret_cast<const LNCornerRadius*>(in);
+}
+
+static void hspLNCornerRadius_Init(HspVarProc* p)
+{
+    p->Alloc = hspLNCornerRadius_Alloc;
+    p->Free = hspLNCornerRadius_Free;
+    
+    p->GetPtr = hspLNCornerRadius_GetPtr;
+    p->GetSize = hspLNCornerRadius_GetSize;
+    p->GetBlockSize = hspCommon_GetBlockSize;
+    p->AllocBlock = hspCommon_AllocBlock;
+
+    p->Set = hspLNCornerRadius_Set;
+
+    p->vartype_name = "LNCornerRadius";
+    p->version = 0x001;
+    p->support = HSPVAR_SUPPORT_STORAGE | HSPVAR_SUPPORT_FLEXARRAY;
+    p->basesize = sizeof(LNCornerRadius);
+    g_LNCornerRadius_typeid = p->flag;
+}
+
+static void hspLNCornerRadius_reffunc(int* typeRes, void** retValPtr)
+{
+    static LNCornerRadius returnValue;
+
+    if (checkAndFetchDefault()) {
+        memset(&returnValue, 0, sizeof(returnValue));
+    } else {
+        returnValue.topLeft = fetchVADouble_reffunc();
+        returnValue.topRight = fetchVADouble_reffunc();
+        returnValue.bottomRight = fetchVADouble_reffunc();
+        returnValue.bottomLeft = fetchVADouble_reffunc();
+    }
+
+
+    *retValPtr = &returnValue;
+    *typeRes = hspLNCornerRadius_typeid();
+}
+
+
 //==============================================================================
 // ln::Object
 
@@ -1373,6 +1470,25 @@ static LNSubinstanceId HSPSubclass_LNRenderView_SubinstanceAlloc(LNHandle handle
 }
 
 static void HSPSubclass_LNRenderView_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+//==============================================================================
+// ln::StaticMeshModel
+
+struct HSPSubclass_LNStaticMeshModel
+{
+};
+
+
+static LNSubinstanceId HSPSubclass_LNStaticMeshModel_SubinstanceAlloc(LNHandle handle)
+{
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNStaticMeshModel)));
+}
+
+static void HSPSubclass_LNStaticMeshModel_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -1947,6 +2063,25 @@ static LNSubinstanceId HSPSubclass_LNStaticMesh_SubinstanceAlloc(LNHandle handle
 }
 
 static void HSPSubclass_LNStaticMesh_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+//==============================================================================
+// ln::StaticMeshComponent
+
+struct HSPSubclass_LNStaticMeshComponent
+{
+};
+
+
+static LNSubinstanceId HSPSubclass_LNStaticMeshComponent_SubinstanceAlloc(LNHandle handle)
+{
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNStaticMeshComponent)));
+}
+
+static void HSPSubclass_LNStaticMeshComponent_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
 {
     free(reinterpret_cast<void*>(subinstance));
 }
@@ -2955,6 +3090,37 @@ static LNResult HSPSubclass_LNRenderViewSerializeHandler_DelegateLabelCaller(LNH
     setCallbackArg(1, self);
     setCallbackArg(2, ar);
     auto* localSelf = reinterpret_cast<HSPSubclass_LNRenderViewSerializeHandler*>(LNRenderViewSerializeHandler_GetSubinstanceId(renderviewserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LNResult>(stat);
+}
+
+//==============================================================================
+// StaticMeshModelSerializeHandler
+
+struct HSPSubclass_LNStaticMeshModelSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LNSubinstanceId HSPSubclass_LNStaticMeshModelSerializeHandler_SubinstanceAlloc(LNHandle handle)
+{
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNStaticMeshModelSerializeHandler)));
+}
+
+static void HSPSubclass_LNStaticMeshModelSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LNResult HSPSubclass_LNStaticMeshModelSerializeHandler_DelegateLabelCaller(LNHandle staticmeshmodelserializehandler, LNHandle self, LNHandle ar)
+{
+    setCallbackArg(0, staticmeshmodelserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNStaticMeshModelSerializeHandler*>(LNStaticMeshModelSerializeHandler_GetSubinstanceId(staticmeshmodelserializehandler));
     stat = 0;
     code_call(localSelf->labelPointer);
     return static_cast<LNResult>(stat);
@@ -4139,6 +4305,37 @@ static LNResult HSPSubclass_LNStaticMeshUpdateHandler_DelegateLabelCaller(LNHand
 }
 
 //==============================================================================
+// StaticMeshComponentSerializeHandler
+
+struct HSPSubclass_LNStaticMeshComponentSerializeHandler
+{
+    unsigned short* labelPointer = nullptr;
+};
+
+
+static LNSubinstanceId HSPSubclass_LNStaticMeshComponentSerializeHandler_SubinstanceAlloc(LNHandle handle)
+{
+    return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_LNStaticMeshComponentSerializeHandler)));
+}
+
+static void HSPSubclass_LNStaticMeshComponentSerializeHandler_SubinstanceFree(LNHandle handle, LNSubinstanceId subinstance)
+{
+    free(reinterpret_cast<void*>(subinstance));
+}
+
+
+static LNResult HSPSubclass_LNStaticMeshComponentSerializeHandler_DelegateLabelCaller(LNHandle staticmeshcomponentserializehandler, LNHandle self, LNHandle ar)
+{
+    setCallbackArg(0, staticmeshcomponentserializehandler);
+    setCallbackArg(1, self);
+    setCallbackArg(2, ar);
+    auto* localSelf = reinterpret_cast<HSPSubclass_LNStaticMeshComponentSerializeHandler*>(LNStaticMeshComponentSerializeHandler_GetSubinstanceId(staticmeshcomponentserializehandler));
+    stat = 0;
+    code_call(localSelf->labelPointer);
+    return static_cast<LNResult>(stat);
+}
+
+//==============================================================================
 // SkinnedMeshComponentSerializeHandler
 
 struct HSPSubclass_LNSkinnedMeshComponentSerializeHandler
@@ -5202,6 +5399,11 @@ bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr)
             hspLNThickness_reffunc(typeRes, retValPtr);
             return true;
         }
+        // LNCornerRadius
+        case 0x12C : {
+            hspLNCornerRadius_reffunc(typeRes, retValPtr);
+            return true;
+        }
         // ln_args
         case 0x1 : {
             ln_args_reffunc(typeRes, retValPtr);
@@ -5663,6 +5865,36 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LNCornerRadius_SetZeros
+        case 0x131 : {
+            // Fetch cornerradius
+            PVal* pval_cornerradius;
+            CodeGetVA_TypeChecked(&pval_cornerradius, LNCornerRadius);
+
+            stat = LNCornerRadius_SetZeros(reinterpret_cast<LNCornerRadius*>(pval_cornerradius->pt));
+
+
+            return true;
+        }
+        // LNCornerRadius_Set
+        case 0x132 : {
+            // Fetch cornerradius
+            PVal* pval_cornerradius;
+            CodeGetVA_TypeChecked(&pval_cornerradius, LNCornerRadius);
+            // Fetch topLeft
+            const auto local_topLeft = fetchVADouble();
+            // Fetch topRight
+            const auto local_topRight = fetchVADouble();
+            // Fetch bottomRight
+            const auto local_bottomRight = fetchVADouble();
+            // Fetch bottomLeft
+            const auto local_bottomLeft = fetchVADouble();
+
+            stat = LNCornerRadius_Set(reinterpret_cast<LNCornerRadius*>(pval_cornerradius->pt), local_topLeft, local_topRight, local_bottomRight, local_bottomLeft);
+
+
+            return true;
+        }
         // LNObject_Release
         case 0x74 : {
             // Fetch object
@@ -5698,7 +5930,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNObject_SetPrototype_OnSerialize
-        case 0x717 : {
+        case 0x77D : {
             // Fetch object
             const auto local_object = fetchVAInt();
             // Fetch callback
@@ -5718,7 +5950,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEventConnection_SetPrototype_OnSerialize
-        case 0x722 : {
+        case 0x788 : {
             // Fetch eventconnection
             const auto local_eventconnection = fetchVAInt();
             // Fetch callback
@@ -5738,7 +5970,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPromiseFailureDelegate_Create
-        case 0x44D : {
+        case 0x47B : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outPromiseFailureDelegate
@@ -5792,7 +6024,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNVariant_SetPrototype_OnSerialize
-        case 0x72D : {
+        case 0x793 : {
             // Fetch variant
             const auto local_variant = fetchVAInt();
             // Fetch callback
@@ -5812,7 +6044,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNZVTestDelegate1_Create
-        case 0x456 : {
+        case 0x484 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestDelegate1
@@ -5828,7 +6060,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNZVTestDelegate2_Create
-        case 0x45C : {
+        case 0x48A : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestDelegate2
@@ -5844,7 +6076,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNZVTestDelegate3_Create
-        case 0x461 : {
+        case 0x48F : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestDelegate3
@@ -5860,7 +6092,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNZVTestEventHandler1_Create
-        case 0x466 : {
+        case 0x494 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestEventHandler1
@@ -5876,7 +6108,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNZVTestEventHandler2_Create
-        case 0x46B : {
+        case 0x499 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestEventHandler2
@@ -5892,7 +6124,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNZVTestPromise1_ThenWith
-        case 0x46E : {
+        case 0x49C : {
             // Fetch zvtestpromise1
             const auto local_zvtestpromise1 = fetchVAInt();
             // Fetch callback
@@ -5912,7 +6144,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNZVTestPromise1_CatchWith
-        case 0x470 : {
+        case 0x49E : {
             // Fetch zvtestpromise1
             const auto local_zvtestpromise1 = fetchVAInt();
             // Fetch callback
@@ -5932,7 +6164,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNZVTestPromise2_ThenWith
-        case 0x474 : {
+        case 0x4A2 : {
             // Fetch zvtestpromise2
             const auto local_zvtestpromise2 = fetchVAInt();
             // Fetch callback
@@ -5952,7 +6184,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNZVTestPromise2_CatchWith
-        case 0x476 : {
+        case 0x4A4 : {
             // Fetch zvtestpromise2
             const auto local_zvtestpromise2 = fetchVAInt();
             // Fetch callback
@@ -6196,7 +6428,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNZVTestClass1_SetPrototype_OnSerialize
-        case 0x738 : {
+        case 0x79E : {
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
             // Fetch callback
@@ -6256,7 +6488,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNZVTestEventArgs1_SetPrototype_OnSerialize
-        case 0x743 : {
+        case 0x7A9 : {
             // Fetch zvtesteventargs1
             const auto local_zvtesteventargs1 = fetchVAInt();
             // Fetch callback
@@ -6276,7 +6508,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSerializer2_SetPrototype_OnSerialize
-        case 0x74E : {
+        case 0x7B4 : {
             // Fetch serializer2
             const auto local_serializer2 = fetchVAInt();
             // Fetch callback
@@ -6324,7 +6556,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNAssetModel_SetPrototype_OnSerialize
-        case 0x759 : {
+        case 0x7BF : {
             // Fetch assetmodel
             const auto local_assetmodel = fetchVAInt();
             // Fetch callback
@@ -6511,7 +6743,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTexture2DDelegate_Create
-        case 0x4A8 : {
+        case 0x4D6 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outTexture2DDelegate
@@ -6527,7 +6759,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTexture2DPromise_ThenWith
-        case 0x4AB : {
+        case 0x4D9 : {
             // Fetch texture2dpromise
             const auto local_texture2dpromise = fetchVAInt();
             // Fetch callback
@@ -6547,7 +6779,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTexture2DPromise_CatchWith
-        case 0x4AD : {
+        case 0x4DB : {
             // Fetch texture2dpromise
             const auto local_texture2dpromise = fetchVAInt();
             // Fetch callback
@@ -6567,7 +6799,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTexture_SetPrototype_OnSerialize
-        case 0x764 : {
+        case 0x7CA : {
             // Fetch texture
             const auto local_texture = fetchVAInt();
             // Fetch callback
@@ -6587,7 +6819,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTexture2D_Create
-        case 0x132 : {
+        case 0x13D : {
             // Fetch width
             const auto local_width = fetchVAInt();
             // Fetch height
@@ -6603,7 +6835,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTexture2D_CreateWithFormat
-        case 0x135 : {
+        case 0x140 : {
             // Fetch width
             const auto local_width = fetchVAInt();
             // Fetch height
@@ -6621,7 +6853,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTexture2D_LoadA
-        case 0x12E : {
+        case 0x139 : {
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch outReturn
@@ -6635,7 +6867,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTexture2D_LoadEmojiA
-        case 0x130 : {
+        case 0x13B : {
             // Fetch code
             const auto local_code = fetchVAString();
             // Fetch outReturn
@@ -6649,7 +6881,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTexture2D_SetPrototype_OnSerialize
-        case 0x76F : {
+        case 0x7D5 : {
             // Fetch texture2d
             const auto local_texture2d = fetchVAInt();
             // Fetch callback
@@ -6669,7 +6901,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNRenderView_SetPrototype_OnSerialize
-        case 0x77A : {
+        case 0x7E0 : {
             // Fetch renderview
             const auto local_renderview = fetchVAInt();
             // Fetch callback
@@ -6688,8 +6920,42 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LNStaticMeshModel_LoadA
+        case 0x14C : {
+            // Fetch filePath
+            const auto local_filePath = fetchVAString();
+            // Fetch outReturn
+            PVal* pval_outReturn;
+            const APTR aptr_outReturn = code_getva(&pval_outReturn);
+            LNHandle local_outReturn;
+
+            stat = LNStaticMeshModel_LoadA(local_filePath, &local_outReturn);
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
+
+            return true;
+        }
+        // LNStaticMeshModel_SetPrototype_OnSerialize
+        case 0x7EB : {
+            // Fetch staticmeshmodel
+            const auto local_staticmeshmodel = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+
+            LNHandle localDelegate_callback;
+            {
+                stat = LNStaticMeshModelSerializeHandler_Create(HSPSubclass_LNStaticMeshModelSerializeHandler_DelegateLabelCaller, &localDelegate_callback);
+                if (stat != LN_SUCCESS) return true;
+                auto* localSelf = reinterpret_cast<HSPSubclass_LNStaticMeshModelSerializeHandler*>(LNStaticMeshModelSerializeHandler_GetSubinstanceId(localDelegate_callback));
+                localSelf->labelPointer = local_callback;
+            }
+
+            stat = LNStaticMeshModel_SetPrototype_OnSerialize(local_staticmeshmodel, localDelegate_callback);
+            LNObject_Release(localDelegate_callback);
+
+            return true;
+        }
         // LNSkinnedMeshModel_LoadA
-        case 0x141 : {
+        case 0x14F : {
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch outReturn
@@ -6703,7 +6969,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSkinnedMeshModel_GetAnimationController
-        case 0x143 : {
+        case 0x151 : {
             // Fetch skinnedmeshmodel
             const auto local_skinnedmeshmodel = fetchVAInt();
             // Fetch outReturn
@@ -6717,7 +6983,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSkinnedMeshModel_SetPrototype_OnSerialize
-        case 0x785 : {
+        case 0x7F6 : {
             // Fetch skinnedmeshmodel
             const auto local_skinnedmeshmodel = fetchVAInt();
             // Fetch callback
@@ -6737,7 +7003,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNAnimationController_AddClip
-        case 0x145 : {
+        case 0x153 : {
             // Fetch animationcontroller
             const auto local_animationcontroller = fetchVAInt();
             // Fetch animationClip
@@ -6753,7 +7019,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNAnimationController_Play
-        case 0x147 : {
+        case 0x155 : {
             // Fetch animationcontroller
             const auto local_animationcontroller = fetchVAInt();
             // Fetch state
@@ -6767,7 +7033,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNAnimationController_SetPrototype_OnSerialize
-        case 0x790 : {
+        case 0x801 : {
             // Fetch animationcontroller
             const auto local_animationcontroller = fetchVAInt();
             // Fetch callback
@@ -6787,7 +7053,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCollisionShape_SetPrototype_OnSerialize
-        case 0x79B : {
+        case 0x80C : {
             // Fetch collisionshape
             const auto local_collisionshape = fetchVAInt();
             // Fetch callback
@@ -6807,7 +7073,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNBoxCollisionShape_Create
-        case 0x14C : {
+        case 0x15A : {
             // Fetch size
             PVal* pval_size;
             CodeGetVA_TypeChecked(&pval_size, LNVector3);
@@ -6822,7 +7088,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNBoxCollisionShape_CreateWHD
-        case 0x14E : {
+        case 0x15C : {
             // Fetch width
             const auto local_width = fetchVADouble();
             // Fetch height
@@ -6840,7 +7106,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNBoxCollisionShape_SetPrototype_OnSerialize
-        case 0x7A6 : {
+        case 0x817 : {
             // Fetch boxcollisionshape
             const auto local_boxcollisionshape = fetchVAInt();
             // Fetch callback
@@ -6860,7 +7126,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNAnimationClip_LoadA
-        case 0x158 : {
+        case 0x166 : {
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch outReturn
@@ -6874,7 +7140,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNAnimationClip_SetHierarchicalAnimationMode
-        case 0x15A : {
+        case 0x168 : {
             // Fetch animationclip
             const auto local_animationclip = fetchVAInt();
             // Fetch value
@@ -6886,7 +7152,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNAnimationClip_HierarchicalAnimationMode
-        case 0x15C : {
+        case 0x16A : {
             // Fetch animationclip
             const auto local_animationclip = fetchVAInt();
             // Fetch outReturn
@@ -6900,7 +7166,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNAnimationClip_SetPrototype_OnSerialize
-        case 0x7B1 : {
+        case 0x822 : {
             // Fetch animationclip
             const auto local_animationclip = fetchVAInt();
             // Fetch callback
@@ -6920,7 +7186,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNAnimationState_SetPrototype_OnSerialize
-        case 0x7BC : {
+        case 0x82D : {
             // Fetch animationstate
             const auto local_animationstate = fetchVAInt();
             // Fetch callback
@@ -6940,7 +7206,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNComponent_SetPrototype_OnSerialize
-        case 0x7C7 : {
+        case 0x838 : {
             // Fetch component
             const auto local_component = fetchVAInt();
             // Fetch callback
@@ -6960,7 +7226,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNVisualComponent_SetVisible
-        case 0x160 : {
+        case 0x16E : {
             // Fetch visualcomponent
             const auto local_visualcomponent = fetchVAInt();
             // Fetch value
@@ -6972,7 +7238,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNVisualComponent_IsVisible
-        case 0x162 : {
+        case 0x170 : {
             // Fetch visualcomponent
             const auto local_visualcomponent = fetchVAInt();
             // Fetch outReturn
@@ -6986,7 +7252,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNVisualComponent_SetPrototype_OnSerialize
-        case 0x7D2 : {
+        case 0x843 : {
             // Fetch visualcomponent
             const auto local_visualcomponent = fetchVAInt();
             // Fetch callback
@@ -7006,7 +7272,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpriteComponent_SetTexture
-        case 0x164 : {
+        case 0x172 : {
             // Fetch spritecomponent
             const auto local_spritecomponent = fetchVAInt();
             // Fetch texture
@@ -7018,7 +7284,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpriteComponent_SetPrototype_OnSerialize
-        case 0x7DD : {
+        case 0x84E : {
             // Fetch spritecomponent
             const auto local_spritecomponent = fetchVAInt();
             // Fetch callback
@@ -7038,7 +7304,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCollisionEventHandler_Create
-        case 0x54C : {
+        case 0x599 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outCollisionEventHandler
@@ -7054,7 +7320,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterController_Create
-        case 0x181 : {
+        case 0x18F : {
             // Fetch outCharacterController
             PVal* pval_outCharacterController;
             const APTR aptr_outCharacterController = code_getva(&pval_outCharacterController);
@@ -7066,7 +7332,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterController_SetVelocity
-        case 0x16E : {
+        case 0x17C : {
             // Fetch charactercontroller
             const auto local_charactercontroller = fetchVAInt();
             // Fetch value
@@ -7079,7 +7345,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterController_GetVelocity
-        case 0x170 : {
+        case 0x17E : {
             // Fetch charactercontroller
             const auto local_charactercontroller = fetchVAInt();
             // Fetch outReturn
@@ -7093,7 +7359,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterController_SetInputControlEnabled
-        case 0x171 : {
+        case 0x17F : {
             // Fetch charactercontroller
             const auto local_charactercontroller = fetchVAInt();
             // Fetch value
@@ -7105,7 +7371,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterController_SetCameraControlEnabled
-        case 0x173 : {
+        case 0x181 : {
             // Fetch charactercontroller
             const auto local_charactercontroller = fetchVAInt();
             // Fetch value
@@ -7117,7 +7383,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterController_SetHeight
-        case 0x175 : {
+        case 0x183 : {
             // Fetch charactercontroller
             const auto local_charactercontroller = fetchVAInt();
             // Fetch value
@@ -7129,7 +7395,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterController_GetHeight
-        case 0x177 : {
+        case 0x185 : {
             // Fetch charactercontroller
             const auto local_charactercontroller = fetchVAInt();
             // Fetch outReturn
@@ -7143,7 +7409,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterController_SetCameraRadius
-        case 0x178 : {
+        case 0x186 : {
             // Fetch charactercontroller
             const auto local_charactercontroller = fetchVAInt();
             // Fetch value
@@ -7155,7 +7421,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterController_GetCameraRadius
-        case 0x17A : {
+        case 0x188 : {
             // Fetch charactercontroller
             const auto local_charactercontroller = fetchVAInt();
             // Fetch outReturn
@@ -7169,7 +7435,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterController_SetCollisionEnter
-        case 0x17B : {
+        case 0x189 : {
             // Fetch charactercontroller
             const auto local_charactercontroller = fetchVAInt();
             // Fetch handler
@@ -7189,7 +7455,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterController_SetCollisionLeave
-        case 0x17D : {
+        case 0x18B : {
             // Fetch charactercontroller
             const auto local_charactercontroller = fetchVAInt();
             // Fetch handler
@@ -7209,7 +7475,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterController_SetCollisionStay
-        case 0x17F : {
+        case 0x18D : {
             // Fetch charactercontroller
             const auto local_charactercontroller = fetchVAInt();
             // Fetch handler
@@ -7229,7 +7495,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterController_SetPrototype_OnSerialize
-        case 0x7E8 : {
+        case 0x859 : {
             // Fetch charactercontroller
             const auto local_charactercontroller = fetchVAInt();
             // Fetch callback
@@ -7249,7 +7515,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorld_Add
-        case 0x183 : {
+        case 0x191 : {
             // Fetch world
             const auto local_world = fetchVAInt();
             // Fetch obj
@@ -7261,7 +7527,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorld_SetPrototype_OnSerialize
-        case 0x7F3 : {
+        case 0x864 : {
             // Fetch world
             const auto local_world = fetchVAInt();
             // Fetch callback
@@ -7281,7 +7547,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNComponentList_GetLength
-        case 0x567 : {
+        case 0x5B4 : {
             // Fetch componentlist
             const auto local_componentlist = fetchVAInt();
             // Fetch outReturn
@@ -7295,7 +7561,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNComponentList_GetItem
-        case 0x569 : {
+        case 0x5B6 : {
             // Fetch componentlist
             const auto local_componentlist = fetchVAInt();
             // Fetch index
@@ -7311,7 +7577,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNComponentList_SetPrototype_OnSerialize
-        case 0x7FE : {
+        case 0x86F : {
             // Fetch componentlist
             const auto local_componentlist = fetchVAInt();
             // Fetch callback
@@ -7331,7 +7597,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_Create
-        case 0x1B9 : {
+        case 0x1C7 : {
             // Fetch outWorldObject
             PVal* pval_outWorldObject;
             const APTR aptr_outWorldObject = code_getva(&pval_outWorldObject);
@@ -7343,7 +7609,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_SetPosition
-        case 0x187 : {
+        case 0x195 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch pos
@@ -7356,7 +7622,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_SetPositionXYZ
-        case 0x189 : {
+        case 0x197 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch x
@@ -7372,7 +7638,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_GetPosition
-        case 0x18D : {
+        case 0x19B : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
@@ -7386,7 +7652,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_SetRotationQuaternion
-        case 0x18E : {
+        case 0x19C : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch rot
@@ -7399,7 +7665,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_SetRotation
-        case 0x190 : {
+        case 0x19E : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch x
@@ -7415,7 +7681,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_GetRotation
-        case 0x194 : {
+        case 0x1A2 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
@@ -7429,7 +7695,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_SetScale
-        case 0x195 : {
+        case 0x1A3 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch scale
@@ -7442,7 +7708,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_SetScaleS
-        case 0x197 : {
+        case 0x1A5 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch xyz
@@ -7454,7 +7720,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_SetScaleXYZ
-        case 0x199 : {
+        case 0x1A7 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch x
@@ -7470,7 +7736,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_GetScale
-        case 0x19D : {
+        case 0x1AB : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
@@ -7484,7 +7750,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_SetCenterPoint
-        case 0x19E : {
+        case 0x1AC : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch value
@@ -7497,7 +7763,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_SetCenterPointXYZ
-        case 0x1A0 : {
+        case 0x1AE : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch x
@@ -7513,7 +7779,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_GetCenterPoint
-        case 0x1A4 : {
+        case 0x1B2 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
@@ -7527,7 +7793,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_LookAt
-        case 0x1A5 : {
+        case 0x1B3 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch target
@@ -7540,7 +7806,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_LookAtXYZ
-        case 0x1A7 : {
+        case 0x1B5 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch x
@@ -7556,7 +7822,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_AddComponent
-        case 0x1AB : {
+        case 0x1B9 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch component
@@ -7568,7 +7834,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_RemoveComponent
-        case 0x1AD : {
+        case 0x1BB : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch component
@@ -7580,7 +7846,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_AddTagA
-        case 0x1AF : {
+        case 0x1BD : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch tag
@@ -7592,7 +7858,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_RemoveTagA
-        case 0x1B1 : {
+        case 0x1BF : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch tag
@@ -7604,7 +7870,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_HasTagA
-        case 0x1B3 : {
+        case 0x1C1 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch tag
@@ -7620,7 +7886,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_Destroy
-        case 0x1B5 : {
+        case 0x1C3 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
 
@@ -7630,7 +7896,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_GetComponents
-        case 0x1B6 : {
+        case 0x1C4 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
@@ -7644,7 +7910,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_SetPrototype_OnSerialize
-        case 0x809 : {
+        case 0x87A : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch callback
@@ -7664,7 +7930,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObject_SetPrototype_OnUpdate
-        case 0x814 : {
+        case 0x885 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch callback
@@ -7684,7 +7950,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNVisualObject_SetVisible
-        case 0x1BB : {
+        case 0x1C9 : {
             // Fetch visualobject
             const auto local_visualobject = fetchVAInt();
             // Fetch value
@@ -7696,7 +7962,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNVisualObject_IsVisible
-        case 0x1BD : {
+        case 0x1CB : {
             // Fetch visualobject
             const auto local_visualobject = fetchVAInt();
             // Fetch outReturn
@@ -7710,7 +7976,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNVisualObject_SetPrototype_OnSerialize
-        case 0x81F : {
+        case 0x890 : {
             // Fetch visualobject
             const auto local_visualobject = fetchVAInt();
             // Fetch callback
@@ -7730,7 +7996,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNVisualObject_SetPrototype_OnUpdate
-        case 0x82A : {
+        case 0x89B : {
             // Fetch visualobject
             const auto local_visualobject = fetchVAInt();
             // Fetch callback
@@ -7750,7 +8016,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCamera_SetPrototype_OnSerialize
-        case 0x835 : {
+        case 0x8A6 : {
             // Fetch camera
             const auto local_camera = fetchVAInt();
             // Fetch callback
@@ -7770,7 +8036,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCamera_SetPrototype_OnUpdate
-        case 0x840 : {
+        case 0x8B1 : {
             // Fetch camera
             const auto local_camera = fetchVAInt();
             // Fetch callback
@@ -7790,7 +8056,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_SetEnabled
-        case 0x1C0 : {
+        case 0x1CE : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch enabled
@@ -7802,7 +8068,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_IsEnabled
-        case 0x1C2 : {
+        case 0x1D0 : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch outReturn
@@ -7816,7 +8082,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_SetColor
-        case 0x1C3 : {
+        case 0x1D1 : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch value
@@ -7829,7 +8095,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_GetColor
-        case 0x1C5 : {
+        case 0x1D3 : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch outReturn
@@ -7843,7 +8109,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_SetAmbientColor
-        case 0x1C6 : {
+        case 0x1D4 : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch value
@@ -7856,7 +8122,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_GetAmbientColor
-        case 0x1C8 : {
+        case 0x1D6 : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch outReturn
@@ -7870,7 +8136,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_GetSkyColor
-        case 0x1C9 : {
+        case 0x1D7 : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch outReturn
@@ -7884,7 +8150,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_SetSkyColor
-        case 0x1CA : {
+        case 0x1D8 : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch value
@@ -7897,7 +8163,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_GetGroundColor
-        case 0x1CC : {
+        case 0x1DA : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch outReturn
@@ -7911,7 +8177,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_SetGroundColor
-        case 0x1CD : {
+        case 0x1DB : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch value
@@ -7924,7 +8190,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_SetIntensity
-        case 0x1CF : {
+        case 0x1DD : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch intensity
@@ -7936,7 +8202,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_GetIntensity
-        case 0x1D1 : {
+        case 0x1DF : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch outReturn
@@ -7950,7 +8216,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_SetShadowEffectiveDistance
-        case 0x1D2 : {
+        case 0x1E0 : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch value
@@ -7962,7 +8228,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_GetShadowEffectiveDistance
-        case 0x1D4 : {
+        case 0x1E2 : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch outReturn
@@ -7976,7 +8242,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_SetShadowEffectiveDepth
-        case 0x1D5 : {
+        case 0x1E3 : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch value
@@ -7988,7 +8254,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_GetShadowEffectiveDepth
-        case 0x1D7 : {
+        case 0x1E5 : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch outReturn
@@ -8002,7 +8268,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_SetPrototype_OnSerialize
-        case 0x84B : {
+        case 0x8BC : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch callback
@@ -8022,7 +8288,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLight_SetPrototype_OnUpdate
-        case 0x856 : {
+        case 0x8C7 : {
             // Fetch environmentlight
             const auto local_environmentlight = fetchVAInt();
             // Fetch callback
@@ -8042,7 +8308,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_Create
-        case 0x1E8 : {
+        case 0x1F6 : {
             // Fetch outDirectionalLight
             PVal* pval_outDirectionalLight;
             const APTR aptr_outDirectionalLight = code_getva(&pval_outDirectionalLight);
@@ -8054,7 +8320,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_CreateWithColor
-        case 0x1E9 : {
+        case 0x1F7 : {
             // Fetch color
             PVal* pval_color;
             CodeGetVA_TypeChecked(&pval_color, LNColor);
@@ -8069,7 +8335,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_SetEnabled
-        case 0x1D9 : {
+        case 0x1E7 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch enabled
@@ -8081,7 +8347,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_IsEnabled
-        case 0x1DB : {
+        case 0x1E9 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch outReturn
@@ -8095,7 +8361,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_SetColor
-        case 0x1DC : {
+        case 0x1EA : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch color
@@ -8108,7 +8374,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_GetColor
-        case 0x1DE : {
+        case 0x1EC : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch outReturn
@@ -8122,7 +8388,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_SetIntensity
-        case 0x1DF : {
+        case 0x1ED : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch intensity
@@ -8134,7 +8400,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_GetIntensity
-        case 0x1E1 : {
+        case 0x1EF : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch outReturn
@@ -8148,7 +8414,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_SetShadowEffectiveDistance
-        case 0x1E2 : {
+        case 0x1F0 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch value
@@ -8160,7 +8426,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_GetShadowEffectiveDistance
-        case 0x1E4 : {
+        case 0x1F2 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch outReturn
@@ -8174,7 +8440,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_SetShadowEffectiveDepth
-        case 0x1E5 : {
+        case 0x1F3 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch value
@@ -8186,7 +8452,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_GetShadowEffectiveDepth
-        case 0x1E7 : {
+        case 0x1F5 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch outReturn
@@ -8200,7 +8466,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_SetPrototype_OnSerialize
-        case 0x861 : {
+        case 0x8D2 : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch callback
@@ -8220,7 +8486,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLight_SetPrototype_OnUpdate
-        case 0x86C : {
+        case 0x8DD : {
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch callback
@@ -8240,7 +8506,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_Create
-        case 0x1FB : {
+        case 0x209 : {
             // Fetch outPointLight
             PVal* pval_outPointLight;
             const APTR aptr_outPointLight = code_getva(&pval_outPointLight);
@@ -8252,7 +8518,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_CreateWithColorAndRange
-        case 0x1FC : {
+        case 0x20A : {
             // Fetch color
             PVal* pval_color;
             CodeGetVA_TypeChecked(&pval_color, LNColor);
@@ -8269,7 +8535,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_SetEnabled
-        case 0x1EC : {
+        case 0x1FA : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch enabled
@@ -8281,7 +8547,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_IsEnabled
-        case 0x1EE : {
+        case 0x1FC : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch outReturn
@@ -8295,7 +8561,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_SetColor
-        case 0x1EF : {
+        case 0x1FD : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch color
@@ -8308,7 +8574,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_GetColor
-        case 0x1F1 : {
+        case 0x1FF : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch outReturn
@@ -8322,7 +8588,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_SetIntensity
-        case 0x1F2 : {
+        case 0x200 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch intensity
@@ -8334,7 +8600,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_GetIntensity
-        case 0x1F4 : {
+        case 0x202 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch outReturn
@@ -8348,7 +8614,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_SetRange
-        case 0x1F5 : {
+        case 0x203 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch range
@@ -8360,7 +8626,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_GetRange
-        case 0x1F7 : {
+        case 0x205 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch outReturn
@@ -8374,7 +8640,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_SetAttenuation
-        case 0x1F8 : {
+        case 0x206 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch attenuation
@@ -8386,7 +8652,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_GetAttenuation
-        case 0x1FA : {
+        case 0x208 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch outReturn
@@ -8400,7 +8666,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_SetPrototype_OnSerialize
-        case 0x877 : {
+        case 0x8E8 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch callback
@@ -8420,7 +8686,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLight_SetPrototype_OnUpdate
-        case 0x882 : {
+        case 0x8F3 : {
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch callback
@@ -8440,7 +8706,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_Create
-        case 0x215 : {
+        case 0x223 : {
             // Fetch outSpotLight
             PVal* pval_outSpotLight;
             const APTR aptr_outSpotLight = code_getva(&pval_outSpotLight);
@@ -8452,7 +8718,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_CreateWithColorAndRange
-        case 0x216 : {
+        case 0x224 : {
             // Fetch color
             PVal* pval_color;
             CodeGetVA_TypeChecked(&pval_color, LNColor);
@@ -8471,7 +8737,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_SetEnabled
-        case 0x200 : {
+        case 0x20E : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch enabled
@@ -8483,7 +8749,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_IsEnabled
-        case 0x202 : {
+        case 0x210 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
@@ -8497,7 +8763,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_SetColor
-        case 0x203 : {
+        case 0x211 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch color
@@ -8510,7 +8776,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_GetColor
-        case 0x205 : {
+        case 0x213 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
@@ -8524,7 +8790,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_SetIntensity
-        case 0x206 : {
+        case 0x214 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch intensity
@@ -8536,7 +8802,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_GetIntensity
-        case 0x208 : {
+        case 0x216 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
@@ -8550,7 +8816,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_SetRange
-        case 0x209 : {
+        case 0x217 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch range
@@ -8562,7 +8828,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_GetRange
-        case 0x20B : {
+        case 0x219 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
@@ -8576,7 +8842,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_SetAttenuation
-        case 0x20C : {
+        case 0x21A : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch attenuation
@@ -8588,7 +8854,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_GetAttenuation
-        case 0x20E : {
+        case 0x21C : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
@@ -8602,7 +8868,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_SetAngle
-        case 0x20F : {
+        case 0x21D : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch angle
@@ -8614,7 +8880,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_GetAngle
-        case 0x211 : {
+        case 0x21F : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
@@ -8628,7 +8894,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_SetPenumbra
-        case 0x212 : {
+        case 0x220 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch penumbra
@@ -8640,7 +8906,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_GetPenumbra
-        case 0x214 : {
+        case 0x222 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
@@ -8654,7 +8920,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_SetPrototype_OnSerialize
-        case 0x88D : {
+        case 0x8FE : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch callback
@@ -8674,7 +8940,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLight_SetPrototype_OnUpdate
-        case 0x898 : {
+        case 0x909 : {
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch callback
@@ -8694,7 +8960,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTestDelegate_Create
-        case 0x60D : {
+        case 0x65A : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outTestDelegate
@@ -8710,7 +8976,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSprite_Create
-        case 0x22C : {
+        case 0x23A : {
             // Fetch outSprite
             PVal* pval_outSprite;
             const APTR aptr_outSprite = code_getva(&pval_outSprite);
@@ -8722,7 +8988,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSprite_CreateWithTexture
-        case 0x22D : {
+        case 0x23B : {
             // Fetch texture
             const auto local_texture = fetchVAInt();
             // Fetch outSprite
@@ -8736,7 +9002,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSprite_CreateWithTextureAndSize
-        case 0x22F : {
+        case 0x23D : {
             // Fetch texture
             const auto local_texture = fetchVAInt();
             // Fetch width
@@ -8754,7 +9020,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSprite_SetTexture
-        case 0x21E : {
+        case 0x22C : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
             // Fetch value
@@ -8766,7 +9032,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSprite_SetSize
-        case 0x220 : {
+        case 0x22E : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
             // Fetch value
@@ -8779,7 +9045,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSprite_SetSizeWH
-        case 0x222 : {
+        case 0x230 : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
             // Fetch width
@@ -8793,7 +9059,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSprite_SetSourceRectXYWH
-        case 0x225 : {
+        case 0x233 : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
             // Fetch x
@@ -8811,7 +9077,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSprite_SetCallerTest
-        case 0x22A : {
+        case 0x238 : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
             // Fetch callback
@@ -8831,7 +9097,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSprite_SetPrototype_OnSerialize
-        case 0x8A3 : {
+        case 0x914 : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
             // Fetch callback
@@ -8851,7 +9117,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSprite_SetPrototype_OnUpdate
-        case 0x8AE : {
+        case 0x91F : {
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
             // Fetch callback
@@ -8871,7 +9137,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCameraOrbitControlComponent_Create
-        case 0x234 : {
+        case 0x242 : {
             // Fetch outCameraOrbitControlComponent
             PVal* pval_outCameraOrbitControlComponent;
             const APTR aptr_outCameraOrbitControlComponent = code_getva(&pval_outCameraOrbitControlComponent);
@@ -8883,7 +9149,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCameraOrbitControlComponent_SetPrototype_OnSerialize
-        case 0x8B9 : {
+        case 0x92A : {
             // Fetch cameraorbitcontrolcomponent
             const auto local_cameraorbitcontrolcomponent = fetchVAInt();
             // Fetch callback
@@ -8903,7 +9169,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNRaycaster_FromScreen
-        case 0x236 : {
+        case 0x244 : {
             // Fetch point
             PVal* pval_point;
             CodeGetVA_TypeChecked(&pval_point, LNPoint);
@@ -8918,7 +9184,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNRaycaster_IntersectPlane
-        case 0x238 : {
+        case 0x246 : {
             // Fetch raycaster
             const auto local_raycaster = fetchVAInt();
             // Fetch normalX
@@ -8938,7 +9204,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNRaycaster_SetPrototype_OnSerialize
-        case 0x8C4 : {
+        case 0x935 : {
             // Fetch raycaster
             const auto local_raycaster = fetchVAInt();
             // Fetch callback
@@ -8958,7 +9224,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNRaycastResult_GetPoint
-        case 0x23D : {
+        case 0x24B : {
             // Fetch raycastresult
             const auto local_raycastresult = fetchVAInt();
             // Fetch outReturn
@@ -8972,7 +9238,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNRaycastResult_SetPrototype_OnSerialize
-        case 0x8CF : {
+        case 0x940 : {
             // Fetch raycastresult
             const auto local_raycastresult = fetchVAInt();
             // Fetch callback
@@ -8992,7 +9258,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldRenderView_SetGuideGridEnabled
-        case 0x23F : {
+        case 0x24D : {
             // Fetch worldrenderview
             const auto local_worldrenderview = fetchVAInt();
             // Fetch value
@@ -9004,7 +9270,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldRenderView_GetGuideGridEnabled
-        case 0x241 : {
+        case 0x24F : {
             // Fetch worldrenderview
             const auto local_worldrenderview = fetchVAInt();
             // Fetch outReturn
@@ -9018,7 +9284,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldRenderView_SetPrototype_OnSerialize
-        case 0x8DA : {
+        case 0x94B : {
             // Fetch worldrenderview
             const auto local_worldrenderview = fetchVAInt();
             // Fetch callback
@@ -9038,7 +9304,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNBoxMesh_Create
-        case 0x243 : {
+        case 0x251 : {
             // Fetch outBoxMesh
             PVal* pval_outBoxMesh;
             const APTR aptr_outBoxMesh = code_getva(&pval_outBoxMesh);
@@ -9050,7 +9316,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNBoxMesh_SetPrototype_OnSerialize
-        case 0x8E5 : {
+        case 0x956 : {
             // Fetch boxmesh
             const auto local_boxmesh = fetchVAInt();
             // Fetch callback
@@ -9070,7 +9336,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNBoxMesh_SetPrototype_OnUpdate
-        case 0x8F0 : {
+        case 0x961 : {
             // Fetch boxmesh
             const auto local_boxmesh = fetchVAInt();
             // Fetch callback
@@ -9090,7 +9356,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPlaneMesh_Create
-        case 0x245 : {
+        case 0x253 : {
             // Fetch outPlaneMesh
             PVal* pval_outPlaneMesh;
             const APTR aptr_outPlaneMesh = code_getva(&pval_outPlaneMesh);
@@ -9102,7 +9368,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPlaneMesh_SetPrototype_OnSerialize
-        case 0x8FB : {
+        case 0x96C : {
             // Fetch planemesh
             const auto local_planemesh = fetchVAInt();
             // Fetch callback
@@ -9122,7 +9388,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPlaneMesh_SetPrototype_OnUpdate
-        case 0x906 : {
+        case 0x977 : {
             // Fetch planemesh
             const auto local_planemesh = fetchVAInt();
             // Fetch callback
@@ -9142,7 +9408,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNStaticMesh_LoadA
-        case 0x247 : {
+        case 0x255 : {
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch outReturn
@@ -9156,7 +9422,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNStaticMesh_MakeCollisionBodyA
-        case 0x249 : {
+        case 0x257 : {
             // Fetch staticmesh
             const auto local_staticmesh = fetchVAInt();
             // Fetch meshContainerName
@@ -9168,7 +9434,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNStaticMesh_SetPrototype_OnSerialize
-        case 0x911 : {
+        case 0x982 : {
             // Fetch staticmesh
             const auto local_staticmesh = fetchVAInt();
             // Fetch callback
@@ -9188,7 +9454,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNStaticMesh_SetPrototype_OnUpdate
-        case 0x91C : {
+        case 0x98D : {
             // Fetch staticmesh
             const auto local_staticmesh = fetchVAInt();
             // Fetch callback
@@ -9207,8 +9473,64 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LNStaticMeshComponent_Create
+        case 0x25E : {
+            // Fetch outStaticMeshComponent
+            PVal* pval_outStaticMeshComponent;
+            const APTR aptr_outStaticMeshComponent = code_getva(&pval_outStaticMeshComponent);
+            LNHandle local_outStaticMeshComponent;
+
+            stat = LNStaticMeshComponent_Create(&local_outStaticMeshComponent);
+            setVAInt(pval_outStaticMeshComponent, aptr_outStaticMeshComponent, local_outStaticMeshComponent);
+
+            return true;
+        }
+        // LNStaticMeshComponent_SetModel
+        case 0x25A : {
+            // Fetch staticmeshcomponent
+            const auto local_staticmeshcomponent = fetchVAInt();
+            // Fetch model
+            const auto local_model = fetchVAInt();
+
+            stat = LNStaticMeshComponent_SetModel(local_staticmeshcomponent, local_model);
+
+
+            return true;
+        }
+        // LNStaticMeshComponent_MakeCollisionBodyA
+        case 0x25C : {
+            // Fetch staticmeshcomponent
+            const auto local_staticmeshcomponent = fetchVAInt();
+            // Fetch meshContainerName
+            const auto local_meshContainerName = fetchVAString();
+
+            stat = LNStaticMeshComponent_MakeCollisionBodyA(local_staticmeshcomponent, local_meshContainerName);
+
+
+            return true;
+        }
+        // LNStaticMeshComponent_SetPrototype_OnSerialize
+        case 0x998 : {
+            // Fetch staticmeshcomponent
+            const auto local_staticmeshcomponent = fetchVAInt();
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+
+            LNHandle localDelegate_callback;
+            {
+                stat = LNStaticMeshComponentSerializeHandler_Create(HSPSubclass_LNStaticMeshComponentSerializeHandler_DelegateLabelCaller, &localDelegate_callback);
+                if (stat != LN_SUCCESS) return true;
+                auto* localSelf = reinterpret_cast<HSPSubclass_LNStaticMeshComponentSerializeHandler*>(LNStaticMeshComponentSerializeHandler_GetSubinstanceId(localDelegate_callback));
+                localSelf->labelPointer = local_callback;
+            }
+
+            stat = LNStaticMeshComponent_SetPrototype_OnSerialize(local_staticmeshcomponent, localDelegate_callback);
+            LNObject_Release(localDelegate_callback);
+
+            return true;
+        }
         // LNSkinnedMeshComponent_Create
-        case 0x24E : {
+        case 0x262 : {
             // Fetch outSkinnedMeshComponent
             PVal* pval_outSkinnedMeshComponent;
             const APTR aptr_outSkinnedMeshComponent = code_getva(&pval_outSkinnedMeshComponent);
@@ -9220,7 +9542,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSkinnedMeshComponent_SetModel
-        case 0x24C : {
+        case 0x260 : {
             // Fetch skinnedmeshcomponent
             const auto local_skinnedmeshcomponent = fetchVAInt();
             // Fetch model
@@ -9232,7 +9554,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSkinnedMeshComponent_SetPrototype_OnSerialize
-        case 0x927 : {
+        case 0x9A3 : {
             // Fetch skinnedmeshcomponent
             const auto local_skinnedmeshcomponent = fetchVAInt();
             // Fetch callback
@@ -9252,7 +9574,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCollision_GetWorldObject
-        case 0x250 : {
+        case 0x264 : {
             // Fetch collision
             const auto local_collision = fetchVAInt();
             // Fetch outReturn
@@ -9266,7 +9588,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCollision_SetPrototype_OnSerialize
-        case 0x932 : {
+        case 0x9AE : {
             // Fetch collision
             const auto local_collision = fetchVAInt();
             // Fetch callback
@@ -9286,7 +9608,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTriggerBodyComponent_Create
-        case 0x254 : {
+        case 0x268 : {
             // Fetch outTriggerBodyComponent
             PVal* pval_outTriggerBodyComponent;
             const APTR aptr_outTriggerBodyComponent = code_getva(&pval_outTriggerBodyComponent);
@@ -9298,7 +9620,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTriggerBodyComponent_AddCollisionShape
-        case 0x252 : {
+        case 0x266 : {
             // Fetch triggerbodycomponent
             const auto local_triggerbodycomponent = fetchVAInt();
             // Fetch shape
@@ -9310,7 +9632,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTriggerBodyComponent_SetPrototype_OnSerialize
-        case 0x93D : {
+        case 0x9B9 : {
             // Fetch triggerbodycomponent
             const auto local_triggerbodycomponent = fetchVAInt();
             // Fetch callback
@@ -9330,7 +9652,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetClearMode
-        case 0x256 : {
+        case 0x26A : {
             // Fetch value
             const auto local_value = static_cast<LNSceneClearMode>(fetchVAInt());
 
@@ -9340,7 +9662,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetSkyColor
-        case 0x258 : {
+        case 0x26C : {
             // Fetch value
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
@@ -9351,7 +9673,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetSkyHorizonColor
-        case 0x25A : {
+        case 0x26E : {
             // Fetch value
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
@@ -9362,7 +9684,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetSkyCloudColor
-        case 0x25C : {
+        case 0x270 : {
             // Fetch value
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
@@ -9373,7 +9695,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetSkyOverlayColor
-        case 0x25E : {
+        case 0x272 : {
             // Fetch value
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
@@ -9384,7 +9706,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_GotoLevel
-        case 0x260 : {
+        case 0x274 : {
             // Fetch level
             const auto local_level = fetchVAInt();
             // Fetch withEffect
@@ -9396,7 +9718,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_CallLevel
-        case 0x263 : {
+        case 0x277 : {
             // Fetch level
             const auto local_level = fetchVAInt();
             // Fetch withEffect
@@ -9408,7 +9730,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_ReturnLevel
-        case 0x266 : {
+        case 0x27A : {
             // Fetch withEffect
             const auto local_withEffect = static_cast<LNBool>(fetchVAInt());
 
@@ -9418,7 +9740,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_ActiveLevel
-        case 0x268 : {
+        case 0x27C : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9430,7 +9752,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_IsTransitionEffectRunning
-        case 0x269 : {
+        case 0x27D : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9442,7 +9764,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetTransitionEffectMode
-        case 0x26A : {
+        case 0x27E : {
             // Fetch value
             const auto local_value = static_cast<LNLevelTransitionEffectMode>(fetchVAInt());
 
@@ -9452,7 +9774,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_TransitionEffectMode
-        case 0x26C : {
+        case 0x280 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9464,7 +9786,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetTransitionDuration
-        case 0x26D : {
+        case 0x281 : {
             // Fetch value
             const auto local_value = fetchVADouble();
 
@@ -9474,7 +9796,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_TransitionDuration
-        case 0x26F : {
+        case 0x283 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9486,7 +9808,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetTransitionEffectColor
-        case 0x270 : {
+        case 0x284 : {
             // Fetch value
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
@@ -9497,7 +9819,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_TransitionEffectColor
-        case 0x272 : {
+        case 0x286 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9509,7 +9831,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetTransitionEffectMaskTexture
-        case 0x273 : {
+        case 0x287 : {
             // Fetch value
             const auto local_value = fetchVAInt();
 
@@ -9519,7 +9841,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_TransitionEffectMaskTexture
-        case 0x275 : {
+        case 0x289 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9531,7 +9853,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetTransitionEffectVague
-        case 0x276 : {
+        case 0x28A : {
             // Fetch value
             const auto local_value = fetchVADouble();
 
@@ -9541,7 +9863,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_TransitionEffectVague
-        case 0x278 : {
+        case 0x28C : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9553,7 +9875,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_StartFadeOut
-        case 0x279 : {
+        case 0x28D : {
 
             stat = LNScene_StartFadeOut();
 
@@ -9561,7 +9883,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_StartFadeIn
-        case 0x27A : {
+        case 0x28E : {
 
             stat = LNScene_StartFadeIn();
 
@@ -9569,7 +9891,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetScreenBlendColor
-        case 0x27B : {
+        case 0x28F : {
             // Fetch value
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
@@ -9580,7 +9902,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_ScreenBlendColor
-        case 0x27D : {
+        case 0x291 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9592,7 +9914,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetAntialiasEnabled
-        case 0x27E : {
+        case 0x292 : {
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
@@ -9602,7 +9924,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_IsAntialiasEnabled
-        case 0x280 : {
+        case 0x294 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9614,7 +9936,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetSSREnabled
-        case 0x281 : {
+        case 0x295 : {
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
@@ -9624,7 +9946,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_IsSSREnabled
-        case 0x283 : {
+        case 0x297 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9636,7 +9958,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetSSAOEnabled
-        case 0x284 : {
+        case 0x298 : {
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
@@ -9646,7 +9968,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_IsSSAOEnabled
-        case 0x286 : {
+        case 0x29A : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9658,7 +9980,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetBloomEnabled
-        case 0x287 : {
+        case 0x29B : {
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
@@ -9668,7 +9990,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_IsBloomEnabled
-        case 0x289 : {
+        case 0x29D : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9680,7 +10002,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetDOFEnabled
-        case 0x28A : {
+        case 0x29E : {
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
@@ -9690,7 +10012,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_IsDOFEnabled
-        case 0x28C : {
+        case 0x2A0 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9702,7 +10024,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetTonemapEnabled
-        case 0x28D : {
+        case 0x2A1 : {
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
@@ -9712,7 +10034,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_IsTonemapEnabled
-        case 0x28F : {
+        case 0x2A3 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9724,7 +10046,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetVignetteEnabled
-        case 0x290 : {
+        case 0x2A4 : {
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
@@ -9734,7 +10056,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_IsVignetteEnabled
-        case 0x292 : {
+        case 0x2A6 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9746,7 +10068,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_SetGammaEnabled
-        case 0x293 : {
+        case 0x2A7 : {
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
@@ -9756,7 +10078,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNScene_IsGammaEnabled
-        case 0x295 : {
+        case 0x2A9 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -9768,7 +10090,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevel_Create
-        case 0x2A5 : {
+        case 0x2B9 : {
             // Fetch outLevel
             PVal* pval_outLevel;
             const APTR aptr_outLevel = code_getva(&pval_outLevel);
@@ -9780,7 +10102,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevel_AddObject
-        case 0x297 : {
+        case 0x2AB : {
             // Fetch level
             const auto local_level = fetchVAInt();
             // Fetch obj
@@ -9792,7 +10114,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevel_RemoveObject
-        case 0x299 : {
+        case 0x2AD : {
             // Fetch level
             const auto local_level = fetchVAInt();
             // Fetch obj
@@ -9804,7 +10126,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevel_AddSubLevel
-        case 0x29B : {
+        case 0x2AF : {
             // Fetch level
             const auto local_level = fetchVAInt();
             // Fetch sublevel
@@ -9816,7 +10138,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevel_RemoveSubLevel
-        case 0x29D : {
+        case 0x2B1 : {
             // Fetch level
             const auto local_level = fetchVAInt();
             // Fetch sublevel
@@ -9828,7 +10150,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevel_RemoveAllSubLevels
-        case 0x29F : {
+        case 0x2B3 : {
             // Fetch level
             const auto local_level = fetchVAInt();
 
@@ -9838,7 +10160,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevel_SetPrototype_OnSerialize
-        case 0x948 : {
+        case 0x9C4 : {
             // Fetch level
             const auto local_level = fetchVAInt();
             // Fetch callback
@@ -9858,7 +10180,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevel_SetPrototype_OnStart
-        case 0x953 : {
+        case 0x9CF : {
             // Fetch level
             const auto local_level = fetchVAInt();
             // Fetch callback
@@ -9878,7 +10200,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevel_SetPrototype_OnStop
-        case 0x95E : {
+        case 0x9DA : {
             // Fetch level
             const auto local_level = fetchVAInt();
             // Fetch callback
@@ -9898,7 +10220,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevel_SetPrototype_OnPause
-        case 0x969 : {
+        case 0x9E5 : {
             // Fetch level
             const auto local_level = fetchVAInt();
             // Fetch callback
@@ -9918,7 +10240,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevel_SetPrototype_OnResume
-        case 0x974 : {
+        case 0x9F0 : {
             // Fetch level
             const auto local_level = fetchVAInt();
             // Fetch callback
@@ -9938,7 +10260,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevel_SetPrototype_OnUpdate
-        case 0x97F : {
+        case 0x9FB : {
             // Fetch level
             const auto local_level = fetchVAInt();
             // Fetch callback
@@ -9958,7 +10280,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIEventArgs_Sender
-        case 0x2AC : {
+        case 0x2C0 : {
             // Fetch uieventargs
             const auto local_uieventargs = fetchVAInt();
             // Fetch outReturn
@@ -9972,7 +10294,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIEventArgs_SetPrototype_OnSerialize
-        case 0x98A : {
+        case 0xA06 : {
             // Fetch uieventargs
             const auto local_uieventargs = fetchVAInt();
             // Fetch callback
@@ -9992,7 +10314,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIGeneralEventHandler_Create
-        case 0x65B : {
+        case 0x6AB : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIGeneralEventHandler
@@ -10008,7 +10330,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIEventHandler_Create
-        case 0x660 : {
+        case 0x6B0 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIEventHandler
@@ -10024,7 +10346,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUILayoutElement_SetPrototype_OnSerialize
-        case 0x995 : {
+        case 0xA11 : {
             // Fetch uilayoutelement
             const auto local_uilayoutelement = fetchVAInt();
             // Fetch callback
@@ -10044,7 +10366,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetSize
-        case 0x2BE : {
+        case 0x2D2 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch size
@@ -10057,7 +10379,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetSizeWH
-        case 0x2C0 : {
+        case 0x2D4 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch width
@@ -10071,7 +10393,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetMargin
-        case 0x2C3 : {
+        case 0x2D7 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch margin
@@ -10084,7 +10406,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_GetMargin
-        case 0x2C5 : {
+        case 0x2D9 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
@@ -10098,7 +10420,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetPadding
-        case 0x2C6 : {
+        case 0x2DA : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch padding
@@ -10111,7 +10433,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_GetPadding
-        case 0x2C8 : {
+        case 0x2DC : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
@@ -10125,7 +10447,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetHAlignment
-        case 0x2C9 : {
+        case 0x2DD : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch value
@@ -10137,7 +10459,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_GetHAlignment
-        case 0x2CB : {
+        case 0x2DF : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
@@ -10151,7 +10473,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetVAlignment
-        case 0x2CC : {
+        case 0x2E0 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch value
@@ -10163,7 +10485,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_GetVAlignment
-        case 0x2CE : {
+        case 0x2E2 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
@@ -10177,7 +10499,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetAlignments
-        case 0x2CF : {
+        case 0x2E3 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch halign
@@ -10191,7 +10513,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetPosition
-        case 0x2D2 : {
+        case 0x2E6 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch pos
@@ -10204,7 +10526,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetPositionXYZ
-        case 0x2D4 : {
+        case 0x2E8 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch x
@@ -10220,7 +10542,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_GetPosition
-        case 0x2D8 : {
+        case 0x2EC : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
@@ -10234,7 +10556,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetRotation
-        case 0x2D9 : {
+        case 0x2ED : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch rot
@@ -10247,7 +10569,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetEulerAngles
-        case 0x2DB : {
+        case 0x2EF : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch x
@@ -10263,7 +10585,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_GetRotation
-        case 0x2DF : {
+        case 0x2F3 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
@@ -10277,7 +10599,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetScale
-        case 0x2E0 : {
+        case 0x2F4 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch scale
@@ -10290,7 +10612,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetScaleS
-        case 0x2E2 : {
+        case 0x2F6 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch xyz
@@ -10302,7 +10624,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetScaleXY
-        case 0x2E4 : {
+        case 0x2F8 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch x
@@ -10316,7 +10638,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_GetScale
-        case 0x2E7 : {
+        case 0x2FB : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
@@ -10330,7 +10652,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetCenterPoint
-        case 0x2E8 : {
+        case 0x2FC : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch value
@@ -10343,7 +10665,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetCenterPointXYZ
-        case 0x2EA : {
+        case 0x2FE : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch x
@@ -10359,7 +10681,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_GetCenterPoint
-        case 0x2EE : {
+        case 0x302 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
@@ -10373,7 +10695,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetEnabled
-        case 0x2EF : {
+        case 0x303 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch value
@@ -10385,7 +10707,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_IsEnabled
-        case 0x2F1 : {
+        case 0x305 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
@@ -10399,7 +10721,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetData
-        case 0x2F2 : {
+        case 0x306 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch value
@@ -10411,7 +10733,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_GetData
-        case 0x2F4 : {
+        case 0x308 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
@@ -10424,8 +10746,116 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LNUIElement_SetBackgroundColor
+        case 0x309 : {
+            // Fetch uielement
+            const auto local_uielement = fetchVAInt();
+            // Fetch value
+            PVal* pval_value;
+            CodeGetVA_TypeChecked(&pval_value, LNColor);
+
+            stat = LNUIElement_SetBackgroundColor(local_uielement, reinterpret_cast<LNColor*>(pval_value->pt));
+
+
+            return true;
+        }
+        // LNUIElement_GetBackgroundColor
+        case 0x30B : {
+            // Fetch uielement
+            const auto local_uielement = fetchVAInt();
+            // Fetch outReturn
+            PVal* pval_outReturn;
+            const APTR aptr_outReturn = code_getva(&pval_outReturn);
+            LNColor local_outReturn;
+
+            stat = LNUIElement_GetBackgroundColor(local_uielement, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
+
+            return true;
+        }
+        // LNUIElement_SetBorderThickness
+        case 0x30C : {
+            // Fetch uielement
+            const auto local_uielement = fetchVAInt();
+            // Fetch value
+            PVal* pval_value;
+            CodeGetVA_TypeChecked(&pval_value, LNThickness);
+
+            stat = LNUIElement_SetBorderThickness(local_uielement, reinterpret_cast<LNThickness*>(pval_value->pt));
+
+
+            return true;
+        }
+        // LNUIElement_GetBorderThickness
+        case 0x30E : {
+            // Fetch uielement
+            const auto local_uielement = fetchVAInt();
+            // Fetch outReturn
+            PVal* pval_outReturn;
+            const APTR aptr_outReturn = code_getva(&pval_outReturn);
+            LNThickness local_outReturn;
+
+            stat = LNUIElement_GetBorderThickness(local_uielement, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNThickness_typeid(), &local_outReturn);
+
+            return true;
+        }
+        // LNUIElement_SetBorderColor
+        case 0x30F : {
+            // Fetch uielement
+            const auto local_uielement = fetchVAInt();
+            // Fetch value
+            PVal* pval_value;
+            CodeGetVA_TypeChecked(&pval_value, LNColor);
+
+            stat = LNUIElement_SetBorderColor(local_uielement, reinterpret_cast<LNColor*>(pval_value->pt));
+
+
+            return true;
+        }
+        // LNUIElement_GetBorderColor
+        case 0x311 : {
+            // Fetch uielement
+            const auto local_uielement = fetchVAInt();
+            // Fetch outReturn
+            PVal* pval_outReturn;
+            const APTR aptr_outReturn = code_getva(&pval_outReturn);
+            LNColor local_outReturn;
+
+            stat = LNUIElement_GetBorderColor(local_uielement, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
+
+            return true;
+        }
+        // LNUIElement_SetCornerRadius
+        case 0x312 : {
+            // Fetch uielement
+            const auto local_uielement = fetchVAInt();
+            // Fetch value
+            PVal* pval_value;
+            CodeGetVA_TypeChecked(&pval_value, LNCornerRadius);
+
+            stat = LNUIElement_SetCornerRadius(local_uielement, reinterpret_cast<LNCornerRadius*>(pval_value->pt));
+
+
+            return true;
+        }
+        // LNUIElement_GetCornerRadius
+        case 0x314 : {
+            // Fetch uielement
+            const auto local_uielement = fetchVAInt();
+            // Fetch outReturn
+            PVal* pval_outReturn;
+            const APTR aptr_outReturn = code_getva(&pval_outReturn);
+            LNCornerRadius local_outReturn;
+
+            stat = LNUIElement_GetCornerRadius(local_uielement, &local_outReturn);
+            code_setva(pval_outReturn, aptr_outReturn, hspLNCornerRadius_typeid(), &local_outReturn);
+
+            return true;
+        }
         // LNUIElement_SetOpacity
-        case 0x2F5 : {
+        case 0x315 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch value
@@ -10437,7 +10867,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_GetOpacity
-        case 0x2F7 : {
+        case 0x317 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
@@ -10451,7 +10881,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_AddChild
-        case 0x2F8 : {
+        case 0x318 : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch child
@@ -10463,7 +10893,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElement_SetPrototype_OnSerialize
-        case 0x9A0 : {
+        case 0xA1C : {
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch callback
@@ -10483,7 +10913,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUITextBlock_Create
-        case 0x2FB : {
+        case 0x31B : {
             // Fetch outUITextBlock
             PVal* pval_outUITextBlock;
             const APTR aptr_outUITextBlock = code_getva(&pval_outUITextBlock);
@@ -10495,7 +10925,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUITextBlock_CreateWithTextA
-        case 0x2FC : {
+        case 0x31C : {
             // Fetch text
             const auto local_text = fetchVAString();
             // Fetch outUITextBlock
@@ -10509,7 +10939,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUITextBlock_SetPrototype_OnSerialize
-        case 0x9AB : {
+        case 0xA27 : {
             // Fetch uitextblock
             const auto local_uitextblock = fetchVAInt();
             // Fetch callback
@@ -10529,7 +10959,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUISprite_Create
-        case 0x309 : {
+        case 0x329 : {
             // Fetch outUISprite
             PVal* pval_outUISprite;
             const APTR aptr_outUISprite = code_getva(&pval_outUISprite);
@@ -10541,7 +10971,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUISprite_CreateWithTexture
-        case 0x30A : {
+        case 0x32A : {
             // Fetch texture
             const auto local_texture = fetchVAInt();
             // Fetch outUISprite
@@ -10555,7 +10985,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUISprite_SetTexture
-        case 0x2FF : {
+        case 0x31F : {
             // Fetch uisprite
             const auto local_uisprite = fetchVAInt();
             // Fetch texture
@@ -10567,7 +10997,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUISprite_SetSourceRect
-        case 0x301 : {
+        case 0x321 : {
             // Fetch uisprite
             const auto local_uisprite = fetchVAInt();
             // Fetch rect
@@ -10580,7 +11010,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUISprite_SetSourceRectXYWH
-        case 0x303 : {
+        case 0x323 : {
             // Fetch uisprite
             const auto local_uisprite = fetchVAInt();
             // Fetch x
@@ -10598,7 +11028,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUISprite_GetSourceRect
-        case 0x308 : {
+        case 0x328 : {
             // Fetch uisprite
             const auto local_uisprite = fetchVAInt();
             // Fetch outReturn
@@ -10612,7 +11042,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUISprite_SetPrototype_OnSerialize
-        case 0x9B6 : {
+        case 0xA32 : {
             // Fetch uisprite
             const auto local_uisprite = fetchVAInt();
             // Fetch callback
@@ -10632,7 +11062,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIIcon_LoadFontIconA
-        case 0x30D : {
+        case 0x32D : {
             // Fetch iconName
             const auto local_iconName = fetchVAString();
             // Fetch outReturn
@@ -10646,7 +11076,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIIcon_LoadFontIconWithNameSizeA
-        case 0x30F : {
+        case 0x32F : {
             // Fetch iconName
             const auto local_iconName = fetchVAString();
             // Fetch size
@@ -10662,7 +11092,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIIcon_LoadFontIconWithNameSizeColorA
-        case 0x312 : {
+        case 0x332 : {
             // Fetch iconName
             const auto local_iconName = fetchVAString();
             // Fetch size
@@ -10681,7 +11111,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIIcon_SetPrototype_OnSerialize
-        case 0x9C1 : {
+        case 0xA3D : {
             // Fetch uiicon
             const auto local_uiicon = fetchVAInt();
             // Fetch callback
@@ -10701,7 +11131,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUI_Add
-        case 0x317 : {
+        case 0x337 : {
             // Fetch element
             const auto local_element = fetchVAInt();
 
@@ -10711,7 +11141,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUI_Remove
-        case 0x319 : {
+        case 0x339 : {
             // Fetch element
             const auto local_element = fetchVAInt();
 
@@ -10721,7 +11151,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUILayoutPanel_SetPrototype_OnSerialize
-        case 0x9CC : {
+        case 0xA48 : {
             // Fetch uilayoutpanel
             const auto local_uilayoutpanel = fetchVAInt();
             // Fetch callback
@@ -10741,7 +11171,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIBoxLayout_Create
-        case 0x320 : {
+        case 0x340 : {
             // Fetch outUIBoxLayout
             PVal* pval_outUIBoxLayout;
             const APTR aptr_outUIBoxLayout = code_getva(&pval_outUIBoxLayout);
@@ -10753,7 +11183,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIBoxLayout_SetOrientation
-        case 0x31D : {
+        case 0x33D : {
             // Fetch uiboxlayout
             const auto local_uiboxlayout = fetchVAInt();
             // Fetch orientation
@@ -10765,7 +11195,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIBoxLayout_GetOrientation
-        case 0x31F : {
+        case 0x33F : {
             // Fetch uiboxlayout
             const auto local_uiboxlayout = fetchVAInt();
             // Fetch outReturn
@@ -10779,7 +11209,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIBoxLayout_SetPrototype_OnSerialize
-        case 0x9D7 : {
+        case 0xA53 : {
             // Fetch uiboxlayout
             const auto local_uiboxlayout = fetchVAInt();
             // Fetch callback
@@ -10799,7 +11229,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIGridLayout_Create
-        case 0x330 : {
+        case 0x350 : {
             // Fetch outUIGridLayout
             PVal* pval_outUIGridLayout;
             const APTR aptr_outUIGridLayout = code_getva(&pval_outUIGridLayout);
@@ -10811,7 +11241,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIGridLayout_SetColumnCount
-        case 0x322 : {
+        case 0x342 : {
             // Fetch uigridlayout
             const auto local_uigridlayout = fetchVAInt();
             // Fetch value
@@ -10823,7 +11253,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIGridLayout_SetRow
-        case 0x324 : {
+        case 0x344 : {
             // Fetch element
             const auto local_element = fetchVAInt();
             // Fetch row
@@ -10835,7 +11265,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIGridLayout_SetColumn
-        case 0x327 : {
+        case 0x347 : {
             // Fetch element
             const auto local_element = fetchVAInt();
             // Fetch column
@@ -10847,7 +11277,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIGridLayout_SetPlacement
-        case 0x32A : {
+        case 0x34A : {
             // Fetch element
             const auto local_element = fetchVAInt();
             // Fetch row
@@ -10865,7 +11295,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIGridLayout_SetPrototype_OnSerialize
-        case 0x9E2 : {
+        case 0xA5E : {
             // Fetch uigridlayout
             const auto local_uigridlayout = fetchVAInt();
             // Fetch callback
@@ -10884,8 +11314,34 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LNUIControl_Create
+        case 0x35C : {
+            // Fetch outUIControl
+            PVal* pval_outUIControl;
+            const APTR aptr_outUIControl = code_getva(&pval_outUIControl);
+            LNHandle local_outUIControl;
+
+            stat = LNUIControl_Create(&local_outUIControl);
+            setVAInt(pval_outUIControl, aptr_outUIControl, local_outUIControl);
+
+            return true;
+        }
+        // LNUIControl_AddInlineVisual
+        case 0x35D : {
+            // Fetch uicontrol
+            const auto local_uicontrol = fetchVAInt();
+            // Fetch element
+            const auto local_element = fetchVAInt();
+            // Fetch layout
+            const auto local_layout = static_cast<LNUIInlinePlacement>(fetchVAInt());
+
+            stat = LNUIControl_AddInlineVisual(local_uicontrol, local_element, local_layout);
+
+
+            return true;
+        }
         // LNUIControl_SetPrototype_OnSerialize
-        case 0x9ED : {
+        case 0xA69 : {
             // Fetch uicontrol
             const auto local_uicontrol = fetchVAInt();
             // Fetch callback
@@ -10905,7 +11361,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIButtonBase_SetTextA
-        case 0x333 : {
+        case 0x361 : {
             // Fetch uibuttonbase
             const auto local_uibuttonbase = fetchVAInt();
             // Fetch text
@@ -10917,7 +11373,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIButtonBase_SetPrototype_OnSerialize
-        case 0x9F8 : {
+        case 0xA74 : {
             // Fetch uibuttonbase
             const auto local_uibuttonbase = fetchVAInt();
             // Fetch callback
@@ -10937,7 +11393,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIButton_Create
-        case 0x336 : {
+        case 0x364 : {
             // Fetch outUIButton
             PVal* pval_outUIButton;
             const APTR aptr_outUIButton = code_getva(&pval_outUIButton);
@@ -10949,7 +11405,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIButton_CreateWithTextA
-        case 0x337 : {
+        case 0x365 : {
             // Fetch text
             const auto local_text = fetchVAString();
             // Fetch outUIButton
@@ -10963,7 +11419,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIButton_ConnectOnClicked
-        case 0x339 : {
+        case 0x367 : {
             // Fetch uibutton
             const auto local_uibutton = fetchVAInt();
             // Fetch handler
@@ -10988,7 +11444,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIButton_SetPrototype_OnSerialize
-        case 0xA03 : {
+        case 0xA7F : {
             // Fetch uibutton
             const auto local_uibutton = fetchVAInt();
             // Fetch callback
@@ -11008,7 +11464,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIWindow_Create
-        case 0x33C : {
+        case 0x36A : {
             // Fetch outUIWindow
             PVal* pval_outUIWindow;
             const APTR aptr_outUIWindow = code_getva(&pval_outUIWindow);
@@ -11020,7 +11476,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIWindow_SetPrototype_OnSerialize
-        case 0xA0E : {
+        case 0xA8A : {
             // Fetch uiwindow
             const auto local_uiwindow = fetchVAInt();
             // Fetch callback
@@ -11040,7 +11496,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListItem_ConnectOnSubmit
-        case 0x341 : {
+        case 0x36F : {
             // Fetch uilistitem
             const auto local_uilistitem = fetchVAInt();
             // Fetch handler
@@ -11065,7 +11521,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListItem_SetPrototype_OnSerialize
-        case 0xA19 : {
+        case 0xA95 : {
             // Fetch uilistitem
             const auto local_uilistitem = fetchVAInt();
             // Fetch callback
@@ -11085,7 +11541,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListItemsControl_SetItemsLayoutPanel
-        case 0x344 : {
+        case 0x372 : {
             // Fetch uilistitemscontrol
             const auto local_uilistitemscontrol = fetchVAInt();
             // Fetch layout
@@ -11097,7 +11553,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListItemsControl_SetSubmitMode
-        case 0x346 : {
+        case 0x374 : {
             // Fetch uilistitemscontrol
             const auto local_uilistitemscontrol = fetchVAInt();
             // Fetch value
@@ -11109,7 +11565,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListItemsControl_GetSubmitMode
-        case 0x348 : {
+        case 0x376 : {
             // Fetch uilistitemscontrol
             const auto local_uilistitemscontrol = fetchVAInt();
             // Fetch outReturn
@@ -11123,7 +11579,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListItemsControl_SetPrototype_OnSerialize
-        case 0xA24 : {
+        case 0xAA0 : {
             // Fetch uilistitemscontrol
             const auto local_uilistitemscontrol = fetchVAInt();
             // Fetch callback
@@ -11143,7 +11599,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListBoxItem_Create
-        case 0x34A : {
+        case 0x378 : {
             // Fetch content
             const auto local_content = fetchVAInt();
             // Fetch outUIListBoxItem
@@ -11157,7 +11613,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListBoxItem_SetPrototype_OnSerialize
-        case 0xA2F : {
+        case 0xAAB : {
             // Fetch uilistboxitem
             const auto local_uilistboxitem = fetchVAInt();
             // Fetch callback
@@ -11177,7 +11633,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListBox_Create
-        case 0x34F : {
+        case 0x37D : {
             // Fetch outUIListBox
             PVal* pval_outUIListBox;
             const APTR aptr_outUIListBox = code_getva(&pval_outUIListBox);
@@ -11189,7 +11645,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListBox_AddItem
-        case 0x34D : {
+        case 0x37B : {
             // Fetch uilistbox
             const auto local_uilistbox = fetchVAInt();
             // Fetch content
@@ -11205,7 +11661,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListBox_SetPrototype_OnSerialize
-        case 0xA3A : {
+        case 0xAB6 : {
             // Fetch uilistbox
             const auto local_uilistbox = fetchVAInt();
             // Fetch callback
@@ -11225,7 +11681,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInput_IsPressedA
-        case 0x351 : {
+        case 0x37F : {
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
@@ -11239,7 +11695,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInput_IsTriggeredA
-        case 0x353 : {
+        case 0x381 : {
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
@@ -11253,7 +11709,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInput_IsTriggeredOffA
-        case 0x355 : {
+        case 0x383 : {
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
@@ -11267,7 +11723,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInput_IsRepeatedA
-        case 0x357 : {
+        case 0x385 : {
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
@@ -11281,7 +11737,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInput_GetAxisValueA
-        case 0x359 : {
+        case 0x387 : {
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
@@ -11295,7 +11751,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInput_ClearAllBindings
-        case 0x35B : {
+        case 0x389 : {
 
             stat = LNInput_ClearAllBindings();
 
@@ -11303,7 +11759,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNMouse_Pressed
-        case 0x35D : {
+        case 0x38B : {
             // Fetch button
             const auto local_button = static_cast<LNMouseButtons>(fetchVAInt());
             // Fetch outReturn
@@ -11317,7 +11773,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNMouse_Triggered
-        case 0x35F : {
+        case 0x38D : {
             // Fetch button
             const auto local_button = static_cast<LNMouseButtons>(fetchVAInt());
             // Fetch outReturn
@@ -11331,7 +11787,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNMouse_TriggeredOff
-        case 0x361 : {
+        case 0x38F : {
             // Fetch button
             const auto local_button = static_cast<LNMouseButtons>(fetchVAInt());
             // Fetch outReturn
@@ -11345,7 +11801,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNMouse_Repeated
-        case 0x363 : {
+        case 0x391 : {
             // Fetch button
             const auto local_button = static_cast<LNMouseButtons>(fetchVAInt());
             // Fetch outReturn
@@ -11359,7 +11815,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNMouse_Position
-        case 0x365 : {
+        case 0x393 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -11371,7 +11827,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommand_CodeA
-        case 0x367 : {
+        case 0x395 : {
             // Fetch interpretercommand
             const auto local_interpretercommand = fetchVAInt();
             // Fetch outReturn
@@ -11385,7 +11841,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommand_ParamsCount
-        case 0x368 : {
+        case 0x396 : {
             // Fetch interpretercommand
             const auto local_interpretercommand = fetchVAInt();
             // Fetch outReturn
@@ -11399,7 +11855,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommand_ParamA
-        case 0x369 : {
+        case 0x397 : {
             // Fetch interpretercommand
             const auto local_interpretercommand = fetchVAInt();
             // Fetch index
@@ -11415,7 +11871,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommand_SetPrototype_OnSerialize
-        case 0xA45 : {
+        case 0xAC1 : {
             // Fetch interpretercommand
             const auto local_interpretercommand = fetchVAInt();
             // Fetch callback
@@ -11435,7 +11891,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommandList_Create
-        case 0x380 : {
+        case 0x3AE : {
             // Fetch outInterpreterCommandList
             PVal* pval_outInterpreterCommandList;
             const APTR aptr_outInterpreterCommandList = code_getva(&pval_outInterpreterCommandList);
@@ -11447,7 +11903,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommandList_AddCommandA
-        case 0x36C : {
+        case 0x39A : {
             // Fetch interpretercommandlist
             const auto local_interpretercommandlist = fetchVAInt();
             // Fetch code
@@ -11459,7 +11915,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommandList_AddCommand1A
-        case 0x36E : {
+        case 0x39C : {
             // Fetch interpretercommandlist
             const auto local_interpretercommandlist = fetchVAInt();
             // Fetch code
@@ -11473,7 +11929,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommandList_AddCommand2A
-        case 0x371 : {
+        case 0x39F : {
             // Fetch interpretercommandlist
             const auto local_interpretercommandlist = fetchVAInt();
             // Fetch code
@@ -11489,7 +11945,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommandList_AddCommand3A
-        case 0x375 : {
+        case 0x3A3 : {
             // Fetch interpretercommandlist
             const auto local_interpretercommandlist = fetchVAInt();
             // Fetch code
@@ -11507,7 +11963,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommandList_AddCommand4A
-        case 0x37A : {
+        case 0x3A8 : {
             // Fetch interpretercommandlist
             const auto local_interpretercommandlist = fetchVAInt();
             // Fetch code
@@ -11527,7 +11983,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommandList_SetPrototype_OnSerialize
-        case 0xA50 : {
+        case 0xACC : {
             // Fetch interpretercommandlist
             const auto local_interpretercommandlist = fetchVAInt();
             // Fetch callback
@@ -11547,7 +12003,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommandDelegate_Create
-        case 0x6E9 : {
+        case 0x74F : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outInterpreterCommandDelegate
@@ -11563,7 +12019,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreter_Create
-        case 0x394 : {
+        case 0x3C2 : {
             // Fetch outInterpreter
             PVal* pval_outInterpreter;
             const APTR aptr_outInterpreter = code_getva(&pval_outInterpreter);
@@ -11575,7 +12031,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreter_Clear
-        case 0x385 : {
+        case 0x3B3 : {
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
 
@@ -11585,7 +12041,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreter_Run
-        case 0x386 : {
+        case 0x3B4 : {
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
             // Fetch commandList
@@ -11597,7 +12053,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreter_IsRunning
-        case 0x388 : {
+        case 0x3B6 : {
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
             // Fetch outReturn
@@ -11611,7 +12067,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreter_Update
-        case 0x389 : {
+        case 0x3B7 : {
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
 
@@ -11621,7 +12077,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreter_Terminate
-        case 0x38A : {
+        case 0x3B8 : {
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
 
@@ -11631,7 +12087,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreter_RegisterCommandHandlerA
-        case 0x38B : {
+        case 0x3B9 : {
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
             // Fetch name
@@ -11653,7 +12109,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreter_SetWaitModeA
-        case 0x38E : {
+        case 0x3BC : {
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
             // Fetch mode
@@ -11665,7 +12121,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreter_GetWaitModeA
-        case 0x390 : {
+        case 0x3BE : {
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
             // Fetch outReturn
@@ -11679,7 +12135,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreter_SetWaitCount
-        case 0x391 : {
+        case 0x3BF : {
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
             // Fetch count
@@ -11691,7 +12147,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreter_GetWaitCount
-        case 0x393 : {
+        case 0x3C1 : {
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
             // Fetch outReturn
@@ -11705,7 +12161,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreter_SetPrototype_OnSerialize
-        case 0xA5B : {
+        case 0xAD7 : {
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
             // Fetch callback
@@ -11725,7 +12181,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreter_SetPrototype_OnUpdateWait
-        case 0xA67 : {
+        case 0xAE3 : {
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
             // Fetch callback
@@ -11745,7 +12201,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngineSettings_SetMainWindowSize
-        case 0x397 : {
+        case 0x3C5 : {
             // Fetch width
             const auto local_width = fetchVAInt();
             // Fetch height
@@ -11757,7 +12213,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngineSettings_SetMainWorldViewSize
-        case 0x39A : {
+        case 0x3C8 : {
             // Fetch width
             const auto local_width = fetchVAInt();
             // Fetch height
@@ -11769,7 +12225,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngineSettings_SetMainWindowTitleA
-        case 0x39D : {
+        case 0x3CB : {
             // Fetch title
             const auto local_title = fetchVAString();
 
@@ -11779,7 +12235,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngineSettings_AddAssetDirectoryA
-        case 0x39F : {
+        case 0x3CD : {
             // Fetch path
             const auto local_path = fetchVAString();
 
@@ -11789,7 +12245,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngineSettings_AddAssetArchiveA
-        case 0x3A1 : {
+        case 0x3CF : {
             // Fetch fileFullPath
             const auto local_fileFullPath = fetchVAString();
             // Fetch password
@@ -11801,7 +12257,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngineSettings_SetFrameRate
-        case 0x3A4 : {
+        case 0x3D2 : {
             // Fetch value
             const auto local_value = fetchVAInt();
 
@@ -11811,7 +12267,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngineSettings_SetDefaultUIThemeA
-        case 0x3A6 : {
+        case 0x3D4 : {
             // Fetch value
             const auto local_value = fetchVAString();
 
@@ -11821,7 +12277,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngineSettings_SetDebugToolEnabled
-        case 0x3A8 : {
+        case 0x3D6 : {
             // Fetch enabled
             const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
@@ -11831,7 +12287,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngineSettings_SetEngineLogEnabled
-        case 0x3AA : {
+        case 0x3D8 : {
             // Fetch enabled
             const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
@@ -11841,7 +12297,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngineSettings_SetEngineLogFilePathA
-        case 0x3AC : {
+        case 0x3DA : {
             // Fetch filePath
             const auto local_filePath = fetchVAString();
 
@@ -11851,7 +12307,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngine_Initialize
-        case 0x3AF : {
+        case 0x3DD : {
 
             stat = LNEngine_Initialize();
 
@@ -11859,7 +12315,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngine_Finalize
-        case 0x3B0 : {
+        case 0x3DE : {
 
             stat = LNEngine_Finalize();
 
@@ -11867,7 +12323,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngine_Update
-        case 0x3B1 : {
+        case 0x3DF : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -11879,7 +12335,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngine_Run
-        case 0x3B2 : {
+        case 0x3E0 : {
             // Fetch app
             const auto local_app = fetchVAInt();
 
@@ -11889,7 +12345,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngine_Time
-        case 0x3B4 : {
+        case 0x3E2 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -11901,7 +12357,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngine_GetCamera
-        case 0x3B5 : {
+        case 0x3E3 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -11913,7 +12369,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngine_GetMainLight
-        case 0x3B6 : {
+        case 0x3E4 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -11925,7 +12381,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEngine_GetRenderView
-        case 0x3B7 : {
+        case 0x3E5 : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
@@ -11937,7 +12393,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNApplication_Create
-        case 0x3BC : {
+        case 0x3EA : {
             // Fetch outApplication
             PVal* pval_outApplication;
             const APTR aptr_outApplication = code_getva(&pval_outApplication);
@@ -11949,7 +12405,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNApplication_OnInit
-        case 0x3B9 : {
+        case 0x3E7 : {
             // Fetch application
             const auto local_application = fetchVAInt();
 
@@ -11959,7 +12415,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNApplication_OnUpdate
-        case 0x3BA : {
+        case 0x3E8 : {
             // Fetch application
             const auto local_application = fetchVAInt();
 
@@ -11969,7 +12425,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNApplication_World
-        case 0x3BB : {
+        case 0x3E9 : {
             // Fetch application
             const auto local_application = fetchVAInt();
             // Fetch outReturn
@@ -11983,7 +12439,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNApplication_SetPrototype_OnSerialize
-        case 0xA72 : {
+        case 0xAEE : {
             // Fetch application
             const auto local_application = fetchVAInt();
             // Fetch callback
@@ -12003,7 +12459,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNApplication_SetPrototype_OnInit
-        case 0xA7D : {
+        case 0xAF9 : {
             // Fetch application
             const auto local_application = fetchVAInt();
             // Fetch callback
@@ -12023,7 +12479,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNApplication_SetPrototype_OnUpdate
-        case 0xA88 : {
+        case 0xB04 : {
             // Fetch application
             const auto local_application = fetchVAInt();
             // Fetch callback
@@ -12043,7 +12499,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDebug_SetGuideGridEnabled
-        case 0x3BE : {
+        case 0x3EC : {
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
@@ -12053,7 +12509,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDebug_SetPhysicsDebugDrawEnabled
-        case 0x3C0 : {
+        case 0x3EE : {
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
@@ -12063,7 +12519,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDebug_PrintA
-        case 0x3C2 : {
+        case 0x3F0 : {
             // Fetch str
             const auto local_str = fetchVAString();
 
@@ -12073,7 +12529,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDebug_PrintWithTimeA
-        case 0x3C4 : {
+        case 0x3F2 : {
             // Fetch time
             const auto local_time = fetchVADouble();
             // Fetch str
@@ -12085,7 +12541,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDebug_PrintWithTimeAndColorA
-        case 0x3C7 : {
+        case 0x3F5 : {
             // Fetch time
             const auto local_time = fetchVADouble();
             // Fetch color
@@ -12100,7 +12556,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNObjectSerializeHandler_Create
-        case 0x715 : {
+        case 0x77B : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outObjectSerializeHandler
@@ -12116,7 +12572,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEventConnectionSerializeHandler_Create
-        case 0x720 : {
+        case 0x786 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outEventConnectionSerializeHandler
@@ -12132,7 +12588,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNVariantSerializeHandler_Create
-        case 0x72B : {
+        case 0x791 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outVariantSerializeHandler
@@ -12148,7 +12604,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNZVTestClass1SerializeHandler_Create
-        case 0x736 : {
+        case 0x79C : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestClass1SerializeHandler
@@ -12164,7 +12620,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNZVTestEventArgs1SerializeHandler_Create
-        case 0x741 : {
+        case 0x7A7 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outZVTestEventArgs1SerializeHandler
@@ -12180,7 +12636,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSerializer2SerializeHandler_Create
-        case 0x74C : {
+        case 0x7B2 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSerializer2SerializeHandler
@@ -12196,7 +12652,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNAssetModelSerializeHandler_Create
-        case 0x757 : {
+        case 0x7BD : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outAssetModelSerializeHandler
@@ -12212,7 +12668,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTextureSerializeHandler_Create
-        case 0x762 : {
+        case 0x7C8 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outTextureSerializeHandler
@@ -12228,7 +12684,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTexture2DSerializeHandler_Create
-        case 0x76D : {
+        case 0x7D3 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outTexture2DSerializeHandler
@@ -12244,7 +12700,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNRenderViewSerializeHandler_Create
-        case 0x778 : {
+        case 0x7DE : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outRenderViewSerializeHandler
@@ -12259,8 +12715,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LNStaticMeshModelSerializeHandler_Create
+        case 0x7E9 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outStaticMeshModelSerializeHandler
+            PVal* pval_outStaticMeshModelSerializeHandler;
+            const APTR aptr_outStaticMeshModelSerializeHandler = code_getva(&pval_outStaticMeshModelSerializeHandler);
+            LNHandle local_outStaticMeshModelSerializeHandler;
+
+            stat = LNStaticMeshModelSerializeHandler_Create(HSPSubclass_LNStaticMeshModelSerializeHandler_DelegateLabelCaller, &local_outStaticMeshModelSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNStaticMeshModelSerializeHandler*>(LNStaticMeshModelSerializeHandler_GetSubinstanceId(local_outStaticMeshModelSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outStaticMeshModelSerializeHandler, aptr_outStaticMeshModelSerializeHandler, local_outStaticMeshModelSerializeHandler);
+
+            return true;
+        }
         // LNSkinnedMeshModelSerializeHandler_Create
-        case 0x783 : {
+        case 0x7F4 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSkinnedMeshModelSerializeHandler
@@ -12276,7 +12748,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNAnimationControllerSerializeHandler_Create
-        case 0x78E : {
+        case 0x7FF : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outAnimationControllerSerializeHandler
@@ -12292,7 +12764,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCollisionShapeSerializeHandler_Create
-        case 0x799 : {
+        case 0x80A : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outCollisionShapeSerializeHandler
@@ -12308,7 +12780,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNBoxCollisionShapeSerializeHandler_Create
-        case 0x7A4 : {
+        case 0x815 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outBoxCollisionShapeSerializeHandler
@@ -12324,7 +12796,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNAnimationClipSerializeHandler_Create
-        case 0x7AF : {
+        case 0x820 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outAnimationClipSerializeHandler
@@ -12340,7 +12812,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNAnimationStateSerializeHandler_Create
-        case 0x7BA : {
+        case 0x82B : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outAnimationStateSerializeHandler
@@ -12356,7 +12828,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNComponentSerializeHandler_Create
-        case 0x7C5 : {
+        case 0x836 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outComponentSerializeHandler
@@ -12372,7 +12844,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNVisualComponentSerializeHandler_Create
-        case 0x7D0 : {
+        case 0x841 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outVisualComponentSerializeHandler
@@ -12388,7 +12860,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpriteComponentSerializeHandler_Create
-        case 0x7DB : {
+        case 0x84C : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSpriteComponentSerializeHandler
@@ -12404,7 +12876,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCharacterControllerSerializeHandler_Create
-        case 0x7E6 : {
+        case 0x857 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outCharacterControllerSerializeHandler
@@ -12420,7 +12892,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldSerializeHandler_Create
-        case 0x7F1 : {
+        case 0x862 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outWorldSerializeHandler
@@ -12436,7 +12908,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNComponentListSerializeHandler_Create
-        case 0x7FC : {
+        case 0x86D : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outComponentListSerializeHandler
@@ -12452,7 +12924,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObjectSerializeHandler_Create
-        case 0x807 : {
+        case 0x878 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outWorldObjectSerializeHandler
@@ -12468,7 +12940,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldObjectUpdateHandler_Create
-        case 0x812 : {
+        case 0x883 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outWorldObjectUpdateHandler
@@ -12484,7 +12956,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNVisualObjectSerializeHandler_Create
-        case 0x81D : {
+        case 0x88E : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outVisualObjectSerializeHandler
@@ -12500,7 +12972,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNVisualObjectUpdateHandler_Create
-        case 0x828 : {
+        case 0x899 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outVisualObjectUpdateHandler
@@ -12516,7 +12988,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCameraSerializeHandler_Create
-        case 0x833 : {
+        case 0x8A4 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outCameraSerializeHandler
@@ -12532,7 +13004,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCameraUpdateHandler_Create
-        case 0x83E : {
+        case 0x8AF : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outCameraUpdateHandler
@@ -12548,7 +13020,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLightSerializeHandler_Create
-        case 0x849 : {
+        case 0x8BA : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outEnvironmentLightSerializeHandler
@@ -12564,7 +13036,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNEnvironmentLightUpdateHandler_Create
-        case 0x854 : {
+        case 0x8C5 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outEnvironmentLightUpdateHandler
@@ -12580,7 +13052,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLightSerializeHandler_Create
-        case 0x85F : {
+        case 0x8D0 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outDirectionalLightSerializeHandler
@@ -12596,7 +13068,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNDirectionalLightUpdateHandler_Create
-        case 0x86A : {
+        case 0x8DB : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outDirectionalLightUpdateHandler
@@ -12612,7 +13084,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLightSerializeHandler_Create
-        case 0x875 : {
+        case 0x8E6 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outPointLightSerializeHandler
@@ -12628,7 +13100,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPointLightUpdateHandler_Create
-        case 0x880 : {
+        case 0x8F1 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outPointLightUpdateHandler
@@ -12644,7 +13116,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLightSerializeHandler_Create
-        case 0x88B : {
+        case 0x8FC : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSpotLightSerializeHandler
@@ -12660,7 +13132,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpotLightUpdateHandler_Create
-        case 0x896 : {
+        case 0x907 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSpotLightUpdateHandler
@@ -12676,7 +13148,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpriteSerializeHandler_Create
-        case 0x8A1 : {
+        case 0x912 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSpriteSerializeHandler
@@ -12692,7 +13164,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNSpriteUpdateHandler_Create
-        case 0x8AC : {
+        case 0x91D : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSpriteUpdateHandler
@@ -12708,7 +13180,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCameraOrbitControlComponentSerializeHandler_Create
-        case 0x8B7 : {
+        case 0x928 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outCameraOrbitControlComponentSerializeHandler
@@ -12724,7 +13196,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNRaycasterSerializeHandler_Create
-        case 0x8C2 : {
+        case 0x933 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outRaycasterSerializeHandler
@@ -12740,7 +13212,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNRaycastResultSerializeHandler_Create
-        case 0x8CD : {
+        case 0x93E : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outRaycastResultSerializeHandler
@@ -12756,7 +13228,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNWorldRenderViewSerializeHandler_Create
-        case 0x8D8 : {
+        case 0x949 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outWorldRenderViewSerializeHandler
@@ -12772,7 +13244,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNBoxMeshSerializeHandler_Create
-        case 0x8E3 : {
+        case 0x954 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outBoxMeshSerializeHandler
@@ -12788,7 +13260,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNBoxMeshUpdateHandler_Create
-        case 0x8EE : {
+        case 0x95F : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outBoxMeshUpdateHandler
@@ -12804,7 +13276,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPlaneMeshSerializeHandler_Create
-        case 0x8F9 : {
+        case 0x96A : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outPlaneMeshSerializeHandler
@@ -12820,7 +13292,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNPlaneMeshUpdateHandler_Create
-        case 0x904 : {
+        case 0x975 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outPlaneMeshUpdateHandler
@@ -12836,7 +13308,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNStaticMeshSerializeHandler_Create
-        case 0x90F : {
+        case 0x980 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outStaticMeshSerializeHandler
@@ -12852,7 +13324,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNStaticMeshUpdateHandler_Create
-        case 0x91A : {
+        case 0x98B : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outStaticMeshUpdateHandler
@@ -12867,8 +13339,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
+        // LNStaticMeshComponentSerializeHandler_Create
+        case 0x996 : {
+            // Fetch callback
+            const auto local_callback = fetchVALabelPointer();
+            // Fetch outStaticMeshComponentSerializeHandler
+            PVal* pval_outStaticMeshComponentSerializeHandler;
+            const APTR aptr_outStaticMeshComponentSerializeHandler = code_getva(&pval_outStaticMeshComponentSerializeHandler);
+            LNHandle local_outStaticMeshComponentSerializeHandler;
+
+            stat = LNStaticMeshComponentSerializeHandler_Create(HSPSubclass_LNStaticMeshComponentSerializeHandler_DelegateLabelCaller, &local_outStaticMeshComponentSerializeHandler);
+            auto* localSelf = reinterpret_cast<HSPSubclass_LNStaticMeshComponentSerializeHandler*>(LNStaticMeshComponentSerializeHandler_GetSubinstanceId(local_outStaticMeshComponentSerializeHandler));
+            localSelf->labelPointer = local_callback;
+            setVAInt(pval_outStaticMeshComponentSerializeHandler, aptr_outStaticMeshComponentSerializeHandler, local_outStaticMeshComponentSerializeHandler);
+
+            return true;
+        }
         // LNSkinnedMeshComponentSerializeHandler_Create
-        case 0x925 : {
+        case 0x9A1 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outSkinnedMeshComponentSerializeHandler
@@ -12884,7 +13372,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNCollisionSerializeHandler_Create
-        case 0x930 : {
+        case 0x9AC : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outCollisionSerializeHandler
@@ -12900,7 +13388,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNTriggerBodyComponentSerializeHandler_Create
-        case 0x93B : {
+        case 0x9B7 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outTriggerBodyComponentSerializeHandler
@@ -12916,7 +13404,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevelSerializeHandler_Create
-        case 0x946 : {
+        case 0x9C2 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outLevelSerializeHandler
@@ -12932,7 +13420,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevelStartHandler_Create
-        case 0x951 : {
+        case 0x9CD : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outLevelStartHandler
@@ -12948,7 +13436,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevelStopHandler_Create
-        case 0x95C : {
+        case 0x9D8 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outLevelStopHandler
@@ -12964,7 +13452,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevelPauseHandler_Create
-        case 0x967 : {
+        case 0x9E3 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outLevelPauseHandler
@@ -12980,7 +13468,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevelResumeHandler_Create
-        case 0x972 : {
+        case 0x9EE : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outLevelResumeHandler
@@ -12996,7 +13484,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNLevelUpdateHandler_Create
-        case 0x97D : {
+        case 0x9F9 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outLevelUpdateHandler
@@ -13012,7 +13500,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIEventArgsSerializeHandler_Create
-        case 0x988 : {
+        case 0xA04 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIEventArgsSerializeHandler
@@ -13028,7 +13516,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUILayoutElementSerializeHandler_Create
-        case 0x993 : {
+        case 0xA0F : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUILayoutElementSerializeHandler
@@ -13044,7 +13532,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIElementSerializeHandler_Create
-        case 0x99E : {
+        case 0xA1A : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIElementSerializeHandler
@@ -13060,7 +13548,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUITextBlockSerializeHandler_Create
-        case 0x9A9 : {
+        case 0xA25 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUITextBlockSerializeHandler
@@ -13076,7 +13564,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUISpriteSerializeHandler_Create
-        case 0x9B4 : {
+        case 0xA30 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUISpriteSerializeHandler
@@ -13092,7 +13580,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIIconSerializeHandler_Create
-        case 0x9BF : {
+        case 0xA3B : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIIconSerializeHandler
@@ -13108,7 +13596,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUILayoutPanelSerializeHandler_Create
-        case 0x9CA : {
+        case 0xA46 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUILayoutPanelSerializeHandler
@@ -13124,7 +13612,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIBoxLayoutSerializeHandler_Create
-        case 0x9D5 : {
+        case 0xA51 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIBoxLayoutSerializeHandler
@@ -13140,7 +13628,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIGridLayoutSerializeHandler_Create
-        case 0x9E0 : {
+        case 0xA5C : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIGridLayoutSerializeHandler
@@ -13156,7 +13644,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIControlSerializeHandler_Create
-        case 0x9EB : {
+        case 0xA67 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIControlSerializeHandler
@@ -13172,7 +13660,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIButtonBaseSerializeHandler_Create
-        case 0x9F6 : {
+        case 0xA72 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIButtonBaseSerializeHandler
@@ -13188,7 +13676,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIButtonSerializeHandler_Create
-        case 0xA01 : {
+        case 0xA7D : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIButtonSerializeHandler
@@ -13204,7 +13692,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIWindowSerializeHandler_Create
-        case 0xA0C : {
+        case 0xA88 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIWindowSerializeHandler
@@ -13220,7 +13708,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListItemSerializeHandler_Create
-        case 0xA17 : {
+        case 0xA93 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIListItemSerializeHandler
@@ -13236,7 +13724,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListItemsControlSerializeHandler_Create
-        case 0xA22 : {
+        case 0xA9E : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIListItemsControlSerializeHandler
@@ -13252,7 +13740,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListBoxItemSerializeHandler_Create
-        case 0xA2D : {
+        case 0xAA9 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIListBoxItemSerializeHandler
@@ -13268,7 +13756,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNUIListBoxSerializeHandler_Create
-        case 0xA38 : {
+        case 0xAB4 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outUIListBoxSerializeHandler
@@ -13284,7 +13772,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommandSerializeHandler_Create
-        case 0xA43 : {
+        case 0xABF : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outInterpreterCommandSerializeHandler
@@ -13300,7 +13788,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterCommandListSerializeHandler_Create
-        case 0xA4E : {
+        case 0xACA : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outInterpreterCommandListSerializeHandler
@@ -13316,7 +13804,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterSerializeHandler_Create
-        case 0xA59 : {
+        case 0xAD5 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outInterpreterSerializeHandler
@@ -13332,7 +13820,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNInterpreterUpdateWaitHandler_Create
-        case 0xA65 : {
+        case 0xAE1 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outInterpreterUpdateWaitHandler
@@ -13348,7 +13836,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNApplicationSerializeHandler_Create
-        case 0xA70 : {
+        case 0xAEC : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outApplicationSerializeHandler
@@ -13364,7 +13852,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNApplicationInitHandler_Create
-        case 0xA7B : {
+        case 0xAF7 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outApplicationInitHandler
@@ -13380,7 +13868,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             return true;
         }
         // LNApplicationUpdateHandler_Create
-        case 0xA86 : {
+        case 0xB02 : {
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
             // Fetch outApplicationUpdateHandler
@@ -13410,6 +13898,7 @@ void RegisterTypes(HSP3TYPEINFO * info)
     registvar(-1, hspLNSize_Init);
     registvar(-1, hspLNRect_Init);
     registvar(-1, hspLNThickness_Init);
+    registvar(-1, hspLNCornerRadius_Init);
     {
         LNObject_SubclassRegistrationInfo info = {};
         info.subinstanceAllocFunc = HSPSubclass_LNObject_SubinstanceAlloc;
@@ -13539,6 +14028,13 @@ void RegisterTypes(HSP3TYPEINFO * info)
         info.subinstanceFreeFunc = HSPSubclass_LNRenderView_SubinstanceFree;
         //info.OnSerialize_OverrideFunc = ????;
         LNRenderView_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LNStaticMeshModel_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNStaticMeshModel_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNStaticMeshModel_SubinstanceFree;
+        //info.OnSerialize_OverrideFunc = ????;
+        LNStaticMeshModel_RegisterSubclassTypeInfo(&info);
     }
     {
         LNSkinnedMeshModel_SubclassRegistrationInfo info = {};
@@ -13751,6 +14247,13 @@ void RegisterTypes(HSP3TYPEINFO * info)
         //info.OnSerialize_OverrideFunc = ????;
         //info.OnUpdate_OverrideFunc = ????;
         LNStaticMesh_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LNStaticMeshComponent_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNStaticMeshComponent_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNStaticMeshComponent_SubinstanceFree;
+        //info.OnSerialize_OverrideFunc = ????;
+        LNStaticMeshComponent_RegisterSubclassTypeInfo(&info);
     }
     {
         LNSkinnedMeshComponent_SubclassRegistrationInfo info = {};
@@ -14014,6 +14517,12 @@ void RegisterTypes(HSP3TYPEINFO * info)
         LNRenderViewSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
+        LNStaticMeshModelSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNStaticMeshModelSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNStaticMeshModelSerializeHandler_SubinstanceFree;
+        LNStaticMeshModelSerializeHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
         LNSkinnedMeshModelSerializeHandler_SubclassRegistrationInfo info = {};
         info.subinstanceAllocFunc = HSPSubclass_LNSkinnedMeshModelSerializeHandler_SubinstanceAlloc;
         info.subinstanceFreeFunc = HSPSubclass_LNSkinnedMeshModelSerializeHandler_SubinstanceFree;
@@ -14240,6 +14749,12 @@ void RegisterTypes(HSP3TYPEINFO * info)
         info.subinstanceAllocFunc = HSPSubclass_LNStaticMeshUpdateHandler_SubinstanceAlloc;
         info.subinstanceFreeFunc = HSPSubclass_LNStaticMeshUpdateHandler_SubinstanceFree;
         LNStaticMeshUpdateHandler_RegisterSubclassTypeInfo(&info);
+    }
+    {
+        LNStaticMeshComponentSerializeHandler_SubclassRegistrationInfo info = {};
+        info.subinstanceAllocFunc = HSPSubclass_LNStaticMeshComponentSerializeHandler_SubinstanceAlloc;
+        info.subinstanceFreeFunc = HSPSubclass_LNStaticMeshComponentSerializeHandler_SubinstanceFree;
+        LNStaticMeshComponentSerializeHandler_RegisterSubclassTypeInfo(&info);
     }
     {
         LNSkinnedMeshComponentSerializeHandler_SubclassRegistrationInfo info = {};

@@ -117,8 +117,9 @@ class App_Example_MeshViewer : public Application
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleSittingPose.bvh");
         //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/Arm_R-Test1-BoneVert.bvh");
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh");
-        auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Walk.bvh");
-        clip->setHierarchicalAnimationMode(HierarchicalAnimationMode::AllowTranslationOnlyRootY);
+        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Walk.bvh");
+        auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/HC5-3.bvh");
+        //clip->setHierarchicalAnimationMode(HierarchicalAnimationMode::AllowTranslationOnlyRootY);
         
         //auto clip = AnimationClip::load(u"D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");
         //auto clip1 = AnimationClip::load(u"D:/Materials/MMD/Motion/MMO用stand/stand2.vmd");
@@ -135,6 +136,27 @@ class App_Example_MeshViewer : public Application
         //box->setScale(7.8);
         //box->setPosition(0, 5, 0);
 #endif
+
+        auto label = makeObject<UIControl>();
+        //label->setBackgroundColor(Color::Blue);
+        label->setAlignments(UIHAlignment::Center, UIVAlignment::Center);
+
+        auto textblock = UITextBlock::create("E");
+        textblock->setBackgroundColor(Color::Gray);
+        textblock->setBorderThickness(1);
+        textblock->setBorderColor(Color::Red);
+        //textblock->setPadding(Thickness(4, 2));
+        textblock->setCornerRadius(3);
+        textblock->setSize(20, 20);
+        label->addInlineVisual(textblock, UIInlinePlacement::Left);
+
+        auto text2 = UITextBlock::create("Examine");
+        text2->setAlignments(UIHAlignment::Center, UIVAlignment::Center);
+        text2->setMargin(Thickness(8, 0, 0, 0));
+        label->addChild(text2);
+
+
+        UI::add(label);
     }
 
     virtual void onUpdate() override

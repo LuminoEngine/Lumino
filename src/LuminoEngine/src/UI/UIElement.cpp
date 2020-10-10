@@ -362,6 +362,16 @@ const Color& UIElement::borderColor() const
 	return m_localStyle->mainStyle()->backgroundColor;
 }
 
+void UIElement::setCornerRadius(const CornerRadius& value)
+{
+    m_localStyle->mainStyle()->cornerRadius = value;
+}
+
+const CornerRadius& UIElement::cornerRadius() const
+{
+    return m_localStyle->mainStyle()->cornerRadius.getOrDefault(CornerRadius::Zero);
+}
+
 void UIElement::setTextColor(const Color& value)
 {
 	m_localStyle->mainStyle()->textColor = value;

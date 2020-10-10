@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMeshComponent.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMesh.hpp>
 #include "../../Mesh/MeshManager.hpp"

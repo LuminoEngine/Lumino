@@ -2,7 +2,7 @@
 #pragma once
 #include "../Animation/AnimationMixer.hpp"
 #include "Common.hpp"
-#include "Mesh.hpp"
+#include "StaticMeshModel.hpp"
 
 namespace ln {
 class SkinnedMeshModel;

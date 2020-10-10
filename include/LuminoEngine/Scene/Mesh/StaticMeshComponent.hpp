@@ -6,15 +6,20 @@ namespace ln {
 class StaticMeshModel;
 class RigidBody;
 
+/** UIElement */
+LN_CLASS()
 class StaticMeshComponent
 	: public VisualComponent
 {
     LN_OBJECT;
 public:
+    /** setModel */
+    LN_METHOD()
     void setModel(StaticMeshModel* model);
+
     StaticMeshModel* model() const;
     
-	/**指定した名前の MeshContainer から、衝突判定用の Body を作成します。 */
+	/** 指定した名前の MeshContainer から、衝突判定用の Body を作成します。 */
 	LN_METHOD()
 	void makeCollisionBody(StringRef meshContainerName);
 
@@ -26,7 +31,10 @@ protected:
 LN_CONSTRUCT_ACCESS:
     StaticMeshComponent();
 	virtual ~StaticMeshComponent();
-	void init();
+
+    /** init */
+    LN_METHOD()
+	bool init();
 
 private:
     void deleteCollisionBody();

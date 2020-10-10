@@ -8,6 +8,7 @@
 #include <LuminoCore/IO/StreamReader.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
 #include "MeshManager.hpp"
 #include "GMesh.hpp"
 #include "MqoImporter.hpp"

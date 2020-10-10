@@ -10,16 +10,35 @@ namespace detail {
 class UIAligned3x3GridLayoutArea;
 }
 
-enum class UIInlineLayout
+/** UIInlinePlacement */
+LN_ENUM()
+enum class UIInlinePlacement
 {
+    /** TopLeft */
     TopLeft,
+
+    /** Top */
     Top,
+
+    /** TopRight */
     TopRight,
+
+    /** Left */
     Left,
+
+    /** Center */
     Center,
+
+    /** Right */
     Right,
+
+    /** BottomLeft */
     BottomLeft,
+
+    /** Bottom */
     Bottom,
+
+    /** BottomRight */
     BottomRight,
 };
 
@@ -112,7 +131,11 @@ class UIControl
 	LN_OBJECT;
 public:
     UIControl();
+
+    /** init */
+    LN_METHOD()
     bool init() { return init(UICreationContext::Default); }
+
     bool init(const UICreationContext* context);
     virtual void onDispose(bool explicitDisposing) override;
 
@@ -139,7 +162,9 @@ public:
 
     // 要素の外側に張り付くものに利用する。
     // アイコンボタンを作るとき、外側ではなく文字側に張り付くようなものは、addContent で、Icon と TextBlock を並べた BoxLayout を追加する。
-    void addInlineVisual(UIElement* element, UIInlineLayout layout);
+    /** addInlineVisual */
+    LN_METHOD()
+    void addInlineVisual(UIElement* element, UIInlinePlacement layout);
 
 	const Ref<Collection<Ref<UIElement>>>& logicalChildren() const { return m_logicalChildren; }
 
@@ -221,7 +246,7 @@ private:
     {
         // このセルの右辺または下辺の座標 = 次のセルの左辺または上辺の座標。
         // このセルの右または下のラインの座標と考える。
-        float desiredLastOffset = 0.0f;
+        //float desiredLastOffset = 0.0f;
 
         float desiredSize = 0.0f;
         float actualOffset = 0.0f;
