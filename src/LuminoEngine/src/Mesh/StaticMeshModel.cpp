@@ -110,6 +110,11 @@ void StaticMeshModel::addMaterial(Material* material)
 	m_materials.add(material);
 }
 
+Material* StaticMeshModel::material(int index)
+{
+	return m_materials[index];
+}
+
 void StaticMeshModel::addRootNode(int index)
 {
     m_rootNodes.add(index);

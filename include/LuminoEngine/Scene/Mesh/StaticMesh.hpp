@@ -3,7 +3,8 @@
 #include "../VisualObject.hpp"
 
 namespace ln {
-    
+class StaticMeshModel;
+
 /**
  * StaticMesh
  */
@@ -22,6 +23,10 @@ public:
     static Ref<StaticMesh> create(StaticMeshModel* model);
     static Ref<StaticMesh> create(const StringRef& filePath, float scale = 1.0f);
     
+	/**指定した名前の MeshContainer から、衝突判定用の Body を作成します。 */
+	LN_METHOD(Property)
+	StaticMeshModel* model() const;
+
 	/**指定した名前の MeshContainer から、衝突判定用の Body を作成します。 */
 	LN_METHOD()
 	void makeCollisionBody(StringRef meshContainerName);

@@ -608,6 +608,73 @@ LN_FLAT_API LNResult LNTexture2DSerializeHandler_Create(LNTexture2DSerializeHand
 
 
 // Auto generated override handler
+using ShaderSerializeHandler = ln::Delegate<void(ln::Shader* self, ln::Serializer2* ar)>;
+
+class LNWS_ShaderSerializeHandler : public ShaderSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNShaderSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNShaderSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNShaderSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNShaderSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNShaderSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNShaderSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNShaderSerializeHandlerCallback m_callback;
+
+    LNWS_ShaderSerializeHandler()
+      : ShaderSerializeHandler([this](ln::Shader* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNShaderSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ShaderSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNShaderSerializeHandlerCallback callback)
+    {
+        if (!ShaderSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNShaderSerializeHandler_Create(LNShaderSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ShaderSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
 using RenderViewSerializeHandler = ln::Delegate<void(ln::RenderView* self, ln::Serializer2* ar)>;
 
 class LNWS_RenderViewSerializeHandler : public RenderViewSerializeHandler
@@ -670,6 +737,73 @@ LN_FLAT_API LNResult LNRenderViewSerializeHandler_Create(LNRenderViewSerializeHa
 {
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outDelegate, LNWS_RenderViewSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using MaterialSerializeHandler = ln::Delegate<void(ln::Material* self, ln::Serializer2* ar)>;
+
+class LNWS_MaterialSerializeHandler : public MaterialSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNMaterialSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNMaterialSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNMaterialSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNMaterialSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNMaterialSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNMaterialSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNMaterialSerializeHandlerCallback m_callback;
+
+    LNWS_MaterialSerializeHandler()
+      : MaterialSerializeHandler([this](ln::Material* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNMaterialSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_MaterialSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNMaterialSerializeHandlerCallback callback)
+    {
+        if (!MaterialSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNMaterialSerializeHandler_Create(LNMaterialSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_MaterialSerializeHandler, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -7455,6 +7589,68 @@ public:
 LNTexture2D_OnSerialize_OverrideCallback LNWS_ln_Texture2D::s_LNTexture2D_OnSerialize_OverrideCallback = nullptr;
 
 
+class LNWS_ln_Shader : public ln::Shader
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNShader_OverridePrototypes
+    {
+        ln::Ref<LNWS_ShaderSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNShader_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNShader_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNShader_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNShader_SubclassRegistrationInfo* subclassInfo() { static LNShader_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Shader()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Shader()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNShader_OnSerialize_OverrideCallback s_LNShader_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNShader_OnSerialize_OverrideCallback) s_LNShader_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Shader::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::Shader::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+LNShader_OnSerialize_OverrideCallback LNWS_ln_Shader::s_LNShader_OnSerialize_OverrideCallback = nullptr;
+
+
 class LNWS_ln_RenderView : public ln::RenderView
 {
 public:
@@ -7515,6 +7711,68 @@ public:
 };
 
 LNRenderView_OnSerialize_OverrideCallback LNWS_ln_RenderView::s_LNRenderView_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_Material : public ln::Material
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNMaterial_OverridePrototypes
+    {
+        ln::Ref<LNWS_MaterialSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNMaterial_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNMaterial_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNMaterial_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNMaterial_SubclassRegistrationInfo* subclassInfo() { static LNMaterial_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Material()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Material()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNMaterial_OnSerialize_OverrideCallback s_LNMaterial_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNMaterial_OnSerialize_OverrideCallback) s_LNMaterial_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Material::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::Material::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+LNMaterial_OnSerialize_OverrideCallback LNWS_ln_Material::s_LNMaterial_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_StaticMeshModel : public ln::StaticMeshModel
@@ -13317,6 +13575,127 @@ LNSubinstanceId LNTexture2D_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
+LN_FLAT_API LNResult LNShader_Load(const LNChar* filePath, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Shader::load(filePath));
+    }
+    else {
+        (ln::Shader::load(filePath));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNShader_LoadA(const char* filePath, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Shader::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+    else {
+        (ln::Shader::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNShader_SetFloat(LNHandle shader, const LNChar* parameterName, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setFloat(parameterName, value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNShader_SetFloatA(LNHandle shader, const char* parameterName, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setFloat(LNI_UTF8STRPTR_TO_STRING(parameterName), value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNShader_SetVector3(LNHandle shader, const LNChar* parameterName, const LNVector3* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setVector(parameterName, *reinterpret_cast<const ln::Vector3*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNShader_SetVector3A(LNHandle shader, const char* parameterName, const LNVector3* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setVector(LNI_UTF8STRPTR_TO_STRING(parameterName), *reinterpret_cast<const ln::Vector3*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNShader_SetVector4(LNHandle shader, const LNChar* parameterName, const LNVector4* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setVector(parameterName, *reinterpret_cast<const ln::Vector4*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNShader_SetVector4A(LNHandle shader, const char* parameterName, const LNVector4* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setVector(LNI_UTF8STRPTR_TO_STRING(parameterName), *reinterpret_cast<const ln::Vector4*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNShader_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNShader_OnSerialize_SetOverrideCallback(LNShader_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Shader::s_LNShader_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNShader_SetPrototype_OnSerialize(LNHandle shader, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_ShaderSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNShader_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Shader>()->id();
+}
+
+LN_FLAT_API void LNShader_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Shader>(), id);
+}
+
+void LNShader_RegisterSubclassTypeInfo(const LNShader_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Shader>(), info->subclassId);
+        *LNWS_ln_Shader::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNShader_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
 LN_FLAT_API LNResult LNRenderView_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -13362,6 +13741,73 @@ LNSubinstanceId LNRenderView_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
+LN_FLAT_API LNResult LNMaterial_SetShader(LNHandle material, LNHandle shader)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Material, material)->setShader(LNI_HANDLE_TO_OBJECT(ln::Shader, shader)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNMaterial_GetShader(LNHandle material, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Material, material)->shader());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Material, material)->shader());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNMaterial_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Material, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNMaterial_OnSerialize_SetOverrideCallback(LNMaterial_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Material::s_LNMaterial_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNMaterial_SetPrototype_OnSerialize(LNHandle material, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_Material, material)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_MaterialSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNMaterial_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Material>()->id();
+}
+
+LN_FLAT_API void LNMaterial_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Material>(), id);
+}
+
+void LNMaterial_RegisterSubclassTypeInfo(const LNMaterial_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Material>(), info->subclassId);
+        *LNWS_ln_Material::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNMaterial_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_Material, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
 LN_FLAT_API LNResult LNStaticMeshModel_Load(const LNChar* filePath, LNHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -13384,6 +13830,34 @@ LN_FLAT_API LNResult LNStaticMeshModel_LoadA(const char* filePath, LNHandle* out
     }
     else {
         (ln::StaticMeshModel::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNStaticMeshModel_MaterialCount(LNHandle staticmeshmodel, int* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshModel, staticmeshmodel)->materialCount());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshModel, staticmeshmodel)->materialCount());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNStaticMeshModel_Material(LNHandle staticmeshmodel, int index, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshModel, staticmeshmodel)->material(index));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshModel, staticmeshmodel)->material(index));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -16345,6 +16819,20 @@ LN_FLAT_API LNResult LNStaticMesh_LoadA(const char* filePath, LNHandle* outRetur
     }
     else {
         (ln::StaticMesh::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNStaticMesh_GetModel(LNHandle staticmesh, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->model());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->model());
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -20280,6 +20768,29 @@ LNSubinstanceId LNTexture2DSerializeHandler_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
+LN_FLAT_API void LNShaderSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ShaderSerializeHandler>(), id);
+}
+
+void LNShaderSerializeHandler_RegisterSubclassTypeInfo(const LNShaderSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ShaderSerializeHandler>(), info->subclassId);
+        *LNWS_ShaderSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNShaderSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ShaderSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
 LN_FLAT_API void LNRenderViewSerializeHandler_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<RenderViewSerializeHandler>(), id);
@@ -20298,6 +20809,29 @@ LNSubinstanceId LNRenderViewSerializeHandler_GetSubinstanceId(LNHandle handle)
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_RenderViewSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNMaterialSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<MaterialSerializeHandler>(), id);
+}
+
+void LNMaterialSerializeHandler_RegisterSubclassTypeInfo(const LNMaterialSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<MaterialSerializeHandler>(), info->subclassId);
+        *LNWS_MaterialSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNMaterialSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_MaterialSerializeHandler, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;

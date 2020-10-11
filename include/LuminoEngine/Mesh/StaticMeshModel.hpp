@@ -31,6 +31,15 @@ public:
     const List<Ref<MeshNode>>& meshNodes() const { return m_nodes; }
     const List<Ref<Material>>& materials() const { return m_materials; }
 
+	
+	/** materialCount */
+	LN_METHOD()
+    int materialCount() const { return m_materials.size(); }
+	
+	/** load */
+	LN_METHOD()
+	Material* material(int index);
+
     void addRootNode(int index);
 
 	/** 全ノードの Local Transform をリセットします。(アニメーション適用前の、デフォルトの姿勢に戻します) */

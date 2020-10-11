@@ -123,9 +123,14 @@ void ShaderCompilationProperties::setDiagnostics(DiagnosticsManager* diag)
 //=============================================================================
 // Shader
 
-Ref<Shader> Shader::create(const StringRef& hlslEffectFilePath, ShaderCompilationProperties* properties)
+Ref<Shader> Shader::create(const StringRef& filePath, ShaderCompilationProperties* properties)
 {
-    return ln::makeObject<Shader>(hlslEffectFilePath, properties);
+    return ln::makeObject<Shader>(filePath, properties);
+}
+
+Ref<Shader> Shader::load(const StringRef& filePath)
+{
+    return ln::makeObject<Shader>(filePath, nullptr);
 }
 
 Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties)
@@ -348,6 +353,25 @@ ShaderTechnique* Shader::findTechnique(const StringRef& name) const
 Ref<ReadOnlyList<Ref<ShaderTechnique>>> Shader::techniques() const
 {
     return m_techniques;
+}
+
+void Shader::setFloat(const StringRef& parameterName, float value)
+{
+    if (auto* param = findParameter(parameterName)) {
+        param->setFloat(value);
+    }
+}
+
+void Shader::setVector(const StringRef& parameterName, const Vector3& value)
+{
+    setVector(parameterName, Vector4(value, 0.0));
+}
+
+void Shader::setVector(const StringRef& parameterName, const Vector4& value)
+{
+    if (auto* param = findParameter(parameterName)) {
+        param->setVector(value);
+    }
 }
 
 //Ref<ShaderDescriptor> Shader::createDescriptor()

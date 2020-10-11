@@ -68,6 +68,11 @@ StaticMeshComponent* StaticMesh::staticMeshComponent() const
     return m_component;
 }
 
+StaticMeshModel* StaticMesh::model() const
+{
+    return m_component->model();
+}
+
 void StaticMesh::makeCollisionBody(StringRef meshContainerName)
 {
     m_component->makeCollisionBody(meshContainerName);

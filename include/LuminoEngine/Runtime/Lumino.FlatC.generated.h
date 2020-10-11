@@ -525,7 +525,9 @@ typedef LNResult(*LNSerializer2SerializeHandlerCallback)(LNHandle serializer2ser
 typedef LNResult(*LNAssetModelSerializeHandlerCallback)(LNHandle assetmodelserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNTextureSerializeHandlerCallback)(LNHandle textureserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNTexture2DSerializeHandlerCallback)(LNHandle texture2dserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNShaderSerializeHandlerCallback)(LNHandle shaderserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNRenderViewSerializeHandlerCallback)(LNHandle renderviewserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNMaterialSerializeHandlerCallback)(LNHandle materialserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNStaticMeshModelSerializeHandlerCallback)(LNHandle staticmeshmodelserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNSkinnedMeshModelSerializeHandlerCallback)(LNHandle skinnedmeshmodelserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNAnimationControllerSerializeHandlerCallback)(LNHandle animationcontrollerserializehandler, LNHandle self, LNHandle ar);
@@ -1590,6 +1592,61 @@ extern LN_FLAT_API void LNTexture2D_RegisterSubclassTypeInfo(const LNTexture2D_S
 extern LN_FLAT_API LNSubinstanceId LNTexture2D_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// ln::Shader
+
+/**
+    @brief load
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LNResult LNShader_Load(const LNChar* filePath, LNHandle* outReturn);
+LN_FLAT_API LNResult LNShader_LoadA(const char* filePath, LNHandle* outReturn);
+
+/**
+    @brief 浮動小数点値を設定します。
+    @param[in] shader : instance
+*/
+LN_FLAT_API LNResult LNShader_SetFloat(LNHandle shader, const LNChar* parameterName, float value);
+LN_FLAT_API LNResult LNShader_SetFloatA(LNHandle shader, const char* parameterName, float value);
+
+/**
+    @brief ベクトル値を設定します。
+    @param[in] shader : instance
+*/
+LN_FLAT_API LNResult LNShader_SetVector3(LNHandle shader, const LNChar* parameterName, const LNVector3* value);
+LN_FLAT_API LNResult LNShader_SetVector3A(LNHandle shader, const char* parameterName, const LNVector3* value);
+
+/**
+    @brief ベクトル値を設定します。
+    @param[in] shader : instance
+*/
+LN_FLAT_API LNResult LNShader_SetVector4(LNHandle shader, const LNChar* parameterName, const LNVector4* value);
+LN_FLAT_API LNResult LNShader_SetVector4A(LNHandle shader, const char* parameterName, const LNVector4* value);
+
+typedef LNResult(*LNShader_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNShader_OnSerialize_SetOverrideCallback(LNShader_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNShader_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] shader : instance
+*/
+LN_FLAT_API LNResult LNShader_SetPrototype_OnSerialize(LNHandle shader, LNHandle callback);
+
+extern LN_FLAT_API int LNShader_GetTypeInfoId();
+LN_FLAT_API void LNShader_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNShader_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNShader_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNShader_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNShader_RegisterSubclassTypeInfo(const LNShader_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNShader_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // ln::RenderView
 
 typedef LNResult(*LNRenderView_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
@@ -1617,6 +1674,46 @@ extern LN_FLAT_API void LNRenderView_RegisterSubclassTypeInfo(const LNRenderView
 extern LN_FLAT_API LNSubinstanceId LNRenderView_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// ln::Material
+
+/**
+    @brief shader
+    @param[in] material : instance
+*/
+LN_FLAT_API LNResult LNMaterial_SetShader(LNHandle material, LNHandle shader);
+
+/**
+    @brief shader
+    @param[in] material : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNMaterial_GetShader(LNHandle material, LNHandle* outReturn);
+
+typedef LNResult(*LNMaterial_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNMaterial_OnSerialize_SetOverrideCallback(LNMaterial_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNMaterial_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] material : instance
+*/
+LN_FLAT_API LNResult LNMaterial_SetPrototype_OnSerialize(LNHandle material, LNHandle callback);
+
+extern LN_FLAT_API int LNMaterial_GetTypeInfoId();
+LN_FLAT_API void LNMaterial_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNMaterial_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNMaterial_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNMaterial_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNMaterial_RegisterSubclassTypeInfo(const LNMaterial_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNMaterial_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // ln::StaticMeshModel
 
 /**
@@ -1625,6 +1722,20 @@ extern LN_FLAT_API LNSubinstanceId LNRenderView_GetSubinstanceId(LNHandle handle
 */
 LN_FLAT_API LNResult LNStaticMeshModel_Load(const LNChar* filePath, LNHandle* outReturn);
 LN_FLAT_API LNResult LNStaticMeshModel_LoadA(const char* filePath, LNHandle* outReturn);
+
+/**
+    @brief materialCount
+    @param[in] staticmeshmodel : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNStaticMeshModel_MaterialCount(LNHandle staticmeshmodel, int* outReturn);
+
+/**
+    @brief load
+    @param[in] staticmeshmodel : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNStaticMeshModel_Material(LNHandle staticmeshmodel, int index, LNHandle* outReturn);
 
 typedef LNResult(*LNStaticMeshModel_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNStaticMeshModel_OnSerialize_SetOverrideCallback(LNStaticMeshModel_OnSerialize_OverrideCallback callback);
@@ -3388,6 +3499,13 @@ extern LN_FLAT_API LNSubinstanceId LNPlaneMesh_GetSubinstanceId(LNHandle handle)
 */
 LN_FLAT_API LNResult LNStaticMesh_Load(const LNChar* filePath, LNHandle* outReturn);
 LN_FLAT_API LNResult LNStaticMesh_LoadA(const char* filePath, LNHandle* outReturn);
+
+/**
+    @brief 指定した名前の MeshContainer から、衝突判定用の Body を作成します。
+    @param[in] staticmesh : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNStaticMesh_GetModel(LNHandle staticmesh, LNHandle* outReturn);
 
 /**
     @brief 指定した名前の MeshContainer から、衝突判定用の Body を作成します。
@@ -5614,6 +5732,22 @@ extern LN_FLAT_API void LNTexture2DSerializeHandler_RegisterSubclassTypeInfo(con
 extern LN_FLAT_API LNSubinstanceId LNTexture2DSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// ShaderSerializeHandler
+
+LN_FLAT_API LNResult LNShaderSerializeHandler_Create(LNShaderSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNShaderSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNShaderSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNShaderSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNShaderSerializeHandler_RegisterSubclassTypeInfo(const LNShaderSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNShaderSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // RenderViewSerializeHandler
 
 LN_FLAT_API LNResult LNRenderViewSerializeHandler_Create(LNRenderViewSerializeHandlerCallback callback, LNHandle* outDelegate);
@@ -5628,6 +5762,22 @@ typedef struct tagLNRenderViewSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNRenderViewSerializeHandler_RegisterSubclassTypeInfo(const LNRenderViewSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNRenderViewSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// MaterialSerializeHandler
+
+LN_FLAT_API LNResult LNMaterialSerializeHandler_Create(LNMaterialSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNMaterialSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNMaterialSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNMaterialSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNMaterialSerializeHandler_RegisterSubclassTypeInfo(const LNMaterialSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNMaterialSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // StaticMeshModelSerializeHandler

@@ -11,6 +11,7 @@ namespace ln {
 	@brief
 */
 // TODO: フレーム開始～描画に使われた後にパラメータを変更できないようにする。わかりにくい不具合のもとになる。
+LN_CLASS()
 class Material
 	: public Object
 {
@@ -49,8 +50,13 @@ public:
 
 
 
-
+	
+    /** shader */
+	LN_METHOD(Property)
 	void setShader(Shader* shader);
+
+	/** shader */
+	LN_METHOD(Property)
 	Shader* shader() const;
 
 	/** 整数値を設定します。 */
