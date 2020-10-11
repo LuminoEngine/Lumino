@@ -35,8 +35,8 @@
 #define LNI_OBJECT_TO_HANDLE(obj)						::ln::Runtime::makeObjectWrap(obj, false)
 #define LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(obj)	::ln::Runtime::makeObjectWrap(obj, true)
 #define LNI_STRING_TO_STRPTR_UTF16(str)                 ::ln::Runtime::getUTF16StringPtr(str)
-#define LNI_STRING_TO_STRPTR_UTF8(str)                  ::ln::Runtime::getUTF8StringPtr(str)
-#define LNI_UTF8STRPTR_TO_STRING(str)                   ::ln::String::fromCString(str, -1, ln::TextEncoding::utf8Encoding())
+#define LNI_STRING_TO_STRPTR_A(str)                     ::ln::Runtime::getAStringPtr(str)
+#define LNI_ASTRPTR_TO_STRING(str)                      ::ln::String::fromCString(str, -1, ::ln::Runtime::getAStringEncoding())
 
 #define LNI_REFERENCE_RETAINED (1)
 #define LNI_REFERENCE_RELEASED (2)

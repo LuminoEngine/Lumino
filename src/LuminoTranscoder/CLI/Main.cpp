@@ -26,6 +26,7 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoCore/Math/Vector4.hpp",
 			TEST_ROOT "include/LuminoCore/Math/Quaternion.hpp",
 			TEST_ROOT "include/LuminoCore/Math/Matrix.hpp",
+			TEST_ROOT "include/LuminoCore/Text/Encoding.hpp",
 		};
 
 

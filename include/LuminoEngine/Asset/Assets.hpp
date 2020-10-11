@@ -68,6 +68,9 @@ public:
 
 	static Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
 
+    /** readAllText */
+    LN_METHOD()
+    static String readAllText(const StringRef& filePath, EncodingType encoding = EncodingType::Unknown);
 
     static Ref<Stream> openFileStream(const StringRef& filePath);
 

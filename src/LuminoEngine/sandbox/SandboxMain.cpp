@@ -432,7 +432,7 @@ int main(int argc, char** argv)
 	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
 	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
-	EngineSettings::setDefaultUITheme(u"Chocotelier");
+	EngineSettings::setUITheme(u"Chocotelier");
     EngineSettings::setGraphicsDebugEnabled(true);
     EngineSettings::setDebugToolEnabled(true);
 	detail::EngineManager::s_settings.standaloneFpsControl = true;

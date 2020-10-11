@@ -12947,10 +12947,10 @@ LN_FLAT_API LNResult LNZVTestClass1_LoadAsyncA(const char* filePath, LNHandle* o
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::ZVTestClass1::loadAsync(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::ZVTestClass1::loadAsync(LNI_ASTRPTR_TO_STRING(filePath)));
     }
     else {
-        (ln::ZVTestClass1::loadAsync(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        (ln::ZVTestClass1::loadAsync(LNI_ASTRPTR_TO_STRING(filePath)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -12989,7 +12989,7 @@ LN_FLAT_API LNResult LNZVTestClass1_GetFilePathA(LNHandle zvtestclass1, const ch
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+        *outReturn = LNI_STRING_TO_STRPTR_A(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
@@ -13286,7 +13286,7 @@ LN_FLAT_API LNResult LNAssets_SaveAssetToLocalFile(LNHandle asset, const LNChar*
 LN_FLAT_API LNResult LNAssets_SaveAssetToLocalFileA(LNHandle asset, const char* filePath)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::Assets::saveAssetToLocalFile(LNI_HANDLE_TO_OBJECT(ln::AssetModel, asset), LNI_UTF8STRPTR_TO_STRING(filePath)));
+    (ln::Assets::saveAssetToLocalFile(LNI_HANDLE_TO_OBJECT(ln::AssetModel, asset), LNI_ASTRPTR_TO_STRING(filePath)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -13309,10 +13309,10 @@ LN_FLAT_API LNResult LNAssets_LoadAssetFromLocalFileA(const char* filePath, LNHa
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(LNI_ASTRPTR_TO_STRING(filePath)));
     }
     else {
-        (ln::Assets::loadAssetFromLocalFile(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        (ln::Assets::loadAssetFromLocalFile(LNI_ASTRPTR_TO_STRING(filePath)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -13337,10 +13337,10 @@ LN_FLAT_API LNResult LNAssets_LoadAssetA(const char* filePath, LNHandle* outRetu
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAsset(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAsset(LNI_ASTRPTR_TO_STRING(filePath)));
     }
     else {
-        (ln::Assets::loadAsset(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        (ln::Assets::loadAsset(LNI_ASTRPTR_TO_STRING(filePath)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -13358,7 +13358,35 @@ LN_FLAT_API LNResult LNAssets_ReloadAsset(const LNChar* filePath, LNHandle obj)
 LN_FLAT_API LNResult LNAssets_ReloadAssetA(const char* filePath, LNHandle obj)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::Assets::reloadAsset(LNI_UTF8STRPTR_TO_STRING(filePath), LNI_HANDLE_TO_OBJECT(ln::Object, obj)));
+    (ln::Assets::reloadAsset(LNI_ASTRPTR_TO_STRING(filePath), LNI_HANDLE_TO_OBJECT(ln::Object, obj)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAssets_ReadAllText(const LNChar* filePath, LNEncodingType encoding, const LNChar** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF16(ln::Assets::readAllText(filePath, static_cast<ln::EncodingType>(encoding)));
+    }
+    else {
+        (ln::Assets::readAllText(filePath, static_cast<ln::EncodingType>(encoding)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAssets_ReadAllTextA(const char* filePath, LNEncodingType encoding, const char** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_A(ln::Assets::readAllText(LNI_ASTRPTR_TO_STRING(filePath), static_cast<ln::EncodingType>(encoding)));
+    }
+    else {
+        (ln::Assets::readAllText(LNI_ASTRPTR_TO_STRING(filePath), static_cast<ln::EncodingType>(encoding)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -13374,7 +13402,7 @@ LN_FLAT_API LNResult LNAudio_PlayBGM(const LNChar* filePath, float volume, float
 LN_FLAT_API LNResult LNAudio_PlayBGMA(const char* filePath, float volume, float pitch, double fadeTime)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::Audio::playBGM(LNI_UTF8STRPTR_TO_STRING(filePath), volume, pitch, fadeTime));
+    (ln::Audio::playBGM(LNI_ASTRPTR_TO_STRING(filePath), volume, pitch, fadeTime));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -13398,7 +13426,7 @@ LN_FLAT_API LNResult LNAudio_PlayBGS(const LNChar* filePath, float volume, float
 LN_FLAT_API LNResult LNAudio_PlayBGSA(const char* filePath, float volume, float pitch, double fadeTime)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::Audio::playBGS(LNI_UTF8STRPTR_TO_STRING(filePath), volume, pitch, fadeTime));
+    (ln::Audio::playBGS(LNI_ASTRPTR_TO_STRING(filePath), volume, pitch, fadeTime));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -13422,7 +13450,7 @@ LN_FLAT_API LNResult LNAudio_PlayME(const LNChar* filePath, float volume, float 
 LN_FLAT_API LNResult LNAudio_PlayMEA(const char* filePath, float volume, float pitch)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::Audio::playME(LNI_UTF8STRPTR_TO_STRING(filePath), volume, pitch));
+    (ln::Audio::playME(LNI_ASTRPTR_TO_STRING(filePath), volume, pitch));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -13446,7 +13474,7 @@ LN_FLAT_API LNResult LNAudio_PlaySE(const LNChar* filePath, float volume, float 
 LN_FLAT_API LNResult LNAudio_PlaySEA(const char* filePath, float volume, float pitch)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::Audio::playSE(LNI_UTF8STRPTR_TO_STRING(filePath), volume, pitch));
+    (ln::Audio::playSE(LNI_ASTRPTR_TO_STRING(filePath), volume, pitch));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -13462,7 +13490,7 @@ LN_FLAT_API LNResult LNAudio_PlaySE3D(const LNChar* filePath, const LNVector3* p
 LN_FLAT_API LNResult LNAudio_PlaySE3DA(const char* filePath, const LNVector3* position, float distance, float volume, float pitch)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::Audio::playSE3D(LNI_UTF8STRPTR_TO_STRING(filePath), *reinterpret_cast<const ln::Vector3*>(position), distance, volume, pitch));
+    (ln::Audio::playSE3D(LNI_ASTRPTR_TO_STRING(filePath), *reinterpret_cast<const ln::Vector3*>(position), distance, volume, pitch));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -13621,10 +13649,10 @@ LN_FLAT_API LNResult LNTexture2D_LoadA(const char* filePath, LNHandle* outReturn
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(LNI_ASTRPTR_TO_STRING(filePath)));
     }
     else {
-        (ln::Texture2D::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        (ln::Texture2D::load(LNI_ASTRPTR_TO_STRING(filePath)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -13649,10 +13677,10 @@ LN_FLAT_API LNResult LNTexture2D_LoadEmojiA(const char* code, LNHandle* outRetur
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(LNI_UTF8STRPTR_TO_STRING(code)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(LNI_ASTRPTR_TO_STRING(code)));
     }
     else {
-        (ln::Texture2D::loadEmoji(LNI_UTF8STRPTR_TO_STRING(code)));
+        (ln::Texture2D::loadEmoji(LNI_ASTRPTR_TO_STRING(code)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -13722,10 +13750,10 @@ LN_FLAT_API LNResult LNShader_LoadA(const char* filePath, LNHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Shader::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Shader::load(LNI_ASTRPTR_TO_STRING(filePath)));
     }
     else {
-        (ln::Shader::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        (ln::Shader::load(LNI_ASTRPTR_TO_STRING(filePath)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -13743,7 +13771,7 @@ LN_FLAT_API LNResult LNShader_SetFloat(LNHandle shader, const LNChar* parameterN
 LN_FLAT_API LNResult LNShader_SetFloatA(LNHandle shader, const char* parameterName, float value)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setFloat(LNI_UTF8STRPTR_TO_STRING(parameterName), value));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setFloat(LNI_ASTRPTR_TO_STRING(parameterName), value));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -13759,7 +13787,7 @@ LN_FLAT_API LNResult LNShader_SetVector3(LNHandle shader, const LNChar* paramete
 LN_FLAT_API LNResult LNShader_SetVector3A(LNHandle shader, const char* parameterName, const LNVector3* value)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setVector(LNI_UTF8STRPTR_TO_STRING(parameterName), *reinterpret_cast<const ln::Vector3*>(value)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setVector(LNI_ASTRPTR_TO_STRING(parameterName), *reinterpret_cast<const ln::Vector3*>(value)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -13775,7 +13803,7 @@ LN_FLAT_API LNResult LNShader_SetVector4(LNHandle shader, const LNChar* paramete
 LN_FLAT_API LNResult LNShader_SetVector4A(LNHandle shader, const char* parameterName, const LNVector4* value)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setVector(LNI_UTF8STRPTR_TO_STRING(parameterName), *reinterpret_cast<const ln::Vector4*>(value)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setVector(LNI_ASTRPTR_TO_STRING(parameterName), *reinterpret_cast<const ln::Vector4*>(value)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -13955,10 +13983,10 @@ LN_FLAT_API LNResult LNStaticMeshModel_LoadA(const char* filePath, LNHandle* out
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::StaticMeshModel::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::StaticMeshModel::load(LNI_ASTRPTR_TO_STRING(filePath)));
     }
     else {
-        (ln::StaticMeshModel::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        (ln::StaticMeshModel::load(LNI_ASTRPTR_TO_STRING(filePath)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -14056,10 +14084,10 @@ LN_FLAT_API LNResult LNSkinnedMeshModel_LoadA(const char* filePath, LNHandle* ou
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::SkinnedMeshModel::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::SkinnedMeshModel::load(LNI_ASTRPTR_TO_STRING(filePath)));
     }
     else {
-        (ln::SkinnedMeshModel::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        (ln::SkinnedMeshModel::load(LNI_ASTRPTR_TO_STRING(filePath)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -14316,10 +14344,10 @@ LN_FLAT_API LNResult LNAnimationClip_LoadA(const char* filePath, LNHandle* outRe
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::AnimationClip::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::AnimationClip::load(LNI_ASTRPTR_TO_STRING(filePath)));
     }
     else {
-        (ln::AnimationClip::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        (ln::AnimationClip::load(LNI_ASTRPTR_TO_STRING(filePath)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -15090,7 +15118,7 @@ LN_FLAT_API LNResult LNWorldObject_AddTag(LNHandle worldobject, const LNChar* ta
 LN_FLAT_API LNResult LNWorldObject_AddTagA(LNHandle worldobject, const char* tag)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->addTag(LNI_UTF8STRPTR_TO_STRING(tag)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->addTag(LNI_ASTRPTR_TO_STRING(tag)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -15106,7 +15134,7 @@ LN_FLAT_API LNResult LNWorldObject_RemoveTag(LNHandle worldobject, const LNChar*
 LN_FLAT_API LNResult LNWorldObject_RemoveTagA(LNHandle worldobject, const char* tag)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->removeTag(LNI_UTF8STRPTR_TO_STRING(tag)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->removeTag(LNI_ASTRPTR_TO_STRING(tag)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -15129,10 +15157,10 @@ LN_FLAT_API LNResult LNWorldObject_HasTagA(LNHandle worldobject, const char* tag
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->hasTag(LNI_UTF8STRPTR_TO_STRING(tag)));
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->hasTag(LNI_ASTRPTR_TO_STRING(tag)));
     }
     else {
-        (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->hasTag(LNI_UTF8STRPTR_TO_STRING(tag)));
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->hasTag(LNI_ASTRPTR_TO_STRING(tag)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -16966,10 +16994,10 @@ LN_FLAT_API LNResult LNStaticMesh_LoadA(const char* filePath, LNHandle* outRetur
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::StaticMesh::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::StaticMesh::load(LNI_ASTRPTR_TO_STRING(filePath)));
     }
     else {
-        (ln::StaticMesh::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+        (ln::StaticMesh::load(LNI_ASTRPTR_TO_STRING(filePath)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -17001,7 +17029,7 @@ LN_FLAT_API LNResult LNStaticMesh_MakeCollisionBody(LNHandle staticmesh, const L
 LN_FLAT_API LNResult LNStaticMesh_MakeCollisionBodyA(LNHandle staticmesh, const char* meshContainerName)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->makeCollisionBody(LNI_UTF8STRPTR_TO_STRING(meshContainerName)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->makeCollisionBody(LNI_ASTRPTR_TO_STRING(meshContainerName)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -17112,7 +17140,7 @@ LN_FLAT_API LNResult LNStaticMeshComponent_MakeCollisionBody(LNHandle staticmesh
 LN_FLAT_API LNResult LNStaticMeshComponent_MakeCollisionBodyA(LNHandle staticmeshcomponent, const char* meshContainerName)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshComponent, staticmeshcomponent)->makeCollisionBody(LNI_UTF8STRPTR_TO_STRING(meshContainerName)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshComponent, staticmeshcomponent)->makeCollisionBody(LNI_ASTRPTR_TO_STRING(meshContainerName)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -18149,7 +18177,6 @@ LN_FLAT_API LNResult LNUIElement_GetHeight(LNHandle uielement, float* outReturn)
 
 LN_FLAT_API LNResult LNUIElement_SetMargin(LNHandle uielement, const LNThickness* margin)
 {
-    printf("LNUIElement_SetMargin: %f %f %f %f\n", margin->left, margin->top, margin->right, margin->bottom);
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setMargin(*reinterpret_cast<const ln::Thickness*>(margin)));
     LNI_FUNC_TRY_END_RETURN;
@@ -18620,7 +18647,7 @@ LN_FLAT_API LNResult LNUITextBlock_CreateWithText(const LNChar* text, LNHandle* 
 LN_FLAT_API LNResult LNUITextBlock_CreateWithTextA(const char* text, LNHandle* outUITextBlock)
 {
     LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outUITextBlock, LNWS_ln_UITextBlock, init, LNI_UTF8STRPTR_TO_STRING(text));
+    LNI_CREATE_OBJECT(outUITextBlock, LNWS_ln_UITextBlock, init, LNI_ASTRPTR_TO_STRING(text));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -18636,7 +18663,7 @@ LN_FLAT_API LNResult LNUITextBlock_SetText(LNHandle uitextblock, const LNChar* v
 LN_FLAT_API LNResult LNUITextBlock_SetTextA(LNHandle uitextblock, const char* value)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UITextBlock, uitextblock)->setText(LNI_UTF8STRPTR_TO_STRING(value)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UITextBlock, uitextblock)->setText(LNI_ASTRPTR_TO_STRING(value)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -18659,7 +18686,7 @@ LN_FLAT_API LNResult LNUITextBlock_GetTextA(LNHandle uitextblock, const char** o
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_UITextBlock, uitextblock)->text());
+        *outReturn = LNI_STRING_TO_STRPTR_A(LNI_HANDLE_TO_OBJECT(LNWS_ln_UITextBlock, uitextblock)->text());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_UITextBlock, uitextblock)->text());
@@ -18831,10 +18858,10 @@ LN_FLAT_API LNResult LNUIIcon_LoadFontIconA(const char* iconName, LNHandle* outR
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::UIIcon::loadFontIcon(LNI_UTF8STRPTR_TO_STRING(iconName)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::UIIcon::loadFontIcon(LNI_ASTRPTR_TO_STRING(iconName)));
     }
     else {
-        (ln::UIIcon::loadFontIcon(LNI_UTF8STRPTR_TO_STRING(iconName)));
+        (ln::UIIcon::loadFontIcon(LNI_ASTRPTR_TO_STRING(iconName)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -18859,10 +18886,10 @@ LN_FLAT_API LNResult LNUIIcon_LoadFontIconWithNameSizeA(const char* iconName, in
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::UIIcon::loadFontIcon(LNI_UTF8STRPTR_TO_STRING(iconName), size));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::UIIcon::loadFontIcon(LNI_ASTRPTR_TO_STRING(iconName), size));
     }
     else {
-        (ln::UIIcon::loadFontIcon(LNI_UTF8STRPTR_TO_STRING(iconName), size));
+        (ln::UIIcon::loadFontIcon(LNI_ASTRPTR_TO_STRING(iconName), size));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -18887,10 +18914,10 @@ LN_FLAT_API LNResult LNUIIcon_LoadFontIconWithNameSizeColorA(const char* iconNam
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::UIIcon::loadFontIcon(LNI_UTF8STRPTR_TO_STRING(iconName), size, *reinterpret_cast<const ln::Color*>(color)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::UIIcon::loadFontIcon(LNI_ASTRPTR_TO_STRING(iconName), size, *reinterpret_cast<const ln::Color*>(color)));
     }
     else {
-        (ln::UIIcon::loadFontIcon(LNI_UTF8STRPTR_TO_STRING(iconName), size, *reinterpret_cast<const ln::Color*>(color)));
+        (ln::UIIcon::loadFontIcon(LNI_ASTRPTR_TO_STRING(iconName), size, *reinterpret_cast<const ln::Color*>(color)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -18961,7 +18988,7 @@ LN_FLAT_API LNResult LNUIMessageTextArea_SetText(LNHandle uimessagetextarea, con
 LN_FLAT_API LNResult LNUIMessageTextArea_SetTextA(LNHandle uimessagetextarea, const char* value)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIMessageTextArea, uimessagetextarea)->setText(LNI_UTF8STRPTR_TO_STRING(value)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIMessageTextArea, uimessagetextarea)->setText(LNI_ASTRPTR_TO_STRING(value)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -19312,7 +19339,7 @@ LN_FLAT_API LNResult LNUIButtonBase_SetText(LNHandle uibuttonbase, const LNChar*
 LN_FLAT_API LNResult LNUIButtonBase_SetTextA(LNHandle uibuttonbase, const char* text)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButtonBase, uibuttonbase)->setText(LNI_UTF8STRPTR_TO_STRING(text)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButtonBase, uibuttonbase)->setText(LNI_ASTRPTR_TO_STRING(text)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -19381,7 +19408,7 @@ LN_FLAT_API LNResult LNUIButton_CreateWithText(const LNChar* text, LNHandle* out
 LN_FLAT_API LNResult LNUIButton_CreateWithTextA(const char* text, LNHandle* outUIButton)
 {
     LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outUIButton, LNWS_ln_UIButton, init, LNI_UTF8STRPTR_TO_STRING(text));
+    LNI_CREATE_OBJECT(outUIButton, LNWS_ln_UIButton, init, LNI_ASTRPTR_TO_STRING(text));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -19770,10 +19797,10 @@ LN_FLAT_API LNResult LNInput_IsPressedA(const char* buttonName, LNBool* outRetur
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isPressed(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isPressed(LNI_ASTRPTR_TO_STRING(buttonName)));
     }
     else {
-        (ln::Input::isPressed(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        (ln::Input::isPressed(LNI_ASTRPTR_TO_STRING(buttonName)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -19798,10 +19825,10 @@ LN_FLAT_API LNResult LNInput_IsTriggeredA(const char* buttonName, LNBool* outRet
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isTriggered(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isTriggered(LNI_ASTRPTR_TO_STRING(buttonName)));
     }
     else {
-        (ln::Input::isTriggered(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        (ln::Input::isTriggered(LNI_ASTRPTR_TO_STRING(buttonName)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -19826,10 +19853,10 @@ LN_FLAT_API LNResult LNInput_IsTriggeredOffA(const char* buttonName, LNBool* out
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isTriggeredOff(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isTriggeredOff(LNI_ASTRPTR_TO_STRING(buttonName)));
     }
     else {
-        (ln::Input::isTriggeredOff(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        (ln::Input::isTriggeredOff(LNI_ASTRPTR_TO_STRING(buttonName)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -19854,10 +19881,10 @@ LN_FLAT_API LNResult LNInput_IsRepeatedA(const char* buttonName, LNBool* outRetu
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isRepeated(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::isRepeated(LNI_ASTRPTR_TO_STRING(buttonName)));
     }
     else {
-        (ln::Input::isRepeated(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        (ln::Input::isRepeated(LNI_ASTRPTR_TO_STRING(buttonName)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -19882,10 +19909,10 @@ LN_FLAT_API LNResult LNInput_GetAxisValueA(const char* buttonName, float* outRet
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = (ln::Input::getAxisValue(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        *outReturn = (ln::Input::getAxisValue(LNI_ASTRPTR_TO_STRING(buttonName)));
     }
     else {
-        (ln::Input::getAxisValue(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+        (ln::Input::getAxisValue(LNI_ASTRPTR_TO_STRING(buttonName)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -19988,7 +20015,7 @@ LN_FLAT_API LNResult LNInterpreterCommand_CodeA(LNHandle interpretercommand, con
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommand, interpretercommand)->code());
+        *outReturn = LNI_STRING_TO_STRPTR_A(LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommand, interpretercommand)->code());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommand, interpretercommand)->code());
@@ -20030,7 +20057,7 @@ LN_FLAT_API LNResult LNInterpreterCommand_ParamA(LNHandle interpretercommand, in
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommand, interpretercommand)->param(index));
+        *outReturn = LNI_STRING_TO_STRPTR_A(LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommand, interpretercommand)->param(index));
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommand, interpretercommand)->param(index));
@@ -20104,7 +20131,7 @@ LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand(LNHandle interpretercom
 LN_FLAT_API LNResult LNInterpreterCommandList_AddCommandA(LNHandle interpretercommandlist, const char* code)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommandList, interpretercommandlist)->addCommand(LNI_UTF8STRPTR_TO_STRING(code)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommandList, interpretercommandlist)->addCommand(LNI_ASTRPTR_TO_STRING(code)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20120,7 +20147,7 @@ LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand1(LNHandle interpreterco
 LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand1A(LNHandle interpretercommandlist, const char* code, const char* param0)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommandList, interpretercommandlist)->addCommand1(LNI_UTF8STRPTR_TO_STRING(code), LNI_UTF8STRPTR_TO_STRING(param0)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommandList, interpretercommandlist)->addCommand1(LNI_ASTRPTR_TO_STRING(code), LNI_ASTRPTR_TO_STRING(param0)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20136,7 +20163,7 @@ LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand2(LNHandle interpreterco
 LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand2A(LNHandle interpretercommandlist, const char* code, const char* param0, const char* param1)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommandList, interpretercommandlist)->addCommand2(LNI_UTF8STRPTR_TO_STRING(code), LNI_UTF8STRPTR_TO_STRING(param0), LNI_UTF8STRPTR_TO_STRING(param1)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommandList, interpretercommandlist)->addCommand2(LNI_ASTRPTR_TO_STRING(code), LNI_ASTRPTR_TO_STRING(param0), LNI_ASTRPTR_TO_STRING(param1)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20152,7 +20179,7 @@ LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand3(LNHandle interpreterco
 LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand3A(LNHandle interpretercommandlist, const char* code, const char* param0, const char* param1, const char* param2)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommandList, interpretercommandlist)->addCommand3(LNI_UTF8STRPTR_TO_STRING(code), LNI_UTF8STRPTR_TO_STRING(param0), LNI_UTF8STRPTR_TO_STRING(param1), LNI_UTF8STRPTR_TO_STRING(param2)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommandList, interpretercommandlist)->addCommand3(LNI_ASTRPTR_TO_STRING(code), LNI_ASTRPTR_TO_STRING(param0), LNI_ASTRPTR_TO_STRING(param1), LNI_ASTRPTR_TO_STRING(param2)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20168,7 +20195,7 @@ LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand4(LNHandle interpreterco
 LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand4A(LNHandle interpretercommandlist, const char* code, const char* param0, const char* param1, const char* param2, const char* param3)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommandList, interpretercommandlist)->addCommand4(LNI_UTF8STRPTR_TO_STRING(code), LNI_UTF8STRPTR_TO_STRING(param0), LNI_UTF8STRPTR_TO_STRING(param1), LNI_UTF8STRPTR_TO_STRING(param2), LNI_UTF8STRPTR_TO_STRING(param3)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommandList, interpretercommandlist)->addCommand4(LNI_ASTRPTR_TO_STRING(code), LNI_ASTRPTR_TO_STRING(param0), LNI_ASTRPTR_TO_STRING(param1), LNI_ASTRPTR_TO_STRING(param2), LNI_ASTRPTR_TO_STRING(param3)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20306,7 +20333,7 @@ LN_FLAT_API LNResult LNInterpreter_RegisterCommandHandler(LNHandle interpreter, 
 LN_FLAT_API LNResult LNInterpreter_RegisterCommandHandlerA(LNHandle interpreter, const char* name, LNHandle handler)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->registerCommandHandler(LNI_UTF8STRPTR_TO_STRING(name), LNI_HANDLE_TO_OBJECT(ln::InterpreterCommandDelegate, handler)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->registerCommandHandler(LNI_ASTRPTR_TO_STRING(name), LNI_HANDLE_TO_OBJECT(ln::InterpreterCommandDelegate, handler)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20322,7 +20349,7 @@ LN_FLAT_API LNResult LNInterpreter_SetWaitMode(LNHandle interpreter, const LNCha
 LN_FLAT_API LNResult LNInterpreter_SetWaitModeA(LNHandle interpreter, const char* mode)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->setWaitMode(LNI_UTF8STRPTR_TO_STRING(mode)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->setWaitMode(LNI_ASTRPTR_TO_STRING(mode)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20345,7 +20372,7 @@ LN_FLAT_API LNResult LNInterpreter_GetWaitModeA(LNHandle interpreter, const char
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->waitMode());
+        *outReturn = LNI_STRING_TO_STRPTR_A(LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->waitMode());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, interpreter)->waitMode());
@@ -20466,7 +20493,7 @@ LN_FLAT_API LNResult LNEngineSettings_SetMainWindowTitle(const LNChar* title)
 LN_FLAT_API LNResult LNEngineSettings_SetMainWindowTitleA(const char* title)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setMainWindowTitle(LNI_UTF8STRPTR_TO_STRING(title)));
+    (ln::EngineSettings::setMainWindowTitle(LNI_ASTRPTR_TO_STRING(title)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20482,7 +20509,7 @@ LN_FLAT_API LNResult LNEngineSettings_AddAssetDirectory(const LNChar* path)
 LN_FLAT_API LNResult LNEngineSettings_AddAssetDirectoryA(const char* path)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::addAssetDirectory(LNI_UTF8STRPTR_TO_STRING(path)));
+    (ln::EngineSettings::addAssetDirectory(LNI_ASTRPTR_TO_STRING(path)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20498,7 +20525,7 @@ LN_FLAT_API LNResult LNEngineSettings_AddAssetArchive(const LNChar* fileFullPath
 LN_FLAT_API LNResult LNEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::addAssetArchive(LNI_UTF8STRPTR_TO_STRING(fileFullPath), LNI_UTF8STRPTR_TO_STRING(password)));
+    (ln::EngineSettings::addAssetArchive(LNI_ASTRPTR_TO_STRING(fileFullPath), LNI_ASTRPTR_TO_STRING(password)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20511,18 +20538,34 @@ LN_FLAT_API LNResult LNEngineSettings_SetFrameRate(int value)
 }
 
 
-LN_FLAT_API LNResult LNEngineSettings_SetDefaultUITheme(const LNChar* value)
+LN_FLAT_API LNResult LNEngineSettings_SetUITheme(const LNChar* value)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setDefaultUITheme(value));
+    (ln::EngineSettings::setUITheme(value));
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LNResult LNEngineSettings_SetDefaultUIThemeA(const char* value)
+LN_FLAT_API LNResult LNEngineSettings_SetUIThemeA(const char* value)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setDefaultUITheme(LNI_UTF8STRPTR_TO_STRING(value)));
+    (ln::EngineSettings::setUITheme(LNI_ASTRPTR_TO_STRING(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNEngineSettings_SetFontFile(const LNChar* filePath)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setFontFile(filePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNEngineSettings_SetFontFileA(const char* filePath)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setFontFile(LNI_ASTRPTR_TO_STRING(filePath)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20554,7 +20597,7 @@ LN_FLAT_API LNResult LNEngineSettings_SetEngineLogFilePath(const LNChar* filePat
 LN_FLAT_API LNResult LNEngineSettings_SetEngineLogFilePathA(const char* filePath)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setEngineLogFilePath(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    (ln::EngineSettings::setEngineLogFilePath(LNI_ASTRPTR_TO_STRING(filePath)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20797,7 +20840,7 @@ LN_FLAT_API LNResult LNDebug_Print(const LNChar* str)
 LN_FLAT_API LNResult LNDebug_PrintA(const char* str)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::Debug::print(LNI_UTF8STRPTR_TO_STRING(str)));
+    (ln::Debug::print(LNI_ASTRPTR_TO_STRING(str)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20813,7 +20856,7 @@ LN_FLAT_API LNResult LNDebug_PrintWithTime(float time, const LNChar* str)
 LN_FLAT_API LNResult LNDebug_PrintWithTimeA(float time, const char* str)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::Debug::print(time, LNI_UTF8STRPTR_TO_STRING(str)));
+    (ln::Debug::print(time, LNI_ASTRPTR_TO_STRING(str)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20829,7 +20872,7 @@ LN_FLAT_API LNResult LNDebug_PrintWithTimeAndColor(float time, const LNColor* co
 LN_FLAT_API LNResult LNDebug_PrintWithTimeAndColorA(float time, const LNColor* color, const char* str)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::Debug::print(time, *reinterpret_cast<const ln::Color*>(color), LNI_UTF8STRPTR_TO_STRING(str)));
+    (ln::Debug::print(time, *reinterpret_cast<const ln::Color*>(color), LNI_ASTRPTR_TO_STRING(str)));
     LNI_FUNC_TRY_END_RETURN;
 }
 

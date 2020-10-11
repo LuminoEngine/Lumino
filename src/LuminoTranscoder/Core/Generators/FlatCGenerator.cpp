@@ -870,7 +870,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 				args.AppendCommad(u"LNI_LNBOOL_TO_BOOL({0})", paramInfo->name());
 			}
             else if (type->isString() && charset == FlatCharset::Ascii) {
-                args.AppendCommad(u"LNI_UTF8STRPTR_TO_STRING({0})", paramInfo->name());
+                args.AppendCommad(u"LNI_ASTRPTR_TO_STRING({0})", paramInfo->name());
             }
 			else
 			{
@@ -897,7 +897,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
                 if (charset == FlatCharset::Unicode)
 					returnAssignmentExpr.append("*outReturn = LNI_STRING_TO_STRPTR_UTF16");
                 else
-					returnAssignmentExpr.append("*outReturn = LNI_STRING_TO_STRPTR_UTF8");
+					returnAssignmentExpr.append("*outReturn = LNI_STRING_TO_STRPTR_A");
 			else
 				returnAssignmentExpr.append("*outReturn = ");
 		}

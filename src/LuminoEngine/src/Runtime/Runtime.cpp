@@ -32,18 +32,38 @@ LNResult Runtime::processException(Exception* e)
 	return detail::EngineDomain::runtimeManager()->processException(e);
 }
 
+//const Char* Runtime::getUTF16StringPtr(String str)
+//{
+//    return str.c_str();
+//}
+
 const Char* Runtime::getUTF16StringPtr(const String& str)
 {
-    return str.c_str();
+    // TODO: Assets::readAllText() のように、String の実態を返す関数の対策のため、必ず reset している。
+    // 参照で返してくるものはふつうに return str.c_str(); すればよいだけなので、そのように最適化したい。
+    auto* sb = detail::EngineDomain::runtimeManager()->requestCommonStringBuffer();
+    sb->reset(str);
+    return sb->getUtf16();
+
+    //return str.c_str();
 }
 
-const char* Runtime::getUTF8StringPtr(const String& str)
+const char* Runtime::getAStringPtr(const String& str)
 {
     auto* sb = detail::EngineDomain::runtimeManager()->requestCommonStringBuffer();
     sb->reset(str);
-    return sb->getUtf8();
+    return sb->getAscii();
 }
 
+void Runtime::setAStringEncoding(TextEncoding* value)
+{
+    detail::EngineDomain::runtimeManager()->setAStringEncoding(value);
+}
+
+TextEncoding* Runtime::getAStringEncoding()
+{
+    return detail::EngineDomain::runtimeManager()->getAStringEncoding();
+}
 
 //==============================================================================
 // ShapesRendererCommandList
@@ -59,7 +79,6 @@ RuntimeStringBuffer::RuntimeStringBuffer()
 //{
 //    Object::init();
 //    m_str = str;
-//}
 
 void RuntimeStringBuffer::reset(const String& str)
 {
@@ -67,13 +86,13 @@ void RuntimeStringBuffer::reset(const String& str)
     m_translated = false;
 }
 
-const char* RuntimeStringBuffer::getUtf8()
+const char* RuntimeStringBuffer::getAscii()
 {
     if (!m_translated) {
-        m_str8 = m_str.toStdString();   // TODO: encoding
+        m_strAscii = m_str.toStdString();   // TODO: encoding
         m_translated = true;
     }
-    return m_str8.c_str();
+    return m_strAscii.c_str();
 }
 
 static std::string std_string_vprintf(const char* format, std::va_list arg)

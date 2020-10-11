@@ -567,9 +567,12 @@ bool String::tryToUInt64(uint64_t* outValue, int base) const
 }
 #undef TRY_TO_INT_DEF
 
-std::string String::toStdString() const
+std::string String::toStdString(TextEncoding* encoding) const
 {
-    std::vector<byte_t> bytes = TextEncoding::systemMultiByteEncoding()->encode(*this);
+    if (!encoding) {
+        encoding = TextEncoding::systemMultiByteEncoding();
+    }
+    std::vector<byte_t> bytes = encoding->encode(*this);
     return std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size());
 }
 

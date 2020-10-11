@@ -306,7 +306,7 @@ public:
     bool tryToUInt64(uint64_t* outValue, int base = 0) const; /**< @copydoc tryToInt */
 
     /** ローカルの std::string 型文字列へ変換します。 */
-    std::string toStdString() const;
+    std::string toStdString(TextEncoding* encoding = nullptr) const;
 
     /** ローカルの std::wstring 型文字列へ変換します。 */
     std::wstring toStdWString() const;

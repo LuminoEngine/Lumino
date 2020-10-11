@@ -59,7 +59,7 @@ ln::Result EditorApplication::init()
     lna::AppData::current()->load();
 
 	ln::EngineSettings::setMainWindowSize(1600, 800);
-    ln::EngineSettings::setDefaultUITheme(u"Chocotelier");
+    ln::EngineSettings::setUITheme(u"Chocotelier");
 	//ln::EngineSettings::setMainBackBufferSize(1600, 800);
     //ln::EngineSettings::setAssetStorageAccessPriority(ln::AssetStorageAccessPriority::AllowLocalDirectory);
     ln::EngineSettings::setGraphicsAPI(ln::GraphicsAPI::Vulkan);

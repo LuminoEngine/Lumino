@@ -119,6 +119,38 @@ struct LNCornerRadius
 
 
 /**
+    @brief エンコーディングの種類
+*/
+typedef enum tagLNEncodingType
+{
+    /**
+        @brief 不明な文字エンコーディング (判別失敗。またはバイナリファイル)
+    */
+    LN_ENCODING_TYPE_UNKNOWN = 0,
+
+    /**
+        @brief ASCII (拡張アスキーは含まない http://www.asciitable.com/)
+    */
+    LN_ENCODING_TYPE_ASCII = 1,
+
+    /**
+        @brief UTF-8
+    */
+    LN_ENCODING_TYPE_UTF8 = 2,
+
+    /**
+        @brief UTF-8 (BOM 無し)
+    */
+    LN_ENCODING_TYPE_UTF8N = 3,
+
+    /**
+        @brief 日本語 (シフト JIS) -- cp932(MS932) Windows-31J ※MS実装
+    */
+    LN_ENCODING_TYPE_SJIS = 4,
+
+} LNEncodingType;
+
+/**
     @brief マウスボタン
 */
 typedef enum tagLNMouseButtons
@@ -1403,6 +1435,13 @@ LN_FLAT_API LNResult LNAssets_LoadAssetA(const char* filePath, LNHandle* outRetu
 */
 LN_FLAT_API LNResult LNAssets_ReloadAsset(const LNChar* filePath, LNHandle obj);
 LN_FLAT_API LNResult LNAssets_ReloadAssetA(const char* filePath, LNHandle obj);
+
+/**
+    @brief readAllText
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNAssets_ReadAllText(const LNChar* filePath, LNEncodingType encoding, const LNChar** outReturn);
+LN_FLAT_API LNResult LNAssets_ReadAllTextA(const char* filePath, LNEncodingType encoding, const char** outReturn);
 
 
 //==============================================================================
@@ -5492,8 +5531,14 @@ LN_FLAT_API LNResult LNEngineSettings_SetFrameRate(int value);
 /**
     @brief デフォルトの UI テーマ名を設定します。
 */
-LN_FLAT_API LNResult LNEngineSettings_SetDefaultUITheme(const LNChar* value);
-LN_FLAT_API LNResult LNEngineSettings_SetDefaultUIThemeA(const char* value);
+LN_FLAT_API LNResult LNEngineSettings_SetUITheme(const LNChar* value);
+LN_FLAT_API LNResult LNEngineSettings_SetUIThemeA(const char* value);
+
+/**
+    @brief デフォルトのフォントファイルを設定します。
+*/
+LN_FLAT_API LNResult LNEngineSettings_SetFontFile(const LNChar* filePath);
+LN_FLAT_API LNResult LNEngineSettings_SetFontFileA(const char* filePath);
 
 /**
     @brief (default: Debug ビルドの場合true、それ以外は false)

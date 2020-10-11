@@ -11,11 +11,17 @@ using namespace ln;
 
 class App_Example_MessageWindow : public Application
 {
+public:
     Ref<UIButton> m_button1;
     Ref<UIMessageTextWindow> m_window1;
     //Ref<UIMessageTextArea> m_message1;
     Ref<UIMessageTextArea> m_message2;
     int m_step = 0;
+
+    App_Example_MessageWindow()
+    {
+        ln::EngineSettings::setFontFile("C:/Proj/LN/PrivateProjects/HC4/assets/Font/mplus-1c-regular.ttf");
+    }
 
     virtual void onInit() override
     {
@@ -70,7 +76,7 @@ class App_Example_MessageWindow : public Application
         //    u"window2->setBackgroundImageRect(Rect(0, 0, 48, 48));\n"
         //    u"window2->setBackgroundImageBorder(Thickness(8));\n"
         //    u"window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);");
-        m_message2->setText(u"aaaaa\nbbbbb\nccccc");
+        m_message2->setText(u"日本語表示\nbbbbb\nccccc");
         //m_message2->setViewportLineCount(2);
         //m_message2->setClipToBounds(true);
         window2->addChild(m_message2);

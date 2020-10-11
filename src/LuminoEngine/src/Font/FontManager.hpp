@@ -36,6 +36,7 @@ public:
 	{
         AssetManager* assetManager;
 		Path engineAssetPath;
+		Path fontFile;
 	};
 
     FontManager();

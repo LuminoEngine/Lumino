@@ -1,5 +1,6 @@
 ﻿
 #include <LuminoEngine.hpp>
+#include <LuminoEngine/Runtime/Runtime.hpp>
 #include "LuminoHSP.h"
 
 extern bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr);
@@ -85,6 +86,8 @@ EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO* info)
 	settings.referenceCountTrackerCallback = nullptr;
 	settings.runtimeGetTypeInfoIdCallback = nullptr;
 	LNRuntime_Initialize(&settings);
+
+	ln::Runtime::setAStringEncoding(ln::TextEncoding::systemMultiByteEncoding());
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule,

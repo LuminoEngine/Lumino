@@ -37,6 +37,8 @@ void RuntimeManager::init(const Settings& settings)
 
     m_settings = settings;
 
+	setAStringEncoding(TextEncoding::utf8Encoding());
+
 	// オブジェクト管理配列
 	for (int i = 511; i >= 0; --i)
 	{
@@ -289,6 +291,16 @@ void RuntimeManager::dumpInfo() const
 	}
 	std::cout << "----------" << std::endl;
 	std::cout << std::endl;
+}
+
+void RuntimeManager::setAStringEncoding(TextEncoding* value)
+{
+	m_commonStringBuffer.setAStringEncoding(value);
+}
+
+TextEncoding* RuntimeManager::getAStringEncoding() const
+{
+	return m_commonStringBuffer.getAStringEncoding();
 }
 
 } // namespace detail

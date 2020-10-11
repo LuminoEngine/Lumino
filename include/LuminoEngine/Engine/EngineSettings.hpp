@@ -50,7 +50,16 @@ public:
 
 	/** デフォルトの UI テーマ名を設定します。 */
 	LN_METHOD()
-	static void setDefaultUITheme(const String& value);
+	static void setUITheme(const String& value);
+	
+	/** デフォルトのフォントファイルを設定します。 */
+	LN_METHOD()
+	static void setFontFile(const String& filePath);
+
+	///**  */
+	//LN_METHOD()
+	//static void setUseSystemStringEncoding(bool value);
+
 
 //	/** グラフィックス機能で使用するレンダリング方法を設定します。(default: Threaded) */
 //	static void setGraphicsRenderingType(RenderingType renderingType);

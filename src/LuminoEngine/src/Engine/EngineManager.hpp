@@ -78,6 +78,7 @@ struct EngineSettings
 	bool runtimeEditorEnabled = false;
 
 	String defaultUITheme;
+	Path fontFile;
 
 
     bool defaultObjectsCreation = true;

@@ -92,6 +92,18 @@ Ref<ByteBuffer> Assets::readAllBytes(const StringRef& filePath)
 	return detail::EngineDomain::assetManager()->readAllBytes(filePath);
 }
 
+String Assets::readAllText(const StringRef& filePath, EncodingType encoding)
+{
+    auto stream = detail::EngineDomain::assetManager()->openFileStream(filePath);
+    if (!stream) {
+        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+        return String::Empty;
+    }
+
+    TextEncoding* e = (encoding == EncodingType::Unknown) ? nullptr : TextEncoding::getEncoding(encoding);
+    return FileSystem::readAllText(stream, e);
+}
+
 Ref<Stream> Assets::openFileStream(const StringRef& filePath)
 {
     return detail::EngineDomain::assetManager()->openFileStream(filePath);

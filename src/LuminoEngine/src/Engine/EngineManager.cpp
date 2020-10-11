@@ -462,6 +462,7 @@ void EngineManager::initializeFontManager()
 		FontManager::Settings settings;
 		settings.assetManager = m_assetManager;
 		settings.engineAssetPath = m_engineResourcesPath;
+		settings.fontFile = m_settings.fontFile;
 
 		m_fontManager = ln::makeRef<FontManager>();
 		m_fontManager->init(settings);
