@@ -144,10 +144,20 @@ public:
 	LN_METHOD(OverloadPostfix = "WH")
 	void setSize(float width, float height) { setSize(Size(width, height)); }
 
+	/** setWidth */
+	LN_METHOD(Property)
     void setWidth(float value);
+
+	/** width */
+	LN_METHOD(Property)
     float width() const;
 
+	/** setHeight */
+	LN_METHOD(Property)
     void setHeight(float value);
+
+	/** height */
+	LN_METHOD(Property)
     float height() const;
 
 

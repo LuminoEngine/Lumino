@@ -117,7 +117,7 @@
 #include "LuminoEngine/UI/Controls/UIListView.hpp"
 #include "LuminoEngine/UI/UI.hpp"
 
-#include "LuminoEngine/UI/UIFlexMessageTextArea.hpp"
+#include "LuminoEngine/UI/UIMessageTextArea.hpp"
 
 #include "LuminoEngine/Asset/Assets.hpp"
 

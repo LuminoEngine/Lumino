@@ -18,14 +18,20 @@ enum class MessageTextPageFeedCursorPosition
 // - line feed
 // - page feed
 // - line centering
+/** UIMessageTextArea */
+LN_CLASS()
 class UIMessageTextArea
 	: public UIElement
 {
 public:
 	static Ref<UIMessageTextArea> create();
 
+    /** setText */
+    LN_METHOD(Property)
     void setText(const StringRef& value);
 
+    /** setTypingSpeed */
+    LN_METHOD(Property)
 	void setTypingSpeed(float value) { m_typingSpeed = value; }
 
     //void setViewportLineCount(int value) { m_viewportLineCount = value; }
@@ -34,7 +40,10 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     UIMessageTextArea();
-	void init();
+
+    /** init */
+    LN_METHOD()
+	bool init();
 
 protected:
     virtual void onUpdateFrame(float elapsedSeconds) override;

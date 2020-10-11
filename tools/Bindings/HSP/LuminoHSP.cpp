@@ -26,6 +26,13 @@ double fetchVADouble_reffunc()
 {
 	if (g_leadSupport) {
 		g_leadSupport = false;
+
+		// code_getd
+		if (mpval->flag != HSPVAR_FLAG_DOUBLE) {
+			if (mpval->flag != HSPVAR_FLAG_INT) throw HSPERR_TYPE_MISMATCH;
+			return (double)(*(int*)(mpval->pt));		// intの時はdoubleに変換
+		}
+
 		return *((double*)mpval->pt);
 	}
 	else {

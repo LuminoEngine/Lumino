@@ -5231,6 +5231,73 @@ LN_FLAT_API LNResult LNUIIconSerializeHandler_Create(LNUIIconSerializeHandlerCal
 
 
 // Auto generated override handler
+using UIMessageTextAreaSerializeHandler = ln::Delegate<void(ln::UIMessageTextArea* self, ln::Serializer2* ar)>;
+
+class LNWS_UIMessageTextAreaSerializeHandler : public UIMessageTextAreaSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIMessageTextAreaSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNUIMessageTextAreaSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIMessageTextAreaSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIMessageTextAreaSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIMessageTextAreaSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNUIMessageTextAreaSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNUIMessageTextAreaSerializeHandlerCallback m_callback;
+
+    LNWS_UIMessageTextAreaSerializeHandler()
+      : UIMessageTextAreaSerializeHandler([this](ln::UIMessageTextArea* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNUIMessageTextAreaSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_UIMessageTextAreaSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNUIMessageTextAreaSerializeHandlerCallback callback)
+    {
+        if (!UIMessageTextAreaSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNUIMessageTextAreaSerializeHandler_Create(LNUIMessageTextAreaSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_UIMessageTextAreaSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
 using UILayoutPanelSerializeHandler = ln::Delegate<void(ln::UILayoutPanel* self, ln::Serializer2* ar)>;
 
 class LNWS_UILayoutPanelSerializeHandler : public UILayoutPanelSerializeHandler
@@ -10971,6 +11038,68 @@ public:
 LNUIIcon_OnSerialize_OverrideCallback LNWS_ln_UIIcon::s_LNUIIcon_OnSerialize_OverrideCallback = nullptr;
 
 
+class LNWS_ln_UIMessageTextArea : public ln::UIMessageTextArea
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIMessageTextArea_OverridePrototypes
+    {
+        ln::Ref<LNWS_UIMessageTextAreaSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNUIMessageTextArea_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIMessageTextArea_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIMessageTextArea_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIMessageTextArea_SubclassRegistrationInfo* subclassInfo() { static LNUIMessageTextArea_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIMessageTextArea()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIMessageTextArea()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNUIMessageTextArea_OnSerialize_OverrideCallback s_LNUIMessageTextArea_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNUIMessageTextArea_OnSerialize_OverrideCallback) s_LNUIMessageTextArea_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UIMessageTextArea::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIMessageTextArea::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIElement>();
+    }
+
+};
+
+LNUIMessageTextArea_OnSerialize_OverrideCallback LNWS_ln_UIMessageTextArea::s_LNUIMessageTextArea_OnSerialize_OverrideCallback = nullptr;
+
+
 class LNWS_ln_UI : public ln::UI
 {
 public:
@@ -15133,6 +15262,28 @@ LN_FLAT_API LNResult LNVisualObject_IsVisible(LNHandle visualobject, LNBool* out
 }
 
 
+LN_FLAT_API LNResult LNVisualObject_SetOpacity(LNHandle visualobject, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, visualobject)->setOpacity(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNVisualObject_GetOpacity(LNHandle visualobject, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, visualobject)->opacity());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, visualobject)->opacity());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNVisualObject_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -17952,8 +18103,53 @@ LN_FLAT_API LNResult LNUIElement_SetSizeWH(LNHandle uielement, float width, floa
 }
 
 
+LN_FLAT_API LNResult LNUIElement_SetWidth(LNHandle uielement, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setWidth(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIElement_GetWidth(LNHandle uielement, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->width());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->width());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIElement_SetHeight(LNHandle uielement, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setHeight(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIElement_GetHeight(LNHandle uielement, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->height());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->height());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNUIElement_SetMargin(LNHandle uielement, const LNThickness* margin)
 {
+    printf("LNUIElement_SetMargin: %f %f %f %f\n", margin->left, margin->top, margin->right, margin->bottom);
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setMargin(*reinterpret_cast<const ln::Thickness*>(margin)));
     LNI_FUNC_TRY_END_RETURN;
@@ -18741,6 +18937,83 @@ LNSubinstanceId LNUIIcon_GetSubinstanceId(LNHandle handle)
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIIcon, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNUIMessageTextArea_Create(LNHandle* outUIMessageTextArea)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUIMessageTextArea, LNWS_ln_UIMessageTextArea, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIMessageTextArea_SetText(LNHandle uimessagetextarea, const LNChar* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIMessageTextArea, uimessagetextarea)->setText(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIMessageTextArea_SetTextA(LNHandle uimessagetextarea, const char* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIMessageTextArea, uimessagetextarea)->setText(LNI_UTF8STRPTR_TO_STRING(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIMessageTextArea_SetTypingSpeed(LNHandle uimessagetextarea, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIMessageTextArea, uimessagetextarea)->setTypingSpeed(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIMessageTextArea_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIMessageTextArea, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNUIMessageTextArea_OnSerialize_SetOverrideCallback(LNUIMessageTextArea_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIMessageTextArea::s_LNUIMessageTextArea_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNUIMessageTextArea_SetPrototype_OnSerialize(LNHandle uimessagetextarea, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_UIMessageTextArea, uimessagetextarea)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_UIMessageTextAreaSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNUIMessageTextArea_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIMessageTextArea>()->id();
+}
+
+LN_FLAT_API void LNUIMessageTextArea_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIMessageTextArea>(), id);
+}
+
+void LNUIMessageTextArea_RegisterSubclassTypeInfo(const LNUIMessageTextArea_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIMessageTextArea>(), info->subclassId);
+        *LNWS_ln_UIMessageTextArea::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIMessageTextArea_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIMessageTextArea, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;
@@ -22350,6 +22623,29 @@ LNSubinstanceId LNUIIconSerializeHandler_GetSubinstanceId(LNHandle handle)
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_UIIconSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNUIMessageTextAreaSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIMessageTextAreaSerializeHandler>(), id);
+}
+
+void LNUIMessageTextAreaSerializeHandler_RegisterSubclassTypeInfo(const LNUIMessageTextAreaSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIMessageTextAreaSerializeHandler>(), info->subclassId);
+        *LNWS_UIMessageTextAreaSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIMessageTextAreaSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_UIMessageTextAreaSerializeHandler, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;

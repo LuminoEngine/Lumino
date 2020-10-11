@@ -86,6 +86,7 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/UI/UITextBlock.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UISprite.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIIcon.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/UIMessageTextArea.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UI.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/Layout/UILayoutPanel.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/Layout/UIGridLayout.hpp",

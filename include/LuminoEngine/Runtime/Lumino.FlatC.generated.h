@@ -594,6 +594,7 @@ typedef LNResult(*LNUIElementSerializeHandlerCallback)(LNHandle uielementseriali
 typedef LNResult(*LNUITextBlockSerializeHandlerCallback)(LNHandle uitextblockserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUISpriteSerializeHandlerCallback)(LNHandle uispriteserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIIconSerializeHandlerCallback)(LNHandle uiiconserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIMessageTextAreaSerializeHandlerCallback)(LNHandle uimessagetextareaserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUILayoutPanelSerializeHandlerCallback)(LNHandle uilayoutpanelserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIBoxLayoutSerializeHandlerCallback)(LNHandle uiboxlayoutserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIGridLayoutSerializeHandlerCallback)(LNHandle uigridlayoutserializehandler, LNHandle self, LNHandle ar);
@@ -2486,6 +2487,19 @@ LN_FLAT_API LNResult LNVisualObject_SetVisible(LNHandle visualobject, LNBool val
 */
 LN_FLAT_API LNResult LNVisualObject_IsVisible(LNHandle visualobject, LNBool* outReturn);
 
+/**
+    @brief 不透明度を設定します。(default: 1.0)
+    @param[in] visualobject : instance
+*/
+LN_FLAT_API LNResult LNVisualObject_SetOpacity(LNHandle visualobject, float value);
+
+/**
+    @brief 不透明度を取得します。
+    @param[in] visualobject : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNVisualObject_GetOpacity(LNHandle visualobject, float* outReturn);
+
 typedef LNResult(*LNVisualObject_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNVisualObject_OnSerialize_SetOverrideCallback(LNVisualObject_OnSerialize_OverrideCallback callback);
 LN_FLAT_API LNResult LNVisualObject_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
@@ -4158,6 +4172,32 @@ LN_FLAT_API LNResult LNUIElement_SetSize(LNHandle uielement, const LNSize* size)
 LN_FLAT_API LNResult LNUIElement_SetSizeWH(LNHandle uielement, float width, float height);
 
 /**
+    @brief setWidth
+    @param[in] uielement : instance
+*/
+LN_FLAT_API LNResult LNUIElement_SetWidth(LNHandle uielement, float value);
+
+/**
+    @brief width
+    @param[in] uielement : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIElement_GetWidth(LNHandle uielement, float* outReturn);
+
+/**
+    @brief setHeight
+    @param[in] uielement : instance
+*/
+LN_FLAT_API LNResult LNUIElement_SetHeight(LNHandle uielement, float value);
+
+/**
+    @brief height
+    @param[in] uielement : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIElement_GetHeight(LNHandle uielement, float* outReturn);
+
+/**
     @brief 要素の margin 値 (外側の余白) を設定します。
     @param[in] uielement : instance
 */
@@ -4598,6 +4638,52 @@ typedef struct tagLNUIIcon_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNUIIcon_RegisterSubclassTypeInfo(const LNUIIcon_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNUIIcon_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::UIMessageTextArea
+
+/**
+    @brief init
+    @param[out] outUIMessageTextArea : instance.
+*/
+LN_FLAT_API LNResult LNUIMessageTextArea_Create(LNHandle* outUIMessageTextArea);
+
+/**
+    @brief setText
+    @param[in] uimessagetextarea : instance
+*/
+LN_FLAT_API LNResult LNUIMessageTextArea_SetText(LNHandle uimessagetextarea, const LNChar* value);
+LN_FLAT_API LNResult LNUIMessageTextArea_SetTextA(LNHandle uimessagetextarea, const char* value);
+
+/**
+    @brief setTypingSpeed
+    @param[in] uimessagetextarea : instance
+*/
+LN_FLAT_API LNResult LNUIMessageTextArea_SetTypingSpeed(LNHandle uimessagetextarea, float value);
+
+typedef LNResult(*LNUIMessageTextArea_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIMessageTextArea_OnSerialize_SetOverrideCallback(LNUIMessageTextArea_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIMessageTextArea_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uimessagetextarea : instance
+*/
+LN_FLAT_API LNResult LNUIMessageTextArea_SetPrototype_OnSerialize(LNHandle uimessagetextarea, LNHandle callback);
+
+extern LN_FLAT_API int LNUIMessageTextArea_GetTypeInfoId();
+LN_FLAT_API void LNUIMessageTextArea_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIMessageTextArea_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIMessageTextArea_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIMessageTextArea_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIMessageTextArea_RegisterSubclassTypeInfo(const LNUIMessageTextArea_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIMessageTextArea_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::UI
@@ -6834,6 +6920,22 @@ typedef struct tagLNUIIconSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNUIIconSerializeHandler_RegisterSubclassTypeInfo(const LNUIIconSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNUIIconSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIMessageTextAreaSerializeHandler
+
+LN_FLAT_API LNResult LNUIMessageTextAreaSerializeHandler_Create(LNUIMessageTextAreaSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIMessageTextAreaSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIMessageTextAreaSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIMessageTextAreaSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIMessageTextAreaSerializeHandler_RegisterSubclassTypeInfo(const LNUIMessageTextAreaSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIMessageTextAreaSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // UILayoutPanelSerializeHandler

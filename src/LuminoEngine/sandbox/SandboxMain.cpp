@@ -21,7 +21,6 @@
 #include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 #include <LuminoEngine/UI/Controls/UIButton.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
-#include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
 #include <LuminoEngine/UI/Controls/UIPropertyFields.hpp>
 #include <LuminoEngine/Tilemap/Voxel.hpp>
 #include <LuminoEngine/Scene/TransformControls.hpp>
@@ -468,8 +467,8 @@ int main(int argc, char** argv)
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_MainLoop();
-		Example_MeshViewer();
-        //Example_MessageWindow();
+		//Example_MeshViewer();
+        Example_MessageWindow();
         //Example_Navigator();
         //Example_Shader();
 		//Example_SoundControl();

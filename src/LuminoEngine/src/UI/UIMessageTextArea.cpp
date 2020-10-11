@@ -6,7 +6,7 @@
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 //#include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include "UIEditableTextArea.hpp"
-#include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
+#include <LuminoEngine/UI/UIMessageTextArea.hpp>
 
 #include "../Font/TextLayoutEngine.hpp"
 #include "../Font/FontManager.hpp"
@@ -373,9 +373,10 @@ UIMessageTextArea::UIMessageTextArea()
 {
 }
 
-void UIMessageTextArea::init()
+bool UIMessageTextArea::init()
 {
-	UIElement::init(nullptr);
+    if (!UIElement::init(nullptr)) return false;
+
 	m_document = makeObject<detail::RTDocument>();
 
 
@@ -385,6 +386,8 @@ void UIMessageTextArea::init()
 	//auto r = makeObject<RTRun>();
 	//r->setText(u"Run Test");
 	//p->addInline(r);
+
+    return true;
 }
 
 void UIMessageTextArea::setText(const StringRef& value)
