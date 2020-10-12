@@ -5,6 +5,10 @@
 namespace ln {
 class RenderingContext;
 
+/**
+ * EffectResource
+ */
+LN_CLASS()
 class EffectResource
     : public AssetObject
 {

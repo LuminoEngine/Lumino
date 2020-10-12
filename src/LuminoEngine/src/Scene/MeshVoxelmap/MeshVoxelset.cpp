@@ -635,7 +635,7 @@ void MeshVoxelset::init()
 
 	auto tex = Texture2D::load(u"autotile4");
 	m_material = Material::create(tex);
-	m_material->shadingModel = ShadingModel::Unlit;
+	m_material->setShadingModel(ShadingModel::Unlit);
 	m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
 	//m_autotileSet[0] = makeObject<MeshAutoVoxelset>();
@@ -646,7 +646,7 @@ void MeshVoxelset::init()
 
 		auto tex = Texture2D::load(u"D:/Materials/Tilemap/ねくらファンタジーマップチップ素材集/マップ素材/オートタイル規格2/b_06海岸_at01.png");
 		auto material = Material::create(tex);
-		material->shadingModel = ShadingModel::Unlit;
+		material->setShadingModel(ShadingModel::Unlit);
 		material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
 		m_autotileSet[1] = makeObject<MeshAutoVoxelset>();

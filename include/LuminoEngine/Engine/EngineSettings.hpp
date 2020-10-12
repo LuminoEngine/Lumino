@@ -100,6 +100,11 @@ public:
 	static void setEngineLogFilePath(const String& filePath);
 
 
+	/**
+	 * setDeveloperToolEnabled
+	 */
+	LN_METHOD()
+	static void setDeveloperToolEnabled(bool enabled);
 
 	/** ユーザー指定のメインウィンドウのウィンドウハンドルを設定します。*/
 	static void setUserMainWindow(intptr_t value);
@@ -107,7 +112,6 @@ public:
 
     static void setStandaloneFpsControl(bool enabled);
     static void setEngineFeatures(Flags<EngineFeature> features);
-	static void setRuntimeEditorEnabled(bool enabled);
 
     static void setDefaultObjectsCreation(bool value);
     static void setUseGLFWWindowSystem(bool value);

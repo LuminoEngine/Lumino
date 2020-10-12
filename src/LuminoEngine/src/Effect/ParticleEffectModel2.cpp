@@ -149,15 +149,15 @@ void SpriteParticleGeometry::setMaterial(Material* material)
     m_material = material;
 }
 
-uint64_t SpriteParticleGeometry::calculateRendererHashKey(ParticleEmitterModel2* emitterModel) const
+uint64_t SpriteParticleGeometry::calculateRendererHashKey(ParticleEmitterModel* emitterModel) const
 {
     return reinterpret_cast<uint64_t>(m_material.get()) + static_cast<uint16_t>(emitterModel->m_geometryDirection);
 }
 
 //==============================================================================
-// ParticleEmitterModel2
+// ParticleEmitterModel
 
-ParticleEmitterModel2::ParticleEmitterModel2()
+ParticleEmitterModel::ParticleEmitterModel()
 {
     m_lifeTime = { 5.0f, 5.0f, ParticleRandomSource::Self };
     m_size = { 1.0f, 1.0f, ParticleRandomSource::Self };
@@ -165,7 +165,7 @@ ParticleEmitterModel2::ParticleEmitterModel2()
     m_crossScale = { 1.0f, 1.0f, ParticleRandomSource::Self };
 }
 
-bool ParticleEmitterModel2::init()
+bool ParticleEmitterModel::init()
 {
     if (!Object::init()) return false;
 
@@ -177,7 +177,7 @@ bool ParticleEmitterModel2::init()
     return true;
 }
 
-void ParticleEmitterModel2::serialize(Serializer2& ar)
+void ParticleEmitterModel::serialize(Serializer2& ar)
 {
     Object::serialize(ar);
     ar & makeNVP(u"maxParticles", m_spawnRate);
@@ -185,31 +185,42 @@ void ParticleEmitterModel2::serialize(Serializer2& ar)
     ar & makeNVP(u"burstCount", m_burstCount);
 }
 
-void ParticleEmitterModel2::setSpriteModule(Material* material)
+void ParticleEmitterModel::setupSpriteModule(Material* material)
 {
     auto geom = makeObject<SpriteParticleGeometry>();
     geom->setMaterial(material);
     m_geometry = geom;
 }
 
-//==============================================================================
-// ParticleModel2
+void ParticleEmitterModel::setupBoxShape(const Vector3& size)
+{
+    m_shapeType = ln::ParticleEmitterShapeType::Box;
+    m_shapeParam = size;
+}
 
-ParticleModel2::ParticleModel2()
+//==============================================================================
+// ParticleModel
+
+ParticleModel::ParticleModel()
 {
 }
 
-bool ParticleModel2::init()
+bool ParticleModel::init()
 {
     if (!Object::init()) return false;
 
-    auto emitter = makeObject<ParticleEmitterModel2>();
-    m_emitters.add(emitter);
+    //auto emitter = makeObject<ParticleEmitterModel>();
+    //m_emitters.add(emitter);
 
     return true;
 }
 
-void ParticleModel2::serialize(Serializer2& ar)
+void ParticleModel::addEmitter(ParticleEmitterModel* emitter)
+{
+    m_emitters.add(emitter);
+}
+
+void ParticleModel::serialize(Serializer2& ar)
 {
     EffectResource::serialize(ar);
     ar & makeNVP(u"emitters", m_emitters);

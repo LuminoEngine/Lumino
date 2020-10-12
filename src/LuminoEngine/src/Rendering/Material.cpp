@@ -68,7 +68,7 @@ void Material::init(Texture* mainTexture, ShadingModel shadingModel)
 {
     init();
     setMainTexture(mainTexture);
-    this->shadingModel = shadingModel;
+    m_shadingModel = shadingModel;
 }
 
 void Material::init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData)

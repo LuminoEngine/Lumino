@@ -323,7 +323,7 @@ bool RibbonRenderer::init(int maxNodes)
 
     auto m_material = Material::create();
     m_material->setMainTexture(Texture2D::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Sprite1.png"));
-    m_material->shadingModel = ShadingModel::Unlit;
+    m_material->m_shadingModel = ShadingModel::Unlit;
     m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
 

@@ -6,13 +6,15 @@
 
 namespace ln {
 class Material;
-class ParticleEmitterModel2;
+class ParticleEmitterModel;
 
 enum class ParticleGeometryType
 {
 	Sprite,
 };
 
+/** パーティクルの向く方向 */
+LN_ENUM()
 enum class ParticleGeometryDirection
 {
 	//Default,
@@ -50,7 +52,7 @@ class ParticleGeometry
 {
 public:
 	ParticleGeometryType type() const { return m_type; }
-	virtual uint64_t calculateRendererHashKey(ParticleEmitterModel2* emitterModel) const = 0;
+	virtual uint64_t calculateRendererHashKey(ParticleEmitterModel* emitterModel) const = 0;
 
 LN_CONSTRUCT_ACCESS:
 	ParticleGeometry(ParticleGeometryType type);
@@ -66,7 +68,7 @@ class SpriteParticleGeometry
 public:
 	void setMaterial(Material* material);
 	const Ref<Material>& material() const { return m_material; }
-	uint64_t calculateRendererHashKey(ParticleEmitterModel2* emitterModel) const override;
+	uint64_t calculateRendererHashKey(ParticleEmitterModel* emitterModel) const override;
 
 LN_CONSTRUCT_ACCESS:
 	SpriteParticleGeometry();
@@ -77,24 +79,70 @@ private:
 };
 
 
-class ParticleEmitterModel2
+/** ParticleEmitterModel */
+LN_CLASS()
+class ParticleEmitterModel
 	: public Object
 {
 public:
 	const Ref<ParticleGeometry>& geometry() const { return m_geometry; }
 
 
-	void setSpriteModule(Material* material);
 
 
 	/** 同時に表示できるパーティクルの最大数を設定します。(default: 100) */
+	LN_METHOD(Property)
 	void setMaxParticles(int count) { m_maxParticles = count; }
 
 	/** 1秒間に放出するパーティクルの数を設定します。(default: 1) */
+	LN_METHOD(Property)
 	void setSpawnRate(float rate) { m_spawnRate = rate; }
 
 	/** パーティクルの生存時間を設定します。(default: 5.0) */
+	LN_METHOD(Property)
 	void setLifeTime(float time) { m_lifeTime.minValue = m_lifeTime.maxValue = time; }
+
+	
+	///** setShapeType (default: Sphere) */
+	//LN_METHOD(Property)
+	//void setShapeType(ParticleEmitterShapeType value) { m_shapeType = value; }
+
+	/** setupBoxShape */
+	LN_METHOD(Property)
+	void setupBoxShape(const Vector3& size);
+
+	
+	/**  (default: 1.0) */
+	LN_METHOD(Property)
+	void setSize(float value) { m_size.set(value); }
+
+	
+	/**  (default: 0) */
+	LN_METHOD(Property)
+	void setForwardVelocityMin(float value) { m_forwardVelocity.minValue = value; }
+
+	/**  (default: 0) */
+	LN_METHOD(Property)
+	void setForwardVelocityMax(float value) { m_forwardVelocity.maxValue = value; }
+
+	/** 進行方向に対するスケール値。通常、Z軸。ParticleGeometryDirection::ToView では Y scale (default: 1.0) */
+	LN_METHOD(Property)
+	void setForwardScale(float value) { m_forwardScale.set(value); }
+	
+
+
+
+	/**  (default: ToView) */
+	LN_METHOD(Property)
+	void setGeometryDirection(ParticleGeometryDirection value) { m_geometryDirection = value; }
+
+
+
+	/** setupSpriteModule */
+	LN_METHOD()
+	void setupSpriteModule(Material* material);
+
+
 
 	// パーティクルのライフタイムを秒単位で
 	RadomRangeValue<float> m_lifeTime;
@@ -144,32 +192,53 @@ protected:
 	void serialize(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
-	ParticleEmitterModel2();
+	ParticleEmitterModel();
+
+	/** init */
+	LN_METHOD()
 	bool init();
 
 private:
 	Ref<ParticleGeometry> m_geometry;
 };
 
-class ParticleModel2
+/** ParticleModel */
+LN_CLASS()
+class ParticleModel
 	: public EffectResource
 {
 public:
+	/** setLoop */
+	LN_METHOD(Property)
+	void setLoop(bool value) { m_loop = true; }
+
+	/** setLoop */
+	LN_METHOD(Property)
+	bool isLoop() const { return m_loop; }
+	
+	/** setLoop */
+	LN_METHOD()
+	void addEmitter(ParticleEmitterModel* emitter);
+
+
 	bool m_loop = true;
 	int seed = 0;
 
-	const List<Ref<ParticleEmitterModel2>>& emitters() const { return m_emitters; }
+	const List<Ref<ParticleEmitterModel>>& emitters() const { return m_emitters; }
 
 protected:
 	void serialize(Serializer2& ar) override;
 
 
 LN_CONSTRUCT_ACCESS:
-	ParticleModel2();
+	ParticleModel();
+
+	/** init */
+	LN_METHOD()
 	bool init();
 
 private:
-	List<Ref<ParticleEmitterModel2>> m_emitters;
+	List<Ref<ParticleEmitterModel>> m_emitters;
 };
 
 } // namespace ln

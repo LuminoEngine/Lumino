@@ -260,7 +260,7 @@ void RenderingManager::init(const Settings& settings)
     }
     {
         auto material = Material::create();
-        material->shadingModel = ShadingModel::Unlit;
+        material->setShadingModel(ShadingModel::Unlit);
         m_builtinMaterials[(int)BuiltinMaterial::Unlit] = material;
     }
 

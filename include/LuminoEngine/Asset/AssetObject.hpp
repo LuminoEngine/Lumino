@@ -171,7 +171,6 @@ LN_CLASS()
 class AssetImportSettings
     : public Object
 {
-    LN_OBJECT;
 public:
     void setUseCache(bool value) { m_useCache = value; }
     bool useCache() const { return m_useCache; }

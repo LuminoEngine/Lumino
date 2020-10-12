@@ -159,7 +159,10 @@ public:
 			{
 			case VariantType::Null:
 			{
-				LN_NOTIMPLEMENTED();
+				//LN_NOTIMPLEMENTED();
+				//Ref<Object> null = nullptr;
+				//ar.process(null);
+				ar.processNull();
 				break;
 			}
 			case VariantType::Bool:

@@ -98,13 +98,11 @@ set(LN_SOURCES_Visual
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/CameraComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/LightComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/ParticleEmitterComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SpriteComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/VisualComponent.hpp
     src/Visual/Internal.hpp
     src/Visual/CameraComponent.cpp
     src/Visual/LightComponent.cpp
-    src/Visual/ParticleEmitterComponent.cpp
     src/Visual/SpriteComponent.cpp
     src/Visual/VisualComponent.cpp
     src/Visual/VisualManager.cpp
@@ -119,6 +117,7 @@ file(GLOB LN_SOURCES_Scene_MeshTilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Sce
 file(GLOB LN_SOURCES_Scene_MeshVoxelmap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/MeshVoxelmap/*.hpp src/Scene/MeshVoxelmap/*.cpp src/Scene/MeshVoxelmap/*.hpp)
 file(GLOB LN_SOURCES_Scene_Reflection ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Reflection/*.hpp src/Scene/Reflection/*.cpp src/Scene/Reflection/*.hpp)
 file(GLOB LN_SOURCES_Scene_Physics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Physics/*.hpp src/Scene/Physics/*.cpp src/Scene/Physics/*.hpp)
+file(GLOB LN_SOURCES_Scene_Effect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Effect/*.hpp src/Scene/Effect/*.cpp src/Scene/Effect/*.hpp)
 
 
 file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
@@ -208,6 +207,7 @@ source_group("Scene\\MeshTilemap" FILES ${LN_SOURCES_Scene_MeshTilemap})
 source_group("Scene\\MeshVoxelmap" FILES ${LN_SOURCES_Scene_MeshVoxelmap})
 source_group("Scene\\Reflection" FILES ${LN_SOURCES_Scene_Reflection})
 source_group("Scene\\Physics" FILES ${LN_SOURCES_Scene_Physics})
+source_group("Scene\\Effect" FILES ${LN_SOURCES_Scene_Effect})
 source_group("UI" FILES ${LN_SOURCES_UI})
 source_group("UI\\Controls" FILES ${LN_SOURCES_UI_Controls})
 source_group("UI\\Layout" FILES ${LN_SOURCES_UI_Layout})
@@ -252,6 +252,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Scene_MeshVoxelmap}
     ${LN_SOURCES_Scene_Reflection}
     ${LN_SOURCES_Scene_Physics}
+    ${LN_SOURCES_Scene_Effect}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_UI_Controls}
     ${LN_SOURCES_UI_Layout}

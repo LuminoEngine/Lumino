@@ -2,9 +2,9 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
-#include "../Effect/ParticleEffectInstance.hpp"
+#include <LuminoEngine/Scene/Effect/ParticleEmitterComponent.hpp>
+#include "../../Effect/ParticleEffectInstance.hpp"
 
 namespace ln {
 
@@ -66,7 +66,7 @@ ParticleEmitterComponent2::ParticleEmitterComponent2()
 {
 }
 
-void ParticleEmitterComponent2::init(ParticleModel2* model)
+void ParticleEmitterComponent2::init(ParticleModel* model)
 {
 	if (LN_REQUIRE(model)) return;
 
@@ -74,6 +74,8 @@ void ParticleEmitterComponent2::init(ParticleModel2* model)
 	//m_model = model;
 	//m_model->commit();
 	m_instance = makeObject<detail::ParticleInstance2>(model);
+
+	setBlendMode(BlendMode::Alpha);
 }
 
 void ParticleEmitterComponent2::onUpdate(float deltaTime)

@@ -12,7 +12,7 @@ public:
 
 	App_Experiment_Editor()
 	{
-		EngineSettings::setRuntimeEditorEnabled(true);
+		EngineSettings::setDebugToolEnabled(true);
 	}
 
     virtual void onInit() override

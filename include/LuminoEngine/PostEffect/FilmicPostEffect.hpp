@@ -92,7 +92,7 @@ public:
 	float m_toeStrength = 0.2f;
 	float m_toeNumerator = 0.02;
 	float m_toeDenominator = 0.3;
-	float m_exposure = 5.0f;
+	float m_exposure = 0.0f;
 
 
 protected:

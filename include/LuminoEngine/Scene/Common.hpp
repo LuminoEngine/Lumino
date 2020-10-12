@@ -7,6 +7,7 @@
 namespace ln {
 class StaticMeshModel;
 class StaticMeshComponent;
+class ParticleEmitterComponent2;
 
 class WorldObject;
 class World;

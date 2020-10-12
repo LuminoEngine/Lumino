@@ -152,7 +152,7 @@ class ParticleInstance2
 	: public ln::Object
 {
 public:
-	const Ref<ParticleModel2>& model() const { return m_model; }
+	const Ref<ParticleModel>& model() const { return m_model; }
 	const Matrix& worldTransform() const { return m_worldTransform; }
 	Random& rand() { return m_rand; }
 	const List<Ref<ParticleEmitterInstance2>> emitters() const { return m_emitterInstances; }
@@ -164,14 +164,14 @@ public:
 
 	void render(RenderingContext* context);
 
-	ParticleRenderer2* acquireRenderer(ParticleEmitterModel2* emitterModel);
+	ParticleRenderer2* acquireRenderer(ParticleEmitterModel* emitterModel);
 
 LN_CONSTRUCT_ACCESS:
 	ParticleInstance2();
-	bool init(ParticleModel2* model);
+	bool init(ParticleModel* model);
 
 private:
-	Ref<ParticleModel2> m_model;
+	Ref<ParticleModel> m_model;
 	Matrix m_worldTransform;
 	List<Ref<ParticleEmitterInstance2>> m_emitterInstances;
 	List<Ref<ParticleRenderer2>> m_renderers;
@@ -182,7 +182,7 @@ class ParticleEmitterInstance2
 	: public ln::Object
 {
 public:
-	const ParticleEmitterModel2* emitterModel() const { return m_emitterModel; }
+	const ParticleEmitterModel* emitterModel() const { return m_emitterModel; }
 
 
 	float makeRandom(detail::ParticleData2* data, float minValue, float maxValue, ParticleRandomSource source) const;
@@ -200,7 +200,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	ParticleEmitterInstance2();
-	bool init(ParticleInstance2* particleInstance, ParticleEmitterModel2* emitterModel);
+	bool init(ParticleInstance2* particleInstance, ParticleEmitterModel* emitterModel);
 
 private:
 	bool isLoop() const { return m_particleInstance->model()->m_loop; }
@@ -213,7 +213,7 @@ private:
 	void simulateParticle(ParticleData2* particle, float deltaTime);
 
 	ParticleInstance2* m_particleInstance;
-	ParticleEmitterModel2* m_emitterModel;
+	ParticleEmitterModel* m_emitterModel;
 	ParticleRenderer2* m_renderer;
 
 	// Sub-emitter がある場合、粒子の数だけ作られる
@@ -241,7 +241,7 @@ class TrailParticleModuleInstance
 	: public ln::Object
 {
 public:
-	ParticleEmitterModel2* m_emitterModel = nullptr;
+	ParticleEmitterModel* m_emitterModel = nullptr;
 	//float m_trailSeconds = 1.0f;	// input param
 	float m_trailRateTime = 0;	// 1s間に生成できる Node 数
 
@@ -273,7 +273,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	TrailParticleModuleInstance();
-	bool init(ParticleEmitterInstance2* emitterInstance, ParticleEmitterModel2* emitterModel);
+	bool init(ParticleEmitterInstance2* emitterInstance, ParticleEmitterModel* emitterModel);
 
 private:
 

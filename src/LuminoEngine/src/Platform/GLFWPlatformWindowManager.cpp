@@ -252,13 +252,16 @@ Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const 
 		glfwWindowHint(GLFW_DECORATED, GL_TRUE);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// for NSGL(macOS)
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);	// for NSGL(macOS)
+
+		GLFWwindow* sharedWindow = (sharedContext) ? sharedContext->mainWindow()->glfwWindow() : nullptr;
         if (!windowManager->manager()->glfwWithOpenGLAPI()) {
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+			sharedWindow = nullptr;
 		}
+
 		m_glfwWindow = glfwCreateWindow(
 			settings.clientSize.width, settings.clientSize.height,
-			settings.title.toStdString().c_str(), nullptr,
-			(sharedContext) ? sharedContext->mainWindow()->glfwWindow() : nullptr);
+			settings.title.toStdString().c_str(), nullptr, sharedWindow);
 		if (LN_ENSURE(m_glfwWindow)) return false;
 
 #if defined(LN_OS_WIN32)

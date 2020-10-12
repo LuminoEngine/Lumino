@@ -284,6 +284,23 @@ typedef enum tagLNDepthBufferFormat
 } LNDepthBufferFormat;
 
 /**
+    @brief ShadingModel
+*/
+typedef enum tagLNShadingModel
+{
+    /**
+        @brief Default
+    */
+    LN_SHADING_MODEL_DEFAULT = 0,
+
+    /**
+        @brief Unlit
+    */
+    LN_SHADING_MODEL_UNLIT = 1,
+
+} LNShadingModel;
+
+/**
     @brief 背景のクリア方法
 */
 typedef enum tagLNSceneClearMode
@@ -341,6 +358,55 @@ typedef enum tagLNHierarchicalAnimationMode
     LN_HIERARCHICAL_ANIMATION_MODE_DISABLE_TRANSLATION = 3,
 
 } LNHierarchicalAnimationMode;
+
+/**
+    @brief ParticleEmitterShapeType
+*/
+typedef enum tagLNParticleEmitterShapeType
+{
+    /**
+        @brief 
+    */
+    LN_PARTICLE_EMITTER_SHAPE_TYPE_SPHERE = 0,
+
+    /**
+        @brief パーティクルを球状に放出します。
+    */
+    LN_PARTICLE_EMITTER_SHAPE_TYPE_CONE = 1,
+
+    /**
+        @brief パーティクルをコーン型に放出します。
+    */
+    LN_PARTICLE_EMITTER_SHAPE_TYPE_BOX = 2,
+
+} LNParticleEmitterShapeType;
+
+/**
+    @brief パーティクルの向く方向
+*/
+typedef enum tagLNParticleGeometryDirection
+{
+    /**
+        @brief 常に視点方向を向く
+    */
+    LN_PARTICLE_GEOMETRY_DIRECTION_TO_VIEW = 0,
+
+    /**
+        @brief 進行方向を軸に、表面 (Y+) が視点から見えるようにする
+    */
+    LN_PARTICLE_GEOMETRY_DIRECTION_TOP = 1,
+
+    /**
+        @brief Y 軸方向に直立し、カメラの方を向きます。
+    */
+    LN_PARTICLE_GEOMETRY_DIRECTION_VERTICAL_BILLBOARD = 2,
+
+    /**
+        @brief XZ 軸上の「床」平面と平行になります。
+    */
+    LN_PARTICLE_GEOMETRY_DIRECTION_HORIZONTAL_BILLBOARD = 3,
+
+} LNParticleGeometryDirection;
 
 /**
     @brief レベル遷移時の画面エフェクトの種類
@@ -554,6 +620,8 @@ typedef LNResult(*LNVariantSerializeHandlerCallback)(LNHandle variantserializeha
 typedef LNResult(*LNZVTestClass1SerializeHandlerCallback)(LNHandle zvtestclass1serializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNZVTestEventArgs1SerializeHandlerCallback)(LNHandle zvtesteventargs1serializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNSerializer2SerializeHandlerCallback)(LNHandle serializer2serializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNAssetObjectSerializeHandlerCallback)(LNHandle assetobjectserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNAssetImportSettingsSerializeHandlerCallback)(LNHandle assetimportsettingsserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNAssetModelSerializeHandlerCallback)(LNHandle assetmodelserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNTextureSerializeHandlerCallback)(LNHandle textureserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNTexture2DSerializeHandlerCallback)(LNHandle texture2dserializehandler, LNHandle self, LNHandle ar);
@@ -567,6 +635,9 @@ typedef LNResult(*LNCollisionShapeSerializeHandlerCallback)(LNHandle collisionsh
 typedef LNResult(*LNBoxCollisionShapeSerializeHandlerCallback)(LNHandle boxcollisionshapeserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNAnimationClipSerializeHandlerCallback)(LNHandle animationclipserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNAnimationStateSerializeHandlerCallback)(LNHandle animationstateserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNEffectResourceSerializeHandlerCallback)(LNHandle effectresourceserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNParticleEmitterModelSerializeHandlerCallback)(LNHandle particleemittermodelserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNParticleModelSerializeHandlerCallback)(LNHandle particlemodelserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNComponentSerializeHandlerCallback)(LNHandle componentserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNVisualComponentSerializeHandlerCallback)(LNHandle visualcomponentserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNSpriteComponentSerializeHandlerCallback)(LNHandle spritecomponentserializehandler, LNHandle self, LNHandle ar);
@@ -614,6 +685,9 @@ typedef LNResult(*LNStaticMeshComponentSerializeHandlerCallback)(LNHandle static
 typedef LNResult(*LNSkinnedMeshComponentSerializeHandlerCallback)(LNHandle skinnedmeshcomponentserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNCollisionSerializeHandlerCallback)(LNHandle collisionserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNTriggerBodyComponentSerializeHandlerCallback)(LNHandle triggerbodycomponentserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNParticleEmitterSerializeHandlerCallback)(LNHandle particleemitterserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNParticleEmitterPreUpdateHandlerCallback)(LNHandle particleemitterpreupdatehandler, LNHandle self);
+typedef LNResult(*LNParticleEmitterUpdateHandlerCallback)(LNHandle particleemitterupdatehandler, LNHandle self, float elapsedSeconds);
 typedef LNResult(*LNLevelSerializeHandlerCallback)(LNHandle levelserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNLevelStartHandlerCallback)(LNHandle levelstarthandler, LNHandle self);
 typedef LNResult(*LNLevelStopHandlerCallback)(LNHandle levelstophandler, LNHandle self);
@@ -1366,6 +1440,60 @@ extern LN_FLAT_API void LNSerializer2_RegisterSubclassTypeInfo(const LNSerialize
 extern LN_FLAT_API LNSubinstanceId LNSerializer2_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// ln::AssetObject
+
+typedef LNResult(*LNAssetObject_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNAssetObject_OnSerialize_SetOverrideCallback(LNAssetObject_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNAssetObject_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] assetobject : instance
+*/
+LN_FLAT_API LNResult LNAssetObject_SetPrototype_OnSerialize(LNHandle assetobject, LNHandle callback);
+
+extern LN_FLAT_API int LNAssetObject_GetTypeInfoId();
+LN_FLAT_API void LNAssetObject_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNAssetObject_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNAssetObject_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNAssetObject_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNAssetObject_RegisterSubclassTypeInfo(const LNAssetObject_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNAssetObject_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::AssetImportSettings
+
+typedef LNResult(*LNAssetImportSettings_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNAssetImportSettings_OnSerialize_SetOverrideCallback(LNAssetImportSettings_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNAssetImportSettings_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] assetimportsettings : instance
+*/
+LN_FLAT_API LNResult LNAssetImportSettings_SetPrototype_OnSerialize(LNHandle assetimportsettings, LNHandle callback);
+
+extern LN_FLAT_API int LNAssetImportSettings_GetTypeInfoId();
+LN_FLAT_API void LNAssetImportSettings_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNAssetImportSettings_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNAssetImportSettings_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNAssetImportSettings_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNAssetImportSettings_RegisterSubclassTypeInfo(const LNAssetImportSettings_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNAssetImportSettings_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // ln::AssetModel
 
 /**
@@ -1638,8 +1766,8 @@ extern LN_FLAT_API LNSubinstanceId LNTexture2D_GetSubinstanceId(LNHandle handle)
     @brief load
     @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
-LN_FLAT_API LNResult LNShader_Load(const LNChar* filePath, LNHandle* outReturn);
-LN_FLAT_API LNResult LNShader_LoadA(const char* filePath, LNHandle* outReturn);
+LN_FLAT_API LNResult LNShader_Load(const LNChar* filePath, LNHandle settings, LNHandle* outReturn);
+LN_FLAT_API LNResult LNShader_LoadA(const char* filePath, LNHandle settings, LNHandle* outReturn);
 
 /**
     @brief 浮動小数点値を設定します。
@@ -1715,6 +1843,38 @@ extern LN_FLAT_API LNSubinstanceId LNRenderView_GetSubinstanceId(LNHandle handle
 
 //==============================================================================
 // ln::Material
+
+/**
+    @brief init
+    @param[out] outMaterial : instance.
+*/
+LN_FLAT_API LNResult LNMaterial_Create(LNHandle* outMaterial);
+
+/**
+    @brief mainTexture
+    @param[in] material : instance
+*/
+LN_FLAT_API LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle value);
+
+/**
+    @brief mainTexture
+    @param[in] material : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNMaterial_GetMainTexture(LNHandle material, LNHandle* outReturn);
+
+/**
+    @brief mainTexture
+    @param[in] material : instance
+*/
+LN_FLAT_API LNResult LNMaterial_SetShadingModel(LNHandle material, LNShadingModel value);
+
+/**
+    @brief mainTexture
+    @param[in] material : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNMaterial_GetShadingModel(LNHandle material, LNShadingModel* outReturn);
 
 /**
     @brief shader
@@ -2021,6 +2181,178 @@ typedef struct tagLNAnimationState_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNAnimationState_RegisterSubclassTypeInfo(const LNAnimationState_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNAnimationState_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::EffectResource
+
+typedef LNResult(*LNEffectResource_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNEffectResource_OnSerialize_SetOverrideCallback(LNEffectResource_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNEffectResource_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] effectresource : instance
+*/
+LN_FLAT_API LNResult LNEffectResource_SetPrototype_OnSerialize(LNHandle effectresource, LNHandle callback);
+
+extern LN_FLAT_API int LNEffectResource_GetTypeInfoId();
+LN_FLAT_API void LNEffectResource_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNEffectResource_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNEffectResource_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNEffectResource_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNEffectResource_RegisterSubclassTypeInfo(const LNEffectResource_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNEffectResource_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::ParticleEmitterModel
+
+/**
+    @brief init
+    @param[out] outParticleEmitterModel : instance.
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_Create(LNHandle* outParticleEmitterModel);
+
+/**
+    @brief 同時に表示できるパーティクルの最大数を設定します。(default: 100)
+    @param[in] particleemittermodel : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_SetMaxParticles(LNHandle particleemittermodel, int count);
+
+/**
+    @brief 1秒間に放出するパーティクルの数を設定します。(default: 1)
+    @param[in] particleemittermodel : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_SetSpawnRate(LNHandle particleemittermodel, float rate);
+
+/**
+    @brief パーティクルの生存時間を設定します。(default: 5.0)
+    @param[in] particleemittermodel : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_SetLifeTime(LNHandle particleemittermodel, float time);
+
+/**
+    @brief setupBoxShape
+    @param[in] particleemittermodel : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_SetupBoxShape(LNHandle particleemittermodel, const LNVector3* size);
+
+/**
+    @brief (default: 1.0)
+    @param[in] particleemittermodel : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_SetSize(LNHandle particleemittermodel, float value);
+
+/**
+    @brief (default: 0)
+    @param[in] particleemittermodel : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_SetForwardVelocityMin(LNHandle particleemittermodel, float value);
+
+/**
+    @brief (default: 0)
+    @param[in] particleemittermodel : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_SetForwardVelocityMax(LNHandle particleemittermodel, float value);
+
+/**
+    @brief 進行方向に対するスケール値。通常、Z軸。ParticleGeometryDirection::ToView では Y scale (default: 1.0)
+    @param[in] particleemittermodel : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_SetForwardScale(LNHandle particleemittermodel, float value);
+
+/**
+    @brief (default: ToView)
+    @param[in] particleemittermodel : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_SetGeometryDirection(LNHandle particleemittermodel, LNParticleGeometryDirection value);
+
+/**
+    @brief setupSpriteModule
+    @param[in] particleemittermodel : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_SetupSpriteModule(LNHandle particleemittermodel, LNHandle material);
+
+typedef LNResult(*LNParticleEmitterModel_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNParticleEmitterModel_OnSerialize_SetOverrideCallback(LNParticleEmitterModel_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNParticleEmitterModel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] particleemittermodel : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_SetPrototype_OnSerialize(LNHandle particleemittermodel, LNHandle callback);
+
+extern LN_FLAT_API int LNParticleEmitterModel_GetTypeInfoId();
+LN_FLAT_API void LNParticleEmitterModel_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNParticleEmitterModel_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNParticleEmitterModel_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNParticleEmitterModel_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNParticleEmitterModel_RegisterSubclassTypeInfo(const LNParticleEmitterModel_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNParticleEmitterModel_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::ParticleModel
+
+/**
+    @brief init
+    @param[out] outParticleModel : instance.
+*/
+LN_FLAT_API LNResult LNParticleModel_Create(LNHandle* outParticleModel);
+
+/**
+    @brief setLoop
+    @param[in] particlemodel : instance
+*/
+LN_FLAT_API LNResult LNParticleModel_SetLoop(LNHandle particlemodel, LNBool value);
+
+/**
+    @brief setLoop
+    @param[in] particlemodel : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNParticleModel_IsLoop(LNHandle particlemodel, LNBool* outReturn);
+
+/**
+    @brief setLoop
+    @param[in] particlemodel : instance
+*/
+LN_FLAT_API LNResult LNParticleModel_AddEmitter(LNHandle particlemodel, LNHandle emitter);
+
+typedef LNResult(*LNParticleModel_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNParticleModel_OnSerialize_SetOverrideCallback(LNParticleModel_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNParticleModel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] particlemodel : instance
+*/
+LN_FLAT_API LNResult LNParticleModel_SetPrototype_OnSerialize(LNHandle particlemodel, LNHandle callback);
+
+extern LN_FLAT_API int LNParticleModel_GetTypeInfoId();
+LN_FLAT_API void LNParticleModel_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNParticleModel_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNParticleModel_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNParticleModel_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNParticleModel_RegisterSubclassTypeInfo(const LNParticleModel_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNParticleModel_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::Component
@@ -3768,6 +4100,59 @@ typedef struct tagLNTriggerBodyComponent_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNTriggerBodyComponent_RegisterSubclassTypeInfo(const LNTriggerBodyComponent_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNTriggerBodyComponent_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::ParticleEmitter
+
+/**
+    @brief init
+    @param[out] outParticleEmitter : instance.
+*/
+LN_FLAT_API LNResult LNParticleEmitter_Create(LNHandle model, LNHandle* outParticleEmitter);
+
+typedef LNResult(*LNParticleEmitter_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNParticleEmitter_OnSerialize_SetOverrideCallback(LNParticleEmitter_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNParticleEmitter_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+typedef LNResult(*LNParticleEmitter_OnPreUpdate_OverrideCallback)(LNHandle worldobject);
+LN_FLAT_API LNResult LNParticleEmitter_OnPreUpdate_SetOverrideCallback(LNParticleEmitter_OnPreUpdate_OverrideCallback callback);
+LN_FLAT_API LNResult LNParticleEmitter_OnPreUpdate_CallOverrideBase(LNHandle worldobject);
+typedef LNResult(*LNParticleEmitter_OnUpdate_OverrideCallback)(LNHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LNResult LNParticleEmitter_OnUpdate_SetOverrideCallback(LNParticleEmitter_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LNResult LNParticleEmitter_OnUpdate_CallOverrideBase(LNHandle worldobject, float elapsedSeconds);
+
+/**
+    @brief 
+    @param[in] particleemitter : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitter_SetPrototype_OnSerialize(LNHandle particleemitter, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] particleemitter : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitter_SetPrototype_OnPreUpdate(LNHandle particleemitter, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] particleemitter : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitter_SetPrototype_OnUpdate(LNHandle particleemitter, LNHandle callback);
+
+extern LN_FLAT_API int LNParticleEmitter_GetTypeInfoId();
+LN_FLAT_API void LNParticleEmitter_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNParticleEmitter_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNParticleEmitter_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+    LNParticleEmitter_OnPreUpdate_OverrideCallback OnPreUpdate_OverrideFunc;
+    LNParticleEmitter_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
+
+} LNParticleEmitter_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNParticleEmitter_RegisterSubclassTypeInfo(const LNParticleEmitter_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNParticleEmitter_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::Scene
@@ -5556,6 +5941,11 @@ LN_FLAT_API LNResult LNEngineSettings_SetEngineLogEnabled(LNBool enabled);
 LN_FLAT_API LNResult LNEngineSettings_SetEngineLogFilePath(const LNChar* filePath);
 LN_FLAT_API LNResult LNEngineSettings_SetEngineLogFilePathA(const char* filePath);
 
+/**
+    @brief setDeveloperToolEnabled
+*/
+LN_FLAT_API LNResult LNEngineSettings_SetDeveloperToolEnabled(LNBool enabled);
+
 
 //==============================================================================
 // ln::Engine
@@ -5815,6 +6205,38 @@ extern LN_FLAT_API void LNSerializer2SerializeHandler_RegisterSubclassTypeInfo(c
 extern LN_FLAT_API LNSubinstanceId LNSerializer2SerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// AssetObjectSerializeHandler
+
+LN_FLAT_API LNResult LNAssetObjectSerializeHandler_Create(LNAssetObjectSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNAssetObjectSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNAssetObjectSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNAssetObjectSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNAssetObjectSerializeHandler_RegisterSubclassTypeInfo(const LNAssetObjectSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNAssetObjectSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// AssetImportSettingsSerializeHandler
+
+LN_FLAT_API LNResult LNAssetImportSettingsSerializeHandler_Create(LNAssetImportSettingsSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNAssetImportSettingsSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNAssetImportSettingsSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNAssetImportSettingsSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNAssetImportSettingsSerializeHandler_RegisterSubclassTypeInfo(const LNAssetImportSettingsSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNAssetImportSettingsSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // AssetModelSerializeHandler
 
 LN_FLAT_API LNResult LNAssetModelSerializeHandler_Create(LNAssetModelSerializeHandlerCallback callback, LNHandle* outDelegate);
@@ -6021,6 +6443,54 @@ typedef struct tagLNAnimationStateSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNAnimationStateSerializeHandler_RegisterSubclassTypeInfo(const LNAnimationStateSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNAnimationStateSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// EffectResourceSerializeHandler
+
+LN_FLAT_API LNResult LNEffectResourceSerializeHandler_Create(LNEffectResourceSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNEffectResourceSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNEffectResourceSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNEffectResourceSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNEffectResourceSerializeHandler_RegisterSubclassTypeInfo(const LNEffectResourceSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNEffectResourceSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ParticleEmitterModelSerializeHandler
+
+LN_FLAT_API LNResult LNParticleEmitterModelSerializeHandler_Create(LNParticleEmitterModelSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNParticleEmitterModelSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNParticleEmitterModelSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNParticleEmitterModelSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNParticleEmitterModelSerializeHandler_RegisterSubclassTypeInfo(const LNParticleEmitterModelSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNParticleEmitterModelSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ParticleModelSerializeHandler
+
+LN_FLAT_API LNResult LNParticleModelSerializeHandler_Create(LNParticleModelSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNParticleModelSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNParticleModelSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNParticleModelSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNParticleModelSerializeHandler_RegisterSubclassTypeInfo(const LNParticleModelSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNParticleModelSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ComponentSerializeHandler
@@ -6773,6 +7243,54 @@ typedef struct tagLNTriggerBodyComponentSerializeHandler_SubclassRegistrationInf
 
 extern LN_FLAT_API void LNTriggerBodyComponentSerializeHandler_RegisterSubclassTypeInfo(const LNTriggerBodyComponentSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNTriggerBodyComponentSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ParticleEmitterSerializeHandler
+
+LN_FLAT_API LNResult LNParticleEmitterSerializeHandler_Create(LNParticleEmitterSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNParticleEmitterSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNParticleEmitterSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNParticleEmitterSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNParticleEmitterSerializeHandler_RegisterSubclassTypeInfo(const LNParticleEmitterSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNParticleEmitterSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ParticleEmitterPreUpdateHandler
+
+LN_FLAT_API LNResult LNParticleEmitterPreUpdateHandler_Create(LNParticleEmitterPreUpdateHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNParticleEmitterPreUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNParticleEmitterPreUpdateHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNParticleEmitterPreUpdateHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNParticleEmitterPreUpdateHandler_RegisterSubclassTypeInfo(const LNParticleEmitterPreUpdateHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNParticleEmitterPreUpdateHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ParticleEmitterUpdateHandler
+
+LN_FLAT_API LNResult LNParticleEmitterUpdateHandler_Create(LNParticleEmitterUpdateHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNParticleEmitterUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNParticleEmitterUpdateHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNParticleEmitterUpdateHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNParticleEmitterUpdateHandler_RegisterSubclassTypeInfo(const LNParticleEmitterUpdateHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNParticleEmitterUpdateHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // LevelSerializeHandler

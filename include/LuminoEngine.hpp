@@ -95,7 +95,8 @@
 #include "LuminoEngine/Scene/Mesh/SkinnedMesh.hpp"
 #include "LuminoEngine/Scene/Shapes/MeshPrimitives.hpp"
 #include "LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp"
-#include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
+#include "LuminoEngine/Scene/Effect/ParticleEmitterComponent.hpp"
+#include "LuminoEngine/Scene/Effect/ParticleEmitter.hpp"
 
 #include "LuminoEngine/Scene/Level.hpp"
 #include "LuminoEngine/Scene/Scene.hpp"

@@ -82,7 +82,7 @@ ShadingModel RenderStage::getShadingModelFinal(const Material* finalMaterial) co
 		return geometryStageParameters->shadingModel.value();
 
 	//  specified meshObj->getMaterial(0)->setXXXX() etc...
-	return finalMaterial->shadingModel;
+	return finalMaterial->shadingModel();
 }
 
 BlendMode RenderStage::getBlendModeFinal(const Material* finalMaterial) const

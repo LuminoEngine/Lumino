@@ -8,9 +8,14 @@
 namespace ln {
 
 // Note: ShadingModel は組み込みの SurfaceShader を選択するもの。Unlit にしても陰はつく。
+/** ShadingModel */
+LN_ENUM()
 enum class ShadingModel : uint8_t
 {
+	/** Default */
 	Default,
+
+	/** Unlit */
 	Unlit,
 };
 

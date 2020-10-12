@@ -18,7 +18,6 @@
 #include "../src/Font/FontCore.hpp"
 #include "../src/Asset/AssetArchive.hpp"
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
-#include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 #include <LuminoEngine/UI/Controls/UIButton.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include <LuminoEngine/UI/Controls/UIPropertyFields.hpp>
@@ -476,7 +475,7 @@ int main(int argc, char** argv)
         //Example_UIControls();
 		//Example_Tilemap();
         //Experiment_CharacterController();
-        Experiment_Editor();
+        //Experiment_Editor();
         //Experiment_MeshCollider();
         //Experiment_Reflector();
         //Experiment_Scripting();
@@ -487,7 +486,7 @@ int main(int argc, char** argv)
         //Sandbox_GridListBox();
 		//Sandbox_MeshTilemap();
         //Sandbox_Physics();
-        //Sandbox_Particle();
+        Sandbox_Particle();
         //Sandbox_PostEffect();
         //Sandbox_Sky();
 		//Tutorial_Sandbox();

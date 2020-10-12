@@ -1,7 +1,6 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/PostEffect/SSRPostEffect.hpp>
-#include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 using namespace ln;
 
 class App_Experiment_SSR : public Application
@@ -126,7 +125,7 @@ class App_Experiment_SSR : public Application
         //li->setPosition(0, 0.1, 0);
 
 #if 0	// 雨
-        auto particleModel = makeObject<ParticleModel2>();
+        auto particleModel = makeObject<ParticleModel>();
         auto m1 = particleModel->emitters()[0];
         m1->m_maxParticles = 10000;
         m1->setSpawnRate(1000);

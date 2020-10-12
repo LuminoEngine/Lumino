@@ -32,7 +32,12 @@ public:
 //	static const String MaterialTextureParameter;
 
 public:
+	/** mainTexture */
+	LN_METHOD(Property)
 	void setMainTexture(Texture* value);
+
+	/** mainTexture */
+	LN_METHOD(Property)
 	Texture* mainTexture() const;
 
 
@@ -49,7 +54,14 @@ public:
 	void setEmissive(const Color& value);
 
 
+	
+	/** mainTexture */
+	LN_METHOD(Property)
+	void setShadingModel(ShadingModel value) { m_shadingModel = value; }
 
+	/** mainTexture */
+	LN_METHOD(Property)
+	ShadingModel shadingModel() const { return m_shadingModel; }
 	
     /** shader */
 	LN_METHOD(Property)
@@ -58,6 +70,8 @@ public:
 	/** shader */
 	LN_METHOD(Property)
 	Shader* shader() const;
+
+
 
 	/** 整数値を設定します。 */
 	void setInt(const StringRef& name, int value);
@@ -89,7 +103,7 @@ private:
 	Optional<bool>			depthWriteEnabled;
 
 public:
-	ShadingModel			shadingModel = ShadingModel::Default;
+	ShadingModel			m_shadingModel = ShadingModel::Default;
 
 	void setBlendMode(Optional<BlendMode> mode);
 	Optional<BlendMode> getBlendMode() const { return blendMode; }
@@ -107,7 +121,11 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Material();
 	virtual ~Material();
+
+	/** init */
+	LN_METHOD()
 	void init();
+
 	void init(Texture* mainTexture);
 	void init(Texture* mainTexture, ShadingModel shadingModel);
 	void init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData);

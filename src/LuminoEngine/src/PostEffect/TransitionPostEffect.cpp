@@ -98,7 +98,7 @@ bool TransitionPostEffectInstance::init(TransitionPostEffect* owner)
     m_withMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TransitionEffectWithMask.fx"));
     
     m_copyMaterial = makeObject<Material>();
-    m_copyMaterial->shadingModel = ShadingModel::Unlit;
+    m_copyMaterial->setShadingModel(ShadingModel::Unlit);
 
     return true;
 }
