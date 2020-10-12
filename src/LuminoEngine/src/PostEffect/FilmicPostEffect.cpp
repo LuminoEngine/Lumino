@@ -114,6 +114,12 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     }
 
     if (m_owner->m_tonemapEnabled) {
+#if 1
+        TonemapPostEffectParams params;
+        params.setup(
+            m_owner->m_linearWhite, m_owner->m_shoulderStrength, m_owner->m_linearStrength, m_owner->m_linearAngle,
+            m_owner->m_toeStrength, m_owner->m_toeNumerator, m_owner->m_toeDenominator, m_owner->m_exposure);
+#else
         const float linearWhite = 3.0f;//0.5;//2.2;//1.2; //5.0f;//
         const float shoulderStrength = 0.0015;//0.15f;
         const float linearStrength = 0.01;// 0.5;
@@ -128,6 +134,7 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
         params.setup(
             linearWhite, shoulderStrength, linearStrength, linearAngle,
             toeStrength, toeNumerator, toeDenominator, Exposure);
+#endif
         m_integrationMaterial->setBufferData(u"TonemapPostEffectParams", &params, sizeof(params));
     }
 

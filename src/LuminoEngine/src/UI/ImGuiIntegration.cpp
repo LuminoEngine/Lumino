@@ -33,7 +33,8 @@ bool ImGuiIntegration::init()
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsLight();
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsLight();
 	//ImGui::StyleColorsClassic();
 
     ImGuiStyle* style = &ImGui::GetStyle();

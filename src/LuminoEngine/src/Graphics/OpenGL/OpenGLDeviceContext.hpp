@@ -254,6 +254,8 @@ public:
 
 protected:
 	virtual void swap() = 0;
+	virtual void beginMakeContext() = 0;
+	virtual void endMakeContext() = 0;
 
 private:
 	void releaseBuffers();

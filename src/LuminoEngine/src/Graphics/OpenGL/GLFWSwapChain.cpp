@@ -2,7 +2,7 @@
 #ifdef LN_GLFW
 
 #include "Internal.hpp"
-#include "GLFWContext.hpp"
+#include "GLFWSwapChain.hpp"
 #include "../../Platform/GLFWPlatformWindowManager.hpp"
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>

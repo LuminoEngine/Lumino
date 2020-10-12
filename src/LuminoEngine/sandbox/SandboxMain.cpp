@@ -468,7 +468,7 @@ int main(int argc, char** argv)
 		//Example_GameAudio();
         //Example_MainLoop();
 		//Example_MeshViewer();
-        Example_MessageWindow();
+        //Example_MessageWindow();
         //Example_Navigator();
         //Example_Shader();
 		//Example_SoundControl();
@@ -476,7 +476,7 @@ int main(int argc, char** argv)
         //Example_UIControls();
 		//Example_Tilemap();
         //Experiment_CharacterController();
-        //Experiment_Editor();
+        Experiment_Editor();
         //Experiment_MeshCollider();
         //Experiment_Reflector();
         //Experiment_Scripting();

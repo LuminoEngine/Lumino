@@ -92,7 +92,12 @@ Ref<Texture2D> Texture2D::load(const StringRef& filePath)
 
 Ref<Texture2DPromise> Texture2D::loadAsync(const StringRef& filePath)
 {
-    return detail::EngineDomain::graphicsManager()->loadTexture2DAsync(filePath);
+    // TODO: 排他処理が必要
+    LN_NOTIMPLEMENTED();
+
+    return Texture2DPromise::run([filePath](Texture2DPromise* p) {
+        p->resolve(load(filePath));
+    });
 }
 
 Ref<Texture2D> Texture2D::loadEmoji(StringRef code)

@@ -20,8 +20,8 @@ public:
 	virtual void getBackendBufferSize(SizeI* outSize) override;
 	void swap() override;
 
-	void beginMakeContext();
-	void endMakeContext();
+	void beginMakeContext() override;
+	void endMakeContext() override;
 
 private:
 	GLFWPlatformWindow* m_window;

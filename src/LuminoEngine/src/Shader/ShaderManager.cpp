@@ -1,7 +1,9 @@
 
 #include "Internal.hpp"
+#include <LuminoEngine/Shader/Shader.hpp>
 #include "ShaderManager.hpp"
 #include "ShaderTranspiler.hpp"
+#include "../Asset/AssetManager.hpp"
 
 namespace ln {
 namespace detail {
@@ -24,6 +26,8 @@ void ShaderManager::init(const Settings& settings)
     LN_LOG_DEBUG << "ShaderManager Initialization started.";
 
     m_graphicsManager = settings.graphicsManager;
+
+    m_shaderCache.init(64);
 
     // Lumino.fxh.h
     {
@@ -97,6 +101,20 @@ void ShaderManager::dispose()
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
     ShaderCodeTranspiler::finalizeGlobals();
 #endif
+
+    m_shaderCache.dispose();
+}
+
+Ref<Shader> ShaderManager::loadShader(const StringRef& filePath)
+{
+    m_shaderCache.collectUnreferenceObjects(false);
+
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+    static const std::vector<const Char*> exts = { u".fx", u".lcfx" };
+#else
+    static const std::vector<const Char*> exts = { u".lcfx" };
+#endif
+    return AssetManager::loadObjectWithCacheHelper<Shader>(&m_shaderCache, nullptr, exts, filePath, nullptr);
 }
 
 } // namespace detail

@@ -768,6 +768,10 @@ void EngineManager::updateFrame()
         m_mainWindow->updateLayoutTree();
     }
 
+	if (m_runtimeEditor) {
+		m_runtimeEditor->updateFrame();
+	}
+
 }
 
 void EngineManager::renderFrame()

@@ -17,6 +17,8 @@
 #include <LuminoEngine/Animation/AnimationClip.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Asset/AssetManager.hpp"
+#include "../Graphics/GraphicsManager.hpp"
+#include "MeshManager.hpp"
 #include "GLTFImporter.hpp"
 
 namespace ln {
@@ -1061,19 +1063,27 @@ Ref<Texture> GLTFImporter::loadTexture(const tinygltf::Texture& texture)
 	// キャッシュ組むとしたらどちらを優先するか指定できた方がいいかも。
 
 	const tinygltf::Image& image = m_model->images[texture.source];
-
-	Ref<Bitmap2D> bitmap;
 	if (image.pixel_type == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE &&  // GL_UNSIGNED_BYTE
 		image.component == 4 &&     // RGBA
 		image.bits == 8) {
-		bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
 	}
 	else {
 		LN_NOTIMPLEMENTED();
 		return nullptr;
 	}
 
-	return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
+	if (1) {
+		return m_meshManager->graphicsManager()->loadTexture2DFromOnMemoryData(&m_basedir, String::fromStdString(image.uri), [&](const AssetRequiredPathSet* x) {
+			Ref<Bitmap2D> bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
+			return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
+		});
+	}
+	else {
+		Ref<Bitmap2D> bitmap;
+		bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
+
+		return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
+	}
 }
 
 Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animation) const

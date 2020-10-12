@@ -57,7 +57,7 @@ void AssetObject::serialize(Serializer2& ar)
 	}
 }
 
-bool AssetObject::_resolveAssetRequiredPathSet(const Path& requiredLoadPath, const std::vector<const Char*> candidateExts, detail::AssetRequiredPathSet* outPathSet)
+bool AssetObject::_resolveAssetRequiredPathSet(const detail::AssetPath* baseDir, const Path& requiredLoadPath, const std::vector<const Char*> candidateExts, detail::AssetRequiredPathSet* outPathSet)
 {
 	auto* manager = detail::EngineDomain::assetManager();
 
@@ -80,6 +80,9 @@ bool AssetObject::_resolveAssetRequiredPathSet(const Path& requiredLoadPath, con
 			}
 		}
 	}
+	//else if (baseDir) {
+	//	outPathSet->assetFilePath = detail::AssetPath::combineAssetPath(*baseDir, requiredLoadPath);
+	//}
 	else {
 		if (requiredLoadPath.hasExtension(AssetModel::AssetFileExtension)) {
 			// 相対パスの場合は Archive から .yml を検索する
@@ -105,8 +108,11 @@ bool AssetObject::_resolveAssetRequiredPathSet(const Path& requiredLoadPath, con
 		// .yml のパスが特定できていれば、それを基準に AssetPath を作る
 		outPathSet->finalResourceAssetFilePath = detail::AssetPath::combineAssetPath(outPathSet->assetFilePath.getParentAssetPath(), outPathSet->resourceFilePath);
 	}
+	else if (baseDir) {
+		outPathSet->finalResourceAssetFilePath = detail::AssetPath::combineAssetPath(*baseDir, requiredLoadPath);
+	}
 	else {
-		// 候補を検索
+		// .yml 以外のファイル。候補を検索
 		const Char* const* d = candidateExts.data();
 		const auto path = manager->findAssetPath(requiredLoadPath, d, candidateExts.size());
 		if (path) {
@@ -121,6 +127,11 @@ bool AssetObject::_resolveAssetRequiredPathSet(const Path& requiredLoadPath, con
 
 	return true;
 }
+
+//bool AssetObject::resolveAssetPathFromResourceFile(const detail::AssetPath& basePath, const Path& localPath, detail::AssetRequiredPathSet* outPathSet)
+//{
+//	return false;
+//}
 
 void AssetObject::reload()
 {

@@ -6,7 +6,7 @@
 #include "../../Platform/OpenGLContext.hpp"
 #include "OpenGLDeviceContext.hpp"
 
-#include "GLFWContext.hpp"
+#include "GLFWSwapChain.hpp"
 
 
 #ifndef GL_TEXTURE_MAX_ANISOTROPY_EXT
@@ -837,7 +837,7 @@ void GLSwapChain::present()
 
 	SizeI bufferSize = getRenderTarget(0)->realSize();
 
-
+	beginMakeContext();
 
 	// SwapChain の Framebuffer をウィンドウのバックバッファへ転送
 	{
@@ -876,6 +876,8 @@ void GLSwapChain::present()
 	}
 
 	swap();
+
+	endMakeContext();
 }
 
 ////=============================================================================

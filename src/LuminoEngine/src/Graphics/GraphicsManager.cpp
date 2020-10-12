@@ -338,10 +338,12 @@ Ref<Texture> GraphicsManager::requestTexture(const AssetPath& assetPath)
 
 Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
 {
+	m_texture2DCache.collectUnreferenceObjects(false);
+
 	static const std::vector<const Char*> exts = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
 
 #if 1
-	return AssetManager::loadObjectWithCacheHelper<Texture2D>(&m_texture2DCache, exts, filePath);
+	return AssetManager::loadObjectWithCacheHelper<Texture2D>(&m_texture2DCache, nullptr, exts, filePath, nullptr);
 #else
 	auto pathSet = std::make_unique<AssetRequiredPathSet>();
 	if (!AssetObject::_resolveAssetRequiredPathSet(filePath, exts, pathSet.get())) {
@@ -368,16 +370,10 @@ Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
 #endif
 }
 
-Ref<Texture2DPromise> GraphicsManager::loadTexture2DAsync(const StringRef& filePath)
+Ref<Texture2D> GraphicsManager::loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringRef& filePath, std::function<Ref<Texture2D>(const AssetRequiredPathSet*)> factory)
 {
-	// TODO: 排他処理が必要
-	LN_NOTIMPLEMENTED();
-
-	return Texture2DPromise::run([this, filePath](Texture2DPromise* p) {
-		p->resolve(loadTexture2D(filePath));
-	});
-
-	return nullptr;
+	static const std::vector<const Char*> exts = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
+	return AssetManager::loadObjectWithCacheHelper<Texture2D>(texture2DCache(), baseDir, exts, filePath, factory);
 }
 
 bool GraphicsManager::checkVulkanSupported()

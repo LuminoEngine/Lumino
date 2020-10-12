@@ -94,6 +94,10 @@ GLFWContext::GLFWContext(GLFWPlatformWindow* mainWindow)
 	assert(m_mainWindow);
 }
 
+//SizeI GLFWContext::getBackendBufferSize() const = 0
+//{
+//}
+
 void GLFWContext::makeCurrentMain()
 {
 	makeCurrent(m_mainWindow);

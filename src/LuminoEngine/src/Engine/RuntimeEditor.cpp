@@ -4,6 +4,9 @@
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/Controls/UISplitter.hpp>
 #include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/WorldRenderView.hpp>
+#include <LuminoEngine/Scene/Scene.hpp>
+#include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include "EngineManager.hpp"
 #include "RuntimeEditor.hpp"
 
@@ -39,6 +42,7 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window)
 	//m_splitter->addChild(m_toolPane);
 
 	m_toolWindow = makeObject<UIFrameWindow>();
+	m_toolWindow->m_renderView->setClearMode(SceneClearMode::ColorAndDepth);
 	m_toolWindow->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
 
 	setMode(Mode::Activated);
@@ -86,6 +90,8 @@ void RuntimeEditor::attach()
 #if 1
 	m_toolWindow->setImGuiLayerEnabled(true);
 	m_toolWindow->invalidateVisual();
+	m_toolWindow->invalidateVisual();
+
 #else
 	// MainWindow の子要素を m_mainContentsPane へ移動する
 	const auto mainChildren = m_window->logicalChildren()->toArray();
@@ -117,6 +123,13 @@ void RuntimeEditor::detach()
 #endif
 }
 
+void RuntimeEditor::updateFrame()
+{
+	if (m_mode == Mode::Activated) {
+		m_toolWindow->invalidateVisual();
+	}
+}
+
 void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 {
 	//const auto pos = m_toolPane->m_combinedFinalRenderTransform.position();
@@ -145,7 +158,7 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 
 			ImGui::EndTabItem();
 		}
-		if (ImGui::BeginTabItem("Details"))
+		if (ImGui::BeginTabItem("Scene"))
 		{
 			ImGui::Text("ID: 0123456789");
 
@@ -157,8 +170,35 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 
 
 
+			bool v = Scene::isGammaEnabled();
+			ImGui::Checkbox("Gamma", &v);
+			Scene::setGammaEnabled(v);
 
 
+			auto& pp = m_manager->mainRenderView()->finishingProcess();
+			v = pp->isTonemapEnabled();
+			ImGui::Checkbox("Tonemap", &v);
+			pp->setTonemapEnabled(v);
+
+			ImGui::SliderFloat("LinearWhite", &(pp->m_linearWhite), 0.0f, 10.0f);
+			ImGui::SliderFloat("ShoulderStrength", &(pp->m_shoulderStrength), 0.0f, 10.0f);
+			ImGui::SliderFloat("LinearStrength", &(pp->m_linearStrength), 0.0f, 10.0f);
+			ImGui::SliderFloat("LinearAngle", &(pp->m_linearAngle), 0.0f, 10.0f);
+
+			ImGui::SliderFloat("ToeStrength", &(pp->m_toeStrength), 0.0f, 10.0f);
+			ImGui::SliderFloat("ToeNumerator", &(pp->m_toeNumerator), 0.0f, 10.0f);
+			ImGui::SliderFloat("ToeDenominator", &(pp->m_toeDenominator), 0.0f, 10.0f);
+			ImGui::SliderFloat("Exposure", &(pp->m_exposure), 0.0f, 10.0f);
+
+			//float m_linearWhite = 5.0f;
+			//float m_shoulderStrength = 0.15f;
+			//float m_linearStrength = 0.5;
+			//float m_linearAngle = 0.05;
+
+			//float  = 0.02f;
+			//float  = 0.02;
+			//float  = 0.3;
+			//float  = 5.0f;
 
 
 

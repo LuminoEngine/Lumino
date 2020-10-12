@@ -25,6 +25,7 @@ public:
     void dispose();
     void toggleMode();
     void setMode(Mode value);
+    void updateFrame();
 
 private:
     void attach();

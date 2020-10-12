@@ -1,11 +1,13 @@
 ﻿// Copyright (c) 2019 lriki. Distributed under the MIT license.
 #pragma once
 #include "Common.hpp"
+#include "../Asset/AssetObject.hpp"
 #include "../Graphics/GraphicsResource.hpp"
 #include "ShaderInterfaceFramework.hpp"
 #include "ShaderHelper.hpp"
 
 namespace ln {
+class AssetImportSettings;
 class DiagnosticsManager;
 class Texture;
 class Shader;
@@ -272,7 +274,7 @@ struct ShaderPassDescriptorLayout
  */
 LN_CLASS()
 class LN_API Shader
-    : public Object
+    : public AssetObject
     , public IGraphicsResource
 {
 public:
@@ -292,7 +294,7 @@ public:
      * load
      */
     LN_METHOD()
-    static Ref<Shader> load(const StringRef& filePath);
+    static Ref<Shader> load(const StringRef& filePath, AssetImportSettings* settings = nullptr);
 
     /**
      * Lumino の独自拡張 (technique 構文など) を使用しない HLSL シェーダをコンパイルし、Shader オブジェクトを作成します。
@@ -348,6 +350,7 @@ protected:
     void onDispose(bool explicitDisposing) override;
     void onManagerFinalizing() override { dispose(); }
     void onChangeDevice(detail::IGraphicsDevice* device) override;
+    void onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath) override;
 
 LN_CONSTRUCT_ACCESS:
 	Shader();
@@ -359,6 +362,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
+    bool loadFromStream(const detail::AssetPath& path, Stream* stream, ShaderCompilationProperties* properties);
     void createFromStream(Stream* stream, DiagnosticsManager* diag);
 	void createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
 

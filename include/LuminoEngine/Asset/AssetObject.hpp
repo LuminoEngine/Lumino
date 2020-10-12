@@ -61,13 +61,59 @@ struct AssetRequiredPathSet
     // このフィールドはシリアライズに `含める` 。
     Path resourceFilePath;
 
+    // resourceFilePath をベースとして、最終的に決まったリソースファイルの AssetPath。
+    //
+    // このフィールドはシリアライズには含まない。
     detail::AssetPath finalResourceAssetFilePath;
 };
 
 } // namespace detail
 
+
+/*
+    各 load 関数のファイルパスの仕様
+    ----------
+    Texture2D::load(), StaticMesh::load() 等のファイルパス。
+
+    最も基本的な配布ファイル構成は次のようになる。
+    ```
+    - 📁
+        - Game.exe
+        - 📁 data
+            - Assets.lna
+    ```
+
+
+    ロード高速化のためサブフォルダ単位でアーカイブするときは次のようになる。
+    アーカイブファイル内に別のアーカイブファイルを含めることはできない。
+    ```
+    - 📁
+        - 📄 Game.exe
+        - 📁 data
+            - 📄 Assets.lna  ← Assets フォルダ直下のファイルだけ含める
+            - 📁 Assets
+                - 📄 Graphics.lna
+                - 📄 Audio.lna
+    ```
+
+    アーカイブファイル内にフォルダパスを埋め込むのもあり。
+    ↑の場合 AssetManager あたりで data フォルダを再帰的に走査しないとならないので、こちらの方が少し簡単。
+    ```
+    - 📁
+        - 📄 Game.exe
+        - 📁 data
+            - 📄 Assets.lna      > .
+            - 📄 7c2f8d3.lna     > ./Graphics
+            - 📄 203a1b0.lna     > ./Audio
+    ```
+
+
+
+*/
+
 /**
  * アセットファイルやその他の外部ファイルをインポートして構築可能なオブジェクトのベースクラスです。
+ *
  */
 LN_CLASS()
 class AssetObject
@@ -86,7 +132,9 @@ public:
     //    return obj;
     //}
     
-    static bool _resolveAssetRequiredPathSet(const Path& requiredLoadPath, const std::vector<const Char*> candidateExts, detail::AssetRequiredPathSet* outPathSet);
+    static bool _resolveAssetRequiredPathSet(const detail::AssetPath* baseDir, const Path& requiredLoadPath, const std::vector<const Char*> candidateExts, detail::AssetRequiredPathSet* outPathSet);
+    // モデルファイルの中からさらに相対パスで読むケースで使う
+    //static bool resolveAssetPathFromResourceFile(const detail::AssetPath& basePath, const Path& localPath, detail::AssetRequiredPathSet* outPathSet);
 
 
     std::unique_ptr<detail::AssetRequiredPathSet> m_data;
@@ -114,6 +162,24 @@ private:
     friend class Assets;
     friend class detail::AssetObjectInternal;
 };
+
+/**
+ * 
+ */
+// TODO: AssetRequiredPathSet をまとめてもよさそう
+LN_CLASS()
+class AssetImportSettings
+    : public Object
+{
+    LN_OBJECT;
+public:
+    void setUseCache(bool value) { m_useCache = value; }
+    bool useCache() const { return m_useCache; }
+
+private:
+    bool m_useCache;
+};
+
 
 namespace detail {
 class AssetObjectInternal
