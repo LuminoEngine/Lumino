@@ -7,6 +7,7 @@
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
+#include "../Graphics/GraphicsManager.hpp"
 #include "EngineManager.hpp"
 #include "RuntimeEditor.hpp"
 
@@ -90,7 +91,7 @@ void RuntimeEditor::attach()
 #if 1
 	m_toolWindow->setImGuiLayerEnabled(true);
 	m_toolWindow->invalidateVisual();
-	m_toolWindow->invalidateVisual();
+	//m_toolWindow->invalidateVisual();
 
 #else
 	// MainWindow の子要素を m_mainContentsPane へ移動する
@@ -156,6 +157,12 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 			ImGui::Text("FPS: %.2f, Ext: %.2f", fps.totalFps(), fps.externalFps());
 			ImGui::Text("Min: %.2f, Max: %.2f", fps.minFrameMillisecondsPerSeconds() / 1000.0f, fps.maxFrameMillisecondsPerSeconds() / 1000.0f);
 
+			ImGui::Separator();
+
+			ImGui::Text("GraphicsResources: %d", m_manager->graphicsManager()->graphicsResources().size());
+			
+
+
 			ImGui::EndTabItem();
 		}
 		if (ImGui::BeginTabItem("Scene"))
@@ -180,15 +187,31 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 			ImGui::Checkbox("Tonemap", &v);
 			pp->setTonemapEnabled(v);
 
-			ImGui::SliderFloat("LinearWhite", &(pp->m_linearWhite), 0.0f, 10.0f);
-			ImGui::SliderFloat("ShoulderStrength", &(pp->m_shoulderStrength), 0.0f, 10.0f);
-			ImGui::SliderFloat("LinearStrength", &(pp->m_linearStrength), 0.0f, 10.0f);
-			ImGui::SliderFloat("LinearAngle", &(pp->m_linearAngle), 0.0f, 10.0f);
+			if (pp->isTonemapEnabled()) {
+				ImGui::Indent(20);
+				ImGui::SliderFloat("LinearWhite", &(pp->m_linearWhite), 0.0f, 10.0f);
+				ImGui::SliderFloat("ShoulderStrength", &(pp->m_shoulderStrength), 0.0f, 10.0f);
+				ImGui::SliderFloat("LinearStrength", &(pp->m_linearStrength), 0.0f, 10.0f);
+				ImGui::SliderFloat("LinearAngle", &(pp->m_linearAngle), 0.0f, 10.0f);
 
-			ImGui::SliderFloat("ToeStrength", &(pp->m_toeStrength), 0.0f, 10.0f);
-			ImGui::SliderFloat("ToeNumerator", &(pp->m_toeNumerator), 0.0f, 10.0f);
-			ImGui::SliderFloat("ToeDenominator", &(pp->m_toeDenominator), 0.0f, 10.0f);
-			ImGui::SliderFloat("Exposure", &(pp->m_exposure), 0.0f, 10.0f);
+				ImGui::SliderFloat("ToeStrength", &(pp->m_toeStrength), 0.0f, 10.0f);
+				ImGui::SliderFloat("ToeNumerator", &(pp->m_toeNumerator), 0.0f, 10.0f);
+				ImGui::SliderFloat("ToeDenominator", &(pp->m_toeDenominator), 0.0f, 10.0f);
+				ImGui::SliderFloat("Exposure", &(pp->m_exposure), 0.0f, 10.0f);
+				ImGui::Indent(0);
+			}
+
+			v = pp->isDOFEnabled();
+			ImGui::Checkbox("Depth Of Field", &v);
+			pp->setDOFEnabled(v);
+			if (pp->isDOFEnabled()) {
+				ImGui::Indent(20);
+				float v = pp->focusedLinearDepth();
+				ImGui::SliderFloat("Focus Distance", &v, 0.0f, 1.0f);
+				pp->setFocusedLinearDepth(v);
+				ImGui::Indent(0);
+
+			}
 
 			//float m_linearWhite = 5.0f;
 			//float m_shoulderStrength = 0.15f;

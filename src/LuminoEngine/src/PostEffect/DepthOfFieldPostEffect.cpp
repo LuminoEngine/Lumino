@@ -131,15 +131,8 @@ bool DepthOfFieldPostEffectInstance::onRender(RenderingContext* context, RenderT
     for (int i = 0; i < 8; i++)
     {
         context->setViewportRect(rect);
-        //context->setViewportRect(
-        //    RectI(
-        //        rect.x + margin,
-        //        rect.y + margin,
-        //        std::max(1, rect.width - margin * 2),
-        //        std::max(1, rect.height - margin * 2)));
         m_copyMaterial->setMainTexture(source);
         context->blit(m_copyMaterial, dofTexture);
-        //context->blit(m_copyMaterial, destination);
 
         rect.y += rect.height;
         rect.width /= 2;
@@ -147,7 +140,6 @@ bool DepthOfFieldPostEffectInstance::onRender(RenderingContext* context, RenderT
     }
     context->setViewportRect(RectI::Empty);
 
-    //context->setScissorRect(RectI(0, 0, 320, 240));
     dofTexture->setSamplerState(m_samplerState);
     viewDepthMap->setSamplerState(m_samplerState);
 

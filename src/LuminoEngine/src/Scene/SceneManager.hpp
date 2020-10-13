@@ -18,6 +18,7 @@ public:
 	Ref<Texture2D> SkydomeCloudB;
 	Ref<Texture2D> SkydomeCloudC;
 	Ref<Texture2D> SkydomeCloudR;
+	Shader* skydomeShader() const;
 
 	SceneManager();
 	virtual ~SceneManager();

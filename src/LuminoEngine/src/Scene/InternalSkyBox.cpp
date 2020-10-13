@@ -164,7 +164,7 @@ bool InternalSkyDome::init()
     _detailCloudTexture->setSamplerState(samperState);
     _secondCloudPowerMap->setSamplerState(samperState);
 
-    m_material->setShader(ln::Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyDome.fx"));
+    m_material->setShader(manager->skydomeShader());
     m_material->setTexture(u"_thirdCloudTexture", _mainCloudsTexture);
     m_material->setTexture(u"_detailCloudTexture", _detailCloudTexture);
     m_material->setTexture(u"_secondCloudPowerMap", _secondCloudPowerMap);

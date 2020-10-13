@@ -167,6 +167,13 @@ void RenderingManager::init(const Settings& settings)
 		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
 		m_builtinShaders[(int)BuiltinShader::BlackShader] = makeObject<Shader>(u"BlackShader", &stream);
 	}
+	// InfinitePlaneGrid
+	{
+		static const unsigned char data[] = {
+#include "Resource/InfinitePlaneGrid.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::InfinitePlaneGrid, u"InfinitePlaneGrid", data, LN_ARRAY_SIZE_OF(data));
+	}
 	// SkyLowAltitudeOptimized
 	{
 		static const unsigned char data[] =
@@ -175,6 +182,13 @@ void RenderingManager::init(const Settings& settings)
 		};
 		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
 		m_builtinShaders[(int)BuiltinShader::SkyLowAltitudeOptimized] = makeObject<Shader>(u"SkyLowAltitudeOptimized", &stream);
+	}
+	// SkyDome
+	{
+		static const unsigned char data[] = {
+#include "../Scene/Resource/SkyDome.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::SkyDome, u"SkyDome", data, LN_ARRAY_SIZE_OF(data));
 	}
 	
 

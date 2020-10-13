@@ -12,7 +12,7 @@ public:
 
 	App_Experiment_Editor()
 	{
-		EngineSettings::setDebugToolEnabled(true);
+		EngineSettings::setDeveloperToolEnabled(true);
 	}
 
     virtual void onInit() override
@@ -39,6 +39,11 @@ public:
 		//	auto pos = Mouse::position();
 		//	Engine::renderView()->findObjectInPoint(pos.x, pos.y);
 		//}
+
+		//auto camera = Engine::camera();
+		//camera->viewMatrix();
+		//auto pp = Vector3::transformCoord(Vector3(10, 0, 0), camera->viewMatrix());
+		//printf("");
     }
 };
 

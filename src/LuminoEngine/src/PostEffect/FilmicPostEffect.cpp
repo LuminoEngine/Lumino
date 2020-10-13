@@ -151,6 +151,7 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
         int tonemapEnabled;
         int _vignetteEnabled;
         int gammaEnabled;
+        float focusedLinearDepth;
     };
 
     EffectSettings settings;
@@ -164,6 +165,7 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     settings.tonemapEnabled = m_owner->m_tonemapEnabled ? 1 : 0;
     settings._vignetteEnabled = m_owner->m_vignetteEnabled ? 1 : 0;
     settings.gammaEnabled = m_owner->m_gammaEnabled ? 1 : 0;
+    settings.focusedLinearDepth = m_owner->m_focusedLinearDepth;
 
     Ref<RenderTargetTexture> occlusionMap = RenderTargetTexture::getTemporary(source->width(), source->height(), TextureFormat::RGBA8, false);
     occlusionMap->setSamplerState(m_samplerState);

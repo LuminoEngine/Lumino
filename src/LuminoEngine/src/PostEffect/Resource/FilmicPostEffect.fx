@@ -23,6 +23,7 @@ cbuffer EffectSettings
     int _tonemapEnabled;
     int _vignetteEnabled;
     int _gammaEnabled;
+    float _focusedLinearDepth;// = 10.0 / 100.0;
 };
 
 
@@ -32,7 +33,6 @@ sampler2D _dofTexture0;
 sampler2D _dofTexture1;
 sampler2D _dofTexture2;
 sampler2D _dofTexture3;
-const float _focusedDepth = 10.0 / 100.0;
 const int MaxDOFMips = 4;
 
 //==============================================================================
@@ -187,7 +187,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
 
 
         float linearDepth = tex2D(_depthTexture, uv).g;
-        float d = distance(_focusedDepth, linearDepth);
+        float d = distance(_focusedLinearDepth, linearDepth);
 
         float t = pow(d, 1.05);//1.25);
 
@@ -196,10 +196,10 @@ float4 PSMain(PSInput input) : SV_TARGET0
         //t *= 0.5;
 
         t *= (float)MaxDOFMips;
-        float alpha, no;
-        alpha = modf(t, no);
+        float alpha, mipNo;
+        alpha = modf(t, mipNo);
 
-        int dofIndex = (int)no;
+        int dofIndex = (int)mipNo;
         float3 colA, colB;
         // TODO: TextureArray でうけとりたい。
         if (dofIndex == 0) {

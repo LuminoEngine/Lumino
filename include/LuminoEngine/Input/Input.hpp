@@ -45,19 +45,19 @@ public:
     /**
      * ボタンのアクションマッピングを追加します。
      */
-    //LN_METHOD()
+    LN_METHOD()
     static void addBinding(const StringRef& buttonName, InputGesture* gesture);
 
     /**
      * アクションマッピングを除外します。
     */
-    //LN_METHOD()
+    LN_METHOD()
     static void removeBinding(InputGesture* gesture);
 
     /**
      * 指定したボタンのアクションマッピングをすべて削除します。
      */
-    //LN_METHOD()
+    LN_METHOD()
     static void clearBindings(const StringRef& buttonName);
 
     /**

@@ -19,6 +19,7 @@
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderElement.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
+#include "../Rendering/RenderingManager.hpp"
 #include "../Mesh/MeshGenerater.hpp"
 #include "../PostEffect/PostEffectRenderer.hpp"
 #include "SceneManager.hpp"
@@ -481,17 +482,19 @@ void WorldRenderView::createGridPlane()
     //m_gridPlane = makeObject<StaticMeshModel>();
     //m_gridPlane->addMeshContainer(meshContainer);
 
-#if 0
-	static const unsigned char data[] =
-	{
-#include "../Rendering/Resource/InfinitePlaneGrid.lcfx.inl"
-	};
-	static const size_t size = LN_ARRAY_SIZE_OF(data);
-	MemoryStream stream(data, size);
-	auto shader = makeObject<Shader>(u"InfinitePlaneGrid", &stream);
-#else
-    auto shader = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
-#endif
+//#if 0
+//	static const unsigned char data[] =
+//	{
+//#include "../Rendering/Resource/InfinitePlaneGrid.lcfx.inl"
+//	};
+//	static const size_t size = LN_ARRAY_SIZE_OF(data);
+//	MemoryStream stream(data, size);
+//	auto shader = makeObject<Shader>(u"InfinitePlaneGrid", &stream);
+//#else
+//    auto shader = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
+//#endif
+    auto shader = detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::InfinitePlaneGrid);
+
     m_gridPlaneMaterial = makeObject<Material>();
     m_gridPlaneMaterial->setShader(shader);
     //m_gridPlane->addMaterial(material);

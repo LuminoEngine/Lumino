@@ -61,6 +61,7 @@ public:
 	const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
 	const Ref<FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
 	ObjectCache<String, Texture2D>* texture2DCache() { return &m_texture2DCache; }
+	const List<IGraphicsResource*>& graphicsResources() const { return m_graphicsResources; }
 
 	int registerExtension(INativeGraphicsExtension* extension);
 	void unregisterExtension(INativeGraphicsExtension* extension);

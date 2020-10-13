@@ -77,6 +77,11 @@ public:
 	LN_METHOD(Property)
 	bool isGammaEnabled() const { return m_gammaEnabled; }
 
+
+	void setFocusedLinearDepth(float value) { m_focusedLinearDepth = value; }
+	float focusedLinearDepth() const { return m_focusedLinearDepth; }
+
+
 	void setScreenBlendColor(const Color& value) { m_screenBlendColor = value; }
 
 	const Color& screenBlendColor() const { return m_screenBlendColor; }
@@ -107,6 +112,7 @@ private:
     float m_bloomStrength;
     float m_bloomRadius;
 
+	float m_focusedLinearDepth = 0.1;
 	Color m_screenBlendColor;
 	ColorTone m_screenColorTone;
 

@@ -8,8 +8,8 @@ class AudioContext;
 class AudioSourceNode;
 class AudioGainNode;
 namespace detail {
-	class GameAudioImpl; class SoundCore
-		;
+	class GameAudioImpl;
+	class SoundCore;
 }
 
 /** 音声の再生状態を表します。*/
@@ -21,13 +21,23 @@ enum class SoundPlayingState
 };
 
 /** 音量フェード完了時の動作を表します。*/
+LN_ENUM()
 enum class SoundFadeBehavior
 {
-    Continue,		/**< 再生を継続する */
-    stop,				/**< 停止する */
-    StopReset,			/**< 停止して、次の再生に備えてサウンドの音量を元の値に戻す */
-    pause,				/**< 一時停止する */
-    PauseReset,			/**< 一時停止して、次の再生に備えてサウンドの音量を元の値に戻す */
+	/** 再生を継続する */
+    Continue,
+
+	/** 停止する */
+    Stop,		
+
+	/** 停止して、次の再生に備えてサウンドの音量を元の値に戻す */
+    StopReset,
+
+	/** 一時停止する */
+    Pause,
+
+	/** 一時停止して、次の再生に備えてサウンドの音量を元の値に戻す */
+	PauseReset,
 };
 
 /*
@@ -58,6 +68,11 @@ enum class SoundFadeBehavior
 
 */
 
+
+/**
+ * Sound
+ */
+LN_CLASS()
 class Sound
 	: public Object
 {
@@ -225,7 +240,8 @@ public:
 	 * 現在の音量から targetVolume へ音量の遷移を行います。現在の音量は getVolume() で取得できる値です。
 	 * フェード中は音量が変更され、getVolume() で取得できる値が変わります。
 	 */
-	void fadeVolume(float targetVolume, double time, SoundFadeBehavior behavior);
+	LN_METHOD()
+	void fadeVolume(float targetVolume, float time, SoundFadeBehavior behavior);
 
 LN_CONSTRUCT_ACCESS:
     Sound();

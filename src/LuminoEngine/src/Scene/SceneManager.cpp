@@ -4,6 +4,7 @@
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Scene/Raycaster.hpp>
+#include "../Rendering/RenderingManager.hpp"
 
 // for registerType
 #include <LuminoEngine/Asset/Assets.hpp>
@@ -122,6 +123,11 @@ void SceneManager::init()
 void SceneManager::dispose()
 {
 	//releaseAndTerminateAllRunningScenes();
+}
+
+Shader* SceneManager::skydomeShader() const
+{
+	return detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::SkyDome);
 }
 
 Level* SceneManager::loadScene(const StringRef& sceneAssetFilePath)
