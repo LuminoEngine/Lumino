@@ -126,7 +126,7 @@ static void initKeyTable()
 	GLFWKeyToLNKey[GLFW_KEY_A] = Keys::A;
 	GLFWKeyToLNKey[GLFW_KEY_B] = Keys::B;
 	GLFWKeyToLNKey[GLFW_KEY_C] = Keys::C;
-	GLFWKeyToLNKey[GLFW_KEY_B] = Keys::D;
+	GLFWKeyToLNKey[GLFW_KEY_D] = Keys::D;
 	GLFWKeyToLNKey[GLFW_KEY_E] = Keys::E;
 	GLFWKeyToLNKey[GLFW_KEY_F] = Keys::F;
 	GLFWKeyToLNKey[GLFW_KEY_G] = Keys::G;

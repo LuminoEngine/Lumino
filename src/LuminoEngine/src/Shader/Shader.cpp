@@ -249,7 +249,7 @@ bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, Shade
     }
     else {
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-        if (LN_REQUIRE(path.scheme() == detail::AssetPath::FileSchemeName)) return false;
+        //if (LN_REQUIRE(path.scheme() == detail::AssetPath::FileSchemeName)) return false;
 
 
         //ByteBuffer buffer = FileSystem::readAllBytes(filePath);

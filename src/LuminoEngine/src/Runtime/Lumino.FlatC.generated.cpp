@@ -608,6 +608,73 @@ LN_FLAT_API LNResult LNAssetModelSerializeHandler_Create(LNAssetModelSerializeHa
 
 
 // Auto generated override handler
+using SoundSerializeHandler = ln::Delegate<void(ln::Sound* self, ln::Serializer2* ar)>;
+
+class LNWS_SoundSerializeHandler : public SoundSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNSoundSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNSoundSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNSoundSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNSoundSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNSoundSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNSoundSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNSoundSerializeHandlerCallback m_callback;
+
+    LNWS_SoundSerializeHandler()
+      : SoundSerializeHandler([this](ln::Sound* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNSoundSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_SoundSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNSoundSerializeHandlerCallback callback)
+    {
+        if (!SoundSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNSoundSerializeHandler_Create(LNSoundSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_SoundSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
 using TextureSerializeHandler = ln::Delegate<void(ln::Texture* self, ln::Serializer2* ar)>;
 
 class LNWS_TextureSerializeHandler : public TextureSerializeHandler
@@ -6571,6 +6638,140 @@ LN_FLAT_API LNResult LNUIListBoxSerializeHandler_Create(LNUIListBoxSerializeHand
 
 
 // Auto generated override handler
+using InputGestureSerializeHandler = ln::Delegate<void(ln::InputGesture* self, ln::Serializer2* ar)>;
+
+class LNWS_InputGestureSerializeHandler : public InputGestureSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNInputGestureSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNInputGestureSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNInputGestureSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNInputGestureSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNInputGestureSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNInputGestureSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNInputGestureSerializeHandlerCallback m_callback;
+
+    LNWS_InputGestureSerializeHandler()
+      : InputGestureSerializeHandler([this](ln::InputGesture* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNInputGestureSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_InputGestureSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNInputGestureSerializeHandlerCallback callback)
+    {
+        if (!InputGestureSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNInputGestureSerializeHandler_Create(LNInputGestureSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_InputGestureSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using KeyGestureSerializeHandler = ln::Delegate<void(ln::KeyGesture* self, ln::Serializer2* ar)>;
+
+class LNWS_KeyGestureSerializeHandler : public KeyGestureSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNKeyGestureSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNKeyGestureSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNKeyGestureSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNKeyGestureSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNKeyGestureSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNKeyGestureSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNKeyGestureSerializeHandlerCallback m_callback;
+
+    LNWS_KeyGestureSerializeHandler()
+      : KeyGestureSerializeHandler([this](ln::KeyGesture* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNKeyGestureSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_KeyGestureSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNKeyGestureSerializeHandlerCallback callback)
+    {
+        if (!KeyGestureSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNKeyGestureSerializeHandler_Create(LNKeyGestureSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_KeyGestureSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
 using InterpreterCommandSerializeHandler = ln::Delegate<void(ln::InterpreterCommand* self, ln::Serializer2* ar)>;
 
 class LNWS_InterpreterCommandSerializeHandler : public InterpreterCommandSerializeHandler
@@ -8076,6 +8277,68 @@ class LNWS_ln_Assets : public ln::Assets
 public:
 };
 
+
+
+class LNWS_ln_Sound : public ln::Sound
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNSound_OverridePrototypes
+    {
+        ln::Ref<LNWS_SoundSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNSound_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNSound_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNSound_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNSound_SubclassRegistrationInfo* subclassInfo() { static LNSound_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Sound()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Sound()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNSound_OnSerialize_OverrideCallback s_LNSound_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNSound_OnSerialize_OverrideCallback) s_LNSound_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::Sound::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::Sound::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+LNSound_OnSerialize_OverrideCallback LNWS_ln_Sound::s_LNSound_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_Audio : public ln::Audio
@@ -12735,6 +12998,130 @@ public:
 LNUIListBox_OnSerialize_OverrideCallback LNWS_ln_UIListBox::s_LNUIListBox_OnSerialize_OverrideCallback = nullptr;
 
 
+class LNWS_ln_InputGesture : public ln::InputGesture
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNInputGesture_OverridePrototypes
+    {
+        ln::Ref<LNWS_InputGestureSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNInputGesture_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNInputGesture_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNInputGesture_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNInputGesture_SubclassRegistrationInfo* subclassInfo() { static LNInputGesture_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_InputGesture()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_InputGesture()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNInputGesture_OnSerialize_OverrideCallback s_LNInputGesture_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNInputGesture_OnSerialize_OverrideCallback) s_LNInputGesture_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::InputGesture::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::InputGesture::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+LNInputGesture_OnSerialize_OverrideCallback LNWS_ln_InputGesture::s_LNInputGesture_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_KeyGesture : public ln::KeyGesture
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNKeyGesture_OverridePrototypes
+    {
+        ln::Ref<LNWS_KeyGestureSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNKeyGesture_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNKeyGesture_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNKeyGesture_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNKeyGesture_SubclassRegistrationInfo* subclassInfo() { static LNKeyGesture_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_KeyGesture()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_KeyGesture()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNKeyGesture_OnSerialize_OverrideCallback s_LNKeyGesture_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNKeyGesture_OnSerialize_OverrideCallback) s_LNKeyGesture_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::KeyGesture::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::KeyGesture::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<InputGesture>();
+    }
+
+};
+
+LNKeyGesture_OnSerialize_OverrideCallback LNWS_ln_KeyGesture::s_LNKeyGesture_OnSerialize_OverrideCallback = nullptr;
+
+
 class LNWS_ln_Input : public ln::Input
 {
 public:
@@ -14426,6 +14813,165 @@ LN_FLAT_API LNResult LNAssets_ReadAllTextA(const char* filePath, LNEncodingType 
     LNI_FUNC_TRY_END_RETURN;
 }
 
+
+LN_FLAT_API LNResult LNSound_SetVolume(LNHandle sound, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->setVolume(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNSound_GetVolume(LNHandle sound, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->getVolume());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->getVolume());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNSound_SetPitch(LNHandle sound, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->setPitch(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNSound_GetPitch(LNHandle sound, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->getPitch());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->getPitch());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNSound_SetLoopEnabled(LNHandle sound, LNBool enabled)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->setLoopEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNSound_IsLoopEnabled(LNHandle sound, LNBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->isLoopEnabled());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->isLoopEnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNSound_SetLoopRange(LNHandle sound, uint32_t begin, uint32_t length)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->SetLoopRange(begin, length));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNSound_Play(LNHandle sound)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->play());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNSound_Stop(LNHandle sound)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->stop());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNSound_Pause(LNHandle sound)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->pause());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNSound_Resume(LNHandle sound)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->resume());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNSound_FadeVolume(LNHandle sound, float targetVolume, float time, LNSoundFadeBehavior behavior)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->fadeVolume(targetVolume, time, static_cast<ln::SoundFadeBehavior>(behavior)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNSound_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNSound_OnSerialize_SetOverrideCallback(LNSound_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Sound::s_LNSound_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNSound_SetPrototype_OnSerialize(LNHandle sound, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, sound)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_SoundSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNSound_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Sound>()->id();
+}
+
+LN_FLAT_API void LNSound_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Sound>(), id);
+}
+
+void LNSound_RegisterSubclassTypeInfo(const LNSound_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Sound>(), info->subclassId);
+        *LNWS_ln_Sound::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNSound_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
 
 LN_FLAT_API LNResult LNAudio_PlayBGM(const LNChar* filePath, float volume, float pitch, double fadeTime)
 {
@@ -21215,6 +21761,104 @@ LNSubinstanceId LNUIListBox_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
+LN_FLAT_API LNResult LNInputGesture_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InputGesture, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNInputGesture_OnSerialize_SetOverrideCallback(LNInputGesture_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_InputGesture::s_LNInputGesture_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNInputGesture_SetPrototype_OnSerialize(LNHandle inputgesture, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_InputGesture, inputgesture)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_InputGestureSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNInputGesture_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::InputGesture>()->id();
+}
+
+LN_FLAT_API void LNInputGesture_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::InputGesture>(), id);
+}
+
+void LNInputGesture_RegisterSubclassTypeInfo(const LNInputGesture_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::InputGesture>(), info->subclassId);
+        *LNWS_ln_InputGesture::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNInputGesture_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_InputGesture, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNKeyGesture_Create(LNKeys key, LNHandle* outKeyGesture)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outKeyGesture, LNWS_ln_KeyGesture, init, static_cast<ln::Keys>(key));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNKeyGesture_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_KeyGesture, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNKeyGesture_OnSerialize_SetOverrideCallback(LNKeyGesture_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_KeyGesture::s_LNKeyGesture_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNKeyGesture_SetPrototype_OnSerialize(LNHandle keygesture, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_KeyGesture, keygesture)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_KeyGestureSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNKeyGesture_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::KeyGesture>()->id();
+}
+
+LN_FLAT_API void LNKeyGesture_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::KeyGesture>(), id);
+}
+
+void LNKeyGesture_RegisterSubclassTypeInfo(const LNKeyGesture_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::KeyGesture>(), info->subclassId);
+        *LNWS_ln_KeyGesture::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNKeyGesture_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_KeyGesture, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
 LN_FLAT_API LNResult LNInput_IsPressed(const LNChar* buttonName, LNBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -21351,6 +21995,46 @@ LN_FLAT_API LNResult LNInput_GetAxisValueA(const char* buttonName, float* outRet
         (ln::Input::getAxisValue(LNI_ASTRPTR_TO_STRING(buttonName)));
     }
 
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNInput_AddBinding(const LNChar* buttonName, LNHandle gesture)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Input::addBinding(buttonName, LNI_HANDLE_TO_OBJECT(ln::InputGesture, gesture)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNInput_AddBindingA(const char* buttonName, LNHandle gesture)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Input::addBinding(LNI_ASTRPTR_TO_STRING(buttonName), LNI_HANDLE_TO_OBJECT(ln::InputGesture, gesture)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNInput_RemoveBinding(LNHandle gesture)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Input::removeBinding(LNI_HANDLE_TO_OBJECT(ln::InputGesture, gesture)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNInput_ClearBindings(const LNChar* buttonName)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Input::clearBindings(buttonName));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNInput_ClearBindingsA(const char* buttonName)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Input::clearBindings(LNI_ASTRPTR_TO_STRING(buttonName)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -22523,6 +23207,29 @@ LNSubinstanceId LNAssetModelSerializeHandler_GetSubinstanceId(LNHandle handle)
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_AssetModelSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNSoundSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<SoundSerializeHandler>(), id);
+}
+
+void LNSoundSerializeHandler_RegisterSubclassTypeInfo(const LNSoundSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<SoundSerializeHandler>(), info->subclassId);
+        *LNWS_SoundSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNSoundSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_SoundSerializeHandler, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;
@@ -24570,6 +25277,52 @@ LNSubinstanceId LNUIListBoxSerializeHandler_GetSubinstanceId(LNHandle handle)
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_UIListBoxSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNInputGestureSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<InputGestureSerializeHandler>(), id);
+}
+
+void LNInputGestureSerializeHandler_RegisterSubclassTypeInfo(const LNInputGestureSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<InputGestureSerializeHandler>(), info->subclassId);
+        *LNWS_InputGestureSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNInputGestureSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_InputGestureSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNKeyGestureSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<KeyGestureSerializeHandler>(), id);
+}
+
+void LNKeyGestureSerializeHandler_RegisterSubclassTypeInfo(const LNKeyGestureSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<KeyGestureSerializeHandler>(), info->subclassId);
+        *LNWS_KeyGestureSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNKeyGestureSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_KeyGestureSerializeHandler, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;

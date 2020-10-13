@@ -151,6 +151,428 @@ typedef enum tagLNEncodingType
 } LNEncodingType;
 
 /**
+    @brief キーコード
+*/
+typedef enum tagLNKeys
+{
+    /**
+        @brief 
+    */
+    LN_KEYS_UNKNOWN = 0,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_A = 1,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_B = 2,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_C = 3,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_D = 4,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_E = 5,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_F = 6,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_G = 7,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_H = 8,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_I = 9,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_J = 10,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_K = 11,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_L = 12,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_M = 13,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_N = 14,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_O = 15,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_P = 16,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_Q = 17,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_R = 18,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_S = 19,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_T = 20,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_U = 21,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_V = 22,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_W = 23,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_X = 24,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_Y = 25,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_Z = 26,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_D0 = 27,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_D1 = 28,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_D2 = 29,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_D3 = 30,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_D4 = 31,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_D5 = 32,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_D6 = 33,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_D7 = 34,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_D8 = 35,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_D9 = 36,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_F1 = 37,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_F2 = 38,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_F3 = 39,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_F4 = 40,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_F5 = 41,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_F6 = 42,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_F7 = 43,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_F8 = 44,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_F9 = 45,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_F10 = 46,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_F11 = 47,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_F12 = 48,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_SPACE = 49,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_ESCAPE = 50,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_UP = 51,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_DOWN = 52,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_LEFT = 53,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_RIGHT = 54,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_LSHIFT = 55,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_RSHIFT = 56,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_LCTRL = 57,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_RCTRL = 58,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_LALT = 59,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_RALT = 60,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_TAB = 61,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_ENTER = 62,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_BACK_SPACE = 63,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_INSERT = 64,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_DELETE = 65,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_PAGE_UP = 66,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_PAGE_DOWN = 67,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_HOME = 68,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_END = 69,
+
+    /**
+        @brief [非推奨 GLFWでは;]
+    */
+    LN_KEYS_COLON = 70,
+
+    /**
+        @brief ;	[非推奨 GLFWでは=]
+    */
+    LN_KEYS_SEMICOLON = 71,
+
+    /**
+        @brief ,
+    */
+    LN_KEYS_COMMA = 72,
+
+    /**
+        @brief .
+    */
+    LN_KEYS_PERIOD = 73,
+
+    /**
+        @brief /
+    */
+    LN_KEYS_SLASH = 74,
+
+    /**
+        @brief -
+    */
+    LN_KEYS_MINUS = 75,
+
+    /**
+        @brief \(バックスラッシュ) [非推奨 GLFWではNOWORD2]
+    */
+    LN_KEYS_BACKSLASH = 76,
+
+    /**
+        @brief \(BaskSpaceキーの左の\キー) [非推奨 GLFWではI]
+    */
+    LN_KEYS_YEN = 77,
+
+    /**
+        @brief ^ [非推奨 GLFWではGLFW_KEY_APOSTROPHE(')]
+    */
+    LN_KEYS_CARET = 78,
+
+    /**
+        @brief [
+    */
+    LN_KEYS_LBRACKET = 79,
+
+    /**
+        @brief ]
+    */
+    LN_KEYS_RBRACKET = 80,
+
+    /**
+        @brief Android '+'
+    */
+    LN_KEYS_ANDROID_PLUS = 81,
+
+    /**
+        @brief 
+    */
+    LN_KEYS_TERMINATOR = 82,
+
+} LNKeys;
+
+/**
     @brief マウスボタン
 */
 typedef enum tagLNMouseButtons
@@ -186,6 +608,38 @@ typedef enum tagLNMouseButtons
     LN_MOUSE_BUTTONS_X2 = 5,
 
 } LNMouseButtons;
+
+/**
+    @brief 音量フェード完了時の動作を表します。
+*/
+typedef enum tagLNSoundFadeBehavior
+{
+    /**
+        @brief 再生を継続する
+    */
+    LN_SOUND_FADE_BEHAVIOR_CONTINUE = 0,
+
+    /**
+        @brief 停止する
+    */
+    LN_SOUND_FADE_BEHAVIOR_STOP = 1,
+
+    /**
+        @brief 停止して、次の再生に備えてサウンドの音量を元の値に戻す
+    */
+    LN_SOUND_FADE_BEHAVIOR_STOP_RESET = 2,
+
+    /**
+        @brief 一時停止する
+    */
+    LN_SOUND_FADE_BEHAVIOR_PAUSE = 3,
+
+    /**
+        @brief 一時停止して、次の再生に備えてサウンドの音量を元の値に戻す
+    */
+    LN_SOUND_FADE_BEHAVIOR_PAUSE_RESET = 4,
+
+} LNSoundFadeBehavior;
 
 /**
     @brief ピクセルフォーマット
@@ -623,6 +1077,7 @@ typedef LNResult(*LNSerializer2SerializeHandlerCallback)(LNHandle serializer2ser
 typedef LNResult(*LNAssetObjectSerializeHandlerCallback)(LNHandle assetobjectserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNAssetImportSettingsSerializeHandlerCallback)(LNHandle assetimportsettingsserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNAssetModelSerializeHandlerCallback)(LNHandle assetmodelserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNSoundSerializeHandlerCallback)(LNHandle soundserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNTextureSerializeHandlerCallback)(LNHandle textureserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNTexture2DSerializeHandlerCallback)(LNHandle texture2dserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNShaderSerializeHandlerCallback)(LNHandle shaderserializehandler, LNHandle self, LNHandle ar);
@@ -712,6 +1167,8 @@ typedef LNResult(*LNUIListItemSerializeHandlerCallback)(LNHandle uilistitemseria
 typedef LNResult(*LNUIListItemsControlSerializeHandlerCallback)(LNHandle uilistitemscontrolserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIListBoxItemSerializeHandlerCallback)(LNHandle uilistboxitemserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIListBoxSerializeHandlerCallback)(LNHandle uilistboxserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNInputGestureSerializeHandlerCallback)(LNHandle inputgestureserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNKeyGestureSerializeHandlerCallback)(LNHandle keygestureserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNInterpreterCommandSerializeHandlerCallback)(LNHandle interpretercommandserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNInterpreterCommandListSerializeHandlerCallback)(LNHandle interpretercommandlistserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNInterpreterSerializeHandlerCallback)(LNHandle interpreterserializehandler, LNHandle self, LNHandle ar);
@@ -1571,6 +2028,116 @@ LN_FLAT_API LNResult LNAssets_ReloadAssetA(const char* filePath, LNHandle obj);
 LN_FLAT_API LNResult LNAssets_ReadAllText(const LNChar* filePath, LNEncodingType encoding, const LNChar** outReturn);
 LN_FLAT_API LNResult LNAssets_ReadAllTextA(const char* filePath, LNEncodingType encoding, const char** outReturn);
 
+
+//==============================================================================
+// ln::Sound
+
+/**
+    @brief この Sound の音量を設定します。
+    @param[in] sound : instance
+    @param[in] volume : 音量 (0.0～1.0。初期値は 1.0)
+*/
+LN_FLAT_API LNResult LNSound_SetVolume(LNHandle sound, float value);
+
+/**
+    @brief この Sound の音量を取得します。
+    @param[in] sound : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNSound_GetVolume(LNHandle sound, float* outReturn);
+
+/**
+    @brief この Sound のピッチ (音高) を設定します。
+    @param[in] sound : instance
+    @param[in] volume : ピッチ (0.5～2.0。初期値は 1.0)
+*/
+LN_FLAT_API LNResult LNSound_SetPitch(LNHandle sound, float value);
+
+/**
+    @brief この Sound のピッチ (音高) を取得します。
+    @param[in] sound : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNSound_GetPitch(LNHandle sound, float* outReturn);
+
+/**
+    @brief ループ再生の有無を設定します。
+    @param[in] sound : instance
+    @param[in] enabled : true の場合、ループ再生する
+*/
+LN_FLAT_API LNResult LNSound_SetLoopEnabled(LNHandle sound, LNBool enabled);
+
+/**
+    @brief ループ再生が有効かを確認します。
+    @param[in] sound : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNSound_IsLoopEnabled(LNHandle sound, LNBool* outReturn);
+
+/**
+    @brief ループ範囲を設定します。
+    @param[in] sound : instance
+    @param[in] begin : ループ範囲の開始サンプル
+    @param[in] length : ループ範囲のサンプル数
+*/
+LN_FLAT_API LNResult LNSound_SetLoopRange(LNHandle sound, uint32_t begin, uint32_t length);
+
+/**
+    @brief この Sound の再生を開始します。
+    @param[in] sound : instance
+*/
+LN_FLAT_API LNResult LNSound_Play(LNHandle sound);
+
+/**
+    @brief この Sound の再生を停止します。
+    @param[in] sound : instance
+*/
+LN_FLAT_API LNResult LNSound_Stop(LNHandle sound);
+
+/**
+    @brief この Sound の再生を一時停止します。
+    @param[in] sound : instance
+*/
+LN_FLAT_API LNResult LNSound_Pause(LNHandle sound);
+
+/**
+    @brief 一時停止中の再生を再開します。
+    @param[in] sound : instance
+*/
+LN_FLAT_API LNResult LNSound_Resume(LNHandle sound);
+
+/**
+    @brief 音量のフェードを開始します。
+    @param[in] sound : instance
+    @param[in] targetVolume : フェード先音量
+    @param[in] time : 変化にかける時間 (秒)
+    @param[in] state : 音量フェード完了時の動作現在の音量から targetVolume へ音量の遷移を行います。現在の音量は getVolume() で取得できる値です。フェード中は音量が変更され、getVolume() で取得できる値が変わります。
+*/
+LN_FLAT_API LNResult LNSound_FadeVolume(LNHandle sound, float targetVolume, float time, LNSoundFadeBehavior behavior);
+
+typedef LNResult(*LNSound_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNSound_OnSerialize_SetOverrideCallback(LNSound_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNSound_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] sound : instance
+*/
+LN_FLAT_API LNResult LNSound_SetPrototype_OnSerialize(LNHandle sound, LNHandle callback);
+
+extern LN_FLAT_API int LNSound_GetTypeInfoId();
+LN_FLAT_API void LNSound_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNSound_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNSound_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNSound_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNSound_RegisterSubclassTypeInfo(const LNSound_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNSound_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::Audio
@@ -5557,6 +6124,66 @@ extern LN_FLAT_API void LNUIListBox_RegisterSubclassTypeInfo(const LNUIListBox_S
 extern LN_FLAT_API LNSubinstanceId LNUIListBox_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// ln::InputGesture
+
+typedef LNResult(*LNInputGesture_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNInputGesture_OnSerialize_SetOverrideCallback(LNInputGesture_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNInputGesture_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] inputgesture : instance
+*/
+LN_FLAT_API LNResult LNInputGesture_SetPrototype_OnSerialize(LNHandle inputgesture, LNHandle callback);
+
+extern LN_FLAT_API int LNInputGesture_GetTypeInfoId();
+LN_FLAT_API void LNInputGesture_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNInputGesture_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNInputGesture_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNInputGesture_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNInputGesture_RegisterSubclassTypeInfo(const LNInputGesture_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNInputGesture_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::KeyGesture
+
+/**
+    @brief init
+    @param[out] outKeyGesture : instance.
+*/
+LN_FLAT_API LNResult LNKeyGesture_Create(LNKeys key, LNHandle* outKeyGesture);
+
+typedef LNResult(*LNKeyGesture_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNKeyGesture_OnSerialize_SetOverrideCallback(LNKeyGesture_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNKeyGesture_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] keygesture : instance
+*/
+LN_FLAT_API LNResult LNKeyGesture_SetPrototype_OnSerialize(LNHandle keygesture, LNHandle callback);
+
+extern LN_FLAT_API int LNKeyGesture_GetTypeInfoId();
+LN_FLAT_API void LNKeyGesture_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNKeyGesture_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNKeyGesture_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNKeyGesture_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNKeyGesture_RegisterSubclassTypeInfo(const LNKeyGesture_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNKeyGesture_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // ln::Input
 
 /**
@@ -5593,6 +6220,23 @@ LN_FLAT_API LNResult LNInput_IsRepeatedA(const char* buttonName, LNBool* outRetu
 */
 LN_FLAT_API LNResult LNInput_GetAxisValue(const LNChar* buttonName, float* outReturn);
 LN_FLAT_API LNResult LNInput_GetAxisValueA(const char* buttonName, float* outReturn);
+
+/**
+    @brief ボタンのアクションマッピングを追加します。
+*/
+LN_FLAT_API LNResult LNInput_AddBinding(const LNChar* buttonName, LNHandle gesture);
+LN_FLAT_API LNResult LNInput_AddBindingA(const char* buttonName, LNHandle gesture);
+
+/**
+    @brief アクションマッピングを除外します。
+*/
+LN_FLAT_API LNResult LNInput_RemoveBinding(LNHandle gesture);
+
+/**
+    @brief 指定したボタンのアクションマッピングをすべて削除します。
+*/
+LN_FLAT_API LNResult LNInput_ClearBindings(const LNChar* buttonName);
+LN_FLAT_API LNResult LNInput_ClearBindingsA(const char* buttonName);
 
 /**
     @brief 全てのアクションマッピングを削除します。
@@ -6251,6 +6895,22 @@ typedef struct tagLNAssetModelSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNAssetModelSerializeHandler_RegisterSubclassTypeInfo(const LNAssetModelSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNAssetModelSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// SoundSerializeHandler
+
+LN_FLAT_API LNResult LNSoundSerializeHandler_Create(LNSoundSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNSoundSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNSoundSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNSoundSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNSoundSerializeHandler_RegisterSubclassTypeInfo(const LNSoundSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNSoundSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // TextureSerializeHandler
@@ -7675,6 +8335,38 @@ typedef struct tagLNUIListBoxSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNUIListBoxSerializeHandler_RegisterSubclassTypeInfo(const LNUIListBoxSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNUIListBoxSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// InputGestureSerializeHandler
+
+LN_FLAT_API LNResult LNInputGestureSerializeHandler_Create(LNInputGestureSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNInputGestureSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNInputGestureSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNInputGestureSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNInputGestureSerializeHandler_RegisterSubclassTypeInfo(const LNInputGestureSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNInputGestureSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// KeyGestureSerializeHandler
+
+LN_FLAT_API LNResult LNKeyGestureSerializeHandler_Create(LNKeyGestureSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNKeyGestureSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNKeyGestureSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNKeyGestureSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNKeyGestureSerializeHandler_RegisterSubclassTypeInfo(const LNKeyGestureSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNKeyGestureSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // InterpreterCommandSerializeHandler

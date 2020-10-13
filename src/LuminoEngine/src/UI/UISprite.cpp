@@ -67,6 +67,11 @@ const Rect & UISprite::sourceRect() const
     return m_sourceRect;
 }
 
+void UISprite::setShader(Shader* shader)
+{
+    m_material->setShader(shader);
+}
+
 Size UISprite::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
 	Texture* texture = m_material->mainTexture();

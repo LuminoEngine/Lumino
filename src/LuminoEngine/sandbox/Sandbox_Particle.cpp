@@ -93,7 +93,7 @@ class App_Sandbox_Particle : public Application
         auto obj1 = makeObject<WorldObject>();
         obj1->addComponent(cmp1);
 #endif
-#if 1	// 雨
+#if 0	// 雨
         auto m1 = makeObject<ParticleEmitterModel>();
         m1->m_maxParticles = 10000;
         m1->setSpawnRate(1000);
@@ -145,19 +145,19 @@ class App_Sandbox_Particle : public Application
 
 
 #endif
-#if 0
+#if 1
 
         auto material2 = Material::create();
         //material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
         material2->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
         //material->setMainTexture(Texture2D::load("C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/WaterDrop-1.png"));
-        material2->shadingModel = ShadingModel::Unlit;
+        material2->setShadingModel(ShadingModel::Unlit);
         material2->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
 
         // 波紋
         auto particleModel2 = makeObject<ParticleModel>();
-        auto m2 = particleModel2->emitters()[0];
+        auto m2 = makeObject<ParticleEmitterModel>();
         m2->m_maxParticles = 1000;
         m2->setSpawnRate(200);
         m2->setLifeTime(0.2);
@@ -169,7 +169,8 @@ class App_Sandbox_Particle : public Application
         m2->m_shapeType = ParticleEmitterShapeType::Box;
         m2->m_shapeParam.set(10, 0, 10);
         m2->m_geometryDirection = ParticleGeometryDirection::HorizontalBillboard;
-        m2->setSpriteModule(material2);
+        m2->setupSpriteModule(material2);
+        particleModel2->addEmitter(m2);
 
         //auto particle2 = ParticleEmitter3D::create(m2);
         //particle2->SetBlendMode(BlendMode::Add);

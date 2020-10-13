@@ -288,6 +288,7 @@ void Sandbox_Particle();
 void Sandbox_PostEffect();
 void Sandbox_Sky();
 void Sandbox_Voxel();
+void Sandbox_UIShader();
 void UISandboxMain();
 
 #if 0
@@ -475,7 +476,7 @@ int main(int argc, char** argv)
         //Example_UIControls();
 		//Example_Tilemap();
         //Experiment_CharacterController();
-        Experiment_Editor();
+        //Experiment_Editor();
         //Experiment_MeshCollider();
         //Experiment_Reflector();
         //Experiment_Scripting();
@@ -489,6 +490,7 @@ int main(int argc, char** argv)
         //Sandbox_Particle();
         //Sandbox_PostEffect();
         //Sandbox_Sky();
+        Sandbox_UIShader();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
 		//UISandboxMain();
