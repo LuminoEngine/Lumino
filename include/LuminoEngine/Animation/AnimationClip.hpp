@@ -15,6 +15,16 @@ class AnimationClip;
 //LN_PROMISE()
 using AnimationClipPromise = Promise<Ref<AnimationClip>>;
 
+
+/**
+ */
+class AnimationClipImportSettings
+	: public Object
+{
+public:
+	bool requiredStandardCoordinateSystem = true;
+};
+
 /**
  * オブジェクトやそのプロパティに影響を与えるアニメーションデータです。
  *

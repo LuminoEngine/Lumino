@@ -106,7 +106,7 @@ void AnimationClip::onLoadResourceFile(Stream* stream, const detail::AssetPath& 
 	auto assetManager = detail::EngineDomain::assetManager();
 	auto diag = makeObject<DiagnosticsManager>();
 	detail::BvhImporter importer(assetManager, diag);
-	importer.import(this, assetPath);
+	importer.import(this, assetPath, detail::EngineDomain::animationManager()->defaultAnimationClipImportSettings());
 	diag->dumpToLog();
 }
 

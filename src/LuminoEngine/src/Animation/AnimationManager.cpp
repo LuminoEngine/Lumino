@@ -204,6 +204,8 @@ void AnimationManager::init(const Settings& settings)
     m_assetManager = settings.assetManager;
     m_animationClipCache.init(64, 0);
 
+	m_defaultAnimationClipImportSettings = makeObject<AnimationClipImportSettings>();
+
     LN_LOG_DEBUG << "AnimationManager Initialization ended.";
 }
 

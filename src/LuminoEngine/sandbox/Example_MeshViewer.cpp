@@ -66,9 +66,10 @@ class App_Example_MeshViewer : public Application
         
         //mesh->setPosition(0, 10, 0);
 		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Models/Axis.glb");
-		//auto mesh = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Map-2.glb.gltf");
-
-#if 1
+		//auto mesh = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Exported/MainMap1-Start.gltf");
+		auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/Axis1.glb");
+        
+#if 0
 
         Engine::mainLight()->setPosition(30, 20, 10);
         Engine::mainLight()->lookAt(0, 0, 0);
@@ -105,7 +106,7 @@ class App_Example_MeshViewer : public Application
         // Note: ここで m_node->setRotation しても、次のフレーム更新時にリセットされるので意味なし
 
         //m_mesh->setShadingModel(ShadingModel::Unlit);
-        m_mesh->setCullMode(CullMode::None);
+        //m_mesh->setCullMode(CullMode::None);
 
 
         //auto clip = AnimationClip::load(u"D:/Materials/VRM/walk2.bvh");
@@ -117,8 +118,8 @@ class App_Example_MeshViewer : public Application
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleSittingPose.bvh");
         //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/Arm_R-Test1-BoneVert.bvh");
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh");
-        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Walk.bvh");
-        auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/HC5-3.bvh");
+        auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Walk.bvh");
+        //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/HC5-3.bvh");
         //clip->setHierarchicalAnimationMode(HierarchicalAnimationMode::AllowTranslationOnlyRootY);
         
         //auto clip = AnimationClip::load(u"D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");

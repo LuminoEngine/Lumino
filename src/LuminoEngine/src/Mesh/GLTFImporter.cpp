@@ -106,8 +106,8 @@ AliciaSolid.vrm は、
 
 GLTFImporter::GLTFImporter()
 	: m_flipZ(false)
-	, m_flipX(false)
-	, m_disableBoneRotation(true)
+	, m_flipX(true)
+	, m_clearBoneRotation(true)
 {
 }
 
@@ -147,6 +147,14 @@ bool GLTFImporter::openGLTFModel(const AssetPath& assetPath)
 
 bool GLTFImporter::onImportAsStaticMesh(StaticMeshModel* model, const AssetPath& assetPath)
 {
+	// TODO: ひとまず HC4 用設定。
+	// ほんとはここから Y90 回転させるべきなのだが、今その処理を入れてる時間がない。
+	m_flipZ = false;
+	//m_flipX = true;
+	//m_faceFlip = false;	// 何もせずインポートするときは R-Hand->L-Hand の変換なので面反転が必要だが、flipX １回やっているので不要。
+	// TODO: そもそも何かNodeの回転修正もあやしいみたい。10/17提出用に向けてはいったん左右反転したままで行ってみる
+	m_flipX = false;	
+
 	if (!openGLTFModel(assetPath)) {
 		return false;
 	}
@@ -160,6 +168,14 @@ bool GLTFImporter::onImportAsStaticMesh(StaticMeshModel* model, const AssetPath&
 
 bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath& assetPath)
 {
+	// TODO: ひとまず HC4 用設定。
+	// インポート元モデルは [Y-Up,R-Hand] で、キャラクターは Z+ を正面としている。
+	// そのため Lumino 標準の Z+ 正面に合わせるには、X を反転するだけでよい。
+	m_flipZ = false;
+	m_flipX = true;
+	m_faceFlip = true;	// TODO: onImportAsStaticMesh の理論ならこれも不要なはずなのだが… 後でちゃんと調べる
+
+
 	if (!openGLTFModel(assetPath)) {
 		return false;
 	}
@@ -357,10 +373,10 @@ bool GLTFImporter::readNode(MeshNode* coreNode, const tinygltf::Node& node)
 	//	nodeTransform(3, 2) = -nodeTransform(3, 2);
 	//}
 	if (m_flipX) {
-		//nodeTransform(0, 0) = -nodeTransform(0, 0);
-		//nodeTransform(0, 1) = -nodeTransform(0, 1);
-		//nodeTransform(0, 2) = -nodeTransform(0, 2);
-		//nodeTransform(3, 0) = -nodeTransform(3, 0);
+		nodeTransform(0, 0) = -nodeTransform(0, 0);
+		nodeTransform(0, 1) = -nodeTransform(0, 1);
+		nodeTransform(0, 2) = -nodeTransform(0, 2);
+		nodeTransform(3, 0) = -nodeTransform(3, 0);
 	}
 
 	coreNode->setName(String::fromStdString(node.name));
@@ -937,7 +953,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 			assert(section.topology == PrimitiveTopology::TriangleList);
 
-			if (m_flipZ || m_flipX) {
+			if (m_faceFlip) {
 				switch (indexForamt) {
 					case ln::IndexBufferFormat::UInt16: {
 						auto* b = static_cast<uint16_t*>(buf) + indexOffset;
@@ -1034,7 +1050,7 @@ Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 	auto armature = makeObject<MeshArmature>(static_cast<SkinnedMeshModel*>(m_meshModel));
 	for (int i = 0; i < skin.joints.size(); i++) {
 
-		if (m_disableBoneRotation) {
+		if (m_clearBoneRotation) {
 			const auto& mat = m_meshModel->m_nodes[skin.joints[i]]->initialLocalTransform();
 			armature->addBone(skin.joints[i], Matrix::makeInverse(mat));
 		}

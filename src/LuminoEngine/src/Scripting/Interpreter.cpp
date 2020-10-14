@@ -159,6 +159,7 @@ Interpreter::Interpreter()
 	: m_commandList()
 	, m_index(0)
 {
+	clear();
 }
 
 bool Interpreter::init()

@@ -61,7 +61,7 @@ static int termfunc(int option)
 //-----------------------------------------------------------------------------
 EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO* info)
 {
-	ln::Logger::setLevel(ln::LogLevel::Debug);
+	//ln::Logger::setLevel(ln::LogLevel::Debug);
 	ln::Logger::addStdErrAdapter();
 	ln::Console::allocate();
 

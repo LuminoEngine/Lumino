@@ -21,7 +21,7 @@ public:
 	void init(const Settings& settings);
 	void dispose();
     void setSceneManager(SceneManager* sceneManager) { m_sceneManager = sceneManager; }
-        
+	const Ref<AnimationClipImportSettings>& defaultAnimationClipImportSettings() const { return m_defaultAnimationClipImportSettings; }
 
     void addClockToAffiliation(AnimationClock* clock, AnimationClockAffiliation affiliation);
 
@@ -36,6 +36,7 @@ private:
 	AssetManager* m_assetManager;
     SceneManager* m_sceneManager;
 	ObjectCache<String, AnimationClip> m_animationClipCache;
+	Ref<AnimationClipImportSettings> m_defaultAnimationClipImportSettings;
 };
 
 } // namespace detail

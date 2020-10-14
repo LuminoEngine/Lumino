@@ -174,7 +174,7 @@ void AsciiLineReader::splitLineTokens()
 BvhImporter::BvhImporter(AssetManager* assetManager, DiagnosticsManager* diag)
 	: m_assetManager(assetManager)
 	, m_diag(diag)
-    , m_flipZ(false)    // BVH の座標系は右手、Y up。それと、Z+ を正面とする。もし VRM モデルに適用したい場合は反転が必要
+    , m_flipZ(true)    // BVH の座標系は右手、Y up。それと、Z+ を正面とする。もし VRM モデルに適用したい場合は反転が必要
     , m_flipX(false)
     , m_minOffsetY(std::numeric_limits<float>::max())
     // https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html
@@ -183,8 +183,15 @@ BvhImporter::BvhImporter(AssetManager* assetManager, DiagnosticsManager* diag)
 {
 }
 
-bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath)
+bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const AnimationClipImportSettings* settings)
 {
+    if (settings->requiredStandardCoordinateSystem) {
+        // BVH データは Y+Top, R-Hand であることを前提とし、
+        // Z+ を正面とするスキンメッシュモデル用のアニメーションに変換する
+        m_flipZ = true;
+        m_flipX = false;
+    }
+
 	auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
     m_reader.reset(stream);
 

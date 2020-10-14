@@ -81,7 +81,7 @@ class BvhImporter
 {
 public:
 	BvhImporter(AssetManager* assetManager, DiagnosticsManager* diag);
-	bool import(AnimationClip* clip, const AssetPath& assetPath);
+	bool import(AnimationClip* clip, const AssetPath& assetPath, const AnimationClipImportSettings* settings);
 
 private:
 	enum ChannelEnum

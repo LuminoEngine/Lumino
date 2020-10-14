@@ -21,6 +21,11 @@ class GLTFImporter
     : public MeshImporter
 {
 public:
+	bool m_flipZ;
+	bool m_flipX;
+	bool m_faceFlip = false;
+	bool m_clearBoneRotation;
+
 	GLTFImporter();
     bool onImportAsStaticMesh(StaticMeshModel* model, const AssetPath& assetPath) override;
 	bool onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath& assetPath) override;
@@ -79,9 +84,6 @@ private:
     AssetPath m_basedir;
 	std::shared_ptr<tinygltf::Model> m_model;
 	StaticMeshModel* m_meshModel;
-	bool m_flipZ;
-	bool m_flipX;
-	bool m_disableBoneRotation;
 
 	List<Ref<AnimationClip>> m_animationClips;
 };

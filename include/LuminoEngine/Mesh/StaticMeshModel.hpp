@@ -176,6 +176,9 @@ public:
 
 	//const Optional<bool>& flipZCoordinate() const { return m_flipZCoordinate; }
 
+	bool flipZ = false;
+	bool flipX = false;
+
 LN_CONSTRUCT_ACCESS:
 	MeshImportSettings();
 	bool init();
