@@ -154,6 +154,7 @@ bool GLTFImporter::onImportAsStaticMesh(StaticMeshModel* model, const AssetPath&
 	//m_faceFlip = false;	// 何もせずインポートするときは R-Hand->L-Hand の変換なので面反転が必要だが、flipX １回やっているので不要。
 	// TODO: そもそも何かNodeの回転修正もあやしいみたい。10/17提出用に向けてはいったん左右反転したままで行ってみる
 	m_flipX = false;	
+	// TODO: このあたり PostProcess として修正入れたいが、先に SkinnedMeshModel と StaticMeshModel の統合をやらないと無駄作業が多くなるのでいったん保留
 
 	if (!openGLTFModel(assetPath)) {
 		return false;

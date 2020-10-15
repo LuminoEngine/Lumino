@@ -14,6 +14,7 @@ public:
     static Ref<StaticMeshModel> load(const StringRef& filePath);
 
 	MeshNode* findNode(StringRef name) const;
+	//MeshContainer* findMeshContainer(StringRef name) const;
 	int findNodeIndex(StringRef name) const;
 
 	MeshNode* addNode();

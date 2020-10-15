@@ -283,6 +283,7 @@ private:
 // ひとつのメッシュモデルデータ内にいくつかのメッシュノードが含まれているとき、それを名前検索するために使用する。
 // 例えば、フィールドのモデルに ビジュアル用のメッシュとコリジョン用のメッシュが含まれている場合、名前検索でコリジョンを取り出して Phyiscs モジュールに渡したりする。
 // また、LOD の管理も行う。
+/** MeshContainer */
 class MeshContainer
 	: public Object
 {
@@ -312,13 +313,13 @@ public:
 
     void setMesh(Mesh* mesh);
     Mesh* mesh() const;
+
+	// TODO: ↓ Node に持たせたので消しておく
 	
 	/** 可視状態を設定します。false の場合、このメッシュの描画は行われません。(default: true) */
-	LN_METHOD(Property)
 	void setVisible(bool value) { m_visible = value; }
 
 	/** 可視状態を取得します。*/
-	LN_METHOD(Property)
 	bool isVisible() const { return m_visible; }
 
 LN_CONSTRUCT_ACCESS:
@@ -340,6 +341,8 @@ private:
 };
 
 // Bone and Container
+/** MeshNode */
+LN_CLASS()
 class MeshNode : public Object
 {
 public:
@@ -382,6 +385,18 @@ public:
 
 	void updateGlobalTransform(bool hierarchical);
 
+	
+
+	// TODO: ↓ このあたりは dynamic data.
+	
+	/** 可視状態を設定します。false の場合、このメッシュの描画は行われません。(default: true) */
+	LN_METHOD(Property)
+	void setVisible(bool value) { m_visible = value; }
+
+	/** 可視状態を取得します。*/
+	LN_METHOD(Property)
+	bool isVisible() const { return m_visible; }
+
 LN_CONSTRUCT_ACCESS:
 	MeshNode();
     virtual ~MeshNode() = default;
@@ -400,6 +415,8 @@ private:
 
 	// アニメーションを書き込むのはここ
 	AttitudeTransform m_localTransform;
+
+	bool m_visible = true;
 
     friend class StaticMeshModel;
 };
