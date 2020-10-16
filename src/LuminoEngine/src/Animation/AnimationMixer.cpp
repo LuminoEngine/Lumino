@@ -437,6 +437,9 @@ void AnimationMixerCore::updateTargetElements()
 
 		}
 
+		//printf("updateTargetElements xxxx\n");
+
+
 		if (!link->affectAnimation)
 		{
 			if (link->rootValue.type() == AnimationValueType::Transform)

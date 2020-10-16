@@ -460,7 +460,6 @@ detail::AnimationTargetElementBlendLink* AnimationController::onRequireBinidng(c
 
 void AnimationController::onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* binding)
 {
-
 	m_model->meshNodes()[binding->targetIndex]->setTransform(binding->rootValue.getTransform());
 
 	//auto& s = binding->rootValue.getTransform().scale;

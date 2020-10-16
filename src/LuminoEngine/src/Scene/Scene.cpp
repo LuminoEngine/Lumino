@@ -180,6 +180,16 @@ void Scene::setFogUpperHeight(float value)
     detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_fogUpperHeight= value;
 }
 
+void Scene::setHDREnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->setHDREnabled(true);
+}
+
+bool Scene::isHDREnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->isHDREnabled();
+}
+
 void Scene::setScreenBlendColor(const Color& value)
 {
     detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setScreenBlendColor(value);

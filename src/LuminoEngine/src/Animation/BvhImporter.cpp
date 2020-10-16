@@ -237,6 +237,7 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const 
     // [2020/9/13] TODO: HierarchicalAnimationMode を作ったけど、それだけだと足りない。
     // モーションによっては歩行時の bobbing のため Y オフセットだけ有効にしたいものもある。
 
+
     for (const auto& joint : m_joints) {
         auto track = makeObject<TransformAnimationTrack>(TranslationClass::Ratio);
         track->m_root = joint->isRoot;
@@ -452,6 +453,8 @@ bool BvhImporter::readHierarchy()
         std::cout << "  " << joint->offset.x << ", " << joint->offset.y << ", " << joint->offset.z << std::endl;
     }
 #endif
+
+    return true;
 }
 
 bool BvhImporter::readMotion()

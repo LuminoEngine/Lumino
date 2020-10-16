@@ -151,6 +151,15 @@ public:
 	/** @name PostEffect */
 	/** @{ */
 
+
+	/** HDR レンダリングの有無を設定します。 (default: false) */
+	LN_METHOD()
+	static void setHDREnabled(bool value);
+
+	/** HDR レンダリングの有無を取得します。 */
+	LN_METHOD()
+	static bool isHDREnabled();
+
 	/** 画面全体へのブレンドカラーを設定します。(default: Black) */
 	LN_METHOD()
 	static void setScreenBlendColor(const Color& value);

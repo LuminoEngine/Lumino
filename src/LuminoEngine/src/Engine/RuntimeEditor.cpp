@@ -201,6 +201,10 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 				ImGui::Indent(0);
 			}
 
+			v = pp->isBloomEnabled();
+			ImGui::Checkbox("Bloom", &v);
+			pp->setBloomEnabled(v);
+
 			v = pp->isDOFEnabled();
 			ImGui::Checkbox("Depth Of Field", &v);
 			pp->setDOFEnabled(v);

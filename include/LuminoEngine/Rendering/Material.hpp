@@ -48,18 +48,29 @@ public:
 
 
 
+	/** setColor */
+	LN_METHOD(Property)
 	void setColor(const Color& value);
+
+	/** setRoughness */
+	LN_METHOD(Property)
 	void setRoughness(float value);
+
+	/** setMetallic */
+	LN_METHOD(Property)
 	void setMetallic(float value);
+
+	/** setEmissive */
+	LN_METHOD(Property)
 	void setEmissive(const Color& value);
 
 
 	
-	/** mainTexture */
+	/** setShadingModel */
 	LN_METHOD(Property)
 	void setShadingModel(ShadingModel value) { m_shadingModel = value; }
 
-	/** mainTexture */
+	/** shadingModel */
 	LN_METHOD(Property)
 	ShadingModel shadingModel() const { return m_shadingModel; }
 	

@@ -321,6 +321,7 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 		}
 	}
 
+	coreMaterial->setCullingMode(CullMode::None);
 
 
     return coreMaterial;
