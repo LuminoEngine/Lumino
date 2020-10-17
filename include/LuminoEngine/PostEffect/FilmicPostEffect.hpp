@@ -99,6 +99,9 @@ public:
 	float m_toeDenominator = 0.3;
 	float m_exposure = 0.0f;
 
+    float m_luminosityThreshold;
+    float m_bloomStrength;
+    float m_bloomRadius;
 
 protected:
     virtual Ref<PostEffectInstance> onCreateInstance() override;
@@ -108,9 +111,6 @@ LN_CONSTRUCT_ACCESS:
     void init();
 
 private:
-    float m_luminosityThreshold;
-    float m_bloomStrength;
-    float m_bloomRadius;
 
 	float m_focusedLinearDepth = 0.1;
 	Color m_screenBlendColor;

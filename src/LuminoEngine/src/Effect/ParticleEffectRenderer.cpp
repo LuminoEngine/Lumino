@@ -181,7 +181,6 @@ void SpriteParticleRenderer::draw(RenderingContext* context, const ParticleData2
                 0.0f, 0.0f, scale.z, 0.0f,
                 pos.x, pos.y, pos.z, 1.0f);
             m_batch->setTransform(transform);
-            m_batch->setColorScale(Color::Red);
             m_batch->drawMesh();
             break;
         }

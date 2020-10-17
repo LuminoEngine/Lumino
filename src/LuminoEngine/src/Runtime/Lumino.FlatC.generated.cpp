@@ -16477,6 +16477,22 @@ LN_FLAT_API LNResult LNParticleEmitterModel_SetSize(LNHandle particleemittermode
 }
 
 
+LN_FLAT_API LNResult LNParticleEmitterModel_SetSizeVelocity(LNHandle particleemittermodel, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ParticleEmitterModel, particleemittermodel)->setSizeVelocity(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNParticleEmitterModel_SetSizeAcceleration(LNHandle particleemittermodel, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ParticleEmitterModel, particleemittermodel)->setSizeAcceleration(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNParticleEmitterModel_SetForwardVelocityMin(LNHandle particleemittermodel, float value)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -17487,6 +17503,14 @@ LN_FLAT_API LNResult LNVisualObject_IsVisible(LNHandle visualobject, LNBool* out
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, visualobject)->isVisible());
     }
 
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNVisualObject_SetBlendMode2(LNHandle visualobject, LNBlendMode value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, visualobject)->setBlendMode2(static_cast<ln::BlendMode>(value)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -20093,6 +20117,70 @@ LN_FLAT_API LNResult LNScene_IsGammaEnabled(LNBool* outReturn)
         (ln::Scene::isGammaEnabled());
     }
 
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTonemapExposure(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTonemapExposure(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTonemapLinearWhite(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTonemapLinearWhite(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTonemapShoulderStrength(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTonemapShoulderStrength(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTonemapLinearStrength(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTonemapLinearStrength(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTonemapLinearAngle(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTonemapLinearAngle(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTonemapToeStrength(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTonemapToeStrength(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTonemapToeNumerator(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTonemapToeNumerator(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetTonemapToeDenominator(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setTonemapToeDenominator(value));
     LNI_FUNC_TRY_END_RETURN;
 }
 

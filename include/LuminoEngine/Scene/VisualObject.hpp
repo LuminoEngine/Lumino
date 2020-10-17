@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Rendering/Common.hpp"
 #include "WorldObject.hpp"
 
 namespace ln {
@@ -23,6 +24,12 @@ public:
     //-------------------------------------------------------------------------
     /** @name RenderState */
     /** @{ */
+
+    /** 合成方法を設定します。(default: BlendMode::Normal) */
+    LN_METHOD(Property)
+    void setBlendMode2(BlendMode value) { setBlendMode(value); }
+    // TODO: Optional の Binding は、clearBlendMode() みたいなメソッドの自動生成程度でいいかも。
+    // 正直凝ったことしても忘れるし、ほとんどのケースでは set だけ使って、get, clear はあまり使わないし。
 
     /** 合成方法を設定します。(default: BlendMode::Normal) */
     void setBlendMode(const Optional<BlendMode>& mode);

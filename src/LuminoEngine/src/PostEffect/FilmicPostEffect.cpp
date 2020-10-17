@@ -14,7 +14,7 @@ namespace ln {
 // FilmicPostEffect
 
 FilmicPostEffect::FilmicPostEffect()
-    : m_luminosityThreshold(0.9f)
+    : m_luminosityThreshold(0.8f)
     , m_bloomStrength(1.0f)
     , m_bloomRadius(1.0f)
     , m_antialiasEnabled(false)

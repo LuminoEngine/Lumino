@@ -238,6 +238,39 @@ public:
 	LN_METHOD(Property)
 	static bool isGammaEnabled();
 
+	
+	/** Tonemap exposure */
+	LN_METHOD(Property)
+	static void setTonemapExposure(float value);
+	
+	/** setTonemapLinearWhite */
+	LN_METHOD(Property)
+	static void setTonemapLinearWhite(float value);
+	
+	/** setTonemapShoulderStrength */
+	LN_METHOD(Property)
+	static void setTonemapShoulderStrength(float value);
+	
+	/** setTonemapLinearStrength */
+	LN_METHOD(Property)
+	static void setTonemapLinearStrength(float value);
+	
+	/** setTonemapLinearAngle */
+	LN_METHOD(Property)
+	static void setTonemapLinearAngle(float value);
+	
+	/** setTonemapToeStrength */
+	LN_METHOD(Property)
+	static void setTonemapToeStrength(float value);
+	
+	/** setTonemapToeNumerator */
+	LN_METHOD(Property)
+	static void setTonemapToeNumerator(float value);
+	
+	/** setTonemapToeDenominator */
+	LN_METHOD(Property)
+	static void setTonemapToeDenominator(float value);
+
 	/** @} */
 };
 

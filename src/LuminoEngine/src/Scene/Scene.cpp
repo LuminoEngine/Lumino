@@ -290,6 +290,46 @@ bool Scene::isGammaEnabled()
     return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isGammaEnabled();
 }
 
+void Scene::setTonemapExposure(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_exposure = value;
+}
+
+void Scene::setTonemapLinearWhite(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_linearWhite = value;
+}
+
+void Scene::setTonemapShoulderStrength(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_shoulderStrength = value;
+}
+
+void Scene::setTonemapLinearStrength(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_linearStrength = value;
+}
+
+void Scene::setTonemapLinearAngle(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_linearAngle = value;
+}
+
+void Scene::setTonemapToeStrength(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_toeStrength = value;
+}
+
+void Scene::setTonemapToeNumerator(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_toeNumerator = value;
+}
+
+void Scene::setTonemapToeDenominator(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_toeDenominator = value;
+}
+
 ////==============================================================================
 //// SceneAsset
 //

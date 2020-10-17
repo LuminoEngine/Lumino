@@ -755,6 +755,38 @@ typedef enum tagLNShadingModel
 } LNShadingModel;
 
 /**
+    @brief 合成方法
+*/
+typedef enum tagLNBlendMode
+{
+    /**
+        @brief 通常
+    */
+    LN_BLEND_MODE_NORMAL = 0,
+
+    /**
+        @brief アルファブレンド (RGB をアルファブレンドし、A を加算合成)
+    */
+    LN_BLEND_MODE_ALPHA = 1,
+
+    /**
+        @brief 加算合成
+    */
+    LN_BLEND_MODE_ADD = 2,
+
+    /**
+        @brief 減算合成
+    */
+    LN_BLEND_MODE_SUBTRACT = 3,
+
+    /**
+        @brief 乗算合成
+    */
+    LN_BLEND_MODE_MULTIPLY = 4,
+
+} LNBlendMode;
+
+/**
     @brief 背景のクリア方法
 */
 typedef enum tagLNSceneClearMode
@@ -2897,6 +2929,18 @@ LN_FLAT_API LNResult LNParticleEmitterModel_SetupBoxShape(LNHandle particleemitt
 LN_FLAT_API LNResult LNParticleEmitterModel_SetSize(LNHandle particleemittermodel, float value);
 
 /**
+    @brief 
+    @param[in] particleemittermodel : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_SetSizeVelocity(LNHandle particleemittermodel, float value);
+
+/**
+    @brief 
+    @param[in] particleemittermodel : instance
+*/
+LN_FLAT_API LNResult LNParticleEmitterModel_SetSizeAcceleration(LNHandle particleemittermodel, float value);
+
+/**
     @brief (default: 0)
     @param[in] particleemittermodel : instance
 */
@@ -3518,6 +3562,12 @@ LN_FLAT_API LNResult LNVisualObject_SetVisible(LNHandle visualobject, LNBool val
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LNResult LNVisualObject_IsVisible(LNHandle visualobject, LNBool* outReturn);
+
+/**
+    @brief 合成方法を設定します。(default: BlendMode::Normal)
+    @param[in] visualobject : instance
+*/
+LN_FLAT_API LNResult LNVisualObject_SetBlendMode2(LNHandle visualobject, LNBlendMode value);
 
 /**
     @brief 不透明度を設定します。(default: 1.0)
@@ -5044,6 +5094,46 @@ LN_FLAT_API LNResult LNScene_SetGammaEnabled(LNBool value);
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LNResult LNScene_IsGammaEnabled(LNBool* outReturn);
+
+/**
+    @brief Tonemap exposure
+*/
+LN_FLAT_API LNResult LNScene_SetTonemapExposure(float value);
+
+/**
+    @brief setTonemapLinearWhite
+*/
+LN_FLAT_API LNResult LNScene_SetTonemapLinearWhite(float value);
+
+/**
+    @brief setTonemapShoulderStrength
+*/
+LN_FLAT_API LNResult LNScene_SetTonemapShoulderStrength(float value);
+
+/**
+    @brief setTonemapLinearStrength
+*/
+LN_FLAT_API LNResult LNScene_SetTonemapLinearStrength(float value);
+
+/**
+    @brief setTonemapLinearAngle
+*/
+LN_FLAT_API LNResult LNScene_SetTonemapLinearAngle(float value);
+
+/**
+    @brief setTonemapToeStrength
+*/
+LN_FLAT_API LNResult LNScene_SetTonemapToeStrength(float value);
+
+/**
+    @brief setTonemapToeNumerator
+*/
+LN_FLAT_API LNResult LNScene_SetTonemapToeNumerator(float value);
+
+/**
+    @brief setTonemapToeDenominator
+*/
+LN_FLAT_API LNResult LNScene_SetTonemapToeDenominator(float value);
 
 
 //==============================================================================

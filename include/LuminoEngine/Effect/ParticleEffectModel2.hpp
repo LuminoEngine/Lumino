@@ -116,6 +116,15 @@ public:
 	LN_METHOD(Property)
 	void setSize(float value) { m_size.set(value); }
 
+	/**  */
+	LN_METHOD(Property)
+	void setSizeVelocity(float value) { m_sizeVelocity.set(value); }
+	
+	/**  */
+	LN_METHOD(Property)
+	void setSizeAcceleration(float value) { m_sizeAcceleration.set(value); }
+
+
 	
 	/**  (default: 0) */
 	LN_METHOD(Property)
