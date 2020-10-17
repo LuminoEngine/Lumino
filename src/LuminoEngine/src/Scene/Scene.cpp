@@ -200,12 +200,12 @@ const Color& Scene::screenBlendColor()
     return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->screenBlendColor();
 }
 
-void Scene::setScreenColorTone(const ColorTone& value)
+void Scene::setColorTone(const ColorTone& value)
 {
     detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setScreenColorTone(value);
 }
 
-const ColorTone& Scene::screenColorTone()
+const ColorTone& Scene::colorTone()
 {
     return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->screenColorTone();
 }

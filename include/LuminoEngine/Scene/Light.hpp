@@ -41,7 +41,7 @@ public:
 	LN_METHOD(Property)
 	const Color& getColor() const { return m_component->getColor(); }
 
-	/** シーン全体の環境光の色を設定します。(default: White) */
+	/** シーン全体の環境光の色を設定します。(default: 0.5, 0.5, 0.5) */
 	LN_METHOD(Property)
 	void setAmbientColor(const Color& value) { m_component->setAmbientColor(value); }
 

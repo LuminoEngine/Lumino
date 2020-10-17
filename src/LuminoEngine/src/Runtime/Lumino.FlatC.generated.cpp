@@ -13820,6 +13820,22 @@ LN_FLAT_API LNResult LNColor_Set(LNColor* color, float r_, float g_, float b_, f
 }
 
 
+LN_FLAT_API LNResult LNColorTone_SetZeros(LNColorTone* colortone)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::ColorTone*>(colortone)) ln::ColorTone();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNColorTone_Set(LNColorTone* colortone, float r_, float g_, float b_, float s_)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::ColorTone*>(colortone)) ln::ColorTone(r_, g_, b_, s_);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNPoint_SetZeros(LNPoint* point)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -19901,6 +19917,54 @@ LN_FLAT_API LNResult LNScene_StartFadeIn()
 }
 
 
+LN_FLAT_API LNResult LNScene_SetFogStartDistance(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setFogStartDistance(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetFogColor(const LNColor* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setFogColor(*reinterpret_cast<const ln::Color*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetFogDensity(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setFogDensity(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetFogHeightDensity(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setFogHeightDensity(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetFogLowerHeight(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setFogLowerHeight(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetFogUpperHeight(float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setFogUpperHeight(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNScene_SetHDREnabled(LNBool value)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -19939,6 +20003,28 @@ LN_FLAT_API LNResult LNScene_ScreenBlendColor(LNColor* outReturn)
     }
     else {
         (ln::Scene::screenBlendColor());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_SetColorTone(const LNColorTone* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Scene::setColorTone(*reinterpret_cast<const ln::ColorTone*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNScene_ColorTone(LNColorTone* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LNColorTone>(ln::Scene::colorTone());
+    }
+    else {
+        (ln::Scene::colorTone());
     }
 
     LNI_FUNC_TRY_END_RETURN;

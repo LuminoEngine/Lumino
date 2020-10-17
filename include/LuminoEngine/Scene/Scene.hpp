@@ -127,21 +127,27 @@ public:
 	// 指数関数的高さフォグ
 
 	/** フォグを開始するカメラからの距離を設定します。 */
+	LN_METHOD()
 	static void setFogStartDistance(float value);
 
 	/** フォグのメインカラーを設定します。 */
+	LN_METHOD()
 	static void setFogColor(const Color& value);
 
 	/** フォグの濃さを設定します。 */
+	LN_METHOD()
 	static void setFogDensity(float value);
 
 	/** 高さフォグの濃さを設定します。 */
+	LN_METHOD()
 	static void setFogHeightDensity(float value);
 
 	/** フォグの高さの下限を設定します。 */
+	LN_METHOD()
 	static void setFogLowerHeight(float value);
 
 	/** フォグの高さの上限を設定します。 */
+	LN_METHOD()
 	static void setFogUpperHeight(float value);
 
 	/** @} */
@@ -169,9 +175,13 @@ public:
 	static const Color& screenBlendColor();
 
 	// ※ RGB は「加算」される
-	static void setScreenColorTone(const ColorTone& value);
+	/** setColorTone */
+	LN_METHOD()
+	static void setColorTone(const ColorTone& value);
 
-	static const ColorTone& screenColorTone();
+	/** colorTone */
+	LN_METHOD()
+	static const ColorTone& colorTone();
 
 	
 	/** アンチエイリアスの有無を設定します。(default: false) */

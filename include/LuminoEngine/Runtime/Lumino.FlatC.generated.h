@@ -66,6 +66,17 @@ struct LNColor
 };
 
 /**
+    @brief 色調を定義します。
+*/
+struct LNColorTone
+{
+    float r;
+    float g;
+    float b;
+    float s;
+};
+
+/**
     @brief 2次元上の点を表します。
 */
 struct LNPoint
@@ -1355,6 +1366,23 @@ LN_FLAT_API LNResult LNColor_SetZeros(LNColor* color);
     @param[in] color : instance
 */
 LN_FLAT_API LNResult LNColor_Set(LNColor* color, float r_, float g_, float b_, float a_);
+
+
+//==============================================================================
+// ln::ColorTone
+
+/**
+    @brief すべての要素を 0.0 で初期化します。
+    @param[in] colortone : instance
+*/
+LN_FLAT_API LNResult LNColorTone_SetZeros(LNColorTone* colortone);
+
+
+/**
+    @brief 各要素を指定して初期化します。
+    @param[in] colortone : instance
+*/
+LN_FLAT_API LNResult LNColorTone_Set(LNColorTone* colortone, float r_, float g_, float b_, float s_);
 
 
 //==============================================================================
@@ -3703,7 +3731,7 @@ LN_FLAT_API LNResult LNEnvironmentLight_SetColor(LNHandle environmentlight, cons
 LN_FLAT_API LNResult LNEnvironmentLight_GetColor(LNHandle environmentlight, LNColor* outReturn);
 
 /**
-    @brief シーン全体の環境光の色を設定します。(default: White)
+    @brief シーン全体の環境光の色を設定します。(default: 0.5, 0.5, 0.5)
     @param[in] environmentlight : instance
 */
 LN_FLAT_API LNResult LNEnvironmentLight_SetAmbientColor(LNHandle environmentlight, const LNColor* value);
@@ -4986,6 +5014,36 @@ LN_FLAT_API LNResult LNScene_StartFadeOut();
 LN_FLAT_API LNResult LNScene_StartFadeIn();
 
 /**
+    @brief フォグを開始するカメラからの距離を設定します。
+*/
+LN_FLAT_API LNResult LNScene_SetFogStartDistance(float value);
+
+/**
+    @brief フォグのメインカラーを設定します。
+*/
+LN_FLAT_API LNResult LNScene_SetFogColor(const LNColor* value);
+
+/**
+    @brief フォグの濃さを設定します。
+*/
+LN_FLAT_API LNResult LNScene_SetFogDensity(float value);
+
+/**
+    @brief 高さフォグの濃さを設定します。
+*/
+LN_FLAT_API LNResult LNScene_SetFogHeightDensity(float value);
+
+/**
+    @brief フォグの高さの下限を設定します。
+*/
+LN_FLAT_API LNResult LNScene_SetFogLowerHeight(float value);
+
+/**
+    @brief フォグの高さの上限を設定します。
+*/
+LN_FLAT_API LNResult LNScene_SetFogUpperHeight(float value);
+
+/**
     @brief HDR レンダリングの有無を設定します。 (default: false)
 */
 LN_FLAT_API LNResult LNScene_SetHDREnabled(LNBool value);
@@ -5006,6 +5064,17 @@ LN_FLAT_API LNResult LNScene_SetScreenBlendColor(const LNColor* value);
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LNResult LNScene_ScreenBlendColor(LNColor* outReturn);
+
+/**
+    @brief setColorTone
+*/
+LN_FLAT_API LNResult LNScene_SetColorTone(const LNColorTone* value);
+
+/**
+    @brief colorTone
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNScene_ColorTone(LNColorTone* outReturn);
 
 /**
     @brief アンチエイリアスの有無を設定します。(default: false)
