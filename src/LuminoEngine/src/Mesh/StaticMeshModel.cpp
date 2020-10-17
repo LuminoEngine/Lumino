@@ -60,6 +60,11 @@ MeshNode* StaticMeshModel::findNode(StringRef name) const
 		return m_nodes[index];
 }
 
+Material* StaticMeshModel::findMaterial(StringRef name) const
+{
+	return m_materials.findIf([&](const auto& x) { return x->m_name == name; }).valueOr(nullptr);
+}
+
 int StaticMeshModel::findNodeIndex(StringRef name) const
 {
 	return m_nodes.indexOfIf([&](const auto& x) { return x->name() == name; });

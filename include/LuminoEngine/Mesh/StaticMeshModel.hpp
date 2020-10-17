@@ -13,7 +13,14 @@ public:
 	LN_METHOD()
     static Ref<StaticMeshModel> load(const StringRef& filePath);
 
+	/** findNode */
+	LN_METHOD()
 	MeshNode* findNode(StringRef name) const;
+	
+	/** findMaterial */
+	LN_METHOD()
+	Material* findMaterial(StringRef name) const;
+
 	//MeshContainer* findMeshContainer(StringRef name) const;
 	int findNodeIndex(StringRef name) const;
 

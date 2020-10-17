@@ -2556,6 +2556,22 @@ LN_FLAT_API LNResult LNStaticMeshModel_Load(const LNChar* filePath, LNHandle* ou
 LN_FLAT_API LNResult LNStaticMeshModel_LoadA(const char* filePath, LNHandle* outReturn);
 
 /**
+    @brief findNode
+    @param[in] staticmeshmodel : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNStaticMeshModel_FindNode(LNHandle staticmeshmodel, const LNChar* name, LNHandle* outReturn);
+LN_FLAT_API LNResult LNStaticMeshModel_FindNodeA(LNHandle staticmeshmodel, const char* name, LNHandle* outReturn);
+
+/**
+    @brief findMaterial
+    @param[in] staticmeshmodel : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNStaticMeshModel_FindMaterial(LNHandle staticmeshmodel, const LNChar* name, LNHandle* outReturn);
+LN_FLAT_API LNResult LNStaticMeshModel_FindMaterialA(LNHandle staticmeshmodel, const char* name, LNHandle* outReturn);
+
+/**
     @brief materialCount
     @param[in] staticmeshmodel : instance
     @param[out] outReturn : instance.
@@ -3110,6 +3126,19 @@ extern LN_FLAT_API LNSubinstanceId LNCollisionEventHandler_GetSubinstanceId(LNHa
     @param[out] outCharacterController : instance.
 */
 LN_FLAT_API LNResult LNCharacterController_Create(LNHandle* outCharacterController);
+
+/**
+    @brief walkVelocity
+    @param[in] charactercontroller : instance
+*/
+LN_FLAT_API LNResult LNCharacterController_SetWalkVelocity(LNHandle charactercontroller, float value);
+
+/**
+    @brief walkVelocity
+    @param[in] charactercontroller : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNCharacterController_GetWalkVelocity(LNHandle charactercontroller, float* outReturn);
 
 /**
     @brief setVelocity

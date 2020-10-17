@@ -114,6 +114,7 @@ private:
 	Optional<bool>			depthWriteEnabled;
 
 public:
+	String m_name;
 	ShadingModel			m_shadingModel = ShadingModel::Default;
 
 	void setBlendMode(Optional<BlendMode> mode);

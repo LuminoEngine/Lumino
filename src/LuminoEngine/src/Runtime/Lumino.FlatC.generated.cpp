@@ -15855,6 +15855,62 @@ LN_FLAT_API LNResult LNStaticMeshModel_LoadA(const char* filePath, LNHandle* out
 }
 
 
+LN_FLAT_API LNResult LNStaticMeshModel_FindNode(LNHandle staticmeshmodel, const LNChar* name, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshModel, staticmeshmodel)->findNode(name));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshModel, staticmeshmodel)->findNode(name));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNStaticMeshModel_FindNodeA(LNHandle staticmeshmodel, const char* name, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshModel, staticmeshmodel)->findNode(LNI_ASTRPTR_TO_STRING(name)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshModel, staticmeshmodel)->findNode(LNI_ASTRPTR_TO_STRING(name)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNStaticMeshModel_FindMaterial(LNHandle staticmeshmodel, const LNChar* name, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshModel, staticmeshmodel)->findMaterial(name));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshModel, staticmeshmodel)->findMaterial(name));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNStaticMeshModel_FindMaterialA(LNHandle staticmeshmodel, const char* name, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshModel, staticmeshmodel)->findMaterial(LNI_ASTRPTR_TO_STRING(name)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshModel, staticmeshmodel)->findMaterial(LNI_ASTRPTR_TO_STRING(name)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNStaticMeshModel_MaterialCount(LNHandle staticmeshmodel, int* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -16781,6 +16837,28 @@ LN_FLAT_API LNResult LNCharacterController_Create(LNHandle* outCharacterControll
 {
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outCharacterController, LNWS_ln_CharacterController, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNCharacterController_SetWalkVelocity(LNHandle charactercontroller, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CharacterController, charactercontroller)->setWalkVelocity(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNCharacterController_GetWalkVelocity(LNHandle charactercontroller, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_CharacterController, charactercontroller)->walkVelocity());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_CharacterController, charactercontroller)->walkVelocity());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 

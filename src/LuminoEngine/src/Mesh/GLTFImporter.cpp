@@ -266,6 +266,7 @@ bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
 Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 {
     auto coreMaterial = makeObject<Material>();
+	coreMaterial->m_name = String::fromStdString(material.name);
 	coreMaterial->setMetallic(1.0f);    // glTF default
 	coreMaterial->setRoughness(1.0f);    // glTF default
 
@@ -321,6 +322,8 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 		}
 	}
 
+	// MMD, VRM など、多くの人型モデルは両面表示を前提として作られていることの方が多いので、
+	// デフォルトではそのようにしておく。
 	coreMaterial->setCullingMode(CullMode::None);
 
 

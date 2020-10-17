@@ -33,6 +33,14 @@ public:
 	void releaseCursorGrab();
 
 	const Ref<RigidBody>& rigidBody() const { return m_rigidBody; }
+	
+	/** walkVelocity */
+	LN_METHOD(Property)
+	void setWalkVelocity(float value) { m_walkVelocity = value; }
+
+	/** walkVelocity */
+	LN_METHOD(Property)
+	float walkVelocity() const { return m_walkVelocity; }
 
 	// InputControlEnabled=true の時に有効
 	/** setVelocity */
