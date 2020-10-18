@@ -101,6 +101,7 @@ private:
 	Ref<FileStream> m_file;
 	Ref<BinaryReader> m_reader;
 	std::map<Path, FileEntry, ComparePath> m_fileEntries;
+	std::mutex m_mutex;
 };
 
 class CryptedArchiveFileStream
