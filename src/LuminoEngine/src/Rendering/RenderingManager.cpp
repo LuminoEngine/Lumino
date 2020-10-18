@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
@@ -272,8 +272,22 @@ void RenderingManager::init(const Settings& settings)
 		};
 		createBuiltinShader(BuiltinShader::Copy, u"Copy", data, LN_ARRAY_SIZE_OF(data));
 	}
+	// TransitionEffectWithoutMask
+	{
+		const unsigned char data[] = {
+#include "../PostEffect/Resource/TransitionEffectWithoutMask.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::TransitionEffectWithoutMask, u"TransitionEffectWithoutMask", data, LN_ARRAY_SIZE_OF(data));
+	}
+	// TransitionEffectWithMask
+	{
+		const unsigned char data[] = {
+#include "../PostEffect/Resource/TransitionEffectWithMask.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::TransitionEffectWithMask, u"TransitionEffectWithMask", data, LN_ARRAY_SIZE_OF(data));
+	}
 
-#if 0	// ƒeƒXƒg—p
+#if 0	// ãƒ†ã‚¹ãƒˆç”¨
 #define ROOT_PATH u"C:/Proj/LN/Lumino/src/LuminoEngine/"
 
 	m_builtinShaders[(int)BuiltinShader::CopyScreen] = Shader::create(ROOT_PATH u"src/Rendering/Resource/CopyScreen.fx");

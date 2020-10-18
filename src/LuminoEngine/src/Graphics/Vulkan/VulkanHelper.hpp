@@ -469,7 +469,13 @@ public:
     void reset();
 
 private:
-	static const uint32_t MAX_DESCRIPTOR_COUNT = 32;
+    // 一度に使える各種類ごとの Descripter 数。
+    // cbuffer だと _Global, LNRenderViewBuffer, LNRenderElementBuffer 等 5,6個。
+    // sampler だと DoF がテクスチャ4つくらい使っている。
+    // TODO: エンジン内部だけならこれで足りるが、ユーザーがいろいろ拡張し始めるとちょっと危ないので、警告とか入れておきたいところ。
+	static const uint32_t MAX_DESCRIPTOR_COUNT2 = 8;       
+
+    static const uint32_t MAX_DESCRIPTOR_SET_COUNT = 32;
     VulkanDevice* m_deviceContext;
     VulkanShaderPass* m_owner;
     //VkDescriptorPool m_descriptorPool;
