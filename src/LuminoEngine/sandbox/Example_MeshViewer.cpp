@@ -78,6 +78,7 @@ public:
         //mesh->model()->material(1)->setColor(Color(0, 1, 0));
         //mesh->model()->material(1)->setEmissive(Color(0.5, 2, 0.5));
         Engine::renderView()->setHDREnabled(true);
+        Scene::setSSAOEnabled(true);
 #if 1
 
         Engine::mainLight()->setPosition(30, 20, 10);
@@ -134,11 +135,11 @@ public:
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleStandingPose7.bvh");
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleSittingPose.bvh");
         //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/Arm_R-Test1-BoneVert.bvh");
-        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh");
+        auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh");
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Walk.bvh");
-        auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Standing2.bvh");
+        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Standing2.bvh");
         //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/HC5-3.bvh");
-        clip->setHierarchicalAnimationMode(HierarchicalAnimationMode::AllowTranslationOnlyRootY);
+        //clip->setHierarchicalAnimationMode(HierarchicalAnimationMode::AllowTranslationOnlyRootY);
         
         //auto clip = AnimationClip::load(u"D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");
         //auto clip1 = AnimationClip::load(u"D:/Materials/MMD/Motion/MMO用stand/stand2.vmd");

@@ -665,7 +665,7 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
     return true;
 }
 
-bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedDescriptorLayout)
+bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedDescriptorLayout, DiagnosticsManager* diag)
 {
 	// Vulkan で必要となる uniform の set, binding は、HLSL で register を使って指定しないと常に 0 となる。
 	// そのまま使うことはできないので、自前で調整を行う。
@@ -759,6 +759,7 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
     root->traverse(&localIntermTraverser);
 
     if (!m_program->mapIO()) {
+        diag->reportError(m_program->getInfoLog());
         LN_ERROR();
         return false;
     }

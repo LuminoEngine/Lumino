@@ -8,27 +8,31 @@
 #include <LuminoForward.fxh>
 #include <LuminoPBR.fxh>
 
+/*
 struct VSInput
 {
     float3 Pos : POSITION0;
     float3 Normal : NORMAL0;
     float2 UV : TEXCOORD0;
 };
+*/
 
 struct VSOutput
 {
-    float4 svPos : SV_POSITION;
-    float3 ViewSpaceNormal : NORMAL0;
+    LN_VS_OUTPUT_DECLARE;
+    //float4 svPos : SV_POSITION; // svPos
+    //float3 ViewSpaceNormal : NORMAL0;   // viewNormal
     float4 ViewPos : TEXCOORD0;
-    float2 UV : TEXCOORD1;
+    //float2 UV : TEXCOORD1;              // UV
     float4 ClipSpacePos : TEXCOORD2;
 };
 
 struct PSInput
 {
-    float3 ViewSpaceNormal : NORMAL0;
+    LN_PS_INPUT_DECLARE;
+    //float3 ViewSpaceNormal : NORMAL0; // viewNormal
     float4 ViewPos : TEXCOORD0;
-    float2 UV : TEXCOORD1;
+    //float2 UV : TEXCOORD1;
     float4 ClipSpacePos : TEXCOORD2;
 };
 
@@ -41,13 +45,19 @@ struct PSOutput
     int4 ObjectId: SV_TARGET3;
 };
 
-VSOutput VS_WriteLinearDepth(VSInput input)
+VSOutput VSMain(LN_VSInput input)
 {
     VSOutput output;
+    LN_ProcessVertex(input, output);
+
+
+    //return output;
+
+    //VSOutput output;
     output.ViewPos = mul(float4(input.Pos, 1.0), ln_WorldView);
-    output.ViewSpaceNormal = mul(input.Normal, (float3x3)ln_WorldViewIT);
-    output.svPos = mul(float4(input.Pos, 1.0), ln_WorldViewProjection);
-    output.UV = input.UV;
+    //output.ViewSpaceNormal = mul(input.Normal, (float3x3)ln_WorldViewIT);
+    //output.svPos = mul(float4(input.Pos, 1.0), ln_WorldViewProjection);
+    //output.UV = input.UV;
     output.ClipSpacePos = output.svPos;
     return output;
 }
@@ -64,7 +74,7 @@ PSOutput PS_WriteLinearDepth(PSInput input)
     PSOutput output;
 
     // 左手。Z+ が正面(奥)
-    output.Normal = float4(LN_PackNormal(normalize(input.ViewSpaceNormal)), 1.0); // normalize 必須
+    output.Normal = float4(LN_PackNormal(normalize(input.viewNormal)), 1.0); // normalize 必須
 
     output.Depth = float4(clipSpaceZ, linearZ, 0.0, 1.0);
 
@@ -86,7 +96,7 @@ technique Default
     Phase = ForwardGBufferPrepass;
     pass Pass1
     {
-        VertexShader = VS_WriteLinearDepth;
+        VertexShader = VSMain;
         PixelShader = PS_WriteLinearDepth;
     }
 }
@@ -97,7 +107,18 @@ technique RoughnessMap
     Roughness = RoughnessMap;
     pass Pass1
     {
-        VertexShader = VS_WriteLinearDepth;
+        VertexShader = VSMain;
         PixelShader = PS_WriteLinearDepth;
+    }
+}
+
+technique Forward_Geometry_SkinnedMesh
+{
+    Phase = ForwardGBufferPrepass;
+    VertexProcessing = Skinned;
+    pass Pass1
+    {
+        VertexShader = VSMain;
+        PixelShader  = PS_WriteLinearDepth;
     }
 }

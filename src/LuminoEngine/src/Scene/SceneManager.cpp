@@ -92,11 +92,6 @@ void SceneManager::init()
 		SkydomeCloudR = createTexture(data, LN_ARRAY_SIZE_OF(data));
 	}
 
-
-#if 0
-    m_atmosphereShader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyFromAtmosphere.fx");
-#endif
-
 	m_primitiveMeshDefaultMaterial = makeObject<Material>();
 	m_primitiveMeshDefaultMaterial->setColor(Color(0.8f, 0.8f, 0.8f, 1.0));
 	m_primitiveMeshDefaultMaterial->setRoughness(0.5f);

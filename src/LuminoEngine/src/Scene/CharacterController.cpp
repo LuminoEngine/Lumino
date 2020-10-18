@@ -266,23 +266,25 @@ void CharacterController::onUpdate(float elapsedSeconds)
 		const auto characterTargetFrontDir = Vector3::transform(Vector3::UnitZ, camera->rotation());
 		const auto characterTargetFrontDirXZ = Vector3::safeNormalize(Vector3(characterTargetFrontDir.x, 0, characterTargetFrontDir.z), Vector3::UnitZ);
 
+		// TODO: ひとまず移動方向に向ける
+		const auto targetDir = (1) ? Vector3::normalize(m_currentVelocity) : characterTargetFrontDirXZ;
+
 		const auto characterCurrentFrontDir = Vector3::transform(Vector3::UnitZ, character->rotation());
 		const auto characterCurrentFrontDirXZ = Vector3::safeNormalize(Vector3(characterCurrentFrontDir.x, 0, characterCurrentFrontDir.z), Vector3::UnitZ);
 
 		const float rotDelta = Math::PI * (1.0f / m_turnTime) * elapsedSeconds;
 
-		const float dot = Vector3::dot(characterCurrentFrontDirXZ, characterTargetFrontDirXZ);
+		const float dot = Vector3::dot(characterCurrentFrontDirXZ, targetDir);
 		const float rotDiff = (dot > 1.0f) ? 0.0f : std::acos(dot);	// (dot > 1.0f) は誤差対策。角度差なしとする
 
 		if (rotDiff < rotDelta) {
-			character->lookAt(character->position() + (characterTargetFrontDirXZ));
+			character->lookAt(character->position() + (targetDir));
 		}
 		else {
-
-
+			
 			// .y の符号で、characterCurrentFrontDirXZ を characterTargetFrontDirXZ に向けるにはどちらに回転するのが最短なのかわかる。
 			// そのまま回転軸にもできる。
-			const auto cross = Vector3::cross(characterCurrentFrontDirXZ, characterTargetFrontDirXZ);
+			const auto cross = Vector3::cross(characterCurrentFrontDirXZ, targetDir);
 			const auto newDir = Vector3::transform(characterCurrentFrontDirXZ, Quaternion::makeFromRotationAxis(cross, rotDelta));
 
 
@@ -291,7 +293,7 @@ void CharacterController::onUpdate(float elapsedSeconds)
 			character->lookAt(characterTargetFrontPos);
 		}
 
-		character->lookAt(character->position() + (characterTargetFrontDirXZ));
+		//character->lookAt(character->position() + (characterTargetFrontDirXZ));
 
 
 		//character->lookAt(character->position() + cameraCurrentFrontXZ);

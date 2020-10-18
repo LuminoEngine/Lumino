@@ -251,6 +251,28 @@ void RenderingManager::init(const Settings& settings)
 		createBuiltinShader(BuiltinShader::RadialBlur, u"RadialBlur", data, LN_ARRAY_SIZE_OF(data));
 	}
 
+	// SSAOOcclusionMap
+	{
+		const unsigned char data[] = {
+#include "../PostEffect/Resource/SSAOOcclusionMap.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::SSAOOcclusionMap, u"SSAOOcclusionMap", data, LN_ARRAY_SIZE_OF(data));
+	}
+	// FilmicPostEffect
+	{
+		const unsigned char data[] = {
+#include "../PostEffect/Resource/FilmicPostEffect.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::FilmicPostEffect, u"FilmicPostEffect", data, LN_ARRAY_SIZE_OF(data));
+	}
+	// Copy
+	{
+		const unsigned char data[] = {
+#include "../PostEffect/Resource/Copy.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::FilmicPostEffect, u"Copy", data, LN_ARRAY_SIZE_OF(data));
+	}
+
 #if 0	// テスト用
 #define ROOT_PATH u"C:/Proj/LN/Lumino/src/LuminoEngine/"
 
