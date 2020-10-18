@@ -42,7 +42,7 @@ bool DepthOfFieldPostEffectCore::init(Material* compositeMaterial)
 {
     m_compositeMaterial = compositeMaterial;
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/Copy.fx");
+    auto shader1 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::Copy);
     m_copyMaterial = makeObject<Material>();
     m_copyMaterial->setShader(shader1);
 

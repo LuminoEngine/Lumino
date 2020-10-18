@@ -270,7 +270,7 @@ void RenderingManager::init(const Settings& settings)
 		const unsigned char data[] = {
 #include "../PostEffect/Resource/Copy.lcfx.inl"
 		};
-		createBuiltinShader(BuiltinShader::FilmicPostEffect, u"Copy", data, LN_ARRAY_SIZE_OF(data));
+		createBuiltinShader(BuiltinShader::Copy, u"Copy", data, LN_ARRAY_SIZE_OF(data));
 	}
 
 #if 0	// テスト用

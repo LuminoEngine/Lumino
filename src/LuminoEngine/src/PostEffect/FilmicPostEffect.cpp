@@ -54,11 +54,12 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
     if (!PostEffectInstance::init()) return false;
     m_owner = owner;
 
-    auto shader2 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSAOOcclusionMap.fx");
+    auto shader2 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SSAOOcclusionMap);
     m_ssaoMaterial = makeObject<Material>();
     m_ssaoMaterial->setShader(shader2);
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.fx");
+    auto shader1 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::FilmicPostEffect);
+    //auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.fx");
     m_integrationMaterial = makeObject<Material>();
     m_integrationMaterial->setShader(shader1);
 
