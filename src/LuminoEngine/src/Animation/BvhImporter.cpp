@@ -171,6 +171,10 @@ void AsciiLineReader::splitLineTokens()
 
 */
 
+static const bool s_fromBlender = false;
+static const bool s_fromBlenderMixamo = false;
+static const bool s_x90 = false;
+
 BvhImporter::BvhImporter(AssetManager* assetManager, DiagnosticsManager* diag)
 	: m_assetManager(assetManager)
 	, m_diag(diag)
@@ -232,6 +236,7 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const 
     // とりあえず Mixamo のモーションは下端 0 が基準になっているようなので、それに合わせておく。
     //const float offsetBasis = std::abs(m_joints[m_rootJointIndex]->offset.y - m_minOffsetY);
     const float offsetBasis = std::abs(m_joints[m_rootJointIndex]->offset.y);
+    //const float offsetScale = (offsetBasis == 0.0) ? 1.0f : 1.0f / offsetBasis;
     const float offsetScale = 1.0f / offsetBasis;
 
     // [2020/9/13] TODO: HierarchicalAnimationMode を作ったけど、それだけだと足りない。
@@ -256,16 +261,18 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const 
             //pos.y += joint->offset.y;
             //pos.z += joint->offset.z;
             //auto pos = Vector3(posOrg.x, posOrg.z, posOrg.y);   // Blender
-            //posOrg *= 0.0f; // 無効化。bvh_player でも使っていなかった。
-            if (!joint->isRoot) {   // bvh_player ではルート要素だけオフセットをつけていた
-                posOrg *= 0.0f;
-            }
-            else {
-                //posOrg *= 1.0f / 20.0f;
-                //posOrg *= 10.0f / 80.0f;    // HC4 Model の Hips 位置は y=10. 
-                posOrg.y -= offsetBasis;
-                posOrg *= offsetScale;
-            }
+            //if (s_fromBlenderMixamo) {
+                //posOrg *= 0.0f; // 無効化。bvh_player でも使っていなかった。
+                if (!joint->isRoot) {   // bvh_player ではルート要素だけオフセットをつけていた
+                    posOrg *= 0.0f;
+                }
+                else {
+                    //posOrg *= 1.0f / 20.0f;
+                    //posOrg *= 10.0f / 80.0f;    // HC4 Model の Hips 位置は y=10. 
+                    posOrg.y -= offsetBasis;
+                    posOrg *= offsetScale;
+                }
+            //}
             auto pos = Vector3(posOrg.x, posOrg.y, posOrg.z);
 #if 1
             auto rotOrg = Vector3(
@@ -282,6 +289,12 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const 
             //std::cout << name << std::endl;
             //printf("  pos: %f %f %f\n", posOrg.x, posOrg.y, posOrg.z);
             //printf("  rot: %f %f %f\n", rotOrg.x, rotOrg.y, rotOrg.z);
+
+            if (joint->isRoot) {
+                if (s_x90) {
+                    //rot.x -= Math::PIDiv2;
+                }
+            }
 
             //if (name == u"Arm_R") {
             //    printf("");
@@ -306,6 +319,20 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const 
                 //rot.y *= -1;
                 //rot.z *= -1;
             }
+
+            if (s_fromBlenderMixamo) {
+
+                rot.y *= -1;
+                rot.z *= -1;
+            }
+
+            if (s_fromBlender) {
+                std::swap(pos.y, pos.z);
+                pos.y = 0;
+                rot.y *= -1.0f;
+                std::swap(rot.y, rot.z);
+            }
+
             track->setDataTQ(iFrame, m_frameTime * iFrame, pos, rot);
 #else
             const auto rot = Quaternion::makeFromEulerAngles(
@@ -353,10 +380,12 @@ bool BvhImporter::readHierarchy()
 
             m_joints.push_back(joint);
 
+            // 最初に見つかった isRoot を m_rootJointIndex として採用。
+            // それ以降の Root は警告する。
             if (m_rootJointIndex < 0) {
                 m_rootJointIndex = m_joints.size() - 1;
             }
-            else {
+            else if (isRoot) {
                 LN_WARNING(u"Multiple root joints found.");
             }
         }
