@@ -172,7 +172,7 @@ void AsciiLineReader::splitLineTokens()
 */
 
 static const bool s_fromBlender = false;
-static const bool s_fromBlenderMixamo = false;
+static const bool s_fromBlenderMixamo = true;
 static const bool s_x90 = false;
 
 BvhImporter::BvhImporter(AssetManager* assetManager, DiagnosticsManager* diag)
@@ -192,7 +192,7 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const 
     if (settings->requiredStandardCoordinateSystem) {
         // BVH データは Y+Top, R-Hand であることを前提とし、
         // Z+ を正面とするスキンメッシュモデル用のアニメーションに変換する
-        m_flipZ = true;
+        m_flipZ = false;
         m_flipX = false;
     }
 
@@ -321,9 +321,15 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const 
             }
 
             if (s_fromBlenderMixamo) {
+                // 元データは x=90度 回転が適用された状態でエクスポートされるので、Y-Up になっている。
 
+
+                //rot.x *= -1;
                 rot.y *= -1;
+                //rot.y -= Math::PI;
+                //rot.z += Math::PI;
                 rot.z *= -1;
+                //std::swap(rot.y, rot.z);
             }
 
             if (s_fromBlender) {

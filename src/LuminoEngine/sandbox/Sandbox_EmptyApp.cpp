@@ -6,13 +6,19 @@ using namespace ln;
 
 class App_Sandbox_EmptyApp : public Application
 {
+public:
+    App_Sandbox_EmptyApp()
+    {
+        EngineSettings::addAssetArchive("C:/Proj/LN/PrivateProjects/HC4/.ln/Assets.lca", "n7OeL8Hh");
+    }
+
     void onInit() override
     {
         //Engine::renderView()->setGuideGridEnabled(true);
         //Engine::camera()->addComponent(CameraOrbitControlComponent::create());
 
 
-        auto mesh = ln::SkinnedMesh::load(u"D:/Documents/Modeling/HC4-10.glb");
+        auto mesh = ln::StaticMesh::load(u"Map/MainMap1-Start.gltf");
     }
 
     void onUpdate() override

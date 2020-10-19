@@ -135,7 +135,8 @@ public:
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleStandingPose7.bvh");
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleSittingPose.bvh");
         //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/Arm_R-Test1-BoneVert.bvh");
-        auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh");
+        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh");
+        auto clip = AnimationClip::load(u"C:/Proj/LN/PrivateProjects/HC4/assets/Animation/Jogging.bvh");
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Walk.bvh");
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Standing2.bvh");
         //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/HC5-3.bvh");

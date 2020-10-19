@@ -286,6 +286,7 @@ void Sandbox_MeshTilemap();
 void Sandbox_Physics();
 void Sandbox_Particle();
 void Sandbox_PostEffect();
+void Sandbox_SkinnedMeshTest();
 void Sandbox_Sky();
 void Sandbox_Voxel();
 void Sandbox_UIShader();
@@ -467,7 +468,7 @@ int main(int argc, char** argv)
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_MainLoop();
-		//Example_MeshViewer();
+		Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
         //Example_Shader();
@@ -475,7 +476,7 @@ int main(int argc, char** argv)
         //Example_Sprite();
         //Example_UIControls();
 		//Example_Tilemap();
-        Experiment_CharacterController();
+        //Experiment_CharacterController();
         //Experiment_Editor();
         //Experiment_MeshCollider();
         //Experiment_Reflector();
@@ -489,6 +490,7 @@ int main(int argc, char** argv)
         //Sandbox_Physics();
         //Sandbox_Particle();
         //Sandbox_PostEffect();
+        //Sandbox_SkinnedMeshTest();
         //Sandbox_Sky();
         //Sandbox_UIShader();
 		//Tutorial_Sandbox();
