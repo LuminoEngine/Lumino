@@ -1,4 +1,5 @@
-﻿#include "Common.hpp"
+﻿#include <future>
+#include "Common.hpp"
 #include "../src/Asset/AssetManager.hpp"
 #include "../src/Asset/AssetArchive.hpp"
 
@@ -77,4 +78,59 @@ TEST_F(Test_Asset_LoadAsset, Basic)
 		//auto skinnedmesh2 = SkinnedMeshModel::load(u"x/SkinnedMesh2.glb");
 		//ASSERT_EQ(true, skinnedmesh1 == skinnedmesh2);
 	}
+}
+
+//------------------------------------------------------------------------------
+// 音声ファイルは基本的に別スレッドで読み取られるので、
+// メインスレッドでの読み取りと競合すると音声が遅延してしまうことがある。
+// そのため Archive ファイルを分けることで同時読み取りを避けたい。
+TEST_F(Test_Asset_LoadAsset, MultiArchive)
+{
+	const Path assetFile1 = LN_TEMPFILE("LoadAssetTest1.lca");
+	uint32_t hash1 = 0;
+	{
+		detail::CryptedAssetArchiveWriter archive;
+		archive.open(assetFile1, u"pass1");
+		archive.addFile(LN_ASSETFILE("Audio/sin_440_3s_S16L_96000_2ch.wav"), u"Audio/sin_440_3s_S16L_96000_2ch.wav");
+		archive.close();
+
+		auto data = FileSystem::readAllBytes(LN_ASSETFILE("Audio/sin_440_3s_S16L_96000_2ch.wav"));
+		hash1 = CRCHash::compute((const char*)data.data(), data.size());
+	}
+
+	const Path assetFile2 = LN_TEMPFILE("LoadAssetTest2.lca");
+	uint32_t hash2 = 0;
+	{
+		detail::CryptedAssetArchiveWriter archive;
+		archive.open(assetFile2, u"pass2");
+		archive.addFile(LN_ASSETFILE("Audio/sin_440_3s_S16L_88200_2ch.wav"), u"Audio/sin_440_3s_S16L_88200_2ch.wav");
+		archive.close();
+
+		auto data = FileSystem::readAllBytes(LN_ASSETFILE("Audio/sin_440_3s_S16L_88200_2ch.wav"));
+		hash2 = CRCHash::compute((const char*)data.data(), data.size());
+	}
+
+	detail::EngineDomain::assetManager()->addAssetArchive(assetFile1, u"pass1");
+	detail::EngineDomain::assetManager()->addAssetArchive(assetFile2, u"pass2");
+
+	auto stream1 = Assets::openFileStream(u"Audio/sin_440_3s_S16L_96000_2ch.wav");
+	auto stream2 = Assets::openFileStream(u"Audio/sin_440_3s_S16L_88200_2ch.wav");
+	ASSERT_EQ(true, stream1 != nullptr);
+	ASSERT_EQ(true, stream2 != nullptr);
+
+	// 複数スレッドから同時にファイル内容を読み取って、ハッシュを計算
+	auto result1 = std::async(std::launch::async, [&] { 
+		auto data1 = stream1->readToEnd();
+		return CRCHash::compute((const char*)data1.data(), data1.size());
+	});
+	auto result2 = std::async(std::launch::async, [&] {
+		auto data2 = stream2->readToEnd();
+		return CRCHash::compute((const char*)data2.data(), data2.size());
+	});
+
+	// ハッシュの一致で、ファイル破損をチェック
+	uint32_t r1 = result1.get();
+	uint32_t r2 = result2.get();
+	ASSERT_EQ(hash1, r1);
+	ASSERT_EQ(hash2, r2);
 }

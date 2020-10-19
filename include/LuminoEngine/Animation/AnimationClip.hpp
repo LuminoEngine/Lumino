@@ -43,17 +43,19 @@ public:
 	static Ref<AnimationClip> load(const StringRef& filePath);
 
 	/** アニメーションの繰り返しの動作を取得します。(default: Loop) */
+	LN_METHOD(Property)
 	void setWrapMode(AnimationWrapMode value) { m_wrapMode = value; }
 
 	/** アニメーションの繰り返しの動作を取得します。 */
+	LN_METHOD(Property)
 	AnimationWrapMode wrapMode() const { return m_wrapMode; }
 
 	/** 階層構造を持つアニメーションデータの動作モード。(default: AllowTranslationOnlyRoot) */
-	LN_METHOD()
+	LN_METHOD(Property)
 	void setHierarchicalAnimationMode(HierarchicalAnimationMode value) { m_hierarchicalAnimationMode = value; }
 
 	/** 階層構造を持つアニメーションデータの動作モード。 */
-	LN_METHOD()
+	LN_METHOD(Property)
 	HierarchicalAnimationMode hierarchicalAnimationMode() const { return m_hierarchicalAnimationMode; }
 
     void addTrack(AnimationTrack* track);

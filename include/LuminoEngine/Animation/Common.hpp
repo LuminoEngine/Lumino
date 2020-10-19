@@ -6,6 +6,7 @@ namespace ln {
 class AnimationClip;
 
 /** アニメーションの繰り返し方法 */
+LN_ENUM()
 enum class AnimationWrapMode
 {
     /** 繰り返しを行わず、1度だけ再生します。 */
