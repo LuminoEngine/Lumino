@@ -467,8 +467,8 @@ int main(int argc, char** argv)
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_MainLoop();
-		//Example_MeshViewer();
-        Example_MessageWindow();
+		Example_MeshViewer();
+        //Example_MessageWindow();
         //Example_Navigator();
         //Example_Shader();
 		//Example_SoundControl();

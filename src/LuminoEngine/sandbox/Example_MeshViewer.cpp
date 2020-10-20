@@ -157,7 +157,7 @@ public:
         //box->setPosition(0, 5, 0);
 #endif
 
-#if 0
+#if 1
         auto label = makeObject<UIControl>();
         //label->setBackgroundColor(Color::Blue);
         label->setAlignments(UIHAlignment::Center, UIVAlignment::Center);
@@ -166,9 +166,9 @@ public:
         textblock->setBackgroundColor(Color::Gray);
         textblock->setBorderThickness(1);
         textblock->setBorderColor(Color::Red);
-        //textblock->setPadding(Thickness(4, 2));
+        textblock->setPadding(Thickness(4, 2));
         textblock->setCornerRadius(3);
-        textblock->setSize(20, 20);
+        //textblock->setSize(20, 20);
         label->addInlineVisual(textblock, UIInlinePlacement::Left);
 
         auto text2 = UITextBlock::create("Examine");

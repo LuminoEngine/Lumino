@@ -6102,6 +6102,73 @@ LN_FLAT_API LNResult LNUIBoxLayoutSerializeHandler_Create(LNUIBoxLayoutSerialize
 
 
 // Auto generated override handler
+using UIStackLayoutSerializeHandler = ln::Delegate<void(ln::UIStackLayout* self, ln::Serializer2* ar)>;
+
+class LNWS_UIStackLayoutSerializeHandler : public UIStackLayoutSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIStackLayoutSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNUIStackLayoutSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIStackLayoutSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIStackLayoutSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIStackLayoutSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNUIStackLayoutSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNUIStackLayoutSerializeHandlerCallback m_callback;
+
+    LNWS_UIStackLayoutSerializeHandler()
+      : UIStackLayoutSerializeHandler([this](ln::UIStackLayout* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNUIStackLayoutSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_UIStackLayoutSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNUIStackLayoutSerializeHandlerCallback callback)
+    {
+        if (!UIStackLayoutSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNUIStackLayoutSerializeHandler_Create(LNUIStackLayoutSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_UIStackLayoutSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
 using UIGridLayoutSerializeHandler = ln::Delegate<void(ln::UIGridLayout* self, ln::Serializer2* ar)>;
 
 class LNWS_UIGridLayoutSerializeHandler : public UIGridLayoutSerializeHandler
@@ -12569,6 +12636,68 @@ public:
 LNUIBoxLayout_OnSerialize_OverrideCallback LNWS_ln_UIBoxLayout::s_LNUIBoxLayout_OnSerialize_OverrideCallback = nullptr;
 
 
+class LNWS_ln_UIStackLayout : public ln::UIStackLayout
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNUIStackLayout_OverridePrototypes
+    {
+        ln::Ref<LNWS_UIStackLayoutSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNUIStackLayout_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNUIStackLayout_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNUIStackLayout_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNUIStackLayout_SubclassRegistrationInfo* subclassInfo() { static LNUIStackLayout_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIStackLayout()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIStackLayout()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNUIStackLayout_OnSerialize_OverrideCallback s_LNUIStackLayout_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNUIStackLayout_OnSerialize_OverrideCallback) s_LNUIStackLayout_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::UIStackLayout::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIStackLayout::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UILayoutPanel>();
+    }
+
+};
+
+LNUIStackLayout_OnSerialize_OverrideCallback LNWS_ln_UIStackLayout::s_LNUIStackLayout_OnSerialize_OverrideCallback = nullptr;
+
+
 class LNWS_ln_UIGridLayout : public ln::UIGridLayout
 {
 public:
@@ -16288,6 +16417,28 @@ LN_FLAT_API LNResult LNAnimationClip_LoadA(const char* filePath, LNHandle* outRe
 }
 
 
+LN_FLAT_API LNResult LNAnimationClip_SetWrapMode(LNHandle animationclip, LNAnimationWrapMode value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationClip, animationclip)->setWrapMode(static_cast<ln::AnimationWrapMode>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAnimationClip_GetWrapMode(LNHandle animationclip, LNAnimationWrapMode* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = static_cast<LNAnimationWrapMode>(LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationClip, animationclip)->wrapMode());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationClip, animationclip)->wrapMode());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNAnimationClip_SetHierarchicalAnimationMode(LNHandle animationclip, LNHierarchicalAnimationMode value)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -16296,7 +16447,7 @@ LN_FLAT_API LNResult LNAnimationClip_SetHierarchicalAnimationMode(LNHandle anima
 }
 
 
-LN_FLAT_API LNResult LNAnimationClip_HierarchicalAnimationMode(LNHandle animationclip, LNHierarchicalAnimationMode* outReturn)
+LN_FLAT_API LNResult LNAnimationClip_GetHierarchicalAnimationMode(LNHandle animationclip, LNHierarchicalAnimationMode* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
@@ -21666,6 +21817,81 @@ LNSubinstanceId LNUIBoxLayout_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
+LN_FLAT_API LNResult LNUIStackLayout_Create(LNHandle* outUIStackLayout)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUIStackLayout, LNWS_ln_UIStackLayout, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIStackLayout_SetOrientation(LNHandle uistacklayout, LNUILayoutOrientation orientation)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIStackLayout, uistacklayout)->setOrientation(static_cast<ln::UILayoutOrientation>(orientation)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIStackLayout_GetOrientation(LNHandle uistacklayout, LNUILayoutOrientation* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = static_cast<LNUILayoutOrientation>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIStackLayout, uistacklayout)->getOrientation());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIStackLayout, uistacklayout)->getOrientation());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIStackLayout_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIStackLayout, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNUIStackLayout_OnSerialize_SetOverrideCallback(LNUIStackLayout_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIStackLayout::s_LNUIStackLayout_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNUIStackLayout_SetPrototype_OnSerialize(LNHandle uistacklayout, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_UIStackLayout, uistacklayout)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_UIStackLayoutSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNUIStackLayout_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIStackLayout>()->id();
+}
+
+LN_FLAT_API void LNUIStackLayout_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIStackLayout>(), id);
+}
+
+void LNUIStackLayout_RegisterSubclassTypeInfo(const LNUIStackLayout_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIStackLayout>(), info->subclassId);
+        *LNWS_ln_UIStackLayout::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIStackLayout_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIStackLayout, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
 LN_FLAT_API LNResult LNUIGridLayout_Create(LNHandle* outUIGridLayout)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -25595,6 +25821,29 @@ LNSubinstanceId LNUIBoxLayoutSerializeHandler_GetSubinstanceId(LNHandle handle)
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_UIBoxLayoutSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNUIStackLayoutSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIStackLayoutSerializeHandler>(), id);
+}
+
+void LNUIStackLayoutSerializeHandler_RegisterSubclassTypeInfo(const LNUIStackLayoutSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<UIStackLayoutSerializeHandler>(), info->subclassId);
+        *LNWS_UIStackLayoutSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNUIStackLayoutSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_UIStackLayoutSerializeHandler, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;

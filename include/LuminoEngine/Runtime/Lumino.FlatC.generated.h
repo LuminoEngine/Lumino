@@ -830,6 +830,28 @@ typedef enum tagLNSceneClearMode
 } LNSceneClearMode;
 
 /**
+    @brief アニメーションの繰り返し方法
+*/
+typedef enum tagLNAnimationWrapMode
+{
+    /**
+        @brief 繰り返しを行わず、1度だけ再生します。
+    */
+    LN_ANIMATION_WRAP_MODE_ONCE = 0,
+
+    /**
+        @brief 最後まで再生された後、先頭に戻ってループします。
+    */
+    LN_ANIMATION_WRAP_MODE_LOOP = 1,
+
+    /**
+        @brief 最後まで再生された後、逆方向に戻ってループします。
+    */
+    LN_ANIMATION_WRAP_MODE_ALTERNATE = 2,
+
+} LNAnimationWrapMode;
+
+/**
     @brief 階層構造を持つアニメーションデータの動作モード
 */
 typedef enum tagLNHierarchicalAnimationMode
@@ -1202,6 +1224,7 @@ typedef LNResult(*LNUIIconSerializeHandlerCallback)(LNHandle uiiconserializehand
 typedef LNResult(*LNUIMessageTextAreaSerializeHandlerCallback)(LNHandle uimessagetextareaserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUILayoutPanelSerializeHandlerCallback)(LNHandle uilayoutpanelserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIBoxLayoutSerializeHandlerCallback)(LNHandle uiboxlayoutserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIStackLayoutSerializeHandlerCallback)(LNHandle uistacklayoutserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIGridLayoutSerializeHandlerCallback)(LNHandle uigridlayoutserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIControlSerializeHandlerCallback)(LNHandle uicontrolserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIButtonBaseSerializeHandlerCallback)(LNHandle uibuttonbaseserializehandler, LNHandle self, LNHandle ar);
@@ -2827,6 +2850,19 @@ LN_FLAT_API LNResult LNAnimationClip_Load(const LNChar* filePath, LNHandle* outR
 LN_FLAT_API LNResult LNAnimationClip_LoadA(const char* filePath, LNHandle* outReturn);
 
 /**
+    @brief アニメーションの繰り返しの動作を取得します。(default: Loop)
+    @param[in] animationclip : instance
+*/
+LN_FLAT_API LNResult LNAnimationClip_SetWrapMode(LNHandle animationclip, LNAnimationWrapMode value);
+
+/**
+    @brief アニメーションの繰り返しの動作を取得します。
+    @param[in] animationclip : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNAnimationClip_GetWrapMode(LNHandle animationclip, LNAnimationWrapMode* outReturn);
+
+/**
     @brief 階層構造を持つアニメーションデータの動作モード。(default: AllowTranslationOnlyRoot)
     @param[in] animationclip : instance
 */
@@ -2837,7 +2873,7 @@ LN_FLAT_API LNResult LNAnimationClip_SetHierarchicalAnimationMode(LNHandle anima
     @param[in] animationclip : instance
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LNResult LNAnimationClip_HierarchicalAnimationMode(LNHandle animationclip, LNHierarchicalAnimationMode* outReturn);
+LN_FLAT_API LNResult LNAnimationClip_GetHierarchicalAnimationMode(LNHandle animationclip, LNHierarchicalAnimationMode* outReturn);
 
 typedef LNResult(*LNAnimationClip_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNAnimationClip_OnSerialize_SetOverrideCallback(LNAnimationClip_OnSerialize_OverrideCallback callback);
@@ -6028,6 +6064,52 @@ extern LN_FLAT_API void LNUIBoxLayout_RegisterSubclassTypeInfo(const LNUIBoxLayo
 extern LN_FLAT_API LNSubinstanceId LNUIBoxLayout_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// ln::UIStackLayout
+
+/**
+    @brief init
+    @param[out] outUIStackLayout : instance.
+*/
+LN_FLAT_API LNResult LNUIStackLayout_Create(LNHandle* outUIStackLayout);
+
+/**
+    @brief (default: Vertical)
+    @param[in] uistacklayout : instance
+*/
+LN_FLAT_API LNResult LNUIStackLayout_SetOrientation(LNHandle uistacklayout, LNUILayoutOrientation orientation);
+
+/**
+    @brief 
+    @param[in] uistacklayout : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIStackLayout_GetOrientation(LNHandle uistacklayout, LNUILayoutOrientation* outReturn);
+
+typedef LNResult(*LNUIStackLayout_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIStackLayout_OnSerialize_SetOverrideCallback(LNUIStackLayout_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIStackLayout_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uistacklayout : instance
+*/
+LN_FLAT_API LNResult LNUIStackLayout_SetPrototype_OnSerialize(LNHandle uistacklayout, LNHandle callback);
+
+extern LN_FLAT_API int LNUIStackLayout_GetTypeInfoId();
+LN_FLAT_API void LNUIStackLayout_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIStackLayout_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIStackLayout_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIStackLayout_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIStackLayout_RegisterSubclassTypeInfo(const LNUIStackLayout_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIStackLayout_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
 // ln::UIGridLayout
 
 /**
@@ -8471,6 +8553,22 @@ typedef struct tagLNUIBoxLayoutSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNUIBoxLayoutSerializeHandler_RegisterSubclassTypeInfo(const LNUIBoxLayoutSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNUIBoxLayoutSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIStackLayoutSerializeHandler
+
+LN_FLAT_API LNResult LNUIStackLayoutSerializeHandler_Create(LNUIStackLayoutSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIStackLayoutSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIStackLayoutSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIStackLayoutSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIStackLayoutSerializeHandler_RegisterSubclassTypeInfo(const LNUIStackLayoutSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIStackLayoutSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // UIGridLayoutSerializeHandler

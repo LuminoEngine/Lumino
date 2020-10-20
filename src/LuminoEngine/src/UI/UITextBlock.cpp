@@ -134,7 +134,7 @@ void UITextBlock::onRender(UIRenderingContext* context)
     //    auto mat = Material::create(tex);
     //    context->drawBoxBackground(Rect(10, 20, 100, 200), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, mat, Rect(64, 0, 64, 64));
     //}
-    context->setTransfrom(Matrix::makeTranslation(renderRect.x, renderRect.y, 0.0f));
+    context->setTransfrom(Matrix::makeTranslation(clientArea.x + renderRect.x, clientArea.y + renderRect.y, 0.0f));
 
     Color color = m_finalStyle->textColor;
     if (!isEnabled()) {
