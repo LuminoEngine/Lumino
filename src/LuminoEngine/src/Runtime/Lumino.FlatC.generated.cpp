@@ -1412,6 +1412,140 @@ LN_FLAT_API LNResult LNBoxCollisionShapeSerializeHandler_Create(LNBoxCollisionSh
 
 
 // Auto generated override handler
+using AnimationCurveSerializeHandler = ln::Delegate<void(ln::AnimationCurve* self, ln::Serializer2* ar)>;
+
+class LNWS_AnimationCurveSerializeHandler : public AnimationCurveSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNAnimationCurveSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNAnimationCurveSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNAnimationCurveSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNAnimationCurveSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNAnimationCurveSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNAnimationCurveSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNAnimationCurveSerializeHandlerCallback m_callback;
+
+    LNWS_AnimationCurveSerializeHandler()
+      : AnimationCurveSerializeHandler([this](ln::AnimationCurve* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNAnimationCurveSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_AnimationCurveSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNAnimationCurveSerializeHandlerCallback callback)
+    {
+        if (!AnimationCurveSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNAnimationCurveSerializeHandler_Create(LNAnimationCurveSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_AnimationCurveSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
+using KeyFrameAnimationCurveSerializeHandler = ln::Delegate<void(ln::KeyFrameAnimationCurve* self, ln::Serializer2* ar)>;
+
+class LNWS_KeyFrameAnimationCurveSerializeHandler : public KeyFrameAnimationCurveSerializeHandler
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNKeyFrameAnimationCurveSerializeHandler_OverridePrototypes
+    {
+
+    };
+    std::unique_ptr<LNKeyFrameAnimationCurveSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNKeyFrameAnimationCurveSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNKeyFrameAnimationCurveSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNKeyFrameAnimationCurveSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNKeyFrameAnimationCurveSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNKeyFrameAnimationCurveSerializeHandlerCallback m_callback;
+
+    LNWS_KeyFrameAnimationCurveSerializeHandler()
+      : KeyFrameAnimationCurveSerializeHandler([this](ln::KeyFrameAnimationCurve* self, ln::Serializer2* ar) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
+        if (r != LN_SUCCESS) { LN_ERROR("LNKeyFrameAnimationCurveSerializeHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_KeyFrameAnimationCurveSerializeHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LNKeyFrameAnimationCurveSerializeHandlerCallback callback)
+    {
+        if (!KeyFrameAnimationCurveSerializeHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // Overrides
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LNResult LNKeyFrameAnimationCurveSerializeHandler_Create(LNKeyFrameAnimationCurveSerializeHandlerCallback callback, LNHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_KeyFrameAnimationCurveSerializeHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+// Auto generated override handler
 using AnimationClipSerializeHandler = ln::Delegate<void(ln::AnimationClip* self, ln::Serializer2* ar)>;
 
 class LNWS_AnimationClipSerializeHandler : public AnimationClipSerializeHandler
@@ -9271,6 +9405,130 @@ public:
 LNBoxCollisionShape_OnSerialize_OverrideCallback LNWS_ln_BoxCollisionShape::s_LNBoxCollisionShape_OnSerialize_OverrideCallback = nullptr;
 
 
+class LNWS_ln_AnimationCurve : public ln::AnimationCurve
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNAnimationCurve_OverridePrototypes
+    {
+        ln::Ref<LNWS_AnimationCurveSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNAnimationCurve_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNAnimationCurve_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNAnimationCurve_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNAnimationCurve_SubclassRegistrationInfo* subclassInfo() { static LNAnimationCurve_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_AnimationCurve()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_AnimationCurve()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNAnimationCurve_OnSerialize_OverrideCallback s_LNAnimationCurve_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNAnimationCurve_OnSerialize_OverrideCallback) s_LNAnimationCurve_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::AnimationCurve::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::AnimationCurve::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+LNAnimationCurve_OnSerialize_OverrideCallback LNWS_ln_AnimationCurve::s_LNAnimationCurve_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_KeyFrameAnimationCurve : public ln::KeyFrameAnimationCurve
+{
+public:
+    // Override functions per instance for FlatAPI User.
+    struct LNKeyFrameAnimationCurve_OverridePrototypes
+    {
+        ln::Ref<LNWS_KeyFrameAnimationCurveSerializeHandler> OnSerialize_OverrideFunc;
+
+    };
+    std::unique_ptr<LNKeyFrameAnimationCurve_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNKeyFrameAnimationCurve_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNKeyFrameAnimationCurve_OverridePrototypes>(); return m_overridePrototypes.get(); }
+
+    static LNKeyFrameAnimationCurve_SubclassRegistrationInfo* subclassInfo() { static LNKeyFrameAnimationCurve_SubclassRegistrationInfo info; return &info; }
+    LNSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_KeyFrameAnimationCurve()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_KeyFrameAnimationCurve()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Overrides
+    static LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback s_LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer2* ar) override
+    {
+        if (m_overridePrototypes) {
+            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
+                func->call(this, ar);
+                return;
+            }
+        }
+        if (s_LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback) s_LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        ln::KeyFrameAnimationCurve::onSerialize(ar);
+    }
+    void onSerialize_CallBase(ln::Serializer2* ar)
+    {
+        ln::KeyFrameAnimationCurve::onSerialize(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<AnimationCurve>();
+    }
+
+};
+
+LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback LNWS_ln_KeyFrameAnimationCurve::s_LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback = nullptr;
+
+
 class LNWS_ln_AnimationClip : public ln::AnimationClip
 {
 public:
@@ -16384,6 +16642,126 @@ LNSubinstanceId LNBoxCollisionShape_GetSubinstanceId(LNHandle handle)
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_ln_BoxCollisionShape, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNAnimationCurve_Evaluate(LNHandle animationcurve, float time, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationCurve, animationcurve)->evaluate(time));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationCurve, animationcurve)->evaluate(time));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNAnimationCurve_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationCurve, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNAnimationCurve_OnSerialize_SetOverrideCallback(LNAnimationCurve_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_AnimationCurve::s_LNAnimationCurve_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNAnimationCurve_SetPrototype_OnSerialize(LNHandle animationcurve, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationCurve, animationcurve)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_AnimationCurveSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNAnimationCurve_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::AnimationCurve>()->id();
+}
+
+LN_FLAT_API void LNAnimationCurve_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::AnimationCurve>(), id);
+}
+
+void LNAnimationCurve_RegisterSubclassTypeInfo(const LNAnimationCurve_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::AnimationCurve>(), info->subclassId);
+        *LNWS_ln_AnimationCurve::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNAnimationCurve_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationCurve, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API LNResult LNKeyFrameAnimationCurve_Create(LNHandle* outKeyFrameAnimationCurve)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outKeyFrameAnimationCurve, LNWS_ln_KeyFrameAnimationCurve, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNKeyFrameAnimationCurve_AddKeyFrame(LNHandle keyframeanimationcurve, float time, float value, LNTangentMode rightTangentMode, float tangent)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_KeyFrameAnimationCurve, keyframeanimationcurve)->addKeyFrame(time, value, static_cast<ln::TangentMode>(rightTangentMode), tangent));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNKeyFrameAnimationCurve_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_KeyFrameAnimationCurve, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LNResult LNKeyFrameAnimationCurve_OnSerialize_SetOverrideCallback(LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_KeyFrameAnimationCurve::s_LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LNResult LNKeyFrameAnimationCurve_SetPrototype_OnSerialize(LNHandle keyframeanimationcurve, LNHandle callback)
+{
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_KeyFrameAnimationCurve, keyframeanimationcurve)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_KeyFrameAnimationCurveSerializeHandler, callback);
+    return LN_SUCCESS;
+}
+extern LN_FLAT_API int LNKeyFrameAnimationCurve_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::KeyFrameAnimationCurve>()->id();
+}
+
+LN_FLAT_API void LNKeyFrameAnimationCurve_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::KeyFrameAnimationCurve>(), id);
+}
+
+void LNKeyFrameAnimationCurve_RegisterSubclassTypeInfo(const LNKeyFrameAnimationCurve_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::KeyFrameAnimationCurve>(), info->subclassId);
+        *LNWS_ln_KeyFrameAnimationCurve::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNKeyFrameAnimationCurve_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_KeyFrameAnimationCurve, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;
@@ -24211,6 +24589,52 @@ LNSubinstanceId LNBoxCollisionShapeSerializeHandler_GetSubinstanceId(LNHandle ha
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
         return (LNI_HANDLE_TO_OBJECT(LNWS_BoxCollisionShapeSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNAnimationCurveSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<AnimationCurveSerializeHandler>(), id);
+}
+
+void LNAnimationCurveSerializeHandler_RegisterSubclassTypeInfo(const LNAnimationCurveSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<AnimationCurveSerializeHandler>(), info->subclassId);
+        *LNWS_AnimationCurveSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNAnimationCurveSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_AnimationCurveSerializeHandler, handle))->m_subinstance;
+        LNI_FUNC_TRY_END_RETURN;
+    }
+    return 0;
+}
+
+LN_FLAT_API void LNKeyFrameAnimationCurveSerializeHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<KeyFrameAnimationCurveSerializeHandler>(), id);
+}
+
+void LNKeyFrameAnimationCurveSerializeHandler_RegisterSubclassTypeInfo(const LNKeyFrameAnimationCurveSerializeHandler_SubclassRegistrationInfo* info)
+{
+    if (info) {
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<KeyFrameAnimationCurveSerializeHandler>(), info->subclassId);
+        *LNWS_KeyFrameAnimationCurveSerializeHandler::subclassInfo() = *info;
+    }
+}
+
+LNSubinstanceId LNKeyFrameAnimationCurveSerializeHandler_GetSubinstanceId(LNHandle handle)
+{
+    if (handle) {
+        LNI_FUNC_TRY_BEGIN;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_KeyFrameAnimationCurveSerializeHandler, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;

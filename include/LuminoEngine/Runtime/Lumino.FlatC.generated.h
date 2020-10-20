@@ -879,6 +879,33 @@ typedef enum tagLNHierarchicalAnimationMode
 } LNHierarchicalAnimationMode;
 
 /**
+    @brief キーフレームアニメーションの補間方法
+*/
+typedef enum tagLNTangentMode
+{
+    /**
+        @brief 線形補間
+    */
+    LN_TANGENT_MODE_LINEAR = 0,
+
+    /**
+        @brief 接線 (速度) を使用した補間 (エルミートスプライン)
+    */
+    LN_TANGENT_MODE_TANGENT = 1,
+
+    /**
+        @brief キーフレームの値を通過するなめらかな補間 (Catmull-Rom)
+    */
+    LN_TANGENT_MODE_AUTO = 2,
+
+    /**
+        @brief 補間なし
+    */
+    LN_TANGENT_MODE_CONSTANT = 3,
+
+} LNTangentMode;
+
+/**
     @brief ParticleEmitterShapeType
 */
 typedef enum tagLNParticleEmitterShapeType
@@ -1154,6 +1181,8 @@ typedef LNResult(*LNSkinnedMeshModelSerializeHandlerCallback)(LNHandle skinnedme
 typedef LNResult(*LNAnimationControllerSerializeHandlerCallback)(LNHandle animationcontrollerserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNCollisionShapeSerializeHandlerCallback)(LNHandle collisionshapeserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNBoxCollisionShapeSerializeHandlerCallback)(LNHandle boxcollisionshapeserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNAnimationCurveSerializeHandlerCallback)(LNHandle animationcurveserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNKeyFrameAnimationCurveSerializeHandlerCallback)(LNHandle keyframeanimationcurveserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNAnimationClipSerializeHandlerCallback)(LNHandle animationclipserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNAnimationStateSerializeHandlerCallback)(LNHandle animationstateserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNEffectResourceSerializeHandlerCallback)(LNHandle effectresourceserializehandler, LNHandle self, LNHandle ar);
@@ -2838,6 +2867,80 @@ typedef struct tagLNBoxCollisionShape_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNBoxCollisionShape_RegisterSubclassTypeInfo(const LNBoxCollisionShape_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNBoxCollisionShape_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::AnimationCurve
+
+/**
+    @brief 指定した時間における値を評価します。
+    @param[in] animationcurve : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNAnimationCurve_Evaluate(LNHandle animationcurve, float time, float* outReturn);
+
+typedef LNResult(*LNAnimationCurve_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNAnimationCurve_OnSerialize_SetOverrideCallback(LNAnimationCurve_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNAnimationCurve_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] animationcurve : instance
+*/
+LN_FLAT_API LNResult LNAnimationCurve_SetPrototype_OnSerialize(LNHandle animationcurve, LNHandle callback);
+
+extern LN_FLAT_API int LNAnimationCurve_GetTypeInfoId();
+LN_FLAT_API void LNAnimationCurve_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNAnimationCurve_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNAnimationCurve_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNAnimationCurve_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNAnimationCurve_RegisterSubclassTypeInfo(const LNAnimationCurve_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNAnimationCurve_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::KeyFrameAnimationCurve
+
+/**
+    @brief init
+    @param[out] outKeyFrameAnimationCurve : instance.
+*/
+LN_FLAT_API LNResult LNKeyFrameAnimationCurve_Create(LNHandle* outKeyFrameAnimationCurve);
+
+/**
+    @brief キーフレームを追加します。
+    @param[in] keyframeanimationcurve : instance
+    @details rightTangentMode は、新しく追加するキーフレームの右側の補間方法です。新しく追加するキーフレームの左側の保管方法は、そのひとつ前のキーフレームの右側の保管方法が設定されます。
+*/
+LN_FLAT_API LNResult LNKeyFrameAnimationCurve_AddKeyFrame(LNHandle keyframeanimationcurve, float time, float value, LNTangentMode rightTangentMode, float tangent);
+
+typedef LNResult(*LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNKeyFrameAnimationCurve_OnSerialize_SetOverrideCallback(LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNKeyFrameAnimationCurve_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] keyframeanimationcurve : instance
+*/
+LN_FLAT_API LNResult LNKeyFrameAnimationCurve_SetPrototype_OnSerialize(LNHandle keyframeanimationcurve, LNHandle callback);
+
+extern LN_FLAT_API int LNKeyFrameAnimationCurve_GetTypeInfoId();
+LN_FLAT_API void LNKeyFrameAnimationCurve_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNKeyFrameAnimationCurve_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNKeyFrameAnimationCurve_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNKeyFrameAnimationCurve_RegisterSubclassTypeInfo(const LNKeyFrameAnimationCurve_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNKeyFrameAnimationCurve_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::AnimationClip
@@ -7433,6 +7536,38 @@ typedef struct tagLNBoxCollisionShapeSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNBoxCollisionShapeSerializeHandler_RegisterSubclassTypeInfo(const LNBoxCollisionShapeSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNBoxCollisionShapeSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// AnimationCurveSerializeHandler
+
+LN_FLAT_API LNResult LNAnimationCurveSerializeHandler_Create(LNAnimationCurveSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNAnimationCurveSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNAnimationCurveSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNAnimationCurveSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNAnimationCurveSerializeHandler_RegisterSubclassTypeInfo(const LNAnimationCurveSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNAnimationCurveSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// KeyFrameAnimationCurveSerializeHandler
+
+LN_FLAT_API LNResult LNKeyFrameAnimationCurveSerializeHandler_Create(LNKeyFrameAnimationCurveSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNKeyFrameAnimationCurveSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNKeyFrameAnimationCurveSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNKeyFrameAnimationCurveSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNKeyFrameAnimationCurveSerializeHandler_RegisterSubclassTypeInfo(const LNKeyFrameAnimationCurveSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNKeyFrameAnimationCurveSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // AnimationClipSerializeHandler
