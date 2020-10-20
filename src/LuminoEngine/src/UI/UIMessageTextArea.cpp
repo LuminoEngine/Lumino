@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <algorithm>
 #include <LuminoEngine/Font/Font.hpp>
 //#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
@@ -71,10 +72,12 @@ private:
     //Size m_layoutingSize;
     RTLayoutContext* m_layoutingContext;
 
+
     bool m_textDirty;
 
     List<RTGlyph> m_glyphs;
     //Size m_actualSize;
+    float m_crossSize;
 };
 
 //class RTPhysicalLine
@@ -123,6 +126,7 @@ RTInline::RTInline()
 
 RTRun::RTRun()
     : m_textDirty(true)
+    , m_crossSize(0.0f)
 {
 }
 
@@ -145,29 +149,47 @@ void RTRun::layout(RTLayoutContext* context)
         TextLayoutEngine::layout(fontCore, m_text.c_str(), m_text.length(), Rect(0, 0, std::numeric_limits<float>::max(), std::numeric_limits<float>::max()), 0, TextAlignment::Forward);
         //setExtentSize(m_layoutingSize);
 
+        detail::FontGlobalMetrics metrics;
+        fontCore->getGlobalMetrics(&metrics);
+        m_crossSize = metrics.lineSpace;
+
         m_textDirty = false;
     }
 
     //auto extentSize = Size::Zero;
-    auto actualSize = Size::Zero;
-    for (auto& glyph : m_glyphs) {
+    //auto actualSize = Size::Zero;
+    float mainSize = 0.0f;
+    if (m_glyphs.isEmpty()) {
+        //actualSize.height = context->document->lineSpacing();
+    }
+    else {
+        for (auto& glyph : m_glyphs) {
 
-        if (glyph.timeOffset <= context->document->localTime()) {
-            actualSize.width = std::max(actualSize.width, glyph.localPos.x + glyph.size.width);
-            actualSize.height = extentSize().height;//context->document->lineSpacing();
+            if (glyph.timeOffset <= context->document->localTime()) {
+                mainSize = std::max(mainSize, glyph.localPos.x + glyph.size.width);
+                //actualSize.width = std::max(actualSize.width, glyph.localPos.x + glyph.size.width);
+                //actualSize.height = extentSize().height;//context->document->lineSpacing();
+            }
         }
     }
-    setActualSize(actualSize);
+
+    setActualSize(Size(mainSize, m_crossSize));
 }
 
 void RTRun::render(UIRenderingContext* context, RTDocument* document, const Point& globalOffset)
 {
     RTInline::render(context, document, globalOffset);
+    float localTime = document->localTime();
 
     for (auto& glyph : m_glyphs) {
         if (glyph.timeOffset <= document->localTime()) {
+            //float a = Math::clamp(localTime - glyph.timeOffset, 0.0f, 0.5f) * 2.0f;
+            //float a = Math::clamp(localTime - glyph.timeOffset, 0.0f, 1.0f);
+            //float a = Math::clamp(localTime - glyph.timeOffset, 0.0f, 2.0f) * 0.5f;
+            float a = Math::clamp(localTime - glyph.timeOffset, 0.0f, 5.0f) * 0.2f; // 5s
+
             auto transform = Matrix::makeTranslation(Vector3(globalOffset.x + glyph.localPos.x, globalOffset.y + glyph.localPos.y, 0));
-            context->drawChar(glyph.codePoint, glyph.color, finalFont(), transform);
+            context->drawChar(glyph.codePoint, glyph.color.withAlpha(a), finalFont(), transform);
         }
     }
 }

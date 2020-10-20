@@ -66,17 +66,17 @@ public:
         m_message2->setMargin(16);
         //m_message2->setHeight(50);
         m_message2->setBackgroundColor(Color::DarkCyan);
-        //m_message2->setText(
-        //    u"window2->setPosition(10, 10);\n"
-        //    u"window2->setHAlignment(UIHAlignment::Left);\n"
-        //    u"window2->setVAlignment(UIVAlignment::Top);\n"
-        //    u"window2->setWidth(200);\n"
-        //    u"window2->setHeight(100);\n"
-        //    u"window2->setBackgroundImage(windowSkin);\n"
-        //    u"window2->setBackgroundImageRect(Rect(0, 0, 48, 48));\n"
-        //    u"window2->setBackgroundImageBorder(Thickness(8));\n"
-        //    u"window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);");
-        m_message2->setText(u"日本語表示\nbbbbb\nccccc");
+        m_message2->setText(
+            u"window2->setPosition(10, 10);\n"
+            u"window2->setHAlignment(UIHAlignment::Left);\n"
+            u"window2->setVAlignment(UIVAlignment::Top);\n"
+            u"window2->setWidth(200);\n"
+            u"window2->setHeight(100);\n"
+            u"window2->setBackgroundImage(windowSkin);\n"
+            u"window2->setBackgroundImageRect(Rect(0, 0, 48, 48));\n"
+            u"window2->setBackgroundImageBorder(Thickness(8));\n"
+            u"window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);");
+        //m_message2->setText(u"日本語表示\n\nbbbbb\nccccc");
         //m_message2->setViewportLineCount(2);
         //m_message2->setClipToBounds(true);
         window2->addChild(m_message2);
