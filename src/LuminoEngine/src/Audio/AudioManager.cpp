@@ -322,18 +322,44 @@ void AudioManager::updateSoundCores(float elapsedSeconds)
 void AudioManager::processThread()
 {
 	LN_LOG_DEBUG << "Audio thread started.";
+
+#ifdef _WIN32
+	// NOTE: Chromium の REALTIME_AUDIO
+	if (!::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL)) {
+		LN_LOG_WARNING << "SetThreadPriority Failed.";
+	}
+#else
+	LN_LOG_WARNING << "Audio thread priority - not implemented.";
+#endif
 	try
 	{
+		// スレッド優先度の影響があるのか、GetTickCount() では正確な経過時間が取れないことがある。
+		// (例えば Sleep(5) の前後で GetTickCount() が返す値が変わらない)
+		// そのため高精度タイマーで計測する。
+		ElapsedTimer timer;
+		float elapsedSeconds = 0.01;
+		const int64_t idleBaseTime = 5;
 		while (!m_endRequested)
 		{
-			const float elapsedSeconds = 0.02f;
-			commitCommands();
-			updateSoundCores(elapsedSeconds);
-			if (m_primaryContext) {
-				m_primaryContext->processOnAudioThread(elapsedSeconds);
+			timer.start();
+
+			const uint64_t processStartTime = timer.elapsedMilliseconds();
+			{
+				commitCommands();
+				updateSoundCores(elapsedSeconds);
+				if (m_primaryContext) {
+					m_primaryContext->processOnAudioThread(elapsedSeconds);
+				}
+			}
+			const uint64_t processEndTime = timer.elapsedMilliseconds();
+
+			const int64_t frameElapsed = processEndTime - processStartTime;
+			const int64_t sleepTime = std::min(idleBaseTime - frameElapsed, idleBaseTime);
+			if (sleepTime > 0) {
+				Thread::sleep(sleepTime);
 			}
 
-            Thread::sleep(20);
+			elapsedSeconds = 0.001f * (timer.elapsedMilliseconds() - processStartTime);
 		}
 	}
 	catch (Exception& e)

@@ -506,6 +506,10 @@ private:
 //    void init();
 //};
 
+/**
+ * UIStackLayout
+ */
+LN_CLASS()
 class UIStackLayout
     : public UILayoutPanel
 {
@@ -513,15 +517,22 @@ public:
     static Ref<UIStackLayout> create();
     static Ref<UIStackLayout> create(UILayoutOrientation orientation);
 
-    // (default: Vertical)
+    /**  (default: Vertical) */
+    LN_METHOD(Property)
     void setOrientation(UILayoutOrientation orientation) { m_orientation = orientation; }
+
+    LN_METHOD(Property)
     UILayoutOrientation getOrientation() const { return m_orientation; }
 
     bool lastStretch = false;
 
 LN_CONSTRUCT_ACCESS:
     UIStackLayout();
+
+    /** init */
+    LN_METHOD()
     bool init();
+
     bool init(UILayoutOrientation orientation);
 
     Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
