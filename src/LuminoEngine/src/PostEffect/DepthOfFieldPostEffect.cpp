@@ -58,6 +58,8 @@ void DepthOfFieldPostEffectCore::prepare(RenderingContext* context, RenderTarget
     int resy = source->height();
     if (m_viewWidth != resx || m_viewHeight != resy) {
         resetResources(resx, resy);
+        m_viewWidth = resx;
+        m_viewHeight = resy;
     }
 
     // down sampling.
