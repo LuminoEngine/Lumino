@@ -192,8 +192,9 @@ void CharacterController::onUpdate(float elapsedSeconds)
 	const auto cameraCurrentFront = Vector3::transform(Vector3::UnitZ, camera->rotation());
 	const auto cameraCurrentFrontXZ = Vector3::safeNormalize(Vector3(cameraCurrentFront.x, 0, cameraCurrentFront.z), Vector3::UnitZ);
 	const auto cameraCurrentRightDirXZ = Vector3::cross(Vector3::UnitY, cameraCurrentFrontXZ);
-	const auto moveVector = (cameraCurrentRightDirXZ * m_inputState.turnVelocity) + (cameraCurrentFrontXZ * m_inputState.forwardVelocity);
+	//const auto moveVector = (cameraCurrentRightDirXZ * m_inputState.turnVelocity) + (cameraCurrentFrontXZ * m_inputState.forwardVelocity);
 
+	const auto moveVector = m_currentVelocity;
 
 
 
