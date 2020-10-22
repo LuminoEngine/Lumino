@@ -8723,6 +8723,13 @@ public:
 
 
 
+class LNWS_ln_Graphics : public ln::Graphics
+{
+public:
+};
+
+
+
 class LNWS_ln_Texture : public ln::Texture
 {
 public:
@@ -15683,6 +15690,20 @@ LNSubinstanceId LNTexture2DPromise_GetSubinstanceId(LNHandle handle)
     }
     return 0;
 }
+
+LN_FLAT_API LNResult LNGraphics_GetActiveGraphicsAPI(LNGraphicsAPI* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = static_cast<LNGraphicsAPI>(ln::Graphics::activeGraphicsAPI());
+    }
+    else {
+        (ln::Graphics::activeGraphicsAPI());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 LN_FLAT_API LNResult LNTexture_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {

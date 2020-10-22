@@ -653,6 +653,28 @@ typedef enum tagLNSoundFadeBehavior
 } LNSoundFadeBehavior;
 
 /**
+    @brief バックエンドグラフィックス API の種類
+*/
+typedef enum tagLNGraphicsAPI
+{
+    /**
+        @brief 自動選択
+    */
+    LN_GRAPHICS_API_DEFAULT = 0,
+
+    /**
+        @brief OpenGL
+    */
+    LN_GRAPHICS_API_OPEN_GL = 1,
+
+    /**
+        @brief Vulkan
+    */
+    LN_GRAPHICS_API_VULKAN = 2,
+
+} LNGraphicsAPI;
+
+/**
     @brief ピクセルフォーマット
 */
 typedef enum tagLNPixelFormat
@@ -2349,6 +2371,16 @@ typedef struct tagLNTexture2DPromise_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNTexture2DPromise_RegisterSubclassTypeInfo(const LNTexture2DPromise_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNTexture2DPromise_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::Graphics
+
+/**
+    @brief activeGraphicsAPI
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNGraphics_GetActiveGraphicsAPI(LNGraphicsAPI* outReturn);
+
 
 //==============================================================================
 // ln::Texture

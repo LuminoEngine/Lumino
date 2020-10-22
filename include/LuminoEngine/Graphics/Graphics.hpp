@@ -7,7 +7,7 @@ namespace ln {
 class CommandQueue;
 
 /** Graphics */
-LN_CLASS()
+LN_CLASS(Static)
 class Graphics
 {
 public:
