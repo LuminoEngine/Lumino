@@ -103,6 +103,11 @@ public:
     float m_bloomStrength;
     float m_bloomRadius;
 
+
+	Color m_vignetteColor;
+	Vector2 m_vignetteCenter;
+	Vector4 m_vignetteSettings;
+
 protected:
     virtual Ref<PostEffectInstance> onCreateInstance() override;
 

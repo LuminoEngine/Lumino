@@ -44,6 +44,7 @@ enum class DeviceTextureType
 
 struct GraphicsDeviceCaps
 {
+	GraphicsAPI graphicsAPI;
 	UnifiedShaderTriple requestedShaderTriple;
 	bool imageLayoytVFlip = false;
 };

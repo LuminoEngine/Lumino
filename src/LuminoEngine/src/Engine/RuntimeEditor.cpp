@@ -217,6 +217,10 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 
 			}
 
+			v = pp->isVignetteEnabled();
+			ImGui::Checkbox("Vignette", &v);
+			pp->setVignetteEnabled(v);
+
 			//float m_linearWhite = 5.0f;
 			//float m_shoulderStrength = 0.15f;
 			//float m_linearStrength = 0.5;

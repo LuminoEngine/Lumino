@@ -352,6 +352,7 @@ void OpenGLDevice::dispose()
 
 void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps)
 {
+	outCaps->graphicsAPI = GraphicsAPI::OpenGL;
 #ifdef LN_GRAPHICS_OPENGLES
 	outCaps->requestedShaderTriple.target = "glsl";
 	outCaps->requestedShaderTriple.version = 300;

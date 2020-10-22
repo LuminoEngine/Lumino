@@ -3,11 +3,17 @@
 #include "GraphicsManager.hpp"
 #include <LuminoEngine/Graphics/CommandQueue.hpp>
 #include <LuminoEngine/Graphics/Graphics.hpp>
+#include "GraphicsDeviceContext.hpp"
 
 namespace ln {
 
 //==============================================================================
 // Graphics
+
+GraphicsAPI Graphics::activeGraphicsAPI()
+{
+	return detail::EngineDomain::graphicsManager()->deviceContext()->caps().graphicsAPI;
+}
 
 CommandQueue* Graphics::graphicsQueue()
 {

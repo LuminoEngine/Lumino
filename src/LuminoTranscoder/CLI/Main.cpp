@@ -46,6 +46,7 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/Audio/Sound.hpp",
 			TEST_ROOT "include/LuminoEngine/Audio/Audio.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/Common.hpp",
+			TEST_ROOT "include/LuminoEngine/Graphics/Graphics.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/ColorStructs.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/GeometryStructs.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/GraphicsResource.hpp",

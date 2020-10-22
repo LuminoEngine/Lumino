@@ -13,6 +13,9 @@ sampler2D _occlusionMap;
 
 cbuffer EffectSettings
 {
+    float4 _vignetteColor;
+    float4 _vignettePosition;
+    float4 _vignetteSettings;
     float4 _blendColor;
     float4 _colorTone;
     int _antialiasEnabled;
@@ -230,7 +233,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
     //--------------------
     // Vignette
     if (_vignetteEnabled) {
-        result.rgb = Vignette(result.rgb, input.uv.xy);
+        result.rgb = Vignette(result.rgb, input.uv.xy, _vignetteColor, _vignettePosition.xy, _vignetteSettings);
     }
     
     //--------------------

@@ -92,7 +92,7 @@ public:
 	void setRule(UILayoutRule value);
 
 	/** setColumnCount */
-	LN_METHOD()
+	LN_METHOD(Property)
 	void setColumnCount(int value);
 
 	/** setRow */

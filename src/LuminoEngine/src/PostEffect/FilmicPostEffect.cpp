@@ -17,6 +17,9 @@ FilmicPostEffect::FilmicPostEffect()
     : m_luminosityThreshold(0.8f)
     , m_bloomStrength(1.0f)
     , m_bloomRadius(1.0f)
+    , m_vignetteColor(0.0f, 0.0f, 0.0f, 1.0)
+    , m_vignetteCenter(0.5f, 0.5f)
+    , m_vignetteSettings(0.65f, 0.5f, 1.0f, 0.0f) // x: intensity, y: smoothness, z: roundness, w: rounded
     , m_antialiasEnabled(false)
     , m_ssrEnabled(false)
     , m_ssaoEnabled(false)
@@ -142,6 +145,9 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     // cbuffer EffectSettings
     struct EffectSettings
     {
+        Vector4 vignetteColor;
+        Vector4 vignettePosition;
+        Vector4 vignetteSettings;
         Vector4 blendColor;
         Vector4 colorTone;
         int antialiasEnabled;
@@ -156,6 +162,9 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     };
 
     EffectSettings settings;
+    settings.vignetteColor = m_owner->m_vignetteColor.toVector4();
+    settings.vignettePosition = Vector4(m_owner->m_vignetteCenter, 0, 0);
+    settings.vignetteSettings = m_owner->m_vignetteSettings;
     settings.blendColor = m_owner->m_screenBlendColor.toVector4();
     settings.colorTone = m_owner->m_screenColorTone.toVector4();
     settings.antialiasEnabled = m_owner->m_antialiasEnabled ? 1 : 0;
