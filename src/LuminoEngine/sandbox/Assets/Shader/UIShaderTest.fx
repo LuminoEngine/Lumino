@@ -1,6 +1,24 @@
 
 #include <Lumino.fxh>
 
+const float _Vague = 0.1;
+sampler2D _MaskTexture;
+
+float steprange(float gray, float factor, float vague)
+{
+    float t = (1.0 - factor);
+    float range = 1.0 + vague;
+
+    t *= range;
+    t -= vague;
+
+    float a = (gray - t) / vague;
+    return a;
+}
+
+
+
+
 LN_VSOutput_Common VS_ClusteredForward_Geometry(LN_VSInput input)
 {
     return LN_ProcessVertex_Common(input);
@@ -8,13 +26,10 @@ LN_VSOutput_Common VS_ClusteredForward_Geometry(LN_VSInput input)
 
 float4 PS_Main(LN_PSInput_Common input) : SV_TARGET
 {
-    return float4(1, 0, 0, 1);
+    float gray = tex2D(_MaskTexture, input.UV).r;
+    float a = (_Vague > 0.0) ? steprange(gray) : step(1.0 - _Factor, gray);
     float4 color = tex2D(ln_MaterialTexture, input.UV) * input.Color;
-    
-    // Alpha test
-    clip(color.a - 0.0001);
-
-    return LN_GetBuiltinEffectColor(color);
+    return LN_GetBuiltinEffectColor(float4(color.rgb, color.a + a));
 }
 
 

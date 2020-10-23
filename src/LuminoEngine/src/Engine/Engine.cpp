@@ -41,6 +41,11 @@ void EngineSettings::setMainWindowTitle(const String& title)
 	detail::EngineManager::s_settings.mainWindowTitle = title;
 }
 
+void EngineSettings::setMainWindowResizable(bool value)
+{
+    detail::EngineManager::s_settings.mainWindowResizable = value;
+}
+
 void EngineSettings::addAssetDirectory(const ln::String& path)
 {
 	detail::EngineManager::s_settings.assetDirectories.add(path);

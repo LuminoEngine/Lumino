@@ -59,6 +59,7 @@ struct EngineSettings
 	SizeI mainWindowSize = SizeI(640, 480);
 	SizeI mainWorldViewSize = SizeI(0, 0);
 	String mainWindowTitle = u"Lumino";
+	bool mainWindowResizable = false;
 	AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
     List<EngineSettingsAssetArchiveEntry> assetArchives;
 	List<Path> assetDirectories;

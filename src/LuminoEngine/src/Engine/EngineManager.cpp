@@ -381,7 +381,7 @@ void EngineManager::initializePlatformManager()
 		settings.mainWindowSettings.title = m_settings.mainWindowTitle;
 		settings.mainWindowSettings.clientSize = m_settings.mainWindowSize;
 		settings.mainWindowSettings.fullscreen = false;
-		settings.mainWindowSettings.resizable = true;
+		settings.mainWindowSettings.resizable = m_settings.mainWindowResizable;
 		settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
 
 		if (m_activeGraphicsAPI == GraphicsAPI::Vulkan) {

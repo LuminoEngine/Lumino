@@ -23,6 +23,10 @@ public:
 	/** メインウィンドウのタイトル文字列を設定します。*/
 	LN_METHOD()
 	static void setMainWindowTitle(const String& title);
+	
+	/** メインウィンドウをユーザーがサイズ変更できるかどうかを指定します。(default: false) */
+	LN_METHOD()
+	static void setMainWindowResizable(bool value);
 
 	/** アセットが保存されているディレクトリを登録します。 */
 	LN_METHOD()
