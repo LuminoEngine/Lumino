@@ -1,19 +1,26 @@
 
 #include <Lumino.fxh>
 
-const float _Vague = 0.1;
+const float _Vague = 0.2;   // 0.2 の場合、あるアルファを中央値として、-0.2~0.0 の範囲をぼかす。
+float _Factor;
 sampler2D _MaskTexture;
 
 float steprange(float gray, float factor, float vague)
 {
-    float t = (1.0 - factor);
-    float range = 1.0 + vague;
+    //const float g = 1.0 - gray; // 黒から白へ遷移
+    //float t = (1.0 - factor);
+    const float g = gray; // 黒から白へ遷移
+    float t = factor;
+    float range = 1.0 + vague;  // ぼかしぶんの倍率。本来だと完了に 1.2 秒かかる、みたいな
+
+    // 実際のところ t は 0.0 ~ 1.2 の範囲を動かすことになる。
 
     t *= range;
-    t -= vague;
+    //t -= vague;
 
-    float a = (gray - t) / vague;
-    return a;
+    //float a = (g - t) / vague;
+    float a = (t - g) / vague;
+    return saturate(a);
 }
 
 
@@ -27,9 +34,9 @@ LN_VSOutput_Common VS_ClusteredForward_Geometry(LN_VSInput input)
 float4 PS_Main(LN_PSInput_Common input) : SV_TARGET
 {
     float gray = tex2D(_MaskTexture, input.UV).r;
-    float a = (_Vague > 0.0) ? steprange(gray) : step(1.0 - _Factor, gray);
+    float a = (_Vague > 0.0) ? steprange(gray, _Factor, _Vague) : step(1.0 - _Factor, gray);
     float4 color = tex2D(ln_MaterialTexture, input.UV) * input.Color;
-    return LN_GetBuiltinEffectColor(float4(color.rgb, color.a + a));
+    return LN_GetBuiltinEffectColor(float4(color.rgb, color.a * a));
 }
 
 

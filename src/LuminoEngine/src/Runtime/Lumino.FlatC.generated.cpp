@@ -15943,6 +15943,22 @@ LN_FLAT_API LNResult LNShader_SetVector4A(LNHandle shader, const char* parameter
 }
 
 
+LN_FLAT_API LNResult LNShader_SetTexture(LNHandle shader, const LNChar* parameterName, LNHandle value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setTexture(parameterName, LNI_HANDLE_TO_OBJECT(ln::Texture, value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNShader_SetTextureA(LNHandle shader, const char* parameterName, LNHandle value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, shader)->setTexture(LNI_ASTRPTR_TO_STRING(parameterName), LNI_HANDLE_TO_OBJECT(ln::Texture, value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNShader_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -21829,6 +21845,14 @@ LN_FLAT_API LNResult LNUISprite_GetSourceRect(LNHandle uisprite, LNRect* outRetu
 }
 
 
+LN_FLAT_API LNResult LNUISprite_SetShader(LNHandle uisprite, LNHandle shader)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UISprite, uisprite)->setShader(LNI_HANDLE_TO_OBJECT(ln::Shader, shader)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNUISprite_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -23741,6 +23765,14 @@ LN_FLAT_API LNResult LNEngineSettings_SetMainWindowTitleA(const char* title)
 {
     LNI_FUNC_TRY_BEGIN;
     (ln::EngineSettings::setMainWindowTitle(LNI_ASTRPTR_TO_STRING(title)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNEngineSettings_SetMainWindowResizable(LNBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWindowResizable(LNI_LNBOOL_TO_BOOL(value)));
     LNI_FUNC_TRY_END_RETURN;
 }
 

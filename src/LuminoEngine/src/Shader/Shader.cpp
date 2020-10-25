@@ -396,6 +396,13 @@ void Shader::setVector(const StringRef& parameterName, const Vector4& value)
     }
 }
 
+void Shader::setTexture(const StringRef& parameterName, Texture* value)
+{
+    if (auto* param = findParameter(parameterName)) {
+        param->setTexture(value);
+    }
+}
+
 //Ref<ShaderDescriptor> Shader::createDescriptor()
 //{
 //    return makeObject<ShaderDescriptor>(this);

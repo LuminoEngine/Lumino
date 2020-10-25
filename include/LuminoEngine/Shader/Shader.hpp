@@ -337,6 +337,10 @@ public:
     LN_METHOD(OverloadPostfix = "4")
     void setVector(const StringRef& parameterName, const Vector4& value);
 
+    /** setTexture */
+    LN_METHOD()
+    void setTexture(const StringRef& parameterName, Texture* value);
+
     // ↑このあたりは HC4 のエフェクトで、ひとつの Shader をたくさんの Material から参照するときの共通パラメータを設定したいため、公開した。
 
     /** この Shader の DescriptorLayout をもとに、ShaderDescriptor を作成します。 */

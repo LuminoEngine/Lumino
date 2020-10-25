@@ -476,7 +476,7 @@ int main(int argc, char** argv)
         //Example_UIControls();
 		//Example_Tilemap();
         //Experiment_CharacterController();
-        Experiment_Editor();
+        //Experiment_Editor();
         //Experiment_MeshCollider();
         //Experiment_Reflector();
         //Experiment_Scripting();
@@ -490,7 +490,7 @@ int main(int argc, char** argv)
         //Sandbox_Particle();
         //Sandbox_PostEffect();
         //Sandbox_Sky();
-        //Sandbox_UIShader();
+        Sandbox_UIShader();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
 		//UISandboxMain();

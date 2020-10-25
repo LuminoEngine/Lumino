@@ -32,6 +32,8 @@ public:
 	LN_METHOD(Property)
 	const Rect& sourceRect() const;
 
+    /** setShader */
+    LN_METHOD(Property)
     void setShader(Shader* shader);
 
 LN_CONSTRUCT_ACCESS:

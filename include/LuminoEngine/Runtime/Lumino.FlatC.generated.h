@@ -2502,6 +2502,13 @@ LN_FLAT_API LNResult LNShader_SetVector3A(LNHandle shader, const char* parameter
 LN_FLAT_API LNResult LNShader_SetVector4(LNHandle shader, const LNChar* parameterName, const LNVector4* value);
 LN_FLAT_API LNResult LNShader_SetVector4A(LNHandle shader, const char* parameterName, const LNVector4* value);
 
+/**
+    @brief setTexture
+    @param[in] shader : instance
+*/
+LN_FLAT_API LNResult LNShader_SetTexture(LNHandle shader, const LNChar* parameterName, LNHandle value);
+LN_FLAT_API LNResult LNShader_SetTextureA(LNHandle shader, const char* parameterName, LNHandle value);
+
 typedef LNResult(*LNShader_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNShader_OnSerialize_SetOverrideCallback(LNShader_OnSerialize_OverrideCallback callback);
 LN_FLAT_API LNResult LNShader_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
@@ -5993,6 +6000,12 @@ LN_FLAT_API LNResult LNUISprite_SetSourceRectXYWH(LNHandle uisprite, float x, fl
 */
 LN_FLAT_API LNResult LNUISprite_GetSourceRect(LNHandle uisprite, LNRect* outReturn);
 
+/**
+    @brief setShader
+    @param[in] uisprite : instance
+*/
+LN_FLAT_API LNResult LNUISprite_SetShader(LNHandle uisprite, LNHandle shader);
+
 typedef LNResult(*LNUISprite_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNUISprite_OnSerialize_SetOverrideCallback(LNUISprite_OnSerialize_OverrideCallback callback);
 LN_FLAT_API LNResult LNUISprite_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
@@ -7020,6 +7033,11 @@ LN_FLAT_API LNResult LNEngineSettings_SetMainWorldViewSize(int width, int height
 */
 LN_FLAT_API LNResult LNEngineSettings_SetMainWindowTitle(const LNChar* title);
 LN_FLAT_API LNResult LNEngineSettings_SetMainWindowTitleA(const char* title);
+
+/**
+    @brief メインウィンドウをユーザーがサイズ変更できるかどうかを指定します。(default: false)
+*/
+LN_FLAT_API LNResult LNEngineSettings_SetMainWindowResizable(LNBool value);
 
 /**
     @brief アセットが保存されているディレクトリを登録します。
