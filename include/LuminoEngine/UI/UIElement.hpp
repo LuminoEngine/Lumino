@@ -430,7 +430,11 @@ public:
 	void invalidateVisual() { invalidate(detail::UIElementDirtyFlags::Render, true); }
 
 	/** 入力フォーカスを得ることができるかどうかを設定します。(default: false) */
+	LN_METHOD(Property)
 	void setFocusable(bool value) { m_focusable = value; }
+
+	/** 入力フォーカスを得ることができるかどうかを取得します。 */
+	LN_METHOD(Property)
 	bool focusable() const { return isEnabled() && m_focusable; }
 
     void setClipToBounds(bool value) { m_clipToBounds = value; }

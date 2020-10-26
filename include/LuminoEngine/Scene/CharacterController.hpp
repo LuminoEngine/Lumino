@@ -51,10 +51,13 @@ public:
 	LN_METHOD(Property)
 	const Vector3& velocity() const { return m_currentVelocity; }
 
-
-	/** キーボードやゲームパッドによる操作の有効状態を設定します。 (default: true) */
+	/**
+	 * キーボードやゲームパッドによる操作の有効状態を設定します。 (default: true)
+	 *
+	 * false を指定した場合、キャラクターの想定外の自走を防止するため、速度も 0 にリセットされます。
+	 */
 	LN_METHOD(Property)
-	void setInputControlEnabled(bool value) { m_inputControlEnabled = value; }
+	void setInputControlEnabled(bool value);
 
 	/**
 	 * マウスによるカメラ操作の有効状態を設定します。 (default: true)

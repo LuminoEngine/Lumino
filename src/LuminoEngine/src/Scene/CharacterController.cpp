@@ -37,6 +37,14 @@ bool CharacterController::init()
     return true;
 }
 
+void CharacterController::setInputControlEnabled(bool value)
+{
+	m_inputControlEnabled = value;
+	if (!m_inputControlEnabled) {
+		m_currentVelocity = Vector3::Zero;
+	}
+}
+
 void CharacterController::setCameraControlEnabled(bool value)
 {
 	if (m_cameraControlEnabled != value) {
