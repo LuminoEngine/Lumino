@@ -46,7 +46,7 @@ void AssetObject::serialize(Serializer2& ar)
 {
 	Object::serialize(ar);
 
-	String file = (m_data) ? m_data->resourceFilePath : String::Empty;
+	String file = (m_data) ? m_data->resourceFilePath.str() : String::Empty;
 
 	ar & makeNVP(u"file", file);
 

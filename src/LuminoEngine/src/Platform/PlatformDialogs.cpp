@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Platform/PlatformDialogs.hpp>
 #ifdef LN_OS_WIN32
-#include "Win32PlatformDialogs.hpp"
+#include "Windows/Win32PlatformDialogs.hpp"
 #endif
 
 namespace ln {

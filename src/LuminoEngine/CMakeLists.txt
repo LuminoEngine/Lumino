@@ -163,14 +163,16 @@ elseif (WIN32)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
         ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
-        src/Platform/Win32PlatformInterface.cpp
+        src/Platform/Windows/Win32PlatformInterface.cpp
+        src/Platform/Windows/Win32PlatformWindowManager.cpp
+        src/Platform/Windows/Win32PlatformWindowManager.cpp
     )
 elseif (APPLE)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
-        src/Platform/iOSPlatformInterface.mm
-        src/Platform/CocoaPlatformInterface.mm
-        src/Platform/PlatformSupport.mm
+        src/Platform/iOS/iOSPlatformInterface.mm
+        src/Platform/macOS/CocoaPlatformInterface.mm
+        src/Platform/macOS/PlatformSupport.mm
     )
 endif()
 

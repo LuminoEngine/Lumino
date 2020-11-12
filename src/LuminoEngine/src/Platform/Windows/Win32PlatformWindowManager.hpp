@@ -2,7 +2,7 @@
 
 #ifdef _WIN32
 
-#include "PlatformWindowManager.hpp"
+#include "../PlatformWindowManager.hpp"
 
 namespace ln {
 namespace detail {

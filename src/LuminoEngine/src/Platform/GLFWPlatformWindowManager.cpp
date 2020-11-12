@@ -7,7 +7,7 @@
 #if defined(LN_OS_WIN32)
 #	define GLFW_EXPOSE_NATIVE_WIN32
 #	include <GLFW/glfw3native.h>
-#	include "Win32PlatformWindowManager.hpp"
+#	include "Windows/Win32PlatformWindowManager.hpp"
 #elif defined(LN_OS_MAC)
 #	define GLFW_EXPOSE_NATIVE_COCOA
 #	include <GLFW/glfw3native.h>

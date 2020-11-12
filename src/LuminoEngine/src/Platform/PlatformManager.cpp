@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include "EmptyPlatformWindowManager.hpp"
 #include "GLFWPlatformWindowManager.hpp"
-#include "Win32PlatformWindowManager.hpp"
+#include "Windows/Win32PlatformWindowManager.hpp"
 #include "PlatformManager.hpp"
 
 namespace ln {
