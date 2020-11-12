@@ -244,7 +244,11 @@ ln::Result MethodParameterSymbol::link()
 
 		// defaut value
 		if (m_pi->defaultValue) {
-			if (m_pi->defaultValue->isNumeric()) {
+			if (m_pi->defaultValue->type() == ln::VariantType::Bool) {
+				m_defaultValue = ln::makeRef<ConstantSymbol>(db());
+				if (!m_defaultValue->init(PredefinedTypes::boolType, m_pi->defaultValue)) return false;
+			}
+			else if (m_pi->defaultValue->isNumeric()) {
 				if (type()->isEnum()) {
 					m_defaultValue = ln::makeRef<ConstantSymbol>(db());
 					if (!m_defaultValue->init(m_qualType.type, m_pi->defaultValue)) return false;

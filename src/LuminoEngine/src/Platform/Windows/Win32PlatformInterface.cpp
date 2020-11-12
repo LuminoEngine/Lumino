@@ -3,8 +3,8 @@
 #include <Windows.h>
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Platform/Win32PlatformInterface.hpp>
-#include "../Engine/EngineManager.hpp"
-#include "GLFWPlatformWindowManager.hpp"
+#include "../../Engine/EngineManager.hpp"
+#include "../GLFWPlatformWindowManager.hpp"
 
 #if defined(_WIN32) && !defined(LUMINO_BUILD_DLL)
 extern "C" ::ln::Application* LuminoCreateApplicationInstance();

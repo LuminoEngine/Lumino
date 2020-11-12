@@ -25,9 +25,9 @@ class App_Experiment_Shadow : public Application
 		auto box1 = BoxMesh::create();
 		box1->setPosition(2, 2, 0);
 
-		//m_sprite = Sprite::create();
-		//m_sprite->setPosition(3, 3, 0);
-		//m_sprite->setTexture(Texture2D::load(u"Sprite1"));
+		m_sprite = Sprite::create();
+		m_sprite->setPosition(3, 3, 0);
+		m_sprite->setTexture(Texture2D::load(u"Sprite1"));
 	}
 
     void onUpdate() override
@@ -37,9 +37,9 @@ class App_Experiment_Shadow : public Application
 		//light->lookAt(0, 0, 0);
 
 
-		//if (ln::detail::g_m_shadowMap) {
-		//	m_sprite->setTexture(ln::detail::g_m_shadowMap);
-		//}
+		if (ln::detail::g_m_shadowMap) {
+			m_sprite->setTexture(ln::detail::g_m_shadowMap);
+		}
     }
 };
 

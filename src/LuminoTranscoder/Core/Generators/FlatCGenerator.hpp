@@ -76,6 +76,8 @@ private:
 	{
 		return ln::String(u"if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);");
 	}
+
+	ln::String makeBaseCallerExpr(const TypeSymbol* classSymbol, const MethodSymbol* methodSymbol) const;
 };
 
 

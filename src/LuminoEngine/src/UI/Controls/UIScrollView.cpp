@@ -204,7 +204,7 @@ const String UITrack::HorizontalState = _LT("Horizontal");
 const String UITrack::VerticalState = _LT("Vertical");
 
 UITrack::UITrack()
-	: m_orientation(Orientation::Horizontal)
+	: m_orientation(UILayoutOrientation::Horizontal)
 	, m_value(0.0f)
 	, m_minimum(0.0f)
 	, m_maximum(1.0f)
@@ -242,19 +242,19 @@ void UITrack::init()
 	addVisualChild(m_thumb);
 	//addVisualChild(m_increaseButton);
 
-	setOrientation(Orientation::Horizontal);
+	setOrientation(UILayoutOrientation::Horizontal);
 }
 
-void UITrack::setOrientation(Orientation orientation)
+void UITrack::setOrientation(UILayoutOrientation orientation)
 {
 	m_orientation = orientation;
 
 	switch (orientation)
 	{
-	case Orientation::Horizontal:
+	case UILayoutOrientation::Horizontal:
 		getVisualStateManager()->gotoState(HorizontalState);
 		break;
-	case Orientation::Vertical:
+	case UILayoutOrientation::Vertical:
 		getVisualStateManager()->gotoState(VerticalState);
 		break;
 	default:
@@ -272,7 +272,7 @@ float UITrack::valueFromDistance(float horizontal, float vertical)
 {
 	float scale = 1;//IsDirectionReversed ? -1 : 1;
 
-	if (m_orientation == Orientation::Horizontal)
+	if (m_orientation == UILayoutOrientation::Horizontal)
 	{
 		return scale * horizontal * m_density;
 	}
@@ -321,19 +321,19 @@ Size UITrack::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalA
 	float decreaseButtonLength;
 	float thumbLength;
 	float increaseButtonLength;
-	float trackLength = (m_orientation == Orientation::Vertical) ? finalSize.height : finalSize.width;
+	float trackLength = (m_orientation == UILayoutOrientation::Vertical) ? finalSize.height : finalSize.width;
 
 	if (Math::isNaN(m_viewportSize))
 	{
 		// ビューサイズが関係ない場合の計算。つまり、Slider コントロール用
-		calcSliderComponentsSize(finalSize, (m_orientation == Orientation::Vertical), &decreaseButtonLength, &thumbLength, &increaseButtonLength);
+		calcSliderComponentsSize(finalSize, (m_orientation == UILayoutOrientation::Vertical), &decreaseButtonLength, &thumbLength, &increaseButtonLength);
 	}
 	else
 	{
 		calcScrollBarComponentsSize(trackLength, m_viewportSize, &decreaseButtonLength, &thumbLength, &increaseButtonLength);
 	}
 
-	if (m_orientation == Orientation::Horizontal)
+	if (m_orientation == UILayoutOrientation::Horizontal)
 	{
 		Rect rect(0.0f, 0.0f, 0.0f, finalSize.height);
 
@@ -531,30 +531,30 @@ void UIScrollBar::init()
     //m_lineUpButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _LT("LineUpButton"));
     //m_lineDownButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _LT("LineDownButton"));
 	// TODO: styleseet
-    m_track->setHAlignment(HAlignment::Stretch);
-    m_track->setVAlignment(VAlignment::Stretch);
-    //m_lineUpButton->setHAlignment(HAlignment::Stretch);
-    //m_lineUpButton->setVAlignment(VAlignment::Stretch);
-    //m_lineDownButton->setHAlignment(HAlignment::Stretch);
-    //m_lineDownButton->setVAlignment(VAlignment::Stretch);
+    m_track->setHAlignment(UIHAlignment::Stretch);
+    m_track->setVAlignment(UIVAlignment::Stretch);
+    //m_lineUpButton->setHAlignment(UIHAlignment::Stretch);
+    //m_lineUpButton->setVAlignment(UIVAlignment::Stretch);
+    //m_lineDownButton->setHAlignment(UIHAlignment::Stretch);
+    //m_lineDownButton->setVAlignment(UIVAlignment::Stretch);
 
     //// TODO:
     //m_lineUpButton->setSize(Size(16, 16));
     //m_lineDownButton->setSize(Size(16, 16));
 
-    setOrientation(Orientation::Horizontal);
+    setOrientation(UILayoutOrientation::Horizontal);
 }
 
-void UIScrollBar::setOrientation(Orientation orientation)
+void UIScrollBar::setOrientation(UILayoutOrientation orientation)
 {
     m_track->setOrientation(orientation);
 
     switch (orientation)
     {
-    case Orientation::Horizontal:
+    case UILayoutOrientation::Horizontal:
         getVisualStateManager()->gotoState(HorizontalState);
         break;
-    case Orientation::Vertical:
+    case UILayoutOrientation::Vertical:
         getVisualStateManager()->gotoState(VerticalState);
         break;
     default:
@@ -563,7 +563,7 @@ void UIScrollBar::setOrientation(Orientation orientation)
     }
 }
 
-Orientation UIScrollBar::getOrientation() const
+UILayoutOrientation UIScrollBar::getOrientation() const
 {
     return m_track->getOrientation();
 }
@@ -654,11 +654,11 @@ Size UIScrollBar::arrangeOverride(UILayoutContext* layoutContext, const Rect& fi
 	const auto finalSize = finalArea.getSize();
     Size upSize;
     Size downSize;
-    Orientation orientation = getOrientation();
+    UILayoutOrientation orientation = getOrientation();
 
     switch (orientation)
     {
-    case Orientation::Horizontal:
+    case UILayoutOrientation::Horizontal:
         if (m_lineUpButton) {
             upSize = m_lineUpButton->desiredSize();
             downSize = m_lineUpButton->desiredSize();
@@ -671,7 +671,7 @@ Size UIScrollBar::arrangeOverride(UILayoutContext* layoutContext, const Rect& fi
             m_track->arrangeLayout(layoutContext, Rect(upSize.width, 0, finalSize.width - upSize.width - downSize.width, finalSize.height));
         }
         break;
-    case Orientation::Vertical:
+    case UILayoutOrientation::Vertical:
         if (m_track) {
             m_track->arrangeLayout(layoutContext, Rect(0, 0, finalSize));
         }
@@ -724,9 +724,9 @@ void UIScrollViewHelper::setHScrollbarVisible(bool value)
 	if (value) {
 		if (!m_horizontalScrollBar) {
 			m_horizontalScrollBar = makeObject<UIScrollBar>();
-			m_horizontalScrollBar->setOrientation(Orientation::Horizontal);
+			m_horizontalScrollBar->setOrientation(UILayoutOrientation::Horizontal);
 			//m_horizontalScrollBar->setWidth(16);	// TODO: style
-			m_horizontalScrollBar->setVAlignment(VAlignment::Stretch);
+			m_horizontalScrollBar->setVAlignment(UIVAlignment::Stretch);
 			m_owner->addVisualChild(m_horizontalScrollBar);
 		}
 	}
@@ -744,8 +744,8 @@ void UIScrollViewHelper::setVScrollbarVisible(bool value)
 		if (!m_verticalScrollBar) {
 			m_verticalScrollBar = makeObject<UIScrollBar>();
 			//m_verticalScrollBar->setHeight(16);	// TODO: style
-			m_verticalScrollBar->setOrientation(Orientation::Vertical);
-			m_verticalScrollBar->setHAlignment(HAlignment::Stretch);
+			m_verticalScrollBar->setOrientation(UILayoutOrientation::Vertical);
+			m_verticalScrollBar->setHAlignment(UIHAlignment::Stretch);
 			m_owner->addVisualChild(m_verticalScrollBar);
 		}
 	}
@@ -892,9 +892,9 @@ void UIScrollViewer::setHScrollbarVisible(bool value)
 	if (value) {
 		if (!m_horizontalScrollBar) {
 			m_horizontalScrollBar = makeObject<UIScrollBar>();
-			m_horizontalScrollBar->setOrientation(Orientation::Horizontal);
+			m_horizontalScrollBar->setOrientation(UILayoutOrientation::Horizontal);
 			m_horizontalScrollBar->setWidth(16);	// TODO: style
-			m_horizontalScrollBar->setVAlignment(VAlignment::Stretch);
+			m_horizontalScrollBar->setVAlignment(UIVAlignment::Stretch);
 			addVisualChild(m_horizontalScrollBar);
 		}
 	}
@@ -912,8 +912,8 @@ void UIScrollViewer::setVScrollbarVisible(bool value)
 		if (!m_verticalScrollBar) {
 			m_verticalScrollBar = makeObject<UIScrollBar>();
 			m_verticalScrollBar->setHeight(16);	// TODO: style
-			m_verticalScrollBar->setOrientation(Orientation::Vertical);
-			m_verticalScrollBar->setHAlignment(HAlignment::Stretch);
+			m_verticalScrollBar->setOrientation(UILayoutOrientation::Vertical);
+			m_verticalScrollBar->setHAlignment(UIHAlignment::Stretch);
 			addVisualChild(m_verticalScrollBar);
 		}
 	}
@@ -931,15 +931,15 @@ void UIScrollViewer::init()
 	setHScrollbarVisible(true);
 	setVScrollbarVisible(true);
     //m_horizontalScrollBar = makeObject<UIScrollBar>();
-    //m_horizontalScrollBar->setOrientation(Orientation::Horizontal);
+    //m_horizontalScrollBar->setOrientation(UILayoutOrientation::Horizontal);
     //m_verticalScrollBar = makeObject<UIScrollBar>();
-    //m_verticalScrollBar->setOrientation(Orientation::Vertical);
+    //m_verticalScrollBar->setOrientation(UILayoutOrientation::Vertical);
     //addVisualChild(m_horizontalScrollBar);
     //addVisualChild(m_verticalScrollBar);
 
     ////m_verticalScrollBar->setHeight(16);
     //m_verticalScrollBar->setWidth(16);
-    //m_verticalScrollBar->setVAlignment(VAlignment::Stretch);
+    //m_verticalScrollBar->setVAlignment(UIVAlignment::Stretch);
 }
 
 Size UIScrollViewer::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
@@ -1044,10 +1044,10 @@ void UIScrollViewer::onRoutedEvent(UIEventArgs* e)
     }
 }
 
-void UIScrollViewer::onLayoutPanelChanged(UILayoutPanel* newPanel)
-{
-    m_scrollTarget = newPanel;
-}
+//void UIScrollViewer::onLayoutPanelChanged(UILayoutPanel2_Deprecated* newPanel)
+//{
+//    m_scrollTarget = newPanel;
+//}
 
 
 } // namespace ln

@@ -21,7 +21,10 @@ Ref<AnimationClip> AnimationClip::create(/*const StringRef& name, */const String
 
 Ref<AnimationClip> AnimationClip::load(const StringRef& filePath)
 {
+	//return makeObject<AnimationClip>(filePath);
+
 	return detail::EngineDomain::animationManager()->loadAnimationClip(filePath);
+
 	//const Char* candidateExts[] = { u".vmd" };
 	//if (const auto assetPath = detail::AssetPath::resolveAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts)))
 	//	return detail::EngineDomain::animationManager()->acquireAnimationClip(assetPath);
@@ -40,18 +43,26 @@ AnimationClip::~AnimationClip()
 {
 }
 
-void AnimationClip::init()
+bool AnimationClip::init()
 {
-	AssetObject::init();
+	return AssetObject::init();
 }
 
-bool AnimationClip::init(const detail::AssetPath& assetSourcePath)
-{
-	if (!AssetObject::init()) return false;
-	m_assetSourcePath = assetSourcePath;
-	reload();
-	return true;
-}
+//bool AnimationClip::init(const Path& assetPath)
+//{
+//	// TODO: 2回initやめたほうがいい
+//	if (!init()) return false;
+//	if (!initLoad(assetPath)) return false;
+//	return true;
+//}
+
+//bool AnimationClip::init(const detail::AssetPath& assetSourcePath)
+//{
+//	if (!AssetObject::init()) return false;
+//	m_assetSourcePath = assetSourcePath;
+//	reload();
+//	return true;
+//}
 
 void AnimationClip::init(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes)
 {
@@ -83,26 +94,42 @@ void AnimationClip::addTrack(AnimationTrack* track)
     m_lastFrameTime = track->lastFrameTime();
 }
 
-void AnimationClip::onLoadSourceFile()
+const std::vector<const Char*>& AnimationClip::resourceExtensions() const
 {
-	if (LN_REQUIRE(!m_assetSourcePath.isNull())) return;
-
-	auto assetManager = detail::EngineDomain::assetManager();
-
-	if (m_assetSourcePath.path().hasExtension(u".bvh")) {
-		auto diag = makeObject<DiagnosticsManager>();
-		detail::BvhImporter importer(assetManager, diag);
-		importer.import(this, m_assetSourcePath);
-		diag->dumpToLog();
-	}
-	else if (m_assetSourcePath.path().hasExtension(u".vmd")) {
-		LN_NOTIMPLEMENTED();
-	}
-	else {
-		// TODO: 拡張子省略時の対策
-		LN_NOTIMPLEMENTED();
-	}
+	static const std::vector<const Char*> exts = { u".bvh", u".vmd" };
+	return exts;
 }
+
+void AnimationClip::onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath)
+{
+	// TODO: ちゃんと stream から読みたい
+	auto assetManager = detail::EngineDomain::assetManager();
+	auto diag = makeObject<DiagnosticsManager>();
+	detail::BvhImporter importer(assetManager, diag);
+	importer.import(this, assetPath, detail::EngineDomain::animationManager()->defaultAnimationClipImportSettings());
+	diag->dumpToLog();
+}
+
+//void AnimationClip::onLoadResourceFile()
+//{
+//	if (LN_REQUIRE(!m_assetSourcePath.isNull())) return;
+//
+//	auto assetManager = detail::EngineDomain::assetManager();
+//
+//	if (m_assetSourcePath.path().hasExtension(u".bvh")) {
+//		auto diag = makeObject<DiagnosticsManager>();
+//		detail::BvhImporter importer(assetManager, diag);
+//		importer.import(this, m_assetSourcePath);
+//		diag->dumpToLog();
+//	}
+//	else if (m_assetSourcePath.path().hasExtension(u".vmd")) {
+//		LN_NOTIMPLEMENTED();
+//	}
+//	else {
+//		// TODO: 拡張子省略時の対策
+//		LN_NOTIMPLEMENTED();
+//	}
+//}
 
 ////==============================================================================
 //// VmdAnimationClip

@@ -1,5 +1,6 @@
 ﻿
 #include <LuminoEngine.hpp>
+#include <LuminoEngine/Runtime/Runtime.hpp>
 #include "LuminoHSP.h"
 
 extern bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr);
@@ -44,7 +45,7 @@ static void* reffunc(int* type_res, int cmd)
 	if (*val != ')') puterror(HSPERR_INVALID_FUNCPARAM);
 	code_next();
 
-	*type_res = HSPVAR_FLAG_INT;			// 返値のタイプを整数に指定する
+	//*type_res = HSPVAR_FLAG_INT;			// 返値のタイプを整数に指定する
 	return retValPtr;
 }
 
@@ -60,9 +61,9 @@ static int termfunc(int option)
 //-----------------------------------------------------------------------------
 EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO* info)
 {
-	ln::Logger::setLevel(ln::LogLevel::Debug);
-	ln::Logger::addStdErrAdapter();
-	ln::Console::allocate();
+	//ln::Logger::setLevel(ln::LogLevel::Debug);
+	//ln::Logger::addStdErrAdapter();
+	//ln::Console::allocate();
 
 	//		プラグイン初期化 (実行・終了処理を登録します)
 	//
@@ -85,6 +86,8 @@ EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO* info)
 	settings.referenceCountTrackerCallback = nullptr;
 	settings.runtimeGetTypeInfoIdCallback = nullptr;
 	LNRuntime_Initialize(&settings);
+
+	ln::Runtime::setAStringEncoding(ln::TextEncoding::systemMultiByteEncoding());
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule,

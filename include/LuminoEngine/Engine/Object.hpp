@@ -39,6 +39,9 @@ class ObjectHelper;
 class EngineDomain;
 struct ObjectRuntimeData;
 
+// ファイルを一意に識別する。
+// Lumino の各 AssetObject は load() にて拡張子省略されたパスを受け入れるが、
+// AssetPath はそれが解決された後の、本当に読み込みたいファイルのパスとなる。
 class AssetPath
 {
 public:
@@ -71,6 +74,7 @@ public:
 
     AssetPath();
     AssetPath(const String& scheme, const String& host, const Path& path);
+    void clear();
 
     const String& scheme() const { return m_components->scheme; }
     const String& host() const { return m_components->host; }
@@ -80,7 +84,7 @@ public:
     static bool isAssetFilePath(const Path& path);
     AssetPath getParentAssetPath() const;  // 親フォルダ
     String toString() const;
-    bool isNull() const noexcept { return m_components == nullptr; }
+    bool isNull() const noexcept { return m_components == nullptr || m_components->scheme.isEmpty(); }
     bool hasValue() const noexcept { return !isNull(); }
     uint64_t calculateHash() const;
 
@@ -239,6 +243,21 @@ public:
     virtual void setTypeInfoOverride(TypeInfo* value);
 
     void reloadAsset();
+
+
+#if defined(LUMINO_TRANSCODER)
+    /** オブジェクトの参照を開放します。 */
+    LN_METHOD(Specialized)
+    void release();
+
+    /** オブジェクトの参照を取得します。 */
+    LN_METHOD(Specialized)
+    void retain();
+
+    /** オブジェクトの参照カウントを取得します。これは内部的に使用される関数です。 */
+    LN_METHOD(Specialized)
+    int getReferenceCount() const;
+#endif
 
 private:
 	virtual void onRetained() override;
@@ -403,4 +422,4 @@ private:
 
 } // namespace ln
 
-#include "TypeInfo.hpp"
+//#include "TypeInfo.hpp"

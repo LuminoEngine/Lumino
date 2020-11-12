@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "GLFWPlatformWindowManager.hpp"
-#include "Win32PlatformWindowManager.hpp"
+#include "Windows/Win32PlatformWindowManager.hpp"
 
 namespace ln {
 

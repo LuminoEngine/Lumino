@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
 #include "VoxelmapMesh.hpp"
 
 namespace ln {

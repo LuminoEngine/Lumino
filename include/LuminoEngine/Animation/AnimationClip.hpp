@@ -12,14 +12,25 @@ class AnimationClip;
 /**
  * AnimationClipPromise
  */
-LN_PROMISE()
+//LN_PROMISE()
 using AnimationClipPromise = Promise<Ref<AnimationClip>>;
+
+
+/**
+ */
+class AnimationClipImportSettings
+	: public Object
+{
+public:
+	bool requiredStandardCoordinateSystem = true;
+};
 
 /**
  * オブジェクトやそのプロパティに影響を与えるアニメーションデータです。
  *
  * スキンメッシュアニメーションでは、「歩く」「走る」といった 1 モーションの単位です。
  */
+LN_CLASS()
 class AnimationClip
 	: public AssetObject
 {
@@ -27,18 +38,24 @@ public:
     /** ひとつの AnimationTrack を持つ AnimationClip を作成します。 */
 	static Ref<AnimationClip> create(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
 
+	/** load */
+	LN_METHOD()
 	static Ref<AnimationClip> load(const StringRef& filePath);
 
 	/** アニメーションの繰り返しの動作を取得します。(default: Loop) */
+	LN_METHOD(Property)
 	void setWrapMode(AnimationWrapMode value) { m_wrapMode = value; }
 
 	/** アニメーションの繰り返しの動作を取得します。 */
+	LN_METHOD(Property)
 	AnimationWrapMode wrapMode() const { return m_wrapMode; }
 
-	/** アニメーションの繰り返しの動作を取得します。(default: AllowTranslationOnlyRoot) */
+	/** 階層構造を持つアニメーションデータの動作モード。(default: AllowTranslationOnlyRoot) */
+	LN_METHOD(Property)
 	void setHierarchicalAnimationMode(HierarchicalAnimationMode value) { m_hierarchicalAnimationMode = value; }
 
-	/** アニメーションの繰り返しの動作を取得します。 */
+	/** 階層構造を持つアニメーションデータの動作モード。 */
+	LN_METHOD(Property)
 	HierarchicalAnimationMode hierarchicalAnimationMode() const { return m_hierarchicalAnimationMode; }
 
     void addTrack(AnimationTrack* track);
@@ -50,23 +67,28 @@ public:
 	const String& name() const { return m_name; }
 
 protected:
-	void onLoadSourceFile() override;
+
 
 LN_CONSTRUCT_ACCESS:
 	AnimationClip();
 	virtual ~AnimationClip();
-	void init();
-	bool init(const detail::AssetPath& assetSourcePath);
+	bool init();
+	//bool init(const Path& assetPath);
+	//bool init(const detail::AssetPath& assetSourcePath);
 	void init(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
 
-protected:
+protected:	// TODO:
 	String m_name;
 	List<Ref<AnimationTrack>> m_tracks;
 	Ref<RefObject> m_srcData;
 	float m_lastFrameTime;
 	AnimationWrapMode m_wrapMode;
 	HierarchicalAnimationMode m_hierarchicalAnimationMode;
-	detail::AssetPath m_assetSourcePath;
+	//detail::AssetPath m_assetSourcePath;
+
+private:
+	const std::vector<const Char*>& resourceExtensions() const override;
+	void onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath) override;
 
 	friend class detail::AnimationManager;
 };

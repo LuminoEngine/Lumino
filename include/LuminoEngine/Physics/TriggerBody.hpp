@@ -23,15 +23,10 @@ public:
     /** 衝突グループマスクを設定します。デフォルトは 0x0000FFFF で、0～15番のグループと衝突することを示します。 */
     void setCollisionGroupMask(uint32_t value);
 
-    /** 位置を設定します。(default: 0, 0, 0) */
-    //void setPosition(const Vector3& value);
-
-
-
 protected:
-    void onBeforeStepSimulation() override;
+    void onDispose(bool explicitDisposing) override;
+    void onPrepareStepSimulation() override;
     void onAfterStepSimulation() override;
-    void onRemoveFromPhysicsWorld() override;
 
 LN_CONSTRUCT_ACCESS:
     TriggerBody();
@@ -39,6 +34,8 @@ LN_CONSTRUCT_ACCESS:
     void init(CollisionShape* shape);
 
 private:
+    void removeFromBtWorld() override;
+
     class LocalGhostObject;
     
     enum DirtyFlags

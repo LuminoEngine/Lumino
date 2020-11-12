@@ -153,6 +153,7 @@ namespace detail {
 
 GraphicsManager::GraphicsManager()
 	: m_assetManager(nullptr)
+	, m_platformManager(nullptr)
     , m_linearAllocatorPageManager()
 {
 }
@@ -164,6 +165,9 @@ void GraphicsManager::init(const Settings& settings)
 	if (LN_REQUIRE(settings.graphicsAPI != GraphicsAPI::Default)) return;
 
     m_assetManager = settings.assetManager;
+	m_platformManager = settings.platformManager;
+
+	m_texture2DCache.init(64);
 
 	// Create device context
 	{
@@ -247,6 +251,8 @@ void GraphicsManager::dispose()
 		m_renderingQueue->dispose();
 		m_renderingQueue = nullptr;
 	}
+
+	m_texture2DCache.dispose();
 
 	// default objects
 	{
@@ -332,19 +338,42 @@ Ref<Texture> GraphicsManager::requestTexture(const AssetPath& assetPath)
 
 Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
 {
-	// TODO: find cache
+	m_texture2DCache.collectUnreferenceObjects(false);
 
-	auto obj = makeObject<Texture2D>(filePath);
+	static const std::vector<const Char*> exts = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
 
-	detail::AssetObjectInternal::setAssetPath(obj, filePath);
+#if 1
+	return AssetManager::loadObjectWithCacheHelper<Texture2D>(&m_texture2DCache, nullptr, exts, filePath, nullptr);
+#else
+	auto pathSet = std::make_unique<AssetRequiredPathSet>();
+	if (!AssetObject::_resolveAssetRequiredPathSet(filePath, exts, pathSet.get())) {
+		return nullptr;
+	}
+
+	// finalResourceAssetFilePath から拡張子を除いたものを CacheKey とする
+	// > CacheKey はどの Archive に入っているファイルであるかまで区別できるものでなければダメ。
+	// > Archive 名と、それを基準とした相対パス(または絶対パス) で表す必要がある。
+	// > 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
+	const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
+
+	if (auto obj = m_texture2DCache.findObject(cacheKey)) {
+		return obj;
+	}
+
+	auto obj = makeObject<Texture2D>();
+	obj->m_data = std::move(pathSet);
+	obj->reload();
+
+	m_texture2DCache.registerObject(cacheKey, obj);
 
 	return obj;
+#endif
 }
 
-Ref<Texture2DPromise> GraphicsManager::loadTexture2DAsync(const StringRef& filePath)
+Ref<Texture2D> GraphicsManager::loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringRef& filePath, std::function<Ref<Texture2D>(const AssetRequiredPathSet*)> factory)
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+	static const std::vector<const Char*> exts = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
+	return AssetManager::loadObjectWithCacheHelper<Texture2D>(texture2DCache(), baseDir, exts, filePath, factory);
 }
 
 bool GraphicsManager::checkVulkanSupported()
@@ -359,6 +388,7 @@ bool GraphicsManager::checkVulkanSupported()
 void GraphicsManager::createOpenGLContext(const Settings& settings)
 {
 	OpenGLDevice::Settings openglSettings;
+	openglSettings.platformManager = m_platformManager;
 	openglSettings.mainWindow = settings.mainWindow;
 	auto ctx = makeRef<OpenGLDevice>();
 	ctx->init(openglSettings);

@@ -9,6 +9,7 @@
 #include "../Platform/TextInputMethodSystem.hpp"
 #include "../../../LuminoCore/src/Text/UnicodeUtils.hpp"
 #include "../Font/FontCore.hpp"
+#include "UIStyleInstance.hpp"
 #include "UIEditableTextArea.hpp"
 #include "UIManager.hpp"
 

@@ -16,7 +16,7 @@ ParticleInstance2::ParticleInstance2()
 {
 }
 
-bool ParticleInstance2::init(ParticleModel2* model)
+bool ParticleInstance2::init(ParticleModel* model)
 {
     if (LN_REQUIRE(model)) return false;
     if (!Object::init()) return false;
@@ -63,7 +63,7 @@ void ParticleInstance2::render(RenderingContext* context)
     }
 }
 
-ParticleRenderer2* ParticleInstance2::acquireRenderer(ParticleEmitterModel2* emitterModel)
+ParticleRenderer2* ParticleInstance2::acquireRenderer(ParticleEmitterModel* emitterModel)
 {
     ParticleGeometry* geometry = emitterModel->geometry();
     uint64_t hashKey = geometry->calculateRendererHashKey(emitterModel);
@@ -99,7 +99,7 @@ ParticleEmitterInstance2::ParticleEmitterInstance2()
 {
 }
 
-bool ParticleEmitterInstance2::init(ParticleInstance2* particleInstance, ParticleEmitterModel2* emitterModel)
+bool ParticleEmitterInstance2::init(ParticleInstance2* particleInstance, ParticleEmitterModel* emitterModel)
 {
     if (!Object::init()) return false;
     if (LN_REQUIRE(emitterModel)) return false;
@@ -425,7 +425,7 @@ TrailParticleModuleInstance::TrailParticleModuleInstance()
 {
 }
 
-bool TrailParticleModuleInstance::init(ParticleEmitterInstance2* emitterInstance, ParticleEmitterModel2* emitterModel)
+bool TrailParticleModuleInstance::init(ParticleEmitterInstance2* emitterInstance, ParticleEmitterModel* emitterModel)
 {
     if (!Object::init()) return false;
     m_emitterModel = emitterModel;

@@ -6,7 +6,8 @@ namespace ln {
 class DataObject;
 
 
-/** キーコード (NumPad はサポートしていない) */
+/** キーコード */
+LN_ENUM()
 enum class Keys
 {
 	Unknown = 0,

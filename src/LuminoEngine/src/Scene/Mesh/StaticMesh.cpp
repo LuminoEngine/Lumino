@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMeshComponent.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMesh.hpp>
 #include "../../Mesh/MeshManager.hpp"
@@ -12,6 +12,11 @@ namespace ln {
 // StaticMesh
 
 LN_OBJECT_IMPLEMENT(StaticMesh, VisualObject) {}
+
+Ref<StaticMesh> StaticMesh::load(const StringRef& filePath)
+{
+    return makeObject<StaticMesh>(filePath, 1.0f);
+}
 
 Ref<StaticMesh> StaticMesh::create()
 {
@@ -61,6 +66,16 @@ void StaticMesh::init(const StringRef& filePath, float scale)
 StaticMeshComponent* StaticMesh::staticMeshComponent() const
 {
     return m_component;
+}
+
+StaticMeshModel* StaticMesh::model() const
+{
+    return m_component->model();
+}
+
+void StaticMesh::makeCollisionBody(StringRef meshContainerName)
+{
+    m_component->makeCollisionBody(meshContainerName);
 }
 
 void StaticMesh::serialize(Serializer2& ar)

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Object.hpp"
 #include "../Animation/EasingFunctions.hpp"
 #include "../Graphics/ColorStructs.hpp"
 
@@ -6,11 +7,21 @@ namespace ln {
 class Font;
 class UIRenderingContext;
 
-/** */
+/**
+ * デバッグに利用できる各機能へアクセスする手段を提供します。
+ */
 LN_CLASS(Static)
 class Debug
 {
 public:
+    /** 3D シーン上に、グリッドを表示するかどうかを設定します。 */
+	LN_METHOD(Property)
+	static void setGuideGridEnabled(bool value);
+	
+    /** 3D シーン上に、コリジョン及び物理演算の情報を表示するかどうかを設定します。 */
+	LN_METHOD(Property)
+	static void setPhysicsDebugDrawEnabled(bool value);
+
 	/**
 	 * ウィンドウ上にデバッグ文字列を表示します。
      * @param[in] str : 表示文字列
@@ -53,7 +64,6 @@ public:
 	{
 		print(time, color, String::format(format, std::forward<TArgs>(args)...));
 	}
-
 
 //private:
 //	static void printInternal(float time, const Color& color, StringRef str);

@@ -11,6 +11,7 @@ enum class UICheckState
 	Checked,
 };
 
+/** UIButtonBase */
 LN_CLASS()
 class UIButtonBase
 	: public UIControl
@@ -38,6 +39,7 @@ private:
     bool m_isPressed;
 };
 
+/** UIButton */
 LN_CLASS()
 class UIButton
 	: public UIButtonBase

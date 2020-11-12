@@ -2,7 +2,7 @@
 
 #ifdef _WIN32
 
-#include "PlatformWindowManager.hpp"
+#include "../PlatformWindowManager.hpp"
 
 namespace ln {
 namespace detail {
@@ -67,13 +67,15 @@ public:
     static const wchar_t* PropWinProc;
     static const DWORD FullscreenStyle;
 
-    Win32PlatformWindowManager();
+    Win32PlatformWindowManager(PlatformManager* manager);
 
     Result init();
 	virtual void dispose() override;
-	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings) override;
+	virtual Ref<PlatformWindow> createMainWindow(const WindowCreationSettings& settings) override;
+    virtual Ref<PlatformWindow> createSubWindow(const WindowCreationSettings& settings) override;
 	virtual void destroyWindow(PlatformWindow* window) override;
 	virtual void processSystemEventQueue(EventProcessingMode mode) override;
+    virtual OpenGLContext* getOpenGLContext() const override;
 
     HINSTANCE instanceHandle() const { return m_hInst; }
 

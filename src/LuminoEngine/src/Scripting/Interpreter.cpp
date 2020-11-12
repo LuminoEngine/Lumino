@@ -115,40 +115,56 @@ V-Flow なら "Github Actions visual" とかで画像検索すると参考にな
 
 namespace ln {
 
-//
-////------------------------------------------------------------------------------
-//ItemMenuScene::ItemMenuScene()
-//{
-//}
-//
-////------------------------------------------------------------------------------
-//void ItemMenuScene::OnStart()
-//{
-//	GameScene::OnStart();
-//}
-//
-////------------------------------------------------------------------------------
-//void ItemMenuScene::OnUpdate()
-//{
-//	GameScene::OnUpdate();
-//}
-//
-////------------------------------------------------------------------------------
-//void ItemMenuScene::OnTerminate()
-//{
-//	GameScene::OnTerminate();
-//}
+//==============================================================================
+// InterpreterCommandList
 
+InterpreterCommandList::InterpreterCommandList()
+{
+}
+
+bool InterpreterCommandList::init()
+{
+	return Object::init();
+}
+
+void InterpreterCommandList::addCommand(const String& code)
+{
+	addCommand(code, {});
+}
+
+void InterpreterCommandList::addCommand1(const String& code, const String& param0)
+{
+	addCommand(code, { param0 });
+}
+
+void InterpreterCommandList::addCommand2(const String& code, const String& param0, const String& param1)
+{
+	addCommand(code, { param0, param1 });
+}
+
+void InterpreterCommandList::addCommand3(const String& code, const String& param0, const String& param1, const String& param2)
+{
+	addCommand(code, { param0, param1, param2 });
+}
+
+void InterpreterCommandList::addCommand4(const String& code, const String& param0, const String& param1, const String& param2, const String& param3)
+{
+	addCommand(code, { param0, param1, param2, param3 });
+}
 
 //==============================================================================
 // Interpreter
-//==============================================================================
 
-//------------------------------------------------------------------------------
 Interpreter::Interpreter()
 	: m_commandList()
 	, m_index(0)
 {
+	clear();
+}
+
+bool Interpreter::init()
+{
+	return Object::init();
 }
 
 void Interpreter::clear()
@@ -159,8 +175,7 @@ void Interpreter::clear()
 	m_waitCount = 0;
 }
 
-//------------------------------------------------------------------------------
-void Interpreter::run(const Ref<InterpreterCommandList>& commandList)
+void Interpreter::run(InterpreterCommandList* commandList)
 {
 	m_commandList = commandList->commands;
 	m_waitCount = 0;
@@ -171,7 +186,6 @@ bool Interpreter::isRunning() const
 	return !m_commandList.isEmpty() || m_waitCount > 0 || !m_waitMode.isEmpty();
 }
 
-//------------------------------------------------------------------------------
 void Interpreter::update()
 {
 	while (isRunning())
@@ -202,23 +216,27 @@ void Interpreter::update()
 //------------------------------------------------------------------------------
 void Interpreter::terminate()
 {
-	m_commandList.clear();
+	clear();
 }
 
 //------------------------------------------------------------------------------
-void Interpreter::registerCommandHandler(const ln::StringRef& name, Ref<InterpreterCommandHandler> handler)
+void Interpreter::registerCommandHandler(const ln::StringRef& name, Ref<InterpreterCommandDelegate> handler)
 {
 	m_commandDelegateMap[name] = handler;
 }
 
-const Ref<InterpreterCommand>& Interpreter::getCurrentCommand() const
+InterpreterCommand* Interpreter::getCurrentCommand() const
 {
+	if (m_index >= m_commandList.size()) {
+		return nullptr;
+	}
+
 	// コマンドリストの最後が Message だった場合 Enter 待ち中は nullptr を返すことになる
 	if (m_commandList.isOutOfRange(m_index)) return nullptr;
 	return m_commandList[m_index];
 }
 
-bool Interpreter::onUpdateWait(const ln::String& waitMode)
+bool Interpreter::onUpdateWait()
 {
 	return false;
 }
@@ -239,7 +257,7 @@ bool Interpreter::updateWait()
 		return true;
 	}
 
-	bool waiting = onUpdateWait(m_waitMode);
+	bool waiting = onUpdateWait();
 	if (!waiting) {
 		m_waitMode = u"";
 	}
@@ -256,7 +274,7 @@ bool Interpreter::checkFreeze()
 //------------------------------------------------------------------------------
 bool Interpreter::executeCommand()
 {
-	auto& cmd = getCurrentCommand();
+	auto* cmd = getCurrentCommand();
 	if (cmd)
 	{
 		if (!onExecuteCommand(cmd))
@@ -268,6 +286,7 @@ bool Interpreter::executeCommand()
 	}
 	else
 	{
+		std::cout << "m_index:" << m_index << std::endl;
 		terminate();
 	}
 
@@ -278,11 +297,12 @@ bool Interpreter::executeCommand()
 //------------------------------------------------------------------------------
 bool Interpreter::onExecuteCommand(InterpreterCommand* cmd)
 {
-	auto itr = m_commandDelegateMap.find(cmd->code);
+	auto itr = m_commandDelegateMap.find(cmd->m_code);
 	if (itr != m_commandDelegateMap.end()) {
 		return itr->second->call(cmd);
 	}
 	else {
+		std::cout << "code: " << cmd->m_code << std::endl;
 		LN_NOTIMPLEMENTED();
 		// continue
 		return true;

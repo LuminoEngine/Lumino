@@ -1,6 +1,8 @@
 ﻿
 #pragma once
 #include <LuminoEngine/Asset/Common.hpp>
+#include <LuminoEngine/Asset/AssetObject.hpp>
+#include "../Base/RefObjectCache.hpp"
 
 namespace ln {
 //class Texture2D;
@@ -9,6 +11,7 @@ class AssetModel;
 namespace detail {
 class AssetArchive;
 class FileSystemReader;
+class AssetRequiredPathSet;
 
 class AssetManager
 	: public RefObject
@@ -38,7 +41,7 @@ public:
     // "asset://local/dir/file.txt"    => Unix 形式の絶対パス。 ファイルシステム上のファイルを指す。
     // "asset:///dir/file.txt"         => ローカルファイルパス。登録されているいずれかの AssetArchive 内のファイルを指す。
     // TODO: "asset://ArchiveName/" とかで AssetArchive を明示できるようにしてもいい気がする
-    Optional<AssetPath> findAssetPath(const StringRef& filePath, const Char** exts, int extsCount) const;
+    Optional<AssetPath> findAssetPath(const StringRef& filePath, const Char* const* exts, int extsCount) const;
     Optional<AssetPath> findAssetPath(const StringRef& filePath) const;
     bool existsAsset(const AssetPath& assetPath) const;
     Ref<Stream> openStreamFromAssetPath(const AssetPath& assetPath) const;
@@ -46,7 +49,7 @@ public:
 
     Ref<AssetModel> loadAssetModelFromLocalFile(const String& filePath) const;
     Ref<AssetModel> loadAssetModelFromAssetPath(const AssetPath& assetPath) const;
-    void loadAssetModelFromAssetPathToInstance(Object* obj, const AssetPath& assetPath) const;
+    bool loadAssetModelFromAssetPathToInstance(Object* obj, const AssetPath& assetPath) const;
     void saveAssetModelToLocalFile(AssetModel* asset, const String& filePath = String::Empty) const;  // 別名で保存するときは filePath を指定する
 
     String assetPathToLocalFullPath(const AssetPath& assetPath) const;
@@ -66,11 +69,81 @@ public:
     // TODO: for develop & debug
     void buildAssetIndexFromLocalFiles(const ln::Path& assetDir);
 
+
+
+    template<class TObject, class TCache>
+    static Ref<TObject> loadObjectWithCacheHelper(
+        TCache* cache,
+        const detail::AssetPath* baseDir,   // モデルファイルからのテクスチャロード等で使用する。不要なら nullptr
+        const std::vector<const Char*>& exts,
+        const StringRef& filePath,
+        std::function<Ref<TObject>(const AssetRequiredPathSet*)> factory)
+    {
+        auto pathSet = std::make_unique<AssetRequiredPathSet>();
+        if (!AssetObject::_resolveAssetRequiredPathSet(baseDir, filePath, exts, pathSet.get())) {
+            return nullptr;
+        }
+
+        // finalResourceAssetFilePath から拡張子を除いたものを CacheKey とする
+        // > CacheKey はどの Archive に入っているファイルであるかまで区別できるものでなければダメ。
+        // > Archive 名と、それを基準とした相対パス(または絶対パス) で表す必要がある。
+        // > 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
+        const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
+
+        if (auto obj = cache->findObject(cacheKey)) {
+            return obj;
+        }
+
+        Ref<TObject> obj;
+        if (factory) {
+            obj = factory(pathSet.get());
+            obj->m_data = std::move(pathSet);
+        }
+        else {
+            obj = makeObject<TObject>();
+            obj->m_data = std::move(pathSet);
+            obj->reload();
+        };
+
+        cache->registerObject(cacheKey, obj);
+
+        return obj;
+    }
+
+    //template<class TObject, class TCache>
+    //static Ref<TObject> loadObjectWithCacheHelper2(
+    //    TCache* cache, const detail::AssetPath& basePath, const Path& localPath)
+    //{
+    //    auto pathSet = std::make_unique<AssetRequiredPathSet>();
+    //    if (!AssetObject::resolveAssetPathFromResourceFile(basePath, localPath, pathSet.get())) {
+    //        return nullptr;
+    //    }
+
+    //    // finalResourceAssetFilePath から拡張子を除いたものを CacheKey とする
+    //    // > CacheKey はどの Archive に入っているファイルであるかまで区別できるものでなければダメ。
+    //    // > Archive 名と、それを基準とした相対パス(または絶対パス) で表す必要がある。
+    //    // > 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
+    //    const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
+
+    //    if (auto obj = cache->findObject(cacheKey)) {
+    //        return obj;
+    //    }
+
+    //    auto obj = makeObject<TObject>();
+    //    obj->m_data = std::move(pathSet);
+    //    obj->reload();
+
+    //    cache->registerObject(cacheKey, obj);
+
+    //    return obj;
+    //}
+
+
 private:
 	void refreshActualArchives();
 	bool existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const;
     Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount, Path* outPath);
-	void makeFindPaths(const StringRef& filePath, const Char** exts, int extsCount, List<Path>* paths) const;
+	void makeFindPaths(const StringRef& filePath, const Char* const* exts, int extsCount, List<Path>* paths) const;
     static bool tryParseAssetPath(const String& assetPath, String* outArchiveName, Path* outLocalPath);
     FileSystemReader* primaryAssetDirectoryArchive() const { return m_fileSystemArchives[0]; }
 

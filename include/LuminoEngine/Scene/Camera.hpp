@@ -74,8 +74,8 @@ public:
 	Ray screenToWorldRay(const Vector2& position) const;
 
 
-	RenderViewClearMode clearMode() const;
-	void setClearMode(RenderViewClearMode value);
+	SceneClearMode clearMode() const;
+	void setClearMode(SceneClearMode value);
 
 	const Color& backgroundColor() const;
 	void setBackgroundColor(const Color& value);

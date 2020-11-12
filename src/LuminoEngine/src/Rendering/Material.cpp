@@ -4,6 +4,7 @@
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include "RenderingManager.hpp"
 
 namespace ln {
 
@@ -19,6 +20,11 @@ static const float Material_DefaultRoughness = 0.5f;
 static const float Material_DefaultMetallic = 0.5f;
 //static const float Material_DefaultSpecular = 0.5f;
 static const Color Material_DefaultEmmisive = Color(0, 0, 0, 0);
+
+Material* Material::defaultMaterial()
+{
+    return detail::EngineDomain::renderingManager()->defaultMaterial();
+}
 
 Ref<Material> Material::create()
 {
@@ -62,7 +68,7 @@ void Material::init(Texture* mainTexture, ShadingModel shadingModel)
 {
     init();
     setMainTexture(mainTexture);
-    this->shadingModel = shadingModel;
+    m_shadingModel = shadingModel;
 }
 
 void Material::init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData)
@@ -303,34 +309,35 @@ void Material::updateShaderVariables(Shader* target) const
 void Material::serialize(Serializer2& ar)
 {
     Object::serialize(ar);
+    LN_NOTIMPLEMENTED();
 
-    // TODO: ↓Assets辺りに関数化
-    if (ar.isSaving()) {
-        Path path = Assets::getAssetPath(m_mainTexture);
-        if (path.isEmpty()) {
-            // assetPath が空であればインスタンスを serialize する
-            ar & makeNVP(u"mainTexture", m_mainTexture);
-        }
-        else {
-            // assetPath を持っているときは assetPath を serialize する
-            ar & makeNVP(u"mainTexture", path);
-        }
-    }
-    else {
-        if (ar.readName(u"mainTexture")) {
-            if (ar.readingValueIsObject()) {
-                Path path = ar.readString();
-                LN_NOTIMPLEMENTED();
-            }
-            else {
-                Path path = ar.readString();
-                m_mainTexture = Texture2D::load(path);
-            }
-        }
-        else {
-            m_mainTexture = nullptr;
-        }
-    }
+    //// TODO: ↓Assets辺りに関数化
+    //if (ar.isSaving()) {
+    //    Path path = Assets::getAssetPath(m_mainTexture);
+    //    if (path.isEmpty()) {
+    //        // assetPath が空であればインスタンスを serialize する
+    //        ar & makeNVP(u"mainTexture", m_mainTexture);
+    //    }
+    //    else {
+    //        // assetPath を持っているときは assetPath を serialize する
+    //        ar & makeNVP(u"mainTexture", path);
+    //    }
+    //}
+    //else {
+    //    if (ar.readName(u"mainTexture")) {
+    //        if (ar.readingValueIsObject()) {
+    //            Path path = ar.readString();
+    //            LN_NOTIMPLEMENTED();
+    //        }
+    //        else {
+    //            Path path = ar.readString();
+    //            m_mainTexture = Texture2D::load(path);
+    //        }
+    //    }
+    //    else {
+    //        m_mainTexture = nullptr;
+    //    }
+    //}
 
 }
 

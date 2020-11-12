@@ -136,6 +136,11 @@ void AnimationState::updateTargetElements()
 						translation = s.translation;
 					}
 					break;
+				case HierarchicalAnimationMode::AllowTranslationOnlyRootY:
+					if (trackInstance.track->m_root) {
+						translation.set(0.0f, s.translation.y, 0.0f);
+					}
+					break;
 				case HierarchicalAnimationMode::AllowTranslation:
 					translation = s.translation;
 					break;
@@ -307,6 +312,13 @@ void AnimationLayer::transitionTo(AnimationState* state, float duration)
         return;
     }
 
+	// 遷移中の古いアニメーションは強制中断。
+	// TODO: Unity の Animator みたいにやるには m_transition を複数配列で持っておくみたいな仕組みが必要
+	if (m_transition.stateFrom) {
+		m_transition.stateFrom->setActive(false);
+		m_transition.stateFrom = nullptr;
+	}
+
 	if (Math::nearEqual(duration, 0.0f))
 	{
 		m_transition.stateFrom = nullptr;
@@ -431,6 +443,9 @@ void AnimationMixerCore::updateTargetElements()
 			}
 
 		}
+
+		//printf("updateTargetElements xxxx\n");
+
 
 		if (!link->affectAnimation)
 		{

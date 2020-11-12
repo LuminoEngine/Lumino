@@ -13,6 +13,11 @@ sampler2D _occlusionMap;
 
 cbuffer EffectSettings
 {
+    float4 _vignetteColor;
+    float4 _vignettePosition;
+    float4 _vignetteSettings;
+    float4 _blendColor;
+    float4 _colorTone;
     int _antialiasEnabled;
     int _ssrEnabled;
     int _ssaoEnabled;
@@ -21,6 +26,7 @@ cbuffer EffectSettings
     int _tonemapEnabled;
     int _vignetteEnabled;
     int _gammaEnabled;
+    float _focusedLinearDepth;// = 10.0 / 100.0;
 };
 
 
@@ -30,7 +36,6 @@ sampler2D _dofTexture0;
 sampler2D _dofTexture1;
 sampler2D _dofTexture2;
 sampler2D _dofTexture3;
-const float _focusedDepth = 10.0 / 100.0;
 const int MaxDOFMips = 4;
 
 //==============================================================================
@@ -185,7 +190,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
 
 
         float linearDepth = tex2D(_depthTexture, uv).g;
-        float d = distance(_focusedDepth, linearDepth);
+        float d = distance(_focusedLinearDepth, linearDepth);
 
         float t = pow(d, 1.05);//1.25);
 
@@ -194,10 +199,10 @@ float4 PSMain(PSInput input) : SV_TARGET0
         //t *= 0.5;
 
         t *= (float)MaxDOFMips;
-        float alpha, no;
-        alpha = modf(t, no);
+        float alpha, mipNo;
+        alpha = modf(t, mipNo);
 
-        int dofIndex = (int)no;
+        int dofIndex = (int)mipNo;
         float3 colA, colB;
         // TODO: TextureArray でうけとりたい。
         if (dofIndex == 0) {
@@ -220,7 +225,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
     }
 
     //--------------------
-    // Tone
+    // Tonemap
     if (_tonemapEnabled) {
         result.rgb = Tonemap(result.rgb);
     }
@@ -228,10 +233,17 @@ float4 PSMain(PSInput input) : SV_TARGET0
     //--------------------
     // Vignette
     if (_vignetteEnabled) {
-        result.rgb = Vignette(result.rgb, input.uv.xy);
+        result.rgb = Vignette(result.rgb, input.uv.xy, _vignetteColor, _vignettePosition.xy, _vignetteSettings);
     }
     
+    //--------------------
+    // Color Effect
 
+    // apply blend color.
+    result.rgb = lerp(result.rgb, _blendColor.rgb, _blendColor.a);
+
+    // apply tone. (NTSC Coef method)
+    result.rgb = LN_CalculateToneColor(float4(result.rgb, 1.0), _colorTone).rgb;
 
     //--------------------
     // Gamma

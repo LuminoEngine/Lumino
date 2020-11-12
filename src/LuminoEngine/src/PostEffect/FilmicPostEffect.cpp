@@ -14,9 +14,20 @@ namespace ln {
 // FilmicPostEffect
 
 FilmicPostEffect::FilmicPostEffect()
-    : m_luminosityThreshold(0.9f)
+    : m_luminosityThreshold(0.8f)
     , m_bloomStrength(1.0f)
     , m_bloomRadius(1.0f)
+    , m_vignetteColor(0.0f, 0.0f, 0.0f, 1.0)
+    , m_vignetteCenter(0.5f, 0.5f)
+    , m_vignetteSettings(0.65f, 0.5f, 1.0f, 0.0f) // x: intensity, y: smoothness, z: roundness, w: rounded
+    , m_antialiasEnabled(false)
+    , m_ssrEnabled(false)
+    , m_ssaoEnabled(false)
+    , m_bloomEnabled(false)
+    , m_dofEnabled(false)
+    , m_tonemapEnabled(false)
+    , m_vignetteEnabled(false)
+    , m_gammaEnabled(false)
 {
 }
 
@@ -46,11 +57,12 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
     if (!PostEffectInstance::init()) return false;
     m_owner = owner;
 
-    auto shader2 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSAOOcclusionMap.fx");
+    auto shader2 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SSAOOcclusionMap);
     m_ssaoMaterial = makeObject<Material>();
     m_ssaoMaterial->setShader(shader2);
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.fx");
+    auto shader1 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::FilmicPostEffect);
+    //auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.fx");
     m_integrationMaterial = makeObject<Material>();
     m_integrationMaterial->setShader(shader1);
 
@@ -74,49 +86,70 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
 
 bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
-    if (!m_antialiasEnabled && !m_ssrEnabled && !m_ssaoEnabled && !m_bloomEnabled && !m_dofEnabled &&
-        !m_tonemapEnabled && !m_vignetteEnabled && !m_gammaEnabled) {
+    const bool toneEnabled = m_owner->m_screenBlendColor.a > 0.0f || !m_owner->m_screenColorTone.isZero();
+
+    if (!m_owner->m_antialiasEnabled &&
+        !m_owner->m_ssrEnabled &&
+        !m_owner->m_ssaoEnabled &&
+        !m_owner->m_bloomEnabled &&
+        !m_owner->m_dofEnabled &&
+        !m_owner->m_tonemapEnabled &&
+        !m_owner->m_vignetteEnabled &&
+        !m_owner->m_gammaEnabled &&
+        !toneEnabled) {
         return false;
     }
 
     bool actualSSREnabled = false;
-    if (m_ssrEnabled) {
+    if (m_owner->m_ssrEnabled) {
         actualSSREnabled = m_ssrEffect.prepare(context, source);
         m_integrationMaterial->setTexture(u"_SSRSampler", m_ssrEffect.ssrResultTexture());
     }
 
-    if (m_bloomEnabled) {
+    if (m_owner->m_bloomEnabled) {
         m_bloomEffect.setLuminosityThreshold(m_owner->m_luminosityThreshold);
         m_bloomEffect.setBloomStrength(m_owner->m_bloomStrength);
         m_bloomEffect.setBloomRadius(m_owner->m_bloomRadius);
         m_bloomEffect.prepare(context, source);
     }
 
-    if (m_dofEnabled) {
+    if (m_owner->m_dofEnabled) {
         m_dofEffect.prepare(context, source);
     }
 
-    if (m_tonemapEnabled) {
-        const float linearWhite = 1.2; //5.0f;
-        const float shoulderStrength = 0.15f;
-        const float linearStrength = 0.5;
-        const float linearAngle = 0.1;
-        const float toeStrength = 0.2f;
+    if (m_owner->m_tonemapEnabled) {
+#if 1
+        TonemapPostEffectParams params;
+        params.setup(
+            m_owner->m_linearWhite, m_owner->m_shoulderStrength, m_owner->m_linearStrength, m_owner->m_linearAngle,
+            m_owner->m_toeStrength, m_owner->m_toeNumerator, m_owner->m_toeDenominator, m_owner->m_exposure);
+#else
+        const float linearWhite = 3.0f;//0.5;//2.2;//1.2; //5.0f;//
+        const float shoulderStrength = 0.0015;//0.15f;
+        const float linearStrength = 0.01;// 0.5;
+        const float linearAngle = 0.05;
+        const float toeStrength = 0.02f;
         const float toeNumerator = 0.02;
         const float toeDenominator = 0.3;
         const float Exposure = 0.0f;// 2.0f;//5.0f;// 
-        const ColorTone tone(0, 0, 0, 0);
+        //const ColorTone tone(0, 0, 0, 0);
 
         TonemapPostEffectParams params;
         params.setup(
             linearWhite, shoulderStrength, linearStrength, linearAngle,
-            toeStrength, toeNumerator, toeDenominator, Exposure, tone);
+            toeStrength, toeNumerator, toeDenominator, Exposure);
+#endif
         m_integrationMaterial->setBufferData(u"TonemapPostEffectParams", &params, sizeof(params));
     }
 
     // cbuffer EffectSettings
     struct EffectSettings
     {
+        Vector4 vignetteColor;
+        Vector4 vignettePosition;
+        Vector4 vignetteSettings;
+        Vector4 blendColor;
+        Vector4 colorTone;
         int antialiasEnabled;
         int ssrEnabled;
         int ssaoEnabled;
@@ -125,18 +158,24 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
         int tonemapEnabled;
         int _vignetteEnabled;
         int gammaEnabled;
+        float focusedLinearDepth;
     };
 
     EffectSettings settings;
-    settings.antialiasEnabled = m_antialiasEnabled ? 1 : 0;
+    settings.vignetteColor = m_owner->m_vignetteColor.toVector4();
+    settings.vignettePosition = Vector4(m_owner->m_vignetteCenter, 0, 0);
+    settings.vignetteSettings = m_owner->m_vignetteSettings;
+    settings.blendColor = m_owner->m_screenBlendColor.toVector4();
+    settings.colorTone = m_owner->m_screenColorTone.toVector4();
+    settings.antialiasEnabled = m_owner->m_antialiasEnabled ? 1 : 0;
     settings.ssrEnabled = actualSSREnabled ? 1 : 0;
-    settings.ssaoEnabled = m_ssaoEnabled ? 1 : 0;
-    settings.bloomEnabled = m_bloomEnabled ? 1 : 0;
-    settings.dofEnabled = m_dofEnabled ? 1 : 0;
-    settings.tonemapEnabled = m_tonemapEnabled ? 1 : 0;
-    settings._vignetteEnabled = m_vignetteEnabled ? 1 : 0;
-    settings.gammaEnabled = m_gammaEnabled ? 1 : 0;
-
+    settings.ssaoEnabled = m_owner->m_ssaoEnabled ? 1 : 0;
+    settings.bloomEnabled = m_owner->m_bloomEnabled ? 1 : 0;
+    settings.dofEnabled = m_owner->m_dofEnabled ? 1 : 0;
+    settings.tonemapEnabled = m_owner->m_tonemapEnabled ? 1 : 0;
+    settings._vignetteEnabled = m_owner->m_vignetteEnabled ? 1 : 0;
+    settings.gammaEnabled = m_owner->m_gammaEnabled ? 1 : 0;
+    settings.focusedLinearDepth = m_owner->m_focusedLinearDepth;
 
     Ref<RenderTargetTexture> occlusionMap = RenderTargetTexture::getTemporary(source->width(), source->height(), TextureFormat::RGBA8, false);
     occlusionMap->setSamplerState(m_samplerState);

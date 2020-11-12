@@ -1,4 +1,4 @@
-
+﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
@@ -96,6 +96,8 @@ void RenderingManager::init(const Settings& settings)
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
+	m_defaultMaterial = makeObject<Material>();
+
 	{
 		static const unsigned char data[] = {
 #include "Resource/Random.png.inl"
@@ -106,16 +108,16 @@ void RenderingManager::init(const Settings& settings)
 		m_randomTexture = makeObject<Texture2D>(bmp, TextureFormat::RGBA8);
 	}
 
-//	// CopyScreen
-//	{
-//		static const unsigned char data[] =
-//		{
-//#include "Resource/CopyScreen.lcfx.inl"
-//		};
-//		static const size_t size = LN_ARRAY_SIZE_OF(data);
-//		MemoryStream stream(data, size);
-//		m_builtinShaders[(int)BuiltinShader::CopyScreen] = makeObject<Shader>(u"CopyScreen", &stream);
-//	}
+	// CopyScreen
+	{
+		static const unsigned char data[] =
+		{
+#include "Resource/CopyScreen.lcfx.inl"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		MemoryStream stream(data, size);
+		m_builtinShaders[(int)BuiltinShader::CopyScreen] = makeObject<Shader>(u"CopyScreen", &stream);
+	}
 	// Sprite
 	{
 		static const unsigned char data[] =
@@ -146,6 +148,16 @@ void RenderingManager::init(const Settings& settings)
         MemoryStream stream(data, size);
         m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = makeObject<Shader>(u"ForwardGBufferPrepass", &stream);
     }
+	// ShadowCaster
+	{
+		static const unsigned char data[] =
+		{
+#include "Resource/ShadowCaster.lcfx.inl"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		MemoryStream stream(data, size);
+		m_builtinShaders[(int)BuiltinShader::ShadowCaster] = makeObject<Shader>(u"ShadowCaster", &stream);
+	}
 	// BlackShader
 	{
 		static const unsigned char data[] =
@@ -155,6 +167,13 @@ void RenderingManager::init(const Settings& settings)
 		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
 		m_builtinShaders[(int)BuiltinShader::BlackShader] = makeObject<Shader>(u"BlackShader", &stream);
 	}
+	// InfinitePlaneGrid
+	{
+		static const unsigned char data[] = {
+#include "Resource/InfinitePlaneGrid.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::InfinitePlaneGrid, u"InfinitePlaneGrid", data, LN_ARRAY_SIZE_OF(data));
+	}
 	// SkyLowAltitudeOptimized
 	{
 		static const unsigned char data[] =
@@ -163,6 +182,13 @@ void RenderingManager::init(const Settings& settings)
 		};
 		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
 		m_builtinShaders[(int)BuiltinShader::SkyLowAltitudeOptimized] = makeObject<Shader>(u"SkyLowAltitudeOptimized", &stream);
+	}
+	// SkyDome
+	{
+		static const unsigned char data[] = {
+#include "../Scene/Resource/SkyDome.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::SkyDome, u"SkyDome", data, LN_ARRAY_SIZE_OF(data));
 	}
 	
 
@@ -225,34 +251,58 @@ void RenderingManager::init(const Settings& settings)
 		createBuiltinShader(BuiltinShader::RadialBlur, u"RadialBlur", data, LN_ARRAY_SIZE_OF(data));
 	}
 
-	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
+	// SSAOOcclusionMap
+	{
+		const unsigned char data[] = {
+#include "../PostEffect/Resource/SSAOOcclusionMap.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::SSAOOcclusionMap, u"SSAOOcclusionMap", data, LN_ARRAY_SIZE_OF(data));
+	}
+	// FilmicPostEffect
+	{
+		const unsigned char data[] = {
+#include "../PostEffect/Resource/FilmicPostEffect.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::FilmicPostEffect, u"FilmicPostEffect", data, LN_ARRAY_SIZE_OF(data));
+	}
+	// Copy
+	{
+		const unsigned char data[] = {
+#include "../PostEffect/Resource/Copy.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::Copy, u"Copy", data, LN_ARRAY_SIZE_OF(data));
+	}
+	// TransitionEffectWithoutMask
+	{
+		const unsigned char data[] = {
+#include "../PostEffect/Resource/TransitionEffectWithoutMask.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::TransitionEffectWithoutMask, u"TransitionEffectWithoutMask", data, LN_ARRAY_SIZE_OF(data));
+	}
+	// TransitionEffectWithMask
+	{
+		const unsigned char data[] = {
+#include "../PostEffect/Resource/TransitionEffectWithMask.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::TransitionEffectWithMask, u"TransitionEffectWithMask", data, LN_ARRAY_SIZE_OF(data));
+	}
 
+#if 0	// テスト用
+#define ROOT_PATH u"C:/Proj/LN/Lumino/src/LuminoEngine/"
 
-	m_builtinShaders[(int)BuiltinShader::CopyScreen] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/CopyScreen.fx");
-	m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ForwardGBufferPrepass.fx");
-	//m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx");
-	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.fx");
+	m_builtinShaders[(int)BuiltinShader::CopyScreen] = Shader::create(ROOT_PATH u"src/Rendering/Resource/CopyScreen.fx");
+	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(ROOT_PATH u"src/Rendering/Resource/Sprite.fx");
 
-	m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/LuminosityHighPassShader.fx");
-	m_builtinShaders[(int)BuiltinShader::BloomComposite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/BloomComposite.fx");
+	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ClusteredShadingDefault.fx");
+	m_builtinShaders[(int)BuiltinShader::BlackShader] = Shader::create(ROOT_PATH u"src/Rendering/Resource/BlackShader.fx");
 
-	m_builtinShaders[(int)BuiltinShader::SSRRayTracing] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSRRayTracing.fx");
-	m_builtinShaders[(int)BuiltinShader::SSRComposite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSRComposite.fx");
-	m_builtinShaders[(int)BuiltinShader::RadialBlur] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/RadialBlur.fx");
-
-#if 0
-    m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
-    m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ForwardGBufferPrepass.fx");
-	m_builtinShaders[(int)BuiltinShader::BlackShader] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/BlackShader.fx");
-	m_builtinShaders[(int)BuiltinShader::SkyLowAltitudeOptimized] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyLowAltitudeOptimized.fx");
-	m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/LuminosityHighPassShader.fx");
-	m_builtinShaders[(int)BuiltinShader::SeperableBlur] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SeperableBlur.fx");
-	m_builtinShaders[(int)BuiltinShader::BloomComposite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/BloomComposite.fx");
-	m_builtinShaders[(int)BuiltinShader::RadialBlur] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/RadialBlur.fx");
-
-    m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.fx");
- //   m_builtinShaders[(int)BuiltinShader::ScreenBlurPostEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/PostEffect/Resource/ScreenBlurPostEffect.fx");
-    //m_builtinShaders[(int)BuiltinShader::TonePostEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/PostEffect/Resource/TonePostEffect.fx");
+	m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ForwardGBufferPrepass.fx");
+	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ShadowCaster.fx");
+	m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/LuminosityHighPassShader.fx");
+	m_builtinShaders[(int)BuiltinShader::BloomComposite] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/BloomComposite.fx");
+	m_builtinShaders[(int)BuiltinShader::SSRRayTracing] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SSRRayTracing.fx");
+	m_builtinShaders[(int)BuiltinShader::SSRComposite] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SSRComposite.fx");
+	m_builtinShaders[(int)BuiltinShader::RadialBlur] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/RadialBlur.fx");
 #endif
 
     {
@@ -260,7 +310,7 @@ void RenderingManager::init(const Settings& settings)
     }
     {
         auto material = Material::create();
-        material->shadingModel = ShadingModel::Unlit;
+        material->setShadingModel(ShadingModel::Unlit);
         m_builtinMaterials[(int)BuiltinMaterial::Unlit] = material;
     }
 
@@ -280,7 +330,6 @@ void RenderingManager::dispose()
 	m_meshRenderFeature = nullptr;
 	m_spriteRenderFeature2 = nullptr;
     m_blitRenderFeature = nullptr;
-	//m_renderStageListBuilder = nullptr;
 	m_standardVertexDeclaration = nullptr;
     m_renderFeatures.clear();
 }

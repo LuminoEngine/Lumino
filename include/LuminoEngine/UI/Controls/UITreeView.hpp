@@ -58,7 +58,7 @@ private:
 	Ref<UIToggleButton> m_expanderButton;
     Ref<UIElement> m_headerContent;
     List<Ref<UITreeItem>> m_items;
-    Ref<UILayoutPanel2> m_itemsLayout;
+    Ref<UILayoutPanel> m_itemsLayout;
 	Ref<UICollectionItemViewModel> m_model;
 
     friend class UITreeView;
@@ -141,7 +141,7 @@ Lumino の場合は
 treeview1->setGenerateTreeItemHandler([](ln::UITreeItem2* item) {
     auto button = ln::UIButton::create(u">");
     button->setSize(20, 20);
-    button->setAlignments(ln::HAlignment::Right, ln::VAlignment::Center);
+    button->setAlignments(ln::UIHAlignment::Right, ln::UIVAlignment::Center);
     item->addChild(button);     // UIElement デフォルトの addChild フレームワークで追加する場合
     item->addChild(1, button);  // 別のカラムに追加したい場合はこんな感じ
 });
@@ -210,7 +210,7 @@ private:
     Ref<UIToggleButton> m_expanderButton;
     UIElement* m_headerContent; // LogicalChild として追加されている、setContent で追加された要素
     //List<Ref<UITreeItem>> m_items;
-    //Ref<UILayoutPanel> m_itemsLayout;
+    //Ref<UILayoutPanel2_Deprecated> m_itemsLayout;
     Ref<UICollectionItemViewModel> m_model;
 
     // measure/arrange 中のみで使える。
@@ -274,7 +274,7 @@ private:
     Ref<UITreeItem2> generateTreeItem(UICollectionItemViewModel* viewModel);
 
     Ref<UICollectionViewModel> m_model;
-    Ref<UILayoutPanel2> m_itemsHostLayout;
+    Ref<UILayoutPanel> m_itemsHostLayout;
     Ref<UIScrollViewHelper> m_scrollViewHelper;
     bool m_dirtyItemVisualTree = true;
 

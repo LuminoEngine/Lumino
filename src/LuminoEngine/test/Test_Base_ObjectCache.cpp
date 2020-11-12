@@ -251,7 +251,7 @@ TEST_F(Test_Base_ObjectCache, GCObjects)
 	// obj1 の参照を切って GC. obj1 は freeList に入っている
 	{
 		obj1 = nullptr;
-		cache1.collectUnreferenceObjects();
+		cache1.collectUnreferenceObjects(true);
 
 		auto aliveObjects = cache1.aliveObjects();
 		ASSERT_EQ(1, aliveObjects.size());
@@ -262,3 +262,53 @@ TEST_F(Test_Base_ObjectCache, GCObjects)
 		ASSERT_EQ(u"obj1", freeObjects[0]->name);
 	}
 }
+
+TEST_F(Test_Base_ObjectCache, GCObjects_Ones)
+{
+	class TestObj : public RefObject
+	{
+	public:
+		String name;
+		TestObj(String n) : name(n) { }
+	};
+
+	detail::ObjectCache<String, TestObj> cache1;
+	cache1.init(2);
+
+	auto obj1 = makeRef<TestObj>(u"obj1");
+	auto obj2 = makeRef<TestObj>(u"obj2");
+	cache1.registerObject(obj1->name, obj1);
+	cache1.registerObject(obj2->name, obj2);
+
+	// release していないので、すべてのオブジェクトは aliveList に入っている
+	{
+		ASSERT_EQ(obj1, cache1.findObject(u"obj1"));
+		ASSERT_EQ(obj2, cache1.findObject(u"obj2"));
+	}
+
+	// 両方の参照を切って GC. ひとつずつ回収される。
+	{
+		obj1 = nullptr;
+		obj2 = nullptr;
+		cache1.collectUnreferenceObjects(false);
+
+		auto aliveObjects = cache1.aliveObjects();
+		ASSERT_EQ(1, aliveObjects.size());
+		ASSERT_EQ(u"obj2", aliveObjects[0]->name);	// obj2 はまだ生きてる
+
+		auto freeObjects = cache1.freeObjects();
+		ASSERT_EQ(1, freeObjects.size());
+		ASSERT_EQ(u"obj1", freeObjects[0]->name);
+
+		cache1.collectUnreferenceObjects(false);
+
+		aliveObjects = cache1.aliveObjects();
+		ASSERT_EQ(0, aliveObjects.size());
+
+		freeObjects = cache1.freeObjects();
+		ASSERT_EQ(2, freeObjects.size());
+		ASSERT_EQ(u"obj1", freeObjects[0]->name);
+		ASSERT_EQ(u"obj2", freeObjects[1]->name);
+	}
+}
+

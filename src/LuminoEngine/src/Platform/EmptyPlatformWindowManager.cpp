@@ -20,7 +20,8 @@ Result EmptyPlatformWindow::init(const WindowCreationSettings& settings)
 //=============================================================================
 // EmptyPlatformWindowManager
 
-EmptyPlatformWindowManager::EmptyPlatformWindowManager()
+EmptyPlatformWindowManager::EmptyPlatformWindowManager(PlatformManager* manager)
+    : PlatformWindowManager(manager)
 {
 }
 
@@ -37,13 +38,22 @@ void EmptyPlatformWindowManager::dispose()
 {
 }
 
-Ref<PlatformWindow> EmptyPlatformWindowManager::createWindow(const WindowCreationSettings& settings)
+Ref<PlatformWindow> EmptyPlatformWindowManager::createMainWindow(const WindowCreationSettings& settings)
 {
-	auto ptr = ln::makeRef<EmptyPlatformWindow>();
+    auto ptr = ln::makeRef<EmptyPlatformWindow>();
     if (!ptr->init(settings)) {
         return nullptr;
     }
-	return ptr;
+    return ptr;
+}
+
+Ref<PlatformWindow> EmptyPlatformWindowManager::createSubWindow(const WindowCreationSettings& settings)
+{
+    auto ptr = ln::makeRef<EmptyPlatformWindow>();
+    if (!ptr->init(settings)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 void EmptyPlatformWindowManager::destroyWindow(PlatformWindow* window)
@@ -52,6 +62,11 @@ void EmptyPlatformWindowManager::destroyWindow(PlatformWindow* window)
 
 void EmptyPlatformWindowManager::processSystemEventQueue(EventProcessingMode mode)
 {
+}
+
+OpenGLContext* EmptyPlatformWindowManager::getOpenGLContext() const
+{
+    return nullptr;
 }
 
 } // namespace detail

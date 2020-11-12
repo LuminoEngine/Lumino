@@ -110,6 +110,8 @@ enum class ParticleDirectionType : uint8_t
 	MovementDirection,
 };
 
+/** ParticleEmitterShapeType */
+LN_ENUM()
 enum class ParticleEmitterShapeType : uint8_t
 {
 	Sphere,		/** パーティクルを球状に放出します。*/

@@ -28,7 +28,7 @@ enum class UIFontStyle
 
 /** 縦方向の表示位置を示します。*/
 LN_ENUM()
-enum class VAlignment
+enum class UIVAlignment
 {
 	/** 子要素を、親のレイアウト スロットの上端に揃えて配置します。*/
 	Top = 0,
@@ -45,7 +45,7 @@ enum class VAlignment
 
 /** 横方向の表示位置を示します。*/
 LN_ENUM()
-enum class HAlignment
+enum class UIHAlignment
 {
 	/** 子要素を、親のレイアウト スロットの左側に揃えて配置します。*/
 	Left = 0,
@@ -79,8 +79,8 @@ class UIStyleInstance;
 //	// layout
 //	Thickness margin;
 //	Thickness padding;
-//	HAlignment hAlignment;
-//	VAlignment vAlignment;
+//	UIHAlignment hAlignment;
+//	UIVAlignment vAlignment;
 //	float minWidth;
 //	float minHeight;
 //	float maxWidth;
@@ -191,8 +191,8 @@ public:	//TODO: internal
 	const Size& getLayoutDesiredSize() const { return m_desiredSize; }
 	const Thickness& getLayoutMargin() const;
 	const Thickness& getLayoutPadding() const;
-	HAlignment getLayoutHAlignment() const;
-	VAlignment getLayoutVAlignment() const;
+	UIHAlignment getLayoutHAlignment() const;
+	UIVAlignment getLayoutVAlignment() const;
 	void getLayoutMinMaxInfo(Size* outMin, Size* outMax) const;
 
 	//void setLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
@@ -294,23 +294,23 @@ public:
 	//}
 
 	// widthNan : ユーザーが希望するサイズを指定しているか
-	static void adjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, float fixedSizeOrNaN, HAlignment align, Rect* outRect)
+	static void adjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, float fixedSizeOrNaN, UIHAlignment align, Rect* outRect)
 	{
 		switch (align)
 		{
-		case HAlignment::Left:
+		case UIHAlignment::Left:
 			outRect->x = 0;
 			outRect->width = desiredSize.width;
 			break;
-		case HAlignment::Center:
+		case UIHAlignment::Center:
 			outRect->x = (areaSize.width - desiredSize.width) / 2;
 			outRect->width = desiredSize.width;
 			break;
-		case HAlignment::Right:
+		case UIHAlignment::Right:
 			outRect->x = areaSize.width - desiredSize.width;
 			outRect->width = desiredSize.width;
 			break;
-		case HAlignment::Stretch:
+		case UIHAlignment::Stretch:
 			if (Math::isNaN(fixedSizeOrNaN))
 			{
 				outRect->x = 0;
@@ -328,23 +328,23 @@ public:
 		}
 	}
 
-	static void adjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, float fixedSizeOrNaN, VAlignment align, Rect* outRect)
+	static void adjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, float fixedSizeOrNaN, UIVAlignment align, Rect* outRect)
 	{
 		switch (align)
 		{
-		case VAlignment::Top:
+		case UIVAlignment::Top:
 			outRect->y = 0;
 			outRect->height = desiredSize.height;
 			break;
-		case VAlignment::Center:
+		case UIVAlignment::Center:
 			outRect->y = (areaSize.height - desiredSize.height) / 2;
 			outRect->height = desiredSize.height;
 			break;
-		case VAlignment::Bottom:
+		case UIVAlignment::Bottom:
 			outRect->y = areaSize.height - desiredSize.height;
 			outRect->height = desiredSize.height;
 			break;
-		case VAlignment::Stretch:
+		case UIVAlignment::Stretch:
             if (Math::isNaN(fixedSizeOrNaN))
 			{
 				outRect->y = 0;
@@ -360,7 +360,7 @@ public:
 		}
 	}
 
-    static void adjustAlignment(const Rect& area, const Size& desiredSize, HAlignment halign, VAlignment valign, Rect* outRect)
+    static void adjustAlignment(const Rect& area, const Size& desiredSize, UIHAlignment halign, UIVAlignment valign, Rect* outRect)
     {
         assert(!Math::isNaNOrInf(area.width));
         assert(!Math::isNaNOrInf(area.height));
@@ -370,19 +370,19 @@ public:
 
         switch (halign)
         {
-        case HAlignment::Left:
+        case UIHAlignment::Left:
             outRect->x = area.x;
             outRect->width = desiredSize.width;
             break;
-        case HAlignment::Center:
+        case UIHAlignment::Center:
             outRect->x = area.x + ((area.width - desiredSize.width) / 2);
             outRect->width = desiredSize.width;
             break;
-        case HAlignment::Right:
+        case UIHAlignment::Right:
             outRect->x = area.x + (area.width - desiredSize.width);
             outRect->width = desiredSize.width;
             break;
-        case HAlignment::Stretch:
+        case UIHAlignment::Stretch:
             outRect->x = area.x;
             outRect->width = area.width;
             break;
@@ -393,19 +393,19 @@ public:
 
         switch (valign)
         {
-        case VAlignment::Top:
+        case UIVAlignment::Top:
             outRect->y = area.y;
             outRect->height = desiredSize.height;
             break;
-        case VAlignment::Center:
+        case UIVAlignment::Center:
             outRect->y = area.y + ((area.height - desiredSize.height) / 2);
             outRect->height = desiredSize.height;
             break;
-        case VAlignment::Bottom:
+        case UIVAlignment::Bottom:
             outRect->y = area.y + (area.height - desiredSize.height);
             outRect->height = desiredSize.height;
             break;
-        case VAlignment::Stretch:
+        case UIVAlignment::Stretch:
             outRect->y = area.y;
             outRect->height = area.height;
             break;
@@ -440,7 +440,13 @@ public:
 	}
 
 	template<class TElement, class TUIElementList>
-	static Size UIFrameLayout_staticArrangeChildrenArea(UILayoutContext* layoutContext, TElement* ownerElement, const TUIElementList& elements, const Rect& finalArea)
+	static Size UIFrameLayout_staticArrangeChildrenArea(
+		UILayoutContext* layoutContext,
+		TElement* ownerElement,
+		UIHAlignment horizontalContentAlignment,
+		UIVAlignment verticalContentAlignment,
+		const TUIElementList& elements,
+		const Rect& finalArea)
 	{
 		for (int i = 0; i < elements->size(); i++)
 		{
@@ -448,7 +454,7 @@ public:
 			if (layoutContext->testLayoutEnabled(child)) {
 
 				Rect slotRect;
-				detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
+				detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), horizontalContentAlignment, verticalContentAlignment, &slotRect);
 
 				child->arrangeLayout(layoutContext, slotRect);
 			}

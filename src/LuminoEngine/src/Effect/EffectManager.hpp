@@ -12,13 +12,13 @@ namespace ln {
 class EffectEmitter;
 class GraphicsContext;
 class RenderingContext;
-class ParticleModel2;
+class ParticleModel;
 
 /**
  * Texture2DPromise
  */
 LN_PROMISE()
-using ParticleModelPromise = Promise<Ref<ParticleModel2>>;
+using ParticleModelPromise = Promise<Ref<ParticleModel>>;
 
 namespace detail {
 class GraphicsManager;
@@ -44,7 +44,7 @@ public:
 	void init(const Settings& settings);
 	void dispose();
 
-    Ref<ParticleModel2> loadParticleModel(const StringRef& filePath);
+    Ref<ParticleModel> loadParticleModel(const StringRef& filePath);
     Ref<ParticleModelPromise> loadParticleModelAsync(const StringRef& filePath);
 
     void testDraw(RenderingContext* renderingContext);

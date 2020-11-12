@@ -72,7 +72,7 @@ protected:
 private:
     void documentTabBar_SelectionChanged(ln::UISelectionChangedEventArgs* e);
 
-    Ref<ln::UIBoxLayout3> m_mainLayout;
+    Ref<ln::UIBoxLayout> m_mainLayout;
     Ref<ln::UISwitchLayout> m_switchLayout;
     Ref<ln::UITabBar> m_documentTabBar;
 	ln::List<Ref<DocumentTab>> m_documentTabs;

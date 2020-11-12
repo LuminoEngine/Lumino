@@ -473,7 +473,7 @@ void GameAudioImpl::playMEFromSound(Sound* sound, float volume, float pitch)
         if (mBGMFadeOutTime > 0)
         {
             // フェードアウト後、一時停止する
-            mBGM->fadeVolume(0, mBGMFadeOutTime, SoundFadeBehavior::pause);
+            mBGM->fadeVolume(0, mBGMFadeOutTime, SoundFadeBehavior::Pause);
         }
         // フェードアウト時間がない場合
         else
@@ -636,7 +636,7 @@ void GameAudioImpl2::update(float elapsedSeconds)
                     // TODO: cross-fade
                     m_bgm = cmd.sound;
                     m_bgm->setLoopEnabled(true);
-                    m_bgm->setVolume(cmd.volume, cmd.fadeTime, SoundFadeBehavior::stop);
+                    m_bgm->setVolume(cmd.volume, cmd.fadeTime, SoundFadeBehavior::Stop);
                     m_bgm->setPitch(cmd.pitch);
                     m_bgm->play();
                     break;
@@ -646,7 +646,7 @@ void GameAudioImpl2::update(float elapsedSeconds)
                 case CommandType::PlayBGS:
                     m_bgs = cmd.sound;
                     m_bgs->setLoopEnabled(true);
-                    m_bgs->setVolume(cmd.volume, cmd.fadeTime, SoundFadeBehavior::stop);
+                    m_bgs->setVolume(cmd.volume, cmd.fadeTime, SoundFadeBehavior::Stop);
                     m_bgs->setPitch(cmd.pitch);
                     m_bgs->play();
                     break;

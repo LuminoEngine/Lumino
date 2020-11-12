@@ -1,8 +1,9 @@
 ﻿#pragma once
+#include <LuminoEngine/UI/Common.hpp>
 
 namespace ln {
 class Application;
-class UIContext;
+//class UIContext;
 class UIContainerElement;
 class UIFrameLayout;
 class UIActiveTimer;
@@ -57,8 +58,8 @@ public:
 
     const Ref<EventArgsPool>& eventArgsPool() const { return m_eventArgsPool; }
 
-    void setMainContext(UIContext* context);
-    const Ref<UIContext>& mainContext() const { return m_mainContext; }
+    //void setMainContext(UIContext* context);
+    //const Ref<UIContext>& mainContext() const { return m_mainContext; }
 
     void updateMouseHover(UIRenderView* mouseEventSource, const Point& frameClientPosition);
     const Ref<UIElement>& mouseHoverElement() const { return m_mouseHoverElement; }
@@ -69,6 +70,7 @@ public:
 	void releaseCursor(UIElement* element);
 	const Ref<UIElement>& capturedElement() const { return m_capturedElement; }
 
+	void clearFocus(UIElement* element);
     void tryGetInputFocus(UIElement* element);
 	const Ref<UIElement>& forcusedElement() const { return m_forcusedElement; }
 	void activateTree(UIElement* element);
@@ -94,12 +96,19 @@ public:
 	// ルートまで到達した Bubble イベントを処理する
 	void handleRootBubbleEvent(UIEventArgs* e);
 
+
+	const Ref<UIStyleContext>& styleContext() const { return m_styleContext; }
+	const Ref<detail::UIStyleInstance>& finalDefaultStyle() const { return m_finalDefaultStyle; }
+
 private:
     struct EventQueueItem
     {
         Ref<UIElement> target;  // 送信待ち中の削除に備え、強参照で持つ
         Ref<UIEventArgs> args;
     };
+	
+	void deactivateElement(UIElement* element);
+	void setupDefaultStyle();
 
 	GraphicsManager* m_graphicsManager;
     Application* m_application;
@@ -107,7 +116,7 @@ private:
 	//PlatformManager* platformManager;
     Ref<UIControl> m_primaryElement;
     Ref<EventArgsPool> m_eventArgsPool;
-    Ref<UIContext> m_mainContext;
+    //Ref<UIContext> m_mainContext;
     Ref<UIElement> m_mouseHoverElement;
 	Ref<UIElement> m_capturedElement;
     Ref<UIElement> m_forcusedElement;
@@ -116,6 +125,10 @@ private:
 	List<Ref<UIActiveTimer>> m_activeTimers;
 	CommonInputCommands m_commonInputCommands;
 	List<Ref<UICommand>> m_inputCommands;
+
+
+	Ref<UIStyleContext> m_styleContext;
+	Ref<detail::UIStyleInstance> m_finalDefaultStyle;
 
     // 
 	List<Ref<UIElement>> m_activationCache;

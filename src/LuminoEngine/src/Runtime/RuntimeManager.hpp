@@ -71,6 +71,9 @@ public:
 
     RuntimeStringBuffer* requestCommonStringBuffer() { return &m_commonStringBuffer; }
 
+	void setAStringEncoding(TextEncoding* value);
+	TextEncoding* getAStringEncoding() const;
+
 private:
     Settings m_settings;
 	List<ObjectEntry> m_objectEntryList;
@@ -78,6 +81,7 @@ private:
 	bool m_systemAliving;
 	std::mutex m_mutex;
     RuntimeStringBuffer m_commonStringBuffer;
+
 	//static LNReferenceCountTrackerCallback m_referenceCountTracker;
  //   static LNRuntimeFinalizedCallback m_runtimeFinalizedCallback;
 };

@@ -3,7 +3,6 @@
 #include "../UIElement.hpp"
 
 namespace ln {
-class UILayoutPanel;
 class UIActiveTimer;
 class UIFrameLayout2;
 
@@ -11,16 +10,35 @@ namespace detail {
 class UIAligned3x3GridLayoutArea;
 }
 
-enum class UIInlineLayout
+/** UIInlinePlacement */
+LN_ENUM()
+enum class UIInlinePlacement
 {
+    /** TopLeft */
     TopLeft,
+
+    /** Top */
     Top,
+
+    /** TopRight */
     TopRight,
+
+    /** Left */
     Left,
+
+    /** Center */
     Center,
+
+    /** Right */
     Right,
+
+    /** BottomLeft */
     BottomLeft,
+
+    /** Bottom */
     Bottom,
+
+    /** BottomRight */
     BottomRight,
 };
 
@@ -94,13 +112,16 @@ Leaf がベースでいいかな。これは普通の UIControl。
  * Visual States
  * ----------
  *
- * | Name           | Group          | Description    |
- * |----------------|----------------|----------------|
- * | Normal         | CommonGroup    | Default state. |
- * | MouseOver      | CommonGroup    | Mouse pointer is positioned over the control. |
- * | Disabled       | CommonGroup    | Control is disabled. |
- * | Focused        | FocusGroup     | Control has focus. |
- * | Unfocused      | FocusGroup     | Control does not have focus. |
+ * | Name           | Group           | Description    |
+ * |----------------|-----------------|----------------|
+ * | Normal         | CommonGroup     | Default state. |
+ * | MouseOver      | CommonGroup     | Mouse pointer is positioned over the control. |
+ * | Disabled       | CommonGroup     | Control is disabled. |
+ * | Focused        | FocusGroup      | Control has focus. |
+ * | Unfocused      | FocusGroup      | Control does not have focus. |
+ * | Visible        | VisibilityGroup | Control is visible. |
+ * | Hidden         | VisibilityGroup | Control is hidden. |
+ * | Collapsed      | VisibilityGroup | Control is collapsed. |
  *
  */
 LN_CLASS()
@@ -110,28 +131,28 @@ class UIControl
 	LN_OBJECT;
 public:
     UIControl();
+
+    /** init */
+    LN_METHOD()
     bool init() { return init(UICreationContext::Default); }
+
     bool init(const UICreationContext* context);
     virtual void onDispose(bool explicitDisposing) override;
 
 
 
-    void setData(Variant* value) { m_data = value; }
-    Variant* data() const { return m_data; }
-    template<typename T> T dataAs() const { return m_data->get<T>(); }
-
 
     /** コンテンツの横方向の配置方法を設定します。 */
-    void setHorizontalContentAlignment(HAlignment value);
+    void setHorizontalContentAlignment(UIHAlignment value);
 
     /** コンテンツの横方向の配置方法を取得します。 */
-    HAlignment horizontalContentAlignment() const;
+    UIHAlignment horizontalContentAlignment() const;
 
     /** コンテンツの縦方向の配置方法を設定します。 */
-    void setVerticalContentAlignment(VAlignment value);
+    void setVerticalContentAlignment(UIVAlignment value);
 
     /** コンテンツの縦方向の配置方法を取得します。 */
-    VAlignment verticalContentAlignment() const;
+    UIVAlignment verticalContentAlignment() const;
 
 
 	void addElement(UIElement* element);
@@ -141,16 +162,9 @@ public:
 
     // 要素の外側に張り付くものに利用する。
     // アイコンボタンを作るとき、外側ではなく文字側に張り付くようなものは、addContent で、Icon と TextBlock を並べた BoxLayout を追加する。
-    void addInlineElement(UIElement* element, UIInlineLayout layout);
-
-	///**
-	//	子要素をレイアウトするための UILayoutPanel を設定します。
-
-	//	デフォルトは nullptr です。
-	//*/
-	//void setLayoutPanel(UILayoutPanel* panel);
-
-	//UILayoutPanel* layoutPanel() const;
+    /** addInlineVisual */
+    LN_METHOD()
+    void addInlineVisual(UIElement* element, UIInlinePlacement layout);
 
 	const Ref<Collection<Ref<UIElement>>>& logicalChildren() const { return m_logicalChildren; }
 
@@ -172,6 +186,7 @@ public:
     // UIComboBoxItem は UIComboBox(UIControl) の子としてレイアウトしてほしくないので、その回避に用意したもの。
     bool m_autoLayoutLogicalChildren = true;
 
+
 protected:
     virtual void onActivated();
     virtual void onDeactivated();
@@ -188,8 +203,6 @@ protected:
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
-    virtual void onLayoutPanelChanged(UILayoutPanel* newPanel);
-
     bool m_enabledDirectChildrenContentAlignment;
 
     //List<Ref<UIElement>> m_logicalChildren;
@@ -204,9 +217,6 @@ private:
 
 	List<Ref<UIActiveTimer>> m_activeTimers;
     Ref<List<Ref<UIAction>>> m_actions;
-    Ref<Variant> m_data;
-    //Ref<UILayoutPanel> m_layout;
-	//Size m_layoutDesiredSize;	// Layout is state-less
 
     Event<UIEventHandler> m_onActivated;
     Event<UIEventHandler> m_onDeactivated;
@@ -236,7 +246,7 @@ private:
     {
         // このセルの右辺または下辺の座標 = 次のセルの左辺または上辺の座標。
         // このセルの右または下のラインの座標と考える。
-        float desiredLastOffset = 0.0f;
+        //float desiredLastOffset = 0.0f;
 
         float desiredSize = 0.0f;
         float actualOffset = 0.0f;

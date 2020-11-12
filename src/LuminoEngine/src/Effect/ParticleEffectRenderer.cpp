@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
@@ -181,7 +181,6 @@ void SpriteParticleRenderer::draw(RenderingContext* context, const ParticleData2
                 0.0f, 0.0f, scale.z, 0.0f,
                 pos.x, pos.y, pos.z, 1.0f);
             m_batch->setTransform(transform);
-            m_batch->setColorScale(Color::Red);
             m_batch->drawMesh();
             break;
         }
@@ -323,7 +322,7 @@ bool RibbonRenderer::init(int maxNodes)
 
     auto m_material = Material::create();
     m_material->setMainTexture(Texture2D::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Sprite1.png"));
-    m_material->shadingModel = ShadingModel::Unlit;
+    m_material->m_shadingModel = ShadingModel::Unlit;
     m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
 

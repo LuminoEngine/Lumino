@@ -15,14 +15,20 @@ static const ln::String ASFileTemplate = uR"(
 #ifndef __lumino__
 #define __lumino__
 
-#regcmd "_hsp3cmdinit@4","LuminoHSP.dll", 6
+#ifdef LUMINO_DEBUG
+    #regcmd "_hsp3cmdinit@4","LuminoHSPd.dll", %%varhpi%%
+#else
+    #regcmd "_hsp3cmdinit@4","LuminoHSP.dll", %%varhpi%%
+#endif
 
 #const global LN_TRUE 1
 #const global LN_FALSE 0
+#const global LN_NULL_HANDLE 0
 
 %%Contents%%
 
 #cmd ln_args $1
+#cmd ln_set_args $2
 
 #endif // __lumino__
 )";
@@ -41,7 +47,9 @@ void HSPHeaderGenerator::generate()
 
         ln::String fileName = ln::String::format("{0}.as", config()->moduleName);
 
-        ln::String src = ASFileTemplate.replace(u"%%Contents%%", code.toString());
+        ln::String src = ASFileTemplate
+            .replace(u"%%Contents%%", code.toString())
+            .replace(u"%%varhpi%%", ln::String::fromNumber((db()->structs()) | stream::op::count()));
 
         ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), src);
     }
@@ -63,6 +71,10 @@ ln::String HSPHeaderGenerator::makeStructs() const
     OutputBuffer code;
     for (const auto& structSymbol : db()->structs()) {
         code.AppendLine("#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), getCommandId(structSymbol));
+
+        for (const auto& methodSymbol : structSymbol->publicMethods()) {
+            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode), getCommandId(methodSymbol));
+        }
     }
     return code.toString();
 }
@@ -429,6 +441,7 @@ ln::String HSPCommandsGenerator::make_reffunc() const
             code.AppendLine(u"return true;");
             code.DecreaseIndent();
             code.AppendLine(u"}");
+
         }
         code.DecreaseIndent();
         code.AppendLine(u"}");
@@ -448,14 +461,38 @@ ln::String HSPCommandsGenerator::make_cmdfunc() const
     code.AppendLine(u"*retVal = RUNMODE_RUN;");
     code.AppendLine(u"switch (cmd) {");
     code.IncreaseIndent();
+
+    {
+        code.AppendLine(u"// ln_set_args");
+        code.AppendLine(u"case 0x2 : {");
+        code.IncreaseIndent();
+        code.AppendLines(u"ln_set_args_cmdfunc();");
+        code.AppendLine(u"return true;");
+        code.DecreaseIndent();
+        code.AppendLine(u"}");
+    }
+
+    for (const auto& structSymbol : db()->structs()) {
+        auto methods = structSymbol->publicMethods();
+        for (const auto& methodSymbol : methods) {
+            if (methodSymbol->isFieldAccessor()) {
+                // TODO: とりあえずすぐ必要だった Vector3 は get() を用意することで逃げた
+            }
+            else {
+                code.AppendLine(u"// " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii));
+                code.AppendLine(u"case 0x{0:X} : {{", getCommandId(methodSymbol));
+                code.IncreaseIndent();
+
+                code.AppendLines(makeCallCommandBlock(methodSymbol));
+
+                code.AppendLine(u"return true;");
+                code.DecreaseIndent();
+                code.AppendLine(u"}");
+            }
+        }
+    }
     
     for (const auto& classSymbol : db()->classes()) {
-
-
-        //auto methods = stream::MakeStream::from(classSymbol->publicMethods())
-        //    | stream::op::concat(stream::MakeStream::from(classSymbol->virtualPrototypeSetters()));
-
-        //for (const auto& methodSymbol : methods) {
         auto methods = classSymbol->publicMethods();
         methods.addRange(classSymbol->virtualPrototypeSetters());
         for (const auto& methodSymbol : methods) {
@@ -544,7 +581,9 @@ ln::String HSPCommandsGenerator::makeCallCommandBlock(const MethodSymbol* method
         else if (param->type()->isStruct()) {
             prologue.AppendLine(u"PVal* pval_{0};", param->name());
             prologue.AppendLine(u"CodeGetVA_TypeChecked(&pval_{0}, {1});", param->name(), makeFlatTypeName2(param->type()));
-            args.AppendCommad(u"reinterpret_cast<const {0}*>(pval_{1}->pt)", makeFlatTypeName2(param->type()), param->name());
+
+            ln::String mod = methodSymbol->isConst() ? u"const " : u"";
+            args.AppendCommad(u"reinterpret_cast<{0}{1}*>(pval_{2}->pt)", mod, makeFlatTypeName2(param->type()), param->name());
         }
         else {
             prologue.AppendLine(makeGetVAExpr(param));
@@ -652,7 +691,11 @@ void HSPHelpGenerator::generate()
 
         ln::String fileName = ln::String::format("{0}.hs", config()->moduleName);
 
-        ln::String src = ASFileTemplate.replace(u"%%Contents%%", code.toString());
+        ln::String src = ASFileTemplate
+            .replace(u"%%Contents%%", code.toString())
+            .replace(u"%%varhpi%%", ln::String::fromNumber((db()->structs()) | stream::op::count()));
+
+
 
         ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), src);
     }

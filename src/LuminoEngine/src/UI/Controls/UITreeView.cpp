@@ -6,6 +6,7 @@
 #include <LuminoEngine/UI/UITextBlock.hpp>
 #include <LuminoEngine/UI/Controls/UIScrollView.hpp>
 #include <LuminoEngine/UI/Controls/UITreeView.hpp>
+#include "../UIStyleInstance.hpp"
 
 namespace ln {
 
@@ -42,7 +43,7 @@ void UITreeItem::init()
 
     //auto layout = makeObject<UIStackLayout_Obsolete>();
     auto layout = makeObject<UIStackLayout>();
-    layout->setOrientation(Orientation::Vertical);
+    layout->setOrientation(UILayoutOrientation::Vertical);
     m_itemsLayout = layout;
     addVisualChild(m_itemsLayout);
 }
@@ -234,11 +235,11 @@ void UITreeView::init()
     UIItemsControl::init();
 
     auto layout = makeObject<UIStackLayout>();
-    layout->setOrientation(Orientation::Vertical);
+    layout->setOrientation(UILayoutOrientation::Vertical);
     setItemsLayoutPanel(layout);
 
-    setHorizontalContentAlignment(HAlignment::Left);
-    setVerticalContentAlignment(VAlignment::Center);
+    setHorizontalContentAlignment(UIHAlignment::Left);
+    setVerticalContentAlignment(UIVAlignment::Center);
 }
 
 //void UITreeView::setModel(UICollectionViewModel* model)
@@ -583,7 +584,11 @@ Size UITreeItem2::arrangeOverride(UILayoutContext* layoutContext, const Rect& fi
             Rect contentArea;
             m_aligned3x3GridLayoutArea->arrange(layoutContext, m_inlineElements, clientArea, &contentArea);
             // 論理子要素を arrange
-            detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(layoutContext, this, m_logicalChildren, contentArea);
+            detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(
+                layoutContext, this,
+                m_finalStyle->horizontalContentAlignment,
+                m_finalStyle->verticalContentAlignment,
+                m_logicalChildren, contentArea);
             //UIFrameLayout2::staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
 
         }
@@ -739,7 +744,7 @@ bool UITreeView2::init()
     if (!UIControl::init()) return false;
 
     auto layout = makeObject<UIStackLayout>();
-    layout->setOrientation(Orientation::Vertical);
+    layout->setOrientation(UILayoutOrientation::Vertical);
     addVisualChild(layout);
     m_itemsHostLayout = layout;
 

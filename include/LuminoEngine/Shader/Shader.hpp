@@ -1,11 +1,13 @@
 ﻿// Copyright (c) 2019 lriki. Distributed under the MIT license.
 #pragma once
 #include "Common.hpp"
+#include "../Asset/AssetObject.hpp"
 #include "../Graphics/GraphicsResource.hpp"
 #include "ShaderInterfaceFramework.hpp"
 #include "ShaderHelper.hpp"
 
 namespace ln {
+class AssetImportSettings;
 class DiagnosticsManager;
 class Texture;
 class Shader;
@@ -270,12 +272,13 @@ struct ShaderPassDescriptorLayout
  * - 値をシリアライズすることはできなくなる。
  * - 複数の Material から参照される場合、値は共有される。
  */
-class LN_API Shader final
-    : public Object
+LN_CLASS()
+class LN_API Shader
+    : public AssetObject
     , public IGraphicsResource
 {
 public:
-    /*
+    /**
      * 事前コンパイル済みシェーダファイルまたはシェーダプログラムファイルから Shader オブジェクトを作成します。
      *
      * @param[in]   filePath : 入力ファイル名
@@ -287,14 +290,20 @@ public:
      */
     static Ref<Shader> create(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
 
-    /*
+    /**
+     * load
+     */
+    LN_METHOD()
+    static Ref<Shader> load(const StringRef& filePath, AssetImportSettings* settings = nullptr);
+
+    /**
      * Lumino の独自拡張 (technique 構文など) を使用しない HLSL シェーダをコンパイルし、Shader オブジェクトを作成します。
      * 
      * 作成された Shader は、1 つの ShaderTechnique と 1 つの ShaderPass を持ちます。
      */
     static Ref<Shader> create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
 
-    /*
+    /**
      * 名前を指定してこの Shader に含まれる ShaderParameter を検索します。
      *
      * @param[in]   name : パラメータの名前
@@ -304,7 +313,7 @@ public:
      */
     ShaderParameter2* findParameter(const StringRef& name) const;
 
-    /*
+    /**
      * 名前を指定してこの Shader に含まれる ShaderTechnique を検索します。
      *
      * @param[in]   name : 定数バッファの名前
@@ -314,6 +323,25 @@ public:
 
     /** この Shader に含まれる ShaderTechnique を取得します。 */
     Ref<ReadOnlyList<Ref<ShaderTechnique>>> techniques() const;
+
+
+    /** 浮動小数点値を設定します。 */
+    LN_METHOD()
+    void setFloat(const StringRef& parameterName, float value);
+    
+    /** ベクトル値を設定します。 */
+    LN_METHOD(OverloadPostfix = "3")
+    void setVector(const StringRef& parameterName, const Vector3& value);
+
+    /** ベクトル値を設定します。 */
+    LN_METHOD(OverloadPostfix = "4")
+    void setVector(const StringRef& parameterName, const Vector4& value);
+
+    /** setTexture */
+    LN_METHOD()
+    void setTexture(const StringRef& parameterName, Texture* value);
+
+    // ↑このあたりは HC4 のエフェクトで、ひとつの Shader をたくさんの Material から参照するときの共通パラメータを設定したいため、公開した。
 
     /** この Shader の DescriptorLayout をもとに、ShaderDescriptor を作成します。 */
     //Ref<ShaderDescriptor> createDescriptor();
@@ -326,6 +354,7 @@ protected:
     void onDispose(bool explicitDisposing) override;
     void onManagerFinalizing() override { dispose(); }
     void onChangeDevice(detail::IGraphicsDevice* device) override;
+    void onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath) override;
 
 LN_CONSTRUCT_ACCESS:
 	Shader();
@@ -337,6 +366,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
+    bool loadFromStream(const detail::AssetPath& path, Stream* stream, ShaderCompilationProperties* properties);
     void createFromStream(Stream* stream, DiagnosticsManager* diag);
 	void createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
 

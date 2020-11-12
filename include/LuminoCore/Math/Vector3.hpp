@@ -68,6 +68,10 @@ public:
      */
     void set(float x, float y, float z);
 
+    /** get */
+    LN_METHOD()
+    void get(float* outX, float* outY, float* outZ) const { *outX = x; *outY = y; *outZ = z; }
+
 	/** Returns pointer to the first element. */
 	float* data() LN_NOEXCEPT { return &x; }
 

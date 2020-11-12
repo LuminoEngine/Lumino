@@ -5,10 +5,11 @@
 #include "UIEvents.hpp"
 
 namespace ln {
+class Variant;
 class UILayoutContext;
 class UIRenderingContext;
 class UIFrameRenderView;
-class UIContext;
+//class UIContext;
 class UIEventArgs;
 class UIStyle;
 class UIStyleClass;
@@ -104,6 +105,7 @@ private:
 
 
 
+/** UIElement */
 LN_CLASS()
 class UIElement
 	: public UILayoutElement
@@ -135,12 +137,27 @@ public:
     const String& name() const { return m_name; }
 
 	/** 要素のサイズを設定します。サイズには、border と padding の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります) */
-	void setSize(float width, float height) { setWidth(width); setHeight(height); }
+	LN_METHOD()
+	void setSize(const Size& size) { setWidth(size.width); setHeight(size.height); }
 
+	/** 要素のサイズを設定します。サイズには、border と padding の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります) */
+	LN_METHOD(OverloadPostfix = "WH")
+	void setSize(float width, float height) { setSize(Size(width, height)); }
+
+	/** setWidth */
+	LN_METHOD(Property)
     void setWidth(float value);
+
+	/** width */
+	LN_METHOD(Property)
     float width() const;
 
+	/** setHeight */
+	LN_METHOD(Property)
     void setHeight(float value);
+
+	/** height */
+	LN_METHOD(Property)
     float height() const;
 
 
@@ -162,23 +179,23 @@ public:
 
 	/** 要素の横方向の配置方法を設定します。 */
 	LN_METHOD(Property)
-	void setHAlignment(HAlignment value);
+	void setHAlignment(UIHAlignment value);
 
 	/** 要素の横方向の配置方法を取得します。 */
 	LN_METHOD(Property)
-	HAlignment hAlignment() const;
+	UIHAlignment hAlignment() const;
 
 	/** 要素の縦方向の配置方法を設定します。 */
 	LN_METHOD(Property)
-	void setVAlignment(VAlignment value);
+	void setVAlignment(UIVAlignment value);
 
 	/** 要素の縦方向の配置方法を取得します。 */
 	LN_METHOD(Property)
-	VAlignment vAlignment() const;
+	UIVAlignment vAlignment() const;
 
 	/** 要素の配置方法を設定します。 */
 	LN_METHOD()
-	void setAlignments(HAlignment halign, VAlignment valign);
+	void setAlignments(UIHAlignment halign, UIVAlignment valign);
 
     
 	/** このオブジェクトの位置を設定します。 */
@@ -234,6 +251,25 @@ public:
 	const Vector3& centerPoint() const;
 
 
+	
+	/** 要素の有効状態を設定します。 */
+	LN_METHOD(Property)
+	void setEnabled(bool value);
+    
+	/** 要素の有効状態を取得します。 */
+	LN_METHOD(Property)
+	bool isEnabled() const;
+
+	/** 任意のユーザーデータを設定します。 */
+	LN_METHOD(Property)
+	void setData(Variant* value);
+
+	/** 任意のユーザーデータを取得します。 */
+	LN_METHOD(Property)
+	Variant* data() const;
+
+	template<typename T> T dataAs() const { return m_data->get<T>(); }
+
 
     /** 背景の描画モードを設定します。*/
     void setBackgroundDrawMode(Sprite9DrawMode value);
@@ -242,9 +278,11 @@ public:
 	Sprite9DrawMode backgroundDrawMode() const;
 
 	/** 背景の色を設定します。 */
+	LN_METHOD(Property)
 	void setBackgroundColor(const Color& value);
 
 	/** 背景の色を取得します。 */
+	LN_METHOD(Property)
 	const Color& backgroundColor() const;
 
 	/** 背景の描画に使用する画像を設定します。 */
@@ -274,17 +312,28 @@ public:
 
 
 	/** 枠線の太さを設定します。 */
+	LN_METHOD(Property)
 	void setBorderThickness(const Thickness& value);
 
 	/** 枠線の太さを取得します。 */
+	LN_METHOD(Property)
 	const Thickness& borderThickness() const;
 
 	/** 枠線の色を設定します。 */
+	LN_METHOD(Property)
 	void setBorderColor(const Color& value);
 
 	/** 枠線の色を取得します。 */
+	LN_METHOD(Property)
 	const Color& borderColor() const;
+	
+	/** 四角形の角の半径を設定します。 */
+	LN_METHOD(Property)
+	void setCornerRadius(const CornerRadius& value);
 
+	/** 四角形の角の半径を取得します。 */
+	LN_METHOD(Property)
+	const CornerRadius& cornerRadius() const;
 
 
 	/** テキストの色を設定します。*/
@@ -321,12 +370,12 @@ public:
 
     
 	/** 可視状態を設定します。(default: UIVisibility::Visible) */
-    //LN_METHOD(Property)
+    LN_METHOD(Property)
     void setVisibility(UIVisibility value);
 
 	/** 可視状態を取得します。*/
-    //LN_METHOD(Property)
-    UIVisibility isVisibility() const;
+    LN_METHOD(Property)
+    UIVisibility visibility() const;
 
     /** 合成方法を設定します。(default: BlendMode::Normal) */
     void setBlendMode(const Optional<BlendMode>& value);
@@ -335,9 +384,11 @@ public:
     BlendMode blendMode() const;
 
     /** 不透明度を設定します。(default: 1.0) */
+	LN_METHOD(Property)
     void setOpacity(float value);	// TODO: 子要素へ継承してほしい
 
     /** 不透明度を取得します。 */
+	LN_METHOD(Property)
     float opacity() const;
 
     /** カラースケールを設定します。(default: Color(1, 1, 1, 1)) */
@@ -361,7 +412,7 @@ public:
     // TODO: ↑の WorldObject 的なものは、派生クラスの UIVisual 的なクラスにユーティリティとして持っていく。
     // UIElement としては RenderTransform, Style 扱いにしたい。
 
-    UIContext* getContext() const;
+    //UIContext* getContext() const;
 
     void addClass(const StringRef& className);
 	void setViewModel(UIViewModel* value);
@@ -379,8 +430,12 @@ public:
 	void invalidateVisual() { invalidate(detail::UIElementDirtyFlags::Render, true); }
 
 	/** 入力フォーカスを得ることができるかどうかを設定します。(default: false) */
+	LN_METHOD(Property)
 	void setFocusable(bool value) { m_focusable = value; }
-	bool focusable() const { return m_focusable; }
+
+	/** 入力フォーカスを得ることができるかどうかを取得します。 */
+	LN_METHOD(Property)
+	bool focusable() const { return isEnabled() && m_focusable; }
 
     void setClipToBounds(bool value) { m_clipToBounds = value; }
     bool clipToBounds() const { return m_clipToBounds; }
@@ -513,6 +568,8 @@ public:	// TODO: internal protected
 
     virtual void onAddChild(UIElement* child);
 
+	virtual void onEnabledChanged();
+
 	//virtual void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
 
     bool isMouseHover() const;
@@ -530,6 +587,8 @@ public:	// TODO: internal protected
 	template<class T> T* logicalParentAs() const { return static_cast<T*>(m_logicalParent); }
     void removeFromLogicalParent();
 	void attemptAddToPrimaryElement();
+
+	Point frameClientPositionToLocalPosition(const Point& frameClientPosition) const;
 
     UIVisualStateManager* getVisualStateManager();
 
@@ -552,7 +611,7 @@ public: // TODO: internal
     
     // TODO: ↓ UIRenderView にまとめてしまっていいかも
     // TODO: ↓ UILayoutContext や UIStyleContxt 経由でもらう
-    UIContext* m_context;       // ルート要素 (ほとんどの場合は UIFrameWindow) が値を持つ。それ以外は基本的に null. もしウィンドウ内で別のコンテキストに属したい場合はセットする。
+    //UIContext* m_context;       // ルート要素 (ほとんどの場合は UIFrameWindow) が値を持つ。それ以外は基本的に null. もしウィンドウ内で別のコンテキストに属したい場合はセットする。
     UIFrameRenderView* m_renderView = nullptr; // ルート要素が値を持つ。
     
     UIElement* m_visualParent;		// 必ず存在する。
@@ -580,16 +639,19 @@ public: // TODO: internal
 	bool m_focusable;			// TODO: flags
     bool m_clipToBounds;			// TODO: flags
 
-    friend class UIContext;
+    //friend class UIContext;
     friend class UIFrameRenderView;
     friend class UIFrameWindow;
     friend class UIViewModel;
 
 	int getVisualChildrenCount() const { return (m_visualChildren) ? m_visualChildren->size() : 0; }
 	UIElement* getVisualChild(int index) const { return (m_visualChildren) ? m_visualChildren->at(index) : nullptr; }
+
 private:
+	void updateEnabledPropertyOnChildren();
 
     Flags<detail::UIElementDirtyFlags> m_dirtyFlags;
+	Ref<Variant> m_data;
 };
 
 } // namespace ln

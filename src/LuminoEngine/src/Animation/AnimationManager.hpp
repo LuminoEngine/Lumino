@@ -21,12 +21,12 @@ public:
 	void init(const Settings& settings);
 	void dispose();
     void setSceneManager(SceneManager* sceneManager) { m_sceneManager = sceneManager; }
-        
+	const Ref<AnimationClipImportSettings>& defaultAnimationClipImportSettings() const { return m_defaultAnimationClipImportSettings; }
 
     void addClockToAffiliation(AnimationClock* clock, AnimationClockAffiliation affiliation);
 
 	Ref<AnimationClip> loadAnimationClip(const StringRef& filePath);
-	Ref<AnimationClipPromise> loadAnimationClipAsync(const StringRef& filePath);
+	//Ref<AnimationClipPromise> loadAnimationClipAsync(const StringRef& filePath);
 	//Ref<AnimationClip> acquireAnimationClip(const AssetPath& assetPath);
 	//void loadAnimationClip(AnimationClip* clip, const AssetPath& assetPath);
 
@@ -35,7 +35,8 @@ public:
 private:
 	AssetManager* m_assetManager;
     SceneManager* m_sceneManager;
-	ObjectCache<uint64_t, AnimationClip> m_animationClipCache;
+	ObjectCache<String, AnimationClip> m_animationClipCache;
+	Ref<AnimationClipImportSettings> m_defaultAnimationClipImportSettings;
 };
 
 } // namespace detail

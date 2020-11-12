@@ -154,11 +154,11 @@ public:
     btRigidBody* body() const { return m_btRigidBody; }
 
 protected:
-    void onBeforeStepSimulation() override;
+    void onPrepareStepSimulation() override;
     void onAfterStepSimulation() override;
-    void onRemoveFromPhysicsWorld() override;
 
 private:
+    void removeFromBtWorld() override;
     void attemptAddToActiveWorld();
     void activate();
     void createBtRigidBody();

@@ -73,17 +73,6 @@ DIOBJECTDATAFORMAT C_ODFDIJOYSTICK[44] =
 	NULL,				0x4f,	0x80ffff0c,	0x000,
 };
 
-// Joystick device data format
-const DIDATAFORMAT c_dfDIJoystick =
-{
-	24, 	// dwSize
-	16,		// dwObjSize
-	0x01,	// dwFlags
-	80,		// dwDataSize
-	44,		// dwNumObjs
-	C_ODFDIJOYSTICK, // rgodf
-};
-
 //==============================================================================
 // Win32JoystickDriver
 //==============================================================================
@@ -113,17 +102,14 @@ void Win32JoystickDriver::init( IDirectInputDevice8* device, HWND hwnd, int xinp
 	mDevice = device;
 	mXInputNo = xinputNumber;
 
-	//memset(mButtonState, 0, sizeof(mButtonState));
-	//memset(mAxisState, 0, sizeof(mAxisState));
-
 	if (!isXInputDevice())
 	{
 		// ジョイスティックとしてデータフォーマットを設定
-		hr = mDevice->SetDataFormat(&c_dfDIJoystick);
+		// (データ取得に DIJOYSTATE2 構造体を使う)
+		hr = mDevice->SetDataFormat(&c_dfDIJoystick2);
 		if (LN_ENSURE(SUCCEEDED(hr))) {
 			return;
 		}
-		//hr = mDevice->SetDataFormat( &c_dfDIJoystick2 );	// もっといろんな情報がほしいとき
 
 		// フォアグラウンド・排他モード
 		//LN_COMCALL(mDevice->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE));
@@ -268,8 +254,8 @@ void Win32JoystickDriver::getJoystickDeviceState(JoystickDeviceState* joyState)
 	// DirectInput
 	else
 	{
-		DIJOYSTATE state;
-		HRESULT hr = mDevice->GetDeviceState(sizeof(DIJOYSTATE), &state);
+		DIJOYSTATE2 state;
+		HRESULT hr = mDevice->GetDeviceState(sizeof(DIJOYSTATE2), &state);
 		if (SUCCEEDED(hr))
 		{
 			// ボタン

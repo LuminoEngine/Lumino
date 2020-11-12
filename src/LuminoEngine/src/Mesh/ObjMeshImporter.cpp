@@ -8,6 +8,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
+#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
 #include "ObjMeshImporter.hpp"
 
 namespace ln {

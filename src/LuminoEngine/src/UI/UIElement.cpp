@@ -14,6 +14,7 @@
 #include <LuminoEngine/UI/Controls/UIControl.hpp>
 #include <LuminoEngine/UI/UITextBlock.hpp>
 #include "../Rendering/RenderStage.hpp"
+#include "UIStyleInstance.hpp"
 #include "UIManager.hpp"
 
 namespace ln {
@@ -83,7 +84,7 @@ LN_OBJECT_IMPLEMENT(UIElement, UILayoutElement) {}
 UIElement::UIElement()
     : m_manager(nullptr)
 	, m_objectManagementFlags(detail::ObjectManagementFlags::None)
-    , m_context(nullptr)
+    //, m_context(nullptr)
     , m_visualParent(nullptr)
     , m_logicalParent(nullptr)
     , m_localStyle(nullptr)
@@ -97,6 +98,8 @@ UIElement::UIElement()
 {
     m_localStyle = makeObject<UIStyleClass>(String::Empty); // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
     m_localStyle->setMainStyle(makeObject<UIStyle>());
+    m_specialElementFlags.set(detail::UISpecialElementFlags::Enabled, true);
+    m_specialElementFlags.set(detail::UISpecialElementFlags::InternalEnabled, true);
 }
 
 UIElement::~UIElement()
@@ -121,21 +124,21 @@ bool UIElement::init(const UICreationContext* context)
 	UILayoutElement::init(m_finalStyle);
     context = (context) ? context : UICreationContext::Default;
     m_manager = detail::EngineDomain::uiManager();
-    if (LN_REQUIRE(m_manager->mainContext())) return false;
+    //if (LN_REQUIRE(m_manager->mainContext())) return false;
 
     m_dirtyFlags.set(detail::UIElementDirtyFlags::InitialLoading);
 
 	// TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
 	m_finalStyle->backgroundMaterial = makeObject<Material>();
 
-	if (context->m_autoAddToPrimaryElement &&
-        m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToPrimaryElement)) {
-		attemptAddToPrimaryElement();
-	}
+	//if (context->m_autoAddToPrimaryElement &&
+ //       m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToPrimaryElement)) {
+	//	attemptAddToPrimaryElement();
+	//}
 
 
     //if (m_manager->mainContext()) {
-        m_manager->mainContext()->addElement(this);
+        //m_manager->mainContext()->addElement(this);
     //}
 
     //onSetup();
@@ -183,27 +186,27 @@ const Thickness& UIElement::padding() const
     return m_localStyle->mainStyle()->padding;
 }
 
-void UIElement::setHAlignment(HAlignment value)
+void UIElement::setHAlignment(UIHAlignment value)
 {
 	m_localStyle->mainStyle()->hAlignment = value;
 }
 
-HAlignment UIElement::hAlignment() const
+UIHAlignment UIElement::hAlignment() const
 {
 	return m_localStyle->mainStyle()->hAlignment;
 }
 
-void UIElement::setVAlignment(VAlignment value)
+void UIElement::setVAlignment(UIVAlignment value)
 {
 	m_localStyle->mainStyle()->vAlignment = value;
 }
 
-VAlignment UIElement::vAlignment() const
+UIVAlignment UIElement::vAlignment() const
 {
 	return m_localStyle->mainStyle()->vAlignment;
 }
 
-void UIElement::setAlignments(HAlignment halign, VAlignment valign)
+void UIElement::setAlignments(UIHAlignment halign, UIVAlignment valign)
 {
 	setHAlignment(halign);
 	setVAlignment(valign);
@@ -247,6 +250,36 @@ void UIElement::setCenterPoint(const Vector3 & value)
 const Vector3& UIElement::centerPoint() const
 {
     return m_localStyle->mainStyle()->centerPoint.getOrDefault(Vector3::Zero);
+}
+
+void UIElement::setEnabled(bool value)
+{
+    bool oldValue = isEnabled();
+    m_specialElementFlags.set(detail::UISpecialElementFlags::Enabled, value);
+    if (oldValue != isEnabled()) {
+        updateEnabledPropertyOnChildren();
+        onEnabledChanged();
+    }
+}
+
+bool UIElement::isEnabled() const
+{
+    if (!m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::InternalEnabled)) {
+        // Parent is disabled.
+        return false;
+    }
+
+    return m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::Enabled);
+}
+
+void UIElement::setData(Variant* value)
+{
+    m_data = value;
+}
+
+Variant* UIElement::data() const
+{
+    return m_data;
 }
 
 void UIElement::setBackgroundDrawMode(Sprite9DrawMode value)
@@ -329,6 +362,16 @@ const Color& UIElement::borderColor() const
 	return m_localStyle->mainStyle()->backgroundColor;
 }
 
+void UIElement::setCornerRadius(const CornerRadius& value)
+{
+    m_localStyle->mainStyle()->cornerRadius = value;
+}
+
+const CornerRadius& UIElement::cornerRadius() const
+{
+    return m_localStyle->mainStyle()->cornerRadius.getOrDefault(CornerRadius::Zero);
+}
+
 void UIElement::setTextColor(const Color& value)
 {
 	m_localStyle->mainStyle()->textColor = value;
@@ -384,7 +427,7 @@ void UIElement::setVisibility(UIVisibility value)
     m_localStyle->mainStyle()->visible = value;
 }
 
-UIVisibility UIElement::isVisibility() const
+UIVisibility UIElement::visibility() const
 {
     return m_localStyle->mainStyle()->visible.getOrDefault(UIVisibility::Visible);
 }
@@ -444,17 +487,17 @@ const ColorTone & UIElement::tone() const
     return m_localStyle->mainStyle()->tone.getOrDefault(detail::BuiltinEffectData::DefaultValue.tone);
 }
 
-UIContext* UIElement::getContext() const
-{
-    if (m_context) {
-        return m_context;
-    }
-    if (m_visualParent) {
-        return m_visualParent->getContext();
-    }
-    LN_ERROR();
-    return nullptr;
-}
+//UIContext* UIElement::getContext() const
+//{
+//    if (m_context) {
+//        return m_context;
+//    }
+//    if (m_visualParent) {
+//        return m_visualParent->getContext();
+//    }
+//    LN_ERROR();
+//    return nullptr;
+//}
 
 void UIElement::addClass(const StringRef& className)
 {
@@ -577,6 +620,7 @@ UIFrameRenderView* UIElement::getRenderView()
 UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 {
 	if (!isRenderVisible()) return nullptr;
+    if (!isEnabled()) return nullptr;
 
 	if (m_hitTestMode == detail::UIHitTestMode::Visible ||
 		m_hitTestMode == detail::UIHitTestMode::InvisiblePanel)
@@ -615,7 +659,7 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 
 void UIElement::focus()
 {
-    if (m_focusable) {
+    if (focusable()) {
         UIElement* leaf = findFocusedVisualChildLeaf();
         if (LN_REQUIRE(leaf)) return;
 
@@ -676,6 +720,9 @@ void UIElement::addVisualChild(UIElement* element)
 	m_orderdVisualChildren->add(element);
 	element->m_visualParent = this;
 
+
+    updateEnabledPropertyOnChildren();
+
 	// TODO: ZOrder
 	//std::stable_sort(
 	//	m_visualChildren->begin(), m_visualChildren->end(),
@@ -702,7 +749,16 @@ void UIElement::removeVisualChild(UIElement* element)
 
     if (m_focusedVisualChild == element)
         m_focusedVisualChild = nullptr;
-    
+
+    {
+        bool oldValue = element->isEnabled();
+        element->m_specialElementFlags.set(detail::UISpecialElementFlags::InternalEnabled, false);
+        if (oldValue != element->isEnabled()) {
+            element->updateEnabledPropertyOnChildren();
+            element->onEnabledChanged();
+        }
+    }
+
     invalidateLayout();
 }
 
@@ -951,11 +1007,16 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 		context->setBaseTransfrom(combinedTransform);
 	}
 	detail::BuiltinEffectData data;
-	data.opacity = opacity();
-	data.colorScale = colorScale();
-	data.blendColor = blendColor();
-	data.tone = tone();
+    data.opacity = m_finalStyle->opacity;//opacity();
+    data.colorScale = m_finalStyle->colorScale;//colorScale();
+    data.blendColor = m_finalStyle->blendColor;//blendColor();
+    data.tone = m_finalStyle->tone; //tone();
+    if (!isEnabled()) {
+        // Grayscale
+        data.tone.s = 1.0f;
+    }
 	context->setBaseBuiltinEffectData(data);
+    //context->setBaseBuiltinEffectData(m_finalStyle->builtinEffect);
 	context->setBlendMode(blendMode());
 	context->setRenderPriority(m_renderPriority);
 
@@ -1081,8 +1142,7 @@ void UIElement::onRoutedEvent(UIEventArgs* e)
 
 bool UIElement::onHitTest(const Point& frameClientPosition)
 {
-    auto inv = Matrix::makeInverse(m_combinedFinalRenderTransform);
-    auto pos = Vector3::transformCoord(Vector3(frameClientPosition.x, frameClientPosition.y, .0f), inv);
+    const auto pos = frameClientPositionToLocalPosition(frameClientPosition);
 
     if (0 <= pos.x && pos.x < actualSize().width &&
         0 <= pos.y && pos.y < actualSize().height) {
@@ -1096,6 +1156,13 @@ bool UIElement::onHitTest(const Point& frameClientPosition)
 void UIElement::onAddChild(UIElement* child)
 {
     LN_UNREACHABLE();
+}
+
+void UIElement::onEnabledChanged()
+{
+    if (!isEnabled() && m_manager) {
+        m_manager->clearFocus(this);
+    }
 }
 
 bool UIElement::isMouseHover() const
@@ -1118,6 +1185,13 @@ void UIElement::attemptAddToPrimaryElement()
 			primaryElement->addElement(this);
 		}
 	//}
+}
+
+Point UIElement::frameClientPositionToLocalPosition(const Point& frameClientPosition) const
+{
+    auto inv = Matrix::makeInverse(m_combinedFinalRenderTransform);
+    auto pos = Vector3::transformCoord(Vector3(frameClientPosition.x, frameClientPosition.y, .0f), inv);
+    return Point(pos.x, pos.y);
 }
 
 void UIElement::raiseEventInternal(UIEventArgs* e, UIEventRoutingStrategy strategy)
@@ -1197,6 +1271,21 @@ UIVisualStateManager* UIElement::getVisualStateManager()
         m_visualStateManager = makeObject<UIVisualStateManager>(this);
     }
     return m_visualStateManager;
+}
+
+void UIElement::updateEnabledPropertyOnChildren()
+{
+    if (m_visualChildren) {
+        bool value = isEnabled();
+        for (auto& child : m_visualChildren) {
+            bool oldValue = child->isEnabled();
+            child->m_specialElementFlags.set(detail::UISpecialElementFlags::InternalEnabled, value);
+            if (oldValue != child->isEnabled()) {
+                child->updateEnabledPropertyOnChildren();
+                child->onEnabledChanged();
+            }
+        }
+    }
 }
 
 } // namespace ln

@@ -42,7 +42,7 @@ bool DepthOfFieldPostEffectCore::init(Material* compositeMaterial)
 {
     m_compositeMaterial = compositeMaterial;
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/Copy.fx");
+    auto shader1 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::Copy);
     m_copyMaterial = makeObject<Material>();
     m_copyMaterial->setShader(shader1);
 
@@ -58,6 +58,8 @@ void DepthOfFieldPostEffectCore::prepare(RenderingContext* context, RenderTarget
     int resy = source->height();
     if (m_viewWidth != resx || m_viewHeight != resy) {
         resetResources(resx, resy);
+        m_viewWidth = resx;
+        m_viewHeight = resy;
     }
 
     // down sampling.
@@ -131,15 +133,8 @@ bool DepthOfFieldPostEffectInstance::onRender(RenderingContext* context, RenderT
     for (int i = 0; i < 8; i++)
     {
         context->setViewportRect(rect);
-        //context->setViewportRect(
-        //    RectI(
-        //        rect.x + margin,
-        //        rect.y + margin,
-        //        std::max(1, rect.width - margin * 2),
-        //        std::max(1, rect.height - margin * 2)));
         m_copyMaterial->setMainTexture(source);
         context->blit(m_copyMaterial, dofTexture);
-        //context->blit(m_copyMaterial, destination);
 
         rect.y += rect.height;
         rect.width /= 2;
@@ -147,7 +142,6 @@ bool DepthOfFieldPostEffectInstance::onRender(RenderingContext* context, RenderT
     }
     context->setViewportRect(RectI::Empty);
 
-    //context->setScissorRect(RectI(0, 0, 320, 240));
     dofTexture->setSamplerState(m_samplerState);
     viewDepthMap->setSamplerState(m_samplerState);
 

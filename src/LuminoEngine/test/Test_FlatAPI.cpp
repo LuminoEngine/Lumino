@@ -22,7 +22,7 @@ TEST_F(Test_FlatAPI, ReferenceCount)
 {
 	LNHandle obj1;
 	LN_ZV_CHECK(LNZVTestClass1_Create(&obj1));
-	ASSERT_EQ(1, LNObject_GetReferenceCount(obj1));
+	ASSERT_EQ(1, _LNObject_GetReferenceCount(obj1));
 	LNObject_Release(obj1);
 }
 
@@ -41,7 +41,7 @@ static LNResult LNZVTestDelegate2_Callback(LNHandle selfDelegate, int a, int b, 
 
 static LNResult LNZVTestDelegate3_Callback(LNHandle selfDelegate, LNHandle otherObject)
 {
-	g_value = LNObject_GetReferenceCount(otherObject);
+	g_value = _LNObject_GetReferenceCount(otherObject);
 	g_otherObject = otherObject;
 	return LN_SUCCESS;
 }
@@ -79,7 +79,7 @@ TEST_F(Test_FlatAPI, Delegate)
 	LN_ZV_CHECK(LNZVTestClass1_CallTestDelegate3(obj1));
 	ASSERT_NE(LN_NULL_HANDLE, g_otherObject);
 	ASSERT_EQ(3, g_value);	// 作成元の stack の分と、Delegate に Ref<> で渡された分と、コールバックに強参照で渡された分
-	ASSERT_EQ(1, LNObject_GetReferenceCount(g_otherObject));	// コールバックに強参照で渡されたオブジェクトは自分で Release する必要がある。
+	ASSERT_EQ(1, _LNObject_GetReferenceCount(g_otherObject));	// コールバックに強参照で渡されたオブジェクトは自分で Release する必要がある。
 
 	LNObject_Release(g_otherObject);
 	LNObject_Release(obj1);
@@ -255,4 +255,19 @@ TEST_F(Test_FlatAPI, VirtualProtoType)
 	LNObject_Release(texture);
 
 	ASSERT_EQ(g_count, 1);
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_FlatAPI, GetStringA)
+{
+	LNHandle obj;
+	LNInterpreter_Create(&obj);
+	LNInterpreter_SetWaitModeA(obj, "ABC");
+
+	const char* str;
+	LNInterpreter_GetWaitModeA(obj, &str);
+
+	ASSERT_STREQ("ABC", str);
+
+	LNObject_Release(obj);
 }

@@ -566,7 +566,8 @@ const wchar_t*	Win32PlatformWindowManager::WindowClassName = L"LuminoWindow";
 const wchar_t*	Win32PlatformWindowManager::PropWinProc = L"LuminoWindowProp";
 const DWORD	Win32PlatformWindowManager::FullscreenStyle = WS_POPUP;
 
-Win32PlatformWindowManager::Win32PlatformWindowManager()
+Win32PlatformWindowManager::Win32PlatformWindowManager(PlatformManager* manager)
+    : PlatformWindowManager(manager)
 {
 }
 
@@ -607,7 +608,12 @@ void Win32PlatformWindowManager::dispose()
     UnregisterClass(WindowClassName, m_hInst);
 }
 
-Ref<PlatformWindow> Win32PlatformWindowManager::createWindow(const WindowCreationSettings& settings)
+Ref<PlatformWindow> Win32PlatformWindowManager::createMainWindow(const WindowCreationSettings& settings)
+{
+    return createSubWindow(settings);
+}
+
+Ref<PlatformWindow> Win32PlatformWindowManager::createSubWindow(const WindowCreationSettings& settings)
 {
     if (settings.userWindow) {
         auto ptr = makeRef<WrappedWin32PlatformWindow>();
@@ -647,6 +653,11 @@ void Win32PlatformWindowManager::processSystemEventQueue(EventProcessingMode mod
             }
         }
     }
+}
+
+OpenGLContext* Win32PlatformWindowManager::getOpenGLContext() const
+{
+    return nullptr;
 }
 
 } // namespace detail

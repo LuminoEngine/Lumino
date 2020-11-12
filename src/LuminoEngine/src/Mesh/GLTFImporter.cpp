@@ -17,6 +17,8 @@
 #include <LuminoEngine/Animation/AnimationClip.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Asset/AssetManager.hpp"
+#include "../Graphics/GraphicsManager.hpp"
+#include "MeshManager.hpp"
 #include "GLTFImporter.hpp"
 
 namespace ln {
@@ -104,8 +106,8 @@ AliciaSolid.vrm は、
 
 GLTFImporter::GLTFImporter()
 	: m_flipZ(false)
-	, m_flipX(false)
-	, m_disableBoneRotation(true)
+	, m_flipX(true)
+	, m_clearBoneRotation(true)
 {
 }
 
@@ -145,6 +147,15 @@ bool GLTFImporter::openGLTFModel(const AssetPath& assetPath)
 
 bool GLTFImporter::onImportAsStaticMesh(StaticMeshModel* model, const AssetPath& assetPath)
 {
+	// TODO: ひとまず HC4 用設定。
+	// ほんとはここから Y90 回転させるべきなのだが、今その処理を入れてる時間がない。
+	m_flipZ = false;
+	//m_flipX = true;
+	//m_faceFlip = false;	// 何もせずインポートするときは R-Hand->L-Hand の変換なので面反転が必要だが、flipX １回やっているので不要。
+	// TODO: そもそも何かNodeの回転修正もあやしいみたい。10/17提出用に向けてはいったん左右反転したままで行ってみる
+	m_flipX = false;	
+	// TODO: このあたり PostProcess として修正入れたいが、先に SkinnedMeshModel と StaticMeshModel の統合をやらないと無駄作業が多くなるのでいったん保留
+
 	if (!openGLTFModel(assetPath)) {
 		return false;
 	}
@@ -158,6 +169,14 @@ bool GLTFImporter::onImportAsStaticMesh(StaticMeshModel* model, const AssetPath&
 
 bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath& assetPath)
 {
+	// TODO: ひとまず HC4 用設定。
+	// インポート元モデルは [Y-Up,R-Hand] で、キャラクターは Z+ を正面としている。
+	// そのため Lumino 標準の Z+ 正面に合わせるには、X を反転するだけでよい。
+	m_flipZ = false;
+	m_flipX = true;
+	m_faceFlip = true;	// TODO: onImportAsStaticMesh の理論ならこれも不要なはずなのだが… 後でちゃんと調べる
+
+
 	if (!openGLTFModel(assetPath)) {
 		return false;
 	}
@@ -247,6 +266,7 @@ bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
 Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 {
     auto coreMaterial = makeObject<Material>();
+	coreMaterial->m_name = String::fromStdString(material.name);
 	coreMaterial->setMetallic(1.0f);    // glTF default
 	coreMaterial->setRoughness(1.0f);    // glTF default
 
@@ -302,6 +322,9 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 		}
 	}
 
+	// MMD, VRM など、多くの人型モデルは両面表示を前提として作られていることの方が多いので、
+	// デフォルトではそのようにしておく。
+	coreMaterial->setCullingMode(CullMode::None);
 
 
     return coreMaterial;
@@ -355,10 +378,10 @@ bool GLTFImporter::readNode(MeshNode* coreNode, const tinygltf::Node& node)
 	//	nodeTransform(3, 2) = -nodeTransform(3, 2);
 	//}
 	if (m_flipX) {
-		//nodeTransform(0, 0) = -nodeTransform(0, 0);
-		//nodeTransform(0, 1) = -nodeTransform(0, 1);
-		//nodeTransform(0, 2) = -nodeTransform(0, 2);
-		//nodeTransform(3, 0) = -nodeTransform(3, 0);
+		nodeTransform(0, 0) = -nodeTransform(0, 0);
+		nodeTransform(0, 1) = -nodeTransform(0, 1);
+		nodeTransform(0, 2) = -nodeTransform(0, 2);
+		nodeTransform(3, 0) = -nodeTransform(3, 0);
 	}
 
 	coreNode->setName(String::fromStdString(node.name));
@@ -457,6 +480,9 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 				}
 				else if (itr->first.compare("TEXCOORD_1") == 0) {
 					vbView.usageIndex = 1;
+				}
+				else if (itr->first.compare("TEXCOORD_2") == 0) {
+					vbView.usageIndex = 2;
 				}
 				else {
 					LN_NOTIMPLEMENTED();
@@ -932,7 +958,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 			assert(section.topology == PrimitiveTopology::TriangleList);
 
-			if (m_flipZ || m_flipX) {
+			if (m_faceFlip) {
 				switch (indexForamt) {
 					case ln::IndexBufferFormat::UInt16: {
 						auto* b = static_cast<uint16_t*>(buf) + indexOffset;
@@ -1029,7 +1055,7 @@ Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 	auto armature = makeObject<MeshArmature>(static_cast<SkinnedMeshModel*>(m_meshModel));
 	for (int i = 0; i < skin.joints.size(); i++) {
 
-		if (m_disableBoneRotation) {
+		if (m_clearBoneRotation) {
 			const auto& mat = m_meshModel->m_nodes[skin.joints[i]]->initialLocalTransform();
 			armature->addBone(skin.joints[i], Matrix::makeInverse(mat));
 		}
@@ -1058,19 +1084,27 @@ Ref<Texture> GLTFImporter::loadTexture(const tinygltf::Texture& texture)
 	// キャッシュ組むとしたらどちらを優先するか指定できた方がいいかも。
 
 	const tinygltf::Image& image = m_model->images[texture.source];
-
-	Ref<Bitmap2D> bitmap;
 	if (image.pixel_type == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE &&  // GL_UNSIGNED_BYTE
 		image.component == 4 &&     // RGBA
 		image.bits == 8) {
-		bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
 	}
 	else {
 		LN_NOTIMPLEMENTED();
 		return nullptr;
 	}
 
-	return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
+	if (1) {
+		return m_meshManager->graphicsManager()->loadTexture2DFromOnMemoryData(&m_basedir, String::fromStdString(image.uri), [&](const AssetRequiredPathSet* x) {
+			Ref<Bitmap2D> bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
+			return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
+		});
+	}
+	else {
+		Ref<Bitmap2D> bitmap;
+		bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
+
+		return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
+	}
 }
 
 Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animation) const

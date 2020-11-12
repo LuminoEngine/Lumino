@@ -21,9 +21,9 @@ SkinnedMeshComponent::~SkinnedMeshComponent()
 {
 }
 
-void SkinnedMeshComponent::init()
+bool SkinnedMeshComponent::init()
 {
-    VisualComponent::init();
+    return VisualComponent::init();
 }
 
 void SkinnedMeshComponent::setModel(SkinnedMeshModel* model)
@@ -92,7 +92,7 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
 //
 
 	for (const auto& node : m_model->meshNodes()) {
-		if (node->meshContainerIndex() >= 0) {
+		if (node->meshContainerIndex() >= 0 && node->isVisible()) {
 			context->setTransfrom(m_model->nodeGlobalTransform(node->index()));
 
 

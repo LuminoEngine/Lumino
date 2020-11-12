@@ -44,7 +44,7 @@ void UITabBar::init()
 	UIItemsControl::init();
 
 	auto layout = makeObject<UIStackLayout2_Obsolete>();
-	layout->setOrientation(Orientation::Horizontal);
+	layout->setOrientation(UILayoutOrientation::Horizontal);
     setItemsLayoutPanel(layout);
 }
 
@@ -140,7 +140,7 @@ bool UITabBar2::init()
 	if (!UIControl::init()) return false;
 
 	auto layout = makeObject<UIStackLayout>();
-	layout->setOrientation(Orientation::Horizontal);
+	layout->setOrientation(UILayoutOrientation::Horizontal);
 	addVisualChild(layout);
 	m_itemsHostLayout = layout;
 

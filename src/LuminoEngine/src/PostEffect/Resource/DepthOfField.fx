@@ -94,21 +94,21 @@ float4 PSMain(PSInput input) : SV_TARGET0
     t *= 0.5;
 
     t *= MaxMips;
-    float alpha, no;
-    alpha = modf(t, no);
+    float alpha, mipNo;
+    alpha = modf(t, mipNo);
 
     float3 colA, colB;
-    if (no == 0) {
+    if (mipNo == 0) {
         //return float4(1, 0, 0, 1);
         colA = retcol.rgb;
         //colB = tex2D(_dofTex, input.UV * float2(1.0f, 0.5f)).rgb;
         colB = GaussianFilteredColor5x5(_dofTex, input.UV * float2(1.0f, 0.5f));
     }
     else {
-        //colA = tex2D(_dofTex, input.UV*float2(1.0f, 0.5f)*pow(0.5, no - 1) + float2(0, 1.0 - pow(0.5, no - 1))).rgb;
-        //colB = tex2D(_dofTex, input.UV*float2(1.0f, 0.5f)*pow(0.5, no) + float2(0, 1 - pow(0.5, no))).rgb;
-        colA = GaussianFilteredColor5x5(_dofTex, input.UV * float2(1.0f, 0.5f) * pow(0.5, no - 1.0) + float2(0, 1.0 - pow(0.5, no - 1.0)));
-        colB = GaussianFilteredColor5x5(_dofTex, input.UV * float2(1.0f, 0.5f) * pow(0.5, no) + float2(0, 1.0 - pow(0.5, no)));
+        //colA = tex2D(_dofTex, input.UV*float2(1.0f, 0.5f)*pow(0.5, mipNo - 1) + float2(0, 1.0 - pow(0.5, mipNo - 1))).rgb;
+        //colB = tex2D(_dofTex, input.UV*float2(1.0f, 0.5f)*pow(0.5, mipNo) + float2(0, 1 - pow(0.5, mipNo))).rgb;
+        colA = GaussianFilteredColor5x5(_dofTex, input.UV * float2(1.0f, 0.5f) * pow(0.5, mipNo - 1.0) + float2(0, 1.0 - pow(0.5, mipNo - 1.0)));
+        colB = GaussianFilteredColor5x5(_dofTex, input.UV * float2(1.0f, 0.5f) * pow(0.5, mipNo) + float2(0, 1.0 - pow(0.5, mipNo)));
     }
     retcol.rgb = lerp(colA, colB, alpha);
 

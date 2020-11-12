@@ -42,7 +42,7 @@ public:
         const List<String>* definitions,
         DiagnosticsManager* diag);
 
-    bool mapIOAndGenerateSpirv(const DescriptorLayout& mergedDescriptorLayout);
+    bool mapIOAndGenerateSpirv(const DescriptorLayout& mergedDescriptorLayout, DiagnosticsManager* diag);
 
 	ShaderStage2 stage() const { return m_stage; }
 	const std::string& entryPoint() const { return m_entryPoint; }

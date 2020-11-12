@@ -60,6 +60,25 @@ public:
 			auto button1 = makeObject<UIButton>();
 			button1->setText(u"Button");
 			layout1->addChild(button1);
+
+
+			auto button2 = makeObject<UIButton>();
+			button2->setText(u"IconButton");
+			layout1->addChild(button2);
+			auto icon2 = ln::makeObject<ln::UIIcon>();
+			icon2->setIconName(u"file");
+			//icon->setMargin(ln::Thickness(0, 0, 0, 4));
+			button2->addInlineVisual(icon2, ln::UIInlinePlacement::Top);
+
+
+			auto button3 = makeObject<UIButton>();
+			button3->setText(u"Disabled");
+			button3->setEnabled(false);
+			layout1->addChild(button3);
+			auto icon3 = ln::makeObject<ln::UIIcon>();
+			icon3->setIconName(u"file");
+			//icon->setMargin(ln::Thickness(0, 0, 0, 4));
+			button3->addInlineVisual(icon3, ln::UIInlinePlacement::Top);
 		}
 		//// RadioButton
 		//{
@@ -155,7 +174,7 @@ public:
 			layout1->addChild(makeObject<UITextBlock>(u"Splitter"));
 
 			auto splitter1 = makeObject<UISplitter>();
-			splitter1->setOrientation(Orientation::Horizontal);
+			splitter1->setOrientation(UILayoutOrientation::Horizontal);
 
 			auto e1 = makeObject<UIElement>();
 			e1->setHeight(100);
@@ -184,8 +203,8 @@ public:
 
 			{
 				auto layout2 = makeObject<UIStackLayout>();
-				layout2->setOrientation(Orientation::Horizontal);
-				layout2->setHAlignment(HAlignment::Center);
+				layout2->setOrientation(UILayoutOrientation::Horizontal);
+				layout2->setHAlignment(UIHAlignment::Center);
 
 				auto icon1 = makeObject<UIIcon>();
 				icon1->setIconName(u"file");
@@ -211,8 +230,8 @@ public:
 
 			{
 				auto layout2 = makeObject<UIStackLayout>();
-				layout2->setOrientation(Orientation::Horizontal);
-				layout2->setHAlignment(HAlignment::Center);
+				layout2->setOrientation(UILayoutOrientation::Horizontal);
+				layout2->setHAlignment(UIHAlignment::Center);
 
 				layout2->addChild(UIIcon::loadFontIcon(u"align-justify", 20));
 				layout2->addChild(UIIcon::loadFontIcon(u"arrow-alt-circle-up", 20));
@@ -291,7 +310,7 @@ public:
 			layout1->addChild(makeObject<UITextBlock>(u"ComboBox"));
 
 			auto comboBox1 = makeObject<UIComboBox>();
-			comboBox1->setHAlignment(HAlignment::Left);
+			comboBox1->setHAlignment(UIHAlignment::Left);
 			comboBox1->addChild(u"CItem1");
 			comboBox1->addChild(u"CItem2");
 			layout1->addChild(comboBox1);

@@ -83,16 +83,16 @@ Ray Camera::screenToWorldRay(const Vector2& position) const
 		Vector3::distance(pt, origin));
 }
 
-RenderViewClearMode Camera::clearMode() const
+SceneClearMode Camera::clearMode() const
 {
     WorldRenderView* view = renderView();
 	if (view) {
 		return view->clearMode();
 	}
-	return RenderViewClearMode::None;
+	return SceneClearMode::None;
 }
 
-void Camera::setClearMode(RenderViewClearMode value)
+void Camera::setClearMode(SceneClearMode value)
 {
     WorldRenderView* view = renderView();
 	if (view) {

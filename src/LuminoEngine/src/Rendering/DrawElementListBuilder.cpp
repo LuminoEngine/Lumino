@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
+#include "RenderingManager.hpp"
 #include "DrawElementListBuilder.hpp"
 
 namespace ln {
@@ -10,9 +11,9 @@ namespace detail {
 // DrawElementListBuilder
 
 DrawElementListBuilder::DrawElementListBuilder()
-    : m_currentCommandFence(0)
+    : m_manager(EngineDomain::renderingManager())
+    , m_currentCommandFence(0)
 {
-    m_defaultMaterial = makeObject<Material>();
 }
 
 DrawElementListBuilder::~DrawElementListBuilder()
@@ -151,7 +152,7 @@ void DrawElementListBuilder::setShadingModel(const Optional<ShadingModel>& value
 void DrawElementListBuilder::setMaterial(Material* value)
 {
     if (!value) {
-        value = m_defaultMaterial;
+        value = m_manager->defaultMaterial();
     }
 
 	if (primaryGeometryStageParameters().m_material != value) {

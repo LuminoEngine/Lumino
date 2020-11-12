@@ -1,10 +1,6 @@
 
 #include <Lumino.fxh>
 
-//sampler2D ln_MaterialTexture;
-//Texture2D ln_MaterialTexture;
-//SamplerState ln_MaterialTextureSamplerState;
-
 struct VS_OUTPUT
 {
 	float4	Pos		: SV_POSITION;		// 位置
@@ -25,7 +21,7 @@ VS_OUTPUT Basic_VS(float3 Pos : POSITION)
 	return output;
 }
 
-float4 Basic_PS(VS_OUTPUT input) : COLOR0
+float4 Basic_PS(VS_OUTPUT input) : SV_TARGET0
 {
 	//float4 texColor = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.Tex);
 	//float4 texColor2 = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.Tex / 10.0);
@@ -36,6 +32,7 @@ float4 Basic_PS(VS_OUTPUT input) : COLOR0
 
 technique Default
 {
+    ShadingModel = Unlit;
 	pass P0
 	{
 		VertexShader = Basic_VS;

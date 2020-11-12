@@ -4,11 +4,12 @@
 #include <LuminoEngine/Animation/AnimationCurve.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include "../Rendering/RenderingManager.hpp"
+#include "SceneManager.hpp"
 #include "InternalSkyBox.hpp"
 
 namespace ln {
@@ -28,7 +29,7 @@ void InternalSkyBox::init()
 
 	m_material = makeObject<Material>();
 	m_material->setShader(shader);
-    m_material->shadingModel = ShadingModel::Unlit;
+    m_material->setShadingModel(ShadingModel::Unlit);
 
     m_lightDirection = Vector3::UnitY;
 }
@@ -143,20 +144,27 @@ bool InternalSkyDome::init()
     }
 
 
-
+    auto manager = detail::EngineDomain::sceneManager();
 
     auto samperState = ln::SamplerState::create(ln::TextureFilterMode::Linear, ln::TextureAddressMode::Repeat, true);
 
+#if 1
+    auto _mainCloudsTexture = manager->SkydomeCloudA;
+    auto _secondCloudsTexture = manager->SkydomeCloudB;
+    auto _detailCloudTexture = manager->SkydomeCloudC;
+    auto _secondCloudPowerMap = manager->SkydomeCloudR;
+#else
     auto _mainCloudsTexture = ln::Texture2D::load(Path(Assets::engineAssetsDirectory(), u"SkydomeCloudA.png"));
-    _mainCloudsTexture->setSamplerState(samperState);
     auto _secondCloudsTexture = ln::Texture2D::load(Path(Assets::engineAssetsDirectory(), u"SkydomeCloudB.png"));
-    _secondCloudsTexture->setSamplerState(samperState);
     auto _detailCloudTexture = ln::Texture2D::load(Path(Assets::engineAssetsDirectory(), u"SkydomeCloudC.png"));
-    _detailCloudTexture->setSamplerState(samperState);
     auto _secondCloudPowerMap = ln::Texture2D::load(Path(Assets::engineAssetsDirectory(), u"SkydomeCloudR.png"));
+#endif
+    _mainCloudsTexture->setSamplerState(samperState);
+    _secondCloudsTexture->setSamplerState(samperState);
+    _detailCloudTexture->setSamplerState(samperState);
     _secondCloudPowerMap->setSamplerState(samperState);
 
-    m_material->setShader(ln::Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyDome.fx"));
+    m_material->setShader(manager->skydomeShader());
     m_material->setTexture(u"_thirdCloudTexture", _mainCloudsTexture);
     m_material->setTexture(u"_detailCloudTexture", _detailCloudTexture);
     m_material->setTexture(u"_secondCloudPowerMap", _secondCloudPowerMap);

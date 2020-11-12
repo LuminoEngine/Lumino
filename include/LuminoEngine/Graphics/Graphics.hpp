@@ -6,10 +6,16 @@
 namespace ln {
 class CommandQueue;
 
-/**  */
-class LN_API Graphics
+/** Graphics */
+LN_CLASS(Static)
+class Graphics
 {
 public:
+	/** activeGraphicsAPI */
+	LN_METHOD(Property)
+	static GraphicsAPI activeGraphicsAPI();
+
+
 	static CommandQueue* graphicsQueue();
 	static CommandQueue* computeQueue();
 

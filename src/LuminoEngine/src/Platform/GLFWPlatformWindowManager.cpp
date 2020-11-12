@@ -7,12 +7,13 @@
 #if defined(LN_OS_WIN32)
 #	define GLFW_EXPOSE_NATIVE_WIN32
 #	include <GLFW/glfw3native.h>
-#	include "Win32PlatformWindowManager.hpp"
+#	include "Windows/Win32PlatformWindowManager.hpp"
 #elif defined(LN_OS_MAC)
 #	define GLFW_EXPOSE_NATIVE_COCOA
 #	include <GLFW/glfw3native.h>
 #endif
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include "PlatformManager.hpp"
 #include "GLFWPlatformWindowManager.hpp"
 
 // https://github.com/glfw/glfw/issues/310
@@ -83,7 +84,36 @@ static void glfwSetWindowCenter(GLFWwindow* window) {
 
 namespace ln {
 namespace detail {
-	
+
+//=============================================================================
+// GLFWContext
+
+GLFWContext::GLFWContext(GLFWPlatformWindow* mainWindow)
+	: m_mainWindow(mainWindow)
+{
+	assert(m_mainWindow);
+}
+
+//SizeI GLFWContext::getBackendBufferSize() const = 0
+//{
+//}
+
+void GLFWContext::makeCurrentMain()
+{
+	makeCurrent(m_mainWindow);
+}
+
+void GLFWContext::makeCurrent(PlatformWindow* window)
+{
+	if (window) {
+		const auto w = static_cast<GLFWPlatformWindow*>(window);
+		glfwMakeContextCurrent(w->glfwWindow());
+	}
+	else {
+		glfwMakeContextCurrent(nullptr);
+	}
+}
+
 //=============================================================================
 // GLFWPlatformWindow
 
@@ -96,7 +126,7 @@ static void initKeyTable()
 	GLFWKeyToLNKey[GLFW_KEY_A] = Keys::A;
 	GLFWKeyToLNKey[GLFW_KEY_B] = Keys::B;
 	GLFWKeyToLNKey[GLFW_KEY_C] = Keys::C;
-	GLFWKeyToLNKey[GLFW_KEY_B] = Keys::D;
+	GLFWKeyToLNKey[GLFW_KEY_D] = Keys::D;
 	GLFWKeyToLNKey[GLFW_KEY_E] = Keys::E;
 	GLFWKeyToLNKey[GLFW_KEY_F] = Keys::F;
 	GLFWKeyToLNKey[GLFW_KEY_G] = Keys::G;
@@ -190,7 +220,7 @@ GLFWPlatformWindow::~GLFWPlatformWindow()
 {
 }
 
-Result GLFWPlatformWindow::init(const WindowCreationSettings& settings)
+Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWContext* sharedContext)
 {
 	initKeyTable();
 
@@ -222,10 +252,16 @@ Result GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 		glfwWindowHint(GLFW_DECORATED, GL_TRUE);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// for NSGL(macOS)
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);	// for NSGL(macOS)
-        if (settings.glfwNoAPI) {
+
+		GLFWwindow* sharedWindow = (sharedContext) ? sharedContext->mainWindow()->glfwWindow() : nullptr;
+        if (!windowManager->manager()->glfwWithOpenGLAPI()) {
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+			sharedWindow = nullptr;
 		}
-		m_glfwWindow = glfwCreateWindow(settings.clientSize.width, settings.clientSize.height, settings.title.toStdString().c_str(), NULL, NULL);
+
+		m_glfwWindow = glfwCreateWindow(
+			settings.clientSize.width, settings.clientSize.height,
+			settings.title.toStdString().c_str(), nullptr, sharedWindow);
 		if (LN_ENSURE(m_glfwWindow)) return false;
 
 #if defined(LN_OS_WIN32)
@@ -254,31 +290,7 @@ Result GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 	// 1インチ (= 25.4 mm) 
 
 
-	glfwMakeContextCurrent(m_glfwWindow);
-    //glfwSwapInterval(1);
-	//glewInit();
-	////GLuint mProgram = glCreateProgram();// LN_CHECK_GLERROR();
-	//// 初回クリア (しておかないと、背景が透明なままになる)
-	//glClear(GL_COLOR_BUFFER_BIT);
-	//glfwSwapBuffers(m_glfwWindow);
-
-    //int count = 0;
-    //while (!glfwWindowShouldClose(m_glfwWindow))
-    //{
-    //    if (count == 0)
-    //    {
-    //        glClearColor(0.0, 0.0, 1.0, 1.0);
-    //        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //         Swap buffers
-    //        glfwSwapBuffers(m_glfwWindow);
-
-    //    }
-    //    count++;
-
-    //    glfwPollEvents();
-    //}
-
+	//glfwMakeContextCurrent(m_glfwWindow);
     return true;
 }
 
@@ -511,7 +523,9 @@ ModifierKeys GLFWPlatformWindow::glfwKeyModToLNKeyMod(int mods)
 //=============================================================================
 // GLFWPlatformWindowManager
 
-GLFWPlatformWindowManager::GLFWPlatformWindowManager()
+GLFWPlatformWindowManager::GLFWPlatformWindowManager(PlatformManager* manager)
+	: PlatformWindowManager(manager)
+	, m_glContext(nullptr)
 {
 }
 
@@ -539,13 +553,29 @@ void GLFWPlatformWindowManager::dispose()
 	glfwTerminate();
 }
 
-Ref<PlatformWindow> GLFWPlatformWindowManager::createWindow(const WindowCreationSettings& settings)
+Ref<PlatformWindow> GLFWPlatformWindowManager::createMainWindow(const WindowCreationSettings& settings)
 {
+	if (LN_REQUIRE(!m_glContext)) return nullptr;
+
 	auto ptr = ln::makeRef<GLFWPlatformWindow>();
-    if (!ptr->init(settings)) {
-        return nullptr;
-    }
-    return ptr;
+	if (!ptr->init(this, settings, nullptr)) {
+		return nullptr;
+	}
+
+	m_glContext = ln::makeRef<GLFWContext>(ptr);
+
+	return ptr;
+}
+
+Ref<PlatformWindow> GLFWPlatformWindowManager::createSubWindow(const WindowCreationSettings& settings)
+{
+	if (LN_REQUIRE(m_glContext)) return nullptr;
+
+	auto ptr = ln::makeRef<GLFWPlatformWindow>();
+	if (!ptr->init(this, settings, m_glContext)) {
+		return nullptr;
+	}
+	return ptr;
 }
 
 void GLFWPlatformWindowManager::destroyWindow(PlatformWindow* window)
@@ -562,6 +592,11 @@ void GLFWPlatformWindowManager::processSystemEventQueue(EventProcessingMode mode
     else {
         glfwPollEvents();
     }
+}
+
+OpenGLContext* GLFWPlatformWindowManager::getOpenGLContext() const
+{
+	return m_glContext;
 }
 
 //=============================================================================

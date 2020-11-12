@@ -4,6 +4,7 @@
 //#define LN_SHADER_UBO_TRANSPORSE_MATRIX
 
 namespace ln {
+class Shader;
 class ShaderDescriptor;
 class ShaderTechnique;
 class ShaderPass;

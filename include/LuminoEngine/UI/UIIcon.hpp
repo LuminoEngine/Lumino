@@ -10,17 +10,22 @@ namespace ln {
  * グリフの境界ボックスではありません。
  * このためグリフが異なっていても、フォントサイズが同一であれば UIIcon としてのサイズは同一となります。
  */
+LN_CLASS()
 class UIIcon
 	: public UIElement
 {
+	LN_OBJECT;
 public:
 	/** アイコン名を指定して UIIcon を作成します。 */
+	LN_METHOD()
 	static Ref<UIIcon> loadFontIcon(const StringRef& iconName);
 
 	/** アイコン名・サイズ を指定して UIIcon を作成します。 */
+	LN_METHOD(OverloadPostfix = "WithNameSize")
 	static Ref<UIIcon> loadFontIcon(const StringRef& iconName, int size);
 
 	/** アイコン名・サイズ・色 (TextColor) を指定して UIIcon を作成します。 */
+	LN_METHOD(OverloadPostfix = "WithNameSizeColor")
 	static Ref<UIIcon> loadFontIcon(const StringRef& iconName, int size, const Color& color);
 
 	void setIconName(const StringRef& value);

@@ -34,7 +34,7 @@ void UISprite::init()
 {
     UIElement::init();
 
-	setAlignments(HAlignment::Center, VAlignment::Center);
+	setAlignments(UIHAlignment::Center, UIVAlignment::Center);
     m_material = makeObject<Material>();
     m_size = Size(-1, -1);
     m_sourceRect = Rect(0, 0, -1, -1);
@@ -65,6 +65,11 @@ void UISprite::setSourceRect(float x, float y, float width, float height)
 const Rect & UISprite::sourceRect() const
 {
     return m_sourceRect;
+}
+
+void UISprite::setShader(Shader* shader)
+{
+    m_material->setShader(shader);
 }
 
 Size UISprite::measureOverride(UILayoutContext* layoutContext, const Size& constraint)

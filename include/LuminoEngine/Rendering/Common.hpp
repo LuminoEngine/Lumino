@@ -8,20 +8,35 @@
 namespace ln {
 
 // Note: ShadingModel は組み込みの SurfaceShader を選択するもの。Unlit にしても陰はつく。
+/** ShadingModel */
+LN_ENUM()
 enum class ShadingModel : uint8_t
 {
+	/** Default */
 	Default,
+
+	/** Unlit */
 	Unlit,
 };
 
 /** 合成方法 */
+LN_ENUM()
 enum class BlendMode : uint8_t
 {
-	Normal,			/**< 通常 */
-	Alpha,			/**< アルファブレンド (RGB をアルファブレンドし、A を加算合成) */
-	Add,			/**< 加算合成 */
-	Subtract,		/**< 減算合成 */
-	Multiply,		/**< 乗算合成 */
+	/** 通常 */
+	Normal,
+
+	/** アルファブレンド (RGB をアルファブレンドし、A を加算合成) */
+	Alpha,
+
+	/** 加算合成 */
+	Add,
+
+	/** 減算合成 */
+	Subtract,
+
+	/** 乗算合成 */
+	Multiply,
 };
 
 /** 3D 空間での基準方向を表す値 */
@@ -64,12 +79,23 @@ enum class LightType
 	Spot,
 };
 
-enum class RenderViewClearMode
+LN_ENUM()
+/** 背景のクリア方法 */
+enum class SceneClearMode
 {
+	/** クリアしません。 */
 	None,
+
+	/** 背景色と深度バッファをクリアします。 */
 	ColorAndDepth,
+
+	/** (未実装) */
 	Sky,
+
+	/** (未実装) */
 	Sky0,
+
+	/** スカイドームでクリアします。 */
 	SkyDome,
 };
 

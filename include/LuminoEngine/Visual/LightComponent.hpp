@@ -26,7 +26,7 @@ public:
 	/** ディレクショナルライトの光源色を取得します。 */
 	const Color& getColor() const { return m_color; }
 
-	/** シーン全体の環境光の色を設定します。(default: White) */
+	/** シーン全体の環境光の色を設定します。(default: 0.5, 0.5, 0.5) */
 	void setAmbientColor(const Color& value) { m_ambientColor = value; }
 
 	/** シーン全体の環境光の色を取得します。 */

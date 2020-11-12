@@ -40,6 +40,7 @@
 #include "../UI/UIManager.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
+#include "RuntimeEditor.hpp"
 
 #include "../Runtime/BindingValidation.hpp"
 #include <imgui.h>
@@ -177,9 +178,14 @@ void EngineManager::dispose()
 	}
 	m_debugCamera = nullptr;
 
+	if (m_runtimeEditor) {
+		m_runtimeEditor->dispose();
+		m_runtimeEditor = nullptr;
+	}
+
     if (m_uiManager) {
         m_uiManager->setPrimaryElement(nullptr);
-        m_uiManager->setMainContext(nullptr);
+        //m_uiManager->setMainContext(nullptr);
     }
 
 	if (m_platformManager) {
@@ -224,10 +230,10 @@ void EngineManager::dispose()
             m_mainWindow->dispose();
             m_mainWindow = nullptr;
         }
-        if (m_mainUIContext) {
-            m_mainUIContext->dispose();
-            m_mainUIContext = nullptr;
-        }
+        //if (m_mainUIContext) {
+        //    m_mainUIContext->dispose();
+        //    m_mainUIContext = nullptr;
+        //}
     }
 
     //if (!m_settings.externalRenderingManagement) {
@@ -375,14 +381,14 @@ void EngineManager::initializePlatformManager()
 		settings.mainWindowSettings.title = m_settings.mainWindowTitle;
 		settings.mainWindowSettings.clientSize = m_settings.mainWindowSize;
 		settings.mainWindowSettings.fullscreen = false;
-		settings.mainWindowSettings.resizable = true;
+		settings.mainWindowSettings.resizable = m_settings.mainWindowResizable;
 		settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
 
 		if (m_activeGraphicsAPI == GraphicsAPI::Vulkan) {
-			settings.mainWindowSettings.glfwNoAPI = true;
+			settings.glfwWithOpenGLAPI = false;
 		}
 		else {
-			settings.mainWindowSettings.glfwNoAPI = false;
+			settings.glfwWithOpenGLAPI = true;
 		}
 
 		m_platformManager = ln::makeRef<PlatformManager>();
@@ -456,6 +462,7 @@ void EngineManager::initializeFontManager()
 		FontManager::Settings settings;
 		settings.assetManager = m_assetManager;
 		settings.engineAssetPath = m_engineResourcesPath;
+		settings.fontFile = m_settings.fontFile;
 
 		m_fontManager = ln::makeRef<FontManager>();
 		m_fontManager->init(settings);
@@ -471,6 +478,7 @@ void EngineManager::initializeGraphicsManager()
 
 		GraphicsManager::Settings settings;
         settings.assetManager = m_assetManager;
+		settings.platformManager = m_platformManager;
 		settings.mainWindow = (m_settings.graphicsContextManagement) ? m_platformManager->mainWindow() : nullptr;
 		settings.graphicsAPI = m_activeGraphicsAPI;
 		settings.debugMode = m_settings.graphicsDebugEnabled;
@@ -581,8 +589,8 @@ void EngineManager::initializeUIManager()
 		m_uiManager = makeRef<UIManager>();
 		m_uiManager->init(settings);
 
-        m_mainUIContext = makeObject<UIContext>();
-        m_uiManager->setMainContext(m_mainUIContext);
+        //m_mainUIContext = makeObject<UIContext>();
+        //m_uiManager->setMainContext(m_mainUIContext);
 
 
 		if (m_settings.debugToolEnabled) {
@@ -634,7 +642,7 @@ void EngineManager::initializeDefaultObjects()
 			m_mainWorldRenderView = makeObject<WorldRenderView>();
 			m_mainWorldRenderView->setTargetWorld(m_mainWorld);
 			m_mainWorldRenderView->setCamera(m_mainCamera);
-			m_mainWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
+			m_mainWorldRenderView->setClearMode(SceneClearMode::ColorAndDepth);
 			m_mainViewport->addRenderView(m_mainWorldRenderView);
 
 
@@ -644,8 +652,8 @@ void EngineManager::initializeDefaultObjects()
 
 			m_mainUIRoot = makeObject<UIDomainProvidor>();
 			m_mainUIRoot->setupNavigator();
-			m_mainUIRoot->setHAlignment(HAlignment::Stretch);
-			m_mainUIRoot->setVAlignment(VAlignment::Stretch);
+			m_mainUIRoot->setHAlignment(UIHAlignment::Stretch);
+			m_mainUIRoot->setVAlignment(UIVAlignment::Stretch);
 			m_mainUIRoot->m_hitTestMode = detail::UIHitTestMode::InvisiblePanel;       // main の WorldView 全体に覆いかぶせるように配置するので、false にしておかないと CameraControl などにイベントが行かなくなる
 			m_mainUIRenderView->setRootElement(m_mainUIRoot);
 			m_uiManager->setPrimaryElement(m_mainUIRoot);
@@ -667,7 +675,7 @@ void EngineManager::initializeDefaultObjects()
 			//m_debugWorldRenderView = makeObject<WorldRenderView>();
 			//m_debugWorldRenderView->setTargetWorld(m_mainWorld);
 			//m_debugWorldRenderView->setCamera(m_debugCamera);
-			//m_debugWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
+			//m_debugWorldRenderView->setClearMode(SceneClearMode::ColorAndDepth);
 			//m_debugCamera->addComponent(makeObject<CameraOrbitControlComponent>());
 			//m_mainViewport->addRenderView(m_debugWorldRenderView);
 			//m_debugCamera->setPosition(10, 10, -10);
@@ -676,11 +684,15 @@ void EngineManager::initializeDefaultObjects()
 	}
 
 	// init 直後にウィンドウサイズを取得したり、Camera Matrix を計算するため、ViewSize を確定させる
-	if (m_mainUIContext && m_mainWindow) {
-		m_mainUIContext->updateStyleTree();
+	if (/*m_mainUIContext && */m_mainWindow) {
+		m_mainWindow->updateStyleTree();
 		m_mainWindow->updateLayoutTree();
 	}
 
+	if (m_settings.runtimeEditorEnabled && m_mainWindow) {
+		m_runtimeEditor = makeRef<detail::RuntimeEditor>();
+		m_runtimeEditor->init(this, m_mainWindow);
+	}
 }
 
 bool EngineManager::updateUnitily()
@@ -747,14 +759,18 @@ void EngineManager::updateFrame()
     // Post update phase
 
     // 大体他の updateFrame で要素位置の調整が入るので、その後にレイアウトする。
-    if (m_mainUIContext) {
+    /*if (m_mainUIContext)*/ {
         // onUpdate のユーザー処理として、2D <-> 3D 変換したいことがあるが、それには ViewPixelSize が必要になる。
         // 初期化直後や、Platform からの SizeChanged イベントの直後に一度レイアウトを更新することで、
         // ユーザー処理の前に正しい ViewPixelSize を計算しておく。
-        m_mainUIContext->updateStyleTree();
+		m_mainWindow->updateStyleTree();
         //m_mainUIContext->updateLayoutTree();
         m_mainWindow->updateLayoutTree();
     }
+
+	if (m_runtimeEditor) {
+		m_runtimeEditor->updateFrame();
+	}
 
 }
 
@@ -858,7 +874,7 @@ void EngineManager::setMainWindow(ln::UIMainWindow* window)
 	if (LN_REQUIRE(!m_mainWindow)) return;
 	m_mainWindow = window;
 	m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), m_settings.mainWindowSize);
-	m_mainUIContext->setLayoutRootElement(m_mainWindow);
+	//m_mainUIContext->setLayoutRootElement(m_mainWindow);
 
 	// TODO: SwapChain だけでいいはず
 	//m_mainWindow->m_graphicsContext = m_graphicsManager->mainWindowGraphicsContext();
@@ -889,7 +905,10 @@ bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)
 		break;
 	case PlatformEventType::KeyDown:
 		if (e.key.keyCode == Keys::F8) {
-			toggleDebugToolMode();
+			//toggleDebugToolMode();
+			if (m_runtimeEditor) {
+				m_runtimeEditor->toggleMode();
+			}
 		}
 		break;
 	default:
@@ -907,41 +926,41 @@ bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)
 
 void EngineManager::handleImGuiDebugLayer(UIEventArgs* e)
 {
-	ImGui::Begin("Statistics");
-	ImGui::Text("FPS: %.2f, Ext: %.2f", m_fpsController.totalFps(), m_fpsController.externalFps());
-	ImGui::Text("Min: %.2f, Max: %.2f", m_fpsController.minTimePerSeconds(), m_fpsController.maxTimePerSeconds());
-	ImGui::Separator();
+	//ImGui::Begin("Statistics");
+	//ImGui::Text("FPS: %.2f, Ext: %.2f", m_fpsController.totalFps(), m_fpsController.externalFps());
+	//ImGui::Text("Min: %.2f, Max: %.2f", m_fpsController.minTimePerSeconds(), m_fpsController.maxTimePerSeconds());
+	//ImGui::Separator();
 
-	if (ImGui::CollapsingHeader("RenderView debug"))
-	{
-		{
-			bool check = m_mainWorldRenderView->guideGridEnabled();
-			ImGui::Checkbox("Grid", &check);
-			m_mainWorldRenderView->setGuideGridEnabled(check);
-		}
-		{
-			bool check = m_mainWorldRenderView->physicsDebugDrawEnabled();
-			ImGui::Checkbox("Physics", &check);
-			m_mainWorldRenderView->setPhysicsDebugDrawEnabled(check);
-		}
-	}
+	//if (ImGui::CollapsingHeader("RenderView debug"))
+	//{
+	//	{
+	//		bool check = m_mainWorldRenderView->guideGridEnabled();
+	//		ImGui::Checkbox("Grid", &check);
+	//		m_mainWorldRenderView->setGuideGridEnabled(check);
+	//	}
+	//	{
+	//		bool check = m_mainWorldRenderView->physicsDebugDrawEnabled();
+	//		ImGui::Checkbox("Physics", &check);
+	//		m_mainWorldRenderView->setPhysicsDebugDrawEnabled(check);
+	//	}
+	//}
 
 
-	if (m_mainWorld) {
-		//ImGui::BeginChild("Levels");
-		Level* level = m_mainWorld->sceneConductor()->activeScene();
-		ImGui::Text("ActiveScene"); ImGui::SameLine(150);
-		if (ImGui::Button("Reload")) {
-			level->reloadAsset();
-		}
-		if (ImGui::Button("Save")) {
-			m_assetManager->saveAssetModelToLocalFile(makeObject<AssetModel>(level));
-		}
+	//if (m_mainWorld) {
+	//	//ImGui::BeginChild("Levels");
+	//	Level* level = m_mainWorld->sceneConductor()->activeScene();
+	//	ImGui::Text("ActiveScene"); ImGui::SameLine(150);
+	//	if (ImGui::Button("Reload")) {
+	//		level->reloadAsset();
+	//	}
+	//	if (ImGui::Button("Save")) {
+	//		m_assetManager->saveAssetModelToLocalFile(makeObject<AssetModel>(level));
+	//	}
 
-		//ImGui::EndChild();
-	}
+	//	//ImGui::EndChild();
+	//}
 
-	ImGui::End();
+	//ImGui::End();
 
 
 

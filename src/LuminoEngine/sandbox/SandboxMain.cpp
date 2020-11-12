@@ -18,10 +18,8 @@
 #include "../src/Font/FontCore.hpp"
 #include "../src/Asset/AssetArchive.hpp"
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
-#include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 #include <LuminoEngine/UI/Controls/UIButton.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
-#include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
 #include <LuminoEngine/UI/Controls/UIPropertyFields.hpp>
 #include <LuminoEngine/Tilemap/Voxel.hpp>
 #include <LuminoEngine/Scene/TransformControls.hpp>
@@ -283,12 +281,14 @@ void Experiment_SerializeLevel();
 void Experiment_Shadow();
 void Experiment_SSR();
 void Tutorial_Sandbox();
+void Sandbox_GridListBox();
 void Sandbox_MeshTilemap();
 void Sandbox_Physics();
 void Sandbox_Particle();
 void Sandbox_PostEffect();
 void Sandbox_Sky();
 void Sandbox_Voxel();
+void Sandbox_UIShader();
 void UISandboxMain();
 
 #if 0
@@ -432,7 +432,7 @@ int main(int argc, char** argv)
 	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
 	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
-	EngineSettings::setDefaultUITheme(u"Chocotelier");
+	EngineSettings::setUITheme(u"Chocotelier");
     EngineSettings::setGraphicsDebugEnabled(true);
     EngineSettings::setDebugToolEnabled(true);
 	detail::EngineManager::s_settings.standaloneFpsControl = true;
@@ -467,7 +467,7 @@ int main(int argc, char** argv)
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_MainLoop();
-		Example_MeshViewer();
+		//Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
         //Example_Shader();
@@ -484,11 +484,13 @@ int main(int argc, char** argv)
         //Experiment_SerializeLevel();
         //Experiment_Shadow();
         //Experiment_SSR();
+        //Sandbox_GridListBox();
 		//Sandbox_MeshTilemap();
         //Sandbox_Physics();
         //Sandbox_Particle();
         //Sandbox_PostEffect();
         //Sandbox_Sky();
+        Sandbox_UIShader();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
 		//UISandboxMain();
@@ -656,7 +658,7 @@ int main(int argc, char** argv)
  //   skymesh1->setColorScale(Color(0.5, 0.5, 0.5));
  //   Engine::world()->add(skymesh1);
 
-    //Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
+    //Engine::mainRenderView()->setClearMode(SceneClearMode::Sky);
 
     //auto vvv = Vector3(5.804542996261093E-6, 1.3562911419845635E-5, 3.0265902468824876E-5);
     //auto vvv2 = Vector3(0.000005804542996261093f, 0.000013562911419845635, 0.000030265902468824876);
@@ -742,8 +744,8 @@ int main(int argc, char** argv)
 		//text1->setText(u"Hello, Lumino!");
 		text2->setText(u"Hello");
 		text2->setPosition(0, 50, 0);
-		text2->setHAlignment(HAlignment::Center);
-		text2->setVAlignment(VAlignment::Center);
+		text2->setHAlignment(UIHAlignment::Center);
+		text2->setVAlignment(UIVAlignment::Center);
 		text2->setFontSize(20);
 		text2->setTextColor(Color::DimGray);
 		//Engine::mainUIView()->addElement(text2);
@@ -1166,7 +1168,7 @@ int main(int argc, char** argv)
     int frameCount = 0;
     while (Engine::update())
     {
-        if (Input::triggered(InputButtons::Submit)) {
+        if (Input::isTriggered(InputButtons::Submit)) {
             GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/coin04_16bit_mono.wav");
             //GameAudio::playSE(u"D:/Proj/Volkoff/Assets/Data/Sound/SE/coin04.wav");
             //GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/sin_440_3s_48000_2ch.wav");

@@ -19,7 +19,12 @@ public:
     static Ref<UITextBlock> create();
     static Ref<UITextBlock> create(const StringRef& text);
 
+    /** 表示文字列を設定します。 */
+    LN_METHOD(Property)
 	void setText(const StringRef& value);
+
+    /** 表示文字列を取得します。 */
+    LN_METHOD(Property)
 	const String& text() const { return m_text; }
 
 
@@ -61,6 +66,7 @@ protected:
 
 private:
     String m_text;
+    Size m_textSize;
 };
 
 } // namespace ln

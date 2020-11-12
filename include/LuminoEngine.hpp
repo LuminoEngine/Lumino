@@ -9,6 +9,7 @@
 
 #include "LuminoEngine/Engine/EngineSettings.hpp"
 #include "LuminoEngine/Engine/Engine.hpp"
+#include "LuminoEngine/Engine/Time.hpp"
 #include "LuminoEngine/Engine/Application.hpp"
 #include "LuminoEngine/Engine/Diagnostics.hpp"
 #include "LuminoEngine/Engine/Debug.hpp"
@@ -51,6 +52,7 @@
 #include "LuminoEngine/Font/Font.hpp"
 
 #include "LuminoEngine/Mesh/Mesh.hpp"
+#include "LuminoEngine/Mesh/StaticMeshModel.hpp"
 #include "LuminoEngine/Mesh/SkinnedMeshModel.hpp"
 
 #include "LuminoEngine/Rendering/Common.hpp"
@@ -63,6 +65,7 @@
 #include "LuminoEngine/PostEffect/TonePostEffect.hpp"
 #include "LuminoEngine/PostEffect/ScreenBlurPostEffect.hpp"
 #include "LuminoEngine/PostEffect/BloomPostEffect.hpp"
+#include "LuminoEngine/PostEffect/FilmicPostEffect.hpp"
 
 #include "LuminoEngine/Physics/CollisionShape.hpp"
 #include "LuminoEngine/Physics/PhysicsWorld.hpp"
@@ -92,6 +95,8 @@
 #include "LuminoEngine/Scene/Mesh/SkinnedMesh.hpp"
 #include "LuminoEngine/Scene/Shapes/MeshPrimitives.hpp"
 #include "LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp"
+#include "LuminoEngine/Scene/Effect/ParticleEmitterComponent.hpp"
+#include "LuminoEngine/Scene/Effect/ParticleEmitter.hpp"
 
 #include "LuminoEngine/Scene/Level.hpp"
 #include "LuminoEngine/Scene/Scene.hpp"
@@ -104,6 +109,7 @@
 #include "LuminoEngine/UI/UIViewport.hpp"
 #include "LuminoEngine/UI/UISprite.hpp"
 #include "LuminoEngine/UI/UITextBlock.hpp"
+#include "LuminoEngine/UI/UIIcon.hpp"
 #include "LuminoEngine/UI/Layout/UILayoutPanel.hpp"
 #include "LuminoEngine/UI/Layout/UIGridLayout.hpp"
 #include "LuminoEngine/UI/Controls/UIWindow.hpp"
@@ -112,7 +118,7 @@
 #include "LuminoEngine/UI/Controls/UIListView.hpp"
 #include "LuminoEngine/UI/UI.hpp"
 
-#include "LuminoEngine/UI/UIFlexMessageTextArea.hpp"
+#include "LuminoEngine/UI/UIMessageTextArea.hpp"
 
 #include "LuminoEngine/Asset/Assets.hpp"
 
@@ -123,6 +129,8 @@
 #include "LuminoEngine/Tilemap/Tilemap.hpp"
 
 #include "LuminoEngine/Effect/EffectContext.hpp"
+
+#include "LuminoEngine/Scripting/Interpreter.hpp"
 
 
 

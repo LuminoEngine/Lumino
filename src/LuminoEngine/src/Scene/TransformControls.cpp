@@ -40,19 +40,19 @@ void TransformControls::init()
 
     m_xColorMaterial = makeObject<Material>();
     m_xColorMaterial->setColor(Color::Red);
-    m_xColorMaterial->shadingModel = ShadingModel::Unlit;
+    m_xColorMaterial->setShadingModel(ShadingModel::Unlit);
 
     m_yColorMaterial = makeObject<Material>();
     m_yColorMaterial->setColor(Color::Green);
-    m_yColorMaterial->shadingModel = ShadingModel::Unlit;
+    m_yColorMaterial->setShadingModel(ShadingModel::Unlit);
 
     m_zColorMaterial = makeObject<Material>();
     m_zColorMaterial->setColor(Color::Blue);
-    m_zColorMaterial->shadingModel = ShadingModel::Unlit;
+    m_zColorMaterial->setShadingModel(ShadingModel::Unlit);
 
     m_activeColorMaterial = makeObject<Material>();
     m_activeColorMaterial->setColor(Color::Yellow);
-    m_activeColorMaterial->shadingModel = ShadingModel::Unlit;
+    m_activeColorMaterial->setShadingModel(ShadingModel::Unlit);
 
     {
         auto builder = makeObject<MeshGeometryBuilder>();

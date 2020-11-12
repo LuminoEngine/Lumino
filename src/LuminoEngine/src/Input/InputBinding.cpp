@@ -155,13 +155,11 @@ Ref<KeyGesture> KeyGesture::create(Keys key, ModifierKeys modifierKeys)
 	return makeObject<KeyGesture>(key, modifierKeys);
 }
 
-//------------------------------------------------------------------------------
 KeyGesture::KeyGesture()
 	: m_key(Keys::Unknown)
 	, m_modifierKeys(ModifierKeys::None)
 {}
 
-//------------------------------------------------------------------------------
 KeyGesture::~KeyGesture()
 {
 }
@@ -169,6 +167,12 @@ KeyGesture::~KeyGesture()
 void KeyGesture::init()
 {
 	InputGesture::init();
+}
+
+void KeyGesture::init(Keys key)
+{
+	InputGesture::init();
+	m_key = key;
 }
 
 void KeyGesture::init(Keys key, ModifierKeys modifierKeys)

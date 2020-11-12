@@ -77,6 +77,11 @@ KeyFrameAnimationCurve::~KeyFrameAnimationCurve()
 {
 }
 
+bool KeyFrameAnimationCurve::init()
+{
+	return AnimationCurve::init();
+}
+
 void KeyFrameAnimationCurve::addKeyFrame(const AnimationKeyFrame& keyFrame)
 {
 	// そのまま追加できる

@@ -5,6 +5,7 @@
 #include <LuminoEngine/UI/Controls/UIControl.hpp>
 #include <LuminoEngine/UI/UIActiveTimer.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
+#include "../UIStyleInstance.hpp"
 #include "../UIManager.hpp"
 
 namespace ln {
@@ -32,13 +33,12 @@ bool UIControl::init(const UICreationContext* context)
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Disabled);
     vsm->registerState(UIVisualStates::FocusStates, UIVisualStates::Focused);
     vsm->registerState(UIVisualStates::FocusStates, UIVisualStates::Unfocused);
+    vsm->registerState(UIVisualStates::Visibility, UIVisualStates::Visible);
+    vsm->registerState(UIVisualStates::Visibility, UIVisualStates::Hidden);
+    vsm->registerState(UIVisualStates::Visibility, UIVisualStates::Collapsed);
     vsm->gotoState(UIVisualStates::Normal);
     vsm->gotoState(UIVisualStates::Unfocused);
-
-	//setHAlignment(HAlignment::Stretch);
-	//setVAlignment(VAlignment::Stretch);
-
-    //setLayoutPanel(makeObject<UIFrameLayout>());
+    vsm->gotoState(UIVisualStates::Visible);
 
     return true;
 }
@@ -49,22 +49,22 @@ void UIControl::onDispose(bool explicitDisposing)
 	UIElement::onDispose(explicitDisposing);
 }
 
-void UIControl::setHorizontalContentAlignment(HAlignment value)
+void UIControl::setHorizontalContentAlignment(UIHAlignment value)
 {
     m_localStyle->mainStyle()->horizontalContentAlignment = value;
 }
 
-HAlignment UIControl::horizontalContentAlignment() const
+UIHAlignment UIControl::horizontalContentAlignment() const
 {
     return m_localStyle->mainStyle()->horizontalContentAlignment;
 }
 
-void UIControl::setVerticalContentAlignment(VAlignment value)
+void UIControl::setVerticalContentAlignment(UIVAlignment value)
 {
     m_localStyle->mainStyle()->verticalContentAlignment = value;
 }
 
-VAlignment UIControl::verticalContentAlignment() const
+UIVAlignment UIControl::verticalContentAlignment() const
 {
     return m_localStyle->mainStyle()->verticalContentAlignment;
 }
@@ -115,7 +115,7 @@ void UIControl::removeAllChildren()
 	//}
 }
 
-void UIControl::addInlineElement(UIElement* element, UIInlineLayout layout)
+void UIControl::addInlineVisual(UIElement* element, UIInlinePlacement layout)
 {
     PointI pts[] = {
         { 0, 0 }, { 1, 0 }, { 2, 0 },
@@ -131,55 +131,6 @@ void UIControl::addInlineElement(UIElement* element, UIInlineLayout layout)
         m_aligned3x3GridLayoutArea = makeObject<detail::UIAligned3x3GridLayoutArea>();
     }
 }
-
-//void UIControl::setLayoutPanel(UILayoutPanel* panel)
-//{
-//	if (m_layout != panel) {
-//		m_layout = panel;
-//		if (!m_layout) {
-//			m_layout = makeObject<UIFrameLayout>();
-//		}
-//		onLayoutPanelChanged(m_layout);
-//		//setLogicalChildrenHost(panel);
-//	}
-//}
-//
-//UILayoutPanel* UIControl::layoutPanel() const
-//{
-//	//if (m_layout)
-//		return m_layout;
-//	//else
-//	//	return m_manager->defaultLayout();
-//}
-//
-//UILayoutPanel* UIControl::layoutPanel() const
-//{
-//    return m_layout;
-//    //LN_UNREACHABLE();
-//    //return nullptr;//m_logicalChildrenHost;
-//}
-
-//int UIControl::getVisualChildrenCount() const
-//{
-//	//if (m_logicalChildrenHost) {
-//	//	return 1;
-//	//}
-//	//else {
-//		return m_logicalChildren.size();
-//	//}
-//}
-//
-//UIElement* UIControl::getVisualChild(int index) const
-//{
-//	//if (m_logicalChildrenHost) {
-//	//	return m_logicalChildrenHost;
-//	//}
-//	//else {
-//		return m_logicalChildren[index];
-//	//}
-//}
-//
-
 
 void UIControl::registerActiveTimer(UIActiveTimer* timer)
 {
@@ -282,7 +233,7 @@ Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& cons
         //   } list;
         //   list.list = &m_logicalChildren;
 
-           //UILayoutPanel* layout = layoutPanel();
+           //UILayoutPanel2_Deprecated* layout = layoutPanel();
            //layout->measureLayout(&list, constraint);
         //   Size desiredSize = layout->desiredSize();
         //   Size localSize = UIElement::measureOverride(constraint);
@@ -321,7 +272,11 @@ Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& fina
         Rect contentArea;
         m_aligned3x3GridLayoutArea->arrange(layoutContext, m_inlineElements, clientArea, &contentArea);
         // 論理子要素を arrange
-		detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(layoutContext, this, m_logicalChildren, contentArea);
+		detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(
+            layoutContext, this,
+            m_finalStyle->horizontalContentAlignment,
+            m_finalStyle->verticalContentAlignment,
+            m_logicalChildren, contentArea);
         //UIFrameLayout2::staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
 
         return finalArea.getSize();
@@ -332,10 +287,6 @@ Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& fina
     else {
         return UIElement::arrangeOverride(layoutContext, finalArea);
     }
-}
-
-void UIControl::onLayoutPanelChanged(UILayoutPanel* newPanel)
-{
 }
 
 // activateInternal と deactivateInternal は、以前は UIElement が持っていた。しかし、
@@ -377,6 +328,33 @@ void  UIAligned3x3GridLayoutArea::init()
 
 Size UIAligned3x3GridLayoutArea::measure(UILayoutContext* layoutContext, const List<Ref<UIElement>>& inlineElements, const Size& constraint, const Size& contentDesiredSize)
 {
+#if 1
+    // 各セルの desiredSize を測定
+    for (int i = 0; i < inlineElements.size(); i++) {
+        UIElement* child = inlineElements[i];
+        child->measureLayout(layoutContext, constraint);
+        const Size& childDesiredSize = child->getLayoutDesiredSize();
+
+        int row, column, rowSpan, columnSpan;
+        getGridInfoHelper(child, &row, &column, &rowSpan, &columnSpan);
+
+        m_rows[row].desiredSize = std::max(m_rows[row].desiredSize, childDesiredSize.height);
+        m_columns[column].desiredSize = std::max(m_columns[column].desiredSize, childDesiredSize.width);
+    }
+
+    // contentSize を中央のセルとして計算する
+    m_rows[1].desiredSize = std::max(m_rows[1].desiredSize, contentDesiredSize.height);
+    m_columns[1].desiredSize = std::max(m_columns[1].desiredSize, contentDesiredSize.width);
+
+    // 全体の desiredSize を測定
+    Size desiredSize;
+    for (int i = 0; i < 3; i++) {
+        desiredSize.height += m_rows[i].desiredSize;
+        desiredSize.width += m_columns[i].desiredSize;
+    }
+
+    return desiredSize;
+#else
     for (int i = 0; i < inlineElements.size(); i++)
     {
         UIElement* child = inlineElements[i];
@@ -416,10 +394,19 @@ Size UIAligned3x3GridLayoutArea::measure(UILayoutContext* layoutContext, const L
 
     // 計算が終わると、右端と下端の次の分割線の位置がサイズとみなせる
     return Size(m_columns[2].desiredLastOffset, m_rows[2].desiredLastOffset);
+#endif
 }
 
 void UIAligned3x3GridLayoutArea::arrange(UILayoutContext* layoutContext, const List<Ref<UIElement>>& inlineElements, const Rect& finalArea, Rect* outActualContentRect)
 {
+#if 0
+    // 両端は Auto 扱い。desiredSize を使ってそのまま確定。
+    m_rows[0].actualSize = m_rows[0].desiredSize;
+    m_rows[2].actualSize = m_rows[2].desiredSize;
+    m_columns[0].actualSize = m_columns[0].desiredSize;
+    m_columns[2].actualSize = m_columns[2].desiredSize;
+
+#else
     LN_CHECK(outActualContentRect);
 
     // 両端は Auto 扱い。desiredSize を使ってそのまま確定。
@@ -465,6 +452,7 @@ void UIAligned3x3GridLayoutArea::arrange(UILayoutContext* layoutContext, const L
     outActualContentRect->y = finalArea.y + m_rows[1].actualOffset;
     outActualContentRect->width = m_columns[1].actualSize;
     outActualContentRect->height = m_rows[1].actualSize;
+#endif
 }
 
 void UIAligned3x3GridLayoutArea::getGridInfoHelper(UIElement* element, int* row, int* column, int* rowSpan, int* columnSpan) const

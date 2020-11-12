@@ -7,7 +7,7 @@ namespace ln {
 class UIItemsControl;
 class UIToggleButton;
 class UITreeView;
-class UILayoutPanel2;
+class UILayoutPanel;
 
 class UICollectionItem
 	: public UIControl
@@ -62,7 +62,7 @@ public:
 protected:
 	//virtual UIControl* generateItem(UIElement* content) = 0;
 
-    void setItemsLayoutPanel(UILayoutPanel2* layout, bool setAsVisualChild = true);
+    void setItemsLayoutPanel(UILayoutPanel* layout, bool setAsVisualChild = true);
 
     // UICollectionItem であるとわかっている 時に、addChild の代わりに使うと効率的に追加できる。
     void addItem(UICollectionItem* item);
@@ -91,7 +91,7 @@ public: // TODO:
     void selectItemExclusive(UICollectionItem* item);
 	void notifyItemClicked(UICollectionItem* item);
 
-    Ref<UILayoutPanel2> m_itemssHostLayout;
+    Ref<UILayoutPanel> m_itemssHostLayout;
 	List<Ref<UICollectionItem>> m_selectionTargets;
 	List<UICollectionItem*> m_selectedItems;
     Event<UIClickEventHandler> m_onItemClick;

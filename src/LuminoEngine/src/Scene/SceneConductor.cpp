@@ -287,6 +287,17 @@ void SceneConductor::postUpdate(float elapsedSeconds)
 	}
 }
 
+void SceneConductor::collectActiveObjects(World* world)
+{
+	for (const auto& level : m_sceneStack) {
+		level->collectActiveObjects(world);
+	}
+
+	if (m_activeScene) {
+		m_activeScene->collectActiveObjects(world);
+	}
+}
+
 void SceneConductor::collectRenderObjects(World* world, RenderingContext* context)
 {
 	for (const auto& level : m_sceneStack) {

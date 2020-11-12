@@ -48,6 +48,7 @@ public:
 	void preUpdate(float elapsedSeconds);
 	void update(float elapsedSeconds);
 	void postUpdate(float elapsedSeconds);
+	void collectActiveObjects(World* world);
 	void collectRenderObjects(World* world, RenderingContext* context);
 	void renderGizmos(RenderingContext* context);
 

@@ -16,27 +16,27 @@ static InputController* Input_activeDevice()
 }
 
 //------------------------------------------------------------------------------
-bool Input::pressed(const StringRef& buttonName)
+bool Input::isPressed(const StringRef& buttonName)
 {
-	return Input_activeDevice()->pressed(buttonName);
+	return Input_activeDevice()->isPressed(buttonName);
 }
 
 //------------------------------------------------------------------------------
-bool Input::triggered(const StringRef& buttonName)
+bool Input::isTriggered(const StringRef& buttonName)
 {
-	return Input_activeDevice()->triggered(buttonName);
+	return Input_activeDevice()->isTriggered(buttonName);
 }
 
 //------------------------------------------------------------------------------
-bool Input::triggeredOff(const StringRef& buttonName)
+bool Input::isTriggeredOff(const StringRef& buttonName)
 {
-	return Input_activeDevice()->triggeredOff(buttonName);
+	return Input_activeDevice()->isTriggeredOff(buttonName);
 }
 
 //------------------------------------------------------------------------------
-bool Input::repeated(const StringRef& buttonName)
+bool Input::isRepeated(const StringRef& buttonName)
 {
-	return Input_activeDevice()->repeated(buttonName);
+	return Input_activeDevice()->isRepeated(buttonName);
 }
 
 //------------------------------------------------------------------------------

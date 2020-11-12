@@ -13,8 +13,8 @@ class Assets
 {
 public:
 
-    static void setAssetPath(AssetObject* obj, const String& filePath);
-    static const Path& getAssetPath(AssetObject* obj);
+    //static void setAssetPath(AssetObject* obj, const String& filePath);
+    //static const Path& getAssetPath(AssetObject* obj);
     static void save(AssetObject* obj);
     static void reload(AssetObject* obj);
 
@@ -68,6 +68,9 @@ public:
 
 	static Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
 
+    /** readAllText */
+    LN_METHOD()
+    static String readAllText(const StringRef& filePath, EncodingType encoding = EncodingType::Unknown);
 
     static Ref<Stream> openFileStream(const StringRef& filePath);
 

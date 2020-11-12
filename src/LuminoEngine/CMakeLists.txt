@@ -18,34 +18,7 @@ set(LN_SOURCES_Engine
     src/EngineContext.cpp
 )
 
-set(LN_SOURCES_Platform
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/AndroidPlatformInterface.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/CocoaPlatformInterface.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformDialogs.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformEvent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformSupport.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformWindow.hpp
-    src/Platform/Internal.hpp
-    src/Platform/AndroidPlatformInterface.cpp
-    src/Platform/EmptyPlatformWindowManager.cpp
-    src/Platform/EmptyPlatformWindowManager.hpp
-    src/Platform/EmscriptenPlatformInterface.cpp
-    src/Platform/GLFWPlatformWindowManager.cpp
-    src/Platform/GLFWPlatformWindowManager.hpp
-    src/Platform/PlatformDialogs.cpp
-    src/Platform/PlatformEvent.cpp
-    src/Platform/PlatformManager.cpp
-    src/Platform/PlatformManager.hpp
-    src/Platform/PlatformSupport.cpp
-    src/Platform/PlatformWindow.cpp
-    src/Platform/PlatformWindowManager.cpp
-    src/Platform/PlatformWindowManager.hpp
-    src/Platform/TextInputMethodSystem.cpp
-    src/Platform/TextInputMethodSystem.hpp
-    src/Platform/Win32PlatformDialogs.hpp
-    src/Platform/Win32PlatformWindowManager.cpp
-    src/Platform/Win32PlatformWindowManager.hpp
-)
+file(GLOB LN_SOURCES_Platform ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/*.hpp src/Platform/*.cpp src/Platform/*.hpp)
 
 set(LN_SOURCES_Grammar
     src/Grammar/Internal.hpp
@@ -125,13 +98,11 @@ set(LN_SOURCES_Visual
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/CameraComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/LightComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/ParticleEmitterComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SpriteComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/VisualComponent.hpp
     src/Visual/Internal.hpp
     src/Visual/CameraComponent.cpp
     src/Visual/LightComponent.cpp
-    src/Visual/ParticleEmitterComponent.cpp
     src/Visual/SpriteComponent.cpp
     src/Visual/VisualComponent.cpp
     src/Visual/VisualManager.cpp
@@ -146,6 +117,7 @@ file(GLOB LN_SOURCES_Scene_MeshTilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Sce
 file(GLOB LN_SOURCES_Scene_MeshVoxelmap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/MeshVoxelmap/*.hpp src/Scene/MeshVoxelmap/*.cpp src/Scene/MeshVoxelmap/*.hpp)
 file(GLOB LN_SOURCES_Scene_Reflection ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Reflection/*.hpp src/Scene/Reflection/*.cpp src/Scene/Reflection/*.hpp)
 file(GLOB LN_SOURCES_Scene_Physics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Physics/*.hpp src/Scene/Physics/*.cpp src/Scene/Physics/*.hpp)
+file(GLOB LN_SOURCES_Scene_Effect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Effect/*.hpp src/Scene/Effect/*.cpp src/Scene/Effect/*.hpp)
 
 
 file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
@@ -185,19 +157,22 @@ if (LN_USE_VULKAN)
 endif()
 
 
-if (WIN32)
+if (LN_EMSCRIPTEN)
+elseif (WIN32)
     file(GLOB LN_SOURCES_Graphics_DirectX12 src/Graphics/DirectX12/*.cpp src/Graphics/DirectX12/*.hpp)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
         ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
-        src/Platform/Win32PlatformInterface.cpp
+        src/Platform/Windows/Win32PlatformInterface.cpp
+        src/Platform/Windows/Win32PlatformWindowManager.cpp
+        src/Platform/Windows/Win32PlatformWindowManager.cpp
     )
 elseif (APPLE)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
-        src/Platform/iOSPlatformInterface.mm
-        src/Platform/CocoaPlatformInterface.mm
-        src/Platform/PlatformSupport.mm
+        src/Platform/iOS/iOSPlatformInterface.mm
+        src/Platform/macOS/CocoaPlatformInterface.mm
+        src/Platform/macOS/PlatformSupport.mm
     )
 endif()
 
@@ -234,6 +209,7 @@ source_group("Scene\\MeshTilemap" FILES ${LN_SOURCES_Scene_MeshTilemap})
 source_group("Scene\\MeshVoxelmap" FILES ${LN_SOURCES_Scene_MeshVoxelmap})
 source_group("Scene\\Reflection" FILES ${LN_SOURCES_Scene_Reflection})
 source_group("Scene\\Physics" FILES ${LN_SOURCES_Scene_Physics})
+source_group("Scene\\Effect" FILES ${LN_SOURCES_Scene_Effect})
 source_group("UI" FILES ${LN_SOURCES_UI})
 source_group("UI\\Controls" FILES ${LN_SOURCES_UI_Controls})
 source_group("UI\\Layout" FILES ${LN_SOURCES_UI_Layout})
@@ -278,6 +254,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Scene_MeshVoxelmap}
     ${LN_SOURCES_Scene_Reflection}
     ${LN_SOURCES_Scene_Physics}
+    ${LN_SOURCES_Scene_Effect}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_UI_Controls}
     ${LN_SOURCES_UI_Layout}

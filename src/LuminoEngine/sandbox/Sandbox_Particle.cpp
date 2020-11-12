@@ -1,6 +1,5 @@
 ﻿
 #include <LuminoEngine.hpp>
-#include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 using namespace ln;
 
 class App_Sandbox_Particle : public Application
@@ -19,7 +18,7 @@ class App_Sandbox_Particle : public Application
         material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
         
 
-        auto particleModel = makeObject<ParticleModel2>();
+        auto particleModel = makeObject<ParticleModel>();
         auto m1 = particleModel->emitters()[0];
         m1->setSpriteModule(material);
         m1->setLifeTime(10);
@@ -50,7 +49,7 @@ class App_Sandbox_Particle : public Application
         material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
 
-        auto particleModel = makeObject<ParticleModel2>();
+        auto particleModel = makeObject<ParticleModel>();
         auto m1 = particleModel->emitters()[0];
         m1->setSpriteModule(material);
         m1->setLifeTime(10);
@@ -95,45 +94,53 @@ class App_Sandbox_Particle : public Application
         obj1->addComponent(cmp1);
 #endif
 #if 0	// 雨
-        auto particleModel = makeObject<ParticleModel2>();
-        auto m1 = particleModel->emitters()[0];
+        auto m1 = makeObject<ParticleEmitterModel>();
         m1->m_maxParticles = 10000;
         m1->setSpawnRate(1000);
         //m1->setSpawnRate(10);
         m1->setLifeTime(1.0);
-        particleModel->m_loop = true;
+
 
         m1->m_shapeType = ParticleEmitterShapeType::Box;
         m1->m_shapeParam.set(20, 0, 20);
-        m1->m_forwardVelocity.minValue = -10;
-        m1->m_forwardVelocity.maxValue = -10;
+        //m1->m_forwardVelocity.minValue = -10;
+        //m1->m_forwardVelocity.maxValue = -10;
+        m1->setForwardVelocityMin(-10);
+        m1->setForwardVelocityMax(-10);
 
-        m1->m_size.set(0.05f);
+        m1->setSize(0.05f);
         //m1->m_size.set(0.5f);
-        m1->m_forwardScale.set(20);
+        m1->setForwardScale(20);
 
         m1->m_geometryDirection = ParticleGeometryDirection::VerticalBillboard;
         m1->m_sortMode = ParticleSortMode::DistanceToView;
+
+
+        auto particleModel = makeObject<ParticleModel>();
+        particleModel->m_loop = true;
+        particleModel->addEmitter(m1);
 
         auto material = Material::create();
         //material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
         material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
         //material->setMainTexture(Texture2D::load("C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/WaterDrop-1.png"));
-        material->shadingModel = ShadingModel::Unlit;
+        material->setShadingModel(ShadingModel::Unlit);
         material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
-        m1->setSpriteModule(material);
+        m1->setupSpriteModule(material);
 
-        detail::AssetObjectInternal::setAssetPath(particleModel, u"Particle.yml");
-        Assets::save(particleModel);
-        
+        //detail::AssetObjectInternal::setAssetPath(particleModel, u"Particle.yml");
+        //Assets::save(particleModel);
 
-        auto particle1 = makeObject<ParticleEmitterComponent2>(particleModel);
-        //particle1->setBlendMode(BlendMode::Add);
-        particle1->setBlendMode(BlendMode::Alpha);
-        m_particleObj = makeObject<WorldObject>();
-        m_particleObj->addComponent(particle1);
+        m_particleObj = makeObject<ParticleEmitter>(particleModel);
         m_particleObj->setPosition(0, 10, 0);
-        //particle1->setAngles(Math::PI, 0, 0);
+
+        //auto particle1 = makeObject<ParticleEmitterComponent2>(particleModel);
+        ////particle1->setBlendMode(BlendMode::Add);
+        //particle1->setBlendMode(BlendMode::Alpha);
+        //m_particleObj = makeObject<WorldObject>();
+        //m_particleObj->addComponent(particle1);
+        //m_particleObj->setPosition(0, 10, 0);
+        ////particle1->setAngles(Math::PI, 0, 0);
 
 
 
@@ -144,13 +151,13 @@ class App_Sandbox_Particle : public Application
         //material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
         material2->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
         //material->setMainTexture(Texture2D::load("C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/WaterDrop-1.png"));
-        material2->shadingModel = ShadingModel::Unlit;
+        material2->setShadingModel(ShadingModel::Unlit);
         material2->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
 
         // 波紋
-        auto particleModel2 = makeObject<ParticleModel2>();
-        auto m2 = particleModel2->emitters()[0];
+        auto particleModel2 = makeObject<ParticleModel>();
+        auto m2 = makeObject<ParticleEmitterModel>();
         m2->m_maxParticles = 1000;
         m2->setSpawnRate(200);
         m2->setLifeTime(0.2);
@@ -162,7 +169,8 @@ class App_Sandbox_Particle : public Application
         m2->m_shapeType = ParticleEmitterShapeType::Box;
         m2->m_shapeParam.set(10, 0, 10);
         m2->m_geometryDirection = ParticleGeometryDirection::HorizontalBillboard;
-        m2->setSpriteModule(material2);
+        m2->setupSpriteModule(material2);
+        particleModel2->addEmitter(m2);
 
         //auto particle2 = ParticleEmitter3D::create(m2);
         //particle2->SetBlendMode(BlendMode::Add);

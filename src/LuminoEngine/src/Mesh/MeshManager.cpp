@@ -374,7 +374,7 @@ Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& 
 
 void MeshManager::collectUnreferenceObjects()
 {
-	m_meshModelCache.collectUnreferenceObjects();
+	m_meshModelCache.collectUnreferenceObjects(false);
 }
 
 } // namespace detail

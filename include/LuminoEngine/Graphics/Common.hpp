@@ -41,6 +41,7 @@ enum class RenderingType
 };
 
 /** バックエンドグラフィックス API の種類 */
+LN_ENUM()
 enum class GraphicsAPI
 {
     /** 自動選択 */

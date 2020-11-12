@@ -19,6 +19,7 @@
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderElement.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
+#include "../Rendering/RenderingManager.hpp"
 #include "../Mesh/MeshGenerater.hpp"
 #include "../PostEffect/PostEffectRenderer.hpp"
 #include "SceneManager.hpp"
@@ -46,7 +47,7 @@ WorldRenderView::~WorldRenderView()
 void WorldRenderView::init()
 {
     RenderView::init();
-    setClearMode(RenderViewClearMode::ColorAndDepth);
+    setClearMode(SceneClearMode::ColorAndDepth);
 
     m_sceneRenderingPipeline = makeRef<detail::SceneRenderingPipeline>();
     m_sceneRenderingPipeline->init();
@@ -183,7 +184,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         clearInfo.color = backgroundColor();
         clearInfo.depth = 1.0f;
         clearInfo.stencil = 0x00;
-        if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+        if (clearMode() == SceneClearMode::ColorAndDepth) {
             clearInfo.flags = ClearFlags::All;
         }
         else {
@@ -209,10 +210,10 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             renderingContext->clearPostEffects();
 
 
-			if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+			if (clearMode() == SceneClearMode::ColorAndDepth) {
 				//renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
 			}
-			else if (clearMode() == RenderViewClearMode::Sky) {
+			else if (clearMode() == SceneClearMode::Sky) {
 				//renderingContext->clear(ClearFlags::Depth | ClearFlags::Stencil, Color(), 1.0f, 0x00);
 
                 if (m_targetWorld->mainLight()) {
@@ -223,7 +224,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 m_internalSkyBox->render(renderingContext, m_viewPoint);
 
 			}
-			else if (clearMode() == RenderViewClearMode::Sky0) {
+			else if (clearMode() == SceneClearMode::Sky0) {
 
                 //renderingContext->setBaseTransfrom(Matrix::Identity);
                 //renderingContext->setTransfrom(Matrix::Identity);
@@ -354,7 +355,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 #endif
                 renderingContext->popState();
 			}
-            else if (clearMode() == RenderViewClearMode::SkyDome) {
+            else if (clearMode() == SceneClearMode::SkyDome) {
                 m_internalSkyDome->setSkyColor(sceneGlobalRenderParams.skydomeSkyColor);
                 m_internalSkyDome->setHorizonColor(sceneGlobalRenderParams.skydomeHorizonColor);
                 m_internalSkyDome->setCloudColor(sceneGlobalRenderParams.skydomeCloudColor);
@@ -445,7 +446,6 @@ WorldObject* WorldRenderView::findObjectInPoint(int x, int y)
     auto bitmap = detail::TextureInternal::readData(m_sceneRenderingPipeline->objectIdBuffer(), nullptr);
     auto data = (uint32_t*)bitmap->data();
     int id = data[bitmap->width() * y + x];
-    printf("id:%d\n", id);
     if (id > 0) {
         return m_targetWorld->findObjectById(id);
     }
@@ -482,17 +482,19 @@ void WorldRenderView::createGridPlane()
     //m_gridPlane = makeObject<StaticMeshModel>();
     //m_gridPlane->addMeshContainer(meshContainer);
 
-#if 0
-	static const unsigned char data[] =
-	{
-#include "../Rendering/Resource/InfinitePlaneGrid.lcfx.inl"
-	};
-	static const size_t size = LN_ARRAY_SIZE_OF(data);
-	MemoryStream stream(data, size);
-	auto shader = makeObject<Shader>(u"InfinitePlaneGrid", &stream);
-#else
-    auto shader = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
-#endif
+//#if 0
+//	static const unsigned char data[] =
+//	{
+//#include "../Rendering/Resource/InfinitePlaneGrid.lcfx.inl"
+//	};
+//	static const size_t size = LN_ARRAY_SIZE_OF(data);
+//	MemoryStream stream(data, size);
+//	auto shader = makeObject<Shader>(u"InfinitePlaneGrid", &stream);
+//#else
+//    auto shader = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
+//#endif
+    auto shader = detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::InfinitePlaneGrid);
+
     m_gridPlaneMaterial = makeObject<Material>();
     m_gridPlaneMaterial->setShader(shader);
     //m_gridPlane->addMaterial(material);

@@ -204,6 +204,8 @@ void AnimationManager::init(const Settings& settings)
     m_assetManager = settings.assetManager;
     m_animationClipCache.init(64, 0);
 
+	m_defaultAnimationClipImportSettings = makeObject<AnimationClipImportSettings>();
+
     LN_LOG_DEBUG << "AnimationManager Initialization ended.";
 }
 
@@ -230,26 +232,29 @@ void AnimationManager::addClockToAffiliation(AnimationClock* clock, AnimationClo
 
 Ref<AnimationClip> AnimationManager::loadAnimationClip(const StringRef& filePath)
 {
-	// TODO: find cache
+	static const std::vector<const Char*> exts = { u".bvh", u".vmd" };
+	return AssetManager::loadObjectWithCacheHelper<AnimationClip>(&m_animationClipCache, nullptr, exts, filePath, nullptr);
 
-	// TODO: やっぱり拡張子は本当のリロード時に解決したい。
-	// なので、AssetPath 自体の仕様として、拡張子無し（未解決）を許可するようにしたい。
-	// → でもそれなら Path で持っておけばいいだけか。ちゃんとドキュメントに書いておこう
-	const Char* exts[] = { u".bvh", u".vmd" };
-	auto assetPath = detail::AssetPath::resolveAssetPath(filePath, exts);
+	//// TODO: find cache
 
-	auto obj = makeObject<AnimationClip>(assetPath);
+	//// TODO: やっぱり拡張子は本当のリロード時に解決したい。
+	//// なので、AssetPath 自体の仕様として、拡張子無し（未解決）を許可するようにしたい。
+	//// → でもそれなら Path で持っておけばいいだけか。ちゃんとドキュメントに書いておこう
+	//const Char* exts[] = { u".bvh", u".vmd" };
+	//auto assetPath = detail::AssetPath::resolveAssetPath(filePath, exts);
 
-	detail::AssetObjectInternal::setAssetPath(obj, filePath);
+	//auto obj = makeObject<AnimationClip>(assetPath);
 
-	return obj;
+	//detail::AssetObjectInternal::setAssetPath(obj, filePath);
+
+	//return obj;
 }
 
-Ref<AnimationClipPromise> AnimationManager::loadAnimationClipAsync(const StringRef& filePath)
-{
-	LN_NOTIMPLEMENTED();
-	return nullptr;
-}
+//Ref<AnimationClipPromise> AnimationManager::loadAnimationClipAsync(const StringRef& filePath)
+//{
+//	LN_NOTIMPLEMENTED();
+//	return nullptr;
+//}
 
 //Ref<AnimationClip> AnimationManager::acquireAnimationClip(const AssetPath& assetPath)
 //{

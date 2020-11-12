@@ -404,10 +404,30 @@ public:
 								LN_NOTIMPLEMENTED();
 							}
 						}
+						else if (expr->getStmtClass() == Stmt::StmtClass::IntegerLiteralClass) {
+							auto literal = static_cast<IntegerLiteral*>(expr);
+							auto value = literal->getValue();
+							paramInfo->defaultValue = ln::makeVariant(static_cast<int>(value.getSExtValue()));
+						}
 						else if (expr->getStmtClass() == Stmt::StmtClass::FloatingLiteralClass) {
 							auto literal = static_cast<FloatingLiteral*>(expr);
 							auto value = literal->getValue();
 							paramInfo->defaultValue = ln::makeVariant(value.convertToFloat());
+						}
+						else if (expr->getStmtClass() == Stmt::StmtClass::CXXBoolLiteralExprClass) {
+							auto literal = static_cast<CXXBoolLiteralExpr*>(expr);
+							paramInfo->defaultValue = ln::makeVariant(literal->getValue());
+						}
+						else if (expr->getStmtClass() == Stmt::StmtClass::ImplicitCastExprClass) {
+							auto castExpr = static_cast<ImplicitCastExpr*>(expr);
+							auto itr = castExpr->child_begin();
+							if (itr != castExpr->child_end() && itr->getStmtClass() == Stmt::StmtClass::CXXNullPtrLiteralExprClass) {
+								paramInfo->defaultValue = ln::makeVariant();
+							}
+							else {
+								std::cout << expr->getStmtClassName() << std::endl;
+								LN_NOTIMPLEMENTED();
+							}
 						}
 						else if (expr->getStmtClass() == Stmt::StmtClass::MaterializeTemporaryExprClass) {
 							LN_NOTIMPLEMENTED();

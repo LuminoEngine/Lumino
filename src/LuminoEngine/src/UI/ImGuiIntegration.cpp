@@ -11,6 +11,7 @@
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
+#include "../Font/FontManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "../../../build/BuildCache/imgui/imgui.h"
 
@@ -20,17 +21,20 @@ namespace detail {
 //==============================================================================
 // UIContext
 
-bool ImGuiContext::init()
+bool ImGuiIntegration::init()
 {
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
+	m_imgui = ImGui::CreateContext();
+	ImGui::SetCurrentContext(m_imgui);
+
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsLight();
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsLight();
 	//ImGui::StyleColorsClassic();
 
     ImGuiStyle* style = &ImGui::GetStyle();
@@ -38,7 +42,14 @@ bool ImGuiContext::init()
     colors[ImGuiCol_WindowBg] = ImVec4(0.94f, 0.94f, 0.94f, 0.70f);
 
 	// Load Fonts
-	io.Fonts->AddFontDefault();
+	if (ByteBuffer* data = EngineDomain::fontManager()->getDefaultFontData()) {
+		void* file_data = IM_ALLOC(data->size());
+		memcpy(file_data, data->data(), data->size());
+		io.Fonts->AddFontFromMemoryTTF(file_data, data->size(), 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
+	}
+	else {
+		io.Fonts->AddFontDefault();
+	}
 
 
 	unsigned char* pixels;
@@ -64,16 +75,18 @@ bool ImGuiContext::init()
 	return true;
 }
 
-void ImGuiContext::dispose()
+void ImGuiIntegration::dispose()
 {
 	if (m_fontTexture) {
-		ImGui::DestroyContext();
+		ImGui::DestroyContext(m_imgui);
 		m_fontTexture = nullptr;
 	}
 }
 
-void ImGuiContext::updateFrame(float elapsedSeconds)
+void ImGuiIntegration::updateFrame(float elapsedSeconds)
 {
+	ImGui::SetCurrentContext(m_imgui);
+
     ImGuiIO& io = ImGui::GetIO();
     io.DeltaTime = elapsedSeconds;
 
@@ -87,8 +100,19 @@ void ImGuiContext::updateFrame(float elapsedSeconds)
     }
 }
 
-void ImGuiContext::render(GraphicsContext* graphicsContext, RenderTargetTexture* target)
+void ImGuiIntegration::prepareRender(float width, float height)
 {
+	ImGui::SetCurrentContext(m_imgui);
+
+	ImGuiIO& io = ImGui::GetIO();
+	IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
+	io.DisplaySize = ImVec2(width, height);
+}
+
+void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetTexture* target)
+{
+	ImGui::SetCurrentContext(m_imgui);
+
 	ImGui::Render();
 	ImDrawData* draw_data = ImGui::GetDrawData();
 
@@ -203,10 +227,11 @@ void ImGuiContext::render(GraphicsContext* graphicsContext, RenderTargetTexture*
 	graphicsContext->endRenderPass();	// TODO: scoped
 }
 
-bool ImGuiContext::handlePlatformEvent(const detail::PlatformEventArgs& e)
+bool ImGuiIntegration::handlePlatformEvent(const detail::PlatformEventArgs& e)
 {
-    if (!ImGui::GetCurrentContext())
-        return false;
+	if (!m_imgui) return false;
+
+	ImGui::SetCurrentContext(m_imgui);
 
 	ImGuiIO& io = ImGui::GetIO();
 

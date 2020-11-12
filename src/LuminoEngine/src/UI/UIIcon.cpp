@@ -6,11 +6,14 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIIcon.hpp>
+#include "UIStyleInstance.hpp"
 
 namespace ln {
 
 //==============================================================================
 // UIIcon
+
+LN_OBJECT_IMPLEMENT(UIIcon, UIElement) {}
 
 Ref<UIIcon> UIIcon::loadFontIcon(const StringRef& iconName)
 {
@@ -36,7 +39,7 @@ UIIcon::UIIcon()
 bool UIIcon::init()
 {
 	if (!UIElement::init(nullptr)) return false;
-	setAlignments(HAlignment::Center, VAlignment::Center);
+	setAlignments(UIHAlignment::Center, UIVAlignment::Center);
 	return true;
 }
 
@@ -98,7 +101,12 @@ Size UIIcon::measureOverride(UILayoutContext* layoutContext, const Size& constra
 
 void UIIcon::onRender(UIRenderingContext* context)
 {
-	context->drawChar(m_codePoint, finalStyle()->textColor, m_font, Matrix::makeTranslation(m_renderOffset.x, m_renderOffset.y, 0));
+	Color color = finalStyle()->textColor;
+	if (!isEnabled()) {
+		color.a = 0.5f;
+	}
+
+	context->drawChar(m_codePoint, color, m_font, Matrix::makeTranslation(m_renderOffset.x, m_renderOffset.y, 0));
 }
 
 } // namespace ln

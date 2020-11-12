@@ -90,11 +90,10 @@ void _LN_ProcessVertex_ClusteredForward(
 {
     outVertexPos = input.Pos;
     
-    float4 pos = mul(float4(input.Pos, 1.0), ln_World);
-    pos = mul(pos, ln_ViewProjection_Light0);
-    outvInLightPosition = pos;
-    
-    outWorldPos = pos.xyz;
+    float4 worldPos = mul(float4(input.Pos, 1.0), ln_World);
+    outWorldPos = worldPos.xyz;
+
+    outvInLightPosition = mul(worldPos, ln_ViewProjection_Light0);
 }
 
 
@@ -304,7 +303,8 @@ float _LN_CalcFogFactor2(float depth, float samplePointY)
 
     // Input-density が小さいと境界が少し不自然に明るくなるが、ほとんどのケースでは問題ないのでこのままとする。
     // TODO: 何かいい補完方法思いついたら修正するかも。
-    return saturate(densityH) * saturate(densityV);
+    //return saturate(densityH) * saturate(densityV);
+    return saturate(densityH) + (saturate(densityH) * saturate(densityV));
 
     //float mu = saturate(densityH * densityV);
     //return saturate(mu * saturate(densityV));

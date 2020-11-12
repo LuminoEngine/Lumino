@@ -13,11 +13,17 @@ class App_Experiment_CharacterController : public Application
 		Engine::renderView()->setPhysicsDebugDrawEnabled(true);
 
 
-		auto box = ln::makeObject<ln::BoxMesh>();
 		//addComponent(box);
 
+		auto ground = ln::RigidBody::create(ln::PlaneCollisionShape::create());
+
+
+
+		// Character
+		auto box = ln::makeObject<ln::BoxMesh>();
 		auto controller = ln::makeObject<ln::CharacterController>();
 		box->addComponent(controller);
+
 
 		auto shape1 = BoxCollisionShape::create(2, 2, 2);
 		auto body1 = TriggerBodyComponent::create();
@@ -28,6 +34,8 @@ class App_Experiment_CharacterController : public Application
 		box->addComponent(body1);
 
 
+
+		// Box
 		auto box2 = ln::makeObject<ln::BoxMesh>();
 		auto shape2 = BoxCollisionShape::create(2, 1, 1);
 		auto body2 = TriggerBodyComponent::create();

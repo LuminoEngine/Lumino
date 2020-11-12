@@ -1,7 +1,10 @@
 ﻿
 #include "Internal.hpp"
 #include "SceneManager.hpp"
+#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Scene/Raycaster.hpp>
+#include "../Rendering/RenderingManager.hpp"
 
 // for registerType
 #include <LuminoEngine/Asset/Assets.hpp>
@@ -15,7 +18,7 @@
 #include <LuminoEngine/Tilemap/TilemapModel.hpp>
 #include <LuminoEngine/Tilemap/TilemapComponent.hpp>
 #include <LuminoEngine/Tilemap/Tilemap.hpp>
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMesh.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitives.hpp>
@@ -41,7 +44,7 @@ void SceneManager::init()
     LN_LOG_DEBUG << "SceneManager Initialization started.";
 
 
-	// ClusteredShadingDefault.lcfx.h
+	// SkyFromAtmosphere.lcfx.h
 	{
 		static const unsigned char data[] =
 		{
@@ -52,9 +55,42 @@ void SceneManager::init()
 		m_atmosphereShader = makeObject<Shader>(u"SkyFromAtmosphere", &stream);
 	}
 
-#if 0
-    m_atmosphereShader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyFromAtmosphere.fx");
-#endif
+
+	auto createTexture = [](const uint8_t* data, size_t len) {
+		MemoryStream stream(data, len);
+		auto bmp = makeObject<Bitmap2D>();
+		bmp->load(&stream);
+		return makeObject<Texture2D>(bmp, TextureFormat::RGBA8);
+	};
+
+	// SkydomeCloudA
+	{
+		static const unsigned char data[] = {
+#include "Resource/SkydomeCloudA.png.inl"
+		};
+		SkydomeCloudA = createTexture(data, LN_ARRAY_SIZE_OF(data));
+	}
+	// SkydomeCloudB
+	{
+		static const unsigned char data[] = {
+#include "Resource/SkydomeCloudB.png.inl"
+		};
+		SkydomeCloudB = createTexture(data, LN_ARRAY_SIZE_OF(data));
+	}
+	// SkydomeCloudC
+	{
+		static const unsigned char data[] = {
+#include "Resource/SkydomeCloudC.png.inl"
+		};
+		SkydomeCloudC = createTexture(data, LN_ARRAY_SIZE_OF(data));
+	}
+	// SkydomeCloudR
+	{
+		static const unsigned char data[] = {
+#include "Resource/SkydomeCloudR.png.inl"
+		};
+		SkydomeCloudR = createTexture(data, LN_ARRAY_SIZE_OF(data));
+	}
 
 	m_primitiveMeshDefaultMaterial = makeObject<Material>();
 	m_primitiveMeshDefaultMaterial->setColor(Color(0.8f, 0.8f, 0.8f, 1.0));
@@ -82,6 +118,11 @@ void SceneManager::init()
 void SceneManager::dispose()
 {
 	//releaseAndTerminateAllRunningScenes();
+}
+
+Shader* SceneManager::skydomeShader() const
+{
+	return detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::SkyDome);
 }
 
 Level* SceneManager::loadScene(const StringRef& sceneAssetFilePath)

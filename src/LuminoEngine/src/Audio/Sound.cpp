@@ -242,7 +242,7 @@ SoundPlayingState Sound::playingState() const
     }
 }
 
-void Sound::fadeVolume(float targetVolume, double time, SoundFadeBehavior behavior)
+void Sound::fadeVolume(float targetVolume, float time, SoundFadeBehavior behavior)
 {
     m_core->setVolume(targetVolume, time, behavior);
     //std::lock_guard<std::mutex> lock(m_playerStateLock);
@@ -403,12 +403,12 @@ void SoundCore::update(float elapsedSeconds)
             case SoundFadeBehavior::Continue:
                 break;
                 // 停止する場合
-            case SoundFadeBehavior::stop:
+            case SoundFadeBehavior::Stop:
             case SoundFadeBehavior::StopReset:
                 m_sourceNode->stop();
                 break;
                 // 一時停止する場合
-            case SoundFadeBehavior::pause:
+            case SoundFadeBehavior::Pause:
             case SoundFadeBehavior::PauseReset:
                 pause();
                 break;

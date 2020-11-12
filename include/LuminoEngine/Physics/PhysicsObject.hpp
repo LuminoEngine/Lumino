@@ -17,9 +17,10 @@ class PhysicsObject
 	: public Object
 {
 public:
+    /** この PhysicsObject が含まれている PhysicsWorld を取得します。 */
     PhysicsWorld* physicsWorld() const;
 
-    /** このオブジェクトが属している PhysicsWorld2D からこのオブジェクトを除外します。 */
+    /** この PhysicsObject が含まれている PhysicsWorld からこの PhysicsObject を除外します。 */
     void removeFromPhysicsWorld();
 
     const List<PhysicsObject*>& contactBodies() const { return m_contactBodies; }
@@ -40,11 +41,10 @@ protected:
     /** 他の PhysicsObject が、この PhysicsObject との接触している間呼び出されます。*/
     virtual void onCollisionStay(PhysicsObject* otherObject, ContactPoint* contact);
 
-
-    virtual void onBeforeStepSimulation();
+    // 各プロパティの遅延評価を実行する。WorldObject からの FeedForward はここでは行わない
+    virtual void onPrepareStepSimulation();
     virtual void onAfterStepSimulation();
 
-    virtual void onRemoveFromPhysicsWorld() = 0;
 
 LN_CONSTRUCT_ACCESS:
     PhysicsObject(PhysicsObjectType type);
@@ -53,15 +53,15 @@ LN_CONSTRUCT_ACCESS:
 
 
 private:
+    virtual void removeFromBtWorld() = 0;
+
     void setPhysicsWorld(PhysicsWorld* owner);
-    //bool isRemovingFromWorld() const { return m_removingFromWorld; }
-    //void setRemovingFromWorld(bool value) { m_removingFromWorld = value; }
     void beginContact(PhysicsObject* otherObject);
     void endContact(PhysicsObject* otherObject);
 
     PhysicsObjectType m_resourceType;
     PhysicsWorld* m_ownerWorld;
-    bool m_removingFromWorld;
+    bool m_removing;
 
     List<PhysicsObject*> m_contactBodies;
     detail::IPhysicsObjectEventListener* m_listener = nullptr;

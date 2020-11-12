@@ -1,11 +1,16 @@
 ﻿#pragma once
-#include "../UIContainerElement.hpp"
+#include "UIControl.hpp"
 
 namespace ln {
-
+    
+/**
+ * UIWindow
+ */
+LN_CLASS()
 class UIWindow
-    : public UIContainerElement
+    : public UIControl
 {
+    LN_OBJECT;
 public:
     static Ref<UIWindow> create();
 
@@ -17,7 +22,10 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     UIWindow();
-	void init();
+
+    /** init */
+    LN_METHOD()
+	bool init();
 
 protected:
 	virtual const String& elementName() const override { static String name = u"UIWindow"; return name; }

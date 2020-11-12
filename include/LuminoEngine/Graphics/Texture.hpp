@@ -43,7 +43,6 @@ protected:
     void init();
     void onDispose(bool explicitDisposing) override;
     void onManagerFinalizing() override { dispose(); }
-    void onLoadSourceFile() override;
     virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) = 0;
 
 private:
@@ -155,7 +154,8 @@ protected:
     void onChangeDevice(detail::IGraphicsDevice* device) override;
     detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
     void serialize(Serializer2& ar) override;
-    void onLoadSourceFile() override;
+    const std::vector<const Char*>& resourceExtensions() const override;
+    void onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath) override;
 
 LN_CONSTRUCT_ACCESS:
     Texture2D();
@@ -170,7 +170,7 @@ LN_CONSTRUCT_ACCESS:
     LN_METHOD(OverloadPostfix = "WithFormat")
     void init(int width, int height, TextureFormat format);
 
-    bool init(const Path& assetPath);
+    //bool init(const Path& assetPath);
 
     void init(Stream* stream, TextureFormat format = TextureFormat::RGBA8);
     void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA8);
@@ -181,7 +181,7 @@ private:
     GraphicsResourcePool m_pool;
     Ref<Bitmap2D> m_bitmap;
     //Path m_assetSourcePath;
-    detail::AssetPath m_sourceFilePath; // see Assets/README.md
+    //detail::AssetPath m_sourceFilePath; // see Assets/README.md
     void* m_rhiLockedBuffer;
     bool m_initialUpdate;
     bool m_modified;

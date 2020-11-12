@@ -14,19 +14,20 @@ namespace ln {
 //=============================================================================
 // Assets
 
-void Assets::setAssetPath(AssetObject* obj, const String& filePath)
-{
-    obj->setAssetPath(filePath);
-}
-
-const Path& Assets::getAssetPath(AssetObject* obj)
-{
-    return obj->assetPath();
-}
-
+//void Assets::setAssetPath(AssetObject* obj, const String& filePath)
+//{
+//    obj->setAssetPath(filePath);
+//}
+//
+//const Path& Assets::getAssetPath(AssetObject* obj)
+//{
+//    return obj->assetPath();
+//}
+//
 void Assets::save(AssetObject* obj)
 {
-    Assets::saveAsset(obj, obj->m_assetFilePath);
+    LN_NOTIMPLEMENTED();
+    //Assets::saveAsset(obj, obj->m_assetFilePath);
 }
 
 void Assets::reload(AssetObject* obj)
@@ -89,6 +90,18 @@ bool Assets::existsFile(const StringRef& filePath)
 Ref<ByteBuffer> Assets::readAllBytes(const StringRef& filePath)
 {
 	return detail::EngineDomain::assetManager()->readAllBytes(filePath);
+}
+
+String Assets::readAllText(const StringRef& filePath, EncodingType encoding)
+{
+    auto stream = detail::EngineDomain::assetManager()->openFileStream(filePath);
+    if (!stream) {
+        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+        return String::Empty;
+    }
+
+    TextEncoding* e = (encoding == EncodingType::Unknown) ? nullptr : TextEncoding::getEncoding(encoding);
+    return FileSystem::readAllText(stream, e);
 }
 
 Ref<Stream> Assets::openFileStream(const StringRef& filePath)
@@ -322,6 +335,15 @@ AssetPath::AssetPath(const String& scheme, const String& host, const Path& path)
     m_components->path = path;
 
     //if (m_components->path.str()[0] != u'/') m_components->path = Path(u"/" + path.str());
+}
+
+void AssetPath::clear()
+{
+    if (m_components) {
+        m_components->scheme.clear();
+        m_components->host.clear();
+        m_components->path.clear();
+    }
 }
 
 AssetPath AssetPath::makeEmpty()

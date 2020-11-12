@@ -32,18 +32,38 @@ LNResult Runtime::processException(Exception* e)
 	return detail::EngineDomain::runtimeManager()->processException(e);
 }
 
+//const Char* Runtime::getUTF16StringPtr(String str)
+//{
+//    return str.c_str();
+//}
+
 const Char* Runtime::getUTF16StringPtr(const String& str)
 {
-    return str.c_str();
+    // TODO: Assets::readAllText() のように、String の実態を返す関数の対策のため、必ず reset している。
+    // 参照で返してくるものはふつうに return str.c_str(); すればよいだけなので、そのように最適化したい。
+    auto* sb = detail::EngineDomain::runtimeManager()->requestCommonStringBuffer();
+    sb->reset(str);
+    return sb->getUtf16();
+
+    //return str.c_str();
 }
 
-const char* Runtime::getUTF8StringPtr(const String& str)
+const char* Runtime::getAStringPtr(const String& str)
 {
     auto* sb = detail::EngineDomain::runtimeManager()->requestCommonStringBuffer();
     sb->reset(str);
-    return sb->getUtf8();
+    return sb->getAscii();
 }
 
+void Runtime::setAStringEncoding(TextEncoding* value)
+{
+    detail::EngineDomain::runtimeManager()->setAStringEncoding(value);
+}
+
+TextEncoding* Runtime::getAStringEncoding()
+{
+    return detail::EngineDomain::runtimeManager()->getAStringEncoding();
+}
 
 //==============================================================================
 // ShapesRendererCommandList
@@ -59,7 +79,6 @@ RuntimeStringBuffer::RuntimeStringBuffer()
 //{
 //    Object::init();
 //    m_str = str;
-//}
 
 void RuntimeStringBuffer::reset(const String& str)
 {
@@ -67,13 +86,13 @@ void RuntimeStringBuffer::reset(const String& str)
     m_translated = false;
 }
 
-const char* RuntimeStringBuffer::getUtf8()
+const char* RuntimeStringBuffer::getAscii()
 {
-    if (m_translated) {
-        m_str8 = m_str.toStdString();   // TODO: encoding
+    if (!m_translated) {
+        m_strAscii = m_str.toStdString();   // TODO: encoding
         m_translated = true;
     }
-    return m_str8.c_str();
+    return m_strAscii.c_str();
 }
 
 static std::string std_string_vprintf(const char* format, std::va_list arg)
@@ -308,12 +327,25 @@ LNResult LNObject_Retain(LNHandle obj)
 	}
 }
 
-int32_t LNObject_GetReferenceCount(LNHandle obj)
+LNResult LNObject_GetReferenceCount(LNHandle obj, int* outReturn)
 {
-	if (auto t = LNI_HANDLE_TO_OBJECT(ln::Object, obj))
-		return ln::RefObjectHelper::getReferenceCount(t);
+    if (!outReturn) return LN_ERROR_INVALID_ARGUMENT;
+
+    if (auto t = LNI_HANDLE_TO_OBJECT(ln::Object, obj)) {
+        *outReturn = ln::RefObjectHelper::getReferenceCount(t);
+        return LN_SUCCESS;
+    }
 	else
-		return 0;
+		return LN_ERROR_INVALID_ARGUMENT;
+}
+
+int32_t _LNObject_GetReferenceCount(LNHandle obj)
+{
+    if (auto t = LNI_HANDLE_TO_OBJECT(ln::Object, obj)) {
+        return ln::RefObjectHelper::getReferenceCount(t);
+    }
+    else
+        return 0;
 }
 
 LNResult LNObject_SetTypeInfoId(LNHandle obj, int typeInfoId)

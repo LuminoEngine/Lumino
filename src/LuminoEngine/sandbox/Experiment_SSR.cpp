@@ -1,7 +1,6 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/PostEffect/SSRPostEffect.hpp>
-#include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 using namespace ln;
 
 class App_Experiment_SSR : public Application
@@ -31,7 +30,7 @@ class App_Experiment_SSR : public Application
 
         m_sprite = Sprite::create(Texture2D::whiteTexture());
         m_sprite->setBlendMode(BlendMode::Normal);
-        //m_sprite->setAlignments(HAlignment::Left, VAlignment::Top);
+        //m_sprite->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 
         auto groundMaterial = Material::create(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-albedo.jpg"));
         groundMaterial->setRoughnessMap(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-roughness.jpg"));
@@ -126,7 +125,7 @@ class App_Experiment_SSR : public Application
         //li->setPosition(0, 0.1, 0);
 
 #if 0	// 雨
-        auto particleModel = makeObject<ParticleModel2>();
+        auto particleModel = makeObject<ParticleModel>();
         auto m1 = particleModel->emitters()[0];
         m1->m_maxParticles = 10000;
         m1->setSpawnRate(1000);

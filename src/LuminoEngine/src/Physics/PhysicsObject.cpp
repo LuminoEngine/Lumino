@@ -12,7 +12,7 @@ PhysicsObject::PhysicsObject(PhysicsObjectType type)
 	: Object()
 	, m_resourceType(type)
 	, m_ownerWorld(nullptr)
-	, m_removingFromWorld(false)
+	, m_removing(false)
 {
 }
 
@@ -63,10 +63,10 @@ void PhysicsObject::onCollisionStay(PhysicsObject* otherObject, ContactPoint* co
 	}
 }
 
-void PhysicsObject::onBeforeStepSimulation()
+void PhysicsObject::onPrepareStepSimulation()
 {
 	if (m_listener) {
-		m_listener->onBeforeStepSimulation();
+		m_listener->onBeforeStepSimulation_Deprecated();
 	}
 }
 

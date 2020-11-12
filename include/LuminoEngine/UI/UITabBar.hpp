@@ -89,7 +89,7 @@ protected:
 private:
 	void selectItem(UITabBarItem2* item);
 
-	Ref<UILayoutPanel2> m_itemsHostLayout;
+	Ref<UILayoutPanel> m_itemsHostLayout;
 	UITabBarItem2* m_selectedTab;
 	Event<UIGeneralEventHandler> m_onSelectedTabChanged;
 

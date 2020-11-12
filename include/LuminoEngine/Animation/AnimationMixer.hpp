@@ -69,6 +69,7 @@ public:
 
 
 /** AnimationClip の再生状態を表すクラスです。 */
+LN_CLASS()
 class AnimationState
 	: public Object
 {

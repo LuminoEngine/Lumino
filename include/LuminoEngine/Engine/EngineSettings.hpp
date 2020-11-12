@@ -23,6 +23,10 @@ public:
 	/** メインウィンドウのタイトル文字列を設定します。*/
 	LN_METHOD()
 	static void setMainWindowTitle(const String& title);
+	
+	/** メインウィンドウをユーザーがサイズ変更できるかどうかを指定します。(default: false) */
+	LN_METHOD()
+	static void setMainWindowResizable(bool value);
 
 	/** アセットが保存されているディレクトリを登録します。 */
 	LN_METHOD()
@@ -47,8 +51,19 @@ public:
 
 	/** グラフィックスバックエンドのデバッグ機能を有効にします。 実際にグラフィックスバックエンドがデバッグ機能をサポートしている場合、診断結果がログに出力されます。 (default: Default) */
 	static void setGraphicsDebugEnabled(bool enabled);
+
+	/** デフォルトの UI テーマ名を設定します。 */
+	LN_METHOD()
+	static void setUITheme(const String& value);
 	
-	static void setDefaultUITheme(const String& value);
+	/** デフォルトのフォントファイルを設定します。 */
+	LN_METHOD()
+	static void setFontFile(const String& filePath);
+
+	///**  */
+	//LN_METHOD()
+	//static void setUseSystemStringEncoding(bool value);
+
 
 //	/** グラフィックス機能で使用するレンダリング方法を設定します。(default: Threaded) */
 //	static void setGraphicsRenderingType(RenderingType renderingType);
@@ -89,6 +104,11 @@ public:
 	static void setEngineLogFilePath(const String& filePath);
 
 
+	/**
+	 * setDeveloperToolEnabled
+	 */
+	LN_METHOD()
+	static void setDeveloperToolEnabled(bool enabled);
 
 	/** ユーザー指定のメインウィンドウのウィンドウハンドルを設定します。*/
 	static void setUserMainWindow(intptr_t value);

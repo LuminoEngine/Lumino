@@ -82,19 +82,20 @@ enum class GamepadElement
 };
 
 /**
-    @brief    ユーザー入力となる入力デバイス操作を定義するためのベースクラスです。
-*/
+ * ユーザー入力となる入力デバイス操作を定義するためのベースクラスです。
+ */
+LN_CLASS()
 class InputGesture
     : public Object
 {
     LN_OBJECT;
-
 public:
     virtual String getDisplayName() const = 0;
     float GetMinValidMThreshold() const { return m_minValidMThreshold; }
     float getScale() const { return 1.0f; } // TODO
 
-    LN_PROTECTED_INTERNAL_ACCESS : InputGesture();
+LN_PROTECTED_INTERNAL_ACCESS:
+    InputGesture();
     virtual ~InputGesture();
     virtual detail::InputBindingType getType() const = 0;
 
@@ -103,13 +104,13 @@ private:
 };
 
 /**
-    @brief    ユーザー入力となるキーボード操作の組み合わせを定義します。
-*/
+ * ユーザー入力となるキーボード操作の組み合わせを定義します。
+ */
+LN_CLASS()
 class KeyGesture
     : public InputGesture
 {
     LN_OBJECT;
-
 public:
     /**
         @brief        MouseGesture オブジェクトを作成します。
@@ -131,7 +132,13 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	KeyGesture();
     virtual ~KeyGesture();
 	void init();
+    
+    /** init */
+    LN_METHOD()
+	void init(Keys key);
+
 	void init(Keys key, ModifierKeys modifierKeys);
+
     virtual detail::InputBindingType getType() const override;
 
 LN_INTERNAL_ACCESS:

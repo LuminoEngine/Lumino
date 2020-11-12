@@ -6,16 +6,22 @@
 #include <LuminoEngine/UI/UIItemsModel.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
+#include <LuminoEngine/UI/UIMessageTextArea.hpp>
 using namespace ln;
 
 class App_Example_MessageWindow : public Application
 {
+public:
     Ref<UIButton> m_button1;
     Ref<UIMessageTextWindow> m_window1;
     //Ref<UIMessageTextArea> m_message1;
     Ref<UIMessageTextArea> m_message2;
     int m_step = 0;
+
+    App_Example_MessageWindow()
+    {
+        ln::EngineSettings::setFontFile("C:/Proj/LN/PrivateProjects/HC4/assets/Font/mplus-1c-regular.ttf");
+    }
 
     virtual void onInit() override
     {
@@ -23,20 +29,20 @@ class App_Example_MessageWindow : public Application
 
         auto windowSkin = Texture2D::load(u"Window1");
 
-        m_window1 = UIMessageTextWindow::create();
-        m_window1->setHAlignment(HAlignment::Left);
-        m_window1->setVAlignment(VAlignment::Top);
-        m_window1->setPosition(10, 10);
-        m_window1->setWidth(200);
-        m_window1->setHeight(80);
-        m_window1->setBackgroundImage(windowSkin);
-        m_window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
-        m_window1->setBackgroundImageBorder(Thickness(8));
-        m_window1->setBackgroundDrawMode(Sprite9DrawMode::StretchedBoxFrame);
-        m_window1->setBackgroundColor(Color::Transparency);
-        m_window1->setBorderThickness(0);
-        //Engine::mainUIView()->addElement(window1);
-        m_window1->setText(u"Hello, Lumino!");
+        //m_window1 = UIMessageTextWindow::create();
+        //m_window1->setHAlignment(UIHAlignment::Left);
+        //m_window1->setVAlignment(UIVAlignment::Top);
+        //m_window1->setPosition(10, 10);
+        //m_window1->setWidth(200);
+        //m_window1->setHeight(80);
+        //m_window1->setBackgroundImage(windowSkin);
+        //m_window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
+        //m_window1->setBackgroundImageBorder(Thickness(8));
+        //m_window1->setBackgroundDrawMode(Sprite9DrawMode::StretchedBoxFrame);
+        //m_window1->setBackgroundColor(Color::Transparency);
+        //m_window1->setBorderThickness(0);
+        ////Engine::mainUIView()->addElement(window1);
+        //m_window1->setText(u"Hello, Lumino!");
 
         //m_message1 = UIMessageTextArea::create();
         //m_message1->setMargin(16);
@@ -44,39 +50,41 @@ class App_Example_MessageWindow : public Application
         //window1->addElement(m_message1);
 
         auto window2 = UIWindow::create();
-        window2->setPosition(10, 100);
-        window2->setHAlignment(HAlignment::Left);
-        window2->setVAlignment(VAlignment::Top);
+        //window2->setPosition(10, 100);
+        window2->setHAlignment(UIHAlignment::Stretch);
+        window2->setVAlignment(UIVAlignment::Stretch);
         window2->setWidth(400);
-        window2->setHeight(100);
+        //window2->setHeight(100);
+        //window2->setBackgroundColor(Color(0,0,0,0.5));
         window2->setBackgroundImage(windowSkin);
         window2->setBackgroundImageRect(Rect(0, 0, 48, 48));
         window2->setBackgroundImageBorder(Thickness(8));
         window2->setBackgroundDrawMode(Sprite9DrawMode::StretchedBoxFrame);
-        //Engine::mainUIView()->addElement(window2);
+        UI::add(window2);
 
         m_message2 = UIMessageTextArea::create();
         m_message2->setMargin(16);
-        m_message2->setHeight(50);
+        //m_message2->setHeight(50);
         m_message2->setBackgroundColor(Color::DarkCyan);
         m_message2->setText(
             u"window2->setPosition(10, 10);\n"
-            u"window2->setHAlignment(HAlignment::Left);\n"
-            u"window2->setVAlignment(VAlignment::Top);\n"
+            u"window2->setHAlignment(UIHAlignment::Left);\n"
+            u"window2->setVAlignment(UIVAlignment::Top);\n"
             u"window2->setWidth(200);\n"
             u"window2->setHeight(100);\n"
             u"window2->setBackgroundImage(windowSkin);\n"
             u"window2->setBackgroundImageRect(Rect(0, 0, 48, 48));\n"
             u"window2->setBackgroundImageBorder(Thickness(8));\n"
             u"window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);");
+        //m_message2->setText(u"日本語表示\n\nbbbbb\nccccc");
         //m_message2->setViewportLineCount(2);
         //m_message2->setClipToBounds(true);
-        window2->addElement(m_message2);
+        window2->addChild(m_message2);
     }
 
     virtual void onUpdate() override
     {
-        if (Input::triggered(InputButtons::Submit)) {
+        if (Input::isTriggered(InputButtons::Submit)) {
 
             switch (m_step)
             {

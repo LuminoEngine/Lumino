@@ -9,6 +9,8 @@ namespace ln {
 // UIWindow
 // https://material-ui.com/demos/cards/
 
+LN_OBJECT_IMPLEMENT(UIWindow, UIControl) {}
+
 Ref<UIWindow> UIWindow::create()
 {
     return makeObject<UIWindow>();
@@ -23,9 +25,9 @@ UIWindow::UIWindow()
     open();
 }
 
-void UIWindow::init()
+bool UIWindow::init()
 {
-    UIContainerElement::init();
+    return UIControl::init();
 }
 
 void UIWindow::open()

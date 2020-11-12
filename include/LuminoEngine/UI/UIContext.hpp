@@ -7,6 +7,7 @@ class UIStyle;
 class UIStyleContext;
 class UIFrameWindow;
 
+#if 0
 // [2019/10/6] アプリ内でどのような文脈でUIシステムを使うか、その単位。
 // 例えば、ゲーム全体で共通のメニュー (プレイヤーのステータスなど) と、ゲーム内オブジェクトの UI (シーンの中に PC のようなオブジェクトがあり、のぞき込むとレトロなUIだしたり) の区別。
 // 内部的によく使うのは、Editor の UI と、Game プレビュー内の UI.
@@ -45,6 +46,7 @@ private:
     Ref<UIStyleContext> m_styleContext;
 	Ref<detail::UIStyleInstance> m_finalDefaultStyle;
 };
+#endif
 
 } // namespace ln
 

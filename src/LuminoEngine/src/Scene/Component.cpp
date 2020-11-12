@@ -51,14 +51,6 @@ void Component::onDetaching(WorldObject* owner)
 {
 }
 
-void Component::onAttachedScene(Level* newOwner)
-{
-}
-
-void Component::onDetachedScene(Level* oldOwner)
-{
-}
-
 //void Component::onPreUpdate()
 //{
 //}
@@ -68,6 +60,10 @@ void Component::onPreUpdate(float elapsedSeconds)
 }
 
 void Component::onUpdate(float elapsedSeconds)
+{
+}
+
+void Component::onApplyPhysicsFeedForward()
 {
 }
 

@@ -104,8 +104,13 @@ LN_CONSTRUCT_ACCESS:
 
 	bool init();
 
+	/** init */
 	LN_METHOD()
 	bool init(const Vector3& size);
+	
+	/** init */
+	LN_METHOD(OverloadPostfix = "WHD")
+	bool init(float width, float height, float depth);
 };
 
 /**
@@ -167,14 +172,18 @@ public:
 		@brief		MeshCollisionShape オブジェクトを作成します。
 	*/
 	static Ref<MeshCollisionShape> create(Mesh* mesh);
+	static Ref<MeshCollisionShape> create(Mesh* mesh, const Matrix& transform);
 
 LN_CONSTRUCT_ACCESS:
 	MeshCollisionShape();
 	virtual ~MeshCollisionShape();
 	bool init();
 	bool init(Mesh* mesh);
+	bool init(Mesh* mesh, const Matrix& transform);
 
 private:
+	bool initInternal(Mesh* mesh, const Matrix* transform);
+
 	btTriangleIndexVertexArray* m_btMeshData;
 };
 

@@ -1,14 +1,13 @@
 ﻿#include "Common.hpp"
 #include <LuminoEngine/Effect/ParticleEffectModel2.hpp>
 #include "../src/Effect/ParticleEffectInstance.hpp"
-#include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 
 class Test_Effect_Particle : public ::testing::Test {};
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, Lifetime)
 {
-	auto particleModel = makeObject<ParticleModel2>();
+	auto particleModel = makeObject<ParticleModel>();
 	auto emitterModel = particleModel->emitters()[0];
 	emitterModel->m_lifeTime = { 1, 1 };	// 1s で消えるようにする
 	emitterModel->m_maxParticles = 1;
@@ -64,12 +63,12 @@ TEST_F(Test_Effect_Particle, SingleSprite)
 
 	auto material = Material::create();
 	material->setMainTexture(Texture2D::load("Effect/ColorGrid.png"));
-	material->shadingModel = ShadingModel::Unlit;
+	material->setShadingModel(ShadingModel::Unlit);
 	material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
-	auto particleModel = makeObject<ParticleModel2>();
+	auto particleModel = makeObject<ParticleModel>();
 	auto emitter1 = particleModel->emitters()[0];
-	emitter1->setSpriteModule(material);
+	emitter1->setupSpriteModule(material);
 	emitter1->setLifeTime(1);
 	emitter1->setMaxParticles(1);
 	emitter1->setSpawnRate(1);
@@ -95,7 +94,7 @@ TEST_F(Test_Effect_Particle, SingleSprite)
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, SpawnRate)
 {
-	auto particleModel = makeObject<ParticleModel2>();
+	auto particleModel = makeObject<ParticleModel>();
 	auto emitterModel = particleModel->emitters()[0];
 	emitterModel->setLifeTime(5);
 	emitterModel->setMaxParticles(50);
@@ -119,7 +118,7 @@ TEST_F(Test_Effect_Particle, SpawnRate)
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, SphereShape)
 {
-	auto particleModel = makeObject<ParticleModel2>();
+	auto particleModel = makeObject<ParticleModel>();
 	auto emitterModel = particleModel->emitters()[0];
 	emitterModel->setLifeTime(10);
 	emitterModel->setMaxParticles(10);
@@ -146,7 +145,7 @@ TEST_F(Test_Effect_Particle, SphereShape)
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, ConeShape)
 {
-	auto particleModel = makeObject<ParticleModel2>();
+	auto particleModel = makeObject<ParticleModel>();
 	auto emitterModel = particleModel->emitters()[0];
 	emitterModel->setLifeTime(10);
 	emitterModel->setMaxParticles(10);
@@ -175,7 +174,7 @@ TEST_F(Test_Effect_Particle, ConeShape)
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, BoxShape)
 {
-	auto particleModel = makeObject<ParticleModel2>();
+	auto particleModel = makeObject<ParticleModel>();
 	auto emitterModel = particleModel->emitters()[0];
 	emitterModel->setLifeTime(10);
 	emitterModel->setMaxParticles(10);
@@ -203,7 +202,7 @@ TEST_F(Test_Effect_Particle, BoxShape)
 ////------------------------------------------------------------------------------
 //TEST_F(Test_Effect_Particle, ZSort)
 //{
-//	auto particleModel = makeObject<ParticleModel2>();
+//	auto particleModel = makeObject<ParticleModel>();
 //	auto emitterModel = particleModel->emitters()[0];
 //	emitterModel->setLifeTime(10);
 //	emitterModel->setMaxParticles(2);
@@ -237,14 +236,14 @@ TEST_F(Test_Effect_Particle, Trail)
 
 	auto material = Material::create();
 	material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/ColorGrid.png"));
-	material->shadingModel = ShadingModel::Unlit;
+	material->setShadingModel(ShadingModel::Unlit);
 	material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
 
-	auto particleModel = makeObject<ParticleModel2>();
+	auto particleModel = makeObject<ParticleModel>();
 	particleModel->seed = 8888;
 	auto m1 = particleModel->emitters()[0];
-	m1->setSpriteModule(material);
+	m1->setupSpriteModule(material);
 	m1->setLifeTime(10);
 	m1->setMaxParticles(10);
 	m1->setSpawnRate(1);

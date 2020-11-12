@@ -11,6 +11,7 @@
 
 #include "../Font/TextLayoutEngine.hpp"
 #include "../Font/FontManager.hpp"
+#include "UIStyleInstance.hpp"
 
 // TODO: Test
 #include <LuminoEngine/Graphics/Texture.hpp>
@@ -70,14 +71,14 @@ void UITextBlock::init()
     // Lumino は今後モバイル・タブレット系に寄せていきたいところ。
     // 
     // また、デフォルトが Top-Left だと表示したときぱっと目に入りづらいことがあるので、デバッグや導入的な視点からちょっとマイナスかも。
-    //setHAlignment(HAlignment::Center);
-    //setVAlignment(VAlignment::Center);
+    //setHAlignment(UIHAlignment::Center);
+    //setVAlignment(UIVAlignment::Center);
 
     // [2020/5/3] ↑やっぱりやめ。
     // 実際に UI 作ってみて思ったことだけど、センタリングしたいっていう機会よりも左寄せのほうが圧倒的に多い。
     // チュートリアル用に視認しやすさを出したとしても、実際に使うときに煩わしいのはちょっと…。
-    setHAlignment(HAlignment::Left);
-    setVAlignment(VAlignment::Top);
+    setHAlignment(UIHAlignment::Left);
+    setVAlignment(UIVAlignment::Top);
 
     setBlendMode(BlendMode::Alpha);
 
@@ -108,19 +109,38 @@ Size UITextBlock::measureOverride(UILayoutContext* layoutContext, const Size& co
     auto fc = detail::FontHelper::resolveFontCore(finalStyle()->font, scale);
     fc->getGlobalMetrics(&gm);
 
-    Size size = finalStyle()->font->measureRenderSize(m_text, scale);
+    Size contentSize = finalStyle()->font->measureRenderSize(m_text, scale);
+    m_textSize = Size(contentSize.width, gm.lineSpace);
 
-	return Size(size.width, gm.lineSpace);
+    Size baseSize = layoutContext->makeDesiredSize(this, m_textSize);
+
+	return baseSize;
 }
 
 void UITextBlock::onRender(UIRenderingContext* context)
 {
+    Rect clientArea = detail::LayoutHelper::arrangeClientArea(this, Rect(0, 0, actualSize()));
+
+    UIHAlignment ha = m_finalStyle->horizontalContentAlignment == UIHAlignment::Stretch ? UIHAlignment::Center : m_finalStyle->horizontalContentAlignment;
+    UIVAlignment va = m_finalStyle->verticalContentAlignment == UIVAlignment::Stretch ? UIVAlignment::Center : m_finalStyle->verticalContentAlignment;
+    Rect renderRect;
+    detail::LayoutHelper::adjustHorizontalAlignment(clientArea.getSize(), m_textSize, 0.0f, ha, &renderRect);
+    detail::LayoutHelper::adjustVerticalAlignment(clientArea.getSize(), m_textSize, 0.0f, va, &renderRect);
+
+    //auto a = m_finalStyle->horizontalContentAlignment;
+
     //{
     //    auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
     //    auto mat = Material::create(tex);
     //    context->drawBoxBackground(Rect(10, 20, 100, 200), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, mat, Rect(64, 0, 64, 64));
     //}
+    context->setTransfrom(Matrix::makeTranslation(clientArea.x + renderRect.x, clientArea.y + renderRect.y, 0.0f));
 
+    Color color = m_finalStyle->textColor;
+    if (!isEnabled()) {
+        color.a = 0.5;
+    }
+    context->setTextColor(color);
 
     context->drawText(m_text);
 }

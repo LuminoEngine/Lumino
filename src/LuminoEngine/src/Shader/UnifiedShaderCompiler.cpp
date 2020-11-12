@@ -328,7 +328,7 @@ bool UnifiedShaderCompiler::link()
 
 	for (auto& pair : m_transpilerMap) {
 		auto& tp = pair.second;
-		if (!tp->mapIOAndGenerateSpirv(m_unifiedShader->descriptorLayout(tp->passId))) {
+		if (!tp->mapIOAndGenerateSpirv(m_unifiedShader->descriptorLayout(tp->passId), m_diag)) {
 			return false;
 		}
 

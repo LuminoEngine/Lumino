@@ -1,9 +1,9 @@
 
 #include <LuminoCore.hpp>
-#include "Internal.hpp"
+#include "../Internal.hpp"
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Platform/iOSPlatformInterface.hpp>
-#include "../Engine/EngineManager.hpp"
+#include "../../Engine/EngineManager.hpp"
 
 static ln::Application* g_app = nullptr;
 

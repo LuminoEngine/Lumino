@@ -77,12 +77,10 @@ LN_CONSTRUCT_ACCESS:
 	RigidBodyComponent();
 	virtual ~RigidBodyComponent() = default;
 	void init();
-	virtual void onDispose(bool explicitDisposing) override;
 
 protected:
-	virtual void onAttachedScene(Level* newOwner) override;
-	virtual void onDetachedScene(Level* oldOwner) override;
-	virtual void onBeforeStepSimulation() override;
+	virtual void onDispose(bool explicitDisposing) override;
+	virtual void onBeforeStepSimulation_Deprecated() override;
 	virtual void onAfterStepSimulation() override;
     virtual void onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact) override;
     virtual void onCollisionLeave(PhysicsObject* otherObject, ContactPoint* contact) override;
@@ -95,13 +93,18 @@ private:
     Event<CollisionEventHandler> m_onCollisionStay;
 };
 
+/** TriggerBodyComponent */
+LN_CLASS()
 class TriggerBodyComponent
     : public Component
     , protected detail::IPhysicsObjectEventListener
 {
+    LN_OBJECT;
 public:
     static Ref<TriggerBodyComponent> create();
-
+    
+	/** addCollisionShape */
+	LN_METHOD()
     void addCollisionShape(CollisionShape* shape);
 
     /** 衝突グループマスクを設定します。デフォルトは 0x0000FFFF で、0～15番のグループと衝突することを示します。 */
@@ -121,13 +124,14 @@ public:
 LN_CONSTRUCT_ACCESS:
     TriggerBodyComponent();
     virtual ~TriggerBodyComponent() = default;
+
+    /** init */
+    LN_METHOD()
     void init();
-    virtual void onDispose(bool explicitDisposing) override;
 
 protected:
-    virtual void onAttachedScene(Level* newOwner) override;
-    virtual void onDetachedScene(Level* oldOwner) override;
-    virtual void onBeforeStepSimulation() override;
+    virtual void onDispose(bool explicitDisposing) override;
+    virtual void onBeforeStepSimulation_Deprecated() override;
     virtual void onAfterStepSimulation() override;
     virtual void onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact) override;
     virtual void onCollisionLeave(PhysicsObject* otherObject, ContactPoint* contact) override;

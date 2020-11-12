@@ -123,9 +123,14 @@ void ShaderCompilationProperties::setDiagnostics(DiagnosticsManager* diag)
 //=============================================================================
 // Shader
 
-Ref<Shader> Shader::create(const StringRef& hlslEffectFilePath, ShaderCompilationProperties* properties)
+Ref<Shader> Shader::create(const StringRef& filePath, ShaderCompilationProperties* properties)
 {
-    return ln::makeObject<Shader>(hlslEffectFilePath, properties);
+    return ln::makeObject<Shader>(filePath, properties);
+}
+
+Ref<Shader> Shader::load(const StringRef& filePath, AssetImportSettings* settings)
+{
+    return detail::EngineDomain::shaderManager()->loadShader(filePath);
 }
 
 Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties)
@@ -147,58 +152,15 @@ Shader::~Shader()
 
 void Shader::init()
 {
-    Object::init();
+    AssetObject::init();
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_graphicsManager);
 }
 
 void Shader::init(const StringRef& filePath, ShaderCompilationProperties* properties)
 {
     Shader::init();
-    Ref<DiagnosticsManager> localDiag = nullptr;
-    if (properties) localDiag = properties->m_diag;
-    if (!localDiag) localDiag = makeObject<DiagnosticsManager>();
-
-    Path path = filePath;
-    if (path.hasExtension(detail::UnifiedShader::FileExt)) {
-        auto file = FileStream::create(filePath, FileOpenMode::Read);
-        createFromStream(file, localDiag);
-    } else {
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-		ByteBuffer buffer = FileSystem::readAllBytes(filePath);
-
-        List<Path> includeDirs = { path.parent() };
-		List<String> definitions;
-		if (properties) {
-			for (auto& path : properties->m_includeDirectories) includeDirs.add(path);
-			for (auto& def : properties->m_definitions) definitions.add(def);
-		}
-
-		detail::UnifiedShaderCompiler compiler(m_manager, localDiag);
-		if (!compiler.compile(reinterpret_cast<char*>(buffer.data()), buffer.size(), includeDirs, definitions)) {
-			LN_ERROR(localDiag->toString());
-			return;
-		}
-		if (!compiler.link()) {
-			LN_ERROR();
-			return;
-		}
-
-		createFromUnifiedShader(compiler.unifiedShader(), localDiag);
-#else
-        LN_NOTIMPLEMENTED();
-#endif
-    }
-
-    m_name = path.fileNameWithoutExtension();
-
-    if (!properties || !properties->m_diag) {
-        if (localDiag->hasError()) {
-            LN_ERROR(localDiag->toString());
-            return;
-        } else if (localDiag->hasWarning()) {
-            LN_LOG_WARNING << localDiag->toString();
-        }
-    }
+    auto stream = FileStream::create(filePath, FileOpenMode::Read);
+    loadFromStream(detail::AssetPath::makeFromLocalFilePath(filePath), stream, properties);
 }
 
 void Shader::init(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties)
@@ -273,6 +235,64 @@ void Shader::init(const String& name, Stream* stream)
     }
 }
 
+bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, ShaderCompilationProperties* properties)
+{
+    Ref<DiagnosticsManager> localDiag = nullptr;
+    if (properties) localDiag = properties->m_diag;
+    if (!localDiag) localDiag = makeObject<DiagnosticsManager>();
+
+    //Path path = filePath;
+    //if (path.hasExtension(detail::UnifiedShader::FileExt)) {
+    if (path.path().hasExtension(detail::UnifiedShader::FileExt)) {
+        //auto file = FileStream::create(filePath, FileOpenMode::Read);
+        createFromStream(stream, localDiag);
+    }
+    else {
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+        //if (LN_REQUIRE(path.scheme() == detail::AssetPath::FileSchemeName)) return false;
+
+
+        //ByteBuffer buffer = FileSystem::readAllBytes(filePath);
+        auto buffer = stream->readToEnd();
+
+        List<Path> includeDirs = { path.path().parent() };
+        List<String> definitions;
+        if (properties) {
+            for (auto& path : properties->m_includeDirectories) includeDirs.add(path);
+            for (auto& def : properties->m_definitions) definitions.add(def);
+        }
+
+        detail::UnifiedShaderCompiler compiler(m_manager, localDiag);
+        if (!compiler.compile(reinterpret_cast<char*>(buffer.data()), buffer.size(), includeDirs, definitions)) {
+            LN_ERROR(localDiag->toString());
+            return false;
+        }
+        if (!compiler.link()) {
+            LN_ERROR();
+            return false;
+        }
+
+        createFromUnifiedShader(compiler.unifiedShader(), localDiag);
+#else
+        LN_NOTIMPLEMENTED();
+#endif
+    }
+
+    m_name = path.path().fileNameWithoutExtension();
+
+    if (!properties || !properties->m_diag) {
+        if (localDiag->hasError()) {
+            LN_ERROR(localDiag->toString());
+            return false;
+        }
+        else if (localDiag->hasWarning()) {
+            LN_LOG_WARNING << localDiag->toString();
+        }
+    }
+
+    return true;
+}
+
 void Shader::createFromStream(Stream* stream, DiagnosticsManager* diag)
 {
     detail::UnifiedShader unifiedShader(diag);
@@ -322,12 +342,19 @@ void Shader::onDispose(bool explicitDisposing)
     m_techniques->clear();
 
     detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_graphicsManager);
-    Object::onDispose(explicitDisposing);
+    AssetObject::onDispose(explicitDisposing);
 }
 
 void Shader::onChangeDevice(detail::IGraphicsDevice* device)
 {
     LN_NOTIMPLEMENTED();
+}
+
+void Shader::onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath)
+{
+    if (!stream) return;
+
+    loadFromStream(assetPath, stream, nullptr);
 }
 
 ShaderParameter2* Shader::findParameter(const StringRef& name) const
@@ -348,6 +375,32 @@ ShaderTechnique* Shader::findTechnique(const StringRef& name) const
 Ref<ReadOnlyList<Ref<ShaderTechnique>>> Shader::techniques() const
 {
     return m_techniques;
+}
+
+void Shader::setFloat(const StringRef& parameterName, float value)
+{
+    if (auto* param = findParameter(parameterName)) {
+        param->setFloat(value);
+    }
+}
+
+void Shader::setVector(const StringRef& parameterName, const Vector3& value)
+{
+    setVector(parameterName, Vector4(value, 0.0));
+}
+
+void Shader::setVector(const StringRef& parameterName, const Vector4& value)
+{
+    if (auto* param = findParameter(parameterName)) {
+        param->setVector(value);
+    }
+}
+
+void Shader::setTexture(const StringRef& parameterName, Texture* value)
+{
+    if (auto* param = findParameter(parameterName)) {
+        param->setTexture(value);
+    }
 }
 
 //Ref<ShaderDescriptor> Shader::createDescriptor()

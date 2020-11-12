@@ -336,6 +336,7 @@ constexpr Color Color::lerp(const Color& color1, const Color& color2, float t) n
 #undef LN_E3
 
 /** 色調を定義します。 */
+LN_STRUCT()
 struct ColorTone
 {
 public:
@@ -344,19 +345,24 @@ public:
 
 public:
     /** 赤成分のカラーバランス (-1.0～1.0) */
+    LN_FIELD()
     float r;
 
     /** 緑成分のカラーバランス (-1.0～1.0) */
+    LN_FIELD()
     float g;
 
     /** 青成分のカラーバランス (-1.0～1.0) */
+    LN_FIELD()
     float b;
 
     /** グレースケールフィルタの強さ (0.0 ～ 1.0) (saturation) */
+    LN_FIELD()
     float s;
 
 public:
     /** すべての要素を 0.0 で初期化します。 */
+    LN_METHOD(OverloadPostfix = "Zeros")
     constexpr ColorTone() noexcept
         : r(0.0f)
         , g(0.0f)
@@ -366,6 +372,7 @@ public:
     }
 
     /** 各要素を指定して初期化します。 */
+    LN_METHOD()
     constexpr ColorTone(float r_, float g_, float b_, float s_) noexcept
         : r(r_)
         , g(g_)
@@ -395,6 +402,8 @@ public:
 
     /** この色調に指定した色調を加算します。0.0～1.0 を超える場合はクランプします。 */
     void addClamp(const ColorTone& tone);
+
+    bool isZero() const { return r == 0.0f && g == 0.0f && b == 0.0f && s == 0.0f; }
 
 	static bool nearEqual(const ColorTone& value1, const ColorTone& value2) { return Vector4::nearEqual(value1.toVector4(), value2.toVector4()); }
 

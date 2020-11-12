@@ -2,9 +2,11 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
+#include "../../Platform/PlatformManager.hpp"
+#include "../../Platform/OpenGLContext.hpp"
 #include "OpenGLDeviceContext.hpp"
 
-#include "GLFWContext.hpp"
+#include "GLFWSwapChain.hpp"
 
 
 #ifndef GL_TEXTURE_MAX_ANISOTROPY_EXT
@@ -244,10 +246,10 @@ Result IGraphicsDevice::getOpenGLCurrentFramebufferTextureId(int* id)
 // OpenGLDevice
 
 OpenGLDevice::OpenGLDevice()
-	: m_glContext(nullptr)
+	: m_mainWindow(nullptr)
+	, m_mainGLContext(nullptr)
 	, m_uniformTempBuffer()
 	, m_uniformTempBufferWriter(&m_uniformTempBuffer)
-	//, m_commandListCreated(false)
 {
 }
 
@@ -255,21 +257,27 @@ void OpenGLDevice::init(const Settings& settings)
 {
 	LN_LOG_DEBUG << "OpenGLDeviceContext::init start";
 
-    if (settings.mainWindow)
-    {
-#ifdef LN_GLFW
-	    auto glfwContext = makeRef<GLFWContext>();
-	    glfwContext->init(this, settings.mainWindow);
-	    m_glContext = glfwContext;
-#endif
-    }
-
-    if (!m_glContext)
-    {
-        // Android(GLSurfaceView) や Web など、バックバッファの swap を Lumino の外側で行う場合のダミー
-        auto glfwContext = makeRef<EmptyGLContext>();
-        m_glContext = glfwContext;
-    }
+	// Create main context
+	{
+		m_mainWindow = settings.mainWindow;
+		m_mainGLContext = settings.platformManager->openGLContext();
+		m_mainGLContext->makeCurrentMain();
+//		if (settings.mainWindow)
+//		{
+//#ifdef LN_GLFW
+//			auto glfwContext = makeRef<GLFWContext>();
+//			glfwContext->init(this, settings.mainWindow);
+//			m_glContext = glfwContext;
+//#endif
+//		}
+//
+//		if (!m_glContext)
+//		{
+//			// Android(GLSurfaceView) や Web など、バックバッファの swap を Lumino の外側で行う場合のダミー
+//			auto glfwContext = makeRef<EmptyGLContext>();
+//			m_glContext = glfwContext;
+//		}
+	}
 
 #if defined(LN_GRAPHICS_OPENGLES)
 	LN_LOG_INFO << "OpenGL ES enabled.";
@@ -282,39 +290,39 @@ void OpenGLDevice::init(const Settings& settings)
 	LN_LOG_INFO << "OpenGL " << GLVersion.major << "." << GLVersion.minor;
 #endif
 
-	//GLint value;
-	//glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &value);
+	// Check caps.
+	{
+		LN_LOG_INFO << "GL_VERSION : " << glGetString(GL_VERSION);
 
-	LN_LOG_INFO << "GL_VERSION : " << glGetString(GL_VERSION);
+		GL_CHECK(glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &m_caps.MAX_VERTEX_ATTRIBS));
+		GL_CHECK(glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &m_caps.MAX_COLOR_ATTACHMENTS));
+		LN_LOG_INFO << "GL_MAX_VERTEX_ATTRIBS : " << m_caps.MAX_VERTEX_ATTRIBS;
+		LN_LOG_INFO << "GL_MAX_COLOR_ATTACHMENTS : " << m_caps.MAX_COLOR_ATTACHMENTS;
 
-	GL_CHECK(glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &m_caps.MAX_VERTEX_ATTRIBS));
-	GL_CHECK(glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &m_caps.MAX_COLOR_ATTACHMENTS));
-	LN_LOG_INFO << "GL_MAX_VERTEX_ATTRIBS : " << m_caps.MAX_VERTEX_ATTRIBS;
-	LN_LOG_INFO << "GL_MAX_COLOR_ATTACHMENTS : " << m_caps.MAX_COLOR_ATTACHMENTS;
-	
-	
-	int extensions = 0;
-	glGetIntegerv(GL_EXTENSIONS, &extensions);
-	LN_LOG_INFO << "GL_EXTENSIONS : " << extensions;
-	for(int i = 0; i < extensions; i++) {
-		LN_LOG_INFO << "  " << glGetStringi(GL_EXTENSIONS, i);
+
+		int extensions = 0;
+		glGetIntegerv(GL_EXTENSIONS, &extensions);
+		LN_LOG_INFO << "GL_EXTENSIONS : " << extensions;
+		for (int i = 0; i < extensions; i++) {
+			LN_LOG_INFO << "  " << glGetStringi(GL_EXTENSIONS, i);
+		}
+		while (glGetError() != 0);	// ignore error.
+
+
+		const char* extensionsString = (const char*)glGetString(GL_EXTENSIONS);
+		while (glGetError() != 0);	// ignore error.
+		if (extensionsString) {
+			std::string str = extensionsString;
+
+			m_caps.support_filter_anisotropic =
+				(str.find("EXT_texture_filter_anisotropic") != std::string::npos) |
+				(str.find("WEBKIT_EXT_texture_filter_anisotropic") != std::string::npos) |
+				(str.find("MOZ_EXT_texture_filter_anisotropic") != std::string::npos);
+			if (m_caps.support_filter_anisotropic) {
+				GL_CHECK(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &m_caps.MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+			}
+		}
 	}
-    while (glGetError() != 0);	// ignore error.
-
-
-    const char* extensionsString = (const char*)glGetString(GL_EXTENSIONS);
-    while (glGetError() != 0);	// ignore error.
-    if (extensionsString) {
-        std::string str = extensionsString;
-
-        m_caps.support_filter_anisotropic =
-            (str.find("EXT_texture_filter_anisotropic") != std::string::npos) |
-            (str.find("WEBKIT_EXT_texture_filter_anisotropic") != std::string::npos) |
-            (str.find("MOZ_EXT_texture_filter_anisotropic") != std::string::npos);
-        if (m_caps.support_filter_anisotropic) {
-            GL_CHECK(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &m_caps.MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-        }
-    }
 
 	m_graphicsQueue = makeRef<GLCommandQueue>();
 	if (!m_graphicsQueue->init()) {
@@ -344,6 +352,7 @@ void OpenGLDevice::dispose()
 
 void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps)
 {
+	outCaps->graphicsAPI = GraphicsAPI::OpenGL;
 #ifdef LN_GRAPHICS_OPENGLES
 	outCaps->requestedShaderTriple.target = "glsl";
 	outCaps->requestedShaderTriple.version = 300;
@@ -358,7 +367,15 @@ void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps)
 
 Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
-	return m_glContext->createSwapChain(window, backbufferSize);
+#ifdef LN_GLFW
+	auto ptr = makeRef<GLFWSwapChain>(this);
+	if (!ptr->init(window, backbufferSize)) {
+		return nullptr;
+	}
+	return ptr;
+#else
+	return nullptr;
+#endif
 }
 
 Ref<ICommandList> OpenGLDevice::onCreateCommandList()
@@ -728,13 +745,13 @@ void GLGraphicsContext::getPrimitiveInfo(PrimitiveTopology primitive, int primit
 		break;
 	}
 }
-
-//=============================================================================
-// GLContext
-
-GLContext::GLContext()
-{
-}
+//
+////=============================================================================
+//// GLContext
+//
+//GLContext::GLContext()
+//{
+//}
 
 //=============================================================================
 // GLSwapChain
@@ -821,7 +838,7 @@ void GLSwapChain::present()
 
 	SizeI bufferSize = getRenderTarget(0)->realSize();
 
-
+	beginMakeContext();
 
 	// SwapChain の Framebuffer をウィンドウのバックバッファへ転送
 	{
@@ -859,27 +876,29 @@ void GLSwapChain::present()
 		GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO()));
 	}
 
-	m_device->glContext()->swap(this);
+	swap();
+
+	endMakeContext();
 }
 
-//=============================================================================
-// EmptyGLContext
-
-Ref<GLSwapChain> EmptyGLContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
-{
-	auto ptr = makeRef<EmptyGLSwapChain>(nullptr);
-    ptr->setBackendBufferSize(backbufferSize.width, backbufferSize.height);
-	ptr->genBackbuffer(backbufferSize.width, backbufferSize.height);
-	return ptr;
-}
-
-void EmptyGLContext::makeCurrent(GLSwapChain* swapChain)
-{
-}
-
-void EmptyGLContext::swap(GLSwapChain* swapChain)
-{
-}
+////=============================================================================
+//// EmptyGLContext
+//
+//Ref<GLSwapChain> EmptyGLContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
+//{
+//	auto ptr = makeRef<EmptyGLSwapChain>(nullptr);
+//    ptr->setBackendBufferSize(backbufferSize.width, backbufferSize.height);
+//	ptr->genBackbuffer(backbufferSize.width, backbufferSize.height);
+//	return ptr;
+//}
+//
+//void EmptyGLContext::makeCurrent(GLSwapChain* swapChain)
+//{
+//}
+//
+//void EmptyGLContext::swap(GLSwapChain* swapChain)
+//{
+//}
 
 //==============================================================================
 // GLCommandQueue

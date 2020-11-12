@@ -20,7 +20,9 @@
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/SceneConductor.hpp>
+#include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
+#include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include "../Engine/EngineManager.hpp"
 #include "SceneManager.hpp"
 
@@ -28,6 +30,31 @@ namespace ln {
 
 //==============================================================================
 // Scene
+
+void Scene::setClearMode(SceneClearMode value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->setClearMode(value);
+}
+
+void Scene::setSkyColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeSkyColor = value;
+}
+
+void Scene::setSkyHorizonColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeHorizonColor = value;
+}
+
+void Scene::setSkyCloudColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeCloudColor = value;
+}
+
+void Scene::setSkyOverlayColor(const Color& value)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeOverlayColor = value;
+}
 
 void Scene::gotoLevel(Level* level, bool withEffect)
 {
@@ -116,11 +143,11 @@ void Scene::startFadeIn()
     sc->transitionEffect()->startFadeIn(sc->transitionEffectDuration());
 }
 
-void Scene::startCrossFade()
-{
-    auto& sc = detail::EngineDomain::engineManager()->mainWorld()->sceneConductor();
-    sc->transitionEffect()->startCrossFade(sc->transitionEffectDuration());
-}
+//void Scene::startCrossFade()
+//{
+//    auto& sc = detail::EngineDomain::engineManager()->mainWorld()->sceneConductor();
+//    sc->transitionEffect()->startCrossFade(sc->transitionEffectDuration());
+//}
 
 void Scene::setFogStartDistance(float value)
 {
@@ -153,24 +180,154 @@ void Scene::setFogUpperHeight(float value)
     detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_fogUpperHeight= value;
 }
 
-void Scene::setSkydomeSkyColor(const Color& value)
+void Scene::setHDREnabled(bool value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeSkyColor = value;
+    detail::EngineDomain::engineManager()->mainRenderView()->setHDREnabled(true);
 }
 
-void Scene::setSkydomeHorizonColor(const Color& value)
+bool Scene::isHDREnabled()
 {
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeHorizonColor = value;
+    return detail::EngineDomain::engineManager()->mainRenderView()->isHDREnabled();
 }
 
-void Scene::setSkydomeCloudColor(const Color& value)
+void Scene::setScreenBlendColor(const Color& value)
 {
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeCloudColor = value;
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setScreenBlendColor(value);
 }
 
-void Scene::setSkydomeOverlayColor(const Color& value)
+const Color& Scene::screenBlendColor()
 {
-    detail::EngineDomain::engineManager()->mainWorld()->masterScene()->acquireRenderParameters()->m_skydomeOverlayColor = value;
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->screenBlendColor();
+}
+
+void Scene::setColorTone(const ColorTone& value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setScreenColorTone(value);
+}
+
+const ColorTone& Scene::colorTone()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->screenColorTone();
+}
+
+void Scene::setAntialiasEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setAntialiasEnabled(value);
+}
+
+bool Scene::isAntialiasEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isAntialiasEnabled();
+}
+
+void Scene::setSSREnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setSSREnabled(value);
+}
+
+bool Scene::isSSREnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isSSREnabled();
+}
+
+void Scene::setSSAOEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setSSAOEnabled(value);
+}
+
+bool Scene::isSSAOEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isSSAOEnabled();
+}
+
+void Scene::setBloomEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setBloomEnabled(value);
+}
+
+bool Scene::isBloomEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isBloomEnabled();
+}
+
+void Scene::setDOFEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setDOFEnabled(value);
+}
+
+bool Scene::isDOFEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isDOFEnabled();
+}
+
+void Scene::setTonemapEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setTonemapEnabled(value);
+}
+
+bool Scene::isTonemapEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isTonemapEnabled();
+}
+
+void Scene::setVignetteEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setVignetteEnabled(value);
+}
+
+bool Scene::isVignetteEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isVignetteEnabled();
+}
+
+void Scene::setGammaEnabled(bool value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->setGammaEnabled(value);
+}
+
+bool Scene::isGammaEnabled()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->isGammaEnabled();
+}
+
+void Scene::setTonemapExposure(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_exposure = value;
+}
+
+void Scene::setTonemapLinearWhite(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_linearWhite = value;
+}
+
+void Scene::setTonemapShoulderStrength(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_shoulderStrength = value;
+}
+
+void Scene::setTonemapLinearStrength(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_linearStrength = value;
+}
+
+void Scene::setTonemapLinearAngle(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_linearAngle = value;
+}
+
+void Scene::setTonemapToeStrength(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_toeStrength = value;
+}
+
+void Scene::setTonemapToeNumerator(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_toeNumerator = value;
+}
+
+void Scene::setTonemapToeDenominator(float value)
+{
+    detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_toeDenominator = value;
 }
 
 ////==============================================================================

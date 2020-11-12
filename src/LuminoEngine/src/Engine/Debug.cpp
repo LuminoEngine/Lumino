@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Debug.hpp>
 #include <LuminoEngine/Font/Font.hpp>
+#include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include "EngineManager.hpp"
 
@@ -25,6 +26,16 @@ duration はデフォルト引数となっており通常は意識しないの�
 
 */
 	
+void Debug::setGuideGridEnabled(bool value)
+{
+	detail::EngineDomain::engineManager()->mainRenderView()->setPhysicsDebugDrawEnabled(value);
+}
+	
+void Debug::setPhysicsDebugDrawEnabled(bool value)
+{
+	detail::EngineDomain::engineManager()->mainRenderView()->setPhysicsDebugDrawEnabled(value);
+}
+
 void Debug::print(StringRef str)
 {
 	detail::EngineDomain::engineManager()->debugInterface()->print(2.0f, Color::Black, str);

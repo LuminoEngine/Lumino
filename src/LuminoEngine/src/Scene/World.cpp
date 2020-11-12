@@ -31,7 +31,7 @@ World::World()
 {
     m_masterScene->m_ownerWorld = this;
     m_masterScene->m_initialUpdate = true;
-
+    m_activeObjects.reserve(100);
 }
 
 World::~World()
@@ -229,6 +229,20 @@ void World::updateFrame(float elapsedSeconds)
     m_sceneConductor->transitionEffect()->onUpdateFrame(elapsedSeconds);
     m_sceneConductor->executeCommands();
 
+    // Collect ActiveObjects
+    {
+        m_activeObjects.clear();
+
+        m_masterScene->collectActiveObjects(this);
+        for (auto& scene : m_sceneList) {
+            scene->collectActiveObjects(this);
+        }
+        if (m_sceneConductor) {
+            m_sceneConductor->collectActiveObjects(this);
+        }
+    }
+
+
     // TODO: イベントの実行順序はこれで決定。ドキュメントに書いておく
     float t = elapsedSeconds * m_timeScale;
     onPreUpdate(t);
@@ -296,6 +310,10 @@ void World::onPostUpdate(float elapsedSeconds)
     }
     if (m_sceneConductor) {
         m_sceneConductor->postUpdate(elapsedSeconds);
+    }
+
+    for (auto& obj : m_activeObjects) {
+        obj->forEachComponents([](auto& x) { x->onApplyPhysicsFeedForward(); });
     }
 }
 
@@ -369,6 +387,11 @@ void World::renderGizmos(RenderingContext* context)
     if (m_sceneConductor) {
         m_sceneConductor->renderGizmos(context);
     }
+}
+
+void World::enqueueActiveWorldObject(WorldObject* obj)
+{
+    m_activeObjects.add(obj);
 }
 
 void World::enqueueWorldRenderingElement(IWorldRenderingElement* element)

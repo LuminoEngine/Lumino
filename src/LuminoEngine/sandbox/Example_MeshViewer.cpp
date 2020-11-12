@@ -4,6 +4,7 @@ using namespace ln;
 
 class App_Example_MeshViewer : public Application
 {
+public:
     Ref<PlaneMesh> m_plane;
     Ref<Sprite> m_sprite;
     Ref<MeshNode> m_node;
@@ -15,15 +16,20 @@ class App_Example_MeshViewer : public Application
     Vector3 m_targetPos;
     Vector3 m_lookPos;
 
+    App_Example_MeshViewer()
+    {
+        EngineSettings::setDeveloperToolEnabled(true);
+    }
+
     virtual void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
-        //Engine::renderView()->setBackgroundColor(Color::Gray);
+        Engine::renderView()->setBackgroundColor(Color::Gray);
 
         //m_sprite = Sprite::create(Texture2D::whiteTexture());
         //m_sprite->setBlendMode(BlendMode::Normal);
-        //m_sprite->setAlignments(HAlignment::Left, VAlignment::Top);
+        //m_sprite->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 
         //m_plane = PlaneMesh::create();
         //auto planeMaterial = Material::create(Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg"));
@@ -66,8 +72,13 @@ class App_Example_MeshViewer : public Application
         
         //mesh->setPosition(0, 10, 0);
 		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Models/Axis.glb");
-		//auto mesh = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Map-2.glb.gltf");
-
+		//auto mesh = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Exported/MainMap1-Start.gltf");
+		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/Axis1.glb");
+        //auto mesh = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/Spear1.gltf");
+        //mesh->model()->material(1)->setColor(Color(0, 1, 0));
+        //mesh->model()->material(1)->setEmissive(Color(0.5, 2, 0.5));
+        Engine::renderView()->setHDREnabled(true);
+        Scene::setSSAOEnabled(true);
 #if 1
 
         Engine::mainLight()->setPosition(30, 20, 10);
@@ -84,7 +95,8 @@ class App_Example_MeshViewer : public Application
         //m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid_BlenderGLTFExported.glb");
         //m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Sendagaya_Shibu.vrm");
         //m_mesh = SkinnedMesh::load(u"D:/Documents/Modeling/HC4-1.glb");
-        m_mesh = SkinnedMesh::load(u"D:/Documents/Modeling/HC4-10.glb");
+        m_mesh = SkinnedMesh::load(u"D:/Documents/Modeling/HC5-6-export.glb");
+
 
 
         m_model = m_mesh->skinnedMeshComponent()->model();
@@ -92,6 +104,13 @@ class App_Example_MeshViewer : public Application
         //MeshDiag::clearBoneInitialRotations(m_model);
         //MeshDiag::printNodes(m_model);
         m_model->verifyHumanoidBones();
+
+        if (auto node = m_model->findNode(u"Icosphere.001")) {
+            node->setVisible(false);
+        }
+        if (auto material = m_model->findMaterial(u"Stone")) {
+            material->setEmissive(Color(0.5, 2, 0.5));
+        }
 
         //m_node = m_model->findNode(u"左腕");
         m_node = m_model->findHumanoidBone(HumanoidBones::Hips);
@@ -116,9 +135,11 @@ class App_Example_MeshViewer : public Application
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleStandingPose7.bvh");
         //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleSittingPose.bvh");
         //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/Arm_R-Test1-BoneVert.bvh");
-        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh");
-        auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Walk.bvh");
-        clip->setHierarchicalAnimationMode(HierarchicalAnimationMode::DisableTranslation);
+        auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh");
+        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Walk.bvh");
+        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Standing2.bvh");
+        //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/HC5-3.bvh");
+        //clip->setHierarchicalAnimationMode(HierarchicalAnimationMode::AllowTranslationOnlyRootY);
         
         //auto clip = AnimationClip::load(u"D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");
         //auto clip1 = AnimationClip::load(u"D:/Materials/MMD/Motion/MMO用stand/stand2.vmd");
@@ -134,6 +155,28 @@ class App_Example_MeshViewer : public Application
         //auto box = BoxMesh::create();
         //box->setScale(7.8);
         //box->setPosition(0, 5, 0);
+#endif
+
+#if 1
+        auto label = makeObject<UIControl>();
+        //label->setBackgroundColor(Color::Blue);
+        label->setAlignments(UIHAlignment::Center, UIVAlignment::Center);
+
+        auto textblock = UITextBlock::create("E");
+        textblock->setBackgroundColor(Color::Gray);
+        textblock->setBorderThickness(1);
+        textblock->setBorderColor(Color::Red);
+        textblock->setPadding(Thickness(4, 2));
+        textblock->setCornerRadius(3);
+        //textblock->setSize(20, 20);
+        label->addInlineVisual(textblock, UIInlinePlacement::Left);
+
+        auto text2 = UITextBlock::create("Examine");
+        text2->setAlignments(UIHAlignment::Center, UIVAlignment::Center);
+        text2->setMargin(Thickness(8, 0, 0, 0));
+        label->addChild(text2);
+
+        UI::add(label);
 #endif
     }
 

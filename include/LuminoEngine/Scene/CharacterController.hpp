@@ -8,6 +8,8 @@ class InputController;
 class UIEventArgs;
 class EventConnection;
 class RigidBody;
+class PhysicsObject;
+class ContactPoint;
 
 enum class CharacterControllerMode
 {
@@ -18,6 +20,10 @@ enum class CharacterControllerMode
 	CharacterMajor,
 };
 
+/**
+ * CharacterController
+ */
+LN_CLASS()
 class CharacterController
 	: public Component
 	, protected detail::IPhysicsObjectEventListener
@@ -27,16 +33,67 @@ public:
 	void releaseCursorGrab();
 
 	const Ref<RigidBody>& rigidBody() const { return m_rigidBody; }
+	
+	/** walkVelocity */
+	LN_METHOD(Property)
+	void setWalkVelocity(float value) { m_walkVelocity = value; }
 
+	/** walkVelocity */
+	LN_METHOD(Property)
+	float walkVelocity() const { return m_walkVelocity; }
 
+	// InputControlEnabled=true の時に有効
+	/** setVelocity */
+	LN_METHOD(Property)
+	void setVelocity(const Vector3& value) { m_currentVelocity = value; }
+
+	/** velocity */
+	LN_METHOD(Property)
+	const Vector3& velocity() const { return m_currentVelocity; }
+
+	/**
+	 * キーボードやゲームパッドによる操作の有効状態を設定します。 (default: true)
+	 *
+	 * false を指定した場合、キャラクターの想定外の自走を防止するため、速度も 0 にリセットされます。
+	 */
+	LN_METHOD(Property)
+	void setInputControlEnabled(bool value);
+
+	/**
+	 * マウスによるカメラ操作の有効状態を設定します。 (default: true)
+	 *
+	 * 有効である場合、関連付けられているカメラを通じて、描画先となるビューの MouseGrab を取得します。
+	 * つまり、マウスカーソルは非表示となり UI をポイントしてクリックする等の操作はできなくなります。
+	 */
+	LN_METHOD(Property)
+	void setCameraControlEnabled(bool value);
+	
+	/** キャラクターの高さを設定します。この値はカプセルコライダーの高さや、カメラの注視点として使用されます。 (default: 2.0) */
+	LN_METHOD(Property)
+	void setHeight(float value) { m_height = value; }
+
+	/** キャラクターの高さを取得します。 */
+	LN_METHOD(Property)
+	float height() const { return m_height; }
+
+	/** キャラクターとカメラの距離を設定します。(default: 5.0) */
+	LN_METHOD(Property)
+	void setCameraRadius(float value) { m_cameraRadius = value; }
+
+	/** キャラクターとカメラの距離を取得します。 */
+	LN_METHOD(Property)
+	float cameraRadius() const { return m_cameraRadius; }
 
 	/** CollisionEnter イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD()
 	void setCollisionEnter(Ref<CollisionEventHandler> handler);
 
 	/** CollisionLeave イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD()
 	void setCollisionLeave(Ref<CollisionEventHandler> handler);
 
 	/** CollisionStay イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD()
 	void setCollisionStay(Ref<CollisionEventHandler> handler);
 
 protected:
@@ -46,7 +103,7 @@ protected:
 	// 例えば攻撃を受けてのけぞっている途中は、よびだすべきではない。
 	void onUpdate(float elapsedSeconds) override;
 
-	void onBeforeStepSimulation() override;
+	void onBeforeStepSimulation_Deprecated() override;
 	void onAfterStepSimulation() override;
 	void onCollisionEnter(PhysicsObject* otherObject, ContactPoint* contact) override;
 	void onCollisionLeave(PhysicsObject* otherObject, ContactPoint* contact) override;
@@ -54,6 +111,9 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
 	CharacterController();
+
+	/** CharacterController を作成します。 */
+	LN_METHOD(Property)
 	bool init();
 
 private:
@@ -61,6 +121,7 @@ private:
 	{
 		float forwardVelocity;
 		float turnVelocity;
+		//float verticalVelocity;
 		//bool sneak;
 
 		float cameraH;
@@ -96,8 +157,11 @@ private:
 	float m_height = 2.0f; //0.5f;//
 
 	// キャラクターとカメラの最大距離。
-	// 鎖の要領で、この範囲内でキャラクターが動いても、カメラは位置を更新しない。
 	float m_cameraRadius = 5.0f;
+
+	// 真上からキャラを見下ろす角度が 0、真下から見上げる角度が 1
+	float m_cameraMinTilt = 0.001f;
+	float m_cameraMaxTilt = 0.8f;
 
 	// Character の EyePoint からの、カメラ注視点のオフセット
 	Vector3 m_lookAtOffset = Vector3(0.25, 0, 0);
@@ -133,6 +197,11 @@ private:
 	Event<CollisionEventHandler> m_onCollisionStay;
 
 	Ref<RigidBody> m_rigidBody;
+
+	Vector3 m_currentVelocity;
+
+	bool m_inputControlEnabled;
+	bool m_cameraControlEnabled;
 };
 
 } // namespace ln

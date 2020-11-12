@@ -6,7 +6,7 @@
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Platform/AndroidPlatformInterface.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
-#include "../Engine/EngineManager.hpp"
+#include "../../Engine/EngineManager.hpp"
 
 extern "C" ::ln::Application* LuminoCreateApplicationInstance();
 

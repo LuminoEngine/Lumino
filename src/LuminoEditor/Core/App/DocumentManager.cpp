@@ -49,11 +49,11 @@ ln::Result DocumentManager::init()
     UIControl::init();
     //setLayoutPanel(ln::makeObject<ln::UIVBoxLayout>());
 
-    m_mainLayout = ln::makeObject<ln::UIBoxLayout3>();
+    m_mainLayout = ln::makeObject<ln::UIBoxLayout>();
     //addElement(m_mainLayout);
 
     m_documentTabBar = ln::makeObject<ln::UITabBar>();
-    m_documentTabBar->setVAlignment(ln::VAlignment::Top);
+    m_documentTabBar->setVAlignment(ln::UIVAlignment::Top);
     m_documentTabBar->connectOnSelectionChanged(ln::bind(this, &DocumentManager::documentTabBar_SelectionChanged));
     m_documentTabBar->setBackgroundColor(ln::Color::Azure);
     //m_documentTabBar->setHeight(30);

@@ -2,6 +2,7 @@
 
 namespace ln {
 
+// deprecated
 class GameAudio final
 {
 public:

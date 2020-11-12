@@ -271,6 +271,8 @@ size_t CryptedAssetArchiveReader::read(byte_t* data, size_t count, size_t dataOf
 		return 0;
 	}
 
+	std::lock_guard<std::mutex> lock(m_mutex);
+
 	size_t seekHeadOffset = seekPoint % 128;
 	size_t seekHead = seekPoint - seekHeadOffset;
 

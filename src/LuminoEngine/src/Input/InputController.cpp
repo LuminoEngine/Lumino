@@ -39,7 +39,7 @@ InputController::~InputController()
 }
 
 //------------------------------------------------------------------------------
-bool InputController::pressed(const StringRef& bindingName) const
+bool InputController::isPressed(const StringRef& bindingName) const
 {
 	if (m_disabledUntilIdle) return false;
 	auto* state = LockupState(bindingName);
@@ -48,7 +48,7 @@ bool InputController::pressed(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-bool InputController::triggered(const StringRef& bindingName) const
+bool InputController::isTriggered(const StringRef& bindingName) const
 {
 	if (m_disabledUntilIdle) return false;
 	auto* state = LockupState(bindingName);
@@ -57,7 +57,7 @@ bool InputController::triggered(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-bool InputController::triggeredOff(const StringRef& bindingName) const
+bool InputController::isTriggeredOff(const StringRef& bindingName) const
 {
 	if (m_disabledUntilIdle) return false;
 	auto* state = LockupState(bindingName);
@@ -66,7 +66,7 @@ bool InputController::triggeredOff(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-bool InputController::repeated(const StringRef& bindingName) const
+bool InputController::isRepeated(const StringRef& bindingName) const
 {
 	if (m_disabledUntilIdle) return false;
 	auto* state = LockupState(bindingName);

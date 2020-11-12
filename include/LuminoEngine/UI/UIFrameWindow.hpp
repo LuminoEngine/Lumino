@@ -87,7 +87,7 @@ public:
     // TODO: inernal
 	SwapChain* swapChain() const;
 	const Ref<DepthBuffer>& depthBuffer() const { return m_depthBuffer; }
-    //void updateLayout();
+    void updateStyleTree();
 	void updateLayoutTree();
 	const Ref<detail::PlatformWindow>& platformWindow() const { return m_platformWindow; }
     const Ref<UIRenderView>& renderView() const { return m_renderView; }
@@ -111,7 +111,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();
 	virtual ~UIFrameWindow();
-    void init();    // Swapchain 無し。外部制御用
+    void init(bool mainWindow = false);    // Swapchain 無し。外部制御用
 
 public:  // TODO: internal
 	virtual bool onPlatformEvent(const detail::PlatformEventArgs& e) override;
@@ -129,12 +129,11 @@ public:  // TODO: internal
 	Ref<UIRenderView> m_renderView;
     Size m_clientSize;
 	UIFrameWindowUpdateMode m_updateMode;
-	detail::ImGuiContext m_imguiContext;
+	detail::ImGuiIntegration m_imguiContext;
 	Ref<detail::DebugInterface> m_debugInterface;
 
 	Event<UIGeneralEventHandler> m_onClosed;
 	Event<UIGeneralEventHandler> m_onImGuiLayer;
-	bool m_autoDisposePlatformWindow;
 	bool m_ImGuiLayerEnabled;
 
 private:

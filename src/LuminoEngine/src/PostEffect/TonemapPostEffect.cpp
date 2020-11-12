@@ -40,8 +40,7 @@ void TonemapPostEffectParams::setup(
     const float toeStrength,
     const float toeNumerator,
     const float toeDenominator,
-    const float exposure,
-    const ColorTone& tone)
+    const float exposure)
 {
     _paramA = shoulderStrength;
     _paramB = linearStrength;
@@ -83,13 +82,12 @@ bool TonemapPostEffectInstance::onRender(RenderingContext* context, RenderTarget
     const float toeNumerator = 0.02;
     const float toeDenominator = 0.3;
     const float Exposure = 0.0f;// 2.0f;//5.0f;// 
-    const ColorTone tone(0, 0, 0, 0);
     //const ColorTone tone(-0.0, -0.01, -0.02, 0);
 
     TonemapPostEffectParams d;
     d.setup(
         linearWhite, shoulderStrength, linearStrength, linearAngle,
-        toeStrength, toeNumerator, toeDenominator, Exposure, tone);
+        toeStrength, toeNumerator, toeDenominator, Exposure);
 
     m_material->setFloat(u"paramA", d._paramA);
     m_material->setFloat(u"paramB", d._paramB);
@@ -99,7 +97,6 @@ bool TonemapPostEffectInstance::onRender(RenderingContext* context, RenderTarget
     m_material->setFloat(u"paramEperF", d._paramEperF);
     m_material->setFloat(u"paramF_White", d._paramF_White);
     m_material->setFloat(u"Exposure", d._exposure);
-    m_material->setVector(u"_Tone", tone.toVector4());
 
     m_material->setMainTexture(source);
     context->blit(m_material, destination);

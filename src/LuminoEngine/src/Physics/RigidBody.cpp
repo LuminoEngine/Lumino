@@ -261,11 +261,11 @@ void RigidBody::activate()
     m_modifiedFlags |= Modified_Activate;
 }
 
-void RigidBody::onBeforeStepSimulation()
+void RigidBody::onPrepareStepSimulation()
 {
     // RigidBodyComponent::onBeforeStepSimulation() で WorldObject の姿勢を this に同期した後
     // 以降の処理を行いたいので、先に実行しておく。
-    PhysicsObject::onBeforeStepSimulation();
+    PhysicsObject::onPrepareStepSimulation();
 
     // TODO: KinematicObject が Component と関連づいている場合、ここで transform を設定
     //auto* transform = getTransform();
@@ -425,7 +425,7 @@ void RigidBody::onAfterStepSimulation()
     PhysicsObject::onAfterStepSimulation();
 }
 
-void RigidBody::onRemoveFromPhysicsWorld()
+void RigidBody::removeFromBtWorld()
 {
     physicsWorld()->getBtWorld()->removeRigidBody(m_btRigidBody);
 }

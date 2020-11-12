@@ -23,8 +23,8 @@ void UIPopup::init()
     specialElementFlags().set(detail::UISpecialElementFlags::Popup);
 
     // UIAdorner で左上を PlacementTarget と合わせてもらう
-    setHAlignment(HAlignment::Left);
-    setVAlignment(VAlignment::Top);
+    setHAlignment(UIHAlignment::Left);
+    setVAlignment(UIVAlignment::Top);
 
 	m_hitTestMode = detail::UIHitTestMode::InvisibleControl;
 }

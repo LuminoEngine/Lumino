@@ -5,29 +5,57 @@
 #include "../Asset/AssetModel.hpp"
 #include "../Asset/AssetObject.hpp"
 
-//template <class T>
-//void staticFactory2();
-
 namespace ln {
 class Texture;
 class World;
 class WorldObject;
-class RenderingContext;
-namespace detail {
-	class SceneManager; class SceneConductor;
-}
 
 /** ワールド 及び レベル 管理のユーティリティです。 */
 LN_CLASS(Static)
 class Scene
 {
 public:
+
+	//----------------------------------------------------------------------------
+	/** @name Background and Sky */
+	/** @{ */
+
+	/** シーン背景のクリア方法を設定します。 */
+	LN_METHOD()
+	static void setClearMode(SceneClearMode value);
+
+	/** ClearMode が SkyDome であるときに使用する、空の基本色を設定します。アルファ値は、設定した色の適用率です。 */
+	LN_METHOD()
+	static void setSkyColor(const Color& value);
+
+	/** ClearMode が SkyDome であるときに使用する、地平の基本色を設定します。アルファ値は、設定した色の適用率です。 */
+	LN_METHOD()
+	static void setSkyHorizonColor(const Color& value);
+
+	/** ClearMode が SkyDome であるときに使用する、雲の基本色を設定します。アルファ値は、設定した色の適用率です。 */
+	LN_METHOD()
+	static void setSkyCloudColor(const Color& value);
+
+	/** ClearMode が SkyDome であるときに使用する、空全体に影響する色を設定します。アルファ値は、設定した色の適用率です。 */
+	LN_METHOD()
+	static void setSkyOverlayColor(const Color& value);
+
+	/** @} */
+
+	//----------------------------------------------------------------------------
+	/** @name Level Transition */
+	/** @{ */
+
 	/** 指定したレベルへ遷移します。既存の全てのレベルは非アクティブ化または削除されます。 */
 	LN_METHOD()
 	static void gotoLevel(Level* level, bool withEffect = true);
 
+	/** 現在のレベルを非アクティブ化し、指定したレベルへ遷移します。 */
+	LN_METHOD()
 	static void callLevel(Level* level, bool withEffect = true);
 
+	/** 現在のレベルを終了し、ひとつ前のレベルへ遷移します。 */
+	LN_METHOD()
 	static void returnLevel(bool withEffect = true);
 
 	/** 現在のアクティブなレベルを取得します。 */
@@ -86,9 +114,11 @@ public:
 	LN_METHOD()
 	static void startFadeIn();
 
-	/** クロスフェードエフェクトを開始します。 */
-	LN_METHOD()
-	static void startCrossFade();
+	///** クロスフェードエフェクトを開始します。 */
+	//LN_METHOD()
+	//static void startCrossFade();
+
+	/** @} */
 
 	//----------------------------------------------------------------------------
 	/** @name Fog */
@@ -97,78 +127,161 @@ public:
 	// 指数関数的高さフォグ
 
 	/** フォグを開始するカメラからの距離を設定します。 */
+	LN_METHOD()
 	static void setFogStartDistance(float value);
 
 	/** フォグのメインカラーを設定します。 */
+	LN_METHOD()
 	static void setFogColor(const Color& value);
 
 	/** フォグの濃さを設定します。 */
+	LN_METHOD()
 	static void setFogDensity(float value);
 
 	/** 高さフォグの濃さを設定します。 */
+	LN_METHOD()
 	static void setFogHeightDensity(float value);
 
 	/** フォグの高さの下限を設定します。 */
+	LN_METHOD()
 	static void setFogLowerHeight(float value);
 
 	/** フォグの高さの上限を設定します。 */
+	LN_METHOD()
 	static void setFogUpperHeight(float value);
 
 	/** @} */
 
+
 	//----------------------------------------------------------------------------
-	/** @name Skydome */
+	/** @name PostEffect */
 	/** @{ */
 
-	/** Skydome の空の基本色を設定します。アルファ値は、設定した色の適用率です。 */
-	static void setSkydomeSkyColor(const Color& value);
 
-	/** Skydome の地平の基本色を設定します。アルファ値は、設定した色の適用率です。 */
-	static void setSkydomeHorizonColor(const Color& value);
+	/** HDR レンダリングの有無を設定します。 (default: false) */
+	LN_METHOD()
+	static void setHDREnabled(bool value);
 
-	/** Skydome の雲の基本色を設定します。アルファ値は、設定した色の適用率です。 */
-	static void setSkydomeCloudColor(const Color& value);
+	/** HDR レンダリングの有無を取得します。 */
+	LN_METHOD()
+	static bool isHDREnabled();
 
-	/** Skydome 全体に影響する色を設定します。アルファ値は、設定した色の適用率です。 */
-	static void setSkydomeOverlayColor(const Color& value);
+	/** 画面全体へのブレンドカラーを設定します。(default: Black) */
+	LN_METHOD()
+	static void setScreenBlendColor(const Color& value);
+
+	/** 画面全体へのブレンドカラーを取得します。 */
+	LN_METHOD()
+	static const Color& screenBlendColor();
+
+	// ※ RGB は「加算」される
+	/** setColorTone */
+	LN_METHOD()
+	static void setColorTone(const ColorTone& value);
+
+	/** colorTone */
+	LN_METHOD()
+	static const ColorTone& colorTone();
+
+	
+	/** アンチエイリアスの有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setAntialiasEnabled(bool value);
+
+	/** アンチエイリアスの有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isAntialiasEnabled();
+    
+	/** SSR (Screen Space Reflection) の有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setSSREnabled(bool value);
+
+	/** SSR の有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isSSREnabled();
+    
+	/** SSAO (Screen Space Ambient Occlusion) の有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setSSAOEnabled(bool value);
+
+	/** SSAO の有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isSSAOEnabled();
+    
+	/** ブルームエフェクトの有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setBloomEnabled(bool value);
+
+	/** ブルームエフェクトの有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isBloomEnabled();
+    
+	/** 被写界深度の有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setDOFEnabled(bool value);
+
+	/** 被写界深度の有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isDOFEnabled();
+    
+	/** トーンマッピングの有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setTonemapEnabled(bool value);
+
+	/** トーンマッピングの有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isTonemapEnabled();
+    
+	/** ビネットエフェクトの有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setVignetteEnabled(bool value);
+
+	/** ビネットエフェクトの有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isVignetteEnabled();
+    
+	/** ガンマ補正の有無を設定します。(default: false) */
+	LN_METHOD(Property)
+	static void setGammaEnabled(bool value);
+
+	/** ガンマ補正の有無を取得します。 */
+	LN_METHOD(Property)
+	static bool isGammaEnabled();
+
+	
+	/** Tonemap exposure */
+	LN_METHOD(Property)
+	static void setTonemapExposure(float value);
+	
+	/** setTonemapLinearWhite */
+	LN_METHOD(Property)
+	static void setTonemapLinearWhite(float value);
+	
+	/** setTonemapShoulderStrength */
+	LN_METHOD(Property)
+	static void setTonemapShoulderStrength(float value);
+	
+	/** setTonemapLinearStrength */
+	LN_METHOD(Property)
+	static void setTonemapLinearStrength(float value);
+	
+	/** setTonemapLinearAngle */
+	LN_METHOD(Property)
+	static void setTonemapLinearAngle(float value);
+	
+	/** setTonemapToeStrength */
+	LN_METHOD(Property)
+	static void setTonemapToeStrength(float value);
+	
+	/** setTonemapToeNumerator */
+	LN_METHOD(Property)
+	static void setTonemapToeNumerator(float value);
+	
+	/** setTonemapToeDenominator */
+	LN_METHOD(Property)
+	static void setTonemapToeDenominator(float value);
 
 	/** @} */
 };
 
-//namespace ed {
-//class WorldObjectAsset;
-
-//class SceneAsset
-//    : public AssetModel
-//{
-//	LN_OBJECT;
-//public:
-//	// Lifecycle management
-//	void setup(const ln::Path& filePath);
-//	void clear();
-//	void save();
-//	void load();
-//
-//	// Edit operations (undo, redo)
-//	void addNewWorldObject();
-//
-//protected:
-//	LN_SERIALIZE_CLASS_VERSION(1);
-//	void serialize(Archive& ar);
-//
-//LN_CONSTRUCT_ACCESS:
-//    SceneAsset();
-//    void init();
-//
-//private:
-//	ln::Path m_filePath;
-//	List<Ref<WorldObjectAsset>> m_rootWorldObjects;
-//
-//	template <class T>
-//	friend
-//	void staticFactory2();
-//
-//};
-
-//} // namespace ed
 } // namespace ln

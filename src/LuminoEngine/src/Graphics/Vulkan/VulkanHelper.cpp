@@ -987,7 +987,7 @@ Result VulkanBuffer::init(VulkanDevice* deviceContext, VkDeviceSize size, VkBuff
 
     VkMemoryAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.allocationSize = memRequirements.size;    // アライメントされたサイズ
     m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
 
     LN_VK_CHECK(vkAllocateMemory(device, &allocInfo, m_allocator, &m_nativeBufferMemory));
@@ -1448,7 +1448,7 @@ void VulkanDescriptorSetsPool::dispose()
 
 Result VulkanDescriptorSetsPool::allocateDescriptorSets(VulkanCommandBuffer* commandBuffer, std::array<VkDescriptorSet, DescriptorType_Count>* sets)
 {
-	if (!m_activePage || m_activePageUsedCount >= MAX_DESCRIPTOR_COUNT)
+	if (!m_activePage || m_activePageUsedCount >= MAX_DESCRIPTOR_SET_COUNT)
 	{
 		// active pool を使い切ったので次の pool を確保
 
@@ -1461,24 +1461,41 @@ Result VulkanDescriptorSetsPool::allocateDescriptorSets(VulkanCommandBuffer* com
 		if (!m_activePage) {
 			std::array<VkDescriptorPoolSize, DescriptorType_Count> poolSizes;
 			poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			poolSizes[0].descriptorCount = MAX_DESCRIPTOR_COUNT;
+			poolSizes[0].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
 			poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//
-			poolSizes[1].descriptorCount = MAX_DESCRIPTOR_COUNT;
+			poolSizes[1].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
             poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;// 
-			poolSizes[2].descriptorCount = MAX_DESCRIPTOR_COUNT;
+			poolSizes[2].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
 
 			VkDescriptorPoolCreateInfo poolInfo = {};
 			poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-			poolInfo.maxSets = MAX_DESCRIPTOR_COUNT * 3;    // 基本3セットなので3倍 // static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
+            poolInfo.maxSets = MAX_DESCRIPTOR_SET_COUNT * 3;    // 基本3セットなので3倍 // static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
 			poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 			poolInfo.pPoolSizes = poolSizes.data();
 
 			LN_VK_CHECK(vkCreateDescriptorPool(m_deviceContext->vulkanDevice(), &poolInfo, m_deviceContext->vulkanAllocator(), &m_activePage));
 			m_pages.push_back(m_activePage);
+
+
+            //std::cout << "vkCreateDescriptorPool" << std::endl;
+            /*
+            Note:
+            poolInfo.maxSets = MAX_DESCRIPTOR_COUNT *3 のままだと、
+            GeForce GTX 1060 で vkAllocateDescriptorSets 16 回目くらいで OutOfMemory
+
+            poolInfo.maxSets = MAX_DESCRIPTOR_COUNT にすると、vkAllocateDescriptorSets 11 回目くらいで OutOfMemory
+
+            GeForce GTX 1060:
+                descriptorCount=8
+                maxSets = MAX_DESCRIPTOR_SET_COUNT * 3
+                にすると、5回目の vkAllocateDescriptorSets で OutOfMemory
+            */
 		}
 
 		m_activePageUsedCount = 0;
 	}
+
+    //std::cout << "m_activePageUsedCount:" << m_activePageUsedCount << std::endl;
 
     VkDescriptorSetAllocateInfo allocInfo;
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;

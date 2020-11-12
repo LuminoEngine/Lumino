@@ -42,7 +42,7 @@ class GameScene : public Level
 
 	void onUpdate() override
 	{
-		if (!Scene::isTransitionEffectRunning() && Input::triggered(u"submit")) {
+		if (!Scene::isTransitionEffectRunning() && Input::isTriggered(u"submit")) {
 			Scene::gotoLevel(makeObject<TitleScene>());
 		}
 	}
@@ -50,13 +50,13 @@ class GameScene : public Level
 
 void TitleScene::onUpdate()
 {
-	if (!Scene::isTransitionEffectRunning() && Input::triggered(u"submit")) {
+	if (!Scene::isTransitionEffectRunning() && Input::isTriggered(u"submit")) {
 		Scene::gotoLevel(makeObject<GameScene>());
 	}
-	if (Input::triggered(u"left")) {
+	if (Input::isTriggered(u"left")) {
 		Scene::startFadeOut();
 	}
-	if (Input::triggered(u"right")) {
+	if (Input::isTriggered(u"right")) {
 		Scene::startFadeIn();
 	}
 }

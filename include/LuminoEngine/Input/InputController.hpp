@@ -15,10 +15,10 @@ public:
     InputController(detail::InputManager* manager);
     virtual ~InputController();
 
-    bool pressed(const StringRef& bindingName) const;
-    bool triggered(const StringRef& bindingName) const;
-    bool triggeredOff(const StringRef& bindingName) const;
-    bool repeated(const StringRef& bindingName) const;
+    bool isPressed(const StringRef& bindingName) const;
+    bool isTriggered(const StringRef& bindingName) const;
+    bool isTriggeredOff(const StringRef& bindingName) const;
+    bool isRepeated(const StringRef& bindingName) const;
     float getAxisValue(const StringRef& bindingName) const;
 
     void addBinding(const StringRef& buttonName, InputGesture* gesture);

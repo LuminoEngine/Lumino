@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/Platform/Common.hpp>
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 
@@ -14,7 +15,6 @@ struct WindowCreationSettings
 
     intptr_t	userWindow = 0;
     uint32_t    win32IconResourceId = 0;
-    bool glfwNoAPI = false;
 };
 
 enum class EventProcessingMode
@@ -27,13 +27,20 @@ class PlatformWindowManager
 	: public RefObject
 {
 public:
-	PlatformWindowManager();
+	PlatformWindowManager(PlatformManager* manager);
 	virtual ~PlatformWindowManager() = default;
 
+	PlatformManager* manager() const { return m_manager; }
+
 	virtual void dispose() = 0;
-	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings) = 0;
+	virtual Ref<PlatformWindow> createMainWindow(const WindowCreationSettings& settings) = 0;
+	virtual Ref<PlatformWindow> createSubWindow(const WindowCreationSettings& settings) = 0;
 	virtual void destroyWindow(PlatformWindow* window) = 0;
 	virtual void processSystemEventQueue(EventProcessingMode mode) = 0;
+	virtual OpenGLContext* getOpenGLContext() const = 0;
+
+private:
+	PlatformManager* m_manager;
 };
 
 } // namespace detail

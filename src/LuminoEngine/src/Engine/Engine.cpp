@@ -41,6 +41,11 @@ void EngineSettings::setMainWindowTitle(const String& title)
 	detail::EngineManager::s_settings.mainWindowTitle = title;
 }
 
+void EngineSettings::setMainWindowResizable(bool value)
+{
+    detail::EngineManager::s_settings.mainWindowResizable = value;
+}
+
 void EngineSettings::addAssetDirectory(const ln::String& path)
 {
 	detail::EngineManager::s_settings.assetDirectories.add(path);
@@ -71,9 +76,14 @@ void EngineSettings::setGraphicsDebugEnabled(bool enabled)
     detail::EngineManager::s_settings.graphicsDebugEnabled = enabled;
 }
 
-void EngineSettings::setDefaultUITheme(const String& value)
+void EngineSettings::setUITheme(const String& value)
 {
     detail::EngineManager::s_settings.defaultUITheme = value;
+}
+
+void EngineSettings::setFontFile(const String& filePath)
+{
+    detail::EngineManager::s_settings.fontFile = filePath;
 }
 
 void EngineSettings::setDebugToolEnabled(bool enabled)
@@ -104,6 +114,11 @@ void EngineSettings::setStandaloneFpsControl(bool enabled)
 void EngineSettings::setEngineFeatures(Flags<EngineFeature> features)
 {
     detail::EngineManager::s_settings.features = features;
+}
+
+void EngineSettings::setDeveloperToolEnabled(bool enabled)
+{
+    detail::EngineManager::s_settings.runtimeEditorEnabled = enabled;
 }
 
 void EngineSettings::setDefaultObjectsCreation(bool value)
@@ -225,10 +240,10 @@ GraphicsContext* Engine::graphicsContext()
 	//return detail::EngineDomain::graphicsManager()->mainWindowGraphicsContext();
 }
 
-UIContext* Engine::mainUIContext()
-{
-    return detail::EngineDomain::engineManager()->mainUIContext();
-}
+//UIContext* Engine::mainUIContext()
+//{
+//    return detail::EngineDomain::engineManager()->mainUIContext();
+//}
 
 UIFrameWindow* Engine::mainWindow()
 {

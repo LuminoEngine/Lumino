@@ -9,6 +9,7 @@ class TextEncoder;
 class String;
 
 /** エンコーディングの種類 */
+LN_ENUM()
 enum class EncodingType
 {
     /** 不明な文字エンコーディング (判別失敗。またはバイナリファイル) */

@@ -22,7 +22,7 @@ namespace LuminoBuild
                 //args = new string[] { "BuildLocalPackage", "MSVC2019-x86-MT" };
                 //args = new string[] { "BuildLocalPackage", "Android-x86_64" };
                 //args = new string[] { "BuildLocalPackage", "Emscripten" };
-                
+
 
                 //args = new string[] { "BuildEngine_AndroidJNI" };
                 //args = new string[] { "BuildExternalProjects", "MSVC2019-x64-MT" };//, "--enable-Effekseer" };

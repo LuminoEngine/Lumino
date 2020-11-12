@@ -33,7 +33,7 @@ namespace ln {
 LN_OBJECT_IMPLEMENT(RenderView, Object) {}
 
 RenderView::RenderView()
-	: m_clearMode(RenderViewClearMode::None)
+	: m_clearMode(SceneClearMode::None)
 	, m_backgroundColor(Color::White)
 {
 }

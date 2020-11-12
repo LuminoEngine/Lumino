@@ -5,6 +5,7 @@
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
+#include "../Rendering/RenderingManager.hpp"
 
 namespace ln {
 
@@ -92,13 +93,15 @@ bool TransitionPostEffectInstance::init(TransitionPostEffect* owner)
     m_owner = owner;
 
     m_withoutMaskMaterial = makeObject<Material>();
-    m_withoutMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TransitionEffectWithoutMask.fx"));
+    //m_withoutMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TransitionEffectWithoutMask.fx"));
+    m_withoutMaskMaterial->setShader(EngineDomain::renderingManager()->builtinShader(BuiltinShader::TransitionEffectWithoutMask));
 
     m_withMaskMaterial = makeObject<Material>();
-    m_withMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TransitionEffectWithMask.fx"));
+    //m_withMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TransitionEffectWithMask.fx"));
+    m_withMaskMaterial->setShader(EngineDomain::renderingManager()->builtinShader(BuiltinShader::TransitionEffectWithMask));
     
     m_copyMaterial = makeObject<Material>();
-    m_copyMaterial->shadingModel = ShadingModel::Unlit;
+    m_copyMaterial->setShadingModel(ShadingModel::Unlit);
 
     return true;
 }

@@ -11,11 +11,14 @@ namespace ln {
 	@brief
 */
 // TODO: フレーム開始～描画に使われた後にパラメータを変更できないようにする。わかりにくい不具合のもとになる。
+LN_CLASS()
 class Material
 	: public Object
 {
 	LN_OBJECT;
 public:
+	static Material* defaultMaterial();
+
 	static Ref<Material> create();
 	static Ref<Material> create(Texture* mainTexture);
 	static Ref<Material> create(Texture* mainTexture, ShadingModel shadingModel);
@@ -29,7 +32,12 @@ public:
 //	static const String MaterialTextureParameter;
 
 public:
+	/** mainTexture */
+	LN_METHOD(Property)
 	void setMainTexture(Texture* value);
+
+	/** mainTexture */
+	LN_METHOD(Property)
 	Texture* mainTexture() const;
 
 
@@ -40,16 +48,41 @@ public:
 
 
 
+	/** setColor */
+	LN_METHOD(Property)
 	void setColor(const Color& value);
+
+	/** setRoughness */
+	LN_METHOD(Property)
 	void setRoughness(float value);
+
+	/** setMetallic */
+	LN_METHOD(Property)
 	void setMetallic(float value);
+
+	/** setEmissive */
+	LN_METHOD(Property)
 	void setEmissive(const Color& value);
 
 
+	
+	/** setShadingModel */
+	LN_METHOD(Property)
+	void setShadingModel(ShadingModel value) { m_shadingModel = value; }
 
-
+	/** shadingModel */
+	LN_METHOD(Property)
+	ShadingModel shadingModel() const { return m_shadingModel; }
+	
+    /** shader */
+	LN_METHOD(Property)
 	void setShader(Shader* shader);
+
+	/** shader */
+	LN_METHOD(Property)
 	Shader* shader() const;
+
+
 
 	/** 整数値を設定します。 */
 	void setInt(const StringRef& name, int value);
@@ -81,7 +114,8 @@ private:
 	Optional<bool>			depthWriteEnabled;
 
 public:
-	ShadingModel			shadingModel = ShadingModel::Default;
+	String m_name;
+	ShadingModel			m_shadingModel = ShadingModel::Default;
 
 	void setBlendMode(Optional<BlendMode> mode);
 	Optional<BlendMode> getBlendMode() const { return blendMode; }
@@ -99,7 +133,11 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Material();
 	virtual ~Material();
+
+	/** init */
+	LN_METHOD()
 	void init();
+
 	void init(Texture* mainTexture);
 	void init(Texture* mainTexture, ShadingModel shadingModel);
 	void init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData);

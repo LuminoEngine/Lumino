@@ -84,7 +84,7 @@ protected:
 
 private:
 
-    Ref<ln::UIBoxLayout3> m_layout;
+    Ref<ln::UIBoxLayout> m_layout;
 	Ref<ln::UISwitchLayout> m_switchLayout;
     Ref<NavigationBar> m_navigationBar;
 	ln::List<Navigator*> m_navigators;

@@ -134,6 +134,11 @@ bool BoxCollisionShape::init(const Vector3& size)
 	// ※PMD の剛体サイズは bullet のと同じなので注意
 }
 
+bool BoxCollisionShape::init(float width, float height, float depth)
+{
+	return init(Vector3(width, height, depth));
+}
+
 //==============================================================================
 // SphereCollisionShape
 //==============================================================================
@@ -230,6 +235,22 @@ bool MeshCollisionShape::init()
 //------------------------------------------------------------------------------
 bool MeshCollisionShape::init(Mesh* mesh)
 {
+	if (!init()) return false;
+	return initInternal(mesh, nullptr);
+}
+
+bool MeshCollisionShape::init(Mesh* mesh, const Matrix& transform)
+{
+	if (!init()) return false;
+
+	// TODO: VertexBuffer と IndexBuffer のコピーが必要。
+	LN_NOTIMPLEMENTED();
+
+	return initInternal(mesh, &transform);
+}
+
+bool MeshCollisionShape::initInternal(Mesh* mesh, const Matrix* transform)
+{
 	if (LN_REQUIRE(mesh)) return false;
 	if (LN_REQUIRE(!m_btMeshData)) return false;
 	if (LN_REQUIRE(mesh->sections().size() > 0)) return false;
@@ -248,10 +269,10 @@ bool MeshCollisionShape::init(Mesh* mesh)
 
 	btIndexedMesh btMesh;
 	btMesh.m_numTriangles = section.primitiveCount;
-	btMesh.m_triangleIndexBase = (const unsigned char *)ib;
+	btMesh.m_triangleIndexBase = (const unsigned char*)ib;
 	btMesh.m_triangleIndexStride = indexBuffer->stride() * 3;
 	btMesh.m_numVertices = mesh->vertexCount();
-	btMesh.m_vertexBase = (const unsigned char *)vb;
+	btMesh.m_vertexBase = (const unsigned char*)vb;
 	btMesh.m_vertexStride = sizeof(Vertex);
 
 	PHY_ScalarType indexFormat;
@@ -274,14 +295,13 @@ bool MeshCollisionShape::init(Mesh* mesh)
 	//m_btMeshData = new btTriangleIndexVertexArray(
 	//	mesh->getTriangleCount(), (int*)ib, mesh->getIndexStride(),
 	//	mesh->getVertexCount(), (btScalar*)vb, sizeof(Vertex));
-	
+
 	CollisionShape::init(new btBvhTriangleMeshShape(m_btMeshData, true));
 
 	// TODO: scoped
 	indexBuffer->unmap();
 	vertexBuffer->unmap();
 
-	return true;
 }
 
 //==============================================================================

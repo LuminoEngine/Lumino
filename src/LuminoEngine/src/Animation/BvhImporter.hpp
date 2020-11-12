@@ -65,11 +65,23 @@ private:
 	int m_lineTokenIndex;
 };
 	
+/*
+	[2020/10/10] Mixamo と 自作モデルでエクスポートした姿勢が一致しない？
+	----------
+	Mixamo の Unity 用モーション (FBX) は Blender でインポートしてみると
+	Armature などオブジェクト姿勢は RotatonX=90 になっている。
+	Blender は Z-Up R-Hand なので、この修正だけで一般的な Y-Up R-Hand に一致する。
+
+	Blender の BVH エクスポータは Blender の座標系でそのままエクスポートする。
+	そのためこの修正値が必要。
+
+	これがない自作のモデルは、Y-Up R-Hand である bvh_viewer.exe で見ると前に倒れて見える。	
+*/
 class BvhImporter
 {
 public:
 	BvhImporter(AssetManager* assetManager, DiagnosticsManager* diag);
-	bool import(AnimationClip* clip, const AssetPath& assetPath);
+	bool import(AnimationClip* clip, const AssetPath& assetPath, const AnimationClipImportSettings* settings);
 
 private:
 	enum ChannelEnum

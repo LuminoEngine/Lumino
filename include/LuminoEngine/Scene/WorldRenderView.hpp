@@ -51,6 +51,9 @@ public:
     void setGizmoEnabled(bool value) { m_gizmoEnabled = value; }
     bool gizmoEnabled() const { return m_gizmoEnabled; }
 
+    void setHDREnabled(bool value) { m_hdrEnabled = value; }
+    bool isHDREnabled() const { return m_hdrEnabled; }
+
     const Ref<TransformControls>& transformControls() const{ return m_transformControls; }
 
     // TODO: internal

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Engine/RenderingCommandList.hpp>
+#include "../Base/RefObjectCache.hpp"
 
 namespace ln {
 class GraphicsContext; 
@@ -15,6 +16,7 @@ class RenderTargetTextureCacheManager;
 class DepthBufferCacheManager;
 class FrameBufferCache;
 class RenderingQueue;
+class AssetRequiredPathSet;
 
 class GraphicsManager
 	: public RefObject
@@ -23,6 +25,7 @@ public:
 	struct Settings
 	{
         AssetManager* assetManager = nullptr;
+		PlatformManager* platformManager = nullptr;
 		PlatformWindow* mainWindow = nullptr;
 		GraphicsAPI graphicsAPI;
 		bool debugMode = false;
@@ -57,14 +60,15 @@ public:
 	const Ref<RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
 	const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
 	const Ref<FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
-
+	ObjectCache<String, Texture2D>* texture2DCache() { return &m_texture2DCache; }
+	const List<IGraphicsResource*>& graphicsResources() const { return m_graphicsResources; }
 
 	int registerExtension(INativeGraphicsExtension* extension);
 	void unregisterExtension(INativeGraphicsExtension* extension);
 	Ref<Texture> requestTexture(const AssetPath& assetPath);
 
 	Ref<Texture2D> loadTexture2D(const StringRef& filePath);
-	Ref<Texture2DPromise> loadTexture2DAsync(const StringRef& filePath);
+	Ref<Texture2D> loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringRef& filePath, std::function<Ref<Texture2D>(const AssetRequiredPathSet*)> factory);
 
     const Ref<Texture2D>& blackTexture() const { return m_blackTexture; }
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }
@@ -87,6 +91,7 @@ private:
 	void createVulkanContext(const Settings& settings);
 
     AssetManager* m_assetManager;
+	PlatformManager* m_platformManager;
 	Ref<IGraphicsDevice> m_deviceContext;
 	//Ref<GraphicsContext> m_graphicsContext;
 	Ref<CommandQueue> m_graphicsQueue;
@@ -97,6 +102,7 @@ private:
 	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
 	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
 	Ref<FrameBufferCache> m_frameBufferCache;
+	ObjectCache<String, Texture2D> m_texture2DCache;
 	List<IGraphicsResource*> m_graphicsResources;
 	List<INativeGraphicsExtension*> m_extensions;
 

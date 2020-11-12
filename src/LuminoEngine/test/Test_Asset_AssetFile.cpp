@@ -2,6 +2,7 @@
 
 class Test_Asset_AssetFile : public ::testing::Test {};
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Asset_AssetFile, SerializeLevel)
 {
@@ -32,3 +33,5 @@ TEST_F(Test_Asset_AssetFile, SerializeLevel)
 
     Engine::setActiveWorld(world);
 }
+#endif
+

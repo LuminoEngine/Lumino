@@ -6,12 +6,14 @@
 namespace ln {
 
 /** 時間の経過をとおして値を評価します。アニメーションが生成する値の最小単位です。 */
+LN_CLASS()
 class AnimationCurve
 	: public Object
 {
 public:
 
 	/** 指定した時間における値を評価します。*/
+	LN_METHOD()
 	float evaluate(float time);
 
 	/** アニメーションの終端の時間を取得します。 */
@@ -38,6 +40,7 @@ private:
 };
 
 /** キーフレームアニメーションの補間方法 */
+LN_ENUM()
 enum class TangentMode
 {
 	/** 線形補間 */
@@ -76,6 +79,7 @@ struct AnimationKeyFrame
 };
 
 /** キーフレームを用いて補間を行う AnimationCurve です。 */
+LN_CLASS()
 class KeyFrameAnimationCurve
 	: public AnimationCurve
 {
@@ -95,11 +99,16 @@ public:
      * rightTangentMode は、新しく追加するキーフレームの右側の補間方法です。
      * 新しく追加するキーフレームの左側の保管方法は、そのひとつ前のキーフレームの右側の保管方法が設定されます。
      */
+	LN_METHOD()
 	void addKeyFrame(float time, float value, TangentMode rightTangentMode = TangentMode::Linear, float tangent = 0.0f);
 
 LN_CONSTRUCT_ACCESS:
 	KeyFrameAnimationCurve();
 	virtual ~KeyFrameAnimationCurve();
+	
+	/** init */
+	LN_METHOD()
+	bool init();
 
 protected:
 	// AnimationCurve interface 

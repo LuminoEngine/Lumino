@@ -127,10 +127,6 @@ void FontManager::init(const Settings& settings)
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
         registerFontFromStream(&stream, false);
-
-        FontDesc desc;
-        desc.Family = u"mplus-1c-regular-ascii-subset";
-        m_defaultFont = makeObject<Font>(desc);
     }
 #else
     {
@@ -141,12 +137,20 @@ void FontManager::init(const Settings& settings)
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
         registerFontFromStream(&stream, false);
-
-        FontDesc desc;
-        desc.Family = u"mplus-1m-regular-ascii-subset";
-        m_defaultFont = makeObject<Font>(desc);
     }
 #endif
+
+    FontDesc desc;
+    desc.Family = u"mplus-1c-regular-ascii-subset";
+    m_defaultFont = makeObject<Font>(desc);
+
+    if (!settings.fontFile.isEmpty()) {
+        registerFontFromFile(settings.fontFile, true);
+    }
+
+
+
+
 
 	m_glyphIconFontManager = makeRef<GlyphIconFontManager>();
 	if (!m_glyphIconFontManager->init(this)) {
@@ -332,6 +336,19 @@ Font* FontManager::defaultFont() const
 Font* FontManager::emojiFont() const
 {
 	return m_emojiFont;
+}
+
+ByteBuffer* FontManager::getDefaultFontData() const
+{
+    if (!m_defaultFont) return nullptr;
+    uint32_t key = CRCHash::compute(m_defaultFont->family().c_str());
+    auto itr = m_ttfDataEntryMap.find(key);
+    if (itr != m_ttfDataEntryMap.end()) {
+        return itr->second.dataBuffer;
+    }
+    else {
+        return nullptr;
+    }
 }
 
 const FontFaceSource* FontManager::lookupFontFaceSourceFromFamilyName(const String& name)

@@ -26,6 +26,7 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoCore/Math/Vector4.hpp",
 			TEST_ROOT "include/LuminoCore/Math/Quaternion.hpp",
 			TEST_ROOT "include/LuminoCore/Math/Matrix.hpp",
+			TEST_ROOT "include/LuminoCore/Text/Encoding.hpp",
 		};
 
 
@@ -34,21 +35,42 @@ int main(int argc, char** argv)
             TEST_ROOT "include/LuminoEngine/Engine/Object.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Event.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Promise.hpp",
+			TEST_ROOT "include/LuminoEngine/Base/Variant.hpp",
 			TEST_ROOT "src/LuminoEngine/src/Runtime/BindingValidation.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Collection.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Serializer.hpp",
 			TEST_ROOT "include/LuminoEngine/Platform/PlatformEvent.hpp",
+			TEST_ROOT "include/LuminoEngine/Asset/AssetObject.hpp",
             TEST_ROOT "include/LuminoEngine/Asset/AssetModel.hpp",
             TEST_ROOT "include/LuminoEngine/Asset/Assets.hpp",
+			TEST_ROOT "include/LuminoEngine/Audio/Sound.hpp",
+			TEST_ROOT "include/LuminoEngine/Audio/Audio.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/Common.hpp",
+			TEST_ROOT "include/LuminoEngine/Graphics/Graphics.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/ColorStructs.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/GeometryStructs.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/GraphicsResource.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/Texture.hpp",
+			TEST_ROOT "include/LuminoEngine/Shader/Shader.hpp",
+			TEST_ROOT "include/LuminoEngine/Rendering/Common.hpp",
 			TEST_ROOT "include/LuminoEngine/Rendering/RenderView.hpp",
+			TEST_ROOT "include/LuminoEngine/Rendering/Material.hpp",
+			TEST_ROOT "include/LuminoEngine/Mesh/Mesh.hpp",
+			TEST_ROOT "include/LuminoEngine/Mesh/StaticMeshModel.hpp",
+			TEST_ROOT "include/LuminoEngine/Mesh/SkinnedMeshModel.hpp",
+			TEST_ROOT "include/LuminoEngine/Physics/CollisionShape.hpp",
+			TEST_ROOT "include/LuminoEngine/Animation/Common.hpp",
+			TEST_ROOT "include/LuminoEngine/Animation/AnimationCurve.hpp",
+			TEST_ROOT "include/LuminoEngine/Animation/AnimationClip.hpp",
+			TEST_ROOT "include/LuminoEngine/Animation/AnimationMixer.hpp",
+			TEST_ROOT "include/LuminoEngine/Effect/EffectModel.hpp",
+			TEST_ROOT "include/LuminoEngine/Effect/ParticleEffectModel.hpp",
+			TEST_ROOT "include/LuminoEngine/Effect/ParticleEffectModel2.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Component.hpp",
 			TEST_ROOT "include/LuminoEngine/Visual/VisualComponent.hpp",
 			TEST_ROOT "include/LuminoEngine/Visual/SpriteComponent.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/Common.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/CharacterController.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/World.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/WorldObject.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/VisualObject.hpp",
@@ -59,15 +81,33 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/Scene/Raycaster.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/WorldRenderView.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Shapes/MeshPrimitives.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/Mesh/StaticMesh.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/Mesh/StaticMeshComponent.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/Mesh/SkinnedMeshComponent.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/Physics/Collision.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/Physics/RigidBodyComponent.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/Effect/ParticleEmitter.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/Scene.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/Level.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/Common.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIEvents.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UILayoutElement.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIElement.hpp",
-			TEST_ROOT "include/LuminoEngine/UI/UIControl.hpp",
-			TEST_ROOT "include/LuminoEngine/UI/UIButton.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UITextBlock.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UISprite.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/UIIcon.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/UIMessageTextArea.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/UI.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/Layout/UILayoutPanel.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/Layout/UIGridLayout.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/Controls/UIControl.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/Controls/UIButton.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/Controls/UIWindow.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/Controls/UIListBox.hpp",
+			TEST_ROOT "include/LuminoEngine/Input/InputBinding.hpp",
 			TEST_ROOT "include/LuminoEngine/Input/Input.hpp",
 			TEST_ROOT "include/LuminoEngine/Input/Mouse.hpp",
+			TEST_ROOT "include/LuminoEngine/Scripting/Interpreter.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/EngineSettings.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/Engine.hpp",
             TEST_ROOT "include/LuminoEngine/Engine/Application.hpp",
@@ -126,16 +166,16 @@ int main(int argc, char** argv)
     config->flatCHeaderOutputDirOverride = LN_LOCALFILE("../../../include/LuminoEngine/Runtime");
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
 
-	//{
-	//	FlatCHeaderGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-	//{
-	//	FlatCSourceGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
+	{
+		FlatCHeaderGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
+	{
+		FlatCSourceGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
 	//{
 	//	RubyExtGenerator g;
 	//	g.setup(db, config);

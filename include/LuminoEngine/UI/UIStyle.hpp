@@ -102,8 +102,8 @@ public:	// TODO: internal
 	float m_width = std::numeric_limits<float>::quiet_NaN();
 	float m_height = std::numeric_limits<float>::quiet_NaN();
 	Thickness m_margin;
-	HAlignment m_hAlignment = HAlignment::Center;
-	VAlignment m_vAlignment = VAlignment::Center;
+	UIHAlignment m_hAlignment = UIHAlignment::Center;
+	UIVAlignment m_vAlignment = UIVAlignment::Center;
 
 	// TODO: image
 
@@ -132,8 +132,8 @@ public:
 	//// layout
 	//Thickness margin;
 	//Thickness padding;
-	//HAlignment hAlignment;
-	//VAlignment vAlignment;
+	//UIHAlignment hAlignment;
+	//UIVAlignment vAlignment;
 	//float minWidth;
 	//float minHeight;
 	//float maxWidth;
@@ -169,10 +169,10 @@ public:
     detail::UIStyleAttribute<float> height;
     detail::UIStyleAttribute<Thickness> margin;
     detail::UIStyleAttribute<Thickness> padding;
-	detail::UIStyleAttribute<HAlignment> hAlignment;
-	detail::UIStyleAttribute<VAlignment> vAlignment;
-    detail::UIStyleAttribute<HAlignment> horizontalContentAlignment;    // UILayoutPanel をどのように配置するか
-    detail::UIStyleAttribute<VAlignment> verticalContentAlignment;
+	detail::UIStyleAttribute<UIHAlignment> hAlignment;
+	detail::UIStyleAttribute<UIVAlignment> vAlignment;
+    detail::UIStyleAttribute<UIHAlignment> horizontalContentAlignment;    // UILayoutPanel2_Deprecated をどのように配置するか
+    detail::UIStyleAttribute<UIVAlignment> verticalContentAlignment;
 	detail::UIStyleAttribute<float> minWidth;
 	detail::UIStyleAttribute<float> minHeight;
 	detail::UIStyleAttribute<float> maxWidth;
@@ -184,10 +184,10 @@ public:
     static const float DefaultHeight;
 	static const Thickness DefaultMargin;
 	static const Thickness DefaultPadding;
-	static const HAlignment DefaultHorizontalAlignment;
-	static const VAlignment DefaultVerticalAlignment;
-	static const HAlignment DefaultHorizontalContentAlignment;
-	static const VAlignment DefaultVerticalContentAlignment;
+	static const UIHAlignment DefaultHorizontalAlignment;
+	static const UIVAlignment DefaultVerticalAlignment;
+	static const UIHAlignment DefaultHorizontalContentAlignment;
+	static const UIVAlignment DefaultVerticalContentAlignment;
 	static const float DefaultMinWidth;
 	static const float DefaultMinHeight;
 	static const float DefaultMaxWidth;
@@ -341,10 +341,10 @@ private:
         uint32_t inheritFlags = 0;
 
         void setLocalValueFlag(detail::UIStyleAnimationElement index, bool v) { if (v) hasLocalValueFlags |= (1 << index); else hasLocalValueFlags &= ~(1 << index); }
-        void setInheritFlag(detail::UIStyleAnimationElement index, bool v) { if (v) hasLocalValueFlags |= (1 << index); else hasLocalValueFlags &= ~(1 << index); }
-        bool hasValue(detail::UIStyleAnimationElement index) const { return (hasLocalValueFlags & (1 << index)) != 0; }
+        void setInheritFlag(detail::UIStyleAnimationElement index, bool v) { if (v) inheritFlags |= (1 << index); else inheritFlags &= ~(1 << index); }
+        bool hasValue(detail::UIStyleAnimationElement index) const { return hasLocalValue(index) || isInherited(index); } //(hasLocalValueFlags & (1 << index)) != 0; }
         bool isInherited(detail::UIStyleAnimationElement index) const { return (inheritFlags & (1 << index)) != 0; }
-        bool hasLocalValue(detail::UIStyleAnimationElement index) const { return hasValue(index) && !isInherited(index); }
+        bool hasLocalValue(detail::UIStyleAnimationElement index) const { return ((hasLocalValueFlags & (1 << index)) != 0);/* && !isInherited(index);*/ }
     };
 
     AnimationData* acquireAnimationData();
@@ -488,183 +488,6 @@ private:
     //Ref<detail::UIStyleClassInstance> m_resolvedGlobalStyle;                            // for unused VisualStateManager
     //std::unordered_map<String, Ref<detail::UIStyleClassInstance>> m_resolvedClasses;    // for unused VisualStateManager
 };
-
-namespace detail {
-
-// どんな Element でも持つ一般的なスタイル値。
-// UIStyle の optional 等を解決したもの。
-// メモリ消費を抑えるため、UIStyleAttribute は使わないようにしている。
-class UIStyleInstance
-    : public RefObject
-{
-public:
-    //UIStyle* sourceLocalStyle = nullptr;	// 以下のデータの生成元となったローカスのスタイル
-
-    // layout
-    float width;
-    float height;
-    Thickness margin;
-    Thickness padding;
-    HAlignment hAlignment;
-    VAlignment vAlignment;
-    HAlignment horizontalContentAlignment;
-    VAlignment verticalContentAlignment;
-    float minWidth;
-    float minHeight;
-    float maxWidth;
-    float maxHeight;
-	UIOverflowBehavior overflowX;
-	UIOverflowBehavior overflowY;
-
-    // layout transform
-    Vector3 position;
-    Quaternion rotation;
-    Vector3 scale;
-    Vector3 centerPoint;
-
-    // background
-    Sprite9DrawMode backgroundDrawMode;
-    Color backgroundColor;
-    Ref<Texture> backgroundImage;
-    Ref<Shader> backgroundShader;
-    Rect backgroundImageRect;
-    Thickness backgroundImageBorder;
-
-    // border
-    Thickness borderThickness = Thickness::Zero;
-    CornerRadius cornerRadius = CornerRadius(0, 0, 0, 0);	// TODO: borderRadius
-    Color 		leftBorderColor = Color::Gray;
-    Color 		topBorderColor = Color::Gray;
-    Color 		rightBorderColor = Color::Gray;
-    Color 		bottomBorderColor = Color::Gray;
-    BorderDirection borderDirection = BorderDirection::Outside;
-	bool borderInset = false;
-
-	// shadow
-	float shadowOffsetX;
-	float shadowOffsetY;
-	float shadowBlurRadius;
-	float shadowSpreadRadius;
-	Color shadowColor;
-	bool shadowInset;
-
-    // text
-    Color textColor;
-    String fontFamily;
-    float fontSize;
-    UIFontWeight fontWeight;
-    UIFontStyle fontStyle;
-
-    // render effects
-    UIVisibility visible;
-    BlendMode blendMode;
-
-    float opacity;
-    Color colorScale;
-    Color blendColor;
-	ColorTone tone;
-
-
-	// decorators
-	List<Ref<UIStyleDecorator>> decorators;
-
-    // commited cache
-    Ref<Font> font;
-    Ref<Material> backgroundMaterial;
-
-	UITheme* theme = nullptr;
-
-
-
-
-    // TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
-
-    UIStyleInstance();
-    void setupDefault();
-    void mergeFrom(const UIStyle* other);
-    void copyFrom(const UIStyleInstance* other);
-
-    void makeRenderObjects();
-
-    static void updateStyleDataHelper(const UIStyleContext* context, const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData);
-
-	Size actualOuterSpace() const
-	{
-		return Size(margin.width(), margin.height());
-		//if (borderInset)
-		//	return Size(margin.width(), margin.height());
-		//else
-		//	return Size(margin.width() + borderThickness.width(), margin.height() + borderThickness.height());
-	}
-	Size actualOuterOffset() const
-	{
-		return Size(margin.left, margin.top);
-	}
-
-    void updateAnimationData();
-    bool hasAnimationData() const { return m_animationData != nullptr; }
-    void advanceAnimation(float elapsedTime);
-    UIElementDirtyFlags applyAnimationValues();
-
-LN_CONSTRUCT_ACCESS:
-
-private:
-    struct AnimationData
-    {
-        Ref<UIScalarAnimationInstance> width;
-        Ref<UIScalarAnimationInstance> height;
-        Ref<UIScalarAnimationInstance> positionX;
-        Ref<UIScalarAnimationInstance> positionY;
-        Ref<UIScalarAnimationInstance> positionZ;
-        Ref<UIVector4AnimationInstance> backgroundColor;
-        Ref<UIScalarAnimationInstance> opacity;
-    };
-
-    AnimationData* acquireAnimationData()
-    {
-        if (!m_animationData) {
-            m_animationData = std::make_unique<AnimationData>();
-        }
-        return m_animationData.get();
-    }
-
-    // これも結構サイズ大きいので、必要なものだけ遅延で作る
-    std::unique_ptr<AnimationData> m_animationData;
-};
-
-class UIStyleClassInstance
-    : public RefObject
-{
-public:
-    UIStyleClassInstance();
-    const Ref<UIStyleInstance>& style() const { return m_style; }
-    UIStyleInstance* findStateStyle(const StringRef& stateName) const;  // 無い場合は nullptr
-    UIStyleInstance* findSubElementStyle(const StringRef& elementName) const;   // 無い場合は nullptr
-    void mergeFrom(const UIStyleSet* other);
-
-private:
-    struct VisualStateSlot
-    {
-        String name;
-        Ref<UIStyleInstance> style;
-    };
-
-    struct SubElementSlot
-    {
-        String name;
-        Ref<UIStyleInstance> style;
-    };
-
-    Ref<UIStyleInstance> m_style;
-    List<VisualStateSlot> m_visualStateStyles;
-    List<SubElementSlot> m_subElements;
-
-    friend class UIStyleContext;
-};
-
-} // namespace detail
-
-
 
 class UIVisualStateManager
     : public Object
@@ -856,6 +679,7 @@ public:
 	// Group
 	static const String CommonStates;
 	static const String FocusStates;
+    static const String Visibility;
 	static const String CheckStates;
 	static const String ValidationStates;
 	static const String SelectionStates;
@@ -870,6 +694,11 @@ public:
     // FocusStates
     static const String Focused;    // Input focus を持っているか. (Logical focus は関係ない)
     static const String Unfocused;
+
+    // VisibilityGroup
+    static const String Visible;
+    static const String Hidden;
+    static const String Collapsed;
 
 	// CheckStates
 	static const String CheckedState;

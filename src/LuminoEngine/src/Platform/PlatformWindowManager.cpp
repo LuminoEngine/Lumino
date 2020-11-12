@@ -27,7 +27,8 @@ namespace detail {
 //==============================================================================
 // PlatformWindowManager
 
-PlatformWindowManager::PlatformWindowManager()
+PlatformWindowManager::PlatformWindowManager(PlatformManager* manager)
+	: m_manager(manager)
 {
 }
 

@@ -76,6 +76,7 @@ LN_CONSTRUCT_ACCESS:
 	{
 		if (!UIValueTrack::init(duration, delay, wrapMode)) return false;
 		m_function = EasingFunctions::function(func);
+		m_startValue = startValue;
 		m_targetValue = targetValue;
 		return true;
 	}

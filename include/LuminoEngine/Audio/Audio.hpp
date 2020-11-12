@@ -1,35 +1,46 @@
 ﻿#pragma once
 
 namespace ln {
-
-class Audio final
+    
+/** Audio */
+LN_CLASS(Static)
+class Audio
 {
 public:
-    /// BGM を演奏する
+    /** BGM を演奏する */
+    LN_METHOD()
     static void playBGM(const StringRef& filePath, float volume = 1.0f, float pitch = 1.0f, double fadeTime = 0.0);
 
-    /// BGM の演奏を停止する
+    /** BGM の演奏を停止する */
+    LN_METHOD()
     static void stopBGM(double fadeTime = 0.0);
 
-    /// BGS (環境音) を演奏する
+    /** BGS (環境音) を演奏する */
+    LN_METHOD()
     static void playBGS(const StringRef& filePath, float volume = 1.0f, float pitch = 1.0f, double fadeTime = 0.0);
 
-    /// BGS の演奏を停止する
+    /** BGS の演奏を停止する */
+    LN_METHOD()
     static void stopBGS(double fadeTime = 0.0);
 
-    // ME (効果音楽) を演奏する
+    /** ME (効果音楽) を演奏する */
+    LN_METHOD()
     static void playME(const StringRef& filePath, float volume = 1.0f, float pitch = 1.0f);
 
-    /// ME の演奏を停止する
+    /** ME の演奏を停止する */
+    LN_METHOD()
     static void stopME();
 
-    /// SE を演奏する
+    /** SE を演奏する */
+    LN_METHOD()
     static void playSE(const StringRef& filePath, float volume = 1.0f, float pitch = 1.0f);
 
-    /// SE を 3D 空間上で演奏する
+    /** SE を 3D 空間上で演奏する */
+    LN_METHOD()
     static void playSE3D(const StringRef& filePath, const Vector3& position, float distance, float volume = 1.0f, float pitch = 1.0f);
 
-    /// 全ての SE の演奏を停止する
+    /** 全ての SE の演奏を停止する */
+    LN_METHOD()
     static void stopSE();
 
     ///// ME 演奏時の BGM のフェード時間を設定する
