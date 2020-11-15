@@ -12,5 +12,6 @@ protected:
 
 private:
     Ref<ln::SkinnedMesh> m_mesh;
+    //Ref<ln::StaticMesh> m_mesh;
 };
 

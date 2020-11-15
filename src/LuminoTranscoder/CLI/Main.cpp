@@ -56,6 +56,7 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/Rendering/RenderView.hpp",
 			TEST_ROOT "include/LuminoEngine/Rendering/Material.hpp",
 			TEST_ROOT "include/LuminoEngine/Mesh/Mesh.hpp",
+			TEST_ROOT "include/LuminoEngine/Mesh/AnimationController.hpp",
 			TEST_ROOT "include/LuminoEngine/Mesh/StaticMeshModel.hpp",
 			TEST_ROOT "include/LuminoEngine/Mesh/SkinnedMeshModel.hpp",
 			TEST_ROOT "include/LuminoEngine/Physics/CollisionShape.hpp",

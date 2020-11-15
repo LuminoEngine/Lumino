@@ -8,7 +8,6 @@ class GraphicsContext;
 class ShaderTechnique;
 class RenderFeature;
 class Material;
-class MeshArmature;
 
 namespace detail {
 class RenderingManager;
@@ -19,6 +18,7 @@ class RenderFeatureBatchList;
 class RenderDrawElement;
 class RenderStage;
 class SceneRendererPass;
+class SkeletonInstance;
 
 // Rendering モジュールの後段の出力結果。
 // RenderingContext(DrawElementListBuilder) によって作られた DrawElementList は SceneRenderer に入力されると、
@@ -52,7 +52,7 @@ public:
 	// SpriteText で使っている。 TODO: これは MaskTexture みたいな位置づけにしてもいいかも。
 	Texture* overrideTexture = nullptr;
 	SamplerState* overrideSamplerState = nullptr;	// 共通の FontCache を AA 有無で描画したいときの区別
-	MeshArmature* skeleton = nullptr;
+	SkeletonInstance* skeleton = nullptr;
 
 	bool instancing = false;
 

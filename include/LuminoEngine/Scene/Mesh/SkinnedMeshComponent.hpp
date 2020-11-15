@@ -4,6 +4,9 @@
 
 namespace ln {
 class SkinnedMeshModel;
+namespace detail {
+class MeshModelInstance;
+}
 
 /**
  * SkinnedMeshComponent
@@ -33,6 +36,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     Ref<SkinnedMeshModel> m_model;
+	Ref<detail::MeshModelInstance> m_modelInstance;
 };
 
 } // namespace ln

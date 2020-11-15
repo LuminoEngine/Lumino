@@ -2,9 +2,11 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Scene/Mesh/SkinnedMeshComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
+#include "../../Mesh/MeshModelInstance.hpp"
 
 namespace ln {
 
@@ -29,6 +31,7 @@ bool SkinnedMeshComponent::init()
 void SkinnedMeshComponent::setModel(SkinnedMeshModel* model)
 {
     m_model = model;
+	m_modelInstance = m_model->createMeshModelInstance();
 }
 
 SkinnedMeshModel* SkinnedMeshComponent::model() const
@@ -55,6 +58,7 @@ void SkinnedMeshComponent::onUpdate(float elapsedSeconds)
 	//	init = true;
 	//}
 	m_model->preUpdate();
+	m_modelInstance->updateSkinningMatrices();
 
 
 
@@ -105,7 +109,7 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
 
 
 					if (node->skeletonIndex >= 0) {
-						context->drawSkinnedMesh(mesh, iSection, m_model->skeleton(node->skeletonIndex));
+						context->drawSkinnedMesh(mesh, iSection, m_modelInstance->skeletons()[node->skeletonIndex]);
 					}
 					else {
 						context->drawMesh(mesh, iSection);

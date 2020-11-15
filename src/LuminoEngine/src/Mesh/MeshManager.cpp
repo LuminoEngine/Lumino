@@ -6,8 +6,8 @@
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include <LuminoEngine/Animation/AnimationMixer.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "GLTFImporter.hpp"
 #include "FbxImporter.hpp"

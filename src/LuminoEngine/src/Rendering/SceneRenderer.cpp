@@ -7,6 +7,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../Graphics/GraphicsManager.hpp"
+#include "../Mesh/MeshModelInstance.hpp"
 #include "RenderStage.hpp"
 #include "RenderElement.hpp"
 #include "RenderingPipeline.hpp"

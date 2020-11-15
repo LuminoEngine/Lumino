@@ -3,7 +3,9 @@
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
+#include "MeshModelInstance.hpp"
 #include "PmxImporter.hpp"	// TODO: 依存したくない
 #include "MeshManager.hpp"
 #include "CCDIKSolver.hpp"
@@ -123,41 +125,6 @@ void MeshArmature::addBone(int linkNode, const Matrix& inverseInitialMatrix)
 	bone->node()->m_boneNode = true;
 }
 
-void MeshArmature::updateSkinningMatrices(SkinnedMeshModel* model)
-{
-	if (!m_skinningMatricesTexture || m_skinningMatricesTexture->height() != m_bones.size()) {
-		m_skinningMatricesTexture = makeObject<Texture2D>(4, m_bones.size(), TextureFormat::RGBA32F);
-		m_skinningMatricesTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
-	}
-
-	Bitmap2D* bitmap = m_skinningMatricesTexture->map(MapMode::Write);
-	Matrix* data = reinterpret_cast<Matrix*>(bitmap->data());
-
-	const auto& nodes = model->meshNodes();
-	for (int i = 0; i < m_bones.size(); i++) {
-		const auto& bone = m_bones[i];
-		
-		// GLTF
-		//data[i] = model->nodeGlobalTransform(bone->m_node) * bone->m_inverseInitialMatrix;
-		// PMX
-		data[i] = bone->m_inverseInitialMatrix * model->nodeGlobalTransform(bone->m_node);
-		// ↑どっちが正しい？
-		// Three.js のコードを見ると、GLTFLoader では読み取った inverseBindMatrices を Skeleton クラスのコンストラクタに
-		// そのまま渡している。転置とかはしていない。
-		// Skeleton コンストラクタは boneInverses が省略されると、bone が持っている World行列を単純に inverse して、
-		// boneInverses を作っている。calculateInverses: function () {　あたり。
-		// というか「逆行列をかけて元に戻す」の計算順序的には GLTF の方が正しい。
-
-		//// TODO: test
-		//if (i == 0) {
-		//	data[i] = Matrix::makeRotationZ(0.3);
-		//}
-		//data[i] = Matrix::Identity;
-	}
-
-	m_skinningMatricesTexture->unmap();
-}
-
 //==============================================================================
 // SkinnedMeshModel
 
@@ -257,9 +224,6 @@ void SkinnedMeshModel::postUpdate()
 	}
 #endif
 #endif
-
-	// スキニング行列の作成
-	updateSkinningMatrices();
 }
 
 void SkinnedMeshModel::updateBoneTransformHierarchy()
@@ -279,44 +243,6 @@ void SkinnedMeshModel::updateIK()
 	ik.m_skeleton = m_skeletons[0];
     ik.UpdateTransform();
 }
-
-void SkinnedMeshModel::updateSkinningMatrices()
-{
-	for (auto& skeleton : m_skeletons) {
-		skeleton->updateSkinningMatrices(this);
-	}
-#if 0
-	// スキニング行列の作成
-	for (int i = 0; i < m_allBoneList.size(); i++)
-	{
-		/*
-			初期姿勢は、スキニングしなくても同じ姿勢。
-			つまり、頂点スキニングで初期姿勢にしたいときは Matrix::Identity のボーン行列を渡す。
-
-			ボーンは最初からオフセットが入ってるけど、
-			それをスキニングに適用すると姿勢が崩れてしまう。
-			そのため、初期オフセットを打ち消す処理が必要。それが getInitialTranstormInv()。
-
-			ID3DXSkinInfo::GetBoneOffsetMatrix() で
-			取得できる行列 (SkinnedMeshサンプルの D3DXMESHCONTAINER_DERIVED::pBoneOffsetMatrices) がこれにあたるものっぽい。
-			サンプルでも描画の直前に対象ボーン行列にこの行列を乗算している。
-		*/
-		m_skinningMatrices[i] = m_allBoneList[i]->getCore()->getInitialTranstormInv() * m_allBoneList[i]->getCombinedMatrix();
-		//m_skinningMatrices[i] = m_allBoneList[i]->getCombinedMatrix();
-
-		m_skinningLocalQuaternions[i] = Quaternion::makeFromRotationMatrix(m_skinningMatrices[i]);//m_allBoneList[i]->m_localTransform.rotation;//
-
-	}
-
-	// スキニングテクスチャ更新
-	if (!m_skinningMatricesTexture.isNull())
-	{
-		m_skinningMatricesTexture->setMappedData(&m_skinningMatrices[0]);
-		m_skinningLocalQuaternionsTexture->setMappedData(&m_skinningLocalQuaternions[0]);
-	}
-#endif
-}
-
 
 void SkinnedMeshModel::writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion* localQuaternionsBuffer)
 {
@@ -349,6 +275,11 @@ void SkinnedMeshModel::writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion*
 //	//	(*m_allBoneList[index]->localTransformPtr()) = value.getTransform();
 //	//}
 //}
+
+Ref<detail::MeshModelInstance> SkinnedMeshModel::createMeshModelInstance()
+{
+	return makeRef<detail::MeshModelInstance>(this);
+}
 
 // 左手座標系状、Z+を正面としたときの、各ボーンの位置関係を検証する。
 void SkinnedMeshModel::verifyHumanoidBones()
@@ -398,86 +329,6 @@ void SkinnedMeshModel::verifyHumanoidBones()
 			}
 		}
 	}
-}
-
-
-
-//==============================================================================
-// AnimationController
-
-AnimationController::AnimationController()
-{
-}
-
-bool AnimationController::init(SkinnedMeshModel* model)
-{
-	if (!Object::init()) return false;
-	m_model = model;
-
-	m_core = makeObject<AnimationMixerCore>(this);
-	m_core->addLayer(makeObject<AnimationLayer>(m_core));
-	return true;
-}
-
-void AnimationController::advanceTime(float elapsedTime)
-{
-	m_core->advanceTime(elapsedTime);
-}
-
-detail::AnimationTargetElementBlendLink* AnimationController::onRequireBinidng(const AnimationTrackTargetKey& key)
-{
-	auto tb = m_bindings.findIf([&](const auto& x) { return AnimationTrackTargetKey::equals(x->key, key); });
-	if (tb) {
-		return *tb;
-	}
-
-	int index = -1;
-	
-	// まず HumanoidBones を検索
-	if (key.bone != HumanoidBones::None) {
-		index = m_model->humanoidBoneIndex(key.bone);
-		if (index >= 0) {
-			std::cout << "map:" << (int)key.bone << std::endl;
-		}
-	}
-
-	// 無ければ名前検索
-	if (index < 0) {
-		index = m_model->findNodeIndex(key.name);
-	}
-
-	if (index >= 0) {
-		auto binding = makeRef<detail::AnimationTargetElementBlendLink>(AnimationValueType::Transform);
-		binding->key = key;
-		binding->targetIndex = index;
-		m_bindings.add(binding);
-		return binding;
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void AnimationController::onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* binding)
-{
-	m_model->meshNodes()[binding->targetIndex]->setTransform(binding->rootValue.getTransform());
-
-	//auto& s = binding->rootValue.getTransform().scale;
-	//if (s.x != 1 || s.y != 1 || s.z != 1) {
-	//	printf("");
-	//}
-
-	//if (binding->name == u"左腕") {
-	//	m_model->meshNodes()[binding->targetIndex]->resetLocalTransform();
-	//	//std::cout << binding->name << std::endl;
-	//}
-	//if (binding->name == u"左腕") {
-	//	Matrix m = Matrix::makeRotationQuaternion(binding->rootValue.getTransform().rotation);
-	//	auto v = Vector3::transformCoord(Vector3::UnitZ, m);
-	//	printf("%f\t%f\t%f\n", v.x, v.y, v.z);
-	//	//result.rotation = Quaternion::makeFromEulerAngles(Vector3(0, 0, time));
-	//}
-
 }
 
 //==============================================================================

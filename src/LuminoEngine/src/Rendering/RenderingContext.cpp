@@ -12,6 +12,7 @@
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Font/FontManager.hpp"
 #include "../Mesh/MeshGenerater.hpp"
+#include "../Mesh/MeshModelInstance.hpp"
 #include "RenderingPipeline.hpp"
 #include "RenderingManager.hpp"
 #include "DrawElementListBuilder.hpp"
@@ -528,7 +529,7 @@ void RenderingContext::drawMesh(Mesh* mesh, int sectionIndex)
     // TODO: bounding
 }
 
-void RenderingContext::drawSkinnedMesh(Mesh* mesh, int sectionIndex, MeshArmature* skeleton)
+void RenderingContext::drawSkinnedMesh(Mesh* mesh, int sectionIndex, detail::SkeletonInstance* skeleton)
 {
 	class DrawSkinnedMesh : public detail::RenderDrawElement
 	{
@@ -537,7 +538,7 @@ void RenderingContext::drawSkinnedMesh(Mesh* mesh, int sectionIndex, MeshArmatur
 		int sectionIndex;
 
 		// SkinnedMesh の場合に、親インスタンスが破棄されないように参照を保持しておく
-		Ref<MeshArmature> skeleton;
+		Ref<detail::SkeletonInstance> skeleton;
 
 		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{

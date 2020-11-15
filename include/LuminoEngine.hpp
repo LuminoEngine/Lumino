@@ -53,6 +53,7 @@
 
 #include "LuminoEngine/Mesh/Mesh.hpp"
 #include "LuminoEngine/Mesh/StaticMeshModel.hpp"
+#include "LuminoEngine/Mesh/AnimationController.hpp"
 #include "LuminoEngine/Mesh/SkinnedMeshModel.hpp"
 
 #include "LuminoEngine/Rendering/Common.hpp"
