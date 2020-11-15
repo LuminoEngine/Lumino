@@ -6,6 +6,7 @@
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Scene/Mesh/SkinnedMeshComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
+#include <LuminoEngine/Rendering/RenderView.hpp>
 #include "../../Mesh/MeshModelInstance.hpp"
 
 namespace ln {
@@ -128,9 +129,20 @@ void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 	context->setDepthTestEnabled(false);
 	context->setDepthWriteEnabled(false);
 
+	const auto* viewPoint = context->viewPoint();
+	Matrix viewproj = viewPoint->viewProjMatrix;
+
+
 	for (const auto& skeleton : m_modelInstance->skeletons()) {
 		for (const auto& bone : skeleton->bones()) {
-			context->setTransfrom(bone->combinedTransform());
+
+			Vector4 trf = Vector4(bone->combinedTransform().position(), 1.0f);
+			trf = Vector4::transform(trf, viewproj);
+			float m_displayScale = 1.0;
+			float m_screenFactor = m_displayScale * 0.15f * trf.w;
+			auto transform = Matrix::multiply(Matrix::makeScaling(m_screenFactor), bone->combinedTransform());
+			context->setTransfrom(transform);
+			//context->setTransfrom(bone->combinedTransform());
 			context->drawSphere(1, 8, 8, Color::Red);
 		}
 	}

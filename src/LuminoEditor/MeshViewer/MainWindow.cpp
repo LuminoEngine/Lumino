@@ -28,7 +28,7 @@ void MainWindow::handleImGUI(ln::UIEventArgs* e)
         const auto& skeletons = modelInstance->skeletons();
         for (int iSkeleton = 0; iSkeleton < modelInstance->skeletons().size(); iSkeleton++) {
             const auto& skeleton = skeletons[iSkeleton];
-            if (ImGui::TreeNode(skeleton, "Skeleton[%d]", iSkeleton)) {
+            if (ImGui::TreeNodeEx(skeleton, ImGuiTreeNodeFlags_DefaultOpen, "Skeleton[%d]", iSkeleton)) {
 
                 const auto& bones = skeleton->bones();
                 for (int iBone = 0; iBone < bones.size(); iBone++) {
