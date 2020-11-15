@@ -21,6 +21,7 @@ public:
     void setModel(SkinnedMeshModel* model);
 
     SkinnedMeshModel* model() const;
+	const Ref<detail::MeshModelInstance>& modelInstance() const { return m_modelInstance; }
 
 protected:
 	void onUpdate(float elapsedSeconds) override;

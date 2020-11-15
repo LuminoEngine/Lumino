@@ -4,7 +4,7 @@
 
 Application::Application()
 {
-    //ln::EngineSettings::seteditor(1600, 800);
+    ln::EngineSettings::setSceneIntegrationEnabled(false);
 }
 
     /*
@@ -60,7 +60,7 @@ bool Application::init()
 
 void Application::onInit()
 {
-	//setMainWindow(ln::makeObject<MainWindow>());
+	setupMainWindow(ln::makeObject<MainWindow>(), true);
     ln::Engine::renderView()->setGuideGridEnabled(true);
     ln::Engine::camera()->addComponent(ln::CameraOrbitControlComponent::create());
     ln::Engine::renderView()->setBackgroundColor(ln::Color::Gray);

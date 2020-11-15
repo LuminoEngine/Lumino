@@ -86,6 +86,11 @@ void EngineSettings::setFontFile(const String& filePath)
     detail::EngineManager::s_settings.fontFile = filePath;
 }
 
+void EngineSettings::setSceneIntegrationEnabled(bool value)
+{
+    detail::EngineManager::s_settings.defaultObjectsCreation = value;
+}
+
 void EngineSettings::setDebugToolEnabled(bool enabled)
 {
 	detail::EngineManager::s_settings.debugToolEnabled = enabled;

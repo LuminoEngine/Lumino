@@ -9,7 +9,7 @@ class ApplicationHelper;
 class UICommand;
 class UIAction;
 class UIEventArgs;
-
+class UIMainWindow;
 
 
 /** グローバルなアプリケーション状態を扱うための基本クラスです。 */
@@ -52,6 +52,8 @@ LN_CONSTRUCT_ACCESS:
     void init();
 
 protected:
+	void setupMainWindow(UIMainWindow* window, bool createBasicObjects);	// onInit でのみ可
+
     virtual void onRoutedEvent(UIEventArgs* e);
 
 private:

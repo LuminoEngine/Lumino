@@ -112,11 +112,6 @@ MainWindow* EditorApplication::mainWindow() const
     return ptr;
 }
 
-void EditorApplication::setMainWindow(ln::UIMainWindow* window)
-{
-	return ln::detail::EngineDomain::engineManager()->setMainWindow(window);
-}
-
 lna::Project* EditorApplication::mainProject() const
 {
     return m_workspace->mainProject();
@@ -159,7 +154,7 @@ void EditorApplication::openAssetFile(const ln::Path& filePath)
 
 void EditorApplication::onInit()
 {
-	setMainWindow(ln::makeObject<MainWindow>());
+	setupMainWindow(ln::makeObject<MainWindow>(), false);
 
     auto sheet = ln::makeObject<ln::UIStyleSheet>();
 	if (auto s = sheet->obtainStyle(u"NavigationBarItem")) {

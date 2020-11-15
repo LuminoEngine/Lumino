@@ -20,13 +20,18 @@ Application::Application()
     detail::EngineManager::s_settings.application = this;
 }
 
+Application::~Application()
+{
+}
+
 void Application::init()
 {
     Object::init();
 }
 
-Application::~Application()
+void Application::setupMainWindow(ln::UIMainWindow* window, bool createBasicObjects)
 {
+	return ln::detail::EngineDomain::engineManager()->setupMainWindow(window, createBasicObjects);
 }
 
 void Application::onInit()
