@@ -1,23 +1,43 @@
 ﻿#pragma once
-
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 
 namespace ln {
 class SkinnedMeshModel;
 namespace detail {
 class MeshModelInstance;
+class SkeletonInstance;
+
+class BoneInstance
+	: public RefObject
+{
+public:
+	BoneInstance(SkeletonInstance* owner, int boneIndex);
+
+	SkeletonInstance* owner() const { return m_owner; }
+	const Matrix& combinedTransform() const;
+
+private:
+	SkeletonInstance* m_owner;
+	int m_boneIndex;
+};
 
 class SkeletonInstance
 	: public RefObject
 {
 public:
 	SkeletonInstance(MeshModelInstance* owner, int skeletonIndex);
-	void updateSkinningMatrices();
 
+	MeshModelInstance* owner() const { return m_owner; }
+	const Ref<MeshArmature>& skeletonModel() const;
+	const List<Ref<BoneInstance>>& bones() const { return m_bones; }
 	const Ref<Texture2D>& skinningMatricesTexture() const { return m_skinningMatricesTexture; }
+
+	void updateSkinningMatrices();
 
 private:
 	MeshModelInstance* m_owner;
 	int m_skeletonIndex;
+	List<Ref<BoneInstance>> m_bones;
 	Ref<Texture2D> m_skinningMatricesTexture;
 };
 
@@ -26,10 +46,6 @@ class MeshModelInstance
 	: public RefObject
 {
 public:
-	struct BoneInstance
-	{
-
-	};
 
 
 	MeshModelInstance(SkinnedMeshModel* model);

@@ -2,11 +2,27 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
-#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "MeshModelInstance.hpp"
 
 namespace ln {
 namespace detail {
+	
+//==============================================================================
+// BoneInstance
+
+BoneInstance::BoneInstance(SkeletonInstance* owner, int boneIndex)
+	: m_owner(owner)
+	, m_boneIndex(boneIndex)
+{
+}
+
+const Matrix& BoneInstance::combinedTransform() const
+{
+	const auto& skeleton = m_owner->skeletonModel();
+	const auto& bone = skeleton->bone(m_boneIndex);
+	const auto& meshModel = m_owner->owner()->model();
+	return meshModel->nodeGlobalTransform(bone->m_node);
+}
 
 //==============================================================================
 // SkeletonInstance
@@ -15,13 +31,21 @@ SkeletonInstance::SkeletonInstance(MeshModelInstance* owner, int skeletonIndex)
 	: m_owner(owner)
 	, m_skeletonIndex(skeletonIndex)
 {
+	const auto& skeleton = skeletonModel();
+	for (int i = 0; i < skeleton->boneCount(); i++) {
+		m_bones.add(makeRef<BoneInstance>(this, i));
+	}
+}
 
+const Ref<MeshArmature>& SkeletonInstance::skeletonModel() const
+{
+	return m_owner->model()->skeletons()[m_skeletonIndex];
 }
 
 void SkeletonInstance::updateSkinningMatrices()
 {
 	const auto& meshModel = m_owner->model();
-	const auto& boneModels = m_owner->model()->skeletons()[m_skeletonIndex]->m_bones;
+	const auto& boneModels = skeletonModel()->m_bones;
 
 	if (!m_skinningMatricesTexture || m_skinningMatricesTexture->height() != boneModels.size()) {
 		m_skinningMatricesTexture = makeObject<Texture2D>(4, boneModels.size(), TextureFormat::RGBA32F);

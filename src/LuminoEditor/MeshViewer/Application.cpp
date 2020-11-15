@@ -64,7 +64,8 @@ void Application::onInit()
     ln::Engine::renderView()->setGuideGridEnabled(true);
     ln::Engine::camera()->addComponent(ln::CameraOrbitControlComponent::create());
     ln::Engine::renderView()->setBackgroundColor(ln::Color::Gray);
-
+    ln::Engine::renderView()->setGizmoEnabled(true);
+    
 
     m_mesh = ln::SkinnedMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/SkinnedAxis1.glb");
     //m_mesh = ln::StaticMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/SkinnedAxis1.glb");

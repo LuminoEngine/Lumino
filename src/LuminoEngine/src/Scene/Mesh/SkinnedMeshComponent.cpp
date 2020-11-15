@@ -121,5 +121,22 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
 	}
 }
 
+void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
+{
+	context->pushState();
+	context->setRenderPhase(RenderPhaseClass::Gizmo);
+	context->setDepthTestEnabled(false);
+	context->setDepthWriteEnabled(false);
+
+	for (const auto& skeleton : m_modelInstance->skeletons()) {
+		for (const auto& bone : skeleton->bones()) {
+			context->setTransfrom(bone->combinedTransform());
+			context->drawSphere(1, 8, 8, Color::Red);
+		}
+	}
+
+	context->popState();
+}
+
 } // namespace ln
 
