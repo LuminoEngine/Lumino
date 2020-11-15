@@ -14,6 +14,7 @@ public:
 	BoneInstance(SkeletonInstance* owner, int boneIndex);
 
 	SkeletonInstance* owner() const { return m_owner; }
+	MeshNode* node() const;
 	const Matrix& combinedTransform() const;
 
 private:

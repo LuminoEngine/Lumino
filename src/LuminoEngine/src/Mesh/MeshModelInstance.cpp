@@ -16,6 +16,13 @@ BoneInstance::BoneInstance(SkeletonInstance* owner, int boneIndex)
 {
 }
 
+MeshNode* BoneInstance::node() const
+{
+	const auto& skeleton = m_owner->skeletonModel();
+	const auto& bone = skeleton->bone(m_boneIndex);
+	return m_owner->owner()->model()->m_nodes[bone->nodeIndex()];
+}
+
 const Matrix& BoneInstance::combinedTransform() const
 {
 	const auto& skeleton = m_owner->skeletonModel();
