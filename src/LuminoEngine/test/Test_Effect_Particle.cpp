@@ -7,8 +7,9 @@ class Test_Effect_Particle : public ::testing::Test {};
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, Lifetime)
 {
-	auto particleModel = makeObject<ParticleModel>();
-	auto emitterModel = particleModel->emitters()[0];
+    auto particleModel = makeObject<ParticleModel>();
+    auto emitterModel = makeObject<ParticleEmitterModel>();
+    particleModel->addEmitter(emitterModel);
 	emitterModel->m_lifeTime = { 1, 1 };	// 1s で消えるようにする
 	emitterModel->m_maxParticles = 1;
 
@@ -67,7 +68,8 @@ TEST_F(Test_Effect_Particle, SingleSprite)
 	material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
 	auto particleModel = makeObject<ParticleModel>();
-	auto emitter1 = particleModel->emitters()[0];
+    auto emitter1 = makeObject<ParticleEmitterModel>();
+    particleModel->addEmitter(emitter1);
 	emitter1->setupSpriteModule(material);
 	emitter1->setLifeTime(1);
 	emitter1->setMaxParticles(1);
@@ -242,7 +244,8 @@ TEST_F(Test_Effect_Particle, Trail)
 
 	auto particleModel = makeObject<ParticleModel>();
 	particleModel->seed = 8888;
-	auto m1 = particleModel->emitters()[0];
+    auto m1 = makeObject<ParticleEmitterModel>();
+    particleModel->addEmitter(m1);
 	m1->setupSpriteModule(material);
 	m1->setLifeTime(10);
 	m1->setMaxParticles(10);
