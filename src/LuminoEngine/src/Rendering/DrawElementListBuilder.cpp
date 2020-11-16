@@ -195,6 +195,11 @@ void DrawElementListBuilder::setRenderPhase(RenderPhaseClass value)
     primaryState()->rendringPhase = value;
 }
 
+RenderPhaseClass DrawElementListBuilder::renderPhase()
+{
+    return primaryState()->rendringPhase;
+}
+
 void DrawElementListBuilder::setAdditionalElementFlags(RenderDrawElementTypeFlags value)
 {
 	primaryState()->additionalElementFlags = value;
@@ -367,6 +372,10 @@ RenderStage* DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFea
 
 void DrawElementListBuilder::prepareRenderDrawElement(RenderDrawElement* newElement, RenderDrawElement* lastElement, RenderStage* stage)
 {
+    if (LN_REQUIRE(stage)) return;
+
+    newElement->m_stage = stage;
+
     // newElement が持つべき BuiltinEffectData を決定する
     BuiltinEffectData* data = nullptr;
     if (m_dirtyFlags.hasFlag(DirtyFlags::BuiltinEffect)) {

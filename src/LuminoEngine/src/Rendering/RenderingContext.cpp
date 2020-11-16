@@ -369,13 +369,18 @@ void RenderingContext::blit(Material* source, RenderTargetTexture* destination, 
 	m_builder->advanceFence();
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);	// TODO: この辺りは RenderFeature の描き方に依存するので、そっちからもらえるようにした方がいいかも
+
+	auto oldRenderPhase = m_builder->renderPhase();
+	m_builder->setRenderPhase(phase);
 	auto* element = m_builder->addNewDrawElement<Blit>(m_manager->blitRenderFeature());
-	element->targetPhase = phase;
+	//element->targetPhase = phase;
 
     if (destination)
     {
         setRenderTarget(0, oldTarget);
     }
+
+	m_builder->setRenderPhase(oldRenderPhase);
 
 	m_builder->advanceFence();
 }

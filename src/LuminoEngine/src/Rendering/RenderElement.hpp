@@ -119,10 +119,11 @@ public:
 
 	RenderStage* addNewRenderStage();
 
-	void addElement(RenderStage* parentStage, RenderDrawElement* element);
+	void addElement(RenderDrawElement* element);
 
 	RenderDrawElement* headElement() const { return m_allElementList.headElement; }
     RenderDrawElement* lastElement() const { return m_allElementList.tailElement; }
+	const ElementListDetail& classifiedElementList(RenderPhaseClass phase) const { return m_classifiedElementList[static_cast<int>(phase)]; }
 
 	void addDynamicLightInfo(const DynamicLightInfo& info) { return m_dynamicLightInfoList.add(info); }
 
@@ -143,7 +144,7 @@ private:
 	List<DynamicLightInfo> m_dynamicLightInfoList;
 };
 
-
+#if 0
 // 1フレームで実行するコマンドリストすべてをまとめておく。
 // インスタンスは World などに、基本的にずっと持っておく。
 // 描画開始時に clear() し、そのフレームで描画したい CommandBuffer やら RenderingContext やらからどんどん add していく。
@@ -166,6 +167,7 @@ private:
 
     
 };
+#endif
 
 } // namespace detail
 } // namespace ln

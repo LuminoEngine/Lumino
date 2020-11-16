@@ -29,14 +29,11 @@ void UIFrameRenderView::init()
     m_renderingContext = makeRef<UIRenderingContext>();
     m_sceneRenderingPipeline = makeRef<detail::FlatRenderingPipeline>();
     m_sceneRenderingPipeline->init();
-    m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
     m_viewPoint = makeObject<RenderViewPoint>();
 
     //m_clearRenderPass = makeObject<RenderPass>();
 
     m_adornerLayer = makeObject<UIAdornerLayer>(this);
-
-    m_drawElementListCollector->addDrawElementList(/*RenderPhaseClass::Default, */m_renderingContext->m_elementList);
 }
 
 void UIFrameRenderView::setRootElement(UIDomainProvidor* element)
@@ -136,7 +133,7 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
 
 
 
-        m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, m_drawElementListCollector);
+        m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, m_renderingContext->m_elementList);
     }
 }
 

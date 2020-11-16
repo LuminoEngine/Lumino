@@ -51,7 +51,6 @@ void WorldRenderView::init()
 
     m_sceneRenderingPipeline = makeRef<detail::SceneRenderingPipeline>();
     m_sceneRenderingPipeline->init();
-    m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
     m_viewPoint = makeObject<RenderViewPoint>();
 
     //m_clearRenderPass = makeObject<RenderPass>();
@@ -109,8 +108,6 @@ void WorldRenderView::init()
 void WorldRenderView::setTargetWorld(World* world)
 {
     m_targetWorld = world;
-
-    m_drawElementListCollector->addDrawElementList(/*RenderPhaseClass::Default, */m_targetWorld->m_renderingContext->m_elementList);
 }
 
 void WorldRenderView::setCamera(Camera* camera)
@@ -426,7 +423,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         }
 
         RenderTargetTexture* actualTarget = (m_hdrRenderTarget) ? m_hdrRenderTarget.get() : renderTarget;
-        m_sceneRenderingPipeline->render(graphicsContext, actualTarget, clearInfo, &camera, m_drawElementListCollector, &sceneGlobalRenderParams);
+        m_sceneRenderingPipeline->render(graphicsContext, actualTarget, clearInfo, &camera, m_targetWorld->m_renderingContext->m_elementList, &sceneGlobalRenderParams);
         
 		//graphicsContext->resetState();
 

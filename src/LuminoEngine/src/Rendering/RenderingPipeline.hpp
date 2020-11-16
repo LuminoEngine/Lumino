@@ -18,14 +18,14 @@ class RenderingPipeline
 public:
     void init();
     const SizeI& renderingFrameBufferSize() const { return m_renderingFrameBufferSize; }
-    const detail::DrawElementListCollector* elementListCollector() const { return m_elementListCollector; }
+    const detail::DrawElementList* elementList() const { return m_elementList; }
 
 protected:
     //void clear(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo);
 
     //Ref<detail::FrameBufferCache> m_frameBufferCache;
     SizeI m_renderingFrameBufferSize;	// render() の内側だけで使える
-    detail::DrawElementListCollector* m_elementListCollector;
+    detail::DrawElementList* m_elementList;
     Ref<RenderPass> m_clearRenderPass;
 };
 
@@ -43,7 +43,7 @@ public:
 		RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
         const detail::CameraInfo* mainCameraInfo,
-        detail::DrawElementListCollector* elementListCollector,
+        detail::DrawElementList* elementList,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
     const Ref<RenderTargetTexture>& viweNormalAndDepthBuffer() const { return m_viweNormalAndDepthBuffer; }
@@ -105,7 +105,7 @@ public:
         RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
 		const detail::CameraInfo* mainCameraInfo,
-        detail::DrawElementListCollector* elementListCollector);
+        detail::DrawElementList* elementList);
 
 private:
 	//Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;

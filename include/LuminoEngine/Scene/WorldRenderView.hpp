@@ -79,7 +79,6 @@ private:
     void adjustGridPlane(const ViewFrustum& viewFrustum, RenderView* renderView);
 
     Ref<detail::SceneRenderingPipeline> m_sceneRenderingPipeline;
-    Ref<detail::DrawElementListCollector> m_drawElementListCollector;
     Ref<World> m_targetWorld;
 	Ref<Camera> m_camera;
     Ref<RenderViewPoint> m_viewPoint;

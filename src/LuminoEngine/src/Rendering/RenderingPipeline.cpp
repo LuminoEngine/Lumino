@@ -96,12 +96,10 @@ void SceneRenderingPipeline::render(
 	RenderTargetTexture* renderTarget,
     const ClearInfo& mainPassClearInfo,
     const detail::CameraInfo* mainCameraInfo,
-    detail::DrawElementListCollector* elementListCollector,
+    detail::DrawElementList* elementList,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
-    m_elementListCollector = elementListCollector;
-    m_elementListCollector->classify();
-
+    m_elementList = elementList;
 
     // Prepare G-Buffers
     {
@@ -195,7 +193,7 @@ void SceneRenderingPipeline::render(
 
     // 誤用防止
     m_renderingFrameBufferSize = SizeI();
-    m_elementListCollector = nullptr;
+    m_elementList = nullptr;
 }
 
 
@@ -230,10 +228,9 @@ void FlatRenderingPipeline::render(
 	RenderTargetTexture* renderTarget,
     const ClearInfo& mainPassClearInfo,
 	const detail::CameraInfo* mainCameraInfo,
-    detail::DrawElementListCollector* elementListCollector)
+    detail::DrawElementList* elementList)
 {
-    m_elementListCollector = elementListCollector;
-    m_elementListCollector->classify();
+    m_elementList = elementList;
 
 	m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
 
@@ -271,7 +268,7 @@ void FlatRenderingPipeline::render(
 
 	// 誤用防止
 	m_renderingFrameBufferSize = SizeI();
-    m_elementListCollector = nullptr;
+    m_elementList = nullptr;
 }
 
 } // namespace detail

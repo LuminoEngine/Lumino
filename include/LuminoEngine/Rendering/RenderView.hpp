@@ -16,7 +16,6 @@ namespace detail {
 class RenderingManager;
 class FrameBufferCache;
 class DrawElementList;
-class DrawElementListCollector;
 class SceneRenderer;
 class UIStyleInstance;
 }

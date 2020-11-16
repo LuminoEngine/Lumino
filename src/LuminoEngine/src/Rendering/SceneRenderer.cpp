@@ -554,9 +554,9 @@ void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRenderer
 	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
 
 
-    for (auto& elementList : renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
+    //for (auto& elementList : renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
     {
-        for (auto& light : elementList->dynamicLightInfoList())
+        for (auto& light : renderingPipeline->elementList()->dynamicLightInfoList())
         {
 			if (light.mainLight) {
 				m_mainLightInfo = &light;
@@ -565,25 +565,30 @@ void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRenderer
         }
     }
 
-    const auto& classifiedElements = renderingPipeline->elementListCollector()->classifiedElements(targetPhase);
-    for (RenderDrawElement* element : classifiedElements)
-    {
+    const auto& classifiedElements = renderingPipeline->elementList()->classifiedElementList(targetPhase);
+	{
+		RenderDrawElement* element = classifiedElements.headElement;
+		while (element) {
+
 #if 0		// TODO: 視錘台カリング
-        const Matrix& transform = element->getTransform(elementList);
+			const Matrix& transform = element->getTransform(elementList);
 
-        Sphere boundingSphere = element->getLocalBoundingSphere();
-        boundingSphere.center += transform.getPosition();
+			Sphere boundingSphere = element->getLocalBoundingSphere();
+			boundingSphere.center += transform.getPosition();
 
-        if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-            cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
-        {
-            // このノードは描画できる
-            m_renderingElementList.add(element);
-        }
+			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
+				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
+			{
+				// このノードは描画できる
+				m_renderingElementList.add(element);
+			}
 #else
-        m_renderingElementList.add(element);
+			m_renderingElementList.add(element);
 #endif
-    }
+
+			element = element->m_classifiedNext;
+		}
+	}
 
 	for (auto& element : m_renderingElementList)
 	{

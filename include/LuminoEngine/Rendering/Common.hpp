@@ -101,7 +101,7 @@ enum class SceneClearMode
 
 // DrawElement の大分類。SceneRenderer に投入する DrawElement を決める。
 // SceneRenderer 内の各 RenderPass は、さらに小項目を RenderDrawElementTypeFlags で識別し、描画するかどうかを決定する。
-enum class RenderPhaseClass
+enum class RenderPhaseClass	// TODO: name: Part
 {
 	// 通常のオブジェクトの他、BackgroundSky, LightDisc もこれに含まれる。
     Geometry = 0,

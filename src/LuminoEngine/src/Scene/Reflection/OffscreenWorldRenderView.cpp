@@ -34,8 +34,6 @@ void OffscreenWorldRenderView::init()
     // ただ、GBuffe のように Viewサイズや視点に依存するデータを独立させる必要がある。
     m_sceneRenderingPipeline = makeRef<detail::SceneRenderingPipeline>();
     m_sceneRenderingPipeline->init();
-
-    m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
 }
 
 void OffscreenWorldRenderView::setRenderTarget(RenderTargetTexture* renderTarget)
@@ -68,9 +66,6 @@ void OffscreenWorldRenderView::render(GraphicsContext* graphicsContext, World* t
 {
     RenderingContext* context = targetWorld->m_renderingContext;
 
-    m_drawElementListCollector->clear();
-    m_drawElementListCollector->addDrawElementList(targetWorld->m_renderingContext->m_elementList);
-
     setClearMode(context->baseRenderView->clearMode());
     setBackgroundColor(context->baseRenderView->backgroundColor());
 
@@ -96,7 +91,7 @@ void OffscreenWorldRenderView::render(GraphicsContext* graphicsContext, World* t
 
     targetWorld->renderObjects();
 
-    m_sceneRenderingPipeline->render(graphicsContext, m_renderTarget, clearInfo, &m_cameraInfo, m_drawElementListCollector, &targetWorld->m_combinedSceneGlobalRenderParams);
+    m_sceneRenderingPipeline->render(graphicsContext, m_renderTarget, clearInfo, &m_cameraInfo, targetWorld->m_renderingContext->m_elementList, &targetWorld->m_combinedSceneGlobalRenderParams);
 
 }
 

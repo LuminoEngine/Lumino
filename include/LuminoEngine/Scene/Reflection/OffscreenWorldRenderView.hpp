@@ -29,7 +29,6 @@ private:
 	Ref<RenderTargetTexture> m_renderTarget;
 
 	Ref<detail::SceneRenderingPipeline> m_sceneRenderingPipeline;
-	Ref<detail::DrawElementListCollector> m_drawElementListCollector;
 };
 
 } // namespace ln

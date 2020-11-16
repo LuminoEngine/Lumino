@@ -65,6 +65,7 @@ public:
 	const Matrix& baseTransform() const;
     void setRenderPriority(int value);
     void setRenderPhase(RenderPhaseClass value);
+	RenderPhaseClass renderPhase();	// TODO: blit の対応が済んだら消す
 	void setAdditionalElementFlags(RenderDrawElementTypeFlags value);
 
 	// BuiltinEffectData
@@ -92,8 +93,8 @@ public:
 		RenderStage* stage = prepareRenderStage(renderFeature);
 		if (LN_ENSURE(stage)) return nullptr;
 		TElement* element = m_targetList->newFrameData<TElement>();
-		m_targetList->addElement(stage, element);
         prepareRenderDrawElement(element, m_targetList->lastElement(), stage);
+		m_targetList->addElement(element);
 		return element;
 	}
 

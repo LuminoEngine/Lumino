@@ -114,14 +114,11 @@ RenderStage* DrawElementList::addNewRenderStage()
 	return newFrameData<RenderStage>();
 }
 
-void DrawElementList::addElement(RenderStage* parentStage, RenderDrawElement* element)
+void DrawElementList::addElement(RenderDrawElement* element)
 {
-	if (LN_REQUIRE(parentStage)) return;
 	if (LN_REQUIRE(element)) return;
-	if (LN_REQUIRE(!element->m_stage)) return;
+	if (LN_REQUIRE(element->m_stage)) return;
 	if (LN_REQUIRE(element->targetPhase != RenderPhaseClass::_Count)) return;
-
-	element->m_stage = parentStage;
 
 	// Add to AllList
 	{
@@ -162,6 +159,7 @@ void DrawElementList::addFrameData(IDrawElementListFrameData* data)
 	m_tailFrameData = data;
 }
 
+#if 0
 //==============================================================================
 // DrawElementListCollector
 
@@ -198,6 +196,7 @@ void DrawElementListCollector::classify()
         }
     }
 }
+#endif
 
 } // namespace detail
 } // namespace ln
