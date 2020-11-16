@@ -152,6 +152,9 @@ void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 	context->setTransfrom(Matrix::makeTranslation(0,0,0));
 	context->drawBox(Box(Vector3(1, 1, 0.5), 100, 100, 0.01), Color::Red);
 
+	context->setTransfrom(Matrix::makeTranslation(200, 200, 0));
+	context->drawText(u"TEST");
+
 	context->popState();
 }
 
