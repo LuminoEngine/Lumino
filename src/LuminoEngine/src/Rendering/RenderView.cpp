@@ -48,16 +48,6 @@ void RenderView::init()
 	m_manager = detail::EngineDomain::renderingManager();
 }
 
-void RenderView::clearDrawElementListManagers()
-{
-	m_elementListManagers.clear();
-}
-
-void RenderView::addDrawElementListManager(detail::DrawElementListCollector* elementListManager)
-{
-	m_elementListManagers.add(elementListManager);
-}
-
 Ref<EventConnection> RenderView::connectOnUIEvent(Ref<UIGeneralEventHandler> handler)
 {
     return m_onUIEvent.connect(handler);

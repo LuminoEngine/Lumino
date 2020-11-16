@@ -36,7 +36,6 @@ void OffscreenWorldRenderView::init()
     m_sceneRenderingPipeline->init();
 
     m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
-    addDrawElementListManager(m_drawElementListCollector);
 }
 
 void OffscreenWorldRenderView::setRenderTarget(RenderTargetTexture* renderTarget)
@@ -97,8 +96,7 @@ void OffscreenWorldRenderView::render(GraphicsContext* graphicsContext, World* t
 
     targetWorld->renderObjects();
 
-    assert(elementListManagers().size() == 1);
-    m_sceneRenderingPipeline->render(graphicsContext, m_renderTarget, clearInfo, &m_cameraInfo, elementListManagers().front(), &targetWorld->m_combinedSceneGlobalRenderParams);
+    m_sceneRenderingPipeline->render(graphicsContext, m_renderTarget, clearInfo, &m_cameraInfo, m_drawElementListCollector, &targetWorld->m_combinedSceneGlobalRenderParams);
 
 }
 

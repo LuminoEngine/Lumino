@@ -136,6 +136,8 @@ void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 	for (const auto& skeleton : m_modelInstance->skeletons()) {
 		for (const auto& bone : skeleton->bones()) {
 
+            //context->setRenderPhase(RenderPhaseClass::Gizmo2D);
+
 			Vector4 trf = Vector4(bone->combinedTransform().position(), 1.0f);
 			trf = Vector4::transform(trf, viewproj);
 			float m_displayScale = 1.0;

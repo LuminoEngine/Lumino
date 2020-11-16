@@ -40,10 +40,6 @@ public:
 
 	UIViewport* viewport() const { return m_parentViewport; }
 
-	// World の描画などでは RenderView のインスタンスを持ち回り、描画してほしい人が Manager を ここに add していく。
-	void clearDrawElementListManagers();
-	void addDrawElementListManager(detail::DrawElementListCollector* elementListManager);
-
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) = 0;
 
 	// TODO: internal
@@ -73,17 +69,12 @@ public: // TODO: protected
     virtual void onRoutedEvent(UIEventArgs* e);
 
 LN_INTERNAL_ACCESS:
-	const List<detail::DrawElementListCollector*>& elementListManagers() const { return m_elementListManagers; }
 	//void setActualScreenOffset(const Point& offset) { m_actualScreenOffset = offset; }
     void setActualSize(const Size& size) { m_actualSize = size; }
 
 private:
 	detail::RenderingManager* m_manager;
 	UIViewport* m_parentViewport = nullptr;
-
-
-    // TODO: これ List じゃなくていい気がする、というか、List じゃないほうが安全
-	List<detail::DrawElementListCollector*> m_elementListManagers;
 
 	SceneClearMode m_clearMode;
 	Color m_backgroundColor;

@@ -111,8 +111,6 @@ void WorldRenderView::setTargetWorld(World* world)
     m_targetWorld = world;
 
     m_drawElementListCollector->addDrawElementList(/*RenderPhaseClass::Default, */m_targetWorld->m_renderingContext->m_elementList);
-
-    addDrawElementListManager(m_drawElementListCollector);
 }
 
 void WorldRenderView::setCamera(Camera* camera)
@@ -427,9 +425,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             }
         }
 
-        assert(elementListManagers().size() == 1);
         RenderTargetTexture* actualTarget = (m_hdrRenderTarget) ? m_hdrRenderTarget.get() : renderTarget;
-		m_sceneRenderingPipeline->render(graphicsContext, actualTarget, clearInfo, &camera, elementListManagers().front(), &sceneGlobalRenderParams);
+        m_sceneRenderingPipeline->render(graphicsContext, actualTarget, clearInfo, &camera, m_drawElementListCollector, &sceneGlobalRenderParams);
         
 		//graphicsContext->resetState();
 
