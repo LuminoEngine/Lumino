@@ -42,7 +42,8 @@ public:
         GraphicsContext* graphicsContext,
 		RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
-        const detail::CameraInfo* mainCameraInfo,
+        const RenderView* renderView,
+        detail::ProjectionKind primaryProjection,
         detail::DrawElementList* elementList,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
@@ -104,7 +105,8 @@ public:
         GraphicsContext* graphicsContext,
         RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
-		const detail::CameraInfo* mainCameraInfo,
+		const RenderView* renderView,
+        detail::ProjectionKind primaryProjection,
         detail::DrawElementList* elementList);
 
 private:

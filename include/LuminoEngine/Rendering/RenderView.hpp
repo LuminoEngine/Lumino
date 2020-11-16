@@ -18,6 +18,15 @@ class FrameBufferCache;
 class DrawElementList;
 class SceneRenderer;
 class UIStyleInstance;
+
+enum class ProjectionKind
+{
+	ViewProjection3D,	// 通常の 3D 空間に配置されたモデルに適用する View-Proj
+	ClipScreen,			// ClipSpace に配置されたモデルに適用する View-Proj。 つまり、変換無し。ポストエフェクト用の Blit で使う。
+	Physical2D,			// レンダーターゲットの px サイズと一致する 2D 空間に配置されたモデルに適用する View-Proj。
+	Independent2D,		// Device-Independent Pixel (dp) で表される 2D 空間に配置されたモデルに適用する View-Proj
+};
+
 }
 
 // RenderView は別の RenderingContext の描画コマンド構築中に、レンダリングターゲットを生成する目的で render を実行することがある。
@@ -43,6 +52,8 @@ public:
 
 	// TODO: internal
 	//detail::CameraInfo mainCameraInfo;
+	const detail::CameraInfo& viewProjection(detail::ProjectionKind kind) const { return m_viewProjections[static_cast<int>(kind)]; }
+	void makeViewProjections(const detail::CameraInfo& base, float dpiScale);
 
 	SceneClearMode clearMode() const { return m_clearMode; }
 	void setClearMode(SceneClearMode value) { m_clearMode = value; }
@@ -79,6 +90,8 @@ private:
 	Color m_backgroundColor;
 	Point m_actualScreenOffset;
     Size m_actualSize;
+
+	std::array<detail::CameraInfo, 4> m_viewProjections;
 
     Event<UIGeneralEventHandler> m_onUIEvent;
 

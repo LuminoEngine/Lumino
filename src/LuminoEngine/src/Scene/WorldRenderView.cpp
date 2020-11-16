@@ -145,16 +145,11 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 {
 	if (m_camera)
 	{
-        //FrameBuffer fb;
-        //fb.renderTarget[0] = graphicsContext->renderPass()->renderTarget(0);
-        //fb.depthBuffer = graphicsContext->renderPass()->depthBuffer();
-
-        // TODO:
-        detail::CameraInfo camera;
         {
             CameraComponent* cc = m_camera->cameraComponent();
             cc->updateMatrices();
             
+            detail::CameraInfo camera;
             m_viewPoint->worldMatrix = m_camera->worldMatrix();
             m_viewPoint->viewPixelSize = camera.viewPixelSize = Size(renderTarget->width(), renderTarget->height());	// TODO: 必要？
             m_viewPoint->viewPosition = camera.viewPosition = m_camera->position();
@@ -168,10 +163,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             m_viewPoint->nearClip = camera.nearClip = cc->getNearClip();
             m_viewPoint->farClip = camera.farClip = cc->getFarClip();
 
-            //Size size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());
-            //Vector3 pos = Vector3(5, 5, -5);
-            //camera.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 100.0f);
-
+            makeViewProjections(camera, 1.0);   // TODO: dpiscale
         }
 
 
@@ -423,7 +415,9 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         }
 
         RenderTargetTexture* actualTarget = (m_hdrRenderTarget) ? m_hdrRenderTarget.get() : renderTarget;
-        m_sceneRenderingPipeline->render(graphicsContext, actualTarget, clearInfo, &camera, m_targetWorld->m_renderingContext->m_elementList, &sceneGlobalRenderParams);
+        m_sceneRenderingPipeline->render(
+            graphicsContext, actualTarget, clearInfo, this, detail::ProjectionKind::ViewProjection3D,
+            m_targetWorld->m_renderingContext->m_elementList, &sceneGlobalRenderParams);
         
 		//graphicsContext->resetState();
 

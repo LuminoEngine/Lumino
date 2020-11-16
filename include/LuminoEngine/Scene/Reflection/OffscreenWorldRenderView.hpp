@@ -17,7 +17,7 @@ public:
 	void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
 
 
-	detail::CameraInfo m_cameraInfo;
+	//detail::CameraInfo m_cameraInfo;
 
 LN_CONSTRUCT_ACCESS:
     OffscreenWorldRenderView();

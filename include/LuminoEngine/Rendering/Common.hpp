@@ -113,6 +113,10 @@ enum class RenderPhaseClass	// TODO: name: Part
     PostEffect,
 
 
+	// (デバイス非依存ピクセル2D座標系)
+	Gizmo2D,
+
+
     _Count,
 };
 

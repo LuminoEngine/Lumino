@@ -48,6 +48,37 @@ void RenderView::init()
 	m_manager = detail::EngineDomain::renderingManager();
 }
 
+void RenderView::makeViewProjections(const detail::CameraInfo& base, float dpiScale)
+{
+	auto* info = &m_viewProjections[static_cast<int>(detail::ProjectionKind::ViewProjection3D)];
+	*info = base;
+
+	info = &m_viewProjections[static_cast<int>(detail::ProjectionKind::ClipScreen)];
+	info->makeUnproject(base.viewPixelSize);
+
+	info = &m_viewProjections[static_cast<int>(detail::ProjectionKind::Physical2D)];
+	info->viewPixelSize = base.viewPixelSize;
+	info->viewPosition = Vector3::Zero;
+	info->viewDirection = Vector3::UnitZ;
+	info->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+	info->projMatrix = Matrix::makePerspective2DLH(base.viewPixelSize.width, base.viewPixelSize.height, 0, 1000);
+	info->viewProjMatrix = info->viewMatrix * info->projMatrix;
+	info->viewFrustum = ViewFrustum(info->viewProjMatrix);
+	info->nearClip = 0;
+	info->farClip = 1000;
+
+	info = &m_viewProjections[static_cast<int>(detail::ProjectionKind::Independent2D)];
+	info->viewPixelSize = base.viewPixelSize;
+	info->viewPosition = Vector3::Zero;
+	info->viewDirection = Vector3::UnitZ;
+	info->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+	info->projMatrix = Matrix::makePerspective2DLH(base.viewPixelSize.width / dpiScale, base.viewPixelSize.height / dpiScale, 0, 1000);
+	info->viewProjMatrix = info->viewMatrix * info->projMatrix;
+	info->viewFrustum = ViewFrustum(info->viewProjMatrix);
+	info->nearClip = 0;
+	info->farClip = 1000;
+}
+
 Ref<EventConnection> RenderView::connectOnUIEvent(Ref<UIGeneralEventHandler> handler)
 {
     return m_onUIEvent.connect(handler);

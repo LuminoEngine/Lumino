@@ -95,7 +95,8 @@ void SceneRenderingPipeline::render(
     GraphicsContext* graphicsContext,
 	RenderTargetTexture* renderTarget,
     const ClearInfo& mainPassClearInfo,
-    const detail::CameraInfo* mainCameraInfo,
+    const RenderView* renderView,
+    detail::ProjectionKind primaryProjection,
     detail::DrawElementList* elementList,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
@@ -116,7 +117,7 @@ void SceneRenderingPipeline::render(
     }
 
     RenderViewInfo renderViewInfo;
-    renderViewInfo.cameraInfo = *mainCameraInfo;
+    renderViewInfo.cameraInfo = renderView->viewProjection(primaryProjection);
 
     {
         const auto* light = m_sceneRenderer->mainLightInfo();
@@ -177,6 +178,8 @@ void SceneRenderingPipeline::render(
     //m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->gbufferPass());
     m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
 
+
+
     {
         //CameraInfo camera;
         //camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
@@ -187,6 +190,17 @@ void SceneRenderingPipeline::render(
             m_sceneRenderer_PostEffectPhase->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass);
         //}
     }
+
+
+    // Gizmo2D
+    {
+        //RenderViewInfo renderViewInfo2;
+        renderViewInfo.cameraInfo = renderView->viewProjection(ProjectionKind::Independent2D);
+        m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Gizmo2D, nullptr);
+        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
+    }
+
+
 
     // TODO: scoped
     DepthBuffer::releaseTemporary(depthBuffer);
@@ -227,7 +241,8 @@ void FlatRenderingPipeline::render(
 	GraphicsContext* graphicsContext,
 	RenderTargetTexture* renderTarget,
     const ClearInfo& mainPassClearInfo,
-	const detail::CameraInfo* mainCameraInfo,
+    const RenderView* renderView,
+    detail::ProjectionKind primaryProjection,
     detail::DrawElementList* elementList)
 {
     m_elementList = elementList;
@@ -235,7 +250,7 @@ void FlatRenderingPipeline::render(
 	m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
 
     RenderViewInfo renderViewInfo;
-    renderViewInfo.cameraInfo = *mainCameraInfo;
+    renderViewInfo.cameraInfo = renderView->viewProjection(primaryProjection);//*mainCameraInfo;
 
     auto depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
 
@@ -255,7 +270,7 @@ void FlatRenderingPipeline::render(
 
         RenderViewInfo renderViewInfo;
         //CameraInfo camera;
-        renderViewInfo.cameraInfo.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
+        renderViewInfo.cameraInfo = renderView->viewProjection(ProjectionKind::ClipScreen);//.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
         m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::PostEffect, nullptr);
         //m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, depthBuffer, renderViewInfo.cameraInfo);
         //for (SceneRendererPass* pass : m_sceneRenderer_PostEffectPhase->m_renderingPassList) {

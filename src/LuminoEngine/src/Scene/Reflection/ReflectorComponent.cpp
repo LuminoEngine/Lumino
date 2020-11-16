@@ -44,7 +44,8 @@ void ReflectorComponent::onPrepareRender(RenderingContext* context)
     const Vector3 localNormal = Vector3(0, 1, 0);
 
     const auto* viewPoint = context->viewPoint();
-    auto& virtualCamera = m_offscreenRenderView->m_cameraInfo;
+    //auto& virtualCamera = m_offscreenRenderView->m_cameraInfo;
+    detail::CameraInfo virtualCamera;
     {
 
         WorldObject* scope = worldObject();
@@ -114,6 +115,8 @@ void ReflectorComponent::onPrepareRender(RenderingContext* context)
             virtualCamera.nearClip = viewPoint->nearClip;
             virtualCamera.farClip = viewPoint->farClip;
         }
+
+        m_offscreenRenderView->makeViewProjections(virtualCamera, 1.0f);    // TODO: dpiScale
 
 
 

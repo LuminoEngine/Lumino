@@ -125,7 +125,7 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
 void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 {
 	context->pushState();
-	context->setRenderPhase(RenderPhaseClass::Gizmo);
+	context->setRenderPhase(RenderPhaseClass::Gizmo2D);
 	context->setDepthTestEnabled(false);
 	context->setDepthWriteEnabled(false);
 
@@ -133,21 +133,24 @@ void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 	Matrix viewproj = viewPoint->viewProjMatrix;
 
 
-	for (const auto& skeleton : m_modelInstance->skeletons()) {
-		for (const auto& bone : skeleton->bones()) {
+	//for (const auto& skeleton : m_modelInstance->skeletons()) {
+	//	for (const auto& bone : skeleton->bones()) {
 
-            //context->setRenderPhase(RenderPhaseClass::Gizmo2D);
+ //           //context->setRenderPhase(RenderPhaseClass::Gizmo2D);
 
-			Vector4 trf = Vector4(bone->combinedTransform().position(), 1.0f);
-			trf = Vector4::transform(trf, viewproj);
-			float m_displayScale = 1.0;
-			float m_screenFactor = m_displayScale * 0.15f * trf.w;
-			auto transform = Matrix::multiply(Matrix::makeScaling(m_screenFactor), bone->combinedTransform());
-			context->setTransfrom(transform);
-			//context->setTransfrom(bone->combinedTransform());
-			context->drawSphere(1, 8, 8, Color::Red);
-		}
-	}
+	//		Vector4 trf = Vector4(bone->combinedTransform().position(), 1.0f);
+	//		trf = Vector4::transform(trf, viewproj);
+	//		float m_displayScale = 1.0;
+	//		float m_screenFactor = m_displayScale * 0.15f * trf.w;
+	//		auto transform = Matrix::multiply(Matrix::makeScaling(m_screenFactor), bone->combinedTransform());
+	//		context->setTransfrom(transform);
+	//		//context->setTransfrom(bone->combinedTransform());
+	//		context->drawSphere(1, 8, 8, Color::Red);
+	//	}
+	//}
+
+	context->setTransfrom(Matrix::makeTranslation(0,0,0));
+	context->drawBox(Box(Vector3(1, 1, 0.5), 100, 100, 0.01), Color::Red);
 
 	context->popState();
 }
