@@ -554,7 +554,6 @@ void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRenderer
 	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
 
 
-#if 1
     for (auto& elementList : renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
     {
         for (auto& light : elementList->dynamicLightInfoList())
@@ -585,64 +584,6 @@ void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRenderer
         m_renderingElementList.add(element);
 #endif
     }
-#else
-	//for (auto& elementListManager : *m_renderingPipeline->elementListManagers())
-	{
-		// TODO: とりあえず Default
-		
-
-		for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
-		{
-			//elementList->setDefaultRenderTarget(m_renderingDefaultRenderTarget);
-			//elementList->setDefaultDepthBuffer(m_renderingDefaultDepthBuffer);
-
-			for (auto& light : elementList->dynamicLightInfoList())
-			{
-				onCollectLight(light);
-			}
-
-			//onPreRender(elementList);
-
-			// 視点に関する情報の設定
-			//context->setViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
-
-			// ライブラリ外部への書き込み対応
-			//context->beginBaseRenderer()->Clear(ClearFlags::Depth/* | ClearFlags::Stencil*/, Color());
-
-			//for (int i = 0; i < elementList->getElementCount(); ++i)
-			//{
-			//	DrawElement* element = elementList->getElement(i);
-
-			RenderDrawElement* element = elementList->headElement();
-			while (element)
-			{
-                // filter phase
-                if (element->targetPhase == m_targetPhase) {
-
-
-#if 0		// TODO: 視錘台カリング
-                    const Matrix& transform = element->getTransform(elementList);
-
-                    Sphere boundingSphere = element->getLocalBoundingSphere();
-                    boundingSphere.center += transform.getPosition();
-
-                    if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-                        cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
-                    {
-                        // このノードは描画できる
-                        m_renderingElementList.add(element);
-                    }
-#else
-                    m_renderingElementList.add(element);
-#endif
-                }
-
-
-				element = element->next();
-			}
-		}
-	}
-#endif
 
 	for (auto& element : m_renderingElementList)
 	{

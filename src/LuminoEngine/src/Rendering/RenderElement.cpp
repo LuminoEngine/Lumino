@@ -62,8 +62,8 @@ void RenderDrawElement::calculateActualPriority()
 
 DrawElementList::DrawElementList(RenderingManager* manager)
 	: m_dataAllocator(makeRef<LinearAllocator>(manager->stageDataPageManager()))
-	, m_headElement(nullptr)
-	, m_tailElement(nullptr)
+    , m_allElementList{nullptr, nullptr}
+	, m_classifiedElementList({})
 	, m_headFrameData(nullptr)
 	, m_tailFrameData(nullptr)
 {
@@ -92,13 +92,18 @@ void DrawElementList::clear()
 
 	// destruct draw elements.
 	{
-		RenderDrawElement* p = m_headElement;
+		RenderDrawElement* p = m_allElementList.headElement;
 		while (p) {
 			p->~RenderDrawElement();
 			p = p->next();
 		}
-		m_headElement = nullptr;
-		m_tailElement = nullptr;
+		m_allElementList.headElement = nullptr;
+		m_allElementList.tailElement = nullptr;
+
+		for (auto& list : m_classifiedElementList) {
+			list.headElement = nullptr;
+			list.tailElement = nullptr;
+		}
 	}
 
 	m_dynamicLightInfoList.clear();
@@ -114,16 +119,34 @@ void DrawElementList::addElement(RenderStage* parentStage, RenderDrawElement* el
 	if (LN_REQUIRE(parentStage)) return;
 	if (LN_REQUIRE(element)) return;
 	if (LN_REQUIRE(!element->m_stage)) return;
+	if (LN_REQUIRE(element->targetPhase != RenderPhaseClass::_Count)) return;
 
 	element->m_stage = parentStage;
 
-	if (!m_headElement) {
-		m_headElement = element;
+	// Add to AllList
+	{
+		if (!m_allElementList.headElement) {
+			m_allElementList.headElement = element;
+		}
+		else {
+			m_allElementList.tailElement->m_next = element;
+		}
+		m_allElementList.tailElement = element;
 	}
-	else {
-		m_tailElement->m_next = element;
+
+	// Add to ClassifiedList
+	// ※ 0.9.0 までは RenderingPipeline::render() の先頭で行っていたが、複数ビューからの描画を想定したときに非効率なので、ここで行うことにした。
+	{
+		ElementListDetail& list = m_classifiedElementList[static_cast<int>(element->targetPhase)];
+
+		if (!list.headElement) {
+			list.headElement = element;
+		}
+		else {
+			list.tailElement->m_classifiedNext = element;
+		}
+		list.tailElement = element;
 	}
-	m_tailElement = element;
 }
 
 void DrawElementList::addFrameData(IDrawElementListFrameData* data)

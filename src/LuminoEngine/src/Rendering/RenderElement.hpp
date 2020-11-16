@@ -54,7 +54,9 @@ public:
     int commandFence = 0;
 	// TODO: ↑ flags 実装に伴い不要になりそう
 
-    RenderPhaseClass targetPhase = RenderPhaseClass::Geometry;
+    RenderPhaseClass targetPhase = RenderPhaseClass::_Count;
+	RenderDrawElement* m_classifiedNext = nullptr;
+
 
 
 
@@ -90,6 +92,12 @@ class DrawElementList
 	: public RefObject
 {
 public:
+	struct ElementListDetail
+    {
+        RenderDrawElement* headElement; // head of link list.
+        RenderDrawElement* tailElement; // tail of link list.
+	};
+
 	DrawElementList(RenderingManager* manager);
 	virtual ~DrawElementList();
 
@@ -113,8 +121,8 @@ public:
 
 	void addElement(RenderStage* parentStage, RenderDrawElement* element);
 
-	RenderDrawElement* headElement() const { return m_headElement; }
-    RenderDrawElement* lastElement() const { return m_tailElement; }
+	RenderDrawElement* headElement() const { return m_allElementList.headElement; }
+    RenderDrawElement* lastElement() const { return m_allElementList.tailElement; }
 
 	void addDynamicLightInfo(const DynamicLightInfo& info) { return m_dynamicLightInfoList.add(info); }
 
@@ -126,8 +134,8 @@ private:
 	Ref<LinearAllocator> m_dataAllocator;
 	List<RenderStage*> m_renderStageList;	// TODO: ポインタのリンクリストでもいいかな
 
-	RenderDrawElement* m_headElement;	// head of link list.
-	RenderDrawElement* m_tailElement;	// tail of link list.
+	ElementListDetail m_allElementList;
+	std::array<ElementListDetail, (int)RenderPhaseClass::_Count> m_classifiedElementList;
 
 	IDrawElementListFrameData* m_headFrameData;	// head of link list.
 	IDrawElementListFrameData* m_tailFrameData;	// tail of link list.
