@@ -6,6 +6,7 @@
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CanvasContext.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
@@ -17,7 +18,6 @@
 #include "RenderingManager.hpp"
 #include "DrawElementListBuilder.hpp"
 
-
 namespace ln {
 
 //==============================================================================
@@ -26,6 +26,8 @@ namespace ln {
 RenderingContext::RenderingContext()
 	: m_manager(detail::EngineDomain::renderingManager())
 	, m_builder(makeRef<detail::DrawElementListBuilder>())
+	, m_pathContext(makeObject<CanvasContext>())
+	, m_pathBegan(false)
 {
 }
 
@@ -690,6 +692,19 @@ void RenderingContext::invokeExtensionRendering(INativeGraphicsExtension* extens
     element->extension = extension;
 
     // TODO: bounding
+}
+
+CanvasContext* RenderingContext::beginPath()
+{
+	if (LN_REQUIRE(!m_pathBegan)) return nullptr;
+	m_pathBegan = true;
+	return m_pathContext;
+}
+
+void RenderingContext::endPath()
+{
+	if (LN_REQUIRE(m_pathBegan)) return;
+	m_pathBegan = false;
 }
 
 void RenderingContext::addAmbientLight(const Color& color, float intensity)

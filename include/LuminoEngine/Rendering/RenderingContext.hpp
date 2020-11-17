@@ -21,6 +21,7 @@ class RenderViewPoint;
 class RenderView;
 class PostEffect;
 class InstancedMeshList;
+class CanvasContext;
 namespace detail {
 class FontRequester;
 class FlexGlyphRun;
@@ -179,6 +180,9 @@ public:
 
     void invokeExtensionRendering(INativeGraphicsExtension* extension);
 
+	CanvasContext* beginPath();
+	void endPath();
+
 	/** @} */
 
 
@@ -239,6 +243,10 @@ protected:  // TODO:
 	detail::RenderingManager* m_manager;
 	Ref<detail::DrawElementListBuilder> m_builder;
 	List<PostEffect*> m_imageEffects;
+
+private:
+	Ref<CanvasContext> m_pathContext;
+	bool m_pathBegan;
 };
 
 } // namespace ln
