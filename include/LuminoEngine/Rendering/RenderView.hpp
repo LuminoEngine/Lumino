@@ -54,6 +54,7 @@ public:
 	//detail::CameraInfo mainCameraInfo;
 	const detail::CameraInfo& viewProjection(detail::ProjectionKind kind) const { return m_viewProjections[static_cast<int>(kind)]; }
 	void makeViewProjections(const detail::CameraInfo& base, float dpiScale);
+	Vector3 transformProjection(const Vector3& pos, detail::ProjectionKind from, detail::ProjectionKind to) const;
 
 	SceneClearMode clearMode() const { return m_clearMode; }
 	void setClearMode(SceneClearMode value) { m_clearMode = value; }

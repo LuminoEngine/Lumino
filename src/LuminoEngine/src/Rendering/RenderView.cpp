@@ -79,6 +79,16 @@ void RenderView::makeViewProjections(const detail::CameraInfo& base, float dpiSc
 	info->farClip = 1000;
 }
 
+Vector3 RenderView::transformProjection(const Vector3& pos, detail::ProjectionKind from, detail::ProjectionKind to) const
+{
+	const auto fromView = m_viewProjections[static_cast<int>(from)];
+	const auto clipPos = Vector3::transformCoord(pos, fromView.viewProjMatrix);
+
+	const auto toView = m_viewProjections[static_cast<int>(to)];
+	const auto inv = Matrix::makeInverse(toView.viewProjMatrix);
+	return Vector3::transformCoord(clipPos, inv);
+}
+
 Ref<EventConnection> RenderView::connectOnUIEvent(Ref<UIGeneralEventHandler> handler)
 {
     return m_onUIEvent.connect(handler);
