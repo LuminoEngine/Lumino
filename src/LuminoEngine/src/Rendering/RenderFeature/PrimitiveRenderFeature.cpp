@@ -227,13 +227,13 @@ void MeshGeneraterRenderFeature::renderBatch(GraphicsContext* context, RenderFea
         LN_NOTIMPLEMENTED();
         break;
     case ln::PrimitiveTopology::TriangleFan:
-        LN_NOTIMPLEMENTED();
+        primitiveCount = localBatch->data.indexCount - 2;
         break;
     case ln::PrimitiveTopology::LineList:
         primitiveCount = localBatch->data.indexCount / 2;
         break;
     case ln::PrimitiveTopology::LineStrip:
-        LN_NOTIMPLEMENTED();
+        primitiveCount = localBatch->data.indexCount - 1;
         break;
     case ln::PrimitiveTopology::PointList:
         LN_NOTIMPLEMENTED();

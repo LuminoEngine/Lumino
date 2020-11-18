@@ -155,6 +155,11 @@ void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 	context->setTransfrom(Matrix::makeTranslation(200, 200, 0));
 	context->drawText(u"TEST");
 
+
+	context->setTransfrom(Matrix::makeTranslation(300, 200, 0));
+	context->drawRegularPolygonPrimitive(16, 20, Color::Blue, true);
+	context->drawRegularPolygonPrimitive(16, 25, Color::Blue, false);
+
 	context->popState();
 }
 

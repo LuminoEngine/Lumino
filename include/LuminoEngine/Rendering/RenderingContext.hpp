@@ -180,11 +180,26 @@ public:
 
     void invokeExtensionRendering(INativeGraphicsExtension* extension);
 
+
+	// デバッグ2D用 AA無しプリミティブ
+
+	// 線分または塗りつぶしで描かれる正多角形。
+	// XY 平面上に、Z-正面で作成する。
+	void drawRegularPolygonPrimitive(int vertexCount, float radius, const Color& color, bool fill, const Matrix& localTransform = Matrix());
+
+
+	/** @} */
+
+	//--------------------------------------------------------------------------
+	/** @name commands */
+	/** @{ */
+
+
+
 	CanvasContext* beginPath();
 	void endPath();
 
 	/** @} */
-
 
 	//--------------------------------------------------------------------------
 	/** @name light */

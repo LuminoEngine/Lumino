@@ -280,6 +280,29 @@ void RenderingContext::drawBox(const Box& box, const Color& color, const Matrix&
 	// TODO: bouding box
 }
 
+void RenderingContext::drawRegularPolygonPrimitive(int vertexCount, float radius, const Color& color, bool fill, const Matrix& localTransform)
+{
+	class DrawRegularPolygon2D : public detail::RenderDrawElement
+	{
+	public:
+		detail::RegularPolygon2DGenerater data;
+
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
+		}
+	};
+
+	m_builder->setPrimitiveTopology(fill ? PrimitiveTopology::TriangleFan : PrimitiveTopology::LineStrip);
+	auto* element = m_builder->addNewDrawElement<DrawRegularPolygon2D>(m_manager->meshGeneraterRenderFeature());
+	element->data.vertices = vertexCount;
+	element->data.radius = radius;
+	element->data.color = color;
+	element->data.fill = fill;
+
+	// TODO: bouding box
+}
+
 void RenderingContext::drawScreenRectangle()
 {
     class DrawScreenRectangle : public detail::RenderDrawElement
