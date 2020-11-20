@@ -775,6 +775,13 @@ void CommandListServer::clearCommandsAndState()
 	}
 }
 
+const CommandListServer::Layer* CommandListServer::getLayer(RenderPart index1, ProjectionKind index2) const
+{
+	const Part& part = m_parts[static_cast<int>(index1)];
+	const Layer& layer = part.layers[static_cast<int>(index2)];
+	return &layer;
+}
+
 } // namespace detail
 } // namespace ln
 

@@ -59,6 +59,47 @@ bool Application::init()
 //    }
 //}
 
+
+
+class TestNode
+{
+public:
+    virtual ~TestNode() = default;
+    TestNode* m_next = nullptr;
+};
+
+struct TestNode2 : public TestNode
+{
+public:
+    int value;
+    //Ref<ln::Sprite> sprite;
+};
+
+struct List
+{
+    TestNode* m_head = nullptr;
+    TestNode* m_tail = nullptr;
+
+    void add(TestNode* node)
+    {
+        if (!m_head) {
+            m_head = m_tail = node;
+        }
+        else {
+            m_tail->m_next = node;
+            m_tail = node;
+        }
+        node->m_next = nullptr;
+    }
+
+    void clear()
+    {
+        m_head = nullptr;
+        m_tail = nullptr;
+        // node はこの後は使わない想定なのでクリアの必要は無し
+    }
+};
+
 void Application::onInit()
 {
 	setupMainWindow(ln::makeObject<MainWindow>(), true);
@@ -70,5 +111,96 @@ void Application::onInit()
     ViewModel::instance()->load();
 
     //m_mesh = ln::StaticMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/SkinnedAxis1.glb");
+
+    Ref<ln::Sprite> sprite = ln::Sprite::create();
+
+#define SEQUENTIAL 0
+    
+
+    static const size_t count = 1000000;
+#if SEQUENTIAL
+    std::vector<TestNode2> instances(count);
+    for (size_t i = 0; i < count; i++) {
+        instances[i].value = rand();
+        //instances[i].sprite = sprite;
+    }
+#else
+    std::vector<std::unique_ptr<TestNode2>> instances;
+    for (size_t i = 0; i < count; i++) {
+        auto p = std::make_unique<TestNode2>();
+        p->value = rand();
+        //p->sprite = sprite;
+        instances.push_back(std::move(p));
+    }
+#endif
+
+    for (int i = 0; i < 20; i++)
+    {
+        ln::ElapsedTimer t;
+        t.start();
+
+        std::vector<TestNode2*> list;
+        list.reserve(count);
+        int64_t dummy = 0;
+
+        // 追加
+        for (size_t i = 0; i < count; i++) {
+#if SEQUENTIAL
+            list.push_back(&instances[i]);
+#else
+            list.push_back(instances[i].get());
+#endif
+        }
+
+        uint64_t t1 = t.elapsedNanoseconds();
+
+        // 列挙
+        const size_t count = list.size();
+        for (size_t i = 0; i < count; i++) {
+            dummy += list[i]->value;
+        }
+
+        uint64_t t2 = t.elapsedNanoseconds();
+
+        // 削除
+        list.clear();
+
+        std::cout << dummy << "\t" << t1 << "[ns], " << t2 << "[ns], " << t.elapsedNanoseconds() << "[ns]" << std::endl;
+    }
+
+
+    for (int i = 0; i < 20; i++)
+    {
+        ln::ElapsedTimer t;
+        t.start();
+
+        List list;
+        int64_t dummy = 0;
+
+        // 追加
+        for (int i = 0; i < count; i++) {
+#if SEQUENTIAL
+            list.add(&instances[i]);
+#else
+            list.add(instances[i].get());
+#endif
+        }
+
+        uint64_t t1 = t.elapsedNanoseconds();
+
+        // 列挙
+        TestNode* n = list.m_head;
+        while (n) {
+            dummy += static_cast<TestNode2*>(n)->value;
+            n = n->m_next;
+        }
+
+        uint64_t t2 = t.elapsedNanoseconds();
+
+        // 削除
+        list.clear();
+
+        std::cout << dummy << "\t" << t1 << "[ns], " << t2 << "[ns], " << t.elapsedNanoseconds() << "[ns]" << std::endl;
+    }
 
 }

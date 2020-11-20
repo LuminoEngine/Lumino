@@ -419,7 +419,7 @@ void ShadowCasterPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsConte
 		//	0.5f, 100.0f);	// TODO: clip range
 
 		//param->setMatrix(Matrix::multiply(view, proj));
-		param->setMatrix(sceneRenderer->m_mainRenderViewInfo.mainLightViewProjection);
+		param->setMatrix(sceneRenderer->mainRenderViewInfo().mainLightViewProjection);
 	}
 
 	//sceneRenderer->m_mainCameraInfo.mainLightShadowMapPixelSize = 
@@ -624,7 +624,7 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderTec
 			//	0.5f, 100.0f);	// TODO: clip range
 
 			//param->setMatrix(Matrix::multiply(view, proj))
-			param->setMatrix(m_mainRenderViewInfo.mainLightViewProjection);
+			param->setMatrix(mainRenderViewInfo().mainLightViewProjection);
 		}
 	}
 

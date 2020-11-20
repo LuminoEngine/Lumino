@@ -85,8 +85,10 @@ public:
 	// render の前準備として、効率的な描画を行うためのZソートなどを実施した Element リストを作成する。
 	void prepare(
 		RenderingPipeline* renderingPipeline,
+		//detail::CommandListServer* commandListServer,
 		const detail::RenderViewInfo& mainRenderViewInfo,
 		RenderPart targetPhase,
+		ProjectionKind targetProjection,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
 	//void render(
@@ -136,12 +138,15 @@ public:	// TODO
 	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderPass* defaultRenderPass /*RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer*//*, const ClearInfo& clearInfo*/);
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
+private:
 	detail::RenderingManager* m_manager;
 	//List<Ref<SceneRendererPass>> m_renderingPassList;
 	RenderFeatureBatchList m_renderFeatureBatchList;
 
     RenderingPipeline* m_renderingPipeline;
 	const detail::SceneGlobalRenderParams* m_sceneGlobalRenderParams;
+	RenderPart m_currentPart;
+	ProjectionKind m_currentProjection;
 
 	//const FrameBuffer* m_defaultFrameBuffer;
 	ZSortDistanceBase m_zSortDistanceBase;

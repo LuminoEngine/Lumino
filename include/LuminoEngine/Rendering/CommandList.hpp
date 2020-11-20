@@ -187,11 +187,6 @@ class CommandListServer
 	: public RefObject
 {
 public:
-	CommandList* acquirePrimaryList(RenderPart index1, ProjectionKind index2);
-	CommandList* getPrimaryList(RenderPart index1, ProjectionKind index2) const;
-	void clearCommandsAndState();
-
-private:
 	struct Layer
 	{
 		Ref<CommandList> primaryList;
@@ -202,6 +197,15 @@ private:
 	{
 		std::array<Layer, 4> layers;
 	};
+
+	CommandList* acquirePrimaryList(RenderPart index1, ProjectionKind index2);
+	CommandList* getPrimaryList(RenderPart index1, ProjectionKind index2) const;
+	void clearCommandsAndState();
+
+
+	const Layer* getLayer(RenderPart index1, ProjectionKind index2) const;
+
+private:
 
 	std::array<Part, 4> m_parts;
 };

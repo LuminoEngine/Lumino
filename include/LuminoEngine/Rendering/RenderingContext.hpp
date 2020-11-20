@@ -214,6 +214,8 @@ public:
 
 	const Ref<detail::DrawElementListBuilder>& builder() const;
 	const Ref<CommandList>& commandList() const { return m_commandList; }
+	const Ref<detail::CommandListServer>& commandListServer() const { return m_listServer; }
+	
 	RenderView* baseRenderView = nullptr;	// for PostEffect
     GraphicsContext* m_frameWindowRenderingGraphicsContext = nullptr;
 	//detail::RenderDrawElement* lastRenderDrawElement() const;

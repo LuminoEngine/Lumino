@@ -418,7 +418,9 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         RenderTargetTexture* actualTarget = (m_hdrRenderTarget) ? m_hdrRenderTarget.get() : renderTarget;
         m_sceneRenderingPipeline->render(
             graphicsContext, actualTarget, clearInfo, this, detail::ProjectionKind::ViewProjection3D,
-            m_targetWorld->m_renderingContext->commandList()->elementList(), &sceneGlobalRenderParams);
+            m_targetWorld->m_renderingContext->commandList()->elementList(),
+            m_targetWorld->m_renderingContext->commandListServer(),
+            &sceneGlobalRenderParams);
         
 		//graphicsContext->resetState();
 

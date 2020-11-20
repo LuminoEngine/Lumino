@@ -19,6 +19,7 @@ public:
     void init();
     const SizeI& renderingFrameBufferSize() const { return m_renderingFrameBufferSize; }
     const detail::DrawElementList* elementList() const { return m_elementList; }
+    const detail::CommandListServer* commandListServer() const { return m_commandListServer; }
 
 protected:
     //void clear(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo);
@@ -26,6 +27,7 @@ protected:
     //Ref<detail::FrameBufferCache> m_frameBufferCache;
     SizeI m_renderingFrameBufferSize;	// render() の内側だけで使える
     detail::DrawElementList* m_elementList;
+    detail::CommandListServer* m_commandListServer = nullptr;
     Ref<RenderPass> m_clearRenderPass;
 };
 
@@ -40,11 +42,12 @@ public:
     void prepare(RenderTargetTexture* renderTarget);
     void render(
         GraphicsContext* graphicsContext,
-		RenderTargetTexture* renderTarget,
+        RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
         const RenderView* renderView,
         detail::ProjectionKind primaryProjection,
         detail::DrawElementList* elementList,
+        detail::CommandListServer* commandListServer,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
     const Ref<RenderTargetTexture>& viweNormalAndDepthBuffer() const { return m_viweNormalAndDepthBuffer; }
@@ -107,7 +110,8 @@ public:
         const ClearInfo& mainPassClearInfo,
 		const RenderView* renderView,
         detail::ProjectionKind primaryProjection,
-        detail::DrawElementList* elementList);
+        detail::DrawElementList* elementList,
+        detail::CommandListServer* commandListServer);
 
 private:
 	//Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;

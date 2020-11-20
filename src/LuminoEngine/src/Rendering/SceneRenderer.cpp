@@ -5,6 +5,7 @@
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Mesh/MeshModelInstance.hpp"
@@ -115,13 +116,17 @@ void SceneRenderer::init()
 
 void SceneRenderer::prepare(
 	RenderingPipeline* renderingPipeline,
+	//detail::CommandListServer* commandListServer,
 	const detail::RenderViewInfo& mainRenderViewInfo,
 	RenderPart targetPhase,
+	ProjectionKind targetProjection,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
 	m_renderingPipeline = renderingPipeline;
     m_mainRenderViewInfo = mainRenderViewInfo;
 	m_sceneGlobalRenderParams = sceneGlobalParams;
+	m_currentPart = targetPhase;
+	m_currentProjection = targetProjection;
 
 	m_renderingElementList.clear();
 	collect(renderingPipeline, m_mainRenderViewInfo.cameraInfo, targetPhase);
@@ -564,6 +569,10 @@ void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRenderer
             onCollectLight(light);
         }
     }
+
+
+
+
 
     const auto& classifiedElements = renderingPipeline->elementList()->classifiedElementList(targetPhase);
 	{

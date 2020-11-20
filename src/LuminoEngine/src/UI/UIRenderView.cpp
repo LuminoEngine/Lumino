@@ -142,7 +142,8 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
 
         m_sceneRenderingPipeline->render(
             graphicsContext, renderTarget, clearInfo, this, detail::ProjectionKind::Independent2D,
-            m_renderingContext->commandList()->elementList());
+            m_renderingContext->commandList()->elementList(),
+            m_renderingContext->commandListServer());
     }
 }
 
