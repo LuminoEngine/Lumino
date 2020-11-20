@@ -6,6 +6,23 @@
 #define LN_BOX_ELEMENT_RENDER_FEATURE_TEST 1
 
 namespace ln {
+class Font;
+class VertexLayout;
+class VertexBuffer;
+class Texture;
+class RenderTargetTexture;
+class DepthBuffer;
+class Material;
+class MeshResource;
+class Mesh;
+class MeshContainer;
+class MeshArmature;
+class RenderViewPoint;
+class RenderView;
+class PostEffect;
+class InstancedMeshList;
+class CommandList;
+class CanvasContext;
 
 // Note: ShadingModel は組み込みの SurfaceShader を選択するもの。Unlit にしても陰はつく。
 /** ShadingModel */
@@ -101,7 +118,7 @@ enum class SceneClearMode
 
 // DrawElement の大分類。SceneRenderer に投入する DrawElement を決める。
 // SceneRenderer 内の各 RenderPass は、さらに小項目を RenderDrawElementTypeFlags で識別し、描画するかどうかを決定する。
-enum class RenderPhaseClass	// TODO: name: Part
+enum class RenderPart
 {
 	// 通常のオブジェクトの他、BackgroundSky, LightDisc もこれに含まれる。
     Geometry = 0,
@@ -212,6 +229,17 @@ enum class GBuffer
 namespace detail {
 class SceneRenderer;
 class SceneRenderingPipeline;
+class DrawElementList;
+class DrawElementListBuilder;
+class FontRequester;
+class FlexGlyphRun;
+class RenderingManager;
+class DrawElementList;
+class DrawElementListBuilder;
+class BuiltinEffectData;
+class RenderDrawElement;
+class SkeletonInstance;
+
 
 enum class RenderDrawElementTypeFlags : uint8_t
 {

@@ -125,7 +125,7 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
 void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 {
 	context->pushState();
-	context->setRenderPhase(RenderPhaseClass::Gizmo2D);
+	context->setRenderPhase(RenderPart::Gizmo2D);
 	context->setDepthTestEnabled(false);
 	context->setDepthWriteEnabled(false);
 
@@ -136,7 +136,7 @@ void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 	for (const auto& skeleton : m_modelInstance->skeletons()) {
 		for (const auto& bone : skeleton->bones()) {
 
-            //context->setRenderPhase(RenderPhaseClass::Gizmo2D);
+            //context->setRenderPhase(RenderPart::Gizmo2D);
 
 			//Vector4 trf = Vector4(bone->combinedTransform().position(), 1.0f);
 			//trf = Vector4::transform(trf, viewproj);

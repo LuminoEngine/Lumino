@@ -9,6 +9,7 @@
 #include <LuminoEngine/Rendering/CanvasContext.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Font/FontManager.hpp"
@@ -25,389 +26,170 @@ namespace ln {
 
 RenderingContext::RenderingContext()
 	: m_manager(detail::EngineDomain::renderingManager())
-	, m_builder(makeRef<detail::DrawElementListBuilder>())
 	, m_pathContext(makeObject<CanvasContext>())
 	, m_pathBegan(false)
+	, m_commandList(makeObject<CommandList>())
 {
-}
-
-RenderingContext::~RenderingContext()
-{
-}
-
-void RenderingContext::setDrawElementList(detail::DrawElementList* list)
-{
-	m_builder->setTargetList(list);
 }
 
 void RenderingContext::resetForBeginRendering()
 {
-	m_builder->resetForBeginRendering();
+	m_commandList->resetForBeginRendering();
 }
 
 void RenderingContext::setRenderTarget(int index, RenderTargetTexture * value)
 {
-	m_builder->setRenderTarget(index, value);
+	m_commandList->setRenderTarget(index, value);
 }
 
 RenderTargetTexture* RenderingContext::renderTarget(int index) const
 {
-    return m_builder->renderTarget(index);
+    return m_commandList->renderTarget(index);
 }
 
 void RenderingContext::setDepthBuffer(DepthBuffer * value)
 {
-	m_builder->setDepthBuffer(value);
+	m_commandList->setDepthBuffer(value);
 }
 
 void RenderingContext::setViewportRect(const RectI & value)
 {
-	m_builder->setViewportRect(value);
+	m_commandList->setViewportRect(value);
 }
 
 void RenderingContext::setScissorRect(const RectI & value)
 {
-	m_builder->setScissorRect(value);
+	m_commandList->setScissorRect(value);
 }
 
 void RenderingContext::setTransfrom(const Matrix& value)
 {
-	m_builder->setTransfrom(value);
+	m_commandList->setTransfrom(value);
 }
 
 void RenderingContext::setBlendMode(Optional<BlendMode> value)
 {
-	m_builder->setBlendMode(value);
+	m_commandList->setBlendMode(value);
 }
 
 void RenderingContext::setShadingModel(Optional<ShadingModel> value)
 {
-    m_builder->setShadingModel(value);
+    m_commandList->setShadingModel(value);
 }
 
 void RenderingContext::setCullingMode(Optional<CullMode> value)
 {
-	m_builder->setCullingMode(value);
+	m_commandList->setCullingMode(value);
 }
 
 void RenderingContext::setDepthTestEnabled(Optional<bool> value)
 {
-	m_builder->setDepthTestEnabled(value);
+	m_commandList->setDepthTestEnabled(value);
 }
 
 void RenderingContext::setDepthWriteEnabled(Optional<bool> value)
 {
-	m_builder->setDepthWriteEnabled(value);
+	m_commandList->setDepthWriteEnabled(value);
 }
 
 void RenderingContext::setOpacity(float value)
 {
-    m_builder->setOpacity(value);
+    m_commandList->setOpacity(value);
 }
 
 void RenderingContext::setMaterial(Material* material)
 {
-    m_builder->setMaterial(material);
+    m_commandList->setMaterial(material);
 }
 
-void RenderingContext::setRenderPhase(RenderPhaseClass value)
+void RenderingContext::setRenderPhase(RenderPart value)
 {
-    m_builder->setRenderPhase(value);
+    m_commandList->setRenderPhase(value);
 }
 
 void RenderingContext::setColorScale(const Color& value)
 {
-    m_builder->setColorScale(value);
+    m_commandList->setColorScale(value);
 }
 
 void RenderingContext::setBlendColor(const Color& value)
 {
-    m_builder->setBlendColor(value);
+    m_commandList->setBlendColor(value);
 }
 
 void RenderingContext::setTone(const ColorTone& value)
 {
-    m_builder->setTone(value);
+    m_commandList->setTone(value);
 }
 
 void RenderingContext::setFont(Font* value)
 {
-	m_builder->setFont(value);
+	m_commandList->setFont(value);
 }
 
 void RenderingContext::setTextColor(const Color& value)
 {
-	m_builder->setTextColor(value);
+	m_commandList->setTextColor(value);
 }
 
 void RenderingContext::resetState()
 {
-    m_builder->reset2();
+    m_commandList->resetState();
 }
 
 void RenderingContext::pushState(bool reset)
 {
-    m_builder->pushState(reset);
+    m_commandList->pushState(reset);
 }
 
 void RenderingContext::popState()
 {
-    m_builder->popState();
+    m_commandList->popState();
 }
 
 void RenderingContext::clear(Flags<ClearFlags> flags, const Color& color, float z, uint8_t stencil)
 {
-	class Clear : public detail::RenderDrawElement
-	{
-	public:
-		ClearFlags flags;
-		Color color;
-		float z;
-		uint8_t stencil;
-
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-		{
-			return static_cast<detail::ClearRenderFeature*>(renderFeature)->clear(batchList, flags, color, z, stencil);
-		}
-	};
-
-    m_builder->advanceFence();
-
-	auto* element = m_builder->addNewDrawElement<Clear>(m_manager->clearRenderFeature());
-	element->addFlags(detail::RenderDrawElementTypeFlags::Clear);
-	element->flags = flags;
-	element->color = color;
-	element->z = z;
-	element->stencil = stencil;
-
-    m_builder->advanceFence();
+	m_commandList->clear(flags, color, z, stencil);
 }
 
 void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
 {
-    class DrawLine : public detail::RenderDrawElement
-    {
-    public:
-        detail::SingleLineGenerater data;
-
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-        {
-            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
-        }
-    };
-
-	m_builder->setPrimitiveTopology(PrimitiveTopology::LineList);
-    auto* element = m_builder->addNewDrawElement<DrawLine>(m_manager->meshGeneraterRenderFeature());
-    element->data.point1 = from;
-    element->data.point1Color = fromColor;
-    element->data.point2 = to;
-    element->data.point2Color = toColor;
-    // TODO:
-    //ptr->makeBoundingSphere(Vector3::min(position1, position2), Vector3::max(position1, position2));
+	m_commandList->drawLine(from, fromColor, to, toColor);
 }
 
 void RenderingContext::drawPlane(float width, float depth, const Color& color)
 {
-	drawPlane(width, depth, Vector2::Zero, Vector2::Ones, color);
+	m_commandList->drawPlane(width, depth, Vector2::Zero, Vector2::Ones, color);
 }
 
 void RenderingContext::drawPlane(float width, float depth, const Vector2& uv1, const Vector2& uv2, const Color& color)
 {
-	class DrawPlane : public detail::RenderDrawElement
-	{
-	public:
-		detail::PlaneMeshGenerater data;
-
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-		{
-			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
-		}
-	};
-
-	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	auto* element = m_builder->addNewDrawElement<DrawPlane>(m_manager->meshGeneraterRenderFeature());
-	element->data.size.set(width, depth);
-	element->data.uv[0] = uv1;
-	element->data.uv[1] = uv2;
-	element->data.setColor(color);
-	//element->data.setTransform(/*element->combinedWorldMatrix()*/);
+	m_commandList->drawPlane(width, depth, uv1,  uv2, color);
 }
 
 void RenderingContext::drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform)
 {
-    class DrawSphere : public detail::RenderDrawElement
-    {
-    public:
-        detail::RegularSphereMeshFactory data;
-
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-		{
-            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
-        }
-    };
-
-	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-    auto* element = m_builder->addNewDrawElement<DrawSphere>(m_manager->meshGeneraterRenderFeature());
-    element->data.m_radius = radius;
-    element->data.m_slices = slices;
-    element->data.m_stacks = stacks;
-    element->data.setColor(color);
-    element->data.setTransform(/*element->combinedWorldMatrix() * */localTransform);
-
-	// TODO: bouding box
+	m_commandList->drawSphere(radius, slices, stacks, color, localTransform);
 }
 
 void RenderingContext::drawBox(const Box& box, const Color& color, const Matrix& localTransform)
 {
-	class DrawBox : public detail::RenderDrawElement
-	{
-	public:
-		detail::RegularBoxMeshFactory data;
-
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-		{
-			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
-		}
-	};
-
-	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	auto* element = m_builder->addNewDrawElement<DrawBox>(m_manager->meshGeneraterRenderFeature());
-	// TODO: box.center
-	element->data.m_size = Vector3(box.width, box.height, box.depth);
-	element->data.setColor(color);
-	element->data.setTransform(/*element->combinedWorldMatrix() **/ localTransform);
-
-	// TODO: bouding box
+	m_commandList->drawBox(box, color, localTransform);
 }
 
 void RenderingContext::drawRegularPolygonPrimitive(int vertexCount, float radius, const Color& color, bool fill, const Matrix& localTransform)
 {
-	class DrawRegularPolygon2D : public detail::RenderDrawElement
-	{
-	public:
-		detail::RegularPolygon2DGenerater data;
-
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-		{
-			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
-		}
-	};
-
-	m_builder->setPrimitiveTopology(fill ? PrimitiveTopology::TriangleFan : PrimitiveTopology::LineStrip);
-	auto* element = m_builder->addNewDrawElement<DrawRegularPolygon2D>(m_manager->meshGeneraterRenderFeature());
-	element->data.vertices = vertexCount;
-	element->data.radius = radius;
-	element->data.color = color;
-	element->data.fill = fill;
-
-	// TODO: bouding box
+	m_commandList->drawRegularPolygonPrimitive(vertexCount, radius, color, fill, localTransform);
 }
 
 void RenderingContext::drawScreenRectangle()
 {
-    class DrawScreenRectangle : public detail::RenderDrawElement
-    {
-    public:
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-		{
-            return static_cast<detail::BlitRenderFeature*>(renderFeature)->blit(batchList, context);
-        }
-    };
-
-    m_builder->advanceFence();
-
-	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);	// TODO: この辺りは RenderFeature の描き方に依存するので、そっちからもらえるようにした方がいいかも
-    auto* element = m_builder->addNewDrawElement<DrawScreenRectangle>(m_manager->blitRenderFeature());
-    element->targetPhase = RenderPhaseClass::Geometry;
-
-    m_builder->advanceFence();
-
+	m_commandList->drawScreenRectangle();
 }
 
-//void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination)
-//{
-//    blit(source, destination, nullptr);
-//}
-//
-//void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination, Material* material) 
-//{
-//    class Blit : public detail::RenderDrawElement
-//    {
-//    public:
-//        Ref<RenderTargetTexture> source;
-//
-//        virtual void onSubsetInfoOverride(detail::SubsetInfo* subsetInfo)
-//        {
-//            if (source) {
-//                subsetInfo->materialTexture = source;
-//            }
-//        }
-//
-//        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-//        {
-//            static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
-//        }
-//    };
-//
-//    // TODO: scoped_gurad
-//    RenderTargetTexture* oldTarget = renderTarget(0);
-//    setRenderTarget(0, destination);
-//
-//    m_builder->setMaterial(material);
-//
-//    m_builder->advanceFence();
-//
-//    auto* element = m_builder->addNewDrawElement<Blit>(
-//        m_manager->blitRenderFeature(),
-//        m_builder->blitRenderFeatureStageParameters());
-//    element->targetPhase = RenderPhaseClass::PostEffect;
-//    element->source = source;
-//
-//    setRenderTarget(0, oldTarget);
-//
-//    m_builder->advanceFence();
-//}
-
-void RenderingContext::blit(Material* source, RenderTargetTexture* destination, RenderPhaseClass phase)
+void RenderingContext::blit(Material* source, RenderTargetTexture* destination, RenderPart phase)
 {
-	class Blit : public detail::RenderDrawElement
-	{
-	public:
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-		{
-			return static_cast<detail::BlitRenderFeature*>(renderFeature)->blit(batchList, context);
-		}
-	};
-
-    // TODO: scoped_gurad
-    RenderTargetTexture* oldTarget = nullptr;
-    if (destination)
-    {
-        RenderTargetTexture* oldTarget = renderTarget(0);
-        setRenderTarget(0, destination);
-    }
-
-	//clear();
-
-	m_builder->setMaterial(source);
-
-	m_builder->advanceFence();
-
-	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);	// TODO: この辺りは RenderFeature の描き方に依存するので、そっちからもらえるようにした方がいいかも
-
-	auto oldRenderPhase = m_builder->renderPhase();
-	m_builder->setRenderPhase(phase);
-	auto* element = m_builder->addNewDrawElement<Blit>(m_manager->blitRenderFeature());
-	//element->targetPhase = phase;
-
-    if (destination)
-    {
-        setRenderTarget(0, oldTarget);
-    }
-
-	m_builder->setRenderPhase(oldRenderPhase);
-
-	m_builder->advanceFence();
+	m_commandList->blit(source, destination, phase);
 }
 
 void RenderingContext::drawSprite(
@@ -421,300 +203,67 @@ void RenderingContext::drawSprite(
     const Flags<detail::SpriteFlipFlags>& flipFlags,
 	Material* material)
 {
-	class DrawSprite : public detail::RenderDrawElement
-	{
-	public:
-		Matrix transform;
-		Vector2 size;
-		Vector2 anchorRatio;
-		Rect srcRect;
-		Color color;
-		SpriteBaseDirection baseDirection;
-		BillboardType billboardType;
-        detail::SpriteFlipFlags flipFlags;
-
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-		{
-			return static_cast<detail::SpriteRenderFeature2*>(renderFeature)->drawRequest(
-				batchList, context, combinedWorldMatrix() * transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
-		}
-	};
-
-    // old 保持して戻すのではなく、Stage 確定時にオーバーライドして直接設定するような仕組みにできないか？
-    auto* oldMat = m_builder->material();
-
-	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	m_builder->setMaterial(material);
-	auto* element = m_builder->addNewDrawElement<DrawSprite>(m_manager->spriteRenderFeature2());
-	element->transform = transform;
-	element->size.set(size.width, size.height);
-	element->anchorRatio = anchor;
-	element->srcRect = srcRect;
-	element->color = color;
-	element->baseDirection = baseDirection;
-	element->billboardType = billboardType;
-    element->flipFlags = flipFlags;
-
-    m_builder->setMaterial(oldMat);
-	// TODO: bounding
+	m_commandList->drawSprite(
+		transform,
+		size,
+		anchor,
+		srcRect,
+		color,
+		baseDirection,
+		billboardType,
+		flipFlags,
+		material);
 }
 
 void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount)
 {
-	if (primitiveCount <= 0) return;
-
-	class DrawPrimitive : public detail::RenderDrawElement
-	{
-	public:
-		Ref<VertexLayout> vertexLayout;
-		Ref<VertexBuffer> vertexBuffer;
-		int startVertex;
-		int primitiveCount;
-
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-		{
-			return static_cast<detail::PrimitiveRenderFeature*>(renderFeature)->drawPrimitive(batchList, vertexLayout, vertexBuffer, startVertex, primitiveCount);
-		}
-	};
-
-	m_builder->setPrimitiveTopology(topology);
-	auto* element = m_builder->addNewDrawElement<DrawPrimitive>(m_manager->primitiveRenderFeature());
-	element->vertexLayout = vertexDeclaration;
-	element->vertexBuffer = vertexBuffer;
-	element->startVertex = startVertex;
-	element->primitiveCount = primitiveCount;
+	m_commandList->drawPrimitive(vertexDeclaration, vertexBuffer, topology, startVertex, primitiveCount);
 }
 
 // LOD なし。というか直接描画
 void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
 {
-    class DrawMesh : public detail::RenderDrawElement
-    {
-    public:
-        Ref<MeshResource> meshResource;
-        int sectionIndex;
-
-        //virtual void onElementInfoOverride(detail::ElementInfo* elementInfo, detail::ShaderTechniqueClass_MeshProcess* meshProcess) override
-        //{
-        //    if (elementInfo->boneTexture && elementInfo->boneLocalQuaternionTexture) {
-        //        if (MeshContainer* container = meshResource->ownerContainer()) {
-        //            if (StaticMeshModel* model = container->meshModel()) {
-        //                if (model->meshModelType() == detail::InternalMeshModelType::SkinnedMesh) {
-        //                    //elementInfo->boneTexture->map()
-        //                    printf("skinned\n");
-        //                    *meshProcess = detail::ShaderTechniqueClass_MeshProcess::SkinnedMesh;
-        //                    Bitmap2D* bmp1 = elementInfo->boneTexture->map(MapMode::Write);
-        //                    Bitmap2D* bmp2 = elementInfo->boneLocalQuaternionTexture->map(MapMode::Write);
-        //                    static_cast<SkinnedMeshModel*>(model)->writeSkinningMatrices(
-        //                        reinterpret_cast<Matrix*>(bmp1->data()),
-        //                        reinterpret_cast<Quaternion*>(bmp2->data()));
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-		{
-			// TODO: boneTexture を送る仕組み
-            return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, meshResource, sectionIndex);
-        }
-    };
-
-    if (meshResource->isInitialEmpty()) return;
-
-	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-    auto* element = m_builder->addNewDrawElement<DrawMesh>(m_manager->meshRenderFeature());
-    element->meshResource = meshResource;
-    element->sectionIndex = sectionIndex;
-
-    // TODO: bounding
+	m_commandList->drawMesh(meshResource, sectionIndex);
 }
 
 void RenderingContext::drawMesh(Mesh* mesh, int sectionIndex)
 {
-    class DrawMesh : public detail::RenderDrawElement
-    {
-    public:
-        Ref<Mesh>  mesh;
-        int sectionIndex;
-
-		// SkinnedMesh の場合に、親インスタンスが破棄されないように参照を保持しておく
-		//Ref<SkinnedMeshModel> skinnedMeshModel;
-
-        virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-        {
-            // TODO: boneTexture を送る仕組み
-            return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, mesh, sectionIndex, nullptr);
-        }
-    };
-
-    //if (meshResource->isInitialEmpty()) return;
-
-    m_builder->setPrimitiveTopology(mesh->sections()[sectionIndex].topology);
-    auto* element = m_builder->addNewDrawElement<DrawMesh>(m_manager->meshRenderFeature());
-    element->mesh = mesh;
-    element->sectionIndex = sectionIndex;
-
-    // TODO: bounding
+	m_commandList->drawMesh(mesh, sectionIndex);
 }
 
 void RenderingContext::drawSkinnedMesh(Mesh* mesh, int sectionIndex, detail::SkeletonInstance* skeleton)
 {
-	class DrawSkinnedMesh : public detail::RenderDrawElement
-	{
-	public:
-		Ref<Mesh>  mesh;
-		int sectionIndex;
-
-		// SkinnedMesh の場合に、親インスタンスが破棄されないように参照を保持しておく
-		Ref<detail::SkeletonInstance> skeleton;
-
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-		{
-			return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, mesh, sectionIndex, skeleton);
-		}
-	};
-
-	m_builder->setPrimitiveTopology(mesh->sections()[sectionIndex].topology);
-	auto* element = m_builder->addNewDrawElement<DrawSkinnedMesh>(m_manager->meshRenderFeature());
-	element->mesh = mesh;
-	element->sectionIndex = sectionIndex;
-	element->skeleton = skeleton;
-
-	// TODO: bounding
+	m_commandList->drawSkinnedMesh(mesh, sectionIndex, skeleton);
 }
 
 void RenderingContext::drawMeshInstanced(InstancedMeshList* list)
 {
-	class DrawMeshInstanced : public detail::RenderDrawElement
-	{
-	public:
-		Ref<InstancedMeshList> list;
-
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-		{
-			return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMeshInstanced(batchList, context, list);
-		}
-	};
-
-	if (list->instanceCount() <= 0) return;
-
-	m_builder->setPrimitiveTopology(list->mesh()->sections()[list->sectionIndex()].topology);
-	auto* element = m_builder->addNewDrawElement<DrawMeshInstanced>(m_manager->meshRenderFeature());
-	element->list = list;
+	m_commandList->drawMeshInstanced(list);
 }
 
 void RenderingContext::drawTextSprite(const StringRef& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font)
 {
-	if (text.isEmpty()) return;
-
-	// TODO: cache
-	auto formattedText = makeRef<detail::FormattedText>();
-	formattedText->text = text;
-	formattedText->font = m_builder->font();
-	formattedText->color = color;	// TODO: m_builder->textColor(); の方がいいか？
-	formattedText->area = Rect();
-	formattedText->textAlignment = TextAlignment::Forward;
-	formattedText->fontRequester = font;
-
-	if (!formattedText->font) {
-		formattedText->font = m_manager->fontManager()->defaultFont();
-	}
-
-	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(m_manager->spriteTextRenderFeature());
-	element->formattedText = formattedText;
-	element->anchor = anchor;
-	element->baseDirection = baseDirection;
-
-	if (baseDirection != SpriteBaseDirection::Basic2D) {
-		// is 3D.
-		element->samplerState = detail::EngineDomain::graphicsManager()->linearSamplerState();
-	}
+	m_commandList->drawTextSprite(text, color, anchor, baseDirection, font);
 }
 
 void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAlignment alignment/*, TextCrossAlignment crossAlignment*//*, const Color& color, Font* font*/)
 {
-
-    // TODO: cache
-    auto formattedText = makeRef<detail::FormattedText>();
-    formattedText->text = text;
-    formattedText->font = m_builder->font();
-	formattedText->color = m_builder->textColor();
-	formattedText->area = area;
-	formattedText->textAlignment = alignment;
-
-    if (!formattedText->font) {
-        formattedText->font = m_manager->fontManager()->defaultFont();
-    }
-
-	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-    auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(m_manager->spriteTextRenderFeature());
-    element->formattedText = formattedText;
-	element->baseDirection = SpriteBaseDirection::Basic2D;
-
-    // TODO: bounding
-    //detail::Sphere sphere;
-    //detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
-    //ptr->setLocalBoundingSphere(sphere);
+	m_commandList->drawText(text, area, alignment);
 }
 
 void RenderingContext::drawChar(uint32_t codePoint, const Color& color, Font* font, const Matrix& transform)
 {
-	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	auto* element = m_builder->addNewDrawElement<detail::DrawCharElement>(m_manager->spriteTextRenderFeature());
-	element->codePoint = codePoint;
-	element->color = color;
-    element->transform = transform;
-
-	if (font)
-		element->font = font;
-	else
-		element->font = m_manager->fontManager()->defaultFont();
-
-
-	//element->flexText = makeRef<detail::FlexText>();	// TODO: cache
-	//element->flexText->copyFrom(text);
-
-	// TODO
-	//detail::Sphere sphere;
-	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
-	//ptr->setLocalBoundingSphere(sphere);
+	m_commandList->drawChar(codePoint, color, font, transform);
 }
 
 void RenderingContext::drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun)
 {
-	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(m_manager->spriteTextRenderFeature());
-	element->glyphRun = glyphRun;
-	//element->flexText = makeRef<detail::FlexText>();	// TODO: cache
-	//element->flexText->copyFrom(text);
-
-	// TODO
-	//detail::Sphere sphere;
-	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
-	//ptr->setLocalBoundingSphere(sphere);
+	m_commandList->drawFlexGlyphRun(glyphRun);
 }
 
 void RenderingContext::invokeExtensionRendering(INativeGraphicsExtension* extension)
 {
-    class InvokeExtensionRendering : public detail::RenderDrawElement
-    {
-    public:
-        INativeGraphicsExtension* extension;
-
-        virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
-        {
-            return static_cast<detail::ExtensionRenderFeature*>(renderFeature)->invoke(context, batchList, extension);
-            //context->drawExtension(extension);
-        }
-    };
-
-    auto* element = m_builder->addNewDrawElement<InvokeExtensionRendering>(m_manager->extensionRenderFeature());
-    element->extension = extension;
-
-    // TODO: bounding
+	m_commandList->invokeExtensionRendering(extension);
 }
 
 CanvasContext* RenderingContext::beginPath()
@@ -732,32 +281,32 @@ void RenderingContext::endPath()
 
 void RenderingContext::addAmbientLight(const Color& color, float intensity)
 {
-	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeAmbientLightInfo(color, intensity));
+	m_commandList->elementList()->addDynamicLightInfo(detail::DynamicLightInfo::makeAmbientLightInfo(color, intensity));
 }
 
 void RenderingContext::addHemisphereLight(const Color& skyColor, const Color& groundColor, float intensity)
 {
-	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeHemisphereLightInfo(skyColor, groundColor, intensity));
+	m_commandList->elementList()->addDynamicLightInfo(detail::DynamicLightInfo::makeHemisphereLightInfo(skyColor, groundColor, intensity));
 }
 
 void RenderingContext::addEnvironmentLightInfo(const Color& color, const Color& ambientColor, const Color& skyColor, const Color& groundColor, float intensity, const Vector3& direction, bool mainLight, float shadowCameraZFar, float shadowLightZFar)
 {
-	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeEnvironmentLightInfo(color, ambientColor, skyColor, groundColor, intensity, direction, mainLight, shadowCameraZFar, shadowLightZFar));
+	m_commandList->elementList()->addDynamicLightInfo(detail::DynamicLightInfo::makeEnvironmentLightInfo(color, ambientColor, skyColor, groundColor, intensity, direction, mainLight, shadowCameraZFar, shadowLightZFar));
 }
 
 void RenderingContext::addDirectionalLight(const Color& color, float intensity, const Vector3& direction, bool mainLight, float shadowCameraZFar, float shadowLightZFar)
 {
-	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeDirectionalLightInfo(color, intensity, direction, mainLight, shadowCameraZFar, shadowLightZFar));
+	m_commandList->elementList()->addDynamicLightInfo(detail::DynamicLightInfo::makeDirectionalLightInfo(color, intensity, direction, mainLight, shadowCameraZFar, shadowLightZFar));
 }
 
 void RenderingContext::addPointLight(const Color& color, float intensity, const Vector3& position, float range, float attenuation)
 {
-	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makePointLightInfo(color, intensity, position, range, attenuation));
+	m_commandList->elementList()->addDynamicLightInfo(detail::DynamicLightInfo::makePointLightInfo(color, intensity, position, range, attenuation));
 }
 
 void RenderingContext::addSpotLight(const Color& color, float intensity, const Vector3& position, const Vector3& direction, float range, float attenuation, float spotAngle, float spotPenumbra)
 {
-	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeSpotLightInfo(color, intensity, position, direction, range, attenuation, spotAngle, spotPenumbra));
+	m_commandList->elementList()->addDynamicLightInfo(detail::DynamicLightInfo::makeSpotLightInfo(color, intensity, position, direction, range, attenuation, spotAngle, spotPenumbra));
 }
 
 Size RenderingContext::measureTextSize(Font* font, const StringRef& text) const
@@ -776,37 +325,47 @@ Size RenderingContext::measureTextSize(Font* font, uint32_t codePoint) const
 
 RenderViewPoint* RenderingContext::viewPoint() const
 {
-    return m_builder->viewPoint();
-}
-
-void RenderingContext::setBaseTransfrom(const Optional<Matrix>& value)
-{
-    m_builder->setBaseTransfrom(value);
-}
-
-const Matrix& RenderingContext::baseTransform() const
-{
-	return m_builder->baseTransform();
-}
-
-void RenderingContext::setRenderPriority(int value)
-{
-    m_builder->setRenderPriority(value);
-}
-
-void RenderingContext::setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value)
-{
-    m_builder->setBaseBuiltinEffectData(value);
+    return m_commandList->viewPoint();
 }
 
 void RenderingContext::setViewPoint(RenderViewPoint* value)
 {
-    m_builder->setViewPoint(value);
+	m_commandList->setViewPoint(value);
+}
+
+void RenderingContext::setBaseTransfrom(const Optional<Matrix>& value)
+{
+	m_commandList->setBaseTransfrom(value);
+}
+
+const Matrix& RenderingContext::baseTransform() const
+{
+	return m_commandList->baseTransform();
+}
+
+void RenderingContext::setRenderPriority(int value)
+{
+	m_commandList->setRenderPriority(value);
+}
+
+void RenderingContext::setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value)
+{
+	m_commandList->setBaseBuiltinEffectData(value);
 }
 
 void RenderingContext::setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value)
 {
-	m_builder->setAdditionalElementFlags(value);
+	m_commandList->setAdditionalElementFlags(value);
+}
+
+void RenderingContext::setObjectId(int value)
+{
+	m_commandList->setObjectId(value);
+}
+
+const Ref<detail::DrawElementListBuilder>& RenderingContext::builder() const
+{
+	return m_commandList->builder();
 }
 
 RenderTargetTexture* RenderingContext::gbuffer(GBuffer kind) const
@@ -825,11 +384,6 @@ RenderTargetTexture* RenderingContext::gbuffer(GBuffer kind) const
 		LN_UNREACHABLE();
 		return nullptr;
 	}
-}
-
-void RenderingContext::setObjectId(int value)
-{
-	m_builder->setObjectId(value);
 }
 
 //detail::RenderDrawElement* RenderingContext::lastRenderDrawElement() const

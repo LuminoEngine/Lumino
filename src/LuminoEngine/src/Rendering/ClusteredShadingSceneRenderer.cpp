@@ -518,7 +518,7 @@ SceneRendererPass* ClusteredShadingSceneRenderer::mainRenderPass() const
 	return m_geometryPass;
 }
 
-void ClusteredShadingSceneRenderer::collect(RenderingPipeline* renderingPipeline, const detail::CameraInfo& cameraInfo, RenderPhaseClass targetPhase)
+void ClusteredShadingSceneRenderer::collect(RenderingPipeline* renderingPipeline, const detail::CameraInfo& cameraInfo, RenderPart targetPhase)
 {
 	m_lightClusters.beginMakeClusters(cameraInfo.viewMatrix, cameraInfo.projMatrix, cameraInfo.viewPosition, cameraInfo.nearClip, cameraInfo.farClip);
 

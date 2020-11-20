@@ -86,7 +86,7 @@ public:
 	void prepare(
 		RenderingPipeline* renderingPipeline,
 		const detail::RenderViewInfo& mainRenderViewInfo,
-		RenderPhaseClass targetPhase,
+		RenderPart targetPhase,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
 	//void render(
@@ -120,7 +120,7 @@ protected:
 
 
 	// レンダリング準備として、描画に関係する各種オブジェクト (DrawElement や Light) を収集するフェーズ
-	virtual void collect(RenderingPipeline* renderingPipeline, const CameraInfo& cameraInfo, RenderPhaseClass targetPhase);
+	virtual void collect(RenderingPipeline* renderingPipeline, const CameraInfo& cameraInfo, RenderPart targetPhase);
 
 	// レンダリング準備として、効率的な描画を行うために収集した各種オブジェクトのソートなどを行う
 	void prepare();
@@ -156,7 +156,7 @@ public:	// TODO
 	SceneInfo m_mainSceneInfo;
 	const DynamicLightInfo* m_mainLightInfo = nullptr;
 
-    //RenderPhaseClass m_targetPhase;
+    //RenderPart m_targetPhase;
 
 	// build by collect().
 	List<RenderDrawElement*> m_renderingElementList;

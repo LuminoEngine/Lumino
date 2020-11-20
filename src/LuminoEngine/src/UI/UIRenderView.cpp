@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
@@ -141,7 +142,7 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
 
         m_sceneRenderingPipeline->render(
             graphicsContext, renderTarget, clearInfo, this, detail::ProjectionKind::Independent2D,
-            m_renderingContext->m_elementList);
+            m_renderingContext->commandList()->elementList());
     }
 }
 

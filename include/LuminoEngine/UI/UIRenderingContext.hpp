@@ -44,7 +44,6 @@ public:
 public: // TODO: inernal
 	void resetForBeginRendering();
 
-	Ref<detail::DrawElementList> m_elementList;
     bool m_adornerRendering = false;
 	Ref<UITheme> m_theme;
 

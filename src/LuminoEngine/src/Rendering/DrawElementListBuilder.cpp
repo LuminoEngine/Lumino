@@ -190,12 +190,12 @@ void DrawElementListBuilder::setRenderPriority(int value)
     primaryState()->renderPriority = value;
 }
 
-void DrawElementListBuilder::setRenderPhase(RenderPhaseClass value)
+void DrawElementListBuilder::setRenderPhase(RenderPart value)
 {
     primaryState()->rendringPhase = value;
 }
 
-RenderPhaseClass DrawElementListBuilder::renderPhase()
+RenderPart DrawElementListBuilder::renderPhase()
 {
     return primaryState()->rendringPhase;
 }
@@ -423,7 +423,7 @@ void DrawElementListBuilder::State::reset()
     transform = Matrix::Identity;
     renderPriority = 0;
     baseTransform = nullptr;
-    rendringPhase = RenderPhaseClass::Geometry;
+    rendringPhase = RenderPart::Geometry;
 	additionalElementFlags = RenderDrawElementTypeFlags::None;
 	font = nullptr;
 	textColor = Color::Black;

@@ -173,7 +173,7 @@ void TransformControls::onRender(RenderingContext* context)
     auto transform = Matrix::multiply(Matrix::makeScaling(m_screenFactor), m_gizmoTransform);
 
     context->pushState();
-    context->setRenderPhase(RenderPhaseClass::Gizmo);
+    context->setRenderPhase(RenderPart::Gizmo);
     context->setBaseTransfrom(transform);
     context->setDepthTestEnabled(false);
     context->setDepthWriteEnabled(false);

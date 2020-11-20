@@ -54,7 +54,7 @@ public:
     int commandFence = 0;
 	// TODO: ↑ flags 実装に伴い不要になりそう
 
-    RenderPhaseClass targetPhase = RenderPhaseClass::_Count;
+    RenderPart targetPhase = RenderPart::_Count;
 	RenderDrawElement* m_classifiedNext = nullptr;
 
 
@@ -123,7 +123,7 @@ public:
 
 	RenderDrawElement* headElement() const { return m_allElementList.headElement; }
     RenderDrawElement* lastElement() const { return m_allElementList.tailElement; }
-	const ElementListDetail& classifiedElementList(RenderPhaseClass phase) const { return m_classifiedElementList[static_cast<int>(phase)]; }
+	const ElementListDetail& classifiedElementList(RenderPart phase) const { return m_classifiedElementList[static_cast<int>(phase)]; }
 
 	void addDynamicLightInfo(const DynamicLightInfo& info) { return m_dynamicLightInfoList.add(info); }
 
@@ -136,7 +136,7 @@ private:
 	List<RenderStage*> m_renderStageList;	// TODO: ポインタのリンクリストでもいいかな
 
 	ElementListDetail m_allElementList;
-	std::array<ElementListDetail, (int)RenderPhaseClass::_Count> m_classifiedElementList;
+	std::array<ElementListDetail, (int)RenderPart::_Count> m_classifiedElementList;
 
 	IDrawElementListFrameData* m_headFrameData;	// head of link list.
 	IDrawElementListFrameData* m_tailFrameData;	// tail of link list.
@@ -153,17 +153,17 @@ class DrawElementListCollector
 {
 public:
 	void clear();
-	void addDrawElementList(/*RenderPhaseClass phase, */DrawElementList* list);
-	const List<DrawElementList*>& lists(/*RenderPhaseClass phase*/) const;
+	void addDrawElementList(/*RenderPart phase, */DrawElementList* list);
+	const List<DrawElementList*>& lists(/*RenderPart phase*/) const;
 
 
     void classify();
-    const List<RenderDrawElement*>& classifiedElements(RenderPhaseClass phase) const { return m_classifiedElements[(int)phase]; };
+    const List<RenderDrawElement*>& classifiedElements(RenderPart phase) const { return m_classifiedElements[(int)phase]; };
 
 private:
-    List<DrawElementList*> m_lists;// [(int)RenderPhaseClass::_Count];
+    List<DrawElementList*> m_lists;// [(int)RenderPart::_Count];
 
-    List<RenderDrawElement*> m_classifiedElements[(int)RenderPhaseClass::_Count];
+    List<RenderDrawElement*> m_classifiedElements[(int)RenderPart::_Count];
 
     
 };

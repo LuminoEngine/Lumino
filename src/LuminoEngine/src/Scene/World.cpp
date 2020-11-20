@@ -410,15 +410,12 @@ void World::enqueueOffscreenRenderView(OffscreenWorldRenderView* element)
 namespace detail {
 
 WorldSceneGraphRenderingContext::WorldSceneGraphRenderingContext()
-	: m_elementList(makeRef<detail::DrawElementList>(detail::EngineDomain::renderingManager()))
 {
-	setDrawElementList(m_elementList);
 }
 
 void WorldSceneGraphRenderingContext::resetForBeginRendering()
 {
 	RenderingContext::resetForBeginRendering();
-	m_elementList->clear();
 }
 
 } // namespace detail

@@ -59,7 +59,7 @@ void InternalSkyBox::render(RenderingContext* context, const RenderViewPoint* vi
 	context->pushState();
 	context->setBlendMode(BlendMode::Normal);
 	context->setAdditionalElementFlags(detail::RenderDrawElementTypeFlags::BackgroundSky);
-    //context->setRenderPhase(RenderPhaseClass::BackgroundSky);
+    //context->setRenderPhase(RenderPart::BackgroundSky);
     //context->setDepthTestEnabled(false);
 	context->setDepthWriteEnabled(false);
     context->setBaseTransfrom(Matrix::makeTranslation(viewPoint->viewPosition));

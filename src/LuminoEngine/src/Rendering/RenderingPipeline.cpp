@@ -152,10 +152,10 @@ void SceneRenderingPipeline::render(
 
     //ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
 
-    //m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPhaseClass::BackgroundSky, nullptr);
+    //m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPart::BackgroundSky, nullptr);
 
     m_sceneRenderer->mainRenderPass()->setClearInfo(mainPassClearInfo);
-    m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Geometry, sceneGlobalParams);
+    m_sceneRenderer->prepare(this, renderViewInfo, RenderPart::Geometry, sceneGlobalParams);
     //m_sceneRenderer->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
     //for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
     //    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, pass);
@@ -170,7 +170,7 @@ void SceneRenderingPipeline::render(
     // TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
     ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
     m_sceneRenderer->mainRenderPass()->setClearInfo(localClearInfo); // 2回目の描画になるので、最初の結果が消えないようにしておく。
-    m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Gizmo, nullptr);
+    m_sceneRenderer->prepare(this, renderViewInfo, RenderPart::Gizmo, nullptr);
     //m_sceneRenderer->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
     //for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
     //    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, pass);
@@ -184,7 +184,7 @@ void SceneRenderingPipeline::render(
         //CameraInfo camera;
         //camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
 		//m_sceneRenderer_PostEffectPhase->lightOcclusionMap = m_sceneRenderer->lightOcclusionPass()->lightOcclusionMap();
-        m_sceneRenderer_PostEffectPhase->prepare(this, renderViewInfo, RenderPhaseClass::PostEffect, nullptr);  // TODO: PostEffect なので ZSort 要らないモード追加していいかも
+        m_sceneRenderer_PostEffectPhase->prepare(this, renderViewInfo, RenderPart::PostEffect, nullptr);  // TODO: PostEffect なので ZSort 要らないモード追加していいかも
         //m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
         //for (SceneRendererPass* pass : m_sceneRenderer_PostEffectPhase->m_renderingPassList) {
             m_sceneRenderer_PostEffectPhase->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass);
@@ -196,7 +196,7 @@ void SceneRenderingPipeline::render(
     {
         //RenderViewInfo renderViewInfo2;
         renderViewInfo.cameraInfo = renderView->viewProjection(ProjectionKind::Independent2D);
-        m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Gizmo2D, nullptr);
+        m_sceneRenderer->prepare(this, renderViewInfo, RenderPart::Gizmo2D, nullptr);
         m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
     }
 
@@ -256,14 +256,14 @@ void FlatRenderingPipeline::render(
 
     //clear(graphicsContext, renderTarget, clearInfo);
     m_unlitRendererPass->setClearInfo(mainPassClearInfo);
-    m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::Geometry, nullptr);
+    m_sceneRenderer->prepare(this, renderViewInfo, RenderPart::Geometry, nullptr);
 	//m_sceneRenderer->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
     //for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
         m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass);
     //}
 
 	// TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
-	//m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPhaseClass::Gizmo, nullptr);
+	//m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPart::Gizmo, nullptr);
 
     {
         //ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
@@ -271,7 +271,7 @@ void FlatRenderingPipeline::render(
         RenderViewInfo renderViewInfo;
         //CameraInfo camera;
         renderViewInfo.cameraInfo = renderView->viewProjection(ProjectionKind::ClipScreen);//.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
-        m_sceneRenderer->prepare(this, renderViewInfo, RenderPhaseClass::PostEffect, nullptr);
+        m_sceneRenderer->prepare(this, renderViewInfo, RenderPart::PostEffect, nullptr);
         //m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, depthBuffer, renderViewInfo.cameraInfo);
         //for (SceneRendererPass* pass : m_sceneRenderer_PostEffectPhase->m_renderingPassList) {
         m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass_PostEffect);

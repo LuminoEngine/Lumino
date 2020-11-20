@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
@@ -93,7 +94,7 @@ void OffscreenWorldRenderView::render(GraphicsContext* graphicsContext, World* t
 
     m_sceneRenderingPipeline->render(
         graphicsContext, m_renderTarget, clearInfo, this, detail::ProjectionKind::ViewProjection3D,
-        targetWorld->m_renderingContext->m_elementList, &targetWorld->m_combinedSceneGlobalRenderParams);
+        targetWorld->m_renderingContext->commandList()->elementList(), &targetWorld->m_combinedSceneGlobalRenderParams);
 
 }
 

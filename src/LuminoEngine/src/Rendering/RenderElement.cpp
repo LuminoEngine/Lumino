@@ -118,7 +118,7 @@ void DrawElementList::addElement(RenderDrawElement* element)
 {
 	if (LN_REQUIRE(element)) return;
 	if (LN_REQUIRE(element->m_stage)) return;
-	if (LN_REQUIRE(element->targetPhase != RenderPhaseClass::_Count)) return;
+	if (LN_REQUIRE(element->targetPhase != RenderPart::_Count)) return;
 
 	// Add to AllList
 	{
@@ -171,13 +171,13 @@ void DrawElementListCollector::clear()
 	//}
 }
 
-void DrawElementListCollector::addDrawElementList(/*RenderPhaseClass phase, */DrawElementList* list)
+void DrawElementListCollector::addDrawElementList(/*RenderPart phase, */DrawElementList* list)
 {
     m_lists.add(list);
 	//m_lists[(int)phase].add(list);
 }
 
-const List<DrawElementList*>& DrawElementListCollector::lists(/*RenderPhaseClass phase*/) const
+const List<DrawElementList*>& DrawElementListCollector::lists(/*RenderPart phase*/) const
 {
     return m_lists;// [(int)phase];
 }

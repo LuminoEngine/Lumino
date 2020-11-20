@@ -65,8 +65,8 @@ public:
     void setBaseTransfrom(const Optional<Matrix>& value);
 	const Matrix& baseTransform() const;
     void setRenderPriority(int value);
-    void setRenderPhase(RenderPhaseClass value);
-	RenderPhaseClass renderPhase();	// TODO: blit の対応が済んだら消す
+    void setRenderPhase(RenderPart value);
+	RenderPart renderPhase();	// TODO: blit の対応が済んだら消す
 	void setAdditionalElementFlags(RenderDrawElementTypeFlags value);
 
 	// BuiltinEffectData
@@ -115,7 +115,7 @@ private:
         Matrix transform;
         Optional<Matrix> baseTransform;
         int renderPriority;
-        RenderPhaseClass rendringPhase;
+        RenderPart rendringPhase;
 		RenderDrawElementTypeFlags additionalElementFlags;
 		Ref<Font> font;
 		Color textColor;

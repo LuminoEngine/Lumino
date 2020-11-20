@@ -116,7 +116,7 @@ void SceneRenderer::init()
 void SceneRenderer::prepare(
 	RenderingPipeline* renderingPipeline,
 	const detail::RenderViewInfo& mainRenderViewInfo,
-	RenderPhaseClass targetPhase,
+	RenderPart targetPhase,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
 	m_renderingPipeline = renderingPipeline;
@@ -548,13 +548,13 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	pass->onEndRender(this);
 }
 
-void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo, RenderPhaseClass targetPhase)
+void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo, RenderPart targetPhase)
 {
 	//InternalContext* context = m_manager->getInternalContext();
 	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
 
 
-    //for (auto& elementList : renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
+    //for (auto& elementList : renderingPipeline->elementListCollector()->lists(/*RenderPart::Default*/))
     {
         for (auto& light : renderingPipeline->elementList()->dynamicLightInfoList())
         {

@@ -8,6 +8,7 @@
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
@@ -417,7 +418,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         RenderTargetTexture* actualTarget = (m_hdrRenderTarget) ? m_hdrRenderTarget.get() : renderTarget;
         m_sceneRenderingPipeline->render(
             graphicsContext, actualTarget, clearInfo, this, detail::ProjectionKind::ViewProjection3D,
-            m_targetWorld->m_renderingContext->m_elementList, &sceneGlobalRenderParams);
+            m_targetWorld->m_renderingContext->commandList()->elementList(), &sceneGlobalRenderParams);
         
 		//graphicsContext->resetState();
 
@@ -529,12 +530,12 @@ void WorldRenderView::renderGridPlane(RenderingContext* renderingContext, Render
 
         
 
-        renderingContext->setRenderPhase(RenderPhaseClass::Gizmo);
+        renderingContext->setRenderPhase(RenderPart::Gizmo);
         //renderingContext->setBlendMode(BlendMode::Alpha);
         //renderingContext->setDepthWriteEnabled(false);
         renderingContext->setMaterial(m_gridPlaneMaterial);
         renderingContext->drawMesh(m_gridPlaneMesh, 0);
-        //renderingContext->setRenderPhase(RenderPhaseClass::Default);
+        //renderingContext->setRenderPhase(RenderPart::Default);
 
 		renderingContext->setMaterial(nullptr);
 		renderingContext->drawLine(Vector3(0, 0, 0), Color::Red, Vector3(10, 0, 0), Color::Red);

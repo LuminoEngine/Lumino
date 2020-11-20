@@ -6,33 +6,6 @@
 #include "../Graphics/RenderState.hpp"
 
 namespace ln {
-class Font;
-class VertexLayout;
-class VertexBuffer;
-class Texture;
-class RenderTargetTexture;
-class DepthBuffer;
-class Material;
-class MeshResource;
-class Mesh;
-class MeshContainer;
-class MeshArmature;
-class RenderViewPoint;
-class RenderView;
-class PostEffect;
-class InstancedMeshList;
-class CanvasContext;
-namespace detail {
-class FontRequester;
-class FlexGlyphRun;
-class RenderingManager;
-class DrawElementList;
-class DrawElementListBuilder;
-class BuiltinEffectData;
-class RenderDrawElement;
-class SkeletonInstance;
-} // namespace detail
-
 
 
 
@@ -102,7 +75,7 @@ public:
 
 
 
-    void setRenderPhase(RenderPhaseClass value);
+    void setRenderPhase(RenderPart value);
 
     // BuiltinEffectData
     //void setTransfrom(const Matrix& value);
@@ -141,7 +114,7 @@ public:
     //void blit(Material* material);
     //void blit(RenderTargetTexture* source, RenderTargetTexture* destination);
     //void blit(RenderTargetTexture* source, RenderTargetTexture* destination, Material* material);
-	void blit(Material* source, RenderTargetTexture* destination, RenderPhaseClass phase = RenderPhaseClass::PostEffect);
+	void blit(Material* source, RenderTargetTexture* destination, RenderPart phase = RenderPart::PostEffect);
 
 	/** スプライトを描画します。 */
 	void drawSprite(
@@ -226,38 +199,39 @@ public:
 	Size measureTextSize(Font* font, uint32_t codePoint) const;
 
 
-    RenderViewPoint* viewPoint() const;
 	World* world = nullptr;
 
 
     // TODO: internal
+    RenderViewPoint* viewPoint() const;
+    void setViewPoint(RenderViewPoint* value);
     void setBaseTransfrom(const Optional<Matrix>& value);
 	const Matrix& baseTransform() const;
+	void setRenderPriority(int value);
     void setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value);
-    void setRenderPriority(int value);
-    void setViewPoint(RenderViewPoint* value);
+   	void setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value);
+	void setObjectId(int value);
+
+	const Ref<detail::DrawElementListBuilder>& builder() const;
+	const Ref<CommandList>& commandList() const { return m_commandList; }
 	RenderView* baseRenderView = nullptr;	// for PostEffect
     GraphicsContext* m_frameWindowRenderingGraphicsContext = nullptr;
 	//detail::RenderDrawElement* lastRenderDrawElement() const;
-	void setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value);
 	void collectPostEffect(PostEffect* effect) { m_imageEffects.add(effect); }
 	const List<PostEffect*>& imageEffects() const { return m_imageEffects; }
 	void clearPostEffects() { m_imageEffects.clear(); }
 	detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;	// for PostEffect
 	RenderTargetTexture* gbuffer(GBuffer kind) const;
 	RenderView* currentRenderView = nullptr;	// Offscreen の場合はそれ
-	void setObjectId(int value);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();
-	virtual ~RenderingContext();
-	void setDrawElementList(detail::DrawElementList* list);
 	void resetForBeginRendering();
 
 protected:  // TODO:
 	detail::RenderingManager* m_manager;
-	Ref<detail::DrawElementListBuilder> m_builder;
 	List<PostEffect*> m_imageEffects;
+	Ref<CommandList> m_commandList;
 
 private:
 	Ref<CanvasContext> m_pathContext;

@@ -163,7 +163,7 @@ protected:
 	//virtual void onBeginRender() override;
 	//virtual void onEndRender() override;
 
-	virtual void collect(RenderingPipeline* renderingPipeline, const detail::CameraInfo& cameraInfo, RenderPhaseClass targetPhase) override;
+	virtual void collect(RenderingPipeline* renderingPipeline, const detail::CameraInfo& cameraInfo, RenderPart targetPhase) override;
 	virtual void onCollectLight(const DynamicLightInfo& light) override;
 	virtual void onSetAdditionalShaderPassVariables(ShaderTechnique* technique) override;
 
