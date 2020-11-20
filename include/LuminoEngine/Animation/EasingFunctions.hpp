@@ -154,24 +154,24 @@ public:
 	template<typename TValue, typename TTime>
 	static TValue easeInExpo(TTime t, TValue b, TValue c, TTime d)
 	{
-		return c * std::pow(2.0, 10.0 * (t / d - 1)) + b;
+		return c * std::pow(2.0f, 10.0f * (t / d - 1.0f)) + b;
 	};
 
 	/** exponential easing out - decelerating to zero velocity */
 	template<typename TValue, typename TTime>
 	static TValue easeOutExpo(TTime t, TValue b, TValue c, TTime d)
 	{
-		return c * (-std::pow(2, -10 * t / d) + 1) + b;
+		return c * (-std::pow(2.0f, -10.0f * t / d) + 1.0f) + b;
 	};
 
 	/** exponential easing in/out - accelerating until halfway, then decelerating */
 	template<typename TValue, typename TTime>
 	static TValue easeInOutExpo(TTime t, TValue b, TValue c, TTime d)
 	{
-		t /= d / 2;
-		if (t < 1) return c / 2 * std::pow(2, 10 * (t - 1)) + b;
+		t /= d / 2.0f;
+		if (t < 1) return c / 2.0f * std::pow(2.0f, 10.0f * (t - 1.0f)) + b;
 		t--;
-		return c / 2 * (-std::pow(2, -10 * t) + 2) + b;
+		return c / 2.0f * (-std::pow(2.0f, -10.0f * t) + 2.0f) + b;
 	};
 
 	/** circular easing in - accelerating from zero velocity */
@@ -179,7 +179,7 @@ public:
 	static TValue easeInCirc(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d;
-		return -c * (std::sqrt(1 - t*t) - 1) + b;
+		return -c * (std::sqrt(1.0f - t*t) - 1.0f) + b;
 	};
 
 	/** circular easing out - decelerating to zero velocity */
@@ -188,17 +188,17 @@ public:
 	{
 		t /= d;
 		t--;
-		return c * std::sqrt(1 - t*t) + b;
+		return c * std::sqrt(1.0f - t*t) + b;
 	};
 
 	/** circular easing in/out - acceleration until halfway, then deceleration */
 	template<typename TValue, typename TTime>
 	static TValue easeInOutCirc(TTime t, TValue b, TValue c, TTime d)
 	{
-		t /= d / 2;
-		if (t < 1) return -c / 2 * (std::sqrt(1 - t*t) - 1) + b;
-		t -= 2;
-		return c / 2 * (std::sqrt(1 - t*t) + 1) + b;
+		t /= d / 2.0f;
+		if (t < 1.0f) return -c / 2.0f * (std::sqrt(1.0f - t*t) - 1.0f) + b;
+		t -= 2.0f;
+		return c / 2.0f * (std::sqrt(1.0f - t*t) + 1.0f) + b;
 	};
 
 

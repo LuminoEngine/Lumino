@@ -144,6 +144,8 @@ private:
 	List<DynamicLightInfo> m_dynamicLightInfoList;
 };
 
+
+
 #if 0
 // 1フレームで実行するコマンドリストすべてをまとめておく。
 // インスタンスは World などに、基本的にずっと持っておく。

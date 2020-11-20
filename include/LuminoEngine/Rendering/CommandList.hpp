@@ -159,7 +159,7 @@ public:
 	/** @} */
 
 // TODO: internal
-	void resetForBeginRendering();
+	void clearCommandsAndState();
 	const Ref<detail::DrawElementListBuilder>& builder() const { return m_builder; }
 	const Ref<detail::DrawElementList>& elementList() const { return m_elementList; }
 
@@ -181,5 +181,31 @@ private:
 	Ref<detail::DrawElementListBuilder> m_builder;
 };
 
+namespace detail {
+
+class CommandListServer
+	: public RefObject
+{
+public:
+	CommandList* acquirePrimaryList(RenderPart index1, ProjectionKind index2);
+	CommandList* getPrimaryList(RenderPart index1, ProjectionKind index2) const;
+	void clearCommandsAndState();
+
+private:
+	struct Layer
+	{
+		Ref<CommandList> primaryList;
+		//std::vector<Ref<DrawElementList>> additionalList;
+	};
+
+	struct Part
+	{
+		std::array<Layer, 4> layers;
+	};
+
+	std::array<Part, 4> m_parts;
+};
+
+} // namespace detail
 } // namespace ln
 

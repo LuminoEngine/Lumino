@@ -124,6 +124,7 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
 
 void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 {
+#if 0
 	context->pushState();
 	context->setRenderPhase(RenderPart::Gizmo2D);
 	context->setDepthTestEnabled(false);
@@ -165,6 +166,7 @@ void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 	//context->drawRegularPolygonPrimitive(16, 25, Color::Blue, false);
 
 	context->popState();
+#endif
 }
 
 } // namespace ln

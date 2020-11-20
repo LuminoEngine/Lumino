@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
@@ -17,6 +18,7 @@ namespace ln {
 
 UIRenderingContext::UIRenderingContext()
 {
+    m_commandList = m_listServer->acquirePrimaryList(RenderPart::Geometry, detail::ProjectionKind::Independent2D);
     builder()->m_stateStackMode = detail::StateStackMode::ScissorPushPop;
 }
 

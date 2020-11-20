@@ -232,6 +232,7 @@ protected:  // TODO:
 	detail::RenderingManager* m_manager;
 	List<PostEffect*> m_imageEffects;
 	Ref<CommandList> m_commandList;
+	Ref<detail::CommandListServer> m_listServer;
 
 private:
 	Ref<CanvasContext> m_pathContext;

@@ -59,7 +59,7 @@ void GraphicsContext::init(RenderingType renderingType)
 //    resetState();
 //}
 
-void GraphicsContext::resetCommandList(detail::CommandList* commandList)
+void GraphicsContext::resetCommandList(detail::GraphicsCommandList* commandList)
 {
 	if (commandList) {
 		// begin frame

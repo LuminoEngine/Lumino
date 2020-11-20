@@ -3,6 +3,7 @@
 #include <LuminoEngine/Animation/AnimationContext.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
 #include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
@@ -411,6 +412,7 @@ namespace detail {
 
 WorldSceneGraphRenderingContext::WorldSceneGraphRenderingContext()
 {
+    m_commandList = m_listServer->acquirePrimaryList(RenderPart::Geometry, detail::ProjectionKind::ViewProjection3D);
 }
 
 void WorldSceneGraphRenderingContext::resetForBeginRendering()
@@ -419,6 +421,5 @@ void WorldSceneGraphRenderingContext::resetForBeginRendering()
 }
 
 } // namespace detail
-
 } // namespace ln
 

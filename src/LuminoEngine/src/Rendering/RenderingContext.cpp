@@ -28,13 +28,14 @@ RenderingContext::RenderingContext()
 	: m_manager(detail::EngineDomain::renderingManager())
 	, m_pathContext(makeObject<CanvasContext>())
 	, m_pathBegan(false)
-	, m_commandList(makeObject<CommandList>())
+	, m_commandList(nullptr)
+	, m_listServer(makeRef<detail::CommandListServer>())
 {
 }
 
 void RenderingContext::resetForBeginRendering()
 {
-	m_commandList->resetForBeginRendering();
+	m_listServer->clearCommandsAndState();
 }
 
 void RenderingContext::setRenderTarget(int index, RenderTargetTexture * value)
