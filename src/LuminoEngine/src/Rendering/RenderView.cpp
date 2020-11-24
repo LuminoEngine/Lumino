@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/RenderView.hpp>
+#include "RenderingPipeline.hpp"
 #include "RenderingManager.hpp"
 #include "RenderStage.hpp"
 #include "SceneRenderer.hpp"
@@ -92,6 +93,24 @@ Vector3 RenderView::transformProjection(const Vector3& pos, detail::ProjectionKi
 Ref<EventConnection> RenderView::connectOnUIEvent(Ref<UIGeneralEventHandler> handler)
 {
     return m_onUIEvent.connect(handler);
+}
+
+RenderTargetTexture* RenderView::gbuffer(GBuffer kind) const
+{
+	if (!m_sceneRenderingPipeline) return nullptr;
+
+	switch (kind)
+	{
+	case ln::GBuffer::ViewNormalMap:
+		return m_sceneRenderingPipeline->viweNormalAndDepthBuffer();
+	case ln::GBuffer::ViewDepthMap:
+		return m_sceneRenderingPipeline->viweDepthBuffer();
+	case ln::GBuffer::ViewMaterialMap:
+		return m_sceneRenderingPipeline->materialBuffer();
+	default:
+		LN_UNREACHABLE();
+		return nullptr;
+	}
 }
 
 void RenderView::updateFrame(float elapsedSeconds)

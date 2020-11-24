@@ -58,6 +58,7 @@
 
 #include "LuminoEngine/Rendering/Common.hpp"
 #include "LuminoEngine/Rendering/Material.hpp"
+#include "LuminoEngine/Rendering/CommandList.hpp"
 #include "LuminoEngine/Rendering/RenderView.hpp"
 #include "LuminoEngine/Rendering/RenderFeature.hpp"
 #include "LuminoEngine/Rendering/RenderingContext.hpp"

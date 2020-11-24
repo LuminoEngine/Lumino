@@ -40,7 +40,7 @@ class PostEffectInstance
 {
 protected:
 	// 周辺状況やパラメータ的に描画の必要がなかった場合は false を返す。
-	virtual bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
+	virtual bool onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
 
 private:
 	//PostEffect* m_owner = nullptr;

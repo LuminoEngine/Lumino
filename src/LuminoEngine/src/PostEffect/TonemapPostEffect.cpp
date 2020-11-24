@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/PostEffect/TonemapPostEffect.hpp>
@@ -72,7 +73,7 @@ bool TonemapPostEffectInstance::init(TonemapPostEffect* owner)
     return true;
 }
 
-bool TonemapPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool TonemapPostEffectInstance::onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     const float linearWhite = 5.0f;//11.2;
     const float shoulderStrength = 0.015f;// 0.15f;

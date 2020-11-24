@@ -31,7 +31,7 @@ public:
 
     DepthOfFieldPostEffectCore();
     bool init(Material* compositeMaterial);
-    void prepare(RenderingContext* context, RenderTargetTexture* source);
+    void prepare(RenderView* renderView, CommandList* context, RenderTargetTexture* source);
 
 private:
     void resetResources(int resx, int resy);
@@ -53,7 +53,7 @@ class DepthOfFieldPostEffectInstance
     : public PostEffectInstance
 {
 protected:
-    bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+    bool onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
     DepthOfFieldPostEffectInstance();

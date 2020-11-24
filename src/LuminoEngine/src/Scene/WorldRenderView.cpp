@@ -398,7 +398,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
 
             {
-                renderingContext->m_sceneRenderingPipeline = m_sceneRenderingPipeline;
+                RenderView::m_sceneRenderingPipeline = m_sceneRenderingPipeline;
 
                 if (!renderingContext->imageEffects().isEmpty()) {
                     acquirePostEffectPresenter();
@@ -411,7 +411,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                     m_imageEffectRenderer->render(renderingContext, actualInput, renderTarget);
                 }
 
-                renderingContext->m_sceneRenderingPipeline = nullptr;
+                RenderView::m_sceneRenderingPipeline = nullptr;
             }
         }
 

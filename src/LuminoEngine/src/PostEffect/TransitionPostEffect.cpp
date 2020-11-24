@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
@@ -106,7 +107,7 @@ bool TransitionPostEffectInstance::init(TransitionPostEffect* owner)
     return true;
 }
 
-bool TransitionPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool TransitionPostEffectInstance::onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     bool recreated = preparePreviousFrameTarget(source->width(), source->height());
     if (m_freezeRevision != m_owner->m_freezeRevision) {
@@ -117,7 +118,7 @@ bool TransitionPostEffectInstance::onRender(RenderingContext* context, RenderTar
             // TODO: scoped または blit みたいに RT 直接指定の Clear
             Ref<RenderTargetTexture> oldTarget = context->renderTarget(0);
             context->setRenderTarget(0, m_overrayTarget);
-            context->clear(ClearFlags::Color, context->baseRenderView->backgroundColor());
+            context->clear(ClearFlags::Color, renderView->backgroundColor());
             context->setRenderTarget(0, oldTarget);
         }
         else {
@@ -172,7 +173,7 @@ bool TransitionPostEffectInstance::preparePreviousFrameTarget(int width, int hei
     }
 }
 
-void TransitionPostEffectInstance::renderFadeInOut(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination, float factor)
+void TransitionPostEffectInstance::renderFadeInOut(CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination, float factor)
 {
     context->setDepthTestEnabled(false);
     context->setDepthWriteEnabled(false);
@@ -224,7 +225,7 @@ void TransitionPostEffectInstance::renderFadeInOut(RenderingContext* context, Re
     //context->blit(m_copyMaterial, destination);
 }
 
-void TransitionPostEffectInstance::renderCrossFade(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+void TransitionPostEffectInstance::renderCrossFade(CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
 
 

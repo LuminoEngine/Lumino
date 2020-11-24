@@ -375,23 +375,6 @@ const Ref<detail::DrawElementListBuilder>& RenderingContext::builder() const
 	return m_commandList->builder();
 }
 
-RenderTargetTexture* RenderingContext::gbuffer(GBuffer kind) const
-{
-	if (!m_sceneRenderingPipeline) return nullptr;
-
-	switch (kind)
-	{
-	case ln::GBuffer::ViewNormalMap:
-		return m_sceneRenderingPipeline->viweNormalAndDepthBuffer();
-	case ln::GBuffer::ViewDepthMap:
-		return m_sceneRenderingPipeline->viweDepthBuffer();
-	case ln::GBuffer::ViewMaterialMap:
-		return m_sceneRenderingPipeline->materialBuffer();
-	default:
-		LN_UNREACHABLE();
-		return nullptr;
-	}
-}
 
 //detail::RenderDrawElement* RenderingContext::lastRenderDrawElement() const
 //{

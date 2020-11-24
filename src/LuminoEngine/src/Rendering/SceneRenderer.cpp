@@ -574,7 +574,7 @@ void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRenderer
     }
 
 
-#if 0
+#if 1
 	m_renderingPipeline->commandListServer()->enumerateDrawElements(
 		m_currentPart, m_currentProjection,
 		[this](RenderDrawElement* element) {

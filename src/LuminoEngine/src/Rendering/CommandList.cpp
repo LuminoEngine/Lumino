@@ -753,6 +753,10 @@ CommandList* CommandListServer::acquirePrimaryList(RenderPart index1, Projection
 	Layer& layer = part.layers[static_cast<int>(index2)];
 	if (!layer.primaryList) {
 		layer.primaryList = makeObject<CommandList>();
+
+		// 作成済みの CommandList の clearCommandsAndState() は描画開始時に呼ばれるが、
+		// 描画中に作られた CommandList のインスタンスに対しては個別に呼び出す必要がある。
+		layer.primaryList->clearCommandsAndState();
 	}
 	return layer.primaryList;
 }

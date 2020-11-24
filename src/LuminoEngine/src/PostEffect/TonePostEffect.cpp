@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/PostEffect/TonePostEffect.hpp>
 
@@ -65,7 +66,7 @@ bool TonePostEffectInstance::init(TonePostEffect* owner)
     return true;
 }
 
-bool TonePostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool TonePostEffectInstance::onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     m_material->setMainTexture(source);
     //m_material->setMainTexture(Texture2D::whiteTexture());

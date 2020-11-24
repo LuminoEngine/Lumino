@@ -58,9 +58,10 @@ bool SSAOPostEffectInstance::init(SSAOPostEffect* owner)
     return true;
 }
 
-bool SSAOPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool SSAOPostEffectInstance::onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     LN_NOTIMPLEMENTED();
+#if 0
     // TODO: density などのパラメータを渡していない
 
     Ref<RenderTargetTexture> occlusionMap = RenderTargetTexture::getTemporary(source->width(), source->height(), TextureFormat::RGBA8, false);
@@ -79,6 +80,7 @@ bool SSAOPostEffectInstance::onRender(RenderingContext* context, RenderTargetTex
     context->blit(m_blurAndCompositeMaterial, destination);
 
     RenderTargetTexture::releaseTemporary(occlusionMap);
+#endif
     return true;
 }
 

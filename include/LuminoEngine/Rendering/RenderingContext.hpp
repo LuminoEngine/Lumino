@@ -227,8 +227,8 @@ public:
 	void collectPostEffect(PostEffect* effect) { m_imageEffects.add(effect); }
 	const List<PostEffect*>& imageEffects() const { return m_imageEffects; }
 	void clearPostEffects() { m_imageEffects.clear(); }
-	detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;	// for PostEffect
-	RenderTargetTexture* gbuffer(GBuffer kind) const;
+	//detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;	// for PostEffect
+	//RenderTargetTexture* gbuffer(GBuffer kind) const;
 	RenderView* currentRenderView = nullptr;	// Offscreen の場合はそれ
 
 	void addDynamicLightInfo(const detail::DynamicLightInfo& info) { return m_dynamicLightInfoList.add(info); }

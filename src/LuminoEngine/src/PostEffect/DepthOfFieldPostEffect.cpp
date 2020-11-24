@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/PostEffect/DepthOfFieldPostEffect.hpp>
@@ -52,7 +53,7 @@ bool DepthOfFieldPostEffectCore::init(Material* compositeMaterial)
     return true;
 }
 
-void DepthOfFieldPostEffectCore::prepare(RenderingContext* context, RenderTargetTexture* source)
+void DepthOfFieldPostEffectCore::prepare(RenderView* renderView, CommandList* context, RenderTargetTexture* source)
 {
     int resx = source->width();
     int resy = source->height();
@@ -68,7 +69,7 @@ void DepthOfFieldPostEffectCore::prepare(RenderingContext* context, RenderTarget
         context->blit(m_copyMaterial, m_mipTargets[i]);
     }
 
-    Texture* viewDepthMap = context->gbuffer(GBuffer::ViewDepthMap);
+    Texture* viewDepthMap = renderView->gbuffer(GBuffer::ViewDepthMap);
     m_compositeMaterial->setTexture(u"_depthTexture", viewDepthMap);
     m_compositeMaterial->setTexture(u"_dofTexture0", m_mipTargets[0]);
     m_compositeMaterial->setTexture(u"_dofTexture1", m_mipTargets[1]);
@@ -122,10 +123,10 @@ bool DepthOfFieldPostEffectInstance::init(DepthOfFieldPostEffect* owner)
     return true;
 }
 
-bool DepthOfFieldPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool DepthOfFieldPostEffectInstance::onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     auto dofTexture = RenderTargetTexture::getTemporary(source->width() / 2, source->height(), TextureFormat::RGBA8, false);
-    Texture* viewDepthMap = context->gbuffer(GBuffer::ViewDepthMap);
+    Texture* viewDepthMap = renderView->gbuffer(GBuffer::ViewDepthMap);
 
     int margin = 2;
 

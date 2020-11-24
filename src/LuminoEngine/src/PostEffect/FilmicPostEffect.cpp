@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
@@ -84,7 +85,7 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
     return true;
 }
 
-bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool FilmicPostEffectInstance::onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     const bool toneEnabled = m_owner->m_screenBlendColor.a > 0.0f || !m_owner->m_screenColorTone.isZero();
 
@@ -102,7 +103,7 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
 
     bool actualSSREnabled = false;
     if (m_owner->m_ssrEnabled) {
-        actualSSREnabled = m_ssrEffect.prepare(context, source);
+        actualSSREnabled = m_ssrEffect.prepare(renderView, context, source);
         m_integrationMaterial->setTexture(u"_SSRSampler", m_ssrEffect.ssrResultTexture());
     }
 
@@ -114,7 +115,7 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     }
 
     if (m_owner->m_dofEnabled) {
-        m_dofEffect.prepare(context, source);
+        m_dofEffect.prepare(renderView, context, source);
     }
 
     if (m_owner->m_tonemapEnabled) {
@@ -180,8 +181,8 @@ bool FilmicPostEffectInstance::onRender(RenderingContext* context, RenderTargetT
     Ref<RenderTargetTexture> occlusionMap = RenderTargetTexture::getTemporary(source->width(), source->height(), TextureFormat::RGBA8, false);
     occlusionMap->setSamplerState(m_samplerState);
 
-    Texture* viewNormalMap = context->gbuffer(GBuffer::ViewNormalMap);
-    Texture* viewDepthMap = context->gbuffer(GBuffer::ViewDepthMap);
+    Texture* viewNormalMap = renderView->gbuffer(GBuffer::ViewNormalMap);
+    Texture* viewDepthMap = renderView->gbuffer(GBuffer::ViewDepthMap);
     Texture* randomTexture = EngineDomain::renderingManager()->randomTexture();
 
     viewNormalMap->setSamplerState(SamplerState::pointClamp());

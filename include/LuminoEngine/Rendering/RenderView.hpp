@@ -62,6 +62,10 @@ public:
     //LN_METHOD(Event)
 	Ref<EventConnection> connectOnUIEvent(Ref<UIGeneralEventHandler> handler);
 
+	detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;	// for PostEffect
+	RenderTargetTexture* gbuffer(GBuffer kind) const;
+
+
 public: // TODO: protected
 	void updateFrame(float elapsedSeconds);
 	void updateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
