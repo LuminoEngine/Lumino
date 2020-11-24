@@ -105,6 +105,7 @@
 #include "LuminoEngine/Scene/SceneConductor.hpp"
 
 #include "LuminoEngine/UI/UIEvents.hpp"
+#include "LuminoEngine/UI/UIColors.hpp"
 #include "LuminoEngine/UI/UIStyle.hpp"
 #include "LuminoEngine/UI/UIRenderView.hpp"
 #include "LuminoEngine/UI/UIFrameWindow.hpp"

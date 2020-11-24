@@ -8,6 +8,7 @@
 #include <LuminoEngine/Scene/Mesh/SkinnedMeshComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
+#include <LuminoEngine/UI/UIColors.hpp>
 #include "../../Mesh/MeshModelInstance.hpp"
 
 namespace ln {
@@ -153,7 +154,7 @@ void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 
 			auto pos = view->transformProjection(bone->combinedTransform().position(), detail::ProjectionKind::ViewProjection3D, detail::ProjectionKind::Independent2D);
 			commandList->setTransfrom(Matrix::makeTranslation(pos));
-			commandList->drawRegularPolygonPrimitive(16, 20, Color::Red, true);
+			commandList->drawRegularPolygonPrimitive(16, 20, UIColors::blue(5), true);
 		}
 	}
 
