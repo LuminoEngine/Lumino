@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Scene/Mesh/SkinnedMeshComponent.hpp>
@@ -124,11 +125,13 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
 
 void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 {
-#if 0
-	context->pushState();
-	context->setRenderPhase(RenderPart::Gizmo2D);
-	context->setDepthTestEnabled(false);
-	context->setDepthWriteEnabled(false);
+#if 1
+
+	CommandList* commandList = context->getCommandList(RenderPart::Gizmo2D, detail::ProjectionKind::Independent2D);
+	commandList->pushState();
+	//commandList->setRenderPhase(RenderPart::Gizmo2D);
+	commandList->setDepthTestEnabled(false);
+	commandList->setDepthWriteEnabled(false);
 
 	//const auto* viewPoint = context->viewPoint();
 	//Matrix viewproj = viewPoint->viewProjMatrix;
@@ -149,8 +152,8 @@ void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 			//context->drawSphere(1, 8, 8, Color::Red);
 
 			auto pos = view->transformProjection(bone->combinedTransform().position(), detail::ProjectionKind::ViewProjection3D, detail::ProjectionKind::Independent2D);
-			context->setTransfrom(Matrix::makeTranslation(pos));
-			context->drawRegularPolygonPrimitive(16, 20, Color::Red, true);
+			commandList->setTransfrom(Matrix::makeTranslation(pos));
+			commandList->drawRegularPolygonPrimitive(16, 20, Color::Red, true);
 		}
 	}
 
@@ -165,7 +168,7 @@ void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 	//context->drawRegularPolygonPrimitive(16, 20, Color::Blue, true);
 	//context->drawRegularPolygonPrimitive(16, 25, Color::Blue, false);
 
-	context->popState();
+	commandList->popState();
 #endif
 }
 

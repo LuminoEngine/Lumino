@@ -528,24 +528,25 @@ void WorldRenderView::renderGridPlane(RenderingContext* renderingContext, Render
         //renderingContext->drawLine(Vector3(0, 0, 0), Color::Red, Vector3(-1, 1, 1), Color::Red);
         //renderingContext->popState();
 
+        CommandList* commandList = renderingContext->getCommandList(RenderPart::Gizmo, detail::ProjectionKind::ViewProjection3D);
 
-        renderingContext->pushState();
+        commandList->pushState();
 
         
 
-        renderingContext->setRenderPhase(RenderPart::Gizmo);
-        //renderingContext->setBlendMode(BlendMode::Alpha);
-        //renderingContext->setDepthWriteEnabled(false);
-        renderingContext->setMaterial(m_gridPlaneMaterial);
-        renderingContext->drawMesh(m_gridPlaneMesh, 0);
-        //renderingContext->setRenderPhase(RenderPart::Default);
+        //commandList->setRenderPhase(RenderPart::Gizmo);
+        //commandList->setBlendMode(BlendMode::Alpha);
+        //commandList->setDepthWriteEnabled(false);
+        commandList->setMaterial(m_gridPlaneMaterial);
+        commandList->drawMesh(m_gridPlaneMesh, 0);
+        //commandList->setRenderPhase(RenderPart::Default);
 
-		renderingContext->setMaterial(nullptr);
-		renderingContext->drawLine(Vector3(0, 0, 0), Color::Red, Vector3(10, 0, 0), Color::Red);
-        renderingContext->drawLine(Vector3(0, 0, 0), Color::Green, Vector3(0, 10, 0), Color::Green);
-        renderingContext->drawLine(Vector3(0, 0, 0), Color::Blue, Vector3(0, 0, 10), Color::Blue);
+        commandList->setMaterial(nullptr);
+        commandList->drawLine(Vector3(0, 0, 0), Color::Red, Vector3(10, 0, 0), Color::Red);
+        commandList->drawLine(Vector3(0, 0, 0), Color::Green, Vector3(0, 10, 0), Color::Green);
+        commandList->drawLine(Vector3(0, 0, 0), Color::Blue, Vector3(0, 0, 10), Color::Blue);
 
-        renderingContext->popState();
+        commandList->popState();
 
         //adjustGridPlane(renderView);
         //renderingContext->setTransform(Matrix::Identity);

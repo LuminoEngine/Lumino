@@ -69,7 +69,8 @@ private:
 
     Ref<detail::ClusteredShadingSceneRenderer> m_sceneRenderer;
     Ref<detail::SceneRenderer> m_sceneRenderer_PostEffectPhase;
-    Ref<UnLigitingSceneRendererPass> m_unlitRendererPass;
+    Ref<UnLigitingSceneRendererPass> m_unlitRendererPass_Normal;
+    Ref<UnLigitingSceneRendererPass> m_unlitRendererPass_PostEffect;
 
     // rgb: Packed view space normal, a: depth (near=0.0 ~ far=1.0)
     // TODO: UE4 や Unity など、多くは WorldSpace の normal を G-Buffer に書き込んでいる。

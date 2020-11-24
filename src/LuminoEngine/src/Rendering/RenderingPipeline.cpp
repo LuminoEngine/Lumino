@@ -57,8 +57,11 @@ void SceneRenderingPipeline::init()
     m_sceneRenderer_PostEffectPhase = makeRef<detail::SceneRenderer>();
     m_sceneRenderer_PostEffectPhase->init();
 
-    m_unlitRendererPass = makeRef<UnLigitingSceneRendererPass>();
-    m_unlitRendererPass->init(manager, true);
+    m_unlitRendererPass_Normal = makeRef<UnLigitingSceneRendererPass>();
+    m_unlitRendererPass_Normal->init(manager, false);
+
+    m_unlitRendererPass_PostEffect = makeRef<UnLigitingSceneRendererPass>();
+    m_unlitRendererPass_PostEffect->init(manager, true);
 
 
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
@@ -190,7 +193,7 @@ void SceneRenderingPipeline::render(
         m_sceneRenderer_PostEffectPhase->prepare(this, renderingContext, renderViewInfo, RenderPart::PostEffect, ProjectionKind::ClipScreen, nullptr);  // TODO: PostEffect なので ZSort 要らないモード追加していいかも
         //m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
         //for (SceneRendererPass* pass : m_sceneRenderer_PostEffectPhase->m_renderingPassList) {
-            m_sceneRenderer_PostEffectPhase->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass);
+            m_sceneRenderer_PostEffectPhase->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass_PostEffect);
         //}
     }
 
@@ -200,7 +203,7 @@ void SceneRenderingPipeline::render(
         //RenderViewInfo renderViewInfo2;
         renderViewInfo.cameraInfo = renderView->viewProjection(ProjectionKind::Independent2D);
         m_sceneRenderer->prepare(this, renderingContext, renderViewInfo, RenderPart::Gizmo2D, ProjectionKind::Independent2D, nullptr);
-        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
+        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass_Normal);
     }
 
 
