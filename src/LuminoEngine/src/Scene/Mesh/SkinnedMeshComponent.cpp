@@ -154,7 +154,8 @@ void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 
 			auto pos = view->transformProjection(bone->combinedTransform().position(), detail::ProjectionKind::ViewProjection3D, detail::ProjectionKind::Independent2D);
 			commandList->setTransfrom(Matrix::makeTranslation(pos));
-			commandList->drawRegularPolygonPrimitive(16, 20, UIColors::blue(5), true);
+			commandList->drawRegularPolygonPrimitive(16, 8, UIColors::blue(), true);
+			commandList->drawRegularPolygonPrimitive(16, 10, UIColors::blue(), false);
 		}
 	}
 

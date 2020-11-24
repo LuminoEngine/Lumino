@@ -116,7 +116,7 @@ void Application::onInit()
 #if 0
     Ref<ln::Sprite> sprite = ln::Sprite::create();
 
-#define SEQUENTIAL 0
+#define SEQUENTIAL 1
     
 
     static const size_t count = 1000000;
