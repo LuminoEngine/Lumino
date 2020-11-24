@@ -205,6 +205,21 @@ public:
 
 	const Layer* getLayer(RenderPart index1, ProjectionKind index2) const;
 
+	template<class TCallback>
+	inline void enumerateDrawElements(RenderPart index1, ProjectionKind index2, TCallback callback) const
+	{
+		const Part& part = m_parts[static_cast<int>(index1)];
+		const Layer& layer = part.layers[static_cast<int>(index2)];
+		if (layer.primaryList) {
+			const auto& list = layer.primaryList->elementList();
+			RenderDrawElement* element = list->headElement();
+			while (element) {
+				callback(element);
+				element = element->m_classifiedNext;
+			}
+		}
+	}
+
 private:
 
 	std::array<Part, 4> m_parts;

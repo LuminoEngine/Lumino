@@ -36,6 +36,7 @@ RenderingContext::RenderingContext()
 void RenderingContext::resetForBeginRendering()
 {
 	m_listServer->clearCommandsAndState();
+	m_dynamicLightInfoList.clear();
 }
 
 void RenderingContext::setRenderTarget(int index, RenderTargetTexture * value)
@@ -282,32 +283,32 @@ void RenderingContext::endPath()
 
 void RenderingContext::addAmbientLight(const Color& color, float intensity)
 {
-	m_commandList->elementList()->addDynamicLightInfo(detail::DynamicLightInfo::makeAmbientLightInfo(color, intensity));
+	addDynamicLightInfo(detail::DynamicLightInfo::makeAmbientLightInfo(color, intensity));
 }
 
 void RenderingContext::addHemisphereLight(const Color& skyColor, const Color& groundColor, float intensity)
 {
-	m_commandList->elementList()->addDynamicLightInfo(detail::DynamicLightInfo::makeHemisphereLightInfo(skyColor, groundColor, intensity));
+	addDynamicLightInfo(detail::DynamicLightInfo::makeHemisphereLightInfo(skyColor, groundColor, intensity));
 }
 
 void RenderingContext::addEnvironmentLightInfo(const Color& color, const Color& ambientColor, const Color& skyColor, const Color& groundColor, float intensity, const Vector3& direction, bool mainLight, float shadowCameraZFar, float shadowLightZFar)
 {
-	m_commandList->elementList()->addDynamicLightInfo(detail::DynamicLightInfo::makeEnvironmentLightInfo(color, ambientColor, skyColor, groundColor, intensity, direction, mainLight, shadowCameraZFar, shadowLightZFar));
+	addDynamicLightInfo(detail::DynamicLightInfo::makeEnvironmentLightInfo(color, ambientColor, skyColor, groundColor, intensity, direction, mainLight, shadowCameraZFar, shadowLightZFar));
 }
 
 void RenderingContext::addDirectionalLight(const Color& color, float intensity, const Vector3& direction, bool mainLight, float shadowCameraZFar, float shadowLightZFar)
 {
-	m_commandList->elementList()->addDynamicLightInfo(detail::DynamicLightInfo::makeDirectionalLightInfo(color, intensity, direction, mainLight, shadowCameraZFar, shadowLightZFar));
+	addDynamicLightInfo(detail::DynamicLightInfo::makeDirectionalLightInfo(color, intensity, direction, mainLight, shadowCameraZFar, shadowLightZFar));
 }
 
 void RenderingContext::addPointLight(const Color& color, float intensity, const Vector3& position, float range, float attenuation)
 {
-	m_commandList->elementList()->addDynamicLightInfo(detail::DynamicLightInfo::makePointLightInfo(color, intensity, position, range, attenuation));
+	addDynamicLightInfo(detail::DynamicLightInfo::makePointLightInfo(color, intensity, position, range, attenuation));
 }
 
 void RenderingContext::addSpotLight(const Color& color, float intensity, const Vector3& position, const Vector3& direction, float range, float attenuation, float spotAngle, float spotPenumbra)
 {
-	m_commandList->elementList()->addDynamicLightInfo(detail::DynamicLightInfo::makeSpotLightInfo(color, intensity, position, direction, range, attenuation, spotAngle, spotPenumbra));
+	addDynamicLightInfo(detail::DynamicLightInfo::makeSpotLightInfo(color, intensity, position, direction, range, attenuation, spotAngle, spotPenumbra));
 }
 
 Size RenderingContext::measureTextSize(Font* font, const StringRef& text) const
@@ -322,6 +323,11 @@ Size RenderingContext::measureTextSize(Font* font, uint32_t codePoint) const
 	if (LN_REQUIRE(font)) return Size::Zero;
 	if (codePoint == 0) return Size::Zero;
 	return font->measureRenderSize(codePoint, viewPoint()->dpiScale);
+}
+
+CommandList* RenderingContext::getCommandList(RenderPart index1, detail::ProjectionKind index2)
+{
+	return m_listServer->acquirePrimaryList(index1, index2);
 }
 
 RenderViewPoint* RenderingContext::viewPoint() const

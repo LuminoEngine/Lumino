@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Rendering/Common.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 
@@ -85,18 +86,12 @@ public:
 	// render の前準備として、効率的な描画を行うためのZソートなどを実施した Element リストを作成する。
 	void prepare(
 		RenderingPipeline* renderingPipeline,
+		RenderingContext* renderingContext,
 		//detail::CommandListServer* commandListServer,
 		const detail::RenderViewInfo& mainRenderViewInfo,
 		RenderPart targetPhase,
 		ProjectionKind targetProjection,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
-
-	//void render(
-	//	GraphicsContext* graphicsContext,
- //       RenderingPipeline* renderingPipeline,
-	//	RenderTargetTexture* renderTarget,
-	//	DepthBuffer* depthBuffer,
- //       const detail::CameraInfo& mainCameraInfo);
 
 	void renderPass(
 		GraphicsContext* graphicsContext,
@@ -144,6 +139,7 @@ private:
 	RenderFeatureBatchList m_renderFeatureBatchList;
 
     RenderingPipeline* m_renderingPipeline;
+	RenderingContext* m_renderingContext;
 	const detail::SceneGlobalRenderParams* m_sceneGlobalRenderParams;
 	RenderPart m_currentPart;
 	ProjectionKind m_currentProjection;

@@ -42,6 +42,7 @@ public:
     void prepare(RenderTargetTexture* renderTarget);
     void render(
         GraphicsContext* graphicsContext,
+        RenderingContext* renderingContext,
         RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
         const RenderView* renderView,
@@ -106,6 +107,7 @@ public:
 	void init();
     void render(
         GraphicsContext* graphicsContext,
+        RenderingContext* renderingContext,
         RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
 		const RenderView* renderView,

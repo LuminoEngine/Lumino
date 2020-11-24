@@ -112,6 +112,8 @@ void Application::onInit()
 
     //m_mesh = ln::StaticMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/SkinnedAxis1.glb");
 
+
+#if 0
     Ref<ln::Sprite> sprite = ln::Sprite::create();
 
 #define SEQUENTIAL 0
@@ -202,5 +204,5 @@ void Application::onInit()
 
         std::cout << dummy << "\t" << t1 << "[ns], " << t2 << "[ns], " << t.elapsedNanoseconds() << "[ns]" << std::endl;
     }
-
+#endif
 }

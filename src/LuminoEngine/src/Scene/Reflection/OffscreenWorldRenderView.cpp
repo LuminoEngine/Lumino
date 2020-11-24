@@ -93,7 +93,8 @@ void OffscreenWorldRenderView::render(GraphicsContext* graphicsContext, World* t
     targetWorld->renderObjects();
 
     m_sceneRenderingPipeline->render(
-        graphicsContext, m_renderTarget, clearInfo, this, detail::ProjectionKind::ViewProjection3D,
+        graphicsContext, targetWorld->m_renderingContext,
+        m_renderTarget, clearInfo, this, detail::ProjectionKind::ViewProjection3D,
         targetWorld->m_renderingContext->commandList()->elementList(),
         targetWorld->m_renderingContext->commandListServer(),
         &targetWorld->m_combinedSceneGlobalRenderParams);

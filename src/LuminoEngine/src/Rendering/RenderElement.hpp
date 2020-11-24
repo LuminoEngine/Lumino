@@ -125,9 +125,6 @@ public:
     RenderDrawElement* lastElement() const { return m_allElementList.tailElement; }
 	const ElementListDetail& classifiedElementList(RenderPart phase) const { return m_classifiedElementList[static_cast<int>(phase)]; }
 
-	void addDynamicLightInfo(const DynamicLightInfo& info) { return m_dynamicLightInfoList.add(info); }
-
-	const List<DynamicLightInfo>& dynamicLightInfoList() const { return m_dynamicLightInfoList; }
 
 private:
 	void addFrameData(IDrawElementListFrameData* data);
@@ -141,7 +138,6 @@ private:
 	IDrawElementListFrameData* m_headFrameData;	// head of link list.
 	IDrawElementListFrameData* m_tailFrameData;	// tail of link list.
 
-	List<DynamicLightInfo> m_dynamicLightInfoList;
 };
 
 

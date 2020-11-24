@@ -199,6 +199,11 @@ public:
 	Size measureTextSize(Font* font, uint32_t codePoint) const;
 
 
+
+	CommandList* getCommandList(RenderPart index1, detail::ProjectionKind index2);
+
+
+
 	World* world = nullptr;
 
 
@@ -226,6 +231,10 @@ public:
 	RenderTargetTexture* gbuffer(GBuffer kind) const;
 	RenderView* currentRenderView = nullptr;	// Offscreen の場合はそれ
 
+	void addDynamicLightInfo(const detail::DynamicLightInfo& info) { return m_dynamicLightInfoList.add(info); }
+
+	const List<detail::DynamicLightInfo>& dynamicLightInfoList() const { return m_dynamicLightInfoList; }
+
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();
 	void resetForBeginRendering();
@@ -239,6 +248,7 @@ protected:  // TODO:
 private:
 	Ref<CanvasContext> m_pathContext;
 	bool m_pathBegan;
+	List<detail::DynamicLightInfo> m_dynamicLightInfoList;
 };
 
 } // namespace ln

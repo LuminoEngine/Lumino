@@ -7,6 +7,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Mesh/MeshModelInstance.hpp"
 #include "RenderStage.hpp"
@@ -116,6 +117,7 @@ void SceneRenderer::init()
 
 void SceneRenderer::prepare(
 	RenderingPipeline* renderingPipeline,
+	RenderingContext* renderingContext,
 	//detail::CommandListServer* commandListServer,
 	const detail::RenderViewInfo& mainRenderViewInfo,
 	RenderPart targetPhase,
@@ -123,6 +125,7 @@ void SceneRenderer::prepare(
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
 	m_renderingPipeline = renderingPipeline;
+	m_renderingContext = renderingContext;
     m_mainRenderViewInfo = mainRenderViewInfo;
 	m_sceneGlobalRenderParams = sceneGlobalParams;
 	m_currentPart = targetPhase;
@@ -561,7 +564,7 @@ void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRenderer
 
     //for (auto& elementList : renderingPipeline->elementListCollector()->lists(/*RenderPart::Default*/))
     {
-        for (auto& light : renderingPipeline->elementList()->dynamicLightInfoList())
+        for (auto& light : m_renderingContext->dynamicLightInfoList())
         {
 			if (light.mainLight) {
 				m_mainLightInfo = &light;
@@ -571,10 +574,30 @@ void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRenderer
     }
 
 
+#if 0
+	m_renderingPipeline->commandListServer()->enumerateDrawElements(
+		m_currentPart, m_currentProjection,
+		[this](RenderDrawElement* element) {
 
+#if 0		// TODO: 視錘台カリング
+			const Matrix& transform = element->getTransform(elementList);
 
+			Sphere boundingSphere = element->getLocalBoundingSphere();
+			boundingSphere.center += transform.getPosition();
 
-    const auto& classifiedElements = renderingPipeline->elementList()->classifiedElementList(targetPhase);
+			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
+				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
+			{
+				// このノードは描画できる
+				m_renderingElementList.add(element);
+			}
+#else
+			m_renderingElementList.add(element);
+#endif
+		});
+
+#else
+	const auto& classifiedElements = renderingPipeline->elementList()->classifiedElementList(targetPhase);
 	{
 		RenderDrawElement* element = classifiedElements.headElement;
 		while (element) {
@@ -598,6 +621,9 @@ void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRenderer
 			element = element->m_classifiedNext;
 		}
 	}
+#endif
+
+
 
 	for (auto& element : m_renderingElementList)
 	{

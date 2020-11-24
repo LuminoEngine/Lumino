@@ -352,6 +352,9 @@ namespace LuminoBuild.Tasks
                 {
                     Utils.CallProcess("git", "checkout c35e80c3fed7445b4e2973fccccc89afd97834cf");
                 }
+
+                // TODO: https://github.com/memononen/nanovg/pull/565 のマージ待ち
+                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "nanovg", "CMakeLists.txt"), "nanovg");
             }
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
