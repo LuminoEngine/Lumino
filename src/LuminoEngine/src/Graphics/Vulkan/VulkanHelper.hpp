@@ -228,6 +228,13 @@ class VulkanDescriptorSetsPool;
 class VulkanRenderPass;
 class VulkanFramebuffer;
 class VulkanSingleFrameAllocator;
+class VulkanBuffer;
+
+struct VulkanSingleFrameBufferInfo
+{
+    VulkanBuffer* buffer;
+    uint32_t offset;
+};
 
 #define LN_VK_CHECK(f) \
 { \
@@ -399,6 +406,7 @@ public:
 
     Result allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets);
 
+    // TODO: deprecated
     VulkanBuffer* allocateBuffer(size_t size, VkBufferUsageFlags usage);
 
     const Ref<VulkanSingleFrameAllocator>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
@@ -406,7 +414,7 @@ public:
 
 	// データを destination へ送信するためのコマンドを push する。
 	// 元データは戻り値のメモリ領域に書き込むこと。
-	VulkanBuffer* cmdCopyBuffer(size_t size, VulkanBuffer* destination);
+    VulkanSingleFrameBufferInfo cmdCopyBuffer(size_t size, VulkanBuffer* destination);
     VulkanBuffer* cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination);
 
 public:

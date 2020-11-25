@@ -6,12 +6,6 @@ namespace ln {
 namespace detail {
 class VulkanDevice;
 
-struct VulkanSingleFrameBufferInfo
-{
-	VulkanBuffer* buffer;
-	uint32_t offset;
-};
-
 class VulkanSingleFrameAllocatorPage
 	: public AbstractLinearAllocatorPage
 {

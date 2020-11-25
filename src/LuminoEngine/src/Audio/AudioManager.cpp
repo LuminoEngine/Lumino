@@ -57,14 +57,6 @@ void AudioManager::init(const Settings& settings)
 
 void AudioManager::dispose()
 {
-    if (m_gameAudio) {
-        m_gameAudio->dispose();
-        m_gameAudio = nullptr;
-    }
-	if (m_gameAudio2) {
-		m_gameAudio2->dispose();
-		m_gameAudio2 = nullptr;
-	}
 
 	{
 		auto disposeList = m_soundManagementList;
@@ -90,6 +82,16 @@ void AudioManager::dispose()
 		throw *m_audioThreadException;
 	}
 #endif
+
+	if (m_gameAudio) {
+		m_gameAudio->dispose();
+		m_gameAudio = nullptr;
+	}
+	if (m_gameAudio2) {
+		m_gameAudio2->dispose();
+		m_gameAudio2 = nullptr;
+	}
+	
     if (m_dispatcher) {
         m_dispatcher->executeTasks();   // 残っているものを実行してしまう
         m_dispatcher = nullptr;

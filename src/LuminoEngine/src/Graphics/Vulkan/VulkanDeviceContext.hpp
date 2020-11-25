@@ -340,7 +340,7 @@ public:
     VkBuffer vulkanBuffer() const { return m_buffer.nativeBuffer(); }
     VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.nativeBufferMemory(); }
 
-    VulkanBuffer* m_mappedResource = nullptr;
+    VulkanSingleFrameBufferInfo m_mappedResource = { nullptr, 0 };
 
 private:
     VulkanDevice* m_deviceContext;
@@ -365,7 +365,7 @@ public:
     VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.nativeBufferMemory(); }
     VkIndexType indexType() const { return m_indexType; }
 
-    VulkanBuffer* m_mappedResource = nullptr;
+    VulkanSingleFrameBufferInfo m_mappedResource = { nullptr, 0 };
 
 protected:
     VulkanDevice* m_deviceContext;

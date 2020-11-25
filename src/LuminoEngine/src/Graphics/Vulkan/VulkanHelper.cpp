@@ -1334,14 +1334,18 @@ VulkanBuffer* VulkanCommandBuffer::allocateBuffer(size_t size, VkBufferUsageFlag
     return buffer;
 }
 
-VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination)
+VulkanSingleFrameBufferInfo VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination)
 {
-    VulkanBuffer* buffer = allocateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    //VulkanBuffer* buffer = allocateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    VulkanSingleFrameBufferInfo bufferInfo = m_transferBufferSingleFrameAllocator->allocate(size);
 
 	// コマンドバッファに乗せる
-	VkBufferCopy copyRegion = {};
+    VkBufferCopy copyRegion;
+    copyRegion.srcOffset = bufferInfo.offset;
+    copyRegion.dstOffset = 0;
 	copyRegion.size = size;
-	vkCmdCopyBuffer(m_commandBuffer, buffer->nativeBuffer(), destination->nativeBuffer(), 1, &copyRegion);
+	//vkCmdCopyBuffer(m_commandBuffer, buffer->nativeBuffer(), destination->nativeBuffer(), 1, &copyRegion);
+    vkCmdCopyBuffer(m_commandBuffer, bufferInfo.buffer->nativeBuffer(), destination->nativeBuffer(), 1, &copyRegion);
 
 #if 1   // TODO: test
     VkBufferMemoryBarrier barrier = {};
@@ -1373,7 +1377,7 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* dest
 #endif
 
 	// 戻り先で書いてもらう
-	return buffer;
+	return bufferInfo;
 }
 
 VulkanBuffer* VulkanCommandBuffer::cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination)

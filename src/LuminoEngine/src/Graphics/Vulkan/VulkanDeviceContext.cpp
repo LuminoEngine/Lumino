@@ -1177,13 +1177,13 @@ void* VulkanGraphicsContext::onMapResource(IGraphicsRHIBuffer* resource, uint32_
 	{
 		VulkanVertexBuffer* vertexBuffer = static_cast<VulkanVertexBuffer*>(resource);
 		vertexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(vertexBuffer->buffer()->size(), vertexBuffer->buffer());
-		return vertexBuffer->m_mappedResource->map();
+        return static_cast<uint8_t*>(vertexBuffer->m_mappedResource.buffer->map()) + vertexBuffer->m_mappedResource.offset;
 	}
 	case DeviceResourceType::IndexBuffer:
 	{
 		VulkanIndexBuffer* indexBuffer = static_cast<VulkanIndexBuffer*>(resource);
 		indexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(indexBuffer->buffer()->size(), indexBuffer->buffer());
-		return indexBuffer->m_mappedResource->map();
+        return static_cast<uint8_t*>(indexBuffer->m_mappedResource.buffer->map()) + indexBuffer->m_mappedResource.offset;
 	}
 	default:
 		LN_NOTIMPLEMENTED();
@@ -1196,10 +1196,12 @@ void VulkanGraphicsContext::onUnmapResource(IGraphicsRHIBuffer* resource)
 	switch (resource->resourceType())
 	{
 	case DeviceResourceType::VertexBuffer:
-		static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource->unmap();
+        static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource.buffer->unmap();
+        static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource.buffer = nullptr;
 		break;
 	case DeviceResourceType::IndexBuffer:
-		static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource->unmap();
+        static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource.buffer->unmap();
+        static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource.buffer = nullptr;
 		break;
 	default:
 		LN_NOTIMPLEMENTED();
@@ -1226,8 +1228,10 @@ void VulkanGraphicsContext::onSetSubData(IGraphicsRHIBuffer* resource, size_t of
 		break;
 	}
 
-	VulkanBuffer* stagingBuffer = recodingCommandBuffer()->cmdCopyBuffer(length, buffer);
-	stagingBuffer->setData(offset, data, length);
+	//VulkanBuffer* stagingBuffer = recodingCommandBuffer()->cmdCopyBuffer(length, buffer);
+	//stagingBuffer->setData(offset, data, length);
+    VulkanSingleFrameBufferInfo stagingBuffer = recodingCommandBuffer()->cmdCopyBuffer(length, buffer);
+    stagingBuffer.buffer->setData(stagingBuffer.offset + offset, data, length);
 }
 
 void VulkanGraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
