@@ -1211,6 +1211,8 @@ Result VulkanCommandBuffer::beginRecording()
     LN_VK_CHECK(vkResetCommandBuffer(vulkanCommandBuffer(), VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT));
 
     m_linearAllocator->cleanup();
+    m_uniformBufferSingleFrameAllocator->cleanup();
+    m_transferBufferSingleFrameAllocator->cleanup();
 
     // 前回の描画で使ったリソースを開放する。
     // end で解放しないのは、まだその後の実際のコマンド実行で使うリソースであるから。

@@ -112,6 +112,9 @@ void VulkanDevice::dispose()
     //m_framebufferCache.dispose();
     //m_renderPassCache.dispose();
 
+    m_uniformBufferSingleFrameAllocator = nullptr;
+    m_transferBufferSingleFrameAllocator = nullptr;
+
     if (m_commandPool) {
         vkDestroyCommandPool(m_device, m_commandPool, vulkanAllocator());
         m_commandPool = VK_NULL_HANDLE;
@@ -3347,6 +3350,14 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
     for (int i = 0; i < uniforms.size(); i++) {
         const auto& uniformBuffer = uniforms[i];
 
+#if 1
+        VulkanSingleFrameBufferInfo bufferInfo = commandBuffer->uniformBufferSingleFrameAllocator()->allocate(uniformBuffer.data.size());
+        bufferInfo.buffer->setData(bufferInfo.offset, uniformBuffer.data.data(), uniformBuffer.data.size());
+
+        VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
+        info.buffer = bufferInfo.buffer->nativeBuffer();
+        info.offset = bufferInfo.offset;
+#else
         // UniformBuffer の内容を CopyCommand に乗せる。
         // Inside RenderPass では vkCmdCopyBuffer が禁止されているので、DeviceLocal に置いたメモリを使うのではなく、
         // 毎回新しい HostVisible な Buffer を作ってそれを使う。
@@ -3363,6 +3374,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
 
         VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
         info.buffer = buffer->nativeBuffer();
+#endif
 
         VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[i];
         writeInfo.dstSet = descriptorSets[DescriptorType_UniformBuffer];
