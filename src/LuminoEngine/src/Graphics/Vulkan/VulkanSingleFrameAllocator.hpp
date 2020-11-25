@@ -4,14 +4,52 @@
 
 namespace ln {
 namespace detail {
+class VulkanDevice;
 
-#if 0
 struct VulkanSingleFrameBufferInfo
 {
 	VulkanBuffer* buffer;
 	uint32_t offset;
-	uint32_t size;
 };
+
+class VulkanSingleFrameAllocatorPage
+	: public AbstractLinearAllocatorPage
+{
+public:
+	virtual ~VulkanSingleFrameAllocatorPage();
+	bool init(VulkanDevice* device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+	VulkanBuffer* buffer() const { return m_buffer.get(); }
+
+private:
+	std::unique_ptr<VulkanBuffer> m_buffer;
+};
+
+class VulkanSingleFrameAllocatorPageManager
+	: public LinearAllocatorPageManager
+{
+public:
+	VulkanSingleFrameAllocatorPageManager(VulkanDevice* device, size_t pageSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+
+protected:
+	Ref<AbstractLinearAllocatorPage> onCreateNewPage(size_t size) override;
+
+private:
+	VulkanDevice* m_device;
+	VkBufferUsageFlags m_usage;
+	VkMemoryPropertyFlags m_properties;
+};
+
+class VulkanSingleFrameAllocator
+	: public AbstractLinearAllocator
+{
+public:
+	VulkanSingleFrameAllocator(VulkanSingleFrameAllocatorPageManager* manager);
+	VulkanSingleFrameBufferInfo allocate(size_t size, size_t alignment = 64);
+
+protected:
+};
+
+#if 0
 
 // CommandList と 1:1 で存在し、1度の CommandList 実行中のメモリ転送・ディスクリプタで必要となるメモリの確保を行う。
 class VulkanSingleFrameAllocator

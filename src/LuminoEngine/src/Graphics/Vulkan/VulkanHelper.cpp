@@ -4,6 +4,7 @@
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "VulkanHelper.hpp"
 #include "VulkanDeviceContext.hpp"
+#include "VulkanSingleFrameAllocator.hpp"
 #include <LuminoEngine/Graphics/GraphicsExtensionVulkan.hpp>
 
 PFN_vkCreateInstance vkCreateInstance;
@@ -1157,6 +1158,9 @@ Result VulkanCommandBuffer::init(VulkanDevice* deviceContext)
 	// ただ、普通動的なバッファ更新でこんなに大きなサイズを使うことはないような気もする。
 	// なお、静的なバッファの場合は init 時に malloc でメモリをとるようにしているので LinearAllocator は関係ない。
 	resetAllocator(LinearAllocatorPageManager::DefaultPageSize);
+
+    m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_deviceContext->uniformBufferSingleFrameAllocator());
+    m_transferBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_deviceContext->transferBufferSingleFrameAllocator());
 
 	m_stagingBufferPoolUsed = 0;
 	glowStagingBufferPool();

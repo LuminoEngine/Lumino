@@ -5,6 +5,7 @@
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "VulkanDeviceContext.hpp"
+#include "VulkanSingleFrameAllocator.hpp"
 
 namespace ln {
 namespace detail {
@@ -77,6 +78,9 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 	//	return false;
 	//}
 
+    const size_t PageSize = 0x200000;   // 2MB
+    m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocatorPageManager>(this, PageSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    m_transferBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocatorPageManager>(this, PageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 	m_nativeInterface = std::make_unique<VulkanNativeGraphicsInterface>(this);
 
 

@@ -1,9 +1,75 @@
 ﻿
 #include "Internal.hpp"
+#include "VulkanDeviceContext.hpp"
 #include "VulkanSingleFrameAllocator.hpp"
 
 namespace ln {
 namespace detail {
+	
+//==============================================================================
+// VulkanSingleFrameAllocatorPage
+
+bool VulkanSingleFrameAllocatorPage::init(VulkanDevice* device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+{
+	m_buffer = std::make_unique<VulkanBuffer>();
+	if (!m_buffer->init(device, size, usage, properties, nullptr)) {
+		return false;
+	}
+	return true;
+}
+
+VulkanSingleFrameAllocatorPage::~VulkanSingleFrameAllocatorPage()
+{
+	if (m_buffer) {
+		m_buffer->dispose();
+		m_buffer = nullptr;
+	}
+}
+
+//==============================================================================
+// VulkanSingleFrameAllocatorPage
+
+VulkanSingleFrameAllocatorPageManager::VulkanSingleFrameAllocatorPageManager(VulkanDevice* device, size_t pageSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+	: LinearAllocatorPageManager(pageSize)
+	, m_device(device)
+	, m_usage(usage)
+	, m_properties(properties)
+{
+}
+
+Ref<AbstractLinearAllocatorPage> VulkanSingleFrameAllocatorPageManager::onCreateNewPage(size_t size)
+{
+	auto page = makeRef<VulkanSingleFrameAllocatorPage>();
+	if (!page->init(m_device, size, m_usage, m_properties)) {
+		return nullptr;
+	}
+	return page;
+}
+
+//==============================================================================
+// VulkanSingleFrameAllocator
+
+VulkanSingleFrameAllocator::VulkanSingleFrameAllocator(VulkanSingleFrameAllocatorPageManager* manager)
+	: AbstractLinearAllocator(manager)
+{
+}
+
+VulkanSingleFrameBufferInfo VulkanSingleFrameAllocator::allocate(size_t size, size_t alignment)
+{
+	VulkanSingleFrameBufferInfo info = { nullptr, 0 };
+
+	AbstractLinearAllocatorPage* page;
+	size_t offset;
+	if (allocateCore(size, alignment, &page, &offset)) {
+		auto* page2 = static_cast<VulkanSingleFrameAllocatorPage*>(page);
+		info.buffer = page2->buffer();
+		info.offset = offset;
+		return info;
+	}
+	else {
+		return info;
+	}
+}
 
 #if 0
 VulkanSingleFrameAllocator::VulkanSingleFrameAllocator()

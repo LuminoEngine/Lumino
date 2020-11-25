@@ -227,6 +227,7 @@ class VulkanShaderPass;
 class VulkanDescriptorSetsPool;
 class VulkanRenderPass;
 class VulkanFramebuffer;
+class VulkanSingleFrameAllocator;
 
 #define LN_VK_CHECK(f) \
 { \
@@ -428,6 +429,8 @@ private:
 	Ref<LinearAllocatorPageManager> m_linearAllocatorManager;
 	Ref<LinearAllocator> m_linearAllocator;
 	VulkanLinearAllocator m_vulkanAllocator;
+    Ref<VulkanSingleFrameAllocator> m_uniformBufferSingleFrameAllocator;
+    Ref<VulkanSingleFrameAllocator> m_transferBufferSingleFrameAllocator;
 
 	size_t m_stagingBufferPoolUsed;
 	std::vector<VulkanBuffer> m_stagingBufferPool;

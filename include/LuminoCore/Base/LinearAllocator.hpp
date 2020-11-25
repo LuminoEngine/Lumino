@@ -40,6 +40,7 @@ public:
 
 	AbstractLinearAllocatorPageManager(size_t pageSize = 0);
 	virtual ~AbstractLinearAllocatorPageManager();
+	void clear();
 
 	size_t pageSize() const { return m_pageSize; }
 
@@ -51,7 +52,6 @@ protected:
 	virtual Ref<AbstractLinearAllocatorPage> onCreateNewPage(size_t size) = 0;
 
 private:
-	void clear();
 
 	size_t m_pageSize;
 	std::mutex m_mutex;
