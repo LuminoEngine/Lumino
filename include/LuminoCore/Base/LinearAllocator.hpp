@@ -7,12 +7,21 @@
 namespace ln {
 namespace detail {
 
-class LinearAllocatorPage
+class AbstractLinearAllocatorPage
 	: public RefObject
 {
+protected:
+	AbstractLinearAllocatorPage() = default;
+	virtual ~AbstractLinearAllocatorPage() = default;
+};
+
+
+class HeapLinearAllocatorPage
+	: public AbstractLinearAllocatorPage
+{
 public:
-	LinearAllocatorPage(size_t size);
-	virtual ~LinearAllocatorPage();
+	HeapLinearAllocatorPage(size_t size);
+	virtual ~HeapLinearAllocatorPage();
 	void* data() const { return m_data; }
 	size_t size() const { return m_size; }
 
@@ -20,6 +29,8 @@ private:
 	void* m_data;
 	size_t m_size;
 };
+
+
 
 class AbstractLinearAllocatorPageManager
 	: public RefObject
@@ -32,20 +43,20 @@ public:
 
 	size_t pageSize() const { return m_pageSize; }
 
-	LinearAllocatorPage* requestPage();
-	void discardPage(LinearAllocatorPage* page);
-	Ref<LinearAllocatorPage> createNewPage(size_t size);
+	AbstractLinearAllocatorPage* requestPage();
+	void discardPage(AbstractLinearAllocatorPage* page);
+	Ref<AbstractLinearAllocatorPage> createNewPage(size_t size);
 
 protected:
-	virtual Ref<LinearAllocatorPage> onCreateNewPage(size_t size) = 0;
+	virtual Ref<AbstractLinearAllocatorPage> onCreateNewPage(size_t size) = 0;
 
 private:
 	void clear();
 
 	size_t m_pageSize;
 	std::mutex m_mutex;
-	List<Ref<LinearAllocatorPage>> m_pagePool;		// page instances
-	std::deque<LinearAllocatorPage*> m_freePages;	// page references
+	List<Ref<AbstractLinearAllocatorPage>> m_pagePool;		// page instances
+	std::deque<AbstractLinearAllocatorPage*> m_freePages;	// page references
 };
 
 class LinearAllocatorPageManager
@@ -55,7 +66,7 @@ public:
 	LinearAllocatorPageManager(size_t pageSize = 0);
 
 protected:
-	Ref<LinearAllocatorPage> onCreateNewPage(size_t size) override;
+	Ref<AbstractLinearAllocatorPage> onCreateNewPage(size_t size) override;
 };
 
 //using LinearAllocatorPageManager = TLinearAllocatorPageManager<LinearAllocatorPage>;
@@ -88,17 +99,17 @@ public:
 	size_t maxAllocatedLargePageSize() const { return m_maxAllocatedLargePageSize; }
 
 protected:
-	bool allocateCore(size_t size, size_t alignment, LinearAllocatorPage** outCurrentPage, size_t* outOffset);
+	bool allocateCore(size_t size, size_t alignment, AbstractLinearAllocatorPage** outCurrentPage, size_t* outOffset);
 
 private:
-	LinearAllocatorPage* allocateLarge(size_t size);
+	AbstractLinearAllocatorPage* allocateLarge(size_t size);
 
 	LinearAllocatorPageManager* m_manager;
 	size_t m_usedOffset;
-	LinearAllocatorPage* m_currentPage;
+	AbstractLinearAllocatorPage* m_currentPage;
 
-	List<LinearAllocatorPage*> m_retiredPages;
-	List<Ref<LinearAllocatorPage>> m_largePages;
+	List<AbstractLinearAllocatorPage*> m_retiredPages;
+	List<Ref<AbstractLinearAllocatorPage>> m_largePages;
 	size_t m_maxAllocatedLargePageSize;
 };
 
