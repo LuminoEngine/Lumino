@@ -1476,6 +1476,31 @@ Result VulkanDescriptorSetsPool::allocateDescriptorSets(VulkanCommandBuffer* com
 			LN_VK_CHECK(vkCreateDescriptorPool(m_deviceContext->vulkanDevice(), &poolInfo, m_deviceContext->vulkanAllocator(), &m_activePage));
 			m_pages.push_back(m_activePage);
 
+            // NOTE: 
+            // - VkDescriptorPoolSize::descriptorCount は、この Pool 全体としてみて、作り出せる Descriptor の最大数。
+            // - poolInfo.maxSets は、この Pool から作り出せる VkDescriptorSet の最大数。
+            // この2つに直接的な関連性は無い。
+            // ひとつ VkDescriptorSet を作るときに、どの種類の Descriptor をいくつ消費するかは VkDescriptorSetLayout に依る。
+            // 例えば VkDescriptorSetLayout が
+            // - { .binding = 0, .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER },
+            // - { .binding = 1, .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER },
+            // という2つのエントリからできているなら、VkDescriptorSet を一つ作ると
+            // - VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER から1つ、
+            // - VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER から1つ、
+            // 計2つの Descriptor を消費する。
+            //
+            // もし Descriptor が枯渇した場合、vkAllocateDescriptorSets() で次のようにレポートされる。
+            // - validation layer : Unable to allocate 1 descriptors of type VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER from pool 0x29. This pool only has 0 descriptors of this type remaining.The Vulkan spec states : descriptorPool must have enough free descriptor capacity remaining to allocate the descriptor sets of the specified layouts(https ://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorPool-00307)
+            // - validation layer: Unable to allocate 1 descriptors of type VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER from pool 0x29. This pool only has 0 descriptors of this type remaining. The Vulkan spec states: descriptorPool must have enough free descriptor capacity remaining to allocate the descriptor sets of the specified layouts (https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorPool-00307)
+            // 
+            // DescriptorSet が枯渇した場合、vkAllocateDescriptorSets() で次のようにレポートされる。
+            // - validation layer : Unable to allocate 1 descriptorSets from pool 0x29. This pool only has 0 descriptorSets remaining.The Vulkan spec states : descriptorSetCount must not be greater than the number of sets that are currently available for allocation in descriptorPool(https ://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorSetCount-00306)
+            //
+            // [2020/11/25] 対応方針：
+            // VkDescriptorPoolSize は固定長ではなく、ShaderPass が持っているレイアウト情報から作る。
+            // maxSets は固定長でも構わない。今のように、不足したら Pool 自体を追加していく。
+              
+
 
             //std::cout << "vkCreateDescriptorPool" << std::endl;
             /*

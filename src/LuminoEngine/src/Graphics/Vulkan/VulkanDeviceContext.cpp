@@ -3137,6 +3137,13 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
     {
         // https://docs.microsoft.com/ja-jp/windows/desktop/direct3dhlsl/dx-graphics-hlsl-variable-register
 
+        // NOTE: なんで DescriptorSet を3つ作るの？
+        // → https://qiita.com/lriki/items/934804030d56fd88dcc8#%E6%9C%AC%E9%A1%8C
+        //   set=0 を UniformBuffer,
+        //   set=1 を Texture,
+        //   set=2 を Sampler として扱いたい。
+        //   GLSL でいうところの layout(set=*) を変えるには、複数の DescriptorSet を作らなければならない。
+
         // set=0, 'b' register in HLSL
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
