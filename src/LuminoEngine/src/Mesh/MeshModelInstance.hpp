@@ -2,7 +2,7 @@
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 
 namespace ln {
-class SkinnedMeshModel;
+class MeshModel;
 namespace detail {
 class MeshModelInstance;
 class SkeletonInstance;
@@ -49,15 +49,15 @@ class MeshModelInstance
 public:
 
 
-	MeshModelInstance(SkinnedMeshModel* model);
+	MeshModelInstance(MeshModel* model);
 
-	const Ref<SkinnedMeshModel>& model() const { return m_model; }
+	const Ref<MeshModel>& model() const { return m_model; }
 	const List<Ref<SkeletonInstance>>& skeletons() const { return m_skeletons; }
 
 	void updateSkinningMatrices();
 
 private:
-	Ref<SkinnedMeshModel> m_model;
+	Ref<MeshModel> m_model;
 	List<Ref<SkeletonInstance>> m_skeletons;
 };
 

@@ -1,10 +1,14 @@
 ﻿#pragma once
+#include "Common.hpp"
 #include "Mesh.hpp"
 
 namespace ln {
 class MeshSkeleton;
 class MeshModel;
 class AnimationController;
+namespace detail {
+class MeshModelInstance;
+}
 	
 // MeshNode を参照するためのデータ構造。
 // Node と Bone は似ているが異なるものなので注意。頂点の BLEND_INDICES から参照されるのはこのインスタンス。
@@ -135,6 +139,8 @@ public:
 	LN_METHOD(Property)
 	AnimationController* animationController() const;
 
+	MeshNode* findHumanoidBone(HumanoidBones boneKind) const;
+
     void addRootNode(int index);
 
 	/** 全ノードの Local Transform をリセットします。(アニメーション適用前の、デフォルトの姿勢に戻します) */
@@ -152,6 +158,20 @@ public:
 	void addSkeleton(MeshSkeleton* skeleton);
 	const Ref<MeshSkeleton>& skeleton(int index) const { return m_skeletons[index]; }
 	const List<Ref<MeshSkeleton>>& skeletons() const { return m_skeletons; }
+
+	std::array<int, 56> m_humanoidBoneNodeIndices;	// Index of m_bones
+	void setHumanoidBoneIndex(HumanoidBones kind, int boneIndex) { m_humanoidBoneNodeIndices[static_cast<int>(kind)] = boneIndex; }
+	int humanoidBoneIndex(HumanoidBones kind) const { return m_humanoidBoneNodeIndices[static_cast<int>(kind)]; }
+
+	// TODO: internal (Skinning)
+	void beginUpdate();
+	void preUpdate();
+	void postUpdate();
+	void updateBoneTransformHierarchy();
+	void updateIK();
+	void writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion* localQuaternionsBuffer);
+	void verifyHumanoidBones();
+	Ref<detail::MeshModelInstance> createMeshModelInstance();
 
 protected:
 	void serialize(Serializer2& ar) override;
@@ -292,6 +312,14 @@ LN_CONSTRUCT_ACCESS:
 private:
 	Optional<bool> m_applyBoneTransformationsEnabled;
 	//Optional<bool> m_flipZCoordinate;
+};
+
+
+class MeshDiag
+{
+public:
+	static void printNodes(const SkinnedMeshModel* model);
+	static void clearBoneInitialRotations(SkinnedMeshModel* model);
 };
 
 } // namespace ln

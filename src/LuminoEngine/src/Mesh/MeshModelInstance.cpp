@@ -84,7 +84,7 @@ void SkeletonInstance::updateSkinningMatrices()
 //==============================================================================
 // MeshModelInstance
 
-MeshModelInstance::MeshModelInstance(SkinnedMeshModel* model)
+MeshModelInstance::MeshModelInstance(MeshModel* model)
 	: m_model(model)
 	, m_skeletons()
 {

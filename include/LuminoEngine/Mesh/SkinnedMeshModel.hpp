@@ -83,62 +83,12 @@ public:
 	LN_METHOD()
 	static Ref<SkinnedMeshModel> load(const StringRef& filePath);
 
-
-	//void addMeshContainer(MeshContainer* meshContainer);
-	//void addMaterial(Material* material);
-
-
-	//const List<Ref<MeshContainer>>& meshContainers() const { return m_meshContainers; }
-	//const List<Ref<Material>>& materials() const { return m_materials; }
-
-
-	MeshNode* findHumanoidBone(HumanoidBones boneKind) const;
-
-    void beginUpdate();
-	void preUpdate();
-	void postUpdate();
-
-
-	void updateBoneTransformHierarchy();
-    void updateIK();
-
-    void writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion* localQuaternionsBuffer);
-
-    //List<Ref<SkinnedMeshBone>>		m_allBoneList;				// 全ボーンリスト
-    //List<SkinnedMeshBone*>			m_ikBoneList;
-    //List<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
-	
-
-
-	//static HumanoidBones mapToHumanoidBones(const MeshBone* bone);
-	void verifyHumanoidBones();
-
-	//float m_animationTranslationBasis = 1.0f;
-
-//protected:
-//	virtual int getAnimationTargetElementCount() const override;
-//	virtual const String& getAnimationTargetElementName(int index) const override;
-//	virtual AnimationValueType getAnimationTargetElementValueType(int index) const override;
-//	virtual void setAnimationTargetElementValue(int index, const AnimationValue& value) override;
-
-	std::array<int, 56> m_humanoidBoneNodeIndices;	// Index of m_bones
-	void setHumanoidBoneIndex(HumanoidBones kind, int boneIndex) { m_humanoidBoneNodeIndices[static_cast<int>(kind)] = boneIndex; }
-	int humanoidBoneIndex(HumanoidBones kind) const { return m_humanoidBoneNodeIndices[static_cast<int>(kind)]; }
-
-	Ref<detail::MeshModelInstance> createMeshModelInstance();
-
 LN_CONSTRUCT_ACCESS:
     SkinnedMeshModel();
 
 private:
 };
 
-class MeshDiag
-{
-public:
-	static void printNodes(const SkinnedMeshModel* model);
-	static void clearBoneInitialRotations(SkinnedMeshModel* model);
-};
 
 } // namespace ln
 
