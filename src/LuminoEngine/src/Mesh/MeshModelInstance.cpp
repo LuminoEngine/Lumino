@@ -44,7 +44,7 @@ SkeletonInstance::SkeletonInstance(MeshModelInstance* owner, int skeletonIndex)
 	}
 }
 
-const Ref<MeshArmature>& SkeletonInstance::skeletonModel() const
+const Ref<MeshSkeleton>& SkeletonInstance::skeletonModel() const
 {
 	return m_owner->model()->skeletons()[m_skeletonIndex];
 }

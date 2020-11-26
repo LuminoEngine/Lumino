@@ -6,9 +6,58 @@
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/StaticMeshModel.hpp>
+#include <LuminoEngine/Mesh/AnimationController.hpp>
 #include "MeshManager.hpp"
 
 namespace ln {
+	
+
+//==============================================================================
+// MeshBone
+
+MeshNode* MeshBone::node() const
+{
+	return m_skeleton->m_model->m_nodes[m_node];
+}
+
+//==============================================================================
+// MeshSkeleton
+
+MeshSkeleton::MeshSkeleton()
+{
+}
+
+bool MeshSkeleton::init(StaticMeshModel* model)
+{
+	if (!Object::init()) return false;
+
+	m_model = model;
+	return true;
+}
+
+MeshBone* MeshSkeleton::bone(int index) const
+{
+	return m_bones[index];
+}
+
+//const Matrix& MeshSkeleton::boneGlobalMatrix(int index) const
+//{
+//}
+
+void MeshSkeleton::addBone(int linkNode, const Matrix& inverseInitialMatrix)
+{
+	auto bone = makeObject<MeshBone>();
+	bone->m_skeleton = this;
+	bone->m_node = linkNode;
+	bone->m_inverseInitialMatrix = inverseInitialMatrix;
+	m_bones.add(bone);
+
+	if (bone->node()->parentNodeIndex() >= 0) {
+		m_rootBones.add(bone);
+	}
+	bone->node()->m_boneNode = true;
+}
+
 
 //==============================================================================
 // StaticMeshModel
@@ -120,6 +169,11 @@ Material* StaticMeshModel::material(int index)
 	return m_materials[index];
 }
 
+AnimationController* StaticMeshModel::animationController() const
+{
+	return m_animationController;
+}
+
 void StaticMeshModel::addRootNode(int index)
 {
     m_rootNodes.add(index);
@@ -138,6 +192,11 @@ void StaticMeshModel::updateNodeTransforms()
     for (int index : m_rootNodes) {
         updateNodeTransformsHierarchical(index, Matrix::Identity, true);
     }
+}
+
+void StaticMeshModel::addSkeleton(MeshSkeleton* skeleton)
+{
+	m_skeletons.add(skeleton);
 }
 
 void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform, bool hierarchical)

@@ -29,7 +29,7 @@ public:
 	SkeletonInstance(MeshModelInstance* owner, int skeletonIndex);
 
 	MeshModelInstance* owner() const { return m_owner; }
-	const Ref<MeshArmature>& skeletonModel() const;
+	const Ref<MeshSkeleton>& skeletonModel() const;
 	const List<Ref<BoneInstance>>& bones() const { return m_bones; }
 	const Ref<Texture2D>& skinningMatricesTexture() const { return m_skinningMatricesTexture; }
 

@@ -47,7 +47,7 @@ void SkinnedMeshComponent::onUpdate(float elapsedSeconds)
     m_model->beginUpdate();
 
 	// TODO: worldMatrix() を使うので、オブジェクトに追従する形にしたい。 OnLateUpdate へ
-	m_model->setWorldTransform(worldObject()->worldMatrix());
+	//m_model->setWorldTransform(worldObject()->worldMatrix());
 
 	//m_meshModel->getAnimator()->advanceTime(elapsedTime);
 	if (m_model->animationController()) {

@@ -72,7 +72,7 @@ private:
 	bool readNode(MeshNode* coreNode, const tinygltf::Node& node);
 	Ref<MeshContainer> readMesh(const tinygltf::Mesh& mesh);
 	Ref<Mesh> generateMesh(const MeshView& meshView) const;
-	Ref<MeshArmature> readSkin(const tinygltf::Skin& skin);
+	Ref<MeshSkeleton> readSkin(const tinygltf::Skin& skin);
 	Ref<Texture> loadTexture(const tinygltf::Texture& texture);
 	Ref<AnimationClip> readAnimation(const tinygltf::Animation& animation) const;
 

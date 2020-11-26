@@ -80,52 +80,6 @@ void SkinnedMeshBone::updateGlobalTransform(bool hierarchical)
 #endif
 
 //==============================================================================
-// MeshBone
-
-MeshNode* MeshBone::node() const
-{
-	return m_skeleton->m_model->m_nodes[m_node];
-}
-
-//==============================================================================
-// MeshArmature
-
-MeshArmature::MeshArmature()
-{
-}
-
-bool MeshArmature::init(SkinnedMeshModel* model)
-{
-	if (!Object::init()) return false;
-
-	m_model = model;
-	return true;
-}
-
-MeshBone* MeshArmature::bone(int index) const
-{
-	return m_bones[index];
-}
-
-//const Matrix& MeshArmature::boneGlobalMatrix(int index) const
-//{
-//}
-
-void MeshArmature::addBone(int linkNode, const Matrix& inverseInitialMatrix)
-{
-	auto bone = makeObject<MeshBone>();
-	bone->m_skeleton = this;
-	bone->m_node = linkNode;
-	bone->m_inverseInitialMatrix = inverseInitialMatrix;
-	m_bones.add(bone);
-
-	if (bone->node()->parentNodeIndex() >= 0) {
-		m_rootBones.add(bone);
-	}
-	bone->node()->m_boneNode = true;
-}
-
-//==============================================================================
 // SkinnedMeshModel
 
 Ref<SkinnedMeshModel> SkinnedMeshModel::load(const StringRef& filePath)
@@ -147,16 +101,6 @@ MeshNode* SkinnedMeshModel::findHumanoidBone(HumanoidBones boneKind) const
 		return m_nodes[index];
 	else
 		return nullptr;
-}
-
-void SkinnedMeshModel::addSkeleton(MeshArmature* skeleton)
-{
-	m_skeletons.add(skeleton);
-}
-
-AnimationController* SkinnedMeshModel::animationController() const
-{
-	return m_animationController;
 }
 
 void SkinnedMeshModel::beginUpdate()
@@ -240,7 +184,7 @@ void SkinnedMeshModel::updateIK()
 {
     detail::CCDIKSolver ik;
     ik.owner = this;
-	ik.m_skeleton = m_skeletons[0];
+	ik.m_skeleton = skeleton(0);	// TODO:
     ik.UpdateTransform();
 }
 

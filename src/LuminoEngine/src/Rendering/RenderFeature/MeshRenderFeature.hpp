@@ -6,7 +6,7 @@
 namespace ln {
 class MeshResource;
 class Mesh;
-class MeshArmature;
+class MeshSkeleton;
 class InstancedMeshList;
 namespace detail {
 

@@ -1260,7 +1260,7 @@ Ref<Material> PmxLoader::makeMaterial(const PmxMaterial* pmxMaterial) const
 
 void PmxLoader::buildSkeleton()
 {
-	auto skeleton = makeObject<MeshArmature>(m_model);
+	auto skeleton = makeObject<MeshSkeleton>(m_model);
 	m_model->addSkeleton(skeleton);
 
 	int nodeIndexOffset = m_model->meshNodes().size();

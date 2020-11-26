@@ -1034,7 +1034,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 	return coreMesh;
 }
 
-Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
+Ref<MeshSkeleton> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 {
 	// inverseBindMatrice はボーンの初期姿勢を打ち消して、原点に戻す行列。
 	// 最終的に BoneTexture などへ書き出すときにこれを乗算する。（Matrix::Identity なら変形が行われないようにする）
@@ -1052,7 +1052,7 @@ Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 	const tinygltf::Buffer& buffer = m_model->buffers[bufferView.buffer];
 
 	const Matrix* inverseBindMatrices = (const Matrix*)(buffer.data.data() + accessor.byteOffset + bufferView.byteOffset);
-	auto armature = makeObject<MeshArmature>(static_cast<SkinnedMeshModel*>(m_meshModel));
+	auto armature = makeObject<MeshSkeleton>(static_cast<SkinnedMeshModel*>(m_meshModel));
 	for (int i = 0; i < skin.joints.size(); i++) {
 
 		if (m_clearBoneRotation) {

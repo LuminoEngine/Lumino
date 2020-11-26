@@ -23,3 +23,22 @@ TEST_F(Test_Mesh_SkinnedMesh, Basic)
 }
 
 #endif
+
+
+TEST_F(Test_Mesh_SkinnedMesh, Basic)
+{
+    //Engine::camera()->setPosition(5, 5, -5);
+    //Engine::camera()->lookAt(0, 0, 0);
+    Engine::camera()->setPosition(10, 5, 0);
+    Engine::camera()->lookAt(5, 0, 5);
+
+
+    auto mesh = SkinnedMesh::load(u"Mesh/SkinnedAxis1.glb");
+    mesh->setPosition(5, 0, 5);                 // 少し移動して、WorldMatrix が適用できていることを確認する
+    mesh->setShadingModel(ShadingModel::Unlit);
+
+    TestEnv::updateFrame();
+    ASSERT_SCREEN(LN_ASSETFILE("Mesh/Expects/Test_Mesh_SkinnedMesh-Basic-1.png"));
+    LN_TEST_CLEAN_SCENE;
+}
+

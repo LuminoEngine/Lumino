@@ -17,7 +17,7 @@ class RenderingContext;
 class MeshResource;
 class Mesh;
 class MeshContainer;
-class MeshArmature;
+class MeshSkeleton;
 class RenderViewPoint;
 class RenderView;
 class PostEffect;

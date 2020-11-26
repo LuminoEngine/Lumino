@@ -12,7 +12,7 @@ class CCDIKSolver
 public:
 
 	SkinnedMeshModel* owner;
-	MeshArmature* m_skeleton;
+	MeshSkeleton* m_skeleton;
 
 	void UpdateTransform()
 	{
