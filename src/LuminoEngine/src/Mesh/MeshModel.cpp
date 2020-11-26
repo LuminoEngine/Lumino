@@ -5,7 +5,7 @@
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Mesh/AnimationController.hpp>
 #include "MeshManager.hpp"
 
@@ -27,7 +27,7 @@ MeshSkeleton::MeshSkeleton()
 {
 }
 
-bool MeshSkeleton::init(StaticMeshModel* model)
+bool MeshSkeleton::init(MeshModel* model)
 {
 	if (!Object::init()) return false;
 
@@ -60,27 +60,27 @@ void MeshSkeleton::addBone(int linkNode, const Matrix& inverseInitialMatrix)
 
 
 //==============================================================================
-// StaticMeshModel
+// MeshModel
 
-Ref<StaticMeshModel> StaticMeshModel::load(const StringRef& filePath)
+Ref<MeshModel> MeshModel::load(const StringRef& filePath)
 {
 	return detail::EngineDomain::meshManager()->acquireStaticMeshModel(filePath, 1.0f);
-	//auto model = makeObject<StaticMeshModel>();
+	//auto model = makeObject<MeshModel>();
  //   detail::EngineDomain::meshManager()->loadStaticMeshModel(model, filePath, scale);
 	//return model;
 }
 
-StaticMeshModel::StaticMeshModel()
+MeshModel::MeshModel()
     : m_type(detail::InternalMeshModelType::StaticMesh)
 {
 }
 
-StaticMeshModel::StaticMeshModel(detail::InternalMeshModelType type)
+MeshModel::MeshModel(detail::InternalMeshModelType type)
     : m_type(type)
 {
 }
 
-void StaticMeshModel::clear()
+void MeshModel::clear()
 {
 	m_meshContainers = {};
 	m_nodes = {};
@@ -89,7 +89,7 @@ void StaticMeshModel::clear()
 	m_nodeGlobalTransforms = {};
 }
 
-void StaticMeshModel::serialize(Serializer2& ar)
+void MeshModel::serialize(Serializer2& ar)
 {
 	Object::serialize(ar);
 	ar & makeNVP(u"filePath", m_filePath);
@@ -100,7 +100,7 @@ void StaticMeshModel::serialize(Serializer2& ar)
 	}
 }
 
-MeshNode* StaticMeshModel::findNode(StringRef name) const
+MeshNode* MeshModel::findNode(StringRef name) const
 {
 	int index = findNodeIndex(name);
 	if (index < 0)
@@ -109,17 +109,17 @@ MeshNode* StaticMeshModel::findNode(StringRef name) const
 		return m_nodes[index];
 }
 
-Material* StaticMeshModel::findMaterial(StringRef name) const
+Material* MeshModel::findMaterial(StringRef name) const
 {
 	return m_materials.findIf([&](const auto& x) { return x->m_name == name; }).valueOr(nullptr);
 }
 
-int StaticMeshModel::findNodeIndex(StringRef name) const
+int MeshModel::findNodeIndex(StringRef name) const
 {
 	return m_nodes.indexOfIf([&](const auto& x) { return x->name() == name; });
 }
 
-MeshContainer* StaticMeshModel::addMeshContainer(Mesh* mesh)
+MeshContainer* MeshModel::addMeshContainer(Mesh* mesh)
 {
 	auto meshContainer = makeObject<MeshContainer>();
 	meshContainer->setMesh(mesh);
@@ -128,7 +128,7 @@ MeshContainer* StaticMeshModel::addMeshContainer(Mesh* mesh)
 	return meshContainer;
 }
 
-MeshNode* StaticMeshModel::addNode()
+MeshNode* MeshModel::addNode()
 {
 	auto node = makeObject<MeshNode>();
 	node->m_model = this;
@@ -137,7 +137,7 @@ MeshNode* StaticMeshModel::addNode()
 	return node;
 }
 
-MeshNode* StaticMeshModel::addMeshContainerNode(Mesh* mesh)
+MeshNode* MeshModel::addMeshContainerNode(Mesh* mesh)
 {
 	auto container = addMeshContainer(mesh);
 	auto node = addNode();
@@ -145,13 +145,13 @@ MeshNode* StaticMeshModel::addMeshContainerNode(Mesh* mesh)
 	return node;
 }
 
-void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)
+void MeshModel::addMeshContainer(MeshContainer* meshContainer)
 {
 	if (LN_REQUIRE(meshContainer)) return;
 	m_meshContainers.add(meshContainer);
 }
 
-void StaticMeshModel::addNode(MeshNode* node)
+void MeshModel::addNode(MeshNode* node)
 {
     if (LN_REQUIRE(node)) return;
 	node->m_model = this;
@@ -159,34 +159,34 @@ void StaticMeshModel::addNode(MeshNode* node)
     m_nodes.add(node);
 }
 
-void StaticMeshModel::addMaterial(Material* material)
+void MeshModel::addMaterial(Material* material)
 {
 	m_materials.add(material);
 }
 
-Material* StaticMeshModel::material(int index)
+Material* MeshModel::material(int index)
 {
 	return m_materials[index];
 }
 
-AnimationController* StaticMeshModel::animationController() const
+AnimationController* MeshModel::animationController() const
 {
 	return m_animationController;
 }
 
-void StaticMeshModel::addRootNode(int index)
+void MeshModel::addRootNode(int index)
 {
     m_rootNodes.add(index);
 }
 
-void StaticMeshModel::resetNodeLocalTransforms()
+void MeshModel::resetNodeLocalTransforms()
 {
 	for (auto& node : meshNodes()) {
 		node->resetLocalTransform();
 	}
 }
 
-void StaticMeshModel::updateNodeTransforms()
+void MeshModel::updateNodeTransforms()
 {
     m_nodeGlobalTransforms.resize(m_nodes.size());
     for (int index : m_rootNodes) {
@@ -194,12 +194,12 @@ void StaticMeshModel::updateNodeTransforms()
     }
 }
 
-void StaticMeshModel::addSkeleton(MeshSkeleton* skeleton)
+void MeshModel::addSkeleton(MeshSkeleton* skeleton)
 {
 	m_skeletons.add(skeleton);
 }
 
-void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform, bool hierarchical)
+void MeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform, bool hierarchical)
 {
     auto node = m_nodes[nodeIndex];
 

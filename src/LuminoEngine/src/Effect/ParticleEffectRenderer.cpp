@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>

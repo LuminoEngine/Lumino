@@ -2,7 +2,7 @@
 #pragma once
 #include "../Animation/AnimationMixer.hpp"
 #include "Common.hpp"
-#include "StaticMeshModel.hpp"
+#include "MeshModel.hpp"
 
 namespace ln {
 class SkinnedMeshModel;
@@ -75,7 +75,7 @@ public:
  */
 LN_CLASS()
 class SkinnedMeshModel
-	: public StaticMeshModel
+	: public MeshModel
 	//, public IAnimationTargetObject
 {
 public:

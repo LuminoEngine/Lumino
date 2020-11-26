@@ -2697,7 +2697,7 @@ extern LN_FLAT_API void LNMeshNode_RegisterSubclassTypeInfo(const LNMeshNode_Sub
 extern LN_FLAT_API LNSubinstanceId LNMeshNode_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// ln::StaticMeshModel
+// ln::MeshModel
 
 /**
     @brief load

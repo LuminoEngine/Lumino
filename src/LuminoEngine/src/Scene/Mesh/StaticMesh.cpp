@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMeshComponent.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMesh.hpp>
 #include "../../Mesh/MeshManager.hpp"
@@ -23,7 +23,7 @@ Ref<StaticMesh> StaticMesh::create()
     return makeObject<StaticMesh>();
 }
 
-Ref<StaticMesh> StaticMesh::create(StaticMeshModel* model)
+Ref<StaticMesh> StaticMesh::create(MeshModel* model)
 {
     return makeObject<StaticMesh>(model);
 }
@@ -49,7 +49,7 @@ void StaticMesh::init()
     setMainVisualComponent(m_component);
 }
 
-void StaticMesh::init(StaticMeshModel* model)
+void StaticMesh::init(MeshModel* model)
 {
     init();
     m_component->setModel(model);
@@ -57,7 +57,7 @@ void StaticMesh::init(StaticMeshModel* model)
 
 void StaticMesh::init(const StringRef& filePath, float scale)
 {
-    //auto model = makeObject<StaticMeshModel>();
+    //auto model = makeObject<MeshModel>();
     //detail::EngineDomain::meshManager()->loadStaticMeshModel(model, filePath, scale);
     auto model = detail::EngineDomain::meshManager()->acquireStaticMeshModel(filePath, scale);
     init(model);
@@ -68,7 +68,7 @@ StaticMeshComponent* StaticMesh::staticMeshComponent() const
     return m_component;
 }
 
-StaticMeshModel* StaticMesh::model() const
+MeshModel* StaticMesh::model() const
 {
     return m_component->model();
 }

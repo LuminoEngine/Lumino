@@ -48,7 +48,7 @@ class Sandbox_MeshTilemap_App : public Application
 
 		//auto material = Material::create(tex);
 
-		//auto meshModel = makeObject<StaticMeshModel>();
+		//auto meshModel = makeObject<MeshModel>();
 		//meshModel->addMeshContainer(meshContainer);
 		//meshModel->addNode(node);
 		//meshModel->addMaterial(material);

@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
-#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include "../Font/FontManager.hpp"
 #include "../Mesh/MeshModelInstance.hpp"
@@ -458,7 +458,7 @@ void CommandList::drawMesh(MeshResource* meshResource, int sectionIndex)
 		//{
 		//    if (elementInfo->boneTexture && elementInfo->boneLocalQuaternionTexture) {
 		//        if (MeshContainer* container = meshResource->ownerContainer()) {
-		//            if (StaticMeshModel* model = container->meshModel()) {
+		//            if (MeshModel* model = container->meshModel()) {
 		//                if (model->meshModelType() == detail::InternalMeshModelType::SkinnedMesh) {
 		//                    //elementInfo->boneTexture->map()
 		//                    printf("skinned\n");

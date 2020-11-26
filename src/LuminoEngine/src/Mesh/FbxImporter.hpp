@@ -13,7 +13,7 @@ class FbxImporter
     : public MeshImporter
 {
 public:
-    Ref<StaticMeshModel> import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
+    Ref<MeshModel> import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
 	Ref<SkinnedMeshModel> importSkinnedMesh(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
 
 private:

@@ -27,7 +27,7 @@ class MqoParser
 public:
 
 	//Ref<tr::SrMeshModel> import(ModelManager* manager, const PathName& filePath);
-	//Ref<StaticMeshModel> import(MeshManager* manager, const Path& filePath);
+	//Ref<MeshModel> import(MeshManager* manager, const Path& filePath);
 
 protected:
 	MqoParser();
@@ -77,7 +77,7 @@ class MqoImporter
 {
 public:
 	MqoImporter();
-	Ref<StaticMeshModel> import(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag);
+	Ref<MeshModel> import(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag);
 
 protected:
 	virtual void visitMaterialChunk() override;
@@ -89,7 +89,7 @@ protected:
 	virtual void visitFace(const MqoFace& mqoFace) override;
 
 private:
-	Ref<StaticMeshModel>	m_model;
+	Ref<MeshModel>	m_model;
 	MeshContainer* m_meshContainer;
 	Ref<GMesh> m_mesh;
 	//MeshResource* m_mesh;

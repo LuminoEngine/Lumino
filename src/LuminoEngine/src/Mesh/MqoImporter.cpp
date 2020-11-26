@@ -8,7 +8,7 @@
 #include <LuminoCore/IO/StreamReader.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
 #include "MeshManager.hpp"
 #include "GMesh.hpp"
 #include "MqoImporter.hpp"
@@ -59,7 +59,7 @@ void MqoParser::parse(MeshManager* manager, const Path& filePath, DiagnosticsMan
 	}
 }
 
-//Ref<StaticMeshModel> MqoParser::import2(ModelManager* manager, const Path& filePath)
+//Ref<MeshModel> MqoParser::import2(ModelManager* manager, const Path& filePath)
 //{
 //	auto mesh = import(manager, filePath);
 //	mesh->calculateNormals();
@@ -336,9 +336,9 @@ MqoImporter::MqoImporter()
 {
 }
 
-Ref<StaticMeshModel> MqoImporter::import(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag)
+Ref<MeshModel> MqoImporter::import(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag)
 {
-	m_model = makeObject<StaticMeshModel>();
+	m_model = makeObject<MeshModel>();
 	parse(manager, filePath, diag);
 
 	// TODO: on end ほしい

@@ -3,7 +3,7 @@
 
 namespace ln {
 class MeshSkeleton;
-class StaticMeshModel;
+class MeshModel;
 class AnimationController;
 	
 // MeshNode を参照するためのデータ構造。
@@ -54,10 +54,10 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	MeshSkeleton();
-	bool init(StaticMeshModel* model);
+	bool init(MeshModel* model);
 
 public:	// TODO:
-	StaticMeshModel* m_model = nullptr;
+	MeshModel* m_model = nullptr;
 	List<Ref<MeshBone>> m_bones;
 	List<MeshBone*> m_rootBones;
 
@@ -86,15 +86,15 @@ public:
 	List<Ref<MeshBoneIKChain>> IKLinks;            // IK影響ボーンと制限のリスト
 };
 
-/** StaticMeshModel */
+/** MeshModel */
 LN_CLASS()
-class StaticMeshModel
+class MeshModel
 	: public Object
 {
 public:
 	/** load */
 	LN_METHOD()
-    static Ref<StaticMeshModel> load(const StringRef& filePath);
+    static Ref<MeshModel> load(const StringRef& filePath);
 
 	/** findNode */
 	LN_METHOD()
@@ -157,8 +157,8 @@ protected:
 	void serialize(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
-    StaticMeshModel();
-    StaticMeshModel(detail::InternalMeshModelType type);
+    MeshModel();
+    MeshModel(detail::InternalMeshModelType type);
 
 public:	// TODO:
 	void clear();

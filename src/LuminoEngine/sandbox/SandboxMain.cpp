@@ -1103,7 +1103,7 @@ int main(int argc, char** argv)
     auto meshContainer = makeObject<MeshContainer>();
     meshContainer->setMeshResource(meshRes);
 
-    auto meshModel = makeObject<StaticMeshModel>();
+    auto meshModel = makeObject<MeshModel>();
     meshModel->addMeshContainer(meshContainer);
     meshModel->addMaterial(meshMaterial);
 

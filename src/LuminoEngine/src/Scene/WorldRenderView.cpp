@@ -86,7 +86,7 @@ void WorldRenderView::init()
 		auto meshContainer = makeObject<MeshContainer>();
 		meshContainer->setMeshResource(meshResource);
 
-		m_skyProjectionPlane = makeObject<StaticMeshModel>();
+		m_skyProjectionPlane = makeObject<MeshModel>();
 		m_skyProjectionPlane->addMeshContainer(meshContainer);
 
 		m_skyProjectionPlane->addMaterial(m_clearMaterial);
@@ -471,7 +471,7 @@ void WorldRenderView::createGridPlane()
     //auto meshContainer = makeObject<MeshContainer>();
     //meshContainer->setMeshResource(meshResource);
 
-    //m_gridPlane = makeObject<StaticMeshModel>();
+    //m_gridPlane = makeObject<MeshModel>();
     //m_gridPlane->addMeshContainer(meshContainer);
 
 //#if 0

@@ -41,7 +41,7 @@ public:
 	void prepare(MeshManager* meshManager, DiagnosticsManager* diag);
 	void applySettings(const MeshImportSettings* settings);
 
-	virtual bool onImportAsStaticMesh(StaticMeshModel* model, const AssetPath& assetPath) = 0;
+	virtual bool onImportAsStaticMesh(MeshModel* model, const AssetPath& assetPath) = 0;
 	virtual bool onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath& assetPath) = 0;
 
 	MeshManager* m_meshManager;
@@ -63,7 +63,7 @@ class MeshSceneModel final
 {
 public:
 	// TODO: ↓まとめちゃっていいかもしれない。
-	Ref<StaticMeshModel> staticMesh;
+	Ref<MeshModel> staticMesh;
 	Ref<SkinnedMeshModel> skinnedMesh;
 
 	List<Ref<AnimationClip>> animationClips;

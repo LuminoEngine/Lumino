@@ -8,7 +8,7 @@ namespace ln {
 class World;
 class Camera;
 class RenderingContext;
-class StaticMeshModel;
+class MeshModel;
 class MeshResource;
 class PostEffect;
 class FilmicPostEffect;
@@ -85,7 +85,7 @@ private:
 	Ref<detail::PostEffectRenderer> m_imageEffectRenderer;
 
     Ref<Material> m_clearMaterial;
-	Ref<StaticMeshModel> m_skyProjectionPlane;
+	Ref<MeshModel> m_skyProjectionPlane;
 
     Ref<MeshResource> m_gridPlaneMesh;
     Ref<Material> m_gridPlaneMaterial;

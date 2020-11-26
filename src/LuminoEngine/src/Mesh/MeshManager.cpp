@@ -220,7 +220,7 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
 	}
 }
 
-Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const Path& filePath, float scale)
+Ref<MeshModel> MeshManager::acquireStaticMeshModel(const Path& filePath, float scale)
 {
 	static const Char* candidateExts[] = { u".gltf", u".glb", u".pmx" };
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
@@ -233,7 +233,7 @@ Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const Path& filePath, f
 	}
 }
 
-Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetPath, float scale)
+Ref<MeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetPath, float scale)
 {
 	uint64_t key = assetPath.calculateHash();
 	auto mesh = m_meshModelCache.findObject(key);
@@ -241,7 +241,7 @@ Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetP
 		return mesh;
 	}
 	else {
-		mesh = makeObject<StaticMeshModel>();
+		mesh = makeObject<MeshModel>();
 		loadStaticMeshModel(mesh, assetPath, scale);
 		m_meshModelCache.registerObject(key, mesh, 0);
 		return mesh;
@@ -249,7 +249,7 @@ Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetP
 }
 
 // TODO: deprecaed
-//void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const Path& filePath, float scale)
+//void MeshManager::loadStaticMeshModel(MeshModel* model, const Path& filePath, float scale)
 //{
 //	static const Char* candidateExts[] = { u".gltf", u".glb" };
 //	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
@@ -261,7 +261,7 @@ Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetP
 //	}
 //}
 
-void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const AssetPath& assetPath, float scale)
+void MeshManager::loadStaticMeshModel(MeshModel* model, const AssetPath& assetPath, float scale)
 {
 	{
 		auto diag = makeObject<DiagnosticsManager>();

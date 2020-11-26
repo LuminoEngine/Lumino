@@ -145,7 +145,7 @@ bool GLTFImporter::openGLTFModel(const AssetPath& assetPath)
 	return result;
 }
 
-bool GLTFImporter::onImportAsStaticMesh(StaticMeshModel* model, const AssetPath& assetPath)
+bool GLTFImporter::onImportAsStaticMesh(MeshModel* model, const AssetPath& assetPath)
 {
 	// TODO: ひとまず HC4 用設定。
 	// ほんとはここから Y90 回転させるべきなのだが、今その処理を入れてる時間がない。
@@ -154,7 +154,7 @@ bool GLTFImporter::onImportAsStaticMesh(StaticMeshModel* model, const AssetPath&
 	//m_faceFlip = false;	// 何もせずインポートするときは R-Hand->L-Hand の変換なので面反転が必要だが、flipX １回やっているので不要。
 	// TODO: そもそも何かNodeの回転修正もあやしいみたい。10/17提出用に向けてはいったん左右反転したままで行ってみる
 	m_flipX = false;	
-	// TODO: このあたり PostProcess として修正入れたいが、先に SkinnedMeshModel と StaticMeshModel の統合をやらないと無駄作業が多くなるのでいったん保留
+	// TODO: このあたり PostProcess として修正入れたいが、先に SkinnedMeshModel と MeshModel の統合をやらないと無駄作業が多くなるのでいったん保留
 
 	if (!openGLTFModel(assetPath)) {
 		return false;
@@ -211,7 +211,7 @@ bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, 
 	return true;
 }
 
-bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
+bool GLTFImporter::readCommon(MeshModel* meshModel)
 {
 	for (auto& material : m_model->materials) {
 		meshModel->addMaterial(readMaterial(material));

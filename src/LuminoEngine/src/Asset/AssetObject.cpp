@@ -176,7 +176,7 @@ const std::vector<const Char*>& AssetObject::resourceExtensions() const
 
 void AssetObject::onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath)
 {
-	// Texture2D や StaticMeshModel などは実装し、
+	// Texture2D や MeshModel などは実装し、
 	// サブクラス側で持っているファイルパスを元にオブジェクトを再構築する。
 	LN_UNREACHABLE();
 }

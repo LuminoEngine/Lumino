@@ -3,7 +3,7 @@
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Physics/CollisionShape.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
@@ -46,12 +46,12 @@ void StaticMeshComponent::deleteCollisionBody()
     }
 }
 
-void StaticMeshComponent::setModel(StaticMeshModel* model)
+void StaticMeshComponent::setModel(MeshModel* model)
 {
     m_model = model;
 }
 
-StaticMeshModel* StaticMeshComponent::model() const
+MeshModel* StaticMeshComponent::model() const
 {
     return m_model;
 }

@@ -40,7 +40,7 @@ public:
     const Color& sceneColor() const { return m_sceneColor; }
 
 private:
-	Ref<StaticMeshModel> m_model;
+	Ref<MeshModel> m_model;
 	Ref<Material> m_material;
 	Vector3 m_lightDirection;
 

@@ -88,7 +88,7 @@ Ref<SkinnedMeshModel> SkinnedMeshModel::load(const StringRef& filePath)
 }
 
 SkinnedMeshModel::SkinnedMeshModel()
-    : StaticMeshModel(detail::InternalMeshModelType::SkinnedMesh)
+    : MeshModel(detail::InternalMeshModelType::SkinnedMesh)
 {
 
 	std::fill(m_humanoidBoneNodeIndices.begin(), m_humanoidBoneNodeIndices.end(), -1);
