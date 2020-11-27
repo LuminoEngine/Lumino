@@ -46,6 +46,8 @@ public:
 #ifdef va_start
 	static int vsprintf(char* out, int charCount, const char* format, va_list args);
 	static int vsprintf(wchar_t* out, int charCount, const wchar_t* format, va_list args);
+	static int vsprintf2(char* out, int charCount, const char* format, ...);
+	static int vsprintf2(wchar_t* out, int charCount, const wchar_t* format, ...);
 #endif
 
 	template<typename TChar>

@@ -260,6 +260,8 @@ public:
 	/** 行列の要素にアクセスします。 */
 	float & operator()(int row, int column);
 
+    String toString() const;
+
 public:
     /**
      * 2つの行列の積を計算します。

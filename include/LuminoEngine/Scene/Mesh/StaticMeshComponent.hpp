@@ -18,7 +18,9 @@ public:
     void setModel(MeshModel* model);
 
     MeshModel* model() const;
-    
+
+    const Ref<detail::MeshModelInstance>& modelInstance() const { return m_modelInstance; }
+
 	/** 指定した名前の MeshContainer から、衝突判定用の Body を作成します。 */
 	LN_METHOD()
 	void makeCollisionBody(StringRef meshContainerName);
@@ -26,6 +28,7 @@ public:
 protected:
     void onDispose(bool explicitDisposing) override;
     void serialize(Serializer2& ar) override;
+    void onUpdate(float elapsedSeconds) override;
     void onRender(RenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -41,6 +44,7 @@ private:
 
     Ref<MeshModel> m_model;
     Ref<RigidBody> m_body;
+    Ref<detail::MeshModelInstance> m_modelInstance;
 };
 
 } // namespace ln

@@ -1084,6 +1084,19 @@ bool Matrix::isNaNOrInf() const
            Math::isNaNOrInf(m[3][0]) || Math::isNaNOrInf(m[3][1]) || Math::isNaNOrInf(m[3][2]) || Math::isNaNOrInf(m[3][3]);
 }
 
+String Matrix::toString() const
+{
+    const std::size_t BufferLength = 4096;
+    char text[BufferLength];
+    StringHelper::vsprintf2(
+        text, BufferLength, "Matrix((%f, %f, %f, %f), (%f, %f, %f, %f), (%f, %f, %f, %f), (%f, %f, %f, %f))",
+        m[0][0], m[0][1], m[0][2], m[0][3],
+        m[1][0], m[1][1], m[1][2], m[1][3],
+        m[2][0], m[2][1], m[2][2], m[2][3],
+        m[3][0], m[3][1], m[3][2], m[3][3]);
+    return String::fromCString(text);
+}
+
 const float& Matrix::operator()(int row, int column) const
 {
 	LN_CHECK(0 <= row && row <= 3);

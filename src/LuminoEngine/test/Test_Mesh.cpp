@@ -1,10 +1,10 @@
 ﻿#include "Common.hpp"
 
-class Test_Mesh_SkinnedMesh : public ::testing::Test {};
+class Test_Mesh : public ::testing::Test {};
 
 #if 0	// TODO: App の外側から Bone 更新できる仕組みを作らないとだめ
 
-TEST_F(Test_Mesh_SkinnedMesh, Basic)
+TEST_F(Test_Mesh, Basic)
 {
     Engine::camera()->setPosition(0, 0, -5);
 
@@ -18,14 +18,29 @@ TEST_F(Test_Mesh_SkinnedMesh, Basic)
     node->setRotation(0, 0, Math::PI / 2);
 
     TestEnv::updateFrame();
-    ASSERT_SCREEN_S(LN_ASSETFILE("Mesh/Expects/Test_Mesh_SkinnedMesh-Basic-1.png"));
+    ASSERT_SCREEN_S(LN_ASSETFILE("Mesh/Expects/Test_Mesh-Basic-1.png"));
     LN_TEST_CLEAN_SCENE;
 }
 
 #endif
 
 
-TEST_F(Test_Mesh_SkinnedMesh, Basic)
+TEST_F(Test_Mesh, StaticMesh)
+{
+    Engine::camera()->setPosition(8, 8, -8);
+    Engine::camera()->lookAt(0, 1, 0);
+
+    auto mesh = StaticMesh::load(u"Mesh/SkinnedAxis1.glb");
+    mesh->setShadingModel(ShadingModel::Unlit);
+
+    TestEnv::updateFrame();
+    ASSERT_SCREEN(LN_ASSETFILE("Mesh/Expects/Test_Mesh-StaticMesh-1.png"));
+    LN_TEST_CLEAN_SCENE;
+}
+
+
+
+TEST_F(Test_Mesh, SkinnedMesh)
 {
     //Engine::camera()->setPosition(5, 5, -5);
     //Engine::camera()->lookAt(0, 0, 0);
@@ -38,7 +53,7 @@ TEST_F(Test_Mesh_SkinnedMesh, Basic)
     mesh->setShadingModel(ShadingModel::Unlit);
 
     TestEnv::updateFrame();
-    ASSERT_SCREEN(LN_ASSETFILE("Mesh/Expects/Test_Mesh_SkinnedMesh-Basic-1.png"));
+    ASSERT_SCREEN(LN_ASSETFILE("Mesh/Expects/Test_Mesh-SkinnedMesh-1.png"));
     LN_TEST_CLEAN_SCENE;
 }
 

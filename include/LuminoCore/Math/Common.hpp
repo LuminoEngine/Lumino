@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <ostream>
 #include "../Base/Common.hpp"
+#include "../Base/String.hpp"
 
 namespace ln {
 

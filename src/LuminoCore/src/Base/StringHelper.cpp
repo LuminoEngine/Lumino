@@ -61,6 +61,24 @@ int StringHelper::vsprintf(wchar_t* out, int charCount, const wchar_t* format, v
 }
 #endif
 
+int StringHelper::vsprintf2(char* out, int charCount, const char* format, ...)
+{
+	va_list list;
+	va_start(list, format);
+	int r = vsprintf(out, charCount, format, list);
+	va_end(list);
+	return r;
+}
+
+int StringHelper::vsprintf2(wchar_t* out, int charCount, const wchar_t* format, ...)
+{
+	va_list list;
+	va_start(list, format);
+	int r = vsprintf(out, charCount, format, list);
+	va_end(list);
+	return r;
+}
+
 template<typename TChar>
 TChar StringHelper::toUpper(TChar ch)
 {

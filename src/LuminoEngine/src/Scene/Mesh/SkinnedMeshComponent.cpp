@@ -18,7 +18,7 @@ namespace ln {
 // SkinnedMeshComponent
 
 SkinnedMeshComponent::SkinnedMeshComponent()
-    : m_model(nullptr)
+    //: m_model(nullptr)
 {
 }
 
@@ -28,9 +28,10 @@ SkinnedMeshComponent::~SkinnedMeshComponent()
 
 bool SkinnedMeshComponent::init()
 {
-    return VisualComponent::init();
+    return StaticMeshComponent::init();
 }
 
+#if 0
 void SkinnedMeshComponent::setModel(SkinnedMeshModel* model)
 {
     m_model = model;
@@ -126,7 +127,7 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
 
 void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 {
-#if 1
+#if 0
 
 	CommandList* commandList = context->getCommandList(RenderPart::Gizmo2D, detail::ProjectionKind::Independent2D);
 	commandList->pushState();
@@ -173,6 +174,7 @@ void SkinnedMeshComponent::onRenderGizmo(RenderingContext* context)
 	commandList->popState();
 #endif
 }
+#endif
 
 } // namespace ln
 

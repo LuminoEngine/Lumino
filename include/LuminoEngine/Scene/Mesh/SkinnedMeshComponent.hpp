@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "../../Visual/VisualComponent.hpp"
+#include "StaticMeshComponent.hpp"
 
 namespace ln {
 class SkinnedMeshModel;
@@ -13,20 +13,15 @@ class MeshModelInstance;
  */
 LN_CLASS()
 class SkinnedMeshComponent
-	: public VisualComponent
+	: public StaticMeshComponent
 {
 public:
-	/** setModel */
-	LN_METHOD()
-    void setModel(SkinnedMeshModel* model);
-
-    SkinnedMeshModel* model() const;
-	const Ref<detail::MeshModelInstance>& modelInstance() const { return m_modelInstance; }
+	//const Ref<detail::MeshModelInstance>& modelInstance() const { return m_modelInstance; }
 
 protected:
-	void onUpdate(float elapsedSeconds) override;
-	void onRender(RenderingContext* context) override;
-	void onRenderGizmo(RenderingContext* context) override;
+	//void onUpdate(float elapsedSeconds) override;
+	//void onRender(RenderingContext* context) override;
+	//void onRenderGizmo(RenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:
     SkinnedMeshComponent();
@@ -37,8 +32,8 @@ LN_CONSTRUCT_ACCESS:
 	bool init();
 
 private:
-    Ref<SkinnedMeshModel> m_model;
-	Ref<detail::MeshModelInstance> m_modelInstance;
+ //   Ref<SkinnedMeshModel> m_model;
+	//Ref<detail::MeshModelInstance> m_modelInstance;
 };
 
 } // namespace ln

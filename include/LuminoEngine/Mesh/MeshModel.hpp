@@ -172,6 +172,7 @@ public:
 	void writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion* localQuaternionsBuffer);
 	void verifyHumanoidBones();
 	Ref<detail::MeshModelInstance> createMeshModelInstance();
+	bool isStaticMeshModel() const { return m_animationController == nullptr; }
 
 protected:
 	void serialize(Serializer2& ar) override;
@@ -318,8 +319,8 @@ private:
 class MeshDiag
 {
 public:
-	static void printNodes(const SkinnedMeshModel* model);
-	static void clearBoneInitialRotations(SkinnedMeshModel* model);
+	static void printNodes(const MeshModel* model);
+	static void clearBoneInitialRotations(MeshModel* model);
 };
 
 } // namespace ln

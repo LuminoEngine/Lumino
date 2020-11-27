@@ -576,7 +576,7 @@ void MeshImportSettings::setApplyBoneTransformationsEnabled(Optional<bool> value
 //==============================================================================
 // MeshDiag
 
-void MeshDiag::printNodes(const SkinnedMeshModel* model)
+void MeshDiag::printNodes(const MeshModel* model)
 {
 	bool hasRotationOrScale = false;
 
@@ -602,7 +602,7 @@ void MeshDiag::printNodes(const SkinnedMeshModel* model)
 	std::cout << "hasRotationOrScale: " << hasRotationOrScale << std::endl;
 }
 
-void MeshDiag::clearBoneInitialRotations(SkinnedMeshModel* model)
+void MeshDiag::clearBoneInitialRotations(MeshModel* model)
 {
 	model->updateNodeTransforms();
 

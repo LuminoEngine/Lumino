@@ -149,7 +149,9 @@ bool GLTFImporter::onImportAsStaticMesh(MeshModel* model, const AssetPath& asset
 {
 	// TODO: ひとまず HC4 用設定。
 	// ほんとはここから Y90 回転させるべきなのだが、今その処理を入れてる時間がない。
-	m_flipZ = false;
+	//m_flipZ = false;
+	m_flipZ = true;
+
 	//m_flipX = true;
 	//m_faceFlip = false;	// 何もせずインポートするときは R-Hand->L-Hand の変換なので面反転が必要だが、flipX １回やっているので不要。
 	// TODO: そもそも何かNodeの回転修正もあやしいみたい。10/17提出用に向けてはいったん左右反転したままで行ってみる
@@ -1058,6 +1060,10 @@ Ref<MeshSkeleton> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 		if (m_clearBoneRotation) {
 			const auto& mat = m_meshModel->m_nodes[skin.joints[i]]->initialLocalTransform();
 			armature->addBone(skin.joints[i], Matrix::makeInverse(mat));
+
+			std::cout << mat.toString() << std::endl;
+			std::cout << inverseBindMatrices[i].toString() << std::endl;
+
 		}
 		else
 		{
