@@ -8,10 +8,13 @@ ViewModel* ViewModel::instance()
 }
 
 ViewModel::ViewModel()
-	: m_mesh()
 {}
 
 void ViewModel::load()
 {
-	m_mesh = ln::SkinnedMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/SkinnedAxis1.glb");
+	m_model = ln::MeshModel::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/SkinnedAxis1.glb");
+	m_meshComponent = ln::makeObject<VisualizedMeshComponent>();
+	m_meshComponent->setModel(m_model);
+	m_meshObject = ln::makeObject<ln::WorldObject>();
+	m_meshObject->addComponent(m_meshComponent);
 }

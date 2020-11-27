@@ -147,7 +147,7 @@ void StaticMeshComponent::onRender(RenderingContext* context)
                         if (materialIndex >= 0) {
                             context->setMaterial(m_model->materials()[materialIndex]);
 
-                            if (node->skeletonIndex >= 0) {
+                            if (m_modelInstance && node->skeletonIndex >= 0) {
                                 context->drawSkinnedMesh(mesh, iSection, m_modelInstance->skeletons()[node->skeletonIndex]);
                             }
                             else {

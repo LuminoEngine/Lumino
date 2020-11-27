@@ -20,24 +20,25 @@ void MainWindow::handleImGUI(ln::UIEventArgs* e)
 {
     ImGui::Begin("Statistics");
 
-    const auto& mesh = ViewModel::instance()->mesh();
+    const auto& meshComponent = ViewModel::instance()->meshComponent();
 
-    if (mesh) {
-        const auto& modelInstance = mesh->skinnedMeshComponent()->modelInstance();
+    if (meshComponent) {
 
-        const auto& skeletons = modelInstance->skeletons();
-        for (int iSkeleton = 0; iSkeleton < modelInstance->skeletons().size(); iSkeleton++) {
-            const auto& skeleton = skeletons[iSkeleton];
-            if (ImGui::TreeNodeEx(skeleton, ImGuiTreeNodeFlags_DefaultOpen, "Skeleton[%d]", iSkeleton)) {
+        if (const auto& modelInstance = meshComponent->modelInstance()) {
+            const auto& skeletons = modelInstance->skeletons();
+            for (int iSkeleton = 0; iSkeleton < modelInstance->skeletons().size(); iSkeleton++) {
+                const auto& skeleton = skeletons[iSkeleton];
+                if (ImGui::TreeNodeEx(skeleton, ImGuiTreeNodeFlags_DefaultOpen, "Skeleton[%d]", iSkeleton)) {
 
-                const auto& bones = skeleton->bones();
-                for (int iBone = 0; iBone < bones.size(); iBone++) {
-                    const auto& bone = bones[iBone];
+                    const auto& bones = skeleton->bones();
+                    for (int iBone = 0; iBone < bones.size(); iBone++) {
+                        const auto& bone = bones[iBone];
 
-                    ImGui::BulletText("Bone[%d] %s", iBone, bone->node()->name().toStdString().c_str());
+                        ImGui::BulletText("Bone[%d] %s", iBone, bone->node()->name().toStdString().c_str());
+                    }
+
+                    ImGui::TreePop();
                 }
-
-                ImGui::TreePop();
             }
         }
 

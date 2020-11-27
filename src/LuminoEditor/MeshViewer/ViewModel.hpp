@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "VisualizedMeshComponent.hpp"
 
 class ViewModel
     : public ln::Object
@@ -8,13 +9,16 @@ public:
 
 	void load();
 
-	const Ref<ln::SkinnedMesh>& mesh() const { return m_mesh; }
+	const Ref<ln::WorldObject>& meshObject() const { return m_meshObject; }
+	const Ref<VisualizedMeshComponent>& meshComponent() const { return m_meshComponent; }
 
 protected:
 
 private:
 	ViewModel();
 
-	Ref<ln::SkinnedMesh> m_mesh;
+	Ref<ln::MeshModel> m_model;
+	Ref<VisualizedMeshComponent> m_meshComponent;
+	Ref<ln::WorldObject> m_meshObject;
 };
 
