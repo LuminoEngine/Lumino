@@ -731,6 +731,7 @@ void CommandList::drawRegularPolygonPrimitive(int vertexCount, float radius, con
 	element->data.radius = radius;
 	element->data.color = color;
 	element->data.fill = fill;
+	element->data.setTransform(localTransform);
 
 	// TODO: bouding box
 }
