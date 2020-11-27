@@ -3,14 +3,24 @@
 
 void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 {
-#if 0
 
-	CommandList* commandList = context->getCommandList(RenderPart::Gizmo2D, detail::ProjectionKind::Independent2D);
+	ln::CommandList* commandList = context->getCommandList(ln::RenderPart::Gizmo2D, ln::detail::ProjectionKind::Independent2D);
 	commandList->pushState();
 	//commandList->setRenderPhase(RenderPart::Gizmo2D);
 	commandList->setDepthTestEnabled(false);
 	commandList->setDepthWriteEnabled(false);
 
+
+	const auto* view = context->currentRenderView;
+	for (const auto& node : model()->m_nodes) {
+
+		auto pos = view->transformProjection(node->globalMatrix().position(), ln::detail::ProjectionKind::ViewProjection3D, ln::detail::ProjectionKind::Independent2D);
+		commandList->setTransfrom(ln::Matrix::makeTranslation(pos));
+		commandList->drawRegularPolygonPrimitive(16, 8, ln::UIColors::blue(), true);
+		commandList->drawRegularPolygonPrimitive(16, 10, ln::UIColors::blue(), false);
+	}
+
+#if 0
 	//const auto* viewPoint = context->viewPoint();
 	//Matrix viewproj = viewPoint->viewProjMatrix;
 
@@ -46,8 +56,8 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 	//context->setTransfrom(Matrix::makeTranslation(300, 200, 0));
 	//context->drawRegularPolygonPrimitive(16, 20, Color::Blue, true);
 	//context->drawRegularPolygonPrimitive(16, 25, Color::Blue, false);
+#endif
 
 	commandList->popState();
-#endif
 }
 
