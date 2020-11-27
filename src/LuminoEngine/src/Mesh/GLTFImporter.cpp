@@ -373,16 +373,23 @@ bool GLTFImporter::readNode(MeshNode* coreNode, const tinygltf::Node& node)
 	}
 
 
-	//if (m_flipZ) {
-	//	//nodeTransform(2, 0) = -nodeTransform(2, 0);
-	//	//nodeTransform(2, 1) = -nodeTransform(2, 1);
-	//	//nodeTransform(2, 2) = -nodeTransform(2, 2);
-	//	nodeTransform(3, 2) = -nodeTransform(3, 2);
-	//}
-	if (m_flipX) {
-		nodeTransform(0, 0) = -nodeTransform(0, 0);
-		nodeTransform(0, 1) = -nodeTransform(0, 1);
+	if (m_flipZ) {
+		// Z軸反転の 右手⇔左手回転の変換
+		// 回転の符号は (-x, -y, z) となる。
+		// https://kamino.hatenablog.com/entry/rotation_expressions
 		nodeTransform(0, 2) = -nodeTransform(0, 2);
+		nodeTransform(1, 2) = -nodeTransform(1, 2);
+		nodeTransform(2, 0) = -nodeTransform(2, 0);
+		nodeTransform(2, 1) = -nodeTransform(2, 1);
+
+		// Z座標反転
+		nodeTransform(3, 2) = -nodeTransform(3, 2);
+	}
+	if (m_flipX) {
+		LN_NOTIMPLEMENTED();
+		//nodeTransform(0, 0) = -nodeTransform(0, 0);
+		//nodeTransform(0, 1) = -nodeTransform(0, 1);
+		//nodeTransform(0, 2) = -nodeTransform(0, 2);
 		nodeTransform(3, 0) = -nodeTransform(3, 0);
 	}
 

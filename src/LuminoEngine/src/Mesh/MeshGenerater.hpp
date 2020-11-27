@@ -147,6 +147,34 @@ public:
     LN_MESHGENERATOR_CLONE_IMPLEMENT(SingleLineGenerater);
 };
 
+class LineStripPrimitiveGenerater
+    : public MeshGenerater
+{
+public:
+    int pointCount;
+    const Vector3* points;
+    const Color* colors;
+
+    virtual int vertexCount() const override { return pointCount; }
+    virtual int indexCount() const override { return pointCount; }
+    virtual PrimitiveTopology primitiveType() const override { return PrimitiveTopology::LineStrip; }
+    virtual void onGenerate(MeshGeneraterBuffer* buf) override
+    {
+        for (int i = 0; i < pointCount; i++) {
+            buf->setV(i, Vertex{ points[i], Vector3::UnitY, Vector2::Zero, colors[i] });
+            buf->setI(i, i);
+        }
+    }
+    void copyFrom(const LineStripPrimitiveGenerater* other)
+    {
+        MeshGenerater::copyFrom(other);
+        pointCount = other->pointCount;
+        points = other->points;
+        colors = other->colors;
+    }
+    LN_MESHGENERATOR_CLONE_IMPLEMENT(LineStripPrimitiveGenerater);
+};
+
 // 線分または塗りつぶしで描かれる正多角形。
 // XY 平面上に、Z-正面で作成する。
 class RegularPolygon2DGenerater

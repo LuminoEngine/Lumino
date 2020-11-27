@@ -189,6 +189,41 @@ void CommandList::drawLine(const Vector3& from, const Color& fromColor, const Ve
 	//ptr->makeBoundingSphere(Vector3::min(position1, position2), Vector3::max(position1, position2));
 }
 
+void CommandList::drawLineStripPrimitive(int pointCount, const Vector3* points, const Color* colors)
+{
+	class DrawLineStripPrimitive : public detail::RenderDrawElement
+	{
+	public:
+		detail::LineStripPrimitiveGenerater data;
+
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
+		}
+	};
+
+	m_builder->setPrimitiveTopology(PrimitiveTopology::LineStrip);
+
+
+
+	auto* element = m_builder->addNewDrawElement<DrawLineStripPrimitive>(m_manager->meshGeneraterRenderFeature());
+
+	size_t pointsSize = sizeof(Vector3) * pointCount;
+	size_t colorsSize = sizeof(Color) * pointCount;
+	void* buffer = m_builder->targetList()->newFrameRawData(pointsSize + colorsSize);
+	auto* pointsBuffer = reinterpret_cast<Vector3*>(buffer);
+	auto* colorsBuffer = reinterpret_cast<Color*>(static_cast<uint8_t*>(buffer) + pointsSize);
+	memcpy(pointsBuffer, points, pointsSize);
+	memcpy(colorsBuffer, colors, colorsSize);
+
+	element->data.pointCount = pointCount;
+	element->data.points = pointsBuffer;
+	element->data.colors = colorsBuffer;
+	// TODO:
+	//ptr->makeBoundingSphere(Vector3::min(position1, position2), Vector3::max(position1, position2));
+}
+
+
 void CommandList::drawPlane(float width, float depth, const Color& color)
 {
 	drawPlane(width, depth, Vector2::Zero, Vector2::Ones, color);

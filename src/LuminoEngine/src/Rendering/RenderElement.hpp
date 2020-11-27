@@ -108,6 +108,7 @@ public:
 
 	void clear();
 
+	// clear 時にデストラクタを呼び出したいもの
 	template<class T, class... TArgs>
 	T* newFrameData(TArgs&&... args)
 	{
@@ -115,6 +116,12 @@ public:
 		T* data = new (buffer)T(std::forward<TArgs>(args)...);
 		addFrameData(data);
 		return data;
+	}
+
+	// デストラクタ呼び出し不要の Raw データ
+	void* newFrameRawData(size_t size)
+	{
+		return m_dataAllocator->allocate(size);
 	}
 
 	RenderStage* addNewRenderStage();

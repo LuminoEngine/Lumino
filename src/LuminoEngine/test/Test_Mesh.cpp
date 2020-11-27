@@ -34,7 +34,7 @@ TEST_F(Test_Mesh, StaticMesh)
     mesh->setShadingModel(ShadingModel::Unlit);
 
     TestEnv::updateFrame();
-    ASSERT_SCREEN(LN_ASSETFILE("Mesh/Expects/Test_Mesh-StaticMesh-1.png"));
+    ASSERT_SCREEN_S(LN_ASSETFILE("Mesh/Expects/Test_Mesh-StaticMesh-1.png"));
     LN_TEST_CLEAN_SCENE;
 }
 
