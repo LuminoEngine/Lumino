@@ -6,8 +6,8 @@
 Application::Application()
 {
     ln::EngineSettings::setSceneIntegrationEnabled(false);
-    ln::EngineSettings::setMainWindowSize(320, 240);
-    ln::EngineSettings::setDeveloperToolEnabled(true);
+    ln::EngineSettings::setMainWindowSize(0.75 * 640, 0.75 * 480);
+    //ln::EngineSettings::setDeveloperToolEnabled(true);
 }
 
     /*

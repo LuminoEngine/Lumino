@@ -12,6 +12,7 @@ class WorldObject;
 class Component;
 class RenderingContext;
 
+// TODO: Delegate 等と同じように using ComponentList = Collection<Ref<Component>>; にしたい
 /** ComponentList */
 LN_CLASS()
 class ComponentList : public Collection<Ref<Component>>

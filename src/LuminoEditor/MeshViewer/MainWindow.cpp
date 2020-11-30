@@ -18,56 +18,44 @@ void MainWindow::onLoaded()
 
 void MainWindow::handleImGUI(ln::UIEventArgs* e)
 {
-    ImGui::Begin("Statistics");
-
     const auto& meshComponent = ViewModel::instance()->meshComponent();
 
-    if (meshComponent) {
+    //ImGui::Begin("Statistics");
 
-        if (const auto& modelInstance = meshComponent->modelInstance()) {
-            const auto& skeletons = modelInstance->skeletons();
-            for (int iSkeleton = 0; iSkeleton < modelInstance->skeletons().size(); iSkeleton++) {
-                const auto& skeleton = skeletons[iSkeleton];
-                if (ImGui::TreeNodeEx(skeleton, ImGuiTreeNodeFlags_DefaultOpen, "Skeleton[%d]", iSkeleton)) {
 
-                    const auto& bones = skeleton->bones();
-                    for (int iBone = 0; iBone < bones.size(); iBone++) {
-                        const auto& bone = bones[iBone];
+    //if (meshComponent) {
 
-                        ImGui::BulletText("Bone[%d] %s", iBone, bone->node()->name().toStdString().c_str());
-                    }
+    //    if (const auto& modelInstance = meshComponent->modelInstance()) {
+    //        const auto& skeletons = modelInstance->skeletons();
+    //        for (int iSkeleton = 0; iSkeleton < modelInstance->skeletons().size(); iSkeleton++) {
+    //            const auto& skeleton = skeletons[iSkeleton];
+    //            if (ImGui::TreeNodeEx(skeleton, ImGuiTreeNodeFlags_DefaultOpen, "Skeleton[%d]", iSkeleton)) {
 
-                    ImGui::TreePop();
-                }
-            }
-        }
+    //                const auto& bones = skeleton->bones();
+    //                for (int iBone = 0; iBone < bones.size(); iBone++) {
+    //                    const auto& bone = bones[iBone];
 
-    }
+    //                    ImGui::BulletText("Bone[%d] %s", iBone, bone->node()->name().toStdString().c_str());
+    //                }
 
-    ImGui::End();
+    //                ImGui::TreePop();
+    //            }
+    //        }
+    //    }
+
+    //}
+
+    //ImGui::End();
 
 
     ImGui::Begin("Animations");
 
     if (meshComponent) {
         if (ln::AnimationController* ac = meshComponent->model()->animationController()) {
-            
-        }
-
-        if (const auto& modelInstance = meshComponent->modelInstance()) {
-            const auto& skeletons = modelInstance->skeletons();
-            for (int iSkeleton = 0; iSkeleton < modelInstance->skeletons().size(); iSkeleton++) {
-                const auto& skeleton = skeletons[iSkeleton];
-                if (ImGui::TreeNodeEx(skeleton, ImGuiTreeNodeFlags_DefaultOpen, "Skeleton[%d]", iSkeleton)) {
-
-                    const auto& bones = skeleton->bones();
-                    for (int iBone = 0; iBone < bones.size(); iBone++) {
-                        const auto& bone = bones[iBone];
-
-                        ImGui::BulletText("Bone[%d] %s", iBone, bone->node()->name().toStdString().c_str());
-                    }
-
-                    ImGui::TreePop();
+            const auto& layers = ac->core()->layers();
+            for (const auto& layer : layers) {
+                for (const auto& state : layer->animationStatus()) {
+                    ImGui::BulletText("%s", state->name().toStdString().c_str());
                 }
             }
         }

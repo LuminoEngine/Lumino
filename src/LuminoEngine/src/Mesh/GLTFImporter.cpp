@@ -1242,7 +1242,7 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 			data.rotationValues = reinterpret_cast<const Quaternion*>(outputData);
 		}
 		else if (channel.target_path == "scale") {
-			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_VEC4)) return nullptr;
+			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_VEC3)) return nullptr;
 			auto& data = transformTrackMap[channel.target_node];
 			data.scaleFrames = inputAccessor.count;
 			data.scaleTimes = inputData;

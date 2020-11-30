@@ -140,6 +140,7 @@ class AnimationLayer
 {
 public:
 	AnimationMixerCore* owner() const { return m_owner; }
+	const List<Ref<AnimationState>>& animationStatus() const { return m_animationStatus; }
 
 LN_CONSTRUCT_ACCESS:
 	AnimationLayer();
@@ -238,6 +239,8 @@ public:
 public:
 
 	void addLayer(const Ref<AnimationLayer>& layer) { m_layers.add(layer); }
+	const List<Ref<AnimationLayer>>& layers() const { return m_layers; }
+
 	void addElementBlendLink(const Ref<detail::AnimationTargetElementBlendLink>& link) { m_targetElementBlendLinks.add(link); }
 
 	///// AnimationTargetEntity の検索 (見つからなければ NULL)
