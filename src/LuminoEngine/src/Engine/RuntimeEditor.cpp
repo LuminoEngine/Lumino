@@ -8,6 +8,7 @@
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include "../Graphics/GraphicsManager.hpp"
+#include "../Rendering/RenderingPipeline.hpp"
 #include "EngineManager.hpp"
 #include "RuntimeEditor.hpp"
 
@@ -161,6 +162,11 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 
 			ImGui::Text("GraphicsResources: %d", m_manager->graphicsManager()->graphicsResources().size());
 			
+
+			const auto& tex = m_manager->mainRenderView()->sceneRenderingPipeline()->viweNormalAndDepthBuffer();
+			if (tex) {
+				ImGui::Image((ImTextureID)tex.get(), ImVec2(tex->width(), tex->height()));
+			}
 
 
 			ImGui::EndTabItem();

@@ -200,7 +200,9 @@ void SceneRenderingPipeline::render(
 
     // Gizmo2D
     {
-        //RenderViewInfo renderViewInfo2;
+        // Depth だけクリア。そうしないと Gizmo が 3D コンテンツの後ろに隠れてしまう。
+        ClearInfo localClearInfo = { ClearFlags::Depth, Color(), 1.0f, 0x00 };
+        m_unlitRendererPass_Normal->setClearInfo(localClearInfo);
         renderViewInfo.cameraInfo = renderView->viewProjection(ProjectionKind::Independent2D);
         m_sceneRenderer->prepare(this, renderingContext, renderViewInfo, RenderPart::Gizmo2D, ProjectionKind::Independent2D, nullptr);
         m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass_Normal);

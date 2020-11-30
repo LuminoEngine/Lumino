@@ -7,8 +7,8 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 	ln::CommandList* commandList = context->getCommandList(ln::RenderPart::Gizmo2D, ln::detail::ProjectionKind::Independent2D);
 	commandList->pushState();
 	//commandList->setRenderPhase(RenderPart::Gizmo2D);
-	commandList->setDepthTestEnabled(false);
-	commandList->setDepthWriteEnabled(false);
+	//commandList->setDepthTestEnabled(false);
+	//commandList->setDepthWriteEnabled(false);
 
 
 

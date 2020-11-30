@@ -386,11 +386,27 @@ bool GLTFImporter::readNode(MeshNode* coreNode, const tinygltf::Node& node)
 		nodeTransform(3, 2) = -nodeTransform(3, 2);
 	}
 	if (m_flipX) {
-		LN_NOTIMPLEMENTED();
-		//nodeTransform(0, 0) = -nodeTransform(0, 0);
-		//nodeTransform(0, 1) = -nodeTransform(0, 1);
-		//nodeTransform(0, 2) = -nodeTransform(0, 2);
+		// X軸反転の 右手⇔左手回転の変換
+		// 回転の符号は (x, -y, -z) となる。
+		nodeTransform(0, 1) = -nodeTransform(0, 1);
+		nodeTransform(0, 2) = -nodeTransform(0, 2);
+		nodeTransform(1, 0) = -nodeTransform(1, 0);
+		nodeTransform(2, 0) = -nodeTransform(2, 0);
+
+		// X座標反転
 		nodeTransform(3, 0) = -nodeTransform(3, 0);
+
+		/*
+		↓実際にこれで比べてみると結果がわかりやすい
+		Matrix m1;
+		m1.rotateX(1);
+		m1.rotateY(1);
+		m1.rotateZ(1);
+		Matrix m2;
+		m2.rotateX(1);
+		m2.rotateY(-1);
+		m2.rotateZ(-1);
+		*/
 	}
 
 	coreNode->setName(String::fromStdString(node.name));

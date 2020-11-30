@@ -45,4 +45,34 @@ void MainWindow::handleImGUI(ln::UIEventArgs* e)
     }
 
     ImGui::End();
+
+
+    ImGui::Begin("Animations");
+
+    if (meshComponent) {
+        if (ln::AnimationController* ac = meshComponent->model()->animationController()) {
+            
+        }
+
+        if (const auto& modelInstance = meshComponent->modelInstance()) {
+            const auto& skeletons = modelInstance->skeletons();
+            for (int iSkeleton = 0; iSkeleton < modelInstance->skeletons().size(); iSkeleton++) {
+                const auto& skeleton = skeletons[iSkeleton];
+                if (ImGui::TreeNodeEx(skeleton, ImGuiTreeNodeFlags_DefaultOpen, "Skeleton[%d]", iSkeleton)) {
+
+                    const auto& bones = skeleton->bones();
+                    for (int iBone = 0; iBone < bones.size(); iBone++) {
+                        const auto& bone = bones[iBone];
+
+                        ImGui::BulletText("Bone[%d] %s", iBone, bone->node()->name().toStdString().c_str());
+                    }
+
+                    ImGui::TreePop();
+                }
+            }
+        }
+
+    }
+
+    ImGui::End();
 }

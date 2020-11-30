@@ -78,6 +78,11 @@ void RenderView::makeViewProjections(const detail::CameraInfo& base, float dpiSc
 	info->viewFrustum = ViewFrustum(info->viewProjMatrix);
 	info->nearClip = 0;
 	info->farClip = 1000;
+
+	Vector3 pos1 = Vector3::transformCoord(Vector3(0, 0, 0), info->viewProjMatrix);
+	Vector3 pos2 = Vector3::transformCoord(Vector3(0, 0, 1), info->viewProjMatrix);;
+	Vector3 pos3 = Vector3::transformCoord(Vector3(0, 0, -1), info->viewProjMatrix);
+	printf("");
 }
 
 Vector3 RenderView::transformProjection(const Vector3& pos, detail::ProjectionKind from, detail::ProjectionKind to) const

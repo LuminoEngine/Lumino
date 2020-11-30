@@ -147,7 +147,7 @@ public:
 	template<typename TValue, typename TTime>
 	static TValue easeInOutSine(TTime t, TValue b, TValue c, TTime d)
 	{
-		return -c / 2.0 * (std::cos((3.14159265358979323846f) *t / d) - 1) + b;
+		return -c / 2.0f * (std::cos((3.14159265358979323846f) * t / d) - 1.0f) + b;
 	};
 
 	/** exponential easing in - accelerating from zero velocity */

@@ -316,9 +316,7 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 			bool result = importer.onImportAsSkinnedMesh(mesh, *path);
 
 
-			//if (!importer.animationClips().isEmpty()) {
 			if (!mesh->skeletons().isEmpty()) {
-				//auto mixer = makeObject<AnimationMixerCore>();
 				mesh->m_animationController = makeObject<AnimationController>(mesh);
 
 				for (auto& clip : importer.animationClips()) {
@@ -336,6 +334,8 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		boneMapper.map(mesh);
 
 		if (mesh->m_animationController) {
+			
+
 			if (MeshNode* root = mesh->findHumanoidBone(HumanoidBones::Hips)) {
 				mesh->m_animationController->core()->m_animationTranslationBasis = root->initialLocalTransform().position().y;
 			}

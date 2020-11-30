@@ -72,6 +72,11 @@ Ref<MeshModel> MeshModel::load(const StringRef& filePath)
 	//return model;
 }
 
+Ref<MeshModel> MeshModel::loadSkinned(const StringRef& filePath)
+{
+	return detail::EngineDomain::meshManager()->createSkinnedMeshModel(filePath, 1.0f);
+}
+
 MeshModel::MeshModel()
     : m_type(detail::InternalMeshModelType::StaticMesh)
 {

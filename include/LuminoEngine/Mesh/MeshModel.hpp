@@ -99,6 +99,7 @@ public:
 	/** load */
 	LN_METHOD()
     static Ref<MeshModel> load(const StringRef& filePath);
+	static Ref<MeshModel> loadSkinned(const StringRef& filePath);	// TODO: load 統一でいいかも
 
 	/** findNode */
 	LN_METHOD()
