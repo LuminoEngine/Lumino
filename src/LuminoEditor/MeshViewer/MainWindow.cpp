@@ -20,7 +20,8 @@ void MainWindow::handleImGUI(ln::UIEventArgs* e)
 {
     const auto& meshComponent = ViewModel::instance()->meshComponent();
 
-    //ImGui::Begin("Statistics");
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::Begin("Statistics");
 
 
     //if (meshComponent) {
@@ -45,22 +46,23 @@ void MainWindow::handleImGUI(ln::UIEventArgs* e)
 
     //}
 
-    //ImGui::End();
+    ImGui::End();
 
 
+    ImGui::SetNextWindowPos(ImVec2(200, 10));
     ImGui::Begin("Animations");
 
-    if (meshComponent) {
-        if (ln::AnimationController* ac = meshComponent->model()->animationController()) {
-            const auto& layers = ac->core()->layers();
-            for (const auto& layer : layers) {
-                for (const auto& state : layer->animationStatus()) {
-                    ImGui::BulletText("%s", state->name().toStdString().c_str());
-                }
-            }
-        }
+    //if (meshComponent) {
+    //    if (ln::AnimationController* ac = meshComponent->model()->animationController()) {
+    //        const auto& layers = ac->core()->layers();
+    //        for (const auto& layer : layers) {
+    //            for (const auto& state : layer->animationStatus()) {
+    //                ImGui::BulletText("%s", state->name().toStdString().c_str());
+    //            }
+    //        }
+    //    }
 
-    }
+    //}
 
     ImGui::End();
 }
