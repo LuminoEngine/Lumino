@@ -22,6 +22,7 @@ class BuilderBase
 public:
 
 protected:
+	BuilderBase() {}
 	BuilderBase(BuilderDetailsBase* details)
 		: m_details(details)
 	{}
