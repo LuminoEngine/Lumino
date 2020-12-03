@@ -2,10 +2,10 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
+#include "../Rendering/CommandListServer.hpp"
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/DrawElementListBuilder.hpp"
 #include "../Rendering/RenderFeature/FrameRectRenderFeature.hpp"

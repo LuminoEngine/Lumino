@@ -3,7 +3,6 @@
 #include <LuminoEngine/Animation/AnimationContext.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
-#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
 #include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
@@ -15,6 +14,7 @@
 #include <LuminoEngine/Scene/Light.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
+#include "../Rendering/CommandListServer.hpp"
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderElement.hpp"
 

@@ -5,11 +5,11 @@
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Mesh/MeshModelInstance.hpp"
+#include "CommandListServer.hpp"
 #include "RenderStage.hpp"
 #include "RenderElement.hpp"
 #include "RenderingPipeline.hpp"

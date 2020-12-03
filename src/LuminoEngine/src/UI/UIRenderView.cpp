@@ -2,7 +2,6 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
@@ -11,6 +10,7 @@
 #include <LuminoEngine/UI/UIAdorner.hpp>
 #include <LuminoEngine/UI/Controls/UIDialog.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
+#include "../Rendering/CommandListServer.hpp"
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderElement.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
