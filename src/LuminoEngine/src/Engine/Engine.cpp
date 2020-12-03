@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "EngineManager.hpp"
 //#include "EngineDomain.hpp"
+#include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Engine/EngineSettings.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
@@ -308,6 +309,11 @@ WorldRenderView* Engine::renderView()
 UIFocusNavigator* Engine::navigator()
 {
     return static_cast<UIDomainProvidor*>(Engine::mainUIView())->focusNavigator();
+}
+
+Dispatcher* Engine::dispatcher()
+{
+    return detail::EngineDomain::engineManager()->mainThreadTaskDispatcher();
 }
 
 PhysicsWorld* Engine::mainPhysicsWorld()

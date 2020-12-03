@@ -15,6 +15,7 @@ class PhysicsWorld2D;
 class World;
 class Camera;
 class EnvironmentLight;
+class Dispatcher;
 
 /** アプリケーション全体にかかわる処理を行います。 */
 LN_CLASS(Static)
@@ -105,6 +106,8 @@ public:
 	static UIFocusNavigator* navigator();
 
 	static UIControl* ui() { return mainUIView(); }
+
+	static Dispatcher* dispatcher();
 
     //static AmbientLight* mainAmbientLight();
     //static DirectionalLight* mainDirectionalLight();
