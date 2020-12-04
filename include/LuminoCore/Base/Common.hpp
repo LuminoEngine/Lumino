@@ -302,6 +302,10 @@ using byte_t = unsigned char;
 #define LN_STRUCT(...)
 #define LN_ENUM(...)
 #define LN_FIELD(...)
+
+/**
+ * @param OverloadPostfix = "Name"
+ */
 #define LN_METHOD(...)
 #define LN_DELEGATE(...)
 #define LN_PROMISE(...)

@@ -31,8 +31,8 @@ LN_CONSTRUCT_ACCESS:
 	bool init();
 	
 	/**  */
-	LN_METHOD()
-		bool init(float width, float height, float depth);
+	LN_METHOD(OverloadPostfix="XYZ")
+	bool init(float width, float height, float depth);
 
 private:
     Ref<BoxMeshComponent> m_component;
