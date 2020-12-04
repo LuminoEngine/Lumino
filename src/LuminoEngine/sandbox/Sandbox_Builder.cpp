@@ -17,101 +17,151 @@ using namespace ln;
 
  ただ参考元のひとつの UE4 は SNew の中で Widget のインスタンスを作っていたりする。
 
+ このパターンが有効なのは、Builder を WorldObject または UIElement のファクトリとして機能させるケース。
+ 一度作った Builder をどこかに保持しておいて、ひとつの Builder から複数のインスタンスを作りたいとき。
+
+ 逆となるとBuilderは使いまわすことはできない、と考えないと危ない。
+ コピーも禁止にしておいた方が良い。
+
+ とはいえそうしたとしても、複数インスタンス禁止なのは WorldObject や UIElement など、単一の親のみに追加可能な
+ オブジェクトだけなので、そうではない Texture などは普通に作れる。これを逆に禁止してしまうのはちょっと…。
+
+
+
 */
 
 #define BT_BUILDER_T() \
 	protected: \
 	class Details; \
 	public: \
-	TBuilder(); \
-	TBuilder(Details* d);
+	BuilderBase(); \
+	BuilderBase(Details* d);
 
 #define BT_BUILDER_IMPLEMENT(type, base) \
 	type::Builder::Builder() : Builder(makeRef<Details>()) {} \
 	type::Builder::Builder(Details* d) : base::Builder(d) {}
 
 #define BT_TOP_BUILDER(type) \
-    Builder() : TBuilder<Builder>(makeRef<TBuilder<Builder>::Details>()) {} \
-    Builder(Details* d) : TBuilder<Builder>(d) {} \
+    Builder() : BuilderBase<Builder>(makeRef<BuilderBase<Builder>::Details>()) {} \
+    Builder(Details* d) : BuilderBase<Builder>(d) {} \
     Ref<type> build() { return buildAs<type>(); }
 
 namespace bt {
+
+    template<class T, class TDetail>
+    struct BuilderBase2 : public RefObject
+    {
+    protected:
+        BuilderBase2() : m_detail(makeRef<TDetail>()) {}
+        TDetail* d() { return static_cast<TDetail*>(m_detail.get()); }
+
+        template<class U>
+        Ref<U> buildAndApply()
+        {
+            auto ptr = makeObject<U>();
+            m_detail->apply(ptr);
+            return ptr;
+        }
+
+    private:
+        Ref<TDetail> m_detail;
+    };
+
+    class BuilderDetailsBase2
+        : public RefObject
+    {
+    public:
+
+        friend class BuilderBase;
+    };
+
+
+
+class Base1;
+
+struct BuilderDetails : public BuilderDetailsBase2
+{
+    int m_width;
+    int m_height;
+    void apply(Base1* i) const;
+};
+
 class Base1 : public Object
 {
 public:
-    template<class T>
-    struct TBuilder : public BuilderBase
-    {
-        /** width property */
-        T& width(int value) { m_width = value; return *static_cast<T*>(this); }
-
-        /** height property */
-        T& height(int value) { m_height = value; return *static_cast<T*>(this); }
-
-    protected:
-        int m_width;
-        int m_height;
-        void apply(Base1* i);
-    };
-
-    struct Builder : public TBuilder<Builder>
-    {
-        Ref<Base1> build();// { return buildAs<Base1>(); }
-    };
+    struct Builder;
 
     void setWidth(int value) {}
     void setHeight(int value) {}
+
+protected:
+    template<class T, class D>
+    struct BuilderBase;
 };
 
-Ref<Base1> Base1::Builder::build()
-{
-    auto ptr = makeObject<Base1>();
-    apply(ptr);
-    return ptr;
-}
-
-template<class T>
-void Base1::TBuilder<T>::apply(Base1* i)
+void BuilderDetails::apply(Base1* i) const
 {
     i->setWidth(m_width);
     i->setHeight(m_height);
 }
 
+template<class T, class D>
+struct Base1::BuilderBase : public BuilderBase2<T, D>
+{
+    /** width property */
+    T& width(int value) { d()->m_width = value; return *static_cast<T*>(this); }
+
+    /** height property */
+    T& height(int value) { d()->m_height = value; return *static_cast<T*>(this); }
+};
+
+struct Base1::Builder : public BuilderBase<Builder, BuilderDetails>
+{
+    Ref<Base1> build() { return buildAndApply<Base1>(); }
+};
+
+
+
+
+
+
+class Shape;
+
 class Shape : public Base1
 {
 public:
-    template<class T>
-    struct TBuilder : public Base1::TBuilder<T>
-    {
-        /** color property */
-        T& color(const Color& value) { m_color = value; return *static_cast<T*>(this); }
 
-    protected:
-        void apply(Shape* i);
-        Color m_color;
-    };
-
-    struct Builder : public TBuilder<Builder>
-    {
-        Ref<Shape> build();
-    };
+    struct Builder;
 
     void setColor(const Color& value) {}
+
+protected:
+    template<class T, class D>
+    struct BuilderBase;
 };
 
-Ref<Shape> Shape::Builder::build()
+struct ShapeBuilderDetails : public BuilderDetails
 {
-    auto ptr = makeObject<Shape>();
-    apply(ptr);
-    return ptr;
-}
+    Color m_color;
 
-template<class T>
-void Shape::TBuilder<T>::apply(Shape* i)
+    void apply(Shape* i) const
+    {
+        BuilderDetails::apply(i);
+        i->setColor(m_color);
+    }
+};
+
+template<class T, class D>
+struct Shape::BuilderBase : public Base1::BuilderBase<T, D>
 {
-    Base1::TBuilder<T>::apply(i);
-    i->setColor(m_width);
-}
+    /** color property */
+    T& color(const Color& value) { d()->m_color = value; return *static_cast<T*>(this); }
+};
+
+struct Shape::Builder : public BuilderBase<Builder, ShapeBuilderDetails>
+{
+    Ref<Shape> build() { return buildAndApply<Shape>(); }
+};
 
 }
 

@@ -94,11 +94,11 @@ BoxMeshComponent::~BoxMeshComponent()
 {
 }
 
-void BoxMeshComponent::init()
+void BoxMeshComponent::init(const Vector3& size)
 {
 	VisualComponent::init();
 	m_material = detail::EngineDomain::sceneManager()->primitiveMeshDefaultMaterial();
-	m_box = Box(1.0f);
+	m_box = Box(Vector3::Zero, size);
 }
 
 void BoxMeshComponent::setMaterial(Material* material)

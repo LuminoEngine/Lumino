@@ -16,6 +16,11 @@ Ref<BoxMesh> BoxMesh::create()
     return makeObject<BoxMesh>();
 }
 
+Ref<BoxMesh> BoxMesh::create(float width, float height, float depth)
+{
+	return makeObject<BoxMesh>(width, height, depth);
+}
+
 //Ref<BoxMesh> BoxMesh::create(const StringRef& filePath, float scale)
 //{
 //    return makeObject<BoxMesh>(filePath, scale);
@@ -29,12 +34,18 @@ BoxMesh::~BoxMesh()
 {
 }
 
-void BoxMesh::init()
+bool BoxMesh::init()
 {
-    VisualObject::init();
-    m_component = makeObject<BoxMeshComponent>();
-    addComponent(m_component);
-    setMainVisualComponent(m_component);
+	return init(1.0f, 1.0f, 1.0f);
+}
+
+bool BoxMesh::init(float width, float height, float depth)
+{
+	if (!VisualObject::init()) return false;
+	m_component = makeObject<BoxMeshComponent>(Vector3(width, height, depth));
+	addComponent(m_component);
+	setMainVisualComponent(m_component);
+	return true;
 }
 
 BoxMeshComponent* BoxMesh::boxMeshComponent() const

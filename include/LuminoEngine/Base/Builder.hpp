@@ -12,7 +12,7 @@ class BuilderDetailsBase
 public:
 
 protected:
-	virtual Ref<Object> build() = 0;
+	virtual Ref<Object> build() { return nullptr; }
 
 	friend class BuilderBase;
 };
