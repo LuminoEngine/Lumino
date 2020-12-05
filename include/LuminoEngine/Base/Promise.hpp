@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "Delegate.hpp"
+#include "Task.hpp"
 
 namespace ln {
 	
@@ -26,6 +27,7 @@ public:
 	virtual void invoke() = 0;
 	virtual void callNext() = 0;
 	static void enqueueInvoke(const Ref<PromiseBase>& p);
+	static void enqueueContinueWith(const Ref<PromiseBase>& p, Task* task);
 	static void enqueueThen(const Ref<PromiseBase>& p);
 };
 
@@ -66,6 +68,16 @@ public:
 		return p;
 	}
 
+	// TODO: internal
+	static Ref<Promise> continueWith(Ref<GenericTask<TResult>> task)
+	{
+		auto p = Ref<Promise>(LN_NEW Promise([task](Promise<TResult>* p) {
+			p->resolve(task->result());
+		}), false);
+		PromiseBase::enqueueContinueWith(p, task);
+		return p;
+	}
+
 	void resolve(TResult value)
 	{
 		std::lock_guard<std::mutex> locl(m_mutex);
@@ -97,7 +109,7 @@ public:
 	{
 		std::lock_guard<std::mutex> locl(m_mutex);
 		std::cout << "Promise(" << this << ") thenWith 2 " << m_rejected << std::endl;
-		m_thenAction = makeObject<Delegate<void(Ref<Object>)>>(action);
+		m_thenAction = makeObject<Delegate<void(TResult)>>(action);
 		std::cout << "Promise(" << this << ") thenWith 2 " << m_rejected << std::endl;
 	}
 
@@ -144,6 +156,11 @@ LN_CONSTRUCT_ACCESS:
 		, m_rejected(false)
 	{
 		std::cout << "Promise(" << this << ") cotr " << m_rejected << std::endl;
+	}
+
+	~Promise()
+	{
+		std::cout << "Promise(" << this << ") destructor"  << std::endl;
 	}
 
 public:

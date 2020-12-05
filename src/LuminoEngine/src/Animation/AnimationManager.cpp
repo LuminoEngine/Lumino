@@ -230,10 +230,14 @@ void AnimationManager::addClockToAffiliation(AnimationClock* clock, AnimationClo
     }
 }
 
-Ref<AnimationClip> AnimationManager::loadAnimationClip(const StringRef& filePath)
+Ref<GenericTask<Ref<AnimationClip>>> AnimationManager::loadAnimationClip(const StringRef& filePath)
 {
 	static const std::vector<const Char*> exts = { u".bvh", u".vmd" };
-	return AssetManager::loadObjectWithCacheHelper<AnimationClip>(&m_animationClipCache, nullptr, exts, filePath, nullptr);
+	return AssetManager::loadObjectWithCacheHelperAsync<AnimationClip>(&m_animationClipCache, nullptr, exts, filePath);
+	//return task->result();
+	
+	
+	//return AssetManager::loadObjectWithCacheHelper<AnimationClip>(&m_animationClipCache, nullptr, exts, filePath, nullptr);
 
 	//// TODO: find cache
 

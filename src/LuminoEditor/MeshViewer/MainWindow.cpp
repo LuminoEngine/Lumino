@@ -73,7 +73,7 @@ void MainWindow::handleImGUI(ln::UIEventArgs* e)
 
                     ImGui::Text("%s", state->name().toStdString().c_str());
                     ImGui::SameLine();
-                    if (ImGui::SmallButton("Play")) {
+                    if (ImGui::SmallButton(("Play##" + std::to_string(reinterpret_cast<intptr_t>(state.get()))).c_str())) {
                         ac->play(state);
                     }
                     //ImGui::TreePop();

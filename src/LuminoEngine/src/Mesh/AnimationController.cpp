@@ -66,10 +66,10 @@ void AnimationController::onUpdateTargetElement(const detail::AnimationTargetEle
 	const auto& node = m_model->meshNodes()[binding->targetIndex];
 	node->setTransform(binding->rootValue.getTransform());
 
-	if (binding->targetIndex == 2) {
-		auto v = binding->rootValue.getTransform().rotation.toEulerAngles();
-		v.print();
-	}
+	//if (binding->targetIndex == 2) {
+	//	auto v = binding->rootValue.getTransform().rotation.toEulerAngles();
+	//	v.print();
+	//}
 
 	//auto& s = binding->rootValue.getTransform().scale;
 	//if (s.x != 1 || s.y != 1 || s.z != 1) {

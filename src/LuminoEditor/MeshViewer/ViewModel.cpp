@@ -26,6 +26,13 @@ void ViewModel::load()
 	auto* ac = m_meshComponent->model()->animationController();
 	//ac->play();
 
-	ac->addClip(ln::AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh"));
-	ac->addClip(ln::AnimationClip::load(u"D:/Materials/Mixamo/Walk.bvh"));
+	//ac->addClip(ln::AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh"));
+
+	ln::AnimationClip::loadAsync(u"D:/Materials/Mixamo/Idle.bvh")->thenWith([=](auto clip) {
+		ac->addClip(clip);
+	});
+
+	ln::AnimationClip::loadAsync(u"D:/Materials/Mixamo/Walk.bvh")->thenWith([=](auto clip) {
+		ac->addClip(clip);
+	});
 }

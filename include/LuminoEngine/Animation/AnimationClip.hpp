@@ -42,6 +42,9 @@ public:
 	LN_METHOD()
 	static Ref<AnimationClip> load(const StringRef& filePath);
 
+	static Ref<AnimationClipPromise> loadAsync(const StringRef& filePath);
+
+
 	/** アニメーションの繰り返しの動作を取得します。(default: Loop) */
 	LN_METHOD(Property)
 	void setWrapMode(AnimationWrapMode value) { m_wrapMode = value; }

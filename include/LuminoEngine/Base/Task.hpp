@@ -19,6 +19,7 @@ enum class TaskStatus
 	Faulted,	/**< 実行中にハンドルされない例外が発生して終了した。*/
 };
 
+// TODO: deprecated
 class Task
     : public RefObject
 {
@@ -59,23 +60,34 @@ public:
     /** 実行中に発生しハンドルされなかった例外を返します。例外が発生していなければ nullptr です。*/
     Exception* exception() const;
 
-private:
+
+    void then(const std::function<void()>& action)
+    {
+        if (LN_REQUIRE(!this->m_prevTask)) return;
+        auto continuationsTask = Task::create(action);
+        continuationsTask->m_prevTask = this;
+        continuationsTask->start();
+    }
+
+protected:
     Task(const std::function<void()>& action);
     ~Task();
     void execute();
 
-    struct NextTask
-    {
-        Ref<Task> task;
-        TaskScheduler* scheduler;
-        Dispatcher* dispatcher;
-    };
+    //struct NextTask
+    //{
+    //    Ref<Task> task;
+    //    TaskScheduler* scheduler;
+    //    Dispatcher* dispatcher;
+    //};
 
     std::function<void()> m_action;
     std::atomic<TaskStatus> m_status;
-    std::vector<NextTask> m_nextTasks;
+    //std::vector<NextTask> m_nextTasks;
     Exception* m_exception;
     ConditionEvent m_waiting;
+
+    Ref<Task> m_prevTask = nullptr;
 
     friend class TaskScheduler;
     friend class Dispatcher;
@@ -85,9 +97,36 @@ template<class TResult>
 class GenericTask
     : public Task
 {
+public:
+    static Ref<GenericTask<TResult>> create(const std::function<TResult()>& action);
 
+    TResult result()
+    {
+        wait();
+        return m_result;
+    }
+
+private:
+    GenericTask(const std::function<TResult()>& action);
+
+    //std::function<TResult()> m_action;
+    TResult m_result;
 };
 
+template<class TResult>
+Ref<GenericTask<TResult>> GenericTask<TResult>::create(const std::function<TResult()>& action)
+{
+    return Ref<GenericTask<TResult>>(LN_NEW GenericTask<TResult>(action), false);
+}
+
+template<class TResult>
+GenericTask<TResult>::GenericTask(const std::function<TResult()>& action)
+    : Task([this, action]() {
+        m_result = action();
+    }),
+    m_result{}
+{
+}
 
 namespace detail {
 
@@ -162,7 +201,8 @@ private:
     void executeThread();
 
     List<std::shared_ptr<std::thread>> m_threadList;
-    std::deque<Ref<Task>> m_taskQueue;
+    List<Ref<Task>> m_taskQueue;
+    //std::deque<Ref<Task>> m_taskQueue;
     detail::semaphore m_semaphore;
     std::mutex m_taskQueueMutex;
     std::atomic<bool> m_endRequested;
