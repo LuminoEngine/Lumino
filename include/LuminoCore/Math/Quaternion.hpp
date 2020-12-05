@@ -189,6 +189,12 @@ public:
      * クォータニオンを共役し、再正規化します。
      * @param[in] 	qua     : 処理の基になるクォータニオン
      * @return      逆数クォータニオン
+     *
+     * 逆数クォータニオンは逆行列のように、元の回転を打ち消すクォータニオンです。
+     * 次のようにすると、回転を打ち消し合い Identity の値と一致します。
+     * ```
+     * q *= Quaternion::makeInverse(q);
+     * ```
      */
     static Quaternion makeInverse(const Quaternion& qua);
 

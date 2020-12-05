@@ -614,16 +614,24 @@ void MeshDiag::clearBoneInitialRotations(MeshModel* model)
 	if (1) {
 
 		for (const auto& node : model->m_nodes) {
-			//if (node->m_boneNode) {
-				// 回転や拡縮も適用してグローバルな pos を求め、それを GlobalTransform に再設定することで位置情報のみにする
+
+			if (1) {
+			}
+			else {
+				// 位置のみ
+
+				//if (node->m_boneNode) {
+					// 回転や拡縮も適用してグローバルな pos を求め、それを GlobalTransform に再設定することで位置情報のみにする
 				auto pos = Vector3::transformCoord(Vector3(0, 0, 0), node->globalMatrix());
 
 				if (0) {
 					pos.x *= -1.0f;
 				}
 
+				// 一時的に GlobalTransform の領域を使う
 				node->setGlobalTransform(Matrix::makeTranslation(pos));
-			//}
+				//}
+			}
 		}
 
 		for (const auto& node : model->m_nodes) {
@@ -633,8 +641,17 @@ void MeshDiag::clearBoneInitialRotations(MeshModel* model)
 					// 普通は逆行列を求めるが、回転は行わなくなるので、移動ベクトルを反転するだけでよい。
 					const auto& self = node->globalMatrix();
 					const auto& parent = model->m_nodes[node->parentNodeIndex()]->globalMatrix();
-					const auto relPos = self.position() - parent.position();
-					node->setInitialLocalTransform(Matrix::makeTranslation(relPos));
+
+					if (1) {
+						// 逆行列使用
+						const auto m = Matrix::makeInverse(parent);
+						node->setInitialLocalTransform(Matrix::multiply(self, m));
+					}
+					else {
+						// 位置だけ
+						const auto relPos = self.position() - parent.position();
+						node->setInitialLocalTransform(Matrix::makeTranslation(relPos));
+					}
 				}
 				else {
 					// 親が無ければ GlobalTransform をそのまま InitialLocalTransform とする。
@@ -649,8 +666,16 @@ void MeshDiag::clearBoneInitialRotations(MeshModel* model)
 				auto t = node->globalMatrix();
 
 				// 逆行列で inverseInitialMatrix とする。
-				// 回転は行わなくなるので、移動ベクトルを反転するだけでよい。
-				bone->m_inverseInitialMatrix = Matrix::makeTranslation(-t.position());
+
+				if (1) {
+					// 逆行列使用
+					bone->m_inverseInitialMatrix = Matrix::makeInverse(t);
+				}
+				else {
+					// 位置だけ
+					// 回転は行わなくなるので、移動ベクトルを反転するだけでよい。
+					bone->m_inverseInitialMatrix = Matrix::makeTranslation(-t.position());
+				}
 			}
 		}
 	}

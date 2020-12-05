@@ -1331,10 +1331,12 @@ void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int sta
 	vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
 }
 
-void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount)
+void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset)
 {
     int ic = (instanceCount == 0) ? 1 : instanceCount;
-	vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), ic, startIndex, 0, 0);
+	vkCmdDrawIndexed(
+        m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount),
+        ic, startIndex, vertexOffset, 0);
 }
 
 void VulkanGraphicsContext::onDrawExtension(INativeGraphicsExtension* extension)

@@ -143,7 +143,7 @@ public:
     /**
      * インデックス付きのプリミティブを描画します。
      */
-    void drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount = 0);
+    void drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount = 0, int vertexOffset = 0);
 
 	void drawExtension(INativeGraphicsExtension* extension);
 

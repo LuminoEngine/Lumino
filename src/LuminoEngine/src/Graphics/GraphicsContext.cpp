@@ -400,19 +400,20 @@ void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
         });
 }
 
-void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount)
+void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount, int vertexOffset)
 {
 	if (LN_REQUIRE(m_recordingBegan)) return;
 	if (LN_REQUIRE(m_currentRenderPass)) return;
     commitState();
-    LN_ENQUEUE_RENDER_COMMAND_4(
+    LN_ENQUEUE_RENDER_COMMAND_5(
         GraphicsContext_setIndexBuffer, this,
         detail::ICommandList*, m_rhiCommandList,
         int, startIndex,
         int, primitiveCount,
         int, instanceCount,
+        int, vertexOffset,
         {
-            m_rhiCommandList->drawPrimitiveIndexed(startIndex, primitiveCount, instanceCount);
+            m_rhiCommandList->drawPrimitiveIndexed(startIndex, primitiveCount, instanceCount, vertexOffset);
         });
 }
 

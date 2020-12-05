@@ -178,6 +178,7 @@ public:
 	//void setDataTQ(int frame, float time, const Vector3& pos, const Quaternion& rot);
 	void setDataTQ(int frame, float time, const Vector3& pos, const Vector3& rot);
 
+
 LN_CONSTRUCT_ACCESS:
 	TransformAnimationTrack();
 
@@ -190,7 +191,7 @@ protected:
 	void evaluate(float time, AnimationValue* outResult) override;
 	float lastFrameTime() const override { return m_lastTime; }
 
-private:
+public:	// TODO: internal
 	std::vector<Vector3Key> m_translationKeys;
 	std::vector<QuaternionKey> m_rotationKeys;
 	std::vector<Vector3Key> m_scaleKeys;

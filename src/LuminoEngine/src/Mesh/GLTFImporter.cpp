@@ -1256,10 +1256,48 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 		auto track = makeObject<TransformAnimationTrack>();
 		track->setTargetName(String::fromStdString(node.name));
 
+
 		const auto& data = pair.second;
 		if (data.translationFrames > 0) track->setupTranslations(data.translationFrames, data.translationTimes, data.translationValues, data.translationInterpolation);
 		if (data.rotationFrames > 0) track->setupRotations(data.rotationFrames, data.rotationTimes, data.rotationValues);
 		if (data.scaleFrames > 0) track->setupScales(data.scaleFrames, data.scaleTimes, data.scaleValues, data.scaleInterpolation);
+
+		// glTF の animation の姿勢には Node の初期姿勢が含まれている。
+		// Lumino としては初期姿勢からの相対変化量だけほしいので、初期姿勢の分を打ち消す。
+		{
+			//const auto& meshModelNode = m_meshModel->m_nodes[pair.first];
+			const auto nodeInversePos = Vector3(-node.translation[0], -node.translation[1], -node.translation[2]);
+			for (auto& k : track->m_translationKeys) {
+				k.value += nodeInversePos;
+				//k.value = -meshModelNode->initialLocalTransform().position();
+			}
+
+			if (node.rotation.size() == 4) {
+				const auto nodeInverseRot = Quaternion::makeInverse(Quaternion(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]));
+				for (auto& k : track->m_rotationKeys) {
+					k.value *= nodeInverseRot;
+				}
+			}
+			else {
+				// 回転を持たないが、rotationFrames を持つことはある
+			}
+
+			if (pair.first == 4) {
+				auto v = track->m_rotationKeys[30].value.toEulerAngles();
+				printf("");
+				//continue;
+			}
+		}
+
+		if (m_flipX) {
+			for (auto& k : track->m_translationKeys) {
+				k.value.x = -k.value.x;
+			}
+			for (auto& k : track->m_rotationKeys) {
+				k.value.y = -k.value.y;
+				k.value.z = -k.value.z;
+			}
+		}
 
 		clip->addTrack(track);
 	}

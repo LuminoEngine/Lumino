@@ -100,7 +100,7 @@ void InternalPrimitiveRenderer::flush(ICommandList* context)
     context->setVertexBuffer(0, m_vertexBuffer);
     context->setIndexBuffer(m_indexBuffer);
 	context->setPrimitiveTopology(m_primitiveType);
-    context->drawPrimitiveIndexed(0, primitiveCount, 0);
+    context->drawPrimitiveIndexed(0, primitiveCount, 0, 0);
 
     for (MeshGenerater* gen : m_generators) {
         gen->~MeshGenerater();

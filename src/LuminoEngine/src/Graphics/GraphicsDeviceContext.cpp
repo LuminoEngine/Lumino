@@ -525,10 +525,10 @@ void ICommandList::drawPrimitive(int startVertex, int primitiveCount)
     endCommit(GraphicsContextSubmitSource_Draw);
 }
 
-void ICommandList::drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount)
+void ICommandList::drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount, int vertexOffset)
 {
     commitStatus(GraphicsContextSubmitSource_Draw);
-    onDrawPrimitiveIndexed(m_staging.pipelineState.topology, startIndex, primitiveCount, instanceCount);
+    onDrawPrimitiveIndexed(m_staging.pipelineState.topology, startIndex, primitiveCount, instanceCount, vertexOffset);
     endCommit(GraphicsContextSubmitSource_Draw);
 }
 

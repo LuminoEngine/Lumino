@@ -17,4 +17,7 @@ void ViewModel::load()
 	m_meshComponent->setModel(m_model);
 	m_meshObject = ln::makeObject<ln::WorldObject>();
 	m_meshObject->addComponent(m_meshComponent);
+
+	auto* ac = m_meshComponent->model()->animationController();
+	//ac->play();
 }

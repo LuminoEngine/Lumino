@@ -13,37 +13,87 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 
 
 	const auto* view = context->currentRenderView;
-	for (const auto& node : model()->m_nodes) {
-		const float z = node->index() == 0 ? 100: 0;
-		const ln::Color c = node->index() == 0 ? ln::UIColors::red() : ln::UIColors::blue();
+	const auto& nodes = model()->m_nodes;
 
-		auto pos = view->transformProjection(node->globalMatrix().position(), ln::detail::ProjectionKind::ViewProjection3D, ln::detail::ProjectionKind::Independent2D);
-		//pos.z = z;
-		commandList->setTransfrom(ln::Matrix::makeTranslation(pos));
-		commandList->drawRegularPolygonPrimitive(16, 8, c, true, ln::Matrix::makeTranslation(0, 0, z));
-		commandList->drawRegularPolygonPrimitive(16, 10, c, false);
+	const auto& skeleton = model()->skeleton(0);
+	if (skeleton) {
+		for (const auto& bone : skeleton->m_bones) {
+			const auto& node = bone->node();
 
-		
+			const ln::Color c = ln::UIColors::blue();
+
+			auto pos = view->transformProjection(node->globalMatrix().position(), ln::detail::ProjectionKind::ViewProjection3D, ln::detail::ProjectionKind::Independent2D);
+			commandList->setTransfrom(ln::Matrix::makeTranslation(pos));
+			commandList->drawRegularPolygonPrimitive(16, 8, c, true, ln::Matrix::makeTranslation(0, 0, 0));
+			commandList->drawRegularPolygonPrimitive(16, 10, c, false);
 
 
-		if (node->parentNodeIndex() >= 0) {
-			const ln::Vector3& parentWorldPos = model()->m_nodes[node->parentNodeIndex()]->globalMatrix().position();
-			const ln::Vector3 parentPos = view->transformProjection(parentWorldPos, ln::detail::ProjectionKind::ViewProjection3D, ln::detail::ProjectionKind::Independent2D);
-			if ((pos - parentPos).length() >= 1.0f) {
-				const ln::Vector3 right = ln::Vector3::cross(
-					ln::Vector3::normalize(pos - parentPos),
-					ln::Vector3::UnitZ);
-				
-				ln::Vector3 points[3] = {
-					parentPos + (right * 10),
-					pos,
-					parentPos - (right * 10) };
-				ln::Color colors[3] = { ln::UIColors::blue(), ln::UIColors::blue(), ln::UIColors::blue() };
-				commandList->setTransfrom(ln::Matrix::Identity);
-				commandList->drawLineStripPrimitive(3, points, colors);
+			if (node->parentNodeIndex() >= 0) {
+				const auto& parentNode = nodes[node->parentNodeIndex()];
+				if (parentNode->m_boneNode) {
+					const ln::Vector3& parentWorldPos = parentNode->globalMatrix().position();
+					const ln::Vector3 parentPos = view->transformProjection(parentWorldPos, ln::detail::ProjectionKind::ViewProjection3D, ln::detail::ProjectionKind::Independent2D);
+					if ((pos - parentPos).length() >= 1.0f) {
+						const ln::Vector3 right = ln::Vector3::cross(
+							ln::Vector3::normalize(pos - parentPos),
+							ln::Vector3::UnitZ);
+
+						ln::Vector3 points[3] = {
+							parentPos + (right * 10),
+							pos,
+							parentPos - (right * 10) };
+						ln::Color colors[3] = { ln::UIColors::blue(), ln::UIColors::blue(), ln::UIColors::blue() };
+						commandList->setTransfrom(ln::Matrix::Identity);
+						commandList->drawLineStripPrimitive(3, points, colors);
+					}
+				}
 			}
-		}
 
+			if (node->children().isEmpty()) {
+				const auto wpos = ln::Vector3::transformCoord(ln::Vector3::UnitZ, node->globalMatrix());
+				const auto vpos = view->transformProjection(wpos, ln::detail::ProjectionKind::ViewProjection3D, ln::detail::ProjectionKind::Independent2D);
+				commandList->setTransfrom(ln::Matrix::makeTranslation(vpos));
+				commandList->drawRegularPolygonPrimitive(16, 10, c, false);
+			}
+			
+		}
+	}
+
+
+	if (0) {
+
+		for (const auto& node : nodes) {
+			const float z = node->index() == 0 ? 100 : 0;
+			const ln::Color c = node->index() == 0 ? ln::UIColors::red() : ln::UIColors::blue();
+
+			auto pos = view->transformProjection(node->globalMatrix().position(), ln::detail::ProjectionKind::ViewProjection3D, ln::detail::ProjectionKind::Independent2D);
+			//pos.z = z;
+			commandList->setTransfrom(ln::Matrix::makeTranslation(pos));
+			commandList->drawRegularPolygonPrimitive(16, 8, c, true, ln::Matrix::makeTranslation(0, 0, z));
+			commandList->drawRegularPolygonPrimitive(16, 10, c, false);
+
+
+
+
+			if (node->parentNodeIndex() >= 0) {
+				const ln::Vector3& parentWorldPos = nodes[node->parentNodeIndex()]->globalMatrix().position();
+				const ln::Vector3 parentPos = view->transformProjection(parentWorldPos, ln::detail::ProjectionKind::ViewProjection3D, ln::detail::ProjectionKind::Independent2D);
+				if ((pos - parentPos).length() >= 1.0f) {
+					const ln::Vector3 right = ln::Vector3::cross(
+						ln::Vector3::normalize(pos - parentPos),
+						ln::Vector3::UnitZ);
+
+					ln::Vector3 points[3] = {
+						parentPos + (right * 10),
+						pos,
+						parentPos - (right * 10) };
+					ln::Color colors[3] = { ln::UIColors::blue(), ln::UIColors::blue(), ln::UIColors::blue() };
+					commandList->setTransfrom(ln::Matrix::Identity);
+					commandList->drawLineStripPrimitive(3, points, colors);
+				}
+			}
+
+		}
 	}
 
 

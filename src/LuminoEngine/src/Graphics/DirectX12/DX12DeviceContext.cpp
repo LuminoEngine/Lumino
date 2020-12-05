@@ -267,7 +267,7 @@ void DX12GraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int start
     LN_NOTIMPLEMENTED();
 }
 
-void DX12GraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount)
+void DX12GraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset)
 {
     LN_NOTIMPLEMENTED();
 }
