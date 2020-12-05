@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 namespace ln {
+class MeshImportSettings;
 class SkinnedMeshModel;
 
 

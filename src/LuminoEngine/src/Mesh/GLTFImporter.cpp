@@ -171,13 +171,20 @@ bool GLTFImporter::onImportAsStaticMesh(MeshModel* model, const AssetPath& asset
 
 bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath& assetPath)
 {
-	// TODO: ひとまず HC4 用設定。
-	// インポート元モデルは [Y-Up,R-Hand] で、キャラクターは Z+ を正面としている。
-	// そのため Lumino 標準の Z+ 正面に合わせるには、X を反転するだけでよい。
-	m_flipZ = false;
-	m_flipX = true;
-	m_faceFlip = true;	// TODO: onImportAsStaticMesh の理論ならこれも不要なはずなのだが… 後でちゃんと調べる
+	if (isCharacterModelFormat()) {
+		// TODO: ひとまず HC4 用設定。
+		// インポート元モデルは [Y-Up,R-Hand] で、キャラクターは Z+ を正面としている。
+		// そのため Lumino 標準の Z+ 正面に合わせるには、X を反転するだけでよい。
+		m_flipZ = false;
+		m_flipX = true;
+		m_faceFlip = true;	// TODO: onImportAsStaticMesh の理論ならこれも不要なはずなのだが… 後でちゃんと調べる
 
+	}
+	else {
+		m_flipZ = true;
+		m_flipX = false;
+		m_faceFlip = false;
+	}
 
 	if (!openGLTFModel(assetPath)) {
 		return false;
@@ -187,27 +194,29 @@ bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, 
 
 	readCommon(m_meshModel);
 
-	for (const auto& skin : m_model->skins) {
-		auto meshSkeleton = readSkin(skin);
-		if (!meshSkeleton) {
-			return false;
-		}
-		model->addSkeleton(meshSkeleton);
+	if (isSkeletonImport()) {
+		for (const auto& skin : m_model->skins) {
+			auto meshSkeleton = readSkin(skin);
+			if (!meshSkeleton) {
+				return false;
+			}
+			model->addSkeleton(meshSkeleton);
 
-		// Note: skins->skeleton は将来的に使われなくなるみたいなプロパティ。
-		// どうもルートボーンを示すための値らしいのだが、Three.js とかでは無視されているようだ。
-		// https://tkaaad97.hatenablog.com/entry/2019/07/28/175737
-	}
+			// Note: skins->skeleton は将来的に使われなくなるみたいなプロパティ。
+			// どうもルートボーンを示すための値らしいのだが、Three.js とかでは無視されているようだ。
+			// https://tkaaad97.hatenablog.com/entry/2019/07/28/175737
+		}
 
-	for (const auto& animation : m_model->animations) {
-		auto clip = readAnimation(animation);
-		if (!clip) {
-			return false;
+		for (const auto& animation : m_model->animations) {
+			auto clip = readAnimation(animation);
+			if (!clip) {
+				return false;
+			}
+			if (clip->name().isEmpty()) {
+				clip->setName(String::fromNumber(m_animationClips.size()));
+			}
+			m_animationClips.add(clip);
 		}
-		if (clip->name().isEmpty()) {
-			clip->setName(String::fromNumber(m_animationClips.size()));
-		}
-		m_animationClips.add(clip);
 	}
 
 	return true;
@@ -1280,12 +1289,6 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 			}
 			else {
 				// 回転を持たないが、rotationFrames を持つことはある
-			}
-
-			if (pair.first == 4) {
-				auto v = track->m_rotationKeys[30].value.toEulerAngles();
-				printf("");
-				//continue;
 			}
 		}
 

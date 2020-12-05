@@ -79,9 +79,6 @@ class SkinnedMeshModel
 	//, public IAnimationTargetObject
 {
 public:
-	/** load */
-	LN_METHOD()
-	static Ref<SkinnedMeshModel> load(const StringRef& filePath);
 
 LN_CONSTRUCT_ACCESS:
     SkinnedMeshModel();

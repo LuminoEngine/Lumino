@@ -263,12 +263,13 @@ Ref<MeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetPath, f
 
 void MeshManager::loadStaticMeshModel(MeshModel* model, const AssetPath& assetPath, float scale)
 {
+	LN_NOTIMPLEMENTED();
 	{
 		auto diag = makeObject<DiagnosticsManager>();
 	 {
 
 			GLTFImporter importer;
-			importer.prepare(this, diag);
+			importer.prepare(this, diag, nullptr);
 			bool result = importer.onImportAsStaticMesh(model, assetPath);
 
 			//ObjMeshImporter importer;
@@ -285,7 +286,7 @@ void MeshManager::loadStaticMeshModel(MeshModel* model, const AssetPath& assetPa
 	model->m_scale = scale;
 }
 
-Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, float scale)
+Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, MeshImportSettings* settings)
 {
 	static const Char* candidateExts[] = { u".gltf", u".glb", u".fbx" };
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
@@ -312,7 +313,7 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		{
 
 			GLTFImporter importer;
-			importer.prepare(this, diag);
+			importer.prepare(this, diag, settings);
 			bool result = importer.onImportAsSkinnedMesh(mesh, *path);
 
 

@@ -15,8 +15,8 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 	const auto* view = context->currentRenderView;
 	const auto& nodes = model()->m_nodes;
 
-	const auto& skeleton = model()->skeleton(0);
-	if (skeleton) {
+	if (!model()->skeletons().isEmpty()) {
+		const auto& skeleton = model()->skeleton(0);
 		for (const auto& bone : skeleton->m_bones) {
 			const auto& node = bone->node();
 
@@ -55,7 +55,7 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 				commandList->setTransfrom(ln::Matrix::makeTranslation(vpos));
 				commandList->drawRegularPolygonPrimitive(16, 10, c, false);
 			}
-			
+
 		}
 	}
 

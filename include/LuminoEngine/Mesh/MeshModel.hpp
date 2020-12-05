@@ -98,8 +98,8 @@ class MeshModel
 public:
 	/** load */
 	LN_METHOD()
-    static Ref<MeshModel> load(const StringRef& filePath);
-	static Ref<MeshModel> loadSkinned(const StringRef& filePath);	// TODO: load 統一でいいかも
+    static Ref<MeshModel> load(const StringRef& filePath, MeshImportSettings* settings = nullptr);
+	//static Ref<MeshModel> loadSkinned(const StringRef& filePath);	// TODO: load 統一でいいかも
 
 	/** findNode */
 	LN_METHOD()
@@ -275,6 +275,20 @@ class MeshImportSettings
 	: public Object
 {
 public:
+	static MeshImportSettings* defaultSettings();
+
+	/** (default: true) */
+	void setSkeletonImport(bool value);
+
+	bool skeletonImport() const { return m_skeletonImport; }
+
+
+	/** */
+	void setCharacterModelFormat(Optional<bool> value) { m_isCharacterModelFormat = value; }
+
+	Optional<bool> isCharacterModelFormat() const { return m_isCharacterModelFormat; }
+
+	
 	/**
 	 * Bone 姿勢を平行移動成分へ適用するかどうかを設定します。(default: true)
 	 *
@@ -312,7 +326,10 @@ LN_CONSTRUCT_ACCESS:
 	bool init();
 
 private:
+	bool m_skeletonImport;
+	Optional<bool> m_isCharacterModelFormat;
 	Optional<bool> m_applyBoneTransformationsEnabled;
+
 	//Optional<bool> m_flipZCoordinate;
 };
 

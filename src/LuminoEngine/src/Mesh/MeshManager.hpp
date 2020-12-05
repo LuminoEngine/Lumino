@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <unordered_map>
 #include "../Base/RefObjectCache.hpp"
+#include <LuminoEngine/Mesh/Common.hpp>
 
 namespace ln {
 class DiagnosticsManager;
@@ -41,7 +42,7 @@ public:
 	Ref<MeshModel> acquireStaticMeshModel(const AssetPath& assetPath, float scale);
     //void loadStaticMeshModel(MeshModel* model, const Path& filePath, float scale);
 	void loadStaticMeshModel(MeshModel* model, const AssetPath& assetPath, float scale);
-    Ref<SkinnedMeshModel> createSkinnedMeshModel(const Path& filePath, float scale);
+    Ref<SkinnedMeshModel> createSkinnedMeshModel(const Path& filePath, MeshImportSettings* settings);
 	Ref<Texture> createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag);
 
 	void collectUnreferenceObjects();

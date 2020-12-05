@@ -10,19 +10,16 @@ namespace detail {
 MeshImporter::MeshImporter()
 	: m_applyBoneTransformationsEnabled(true)
 	//, m_flipZCoordinate(true)
+	, m_settings(nullptr)
 {
 }
 
-void MeshImporter::prepare(MeshManager* meshManager, DiagnosticsManager* diag)
+void MeshImporter::prepare(MeshManager* meshManager, DiagnosticsManager* diag, const MeshImportSettings* settings)
 {
 	m_meshManager = meshManager;
 	m_assetManager = m_meshManager->assetManager();
 	m_diag = diag;
-}
-
-void MeshImporter::applySettings(const MeshImportSettings* settings)
-{
-	LN_DCHECK(settings);
+	m_settings = settings;
 
 	m_applyBoneTransformationsEnabled = settings->applyBoneTransformationsEnabled().valueOr(m_applyBoneTransformationsEnabled);
 }

@@ -64,18 +64,20 @@ void MeshSkeleton::addBone(int linkNode, const Matrix& inverseInitialMatrix)
 //==============================================================================
 // MeshModel
 
-Ref<MeshModel> MeshModel::load(const StringRef& filePath)
+Ref<MeshModel> MeshModel::load(const StringRef& filePath, MeshImportSettings* settings)
 {
-	return detail::EngineDomain::meshManager()->acquireStaticMeshModel(filePath, 1.0f);
+	return detail::EngineDomain::meshManager()->createSkinnedMeshModel(
+		filePath, settings ? settings : MeshImportSettings::defaultSettings());
+	//return detail::EngineDomain::meshManager()->acquireStaticMeshModel(filePath, 1.0f);
 	//auto model = makeObject<MeshModel>();
  //   detail::EngineDomain::meshManager()->loadStaticMeshModel(model, filePath, scale);
 	//return model;
 }
 
-Ref<MeshModel> MeshModel::loadSkinned(const StringRef& filePath)
-{
-	return detail::EngineDomain::meshManager()->createSkinnedMeshModel(filePath, 1.0f);
-}
+//Ref<MeshModel> MeshModel::loadSkinned(const StringRef& filePath)
+//{
+//	return detail::EngineDomain::meshManager()->createSkinnedMeshModel(filePath, 1.0f);
+//}
 
 MeshModel::MeshModel()
     : m_type(detail::InternalMeshModelType::StaticMesh)
@@ -562,14 +564,26 @@ std::array<const Char*, 1> MeshHelper::CandidateExtensions_MeshModel = { u".gltf
 //==============================================================================
 // InstancedMeshList
 
+MeshImportSettings* MeshImportSettings::defaultSettings()
+{
+	static MeshImportSettings settings;
+	return &settings;
+}
+
 MeshImportSettings::MeshImportSettings()
-	: m_applyBoneTransformationsEnabled(true)
+	: m_skeletonImport(true)
+	, m_applyBoneTransformationsEnabled(true)
 {
 }
 
 bool MeshImportSettings::init()
 {
 	return Object::init();
+}
+
+void MeshImportSettings::setSkeletonImport(bool value)
+{
+	m_skeletonImport = value;
 }
 
 void MeshImportSettings::setApplyBoneTransformationsEnabled(Optional<bool> value)

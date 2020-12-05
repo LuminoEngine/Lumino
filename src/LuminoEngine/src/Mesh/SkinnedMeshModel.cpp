@@ -82,10 +82,10 @@ void SkinnedMeshBone::updateGlobalTransform(bool hierarchical)
 //==============================================================================
 // SkinnedMeshModel
 
-Ref<SkinnedMeshModel> SkinnedMeshModel::load(const StringRef& filePath)
-{
-	return detail::EngineDomain::meshManager()->createSkinnedMeshModel(filePath, 1.0f);
-}
+//Ref<SkinnedMeshModel> SkinnedMeshModel::load(const StringRef& filePath)
+//{
+//	return detail::EngineDomain::meshManager()->createSkinnedMeshModel(filePath, 1.0f);
+//}
 
 SkinnedMeshModel::SkinnedMeshModel()
     : MeshModel(detail::InternalMeshModelType::SkinnedMesh)
