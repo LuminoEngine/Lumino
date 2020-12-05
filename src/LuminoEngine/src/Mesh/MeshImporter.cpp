@@ -22,6 +22,10 @@ void MeshImporter::prepare(MeshManager* meshManager, DiagnosticsManager* diag, c
 	m_settings = settings;
 
 	m_applyBoneTransformationsEnabled = settings->applyBoneTransformationsEnabled().valueOr(m_applyBoneTransformationsEnabled);
+
+	if (m_settings->isCharacterModelFormat()) {
+		m_isCharacterModelFormat = m_settings->isCharacterModelFormat().value();
+	}
 }
 
 } // namespace detail

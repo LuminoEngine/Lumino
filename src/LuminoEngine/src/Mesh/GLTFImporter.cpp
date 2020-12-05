@@ -186,6 +186,10 @@ bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, 
 		m_faceFlip = false;
 	}
 
+
+
+
+
 	if (!openGLTFModel(assetPath)) {
 		return false;
 	}

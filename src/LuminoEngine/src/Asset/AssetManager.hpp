@@ -90,6 +90,7 @@ public:
         // > 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
         const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
 
+        // キャッシュに見つかったらそれを返す
         if (auto obj = cache->findObject(cacheKey)) {
             return obj;
         }
