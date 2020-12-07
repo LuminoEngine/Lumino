@@ -57,14 +57,6 @@ void AudioManager::init(const Settings& settings)
 
 void AudioManager::dispose()
 {
-    if (m_gameAudio) {
-        m_gameAudio->dispose();
-        m_gameAudio = nullptr;
-    }
-	if (m_gameAudio2) {
-		m_gameAudio2->dispose();
-		m_gameAudio2 = nullptr;
-	}
 
 	{
 		auto disposeList = m_soundManagementList;
@@ -90,6 +82,16 @@ void AudioManager::dispose()
 		throw *m_audioThreadException;
 	}
 #endif
+
+	if (m_gameAudio) {
+		m_gameAudio->dispose();
+		m_gameAudio = nullptr;
+	}
+	if (m_gameAudio2) {
+		m_gameAudio2->dispose();
+		m_gameAudio2 = nullptr;
+	}
+	
     if (m_dispatcher) {
         m_dispatcher->executeTasks();   // 残っているものを実行してしまう
         m_dispatcher = nullptr;
@@ -163,18 +165,18 @@ Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef& filePath)
 	}
 }
 
-void AudioManager::createAudioDecoderAsync(const StringRef& filePath, const std::function<void(AudioDecoder* decoder)>& postAction)
-{
-    auto task = Task::create([this, filePath, postAction]() {
-        auto decoder = createAudioDecoder(filePath);
-        m_dispatcher->post([postAction, decoder]() {
-            postAction(decoder);
-        });
-    });
-    //task->awaitThen([]() {
-    //    postAction
-    //});
-}
+//void AudioManager::createAudioDecoderAsync(const StringRef& filePath, const std::function<void(AudioDecoder* decoder)>& postAction)
+//{
+//    auto task = Task::create([this, filePath, postAction]() {
+//        auto decoder = createAudioDecoder(filePath);
+//        m_dispatcher->post([postAction, decoder]() {
+//            postAction(decoder);
+//        });
+//    });
+//    //task->awaitThen([]() {
+//    //    postAction
+//    //});
+//}
 
 void AudioManager::releaseAudioDecoder(AudioDecoder* decoder)
 {

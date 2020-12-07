@@ -8,7 +8,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
-#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
 #include "ObjMeshImporter.hpp"
 
 namespace ln {
@@ -136,7 +136,7 @@ public:
 //==============================================================================
 // ObjMeshImporter
 
-Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, DiagnosticsManager* diag)
+Ref<MeshModel> ObjMeshImporter::import(const Path& filePath, float scale, DiagnosticsManager* diag)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -159,7 +159,7 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, 
     }
 
     std::unordered_map<int, Vector3> smoothVertexNormals;
-    auto meshModel = makeObject<StaticMeshModel>();
+    auto meshModel = makeObject<MeshModel>();
 
     for (tinyobj::shape_t& shape : shapes)
     {

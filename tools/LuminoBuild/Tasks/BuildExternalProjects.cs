@@ -345,6 +345,17 @@ namespace LuminoBuild.Tasks
                 Utils.CallProcess("git", "clone --depth 1 -b v5.4.0 https://github.com/lua/lua.git");
                 Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "lua", "CMakeLists.txt"), "lua");
             }
+            if (!Directory.Exists("nanovg"))
+            {
+                Utils.CallProcess("git", "clone https://github.com/memononen/nanovg.git");
+                using (CurrentDir.Enter("nanovg"))
+                {
+                    Utils.CallProcess("git", "checkout c35e80c3fed7445b4e2973fccccc89afd97834cf");
+                }
+
+                // TODO: https://github.com/memononen/nanovg/pull/565 のマージ待ち
+                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "nanovg", "CMakeLists.txt"), "nanovg");
+            }
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
 
@@ -364,7 +375,7 @@ namespace LuminoBuild.Tasks
                     var altRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
                     var cppyamlRuntime = "-DYAML_MSVC_SHARED_RT=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
 
-                    BuildProjectMSVC(builder, "lua", reposDir, targetName, targetFullName, configuration);
+                    BuildProjectMSVC(builder, "nanovg", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "yaml-cpp", reposDir, targetName, targetFullName, configuration, $"{cppyamlRuntime} -DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF");
                     BuildProjectMSVC(builder, "zlib", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "libpng", reposDir, targetName, targetFullName, configuration, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
@@ -382,6 +393,7 @@ namespace LuminoBuild.Tasks
                     BuildProjectMSVC(builder, "tmxlite/tmxlite", reposDir, targetName, targetFullName, configuration, $"-DTMXLITE_STATIC_LIB=ON");
                     BuildProjectMSVC(builder, "Box2D/Box2D", reposDir, targetName, targetFullName, configuration, $"-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
                     BuildProjectMSVC(builder, "Vulkan-Headers", reposDir, targetName, targetFullName, configuration);
+                    BuildProjectMSVC(builder, "lua", reposDir, targetName, targetFullName, configuration);
 
                     if (builder.Args.Contains("--enable-Effekseer"))
                     {
@@ -411,6 +423,7 @@ namespace LuminoBuild.Tasks
                         BuildProjectAndroid(builder, "Box2D/Box2D", reposDir,targetName, "-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
                         BuildProjectAndroid(builder, "Vulkan-Headers", reposDir,targetName);
                         BuildProjectAndroid(builder, "yaml-cpp", reposDir, targetName, $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF");
+                        BuildProjectAndroid(builder, "nanovg", reposDir, targetName);
                     }
                 }
 
@@ -433,6 +446,7 @@ namespace LuminoBuild.Tasks
                     BuildProjectEm(builder, "tmxlite/tmxlite", reposDir, "Emscripten", "-DTMXLITE_STATIC_LIB=ON");
                     BuildProjectEm(builder, "Box2D/Box2D", reposDir, "Emscripten", "-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
                     BuildProjectEm(builder, "yaml-cpp", reposDir, "Emscripten", $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF");
+                    BuildProjectEm(builder, "nanovg", reposDir, "Emscripten");
                 }
 
             }
@@ -474,6 +488,7 @@ namespace LuminoBuild.Tasks
                         BuildProject(builder, "Box2D/Box2D", "", reposDir, dirName, generator, $"-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON " + args);
                         BuildProject(builder, "Vulkan-Headers", "", reposDir, dirName, generator, args);
                         BuildProject(builder, "yaml-cpp", "", reposDir, dirName, generator, $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF " + args);
+                        BuildProject(builder, "nanovg", "", reposDir, dirName, generator, args);
                     }
                 }
 
@@ -510,6 +525,7 @@ namespace LuminoBuild.Tasks
                         BuildProject(builder, "Box2D/Box2D", t.Config, reposDir, dirName, generator, $"-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON " + args);
                         BuildProject(builder, "Vulkan-Headers", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "yaml-cpp", t.Config, reposDir, dirName, generator, $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF " + args);
+                        BuildProject(builder, "nanovg", t.Config, reposDir, dirName, generator, args);
                     }
                 }
             }

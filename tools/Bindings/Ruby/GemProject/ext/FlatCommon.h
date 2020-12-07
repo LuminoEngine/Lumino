@@ -12,14 +12,20 @@
 
 
 #define LNI_FUNC_TRY_BEGIN    try {
+//#define LNI_FUNC_TRY_END_RETURN    } \
+//    catch (ln::Exception& e) { \
+//        return ln::Runtime::processException(&e); \
+//    } \
+//    catch (...) { \
+//        return LN_ERROR_UNKNOWN; \
+//    } \
+//	return LN_SUCCESS;
 #define LNI_FUNC_TRY_END_RETURN    } \
     catch (ln::Exception& e) { \
         return ln::Runtime::processException(&e); \
     } \
-    catch (...) { \
-        return LN_ERROR_UNKNOWN; \
-    } \
 	return LN_SUCCESS;
+// NOTE: HSP ランタイムは エラーを例外で通知していくので、catch (...) で処理してしまうとよくわからないままプロセスが終了してしまう。
 
 #define LNI_BOOL_TO_LNBOOL(x)    (x) ? LN_TRUE : LN_FALSE
 #define LNI_LNBOOL_TO_BOOL(x)    (x != LN_FALSE)
@@ -29,8 +35,8 @@
 #define LNI_OBJECT_TO_HANDLE(obj)						::ln::Runtime::makeObjectWrap(obj, false)
 #define LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(obj)	::ln::Runtime::makeObjectWrap(obj, true)
 #define LNI_STRING_TO_STRPTR_UTF16(str)                 ::ln::Runtime::getUTF16StringPtr(str)
-#define LNI_STRING_TO_STRPTR_UTF8(str)                  ::ln::Runtime::getUTF8StringPtr(str)
-#define LNI_UTF8STRPTR_TO_STRING(str)                   ::ln::String::fromCString(str, -1, ln::TextEncoding::utf8Encoding())
+#define LNI_STRING_TO_STRPTR_A(str)                     ::ln::Runtime::getAStringPtr(str)
+#define LNI_ASTRPTR_TO_STRING(str)                      ::ln::String::fromCString(str, -1, ::ln::Runtime::getAStringEncoding())
 
 #define LNI_REFERENCE_RETAINED (1)
 #define LNI_REFERENCE_RELEASED (2)
@@ -43,16 +49,16 @@ extern "C" {
 #include <stdint.h>
 
 /** Lumino のオブジェクトを識別するための値です。0 (LN_NULL_HANDLE) は無効値です。 */
-typedef uint32_t LnHandle;
+typedef uint32_t LNHandle;
 
-typedef void* LnUserData;
+typedef void* LNUserData;
 
-typedef char16_t LnChar;
+typedef char16_t LNChar;
 
 #define LN_NULL_HANDLE 0
 
 /** 結果・エラーコード */
-typedef enum tagLnResult
+typedef enum tagLNResult
 {
     /** 成功 */
 	LN_SUCCESS = 0,
@@ -63,10 +69,13 @@ typedef enum tagLnResult
 	/**  */
 	LN_RUNTIME_UNINITIALIZED = -2,
 
-} LnResult;
+    /**  */
+    LN_ERROR_INVALID_ARGUMENT = -3,
+
+} LNResult;
 
 /** 真偽値 */
-typedef enum tagLnBool
+typedef enum tagLNBool
 {
     /** 偽 */
     LN_FALSE = 0,
@@ -74,10 +83,10 @@ typedef enum tagLnBool
     /** 真 */
     LN_TRUE = 1,
 
-} LnBool;
+} LNBool;
 
 /** ログの通知レベル */
-typedef enum tagLnLogLevel
+typedef enum tagLNLogLevel
 {
     LN_LOG_LEVEL_UNKNOWN = 0,
     LN_LOG_LEVEL_VERBOSE,
@@ -87,49 +96,53 @@ typedef enum tagLnLogLevel
     LN_LOG_LEVEL_ERROR,
     LN_LOG_LEVEL_FATAL,
 
-} LnLogLevel;
+} LNLogLevel;
 
 //==============================================================================
 // Internal API
 
-typedef void(*LnRuntimeFinalizedCallback)();
-typedef void(*LnReferenceCountTrackerCallback)(LnHandle handle, int method, int count);
-typedef void(*LnRuntimeGetTypeInfoIdCallback)(LnHandle handle, int* outTypeInfoId);
+typedef void(*LNRuntimeFinalizedCallback)();
+typedef void(*LNReferenceCountTrackerCallback)(LNHandle handle, int method, int count);
+typedef void(*LNRuntimeGetTypeInfoIdCallback)(LNHandle handle, int* outTypeInfoId);
 
-typedef struct tagLnRuntimeSettings
+typedef struct tagLNRuntimeSettings
 {
-    LnRuntimeFinalizedCallback runtimeFinalizedCallback;
-    LnReferenceCountTrackerCallback referenceCountTrackerCallback;
-    LnRuntimeGetTypeInfoIdCallback runtimeGetTypeInfoIdCallback;
+    LNRuntimeFinalizedCallback runtimeFinalizedCallback;
+    LNReferenceCountTrackerCallback referenceCountTrackerCallback;
+    LNRuntimeGetTypeInfoIdCallback runtimeGetTypeInfoIdCallback;
 
-} LnRuntimeSettings;
+} LNRuntimeSettings;
 
-extern LN_FLAT_API void LnRuntime_Initialize(const LnRuntimeSettings* settings);
-extern LN_FLAT_API void LnRuntime_Finalize();
-inline const char* LnRuntime_GetLastErrorMessage() { return ""; }  // TODO:
-extern LN_FLAT_API void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id);
-extern LN_FLAT_API int64_t LnRuntime_GetManagedObjectId(LnHandle handle);
-extern LN_FLAT_API int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle);
-//extern LN_FLAT_API void LnRuntime_SetReferenceCountTracker(LnReferenceCountTrackerCallback callback);
-extern LN_FLAT_API void LnRuntime_SetReferenceTrackEnabled(LnHandle handle);
-//extern LN_FLAT_API void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback);
-//extern LN_FLAT_API void LnRuntime_SetRuntimeCreateInstanceCallback(LnRuntimeCreateInstanceCallback callback);
-//extern LN_FLAT_API void LnRuntime_SetRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback);
-extern LN_FLAT_API void LnRuntime_RunAppInternal(LnHandle app);
-extern LN_FLAT_API void LnRuntime_DumpInfo();
+extern LN_FLAT_API void LNRuntime_Initialize(const LNRuntimeSettings* settings);
+extern LN_FLAT_API void LNRuntime_Finalize();
+inline const char* LNRuntime_GetLastErrorMessage() { return ""; }  // TODO:
+extern LN_FLAT_API void LNRuntime_SetManagedObjectId(LNHandle handle, int64_t id);
+extern LN_FLAT_API int64_t LNRuntime_GetManagedObjectId(LNHandle handle);
+extern LN_FLAT_API int64_t LNRuntime_GetManagedTypeInfoId(LNHandle handle);
+//extern LN_FLAT_API void LNRuntime_SetReferenceCountTracker(LNReferenceCountTrackerCallback callback);
+extern LN_FLAT_API void LNRuntime_SetReferenceTrackEnabled(LNHandle handle);
+//extern LN_FLAT_API void LNRuntime_SetRuntimeFinalizedCallback(LNRuntimeFinalizedCallback callback);
+//extern LN_FLAT_API void LNRuntime_SetRuntimeCreateInstanceCallback(LNRuntimeCreateInstanceCallback callback);
+//extern LN_FLAT_API void LNRuntime_SetRuntimeGetTypeInfoIdCallback(LNRuntimeGetTypeInfoIdCallback callback);
+extern LN_FLAT_API void LNRuntime_RunAppInternal(LNHandle app);
+extern LN_FLAT_API void LNRuntime_DumpInfo();
 
-extern LN_FLAT_API void LnInternalEngineSettings_SetEngineResourcesPathA(const char* path);
+extern LN_FLAT_API void LNInternalEngineSettings_SetEngineResourcesPathA(const char* path);
 
-typedef void(*LnTypeInfoCreateInstanceCallback)(int typeInfoId, LnHandle* outHandle);
+typedef void(*LNTypeInfoCreateInstanceCallback)(int typeInfoId, LNHandle* outHandle);
 
-extern LN_FLAT_API LnResult LnTypeInfo_Acquire(const LnChar* typeName, int* outTypeInfoId);
-extern LN_FLAT_API LnResult LnTypeInfo_AcquireA(const char* typeName, int* outTypeInfoId);
-extern LN_FLAT_API LnResult LnTypeInfo_Find(const LnChar* typeName, int* outTypeInfoId);
-extern LN_FLAT_API LnResult LnTypeInfo_FindA(const char* typeName, int* outTypeInfoId);
-extern LN_FLAT_API LnResult LnTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId);
-extern LN_FLAT_API LnResult LnTypeInfo_SetCreateInstanceCallback(int typeInfoId, LnTypeInfoCreateInstanceCallback callback);
-extern LN_FLAT_API LnResult LnTypeInfo_SetManagedTypeInfoId(int typeInfoId, int managedTypeInfoId);
-extern LN_FLAT_API LnResult LnTypeInfo_GetManagedTypeInfoId(int typeInfoId, int* outManagedTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_Acquire(const LNChar* typeName, int* outTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_AcquireA(const char* typeName, int* outTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_Find(const LNChar* typeName, int* outTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_FindA(const char* typeName, int* outTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_SetCreateInstanceCallback(int typeInfoId, LNTypeInfoCreateInstanceCallback callback);
+extern LN_FLAT_API LNResult LNTypeInfo_SetManagedTypeInfoId(int typeInfoId, int managedTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_GetManagedTypeInfoId(int typeInfoId, int* outManagedTypeInfoId);
+
+typedef uint64_t LNSubinstanceId;
+typedef LNSubinstanceId(*LNSubinstanceAllocFunc)(LNHandle object);
+typedef void(*LNSubinstanceFreeFunc)(LNHandle object, LNSubinstanceId subinstanceId);
 
 //==============================================================================
 
@@ -142,32 +155,33 @@ extern LN_FLAT_API LnResult LnTypeInfo_GetManagedTypeInfoId(int typeInfoId, int*
 	@param[in]	obj	: オブジェクトハンドル
 	@details	指定されたオブジェクトの参照を解放します。
 */
-LN_FLAT_API LnResult LnObject_Release(LnHandle obj);
+LN_FLAT_API LNResult LNObject_Release(LNHandle obj);
 
 /**
  *  @brief      オブジェクトの参照を取得します。
  *  @param[in]  obj	: オブジェクトハンドル
  *  @details    指定されたオブジェクトの参照カウントをインクリメントします。
  */
-LN_FLAT_API LnResult LnObject_Retain(LnHandle obj);
+LN_FLAT_API LNResult LNObject_Retain(LNHandle obj);
 
 /**
  *  @brief      ネイティブオブジェクトの参照カウントを取得します。これは内部的に使用される関数です。
  *  @param[in]  obj	: オブジェクトハンドル
  */
-LN_FLAT_API int32_t LnObject_GetReferenceCount(LnHandle obj);
+LN_FLAT_API LNResult LNObject_GetReferenceCount(LNHandle object, int* outReturn);
+LN_FLAT_API int32_t _LNObject_GetReferenceCount(LNHandle obj);
 
 // class LNWS_XXXX のインスタンスに対して set できる。
 // Engine 内部で new されたインスタンスに対して呼び出すことはできない。
 // Managed 側で Engine のクラスを継承して新たな型を作ったとき、それを登録するために使用する。
-LN_FLAT_API LnResult LnObject_SetTypeInfoId(LnHandle obj, int typeInfoId);
+LN_FLAT_API LNResult LNObject_SetTypeInfoId(LNHandle obj, int typeInfoId);
 
 //==============================================================================
 
-LN_FLAT_API void LnLog_SetLevel(LnLogLevel level);
-LN_FLAT_API void LnLog_Write(LnLogLevel level, const LnChar* tag, const LnChar* text);
-LN_FLAT_API void LnLog_WriteA(LnLogLevel level, const char* tag, const char* text);
-LN_FLAT_API void LnLog_PrintA(LnLogLevel level, const char* tag, const char* format, ...);
+LN_FLAT_API void LNLog_SetLevel(LNLogLevel level);
+LN_FLAT_API void LNLog_Write(LNLogLevel level, const LNChar* tag, const LNChar* text);
+LN_FLAT_API void LNLog_WriteA(LNLogLevel level, const char* tag, const char* text);
+LN_FLAT_API void LNLog_PrintA(LNLogLevel level, const char* tag, const char* format, ...);
 
 #ifdef __cplusplus
 } // extern "C"

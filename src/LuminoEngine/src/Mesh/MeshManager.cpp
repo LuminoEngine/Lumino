@@ -6,8 +6,8 @@
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include <LuminoEngine/Animation/AnimationMixer.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "GLTFImporter.hpp"
 #include "FbxImporter.hpp"
@@ -220,7 +220,7 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
 	}
 }
 
-Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const Path& filePath, float scale)
+Ref<MeshModel> MeshManager::acquireStaticMeshModel(const Path& filePath, float scale)
 {
 	static const Char* candidateExts[] = { u".gltf", u".glb", u".pmx" };
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
@@ -233,7 +233,7 @@ Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const Path& filePath, f
 	}
 }
 
-Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetPath, float scale)
+Ref<MeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetPath, float scale)
 {
 	uint64_t key = assetPath.calculateHash();
 	auto mesh = m_meshModelCache.findObject(key);
@@ -241,7 +241,7 @@ Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetP
 		return mesh;
 	}
 	else {
-		mesh = makeObject<StaticMeshModel>();
+		mesh = makeObject<MeshModel>();
 		loadStaticMeshModel(mesh, assetPath, scale);
 		m_meshModelCache.registerObject(key, mesh, 0);
 		return mesh;
@@ -249,7 +249,7 @@ Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetP
 }
 
 // TODO: deprecaed
-//void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const Path& filePath, float scale)
+//void MeshManager::loadStaticMeshModel(MeshModel* model, const Path& filePath, float scale)
 //{
 //	static const Char* candidateExts[] = { u".gltf", u".glb" };
 //	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
@@ -261,14 +261,15 @@ Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetP
 //	}
 //}
 
-void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const AssetPath& assetPath, float scale)
+void MeshManager::loadStaticMeshModel(MeshModel* model, const AssetPath& assetPath, float scale)
 {
+	LN_NOTIMPLEMENTED();
 	{
 		auto diag = makeObject<DiagnosticsManager>();
 	 {
 
 			GLTFImporter importer;
-			importer.prepare(this, diag);
+			importer.prepare(this, diag, nullptr);
 			bool result = importer.onImportAsStaticMesh(model, assetPath);
 
 			//ObjMeshImporter importer;
@@ -285,7 +286,7 @@ void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const AssetPath& a
 	model->m_scale = scale;
 }
 
-Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, float scale)
+Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, MeshImportSettings* settings)
 {
 	static const Char* candidateExts[] = { u".gltf", u".glb", u".fbx" };
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
@@ -312,13 +313,11 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		{
 
 			GLTFImporter importer;
-			importer.prepare(this, diag);
+			importer.prepare(this, diag, settings);
 			bool result = importer.onImportAsSkinnedMesh(mesh, *path);
 
 
-			//if (!importer.animationClips().isEmpty()) {
 			if (!mesh->skeletons().isEmpty()) {
-				//auto mixer = makeObject<AnimationMixerCore>();
 				mesh->m_animationController = makeObject<AnimationController>(mesh);
 
 				for (auto& clip : importer.animationClips()) {
@@ -336,6 +335,8 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		boneMapper.map(mesh);
 
 		if (mesh->m_animationController) {
+			
+
 			if (MeshNode* root = mesh->findHumanoidBone(HumanoidBones::Hips)) {
 				mesh->m_animationController->core()->m_animationTranslationBasis = root->initialLocalTransform().position().y;
 			}

@@ -10,6 +10,7 @@
 #include <LuminoEngine/UI/UIAdorner.hpp>
 #include <LuminoEngine/UI/Controls/UIDialog.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
+#include "../Rendering/CommandListServer.hpp"
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderElement.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
@@ -29,15 +30,11 @@ void UIFrameRenderView::init()
     m_renderingContext = makeRef<UIRenderingContext>();
     m_sceneRenderingPipeline = makeRef<detail::FlatRenderingPipeline>();
     m_sceneRenderingPipeline->init();
-    m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
     m_viewPoint = makeObject<RenderViewPoint>();
 
     //m_clearRenderPass = makeObject<RenderPass>();
 
     m_adornerLayer = makeObject<UIAdornerLayer>(this);
-
-    m_drawElementListCollector->addDrawElementList(/*RenderPhaseClass::Default, */m_renderingContext->m_elementList);
-    addDrawElementListManager(m_drawElementListCollector);
 }
 
 void UIFrameRenderView::setRootElement(UIDomainProvidor* element)
@@ -77,18 +74,24 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
         //fb.depthBuffer = graphicsContext->renderPass()->depthBuffer();
 
         // TODO:
-        detail::CameraInfo camera;
         {
-            m_viewPoint->viewPixelSize = camera.viewPixelSize = Size(renderTarget->width(), renderTarget->height());	// TODO: 必要？
-            m_viewPoint->viewPosition = camera.viewPosition = Vector3::Zero;
-            m_viewPoint->viewDirection = camera.viewDirection = Vector3::UnitZ;
-            m_viewPoint->viewMatrix = camera.viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);//Matrix();// 
-            m_viewPoint->projMatrix = camera.projMatrix = Matrix::makePerspective2DLH(camera.viewPixelSize.width, camera.viewPixelSize.height, 0, 1000);
-            m_viewPoint->viewProjMatrix = camera.viewProjMatrix = camera.viewMatrix * camera.projMatrix;
-            m_viewPoint->viewFrustum = camera.viewFrustum = ViewFrustum(camera.viewProjMatrix);
+            m_viewPoint->viewPixelSize = Size(renderTarget->width(), renderTarget->height());	// TODO: 必要？
+            m_viewPoint->viewPosition = Vector3::Zero;
+            m_viewPoint->viewDirection = Vector3::UnitZ;
+            m_viewPoint->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);//Matrix();// 
+            m_viewPoint->projMatrix = Matrix::makePerspective2DLH(m_viewPoint->viewPixelSize.width, m_viewPoint->viewPixelSize.height, 0, 1000);
+            m_viewPoint->viewProjMatrix = m_viewPoint->viewMatrix * m_viewPoint->projMatrix;
+            m_viewPoint->viewFrustum = ViewFrustum(m_viewPoint->viewProjMatrix);
             m_viewPoint->fovY = 1.0f;
-            m_viewPoint->nearClip = camera.nearClip = 0;
-            m_viewPoint->farClip = camera.farClip = 1000;
+            m_viewPoint->nearClip = 0.0f;
+            m_viewPoint->farClip = 1000.0f;
+
+            detail::CameraInfo camera;
+            camera.makePerspective(
+                Vector3::Zero, Vector3::UnitZ,
+                Math::PI / 4, m_viewPoint->viewPixelSize,
+                0.0f, 1000.0f);
+            makeViewProjections(camera, 1.0);   // TODO: dpiscale
         }
 
 
@@ -137,8 +140,11 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
 
 
 
-        assert(elementListManagers().size() == 1);
-        m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, elementListManagers().front());
+        m_sceneRenderingPipeline->render(
+            graphicsContext, m_renderingContext,
+            renderTarget, clearInfo, this, detail::ProjectionKind::Independent2D,
+            m_renderingContext->commandList()->elementList(),
+            m_renderingContext->commandListServer());
     }
 }
 

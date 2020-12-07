@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/PostEffect/SSRPostEffect.hpp>
@@ -70,11 +71,11 @@ bool SSRPostEffectCore::init(Material* compositeMaterial)
     return true;
 }
 
-bool SSRPostEffectCore::prepare(RenderingContext* context, RenderTargetTexture* source)
+bool SSRPostEffectCore::prepare(RenderView* renderView, CommandList* context, RenderTargetTexture* source)
 {
-    Texture* viewNormalMap = context->gbuffer(GBuffer::ViewNormalMap);
-    Texture* viewDepthMap = context->gbuffer(GBuffer::ViewDepthMap);
-    Texture* viewMaterialMap = context->gbuffer(GBuffer::ViewMaterialMap);
+    Texture* viewNormalMap = renderView->gbuffer(GBuffer::ViewNormalMap);
+    Texture* viewDepthMap = renderView->gbuffer(GBuffer::ViewDepthMap);
+    Texture* viewMaterialMap = renderView->gbuffer(GBuffer::ViewMaterialMap);
 
     if (viewNormalMap && viewDepthMap && viewMaterialMap) {
 
@@ -107,7 +108,7 @@ bool SSRPostEffectCore::prepare(RenderingContext* context, RenderTargetTexture* 
     }
 }
 
-void SSRPostEffectCore::render(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+void SSRPostEffectCore::render(CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     m_paramColorSampler->setTexture(source);
     m_paramSSRSampler->setTexture(m_blurTarget2);
@@ -155,9 +156,9 @@ bool SSRPostEffectInstance::init(SSRPostEffect* owner)
     return true;
 }
 
-bool SSRPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool SSRPostEffectInstance::onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
-    if (m_effect.prepare(context, source)) {
+    if (m_effect.prepare(renderView, context, source)) {
         m_effect.render(context, source, destination);
         return true;
     }

@@ -123,7 +123,7 @@ class FbxStreamWrapper : public ::FbxStream
     }
 };
 
-Ref<StaticMeshModel> FbxImporter::import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+Ref<MeshModel> FbxImporter::import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
 {
 	return nullptr;
 }

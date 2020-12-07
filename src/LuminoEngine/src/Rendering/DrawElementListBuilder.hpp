@@ -7,6 +7,7 @@
 #include "RenderFeature/SpriteTextRenderFeature.hpp"
 #include "RenderFeature/FrameRectRenderFeature.hpp"
 #include "RenderFeature/ShapesRenderFeature.hpp"
+#include "RenderFeature/PathRenderFeature.hpp"
 #include "RenderFeature/ExtensionRenderFeature.hpp"
 
 namespace ln {
@@ -64,7 +65,8 @@ public:
     void setBaseTransfrom(const Optional<Matrix>& value);
 	const Matrix& baseTransform() const;
     void setRenderPriority(int value);
-    void setRenderPhase(RenderPhaseClass value);
+    void setRenderPhase(RenderPart value);
+	RenderPart renderPhase();	// TODO: blit の対応が済んだら消す
 	void setAdditionalElementFlags(RenderDrawElementTypeFlags value);
 
 	// BuiltinEffectData
@@ -92,8 +94,8 @@ public:
 		RenderStage* stage = prepareRenderStage(renderFeature);
 		if (LN_ENSURE(stage)) return nullptr;
 		TElement* element = m_targetList->newFrameData<TElement>();
-		m_targetList->addElement(stage, element);
         prepareRenderDrawElement(element, m_targetList->lastElement(), stage);
+		m_targetList->addElement(element);
 		return element;
 	}
 
@@ -113,7 +115,7 @@ private:
         Matrix transform;
         Optional<Matrix> baseTransform;
         int renderPriority;
-        RenderPhaseClass rendringPhase;
+        RenderPart rendringPhase;
 		RenderDrawElementTypeFlags additionalElementFlags;
 		Ref<Font> font;
 		Color textColor;

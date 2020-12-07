@@ -5,6 +5,7 @@
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "VulkanDeviceContext.hpp"
+#include "VulkanSingleFrameAllocator.hpp"
 
 namespace ln {
 namespace detail {
@@ -77,6 +78,9 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 	//	return false;
 	//}
 
+    const size_t PageSize = 0x200000;   // 2MB
+    m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocatorPageManager>(this, PageSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    m_transferBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocatorPageManager>(this, PageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 	m_nativeInterface = std::make_unique<VulkanNativeGraphicsInterface>(this);
 
 
@@ -107,6 +111,9 @@ void VulkanDevice::dispose()
     //m_pipelineCache.dispose();
     //m_framebufferCache.dispose();
     //m_renderPassCache.dispose();
+
+    m_uniformBufferSingleFrameAllocator = nullptr;
+    m_transferBufferSingleFrameAllocator = nullptr;
 
     if (m_commandPool) {
         vkDestroyCommandPool(m_device, m_commandPool, vulkanAllocator());
@@ -1170,13 +1177,13 @@ void* VulkanGraphicsContext::onMapResource(IGraphicsRHIBuffer* resource, uint32_
 	{
 		VulkanVertexBuffer* vertexBuffer = static_cast<VulkanVertexBuffer*>(resource);
 		vertexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(vertexBuffer->buffer()->size(), vertexBuffer->buffer());
-		return vertexBuffer->m_mappedResource->map();
+        return static_cast<uint8_t*>(vertexBuffer->m_mappedResource.buffer->map()) + vertexBuffer->m_mappedResource.offset;
 	}
 	case DeviceResourceType::IndexBuffer:
 	{
 		VulkanIndexBuffer* indexBuffer = static_cast<VulkanIndexBuffer*>(resource);
 		indexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(indexBuffer->buffer()->size(), indexBuffer->buffer());
-		return indexBuffer->m_mappedResource->map();
+        return static_cast<uint8_t*>(indexBuffer->m_mappedResource.buffer->map()) + indexBuffer->m_mappedResource.offset;
 	}
 	default:
 		LN_NOTIMPLEMENTED();
@@ -1189,10 +1196,12 @@ void VulkanGraphicsContext::onUnmapResource(IGraphicsRHIBuffer* resource)
 	switch (resource->resourceType())
 	{
 	case DeviceResourceType::VertexBuffer:
-		static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource->unmap();
+        static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource.buffer->unmap();
+        static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource.buffer = nullptr;
 		break;
 	case DeviceResourceType::IndexBuffer:
-		static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource->unmap();
+        static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource.buffer->unmap();
+        static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource.buffer = nullptr;
 		break;
 	default:
 		LN_NOTIMPLEMENTED();
@@ -1219,8 +1228,10 @@ void VulkanGraphicsContext::onSetSubData(IGraphicsRHIBuffer* resource, size_t of
 		break;
 	}
 
-	VulkanBuffer* stagingBuffer = recodingCommandBuffer()->cmdCopyBuffer(length, buffer);
-	stagingBuffer->setData(offset, data, length);
+	//VulkanBuffer* stagingBuffer = recodingCommandBuffer()->cmdCopyBuffer(length, buffer);
+	//stagingBuffer->setData(offset, data, length);
+    VulkanSingleFrameBufferInfo stagingBuffer = recodingCommandBuffer()->cmdCopyBuffer(length, buffer);
+    stagingBuffer.buffer->setData(stagingBuffer.offset + offset, data, length);
 }
 
 void VulkanGraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
@@ -1320,10 +1331,12 @@ void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int sta
 	vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
 }
 
-void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount)
+void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset)
 {
     int ic = (instanceCount == 0) ? 1 : instanceCount;
-	vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), ic, startIndex, 0, 0);
+	vkCmdDrawIndexed(
+        m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount),
+        ic, startIndex, vertexOffset, 0);
 }
 
 void VulkanGraphicsContext::onDrawExtension(INativeGraphicsExtension* extension)
@@ -3137,6 +3150,13 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
     {
         // https://docs.microsoft.com/ja-jp/windows/desktop/direct3dhlsl/dx-graphics-hlsl-variable-register
 
+        // NOTE: なんで DescriptorSet を3つ作るの？
+        // → https://qiita.com/lriki/items/934804030d56fd88dcc8#%E6%9C%AC%E9%A1%8C
+        //   set=0 を UniformBuffer,
+        //   set=1 を Texture,
+        //   set=2 を Sampler として扱いたい。
+        //   GLSL でいうところの layout(set=*) を変えるには、複数の DescriptorSet を作らなければならない。
+
         // set=0, 'b' register in HLSL
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
@@ -3336,6 +3356,14 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
     for (int i = 0; i < uniforms.size(); i++) {
         const auto& uniformBuffer = uniforms[i];
 
+#if 1
+        VulkanSingleFrameBufferInfo bufferInfo = commandBuffer->uniformBufferSingleFrameAllocator()->allocate(uniformBuffer.data.size());
+        bufferInfo.buffer->setData(bufferInfo.offset, uniformBuffer.data.data(), uniformBuffer.data.size());
+
+        VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
+        info.buffer = bufferInfo.buffer->nativeBuffer();
+        info.offset = bufferInfo.offset;
+#else
         // UniformBuffer の内容を CopyCommand に乗せる。
         // Inside RenderPass では vkCmdCopyBuffer が禁止されているので、DeviceLocal に置いたメモリを使うのではなく、
         // 毎回新しい HostVisible な Buffer を作ってそれを使う。
@@ -3352,6 +3380,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
 
         VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
         info.buffer = buffer->nativeBuffer();
+#endif
 
         VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[i];
         writeInfo.dstSet = descriptorSets[DescriptorType_UniformBuffer];

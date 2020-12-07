@@ -105,12 +105,12 @@ void Task::execute()
 		m_action();
 		m_status = TaskStatus::Completed;
 
-        // post next tasks
-        for (auto& n : m_nextTasks) {
-            if (n.dispatcher) {
-                n.dispatcher->post(n.task);
-            }
-        }
+        //// post next tasks
+        //for (auto& n : m_nextTasks) {
+        //    if (n.dispatcher) {
+        //        n.dispatcher->post(n.task);
+        //    }
+        //}
 	}
 	catch (Exception& e)
 	{
@@ -124,6 +124,10 @@ void Task::execute()
 	}
 	m_waiting.unlock();
 }
+
+//==============================================================================
+// GenericTask
+
 
 //==============================================================================
 // Dispatcher
@@ -237,16 +241,23 @@ void TaskScheduler::queueTask(Task* task)
     if (LN_REQUIRE(task != nullptr)) return;
 
     std::lock_guard<std::mutex> lock(m_taskQueueMutex);
-    m_taskQueue.push_back(task);
+    m_taskQueue.add(task);
 
     m_semaphore.notify();
 }
 
 void TaskScheduler::executeThread()
 {
+    bool queueEmpty = true;
+
     while (true)
     {
-        m_semaphore.wait();	// キューに何か追加されるまで待つ。または終了要求まで。
+        if (queueEmpty) {
+            m_semaphore.wait();	// キューに何か追加されるまで待つ。または終了要求まで。
+        }
+        else {
+            Thread::sleep(1);
+        }
 
         // 終了要求がきていたらおしまい
         if (m_endRequested) {
@@ -257,13 +268,52 @@ void TaskScheduler::executeThread()
         Ref<Task> task = nullptr;
         {
             std::lock_guard<std::mutex> lock(m_taskQueueMutex);
-            task = m_taskQueue.front();
-            m_taskQueue.pop_front();
+
+
+
+            for (auto itr = m_taskQueue.begin(); itr < m_taskQueue.end();) {
+                bool pop = false;
+                bool executale = false;
+                auto& t = *itr;
+                if (t->m_prevTask) {
+                    if (t->m_prevTask->isCompleted()) {
+                        pop = true;
+                        executale = true;
+                    }
+                    else if (t->m_prevTask->isFaulted()) {
+                        pop = true;
+                        executale = false;
+                    }
+                }
+                else {
+                    pop = true;
+                    executale = true;
+                }
+
+                if (executale) {
+                    task = t;
+                }
+                if (pop) {
+                    itr = m_taskQueue.erase(itr);
+                }
+                else {
+                    ++itr;
+                }
+            }
+
+            queueEmpty = m_taskQueue.isEmpty();
+
+            //task = m_taskQueue.front();
+            //m_taskQueue.pop_front();
+
+
         }
 
         // 実行。状態変化は内部で行う
-        task->execute();
-        task.reset();
+        if (task) {
+            task->execute();
+            task.reset();
+        }
     }
 }
 

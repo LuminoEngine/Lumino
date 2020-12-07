@@ -4,7 +4,7 @@
 #include <LuminoEngine/Animation/AnimationCurve.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
-#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
@@ -59,7 +59,7 @@ void InternalSkyBox::render(RenderingContext* context, const RenderViewPoint* vi
 	context->pushState();
 	context->setBlendMode(BlendMode::Normal);
 	context->setAdditionalElementFlags(detail::RenderDrawElementTypeFlags::BackgroundSky);
-    //context->setRenderPhase(RenderPhaseClass::BackgroundSky);
+    //context->setRenderPhase(RenderPart::BackgroundSky);
     //context->setDepthTestEnabled(false);
 	context->setDepthWriteEnabled(false);
     context->setBaseTransfrom(Matrix::makeTranslation(viewPoint->viewPosition));
@@ -81,7 +81,7 @@ InternalSkyDome::InternalSkyDome()
 bool InternalSkyDome::init()
 {
 #if 0 // Dump
-    m_model = StaticMeshModel::load(u"Sphere.glb");
+    m_model = MeshModel::load(u"Sphere.glb");
     auto mesh = m_model->meshContainers()[0]->mesh();
     {
         Vector3 m;
@@ -134,7 +134,7 @@ bool InternalSkyDome::init()
 
         mesh->addSection(0, indexCount / 3, 0, PrimitiveTopology::TriangleList);
 
-        m_model = makeObject<StaticMeshModel>();
+        m_model = makeObject<MeshModel>();
         auto node = m_model->addMeshContainerNode(mesh);
         m_model->addRootNode(0);
 

@@ -3,12 +3,14 @@
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
+#include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Physics/CollisionShape.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMeshComponent.hpp>
 #include "Engine/EngineManager.hpp"
+#include "../../Mesh/MeshModelInstance.hpp"
 
 namespace ln {
 
@@ -46,12 +48,19 @@ void StaticMeshComponent::deleteCollisionBody()
     }
 }
 
-void StaticMeshComponent::setModel(StaticMeshModel* model)
+void StaticMeshComponent::setModel(MeshModel* model)
 {
-    m_model = model;
+    if (m_model != model) {
+        m_modelInstance = nullptr;
+        m_model = model;
+
+        if (!m_model->isStaticMeshModel()) {
+            m_modelInstance = m_model->createMeshModelInstance();
+        }
+    }
 }
 
-StaticMeshModel* StaticMeshComponent::model() const
+MeshModel* StaticMeshComponent::model() const
 {
     return m_model;
 }
@@ -81,6 +90,46 @@ void StaticMeshComponent::serialize(Serializer2& ar)
     ar & makeNVP(u"model", m_model);
 }
 
+void StaticMeshComponent::onUpdate(float elapsedSeconds)
+{
+
+    if (m_modelInstance) {
+        m_model->beginUpdate();
+
+        // TODO: worldMatrix() を使うので、オブジェクトに追従する形にしたい。 OnLateUpdate へ
+        //m_model->setWorldTransform(worldObject()->worldMatrix());
+
+        //m_meshModel->getAnimator()->advanceTime(elapsedTime);
+        if (m_model->animationController()) {
+            m_model->animationController()->advanceTime(elapsedSeconds);
+        }
+        //m_model->animationController()->updateTargetElements();
+        //static bool init = false;
+        //if (!init)
+        //{
+        //	m_meshModel->getAnimator()->advanceTime(808.11);
+        //	init = true;
+        //}
+        m_model->preUpdate();
+        m_modelInstance->updateSkinningMatrices();
+
+
+
+        //for (int i = 0; i < m_meshModel->bones().getCount(); i++)
+        //{
+        //	SkinnedMeshBone* bone = m_meshModel->bones()[i];
+        //	if (bone->name() == _T("左足首"))
+        //	{
+        //		AttitudeTransform t;
+        //		t.scale = Vector3(1, 1, 0.2);
+        //		bone->setLocalTransform(t);
+        //	}
+        //}
+    }
+
+
+}
+
 void StaticMeshComponent::onRender(RenderingContext* context)
 {
     if (!m_model) return;
@@ -90,14 +139,20 @@ void StaticMeshComponent::onRender(RenderingContext* context)
 
             context->setTransfrom(m_model->nodeGlobalTransform(node->index()));
             const auto& meshContainer = m_model->meshContainers()[node->meshContainerIndex()];
-
             if (meshContainer->isVisible()) {
                 if (Mesh* mesh = meshContainer->mesh()) {
+
                     for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
                         int materialIndex = mesh->sections()[iSection].materialIndex;
                         if (materialIndex >= 0) {
                             context->setMaterial(m_model->materials()[materialIndex]);
-                            context->drawMesh(mesh, iSection);
+
+                            if (m_modelInstance && node->skeletonIndex >= 0) {
+                                context->drawSkinnedMesh(mesh, iSection, m_modelInstance->skeletons()[node->skeletonIndex]);
+                            }
+                            else {
+                                context->drawMesh(mesh, iSection);
+                            }
                         }
                     }
                 }

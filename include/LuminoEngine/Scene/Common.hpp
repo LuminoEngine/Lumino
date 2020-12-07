@@ -5,7 +5,7 @@
 #include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
-class StaticMeshModel;
+class MeshModel;
 class StaticMeshComponent;
 class ParticleEmitterComponent2;
 

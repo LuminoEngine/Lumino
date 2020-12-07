@@ -18,7 +18,7 @@
 #include <LuminoEngine/Tilemap/TilemapModel.hpp>
 #include <LuminoEngine/Tilemap/TilemapComponent.hpp>
 #include <LuminoEngine/Tilemap/Tilemap.hpp>
-#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMesh.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitives.hpp>

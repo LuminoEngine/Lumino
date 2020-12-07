@@ -38,10 +38,9 @@ class MeshImporter
 {
 public:
 	MeshImporter();
-	void prepare(MeshManager* meshManager, DiagnosticsManager* diag);
-	void applySettings(const MeshImportSettings* settings);
+	void prepare(MeshManager* meshManager, DiagnosticsManager* diag, const MeshImportSettings* settings);
 
-	virtual bool onImportAsStaticMesh(StaticMeshModel* model, const AssetPath& assetPath) = 0;
+	virtual bool onImportAsStaticMesh(MeshModel* model, const AssetPath& assetPath) = 0;
 	virtual bool onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath& assetPath) = 0;
 
 	MeshManager* m_meshManager;
@@ -50,6 +49,17 @@ public:
 
 	bool m_applyBoneTransformationsEnabled;
 	bool m_flipZCoordinate;
+
+	bool m_isCharacterModelFormat = false;
+
+protected:
+	// モデルファイルの座標系が既知の場合、正面が Lumino の座標系で Z+ を向くように処理する
+	bool isCharacterModelFormat() const { return m_isCharacterModelFormat; }
+
+	bool isSkeletonImport() const { return m_settings->skeletonImport(); }
+
+private:
+	const MeshImportSettings* m_settings;
 };
 
 } // namespace detail
@@ -63,7 +73,7 @@ class MeshSceneModel final
 {
 public:
 	// TODO: ↓まとめちゃっていいかもしれない。
-	Ref<StaticMeshModel> staticMesh;
+	Ref<MeshModel> staticMesh;
 	Ref<SkinnedMeshModel> skinnedMesh;
 
 	List<Ref<AnimationClip>> animationClips;

@@ -3,7 +3,7 @@
 #include "../VisualObject.hpp"
 
 namespace ln {
-class StaticMeshModel;
+class MeshModel;
 
 /**
  * StaticMesh
@@ -20,12 +20,12 @@ public:
 
     // obsolete
     static Ref<StaticMesh> create();
-    static Ref<StaticMesh> create(StaticMeshModel* model);
+    static Ref<StaticMesh> create(MeshModel* model);
     static Ref<StaticMesh> create(const StringRef& filePath, float scale = 1.0f);
     
 	/**指定した名前の MeshContainer から、衝突判定用の Body を作成します。 */
 	LN_METHOD(Property)
-	StaticMeshModel* model() const;
+	MeshModel* model() const;
 
 	/**指定した名前の MeshContainer から、衝突判定用の Body を作成します。 */
 	LN_METHOD()
@@ -40,7 +40,7 @@ LN_CONSTRUCT_ACCESS:
 	StaticMesh();
 	virtual ~StaticMesh();
 	void init();
-    void init(StaticMeshModel* model);
+    void init(MeshModel* model);
     void init(const StringRef& filePath, float scale);
 
 private:

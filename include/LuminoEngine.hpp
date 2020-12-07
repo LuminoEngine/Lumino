@@ -6,7 +6,9 @@
 #include "LuminoEngine/Base/Regex.hpp"
 #include "LuminoEngine/Base/Variant.hpp"
 #include "LuminoEngine/Base/Serializer.hpp"
+#include "LuminoEngine/Base/Task.hpp"
 
+#include "LuminoEngine/Engine/Object.hpp"
 #include "LuminoEngine/Engine/EngineSettings.hpp"
 #include "LuminoEngine/Engine/Engine.hpp"
 #include "LuminoEngine/Engine/Time.hpp"
@@ -52,11 +54,13 @@
 #include "LuminoEngine/Font/Font.hpp"
 
 #include "LuminoEngine/Mesh/Mesh.hpp"
-#include "LuminoEngine/Mesh/StaticMeshModel.hpp"
+#include "LuminoEngine/Mesh/MeshModel.hpp"
+#include "LuminoEngine/Mesh/AnimationController.hpp"
 #include "LuminoEngine/Mesh/SkinnedMeshModel.hpp"
 
 #include "LuminoEngine/Rendering/Common.hpp"
 #include "LuminoEngine/Rendering/Material.hpp"
+#include "LuminoEngine/Rendering/CommandList.hpp"
 #include "LuminoEngine/Rendering/RenderView.hpp"
 #include "LuminoEngine/Rendering/RenderFeature.hpp"
 #include "LuminoEngine/Rendering/RenderingContext.hpp"
@@ -103,6 +107,7 @@
 #include "LuminoEngine/Scene/SceneConductor.hpp"
 
 #include "LuminoEngine/UI/UIEvents.hpp"
+#include "LuminoEngine/UI/UIColors.hpp"
 #include "LuminoEngine/UI/UIStyle.hpp"
 #include "LuminoEngine/UI/UIRenderView.hpp"
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
@@ -156,17 +161,20 @@
 #pragma comment(lib, "glad" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "glslang" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "HLSL" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
-#pragma comment(lib, "libpng16" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "OGLCompiler" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "OSDependent" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "SPIRV" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "SPVRemapper" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "GenericCodeGen" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "MachineIndependent" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "libpng16" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "zlib" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "LinearMath" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "BulletCollision" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "BulletDynamics" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "BulletSoftBody" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "Box2D" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "yaml-cpp" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 
 #ifdef _DEBUG
 #pragma comment(lib, "tmxlite-s-d.lib")

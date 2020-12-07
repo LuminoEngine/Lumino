@@ -174,8 +174,8 @@ void AsciiLineReader::splitLineTokens()
 BvhImporter::BvhImporter(AssetManager* assetManager, DiagnosticsManager* diag)
 	: m_assetManager(assetManager)
 	, m_diag(diag)
-    , m_flipZ(true)    // BVH の座標系は右手、Y up。それと、Z+ を正面とする。もし VRM モデルに適用したい場合は反転が必要
-    , m_flipX(false)
+    , m_flipZ(false)    // BVH の座標系は右手、Y up。それと、Z+ を正面とする。もし VRM モデルに適用したい場合は反転が必要
+    , m_flipX(true)
     , m_minOffsetY(std::numeric_limits<float>::max())
     // https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html
     // BVH階層に関する最後の注意点として、ワールド空間は、Y軸をワールドアップベクトルとする右手系の座標系として定義されます。
@@ -188,8 +188,8 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const 
     if (settings->requiredStandardCoordinateSystem) {
         // BVH データは Y+Top, R-Hand であることを前提とし、
         // Z+ を正面とするスキンメッシュモデル用のアニメーションに変換する
-        m_flipZ = true;
-        m_flipX = false;
+        m_flipZ = false;
+        m_flipX = true;
     }
 
 	auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
@@ -232,7 +232,7 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const 
     // とりあえず Mixamo のモーションは下端 0 が基準になっているようなので、それに合わせておく。
     //const float offsetBasis = std::abs(m_joints[m_rootJointIndex]->offset.y - m_minOffsetY);
     const float offsetBasis = std::abs(m_joints[m_rootJointIndex]->offset.y);
-    const float offsetScale = 1.0f / offsetBasis;
+    const float offsetScale = (1.0f / offsetBasis) * 2.5f;
 
     // [2020/9/13] TODO: HierarchicalAnimationMode を作ったけど、それだけだと足りない。
     // モーションによっては歩行時の bobbing のため Y オフセットだけ有効にしたいものもある。
@@ -265,8 +265,14 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const 
                 //posOrg *= 10.0f / 80.0f;    // HC4 Model の Hips 位置は y=10. 
                 posOrg.y -= offsetBasis;
                 posOrg *= offsetScale;
+
+                //posOrg.x = 1;
             }
             auto pos = Vector3(posOrg.x, posOrg.y, posOrg.z);
+
+            if (m_flipX) {
+                pos.x *= -1.0f;
+            }
 #if 1
             auto rotOrg = Vector3(
                 (joint->channels[X_ROTATION] >= 0) ? rameData(iFrame, joint->channels[X_ROTATION]) : 0.0f,
@@ -293,7 +299,7 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const 
                 rot.z *= -1;
             }
             if (m_flipX) {
-                pos.x *= -1.0f;
+                //pos.x *= -1.0f;
                 //rot.x *= -1.0f;
                 //rot.z *= -1.0f;
 

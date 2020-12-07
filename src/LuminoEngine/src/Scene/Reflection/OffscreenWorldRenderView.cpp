@@ -6,6 +6,7 @@
 #include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
 #include "../../Graphics/GraphicsManager.hpp"
 #include "../../Graphics/RenderTargetTextureCache.hpp"
+#include "../../Rendering/CommandListServer.hpp"
 #include "../../Rendering/RenderingManager.hpp"
 #include "../../Rendering/RenderingPipeline.hpp"
 #include "../../Rendering/RenderElement.hpp"
@@ -34,9 +35,6 @@ void OffscreenWorldRenderView::init()
     // ただ、GBuffe のように Viewサイズや視点に依存するデータを独立させる必要がある。
     m_sceneRenderingPipeline = makeRef<detail::SceneRenderingPipeline>();
     m_sceneRenderingPipeline->init();
-
-    m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
-    addDrawElementListManager(m_drawElementListCollector);
 }
 
 void OffscreenWorldRenderView::setRenderTarget(RenderTargetTexture* renderTarget)
@@ -69,9 +67,6 @@ void OffscreenWorldRenderView::render(GraphicsContext* graphicsContext, World* t
 {
     RenderingContext* context = targetWorld->m_renderingContext;
 
-    m_drawElementListCollector->clear();
-    m_drawElementListCollector->addDrawElementList(targetWorld->m_renderingContext->m_elementList);
-
     setClearMode(context->baseRenderView->clearMode());
     setBackgroundColor(context->baseRenderView->backgroundColor());
 
@@ -97,8 +92,12 @@ void OffscreenWorldRenderView::render(GraphicsContext* graphicsContext, World* t
 
     targetWorld->renderObjects();
 
-    assert(elementListManagers().size() == 1);
-    m_sceneRenderingPipeline->render(graphicsContext, m_renderTarget, clearInfo, &m_cameraInfo, elementListManagers().front(), &targetWorld->m_combinedSceneGlobalRenderParams);
+    m_sceneRenderingPipeline->render(
+        graphicsContext, targetWorld->m_renderingContext,
+        m_renderTarget, clearInfo, this, detail::ProjectionKind::ViewProjection3D,
+        targetWorld->m_renderingContext->commandList()->elementList(),
+        targetWorld->m_renderingContext->commandListServer(),
+        &targetWorld->m_combinedSceneGlobalRenderParams);
 
 }
 

@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Mesh/StaticMeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Tilemap/Voxel.hpp>
 
@@ -19,8 +19,8 @@ void VoxelmapModel::init()
 {
     Object::init();
     resizeMap(16, 16, 16);
-    m_box = StaticMeshModel::load(u"C:/Proj/LN/PrivateProjects/HC0/Assets/AutoVolume1.glb");
-    m_mapBlocksMesh = makeObject<StaticMeshModel>();
+    m_box = MeshModel::load(u"C:/Proj/LN/PrivateProjects/HC0/Assets/AutoVolume1.glb");
+    m_mapBlocksMesh = makeObject<MeshModel>();
 }
 
 void VoxelmapModel::resizeMap(int width, int height, int depth)

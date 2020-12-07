@@ -13,26 +13,28 @@
 namespace ln {
 
 //==============================================================================
-// CommandList
+// GraphicsCommandList
+
 namespace detail {
-CommandList::CommandList()
+
+GraphicsCommandList::GraphicsCommandList()
 {
 }
 
-void CommandList::init(GraphicsManager* manager)
+void GraphicsCommandList::init(GraphicsManager* manager)
 {
     m_rhiResource = manager->deviceContext()->createCommandList();
     m_allocator = makeRef<LinearAllocator>(manager->linearAllocatorPageManager());
 }
 
-void CommandList::dispose()
+void GraphicsCommandList::dispose()
 {
     if (m_rhiResource) {
         m_rhiResource = nullptr;
     }
 }
 
-void CommandList::reset()
+void GraphicsCommandList::reset()
 {
     m_allocator->cleanup();
 }
@@ -140,7 +142,7 @@ void SwapChain::resetRHIBackbuffers()
 		m_renderPasses[i] = renderPass;
 			
 		// CommandList
-        auto commandList = makeRef<detail::CommandList>();
+        auto commandList = makeRef<detail::GraphicsCommandList>();
         commandList->init(detail::GraphicsResourceInternal::manager(this));
 		m_commandLists[i] = commandList;
 	}

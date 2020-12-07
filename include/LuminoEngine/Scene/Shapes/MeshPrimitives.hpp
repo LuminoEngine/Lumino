@@ -16,6 +16,7 @@ class BoxMesh
 {
 public:
 	static Ref<BoxMesh> create();
+	static Ref<BoxMesh> create(float width, float height, float depth);
 
 	BoxMeshComponent* boxMeshComponent() const;
 
@@ -27,7 +28,11 @@ LN_CONSTRUCT_ACCESS:
 
 	/** 各軸のサイズが 1 である BoxMesh を作成します。 */
 	LN_METHOD()
-	void init();
+	bool init();
+	
+	/**  */
+	LN_METHOD(OverloadPostfix="XYZ")
+	bool init(float width, float height, float depth);
 
 private:
     Ref<BoxMeshComponent> m_component;

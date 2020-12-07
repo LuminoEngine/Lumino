@@ -59,8 +59,8 @@ public:
     void setBloomStrength(float value) { m_bloomStrength = value; }
     void setBloomRadius(float value) { m_bloomRadius = value; }
 
-    void prepare(RenderingContext* context, RenderTargetTexture* source);
-    void render(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination);
+    void prepare(CommandList* context, RenderTargetTexture* source);
+    void render(CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination);
 
 private:
     void resetResources(int resx, int resy);
@@ -88,7 +88,7 @@ class BloomPostEffectInstance
     : public PostEffectInstance
 {
 protected:
-    bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+    bool onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
     BloomPostEffectInstance();

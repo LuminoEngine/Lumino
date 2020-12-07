@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/RenderView.hpp>
+#include "RenderingPipeline.hpp"
 #include "RenderingManager.hpp"
 #include "RenderStage.hpp"
 #include "SceneRenderer.hpp"
@@ -48,19 +49,73 @@ void RenderView::init()
 	m_manager = detail::EngineDomain::renderingManager();
 }
 
-void RenderView::clearDrawElementListManagers()
+void RenderView::makeViewProjections(const detail::CameraInfo& base, float dpiScale)
 {
-	m_elementListManagers.clear();
+	auto* info = &m_viewProjections[static_cast<int>(detail::ProjectionKind::ViewProjection3D)];
+	*info = base;
+
+	info = &m_viewProjections[static_cast<int>(detail::ProjectionKind::ClipScreen)];
+	info->makeUnproject(base.viewPixelSize);
+
+	info = &m_viewProjections[static_cast<int>(detail::ProjectionKind::Physical2D)];
+	info->viewPixelSize = base.viewPixelSize;
+	info->viewPosition = Vector3::Zero;
+	info->viewDirection = Vector3::UnitZ;
+	info->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+	info->projMatrix = Matrix::makePerspective2DLH(base.viewPixelSize.width, base.viewPixelSize.height, 0, 1000);
+	info->viewProjMatrix = info->viewMatrix * info->projMatrix;
+	info->viewFrustum = ViewFrustum(info->viewProjMatrix);
+	info->nearClip = 0;
+	info->farClip = 1000;
+
+	info = &m_viewProjections[static_cast<int>(detail::ProjectionKind::Independent2D)];
+	info->viewPixelSize = base.viewPixelSize;
+	info->viewPosition = Vector3::Zero;
+	info->viewDirection = Vector3::UnitZ;
+	info->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+	info->projMatrix = Matrix::makePerspective2DLH(base.viewPixelSize.width / dpiScale, base.viewPixelSize.height / dpiScale, 0, 1000);
+	info->viewProjMatrix = info->viewMatrix * info->projMatrix;
+	info->viewFrustum = ViewFrustum(info->viewProjMatrix);
+	info->nearClip = 0;
+	info->farClip = 1000;
+
+	Vector3 pos1 = Vector3::transformCoord(Vector3(0, 0, 0), info->viewProjMatrix);
+	Vector3 pos2 = Vector3::transformCoord(Vector3(0, 0, 1), info->viewProjMatrix);;
+	Vector3 pos3 = Vector3::transformCoord(Vector3(0, 0, -1), info->viewProjMatrix);
+	printf("");
 }
 
-void RenderView::addDrawElementListManager(detail::DrawElementListCollector* elementListManager)
+Vector3 RenderView::transformProjection(const Vector3& pos, detail::ProjectionKind from, detail::ProjectionKind to) const
 {
-	m_elementListManagers.add(elementListManager);
+	const auto fromView = m_viewProjections[static_cast<int>(from)];
+	const auto clipPos = Vector3::transformCoord(pos, fromView.viewProjMatrix);
+
+	const auto toView = m_viewProjections[static_cast<int>(to)];
+	const auto inv = Matrix::makeInverse(toView.viewProjMatrix);
+	return Vector3::transformCoord(clipPos, inv);
 }
 
 Ref<EventConnection> RenderView::connectOnUIEvent(Ref<UIGeneralEventHandler> handler)
 {
     return m_onUIEvent.connect(handler);
+}
+
+RenderTargetTexture* RenderView::gbuffer(GBuffer kind) const
+{
+	if (!m_sceneRenderingPipeline) return nullptr;
+
+	switch (kind)
+	{
+	case ln::GBuffer::ViewNormalMap:
+		return m_sceneRenderingPipeline->viweNormalAndDepthBuffer();
+	case ln::GBuffer::ViewDepthMap:
+		return m_sceneRenderingPipeline->viweDepthBuffer();
+	case ln::GBuffer::ViewMaterialMap:
+		return m_sceneRenderingPipeline->materialBuffer();
+	default:
+		LN_UNREACHABLE();
+		return nullptr;
+	}
 }
 
 void RenderView::updateFrame(float elapsedSeconds)

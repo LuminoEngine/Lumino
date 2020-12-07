@@ -30,6 +30,7 @@ class VulkanSwapChain;
 class VulkanRenderTarget;
 class VulkanDepthBuffer;
 class VulkanShaderDescriptorTable;
+class VulkanSingleFrameAllocatorPageManager;
 class VulkanNativeGraphicsInterface;
 
 class VulkanDevice
@@ -53,6 +54,8 @@ public:
     VkCommandPool vulkanCommandPool() const { return m_commandPool; }
     uint32_t graphicsQueueFamilyIndex() const { return m_graphicsQueueFamilyIndex; }
     Result findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
+    const Ref<VulkanSingleFrameAllocatorPageManager>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
+    const Ref<VulkanSingleFrameAllocatorPageManager>& transferBufferSingleFrameAllocator() const { return m_transferBufferSingleFrameAllocator; }
     VulkanNativeGraphicsInterface* vulkanNativeGraphicsInterface() const { return m_nativeInterface.get(); }
 
 protected:
@@ -114,6 +117,9 @@ public: // TODO:
 	VkQueue m_graphicsQueue;
     VkCommandPool m_commandPool;
     //VulkanAllocator m_allocator;
+    Ref<VulkanSingleFrameAllocatorPageManager> m_uniformBufferSingleFrameAllocator;
+    Ref<VulkanSingleFrameAllocatorPageManager> m_transferBufferSingleFrameAllocator;
+
 
     //VulkanRenderPassCache m_renderPassCache;
     //VulkanFramebufferCache m_framebufferCache;
@@ -154,7 +160,7 @@ protected:
     void onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data) override;
 	void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
-	void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount) override;
+	void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) override;
 	void onDrawExtension(INativeGraphicsExtension* extension) override;
 
 private:
@@ -334,7 +340,7 @@ public:
     VkBuffer vulkanBuffer() const { return m_buffer.nativeBuffer(); }
     VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.nativeBufferMemory(); }
 
-    VulkanBuffer* m_mappedResource = nullptr;
+    VulkanSingleFrameBufferInfo m_mappedResource = { nullptr, 0 };
 
 private:
     VulkanDevice* m_deviceContext;
@@ -359,7 +365,7 @@ public:
     VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.nativeBufferMemory(); }
     VkIndexType indexType() const { return m_indexType; }
 
-    VulkanBuffer* m_mappedResource = nullptr;
+    VulkanSingleFrameBufferInfo m_mappedResource = { nullptr, 0 };
 
 protected:
     VulkanDevice* m_deviceContext;

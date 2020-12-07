@@ -8,7 +8,7 @@
 #define LN_TO_RUBY_FUNC(f) reinterpret_cast<VALUE(__cdecl *)(...)>(f)
 
 inline VALUE LNI_TO_RUBY_VALUE(const char* v)   { return rb_str_new2(v); }
-inline VALUE LNI_TO_RUBY_VALUE(LnBool v)        { return (v != LN_FALSE) ? Qtrue : Qfalse; }
+inline VALUE LNI_TO_RUBY_VALUE(LNBool v)        { return (v != LN_FALSE) ? Qtrue : Qfalse; }
 inline VALUE LNI_TO_RUBY_VALUE(uint8_t v)       { return INT2FIX(v); }
 inline VALUE LNI_TO_RUBY_VALUE(int v)           { return INT2NUM(v); }
 inline VALUE LNI_TO_RUBY_VALUE(uint32_t v)      { return INT2NUM(v); }
@@ -27,7 +27,7 @@ inline int LNRB_VALUE_TO_NUMBER(VALUE v) { return FIX2INT(v); }
 inline float LNRB_VALUE_TO_FLOAT(VALUE v) { return (float)NUM2DBL(v); }
 inline double LNRB_VALUE_TO_DOUBLE(VALUE v) { return NUM2DBL(v); }
 inline const char* LNRB_VALUE_TO_STRING(VALUE v) { return StringValuePtr(v); }
-inline LnBool LNRB_VALUE_TO_BOOL(VALUE v) { return (TYPE(v) == T_TRUE) ? LN_TRUE : LN_FALSE; }
+inline LNBool LNRB_VALUE_TO_BOOL(VALUE v) { return (TYPE(v) == T_TRUE) ? LN_TRUE : LN_FALSE; }
 
 extern "C" void InitLuminoRubyRuntimeManager();
 

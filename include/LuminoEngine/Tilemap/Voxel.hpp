@@ -4,7 +4,7 @@
 #include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
-class StaticMeshModel;
+class MeshModel;
 class RenderingContext;
 
 class VoxelmapModel
@@ -29,8 +29,8 @@ private:
     int m_height;
     int m_depth;
 
-    Ref<StaticMeshModel> m_box;
-    Ref<StaticMeshModel> m_mapBlocksMesh;
+    Ref<MeshModel> m_box;
+    Ref<MeshModel> m_mapBlocksMesh;
 };
 
 } // namespace ln

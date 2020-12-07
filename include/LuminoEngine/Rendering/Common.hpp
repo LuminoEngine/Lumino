@@ -6,6 +6,24 @@
 #define LN_BOX_ELEMENT_RENDER_FEATURE_TEST 1
 
 namespace ln {
+class Font;
+class VertexLayout;
+class VertexBuffer;
+class Texture;
+class RenderTargetTexture;
+class DepthBuffer;
+class Material;
+class RenderingContext;
+class MeshResource;
+class Mesh;
+class MeshContainer;
+class MeshSkeleton;
+class RenderViewPoint;
+class RenderView;
+class PostEffect;
+class InstancedMeshList;
+class CommandList;
+class CanvasContext;
 
 // Note: ShadingModel は組み込みの SurfaceShader を選択するもの。Unlit にしても陰はつく。
 /** ShadingModel */
@@ -101,7 +119,7 @@ enum class SceneClearMode
 
 // DrawElement の大分類。SceneRenderer に投入する DrawElement を決める。
 // SceneRenderer 内の各 RenderPass は、さらに小項目を RenderDrawElementTypeFlags で識別し、描画するかどうかを決定する。
-enum class RenderPhaseClass
+enum class RenderPart
 {
 	// 通常のオブジェクトの他、BackgroundSky, LightDisc もこれに含まれる。
     Geometry = 0,
@@ -111,6 +129,10 @@ enum class RenderPhaseClass
 
 	// スクリーン全体にオーバーレイ描画されるもの。Zソートなど一部の不要な工程が省略される。
     PostEffect,
+
+
+	// (デバイス非依存ピクセル2D座標系)
+	Gizmo2D,
 
 
     _Count,
@@ -208,6 +230,18 @@ enum class GBuffer
 namespace detail {
 class SceneRenderer;
 class SceneRenderingPipeline;
+class DrawElementList;
+class DrawElementListBuilder;
+class FontRequester;
+class FlexGlyphRun;
+class RenderingManager;
+class DrawElementList;
+class DrawElementListBuilder;
+class BuiltinEffectData;
+class RenderDrawElement;
+class SkeletonInstance;
+class CommandListServer;
+
 
 enum class RenderDrawElementTypeFlags : uint8_t
 {
@@ -232,6 +266,14 @@ enum class SpriteFlipFlags : uint8_t
     FlipY = 1 << 2,
 };
 LN_FLAGS_OPERATORS(SpriteFlipFlags);
+
+enum class ProjectionKind
+{
+	ViewProjection3D,	// 通常の 3D 空間に配置されたモデルに適用する View-Proj
+	ClipScreen,			// ClipSpace に配置されたモデルに適用する View-Proj。 つまり、変換無し。ポストエフェクト用の Blit で使う。
+	Physical2D,			// レンダーターゲットの px サイズと一致する 2D 空間に配置されたモデルに適用する View-Proj。
+	Independent2D,		// Device-Independent Pixel (dp) で表される 2D 空間に配置されたモデルに適用する View-Proj
+};
 
 struct DynamicLightInfo
 {

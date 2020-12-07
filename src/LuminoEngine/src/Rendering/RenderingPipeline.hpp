@@ -18,14 +18,16 @@ class RenderingPipeline
 public:
     void init();
     const SizeI& renderingFrameBufferSize() const { return m_renderingFrameBufferSize; }
-    const detail::DrawElementListCollector* elementListCollector() const { return m_elementListCollector; }
+    const detail::DrawElementList* elementList() const { return m_elementList; }
+    const detail::CommandListServer* commandListServer() const { return m_commandListServer; }
 
 protected:
     //void clear(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo);
 
     //Ref<detail::FrameBufferCache> m_frameBufferCache;
     SizeI m_renderingFrameBufferSize;	// render() の内側だけで使える
-    detail::DrawElementListCollector* m_elementListCollector;
+    detail::DrawElementList* m_elementList;
+    detail::CommandListServer* m_commandListServer = nullptr;
     Ref<RenderPass> m_clearRenderPass;
 };
 
@@ -40,10 +42,13 @@ public:
     void prepare(RenderTargetTexture* renderTarget);
     void render(
         GraphicsContext* graphicsContext,
-		RenderTargetTexture* renderTarget,
+        RenderingContext* renderingContext,
+        RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
-        const detail::CameraInfo* mainCameraInfo,
-        detail::DrawElementListCollector* elementListCollector,
+        const RenderView* renderView,
+        detail::ProjectionKind primaryProjection,
+        detail::DrawElementList* elementList,
+        detail::CommandListServer* commandListServer,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
     const Ref<RenderTargetTexture>& viweNormalAndDepthBuffer() const { return m_viweNormalAndDepthBuffer; }
@@ -64,7 +69,8 @@ private:
 
     Ref<detail::ClusteredShadingSceneRenderer> m_sceneRenderer;
     Ref<detail::SceneRenderer> m_sceneRenderer_PostEffectPhase;
-    Ref<UnLigitingSceneRendererPass> m_unlitRendererPass;
+    Ref<UnLigitingSceneRendererPass> m_unlitRendererPass_Normal;
+    Ref<UnLigitingSceneRendererPass> m_unlitRendererPass_PostEffect;
 
     // rgb: Packed view space normal, a: depth (near=0.0 ~ far=1.0)
     // TODO: UE4 や Unity など、多くは WorldSpace の normal を G-Buffer に書き込んでいる。
@@ -102,10 +108,13 @@ public:
 	void init();
     void render(
         GraphicsContext* graphicsContext,
+        RenderingContext* renderingContext,
         RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
-		const detail::CameraInfo* mainCameraInfo,
-        detail::DrawElementListCollector* elementListCollector);
+		const RenderView* renderView,
+        detail::ProjectionKind primaryProjection,
+        detail::DrawElementList* elementList,
+        detail::CommandListServer* commandListServer);
 
 private:
 	//Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;

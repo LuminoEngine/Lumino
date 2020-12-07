@@ -290,7 +290,7 @@ public:
 
     void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
     void drawPrimitive(int startVertex, int primitiveCount);
-    void drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount);
+    void drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount, int vertexOffset);
 	void drawExtension(INativeGraphicsExtension* extension);
 
     /////////
@@ -320,7 +320,7 @@ public:	// TODO:
 
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
-	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount) = 0;
+	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) = 0;
 	virtual void onDrawExtension(INativeGraphicsExtension* extension) = 0;
 
 	uint32_t stagingStateDirtyFlags() const { return m_stateDirtyFlags; }

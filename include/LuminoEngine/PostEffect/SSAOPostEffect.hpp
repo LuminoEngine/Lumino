@@ -26,7 +26,7 @@ class SSAOPostEffectInstance
     : public PostEffectInstance
 {
 protected:
-    bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+    bool onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
     SSAOPostEffectInstance();

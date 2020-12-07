@@ -60,6 +60,20 @@ public:
 	LN_METHOD()
 	static void setFontFile(const String& filePath);
 
+	/**
+	 * エンジン初期化時に、シーンを表示するために必要な各オブジェクトを自動作成するかどうかを指定します。 (default: true)
+	 *
+	 * true の場合、UIMainWindow, UIViewport, World, Camera など、
+	 * ゲームアプリケーションとして動作させるために必要となる基本的なオブジェクトを作成します。
+	 *
+	 * false の場合、必要なオブジェクトはユーザープログラムで生成しなければなりません。
+	 * UIMainWindow はアプリケーションの種類にかかわらず必ず必要となります。
+	 * Application::onInit() で setupWindow() を呼び出すことで、独自の UIMainWindow を使用することができます。
+	 */
+	static void setSceneIntegrationEnabled(bool value);
+
+	
+
 	///**  */
 	//LN_METHOD()
 	//static void setUseSystemStringEncoding(bool value);

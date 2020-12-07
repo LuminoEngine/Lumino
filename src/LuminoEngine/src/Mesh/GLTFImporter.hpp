@@ -27,7 +27,7 @@ public:
 	bool m_clearBoneRotation;
 
 	GLTFImporter();
-    bool onImportAsStaticMesh(StaticMeshModel* model, const AssetPath& assetPath) override;
+    bool onImportAsStaticMesh(MeshModel* model, const AssetPath& assetPath) override;
 	bool onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath& assetPath) override;
 
 	const List<Ref<AnimationClip>> animationClips() const { return m_animationClips; }
@@ -67,12 +67,12 @@ private:
 	};
 
 	bool openGLTFModel(const AssetPath& assetPath);
-	bool readCommon(StaticMeshModel* meshModel);
+	bool readCommon(MeshModel* meshModel);
     Ref<Material> readMaterial(const tinygltf::Material& material);
 	bool readNode(MeshNode* coreNode, const tinygltf::Node& node);
 	Ref<MeshContainer> readMesh(const tinygltf::Mesh& mesh);
 	Ref<Mesh> generateMesh(const MeshView& meshView) const;
-	Ref<MeshArmature> readSkin(const tinygltf::Skin& skin);
+	Ref<MeshSkeleton> readSkin(const tinygltf::Skin& skin);
 	Ref<Texture> loadTexture(const tinygltf::Texture& texture);
 	Ref<AnimationClip> readAnimation(const tinygltf::Animation& animation) const;
 
@@ -83,7 +83,7 @@ private:
 
     AssetPath m_basedir;
 	std::shared_ptr<tinygltf::Model> m_model;
-	StaticMeshModel* m_meshModel;
+	MeshModel* m_meshModel;
 
 	List<Ref<AnimationClip>> m_animationClips;
 };

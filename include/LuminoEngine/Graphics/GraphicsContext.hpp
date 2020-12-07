@@ -17,7 +17,7 @@ class SwapChain;
 namespace detail {
 class RenderingQueue;
 class IRenderPass;
-class CommandList;
+class GraphicsCommandList;
 }
 
 /*
@@ -143,7 +143,7 @@ public:
     /**
      * インデックス付きのプリミティブを描画します。
      */
-    void drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount = 0);
+    void drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount = 0, int vertexOffset = 0);
 
 	void drawExtension(INativeGraphicsExtension* extension);
 
@@ -157,7 +157,7 @@ private:
     GraphicsContext();
     virtual ~GraphicsContext();
     void init(RenderingType renderingType);
-	void resetCommandList(detail::CommandList* commandList);
+	void resetCommandList(detail::GraphicsCommandList* commandList);
 
     void enterRenderState();
     void leaveRenderState();
@@ -212,7 +212,7 @@ private:
     };
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::CommandList> m_commandList;
+    Ref<detail::GraphicsCommandList> m_commandList;
     detail::ICommandList* m_rhiCommandList;
     Ref<detail::RenderingCommandList> m_recordingCommandList;
     Ref<detail::RenderingCommandList> m_executingCommandList;
@@ -233,7 +233,7 @@ namespace detail {
 class GraphicsContextInternal
 {
 public:
-	static void resetCommandList(GraphicsContext* self, detail::CommandList* commandLsit) { self->resetCommandList(commandLsit); }
+	static void resetCommandList(GraphicsContext* self, detail::GraphicsCommandList* commandLsit) { self->resetCommandList(commandLsit); }
     static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
     static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
 	static void beginCommandRecoding(GraphicsContext* self) { self->beginCommandRecodingIfNeeded(); }

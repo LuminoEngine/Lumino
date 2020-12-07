@@ -20,7 +20,6 @@ public:
     ln::Result init();
     void dispose();
     void run();
-	void setMainWindow(ln::UIMainWindow* window);	// onInit でのみ可
 
     MainWindow* mainWindow() const;
     const ln::Ref<lna::Workspace>& workspace() const { return m_workspace; }

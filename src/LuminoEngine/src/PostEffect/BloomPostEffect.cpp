@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/PostEffect/BloomPostEffect.hpp>
 #include "../Rendering/RenderingManager.hpp"
@@ -120,7 +121,7 @@ bool BloomPostEffectCore::init(Material* compositeMaterial)
     return true;
 }
 
-void BloomPostEffectCore::prepare(RenderingContext* context, RenderTargetTexture* source)
+void BloomPostEffectCore::prepare(CommandList* context, RenderTargetTexture* source)
 {
     int resx = source->width();
     int resy = source->height();
@@ -162,7 +163,7 @@ void BloomPostEffectCore::prepare(RenderingContext* context, RenderTargetTexture
     m_compositeMaterial->setBufferData(u"BloomCompositeParams", &m_bloomCompositeParams, sizeof(m_bloomCompositeParams));
 }
 
-void BloomPostEffectCore::render(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+void BloomPostEffectCore::render(CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     // Composite All the mips
     m_compositeMaterial->setMainTexture(source);
@@ -236,7 +237,7 @@ bool BloomPostEffectInstance::init(BloomPostEffect* owner)
     return true;
 }
 
-bool BloomPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool BloomPostEffectInstance::onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     m_effect.setLuminosityThreshold(m_owner->m_luminosityThreshold);
     m_effect.setBloomStrength(m_owner->m_bloomStrength);

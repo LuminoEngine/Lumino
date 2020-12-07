@@ -4,6 +4,7 @@
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "VulkanHelper.hpp"
 #include "VulkanDeviceContext.hpp"
+#include "VulkanSingleFrameAllocator.hpp"
 #include <LuminoEngine/Graphics/GraphicsExtensionVulkan.hpp>
 
 PFN_vkCreateInstance vkCreateInstance;
@@ -1158,6 +1159,9 @@ Result VulkanCommandBuffer::init(VulkanDevice* deviceContext)
 	// なお、静的なバッファの場合は init 時に malloc でメモリをとるようにしているので LinearAllocator は関係ない。
 	resetAllocator(LinearAllocatorPageManager::DefaultPageSize);
 
+    m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_deviceContext->uniformBufferSingleFrameAllocator());
+    m_transferBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_deviceContext->transferBufferSingleFrameAllocator());
+
 	m_stagingBufferPoolUsed = 0;
 	glowStagingBufferPool();
 
@@ -1207,6 +1211,8 @@ Result VulkanCommandBuffer::beginRecording()
     LN_VK_CHECK(vkResetCommandBuffer(vulkanCommandBuffer(), VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT));
 
     m_linearAllocator->cleanup();
+    m_uniformBufferSingleFrameAllocator->cleanup();
+    m_transferBufferSingleFrameAllocator->cleanup();
 
     // 前回の描画で使ったリソースを開放する。
     // end で解放しないのは、まだその後の実際のコマンド実行で使うリソースであるから。
@@ -1328,14 +1334,18 @@ VulkanBuffer* VulkanCommandBuffer::allocateBuffer(size_t size, VkBufferUsageFlag
     return buffer;
 }
 
-VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination)
+VulkanSingleFrameBufferInfo VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination)
 {
-    VulkanBuffer* buffer = allocateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    //VulkanBuffer* buffer = allocateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    VulkanSingleFrameBufferInfo bufferInfo = m_transferBufferSingleFrameAllocator->allocate(size);
 
 	// コマンドバッファに乗せる
-	VkBufferCopy copyRegion = {};
+    VkBufferCopy copyRegion;
+    copyRegion.srcOffset = bufferInfo.offset;
+    copyRegion.dstOffset = 0;
 	copyRegion.size = size;
-	vkCmdCopyBuffer(m_commandBuffer, buffer->nativeBuffer(), destination->nativeBuffer(), 1, &copyRegion);
+	//vkCmdCopyBuffer(m_commandBuffer, buffer->nativeBuffer(), destination->nativeBuffer(), 1, &copyRegion);
+    vkCmdCopyBuffer(m_commandBuffer, bufferInfo.buffer->nativeBuffer(), destination->nativeBuffer(), 1, &copyRegion);
 
 #if 1   // TODO: test
     VkBufferMemoryBarrier barrier = {};
@@ -1367,7 +1377,7 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* dest
 #endif
 
 	// 戻り先で書いてもらう
-	return buffer;
+	return bufferInfo;
 }
 
 VulkanBuffer* VulkanCommandBuffer::cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination)
@@ -1475,6 +1485,31 @@ Result VulkanDescriptorSetsPool::allocateDescriptorSets(VulkanCommandBuffer* com
 
 			LN_VK_CHECK(vkCreateDescriptorPool(m_deviceContext->vulkanDevice(), &poolInfo, m_deviceContext->vulkanAllocator(), &m_activePage));
 			m_pages.push_back(m_activePage);
+
+            // NOTE: 
+            // - VkDescriptorPoolSize::descriptorCount は、この Pool 全体としてみて、作り出せる Descriptor の最大数。
+            // - poolInfo.maxSets は、この Pool から作り出せる VkDescriptorSet の最大数。
+            // この2つに直接的な関連性は無い。
+            // ひとつ VkDescriptorSet を作るときに、どの種類の Descriptor をいくつ消費するかは VkDescriptorSetLayout に依る。
+            // 例えば VkDescriptorSetLayout が
+            // - { .binding = 0, .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER },
+            // - { .binding = 1, .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER },
+            // という2つのエントリからできているなら、VkDescriptorSet を一つ作ると
+            // - VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER から1つ、
+            // - VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER から1つ、
+            // 計2つの Descriptor を消費する。
+            //
+            // もし Descriptor が枯渇した場合、vkAllocateDescriptorSets() で次のようにレポートされる。
+            // - validation layer : Unable to allocate 1 descriptors of type VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER from pool 0x29. This pool only has 0 descriptors of this type remaining.The Vulkan spec states : descriptorPool must have enough free descriptor capacity remaining to allocate the descriptor sets of the specified layouts(https ://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorPool-00307)
+            // - validation layer: Unable to allocate 1 descriptors of type VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER from pool 0x29. This pool only has 0 descriptors of this type remaining. The Vulkan spec states: descriptorPool must have enough free descriptor capacity remaining to allocate the descriptor sets of the specified layouts (https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorPool-00307)
+            // 
+            // DescriptorSet が枯渇した場合、vkAllocateDescriptorSets() で次のようにレポートされる。
+            // - validation layer : Unable to allocate 1 descriptorSets from pool 0x29. This pool only has 0 descriptorSets remaining.The Vulkan spec states : descriptorSetCount must not be greater than the number of sets that are currently available for allocation in descriptorPool(https ://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorSetCount-00306)
+            //
+            // [2020/11/25] 対応方針：
+            // VkDescriptorPoolSize は固定長ではなく、ShaderPass が持っているレイアウト情報から作る。
+            // maxSets は固定長でも構わない。今のように、不足したら Pool 自体を追加していく。
+              
 
 
             //std::cout << "vkCreateDescriptorPool" << std::endl;

@@ -16,6 +16,7 @@
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
 #include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
+#include "../Rendering/CommandListServer.hpp"
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderElement.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
@@ -51,7 +52,6 @@ void WorldRenderView::init()
 
     m_sceneRenderingPipeline = makeRef<detail::SceneRenderingPipeline>();
     m_sceneRenderingPipeline->init();
-    m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
     m_viewPoint = makeObject<RenderViewPoint>();
 
     //m_clearRenderPass = makeObject<RenderPass>();
@@ -86,7 +86,7 @@ void WorldRenderView::init()
 		auto meshContainer = makeObject<MeshContainer>();
 		meshContainer->setMeshResource(meshResource);
 
-		m_skyProjectionPlane = makeObject<StaticMeshModel>();
+		m_skyProjectionPlane = makeObject<MeshModel>();
 		m_skyProjectionPlane->addMeshContainer(meshContainer);
 
 		m_skyProjectionPlane->addMaterial(m_clearMaterial);
@@ -109,10 +109,6 @@ void WorldRenderView::init()
 void WorldRenderView::setTargetWorld(World* world)
 {
     m_targetWorld = world;
-
-    m_drawElementListCollector->addDrawElementList(/*RenderPhaseClass::Default, */m_targetWorld->m_renderingContext->m_elementList);
-
-    addDrawElementListManager(m_drawElementListCollector);
 }
 
 void WorldRenderView::setCamera(Camera* camera)
@@ -150,16 +146,11 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 {
 	if (m_camera)
 	{
-        //FrameBuffer fb;
-        //fb.renderTarget[0] = graphicsContext->renderPass()->renderTarget(0);
-        //fb.depthBuffer = graphicsContext->renderPass()->depthBuffer();
-
-        // TODO:
-        detail::CameraInfo camera;
         {
             CameraComponent* cc = m_camera->cameraComponent();
             cc->updateMatrices();
             
+            detail::CameraInfo camera;
             m_viewPoint->worldMatrix = m_camera->worldMatrix();
             m_viewPoint->viewPixelSize = camera.viewPixelSize = Size(renderTarget->width(), renderTarget->height());	// TODO: 必要？
             m_viewPoint->viewPosition = camera.viewPosition = m_camera->position();
@@ -173,10 +164,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             m_viewPoint->nearClip = camera.nearClip = cc->getNearClip();
             m_viewPoint->farClip = camera.farClip = cc->getFarClip();
 
-            //Size size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());
-            //Vector3 pos = Vector3(5, 5, -5);
-            //camera.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 100.0f);
-
+            makeViewProjections(camera, 1.0);   // TODO: dpiscale
         }
 
 
@@ -410,7 +398,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
 
             {
-                renderingContext->m_sceneRenderingPipeline = m_sceneRenderingPipeline;
+                RenderView::m_sceneRenderingPipeline = m_sceneRenderingPipeline;
 
                 if (!renderingContext->imageEffects().isEmpty()) {
                     acquirePostEffectPresenter();
@@ -423,13 +411,17 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                     m_imageEffectRenderer->render(renderingContext, actualInput, renderTarget);
                 }
 
-                renderingContext->m_sceneRenderingPipeline = nullptr;
+                RenderView::m_sceneRenderingPipeline = nullptr;
             }
         }
 
-        assert(elementListManagers().size() == 1);
         RenderTargetTexture* actualTarget = (m_hdrRenderTarget) ? m_hdrRenderTarget.get() : renderTarget;
-		m_sceneRenderingPipeline->render(graphicsContext, actualTarget, clearInfo, &camera, elementListManagers().front(), &sceneGlobalRenderParams);
+        m_sceneRenderingPipeline->render(
+            graphicsContext, m_targetWorld->m_renderingContext,
+            actualTarget, clearInfo, this, detail::ProjectionKind::ViewProjection3D,
+            m_targetWorld->m_renderingContext->commandList()->elementList(),
+            m_targetWorld->m_renderingContext->commandListServer(),
+            &sceneGlobalRenderParams);
         
 		//graphicsContext->resetState();
 
@@ -479,7 +471,7 @@ void WorldRenderView::createGridPlane()
     //auto meshContainer = makeObject<MeshContainer>();
     //meshContainer->setMeshResource(meshResource);
 
-    //m_gridPlane = makeObject<StaticMeshModel>();
+    //m_gridPlane = makeObject<MeshModel>();
     //m_gridPlane->addMeshContainer(meshContainer);
 
 //#if 0
@@ -536,24 +528,25 @@ void WorldRenderView::renderGridPlane(RenderingContext* renderingContext, Render
         //renderingContext->drawLine(Vector3(0, 0, 0), Color::Red, Vector3(-1, 1, 1), Color::Red);
         //renderingContext->popState();
 
+        CommandList* commandList = renderingContext->getCommandList(RenderPart::Gizmo, detail::ProjectionKind::ViewProjection3D);
 
-        renderingContext->pushState();
+        commandList->pushState();
 
         
 
-        renderingContext->setRenderPhase(RenderPhaseClass::Gizmo);
-        //renderingContext->setBlendMode(BlendMode::Alpha);
-        //renderingContext->setDepthWriteEnabled(false);
-        renderingContext->setMaterial(m_gridPlaneMaterial);
-        renderingContext->drawMesh(m_gridPlaneMesh, 0);
-        //renderingContext->setRenderPhase(RenderPhaseClass::Default);
+        //commandList->setRenderPhase(RenderPart::Gizmo);
+        //commandList->setBlendMode(BlendMode::Alpha);
+        //commandList->setDepthWriteEnabled(false);
+        commandList->setMaterial(m_gridPlaneMaterial);
+        commandList->drawMesh(m_gridPlaneMesh, 0);
+        //commandList->setRenderPhase(RenderPart::Default);
 
-		renderingContext->setMaterial(nullptr);
-		renderingContext->drawLine(Vector3(0, 0, 0), Color::Red, Vector3(10, 0, 0), Color::Red);
-        renderingContext->drawLine(Vector3(0, 0, 0), Color::Green, Vector3(0, 10, 0), Color::Green);
-        renderingContext->drawLine(Vector3(0, 0, 0), Color::Blue, Vector3(0, 0, 10), Color::Blue);
+        commandList->setMaterial(nullptr);
+        commandList->drawLine(Vector3(0, 0, 0), Color::Red, Vector3(10, 0, 0), Color::Red);
+        commandList->drawLine(Vector3(0, 0, 0), Color::Green, Vector3(0, 10, 0), Color::Green);
+        commandList->drawLine(Vector3(0, 0, 0), Color::Blue, Vector3(0, 0, 10), Color::Blue);
 
-        renderingContext->popState();
+        commandList->popState();
 
         //adjustGridPlane(renderView);
         //renderingContext->setTransform(Matrix::Identity);

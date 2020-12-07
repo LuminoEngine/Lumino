@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/PostEffect/ScreenBlurPostEffect.hpp>
 #include "../Rendering/RenderingManager.hpp"
@@ -86,7 +87,7 @@ bool ScreenBlurPostEffectInstance::init(ScreenBlurPostEffect* owner)
     return true;
 }
 
-bool ScreenBlurPostEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool ScreenBlurPostEffectInstance::onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     m_materialForCopySourceTo->setMainTexture(source);
 

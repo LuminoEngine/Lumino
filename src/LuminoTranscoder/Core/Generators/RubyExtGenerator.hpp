@@ -58,7 +58,6 @@ private:
 	ln::String makeVALUEToNativeCastExpr(const MethodParameterSymbol* param, const ln::String& varName) const;
 	ln::String makeVALUEToNativeCastDecl(const MethodParameterSymbol* param) const;
     ln::String makeNativeToVALUECastDecl(const MethodParameterSymbol* param) const;
-	ln::String makeConstantValue(const ConstantSymbol* constant) const;
 
 
 	ln::String makeWrapFuncImplement_ProcCaller(const MethodSymbol* delegateProtoType) const;

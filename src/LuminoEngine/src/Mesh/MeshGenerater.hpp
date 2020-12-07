@@ -147,6 +147,102 @@ public:
     LN_MESHGENERATOR_CLONE_IMPLEMENT(SingleLineGenerater);
 };
 
+class LineStripPrimitiveGenerater
+    : public MeshGenerater
+{
+public:
+    int pointCount;
+    const Vector3* points;
+    const Color* colors;
+
+    virtual int vertexCount() const override { return pointCount; }
+    virtual int indexCount() const override { return pointCount; }
+    virtual PrimitiveTopology primitiveType() const override { return PrimitiveTopology::LineStrip; }
+    virtual void onGenerate(MeshGeneraterBuffer* buf) override
+    {
+        for (int i = 0; i < pointCount; i++) {
+            buf->setV(i, Vertex{ points[i], Vector3::UnitY, Vector2::Zero, colors[i] });
+            buf->setI(i, i);
+        }
+    }
+    void copyFrom(const LineStripPrimitiveGenerater* other)
+    {
+        MeshGenerater::copyFrom(other);
+        pointCount = other->pointCount;
+        points = other->points;
+        colors = other->colors;
+    }
+    LN_MESHGENERATOR_CLONE_IMPLEMENT(LineStripPrimitiveGenerater);
+};
+
+// 線分または塗りつぶしで描かれる正多角形。
+// XY 平面上に、Z-正面で作成する。
+class RegularPolygon2DGenerater
+    : public MeshGenerater
+{
+public:
+    int vertices = 3;
+    float radius = 1.0f;
+    Color color;
+    bool fill = true;
+
+    virtual int vertexCount() const override { return fill ? vertices + 1 : vertices; }
+    virtual int indexCount() const override { return fill ? 2 + vertices : vertices + 1; }
+    virtual PrimitiveTopology primitiveType() const override { return fill ? PrimitiveTopology::TriangleFan : PrimitiveTopology::LineStrip; }
+    virtual void onGenerate(MeshGeneraterBuffer* buf) override
+    {
+        if (LN_REQUIRE(vertices >= 3)) return;
+
+        const Vector3 center = Vector3::Zero;
+        //float step = -Math::PI2 / vertices;
+        float step = Math::PI2 / vertices; // 2D用
+
+        // 線を引く開始角度 (偶数なら半ステップずらす)
+        float offset = Math::PI * 0.5f + ((vertices % 2 == 0) ? step * 0.5f : 0.0f);
+
+        // 外周の点を plot
+        for (int i = 0; i < vertices; i++)
+        {
+            float theta = step * i + offset;
+
+            float x, y;
+            Math::sinCos(theta, &y, &x);
+
+            Vector3 pos = center + radius * Vector3(x, y, 0.0f);
+            buf->setV(i, Vertex{ pos, -Vector3::UnitZ, Vector2::Zero, color });
+        }
+
+        if (fill) {
+            // 中心点
+            int centerI = vertices;
+            buf->setV(centerI, Vertex{ center, -Vector3::UnitZ, Vector2::Zero, color });
+
+            buf->setI(0, centerI);
+            buf->setI(1, 0);
+            buf->setI(2, 1);
+            for (int i = 3; i <= vertices; i++) {
+                buf->setI(i, i - 1);
+            }
+            buf->setI(vertices + 1, 0); // 最初の点と結ぶ
+        }
+        else {
+            for (int i = 0; i < vertices; i++) {
+                buf->setI(i, i);
+            }
+            buf->setI(vertices, 0); // 最初の点と結ぶ
+        }
+    }
+    void copyFrom(const RegularPolygon2DGenerater* other)
+    {
+        MeshGenerater::copyFrom(other);
+        vertices = other->vertices;
+        radius = other->radius;
+        color = other->color;
+        fill = other->fill;
+    }
+    LN_MESHGENERATOR_CLONE_IMPLEMENT(RegularPolygon2DGenerater);
+};
+
 // Y+ を正面とする
 class PlaneMeshGenerater
     : public MeshGenerater

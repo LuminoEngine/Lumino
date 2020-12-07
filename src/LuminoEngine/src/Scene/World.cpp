@@ -14,6 +14,7 @@
 #include <LuminoEngine/Scene/Light.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
+#include "../Rendering/CommandListServer.hpp"
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderElement.hpp"
 
@@ -410,18 +411,15 @@ void World::enqueueOffscreenRenderView(OffscreenWorldRenderView* element)
 namespace detail {
 
 WorldSceneGraphRenderingContext::WorldSceneGraphRenderingContext()
-	: m_elementList(makeRef<detail::DrawElementList>(detail::EngineDomain::renderingManager()))
 {
-	setDrawElementList(m_elementList);
+    m_commandList = m_listServer->acquirePrimaryList(RenderPart::Geometry, detail::ProjectionKind::ViewProjection3D);
 }
 
 void WorldSceneGraphRenderingContext::resetForBeginRendering()
 {
 	RenderingContext::resetForBeginRendering();
-	m_elementList->clear();
 }
 
 } // namespace detail
-
 } // namespace ln
 

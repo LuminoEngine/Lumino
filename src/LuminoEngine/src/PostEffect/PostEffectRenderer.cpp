@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/PostEffect/PostEffect.hpp>
@@ -96,18 +97,20 @@ void PostEffectRenderer::render(RenderingContext* context, RenderTargetTexture* 
 		context->blit(m_copyMaterial, inout);
 		context->popState();
 #else
-        context->pushState(true);
-        context->setDepthBuffer(nullptr);
+        CommandList* commandList = context->getCommandList(RenderPart::PostEffect, ProjectionKind::ClipScreen);
+
+        commandList->pushState(true);
+        commandList->setDepthBuffer(nullptr);
 
         bool renderd = false;
         int renderCount = 0;
         for (auto& effect : m_collectedPostEffectInstances)
         {
             if (renderCount == 0) {
-                renderd = effect.instance->onRender(context, input, secondaryTarget);
+                renderd = effect.instance->onRender(context->currentRenderView, commandList, input, secondaryTarget);
             }
             else {
-                renderd = effect.instance->onRender(context, primaryTarget, secondaryTarget);
+                renderd = effect.instance->onRender(context->currentRenderView, commandList, primaryTarget, secondaryTarget);
             }
 
             if (renderd) {
@@ -118,10 +121,10 @@ void PostEffectRenderer::render(RenderingContext* context, RenderTargetTexture* 
         for (auto& effect : m_imageEffectInstances)
         {
             if (renderCount == 0) {
-                renderd = effect.instance->onRender(context, input, secondaryTarget);
+                renderd = effect.instance->onRender(context->currentRenderView, commandList, input, secondaryTarget);
             }
             else {
-                renderd = effect.instance->onRender(context, primaryTarget, secondaryTarget);
+                renderd = effect.instance->onRender(context->currentRenderView, commandList, primaryTarget, secondaryTarget);
             }
             
             if (renderd) {
@@ -130,14 +133,14 @@ void PostEffectRenderer::render(RenderingContext* context, RenderTargetTexture* 
             }
         }
 
-        context->resetState();
+        commandList->resetState();
 
         if (renderCount >= 1) {
             m_copyMaterial->setMainTexture(primaryTarget);
-            context->blit(m_copyMaterial, output);
+            commandList->blit(m_copyMaterial, output);
         }
 
-        context->popState();
+        commandList->popState();
 #endif
 		RenderTargetTexture::releaseTemporary(secondaryTarget);
 		RenderTargetTexture::releaseTemporary(primaryTarget);

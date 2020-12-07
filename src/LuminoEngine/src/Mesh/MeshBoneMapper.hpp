@@ -98,7 +98,7 @@ private:
 	void resolveFingerBones();
 
 	SkinnedMeshModel* m_model;
-	//MeshArmature* m_skeleton;
+	//MeshSkeleton* m_skeleton;
 	List<NodeInfo> m_nodes;
 	//List<BoneInfo> m_bones;
 	List<StringRef> m_splitCache;

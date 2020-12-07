@@ -52,7 +52,7 @@ TEST_F(Test_Asset_LoadAsset, Basic)
 
 	{
 		// モデルファイルから相対パス指定されたテクスチャの読み込み
-		auto mesh1 = StaticMeshModel::load(u"x/BoxTextured/BoxTextured.gltf");
+		auto mesh1 = MeshModel::load(u"x/BoxTextured/BoxTextured.gltf");
 		ASSERT_EQ(true, mesh1 != nullptr);
 		ASSERT_EQ(true, mesh1->materials()[0]->mainTexture() != nullptr);
 

@@ -100,7 +100,7 @@ void InternalPrimitiveRenderer::flush(ICommandList* context)
     context->setVertexBuffer(0, m_vertexBuffer);
     context->setIndexBuffer(m_indexBuffer);
 	context->setPrimitiveTopology(m_primitiveType);
-    context->drawPrimitiveIndexed(0, primitiveCount, 0);
+    context->drawPrimitiveIndexed(0, primitiveCount, 0, 0);
 
     for (MeshGenerater* gen : m_generators) {
         gen->~MeshGenerater();
@@ -227,13 +227,13 @@ void MeshGeneraterRenderFeature::renderBatch(GraphicsContext* context, RenderFea
         LN_NOTIMPLEMENTED();
         break;
     case ln::PrimitiveTopology::TriangleFan:
-        LN_NOTIMPLEMENTED();
+        primitiveCount = localBatch->data.indexCount - 2;
         break;
     case ln::PrimitiveTopology::LineList:
         primitiveCount = localBatch->data.indexCount / 2;
         break;
     case ln::PrimitiveTopology::LineStrip:
-        LN_NOTIMPLEMENTED();
+        primitiveCount = localBatch->data.indexCount - 1;
         break;
     case ln::PrimitiveTopology::PointList:
         LN_NOTIMPLEMENTED();

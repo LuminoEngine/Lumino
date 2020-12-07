@@ -56,7 +56,8 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/Rendering/RenderView.hpp",
 			TEST_ROOT "include/LuminoEngine/Rendering/Material.hpp",
 			TEST_ROOT "include/LuminoEngine/Mesh/Mesh.hpp",
-			TEST_ROOT "include/LuminoEngine/Mesh/StaticMeshModel.hpp",
+			TEST_ROOT "include/LuminoEngine/Mesh/AnimationController.hpp",
+			TEST_ROOT "include/LuminoEngine/Mesh/MeshModel.hpp",
 			TEST_ROOT "include/LuminoEngine/Mesh/SkinnedMeshModel.hpp",
 			TEST_ROOT "include/LuminoEngine/Physics/CollisionShape.hpp",
 			TEST_ROOT "include/LuminoEngine/Animation/Common.hpp",
@@ -165,17 +166,18 @@ int main(int argc, char** argv)
 	config->flatCHeaderString = u"#include <LuminoEngine.hpp>\n#include \"BindingValidation.hpp\"";
     config->flatCHeaderOutputDirOverride = LN_LOCALFILE("../../../include/LuminoEngine/Runtime");
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
+	config->versionString = u"0.9.0";
 
-	{
-		FlatCHeaderGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
-	{
-		FlatCSourceGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
+	//{
+	//	FlatCHeaderGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
+	//{
+	//	FlatCSourceGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
 	//{
 	//	RubyExtGenerator g;
 	//	g.setup(db, config);
@@ -186,13 +188,18 @@ int main(int argc, char** argv)
 	//	g.setup(db, config);
 	//	g.generate();
 	//}
+	//{
+	//	HSPHeaderGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
+	//{
+	//	HSPCommandsGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
 	{
-		HSPHeaderGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
-	{
-		HSPCommandsGenerator g;
+		HSPHelpGenerator g;
 		g.setup(db, config);
 		g.generate();
 	}

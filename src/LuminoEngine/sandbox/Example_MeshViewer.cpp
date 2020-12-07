@@ -9,7 +9,7 @@ public:
     Ref<Sprite> m_sprite;
     Ref<MeshNode> m_node;
     Ref<SkinnedMesh> m_mesh;
-    Ref<SkinnedMeshModel> m_model;
+    Ref<MeshModel> m_model;
     Ref<AnimationState> m_idle;
     Ref<AnimationState> m_walk;
 

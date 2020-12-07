@@ -6,7 +6,10 @@
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include "../Graphics/GraphicsManager.hpp"
+#include "../Mesh/MeshModelInstance.hpp"
+#include "CommandListServer.hpp"
 #include "RenderStage.hpp"
 #include "RenderElement.hpp"
 #include "RenderingPipeline.hpp"
@@ -114,13 +117,19 @@ void SceneRenderer::init()
 
 void SceneRenderer::prepare(
 	RenderingPipeline* renderingPipeline,
+	RenderingContext* renderingContext,
+	//detail::CommandListServer* commandListServer,
 	const detail::RenderViewInfo& mainRenderViewInfo,
-	RenderPhaseClass targetPhase,
+	RenderPart targetPhase,
+	ProjectionKind targetProjection,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
 	m_renderingPipeline = renderingPipeline;
+	m_renderingContext = renderingContext;
     m_mainRenderViewInfo = mainRenderViewInfo;
 	m_sceneGlobalRenderParams = sceneGlobalParams;
+	m_currentPart = targetPhase;
+	m_currentProjection = targetProjection;
 
 	m_renderingElementList.clear();
 	collect(renderingPipeline, m_mainRenderViewInfo.cameraInfo, targetPhase);
@@ -547,16 +556,15 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	pass->onEndRender(this);
 }
 
-void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo, RenderPhaseClass targetPhase)
+void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo, RenderPart targetPhase)
 {
 	//InternalContext* context = m_manager->getInternalContext();
 	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
 
 
-#if 1
-    for (auto& elementList : renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
+    //for (auto& elementList : renderingPipeline->elementListCollector()->lists(/*RenderPart::Default*/))
     {
-        for (auto& light : elementList->dynamicLightInfoList())
+        for (auto& light : m_renderingContext->dynamicLightInfoList())
         {
 			if (light.mainLight) {
 				m_mainLightInfo = &light;
@@ -565,83 +573,57 @@ void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRenderer
         }
     }
 
-    const auto& classifiedElements = renderingPipeline->elementListCollector()->classifiedElements(targetPhase);
-    for (RenderDrawElement* element : classifiedElements)
-    {
+
+#if 1
+	m_renderingPipeline->commandListServer()->enumerateDrawElements(
+		m_currentPart, m_currentProjection,
+		[this](RenderDrawElement* element) {
+
 #if 0		// TODO: 視錘台カリング
-        const Matrix& transform = element->getTransform(elementList);
+			const Matrix& transform = element->getTransform(elementList);
 
-        Sphere boundingSphere = element->getLocalBoundingSphere();
-        boundingSphere.center += transform.getPosition();
+			Sphere boundingSphere = element->getLocalBoundingSphere();
+			boundingSphere.center += transform.getPosition();
 
-        if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-            cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
-        {
-            // このノードは描画できる
-            m_renderingElementList.add(element);
-        }
+			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
+				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
+			{
+				// このノードは描画できる
+				m_renderingElementList.add(element);
+			}
 #else
-        m_renderingElementList.add(element);
+			m_renderingElementList.add(element);
 #endif
-    }
+		});
+
 #else
-	//for (auto& elementListManager : *m_renderingPipeline->elementListManagers())
+	const auto& classifiedElements = renderingPipeline->elementList()->classifiedElementList(targetPhase);
 	{
-		// TODO: とりあえず Default
-		
-
-		for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
-		{
-			//elementList->setDefaultRenderTarget(m_renderingDefaultRenderTarget);
-			//elementList->setDefaultDepthBuffer(m_renderingDefaultDepthBuffer);
-
-			for (auto& light : elementList->dynamicLightInfoList())
-			{
-				onCollectLight(light);
-			}
-
-			//onPreRender(elementList);
-
-			// 視点に関する情報の設定
-			//context->setViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
-
-			// ライブラリ外部への書き込み対応
-			//context->beginBaseRenderer()->Clear(ClearFlags::Depth/* | ClearFlags::Stencil*/, Color());
-
-			//for (int i = 0; i < elementList->getElementCount(); ++i)
-			//{
-			//	DrawElement* element = elementList->getElement(i);
-
-			RenderDrawElement* element = elementList->headElement();
-			while (element)
-			{
-                // filter phase
-                if (element->targetPhase == m_targetPhase) {
-
+		RenderDrawElement* element = classifiedElements.headElement;
+		while (element) {
 
 #if 0		// TODO: 視錘台カリング
-                    const Matrix& transform = element->getTransform(elementList);
+			const Matrix& transform = element->getTransform(elementList);
 
-                    Sphere boundingSphere = element->getLocalBoundingSphere();
-                    boundingSphere.center += transform.getPosition();
+			Sphere boundingSphere = element->getLocalBoundingSphere();
+			boundingSphere.center += transform.getPosition();
 
-                    if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-                        cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
-                    {
-                        // このノードは描画できる
-                        m_renderingElementList.add(element);
-                    }
-#else
-                    m_renderingElementList.add(element);
-#endif
-                }
-
-
-				element = element->next();
+			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
+				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
+			{
+				// このノードは描画できる
+				m_renderingElementList.add(element);
 			}
+#else
+			m_renderingElementList.add(element);
+#endif
+
+			element = element->m_classifiedNext;
 		}
 	}
 #endif
+
+
 
 	for (auto& element : m_renderingElementList)
 	{

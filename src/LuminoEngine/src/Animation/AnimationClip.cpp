@@ -23,13 +23,19 @@ Ref<AnimationClip> AnimationClip::load(const StringRef& filePath)
 {
 	//return makeObject<AnimationClip>(filePath);
 
-	return detail::EngineDomain::animationManager()->loadAnimationClip(filePath);
+	return detail::EngineDomain::animationManager()->loadAnimationClip(filePath)->result();
 
 	//const Char* candidateExts[] = { u".vmd" };
 	//if (const auto assetPath = detail::AssetPath::resolveAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts)))
 	//	return detail::EngineDomain::animationManager()->acquireAnimationClip(assetPath);
 	//else
 	//	return nullptr;
+}
+
+Ref<AnimationClipPromise> AnimationClip::loadAsync(const StringRef& filePath)
+{
+	auto task = detail::EngineDomain::animationManager()->loadAnimationClip(filePath);
+	return AnimationClipPromise::continueWith(task);
 }
 
 AnimationClip::AnimationClip()
@@ -108,6 +114,8 @@ void AnimationClip::onLoadResourceFile(Stream* stream, const detail::AssetPath& 
 	detail::BvhImporter importer(assetManager, diag);
 	importer.import(this, assetPath, detail::EngineDomain::animationManager()->defaultAnimationClipImportSettings());
 	diag->dumpToLog();
+
+	setName(assetPath.path().fileNameWithoutExtension());
 }
 
 //void AnimationClip::onLoadResourceFile()

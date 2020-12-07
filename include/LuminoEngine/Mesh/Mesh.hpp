@@ -8,7 +8,7 @@ class VertexBuffer;
 class IndexBuffer;
 class Material;
 class MeshContainer;
-class StaticMeshModel;
+class MeshModel;
 class MeshGeometryBuilder;
 namespace detail {
 class MeshManager;
@@ -337,7 +337,7 @@ private:
     List<Ref<Mesh>> m_lodMesh;
 	bool m_visible;
 
-	friend class StaticMeshModel;
+	friend class MeshModel;
 };
 
 // Bone and Container
@@ -402,7 +402,7 @@ LN_CONSTRUCT_ACCESS:
     virtual ~MeshNode() = default;
 
 private:
-	StaticMeshModel* m_model;
+	MeshModel* m_model;
 	String m_name;
     int m_index;
     int m_meshContainerIndex;
@@ -418,7 +418,7 @@ private:
 
 	bool m_visible = true;
 
-    friend class StaticMeshModel;
+    friend class MeshModel;
 };
 
 namespace detail {

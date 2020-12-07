@@ -9,6 +9,7 @@
 #include "RenderFeature/BlitRenderFeature.hpp"
 #include "RenderFeature/SpriteRenderFeature.hpp"
 #include "RenderFeature/MeshRenderFeature.hpp"
+#include "RenderFeature/PathRenderFeature.hpp"
 #include "RenderFeature/ExtensionRenderFeature.hpp"
 #include "RenderingManager.hpp"
 
@@ -89,6 +90,9 @@ void RenderingManager::init(const Settings& settings)
 	m_shapesRenderFeature = makeObject<ShapesRenderFeature>(this);
 #endif
 	m_renderFeatures.add(m_shapesRenderFeature);
+
+	m_pathRenderFeature = makeObject<PathRenderFeature>(this);
+	m_renderFeatures.add(m_pathRenderFeature);
 
     m_extensionRenderFeature = makeObject<ExtensionRenderFeature>(this);
     m_renderFeatures.add(m_extensionRenderFeature);

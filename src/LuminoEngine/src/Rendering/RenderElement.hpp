@@ -54,7 +54,9 @@ public:
     int commandFence = 0;
 	// TODO: ↑ flags 実装に伴い不要になりそう
 
-    RenderPhaseClass targetPhase = RenderPhaseClass::Geometry;
+    RenderPart targetPhase = RenderPart::_Count;
+	RenderDrawElement* m_classifiedNext = nullptr;
+
 
 
 
@@ -90,6 +92,12 @@ class DrawElementList
 	: public RefObject
 {
 public:
+	struct ElementListDetail
+    {
+        RenderDrawElement* headElement; // head of link list.
+        RenderDrawElement* tailElement; // tail of link list.
+	};
+
 	DrawElementList(RenderingManager* manager);
 	virtual ~DrawElementList();
 
@@ -100,6 +108,7 @@ public:
 
 	void clear();
 
+	// clear 時にデストラクタを呼び出したいもの
 	template<class T, class... TArgs>
 	T* newFrameData(TArgs&&... args)
 	{
@@ -109,16 +118,20 @@ public:
 		return data;
 	}
 
+	// デストラクタ呼び出し不要の Raw データ
+	void* newFrameRawData(size_t size)
+	{
+		return m_dataAllocator->allocate(size);
+	}
+
 	RenderStage* addNewRenderStage();
 
-	void addElement(RenderStage* parentStage, RenderDrawElement* element);
+	void addElement(RenderDrawElement* element);
 
-	RenderDrawElement* headElement() const { return m_headElement; }
-    RenderDrawElement* lastElement() const { return m_tailElement; }
+	RenderDrawElement* headElement() const { return m_allElementList.headElement; }
+    RenderDrawElement* lastElement() const { return m_allElementList.tailElement; }
+	const ElementListDetail& classifiedElementList(RenderPart phase) const { return m_classifiedElementList[static_cast<int>(phase)]; }
 
-	void addDynamicLightInfo(const DynamicLightInfo& info) { return m_dynamicLightInfoList.add(info); }
-
-	const List<DynamicLightInfo>& dynamicLightInfoList() const { return m_dynamicLightInfoList; }
 
 private:
 	void addFrameData(IDrawElementListFrameData* data);
@@ -126,16 +139,17 @@ private:
 	Ref<LinearAllocator> m_dataAllocator;
 	List<RenderStage*> m_renderStageList;	// TODO: ポインタのリンクリストでもいいかな
 
-	RenderDrawElement* m_headElement;	// head of link list.
-	RenderDrawElement* m_tailElement;	// tail of link list.
+	ElementListDetail m_allElementList;
+	std::array<ElementListDetail, (int)RenderPart::_Count> m_classifiedElementList;
 
 	IDrawElementListFrameData* m_headFrameData;	// head of link list.
 	IDrawElementListFrameData* m_tailFrameData;	// tail of link list.
 
-	List<DynamicLightInfo> m_dynamicLightInfoList;
 };
 
 
+
+#if 0
 // 1フレームで実行するコマンドリストすべてをまとめておく。
 // インスタンスは World などに、基本的にずっと持っておく。
 // 描画開始時に clear() し、そのフレームで描画したい CommandBuffer やら RenderingContext やらからどんどん add していく。
@@ -144,20 +158,21 @@ class DrawElementListCollector
 {
 public:
 	void clear();
-	void addDrawElementList(/*RenderPhaseClass phase, */DrawElementList* list);
-	const List<DrawElementList*>& lists(/*RenderPhaseClass phase*/) const;
+	void addDrawElementList(/*RenderPart phase, */DrawElementList* list);
+	const List<DrawElementList*>& lists(/*RenderPart phase*/) const;
 
 
     void classify();
-    const List<RenderDrawElement*>& classifiedElements(RenderPhaseClass phase) const { return m_classifiedElements[(int)phase]; };
+    const List<RenderDrawElement*>& classifiedElements(RenderPart phase) const { return m_classifiedElements[(int)phase]; };
 
 private:
-    List<DrawElementList*> m_lists;// [(int)RenderPhaseClass::_Count];
+    List<DrawElementList*> m_lists;// [(int)RenderPart::_Count];
 
-    List<RenderDrawElement*> m_classifiedElements[(int)RenderPhaseClass::_Count];
+    List<RenderDrawElement*> m_classifiedElements[(int)RenderPart::_Count];
 
     
 };
+#endif
 
 } // namespace detail
 } // namespace ln

@@ -7,10 +7,10 @@
 #include <unordered_map>
 #include "FlatCommon.h"
 
-#define LNRB_LOG_D(...) LnLog_PrintA(LN_LOG_LEVEL_DEBUG, "RubyRuntime", __VA_ARGS__)
-#define LNRB_LOG_I(...) LnLog_WriteA(LN_LOG_LEVEL_INFO, "RubyRuntime", __VA_ARGS__)
+#define LNRB_LOG_D(...) LNLog_PrintA(LN_LOG_LEVEL_DEBUG, "RubyRuntime", __VA_ARGS__)
+#define LNRB_LOG_I(...) LNLog_WriteA(LN_LOG_LEVEL_INFO, "RubyRuntime", __VA_ARGS__)
 
-typedef VALUE(*ObjectFactoryFunc)(VALUE klass, LnHandle handle);
+typedef VALUE(*ObjectFactoryFunc)(VALUE klass, LNHandle handle);
 
 struct TypeInfo
 {
@@ -20,7 +20,7 @@ struct TypeInfo
 
 struct Wrap_RubyObject
 {
-    LnHandle handle;
+    LNHandle handle;
     Wrap_RubyObject() : handle(0) {}
 };
 
@@ -33,25 +33,25 @@ public:
     static const int InitialListSize = 512;
 
     static LuminoRubyRuntimeManager* instance;
-    static LnLogLevel s_logLevel;
+    static LNLogLevel s_logLevel;
 
     void init();
     VALUE luminoModule() const { return m_luminoModule; }
     VALUE eventSignalClass() const { return m_eventSignalClass; }
-    VALUE wrapObjectForGetting(LnHandle handle, bool retain = true);
-    LnHandle getHandle(VALUE value) const;
+    VALUE wrapObjectForGetting(LNHandle handle, bool retain = true);
+    LNHandle getHandle(VALUE value) const;
     int registerTypeInfo(VALUE klass, ObjectFactoryFunc factory);
     void registerWrapperObject(VALUE obj, bool forNativeGetting);
-    void unregisterWrapperObject(LnHandle handle);
+    void unregisterWrapperObject(LNHandle handle);
 
     // for generator interface
     static LuminoRubyRuntimeManager* getInstance(VALUE managerInstance);
     static void gc_mark(LuminoRubyRuntimeManager* obj);
-    static void handleReferenceChangedStatic(LnHandle handle, int method, int count);
-    void handleReferenceChanged(LnHandle handle, int method, int count);
+    static void handleReferenceChangedStatic(LNHandle handle, int method, int count);
+    void handleReferenceChanged(LNHandle handle, int method, int count);
 
     static void handleRuntimeFinalized();
-    static void handleCreateInstanceCallback(int typeInfoId, LnHandle* outHandle);
+    static void handleCreateInstanceCallback(int typeInfoId, LNHandle* outHandle);
 
     void dumpInfo() const;
 
@@ -82,11 +82,11 @@ public:
     static std::string makeTypeInfoName(VALUE klass);
 };
 
-inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
-inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle, VALUE& accessorCache) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
-inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle, std::vector<VALUE>& accessorCache, int index) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
-inline void LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(LnHandle handle) { if ( LuminoRubyRuntimeManager::instance) LuminoRubyRuntimeManager::instance->unregisterWrapperObject(handle); }
+inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LNHandle handle) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
+inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LNHandle handle, VALUE& accessorCache) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
+inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LNHandle handle, std::vector<VALUE>& accessorCache, int index) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
+inline void LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(LNHandle handle) { if ( LuminoRubyRuntimeManager::instance) LuminoRubyRuntimeManager::instance->unregisterWrapperObject(handle); }
 
-inline VALUE LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(LnHandle handle) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle, false); }
+inline VALUE LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(LNHandle handle) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle, false); }
 
 

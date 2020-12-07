@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Asset/Common.hpp>
 #include <LuminoEngine/Asset/AssetObject.hpp>
 #include "../Base/RefObjectCache.hpp"
@@ -70,7 +71,7 @@ public:
     void buildAssetIndexFromLocalFiles(const ln::Path& assetDir);
 
 
-
+    // TODO: deprecated. use loadObjectWithCacheHelperAsync
     template<class TObject, class TCache>
     static Ref<TObject> loadObjectWithCacheHelper(
         TCache* cache,
@@ -90,6 +91,7 @@ public:
         // > 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
         const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
 
+        // キャッシュに見つかったらそれを返す
         if (auto obj = cache->findObject(cacheKey)) {
             return obj;
         }
@@ -110,33 +112,48 @@ public:
         return obj;
     }
 
-    //template<class TObject, class TCache>
-    //static Ref<TObject> loadObjectWithCacheHelper2(
-    //    TCache* cache, const detail::AssetPath& basePath, const Path& localPath)
-    //{
-    //    auto pathSet = std::make_unique<AssetRequiredPathSet>();
-    //    if (!AssetObject::resolveAssetPathFromResourceFile(basePath, localPath, pathSet.get())) {
-    //        return nullptr;
-    //    }
 
-    //    // finalResourceAssetFilePath から拡張子を除いたものを CacheKey とする
-    //    // > CacheKey はどの Archive に入っているファイルであるかまで区別できるものでなければダメ。
-    //    // > Archive 名と、それを基準とした相対パス(または絶対パス) で表す必要がある。
-    //    // > 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
-    //    const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
+    template<class TObject, class TCache>
+    static Ref<GenericTask<Ref<TObject>>> loadObjectWithCacheHelperAsync(
+        TCache* cache,
+        const detail::AssetPath* baseDir,   // モデルファイルからのテクスチャロード等で使用する。不要なら nullptr
+        const std::vector<const Char*>& exts,
+        const StringRef& filePath)
+    {
+        auto pathSet = std::make_unique<AssetRequiredPathSet>();
+        if (!AssetObject::_resolveAssetRequiredPathSet(baseDir, filePath, exts, pathSet.get())) {
+            return nullptr;
+        }
 
-    //    if (auto obj = cache->findObject(cacheKey)) {
-    //        return obj;
-    //    }
+        // finalResourceAssetFilePath から拡張子を除いたものを CacheKey とする
+        // > CacheKey はどの Archive に入っているファイルであるかまで区別できるものでなければダメ。
+        // > Archive 名と、それを基準とした相対パス(または絶対パス) で表す必要がある。
+        // > 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
+        const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
 
-    //    auto obj = makeObject<TObject>();
-    //    obj->m_data = std::move(pathSet);
-    //    obj->reload();
+        if (auto obj = cache->findObject(cacheKey)) {
+            auto task = GenericTask<Ref<TObject>>::create([obj]() {
+                return obj;
+            });
+            task->start();
+            return task;
+        }
 
-    //    cache->registerObject(cacheKey, obj);
 
-    //    return obj;
-    //}
+        auto obj = makeObject<TObject>();
+
+        // reload 前に先にインスタンスを登録して、
+        // 同時に同じアセットがロードされようとしたときに別のインスタンスを作ってしまうケースに対応する。
+        cache->registerObject(cacheKey, obj);
+        obj->m_data = std::move(pathSet);
+
+        auto task = GenericTask<Ref<TObject>>::create([obj]() {
+            obj->reload();
+            return obj;
+        });
+        task->start();
+        return task;
+    }
 
 
 private:

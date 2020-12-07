@@ -6,31 +6,6 @@
 #include "../Graphics/RenderState.hpp"
 
 namespace ln {
-class Font;
-class VertexLayout;
-class VertexBuffer;
-class Texture;
-class RenderTargetTexture;
-class DepthBuffer;
-class Material;
-class MeshResource;
-class Mesh;
-class MeshContainer;
-class MeshArmature;
-class RenderViewPoint;
-class RenderView;
-class PostEffect;
-class InstancedMeshList;
-namespace detail {
-class FontRequester;
-class FlexGlyphRun;
-class RenderingManager;
-class DrawElementList;
-class DrawElementListBuilder;
-class BuiltinEffectData;
-class RenderDrawElement;
-} // namespace detail
-
 
 
 
@@ -100,7 +75,7 @@ public:
 
 
 
-    void setRenderPhase(RenderPhaseClass value);
+    void setRenderPhase(RenderPart value);
 
     // BuiltinEffectData
     //void setTransfrom(const Matrix& value);
@@ -139,7 +114,7 @@ public:
     //void blit(Material* material);
     //void blit(RenderTargetTexture* source, RenderTargetTexture* destination);
     //void blit(RenderTargetTexture* source, RenderTargetTexture* destination, Material* material);
-	void blit(Material* source, RenderTargetTexture* destination, RenderPhaseClass phase = RenderPhaseClass::PostEffect);
+	void blit(Material* source, RenderTargetTexture* destination, RenderPart phase = RenderPart::PostEffect);
 
 	/** スプライトを描画します。 */
 	void drawSprite(
@@ -163,7 +138,7 @@ public:
     void drawMesh(MeshResource* meshResource, int sectionIndex);
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
     void drawMesh(Mesh* mesh, int sectionIndex);
-	void drawSkinnedMesh(Mesh* mesh, int sectionIndex, MeshArmature* skeleton);
+	void drawSkinnedMesh(Mesh* mesh, int sectionIndex, detail::SkeletonInstance* skeleton);
 
 	void drawMeshInstanced(InstancedMeshList* list);
 
@@ -178,8 +153,26 @@ public:
 
     void invokeExtensionRendering(INativeGraphicsExtension* extension);
 
+
+	// デバッグ2D用 AA無しプリミティブ
+
+	// 線分または塗りつぶしで描かれる正多角形。
+	// XY 平面上に、Z-正面で作成する。
+	void drawRegularPolygonPrimitive(int vertexCount, float radius, const Color& color, bool fill, const Matrix& localTransform = Matrix());
+
+
 	/** @} */
 
+	//--------------------------------------------------------------------------
+	/** @name commands */
+	/** @{ */
+
+
+
+	CanvasContext* beginPath();
+	void endPath();
+
+	/** @} */
 
 	//--------------------------------------------------------------------------
 	/** @name light */
@@ -206,38 +199,56 @@ public:
 	Size measureTextSize(Font* font, uint32_t codePoint) const;
 
 
-    RenderViewPoint* viewPoint() const;
+
+	CommandList* getCommandList(RenderPart index1, detail::ProjectionKind index2);
+
+
+
 	World* world = nullptr;
 
 
     // TODO: internal
+    RenderViewPoint* viewPoint() const;
+    void setViewPoint(RenderViewPoint* value);
     void setBaseTransfrom(const Optional<Matrix>& value);
 	const Matrix& baseTransform() const;
+	void setRenderPriority(int value);
     void setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value);
-    void setRenderPriority(int value);
-    void setViewPoint(RenderViewPoint* value);
+   	void setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value);
+	void setObjectId(int value);
+
+	const Ref<detail::DrawElementListBuilder>& builder() const;
+	const Ref<CommandList>& commandList() const { return m_commandList; }
+	const Ref<detail::CommandListServer>& commandListServer() const { return m_listServer; }
+	
 	RenderView* baseRenderView = nullptr;	// for PostEffect
     GraphicsContext* m_frameWindowRenderingGraphicsContext = nullptr;
 	//detail::RenderDrawElement* lastRenderDrawElement() const;
-	void setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value);
 	void collectPostEffect(PostEffect* effect) { m_imageEffects.add(effect); }
 	const List<PostEffect*>& imageEffects() const { return m_imageEffects; }
 	void clearPostEffects() { m_imageEffects.clear(); }
-	detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;	// for PostEffect
-	RenderTargetTexture* gbuffer(GBuffer kind) const;
+	//detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;	// for PostEffect
+	//RenderTargetTexture* gbuffer(GBuffer kind) const;
 	RenderView* currentRenderView = nullptr;	// Offscreen の場合はそれ
-	void setObjectId(int value);
+
+	void addDynamicLightInfo(const detail::DynamicLightInfo& info) { return m_dynamicLightInfoList.add(info); }
+
+	const List<detail::DynamicLightInfo>& dynamicLightInfoList() const { return m_dynamicLightInfoList; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();
-	virtual ~RenderingContext();
-	void setDrawElementList(detail::DrawElementList* list);
 	void resetForBeginRendering();
 
 protected:  // TODO:
 	detail::RenderingManager* m_manager;
-	Ref<detail::DrawElementListBuilder> m_builder;
 	List<PostEffect*> m_imageEffects;
+	Ref<CommandList> m_commandList;
+	Ref<detail::CommandListServer> m_listServer;
+
+private:
+	Ref<CanvasContext> m_pathContext;
+	bool m_pathBegan;
+	List<detail::DynamicLightInfo> m_dynamicLightInfoList;
 };
 
 } // namespace ln

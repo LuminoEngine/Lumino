@@ -202,7 +202,7 @@ void UIViewport::onRender(UIRenderingContext* context)
 	context->setCullingMode(CullMode::None);
 	context->setBlendMode(BlendMode::Normal);
 	m_blitMaterial->setMainTexture(m_primaryTarget);
-	context->blit(m_blitMaterial, nullptr, RenderPhaseClass::Geometry);
+	context->blit(m_blitMaterial, nullptr, RenderPart::Geometry);
 #else
 	// TODO: ポストプロセスの結果を転送したいので、Sprite 描画では描画できない。
 	// 現状、RenderPhaseClass::PostEffect を使っている blit を利用する必要がある。
@@ -227,7 +227,7 @@ void UIViewport::onRender(UIRenderingContext* context)
 	context->setCullingMode(CullMode::None);
 	context->setBlendMode(BlendMode::Normal);
     m_blitMaterial->setMainTexture(m_primaryTarget);
-	context->blit(m_blitMaterial, nullptr, RenderPhaseClass::Geometry);
+	context->blit(m_blitMaterial, nullptr, RenderPart::Geometry);
 #endif
 
 	//context->drawSolidRectangle(Rect(0, 0, 100, 100), Color::Blue);

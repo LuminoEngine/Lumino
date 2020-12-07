@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Rendering/Common.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 
@@ -85,16 +86,12 @@ public:
 	// render の前準備として、効率的な描画を行うためのZソートなどを実施した Element リストを作成する。
 	void prepare(
 		RenderingPipeline* renderingPipeline,
+		RenderingContext* renderingContext,
+		//detail::CommandListServer* commandListServer,
 		const detail::RenderViewInfo& mainRenderViewInfo,
-		RenderPhaseClass targetPhase,
+		RenderPart targetPhase,
+		ProjectionKind targetProjection,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
-
-	//void render(
-	//	GraphicsContext* graphicsContext,
- //       RenderingPipeline* renderingPipeline,
-	//	RenderTargetTexture* renderTarget,
-	//	DepthBuffer* depthBuffer,
- //       const detail::CameraInfo& mainCameraInfo);
 
 	void renderPass(
 		GraphicsContext* graphicsContext,
@@ -120,7 +117,7 @@ protected:
 
 
 	// レンダリング準備として、描画に関係する各種オブジェクト (DrawElement や Light) を収集するフェーズ
-	virtual void collect(RenderingPipeline* renderingPipeline, const CameraInfo& cameraInfo, RenderPhaseClass targetPhase);
+	virtual void collect(RenderingPipeline* renderingPipeline, const CameraInfo& cameraInfo, RenderPart targetPhase);
 
 	// レンダリング準備として、効率的な描画を行うために収集した各種オブジェクトのソートなどを行う
 	void prepare();
@@ -136,12 +133,16 @@ public:	// TODO
 	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderPass* defaultRenderPass /*RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer*//*, const ClearInfo& clearInfo*/);
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
+private:
 	detail::RenderingManager* m_manager;
 	//List<Ref<SceneRendererPass>> m_renderingPassList;
 	RenderFeatureBatchList m_renderFeatureBatchList;
 
     RenderingPipeline* m_renderingPipeline;
+	RenderingContext* m_renderingContext;
 	const detail::SceneGlobalRenderParams* m_sceneGlobalRenderParams;
+	RenderPart m_currentPart;
+	ProjectionKind m_currentProjection;
 
 	//const FrameBuffer* m_defaultFrameBuffer;
 	ZSortDistanceBase m_zSortDistanceBase;
@@ -156,7 +157,7 @@ public:	// TODO
 	SceneInfo m_mainSceneInfo;
 	const DynamicLightInfo* m_mainLightInfo = nullptr;
 
-    //RenderPhaseClass m_targetPhase;
+    //RenderPart m_targetPhase;
 
 	// build by collect().
 	List<RenderDrawElement*> m_renderingElementList;

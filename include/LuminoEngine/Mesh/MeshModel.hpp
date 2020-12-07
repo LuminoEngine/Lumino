@@ -1,17 +1,105 @@
 ﻿#pragma once
+#include "Common.hpp"
 #include "Mesh.hpp"
 
 namespace ln {
+class MeshSkeleton;
+class MeshModel;
+class AnimationController;
+namespace detail {
+class MeshModelInstance;
+}
+	
+// MeshNode を参照するためのデータ構造。
+// Node と Bone は似ているが異なるものなので注意。頂点の BLEND_INDICES から参照されるのはこのインスタンス。
+// ひとつの Node を複数の Bone が参照する。
+// 正直、Bone という名前はやめた方がいい気がする。
+// SkinnedMesh でのみ使用する。
+class MeshBone
+	: public Object
+{
+public:
+	//const String& name() const;
 
-/** StaticMeshModel */
+	MeshNode* node() const;
+	int nodeIndex() const { return m_node; }
+
+	//const AttitudeTransform& localTransform() const;
+
+	//const Matrix& globalMatrix() const;
+
+public:	// TODO
+	MeshSkeleton* m_skeleton;
+	int m_node = -1;
+
+	// ボーンの初期姿勢を打ち消して、原点に戻す行列。
+	// モデル空間内の絶対座標系となっている。(親ボーンからの相対座標系ではない点に注意)
+	Matrix m_inverseInitialMatrix;
+
+	friend class MeshSkeleton;
+};
+
+// Bone をまとめるデータ構造。
+// BoneTexture を生成する単位。
+// ひとつの Model に対して複数インスタンスを持つことがあるが、MeshContainer がどの Skeleton を使って描画するのかを参照する。
+class MeshSkeleton
+	: public Object
+{
+public:
+	int boneCount() const { return m_bones.size(); }
+	MeshBone* bone(int index) const;
+
+
+	const List<MeshBone*>& rootBones() const { return m_rootBones; }
+
+public:
+	// TODO: internal
+	void addBone(int linkNode, const Matrix& inverseInitialMatrix);
+
+LN_CONSTRUCT_ACCESS:
+	MeshSkeleton();
+	bool init(MeshModel* model);
+
+public:	// TODO:
+	MeshModel* m_model = nullptr;
+	List<Ref<MeshBone>> m_bones;
+	List<MeshBone*> m_rootBones;
+
+};
+
+class MeshBoneIKChain
+	: public Object
+{
+public:
+
+	int LinkBoneIndex;        // IK構成ボーン番号
+	bool IsRotateLimit;        // 回転制限をするか
+	Vector3 MinLimit;            // 下限
+	Vector3 MaxLimit;            // 上限
+};
+
+class MeshBoneIK
+	: public Object
+{
+public:
+	int            IKBoneIndex;            // IKボーン (PMX では、この IK 情報を持つボーンを指す)
+	int            IKTargetBoneIndex;        // IKターゲットボーン
+	int            LoopCount;                // 演算回数
+	float        IKRotateLimit;            // IKループ計算時の1回あたりの制限角度 -> ラジアン角 | PMDのIK値とは4倍異なるので注意
+
+	List<Ref<MeshBoneIKChain>> IKLinks;            // IK影響ボーンと制限のリスト
+};
+
+/** MeshModel */
 LN_CLASS()
-class StaticMeshModel
+class MeshModel
 	: public Object
 {
 public:
 	/** load */
 	LN_METHOD()
-    static Ref<StaticMeshModel> load(const StringRef& filePath);
+    static Ref<MeshModel> load(const StringRef& filePath, MeshImportSettings* settings = nullptr);
+	//static Ref<MeshModel> loadSkinned(const StringRef& filePath);	// TODO: load 統一でいいかも
 
 	/** findNode */
 	LN_METHOD()
@@ -47,6 +135,12 @@ public:
 	/** load */
 	LN_METHOD()
 	Material* material(int index);
+	
+	/** animationController */
+	LN_METHOD(Property)
+	AnimationController* animationController() const;
+
+	MeshNode* findHumanoidBone(HumanoidBones boneKind) const;
 
     void addRootNode(int index);
 
@@ -60,13 +154,33 @@ public:
     detail::InternalMeshModelType meshModelType() const { return m_type; }
     //Matrix* nodeGlobalTransformPtr(int nodeIndex) { return &m_nodeGlobalTransforms[nodeIndex]; }
     const Matrix& nodeGlobalTransform(int nodeIndex) { return m_nodeGlobalTransforms[nodeIndex]; }
+	
+	// TODO: internal
+	void addSkeleton(MeshSkeleton* skeleton);
+	const Ref<MeshSkeleton>& skeleton(int index) const { return m_skeletons[index]; }
+	const List<Ref<MeshSkeleton>>& skeletons() const { return m_skeletons; }
+
+	std::array<int, 56> m_humanoidBoneNodeIndices;	// Index of m_bones
+	void setHumanoidBoneIndex(HumanoidBones kind, int boneIndex) { m_humanoidBoneNodeIndices[static_cast<int>(kind)] = boneIndex; }
+	int humanoidBoneIndex(HumanoidBones kind) const { return m_humanoidBoneNodeIndices[static_cast<int>(kind)]; }
+
+	// TODO: internal (Skinning)
+	void beginUpdate();
+	void preUpdate();
+	void postUpdate();
+	void updateBoneTransformHierarchy();
+	void updateIK();
+	void writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion* localQuaternionsBuffer);
+	void verifyHumanoidBones();
+	Ref<detail::MeshModelInstance> createMeshModelInstance();
+	bool isStaticMeshModel() const { return m_animationController == nullptr; }
 
 protected:
 	void serialize(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
-    StaticMeshModel();
-    StaticMeshModel(detail::InternalMeshModelType type);
+    MeshModel();
+    MeshModel(detail::InternalMeshModelType type);
 
 public:	// TODO:
 	void clear();
@@ -87,6 +201,12 @@ public:	// TODO:
     // でも Node は SkinndMesh と共用なので、Node 側に GlobalTransform を持たせるのは
     // データが無駄になったりする。
     List<Matrix> m_nodeGlobalTransforms;
+
+	List<Ref<MeshBoneIK>> m_iks;
+	Ref<AnimationController> m_animationController;
+
+private:
+	List<Ref<MeshSkeleton>> m_skeletons;
 
 	friend class detail::MeshManager;
 };
@@ -151,10 +271,26 @@ public:
 //};
 //}
 
+/** MeshImportSettings */
+LN_CLASS()
 class MeshImportSettings
 	: public Object
 {
 public:
+	static MeshImportSettings* defaultSettings();
+
+	/** (default: true) */
+	void setSkeletonImport(bool value);
+
+	bool skeletonImport() const { return m_skeletonImport; }
+
+
+	/** */
+	void setCharacterModelFormat(Optional<bool> value) { m_isCharacterModelFormat = value; }
+
+	Optional<bool> isCharacterModelFormat() const { return m_isCharacterModelFormat; }
+
+	
 	/**
 	 * Bone 姿勢を平行移動成分へ適用するかどうかを設定します。(default: true)
 	 *
@@ -189,11 +325,25 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	MeshImportSettings();
+
+	/** init */
+	LN_METHOD()
 	bool init();
 
 private:
+	bool m_skeletonImport;
+	Optional<bool> m_isCharacterModelFormat;
 	Optional<bool> m_applyBoneTransformationsEnabled;
+
 	//Optional<bool> m_flipZCoordinate;
+};
+
+
+class MeshDiag
+{
+public:
+	static void printNodes(const MeshModel* model);
+	static void clearBoneInitialRotations(MeshModel* model);
 };
 
 } // namespace ln

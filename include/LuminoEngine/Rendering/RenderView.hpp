@@ -16,9 +16,10 @@ namespace detail {
 class RenderingManager;
 class FrameBufferCache;
 class DrawElementList;
-class DrawElementListCollector;
 class SceneRenderer;
 class UIStyleInstance;
+
+
 }
 
 // RenderView は別の RenderingContext の描画コマンド構築中に、レンダリングターゲットを生成する目的で render を実行することがある。
@@ -40,14 +41,13 @@ public:
 
 	UIViewport* viewport() const { return m_parentViewport; }
 
-	// World の描画などでは RenderView のインスタンスを持ち回り、描画してほしい人が Manager を ここに add していく。
-	void clearDrawElementListManagers();
-	void addDrawElementListManager(detail::DrawElementListCollector* elementListManager);
-
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) = 0;
 
 	// TODO: internal
 	//detail::CameraInfo mainCameraInfo;
+	const detail::CameraInfo& viewProjection(detail::ProjectionKind kind) const { return m_viewProjections[static_cast<int>(kind)]; }
+	void makeViewProjections(const detail::CameraInfo& base, float dpiScale);
+	Vector3 transformProjection(const Vector3& pos, detail::ProjectionKind from, detail::ProjectionKind to) const;
 
 	SceneClearMode clearMode() const { return m_clearMode; }
 	void setClearMode(SceneClearMode value) { m_clearMode = value; }
@@ -62,6 +62,10 @@ public:
     //LN_METHOD(Event)
 	Ref<EventConnection> connectOnUIEvent(Ref<UIGeneralEventHandler> handler);
 
+	detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;	// for PostEffect
+	RenderTargetTexture* gbuffer(GBuffer kind) const;
+
+
 public: // TODO: protected
 	void updateFrame(float elapsedSeconds);
 	void updateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
@@ -73,7 +77,6 @@ public: // TODO: protected
     virtual void onRoutedEvent(UIEventArgs* e);
 
 LN_INTERNAL_ACCESS:
-	const List<detail::DrawElementListCollector*>& elementListManagers() const { return m_elementListManagers; }
 	//void setActualScreenOffset(const Point& offset) { m_actualScreenOffset = offset; }
     void setActualSize(const Size& size) { m_actualSize = size; }
 
@@ -81,14 +84,12 @@ private:
 	detail::RenderingManager* m_manager;
 	UIViewport* m_parentViewport = nullptr;
 
-
-    // TODO: これ List じゃなくていい気がする、というか、List じゃないほうが安全
-	List<detail::DrawElementListCollector*> m_elementListManagers;
-
 	SceneClearMode m_clearMode;
 	Color m_backgroundColor;
 	Point m_actualScreenOffset;
     Size m_actualSize;
+
+	std::array<detail::CameraInfo, 4> m_viewProjections;
 
     Event<UIGeneralEventHandler> m_onUIEvent;
 

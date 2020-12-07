@@ -58,7 +58,7 @@ public:
 	//void removeAudioNode(AudioNode* node);
 
 	Ref<AudioDecoder> createAudioDecoder(const StringRef& filePath);
-	void createAudioDecoderAsync(const StringRef& filePath, const std::function<void(AudioDecoder* decoder)>& postAction);
+	//void createAudioDecoderAsync(const StringRef& filePath, const std::function<void(AudioDecoder* decoder)>& postAction);
 	void releaseAudioDecoder(AudioDecoder* decoder);
 
 	void addSoundManagement(Sound* value);

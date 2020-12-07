@@ -31,8 +31,8 @@ class SSRPostEffectCore
 public:
     SSRPostEffectCore();
     bool init(Material* compositeMaterial);
-    bool prepare(RenderingContext* context, RenderTargetTexture* source);
-    void render(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination);
+    bool prepare(RenderView* renderView, CommandList* context, RenderTargetTexture* source);
+    void render(CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination);
 
     Ref<RenderTargetTexture> ssrResultTexture() const { return m_blurTarget2; }
 
@@ -65,7 +65,7 @@ class SSRPostEffectInstance
     : public PostEffectInstance
 {
 protected:
-    bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+    bool onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
     SSRPostEffectInstance();

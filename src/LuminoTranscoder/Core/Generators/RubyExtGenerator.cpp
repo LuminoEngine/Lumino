@@ -244,9 +244,6 @@ void RubyExtGenerator::generate()
         auto outputDir = ln::Path(makeOutputFilePath(u"Ruby", u"GemProject/ext"));
         ln::FileSystem::createDirectory(outputDir);
 
-        ln::FileSystem::copyFile(config()->flatCCommonHeader, ln::Path(outputDir, u"FlatCommon.h"), ln::FileCopyOption::Overwrite);
-        ln::FileSystem::copyFile(makeFlatCHeaderOutputPath(), ln::Path(outputDir, u"FlatC.generated.h"), ln::FileCopyOption::Overwrite);
-
 		ln::String fileName = ln::String::format("{0}.RubyExt.generated.cpp", config()->moduleName);
 
 		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(u"RubyExt.template.cpp"))
@@ -306,7 +303,9 @@ ln::String RubyExtGenerator::makeClassRequiredImplementation(const TypeSymbol* c
 		if (classSymbol->baseClass()) {  // 継承
 			wrapStruct.AppendLine("    : public " + makeWrapStructName(classSymbol->baseClass()));
 		}
-		else if (classSymbol->isRootObjectClass()) {
+		else if (
+			classSymbol->isRootObjectClass() ||
+			classSymbol->isDelegateObject()) {
 			wrapStruct.AppendLine("    : public Wrap_RubyObject");
 		}
 		wrapStruct.AppendLine(u"{");
@@ -483,10 +482,6 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
     }
 	*/
 
-    //if (method->shortName() == u"readString") {
-    //    printf("");
-    //}
-
 	// 集計
 	int requiredArgsCount = 0;
 	int optionalArgsCount = 0;			// デフォルト引数の数
@@ -550,7 +545,9 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 				callerArgDecls.AppendLine(makeVALUEToNativeCastDecl(param));
 				// API実引数
 				if (param->type()->isStruct())
-					callerArgList.AppendCommad("&_" + param->name());   // struct は 参照渡し
+					callerArgList.AppendCommad("&_" + param->name());   // struct はポインタ渡し
+				else if (param->isOut())
+					callerArgList.AppendCommad("&_" + param->name());	// Primitive 型の出力引数はポインタ渡し
 				else
 					callerArgList.AppendCommad("_" + param->name());
 
@@ -758,11 +755,10 @@ ln::String RubyExtGenerator::makeTypeCheckExpr(const TypeSymbol* type, const ln:
 		type == PredefinedTypes::uint32Type) {
 		return ln::String::format(u"LNRB_VALUE_IS_NUMBER({0})", varName);
 	}
-	else if (type == PredefinedTypes::floatType) {
+	else if (
+		type == PredefinedTypes::floatType ||
+		type == PredefinedTypes::doubleType) {
 		return ln::String::format(u"LNRB_VALUE_IS_FLOAT({0})", varName);
-	}
-	else if (type == PredefinedTypes::doubleType) {
-		return ln::String::format(u"LNRB_VALUE_IS_DOUBLE({0})", varName);
 	}
 	else if (type->isString()) {
 		return ln::String::format(u"LNRB_VALUE_IS_STRING({0})", varName);
@@ -804,7 +800,9 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastExpr(const MethodParameterSymb
 			type == PredefinedTypes::uint32Type) {
 			castExpr = ln::String::format(u"LNRB_VALUE_TO_NUMBER({0})", varName);
 		}
-		else if (type == PredefinedTypes::floatType) {
+		else if (
+			type == PredefinedTypes::floatType ||
+			type == PredefinedTypes::doubleType) {
 			castExpr = ln::String::format(u"LNRB_VALUE_TO_FLOAT({0})", varName);
 		}
 		else if (type->isString()) {
@@ -854,7 +852,9 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymb
 			type == PredefinedTypes::uint32Type) {
 			declExpr = ln::String::format(u"{0} {1}", type->shortName(), varName);
 		}
-		else if (type == PredefinedTypes::floatType) {
+		else if (
+			type == PredefinedTypes::floatType ||
+			type == PredefinedTypes::doubleType) {
 			declExpr = ln::String::format(u"{0} {1}", type->shortName(), varName);
 		}
 		else if (type->isString()) {
@@ -870,7 +870,7 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymb
 	}
 
 	if (param->defaultValue()) {
-		return ln::String::format(u"{0} = ({1} != Qnil) ? {2} : {3};", declExpr, param->name(), castExpr, makeConstantValue(param->defaultValue()));
+		return ln::String::format(u"{0} = ({1} != Qnil) ? {2} : {3};", declExpr, param->name(), castExpr, makeFlatConstantValue(param->defaultValue()));
 	}
 	else {
 		return ln::String::format(u"{0} = {1};", declExpr, castExpr);
@@ -886,19 +886,6 @@ ln::String RubyExtGenerator::makeNativeToVALUECastDecl(const MethodParameterSymb
     else {
         return ln::String::format(u"LNI_TO_RUBY_VALUE({0})", param->name());
     }
-}
-
-ln::String RubyExtGenerator::makeConstantValue(const ConstantSymbol* constant) const
-{
-	if (constant->type()->isEnum()) {
-		return ln::String::format(u"({0}){1}", makeFlatClassName(constant->type()), ln::String::fromNumber(constant->value()->get<int>()));
-	}
-	else if (constant->type() == PredefinedTypes::floatType) {
-		return ln::String::fromNumber(constant->value()->get<float>());
-	}
-	else {
-		return ln::String::fromNumber(constant->value()->get<int>());
-	}
 }
 
 // 
@@ -938,6 +925,28 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_ProcCaller(const MethodSymbol
 // LNWorldObject_OnUpdate_SetOverrideCallback() などに登録するコールバック関数の生成
 ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const TypeSymbol* classSymbol) const
 {
+	/*
+	出力例：
+	```
+	LNResult Wrap_LNInterpreter_OnSerialize_OverrideCallback(LNHandle object, LNHandle ar)
+	{
+		VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+		VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+		return LN_SUCCESS;
+	}
+	```
+
+	出力例：
+	```
+	LNResult Wrap_LNInterpreter_OnUpdateWait_OverrideCallback(LNHandle interpreter, LNBool* outReturn)
+	{
+		VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(interpreter);
+		VALUE retval = rb_funcall(obj, rb_intern("on_update_wait"), 1);
+		*outReturn = ;
+		return LN_SUCCESS;
+	}
+	```
+	*/
 	OutputBuffer code;
 
 	for (auto& method : classSymbol->leafVirtualMethods()) {
@@ -958,15 +967,23 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const Typ
 
 			// make args
 			OutputBuffer args;
+			int argsCount = 0;
 			for (int i = 1; i < method->flatParameters().size(); i++) {
-                args.AppendCommad(makeNativeToVALUECastDecl(method->flatParameters()[i]));
+				const auto& param = method->flatParameters()[i];
+				if (!param->isReturn()) {
+					args.AppendCommad(makeNativeToVALUECastDecl(param));
+					argsCount++;
+				}
+			}
+			if (argsCount == 0) {
+				args.AppendCommad(u"0");	// 引数0個の時のダミー
 			}
 
 			code.AppendLine(u"VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE({0});", method->flatParameters().front()->name());
-			code.AppendLine(u"VALUE retval = rb_funcall(obj, rb_intern(\"{0}\"), {1}, {2});", makeRubyMethodName(method), method->flatParameters().size() - 1, args.toString());
+			code.AppendLine(u"VALUE retval = rb_funcall(obj, rb_intern(\"{0}\"), {1}, {2});", makeRubyMethodName(method), argsCount, args.toString());
 
 			if (method->returnType().type != PredefinedTypes::voidType) {
-				code.AppendLine(u"Return-type is not impelemnted.");
+				code.AppendLine(u"*outReturn = {0};", makeVALUEToNativeCastExpr(method->flatReturnParam(), u"retval"));
 			}
 
 			code.AppendLine("return LN_SUCCESS;");

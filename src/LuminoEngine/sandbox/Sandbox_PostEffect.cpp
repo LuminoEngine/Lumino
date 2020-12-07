@@ -58,7 +58,7 @@ class App_Sandbox_PostEffect : public Application
         builder->endSection();
         auto mesh = builder->buildMesh();
 
-        auto model = makeObject<StaticMeshModel>();
+        auto model = makeObject<MeshModel>();
         model->addMeshContainerNode(mesh);
         model->addMaterial(Material::create());
         model->updateNodeTransforms();

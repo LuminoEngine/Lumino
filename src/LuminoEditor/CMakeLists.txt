@@ -5,4 +5,5 @@ project (Lumino)
 add_subdirectory(Core)
 add_subdirectory(App)
 add_subdirectory(CLI)
+add_subdirectory(MeshViewer)
 

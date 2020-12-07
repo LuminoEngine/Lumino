@@ -5,6 +5,7 @@
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
+#include "../Rendering/CommandListServer.hpp"
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/DrawElementListBuilder.hpp"
 #include "../Rendering/RenderFeature/FrameRectRenderFeature.hpp"
@@ -16,10 +17,9 @@ namespace ln {
 // UIRenderingContext
 
 UIRenderingContext::UIRenderingContext()
-	: m_elementList(makeRef<detail::DrawElementList>(detail::EngineDomain::renderingManager()))
 {
-	setDrawElementList(m_elementList);
-    m_builder->m_stateStackMode = detail::StateStackMode::ScissorPushPop;
+    m_commandList = m_listServer->acquirePrimaryList(RenderPart::Geometry, detail::ProjectionKind::Independent2D);
+    builder()->m_stateStackMode = detail::StateStackMode::ScissorPushPop;
 }
 
 void UIRenderingContext::drawSolidRectangle(const Rect& rect, const Color& color)
@@ -31,18 +31,18 @@ void UIRenderingContext::drawSolidRectangle(const Rect& rect, const Color& color
 	background.color = color;
 	drawBoxElement(base, &background, nullptr, nullptr);
 
-    //auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
+    //auto* element = builder()->addNewDrawElement<detail::DrawShapesElement>(
     //    m_manager->shapesRenderFeature(),
-    //    m_builder->shapesRenderFeatureStageParameters());
+    //    builder()->shapesRenderFeatureStageParameters());
 
-    //element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, CornerRadius(), color);
+    //element->commandList.addDrawBoxBackground(builder()->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, CornerRadius(), color);
 }
 
 void UIRenderingContext::drawImageBox(const Rect& rect, Sprite9DrawMode mode, const Rect& textureSourceRect, const Thickness& borderThickness, const Color& color)
 {
-    if (!m_builder->material()) return;
+    if (!builder()->material()) return;
 
-    Texture* texture = m_builder->material()->mainTexture();
+    Texture* texture = builder()->material()->mainTexture();
     if (!texture) return;
 
     Rect actualSourceRect = textureSourceRect;
@@ -52,7 +52,7 @@ void UIRenderingContext::drawImageBox(const Rect& rect, Sprite9DrawMode mode, co
     //    drawSolidRectangle(rect, color);
     //}
     //else {
-        auto* element = m_builder->addNewDrawElement<detail::DrawFrameRectElement>(m_manager->frameRectRenderFeature());
+        auto* element = builder()->addNewDrawElement<detail::DrawFrameRectElement>(m_manager->frameRectRenderFeature());
 
         element->rect = rect;
         element->transform = element->combinedWorldMatrix();
@@ -66,25 +66,25 @@ void UIRenderingContext::drawImageBox(const Rect& rect, Sprite9DrawMode mode, co
 
 //void UIRenderingContext::drawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, Material* material*/, const Rect& textureSourceRect, const Color& color)
 //{
-//    //m_builder->setMaterial(material);
+//    //builder()->setMaterial(material);
 //
-//    if (m_builder->material() && !m_builder->material()->mainTexture()) {
+//    if (builder()->material() && !builder()->material()->mainTexture()) {
 //        mode = BrushImageDrawMode::Image;
 //    }
 //
 //	if (mode == BrushImageDrawMode::Image)
 //	{
-//        auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
+//        auto* element = builder()->addNewDrawElement<detail::DrawShapesElement>(
 //            m_manager->shapesRenderFeature(),
-//            m_builder->shapesRenderFeatureStageParameters());
+//            builder()->shapesRenderFeatureStageParameters());
 //		
-//        element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
+//        element->commandList.addDrawBoxBackground(builder()->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
 //	}
 //	else
 //	{
-//		auto* element = m_builder->addNewDrawElement<detail::DrawFrameRectElement>(
+//		auto* element = builder()->addNewDrawElement<detail::DrawFrameRectElement>(
 //			m_manager->frameRectRenderFeature(),
-//			m_builder->frameRectRenderFeatureStageParameters());
+//			builder()->frameRectRenderFeatureStageParameters());
 //
 //		element->rect = rect;
 //		element->transform = element->combinedWorldMatrix();
@@ -99,9 +99,9 @@ void UIRenderingContext::drawImageBox(const Rect& rect, Sprite9DrawMode mode, co
 
 void UIRenderingContext::drawBoxBorderLine(const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset)
 {
-    auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(m_manager->shapesRenderFeature());
+    auto* element = builder()->addNewDrawElement<detail::DrawShapesElement>(m_manager->shapesRenderFeature());
 
-    element->commandList.drawBoxBorderLine(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, thickness, leftColor, topColor, rightColor, bottomColor, cornerRadius, borderInset);
+    element->commandList.drawBoxBorderLine(builder()->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, thickness, leftColor, topColor, rightColor, bottomColor, cornerRadius, borderInset);
 
 
     // TODO: bounding box
@@ -114,9 +114,9 @@ void UIRenderingContext::drawBoxBorderLine(const Rect& rect, float thickness, co
 
 void UIRenderingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Vector2& offset, const Color& color, float blur, float width, bool inset)
 {
-	auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(m_manager->shapesRenderFeature());
+	auto* element = builder()->addNewDrawElement<detail::DrawShapesElement>(m_manager->shapesRenderFeature());
 
-	element->commandList.addDrawBoxShadow(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, offset, color, blur, width, inset);
+	element->commandList.addDrawBoxShadow(builder()->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, offset, color, blur, width, inset);
 
 
 	// TODO: bounding box
@@ -125,9 +125,9 @@ void UIRenderingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cor
 
 void UIRenderingContext::drawBoxElement(const BoxElementShapeBaseStyle& baseStyle, const BoxElementShapeBackgroundStyle* backbroundStyle, const BoxElementShapeBorderStyle* borderStyle, const BoxElementShapeShadowStyle* shadowStyle)
 {
-    auto* element = m_builder->addNewDrawElement<detail::DrawBoxElementShape>(m_manager->shapesRenderFeature());
+    auto* element = builder()->addNewDrawElement<detail::DrawBoxElementShape>(m_manager->shapesRenderFeature());
 
-    auto& allocator = m_builder->targetList()->dataAllocator();
+    auto& allocator = builder()->targetList()->dataAllocator();
     element->commandList.addResetCommand(allocator);
     element->commandList.addBaseCommand(allocator, baseStyle);
     if (backbroundStyle) element->commandList.addBackgroundCommand(allocator, *backbroundStyle);
@@ -154,7 +154,7 @@ void UIRenderingContext::drawImage(const Rect& destinationRect, Material* materi
 void UIRenderingContext::drawVisual(UIElement* element, const Matrix& transform)
 {
 	//pushState();
-	element->renderClient(this, m_builder->baseTransform() * element->m_localTransform * transform);
+	element->renderClient(this, builder()->baseTransform() * element->m_localTransform * transform);
 	//popState();
 }
 
@@ -192,7 +192,6 @@ UITheme* UIRenderingContext::theme() const
 void UIRenderingContext::resetForBeginRendering()
 {
 	RenderingContext::resetForBeginRendering();
-	m_elementList->clear();
 }
 
 } // namespace ln

@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "EngineManager.hpp"
 //#include "EngineDomain.hpp"
+#include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Engine/EngineSettings.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
@@ -84,6 +85,11 @@ void EngineSettings::setUITheme(const String& value)
 void EngineSettings::setFontFile(const String& filePath)
 {
     detail::EngineManager::s_settings.fontFile = filePath;
+}
+
+void EngineSettings::setSceneIntegrationEnabled(bool value)
+{
+    detail::EngineManager::s_settings.defaultObjectsCreation = value;
 }
 
 void EngineSettings::setDebugToolEnabled(bool enabled)
@@ -303,6 +309,11 @@ WorldRenderView* Engine::renderView()
 UIFocusNavigator* Engine::navigator()
 {
     return static_cast<UIDomainProvidor*>(Engine::mainUIView())->focusNavigator();
+}
+
+Dispatcher* Engine::dispatcher()
+{
+    return detail::EngineDomain::engineManager()->mainThreadTaskDispatcher();
 }
 
 PhysicsWorld* Engine::mainPhysicsWorld()

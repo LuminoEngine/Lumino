@@ -66,7 +66,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	BoxMeshComponent();
 	virtual ~BoxMeshComponent();
-	void init();
+	void init(const Vector3& size);
 
 private:
 	Ref<Material> m_material;

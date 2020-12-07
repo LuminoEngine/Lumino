@@ -29,6 +29,7 @@ bool ImGuiIntegration::init()
 	ImGui::SetCurrentContext(m_imgui);
 
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
@@ -38,8 +39,8 @@ bool ImGuiIntegration::init()
 	//ImGui::StyleColorsClassic();
 
     ImGuiStyle* style = &ImGui::GetStyle();
-    ImVec4* colors = style->Colors;
-    colors[ImGuiCol_WindowBg] = ImVec4(0.94f, 0.94f, 0.94f, 0.70f);
+    //ImVec4* colors = style->Colors;
+    //colors[ImGuiCol_WindowBg] = ImVec4(0.94f, 0.94f, 0.94f, 0.70f);
 
 	// Load Fonts
 	if (ByteBuffer* data = EngineDomain::fontManager()->getDefaultFontData()) {
@@ -128,12 +129,12 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 	}
 	if (!m_indexBuffer || m_indexBufferSize < draw_data->TotalIdxCount)
 	{
-		m_indexBufferSize = draw_data->TotalVtxCount + 10000;
+		m_indexBufferSize = draw_data->TotalIdxCount + 10000;
 		m_indexBuffer = makeObject<IndexBuffer>(m_indexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
 	}
 
-	auto vtx_dst = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
-	auto idx_dst = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));
+	Vertex* vtx_dst = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
+	ImDrawIdx* idx_dst = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));
 	for (int n = 0; n < draw_data->CmdListsCount; n++)
 	{
 		const ImDrawList* cmd_list = draw_data->CmdLists[n];
@@ -190,14 +191,22 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 	m_renderPass->setRenderTarget(0, target);
 	graphicsContext->beginRenderPass(m_renderPass);
 
+	//std::cout << "----" << std::endl;
+	//std::cout << "CmdListsCount: " << draw_data->CmdListsCount << std::endl;
+
 	// Render command lists
 	// (Because we merged all buffers into a single one, we maintain our own offset into them)
 	int global_vtx_offset = 0;
 	int global_idx_offset = 0;
 	ImVec2 clip_off = draw_data->DisplayPos;
+	//for (int n = 0; n < std::min(draw_data->CmdListsCount, 1); n++)
 	for (int n = 0; n < draw_data->CmdListsCount; n++)
 	{
 		const ImDrawList* cmd_list = draw_data->CmdLists[n];
+
+		//std::cout << "CmdBuffer.Size: " << cmd_list->CmdBuffer.Size << std::endl;
+		//std::cout << "VtxBuffer.Size: " << cmd_list->VtxBuffer.Size << std::endl;
+		//std::cout << "IdxBuffer.Size: " << cmd_list->IdxBuffer.Size << std::endl;
 		for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
 		{
 			const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
@@ -213,7 +222,11 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 				graphicsContext->setScissorRect(r);
 				//graphicsContext->drawPrimitiveIndexed(pcmd->VtxOffset + global_vtx_offset, pcmd->ElemCount / 3);
 				graphicsContext->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-				graphicsContext->drawPrimitiveIndexed(pcmd->IdxOffset + global_idx_offset, pcmd->ElemCount / 3);
+				graphicsContext->drawPrimitiveIndexed(pcmd->IdxOffset + global_idx_offset, pcmd->ElemCount / 3, 0, pcmd->VtxOffset + global_vtx_offset);
+
+				//std::cout << "  pcmd->IdxOffset: " << pcmd->IdxOffset << std::endl;
+				//std::cout << "  pcmd->VtxOffset: " << pcmd->VtxOffset << std::endl;
+				//std::cout << "  pcmd->ElemCount: " << pcmd->ElemCount << std::endl;
 
 				if (pcmd->VtxOffset != 0) {
 					LN_NOTIMPLEMENTED();
@@ -223,6 +236,8 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 		global_idx_offset += cmd_list->IdxBuffer.Size;
 		global_vtx_offset += cmd_list->VtxBuffer.Size;
 	}
+
+	//std::cout << "----" << std::endl;
 
 	graphicsContext->endRenderPass();	// TODO: scoped
 }

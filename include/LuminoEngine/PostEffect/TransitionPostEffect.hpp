@@ -64,7 +64,7 @@ class TransitionPostEffectInstance
     : public PostEffectInstance
 {
 protected:
-    bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+    bool onRender(RenderView* renderView, CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
     TransitionPostEffectInstance();
@@ -72,8 +72,8 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     bool preparePreviousFrameTarget(int width, int height);
-    void renderFadeInOut(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination, float factor);
-    void renderCrossFade(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination);
+    void renderFadeInOut(CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination, float factor);
+    void renderCrossFade(CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination);
 
     TransitionPostEffect* m_owner;
 

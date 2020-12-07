@@ -354,6 +354,7 @@ set(
     tmxlite
     yamlcpp
     VulkanHeaders
+    nanovg
     ${LN_PLATFORM_LIBS}
 )
 

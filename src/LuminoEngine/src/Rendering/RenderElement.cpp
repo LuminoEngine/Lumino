@@ -62,8 +62,8 @@ void RenderDrawElement::calculateActualPriority()
 
 DrawElementList::DrawElementList(RenderingManager* manager)
 	: m_dataAllocator(makeRef<LinearAllocator>(manager->stageDataPageManager()))
-	, m_headElement(nullptr)
-	, m_tailElement(nullptr)
+    , m_allElementList{nullptr, nullptr}
+	, m_classifiedElementList({})
 	, m_headFrameData(nullptr)
 	, m_tailFrameData(nullptr)
 {
@@ -92,16 +92,19 @@ void DrawElementList::clear()
 
 	// destruct draw elements.
 	{
-		RenderDrawElement* p = m_headElement;
+		RenderDrawElement* p = m_allElementList.headElement;
 		while (p) {
 			p->~RenderDrawElement();
 			p = p->next();
 		}
-		m_headElement = nullptr;
-		m_tailElement = nullptr;
-	}
+		m_allElementList.headElement = nullptr;
+		m_allElementList.tailElement = nullptr;
 
-	m_dynamicLightInfoList.clear();
+		for (auto& list : m_classifiedElementList) {
+			list.headElement = nullptr;
+			list.tailElement = nullptr;
+		}
+	}
 }
 
 RenderStage* DrawElementList::addNewRenderStage()
@@ -109,21 +112,36 @@ RenderStage* DrawElementList::addNewRenderStage()
 	return newFrameData<RenderStage>();
 }
 
-void DrawElementList::addElement(RenderStage* parentStage, RenderDrawElement* element)
+void DrawElementList::addElement(RenderDrawElement* element)
 {
-	if (LN_REQUIRE(parentStage)) return;
 	if (LN_REQUIRE(element)) return;
-	if (LN_REQUIRE(!element->m_stage)) return;
+	if (LN_REQUIRE(element->m_stage)) return;
+	if (LN_REQUIRE(element->targetPhase != RenderPart::_Count)) return;
 
-	element->m_stage = parentStage;
+	// Add to AllList
+	{
+		if (!m_allElementList.headElement) {
+			m_allElementList.headElement = element;
+		}
+		else {
+			m_allElementList.tailElement->m_next = element;
+		}
+		m_allElementList.tailElement = element;
+	}
 
-	if (!m_headElement) {
-		m_headElement = element;
+	// Add to ClassifiedList
+	// ※ 0.9.0 までは RenderingPipeline::render() の先頭で行っていたが、複数ビューからの描画を想定したときに非効率なので、ここで行うことにした。
+	{
+		ElementListDetail& list = m_classifiedElementList[static_cast<int>(element->targetPhase)];
+
+		if (!list.headElement) {
+			list.headElement = element;
+		}
+		else {
+			list.tailElement->m_classifiedNext = element;
+		}
+		list.tailElement = element;
 	}
-	else {
-		m_tailElement->m_next = element;
-	}
-	m_tailElement = element;
 }
 
 void DrawElementList::addFrameData(IDrawElementListFrameData* data)
@@ -139,6 +157,7 @@ void DrawElementList::addFrameData(IDrawElementListFrameData* data)
 	m_tailFrameData = data;
 }
 
+#if 0
 //==============================================================================
 // DrawElementListCollector
 
@@ -150,13 +169,13 @@ void DrawElementListCollector::clear()
 	//}
 }
 
-void DrawElementListCollector::addDrawElementList(/*RenderPhaseClass phase, */DrawElementList* list)
+void DrawElementListCollector::addDrawElementList(/*RenderPart phase, */DrawElementList* list)
 {
     m_lists.add(list);
 	//m_lists[(int)phase].add(list);
 }
 
-const List<DrawElementList*>& DrawElementListCollector::lists(/*RenderPhaseClass phase*/) const
+const List<DrawElementList*>& DrawElementListCollector::lists(/*RenderPart phase*/) const
 {
     return m_lists;// [(int)phase];
 }
@@ -175,6 +194,7 @@ void DrawElementListCollector::classify()
         }
     }
 }
+#endif
 
 } // namespace detail
 } // namespace ln

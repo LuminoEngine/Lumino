@@ -190,9 +190,14 @@ void DrawElementListBuilder::setRenderPriority(int value)
     primaryState()->renderPriority = value;
 }
 
-void DrawElementListBuilder::setRenderPhase(RenderPhaseClass value)
+void DrawElementListBuilder::setRenderPhase(RenderPart value)
 {
     primaryState()->rendringPhase = value;
+}
+
+RenderPart DrawElementListBuilder::renderPhase()
+{
+    return primaryState()->rendringPhase;
 }
 
 void DrawElementListBuilder::setAdditionalElementFlags(RenderDrawElementTypeFlags value)
@@ -367,6 +372,10 @@ RenderStage* DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFea
 
 void DrawElementListBuilder::prepareRenderDrawElement(RenderDrawElement* newElement, RenderDrawElement* lastElement, RenderStage* stage)
 {
+    if (LN_REQUIRE(stage)) return;
+
+    newElement->m_stage = stage;
+
     // newElement が持つべき BuiltinEffectData を決定する
     BuiltinEffectData* data = nullptr;
     if (m_dirtyFlags.hasFlag(DirtyFlags::BuiltinEffect)) {
@@ -414,7 +423,7 @@ void DrawElementListBuilder::State::reset()
     transform = Matrix::Identity;
     renderPriority = 0;
     baseTransform = nullptr;
-    rendringPhase = RenderPhaseClass::Geometry;
+    rendringPhase = RenderPart::Geometry;
 	additionalElementFlags = RenderDrawElementTypeFlags::None;
 	font = nullptr;
 	textColor = Color::Black;

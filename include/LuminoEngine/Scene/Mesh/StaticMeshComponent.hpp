@@ -3,7 +3,7 @@
 #include "../../Visual/VisualComponent.hpp"
 
 namespace ln {
-class StaticMeshModel;
+class MeshModel;
 class RigidBody;
 
 /** UIElement */
@@ -15,10 +15,12 @@ class StaticMeshComponent
 public:
     /** setModel */
     LN_METHOD()
-    void setModel(StaticMeshModel* model);
+    void setModel(MeshModel* model);
 
-    StaticMeshModel* model() const;
-    
+    MeshModel* model() const;
+
+    const Ref<detail::MeshModelInstance>& modelInstance() const { return m_modelInstance; }
+
 	/** 指定した名前の MeshContainer から、衝突判定用の Body を作成します。 */
 	LN_METHOD()
 	void makeCollisionBody(StringRef meshContainerName);
@@ -26,6 +28,7 @@ public:
 protected:
     void onDispose(bool explicitDisposing) override;
     void serialize(Serializer2& ar) override;
+    void onUpdate(float elapsedSeconds) override;
     void onRender(RenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -39,8 +42,9 @@ LN_CONSTRUCT_ACCESS:
 private:
     void deleteCollisionBody();
 
-    Ref<StaticMeshModel> m_model;
+    Ref<MeshModel> m_model;
     Ref<RigidBody> m_body;
+    Ref<detail::MeshModelInstance> m_modelInstance;
 };
 
 } // namespace ln

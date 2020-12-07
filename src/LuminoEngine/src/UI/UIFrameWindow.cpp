@@ -349,6 +349,7 @@ void UIFrameWindow::renderContents()
 	assert(!m_depthBuffer);
 
 	if (m_ImGuiLayerEnabled) {
+        // TODO: time
 		m_imguiContext.updateFrame(0.0166f);
 	}
 

@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 namespace ln {
@@ -18,5 +18,19 @@ enum class EngineFeature
     Experimental = 0xFFFF,
 };
 LN_FLAGS_OPERATORS(EngineFeature);
+
+/** Application running mode. */
+enum class ApplicationMode
+{
+    /** ゲームアプリケーションとして実行します。 */
+    Game,
+
+    /**
+     * エディタアプリケーションとして実行します。
+     *
+     * エディタアプリケーションは
+     */
+    Editor,
+};
 
 } // namespace ln

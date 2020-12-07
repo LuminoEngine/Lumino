@@ -1,13 +1,14 @@
 ﻿#pragma once
 #include <unordered_map>
 #include "../Base/RefObjectCache.hpp"
+#include <LuminoEngine/Mesh/Common.hpp>
 
 namespace ln {
 class DiagnosticsManager;
 class VertexLayout;
 class Texture;
 class Texture2D;
-class StaticMeshModel;
+class MeshModel;
 class SkinnedMeshModel;
 namespace detail {
 class AssetManager;
@@ -37,11 +38,11 @@ public:
 	void dispose();
 	VertexLayout* getPredefinedVertexLayout(PredefinedVertexLayoutFlags flags);
 
-	Ref<StaticMeshModel> acquireStaticMeshModel(const Path& filePath, float scale);
-	Ref<StaticMeshModel> acquireStaticMeshModel(const AssetPath& assetPath, float scale);
-    //void loadStaticMeshModel(StaticMeshModel* model, const Path& filePath, float scale);
-	void loadStaticMeshModel(StaticMeshModel* model, const AssetPath& assetPath, float scale);
-    Ref<SkinnedMeshModel> createSkinnedMeshModel(const Path& filePath, float scale);
+	Ref<MeshModel> acquireStaticMeshModel(const Path& filePath, float scale);
+	Ref<MeshModel> acquireStaticMeshModel(const AssetPath& assetPath, float scale);
+    //void loadStaticMeshModel(MeshModel* model, const Path& filePath, float scale);
+	void loadStaticMeshModel(MeshModel* model, const AssetPath& assetPath, float scale);
+    Ref<SkinnedMeshModel> createSkinnedMeshModel(const Path& filePath, MeshImportSettings* settings);
 	Ref<Texture> createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag);
 
 	void collectUnreferenceObjects();
@@ -67,7 +68,7 @@ private:
     std::array<Ref<Texture2D>, 10> m_mmdDefaultToonTexture;
 
 	Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
-	ObjectCache<uint64_t, StaticMeshModel> m_meshModelCache;
+	ObjectCache<uint64_t, MeshModel> m_meshModelCache;
 };
 
 } // namespace detail

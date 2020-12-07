@@ -1,27 +1,27 @@
 ﻿
 #pragma once
-#include "../../Visual/VisualComponent.hpp"
+#include "StaticMeshComponent.hpp"
 
 namespace ln {
 class SkinnedMeshModel;
+namespace detail {
+class MeshModelInstance;
+}
 
 /**
  * SkinnedMeshComponent
  */
 LN_CLASS()
 class SkinnedMeshComponent
-	: public VisualComponent
+	: public StaticMeshComponent
 {
 public:
-	/** setModel */
-	LN_METHOD()
-    void setModel(SkinnedMeshModel* model);
-
-    SkinnedMeshModel* model() const;
+	//const Ref<detail::MeshModelInstance>& modelInstance() const { return m_modelInstance; }
 
 protected:
-	virtual void onUpdate(float elapsedSeconds) override;
-	virtual void onRender(RenderingContext* context) override;
+	//void onUpdate(float elapsedSeconds) override;
+	//void onRender(RenderingContext* context) override;
+	//void onRenderGizmo(RenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:
     SkinnedMeshComponent();
@@ -32,7 +32,8 @@ LN_CONSTRUCT_ACCESS:
 	bool init();
 
 private:
-    Ref<SkinnedMeshModel> m_model;
+ //   Ref<SkinnedMeshModel> m_model;
+	//Ref<detail::MeshModelInstance> m_modelInstance;
 };
 
 } // namespace ln

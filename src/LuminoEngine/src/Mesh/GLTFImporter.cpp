@@ -145,16 +145,18 @@ bool GLTFImporter::openGLTFModel(const AssetPath& assetPath)
 	return result;
 }
 
-bool GLTFImporter::onImportAsStaticMesh(StaticMeshModel* model, const AssetPath& assetPath)
+bool GLTFImporter::onImportAsStaticMesh(MeshModel* model, const AssetPath& assetPath)
 {
 	// TODO: ひとまず HC4 用設定。
 	// ほんとはここから Y90 回転させるべきなのだが、今その処理を入れてる時間がない。
-	m_flipZ = false;
+	//m_flipZ = false;
+	m_flipZ = true;
+
 	//m_flipX = true;
 	//m_faceFlip = false;	// 何もせずインポートするときは R-Hand->L-Hand の変換なので面反転が必要だが、flipX １回やっているので不要。
 	// TODO: そもそも何かNodeの回転修正もあやしいみたい。10/17提出用に向けてはいったん左右反転したままで行ってみる
 	m_flipX = false;	
-	// TODO: このあたり PostProcess として修正入れたいが、先に SkinnedMeshModel と StaticMeshModel の統合をやらないと無駄作業が多くなるのでいったん保留
+	// TODO: このあたり PostProcess として修正入れたいが、先に SkinnedMeshModel と MeshModel の統合をやらないと無駄作業が多くなるのでいったん保留
 
 	if (!openGLTFModel(assetPath)) {
 		return false;
@@ -169,12 +171,23 @@ bool GLTFImporter::onImportAsStaticMesh(StaticMeshModel* model, const AssetPath&
 
 bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath& assetPath)
 {
-	// TODO: ひとまず HC4 用設定。
-	// インポート元モデルは [Y-Up,R-Hand] で、キャラクターは Z+ を正面としている。
-	// そのため Lumino 標準の Z+ 正面に合わせるには、X を反転するだけでよい。
-	m_flipZ = false;
-	m_flipX = true;
-	m_faceFlip = true;	// TODO: onImportAsStaticMesh の理論ならこれも不要なはずなのだが… 後でちゃんと調べる
+	if (isCharacterModelFormat()) {
+		// TODO: ひとまず HC4 用設定。
+		// インポート元モデルは [Y-Up,R-Hand] で、キャラクターは Z+ を正面としている。
+		// そのため Lumino 標準の Z+ 正面に合わせるには、X を反転するだけでよい。
+		m_flipZ = false;
+		m_flipX = true;
+		m_faceFlip = true;	// TODO: onImportAsStaticMesh の理論ならこれも不要なはずなのだが… 後でちゃんと調べる
+
+	}
+	else {
+		m_flipZ = true;
+		m_flipX = false;
+		m_faceFlip = false;
+	}
+
+
+
 
 
 	if (!openGLTFModel(assetPath)) {
@@ -185,33 +198,35 @@ bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, 
 
 	readCommon(m_meshModel);
 
-	for (const auto& skin : m_model->skins) {
-		auto meshSkeleton = readSkin(skin);
-		if (!meshSkeleton) {
-			return false;
-		}
-		model->addSkeleton(meshSkeleton);
+	if (isSkeletonImport()) {
+		for (const auto& skin : m_model->skins) {
+			auto meshSkeleton = readSkin(skin);
+			if (!meshSkeleton) {
+				return false;
+			}
+			model->addSkeleton(meshSkeleton);
 
-		// Note: skins->skeleton は将来的に使われなくなるみたいなプロパティ。
-		// どうもルートボーンを示すための値らしいのだが、Three.js とかでは無視されているようだ。
-		// https://tkaaad97.hatenablog.com/entry/2019/07/28/175737
-	}
+			// Note: skins->skeleton は将来的に使われなくなるみたいなプロパティ。
+			// どうもルートボーンを示すための値らしいのだが、Three.js とかでは無視されているようだ。
+			// https://tkaaad97.hatenablog.com/entry/2019/07/28/175737
+		}
 
-	for (const auto& animation : m_model->animations) {
-		auto clip = readAnimation(animation);
-		if (!clip) {
-			return false;
+		for (const auto& animation : m_model->animations) {
+			auto clip = readAnimation(animation);
+			if (!clip) {
+				return false;
+			}
+			if (clip->name().isEmpty()) {
+				clip->setName(String::fromNumber(m_animationClips.size()));
+			}
+			m_animationClips.add(clip);
 		}
-		if (clip->name().isEmpty()) {
-			clip->setName(String::fromNumber(m_animationClips.size()));
-		}
-		m_animationClips.add(clip);
 	}
 
 	return true;
 }
 
-bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
+bool GLTFImporter::readCommon(MeshModel* meshModel)
 {
 	for (auto& material : m_model->materials) {
 		meshModel->addMaterial(readMaterial(material));
@@ -371,17 +386,40 @@ bool GLTFImporter::readNode(MeshNode* coreNode, const tinygltf::Node& node)
 	}
 
 
-	//if (m_flipZ) {
-	//	//nodeTransform(2, 0) = -nodeTransform(2, 0);
-	//	//nodeTransform(2, 1) = -nodeTransform(2, 1);
-	//	//nodeTransform(2, 2) = -nodeTransform(2, 2);
-	//	nodeTransform(3, 2) = -nodeTransform(3, 2);
-	//}
+	if (m_flipZ) {
+		// Z軸反転の 右手⇔左手回転の変換
+		// 回転の符号は (-x, -y, z) となる。
+		// https://kamino.hatenablog.com/entry/rotation_expressions
+		nodeTransform(0, 2) = -nodeTransform(0, 2);
+		nodeTransform(1, 2) = -nodeTransform(1, 2);
+		nodeTransform(2, 0) = -nodeTransform(2, 0);
+		nodeTransform(2, 1) = -nodeTransform(2, 1);
+
+		// Z座標反転
+		nodeTransform(3, 2) = -nodeTransform(3, 2);
+	}
 	if (m_flipX) {
-		nodeTransform(0, 0) = -nodeTransform(0, 0);
+		// X軸反転の 右手⇔左手回転の変換
+		// 回転の符号は (x, -y, -z) となる。
 		nodeTransform(0, 1) = -nodeTransform(0, 1);
 		nodeTransform(0, 2) = -nodeTransform(0, 2);
+		nodeTransform(1, 0) = -nodeTransform(1, 0);
+		nodeTransform(2, 0) = -nodeTransform(2, 0);
+
+		// X座標反転
 		nodeTransform(3, 0) = -nodeTransform(3, 0);
+
+		/*
+		↓実際にこれで比べてみると結果がわかりやすい
+		Matrix m1;
+		m1.rotateX(1);
+		m1.rotateY(1);
+		m1.rotateZ(1);
+		Matrix m2;
+		m2.rotateX(1);
+		m2.rotateY(-1);
+		m2.rotateZ(-1);
+		*/
 	}
 
 	coreNode->setName(String::fromStdString(node.name));
@@ -1034,7 +1072,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 	return coreMesh;
 }
 
-Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
+Ref<MeshSkeleton> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 {
 	// inverseBindMatrice はボーンの初期姿勢を打ち消して、原点に戻す行列。
 	// 最終的に BoneTexture などへ書き出すときにこれを乗算する。（Matrix::Identity なら変形が行われないようにする）
@@ -1052,12 +1090,16 @@ Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 	const tinygltf::Buffer& buffer = m_model->buffers[bufferView.buffer];
 
 	const Matrix* inverseBindMatrices = (const Matrix*)(buffer.data.data() + accessor.byteOffset + bufferView.byteOffset);
-	auto armature = makeObject<MeshArmature>(static_cast<SkinnedMeshModel*>(m_meshModel));
+	auto armature = makeObject<MeshSkeleton>(static_cast<SkinnedMeshModel*>(m_meshModel));
 	for (int i = 0; i < skin.joints.size(); i++) {
 
 		if (m_clearBoneRotation) {
 			const auto& mat = m_meshModel->m_nodes[skin.joints[i]]->initialLocalTransform();
 			armature->addBone(skin.joints[i], Matrix::makeInverse(mat));
+
+			std::cout << mat.toString() << std::endl;
+			std::cout << inverseBindMatrices[i].toString() << std::endl;
+
 		}
 		else
 		{
@@ -1213,7 +1255,7 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 			data.rotationValues = reinterpret_cast<const Quaternion*>(outputData);
 		}
 		else if (channel.target_path == "scale") {
-			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_VEC4)) return nullptr;
+			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_VEC3)) return nullptr;
 			auto& data = transformTrackMap[channel.target_node];
 			data.scaleFrames = inputAccessor.count;
 			data.scaleTimes = inputData;
@@ -1227,10 +1269,42 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 		auto track = makeObject<TransformAnimationTrack>();
 		track->setTargetName(String::fromStdString(node.name));
 
+
 		const auto& data = pair.second;
 		if (data.translationFrames > 0) track->setupTranslations(data.translationFrames, data.translationTimes, data.translationValues, data.translationInterpolation);
 		if (data.rotationFrames > 0) track->setupRotations(data.rotationFrames, data.rotationTimes, data.rotationValues);
 		if (data.scaleFrames > 0) track->setupScales(data.scaleFrames, data.scaleTimes, data.scaleValues, data.scaleInterpolation);
+
+		// glTF の animation の姿勢には Node の初期姿勢が含まれている。
+		// Lumino としては初期姿勢からの相対変化量だけほしいので、初期姿勢の分を打ち消す。
+		{
+			//const auto& meshModelNode = m_meshModel->m_nodes[pair.first];
+			const auto nodeInversePos = Vector3(-node.translation[0], -node.translation[1], -node.translation[2]);
+			for (auto& k : track->m_translationKeys) {
+				k.value += nodeInversePos;
+				//k.value = -meshModelNode->initialLocalTransform().position();
+			}
+
+			if (node.rotation.size() == 4) {
+				const auto nodeInverseRot = Quaternion::makeInverse(Quaternion(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]));
+				for (auto& k : track->m_rotationKeys) {
+					k.value *= nodeInverseRot;
+				}
+			}
+			else {
+				// 回転を持たないが、rotationFrames を持つことはある
+			}
+		}
+
+		if (m_flipX) {
+			for (auto& k : track->m_translationKeys) {
+				k.value.x = -k.value.x;
+			}
+			for (auto& k : track->m_rotationKeys) {
+				k.value.y = -k.value.y;
+				k.value.z = -k.value.z;
+			}
+		}
 
 		clip->addTrack(track);
 	}

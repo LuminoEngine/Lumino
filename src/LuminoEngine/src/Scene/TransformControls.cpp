@@ -4,6 +4,7 @@
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Mesh/MeshProcessing.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/TransformControls.hpp>
@@ -172,62 +173,63 @@ void TransformControls::onRender(RenderingContext* context)
 
     auto transform = Matrix::multiply(Matrix::makeScaling(m_screenFactor), m_gizmoTransform);
 
-    context->pushState();
-    context->setRenderPhase(RenderPhaseClass::Gizmo);
-    context->setBaseTransfrom(transform);
-    context->setDepthTestEnabled(false);
-    context->setDepthWriteEnabled(false);
+    // TODO:
+    CommandList* commandList = context->getCommandList(RenderPart::Gizmo, detail::ProjectionKind::ViewProjection3D);
+    commandList->pushState();
+    commandList->setBaseTransfrom(transform);
+    commandList->setDepthTestEnabled(false);
+    commandList->setDepthWriteEnabled(false);
 
 
     switch (m_transformType)
     {
         case TransformControlsType::Translation:
         {
-            context->setMaterial((m_operationType == OperationType::X) ? m_activeColorMaterial : m_xColorMaterial);
-            context->drawMesh(m_translationGizmoMesh, 0);
-            //context->drawLine(Vector3(0, 0, 0), Color::White, Vector3(1, 0, 0), Color::White);
+            commandList->setMaterial((m_operationType == OperationType::X) ? m_activeColorMaterial : m_xColorMaterial);
+            commandList->drawMesh(m_translationGizmoMesh, 0);
+            //commandList->drawLine(Vector3(0, 0, 0), Color::White, Vector3(1, 0, 0), Color::White);
 
-            context->setMaterial((m_operationType == OperationType::Y) ? m_activeColorMaterial : m_yColorMaterial);
-            context->drawMesh(m_translationGizmoMesh, 1);
-            //context->drawLine(Vector3(0, 0, 0), Color::White, Vector3(0, 1, 0), Color::White);
+            commandList->setMaterial((m_operationType == OperationType::Y) ? m_activeColorMaterial : m_yColorMaterial);
+            commandList->drawMesh(m_translationGizmoMesh, 1);
+            //commandList->drawLine(Vector3(0, 0, 0), Color::White, Vector3(0, 1, 0), Color::White);
 
-            context->setMaterial((m_operationType == OperationType::Z) ? m_activeColorMaterial : m_zColorMaterial);
-            context->drawMesh(m_translationGizmoMesh, 2);
-            //context->drawLine(Vector3(0, 0, 0), Color::White, Vector3(0, 0, 1), Color::White);
+            commandList->setMaterial((m_operationType == OperationType::Z) ? m_activeColorMaterial : m_zColorMaterial);
+            commandList->drawMesh(m_translationGizmoMesh, 2);
+            //commandList->drawLine(Vector3(0, 0, 0), Color::White, Vector3(0, 0, 1), Color::White);
 
 
             break;
         }
         case TransformControlsType::Rotation:
         {
-            context->setMaterial((m_operationType == OperationType::X) ? m_activeColorMaterial : m_xColorMaterial);
-            context->drawMesh(m_translationGizmoMesh, 3);
-            context->setMaterial((m_operationType == OperationType::Y) ? m_activeColorMaterial : m_yColorMaterial);
-            context->drawMesh(m_translationGizmoMesh, 4);
-            context->setMaterial((m_operationType == OperationType::Z) ? m_activeColorMaterial : m_zColorMaterial);
-            context->drawMesh(m_translationGizmoMesh, 5);
+            commandList->setMaterial((m_operationType == OperationType::X) ? m_activeColorMaterial : m_xColorMaterial);
+            commandList->drawMesh(m_translationGizmoMesh, 3);
+            commandList->setMaterial((m_operationType == OperationType::Y) ? m_activeColorMaterial : m_yColorMaterial);
+            commandList->drawMesh(m_translationGizmoMesh, 4);
+            commandList->setMaterial((m_operationType == OperationType::Z) ? m_activeColorMaterial : m_zColorMaterial);
+            commandList->drawMesh(m_translationGizmoMesh, 5);
 
             Matrix viewInv = Matrix::makeScaling(m_screenFactor) * Matrix::makeInverse(m_view);
             viewInv.m41 = m_gizmoTransform.m41;
             viewInv.m42 = m_gizmoTransform.m42;
             viewInv.m43 = m_gizmoTransform.m43;
-            context->setBaseTransfrom(viewInv);
-            context->drawMesh(m_translationGizmoMesh, 6);
+            commandList->setBaseTransfrom(viewInv);
+            commandList->drawMesh(m_translationGizmoMesh, 6);
             break;
         }
         case TransformControlsType::Scaling:
         {
-            context->setMaterial((m_operationType == OperationType::X) ? m_activeColorMaterial : m_xColorMaterial);
-            context->drawMesh(m_translationGizmoMesh, 7);
-            context->setMaterial((m_operationType == OperationType::Y) ? m_activeColorMaterial : m_yColorMaterial);
-            context->drawMesh(m_translationGizmoMesh, 8);
-            context->setMaterial((m_operationType == OperationType::Z) ? m_activeColorMaterial : m_zColorMaterial);
-            context->drawMesh(m_translationGizmoMesh, 9);
+            commandList->setMaterial((m_operationType == OperationType::X) ? m_activeColorMaterial : m_xColorMaterial);
+            commandList->drawMesh(m_translationGizmoMesh, 7);
+            commandList->setMaterial((m_operationType == OperationType::Y) ? m_activeColorMaterial : m_yColorMaterial);
+            commandList->drawMesh(m_translationGizmoMesh, 8);
+            commandList->setMaterial((m_operationType == OperationType::Z) ? m_activeColorMaterial : m_zColorMaterial);
+            commandList->drawMesh(m_translationGizmoMesh, 9);
             break;
         }
     }
 
-    context->popState();
+    commandList->popState();
 }
 
 void TransformControls::onRoutedEvent(UIEventArgs* e)

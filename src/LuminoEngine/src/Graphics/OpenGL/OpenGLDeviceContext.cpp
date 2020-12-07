@@ -678,8 +678,13 @@ void GLGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVe
 	GL_CHECK(glDrawArrays(gl_prim, startVertex, vertexCount));
 }
 
-void GLGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount)
+void GLGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset)
 {
+	if (vertexOffset != 0) {
+		LN_NOTIMPLEMENTED();
+		return;
+	}
+
 	GLenum gl_prim;
 	int vertexCount;
 	getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);

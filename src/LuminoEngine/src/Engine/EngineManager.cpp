@@ -604,94 +604,8 @@ void EngineManager::initializeUIManager()
 
 void EngineManager::initializeDefaultObjects()
 {
-	if (m_settings.defaultObjectsCreation)
-	{
-		if (m_uiManager) {
-
-			setMainWindow(makeObject<UIMainWindow>());
-
-			m_mainViewport = makeObject<UIViewport>();
-			m_mainWindow->addElement(m_mainViewport);
-		}
-
-		if (m_sceneManager)
-		{
-			m_mainWorld = makeObject<World>();
-			m_sceneManager->setActiveWorld(m_mainWorld);
-
-			m_mainScene = m_mainWorld->masterScene();
-
-			m_mainCamera = makeObject<Camera>();
-			m_mainWorld->add(m_mainCamera);
-			if (m_sceneManager) {
-				m_sceneManager->setDefaultCamera(m_mainCamera);
-			}
-
-			if (m_settings.createMainLights) {
-
-
-				//auto mainAmbientLight = makeObject<AmbientLight>();
-				//m_mainWorld->add(mainAmbientLight);
-				//m_mainWorld->setMainAmbientLight(mainAmbientLight);
-
-				//auto mainDirectionalLight = makeObject<DirectionalLight>();
-				//m_mainWorld->add(mainDirectionalLight);
-				//m_mainWorld->setMainDirectionalLight(mainDirectionalLight);
-			}
-
-			m_mainWorldRenderView = makeObject<WorldRenderView>();
-			m_mainWorldRenderView->setTargetWorld(m_mainWorld);
-			m_mainWorldRenderView->setCamera(m_mainCamera);
-			m_mainWorldRenderView->setClearMode(SceneClearMode::ColorAndDepth);
-			m_mainViewport->addRenderView(m_mainWorldRenderView);
-
-
-			m_mainUIRenderView = makeObject<UIRenderView>();
-			m_mainViewport->addRenderView(m_mainUIRenderView);
-			m_mainViewport->setViewBoxSize(m_settings.mainWorldViewSize.toFloatSize());
-
-			m_mainUIRoot = makeObject<UIDomainProvidor>();
-			m_mainUIRoot->setupNavigator();
-			m_mainUIRoot->setHAlignment(UIHAlignment::Stretch);
-			m_mainUIRoot->setVAlignment(UIVAlignment::Stretch);
-			m_mainUIRoot->m_hitTestMode = detail::UIHitTestMode::InvisiblePanel;       // main の WorldView 全体に覆いかぶせるように配置するので、false にしておかないと CameraControl などにイベントが行かなくなる
-			m_mainUIRenderView->setRootElement(m_mainUIRoot);
-			m_uiManager->setPrimaryElement(m_mainUIRoot);
-
-			m_mainPhysicsWorld = m_mainWorld->physicsWorld();
-			m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
-
-			m_physicsManager->setActivePhysicsWorld(m_mainPhysicsWorld);
-			m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
-
-
-			m_debugInterface = makeObject<DebugInterface>();
-			m_mainWindow->m_debugInterface = m_debugInterface;
-
-
-			//m_debugCamera = makeObject<Camera>();
-			////m_mainWorld->add(m_mainCamera);
-			////Ref<Camera> m_debugCamera;
-			//m_debugWorldRenderView = makeObject<WorldRenderView>();
-			//m_debugWorldRenderView->setTargetWorld(m_mainWorld);
-			//m_debugWorldRenderView->setCamera(m_debugCamera);
-			//m_debugWorldRenderView->setClearMode(SceneClearMode::ColorAndDepth);
-			//m_debugCamera->addComponent(makeObject<CameraOrbitControlComponent>());
-			//m_mainViewport->addRenderView(m_debugWorldRenderView);
-			//m_debugCamera->setPosition(10, 10, -10);
-			//m_debugCamera->lookAt(Vector3(0, 0, 0));
-		}
-	}
-
-	// init 直後にウィンドウサイズを取得したり、Camera Matrix を計算するため、ViewSize を確定させる
-	if (/*m_mainUIContext && */m_mainWindow) {
-		m_mainWindow->updateStyleTree();
-		m_mainWindow->updateLayoutTree();
-	}
-
-	if (m_settings.runtimeEditorEnabled && m_mainWindow) {
-		m_runtimeEditor = makeRef<detail::RuntimeEditor>();
-		m_runtimeEditor->init(this, m_mainWindow);
+	if (m_settings.defaultObjectsCreation) {
+		setupMainWindow(makeObject<UIMainWindow>(), true);
 	}
 }
 
@@ -868,7 +782,7 @@ const Path& EngineManager::persistentDataPath() const
     return m_persistentDataPath;
 }
 
-void EngineManager::setMainWindow(ln::UIMainWindow* window)
+void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicObjects)
 {
 	if (LN_REQUIRE(window)) return;
 	if (LN_REQUIRE(!m_mainWindow)) return;
@@ -880,6 +794,95 @@ void EngineManager::setMainWindow(ln::UIMainWindow* window)
 	//m_mainWindow->m_graphicsContext = m_graphicsManager->mainWindowGraphicsContext();
 
 	m_mainWindow->m_onImGuiLayer.connect(ln::bind(this, &EngineManager::handleImGuiDebugLayer));
+
+	if (createBasicObjects) {
+
+		if (m_uiManager) {
+
+
+			m_mainViewport = makeObject<UIViewport>();
+			m_mainWindow->addElement(m_mainViewport);
+		}
+
+		if (m_sceneManager)
+		{
+			m_mainWorld = makeObject<World>();
+			m_sceneManager->setActiveWorld(m_mainWorld);
+
+			m_mainScene = m_mainWorld->masterScene();
+
+			m_mainCamera = makeObject<Camera>();
+			m_mainWorld->add(m_mainCamera);
+			if (m_sceneManager) {
+				m_sceneManager->setDefaultCamera(m_mainCamera);
+			}
+
+			if (m_settings.createMainLights) {
+
+
+				//auto mainAmbientLight = makeObject<AmbientLight>();
+				//m_mainWorld->add(mainAmbientLight);
+				//m_mainWorld->setMainAmbientLight(mainAmbientLight);
+
+				//auto mainDirectionalLight = makeObject<DirectionalLight>();
+				//m_mainWorld->add(mainDirectionalLight);
+				//m_mainWorld->setMainDirectionalLight(mainDirectionalLight);
+			}
+
+			m_mainWorldRenderView = makeObject<WorldRenderView>();
+			m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+			m_mainWorldRenderView->setCamera(m_mainCamera);
+			m_mainWorldRenderView->setClearMode(SceneClearMode::ColorAndDepth);
+			m_mainViewport->addRenderView(m_mainWorldRenderView);
+
+
+			m_mainUIRenderView = makeObject<UIRenderView>();
+			m_mainViewport->addRenderView(m_mainUIRenderView);
+			m_mainViewport->setViewBoxSize(m_settings.mainWorldViewSize.toFloatSize());
+
+			m_mainUIRoot = makeObject<UIDomainProvidor>();
+			m_mainUIRoot->setupNavigator();
+			m_mainUIRoot->setHAlignment(UIHAlignment::Stretch);
+			m_mainUIRoot->setVAlignment(UIVAlignment::Stretch);
+			m_mainUIRoot->m_hitTestMode = detail::UIHitTestMode::InvisiblePanel;       // main の WorldView 全体に覆いかぶせるように配置するので、false にしておかないと CameraControl などにイベントが行かなくなる
+			m_mainUIRenderView->setRootElement(m_mainUIRoot);
+			m_uiManager->setPrimaryElement(m_mainUIRoot);
+
+			m_mainPhysicsWorld = m_mainWorld->physicsWorld();
+			m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
+
+			m_physicsManager->setActivePhysicsWorld(m_mainPhysicsWorld);
+			m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
+
+
+			m_debugInterface = makeObject<DebugInterface>();
+			m_mainWindow->m_debugInterface = m_debugInterface;
+
+
+			//m_debugCamera = makeObject<Camera>();
+			////m_mainWorld->add(m_mainCamera);
+			////Ref<Camera> m_debugCamera;
+			//m_debugWorldRenderView = makeObject<WorldRenderView>();
+			//m_debugWorldRenderView->setTargetWorld(m_mainWorld);
+			//m_debugWorldRenderView->setCamera(m_debugCamera);
+			//m_debugWorldRenderView->setClearMode(SceneClearMode::ColorAndDepth);
+			//m_debugCamera->addComponent(makeObject<CameraOrbitControlComponent>());
+			//m_mainViewport->addRenderView(m_debugWorldRenderView);
+			//m_debugCamera->setPosition(10, 10, -10);
+			//m_debugCamera->lookAt(Vector3(0, 0, 0));
+		}
+	}
+
+	// init 直後にウィンドウサイズを取得したり、Camera Matrix を計算するため、ViewSize を確定させる
+	if (/*m_mainUIContext && */m_mainWindow) {
+		m_mainWindow->updateStyleTree();
+		m_mainWindow->updateLayoutTree();
+	}
+
+	if (m_settings.runtimeEditorEnabled && m_mainWindow) {
+		m_runtimeEditor = makeRef<detail::RuntimeEditor>();
+		m_runtimeEditor->init(this, m_mainWindow);
+	}
 }
 
 void EngineManager::resolveActiveGraphicsAPI()

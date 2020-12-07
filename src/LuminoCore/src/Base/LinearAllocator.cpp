@@ -16,23 +16,23 @@ size_t AlignUp(size_t value, size_t alignment)
 }
 
 //=============================================================================
-// LinearAllocatorPageManager
+// HeapLinearAllocatorPage
 
-LinearAllocatorPage::LinearAllocatorPage(size_t size)
+HeapLinearAllocatorPage::HeapLinearAllocatorPage(size_t size)
 {
 	m_data = LN_OPERATOR_NEW(size);
 	m_size = size;
 }
 
-LinearAllocatorPage::~LinearAllocatorPage()
+HeapLinearAllocatorPage::~HeapLinearAllocatorPage()
 {
 	LN_OPERATOR_DELETE(m_data);
 }
 
 //=============================================================================
-// LinearAllocatorPageManager
+// AbstractLinearAllocatorPageManager
 
-LinearAllocatorPageManager::LinearAllocatorPageManager(size_t pageSize)
+AbstractLinearAllocatorPageManager::AbstractLinearAllocatorPageManager(size_t pageSize)
 	: m_pageSize((pageSize == 0) ? DefaultPageSize : pageSize)
 	, m_mutex()
 	, m_pagePool()
@@ -40,16 +40,16 @@ LinearAllocatorPageManager::LinearAllocatorPageManager(size_t pageSize)
 {
 }
 
-LinearAllocatorPageManager::~LinearAllocatorPageManager()
+AbstractLinearAllocatorPageManager::~AbstractLinearAllocatorPageManager()
 {
 	clear();
 }
 
-LinearAllocatorPage* LinearAllocatorPageManager::requestPage()
+AbstractLinearAllocatorPage* AbstractLinearAllocatorPageManager::requestPage()
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 
-	LinearAllocatorPage* resultPage = nullptr;
+	AbstractLinearAllocatorPage* resultPage = nullptr;
 
 	//auto freePage = m_freePages.findIf([&](LinearAllocatorPage* page) { return page->size() >= requerSize; });
 	//if (freePage) {
@@ -71,26 +71,39 @@ LinearAllocatorPage* LinearAllocatorPageManager::requestPage()
 	return resultPage;
 }
 
-void LinearAllocatorPageManager::discardPage(LinearAllocatorPage* page)
+void AbstractLinearAllocatorPageManager::discardPage(AbstractLinearAllocatorPage* page)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 	m_freePages.push_back(page);
 }
 
-void LinearAllocatorPageManager::clear()
+Ref<AbstractLinearAllocatorPage> AbstractLinearAllocatorPageManager::createNewPage(size_t size)
+{
+	return onCreateNewPage(size);
+}
+
+void AbstractLinearAllocatorPageManager::clear()
 {
 	m_pagePool.clear();
 }
 
-Ref<LinearAllocatorPage> LinearAllocatorPageManager::createNewPage(size_t size)
+//=============================================================================
+// LinearAllocatorPageManager
+
+LinearAllocatorPageManager::LinearAllocatorPageManager(size_t pageSize)
+	: AbstractLinearAllocatorPageManager(pageSize)
 {
-	return makeRef<LinearAllocatorPage>(size);
+}
+
+Ref<AbstractLinearAllocatorPage> LinearAllocatorPageManager::onCreateNewPage(size_t size)
+{
+	return makeRef<HeapLinearAllocatorPage>(size);
 }
 
 //=============================================================================
-// LinearAllocator
+// AbstractLinearAllocator
 
-LinearAllocator::LinearAllocator(LinearAllocatorPageManager* manager)
+AbstractLinearAllocator::AbstractLinearAllocator(LinearAllocatorPageManager* manager)
 	: m_manager(manager)
 	, m_usedOffset(0)
 	, m_currentPage(nullptr)
@@ -98,18 +111,20 @@ LinearAllocator::LinearAllocator(LinearAllocatorPageManager* manager)
 {
 }
 
-LinearAllocator::~LinearAllocator()
+AbstractLinearAllocator::~AbstractLinearAllocator()
 {
 }
 
-void* LinearAllocator::allocate(size_t size, size_t alignment)
+bool AbstractLinearAllocator::allocateCore(size_t size, size_t alignment, AbstractLinearAllocatorPage** outCurrentPage, size_t* outOffset)
 {
 	const size_t alignmentMask = alignment - 1;
 	const size_t alignedSize = AlignUpWithMask(size, alignmentMask);
 
 
 	if (alignedSize > m_manager->pageSize()) {
-		return allocateLarge(alignedSize);
+		*outCurrentPage = allocateLarge(alignedSize);
+		*outOffset = 0;
+		return true;
 	}
 
 	m_usedOffset = AlignUp(m_usedOffset, alignment);
@@ -127,14 +142,18 @@ void* LinearAllocator::allocate(size_t size, size_t alignment)
 		m_usedOffset = 0;
 	}
 
-	byte_t* ptr = static_cast<byte_t*>(m_currentPage->data()) + m_usedOffset;
+	if (LN_REQUIRE(m_currentPage)) return false;
+
+	//byte_t* ptr = static_cast<byte_t*>(m_currentPage->data()) + m_usedOffset;
+	*outCurrentPage = m_currentPage;
+	*outOffset = m_usedOffset;
 
 	m_usedOffset += alignedSize;
 
-	return ptr;
+	return true;
 }
 
-void LinearAllocator::cleanup()
+void AbstractLinearAllocator::cleanup()
 {
     if (m_currentPage) {
         m_manager->discardPage(m_currentPage);
@@ -152,12 +171,32 @@ void LinearAllocator::cleanup()
 	m_maxAllocatedLargePageSize = 0;
 }
 
-void* LinearAllocator::allocateLarge(size_t size)
+AbstractLinearAllocatorPage* AbstractLinearAllocator::allocateLarge(size_t size)
 {
 	m_maxAllocatedLargePageSize = std::max(m_maxAllocatedLargePageSize, size);
-	auto page = LinearAllocatorPageManager::createNewPage(size);
+	auto page = m_manager->createNewPage(size);
 	m_largePages.add(page);
-	return page->data();
+	return page;
+}
+
+//=============================================================================
+// LinearAllocator
+
+LinearAllocator::LinearAllocator(LinearAllocatorPageManager* manager)
+	: AbstractLinearAllocator(manager)
+{
+}
+
+void* LinearAllocator::allocate(size_t size, size_t alignment)
+{
+	AbstractLinearAllocatorPage* page;
+	size_t offset;
+	if (allocateCore(size, alignment, &page, &offset)) {
+		return static_cast<uint8_t*>(static_cast<HeapLinearAllocatorPage*>(page)->data()) + offset;
+	}
+	else {
+		return nullptr;
+	}
 }
 
 } // namespace detail

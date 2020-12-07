@@ -22,7 +22,7 @@ class App_Experiment_SerializeLevel : public Application
 
             auto level1 = makeObject<Level>();
 
-            auto model1 = StaticMeshModel::load(u"Models/Box1.gltf");
+            auto model1 = MeshModel::load(u"Models/Box1.gltf");
             //Assets::saveAsset(model1, u"Models/Box1");
 
 

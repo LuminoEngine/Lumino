@@ -22,20 +22,35 @@ rake yard
 確認は doc/index.html から。
 
 ### ビルド
+
 ```
 rake build
 ```
 
+※パッケージを作るだけで、実際にソースコードのビルドはまだ行われない
+
 ### ローカルインストール
+
 ```
-gem install pkg/lumino-0.9.0.pre.gem
+gem install pkg/lumino-0.9.0.gem
 ```
+
+### アンインストール
+
+```
+gem uninstall lumino
+```
+
 
 ### テスト
 ```
 rake test
 rake test TESTOPTS="-n'test_delegate_object_block'"
 ```
+
+### ruby.h の場所
+
+C:/Ruby26-x64/include/ruby-2.6.0/ruby.h 等。
 
 --------------------------------------------------
 
@@ -207,7 +222,7 @@ printf("%d\n", g_class_UIButton);
 ```
 
 ```cpp
-static void LnUIEventHandlerCallback_Tmp(LnHandle e)
+static void LnUIEventHandlerCallback_Tmp(LNHandle e)
 {
     printf("Clicked!!! self:%d\n", self);
     

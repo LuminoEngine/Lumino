@@ -7,12 +7,21 @@
 namespace ln {
 namespace detail {
 
-class LinearAllocatorPage
+class AbstractLinearAllocatorPage
 	: public RefObject
 {
+protected:
+	AbstractLinearAllocatorPage() = default;
+	virtual ~AbstractLinearAllocatorPage() = default;
+};
+
+
+class HeapLinearAllocatorPage
+	: public AbstractLinearAllocatorPage
+{
 public:
-	LinearAllocatorPage(size_t size);
-	virtual ~LinearAllocatorPage();
+	HeapLinearAllocatorPage(size_t size);
+	virtual ~HeapLinearAllocatorPage();
 	void* data() const { return m_data; }
 	size_t size() const { return m_size; }
 
@@ -21,30 +30,50 @@ private:
 	size_t m_size;
 };
 
-class LinearAllocatorPageManager
+
+
+class AbstractLinearAllocatorPageManager
 	: public RefObject
 {
 public:
 	static const size_t DefaultPageSize = 0x200000;	// 2MB
 
-	LinearAllocatorPageManager(size_t pageSize = 0);
-	virtual ~LinearAllocatorPageManager();
+	AbstractLinearAllocatorPageManager(size_t pageSize = 0);
+	virtual ~AbstractLinearAllocatorPageManager();
+	void clear();
 
 	size_t pageSize() const { return m_pageSize; }
 
-	LinearAllocatorPage* requestPage();
-	void discardPage(LinearAllocatorPage* page);
+	AbstractLinearAllocatorPage* requestPage();
+	void discardPage(AbstractLinearAllocatorPage* page);
+	Ref<AbstractLinearAllocatorPage> createNewPage(size_t size);
 
-	static Ref<LinearAllocatorPage> createNewPage(size_t size);
+protected:
+	virtual Ref<AbstractLinearAllocatorPage> onCreateNewPage(size_t size) = 0;
 
 private:
-	void clear();
 
 	size_t m_pageSize;
 	std::mutex m_mutex;
-	List<Ref<LinearAllocatorPage>> m_pagePool;		// page instances
-	std::deque<LinearAllocatorPage*> m_freePages;	// page references
+	List<Ref<AbstractLinearAllocatorPage>> m_pagePool;		// page instances
+	std::deque<AbstractLinearAllocatorPage*> m_freePages;	// page references
 };
+
+class LinearAllocatorPageManager
+	: public AbstractLinearAllocatorPageManager
+{
+public:
+	LinearAllocatorPageManager(size_t pageSize = 0);
+
+protected:
+	Ref<AbstractLinearAllocatorPage> onCreateNewPage(size_t size) override;
+};
+
+//using LinearAllocatorPageManager = TLinearAllocatorPageManager<LinearAllocatorPage>;
+
+
+
+
 
 /*
 	ページベースのシンプルなアロケータ。
@@ -58,28 +87,40 @@ private:
 	通常のサイズのページはキャッシュ管理され、頻繁にメモリ確保は行われない。
 	対し、LargePage は cleanup() 時点で解放される。
 */
-class LinearAllocator
+class AbstractLinearAllocator
 	: public RefObject
 {
 public:
-	LinearAllocator(LinearAllocatorPageManager* manager);
-	virtual ~LinearAllocator();
+	AbstractLinearAllocator(LinearAllocatorPageManager* manager);
+	virtual ~AbstractLinearAllocator();
 
-	void* allocate(size_t size, size_t alignment = 64);
 	void cleanup();
 
 	size_t maxAllocatedLargePageSize() const { return m_maxAllocatedLargePageSize; }
 
+protected:
+	bool allocateCore(size_t size, size_t alignment, AbstractLinearAllocatorPage** outCurrentPage, size_t* outOffset);
+
 private:
-	void* allocateLarge(size_t size);
+	AbstractLinearAllocatorPage* allocateLarge(size_t size);
 
 	LinearAllocatorPageManager* m_manager;
 	size_t m_usedOffset;
-	LinearAllocatorPage* m_currentPage;
+	AbstractLinearAllocatorPage* m_currentPage;
 
-	List<LinearAllocatorPage*> m_retiredPages;
-	List<Ref<LinearAllocatorPage>> m_largePages;
+	List<AbstractLinearAllocatorPage*> m_retiredPages;
+	List<Ref<AbstractLinearAllocatorPage>> m_largePages;
 	size_t m_maxAllocatedLargePageSize;
+};
+
+class LinearAllocator
+	: public AbstractLinearAllocator
+{
+public:
+	LinearAllocator(LinearAllocatorPageManager* manager);
+	void* allocate(size_t size, size_t alignment = 64);
+
+protected:
 };
 
 } // namespace detail

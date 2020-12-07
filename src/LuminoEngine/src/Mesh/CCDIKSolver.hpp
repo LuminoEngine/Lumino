@@ -3,7 +3,7 @@
 #if 1
 
 namespace ln {
-class SkinnedMeshModel;
+class MeshModel;
 //class SkinnedMeshBone;
 namespace detail {
 
@@ -11,8 +11,8 @@ class CCDIKSolver
 {
 public:
 
-	SkinnedMeshModel* owner;
-	MeshArmature* m_skeleton;
+	MeshModel* owner;
+	MeshSkeleton* m_skeleton;
 
 	void UpdateTransform()
 	{

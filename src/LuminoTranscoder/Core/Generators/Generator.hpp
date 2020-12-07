@@ -40,6 +40,10 @@ public:
 	// FlatC の実装コード (.cpp) の先頭に埋め込まれる文字列。ターゲットモジュールの #include 等を指定する。
 	ln::String flatCHeaderString;
 
+	// ライブラリバージョン
+	// e.g.) 0.9.0
+	ln::String versionString;
+
 
     ln::String flatCHeaderOutputDirOverride;
     ln::String flatCSourceOutputDirOverride;
@@ -98,9 +102,10 @@ public:
 	ln::String makeFlatCharTypeName(FlatCharset charset) const;
 	ln::String makeFlatParamList(const MethodSymbol* method, FlatCharset charset) const;	// e.g) -> "int p1, int p2, int* outReturn"
 	ln::String makeFlatArgList(const MethodSymbol* method) const;
+	ln::String makeFlatConstantValue(const ConstantSymbol* constant) const;
 
 	// e.g) -> LN_PIXEL_FORMAT_A8
-	ln::String makeFlatEnumMemberName(TypeSymbol* enumType, ConstantSymbol* member) const;
+	ln::String makeFlatEnumMemberName(const TypeSymbol* enumType, const ConstantSymbol* member) const;
 
 private:
 	SymbolDatabase* m_database;
