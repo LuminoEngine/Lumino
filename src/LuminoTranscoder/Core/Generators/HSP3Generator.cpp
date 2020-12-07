@@ -16,9 +16,9 @@ static const ln::String ASFileTemplate = uR"(
 #define __lumino__
 
 #ifdef LUMINO_DEBUG
-    #regcmd "_hsp3cmdinit@4","LuminoHSPd.dll", %%varhpi%%
+    #regcmd "_hsp3cmdinit@4","LuminoHSP3d.dll", %%varhpi%%
 #else
-    #regcmd "_hsp3cmdinit@4","LuminoHSP.dll", %%varhpi%%
+    #regcmd "_hsp3cmdinit@4","LuminoHSP3.dll", %%varhpi%%
 #endif
 
 #const global LN_TRUE 1
@@ -36,6 +36,7 @@ static const ln::String ASFileTemplate = uR"(
 void HSP3HeaderGenerator::generate()
 {
     OutputBuffer code;
+    code.setNewLineCode(u"\r\n");
     code.AppendLines(makeEnums());
     code.AppendLines(makeStructs());
     code.AppendLines(makeClasses());
@@ -45,7 +46,7 @@ void HSP3HeaderGenerator::generate()
         auto outputDir = ln::Path(makeOutputFilePath(u"HSP3", u""));
         ln::FileSystem::createDirectory(outputDir);
 
-        ln::String fileName = ln::String::format("{0}.as", config()->moduleName);
+        ln::String fileName = ln::String::format("{0}.as", config()->moduleName).toLower();
 
         ln::String src = ASFileTemplate
             .replace(u"%%Contents%%", code.toString())
@@ -603,9 +604,10 @@ ln::String HSP3CommandsGenerator::makeCallCommandBlock(const MethodSymbol* metho
     return code.toString();
 }
 
-ln::String HSP3CommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, bool reffunc) const
+ln::String HSP3CommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, bool reffunc, const ConstantSymbol* defaultValue) const
 {
     const ln::Char* postfix = (reffunc) ? u"_reffunc" : u"";
+    const auto defaultValueStr = (defaultValue) ? makeFlatConstantValue(defaultValue) : ln::String();
 
     if (LabelSyntax) {
         if (typeSymbol->isDelegateObject()) {
@@ -621,14 +623,14 @@ ln::String HSP3CommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, 
         typeSymbol == PredefinedTypes::int16Type ||
         typeSymbol == PredefinedTypes::uint32Type ||
         typeSymbol->isClass()) {
-        return ln::String::format(u"fetchVAInt{0}()", postfix);
+        return ln::String::format(u"fetchVAInt{0}({1})", postfix, defaultValueStr);
     }
     if (typeSymbol->isEnum()) {
-        return ln::String::format(u"static_cast<{0}>(fetchVAInt{1}())", makeFlatTypeName2(typeSymbol), postfix);
+        return ln::String::format(u"static_cast<{0}>(fetchVAInt{1}({2}))", makeFlatTypeName2(typeSymbol), postfix, defaultValueStr);
     }
     if (typeSymbol == PredefinedTypes::floatType ||
         typeSymbol == PredefinedTypes::doubleType) {
-        return ln::String::format(u"fetchVADouble{0}()", postfix);
+        return ln::String::format(u"fetchVADouble{0}({1})", postfix, defaultValueStr);
     }
     if (typeSymbol == PredefinedTypes::stringType ||
         typeSymbol == PredefinedTypes::stringRefType) {
@@ -643,7 +645,7 @@ ln::String HSP3CommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, 
 ln::String HSP3CommandsGenerator::makeGetVAExpr(const MethodParameterSymbol* paramSymbol) const
 {
     const auto localName = ln::String::format(u"local_" + paramSymbol->name());
-    return ln::String::format(u"const auto {0} = {1};", localName, makeFetchVAExpr(paramSymbol->type(), false));
+    return ln::String::format(u"const auto {0} = {1};", localName, makeFetchVAExpr(paramSymbol->type(), false, paramSymbol->defaultValue()));
 }
 
 ln::String HSP3CommandsGenerator::makeSetVAExpr(const MethodParameterSymbol* paramSymbol) const
@@ -729,6 +731,7 @@ _HREF_
 void HSP3HelpGenerator::generate()
 {
     OutputBuffer code;
+    code.setNewLineCode(u"\r\n");
 
     // Header
     {
@@ -759,7 +762,7 @@ void HSP3HelpGenerator::generate()
         auto outputDir = ln::Path(makeOutputFilePath(u"HSP3", u""));
         ln::FileSystem::createDirectory(outputDir);
 
-        ln::String fileName = ln::String::format("{0}.hs", config()->moduleName);
+        ln::String fileName = ln::String::format("{0}.hs", config()->moduleName).toLower();
 
         ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), code.toString(), ln::TextEncoding::getEncoding(ln::EncodingType::SJIS));
     }
@@ -767,7 +770,6 @@ void HSP3HelpGenerator::generate()
 
 ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol) const
 {
-
     // 引数リスト
     OutputBuffer params;
     for (const auto& param : methodSymbol->flatParameters()) {
@@ -823,7 +825,7 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
     detailText.AppendLine(u"stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)");
 
     return FuncTemplate
-        .replace("_NAME_", makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii))
+        .replace("_NAME_", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode))    // FlatCharset::Unicode を指定して、"A" をつけないようにする
         .replace("_BRIEF_", translateComment(methodSymbol->document()->summary()))
         .replace("_INST_", translateComment(methodSymbol->document()->details()))
         .replace("_HREF_", "")

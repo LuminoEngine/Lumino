@@ -138,12 +138,7 @@ namespace LuminoBuild.Tasks
             // Docs
             {
                 Console.WriteLine($"Copy docs...");
-
-                // Readme
-                Utils.GenerateFile(
-                    Path.Combine(destinationRootDir, "Readme.txt"),
-                    Path.Combine(builder.LuminoPackageSourceDir, "Readme.txt.template"),
-                    new Dictionary<string, string> { { "%%LuminoVersion%%", builder.VersionString } });
+                GenerateReadme(builder, destinationRootDir);
             }
 
             // Engine assets
@@ -162,6 +157,15 @@ namespace LuminoBuild.Tasks
                     Path.Combine(builder.LuminoToolsDir, "EngineResources"),
                     Path.Combine(destinationToolDir, "EngineResources"));
             }
+        }
+
+        public static void GenerateReadme(Builder builder, string dstDir)
+        {
+            // Readme
+            Utils.GenerateFile(
+                Path.Combine(dstDir, "README.txt"),
+                Path.Combine(builder.LuminoPackageSourceDir, "Readme.txt.template"),
+                new Dictionary<string, string> { { "%%LuminoVersion%%", builder.VersionString } });
         }
 
         public static void CopyEngineLibs(Builder builder, string tempInstallDir, string nativeEngineRoot, bool fileMoving)

@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.0.0)
-project(LuminoHSP)
+project(LuminoHSP3)
 
 file(GLOB LOCAL_SOURCES "*.h" "*.cpp")
 source_group("Sources" FILES ${LOCAL_SOURCES})

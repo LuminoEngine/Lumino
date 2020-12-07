@@ -188,16 +188,16 @@ int main(int argc, char** argv)
 	//	g.setup(db, config);
 	//	g.generate();
 	//}
-	//{
-	//	HSP3HeaderGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-	//{
-	//	HSP3CommandsGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
+	{
+		HSP3HeaderGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
+	{
+		HSP3CommandsGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
 	{
 		HSP3HelpGenerator g;
 		g.setup(db, config);

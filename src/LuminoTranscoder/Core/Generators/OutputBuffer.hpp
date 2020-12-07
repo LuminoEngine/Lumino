@@ -7,6 +7,8 @@ class OutputBuffer
 public:
 	OutputBuffer();
 	OutputBuffer(int indent);
+
+	void setNewLineCode(const ln::String& code) { m_newLineCode = code; }
 	
 	/** 空であるか */
 	bool isEmpty() const { return m_buffer.isEmpty(); }

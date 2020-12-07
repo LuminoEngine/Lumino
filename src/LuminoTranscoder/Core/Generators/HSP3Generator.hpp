@@ -44,7 +44,7 @@ private:
     ln::String make_reffunc() const;
     ln::String make_cmdfunc() const;
     ln::String makeCallCommandBlock(const MethodSymbol* methodSymbol) const;
-    ln::String makeFetchVAExpr(const TypeSymbol* typeSymbol, bool reffunc) const;
+    ln::String makeFetchVAExpr(const TypeSymbol* typeSymbol, bool reffunc, const ConstantSymbol* defaultValue = nullptr) const;
     ln::String makeGetVAExpr(const MethodParameterSymbol* paramSymbol) const;
     ln::String makeSetVAExpr(const MethodParameterSymbol* paramSymbol) const;
 
