@@ -113,6 +113,9 @@ struct Base1::BuilderBase : public BuilderBase2<T, D>
 
     /** height property */
     T& height(int value) { d()->m_height = value; return *static_cast<T*>(this); }
+
+protected:
+    D* d() { return BuilderBase2<T, D>::d(); }
 };
 
 struct Base1::Builder : public BuilderBase<Builder, BuilderDetails>
@@ -156,6 +159,9 @@ struct Shape::BuilderBase : public Base1::BuilderBase<T, D>
 {
     /** color property */
     T& color(const Color& value) { d()->m_color = value; return *static_cast<T*>(this); }
+
+protected:
+    D* d() { return BuilderBase2<T, D>::d(); }
 };
 
 struct Shape::Builder : public BuilderBase<Builder, ShapeBuilderDetails>
