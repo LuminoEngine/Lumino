@@ -2,7 +2,7 @@
 #include "FlatCGenerator.hpp"
 #include "Generator.hpp"
 
-class HSPGeneratorBase
+class HSP3GeneratorBase
 	: public Generator
 {
 protected:
@@ -18,8 +18,8 @@ protected:
 };
 
 // .as
-class HSPHeaderGenerator
-    : public HSPGeneratorBase
+class HSP3HeaderGenerator
+    : public HSP3GeneratorBase
 {
 public:
     void generate();
@@ -31,8 +31,8 @@ private:
 };
 
 // .cpp
-class HSPCommandsGenerator
-    : public HSPGeneratorBase
+class HSP3CommandsGenerator
+    : public HSP3GeneratorBase
 {
 public:
     void generate();
@@ -57,8 +57,8 @@ private:
 };
 
 // .hs
-class HSPHelpGenerator
-    : public HSPGeneratorBase
+class HSP3HelpGenerator
+    : public HSP3GeneratorBase
 {
 public:
     void generate();

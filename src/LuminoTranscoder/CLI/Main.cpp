@@ -189,17 +189,17 @@ int main(int argc, char** argv)
 	//	g.generate();
 	//}
 	//{
-	//	HSPHeaderGenerator g;
+	//	HSP3HeaderGenerator g;
 	//	g.setup(db, config);
 	//	g.generate();
 	//}
 	//{
-	//	HSPCommandsGenerator g;
+	//	HSP3CommandsGenerator g;
 	//	g.setup(db, config);
 	//	g.generate();
 	//}
 	{
-		HSPHelpGenerator g;
+		HSP3HelpGenerator g;
 		g.setup(db, config);
 		g.generate();
 	}
