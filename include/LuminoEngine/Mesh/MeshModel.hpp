@@ -271,6 +271,8 @@ public:
 //};
 //}
 
+/** MeshImportSettings */
+LN_CLASS()
 class MeshImportSettings
 	: public Object
 {
@@ -323,6 +325,9 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	MeshImportSettings();
+
+	/** init */
+	LN_METHOD()
 	bool init();
 
 private:

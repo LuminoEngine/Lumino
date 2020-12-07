@@ -1,20 +1,20 @@
 #if 1
 #include "LuminoRubyRuntimeManager.h"
 
-extern "C" LN_FLAT_API LnResult LnEngine_Finalize();
-extern "C" LN_FLAT_API void LnRuntime_RunAppInternal(LnHandle app);
+extern "C" LN_FLAT_API LNResult LNEngine_Finalize();
+extern "C" LN_FLAT_API void LNRuntime_RunAppInternal(LNHandle app);
 
 //==============================================================================
 // 
 
-static VALUE Wrap_LnRuntime_RunAppInternal(VALUE self, VALUE app)
+static VALUE Wrap_LNRuntime_RunAppInternal(VALUE self, VALUE app)
 {
-    LnHandle handle = LuminoRubyRuntimeManager::instance->getHandle(app);
-    LnRuntime_RunAppInternal(handle);
+    LNHandle handle = LuminoRubyRuntimeManager::instance->getHandle(app);
+    LNRuntime_RunAppInternal(handle);
     return Qnil;
 }
 
-VALUE Wrap_LnRuntime_RegisterType(VALUE self, VALUE type)
+VALUE Wrap_LNRuntime_RegisterType(VALUE self, VALUE type)
 {
     std::string className;
     {
@@ -31,25 +31,25 @@ VALUE Wrap_LnRuntime_RegisterType(VALUE self, VALUE type)
     LNRB_LOG_D("Usesr type registering. (class: %s, superclass: %s)", className.c_str(), superclassName.c_str());
 
     int typeInfoId;
-    LnTypeInfo_AcquireA(className.c_str(), &typeInfoId);
+    LNTypeInfo_AcquireA(className.c_str(), &typeInfoId);
 
     int baseTypeInfoId;
-    LnTypeInfo_AcquireA(superclassName.c_str(), &baseTypeInfoId);
+    LNTypeInfo_AcquireA(superclassName.c_str(), &baseTypeInfoId);
 
-    LnTypeInfo_SetBaseClass(typeInfoId, baseTypeInfoId);
-    LnTypeInfo_SetCreateInstanceCallback(typeInfoId, &LuminoRubyRuntimeManager::handleCreateInstanceCallback);
+    LNTypeInfo_SetBaseClass(typeInfoId, baseTypeInfoId);
+    LNTypeInfo_SetCreateInstanceCallback(typeInfoId, &LuminoRubyRuntimeManager::handleCreateInstanceCallback);
 
     // ユーザー定義型として、あとでインスタンス生成時に型情報を関連付けるときに高速に検索できるように覚えておく
     LuminoRubyRuntimeManager::instance->m_userDefinedClassTypeIdMap[className] = typeInfoId;
 
     int managedTypeInfoId = LuminoRubyRuntimeManager::instance->registerTypeInfo(type, nullptr);
-    LnTypeInfo_SetManagedTypeInfoId(typeInfoId, managedTypeInfoId);
+    LNTypeInfo_SetManagedTypeInfoId(typeInfoId, managedTypeInfoId);
     
     LNRB_LOG_D("Usesr type registerd. (typeInfoId: %d, baseTypeInfoId: %d, managedTypeInfoId: %d)", typeInfoId, baseTypeInfoId, managedTypeInfoId);
     return Qnil;
 }
 
-static VALUE Wrap_LnRuntime_inherited(VALUE self, VALUE type)
+static VALUE Wrap_LNRuntime_inherited(VALUE self, VALUE type)
 {
     VALUE v  = rb_funcall(type, rb_intern("name"), 0, 0);
     std::string name2 = StringValuePtr(v);
@@ -59,10 +59,10 @@ static VALUE Wrap_LnRuntime_inherited(VALUE self, VALUE type)
     LNRB_LOG_D("Usesr type registering from 'self.inherited.' (%s)", name.c_str());
 
     int typeInfoId = 0;
-    LnTypeInfo_FindA(name.c_str(), &typeInfoId);
+    LNTypeInfo_FindA(name.c_str(), &typeInfoId);
 
     if (typeInfoId == 0) {
-        Wrap_LnRuntime_RegisterType(self, type);
+        Wrap_LNRuntime_RegisterType(self, type);
     }
 
     LNRB_LOG_D("Usesr type registerd from 'self.inherited.' (%d)", typeInfoId);
@@ -73,7 +73,7 @@ static VALUE Wrap_LnRuntime_inherited(VALUE self, VALUE type)
 // LuminoRubyRuntimeManager
 
 LuminoRubyRuntimeManager* LuminoRubyRuntimeManager::instance = nullptr;
-LnLogLevel LuminoRubyRuntimeManager::s_logLevel = LN_LOG_LEVEL_INFO;
+LNLogLevel LuminoRubyRuntimeManager::s_logLevel = LN_LOG_LEVEL_INFO;
 
 LuminoRubyRuntimeManager* LuminoRubyRuntimeManager::getInstance(VALUE managerInstance)
 {
@@ -90,23 +90,23 @@ void LuminoRubyRuntimeManager::init()
     {
         VALUE LUMINO_LOG_LEVEL = rb_eval_string_protect("$LUMINO_LOG_LEVEL", NULL);
         if (LUMINO_LOG_LEVEL != Qnil) {
-            s_logLevel = (LnLogLevel)FIX2INT(LUMINO_LOG_LEVEL);
-            LnLog_SetLevel(s_logLevel);
+            s_logLevel = (LNLogLevel)FIX2INT(LUMINO_LOG_LEVEL);
+            LNLog_SetLevel(s_logLevel);
         }
         
         VALUE LUMINO_ENGINE_RESOURCES_DIR = rb_eval_string_protect("$LUMINO_ENGINE_RESOURCES_DIR", NULL);
         if (LUMINO_ENGINE_RESOURCES_DIR != Qnil) {
             const char* path = StringValuePtr(LUMINO_ENGINE_RESOURCES_DIR);
             printf("path: %s\n", path);
-            LnInternalEngineSettings_SetEngineResourcesPathA(path);
+            LNInternalEngineSettings_SetEngineResourcesPathA(path);
         }
 
-        LnRuntimeSettings settings;
+        LNRuntimeSettings settings;
         settings.runtimeFinalizedCallback = handleRuntimeFinalized;
         settings.referenceCountTrackerCallback = handleReferenceChangedStatic;
         settings.runtimeGetTypeInfoIdCallback = nullptr;
 
-        LnRuntime_Initialize(&settings);
+        LNRuntime_Initialize(&settings);
     }
 
     // Define core functions.
@@ -140,12 +140,12 @@ void LuminoRubyRuntimeManager::init()
         m_eventSignalClass = rb_eval_string("Lumino::EventSignal");
 
         m_objectClass = rb_define_class_under(m_luminoModule, "Object", rb_cObject);
-        rb_define_singleton_method(m_objectClass, "inherited", reinterpret_cast<VALUE(__cdecl *)(...)>(Wrap_LnRuntime_inherited), 1);
+        rb_define_singleton_method(m_objectClass, "inherited", reinterpret_cast<VALUE(__cdecl *)(...)>(Wrap_LNRuntime_inherited), 1);
 
         VALUE class_Application = rb_define_class_under(m_luminoModule, "Application", m_objectClass);
-        rb_define_singleton_method(class_Application, "run_app_internal", reinterpret_cast<VALUE(__cdecl *)(...)>(Wrap_LnRuntime_RunAppInternal), 1);
+        rb_define_singleton_method(class_Application, "run_app_internal", reinterpret_cast<VALUE(__cdecl *)(...)>(Wrap_LNRuntime_RunAppInternal), 1);
         
-        rb_define_module_function(m_luminoModule, "register_type", reinterpret_cast<VALUE(__cdecl *)(...)>(Wrap_LnRuntime_RegisterType), 1);
+        rb_define_module_function(m_luminoModule, "register_type", reinterpret_cast<VALUE(__cdecl *)(...)>(Wrap_LNRuntime_RegisterType), 1);
     }
 
     m_typeInfoList.push_back({});   // [0] is dummy
@@ -158,18 +158,18 @@ void LuminoRubyRuntimeManager::init()
     m_runtimeAliving = true;
 }
 
-VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, bool retain)
+VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LNHandle handle, bool retain)
 {
     if (handle == LN_NULL_HANDLE) return Qnil;
 
-    int objectIndex = (int)LnRuntime_GetManagedObjectId(handle);
-    int typeinfoIndex = (int)LnRuntime_GetManagedTypeInfoId(handle);
+    int objectIndex = (int)LNRuntime_GetManagedObjectId(handle);
+    int typeinfoIndex = (int)LNRuntime_GetManagedTypeInfoId(handle);
 
     if (objectIndex <= 0) {
         LNRB_LOG_D("New Ruby object from WrapObjectForGetting (typeinfoIndex:%d)", typeinfoIndex);
         VALUE obj = m_typeInfoList[typeinfoIndex].factory(m_typeInfoList[typeinfoIndex].klass, handle);
         if (retain) {
-            LnObject_Retain(handle);
+            LNObject_Retain(handle);
         }
         registerWrapperObject(obj, true);
         return obj;
@@ -179,7 +179,7 @@ VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, bool retai
     }
 }
 
-LnHandle LuminoRubyRuntimeManager::getHandle(VALUE value) const
+LNHandle LuminoRubyRuntimeManager::getHandle(VALUE value) const
 {
     if (value == Qnil) {
         return LN_NULL_HANDLE;
@@ -206,9 +206,9 @@ int LuminoRubyRuntimeManager::registerTypeInfo(VALUE klass, ObjectFactoryFunc fa
 
 void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGetting)
 {
-    LnHandle handle = getHandle(obj);
+    LNHandle handle = getHandle(obj);
 
-    int64_t id = LnRuntime_GetManagedObjectId(handle);
+    int64_t id = LNRuntime_GetManagedObjectId(handle);
     if (id > 0) {
         // 登録済み
         LNRB_LOG_D("registerWrapperObject: [Registerd] ManagedObjectId: %d\n", id);
@@ -233,7 +233,7 @@ void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGe
         m_objectList[index].strongRef = obj;
     }
     
-    LnRuntime_SetManagedObjectId(handle, index);
+    LNRuntime_SetManagedObjectId(handle, index);
     LNRB_LOG_D("registerWrapperObject (handle:%u, ManagedObjectId:%d)\n", handle, index);
 
     // ユーザー定義型の型情報をオブジェクトにセットする
@@ -245,19 +245,19 @@ void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGe
         // ユーザー定義型に限定する (Engine 内部型は登録する必要なし)
         auto itr = m_userDefinedClassTypeIdMap.find(name);
         if (itr != m_userDefinedClassTypeIdMap.end()) {
-            LnObject_SetTypeInfoId(handle, itr->second);
-            LNRB_LOG_D("LnObject_SetTypeInfoId (handle:%u, itr->second:%d)\n", handle, itr->second);
+            LNObject_SetTypeInfoId(handle, itr->second);
+            LNRB_LOG_D("LNObject_SetTypeInfoId (handle:%u, itr->second:%d)\n", handle, itr->second);
         }
     }
 
 }
 
-void LuminoRubyRuntimeManager::unregisterWrapperObject(LnHandle handle)
+void LuminoRubyRuntimeManager::unregisterWrapperObject(LNHandle handle)
 {
-    LNRB_LOG_D("LuminoRubyRuntimeManager::unregisterWrapperObject: LnHandle=%u\n", handle);
+    LNRB_LOG_D("LuminoRubyRuntimeManager::unregisterWrapperObject: LNHandle=%u\n", handle);
     if (m_runtimeAliving) {
-        LnObject_Release(handle);
-        int index = (int)LnRuntime_GetManagedObjectId(handle);
+        LNObject_Release(handle);
+        int index = (int)LNRuntime_GetManagedObjectId(handle);
         m_objectList[index].weakRef = Qnil;
         m_objectList[index].strongRef = Qnil;
         m_objectListIndexStack.push(index);
@@ -295,14 +295,14 @@ void LuminoRubyRuntimeManager::gc_mark(LuminoRubyRuntimeManager* obj)
     }
 }
 
-void LuminoRubyRuntimeManager::handleReferenceChangedStatic(LnHandle handle, int method, int count)
+void LuminoRubyRuntimeManager::handleReferenceChangedStatic(LNHandle handle, int method, int count)
 {
     instance->handleReferenceChanged(handle, method, count);
 }
 
-void LuminoRubyRuntimeManager::handleReferenceChanged(LnHandle handle, int method, int count)
+void LuminoRubyRuntimeManager::handleReferenceChanged(LNHandle handle, int method, int count)
 {
-    int objectIndex = (int)LnRuntime_GetManagedObjectId(handle);
+    int objectIndex = (int)LNRuntime_GetManagedObjectId(handle);
 
     if (method == LNI_REFERENCE_RETAINED) {
         if (count >= 2) {
@@ -324,13 +324,13 @@ void LuminoRubyRuntimeManager::handleRuntimeFinalized()
     LNRB_LOG_D("Runtime finalized.");
 }
 
-void LuminoRubyRuntimeManager::handleCreateInstanceCallback(int typeInfoId, LnHandle* outHandle)
+void LuminoRubyRuntimeManager::handleCreateInstanceCallback(int typeInfoId, LNHandle* outHandle)
 {
     LNRB_LOG_D("start: handleCreateInstanceCallback");
     auto* manager = LuminoRubyRuntimeManager::instance;
 
     int managedTypeInfoId = -1;
-    LnTypeInfo_GetManagedTypeInfoId(typeInfoId, &managedTypeInfoId);
+    LNTypeInfo_GetManagedTypeInfoId(typeInfoId, &managedTypeInfoId);
 
     
     printf("managedTypeInfoId: %d\n", managedTypeInfoId);
@@ -355,7 +355,7 @@ void LuminoRubyRuntimeManager::handleCreateInstanceCallback(int typeInfoId, LnHa
 
 void LuminoRubyRuntimeManager::dumpInfo() const
 {
-    LnRuntime_DumpInfo();
+    LNRuntime_DumpInfo();
     
     std::cout << std::endl;
     std::cout << "Ruby alive objects" << std::endl;

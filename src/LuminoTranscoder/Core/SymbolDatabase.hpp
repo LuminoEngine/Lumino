@@ -403,7 +403,7 @@ public:
     bool isDelegateObject() const { return typeClass() == TypeClass::DelegateObject; }
 	bool isPromise() const { return typeClass() == TypeClass::Promise; }
 
-	// LnHandle として扱うものかどうか
+	// LNHandle として扱うものかどうか
 	bool isObjectGroup() const { return isClass() || isDelegateObject(); }
 	bool isVirtualHandlerDelegate() const { return m_virtualDelegateType; }
 

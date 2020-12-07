@@ -22,7 +22,7 @@ LnSpriteComponent_SetPototype_OnRender(obj, callback);  // (B)
 (B) の方がいいかもしれない。というのも、基本的に callback の実装は次のように、ベースクラスのメソッドを呼び出すことになる。
 
 ```cpp
-LnResult callback(LnHandle self, LnHandle context) {
+LnResult callback(LNHandle self, LNHandle context) {
     LnSpriteComponent_CallSuper_OnRender(self, context);
     retun LN_OK;
 }

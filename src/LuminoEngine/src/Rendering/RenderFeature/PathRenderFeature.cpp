@@ -7,6 +7,10 @@
 #include "../../Graphics/GraphicsManager.hpp"
 #include "../RenderingManager.hpp"
 #include "PathRenderFeature.hpp"
+
+// [2020/11/17] Shader を使うことになるので、Descripter の対応 (Material ごとに UniformBuffer を持てるようにする) が済んでからにする。
+#if 0
+
 #include <nanovg/nanovg.h>
 
 /**
@@ -27,8 +31,6 @@ nvgFill, nvgStroke, nvgText　のタイミングで、それぞれ renderFill, r
 
  */
 
-// [2020/11/17] Shader を使うことになるので、Descripter の対応 (Material ごとに UniformBuffer を持てるようにする) が済んでからにする。
-#if 0
 
 //==============================================================================
 // see: build/ExternalSource/nanovg/src/nanovg_gl.h

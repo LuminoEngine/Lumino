@@ -1200,6 +1200,7 @@ typedef LNResult(*LNMaterialSerializeHandlerCallback)(LNHandle materialserialize
 typedef LNResult(*LNMeshNodeSerializeHandlerCallback)(LNHandle meshnodeserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNAnimationControllerSerializeHandlerCallback)(LNHandle animationcontrollerserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNMeshModelSerializeHandlerCallback)(LNHandle meshmodelserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNMeshImportSettingsSerializeHandlerCallback)(LNHandle meshimportsettingsserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNSkinnedMeshModelSerializeHandlerCallback)(LNHandle skinnedmeshmodelserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNCollisionShapeSerializeHandlerCallback)(LNHandle collisionshapeserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNBoxCollisionShapeSerializeHandlerCallback)(LNHandle boxcollisionshapeserializehandler, LNHandle self, LNHandle ar);
@@ -2743,8 +2744,8 @@ extern LN_FLAT_API LNSubinstanceId LNAnimationController_GetSubinstanceId(LNHand
     @brief load
     @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
-LN_FLAT_API LNResult LNMeshModel_Load(const LNChar* filePath, LNHandle* outReturn);
-LN_FLAT_API LNResult LNMeshModel_LoadA(const char* filePath, LNHandle* outReturn);
+LN_FLAT_API LNResult LNMeshModel_Load(const LNChar* filePath, LNHandle settings, LNHandle* outReturn);
+LN_FLAT_API LNResult LNMeshModel_LoadA(const char* filePath, LNHandle settings, LNHandle* outReturn);
 
 /**
     @brief findNode
@@ -2808,14 +2809,40 @@ extern LN_FLAT_API void LNMeshModel_RegisterSubclassTypeInfo(const LNMeshModel_S
 extern LN_FLAT_API LNSubinstanceId LNMeshModel_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// ln::SkinnedMeshModel
+// ln::MeshImportSettings
 
 /**
-    @brief load
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @brief init
+    @param[out] outMeshImportSettings : instance.
 */
-LN_FLAT_API LNResult LNSkinnedMeshModel_Load(const LNChar* filePath, LNHandle* outReturn);
-LN_FLAT_API LNResult LNSkinnedMeshModel_LoadA(const char* filePath, LNHandle* outReturn);
+LN_FLAT_API LNResult LNMeshImportSettings_Create(LNHandle* outMeshImportSettings);
+
+typedef LNResult(*LNMeshImportSettings_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNMeshImportSettings_OnSerialize_SetOverrideCallback(LNMeshImportSettings_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNMeshImportSettings_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] meshimportsettings : instance
+*/
+LN_FLAT_API LNResult LNMeshImportSettings_SetPrototype_OnSerialize(LNHandle meshimportsettings, LNHandle callback);
+
+extern LN_FLAT_API int LNMeshImportSettings_GetTypeInfoId();
+LN_FLAT_API void LNMeshImportSettings_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNMeshImportSettings_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNMeshImportSettings_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNMeshImportSettings_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNMeshImportSettings_RegisterSubclassTypeInfo(const LNMeshImportSettings_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNMeshImportSettings_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::SkinnedMeshModel
 
 typedef LNResult(*LNSkinnedMeshModel_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNSkinnedMeshModel_OnSerialize_SetOverrideCallback(LNSkinnedMeshModel_OnSerialize_OverrideCallback callback);
@@ -7552,6 +7579,22 @@ typedef struct tagLNMeshModelSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNMeshModelSerializeHandler_RegisterSubclassTypeInfo(const LNMeshModelSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNMeshModelSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// MeshImportSettingsSerializeHandler
+
+LN_FLAT_API LNResult LNMeshImportSettingsSerializeHandler_Create(LNMeshImportSettingsSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNMeshImportSettingsSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNMeshImportSettingsSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNMeshImportSettingsSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNMeshImportSettingsSerializeHandler_RegisterSubclassTypeInfo(const LNMeshImportSettingsSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNMeshImportSettingsSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // SkinnedMeshModelSerializeHandler

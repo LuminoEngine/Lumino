@@ -21,7 +21,7 @@ static VALUE %%FlatClassName%%_allocate(VALUE klass)
     return obj;
 }
 
-static VALUE %%FlatClassName%%_allocateForGetObject(VALUE klass, LnHandle handle)
+static VALUE %%FlatClassName%%_allocateForGetObject(VALUE klass, LNHandle handle)
 {
     VALUE obj;
     %%WrapStructName%%* internalObj;

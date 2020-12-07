@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/CommandList.hpp>
+#include "RenderElement.hpp"
 
 namespace ln {
 namespace detail {
