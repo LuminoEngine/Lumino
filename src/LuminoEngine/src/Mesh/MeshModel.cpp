@@ -623,13 +623,15 @@ void MeshDiag::printNodes(const MeshModel* model)
 
 void MeshDiag::clearBoneInitialRotations(MeshModel* model)
 {
+	const bool inverse = false;
+
 	model->updateNodeTransforms();
 
 	if (1) {
 
 		for (const auto& node : model->m_nodes) {
 
-			if (1) {
+			if (inverse) {
 			}
 			else {
 				// 位置のみ
@@ -656,7 +658,7 @@ void MeshDiag::clearBoneInitialRotations(MeshModel* model)
 					const auto& self = node->globalMatrix();
 					const auto& parent = model->m_nodes[node->parentNodeIndex()]->globalMatrix();
 
-					if (1) {
+					if (inverse) {
 						// 逆行列使用
 						const auto m = Matrix::makeInverse(parent);
 						node->setInitialLocalTransform(Matrix::multiply(self, m));
@@ -681,7 +683,7 @@ void MeshDiag::clearBoneInitialRotations(MeshModel* model)
 
 				// 逆行列で inverseInitialMatrix とする。
 
-				if (1) {
+				if (inverse) {
 					// 逆行列使用
 					bone->m_inverseInitialMatrix = Matrix::makeInverse(t);
 				}
