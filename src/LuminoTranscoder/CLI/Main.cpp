@@ -3,7 +3,7 @@
 #include "../Core/SymbolDatabase.hpp"
 #include "../Core/Generators/FlatCGenerator.hpp"
 #include "../Core/Generators/RubyExtGenerator.hpp"
-#include "../Core/Generators/HSPGenerator.hpp"
+#include "../Core/Generators/HSP3Generator.hpp"
 #include "../Core/Generators/DotNetPInvokeGenerator.hpp"
 #include "../Core/Generators/DotnetClassGenerator.hpp"
 

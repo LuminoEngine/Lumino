@@ -1,5 +1,5 @@
 ﻿
-#include "HSPGenerator.hpp"
+#include "HSP3Generator.hpp"
 
 // Delegate のハンドルを指定するところに直接ラベルを指定できるようにする (Delegate は使用不可能)
 static const bool LabelSyntax = true;
@@ -42,7 +42,7 @@ void HSPHeaderGenerator::generate()
 
     // save
     {
-        auto outputDir = ln::Path(makeOutputFilePath(u"HSP", u""));
+        auto outputDir = ln::Path(makeOutputFilePath(u"HSP3", u""));
         ln::FileSystem::createDirectory(outputDir);
 
         ln::String fileName = ln::String::format("{0}.as", config()->moduleName);
@@ -219,7 +219,7 @@ void HSPCommandsGenerator::generate()
     
     // save
     {
-        auto outputDir = ln::Path(makeOutputFilePath(u"HSP", u""));
+        auto outputDir = ln::Path(makeOutputFilePath(u"HSP3", u""));
         ln::FileSystem::createDirectory(outputDir);
 
         ln::String fileName = ln::String::format("{0}.HSPCommands.generated.cpp", config()->moduleName);
@@ -756,7 +756,7 @@ void HSPHelpGenerator::generate()
 
     // save
     {
-        auto outputDir = ln::Path(makeOutputFilePath(u"HSP", u""));
+        auto outputDir = ln::Path(makeOutputFilePath(u"HSP3", u""));
         ln::FileSystem::createDirectory(outputDir);
 
         ln::String fileName = ln::String::format("{0}.hs", config()->moduleName);
