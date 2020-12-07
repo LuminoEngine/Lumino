@@ -57,7 +57,7 @@ public:
     static void resetFrameDelay();
 
     /** アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。 */
-	LN_METHOD()
+	LN_METHOD(Property)
     static double time();
     
     /** アプリケーション全体のタイムスケールを設定します。 */
@@ -82,7 +82,7 @@ public:
     static Size mainViewSize();
 
 	/** デフォルトで作成されるメインの World です。 */
-	//LN_METHOD(Property)
+	LN_METHOD(Property)
     static World* world();
 
 	/** デフォルトで作成されるメインの Camera です。 */

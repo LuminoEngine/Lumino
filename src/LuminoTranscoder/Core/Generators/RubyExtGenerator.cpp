@@ -244,9 +244,6 @@ void RubyExtGenerator::generate()
         auto outputDir = ln::Path(makeOutputFilePath(u"Ruby", u"GemProject/ext"));
         ln::FileSystem::createDirectory(outputDir);
 
-        ln::FileSystem::copyFile(config()->flatCCommonHeader, ln::Path(outputDir, u"FlatCommon.h"), ln::FileCopyOption::Overwrite);
-        ln::FileSystem::copyFile(makeFlatCHeaderOutputPath(), ln::Path(outputDir, u"FlatC.generated.h"), ln::FileCopyOption::Overwrite);
-
 		ln::String fileName = ln::String::format("{0}.RubyExt.generated.cpp", config()->moduleName);
 
 		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(u"RubyExt.template.cpp"))
@@ -873,7 +870,7 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymb
 	}
 
 	if (param->defaultValue()) {
-		return ln::String::format(u"{0} = ({1} != Qnil) ? {2} : {3};", declExpr, param->name(), castExpr, makeConstantValue(param->defaultValue()));
+		return ln::String::format(u"{0} = ({1} != Qnil) ? {2} : {3};", declExpr, param->name(), castExpr, makeFlatConstantValue(param->defaultValue()));
 	}
 	else {
 		return ln::String::format(u"{0} = {1};", declExpr, castExpr);
@@ -889,22 +886,6 @@ ln::String RubyExtGenerator::makeNativeToVALUECastDecl(const MethodParameterSymb
     else {
         return ln::String::format(u"LNI_TO_RUBY_VALUE({0})", param->name());
     }
-}
-
-ln::String RubyExtGenerator::makeConstantValue(const ConstantSymbol* constant) const
-{
-	if (constant->type()->isEnum()) {
-		return ln::String::format(u"({0}){1}", makeFlatClassName(constant->type()), ln::String::fromNumber(constant->value()->get<int>()));
-	}
-	else if (constant->type() == PredefinedTypes::boolType) {
-		return constant->value()->get<bool>() ? u"LN_TRUE" : u"LN_FALSE";
-	}
-	else if (constant->type() == PredefinedTypes::floatType) {
-		return ln::String::fromNumber(constant->value()->get<float>());
-	}
-	else {
-		return ln::String::fromNumber(constant->value()->get<int>());
-	}
 }
 
 // 

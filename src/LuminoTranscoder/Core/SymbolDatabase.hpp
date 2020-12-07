@@ -207,6 +207,7 @@ public:
 	const QualType& qualType() const { return m_qualType; }
 	const ln::String& name() const { return m_name; }
 	const ln::Ref<ConstantSymbol>& defaultValue() const { return m_defaultValue; }
+	bool hasDefaultValue() const { return m_defaultValue != nullptr; }
 
 	bool isIn() const { return m_isIn; }
 	bool isOut() const { return m_isOut; }
@@ -214,6 +215,7 @@ public:
 	bool isReturn() const { return m_isReturn; }	// for flat parameters
 
 	ln::String getFullQualTypeName() const;
+	int flatParamIndex() const { return m_flatParamIndex; }
 
 private:
 	PIMethodParameter* m_pi = nullptr;
@@ -221,6 +223,7 @@ private:
 	QualType m_qualType;
 	ln::String m_name;
 	ln::Ref<ConstantSymbol> m_defaultValue;
+	int m_flatParamIndex = -1;	// m_flatParameters の index. インスタンスメソッドでは [0] が this, 戻り値があれば [last] が return になったりする。
 
 	bool m_isIn = false;
 	bool m_isOut = false;

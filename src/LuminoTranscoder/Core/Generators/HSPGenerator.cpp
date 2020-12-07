@@ -680,9 +680,79 @@ ln::String HSPCommandsGenerator::makeSetVAExpr(const MethodParameterSymbol* para
 //==============================================================================
 // HSPHelpGenerator
 
+static const ln::String HeaderTemplate = uR"(
+;============================================================
+; Lumino ヘルプファイル
+;============================================================
+
+%dll
+Lumino
+
+%ver
+_LIBRARY_VERSION_
+
+%date
+_BUILD_TIME_
+
+%author
+lriki
+
+%note
+lumino.as をインクルードしてください
+
+%type
+拡張命令
+
+%url
+http ://nnmy.sakura.ne.jp/
+
+)";
+
+static const ln::String FuncTemplate = uR"(
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+_NAME_
+_BRIEF_
+%group
+_GROUP_
+%prm
+_PRM_LIST_
+_PRM_DETAIL_
+%inst
+_INST_
+%href
+_HREF_
+)";
+
 void HSPHelpGenerator::generate()
 {
     OutputBuffer code;
+
+    // Header
+    {
+        std::time_t t = std::time(0);   // get time now
+        std::tm* now = std::localtime(&t);
+        auto text = HeaderTemplate
+            .replace(u"_LIBRARY_VERSION_", config()->versionString)
+            .replace(u"_BUILD_TIME_", ln::String::format(u"{0}/{1}/{2}", (now->tm_year + 1900), (now->tm_mon + 1), now->tm_mday));
+        code.AppendLines(text);
+    }
+    
+    // Structs
+    for (const auto& structSymbol : db()->structs()) {
+        for (auto& methodSymbol : structSymbol->publicMethods()) {
+            code.AppendLines(makeFuncDocument(methodSymbol));
+        }
+    }
+
+    // Classes
+    for (const auto& classSymbol : db()->classes()) {
+        for (auto& methodSymbol : classSymbol->publicMethods()) {
+            code.AppendLines(makeFuncDocument(methodSymbol));
+        }
+    }
 
     // save
     {
@@ -691,14 +761,107 @@ void HSPHelpGenerator::generate()
 
         ln::String fileName = ln::String::format("{0}.hs", config()->moduleName);
 
-        ln::String src = ASFileTemplate
-            .replace(u"%%Contents%%", code.toString())
-            .replace(u"%%varhpi%%", ln::String::fromNumber((db()->structs()) | stream::op::count()));
-
-
-
-        ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), src);
+        ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), code.toString(), ln::TextEncoding::getEncoding(ln::EncodingType::SJIS));
     }
+}
+
+ln::String HSPHelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol) const
+{
+
+    // 引数リスト
+    OutputBuffer params;
+    for (const auto& param : methodSymbol->flatParameters()) {
+        params.AppendCommad(param->name());
+    }
+
+    // インデント量の計算
+    // [out] pp   : 説明
+    // [in]  name : 説明
+    // ^^^^^        … ioColumnWidth
+    //       ^^^^   … nameColumnWidth
+    int ioColumnWidth = 0;
+    int nameColumnWidth = 0;
+    for (const auto& param : methodSymbol->flatParameters()) {
+        // 名前部分はデフォルト引数も含んだ長さで考える
+        int nameLen = param->name().length();
+        if (param->hasDefaultValue())
+            nameLen += makeFlatConstantValue(param->defaultValue()).length() + 2;   // +2 は () の分
+
+        ioColumnWidth = std::max(ioColumnWidth, makeIOName(param).length());
+        nameColumnWidth = std::max(nameColumnWidth, nameLen);
+    }
+    ioColumnWidth += 2; // 前後の [ ] の分
+
+    // 引数の1行説明
+    OutputBuffer detailText;
+    for (const auto& param : methodSymbol->flatParameters()) {
+        auto name = param->name();
+
+        // デフォルト値がある場合は () を付けて表現
+        if (param->hasDefaultValue())
+            name += u"(" + makeFlatConstantValue(param->defaultValue()) + u")";
+
+        detailText.append(ln::String::format(u"{0,-" + ln::String::fromNumber(ioColumnWidth) + u"}", u"[" + makeIOName(param) + "]"));
+        detailText.append(ln::String::format(u" {0,-" + ln::String::fromNumber(nameColumnWidth) + u"}", name));
+        detailText.append(u" : ");
+        detailText.append(translateComment(methodSymbol->document()->flatParams()[param->flatParamIndex()]->description()));
+        detailText.NewLine();
+
+        // enum 型の場合は候補値も追加しておく
+        const auto& enumType = param->type();
+        if (enumType->isEnum()) {
+            const auto indent = ln::String::format(u" {0,-" + ln::String::fromNumber(ioColumnWidth + 3 + nameColumnWidth + 3) + u"}", u" ");
+
+            for (const auto& member : enumType->constants()) {
+                detailText.AppendLine(indent + makeFlatEnumMemberName(enumType, member));
+                detailText.AppendLine(indent + member->document()->summary());
+            }
+        }
+    }
+
+    detailText.NewLine();
+    detailText.AppendLine(u"stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)");
+
+    return FuncTemplate
+        .replace("_NAME_", makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii))
+        .replace("_BRIEF_", translateComment(methodSymbol->document()->summary()))
+        .replace("_INST_", translateComment(methodSymbol->document()->details()))
+        .replace("_HREF_", "")
+        .replace("_GROUP_", makeFlatClassName(methodSymbol->ownerType()))
+        .replace("_PRM_LIST_", params.toString())
+        .replace("_PRM_DETAIL_", detailText.toString());
+
+    // サンプルコード
+    //TestCode sampleCode;
+    //if (_sampleCodeMap.TryGetValue(func.CPPName, out sampleCode) &&
+    //    !sampleCode.IsSkipTest)
+    //{
+    //    funcText += "\n%sample\n" + sampleCode.ExtractedCode + "\n";
+    //}
+}
+
+ln::String HSPHelpGenerator::makeIOName(const MethodParameterSymbol* paramSymbol) const
+{
+    if (paramSymbol->isOut())
+        return u"out";
+    else
+        return u"in";
+}
+
+ln::String HSPHelpGenerator::translateComment(const ln::String& text) const
+{
+    auto result = text.replace("関数", "命令")
+        .replace("のポインタ", "")
+        .replace("クラス", "モジュール");
+
+    return result;
+
+    //string doc = "";
+    //string[] lines = text.Replace("\r", "").Split('\n');
+    //foreach(var line in lines)
+    //    doc += line.Trim() + OutputBuffer.NewLineCode;
+
+    //return doc;
 }
 
 #if 0
@@ -716,88 +879,6 @@ namespace BinderMaker.Builder
     /// </summary>
     class HSPHelpBuilder : Builder
     {
-        #region Templates
-        const string HeaderTemplate = @"
-; ============================================================
-; Lumino ヘルプファイル
-; ============================================================
-
-% dll
-Lumino
-
-% ver
-_LIBRARY_VERSION_
-
-% date
-_BUILD_TIME_
-
-% author
-lriki
-
-% note
-lumino.as をインクルードしてください
-
-% type
-拡張命令
-
-% url
-http ://nnmy.sakura.ne.jp/
-
-";
-
-        const string FuncTemplate = @"
-; ---------------------------------------------------------- -
-;
-; ---------------------------------------------------------- -
-% index
-_NAME_
-_BRIEF_
-% group
-_GROUP_
-% prm
-_PRM_LIST_
-_PRM_DETAIL_
-% inst
-_INST_
-% href
-_HREF_
-";
-        #endregion
-
-        private OutputBuffer _output = new OutputBuffer();
-
-/// <summary>
-/// ビルド開始前(初期化)通知
-/// </summary>
-/// <param name="enumType"></param>
-protected override void OnInitialize()
-{
-    // ヘッダ
-    string t = HeaderTemplate.TrimStart();
-    //t = t.Replace("_LIBRARY_VERSION_", CLManager.GetLibararyVersion());
-    t = t.Replace("_BUILD_TIME_", DateTime.Today.ToString("yyyy/MM/dd"));
-    _output.AppendWithIndent(t);
-}
-
-/// <summary>
-/// クラスor構造体 通知 (開始)
-/// </summary>
-/// <param name="classType"></param>
-/// <returns>false の場合このクラスの出力を無視する</returns>
-protected override bool OnClassLookedStart(CLClass classType)
-{
-
-    return true;
-}
-
-/// <summary>
-/// クラスor構造体 通知 (終了)
-/// </summary>
-/// <param name="enumType"></param>
-protected override void OnClassLookedEnd(CLClass classType)
-{
-}
-
 /// <summary>
 /// プロパティ 通知
 /// </summary>
@@ -946,26 +1027,8 @@ protected override string OnMakeOutoutFileText()
 protected override Encoding GetOutputEncoding() { return Encoding.GetEncoding(932); }
 
 
-public static string TranslateComment(string text)
-{
-    text = text.Replace("関数", "命令");
-    text = text.Replace("のポインタ", "");
-    text = text.Replace("クラス", "モジュール");
 
-    string doc = "";
-    string[] lines = text.Replace("\r", "").Split('\n');
-    foreach(var line in lines)
-        doc += line.Trim() + OutputBuffer.NewLineCode;
 
-    return doc;
-}
-
-public static string GetIOName(IOModifier m)
-{
-    if (m == IOModifier.Out)
-        return "out";
-    return "in";
-}
 }
 
 

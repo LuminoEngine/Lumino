@@ -16708,6 +16708,7 @@ static VALUE Wrap_LNEngineSettings_SetDeveloperToolEnabled(int argc, VALUE* argv
 
 struct Wrap_Engine
 {
+    VALUE LNEngine_GetWorld_AccessorCache = Qnil;
     VALUE LNEngine_GetCamera_AccessorCache = Qnil;
     VALUE LNEngine_GetMainLight_AccessorCache = Qnil;
     VALUE LNEngine_GetRenderView_AccessorCache = Qnil;
@@ -16779,18 +16780,33 @@ static VALUE Wrap_LNEngine_Run(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
-static VALUE Wrap_LNEngine_Time(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LNEngine_GetTime(int argc, VALUE* argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
 
         {
             double _outReturn;
-            LNResult errorCode = LNEngine_Time(&_outReturn);
+            LNResult errorCode = LNEngine_GetTime(&_outReturn);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
             return LNI_TO_RUBY_VALUE(_outReturn);
         }
     }
     rb_raise(rb_eArgError, "ln::Engine::time - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNEngine_GetWorld(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LNHandle _outReturn;
+            LNResult errorCode = LNEngine_GetWorld(&_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Engine::world - wrong argument type.");
     return Qnil;
 }
 
@@ -27208,7 +27224,8 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_Engine, "finalize", LN_TO_RUBY_FUNC(Wrap_LNEngine_Finalize), -1);
     rb_define_singleton_method(g_class_Engine, "update", LN_TO_RUBY_FUNC(Wrap_LNEngine_Update), -1);
     rb_define_singleton_method(g_class_Engine, "run", LN_TO_RUBY_FUNC(Wrap_LNEngine_Run), -1);
-    rb_define_singleton_method(g_class_Engine, "time", LN_TO_RUBY_FUNC(Wrap_LNEngine_Time), -1);
+    rb_define_singleton_method(g_class_Engine, "time", LN_TO_RUBY_FUNC(Wrap_LNEngine_GetTime), -1);
+    rb_define_singleton_method(g_class_Engine, "world", LN_TO_RUBY_FUNC(Wrap_LNEngine_GetWorld), -1);
     rb_define_singleton_method(g_class_Engine, "camera", LN_TO_RUBY_FUNC(Wrap_LNEngine_GetCamera), -1);
     rb_define_singleton_method(g_class_Engine, "main_light", LN_TO_RUBY_FUNC(Wrap_LNEngine_GetMainLight), -1);
     rb_define_singleton_method(g_class_Engine, "render_view", LN_TO_RUBY_FUNC(Wrap_LNEngine_GetRenderView), -1);

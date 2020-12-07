@@ -24103,7 +24103,7 @@ LN_FLAT_API LNResult LNEngine_Run(LNHandle app)
 }
 
 
-LN_FLAT_API LNResult LNEngine_Time(double* outReturn)
+LN_FLAT_API LNResult LNEngine_GetTime(double* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
@@ -24111,6 +24111,20 @@ LN_FLAT_API LNResult LNEngine_Time(double* outReturn)
     }
     else {
         (ln::Engine::time());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNEngine_GetWorld(LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::world());
+    }
+    else {
+        (ln::Engine::world());
     }
 
     LNI_FUNC_TRY_END_RETURN;

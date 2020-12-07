@@ -166,6 +166,7 @@ int main(int argc, char** argv)
 	config->flatCHeaderString = u"#include <LuminoEngine.hpp>\n#include \"BindingValidation.hpp\"";
     config->flatCHeaderOutputDirOverride = LN_LOCALFILE("../../../include/LuminoEngine/Runtime");
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
+	config->versionString = u"0.9.0";
 
 	//{
 	//	FlatCHeaderGenerator g;
@@ -177,16 +178,16 @@ int main(int argc, char** argv)
 	//	g.setup(db, config);
 	//	g.generate();
 	//}
-	{
-		RubyExtGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
-	{
-		RubyYARDOCSourceGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
+	//{
+	//	RubyExtGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
+	//{
+	//	RubyYARDOCSourceGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
 	//{
 	//	HSPHeaderGenerator g;
 	//	g.setup(db, config);
@@ -197,6 +198,11 @@ int main(int argc, char** argv)
 	//	g.setup(db, config);
 	//	g.generate();
 	//}
+	{
+		HSPHelpGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
     //{
     //    DotNetPInvokeGenerator g;
     //    g.setup(db, config);

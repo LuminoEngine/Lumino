@@ -7161,7 +7161,13 @@ LN_FLAT_API LNResult LNEngine_Run(LNHandle app);
     @brief アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LNResult LNEngine_Time(double* outReturn);
+LN_FLAT_API LNResult LNEngine_GetTime(double* outReturn);
+
+/**
+    @brief デフォルトで作成されるメインの World です。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNEngine_GetWorld(LNHandle* outReturn);
 
 /**
     @brief デフォルトで作成されるメインの Camera です。

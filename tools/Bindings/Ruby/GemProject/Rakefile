@@ -48,6 +48,16 @@ Rake::ExtensionTask.new "Lumino_RubyExt" do |ext|
     p "exe copy (" + lumino_cmd + ", " + to + ")"
   end
 
+  from = File.expand_path("../../../../../include/LuminoEngine/Runtime/Lumino.FlatC.generated.h", __FILE__)
+  to = "ext/FlatC.generated.h"
+  FileUtils.cp(from, to)
+  p "Copied " + from + " > " + to
+
+  from = File.expand_path("../../../../../include/LuminoEngine/Runtime/FlatCommon.h", __FILE__)
+  to = "ext/FlatCommon.h"
+  FileUtils.cp(from, to)
+  p "Copied " + from + " > " + to
+
   # copy resources
   #resources = File.expand_path("../../../../../tools/EngineResources", __FILE__)
   #FileUtils.cp_r(resources, "ext")

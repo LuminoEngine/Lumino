@@ -64,4 +64,7 @@ public:
     void generate();
 
 private:
+    ln::String makeFuncDocument(const MethodSymbol* methodSymbol) const;
+    ln::String makeIOName(const MethodParameterSymbol* paramSymbol) const;
+    ln::String translateComment(const ln::String& text) const;
 };

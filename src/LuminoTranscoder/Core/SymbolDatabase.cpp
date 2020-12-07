@@ -407,6 +407,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 			if (!s->init(QualType{ m_ownerType }, name)) return false;
 			s->m_isIn = true;
 			s->m_isThis = true;
+			s->m_flatParamIndex = doc->m_flatParams.size();
 			m_flatParameters.add(s);
 
             // documetation
@@ -423,6 +424,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 			if (!s->init(QualType{ m_ownerType }, name)) return false;
 			s->m_isIn = true;
 			s->m_isThis = true;
+			s->m_flatParamIndex = doc->m_flatParams.size();
 			m_flatParameters.add(s);
 
             // documetation
@@ -448,13 +450,25 @@ ln::Result MethodSymbol::makeFlatParameters()
  //       doc->m_flatParams.add(param);
 	//}
 
-	// params
-	for (auto& paramInfo : m_parameters) {
-		m_flatParameters.add(paramInfo);
+	for (int iParam = 0; iParam < m_parameters.size(); iParam++) {
+		auto param = m_parameters[iParam];
+		m_flatParameters.add(param);
+
+		auto paramDoc = doc->m_flatParams.findIf([param](auto& x) { return x->name() == param->name(); });
+		if (paramDoc) {
+			// 一致する DocComment が見つかったらインデックスを維持して追加
+			param->m_flatParamIndex = doc->m_flatParams.size();
+			doc->m_flatParams.add(*paramDoc);
+		}
+		else {
+			// 見つからなかったらダミーを追加して続行
+			auto paramDoc2 = ln::makeRef<ParameterDocumentInfo>();
+			if (!paramDoc2->init(param->name(), u"", "")) return false;
+			param->m_flatParamIndex = doc->m_flatParams.size();
+			doc->m_flatParams.add(paramDoc2);
+			std::cerr << "warning: " << param->name() << " parameter not commented." << std::endl;
+		}
 	}
-    for (auto& paramInfo : doc->m_params) {
-        doc->m_flatParams.add(paramInfo);
-    }
 
 	// return value
 	if (m_returnType.type == PredefinedTypes::voidType/* || m_returnType.type == PredefinedTypes::EventConnectionType*/)
@@ -468,6 +482,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 		s->m_isIn = false;
 		s->m_isOut = true;
 		s->m_isReturn = true;
+		s->m_flatParamIndex = doc->m_flatParams.size();
 		m_flatParameters.add(s);
 
         // documetation
@@ -485,6 +500,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
 			if (!s->init(QualType{ m_ownerType }, name)) return false;
 			s->m_isReturn = true;
+			s->m_flatParamIndex = doc->m_flatParams.size();
 			m_flatParameters.add(s);
 
             // documetation

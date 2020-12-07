@@ -5520,6 +5520,13 @@ class Lumino::Engine
 
 
 
+    # デフォルトで作成されるメインの World です。
+    # @return [Lumino::World] 
+    def world(*args)
+    end
+
+
+
     # デフォルトで作成されるメインの Camera です。
     # @return [Lumino::Camera] 
     def camera(*args)
