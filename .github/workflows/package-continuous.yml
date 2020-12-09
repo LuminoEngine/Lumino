@@ -183,15 +183,15 @@ jobs:
         name: NativePackage-MSVC2019-x64-MT
         path: ./build/NativePackage
     
-    - uses: actions/download-artifact@v1
-      with:
-        name: NativePackage-Web
-        path: ./build/NativePackage
+#    - uses: actions/download-artifact@v1
+#      with:
+#        name: NativePackage-Web
+#        path: ./build/NativePackage
     
-    - uses: actions/download-artifact@v1
-      with:
-        name: NativePackage-Android
-        path: ./build/NativePackage
+#    - uses: actions/download-artifact@v1
+#      with:
+#        name: NativePackage-Android
+#        path: ./build/NativePackage
 
     - name: Build
       run: dotnet run -- MakeInstaller_Win32
@@ -225,10 +225,10 @@ jobs:
         name: NativePackage-macOS
         path: ./build/NativePackage
     
-    - uses: actions/download-artifact@v1
-      with:
-        name: NativePackage-iOS
-        path: ./build/NativePackage
+#    - uses: actions/download-artifact@v1
+#      with:
+#        name: NativePackage-iOS
+#        path: ./build/NativePackage
 
     - name: Build
       run: dotnet run -- MakePackage_macOS

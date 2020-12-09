@@ -1,6 +1,7 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/Runtime/Runtime.hpp>
+#include "../../../src/LuminoEngine/src/Engine/EngineManager.hpp"
 #include "LuminoHSP.h"
 
 extern bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr);
@@ -56,6 +57,14 @@ static int termfunc(int option)
 	return 0;
 }
 
+static void OnPreInitEngineManager()
+{
+	if (!ln::detail::EngineManager::s_settings.userMainWindow) {
+		BMSCR* bm = (BMSCR*)getbmscr(active_window);
+		ln::detail::EngineManager::s_settings.userMainWindow = reinterpret_cast<intptr_t>(bm->hwnd);
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Entry point for HSP plugin.
 //-----------------------------------------------------------------------------
@@ -63,7 +72,7 @@ EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO* info)
 {
 	//ln::Logger::setLevel(ln::LogLevel::Debug);
 	//ln::Logger::addStdErrAdapter();
-	//ln::Console::allocate();
+	ln::Console::allocate();
 
 	//		プラグイン初期化 (実行・終了処理を登録します)
 	//
@@ -88,6 +97,11 @@ EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO* info)
 	LNRuntime_Initialize(&settings);
 
 	ln::Runtime::setAStringEncoding(ln::TextEncoding::systemMultiByteEncoding());
+
+	ln::EngineContext::current()->engineManagerPreInit = OnPreInitEngineManager;
+
+	// NOTE: メインウィンドウの HWND は active_window マクロでとれるが、この時点では NULL なので注意。
+	// プラグインロード時にメインウィンドウにアタッチすることはできない。
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule,

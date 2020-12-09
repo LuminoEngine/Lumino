@@ -12,6 +12,10 @@ class EngineContext : public RefObject
 public:
 	static EngineContext* current();
 
+	// EngineManager の初期化が行われる直前に呼び出される。
+	// Binding で、ラインタイム情報をもとに EngineSetting を最終調整するために使用する。
+	std::function<void()> engineManagerPreInit;
+
     EngineContext();
 	virtual ~EngineContext();
 	void internalInit();

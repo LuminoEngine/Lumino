@@ -24,6 +24,7 @@ static const ln::String ASFileTemplate = uR"(
 #const global LN_TRUE 1
 #const global LN_FALSE 0
 #const global LN_NULL_HANDLE 0
+_ln_return_discard = 0
 
 %%Contents%%
 
@@ -71,10 +72,10 @@ ln::String HSP3HeaderGenerator::makeStructs() const
 {
     OutputBuffer code;
     for (const auto& structSymbol : db()->structs()) {
-        code.AppendLine("#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), getCommandId(structSymbol));
+        code.AppendLine(u"#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), getCommandId(structSymbol));
 
         for (const auto& methodSymbol : structSymbol->publicMethods()) {
-            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode), getCommandId(methodSymbol));
+            code.AppendLine(u"#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode), getCommandId(methodSymbol));
         }
     }
     return code.toString();
@@ -85,12 +86,32 @@ ln::String HSP3HeaderGenerator::makeClasses() const
     OutputBuffer code;
     for (const auto& classSymbol : db()->classes()) {
         for (const auto& methodSymbol : classSymbol->publicMethods()) {
-            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode), getCommandId(methodSymbol));
+            const auto funcName = makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode);
+            code.AppendLine(u"#cmd _{0} ${1:X}", funcName, getCommandId(methodSymbol));
+
+            // Engine::update やイベントの connect など、戻り値が不要な場合は省略できるようにしたい。
+            // ただ #cmd では Val 型の省略ができないため、#define でラップすることで対策する。
+            OutputBuffer paramsText;
+            OutputBuffer argsText;
+            const auto& flatParams = methodSymbol->flatParameters();
+            for (int i = 0; i < flatParams.size(); i++) {
+                if (flatParams[i]->isReturn())
+                    paramsText.AppendCommad(u"%{0}=_ln_return_discard", i + 1);
+                else
+                    paramsText.AppendCommad(u"%{0}", i+1);
+
+                argsText.AppendCommad(u"%{0}", i + 1);
+            }
+
+            if (paramsText.isEmpty())
+                code.AppendLine(u"#define {0} _{0}", funcName, paramsText.toString());
+            else
+                code.AppendLine(u"#define {0}({1}) _{0} {2}", funcName, paramsText.toString(), argsText.toString());
         }
 
         const auto virtualMethods = classSymbol->virtualPrototypeSetters();
         for (int i = 0; i < virtualMethods.size(); i++) {
-            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(virtualMethods[i], FlatCharset::Unicode), getCommandId(virtualMethods[i]));
+            code.AppendLine(u"#cmd {0} ${1:X}", makeFlatFullFuncName(virtualMethods[i], FlatCharset::Unicode), getCommandId(virtualMethods[i]));
         }
     }
     return code.toString();
@@ -601,6 +622,16 @@ ln::String HSP3CommandsGenerator::makeCallCommandBlock(const MethodSymbol* metho
 
     code.AppendLine(callExpr);
     code.AppendLines(epilogue.toString().trim());
+
+    // LNEngine_Update は、await を実行して HSP3 ランタイムのメッセージ処理を行うようにする。
+    // ※こうしておかないと、HSP3 が作ったメインウィンドウがクローズできない。
+    //   ユーザープログラムで await してもらえばいいのだが、ちょっと煩わしい。hgimg のようにしておきたい。
+    if (classSymbol->shortName() == u"Engine" && methodSymbol->shortName() == u"update") {
+        code.AppendLine(u"ctx->waittick = 0;");
+        code.AppendLine(u"*retVal = RUNMODE_AWAIT;");
+    }
+
+    
     return code.toString();
 }
 
@@ -622,6 +653,7 @@ ln::String HSP3CommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, 
         typeSymbol == PredefinedTypes::intType ||
         typeSymbol == PredefinedTypes::int16Type ||
         typeSymbol == PredefinedTypes::uint32Type ||
+        typeSymbol == PredefinedTypes::intptrType ||
         typeSymbol->isClass()) {
         return ln::String::format(u"fetchVAInt{0}({1})", postfix, defaultValueStr);
     }
@@ -800,7 +832,8 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
         auto name = param->name();
 
         // デフォルト値がある場合は () を付けて表現
-        if (param->hasDefaultValue())
+        // また outReturn も省略可能とする
+        if (param->hasDefaultValue() || param->isReturn())
             name += u"(" + makeFlatConstantValue(param->defaultValue()) + u")";
 
         detailText.append(ln::String::format(u"{0,-" + ln::String::fromNumber(ioColumnWidth) + u"}", u"[" + makeIOName(param) + "]"));

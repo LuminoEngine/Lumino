@@ -4,23 +4,47 @@
         <Package Description="Lumino installer" Comments="Lumino installer" InstallerVersion="200" Compressed="yes" SummaryCodepage="932" />
         <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
 
+        <!-- User folder -->
+        <Property Id="ID_USER_DIR">
+            <DirectorySearch Id="ID_UserProfileSearch" Depth="0" Path="[%USERPROFILE]" />
+        </Property>
+        
+        <!-- MyDocument folder -->
+        <Property Id="ID_PERSONAL_DIR">
+            <DirectorySearch Id="ID_PersonalFolderSearch" Depth="0" Path="[PersonalFolder]" />
+        </Property>
+    
         <Directory Id="TARGETDIR" Name="SourceDir">
-            <!-- Program Files -->
-            <Directory Id="ProgramFilesFolder" Name="PFiles">
-                <!-- <Program Files>/Lumino -->
+            <Directory Id="ID_USER_DIR">
                 <Directory Id="ID_LUMINO_DIR" Name="Lumino">
                     <Component Id="ID_LuminoCommon" Guid="E82C2596-609D-4BA7-849C-80B5BCA06130">
                         <CreateFolder />
-                        <Environment Id="ID_LUMINO_PATH" Name="LUMINO_PATH" System="yes" Permanent="no" Action="set" Part="all" Value="[ID_LUMINO_DIR]" />
-                        <Environment Id="PATH" Name="PATH" Value="[ID_LUMINO_DIR]Tools" Permanent="yes" Part="last" Action="set" System="yes" />
+                        <Environment Id="ID_LUMINO_PATH" Name="LUMINO_PATH" System="no" Permanent="no" Action="set" Part="all" Value="[ID_LUMINO_DIR]" />
+                        <Environment Id="PATH" Name="PATH" Value="[ID_LUMINO_DIR]Tools" Permanent="yes" Part="last" Action="set" System="no" />
                     </Component>
                 </Directory>
             </Directory>
+                
+	        <Directory Id="ID_PERSONAL_DIR">
+	            <Directory Id="ID_VS2019_DIR" Name="Visual Studio 2019">
+	                <Directory Id="ID_VS2019_Templates_DIR" Name="Templates">
+	                    <Directory Id="ID_VS2019_Templates_ProjectTemplates_DIR" Name="ProjectTemplates">
+	                    </Directory>
+	                </Directory>
+	            </Directory>
+	        </Directory>
         </Directory>
+        
+        <DirectoryRef Id="ID_VS2019_Templates_ProjectTemplates_DIR">
+            <Component Id="VS2019LuminoProject.zip" Guid="BDF84715-8100-4731-B839-CE066962FFAA">
+                <File Id="VS2019LuminoProject.zip" Source="$(var.PackageSourceDir)/VS2019LuminoProject.zip" KeyPath="yes" Checksum="yes"/>
+            </Component>
+        </DirectoryRef>
 
         <Feature Id="DefaultFeature" Title="Main Feature" Level="1">
             <ComponentGroupRef Id="LuminoFiles" />
             <ComponentRef Id="ID_LuminoCommon" />
+            <ComponentRef Id="VS2019LuminoProject.zip" />
         </Feature>
 
         <UI />

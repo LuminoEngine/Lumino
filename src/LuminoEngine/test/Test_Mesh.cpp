@@ -25,6 +25,7 @@ TEST_F(Test_Mesh, Basic)
 #endif
 
 
+#if 0
 TEST_F(Test_Mesh, StaticMesh)
 {
     Engine::camera()->setPosition(8, 8, -8);
@@ -57,3 +58,5 @@ TEST_F(Test_Mesh, SkinnedMesh)
     LN_TEST_CLEAN_SCENE;
 }
 
+
+#endif

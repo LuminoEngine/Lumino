@@ -752,7 +752,8 @@ ln::String RubyExtGenerator::makeTypeCheckExpr(const TypeSymbol* type, const ln:
 	else if (
 		type == PredefinedTypes::intType ||
 		type == PredefinedTypes::int16Type ||
-		type == PredefinedTypes::uint32Type) {
+		type == PredefinedTypes::uint32Type ||
+		type == PredefinedTypes::intptrType) {
 		return ln::String::format(u"LNRB_VALUE_IS_NUMBER({0})", varName);
 	}
 	else if (
@@ -1237,6 +1238,7 @@ ln::String RubyYARDOCSourceGenerator::makeRubyTypeFullName(const TypeSymbol* typ
 			{ PredefinedTypes::intType, u"Integer" },
 			{ PredefinedTypes::int16Type, u"Integer" },
 			{ PredefinedTypes::uint32Type, u"Integer" },
+			{ PredefinedTypes::intptrType, u"Integer" },
 			{ PredefinedTypes::floatType, u"Float" },
 			{ PredefinedTypes::stringType, u"String" },
 			//{ PredefinedTypes::stringRefType, u"" },

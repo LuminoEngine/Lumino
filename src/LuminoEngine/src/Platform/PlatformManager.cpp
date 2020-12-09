@@ -11,13 +11,14 @@ namespace detail {
 PlatformManager::PlatformManager()
 	: m_windowManager()
     , m_glfwWithOpenGLAPI(true)
+    , m_messageLoopProcessing(true)
 {
 }
 
 Result PlatformManager::init(const Settings& settings)
 {
 #ifdef LN_GLFW
-    if (settings.useGLFWWindowSystem) {
+    if (settings.useGLFWWindowSystem && !settings.mainWindowSettings.userWindow) {
         if (!m_windowManager) {
             auto windowManager = ln::makeRef<GLFWPlatformWindowManager>(this);
             if (!windowManager->init()) {
@@ -38,6 +39,12 @@ Result PlatformManager::init(const Settings& settings)
 #endif
 
     m_glfwWithOpenGLAPI = settings.glfwWithOpenGLAPI;
+
+    // ユーザーウィンドウが指定されている場合、イベント処理は外部に任せる
+    // ※ HSP3 ランタイム上では、Lumino 側がイベント処理してしまうと、termfunc() が呼ばれなくなる
+    if (settings.mainWindowSettings.userWindow) {
+        m_messageLoopProcessing = false;
+    }
 
 	if (!m_windowManager)
 	{
@@ -68,6 +75,13 @@ void PlatformManager::dispose()
 OpenGLContext* PlatformManager::openGLContext() const
 {
     return m_windowManager->getOpenGLContext();
+}
+
+void PlatformManager::processSystemEventQueue()
+{
+    if (m_messageLoopProcessing) {
+        m_windowManager->processSystemEventQueue(EventProcessingMode::Polling);
+    }
 }
 
 } // namespace detail

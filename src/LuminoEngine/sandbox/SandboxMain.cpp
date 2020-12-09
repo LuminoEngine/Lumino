@@ -562,7 +562,7 @@ int main(int argc, char** argv)
     //EngineSettings::setMainWorldViewSize(640 / div, 480 / div);
 
 
-	Engine::initialize();
+	Engine::init();
 	//Engine::update();
 	//Engine::finalize();
 	//return 0;

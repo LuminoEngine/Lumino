@@ -573,6 +573,8 @@ Win32PlatformWindowManager::Win32PlatformWindowManager(PlatformManager* manager)
 
 Result Win32PlatformWindowManager::init()
 {
+    LN_LOG_INFO << "Win32 native window manager";
+
     m_hInst = (HINSTANCE)::GetModuleHandle(NULL);
 
     // TODO: ウィンドウアイコン

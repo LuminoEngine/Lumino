@@ -629,7 +629,7 @@ void EngineManager::updateFrame()
 	}
 
 	if (m_platformManager) {
-		m_platformManager->windowManager()->processSystemEventQueue(EventProcessingMode::Polling);
+		m_platformManager->processSystemEventQueue();
 	}
 	if (m_uiManager) {
 		m_uiManager->dispatchPostedEvents();

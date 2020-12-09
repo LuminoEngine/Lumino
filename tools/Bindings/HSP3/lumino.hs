@@ -10,7 +10,7 @@ Lumino
 0.9.0
 
 %date
-2020/12/7
+2020/12/9
 
 %author
 lriki
@@ -12543,7 +12543,27 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNEngine_Initialize
+LNEngineSettings_SetUserMainWindow
+ƒ†[ƒU[w’è‚ÌƒƒCƒ“ƒEƒBƒ“ƒhƒE‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ğİ’è‚µ‚Ü‚·B
+%group
+LNEngineSettings
+%prm
+value
+[in] value : 
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNEngine_Init
 ƒGƒ“ƒWƒ“‚Ì‰Šú‰»ˆ—‚ğs‚¢‚Ü‚·B
 %group
 LNEngine

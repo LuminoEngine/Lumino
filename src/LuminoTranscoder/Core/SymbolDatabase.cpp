@@ -7,6 +7,7 @@ ln::Ref<TypeSymbol>	PredefinedTypes::boolType;
 ln::Ref<TypeSymbol>	PredefinedTypes::intType;
 ln::Ref<TypeSymbol>	PredefinedTypes::int16Type;
 ln::Ref<TypeSymbol>	PredefinedTypes::uint32Type;
+ln::Ref<TypeSymbol>	PredefinedTypes::intptrType;
 ln::Ref<TypeSymbol>	PredefinedTypes::floatType;
 ln::Ref<TypeSymbol>	PredefinedTypes::doubleType;
 ln::Ref<TypeSymbol>	PredefinedTypes::stringType;
@@ -1204,6 +1205,8 @@ void SymbolDatabase::initPredefineds()
 	PredefinedTypes::int16Type = addPredefined(u"int16_t");
 
 	PredefinedTypes::uint32Type = addPredefined(u"uint32_t");
+
+	PredefinedTypes::intptrType = addPredefined(u"intptr_t");
 
 	PredefinedTypes::floatType = addPredefined(u"float");
 

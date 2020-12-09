@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="app">
+      <UniqueIdentifier>{22792e8f-6bfe-43c8-96dd-86f5e61e7979}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="app\small.ico">
+      <Filter>app</Filter>
+    </Image>
+    <Image Include="app\app.ico">
+      <Filter>app</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="app\targetver.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="app\pch.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="app\resource.h">
+      <Filter>app</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="app\pch.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="app\Launch.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app\app.rc">
+      <Filter>app</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
