@@ -2,7 +2,6 @@
 #include "PostEffect.hpp"
 
 namespace ln {
-class ColorTone;
 namespace detail { class TonemapPostEffectInstance; }
 
 class TonemapPostEffect

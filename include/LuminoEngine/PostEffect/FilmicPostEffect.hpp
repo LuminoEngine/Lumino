@@ -92,11 +92,11 @@ public:
 
 	float m_linearWhite = 5.0f;
 	float m_shoulderStrength = 0.15f;
-	float m_linearStrength = 0.5;
-	float m_linearAngle = 0.1;
+	float m_linearStrength = 0.5f;
+	float m_linearAngle = 0.1f;
 	float m_toeStrength = 0.2f;
-	float m_toeNumerator = 0.02;
-	float m_toeDenominator = 0.3;
+	float m_toeNumerator = 0.02f;
+	float m_toeDenominator = 0.3f;
 	float m_exposure = 0.0f;
 
     float m_luminosityThreshold;

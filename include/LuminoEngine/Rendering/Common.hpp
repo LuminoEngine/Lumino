@@ -431,7 +431,7 @@ struct SceneGlobalRenderParams
 		lowerHeight = -100.0f;
 		upperHeight = 10.0f;
 		startDistance = 20.0f;
-		fogColor = Color(0.686, 0.678, 0.666);//Color::White;
+		fogColor = Color(0.686f, 0.678f, 0.666f);//Color::White;
 		fogDensity = 1.0f / 50.0f;
 		heightFogDensity = 1.0f / 10.0f;
 

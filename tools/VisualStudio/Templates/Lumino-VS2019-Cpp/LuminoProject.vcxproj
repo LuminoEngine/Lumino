@@ -30,11 +30,14 @@
   <ItemGroup>
     <ResourceCompile Include="app\app.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="app\Lumino.natvis" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{02f70011-ca34-423c-9dde-511cb705f65e}</ProjectGuid>
-    <RootNamespace>LuminoProject</RootNamespace>
+    <ProjectGuid>{$guid1$}</ProjectGuid>
+    <RootNamespace>$safeprojectname$</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

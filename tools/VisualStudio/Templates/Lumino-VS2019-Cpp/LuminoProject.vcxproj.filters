@@ -38,4 +38,9 @@
       <Filter>app</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="app\Lumino.natvis">
+      <Filter>app</Filter>
+    </Natvis>
+  </ItemGroup>
 </Project>
