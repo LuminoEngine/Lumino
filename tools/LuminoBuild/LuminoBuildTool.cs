@@ -340,7 +340,9 @@ namespace LuminoBuild
         /// <param name="distDir">Dist dir.</param>
         public static void CopyFile(string srcFile, string dstDir)
         {
-            File.Copy(srcFile, dstDir + "/" + Path.GetFileName(srcFile), true);
+            var dst = dstDir + "/" + Path.GetFileName(srcFile);
+            File.Copy(srcFile, dst, true);
+            Console.WriteLine($"Copy: {srcFile} to {dst}");
         }
 
         /// <summary>

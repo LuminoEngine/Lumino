@@ -85,6 +85,7 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.BuildEngine_Emscripten());
             builder.Tasks.Add(new Tasks.MakeNativePackage());
             builder.Tasks.Add(new Tasks.MakeInstaller_Win32());
+            builder.Tasks.Add(new Tasks.MakePackage_HSP3());
             builder.Tasks.Add(new Tasks.MakePackage_macOS());
             builder.Tasks.Add(new Tasks.MakePackage_Ruby());
             builder.Rules.Add(new Rules.BuildPackage());

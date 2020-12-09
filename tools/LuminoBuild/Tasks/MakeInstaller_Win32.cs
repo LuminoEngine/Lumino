@@ -33,6 +33,16 @@ namespace LuminoBuild.Tasks
                 },
             };
 
+
+            // VisualStudio project tempalte
+            {
+                // zip にして、.wxs が $(var.PackageSourceDir) で参照できるフォルダに配置する
+                Utils.CreateZipFile(
+                    Path.Combine(builder.LuminoToolsDir, "VisualStudio", "Templates", "Lumino-VS2019-Cpp"),
+                    Path.Combine(builder.LuminoToolsDir, "PackageSource", "Installer", "Lumino-VS2019-Cpp.zip"),
+                    false);
+            }
+
             Directory.CreateDirectory(tmpDir);
 
 

@@ -1,0 +1,34 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>LuminoProject</Name>
+    <Description>Lumino project template</Description>
+    <ProjectType>VC</ProjectType>
+    <LanguageTag>cpp</LanguageTag>
+    <PlatformTag>windows</PlatformTag>
+    <ProjectTypeTag>desktop</ProjectTypeTag>
+    <ProjectTypeTag>games</ProjectTypeTag>
+    <ProjectSubType>
+    </ProjectSubType>
+    <SortOrder>1000</SortOrder>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>LuminoProject</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <Icon>__TemplateIcon.ico</Icon>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="LuminoProject.vcxproj" File="LuminoProject.vcxproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="false" TargetFileName="$projectname$.vcxproj.filters">LuminoProject.vcxproj.filters</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Launch.cpp">APP\Launch.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="pch.cpp">APP\pch.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="pch.h">APP\pch.h</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="resource.h">APP\resource.h</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="targetver.h">APP\targetver.h</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="app.rc">APP\app.rc</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="app.ico">APP\app.ico</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="small.ico">APP\small.ico</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Main.cpp">Main.cpp</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

@@ -41,6 +41,36 @@ jobs:
         path: ./build/NativePackage
 
   #==============================================================================
+  Build-Native-MSVC2019-x86-MT:
+    runs-on: windows-2019
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: Common build cache (build/BuildCache)
+      uses: actions/cache@v1
+      with:
+        path: ./build/BuildCache
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+            
+    - name: Build
+      run: |
+        dotnet run -- BuildExternalProjects MSVC2019-x86-MT
+        dotnet run -- BuildEngine_MSVC MSVC2019-x86-MT
+        dotnet run -- MakeNativePackage
+        
+    - uses: actions/upload-artifact@v1
+      with:
+        name: NativePackage-MSVC2019-x86-MT
+        path: ./build/NativePackage
+
+  #==============================================================================
   Build-Native-Web:
     runs-on: windows-latest
 
@@ -183,15 +213,15 @@ jobs:
         name: NativePackage-MSVC2019-x64-MT
         path: ./build/NativePackage
     
-    - uses: actions/download-artifact@v1
-      with:
-        name: NativePackage-Web
-        path: ./build/NativePackage
+#    - uses: actions/download-artifact@v1
+#      with:
+#        name: NativePackage-Web
+#        path: ./build/NativePackage
     
-    - uses: actions/download-artifact@v1
-      with:
-        name: NativePackage-Android
-        path: ./build/NativePackage
+#    - uses: actions/download-artifact@v1
+#      with:
+#        name: NativePackage-Android
+#        path: ./build/NativePackage
 
     - name: Build
       run: dotnet run -- MakeInstaller_Win32
@@ -225,10 +255,10 @@ jobs:
         name: NativePackage-macOS
         path: ./build/NativePackage
     
-    - uses: actions/download-artifact@v1
-      with:
-        name: NativePackage-iOS
-        path: ./build/NativePackage
+#    - uses: actions/download-artifact@v1
+#      with:
+#        name: NativePackage-iOS
+#        path: ./build/NativePackage
 
     - name: Build
       run: dotnet run -- MakePackage_macOS
@@ -267,3 +297,27 @@ jobs:
       with:
         name: Lumino-latest-Ruby
         path: ./tools/Bindings/Ruby/GemProject/pkg
+
+  #==============================================================================
+  Package-HSP3:
+    needs: Build-Native-MSVC2019-x86-MT
+    runs-on: windows-2019
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - uses: actions/download-artifact@v1
+      with:
+        name: NativePackage-MSVC2019-x86-MT
+        path: ./build/NativePackage
+
+    - name: Build and test with Rake
+      run: |
+        gem install bundler
+        dotnet run -- MakePackage_HSP3
+
+    - uses: actions/upload-artifact@v1
+      with:
+        name: Lumino-latest-HSP3
+        path: ./tools/Bindings/HSP3/_package/LuminoHSP3-latest

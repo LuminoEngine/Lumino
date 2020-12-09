@@ -24065,10 +24065,18 @@ LN_FLAT_API LNResult LNEngineSettings_SetDeveloperToolEnabled(LNBool enabled)
 }
 
 
-LN_FLAT_API LNResult LNEngine_Initialize()
+LN_FLAT_API LNResult LNEngineSettings_SetUserMainWindow(intptr_t value)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::Engine::initialize());
+    (ln::EngineSettings::setUserMainWindow(value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNEngine_Init()
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Engine::init());
     LNI_FUNC_TRY_END_RETURN;
 }
 

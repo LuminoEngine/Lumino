@@ -83,6 +83,7 @@ public:
 	static ln::Ref<TypeSymbol>	intType;
 	static ln::Ref<TypeSymbol>	int16Type;
 	static ln::Ref<TypeSymbol>	uint32Type;
+	static ln::Ref<TypeSymbol>	intptrType;
 	static ln::Ref<TypeSymbol>	floatType;
 	static ln::Ref<TypeSymbol>	doubleType;
 	static ln::Ref<TypeSymbol>	stringType;

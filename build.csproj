@@ -30,16 +30,17 @@
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_macOS.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_iOS.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeNuGetPackage_Core.cs" />
-    <Compile Include="tools\LuminoBuild\Tasks\BuildEngine_Android.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_Android.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_Emscripten.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildExternalProjects.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildLLVM.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildRuntime.cs" />
-    <Compile Include="tools\LuminoBuild\Tasks\MakeNativePackage.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/MakeNativePackage.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeInstaller_Win32.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/CompressPackage.cs" />
-    <Compile Include="tools\LuminoBuild\Rules\BuildPackage.cs" />
-    <Compile Include="tools\LuminoBuild\Rules\BuildLocalPackage.cs" />
+    <Compile Include="tools/LuminoBuild/Rules/BuildPackage.cs" />
+    <Compile Include="tools/LuminoBuild/Rules/BuildLocalPackage.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/MakePackage_HSP3.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakePackage_macOS.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakePackage_Ruby.cs" />
   </ItemGroup>

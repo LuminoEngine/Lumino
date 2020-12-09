@@ -166,7 +166,7 @@ static void endFrame()
 	detail::EngineDomain::engineManager()->presentFrame();
 }
 
-void Engine::initialize()
+void Engine::init()
 {
 	detail::EngineDomain::engineContext()->initializeEngineManager();
     detail::EngineManager* manager = detail::EngineDomain::engineManager();

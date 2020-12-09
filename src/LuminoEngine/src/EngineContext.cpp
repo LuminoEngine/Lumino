@@ -64,6 +64,10 @@ void EngineContext::initializeEngineManager()
 	initializeRuntimeManager();
 
 	if (!m_engineManager) {
+		if (engineManagerPreInit) {
+			engineManagerPreInit();
+		}
+
 		m_engineManager = makeRef<detail::EngineManager>();
 		m_engineManager->init(detail::EngineManager::s_settings);
 	}

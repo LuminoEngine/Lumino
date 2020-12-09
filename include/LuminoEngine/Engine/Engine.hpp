@@ -25,7 +25,7 @@ public:
 
 	/** エンジンの初期化処理を行います。 */
 	LN_METHOD(RuntimeInitializer)
-	static void initialize();
+	static void init();
 
 	/** エンジンの終了処理を行います。 */
 	LN_METHOD()

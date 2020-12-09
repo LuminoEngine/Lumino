@@ -77,8 +77,16 @@ void UITextBlock::init()
     // [2020/5/3] ↑やっぱりやめ。
     // 実際に UI 作ってみて思ったことだけど、センタリングしたいっていう機会よりも左寄せのほうが圧倒的に多い。
     // チュートリアル用に視認しやすさを出したとしても、実際に使うときに煩わしいのはちょっと…。
-    setHAlignment(UIHAlignment::Left);
-    setVAlignment(UIVAlignment::Top);
+    //setHAlignment(UIHAlignment::Left);
+    //setVAlignment(UIVAlignment::Top);
+
+    // [2020/12/5] ↑やっぱりやめ。
+    // コードファーストだとやっぱり最初に試しに create してみたときに、目に入りやすい中央が良い。デバッグしやすい。
+    // また Alignment で一番使うのは (UIHAlignment::Left, UIVAlignment::Center) だったりする。
+    // でもこれをデフォルトにするのはちょっと驚き大きめ。
+    // そうするとほぼ必ず setAlignments は呼び出すことになるので、デフォルト左上もあまり嬉しくない。デバッグしやすさを優先してみる。
+    setHAlignment(UIHAlignment::Center);
+    setVAlignment(UIVAlignment::Center);
 
     setBlendMode(BlendMode::Alpha);
 

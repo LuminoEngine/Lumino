@@ -4,7 +4,7 @@ using namespace ln;
 
 void Example_MainLoop()
 {
-	ln::Engine::initialize();
+	ln::Engine::init();
 
 	while (ln::Engine::update())
 	{

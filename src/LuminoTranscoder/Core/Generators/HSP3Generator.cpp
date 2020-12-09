@@ -1,29 +1,30 @@
 ﻿
-#include "HSPGenerator.hpp"
+#include "HSP3Generator.hpp"
 
 // Delegate のハンドルを指定するところに直接ラベルを指定できるようにする (Delegate は使用不可能)
 static const bool LabelSyntax = true;
 
 //==============================================================================
-// HSPGeneratorBase
+// HSP3GeneratorBase
 
 
 //==============================================================================
-// HSPHeaderGenerator
+// HSP3HeaderGenerator
 
 static const ln::String ASFileTemplate = uR"(
 #ifndef __lumino__
 #define __lumino__
 
 #ifdef LUMINO_DEBUG
-    #regcmd "_hsp3cmdinit@4","LuminoHSPd.dll", %%varhpi%%
+    #regcmd "_hsp3cmdinit@4","LuminoHSP3d.dll", %%varhpi%%
 #else
-    #regcmd "_hsp3cmdinit@4","LuminoHSP.dll", %%varhpi%%
+    #regcmd "_hsp3cmdinit@4","LuminoHSP3.dll", %%varhpi%%
 #endif
 
 #const global LN_TRUE 1
 #const global LN_FALSE 0
 #const global LN_NULL_HANDLE 0
+_ln_return_discard = 0
 
 %%Contents%%
 
@@ -33,19 +34,20 @@ static const ln::String ASFileTemplate = uR"(
 #endif // __lumino__
 )";
 
-void HSPHeaderGenerator::generate()
+void HSP3HeaderGenerator::generate()
 {
     OutputBuffer code;
+    code.setNewLineCode(u"\r\n");
     code.AppendLines(makeEnums());
     code.AppendLines(makeStructs());
     code.AppendLines(makeClasses());
 
     // save
     {
-        auto outputDir = ln::Path(makeOutputFilePath(u"HSP", u""));
+        auto outputDir = ln::Path(makeOutputFilePath(u"HSP3", u""));
         ln::FileSystem::createDirectory(outputDir);
 
-        ln::String fileName = ln::String::format("{0}.as", config()->moduleName);
+        ln::String fileName = ln::String::format("{0}.as", config()->moduleName).toLower();
 
         ln::String src = ASFileTemplate
             .replace(u"%%Contents%%", code.toString())
@@ -55,7 +57,7 @@ void HSPHeaderGenerator::generate()
     }
 }
 
-ln::String HSPHeaderGenerator::makeEnums() const
+ln::String HSP3HeaderGenerator::makeEnums() const
 {
     OutputBuffer code;
     for (const auto& enumSymbol : db()->enums()) {
@@ -66,37 +68,57 @@ ln::String HSPHeaderGenerator::makeEnums() const
     return code.toString();
 }
 
-ln::String HSPHeaderGenerator::makeStructs() const
+ln::String HSP3HeaderGenerator::makeStructs() const
 {
     OutputBuffer code;
     for (const auto& structSymbol : db()->structs()) {
-        code.AppendLine("#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), getCommandId(structSymbol));
+        code.AppendLine(u"#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), getCommandId(structSymbol));
 
         for (const auto& methodSymbol : structSymbol->publicMethods()) {
-            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode), getCommandId(methodSymbol));
+            code.AppendLine(u"#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode), getCommandId(methodSymbol));
         }
     }
     return code.toString();
 }
 
-ln::String HSPHeaderGenerator::makeClasses() const
+ln::String HSP3HeaderGenerator::makeClasses() const
 {
     OutputBuffer code;
     for (const auto& classSymbol : db()->classes()) {
         for (const auto& methodSymbol : classSymbol->publicMethods()) {
-            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode), getCommandId(methodSymbol));
+            const auto funcName = makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode);
+            code.AppendLine(u"#cmd _{0} ${1:X}", funcName, getCommandId(methodSymbol));
+
+            // Engine::update やイベントの connect など、戻り値が不要な場合は省略できるようにしたい。
+            // ただ #cmd では Val 型の省略ができないため、#define でラップすることで対策する。
+            OutputBuffer paramsText;
+            OutputBuffer argsText;
+            const auto& flatParams = methodSymbol->flatParameters();
+            for (int i = 0; i < flatParams.size(); i++) {
+                if (flatParams[i]->isReturn())
+                    paramsText.AppendCommad(u"%{0}=_ln_return_discard", i + 1);
+                else
+                    paramsText.AppendCommad(u"%{0}", i+1);
+
+                argsText.AppendCommad(u"%{0}", i + 1);
+            }
+
+            if (paramsText.isEmpty())
+                code.AppendLine(u"#define {0} _{0}", funcName, paramsText.toString());
+            else
+                code.AppendLine(u"#define {0}({1}) _{0} {2}", funcName, paramsText.toString(), argsText.toString());
         }
 
         const auto virtualMethods = classSymbol->virtualPrototypeSetters();
         for (int i = 0; i < virtualMethods.size(); i++) {
-            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(virtualMethods[i], FlatCharset::Unicode), getCommandId(virtualMethods[i]));
+            code.AppendLine(u"#cmd {0} ${1:X}", makeFlatFullFuncName(virtualMethods[i], FlatCharset::Unicode), getCommandId(virtualMethods[i]));
         }
     }
     return code.toString();
 }
 
 //==============================================================================
-// HSPCommandsGenerator
+// HSP3CommandsGenerator
 
 static const ln::String StructStorageCoreTemplate = uR"(
 //-----------------------------------------------------------------------------
@@ -190,7 +212,7 @@ static void hsp%%Type%%_reffunc(int* typeRes, void** retValPtr)
 
 
 
-void HSPCommandsGenerator::generate()
+void HSP3CommandsGenerator::generate()
 {
     // Setup command map
     //for (const auto& classSymbol : db()->classes()) {
@@ -219,7 +241,7 @@ void HSPCommandsGenerator::generate()
     
     // save
     {
-        auto outputDir = ln::Path(makeOutputFilePath(u"HSP", u""));
+        auto outputDir = ln::Path(makeOutputFilePath(u"HSP3", u""));
         ln::FileSystem::createDirectory(outputDir);
 
         ln::String fileName = ln::String::format("{0}.HSPCommands.generated.cpp", config()->moduleName);
@@ -229,7 +251,7 @@ void HSPCommandsGenerator::generate()
 }
 
 // Ruby のように、Allocator などを定義していく
-ln::String HSPCommandsGenerator::makeStructStorageCores() const
+ln::String HSP3CommandsGenerator::makeStructStorageCores() const
 {
     OutputBuffer code;
 
@@ -300,7 +322,7 @@ else {
     return code.toString();
 }
 
-ln::String HSPCommandsGenerator::makeRegisterTypeFunc() const
+ln::String HSP3CommandsGenerator::makeRegisterTypeFunc() const
 {
     OutputBuffer code;
     code.AppendLine(u"void RegisterTypes(HSP3TYPEINFO * info)");
@@ -339,7 +361,7 @@ ln::String HSPCommandsGenerator::makeRegisterTypeFunc() const
     return code.toString();
 }
 
-ln::String HSPCommandsGenerator::makeSubclassDefines() const
+ln::String HSP3CommandsGenerator::makeSubclassDefines() const
 {
     static const ln::String SubclassCommonTemplate = uR"(
 static LNSubinstanceId HSPSubclass_%%FlatClassName%%_SubinstanceAlloc(LNHandle handle)
@@ -411,7 +433,7 @@ static void HSPSubclass_%%FlatClassName%%_SubinstanceFree(LNHandle handle, LNSub
     return code.toString().trim();
 }
 
-ln::String HSPCommandsGenerator::make_reffunc() const
+ln::String HSP3CommandsGenerator::make_reffunc() const
 {
     OutputBuffer code;
     code.AppendLine(u"bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr)");
@@ -452,7 +474,7 @@ ln::String HSPCommandsGenerator::make_reffunc() const
     return code.toString();
 }
 
-ln::String HSPCommandsGenerator::make_cmdfunc() const
+ln::String HSP3CommandsGenerator::make_cmdfunc() const
 {
     OutputBuffer code;
     code.AppendLine(u"bool Commands_cmdfunc(int cmd, int* retVal)");
@@ -528,7 +550,7 @@ ln::String HSPCommandsGenerator::make_cmdfunc() const
     return code.toString();
 }
 
-ln::String HSPCommandsGenerator::makeCallCommandBlock(const MethodSymbol* methodSymbol) const
+ln::String HSP3CommandsGenerator::makeCallCommandBlock(const MethodSymbol* methodSymbol) const
 {
     OutputBuffer prologue;
     OutputBuffer args;
@@ -600,12 +622,23 @@ ln::String HSPCommandsGenerator::makeCallCommandBlock(const MethodSymbol* method
 
     code.AppendLine(callExpr);
     code.AppendLines(epilogue.toString().trim());
+
+    // LNEngine_Update は、await を実行して HSP3 ランタイムのメッセージ処理を行うようにする。
+    // ※こうしておかないと、HSP3 が作ったメインウィンドウがクローズできない。
+    //   ユーザープログラムで await してもらえばいいのだが、ちょっと煩わしい。hgimg のようにしておきたい。
+    if (classSymbol->shortName() == u"Engine" && methodSymbol->shortName() == u"update") {
+        code.AppendLine(u"ctx->waittick = 0;");
+        code.AppendLine(u"*retVal = RUNMODE_AWAIT;");
+    }
+
+    
     return code.toString();
 }
 
-ln::String HSPCommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, bool reffunc) const
+ln::String HSP3CommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, bool reffunc, const ConstantSymbol* defaultValue) const
 {
     const ln::Char* postfix = (reffunc) ? u"_reffunc" : u"";
+    const auto defaultValueStr = (defaultValue) ? makeFlatConstantValue(defaultValue) : ln::String();
 
     if (LabelSyntax) {
         if (typeSymbol->isDelegateObject()) {
@@ -620,15 +653,16 @@ ln::String HSPCommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, b
         typeSymbol == PredefinedTypes::intType ||
         typeSymbol == PredefinedTypes::int16Type ||
         typeSymbol == PredefinedTypes::uint32Type ||
+        typeSymbol == PredefinedTypes::intptrType ||
         typeSymbol->isClass()) {
-        return ln::String::format(u"fetchVAInt{0}()", postfix);
+        return ln::String::format(u"fetchVAInt{0}({1})", postfix, defaultValueStr);
     }
     if (typeSymbol->isEnum()) {
-        return ln::String::format(u"static_cast<{0}>(fetchVAInt{1}())", makeFlatTypeName2(typeSymbol), postfix);
+        return ln::String::format(u"static_cast<{0}>(fetchVAInt{1}({2}))", makeFlatTypeName2(typeSymbol), postfix, defaultValueStr);
     }
     if (typeSymbol == PredefinedTypes::floatType ||
         typeSymbol == PredefinedTypes::doubleType) {
-        return ln::String::format(u"fetchVADouble{0}()", postfix);
+        return ln::String::format(u"fetchVADouble{0}({1})", postfix, defaultValueStr);
     }
     if (typeSymbol == PredefinedTypes::stringType ||
         typeSymbol == PredefinedTypes::stringRefType) {
@@ -640,13 +674,13 @@ ln::String HSPCommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, b
     return u"????";
 }
 
-ln::String HSPCommandsGenerator::makeGetVAExpr(const MethodParameterSymbol* paramSymbol) const
+ln::String HSP3CommandsGenerator::makeGetVAExpr(const MethodParameterSymbol* paramSymbol) const
 {
     const auto localName = ln::String::format(u"local_" + paramSymbol->name());
-    return ln::String::format(u"const auto {0} = {1};", localName, makeFetchVAExpr(paramSymbol->type(), false));
+    return ln::String::format(u"const auto {0} = {1};", localName, makeFetchVAExpr(paramSymbol->type(), false, paramSymbol->defaultValue()));
 }
 
-ln::String HSPCommandsGenerator::makeSetVAExpr(const MethodParameterSymbol* paramSymbol) const
+ln::String HSP3CommandsGenerator::makeSetVAExpr(const MethodParameterSymbol* paramSymbol) const
 {
     const TypeSymbol* typeSymbol = paramSymbol->type();
     const auto pvalName = ln::String::format(u"pval_" + paramSymbol->name());
@@ -678,7 +712,7 @@ ln::String HSPCommandsGenerator::makeSetVAExpr(const MethodParameterSymbol* para
 }
 
 //==============================================================================
-// HSPHelpGenerator
+// HSP3HelpGenerator
 
 static const ln::String HeaderTemplate = uR"(
 ;============================================================
@@ -726,9 +760,10 @@ _INST_
 _HREF_
 )";
 
-void HSPHelpGenerator::generate()
+void HSP3HelpGenerator::generate()
 {
     OutputBuffer code;
+    code.setNewLineCode(u"\r\n");
 
     // Header
     {
@@ -756,18 +791,17 @@ void HSPHelpGenerator::generate()
 
     // save
     {
-        auto outputDir = ln::Path(makeOutputFilePath(u"HSP", u""));
+        auto outputDir = ln::Path(makeOutputFilePath(u"HSP3", u""));
         ln::FileSystem::createDirectory(outputDir);
 
-        ln::String fileName = ln::String::format("{0}.hs", config()->moduleName);
+        ln::String fileName = ln::String::format("{0}.hs", config()->moduleName).toLower();
 
         ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), code.toString(), ln::TextEncoding::getEncoding(ln::EncodingType::SJIS));
     }
 }
 
-ln::String HSPHelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol) const
+ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol) const
 {
-
     // 引数リスト
     OutputBuffer params;
     for (const auto& param : methodSymbol->flatParameters()) {
@@ -798,7 +832,8 @@ ln::String HSPHelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol) 
         auto name = param->name();
 
         // デフォルト値がある場合は () を付けて表現
-        if (param->hasDefaultValue())
+        // また outReturn も省略可能とする
+        if (param->hasDefaultValue() || param->isReturn())
             name += u"(" + makeFlatConstantValue(param->defaultValue()) + u")";
 
         detailText.append(ln::String::format(u"{0,-" + ln::String::fromNumber(ioColumnWidth) + u"}", u"[" + makeIOName(param) + "]"));
@@ -823,7 +858,7 @@ ln::String HSPHelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol) 
     detailText.AppendLine(u"stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)");
 
     return FuncTemplate
-        .replace("_NAME_", makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii))
+        .replace("_NAME_", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode))    // FlatCharset::Unicode を指定して、"A" をつけないようにする
         .replace("_BRIEF_", translateComment(methodSymbol->document()->summary()))
         .replace("_INST_", translateComment(methodSymbol->document()->details()))
         .replace("_HREF_", "")
@@ -840,7 +875,7 @@ ln::String HSPHelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol) 
     //}
 }
 
-ln::String HSPHelpGenerator::makeIOName(const MethodParameterSymbol* paramSymbol) const
+ln::String HSP3HelpGenerator::makeIOName(const MethodParameterSymbol* paramSymbol) const
 {
     if (paramSymbol->isOut())
         return u"out";
@@ -848,7 +883,7 @@ ln::String HSPHelpGenerator::makeIOName(const MethodParameterSymbol* paramSymbol
         return u"in";
 }
 
-ln::String HSPHelpGenerator::translateComment(const ln::String& text) const
+ln::String HSP3HelpGenerator::translateComment(const ln::String& text) const
 {
     auto result = text.replace("関数", "命令")
         .replace("のポインタ", "")

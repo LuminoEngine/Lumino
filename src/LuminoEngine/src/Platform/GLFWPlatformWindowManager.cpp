@@ -535,6 +535,8 @@ GLFWPlatformWindowManager::~GLFWPlatformWindowManager()
 
 Result GLFWPlatformWindowManager::init()
 {
+	LN_LOG_INFO << "GLFW window manager";
+
 	int result = glfwInit();
 	if (LN_ENSURE(result != 0)) return false;
 
@@ -556,6 +558,7 @@ void GLFWPlatformWindowManager::dispose()
 Ref<PlatformWindow> GLFWPlatformWindowManager::createMainWindow(const WindowCreationSettings& settings)
 {
 	if (LN_REQUIRE(!m_glContext)) return nullptr;
+	if (LN_REQUIRE(!settings.userWindow)) return nullptr;
 
 	auto ptr = ln::makeRef<GLFWPlatformWindow>();
 	if (!ptr->init(this, settings, nullptr)) {
@@ -570,6 +573,7 @@ Ref<PlatformWindow> GLFWPlatformWindowManager::createMainWindow(const WindowCrea
 Ref<PlatformWindow> GLFWPlatformWindowManager::createSubWindow(const WindowCreationSettings& settings)
 {
 	if (LN_REQUIRE(m_glContext)) return nullptr;
+	if (LN_REQUIRE(!settings.userWindow)) return nullptr;
 
 	auto ptr = ln::makeRef<GLFWPlatformWindow>();
 	if (!ptr->init(this, settings, m_glContext)) {

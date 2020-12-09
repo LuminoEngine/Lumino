@@ -295,7 +295,7 @@ private:
     //    BuiltinSemantics kind;
     //};
 
-    bool hasParameter(BuiltinShaderParameters v) const { return (m_hasBuiltinShaderParameters & (1 << v)) != 0; }
+    bool hasParameter(BuiltinShaderParameters v) const { return (m_hasBuiltinShaderParameters & (1ULL << v)) != 0; }
 
     ShaderDescriptor* m_descriptor;
 
