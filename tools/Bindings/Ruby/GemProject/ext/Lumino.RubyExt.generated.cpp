@@ -16702,6 +16702,23 @@ static VALUE Wrap_LNEngineSettings_SetDeveloperToolEnabled(int argc, VALUE* argv
     return Qnil;
 }
 
+static VALUE Wrap_LNEngineSettings_SetUserMainWindow(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_NUMBER(value))
+        {
+            intptr_t _value = LNRB_VALUE_TO_NUMBER(value);
+            LNResult errorCode = LNEngineSettings_SetUserMainWindow(_value);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setUserMainWindow - wrong argument type.");
+    return Qnil;
+}
+
 
 //==============================================================================
 // ln::Engine
@@ -16718,18 +16735,18 @@ struct Wrap_Engine
 };
 
 
-static VALUE Wrap_LNEngine_Initialize(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LNEngine_Init(int argc, VALUE* argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
 
         {
 
-            LNResult errorCode = LNEngine_Initialize();
+            LNResult errorCode = LNEngine_Init();
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "ln::Engine::initialize - wrong argument type.");
+    rb_raise(rb_eArgError, "ln::Engine::init - wrong argument type.");
     return Qnil;
 }
 
@@ -27218,9 +27235,10 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_EngineSettings, "set_engine_log_enabled", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetEngineLogEnabled), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_engine_log_file_path", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetEngineLogFilePath), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_developer_tool_enabled", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetDeveloperToolEnabled), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "set_user_main_window", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetUserMainWindow), -1);
 
     g_class_Engine = rb_define_class_under(g_rootModule, "Engine", rb_cObject);
-    rb_define_singleton_method(g_class_Engine, "initialize", LN_TO_RUBY_FUNC(Wrap_LNEngine_Initialize), -1);
+    rb_define_singleton_method(g_class_Engine, "init", LN_TO_RUBY_FUNC(Wrap_LNEngine_Init), -1);
     rb_define_singleton_method(g_class_Engine, "finalize", LN_TO_RUBY_FUNC(Wrap_LNEngine_Finalize), -1);
     rb_define_singleton_method(g_class_Engine, "update", LN_TO_RUBY_FUNC(Wrap_LNEngine_Update), -1);
     rb_define_singleton_method(g_class_Engine, "run", LN_TO_RUBY_FUNC(Wrap_LNEngine_Run), -1);

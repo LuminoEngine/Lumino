@@ -798,7 +798,8 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastExpr(const MethodParameterSymb
 		else if (
 			type == PredefinedTypes::intType ||
 			type == PredefinedTypes::int16Type ||
-			type == PredefinedTypes::uint32Type) {
+			type == PredefinedTypes::uint32Type ||
+			type == PredefinedTypes::intptrType) {
 			castExpr = ln::String::format(u"LNRB_VALUE_TO_NUMBER({0})", varName);
 		}
 		else if (
@@ -850,7 +851,8 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymb
 		else if (
 			type == PredefinedTypes::intType ||
 			type == PredefinedTypes::int16Type ||
-			type == PredefinedTypes::uint32Type) {
+			type == PredefinedTypes::uint32Type ||
+			type == PredefinedTypes::intptrType) {
 			declExpr = ln::String::format(u"{0} {1}", type->shortName(), varName);
 		}
 		else if (

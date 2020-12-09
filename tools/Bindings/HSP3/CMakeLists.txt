@@ -13,3 +13,9 @@ target_link_libraries(${PROJECT_NAME} LuminoEngine-static)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Tools")
 #ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")
 
+# Install shared library
+install(TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}Targets
+    RUNTIME     DESTINATION bin
+    ARCHIVE     DESTINATION lib
+    LIBRARY     DESTINATION lib)

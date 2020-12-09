@@ -5480,13 +5480,21 @@ class Lumino::EngineSettings
 
 
 
+    # ユーザー指定のメインウィンドウのウィンドウハンドルを設定します。
+    # @param [Integer] value 
+    # 
+    def set_user_main_window(*args)
+    end
+
+
+
 end
 
 # アプリケーション全体にかかわる処理を行います。
 # 
 class Lumino::Engine
     # エンジンの初期化処理を行います。
-    def initialize(*args)
+    def init(*args)
     end
 
 
