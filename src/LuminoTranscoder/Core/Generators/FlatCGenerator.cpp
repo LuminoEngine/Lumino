@@ -370,7 +370,7 @@ void FlatCSourceGenerator::generate()
 				funcImpl.AppendLine(u"{");
 				funcImpl.IncreaseIndent();
 				funcImpl.AppendLine(u"{0}::s_{1} = callback;", makeWrapSubclassName(classSymbol), makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode));
-				funcImpl.AppendLine(u"return LN_SUCCESS;");
+				funcImpl.AppendLine(u"return LN_OK;");
 				funcImpl.DecreaseIndent();
 				funcImpl.AppendLine(u"}");
 
@@ -379,7 +379,7 @@ void FlatCSourceGenerator::generate()
 				//funcImpl.IncreaseIndent();
 				//{
 				//	funcImpl.AppendLine(u"LNI_HANDLE_TO_OBJECT({0}, {1})->acquireOverridePrototypes()->{2} = func;", makeWrapSubclassName(classSymbol), method->flatParameters()[0]->name(), makeFlatAPIName_OverrideFunc(method, FlatCharset::Unicode));
-				//	funcImpl.AppendLine(u"return LN_SUCCESS;");
+				//	funcImpl.AppendLine(u"return LN_OK;");
 				//}
 				//funcImpl.DecreaseIndent();
 				//funcImpl.AppendLine(u"}");
@@ -399,7 +399,7 @@ void FlatCSourceGenerator::generate()
 						makeWrapSubclassName(classSymbol), method->flatParameters()[0]->name(),
 						makeFlatAPIName_OverrideFunc(method->virtualPototypeSouceMethod(), FlatCharset::Unicode),
 						makeWrapSubclassName(method->virtualPototypeDelegate()));
-					classMemberFuncImplsText.AppendLine(u"return LN_SUCCESS;");
+					classMemberFuncImplsText.AppendLine(u"return LN_OK;");
 				}
 				classMemberFuncImplsText.DecreaseIndent();
 				classMemberFuncImplsText.AppendLine(u"}");
@@ -568,7 +568,7 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecl(const TypeSymbol* classSym
 
 				if (resutnType == PredefinedTypes::voidType) {
 					code.AppendLine(u"auto r = m_callback({0});", args.toString());
-					code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
+					code.AppendLine(u"if (r != LN_OK) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
 				}
 				else {
 					args.AppendCommad(u"&ret");
@@ -579,7 +579,7 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecl(const TypeSymbol* classSym
 						code.AppendLine(nativeReturnType + u" ret = {};");
 
 					code.AppendLine(u"auto r = m_callback({0});", args.toString());
-					code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
+					code.AppendLine(u"if (r != LN_OK) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
 
 					if (resutnType == PredefinedTypes::boolType)
 						code.AppendLine(u"return ret != LN_FALSE;");

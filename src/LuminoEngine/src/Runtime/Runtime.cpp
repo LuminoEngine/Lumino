@@ -205,7 +205,7 @@ LNResult LNTypeInfo_Acquire(const LNChar* typeName, int* outTypeInfoId)
     if (LN_REQUIRE(outTypeInfoId)) return LN_ERROR_UNKNOWN;
     if (ln::TypeInfo* t = ln::EngineContext::current()->acquireTypeInfo(typeName)) {
         *outTypeInfoId = t->id();
-        return LN_SUCCESS;
+        return LN_OK;
     }
     else {
         return LN_ERROR_UNKNOWN;
@@ -224,7 +224,7 @@ LNResult LNTypeInfo_Find(const LNChar* typeName, int* outTypeInfoId)
     if (LN_REQUIRE(outTypeInfoId)) return LN_ERROR_UNKNOWN;
     if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeName)) {
         *outTypeInfoId = t->id();
-        return LN_SUCCESS;
+        return LN_OK;
     }
     else {
         return LN_ERROR_UNKNOWN;
@@ -244,7 +244,7 @@ LNResult LNTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId)
     ln::TypeInfo* b = ln::EngineContext::current()->findTypeInfo(baseClassTypeInfoId);
     if (t && b) {
         t->m_baseType = b;
-        return LN_SUCCESS;
+        return LN_OK;
     }
     else {
         return LN_ERROR_UNKNOWN;
@@ -268,7 +268,7 @@ LNResult LNTypeInfo_SetCreateInstanceCallback(int typeInfoId, LNTypeInfoCreateIn
             printf("[Engine] [%p] RefCount: %d\n", ref, ln::RefObjectHelper::getReferenceCount(ref));
             return ref;
         };
-        return LN_SUCCESS;
+        return LN_OK;
     }
     else {
         return LN_ERROR_UNKNOWN;
@@ -281,7 +281,7 @@ LNResult LNTypeInfo_SetManagedTypeInfoId(int typeInfoId, int managedTypeInfoId)
     LNI_FUNC_TRY_BEGIN;
     if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
         ln::detail::TypeInfoInternal::setManagedTypeInfoId(t, managedTypeInfoId);
-        return LN_SUCCESS;
+        return LN_OK;
     }
     else {
         return LN_ERROR_UNKNOWN;
@@ -294,7 +294,7 @@ LNResult LNTypeInfo_GetManagedTypeInfoId(int typeInfoId, int* outManagedTypeInfo
     LNI_FUNC_TRY_BEGIN;
     if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
         *outManagedTypeInfoId = ln::detail::TypeInfoInternal::getManagedTypeInfoId(t);
-        return LN_SUCCESS;
+        return LN_OK;
     }
     else {
         return LN_ERROR_UNKNOWN;
@@ -309,7 +309,7 @@ LNResult LNObject_Release(LNHandle obj)
 {
     if (auto m = ln::detail::EngineDomain::runtimeManager()) {
         m->releaseObjectExplicitly(obj);
-		return LN_SUCCESS;
+		return LN_OK;
     }
 	else {
 		return LN_RUNTIME_UNINITIALIZED;
@@ -320,7 +320,7 @@ LNResult LNObject_Retain(LNHandle obj)
 {
 	if (auto m = ln::detail::EngineDomain::runtimeManager()) {
 		m->retainObjectExplicitly(obj);
-		return LN_SUCCESS;
+		return LN_OK;
 	}
 	else {
 		return LN_RUNTIME_UNINITIALIZED;
@@ -333,7 +333,7 @@ LNResult LNObject_GetReferenceCount(LNHandle obj, int* outReturn)
 
     if (auto t = LNI_HANDLE_TO_OBJECT(ln::Object, obj)) {
         *outReturn = ln::RefObjectHelper::getReferenceCount(t);
-        return LN_SUCCESS;
+        return LN_OK;
     }
 	else
 		return LN_ERROR_INVALID_ARGUMENT;
@@ -353,7 +353,7 @@ LNResult LNObject_SetTypeInfoId(LNHandle obj, int typeInfoId)
     LNI_FUNC_TRY_BEGIN;
     if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
         LNI_HANDLE_TO_OBJECT(ln::Object, obj)->setTypeInfoOverride(t);
-        return LN_SUCCESS;
+        return LN_OK;
     }
     else {
         return LN_ERROR_UNKNOWN;

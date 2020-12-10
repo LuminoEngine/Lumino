@@ -916,7 +916,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_ProcCaller(const MethodSymbol
 			code.AppendLine("*outReturn = {0};", makeVALUEToNativeCastExpr(delegateProtoType->flatReturnParam(), u"retval"));
 		}
 
-		code.AppendLine("return LN_SUCCESS;	// TODO: error handling.", wrapStructName);
+		code.AppendLine("return LN_OK;	// TODO: error handling.", wrapStructName);
 	}
 	code.DecreaseIndent();
 	code.AppendLine("}");
@@ -935,7 +935,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const Typ
 	{
 		VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
 		VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-		return LN_SUCCESS;
+		return LN_OK;
 	}
 	```
 
@@ -946,7 +946,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const Typ
 		VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(interpreter);
 		VALUE retval = rb_funcall(obj, rb_intern("on_update_wait"), 1);
 		*outReturn = ;
-		return LN_SUCCESS;
+		return LN_OK;
 	}
 	```
 	*/
@@ -989,7 +989,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const Typ
 				code.AppendLine(u"*outReturn = {0};", makeVALUEToNativeCastExpr(method->flatReturnParam(), u"retval"));
 			}
 
-			code.AppendLine("return LN_SUCCESS;");
+			code.AppendLine("return LN_OK;");
 
 			// end body
 			code.DecreaseIndent();

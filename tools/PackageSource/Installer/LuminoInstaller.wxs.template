@@ -25,26 +25,26 @@
                 </Directory>
             </Directory>
                 
-	        <Directory Id="ID_PERSONAL_DIR">
-	            <Directory Id="ID_VS2019_DIR" Name="Visual Studio 2019">
-	                <Directory Id="ID_VS2019_Templates_DIR" Name="Templates">
-	                    <Directory Id="ID_VS2019_Templates_ProjectTemplates_DIR" Name="ProjectTemplates">
-	                    </Directory>
-	                </Directory>
-	            </Directory>
-	        </Directory>
+            <Directory Id="ID_PERSONAL_DIR">
+                <Directory Id="ID_VS2019_DIR" Name="Visual Studio 2019">
+                    <Directory Id="ID_VS2019_Templates_DIR" Name="Templates">
+                        <Directory Id="ID_VS2019_Templates_ProjectTemplates_DIR" Name="ProjectTemplates">
+                        </Directory>
+                    </Directory>
+                </Directory>
+            </Directory>
         </Directory>
         
         <DirectoryRef Id="ID_VS2019_Templates_ProjectTemplates_DIR">
-            <Component Id="Lumino-VS2019-Cpp.zip" Guid="BDF84715-8100-4731-B839-CE066962FFAA">
-                <File Id="Lumino-VS2019-Cpp.zip" Source="$(var.PackageSourceDir)/Lumino-VS2019-Cpp.zip" KeyPath="yes" Checksum="yes"/>
+            <Component Id="ID_LUMINO_VS2019_CPP_ZIP" Guid="BDF84715-8100-4731-B839-CE066962FFAA">
+                <File Id="ID_LUMINO_VS2019_CPP_ZIP" Source="$(var.PackageSourceDir)/Lumino-VS2019-Cpp.zip" KeyPath="yes" Checksum="yes"/>
             </Component>
         </DirectoryRef>
 
         <Feature Id="DefaultFeature" Title="Main Feature" Level="1">
             <ComponentGroupRef Id="LuminoFiles" />
             <ComponentRef Id="ID_LuminoCommon" />
-            <ComponentRef Id="Lumino-VS2019-Cpp.zip" />
+            <ComponentRef Id="ID_LUMINO_VS2019_CPP_ZIP" />
         </Feature>
 
         <UI />

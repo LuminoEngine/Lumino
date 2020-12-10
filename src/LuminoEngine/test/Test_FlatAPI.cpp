@@ -6,7 +6,7 @@
 #define LN_ZV_CHECK(f) \
 { \
     LNResult r = (f); \
-	ASSERT_EQ(LN_SUCCESS, r); \
+	ASSERT_EQ(LN_OK, r); \
 }
 
 //==============================================================================
@@ -29,21 +29,21 @@ TEST_F(Test_FlatAPI, ReferenceCount)
 static LNResult LNZVTestDelegate1_Callback(LNHandle selfDelegate, int a)
 {
 	g_value = a;
-	return LN_SUCCESS;
+	return LN_OK;
 }
 
 static LNResult LNZVTestDelegate2_Callback(LNHandle selfDelegate, int a, int b, int* outReturn)
 {
 	g_value++;
 	*outReturn = a + b;
-	return LN_SUCCESS;
+	return LN_OK;
 }
 
 static LNResult LNZVTestDelegate3_Callback(LNHandle selfDelegate, LNHandle otherObject)
 {
 	g_value = _LNObject_GetReferenceCount(otherObject);
 	g_otherObject = otherObject;
-	return LN_SUCCESS;
+	return LN_OK;
 }
 
 TEST_F(Test_FlatAPI, Delegate)
@@ -120,7 +120,7 @@ TEST_F(Test_FlatAPI, Promise)
 static LNResult LNZVPromiseFailureDelegate_Callback(LNHandle selfDelegate)
 {
 	g_value = -1;
-	return LN_SUCCESS;
+	return LN_OK;
 }
 
 TEST_F(Test_FlatAPI, Promise_Failure)
@@ -149,7 +149,7 @@ TEST_F(Test_FlatAPI, Promise_Failure)
 static LNResult LNZVTestEventHandler1_Callback(LNHandle selfDelegate)
 {
 	g_value = 555;
-	return LN_SUCCESS;
+	return LN_OK;
 }
 
 static LNResult LNZVTestEventHandler2_Callback(LNHandle selfDelegate, LNHandle e)
@@ -157,7 +157,7 @@ static LNResult LNZVTestEventHandler2_Callback(LNHandle selfDelegate, LNHandle e
 	int v;
 	LNZVTestEventArgs1_GetValue(e, &v);
 	g_value = v;
-	return LN_SUCCESS;
+	return LN_OK;
 }
 
 TEST_F(Test_FlatAPI, Event)
@@ -227,7 +227,7 @@ static int g_count = 0;
 static LNResult Sprite_OnUpdate(LNHandle delegate, LNHandle self, float elapsedSeconds)
 {
 	g_count++;
-	return LN_SUCCESS;
+	return LN_OK;
 }
 
 TEST_F(Test_FlatAPI, VirtualProtoType)
