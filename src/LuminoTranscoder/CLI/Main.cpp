@@ -91,6 +91,7 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/Scene/Scene.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Level.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/Common.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/UIColors.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIEvents.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UILayoutElement.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIElement.hpp",
@@ -168,26 +169,26 @@ int main(int argc, char** argv)
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
 	config->versionString = u"0.9.0";
 
-	//{
-	//	FlatCHeaderGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-	//{
-	//	FlatCSourceGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
 	{
-		RubyExtGenerator g;
+		FlatCHeaderGenerator g;
 		g.setup(db, config);
 		g.generate();
 	}
 	{
-		RubyYARDOCSourceGenerator g;
+		FlatCSourceGenerator g;
 		g.setup(db, config);
 		g.generate();
 	}
+	//{
+	//	RubyExtGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
+	//{
+	//	RubyYARDOCSourceGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
 	//{
 	//	HSP3HeaderGenerator g;
 	//	g.setup(db, config);
