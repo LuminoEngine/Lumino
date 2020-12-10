@@ -388,6 +388,50 @@ module Lumino::UIVisibility
     COLLAPSED = 2
 end
 
+# UIColorHues
+module Lumino::UIColorHues
+    # 
+    RED = 0
+    # 
+    PINK = 1
+    # 
+    PURPLE = 2
+    # 
+    DEEP_PURPLE = 4
+    # 
+    INDIGO = 5
+    # 
+    BLUE = 6
+    # 
+    LIGHT_BLUE = 7
+    # 
+    CYAN = 8
+    # 
+    TEAL = 9
+    # 
+    GREEN = 10
+    # 
+    LIGHT_GREEN = 11
+    # 
+    LIME = 12
+    # 
+    YELLOW = 13
+    # 
+    AMBER = 14
+    # 
+    ORANGE = 15
+    # 
+    DEEP_ORANGE = 16
+    # 
+    BROWN = 17
+    # 
+    GREY = 18
+    # 
+    BLACK = 19
+    # 
+    WHITE = 20
+end
+
 # UIVAlignment
 module Lumino::UIVAlignment
     # 子要素を、親のレイアウト スロットの上端に揃えて配置します。
@@ -4206,6 +4250,183 @@ class Lumino::Level
 
     # フレーム更新
     def on_update(*args)
+    end
+
+
+
+end
+
+# 定義済みの色を取得するためのクラスです。
+# 
+class Lumino::UIColors
+    # 色の濃さ (0~9) を指定して、 Red カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def red(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 Pink カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def pink(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 Purple カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def purple(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 DeepPurple カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def deep_purple(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 Indigo カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def indigo(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 Blue カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def blue(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 LightBlue カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def light_blue(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 Cyan カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def cyan(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 Teal カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def teal(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 Green カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def green(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 LightGreen カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def light_green(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 Lime カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def lime(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 Yellow カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def yellow(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 Amber カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def amber(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 Orange カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def orange(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 DeepOrange カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def deep_orange(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 Brown カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def brown(*args)
+    end
+
+
+
+    # 色の濃さ (0~9) を指定して、 Grey カラーパレットの色を取得します。
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def grey(*args)
+    end
+
+
+
+    # カラーインデックスと色の濃さ (0~9) を指定して、色を取得します。
+    # @param [Lumino::UIColorHues] hue 
+    # @param [Integer] shades 
+    # 
+    # @return [Lumino::Color] 
+    def get(*args)
     end
 
 

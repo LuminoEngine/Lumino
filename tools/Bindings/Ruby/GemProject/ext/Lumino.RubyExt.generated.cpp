@@ -52,6 +52,7 @@ VALUE g_enum_ParticleGeometryDirection;
 VALUE g_enum_LevelTransitionEffectMode;
 VALUE g_enum_UILayoutOrientation;
 VALUE g_enum_UIVisibility;
+VALUE g_enum_UIColorHues;
 VALUE g_enum_UIVAlignment;
 VALUE g_enum_UIHAlignment;
 VALUE g_enum_UIInlinePlacement;
@@ -130,6 +131,7 @@ VALUE g_class_TriggerBodyComponent;
 VALUE g_class_ParticleEmitter;
 VALUE g_class_Scene;
 VALUE g_class_Level;
+VALUE g_class_UIColors;
 VALUE g_class_UIEventArgs;
 VALUE g_class_UIGeneralEventHandler;
 VALUE g_class_UIEventHandler;
@@ -2361,7 +2363,7 @@ LNResult Wrap_LNObject_OnSerialize_OverrideCallback(LNHandle object, LNHandle ar
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -2417,7 +2419,7 @@ LNResult Wrap_LNEventConnection_OnSerialize_OverrideCallback(LNHandle object, LN
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -2476,7 +2478,7 @@ static LNResult Wrap_LNPromiseFailureDelegate_PromiseFailureDelegate_ProcCaller(
     Wrap_PromiseFailureDelegate* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(promisefailuredelegate), Wrap_PromiseFailureDelegate, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 0, );
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNPromiseFailureDelegate_Create(int argc, VALUE* argv, VALUE self)
@@ -2607,7 +2609,7 @@ LNResult Wrap_LNVariant_OnSerialize_OverrideCallback(LNHandle object, LNHandle a
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -2666,7 +2668,7 @@ static LNResult Wrap_LNZVTestDelegate1_ZVTestDelegate1_ProcCaller(LNHandle zvtes
     Wrap_ZVTestDelegate1* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(zvtestdelegate1), Wrap_ZVTestDelegate1, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNI_TO_RUBY_VALUE(p1));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNZVTestDelegate1_Create(int argc, VALUE* argv, VALUE self)
@@ -2745,7 +2747,7 @@ static LNResult Wrap_LNZVTestDelegate2_ZVTestDelegate2_ProcCaller(LNHandle zvtes
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(zvtestdelegate2), Wrap_ZVTestDelegate2, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNI_TO_RUBY_VALUE(p1), LNI_TO_RUBY_VALUE(p2));
     *outReturn = LNRB_VALUE_TO_NUMBER(retval);
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNZVTestDelegate2_Create(int argc, VALUE* argv, VALUE self)
@@ -2823,7 +2825,7 @@ static LNResult Wrap_LNZVTestDelegate3_ZVTestDelegate3_ProcCaller(LNHandle zvtes
     Wrap_ZVTestDelegate3* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(zvtestdelegate3), Wrap_ZVTestDelegate3, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(p1));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNZVTestDelegate3_Create(int argc, VALUE* argv, VALUE self)
@@ -2901,7 +2903,7 @@ static LNResult Wrap_LNZVTestEventHandler1_ZVTestEventHandler1_ProcCaller(LNHand
     Wrap_ZVTestEventHandler1* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(zvtesteventhandler1), Wrap_ZVTestEventHandler1, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 0, );
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNZVTestEventHandler1_Create(int argc, VALUE* argv, VALUE self)
@@ -2979,7 +2981,7 @@ static LNResult Wrap_LNZVTestEventHandler2_ZVTestEventHandler2_ProcCaller(LNHand
     Wrap_ZVTestEventHandler2* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(zvtesteventhandler2), Wrap_ZVTestEventHandler2, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(p1));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNZVTestEventHandler2_Create(int argc, VALUE* argv, VALUE self)
@@ -3592,7 +3594,7 @@ LNResult Wrap_LNZVTestClass1_OnSerialize_OverrideCallback(LNHandle object, LNHan
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -3699,7 +3701,7 @@ LNResult Wrap_LNZVTestEventArgs1_OnSerialize_OverrideCallback(LNHandle object, L
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -3755,7 +3757,7 @@ LNResult Wrap_LNSerializer2_OnSerialize_OverrideCallback(LNHandle object, LNHand
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -3811,7 +3813,7 @@ LNResult Wrap_LNAssetObject_OnSerialize_OverrideCallback(LNHandle object, LNHand
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -3867,7 +3869,7 @@ LNResult Wrap_LNAssetImportSettings_OnSerialize_OverrideCallback(LNHandle object
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -3962,7 +3964,7 @@ LNResult Wrap_LNAssetModel_OnSerialize_OverrideCallback(LNHandle object, LNHandl
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -4344,7 +4346,7 @@ LNResult Wrap_LNSound_OnSerialize_OverrideCallback(LNHandle object, LNHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -4592,7 +4594,7 @@ static LNResult Wrap_LNTexture2DDelegate_Texture2DDelegate_ProcCaller(LNHandle t
     Wrap_Texture2DDelegate* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(texture2ddelegate), Wrap_Texture2DDelegate, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(p1));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNTexture2DDelegate_Create(int argc, VALUE* argv, VALUE self)
@@ -4804,7 +4806,7 @@ LNResult Wrap_LNTexture_OnSerialize_OverrideCallback(LNHandle object, LNHandle a
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -4938,7 +4940,7 @@ LNResult Wrap_LNTexture2D_OnSerialize_OverrideCallback(LNHandle object, LNHandle
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -5090,7 +5092,7 @@ LNResult Wrap_LNShader_OnSerialize_OverrideCallback(LNHandle object, LNHandle ar
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -5146,7 +5148,7 @@ LNResult Wrap_LNRenderView_OnSerialize_OverrideCallback(LNHandle object, LNHandl
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -5410,7 +5412,7 @@ LNResult Wrap_LNMaterial_OnSerialize_OverrideCallback(LNHandle object, LNHandle 
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -5502,7 +5504,7 @@ LNResult Wrap_LNMeshNode_OnSerialize_OverrideCallback(LNHandle object, LNHandle 
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -5599,7 +5601,7 @@ LNResult Wrap_LNAnimationController_OnSerialize_OverrideCallback(LNHandle object
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -5771,7 +5773,7 @@ LNResult Wrap_LNMeshModel_OnSerialize_OverrideCallback(LNHandle object, LNHandle
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -5847,7 +5849,7 @@ LNResult Wrap_LNMeshImportSettings_OnSerialize_OverrideCallback(LNHandle object,
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -5903,7 +5905,7 @@ LNResult Wrap_LNSkinnedMeshModel_OnSerialize_OverrideCallback(LNHandle object, L
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -5959,7 +5961,7 @@ LNResult Wrap_LNCollisionShape_OnSerialize_OverrideCallback(LNHandle object, LNH
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -6055,7 +6057,7 @@ LNResult Wrap_LNBoxCollisionShape_OnSerialize_OverrideCallback(LNHandle object, 
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -6131,7 +6133,7 @@ LNResult Wrap_LNAnimationCurve_OnSerialize_OverrideCallback(LNHandle object, LNH
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -6232,7 +6234,7 @@ LNResult Wrap_LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback(LNHandle obj
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -6378,7 +6380,7 @@ LNResult Wrap_LNAnimationClip_OnSerialize_OverrideCallback(LNHandle object, LNHa
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -6434,7 +6436,7 @@ LNResult Wrap_LNAnimationState_OnSerialize_OverrideCallback(LNHandle object, LNH
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -6490,7 +6492,7 @@ LNResult Wrap_LNEffectResource_OnSerialize_OverrideCallback(LNHandle object, LNH
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -6794,7 +6796,7 @@ LNResult Wrap_LNParticleEmitterModel_OnSerialize_OverrideCallback(LNHandle objec
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -6925,7 +6927,7 @@ LNResult Wrap_LNParticleModel_OnSerialize_OverrideCallback(LNHandle object, LNHa
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -6981,7 +6983,7 @@ LNResult Wrap_LNComponent_OnSerialize_OverrideCallback(LNHandle object, LNHandle
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -7073,7 +7075,7 @@ LNResult Wrap_LNVisualComponent_OnSerialize_OverrideCallback(LNHandle object, LN
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -7148,7 +7150,7 @@ LNResult Wrap_LNSpriteComponent_OnSerialize_OverrideCallback(LNHandle object, LN
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -7207,7 +7209,7 @@ static LNResult Wrap_LNCollisionEventHandler_CollisionEventHandler_ProcCaller(LN
     Wrap_CollisionEventHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(collisioneventhandler), Wrap_CollisionEventHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(p1));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNCollisionEventHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -7576,7 +7578,7 @@ LNResult Wrap_LNCharacterController_OnSerialize_OverrideCallback(LNHandle object
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -7651,7 +7653,7 @@ LNResult Wrap_LNWorld_OnSerialize_OverrideCallback(LNHandle object, LNHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -7746,7 +7748,7 @@ LNResult Wrap_LNComponentList_OnSerialize_OverrideCallback(LNHandle object, LNHa
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -8247,19 +8249,19 @@ LNResult Wrap_LNWorldObject_OnSerialize_OverrideCallback(LNHandle object, LNHand
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNWorldObject_OnPreUpdate_OverrideCallback(LNHandle worldobject)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_pre_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNWorldObject_OnUpdate_OverrideCallback(LNHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -8406,19 +8408,19 @@ LNResult Wrap_LNVisualObject_OnSerialize_OverrideCallback(LNHandle object, LNHan
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNVisualObject_OnPreUpdate_OverrideCallback(LNHandle worldobject)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_pre_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNVisualObject_OnUpdate_OverrideCallback(LNHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -8474,19 +8476,19 @@ LNResult Wrap_LNCamera_OnSerialize_OverrideCallback(LNHandle object, LNHandle ar
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNCamera_OnPreUpdate_OverrideCallback(LNHandle worldobject)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_pre_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNCamera_OnUpdate_OverrideCallback(LNHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -8838,19 +8840,19 @@ LNResult Wrap_LNEnvironmentLight_OnSerialize_OverrideCallback(LNHandle object, L
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNEnvironmentLight_OnPreUpdate_OverrideCallback(LNHandle worldobject)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_pre_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNEnvironmentLight_OnUpdate_OverrideCallback(LNHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -9122,19 +9124,19 @@ LNResult Wrap_LNDirectionalLight_OnSerialize_OverrideCallback(LNHandle object, L
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNDirectionalLight_OnPreUpdate_OverrideCallback(LNHandle worldobject)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_pre_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNDirectionalLight_OnUpdate_OverrideCallback(LNHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -9408,19 +9410,19 @@ LNResult Wrap_LNPointLight_OnSerialize_OverrideCallback(LNHandle object, LNHandl
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNPointLight_OnPreUpdate_OverrideCallback(LNHandle worldobject)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_pre_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNPointLight_OnUpdate_OverrideCallback(LNHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -9768,19 +9770,19 @@ LNResult Wrap_LNSpotLight_OnSerialize_OverrideCallback(LNHandle object, LNHandle
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNSpotLight_OnPreUpdate_OverrideCallback(LNHandle worldobject)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_pre_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNSpotLight_OnUpdate_OverrideCallback(LNHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -9840,7 +9842,7 @@ static LNResult Wrap_LNTestDelegate_TestDelegate_ProcCaller(LNHandle testdelegat
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(testdelegate), Wrap_TestDelegate, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNI_TO_RUBY_VALUE(p1));
     *outReturn = LNRB_VALUE_TO_NUMBER(retval);
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNTestDelegate_Create(int argc, VALUE* argv, VALUE self)
@@ -10073,19 +10075,19 @@ LNResult Wrap_LNSprite_OnSerialize_OverrideCallback(LNHandle object, LNHandle ar
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNSprite_OnPreUpdate_OverrideCallback(LNHandle worldobject)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_pre_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNSprite_OnUpdate_OverrideCallback(LNHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -10161,7 +10163,7 @@ LNResult Wrap_LNCameraOrbitControlComponent_OnSerialize_OverrideCallback(LNHandl
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -10259,7 +10261,7 @@ LNResult Wrap_LNRaycaster_OnSerialize_OverrideCallback(LNHandle object, LNHandle
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -10334,7 +10336,7 @@ LNResult Wrap_LNRaycastResult_OnSerialize_OverrideCallback(LNHandle object, LNHa
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -10426,7 +10428,7 @@ LNResult Wrap_LNWorldRenderView_OnSerialize_OverrideCallback(LNHandle object, LN
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -10520,19 +10522,19 @@ LNResult Wrap_LNBoxMesh_OnSerialize_OverrideCallback(LNHandle object, LNHandle a
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNBoxMesh_OnPreUpdate_OverrideCallback(LNHandle worldobject)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_pre_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNBoxMesh_OnUpdate_OverrideCallback(LNHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -10608,19 +10610,19 @@ LNResult Wrap_LNPlaneMesh_OnSerialize_OverrideCallback(LNHandle object, LNHandle
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNPlaneMesh_OnPreUpdate_OverrideCallback(LNHandle worldobject)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_pre_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNPlaneMesh_OnUpdate_OverrideCallback(LNHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -10732,19 +10734,19 @@ LNResult Wrap_LNStaticMesh_OnSerialize_OverrideCallback(LNHandle object, LNHandl
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNStaticMesh_OnPreUpdate_OverrideCallback(LNHandle worldobject)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_pre_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNStaticMesh_OnUpdate_OverrideCallback(LNHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -10858,7 +10860,7 @@ LNResult Wrap_LNStaticMeshComponent_OnSerialize_OverrideCallback(LNHandle object
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -10934,7 +10936,7 @@ LNResult Wrap_LNSkinnedMeshComponent_OnSerialize_OverrideCallback(LNHandle objec
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -11009,7 +11011,7 @@ LNResult Wrap_LNCollision_OnSerialize_OverrideCallback(LNHandle object, LNHandle
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -11104,7 +11106,7 @@ LNResult Wrap_LNTriggerBodyComponent_OnSerialize_OverrideCallback(LNHandle objec
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -11182,19 +11184,19 @@ LNResult Wrap_LNParticleEmitter_OnSerialize_OverrideCallback(LNHandle object, LN
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNParticleEmitter_OnPreUpdate_OverrideCallback(LNHandle worldobject)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_pre_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNParticleEmitter_OnUpdate_OverrideCallback(LNHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -12416,38 +12418,432 @@ LNResult Wrap_LNLevel_OnSerialize_OverrideCallback(LNHandle object, LNHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNLevel_OnStart_OverrideCallback(LNHandle level)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(level);
     VALUE retval = rb_funcall(obj, rb_intern("on_start"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNLevel_OnStop_OverrideCallback(LNHandle level)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(level);
     VALUE retval = rb_funcall(obj, rb_intern("on_stop"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNLevel_OnPause_OverrideCallback(LNHandle level)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(level);
     VALUE retval = rb_funcall(obj, rb_intern("on_pause"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNLevel_OnResume_OverrideCallback(LNHandle level)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(level);
     VALUE retval = rb_funcall(obj, rb_intern("on_resume"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNLevel_OnUpdate_OverrideCallback(LNHandle level)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(level);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
+
+//==============================================================================
+// ln::UIColors
+
+struct Wrap_UIColors
+{
+
+    Wrap_UIColors()
+    {}
+};
+
+
+static VALUE Wrap_LNUIColors_Red(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Red(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::red - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Pink(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Pink(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::pink - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Purple(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Purple(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::purple - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_DeepPurple(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_DeepPurple(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::deepPurple - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Indigo(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Indigo(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::indigo - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Blue(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Blue(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::blue - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_LightBlue(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_LightBlue(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::lightBlue - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Cyan(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Cyan(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::cyan - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Teal(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Teal(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::teal - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Green(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Green(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::green - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_LightGreen(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_LightGreen(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::lightGreen - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Lime(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Lime(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::lime - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Yellow(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Yellow(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::yellow - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Amber(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Amber(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::amber - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Orange(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Orange(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::orange - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_DeepOrange(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_DeepOrange(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::deepOrange - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Brown(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Brown(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::brown - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Grey(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE shades;
+        rb_scan_args(argc, argv, "01", &shades);
+        if (LNRB_VALUE_IS_NUMBER(shades))
+        {
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Grey(_shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::grey - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIColors_Get(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 2) {
+        VALUE hue;
+        VALUE shades;
+        rb_scan_args(argc, argv, "11", &hue, &shades);
+        if (LNRB_VALUE_IS_NUMBER(hue) && LNRB_VALUE_IS_NUMBER(shades))
+        {
+            LNUIColorHues _hue = (LNUIColorHues)FIX2INT(hue);
+            int _shades = (shades != Qnil) ? LNRB_VALUE_TO_NUMBER(shades) : 5;
+            LNColor _outReturn;
+            LNResult errorCode = LNUIColors_Get(_hue, _shades, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            VALUE retObj = LNColor_allocate(g_class_Color);
+            *((LNColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIColors::get - wrong argument type.");
+    return Qnil;
+}
+
 
 //==============================================================================
 // ln::UIEventArgs
@@ -12519,7 +12915,7 @@ LNResult Wrap_LNUIEventArgs_OnSerialize_OverrideCallback(LNHandle object, LNHand
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -12578,7 +12974,7 @@ static LNResult Wrap_LNUIGeneralEventHandler_UIGeneralEventHandler_ProcCaller(LN
     Wrap_UIGeneralEventHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uigeneraleventhandler), Wrap_UIGeneralEventHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(p1));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIGeneralEventHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -12656,7 +13052,7 @@ static LNResult Wrap_LNUIEventHandler_UIEventHandler_ProcCaller(LNHandle uievent
     Wrap_UIEventHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uieventhandler), Wrap_UIEventHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 0, );
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIEventHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -12731,7 +13127,7 @@ LNResult Wrap_LNUILayoutElement_OnSerialize_OverrideCallback(LNHandle object, LN
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -13642,7 +14038,7 @@ LNResult Wrap_LNUIElement_OnSerialize_OverrideCallback(LNHandle object, LNHandle
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -13768,7 +14164,7 @@ LNResult Wrap_LNUITextBlock_OnSerialize_OverrideCallback(LNHandle object, LNHand
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -13951,7 +14347,7 @@ LNResult Wrap_LNUISprite_OnSerialize_OverrideCallback(LNHandle object, LNHandle 
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -14055,7 +14451,7 @@ LNResult Wrap_LNUIIcon_OnSerialize_OverrideCallback(LNHandle object, LNHandle ar
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -14169,7 +14565,7 @@ LNResult Wrap_LNUIMessageTextArea_OnSerialize_OverrideCallback(LNHandle object, 
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -14271,7 +14667,7 @@ LNResult Wrap_LNUILayoutPanel_OnSerialize_OverrideCallback(LNHandle object, LNHa
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -14383,7 +14779,7 @@ LNResult Wrap_LNUIBoxLayout_OnSerialize_OverrideCallback(LNHandle object, LNHand
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -14495,7 +14891,7 @@ LNResult Wrap_LNUIStackLayout_OnSerialize_OverrideCallback(LNHandle object, LNHa
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -14653,7 +15049,7 @@ LNResult Wrap_LNUIGridLayout_OnSerialize_OverrideCallback(LNHandle object, LNHan
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -14750,7 +15146,7 @@ LNResult Wrap_LNUIControl_OnSerialize_OverrideCallback(LNHandle object, LNHandle
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -14825,7 +15221,7 @@ LNResult Wrap_LNUIButtonBase_OnSerialize_OverrideCallback(LNHandle object, LNHan
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -14947,7 +15343,7 @@ LNResult Wrap_LNUIButton_OnSerialize_OverrideCallback(LNHandle object, LNHandle 
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -15023,7 +15419,7 @@ LNResult Wrap_LNUIWindow_OnSerialize_OverrideCallback(LNHandle object, LNHandle 
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -15111,7 +15507,7 @@ LNResult Wrap_LNUIListItem_OnSerialize_OverrideCallback(LNHandle object, LNHandl
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -15222,7 +15618,7 @@ LNResult Wrap_LNUIListItemsControl_OnSerialize_OverrideCallback(LNHandle object,
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -15300,7 +15696,7 @@ LNResult Wrap_LNUIListBoxItem_OnSerialize_OverrideCallback(LNHandle object, LNHa
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -15396,7 +15792,7 @@ LNResult Wrap_LNUIListBox_OnSerialize_OverrideCallback(LNHandle object, LNHandle
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -15452,7 +15848,7 @@ LNResult Wrap_LNInputGesture_OnSerialize_OverrideCallback(LNHandle object, LNHan
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -15530,7 +15926,7 @@ LNResult Wrap_LNKeyGesture_OnSerialize_OverrideCallback(LNHandle object, LNHandl
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -15911,7 +16307,7 @@ LNResult Wrap_LNInterpreterCommand_OnSerialize_OverrideCallback(LNHandle object,
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -16102,7 +16498,7 @@ LNResult Wrap_LNInterpreterCommandList_OnSerialize_OverrideCallback(LNHandle obj
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -16162,7 +16558,7 @@ static LNResult Wrap_LNInterpreterCommandDelegate_InterpreterCommandDelegate_Pro
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(interpretercommanddelegate), Wrap_InterpreterCommandDelegate, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(p1));
     *outReturn = LNRB_VALUE_TO_BOOL(retval);
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNInterpreterCommandDelegate_Create(int argc, VALUE* argv, VALUE self)
@@ -16454,14 +16850,14 @@ LNResult Wrap_LNInterpreter_OnSerialize_OverrideCallback(LNHandle object, LNHand
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNInterpreter_OnUpdateWait_OverrideCallback(LNHandle interpreter, LNBool* outReturn)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(interpreter);
     VALUE retval = rb_funcall(obj, rb_intern("on_update_wait"), 0, 0);
     *outReturn = LNRB_VALUE_TO_BOOL(retval);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -16997,19 +17393,19 @@ LNResult Wrap_LNApplication_OnSerialize_OverrideCallback(LNHandle object, LNHand
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNApplication_OnInit_OverrideCallback(LNHandle application)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(application);
     VALUE retval = rb_funcall(obj, rb_intern("on_init"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 LNResult Wrap_LNApplication_OnUpdate_OverrideCallback(LNHandle application)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(application);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 0, 0);
-    return LN_SUCCESS;
+    return LN_OK;
 }
 
 //==============================================================================
@@ -17159,7 +17555,7 @@ static LNResult Wrap_LNObjectSerializeHandler_OnSerialize_ProcCaller(LNHandle ob
     Wrap_ObjectSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(objectserializehandler), Wrap_ObjectSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNObjectSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -17237,7 +17633,7 @@ static LNResult Wrap_LNEventConnectionSerializeHandler_OnSerialize_ProcCaller(LN
     Wrap_EventConnectionSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(eventconnectionserializehandler), Wrap_EventConnectionSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNEventConnectionSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -17315,7 +17711,7 @@ static LNResult Wrap_LNVariantSerializeHandler_OnSerialize_ProcCaller(LNHandle v
     Wrap_VariantSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(variantserializehandler), Wrap_VariantSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNVariantSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -17393,7 +17789,7 @@ static LNResult Wrap_LNZVTestClass1SerializeHandler_OnSerialize_ProcCaller(LNHan
     Wrap_ZVTestClass1SerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(zvtestclass1serializehandler), Wrap_ZVTestClass1SerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNZVTestClass1SerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -17471,7 +17867,7 @@ static LNResult Wrap_LNZVTestEventArgs1SerializeHandler_OnSerialize_ProcCaller(L
     Wrap_ZVTestEventArgs1SerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(zvtesteventargs1serializehandler), Wrap_ZVTestEventArgs1SerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNZVTestEventArgs1SerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -17549,7 +17945,7 @@ static LNResult Wrap_LNSerializer2SerializeHandler_OnSerialize_ProcCaller(LNHand
     Wrap_Serializer2SerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(serializer2serializehandler), Wrap_Serializer2SerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNSerializer2SerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -17627,7 +18023,7 @@ static LNResult Wrap_LNAssetObjectSerializeHandler_OnSerialize_ProcCaller(LNHand
     Wrap_AssetObjectSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(assetobjectserializehandler), Wrap_AssetObjectSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNAssetObjectSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -17705,7 +18101,7 @@ static LNResult Wrap_LNAssetImportSettingsSerializeHandler_OnSerialize_ProcCalle
     Wrap_AssetImportSettingsSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(assetimportsettingsserializehandler), Wrap_AssetImportSettingsSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNAssetImportSettingsSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -17783,7 +18179,7 @@ static LNResult Wrap_LNAssetModelSerializeHandler_OnSerialize_ProcCaller(LNHandl
     Wrap_AssetModelSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(assetmodelserializehandler), Wrap_AssetModelSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNAssetModelSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -17861,7 +18257,7 @@ static LNResult Wrap_LNSoundSerializeHandler_OnSerialize_ProcCaller(LNHandle sou
     Wrap_SoundSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(soundserializehandler), Wrap_SoundSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNSoundSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -17939,7 +18335,7 @@ static LNResult Wrap_LNTextureSerializeHandler_OnSerialize_ProcCaller(LNHandle t
     Wrap_TextureSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(textureserializehandler), Wrap_TextureSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNTextureSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -18017,7 +18413,7 @@ static LNResult Wrap_LNTexture2DSerializeHandler_OnSerialize_ProcCaller(LNHandle
     Wrap_Texture2DSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(texture2dserializehandler), Wrap_Texture2DSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNTexture2DSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -18095,7 +18491,7 @@ static LNResult Wrap_LNShaderSerializeHandler_OnSerialize_ProcCaller(LNHandle sh
     Wrap_ShaderSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(shaderserializehandler), Wrap_ShaderSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNShaderSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -18173,7 +18569,7 @@ static LNResult Wrap_LNRenderViewSerializeHandler_OnSerialize_ProcCaller(LNHandl
     Wrap_RenderViewSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(renderviewserializehandler), Wrap_RenderViewSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNRenderViewSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -18251,7 +18647,7 @@ static LNResult Wrap_LNMaterialSerializeHandler_OnSerialize_ProcCaller(LNHandle 
     Wrap_MaterialSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(materialserializehandler), Wrap_MaterialSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNMaterialSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -18329,7 +18725,7 @@ static LNResult Wrap_LNMeshNodeSerializeHandler_OnSerialize_ProcCaller(LNHandle 
     Wrap_MeshNodeSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(meshnodeserializehandler), Wrap_MeshNodeSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNMeshNodeSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -18407,7 +18803,7 @@ static LNResult Wrap_LNAnimationControllerSerializeHandler_OnSerialize_ProcCalle
     Wrap_AnimationControllerSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(animationcontrollerserializehandler), Wrap_AnimationControllerSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNAnimationControllerSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -18485,7 +18881,7 @@ static LNResult Wrap_LNMeshModelSerializeHandler_OnSerialize_ProcCaller(LNHandle
     Wrap_MeshModelSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(meshmodelserializehandler), Wrap_MeshModelSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNMeshModelSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -18563,7 +18959,7 @@ static LNResult Wrap_LNMeshImportSettingsSerializeHandler_OnSerialize_ProcCaller
     Wrap_MeshImportSettingsSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(meshimportsettingsserializehandler), Wrap_MeshImportSettingsSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNMeshImportSettingsSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -18641,7 +19037,7 @@ static LNResult Wrap_LNSkinnedMeshModelSerializeHandler_OnSerialize_ProcCaller(L
     Wrap_SkinnedMeshModelSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(skinnedmeshmodelserializehandler), Wrap_SkinnedMeshModelSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNSkinnedMeshModelSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -18719,7 +19115,7 @@ static LNResult Wrap_LNCollisionShapeSerializeHandler_OnSerialize_ProcCaller(LNH
     Wrap_CollisionShapeSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(collisionshapeserializehandler), Wrap_CollisionShapeSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNCollisionShapeSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -18797,7 +19193,7 @@ static LNResult Wrap_LNBoxCollisionShapeSerializeHandler_OnSerialize_ProcCaller(
     Wrap_BoxCollisionShapeSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(boxcollisionshapeserializehandler), Wrap_BoxCollisionShapeSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNBoxCollisionShapeSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -18875,7 +19271,7 @@ static LNResult Wrap_LNAnimationCurveSerializeHandler_OnSerialize_ProcCaller(LNH
     Wrap_AnimationCurveSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(animationcurveserializehandler), Wrap_AnimationCurveSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNAnimationCurveSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -18953,7 +19349,7 @@ static LNResult Wrap_LNKeyFrameAnimationCurveSerializeHandler_OnSerialize_ProcCa
     Wrap_KeyFrameAnimationCurveSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(keyframeanimationcurveserializehandler), Wrap_KeyFrameAnimationCurveSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNKeyFrameAnimationCurveSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -19031,7 +19427,7 @@ static LNResult Wrap_LNAnimationClipSerializeHandler_OnSerialize_ProcCaller(LNHa
     Wrap_AnimationClipSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(animationclipserializehandler), Wrap_AnimationClipSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNAnimationClipSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -19109,7 +19505,7 @@ static LNResult Wrap_LNAnimationStateSerializeHandler_OnSerialize_ProcCaller(LNH
     Wrap_AnimationStateSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(animationstateserializehandler), Wrap_AnimationStateSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNAnimationStateSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -19187,7 +19583,7 @@ static LNResult Wrap_LNEffectResourceSerializeHandler_OnSerialize_ProcCaller(LNH
     Wrap_EffectResourceSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(effectresourceserializehandler), Wrap_EffectResourceSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNEffectResourceSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -19265,7 +19661,7 @@ static LNResult Wrap_LNParticleEmitterModelSerializeHandler_OnSerialize_ProcCall
     Wrap_ParticleEmitterModelSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(particleemittermodelserializehandler), Wrap_ParticleEmitterModelSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNParticleEmitterModelSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -19343,7 +19739,7 @@ static LNResult Wrap_LNParticleModelSerializeHandler_OnSerialize_ProcCaller(LNHa
     Wrap_ParticleModelSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(particlemodelserializehandler), Wrap_ParticleModelSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNParticleModelSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -19421,7 +19817,7 @@ static LNResult Wrap_LNComponentSerializeHandler_OnSerialize_ProcCaller(LNHandle
     Wrap_ComponentSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(componentserializehandler), Wrap_ComponentSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNComponentSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -19499,7 +19895,7 @@ static LNResult Wrap_LNVisualComponentSerializeHandler_OnSerialize_ProcCaller(LN
     Wrap_VisualComponentSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(visualcomponentserializehandler), Wrap_VisualComponentSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNVisualComponentSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -19577,7 +19973,7 @@ static LNResult Wrap_LNSpriteComponentSerializeHandler_OnSerialize_ProcCaller(LN
     Wrap_SpriteComponentSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(spritecomponentserializehandler), Wrap_SpriteComponentSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNSpriteComponentSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -19655,7 +20051,7 @@ static LNResult Wrap_LNCharacterControllerSerializeHandler_OnSerialize_ProcCalle
     Wrap_CharacterControllerSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(charactercontrollerserializehandler), Wrap_CharacterControllerSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNCharacterControllerSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -19733,7 +20129,7 @@ static LNResult Wrap_LNWorldSerializeHandler_OnSerialize_ProcCaller(LNHandle wor
     Wrap_WorldSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(worldserializehandler), Wrap_WorldSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNWorldSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -19811,7 +20207,7 @@ static LNResult Wrap_LNComponentListSerializeHandler_OnSerialize_ProcCaller(LNHa
     Wrap_ComponentListSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(componentlistserializehandler), Wrap_ComponentListSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNComponentListSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -19889,7 +20285,7 @@ static LNResult Wrap_LNWorldObjectSerializeHandler_OnSerialize_ProcCaller(LNHand
     Wrap_WorldObjectSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(worldobjectserializehandler), Wrap_WorldObjectSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNWorldObjectSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -19967,7 +20363,7 @@ static LNResult Wrap_LNWorldObjectPreUpdateHandler_OnPreUpdate_ProcCaller(LNHand
     Wrap_WorldObjectPreUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(worldobjectpreupdatehandler), Wrap_WorldObjectPreUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNWorldObjectPreUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -20045,7 +20441,7 @@ static LNResult Wrap_LNWorldObjectUpdateHandler_OnUpdate_ProcCaller(LNHandle wor
     Wrap_WorldObjectUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(worldobjectupdatehandler), Wrap_WorldObjectUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNWorldObjectUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -20123,7 +20519,7 @@ static LNResult Wrap_LNVisualObjectSerializeHandler_OnSerialize_ProcCaller(LNHan
     Wrap_VisualObjectSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(visualobjectserializehandler), Wrap_VisualObjectSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNVisualObjectSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -20201,7 +20597,7 @@ static LNResult Wrap_LNVisualObjectPreUpdateHandler_OnPreUpdate_ProcCaller(LNHan
     Wrap_VisualObjectPreUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(visualobjectpreupdatehandler), Wrap_VisualObjectPreUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNVisualObjectPreUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -20279,7 +20675,7 @@ static LNResult Wrap_LNVisualObjectUpdateHandler_OnUpdate_ProcCaller(LNHandle vi
     Wrap_VisualObjectUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(visualobjectupdatehandler), Wrap_VisualObjectUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNVisualObjectUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -20357,7 +20753,7 @@ static LNResult Wrap_LNCameraSerializeHandler_OnSerialize_ProcCaller(LNHandle ca
     Wrap_CameraSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(cameraserializehandler), Wrap_CameraSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNCameraSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -20435,7 +20831,7 @@ static LNResult Wrap_LNCameraPreUpdateHandler_OnPreUpdate_ProcCaller(LNHandle ca
     Wrap_CameraPreUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(camerapreupdatehandler), Wrap_CameraPreUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNCameraPreUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -20513,7 +20909,7 @@ static LNResult Wrap_LNCameraUpdateHandler_OnUpdate_ProcCaller(LNHandle cameraup
     Wrap_CameraUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(cameraupdatehandler), Wrap_CameraUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNCameraUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -20591,7 +20987,7 @@ static LNResult Wrap_LNEnvironmentLightSerializeHandler_OnSerialize_ProcCaller(L
     Wrap_EnvironmentLightSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(environmentlightserializehandler), Wrap_EnvironmentLightSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNEnvironmentLightSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -20669,7 +21065,7 @@ static LNResult Wrap_LNEnvironmentLightPreUpdateHandler_OnPreUpdate_ProcCaller(L
     Wrap_EnvironmentLightPreUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(environmentlightpreupdatehandler), Wrap_EnvironmentLightPreUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNEnvironmentLightPreUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -20747,7 +21143,7 @@ static LNResult Wrap_LNEnvironmentLightUpdateHandler_OnUpdate_ProcCaller(LNHandl
     Wrap_EnvironmentLightUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(environmentlightupdatehandler), Wrap_EnvironmentLightUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNEnvironmentLightUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -20825,7 +21221,7 @@ static LNResult Wrap_LNDirectionalLightSerializeHandler_OnSerialize_ProcCaller(L
     Wrap_DirectionalLightSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(directionallightserializehandler), Wrap_DirectionalLightSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNDirectionalLightSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -20903,7 +21299,7 @@ static LNResult Wrap_LNDirectionalLightPreUpdateHandler_OnPreUpdate_ProcCaller(L
     Wrap_DirectionalLightPreUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(directionallightpreupdatehandler), Wrap_DirectionalLightPreUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNDirectionalLightPreUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -20981,7 +21377,7 @@ static LNResult Wrap_LNDirectionalLightUpdateHandler_OnUpdate_ProcCaller(LNHandl
     Wrap_DirectionalLightUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(directionallightupdatehandler), Wrap_DirectionalLightUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNDirectionalLightUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -21059,7 +21455,7 @@ static LNResult Wrap_LNPointLightSerializeHandler_OnSerialize_ProcCaller(LNHandl
     Wrap_PointLightSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(pointlightserializehandler), Wrap_PointLightSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNPointLightSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -21137,7 +21533,7 @@ static LNResult Wrap_LNPointLightPreUpdateHandler_OnPreUpdate_ProcCaller(LNHandl
     Wrap_PointLightPreUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(pointlightpreupdatehandler), Wrap_PointLightPreUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNPointLightPreUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -21215,7 +21611,7 @@ static LNResult Wrap_LNPointLightUpdateHandler_OnUpdate_ProcCaller(LNHandle poin
     Wrap_PointLightUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(pointlightupdatehandler), Wrap_PointLightUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNPointLightUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -21293,7 +21689,7 @@ static LNResult Wrap_LNSpotLightSerializeHandler_OnSerialize_ProcCaller(LNHandle
     Wrap_SpotLightSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(spotlightserializehandler), Wrap_SpotLightSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNSpotLightSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -21371,7 +21767,7 @@ static LNResult Wrap_LNSpotLightPreUpdateHandler_OnPreUpdate_ProcCaller(LNHandle
     Wrap_SpotLightPreUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(spotlightpreupdatehandler), Wrap_SpotLightPreUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNSpotLightPreUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -21449,7 +21845,7 @@ static LNResult Wrap_LNSpotLightUpdateHandler_OnUpdate_ProcCaller(LNHandle spotl
     Wrap_SpotLightUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(spotlightupdatehandler), Wrap_SpotLightUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNSpotLightUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -21527,7 +21923,7 @@ static LNResult Wrap_LNSpriteSerializeHandler_OnSerialize_ProcCaller(LNHandle sp
     Wrap_SpriteSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(spriteserializehandler), Wrap_SpriteSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNSpriteSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -21605,7 +22001,7 @@ static LNResult Wrap_LNSpritePreUpdateHandler_OnPreUpdate_ProcCaller(LNHandle sp
     Wrap_SpritePreUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(spritepreupdatehandler), Wrap_SpritePreUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNSpritePreUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -21683,7 +22079,7 @@ static LNResult Wrap_LNSpriteUpdateHandler_OnUpdate_ProcCaller(LNHandle spriteup
     Wrap_SpriteUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(spriteupdatehandler), Wrap_SpriteUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNSpriteUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -21761,7 +22157,7 @@ static LNResult Wrap_LNCameraOrbitControlComponentSerializeHandler_OnSerialize_P
     Wrap_CameraOrbitControlComponentSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(cameraorbitcontrolcomponentserializehandler), Wrap_CameraOrbitControlComponentSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNCameraOrbitControlComponentSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -21839,7 +22235,7 @@ static LNResult Wrap_LNRaycasterSerializeHandler_OnSerialize_ProcCaller(LNHandle
     Wrap_RaycasterSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(raycasterserializehandler), Wrap_RaycasterSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNRaycasterSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -21917,7 +22313,7 @@ static LNResult Wrap_LNRaycastResultSerializeHandler_OnSerialize_ProcCaller(LNHa
     Wrap_RaycastResultSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(raycastresultserializehandler), Wrap_RaycastResultSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNRaycastResultSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -21995,7 +22391,7 @@ static LNResult Wrap_LNWorldRenderViewSerializeHandler_OnSerialize_ProcCaller(LN
     Wrap_WorldRenderViewSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(worldrenderviewserializehandler), Wrap_WorldRenderViewSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNWorldRenderViewSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -22073,7 +22469,7 @@ static LNResult Wrap_LNBoxMeshSerializeHandler_OnSerialize_ProcCaller(LNHandle b
     Wrap_BoxMeshSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(boxmeshserializehandler), Wrap_BoxMeshSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNBoxMeshSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -22151,7 +22547,7 @@ static LNResult Wrap_LNBoxMeshPreUpdateHandler_OnPreUpdate_ProcCaller(LNHandle b
     Wrap_BoxMeshPreUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(boxmeshpreupdatehandler), Wrap_BoxMeshPreUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNBoxMeshPreUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -22229,7 +22625,7 @@ static LNResult Wrap_LNBoxMeshUpdateHandler_OnUpdate_ProcCaller(LNHandle boxmesh
     Wrap_BoxMeshUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(boxmeshupdatehandler), Wrap_BoxMeshUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNBoxMeshUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -22307,7 +22703,7 @@ static LNResult Wrap_LNPlaneMeshSerializeHandler_OnSerialize_ProcCaller(LNHandle
     Wrap_PlaneMeshSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(planemeshserializehandler), Wrap_PlaneMeshSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNPlaneMeshSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -22385,7 +22781,7 @@ static LNResult Wrap_LNPlaneMeshPreUpdateHandler_OnPreUpdate_ProcCaller(LNHandle
     Wrap_PlaneMeshPreUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(planemeshpreupdatehandler), Wrap_PlaneMeshPreUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNPlaneMeshPreUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -22463,7 +22859,7 @@ static LNResult Wrap_LNPlaneMeshUpdateHandler_OnUpdate_ProcCaller(LNHandle plane
     Wrap_PlaneMeshUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(planemeshupdatehandler), Wrap_PlaneMeshUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNPlaneMeshUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -22541,7 +22937,7 @@ static LNResult Wrap_LNStaticMeshSerializeHandler_OnSerialize_ProcCaller(LNHandl
     Wrap_StaticMeshSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(staticmeshserializehandler), Wrap_StaticMeshSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNStaticMeshSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -22619,7 +23015,7 @@ static LNResult Wrap_LNStaticMeshPreUpdateHandler_OnPreUpdate_ProcCaller(LNHandl
     Wrap_StaticMeshPreUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(staticmeshpreupdatehandler), Wrap_StaticMeshPreUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNStaticMeshPreUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -22697,7 +23093,7 @@ static LNResult Wrap_LNStaticMeshUpdateHandler_OnUpdate_ProcCaller(LNHandle stat
     Wrap_StaticMeshUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(staticmeshupdatehandler), Wrap_StaticMeshUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNStaticMeshUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -22775,7 +23171,7 @@ static LNResult Wrap_LNStaticMeshComponentSerializeHandler_OnSerialize_ProcCalle
     Wrap_StaticMeshComponentSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(staticmeshcomponentserializehandler), Wrap_StaticMeshComponentSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNStaticMeshComponentSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -22853,7 +23249,7 @@ static LNResult Wrap_LNSkinnedMeshComponentSerializeHandler_OnSerialize_ProcCall
     Wrap_SkinnedMeshComponentSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(skinnedmeshcomponentserializehandler), Wrap_SkinnedMeshComponentSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNSkinnedMeshComponentSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -22931,7 +23327,7 @@ static LNResult Wrap_LNCollisionSerializeHandler_OnSerialize_ProcCaller(LNHandle
     Wrap_CollisionSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(collisionserializehandler), Wrap_CollisionSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNCollisionSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -23009,7 +23405,7 @@ static LNResult Wrap_LNTriggerBodyComponentSerializeHandler_OnSerialize_ProcCall
     Wrap_TriggerBodyComponentSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(triggerbodycomponentserializehandler), Wrap_TriggerBodyComponentSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNTriggerBodyComponentSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -23087,7 +23483,7 @@ static LNResult Wrap_LNParticleEmitterSerializeHandler_OnSerialize_ProcCaller(LN
     Wrap_ParticleEmitterSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(particleemitterserializehandler), Wrap_ParticleEmitterSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNParticleEmitterSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -23165,7 +23561,7 @@ static LNResult Wrap_LNParticleEmitterPreUpdateHandler_OnPreUpdate_ProcCaller(LN
     Wrap_ParticleEmitterPreUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(particleemitterpreupdatehandler), Wrap_ParticleEmitterPreUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNParticleEmitterPreUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -23243,7 +23639,7 @@ static LNResult Wrap_LNParticleEmitterUpdateHandler_OnUpdate_ProcCaller(LNHandle
     Wrap_ParticleEmitterUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(particleemitterupdatehandler), Wrap_ParticleEmitterUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNParticleEmitterUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -23321,7 +23717,7 @@ static LNResult Wrap_LNLevelSerializeHandler_OnSerialize_ProcCaller(LNHandle lev
     Wrap_LevelSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(levelserializehandler), Wrap_LevelSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNLevelSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -23399,7 +23795,7 @@ static LNResult Wrap_LNLevelStartHandler_OnStart_ProcCaller(LNHandle levelstarth
     Wrap_LevelStartHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(levelstarthandler), Wrap_LevelStartHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNLevelStartHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -23477,7 +23873,7 @@ static LNResult Wrap_LNLevelStopHandler_OnStop_ProcCaller(LNHandle levelstophand
     Wrap_LevelStopHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(levelstophandler), Wrap_LevelStopHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNLevelStopHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -23555,7 +23951,7 @@ static LNResult Wrap_LNLevelPauseHandler_OnPause_ProcCaller(LNHandle levelpauseh
     Wrap_LevelPauseHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(levelpausehandler), Wrap_LevelPauseHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNLevelPauseHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -23633,7 +24029,7 @@ static LNResult Wrap_LNLevelResumeHandler_OnResume_ProcCaller(LNHandle levelresu
     Wrap_LevelResumeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(levelresumehandler), Wrap_LevelResumeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNLevelResumeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -23711,7 +24107,7 @@ static LNResult Wrap_LNLevelUpdateHandler_OnUpdate_ProcCaller(LNHandle levelupda
     Wrap_LevelUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(levelupdatehandler), Wrap_LevelUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNLevelUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -23789,7 +24185,7 @@ static LNResult Wrap_LNUIEventArgsSerializeHandler_OnSerialize_ProcCaller(LNHand
     Wrap_UIEventArgsSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uieventargsserializehandler), Wrap_UIEventArgsSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIEventArgsSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -23867,7 +24263,7 @@ static LNResult Wrap_LNUILayoutElementSerializeHandler_OnSerialize_ProcCaller(LN
     Wrap_UILayoutElementSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uilayoutelementserializehandler), Wrap_UILayoutElementSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUILayoutElementSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -23945,7 +24341,7 @@ static LNResult Wrap_LNUIElementSerializeHandler_OnSerialize_ProcCaller(LNHandle
     Wrap_UIElementSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uielementserializehandler), Wrap_UIElementSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIElementSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -24023,7 +24419,7 @@ static LNResult Wrap_LNUITextBlockSerializeHandler_OnSerialize_ProcCaller(LNHand
     Wrap_UITextBlockSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uitextblockserializehandler), Wrap_UITextBlockSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUITextBlockSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -24101,7 +24497,7 @@ static LNResult Wrap_LNUISpriteSerializeHandler_OnSerialize_ProcCaller(LNHandle 
     Wrap_UISpriteSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uispriteserializehandler), Wrap_UISpriteSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUISpriteSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -24179,7 +24575,7 @@ static LNResult Wrap_LNUIIconSerializeHandler_OnSerialize_ProcCaller(LNHandle ui
     Wrap_UIIconSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uiiconserializehandler), Wrap_UIIconSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIIconSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -24257,7 +24653,7 @@ static LNResult Wrap_LNUIMessageTextAreaSerializeHandler_OnSerialize_ProcCaller(
     Wrap_UIMessageTextAreaSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uimessagetextareaserializehandler), Wrap_UIMessageTextAreaSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIMessageTextAreaSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -24335,7 +24731,7 @@ static LNResult Wrap_LNUILayoutPanelSerializeHandler_OnSerialize_ProcCaller(LNHa
     Wrap_UILayoutPanelSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uilayoutpanelserializehandler), Wrap_UILayoutPanelSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUILayoutPanelSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -24413,7 +24809,7 @@ static LNResult Wrap_LNUIBoxLayoutSerializeHandler_OnSerialize_ProcCaller(LNHand
     Wrap_UIBoxLayoutSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uiboxlayoutserializehandler), Wrap_UIBoxLayoutSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIBoxLayoutSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -24491,7 +24887,7 @@ static LNResult Wrap_LNUIStackLayoutSerializeHandler_OnSerialize_ProcCaller(LNHa
     Wrap_UIStackLayoutSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uistacklayoutserializehandler), Wrap_UIStackLayoutSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIStackLayoutSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -24569,7 +24965,7 @@ static LNResult Wrap_LNUIGridLayoutSerializeHandler_OnSerialize_ProcCaller(LNHan
     Wrap_UIGridLayoutSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uigridlayoutserializehandler), Wrap_UIGridLayoutSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIGridLayoutSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -24647,7 +25043,7 @@ static LNResult Wrap_LNUIControlSerializeHandler_OnSerialize_ProcCaller(LNHandle
     Wrap_UIControlSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uicontrolserializehandler), Wrap_UIControlSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIControlSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -24725,7 +25121,7 @@ static LNResult Wrap_LNUIButtonBaseSerializeHandler_OnSerialize_ProcCaller(LNHan
     Wrap_UIButtonBaseSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uibuttonbaseserializehandler), Wrap_UIButtonBaseSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIButtonBaseSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -24803,7 +25199,7 @@ static LNResult Wrap_LNUIButtonSerializeHandler_OnSerialize_ProcCaller(LNHandle 
     Wrap_UIButtonSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uibuttonserializehandler), Wrap_UIButtonSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIButtonSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -24881,7 +25277,7 @@ static LNResult Wrap_LNUIWindowSerializeHandler_OnSerialize_ProcCaller(LNHandle 
     Wrap_UIWindowSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uiwindowserializehandler), Wrap_UIWindowSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIWindowSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -24959,7 +25355,7 @@ static LNResult Wrap_LNUIListItemSerializeHandler_OnSerialize_ProcCaller(LNHandl
     Wrap_UIListItemSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uilistitemserializehandler), Wrap_UIListItemSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIListItemSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -25037,7 +25433,7 @@ static LNResult Wrap_LNUIListItemsControlSerializeHandler_OnSerialize_ProcCaller
     Wrap_UIListItemsControlSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uilistitemscontrolserializehandler), Wrap_UIListItemsControlSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIListItemsControlSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -25115,7 +25511,7 @@ static LNResult Wrap_LNUIListBoxItemSerializeHandler_OnSerialize_ProcCaller(LNHa
     Wrap_UIListBoxItemSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uilistboxitemserializehandler), Wrap_UIListBoxItemSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIListBoxItemSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -25193,7 +25589,7 @@ static LNResult Wrap_LNUIListBoxSerializeHandler_OnSerialize_ProcCaller(LNHandle
     Wrap_UIListBoxSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uilistboxserializehandler), Wrap_UIListBoxSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNUIListBoxSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -25271,7 +25667,7 @@ static LNResult Wrap_LNInputGestureSerializeHandler_OnSerialize_ProcCaller(LNHan
     Wrap_InputGestureSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(inputgestureserializehandler), Wrap_InputGestureSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNInputGestureSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -25349,7 +25745,7 @@ static LNResult Wrap_LNKeyGestureSerializeHandler_OnSerialize_ProcCaller(LNHandl
     Wrap_KeyGestureSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(keygestureserializehandler), Wrap_KeyGestureSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNKeyGestureSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -25427,7 +25823,7 @@ static LNResult Wrap_LNInterpreterCommandSerializeHandler_OnSerialize_ProcCaller
     Wrap_InterpreterCommandSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(interpretercommandserializehandler), Wrap_InterpreterCommandSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNInterpreterCommandSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -25505,7 +25901,7 @@ static LNResult Wrap_LNInterpreterCommandListSerializeHandler_OnSerialize_ProcCa
     Wrap_InterpreterCommandListSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(interpretercommandlistserializehandler), Wrap_InterpreterCommandListSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNInterpreterCommandListSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -25583,7 +25979,7 @@ static LNResult Wrap_LNInterpreterSerializeHandler_OnSerialize_ProcCaller(LNHand
     Wrap_InterpreterSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(interpreterserializehandler), Wrap_InterpreterSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNInterpreterSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -25662,7 +26058,7 @@ static LNResult Wrap_LNInterpreterUpdateWaitHandler_OnUpdateWait_ProcCaller(LNHa
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(interpreterupdatewaithandler), Wrap_InterpreterUpdateWaitHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
     *outReturn = LNRB_VALUE_TO_BOOL(retval);
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNInterpreterUpdateWaitHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -25740,7 +26136,7 @@ static LNResult Wrap_LNApplicationSerializeHandler_OnSerialize_ProcCaller(LNHand
     Wrap_ApplicationSerializeHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(applicationserializehandler), Wrap_ApplicationSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNApplicationSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -25818,7 +26214,7 @@ static LNResult Wrap_LNApplicationInitHandler_OnInit_ProcCaller(LNHandle applica
     Wrap_ApplicationInitHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(applicationinithandler), Wrap_ApplicationInitHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNApplicationInitHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -25896,7 +26292,7 @@ static LNResult Wrap_LNApplicationUpdateHandler_OnUpdate_ProcCaller(LNHandle app
     Wrap_ApplicationUpdateHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(applicationupdatehandler), Wrap_ApplicationUpdateHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_SUCCESS;	// TODO: error handling.
+    return LN_OK;	// TODO: error handling.
 }
 
 static VALUE Wrap_LNApplicationUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
@@ -26119,6 +26515,28 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_const(g_enum_UIVisibility, "VISIBLE", INT2FIX(0)); 
     rb_define_const(g_enum_UIVisibility, "HIDDEN", INT2FIX(1)); 
     rb_define_const(g_enum_UIVisibility, "COLLAPSED", INT2FIX(2)); 
+
+    g_enum_UIColorHues = rb_define_module_under(g_rootModule, "UIColorHues");
+    rb_define_const(g_enum_UIColorHues, "RED", INT2FIX(0)); 
+    rb_define_const(g_enum_UIColorHues, "PINK", INT2FIX(1)); 
+    rb_define_const(g_enum_UIColorHues, "PURPLE", INT2FIX(2)); 
+    rb_define_const(g_enum_UIColorHues, "DEEP_PURPLE", INT2FIX(4)); 
+    rb_define_const(g_enum_UIColorHues, "INDIGO", INT2FIX(5)); 
+    rb_define_const(g_enum_UIColorHues, "BLUE", INT2FIX(6)); 
+    rb_define_const(g_enum_UIColorHues, "LIGHT_BLUE", INT2FIX(7)); 
+    rb_define_const(g_enum_UIColorHues, "CYAN", INT2FIX(8)); 
+    rb_define_const(g_enum_UIColorHues, "TEAL", INT2FIX(9)); 
+    rb_define_const(g_enum_UIColorHues, "GREEN", INT2FIX(10)); 
+    rb_define_const(g_enum_UIColorHues, "LIGHT_GREEN", INT2FIX(11)); 
+    rb_define_const(g_enum_UIColorHues, "LIME", INT2FIX(12)); 
+    rb_define_const(g_enum_UIColorHues, "YELLOW", INT2FIX(13)); 
+    rb_define_const(g_enum_UIColorHues, "AMBER", INT2FIX(14)); 
+    rb_define_const(g_enum_UIColorHues, "ORANGE", INT2FIX(15)); 
+    rb_define_const(g_enum_UIColorHues, "DEEP_ORANGE", INT2FIX(16)); 
+    rb_define_const(g_enum_UIColorHues, "BROWN", INT2FIX(17)); 
+    rb_define_const(g_enum_UIColorHues, "GREY", INT2FIX(18)); 
+    rb_define_const(g_enum_UIColorHues, "BLACK", INT2FIX(19)); 
+    rb_define_const(g_enum_UIColorHues, "WHITE", INT2FIX(20)); 
 
     g_enum_UIVAlignment = rb_define_module_under(g_rootModule, "UIVAlignment");
     rb_define_const(g_enum_UIVAlignment, "TOP", INT2FIX(0)); 
@@ -26957,6 +27375,27 @@ extern "C" void Init_Lumino_RubyExt()
     LNLevel_OnPause_SetOverrideCallback(Wrap_LNLevel_OnPause_OverrideCallback);
     LNLevel_OnResume_SetOverrideCallback(Wrap_LNLevel_OnResume_OverrideCallback);
     LNLevel_OnUpdate_SetOverrideCallback(Wrap_LNLevel_OnUpdate_OverrideCallback);
+
+    g_class_UIColors = rb_define_class_under(g_rootModule, "UIColors", rb_cObject);
+    rb_define_singleton_method(g_class_UIColors, "red", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Red), -1);
+    rb_define_singleton_method(g_class_UIColors, "pink", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Pink), -1);
+    rb_define_singleton_method(g_class_UIColors, "purple", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Purple), -1);
+    rb_define_singleton_method(g_class_UIColors, "deep_purple", LN_TO_RUBY_FUNC(Wrap_LNUIColors_DeepPurple), -1);
+    rb_define_singleton_method(g_class_UIColors, "indigo", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Indigo), -1);
+    rb_define_singleton_method(g_class_UIColors, "blue", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Blue), -1);
+    rb_define_singleton_method(g_class_UIColors, "light_blue", LN_TO_RUBY_FUNC(Wrap_LNUIColors_LightBlue), -1);
+    rb_define_singleton_method(g_class_UIColors, "cyan", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Cyan), -1);
+    rb_define_singleton_method(g_class_UIColors, "teal", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Teal), -1);
+    rb_define_singleton_method(g_class_UIColors, "green", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Green), -1);
+    rb_define_singleton_method(g_class_UIColors, "light_green", LN_TO_RUBY_FUNC(Wrap_LNUIColors_LightGreen), -1);
+    rb_define_singleton_method(g_class_UIColors, "lime", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Lime), -1);
+    rb_define_singleton_method(g_class_UIColors, "yellow", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Yellow), -1);
+    rb_define_singleton_method(g_class_UIColors, "amber", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Amber), -1);
+    rb_define_singleton_method(g_class_UIColors, "orange", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Orange), -1);
+    rb_define_singleton_method(g_class_UIColors, "deep_orange", LN_TO_RUBY_FUNC(Wrap_LNUIColors_DeepOrange), -1);
+    rb_define_singleton_method(g_class_UIColors, "brown", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Brown), -1);
+    rb_define_singleton_method(g_class_UIColors, "grey", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Grey), -1);
+    rb_define_singleton_method(g_class_UIColors, "get", LN_TO_RUBY_FUNC(Wrap_LNUIColors_Get), -1);
 
     g_class_UIEventArgs = rb_define_class_under(g_rootModule, "UIEventArgs", g_class_Object);
     rb_define_alloc_func(g_class_UIEventArgs, LNUIEventArgs_allocate);

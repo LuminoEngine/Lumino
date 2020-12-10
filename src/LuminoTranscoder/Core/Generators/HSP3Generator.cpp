@@ -573,7 +573,7 @@ ln::String HSP3CommandsGenerator::makeCallCommandBlock(const MethodSymbol* metho
                 prologue.AppendLine(u"{");
                 prologue.IncreaseIndent();
                 prologue.AppendLine(u"stat = {0}({1}, &{2});", makeFlatFullFuncName(param->type()->publicMethods()[0], FlatCharset::Ascii), makeName_DelegateLabelCaller(param->type()), localDelegateName);
-                prologue.AppendLine(u"if (stat != LN_SUCCESS) return true;");
+                prologue.AppendLine(u"if (stat != LN_OK) return true;");
                 prologue.AppendLine(u"auto* localSelf = reinterpret_cast<{0}*>({1}({2}));", makeName_HSPSubclassType(param->type()), makeFlatAPIName_GetSubinstanceId(param->type()), localDelegateName);
                 prologue.AppendLine(u"localSelf->labelPointer = {0};", localVarName);
                 prologue.DecreaseIndent();

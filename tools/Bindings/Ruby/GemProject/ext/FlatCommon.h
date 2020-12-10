@@ -19,12 +19,12 @@
 //    catch (...) { \
 //        return LN_ERROR_UNKNOWN; \
 //    } \
-//	return LN_SUCCESS;
+//	return LN_OK;
 #define LNI_FUNC_TRY_END_RETURN    } \
     catch (ln::Exception& e) { \
         return ln::Runtime::processException(&e); \
     } \
-	return LN_SUCCESS;
+	return LN_OK;
 // NOTE: HSP ランタイムは エラーを例外で通知していくので、catch (...) で処理してしまうとよくわからないままプロセスが終了してしまう。
 
 #define LNI_BOOL_TO_LNBOOL(x)    (x) ? LN_TRUE : LN_FALSE
@@ -61,7 +61,7 @@ typedef char16_t LNChar;
 typedef enum tagLNResult
 {
     /** 成功 */
-	LN_SUCCESS = 0,
+	LN_OK = 0,
 
     /** 不明なエラー */
     LN_ERROR_UNKNOWN = -1,
