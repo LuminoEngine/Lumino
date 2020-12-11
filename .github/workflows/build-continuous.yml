@@ -1,7 +1,7 @@
 name: Verification
 
 on:
-  push:
+  pull_request:
     branches:
     - master
 
