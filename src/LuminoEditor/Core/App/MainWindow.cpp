@@ -17,6 +17,8 @@ MainWindow::MainWindow()
 void MainWindow::init()
 {
 	UIMainWindow::init();
+    m_realtimeRenderingEnabled = false;
+    setAllowDragDrop(true);
 }
 
 void MainWindow::onLoaded()

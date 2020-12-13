@@ -71,6 +71,14 @@ class LN_API UIFrameWindow
 	, public detail::IPlatforEventListener
 {
 public:
+    /** ウィンドウ上へのファイルのドラッグ＆ドロップを許可するかどうかを設定します。 */
+    LN_METHOD(Property)
+    void setAllowDragDrop(bool value);
+
+    /** ウィンドウ上へのファイルのドラッグ＆ドロップを許可するかどうかを取得します。 */
+    LN_METHOD(Property)
+    bool isAllowDragDrop() const;
+
 
 	virtual void onDispose(bool explicitDisposing) override;
 
@@ -93,11 +101,11 @@ public:
     const Ref<UIRenderView>& renderView() const { return m_renderView; }
     //const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
     const Ref<detail::UIInputInjector>& inputInjector() const{ return m_inputInjector; }
-	void setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 
 	void setImGuiLayerEnabled(bool value) { m_ImGuiLayerEnabled = value; }
 
 protected:
+    void setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
     virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
@@ -135,6 +143,10 @@ public:  // TODO: internal
 	Event<UIGeneralEventHandler> m_onClosed;
 	Event<UIGeneralEventHandler> m_onImGuiLayer;
 	bool m_ImGuiLayerEnabled;
+
+    // RedrawEvent で描画しなくなる。
+    // ゲームランタイムでは true, エディタでは false.
+    bool m_realtimeRenderingEnabled;
 
 private:
     virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);

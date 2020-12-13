@@ -12,6 +12,7 @@
 #include <LuminoEngine/Engine/Debug.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Platform/PlatformManager.hpp"
+#include "../Engine/EngineManager.hpp"
 #include "UIStyleInstance.hpp"
 #include "UIManager.hpp"
 #include <imgui.h>
@@ -263,6 +264,7 @@ UIElement* UIInputInjector::mouseHoveredElement()
 UIFrameWindow::UIFrameWindow()
 	: m_updateMode(UIFrameWindowUpdateMode::EventDispatches)
 	, m_ImGuiLayerEnabled(false)
+    , m_realtimeRenderingEnabled(true)
     , m_layoutContext(makeObject<UILayoutContext>())
 {
     m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
@@ -293,6 +295,19 @@ void UIFrameWindow::init(bool mainWindow)
             platformManager->windowManager()->createSubWindow(settings),
             settings.clientSize);
     }
+
+    // EditorMode の時の初回描画用
+    invalidateVisual();
+}
+
+void UIFrameWindow::setAllowDragDrop(bool value)
+{
+    m_platformWindow->setAllowDragDrop(value);
+}
+
+bool UIFrameWindow::isAllowDragDrop() const
+{
+    return m_platformWindow->isAllowDragDrop();
 }
 
 void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
@@ -589,7 +604,7 @@ void UIFrameWindow::onRoutedEvent(UIEventArgs* e)
         return;
     }
 	else if (e->type() == UIEvents::RequestVisualRedrawEvent) {
-		if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Render)) {
+		if (!m_realtimeRenderingEnabled && m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Render)) {
 			renderContents();
 			present();
 		}
@@ -635,6 +650,12 @@ void UIMainWindow::init()
 	UIFrameWindow::init(true);
 
     m_updateMode = UIFrameWindowUpdateMode::Polling;
+
+    // サブクラスの init 等で、AllowDragDrop や WindowSize など PlatformWindow が実態をもつプロパティにアクセス試合ことがある。
+    // そのためこの時点で PlatformWindow をアタッチしておきたい。
+    setupPlatformWindow(
+        detail::EngineDomain::engineManager()->platformManager()->mainWindow(),
+        detail::EngineDomain::engineManager()->settings().mainWindowSize);
 
 	// TODO: ここでいい？
 	onLoaded();

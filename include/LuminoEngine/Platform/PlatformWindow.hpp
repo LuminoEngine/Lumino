@@ -19,6 +19,8 @@ public:
     virtual void setWindowTitle(const String& title) = 0;
 	virtual void getSize(SizeI* size) = 0;
 	virtual void getFramebufferSize(int* width, int* height) = 0;   // スワップチェインのサイズとするべきサイズ (retina display や dpi スケーリングを考慮)
+	virtual void setAllowDragDrop(bool value) = 0;
+	virtual bool isAllowDragDrop() const = 0;
 
 	virtual PointI pointFromScreen(const PointI& screenPoint) = 0;
 	virtual PointI pointToScreen(const PointI& clientPoint) = 0;

@@ -17,6 +17,16 @@ Result EmptyPlatformWindow::init(const WindowCreationSettings& settings)
     return true;
 }
 
+void EmptyPlatformWindow::setAllowDragDrop(bool value)
+{
+    LN_NOTIMPLEMENTED();
+}
+
+bool EmptyPlatformWindow::isAllowDragDrop() const
+{
+    return false;
+}
+
 //=============================================================================
 // EmptyPlatformWindowManager
 

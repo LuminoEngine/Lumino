@@ -787,7 +787,7 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
 	if (LN_REQUIRE(window)) return;
 	if (LN_REQUIRE(!m_mainWindow)) return;
 	m_mainWindow = window;
-	m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), m_settings.mainWindowSize);
+	//m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), m_settings.mainWindowSize);
 	//m_mainUIContext->setLayoutRootElement(m_mainWindow);
 
 	// TODO: SwapChain だけでいいはず
@@ -796,10 +796,7 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
 	m_mainWindow->m_onImGuiLayer.connect(ln::bind(this, &EngineManager::handleImGuiDebugLayer));
 
 	if (createBasicObjects) {
-
 		if (m_uiManager) {
-
-
 			m_mainViewport = makeObject<UIViewport>();
 			m_mainWindow->addElement(m_mainViewport);
 		}

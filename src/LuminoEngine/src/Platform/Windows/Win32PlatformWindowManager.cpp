@@ -40,6 +40,16 @@ void AbstractWin32PlatformWindow::getFramebufferSize(int* width, int* height)
     *height = rect.bottom - rect.top;
 }
 
+void AbstractWin32PlatformWindow::setAllowDragDrop(bool value)
+{
+    LN_NOTIMPLEMENTED();
+}
+
+bool AbstractWin32PlatformWindow::isAllowDragDrop() const
+{
+    return false;
+}
+
 PointI AbstractWin32PlatformWindow::pointFromScreen(const PointI& screenPoint)
 {
     POINT pt = { screenPoint.x, screenPoint.y };

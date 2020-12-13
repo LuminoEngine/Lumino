@@ -18,6 +18,8 @@ public:
     virtual void setWindowTitle(const String& title) override;
     virtual void getSize(SizeI* size) override;
     virtual void getFramebufferSize(int* width, int* height) override;
+    virtual void setAllowDragDrop(bool value) override;
+    virtual bool isAllowDragDrop() const override;
     virtual PointI pointFromScreen(const PointI& screenPoint) override;
     virtual PointI pointToScreen(const PointI& clientPoint) override;
     virtual void grabCursor() override;

@@ -305,6 +305,7 @@ using byte_t = unsigned char;
 
 /**
  * @param OverloadPostfix = "Name"
+ * @param Property
  */
 #define LN_METHOD(...)
 #define LN_DELEGATE(...)

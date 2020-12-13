@@ -314,6 +314,16 @@ void GLFWPlatformWindow::getFramebufferSize(int* width, int* height)
 	glfwGetFramebufferSize(m_glfwWindow, width, height);
 }
 
+void GLFWPlatformWindow::setAllowDragDrop(bool value)
+{
+	glfwSetDropCallback(m_glfwWindow, window_drop_callback);
+}
+
+bool GLFWPlatformWindow::isAllowDragDrop() const
+{
+	return false;
+}
+
 PointI GLFWPlatformWindow::pointFromScreen(const PointI& screenPoint)
 {
 #if defined(LN_EMSCRIPTEN)
@@ -509,6 +519,12 @@ void GLFWPlatformWindow::window_scroll_callback(GLFWwindow* window, double xoffs
 {
     GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
     thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseWheelEvent(thisWindow, -1.0 * yoffset));
+}
+
+void GLFWPlatformWindow::window_drop_callback(GLFWwindow* window, int count, const char** paths)
+{
+	GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
+	LN_NOTIMPLEMENTED();
 }
 
 ModifierKeys GLFWPlatformWindow::glfwKeyModToLNKeyMod(int mods)
