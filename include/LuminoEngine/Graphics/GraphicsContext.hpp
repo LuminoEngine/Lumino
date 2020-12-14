@@ -106,11 +106,11 @@ public:
     /** ShaderPass を取得します。 */
     ShaderPass* shaderPass() const;
 
-    ///** ShaderPass を設定します。 */
-    //void setShaderDescriptor(ShaderDescriptor* value);
+    /** ShaderPass を設定します。 */
+    void setShaderDescriptor(ShaderDescriptor* value);
 
-    ///** ShaderPass を取得します。 */
-    //ShaderDescriptor* shaderDescriptor() const;
+    /** ShaderPass を取得します。 */
+    ShaderDescriptor* shaderDescriptor() const;
 
     /** デフォルト設定を復元します。 */
     void resetState();
@@ -196,9 +196,9 @@ private:
         Ref<VertexLayout> VertexLayout;
         std::array<Ref<VertexBuffer>, detail::MaxVertexStreams> vertexBuffers;
         Ref<IndexBuffer> indexBuffer;
-        Ref<Shader> shader; // shaderPass owner, for keep reference.
+        Ref<Shader> shader; // shaderPass and shaderDescriptor owner, for keep reference.
         ShaderPass* shaderPass;
-        //Ref<ShaderDescriptor> shaderDescriptor;
+        ShaderDescriptor* shaderDescriptor;
         PrimitiveTopology topology;
 
         void reset();

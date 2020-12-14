@@ -86,12 +86,10 @@ static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTe
 };
 
 ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
-    : m_descriptor(nullptr)
-    , m_hasBuiltinShaderParameters(0)
+    : m_hasBuiltinShaderParameters(0)
     , m_builtinUniformBuffers({})
     , m_builtinShaderTextures({})
 {
-    //auto a = LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip);
     // メモリレイアウトそのまま ConstantBuffer に転送するため、オフセットを検証しておく
     assert(192 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_Resolution));
     assert(208 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraPosition));
@@ -106,7 +104,6 @@ ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
 
 void ShaderTechniqueSemanticsManager::init(ShaderTechnique* technique)
 {
-    m_descriptor = technique->shader()->descriptor();
     const auto& globalLayout = technique->shader()->descriptorLayout();
 
     for (const auto& pass : technique->m_passes) {
@@ -160,7 +157,7 @@ void ShaderTechniqueSemanticsManager::reset()
     for (auto& i : m_builtinShaderTextures) i = -1;
 }
 
-void ShaderTechniqueSemanticsManager::updateRenderViewVariables(const RenderViewInfo& info, const SceneInfo& sceneInfo)
+void ShaderTechniqueSemanticsManager::updateRenderViewVariables(ShaderDescriptor* descriptor, const RenderViewInfo& info, const SceneInfo& sceneInfo) const
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNRenderViewBuffer];
     if (index >= 0) {
@@ -177,7 +174,7 @@ void ShaderTechniqueSemanticsManager::updateRenderViewVariables(const RenderView
         data.ln_AmbientColor = sceneInfo.ambientColor.toVector4();
         data.ln_AmbientSkyColor = sceneInfo.ambientSkyColor.toVector4();
         data.ln_AmbientGroundColor = sceneInfo.ambientGroundColor.toVector4();
-        m_descriptor->setData(index, &data, sizeof(data));
+        descriptor->setData(index, &data, sizeof(data));
     }
 
     index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNShadowParameters];
@@ -185,17 +182,17 @@ void ShaderTechniqueSemanticsManager::updateRenderViewVariables(const RenderView
         LNShadowParameters data;
         data.ln_mainLightShadowMapResolution = Vector4(info.mainLightShadowMapPixelSize, 1.0f / info.mainLightShadowMapPixelSize.width, 1.0f / info.mainLightShadowMapPixelSize.height);
         data.ln_shadowDensity = Vector4(info.mainLightShadowDensity, 0, 0, 0);
-        m_descriptor->setData(index, &data, sizeof(data));
+        descriptor->setData(index, &data, sizeof(data));
     }
 
     index = m_builtinShaderTextures[BuiltinShaderTextures_ln_mainLightShadowMap];
     if (index >= 0) {
         LN_DCHECK(info.mainLightShadowMap);
-        m_descriptor->setTexture(index, info.mainLightShadowMap);
+        descriptor->setTexture(index, info.mainLightShadowMap);
     }
 }
 
-void ShaderTechniqueSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info)
+void ShaderTechniqueSemanticsManager::updateElementVariables(ShaderDescriptor* descriptor, const CameraInfo& cameraInfo, const ElementInfo& info) const
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNRenderElementBuffer];
     if (index >= 0) {
@@ -214,19 +211,19 @@ void ShaderTechniqueSemanticsManager::updateElementVariables(const CameraInfo& c
             data.ln_BoneTextureReciprocalSize = Vector4(1.0f / info.boneTexture->width(), 1.0f / info.boneTexture->height(), 0, 0);
 
         data.ln_objectId = info.objectId;
-        m_descriptor->setData(index, &data, sizeof(data));
+        descriptor->setData(index, &data, sizeof(data));
     }
 
     index = m_builtinShaderTextures[BuiltinShaderTextures_ln_BoneTexture];
     if (index >= 0)
-        m_descriptor->setTexture(index, info.boneTexture);
+        descriptor->setTexture(index, info.boneTexture);
 
     index = m_builtinShaderTextures[BuiltinShaderTextures_ln_BoneLocalQuaternionTexture];
     if (index >= 0)
-        m_descriptor->setTexture(index, info.boneLocalQuaternionTexture);
+        descriptor->setTexture(index, info.boneLocalQuaternionTexture);
 }
 
-void ShaderTechniqueSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
+void ShaderTechniqueSemanticsManager::updateSubsetVariables(ShaderDescriptor* descriptor, const SubsetInfo& info) const
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNEffectColorBuffer];
     if (index >= 0) {
@@ -236,30 +233,30 @@ void ShaderTechniqueSemanticsManager::updateSubsetVariables(const SubsetInfo& in
             info.blendColor.toVector4(),
             info.tone.toVector4(),
         };
-        m_descriptor->setData(index, &data, sizeof(data));
+        descriptor->setData(index, &data, sizeof(data));
     }
 
 
     index = m_builtinShaderTextures[BuiltinShaderTextures_ln_MaterialTexture];
     if (index >= 0) {
         LN_DCHECK(info.materialTexture);
-        m_descriptor->setTexture(index, info.materialTexture);
+        descriptor->setTexture(index, info.materialTexture);
     }
 
     index = m_builtinShaderTextures[BuiltinShaderTextures_ln_NormalMap];
     if (index >= 0) {
         LN_DCHECK(info.normalMap);
-        m_descriptor->setTexture(index, info.normalMap);
+        descriptor->setTexture(index, info.normalMap);
     }
 
     index = m_builtinShaderTextures[BuiltinShaderTextures_ln_MaterialRoughnessMap];
     if (index >= 0) {
         LN_DCHECK(info.roughnessMap);
-        m_descriptor->setTexture(index, info.roughnessMap);
+        descriptor->setTexture(index, info.roughnessMap);
     }
 }
 
-void ShaderTechniqueSemanticsManager::updateSubsetVariables_PBR(const PbrMaterialData& materialData)
+void ShaderTechniqueSemanticsManager::updateSubsetVariables_PBR(ShaderDescriptor* descriptor, const PbrMaterialData& materialData) const
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNPBRMaterialParameter];
     if (index >= 0) {
@@ -270,11 +267,11 @@ void ShaderTechniqueSemanticsManager::updateSubsetVariables_PBR(const PbrMateria
             materialData.roughness,
             materialData.metallic,
         };
-        m_descriptor->setData(index, &data, sizeof(data));
+        descriptor->setData(index, &data, sizeof(data));
     }
 }
 
-void ShaderTechniqueSemanticsManager::updateClusteredShadingVariables(const ClusteredShadingRendererInfo& info) const
+void ShaderTechniqueSemanticsManager::updateClusteredShadingVariables(ShaderDescriptor* descriptor, const ClusteredShadingRendererInfo& info) const
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNClusteredShadingParameters];
     if (index >= 0) {
@@ -286,20 +283,20 @@ void ShaderTechniqueSemanticsManager::updateClusteredShadingVariables(const Clus
             info.nearClip,
             info.farClip,
         };
-        m_descriptor->setData(index, &data, sizeof(data));
+        descriptor->setData(index, &data, sizeof(data));
     }
 
     index = m_builtinShaderTextures[BuiltinShaderTextures_ln_ClustersTexture];
     if (index >= 0)
-        m_descriptor->setTexture(index, info.lightClustersTexture);
+        descriptor->setTexture(index, info.lightClustersTexture);
 
     index = m_builtinShaderTextures[BuiltinShaderTextures_ln_GlobalLightInfoTexture];
     if (index >= 0)
-        m_descriptor->setTexture(index, info.globalLightInfoTexture);
+        descriptor->setTexture(index, info.globalLightInfoTexture);
 
     index = m_builtinShaderTextures[BuiltinShaderTextures_ln_PointLightInfoTexture];
     if (index >= 0)
-        m_descriptor->setTexture(index, info.localLightInfoTexture);
+        descriptor->setTexture(index, info.localLightInfoTexture);
 }
 
 //=============================================================================

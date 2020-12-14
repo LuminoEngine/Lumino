@@ -304,7 +304,7 @@ void Shader::createFromStream(Stream* stream, DiagnosticsManager* diag)
 void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag)
 {
     m_descriptorLayout = makeObject<ShaderDescriptorLayout>(unifiedShader->globalDescriptorLayout());
-    m_descriptor = makeObject<ShaderDescriptor>(this);
+    //m_descriptor = makeObject<ShaderDescriptor>(this);
 
 	for (int iTech = 0; iTech < unifiedShader->techniqueCount(); iTech++) {
 		detail::UnifiedShader::TechniqueId techId = unifiedShader->techniqueId(iTech);
@@ -357,10 +357,10 @@ void Shader::onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPa
     loadFromStream(assetPath, stream, nullptr);
 }
 
-ShaderParameter2* Shader::findParameter(const StringRef& name) const
-{
-    return m_descriptor->findParameter2(name);
-}
+//ShaderParameter2* Shader::findParameter(const StringRef& name) const
+//{
+//    return m_descriptor->findParameter2(name);
+//}
 
 ShaderTechnique* Shader::findTechnique(const StringRef& name) const
 {
@@ -377,36 +377,36 @@ Ref<ReadOnlyList<Ref<ShaderTechnique>>> Shader::techniques() const
     return m_techniques;
 }
 
-void Shader::setFloat(const StringRef& parameterName, float value)
-{
-    if (auto* param = findParameter(parameterName)) {
-        param->setFloat(value);
-    }
-}
-
-void Shader::setVector(const StringRef& parameterName, const Vector3& value)
-{
-    setVector(parameterName, Vector4(value, 0.0));
-}
-
-void Shader::setVector(const StringRef& parameterName, const Vector4& value)
-{
-    if (auto* param = findParameter(parameterName)) {
-        param->setVector(value);
-    }
-}
-
-void Shader::setTexture(const StringRef& parameterName, Texture* value)
-{
-    if (auto* param = findParameter(parameterName)) {
-        param->setTexture(value);
-    }
-}
-
-//Ref<ShaderDescriptor> Shader::createDescriptor()
+//void Shader::setFloat(const StringRef& parameterName, float value)
 //{
-//    return makeObject<ShaderDescriptor>(this);
+//    if (auto* param = findParameter(parameterName)) {
+//        param->setFloat(value);
+//    }
 //}
+//
+//void Shader::setVector(const StringRef& parameterName, const Vector3& value)
+//{
+//    setVector(parameterName, Vector4(value, 0.0));
+//}
+//
+//void Shader::setVector(const StringRef& parameterName, const Vector4& value)
+//{
+//    if (auto* param = findParameter(parameterName)) {
+//        param->setVector(value);
+//    }
+//}
+//
+//void Shader::setTexture(const StringRef& parameterName, Texture* value)
+//{
+//    if (auto* param = findParameter(parameterName)) {
+//        param->setTexture(value);
+//    }
+//}
+
+Ref<ShaderDescriptor> Shader::createDescriptor()
+{
+    return makeObject<ShaderDescriptor>(this);
+}
 
 // TODO: 名前の指定方法をもう少しいい感じにしたい。PostEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。
 ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const

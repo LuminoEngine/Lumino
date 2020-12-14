@@ -311,7 +311,7 @@ public:
      *
      * @attention 現在、SamplerState の設定は未サポートです。将来的には、この関数で SamplerState 型のパラメータを検索できるようにする予定です。
      */
-    ShaderParameter2* findParameter(const StringRef& name) const;
+    //ShaderParameter2* findParameter(const StringRef& name) const;
 
     /**
      * 名前を指定してこの Shader に含まれる ShaderTechnique を検索します。
@@ -325,28 +325,28 @@ public:
     Ref<ReadOnlyList<Ref<ShaderTechnique>>> techniques() const;
 
 
-    /** 浮動小数点値を設定します。 */
-    LN_METHOD()
-    void setFloat(const StringRef& parameterName, float value);
-    
-    /** ベクトル値を設定します。 */
-    LN_METHOD(OverloadPostfix = "3")
-    void setVector(const StringRef& parameterName, const Vector3& value);
+    ///** 浮動小数点値を設定します。 */
+    //LN_METHOD()
+    //void setFloat(const StringRef& parameterName, float value);
+    //
+    ///** ベクトル値を設定します。 */
+    //LN_METHOD(OverloadPostfix = "3")
+    //void setVector(const StringRef& parameterName, const Vector3& value);
 
-    /** ベクトル値を設定します。 */
-    LN_METHOD(OverloadPostfix = "4")
-    void setVector(const StringRef& parameterName, const Vector4& value);
+    ///** ベクトル値を設定します。 */
+    //LN_METHOD(OverloadPostfix = "4")
+    //void setVector(const StringRef& parameterName, const Vector4& value);
 
-    /** setTexture */
-    LN_METHOD()
-    void setTexture(const StringRef& parameterName, Texture* value);
+    ///** setTexture */
+    //LN_METHOD()
+    //void setTexture(const StringRef& parameterName, Texture* value);
 
     // ↑このあたりは HC4 のエフェクトで、ひとつの Shader をたくさんの Material から参照するときの共通パラメータを設定したいため、公開した。
 
     /** この Shader の DescriptorLayout をもとに、ShaderDescriptor を作成します。 */
-    //Ref<ShaderDescriptor> createDescriptor();
+    Ref<ShaderDescriptor> createDescriptor();
 
-    const Ref<ShaderDescriptor>& descriptor() const { return m_descriptor; }
+    //const Ref<ShaderDescriptor>& descriptor_() const { return m_descriptor; }
     const Ref<ShaderDescriptorLayout>& descriptorLayout() const { return m_descriptorLayout; }
 
 
@@ -374,7 +374,7 @@ private:
     detail::GraphicsManager* m_graphicsManager;
     String m_name;
     Ref<ShaderDescriptorLayout> m_descriptorLayout;
-    Ref<ShaderDescriptor> m_descriptor;
+    //Ref<ShaderDescriptor> m_descriptor;
     Ref<List<Ref<ShaderTechnique>>> m_techniques;
 
     friend class ShaderPass;

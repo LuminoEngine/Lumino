@@ -204,7 +204,8 @@ public:	// TODO:
 	//static const float DefaultPower;	// (50.0f)
 
     // TODO: internal
-    void updateShaderVariables(Shader* target) const;
+    void updateShaderVariables(Shader* target, ShaderDescriptor* descriptor) const;
+	const Ref<ShaderDescriptor>& shaderDescriptor() const { return m_shaderDescriptor; }
 
 protected:  // TODO:
 	//void LinkVariables();
@@ -216,6 +217,7 @@ protected:  // TODO:
 	detail::ShaderParameterValue* getValue(const ln::StringRef& name);
 
 	Ref<Shader> m_shader;
+	Ref<ShaderDescriptor> m_shaderDescriptor;
 	Ref<Texture> m_mainTexture;
 	Ref<Texture> m_normalMap;
 	Ref<Texture> m_roughnessMap;

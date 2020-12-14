@@ -131,6 +131,13 @@ void Material::setEmissive(const Color& value)
 void Material::setShader(Shader* shader)
 {
     m_shader = shader;
+
+    if (m_shader) {
+        m_shaderDescriptor = m_shader->createDescriptor();
+    }
+    else {
+        m_shaderDescriptor = nullptr;
+    }
 }
 
 Shader* Material::shader() const
@@ -239,13 +246,13 @@ detail::ShaderParameterValue* Material::getValue(const ln::StringRef& name)
 	return m_values.back().second.get();
 }
 
-void Material::updateShaderVariables(Shader* target) const
+void Material::updateShaderVariables(Shader* target, ShaderDescriptor* descriptor) const
 {
     // Material から Shader へ検索をかける。
     // Shader はビルトインの変数がいくつか含まれているので、この方が高速に検索できる。
 
     for (const auto& pair : m_values) {
-        auto* param = target->findParameter(pair.first);
+        auto* param = descriptor->findParameter2(pair.first);
         if (param) {
             switch (pair.second->type())
             {
@@ -294,7 +301,7 @@ void Material::updateShaderVariables(Shader* target) const
     for (const auto& pair : m_uniformBufferData) {
         int index = target->descriptorLayout()->findUniformBufferRegisterIndex(pair.first);
         if (index >= 0) {
-            target->descriptor()->setData(index, pair.second->data(), pair.second->size());
+            descriptor->setData(index, pair.second->data(), pair.second->size());
         }
     }
 }
