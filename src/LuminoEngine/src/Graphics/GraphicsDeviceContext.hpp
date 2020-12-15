@@ -130,7 +130,7 @@ struct ShaderDescriptorBufferView
 {
 	IUniformBuffer* buffer;
 	size_t offset;
-	size_t size;
+	//size_t size;
 };
 
 struct ShaderDescriptorCombinedSampler

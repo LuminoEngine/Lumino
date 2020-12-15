@@ -79,7 +79,7 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 	//}
 
     const size_t PageSize = 0x200000;   // 2MB
-    m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocatorPageManager>(this, PageSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    //m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocatorPageManager>(this, PageSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     m_transferBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocatorPageManager>(this, PageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 	m_nativeInterface = std::make_unique<VulkanNativeGraphicsInterface>(this);
 
@@ -112,7 +112,7 @@ void VulkanDevice::dispose()
     //m_framebufferCache.dispose();
     //m_renderPassCache.dispose();
 
-    m_uniformBufferSingleFrameAllocator = nullptr;
+    //m_uniformBufferSingleFrameAllocator = nullptr;
     m_transferBufferSingleFrameAllocator = nullptr;
 
     if (m_commandPool) {

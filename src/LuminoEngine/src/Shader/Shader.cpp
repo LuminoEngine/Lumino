@@ -523,29 +523,35 @@ void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail
                 const ShaderDescriptorLayout* globalLayout = m_owner->m_owner->descriptorLayout();
                 detail::ShaderDescriptorTableUpdateInfo updateInfo;
 
-                // まず全 UniformBuffer に必要なサイズを測る
-                // TODO: 事前計算でもよさそう
-                size_t totalSize = 0;
-                for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
-                    if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
-                        LN_NOTIMPLEMENTED();
-                        break;
-                    }
-                    auto& view = updateInfo.uniforms[i];
-                    view.size = globalLayout->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].size;
-                    view.offset = totalSize;
-                    totalSize += view.size;
-                }
+                //// まず全 UniformBuffer に必要なサイズを測る
+                //// TODO: 事前計算でもよさそう
+                //size_t totalSize = 0;
+                //for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
+                //    if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
+                //        LN_NOTIMPLEMENTED();
+                //        break;
+                //    }
+                //    auto& view = updateInfo.uniforms[i];
+                //    view.size = ;
+                //    //view.offset = totalSize;
+                //    totalSize += view.size;
+                //}
 
                 // 全 UniformBuffer に必要な領域をまとめて確保してデータコピー
-                auto uniformBufferData = commandList->allocateUniformBuffer(totalSize);
                 for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
+                    size_t size = globalLayout->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].size;
                     auto& view = updateInfo.uniforms[i];
+
+                    // アライメント付きで確保しないと Vulkan 等では正しく描かれない。
+                    // 以前 OpenGL 用のときは事前にまとめて allocate していたが、ひとつずつアライメントされたものを確保する。
+                    auto uniformBufferData = commandList->allocateUniformBuffer(size);
                     view.buffer = uniformBufferData.buffer;
+                    view.offset = uniformBufferData.offset;
 
                     // TODO: map しないほうが効率いいか？
                     void* d = static_cast<byte_t*>(view.buffer->map()) + view.offset;
-                    memcpy(d, descripter->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].data(), view.size);
+                    memcpy(d, descripter->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].data(), size);
+                    view.buffer->unmap();
                 }
 
                 // Textures

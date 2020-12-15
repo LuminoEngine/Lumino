@@ -39,7 +39,7 @@ void GraphicsCommandList::dispose()
 void GraphicsCommandList::reset()
 {
     m_allocator->cleanup();
-	m_singleFrameUniformBufferAllocator->cleanup();
+	//m_singleFrameUniformBufferAllocator->cleanup();
 }
 
 detail::UniformBufferView GraphicsCommandList::allocateUniformBuffer(size_t size)
@@ -106,6 +106,7 @@ GraphicsContext* SwapChain::beginFrame2()
 {
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, currentCommandList());
 	detail::GraphicsContextInternal::beginCommandRecoding(m_graphicsContext);
+	currentCommandList()->m_singleFrameUniformBufferAllocator->cleanup();
 	m_graphicsContext->resetState();
 
 	m_rhiObject->acquireNextImage(&m_imageIndex);

@@ -54,7 +54,7 @@ public:
     VkCommandPool vulkanCommandPool() const { return m_commandPool; }
     uint32_t graphicsQueueFamilyIndex() const { return m_graphicsQueueFamilyIndex; }
     Result findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
-    const Ref<VulkanSingleFrameAllocatorPageManager>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
+    //const Ref<VulkanSingleFrameAllocatorPageManager>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
     const Ref<VulkanSingleFrameAllocatorPageManager>& transferBufferSingleFrameAllocator() const { return m_transferBufferSingleFrameAllocator; }
     VulkanNativeGraphicsInterface* vulkanNativeGraphicsInterface() const { return m_nativeInterface.get(); }
 
@@ -118,7 +118,7 @@ public: // TODO:
 	VkQueue m_graphicsQueue;
     VkCommandPool m_commandPool;
     //VulkanAllocator m_allocator;
-    Ref<VulkanSingleFrameAllocatorPageManager> m_uniformBufferSingleFrameAllocator;
+    //Ref<VulkanSingleFrameAllocatorPageManager> m_uniformBufferSingleFrameAllocator;
     Ref<VulkanSingleFrameAllocatorPageManager> m_transferBufferSingleFrameAllocator;
 
 

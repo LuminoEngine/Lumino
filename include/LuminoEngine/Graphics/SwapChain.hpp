@@ -31,11 +31,11 @@ public:
     const Ref<LinearAllocator>& allocator_deprecated() const { return m_allocator; }
     void reset();
     detail::UniformBufferView allocateUniformBuffer(size_t size);
+    Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;
 
 private:
     Ref<detail::ICommandList> m_rhiResource;
     Ref<LinearAllocator> m_allocator;
-    Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;
 };
 
 }
