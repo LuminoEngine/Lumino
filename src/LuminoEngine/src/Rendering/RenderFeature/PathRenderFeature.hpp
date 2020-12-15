@@ -3,6 +3,8 @@
 #include "../../Graphics/GraphicsDeviceContext.hpp"
 #include "../RenderStage.hpp"
 
+struct NVGcontext;
+
 namespace ln {
 namespace detail {
 
@@ -14,6 +16,7 @@ class PathRenderFeature
 public:
 	PathRenderFeature();
 	void init(RenderingManager* manager);
+	void onDispose(bool explicitDisposing) override;
 
 	void beginRendering() override;
 	void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
@@ -32,6 +35,7 @@ private:
 	};
 
 	BatchData m_batchData;
+	NVGcontext* m_nvgContext;
 };
 
 } // namespace detail

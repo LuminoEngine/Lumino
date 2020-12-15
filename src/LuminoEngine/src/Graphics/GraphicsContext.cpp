@@ -298,11 +298,6 @@ ShaderPass* GraphicsContext::shaderPass() const
 //	}
 //}
 
-//RenderPass* GraphicsContext::renderPass() const
-//{
-//	return m_staging.renderPass;
-//}
-
 void GraphicsContext::beginRenderPass(RenderPass* value)
 {
 	if (LN_REQUIRE(value)) return;
@@ -367,6 +362,11 @@ void GraphicsContext::endRenderPass()
 	m_currentRenderPass->m_active = false;
 	m_currentRenderPass = nullptr;
     m_renderPassStep = RenderPassStep::None;
+}
+
+RenderPass* GraphicsContext::renderPass() const
+{
+	return m_currentRenderPass;
 }
 
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)

@@ -3,13 +3,17 @@
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include "../../Graphics/GraphicsManager.hpp"
 #include "../RenderingManager.hpp"
 #include "PathRenderFeature.hpp"
 
 // [2020/11/17] Shader を使うことになるので、Descripter の対応 (Material ごとに UniformBuffer を持てるようにする) が済んでからにする。
-#if 0
+#if 1
+
+typedef unsigned int GLenum;
+typedef unsigned int GLuint;
 
 #include <nanovg/nanovg.h>
 
@@ -25,9 +29,20 @@ nvgFill(vg);
 nvgEndFrame(...);
 ```
 
-nvgFill, nvgStroke, nvgText　のタイミングで、それぞれ renderFill, renderStroke, renderTriangles コールバックが呼び出される。
-ここで "Call" というデータを 1 つ作る。（"Call" は nanovg の内部データではなく、ドライバレイヤーで利用するデータ構造）
+1. nvgFill, nvgStroke, nvgText　のタイミングで、それぞれ renderFill, renderStroke, renderTriangles コールバックが呼び出される。
+   ここで "Call" というデータを 1 つ作る。
+   （"Call" は nanovg の内部データではなく、ドライバレイヤーで利用するデータ構造。ドローコールひとつに相当）
+   まだ GraphicsAPI へドローコールは出さない。
+2. glnvg__renderFlush() で、溜まった Call を GraphicsAPI へ送り出す。
+   ここから Call の性質に応じて
+   glnvg__fill, glnvg__stroke, glnvg__triangles が呼び出される。
 	
+
+UniformBuffer の使われ方
+----------
+- 実際に作られる OpenGL の UBO はひとつだけ。
+- render* の時に realloc で、ドローコールの数分の GLNVGfragUniforms が入るバッファを Host 側に確保する。
+- flush の時に glBufferData() でこのバッファを丸ごとひとつの UBO へ転送し、glDraw** するときに glBindBufferRange で参照位置を指定している。
 
  */
 
@@ -356,6 +371,27 @@ static int glnvg__convertPaint(GLNVGcontext* gl, GLNVGfragUniforms* frag, NVGpai
 	glnvg__xformToMat3x4(frag->paintMat, invxform);
 
 	return 1;
+}
+
+static void glnvg__setUniforms(GLNVGcontext* gl, int uniformOffset, int image)
+{
+	GLNVGtexture* tex = NULL;
+#if NANOVG_GL_USE_UNIFORMBUFFER
+	glBindBufferRange(GL_UNIFORM_BUFFER, GLNVG_FRAG_BINDING, gl->fragBuf, uniformOffset, sizeof(GLNVGfragUniforms));
+#else
+	GLNVGfragUniforms* frag = nvg__fragUniformPtr(gl, uniformOffset);
+	glUniform4fv(gl->shader.loc[GLNVG_LOC_FRAG], NANOVG_GL_UNIFORMARRAY_SIZE, &(frag->uniformArray[0][0]));
+#endif
+
+	if (image != 0) {
+		tex = glnvg__findTexture(gl, image);
+	}
+	// If no image is set, use empty texture
+	if (tex == NULL) {
+		tex = glnvg__findTexture(gl, gl->dummyTex);
+	}
+	glnvg__bindTexture(gl, tex != NULL ? tex->tex : 0);
+	glnvg__checkError(gl, "tex paint tex");
 }
 
 // params.renderViewport
@@ -985,12 +1021,23 @@ namespace detail {
 // PathRenderFeature
 
 PathRenderFeature::PathRenderFeature()
+	: m_nvgContext(nullptr)
 {
 }
 
 void PathRenderFeature::init(RenderingManager* manager)
 {
 	RenderFeature::init();
+	m_nvgContext = nvgCreateGL(NVG_ANTIALIAS);
+}
+
+void PathRenderFeature::onDispose(bool explicitDisposing)
+{
+	if (m_nvgContext) {
+		nvgDeleteGL(m_nvgContext);
+		m_nvgContext = nullptr;
+	}
+	RenderFeature::onDispose(explicitDisposing);
 }
 
 void PathRenderFeature::beginRendering()
@@ -1009,6 +1056,16 @@ void PathRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeat
 void PathRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
 {
 	auto localBatch = static_cast<Batch*>(batch);
+
+	RenderPass* pass = context->renderPass();
+	RenderTargetTexture* target = pass->renderTarget(0);
+
+	nvgBeginFrame(m_nvgContext, target->width(), target->height(), 1.0);	// TODO: DPI
+	nvgBeginPath(m_nvgContext);
+	nvgRect(m_nvgContext, 100, 100, 120, 30);
+	nvgFillColor(m_nvgContext, nvgRGBA(255, 192, 0, 255));
+	nvgFill(m_nvgContext);
+	nvgEndFrame(m_nvgContext);
 
 }
 

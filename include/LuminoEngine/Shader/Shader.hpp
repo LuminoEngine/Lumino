@@ -30,6 +30,44 @@ class ShaderTechniqueSemanticsManager;
 // 本来は Pass に持たせるべきだが、そうするとユーザープログラムから Material(=Effect) として使いたい場合、
 // 全く同じ ShaderDescriptor がたくさん作られることになり、メモリの無駄が多くなる。#136 の問題も出てくる。
 // そのため ShaderPass と関係を持つのではなく、Shader と関係を持つようにする。
+/*
+  [2020/12/15] ShaderDescriptor 計画
+  ----------
+    ShaderDescriptor = DescriptorSet。
+    正しくやるなら、これは通常、SceneRenderer からのドローコール1つに付き1つのインスタンスが必要になる。
+    それへ、Objectごとに変わるUniformBuffer, Viewごとに変わるUniformBuffer, マテリアルのUniformBufferなどをアタッチして使う。
+    Material 1つ = ShaderDescriptor 1 つ、ではない。
+    つまり Pool 必須。VulkanDriver とほぼ同じ実装が必要になる。
+
+    少しずつ移行するなら…
+
+    まず UniformBuffer を扱えるようにする。
+    現状 m_descriptor->setData() で struct を設定している個所で、SingleFrame な UniformBuffer を
+    GraphicsContext から作り、それ経由でデータをセットするように変更する。
+
+    極限まで最適化するなら SingleFrame 以外の UniformBuffer もほしいが、ひとまず保留。
+    というか Vulkan の allocationCount の問題があったけど、Buffer 自体はそれほど多く作れるものではない。
+    またMaterial から使うときも、結局 Material 自体は UniformBuffer を持たずに map で値を持っていて、
+    SceneRenderer から submit するときに その map のデータを SingleFrame UniformBuffer へ転記する。
+    ※こうしないと Material のシリアライズが大変。
+
+    次に ShaderDescriptor の Pool を作る。
+    必須ではない気もするけど、UniformBuffer は個別にしたのに DescriptorSet は Shader ごとに唯一なインスタンスなのが不自然。
+    RHI 側の肥大化も防止したい。DX12 や Metal 対応の前にやっておきたいところ。
+
+    ShaderDescriptor はすべて SingleFrame なオブジェクトなので、GraphicsContext に shader を与えて生成してもらう感じがいいかな。
+
+    ### Shader 自体が値を保持する必要は？
+
+    無し、でいいと思う。その役割は Material が負う。
+
+    でも HC4 では ひとつのShaderをたくさんの Material にセットするとき、シーン内で唯一の意味を持つ値を、
+    全部の Material 側に設定するのがイヤだったから Shder に直接設定していた。
+    実際これはメモリ削減に有効に働いた。手間も少なかったし。
+
+    「Materialに値が設定されなったときの規定値」として Shader が値を持つのはアリかも。
+
+*/
 class ShaderDescriptor final
     : public Object
 {

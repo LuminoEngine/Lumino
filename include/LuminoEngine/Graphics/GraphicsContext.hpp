@@ -118,14 +118,15 @@ public:
 	///** RenderPass を設定します。Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
 	//void setRenderPass(RenderPass* value);
 
-	///** RenderPass を取得します。 */
-	//RenderPass* renderPass() const;
 
 	/** RenderPass を開始します。 */
 	void beginRenderPass(RenderPass* value);
 
 	/** RenderPass を終了します。 */
 	void endRenderPass();
+
+	/** RenderPass を取得します。 */
+	RenderPass* renderPass() const;
 
     /**
      * レンダーターゲット、深度バッファ、ステンシルバッファをクリアします。
