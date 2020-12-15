@@ -479,6 +479,12 @@ Ref<IShaderPass> OpenGLDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
 	return ptr;
 }
 
+Ref<IUniformBuffer> OpenGLDevice::onCreateUniformBuffer(uint32_t size)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
 ICommandQueue* OpenGLDevice::getGraphicsCommandQueue()
 {
 	return m_graphicsQueue;

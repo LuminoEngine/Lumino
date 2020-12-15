@@ -9,6 +9,7 @@
 #include "GraphicsDeviceContext.hpp"
 #include "OpenGL/OpenGLDeviceContext.hpp"
 #include "../Engine/LinearAllocator.hpp"
+#include "SingleFrameAllocator.hpp"
 
 namespace ln {
 
@@ -25,6 +26,7 @@ void GraphicsCommandList::init(GraphicsManager* manager)
 {
     m_rhiResource = manager->deviceContext()->createCommandList();
     m_allocator = makeRef<LinearAllocator>(manager->linearAllocatorPageManager());
+	m_singleFrameUniformBufferAllocator = makeRef<detail::SingleFrameUniformBufferAllocator>(manager->singleFrameUniformBufferAllocatorPageManager());
 }
 
 void GraphicsCommandList::dispose()
@@ -37,6 +39,12 @@ void GraphicsCommandList::dispose()
 void GraphicsCommandList::reset()
 {
     m_allocator->cleanup();
+	m_singleFrameUniformBufferAllocator->cleanup();
+}
+
+detail::UniformBufferView GraphicsCommandList::allocateUniformBuffer(size_t size)
+{
+	return m_singleFrameUniformBufferAllocator->allocate(size);
 }
 
 } // namespace detail

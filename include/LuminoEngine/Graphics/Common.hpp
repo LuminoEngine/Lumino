@@ -366,6 +366,7 @@ class IGraphicsDevice;
 class ICommandList;
 class ITexture;
 class ISamplerState;
+class IUniformBuffer;
 
 static const int MaxMultiRenderTargets = 4;
 static const int MaxVertexStreams = 16;
@@ -419,6 +420,13 @@ struct ShaderUniformTypeDesc
     }
 
     bool isArray() const { return elements > 0; }
+};
+
+struct UniformBufferView
+{
+    IUniformBuffer* buffer;
+    size_t offset;
+    void setData(const void* data, size_t size);
 };
 
 } // namespace detail

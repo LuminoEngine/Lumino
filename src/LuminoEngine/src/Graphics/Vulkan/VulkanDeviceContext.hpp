@@ -75,6 +75,7 @@ protected:
     Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
+    Ref<IUniformBuffer> onCreateUniformBuffer(uint32_t size) override;
 	void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override;
 	ICommandQueue* getGraphicsCommandQueue() override;
 	ICommandQueue* getComputeCommandQueue() override;
@@ -372,6 +373,21 @@ protected:
     VulkanBuffer m_buffer;
     GraphicsResourceUsage m_usage;
     VkIndexType m_indexType;
+};
+
+class VulkanUniformBuffer
+    : public IUniformBuffer
+{
+public:
+    VulkanUniformBuffer();
+    Result init(VulkanDevice* deviceContext, uint32_t size);
+    void dispose() override;
+    void* map() override;
+    void unmap() override;
+    VulkanBuffer* buffer() { return &m_buffer; }
+
+protected:
+    VulkanBuffer m_buffer;
 };
 
 class VulkanTexture

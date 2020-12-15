@@ -19,6 +19,7 @@ class GraphicsManager;
 class PlatformWindow;
 class ISwapChain;
 class SwapChainInternal;
+class SingleFrameUniformBufferAllocator;
 
 class GraphicsCommandList : public RefObject
 {
@@ -27,12 +28,14 @@ public:
     void init(GraphicsManager* manager);
     void dispose();
     const Ref<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
-    const Ref<LinearAllocator>& allocator() const { return m_allocator; }
+    const Ref<LinearAllocator>& allocator_deprecated() const { return m_allocator; }
     void reset();
+    detail::UniformBufferView allocateUniformBuffer(size_t size);
 
 private:
     Ref<detail::ICommandList> m_rhiResource;
     Ref<LinearAllocator> m_allocator;
+    Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;
 };
 
 }

@@ -262,6 +262,15 @@ Ref<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
     return ptr;
 }
 
+Ref<IUniformBuffer> VulkanDevice::onCreateUniformBuffer(uint32_t size)
+{
+    auto ptr = makeRef<VulkanUniformBuffer>();
+    if (!ptr->init(this, size)) {
+        return nullptr;
+    }
+    return ptr;
+}
+
 // TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
 // CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
 void VulkanDevice::onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
@@ -2465,6 +2474,38 @@ void* VulkanIndexBuffer::map()
 }
 
 void VulkanIndexBuffer::unmap()
+{
+    m_buffer.unmap();
+}
+
+//==============================================================================
+// VulkanUniformBuffer
+
+VulkanUniformBuffer::VulkanUniformBuffer()
+    : m_buffer()
+{
+}
+
+Result VulkanUniformBuffer::init(VulkanDevice* deviceContext, uint32_t size)
+{
+    if (!m_buffer.init(deviceContext, size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
+        return false;
+    }
+    return true;
+}
+
+void VulkanUniformBuffer::dispose()
+{
+    m_buffer.dispose();
+    IUniformBuffer::dispose();
+}
+
+void* VulkanUniformBuffer::map()
+{
+    return m_buffer.map();
+}
+
+void VulkanUniformBuffer::unmap()
 {
     m_buffer.unmap();
 }

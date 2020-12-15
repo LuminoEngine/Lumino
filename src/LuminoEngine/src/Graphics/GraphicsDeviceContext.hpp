@@ -20,6 +20,7 @@ class IRenderPass;
 class IVertexDeclaration;
 class IVertexBuffer;
 class IIndexBuffer;
+class IUniformBuffer;
 class ITexture;
 class IDepthBuffer;
 class ISamplerState;
@@ -33,6 +34,7 @@ enum class DeviceResourceType
 {
     VertexBuffer,
     IndexBuffer,
+	UniformBuffer,
 };
 
 enum class DeviceTextureType
@@ -215,6 +217,7 @@ public:
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
+	Ref<IUniformBuffer> createUniformBuffer(uint32_t size);
     void releaseObject(IGraphicsDeviceObject* obj) {}
 
 	void flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
@@ -247,6 +250,7 @@ protected:
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
+	virtual Ref<IUniformBuffer> onCreateUniformBuffer(uint32_t size) = 0;
 	virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) = 0;
 
 public:	// TODO:
@@ -445,6 +449,16 @@ protected:
 	virtual ~IIndexBuffer() = default;
 };
 
+class IUniformBuffer
+	: public IGraphicsDeviceObject
+{
+public:
+	virtual void* map() = 0;
+	virtual void unmap() = 0;
+
+protected:
+	virtual ~IUniformBuffer() = default;
+};
 
 class ITexture
 	: public IGraphicsDeviceObject

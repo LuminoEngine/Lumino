@@ -14,6 +14,7 @@
 #endif
 #include "../Engine/LinearAllocator.hpp"
 #include "../Asset/AssetManager.hpp"
+#include "SingleFrameAllocator.hpp"
 
 namespace ln {
 
@@ -212,6 +213,7 @@ void GraphicsManager::init(const Settings& settings)
 	m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
 	m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
 	m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
+	m_singleFrameUniformBufferAllocatorPageManager = makeRef<SingleFrameUniformBufferAllocatorPageManager>(m_deviceContext, AbstractLinearAllocatorPageManager::DefaultPageSize);
 
 	m_extensions.add(nullptr);	// [0] is dummy
 

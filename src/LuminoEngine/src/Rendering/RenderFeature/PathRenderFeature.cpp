@@ -10,7 +10,7 @@
 #include "PathRenderFeature.hpp"
 
 // [2020/11/17] Shader を使うことになるので、Descripter の対応 (Material ごとに UniformBuffer を持てるようにする) が済んでからにする。
-#if 1
+#if 0
 
 typedef unsigned int GLenum;
 typedef unsigned int GLuint;
@@ -1028,13 +1028,13 @@ PathRenderFeature::PathRenderFeature()
 void PathRenderFeature::init(RenderingManager* manager)
 {
 	RenderFeature::init();
-	m_nvgContext = nvgCreateGL(NVG_ANTIALIAS);
+	//m_nvgContext = nvgCreateGL(NVG_ANTIALIAS);
 }
 
 void PathRenderFeature::onDispose(bool explicitDisposing)
 {
 	if (m_nvgContext) {
-		nvgDeleteGL(m_nvgContext);
+		//nvgDeleteGL(m_nvgContext);
 		m_nvgContext = nullptr;
 	}
 	RenderFeature::onDispose(explicitDisposing);
@@ -1060,12 +1060,12 @@ void PathRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch
 	RenderPass* pass = context->renderPass();
 	RenderTargetTexture* target = pass->renderTarget(0);
 
-	nvgBeginFrame(m_nvgContext, target->width(), target->height(), 1.0);	// TODO: DPI
-	nvgBeginPath(m_nvgContext);
-	nvgRect(m_nvgContext, 100, 100, 120, 30);
-	nvgFillColor(m_nvgContext, nvgRGBA(255, 192, 0, 255));
-	nvgFill(m_nvgContext);
-	nvgEndFrame(m_nvgContext);
+	//nvgBeginFrame(m_nvgContext, target->width(), target->height(), 1.0);	// TODO: DPI
+	//nvgBeginPath(m_nvgContext);
+	//nvgRect(m_nvgContext, 100, 100, 120, 30);
+	//nvgFillColor(m_nvgContext, nvgRGBA(255, 192, 0, 255));
+	//nvgFill(m_nvgContext);
+	//nvgEndFrame(m_nvgContext);
 
 }
 
