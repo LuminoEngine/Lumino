@@ -597,8 +597,7 @@ public:
     {
         int descriptorWriteInfoIndex = -1;  // index of VulkanShaderPass::m_descriptorWriteInfo
         int bindingIndex = 0;
-        std::vector<byte_t> data;
-        //std::shared_ptr<VulkanBuffer> buffer;
+        ShaderDescriptorBufferView bufferView;
     };
     struct ImageBufferInfo
     {

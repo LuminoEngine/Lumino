@@ -24,6 +24,7 @@ class UnifiedShader;
 class IShaderPass;
 //class IShaderUniformBuffer;
 class ShaderTechniqueSemanticsManager;
+class GraphicsCommandList;
 }
 
 // UniformBuffer, sampler など、Shader の Data を保持する。
@@ -489,7 +490,7 @@ private:
 
     void setOwner(ShaderTechnique* owner) { m_owner = owner; }
     detail::IShaderPass* resolveRHIObject(GraphicsContext* graphicsContext, bool* outModified);
-    void submitShaderDescriptor(GraphicsContext* graphicsContext, detail::ICommandList* commandList, const ShaderDescriptor* descripter, bool* outModified);
+    void submitShaderDescriptor(GraphicsContext* graphicsContext, detail::GraphicsCommandList* commandList, const ShaderDescriptor* descripter, bool* outModified);
 
     ShaderTechnique* m_owner;
     String m_name;

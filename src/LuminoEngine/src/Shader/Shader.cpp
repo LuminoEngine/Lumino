@@ -5,6 +5,7 @@
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
+#include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
@@ -511,36 +512,40 @@ detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsContext* graphicsConte
     return m_rhiPass;
 }
 
-void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail::ICommandList* commandList, const ShaderDescriptor* descripter, bool* outModified)
+void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail::GraphicsCommandList* commandList, const ShaderDescriptor* descripter, bool* outModified)
 {
     if (descripter) {
         if (descripter != m_lastShaderDescriptor || m_lastShaderDescriptorRevision != descripter->m_revision) {
+            detail::ICommandList* rhiCommandList = commandList->rhiResource();
 
             {
                 auto* manager = m_owner->shader()->m_graphicsManager;
                 const ShaderDescriptorLayout* globalLayout = m_owner->m_owner->descriptorLayout();
                 detail::ShaderDescriptorTableUpdateInfo updateInfo;
 
-                // まず UniformBuffer に必要なサイズを測る
+                // まず全 UniformBuffer に必要なサイズを測る
+                // TODO: 事前計算でもよさそう
                 size_t totalSize = 0;
                 for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
                     if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
                         LN_NOTIMPLEMENTED();
                         break;
                     }
-                    updateInfo.uniforms[i].size = globalLayout->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].size;
-                    totalSize += updateInfo.uniforms[i].size;
+                    auto& view = updateInfo.uniforms[i];
+                    view.size = globalLayout->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].size;
+                    view.offset = totalSize;
+                    totalSize += view.size;
                 }
 
-                // UniformBuffer に必要な領域をまとめて確保してデータコピー
-                detail::RenderBulkData uniformBufferData = detail::GraphicsContextInternal::getRenderingCommandList(graphicsContext)->allocateBulkData(totalSize);
-                size_t offset = 0;
+                // 全 UniformBuffer に必要な領域をまとめて確保してデータコピー
+                auto uniformBufferData = commandList->allocateUniformBuffer(totalSize);
                 for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
                     auto& view = updateInfo.uniforms[i];
-                    void* d = static_cast<byte_t*>(uniformBufferData.writableData()) + offset;
+                    view.buffer = uniformBufferData.buffer;
+
+                    // TODO: map しないほうが効率いいか？
+                    void* d = static_cast<byte_t*>(view.buffer->map()) + view.offset;
                     memcpy(d, descripter->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].data(), view.size);
-                    view.data = d;
-                    offset += view.size;
                 }
 
                 // Textures
@@ -590,11 +595,11 @@ void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail
 
                 LN_ENQUEUE_RENDER_COMMAND_3(
                     ShaderConstantBuffer_submitShaderDescriptor, graphicsContext,
-                    detail::ICommandList*, commandList,
+                    detail::ICommandList*, rhiCommandList,
                     detail::IShaderDescriptorTable*, rhiDescriptorTable,
                     detail::ShaderDescriptorTableUpdateInfo, updateInfo,
                     {
-                        commandList->setDescriptorTableData(rhiDescriptorTable, &updateInfo);
+                        rhiCommandList->setDescriptorTableData(rhiDescriptorTable, &updateInfo);
                     });
             }
 

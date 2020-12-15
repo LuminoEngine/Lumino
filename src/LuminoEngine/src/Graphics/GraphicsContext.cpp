@@ -521,7 +521,7 @@ detail::ICommandList* GraphicsContext::commitState()
     detail::IShaderPass* shaderPassRHI = nullptr;
     if (m_staging.shaderPass) {
         //m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shaderDescriptor, &resourceModified);
-        m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shader->descriptor(), &resourceModified);
+        m_staging.shaderPass->submitShaderDescriptor(this, m_commandList, m_staging.shader->descriptor(), &resourceModified);
 
         shaderPassRHI = m_staging.shaderPass->resolveRHIObject(this, &resourceModified);
     }

@@ -128,8 +128,9 @@ using ShaderVertexInputAttributeTable = std::vector<ShaderVertexInputAttribute>;
 
 struct ShaderDescriptorBufferView
 {
-	const void* data;
-	uint32_t size;
+	IUniformBuffer* buffer;
+	size_t offset;
+	size_t size;
 };
 
 struct ShaderDescriptorCombinedSampler

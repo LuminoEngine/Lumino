@@ -3398,8 +3398,11 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         const auto& uniformBuffer = uniforms[i];
 
 #if 1
-        VulkanSingleFrameBufferInfo bufferInfo = commandBuffer->uniformBufferSingleFrameAllocator()->allocate(uniformBuffer.data.size());
-        bufferInfo.buffer->setData(bufferInfo.offset, uniformBuffer.data.data(), uniformBuffer.data.size());
+        //VulkanSingleFrameBufferInfo bufferInfo = commandBuffer->uniformBufferSingleFrameAllocator()->allocate(uniformBuffer.data.size());
+        //bufferInfo.buffer->setData(bufferInfo.offset, uniformBuffer.data.data(), uniformBuffer.data.size());
+        VulkanSingleFrameBufferInfo bufferInfo;
+        bufferInfo.buffer = static_cast<VulkanUniformBuffer*>(uniformBuffer.bufferView.buffer)->buffer();
+        bufferInfo.offset = uniformBuffer.bufferView.offset;
 
         VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
         info.buffer = bufferInfo.buffer->nativeBuffer();
@@ -3485,16 +3488,6 @@ bool VulkanShaderDescriptorTable::init(VulkanDevice* deviceContext, const Vulkan
         UniformBufferInfo info;
         info.descriptorWriteInfoIndex = writeIndex;
         info.bindingIndex = item.binding;
-        info.data.resize(item.size);
-        //info.buffer = std::make_shared<VulkanBuffer>();
-
-        //// TRANSFER_DST に最適化
-        //if (!info.buffer->init(
-        //    deviceContext, item.size,
-        //    VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        //    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
-        //    return false;
-        //}
 
         // Verify
         const VkWriteDescriptorSet& writeInfo = ownerPass->witeInfo(info.descriptorWriteInfoIndex);
@@ -3565,9 +3558,7 @@ void VulkanShaderDescriptorTable::setData(const ShaderDescriptorTableUpdateInfo*
     //if (LN_REQUIRE(data->samplers.size() == m_samplers.size())) return;
 
     for (int i = 0; i < m_uniforms.size(); i++) {
-        if (LN_REQUIRE(data->uniforms[i].size == m_uniforms[i].data.size()))
-            return;
-        memcpy(m_uniforms[i].data.data(), data->uniforms[i].data, m_uniforms[i].data.size());
+        m_uniforms[i].bufferView = data->uniforms[i];
     }
 
     for (int i = 0; i < m_textures.size(); i++) {

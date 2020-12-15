@@ -2143,7 +2143,8 @@ void GLShaderDescriptorTable::setData(const ShaderDescriptorTableUpdateInfo* dat
 	for (int i = 0; i < m_uniformBuffers.size(); i++) {
 		if (m_uniformBuffers[i].ubo) {
 			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBuffers[i].ubo));
-			GL_CHECK(glBufferSubData(GL_UNIFORM_BUFFER, 0, data->uniforms[i].size, data->uniforms[i].data));
+			LN_NOTIMPLEMENTED();
+			//GL_CHECK(glBufferSubData(GL_UNIFORM_BUFFER, 0, data->uniforms[i].size, data->uniforms[i].data));
 			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 		}
 	}

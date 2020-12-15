@@ -270,6 +270,11 @@ void GraphicsManager::dispose()
 		resource->onManagerFinalizing();
 	}
 
+	if (m_singleFrameUniformBufferAllocatorPageManager) {
+		m_singleFrameUniformBufferAllocatorPageManager->clear();
+		m_singleFrameUniformBufferAllocatorPageManager = nullptr;
+	}
+
 	m_frameBufferCache = nullptr;
 	m_depthBufferCacheManager = nullptr;
 	m_renderTargetTextureCacheManager = nullptr;
