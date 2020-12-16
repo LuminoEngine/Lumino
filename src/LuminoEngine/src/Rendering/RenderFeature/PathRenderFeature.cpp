@@ -971,7 +971,7 @@ static void glnvg__renderDelete(void* uptr)
 	free(gl);
 }
 
-NVGcontext* nvgCreateGL(int flags)
+NVGcontext* nvgCreateGL(int flags, GLNVGcontext** glCtx)
 {
 	NVGparams params;
 	NVGcontext* ctx = NULL;
@@ -999,6 +999,8 @@ NVGcontext* nvgCreateGL(int flags)
 
 	ctx = nvgCreateInternal(&params);
 	if (ctx == NULL) goto error;
+
+	*glCtx = gl;
 
 	return ctx;
 
@@ -1028,7 +1030,7 @@ PathRenderFeature::PathRenderFeature()
 void PathRenderFeature::init(RenderingManager* manager)
 {
 	RenderFeature::init();
-	//m_nvgContext = nvgCreateGL(NVG_ANTIALIAS);
+	//m_nvgContext = nvgCreateGL(NVG_ANTIALIAS, &m_glnvgContext);
 }
 
 void PathRenderFeature::onDispose(bool explicitDisposing)
@@ -1060,6 +1062,7 @@ void PathRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch
 	RenderPass* pass = context->renderPass();
 	RenderTargetTexture* target = pass->renderTarget(0);
 
+	//m_glnvgContext->g = context;
 	//nvgBeginFrame(m_nvgContext, target->width(), target->height(), 1.0);	// TODO: DPI
 	//nvgBeginPath(m_nvgContext);
 	//nvgRect(m_nvgContext, 100, 100, 120, 30);

@@ -4,6 +4,7 @@
 #include "../RenderStage.hpp"
 
 struct NVGcontext;
+struct GLNVGcontext;
 
 namespace ln {
 namespace detail {
@@ -36,6 +37,7 @@ private:
 
 	BatchData m_batchData;
 	NVGcontext* m_nvgContext;
+	GLNVGcontext* m_glnvgContext;
 };
 
 } // namespace detail

@@ -291,8 +291,9 @@ void RenderingManager::init(const Settings& settings)
 		createBuiltinShader(BuiltinShader::TransitionEffectWithMask, u"TransitionEffectWithMask", data, LN_ARRAY_SIZE_OF(data));
 	}
 
-#if 0	// テスト用
 #define ROOT_PATH u"C:/Proj/LN/Lumino/src/LuminoEngine/"
+	m_builtinShaders[(int)BuiltinShader::NanoVG] = Shader::create(ROOT_PATH u"src/Rendering/Resource/nanovg.fx");
+#if 0	// テスト用
 
 	m_builtinShaders[(int)BuiltinShader::CopyScreen] = Shader::create(ROOT_PATH u"src/Rendering/Resource/CopyScreen.fx");
 	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(ROOT_PATH u"src/Rendering/Resource/Sprite.fx");
