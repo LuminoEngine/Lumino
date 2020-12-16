@@ -5,6 +5,7 @@
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include "OpenGL/OpenGLDeviceContext.hpp"
@@ -45,6 +46,11 @@ void GraphicsCommandList::reset()
 detail::UniformBufferView GraphicsCommandList::allocateUniformBuffer(size_t size)
 {
 	return m_singleFrameUniformBufferAllocator->allocate(size);
+}
+
+ShaderDescriptor* GraphicsCommandList::acquireShaderDescriptor(Shader* shader)
+{
+	return shader->acquireDescriptor();
 }
 
 } // namespace detail

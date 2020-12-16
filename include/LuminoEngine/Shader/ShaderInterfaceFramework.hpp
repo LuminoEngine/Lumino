@@ -9,7 +9,6 @@ class Texture;
 class Texture2D;
 class ShaderDefaultDescriptor;
 namespace detail {
-struct ShaderDescriptor2;
 
 // cbuffer LNRenderViewBuffer
 struct alignas(16) LNRenderViewBuffer
@@ -286,11 +285,11 @@ public:
     int getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers buffer) const { return m_builtinUniformBuffers[static_cast<int>(buffer)]; }
 
     // call by rendering time.
-    void updateRenderViewVariables(ShaderDescriptor2* descriptor, const RenderViewInfo& info, const SceneInfo& sceneInfo) const;
-    void updateElementVariables(ShaderDescriptor2* descriptor, const CameraInfo& cameraInfo, const ElementInfo& info) const;
-    void updateSubsetVariables(ShaderDescriptor2* descriptor, const SubsetInfo& info) const;
-    void updateSubsetVariables_PBR(ShaderDescriptor2* descriptor, const PbrMaterialData& materialData) const;
-    void updateClusteredShadingVariables(ShaderDescriptor2* descriptor, const ClusteredShadingRendererInfo& info) const;
+    void updateRenderViewVariables(ShaderDescriptor* descriptor, const RenderViewInfo& info, const SceneInfo& sceneInfo) const;
+    void updateElementVariables(ShaderDescriptor* descriptor, const CameraInfo& cameraInfo, const ElementInfo& info) const;
+    void updateSubsetVariables(ShaderDescriptor* descriptor, const SubsetInfo& info) const;
+    void updateSubsetVariables_PBR(ShaderDescriptor* descriptor, const PbrMaterialData& materialData) const;
+    void updateClusteredShadingVariables(ShaderDescriptor* descriptor, const ClusteredShadingRendererInfo& info) const;
 
 private:
     //struct VariableKindPair

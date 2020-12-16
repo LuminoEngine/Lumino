@@ -216,7 +216,7 @@ bool RenderFeature::drawElementTransformNegate() const
 }
 
 void RenderFeature::updateRenderParameters(
-	detail::ShaderDescriptor2* descriptor,
+	ShaderDescriptor* descriptor,
 	detail::RenderDrawElement* element,
 	ShaderTechnique* tech,
 	const detail::RenderViewInfo& renderViewInfo,
@@ -228,7 +228,7 @@ void RenderFeature::updateRenderParameters(
 }
 
 void RenderFeature::updateRenderParametersDefault(
-	detail::ShaderDescriptor2* descriptor,
+	ShaderDescriptor* descriptor,
 	ShaderTechnique* tech,
 	const detail::RenderViewInfo& renderViewInfo,
 	const detail::SceneInfo& sceneInfo,

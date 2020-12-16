@@ -107,8 +107,7 @@ public:
     ShaderPass* shaderPass() const;
 
     ///** ShaderPass を設定します。 */
-    //void setShaderDescriptor(ShaderDefaultDescriptor* value);
-    void setShaderDescriptor(detail::ShaderDescriptor2* value) { m_staging.shaderDescriptor = value; }
+    void setShaderDescriptor(ShaderDescriptor* value);
 
     ///** ShaderPass を取得します。 */
     //ShaderDefaultDescriptor* shaderDescriptor() const;
@@ -204,7 +203,7 @@ private:
         Ref<Shader> shader; // shaderPass owner, for keep reference.
         ShaderPass* shaderPass;
         //Ref<ShaderDefaultDescriptor> shaderDescriptor;
-        detail::ShaderDescriptor2* shaderDescriptor;
+        ShaderDescriptor* shaderDescriptor;
         PrimitiveTopology topology;
 
         void reset();

@@ -126,7 +126,7 @@ protected:
 	//virtual void onEndRender() = 0;
 
 	virtual void onCollectLight(const DynamicLightInfo& light);
-	virtual void onSetAdditionalShaderPassVariables(ShaderDescriptor2* descriptor, ShaderTechnique* technique);
+	virtual void onSetAdditionalShaderPassVariables(ShaderDescriptor* descriptor, ShaderTechnique* technique);
 
 
 public:	// TODO

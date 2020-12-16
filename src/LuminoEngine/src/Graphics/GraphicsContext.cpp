@@ -112,6 +112,11 @@ void GraphicsContext::onDispose(bool explicitDisposing)
     Object::onDispose(explicitDisposing);
 }
 
+void GraphicsContext::setShaderDescriptor(ShaderDescriptor* value)
+{
+    m_staging.shaderDescriptor = value;
+}
+
 void GraphicsContext::resetState()
 {
     m_staging.reset();

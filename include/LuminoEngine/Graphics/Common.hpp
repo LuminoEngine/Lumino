@@ -15,6 +15,7 @@ class Texture;
 class Texture2D;
 class RenderTargetTexture;
 class DepthBuffer;
+class ShaderDescriptor;
 class INativeGraphicsExtension;
 
 /**
@@ -427,16 +428,6 @@ struct UniformBufferView
     IUniformBuffer* buffer;
     size_t offset;
     void setData(const void* data, size_t size);
-};
-
-struct ShaderDescriptor2
-{
-    static const int MaxElements = 8;
-
-    std::array<UniformBufferView, MaxElements> uniforms = {};
-    std::array<Texture*, MaxElements> textures = {};
-    std::array<SamplerState*, MaxElements> samplers = {};
-
 };
 
 } // namespace detail

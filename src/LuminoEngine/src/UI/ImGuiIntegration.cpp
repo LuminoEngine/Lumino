@@ -10,6 +10,7 @@
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
 #include "../Font/FontManager.hpp"
@@ -194,26 +195,26 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 
 
 	const auto& commandList = graphicsContext->commandList();
-	ShaderDescriptor2 descriptor = commandList->allocateShaderDescriptor(m_shader);
+	ShaderDescriptor* descriptor = commandList->acquireShaderDescriptor(m_shader);
 	{
-		descriptor.uniforms[0] = commandList->allocateUniformBuffer(sizeof(LNRenderElementBuffer));
+		descriptor->setUniformBuffer(0, commandList->allocateUniformBuffer(sizeof(LNRenderElementBuffer)));
 		LNRenderElementBuffer renderElementBuffer;
 		renderElementBuffer.ln_WorldViewProjection = mat_projection;
 		renderElementBuffer.ln_WorldViewIT = Matrix::Identity;
-		descriptor.uniforms[0].setData(&renderElementBuffer, sizeof(LNRenderElementBuffer));
+		descriptor->setUniformBufferData(0, &renderElementBuffer, sizeof(LNRenderElementBuffer));
 	}
 	{
-		descriptor.uniforms[1] = commandList->allocateUniformBuffer(sizeof(LNEffectColorBuffer));
+		descriptor->setUniformBuffer(1, commandList->allocateUniformBuffer(sizeof(LNRenderElementBuffer)));
 		LNEffectColorBuffer buf2;
 		buf2.ln_ColorScale = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-		descriptor.uniforms[1].setData(&buf2, sizeof(LNEffectColorBuffer));
+		descriptor->setUniformBufferData(1, &buf2, sizeof(LNEffectColorBuffer));
 	}
 	{
-		descriptor.uniforms[2] = commandList->allocateUniformBuffer(sizeof(LNRenderViewBuffer));
+		descriptor->setUniformBuffer(2, commandList->allocateUniformBuffer(sizeof(LNRenderElementBuffer)));
 		LNRenderViewBuffer buf3;
-		descriptor.uniforms[2].setData(&buf3, sizeof(LNRenderViewBuffer));
+		descriptor->setUniformBufferData(2, &buf3, sizeof(LNRenderViewBuffer));
 	}
-	graphicsContext->setShaderDescriptor(&descriptor);
+	graphicsContext->setShaderDescriptor(descriptor);
 
 	//std::cout << "----" << std::endl;
 	//std::cout << "CmdListsCount: " << draw_data->CmdListsCount << std::endl;
@@ -242,7 +243,7 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 			{
 				auto texture = reinterpret_cast<Texture2D*>(pcmd->TextureId);
 				//m_shader->findParameter(u"ln_MaterialTexture")->setTexture(texture);
-				descriptor.textures[0] = texture;
+				descriptor->setTexture(0, texture);
 				Rect r(pcmd->ClipRect.x - clip_off.x, pcmd->ClipRect.y - clip_off.y, pcmd->ClipRect.z - clip_off.x, pcmd->ClipRect.w - clip_off.y);
 				graphicsContext->setScissorRect(r);
 				//graphicsContext->drawPrimitiveIndexed(pcmd->VtxOffset + global_vtx_offset, pcmd->ElemCount / 3);

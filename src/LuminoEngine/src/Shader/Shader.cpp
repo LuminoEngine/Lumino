@@ -7,6 +7,7 @@
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "UnifiedShaderCompiler.hpp"
@@ -330,6 +331,7 @@ void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, Diagn
 		}
 
         tech->setupSemanticsManager();
+        m_descriptor2 = makeObject<ShaderDescriptor>(this);
 	}
 }
 
@@ -408,6 +410,11 @@ void Shader::setTexture(const StringRef& parameterName, Texture* value)
 //{
 //    return makeObject<ShaderDefaultDescriptor>(this);
 //}
+
+Ref<ShaderDescriptor> Shader::acquireDescriptor()
+{
+    return m_descriptor2;
+}
 
 // TODO: 名前の指定方法をもう少しいい感じにしたい。PostEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。
 ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const
@@ -621,7 +628,7 @@ void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail
 
 }
 
-void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const detail::ShaderDescriptor2* descripter, bool* outModified)
+void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const ShaderDescriptor* descripter, bool* outModified)
 {
     auto* manager = m_owner->shader()->m_graphicsManager;
     detail::GraphicsCommandList* commandList = graphicsContext->commandList();
@@ -634,8 +641,9 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
     // Uniforms
     for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
         int dataIndex = m_descriptorLayout.m_buffers[i].dataIndex;
-        updateInfo.uniforms[i].buffer = descripter->uniforms[dataIndex].buffer;
-        updateInfo.uniforms[i].offset = descripter->uniforms[dataIndex].offset;
+        const auto& view = descripter->uniformBuffer(dataIndex);
+        updateInfo.uniforms[i].buffer = view.buffer;
+        updateInfo.uniforms[i].offset = view.offset;
         if (LN_ENSURE(updateInfo.uniforms[i].buffer)) return;
     }
 
@@ -646,7 +654,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
             break;
         }
         const auto& info = m_descriptorLayout.m_textures[i];
-        Texture* texture = descripter->textures[info.dataIndex];
+        Texture* texture = descripter->texture(info.dataIndex);
         if (!texture) {
             texture = manager->whiteTexture();
         }
@@ -671,7 +679,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
             break;
         }
         const auto& info = m_descriptorLayout.m_samplers[i];
-        SamplerState* sampler = descripter->samplers[info.dataIndex];
+        SamplerState* sampler = descripter->samplerState(info.dataIndex);
         if (!sampler)
             sampler = manager->defaultSamplerState();
 

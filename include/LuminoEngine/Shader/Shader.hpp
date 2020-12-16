@@ -25,7 +25,6 @@ class IShaderPass;
 //class IShaderUniformBuffer;
 class ShaderTechniqueSemanticsManager;
 class GraphicsCommandList;
-struct ShaderDescriptor2;
 }
 
 // UniformBuffer, sampler など、Shader の Data を保持する。
@@ -88,7 +87,41 @@ struct ShaderDescriptor2;
     "$Global" と "xxxx" にはデフォルト値を使いたい。
 
 
+    [2020/12/16] そもそも ShaderDescriptor をたくさん作れるようにする必要はある？
+    ----------
+    SceneRenderer から本気でマルチスレッドでコマンドリスト作る場合…かな。
 
+    Vulkan は API の仕様上 Pool からたくさんの Descriptor を作る必要があるけど、
+    ラッパー側では 092f21e7507a6480d61249480ad267bb1916e22f 時点のように
+    単一の固定長 array を持った struct に UniformBuffer や Texture をセットして、
+    submit するだけでかまわない。
+
+    モダンな GraphicsAPI としては正しいのかもしれないけど、
+    結局 RHI とラッパーで同じようなデータ構造を用意する必要があり、
+    複雑さが上がる一方、メモリ消費・実行速度的に嬉しいことがあまりない。
+
+    ゲームのように複雑なシーンで動く絵を出すためには、実質ドローコールのたびに
+    Descriptor を作らなければならないためかなりのメモリ消費になる。
+
+    またラッパー側で GraphicsCommandList をバックバッファの数だけ持つようにして
+    ローテーション組む用になっているが、このときどの GraphicsCommandList と DescriptorPool を
+    対応付けるか、という問題も出てくる。(VulkanDriver と同じような方法で解決せざるを得ないけど)
+    単純に複雑さが上がる。
+
+
+    [2020/12/16] それでも ShaderDescriptor が必要？
+    ----------
+    UniformBuffer をサポートしたことで Shader へデータをセットする API が複雑になってきたので、
+    エンジンの 内部から使うものと、外部のユーザープログラムから使うものを区別したい。
+
+    Unity とかは Shader に対して直接フィールドをセットすることはできないけど、
+    前述の通り直接設定したほうが作業効率が良いこともある。
+
+    ただ GraphicsContext を使うときにもこれが必要になるので、どのみち公開することになる。
+    Binding への公開はそもそも Graphics 全体の課題なのでいいとしても、
+    Descriptor 自体はある程度本来の使い方に似せたデザインにしたい。
+
+    
 */
 class ShaderDefaultDescriptor final
     : public Object
@@ -331,6 +364,7 @@ struct ShaderPassDescriptorLayout
  * その場合 Material 側で持つデータ量や転送のオーバーヘッドは少なくなるが、以下の点に注意すること。
  * - 値をシリアライズすることはできなくなる。
  * - 複数の Material から参照される場合、値は共有される。
+ *
  */
 LN_CLASS()
 class LN_API Shader
@@ -405,6 +439,7 @@ public:
 
     /** この Shader の DescriptorLayout をもとに、ShaderDescriptor を作成します。 */
     //Ref<ShaderDefaultDescriptor> createDescriptor();
+    Ref<ShaderDescriptor> acquireDescriptor();
 
     const Ref<ShaderDefaultDescriptor>& descriptor() const { return m_descriptor; }
     const Ref<ShaderDescriptorLayout>& descriptorLayout() const { return m_descriptorLayout; }
@@ -435,6 +470,7 @@ private:
     String m_name;
     Ref<ShaderDescriptorLayout> m_descriptorLayout;
     Ref<ShaderDefaultDescriptor> m_descriptor;
+    Ref<ShaderDescriptor> m_descriptor2;
     Ref<List<Ref<ShaderTechnique>>> m_techniques;
 
     friend class ShaderPass;
@@ -512,7 +548,7 @@ private:
     void setOwner(ShaderTechnique* owner) { m_owner = owner; }
     detail::IShaderPass* resolveRHIObject(GraphicsContext* graphicsContext, bool* outModified);
     void submitShaderDescriptor(GraphicsContext* graphicsContext, detail::GraphicsCommandList* commandList, const ShaderDefaultDescriptor* descripter, bool* outModified);
-    void submitShaderDescriptor2(GraphicsContext* graphicsContext, const detail::ShaderDescriptor2* descripter, bool* outModified);
+    void submitShaderDescriptor2(GraphicsContext* graphicsContext, const ShaderDescriptor* descripter, bool* outModified);
 
     ShaderTechnique* m_owner;
     String m_name;
