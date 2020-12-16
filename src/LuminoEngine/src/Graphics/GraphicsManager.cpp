@@ -27,7 +27,12 @@ void ConstantBufferView::setData(const void* data, size_t size)
 	byte_t* d = static_cast<byte_t*>(buffer->writableData()) + offset;
 	memcpy(d, data, size);
 }
-	
+
+void* ConstantBufferView::writableData()
+{
+	return static_cast<byte_t*>(buffer->writableData()) + offset;
+}
+
 } // namespace detail
 
 //==============================================================================

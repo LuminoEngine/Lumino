@@ -926,52 +926,76 @@ void ShaderParameter2::setData(const void* data, size_t size)
     m_owner->setData(m_dataIndex, data, size);
 }
 
-void ShaderParameter2::setInt(int value)
+void ShaderParameter2::setInt(int value, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setInt(m_dataIndex, value);
+    if (descriptor)
+        descriptor->setInt(m_dataIndex, value);
+    else
+        m_owner->setInt(m_dataIndex, value);
 }
 
-void ShaderParameter2::setIntArray(const int* value, int count)
+void ShaderParameter2::setIntArray(const int* value, int count, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setIntArray(m_dataIndex, value, count);
+    if (descriptor)
+        descriptor->setIntArray(m_dataIndex, value, count);
+    else
+        m_owner->setIntArray(m_dataIndex, value, count);
 }
 
-void ShaderParameter2::setFloat(float value)
+void ShaderParameter2::setFloat(float value, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setFloat(m_dataIndex, value);
+    if (descriptor)
+        descriptor->setFloat(m_dataIndex, value);
+    else
+        m_owner->setFloat(m_dataIndex, value);
 }
 
-void ShaderParameter2::setFloatArray(const float* value, int count)
+void ShaderParameter2::setFloatArray(const float* value, int count, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setFloatArray(m_dataIndex, value, count);
+    if (descriptor)
+        descriptor->setFloatArray(m_dataIndex, value, count);
+    else
+        m_owner->setFloatArray(m_dataIndex, value, count);
 }
 
-void ShaderParameter2::setVector(const Vector4& value)
+void ShaderParameter2::setVector(const Vector4& value, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setVector(m_dataIndex, value);
+    if (descriptor)
+        descriptor->setVector(m_dataIndex, value);
+    else
+        m_owner->setVector(m_dataIndex, value);
 }
 
-void ShaderParameter2::setVectorArray(const Vector4* value, int count)
+void ShaderParameter2::setVectorArray(const Vector4* value, int count, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setVectorArray(m_dataIndex, value, count);
+    if (descriptor)
+        descriptor->setVectorArray(m_dataIndex, value, count);
+    else
+        m_owner->setVectorArray(m_dataIndex, value, count);
 }
 
-void ShaderParameter2::setMatrix(const Matrix& value)
+void ShaderParameter2::setMatrix(const Matrix& value, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setMatrix(m_dataIndex, value);
+    if (descriptor)
+        descriptor->setMatrix(m_dataIndex, value);
+    else
+        m_owner->setMatrix(m_dataIndex, value);
 }
 
-void ShaderParameter2::setMatrixArray(const Matrix* value, int count)
+void ShaderParameter2::setMatrixArray(const Matrix* value, int count, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setMatrixArray(m_dataIndex, value, count);
+    if (descriptor)
+        descriptor->setMatrixArray(m_dataIndex, value, count);
+    else
+        m_owner->setMatrixArray(m_dataIndex, value, count);
 }
 
 void ShaderParameter2::setTexture(Texture* value)

@@ -267,28 +267,28 @@ public:
     const String name() const;
 
     /** 整数値を設定します。 */
-    void setInt(int value);
+    void setInt(int value, ShaderDescriptor* descriptor = nullptr);
 
     /** 整数値の配列を設定します。 */
-    void setIntArray(const int* value, int count);
+    void setIntArray(const int* value, int count, ShaderDescriptor* descriptor = nullptr);
 
     /** 浮動小数点値を設定します。 */
-    void setFloat(float value);
+    void setFloat(float value, ShaderDescriptor* descriptor = nullptr);
 
     /** 浮動小数点値の配列を設定します。 */
-    void setFloatArray(const float* value, int count);
+    void setFloatArray(const float* value, int count, ShaderDescriptor* descriptor = nullptr);
 
     /** ベクトルを設定します。 */
-    void setVector(const Vector4& value);
+    void setVector(const Vector4& value, ShaderDescriptor* descriptor = nullptr);
 
     /** ベクトルの配列を設定します。 */
-    void setVectorArray(const Vector4* value, int count);
+    void setVectorArray(const Vector4* value, int count, ShaderDescriptor* descriptor = nullptr);
 
     /** 行列を設定します。 */
-    void setMatrix(const Matrix& value);
+    void setMatrix(const Matrix& value, ShaderDescriptor* descriptor = nullptr);
 
     /** 行列の配列を設定します。 */
-    void setMatrixArray(const Matrix* value, int count);
+    void setMatrixArray(const Matrix* value, int count, ShaderDescriptor* descriptor = nullptr);
 
     /** テクスチャを設定します。 */
     void setTexture(Texture* value);
@@ -310,7 +310,7 @@ LN_INTERNAL_NEW_OBJECT;
     ShaderParameter2();
     bool init(ShaderDefaultDescriptor* owner, IndexType type, int dataIndex);
 
-private:
+public: // TODO:
     ShaderDefaultDescriptor* m_owner;
     IndexType m_indexType;
     int m_dataIndex = 0;     // Index of ShaderDescriptorLayout::m_buffers,m_members,m_textures,m_samplers

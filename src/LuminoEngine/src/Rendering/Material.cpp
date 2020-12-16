@@ -275,28 +275,29 @@ void Material::updateShaderVariables(detail::GraphicsCommandList* commandList, S
                 LN_NOTIMPLEMENTED();
                 break;
             case ShaderVariableType::Int:
-                param->setInt(pair.second->getInt());
+                param->setInt(pair.second->getInt(), descriptor);
                 break;
             case ShaderVariableType::Float:
-                param->setFloat(pair.second->getFloat());
+                param->setFloat(pair.second->getFloat(), descriptor);
                 break;
             case ShaderVariableType::FloatArray:
-                param->setFloatArray(pair.second->getFloatArray(), pair.second->getArrayLength());
+                param->setFloatArray(pair.second->getFloatArray(), pair.second->getArrayLength(), descriptor);
                 break;
             case ShaderVariableType::Vector:
-                param->setVector(pair.second->getVector());
+                param->setVector(pair.second->getVector(), descriptor);
                 break;
             case ShaderVariableType::VectorArray:
-                param->setVectorArray(pair.second->getVectorArray(), pair.second->getArrayLength());
+                param->setVectorArray(pair.second->getVectorArray(), pair.second->getArrayLength(), descriptor);
                 break;
             case ShaderVariableType::Matrix:
-                param->setMatrix(pair.second->getMatrix());
+                param->setMatrix(pair.second->getMatrix(), descriptor);
                 break;
             case ShaderVariableType::MatrixArray:
-                param->setMatrixArray(pair.second->getMatrixArray(), pair.second->getArrayLength());
+                param->setMatrixArray(pair.second->getMatrixArray(), pair.second->getArrayLength(), descriptor);
                 break;
             case ShaderVariableType::Texture:
-                param->setTexture(pair.second->getTexture());
+                //param->setTexture(pair.second->getTexture(), descriptor);
+                descriptor->setTexture(param->m_dataIndex, pair.second->getTexture());
                 break;
             case ShaderVariableType::Pointer:
                 LN_NOTIMPLEMENTED();

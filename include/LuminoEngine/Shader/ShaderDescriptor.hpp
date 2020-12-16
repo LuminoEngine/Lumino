@@ -57,6 +57,8 @@ public:
 
 	///** SamplerState を設定します。 */
 	//void setSamplerState(int samplerIndex, SamplerState* value);
+
+	void fetchDefaultValues();
 	
 LN_INTERNAL_NEW_OBJECT;
     ShaderDescriptor();

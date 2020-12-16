@@ -429,6 +429,7 @@ struct ConstantBufferView
     ConstantBuffer* buffer;
     size_t offset;
     void setData(const void* data, size_t size);
+    void* writableData();
 };
 
 } // namespace detail

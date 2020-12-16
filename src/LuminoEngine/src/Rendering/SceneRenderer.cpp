@@ -538,8 +538,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 						descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
 						const auto& data = shader->descriptor()->m_buffers[index];
 						descriptor->setUniformBufferData(0, data.data(), data.size());
-						
 					}
+					descriptor->fetchDefaultValues();
 				}
 
 				//semanticsManager->updateCameraVariables(cameraInfo);

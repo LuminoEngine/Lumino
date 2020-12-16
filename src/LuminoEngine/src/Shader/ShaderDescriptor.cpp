@@ -1,5 +1,7 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/ConstantBuffer.hpp>
 #include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 
@@ -44,42 +46,42 @@ void ShaderDescriptor::setInt(int memberIndex, int value)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, static_cast<byte_t*>(buffer.buffer->writableData()), member.desc.offset, 1, 0);
+	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, 0);
 }
 
 void ShaderDescriptor::setIntArray(int memberIndex, const int* value, int count)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, static_cast<byte_t*>(buffer.buffer->writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride);
+	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
 void ShaderDescriptor::setFloat(int memberIndex, float value)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, static_cast<byte_t*>(buffer.buffer->writableData()), member.desc.offset, 1, 0);
+	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, 0);
 }
 
 void ShaderDescriptor::setFloatArray(int memberIndex, const float* value, int count)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, static_cast<byte_t*>(buffer.buffer->writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride);
+	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
 void ShaderDescriptor::setVector(int memberIndex, const Vector4& value)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)&value, 4, 1, static_cast<byte_t*>(buffer.buffer->writableData()), member.desc.offset, 1, 0, member.desc.columns);
+	detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)&value, 4, 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, 0, member.desc.columns);
 }
 
 void ShaderDescriptor::setVectorArray(int memberIndex, const Vector4* value, int count)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)value, 4, count, static_cast<byte_t*>(buffer.buffer->writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride, member.desc.columns);
+	detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)value, 4, count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride, member.desc.columns);
 }
 
 void ShaderDescriptor::setMatrix(int memberIndex, const Matrix& value)
@@ -92,7 +94,7 @@ void ShaderDescriptor::setMatrix(int memberIndex, const Matrix& value)
 
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, static_cast<byte_t*>(buffer.buffer->writableData()), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, transpose);
+	detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, transpose);
 }
 
 void ShaderDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int count)
@@ -104,7 +106,7 @@ void ShaderDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int 
 #endif
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)value, 4, 4, count, static_cast<byte_t*>(buffer.buffer->writableData()), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, transpose);
+	detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)value, 4, 4, count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, transpose);
 }
 
 //void ShaderDescriptor::setTexture(int textureIndex, Texture* value)
@@ -121,6 +123,21 @@ void ShaderDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int 
 //{
 //	m_samplers[samplerIndex] = value;
 //}
+
+void ShaderDescriptor::fetchDefaultValues()
+{
+	const auto& defaulValues = m_shader->descriptor();
+	const auto& layout = descriptorLayout();
+
+	// TODO: uniform も
+
+	for (int i = 0; i < layout->m_textures.size(); i++) {
+		m_textures[i] = defaulValues->m_textures[i];
+	}
+	for (int i = 0; i < layout->m_samplers.size(); i++) {
+		m_samplers[i] = defaulValues->m_samplers[i];
+	}
+}
 
 #if 0
 //==============================================================================
