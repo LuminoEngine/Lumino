@@ -323,6 +323,8 @@ static int glnvg__convertPaint(GLNVGcontext* gl, GLNVGfragUniforms* frag, NVGpai
 
 	memset(frag, 0, sizeof(*frag));
 
+	frag->viewSize.x = gl->view[0];
+	frag->viewSize.y = gl->view[1];
 	frag->innerCol = glnvg__premulColor(paint->innerColor);
 	frag->outerCol = glnvg__premulColor(paint->outerColor);
 
@@ -484,23 +486,20 @@ static void glnvg__fill(GLNVGcontext* gl, GLNVGcall* call)
 
 static void glnvg__convexFill(GLNVGcontext* gl, GLNVGcall* call)
 {
-#if 1	// TODO:
-	LN_NOTIMPLEMENTED();
-#else
 	GLNVGpath* paths = &gl->paths[call->pathOffset];
 	int i, npaths = call->pathCount;
 
 	glnvg__setUniforms(gl, call->uniformOffset, call->image);
-	glnvg__checkError(gl, "convex fill");
 
 	for (i = 0; i < npaths; i++) {
-		glDrawArrays(GL_TRIANGLE_FAN, paths[i].fillOffset, paths[i].fillCount);
+		gl->g->setPrimitiveTopology(ln::PrimitiveTopology::TriangleFan);
+		gl->g->drawPrimitive(paths[i].fillOffset, (paths[i].fillCount - 2));
 		// Draw fringes
 		if (paths[i].strokeCount > 0) {
-			glDrawArrays(GL_TRIANGLE_STRIP, paths[i].strokeOffset, paths[i].strokeCount);
+			gl->g->setPrimitiveTopology(ln::PrimitiveTopology::TriangleStrip);
+			gl->g->drawPrimitive(paths[i].strokeOffset, (paths[i].strokeCount - 2));
 		}
 	}
-#endif
 }
 
 static void glnvg__stroke(GLNVGcontext* gl, GLNVGcall* call)
