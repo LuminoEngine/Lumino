@@ -19,11 +19,13 @@
 namespace ln {
 namespace detail {
 
-void UniformBufferView::setData(const void* data, size_t size)
+void ConstantBufferView::setData(const void* data, size_t size)
 {
-	byte_t* d = static_cast<byte_t*>(buffer->map()) + offset;	// TODO: map しないほうが効率いい？SingleFrameのデータなので、フレーム締めるときに unmap でよい
+	//byte_t* d = static_cast<byte_t*>(buffer->map()) + offset;	// TODO: map しないほうが効率いい？SingleFrameのデータなので、フレーム締めるときに unmap でよい
+	//memcpy(d, data, size);
+	//buffer->unmap();
+	byte_t* d = static_cast<byte_t*>(buffer->writableData()) + offset;
 	memcpy(d, data, size);
-	buffer->unmap();
 }
 	
 } // namespace detail
@@ -223,7 +225,7 @@ void GraphicsManager::init(const Settings& settings)
 	m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
 	m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
 	m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
-	m_singleFrameUniformBufferAllocatorPageManager = makeRef<SingleFrameUniformBufferAllocatorPageManager>(m_deviceContext, AbstractLinearAllocatorPageManager::DefaultPageSize);
+	m_singleFrameUniformBufferAllocatorPageManager = makeRef<SingleFrameUniformBufferAllocatorPageManager>(AbstractLinearAllocatorPageManager::DefaultPageSize);
 
 	m_extensions.add(nullptr);	// [0] is dummy
 

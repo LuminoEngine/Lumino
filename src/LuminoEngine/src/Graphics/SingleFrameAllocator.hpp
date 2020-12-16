@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
+#include <LuminoEngine/Graphics/ConstantBuffer.hpp>
 #include "GraphicsDeviceContext.hpp"
 
 namespace ln {
@@ -11,24 +12,23 @@ class SingleFrameUniformBufferAllocatorPage
 {
 public:
 	virtual ~SingleFrameUniformBufferAllocatorPage();
-	bool init(IGraphicsDevice* device, uint32_t size);
-	IUniformBuffer* buffer() const { return m_buffer.get(); }
+	bool init(uint32_t size);
+	ConstantBuffer* buffer() const { return m_buffer.get(); }
 
 private:
-	Ref<IUniformBuffer> m_buffer;
+	Ref<ConstantBuffer> m_buffer;
 };
 
 class SingleFrameUniformBufferAllocatorPageManager
 	: public LinearAllocatorPageManager
 {
 public:
-	SingleFrameUniformBufferAllocatorPageManager(IGraphicsDevice* device, size_t pageSize);
+	SingleFrameUniformBufferAllocatorPageManager(size_t pageSize);
 
 protected:
 	Ref<AbstractLinearAllocatorPage> onCreateNewPage(size_t size) override;
 
 private:
-	IGraphicsDevice* m_device;
 };
 
 class SingleFrameUniformBufferAllocator
@@ -36,7 +36,8 @@ class SingleFrameUniformBufferAllocator
 {
 public:
 	SingleFrameUniformBufferAllocator(SingleFrameUniformBufferAllocatorPageManager* manager);
-	UniformBufferView allocate(size_t size, size_t alignment = 64);
+	ConstantBufferView allocate(size_t size, size_t alignment = 64);
+	void unmap();
 
 protected:
 };

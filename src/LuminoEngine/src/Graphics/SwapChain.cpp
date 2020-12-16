@@ -43,7 +43,7 @@ void GraphicsCommandList::reset()
 	//m_singleFrameUniformBufferAllocator->cleanup();
 }
 
-detail::UniformBufferView GraphicsCommandList::allocateUniformBuffer(size_t size)
+detail::ConstantBufferView GraphicsCommandList::allocateUniformBuffer(size_t size)
 {
 	return m_singleFrameUniformBufferAllocator->allocate(size);
 }
@@ -126,6 +126,7 @@ RenderPass* SwapChain::currentRenderPass() const
 
 void SwapChain::endFrame()
 {
+	currentCommandList()->m_singleFrameUniformBufferAllocator->unmap();
 	detail::GraphicsContextInternal::flushCommandRecoding(m_graphicsContext, currentBackbuffer());
 	detail::GraphicsContextInternal::endCommandRecoding(m_graphicsContext);
 	detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(m_graphicsContext);

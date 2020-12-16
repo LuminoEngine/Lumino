@@ -15,6 +15,7 @@ class Texture;
 class Texture2D;
 class RenderTargetTexture;
 class DepthBuffer;
+class ConstantBuffer;
 class ShaderDescriptor;
 class INativeGraphicsExtension;
 
@@ -423,9 +424,9 @@ struct ShaderUniformTypeDesc
     bool isArray() const { return elements > 0; }
 };
 
-struct UniformBufferView
+struct ConstantBufferView
 {
-    IUniformBuffer* buffer;
+    ConstantBuffer* buffer;
     size_t offset;
     void setData(const void* data, size_t size);
 };

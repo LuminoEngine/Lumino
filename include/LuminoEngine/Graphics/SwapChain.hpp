@@ -31,7 +31,7 @@ public:
     const Ref<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
     const Ref<LinearAllocator>& allocator_deprecated() const { return m_allocator; }
     void reset();
-    detail::UniformBufferView allocateUniformBuffer(size_t size);
+    detail::ConstantBufferView allocateUniformBuffer(size_t size);
     Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;
 
     ShaderDescriptor* acquireShaderDescriptor(Shader* shader);

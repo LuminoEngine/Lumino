@@ -430,7 +430,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			}
 
 			const RenderStage* stage = batch->stage();
-			const Material* finalMaterial = batch->finalMaterial();
+			Material* finalMaterial = batch->finalMaterial();
 			const SubsetInfo& subsetInfo = batch->subsetInfo();
 
 			// ステートの変わり目チェック
@@ -557,7 +557,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				if (finalMaterial) {
 					PbrMaterialData pbrMaterialData = finalMaterial->getPbrMaterialData();
 					semanticsManager->updateSubsetVariables_PBR(descriptor, pbrMaterialData);
-					finalMaterial->updateShaderVariables(tech->shader());
+					finalMaterial->updateShaderVariables(commandList, descriptor);
 					RenderStage::applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
 				}
 

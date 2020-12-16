@@ -6,6 +6,7 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
+#include <LuminoEngine/Graphics/ConstantBuffer.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
@@ -16,81 +17,6 @@
 #include "HLSLMetadataParser.hpp"
 
 namespace ln {
-
-// int or float
-static void alignScalarsToBuffer(
-    const byte_t* source,
-    size_t unitBytes,
-    int unitCount,
-    byte_t* buffer,
-    size_t offset,
-    int elements,
-    size_t arrayStride) LN_NOEXCEPT
-{
-    byte_t* head = buffer + offset;
-    int loop = std::min(unitCount, elements);
-    for (int i = 0; i < loop; i++) {
-        memcpy(head + arrayStride * i, source + unitBytes * i, unitBytes);
-    }
-}
-
-// vector
-static void alignVectorsToBuffer(
-    const byte_t* source,
-    int sourceColumns,
-    int sourceElementCount,
-    byte_t* buffer,
-    size_t offset,
-    int elements,
-    size_t arrayStride,
-    int columns) LN_NOEXCEPT
-{
-    size_t srcVectorSize = sizeof(float) * sourceColumns;
-    size_t copySize = std::min(srcVectorSize, sizeof(float) * columns);
-    byte_t* head = buffer + offset;
-    int loop = std::min(sourceElementCount, elements);
-    for (int i = 0; i < loop; i++) {
-        memcpy(head + arrayStride * i, source + srcVectorSize * i, copySize);
-    }
-}
-
-// matrix
-static void alignMatricesToBuffer(
-    const byte_t* source,
-    int sourceColumns,
-    int sourceRows,
-    int sourceElementCount,
-    byte_t* buffer,
-    size_t offset,
-    int elements,
-    size_t matrixStride,
-    size_t arrayStride,
-    int rows,
-    int columns,
-    bool transpose) LN_NOEXCEPT
-{
-    size_t srcRowSize = sizeof(float) * sourceColumns;
-    size_t dstRowSize = matrixStride;
-    size_t copySize = std::min(srcRowSize, dstRowSize);
-    byte_t* head = buffer + offset;
-    int loop = std::min(sourceElementCount, elements);
-    int rowLoop = std::min(sourceRows, rows);
-    for (int i = 0; i < loop; i++) {
-        const byte_t* srcMatHead = source + (sourceColumns * sourceRows * sizeof(float)) * i;
-        byte_t* dstMatHead = head + arrayStride * i;
-
-        float tmp[16];
-        if (transpose) {
-            assert(sourceColumns == 4 && sourceRows == 4);
-            *reinterpret_cast<Matrix*>(tmp) = Matrix::makeTranspose(*reinterpret_cast<const Matrix*>(srcMatHead));
-            srcMatHead = reinterpret_cast<const byte_t*>(tmp);
-        }
-
-        for (int j = 0; j < rowLoop; j++) {
-            memcpy(dstMatHead + matrixStride * j, srcMatHead + srcRowSize * j, copySize);
-        }
-    }
-}
 
 //=============================================================================
 // ShaderCompilationProperties
@@ -552,7 +478,7 @@ void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail
                     // アライメント付きで確保しないと Vulkan 等では正しく描かれない。
                     // 以前 OpenGL 用のときは事前にまとめて allocate していたが、ひとつずつアライメントされたものを確保する。
                     auto uniformBufferData = commandList->allocateUniformBuffer(size);
-                    view.buffer = uniformBufferData.buffer;
+                    view.buffer = uniformBufferData.buffer->rhiObject();
                     view.offset = uniformBufferData.offset;
 
                     // TODO: map しないほうが効率いいか？
@@ -642,7 +568,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
     for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
         int dataIndex = m_descriptorLayout.m_buffers[i].dataIndex;
         const auto& view = descripter->uniformBuffer(dataIndex);
-        updateInfo.uniforms[i].buffer = view.buffer;
+        updateInfo.uniforms[i].buffer = view.buffer->rhiObject();
         updateInfo.uniforms[i].offset = view.offset;
         if (LN_ENSURE(updateInfo.uniforms[i].buffer)) return;
     }
@@ -799,42 +725,42 @@ void ShaderDefaultDescriptor::setInt(int memberIndex, int value)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, buffer.data(), member.desc.offset, 1, 0);
+    detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, buffer.data(), member.desc.offset, 1, 0);
 }
 
 void ShaderDefaultDescriptor::setIntArray(int memberIndex, const int* value, int count)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
+    detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
 void ShaderDefaultDescriptor::setFloat(int memberIndex, float value)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, buffer.data(), member.desc.offset, 1, 0);
+    detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, buffer.data(), member.desc.offset, 1, 0);
 }
 
 void ShaderDefaultDescriptor::setFloatArray(int memberIndex, const float* value, int count)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
+    detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
 void ShaderDefaultDescriptor::setVector(int memberIndex, const Vector4& value)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignVectorsToBuffer((const byte_t*)&value, 4, 1, buffer.data(), member.desc.offset, 1, 0, member.desc.columns);
+    detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)&value, 4, 1, buffer.data(), member.desc.offset, 1, 0, member.desc.columns);
 }
 
 void ShaderDefaultDescriptor::setVectorArray(int memberIndex, const Vector4* value, int count)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignVectorsToBuffer((const byte_t*)value, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride, member.desc.columns);
+    detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)value, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride, member.desc.columns);
 }
 
 void ShaderDefaultDescriptor::setMatrix(int memberIndex, const Matrix& value)
@@ -847,7 +773,7 @@ void ShaderDefaultDescriptor::setMatrix(int memberIndex, const Matrix& value)
 
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, buffer.data(), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, transpose);
+    detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, buffer.data(), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, transpose);
 }
 
 void ShaderDefaultDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int count)
@@ -859,7 +785,7 @@ void ShaderDefaultDescriptor::setMatrixArray(int memberIndex, const Matrix* valu
 #endif
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignMatricesToBuffer((const byte_t*)value, 4, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, transpose);
+    detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)value, 4, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, transpose);
 }
 
 void ShaderDefaultDescriptor::setTexture(int textureIndex, Texture* value)

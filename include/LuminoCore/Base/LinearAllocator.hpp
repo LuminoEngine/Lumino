@@ -100,6 +100,9 @@ public:
 
 protected:
 	bool allocateCore(size_t size, size_t alignment, AbstractLinearAllocatorPage** outCurrentPage, size_t* outOffset);
+	AbstractLinearAllocatorPage* currentPage() const { return m_currentPage; }
+	const List<AbstractLinearAllocatorPage*>& retiredPages() const { return m_retiredPages; }
+	const List<Ref<AbstractLinearAllocatorPage>>& largePages() const { return m_largePages; }
 
 private:
 	AbstractLinearAllocatorPage* allocateLarge(size_t size);
