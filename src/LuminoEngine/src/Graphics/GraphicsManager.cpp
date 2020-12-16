@@ -17,6 +17,16 @@
 #include "SingleFrameAllocator.hpp"
 
 namespace ln {
+namespace detail {
+
+void UniformBufferView::setData(const void* data, size_t size)
+{
+	byte_t* d = static_cast<byte_t*>(buffer->map()) + offset;	// TODO: map しないほうが効率いい？SingleFrameのデータなので、フレーム締めるときに unmap でよい
+	memcpy(d, data, size);
+	buffer->unmap();
+}
+	
+} // namespace detail
 
 //==============================================================================
 // GraphicsHelper

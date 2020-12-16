@@ -429,5 +429,15 @@ struct UniformBufferView
     void setData(const void* data, size_t size);
 };
 
+struct ShaderDescriptor2
+{
+    static const int MaxElements = 8;
+
+    std::array<UniformBufferView, MaxElements> uniforms = {};
+    std::array<Texture*, MaxElements> textures = {};
+    std::array<SamplerState*, MaxElements> samplers = {};
+
+};
+
 } // namespace detail
 } // namespace ln

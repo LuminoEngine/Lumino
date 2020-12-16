@@ -25,19 +25,20 @@ class IShaderPass;
 //class IShaderUniformBuffer;
 class ShaderTechniqueSemanticsManager;
 class GraphicsCommandList;
+struct ShaderDescriptor2;
 }
 
 // UniformBuffer, sampler など、Shader の Data を保持する。
 // 本来は Pass に持たせるべきだが、そうするとユーザープログラムから Material(=Effect) として使いたい場合、
-// 全く同じ ShaderDescriptor がたくさん作られることになり、メモリの無駄が多くなる。#136 の問題も出てくる。
+// 全く同じ ShaderDefaultDescriptor がたくさん作られることになり、メモリの無駄が多くなる。#136 の問題も出てくる。
 // そのため ShaderPass と関係を持つのではなく、Shader と関係を持つようにする。
 /*
-  [2020/12/15] ShaderDescriptor 計画
+  [2020/12/15] ShaderDefaultDescriptor 計画
   ----------
-    ShaderDescriptor = DescriptorSet。
+    ShaderDefaultDescriptor = DescriptorSet。
     正しくやるなら、これは通常、SceneRenderer からのドローコール1つに付き1つのインスタンスが必要になる。
     それへ、Objectごとに変わるUniformBuffer, Viewごとに変わるUniformBuffer, マテリアルのUniformBufferなどをアタッチして使う。
-    Material 1つ = ShaderDescriptor 1 つ、ではない。
+    Material 1つ = ShaderDefaultDescriptor 1 つ、ではない。
     つまり Pool 必須。VulkanDriver とほぼ同じ実装が必要になる。
 
     少しずつ移行するなら…
@@ -52,11 +53,11 @@ class GraphicsCommandList;
     SceneRenderer から submit するときに その map のデータを SingleFrame UniformBuffer へ転記する。
     ※こうしないと Material のシリアライズが大変。
 
-    次に ShaderDescriptor の Pool を作る。
+    次に ShaderDefaultDescriptor の Pool を作る。
     必須ではない気もするけど、UniformBuffer は個別にしたのに DescriptorSet は Shader ごとに唯一なインスタンスなのが不自然。
     RHI 側の肥大化も防止したい。DX12 や Metal 対応の前にやっておきたいところ。
 
-    ShaderDescriptor はすべて SingleFrame なオブジェクトなので、GraphicsContext に shader を与えて生成してもらう感じがいいかな。
+    ShaderDefaultDescriptor はすべて SingleFrame なオブジェクトなので、GraphicsContext に shader を与えて生成してもらう感じがいいかな。
 
     ### Shader 自体が値を保持する必要は？
 
@@ -68,8 +69,28 @@ class GraphicsCommandList;
 
     「Materialに値が設定されなったときの規定値」として Shader が値を持つのはアリかも。
 
+    「規定値を設定しておく ShaderDescriptor」を1つ、Shader に持たせる方法がよさそう？
+    ただこの人は UniformBuffer ではなく普通の ByteArray を持つようにしなければならない。
+
+
+    SceneRenderer 辺りからの使われ方は、だいたい次のようになる。
+    ```
+    viewUniformBuffer = シーン描画開始時に確定して共有
+
+    // Subset 単位
+    auto* descriptor = shader->allocateDescriptor();
+    descriptor->setUniformBuffer("LNRenderViewBuffer", viewUniformBuffer);
+    descriptor->setUniformBuffer("LNRenderElementBuffer", elementUniformBuffer);
+    descriptor->setUniformBuffer("LNEffectColorBuffer", effectUniformBuffer);
+    descriptor->setUniformBuffer("$Global", Materialが持つユーザー指定のParams);
+    descriptor->setUniformBuffer("xxxx", Material::setData()で指定されたユーザー指定のstructデータから作ったUB);
+    ```
+    "$Global" と "xxxx" にはデフォルト値を使いたい。
+
+
+
 */
-class ShaderDescriptor final
+class ShaderDefaultDescriptor final
     : public Object
 {
 public:
@@ -119,10 +140,10 @@ public:
     const Ref<Shader> ownerShader() const { return m_ownerShader; }
 
 LN_CONSTRUCT_ACCESS:
-    ShaderDescriptor();
+    ShaderDefaultDescriptor();
     bool init(Shader* ownerShader);
 
-private:
+ public:    // TODO:
     Shader* m_ownerShader;
     List<ByteBuffer> m_buffers;
     List<Ref<Texture>> m_textures;
@@ -133,8 +154,8 @@ private:
     friend class ShaderPass;
 };
 
-// ShaderDescriptor と 1:1。つまり Global 情報。
-// m_buffers, m_textures, m_samplers は ShaderDescriptor のそれぞれ と要素番号が一致する。
+// ShaderDefaultDescriptor と 1:1。つまり Global 情報。
+// m_buffers, m_textures, m_samplers は ShaderDefaultDescriptor のそれぞれ と要素番号が一致する。
 // 名前から UniformBuffer, Texture, SamplerState, Sampler を求める。
 // 名前から UniformBuffer の Member を求める。
 class ShaderDescriptorLayout final
@@ -154,7 +175,7 @@ LN_CONSTRUCT_ACCESS:
     ShaderDescriptorLayout();
     bool init(const detail::DescriptorLayout& layout);
 
-private:
+public: // TODO:
     struct UniformBufferRegisterInfo
     {
         String name;
@@ -185,7 +206,7 @@ private:
     List<TextureRegisterInfo> m_textures;
     List<SamplerRegisterInfo> m_samplers;
 
-    friend class ShaderDescriptor;
+    friend class ShaderDefaultDescriptor;
     friend class ShaderPass;
     friend class ShaderParameter2;
     friend class detail::ShaderTechniqueSemanticsManager;
@@ -254,10 +275,10 @@ public:
 
 LN_INTERNAL_NEW_OBJECT;
     ShaderParameter2();
-    bool init(ShaderDescriptor* owner, IndexType type, int dataIndex);
+    bool init(ShaderDefaultDescriptor* owner, IndexType type, int dataIndex);
 
 private:
-    ShaderDescriptor* m_owner;
+    ShaderDefaultDescriptor* m_owner;
     IndexType m_indexType;
     int m_dataIndex = 0;     // Index of ShaderDescriptorLayout::m_buffers,m_members,m_textures,m_samplers
 };
@@ -383,9 +404,9 @@ public:
     // ↑このあたりは HC4 のエフェクトで、ひとつの Shader をたくさんの Material から参照するときの共通パラメータを設定したいため、公開した。
 
     /** この Shader の DescriptorLayout をもとに、ShaderDescriptor を作成します。 */
-    //Ref<ShaderDescriptor> createDescriptor();
+    //Ref<ShaderDefaultDescriptor> createDescriptor();
 
-    const Ref<ShaderDescriptor>& descriptor() const { return m_descriptor; }
+    const Ref<ShaderDefaultDescriptor>& descriptor() const { return m_descriptor; }
     const Ref<ShaderDescriptorLayout>& descriptorLayout() const { return m_descriptorLayout; }
 
 
@@ -413,12 +434,12 @@ private:
     detail::GraphicsManager* m_graphicsManager;
     String m_name;
     Ref<ShaderDescriptorLayout> m_descriptorLayout;
-    Ref<ShaderDescriptor> m_descriptor;
+    Ref<ShaderDefaultDescriptor> m_descriptor;
     Ref<List<Ref<ShaderTechnique>>> m_techniques;
 
     friend class ShaderPass;
     friend class detail::ShaderHelper;
-    friend class ShaderDescriptor;
+    friend class ShaderDefaultDescriptor;
     friend class detail::GraphicsResourceInternal;
 };
 
@@ -490,7 +511,8 @@ private:
 
     void setOwner(ShaderTechnique* owner) { m_owner = owner; }
     detail::IShaderPass* resolveRHIObject(GraphicsContext* graphicsContext, bool* outModified);
-    void submitShaderDescriptor(GraphicsContext* graphicsContext, detail::GraphicsCommandList* commandList, const ShaderDescriptor* descripter, bool* outModified);
+    void submitShaderDescriptor(GraphicsContext* graphicsContext, detail::GraphicsCommandList* commandList, const ShaderDefaultDescriptor* descripter, bool* outModified);
+    void submitShaderDescriptor2(GraphicsContext* graphicsContext, const detail::ShaderDescriptor2* descripter, bool* outModified);
 
     ShaderTechnique* m_owner;
     String m_name;
@@ -498,7 +520,7 @@ private:
     ShaderPassDescriptorLayout m_descriptorLayout;
 
     Ref<detail::ShaderRenderState> m_renderState;
-    const ShaderDescriptor* m_lastShaderDescriptor = nullptr;
+    const ShaderDefaultDescriptor* m_lastShaderDescriptor = nullptr;
     int m_lastShaderDescriptorRevision = 0;
 
     friend class Shader;

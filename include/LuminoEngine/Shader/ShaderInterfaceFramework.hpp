@@ -7,8 +7,9 @@
 namespace ln {
 class Texture;
 class Texture2D;
-class ShaderDescriptor;
+class ShaderDefaultDescriptor;
 namespace detail {
+struct ShaderDescriptor2;
 
 // cbuffer LNRenderViewBuffer
 struct alignas(16) LNRenderViewBuffer
@@ -252,6 +253,7 @@ enum BuiltinShaderUniformBuffers
     BuiltinShaderUniformBuffers_LNPBRMaterialParameter,
     BuiltinShaderUniformBuffers_LNClusteredShadingParameters,
     BuiltinShaderUniformBuffers_LNShadowParameters,
+    BuiltinShaderUniformBuffers_Global, // for Material user params
     
     BuiltinShaderUniformBuffers__Count,
 };
@@ -281,12 +283,14 @@ public:
     void init(ShaderTechnique* technique);
     void reset();
 
+    int getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers buffer) const { return m_builtinUniformBuffers[static_cast<int>(buffer)]; }
+
     // call by rendering time.
-    void updateRenderViewVariables(const RenderViewInfo& info, const SceneInfo& sceneInfo);
-    void updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info);
-    void updateSubsetVariables(const SubsetInfo& info);
-    void updateSubsetVariables_PBR(const PbrMaterialData& materialData);
-    void updateClusteredShadingVariables(const ClusteredShadingRendererInfo& info) const;
+    void updateRenderViewVariables(ShaderDescriptor2* descriptor, const RenderViewInfo& info, const SceneInfo& sceneInfo) const;
+    void updateElementVariables(ShaderDescriptor2* descriptor, const CameraInfo& cameraInfo, const ElementInfo& info) const;
+    void updateSubsetVariables(ShaderDescriptor2* descriptor, const SubsetInfo& info) const;
+    void updateSubsetVariables_PBR(ShaderDescriptor2* descriptor, const PbrMaterialData& materialData) const;
+    void updateClusteredShadingVariables(ShaderDescriptor2* descriptor, const ClusteredShadingRendererInfo& info) const;
 
 private:
     //struct VariableKindPair
@@ -297,7 +301,7 @@ private:
 
     bool hasParameter(BuiltinShaderParameters v) const { return (m_hasBuiltinShaderParameters & (1ULL << v)) != 0; }
 
-    ShaderDescriptor* m_descriptor;
+    ShaderDefaultDescriptor* m_descriptor;
 
     // Boolean flags BuiltinShaderParameters
     uint64_t m_hasBuiltinShaderParameters;

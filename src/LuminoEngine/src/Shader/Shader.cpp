@@ -305,7 +305,7 @@ void Shader::createFromStream(Stream* stream, DiagnosticsManager* diag)
 void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag)
 {
     m_descriptorLayout = makeObject<ShaderDescriptorLayout>(unifiedShader->globalDescriptorLayout());
-    m_descriptor = makeObject<ShaderDescriptor>(this);
+    m_descriptor = makeObject<ShaderDefaultDescriptor>(this);
 
 	for (int iTech = 0; iTech < unifiedShader->techniqueCount(); iTech++) {
 		detail::UnifiedShader::TechniqueId techId = unifiedShader->techniqueId(iTech);
@@ -404,9 +404,9 @@ void Shader::setTexture(const StringRef& parameterName, Texture* value)
     }
 }
 
-//Ref<ShaderDescriptor> Shader::createDescriptor()
+//Ref<ShaderDefaultDescriptor> Shader::createDescriptor()
 //{
-//    return makeObject<ShaderDescriptor>(this);
+//    return makeObject<ShaderDefaultDescriptor>(this);
 //}
 
 // TODO: 名前の指定方法をもう少しいい感じにしたい。PostEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。
@@ -512,7 +512,7 @@ detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsContext* graphicsConte
     return m_rhiPass;
 }
 
-void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail::GraphicsCommandList* commandList, const ShaderDescriptor* descripter, bool* outModified)
+void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail::GraphicsCommandList* commandList, const ShaderDefaultDescriptor* descripter, bool* outModified)
 {
     if (descripter) {
         if (descripter != m_lastShaderDescriptor || m_lastShaderDescriptorRevision != descripter->m_revision) {
@@ -621,14 +621,87 @@ void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail
 
 }
 
-//=============================================================================
-// ShaderDescriptor
+void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const detail::ShaderDescriptor2* descripter, bool* outModified)
+{
+    auto* manager = m_owner->shader()->m_graphicsManager;
+    detail::GraphicsCommandList* commandList = graphicsContext->commandList();
+    detail::ICommandList* rhiCommandList = commandList->rhiResource();
 
-ShaderDescriptor::ShaderDescriptor()
+
+    detail::ShaderDescriptorTableUpdateInfo updateInfo;
+
+
+    // Uniforms
+    for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
+        int dataIndex = m_descriptorLayout.m_buffers[i].dataIndex;
+        updateInfo.uniforms[i].buffer = descripter->uniforms[dataIndex].buffer;
+        updateInfo.uniforms[i].offset = descripter->uniforms[dataIndex].offset;
+        if (LN_ENSURE(updateInfo.uniforms[i].buffer)) return;
+    }
+
+    // Textures
+    for (int i = 0; i < m_descriptorLayout.m_textures.size(); i++) {
+        if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
+            LN_NOTIMPLEMENTED();
+            break;
+        }
+        const auto& info = m_descriptorLayout.m_textures[i];
+        Texture* texture = descripter->textures[info.dataIndex];
+        if (!texture) {
+            texture = manager->whiteTexture();
+        }
+
+        SamplerState* sampler = nullptr;
+        if (texture->samplerState())
+            sampler = texture->samplerState();
+        else
+            sampler = manager->defaultSamplerState();
+
+        bool modified = false;
+        auto& view = updateInfo.textures[i];
+        view.texture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
+        view.stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
+        (*outModified) |= modified;
+    }
+
+    // Samplers
+    for (int i = 0; i < m_descriptorLayout.m_samplers.size(); i++) {
+        if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
+            LN_NOTIMPLEMENTED();
+            break;
+        }
+        const auto& info = m_descriptorLayout.m_samplers[i];
+        SamplerState* sampler = descripter->samplers[info.dataIndex];
+        if (!sampler)
+            sampler = manager->defaultSamplerState();
+
+        bool modified = false;
+        auto& view = updateInfo.samplers[i];
+        view.texture = nullptr;
+        view.stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
+        (*outModified) |= modified;
+    }
+
+    detail::IShaderDescriptorTable* rhiDescriptorTable = m_rhiPass->descriptorTable();
+
+    LN_ENQUEUE_RENDER_COMMAND_3(
+        ShaderConstantBuffer_submitShaderDescriptor, graphicsContext,
+        detail::ICommandList*, rhiCommandList,
+        detail::IShaderDescriptorTable*, rhiDescriptorTable,
+        detail::ShaderDescriptorTableUpdateInfo, updateInfo,
+        {
+            rhiCommandList->setDescriptorTableData(rhiDescriptorTable, &updateInfo);
+        });
+}
+
+//=============================================================================
+// ShaderDefaultDescriptor
+
+ShaderDefaultDescriptor::ShaderDefaultDescriptor()
 {
 }
 
-bool ShaderDescriptor::init(Shader* ownerShader)
+bool ShaderDefaultDescriptor::init(Shader* ownerShader)
 {
     if (LN_REQUIRE(ownerShader)) return false;
     if (!Object::init()) return false;
@@ -669,33 +742,33 @@ bool ShaderDescriptor::init(Shader* ownerShader)
     return true;
 }
 
-ShaderDescriptorLayout* ShaderDescriptor::descriptorLayout() const
+ShaderDescriptorLayout* ShaderDefaultDescriptor::descriptorLayout() const
 {
     return m_ownerShader->descriptorLayout();
 }
 
-ShaderParameter2* ShaderDescriptor::findParameter2(const StringRef& name) const
+ShaderParameter2* ShaderDefaultDescriptor::findParameter2(const StringRef& name) const
 {
     return m_parameters.findIf([&](auto& x) { return x->name() == name; }).valueOr(nullptr);
 }
 
-//int ShaderDescriptor::findUniformBufferIndex(const ln::StringRef& name) const
+//int ShaderDefaultDescriptor::findUniformBufferIndex(const ln::StringRef& name) const
 //{
 //    return m_ownerShader->descriptorLayout()->findUniformBufferRegisterIndex(name);
 //}
 //
-//int ShaderDescriptor::findTextureIndex(const ln::StringRef& name) const
+//int ShaderDefaultDescriptor::findTextureIndex(const ln::StringRef& name) const
 //{
 //    return m_ownerShader->descriptorLayout()->findTextureRegisterIndex(name);
 //}
 //
-//int ShaderDescriptor::findSamplerIndex(const ln::StringRef& name) const
+//int ShaderDefaultDescriptor::findSamplerIndex(const ln::StringRef& name) const
 //{
 //    return m_ownerShader->descriptorLayout()->findSamplerRegisterIndex(name);
 //}
 
 
-void ShaderDescriptor::setData(int uniformBufferIndex, const void* data, size_t size)
+void ShaderDefaultDescriptor::setData(int uniformBufferIndex, const void* data, size_t size)
 {
     auto& buffer = m_buffers[uniformBufferIndex];
 
@@ -714,49 +787,49 @@ void ShaderDescriptor::setData(int uniformBufferIndex, const void* data, size_t 
 #endif
 }
 
-void ShaderDescriptor::setInt(int memberIndex, int value)
+void ShaderDefaultDescriptor::setInt(int memberIndex, int value)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
     alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, buffer.data(), member.desc.offset, 1, 0);
 }
 
-void ShaderDescriptor::setIntArray(int memberIndex, const int* value, int count)
+void ShaderDefaultDescriptor::setIntArray(int memberIndex, const int* value, int count)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
     alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
-void ShaderDescriptor::setFloat(int memberIndex, float value)
+void ShaderDefaultDescriptor::setFloat(int memberIndex, float value)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
     alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, buffer.data(), member.desc.offset, 1, 0);
 }
 
-void ShaderDescriptor::setFloatArray(int memberIndex, const float* value, int count)
+void ShaderDefaultDescriptor::setFloatArray(int memberIndex, const float* value, int count)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
     alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
-void ShaderDescriptor::setVector(int memberIndex, const Vector4& value)
+void ShaderDefaultDescriptor::setVector(int memberIndex, const Vector4& value)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
     alignVectorsToBuffer((const byte_t*)&value, 4, 1, buffer.data(), member.desc.offset, 1, 0, member.desc.columns);
 }
 
-void ShaderDescriptor::setVectorArray(int memberIndex, const Vector4* value, int count)
+void ShaderDefaultDescriptor::setVectorArray(int memberIndex, const Vector4* value, int count)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
     alignVectorsToBuffer((const byte_t*)value, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride, member.desc.columns);
 }
 
-void ShaderDescriptor::setMatrix(int memberIndex, const Matrix& value)
+void ShaderDefaultDescriptor::setMatrix(int memberIndex, const Matrix& value)
 {
 #ifdef LN_SHADER_UBO_TRANSPORSE_MATRIX
     const bool transpose = true;
@@ -769,7 +842,7 @@ void ShaderDescriptor::setMatrix(int memberIndex, const Matrix& value)
     alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, buffer.data(), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, transpose);
 }
 
-void ShaderDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int count)
+void ShaderDefaultDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int count)
 {
 #ifdef LN_SHADER_UBO_TRANSPORSE_MATRIX
     const bool transpose = true;
@@ -781,17 +854,17 @@ void ShaderDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int 
     alignMatricesToBuffer((const byte_t*)value, 4, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, transpose);
 }
 
-void ShaderDescriptor::setTexture(int textureIndex, Texture* value)
+void ShaderDefaultDescriptor::setTexture(int textureIndex, Texture* value)
 {
     m_textures[textureIndex] = value;
 }
 
-void ShaderDescriptor::setSampler(int textureIndex, Texture* value)
+void ShaderDefaultDescriptor::setSampler(int textureIndex, Texture* value)
 {
     m_textures[textureIndex] = value;
 }
 
-void ShaderDescriptor::setSamplerState(int samplerIndex, SamplerState* value)
+void ShaderDefaultDescriptor::setSamplerState(int samplerIndex, SamplerState* value)
 {
     m_samplers[samplerIndex] = value;
 }
@@ -886,7 +959,7 @@ ShaderParameter2::ShaderParameter2()
 {
 }
 
-bool ShaderParameter2::init(ShaderDescriptor* owner, IndexType type, int dataIndex)
+bool ShaderParameter2::init(ShaderDefaultDescriptor* owner, IndexType type, int dataIndex)
 {
     if (!Object::init()) return false;
     m_owner = owner;

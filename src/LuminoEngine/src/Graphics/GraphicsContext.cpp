@@ -269,7 +269,7 @@ ShaderPass* GraphicsContext::shaderPass() const
     return m_staging.shaderPass;
 }
 
-//void GraphicsContext::setShaderDescriptor(ShaderDescriptor* value)
+//void GraphicsContext::setShaderDescriptor(ShaderDefaultDescriptor* value)
 //{
 //    if (m_staging.shaderDescriptor != value) {
 //        m_staging.shaderDescriptor = value;
@@ -277,7 +277,7 @@ ShaderPass* GraphicsContext::shaderPass() const
 //    }
 //}
 //
-//ShaderDescriptor* GraphicsContext::shaderDescriptor() const
+//ShaderDefaultDescriptor* GraphicsContext::shaderDescriptor() const
 //{
 //    return m_staging.shaderDescriptor;
 //}
@@ -520,8 +520,13 @@ detail::ICommandList* GraphicsContext::commitState()
 
     detail::IShaderPass* shaderPassRHI = nullptr;
     if (m_staging.shaderPass) {
-        //m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shaderDescriptor, &resourceModified);
-        m_staging.shaderPass->submitShaderDescriptor(this, m_commandList, m_staging.shader->descriptor(), &resourceModified);
+        if (m_staging.shaderDescriptor) {
+            m_staging.shaderPass->submitShaderDescriptor2(this, m_staging.shaderDescriptor, &resourceModified);
+        }
+        else {
+            //m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shaderDescriptor, &resourceModified);
+            m_staging.shaderPass->submitShaderDescriptor(this, m_commandList, m_staging.shader->descriptor(), &resourceModified);
+        }
 
         shaderPassRHI = m_staging.shaderPass->resolveRHIObject(this, &resourceModified);
     }
@@ -809,6 +814,7 @@ void GraphicsContext::State::reset()
     indexBuffer = nullptr;
     shader = nullptr;
     shaderPass = nullptr;
+    shaderDescriptor = nullptr;
     topology = PrimitiveTopology::TriangleList;
 	//renderPass = nullptr;
 }

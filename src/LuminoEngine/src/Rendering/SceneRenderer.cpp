@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
@@ -463,6 +464,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				batch->render(graphicsContext);
 			}
 			else {
+
 				ElementInfo elementInfo;
 				elementInfo.objectId = stage->m_objectId;
 				elementInfo.viewProjMatrix = &cameraInfo.cameraInfo.viewProjMatrix;
@@ -487,6 +489,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					finalMaterial->shader(),
 					stage->getShadingModelFinal(finalMaterial));
 
+
 				SubsetInfo localSubsetInfo = subsetInfo;
 				if (batch->overrideTexture) {
 					localSubsetInfo.materialTexture = batch->overrideTexture;
@@ -510,6 +513,34 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 
 				detail::ShaderTechniqueSemanticsManager* semanticsManager = tech->semanticsManager2();
+
+
+				const auto& commandList = graphicsContext->commandList();
+				ShaderDescriptor2 descriptor = commandList->allocateShaderDescriptor(tech->shader());
+				{
+					// TODO: ひとまず全部確保。LNRenderViewBuffer や LNClusteredShadingParameters は Element 単位ではなく共有可能なので、もう少し最適化したい
+					const auto& shader = tech->shader();
+					int index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNRenderViewBuffer);
+					if (index >= 0) descriptor.uniforms[index] = commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size);
+					index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNRenderElementBuffer);
+					if (index >= 0) descriptor.uniforms[index] = commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size);
+					index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNEffectColorBuffer);
+					if (index >= 0) descriptor.uniforms[index] = commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size);
+					index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNPBRMaterialParameter);
+					if (index >= 0) descriptor.uniforms[index] = commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size);
+					index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNClusteredShadingParameters);
+					if (index >= 0) descriptor.uniforms[index] = commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size);
+					index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNShadowParameters);
+					if (index >= 0) descriptor.uniforms[index] = commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size);
+					index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_Global);
+					if (index >= 0) {
+						descriptor.uniforms[index] = commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size);
+						const auto& data = shader->descriptor()->m_buffers[index];
+						descriptor.uniforms[index].setData(data.data(), data.size());
+						
+					}
+				}
+
 				//semanticsManager->updateCameraVariables(cameraInfo);
 				//semanticsManager->updateElementVariables(cameraInfo, elementInfo);
 				//semanticsManager->updateSubsetVariables(subsetInfo);
@@ -519,22 +550,24 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				//else
 				// TODO: ↑SpriteTextRenderer が Font 取るのに使ってる。これは Batch に持っていくべきだろう。
 				{
-					RenderFeature::updateRenderParametersDefault(tech, m_mainRenderViewInfo, m_mainSceneInfo, elementInfo, localSubsetInfo);
+					RenderFeature::updateRenderParametersDefault(&descriptor, tech, m_mainRenderViewInfo, m_mainSceneInfo, elementInfo, localSubsetInfo);
 				}
 
 				if (finalMaterial) {
 					PbrMaterialData pbrMaterialData = finalMaterial->getPbrMaterialData();
-					semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
+					semanticsManager->updateSubsetVariables_PBR(&descriptor, pbrMaterialData);
 					finalMaterial->updateShaderVariables(tech->shader());
 					RenderStage::applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
 				}
 
-				onSetAdditionalShaderPassVariables(tech);
+				onSetAdditionalShaderPassVariables(&descriptor, tech);
 
 				for (ShaderPass* pass2 : tech->passes())
 				{
 					graphicsContext->setShaderPass(pass2);
+					graphicsContext->setShaderDescriptor(&descriptor);
 					batch->render(graphicsContext);
+					graphicsContext->setShaderDescriptor(nullptr);
 				}
 			}
 
@@ -685,7 +718,7 @@ void SceneRenderer::onCollectLight(const DynamicLightInfo& light)
 {
 }
 
-void SceneRenderer::onSetAdditionalShaderPassVariables(ShaderTechnique* technique)
+void SceneRenderer::onSetAdditionalShaderPassVariables(ShaderDescriptor2* descriptor, ShaderTechnique* technique)
 {
 }
 

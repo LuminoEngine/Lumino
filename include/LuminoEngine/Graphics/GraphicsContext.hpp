@@ -107,10 +107,11 @@ public:
     ShaderPass* shaderPass() const;
 
     ///** ShaderPass を設定します。 */
-    //void setShaderDescriptor(ShaderDescriptor* value);
+    //void setShaderDescriptor(ShaderDefaultDescriptor* value);
+    void setShaderDescriptor(detail::ShaderDescriptor2* value) { m_staging.shaderDescriptor = value; }
 
     ///** ShaderPass を取得します。 */
-    //ShaderDescriptor* shaderDescriptor() const;
+    //ShaderDefaultDescriptor* shaderDescriptor() const;
 
     /** デフォルト設定を復元します。 */
     void resetState();
@@ -149,6 +150,9 @@ public:
 	void drawExtension(INativeGraphicsExtension* extension);
 
     void interruptCurrentRenderPassFromResolveRHI();
+
+    // TODO: intenral
+    const Ref<detail::GraphicsCommandList>& commandList() const { return m_commandList; }
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
@@ -199,7 +203,8 @@ private:
         Ref<IndexBuffer> indexBuffer;
         Ref<Shader> shader; // shaderPass owner, for keep reference.
         ShaderPass* shaderPass;
-        //Ref<ShaderDescriptor> shaderDescriptor;
+        //Ref<ShaderDefaultDescriptor> shaderDescriptor;
+        detail::ShaderDescriptor2* shaderDescriptor;
         PrimitiveTopology topology;
 
         void reset();

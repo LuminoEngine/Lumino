@@ -21,6 +21,7 @@ class ISwapChain;
 class SwapChainInternal;
 class SingleFrameUniformBufferAllocator;
 
+
 class GraphicsCommandList : public RefObject
 {
 public:
@@ -32,6 +33,8 @@ public:
     void reset();
     detail::UniformBufferView allocateUniformBuffer(size_t size);
     Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;
+
+    ShaderDescriptor2 allocateShaderDescriptor(const Shader* shader) { return ShaderDescriptor2(); }
 
 private:
     Ref<detail::ICommandList> m_rhiResource;

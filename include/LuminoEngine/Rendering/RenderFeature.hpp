@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
+#include "../Graphics/Common.hpp"
 #include "Common.hpp"
 #include "../Shader/ShaderInterfaceFramework.hpp"
 
@@ -149,6 +150,7 @@ public:
     // SpritetextRenderFerture など、RenderFeature 固有のパラメータ (グリフテクスチャなど) で
     // パラメータをオーバーライドしたい場合はここで処理する。
     virtual void updateRenderParameters(
+		detail::ShaderDescriptor2* descriptor,
 		detail::RenderDrawElement* element,
 		ShaderTechnique* tech,
 		const detail::RenderViewInfo& renderViewInfo,
@@ -156,7 +158,8 @@ public:
 		const detail::ElementInfo& elementInfo,
 		const detail::SubsetInfo& subsetInfo);
 
-    static void updateRenderParametersDefault(
+	static void updateRenderParametersDefault(
+		detail::ShaderDescriptor2* descriptor,
 		ShaderTechnique* tech,
 		const detail::RenderViewInfo& renderViewInfo,
 		const detail::SceneInfo& sceneInfo,

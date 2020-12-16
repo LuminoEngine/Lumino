@@ -7,6 +7,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
@@ -184,12 +185,35 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
         0.0f,         0.0f,         0.5f,  0.0f,
         (L+R)/(L-R),  (T+B)/(B-T),  0.5f,  1.0f
 	);
-	m_shader->findParameter(u"ln_WorldViewProjection")->setMatrix(mat_projection);
-	m_shader->findParameter(u"ln_WorldViewIT")->setMatrix(Matrix::Identity);
+	//m_shader->findParameter(u"ln_WorldViewProjection")->setMatrix(mat_projection);
+	//m_shader->findParameter(u"ln_WorldViewIT")->setMatrix(Matrix::Identity);
 	graphicsContext->setShaderPass(m_shader->techniques()[0]->passes()[0]);
 
 	m_renderPass->setRenderTarget(0, target);
 	graphicsContext->beginRenderPass(m_renderPass);
+
+
+	const auto& commandList = graphicsContext->commandList();
+	ShaderDescriptor2 descriptor = commandList->allocateShaderDescriptor(m_shader);
+	{
+		descriptor.uniforms[0] = commandList->allocateUniformBuffer(sizeof(LNRenderElementBuffer));
+		LNRenderElementBuffer renderElementBuffer;
+		renderElementBuffer.ln_WorldViewProjection = mat_projection;
+		renderElementBuffer.ln_WorldViewIT = Matrix::Identity;
+		descriptor.uniforms[0].setData(&renderElementBuffer, sizeof(LNRenderElementBuffer));
+	}
+	{
+		descriptor.uniforms[1] = commandList->allocateUniformBuffer(sizeof(LNEffectColorBuffer));
+		LNEffectColorBuffer buf2;
+		buf2.ln_ColorScale = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+		descriptor.uniforms[1].setData(&buf2, sizeof(LNEffectColorBuffer));
+	}
+	{
+		descriptor.uniforms[2] = commandList->allocateUniformBuffer(sizeof(LNRenderViewBuffer));
+		LNRenderViewBuffer buf3;
+		descriptor.uniforms[2].setData(&buf3, sizeof(LNRenderViewBuffer));
+	}
+	graphicsContext->setShaderDescriptor(&descriptor);
 
 	//std::cout << "----" << std::endl;
 	//std::cout << "CmdListsCount: " << draw_data->CmdListsCount << std::endl;
@@ -217,7 +241,8 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 			else
 			{
 				auto texture = reinterpret_cast<Texture2D*>(pcmd->TextureId);
-				m_shader->findParameter(u"ln_MaterialTexture")->setTexture(texture);
+				//m_shader->findParameter(u"ln_MaterialTexture")->setTexture(texture);
+				descriptor.textures[0] = texture;
 				Rect r(pcmd->ClipRect.x - clip_off.x, pcmd->ClipRect.y - clip_off.y, pcmd->ClipRect.z - clip_off.x, pcmd->ClipRect.w - clip_off.y);
 				graphicsContext->setScissorRect(r);
 				//graphicsContext->drawPrimitiveIndexed(pcmd->VtxOffset + global_vtx_offset, pcmd->ElemCount / 3);
@@ -239,6 +264,7 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 
 	//std::cout << "----" << std::endl;
 
+	graphicsContext->setShaderDescriptor(nullptr);
 	graphicsContext->endRenderPass();	// TODO: scoped
 }
 
