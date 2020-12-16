@@ -6,10 +6,14 @@
 
 cbuffer Constants
 {
-    float2 viewSize;
     
-    float4x4 scissorMat_;
-    float4x4 paintMat_;
+    //float4x4 scissorMat_;
+    //float4x4 paintMat_;
+    float3x3 scissorMat;
+    float3x3 paintMat;
+    
+    float4 viewSize;    // actualy .x, .y
+
     float4 innerCol;
     float4 outerCol;
     float2 scissorExt;
@@ -50,8 +54,8 @@ VSOutput VSMain(VSInput input)
 //==============================================================================
 // Pixel shader
 
-#define scissorMat (float3x3)scissorMat_
-#define paintMat (float3x3)paintMat_
+//#define scissorMat (float3x3)scissorMat_
+//#define paintMat (float3x3)paintMat_
 
 
  

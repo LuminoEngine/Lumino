@@ -10,6 +10,7 @@ file(GLOB HDRS ${SRC_DIR}/*.h)
 
 add_library(${PROJECT_NAME} ${SRCS})
 
+add_definitions(-DNVG_NO_STB=1)
 
 install(TARGETS ${PROJECT_NAME}
         LIBRARY DESTINATION lib

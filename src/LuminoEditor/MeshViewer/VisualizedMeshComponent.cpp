@@ -96,6 +96,8 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 		}
 	}
 
+	context->beginPath();
+	context->endPath();
 
 #if 0
 	//const auto* viewPoint = context->viewPoint();

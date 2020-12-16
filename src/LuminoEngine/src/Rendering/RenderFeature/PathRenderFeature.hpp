@@ -19,6 +19,10 @@ public:
 	void init(RenderingManager* manager);
 	void onDispose(bool explicitDisposing) override;
 
+	RenderingManager* manager() const { return m_manager; }
+
+	RequestBatchResult draw(detail::RenderFeatureBatchList* batchList, GraphicsContext* context);
+
 	void beginRendering() override;
 	void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
@@ -35,6 +39,7 @@ private:
 		BatchData data;
 	};
 
+	RenderingManager* m_manager;
 	BatchData m_batchData;
 	NVGcontext* m_nvgContext;
 	GLNVGcontext* m_glnvgContext;

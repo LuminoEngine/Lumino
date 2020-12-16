@@ -60,48 +60,6 @@ void RenderingManager::init(const Settings& settings)
     m_standardVertexDeclarationRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(nullptr, m_standardVertexDeclaration, nullptr);
     //m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
-	m_clearRenderFeature = makeObject<ClearRenderFeature>();
-	m_renderFeatures.add(m_clearRenderFeature);
-
-    m_blitRenderFeature = makeObject<BlitRenderFeature>(this);
-	m_renderFeatures.add(m_blitRenderFeature);
-
-	m_spriteRenderFeature2 = makeObject<SpriteRenderFeature2>(this);
-	m_renderFeatures.add(m_spriteRenderFeature2);
-
-    m_meshRenderFeature = makeObject<MeshRenderFeature>(this);
-	m_renderFeatures.add(m_meshRenderFeature);
-
-    m_meshGeneraterRenderFeature = makeObject<MeshGeneraterRenderFeature>(this);
-	m_renderFeatures.add(m_meshGeneraterRenderFeature);
-
-	m_primitiveRenderFeature = makeObject<PrimitiveRenderFeature>();
-	m_renderFeatures.add(m_primitiveRenderFeature);
-
-    m_spriteTextRenderFeature = makeObject<SpriteTextRenderFeature>(this);
-	m_renderFeatures.add(m_spriteTextRenderFeature);
-
-	m_frameRectRenderFeature = makeObject<FrameRectRenderFeature>(this);
-	m_renderFeatures.add(m_frameRectRenderFeature);
-
-#ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
-	m_shapesRenderFeature = makeObject<ShapesRenderFeature2>(this);
-#else
-	m_shapesRenderFeature = makeObject<ShapesRenderFeature>(this);
-#endif
-	m_renderFeatures.add(m_shapesRenderFeature);
-
-	m_pathRenderFeature = makeObject<PathRenderFeature>(this);
-	m_renderFeatures.add(m_pathRenderFeature);
-
-    m_extensionRenderFeature = makeObject<ExtensionRenderFeature>(this);
-    m_renderFeatures.add(m_extensionRenderFeature);
-
-
-    m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
-
-	m_defaultMaterial = makeObject<Material>();
-
 	{
 		static const unsigned char data[] = {
 #include "Resource/Random.png.inl"
@@ -309,6 +267,51 @@ void RenderingManager::init(const Settings& settings)
 	m_builtinShaders[(int)BuiltinShader::SSRComposite] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SSRComposite.fx");
 	m_builtinShaders[(int)BuiltinShader::RadialBlur] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/RadialBlur.fx");
 #endif
+
+
+
+	m_clearRenderFeature = makeObject<ClearRenderFeature>();
+	m_renderFeatures.add(m_clearRenderFeature);
+
+	m_blitRenderFeature = makeObject<BlitRenderFeature>(this);
+	m_renderFeatures.add(m_blitRenderFeature);
+
+	m_spriteRenderFeature2 = makeObject<SpriteRenderFeature2>(this);
+	m_renderFeatures.add(m_spriteRenderFeature2);
+
+	m_meshRenderFeature = makeObject<MeshRenderFeature>(this);
+	m_renderFeatures.add(m_meshRenderFeature);
+
+	m_meshGeneraterRenderFeature = makeObject<MeshGeneraterRenderFeature>(this);
+	m_renderFeatures.add(m_meshGeneraterRenderFeature);
+
+	m_primitiveRenderFeature = makeObject<PrimitiveRenderFeature>();
+	m_renderFeatures.add(m_primitiveRenderFeature);
+
+	m_spriteTextRenderFeature = makeObject<SpriteTextRenderFeature>(this);
+	m_renderFeatures.add(m_spriteTextRenderFeature);
+
+	m_frameRectRenderFeature = makeObject<FrameRectRenderFeature>(this);
+	m_renderFeatures.add(m_frameRectRenderFeature);
+
+#ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
+	m_shapesRenderFeature = makeObject<ShapesRenderFeature2>(this);
+#else
+	m_shapesRenderFeature = makeObject<ShapesRenderFeature>(this);
+#endif
+	m_renderFeatures.add(m_shapesRenderFeature);
+
+	m_pathRenderFeature = makeObject<PathRenderFeature>(this);
+	m_renderFeatures.add(m_pathRenderFeature);
+
+	m_extensionRenderFeature = makeObject<ExtensionRenderFeature>(this);
+	m_renderFeatures.add(m_extensionRenderFeature);
+
+
+	m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
+
+	m_defaultMaterial = makeObject<Material>();
+
 
     {
         m_builtinMaterials[(int)BuiltinMaterial::Default] = Material::create();
