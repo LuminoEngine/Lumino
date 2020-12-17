@@ -49,6 +49,7 @@ struct GraphicsDeviceCaps
 	GraphicsAPI graphicsAPI;
 	UnifiedShaderTriple requestedShaderTriple;
 	bool imageLayoytVFlip = false;
+	size_t uniformBufferOffsetAlignment;
 };
 
 // obsolete

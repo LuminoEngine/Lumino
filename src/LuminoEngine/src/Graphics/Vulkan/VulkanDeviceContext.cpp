@@ -146,6 +146,7 @@ void VulkanDevice::onGetCaps(GraphicsDeviceCaps * outCaps)
     outCaps->requestedShaderTriple.target = "spv";
     outCaps->requestedShaderTriple.version = 110;
     outCaps->requestedShaderTriple.option = "";
+    outCaps->uniformBufferOffsetAlignment = 64; // TODO: limits からとれる？
 }
 
 Ref<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)

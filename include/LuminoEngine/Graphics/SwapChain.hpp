@@ -39,6 +39,7 @@ public:
 private:
     Ref<detail::ICommandList> m_rhiResource;
     Ref<LinearAllocator> m_allocator;
+    size_t m_uniformBufferOffsetAlignment;
 };
 
 }

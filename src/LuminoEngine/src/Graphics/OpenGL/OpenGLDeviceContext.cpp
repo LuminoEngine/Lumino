@@ -363,6 +363,10 @@ void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps)
 	outCaps->requestedShaderTriple.option = "";
 #endif
 	outCaps->imageLayoytVFlip = true;
+
+	GLint align = 0;
+	glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &align);
+	outCaps->uniformBufferOffsetAlignment = align;
 }
 
 Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
@@ -481,8 +485,11 @@ Ref<IShaderPass> OpenGLDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
 
 Ref<IUniformBuffer> OpenGLDevice::onCreateUniformBuffer(uint32_t size)
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+	auto ptr = makeRef<GLUniformBuffer>();
+	if (!ptr->init(size)) {
+		return nullptr;
+	}
+	return ptr;
 }
 
 ICommandQueue* OpenGLDevice::getGraphicsCommandQueue()
@@ -1912,6 +1919,71 @@ void GLShaderPass::apply() const
 }
 
 //=============================================================================
+// GLUniformBuffer
+
+GLUniformBuffer::GLUniformBuffer()
+	: m_ubo(0)
+	, m_size(0)
+	, m_data(nullptr)
+	, m_mapped(false)
+{
+}
+
+bool GLUniformBuffer::init(size_t size)
+{
+	m_size = size;
+
+	// 大きなバッファをずっと持つ可能性があるが、UBO は通常、毎フレームデータの書き込みが行われるため、
+	// map() のたびに大きなバッファを new するとオーバーヘッドが大きくなる。
+	m_data = LN_NEW uint8_t[m_size];
+
+	GL_CHECK(glGenBuffers(1, &m_ubo));
+	//GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, info.ubo));
+	//GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, info.blockSize, nullptr, GL_DYNAMIC_DRAW));
+	//GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+
+	map();
+	unmap();
+
+	return true;
+}
+
+void GLUniformBuffer::dispose()
+{
+	if (m_ubo) {
+		GL_CHECK(glDeleteBuffers(1, &m_ubo));
+		m_ubo = 0;
+	}
+	LN_SAFE_DELETE_ARRAY(m_data);
+	IUniformBuffer::dispose();
+}
+
+// モバイル環境で glMapBuffer が使えないことがあるため、glBufferData() で対応する。
+void* GLUniformBuffer::map()
+{
+	if (LN_REQUIRE(!m_mapped)) return nullptr;
+	m_mapped = true;
+	return m_data;
+}
+
+void GLUniformBuffer::unmap()
+{
+	if (LN_REQUIRE(m_mapped)) return;
+	GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_ubo));
+	GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, m_size, m_data, GL_STREAM_DRAW));
+	GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+	m_mapped = false;
+}
+
+void GLUniformBuffer::flush()
+{
+	if (m_mapped) {
+		unmap();
+		map();
+	}
+}
+
+//=============================================================================
 // GLShaderDescriptorTable
 
 GLShaderDescriptorTable::GLShaderDescriptorTable()
@@ -1949,11 +2021,6 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
 			LN_LOG_VERBOSE << "  blockName  : " << blockName;
 			LN_LOG_VERBOSE << "  blockIndex : " << info.blockIndex;
 			LN_LOG_VERBOSE << "  blockSize  : " << info.blockSize;
-
-			GL_CHECK(glGenBuffers(1, &info.ubo));
-			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, info.ubo));
-			GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, info.blockSize, nullptr, GL_DYNAMIC_DRAW));
-			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 
 			// OpenGL の API では、グローバルに定義された uniform は _Global という UBO に入ってくる。
 			// 一方 glslang では同じように UBO にまとめられるが、名前は $Global となっている。
@@ -2125,11 +2192,6 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
 
 void GLShaderDescriptorTable::dispose()
 {
-	for (const auto& info : m_uniformBuffers) {
-		if (info.ubo) {
-			GL_CHECK(glDeleteBuffers(1, &info.ubo));
-		}
-	}
 	m_uniformBuffers.clear();
 	m_samplerUniforms.clear();
 	m_externalTextureUniforms.clear();
@@ -2141,12 +2203,8 @@ void GLShaderDescriptorTable::dispose()
 void GLShaderDescriptorTable::setData(const ShaderDescriptorTableUpdateInfo* data)
 {
 	for (int i = 0; i < m_uniformBuffers.size(); i++) {
-		if (m_uniformBuffers[i].ubo) {
-			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBuffers[i].ubo));
-			LN_NOTIMPLEMENTED();
-			//GL_CHECK(glBufferSubData(GL_UNIFORM_BUFFER, 0, data->uniforms[i].size, data->uniforms[i].data));
-			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
-		}
+		m_uniformBuffers[i].buffer = static_cast<GLUniformBuffer*>(data->uniforms[i].buffer);
+		m_uniformBuffers[i].offset = data->uniforms[i].offset;
 	}
 
 	for (int i = 0; i < m_externalTextureUniforms.size(); i++) {
@@ -2161,13 +2219,33 @@ void GLShaderDescriptorTable::setData(const ShaderDescriptorTableUpdateInfo* dat
 
 void GLShaderDescriptorTable::bind(GLuint program)
 {
+	//int ii = 0;
 	for (const auto& info : m_uniformBuffers) {
-		if (info.ubo) {
-			// m_ubo を context 内の Global なテーブルの m_bindingPoint 番目にセット
-			GL_CHECK(glBindBufferBase(GL_UNIFORM_BUFFER, info.bindingPoint, info.ubo));
+		if (info.buffer) {
+			GLuint ubo = info.buffer->ubo();
 
-			// m_bindingPoint 番目にセットされている m_ubo を、m_blockIndex 番目の Uniform Buffer として使う
+			// TODO: 超暫定対応。
+			// Vulkan は commit までにバッファを unmap すればよいが、OpenGL では glDraw* を呼ぶ前に unmap しなければならない。
+			// map/unmap よりも setData のほうがいいかも。
+			info.buffer->flush();
+
+			//GLint size = 0;
+			//glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+			//glGetBufferParameteriv(GL_UNIFORM_BUFFER, GL_BUFFER_SIZE, &size);
+
+			//GLint align = 0;
+			//glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &align);
+
+
+			// ubo を Global なテーブルの bindingPoint 番目にセット
+			//GL_CHECK(glBindBufferBase(GL_UNIFORM_BUFFER, info.bindingPoint, ubo));
+			//size_t offset = info.offset + align - info.offset % align;
+			GL_CHECK(glBindBufferRange(GL_UNIFORM_BUFFER, info.bindingPoint, ubo, info.offset, info.blockSize));
+
+			// bindingPoint 番目にセットされている ubo を、blockIndex 番目の UniformBuffer として使う
 			GL_CHECK(glUniformBlockBinding(program, info.blockIndex, info.bindingPoint));
+
+			//ii++;
 		}
 	}
 

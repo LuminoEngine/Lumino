@@ -28,6 +28,7 @@ void GraphicsCommandList::init(GraphicsManager* manager)
     m_rhiResource = manager->deviceContext()->createCommandList();
     m_allocator = makeRef<LinearAllocator>(manager->linearAllocatorPageManager());
 	m_singleFrameUniformBufferAllocator = makeRef<detail::SingleFrameUniformBufferAllocator>(manager->singleFrameUniformBufferAllocatorPageManager());
+	m_uniformBufferOffsetAlignment = manager->deviceContext()->caps().uniformBufferOffsetAlignment;
 }
 
 void GraphicsCommandList::dispose()
@@ -45,7 +46,7 @@ void GraphicsCommandList::reset()
 
 detail::ConstantBufferView GraphicsCommandList::allocateUniformBuffer(size_t size)
 {
-	return m_singleFrameUniformBufferAllocator->allocate(size);
+	return m_singleFrameUniformBufferAllocator->allocate(size, m_uniformBufferOffsetAlignment);
 }
 
 ShaderDescriptor* GraphicsCommandList::acquireShaderDescriptor(Shader* shader)

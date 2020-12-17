@@ -37,7 +37,7 @@ struct VSInput
 
 struct VSOutput
 {
-    float2 pos      : SV_POSITION;
+    float4 pos      : SV_POSITION;
     float2 ftcoord  : TEXCOORD0;
     float2 fpos     : TEXCOORD1;
 };
@@ -58,7 +58,7 @@ VSOutput VSMain(VSInput input)
 //#define paintMat (float3x3)paintMat_
 
 
- 
+
 struct PSInput
 {
     float2 ftcoord  : TEXCOORD0;

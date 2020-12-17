@@ -604,6 +604,26 @@ private:
 	Ref<GLShaderDescriptorTable> m_descriptorTable;
 };
 
+class GLUniformBuffer
+	: public IUniformBuffer
+{
+public:
+	GLUniformBuffer();
+	bool init(size_t size);
+	void dispose() override;
+	void* map() override;
+	void unmap() override;
+
+	GLuint ubo() const { return m_ubo; }
+	void flush();
+
+private:
+	GLuint m_ubo;
+	size_t m_size;
+	uint8_t* m_data;
+	bool m_mapped;
+};
+
 class GLShaderDescriptorTable
 	: public IShaderDescriptorTable
 {
@@ -616,7 +636,11 @@ public:
 
 		// null になることもある。DescriptorLayout 側のインデックスと一致させるため、
 		// UniformBufferInfo のインスタンスは作られるが、Active な UBO ではない場合 0 になる。
-		GLuint ubo = 0;		
+		//GLuint ubo = 0;
+		GLUniformBuffer* buffer;
+		size_t offset;
+		//size_t size;
+
 	};
 
 	// textureXD と samplerState を結合するためのデータ構造

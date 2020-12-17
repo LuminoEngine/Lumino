@@ -36,7 +36,7 @@ class SingleFrameUniformBufferAllocator
 {
 public:
 	SingleFrameUniformBufferAllocator(SingleFrameUniformBufferAllocatorPageManager* manager);
-	ConstantBufferView allocate(size_t size, size_t alignment = 64);
+	ConstantBufferView allocate(size_t size, size_t alignment);
 	void unmap();
 
 protected:
