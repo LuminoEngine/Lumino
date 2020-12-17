@@ -256,6 +256,14 @@ static int glnvg__renderCreate(void* uptr)
 	gl->vertexLayout->addElement(0, ln::VertexElementType::Float2, ln::VertexElementUsage::Position, 0);
 	gl->vertexLayout->addElement(0, ln::VertexElementType::Float2, ln::VertexElementUsage::TexCoord, 0);
 
+	size_t align = gl->renderFeature->manager()->graphicsManager()->deviceContext()->caps().uniformBufferOffsetAlignment;
+	gl->fragSize = sizeof(GLNVGfragUniforms) + align - sizeof(GLNVGfragUniforms) % align;
+
+	static_assert(192 == sizeof(GLNVGfragUniforms), "Invalid sizeof(GLNVGfragUniforms)");
+	static_assert(96 == offsetof(GLNVGfragUniforms, viewSize), "Invalid offsetof(GLNVGfragUniforms, viewSize)");
+	static_assert(184 == offsetof(GLNVGfragUniforms, texType), "Invalid offsetof(GLNVGfragUniforms, texType)");
+	static_assert(188 == offsetof(GLNVGfragUniforms, type), "Invalid offsetof(GLNVGfragUniforms, type)");
+
 	return 1;
 }
 
@@ -433,13 +441,39 @@ static void glnvg__fill(GLNVGcontext* gl, GLNVGcall* call)
 	GLNVGpath* paths = &gl->paths[call->pathOffset];
 	int i, npaths = call->pathCount;
 
-#if 0	// TODO:
 	// Draw shapes
-	ln::DepthStencilStateDesc depthStencil;
-	depthStencil.stencilEnabled = true;
-	depthStencil.stencilReferenceValue = 0;
-	depthStencil.frontFace.stencilFunc = ln::ComparisonFunc::Always;
-	depthStencil.backFace.stencilFunc = ln::ComparisonFunc::Always;
+#if 0	// TODO:
+#if 1
+	glnvg__setUniforms(gl, call->uniformOffset, 0);
+
+	ln::DepthStencilStateDesc desc0 = g->depthStencilState();
+	ln::DepthStencilStateDesc desc1;
+	desc1.stencilEnabled = true;
+	//desc1.stencilReferenceValue = 0;
+	desc1.frontFace.stencilFailOp = ln::StencilOp::Keep;
+	desc1.frontFace.stencilDepthFailOp = ln::StencilOp::Keep;
+	desc1.frontFace.stencilPassOp = ln::StencilOp::Replace;
+	desc1.frontFace.stencilFunc = ln::ComparisonFunc::Always;
+	desc1.backFace.stencilFailOp = ln::StencilOp::Keep;
+	desc1.backFace.stencilDepthFailOp = ln::StencilOp::Keep;
+	desc1.backFace.stencilPassOp = ln::StencilOp::Replace;
+	desc1.backFace.stencilFunc = ln::ComparisonFunc::Always;
+	g->setDepthStencilState(desc1);
+
+	ln::RasterizerStateDesc rdesc0 = g->rasterizerState();
+	ln::RasterizerStateDesc rdesc1;
+	rdesc1.cullMode = ln::CullMode::None;
+	g->setRasterizerState(rdesc1);
+
+
+	for (i = 0; i < npaths; i++) {
+		gl->g->setPrimitiveTopology(ln::PrimitiveTopology::TriangleFan);
+		gl->g->drawPrimitive(paths[i].fillOffset, (paths[i].fillCount - 2));
+	}
+
+	g->setDepthStencilState(desc0);
+	g->setRasterizerState(rdesc0);
+#else
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
 	// set bindpoint for solid loc
@@ -455,6 +489,7 @@ static void glnvg__fill(GLNVGcontext* gl, GLNVGcall* call)
 
 	// Draw anti-aliased pixels
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE)
+#endif
 #endif
 
 	glnvg__setUniforms(gl, call->uniformOffset + gl->fragSize, call->image);
@@ -620,6 +655,7 @@ static void glnvg__renderFlush(void* uptr)
 	int i;
 
 	if (gl->ncalls > 0) {
+	//if (0) {
 
 		// Setup require GL state.
 		gl->g->setShaderPass(gl->shader->techniques()[0]->passes()[0]);
@@ -637,8 +673,18 @@ static void glnvg__renderFlush(void* uptr)
 		ln::RasterizerStateDesc desc3;
 		desc3.fillMode = ln::FillMode::Solid;
 		desc3.cullMode = ln::CullMode::Back;	// TODO: 要チェック
+		desc3.cullMode = ln::CullMode::None;
 		gl->g->setRasterizerState(desc3);
 
+		//gl->boundTexture = 0;
+		//gl->stencilMask = 0xffffffff;
+		//gl->stencilFunc = GL_ALWAYS;
+		//gl->stencilFuncRef = 0;
+		//gl->stencilFuncMask = 0xffffffff;
+		gl->blendFunc.srcRGB = desc1.renderTargets[0].sourceBlend;
+		gl->blendFunc.srcAlpha = desc1.renderTargets[0].sourceBlendAlpha;
+		gl->blendFunc.dstRGB = desc1.renderTargets[0].destinationBlend;
+		gl->blendFunc.dstAlpha = desc1.renderTargets[0].destinationBlendAlpha;
 
 		//glDisable(GL_SCISSOR_TEST);
 		//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -1038,7 +1084,7 @@ void PathRenderFeature::init(RenderingManager* manager)
 {
 	RenderFeature::init();
 	m_manager = manager;
-	m_nvgContext = nvgCreateGL(NVG_ANTIALIAS, this, &m_glnvgContext);
+	m_nvgContext = nvgCreateGL(0/*NVG_ANTIALIAS*/, this, &m_glnvgContext);
 }
 
 void PathRenderFeature::onDispose(bool explicitDisposing)
@@ -1079,10 +1125,29 @@ void PathRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch
 
 	m_glnvgContext->g = context;
 	nvgBeginFrame(m_nvgContext, target->width(), target->height(), 1.0);	// TODO: DPI
-	nvgBeginPath(m_nvgContext);
-	nvgRect(m_nvgContext, 100, 100, 120, 30);
-	nvgFillColor(m_nvgContext, nvgRGBA(255, 192, 0, 255));
-	nvgFill(m_nvgContext);
+
+
+	// Drop shadow
+	float x = 100;
+	float y = 50;
+	float w = 300;
+	float h = 200;
+	NVGcontext* vg = m_nvgContext;
+	float cornerRadius = 3.0f;
+	NVGpaint shadowPaint;
+	shadowPaint = nvgBoxGradient(vg, x, y + 2, w, h, cornerRadius * 2, 10, nvgRGBA(0, 0, 0, 128), nvgRGBA(0, 0, 0, 0));
+	nvgBeginPath(vg);
+	nvgRect(vg, x - 10, y - 10, w + 20, h + 30);
+	nvgRoundedRect(vg, x, y, w, h, cornerRadius);
+	nvgPathWinding(vg, NVG_HOLE);
+	nvgFillPaint(vg, shadowPaint);
+	nvgFill(vg);
+
+	//nvgBeginPath(m_nvgContext);
+	//nvgRect(m_nvgContext, 100, 100, 120, 30);
+	//nvgFillColor(m_nvgContext, nvgRGBA(255, 192, 0, 255));
+	//nvgFill(m_nvgContext);
+
 	nvgEndFrame(m_nvgContext);
 
 }

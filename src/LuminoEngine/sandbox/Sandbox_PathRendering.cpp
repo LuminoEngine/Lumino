@@ -1,5 +1,6 @@
 ﻿
 #include <LuminoEngine.hpp>
+#include <LuminoEngine/UI/UIRenderingContext.hpp>
 using namespace ln;
 
 class TestElement : public UIElement
@@ -7,7 +8,8 @@ class TestElement : public UIElement
 public:
     void onRender(UIRenderingContext* context) override
     {
-
+        context->beginPath();
+        context->endPath();
     }
 
 private:

@@ -149,6 +149,11 @@ public:
 
 	void drawPath(CanvasContext* context);
 
+
+	//CanvasContext* beginPath();
+	//void endPath();
+
+
 	void invokeExtensionRendering(INativeGraphicsExtension* extension);
 
 

@@ -10,21 +10,21 @@ cbuffer Constants
     //float4x4 scissorMat_;
     //float4x4 paintMat_;
     float3x3 scissorMat;
-    float3x3 paintMat;
+    float3x3 paintMat;  // 48
     
-    float4 viewSize;    // actualy .x, .y
+    float4 viewSize;    // actualy .x, .y       // [96]
 
     float4 innerCol;
     float4 outerCol;
-    float2 scissorExt;
-    float2 scissorScale;
+    float2 scissorExt;      // 144
+    float2 scissorScale;    // 152
     float2 extent;
     float radius;
     float feather;
-    float strokeMult;
-    float strokeThr;
-    int texType;
-    int type;
+    float strokeMult;   // 176
+    float strokeThr;    // 180
+    int texType;        // 
+    int type;           // 188
 };
 
 sampler2D tex;
@@ -57,7 +57,7 @@ VSOutput VSMain(VSInput input)
 //#define scissorMat (float3x3)scissorMat_
 //#define paintMat (float3x3)paintMat_
 
-
+#define my_mul(a, b) mul(b, a)
 
 struct PSInput
 {
@@ -74,7 +74,8 @@ float sdroundrect(float2 pt, float2 ext, float rad) {
 
 // Scissoring
 float scissorMask(float2 p) {
-    float2 sc = (abs((scissorMat * float3(p,1.0)).xy) - scissorExt);
+    //float2 sc = (abs((scissorMat * float3(p,1.0)).xy) - scissorExt);
+    float2 sc = (abs(my_mul(scissorMat, float3(p,1.0)).xy) - scissorExt);
     sc = float2(0.5,0.5) - sc * scissorScale;
     return clamp(sc.x,0.0,1.0) * clamp(sc.y,0.0,1.0);
 }
@@ -100,15 +101,18 @@ float4 PSMain(PSInput input) : SV_TARGET
 #endif
     if (type == 0) {            // Gradient
         // Calculate gradient color using box gradient
-        float2 pt = (paintMat * float3(fpos,1.0)).xy;
+        //float2 pt = (paintMat * float3(fpos,1.0)).xy;
+        float2 pt = my_mul(paintMat, float3(fpos,1.0)).xy;
         float d = clamp((sdroundrect(pt, extent, radius) + feather*0.5) / feather, 0.0, 1.0);
         float4 color = lerp(innerCol,outerCol,d);
         // Combine alpha
         color *= strokeAlpha * scissor;
         result = color;
-    } else if (type == 1) {        // Image
+    }
+    else if (type == 1) {        // Image
         // Calculate color fron texture
-        float2 pt = (paintMat * float3(fpos,1.0)).xy / extent;
+        //float2 pt = (paintMat * float3(fpos,1.0)).xy / extent;
+        float2 pt = my_mul(paintMat, float3(fpos,1.0)).xy / extent;
 
         float4 color = tex2D(tex, pt);
 
