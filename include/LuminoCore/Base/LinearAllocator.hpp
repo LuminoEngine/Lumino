@@ -36,7 +36,7 @@ class AbstractLinearAllocatorPageManager
 	: public RefObject
 {
 public:
-	static const size_t DefaultPageSize = 0x200000;	// 2MB
+	static constexpr size_t DefaultPageSize = 0x200000;	// 2MB
 
 	AbstractLinearAllocatorPageManager(size_t pageSize = 0);
 	virtual ~AbstractLinearAllocatorPageManager();

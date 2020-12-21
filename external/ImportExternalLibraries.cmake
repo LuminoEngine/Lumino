@@ -414,27 +414,29 @@ list(APPEND LN_EXTERNAL_LIBS Box2D)
 #--------------------------------------
 # Vulkan
 
-#if (LN_USE_VULKAN)
-##    if (WIN32)
-ln_make_external_find_path(VulkanHeaders_ROOT "Vulkan-Headers")
+if (${LN_TARGET_ARCH} STREQUAL "Emscripten")
+else()
+    #if (LN_USE_VULKAN)
+    ##    if (WIN32)
+    ln_make_external_find_path(VulkanHeaders_ROOT "Vulkan-Headers")
 
-add_library(VulkanHeaders IMPORTED INTERFACE)   # IMPORTED がないと install で Target not found になる
-set_target_properties(VulkanHeaders PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${VulkanHeaders_ROOT}/include)
-list(APPEND LN_EXTERNAL_LIBS VulkanHeaders)
+    add_library(VulkanHeaders IMPORTED INTERFACE)   # IMPORTED がないと install で Target not found になる
+    set_target_properties(VulkanHeaders PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${VulkanHeaders_ROOT}/include)
+    list(APPEND LN_EXTERNAL_LIBS VulkanHeaders)
 
-#find_package(Vulkan REQUIRED)
-#list(APPEND LN_EXTERNAL_LIBS Vulkan::Vulkan)
+    #find_package(Vulkan REQUIRED)
+    #list(APPEND LN_EXTERNAL_LIBS Vulkan::Vulkan)
 
 
-#add_library(VulkanImported IMPORTED INTERFACE)
-#set_target_properties(VulkanImported PROPERTIES IMPORTED_LOCATION_RELEASE ${Vulkan_LIBRARIES})
-#set_target_properties(VulkanImported PROPERTIES IMPORTED_LOCATION_DEBUG ${Vulkan_LIBRARIES})
-# dynamic load としたため、include だけでよい
-#set_target_properties(VulkanImported PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${Vulkan_INCLUDE_DIRS})
-#list(APPEND LN_EXTERNAL_LIBS VulkanImported)
-#    endif()
-#endif()
-
+    #add_library(VulkanImported IMPORTED INTERFACE)
+    #set_target_properties(VulkanImported PROPERTIES IMPORTED_LOCATION_RELEASE ${Vulkan_LIBRARIES})
+    #set_target_properties(VulkanImported PROPERTIES IMPORTED_LOCATION_DEBUG ${Vulkan_LIBRARIES})
+    # dynamic load としたため、include だけでよい
+    #set_target_properties(VulkanImported PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${Vulkan_INCLUDE_DIRS})
+    #list(APPEND LN_EXTERNAL_LIBS VulkanImported)
+    #    endif()
+    #endif()
+endif()
 
 #--------------------------------------
 # yaml-cpp
