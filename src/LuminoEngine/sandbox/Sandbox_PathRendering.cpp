@@ -8,8 +8,10 @@ class TestElement : public UIElement
 public:
     void onRender(UIRenderingContext* context) override
     {
-        context->beginPath();
-        context->endPath();
+        //context->beginPath();
+        //context->endPath();
+
+        context->drawRegularPolygonPrimitive(3, 5, Color::Red, true);
     }
 
 private:
