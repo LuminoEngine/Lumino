@@ -6826,7 +6826,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble();
 
-            stat = LNVector3_Set(reinterpret_cast<LNVector3*>(pval_vector3->pt), local_x, local_y, local_z);
+            stat = LNVector3_Set(reinterpret_cast<LNVector3*>(pval_vector3->pt), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z));
 
 
             return true;
@@ -6910,7 +6910,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNVector3 local_outReturn;
 
-            stat = LNVector3_NormalizeXYZ(local_x, local_y, local_z, &local_outReturn);
+            stat = LNVector3_NormalizeXYZ(static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
@@ -6955,7 +6955,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch w
             const auto local_w = fetchVADouble();
 
-            stat = LNVector4_Set(reinterpret_cast<LNVector4*>(pval_vector4->pt), local_x, local_y, local_z, local_w);
+            stat = LNVector4_Set(reinterpret_cast<LNVector4*>(pval_vector4->pt), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z), static_cast<float>(local_w));
 
 
             return true;
@@ -6985,7 +6985,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch w
             const auto local_w = fetchVADouble();
 
-            stat = LNQuaternion_Set(reinterpret_cast<LNQuaternion*>(pval_quaternion->pt), local_x, local_y, local_z, local_w);
+            stat = LNQuaternion_Set(reinterpret_cast<LNQuaternion*>(pval_quaternion->pt), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z), static_cast<float>(local_w));
 
 
             return true;
@@ -7001,7 +7001,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch r
             const auto local_r = fetchVADouble();
 
-            stat = LNQuaternion_SetFromAxis(reinterpret_cast<LNQuaternion*>(pval_quaternion->pt), reinterpret_cast<LNVector3*>(pval_axis->pt), local_r);
+            stat = LNQuaternion_SetFromAxis(reinterpret_cast<LNQuaternion*>(pval_quaternion->pt), reinterpret_cast<LNVector3*>(pval_axis->pt), static_cast<float>(local_r));
 
 
             return true;
@@ -7055,7 +7055,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch m44
             const auto local_m44 = fetchVADouble();
 
-            stat = LNMatrix_Set(reinterpret_cast<LNMatrix*>(pval_matrix->pt), local_m11, local_m12, local_m13, local_m14, local_m21, local_m22, local_m23, local_m24, local_m31, local_m32, local_m33, local_m34, local_m41, local_m42, local_m43, local_m44);
+            stat = LNMatrix_Set(reinterpret_cast<LNMatrix*>(pval_matrix->pt), static_cast<float>(local_m11), static_cast<float>(local_m12), static_cast<float>(local_m13), static_cast<float>(local_m14), static_cast<float>(local_m21), static_cast<float>(local_m22), static_cast<float>(local_m23), static_cast<float>(local_m24), static_cast<float>(local_m31), static_cast<float>(local_m32), static_cast<float>(local_m33), static_cast<float>(local_m34), static_cast<float>(local_m41), static_cast<float>(local_m42), static_cast<float>(local_m43), static_cast<float>(local_m44));
 
 
             return true;
@@ -7085,7 +7085,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch a_
             const auto local_a_ = fetchVADouble(1.000000);
 
-            stat = LNColor_Set(reinterpret_cast<LNColor*>(pval_color->pt), local_r_, local_g_, local_b_, local_a_);
+            stat = LNColor_Set(reinterpret_cast<LNColor*>(pval_color->pt), static_cast<float>(local_r_), static_cast<float>(local_g_), static_cast<float>(local_b_), static_cast<float>(local_a_));
 
 
             return true;
@@ -7115,7 +7115,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch s_
             const auto local_s_ = fetchVADouble();
 
-            stat = LNColorTone_Set(reinterpret_cast<LNColorTone*>(pval_colortone->pt), local_r_, local_g_, local_b_, local_s_);
+            stat = LNColorTone_Set(reinterpret_cast<LNColorTone*>(pval_colortone->pt), static_cast<float>(local_r_), static_cast<float>(local_g_), static_cast<float>(local_b_), static_cast<float>(local_s_));
 
 
             return true;
@@ -7141,7 +7141,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch y_
             const auto local_y_ = fetchVADouble();
 
-            stat = LNPoint_Set(reinterpret_cast<LNPoint*>(pval_point->pt), local_x_, local_y_);
+            stat = LNPoint_Set(reinterpret_cast<LNPoint*>(pval_point->pt), static_cast<float>(local_x_), static_cast<float>(local_y_));
 
 
             return true;
@@ -7167,7 +7167,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch h
             const auto local_h = fetchVADouble();
 
-            stat = LNSize_Set(reinterpret_cast<LNSize*>(pval_size->pt), local_w, local_h);
+            stat = LNSize_Set(reinterpret_cast<LNSize*>(pval_size->pt), static_cast<float>(local_w), static_cast<float>(local_h));
 
 
             return true;
@@ -7197,7 +7197,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch height
             const auto local_height = fetchVADouble();
 
-            stat = LNRect_Set(reinterpret_cast<LNRect*>(pval_rect->pt), local_x, local_y, local_width, local_height);
+            stat = LNRect_Set(reinterpret_cast<LNRect*>(pval_rect->pt), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_width), static_cast<float>(local_height));
 
 
             return true;
@@ -7271,7 +7271,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch bottom_
             const auto local_bottom_ = fetchVADouble();
 
-            stat = LNThickness_Set(reinterpret_cast<LNThickness*>(pval_thickness->pt), local_left_, local_top_, local_right_, local_bottom_);
+            stat = LNThickness_Set(reinterpret_cast<LNThickness*>(pval_thickness->pt), static_cast<float>(local_left_), static_cast<float>(local_top_), static_cast<float>(local_right_), static_cast<float>(local_bottom_));
 
 
             return true;
@@ -7301,7 +7301,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch bottomLeft
             const auto local_bottomLeft = fetchVADouble();
 
-            stat = LNCornerRadius_Set(reinterpret_cast<LNCornerRadius*>(pval_cornerradius->pt), local_topLeft, local_topRight, local_bottomRight, local_bottomLeft);
+            stat = LNCornerRadius_Set(reinterpret_cast<LNCornerRadius*>(pval_cornerradius->pt), static_cast<float>(local_topLeft), static_cast<float>(local_topRight), static_cast<float>(local_bottomRight), static_cast<float>(local_bottomLeft));
 
 
             return true;
@@ -7311,7 +7311,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch object
             const auto local_object = fetchVAInt();
 
-            stat = LNObject_Release(local_object);
+            stat = LNObject_Release(static_cast<LNHandle>(local_object));
 
 
             return true;
@@ -7321,7 +7321,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch object
             const auto local_object = fetchVAInt();
 
-            stat = LNObject_Retain(local_object);
+            stat = LNObject_Retain(static_cast<LNHandle>(local_object));
 
 
             return true;
@@ -7335,7 +7335,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
-            stat = LNObject_GetReferenceCount(local_object, &local_outReturn);
+            stat = LNObject_GetReferenceCount(static_cast<LNHandle>(local_object), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -7355,7 +7355,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNObject_SetPrototype_OnSerialize(local_object, localDelegate_callback);
+            stat = LNObject_SetPrototype_OnSerialize(static_cast<LNHandle>(local_object), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -7375,7 +7375,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNEventConnection_SetPrototype_OnSerialize(local_eventconnection, localDelegate_callback);
+            stat = LNEventConnection_SetPrototype_OnSerialize(static_cast<LNHandle>(local_eventconnection), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -7415,7 +7415,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LNVariant_SetInt(local_variant, local_value);
+            stat = LNVariant_SetInt(static_cast<LNHandle>(local_variant), static_cast<int>(local_value));
 
 
             return true;
@@ -7429,7 +7429,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
-            stat = LNVariant_GetInt(local_variant, &local_outReturn);
+            stat = LNVariant_GetInt(static_cast<LNHandle>(local_variant), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -7449,7 +7449,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNVariant_SetPrototype_OnSerialize(local_variant, localDelegate_callback);
+            stat = LNVariant_SetPrototype_OnSerialize(static_cast<LNHandle>(local_variant), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -7549,7 +7549,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNZVTestPromise1_ThenWith(local_zvtestpromise1, localDelegate_callback);
+            stat = LNZVTestPromise1_ThenWith(static_cast<LNHandle>(local_zvtestpromise1), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -7569,7 +7569,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNZVTestPromise1_CatchWith(local_zvtestpromise1, localDelegate_callback);
+            stat = LNZVTestPromise1_CatchWith(static_cast<LNHandle>(local_zvtestpromise1), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -7589,7 +7589,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNZVTestPromise2_ThenWith(local_zvtestpromise2, localDelegate_callback);
+            stat = LNZVTestPromise2_ThenWith(static_cast<LNHandle>(local_zvtestpromise2), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -7609,7 +7609,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNZVTestPromise2_CatchWith(local_zvtestpromise2, localDelegate_callback);
+            stat = LNZVTestPromise2_CatchWith(static_cast<LNHandle>(local_zvtestpromise2), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -7641,7 +7641,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_value;
             }
 
-            stat = LNZVTestClass1_SetTestDelegate1(local_zvtestclass1, localDelegate_value);
+            stat = LNZVTestClass1_SetTestDelegate1(static_cast<LNHandle>(local_zvtestclass1), localDelegate_value);
             LNObject_Release(localDelegate_value);
 
             return true;
@@ -7661,7 +7661,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_value;
             }
 
-            stat = LNZVTestClass1_SetTestDelegate2(local_zvtestclass1, localDelegate_value);
+            stat = LNZVTestClass1_SetTestDelegate2(static_cast<LNHandle>(local_zvtestclass1), localDelegate_value);
             LNObject_Release(localDelegate_value);
 
             return true;
@@ -7681,7 +7681,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_value;
             }
 
-            stat = LNZVTestClass1_SetTestDelegate3(local_zvtestclass1, localDelegate_value);
+            stat = LNZVTestClass1_SetTestDelegate3(static_cast<LNHandle>(local_zvtestclass1), localDelegate_value);
             LNObject_Release(localDelegate_value);
 
             return true;
@@ -7693,7 +7693,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch a
             const auto local_a = fetchVAInt();
 
-            stat = LNZVTestClass1_CallTestDelegate1(local_zvtestclass1, local_a);
+            stat = LNZVTestClass1_CallTestDelegate1(static_cast<LNHandle>(local_zvtestclass1), static_cast<int>(local_a));
 
 
             return true;
@@ -7711,7 +7711,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
-            stat = LNZVTestClass1_CallTestDelegate2(local_zvtestclass1, local_a, local_b, &local_outReturn);
+            stat = LNZVTestClass1_CallTestDelegate2(static_cast<LNHandle>(local_zvtestclass1), static_cast<int>(local_a), static_cast<int>(local_b), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -7721,7 +7721,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
 
-            stat = LNZVTestClass1_CallTestDelegate3(local_zvtestclass1);
+            stat = LNZVTestClass1_CallTestDelegate3(static_cast<LNHandle>(local_zvtestclass1));
 
 
             return true;
@@ -7735,7 +7735,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNZVTestClass1_LoadAsyncA(local_filePath, &local_outReturn);
+            stat = LNZVTestClass1_LoadAsyncA(static_cast<const char*>(local_filePath), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -7749,7 +7749,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNZVTestClass1_ExecuteAsync(local_zvtestclass1, &local_outReturn);
+            stat = LNZVTestClass1_ExecuteAsync(static_cast<LNHandle>(local_zvtestclass1), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -7763,7 +7763,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             const char* local_outReturn;
 
-            stat = LNZVTestClass1_GetFilePathA(local_zvtestclass1, &local_outReturn);
+            stat = LNZVTestClass1_GetFilePathA(static_cast<LNHandle>(local_zvtestclass1), &local_outReturn);
             setVAStr(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -7787,7 +7787,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNZVTestClass1_ConnectOnEvent1(local_zvtestclass1, localDelegate_handler, &local_outReturn);
+            stat = LNZVTestClass1_ConnectOnEvent1(static_cast<LNHandle>(local_zvtestclass1), localDelegate_handler, &local_outReturn);
             LNObject_Release(localDelegate_handler);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
@@ -7798,7 +7798,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
 
-            stat = LNZVTestClass1_RaiseEvent1(local_zvtestclass1);
+            stat = LNZVTestClass1_RaiseEvent1(static_cast<LNHandle>(local_zvtestclass1));
 
 
             return true;
@@ -7822,7 +7822,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNZVTestClass1_ConnectOnEvent2(local_zvtestclass1, localDelegate_handler, &local_outReturn);
+            stat = LNZVTestClass1_ConnectOnEvent2(static_cast<LNHandle>(local_zvtestclass1), localDelegate_handler, &local_outReturn);
             LNObject_Release(localDelegate_handler);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
@@ -7833,7 +7833,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
 
-            stat = LNZVTestClass1_RaiseEvent2(local_zvtestclass1);
+            stat = LNZVTestClass1_RaiseEvent2(static_cast<LNHandle>(local_zvtestclass1));
 
 
             return true;
@@ -7853,7 +7853,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNZVTestClass1_SetPrototype_OnSerialize(local_zvtestclass1, localDelegate_callback);
+            stat = LNZVTestClass1_SetPrototype_OnSerialize(static_cast<LNHandle>(local_zvtestclass1), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -7879,7 +7879,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outZVTestEventArgs1 = code_getva(&pval_outZVTestEventArgs1);
             LNHandle local_outZVTestEventArgs1;
 
-            stat = LNZVTestEventArgs1_CreateWithValue(local_v, &local_outZVTestEventArgs1);
+            stat = LNZVTestEventArgs1_CreateWithValue(static_cast<int>(local_v), &local_outZVTestEventArgs1);
             setVAInt(pval_outZVTestEventArgs1, aptr_outZVTestEventArgs1, local_outZVTestEventArgs1);
 
             return true;
@@ -7893,7 +7893,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
-            stat = LNZVTestEventArgs1_GetValue(local_zvtesteventargs1, &local_outReturn);
+            stat = LNZVTestEventArgs1_GetValue(static_cast<LNHandle>(local_zvtesteventargs1), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -7913,7 +7913,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNZVTestEventArgs1_SetPrototype_OnSerialize(local_zvtesteventargs1, localDelegate_callback);
+            stat = LNZVTestEventArgs1_SetPrototype_OnSerialize(static_cast<LNHandle>(local_zvtesteventargs1), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -7933,7 +7933,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNSerializer2_SetPrototype_OnSerialize(local_serializer2, localDelegate_callback);
+            stat = LNSerializer2_SetPrototype_OnSerialize(static_cast<LNHandle>(local_serializer2), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -7953,7 +7953,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNAssetObject_SetPrototype_OnSerialize(local_assetobject, localDelegate_callback);
+            stat = LNAssetObject_SetPrototype_OnSerialize(static_cast<LNHandle>(local_assetobject), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -7973,7 +7973,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNAssetImportSettings_SetPrototype_OnSerialize(local_assetimportsettings, localDelegate_callback);
+            stat = LNAssetImportSettings_SetPrototype_OnSerialize(static_cast<LNHandle>(local_assetimportsettings), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -7987,7 +7987,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outAssetModel = code_getva(&pval_outAssetModel);
             LNHandle local_outAssetModel;
 
-            stat = LNAssetModel_Create(local_target, &local_outAssetModel);
+            stat = LNAssetModel_Create(static_cast<LNHandle>(local_target), &local_outAssetModel);
             setVAInt(pval_outAssetModel, aptr_outAssetModel, local_outAssetModel);
 
             return true;
@@ -8001,7 +8001,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNAssetModel_Target(local_assetmodel, &local_outReturn);
+            stat = LNAssetModel_Target(static_cast<LNHandle>(local_assetmodel), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8021,7 +8021,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNAssetModel_SetPrototype_OnSerialize(local_assetmodel, localDelegate_callback);
+            stat = LNAssetModel_SetPrototype_OnSerialize(static_cast<LNHandle>(local_assetmodel), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -8033,7 +8033,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch filePath
             const auto local_filePath = fetchVAString();
 
-            stat = LNAssets_SaveAssetToLocalFileA(local_asset, local_filePath);
+            stat = LNAssets_SaveAssetToLocalFileA(static_cast<LNHandle>(local_asset), static_cast<const char*>(local_filePath));
 
 
             return true;
@@ -8047,7 +8047,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNAssets_LoadAssetFromLocalFileA(local_filePath, &local_outReturn);
+            stat = LNAssets_LoadAssetFromLocalFileA(static_cast<const char*>(local_filePath), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8061,7 +8061,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNAssets_LoadAssetA(local_filePath, &local_outReturn);
+            stat = LNAssets_LoadAssetA(static_cast<const char*>(local_filePath), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8073,7 +8073,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch obj
             const auto local_obj = fetchVAInt();
 
-            stat = LNAssets_ReloadAssetA(local_filePath, local_obj);
+            stat = LNAssets_ReloadAssetA(static_cast<const char*>(local_filePath), static_cast<LNHandle>(local_obj));
 
 
             return true;
@@ -8089,7 +8089,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             const char* local_outReturn;
 
-            stat = LNAssets_ReadAllTextA(local_filePath, local_encoding, &local_outReturn);
+            stat = LNAssets_ReadAllTextA(static_cast<const char*>(local_filePath), static_cast<LNEncodingType>(local_encoding), &local_outReturn);
             setVAStr(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8101,7 +8101,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNSound_SetVolume(local_sound, local_value);
+            stat = LNSound_SetVolume(static_cast<LNHandle>(local_sound), static_cast<float>(local_value));
 
 
             return true;
@@ -8115,7 +8115,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNSound_GetVolume(local_sound, &local_outReturn);
+            stat = LNSound_GetVolume(static_cast<LNHandle>(local_sound), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8127,7 +8127,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNSound_SetPitch(local_sound, local_value);
+            stat = LNSound_SetPitch(static_cast<LNHandle>(local_sound), static_cast<float>(local_value));
 
 
             return true;
@@ -8141,7 +8141,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNSound_GetPitch(local_sound, &local_outReturn);
+            stat = LNSound_GetPitch(static_cast<LNHandle>(local_sound), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8153,7 +8153,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch enabled
             const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNSound_SetLoopEnabled(local_sound, local_enabled);
+            stat = LNSound_SetLoopEnabled(static_cast<LNHandle>(local_sound), static_cast<LNBool>(local_enabled));
 
 
             return true;
@@ -8167,7 +8167,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNSound_IsLoopEnabled(local_sound, &local_outReturn);
+            stat = LNSound_IsLoopEnabled(static_cast<LNHandle>(local_sound), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8181,7 +8181,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch length
             const auto local_length = fetchVAInt();
 
-            stat = LNSound_SetLoopRange(local_sound, local_begin, local_length);
+            stat = LNSound_SetLoopRange(static_cast<LNHandle>(local_sound), static_cast<uint32_t>(local_begin), static_cast<uint32_t>(local_length));
 
 
             return true;
@@ -8191,7 +8191,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch sound
             const auto local_sound = fetchVAInt();
 
-            stat = LNSound_Play(local_sound);
+            stat = LNSound_Play(static_cast<LNHandle>(local_sound));
 
 
             return true;
@@ -8201,7 +8201,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch sound
             const auto local_sound = fetchVAInt();
 
-            stat = LNSound_Stop(local_sound);
+            stat = LNSound_Stop(static_cast<LNHandle>(local_sound));
 
 
             return true;
@@ -8211,7 +8211,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch sound
             const auto local_sound = fetchVAInt();
 
-            stat = LNSound_Pause(local_sound);
+            stat = LNSound_Pause(static_cast<LNHandle>(local_sound));
 
 
             return true;
@@ -8221,7 +8221,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch sound
             const auto local_sound = fetchVAInt();
 
-            stat = LNSound_Resume(local_sound);
+            stat = LNSound_Resume(static_cast<LNHandle>(local_sound));
 
 
             return true;
@@ -8237,7 +8237,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch behavior
             const auto local_behavior = static_cast<LNSoundFadeBehavior>(fetchVAInt());
 
-            stat = LNSound_FadeVolume(local_sound, local_targetVolume, local_time, local_behavior);
+            stat = LNSound_FadeVolume(static_cast<LNHandle>(local_sound), static_cast<float>(local_targetVolume), static_cast<float>(local_time), static_cast<LNSoundFadeBehavior>(local_behavior));
 
 
             return true;
@@ -8257,7 +8257,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNSound_SetPrototype_OnSerialize(local_sound, localDelegate_callback);
+            stat = LNSound_SetPrototype_OnSerialize(static_cast<LNHandle>(local_sound), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -8273,7 +8273,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch fadeTime
             const auto local_fadeTime = fetchVADouble(0.000000);
 
-            stat = LNAudio_PlayBGMA(local_filePath, local_volume, local_pitch, local_fadeTime);
+            stat = LNAudio_PlayBGMA(static_cast<const char*>(local_filePath), static_cast<float>(local_volume), static_cast<float>(local_pitch), static_cast<double>(local_fadeTime));
 
 
             return true;
@@ -8283,7 +8283,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch fadeTime
             const auto local_fadeTime = fetchVADouble(0.000000);
 
-            stat = LNAudio_StopBGM(local_fadeTime);
+            stat = LNAudio_StopBGM(static_cast<double>(local_fadeTime));
 
 
             return true;
@@ -8299,7 +8299,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch fadeTime
             const auto local_fadeTime = fetchVADouble(0.000000);
 
-            stat = LNAudio_PlayBGSA(local_filePath, local_volume, local_pitch, local_fadeTime);
+            stat = LNAudio_PlayBGSA(static_cast<const char*>(local_filePath), static_cast<float>(local_volume), static_cast<float>(local_pitch), static_cast<double>(local_fadeTime));
 
 
             return true;
@@ -8309,7 +8309,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch fadeTime
             const auto local_fadeTime = fetchVADouble(0.000000);
 
-            stat = LNAudio_StopBGS(local_fadeTime);
+            stat = LNAudio_StopBGS(static_cast<double>(local_fadeTime));
 
 
             return true;
@@ -8323,7 +8323,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch pitch
             const auto local_pitch = fetchVADouble(1.000000);
 
-            stat = LNAudio_PlayMEA(local_filePath, local_volume, local_pitch);
+            stat = LNAudio_PlayMEA(static_cast<const char*>(local_filePath), static_cast<float>(local_volume), static_cast<float>(local_pitch));
 
 
             return true;
@@ -8345,7 +8345,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch pitch
             const auto local_pitch = fetchVADouble(1.000000);
 
-            stat = LNAudio_PlaySEA(local_filePath, local_volume, local_pitch);
+            stat = LNAudio_PlaySEA(static_cast<const char*>(local_filePath), static_cast<float>(local_volume), static_cast<float>(local_pitch));
 
 
             return true;
@@ -8364,7 +8364,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch pitch
             const auto local_pitch = fetchVADouble(1.000000);
 
-            stat = LNAudio_PlaySE3DA(local_filePath, reinterpret_cast<LNVector3*>(pval_position->pt), local_distance, local_volume, local_pitch);
+            stat = LNAudio_PlaySE3DA(static_cast<const char*>(local_filePath), reinterpret_cast<LNVector3*>(pval_position->pt), static_cast<float>(local_distance), static_cast<float>(local_volume), static_cast<float>(local_pitch));
 
 
             return true;
@@ -8408,7 +8408,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNTexture2DPromise_ThenWith(local_texture2dpromise, localDelegate_callback);
+            stat = LNTexture2DPromise_ThenWith(static_cast<LNHandle>(local_texture2dpromise), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -8428,7 +8428,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNTexture2DPromise_CatchWith(local_texture2dpromise, localDelegate_callback);
+            stat = LNTexture2DPromise_CatchWith(static_cast<LNHandle>(local_texture2dpromise), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -8460,7 +8460,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNTexture_SetPrototype_OnSerialize(local_texture, localDelegate_callback);
+            stat = LNTexture_SetPrototype_OnSerialize(static_cast<LNHandle>(local_texture), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -8476,7 +8476,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outTexture2D = code_getva(&pval_outTexture2D);
             LNHandle local_outTexture2D;
 
-            stat = LNTexture2D_Create(local_width, local_height, &local_outTexture2D);
+            stat = LNTexture2D_Create(static_cast<int>(local_width), static_cast<int>(local_height), &local_outTexture2D);
             setVAInt(pval_outTexture2D, aptr_outTexture2D, local_outTexture2D);
 
             return true;
@@ -8494,7 +8494,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outTexture2D = code_getva(&pval_outTexture2D);
             LNHandle local_outTexture2D;
 
-            stat = LNTexture2D_CreateWithFormat(local_width, local_height, local_format, &local_outTexture2D);
+            stat = LNTexture2D_CreateWithFormat(static_cast<int>(local_width), static_cast<int>(local_height), static_cast<LNTextureFormat>(local_format), &local_outTexture2D);
             setVAInt(pval_outTexture2D, aptr_outTexture2D, local_outTexture2D);
 
             return true;
@@ -8508,7 +8508,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNTexture2D_LoadA(local_filePath, &local_outReturn);
+            stat = LNTexture2D_LoadA(static_cast<const char*>(local_filePath), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8522,7 +8522,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNTexture2D_LoadEmojiA(local_code, &local_outReturn);
+            stat = LNTexture2D_LoadEmojiA(static_cast<const char*>(local_code), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8542,7 +8542,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNTexture2D_SetPrototype_OnSerialize(local_texture2d, localDelegate_callback);
+            stat = LNTexture2D_SetPrototype_OnSerialize(static_cast<LNHandle>(local_texture2d), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -8558,7 +8558,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNShader_LoadA(local_filePath, local_settings, &local_outReturn);
+            stat = LNShader_LoadA(static_cast<const char*>(local_filePath), static_cast<LNHandle>(local_settings), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8572,7 +8572,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNShader_SetFloatA(local_shader, local_parameterName, local_value);
+            stat = LNShader_SetFloatA(static_cast<LNHandle>(local_shader), static_cast<const char*>(local_parameterName), static_cast<float>(local_value));
 
 
             return true;
@@ -8587,7 +8587,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNVector3);
 
-            stat = LNShader_SetVector3A(local_shader, local_parameterName, reinterpret_cast<LNVector3*>(pval_value->pt));
+            stat = LNShader_SetVector3A(static_cast<LNHandle>(local_shader), static_cast<const char*>(local_parameterName), reinterpret_cast<LNVector3*>(pval_value->pt));
 
 
             return true;
@@ -8602,7 +8602,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNVector4);
 
-            stat = LNShader_SetVector4A(local_shader, local_parameterName, reinterpret_cast<LNVector4*>(pval_value->pt));
+            stat = LNShader_SetVector4A(static_cast<LNHandle>(local_shader), static_cast<const char*>(local_parameterName), reinterpret_cast<LNVector4*>(pval_value->pt));
 
 
             return true;
@@ -8616,7 +8616,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LNShader_SetTextureA(local_shader, local_parameterName, local_value);
+            stat = LNShader_SetTextureA(static_cast<LNHandle>(local_shader), static_cast<const char*>(local_parameterName), static_cast<LNHandle>(local_value));
 
 
             return true;
@@ -8636,7 +8636,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNShader_SetPrototype_OnSerialize(local_shader, localDelegate_callback);
+            stat = LNShader_SetPrototype_OnSerialize(static_cast<LNHandle>(local_shader), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -8656,7 +8656,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNRenderView_SetPrototype_OnSerialize(local_renderview, localDelegate_callback);
+            stat = LNRenderView_SetPrototype_OnSerialize(static_cast<LNHandle>(local_renderview), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -8680,7 +8680,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LNMaterial_SetMainTexture(local_material, local_value);
+            stat = LNMaterial_SetMainTexture(static_cast<LNHandle>(local_material), static_cast<LNHandle>(local_value));
 
 
             return true;
@@ -8694,7 +8694,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNMaterial_GetMainTexture(local_material, &local_outReturn);
+            stat = LNMaterial_GetMainTexture(static_cast<LNHandle>(local_material), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8707,7 +8707,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
 
-            stat = LNMaterial_SetColor(local_material, reinterpret_cast<LNColor*>(pval_value->pt));
+            stat = LNMaterial_SetColor(static_cast<LNHandle>(local_material), reinterpret_cast<LNColor*>(pval_value->pt));
 
 
             return true;
@@ -8719,7 +8719,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNMaterial_SetRoughness(local_material, local_value);
+            stat = LNMaterial_SetRoughness(static_cast<LNHandle>(local_material), static_cast<float>(local_value));
 
 
             return true;
@@ -8731,7 +8731,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNMaterial_SetMetallic(local_material, local_value);
+            stat = LNMaterial_SetMetallic(static_cast<LNHandle>(local_material), static_cast<float>(local_value));
 
 
             return true;
@@ -8744,7 +8744,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
 
-            stat = LNMaterial_SetEmissive(local_material, reinterpret_cast<LNColor*>(pval_value->pt));
+            stat = LNMaterial_SetEmissive(static_cast<LNHandle>(local_material), reinterpret_cast<LNColor*>(pval_value->pt));
 
 
             return true;
@@ -8756,7 +8756,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNShadingModel>(fetchVAInt());
 
-            stat = LNMaterial_SetShadingModel(local_material, local_value);
+            stat = LNMaterial_SetShadingModel(static_cast<LNHandle>(local_material), static_cast<LNShadingModel>(local_value));
 
 
             return true;
@@ -8770,7 +8770,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNShadingModel local_outReturn;
 
-            stat = LNMaterial_GetShadingModel(local_material, &local_outReturn);
+            stat = LNMaterial_GetShadingModel(static_cast<LNHandle>(local_material), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8782,7 +8782,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch shader
             const auto local_shader = fetchVAInt();
 
-            stat = LNMaterial_SetShader(local_material, local_shader);
+            stat = LNMaterial_SetShader(static_cast<LNHandle>(local_material), static_cast<LNHandle>(local_shader));
 
 
             return true;
@@ -8796,7 +8796,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNMaterial_GetShader(local_material, &local_outReturn);
+            stat = LNMaterial_GetShader(static_cast<LNHandle>(local_material), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8816,7 +8816,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNMaterial_SetPrototype_OnSerialize(local_material, localDelegate_callback);
+            stat = LNMaterial_SetPrototype_OnSerialize(static_cast<LNHandle>(local_material), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -8828,7 +8828,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNMeshNode_SetVisible(local_meshnode, local_value);
+            stat = LNMeshNode_SetVisible(static_cast<LNHandle>(local_meshnode), static_cast<LNBool>(local_value));
 
 
             return true;
@@ -8842,7 +8842,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNMeshNode_IsVisible(local_meshnode, &local_outReturn);
+            stat = LNMeshNode_IsVisible(static_cast<LNHandle>(local_meshnode), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8862,7 +8862,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNMeshNode_SetPrototype_OnSerialize(local_meshnode, localDelegate_callback);
+            stat = LNMeshNode_SetPrototype_OnSerialize(static_cast<LNHandle>(local_meshnode), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -8878,7 +8878,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNAnimationController_AddClip(local_animationcontroller, local_animationClip, &local_outReturn);
+            stat = LNAnimationController_AddClip(static_cast<LNHandle>(local_animationcontroller), static_cast<LNHandle>(local_animationClip), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8892,7 +8892,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch duration
             const auto local_duration = fetchVADouble(0.300000);
 
-            stat = LNAnimationController_Play(local_animationcontroller, local_state, local_duration);
+            stat = LNAnimationController_Play(static_cast<LNHandle>(local_animationcontroller), static_cast<LNHandle>(local_state), static_cast<float>(local_duration));
 
 
             return true;
@@ -8912,7 +8912,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNAnimationController_SetPrototype_OnSerialize(local_animationcontroller, localDelegate_callback);
+            stat = LNAnimationController_SetPrototype_OnSerialize(static_cast<LNHandle>(local_animationcontroller), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -8928,7 +8928,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNMeshModel_LoadA(local_filePath, local_settings, &local_outReturn);
+            stat = LNMeshModel_LoadA(static_cast<const char*>(local_filePath), static_cast<LNHandle>(local_settings), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8944,7 +8944,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNMeshModel_FindNodeA(local_meshmodel, local_name, &local_outReturn);
+            stat = LNMeshModel_FindNodeA(static_cast<LNHandle>(local_meshmodel), static_cast<const char*>(local_name), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8960,7 +8960,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNMeshModel_FindMaterialA(local_meshmodel, local_name, &local_outReturn);
+            stat = LNMeshModel_FindMaterialA(static_cast<LNHandle>(local_meshmodel), static_cast<const char*>(local_name), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8974,7 +8974,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
-            stat = LNMeshModel_MaterialCount(local_meshmodel, &local_outReturn);
+            stat = LNMeshModel_MaterialCount(static_cast<LNHandle>(local_meshmodel), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -8990,7 +8990,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNMeshModel_Material(local_meshmodel, local_index, &local_outReturn);
+            stat = LNMeshModel_Material(static_cast<LNHandle>(local_meshmodel), static_cast<int>(local_index), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -9004,7 +9004,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNMeshModel_GetAnimationController(local_meshmodel, &local_outReturn);
+            stat = LNMeshModel_GetAnimationController(static_cast<LNHandle>(local_meshmodel), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -9024,7 +9024,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNMeshModel_SetPrototype_OnSerialize(local_meshmodel, localDelegate_callback);
+            stat = LNMeshModel_SetPrototype_OnSerialize(static_cast<LNHandle>(local_meshmodel), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9056,7 +9056,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNMeshImportSettings_SetPrototype_OnSerialize(local_meshimportsettings, localDelegate_callback);
+            stat = LNMeshImportSettings_SetPrototype_OnSerialize(static_cast<LNHandle>(local_meshimportsettings), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9076,7 +9076,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNSkinnedMeshModel_SetPrototype_OnSerialize(local_skinnedmeshmodel, localDelegate_callback);
+            stat = LNSkinnedMeshModel_SetPrototype_OnSerialize(static_cast<LNHandle>(local_skinnedmeshmodel), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9096,7 +9096,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNCollisionShape_SetPrototype_OnSerialize(local_collisionshape, localDelegate_callback);
+            stat = LNCollisionShape_SetPrototype_OnSerialize(static_cast<LNHandle>(local_collisionshape), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9129,7 +9129,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outBoxCollisionShape = code_getva(&pval_outBoxCollisionShape);
             LNHandle local_outBoxCollisionShape;
 
-            stat = LNBoxCollisionShape_CreateWHD(local_width, local_height, local_depth, &local_outBoxCollisionShape);
+            stat = LNBoxCollisionShape_CreateWHD(static_cast<float>(local_width), static_cast<float>(local_height), static_cast<float>(local_depth), &local_outBoxCollisionShape);
             setVAInt(pval_outBoxCollisionShape, aptr_outBoxCollisionShape, local_outBoxCollisionShape);
 
             return true;
@@ -9149,7 +9149,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNBoxCollisionShape_SetPrototype_OnSerialize(local_boxcollisionshape, localDelegate_callback);
+            stat = LNBoxCollisionShape_SetPrototype_OnSerialize(static_cast<LNHandle>(local_boxcollisionshape), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9165,7 +9165,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNAnimationCurve_Evaluate(local_animationcurve, local_time, &local_outReturn);
+            stat = LNAnimationCurve_Evaluate(static_cast<LNHandle>(local_animationcurve), static_cast<float>(local_time), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -9185,7 +9185,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNAnimationCurve_SetPrototype_OnSerialize(local_animationcurve, localDelegate_callback);
+            stat = LNAnimationCurve_SetPrototype_OnSerialize(static_cast<LNHandle>(local_animationcurve), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9215,7 +9215,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch tangent
             const auto local_tangent = fetchVADouble(0.000000);
 
-            stat = LNKeyFrameAnimationCurve_AddKeyFrame(local_keyframeanimationcurve, local_time, local_value, local_rightTangentMode, local_tangent);
+            stat = LNKeyFrameAnimationCurve_AddKeyFrame(static_cast<LNHandle>(local_keyframeanimationcurve), static_cast<float>(local_time), static_cast<float>(local_value), static_cast<LNTangentMode>(local_rightTangentMode), static_cast<float>(local_tangent));
 
 
             return true;
@@ -9235,7 +9235,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNKeyFrameAnimationCurve_SetPrototype_OnSerialize(local_keyframeanimationcurve, localDelegate_callback);
+            stat = LNKeyFrameAnimationCurve_SetPrototype_OnSerialize(static_cast<LNHandle>(local_keyframeanimationcurve), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9249,7 +9249,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNAnimationClip_LoadA(local_filePath, &local_outReturn);
+            stat = LNAnimationClip_LoadA(static_cast<const char*>(local_filePath), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -9261,7 +9261,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNAnimationWrapMode>(fetchVAInt());
 
-            stat = LNAnimationClip_SetWrapMode(local_animationclip, local_value);
+            stat = LNAnimationClip_SetWrapMode(static_cast<LNHandle>(local_animationclip), static_cast<LNAnimationWrapMode>(local_value));
 
 
             return true;
@@ -9275,7 +9275,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNAnimationWrapMode local_outReturn;
 
-            stat = LNAnimationClip_GetWrapMode(local_animationclip, &local_outReturn);
+            stat = LNAnimationClip_GetWrapMode(static_cast<LNHandle>(local_animationclip), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -9287,7 +9287,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNHierarchicalAnimationMode>(fetchVAInt());
 
-            stat = LNAnimationClip_SetHierarchicalAnimationMode(local_animationclip, local_value);
+            stat = LNAnimationClip_SetHierarchicalAnimationMode(static_cast<LNHandle>(local_animationclip), static_cast<LNHierarchicalAnimationMode>(local_value));
 
 
             return true;
@@ -9301,7 +9301,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHierarchicalAnimationMode local_outReturn;
 
-            stat = LNAnimationClip_GetHierarchicalAnimationMode(local_animationclip, &local_outReturn);
+            stat = LNAnimationClip_GetHierarchicalAnimationMode(static_cast<LNHandle>(local_animationclip), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -9321,7 +9321,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNAnimationClip_SetPrototype_OnSerialize(local_animationclip, localDelegate_callback);
+            stat = LNAnimationClip_SetPrototype_OnSerialize(static_cast<LNHandle>(local_animationclip), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9341,7 +9341,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNAnimationState_SetPrototype_OnSerialize(local_animationstate, localDelegate_callback);
+            stat = LNAnimationState_SetPrototype_OnSerialize(static_cast<LNHandle>(local_animationstate), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9361,7 +9361,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNEffectResource_SetPrototype_OnSerialize(local_effectresource, localDelegate_callback);
+            stat = LNEffectResource_SetPrototype_OnSerialize(static_cast<LNHandle>(local_effectresource), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9385,7 +9385,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch count
             const auto local_count = fetchVAInt();
 
-            stat = LNParticleEmitterModel_SetMaxParticles(local_particleemittermodel, local_count);
+            stat = LNParticleEmitterModel_SetMaxParticles(static_cast<LNHandle>(local_particleemittermodel), static_cast<int>(local_count));
 
 
             return true;
@@ -9397,7 +9397,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch rate
             const auto local_rate = fetchVADouble();
 
-            stat = LNParticleEmitterModel_SetSpawnRate(local_particleemittermodel, local_rate);
+            stat = LNParticleEmitterModel_SetSpawnRate(static_cast<LNHandle>(local_particleemittermodel), static_cast<float>(local_rate));
 
 
             return true;
@@ -9409,7 +9409,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch time
             const auto local_time = fetchVADouble();
 
-            stat = LNParticleEmitterModel_SetLifeTime(local_particleemittermodel, local_time);
+            stat = LNParticleEmitterModel_SetLifeTime(static_cast<LNHandle>(local_particleemittermodel), static_cast<float>(local_time));
 
 
             return true;
@@ -9422,7 +9422,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_size;
             CodeGetVA_TypeChecked(&pval_size, LNVector3);
 
-            stat = LNParticleEmitterModel_SetupBoxShape(local_particleemittermodel, reinterpret_cast<LNVector3*>(pval_size->pt));
+            stat = LNParticleEmitterModel_SetupBoxShape(static_cast<LNHandle>(local_particleemittermodel), reinterpret_cast<LNVector3*>(pval_size->pt));
 
 
             return true;
@@ -9434,7 +9434,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNParticleEmitterModel_SetSize(local_particleemittermodel, local_value);
+            stat = LNParticleEmitterModel_SetSize(static_cast<LNHandle>(local_particleemittermodel), static_cast<float>(local_value));
 
 
             return true;
@@ -9446,7 +9446,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNParticleEmitterModel_SetSizeVelocity(local_particleemittermodel, local_value);
+            stat = LNParticleEmitterModel_SetSizeVelocity(static_cast<LNHandle>(local_particleemittermodel), static_cast<float>(local_value));
 
 
             return true;
@@ -9458,7 +9458,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNParticleEmitterModel_SetSizeAcceleration(local_particleemittermodel, local_value);
+            stat = LNParticleEmitterModel_SetSizeAcceleration(static_cast<LNHandle>(local_particleemittermodel), static_cast<float>(local_value));
 
 
             return true;
@@ -9470,7 +9470,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNParticleEmitterModel_SetForwardVelocityMin(local_particleemittermodel, local_value);
+            stat = LNParticleEmitterModel_SetForwardVelocityMin(static_cast<LNHandle>(local_particleemittermodel), static_cast<float>(local_value));
 
 
             return true;
@@ -9482,7 +9482,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNParticleEmitterModel_SetForwardVelocityMax(local_particleemittermodel, local_value);
+            stat = LNParticleEmitterModel_SetForwardVelocityMax(static_cast<LNHandle>(local_particleemittermodel), static_cast<float>(local_value));
 
 
             return true;
@@ -9494,7 +9494,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNParticleEmitterModel_SetForwardScale(local_particleemittermodel, local_value);
+            stat = LNParticleEmitterModel_SetForwardScale(static_cast<LNHandle>(local_particleemittermodel), static_cast<float>(local_value));
 
 
             return true;
@@ -9506,7 +9506,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNParticleGeometryDirection>(fetchVAInt());
 
-            stat = LNParticleEmitterModel_SetGeometryDirection(local_particleemittermodel, local_value);
+            stat = LNParticleEmitterModel_SetGeometryDirection(static_cast<LNHandle>(local_particleemittermodel), static_cast<LNParticleGeometryDirection>(local_value));
 
 
             return true;
@@ -9518,7 +9518,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch material
             const auto local_material = fetchVAInt();
 
-            stat = LNParticleEmitterModel_SetupSpriteModule(local_particleemittermodel, local_material);
+            stat = LNParticleEmitterModel_SetupSpriteModule(static_cast<LNHandle>(local_particleemittermodel), static_cast<LNHandle>(local_material));
 
 
             return true;
@@ -9538,7 +9538,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNParticleEmitterModel_SetPrototype_OnSerialize(local_particleemittermodel, localDelegate_callback);
+            stat = LNParticleEmitterModel_SetPrototype_OnSerialize(static_cast<LNHandle>(local_particleemittermodel), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9562,7 +9562,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNParticleModel_SetLoop(local_particlemodel, local_value);
+            stat = LNParticleModel_SetLoop(static_cast<LNHandle>(local_particlemodel), static_cast<LNBool>(local_value));
 
 
             return true;
@@ -9576,7 +9576,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNParticleModel_IsLoop(local_particlemodel, &local_outReturn);
+            stat = LNParticleModel_IsLoop(static_cast<LNHandle>(local_particlemodel), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -9588,7 +9588,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch emitter
             const auto local_emitter = fetchVAInt();
 
-            stat = LNParticleModel_AddEmitter(local_particlemodel, local_emitter);
+            stat = LNParticleModel_AddEmitter(static_cast<LNHandle>(local_particlemodel), static_cast<LNHandle>(local_emitter));
 
 
             return true;
@@ -9608,7 +9608,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNParticleModel_SetPrototype_OnSerialize(local_particlemodel, localDelegate_callback);
+            stat = LNParticleModel_SetPrototype_OnSerialize(static_cast<LNHandle>(local_particlemodel), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9628,7 +9628,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNComponent_SetPrototype_OnSerialize(local_component, localDelegate_callback);
+            stat = LNComponent_SetPrototype_OnSerialize(static_cast<LNHandle>(local_component), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9640,7 +9640,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNVisualComponent_SetVisible(local_visualcomponent, local_value);
+            stat = LNVisualComponent_SetVisible(static_cast<LNHandle>(local_visualcomponent), static_cast<LNBool>(local_value));
 
 
             return true;
@@ -9654,7 +9654,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNVisualComponent_IsVisible(local_visualcomponent, &local_outReturn);
+            stat = LNVisualComponent_IsVisible(static_cast<LNHandle>(local_visualcomponent), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -9674,7 +9674,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNVisualComponent_SetPrototype_OnSerialize(local_visualcomponent, localDelegate_callback);
+            stat = LNVisualComponent_SetPrototype_OnSerialize(static_cast<LNHandle>(local_visualcomponent), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9686,7 +9686,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch texture
             const auto local_texture = fetchVAInt();
 
-            stat = LNSpriteComponent_SetTexture(local_spritecomponent, local_texture);
+            stat = LNSpriteComponent_SetTexture(static_cast<LNHandle>(local_spritecomponent), static_cast<LNHandle>(local_texture));
 
 
             return true;
@@ -9706,7 +9706,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNSpriteComponent_SetPrototype_OnSerialize(local_spritecomponent, localDelegate_callback);
+            stat = LNSpriteComponent_SetPrototype_OnSerialize(static_cast<LNHandle>(local_spritecomponent), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9746,7 +9746,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNCharacterController_SetWalkVelocity(local_charactercontroller, local_value);
+            stat = LNCharacterController_SetWalkVelocity(static_cast<LNHandle>(local_charactercontroller), static_cast<float>(local_value));
 
 
             return true;
@@ -9760,7 +9760,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNCharacterController_GetWalkVelocity(local_charactercontroller, &local_outReturn);
+            stat = LNCharacterController_GetWalkVelocity(static_cast<LNHandle>(local_charactercontroller), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -9773,7 +9773,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNVector3);
 
-            stat = LNCharacterController_SetVelocity(local_charactercontroller, reinterpret_cast<LNVector3*>(pval_value->pt));
+            stat = LNCharacterController_SetVelocity(static_cast<LNHandle>(local_charactercontroller), reinterpret_cast<LNVector3*>(pval_value->pt));
 
 
             return true;
@@ -9787,7 +9787,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNVector3 local_outReturn;
 
-            stat = LNCharacterController_GetVelocity(local_charactercontroller, &local_outReturn);
+            stat = LNCharacterController_GetVelocity(static_cast<LNHandle>(local_charactercontroller), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
@@ -9799,7 +9799,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNCharacterController_SetInputControlEnabled(local_charactercontroller, local_value);
+            stat = LNCharacterController_SetInputControlEnabled(static_cast<LNHandle>(local_charactercontroller), static_cast<LNBool>(local_value));
 
 
             return true;
@@ -9811,7 +9811,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNCharacterController_SetCameraControlEnabled(local_charactercontroller, local_value);
+            stat = LNCharacterController_SetCameraControlEnabled(static_cast<LNHandle>(local_charactercontroller), static_cast<LNBool>(local_value));
 
 
             return true;
@@ -9823,7 +9823,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNCharacterController_SetHeight(local_charactercontroller, local_value);
+            stat = LNCharacterController_SetHeight(static_cast<LNHandle>(local_charactercontroller), static_cast<float>(local_value));
 
 
             return true;
@@ -9837,7 +9837,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNCharacterController_GetHeight(local_charactercontroller, &local_outReturn);
+            stat = LNCharacterController_GetHeight(static_cast<LNHandle>(local_charactercontroller), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -9849,7 +9849,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNCharacterController_SetCameraRadius(local_charactercontroller, local_value);
+            stat = LNCharacterController_SetCameraRadius(static_cast<LNHandle>(local_charactercontroller), static_cast<float>(local_value));
 
 
             return true;
@@ -9863,7 +9863,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNCharacterController_GetCameraRadius(local_charactercontroller, &local_outReturn);
+            stat = LNCharacterController_GetCameraRadius(static_cast<LNHandle>(local_charactercontroller), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -9883,7 +9883,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_handler;
             }
 
-            stat = LNCharacterController_SetCollisionEnter(local_charactercontroller, localDelegate_handler);
+            stat = LNCharacterController_SetCollisionEnter(static_cast<LNHandle>(local_charactercontroller), localDelegate_handler);
             LNObject_Release(localDelegate_handler);
 
             return true;
@@ -9903,7 +9903,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_handler;
             }
 
-            stat = LNCharacterController_SetCollisionLeave(local_charactercontroller, localDelegate_handler);
+            stat = LNCharacterController_SetCollisionLeave(static_cast<LNHandle>(local_charactercontroller), localDelegate_handler);
             LNObject_Release(localDelegate_handler);
 
             return true;
@@ -9923,7 +9923,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_handler;
             }
 
-            stat = LNCharacterController_SetCollisionStay(local_charactercontroller, localDelegate_handler);
+            stat = LNCharacterController_SetCollisionStay(static_cast<LNHandle>(local_charactercontroller), localDelegate_handler);
             LNObject_Release(localDelegate_handler);
 
             return true;
@@ -9943,7 +9943,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNCharacterController_SetPrototype_OnSerialize(local_charactercontroller, localDelegate_callback);
+            stat = LNCharacterController_SetPrototype_OnSerialize(static_cast<LNHandle>(local_charactercontroller), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9955,7 +9955,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch obj
             const auto local_obj = fetchVAInt();
 
-            stat = LNWorld_Add(local_world, local_obj);
+            stat = LNWorld_Add(static_cast<LNHandle>(local_world), static_cast<LNHandle>(local_obj));
 
 
             return true;
@@ -9975,7 +9975,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNWorld_SetPrototype_OnSerialize(local_world, localDelegate_callback);
+            stat = LNWorld_SetPrototype_OnSerialize(static_cast<LNHandle>(local_world), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -9989,7 +9989,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
-            stat = LNComponentList_GetLength(local_componentlist, &local_outReturn);
+            stat = LNComponentList_GetLength(static_cast<LNHandle>(local_componentlist), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -10005,7 +10005,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNComponentList_GetItem(local_componentlist, local_index, &local_outReturn);
+            stat = LNComponentList_GetItem(static_cast<LNHandle>(local_componentlist), static_cast<int>(local_index), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -10025,7 +10025,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNComponentList_SetPrototype_OnSerialize(local_componentlist, localDelegate_callback);
+            stat = LNComponentList_SetPrototype_OnSerialize(static_cast<LNHandle>(local_componentlist), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -10050,7 +10050,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_pos;
             CodeGetVA_TypeChecked(&pval_pos, LNVector3);
 
-            stat = LNWorldObject_SetPosition(local_worldobject, reinterpret_cast<LNVector3*>(pval_pos->pt));
+            stat = LNWorldObject_SetPosition(static_cast<LNHandle>(local_worldobject), reinterpret_cast<LNVector3*>(pval_pos->pt));
 
 
             return true;
@@ -10066,7 +10066,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble(0.000000);
 
-            stat = LNWorldObject_SetPositionXYZ(local_worldobject, local_x, local_y, local_z);
+            stat = LNWorldObject_SetPositionXYZ(static_cast<LNHandle>(local_worldobject), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z));
 
 
             return true;
@@ -10080,7 +10080,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNVector3 local_outReturn;
 
-            stat = LNWorldObject_GetPosition(local_worldobject, &local_outReturn);
+            stat = LNWorldObject_GetPosition(static_cast<LNHandle>(local_worldobject), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
@@ -10093,7 +10093,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_rot;
             CodeGetVA_TypeChecked(&pval_rot, LNQuaternion);
 
-            stat = LNWorldObject_SetRotationQuaternion(local_worldobject, reinterpret_cast<LNQuaternion*>(pval_rot->pt));
+            stat = LNWorldObject_SetRotationQuaternion(static_cast<LNHandle>(local_worldobject), reinterpret_cast<LNQuaternion*>(pval_rot->pt));
 
 
             return true;
@@ -10109,7 +10109,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble();
 
-            stat = LNWorldObject_SetRotation(local_worldobject, local_x, local_y, local_z);
+            stat = LNWorldObject_SetRotation(static_cast<LNHandle>(local_worldobject), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z));
 
 
             return true;
@@ -10123,7 +10123,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNQuaternion local_outReturn;
 
-            stat = LNWorldObject_GetRotation(local_worldobject, &local_outReturn);
+            stat = LNWorldObject_GetRotation(static_cast<LNHandle>(local_worldobject), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNQuaternion_typeid(), &local_outReturn);
 
             return true;
@@ -10136,7 +10136,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_scale;
             CodeGetVA_TypeChecked(&pval_scale, LNVector3);
 
-            stat = LNWorldObject_SetScale(local_worldobject, reinterpret_cast<LNVector3*>(pval_scale->pt));
+            stat = LNWorldObject_SetScale(static_cast<LNHandle>(local_worldobject), reinterpret_cast<LNVector3*>(pval_scale->pt));
 
 
             return true;
@@ -10148,7 +10148,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch xyz
             const auto local_xyz = fetchVADouble();
 
-            stat = LNWorldObject_SetScaleS(local_worldobject, local_xyz);
+            stat = LNWorldObject_SetScaleS(static_cast<LNHandle>(local_worldobject), static_cast<float>(local_xyz));
 
 
             return true;
@@ -10164,7 +10164,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble(1.000000);
 
-            stat = LNWorldObject_SetScaleXYZ(local_worldobject, local_x, local_y, local_z);
+            stat = LNWorldObject_SetScaleXYZ(static_cast<LNHandle>(local_worldobject), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z));
 
 
             return true;
@@ -10178,7 +10178,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNVector3 local_outReturn;
 
-            stat = LNWorldObject_GetScale(local_worldobject, &local_outReturn);
+            stat = LNWorldObject_GetScale(static_cast<LNHandle>(local_worldobject), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
@@ -10191,7 +10191,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNVector3);
 
-            stat = LNWorldObject_SetCenterPoint(local_worldobject, reinterpret_cast<LNVector3*>(pval_value->pt));
+            stat = LNWorldObject_SetCenterPoint(static_cast<LNHandle>(local_worldobject), reinterpret_cast<LNVector3*>(pval_value->pt));
 
 
             return true;
@@ -10207,7 +10207,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble(0.000000);
 
-            stat = LNWorldObject_SetCenterPointXYZ(local_worldobject, local_x, local_y, local_z);
+            stat = LNWorldObject_SetCenterPointXYZ(static_cast<LNHandle>(local_worldobject), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z));
 
 
             return true;
@@ -10221,7 +10221,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNVector3 local_outReturn;
 
-            stat = LNWorldObject_GetCenterPoint(local_worldobject, &local_outReturn);
+            stat = LNWorldObject_GetCenterPoint(static_cast<LNHandle>(local_worldobject), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
@@ -10234,7 +10234,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_target;
             CodeGetVA_TypeChecked(&pval_target, LNVector3);
 
-            stat = LNWorldObject_LookAt(local_worldobject, reinterpret_cast<LNVector3*>(pval_target->pt));
+            stat = LNWorldObject_LookAt(static_cast<LNHandle>(local_worldobject), reinterpret_cast<LNVector3*>(pval_target->pt));
 
 
             return true;
@@ -10250,7 +10250,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble();
 
-            stat = LNWorldObject_LookAtXYZ(local_worldobject, local_x, local_y, local_z);
+            stat = LNWorldObject_LookAtXYZ(static_cast<LNHandle>(local_worldobject), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z));
 
 
             return true;
@@ -10262,7 +10262,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch component
             const auto local_component = fetchVAInt();
 
-            stat = LNWorldObject_AddComponent(local_worldobject, local_component);
+            stat = LNWorldObject_AddComponent(static_cast<LNHandle>(local_worldobject), static_cast<LNHandle>(local_component));
 
 
             return true;
@@ -10274,7 +10274,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch component
             const auto local_component = fetchVAInt();
 
-            stat = LNWorldObject_RemoveComponent(local_worldobject, local_component);
+            stat = LNWorldObject_RemoveComponent(static_cast<LNHandle>(local_worldobject), static_cast<LNHandle>(local_component));
 
 
             return true;
@@ -10286,7 +10286,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch tag
             const auto local_tag = fetchVAString();
 
-            stat = LNWorldObject_AddTagA(local_worldobject, local_tag);
+            stat = LNWorldObject_AddTagA(static_cast<LNHandle>(local_worldobject), static_cast<const char*>(local_tag));
 
 
             return true;
@@ -10298,7 +10298,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch tag
             const auto local_tag = fetchVAString();
 
-            stat = LNWorldObject_RemoveTagA(local_worldobject, local_tag);
+            stat = LNWorldObject_RemoveTagA(static_cast<LNHandle>(local_worldobject), static_cast<const char*>(local_tag));
 
 
             return true;
@@ -10314,7 +10314,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNWorldObject_HasTagA(local_worldobject, local_tag, &local_outReturn);
+            stat = LNWorldObject_HasTagA(static_cast<LNHandle>(local_worldobject), static_cast<const char*>(local_tag), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -10324,7 +10324,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
 
-            stat = LNWorldObject_Destroy(local_worldobject);
+            stat = LNWorldObject_Destroy(static_cast<LNHandle>(local_worldobject));
 
 
             return true;
@@ -10338,7 +10338,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNWorldObject_GetComponents(local_worldobject, &local_outReturn);
+            stat = LNWorldObject_GetComponents(static_cast<LNHandle>(local_worldobject), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -10358,7 +10358,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNWorldObject_SetPrototype_OnSerialize(local_worldobject, localDelegate_callback);
+            stat = LNWorldObject_SetPrototype_OnSerialize(static_cast<LNHandle>(local_worldobject), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -10378,7 +10378,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNWorldObject_SetPrototype_OnPreUpdate(local_worldobject, localDelegate_callback);
+            stat = LNWorldObject_SetPrototype_OnPreUpdate(static_cast<LNHandle>(local_worldobject), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -10398,7 +10398,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNWorldObject_SetPrototype_OnUpdate(local_worldobject, localDelegate_callback);
+            stat = LNWorldObject_SetPrototype_OnUpdate(static_cast<LNHandle>(local_worldobject), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -10410,7 +10410,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNVisualObject_SetVisible(local_visualobject, local_value);
+            stat = LNVisualObject_SetVisible(static_cast<LNHandle>(local_visualobject), static_cast<LNBool>(local_value));
 
 
             return true;
@@ -10424,7 +10424,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNVisualObject_IsVisible(local_visualobject, &local_outReturn);
+            stat = LNVisualObject_IsVisible(static_cast<LNHandle>(local_visualobject), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -10436,7 +10436,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBlendMode>(fetchVAInt());
 
-            stat = LNVisualObject_SetBlendMode2(local_visualobject, local_value);
+            stat = LNVisualObject_SetBlendMode2(static_cast<LNHandle>(local_visualobject), static_cast<LNBlendMode>(local_value));
 
 
             return true;
@@ -10448,7 +10448,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNVisualObject_SetOpacity(local_visualobject, local_value);
+            stat = LNVisualObject_SetOpacity(static_cast<LNHandle>(local_visualobject), static_cast<float>(local_value));
 
 
             return true;
@@ -10462,7 +10462,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNVisualObject_GetOpacity(local_visualobject, &local_outReturn);
+            stat = LNVisualObject_GetOpacity(static_cast<LNHandle>(local_visualobject), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -10482,7 +10482,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNVisualObject_SetPrototype_OnSerialize(local_visualobject, localDelegate_callback);
+            stat = LNVisualObject_SetPrototype_OnSerialize(static_cast<LNHandle>(local_visualobject), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -10502,7 +10502,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNVisualObject_SetPrototype_OnPreUpdate(local_visualobject, localDelegate_callback);
+            stat = LNVisualObject_SetPrototype_OnPreUpdate(static_cast<LNHandle>(local_visualobject), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -10522,7 +10522,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNVisualObject_SetPrototype_OnUpdate(local_visualobject, localDelegate_callback);
+            stat = LNVisualObject_SetPrototype_OnUpdate(static_cast<LNHandle>(local_visualobject), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -10542,7 +10542,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNCamera_SetPrototype_OnSerialize(local_camera, localDelegate_callback);
+            stat = LNCamera_SetPrototype_OnSerialize(static_cast<LNHandle>(local_camera), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -10562,7 +10562,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNCamera_SetPrototype_OnPreUpdate(local_camera, localDelegate_callback);
+            stat = LNCamera_SetPrototype_OnPreUpdate(static_cast<LNHandle>(local_camera), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -10582,7 +10582,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNCamera_SetPrototype_OnUpdate(local_camera, localDelegate_callback);
+            stat = LNCamera_SetPrototype_OnUpdate(static_cast<LNHandle>(local_camera), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -10594,7 +10594,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch enabled
             const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNEnvironmentLight_SetEnabled(local_environmentlight, local_enabled);
+            stat = LNEnvironmentLight_SetEnabled(static_cast<LNHandle>(local_environmentlight), static_cast<LNBool>(local_enabled));
 
 
             return true;
@@ -10608,7 +10608,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNEnvironmentLight_IsEnabled(local_environmentlight, &local_outReturn);
+            stat = LNEnvironmentLight_IsEnabled(static_cast<LNHandle>(local_environmentlight), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -10621,7 +10621,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
 
-            stat = LNEnvironmentLight_SetColor(local_environmentlight, reinterpret_cast<LNColor*>(pval_value->pt));
+            stat = LNEnvironmentLight_SetColor(static_cast<LNHandle>(local_environmentlight), reinterpret_cast<LNColor*>(pval_value->pt));
 
 
             return true;
@@ -10635,7 +10635,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNEnvironmentLight_GetColor(local_environmentlight, &local_outReturn);
+            stat = LNEnvironmentLight_GetColor(static_cast<LNHandle>(local_environmentlight), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -10648,7 +10648,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
 
-            stat = LNEnvironmentLight_SetAmbientColor(local_environmentlight, reinterpret_cast<LNColor*>(pval_value->pt));
+            stat = LNEnvironmentLight_SetAmbientColor(static_cast<LNHandle>(local_environmentlight), reinterpret_cast<LNColor*>(pval_value->pt));
 
 
             return true;
@@ -10662,7 +10662,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNEnvironmentLight_GetAmbientColor(local_environmentlight, &local_outReturn);
+            stat = LNEnvironmentLight_GetAmbientColor(static_cast<LNHandle>(local_environmentlight), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -10676,7 +10676,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNEnvironmentLight_GetSkyColor(local_environmentlight, &local_outReturn);
+            stat = LNEnvironmentLight_GetSkyColor(static_cast<LNHandle>(local_environmentlight), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -10689,7 +10689,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
 
-            stat = LNEnvironmentLight_SetSkyColor(local_environmentlight, reinterpret_cast<LNColor*>(pval_value->pt));
+            stat = LNEnvironmentLight_SetSkyColor(static_cast<LNHandle>(local_environmentlight), reinterpret_cast<LNColor*>(pval_value->pt));
 
 
             return true;
@@ -10703,7 +10703,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNEnvironmentLight_GetGroundColor(local_environmentlight, &local_outReturn);
+            stat = LNEnvironmentLight_GetGroundColor(static_cast<LNHandle>(local_environmentlight), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -10716,7 +10716,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
 
-            stat = LNEnvironmentLight_SetGroundColor(local_environmentlight, reinterpret_cast<LNColor*>(pval_value->pt));
+            stat = LNEnvironmentLight_SetGroundColor(static_cast<LNHandle>(local_environmentlight), reinterpret_cast<LNColor*>(pval_value->pt));
 
 
             return true;
@@ -10728,7 +10728,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch intensity
             const auto local_intensity = fetchVADouble();
 
-            stat = LNEnvironmentLight_SetIntensity(local_environmentlight, local_intensity);
+            stat = LNEnvironmentLight_SetIntensity(static_cast<LNHandle>(local_environmentlight), static_cast<float>(local_intensity));
 
 
             return true;
@@ -10742,7 +10742,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNEnvironmentLight_GetIntensity(local_environmentlight, &local_outReturn);
+            stat = LNEnvironmentLight_GetIntensity(static_cast<LNHandle>(local_environmentlight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -10754,7 +10754,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNEnvironmentLight_SetShadowEffectiveDistance(local_environmentlight, local_value);
+            stat = LNEnvironmentLight_SetShadowEffectiveDistance(static_cast<LNHandle>(local_environmentlight), static_cast<float>(local_value));
 
 
             return true;
@@ -10768,7 +10768,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNEnvironmentLight_GetShadowEffectiveDistance(local_environmentlight, &local_outReturn);
+            stat = LNEnvironmentLight_GetShadowEffectiveDistance(static_cast<LNHandle>(local_environmentlight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -10780,7 +10780,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNEnvironmentLight_SetShadowEffectiveDepth(local_environmentlight, local_value);
+            stat = LNEnvironmentLight_SetShadowEffectiveDepth(static_cast<LNHandle>(local_environmentlight), static_cast<float>(local_value));
 
 
             return true;
@@ -10794,7 +10794,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNEnvironmentLight_GetShadowEffectiveDepth(local_environmentlight, &local_outReturn);
+            stat = LNEnvironmentLight_GetShadowEffectiveDepth(static_cast<LNHandle>(local_environmentlight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -10814,7 +10814,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNEnvironmentLight_SetPrototype_OnSerialize(local_environmentlight, localDelegate_callback);
+            stat = LNEnvironmentLight_SetPrototype_OnSerialize(static_cast<LNHandle>(local_environmentlight), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -10834,7 +10834,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNEnvironmentLight_SetPrototype_OnPreUpdate(local_environmentlight, localDelegate_callback);
+            stat = LNEnvironmentLight_SetPrototype_OnPreUpdate(static_cast<LNHandle>(local_environmentlight), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -10854,7 +10854,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNEnvironmentLight_SetPrototype_OnUpdate(local_environmentlight, localDelegate_callback);
+            stat = LNEnvironmentLight_SetPrototype_OnUpdate(static_cast<LNHandle>(local_environmentlight), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -10893,7 +10893,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch enabled
             const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNDirectionalLight_SetEnabled(local_directionallight, local_enabled);
+            stat = LNDirectionalLight_SetEnabled(static_cast<LNHandle>(local_directionallight), static_cast<LNBool>(local_enabled));
 
 
             return true;
@@ -10907,7 +10907,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNDirectionalLight_IsEnabled(local_directionallight, &local_outReturn);
+            stat = LNDirectionalLight_IsEnabled(static_cast<LNHandle>(local_directionallight), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -10920,7 +10920,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_color;
             CodeGetVA_TypeChecked(&pval_color, LNColor);
 
-            stat = LNDirectionalLight_SetColor(local_directionallight, reinterpret_cast<LNColor*>(pval_color->pt));
+            stat = LNDirectionalLight_SetColor(static_cast<LNHandle>(local_directionallight), reinterpret_cast<LNColor*>(pval_color->pt));
 
 
             return true;
@@ -10934,7 +10934,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNDirectionalLight_GetColor(local_directionallight, &local_outReturn);
+            stat = LNDirectionalLight_GetColor(static_cast<LNHandle>(local_directionallight), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -10946,7 +10946,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch intensity
             const auto local_intensity = fetchVADouble();
 
-            stat = LNDirectionalLight_SetIntensity(local_directionallight, local_intensity);
+            stat = LNDirectionalLight_SetIntensity(static_cast<LNHandle>(local_directionallight), static_cast<float>(local_intensity));
 
 
             return true;
@@ -10960,7 +10960,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNDirectionalLight_GetIntensity(local_directionallight, &local_outReturn);
+            stat = LNDirectionalLight_GetIntensity(static_cast<LNHandle>(local_directionallight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -10972,7 +10972,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNDirectionalLight_SetShadowEffectiveDistance(local_directionallight, local_value);
+            stat = LNDirectionalLight_SetShadowEffectiveDistance(static_cast<LNHandle>(local_directionallight), static_cast<float>(local_value));
 
 
             return true;
@@ -10986,7 +10986,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNDirectionalLight_GetShadowEffectiveDistance(local_directionallight, &local_outReturn);
+            stat = LNDirectionalLight_GetShadowEffectiveDistance(static_cast<LNHandle>(local_directionallight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -10998,7 +10998,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNDirectionalLight_SetShadowEffectiveDepth(local_directionallight, local_value);
+            stat = LNDirectionalLight_SetShadowEffectiveDepth(static_cast<LNHandle>(local_directionallight), static_cast<float>(local_value));
 
 
             return true;
@@ -11012,7 +11012,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNDirectionalLight_GetShadowEffectiveDepth(local_directionallight, &local_outReturn);
+            stat = LNDirectionalLight_GetShadowEffectiveDepth(static_cast<LNHandle>(local_directionallight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -11032,7 +11032,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNDirectionalLight_SetPrototype_OnSerialize(local_directionallight, localDelegate_callback);
+            stat = LNDirectionalLight_SetPrototype_OnSerialize(static_cast<LNHandle>(local_directionallight), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11052,7 +11052,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNDirectionalLight_SetPrototype_OnPreUpdate(local_directionallight, localDelegate_callback);
+            stat = LNDirectionalLight_SetPrototype_OnPreUpdate(static_cast<LNHandle>(local_directionallight), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11072,7 +11072,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNDirectionalLight_SetPrototype_OnUpdate(local_directionallight, localDelegate_callback);
+            stat = LNDirectionalLight_SetPrototype_OnUpdate(static_cast<LNHandle>(local_directionallight), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11101,7 +11101,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outPointLight = code_getva(&pval_outPointLight);
             LNHandle local_outPointLight;
 
-            stat = LNPointLight_CreateWithColorAndRange(reinterpret_cast<LNColor*>(pval_color->pt), local_range, &local_outPointLight);
+            stat = LNPointLight_CreateWithColorAndRange(reinterpret_cast<LNColor*>(pval_color->pt), static_cast<float>(local_range), &local_outPointLight);
             setVAInt(pval_outPointLight, aptr_outPointLight, local_outPointLight);
 
             return true;
@@ -11113,7 +11113,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch enabled
             const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNPointLight_SetEnabled(local_pointlight, local_enabled);
+            stat = LNPointLight_SetEnabled(static_cast<LNHandle>(local_pointlight), static_cast<LNBool>(local_enabled));
 
 
             return true;
@@ -11127,7 +11127,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNPointLight_IsEnabled(local_pointlight, &local_outReturn);
+            stat = LNPointLight_IsEnabled(static_cast<LNHandle>(local_pointlight), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -11140,7 +11140,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_color;
             CodeGetVA_TypeChecked(&pval_color, LNColor);
 
-            stat = LNPointLight_SetColor(local_pointlight, reinterpret_cast<LNColor*>(pval_color->pt));
+            stat = LNPointLight_SetColor(static_cast<LNHandle>(local_pointlight), reinterpret_cast<LNColor*>(pval_color->pt));
 
 
             return true;
@@ -11154,7 +11154,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNPointLight_GetColor(local_pointlight, &local_outReturn);
+            stat = LNPointLight_GetColor(static_cast<LNHandle>(local_pointlight), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -11166,7 +11166,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch intensity
             const auto local_intensity = fetchVADouble();
 
-            stat = LNPointLight_SetIntensity(local_pointlight, local_intensity);
+            stat = LNPointLight_SetIntensity(static_cast<LNHandle>(local_pointlight), static_cast<float>(local_intensity));
 
 
             return true;
@@ -11180,7 +11180,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNPointLight_GetIntensity(local_pointlight, &local_outReturn);
+            stat = LNPointLight_GetIntensity(static_cast<LNHandle>(local_pointlight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -11192,7 +11192,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch range
             const auto local_range = fetchVADouble();
 
-            stat = LNPointLight_SetRange(local_pointlight, local_range);
+            stat = LNPointLight_SetRange(static_cast<LNHandle>(local_pointlight), static_cast<float>(local_range));
 
 
             return true;
@@ -11206,7 +11206,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNPointLight_GetRange(local_pointlight, &local_outReturn);
+            stat = LNPointLight_GetRange(static_cast<LNHandle>(local_pointlight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -11218,7 +11218,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch attenuation
             const auto local_attenuation = fetchVADouble();
 
-            stat = LNPointLight_SetAttenuation(local_pointlight, local_attenuation);
+            stat = LNPointLight_SetAttenuation(static_cast<LNHandle>(local_pointlight), static_cast<float>(local_attenuation));
 
 
             return true;
@@ -11232,7 +11232,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNPointLight_GetAttenuation(local_pointlight, &local_outReturn);
+            stat = LNPointLight_GetAttenuation(static_cast<LNHandle>(local_pointlight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -11252,7 +11252,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNPointLight_SetPrototype_OnSerialize(local_pointlight, localDelegate_callback);
+            stat = LNPointLight_SetPrototype_OnSerialize(static_cast<LNHandle>(local_pointlight), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11272,7 +11272,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNPointLight_SetPrototype_OnPreUpdate(local_pointlight, localDelegate_callback);
+            stat = LNPointLight_SetPrototype_OnPreUpdate(static_cast<LNHandle>(local_pointlight), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11292,7 +11292,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNPointLight_SetPrototype_OnUpdate(local_pointlight, localDelegate_callback);
+            stat = LNPointLight_SetPrototype_OnUpdate(static_cast<LNHandle>(local_pointlight), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11323,7 +11323,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outSpotLight = code_getva(&pval_outSpotLight);
             LNHandle local_outSpotLight;
 
-            stat = LNSpotLight_CreateWithColorAndRange(reinterpret_cast<LNColor*>(pval_color->pt), local_range, local_angle, &local_outSpotLight);
+            stat = LNSpotLight_CreateWithColorAndRange(reinterpret_cast<LNColor*>(pval_color->pt), static_cast<float>(local_range), static_cast<float>(local_angle), &local_outSpotLight);
             setVAInt(pval_outSpotLight, aptr_outSpotLight, local_outSpotLight);
 
             return true;
@@ -11335,7 +11335,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch enabled
             const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNSpotLight_SetEnabled(local_spotlight, local_enabled);
+            stat = LNSpotLight_SetEnabled(static_cast<LNHandle>(local_spotlight), static_cast<LNBool>(local_enabled));
 
 
             return true;
@@ -11349,7 +11349,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNSpotLight_IsEnabled(local_spotlight, &local_outReturn);
+            stat = LNSpotLight_IsEnabled(static_cast<LNHandle>(local_spotlight), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -11362,7 +11362,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_color;
             CodeGetVA_TypeChecked(&pval_color, LNColor);
 
-            stat = LNSpotLight_SetColor(local_spotlight, reinterpret_cast<LNColor*>(pval_color->pt));
+            stat = LNSpotLight_SetColor(static_cast<LNHandle>(local_spotlight), reinterpret_cast<LNColor*>(pval_color->pt));
 
 
             return true;
@@ -11376,7 +11376,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNSpotLight_GetColor(local_spotlight, &local_outReturn);
+            stat = LNSpotLight_GetColor(static_cast<LNHandle>(local_spotlight), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -11388,7 +11388,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch intensity
             const auto local_intensity = fetchVADouble();
 
-            stat = LNSpotLight_SetIntensity(local_spotlight, local_intensity);
+            stat = LNSpotLight_SetIntensity(static_cast<LNHandle>(local_spotlight), static_cast<float>(local_intensity));
 
 
             return true;
@@ -11402,7 +11402,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNSpotLight_GetIntensity(local_spotlight, &local_outReturn);
+            stat = LNSpotLight_GetIntensity(static_cast<LNHandle>(local_spotlight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -11414,7 +11414,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch range
             const auto local_range = fetchVADouble();
 
-            stat = LNSpotLight_SetRange(local_spotlight, local_range);
+            stat = LNSpotLight_SetRange(static_cast<LNHandle>(local_spotlight), static_cast<float>(local_range));
 
 
             return true;
@@ -11428,7 +11428,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNSpotLight_GetRange(local_spotlight, &local_outReturn);
+            stat = LNSpotLight_GetRange(static_cast<LNHandle>(local_spotlight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -11440,7 +11440,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch attenuation
             const auto local_attenuation = fetchVADouble();
 
-            stat = LNSpotLight_SetAttenuation(local_spotlight, local_attenuation);
+            stat = LNSpotLight_SetAttenuation(static_cast<LNHandle>(local_spotlight), static_cast<float>(local_attenuation));
 
 
             return true;
@@ -11454,7 +11454,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNSpotLight_GetAttenuation(local_spotlight, &local_outReturn);
+            stat = LNSpotLight_GetAttenuation(static_cast<LNHandle>(local_spotlight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -11466,7 +11466,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch angle
             const auto local_angle = fetchVADouble();
 
-            stat = LNSpotLight_SetAngle(local_spotlight, local_angle);
+            stat = LNSpotLight_SetAngle(static_cast<LNHandle>(local_spotlight), static_cast<float>(local_angle));
 
 
             return true;
@@ -11480,7 +11480,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNSpotLight_GetAngle(local_spotlight, &local_outReturn);
+            stat = LNSpotLight_GetAngle(static_cast<LNHandle>(local_spotlight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -11492,7 +11492,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch penumbra
             const auto local_penumbra = fetchVADouble();
 
-            stat = LNSpotLight_SetPenumbra(local_spotlight, local_penumbra);
+            stat = LNSpotLight_SetPenumbra(static_cast<LNHandle>(local_spotlight), static_cast<float>(local_penumbra));
 
 
             return true;
@@ -11506,7 +11506,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNSpotLight_GetPenumbra(local_spotlight, &local_outReturn);
+            stat = LNSpotLight_GetPenumbra(static_cast<LNHandle>(local_spotlight), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -11526,7 +11526,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNSpotLight_SetPrototype_OnSerialize(local_spotlight, localDelegate_callback);
+            stat = LNSpotLight_SetPrototype_OnSerialize(static_cast<LNHandle>(local_spotlight), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11546,7 +11546,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNSpotLight_SetPrototype_OnPreUpdate(local_spotlight, localDelegate_callback);
+            stat = LNSpotLight_SetPrototype_OnPreUpdate(static_cast<LNHandle>(local_spotlight), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11566,7 +11566,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNSpotLight_SetPrototype_OnUpdate(local_spotlight, localDelegate_callback);
+            stat = LNSpotLight_SetPrototype_OnUpdate(static_cast<LNHandle>(local_spotlight), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11608,7 +11608,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outSprite = code_getva(&pval_outSprite);
             LNHandle local_outSprite;
 
-            stat = LNSprite_CreateWithTexture(local_texture, &local_outSprite);
+            stat = LNSprite_CreateWithTexture(static_cast<LNHandle>(local_texture), &local_outSprite);
             setVAInt(pval_outSprite, aptr_outSprite, local_outSprite);
 
             return true;
@@ -11626,7 +11626,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outSprite = code_getva(&pval_outSprite);
             LNHandle local_outSprite;
 
-            stat = LNSprite_CreateWithTextureAndSize(local_texture, local_width, local_height, &local_outSprite);
+            stat = LNSprite_CreateWithTextureAndSize(static_cast<LNHandle>(local_texture), static_cast<float>(local_width), static_cast<float>(local_height), &local_outSprite);
             setVAInt(pval_outSprite, aptr_outSprite, local_outSprite);
 
             return true;
@@ -11638,7 +11638,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LNSprite_SetTexture(local_sprite, local_value);
+            stat = LNSprite_SetTexture(static_cast<LNHandle>(local_sprite), static_cast<LNHandle>(local_value));
 
 
             return true;
@@ -11651,7 +11651,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNSize);
 
-            stat = LNSprite_SetSize(local_sprite, reinterpret_cast<LNSize*>(pval_value->pt));
+            stat = LNSprite_SetSize(static_cast<LNHandle>(local_sprite), reinterpret_cast<LNSize*>(pval_value->pt));
 
 
             return true;
@@ -11665,7 +11665,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch height
             const auto local_height = fetchVADouble();
 
-            stat = LNSprite_SetSizeWH(local_sprite, local_width, local_height);
+            stat = LNSprite_SetSizeWH(static_cast<LNHandle>(local_sprite), static_cast<float>(local_width), static_cast<float>(local_height));
 
 
             return true;
@@ -11683,7 +11683,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch height
             const auto local_height = fetchVADouble();
 
-            stat = LNSprite_SetSourceRectXYWH(local_sprite, local_x, local_y, local_width, local_height);
+            stat = LNSprite_SetSourceRectXYWH(static_cast<LNHandle>(local_sprite), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_width), static_cast<float>(local_height));
 
 
             return true;
@@ -11703,7 +11703,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNSprite_SetCallerTest(local_sprite, localDelegate_callback);
+            stat = LNSprite_SetCallerTest(static_cast<LNHandle>(local_sprite), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11723,7 +11723,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNSprite_SetPrototype_OnSerialize(local_sprite, localDelegate_callback);
+            stat = LNSprite_SetPrototype_OnSerialize(static_cast<LNHandle>(local_sprite), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11743,7 +11743,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNSprite_SetPrototype_OnPreUpdate(local_sprite, localDelegate_callback);
+            stat = LNSprite_SetPrototype_OnPreUpdate(static_cast<LNHandle>(local_sprite), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11763,7 +11763,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNSprite_SetPrototype_OnUpdate(local_sprite, localDelegate_callback);
+            stat = LNSprite_SetPrototype_OnUpdate(static_cast<LNHandle>(local_sprite), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11795,7 +11795,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNCameraOrbitControlComponent_SetPrototype_OnSerialize(local_cameraorbitcontrolcomponent, localDelegate_callback);
+            stat = LNCameraOrbitControlComponent_SetPrototype_OnSerialize(static_cast<LNHandle>(local_cameraorbitcontrolcomponent), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11830,7 +11830,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNRaycaster_IntersectPlane(local_raycaster, local_normalX, local_normalY, local_normalZ, &local_outReturn);
+            stat = LNRaycaster_IntersectPlane(static_cast<LNHandle>(local_raycaster), static_cast<float>(local_normalX), static_cast<float>(local_normalY), static_cast<float>(local_normalZ), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -11850,7 +11850,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNRaycaster_SetPrototype_OnSerialize(local_raycaster, localDelegate_callback);
+            stat = LNRaycaster_SetPrototype_OnSerialize(static_cast<LNHandle>(local_raycaster), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11864,7 +11864,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNVector3 local_outReturn;
 
-            stat = LNRaycastResult_GetPoint(local_raycastresult, &local_outReturn);
+            stat = LNRaycastResult_GetPoint(static_cast<LNHandle>(local_raycastresult), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
@@ -11884,7 +11884,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNRaycastResult_SetPrototype_OnSerialize(local_raycastresult, localDelegate_callback);
+            stat = LNRaycastResult_SetPrototype_OnSerialize(static_cast<LNHandle>(local_raycastresult), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11896,7 +11896,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNWorldRenderView_SetGuideGridEnabled(local_worldrenderview, local_value);
+            stat = LNWorldRenderView_SetGuideGridEnabled(static_cast<LNHandle>(local_worldrenderview), static_cast<LNBool>(local_value));
 
 
             return true;
@@ -11910,7 +11910,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNWorldRenderView_GetGuideGridEnabled(local_worldrenderview, &local_outReturn);
+            stat = LNWorldRenderView_GetGuideGridEnabled(static_cast<LNHandle>(local_worldrenderview), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -11930,7 +11930,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNWorldRenderView_SetPrototype_OnSerialize(local_worldrenderview, localDelegate_callback);
+            stat = LNWorldRenderView_SetPrototype_OnSerialize(static_cast<LNHandle>(local_worldrenderview), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -11960,7 +11960,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outBoxMesh = code_getva(&pval_outBoxMesh);
             LNHandle local_outBoxMesh;
 
-            stat = LNBoxMesh_CreateXYZ(local_width, local_height, local_depth, &local_outBoxMesh);
+            stat = LNBoxMesh_CreateXYZ(static_cast<float>(local_width), static_cast<float>(local_height), static_cast<float>(local_depth), &local_outBoxMesh);
             setVAInt(pval_outBoxMesh, aptr_outBoxMesh, local_outBoxMesh);
 
             return true;
@@ -11980,7 +11980,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNBoxMesh_SetPrototype_OnSerialize(local_boxmesh, localDelegate_callback);
+            stat = LNBoxMesh_SetPrototype_OnSerialize(static_cast<LNHandle>(local_boxmesh), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12000,7 +12000,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNBoxMesh_SetPrototype_OnPreUpdate(local_boxmesh, localDelegate_callback);
+            stat = LNBoxMesh_SetPrototype_OnPreUpdate(static_cast<LNHandle>(local_boxmesh), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12020,7 +12020,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNBoxMesh_SetPrototype_OnUpdate(local_boxmesh, localDelegate_callback);
+            stat = LNBoxMesh_SetPrototype_OnUpdate(static_cast<LNHandle>(local_boxmesh), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12052,7 +12052,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNPlaneMesh_SetPrototype_OnSerialize(local_planemesh, localDelegate_callback);
+            stat = LNPlaneMesh_SetPrototype_OnSerialize(static_cast<LNHandle>(local_planemesh), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12072,7 +12072,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNPlaneMesh_SetPrototype_OnPreUpdate(local_planemesh, localDelegate_callback);
+            stat = LNPlaneMesh_SetPrototype_OnPreUpdate(static_cast<LNHandle>(local_planemesh), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12092,7 +12092,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNPlaneMesh_SetPrototype_OnUpdate(local_planemesh, localDelegate_callback);
+            stat = LNPlaneMesh_SetPrototype_OnUpdate(static_cast<LNHandle>(local_planemesh), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12106,7 +12106,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNStaticMesh_LoadA(local_filePath, &local_outReturn);
+            stat = LNStaticMesh_LoadA(static_cast<const char*>(local_filePath), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -12120,7 +12120,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNStaticMesh_GetModel(local_staticmesh, &local_outReturn);
+            stat = LNStaticMesh_GetModel(static_cast<LNHandle>(local_staticmesh), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -12132,7 +12132,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch meshContainerName
             const auto local_meshContainerName = fetchVAString();
 
-            stat = LNStaticMesh_MakeCollisionBodyA(local_staticmesh, local_meshContainerName);
+            stat = LNStaticMesh_MakeCollisionBodyA(static_cast<LNHandle>(local_staticmesh), static_cast<const char*>(local_meshContainerName));
 
 
             return true;
@@ -12152,7 +12152,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNStaticMesh_SetPrototype_OnSerialize(local_staticmesh, localDelegate_callback);
+            stat = LNStaticMesh_SetPrototype_OnSerialize(static_cast<LNHandle>(local_staticmesh), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12172,7 +12172,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNStaticMesh_SetPrototype_OnPreUpdate(local_staticmesh, localDelegate_callback);
+            stat = LNStaticMesh_SetPrototype_OnPreUpdate(static_cast<LNHandle>(local_staticmesh), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12192,7 +12192,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNStaticMesh_SetPrototype_OnUpdate(local_staticmesh, localDelegate_callback);
+            stat = LNStaticMesh_SetPrototype_OnUpdate(static_cast<LNHandle>(local_staticmesh), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12216,7 +12216,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch model
             const auto local_model = fetchVAInt();
 
-            stat = LNStaticMeshComponent_SetModel(local_staticmeshcomponent, local_model);
+            stat = LNStaticMeshComponent_SetModel(static_cast<LNHandle>(local_staticmeshcomponent), static_cast<LNHandle>(local_model));
 
 
             return true;
@@ -12228,7 +12228,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch meshContainerName
             const auto local_meshContainerName = fetchVAString();
 
-            stat = LNStaticMeshComponent_MakeCollisionBodyA(local_staticmeshcomponent, local_meshContainerName);
+            stat = LNStaticMeshComponent_MakeCollisionBodyA(static_cast<LNHandle>(local_staticmeshcomponent), static_cast<const char*>(local_meshContainerName));
 
 
             return true;
@@ -12248,7 +12248,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNStaticMeshComponent_SetPrototype_OnSerialize(local_staticmeshcomponent, localDelegate_callback);
+            stat = LNStaticMeshComponent_SetPrototype_OnSerialize(static_cast<LNHandle>(local_staticmeshcomponent), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12280,7 +12280,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNSkinnedMeshComponent_SetPrototype_OnSerialize(local_skinnedmeshcomponent, localDelegate_callback);
+            stat = LNSkinnedMeshComponent_SetPrototype_OnSerialize(static_cast<LNHandle>(local_skinnedmeshcomponent), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12294,7 +12294,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNCollision_GetWorldObject(local_collision, &local_outReturn);
+            stat = LNCollision_GetWorldObject(static_cast<LNHandle>(local_collision), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -12314,7 +12314,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNCollision_SetPrototype_OnSerialize(local_collision, localDelegate_callback);
+            stat = LNCollision_SetPrototype_OnSerialize(static_cast<LNHandle>(local_collision), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12338,7 +12338,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch shape
             const auto local_shape = fetchVAInt();
 
-            stat = LNTriggerBodyComponent_AddCollisionShape(local_triggerbodycomponent, local_shape);
+            stat = LNTriggerBodyComponent_AddCollisionShape(static_cast<LNHandle>(local_triggerbodycomponent), static_cast<LNHandle>(local_shape));
 
 
             return true;
@@ -12358,7 +12358,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNTriggerBodyComponent_SetPrototype_OnSerialize(local_triggerbodycomponent, localDelegate_callback);
+            stat = LNTriggerBodyComponent_SetPrototype_OnSerialize(static_cast<LNHandle>(local_triggerbodycomponent), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12372,7 +12372,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outParticleEmitter = code_getva(&pval_outParticleEmitter);
             LNHandle local_outParticleEmitter;
 
-            stat = LNParticleEmitter_Create(local_model, &local_outParticleEmitter);
+            stat = LNParticleEmitter_Create(static_cast<LNHandle>(local_model), &local_outParticleEmitter);
             setVAInt(pval_outParticleEmitter, aptr_outParticleEmitter, local_outParticleEmitter);
 
             return true;
@@ -12392,7 +12392,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNParticleEmitter_SetPrototype_OnSerialize(local_particleemitter, localDelegate_callback);
+            stat = LNParticleEmitter_SetPrototype_OnSerialize(static_cast<LNHandle>(local_particleemitter), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12412,7 +12412,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNParticleEmitter_SetPrototype_OnPreUpdate(local_particleemitter, localDelegate_callback);
+            stat = LNParticleEmitter_SetPrototype_OnPreUpdate(static_cast<LNHandle>(local_particleemitter), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12432,7 +12432,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNParticleEmitter_SetPrototype_OnUpdate(local_particleemitter, localDelegate_callback);
+            stat = LNParticleEmitter_SetPrototype_OnUpdate(static_cast<LNHandle>(local_particleemitter), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -12442,7 +12442,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNSceneClearMode>(fetchVAInt());
 
-            stat = LNScene_SetClearMode(local_value);
+            stat = LNScene_SetClearMode(static_cast<LNSceneClearMode>(local_value));
 
 
             return true;
@@ -12498,7 +12498,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch withEffect
             const auto local_withEffect = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNScene_GotoLevel(local_level, local_withEffect);
+            stat = LNScene_GotoLevel(static_cast<LNHandle>(local_level), static_cast<LNBool>(local_withEffect));
 
 
             return true;
@@ -12510,7 +12510,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch withEffect
             const auto local_withEffect = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNScene_CallLevel(local_level, local_withEffect);
+            stat = LNScene_CallLevel(static_cast<LNHandle>(local_level), static_cast<LNBool>(local_withEffect));
 
 
             return true;
@@ -12520,7 +12520,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch withEffect
             const auto local_withEffect = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNScene_ReturnLevel(local_withEffect);
+            stat = LNScene_ReturnLevel(static_cast<LNBool>(local_withEffect));
 
 
             return true;
@@ -12554,7 +12554,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNLevelTransitionEffectMode>(fetchVAInt());
 
-            stat = LNScene_SetTransitionEffectMode(local_value);
+            stat = LNScene_SetTransitionEffectMode(static_cast<LNLevelTransitionEffectMode>(local_value));
 
 
             return true;
@@ -12576,7 +12576,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetTransitionDuration(local_value);
+            stat = LNScene_SetTransitionDuration(static_cast<float>(local_value));
 
 
             return true;
@@ -12621,7 +12621,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LNScene_SetTransitionEffectMaskTexture(local_value);
+            stat = LNScene_SetTransitionEffectMaskTexture(static_cast<LNHandle>(local_value));
 
 
             return true;
@@ -12643,7 +12643,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetTransitionEffectVague(local_value);
+            stat = LNScene_SetTransitionEffectVague(static_cast<float>(local_value));
 
 
             return true;
@@ -12681,7 +12681,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetFogStartDistance(local_value);
+            stat = LNScene_SetFogStartDistance(static_cast<float>(local_value));
 
 
             return true;
@@ -12702,7 +12702,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetFogDensity(local_value);
+            stat = LNScene_SetFogDensity(static_cast<float>(local_value));
 
 
             return true;
@@ -12712,7 +12712,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetFogHeightDensity(local_value);
+            stat = LNScene_SetFogHeightDensity(static_cast<float>(local_value));
 
 
             return true;
@@ -12722,7 +12722,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetFogLowerHeight(local_value);
+            stat = LNScene_SetFogLowerHeight(static_cast<float>(local_value));
 
 
             return true;
@@ -12732,7 +12732,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetFogUpperHeight(local_value);
+            stat = LNScene_SetFogUpperHeight(static_cast<float>(local_value));
 
 
             return true;
@@ -12742,7 +12742,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNScene_SetHDREnabled(local_value);
+            stat = LNScene_SetHDREnabled(static_cast<LNBool>(local_value));
 
 
             return true;
@@ -12810,7 +12810,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNScene_SetAntialiasEnabled(local_value);
+            stat = LNScene_SetAntialiasEnabled(static_cast<LNBool>(local_value));
 
 
             return true;
@@ -12832,7 +12832,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNScene_SetSSREnabled(local_value);
+            stat = LNScene_SetSSREnabled(static_cast<LNBool>(local_value));
 
 
             return true;
@@ -12854,7 +12854,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNScene_SetSSAOEnabled(local_value);
+            stat = LNScene_SetSSAOEnabled(static_cast<LNBool>(local_value));
 
 
             return true;
@@ -12876,7 +12876,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNScene_SetBloomEnabled(local_value);
+            stat = LNScene_SetBloomEnabled(static_cast<LNBool>(local_value));
 
 
             return true;
@@ -12898,7 +12898,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNScene_SetDOFEnabled(local_value);
+            stat = LNScene_SetDOFEnabled(static_cast<LNBool>(local_value));
 
 
             return true;
@@ -12920,7 +12920,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNScene_SetTonemapEnabled(local_value);
+            stat = LNScene_SetTonemapEnabled(static_cast<LNBool>(local_value));
 
 
             return true;
@@ -12942,7 +12942,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNScene_SetVignetteEnabled(local_value);
+            stat = LNScene_SetVignetteEnabled(static_cast<LNBool>(local_value));
 
 
             return true;
@@ -12964,7 +12964,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNScene_SetGammaEnabled(local_value);
+            stat = LNScene_SetGammaEnabled(static_cast<LNBool>(local_value));
 
 
             return true;
@@ -12986,7 +12986,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetTonemapExposure(local_value);
+            stat = LNScene_SetTonemapExposure(static_cast<float>(local_value));
 
 
             return true;
@@ -12996,7 +12996,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetTonemapLinearWhite(local_value);
+            stat = LNScene_SetTonemapLinearWhite(static_cast<float>(local_value));
 
 
             return true;
@@ -13006,7 +13006,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetTonemapShoulderStrength(local_value);
+            stat = LNScene_SetTonemapShoulderStrength(static_cast<float>(local_value));
 
 
             return true;
@@ -13016,7 +13016,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetTonemapLinearStrength(local_value);
+            stat = LNScene_SetTonemapLinearStrength(static_cast<float>(local_value));
 
 
             return true;
@@ -13026,7 +13026,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetTonemapLinearAngle(local_value);
+            stat = LNScene_SetTonemapLinearAngle(static_cast<float>(local_value));
 
 
             return true;
@@ -13036,7 +13036,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetTonemapToeStrength(local_value);
+            stat = LNScene_SetTonemapToeStrength(static_cast<float>(local_value));
 
 
             return true;
@@ -13046,7 +13046,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetTonemapToeNumerator(local_value);
+            stat = LNScene_SetTonemapToeNumerator(static_cast<float>(local_value));
 
 
             return true;
@@ -13056,7 +13056,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNScene_SetTonemapToeDenominator(local_value);
+            stat = LNScene_SetTonemapToeDenominator(static_cast<float>(local_value));
 
 
             return true;
@@ -13080,7 +13080,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch obj
             const auto local_obj = fetchVAInt();
 
-            stat = LNLevel_AddObject(local_level, local_obj);
+            stat = LNLevel_AddObject(static_cast<LNHandle>(local_level), static_cast<LNHandle>(local_obj));
 
 
             return true;
@@ -13092,7 +13092,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch obj
             const auto local_obj = fetchVAInt();
 
-            stat = LNLevel_RemoveObject(local_level, local_obj);
+            stat = LNLevel_RemoveObject(static_cast<LNHandle>(local_level), static_cast<LNHandle>(local_obj));
 
 
             return true;
@@ -13104,7 +13104,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch sublevel
             const auto local_sublevel = fetchVAInt();
 
-            stat = LNLevel_AddSubLevel(local_level, local_sublevel);
+            stat = LNLevel_AddSubLevel(static_cast<LNHandle>(local_level), static_cast<LNHandle>(local_sublevel));
 
 
             return true;
@@ -13116,7 +13116,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch sublevel
             const auto local_sublevel = fetchVAInt();
 
-            stat = LNLevel_RemoveSubLevel(local_level, local_sublevel);
+            stat = LNLevel_RemoveSubLevel(static_cast<LNHandle>(local_level), static_cast<LNHandle>(local_sublevel));
 
 
             return true;
@@ -13126,7 +13126,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch level
             const auto local_level = fetchVAInt();
 
-            stat = LNLevel_RemoveAllSubLevels(local_level);
+            stat = LNLevel_RemoveAllSubLevels(static_cast<LNHandle>(local_level));
 
 
             return true;
@@ -13146,7 +13146,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNLevel_SetPrototype_OnSerialize(local_level, localDelegate_callback);
+            stat = LNLevel_SetPrototype_OnSerialize(static_cast<LNHandle>(local_level), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -13166,7 +13166,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNLevel_SetPrototype_OnStart(local_level, localDelegate_callback);
+            stat = LNLevel_SetPrototype_OnStart(static_cast<LNHandle>(local_level), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -13186,7 +13186,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNLevel_SetPrototype_OnStop(local_level, localDelegate_callback);
+            stat = LNLevel_SetPrototype_OnStop(static_cast<LNHandle>(local_level), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -13206,7 +13206,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNLevel_SetPrototype_OnPause(local_level, localDelegate_callback);
+            stat = LNLevel_SetPrototype_OnPause(static_cast<LNHandle>(local_level), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -13226,7 +13226,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNLevel_SetPrototype_OnResume(local_level, localDelegate_callback);
+            stat = LNLevel_SetPrototype_OnResume(static_cast<LNHandle>(local_level), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -13246,7 +13246,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNLevel_SetPrototype_OnUpdate(local_level, localDelegate_callback);
+            stat = LNLevel_SetPrototype_OnUpdate(static_cast<LNHandle>(local_level), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -13260,7 +13260,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Red(local_shades, &local_outReturn);
+            stat = LNUIColors_Red(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13274,7 +13274,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Pink(local_shades, &local_outReturn);
+            stat = LNUIColors_Pink(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13288,7 +13288,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Purple(local_shades, &local_outReturn);
+            stat = LNUIColors_Purple(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13302,7 +13302,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_DeepPurple(local_shades, &local_outReturn);
+            stat = LNUIColors_DeepPurple(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13316,7 +13316,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Indigo(local_shades, &local_outReturn);
+            stat = LNUIColors_Indigo(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13330,7 +13330,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Blue(local_shades, &local_outReturn);
+            stat = LNUIColors_Blue(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13344,7 +13344,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_LightBlue(local_shades, &local_outReturn);
+            stat = LNUIColors_LightBlue(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13358,7 +13358,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Cyan(local_shades, &local_outReturn);
+            stat = LNUIColors_Cyan(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13372,7 +13372,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Teal(local_shades, &local_outReturn);
+            stat = LNUIColors_Teal(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13386,7 +13386,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Green(local_shades, &local_outReturn);
+            stat = LNUIColors_Green(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13400,7 +13400,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_LightGreen(local_shades, &local_outReturn);
+            stat = LNUIColors_LightGreen(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13414,7 +13414,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Lime(local_shades, &local_outReturn);
+            stat = LNUIColors_Lime(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13428,7 +13428,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Yellow(local_shades, &local_outReturn);
+            stat = LNUIColors_Yellow(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13442,7 +13442,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Amber(local_shades, &local_outReturn);
+            stat = LNUIColors_Amber(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13456,7 +13456,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Orange(local_shades, &local_outReturn);
+            stat = LNUIColors_Orange(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13470,7 +13470,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_DeepOrange(local_shades, &local_outReturn);
+            stat = LNUIColors_DeepOrange(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13484,7 +13484,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Brown(local_shades, &local_outReturn);
+            stat = LNUIColors_Brown(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13498,7 +13498,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Grey(local_shades, &local_outReturn);
+            stat = LNUIColors_Grey(static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13514,7 +13514,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIColors_Get(local_hue, local_shades, &local_outReturn);
+            stat = LNUIColors_Get(static_cast<LNUIColorHues>(local_hue), static_cast<int>(local_shades), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -13528,7 +13528,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNUIEventArgs_Sender(local_uieventargs, &local_outReturn);
+            stat = LNUIEventArgs_Sender(static_cast<LNHandle>(local_uieventargs), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -13548,7 +13548,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIEventArgs_SetPrototype_OnSerialize(local_uieventargs, localDelegate_callback);
+            stat = LNUIEventArgs_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uieventargs), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -13600,7 +13600,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUILayoutElement_SetPrototype_OnSerialize(local_uilayoutelement, localDelegate_callback);
+            stat = LNUILayoutElement_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uilayoutelement), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -13613,7 +13613,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_size;
             CodeGetVA_TypeChecked(&pval_size, LNSize);
 
-            stat = LNUIElement_SetSize(local_uielement, reinterpret_cast<LNSize*>(pval_size->pt));
+            stat = LNUIElement_SetSize(static_cast<LNHandle>(local_uielement), reinterpret_cast<LNSize*>(pval_size->pt));
 
 
             return true;
@@ -13627,7 +13627,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch height
             const auto local_height = fetchVADouble();
 
-            stat = LNUIElement_SetSizeWH(local_uielement, local_width, local_height);
+            stat = LNUIElement_SetSizeWH(static_cast<LNHandle>(local_uielement), static_cast<float>(local_width), static_cast<float>(local_height));
 
 
             return true;
@@ -13639,7 +13639,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNUIElement_SetWidth(local_uielement, local_value);
+            stat = LNUIElement_SetWidth(static_cast<LNHandle>(local_uielement), static_cast<float>(local_value));
 
 
             return true;
@@ -13653,7 +13653,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNUIElement_GetWidth(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetWidth(static_cast<LNHandle>(local_uielement), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -13665,7 +13665,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNUIElement_SetHeight(local_uielement, local_value);
+            stat = LNUIElement_SetHeight(static_cast<LNHandle>(local_uielement), static_cast<float>(local_value));
 
 
             return true;
@@ -13679,7 +13679,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNUIElement_GetHeight(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetHeight(static_cast<LNHandle>(local_uielement), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -13692,7 +13692,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_margin;
             CodeGetVA_TypeChecked(&pval_margin, LNThickness);
 
-            stat = LNUIElement_SetMargin(local_uielement, reinterpret_cast<LNThickness*>(pval_margin->pt));
+            stat = LNUIElement_SetMargin(static_cast<LNHandle>(local_uielement), reinterpret_cast<LNThickness*>(pval_margin->pt));
 
 
             return true;
@@ -13706,7 +13706,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNThickness local_outReturn;
 
-            stat = LNUIElement_GetMargin(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetMargin(static_cast<LNHandle>(local_uielement), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNThickness_typeid(), &local_outReturn);
 
             return true;
@@ -13719,7 +13719,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_padding;
             CodeGetVA_TypeChecked(&pval_padding, LNThickness);
 
-            stat = LNUIElement_SetPadding(local_uielement, reinterpret_cast<LNThickness*>(pval_padding->pt));
+            stat = LNUIElement_SetPadding(static_cast<LNHandle>(local_uielement), reinterpret_cast<LNThickness*>(pval_padding->pt));
 
 
             return true;
@@ -13733,7 +13733,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNThickness local_outReturn;
 
-            stat = LNUIElement_GetPadding(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetPadding(static_cast<LNHandle>(local_uielement), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNThickness_typeid(), &local_outReturn);
 
             return true;
@@ -13745,7 +13745,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNUIHAlignment>(fetchVAInt());
 
-            stat = LNUIElement_SetHAlignment(local_uielement, local_value);
+            stat = LNUIElement_SetHAlignment(static_cast<LNHandle>(local_uielement), static_cast<LNUIHAlignment>(local_value));
 
 
             return true;
@@ -13759,7 +13759,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNUIHAlignment local_outReturn;
 
-            stat = LNUIElement_GetHAlignment(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetHAlignment(static_cast<LNHandle>(local_uielement), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -13771,7 +13771,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNUIVAlignment>(fetchVAInt());
 
-            stat = LNUIElement_SetVAlignment(local_uielement, local_value);
+            stat = LNUIElement_SetVAlignment(static_cast<LNHandle>(local_uielement), static_cast<LNUIVAlignment>(local_value));
 
 
             return true;
@@ -13785,7 +13785,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNUIVAlignment local_outReturn;
 
-            stat = LNUIElement_GetVAlignment(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetVAlignment(static_cast<LNHandle>(local_uielement), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -13799,7 +13799,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch valign
             const auto local_valign = static_cast<LNUIVAlignment>(fetchVAInt());
 
-            stat = LNUIElement_SetAlignments(local_uielement, local_halign, local_valign);
+            stat = LNUIElement_SetAlignments(static_cast<LNHandle>(local_uielement), static_cast<LNUIHAlignment>(local_halign), static_cast<LNUIVAlignment>(local_valign));
 
 
             return true;
@@ -13812,7 +13812,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_pos;
             CodeGetVA_TypeChecked(&pval_pos, LNVector3);
 
-            stat = LNUIElement_SetPosition(local_uielement, reinterpret_cast<LNVector3*>(pval_pos->pt));
+            stat = LNUIElement_SetPosition(static_cast<LNHandle>(local_uielement), reinterpret_cast<LNVector3*>(pval_pos->pt));
 
 
             return true;
@@ -13828,7 +13828,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble(0.000000);
 
-            stat = LNUIElement_SetPositionXYZ(local_uielement, local_x, local_y, local_z);
+            stat = LNUIElement_SetPositionXYZ(static_cast<LNHandle>(local_uielement), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z));
 
 
             return true;
@@ -13842,7 +13842,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNVector3 local_outReturn;
 
-            stat = LNUIElement_GetPosition(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetPosition(static_cast<LNHandle>(local_uielement), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
@@ -13855,7 +13855,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_rot;
             CodeGetVA_TypeChecked(&pval_rot, LNQuaternion);
 
-            stat = LNUIElement_SetRotation(local_uielement, reinterpret_cast<LNQuaternion*>(pval_rot->pt));
+            stat = LNUIElement_SetRotation(static_cast<LNHandle>(local_uielement), reinterpret_cast<LNQuaternion*>(pval_rot->pt));
 
 
             return true;
@@ -13871,7 +13871,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble();
 
-            stat = LNUIElement_SetEulerAngles(local_uielement, local_x, local_y, local_z);
+            stat = LNUIElement_SetEulerAngles(static_cast<LNHandle>(local_uielement), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z));
 
 
             return true;
@@ -13885,7 +13885,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNQuaternion local_outReturn;
 
-            stat = LNUIElement_GetRotation(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetRotation(static_cast<LNHandle>(local_uielement), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNQuaternion_typeid(), &local_outReturn);
 
             return true;
@@ -13898,7 +13898,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_scale;
             CodeGetVA_TypeChecked(&pval_scale, LNVector3);
 
-            stat = LNUIElement_SetScale(local_uielement, reinterpret_cast<LNVector3*>(pval_scale->pt));
+            stat = LNUIElement_SetScale(static_cast<LNHandle>(local_uielement), reinterpret_cast<LNVector3*>(pval_scale->pt));
 
 
             return true;
@@ -13910,7 +13910,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch xyz
             const auto local_xyz = fetchVADouble();
 
-            stat = LNUIElement_SetScaleS(local_uielement, local_xyz);
+            stat = LNUIElement_SetScaleS(static_cast<LNHandle>(local_uielement), static_cast<float>(local_xyz));
 
 
             return true;
@@ -13924,7 +13924,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch y
             const auto local_y = fetchVADouble();
 
-            stat = LNUIElement_SetScaleXY(local_uielement, local_x, local_y);
+            stat = LNUIElement_SetScaleXY(static_cast<LNHandle>(local_uielement), static_cast<float>(local_x), static_cast<float>(local_y));
 
 
             return true;
@@ -13938,7 +13938,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNVector3 local_outReturn;
 
-            stat = LNUIElement_GetScale(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetScale(static_cast<LNHandle>(local_uielement), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
@@ -13951,7 +13951,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNVector3);
 
-            stat = LNUIElement_SetCenterPoint(local_uielement, reinterpret_cast<LNVector3*>(pval_value->pt));
+            stat = LNUIElement_SetCenterPoint(static_cast<LNHandle>(local_uielement), reinterpret_cast<LNVector3*>(pval_value->pt));
 
 
             return true;
@@ -13967,7 +13967,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble(0.000000);
 
-            stat = LNUIElement_SetCenterPointXYZ(local_uielement, local_x, local_y, local_z);
+            stat = LNUIElement_SetCenterPointXYZ(static_cast<LNHandle>(local_uielement), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z));
 
 
             return true;
@@ -13981,7 +13981,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNVector3 local_outReturn;
 
-            stat = LNUIElement_GetCenterPoint(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetCenterPoint(static_cast<LNHandle>(local_uielement), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNVector3_typeid(), &local_outReturn);
 
             return true;
@@ -13993,7 +13993,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNUIElement_SetEnabled(local_uielement, local_value);
+            stat = LNUIElement_SetEnabled(static_cast<LNHandle>(local_uielement), static_cast<LNBool>(local_value));
 
 
             return true;
@@ -14007,7 +14007,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNUIElement_IsEnabled(local_uielement, &local_outReturn);
+            stat = LNUIElement_IsEnabled(static_cast<LNHandle>(local_uielement), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -14019,7 +14019,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LNUIElement_SetData(local_uielement, local_value);
+            stat = LNUIElement_SetData(static_cast<LNHandle>(local_uielement), static_cast<LNHandle>(local_value));
 
 
             return true;
@@ -14033,7 +14033,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNUIElement_GetData(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetData(static_cast<LNHandle>(local_uielement), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -14046,7 +14046,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
 
-            stat = LNUIElement_SetBackgroundColor(local_uielement, reinterpret_cast<LNColor*>(pval_value->pt));
+            stat = LNUIElement_SetBackgroundColor(static_cast<LNHandle>(local_uielement), reinterpret_cast<LNColor*>(pval_value->pt));
 
 
             return true;
@@ -14060,7 +14060,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIElement_GetBackgroundColor(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetBackgroundColor(static_cast<LNHandle>(local_uielement), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -14073,7 +14073,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNThickness);
 
-            stat = LNUIElement_SetBorderThickness(local_uielement, reinterpret_cast<LNThickness*>(pval_value->pt));
+            stat = LNUIElement_SetBorderThickness(static_cast<LNHandle>(local_uielement), reinterpret_cast<LNThickness*>(pval_value->pt));
 
 
             return true;
@@ -14087,7 +14087,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNThickness local_outReturn;
 
-            stat = LNUIElement_GetBorderThickness(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetBorderThickness(static_cast<LNHandle>(local_uielement), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNThickness_typeid(), &local_outReturn);
 
             return true;
@@ -14100,7 +14100,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNColor);
 
-            stat = LNUIElement_SetBorderColor(local_uielement, reinterpret_cast<LNColor*>(pval_value->pt));
+            stat = LNUIElement_SetBorderColor(static_cast<LNHandle>(local_uielement), reinterpret_cast<LNColor*>(pval_value->pt));
 
 
             return true;
@@ -14114,7 +14114,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNColor local_outReturn;
 
-            stat = LNUIElement_GetBorderColor(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetBorderColor(static_cast<LNHandle>(local_uielement), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNColor_typeid(), &local_outReturn);
 
             return true;
@@ -14127,7 +14127,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_value;
             CodeGetVA_TypeChecked(&pval_value, LNCornerRadius);
 
-            stat = LNUIElement_SetCornerRadius(local_uielement, reinterpret_cast<LNCornerRadius*>(pval_value->pt));
+            stat = LNUIElement_SetCornerRadius(static_cast<LNHandle>(local_uielement), reinterpret_cast<LNCornerRadius*>(pval_value->pt));
 
 
             return true;
@@ -14141,7 +14141,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNCornerRadius local_outReturn;
 
-            stat = LNUIElement_GetCornerRadius(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetCornerRadius(static_cast<LNHandle>(local_uielement), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNCornerRadius_typeid(), &local_outReturn);
 
             return true;
@@ -14153,7 +14153,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNUIVisibility>(fetchVAInt());
 
-            stat = LNUIElement_SetVisibility(local_uielement, local_value);
+            stat = LNUIElement_SetVisibility(static_cast<LNHandle>(local_uielement), static_cast<LNUIVisibility>(local_value));
 
 
             return true;
@@ -14167,7 +14167,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNUIVisibility local_outReturn;
 
-            stat = LNUIElement_GetVisibility(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetVisibility(static_cast<LNHandle>(local_uielement), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -14179,7 +14179,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNUIElement_SetOpacity(local_uielement, local_value);
+            stat = LNUIElement_SetOpacity(static_cast<LNHandle>(local_uielement), static_cast<float>(local_value));
 
 
             return true;
@@ -14193,7 +14193,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNUIElement_GetOpacity(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetOpacity(static_cast<LNHandle>(local_uielement), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -14205,7 +14205,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch child
             const auto local_child = fetchVAInt();
 
-            stat = LNUIElement_AddChild(local_uielement, local_child);
+            stat = LNUIElement_AddChild(static_cast<LNHandle>(local_uielement), static_cast<LNHandle>(local_child));
 
 
             return true;
@@ -14217,7 +14217,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNUIElement_SetFocusable(local_uielement, local_value);
+            stat = LNUIElement_SetFocusable(static_cast<LNHandle>(local_uielement), static_cast<LNBool>(local_value));
 
 
             return true;
@@ -14231,7 +14231,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNUIElement_GetFocusable(local_uielement, &local_outReturn);
+            stat = LNUIElement_GetFocusable(static_cast<LNHandle>(local_uielement), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -14251,7 +14251,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIElement_SetPrototype_OnSerialize(local_uielement, localDelegate_callback);
+            stat = LNUIElement_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uielement), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -14277,7 +14277,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outUITextBlock = code_getva(&pval_outUITextBlock);
             LNHandle local_outUITextBlock;
 
-            stat = LNUITextBlock_CreateWithTextA(local_text, &local_outUITextBlock);
+            stat = LNUITextBlock_CreateWithTextA(static_cast<const char*>(local_text), &local_outUITextBlock);
             setVAInt(pval_outUITextBlock, aptr_outUITextBlock, local_outUITextBlock);
 
             return true;
@@ -14289,7 +14289,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVAString();
 
-            stat = LNUITextBlock_SetTextA(local_uitextblock, local_value);
+            stat = LNUITextBlock_SetTextA(static_cast<LNHandle>(local_uitextblock), static_cast<const char*>(local_value));
 
 
             return true;
@@ -14303,7 +14303,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             const char* local_outReturn;
 
-            stat = LNUITextBlock_GetTextA(local_uitextblock, &local_outReturn);
+            stat = LNUITextBlock_GetTextA(static_cast<LNHandle>(local_uitextblock), &local_outReturn);
             setVAStr(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -14323,7 +14323,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUITextBlock_SetPrototype_OnSerialize(local_uitextblock, localDelegate_callback);
+            stat = LNUITextBlock_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uitextblock), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -14349,7 +14349,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outUISprite = code_getva(&pval_outUISprite);
             LNHandle local_outUISprite;
 
-            stat = LNUISprite_CreateWithTexture(local_texture, &local_outUISprite);
+            stat = LNUISprite_CreateWithTexture(static_cast<LNHandle>(local_texture), &local_outUISprite);
             setVAInt(pval_outUISprite, aptr_outUISprite, local_outUISprite);
 
             return true;
@@ -14361,7 +14361,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch texture
             const auto local_texture = fetchVAInt();
 
-            stat = LNUISprite_SetTexture(local_uisprite, local_texture);
+            stat = LNUISprite_SetTexture(static_cast<LNHandle>(local_uisprite), static_cast<LNHandle>(local_texture));
 
 
             return true;
@@ -14374,7 +14374,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_rect;
             CodeGetVA_TypeChecked(&pval_rect, LNRect);
 
-            stat = LNUISprite_SetSourceRect(local_uisprite, reinterpret_cast<LNRect*>(pval_rect->pt));
+            stat = LNUISprite_SetSourceRect(static_cast<LNHandle>(local_uisprite), reinterpret_cast<LNRect*>(pval_rect->pt));
 
 
             return true;
@@ -14392,7 +14392,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch height
             const auto local_height = fetchVADouble();
 
-            stat = LNUISprite_SetSourceRectXYWH(local_uisprite, local_x, local_y, local_width, local_height);
+            stat = LNUISprite_SetSourceRectXYWH(static_cast<LNHandle>(local_uisprite), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_width), static_cast<float>(local_height));
 
 
             return true;
@@ -14406,7 +14406,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNRect local_outReturn;
 
-            stat = LNUISprite_GetSourceRect(local_uisprite, &local_outReturn);
+            stat = LNUISprite_GetSourceRect(static_cast<LNHandle>(local_uisprite), &local_outReturn);
             code_setva(pval_outReturn, aptr_outReturn, hspLNRect_typeid(), &local_outReturn);
 
             return true;
@@ -14418,7 +14418,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch shader
             const auto local_shader = fetchVAInt();
 
-            stat = LNUISprite_SetShader(local_uisprite, local_shader);
+            stat = LNUISprite_SetShader(static_cast<LNHandle>(local_uisprite), static_cast<LNHandle>(local_shader));
 
 
             return true;
@@ -14438,7 +14438,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUISprite_SetPrototype_OnSerialize(local_uisprite, localDelegate_callback);
+            stat = LNUISprite_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uisprite), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -14452,7 +14452,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNUIIcon_LoadFontIconA(local_iconName, &local_outReturn);
+            stat = LNUIIcon_LoadFontIconA(static_cast<const char*>(local_iconName), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -14468,7 +14468,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNUIIcon_LoadFontIconWithNameSizeA(local_iconName, local_size, &local_outReturn);
+            stat = LNUIIcon_LoadFontIconWithNameSizeA(static_cast<const char*>(local_iconName), static_cast<int>(local_size), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -14487,7 +14487,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNUIIcon_LoadFontIconWithNameSizeColorA(local_iconName, local_size, reinterpret_cast<LNColor*>(pval_color->pt), &local_outReturn);
+            stat = LNUIIcon_LoadFontIconWithNameSizeColorA(static_cast<const char*>(local_iconName), static_cast<int>(local_size), reinterpret_cast<LNColor*>(pval_color->pt), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -14507,7 +14507,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIIcon_SetPrototype_OnSerialize(local_uiicon, localDelegate_callback);
+            stat = LNUIIcon_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uiicon), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -14531,7 +14531,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVAString();
 
-            stat = LNUIMessageTextArea_SetTextA(local_uimessagetextarea, local_value);
+            stat = LNUIMessageTextArea_SetTextA(static_cast<LNHandle>(local_uimessagetextarea), static_cast<const char*>(local_value));
 
 
             return true;
@@ -14543,7 +14543,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVADouble();
 
-            stat = LNUIMessageTextArea_SetTypingSpeed(local_uimessagetextarea, local_value);
+            stat = LNUIMessageTextArea_SetTypingSpeed(static_cast<LNHandle>(local_uimessagetextarea), static_cast<float>(local_value));
 
 
             return true;
@@ -14563,7 +14563,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIMessageTextArea_SetPrototype_OnSerialize(local_uimessagetextarea, localDelegate_callback);
+            stat = LNUIMessageTextArea_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uimessagetextarea), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -14573,7 +14573,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch element
             const auto local_element = fetchVAInt();
 
-            stat = LNUI_Add(local_element);
+            stat = LNUI_Add(static_cast<LNHandle>(local_element));
 
 
             return true;
@@ -14583,7 +14583,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch element
             const auto local_element = fetchVAInt();
 
-            stat = LNUI_Remove(local_element);
+            stat = LNUI_Remove(static_cast<LNHandle>(local_element));
 
 
             return true;
@@ -14603,7 +14603,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUILayoutPanel_SetPrototype_OnSerialize(local_uilayoutpanel, localDelegate_callback);
+            stat = LNUILayoutPanel_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uilayoutpanel), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -14627,7 +14627,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch orientation
             const auto local_orientation = static_cast<LNUILayoutOrientation>(fetchVAInt());
 
-            stat = LNUIBoxLayout_SetOrientation(local_uiboxlayout, local_orientation);
+            stat = LNUIBoxLayout_SetOrientation(static_cast<LNHandle>(local_uiboxlayout), static_cast<LNUILayoutOrientation>(local_orientation));
 
 
             return true;
@@ -14641,7 +14641,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNUILayoutOrientation local_outReturn;
 
-            stat = LNUIBoxLayout_GetOrientation(local_uiboxlayout, &local_outReturn);
+            stat = LNUIBoxLayout_GetOrientation(static_cast<LNHandle>(local_uiboxlayout), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -14661,7 +14661,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIBoxLayout_SetPrototype_OnSerialize(local_uiboxlayout, localDelegate_callback);
+            stat = LNUIBoxLayout_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uiboxlayout), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -14685,7 +14685,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch orientation
             const auto local_orientation = static_cast<LNUILayoutOrientation>(fetchVAInt());
 
-            stat = LNUIStackLayout_SetOrientation(local_uistacklayout, local_orientation);
+            stat = LNUIStackLayout_SetOrientation(static_cast<LNHandle>(local_uistacklayout), static_cast<LNUILayoutOrientation>(local_orientation));
 
 
             return true;
@@ -14699,7 +14699,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNUILayoutOrientation local_outReturn;
 
-            stat = LNUIStackLayout_GetOrientation(local_uistacklayout, &local_outReturn);
+            stat = LNUIStackLayout_GetOrientation(static_cast<LNHandle>(local_uistacklayout), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -14719,7 +14719,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIStackLayout_SetPrototype_OnSerialize(local_uistacklayout, localDelegate_callback);
+            stat = LNUIStackLayout_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uistacklayout), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -14743,7 +14743,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LNUIGridLayout_SetColumnCount(local_uigridlayout, local_value);
+            stat = LNUIGridLayout_SetColumnCount(static_cast<LNHandle>(local_uigridlayout), static_cast<int>(local_value));
 
 
             return true;
@@ -14755,7 +14755,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch row
             const auto local_row = fetchVAInt();
 
-            stat = LNUIGridLayout_SetRow(local_element, local_row);
+            stat = LNUIGridLayout_SetRow(static_cast<LNHandle>(local_element), static_cast<int>(local_row));
 
 
             return true;
@@ -14767,7 +14767,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch column
             const auto local_column = fetchVAInt();
 
-            stat = LNUIGridLayout_SetColumn(local_element, local_column);
+            stat = LNUIGridLayout_SetColumn(static_cast<LNHandle>(local_element), static_cast<int>(local_column));
 
 
             return true;
@@ -14785,7 +14785,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch columnSpan
             const auto local_columnSpan = fetchVAInt(1);
 
-            stat = LNUIGridLayout_SetPlacement(local_element, local_row, local_column, local_rowSpan, local_columnSpan);
+            stat = LNUIGridLayout_SetPlacement(static_cast<LNHandle>(local_element), static_cast<int>(local_row), static_cast<int>(local_column), static_cast<int>(local_rowSpan), static_cast<int>(local_columnSpan));
 
 
             return true;
@@ -14805,7 +14805,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIGridLayout_SetPrototype_OnSerialize(local_uigridlayout, localDelegate_callback);
+            stat = LNUIGridLayout_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uigridlayout), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -14831,7 +14831,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch layout
             const auto local_layout = static_cast<LNUIInlinePlacement>(fetchVAInt());
 
-            stat = LNUIControl_AddInlineVisual(local_uicontrol, local_element, local_layout);
+            stat = LNUIControl_AddInlineVisual(static_cast<LNHandle>(local_uicontrol), static_cast<LNHandle>(local_element), static_cast<LNUIInlinePlacement>(local_layout));
 
 
             return true;
@@ -14851,7 +14851,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIControl_SetPrototype_OnSerialize(local_uicontrol, localDelegate_callback);
+            stat = LNUIControl_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uicontrol), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -14863,7 +14863,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch text
             const auto local_text = fetchVAString();
 
-            stat = LNUIButtonBase_SetTextA(local_uibuttonbase, local_text);
+            stat = LNUIButtonBase_SetTextA(static_cast<LNHandle>(local_uibuttonbase), static_cast<const char*>(local_text));
 
 
             return true;
@@ -14883,7 +14883,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIButtonBase_SetPrototype_OnSerialize(local_uibuttonbase, localDelegate_callback);
+            stat = LNUIButtonBase_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uibuttonbase), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -14909,7 +14909,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outUIButton = code_getva(&pval_outUIButton);
             LNHandle local_outUIButton;
 
-            stat = LNUIButton_CreateWithTextA(local_text, &local_outUIButton);
+            stat = LNUIButton_CreateWithTextA(static_cast<const char*>(local_text), &local_outUIButton);
             setVAInt(pval_outUIButton, aptr_outUIButton, local_outUIButton);
 
             return true;
@@ -14933,7 +14933,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNUIButton_ConnectOnClicked(local_uibutton, localDelegate_handler, &local_outReturn);
+            stat = LNUIButton_ConnectOnClicked(static_cast<LNHandle>(local_uibutton), localDelegate_handler, &local_outReturn);
             LNObject_Release(localDelegate_handler);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
@@ -14954,7 +14954,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIButton_SetPrototype_OnSerialize(local_uibutton, localDelegate_callback);
+            stat = LNUIButton_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uibutton), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -14986,7 +14986,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIWindow_SetPrototype_OnSerialize(local_uiwindow, localDelegate_callback);
+            stat = LNUIWindow_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uiwindow), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -15010,7 +15010,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNUIListItem_ConnectOnSubmit(local_uilistitem, localDelegate_handler, &local_outReturn);
+            stat = LNUIListItem_ConnectOnSubmit(static_cast<LNHandle>(local_uilistitem), localDelegate_handler, &local_outReturn);
             LNObject_Release(localDelegate_handler);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
@@ -15031,7 +15031,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIListItem_SetPrototype_OnSerialize(local_uilistitem, localDelegate_callback);
+            stat = LNUIListItem_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uilistitem), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -15043,7 +15043,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch layout
             const auto local_layout = fetchVAInt();
 
-            stat = LNUIListItemsControl_SetItemsLayoutPanel(local_uilistitemscontrol, local_layout);
+            stat = LNUIListItemsControl_SetItemsLayoutPanel(static_cast<LNHandle>(local_uilistitemscontrol), static_cast<LNHandle>(local_layout));
 
 
             return true;
@@ -15055,7 +15055,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNUIListSubmitMode>(fetchVAInt());
 
-            stat = LNUIListItemsControl_SetSubmitMode(local_uilistitemscontrol, local_value);
+            stat = LNUIListItemsControl_SetSubmitMode(static_cast<LNHandle>(local_uilistitemscontrol), static_cast<LNUIListSubmitMode>(local_value));
 
 
             return true;
@@ -15069,7 +15069,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNUIListSubmitMode local_outReturn;
 
-            stat = LNUIListItemsControl_GetSubmitMode(local_uilistitemscontrol, &local_outReturn);
+            stat = LNUIListItemsControl_GetSubmitMode(static_cast<LNHandle>(local_uilistitemscontrol), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15089,7 +15089,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIListItemsControl_SetPrototype_OnSerialize(local_uilistitemscontrol, localDelegate_callback);
+            stat = LNUIListItemsControl_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uilistitemscontrol), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -15103,7 +15103,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outUIListBoxItem = code_getva(&pval_outUIListBoxItem);
             LNHandle local_outUIListBoxItem;
 
-            stat = LNUIListBoxItem_Create(local_content, &local_outUIListBoxItem);
+            stat = LNUIListBoxItem_Create(static_cast<LNHandle>(local_content), &local_outUIListBoxItem);
             setVAInt(pval_outUIListBoxItem, aptr_outUIListBoxItem, local_outUIListBoxItem);
 
             return true;
@@ -15123,7 +15123,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIListBoxItem_SetPrototype_OnSerialize(local_uilistboxitem, localDelegate_callback);
+            stat = LNUIListBoxItem_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uilistboxitem), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -15151,7 +15151,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNUIListBox_AddItem(local_uilistbox, local_content, &local_outReturn);
+            stat = LNUIListBox_AddItem(static_cast<LNHandle>(local_uilistbox), static_cast<LNHandle>(local_content), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15171,7 +15171,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNUIListBox_SetPrototype_OnSerialize(local_uilistbox, localDelegate_callback);
+            stat = LNUIListBox_SetPrototype_OnSerialize(static_cast<LNHandle>(local_uilistbox), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -15191,7 +15191,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNInputGesture_SetPrototype_OnSerialize(local_inputgesture, localDelegate_callback);
+            stat = LNInputGesture_SetPrototype_OnSerialize(static_cast<LNHandle>(local_inputgesture), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -15205,7 +15205,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outKeyGesture = code_getva(&pval_outKeyGesture);
             LNHandle local_outKeyGesture;
 
-            stat = LNKeyGesture_Create(local_key, &local_outKeyGesture);
+            stat = LNKeyGesture_Create(static_cast<LNKeys>(local_key), &local_outKeyGesture);
             setVAInt(pval_outKeyGesture, aptr_outKeyGesture, local_outKeyGesture);
 
             return true;
@@ -15225,7 +15225,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNKeyGesture_SetPrototype_OnSerialize(local_keygesture, localDelegate_callback);
+            stat = LNKeyGesture_SetPrototype_OnSerialize(static_cast<LNHandle>(local_keygesture), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -15239,7 +15239,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNInput_IsPressedA(local_buttonName, &local_outReturn);
+            stat = LNInput_IsPressedA(static_cast<const char*>(local_buttonName), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15253,7 +15253,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNInput_IsTriggeredA(local_buttonName, &local_outReturn);
+            stat = LNInput_IsTriggeredA(static_cast<const char*>(local_buttonName), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15267,7 +15267,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNInput_IsTriggeredOffA(local_buttonName, &local_outReturn);
+            stat = LNInput_IsTriggeredOffA(static_cast<const char*>(local_buttonName), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15281,7 +15281,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNInput_IsRepeatedA(local_buttonName, &local_outReturn);
+            stat = LNInput_IsRepeatedA(static_cast<const char*>(local_buttonName), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15295,7 +15295,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
-            stat = LNInput_GetAxisValueA(local_buttonName, &local_outReturn);
+            stat = LNInput_GetAxisValueA(static_cast<const char*>(local_buttonName), &local_outReturn);
             setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15307,7 +15307,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch gesture
             const auto local_gesture = fetchVAInt();
 
-            stat = LNInput_AddBindingA(local_buttonName, local_gesture);
+            stat = LNInput_AddBindingA(static_cast<const char*>(local_buttonName), static_cast<LNHandle>(local_gesture));
 
 
             return true;
@@ -15317,7 +15317,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch gesture
             const auto local_gesture = fetchVAInt();
 
-            stat = LNInput_RemoveBinding(local_gesture);
+            stat = LNInput_RemoveBinding(static_cast<LNHandle>(local_gesture));
 
 
             return true;
@@ -15327,7 +15327,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
 
-            stat = LNInput_ClearBindingsA(local_buttonName);
+            stat = LNInput_ClearBindingsA(static_cast<const char*>(local_buttonName));
 
 
             return true;
@@ -15349,7 +15349,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNMouse_Pressed(local_button, &local_outReturn);
+            stat = LNMouse_Pressed(static_cast<LNMouseButtons>(local_button), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15363,7 +15363,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNMouse_Triggered(local_button, &local_outReturn);
+            stat = LNMouse_Triggered(static_cast<LNMouseButtons>(local_button), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15377,7 +15377,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNMouse_TriggeredOff(local_button, &local_outReturn);
+            stat = LNMouse_TriggeredOff(static_cast<LNMouseButtons>(local_button), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15391,7 +15391,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNMouse_Repeated(local_button, &local_outReturn);
+            stat = LNMouse_Repeated(static_cast<LNMouseButtons>(local_button), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15417,7 +15417,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             const char* local_outReturn;
 
-            stat = LNInterpreterCommand_CodeA(local_interpretercommand, &local_outReturn);
+            stat = LNInterpreterCommand_CodeA(static_cast<LNHandle>(local_interpretercommand), &local_outReturn);
             setVAStr(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15431,7 +15431,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
-            stat = LNInterpreterCommand_ParamsCount(local_interpretercommand, &local_outReturn);
+            stat = LNInterpreterCommand_ParamsCount(static_cast<LNHandle>(local_interpretercommand), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15447,7 +15447,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             const char* local_outReturn;
 
-            stat = LNInterpreterCommand_ParamA(local_interpretercommand, local_index, &local_outReturn);
+            stat = LNInterpreterCommand_ParamA(static_cast<LNHandle>(local_interpretercommand), static_cast<int>(local_index), &local_outReturn);
             setVAStr(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15467,7 +15467,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNInterpreterCommand_SetPrototype_OnSerialize(local_interpretercommand, localDelegate_callback);
+            stat = LNInterpreterCommand_SetPrototype_OnSerialize(static_cast<LNHandle>(local_interpretercommand), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -15491,7 +15491,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch code
             const auto local_code = fetchVAString();
 
-            stat = LNInterpreterCommandList_AddCommandA(local_interpretercommandlist, local_code);
+            stat = LNInterpreterCommandList_AddCommandA(static_cast<LNHandle>(local_interpretercommandlist), static_cast<const char*>(local_code));
 
 
             return true;
@@ -15505,7 +15505,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch param0
             const auto local_param0 = fetchVAString();
 
-            stat = LNInterpreterCommandList_AddCommand1A(local_interpretercommandlist, local_code, local_param0);
+            stat = LNInterpreterCommandList_AddCommand1A(static_cast<LNHandle>(local_interpretercommandlist), static_cast<const char*>(local_code), static_cast<const char*>(local_param0));
 
 
             return true;
@@ -15521,7 +15521,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch param1
             const auto local_param1 = fetchVAString();
 
-            stat = LNInterpreterCommandList_AddCommand2A(local_interpretercommandlist, local_code, local_param0, local_param1);
+            stat = LNInterpreterCommandList_AddCommand2A(static_cast<LNHandle>(local_interpretercommandlist), static_cast<const char*>(local_code), static_cast<const char*>(local_param0), static_cast<const char*>(local_param1));
 
 
             return true;
@@ -15539,7 +15539,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch param2
             const auto local_param2 = fetchVAString();
 
-            stat = LNInterpreterCommandList_AddCommand3A(local_interpretercommandlist, local_code, local_param0, local_param1, local_param2);
+            stat = LNInterpreterCommandList_AddCommand3A(static_cast<LNHandle>(local_interpretercommandlist), static_cast<const char*>(local_code), static_cast<const char*>(local_param0), static_cast<const char*>(local_param1), static_cast<const char*>(local_param2));
 
 
             return true;
@@ -15559,7 +15559,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch param3
             const auto local_param3 = fetchVAString();
 
-            stat = LNInterpreterCommandList_AddCommand4A(local_interpretercommandlist, local_code, local_param0, local_param1, local_param2, local_param3);
+            stat = LNInterpreterCommandList_AddCommand4A(static_cast<LNHandle>(local_interpretercommandlist), static_cast<const char*>(local_code), static_cast<const char*>(local_param0), static_cast<const char*>(local_param1), static_cast<const char*>(local_param2), static_cast<const char*>(local_param3));
 
 
             return true;
@@ -15579,7 +15579,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNInterpreterCommandList_SetPrototype_OnSerialize(local_interpretercommandlist, localDelegate_callback);
+            stat = LNInterpreterCommandList_SetPrototype_OnSerialize(static_cast<LNHandle>(local_interpretercommandlist), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -15617,7 +15617,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
 
-            stat = LNInterpreter_Clear(local_interpreter);
+            stat = LNInterpreter_Clear(static_cast<LNHandle>(local_interpreter));
 
 
             return true;
@@ -15629,7 +15629,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch commandList
             const auto local_commandList = fetchVAInt();
 
-            stat = LNInterpreter_Run(local_interpreter, local_commandList);
+            stat = LNInterpreter_Run(static_cast<LNHandle>(local_interpreter), static_cast<LNHandle>(local_commandList));
 
 
             return true;
@@ -15643,7 +15643,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNBool local_outReturn;
 
-            stat = LNInterpreter_IsRunning(local_interpreter, &local_outReturn);
+            stat = LNInterpreter_IsRunning(static_cast<LNHandle>(local_interpreter), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15653,7 +15653,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
 
-            stat = LNInterpreter_Update(local_interpreter);
+            stat = LNInterpreter_Update(static_cast<LNHandle>(local_interpreter));
 
 
             return true;
@@ -15663,7 +15663,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch interpreter
             const auto local_interpreter = fetchVAInt();
 
-            stat = LNInterpreter_Terminate(local_interpreter);
+            stat = LNInterpreter_Terminate(static_cast<LNHandle>(local_interpreter));
 
 
             return true;
@@ -15685,7 +15685,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_handler;
             }
 
-            stat = LNInterpreter_RegisterCommandHandlerA(local_interpreter, local_name, localDelegate_handler);
+            stat = LNInterpreter_RegisterCommandHandlerA(static_cast<LNHandle>(local_interpreter), static_cast<const char*>(local_name), localDelegate_handler);
             LNObject_Release(localDelegate_handler);
 
             return true;
@@ -15697,7 +15697,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch mode
             const auto local_mode = fetchVAString();
 
-            stat = LNInterpreter_SetWaitModeA(local_interpreter, local_mode);
+            stat = LNInterpreter_SetWaitModeA(static_cast<LNHandle>(local_interpreter), static_cast<const char*>(local_mode));
 
 
             return true;
@@ -15711,7 +15711,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             const char* local_outReturn;
 
-            stat = LNInterpreter_GetWaitModeA(local_interpreter, &local_outReturn);
+            stat = LNInterpreter_GetWaitModeA(static_cast<LNHandle>(local_interpreter), &local_outReturn);
             setVAStr(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15723,7 +15723,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch count
             const auto local_count = fetchVAInt();
 
-            stat = LNInterpreter_SetWaitCount(local_interpreter, local_count);
+            stat = LNInterpreter_SetWaitCount(static_cast<LNHandle>(local_interpreter), static_cast<int>(local_count));
 
 
             return true;
@@ -15737,7 +15737,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
-            stat = LNInterpreter_GetWaitCount(local_interpreter, &local_outReturn);
+            stat = LNInterpreter_GetWaitCount(static_cast<LNHandle>(local_interpreter), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -15757,7 +15757,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNInterpreter_SetPrototype_OnSerialize(local_interpreter, localDelegate_callback);
+            stat = LNInterpreter_SetPrototype_OnSerialize(static_cast<LNHandle>(local_interpreter), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -15777,7 +15777,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNInterpreter_SetPrototype_OnUpdateWait(local_interpreter, localDelegate_callback);
+            stat = LNInterpreter_SetPrototype_OnUpdateWait(static_cast<LNHandle>(local_interpreter), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -15789,7 +15789,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch height
             const auto local_height = fetchVAInt();
 
-            stat = LNEngineSettings_SetMainWindowSize(local_width, local_height);
+            stat = LNEngineSettings_SetMainWindowSize(static_cast<int>(local_width), static_cast<int>(local_height));
 
 
             return true;
@@ -15801,7 +15801,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch height
             const auto local_height = fetchVAInt();
 
-            stat = LNEngineSettings_SetMainWorldViewSize(local_width, local_height);
+            stat = LNEngineSettings_SetMainWorldViewSize(static_cast<int>(local_width), static_cast<int>(local_height));
 
 
             return true;
@@ -15811,7 +15811,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch title
             const auto local_title = fetchVAString();
 
-            stat = LNEngineSettings_SetMainWindowTitleA(local_title);
+            stat = LNEngineSettings_SetMainWindowTitleA(static_cast<const char*>(local_title));
 
 
             return true;
@@ -15821,7 +15821,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNEngineSettings_SetMainWindowResizable(local_value);
+            stat = LNEngineSettings_SetMainWindowResizable(static_cast<LNBool>(local_value));
 
 
             return true;
@@ -15831,7 +15831,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch path
             const auto local_path = fetchVAString();
 
-            stat = LNEngineSettings_AddAssetDirectoryA(local_path);
+            stat = LNEngineSettings_AddAssetDirectoryA(static_cast<const char*>(local_path));
 
 
             return true;
@@ -15843,7 +15843,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch password
             const auto local_password = fetchVAString();
 
-            stat = LNEngineSettings_AddAssetArchiveA(local_fileFullPath, local_password);
+            stat = LNEngineSettings_AddAssetArchiveA(static_cast<const char*>(local_fileFullPath), static_cast<const char*>(local_password));
 
 
             return true;
@@ -15853,7 +15853,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LNEngineSettings_SetFrameRate(local_value);
+            stat = LNEngineSettings_SetFrameRate(static_cast<int>(local_value));
 
 
             return true;
@@ -15863,7 +15863,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVAString();
 
-            stat = LNEngineSettings_SetUIThemeA(local_value);
+            stat = LNEngineSettings_SetUIThemeA(static_cast<const char*>(local_value));
 
 
             return true;
@@ -15873,7 +15873,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch filePath
             const auto local_filePath = fetchVAString();
 
-            stat = LNEngineSettings_SetFontFileA(local_filePath);
+            stat = LNEngineSettings_SetFontFileA(static_cast<const char*>(local_filePath));
 
 
             return true;
@@ -15883,7 +15883,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch enabled
             const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNEngineSettings_SetDebugToolEnabled(local_enabled);
+            stat = LNEngineSettings_SetDebugToolEnabled(static_cast<LNBool>(local_enabled));
 
 
             return true;
@@ -15893,7 +15893,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch enabled
             const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNEngineSettings_SetEngineLogEnabled(local_enabled);
+            stat = LNEngineSettings_SetEngineLogEnabled(static_cast<LNBool>(local_enabled));
 
 
             return true;
@@ -15903,7 +15903,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch filePath
             const auto local_filePath = fetchVAString();
 
-            stat = LNEngineSettings_SetEngineLogFilePathA(local_filePath);
+            stat = LNEngineSettings_SetEngineLogFilePathA(static_cast<const char*>(local_filePath));
 
 
             return true;
@@ -15913,7 +15913,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch enabled
             const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNEngineSettings_SetDeveloperToolEnabled(local_enabled);
+            stat = LNEngineSettings_SetDeveloperToolEnabled(static_cast<LNBool>(local_enabled));
 
 
             return true;
@@ -15923,7 +15923,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = fetchVAInt();
 
-            stat = LNEngineSettings_SetUserMainWindow(local_value);
+            stat = LNEngineSettings_SetUserMainWindow(static_cast<intptr_t>(local_value));
 
 
             return true;
@@ -15963,7 +15963,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch app
             const auto local_app = fetchVAInt();
 
-            stat = LNEngine_Run(local_app);
+            stat = LNEngine_Run(static_cast<LNHandle>(local_app));
 
 
             return true;
@@ -16045,7 +16045,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch application
             const auto local_application = fetchVAInt();
 
-            stat = LNApplication_OnInit(local_application);
+            stat = LNApplication_OnInit(static_cast<LNHandle>(local_application));
 
 
             return true;
@@ -16055,7 +16055,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch application
             const auto local_application = fetchVAInt();
 
-            stat = LNApplication_OnUpdate(local_application);
+            stat = LNApplication_OnUpdate(static_cast<LNHandle>(local_application));
 
 
             return true;
@@ -16069,7 +16069,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNApplication_World(local_application, &local_outReturn);
+            stat = LNApplication_World(static_cast<LNHandle>(local_application), &local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;
@@ -16089,7 +16089,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNApplication_SetPrototype_OnSerialize(local_application, localDelegate_callback);
+            stat = LNApplication_SetPrototype_OnSerialize(static_cast<LNHandle>(local_application), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -16109,7 +16109,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNApplication_SetPrototype_OnInit(local_application, localDelegate_callback);
+            stat = LNApplication_SetPrototype_OnInit(static_cast<LNHandle>(local_application), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -16129,7 +16129,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
                 localSelf->labelPointer = local_callback;
             }
 
-            stat = LNApplication_SetPrototype_OnUpdate(local_application, localDelegate_callback);
+            stat = LNApplication_SetPrototype_OnUpdate(static_cast<LNHandle>(local_application), localDelegate_callback);
             LNObject_Release(localDelegate_callback);
 
             return true;
@@ -16139,7 +16139,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNDebug_SetGuideGridEnabled(local_value);
+            stat = LNDebug_SetGuideGridEnabled(static_cast<LNBool>(local_value));
 
 
             return true;
@@ -16149,7 +16149,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch value
             const auto local_value = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNDebug_SetPhysicsDebugDrawEnabled(local_value);
+            stat = LNDebug_SetPhysicsDebugDrawEnabled(static_cast<LNBool>(local_value));
 
 
             return true;
@@ -16159,7 +16159,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch str
             const auto local_str = fetchVAString();
 
-            stat = LNDebug_PrintA(local_str);
+            stat = LNDebug_PrintA(static_cast<const char*>(local_str));
 
 
             return true;
@@ -16171,7 +16171,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch str
             const auto local_str = fetchVAString();
 
-            stat = LNDebug_PrintWithTimeA(local_time, local_str);
+            stat = LNDebug_PrintWithTimeA(static_cast<float>(local_time), static_cast<const char*>(local_str));
 
 
             return true;
@@ -16186,7 +16186,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch str
             const auto local_str = fetchVAString();
 
-            stat = LNDebug_PrintWithTimeAndColorA(local_time, reinterpret_cast<LNColor*>(pval_color->pt), local_str);
+            stat = LNDebug_PrintWithTimeAndColorA(static_cast<float>(local_time), reinterpret_cast<LNColor*>(pval_color->pt), static_cast<const char*>(local_str));
 
 
             return true;
