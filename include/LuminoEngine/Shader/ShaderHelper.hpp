@@ -170,7 +170,85 @@ public:
     static bool buildShader(const Path& inputFile, const Path& outputFile, const Path& exportDir);
     static bool generateShader(ShaderManager* manager, const Path& inputFile, const Path& outputFile, const Path& exportDir, DiagnosticsManager* diag);
 
+
+    // int or float
+    static void alignScalarsToBuffer(
+        const byte_t* source,
+        size_t unitBytes,
+        int unitCount,
+        byte_t* buffer,
+        size_t offset,
+        int elements,
+        size_t arrayStride) LN_NOEXCEPT
+    {
+        byte_t* head = buffer + offset;
+        int loop = std::min(unitCount, elements);
+        for (int i = 0; i < loop; i++) {
+            memcpy(head + arrayStride * i, source + unitBytes * i, unitBytes);
+        }
+    }
+
+    // vector
+    static void alignVectorsToBuffer(
+        const byte_t* source,
+        int sourceColumns,
+        int sourceElementCount,
+        byte_t* buffer,
+        size_t offset,
+        int elements,
+        size_t arrayStride,
+        int columns) LN_NOEXCEPT
+    {
+        size_t srcVectorSize = sizeof(float) * sourceColumns;
+        size_t copySize = std::min(srcVectorSize, sizeof(float) * columns);
+        byte_t* head = buffer + offset;
+        int loop = std::min(sourceElementCount, elements);
+        for (int i = 0; i < loop; i++) {
+            memcpy(head + arrayStride * i, source + srcVectorSize * i, copySize);
+        }
+    }
+
+    // matrix
+    static void alignMatricesToBuffer(
+        const byte_t* source,
+        int sourceColumns,
+        int sourceRows,
+        int sourceElementCount,
+        byte_t* buffer,
+        size_t offset,
+        int elements,
+        size_t matrixStride,
+        size_t arrayStride,
+        int rows,
+        int columns,
+        bool transpose) LN_NOEXCEPT
+    {
+        size_t srcRowSize = sizeof(float) * sourceColumns;
+        size_t dstRowSize = matrixStride;
+        size_t copySize = std::min(srcRowSize, dstRowSize);
+        byte_t* head = buffer + offset;
+        int loop = std::min(sourceElementCount, elements);
+        int rowLoop = std::min(sourceRows, rows);
+        for (int i = 0; i < loop; i++) {
+            const byte_t* srcMatHead = source + (sourceColumns * sourceRows * sizeof(float)) * i;
+            byte_t* dstMatHead = head + arrayStride * i;
+
+            float tmp[16];
+            if (transpose) {
+                assert(sourceColumns == 4 && sourceRows == 4);
+                *reinterpret_cast<Matrix*>(tmp) = Matrix::makeTranspose(*reinterpret_cast<const Matrix*>(srcMatHead));
+                srcMatHead = reinterpret_cast<const byte_t*>(tmp);
+            }
+
+            for (int j = 0; j < rowLoop; j++) {
+                memcpy(dstMatHead + matrixStride * j, srcMatHead + srcRowSize * j, copySize);
+            }
+        }
+    }
 };
+
+
+
 
 } // namespace detail
 } // namespace ln

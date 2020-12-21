@@ -287,6 +287,7 @@ void Sandbox_MeshTilemap();
 void Sandbox_Physics();
 void Sandbox_Physics2();
 void Sandbox_Particle();
+void Sandbox_PathRendering();
 void Sandbox_PostEffect();
 void Sandbox_Sky();
 void Sandbox_Voxel();
@@ -486,12 +487,13 @@ int main(int argc, char** argv)
         //Experiment_SerializeLevel();
         //Experiment_Shadow();
         //Experiment_SSR();
-        Sandbox_Builder();
+        //Sandbox_Builder();
         //Sandbox_GridListBox();
 		//Sandbox_MeshTilemap();
         //Sandbox_Physics();
         //Sandbox_Physics2();
         //Sandbox_Particle();
+        Sandbox_PathRendering();
         //Sandbox_PostEffect();
         //Sandbox_Sky();
         //Sandbox_UIShader();
@@ -562,7 +564,7 @@ int main(int argc, char** argv)
     //EngineSettings::setMainWorldViewSize(640 / div, 480 / div);
 
 
-	Engine::init();
+	Engine::initialize();
 	//Engine::update();
 	//Engine::finalize();
 	//return 0;
@@ -869,7 +871,7 @@ int main(int argc, char** argv)
 	}
 
 
-	Engine::finalize();
+	Engine::terminate();
 	return 0;
 
 
@@ -1203,7 +1205,7 @@ int main(int argc, char** argv)
     }
 
 
-	Engine::finalize();
+	Engine::terminate();
 
 	return 0;
 }

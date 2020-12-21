@@ -79,7 +79,7 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 	//}
 
     const size_t PageSize = 0x200000;   // 2MB
-    m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocatorPageManager>(this, PageSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    //m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocatorPageManager>(this, PageSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     m_transferBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocatorPageManager>(this, PageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 	m_nativeInterface = std::make_unique<VulkanNativeGraphicsInterface>(this);
 
@@ -112,7 +112,7 @@ void VulkanDevice::dispose()
     //m_framebufferCache.dispose();
     //m_renderPassCache.dispose();
 
-    m_uniformBufferSingleFrameAllocator = nullptr;
+    //m_uniformBufferSingleFrameAllocator = nullptr;
     m_transferBufferSingleFrameAllocator = nullptr;
 
     if (m_commandPool) {
@@ -146,6 +146,7 @@ void VulkanDevice::onGetCaps(GraphicsDeviceCaps * outCaps)
     outCaps->requestedShaderTriple.target = "spv";
     outCaps->requestedShaderTriple.version = 110;
     outCaps->requestedShaderTriple.option = "";
+    outCaps->uniformBufferOffsetAlignment = 64; // TODO: limits からとれる？
 }
 
 Ref<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
@@ -257,6 +258,15 @@ Ref<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
 {
     auto ptr = makeRef<VulkanShaderPass>();
     if (!ptr->init(this, createInfo, diag)) {
+        return nullptr;
+    }
+    return ptr;
+}
+
+Ref<IUniformBuffer> VulkanDevice::onCreateUniformBuffer(uint32_t size)
+{
+    auto ptr = makeRef<VulkanUniformBuffer>();
+    if (!ptr->init(this, size)) {
         return nullptr;
     }
     return ptr;
@@ -2470,6 +2480,38 @@ void VulkanIndexBuffer::unmap()
 }
 
 //==============================================================================
+// VulkanUniformBuffer
+
+VulkanUniformBuffer::VulkanUniformBuffer()
+    : m_buffer()
+{
+}
+
+Result VulkanUniformBuffer::init(VulkanDevice* deviceContext, uint32_t size)
+{
+    if (!m_buffer.init(deviceContext, size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
+        return false;
+    }
+    return true;
+}
+
+void VulkanUniformBuffer::dispose()
+{
+    m_buffer.dispose();
+    IUniformBuffer::dispose();
+}
+
+void* VulkanUniformBuffer::map()
+{
+    return m_buffer.map();
+}
+
+void VulkanUniformBuffer::unmap()
+{
+    m_buffer.unmap();
+}
+
+//==============================================================================
 // VulkanTexture2D
 
 VulkanTexture2D::VulkanTexture2D()
@@ -3357,8 +3399,11 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         const auto& uniformBuffer = uniforms[i];
 
 #if 1
-        VulkanSingleFrameBufferInfo bufferInfo = commandBuffer->uniformBufferSingleFrameAllocator()->allocate(uniformBuffer.data.size());
-        bufferInfo.buffer->setData(bufferInfo.offset, uniformBuffer.data.data(), uniformBuffer.data.size());
+        //VulkanSingleFrameBufferInfo bufferInfo = commandBuffer->uniformBufferSingleFrameAllocator()->allocate(uniformBuffer.data.size());
+        //bufferInfo.buffer->setData(bufferInfo.offset, uniformBuffer.data.data(), uniformBuffer.data.size());
+        VulkanSingleFrameBufferInfo bufferInfo;
+        bufferInfo.buffer = static_cast<VulkanUniformBuffer*>(uniformBuffer.bufferView.buffer)->buffer();
+        bufferInfo.offset = uniformBuffer.bufferView.offset;
 
         VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
         info.buffer = bufferInfo.buffer->nativeBuffer();
@@ -3444,16 +3489,6 @@ bool VulkanShaderDescriptorTable::init(VulkanDevice* deviceContext, const Vulkan
         UniformBufferInfo info;
         info.descriptorWriteInfoIndex = writeIndex;
         info.bindingIndex = item.binding;
-        info.data.resize(item.size);
-        //info.buffer = std::make_shared<VulkanBuffer>();
-
-        //// TRANSFER_DST に最適化
-        //if (!info.buffer->init(
-        //    deviceContext, item.size,
-        //    VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        //    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
-        //    return false;
-        //}
 
         // Verify
         const VkWriteDescriptorSet& writeInfo = ownerPass->witeInfo(info.descriptorWriteInfoIndex);
@@ -3524,9 +3559,7 @@ void VulkanShaderDescriptorTable::setData(const ShaderDescriptorTableUpdateInfo*
     //if (LN_REQUIRE(data->samplers.size() == m_samplers.size())) return;
 
     for (int i = 0; i < m_uniforms.size(); i++) {
-        if (LN_REQUIRE(data->uniforms[i].size == m_uniforms[i].data.size()))
-            return;
-        memcpy(m_uniforms[i].data.data(), data->uniforms[i].data, m_uniforms[i].data.size());
+        m_uniforms[i].bufferView = data->uniforms[i];
     }
 
     for (int i = 0; i < m_textures.size(); i++) {

@@ -166,7 +166,37 @@ static void endFrame()
 	detail::EngineDomain::engineManager()->presentFrame();
 }
 
-void Engine::init()
+// Naming Note:
+// - bgfx::init/bgfx::shutdown
+// - cinder::AppMsw::initialize / cinder::AppBase::cleanupLaunch
+// - glfwInit / glfwTerminate
+// - ImGui::Initialize / ImGui::Shutdown(ImGui::CreateContext / ImGui::DestroyContext)
+// - nvgCreateInternal / nvgDeleteInternal
+// - luaL_newstate / lua_close
+// - glslang::InitializeProcess / glslang::FinalizeProcess
+// - SDL_Init / SDL_Quit
+// 終了処理を行う関数の名前についてはかなりバラバラ。
+// 名前についての質問：
+// https://softwareengineering.stackexchange.com/questions/163004/what-is-the-opposite-of-initialize-or-init
+//
+// finalize vs terminate
+// ----------
+// finalize は完了する、成し遂げるといった意味合いも持つ。
+// TensorFlow のコードの中で、Node の Builder みたいな処理の最後で呼ばれることもあるみたい。
+// また C#,Java あたりの言語では参照が無くなったことを通知するために呼び出される。
+// terminate はシステムやプロセスといった比較的時寿命が長いものの終了を示すのに使われることが多い印象。
+// テストフレームワークでも使われる。再利用不可、という感じもする。
+// finalize はオブジェクトの終了処理に使われることが多い印象。
+//
+// init vs initialize
+// ----------
+// https://stackoverflow.com/questions/6191480/objective-c-init-vs-initialize
+// Objective-C のスタイルだが、
+// - init はインスタンスメソッド
+// - initialize はクラスメソッド
+// となっている。Java でも類似するとか。
+// 
+void Engine::initialize()
 {
 	detail::EngineDomain::engineContext()->initializeEngineManager();
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
@@ -176,7 +206,7 @@ void Engine::init()
     }
 }
 
-void Engine::finalize()
+void Engine::terminate()
 {
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
 	if (manager) {

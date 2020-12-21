@@ -152,6 +152,7 @@ protected:
     virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
+	virtual Ref<IUniformBuffer> onCreateUniformBuffer(uint32_t size) override;
 	virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override {}
 	virtual ICommandQueue* getGraphicsCommandQueue() override;
 	virtual ICommandQueue* getComputeCommandQueue() override;
@@ -603,6 +604,26 @@ private:
 	Ref<GLShaderDescriptorTable> m_descriptorTable;
 };
 
+class GLUniformBuffer
+	: public IUniformBuffer
+{
+public:
+	GLUniformBuffer();
+	bool init(size_t size);
+	void dispose() override;
+	void* map() override;
+	void unmap() override;
+
+	GLuint ubo() const { return m_ubo; }
+	void flush();
+
+private:
+	GLuint m_ubo;
+	size_t m_size;
+	uint8_t* m_data;
+	bool m_mapped;
+};
+
 class GLShaderDescriptorTable
 	: public IShaderDescriptorTable
 {
@@ -615,7 +636,11 @@ public:
 
 		// null になることもある。DescriptorLayout 側のインデックスと一致させるため、
 		// UniformBufferInfo のインスタンスは作られるが、Active な UBO ではない場合 0 になる。
-		GLuint ubo = 0;		
+		//GLuint ubo = 0;
+		GLUniformBuffer* buffer;
+		size_t offset;
+		//size_t size;
+
 	};
 
 	// textureXD と samplerState を結合するためのデータ構造

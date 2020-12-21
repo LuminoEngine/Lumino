@@ -5,12 +5,13 @@
 
 namespace ln {
 class Shader;
-class ShaderDescriptor;
+class ShaderDefaultDescriptor;
 class ShaderTechnique;
 class ShaderPass;
+class ShaderDescriptor;
 
 namespace detail {
-
+class ShaderDescriptorPool;
 //
 //// LigitingModel
 //enum class ShaderTechniqueClass_Ligiting : uint8_t

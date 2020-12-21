@@ -280,6 +280,7 @@ void RenderingContext::endPath()
 {
 	if (LN_REQUIRE(m_pathBegan)) return;
 	m_pathBegan = false;
+	m_commandList->drawPath(m_pathContext);
 }
 
 void RenderingContext::addAmbientLight(const Color& color, float intensity)

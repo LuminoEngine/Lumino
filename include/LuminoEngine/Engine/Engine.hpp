@@ -25,11 +25,11 @@ public:
 
 	/** エンジンの初期化処理を行います。 */
 	LN_METHOD(RuntimeInitializer)
-	static void init();
+	static void initialize();
 
 	/** エンジンの終了処理を行います。 */
 	LN_METHOD()
-	static void finalize();
+	static void terminate();
 
 	/**
 	@brief		1フレーム分の更新処理を行います。

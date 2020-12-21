@@ -15,6 +15,8 @@ class Texture;
 class Texture2D;
 class RenderTargetTexture;
 class DepthBuffer;
+class ConstantBuffer;
+class ShaderDescriptor;
 class INativeGraphicsExtension;
 
 /**
@@ -366,6 +368,7 @@ class IGraphicsDevice;
 class ICommandList;
 class ITexture;
 class ISamplerState;
+class IUniformBuffer;
 
 static const int MaxMultiRenderTargets = 4;
 static const int MaxVertexStreams = 16;
@@ -419,6 +422,14 @@ struct ShaderUniformTypeDesc
     }
 
     bool isArray() const { return elements > 0; }
+};
+
+struct ConstantBufferView
+{
+    ConstantBuffer* buffer;
+    size_t offset;
+    void setData(const void* data, size_t size);
+    void* writableData();
 };
 
 } // namespace detail

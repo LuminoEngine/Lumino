@@ -833,8 +833,11 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
 
         // デフォルト値がある場合は () を付けて表現
         // また outReturn も省略可能とする
-        if (param->hasDefaultValue() || param->isReturn())
+        if (param->hasDefaultValue())
             name += u"(" + makeFlatConstantValue(param->defaultValue()) + u")";
+        else if (param->isReturn()) {
+            name += u"(0)";
+        }
 
         detailText.append(ln::String::format(u"{0,-" + ln::String::fromNumber(ioColumnWidth) + u"}", u"[" + makeIOName(param) + "]"));
         detailText.append(ln::String::format(u" {0,-" + ln::String::fromNumber(nameColumnWidth) + u"}", name));

@@ -5715,13 +5715,13 @@ end
 # 
 class Lumino::Engine
     # エンジンの初期化処理を行います。
-    def init(*args)
+    def initialize(*args)
     end
 
 
 
     # エンジンの終了処理を行います。
-    def finalize(*args)
+    def terminate(*args)
     end
 
 

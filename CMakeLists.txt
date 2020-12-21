@@ -26,6 +26,8 @@ endif()
 #------------------------------------------------------------------------------
 # options
 
+option(LN_TARGET_ARCH "arch." "Unknown")
+
 # build unit test projects
 option(LN_BUILD_TESTS "build unit test projects." ON)
 

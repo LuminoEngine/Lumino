@@ -107,10 +107,10 @@ public:
     ShaderPass* shaderPass() const;
 
     ///** ShaderPass を設定します。 */
-    //void setShaderDescriptor(ShaderDescriptor* value);
+    void setShaderDescriptor(ShaderDescriptor* value);
 
     ///** ShaderPass を取得します。 */
-    //ShaderDescriptor* shaderDescriptor() const;
+    //ShaderDefaultDescriptor* shaderDescriptor() const;
 
     /** デフォルト設定を復元します。 */
     void resetState();
@@ -118,14 +118,15 @@ public:
 	///** RenderPass を設定します。Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
 	//void setRenderPass(RenderPass* value);
 
-	///** RenderPass を取得します。 */
-	//RenderPass* renderPass() const;
 
 	/** RenderPass を開始します。 */
 	void beginRenderPass(RenderPass* value);
 
 	/** RenderPass を終了します。 */
 	void endRenderPass();
+
+	/** RenderPass を取得します。 */
+	RenderPass* renderPass() const;
 
     /**
      * レンダーターゲット、深度バッファ、ステンシルバッファをクリアします。
@@ -148,6 +149,9 @@ public:
 	void drawExtension(INativeGraphicsExtension* extension);
 
     void interruptCurrentRenderPassFromResolveRHI();
+
+    // TODO: intenral
+    const Ref<detail::GraphicsCommandList>& commandList() const { return m_commandList; }
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
@@ -198,7 +202,8 @@ private:
         Ref<IndexBuffer> indexBuffer;
         Ref<Shader> shader; // shaderPass owner, for keep reference.
         ShaderPass* shaderPass;
-        //Ref<ShaderDescriptor> shaderDescriptor;
+        //Ref<ShaderDefaultDescriptor> shaderDescriptor;
+        ShaderDescriptor* shaderDescriptor;
         PrimitiveTopology topology;
 
         void reset();

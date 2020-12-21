@@ -63,6 +63,8 @@ enum class BuiltinShader
 
 	TransitionEffectWithoutMask,
 	TransitionEffectWithMask,
+
+	NanoVG,
 };
 
 enum class BuiltinMaterial
@@ -233,7 +235,7 @@ private:
 
 	Ref<Material> m_defaultMaterial;
 	Ref<Texture2D> m_randomTexture;
-	std::array<Ref<Shader>, 23> m_builtinShaders;
+	std::array<Ref<Shader>, 24> m_builtinShaders;
     std::array<Ref<Material>, 2> m_builtinMaterials;
 };
 

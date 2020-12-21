@@ -112,6 +112,11 @@ void GraphicsContext::onDispose(bool explicitDisposing)
     Object::onDispose(explicitDisposing);
 }
 
+void GraphicsContext::setShaderDescriptor(ShaderDescriptor* value)
+{
+    m_staging.shaderDescriptor = value;
+}
+
 void GraphicsContext::resetState()
 {
     m_staging.reset();
@@ -269,7 +274,7 @@ ShaderPass* GraphicsContext::shaderPass() const
     return m_staging.shaderPass;
 }
 
-//void GraphicsContext::setShaderDescriptor(ShaderDescriptor* value)
+//void GraphicsContext::setShaderDescriptor(ShaderDefaultDescriptor* value)
 //{
 //    if (m_staging.shaderDescriptor != value) {
 //        m_staging.shaderDescriptor = value;
@@ -277,7 +282,7 @@ ShaderPass* GraphicsContext::shaderPass() const
 //    }
 //}
 //
-//ShaderDescriptor* GraphicsContext::shaderDescriptor() const
+//ShaderDefaultDescriptor* GraphicsContext::shaderDescriptor() const
 //{
 //    return m_staging.shaderDescriptor;
 //}
@@ -296,11 +301,6 @@ ShaderPass* GraphicsContext::shaderPass() const
 //			setScissorRect(rect);
 //		}
 //	}
-//}
-
-//RenderPass* GraphicsContext::renderPass() const
-//{
-//	return m_staging.renderPass;
 //}
 
 void GraphicsContext::beginRenderPass(RenderPass* value)
@@ -367,6 +367,11 @@ void GraphicsContext::endRenderPass()
 	m_currentRenderPass->m_active = false;
 	m_currentRenderPass = nullptr;
     m_renderPassStep = RenderPassStep::None;
+}
+
+RenderPass* GraphicsContext::renderPass() const
+{
+	return m_currentRenderPass;
 }
 
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
@@ -520,8 +525,13 @@ detail::ICommandList* GraphicsContext::commitState()
 
     detail::IShaderPass* shaderPassRHI = nullptr;
     if (m_staging.shaderPass) {
-        //m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shaderDescriptor, &resourceModified);
-        m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shader->descriptor(), &resourceModified);
+        if (m_staging.shaderDescriptor) {
+            m_staging.shaderPass->submitShaderDescriptor2(this, m_staging.shaderDescriptor, &resourceModified);
+        }
+        else {
+            //m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shaderDescriptor, &resourceModified);
+            m_staging.shaderPass->submitShaderDescriptor(this, m_commandList, m_staging.shader->descriptor(), &resourceModified);
+        }
 
         shaderPassRHI = m_staging.shaderPass->resolveRHIObject(this, &resourceModified);
     }
@@ -809,6 +819,7 @@ void GraphicsContext::State::reset()
     indexBuffer = nullptr;
     shader = nullptr;
     shaderPass = nullptr;
+    shaderDescriptor = nullptr;
     topology = PrimitiveTopology::TriangleList;
 	//renderPass = nullptr;
 }

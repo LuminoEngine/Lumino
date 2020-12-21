@@ -147,6 +147,13 @@ public:
 
 	void drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun);
 
+	void drawPath(CanvasContext* context);
+
+
+	//CanvasContext* beginPath();
+	//void endPath();
+
+
 	void invokeExtensionRendering(INativeGraphicsExtension* extension);
 
 

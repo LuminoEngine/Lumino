@@ -14,8 +14,26 @@
 #endif
 #include "../Engine/LinearAllocator.hpp"
 #include "../Asset/AssetManager.hpp"
+#include "SingleFrameAllocator.hpp"
 
 namespace ln {
+namespace detail {
+
+void ConstantBufferView::setData(const void* data, size_t size)
+{
+	//byte_t* d = static_cast<byte_t*>(buffer->map()) + offset;	// TODO: map しないほうが効率いい？SingleFrameのデータなので、フレーム締めるときに unmap でよい
+	//memcpy(d, data, size);
+	//buffer->unmap();
+	byte_t* d = static_cast<byte_t*>(buffer->writableData()) + offset;
+	memcpy(d, data, size);
+}
+
+void* ConstantBufferView::writableData()
+{
+	return static_cast<byte_t*>(buffer->writableData()) + offset;
+}
+
+} // namespace detail
 
 //==============================================================================
 // GraphicsHelper
@@ -212,6 +230,7 @@ void GraphicsManager::init(const Settings& settings)
 	m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
 	m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
 	m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
+	m_singleFrameUniformBufferAllocatorPageManager = makeRef<SingleFrameUniformBufferAllocatorPageManager>(0x200000);// 2MB
 
 	m_extensions.add(nullptr);	// [0] is dummy
 
@@ -266,6 +285,11 @@ void GraphicsManager::dispose()
 	m_graphicsResources.clear();
 	for (IGraphicsResource* resource : removeList) {
 		resource->onManagerFinalizing();
+	}
+
+	if (m_singleFrameUniformBufferAllocatorPageManager) {
+		m_singleFrameUniformBufferAllocatorPageManager->clear();
+		m_singleFrameUniformBufferAllocatorPageManager = nullptr;
 	}
 
 	m_frameBufferCache = nullptr;

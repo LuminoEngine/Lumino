@@ -5,14 +5,18 @@
 namespace ln {
 namespace detail {
 class ICommandList;
+class SingleFrameUniformBufferAllocator;
 }
 
+#if 0
 /**  */
 class GraphicsCommandBuffer
     : public Object
     , public IGraphicsResource
 {
 public:
+    detail::UniformBufferView allocateUniformBuffer(size_t size);
+    void end();
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
@@ -30,8 +34,10 @@ private:
 
     detail::GraphicsManager* m_manager;
     Ref<detail::ICommandList> m_rhiObject;
+    Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;
 
     friend class detail::GraphicsResourceInternal;
 };
+#endif
 
 } // namespace ln

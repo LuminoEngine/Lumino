@@ -5,10 +5,12 @@
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include "OpenGL/OpenGLDeviceContext.hpp"
 #include "../Engine/LinearAllocator.hpp"
+#include "SingleFrameAllocator.hpp"
 
 namespace ln {
 
@@ -25,6 +27,8 @@ void GraphicsCommandList::init(GraphicsManager* manager)
 {
     m_rhiResource = manager->deviceContext()->createCommandList();
     m_allocator = makeRef<LinearAllocator>(manager->linearAllocatorPageManager());
+	m_singleFrameUniformBufferAllocator = makeRef<detail::SingleFrameUniformBufferAllocator>(manager->singleFrameUniformBufferAllocatorPageManager());
+	m_uniformBufferOffsetAlignment = manager->deviceContext()->caps().uniformBufferOffsetAlignment;
 }
 
 void GraphicsCommandList::dispose()
@@ -37,6 +41,17 @@ void GraphicsCommandList::dispose()
 void GraphicsCommandList::reset()
 {
     m_allocator->cleanup();
+	//m_singleFrameUniformBufferAllocator->cleanup();
+}
+
+detail::ConstantBufferView GraphicsCommandList::allocateUniformBuffer(size_t size)
+{
+	return m_singleFrameUniformBufferAllocator->allocate(size, m_uniformBufferOffsetAlignment);
+}
+
+ShaderDescriptor* GraphicsCommandList::acquireShaderDescriptor(Shader* shader)
+{
+	return shader->acquireDescriptor();
 }
 
 } // namespace detail
@@ -98,6 +113,7 @@ GraphicsContext* SwapChain::beginFrame2()
 {
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, currentCommandList());
 	detail::GraphicsContextInternal::beginCommandRecoding(m_graphicsContext);
+	currentCommandList()->m_singleFrameUniformBufferAllocator->cleanup();
 	m_graphicsContext->resetState();
 
 	m_rhiObject->acquireNextImage(&m_imageIndex);
@@ -111,6 +127,7 @@ RenderPass* SwapChain::currentRenderPass() const
 
 void SwapChain::endFrame()
 {
+	currentCommandList()->m_singleFrameUniformBufferAllocator->unmap();
 	detail::GraphicsContextInternal::flushCommandRecoding(m_graphicsContext, currentBackbuffer());
 	detail::GraphicsContextInternal::endCommandRecoding(m_graphicsContext);
 	detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(m_graphicsContext);

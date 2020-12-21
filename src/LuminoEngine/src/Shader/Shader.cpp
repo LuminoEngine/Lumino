@@ -5,7 +5,10 @@
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
+#include <LuminoEngine/Graphics/SwapChain.hpp>
+#include <LuminoEngine/Graphics/ConstantBuffer.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "UnifiedShaderCompiler.hpp"
@@ -14,81 +17,6 @@
 #include "HLSLMetadataParser.hpp"
 
 namespace ln {
-
-// int or float
-static void alignScalarsToBuffer(
-    const byte_t* source,
-    size_t unitBytes,
-    int unitCount,
-    byte_t* buffer,
-    size_t offset,
-    int elements,
-    size_t arrayStride) LN_NOEXCEPT
-{
-    byte_t* head = buffer + offset;
-    int loop = std::min(unitCount, elements);
-    for (int i = 0; i < loop; i++) {
-        memcpy(head + arrayStride * i, source + unitBytes * i, unitBytes);
-    }
-}
-
-// vector
-static void alignVectorsToBuffer(
-    const byte_t* source,
-    int sourceColumns,
-    int sourceElementCount,
-    byte_t* buffer,
-    size_t offset,
-    int elements,
-    size_t arrayStride,
-    int columns) LN_NOEXCEPT
-{
-    size_t srcVectorSize = sizeof(float) * sourceColumns;
-    size_t copySize = std::min(srcVectorSize, sizeof(float) * columns);
-    byte_t* head = buffer + offset;
-    int loop = std::min(sourceElementCount, elements);
-    for (int i = 0; i < loop; i++) {
-        memcpy(head + arrayStride * i, source + srcVectorSize * i, copySize);
-    }
-}
-
-// matrix
-static void alignMatricesToBuffer(
-    const byte_t* source,
-    int sourceColumns,
-    int sourceRows,
-    int sourceElementCount,
-    byte_t* buffer,
-    size_t offset,
-    int elements,
-    size_t matrixStride,
-    size_t arrayStride,
-    int rows,
-    int columns,
-    bool transpose) LN_NOEXCEPT
-{
-    size_t srcRowSize = sizeof(float) * sourceColumns;
-    size_t dstRowSize = matrixStride;
-    size_t copySize = std::min(srcRowSize, dstRowSize);
-    byte_t* head = buffer + offset;
-    int loop = std::min(sourceElementCount, elements);
-    int rowLoop = std::min(sourceRows, rows);
-    for (int i = 0; i < loop; i++) {
-        const byte_t* srcMatHead = source + (sourceColumns * sourceRows * sizeof(float)) * i;
-        byte_t* dstMatHead = head + arrayStride * i;
-
-        float tmp[16];
-        if (transpose) {
-            assert(sourceColumns == 4 && sourceRows == 4);
-            *reinterpret_cast<Matrix*>(tmp) = Matrix::makeTranspose(*reinterpret_cast<const Matrix*>(srcMatHead));
-            srcMatHead = reinterpret_cast<const byte_t*>(tmp);
-        }
-
-        for (int j = 0; j < rowLoop; j++) {
-            memcpy(dstMatHead + matrixStride * j, srcMatHead + srcRowSize * j, copySize);
-        }
-    }
-}
 
 //=============================================================================
 // ShaderCompilationProperties
@@ -304,7 +232,7 @@ void Shader::createFromStream(Stream* stream, DiagnosticsManager* diag)
 void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag)
 {
     m_descriptorLayout = makeObject<ShaderDescriptorLayout>(unifiedShader->globalDescriptorLayout());
-    m_descriptor = makeObject<ShaderDescriptor>(this);
+    m_descriptor = makeObject<ShaderDefaultDescriptor>(this);
 
 	for (int iTech = 0; iTech < unifiedShader->techniqueCount(); iTech++) {
 		detail::UnifiedShader::TechniqueId techId = unifiedShader->techniqueId(iTech);
@@ -329,6 +257,7 @@ void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, Diagn
 		}
 
         tech->setupSemanticsManager();
+        m_descriptor2 = makeObject<ShaderDescriptor>(this);
 	}
 }
 
@@ -403,10 +332,15 @@ void Shader::setTexture(const StringRef& parameterName, Texture* value)
     }
 }
 
-//Ref<ShaderDescriptor> Shader::createDescriptor()
+//Ref<ShaderDefaultDescriptor> Shader::createDescriptor()
 //{
-//    return makeObject<ShaderDescriptor>(this);
+//    return makeObject<ShaderDefaultDescriptor>(this);
 //}
+
+Ref<ShaderDescriptor> Shader::acquireDescriptor()
+{
+    return m_descriptor2;
+}
 
 // TODO: 名前の指定方法をもう少しいい感じにしたい。PostEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。
 ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const
@@ -511,36 +445,46 @@ detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsContext* graphicsConte
     return m_rhiPass;
 }
 
-void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail::ICommandList* commandList, const ShaderDescriptor* descripter, bool* outModified)
+void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail::GraphicsCommandList* commandList, const ShaderDefaultDescriptor* descripter, bool* outModified)
 {
     if (descripter) {
         if (descripter != m_lastShaderDescriptor || m_lastShaderDescriptorRevision != descripter->m_revision) {
+            detail::ICommandList* rhiCommandList = commandList->rhiResource();
 
             {
                 auto* manager = m_owner->shader()->m_graphicsManager;
                 const ShaderDescriptorLayout* globalLayout = m_owner->m_owner->descriptorLayout();
                 detail::ShaderDescriptorTableUpdateInfo updateInfo;
 
-                // まず UniformBuffer に必要なサイズを測る
-                size_t totalSize = 0;
-                for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
-                    if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
-                        LN_NOTIMPLEMENTED();
-                        break;
-                    }
-                    updateInfo.uniforms[i].size = globalLayout->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].size;
-                    totalSize += updateInfo.uniforms[i].size;
-                }
+                //// まず全 UniformBuffer に必要なサイズを測る
+                //// TODO: 事前計算でもよさそう
+                //size_t totalSize = 0;
+                //for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
+                //    if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
+                //        LN_NOTIMPLEMENTED();
+                //        break;
+                //    }
+                //    auto& view = updateInfo.uniforms[i];
+                //    view.size = ;
+                //    //view.offset = totalSize;
+                //    totalSize += view.size;
+                //}
 
-                // UniformBuffer に必要な領域をまとめて確保してデータコピー
-                detail::RenderBulkData uniformBufferData = detail::GraphicsContextInternal::getRenderingCommandList(graphicsContext)->allocateBulkData(totalSize);
-                size_t offset = 0;
+                // 全 UniformBuffer に必要な領域をまとめて確保してデータコピー
                 for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
+                    size_t size = globalLayout->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].size;
                     auto& view = updateInfo.uniforms[i];
-                    void* d = static_cast<byte_t*>(uniformBufferData.writableData()) + offset;
-                    memcpy(d, descripter->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].data(), view.size);
-                    view.data = d;
-                    offset += view.size;
+
+                    // アライメント付きで確保しないと Vulkan 等では正しく描かれない。
+                    // 以前 OpenGL 用のときは事前にまとめて allocate していたが、ひとつずつアライメントされたものを確保する。
+                    auto uniformBufferData = commandList->allocateUniformBuffer(size);
+                    view.buffer = uniformBufferData.buffer->rhiObject();
+                    view.offset = uniformBufferData.offset;
+
+                    // TODO: map しないほうが効率いいか？
+                    void* d = static_cast<byte_t*>(view.buffer->map()) + view.offset;
+                    memcpy(d, descripter->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].data(), size);
+                    view.buffer->unmap();
                 }
 
                 // Textures
@@ -590,11 +534,11 @@ void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail
 
                 LN_ENQUEUE_RENDER_COMMAND_3(
                     ShaderConstantBuffer_submitShaderDescriptor, graphicsContext,
-                    detail::ICommandList*, commandList,
+                    detail::ICommandList*, rhiCommandList,
                     detail::IShaderDescriptorTable*, rhiDescriptorTable,
                     detail::ShaderDescriptorTableUpdateInfo, updateInfo,
                     {
-                        commandList->setDescriptorTableData(rhiDescriptorTable, &updateInfo);
+                        rhiCommandList->setDescriptorTableData(rhiDescriptorTable, &updateInfo);
                     });
             }
 
@@ -610,14 +554,88 @@ void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail
 
 }
 
-//=============================================================================
-// ShaderDescriptor
+void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const ShaderDescriptor* descripter, bool* outModified)
+{
+    auto* manager = m_owner->shader()->m_graphicsManager;
+    detail::GraphicsCommandList* commandList = graphicsContext->commandList();
+    detail::ICommandList* rhiCommandList = commandList->rhiResource();
 
-ShaderDescriptor::ShaderDescriptor()
+
+    detail::ShaderDescriptorTableUpdateInfo updateInfo;
+
+
+    // Uniforms
+    for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
+        int dataIndex = m_descriptorLayout.m_buffers[i].dataIndex;
+        const auto& view = descripter->uniformBuffer(dataIndex);
+        updateInfo.uniforms[i].buffer = view.buffer->rhiObject();
+        updateInfo.uniforms[i].offset = view.offset;
+        if (LN_ENSURE(updateInfo.uniforms[i].buffer)) return;
+    }
+
+    // Textures
+    for (int i = 0; i < m_descriptorLayout.m_textures.size(); i++) {
+        if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
+            LN_NOTIMPLEMENTED();
+            break;
+        }
+        const auto& info = m_descriptorLayout.m_textures[i];
+        Texture* texture = descripter->texture(info.dataIndex);
+        if (!texture) {
+            texture = manager->whiteTexture();
+        }
+
+        SamplerState* sampler = nullptr;
+        if (texture->samplerState())
+            sampler = texture->samplerState();
+        else
+            sampler = manager->defaultSamplerState();
+
+        bool modified = false;
+        auto& view = updateInfo.textures[i];
+        view.texture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
+        view.stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
+        (*outModified) |= modified;
+    }
+
+    // Samplers
+    for (int i = 0; i < m_descriptorLayout.m_samplers.size(); i++) {
+        if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
+            LN_NOTIMPLEMENTED();
+            break;
+        }
+        const auto& info = m_descriptorLayout.m_samplers[i];
+        SamplerState* sampler = descripter->samplerState(info.dataIndex);
+        if (!sampler)
+            sampler = manager->defaultSamplerState();
+
+        bool modified = false;
+        auto& view = updateInfo.samplers[i];
+        view.texture = nullptr;
+        view.stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
+        (*outModified) |= modified;
+    }
+
+    detail::IShaderDescriptorTable* rhiDescriptorTable = m_rhiPass->descriptorTable();
+
+    LN_ENQUEUE_RENDER_COMMAND_3(
+        ShaderConstantBuffer_submitShaderDescriptor, graphicsContext,
+        detail::ICommandList*, rhiCommandList,
+        detail::IShaderDescriptorTable*, rhiDescriptorTable,
+        detail::ShaderDescriptorTableUpdateInfo, updateInfo,
+        {
+            rhiCommandList->setDescriptorTableData(rhiDescriptorTable, &updateInfo);
+        });
+}
+
+//=============================================================================
+// ShaderDefaultDescriptor
+
+ShaderDefaultDescriptor::ShaderDefaultDescriptor()
 {
 }
 
-bool ShaderDescriptor::init(Shader* ownerShader)
+bool ShaderDefaultDescriptor::init(Shader* ownerShader)
 {
     if (LN_REQUIRE(ownerShader)) return false;
     if (!Object::init()) return false;
@@ -658,33 +676,33 @@ bool ShaderDescriptor::init(Shader* ownerShader)
     return true;
 }
 
-ShaderDescriptorLayout* ShaderDescriptor::descriptorLayout() const
+ShaderDescriptorLayout* ShaderDefaultDescriptor::descriptorLayout() const
 {
     return m_ownerShader->descriptorLayout();
 }
 
-ShaderParameter2* ShaderDescriptor::findParameter2(const StringRef& name) const
+ShaderParameter2* ShaderDefaultDescriptor::findParameter2(const StringRef& name) const
 {
     return m_parameters.findIf([&](auto& x) { return x->name() == name; }).valueOr(nullptr);
 }
 
-//int ShaderDescriptor::findUniformBufferIndex(const ln::StringRef& name) const
+//int ShaderDefaultDescriptor::findUniformBufferIndex(const ln::StringRef& name) const
 //{
 //    return m_ownerShader->descriptorLayout()->findUniformBufferRegisterIndex(name);
 //}
 //
-//int ShaderDescriptor::findTextureIndex(const ln::StringRef& name) const
+//int ShaderDefaultDescriptor::findTextureIndex(const ln::StringRef& name) const
 //{
 //    return m_ownerShader->descriptorLayout()->findTextureRegisterIndex(name);
 //}
 //
-//int ShaderDescriptor::findSamplerIndex(const ln::StringRef& name) const
+//int ShaderDefaultDescriptor::findSamplerIndex(const ln::StringRef& name) const
 //{
 //    return m_ownerShader->descriptorLayout()->findSamplerRegisterIndex(name);
 //}
 
 
-void ShaderDescriptor::setData(int uniformBufferIndex, const void* data, size_t size)
+void ShaderDefaultDescriptor::setData(int uniformBufferIndex, const void* data, size_t size)
 {
     auto& buffer = m_buffers[uniformBufferIndex];
 
@@ -703,49 +721,49 @@ void ShaderDescriptor::setData(int uniformBufferIndex, const void* data, size_t 
 #endif
 }
 
-void ShaderDescriptor::setInt(int memberIndex, int value)
+void ShaderDefaultDescriptor::setInt(int memberIndex, int value)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, buffer.data(), member.desc.offset, 1, 0);
+    detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, buffer.data(), member.desc.offset, 1, 0);
 }
 
-void ShaderDescriptor::setIntArray(int memberIndex, const int* value, int count)
+void ShaderDefaultDescriptor::setIntArray(int memberIndex, const int* value, int count)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
+    detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
-void ShaderDescriptor::setFloat(int memberIndex, float value)
+void ShaderDefaultDescriptor::setFloat(int memberIndex, float value)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, buffer.data(), member.desc.offset, 1, 0);
+    detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, buffer.data(), member.desc.offset, 1, 0);
 }
 
-void ShaderDescriptor::setFloatArray(int memberIndex, const float* value, int count)
+void ShaderDefaultDescriptor::setFloatArray(int memberIndex, const float* value, int count)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
+    detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
-void ShaderDescriptor::setVector(int memberIndex, const Vector4& value)
+void ShaderDefaultDescriptor::setVector(int memberIndex, const Vector4& value)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignVectorsToBuffer((const byte_t*)&value, 4, 1, buffer.data(), member.desc.offset, 1, 0, member.desc.columns);
+    detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)&value, 4, 1, buffer.data(), member.desc.offset, 1, 0, member.desc.columns);
 }
 
-void ShaderDescriptor::setVectorArray(int memberIndex, const Vector4* value, int count)
+void ShaderDefaultDescriptor::setVectorArray(int memberIndex, const Vector4* value, int count)
 {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignVectorsToBuffer((const byte_t*)value, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride, member.desc.columns);
+    detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)value, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride, member.desc.columns);
 }
 
-void ShaderDescriptor::setMatrix(int memberIndex, const Matrix& value)
+void ShaderDefaultDescriptor::setMatrix(int memberIndex, const Matrix& value)
 {
 #ifdef LN_SHADER_UBO_TRANSPORSE_MATRIX
     const bool transpose = true;
@@ -755,10 +773,10 @@ void ShaderDescriptor::setMatrix(int memberIndex, const Matrix& value)
 
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, buffer.data(), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, transpose);
+    detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, buffer.data(), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, transpose);
 }
 
-void ShaderDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int count)
+void ShaderDefaultDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int count)
 {
 #ifdef LN_SHADER_UBO_TRANSPORSE_MATRIX
     const bool transpose = true;
@@ -767,20 +785,20 @@ void ShaderDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int 
 #endif
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignMatricesToBuffer((const byte_t*)value, 4, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, transpose);
+    detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)value, 4, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, transpose);
 }
 
-void ShaderDescriptor::setTexture(int textureIndex, Texture* value)
+void ShaderDefaultDescriptor::setTexture(int textureIndex, Texture* value)
 {
     m_textures[textureIndex] = value;
 }
 
-void ShaderDescriptor::setSampler(int textureIndex, Texture* value)
+void ShaderDefaultDescriptor::setSampler(int textureIndex, Texture* value)
 {
     m_textures[textureIndex] = value;
 }
 
-void ShaderDescriptor::setSamplerState(int samplerIndex, SamplerState* value)
+void ShaderDefaultDescriptor::setSamplerState(int samplerIndex, SamplerState* value)
 {
     m_samplers[samplerIndex] = value;
 }
@@ -875,7 +893,7 @@ ShaderParameter2::ShaderParameter2()
 {
 }
 
-bool ShaderParameter2::init(ShaderDescriptor* owner, IndexType type, int dataIndex)
+bool ShaderParameter2::init(ShaderDefaultDescriptor* owner, IndexType type, int dataIndex)
 {
     if (!Object::init()) return false;
     m_owner = owner;
@@ -908,52 +926,76 @@ void ShaderParameter2::setData(const void* data, size_t size)
     m_owner->setData(m_dataIndex, data, size);
 }
 
-void ShaderParameter2::setInt(int value)
+void ShaderParameter2::setInt(int value, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setInt(m_dataIndex, value);
+    if (descriptor)
+        descriptor->setInt(m_dataIndex, value);
+    else
+        m_owner->setInt(m_dataIndex, value);
 }
 
-void ShaderParameter2::setIntArray(const int* value, int count)
+void ShaderParameter2::setIntArray(const int* value, int count, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setIntArray(m_dataIndex, value, count);
+    if (descriptor)
+        descriptor->setIntArray(m_dataIndex, value, count);
+    else
+        m_owner->setIntArray(m_dataIndex, value, count);
 }
 
-void ShaderParameter2::setFloat(float value)
+void ShaderParameter2::setFloat(float value, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setFloat(m_dataIndex, value);
+    if (descriptor)
+        descriptor->setFloat(m_dataIndex, value);
+    else
+        m_owner->setFloat(m_dataIndex, value);
 }
 
-void ShaderParameter2::setFloatArray(const float* value, int count)
+void ShaderParameter2::setFloatArray(const float* value, int count, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setFloatArray(m_dataIndex, value, count);
+    if (descriptor)
+        descriptor->setFloatArray(m_dataIndex, value, count);
+    else
+        m_owner->setFloatArray(m_dataIndex, value, count);
 }
 
-void ShaderParameter2::setVector(const Vector4& value)
+void ShaderParameter2::setVector(const Vector4& value, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setVector(m_dataIndex, value);
+    if (descriptor)
+        descriptor->setVector(m_dataIndex, value);
+    else
+        m_owner->setVector(m_dataIndex, value);
 }
 
-void ShaderParameter2::setVectorArray(const Vector4* value, int count)
+void ShaderParameter2::setVectorArray(const Vector4* value, int count, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setVectorArray(m_dataIndex, value, count);
+    if (descriptor)
+        descriptor->setVectorArray(m_dataIndex, value, count);
+    else
+        m_owner->setVectorArray(m_dataIndex, value, count);
 }
 
-void ShaderParameter2::setMatrix(const Matrix& value)
+void ShaderParameter2::setMatrix(const Matrix& value, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setMatrix(m_dataIndex, value);
+    if (descriptor)
+        descriptor->setMatrix(m_dataIndex, value);
+    else
+        m_owner->setMatrix(m_dataIndex, value);
 }
 
-void ShaderParameter2::setMatrixArray(const Matrix* value, int count)
+void ShaderParameter2::setMatrixArray(const Matrix* value, int count, ShaderDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
-    m_owner->setMatrixArray(m_dataIndex, value, count);
+    if (descriptor)
+        descriptor->setMatrixArray(m_dataIndex, value, count);
+    else
+        m_owner->setMatrixArray(m_dataIndex, value, count);
 }
 
 void ShaderParameter2::setTexture(Texture* value)

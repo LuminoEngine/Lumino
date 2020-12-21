@@ -24346,18 +24346,18 @@ LN_FLAT_API LNResult LNEngineSettings_SetUserMainWindow(intptr_t value)
 }
 
 
-LN_FLAT_API LNResult LNEngine_Init()
+LN_FLAT_API LNResult LNEngine_Initialize()
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::Engine::init());
+    (ln::Engine::initialize());
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LNResult LNEngine_Finalize()
+LN_FLAT_API LNResult LNEngine_Terminate()
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::Engine::finalize());
+    (ln::Engine::terminate());
     LNI_FUNC_TRY_END_RETURN;
 }
 

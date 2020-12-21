@@ -204,9 +204,16 @@ public:	// TODO:
 	//static const float DefaultPower;	// (50.0f)
 
     // TODO: internal
-    void updateShaderVariables(Shader* target) const;
+    void updateShaderVariables(detail::GraphicsCommandList* commandList, ShaderDescriptor* descriptor);
 
 protected:  // TODO:
+	struct UniformBufferEntiry
+	{
+		String name;
+		Ref<ByteBuffer> data;
+		int descriptorIndex = -1;
+	};
+
 	//void LinkVariables();
 	//ShaderValue* FindShaderValue(const StringRef& name);
 	//ShaderValue* FindShaderValueConst(const StringRef& name) const;
@@ -220,7 +227,7 @@ protected:  // TODO:
 	Ref<Texture> m_normalMap;
 	Ref<Texture> m_roughnessMap;
 	std::vector<std::pair<String, std::shared_ptr<detail::ShaderParameterValue>>> m_values;
-	std::vector<std::pair<String, Ref<ByteBuffer>>> m_uniformBufferData;
+	std::vector<UniformBufferEntiry> m_uniformBufferData;
 
 protected:
 
@@ -267,6 +274,7 @@ private:
 	const detail::PbrMaterialData& getPbrMaterialData() const { return m_data; }
 
 	detail::PbrMaterialData m_data;
+	bool m_needRefreshShaderBinding;
 
 	friend class detail::SceneRenderer;
 };

@@ -271,6 +271,15 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 	return ptr;
 }
 
+Ref<IUniformBuffer> IGraphicsDevice::createUniformBuffer(uint32_t size)
+{
+	Ref<IUniformBuffer> ptr = onCreateUniformBuffer(size);
+	if (ptr) {
+		m_aliveObjects.push_back(ptr);
+	}
+	return ptr;
+}
+
 void IGraphicsDevice::flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
 {
 	onFlushCommandBuffer(context, affectRendreTarget);

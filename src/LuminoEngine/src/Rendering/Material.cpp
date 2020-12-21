@@ -2,6 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
+#include <LuminoEngine/Graphics/SwapChain.hpp>
+#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "RenderingManager.hpp"
@@ -42,6 +44,7 @@ Ref<Material> Material::create(Texture* mainTexture, ShadingModel shadingModel)
 }
 
 Material::Material()
+    : m_needRefreshShaderBinding(false)
 {
     m_data.color = Material_DefaultColor;
     m_data.roughness = Material_DefaultRoughness;
@@ -131,6 +134,7 @@ void Material::setEmissive(const Color& value)
 void Material::setShader(Shader* shader)
 {
     m_shader = shader;
+    m_needRefreshShaderBinding = true;
 }
 
 Shader* Material::shader() const
@@ -191,16 +195,17 @@ void Material::setBufferData(const StringRef& uniformBufferName, const void* dat
     ByteBuffer* buffer;
 
     const auto itr = std::find_if(
-        m_uniformBufferData.begin(), m_uniformBufferData.end(), [&](const auto& pair) {
-            return pair.first == uniformBufferName;
+        m_uniformBufferData.begin(), m_uniformBufferData.end(), [&](const UniformBufferEntiry& e) {
+            return e.name == uniformBufferName;
         });
     if (itr != m_uniformBufferData.end()) {
-        buffer = itr->second;
+        buffer = itr->data;
     }
     else {
         auto newBuf = makeRef<ByteBuffer>();
-        m_uniformBufferData.push_back({ uniformBufferName, newBuf });
+        m_uniformBufferData.push_back({ uniformBufferName, newBuf, -1 });
         buffer = newBuf;
+        m_needRefreshShaderBinding = true;
     }
 
     buffer->assign(data, size);
@@ -236,11 +241,22 @@ detail::ShaderParameterValue* Material::getValue(const ln::StringRef& name)
 
 	auto v = std::make_shared<detail::ShaderParameterValue>();
 	m_values.push_back({ String(name), v });
+    m_needRefreshShaderBinding = true;
 	return m_values.back().second.get();
 }
 
-void Material::updateShaderVariables(Shader* target) const
+void Material::updateShaderVariables(detail::GraphicsCommandList* commandList, ShaderDescriptor* descriptor)
 {
+    Shader* target = descriptor->shader();
+    const ShaderDescriptorLayout* layout = target->descriptorLayout();
+
+    if (m_needRefreshShaderBinding) {
+        for (UniformBufferEntiry& e : m_uniformBufferData) {
+            e.descriptorIndex = layout->findUniformBufferRegisterIndex(e.name);
+        }
+        m_needRefreshShaderBinding = false;
+    }
+
     // Material から Shader へ検索をかける。
     // Shader はビルトインの変数がいくつか含まれているので、この方が高速に検索できる。
 
@@ -259,28 +275,29 @@ void Material::updateShaderVariables(Shader* target) const
                 LN_NOTIMPLEMENTED();
                 break;
             case ShaderVariableType::Int:
-                param->setInt(pair.second->getInt());
+                param->setInt(pair.second->getInt(), descriptor);
                 break;
             case ShaderVariableType::Float:
-                param->setFloat(pair.second->getFloat());
+                param->setFloat(pair.second->getFloat(), descriptor);
                 break;
             case ShaderVariableType::FloatArray:
-                param->setFloatArray(pair.second->getFloatArray(), pair.second->getArrayLength());
+                param->setFloatArray(pair.second->getFloatArray(), pair.second->getArrayLength(), descriptor);
                 break;
             case ShaderVariableType::Vector:
-                param->setVector(pair.second->getVector());
+                param->setVector(pair.second->getVector(), descriptor);
                 break;
             case ShaderVariableType::VectorArray:
-                param->setVectorArray(pair.second->getVectorArray(), pair.second->getArrayLength());
+                param->setVectorArray(pair.second->getVectorArray(), pair.second->getArrayLength(), descriptor);
                 break;
             case ShaderVariableType::Matrix:
-                param->setMatrix(pair.second->getMatrix());
+                param->setMatrix(pair.second->getMatrix(), descriptor);
                 break;
             case ShaderVariableType::MatrixArray:
-                param->setMatrixArray(pair.second->getMatrixArray(), pair.second->getArrayLength());
+                param->setMatrixArray(pair.second->getMatrixArray(), pair.second->getArrayLength(), descriptor);
                 break;
             case ShaderVariableType::Texture:
-                param->setTexture(pair.second->getTexture());
+                //param->setTexture(pair.second->getTexture(), descriptor);
+                descriptor->setTexture(param->m_dataIndex, pair.second->getTexture());
                 break;
             case ShaderVariableType::Pointer:
                 LN_NOTIMPLEMENTED();
@@ -291,11 +308,11 @@ void Material::updateShaderVariables(Shader* target) const
         }
     }
 
-    for (const auto& pair : m_uniformBufferData) {
-        int index = target->descriptorLayout()->findUniformBufferRegisterIndex(pair.first);
-        if (index >= 0) {
-            target->descriptor()->setData(index, pair.second->data(), pair.second->size());
+    for (const UniformBufferEntiry& e : m_uniformBufferData) {
+        if (!descriptor->uniformBuffer(e.descriptorIndex).buffer) {
+            descriptor->setUniformBuffer(e.descriptorIndex, commandList->allocateUniformBuffer(layout->m_buffers[e.descriptorIndex].size));
         }
+        descriptor->setUniformBufferData(e.descriptorIndex, e.data->data(), e.data->size());
     }
 }
 

@@ -692,6 +692,34 @@ void CommandList::drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun)
 	//ptr->setLocalBoundingSphere(sphere);
 }
 
+void CommandList::drawPath(CanvasContext* context)
+{
+	class DrawMeshInstanced : public detail::RenderDrawElement
+	{
+	public:
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+			return static_cast<detail::PathRenderFeature*>(renderFeature)->draw(batchList, context);
+		}
+	};
+
+	auto* element = m_builder->addNewDrawElement<DrawMeshInstanced>(m_manager->pathRenderFeature());
+}
+
+//CanvasContext* CommandList::beginPath()
+//{
+//	if (LN_REQUIRE(!m_pathBegan)) return nullptr;
+//	m_pathBegan = true;
+//	return m_pathContext;
+//}
+//
+//void CommandList::endPath()
+//{
+//	if (LN_REQUIRE(m_pathBegan)) return;
+//	m_pathBegan = false;
+//	m_commandList->drawPath(m_pathContext);
+//}
+
 void CommandList::invokeExtensionRendering(INativeGraphicsExtension* extension)
 {
 	class InvokeExtensionRendering : public detail::RenderDrawElement

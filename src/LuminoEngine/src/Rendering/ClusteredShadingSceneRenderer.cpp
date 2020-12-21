@@ -572,7 +572,7 @@ void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light
 	}
 }
 
-void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderTechnique* technique)
+void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderDescriptor* descriptor, ShaderTechnique* technique)
 {
 	// TODO: 
 	// 毎回 findParameter していたのをテーブル対応にしたことで 50us → 1us 以下にできた。
@@ -601,7 +601,7 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderTec
 		m_lightClusters.m_farClip,
 	};
 
-	ssm->updateClusteredShadingVariables(info);
+	ssm->updateClusteredShadingVariables(descriptor, info);
 
 	//// TODO: Test
 	//v = shader->findParameter(u"_LensflareOcclusionMap");

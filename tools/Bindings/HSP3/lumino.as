@@ -1410,10 +1410,10 @@ _ln_return_discard = 0
 #define LNEngineSettings_SetDeveloperToolEnabled(%1) _LNEngineSettings_SetDeveloperToolEnabled %1
 #cmd _LNEngineSettings_SetUserMainWindow $580
 #define LNEngineSettings_SetUserMainWindow(%1) _LNEngineSettings_SetUserMainWindow %1
-#cmd _LNEngine_Init $583
-#define LNEngine_Init _LNEngine_Init
-#cmd _LNEngine_Finalize $584
-#define LNEngine_Finalize _LNEngine_Finalize
+#cmd _LNEngine_Initialize $583
+#define LNEngine_Initialize _LNEngine_Initialize
+#cmd _LNEngine_Terminate $584
+#define LNEngine_Terminate _LNEngine_Terminate
 #cmd _LNEngine_Update $585
 #define LNEngine_Update(%1=_ln_return_discard) _LNEngine_Update %1
 #cmd _LNEngine_Run $586

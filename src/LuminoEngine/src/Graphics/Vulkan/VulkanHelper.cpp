@@ -1159,7 +1159,7 @@ Result VulkanCommandBuffer::init(VulkanDevice* deviceContext)
 	// なお、静的なバッファの場合は init 時に malloc でメモリをとるようにしているので LinearAllocator は関係ない。
 	resetAllocator(LinearAllocatorPageManager::DefaultPageSize);
 
-    m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_deviceContext->uniformBufferSingleFrameAllocator());
+    //m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_deviceContext->uniformBufferSingleFrameAllocator());
     m_transferBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_deviceContext->transferBufferSingleFrameAllocator());
 
 	m_stagingBufferPoolUsed = 0;
@@ -1211,7 +1211,7 @@ Result VulkanCommandBuffer::beginRecording()
     LN_VK_CHECK(vkResetCommandBuffer(vulkanCommandBuffer(), VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT));
 
     m_linearAllocator->cleanup();
-    m_uniformBufferSingleFrameAllocator->cleanup();
+    //m_uniformBufferSingleFrameAllocator->cleanup();
     m_transferBufferSingleFrameAllocator->cleanup();
 
     // 前回の描画で使ったリソースを開放する。

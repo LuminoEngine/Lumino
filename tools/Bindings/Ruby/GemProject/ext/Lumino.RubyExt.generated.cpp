@@ -17131,33 +17131,33 @@ struct Wrap_Engine
 };
 
 
-static VALUE Wrap_LNEngine_Init(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LNEngine_Initialize(int argc, VALUE* argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
 
         {
 
-            LNResult errorCode = LNEngine_Init();
+            LNResult errorCode = LNEngine_Initialize();
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "ln::Engine::init - wrong argument type.");
+    rb_raise(rb_eArgError, "ln::Engine::initialize - wrong argument type.");
     return Qnil;
 }
 
-static VALUE Wrap_LNEngine_Finalize(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LNEngine_Terminate(int argc, VALUE* argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
 
         {
 
-            LNResult errorCode = LNEngine_Finalize();
+            LNResult errorCode = LNEngine_Terminate();
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "ln::Engine::finalize - wrong argument type.");
+    rb_raise(rb_eArgError, "ln::Engine::terminate - wrong argument type.");
     return Qnil;
 }
 
@@ -27677,8 +27677,8 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_EngineSettings, "set_user_main_window", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetUserMainWindow), -1);
 
     g_class_Engine = rb_define_class_under(g_rootModule, "Engine", rb_cObject);
-    rb_define_singleton_method(g_class_Engine, "init", LN_TO_RUBY_FUNC(Wrap_LNEngine_Init), -1);
-    rb_define_singleton_method(g_class_Engine, "finalize", LN_TO_RUBY_FUNC(Wrap_LNEngine_Finalize), -1);
+    rb_define_singleton_method(g_class_Engine, "initialize", LN_TO_RUBY_FUNC(Wrap_LNEngine_Initialize), -1);
+    rb_define_singleton_method(g_class_Engine, "terminate", LN_TO_RUBY_FUNC(Wrap_LNEngine_Terminate), -1);
     rb_define_singleton_method(g_class_Engine, "update", LN_TO_RUBY_FUNC(Wrap_LNEngine_Update), -1);
     rb_define_singleton_method(g_class_Engine, "run", LN_TO_RUBY_FUNC(Wrap_LNEngine_Run), -1);
     rb_define_singleton_method(g_class_Engine, "time", LN_TO_RUBY_FUNC(Wrap_LNEngine_GetTime), -1);

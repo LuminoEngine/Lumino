@@ -54,7 +54,7 @@ public:
     VkCommandPool vulkanCommandPool() const { return m_commandPool; }
     uint32_t graphicsQueueFamilyIndex() const { return m_graphicsQueueFamilyIndex; }
     Result findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
-    const Ref<VulkanSingleFrameAllocatorPageManager>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
+    //const Ref<VulkanSingleFrameAllocatorPageManager>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
     const Ref<VulkanSingleFrameAllocatorPageManager>& transferBufferSingleFrameAllocator() const { return m_transferBufferSingleFrameAllocator; }
     VulkanNativeGraphicsInterface* vulkanNativeGraphicsInterface() const { return m_nativeInterface.get(); }
 
@@ -75,6 +75,7 @@ protected:
     Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
+    Ref<IUniformBuffer> onCreateUniformBuffer(uint32_t size) override;
 	void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override;
 	ICommandQueue* getGraphicsCommandQueue() override;
 	ICommandQueue* getComputeCommandQueue() override;
@@ -117,7 +118,7 @@ public: // TODO:
 	VkQueue m_graphicsQueue;
     VkCommandPool m_commandPool;
     //VulkanAllocator m_allocator;
-    Ref<VulkanSingleFrameAllocatorPageManager> m_uniformBufferSingleFrameAllocator;
+    //Ref<VulkanSingleFrameAllocatorPageManager> m_uniformBufferSingleFrameAllocator;
     Ref<VulkanSingleFrameAllocatorPageManager> m_transferBufferSingleFrameAllocator;
 
 
@@ -374,6 +375,21 @@ protected:
     VkIndexType m_indexType;
 };
 
+class VulkanUniformBuffer
+    : public IUniformBuffer
+{
+public:
+    VulkanUniformBuffer();
+    Result init(VulkanDevice* deviceContext, uint32_t size);
+    void dispose() override;
+    void* map() override;
+    void unmap() override;
+    VulkanBuffer* buffer() { return &m_buffer; }
+
+protected:
+    VulkanBuffer m_buffer;
+};
+
 class VulkanTexture
     : public ITexture
 {
@@ -581,8 +597,7 @@ public:
     {
         int descriptorWriteInfoIndex = -1;  // index of VulkanShaderPass::m_descriptorWriteInfo
         int bindingIndex = 0;
-        std::vector<byte_t> data;
-        //std::shared_ptr<VulkanBuffer> buffer;
+        ShaderDescriptorBufferView bufferView;
     };
     struct ImageBufferInfo
     {

@@ -409,7 +409,7 @@ public:
     // TODO: deprecated
     VulkanBuffer* allocateBuffer(size_t size, VkBufferUsageFlags usage);
 
-    const Ref<VulkanSingleFrameAllocator>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
+    //const Ref<VulkanSingleFrameAllocator>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
     const Ref<VulkanSingleFrameAllocator>& transferBufferSingleFrameAllocator() const { return m_transferBufferSingleFrameAllocator; }
 
 	// データを destination へ送信するためのコマンドを push する。
@@ -440,7 +440,7 @@ private:
 	Ref<LinearAllocatorPageManager> m_linearAllocatorManager;
 	Ref<LinearAllocator> m_linearAllocator;
 	VulkanLinearAllocator m_vulkanAllocator;
-    Ref<VulkanSingleFrameAllocator> m_uniformBufferSingleFrameAllocator;
+    //Ref<VulkanSingleFrameAllocator> m_uniformBufferSingleFrameAllocator;
     Ref<VulkanSingleFrameAllocator> m_transferBufferSingleFrameAllocator;
 
 	size_t m_stagingBufferPoolUsed;

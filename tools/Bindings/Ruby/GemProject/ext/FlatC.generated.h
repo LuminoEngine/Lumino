@@ -1048,6 +1048,113 @@ typedef enum tagLNUIVisibility
 } LNUIVisibility;
 
 /**
+    @brief カラーインデックス
+*/
+typedef enum tagLNUIColorHues
+{
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_RED = 0,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_PINK = 1,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_PURPLE = 2,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_DEEP_PURPLE = 4,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_INDIGO = 5,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_BLUE = 6,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_LIGHT_BLUE = 7,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_CYAN = 8,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_TEAL = 9,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_GREEN = 10,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_LIGHT_GREEN = 11,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_LIME = 12,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_YELLOW = 13,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_AMBER = 14,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_ORANGE = 15,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_DEEP_ORANGE = 16,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_BROWN = 17,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_GREY = 18,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_BLACK = 19,
+
+    /**
+        @brief 
+    */
+    LN_UICOLOR_HUES_WHITE = 20,
+
+} LNUIColorHues;
+
+/**
     @brief 縦方向の表示位置を示します。
 */
 typedef enum tagLNUIVAlignment
@@ -5908,6 +6015,144 @@ extern LN_FLAT_API void LNLevel_RegisterSubclassTypeInfo(const LNLevel_SubclassR
 extern LN_FLAT_API LNSubinstanceId LNLevel_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
+// ln::UIColors
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Red カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Red(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Pink カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Pink(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Purple カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Purple(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 DeepPurple カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_DeepPurple(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Indigo カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Indigo(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Blue カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Blue(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 LightBlue カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_LightBlue(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Cyan カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Cyan(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Teal カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Teal(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Green カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Green(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 LightGreen カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_LightGreen(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Lime カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Lime(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Yellow カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Yellow(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Amber カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Amber(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Orange カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Orange(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 DeepOrange カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_DeepOrange(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Brown カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Brown(int shades, LNColor* outReturn);
+
+/**
+    @brief 色の濃さ (0~9) を指定して、 Grey カラーパレットの色を取得します。
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Grey(int shades, LNColor* outReturn);
+
+/**
+    @brief カラーインデックスと色の濃さ (0~9) を指定して、色を取得します。
+    @param[] hue : 
+    @param[] shades : 
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIColors_Get(LNUIColorHues hue, int shades, LNColor* outReturn);
+
+
+//==============================================================================
 // ln::UIEventArgs
 
 /**
@@ -7680,12 +7925,12 @@ LN_FLAT_API LNResult LNEngineSettings_SetUserMainWindow(intptr_t value);
 /**
     @brief エンジンの初期化処理を行います。
 */
-LN_FLAT_API LNResult LNEngine_Init();
+LN_FLAT_API LNResult LNEngine_Initialize();
 
 /**
     @brief エンジンの終了処理を行います。
 */
-LN_FLAT_API LNResult LNEngine_Finalize();
+LN_FLAT_API LNResult LNEngine_Terminate();
 
 /**
     @brief 

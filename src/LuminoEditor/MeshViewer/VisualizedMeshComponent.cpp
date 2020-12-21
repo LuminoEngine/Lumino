@@ -10,6 +10,7 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 	//commandList->setDepthTestEnabled(false);
 	//commandList->setDepthWriteEnabled(false);
 
+	commandList->drawPath(nullptr);
 
 
 	const auto* view = context->currentRenderView;
@@ -96,6 +97,8 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 		}
 	}
 
+	//context->beginPath();
+	//context->endPath();
 
 #if 0
 	//const auto* viewPoint = context->viewPoint();

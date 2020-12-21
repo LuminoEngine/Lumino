@@ -165,7 +165,7 @@ protected:
 
 	virtual void collect(RenderingPipeline* renderingPipeline, const detail::CameraInfo& cameraInfo, RenderPart targetPhase) override;
 	virtual void onCollectLight(const DynamicLightInfo& light) override;
-	virtual void onSetAdditionalShaderPassVariables(ShaderTechnique* technique) override;
+	virtual void onSetAdditionalShaderPassVariables(ShaderDescriptor* descriptor, ShaderTechnique* technique) override;
 
 private:
 	LightClusters				m_lightClusters;

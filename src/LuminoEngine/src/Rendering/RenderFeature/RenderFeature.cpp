@@ -216,6 +216,7 @@ bool RenderFeature::drawElementTransformNegate() const
 }
 
 void RenderFeature::updateRenderParameters(
+	ShaderDescriptor* descriptor,
 	detail::RenderDrawElement* element,
 	ShaderTechnique* tech,
 	const detail::RenderViewInfo& renderViewInfo,
@@ -223,10 +224,11 @@ void RenderFeature::updateRenderParameters(
 	const detail::ElementInfo& elementInfo,
 	const detail::SubsetInfo& subsetInfo)
 {
-    updateRenderParametersDefault(tech, renderViewInfo, sceneInfo, elementInfo, subsetInfo);
+    updateRenderParametersDefault(descriptor, tech, renderViewInfo, sceneInfo, elementInfo, subsetInfo);
 }
 
 void RenderFeature::updateRenderParametersDefault(
+	ShaderDescriptor* descriptor,
 	ShaderTechnique* tech,
 	const detail::RenderViewInfo& renderViewInfo,
 	const detail::SceneInfo& sceneInfo,
@@ -234,9 +236,9 @@ void RenderFeature::updateRenderParametersDefault(
 	const detail::SubsetInfo& subsetInfo)
 {
 	detail::ShaderTechniqueSemanticsManager* semanticsManager = tech->semanticsManager2();
-	semanticsManager->updateRenderViewVariables(renderViewInfo, sceneInfo);	// TODO: ここだと element ごとに呼ばれるのでかなり無駄が多い。事前計算しておいて、memcpy で済ませたい
-	semanticsManager->updateElementVariables(renderViewInfo.cameraInfo, elementInfo);
-	semanticsManager->updateSubsetVariables(subsetInfo);
+	semanticsManager->updateRenderViewVariables(descriptor, renderViewInfo, sceneInfo);	// TODO: ここだと element ごとに呼ばれるのでかなり無駄が多い。事前計算しておいて、memcpy で済ませたい
+	semanticsManager->updateElementVariables(descriptor, renderViewInfo.cameraInfo, elementInfo);
+	semanticsManager->updateSubsetVariables(descriptor, subsetInfo);
 }
 
 //==============================================================================

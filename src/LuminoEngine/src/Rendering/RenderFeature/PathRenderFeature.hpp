@@ -3,6 +3,9 @@
 #include "../../Graphics/GraphicsDeviceContext.hpp"
 #include "../RenderStage.hpp"
 
+struct NVGcontext;
+struct GLNVGcontext;
+
 namespace ln {
 namespace detail {
 
@@ -14,6 +17,11 @@ class PathRenderFeature
 public:
 	PathRenderFeature();
 	void init(RenderingManager* manager);
+	void onDispose(bool explicitDisposing) override;
+
+	RenderingManager* manager() const { return m_manager; }
+
+	RequestBatchResult draw(detail::RenderFeatureBatchList* batchList, GraphicsContext* context);
 
 	void beginRendering() override;
 	void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
@@ -31,7 +39,10 @@ private:
 		BatchData data;
 	};
 
+	RenderingManager* m_manager;
 	BatchData m_batchData;
+	NVGcontext* m_nvgContext;
+	GLNVGcontext* m_glnvgContext;
 };
 
 } // namespace detail
