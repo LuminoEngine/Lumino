@@ -564,7 +564,7 @@ int main(int argc, char** argv)
     //EngineSettings::setMainWorldViewSize(640 / div, 480 / div);
 
 
-	Engine::init();
+	Engine::initialize();
 	//Engine::update();
 	//Engine::finalize();
 	//return 0;
@@ -871,7 +871,7 @@ int main(int argc, char** argv)
 	}
 
 
-	Engine::finalize();
+	Engine::terminate();
 	return 0;
 
 
@@ -1205,7 +1205,7 @@ int main(int argc, char** argv)
     }
 
 
-	Engine::finalize();
+	Engine::terminate();
 
 	return 0;
 }

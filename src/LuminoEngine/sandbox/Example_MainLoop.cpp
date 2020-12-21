@@ -4,12 +4,12 @@ using namespace ln;
 
 void Example_MainLoop()
 {
-	ln::Engine::init();
+	ln::Engine::initialize();
 
 	while (ln::Engine::update())
 	{
 		
 	}
 
-	ln::Engine::finalize();
+	ln::Engine::terminate();
 }
