@@ -15928,18 +15928,18 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
-        // LNEngine_Init
+        // LNEngine_Initialize
         case 0x583 : {
 
-            stat = LNEngine_Init();
+            stat = LNEngine_Initialize();
 
 
             return true;
         }
-        // LNEngine_Finalize
+        // LNEngine_Terminate
         case 0x584 : {
 
-            stat = LNEngine_Finalize();
+            stat = LNEngine_Terminate();
 
 
             return true;

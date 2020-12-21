@@ -7925,12 +7925,12 @@ LN_FLAT_API LNResult LNEngineSettings_SetUserMainWindow(intptr_t value);
 /**
     @brief エンジンの初期化処理を行います。
 */
-LN_FLAT_API LNResult LNEngine_Init();
+LN_FLAT_API LNResult LNEngine_Initialize();
 
 /**
     @brief エンジンの終了処理を行います。
 */
-LN_FLAT_API LNResult LNEngine_Finalize();
+LN_FLAT_API LNResult LNEngine_Terminate();
 
 /**
     @brief 
