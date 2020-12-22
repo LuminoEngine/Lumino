@@ -210,7 +210,7 @@ namespace detail {
 
 const std::vector<const char*> VulkanHelper::validationLayers =
 {
-    "VK_LAYER_LUNARG_standard_validation"
+    "VK_LAYER_KHRONOS_validation"
 };
 
 struct FormatConversionItem
