@@ -88,6 +88,12 @@ public: // TODO:
         VkPhysicalDeviceProperties deviceProperty;
     };
 
+    struct ImageFormatProperty
+    {
+        VkFormat format;
+        VkFormatProperties props;
+    };
+
     Result createInstance();
     Result setupDebugMessenger();
     Result pickPhysicalDevice();
@@ -130,6 +136,8 @@ public: // TODO:
 	std::unique_ptr<VulkanNativeGraphicsInterface> m_nativeInterface;
 
     std::vector<VkQueueFamilyProperties> m_queueFamilyProps;
+    std::vector<ImageFormatProperty> m_imageFormatProperties;
+    VkPhysicalDeviceMemoryProperties m_deviceMemoryProperties;
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
     bool m_enableValidationLayers;
 };

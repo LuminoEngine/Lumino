@@ -304,11 +304,8 @@ ICommandQueue* VulkanDevice::getComputeCommandQueue()
 
 Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType)
 {
-    VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memProperties);
-
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-        if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+    for (uint32_t i = 0; i < m_deviceMemoryProperties.memoryTypeCount; i++) {
+        if ((typeFilter & (1 << i)) && (m_deviceMemoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {
             *outType = i;
             return false;
         }
@@ -487,6 +484,20 @@ Result VulkanDevice::pickPhysicalDevice()
     const PhysicalDeviceInfo& info = m_physicalDeviceInfos[index];
     m_physicalDevice = info.device;
 
+    // x86, GeForce RTX 2080 SUPER において、SwapChain 作成後に vkGetPhysicalDevice** が軒並みハングする問題の対策。
+    // 2020/12/22 時点の問題で、今後修正が入るかもしれない。
+    {
+        m_imageFormatProperties = {
+            { VK_FORMAT_D32_SFLOAT_S8_UINT, VkFormatProperties{} },
+            { VK_FORMAT_D24_UNORM_S8_UINT, VkFormatProperties{} },
+            { VK_FORMAT_D16_UNORM_S8_UINT, VkFormatProperties{} },
+        };
+        for (ImageFormatProperty& i : m_imageFormatProperties) {
+            vkGetPhysicalDeviceFormatProperties(m_physicalDevice, i.format, &i.props);
+        }
+
+        vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &m_deviceMemoryProperties);
+    }
 
 
 
@@ -807,14 +818,18 @@ bool VulkanDevice::findPresentQueueFamily(VkSurfaceKHR surface, uint32_t* outInd
 VkFormat VulkanDevice::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
 {
     for (VkFormat format : candidates) {
-        VkFormatProperties props;
-        vkGetPhysicalDeviceFormatProperties(vulkanPhysicalDevice(), format, &props);
+        const auto itr = std::find_if(
+            m_imageFormatProperties.begin(), m_imageFormatProperties.end(),
+            [format](const ImageFormatProperty& x) { return x.format == format; });
+        if (itr != m_imageFormatProperties.end()) {
+            const VkFormatProperties& props = itr->props;
 
-        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
-            return format;
-        }
-        else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
-            return format;
+            if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+                return format;
+            }
+            else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+                return format;
+            }
         }
     }
 
@@ -1087,13 +1102,6 @@ void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
 	renderPassInfo.clearValueCount = count;
 	renderPassInfo.pClearValues = clearValues;
 
-    //printf("BeginRenderPass (%f %f %f %f) RT:%p\n",
-    //    clearValues[0].color.float32[0],
-    //    clearValues[0].color.float32[1],
-    //    clearValues[0].color.float32[2],
-    //    clearValues[0].color.float32[3],
-    //    framebuffer->renderTargets()[0]);
-
 	vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
@@ -1314,10 +1322,6 @@ void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color,
 			attachments[count].clearValue.depthStencil.depth = z;
 			++count;
 		}
-
-        //printf("Clear (%f %f %f %f) RT:%p\n",
-        //    color.r, color.g, color.b, color.a,
-        //    framebuffer->renderTargets()[0]);
 
 		vkCmdClearAttachments(
 			m_recodingCommandBuffer->vulkanCommandBuffer()
