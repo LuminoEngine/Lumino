@@ -633,8 +633,8 @@ Result VulkanDevice::createLogicalDevice()
     {
         uint32_t propCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevice, &propCount, nullptr);
-        std::vector<VkQueueFamilyProperties> queueFamilyPros(propCount);
-        vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevice, &propCount, queueFamilyPros.data());
+        m_queueFamilyProps.resize(propCount);
+        vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevice, &propCount, m_queueFamilyProps.data());
         queueCreateInfos.resize(propCount);
 
         int queueIndex = 0;
@@ -644,13 +644,13 @@ Result VulkanDevice::createLogicalDevice()
             queueCreateInfos[i].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
             queueCreateInfos[i].pNext = nullptr;
             queueCreateInfos[i].flags = 0;
-            queueCreateInfos[i].queueCount = queueFamilyPros[i].queueCount;
+            queueCreateInfos[i].queueCount = m_queueFamilyProps[i].queueCount;
             queueCreateInfos[i].queueFamilyIndex = i;
 
-            totalQueueCount += queueFamilyPros[i].queueCount;
+            totalQueueCount += m_queueFamilyProps[i].queueCount;
 
             // Graphics queue
-            if (queueFamilyPros[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+            if (m_queueFamilyProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 if (graphicsFamilyIndex == UINT32_MAX) {
                     graphicsFamilyIndex = i;
                     graphicsQueueIndex = queueIndex;
@@ -659,7 +659,7 @@ Result VulkanDevice::createLogicalDevice()
             }
 
             // Compute queue
-            if ((queueFamilyPros[i].queueFlags & VK_QUEUE_COMPUTE_BIT) && ((queueFamilyPros[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != VK_QUEUE_GRAPHICS_BIT)) {
+            if ((m_queueFamilyProps[i].queueFlags & VK_QUEUE_COMPUTE_BIT) && ((m_queueFamilyProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != VK_QUEUE_GRAPHICS_BIT)) {
                 if (computeFamilyIndex == UINT32_MAX) {
                     computeFamilyIndex = i;
                     computeQueueIndex = queueIndex;
@@ -668,7 +668,7 @@ Result VulkanDevice::createLogicalDevice()
             }
 
             // Transfer queue
-            if ((queueFamilyPros[i].queueFlags & VK_QUEUE_TRANSFER_BIT) && ((queueFamilyPros[i].queueFlags & VK_QUEUE_TRANSFER_BIT) != VK_QUEUE_GRAPHICS_BIT)) {
+            if ((m_queueFamilyProps[i].queueFlags & VK_QUEUE_TRANSFER_BIT) && ((m_queueFamilyProps[i].queueFlags & VK_QUEUE_TRANSFER_BIT) != VK_QUEUE_GRAPHICS_BIT)) {
                 if (transferFamilyIndex == UINT32_MAX) {
                     transferFamilyIndex = i;
                     transferQueueindex = queueIndex;
@@ -680,7 +680,7 @@ Result VulkanDevice::createLogicalDevice()
         // 1つも見つからなければ仕方ないので共用のものを探す.
         if (computeFamilyIndex == UINT32_MAX) {
             for (auto i = 0u; i < propCount; ++i) {
-                if (queueFamilyPros[i].queueFlags & VK_QUEUE_COMPUTE_BIT) {
+                if (m_queueFamilyProps[i].queueFlags & VK_QUEUE_COMPUTE_BIT) {
                     if (computeFamilyIndex == UINT32_MAX) {
                         computeFamilyIndex = i;
                         computeQueueIndex = queueIndex;
@@ -693,7 +693,7 @@ Result VulkanDevice::createLogicalDevice()
         // 1つも見つからなければ仕方ないので共用のものを探す.
         if (transferFamilyIndex == UINT32_MAX) {
             for (auto i = 0u; i < propCount; ++i) {
-                if (queueFamilyPros[i].queueFlags & VK_QUEUE_TRANSFER_BIT) {
+                if (m_queueFamilyProps[i].queueFlags & VK_QUEUE_TRANSFER_BIT) {
                     if (transferFamilyIndex == UINT32_MAX) {
                         transferFamilyIndex = i;
                         transferQueueindex = queueIndex;
@@ -793,16 +793,10 @@ Result VulkanDevice::createCommandPool()
 
 bool VulkanDevice::findPresentQueueFamily(VkSurfaceKHR surface, uint32_t* outIndex)
 {
-    uint32_t queueFamilyCount = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevice, &queueFamilyCount, nullptr);
-
-    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevice, &queueFamilyCount, queueFamilies.data());
-
-    for (uint32_t i = 0; i < queueFamilies.size(); i++) {
+    for (uint32_t i = 0; i < m_queueFamilyProps.size(); i++) {
         VkBool32 presentSupport = false;
         vkGetPhysicalDeviceSurfaceSupportKHR(m_physicalDevice, i, surface, &presentSupport);
-        if (queueFamilies[i].queueCount > 0 && presentSupport) {
+        if (m_queueFamilyProps[i].queueCount > 0 && presentSupport) {
             *outIndex = i;
             return true;
         }
@@ -1435,7 +1429,6 @@ bool VulkanSwapChain::createNativeSwapchain(const SizeI& backbufferSize)
 	if (LN_REQUIRE(!m_swapchain)) return false;
 
 	VkDevice device = m_deviceContext->vulkanDevice();
-
 	// この Swapchain と対応する Surface と互換性がある QueueFamily を選択する
 	uint32_t presentQueueFamily = 0;
 	if (m_deviceContext->findPresentQueueFamily(m_surface, &presentQueueFamily)) {

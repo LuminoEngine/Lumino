@@ -129,7 +129,7 @@ public: // TODO:
 	//Ref<VulkanGraphicsContext> m_graphicsContext;
 	std::unique_ptr<VulkanNativeGraphicsInterface> m_nativeInterface;
 
-
+    std::vector<VkQueueFamilyProperties> m_queueFamilyProps;
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
     bool m_enableValidationLayers;
 };
