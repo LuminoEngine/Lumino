@@ -1,7 +1,6 @@
 #if 1
 #include "LuminoRubyRuntimeManager.h"
 
-extern "C" LN_FLAT_API LNResult LNEngine_Finalize();
 extern "C" LN_FLAT_API void LNRuntime_RunAppInternal(LNHandle app);
 
 //==============================================================================

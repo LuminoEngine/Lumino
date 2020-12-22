@@ -609,7 +609,7 @@ ln::String HSP3CommandsGenerator::makeCallCommandBlock(const MethodSymbol* metho
         }
         else {
             prologue.AppendLine(makeGetVAExpr(param));
-            args.AppendCommad(localVarName);
+            args.AppendCommad(u"static_cast<{0}>({1})", makeFlatCParamQualTypeName(methodSymbol, param, FlatCharset::Ascii), localVarName);
         }
 
     }

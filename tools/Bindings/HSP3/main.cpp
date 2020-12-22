@@ -52,7 +52,7 @@ static void* reffunc(int* type_res, int cmd)
 
 static int termfunc(int option)
 {
-	LNEngine_Finalize();
+	LNEngine_Terminate();
 	LNRuntime_Finalize();
 	return 0;
 }
