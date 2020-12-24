@@ -1902,7 +1902,7 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 	subpass.pInputAttachments = nullptr;
 	subpass.colorAttachmentCount = colorAttachmentCount;
 	subpass.pColorAttachments = attachmentRefs.data();
-	subpass.pResolveAttachments = (resolveCount > 0) ? resolveRefs.data() : nullptr;    // 指定する場合、要素数は colorAttachmentCount でなければならない (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkSubpassDescription.html)
+	subpass.pResolveAttachments = (m_containsMultisampleTarget) ? resolveRefs.data() : nullptr;    // 指定する場合、要素数は colorAttachmentCount でなければならない (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkSubpassDescription.html)
 	subpass.pDepthStencilAttachment = depthAttachmentRef;
 	subpass.preserveAttachmentCount = 0;
 	subpass.pPreserveAttachments = nullptr;
@@ -1997,7 +1997,8 @@ Result VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRe
 	}
 	m_depthBuffer = static_cast<VulkanDepthBuffer*>(state.depthBuffer);
 
-	VkImageView attachments[MaxMultiRenderTargets + 1] = {};
+    // MaxRenderTargets + Resolve-MaxRenderTargets(for MSAA) + depthbuffer
+    std::array<VkImageView, MaxMultiRenderTargets * 2 + 1> attachments;
 	int attachmentsCount = 0;
 	for (size_t i = 0; i < m_renderTargets.size(); i++) {
 		if (m_renderTargets[i]) {
@@ -2012,8 +2013,10 @@ Result VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRe
 	}
 	for (size_t i = 0; i < m_renderTargets.size(); i++) {
 		if (m_renderTargets[i]) {
-			attachments[attachmentsCount] = m_renderTargets[i]->image()->vulkanImageView();
-			attachmentsCount++;
+            if (m_renderTargets[i]->isMultisample()) {
+                attachments[attachmentsCount] = m_renderTargets[i]->image()->vulkanImageView();
+                attachmentsCount++;
+            }
 		}
 	}
 	if (m_depthBuffer) {
@@ -2028,7 +2031,7 @@ Result VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRe
 	framebufferInfo.flags = 0;
 	framebufferInfo.renderPass = m_ownerRenderPass->nativeRenderPass();
 	framebufferInfo.attachmentCount = attachmentsCount;
-	framebufferInfo.pAttachments = attachments;
+	framebufferInfo.pAttachments = attachments.data();
 	framebufferInfo.width = imageSize.width;
 	framebufferInfo.height = imageSize.height;
 	framebufferInfo.layers = 1;

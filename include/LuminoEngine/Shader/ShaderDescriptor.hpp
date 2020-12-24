@@ -69,7 +69,7 @@ LN_INTERNAL_NEW_OBJECT;
     bool init(Shader* shader);
 
 private:
-	static const int MaxElements = 8;
+	static const int MaxElements = 16;
 
 	Shader* m_shader;
 	std::array<detail::ConstantBufferView, MaxElements> m_uniformBufferViews = {};

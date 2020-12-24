@@ -44,8 +44,16 @@ void ShaderSecondaryDescriptor::reset(detail::GraphicsCommandList* commandList)
 
 void ShaderSecondaryDescriptor::reallocFromSemanticsManager(detail::GraphicsCommandList* commandList, const detail::ShaderTechniqueSemanticsManager* semanticsManager)
 {
-	// TODO: ひとまず全部確保。LNRenderViewBuffer や LNClusteredShadingParameters は Element 単位ではなく共有可能なので、もう少し最適化したい
 	const auto& layout = descriptorLayout();
+	const auto& defaulValues = m_shader->descriptor();
+
+	for (int i = 0; i < layout->m_buffers.size(); i++) {
+		const auto& info = layout->m_buffers[i];
+		m_uniformBufferViews[i].clear();
+	}
+
+
+	// TODO: ひとまず全部確保。LNRenderViewBuffer や LNClusteredShadingParameters は Element 単位ではなく共有可能なので、もう少し最適化したい
 	int index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNRenderViewBuffer);
 	if (index >= 0) setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
 	index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNRenderElementBuffer);
@@ -64,6 +72,22 @@ void ShaderSecondaryDescriptor::reallocFromSemanticsManager(detail::GraphicsComm
 		setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
 		const auto& data = shader()->descriptor()->m_buffers[index];
 		setUniformBufferData(0, data.data(), data.size());
+	}
+
+
+	for (int i = 0; i < layout->m_buffers.size(); i++) {
+		if (!m_uniformBufferViews[i].buffer) {
+			const auto& info = layout->m_buffers[i];
+			m_uniformBufferViews[i] = commandList->allocateUniformBuffer(info.size);
+		}
+	}
+
+
+	for (int i = 0; i < layout->m_textures.size(); i++) {
+		m_textures[i] = defaulValues->m_textures[i];
+	}
+	for (int i = 0; i < layout->m_samplers.size(); i++) {
+		m_samplers[i] = defaulValues->m_samplers[i];
 	}
 }
 

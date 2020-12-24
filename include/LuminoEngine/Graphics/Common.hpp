@@ -430,6 +430,7 @@ struct ConstantBufferView
     size_t offset;
     void setData(const void* data, size_t size);
     void* writableData();
+    void clear() { buffer = nullptr; offset = 0; }
 };
 
 } // namespace detail

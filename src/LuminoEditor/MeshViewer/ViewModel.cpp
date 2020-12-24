@@ -12,6 +12,8 @@ ViewModel::ViewModel()
 
 void ViewModel::load()
 {
+	ln::Scene::setAntialiasEnabled(true);
+
 	auto settings = ln::makeObject<ln::MeshImportSettings>();
 	//settings->setSkeletonImport(false);
 	settings->setCharacterModelFormat(true);
