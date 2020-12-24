@@ -55,7 +55,7 @@ public:
 	// TODO: ↑ flags 実装に伴い不要になりそう
 
     RenderPart targetPhase = RenderPart::_Count;
-	RenderDrawElement* m_classifiedNext = nullptr;
+	//RenderDrawElement* m_classifiedNext = nullptr;
 
 
 
@@ -73,10 +73,10 @@ public:
 	void calculateActualPriority();
 	int64_t actualPriority() const { return m_actualPriority; }
 
+	RenderDrawElement* m_next;
 private:
 	Matrix m_combinedWorldMatrix;
 	RenderStage* m_stage;
-	RenderDrawElement* m_next;
 	int64_t m_actualPriority;	// Zソートのためのキャッシュ。何回も計算を繰り返したくないので
 	//RenderDrawElementTypeFlags m_elementType = RenderDrawElementTypeFlags::None;
 	Flags<RenderDrawElementTypeFlags> m_flags = RenderDrawElementTypeFlags::None;
@@ -130,7 +130,7 @@ public:
 
 	RenderDrawElement* headElement() const { return m_allElementList.headElement; }
     RenderDrawElement* lastElement() const { return m_allElementList.tailElement; }
-	const ElementListDetail& classifiedElementList(RenderPart phase) const { return m_classifiedElementList[static_cast<int>(phase)]; }
+	//const ElementListDetail& classifiedElementList(RenderPart phase) const { return m_classifiedElementList[static_cast<int>(phase)]; }
 
 
 private:
@@ -140,7 +140,7 @@ private:
 	List<RenderStage*> m_renderStageList;	// TODO: ポインタのリンクリストでもいいかな
 
 	ElementListDetail m_allElementList;
-	std::array<ElementListDetail, (int)RenderPart::_Count> m_classifiedElementList;
+	//std::array<ElementListDetail, (int)RenderPart::_Count> m_classifiedElementList;
 
 	IDrawElementListFrameData* m_headFrameData;	// head of link list.
 	IDrawElementListFrameData* m_tailFrameData;	// tail of link list.
