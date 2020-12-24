@@ -11,6 +11,8 @@ class ShaderSecondaryDescriptor
 {
 public:
 	void reset(detail::GraphicsCommandList* commandList);
+	// ShaderTechniqueSemanticsManager が必要としている要素に限定して realloc する。SceneRenderer で使用する。
+	void reallocFromSemanticsManager(detail::GraphicsCommandList* commandList, const detail::ShaderTechniqueSemanticsManager* semanticsManager);
 
 
 	// 各 index は ShaderDescriptorLayout のフィールドの index と一致する。

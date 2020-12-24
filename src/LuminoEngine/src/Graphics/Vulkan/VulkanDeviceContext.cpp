@@ -227,10 +227,10 @@ Ref<ITexture> VulkanDevice::onCreateTexture3D(GraphicsResourceUsage usage, uint3
 	return nullptr;
 }
 
-Ref<ITexture> VulkanDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+Ref<ITexture> VulkanDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
     auto ptr = makeRef<VulkanRenderTarget>();
-    if (!ptr->init(this, width, height, requestFormat, mipmap)) {
+    if (!ptr->init(this, width, height, requestFormat, mipmap, msaa)) {
         return nullptr;
     }
     return ptr;
@@ -499,7 +499,16 @@ Result VulkanDevice::pickPhysicalDevice()
         vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &m_deviceMemoryProperties);
     }
 
-
+    {
+        VkSampleCountFlags counts = info.deviceProperty.limits.framebufferColorSampleCounts & info.deviceProperty.limits.framebufferDepthSampleCounts;
+        if (counts & VK_SAMPLE_COUNT_64_BIT) { m_msaaSamples = VK_SAMPLE_COUNT_64_BIT; }
+        else if (counts & VK_SAMPLE_COUNT_32_BIT) { m_msaaSamples = VK_SAMPLE_COUNT_32_BIT; }
+        else if (counts & VK_SAMPLE_COUNT_16_BIT) { m_msaaSamples = VK_SAMPLE_COUNT_16_BIT; }
+        else if (counts & VK_SAMPLE_COUNT_8_BIT) { m_msaaSamples = VK_SAMPLE_COUNT_8_BIT; }
+        else if (counts & VK_SAMPLE_COUNT_4_BIT) { m_msaaSamples = VK_SAMPLE_COUNT_4_BIT; }
+        else if (counts & VK_SAMPLE_COUNT_2_BIT) { m_msaaSamples = VK_SAMPLE_COUNT_2_BIT; }
+        else { m_msaaSamples = VK_SAMPLE_COUNT_1_BIT; }
+    }
 
     // Dump Caps
     {
@@ -1735,6 +1744,7 @@ VulkanRenderPass2::VulkanRenderPass2()
 	, m_clearColor()
 	, m_clearDepth(1.0f)
 	, m_clearStencil(0x00)
+    , m_containsMultisampleTarget(false)
 {
 }
 
@@ -1756,30 +1766,56 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 	// 一方 StoreOp は RenderPass end 後に、RenderTarget の内容が不要であるかを指定することで GPU がメモリを再利用できるようにするための仕組みだが、
 	// パフォーマンを考えなければ常に VK_ATTACHMENT_STORE_OP_STORE のままで構わない。
 
-	// MaxRenderTargets + depthbuffer
-	//VkAttachmentDescription attachmentDescs[MaxMultiRenderTargets/* + 1*/] = {};
-	//VkAttachmentReference attachmentRefs[MaxMultiRenderTargets/* + 1*/] = {};
-    std::array<VkAttachmentDescription, MaxMultiRenderTargets + 1> attachmentDescs;
+    // attachments は普段は次のようなレイアウトになる
+    // [0] RenderTarget0
+    // [1] RenderTarget1
+    // [2] RenderTarget2
+    // [3] RenderTarget3
+    // [4] DepthBuffer
+    //
+    // RenderTarget がひとつしか使われていない場合は次のようになる
+    // [0] RenderTarget0
+    // [1] DepthBuffer
+    //
+    // MSAA 有効時は、DepthBuffer の前に Resolve 用のターゲットが入る
+    // [0] MultisampleColorTarget(RenderTarget0)
+    // [1] ResolveColorTarget(RenderTarget0)
+    // [2] DepthBuffer
+
+	// MaxRenderTargets + Resolve-MaxRenderTargets(for MSAA) + depthbuffer
+    std::array<VkAttachmentDescription, MaxMultiRenderTargets * 2 + 1> attachmentDescs;
     std::array<VkAttachmentReference, MaxMultiRenderTargets + 1> attachmentRefs;
 	VkAttachmentReference* depthAttachmentRef = nullptr;
+    std::array<VkAttachmentReference, MaxMultiRenderTargets> resolveRefs;
 	int attachmentCount = 0;
-	int colorAttachmentCount = 0;
+	int colorAttachmentCount = 0;;
+    int resolveCount = 0;
 	for (int i = 0; i < MaxMultiRenderTargets; i++) {
 		if (buffers.renderTargets[i]) {
 			VulkanRenderTarget* renderTarget = static_cast<VulkanRenderTarget*>(buffers.renderTargets[i]);
 
 			attachmentDescs[i].flags = 0;
-			attachmentDescs[i].format = renderTarget->image()->vulkanFormat();//VulkanHelper::LNFormatToVkFormat(state.renderTargets[i]->getTextureFormat());
-			attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
+            if (renderTarget->isMultisample()) {
+                attachmentDescs[i].format = renderTarget->multisampleColorBuffer()->vulkanFormat();
+                attachmentDescs[i].samples = renderTarget->msaaSamples();
+            }
+            else {
+                attachmentDescs[i].format = renderTarget->image()->vulkanFormat();
+                attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
+            }
 			//attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;//VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 			attachmentDescs[i].loadOp = colorLoadOp;// (loadOpClear) ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;// サンプルでは画面全体 clear する前提なので、前回値を保持する必要はない。そのため CLEAR。というか、CLEAR 指定しないと clear しても背景真っ黒になった。
 			attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 			attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;// VK_ATTACHMENT_LOAD_OP_LOAD;// VK_ATTACHMENT_LOAD_OP_DONT_CARE;    // TODO: stencil。今は未対応
 			attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;//VK_ATTACHMENT_STORE_OP_STORE; //VK_ATTACHMENT_STORE_OP_DONT_CARE;//    // TODO: stencil。今は未対応
 			if (renderTarget->isSwapchainBackbuffer()) {
+                if (renderTarget->isMultisample()) {
+                    LN_NOTIMPLEMENTED();
+                    return false;
+                }
+
 				// swapchain の場合
-				// TODO: initialLayout は、Swapchain 作成直後は VK_IMAGE_LAYOUT_UNDEFINED を指定しなければならない。
-				// なお、Barrier に乗せて遷移させることは許可されていない。ここで何とかする必要がある。
+				// ※Barrier に乗せて遷移させることは許可されていない。ここで何とかする必要がある。
 				// https://stackoverflow.com/questions/37524032/how-to-deal-with-the-layouts-of-presentable-images
 				// validation layer: Submitted command buffer expects image 0x50 (subresource: aspectMask 0x1 array layer 0, mip level 0) to be in layout VK_IMAGE_LAYOUT_PRESENT_SRC_KHR--instead, image 0x50's current layout is VK_IMAGE_LAYOUT_UNDEFINED.
 				attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;// VK_IMAGE_LAYOUT_UNDEFINED;     // レンダリング前のレイアウト定義。UNDEFINED はレイアウトは何でもよいが、内容の保証はない。サンプルでは全体 clear するので問題ない。
@@ -1808,9 +1844,38 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 		}
 	}
 
+    for (int i = 0; i < MaxMultiRenderTargets; i++) {
+        if (buffers.renderTargets[i]) {
+            VulkanRenderTarget* renderTarget = static_cast<VulkanRenderTarget*>(buffers.renderTargets[i]);
+            if (renderTarget->isMultisample()) {
+                m_containsMultisampleTarget = true;
+                resolveRefs[i].attachment = colorAttachmentCount + i;
+                resolveRefs[i].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                if (renderTarget->isSwapchainBackbuffer()) {
+                    LN_NOTIMPLEMENTED();
+                    return false;
+                }
+
+                VkAttachmentDescription& colorAttachmentResolve = attachmentDescs[attachmentCount];
+                colorAttachmentResolve.format = renderTarget->image()->vulkanFormat();
+                colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
+                colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+                colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+                colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+                colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+                colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+                colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+                attachmentCount++;
+            }
+            resolveCount++;
+        }
+    }
+
 	if (buffers.depthBuffer) {
 		VulkanDepthBuffer* depthBuffer = static_cast<VulkanDepthBuffer*>(buffers.depthBuffer);
-		int i = colorAttachmentCount;
+		int i = attachmentCount;
 
 		attachmentDescs[i].flags = 0;
 		attachmentDescs[i].format = depthBuffer->nativeFormat();//m_device->findDepthFormat();//VK_FORMAT_D32_SFLOAT_S8_UINT; 
@@ -1837,7 +1902,7 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 	subpass.pInputAttachments = nullptr;
 	subpass.colorAttachmentCount = colorAttachmentCount;
 	subpass.pColorAttachments = attachmentRefs.data();
-	subpass.pResolveAttachments = nullptr;
+	subpass.pResolveAttachments = (resolveCount > 0) ? resolveRefs.data() : nullptr;    // 指定する場合、要素数は colorAttachmentCount でなければならない (https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkSubpassDescription.html)
 	subpass.pDepthStencilAttachment = depthAttachmentRef;
 	subpass.preserveAttachmentCount = 0;
 	subpass.pPreserveAttachments = nullptr;
@@ -1934,6 +1999,17 @@ Result VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRe
 
 	VkImageView attachments[MaxMultiRenderTargets + 1] = {};
 	int attachmentsCount = 0;
+	for (size_t i = 0; i < m_renderTargets.size(); i++) {
+		if (m_renderTargets[i]) {
+            if (m_renderTargets[i]->isMultisample()) {
+                attachments[attachmentsCount] = m_renderTargets[i]->multisampleColorBuffer()->vulkanImageView();
+            }
+            else {
+                attachments[attachmentsCount] = m_renderTargets[i]->image()->vulkanImageView();
+            }
+			attachmentsCount++;
+		}
+	}
 	for (size_t i = 0; i < m_renderTargets.size(); i++) {
 		if (m_renderTargets[i]) {
 			attachments[attachmentsCount] = m_renderTargets[i]->image()->vulkanImageView();
@@ -2092,7 +2168,7 @@ Result VulkanPipeline2::init(VulkanDevice* deviceContext, const DevicePipelineSt
 	VkPipelineMultisampleStateCreateInfo multisampling = {};
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	multisampling.sampleShadingEnable = VK_FALSE;
-	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+	multisampling.rasterizationSamples = m_ownerRenderPass->containsMultisampleTarget() ? m_device->msaaSamples() : VK_SAMPLE_COUNT_1_BIT;
 
 	//VkPipelineDepthStencilStateCreateInfo depthStencil = {};
 	//depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
@@ -2549,7 +2625,7 @@ Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage 
         }
         stagingBuffer.setData(0, initialData, imageSize);
 
-        m_image.init(m_deviceContext, width, height, m_nativeFormat, m_mipLevels, VK_IMAGE_TILING_OPTIMAL, usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+        m_image.init(m_deviceContext, width, height, m_nativeFormat, m_mipLevels, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
         if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, m_mipLevels, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
             return false;
@@ -2723,11 +2799,13 @@ Result VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int
 
 VulkanRenderTarget::VulkanRenderTarget()
     : m_deviceContext(nullptr)
+    , m_image(nullptr)
+    , m_multisampleColorBuffer(nullptr)
     , m_imageAvailableSemaphoreRef(nullptr)
 {
 }
 
-Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -2749,7 +2827,7 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
         }
 
         m_image = std::make_unique<VulkanImage>();
-        if (!m_image->init(m_deviceContext, width, height, nativeFormat, 1, VK_IMAGE_TILING_OPTIMAL, usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
+        if (!m_image->init(m_deviceContext, width, height, nativeFormat, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
             return false;
         }
 
@@ -2757,41 +2835,15 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
             return false;
         }
 
-        //// Color attachment
-        //VkImageCreateInfo image = vks::initializers::imageCreateInfo();
-        //image.imageType = VK_IMAGE_TYPE_2D;
-        //image.format = FB_COLOR_FORMAT;
-        //image.extent.width = offscreenPass.width;
-        //image.extent.height = offscreenPass.height;
-        //image.extent.depth = 1;
-        //image.mipLevels = 1;
-        //image.arrayLayers = 1;
-        //image.samples = VK_SAMPLE_COUNT_1_BIT;
-        //image.tiling = VK_IMAGE_TILING_OPTIMAL;
-        //// We will sample directly from the color attachment
-        //image.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-
-        //VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
-        //VkMemoryRequirements memReqs;
-
-        //VK_CHECK_RESULT(vkCreateImage(device, &image, nullptr, &offscreenPass.color.image));
-        //vkGetImageMemoryRequirements(device, offscreenPass.color.image, &memReqs);
-        //memAlloc.allocationSize = memReqs.size;
-        //memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-        //VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &offscreenPass.color.mem));
-        //VK_CHECK_RESULT(vkBindImageMemory(device, offscreenPass.color.image, offscreenPass.color.mem, 0));
-
-        //VkImageViewCreateInfo colorImageView = vks::initializers::imageViewCreateInfo();
-        //colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        //colorImageView.format = FB_COLOR_FORMAT;
-        //colorImageView.subresourceRange = {};
-        //colorImageView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        //colorImageView.subresourceRange.baseMipLevel = 0;
-        //colorImageView.subresourceRange.levelCount = 1;
-        //colorImageView.subresourceRange.baseArrayLayer = 0;
-        //colorImageView.subresourceRange.layerCount = 1;
-        //colorImageView.image = offscreenPass.color.image;
-        //VK_CHECK_RESULT(vkCreateImageView(device, &colorImageView, nullptr, &offscreenPass.color.view));
+        if (msaa) {
+            m_multisampleColorBuffer = std::make_unique<VulkanImage>();
+            if (!m_multisampleColorBuffer->init(
+                m_deviceContext, width, height, nativeFormat, 1, m_deviceContext->msaaSamples(), VK_IMAGE_TILING_OPTIMAL,
+                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,   // MultisampleColorBuffer は読み取り不要なので VK_IMAGE_USAGE_TRANSFER_SRC_BIT は不要
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
+                return false;
+            }
+        }
     }
 
     return true;
@@ -2811,6 +2863,11 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
 
 void VulkanRenderTarget::dispose()
 {
+    if (m_multisampleColorBuffer) {
+        m_multisampleColorBuffer->dispose();
+        m_multisampleColorBuffer = nullptr;
+    }
+
     if (m_image) {
         m_image->dispose();
         m_image = nullptr;
@@ -3066,7 +3123,7 @@ Result VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint
 
     VkFormat depthFormat = m_deviceContext->findDepthFormat();
 
-    if (!m_image.init(m_deviceContext, width, height, depthFormat, 1, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT)) {
+    if (!m_image.init(m_deviceContext, width, height, depthFormat, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT)) {
         return false;
     }
 

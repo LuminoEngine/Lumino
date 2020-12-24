@@ -556,7 +556,7 @@ detail::ITexture* RenderTargetTexture::resolveRHIObject(GraphicsContext* context
             m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createWrappedRenderTarget(m_nativeObject, width(), height());
         }
         else {
-            m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width(), height(), format(), mipmap());
+            m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width(), height(), format(), mipmap(), false);
         }
     }
 

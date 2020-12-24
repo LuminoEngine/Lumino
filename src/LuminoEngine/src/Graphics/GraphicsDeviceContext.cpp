@@ -216,9 +216,9 @@ Ref<ITexture> IGraphicsDevice::createTexture3D(GraphicsResourceUsage usage, uint
 	return ptr;
 }
 
-Ref<ITexture> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+Ref<ITexture> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
-	Ref<ITexture> ptr = onCreateRenderTarget(width, height, requestFormat, mipmap);
+	Ref<ITexture> ptr = onCreateRenderTarget(width, height, requestFormat, mipmap, msaa);
 	ptr->m_mipmap = mipmap;
 	if (ptr) {
 		m_aliveObjects.push_back(ptr);

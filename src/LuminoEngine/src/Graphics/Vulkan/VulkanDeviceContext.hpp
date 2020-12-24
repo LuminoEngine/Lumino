@@ -54,6 +54,7 @@ public:
     VkCommandPool vulkanCommandPool() const { return m_commandPool; }
     uint32_t graphicsQueueFamilyIndex() const { return m_graphicsQueueFamilyIndex; }
     Result findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
+    VkSampleCountFlagBits msaaSamples() const { return m_msaaSamples; }
     //const Ref<VulkanSingleFrameAllocatorPageManager>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
     const Ref<VulkanSingleFrameAllocatorPageManager>& transferBufferSingleFrameAllocator() const { return m_transferBufferSingleFrameAllocator; }
     VulkanNativeGraphicsInterface* vulkanNativeGraphicsInterface() const { return m_nativeInterface.get(); }
@@ -70,7 +71,7 @@ protected:
 	Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
 	Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
-	Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
+	Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) override;
     Ref<ITexture> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) override { LN_NOTIMPLEMENTED(); return nullptr; }
     Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
@@ -139,6 +140,7 @@ public: // TODO:
     std::vector<ImageFormatProperty> m_imageFormatProperties;
     VkPhysicalDeviceMemoryProperties m_deviceMemoryProperties;
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
+    VkSampleCountFlagBits m_msaaSamples;
     bool m_enableValidationLayers;
 };
 
@@ -244,6 +246,7 @@ public:
 	const Color& clearColor() const { return m_clearColor; }
 	float clearDepth() const { return m_clearDepth; }
 	uint8_t clearStencil() const { return m_clearStencil; }
+    bool containsMultisampleTarget() const { return m_containsMultisampleTarget; }
 
 private:
 	VulkanDevice* m_device;
@@ -253,6 +256,7 @@ private:
 	Color m_clearColor;
 	float m_clearDepth;
 	uint8_t m_clearStencil;
+    bool m_containsMultisampleTarget;
 #ifdef LN_DEBUG
     VkAttachmentDescription m_attachmentDescs[MaxMultiRenderTargets] = {};
     VkAttachmentReference m_attachmentRefs[MaxMultiRenderTargets] = {};
@@ -443,7 +447,7 @@ class VulkanRenderTarget
 {
 public:
 	VulkanRenderTarget();
-    Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
+    Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
 	Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
     virtual void dispose() override;
 	virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
@@ -455,8 +459,11 @@ public:
 	virtual void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {}
 
 	virtual const VulkanImage* image() const override { return m_image.get(); }
+    const VulkanImage* multisampleColorBuffer() const { return m_multisampleColorBuffer.get(); }
 
     bool isSwapchainBackbuffer() const { return m_image->IsExternalManagement(); }
+    bool isMultisample() const { return m_multisampleColorBuffer != nullptr; }
+    VkSampleCountFlagBits msaaSamples() const { return (isMultisample()) ? m_deviceContext->msaaSamples() : VK_SAMPLE_COUNT_1_BIT; }
     void setImageAvailableSemaphoreRef(VkSemaphore* semaphore) { m_imageAvailableSemaphoreRef = semaphore; }
     VkSemaphore imageAvailableSemaphore() const { return (m_imageAvailableSemaphoreRef) ? *m_imageAvailableSemaphoreRef : VK_NULL_HANDLE; }
     VkSemaphore renderFinishedSemaphore() const { return m_renderFinishedSemaphore; }
@@ -465,7 +472,9 @@ public:
 
 protected:
     VulkanDevice* m_deviceContext;
-	std::unique_ptr<VulkanImage> m_image;
+	std::unique_ptr<VulkanImage> m_image;                   // MSAA 有効の時は、Resolve されたテクスチャデータ
+    std::unique_ptr<VulkanImage> m_multisampleColorBuffer;  // MSAA 有効の時に使う、マルチサンプル有効なレンダーターゲットバッファ。MSAA 無しのときは nullptr
+
 	SizeI m_size;
 	TextureFormat m_format;
 

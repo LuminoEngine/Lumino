@@ -42,6 +42,31 @@ void ShaderSecondaryDescriptor::reset(detail::GraphicsCommandList* commandList)
 	}
 }
 
+void ShaderSecondaryDescriptor::reallocFromSemanticsManager(detail::GraphicsCommandList* commandList, const detail::ShaderTechniqueSemanticsManager* semanticsManager)
+{
+	// TODO: ひとまず全部確保。LNRenderViewBuffer や LNClusteredShadingParameters は Element 単位ではなく共有可能なので、もう少し最適化したい
+	const auto& layout = descriptorLayout();
+	int index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNRenderViewBuffer);
+	if (index >= 0) setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+	index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNRenderElementBuffer);
+	if (index >= 0) setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+	index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNEffectColorBuffer);
+	if (index >= 0) setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+	index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNPBRMaterialParameter);
+	if (index >= 0) setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+	index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNClusteredShadingParameters);
+	if (index >= 0) setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+	index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNShadowParameters);
+	if (index >= 0) setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+	index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_Global);
+	if (index >= 0) {
+		// "$Global" はデフォルト値からコピーしておく
+		setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+		const auto& data = shader()->descriptor()->m_buffers[index];
+		setUniformBufferData(0, data.data(), data.size());
+	}
+}
+
 void ShaderSecondaryDescriptor::setUniformBuffer(int index, const detail::ConstantBufferView& value)
 {
 	m_uniformBufferViews[index] = value;
