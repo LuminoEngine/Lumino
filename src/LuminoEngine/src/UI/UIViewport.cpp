@@ -9,6 +9,7 @@
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../PostEffect/PostEffectRenderer.hpp"
 #include "UIManager.hpp"
@@ -191,18 +192,19 @@ void UIViewport::onRender(UIRenderingContext* context)
 	//
 
 #if 1
+	CommandList* commandList = context->getCommandList(RenderPart::Geometry, detail::ProjectionKind::Independent2D);
 	Matrix t;
 	// -1~1 の rect である blit の Mesh をハックして使おうとしているので、先にスケーリングする必要がある
 	t.scale((viewSize.width * 0.5), -(viewSize.height * 0.5), 0);
-	t *= context->baseTransform();
+	t *= commandList->baseTransform();
 	t.translate((viewSize.width * 0.5), (viewSize.height * 0.5), 0);
 	
 
-	context->setBaseTransfrom(t);
-	context->setCullingMode(CullMode::None);
-	context->setBlendMode(BlendMode::Normal);
+	commandList->setBaseTransfrom(t);
+	commandList->setCullingMode(CullMode::None);
+	commandList->setBlendMode(BlendMode::Normal);
 	m_blitMaterial->setMainTexture(m_primaryTarget);
-	context->blit(m_blitMaterial, nullptr, RenderPart::Geometry);
+	commandList->blit(m_blitMaterial, nullptr, RenderPart::Geometry);
 #else
 	// TODO: ポストプロセスの結果を転送したいので、Sprite 描画では描画できない。
 	// 現状、RenderPhaseClass::PostEffect を使っている blit を利用する必要がある。
