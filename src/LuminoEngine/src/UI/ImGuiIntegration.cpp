@@ -195,7 +195,7 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 
 
 	const auto& commandList = graphicsContext->commandList();
-	ShaderDescriptor* descriptor = commandList->acquireShaderDescriptor(m_shader);
+	ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(m_shader);
 	{
 		descriptor->setUniformBuffer(0, commandList->allocateUniformBuffer(sizeof(LNRenderElementBuffer)));
 		LNRenderElementBuffer renderElementBuffer;

@@ -267,28 +267,28 @@ public:
     const String name() const;
 
     /** 整数値を設定します。 */
-    void setInt(int value, ShaderDescriptor* descriptor = nullptr);
+    void setInt(int value, detail::ShaderSecondaryDescriptor* descriptor = nullptr);
 
     /** 整数値の配列を設定します。 */
-    void setIntArray(const int* value, int count, ShaderDescriptor* descriptor = nullptr);
+    void setIntArray(const int* value, int count, detail::ShaderSecondaryDescriptor* descriptor = nullptr);
 
     /** 浮動小数点値を設定します。 */
-    void setFloat(float value, ShaderDescriptor* descriptor = nullptr);
+    void setFloat(float value, detail::ShaderSecondaryDescriptor* descriptor = nullptr);
 
     /** 浮動小数点値の配列を設定します。 */
-    void setFloatArray(const float* value, int count, ShaderDescriptor* descriptor = nullptr);
+    void setFloatArray(const float* value, int count, detail::ShaderSecondaryDescriptor* descriptor = nullptr);
 
     /** ベクトルを設定します。 */
-    void setVector(const Vector4& value, ShaderDescriptor* descriptor = nullptr);
+    void setVector(const Vector4& value, detail::ShaderSecondaryDescriptor* descriptor = nullptr);
 
     /** ベクトルの配列を設定します。 */
-    void setVectorArray(const Vector4* value, int count, ShaderDescriptor* descriptor = nullptr);
+    void setVectorArray(const Vector4* value, int count, detail::ShaderSecondaryDescriptor* descriptor = nullptr);
 
     /** 行列を設定します。 */
-    void setMatrix(const Matrix& value, ShaderDescriptor* descriptor = nullptr);
+    void setMatrix(const Matrix& value, detail::ShaderSecondaryDescriptor* descriptor = nullptr);
 
     /** 行列の配列を設定します。 */
-    void setMatrixArray(const Matrix* value, int count, ShaderDescriptor* descriptor = nullptr);
+    void setMatrixArray(const Matrix* value, int count, detail::ShaderSecondaryDescriptor* descriptor = nullptr);
 
     /** テクスチャを設定します。 */
     void setTexture(Texture* value);
@@ -439,7 +439,7 @@ public:
 
     /** この Shader の DescriptorLayout をもとに、ShaderDescriptor を作成します。 */
     //Ref<ShaderDefaultDescriptor> createDescriptor();
-    Ref<ShaderDescriptor> acquireDescriptor();
+    Ref<detail::ShaderSecondaryDescriptor> acquireDescriptor();
 
     const Ref<ShaderDefaultDescriptor>& descriptor() const { return m_descriptor; }
     const Ref<ShaderDescriptorLayout>& descriptorLayout() const { return m_descriptorLayout; }
@@ -470,7 +470,7 @@ private:
     String m_name;
     Ref<ShaderDescriptorLayout> m_descriptorLayout;
     Ref<ShaderDefaultDescriptor> m_descriptor;
-    Ref<ShaderDescriptor> m_descriptor2;
+    Ref<detail::ShaderSecondaryDescriptor> m_descriptor2;
     Ref<List<Ref<ShaderTechnique>>> m_techniques;
 
     friend class ShaderPass;
@@ -548,7 +548,7 @@ private:
     void setOwner(ShaderTechnique* owner) { m_owner = owner; }
     detail::IShaderPass* resolveRHIObject(GraphicsContext* graphicsContext, bool* outModified);
     void submitShaderDescriptor(GraphicsContext* graphicsContext, detail::GraphicsCommandList* commandList, const ShaderDefaultDescriptor* descripter, bool* outModified);
-    void submitShaderDescriptor2(GraphicsContext* graphicsContext, const ShaderDescriptor* descripter, bool* outModified);
+    void submitShaderDescriptor2(GraphicsContext* graphicsContext, const detail::ShaderSecondaryDescriptor* descripter, bool* outModified);
 
     ShaderTechnique* m_owner;
     String m_name;

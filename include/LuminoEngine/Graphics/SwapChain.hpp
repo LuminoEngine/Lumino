@@ -34,7 +34,7 @@ public:
     detail::ConstantBufferView allocateUniformBuffer(size_t size);
     Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;
 
-    ShaderDescriptor* acquireShaderDescriptor(Shader* shader);
+    ShaderSecondaryDescriptor* acquireShaderDescriptor(Shader* shader);
 
 private:
     Ref<detail::ICommandList> m_rhiResource;

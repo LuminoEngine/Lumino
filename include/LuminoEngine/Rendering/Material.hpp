@@ -204,7 +204,7 @@ public:	// TODO:
 	//static const float DefaultPower;	// (50.0f)
 
     // TODO: internal
-    void updateShaderVariables(detail::GraphicsCommandList* commandList, ShaderDescriptor* descriptor);
+    void updateShaderVariables(detail::GraphicsCommandList* commandList, detail::ShaderSecondaryDescriptor* descriptor);
 
 protected:  // TODO:
 	struct UniformBufferEntiry

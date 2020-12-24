@@ -8,9 +8,9 @@ class Shader;
 class ShaderDefaultDescriptor;
 class ShaderTechnique;
 class ShaderPass;
-class ShaderDescriptor;
 
 namespace detail {
+class ShaderSecondaryDescriptor;
 class ShaderDescriptorPool;
 //
 //// LigitingModel

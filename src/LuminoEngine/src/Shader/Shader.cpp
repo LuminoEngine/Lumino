@@ -257,7 +257,7 @@ void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, Diagn
 		}
 
         tech->setupSemanticsManager();
-        m_descriptor2 = makeObject<ShaderDescriptor>(this);
+        m_descriptor2 = makeObject<detail::ShaderSecondaryDescriptor>(this);
 	}
 }
 
@@ -337,7 +337,7 @@ void Shader::setTexture(const StringRef& parameterName, Texture* value)
 //    return makeObject<ShaderDefaultDescriptor>(this);
 //}
 
-Ref<ShaderDescriptor> Shader::acquireDescriptor()
+Ref<detail::ShaderSecondaryDescriptor> Shader::acquireDescriptor()
 {
     return m_descriptor2;
 }
@@ -554,7 +554,7 @@ void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail
 
 }
 
-void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const ShaderDescriptor* descripter, bool* outModified)
+void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const detail::ShaderSecondaryDescriptor* descripter, bool* outModified)
 {
     auto* manager = m_owner->shader()->m_graphicsManager;
     detail::GraphicsCommandList* commandList = graphicsContext->commandList();
@@ -926,7 +926,7 @@ void ShaderParameter2::setData(const void* data, size_t size)
     m_owner->setData(m_dataIndex, data, size);
 }
 
-void ShaderParameter2::setInt(int value, ShaderDescriptor* descriptor)
+void ShaderParameter2::setInt(int value, detail::ShaderSecondaryDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
@@ -935,7 +935,7 @@ void ShaderParameter2::setInt(int value, ShaderDescriptor* descriptor)
         m_owner->setInt(m_dataIndex, value);
 }
 
-void ShaderParameter2::setIntArray(const int* value, int count, ShaderDescriptor* descriptor)
+void ShaderParameter2::setIntArray(const int* value, int count, detail::ShaderSecondaryDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
@@ -944,7 +944,7 @@ void ShaderParameter2::setIntArray(const int* value, int count, ShaderDescriptor
         m_owner->setIntArray(m_dataIndex, value, count);
 }
 
-void ShaderParameter2::setFloat(float value, ShaderDescriptor* descriptor)
+void ShaderParameter2::setFloat(float value, detail::ShaderSecondaryDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
@@ -953,7 +953,7 @@ void ShaderParameter2::setFloat(float value, ShaderDescriptor* descriptor)
         m_owner->setFloat(m_dataIndex, value);
 }
 
-void ShaderParameter2::setFloatArray(const float* value, int count, ShaderDescriptor* descriptor)
+void ShaderParameter2::setFloatArray(const float* value, int count, detail::ShaderSecondaryDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
@@ -962,7 +962,7 @@ void ShaderParameter2::setFloatArray(const float* value, int count, ShaderDescri
         m_owner->setFloatArray(m_dataIndex, value, count);
 }
 
-void ShaderParameter2::setVector(const Vector4& value, ShaderDescriptor* descriptor)
+void ShaderParameter2::setVector(const Vector4& value, detail::ShaderSecondaryDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
@@ -971,7 +971,7 @@ void ShaderParameter2::setVector(const Vector4& value, ShaderDescriptor* descrip
         m_owner->setVector(m_dataIndex, value);
 }
 
-void ShaderParameter2::setVectorArray(const Vector4* value, int count, ShaderDescriptor* descriptor)
+void ShaderParameter2::setVectorArray(const Vector4* value, int count, detail::ShaderSecondaryDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
@@ -980,7 +980,7 @@ void ShaderParameter2::setVectorArray(const Vector4* value, int count, ShaderDes
         m_owner->setVectorArray(m_dataIndex, value, count);
 }
 
-void ShaderParameter2::setMatrix(const Matrix& value, ShaderDescriptor* descriptor)
+void ShaderParameter2::setMatrix(const Matrix& value, detail::ShaderSecondaryDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
@@ -989,7 +989,7 @@ void ShaderParameter2::setMatrix(const Matrix& value, ShaderDescriptor* descript
         m_owner->setMatrix(m_dataIndex, value);
 }
 
-void ShaderParameter2::setMatrixArray(const Matrix* value, int count, ShaderDescriptor* descriptor)
+void ShaderParameter2::setMatrixArray(const Matrix* value, int count, detail::ShaderSecondaryDescriptor* descriptor)
 {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)

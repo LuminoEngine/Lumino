@@ -163,7 +163,7 @@ void ShaderTechniqueSemanticsManager::reset()
     for (auto& i : m_builtinShaderTextures) i = -1;
 }
 
-void ShaderTechniqueSemanticsManager::updateRenderViewVariables(ShaderDescriptor* descriptor, const RenderViewInfo& info, const SceneInfo& sceneInfo) const
+void ShaderTechniqueSemanticsManager::updateRenderViewVariables(ShaderSecondaryDescriptor* descriptor, const RenderViewInfo& info, const SceneInfo& sceneInfo) const
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNRenderViewBuffer];
     if (index >= 0) {
@@ -198,7 +198,7 @@ void ShaderTechniqueSemanticsManager::updateRenderViewVariables(ShaderDescriptor
     }
 }
 
-void ShaderTechniqueSemanticsManager::updateElementVariables(ShaderDescriptor* descriptor, const CameraInfo& cameraInfo, const ElementInfo& info) const
+void ShaderTechniqueSemanticsManager::updateElementVariables(ShaderSecondaryDescriptor* descriptor, const CameraInfo& cameraInfo, const ElementInfo& info) const
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNRenderElementBuffer];
     if (index >= 0) {
@@ -231,7 +231,7 @@ void ShaderTechniqueSemanticsManager::updateElementVariables(ShaderDescriptor* d
     }
 }
 
-void ShaderTechniqueSemanticsManager::updateSubsetVariables(ShaderDescriptor* descriptor, const SubsetInfo& info) const
+void ShaderTechniqueSemanticsManager::updateSubsetVariables(ShaderSecondaryDescriptor* descriptor, const SubsetInfo& info) const
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNEffectColorBuffer];
     if (index >= 0) {
@@ -263,7 +263,7 @@ void ShaderTechniqueSemanticsManager::updateSubsetVariables(ShaderDescriptor* de
     }
 }
 
-void ShaderTechniqueSemanticsManager::updateSubsetVariables_PBR(ShaderDescriptor* descriptor, const PbrMaterialData& materialData) const
+void ShaderTechniqueSemanticsManager::updateSubsetVariables_PBR(ShaderSecondaryDescriptor* descriptor, const PbrMaterialData& materialData) const
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNPBRMaterialParameter];
     if (index >= 0) {
@@ -278,7 +278,7 @@ void ShaderTechniqueSemanticsManager::updateSubsetVariables_PBR(ShaderDescriptor
     }
 }
 
-void ShaderTechniqueSemanticsManager::updateClusteredShadingVariables(ShaderDescriptor* descriptor, const ClusteredShadingRendererInfo& info) const
+void ShaderTechniqueSemanticsManager::updateClusteredShadingVariables(ShaderSecondaryDescriptor* descriptor, const ClusteredShadingRendererInfo& info) const
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNClusteredShadingParameters];
     if (index >= 0) {

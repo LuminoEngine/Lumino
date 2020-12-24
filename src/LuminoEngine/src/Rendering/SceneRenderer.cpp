@@ -517,29 +517,29 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 
 				const auto& commandList = graphicsContext->commandList();
-				ShaderDescriptor* descriptor = commandList->acquireShaderDescriptor(tech->shader());
+				ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(tech->shader());
 				{
 					// TODO: ひとまず全部確保。LNRenderViewBuffer や LNClusteredShadingParameters は Element 単位ではなく共有可能なので、もう少し最適化したい
-					const auto& shader = tech->shader();
-					int index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNRenderViewBuffer);
-					if (index >= 0) descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
-					index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNRenderElementBuffer);
-					if (index >= 0) descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
-					index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNEffectColorBuffer);
-					if (index >= 0) descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
-					index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNPBRMaterialParameter);
-					if (index >= 0) descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
-					index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNClusteredShadingParameters);
-					if (index >= 0) descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
-					index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNShadowParameters);
-					if (index >= 0) descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
-					index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_Global);
-					if (index >= 0) {
-						descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
-						const auto& data = shader->descriptor()->m_buffers[index];
-						descriptor->setUniformBufferData(0, data.data(), data.size());
-					}
-					descriptor->fetchDefaultValues();
+					//const auto& shader = tech->shader();
+					//int index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNRenderViewBuffer);
+					//if (index >= 0) descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
+					//index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNRenderElementBuffer);
+					//if (index >= 0) descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
+					//index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNEffectColorBuffer);
+					//if (index >= 0) descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
+					//index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNPBRMaterialParameter);
+					//if (index >= 0) descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
+					//index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNClusteredShadingParameters);
+					//if (index >= 0) descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
+					//index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNShadowParameters);
+					//if (index >= 0) descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
+					//index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_Global);
+					//if (index >= 0) {
+					//	descriptor->setUniformBuffer(index, commandList->allocateUniformBuffer(shader->descriptorLayout()->m_buffers[index].size));
+					//	const auto& data = shader->descriptor()->m_buffers[index];
+					//	descriptor->setUniformBufferData(0, data.data(), data.size());
+					//}
+					descriptor->reset(commandList);
 				}
 
 				//semanticsManager->updateCameraVariables(cameraInfo);
@@ -719,7 +719,7 @@ void SceneRenderer::onCollectLight(const DynamicLightInfo& light)
 {
 }
 
-void SceneRenderer::onSetAdditionalShaderPassVariables(ShaderDescriptor* descriptor, ShaderTechnique* technique)
+void SceneRenderer::onSetAdditionalShaderPassVariables(ShaderSecondaryDescriptor* descriptor, ShaderTechnique* technique)
 {
 }
 
