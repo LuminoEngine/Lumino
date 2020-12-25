@@ -753,8 +753,8 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 
 				VertexMorphTargetView view;
 				view.positions = static_cast<const Vector3*>(getRawData(m_model->accessors[position]));
-				view.normals = static_cast<const Vector3*>(getRawData(m_model->accessors[position]));
-				view.tangents = static_cast<const Vector3*>(getRawData(m_model->accessors[position]));
+				view.normals = static_cast<const Vector3*>(getRawData(m_model->accessors[normal]));
+				view.tangents = static_cast<const Vector3*>(getRawData(m_model->accessors[tangent]));
 				sectionView.morphTargetViews.push_back(std::move(view));
 			}
 		}
@@ -799,28 +799,11 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 		vertexCount += count;
 	}
 
-	// count indices and measure element size.
+	// Count indices and measure element size.
 	int indexCount = 0;
-	//int indexElementSize = 0;
 	for (auto& section : meshView.sectionViews) {
 		indexCount += section.indexCount;
-	//	indexElementSize = std::max(indexElementSize, section.indexElementSize);
 	}
-	//int indexElementSize = detail::GraphicsResourceInternal::selectIndexBufferFormat(vertexCount);
-
-	//// select index format.
-	//IndexBufferFormat indexForamt;
-	//if (indexElementSize == 1 || indexElementSize == 2) {
-	//	indexForamt = IndexBufferFormat::UInt16;
-	//	indexElementSize = 2;
-	//}
-	//else if (indexElementSize == 4) {
-	//	indexForamt = IndexBufferFormat::UInt32;
-	//}
-	//else {
-	//	LN_NOTIMPLEMENTED();
-	//	return nullptr;
-	//}
 	IndexBufferFormat indexForamt = GraphicsHelper::selectIndexBufferFormat(vertexCount);
 
 	auto coreMesh = makeObject<Mesh>(vertexCount, indexCount, indexForamt, GraphicsResourceUsage::Static);
@@ -1114,7 +1097,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 		static_cast<const Vertex*>(coreMesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main)),
 		vertexCount);
 
-	std::cout << "GenerateMesh: " << timer.elapsedMilliseconds() << "[ms]" << std::endl;
+	//std::cout << "GenerateMesh: " << timer.elapsedMilliseconds() << "[ms]" << std::endl;
 
 	return coreMesh;
 }
