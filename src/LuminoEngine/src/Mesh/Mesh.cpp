@@ -818,6 +818,21 @@ IndexBuffer* Mesh::indexBuffer() const
 	return m_indexBuffer.buffer;
 }
 
+void* Mesh::acquireMappedMorphVertexBuffer(int morphIndex)
+{
+	// Grow
+	if (morphIndex >= m_morphVertexBuffer.size()) {
+		m_morphVertexBuffer.resize(morphIndex);
+	}
+
+	VertexBufferEntry& e = m_morphVertexBuffer[morphIndex];
+	if (!e.buffer) {
+
+	}
+
+
+}
+
 void Mesh::attemptResetVertexLayout()
 {
 	if (!m_vertexLayout) {
