@@ -142,6 +142,8 @@ set(LN_INCLUDES_gtest
 set(LN_SOURCES_gtest
     "${CMAKE_CURRENT_LIST_DIR}/external/gtest/src/gtest-all.cc")
 
+set(LN_GLTF_SAMPLE_MODELS_DIR "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/glTF-Sample-Models/")
+
 #------------------------------------------------------------------------------
 
 if (LN_BUILD_CORE_ONLY)

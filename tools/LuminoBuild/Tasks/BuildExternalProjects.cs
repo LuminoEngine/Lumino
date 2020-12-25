@@ -356,6 +356,10 @@ namespace LuminoBuild.Tasks
                 // TODO: https://github.com/memononen/nanovg/pull/565 のマージ待ち
                 Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "nanovg", "CMakeLists.txt"), "nanovg");
             }
+            if (!BuildEnvironment.FromCI && !Directory.Exists("glTF-Sample-Models"))
+            {
+                Utils.CallProcess("git", "clone https://github.com/KhronosGroup/glTF-Sample-Models");
+            }
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
 
