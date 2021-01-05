@@ -827,10 +827,14 @@ void* Mesh::acquireMappedMorphVertexBuffer(int morphIndex)
 
 	VertexBufferEntry& e = m_morphVertexBuffer[morphIndex];
 	if (!e.buffer) {
-
+		e.buffer = makeObject<VertexBuffer>(sizeof(VertexBlendWeight) * m_vertexCount, m_resourceUsage);
 	}
 
+	if (!e.mappedBuffer) {
+		e.mappedBuffer = e.buffer->map(MapMode::Write);
+	}
 
+	return e.mappedBuffer;
 }
 
 void Mesh::attemptResetVertexLayout()

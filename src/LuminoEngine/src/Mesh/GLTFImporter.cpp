@@ -931,6 +931,16 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
    //         // TODO: unmap 無いとめんどい以前に怖い
 		}
 
+		
+
+		// Build morph target vertex buffer
+		{
+			for (auto& vbView : section.morphTargetViews) {
+
+			}
+		
+		}
+
 		vertexOffset += vertexCountInSection;
 	}
 

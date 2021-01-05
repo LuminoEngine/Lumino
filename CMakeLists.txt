@@ -135,12 +135,12 @@ endif()
 # gtest
 
 set(LN_INCLUDES_gtest
-    "${CMAKE_CURRENT_LIST_DIR}/external/gtest/include"
-    "${CMAKE_CURRENT_LIST_DIR}/external/gtest"
-    "${CMAKE_CURRENT_LIST_DIR}/external/gtest/src")
+    "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/googletest/googletest/include"
+    "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/googletest/googletest"
+    "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/googletest/googletest/src")
 
 set(LN_SOURCES_gtest
-    "${CMAKE_CURRENT_LIST_DIR}/external/gtest/src/gtest-all.cc")
+    "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/googletest/googletest/src/gtest-all.cc")
 
 set(LN_GLTF_SAMPLE_MODELS_DIR "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/glTF-Sample-Models/")
 

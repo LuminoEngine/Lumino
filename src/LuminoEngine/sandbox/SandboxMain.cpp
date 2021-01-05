@@ -262,6 +262,7 @@ private:
 
 void Sandbox_EmptyApp();
 void Example_GameAudio();
+void Example_glTFSampleViewer();
 void Example_MainLoop();
 void Example_MeshViewer();
 void Example_MessageWindow();
@@ -469,6 +470,7 @@ int main(int argc, char** argv)
     if (1) {
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
+        Example_glTFSampleViewer();
         //Example_MainLoop();
 		//Example_MeshViewer();
         //Example_MessageWindow();
@@ -493,7 +495,7 @@ int main(int argc, char** argv)
         //Sandbox_Physics();
         //Sandbox_Physics2();
         //Sandbox_Particle();
-        Sandbox_PathRendering();
+        //Sandbox_PathRendering();
         //Sandbox_PostEffect();
         //Sandbox_Sky();
         //Sandbox_UIShader();
