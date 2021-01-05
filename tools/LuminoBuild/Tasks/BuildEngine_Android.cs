@@ -47,23 +47,27 @@ namespace LuminoBuild.Tasks
 
                         var args = new string[]
                         {
+                            // Basic options https://developer.android.com/ndk/guides/cmake.html
                             $"-H{cmakeHomeDir}",
                             $"-B{cmakeBuildDir}",
-                            $"-DLN_BUILD_TESTS=OFF",
-                            $"-DLN_BUILD_TOOLS=OFF",
-                            $"-DLN_TARGET_ARCH={targetName}",
+                            //$"-G\"Android Gradle - Ninja\"",
+                            $"-G\"Ninja\"",
+                            $"-DANDROID_ABI={abi}",
+                            $"-DANDROID_NDK={AndoridBuildEnv.AndroidNdkRootDir}",
+                            $"-DCMAKE_BUILD_TYPE={config}",
+                            $"-DCMAKE_MAKE_PROGRAM={AndoridBuildEnv.AndroidSdkNinja}",
+                            $"-DCMAKE_TOOLCHAIN_FILE={AndoridBuildEnv.AndroidCMakeToolchain}",
+                            
+                            // Lumino required
                             $"-DCMAKE_DEBUG_POSTFIX=d",
                             $"-DCMAKE_INSTALL_PREFIX={cmakeInstallDir}",
-                            $"-DANDROID_ABI={abi}",
                             $"-DANDROID_PLATFORM={platform}",
-                            $"-DCMAKE_BUILD_TYPE={config}",
-                            $"-DANDROID_NDK={AndoridBuildEnv.AndroidNdkRootDir}",
-                            $"-DCMAKE_CXX_FLAGS=-std=c++14",
+                            //$"-DCMAKE_CXX_FLAGS=-std=c++14",
                             $"-DANDROID_STL=c++_shared",
-                            $"-DCMAKE_TOOLCHAIN_FILE={AndoridBuildEnv.AndroidCMakeToolchain}",
-                            $"-DCMAKE_MAKE_PROGRAM={AndoridBuildEnv.AndroidSdkNinja}",
                             $"-DANDROID_NATIVE_API_LEVEL=26",
-                            $"-G\"Android Gradle - Ninja\"",
+                            $"-DLN_TARGET_ARCH={targetName}",
+                            $"-DLN_BUILD_TESTS=OFF",
+                            $"-DLN_BUILD_TOOLS=OFF",
                         };
 
                         Utils.CallProcess(AndoridBuildEnv.AndroidSdkCMake, string.Join(' ', args));

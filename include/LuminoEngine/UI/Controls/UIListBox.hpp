@@ -81,7 +81,11 @@ public:
 	/** setItemsLayoutPanel */
 	LN_METHOD(Property)
 	void setItemsLayoutPanel(UILayoutPanel* layout);
-	
+
+	/** itemsLayoutPanel */
+	LN_METHOD(Property)
+	UILayoutPanel* itemsLayoutPanel() const;
+
     /** UIListSubmitMode (default: Single) */
 	LN_METHOD(Property)
     void setSubmitMode(UIListSubmitMode value);
@@ -185,9 +189,11 @@ public:
 
 protected:
 	// base interface
-	virtual const String& elementName() const  override { static String name = u"UIListBox"; return name; }
-    virtual void onAddChild(UIElement* child) override;
-
+	const String& elementName() const  override { static String name = u"UIListBox"; return name; }
+    void onAddChild(UIElement* child) override;
+	Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+	Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
+	void onRoutedEvent(UIEventArgs* e) override;
 
 
 LN_CONSTRUCT_ACCESS:
@@ -198,6 +204,7 @@ LN_CONSTRUCT_ACCESS:
 	bool init();
 
 private:
+	Ref<UIScrollViewHelper> m_scrollViewHelper;
 };
 
 } // namespace ln

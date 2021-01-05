@@ -22,19 +22,16 @@ namespace LuminoBuild
 
             if (Utils.IsWin32)
             {
-                //var cloneParentDir = Path.Combine(builder.LuminoBuildDir, "Emscripten");
+                AndroidSdkRootDir = Path.GetFullPath(Path.Combine(buildCacheDir, "android-sdk-2"));
 
-                //string localAppDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                //AndroidSdkRootDir = Path.Combine(localAppDir, @"Android\Sdk");
+                AndroidSdkCMake = Path.Combine(AndroidSdkRootDir, @"cmake\3.10.2.4988404\bin\cmake.exe");
+                AndroidSdkNinja = Path.Combine(AndroidSdkRootDir, @"cmake\3.10.2.4988404\bin\ninja.exe");
 
-                AndroidSdkRootDir = Path.GetFullPath(Path.Combine(buildCacheDir, "android-sdk"));
-
-                AndroidSdkCMake = Path.Combine(AndroidSdkRootDir, @"cmake\3.6.4111459\bin\cmake.exe");
-                AndroidSdkNinja = Path.Combine(AndroidSdkRootDir, @"cmake\3.6.4111459\bin\ninja.exe");
-
-                AndroidNdkRootDir = Path.Combine(AndroidSdkRootDir, "ndk-bundle");
+                AndroidNdkRootDir = Path.Combine(AndroidSdkRootDir, "ndk", "22.0.7026061");
                 AndroidCMakeToolchain = Path.Combine(AndroidNdkRootDir, @"build\cmake\android.toolchain.cmake");
             }
+
+#if false
 
             // Install Android SDK
             if (BuildEnvironment.IsAndroidTarget && Utils.IsWin32)
@@ -87,7 +84,7 @@ namespace LuminoBuild
 
             }
 
-
+#endif
             if (Directory.Exists(AndroidSdkRootDir))
             {
                 AndroidStudioFound = true;

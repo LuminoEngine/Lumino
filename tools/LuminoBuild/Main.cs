@@ -18,13 +18,13 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "BuildLocalPackage", "MSVC2019-x64-MT" };
+                //args = new string[] { "BuildLocalPackage", "MSVC2019-x64-MT" };
                 //args = new string[] { "BuildLocalPackage", "MSVC2019-x86-MT" };
                 //args = new string[] { "BuildLocalPackage", "Android-x86_64" };
                 //args = new string[] { "BuildLocalPackage", "Emscripten" };
 
 
-                //args = new string[] { "BuildEngine_AndroidJNI" };
+                args = new string[] { "BuildEngine_Android" };
                 //args = new string[] { "BuildExternalProjects", "MSVC2019-x64-MT" };//, "--enable-Effekseer" };
                 //args = new string[] { "BuildExternalProjects", "Emscripten" };
                 //args = new string[] { "BuildExternalProjects", "Android-x86_64" };

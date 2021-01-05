@@ -147,6 +147,30 @@ namespace LuminoBuild.Tasks
 
                 var args = new string[]
                 {
+                    // Basic options https://developer.android.com/ndk/guides/cmake.html
+                    $"-H{cmakeHomeDir}",
+                    $"-B{buildDir}",
+                    //$"-G\"Android Gradle - Ninja\"",
+                    $"-G\"Ninja\"",
+                    $"-DANDROID_ABI={AndoridBuildEnv.GetABIFromTargetName(targetName)}",
+                    $"-DANDROID_NDK={AndoridBuildEnv.AndroidNdkRootDir}",
+                    $"-DCMAKE_BUILD_TYPE={config}",
+                    $"-DCMAKE_MAKE_PROGRAM={AndoridBuildEnv.AndroidSdkNinja}",
+                    $"-DCMAKE_TOOLCHAIN_FILE={AndoridBuildEnv.AndroidCMakeToolchain}",
+                    $"-DANDROID_TOOLCHAIN=clang",
+
+                    // Lumino required
+                    $"-DCMAKE_INSTALL_PREFIX={installDir}",
+                    $"-DCMAKE_DEBUG_POSTFIX=d",
+                    $"-DANDROID_PLATFORM={platform}",
+                    $"-DANDROID_STL=c++_shared",
+                    $"-DANDROID_NATIVE_API_LEVEL=26",
+                    $"-DLN_TARGET_ARCH={targetName}",
+                    additionalOptions,
+                };
+#if false
+                var args = new string[]
+                {
                     $"-H{cmakeHomeDir}",
                     $"-B{buildDir}",
                     $"-DLN_TARGET_ARCH={targetName}",
@@ -156,14 +180,16 @@ namespace LuminoBuild.Tasks
                     $"-DANDROID_PLATFORM={platform}",
                     $"-DCMAKE_BUILD_TYPE={config}",
                     $"-DANDROID_NDK={AndoridBuildEnv.AndroidNdkRootDir}",
-                    $"-DCMAKE_CXX_FLAGS=-std=c++14",
+                    //$"-DCMAKE_CXX_FLAGS=-std=c++14",
                     $"-DANDROID_STL=c++_shared",
                     $"-DCMAKE_TOOLCHAIN_FILE={AndoridBuildEnv.AndroidCMakeToolchain}",
-                    $"-DCMAKE_MAKE_PROGRAM={AndoridBuildEnv.AndroidSdkNinja}",
+                    //$"-DCMAKE_MAKE_PROGRAM={AndoridBuildEnv.AndroidSdkNinja}",
                     $"-DANDROID_NATIVE_API_LEVEL=26",
                     additionalOptions,
-                    $"-G\"Android Gradle - Ninja\"",
+                    //$"-G\"Android Gradle - Ninja\"",
+                    $"-G\"Unix Makefile\"",
                 };
+#endif
 
                 Utils.CallProcess(AndoridBuildEnv.AndroidSdkCMake, string.Join(' ', args));
                 Utils.CallProcess(AndoridBuildEnv.AndroidSdkCMake, $"--build {buildDir} ");
