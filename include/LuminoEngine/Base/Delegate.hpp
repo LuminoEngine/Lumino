@@ -18,16 +18,25 @@ class Delegate<TReturn(TArgs...)>
 public:
 	Delegate(const std::function<TReturn(TArgs...)>& function)
 		: m_function(function)
+		, m_alternative()
+	{}
+
+	Delegate(const std::function<void()>& function)
+		: m_function()
+		, m_alternative(function)
 	{}
 
 	bool isEmpty() const
 	{
-		return !m_function;
+		return !m_function || !m_alternative;
 	}
 
 	TReturn call(TArgs... args)
 	{
-		return m_function(std::forward<TArgs>(args)...);
+		if (m_function)
+			return m_function(std::forward<TArgs>(args)...);
+		else if (m_alternative)
+			m_alternative();
 	}
 
 LN_CONSTRUCT_ACCESS:
@@ -48,8 +57,49 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	std::function<TReturn(TArgs...)> m_function;
+	std::function<void()> m_alternative;
 };
 
+/**
+ */
+template<>
+class Delegate<void()>
+	: public Object
+{
+public:
+	Delegate(const std::function<void()>& function)
+		: m_function(function)
+	{}
+
+	bool isEmpty() const
+	{
+		return !m_function;
+	}
+
+	void call()
+	{
+		m_function();
+	}
+
+LN_CONSTRUCT_ACCESS:
+	Delegate()
+		: m_function()
+	{}
+
+	bool init()
+	{
+		return Object::init();
+	}
+
+	void init(const std::function<void()>& function)
+	{
+		init();
+		m_function = function;
+	}
+
+private:
+	std::function<void()> m_function;
+};
 
 template<class TReturn, class... TArgs>
 class Ref<Delegate<TReturn(TArgs...)>>
@@ -292,14 +342,14 @@ Delegate<TReturn(TArgs...)>* Ref<Delegate<TReturn(TArgs...)>>::operator->() cons
 template<class TClass, typename TReturn, typename... TArgs>
 Ref<Delegate<TReturn(TArgs...)>> makeDelegate(TClass* c, TReturn(TClass::*m)(TArgs...))
 {
-	auto* ptr = LN_NEW Delegate<TReturn(TArgs...)>([=](auto&&... args) { return (c->*m)(std::forward<decltype(args)>(args)...); });
+	auto* ptr = LN_NEW Delegate<TReturn(TArgs...)>([=](TArgs&&... args) { return (c->*m)(std::forward<decltype(args)>(args)...); });
 	return Ref<Delegate<TReturn(TArgs...)>>(ptr, false);
 }
 
 template<class TClass, typename TReturn, typename... TArgs>
 Ref<Delegate<TReturn(TArgs...)>> makeDelegate(const TClass* c, TReturn(TClass::*m)(TArgs...) const)
 {
-	auto* ptr = LN_NEW Delegate<TReturn(TArgs...)>([=](auto&&... args) { return (c->*m)(std::forward<decltype(args)>(args)...); });
+	auto* ptr = LN_NEW Delegate<TReturn(TArgs...)>([=](TArgs&&... args) { return (c->*m)(std::forward<decltype(args)>(args)...); });
 	return Ref<Delegate<TReturn(TArgs...)>>(ptr, false);
 }
 

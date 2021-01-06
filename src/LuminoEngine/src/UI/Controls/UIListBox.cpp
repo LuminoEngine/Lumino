@@ -172,6 +172,11 @@ UIListSubmitMode UIListItemsControl::submitMode() const
 	return m_submitMode;
 }
 
+Ref<EventConnection> UIListItemsControl::connectOnSubmit(Ref<UIGeneralEventHandler> handler)
+{
+	return m_onSubmit.connect(handler);
+}
+
 void UIListItemsControl::addListItem(UIListItem* item)
 {
 	if (LN_REQUIRE(item)) return;
@@ -214,6 +219,11 @@ void UIListItemsControl::removeAllItems()
 		}
 		m_logicalChildren->clear();
 	}
+}
+
+void UIListItemsControl::submitItem(UIListItem* item)
+{
+	m_onSubmit.raise(UIEventArgs::create(item, UIEvents::Submitted));
 }
 
 void UIListItemsControl::onRoutedEvent(UIEventArgs* e)
@@ -290,6 +300,7 @@ void UIListItemsControl::onRoutedEvent(UIEventArgs* e)
 	else if (e->type() == UIEvents::ExecuteCommandEvent) {
 		if (static_cast<UICommandEventArgs*>(e)->command() == UICommonInputCommands::submit()) {
 			if (UIListItem* item = selectedItem()) {
+				submitItem(item);
 				item->onSubmit();
 				//e->handled = true;
 			}
@@ -329,6 +340,7 @@ Size UIListItemsControl::arrangeOverride(UILayoutContext* layoutContext, const R
 void UIListItemsControl::notifyItemClicked(UIListItem* item, int clickCount)
 {
 	if (submitMode() == UIListSubmitMode::Single) {
+		submitItem(item);
 		item->onSubmit();
 	}
 	else {

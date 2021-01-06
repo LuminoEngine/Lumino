@@ -48,55 +48,101 @@ using namespace ln;
 
 namespace bt {
 
+
+    template<class T>
+    struct BuilderVariant;
+
+    class BuilderDetailsBase2;
+
+    struct BuilderBase1
+    {
+        Ref<BuilderDetailsBase2> m_detail;
+    };
+
     template<class T, class TDetail>
-    struct BuilderBase2 : public RefObject
+    struct BuilderBase2 : BuilderBase1
     {
     protected:
-        BuilderBase2() : m_detail(makeRef<TDetail>()) {}
-        TDetail* d() { return static_cast<TDetail*>(m_detail.get()); }
+        BuilderBase2() { m_detail = (makeRef<TDetail>()); }
+        TDetail* d() const { return static_cast<TDetail*>(m_detail.get()); }
 
-        template<class U>
-        Ref<U> buildAndApply()
-        {
-            auto ptr = makeObject<U>();
-            m_detail->apply(ptr);
-            return ptr;
-        }
+
+        //template<class U>
+        //Ref<U> buildAndApply()
+        //{
+        //    auto ptr = makeObject<U>();
+        //    m_detail->apply(ptr);
+        //    return ptr;
+        //}
 
     private:
-        Ref<TDetail> m_detail;
+
+        template<class T>
+        friend struct BuilderVariant;
     };
 
     class BuilderDetailsBase2
         : public RefObject
     {
     public:
+        virtual Ref<Object> create() const = 0;   // BuilderVariant から生成したいので
 
         friend class BuilderBase;
     };
 
 
+    template<class T>
+    struct BuilderVariant
+    {
+        BuilderVariant(T* value) : v(value), d() {}
+        BuilderVariant(const BuilderBase1& value) : v(), d(value.m_detail) {}
+        BuilderVariant(const BuilderVariant&) = default;
 
-class Base1;
+        Ref<T> get() const
+        {
+            if (v)
+                return v;
+            else
+                return static_pointer_cast<T>(d->create());
+        }
+
+        Ref<T> v;
+        Ref<BuilderDetailsBase2> d;
+    };
+
+
+
+
+
+//====================
+class Base1 : public Object
+{
+public:
+    struct Builder;
+
+    void setWidth(int value) { m_width = value; }
+    void setHeight(int value) { m_height = value; }
+
+protected:
+    template<class T, class D>
+    struct BuilderBase;
+
+private:
+    int m_width = 0;
+    int m_height = 0;
+};
 
 struct BuilderDetails : public BuilderDetailsBase2
 {
     int m_width;
     int m_height;
     void apply(Base1* i) const;
-};
-
-class Base1 : public Object
-{
-public:
-    struct Builder;
-
-    void setWidth(int value) {}
-    void setHeight(int value) {}
-
-protected:
-    template<class T, class D>
-    struct BuilderBase;
+    Ref<Object> create() const override
+    {
+        auto ptr = makeObject<Base1>();
+        apply(ptr);
+        return ptr;
+    }
 };
 
 void BuilderDetails::apply(Base1* i) const
@@ -115,32 +161,34 @@ struct Base1::BuilderBase : public BuilderBase2<T, D>
     T& height(int value) { d()->m_height = value; return *static_cast<T*>(this); }
 
 protected:
-    D* d() { return BuilderBase2<T, D>::d(); }
+    D* d() const { return BuilderBase2<T, D>::d(); }
 };
 
 struct Base1::Builder : public BuilderBase<Builder, BuilderDetails>
 {
-    Ref<Base1> build() { return buildAndApply<Base1>(); }
+    using Base = BuilderBase<Builder, BuilderDetails>;
+    Ref<Base1> build() { return static_pointer_cast<Base1>(d()->create()); }
 };
 
 
 
 
 
-
-class Shape;
-
+//====================
 class Shape : public Base1
 {
 public:
 
     struct Builder;
 
-    void setColor(const Color& value) {}
+    void setColor(const Color& value) { m_color = value; }
 
 protected:
     template<class T, class D>
     struct BuilderBase;
+
+private:
+    Color m_color;
 };
 
 struct ShapeBuilderDetails : public BuilderDetails
@@ -152,6 +200,12 @@ struct ShapeBuilderDetails : public BuilderDetails
         BuilderDetails::apply(i);
         i->setColor(m_color);
     }
+    Ref<Object> create() const override
+    {
+        auto ptr = makeObject<Shape>();
+        apply(ptr);
+        return ptr;
+    }
 };
 
 template<class T, class D>
@@ -161,12 +215,63 @@ struct Shape::BuilderBase : public Base1::BuilderBase<T, D>
     T& color(const Color& value) { d()->m_color = value; return *static_cast<T*>(this); }
 
 protected:
-    D* d() { return BuilderBase2<T, D>::d(); }
+    D* d() const { return BuilderBase2<T, D>::d(); }
 };
 
-struct Shape::Builder : public BuilderBase<Builder, ShapeBuilderDetails>
+struct Shape::Builder : public Shape::BuilderBase<Builder, ShapeBuilderDetails>
 {
-    Ref<Shape> build() { return buildAndApply<Shape>(); }
+    Ref<Shape> build() { return static_pointer_cast<Shape>(d()->create()); }
+};
+
+
+
+
+//====================
+class Container : public Base1
+{
+public:
+    struct Builder;
+
+    void add(Base1* value) { m_elements.push_back(value); }
+
+protected:
+    template<class T, class D>
+    struct BuilderBase;
+    std::vector<Ref<Base1>> m_elements;
+};
+
+struct ContainerBuilderDetails : public BuilderDetails
+{
+    //List<Ref<Shape>> m_shapes;
+    std::vector<BuilderVariant<Base1>> m_shapes;
+
+    void apply(Container* i) const
+    {
+        BuilderDetails::apply(i);
+        for (const auto& s : m_shapes) i->add(s.get());
+    }
+    Ref<Object> create() const override
+    {
+        auto ptr = makeObject<Container>();
+        apply(ptr);
+        return ptr;
+    }
+};
+
+template<class T, class D>
+struct Container::BuilderBase : public Base1::BuilderBase<T, D>
+{
+    /** color property */
+    T& add(Base1* value) { d()->m_shapes.push_back(value); return *static_cast<T*>(this); }
+    T& add(const BuilderBase1& value) { d()->m_shapes.push_back(value); return *static_cast<T*>(this); }
+
+protected:
+    D* d() const { return BuilderBase2<T, D>::d(); }
+};
+
+struct Container::Builder : public Container::BuilderBase<Builder, ContainerBuilderDetails>
+{
+    Ref<Container> build() { return static_pointer_cast<Container>(d()->create()); }
 };
 
 }
@@ -196,6 +301,23 @@ class App_Sandbox_Builder : public Application
             .color(Color::Red)
             .build();
 
+        Ref<bt::Container> container = bt::Container::Builder()
+            .width(500)
+            .height(100)
+            .add(
+                shape1
+            )
+            .add(
+                bt::Shape::Builder()
+                    .width(20)
+                    .height(100)
+                    .color(Color::Red)
+            )
+            .build();
+
+        bt::Shape::Builder builder1 = bt::Shape::Builder().width(10);
+        bt::Shape::Builder builder2 = builder1;
+        builder1 = builder2;
 
     }
 

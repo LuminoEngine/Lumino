@@ -39,7 +39,7 @@ public:
 
 
 protected:
-	virtual void onSubmit();	// TODO: double click
+	virtual void onSubmit();
 	virtual void onSelected(UIEventArgs* e);
 	virtual void onUnselected(UIEventArgs* e);
 
@@ -94,10 +94,16 @@ public:
 	LN_METHOD(Property)
 	UIListSubmitMode submitMode() const;
 
+	/** Submit イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	Ref<EventConnection> connectOnSubmit(Ref<UIGeneralEventHandler> handler);
+
+
 protected:
 	void addListItem(UIListItem* item);
 	void removeListItem(UIListItem* item);
 	void removeAllItems();
+	virtual void submitItem(UIListItem* item);
 
 	// base interfaces
 	void onRoutedEvent(UIEventArgs* e) override;
@@ -116,6 +122,7 @@ private:
 	List<UIListItem*> m_selectedItems;
 	UIListSelectionMoveMode m_selectionMoveMode;
 	UIListSubmitMode m_submitMode;
+	Event<UIGeneralEventHandler> m_onSubmit;
 
 	friend class UIListItem;
 };

@@ -17,6 +17,10 @@ class App_Example_glTFSampleViewer : public Application
         m_listbox1->setWidth(200);
         m_listbox1->setAlignments(UIHAlignment::Left, UIVAlignment::Stretch);
         m_listbox1->setSubmitMode(UIListSubmitMode::Double);
+        m_listbox1->connectOnSubmit([&]() {
+            const auto* item = m_listbox1->selectedItem();
+            printf("submit %p\n", item);
+        });
         UI::add(m_listbox1);
 
 
