@@ -589,11 +589,11 @@ namespace LuminoBuild
             }
         }
 
-        public static void CallProcessShell(string program, string args = "")
+        public static void CallProcessShell(string program, string args = "", Dictionary<string, string> environmentVariables = null, Action<StreamWriter> stdinWrite = null)
         {
             if (Utils.IsWin32)
             {
-                CallProcess("cmd", $" /c {program} {args}");
+                CallProcess("cmd", $" /c {program} {args}", environmentVariables, stdinWrite);
             }
             else
             {

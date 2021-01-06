@@ -22,13 +22,43 @@ namespace LuminoBuild
 
             if (Utils.IsWin32)
             {
-                AndroidSdkRootDir = Path.GetFullPath(Path.Combine(buildCacheDir, "android-sdk-2"));
+                AndroidSdkRootDir = Path.GetFullPath(Path.Combine(buildCacheDir, "android-sdk"));
 
                 AndroidSdkCMake = Path.Combine(AndroidSdkRootDir, @"cmake\3.10.2.4988404\bin\cmake.exe");
                 AndroidSdkNinja = Path.Combine(AndroidSdkRootDir, @"cmake\3.10.2.4988404\bin\ninja.exe");
 
                 AndroidNdkRootDir = Path.Combine(AndroidSdkRootDir, "ndk", "22.0.7026061");
                 AndroidCMakeToolchain = Path.Combine(AndroidNdkRootDir, @"build\cmake\android.toolchain.cmake");
+            }
+
+
+            // Install Android SDK
+            if (BuildEnvironment.IsAndroidTarget && Utils.IsWin32)
+            {
+                var javaHome = Path.Combine(builder.LuminoBuildDir, "Emscripten", "emsdk", "java", "8.152_64bit");
+                var javaPath = Path.Combine(javaHome, "bin");
+                var skdmanager = Path.Combine(AndroidSdkRootDir, "tools", "bin", (Utils.IsWin32) ? "sdkmanager.bat" : "sdkmanager");
+                var env = new Dictionary<string, string>()
+                {
+                    { "PATH", javaPath + ";"+ Environment.GetEnvironmentVariable("PATH") },
+                    { "JAVA_HOME", javaHome },
+                };
+
+                if (!Directory.Exists(AndroidSdkRootDir))
+                {
+                    var zip = Path.Combine(buildCacheDir, "android-commandlinetools.zip");
+                    Utils.DownloadFile("https://dl.google.com/android/repository/sdk-tools-windows-4333796.zip", zip);
+                    Utils.ExtractZipFile(zip, AndroidSdkRootDir);
+
+
+                    if (!Utils.IsWin32)
+                        Utils.chmod(skdmanager, Utils.S_0755);
+
+
+                    Utils.CallProcess("java", $"-version", env);
+                    Utils.CallProcess(skdmanager, $"ndk;22.0.7026061 --sdk_root={AndroidSdkRootDir}", env, (stdin) => stdin.WriteLine("y"));
+                    Utils.CallProcess(skdmanager, $"cmake;3.10.2.4988404 --sdk_root={AndroidSdkRootDir}", env, (stdin) => stdin.WriteLine("y"));
+                }
             }
 
 #if false

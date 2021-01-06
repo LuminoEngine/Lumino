@@ -24,7 +24,7 @@ namespace LuminoBuild
                 //args = new string[] { "BuildLocalPackage", "Emscripten" };
 
 
-                args = new string[] { "BuildEngine_Android" };
+                //args = new string[] { "BuildEngine_Android" };
                 //args = new string[] { "BuildExternalProjects", "MSVC2019-x64-MT" };//, "--enable-Effekseer" };
                 //args = new string[] { "BuildExternalProjects", "Emscripten" };
                 //args = new string[] { "BuildExternalProjects", "Android-x86_64" };
@@ -36,7 +36,7 @@ namespace LuminoBuild
                 //args = new string[] { "BuildLLVM" };
                 //args = new string[] { "BuildEmbeddedResources" };
 
-                //args = new string[] { "MakeNativePackage" };
+                args = new string[] { "MakeNativePackage" };
                 //args = new string[] { "MakeInstaller_Win32" };
             }
 
