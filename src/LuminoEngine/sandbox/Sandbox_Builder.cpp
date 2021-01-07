@@ -49,23 +49,24 @@ using namespace ln;
 namespace bt {
 
 
-    template<class T>
+    template<class T, class I>
     struct BuilderVariant;
 
     class BuilderDetailsBase2;
 
-    struct BuilderBase1
+    struct IBuilder
     {
-        Ref<BuilderDetailsBase2> m_detail;
+        virtual BuilderDetailsBase2* getDetail() const = 0;
     };
 
     template<class T, class TDetail>
-    struct BuilderBase2 : BuilderBase1
+    struct BuilderBase2// : BuilderBase1
     {
     protected:
         BuilderBase2() { m_detail = (makeRef<TDetail>()); }
         TDetail* d() const { return static_cast<TDetail*>(m_detail.get()); }
 
+        Ref<BuilderDetailsBase2> m_detail;
 
         //template<class U>
         //Ref<U> buildAndApply()
@@ -77,7 +78,7 @@ namespace bt {
 
     private:
 
-        template<class T>
+        template<class T, class I>
         friend struct BuilderVariant;
     };
 
@@ -87,15 +88,26 @@ namespace bt {
     public:
         virtual Ref<Object> create() const = 0;   // BuilderVariant から生成したいので
 
+        template<class T, class D>
         friend class BuilderBase;
     };
 
 
-    template<class T>
+    template<class T, class I>
     struct BuilderVariant
     {
-        BuilderVariant(T* value) : v(value), d() {}
-        BuilderVariant(const BuilderBase1& value) : v(), d(value.m_detail) {}
+        //BuilderVariant(T* value) : v(value), d() {}
+        //BuilderVariant(Ref<T> value) : v(value), d() {}
+        template<class T2>
+        BuilderVariant(Ref<T2> value) : v(value), d() {}
+
+        template<class T2, class D2>
+        BuilderVariant(const BuilderBase2<T2, D2>& value) : v(), d(value.d()) { auto t = static_cast<typename T*>(reinterpret_cast<T2::BuildType*>(0)); }
+
+        //template<class B>
+        //BuilderVariant(const B& value) : v(), d(value.d()) {}
+        
+        //BuilderVariant(const I& value) : v(), d(value.getDetail()) {}
         BuilderVariant(const BuilderVariant&) = default;
 
         Ref<T> get() const
@@ -118,6 +130,7 @@ namespace bt {
 class Base1 : public Object
 {
 public:
+    struct IBuilder : public bt::IBuilder {};
     struct Builder;
 
     void setWidth(int value) { m_width = value; }
@@ -178,6 +191,7 @@ struct Base1::Builder : public BuilderBase<Builder, BuilderDetails>
 class Shape : public Base1
 {
 public:
+    struct IBuilder : public Base1::IBuilder {};
 
     struct Builder;
 
@@ -209,8 +223,12 @@ struct ShapeBuilderDetails : public BuilderDetails
 };
 
 template<class T, class D>
-struct Shape::BuilderBase : public Base1::BuilderBase<T, D>
+struct Shape::BuilderBase : public Base1::BuilderBase<T, D>//, public IBuilder
 {
+    struct IBuilder : public bt::IBuilder {};
+
+    //BuilderDetailsBase2* getDetail() const override { return d(); }
+
     /** color property */
     T& color(const Color& value) { d()->m_color = value; return *static_cast<T*>(this); }
 
@@ -220,6 +238,7 @@ protected:
 
 struct Shape::Builder : public Shape::BuilderBase<Builder, ShapeBuilderDetails>
 {
+    using BuildType = Shape;
     Ref<Shape> build() { return static_pointer_cast<Shape>(d()->create()); }
 };
 
@@ -243,7 +262,8 @@ protected:
 struct ContainerBuilderDetails : public BuilderDetails
 {
     //List<Ref<Shape>> m_shapes;
-    std::vector<BuilderVariant<Base1>> m_shapes;
+    //std::vector<BuilderVariant<Base1, Base1::IBuilder>> m_shapes;
+    std::vector<BuilderVariant<Shape, Base1::IBuilder>> m_shapes;
 
     void apply(Container* i) const
     {
@@ -262,8 +282,11 @@ template<class T, class D>
 struct Container::BuilderBase : public Base1::BuilderBase<T, D>
 {
     /** color property */
-    T& add(Base1* value) { d()->m_shapes.push_back(value); return *static_cast<T*>(this); }
-    T& add(const BuilderBase1& value) { d()->m_shapes.push_back(value); return *static_cast<T*>(this); }
+    template<class X>
+    T& add(const X& value) { d()->m_shapes.push_back(value); return *static_cast<T*>(this); }
+    //T& add(X&& value) { d()->m_shapes.push_back(std::forward<X>(value)); return *static_cast<T*>(this); }
+    //T& add(Base1* value) { d()->m_shapes.push_back(value); return *static_cast<T*>(this); }
+    //T& add(const Base1::IBuilder& value) { d()->m_shapes.push_back(value); return *static_cast<T*>(this); }
 
 protected:
     D* d() const { return BuilderBase2<T, D>::d(); }
@@ -304,6 +327,8 @@ class App_Sandbox_Builder : public Application
         Ref<bt::Container> container = bt::Container::Builder()
             .width(500)
             .height(100)
+            //.add(base1)   // Error
+            //.add(bt::Shape::Base1())    // Error
             .add(
                 shape1
             )

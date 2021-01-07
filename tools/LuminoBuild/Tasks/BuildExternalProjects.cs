@@ -209,10 +209,6 @@ namespace LuminoBuild.Tasks
             Directory.CreateDirectory(reposDir);
             Directory.SetCurrentDirectory(reposDir);
 
-            if (!Directory.Exists("googletest"))
-            {
-                Utils.CallProcess("git", "clone --depth 1 -b release-1.8.1 https://github.com/google/googletest.git googletest");
-            }
             if (!Directory.Exists("ios-cmake"))
             {
                 Utils.CallProcess("git", "clone --depth 1 -b 3.0.1 https://github.com/leetal/ios-cmake.git ios-cmake");
