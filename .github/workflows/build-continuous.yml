@@ -103,7 +103,7 @@ jobs:
 
   #==============================================================================
   Native-macOS:
-    runs-on: macos-10.15
+    runs-on: macos-11.0
 
     steps:
     - name: Checkout
@@ -127,7 +127,7 @@ jobs:
 
   #==============================================================================
   Native-iOS:
-    runs-on: macos-10.15
+    runs-on: macos-11.0
 
     steps:
     - name: Checkout

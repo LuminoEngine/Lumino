@@ -135,7 +135,7 @@ jobs:
 
   #==============================================================================
   Build-Native-macOS:
-    runs-on: macos-10.15
+    runs-on: macos-11.0
 
     steps:
     - name: Checkout
@@ -165,7 +165,7 @@ jobs:
         
   #==============================================================================
   Build-Native-iOS:
-    runs-on: macos-10.15
+    runs-on: macos-11.0
 
     steps:
     - name: Checkout
@@ -239,7 +239,7 @@ jobs:
   #==============================================================================
   Package-macOS:
     needs: [Build-Native-macOS, Build-Native-iOS]
-    runs-on: macos-10.15
+    runs-on: macos-11.0
     
     steps:
     - name: Checkout
