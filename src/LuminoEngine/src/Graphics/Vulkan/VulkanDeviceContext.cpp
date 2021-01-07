@@ -1126,7 +1126,7 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 		viewport.x = state.regionRects.viewportRect.x;
 		viewport.y = state.regionRects.viewportRect.height + state.regionRects.viewportRect.y;
 		viewport.width = state.regionRects.viewportRect.width;
-		viewport.height = -state.regionRects.viewportRect.height;   // height マイナスで、DirectX や OpenGL と同じ座標系になる
+		viewport.height = -state.regionRects.viewportRect.height;   // height マイナスで、DirectX や OpenGL と同じ座標系になる (1.1+, VK_KHR_maintenance1)
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
 		vkCmdSetViewport(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &viewport);
