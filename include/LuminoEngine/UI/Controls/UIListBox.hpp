@@ -198,7 +198,7 @@ public:
     static Ref<UIListBox> create();
 
 	/** UIListBoxItem を追加し、そのインスタンスを返します。 */
-	UIListBoxItem* addItem(const ln::String& text);
+	UIListBoxItem* addItem(const ln::String& text, Ref<Variant> data = nullptr);
 
 	/** UIListBoxItem を追加し、そのインスタンスを返します。 */
 	LN_METHOD()

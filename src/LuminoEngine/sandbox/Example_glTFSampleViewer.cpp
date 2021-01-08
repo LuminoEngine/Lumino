@@ -7,9 +7,14 @@ using namespace ln;
 class App_Example_glTFSampleViewer : public Application
 {
     Ref<UIListBox> m_listbox1;
+    Ref<SkinnedMesh> m_mesh;
 
     void onInit() override
     {
+        Engine::renderView()->setGuideGridEnabled(true);
+        Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+        //Engine::renderView()->setBackgroundColor(Color::Gray);
+
         namespace fs = std::filesystem;
 
         //m_listbox1 = UIListBox::create();
@@ -18,10 +23,7 @@ class App_Example_glTFSampleViewer : public Application
         m_listbox1 = UIListBox::Builder()
             .width(200)
             .backgroundColor(Color::Gray)
-            .onSubmit([&]() {
-                const auto* item = m_listbox1->selectedItem();
-                printf("submit %p\n", item);
-            })
+            .onSubmit([&]() { handleListItemSubmit(m_listbox1->selectedItem()->dataAs<String>()); })
             .build();
         m_listbox1->setAlignments(UIHAlignment::Left, UIVAlignment::Stretch);
         m_listbox1->setSubmitMode(UIListSubmitMode::Single);
@@ -35,24 +37,26 @@ class App_Example_glTFSampleViewer : public Application
                 for (const auto& y : fs::directory_iterator(glbdir)) {
                     std::cout << y.path() << std::endl;
 
-                    m_listbox1->addChild(y.path().filename().u16string().c_str());
+                    m_listbox1->addItem(y.path().filename().u16string().c_str(), String(y.path().u16string().c_str()));
+
                 }
             }
         }
-
-        //m_listbox1->addChild(u"item1");
-        //m_listbox1->addChild(u"item2");
-        //m_listbox1->addChild(u"item3");
-        //m_listbox1->addChild(u"item4");
     }
 
     void onUpdate() override
     {
     }
 
-    void handleListItemSubmit()
+    void handleListItemSubmit(const String& path)
     {
+        if (m_mesh) {
+            m_mesh->removeFromParent();
+        }
 
+        m_mesh = SkinnedMesh::load(path);
+
+        std::cout << path << std::endl;
     }
 };
 

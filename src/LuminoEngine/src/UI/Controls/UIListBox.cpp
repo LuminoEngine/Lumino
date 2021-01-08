@@ -438,9 +438,10 @@ bool UIListBox::init()
 	return true;
 }
 
-UIListBoxItem* UIListBox::addItem(const ln::String& text)
+UIListBoxItem* UIListBox::addItem(const ln::String& text, Ref<Variant> data)
 {
 	auto item = UIListBoxItem::create(text);
+	item->setData(data);
 	addChild(item);
 	return item;
 }

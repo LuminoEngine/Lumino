@@ -48,8 +48,24 @@ enum class VariantType
 void serialize(Archive& ar, Variant& value);
 
 
-template<typename... TArgs>
-Ref<Variant> makeVariant(TArgs&&... args);
+
+
+/** RefObject 用 スマートポインタ */
+template<>
+class Ref<Variant>
+{
+public:
+	Ref(bool value) noexcept;
+	Ref(int32_t value) noexcept;
+	Ref(const String& value) noexcept;
+
+#define LN_SPECIALIZED_TYPE Variant
+#include <LuminoCore/Base/Ref1.inl>
+#undef LN_SPECIALIZED_TYPE
+};
+
+
+
 
 /** Variant */
 LN_CLASS()
@@ -97,15 +113,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~Variant();
 
 	template<class T>
-	Variant(const List<T>& list)
-		: Variant(makeRef<List<Ref<Variant>>>())
-	{
-		auto& tl = Variant::list();
-		for (auto& item : list) {
-			auto v = makeVariant(item);
-			tl.add(v);
-		}
-	}
+	Variant(const List<T>& list);
 	
 	/** init. */
 	LN_METHOD()
@@ -378,6 +386,35 @@ private:
 	template<class T, class... TArgs> friend Ref<T> makeRef(TArgs&&... args);
 	template<typename... TArgs> friend Ref<Variant> makeVariant(TArgs&&... args);
 };
+
+template<class T>
+Variant::Variant(const List<T>& list)
+	: Variant(makeRef<List<Ref<Variant>>>())
+{
+	auto& tl = Variant::list();
+	for (auto& item : list) {
+		auto v = makeVariant(item);
+		tl.add(v);
+	}
+}
+
+
+inline Ref<Variant>::Ref(bool value) noexcept
+	: Ref(makeVariant(value))
+{}
+
+inline Ref<Variant>::Ref(int32_t value) noexcept
+	: Ref(makeVariant(value))
+{}
+
+inline Ref<Variant>::Ref(const String& value) noexcept
+	: Ref(makeVariant(value))
+{}
+
+
+#define LN_SPECIALIZED_TYPE Variant
+#include <LuminoCore/Base/Ref2.inl>
+#undef LN_SPECIALIZED_TYPE
 
 namespace detail
 {
@@ -718,15 +755,6 @@ TValue Variant::get() const
 
 
 
-template<typename... TArgs>
-Ref<Variant> makeVariant(TArgs&&... args)
-{
-	auto ptr = Ref<Variant>(new Variant(std::forward<TArgs>(args)...), false);
-	ptr->init();
-	return ptr;
-}
-
-
 template<>
 inline void serialize(Archive& ar, Ref<Variant>& value)
 {
@@ -754,6 +782,16 @@ inline void serialize(Archive& ar, Ref<Variant>& value)
 			value = nullptr;
 		}
 	}
+}
+
+
+
+template<typename... TArgs>
+Ref<Variant> makeVariant(TArgs&&... args)
+{
+	auto ptr = Ref<Variant>(new Variant(std::forward<TArgs>(args)...), false);
+	ptr->init();
+	return ptr;
 }
 
 
