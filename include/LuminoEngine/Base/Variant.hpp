@@ -75,6 +75,8 @@ class Variant
 public:
 	static const Variant Empty;
 
+	template<class T> friend class Ref;
+
 LN_CONSTRUCT_ACCESS:
 	Variant();
 
@@ -400,15 +402,15 @@ Variant::Variant(const List<T>& list)
 
 
 inline Ref<Variant>::Ref(bool value) noexcept
-	: Ref(makeVariant(value))
+	: Ref(LN_NEW Variant(value), false)
 {}
 
 inline Ref<Variant>::Ref(int32_t value) noexcept
-	: Ref(makeVariant(value))
+	: Ref(LN_NEW Variant(value), false)
 {}
 
 inline Ref<Variant>::Ref(const String& value) noexcept
-	: Ref(makeVariant(value))
+	: Ref(LN_NEW Variant(value), false)
 {}
 
 

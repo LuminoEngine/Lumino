@@ -13,13 +13,13 @@ template<class T, class B, class D>
 struct AbstractBuilder
 {
 public:
-    Ref<T> build() const { return ln::static_pointer_cast<T>(d()->create()); }
+    Ref<T> build() const;
 
 protected:
     virtual ~AbstractBuilder() = default;
     AbstractBuilder() { m_detail = std::make_shared<D>(); }
     D* d() const { return static_cast<D*>(m_detail.get()); }
-    B& self() { return *static_cast<B*>(this); }
+    //B& self() { return *static_cast<B*>(this); }
 
 private:
     using GenType = T;
@@ -69,6 +69,13 @@ struct BuilderVariant
     std::shared_ptr<AbstractBuilderDetails> d;
 };
 
+
+template<class T, class B, class D>
+inline Ref<T> AbstractBuilder<T, B, D>::build() const
+{
+    return ln::static_pointer_cast<T>(m_detail->create());
+}
+
 } // namespace ln
 
 #define LN_BUILDER \
@@ -88,6 +95,13 @@ struct BuilderVariant
         apply(ptr.get()); \
         return ptr; \
     }
+
+#define LN_BUILDER_CORE(basetype) \
+	protected: \
+		D* d() const { return basetype<T, B, D>::d(); } \
+		B& self() { return *static_cast<B*>(this); } \
+	public:
+
 
 #if 0
 

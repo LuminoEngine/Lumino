@@ -140,6 +140,8 @@ struct UIListItemsControl::BuilderDetails : public UIControl::BuilderDetails
 template<class T, class B, class D>
 struct UIListItemsControl::BuilderCore : public UIControl::BuilderCore<T, B, D>
 {
+	LN_BUILDER_CORE(UIControl::BuilderCore);
+
 	B& onSubmit(Ref<UIGeneralEventHandler> value) { d()->onSubmit = value; return self(); }
 };
 
@@ -242,6 +244,7 @@ struct UIListBox::BuilderDetails : public UIListItemsControl::BuilderDetails
 template<class T, class B, class D>
 struct UIListBox::BuilderCore : public UIListItemsControl::BuilderCore<T, B, D>
 {
+	LN_BUILDER_CORE(UIListItemsControl::BuilderCore);
 };
 
 LN_BUILDER_IMPLEMENT(UIListBox);

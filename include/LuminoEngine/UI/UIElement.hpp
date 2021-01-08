@@ -659,6 +659,7 @@ private:
 //==============================================================================
 // UIElement::Builder
 
+
 struct UIElement::BuilderDetails : public AbstractBuilderDetails
 {
 	LN_BUILDER_DETAILS(UIElement);
@@ -673,6 +674,8 @@ struct UIElement::BuilderDetails : public AbstractBuilderDetails
 template<class T, class B, class D>
 struct UIElement::BuilderCore : public AbstractBuilder<T, B, D>
 {
+	LN_BUILDER_CORE(AbstractBuilder);
+
 	/** width property */
 	B& width(float value) { d()->width = value; return self(); }
 
