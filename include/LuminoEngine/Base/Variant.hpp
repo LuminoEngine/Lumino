@@ -395,8 +395,7 @@ Variant::Variant(const List<T>& list)
 {
 	auto& tl = Variant::list();
 	for (auto& item : list) {
-		auto v = makeVariant(item);
-		tl.add(v);
+		tl.add(Ref<Variant>(LN_NEW Variant(item), false));
 	}
 }
 

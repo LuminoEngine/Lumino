@@ -136,16 +136,18 @@ void Element::BuilderDetails::apply(Element* i) const
 template<class B, class D>
 struct Element::BuilderBase : public AbstractBuilder<B, D>
 {
+    using base_type = AbstractBuilder<B, D>;
+
     /** width property */
-    B& width(int value) { d()->m_width = value; return *static_cast<B*>(this); }
+    B& width(int value) { base_type::d()->m_width = value; return *static_cast<B*>(this); }
 
     /** height property */
-    B& height(int value) { d()->m_height = value; return *static_cast<B*>(this); }
+    B& height(int value) { base_type::d()->m_height = value; return *static_cast<B*>(this); }
 };
 
 struct Element::Builder : public BuilderBase<Builder, BuilderDetails>
 {
-    Ref<Element> build() { return ln::static_pointer_cast<Element>(d()->create()); }
+    Ref<Element> build() { return ln::static_pointer_cast<Element>(base_type::d()->create()); }
 };
 
 //====================
@@ -186,13 +188,15 @@ void Shape::BuilderDetails::apply(Shape* i) const
 template<class B, class D>
 struct Shape::BuilderBase : public Element::BuilderBase<B, D>
 {
+    using base_type = AbstractBuilder<B, D>;
+
     /** color property */
-    B& color(const Color& value) { d()->m_color = value; return *static_cast<B*>(this); }
+    B& color(const Color& value) { base_type::d()->m_color = value; return *static_cast<B*>(this); }
 };
 
 struct Shape::Builder : public Shape::BuilderBase<Builder, Shape::BuilderDetails>
 {
-    Ref<Shape> build() { return ln::static_pointer_cast<Shape>(d()->create()); }
+    Ref<Shape> build() { return ln::static_pointer_cast<Shape>(base_type::d()->create()); }
 };
 
 //====================
@@ -235,14 +239,16 @@ void Container::BuilderDetails::apply(Container* i) const
 template<class B, class D>
 struct Container::BuilderBase : public Element::BuilderBase<B, D>
 {
+    using base_type = AbstractBuilder<B, D>;
+
     /** color property */
     template<class X>
-    B& add(const X& value) { d()->m_shapes.push_back(value); return *static_cast<B*>(this); }
+    B& add(const X& value) { base_type::d()->m_shapes.push_back(value); return *static_cast<B*>(this); }
 };
 
 struct Container::Builder : public Container::BuilderBase<Builder, Container::BuilderDetails>
 {
-    Ref<Container> build() { return ln::static_pointer_cast<Container>(d()->create()); }
+    Ref<Container> build() { return ln::static_pointer_cast<Container>(base_type::d()->create()); }
 };
 
 
