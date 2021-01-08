@@ -48,6 +48,7 @@ TEST_F(Test_UI_UIGridLayout, Basic)
 		LN_TEST_CLEAN_SCENE;
 	}
 
+#if 0
 	//- [ ] 2x2 cells.
 	{
 		auto layout1 = makeDecl<UIGridLayout>()
@@ -70,6 +71,7 @@ TEST_F(Test_UI_UIGridLayout, Basic)
 		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UIGridLayout-Basic-3.png"));
 		LN_TEST_CLEAN_SCENE;
 	}
+#endif
 }
 
 TEST_F(Test_UI_UIGridLayout, VerticalFlow)

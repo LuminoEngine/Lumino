@@ -362,6 +362,15 @@ void UIListItemsControl::selectItemExclusive(UIListItem* item)
 }
 
 //==============================================================================
+// UIListItemsControl::BuilderDetails
+
+void UIListItemsControl::BuilderDetails::apply(UIListItemsControl* p) const
+{
+	UIControl::BuilderDetails::apply(p);
+	if (onSubmit) p->connectOnSubmit(onSubmit);
+}
+
+//==============================================================================
 // UIListBoxItem
 
 LN_OBJECT_IMPLEMENT(UIListBoxItem, UIListItem) {}
@@ -512,6 +521,14 @@ void UIListBox::onRoutedEvent(UIEventArgs* e)
 {
 	UIListItemsControl::onRoutedEvent(e);
 	m_scrollViewHelper->handleRoutedEvent(e);
+}
+
+//==============================================================================
+// UIListBox::BuilderDetails
+
+void UIListBox::BuilderDetails::apply(UIListBox* p) const
+{
+	UIListItemsControl::BuilderDetails::apply(p);
 }
 
 } // namespace ln

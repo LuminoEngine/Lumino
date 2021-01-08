@@ -111,26 +111,28 @@ class UIElement
 	: public UILayoutElement
 {
     LN_OBJECT;
+	LN_BUILDER;
+
 public:
-	class Builder : public BuilderBase
-	{
-	public:
-		Builder();
-		Builder& height(float value);
-		Builder& backgroundColor(const Color& value);
-		Ref<UIElement> build();
+	//class Builder : public BuilderBase
+	//{
+	//public:
+	//	Builder();
+	//	Builder& height(float value);
+	//	Builder& backgroundColor(const Color& value);
+	//	Ref<UIElement> build();
 
-	protected:
-		class Details : public BuilderDetailsBase
-		{
-		public:
-			Optional<float> height;
-			Optional<Color> backgroundColor;
-			virtual Ref<Object> build() override;
-		};
+	//protected:
+	//	class Details : public BuilderDetailsBase
+	//	{
+	//	public:
+	//		Optional<float> height;
+	//		Optional<Color> backgroundColor;
+	//		virtual Ref<Object> build() override;
+	//	};
 
-		Builder(Details* d);
-	};
+	//	Builder(Details* d);
+	//};
 
 
     void setName(const String& value) { m_name = value; }
@@ -653,6 +655,35 @@ private:
     Flags<detail::UIElementDirtyFlags> m_dirtyFlags;
 	Ref<Variant> m_data;
 };
+
+//==============================================================================
+// UIElement::Builder
+
+struct UIElement::BuilderDetails : public AbstractBuilderDetails
+{
+	LN_BUILDER_DETAILS(UIElement);
+
+	Optional<float> width;
+	Optional<float> height;
+	Optional<Color> backgroundColor;
+
+	void apply(UIElement* p) const;
+};
+
+template<class T, class B, class D>
+struct UIElement::BuilderCore : public AbstractBuilder<T, B, D>
+{
+	/** width property */
+	B& width(float value) { d()->width = value; return self(); }
+
+	/** height property */
+	B& height(float value) { d()->height = value; return self(); }
+
+	/** height property */
+	B& backgroundColor(const Color& value) { d()->backgroundColor = value; return self(); }
+};
+
+LN_BUILDER_IMPLEMENT(UIElement);
 
 } // namespace ln
 

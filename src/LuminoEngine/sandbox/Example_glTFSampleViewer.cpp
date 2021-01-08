@@ -12,15 +12,19 @@ class App_Example_glTFSampleViewer : public Application
     {
         namespace fs = std::filesystem;
 
-        m_listbox1 = UIListBox::create();
-        m_listbox1->setBackgroundColor(Color::Gray);
-        m_listbox1->setWidth(200);
+        //m_listbox1 = UIListBox::create();
+        //m_listbox1->setBackgroundColor(Color::Gray);
+        //m_listbox1->setWidth(200);
+        m_listbox1 = UIListBox::Builder()
+            .width(200)
+            .backgroundColor(Color::Gray)
+            .onSubmit([&]() {
+                const auto* item = m_listbox1->selectedItem();
+                printf("submit %p\n", item);
+            })
+            .build();
         m_listbox1->setAlignments(UIHAlignment::Left, UIVAlignment::Stretch);
-        m_listbox1->setSubmitMode(UIListSubmitMode::Double);
-        m_listbox1->connectOnSubmit([&]() {
-            const auto* item = m_listbox1->selectedItem();
-            printf("submit %p\n", item);
-        });
+        m_listbox1->setSubmitMode(UIListSubmitMode::Single);
         UI::add(m_listbox1);
 
 

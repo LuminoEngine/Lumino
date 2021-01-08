@@ -74,6 +74,7 @@ class UIListItemsControl
 	: public UIControl
 {
 	LN_OBJECT;
+	LN_BUILDER;
 public:
 	void selectItem(UIListItem* item);
 	UIListItem* selectedItem() const;
@@ -127,6 +128,22 @@ private:
 	friend class UIListItem;
 };
 
+struct UIListItemsControl::BuilderDetails : public UIControl::BuilderDetails
+{
+	LN_BUILDER_DETAILS(UIListItemsControl);
+
+	Ref<UIGeneralEventHandler> onSubmit;
+
+	void apply(UIListItemsControl* p) const;
+};
+
+template<class T, class B, class D>
+struct UIListItemsControl::BuilderCore : public UIControl::BuilderCore<T, B, D>
+{
+	B& onSubmit(Ref<UIGeneralEventHandler> value) { d()->onSubmit = value; return self(); }
+};
+
+LN_BUILDER_IMPLEMENT(UIListItemsControl);
 
 //--------------------------------------
 
@@ -176,6 +193,7 @@ class UIListBox
 	: public UIListItemsControl
 {
 	LN_OBJECT;
+	LN_BUILDER;
 public:
     static Ref<UIListBox> create();
 
@@ -213,6 +231,20 @@ LN_CONSTRUCT_ACCESS:
 private:
 	Ref<UIScrollViewHelper> m_scrollViewHelper;
 };
+
+struct UIListBox::BuilderDetails : public UIListItemsControl::BuilderDetails
+{
+	LN_BUILDER_DETAILS(UIListBox);
+
+	void apply(UIListBox* p) const;
+};
+
+template<class T, class B, class D>
+struct UIListBox::BuilderCore : public UIListItemsControl::BuilderCore<T, B, D>
+{
+};
+
+LN_BUILDER_IMPLEMENT(UIListBox);
 
 } // namespace ln
 

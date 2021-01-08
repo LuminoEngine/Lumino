@@ -40,7 +40,7 @@ void UIViewModel::notify(UINotifyPropertyChangedEventArgs* e)
 
 //==============================================================================
 // UIElement::Builder
-
+/*
 UIElement::Builder::Builder()
 	: Builder(makeRef<Details>())
 {
@@ -74,6 +74,14 @@ Ref<Object> UIElement::Builder::Details::build()
 	if (height) ptr->setHeight(*height);
 	if (backgroundColor) ptr->setBackgroundColor(*backgroundColor);
 	return ptr;
+}
+*/
+
+void UIElement::BuilderDetails::apply(UIElement* p) const
+{
+    if (width) p->setWidth(*width);
+    if (height) p->setHeight(*height);
+    if (backgroundColor) p->setBackgroundColor(*backgroundColor);
 }
 
 //==============================================================================

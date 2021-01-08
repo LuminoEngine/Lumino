@@ -470,7 +470,7 @@ int main(int argc, char** argv)
     if (1) {
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
-        //Example_glTFSampleViewer();
+        Example_glTFSampleViewer();
         //Example_MainLoop();
 		//Example_MeshViewer();
         //Example_MessageWindow();
@@ -489,7 +489,7 @@ int main(int argc, char** argv)
         //Experiment_SerializeLevel();
         //Experiment_Shadow();
         //Experiment_SSR();
-        Sandbox_Builder();
+        //Sandbox_Builder();
         //Sandbox_GridListBox();
 		//Sandbox_MeshTilemap();
         //Sandbox_Physics();

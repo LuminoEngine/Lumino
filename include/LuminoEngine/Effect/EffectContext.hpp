@@ -53,34 +53,34 @@ class SpriteFrameEffectResource
     : public EffectResource
 {
 public:
-	template<class T>
-	class Builder : public BuilderBase
-	{
-	public:
-		LN_BUILDER(SpriteFrameEffectResource);
-		T& size(float value) { detailsAs<Details>()->size = Size(value, value); return static_cast<T&>(*this); }
-		T& size(const Size& value) { detailsAs<Details>()->size = value; return static_cast<T&>(*this); }
-		T& spriteSheet(SpriteSheet* value) { detailsAs<Details>()->spriteSheet = value; return static_cast<T&>(*this); }
-		T& startNumber(int value) { detailsAs<Details>()->startNumber = value; return static_cast<T&>(*this); }
-		T& lastNumber(int value) { detailsAs<Details>()->lastNumber = value; return static_cast<T&>(*this); }
-		T& frameTime(float value) { detailsAs<Details>()->frameTime = value; return static_cast<T&>(*this); }
+	//template<class T>
+	//class Builder : public BuilderBase
+	//{
+	//public:
+	//	LN_BUILDER(SpriteFrameEffectResource);
+	//	T& size(float value) { detailsAs<Details>()->size = Size(value, value); return static_cast<T&>(*this); }
+	//	T& size(const Size& value) { detailsAs<Details>()->size = value; return static_cast<T&>(*this); }
+	//	T& spriteSheet(SpriteSheet* value) { detailsAs<Details>()->spriteSheet = value; return static_cast<T&>(*this); }
+	//	T& startNumber(int value) { detailsAs<Details>()->startNumber = value; return static_cast<T&>(*this); }
+	//	T& lastNumber(int value) { detailsAs<Details>()->lastNumber = value; return static_cast<T&>(*this); }
+	//	T& frameTime(float value) { detailsAs<Details>()->frameTime = value; return static_cast<T&>(*this); }
 
-	protected:
-		class Details : public BuilderDetailsBase
-		{
-		public:
-			Size size;
-			Ref<SpriteSheet> spriteSheet;
-			int startNumber;
-			int lastNumber;
-			float frameTime;
-			virtual Ref<Object> build() override;
-		};
-	};
+	//protected:
+	//	class Details : public BuilderDetailsBase
+	//	{
+	//	public:
+	//		Size size;
+	//		Ref<SpriteSheet> spriteSheet;
+	//		int startNumber;
+	//		int lastNumber;
+	//		float frameTime;
+	//		virtual Ref<Object> build() override;
+	//	};
+	//};
 
-	class BuilderF : public Builder<BuilderF>
-	{
-	};
+	//class BuilderF : public Builder<BuilderF>
+	//{
+	//};
 
 public: // TODO: internal
 
@@ -98,18 +98,18 @@ public: // TODO: private
     Ref<Material> m_material;
 };
 
-template<class T>
-SpriteFrameEffectResource::Builder<T>::Builder() : Builder(makeRef<Details>()) {}
-template<class T>
-SpriteFrameEffectResource::Builder<T>::Builder(Details* d) : BuilderBase(d) {}
-
-template<class T>
-Ref<Object> SpriteFrameEffectResource::Builder<T>::Details::build()
-{
-	auto ptr = makeObject<SpriteFrameEffectResource>(size, spriteSheet, startNumber, lastNumber, frameTime);
-	return ptr;
-}
-
+//template<class T>
+//SpriteFrameEffectResource::Builder<T>::Builder() : Builder(makeRef<Details>()) {}
+//template<class T>
+//SpriteFrameEffectResource::Builder<T>::Builder(Details* d) : BuilderBase(d) {}
+//
+//template<class T>
+//Ref<Object> SpriteFrameEffectResource::Builder<T>::Details::build()
+//{
+//	auto ptr = makeObject<SpriteFrameEffectResource>(size, spriteSheet, startNumber, lastNumber, frameTime);
+//	return ptr;
+//}
+//
 
 class SpriteFrameEffectEmitter
     : public EffectEmitter
