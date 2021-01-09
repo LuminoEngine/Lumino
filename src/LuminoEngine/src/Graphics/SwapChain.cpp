@@ -49,7 +49,7 @@ detail::ConstantBufferView GraphicsCommandList::allocateUniformBuffer(size_t siz
 	return m_singleFrameUniformBufferAllocator->allocate(size, m_uniformBufferOffsetAlignment);
 }
 
-ShaderDescriptor* GraphicsCommandList::acquireShaderDescriptor(Shader* shader)
+ShaderSecondaryDescriptor* GraphicsCommandList::acquireShaderDescriptor(Shader* shader)
 {
 	return shader->acquireDescriptor();
 }

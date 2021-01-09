@@ -448,8 +448,12 @@ Ref<ITexture> OpenGLDevice::onCreateTexture3D(GraphicsResourceUsage usage, uint3
 	return ptr;
 }
 
-Ref<ITexture> OpenGLDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+Ref<ITexture> OpenGLDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
+	if (msaa) {
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
 	auto ptr = makeRef<GLRenderTargetTexture>();
 	ptr->init(width, height, requestFormat, mipmap);
 	return ptr;

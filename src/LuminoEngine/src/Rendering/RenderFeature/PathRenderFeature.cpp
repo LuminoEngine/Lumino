@@ -402,7 +402,7 @@ static int glnvg__convertPaint(GLNVGcontext* gl, GLNVGfragUniforms* frag, NVGpai
 static void glnvg__setUniforms(GLNVGcontext* gl, int uniformOffset, int image)
 {
 	ln::detail::GraphicsCommandList* commandList = gl->commandList();
-	ln::ShaderDescriptor* descriptor = commandList->acquireShaderDescriptor(gl->shader);
+	ln::detail::ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(gl->shader);
 
 	// ConstantBuffer
 	ln::detail::ConstantBufferView view = commandList->allocateUniformBuffer(sizeof(GLNVGfragUniforms));

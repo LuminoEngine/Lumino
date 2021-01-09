@@ -35,6 +35,7 @@ class UIGridLayout
 {
 	LN_OBJECT;
 public:
+	/*
 	class Builder : public UILayoutPanel::Builder
 	{
 	public:
@@ -88,6 +89,7 @@ public:
 		};
 
 	};
+	*/
 
 	void setRule(UILayoutRule value);
 

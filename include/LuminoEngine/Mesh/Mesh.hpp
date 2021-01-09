@@ -225,6 +225,9 @@ public:
 	VertexBuffer* vertexBuffer(InterleavedVertexGroup group) const;
 	IndexBuffer* indexBuffer() const;
 
+
+	void* acquireMappedMorphVertexBuffer(int morphIndex);
+
 LN_CONSTRUCT_ACCESS:
 	Mesh();
 	virtual ~Mesh();
@@ -264,6 +267,7 @@ private:
 	VertexBufferEntry m_mainVertexBuffer;		// struct Vertex. (Pos0, Normal0, UV0, Color0)
 	VertexBufferEntry m_skinningVertexBuffer;	// BlendWeignt0, BlendIndex0
 	VertexBufferEntry m_additionalUVVertexBuffer;	// TEXCOORD_1, TEXCOORD_2,TEXCOORD_3
+	List<VertexBufferEntry> m_morphVertexBuffer;
 	List<VertexBufferAttribute> m_extraVertexBuffers;
 	IndexBufferEntry m_indexBuffer;
     Ref<VertexLayout> m_vertexLayout;

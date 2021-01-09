@@ -2,6 +2,110 @@
 #pragma once
 
 namespace ln {
+	
+template<class T>
+struct BuilderVariant;
+
+struct AbstractBuilderDetails;
+
+//====================
+template<class T, class B, class D>
+struct AbstractBuilder
+{
+public:
+    Ref<T> build() const;
+
+protected:
+    virtual ~AbstractBuilder() = default;
+    AbstractBuilder() { m_detail = std::make_shared<D>(); }
+    D* d() const { return static_cast<D*>(m_detail.get()); }
+    //B& self() { return *static_cast<B*>(this); }
+
+private:
+    using GenType = T;
+    std::shared_ptr<AbstractBuilderDetails> m_detail;
+
+    template<class T2>
+    friend struct BuilderVariant;
+};
+
+//====================
+struct AbstractBuilderDetails
+{
+public:
+    virtual ~AbstractBuilderDetails() = default;
+    virtual Ref<Object> create() const = 0;
+
+    template<class T, class B, class D>
+    friend struct AbstractBuilder;
+};
+
+//====================
+template<class T>
+struct BuilderVariant
+{
+    template<class T2>
+    BuilderVariant(const Ref<T2>& value) : v(value), d() {}
+
+    template<class T2, class B2, class D2>
+    BuilderVariant(const AbstractBuilder<B2, B2, D2>& value) : v(), d(value.m_detail)
+    {
+        // can implicit cast?
+        const T* t = (reinterpret_cast<const typename T2::GenType*>(&value));
+        (void)t;
+    }
+
+    BuilderVariant(const BuilderVariant&) = default;
+
+    Ref<T> get() const
+    {
+        if (v)
+            return v;
+        else
+            return static_pointer_cast<T>(d->create());
+    }
+
+    Ref<T> v;
+    std::shared_ptr<AbstractBuilderDetails> d;
+};
+
+
+template<class T, class B, class D>
+inline Ref<T> AbstractBuilder<T, B, D>::build() const
+{
+    return ln::static_pointer_cast<T>(m_detail->create());
+}
+
+} // namespace ln
+
+#define LN_BUILDER \
+	protected: \
+    template<class T, class B, class D> struct BuilderCore; \
+    struct BuilderDetails; \
+	public: \
+    struct Builder;
+
+#define LN_BUILDER_IMPLEMENT(type) \
+	struct type::Builder : public BuilderCore<type, Builder, BuilderDetails> { };
+
+#define LN_BUILDER_DETAILS(type) \
+    Ref<Object> create() const override \
+    { \
+        auto ptr = makeObject<type>(); \
+        apply(ptr.get()); \
+        return ptr; \
+    }
+
+#define LN_BUILDER_CORE(basetype) \
+	protected: \
+		D* d() const { return basetype<T, B, D>::d(); } \
+		B& self() { return *static_cast<B*>(this); } \
+	public:
+
+
+#if 0
+
+namespace ln {
 class Object;
 	
 class BuilderBase;
@@ -56,3 +160,4 @@ private:
 	type::Builder::Builder() : Builder(makeRef<Details>()) {} \
 	type::Builder::Builder(Details* d) : base::Builder(d) {}
 	
+#endif

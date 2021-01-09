@@ -9,6 +9,7 @@ class Material;
 class Texture;
 class Skin;
 class Animation;
+class Accessor;
 }
 
 namespace ln {
@@ -45,6 +46,14 @@ private:
 		size_t byteStride;
 	};
 
+	struct VertexMorphTargetView
+	{
+		const Vector3* positions;
+		const Vector3* normals;
+		const Vector3* tangents;
+		//size_t vertexCount;
+	};
+
 	// ファイルからのデータ読み込み用
 	struct SectionView
 	{
@@ -59,6 +68,8 @@ private:
 		int materialIndex;
 
 		PrimitiveTopology topology;
+
+		std::vector<VertexMorphTargetView> morphTargetViews;
 	};
 
 	struct MeshView
@@ -75,6 +86,7 @@ private:
 	Ref<MeshSkeleton> readSkin(const tinygltf::Skin& skin);
 	Ref<Texture> loadTexture(const tinygltf::Texture& texture);
 	Ref<AnimationClip> readAnimation(const tinygltf::Animation& animation) const;
+	const void* getRawData(const tinygltf::Accessor& accessor) const;
 
 	static bool FileExists(const std::string &abs_filename, void *user_data);
 	static std::string ExpandFilePath(const std::string &filepath, void *user_data);

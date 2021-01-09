@@ -7,21 +7,7 @@ enable_testing()
 
 if (ANDROID_ABI)
     set(LN_ANDROID ON)
-    message(${ANDROID_SYSROOT})
-
-    if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
-        include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
-    elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
-        include_directories(${ANDROID_SYSROOT}/usr/include/aarch64-linux-android)
-    elseif(${ANDROID_ABI} STREQUAL "x86")
-        include_directories(${ANDROID_SYSROOT}/usr/include/i686-linux-android)
-    elseif(${ANDROID_ABI} STREQUAL "x86_64")
-        include_directories(${ANDROID_SYSROOT}/usr/include/x86_64-linux-android)
-    else()
-        include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
-    endif()
 endif()
-
 
 #------------------------------------------------------------------------------
 # options
@@ -135,12 +121,14 @@ endif()
 # gtest
 
 set(LN_INCLUDES_gtest
-    "${CMAKE_CURRENT_LIST_DIR}/external/gtest/include"
-    "${CMAKE_CURRENT_LIST_DIR}/external/gtest"
-    "${CMAKE_CURRENT_LIST_DIR}/external/gtest/src")
+    "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/googletest/googletest/include"
+    "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/googletest/googletest"
+    "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/googletest/googletest/src")
 
 set(LN_SOURCES_gtest
-    "${CMAKE_CURRENT_LIST_DIR}/external/gtest/src/gtest-all.cc")
+    "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/googletest/googletest/src/gtest-all.cc")
+
+set(LN_GLTF_SAMPLE_MODELS_DIR "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/glTF-Sample-Models/")
 
 #------------------------------------------------------------------------------
 

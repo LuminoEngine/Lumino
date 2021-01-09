@@ -150,7 +150,7 @@ public:
     // SpritetextRenderFerture など、RenderFeature 固有のパラメータ (グリフテクスチャなど) で
     // パラメータをオーバーライドしたい場合はここで処理する。
     virtual void updateRenderParameters(
-		ShaderDescriptor* descriptor,
+		detail::ShaderSecondaryDescriptor* descriptor,
 		detail::RenderDrawElement* element,
 		ShaderTechnique* tech,
 		const detail::RenderViewInfo& renderViewInfo,
@@ -159,7 +159,7 @@ public:
 		const detail::SubsetInfo& subsetInfo);
 
 	static void updateRenderParametersDefault(
-		ShaderDescriptor* descriptor,
+		detail::ShaderSecondaryDescriptor* descriptor,
 		ShaderTechnique* tech,
 		const detail::RenderViewInfo& renderViewInfo,
 		const detail::SceneInfo& sceneInfo,

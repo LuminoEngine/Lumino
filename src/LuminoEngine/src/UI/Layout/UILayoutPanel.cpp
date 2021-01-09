@@ -9,6 +9,7 @@ namespace ln {
 //==============================================================================
 // UILayoutPanel::Builder
 
+    /*
 LN_BUILDER_IMPLEMENT(UILayoutPanel, UIElement);
 
 UILayoutPanel::Builder& UILayoutPanel::Builder::children(std::initializer_list<UIElement::Builder> list)
@@ -25,6 +26,7 @@ Ref<Object> UILayoutPanel::Builder::Details::build()
 		ptr->addChild(b.build());
 	return ptr;
 }
+    */
 
 //==============================================================================
 // UILayoutPanel

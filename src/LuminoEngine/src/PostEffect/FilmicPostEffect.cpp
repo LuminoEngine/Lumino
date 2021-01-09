@@ -206,6 +206,7 @@ bool FilmicPostEffectInstance::onRender(RenderView* renderView, CommandList* con
     //context->blit(m_ssaoMaterial, destination);
 
 
+    source->setSamplerState(SamplerState::linearClamp());
     m_integrationMaterial->setBufferData(u"EffectSettings", &settings, sizeof(settings));
     m_integrationMaterial->setTexture(u"_occlusionMap", occlusionMap);
     m_integrationMaterial->setMainTexture(source);

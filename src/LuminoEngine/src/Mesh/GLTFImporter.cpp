@@ -712,6 +712,53 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 			return nullptr;
 		}
 
+		// Morph Targets
+		// https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#morph-targets
+		{
+			for (auto itr = primitive.targets.begin(); itr != primitive.targets.end(); ++itr) {
+				int morphTargetIndex = itr - primitive.targets.begin();
+
+				int position = -1;
+				int normal = -1;
+				int tangent = -1;
+				{
+					for (auto itr2 = itr->begin(); itr2 != itr->end(); ++itr2) {
+						if (itr2->first == "POSITION") {
+							position = itr2->second;
+						}
+						else if (itr2->first == "NORMAL") {
+							normal = itr2->second;
+						}
+						else if (itr2->first == "TANGENT") {
+							tangent = itr2->second;
+						}
+						else {
+							// glTF として標準サポートされているのは上記3つの属性のみ
+							LN_WARNING("Ignored morph target.");
+						}
+					}
+					if (position == -1) {
+						LN_ERROR("Morph Target 'POSITION' vertex not found.");
+						return nullptr;
+					}
+					if (normal == -1) {
+						LN_ERROR("Morph Target 'NORMAL' vertex not found.");
+						return nullptr;
+					}
+					if (tangent == -1) {
+						LN_ERROR("Morph Target 'TANGENT' vertex not found.");
+						return nullptr;
+					}
+				}
+
+				VertexMorphTargetView view;
+				view.positions = static_cast<const Vector3*>(getRawData(m_model->accessors[position]));
+				view.normals = static_cast<const Vector3*>(getRawData(m_model->accessors[normal]));
+				view.tangents = static_cast<const Vector3*>(getRawData(m_model->accessors[tangent]));
+				sectionView.morphTargetViews.push_back(std::move(view));
+			}
+		}
+
 		meshView.sectionViews.push_back(std::move(sectionView));
 	}
 
@@ -752,28 +799,11 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 		vertexCount += count;
 	}
 
-	// count indices and measure element size.
+	// Count indices and measure element size.
 	int indexCount = 0;
-	//int indexElementSize = 0;
 	for (auto& section : meshView.sectionViews) {
 		indexCount += section.indexCount;
-	//	indexElementSize = std::max(indexElementSize, section.indexElementSize);
 	}
-	//int indexElementSize = detail::GraphicsResourceInternal::selectIndexBufferFormat(vertexCount);
-
-	//// select index format.
-	//IndexBufferFormat indexForamt;
-	//if (indexElementSize == 1 || indexElementSize == 2) {
-	//	indexForamt = IndexBufferFormat::UInt16;
-	//	indexElementSize = 2;
-	//}
-	//else if (indexElementSize == 4) {
-	//	indexForamt = IndexBufferFormat::UInt32;
-	//}
-	//else {
-	//	LN_NOTIMPLEMENTED();
-	//	return nullptr;
-	//}
 	IndexBufferFormat indexForamt = GraphicsHelper::selectIndexBufferFormat(vertexCount);
 
 	auto coreMesh = makeObject<Mesh>(vertexCount, indexCount, indexForamt, GraphicsResourceUsage::Static);
@@ -899,6 +929,16 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 			//	}
 			//}
    //         // TODO: unmap 無いとめんどい以前に怖い
+		}
+
+		
+
+		// Build morph target vertex buffer
+		{
+			for (auto& vbView : section.morphTargetViews) {
+
+			}
+		
 		}
 
 		vertexOffset += vertexCountInSection;
@@ -1067,7 +1107,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 		static_cast<const Vertex*>(coreMesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main)),
 		vertexCount);
 
-	std::cout << "GenerateMesh: " << timer.elapsedMilliseconds() << "[ms]" << std::endl;
+	//std::cout << "GenerateMesh: " << timer.elapsedMilliseconds() << "[ms]" << std::endl;
 
 	return coreMesh;
 }
@@ -1220,6 +1260,12 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 		if (channel.target_path == "weights") {
 			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_SCALAR)) return nullptr;
 
+			if (LN_REQUIRE(channel.target_node >= 0)) return nullptr;
+			const auto& node = m_model->nodes[channel.target_node];
+
+			if (LN_REQUIRE(node.mesh >= 0)) return nullptr;
+			const auto& mesh = m_model->meshes[node.mesh];
+
 			//sectionView.indexCount = indexAccessor.count;
 
 			for (int i = 0; i < inputAccessor.count; i++) {
@@ -1310,6 +1356,13 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 	}
 
 	return clip;
+}
+
+const void* GLTFImporter::getRawData(const tinygltf::Accessor& accessor) const
+{
+	const tinygltf::BufferView& bufferView = m_model->bufferViews[accessor.bufferView];
+	const tinygltf::Buffer& buffer = m_model->buffers[bufferView.buffer];
+	return buffer.data.data() + accessor.byteOffset + bufferView.byteOffset;
 }
 
 bool GLTFImporter::FileExists(const std::string &abs_filename, void *user_data)

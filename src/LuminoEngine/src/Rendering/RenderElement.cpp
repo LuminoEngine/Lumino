@@ -63,7 +63,7 @@ void RenderDrawElement::calculateActualPriority()
 DrawElementList::DrawElementList(RenderingManager* manager)
 	: m_dataAllocator(makeRef<LinearAllocator>(manager->stageDataPageManager()))
     , m_allElementList{nullptr, nullptr}
-	, m_classifiedElementList({})
+	//, m_classifiedElementList({})
 	, m_headFrameData(nullptr)
 	, m_tailFrameData(nullptr)
 {
@@ -100,10 +100,10 @@ void DrawElementList::clear()
 		m_allElementList.headElement = nullptr;
 		m_allElementList.tailElement = nullptr;
 
-		for (auto& list : m_classifiedElementList) {
-			list.headElement = nullptr;
-			list.tailElement = nullptr;
-		}
+		//for (auto& list : m_classifiedElementList) {
+		//	list.headElement = nullptr;
+		//	list.tailElement = nullptr;
+		//}
 	}
 }
 
@@ -131,17 +131,17 @@ void DrawElementList::addElement(RenderDrawElement* element)
 
 	// Add to ClassifiedList
 	// ※ 0.9.0 までは RenderingPipeline::render() の先頭で行っていたが、複数ビューからの描画を想定したときに非効率なので、ここで行うことにした。
-	{
-		ElementListDetail& list = m_classifiedElementList[static_cast<int>(element->targetPhase)];
+	//{
+	//	ElementListDetail& list = m_classifiedElementList[static_cast<int>(element->targetPhase)];
 
-		if (!list.headElement) {
-			list.headElement = element;
-		}
-		else {
-			list.tailElement->m_classifiedNext = element;
-		}
-		list.tailElement = element;
-	}
+	//	if (!list.headElement) {
+	//		list.headElement = element;
+	//	}
+	//	else {
+	//		list.tailElement->m_classifiedNext = element;
+	//	}
+	//	list.tailElement = element;
+	//}
 }
 
 void DrawElementList::addFrameData(IDrawElementListFrameData* data)

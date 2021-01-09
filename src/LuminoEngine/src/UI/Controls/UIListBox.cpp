@@ -157,6 +157,11 @@ void UIListItemsControl::setItemsLayoutPanel(UILayoutPanel* layout)
 	}
 }
 
+UILayoutPanel* UIListItemsControl::itemsLayoutPanel() const
+{
+	return m_itemsHostLayout;
+}
+
 void UIListItemsControl::setSubmitMode(UIListSubmitMode value)
 {
 	m_submitMode = value;
@@ -165,6 +170,11 @@ void UIListItemsControl::setSubmitMode(UIListSubmitMode value)
 UIListSubmitMode UIListItemsControl::submitMode() const
 {
 	return m_submitMode;
+}
+
+Ref<EventConnection> UIListItemsControl::connectOnSubmit(Ref<UIGeneralEventHandler> handler)
+{
+	return m_onSubmit.connect(handler);
 }
 
 void UIListItemsControl::addListItem(UIListItem* item)
@@ -209,6 +219,11 @@ void UIListItemsControl::removeAllItems()
 		}
 		m_logicalChildren->clear();
 	}
+}
+
+void UIListItemsControl::submitItem(UIListItem* item)
+{
+	m_onSubmit.raise(UIEventArgs::create(item, UIEvents::Submitted));
 }
 
 void UIListItemsControl::onRoutedEvent(UIEventArgs* e)
@@ -285,6 +300,7 @@ void UIListItemsControl::onRoutedEvent(UIEventArgs* e)
 	else if (e->type() == UIEvents::ExecuteCommandEvent) {
 		if (static_cast<UICommandEventArgs*>(e)->command() == UICommonInputCommands::submit()) {
 			if (UIListItem* item = selectedItem()) {
+				submitItem(item);
 				item->onSubmit();
 				//e->handled = true;
 			}
@@ -324,6 +340,7 @@ Size UIListItemsControl::arrangeOverride(UILayoutContext* layoutContext, const R
 void UIListItemsControl::notifyItemClicked(UIListItem* item, int clickCount)
 {
 	if (submitMode() == UIListSubmitMode::Single) {
+		submitItem(item);
 		item->onSubmit();
 	}
 	else {
@@ -342,6 +359,15 @@ void UIListItemsControl::selectItemExclusive(UIListItem* item)
 
 	m_selectedItems.add(item);
 	item->setSelectedInternal(true);
+}
+
+//==============================================================================
+// UIListItemsControl::BuilderDetails
+
+void UIListItemsControl::BuilderDetails::apply(UIListItemsControl* p) const
+{
+	UIControl::BuilderDetails::apply(p);
+	if (onSubmit) p->connectOnSubmit(onSubmit);
 }
 
 //==============================================================================
@@ -397,18 +423,25 @@ Ref<UIListBox> UIListBox::create()
 }
 
 UIListBox::UIListBox()
+	: m_scrollViewHelper()
 {
 }
 
 bool UIListBox::init()
 {
 	if (!UIListItemsControl::init()) return false;
+
+	m_scrollViewHelper = makeRef<UIScrollViewHelper>(this);
+	m_scrollViewHelper->setScrollTarget(itemsLayoutPanel());
+	m_scrollViewHelper->setVScrollbarVisible(true);
+
 	return true;
 }
 
-UIListBoxItem* UIListBox::addItem(const ln::String& text)
+UIListBoxItem* UIListBox::addItem(const ln::String& text, Ref<Variant> data)
 {
 	auto item = UIListBoxItem::create(text);
+	item->setData(data);
 	addChild(item);
 	return item;
 }
@@ -464,6 +497,39 @@ void UIListBox::onAddChild(UIElement* child)
 		item->addElement(child);
 		addListItem(item);
 	}
+}
+
+Size UIListBox::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+{
+	const Size scrollBarDesiredSize = m_scrollViewHelper->measure(layoutContext, constraint);
+	const Size baseSize = UIListItemsControl::measureOverride(layoutContext, constraint);
+	return Size(baseSize.width + scrollBarDesiredSize.width, baseSize.height + scrollBarDesiredSize.height);
+}
+
+Size UIListBox::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
+{
+	const Size finalSize = finalArea.getSize();
+	const Rect clientArea = m_scrollViewHelper->calculateClientArea(finalSize);
+
+	UIListItemsControl::arrangeOverride(layoutContext, clientArea);
+
+	m_scrollViewHelper->arrange(layoutContext, finalSize);
+
+	return finalSize;
+}
+
+void UIListBox::onRoutedEvent(UIEventArgs* e)
+{
+	UIListItemsControl::onRoutedEvent(e);
+	m_scrollViewHelper->handleRoutedEvent(e);
+}
+
+//==============================================================================
+// UIListBox::BuilderDetails
+
+void UIListBox::BuilderDetails::apply(UIListBox* p) const
+{
+	UIListItemsControl::BuilderDetails::apply(p);
 }
 
 } // namespace ln

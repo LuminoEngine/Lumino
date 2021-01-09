@@ -10,7 +10,7 @@ namespace ln {
 // UIGridLayout::Builder
 	
 LN_OBJECT_IMPLEMENT(UIGridLayout, UILayoutPanel) {}
-LN_BUILDER_IMPLEMENT(UIGridLayout, UILayoutPanel);
+//LN_BUILDER_IMPLEMENT(UIGridLayout, UILayoutPanel);
 
 //UIGridLayout::Builder::Builder() : Builder(makeRef<Details>()) {}
 //	UIGridLayout::Builder::Builder(Details* d) : base::Builder(d) {}
@@ -28,11 +28,11 @@ LN_BUILDER_IMPLEMENT(UIGridLayout, UILayoutPanel);
 //{
 //}
 
-UIGridLayout::Builder& UIGridLayout::Builder::columnCount(int value)
-{
-	detailsAs<Details>()->columnCount = value;
-	return *this;
-}
+//UIGridLayout::Builder& UIGridLayout::Builder::columnCount(int value)
+//{
+//	detailsAs<Details>()->columnCount = value;
+//	return *this;
+//}
 
 //UIGridLayout::Builder& UIGridLayout::Builder::add(const UIElement::Builder& value)
 //{
@@ -45,15 +45,15 @@ UIGridLayout::Builder& UIGridLayout::Builder::columnCount(int value)
 //	return buildAs<UIGridLayout>();
 //}
 
-Ref<Object> UIGridLayout::Builder::Details::build()
-{
-	auto ptr = makeObject<UIGridLayout>();
-	ptr->setColumnCount(columnCount);
-	for (auto& b : children)
-		ptr->addChild(b.build());
-	return ptr;
-}
-
+//Ref<Object> UIGridLayout::Builder::Details::build()
+//{
+//	auto ptr = makeObject<UIGridLayout>();
+//	ptr->setColumnCount(columnCount);
+//	for (auto& b : children)
+//		ptr->addChild(b.build());
+//	return ptr;
+//}
+//
 //==============================================================================
 // UIGridLayout
 

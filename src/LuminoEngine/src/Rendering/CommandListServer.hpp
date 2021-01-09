@@ -38,7 +38,8 @@ public:
 			RenderDrawElement* element = list->headElement();
 			while (element) {
 				callback(element);
-				element = element->m_classifiedNext;
+				//element = element->m_classifiedNext;
+				element = element->m_next;
 			}
 		}
 	}

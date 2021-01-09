@@ -6,6 +6,26 @@
 #include "ShaderLib/Tonemap.part.fxh"
 #include "ShaderLib/Vignette.part.fxh"
 
+#if 0
+#define FXAA_GRAY_AS_LUMA 1
+//#define FXAA_GATHER4_ALPHA 0
+#define FXAA_PC 1
+#define FXAA_HLSL_5 1
+#define FxaaTexGreen4(t, p) tex2D(t, p).g
+#define FxaaTexOffGreen4(t, p, o) tex2D(t, p + float2(ln_Resolution.z * ((float)o.x), ln_Resolution.w * ((float)o.y))).g
+//#define FxaaTexTop(t, p) tex2Dlod(t, float4(p, 0.0, 0.0))
+//#define FxaaTexOff(t, p, o, r) tex2Dlod(t, float4(p + float2(ln_Resolution.z * ((float)o.x), ln_Resolution.w * ((float)o.y), 0.0, 0.0)))
+
+#define FxaaTexTop(t, p) tex2Dlod(t, float4(p, 0.0, 0.0))
+#define FxaaTexOff(t, p, o, r) tex2Dlod(t, float4(p + (o * r), 0, 0))
+#endif
+
+
+#define FXAA_HLSL_5 0
+#define FXAA_HLSL_3 1
+#define FXAA_GATHER4_ALPHA 0
+#include "ShaderLib/FXAA.hlsli"
+
 
 //==============================================================================
 
@@ -146,14 +166,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
 {
     float4 result = float4(0, 0, 0, 1);
 
-    //--------------------
-    // FXAA
-    if (_antialiasEnabled) {
-        result = FxaaPixelShader(ln_MaterialTexture, input.uv, ln_Resolution.zw, ln_Resolution.zw);
-    }
-    else {
-        result = tex2D(ln_MaterialTexture, input.uv.xy);
-    }
+    result = tex2D(ln_MaterialTexture, input.uv.xy);
 
     //--------------------
     // SSR
@@ -173,6 +186,43 @@ float4 PSMain(PSInput input) : SV_TARGET0
         float4 ao = LN_AverageBlur5x5(_occlusionMap, ln_Resolution.zw, input.uv.xy);
 #endif
         result.rgb *= ao.rgb;
+    }
+
+    //--------------------
+    // FXAA
+    /*
+    if (_antialiasEnabled) {
+        result = FxaaPixelShader(ln_MaterialTexture, input.uv, ln_Resolution.zw, ln_Resolution.zw);
+    }
+    else {
+    }
+    */
+    if (_antialiasEnabled) {
+        // TODO: 今のところ src と dst のサイズが同じなのでこれでいいが、本当は ln_MaterialTexture のサイズを取った方が良い
+        const float dx = ln_Resolution.z; // 1.0 / ln_Resolution.x
+        const float dy = ln_Resolution.w; // 1.0 / ln_Resolution.z
+        
+        FxaaTex InputFXAATex = ln_MaterialTexture;//{ smp, tex };
+        float3 aa = FxaaPixelShader(
+            input.uv.xy,                            // FxaaFloat2 pos,
+            FxaaFloat4(0.0f, 0.0f, 0.0f, 0.0f),        // FxaaFloat4 fxaaConsolePosPos,
+            InputFXAATex,                            // FxaaTex tex,
+            InputFXAATex,                            // FxaaTex fxaaConsole360TexExpBiasNegOne,
+            InputFXAATex,                            // FxaaTex fxaaConsole360TexExpBiasNegTwo,
+            float2(dx, dy),                            // FxaaFloat2 fxaaQualityRcpFrame,
+            FxaaFloat4(0.0f, 0.0f, 0.0f, 0.0f),        // FxaaFloat4 fxaaConsoleRcpFrameOpt,
+            FxaaFloat4(0.0f, 0.0f, 0.0f, 0.0f),        // FxaaFloat4 fxaaConsoleRcpFrameOpt2,
+            FxaaFloat4(0.0f, 0.0f, 0.0f, 0.0f),        // FxaaFloat4 fxaaConsole360RcpFrameOpt2,
+            0.75f,                                    // FxaaFloat fxaaQualitySubpix,  [0..1], default 0.75
+            0.166f,                                    // FxaaFloat fxaaQualityEdgeThreshold,   [0.125..0.33], default 0.166
+            0.0833f,                                // FxaaFloat fxaaQualityEdgeThresholdMin,    //0.0625; // ?
+            0.0f,                                    // FxaaFloat fxaaConsoleEdgeSharpness,
+            0.0f,                                    // FxaaFloat fxaaConsoleEdgeThreshold,
+            0.0f,                                    // FxaaFloat fxaaConsoleEdgeThresholdMin,
+            FxaaFloat4(0.0f, 0.0f, 0.0f, 0.0f)        // FxaaFloat fxaaConsole360ConstDir,
+        ).rgb;
+        result.rgb = aa;
+        //result = float4(1, 0, 0, 1);
     }
 
     //--------------------

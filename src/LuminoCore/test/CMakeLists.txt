@@ -58,10 +58,3 @@ endif()
 #------------------------------------------------------------------------------
 # ctest
 add_test(NAME LuminoCore-test-all COMMAND $<TARGET_FILE:LuminoCore-test>)
-
-#set_target_properties(${PROJECT_NAME} PROPERTIES
-#    CXX_STANDARD 11
-#    CXX_STANDARD_REQUIRED YES
-#    CXX_EXTENSIONS NO
-#)
-#message("Supported features = ${CMAKE_CXX_COMPILE_FEATURES}")

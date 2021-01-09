@@ -39,7 +39,7 @@ public:
 
 
 protected:
-	virtual void onSubmit();	// TODO: double click
+	virtual void onSubmit();
 	virtual void onSelected(UIEventArgs* e);
 	virtual void onUnselected(UIEventArgs* e);
 
@@ -74,6 +74,7 @@ class UIListItemsControl
 	: public UIControl
 {
 	LN_OBJECT;
+	LN_BUILDER;
 public:
 	void selectItem(UIListItem* item);
 	UIListItem* selectedItem() const;
@@ -81,7 +82,11 @@ public:
 	/** setItemsLayoutPanel */
 	LN_METHOD(Property)
 	void setItemsLayoutPanel(UILayoutPanel* layout);
-	
+
+	/** itemsLayoutPanel */
+	LN_METHOD(Property)
+	UILayoutPanel* itemsLayoutPanel() const;
+
     /** UIListSubmitMode (default: Single) */
 	LN_METHOD(Property)
     void setSubmitMode(UIListSubmitMode value);
@@ -90,10 +95,16 @@ public:
 	LN_METHOD(Property)
 	UIListSubmitMode submitMode() const;
 
+	/** Submit イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	Ref<EventConnection> connectOnSubmit(Ref<UIGeneralEventHandler> handler);
+
+
 protected:
 	void addListItem(UIListItem* item);
 	void removeListItem(UIListItem* item);
 	void removeAllItems();
+	virtual void submitItem(UIListItem* item);
 
 	// base interfaces
 	void onRoutedEvent(UIEventArgs* e) override;
@@ -112,10 +123,29 @@ private:
 	List<UIListItem*> m_selectedItems;
 	UIListSelectionMoveMode m_selectionMoveMode;
 	UIListSubmitMode m_submitMode;
+	Event<UIGeneralEventHandler> m_onSubmit;
 
 	friend class UIListItem;
 };
 
+struct UIListItemsControl::BuilderDetails : public UIControl::BuilderDetails
+{
+	LN_BUILDER_DETAILS(UIListItemsControl);
+
+	Ref<UIGeneralEventHandler> onSubmit;
+
+	void apply(UIListItemsControl* p) const;
+};
+
+template<class T, class B, class D>
+struct UIListItemsControl::BuilderCore : public UIControl::BuilderCore<T, B, D>
+{
+	LN_BUILDER_CORE(UIControl::BuilderCore);
+
+	B& onSubmit(Ref<UIGeneralEventHandler> value) { d()->onSubmit = value; return self(); }
+};
+
+LN_BUILDER_IMPLEMENT(UIListItemsControl);
 
 //--------------------------------------
 
@@ -165,11 +195,12 @@ class UIListBox
 	: public UIListItemsControl
 {
 	LN_OBJECT;
+	LN_BUILDER;
 public:
     static Ref<UIListBox> create();
 
 	/** UIListBoxItem を追加し、そのインスタンスを返します。 */
-	UIListBoxItem* addItem(const ln::String& text);
+	UIListBoxItem* addItem(const ln::String& text, Ref<Variant> data = nullptr);
 
 	/** UIListBoxItem を追加し、そのインスタンスを返します。 */
 	LN_METHOD()
@@ -185,9 +216,11 @@ public:
 
 protected:
 	// base interface
-	virtual const String& elementName() const  override { static String name = u"UIListBox"; return name; }
-    virtual void onAddChild(UIElement* child) override;
-
+	const String& elementName() const  override { static String name = u"UIListBox"; return name; }
+    void onAddChild(UIElement* child) override;
+	Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+	Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
+	void onRoutedEvent(UIEventArgs* e) override;
 
 
 LN_CONSTRUCT_ACCESS:
@@ -198,7 +231,23 @@ LN_CONSTRUCT_ACCESS:
 	bool init();
 
 private:
+	Ref<UIScrollViewHelper> m_scrollViewHelper;
 };
+
+struct UIListBox::BuilderDetails : public UIListItemsControl::BuilderDetails
+{
+	LN_BUILDER_DETAILS(UIListBox);
+
+	void apply(UIListBox* p) const;
+};
+
+template<class T, class B, class D>
+struct UIListBox::BuilderCore : public UIListItemsControl::BuilderCore<T, B, D>
+{
+	LN_BUILDER_CORE(UIListItemsControl::BuilderCore);
+};
+
+LN_BUILDER_IMPLEMENT(UIListBox);
 
 } // namespace ln
 

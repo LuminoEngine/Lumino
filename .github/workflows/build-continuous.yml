@@ -103,7 +103,7 @@ jobs:
 
   #==============================================================================
   Native-macOS:
-    runs-on: macos-10.15
+    runs-on: macos-11.0
 
     steps:
     - name: Checkout
@@ -126,26 +126,26 @@ jobs:
         dotnet run -- BuildEngine_macOS
 
   #==============================================================================
-  Native-iOS:
-    runs-on: macos-10.15
+#  Native-iOS:
+#    runs-on: macos-11.0
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
+#    steps:
+#    - name: Checkout
+#      uses: actions/checkout@v1
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.108
+#    - name: Setup .NET Core
+#      uses: actions/setup-dotnet@v1
+#      with:
+#        dotnet-version: 2.2.108
 
-    - name: Common build cache (build/BuildCache)
-      uses: actions/cache@v1
-      with:
-        path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+#    - name: Common build cache (build/BuildCache)
+#      uses: actions/cache@v1
+#      with:
+#        path: ./build/BuildCache
+#        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
             
-    - name: Build
-      run: |
-        dotnet run -- BuildExternalProjects iOS-OS64
-        dotnet run -- BuildExternalProjects iOS-SIMULATOR64
-        dotnet run -- BuildEngine_iOS
+#    - name: Build
+#      run: |
+#        dotnet run -- BuildExternalProjects iOS-OS64
+#        dotnet run -- BuildExternalProjects iOS-SIMULATOR64
+#        dotnet run -- BuildEngine_iOS

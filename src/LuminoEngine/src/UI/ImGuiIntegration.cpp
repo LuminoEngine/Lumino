@@ -14,6 +14,8 @@
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
 #include "../Font/FontManager.hpp"
+#include "../Graphics/GraphicsManager.hpp"
+#include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "../../../build/BuildCache/imgui/imgui.h"
 
@@ -31,7 +33,9 @@ bool ImGuiIntegration::init()
 	ImGui::SetCurrentContext(m_imgui);
 
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
+	if (EngineDomain::graphicsManager()->deviceContext()->caps().graphicsAPI == GraphicsAPI::Vulkan) {
+		io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
+	}
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
@@ -114,6 +118,8 @@ void ImGuiIntegration::prepareRender(float width, float height)
 
 void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetTexture* target)
 {
+	ImGuiIO& io = ImGui::GetIO();
+
 	ImGui::SetCurrentContext(m_imgui);
 
 	ImGui::Render();
@@ -137,6 +143,7 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 
 	Vertex* vtx_dst = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
 	ImDrawIdx* idx_dst = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));
+	int global_vtx_offset2 = 0;
 	for (int n = 0; n < draw_data->CmdListsCount; n++)
 	{
 		const ImDrawList* cmd_list = draw_data->CmdLists[n];
@@ -156,8 +163,19 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 			vtx_dst++;
 			vtx_src++;
 		}
-		memcpy(idx_dst, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx));
+
+		if (io.BackendFlags & ImGuiBackendFlags_RendererHasVtxOffset) {
+			memcpy(idx_dst, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx));
+		}
+		else {
+			const ImDrawIdx* s = cmd_list->IdxBuffer.Data;
+			ImDrawIdx* d = idx_dst;
+			for (int i = 0; i < cmd_list->IdxBuffer.Size; i++) {
+				d[i] = s[i] + global_vtx_offset2;
+			}
+		}
 		idx_dst += cmd_list->IdxBuffer.Size;
+		global_vtx_offset2 += cmd_list->VtxBuffer.Size;
 	}
 	graphicsContext->setVertexBuffer(0, m_vertexBuffer);
 	graphicsContext->setIndexBuffer(m_indexBuffer);
@@ -195,7 +213,7 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 
 
 	const auto& commandList = graphicsContext->commandList();
-	ShaderDescriptor* descriptor = commandList->acquireShaderDescriptor(m_shader);
+	ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(m_shader);
 	{
 		descriptor->setUniformBuffer(0, commandList->allocateUniformBuffer(sizeof(LNRenderElementBuffer)));
 		LNRenderElementBuffer renderElementBuffer;
@@ -248,15 +266,21 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 				graphicsContext->setScissorRect(r);
 				//graphicsContext->drawPrimitiveIndexed(pcmd->VtxOffset + global_vtx_offset, pcmd->ElemCount / 3);
 				graphicsContext->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-				graphicsContext->drawPrimitiveIndexed(pcmd->IdxOffset + global_idx_offset, pcmd->ElemCount / 3, 0, pcmd->VtxOffset + global_vtx_offset);
+
+				if (io.BackendFlags & ImGuiBackendFlags_RendererHasVtxOffset) {
+					graphicsContext->drawPrimitiveIndexed(pcmd->IdxOffset + global_idx_offset, pcmd->ElemCount / 3, 0, pcmd->VtxOffset + global_vtx_offset);
+				}
+				else {
+					graphicsContext->drawPrimitiveIndexed(pcmd->IdxOffset + global_idx_offset, pcmd->ElemCount / 3, 0, 0);
+					if (pcmd->VtxOffset != 0) {
+						LN_NOTIMPLEMENTED();
+					}
+				}
 
 				//std::cout << "  pcmd->IdxOffset: " << pcmd->IdxOffset << std::endl;
 				//std::cout << "  pcmd->VtxOffset: " << pcmd->VtxOffset << std::endl;
 				//std::cout << "  pcmd->ElemCount: " << pcmd->ElemCount << std::endl;
 
-				if (pcmd->VtxOffset != 0) {
-					LN_NOTIMPLEMENTED();
-				}
 			}
 		}
 		global_idx_offset += cmd_list->IdxBuffer.Size;
@@ -265,8 +289,8 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 
 	//std::cout << "----" << std::endl;
 
-	graphicsContext->setShaderDescriptor(nullptr);
 	graphicsContext->endRenderPass();	// TODO: scoped
+	graphicsContext->setShaderDescriptor(nullptr);
 }
 
 bool ImGuiIntegration::handlePlatformEvent(const detail::PlatformEventArgs& e)

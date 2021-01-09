@@ -16,7 +16,6 @@ class Texture2D;
 class RenderTargetTexture;
 class DepthBuffer;
 class ConstantBuffer;
-class ShaderDescriptor;
 class INativeGraphicsExtension;
 
 /**
@@ -369,6 +368,7 @@ class ICommandList;
 class ITexture;
 class ISamplerState;
 class IUniformBuffer;
+class ShaderSecondaryDescriptor;
 
 static const int MaxMultiRenderTargets = 4;
 static const int MaxVertexStreams = 16;
@@ -430,6 +430,7 @@ struct ConstantBufferView
     size_t offset;
     void setData(const void* data, size_t size);
     void* writableData();
+    void clear() { buffer = nullptr; offset = 0; }
 };
 
 } // namespace detail

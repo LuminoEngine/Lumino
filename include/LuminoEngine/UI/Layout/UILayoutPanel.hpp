@@ -130,20 +130,20 @@ class UILayoutPanel
 {
     LN_OBJECT;
 public:
-	class Builder : public UIElement::Builder
-	{
-		LN_BUILDER(UILayoutPanel);
-	public:
-		Builder& children(std::initializer_list<UIElement::Builder> list);
+	//class Builder : public UIElement::Builder
+	//{
+	//	LN_BUILDER(UILayoutPanel);
+	//public:
+	//	Builder& children(std::initializer_list<UIElement::Builder> list);
 
-	protected:
-		class Details : public UIElement::Builder::Details
-		{
-		public:
-			List<UIElement::Builder> children;
-			virtual Ref<Object> build() override;
-		};
-	};
+	//protected:
+	//	class Details : public UIElement::Builder::Details
+	//	{
+	//	public:
+	//		List<UIElement::Builder> children;
+	//		virtual Ref<Object> build() override;
+	//	};
+	//};
 
     UILayoutPanel();
     bool init();

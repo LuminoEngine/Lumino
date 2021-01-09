@@ -3,12 +3,18 @@
 #include "Shader.hpp"
 
 namespace ln {
+namespace detail {
 
 	
-class ShaderDescriptor
+class ShaderSecondaryDescriptor
 	: public Object
 {
 public:
+	void reset(detail::GraphicsCommandList* commandList);
+	// ShaderTechniqueSemanticsManager が必要としている要素に限定して realloc する。SceneRenderer で使用する。
+	void reallocFromSemanticsManager(detail::GraphicsCommandList* commandList, const detail::ShaderTechniqueSemanticsManager* semanticsManager);
+
+
 	// 各 index は ShaderDescriptorLayout のフィールドの index と一致する。
 	// BindingIndex ではない点に注意。
 	void setUniformBuffer(int index, const detail::ConstantBufferView& value);
@@ -58,29 +64,28 @@ public:
 	///** SamplerState を設定します。 */
 	//void setSamplerState(int samplerIndex, SamplerState* value);
 
-	void fetchDefaultValues();
-	
 LN_INTERNAL_NEW_OBJECT;
-    ShaderDescriptor();
+    ShaderSecondaryDescriptor();
     bool init(Shader* shader);
 
 private:
-	static const int MaxElements = 8;
+	static const int MaxElements = 16;
 
 	Shader* m_shader;
 	std::array<detail::ConstantBufferView, MaxElements> m_uniformBufferViews = {};
 	std::array<Texture*, MaxElements> m_textures = {};
 	std::array<SamplerState*, MaxElements> m_samplers = {};
 };
+} // namespace detail
 
 #if 0
-class ShaderDescriptor
+class ShaderSecondaryDescriptor
 	: public RefObject	// 大量に作られるオブジェクトなので、今は外部公開は考えない。TODO: struct でもいいかも。
 {
 public:
 	
 LN_INTERNAL_NEW_OBJECT;
-    ShaderDescriptor();
+    ShaderSecondaryDescriptor();
     bool init(detail::ShaderDescriptorPool* pool, void* data);
 
 private:
@@ -91,7 +96,7 @@ private:
 
 namespace detail {
 
-// ShaderDescriptor は Shader クラスに対応してデータを保持する。
+// ShaderSecondaryDescriptor は Shader クラスに対応してデータを保持する。
 // Vulkan など RHI では ShaderPass が対応する。
 class ShaderDescriptorPool
 {
@@ -100,7 +105,7 @@ public:
 	bool init(Shader* shader);
 	size_t descriptorDataSize() const { return m_descriptorDataSize; }
 	void reset();
-	ShaderDescriptor* allocate();
+	ShaderSecondaryDescriptor* allocate();
 
 private:
 	void grow();
@@ -110,7 +115,7 @@ private:
 	Shader* m_shader;
 	size_t m_descriptorDataSize;
 	std::vector<Ref<ByteBuffer>> m_pageDataList;
-	std::vector<Ref<ShaderDescriptor>> m_descriptors;
+	std::vector<Ref<ShaderSecondaryDescriptor>> m_descriptors;
 	size_t m_used;
 };
 

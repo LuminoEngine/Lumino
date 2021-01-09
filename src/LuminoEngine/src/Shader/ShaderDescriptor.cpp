@@ -2,89 +2,158 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Graphics/ConstantBuffer.hpp>
 #include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 
 namespace ln {
-	
+namespace detail {
+
 //==============================================================================
 // SceneRendererPass
 	
-ShaderDescriptor::ShaderDescriptor()
+ShaderSecondaryDescriptor::ShaderSecondaryDescriptor()
 	: m_shader(nullptr)
 {
 }
 
-bool ShaderDescriptor::init(Shader* shader)
+bool ShaderSecondaryDescriptor::init(Shader* shader)
 {
 	if (!Object::init()) return false;
 	m_shader = shader;
 	return true;
 }
 
-void ShaderDescriptor::setUniformBuffer(int index, const detail::ConstantBufferView& value)
+void ShaderSecondaryDescriptor::reset(detail::GraphicsCommandList* commandList)
+{
+	const auto& defaulValues = m_shader->descriptor();
+	const auto& layout = descriptorLayout();
+
+	for (int i = 0; i < layout->m_buffers.size(); i++) {
+		const auto& info = layout->m_buffers[i];
+		m_uniformBufferViews[i] = commandList->allocateUniformBuffer(info.size);
+	}
+
+	for (int i = 0; i < layout->m_textures.size(); i++) {
+		m_textures[i] = defaulValues->m_textures[i];
+	}
+	for (int i = 0; i < layout->m_samplers.size(); i++) {
+		m_samplers[i] = defaulValues->m_samplers[i];
+	}
+}
+
+void ShaderSecondaryDescriptor::reallocFromSemanticsManager(detail::GraphicsCommandList* commandList, const detail::ShaderTechniqueSemanticsManager* semanticsManager)
+{
+	const auto& layout = descriptorLayout();
+	const auto& defaulValues = m_shader->descriptor();
+
+	for (int i = 0; i < layout->m_buffers.size(); i++) {
+		const auto& info = layout->m_buffers[i];
+		m_uniformBufferViews[i].clear();
+	}
+
+
+	// TODO: ひとまず全部確保。LNRenderViewBuffer や LNClusteredShadingParameters は Element 単位ではなく共有可能なので、もう少し最適化したい
+	int index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNRenderViewBuffer);
+	if (index >= 0) setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+	index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNRenderElementBuffer);
+	if (index >= 0) setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+	index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNEffectColorBuffer);
+	if (index >= 0) setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+	index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNPBRMaterialParameter);
+	if (index >= 0) setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+	index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNClusteredShadingParameters);
+	if (index >= 0) setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+	index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_LNShadowParameters);
+	if (index >= 0) setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+	index = semanticsManager->getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers_Global);
+	if (index >= 0) {
+		// "$Global" はデフォルト値からコピーしておく
+		setUniformBuffer(index, commandList->allocateUniformBuffer(layout->m_buffers[index].size));
+		const auto& data = shader()->descriptor()->m_buffers[index];
+		setUniformBufferData(0, data.data(), data.size());
+	}
+
+
+	for (int i = 0; i < layout->m_buffers.size(); i++) {
+		if (!m_uniformBufferViews[i].buffer) {
+			const auto& info = layout->m_buffers[i];
+			m_uniformBufferViews[i] = commandList->allocateUniformBuffer(info.size);
+		}
+	}
+
+
+	for (int i = 0; i < layout->m_textures.size(); i++) {
+		m_textures[i] = defaulValues->m_textures[i];
+	}
+	for (int i = 0; i < layout->m_samplers.size(); i++) {
+		m_samplers[i] = defaulValues->m_samplers[i];
+	}
+}
+
+void ShaderSecondaryDescriptor::setUniformBuffer(int index, const detail::ConstantBufferView& value)
 {
 	m_uniformBufferViews[index] = value;
 }
 
-void ShaderDescriptor::setTexture(int index, Texture* value)
+void ShaderSecondaryDescriptor::setTexture(int index, Texture* value)
 {
 	m_textures[index] = value;
 }
 
-void ShaderDescriptor::setSamplerState(int index, SamplerState* value)
+void ShaderSecondaryDescriptor::setSamplerState(int index, SamplerState* value)
 {
 	m_samplers[index] = value;
 }
 
-void ShaderDescriptor::setUniformBufferData(int index, const void* data, size_t size)
+void ShaderSecondaryDescriptor::setUniformBufferData(int index, const void* data, size_t size)
 {
 	m_uniformBufferViews[index].setData(data, size);
 }
 
-void ShaderDescriptor::setInt(int memberIndex, int value)
+void ShaderSecondaryDescriptor::setInt(int memberIndex, int value)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
 	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, 0);
 }
 
-void ShaderDescriptor::setIntArray(int memberIndex, const int* value, int count)
+void ShaderSecondaryDescriptor::setIntArray(int memberIndex, const int* value, int count)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
 	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
-void ShaderDescriptor::setFloat(int memberIndex, float value)
+void ShaderSecondaryDescriptor::setFloat(int memberIndex, float value)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
 	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, 0);
 }
 
-void ShaderDescriptor::setFloatArray(int memberIndex, const float* value, int count)
+void ShaderSecondaryDescriptor::setFloatArray(int memberIndex, const float* value, int count)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
 	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
-void ShaderDescriptor::setVector(int memberIndex, const Vector4& value)
+void ShaderSecondaryDescriptor::setVector(int memberIndex, const Vector4& value)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
 	detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)&value, 4, 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, 0, member.desc.columns);
 }
 
-void ShaderDescriptor::setVectorArray(int memberIndex, const Vector4* value, int count)
+void ShaderSecondaryDescriptor::setVectorArray(int memberIndex, const Vector4* value, int count)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
 	detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)value, 4, count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride, member.desc.columns);
 }
 
-void ShaderDescriptor::setMatrix(int memberIndex, const Matrix& value)
+void ShaderSecondaryDescriptor::setMatrix(int memberIndex, const Matrix& value)
 {
 #ifdef LN_SHADER_UBO_TRANSPORSE_MATRIX
 	const bool transpose = true;
@@ -97,7 +166,7 @@ void ShaderDescriptor::setMatrix(int memberIndex, const Matrix& value)
 	detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, transpose);
 }
 
-void ShaderDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int count)
+void ShaderSecondaryDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int count)
 {
 #ifdef LN_SHADER_UBO_TRANSPORSE_MATRIX
 	const bool transpose = true;
@@ -109,46 +178,34 @@ void ShaderDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int 
 	detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)value, 4, 4, count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, transpose);
 }
 
-//void ShaderDescriptor::setTexture(int textureIndex, Texture* value)
+//void ShaderSecondaryDescriptor::setTexture(int textureIndex, Texture* value)
 //{
 //	m_textures[textureIndex] = value;
 //}
 //
-//void ShaderDescriptor::setSampler(int textureIndex, Texture* value)
+//void ShaderSecondaryDescriptor::setSampler(int textureIndex, Texture* value)
 //{
 //	m_textures[textureIndex] = value;
 //}
 //
-//void ShaderDescriptor::setSamplerState(int samplerIndex, SamplerState* value)
+//void ShaderSecondaryDescriptor::setSamplerState(int samplerIndex, SamplerState* value)
 //{
 //	m_samplers[samplerIndex] = value;
 //}
 
-void ShaderDescriptor::fetchDefaultValues()
-{
-	const auto& defaulValues = m_shader->descriptor();
-	const auto& layout = descriptorLayout();
 
-	// TODO: uniform も
-
-	for (int i = 0; i < layout->m_textures.size(); i++) {
-		m_textures[i] = defaulValues->m_textures[i];
-	}
-	for (int i = 0; i < layout->m_samplers.size(); i++) {
-		m_samplers[i] = defaulValues->m_samplers[i];
-	}
-}
+} // namespace detail
 
 #if 0
 //==============================================================================
 // SceneRendererPass
 	
-ShaderDescriptor::ShaderDescriptor()
+ShaderSecondaryDescriptor::ShaderSecondaryDescriptor()
 	: m_pool(nullptr)
 {
 }
 
-bool ShaderDescriptor::init(detail::ShaderDescriptorPool* pool, void* data)
+bool ShaderSecondaryDescriptor::init(detail::ShaderDescriptorPool* pool, void* data)
 {
 	//if (!Object::init()) return false;
 	m_pool = pool;
@@ -196,13 +253,13 @@ void ShaderDescriptorPool::reset()
 	m_used = 0;
 }
 
-ShaderDescriptor* ShaderDescriptorPool::allocate()
+ShaderSecondaryDescriptor* ShaderDescriptorPool::allocate()
 {
 	if (m_used >= m_descriptors.size()) {
 		grow();
 	}
 
-	ShaderDescriptor* d = m_descriptors[m_used];
+	ShaderSecondaryDescriptor* d = m_descriptors[m_used];
 	m_used++;
 	return d;
 }
@@ -219,7 +276,7 @@ void ShaderDescriptorPool::grow()
 
 	m_descriptors.resize(newSize);
 	for (size_t i = oldSize; i < newSize; i++) {
-		auto descriptor = makeObject<ShaderDescriptor>(this, dataHead);
+		auto descriptor = makeObject<ShaderSecondaryDescriptor>(this, dataHead);
 		m_descriptors[i] = descriptor;
 		dataHead += m_descriptorDataSize;
 	}
