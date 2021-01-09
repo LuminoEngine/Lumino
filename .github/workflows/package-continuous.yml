@@ -164,35 +164,35 @@ jobs:
         path: ./build/NativePackage
         
   #==============================================================================
-  Build-Native-iOS:
-    runs-on: macos-11.0
+#  Build-Native-iOS:
+#    runs-on: macos-11.0
+#
+#    steps:
+#    - name: Checkout
+#      uses: actions/checkout@v1
+#
+#    - name: Setup .NET Core
+#      uses: actions/setup-dotnet@v1
+#      with:
+#        dotnet-version: 2.2.108
+#
+#    - name: Common build cache (build/BuildCache)
+#      uses: actions/cache@v1
+#      with:
+#        path: ./build/BuildCache
+#        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+#            
+#    - name: Build
+#      run: |
+#        dotnet run -- BuildExternalProjects iOS-OS64
+#        dotnet run -- BuildExternalProjects iOS-SIMULATOR64
+#        dotnet run -- BuildEngine_iOS
+#        dotnet run -- MakeNativePackage
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.108
-
-    - name: Common build cache (build/BuildCache)
-      uses: actions/cache@v1
-      with:
-        path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
-            
-    - name: Build
-      run: |
-        dotnet run -- BuildExternalProjects iOS-OS64
-        dotnet run -- BuildExternalProjects iOS-SIMULATOR64
-        dotnet run -- BuildEngine_iOS
-        dotnet run -- MakeNativePackage
-
-    - uses: actions/upload-artifact@v1
-      with:
-        name: NativePackage-iOS
-        path: ./build/NativePackage
+#    - uses: actions/upload-artifact@v1
+#      with:
+#        name: NativePackage-iOS
+#        path: ./build/NativePackage
 
   #==============================================================================
   Package-Windows:
@@ -238,7 +238,8 @@ jobs:
 
   #==============================================================================
   Package-macOS:
-    needs: [Build-Native-macOS, Build-Native-iOS]
+#    needs: [Build-Native-macOS, Build-Native-iOS]
+    needs: [Build-Native-macOS]
     runs-on: macos-11.0
     
     steps:
