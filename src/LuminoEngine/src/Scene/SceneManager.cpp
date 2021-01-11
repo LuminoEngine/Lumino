@@ -171,7 +171,7 @@ Ref<WorldObject> SceneManager::instantiateObjectFromAnyFile(const Path& filePath
 	if (std::find_if(
 		MeshHelper::CandidateExtensions_MeshModel.begin(), MeshHelper::CandidateExtensions_MeshModel.end(),
 		[&](const Char* x) { return ext.endsWith(x, CaseSensitivity::CaseInsensitive); }) != MeshHelper::CandidateExtensions_MeshModel.end()) {
-		return Mesh::create(filePath);
+		return Mesh::load(filePath);
 	}
 
 	return nullptr;

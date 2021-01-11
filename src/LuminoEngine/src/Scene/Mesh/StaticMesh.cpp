@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Scene/Mesh/MeshComponent.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMesh.hpp>
 #include "../../Mesh/MeshManager.hpp"
@@ -13,9 +14,9 @@ namespace ln {
 
 LN_OBJECT_IMPLEMENT(Mesh, VisualObject) {}
 
-Ref<Mesh> Mesh::load(const StringRef& filePath)
+Ref<Mesh> Mesh::load(const StringRef& filePath, MeshImportSettings* settings)
 {
-    return makeObject<Mesh>(filePath, 1.0f);
+    return makeObject<Mesh>(filePath, settings);
 }
 
 Ref<Mesh> Mesh::create()
@@ -26,11 +27,6 @@ Ref<Mesh> Mesh::create()
 Ref<Mesh> Mesh::create(MeshModel* model)
 {
     return makeObject<Mesh>(model);
-}
-
-Ref<Mesh> Mesh::create(const StringRef& filePath, float scale)
-{
-    return makeObject<Mesh>(filePath, scale);
 }
 
 Mesh::Mesh()
@@ -55,11 +51,10 @@ void Mesh::init(MeshModel* model)
     m_component->setModel(model);
 }
 
-void Mesh::init(const StringRef& filePath, float scale)
+void Mesh::init(const StringRef& filePath, MeshImportSettings* settings)
 {
-    //auto model = makeObject<MeshModel>();
-    //detail::EngineDomain::meshManager()->loadStaticMeshModel(model, filePath, scale);
-    auto model = detail::EngineDomain::meshManager()->acquireStaticMeshModel(filePath, scale);
+    auto model = detail::EngineDomain::meshManager()->createSkinnedMeshModel(
+        filePath, settings ? settings : MeshImportSettings::defaultSettings());
     init(model);
 }
 

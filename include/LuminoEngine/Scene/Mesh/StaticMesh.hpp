@@ -16,12 +16,10 @@ class Mesh
 public:
 	/** load */
 	LN_METHOD()
-	static Ref<Mesh> load(const StringRef& filePath);
+	static Ref<Mesh> load(const StringRef& filePath, MeshImportSettings* settings = nullptr);
 
-    // obsolete
     static Ref<Mesh> create();
     static Ref<Mesh> create(MeshModel* model);
-    static Ref<Mesh> create(const StringRef& filePath, float scale = 1.0f);
     
 	/**指定した名前の MeshContainer から、衝突判定用の Body を作成します。 */
 	LN_METHOD(Property)
@@ -41,7 +39,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~Mesh();
 	void init();
     void init(MeshModel* model);
-    void init(const StringRef& filePath, float scale);
+    void init(const StringRef& filePath, MeshImportSettings* settings);
 
 private:
     Ref<MeshComponent> m_component;
