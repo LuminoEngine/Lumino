@@ -63,7 +63,7 @@ class App_Sandbox_PostEffect : public Application
         model->addMaterial(Material::create());
         model->updateNodeTransforms();
 
-        auto obj = makeObject<Mesh>(model);
+        auto obj = makeObject<StaticMesh>(model);
 
 
 		//auto effect2 = makeObject<SSRPostEffect>();

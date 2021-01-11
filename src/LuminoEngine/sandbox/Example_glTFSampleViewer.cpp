@@ -7,7 +7,7 @@ using namespace ln;
 class App_Example_glTFSampleViewer : public Application
 {
     Ref<UIListBox> m_listbox1;
-    Ref<Mesh> m_mesh;
+    Ref<StaticMesh> m_mesh;
 
     void onInit() override
     {
@@ -57,7 +57,7 @@ class App_Example_glTFSampleViewer : public Application
 
         auto settings = makeObject<MeshImportSettings>();
         settings->setApplyBoneTransformationsEnabled(false);
-        m_mesh = Mesh::load(path, settings);
+        m_mesh = StaticMesh::load(path, settings);
 
         std::cout << path << std::endl;
     }

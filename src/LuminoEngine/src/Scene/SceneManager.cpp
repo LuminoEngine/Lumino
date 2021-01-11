@@ -107,7 +107,7 @@ void SceneManager::init()
     EngineDomain::registerType<TilemapComponent>();
     EngineDomain::registerType<Tilemap>();
 
-	EngineDomain::registerType<Mesh>();
+	EngineDomain::registerType<StaticMesh>();
 
 	EngineDomain::registerType<PlaneMesh>();
 	EngineDomain::registerType<PlaneMeshComponent>();
@@ -171,7 +171,7 @@ Ref<WorldObject> SceneManager::instantiateObjectFromAnyFile(const Path& filePath
 	if (std::find_if(
 		MeshHelper::CandidateExtensions_MeshModel.begin(), MeshHelper::CandidateExtensions_MeshModel.end(),
 		[&](const Char* x) { return ext.endsWith(x, CaseSensitivity::CaseInsensitive); }) != MeshHelper::CandidateExtensions_MeshModel.end()) {
-		return Mesh::load(filePath);
+		return StaticMesh::load(filePath);
 	}
 
 	return nullptr;

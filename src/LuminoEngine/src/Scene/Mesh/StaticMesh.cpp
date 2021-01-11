@@ -10,34 +10,34 @@
 namespace ln {
 
 //==============================================================================
-// Mesh
+// StaticMesh
 
-LN_OBJECT_IMPLEMENT(Mesh, VisualObject) {}
+LN_OBJECT_IMPLEMENT(StaticMesh, VisualObject) {}
 
-Ref<Mesh> Mesh::load(const StringRef& filePath, MeshImportSettings* settings)
+Ref<StaticMesh> StaticMesh::load(const StringRef& filePath, MeshImportSettings* settings)
 {
-    return makeObject<Mesh>(filePath, settings);
+    return makeObject<StaticMesh>(filePath, settings);
 }
 
-Ref<Mesh> Mesh::create()
+Ref<StaticMesh> StaticMesh::create()
 {
-    return makeObject<Mesh>();
+    return makeObject<StaticMesh>();
 }
 
-Ref<Mesh> Mesh::create(MeshModel* model)
+Ref<StaticMesh> StaticMesh::create(MeshModel* model)
 {
-    return makeObject<Mesh>(model);
+    return makeObject<StaticMesh>(model);
 }
 
-Mesh::Mesh()
-{
-}
-
-Mesh::~Mesh()
+StaticMesh::StaticMesh()
 {
 }
 
-void Mesh::init()
+StaticMesh::~StaticMesh()
+{
+}
+
+void StaticMesh::init()
 {
     VisualObject::init();
     m_component = makeObject<MeshComponent>();
@@ -45,35 +45,35 @@ void Mesh::init()
     setMainVisualComponent(m_component);
 }
 
-void Mesh::init(MeshModel* model)
+void StaticMesh::init(MeshModel* model)
 {
     init();
     m_component->setModel(model);
 }
 
-void Mesh::init(const StringRef& filePath, MeshImportSettings* settings)
+void StaticMesh::init(const StringRef& filePath, MeshImportSettings* settings)
 {
     auto model = detail::EngineDomain::meshManager()->createSkinnedMeshModel(
         filePath, settings ? settings : MeshImportSettings::defaultSettings());
     init(model);
 }
 
-MeshComponent* Mesh::staticMeshComponent() const
+MeshComponent* StaticMesh::staticMeshComponent() const
 {
     return m_component;
 }
 
-MeshModel* Mesh::model() const
+MeshModel* StaticMesh::model() const
 {
     return m_component->model();
 }
 
-void Mesh::makeCollisionBody(StringRef meshContainerName)
+void StaticMesh::makeCollisionBody(StringRef meshContainerName)
 {
     m_component->makeCollisionBody(meshContainerName);
 }
 
-void Mesh::serialize(Serializer2& ar)
+void StaticMesh::serialize(Serializer2& ar)
 {
     VisualObject::serialize(ar);
 
