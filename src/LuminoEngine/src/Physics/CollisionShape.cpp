@@ -10,7 +10,7 @@
 #include <LuminoEngine/Physics/CollisionShape.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include "BulletUtils.hpp"
 
 namespace ln {

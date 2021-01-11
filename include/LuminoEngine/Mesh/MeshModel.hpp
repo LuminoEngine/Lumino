@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Common.hpp"
-#include "Mesh.hpp"
+#include "MeshPrimitive.hpp"
 
 namespace ln {
 class MeshSkeleton;

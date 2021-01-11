@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 
 #if 1
 
