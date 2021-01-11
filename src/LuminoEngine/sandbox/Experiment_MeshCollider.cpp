@@ -14,7 +14,7 @@ class App_Experiment_MeshCollider : public Application
         //Engine::renderView()->setPhysicsDebugDrawEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
 
-        auto staticMesh = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Map-1.glb");
+        auto staticMesh = Mesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Map-1.glb");
         auto model = staticMesh->staticMeshComponent()->model();
 
         if (auto node = model->findNode(u"Lumino.MeshCollider")) {

@@ -5251,7 +5251,7 @@ extern LN_FLAT_API void LNPlaneMesh_RegisterSubclassTypeInfo(const LNPlaneMesh_S
 extern LN_FLAT_API LNSubinstanceId LNPlaneMesh_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// ln::StaticMesh
+// ln::Mesh
 
 /**
     @brief load

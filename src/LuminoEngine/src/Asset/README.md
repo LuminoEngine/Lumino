@@ -150,8 +150,8 @@ end note
 #### CacheKey に拡張子は含めるべき？
 
 ```cpp
-auto mesh1 = StaticMesh::load("mesh");      // .yml があればそちらを優先ロード
-auto mesh2 = StaticMesh::load("mesh.gltf");
+auto mesh1 = Mesh::load("mesh");      // .yml があればそちらを優先ロード
+auto mesh2 = Mesh::load("mesh.gltf");
 ```
 
 .yml をロードしたときも、importer に流れるときは mesh.gltf に解決されるので、埋め込みテクスチャがある場合、どちらも "mesh.gltf/img.png" が Cache に登録される。

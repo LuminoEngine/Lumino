@@ -6,22 +6,22 @@ namespace ln {
 class MeshModel;
 
 /**
- * StaticMesh
+ * Mesh
  */
 LN_CLASS()
-class StaticMesh
+class Mesh
 	: public VisualObject
 {
     LN_OBJECT;
 public:
 	/** load */
 	LN_METHOD()
-	static Ref<StaticMesh> load(const StringRef& filePath);
+	static Ref<Mesh> load(const StringRef& filePath);
 
     // obsolete
-    static Ref<StaticMesh> create();
-    static Ref<StaticMesh> create(MeshModel* model);
-    static Ref<StaticMesh> create(const StringRef& filePath, float scale = 1.0f);
+    static Ref<Mesh> create();
+    static Ref<Mesh> create(MeshModel* model);
+    static Ref<Mesh> create(const StringRef& filePath, float scale = 1.0f);
     
 	/**指定した名前の MeshContainer から、衝突判定用の Body を作成します。 */
 	LN_METHOD(Property)
@@ -37,8 +37,8 @@ protected:
     void serialize(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
-	StaticMesh();
-	virtual ~StaticMesh();
+	Mesh();
+	virtual ~Mesh();
 	void init();
     void init(MeshModel* model);
     void init(const StringRef& filePath, float scale);

@@ -196,7 +196,7 @@ public:	// TODO:
     List<int> m_rootNodes;
 
     // 静的データである localTransform に対する動的データ。
-    // といっても StaticMesh はリアルタイム更新はしない。
+    // といっても Mesh はリアルタイム更新はしない。
     // ロード後にまとめて構築するだけ。
     // でも Node は SkinndMesh と共用なので、Node 側に GlobalTransform を持たせるのは
     // データが無駄になったりする。

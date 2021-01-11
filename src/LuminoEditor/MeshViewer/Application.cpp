@@ -114,7 +114,7 @@ void Application::onInit()
     
     ViewModel::instance()->load();
 
-    //m_mesh = ln::StaticMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/SkinnedAxis1.glb");
+    //m_mesh = ln::Mesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/SkinnedAxis1.glb");
 
 
 #if 0

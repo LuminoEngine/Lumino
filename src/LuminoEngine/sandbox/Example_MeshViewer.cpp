@@ -49,16 +49,16 @@ public:
         ////m_plane->planeMeshComponent()->setUVParUnit(Vector2(0.5f, 0.5f));
         //m_plane->planeMeshComponent()->setUVParUnit(Vector2(5, 5));
 
-        //auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/Blender/untitled4.glb");
+        //auto mesh = Mesh::create(u"D:/Materials/KitBash3D/WARZONE/Blender/untitled4.glb");
 
 
-        //auto mesh = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb");
+        //auto mesh = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb");
         
-		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/autotile-regions.glb");
+		//auto mesh = Mesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/autotile-regions.glb");
         //auto mesh = SkinnedMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/SkinnedMesh2.glb");
         //auto mesh = SkinnedMesh::load(u"D:/LocalProj/UnityChanSD/Misaki_sum_humanoid.fbx");
-        //auto mesh = StaticMesh::create(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
-        //auto mesh = StaticMesh::create(u"D:/Materials/VRM/PronamaChan/PronamaChan.glb");
+        //auto mesh = Mesh::create(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
+        //auto mesh = Mesh::create(u"D:/Materials/VRM/PronamaChan/PronamaChan.glb");
 
         //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedCube/glTF/AnimatedCube.gltf");
         //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedMorphCube/glTF/AnimatedMorphCube.gltf");
@@ -66,15 +66,15 @@ public:
         
         
         //mesh->skinnedMeshComponent()->model()->animationController()->play(u"animation_AnimatedCube");
-        //auto mesh = StaticMesh::create("D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/BldgMedTallC_grp.gltf");
-        //auto mesh = StaticMesh::create("D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/2-OverpassBroken_grp.gltf");
-        //auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/27-BldgRubbleB_grp.gltf");
+        //auto mesh = Mesh::create("D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/BldgMedTallC_grp.gltf");
+        //auto mesh = Mesh::create("D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/2-OverpassBroken_grp.gltf");
+        //auto mesh = Mesh::create(u"D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/27-BldgRubbleB_grp.gltf");
         
         //mesh->setPosition(0, 10, 0);
-		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Models/Axis.glb");
-		//auto mesh = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Exported/MainMap1-Start.gltf");
-		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/Axis1.glb");
-        //auto mesh = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/Spear1.gltf");
+		//auto mesh = Mesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Models/Axis.glb");
+		//auto mesh = Mesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Exported/MainMap1-Start.gltf");
+		//auto mesh = Mesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/Axis1.glb");
+        //auto mesh = Mesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/Spear1.gltf");
         //mesh->model()->material(1)->setColor(Color(0, 1, 0));
         //mesh->model()->material(1)->setEmissive(Color(0.5, 2, 0.5));
         Engine::renderView()->setHDREnabled(true);

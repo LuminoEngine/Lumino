@@ -9,39 +9,39 @@
 namespace ln {
 
 //==============================================================================
-// StaticMesh
+// Mesh
 
-LN_OBJECT_IMPLEMENT(StaticMesh, VisualObject) {}
+LN_OBJECT_IMPLEMENT(Mesh, VisualObject) {}
 
-Ref<StaticMesh> StaticMesh::load(const StringRef& filePath)
+Ref<Mesh> Mesh::load(const StringRef& filePath)
 {
-    return makeObject<StaticMesh>(filePath, 1.0f);
+    return makeObject<Mesh>(filePath, 1.0f);
 }
 
-Ref<StaticMesh> StaticMesh::create()
+Ref<Mesh> Mesh::create()
 {
-    return makeObject<StaticMesh>();
+    return makeObject<Mesh>();
 }
 
-Ref<StaticMesh> StaticMesh::create(MeshModel* model)
+Ref<Mesh> Mesh::create(MeshModel* model)
 {
-    return makeObject<StaticMesh>(model);
+    return makeObject<Mesh>(model);
 }
 
-Ref<StaticMesh> StaticMesh::create(const StringRef& filePath, float scale)
+Ref<Mesh> Mesh::create(const StringRef& filePath, float scale)
 {
-    return makeObject<StaticMesh>(filePath, scale);
+    return makeObject<Mesh>(filePath, scale);
 }
 
-StaticMesh::StaticMesh()
-{
-}
-
-StaticMesh::~StaticMesh()
+Mesh::Mesh()
 {
 }
 
-void StaticMesh::init()
+Mesh::~Mesh()
+{
+}
+
+void Mesh::init()
 {
     VisualObject::init();
     m_component = makeObject<MeshComponent>();
@@ -49,13 +49,13 @@ void StaticMesh::init()
     setMainVisualComponent(m_component);
 }
 
-void StaticMesh::init(MeshModel* model)
+void Mesh::init(MeshModel* model)
 {
     init();
     m_component->setModel(model);
 }
 
-void StaticMesh::init(const StringRef& filePath, float scale)
+void Mesh::init(const StringRef& filePath, float scale)
 {
     //auto model = makeObject<MeshModel>();
     //detail::EngineDomain::meshManager()->loadStaticMeshModel(model, filePath, scale);
@@ -63,22 +63,22 @@ void StaticMesh::init(const StringRef& filePath, float scale)
     init(model);
 }
 
-MeshComponent* StaticMesh::staticMeshComponent() const
+MeshComponent* Mesh::staticMeshComponent() const
 {
     return m_component;
 }
 
-MeshModel* StaticMesh::model() const
+MeshModel* Mesh::model() const
 {
     return m_component->model();
 }
 
-void StaticMesh::makeCollisionBody(StringRef meshContainerName)
+void Mesh::makeCollisionBody(StringRef meshContainerName)
 {
     m_component->makeCollisionBody(meshContainerName);
 }
 
-void StaticMesh::serialize(Serializer2& ar)
+void Mesh::serialize(Serializer2& ar)
 {
     VisualObject::serialize(ar);
 

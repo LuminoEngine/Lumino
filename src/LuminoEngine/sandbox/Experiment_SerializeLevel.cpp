@@ -26,7 +26,7 @@ class App_Experiment_SerializeLevel : public Application
             //Assets::saveAsset(model1, u"Models/Box1");
 
 
-            auto mesh1 = StaticMesh::create(model1);
+            auto mesh1 = Mesh::create(model1);
 
 
             level1->addObject(mesh1);

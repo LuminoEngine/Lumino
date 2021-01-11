@@ -428,6 +428,8 @@ private:
 };
 
 namespace detail {
+
+	// TODO: deprecated?
 enum class InternalMeshModelType
 {
     StaticMesh,

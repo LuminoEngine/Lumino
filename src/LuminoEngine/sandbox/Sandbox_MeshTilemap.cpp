@@ -54,12 +54,12 @@ class Sandbox_MeshTilemap_App : public Application
 		//meshModel->addMaterial(material);
 		//meshModel->updateNodeTransforms();
 
-		//auto staticMesh = StaticMesh::create();
+		//auto staticMesh = Mesh::create();
 		//auto meshComponent = staticMesh->staticMeshComponent();
 		//meshComponent->setModel(meshModel);
 		//
 		//staticMesh->setShadingModel(ShadingModel::Unlit);
-		////auto mesh = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
+		////auto mesh = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
 
 		auto meshTilemapModel = makeObject<MeshVoxelmapModel>();
 

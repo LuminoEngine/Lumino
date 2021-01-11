@@ -95,7 +95,7 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
     }));
 
 
-    //auto a = ln::StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Models/WARZONE/2-OverpassBroken_grp.gltf");
+    //auto a = ln::Mesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Models/WARZONE/2-OverpassBroken_grp.gltf");
     //m_editingLevel->addObject(a);
 }
 
