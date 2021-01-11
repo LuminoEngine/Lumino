@@ -99,7 +99,7 @@ public:
 
 
 
-        m_model = m_mesh->skinnedMeshComponent()->model();
+        m_model = m_mesh->meshComponent()->model();
         MeshDiag::printNodes(m_model);
         //MeshDiag::clearBoneInitialRotations(m_model);
         //MeshDiag::printNodes(m_model);

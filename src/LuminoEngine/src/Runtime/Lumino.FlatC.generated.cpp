@@ -4896,7 +4896,7 @@ LN_FLAT_API LNResult LNStaticMeshComponentSerializeHandler_Create(LNStaticMeshCo
 
 
 // Auto generated override handler
-using SkinnedMeshComponentSerializeHandler = ln::Delegate<void(ln::SkinnedMeshComponent* self, ln::Serializer2* ar)>;
+using SkinnedMeshComponentSerializeHandler = ln::Delegate<void(ln::MeshComponent* self, ln::Serializer2* ar)>;
 
 class LNWS_SkinnedMeshComponentSerializeHandler : public SkinnedMeshComponentSerializeHandler
 {
@@ -4915,7 +4915,7 @@ public:
     LNSkinnedMeshComponentSerializeHandlerCallback m_callback;
 
     LNWS_SkinnedMeshComponentSerializeHandler()
-      : SkinnedMeshComponentSerializeHandler([this](ln::SkinnedMeshComponent* self, ln::Serializer2* ar) -> void
+      : SkinnedMeshComponentSerializeHandler([this](ln::MeshComponent* self, ln::Serializer2* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNSkinnedMeshComponentSerializeHandlerCallback"); }
@@ -11887,7 +11887,7 @@ public:
 LNStaticMeshComponent_OnSerialize_OverrideCallback LNWS_ln_StaticMeshComponent::s_LNStaticMeshComponent_OnSerialize_OverrideCallback = nullptr;
 
 
-class LNWS_ln_SkinnedMeshComponent : public ln::SkinnedMeshComponent
+class LNWS_ln_SkinnedMeshComponent : public ln::MeshComponent
 {
 public:
     // Override functions per instance for FlatAPI User.
@@ -11923,11 +11923,11 @@ public:
             }
         }
         if (s_LNSkinnedMeshComponent_OnSerialize_OverrideCallback) s_LNSkinnedMeshComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::SkinnedMeshComponent::onSerialize(ar);
+        ln::MeshComponent::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
-        ln::SkinnedMeshComponent::onSerialize(ar);
+        ln::MeshComponent::onSerialize(ar);
     }
 
     // TypeInfo
@@ -20193,18 +20193,18 @@ LN_FLAT_API LNResult LNSkinnedMeshComponent_SetPrototype_OnSerialize(LNHandle sk
 }
 extern LN_FLAT_API int LNSkinnedMeshComponent_GetTypeInfoId()
 {
-    return ln::TypeInfo::getTypeInfo<ln::SkinnedMeshComponent>()->id();
+    return ln::TypeInfo::getTypeInfo<ln::MeshComponent>()->id();
 }
 
 LN_FLAT_API void LNSkinnedMeshComponent_SetManagedTypeInfoId(int64_t id)
 {
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::SkinnedMeshComponent>(), id);
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::MeshComponent>(), id);
 }
 
 void LNSkinnedMeshComponent_RegisterSubclassTypeInfo(const LNSkinnedMeshComponent_SubclassRegistrationInfo* info)
 {
     if (info) {
-        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::SkinnedMeshComponent>(), info->subclassId);
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::MeshComponent>(), info->subclassId);
         *LNWS_ln_SkinnedMeshComponent::subclassInfo() = *info;
     }
 }

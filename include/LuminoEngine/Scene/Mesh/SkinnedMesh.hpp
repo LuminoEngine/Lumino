@@ -3,7 +3,7 @@
 #include "../VisualObject.hpp"
 
 namespace ln {
-class SkinnedMeshComponent;
+class MeshComponent;
 
 class SkinnedMesh
 	: public VisualObject
@@ -12,7 +12,7 @@ public:
     static Ref<SkinnedMesh> create();
     static Ref<SkinnedMesh> load(const StringRef& filePath, float scale = 1.0f);
 
-    SkinnedMeshComponent* skinnedMeshComponent() const;
+    MeshComponent* meshComponent() const;
 
 protected:
 
@@ -23,7 +23,7 @@ LN_CONSTRUCT_ACCESS:
     void init(const StringRef& filePath, float scale);
 
 private:
-    Ref<SkinnedMeshComponent> m_component;
+    Ref<MeshComponent> m_component;
 };
 
 } // namespace ln

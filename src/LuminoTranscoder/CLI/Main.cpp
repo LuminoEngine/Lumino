@@ -84,7 +84,6 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/Scene/Shapes/MeshPrimitives.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Mesh/StaticMesh.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Mesh/MeshComponent.hpp",
-			TEST_ROOT "include/LuminoEngine/Scene/Mesh/SkinnedMeshComponent.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Physics/Collision.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Physics/RigidBodyComponent.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Effect/ParticleEmitter.hpp",
