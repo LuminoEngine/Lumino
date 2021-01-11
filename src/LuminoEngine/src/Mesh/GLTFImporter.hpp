@@ -41,7 +41,6 @@ private:
 		VertexElementUsage usage;
 		int usageIndex;
 		const void* data;
-		//size_t byteOffset;
 		size_t count;	// vertex count. not byte size. (byte size = count * size(type))
 		size_t byteStride;
 	};
@@ -55,11 +54,9 @@ private:
 	};
 
 	// ファイルからのデータ読み込み用
-	struct SectionView
+	struct MeshPrimitiveView
 	{
 		std::vector<VertexBufferView> vertexBufferViews;
-		//int indexOffset;    // (unit: index number. not byte size)
-		//int indexCount;     // (unit: index number. not byte size)
 
 		const void* indexData;  // このセクション内で 0 から始まるインデックス
 		int indexElementSize;	// byte size. (1, 2, 4)
@@ -74,7 +71,7 @@ private:
 
 	struct MeshView
 	{
-		std::vector<SectionView> sectionViews;
+		std::vector<MeshPrimitiveView> sectionViews;
 	};
 
 	bool openGLTFModel(const AssetPath& assetPath);
@@ -82,7 +79,7 @@ private:
     Ref<Material> readMaterial(const tinygltf::Material& material);
 	bool readNode(MeshNode* coreNode, const tinygltf::Node& node);
 	Ref<MeshContainer> readMesh(const tinygltf::Mesh& mesh);
-	Ref<Mesh> generateMesh(const MeshView& meshView) const;
+	Ref<MeshContainer> generateMesh(const MeshView& meshView) const;
 	Ref<MeshSkeleton> readSkin(const tinygltf::Skin& skin);
 	Ref<Texture> loadTexture(const tinygltf::Texture& texture);
 	Ref<AnimationClip> readAnimation(const tinygltf::Animation& animation) const;

@@ -106,7 +106,7 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
 
 			const auto& meshContainer = m_model->meshContainers()[node->meshContainerIndex()];
 
-			Mesh* mesh = meshContainer->mesh();
+			MeshPrimitive* mesh = meshContainer->mesh();
 			if (mesh) {
 				for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
 					context->setMaterial(m_model->materials()[mesh->sections()[iSection].materialIndex]);

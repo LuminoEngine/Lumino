@@ -21,7 +21,7 @@ class App_Experiment_MeshCollider : public Application
             int index = node->meshContainerIndex();
             if (index >= 0) {
                 auto meshContainer = model->meshContainers()[index];
-                auto mesh = meshContainer->mesh();
+                auto mesh = meshContainer->meshPrimitives()[0];
                 auto shape = MeshCollisionShape::create(mesh);
                 auto body = RigidBodyComponent::create();
                 body->addCollisionShape(shape);

@@ -229,12 +229,12 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
 	m_commandList->drawMesh(meshResource, sectionIndex);
 }
 
-void RenderingContext::drawMesh(Mesh* mesh, int sectionIndex)
+void RenderingContext::drawMesh(MeshPrimitive* mesh, int sectionIndex)
 {
 	m_commandList->drawMesh(mesh, sectionIndex);
 }
 
-void RenderingContext::drawSkinnedMesh(Mesh* mesh, int sectionIndex, detail::SkeletonInstance* skeleton)
+void RenderingContext::drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton)
 {
 	m_commandList->drawSkinnedMesh(mesh, sectionIndex, skeleton);
 }

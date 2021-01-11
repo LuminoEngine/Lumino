@@ -5,7 +5,7 @@ namespace detail {
 class LinearAllocator;
 class MeshGenerater;
 }
-class Mesh;
+class MeshPrimitive;
 
 class MeshGeometryBuilder
 	: public Object
@@ -37,7 +37,7 @@ public:
 
 	void endSection();
 
-	Ref<Mesh> buildMesh();
+	Ref<MeshPrimitive> buildMesh();
 	
 LN_CONSTRUCT_ACCESS:
 	MeshGeometryBuilder();

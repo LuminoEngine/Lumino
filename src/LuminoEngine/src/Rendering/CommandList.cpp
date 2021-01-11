@@ -526,12 +526,12 @@ void CommandList::drawMesh(MeshResource* meshResource, int sectionIndex)
 	// TODO: bounding
 }
 
-void CommandList::drawMesh(Mesh* mesh, int sectionIndex)
+void CommandList::drawMesh(MeshPrimitive* mesh, int sectionIndex)
 {
 	class DrawMesh : public detail::RenderDrawElement
 	{
 	public:
-		Ref<Mesh>  mesh;
+		Ref<MeshPrimitive>  mesh;
 		int sectionIndex;
 
 		// SkinnedMesh の場合に、親インスタンスが破棄されないように参照を保持しておく
@@ -554,12 +554,12 @@ void CommandList::drawMesh(Mesh* mesh, int sectionIndex)
 	// TODO: bounding
 }
 
-void CommandList::drawSkinnedMesh(Mesh* mesh, int sectionIndex, detail::SkeletonInstance* skeleton)
+void CommandList::drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton)
 {
 	class DrawSkinnedMesh : public detail::RenderDrawElement
 	{
 	public:
-		Ref<Mesh>  mesh;
+		Ref<MeshPrimitive>  mesh;
 		int sectionIndex;
 
 		// SkinnedMesh の場合に、親インスタンスが破棄されないように参照を保持しておく

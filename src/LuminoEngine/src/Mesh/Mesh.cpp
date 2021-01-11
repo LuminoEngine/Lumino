@@ -333,7 +333,7 @@ bool MeshResource::isInitialEmpty() const
 //==============================================================================
 // Mesh
 
-void Mesh::VertexBufferEntry::reset()
+void MeshPrimitive::VertexBufferEntry::reset()
 {
 	if (mappedBuffer) {
 		buffer->unmap();
@@ -341,7 +341,7 @@ void Mesh::VertexBufferEntry::reset()
 	buffer = nullptr;
 }
 
-void Mesh::IndexBufferEntry::reset()
+void MeshPrimitive::IndexBufferEntry::reset()
 {
 	if (mappedBuffer) {
 		buffer->unmap();
@@ -349,21 +349,21 @@ void Mesh::IndexBufferEntry::reset()
 	buffer = nullptr;
 }
 
-Mesh::Mesh()
+MeshPrimitive::MeshPrimitive()
 	: m_resourceUsage(GraphicsResourceUsage::Static)
 {
 }
 
-Mesh::~Mesh()
+MeshPrimitive::~MeshPrimitive()
 {
 }
 
-void Mesh::init()
+void MeshPrimitive::init()
 {
 	Object::init();
 }
 
-void Mesh::init(int vertexCount, int indexCount)
+void MeshPrimitive::init(int vertexCount, int indexCount)
 {
 	init();
 	m_vertexCount = vertexCount;
@@ -371,7 +371,7 @@ void Mesh::init(int vertexCount, int indexCount)
 	m_indexFormat = GraphicsHelper::selectIndexBufferFormat(m_vertexCount);
 }
 
-void Mesh::init(int vertexCount, int indexCount, IndexBufferFormat indexFormat, GraphicsResourceUsage resourceUsage)
+void MeshPrimitive::init(int vertexCount, int indexCount, IndexBufferFormat indexFormat, GraphicsResourceUsage resourceUsage)
 {
 	init();
 	m_vertexCount = vertexCount;
@@ -380,7 +380,7 @@ void Mesh::init(int vertexCount, int indexCount, IndexBufferFormat indexFormat, 
 	m_resourceUsage = resourceUsage;
 }
 
-void Mesh::resetVertexBuffer(int vertexCount)
+void MeshPrimitive::resetVertexBuffer(int vertexCount)
 {
 	m_mainVertexBuffer.reset();
 	m_skinningVertexBuffer.reset();
@@ -389,26 +389,26 @@ void Mesh::resetVertexBuffer(int vertexCount)
 	m_vertexCount = vertexCount;
 }
 
-void Mesh::resetIndexBuffer(int indexCount, IndexBufferFormat indexFormat)
+void MeshPrimitive::resetIndexBuffer(int indexCount, IndexBufferFormat indexFormat)
 {
 	m_indexBuffer.reset();
 	m_indexCount = indexCount;
 	m_indexFormat = indexFormat;
 }
 
-void Mesh::setVertex(int index, const Vertex& value)
+void MeshPrimitive::setVertex(int index, const Vertex& value)
 {
 	if (LN_REQUIRE(0 <= index && index < m_vertexCount)) return;
 	reinterpret_cast<Vertex*>(acquireMappedVertexBuffer(InterleavedVertexGroup::Main))[index] = value;
 }
 
-const Vertex& Mesh::vertex(int index)
+const Vertex& MeshPrimitive::vertex(int index)
 {
 	if (LN_REQUIRE(0 <= index && index < m_vertexCount)) return Vertex::Default;
 	return reinterpret_cast<Vertex*>(acquireMappedVertexBuffer(InterleavedVertexGroup::Main))[index];
 }
 
-void Mesh::setIndex(int index, int value)
+void MeshPrimitive::setIndex(int index, int value)
 {
 	if (LN_REQUIRE(0 <= index && index < m_indexCount)) return;
 	
@@ -426,7 +426,7 @@ void Mesh::setIndex(int index, int value)
 	}
 }
 
-int Mesh::index(int index)
+int MeshPrimitive::index(int index)
 {
 	if (LN_REQUIRE(0 <= index && index < m_indexCount)) return 0;
 
@@ -442,7 +442,7 @@ int Mesh::index(int index)
 	}
 }
 
-void Mesh::addSection(int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology)
+void MeshPrimitive::addSection(int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology)
 {
 	MeshSection2 meshSection;
 	meshSection.startIndex = startIndex;
@@ -452,7 +452,7 @@ void Mesh::addSection(int startIndex, int primitiveCount, int materialIndex, Pri
 	m_sections.add(meshSection);
 }
 
-void Mesh::setSection(int sectionIndex, int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology)
+void MeshPrimitive::setSection(int sectionIndex, int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology)
 {
 	MeshSection2& meshSection = m_sections[sectionIndex];
 	meshSection.startIndex = startIndex;
@@ -461,7 +461,7 @@ void Mesh::setSection(int sectionIndex, int startIndex, int primitiveCount, int 
 	meshSection.topology = topology;
 }
 
-void Mesh::commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB)
+void MeshPrimitive::commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB)
 {
 	// unmap
 	{
@@ -511,7 +511,7 @@ void Mesh::commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLa
 	*outVBCount = count;
 }
 
-InterleavedVertexGroup Mesh::getStandardElement(VertexElementUsage usage, int usageIndex) const
+InterleavedVertexGroup MeshPrimitive::getStandardElement(VertexElementUsage usage, int usageIndex) const
 {
 	if (usageIndex == 0) {
 		if (usage == VertexElementUsage::Position ||
@@ -534,7 +534,7 @@ InterleavedVertexGroup Mesh::getStandardElement(VertexElementUsage usage, int us
 	return InterleavedVertexGroup::Undefined;
 }
 
-void* Mesh::acquireMappedVertexBuffer(InterleavedVertexGroup group)
+void* MeshPrimitive::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 {
 	switch (group)
 	{
@@ -586,7 +586,7 @@ void* Mesh::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 	}
 }
 
-void* Mesh::acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex)
+void* MeshPrimitive::acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex)
 {
 	auto group = getStandardElement(usage, usageIndex);
 	if (group == InterleavedVertexGroup::Undefined) {
@@ -621,7 +621,7 @@ void* Mesh::acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage
 	}
 }
 
-void* Mesh::acquireMappedIndexBuffer()
+void* MeshPrimitive::acquireMappedIndexBuffer()
 {
 	if (!m_indexBuffer.buffer) {
 		m_indexBuffer.buffer = makeObject<IndexBuffer>(m_indexCount, m_indexFormat, m_resourceUsage);
@@ -636,7 +636,7 @@ void* Mesh::acquireMappedIndexBuffer()
 	return m_indexBuffer.mappedBuffer;
 }
 
-VertexElementType Mesh::findVertexElementType(VertexElementUsage usage, int usageIndex) const
+VertexElementType MeshPrimitive::findVertexElementType(VertexElementUsage usage, int usageIndex) const
 {
 	// Find predefined vertex data.
 	if (usageIndex == 0) {
@@ -778,7 +778,7 @@ static void calculateTangentsInternal(int indexCount, const TIndex* indices, Ver
 // TODO: 未テスト。Blender が接線をエクスポートしない問題の暫定対策として用意しているが、
 // ちゃんと公開する前にはテストすること。
 // https://github.com/KhronosGroup/glTF-Blender-IO/issues/172
-void Mesh::calculateTangents()
+void MeshPrimitive::calculateTangents()
 {
 	if (LN_REQUIRE(isAllTriangleLists())) return;
 
@@ -797,7 +797,7 @@ void Mesh::calculateTangents()
 	}
 }
 
-VertexBuffer* Mesh::vertexBuffer(InterleavedVertexGroup group) const
+VertexBuffer* MeshPrimitive::vertexBuffer(InterleavedVertexGroup group) const
 {
 	switch (group)
 	{
@@ -813,12 +813,12 @@ VertexBuffer* Mesh::vertexBuffer(InterleavedVertexGroup group) const
 	}
 }
 
-IndexBuffer* Mesh::indexBuffer() const
+IndexBuffer* MeshPrimitive::indexBuffer() const
 {
 	return m_indexBuffer.buffer;
 }
 
-void* Mesh::acquireMappedMorphVertexBuffer(int morphIndex)
+void* MeshPrimitive::acquireMappedMorphVertexBuffer(int morphIndex)
 {
 	// Grow
 	if (morphIndex >= m_morphVertexBuffer.size()) {
@@ -837,7 +837,7 @@ void* Mesh::acquireMappedMorphVertexBuffer(int morphIndex)
 	return e.mappedBuffer;
 }
 
-void Mesh::attemptResetVertexLayout()
+void MeshPrimitive::attemptResetVertexLayout()
 {
 	if (!m_vertexLayout) {
 		m_vertexLayout = makeObject<VertexLayout>();
@@ -875,7 +875,7 @@ MeshContainer::MeshContainer()
 	//, m_lodResources()
 	, m_visible(true)
 {
-    m_lodMesh.resize(1);
+    //m_lodMesh.resize(1);
 }
 
 MeshContainer::~MeshContainer()
@@ -958,18 +958,23 @@ void MeshContainer::calculateBounds()
 #endif
 }
 
-void MeshContainer::setMesh(Mesh* mesh)
+void MeshContainer::addMeshPrimitive(MeshPrimitive* mesh)
 {
-	//if (LN_REQUIRE(mesh)) return;
-	//if (LN_REQUIRE(!mesh->m_owner)) return;
-    m_lodMesh[0] = mesh;
-	//mesh->m_owner = this;
+	m_lodMesh.add(mesh);
 }
 
-Mesh* MeshContainer::mesh() const
-{
-    return m_lodMesh[0];
-}
+//void MeshContainer::setMesh(MeshPrimitive* mesh)
+//{
+//	//if (LN_REQUIRE(mesh)) return;
+//	//if (LN_REQUIRE(!mesh->m_owner)) return;
+//    m_lodMesh[0] = mesh;
+//	//mesh->m_owner = this;
+//}
+//
+//MeshPrimitive* MeshContainer::mesh() const
+//{
+//    return m_lodMesh[0];
+//}
 //==============================================================================
 // MeshNode
 

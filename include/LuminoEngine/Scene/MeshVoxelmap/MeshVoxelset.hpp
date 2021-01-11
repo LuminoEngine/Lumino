@@ -45,7 +45,7 @@ private:
 	Ref<Material> m_material;
 	Vector2 m_frameUVOffset;
 	int m_animationFrameCount = 0;
-	Ref<Mesh> m_mesh;
+	Ref<MeshPrimitive> m_mesh;
 	std::array<Ref<InstancedMeshList>, 6 * 48> m_meshList;
 	std::array<Ref<InstancedMeshList>, 6 * 48> m_dentMeshList;
 };

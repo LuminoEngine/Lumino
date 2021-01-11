@@ -180,7 +180,7 @@ struct MeshSection2
 // MeshLOD は複数の Container で共有可能とする。
 // 特にデータサイズが大きくなるオブジェクトなので、一般的な形状では共有したいケースが多い。
 // そのため owner などのフィールドは持たない。
-class Mesh
+class MeshPrimitive
 	: public Object
 {
 public:
@@ -229,8 +229,8 @@ public:
 	void* acquireMappedMorphVertexBuffer(int morphIndex);
 
 LN_CONSTRUCT_ACCESS:
-	Mesh();
-	virtual ~Mesh();
+	MeshPrimitive();
+	virtual ~MeshPrimitive();
 	void init();
 	void init(int vertexCount, int indexCount);
 	void init(int vertexCount, int indexCount, IndexBufferFormat indexFormat, GraphicsResourceUsage resourceUsage);
@@ -315,8 +315,10 @@ public:
 	void calculateBounds();
 
 
-    void setMesh(Mesh* mesh);
-    Mesh* mesh() const;
+    //void setMesh(MeshPrimitive* mesh);
+    //MeshPrimitive* mesh() const;
+	void addMeshPrimitive(MeshPrimitive* mesh);
+	const List<Ref<MeshPrimitive>>& meshPrimitives() const { return m_lodMesh; }
 
 	// TODO: ↓ Node に持たせたので消しておく
 	
@@ -338,7 +340,7 @@ private:
 	ln::String m_name;
 	Box m_boundingBox;
 	//List<Ref<MeshResource>> m_lodResources; // TODO: :obsolete
-    List<Ref<Mesh>> m_lodMesh;
+    List<Ref<MeshPrimitive>> m_lodMesh;
 	bool m_visible;
 
 	friend class MeshModel;

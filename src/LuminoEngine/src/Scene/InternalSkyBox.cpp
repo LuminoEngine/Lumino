@@ -116,7 +116,7 @@ bool InternalSkyDome::init()
     {
         const int vertexCount = LN_ARRAY_SIZE_OF(s_skyDomeVertices);
         const int indexCount = LN_ARRAY_SIZE_OF(s_skyDomeIndices);
-        auto mesh = makeObject<Mesh>(
+        auto mesh = makeObject<MeshPrimitive>(
             vertexCount, indexCount,
             IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
 
@@ -493,8 +493,7 @@ void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* v
             context->setTransfrom(transform);
             const auto& meshContainer = m_model->meshContainers()[node->meshContainerIndex()];
 
-            Mesh* mesh = meshContainer->mesh();
-            if (mesh) {
+            for (const auto& mesh : meshContainer->meshPrimitives()) {
                 for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
                     context->setMaterial(m_model->materials()[mesh->sections()[iSection].materialIndex]);
                     context->drawMesh(mesh, iSection);

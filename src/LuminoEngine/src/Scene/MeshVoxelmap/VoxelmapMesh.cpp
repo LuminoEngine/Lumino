@@ -175,7 +175,7 @@ void VoxelmapMeshBuilder::putSquare(const Vector3& p0, const Vector3& p1, const 
 
 void VoxelmapMeshBuilder::build()
 {
-	m_mesh = makeObject<Mesh>(m_vertices.size(), m_indices.size());
+	m_mesh = makeObject<MeshPrimitive>(m_vertices.size(), m_indices.size());
 	for (int i = 0; i < m_vertices.size(); i++) {	// TODO: vector をまとめて set する機能作ってもいいかも
 		m_mesh->setVertex(i, m_vertices[i]);
 	}

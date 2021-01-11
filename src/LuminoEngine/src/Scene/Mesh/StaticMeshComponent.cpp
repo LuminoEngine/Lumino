@@ -73,7 +73,7 @@ void StaticMeshComponent::makeCollisionBody(StringRef meshContainerName)
         int index = node->meshContainerIndex();
         if (index >= 0) {
             auto meshContainer = m_model->meshContainers()[index];
-            auto shape = MeshCollisionShape::create(meshContainer->mesh());
+            auto shape = MeshCollisionShape::create(meshContainer->meshPrimitives()[0]);
             m_body = makeObject<RigidBody>(shape);
 
             // TODO: onPreUpdate で UpdateContext からとりたいことろ
@@ -140,7 +140,7 @@ void StaticMeshComponent::onRender(RenderingContext* context)
             context->setTransfrom(m_model->nodeGlobalTransform(node->index()));
             const auto& meshContainer = m_model->meshContainers()[node->meshContainerIndex()];
             if (meshContainer->isVisible()) {
-                if (Mesh* mesh = meshContainer->mesh()) {
+                for (const auto& mesh : meshContainer->meshPrimitives()) {
 
                     for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
                         int materialIndex = mesh->sections()[iSection].materialIndex;
