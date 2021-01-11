@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "StaticMeshComponent.hpp"
+#include "MeshComponent.hpp"
 
 namespace ln {
 class SkinnedMeshModel;
@@ -13,7 +13,7 @@ class MeshModelInstance;
  */
 LN_CLASS()
 class SkinnedMeshComponent
-	: public StaticMeshComponent
+	: public MeshComponent
 {
 public:
 	//const Ref<detail::MeshModelInstance>& modelInstance() const { return m_modelInstance; }

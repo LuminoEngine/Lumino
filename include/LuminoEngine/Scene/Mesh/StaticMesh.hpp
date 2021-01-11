@@ -31,7 +31,7 @@ public:
 	LN_METHOD()
 	void makeCollisionBody(StringRef meshContainerName);
 
-    StaticMeshComponent* staticMeshComponent() const;
+    MeshComponent* staticMeshComponent() const;
 
 protected:
     void serialize(Serializer2& ar) override;
@@ -44,7 +44,7 @@ LN_CONSTRUCT_ACCESS:
     void init(const StringRef& filePath, float scale);
 
 private:
-    Ref<StaticMeshComponent> m_component;
+    Ref<MeshComponent> m_component;
 };
 
 } // namespace ln

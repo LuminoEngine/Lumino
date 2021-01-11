@@ -93,7 +93,7 @@
 #include "LuminoEngine/Scene/Physics/RigidBodyComponent.hpp"
 #include "LuminoEngine/Scene/Physics/RigidBody2DComponent.hpp"
 #include "LuminoEngine/Scene/Text/Text.hpp"
-#include "LuminoEngine/Scene/Mesh/StaticMeshComponent.hpp"
+#include "LuminoEngine/Scene/Mesh/MeshComponent.hpp"
 #include "LuminoEngine/Scene/Mesh/StaticMesh.hpp"
 #include "LuminoEngine/Scene/Mesh/SkinnedMeshComponent.hpp"
 #include "LuminoEngine/Scene/Mesh/SkinnedMesh.hpp"

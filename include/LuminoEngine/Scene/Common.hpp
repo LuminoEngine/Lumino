@@ -6,7 +6,7 @@
 
 namespace ln {
 class MeshModel;
-class StaticMeshComponent;
+class MeshComponent;
 class ParticleEmitterComponent2;
 
 class WorldObject;

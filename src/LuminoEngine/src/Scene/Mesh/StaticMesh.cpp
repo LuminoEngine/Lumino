@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
-#include <LuminoEngine/Scene/Mesh/StaticMeshComponent.hpp>
+#include <LuminoEngine/Scene/Mesh/MeshComponent.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMesh.hpp>
 #include "../../Mesh/MeshManager.hpp"
 
@@ -44,7 +44,7 @@ StaticMesh::~StaticMesh()
 void StaticMesh::init()
 {
     VisualObject::init();
-    m_component = makeObject<StaticMeshComponent>();
+    m_component = makeObject<MeshComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 }
@@ -63,7 +63,7 @@ void StaticMesh::init(const StringRef& filePath, float scale)
     init(model);
 }
 
-StaticMeshComponent* StaticMesh::staticMeshComponent() const
+MeshComponent* StaticMesh::staticMeshComponent() const
 {
     return m_component;
 }
@@ -85,7 +85,7 @@ void StaticMesh::serialize(Serializer2& ar)
     
 
     if (ar.isLoading()) {
-        if (auto* c = findComponent<StaticMeshComponent>()) {
+        if (auto* c = findComponent<MeshComponent>()) {
             m_component = c;
             setMainVisualComponent(m_component);
         }

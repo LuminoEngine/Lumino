@@ -28,7 +28,7 @@ SkinnedMeshComponent::~SkinnedMeshComponent()
 
 bool SkinnedMeshComponent::init()
 {
-    return StaticMeshComponent::init();
+    return MeshComponent::init();
 }
 
 #if 0
