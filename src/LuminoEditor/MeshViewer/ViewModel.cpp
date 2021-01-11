@@ -16,12 +16,14 @@ void ViewModel::load()
 
 	auto settings = ln::makeObject<ln::MeshImportSettings>();
 	//settings->setSkeletonImport(false);
-	//settings->setCharacterModelFormat(true);
+	settings->setCharacterModelFormat(true);
 
 	//m_model = ln::MeshModel::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/SkinnedAxis1.glb", settings);
 	//m_model = ln::MeshModel::load(u"D:/Documents/Modeling/HC5-6-export.glb", settings);
 	//m_model = ln::MeshModel::load(LN_GLTF_SAMPLE_MODELS_DIR "2.0/Box/glTF-Binary/Box.glb", settings);
-	m_model = ln::MeshModel::load(LN_GLTF_SAMPLE_MODELS_DIR "2.0/AnimatedMorphCube/glTF-Binary/AnimatedMorphCube.glb", settings);
+	//m_model = ln::MeshModel::load(LN_GLTF_SAMPLE_MODELS_DIR "2.0/AnimatedMorphCube/glTF-Binary/AnimatedMorphCube.glb", settings);
+	//m_model = ln::MeshModel::load("C:/Proj/LN/Lumino/build/ExternalSource/glTF-Sample-Models//2.0\\Buggy\\glTF-Binary\\Buggy.glb", settings);
+	m_model = ln::MeshModel::load("C:/Proj/LN/Lumino/build/ExternalSource/glTF-Sample-Models/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb", settings);
 	m_meshComponent = ln::makeObject<VisualizedMeshComponent>();
 	m_meshComponent->setModel(m_model);
 	m_meshObject = ln::makeObject<ln::WorldObject>();

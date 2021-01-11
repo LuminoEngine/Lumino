@@ -73,7 +73,7 @@ struct AssetRequiredPathSet
 /*
     各 load 関数のファイルパスの仕様
     ----------
-    Texture2D::load(), StaticMesh::load() 等のファイルパス。
+    Texture2D::load(), Mesh::load() 等のファイルパス。
 
     最も基本的な配布ファイル構成は次のようになる。
     ```

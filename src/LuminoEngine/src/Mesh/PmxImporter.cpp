@@ -346,9 +346,9 @@ bool PmxLoader::load(SkinnedMeshModel* model, const AssetPath& assetPath, bool i
 		return false;
 	}
 
-	auto mesh = makeObject<Mesh>();
+	auto mesh = makeObject<MeshPrimitive>();
 	auto meshContainer = makeObject<MeshContainer>();
-	meshContainer->setMesh(mesh);
+	meshContainer->addMeshPrimitive(mesh);
 	m_model->addMeshContainer(meshContainer);
 	auto meshNode = makeObject<MeshNode>();
 	meshNode->setMeshContainerIndex(0);
@@ -434,7 +434,7 @@ bool PmxLoader::loadModelInfo(BinaryReader* reader)
 	return true;
 }
 
-bool PmxLoader::loadVertices(BinaryReader* reader, Mesh* mesh)
+bool PmxLoader::loadVertices(BinaryReader* reader, MeshPrimitive* mesh)
 {
 	// 頂点数
 	int vertexCount = reader->readInt32();
@@ -567,7 +567,7 @@ bool PmxLoader::loadVertices(BinaryReader* reader, Mesh* mesh)
 	return true;
 }
 
-bool PmxLoader::loadIndices(BinaryReader* reader, Mesh* mesh)
+bool PmxLoader::loadIndices(BinaryReader* reader, MeshPrimitive* mesh)
 {
 	// インデックス数
 	int indexCount = reader->readInt32();
@@ -644,7 +644,7 @@ bool PmxLoader::loadTextureTable(BinaryReader* reader)
 	return true;
 }
 
-bool PmxLoader::loadMaterials(BinaryReader* reader, Mesh* mesh)
+bool PmxLoader::loadMaterials(BinaryReader* reader, MeshPrimitive* mesh)
 {
 	// マテリアル数
 	int materialCount = reader->readInt32();

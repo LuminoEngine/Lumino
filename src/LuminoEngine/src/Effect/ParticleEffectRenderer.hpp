@@ -71,7 +71,7 @@ public:
 
 private:
 	Ref<Material> m_material;
-	Ref<Mesh> m_mesh;
+	Ref<MeshPrimitive> m_mesh;
 	int m_maxNodes;
 	int m_activeNodes;
 

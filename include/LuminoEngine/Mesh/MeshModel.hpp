@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Common.hpp"
-#include "Mesh.hpp"
+#include "MeshPrimitive.hpp"
 
 namespace ln {
 class MeshSkeleton;
@@ -113,8 +113,8 @@ public:
 	int findNodeIndex(StringRef name) const;
 
 	MeshNode* addNode();
-	MeshContainer* addMeshContainer(Mesh* mesh);
-	MeshNode* addMeshContainerNode(Mesh* mesh);
+	MeshContainer* addMeshContainer(MeshPrimitive* mesh);
+	MeshNode* addMeshContainerNode(MeshPrimitive* mesh);
 
 	[[deprecated]]
 	void addMeshContainer(MeshContainer* meshContainer);
@@ -196,7 +196,7 @@ public:	// TODO:
     List<int> m_rootNodes;
 
     // 静的データである localTransform に対する動的データ。
-    // といっても StaticMesh はリアルタイム更新はしない。
+    // といっても Mesh はリアルタイム更新はしない。
     // ロード後にまとめて構築するだけ。
     // でも Node は SkinndMesh と共用なので、Node 側に GlobalTransform を持たせるのは
     // データが無駄になったりする。
@@ -223,7 +223,7 @@ public:
 	void drawMesh();
 
 
-	Ref<Mesh> mesh() const { return m_mesh; }
+	Ref<MeshPrimitive> mesh() const { return m_mesh; }
 	int sectionIndex() const { return m_sectionIndex; }
 	int instanceCount() const { return m_instanceCount; }
 	void commitRenderData(MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB);
@@ -231,7 +231,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	InstancedMeshList();
 	virtual ~InstancedMeshList();
-	bool init(Mesh* mesh, int sectionIndex);
+	bool init(MeshPrimitive* mesh, int sectionIndex);
 
 private:
 	struct InstanceData
@@ -244,7 +244,7 @@ private:
 		Vector4 colorScale;
 	};
 
-	Ref<Mesh> m_mesh;
+	Ref<MeshPrimitive> m_mesh;
 	int m_sectionIndex;
 	InstanceData m_stagingData;
 	std::vector<InstanceData> m_instanceData;

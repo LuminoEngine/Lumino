@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 class VisualizedMeshComponent
-    : public ln::StaticMeshComponent
+    : public ln::MeshComponent
 {
 public:
 

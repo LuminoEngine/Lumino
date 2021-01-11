@@ -646,20 +646,20 @@ int main(int argc, char** argv)
     //Effect::emit(u"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk", Matrix::makeTranslation(Vector3(1, 0, 0)));
 
 
-	auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
-    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf");
-    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
-    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
-    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
-	//auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/three.js/examples/models/gltf/PrimaryIonDrive.glb");
+	auto mesh1 = StaticMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
+    //auto mesh1 = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf");
+    //auto mesh1 = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
+    //auto mesh1 = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
+    //auto mesh1 = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
+	//auto mesh1 = Mesh::create(u"D:/Tech/Graphics/three.js/examples/models/gltf/PrimaryIonDrive.glb");
 
- //   auto mesh1 = StaticMesh::create(u"D:/Programs/MagicaVoxel-0.99.4.2-alpha-win64/export/monu10.glb");
+ //   auto mesh1 = Mesh::create(u"D:/Programs/MagicaVoxel-0.99.4.2-alpha-win64/export/monu10.glb");
 	//mesh1->setEulerAngles(Math::PI / 2, 0, 0);
  //   mesh1->setScale(10);
 	mesh1->setPosition(0, 5, 0);
     //Engine::world()->add(mesh1);
     
-	//auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
+	//auto skymesh1 = Mesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
  //   skymesh1->setBlendMode(BlendMode::Add);
  //   skymesh1->setScale(100);
  //   skymesh1->setShadingModel(ShadingModel::Unlit);
@@ -684,7 +684,7 @@ int main(int argc, char** argv)
     //Engine::world()->add(mainDirectionalLight);
     
     // MeshContainer 複数
-    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf");
+    //auto mesh1 = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf");
 
     //auto voxelmap1 = makeObject<VisualObject>();
     //auto voxelmapComponent1 = makeObject<VoxelmapComponent>();
@@ -992,16 +992,16 @@ int main(int argc, char** argv)
     ////sprite2->setPosition(200, 100);
     //sprite2->setCenterPoint(50, 50);
 
-    //auto mesh1 = makeObject<StaticMesh>(u"D:/tmp/cube.obj");
-    //auto mesh1 = makeObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
-    //auto mesh1 = makeObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/usemtl-issue-68.obj");
+    //auto mesh1 = makeObject<Mesh>(u"D:/tmp/cube.obj");
+    //auto mesh1 = makeObject<Mesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    //auto mesh1 = makeObject<Mesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/usemtl-issue-68.obj");
     //mesh1->setPosition(0, -1, 0);
     //
 
-    //auto mesh2 = makeObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    //auto mesh2 = makeObject<Mesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
     //mesh2->setPosition(2, 0, 0);
 
-    //auto mesh3 = makeObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
+    //auto mesh3 = makeObject<Mesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
     //mesh3->setVisible(false);
 
     //auto clip1 = VmdAnimationClip::create(u"D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd");
@@ -1115,7 +1115,7 @@ int main(int argc, char** argv)
     meshModel->addMeshContainer(meshContainer);
     meshModel->addMaterial(meshMaterial);
 
-    auto mesh1 = makeObject<StaticMesh>();
+    auto mesh1 = makeObject<Mesh>();
     mesh1->staticMeshComponent()->setModel(meshModel);
 #endif
 

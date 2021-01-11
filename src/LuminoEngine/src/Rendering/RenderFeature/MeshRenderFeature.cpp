@@ -58,7 +58,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 	return result;
 }
 
-RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Mesh* mesh, int sectionIndex, detail::SkeletonInstance* skeleton)
+RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton)
 {
     if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
 

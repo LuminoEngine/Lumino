@@ -5,7 +5,7 @@
 
 namespace ln {
 class MeshResource;
-class Mesh;
+class MeshPrimitive;
 class MeshSkeleton;
 class InstancedMeshList;
 namespace detail {
@@ -18,7 +18,7 @@ public:
 	void init(RenderingManager* manager);
 
 	RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshResource* mesh, int sectionIndex);
-    RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Mesh* mesh, int sectionIndex, detail::SkeletonInstance* skeleton);
+    RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton);
 	RequestBatchResult drawMeshInstanced(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, InstancedMeshList* list);
 
 	RequestBatchResult attemptSubmitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, bool instanced);

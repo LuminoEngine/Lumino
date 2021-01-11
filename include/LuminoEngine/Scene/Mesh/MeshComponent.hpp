@@ -8,7 +8,7 @@ class RigidBody;
 
 /** UIElement */
 LN_CLASS()
-class StaticMeshComponent
+class MeshComponent
 	: public VisualComponent
 {
     LN_OBJECT;
@@ -32,8 +32,8 @@ protected:
     void onRender(RenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:
-    StaticMeshComponent();
-	virtual ~StaticMeshComponent();
+    MeshComponent();
+	virtual ~MeshComponent();
 
     /** init */
     LN_METHOD()

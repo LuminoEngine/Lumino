@@ -15,7 +15,7 @@ class DepthBuffer;
 class Material;
 class RenderingContext;
 class MeshResource;
-class Mesh;
+class MeshPrimitive;
 class MeshContainer;
 class MeshSkeleton;
 class RenderViewPoint;

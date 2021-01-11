@@ -53,7 +53,7 @@
 
 #include "LuminoEngine/Font/Font.hpp"
 
-#include "LuminoEngine/Mesh/Mesh.hpp"
+#include "LuminoEngine/Mesh/MeshPrimitive.hpp"
 #include "LuminoEngine/Mesh/MeshModel.hpp"
 #include "LuminoEngine/Mesh/AnimationController.hpp"
 #include "LuminoEngine/Mesh/SkinnedMeshModel.hpp"
@@ -93,9 +93,8 @@
 #include "LuminoEngine/Scene/Physics/RigidBodyComponent.hpp"
 #include "LuminoEngine/Scene/Physics/RigidBody2DComponent.hpp"
 #include "LuminoEngine/Scene/Text/Text.hpp"
-#include "LuminoEngine/Scene/Mesh/StaticMeshComponent.hpp"
+#include "LuminoEngine/Scene/Mesh/MeshComponent.hpp"
 #include "LuminoEngine/Scene/Mesh/StaticMesh.hpp"
-#include "LuminoEngine/Scene/Mesh/SkinnedMeshComponent.hpp"
 #include "LuminoEngine/Scene/Mesh/SkinnedMesh.hpp"
 #include "LuminoEngine/Scene/Shapes/MeshPrimitives.hpp"
 #include "LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp"

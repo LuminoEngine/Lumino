@@ -106,12 +106,12 @@ class App_Experiment_SSR : public Application
         ////m_plane->planeMeshComponent()->setUVParUnit(Vector2(0.5f, 0.5f));
         //m_plane->planeMeshComponent()->setUVParUnit(Vector2(5, 5));
 
-        //auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/Blender/untitled4.glb");
+        //auto mesh = Mesh::create(u"D:/Materials/KitBash3D/WARZONE/Blender/untitled4.glb");
 
 
-        //auto mesh = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb");
+        //auto mesh = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb");
         
-		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/autotile-regions.glb");
+		//auto mesh = Mesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/autotile-regions.glb");
         //auto mesh = SkinnedMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/SkinnedMesh2.glb");
         //auto mesh = SkinnedMesh::load(u"D:/LocalProj/UnityChanSD/Misaki_sum_humanoid.fbx");
         //mesh->setShadingModel(ShadingModel::Unlit);

@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <LuminoEngine/Mesh/Common.hpp>
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 
 namespace ln {
 class Stream;

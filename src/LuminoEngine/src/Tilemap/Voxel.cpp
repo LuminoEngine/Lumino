@@ -40,8 +40,7 @@ void VoxelmapModel::render(RenderingContext* context)
 
             const auto& meshContainer = m_box->meshContainers()[node->meshContainerIndex()];
 
-            Mesh* mesh = meshContainer->mesh();
-            if (mesh) {
+            for (const auto& mesh : meshContainer->meshPrimitives()) {
                 for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
                     context->setMaterial(m_box->materials()[mesh->sections()[iSection].materialIndex]);
                     context->drawMesh(mesh, iSection);

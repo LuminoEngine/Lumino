@@ -6,7 +6,7 @@
 Application::Application()
 {
     ln::EngineSettings::setSceneIntegrationEnabled(false);
-    //ln::EngineSettings::setMainWindowSize(1280, 960);
+    ln::EngineSettings::setMainWindowSize(1280, 960);
     //ln::EngineSettings::setMainWindowSize(0.75 * 640, 0.75 * 480);
     //ln::EngineSettings::setDeveloperToolEnabled(true);
     ln::EngineSettings::setGraphicsDebugEnabled(true);
@@ -114,7 +114,7 @@ void Application::onInit()
     
     ViewModel::instance()->load();
 
-    //m_mesh = ln::StaticMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/SkinnedAxis1.glb");
+    //m_mesh = ln::Mesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/SkinnedAxis1.glb");
 
 
 #if 0

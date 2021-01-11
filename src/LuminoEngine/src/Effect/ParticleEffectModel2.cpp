@@ -100,7 +100,7 @@
 */
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>

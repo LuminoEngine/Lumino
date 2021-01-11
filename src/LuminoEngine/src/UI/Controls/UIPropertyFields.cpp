@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
@@ -174,7 +174,7 @@ bool UIColorPickerContent::init()
 	setBackgroundColor(Color::Gray);
 	setFocusable(true);
 
-	m_mesh = makeObject<Mesh>(1 + (ColorCircleSplits + 2) * 2, 0, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
+	m_mesh = makeObject<MeshPrimitive>(1 + (ColorCircleSplits + 2) * 2, 0, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
 	auto* vb = static_cast<Vertex*>(m_mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
 
 	vb[0].position = Vector3::Zero;

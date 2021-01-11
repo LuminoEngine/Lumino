@@ -19,7 +19,7 @@ class App_Sandbox_PostEffect : public Application
 		//Engine::ambientLight()->setIntensity(0.5);
 
 		Engine::camera()->setFarClip(100);
-        //auto mesh = StaticMesh::create(u"D:/Tech/Tools/cornellBox/BJS-2.79-Cycles-gltf/assets/cornellBox-2.79-Cycles-gltf.bin");
+        //auto mesh = Mesh::create(u"D:/Tech/Tools/cornellBox/BJS-2.79-Cycles-gltf/assets/cornellBox-2.79-Cycles-gltf.bin");
 
 		float size = 10.0f;
 		float hs = 10.0f / 2.0f;

@@ -6,7 +6,7 @@
 #include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelset.hpp>
 
 #include <LuminoEngine/Graphics/Texture.hpp>
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 
@@ -48,7 +48,7 @@ public:
 
 
 	void build();
-	const Ref<Mesh>& mesh() const { return m_mesh; }
+	const Ref<MeshPrimitive>& mesh() const { return m_mesh; }
 	const std::array<Ref<InstancedMeshList>, 6 * 48>& convexMeshList() const { return m_convexMeshList; }
 	const std::array<Ref<InstancedMeshList>, 6 * 48>& concaveMeshList() const { return m_concaveMeshList; }
 
@@ -73,7 +73,7 @@ private:
 	std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;
 	std::vector<SectionInfo> m_sections;
-	Ref<Mesh> m_mesh;
+	Ref<MeshPrimitive> m_mesh;
 	std::array<Ref<InstancedMeshList>, 6 * 48> m_convexMeshList;
 	std::array<Ref<InstancedMeshList>, 6 * 48> m_concaveMeshList;
 };

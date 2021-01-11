@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include "../Engine/LinearAllocator.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "MeshManager.hpp"

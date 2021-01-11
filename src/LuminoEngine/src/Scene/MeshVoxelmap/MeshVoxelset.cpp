@@ -46,7 +46,7 @@ void MeshAutoVoxelset::buildQubeFloorAndWall()
 		Size(tex->width(), tex->height()), Rect(0, 0, tex->width(), tex->height()), detail::MeshAutoTilesetUVMapper::Format::MVWithWall);
 
 
-	m_mesh = makeObject<Mesh>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
+	m_mesh = makeObject<MeshPrimitive>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
 
 	// ZMinus を、指定方向に向けるための変換行列
 	const auto finalOffset = Vector3(0.5, 0.5, 0.5);
@@ -118,7 +118,7 @@ void MeshAutoVoxelset::buildFloor()
 	m_frameUVOffset.y = 0;
 	m_animationFrameCount = 3;
 
-	m_mesh = makeObject<Mesh>((4 * 4 * 48) * 1, (6 * 4 * 48) * 1);
+	m_mesh = makeObject<MeshPrimitive>((4 * 4 * 48) * 1, (6 * 4 * 48) * 1);
 
 
 

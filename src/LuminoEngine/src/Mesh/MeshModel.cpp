@@ -128,10 +128,10 @@ int MeshModel::findNodeIndex(StringRef name) const
 	return m_nodes.indexOfIf([&](const auto& x) { return x->name() == name; });
 }
 
-MeshContainer* MeshModel::addMeshContainer(Mesh* mesh)
+MeshContainer* MeshModel::addMeshContainer(MeshPrimitive* mesh)
 {
 	auto meshContainer = makeObject<MeshContainer>();
-	meshContainer->setMesh(mesh);
+	meshContainer->addMeshPrimitive(mesh);
 	meshContainer->m_index = m_meshContainers.size();
 	m_meshContainers.add(meshContainer);
 	return meshContainer;
@@ -146,7 +146,7 @@ MeshNode* MeshModel::addNode()
 	return node;
 }
 
-MeshNode* MeshModel::addMeshContainerNode(Mesh* mesh)
+MeshNode* MeshModel::addMeshContainerNode(MeshPrimitive* mesh)
 {
 	auto container = addMeshContainer(mesh);
 	auto node = addNode();
@@ -456,7 +456,7 @@ InstancedMeshList::~InstancedMeshList()
 {
 }
 
-bool InstancedMeshList::init(Mesh* mesh, int sectionIndex)
+bool InstancedMeshList::init(MeshPrimitive* mesh, int sectionIndex)
 {
 	if (!Object::init()) return false;
 	m_mesh = mesh;
@@ -621,6 +621,12 @@ void MeshDiag::printNodes(const MeshModel* model)
 	std::cout << "hasRotationOrScale: " << hasRotationOrScale << std::endl;
 }
 
+
+// すべての node transform を適用して、Position のみの Node Transform にする。
+// これはキャラクターの手に武器を持たせたりするときの位置合わせを補助するための機能。
+// 本来はモデリングソフト側でデフォルト姿勢(Tポーズ) は Bone や Node の回転が無い状態にしてほしいのだが、
+// ソースデータの無いモデルやエクスポータの都合で回転が入ってしまう場合のケアとして利用する。
+// 基本的には使わないことが推奨される。(glTFSample の Buggy 等は Node の回転が消されると正しく描画できない)
 void MeshDiag::clearBoneInitialRotations(MeshModel* model)
 {
 	const bool inverse = false;

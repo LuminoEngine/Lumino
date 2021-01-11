@@ -8,7 +8,7 @@
 #include <LuminoEngine/Physics/CollisionShape.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
-#include <LuminoEngine/Scene/Mesh/StaticMeshComponent.hpp>
+#include <LuminoEngine/Scene/Mesh/MeshComponent.hpp>
 #include "Engine/EngineManager.hpp"
 #include "../../Mesh/MeshModelInstance.hpp"
 
@@ -16,31 +16,31 @@ namespace ln {
 
 
 //=============================================================================
-// StaticMeshComponent
+// MeshComponent
 
-LN_OBJECT_IMPLEMENT(StaticMeshComponent, VisualComponent) {}
+LN_OBJECT_IMPLEMENT(MeshComponent, VisualComponent) {}
 
-StaticMeshComponent::StaticMeshComponent()
+MeshComponent::MeshComponent()
     : m_model(nullptr)
 {
 }
 
-StaticMeshComponent::~StaticMeshComponent()
+MeshComponent::~MeshComponent()
 {
 }
 
-bool StaticMeshComponent::init()
+bool MeshComponent::init()
 {
     return VisualComponent::init();
 }
 
-void StaticMeshComponent::onDispose(bool explicitDisposing)
+void MeshComponent::onDispose(bool explicitDisposing)
 {
     deleteCollisionBody();
     VisualComponent::onDispose(explicitDisposing);
 }
 
-void StaticMeshComponent::deleteCollisionBody()
+void MeshComponent::deleteCollisionBody()
 {
     if (m_body) {
         m_body->removeFromPhysicsWorld();
@@ -48,7 +48,7 @@ void StaticMeshComponent::deleteCollisionBody()
     }
 }
 
-void StaticMeshComponent::setModel(MeshModel* model)
+void MeshComponent::setModel(MeshModel* model)
 {
     if (m_model != model) {
         m_modelInstance = nullptr;
@@ -60,12 +60,12 @@ void StaticMeshComponent::setModel(MeshModel* model)
     }
 }
 
-MeshModel* StaticMeshComponent::model() const
+MeshModel* MeshComponent::model() const
 {
     return m_model;
 }
 
-void StaticMeshComponent::makeCollisionBody(StringRef meshContainerName)
+void MeshComponent::makeCollisionBody(StringRef meshContainerName)
 {
     if (LN_REQUIRE(m_model)) return;
 
@@ -73,7 +73,7 @@ void StaticMeshComponent::makeCollisionBody(StringRef meshContainerName)
         int index = node->meshContainerIndex();
         if (index >= 0) {
             auto meshContainer = m_model->meshContainers()[index];
-            auto shape = MeshCollisionShape::create(meshContainer->mesh());
+            auto shape = MeshCollisionShape::create(meshContainer->meshPrimitives()[0]);
             m_body = makeObject<RigidBody>(shape);
 
             // TODO: onPreUpdate で UpdateContext からとりたいことろ
@@ -84,13 +84,13 @@ void StaticMeshComponent::makeCollisionBody(StringRef meshContainerName)
     }
 }
 
-void StaticMeshComponent::serialize(Serializer2& ar)
+void MeshComponent::serialize(Serializer2& ar)
 {
     VisualComponent::serialize(ar);
     ar & makeNVP(u"model", m_model);
 }
 
-void StaticMeshComponent::onUpdate(float elapsedSeconds)
+void MeshComponent::onUpdate(float elapsedSeconds)
 {
 
     if (m_modelInstance) {
@@ -130,7 +130,7 @@ void StaticMeshComponent::onUpdate(float elapsedSeconds)
 
 }
 
-void StaticMeshComponent::onRender(RenderingContext* context)
+void MeshComponent::onRender(RenderingContext* context)
 {
     if (!m_model) return;
 
@@ -140,7 +140,7 @@ void StaticMeshComponent::onRender(RenderingContext* context)
             context->setTransfrom(m_model->nodeGlobalTransform(node->index()));
             const auto& meshContainer = m_model->meshContainers()[node->meshContainerIndex()];
             if (meshContainer->isVisible()) {
-                if (Mesh* mesh = meshContainer->mesh()) {
+                for (const auto& mesh : meshContainer->meshPrimitives()) {
 
                     for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
                         int materialIndex = mesh->sections()[iSection].materialIndex;

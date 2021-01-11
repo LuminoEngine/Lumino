@@ -99,7 +99,7 @@ private:
 	static const int ColorCircleSplits;
 	static const Vector2 CenterOffset;
 
-	Ref<Mesh> m_mesh;
+	Ref<MeshPrimitive> m_mesh;
 	Ref<Material> m_material;
 
 	Color m_color;

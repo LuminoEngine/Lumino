@@ -16,12 +16,10 @@ class StaticMesh
 public:
 	/** load */
 	LN_METHOD()
-	static Ref<StaticMesh> load(const StringRef& filePath);
+	static Ref<StaticMesh> load(const StringRef& filePath, MeshImportSettings* settings = nullptr);
 
-    // obsolete
     static Ref<StaticMesh> create();
     static Ref<StaticMesh> create(MeshModel* model);
-    static Ref<StaticMesh> create(const StringRef& filePath, float scale = 1.0f);
     
 	/**指定した名前の MeshContainer から、衝突判定用の Body を作成します。 */
 	LN_METHOD(Property)
@@ -31,7 +29,7 @@ public:
 	LN_METHOD()
 	void makeCollisionBody(StringRef meshContainerName);
 
-    StaticMeshComponent* staticMeshComponent() const;
+    MeshComponent* staticMeshComponent() const;
 
 protected:
     void serialize(Serializer2& ar) override;
@@ -41,10 +39,10 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~StaticMesh();
 	void init();
     void init(MeshModel* model);
-    void init(const StringRef& filePath, float scale);
+    void init(const StringRef& filePath, MeshImportSettings* settings);
 
 private:
-    Ref<StaticMeshComponent> m_component;
+    Ref<MeshComponent> m_component;
 };
 
 } // namespace ln

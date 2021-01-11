@@ -14,14 +14,14 @@ class App_Experiment_MeshCollider : public Application
         //Engine::renderView()->setPhysicsDebugDrawEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
 
-        auto staticMesh = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Map-1.glb");
+        auto staticMesh = StaticMesh::load(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Map-1.glb");
         auto model = staticMesh->staticMeshComponent()->model();
 
         if (auto node = model->findNode(u"Lumino.MeshCollider")) {
             int index = node->meshContainerIndex();
             if (index >= 0) {
                 auto meshContainer = model->meshContainers()[index];
-                auto mesh = meshContainer->mesh();
+                auto mesh = meshContainer->meshPrimitives()[0];
                 auto shape = MeshCollisionShape::create(mesh);
                 auto body = RigidBodyComponent::create();
                 body->addCollisionShape(shape);

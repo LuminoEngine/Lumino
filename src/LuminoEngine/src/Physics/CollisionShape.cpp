@@ -10,7 +10,7 @@
 #include <LuminoEngine/Physics/CollisionShape.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include "BulletUtils.hpp"
 
 namespace ln {
@@ -210,7 +210,7 @@ bool CapsuleCollisionShape::init(float radius, float height)
 LN_OBJECT_IMPLEMENT(MeshCollisionShape, CollisionShape) {}
 
 //------------------------------------------------------------------------------
-Ref<MeshCollisionShape> MeshCollisionShape::create(Mesh* mesh)
+Ref<MeshCollisionShape> MeshCollisionShape::create(MeshPrimitive* mesh)
 {
     return makeObject<MeshCollisionShape>(mesh);
 }
@@ -233,13 +233,13 @@ bool MeshCollisionShape::init()
 }
 
 //------------------------------------------------------------------------------
-bool MeshCollisionShape::init(Mesh* mesh)
+bool MeshCollisionShape::init(MeshPrimitive* mesh)
 {
 	if (!init()) return false;
 	return initInternal(mesh, nullptr);
 }
 
-bool MeshCollisionShape::init(Mesh* mesh, const Matrix& transform)
+bool MeshCollisionShape::init(MeshPrimitive* mesh, const Matrix& transform)
 {
 	if (!init()) return false;
 
@@ -249,7 +249,7 @@ bool MeshCollisionShape::init(Mesh* mesh, const Matrix& transform)
 	return initInternal(mesh, &transform);
 }
 
-bool MeshCollisionShape::initInternal(Mesh* mesh, const Matrix* transform)
+bool MeshCollisionShape::initInternal(MeshPrimitive* mesh, const Matrix* transform)
 {
 	if (LN_REQUIRE(mesh)) return false;
 	if (LN_REQUIRE(!m_btMeshData)) return false;

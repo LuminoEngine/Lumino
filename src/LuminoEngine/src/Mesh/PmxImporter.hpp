@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 
 #if 1
 
@@ -610,10 +610,10 @@ private:
     int getRigidBodyIndexSize() { return m_pmxHeader.Data[7]; }
 
     bool loadModelInfo(BinaryReader* reader);
-    bool loadVertices(BinaryReader* reader, Mesh* mesh);
-    bool loadIndices(BinaryReader* reader, Mesh* mesh);
+    bool loadVertices(BinaryReader* reader, MeshPrimitive* mesh);
+    bool loadIndices(BinaryReader* reader, MeshPrimitive* mesh);
     bool loadTextureTable(BinaryReader* reader);
-    bool loadMaterials(BinaryReader* reader, Mesh* mesh);
+    bool loadMaterials(BinaryReader* reader, MeshPrimitive* mesh);
     bool loadBones(BinaryReader* reader);
     bool loadMorphs(BinaryReader* reader);
     bool loadDisplayFrame(BinaryReader* reader);

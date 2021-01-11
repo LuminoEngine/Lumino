@@ -5,7 +5,7 @@
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/MeshProcessing.hpp>
 #include "MeshManager.hpp"
 #include "MeshGenerater.hpp"
@@ -124,7 +124,7 @@ void MeshGeometryBuilder::endSection()
 	s.generatorCount = m_generators.size() - s.startGenerator;
 }
 
-Ref<Mesh> MeshGeometryBuilder::buildMesh()
+Ref<MeshPrimitive> MeshGeometryBuilder::buildMesh()
 {
 	int vertexCount = 0;
 	int indexCount = 0;
@@ -137,7 +137,7 @@ Ref<Mesh> MeshGeometryBuilder::buildMesh()
 		}
 	}
 
-	auto mesh = makeObject<Mesh>(vertexCount, indexCount);
+	auto mesh = makeObject<MeshPrimitive>(vertexCount, indexCount);
 
 	auto* mappedVB = mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main);
 	auto* mappedIB = mesh->acquireMappedIndexBuffer();

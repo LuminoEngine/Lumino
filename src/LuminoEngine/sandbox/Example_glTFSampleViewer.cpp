@@ -7,7 +7,7 @@ using namespace ln;
 class App_Example_glTFSampleViewer : public Application
 {
     Ref<UIListBox> m_listbox1;
-    Ref<SkinnedMesh> m_mesh;
+    Ref<StaticMesh> m_mesh;
 
     void onInit() override
     {
@@ -54,7 +54,10 @@ class App_Example_glTFSampleViewer : public Application
             m_mesh->removeFromParent();
         }
 
-        m_mesh = SkinnedMesh::load(path);
+
+        auto settings = makeObject<MeshImportSettings>();
+        settings->setApplyBoneTransformationsEnabled(false);
+        m_mesh = StaticMesh::load(path, settings);
 
         std::cout << path << std::endl;
     }
