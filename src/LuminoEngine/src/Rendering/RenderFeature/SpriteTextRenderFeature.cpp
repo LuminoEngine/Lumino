@@ -122,6 +122,8 @@ void SpriteTextRenderFeature::endRendering()
         font->endCacheUsing();
     }
     m_renderingFonts.clear();
+	m_batchData.spriteOffset = 0;
+	m_batchData.spriteCount = 0;
 }
 
 void SpriteTextRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
@@ -152,9 +154,6 @@ void SpriteTextRenderFeature::renderBatch(GraphicsContext* context, RenderFeatur
 	context->setVertexBuffer(0, m_vertexBuffer);
 	context->setIndexBuffer(m_indexBuffer);
 	context->drawPrimitiveIndexed(localBatch->data.spriteOffset * 6, localBatch->data.spriteCount * 2);
-
-	m_batchData.spriteOffset = 0;
-	m_batchData.spriteCount = 0;
 }
 
 void SpriteTextRenderFeature::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
