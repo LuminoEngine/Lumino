@@ -252,9 +252,9 @@ void SceneRenderer::render(
 //	m_renderingPassList.add(pass);
 //}
 
-void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, SceneRendererPass* pass)
+void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext)
 {
-	RenderPass* defaultRenderPass = nullptr;//pass->renderPass();
+	RenderPass* defaultRenderPass = nullptr;
 	//assert(defaultRenderPass);
 
 	// Create batch list.
@@ -267,7 +267,8 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, SceneRender
 		//int count = 0;
 		for (RenderDrawElement* element : m_renderingElementList)
 		{
-			if (pass->filterElement(element)) {
+			//if (pass->filterElement(element))
+			{
 				bool submitRequested = false;
 				RenderStage* stage = element->stage();
 				assert(stage->renderFeature);
@@ -412,7 +413,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	RenderPass* defaultRenderPass = pass->renderPass();
 	assert(defaultRenderPass);
 
-	buildBatchList(graphicsContext, pass);
+	buildBatchList(graphicsContext);
 
 	// Render batch-list.
 	{
