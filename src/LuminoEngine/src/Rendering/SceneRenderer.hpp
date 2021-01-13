@@ -134,6 +134,8 @@ public:	// TODO
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
 private:
+	void buildBatchList(GraphicsContext* graphicsContext, SceneRendererPass* pass);
+
 	detail::RenderingManager* m_manager;
 	//List<Ref<SceneRendererPass>> m_renderingPassList;
 	RenderFeatureBatchList m_renderFeatureBatchList;

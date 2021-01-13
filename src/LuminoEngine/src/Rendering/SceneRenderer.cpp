@@ -252,36 +252,10 @@ void SceneRenderer::render(
 //	m_renderingPassList.add(pass);
 //}
 
-void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass)
+void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, SceneRendererPass* pass)
 {
-	graphicsContext->resetState();
-
-	//m_renderingElementList.clear();
-
-	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
-	pass->onBeginRender(this, graphicsContext, renderTarget, depthBuffer);
-
-	const detail::RenderViewInfo& cameraInfo = mainRenderViewInfo();
-
-	//pass->overrideCameraInfo(&cameraInfo);
-
-	//collect(/*pass, */cameraInfo);
-
-	//prepare();
-
-	for (auto& renderFeature : m_manager->renderFeatures()) {
-		renderFeature->beginRendering();
-	}
-
-	m_renderFeatureBatchList.clear();
-
-    // TODO: とりいそぎ
-    m_renderFeatureBatchList.renderTarget = renderTarget;
-    m_renderFeatureBatchList.depthBuffer = depthBuffer;
-	m_renderFeatureBatchList.m_mainCameraInfo = &m_mainRenderViewInfo.cameraInfo;
-
-	RenderPass* defaultRenderPass = pass->renderPass();
-	assert(defaultRenderPass);
+	RenderPass* defaultRenderPass = nullptr;//pass->renderPass();
+	//assert(defaultRenderPass);
 
 	// Create batch list.
 	{
@@ -290,7 +264,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 		const Matrix* currentWorldMatrix = nullptr;
 		Material* currentFinalMaterial = nullptr;
 		SubsetInfo currentSubsetInfo;
-        //int count = 0;
+		//int count = 0;
 		for (RenderDrawElement* element : m_renderingElementList)
 		{
 			if (pass->filterElement(element)) {
@@ -309,7 +283,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					if (!currentStage || !currentStage->equals(stage)) {
 						submitRequested = true;
 					}
-				}				
+				}
 
 				RenderPass* renderPass = nullptr;
 				if (submitRequested) {
@@ -405,6 +379,40 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			m_renderFeatureBatchList.lastBatch()->setRenderPass(m_renderFeatureBatchList.lastBatch()->ensureRenderPassOutside ? nullptr : currentRenderPass);
 		}
 	}
+}
+
+void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass)
+{
+	graphicsContext->resetState();
+
+	//m_renderingElementList.clear();
+
+	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
+	pass->onBeginRender(this, graphicsContext, renderTarget, depthBuffer);
+
+	const detail::RenderViewInfo& cameraInfo = mainRenderViewInfo();
+
+	//pass->overrideCameraInfo(&cameraInfo);
+
+	//collect(/*pass, */cameraInfo);
+
+	//prepare();
+
+	for (auto& renderFeature : m_manager->renderFeatures()) {
+		renderFeature->beginRendering();
+	}
+
+	m_renderFeatureBatchList.clear();
+
+    // TODO: とりいそぎ
+    m_renderFeatureBatchList.renderTarget = renderTarget;
+    m_renderFeatureBatchList.depthBuffer = depthBuffer;
+	m_renderFeatureBatchList.m_mainCameraInfo = &m_mainRenderViewInfo.cameraInfo;
+
+	RenderPass* defaultRenderPass = pass->renderPass();
+	assert(defaultRenderPass);
+
+	buildBatchList(graphicsContext, pass);
 
 	// Render batch-list.
 	{
@@ -419,11 +427,21 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 		RenderFeatureBatch* batch = m_renderFeatureBatchList.firstBatch();
 		while (batch)
 		{
-			if (currentRenderPass != batch->renderPass()) {
+
+			// 新しい RenderPass を取得する。nullptr の場合は Pass のデフォルトを使う。
+			// (バックバッファ以外にも、シャドウマップなどへ書き込む Pass もある)
+			RenderPass* batchRenderPass = batch->renderPass();
+			if (!batchRenderPass) {
+				batchRenderPass = defaultRenderPass;
+			}
+
+			if (currentRenderPass != batchRenderPass) {
 				if (currentRenderPass) {
 					graphicsContext->endRenderPass();
 				}
-				currentRenderPass = batch->renderPass();
+
+				currentRenderPass = batchRenderPass;
+
                 if (currentRenderPass) {
                     graphicsContext->beginRenderPass(currentRenderPass);
                 }
@@ -703,7 +721,7 @@ void SceneRenderer::onSetAdditionalShaderPassVariables(ShaderSecondaryDescriptor
 
 RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderPass* defaultRenderPass/*RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer*//*, const ClearInfo& clearInfo*/)
 {
-	assert(currentRenderPass);
+	//assert(currentRenderPass);
 	FrameBuffer fb;
 	for (int i = 0; i < GraphicsContext::MaxMultiRenderTargets; i++) {
 		//if (i == 0)
@@ -716,12 +734,15 @@ RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, 
 
     //bool equalsClearInfo = 
 
-	if (equalsFramebuffer(currentRenderPass, fb)) {
-		return currentRenderPass;
+	if (currentRenderPass) {
+		if (equalsFramebuffer(currentRenderPass, fb)) {
+			return currentRenderPass;
+		}
 	}
 
 	if (!fb.renderTarget[0]) {
-		return defaultRenderPass;
+		return nullptr;
+		//return defaultRenderPass;
 	}
 
 	RenderPass* renderPass;
