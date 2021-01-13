@@ -556,6 +556,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 					RLIMaterial rm;
 					rm.mergeFrom(currentStage->geometryStageParameters, finalMaterial);
+					pass->overrideFinalMaterial(&rm);
 					rm.applyRenderStates(graphicsContext);
 
 					onSetAdditionalShaderPassVariables(descriptor, tech);

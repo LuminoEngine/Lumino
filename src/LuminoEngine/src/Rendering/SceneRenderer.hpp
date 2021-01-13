@@ -54,6 +54,8 @@ public:
 
 	virtual bool filterElement(RenderDrawElement* element) const;
 
+	virtual void overrideFinalMaterial(RLIMaterial* material) {}
+
 	// Element の情報と派生 Pass から、最終的に使いたい ShaderTechnique を求める
 	virtual ShaderTechnique* selectShaderTechnique(
 		const ShaderTechniqueRequestClasses& requester,
