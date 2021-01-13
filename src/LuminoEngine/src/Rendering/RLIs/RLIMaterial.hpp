@@ -16,7 +16,7 @@ namespace detail {
 // RenderFeature の都合 (Instancing 使いたい、シャドウマップ作るときは両面カリングにしたい、等) で、
 // より低いレイヤーでも変更する必要が出てきた。
 // (特にシャドウマップは R32 フォーマットにしているが、適切に RenderState を指定しないと Vulkan の検証レイヤーに指摘される)
-struct RILMaterial	// 旧: GeometryStageParameters
+struct RLIMaterial	// 旧: GeometryStageParameters
 {
 public:
 	Material* material;		// ソースマテリアル。Mesh を描画するときは、Mesh にアタッチされた Material.
@@ -27,7 +27,7 @@ public:
 	ShadingModel shadingModel;
 	PrimitiveTopology primitiveTopology;
 
-	RILMaterial();
+	RLIMaterial();
 	void reset();
 	bool equals(const RLIMaterial* other) const;
 

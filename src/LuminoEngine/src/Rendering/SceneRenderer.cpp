@@ -269,7 +269,7 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext)
 
 	// Create batch list.
 	{
-		RenderPass* currentRenderPass = defaultRenderPass;
+		RenderPass* currentRenderPass = nullptr;
 		RenderStage* currentStage = nullptr;
 		const Matrix* currentWorldMatrix = nullptr;
 		Material* currentFinalMaterial = nullptr;
@@ -298,7 +298,7 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext)
 
 				RenderPass* renderPass = nullptr;
 				if (submitRequested) {
-					renderPass = getOrCreateRenderPass(currentRenderPass, stage, defaultRenderPass/*renderTarget, depthBuffer*//*, clearInfo*/);
+					renderPass = getOrCreateRenderPass(currentRenderPass, stage);
 				}
 				else {
 					renderPass = currentRenderPass;
@@ -715,7 +715,7 @@ void SceneRenderer::onSetAdditionalShaderPassVariables(ShaderSecondaryDescriptor
 {
 }
 
-RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderPass* defaultRenderPass/*RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer*//*, const ClearInfo& clearInfo*/)
+RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage)
 {
 	//assert(currentRenderPass);
 	FrameBuffer fb;

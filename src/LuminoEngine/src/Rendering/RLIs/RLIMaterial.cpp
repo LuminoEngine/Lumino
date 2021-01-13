@@ -6,12 +6,12 @@
 namespace ln {
 namespace detail {
 
-RILMaterial::RILMaterial()
+RLIMaterial::RLIMaterial()
 {
 	reset();
 }
 
-void RILMaterial::reset()
+void RLIMaterial::reset()
 {
 	material = nullptr;
 	blendMode = BlendMode::Normal;
@@ -22,7 +22,7 @@ void RILMaterial::reset()
 	primitiveTopology = PrimitiveTopology::TriangleList;
 }
 
-bool RILMaterial::equals(const RILMaterial* other) const
+bool RLIMaterial::equals(const RLIMaterial* other) const
 {
 	return
 		material == other->material &&  // TODO: Material が一致することはまずない。ちゃんと中身かhashを見ること。

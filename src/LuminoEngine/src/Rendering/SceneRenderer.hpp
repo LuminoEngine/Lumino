@@ -131,7 +131,7 @@ protected:
 
 
 public:	// TODO
-	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderPass* defaultRenderPass /*RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer*//*, const ClearInfo& clearInfo*/);
+	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage);
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
 private:
