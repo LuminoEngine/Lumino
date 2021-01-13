@@ -14,6 +14,9 @@ namespace detail {
 ShaderManager::ShaderManager()
     : m_graphicsManager(nullptr)
     , m_builtinShaderList()
+#ifdef _WIN32
+    , m_hD3DCompilerDLL(nullptr)
+#endif
 {
 }
 
@@ -93,11 +96,29 @@ void ShaderManager::init(const Settings& settings)
     ShaderCodeTranspiler::initializeGlobals();
 #endif
 
+#ifdef _WIN32
+    m_hD3DCompilerDLL = ::LoadLibrary(D3DCOMPILER_DLL_W);
+    if (m_hD3DCompilerDLL) {
+        D3DCompile2 = reinterpret_cast<PFN_D3DCompile2>(::GetProcAddress(m_hD3DCompilerDLL, "D3DCompile2"));
+    }
+    else {
+        LN_LOG_ERROR << D3DCOMPILER_DLL_A << " not found.";
+    }
+#endif
+
     LN_LOG_DEBUG << "ShaderManager Initialization ended.";
 }
 
 void ShaderManager::dispose()
 {
+#ifdef _WIN32
+    if (m_hD3DCompilerDLL) {
+        ::FreeLibrary(m_hD3DCompilerDLL);
+        m_hD3DCompilerDLL = nullptr;
+    }
+    D3DCompile2 = nullptr;
+#endif
+
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
     ShaderCodeTranspiler::finalizeGlobals();
 #endif

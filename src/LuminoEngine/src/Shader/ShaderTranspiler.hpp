@@ -48,12 +48,18 @@ public:
 	const std::string& entryPoint() const { return m_entryPoint; }
 	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
 	std::vector<byte_t> spirvCode() const;
+    std::vector<byte_t> generateHlslByteCode() const;
     std::vector<byte_t> generateGlsl(uint32_t version, bool es);
 
 private:
     ShaderManager* m_manager;
+    DiagnosticsManager* m_diag;
 	ShaderStage2 m_stage;
+    std::string m_filename;
+    std::string m_code;
 	std::string m_entryPoint;
+    std::vector<std::string> m_definitions;
+    List<Path> m_includeDirectories;
     std::unique_ptr<glslang::TShader> m_shader;
     std::unique_ptr<glslang::TProgram> m_program;
 	std::vector<VertexInputAttribute> m_attributes;

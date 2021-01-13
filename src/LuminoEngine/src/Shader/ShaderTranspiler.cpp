@@ -312,6 +312,7 @@ void ShaderCodeTranspiler::finalizeGlobals()
 
 ShaderCodeTranspiler::ShaderCodeTranspiler(ShaderManager* manager)
     : m_manager(manager)
+    , m_filename("shadercode")
     , m_stage(ShaderStage2_Vertex)
 {
 }
@@ -332,17 +333,22 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
     const List<String>* definitions,
     DiagnosticsManager* diag)
 {
+    m_diag = diag;
+    m_code = std::string(code, length);
     m_stage = stage;
-	m_entryPoint = entryPoint;
+    m_entryPoint = entryPoint;
+    m_includeDirectories = includeDir;
 
     LocalIncluder includer;
     includer.m_manager = m_manager;
-    includer.includeDirs = &includeDir;
+    includer.includeDirs = &m_includeDirectories;
 
     TPreamble preamble;
     if (definitions) {
         for (auto& def : *definitions) {
-            preamble.addDef(def.toStdString());
+            const auto s = def.toStdString();
+            preamble.addDef(s);
+            m_definitions.push_back(s);
         }
     }
 
@@ -430,7 +436,7 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 
         const char* shaderCode[1] = { preprocessedCode.c_str() };
         const int shaderLenght[1] = { static_cast<int>(preprocessedCode.length()) };
-        const char* shaderName[1] = { "shadercode" };
+        const char* shaderName[1] = { m_filename.c_str() };
         m_shader->setStringsWithLengthsAndNames(shaderCode, shaderLenght, shaderName, 1);
 
         /* TODO: parse でメモリリークしてるぽい。EShLangFragment の時に発生する。
@@ -451,7 +457,7 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
     else {
         const char* shaderCode[1] = { code };
         const int shaderLenght[1] = { static_cast<int>(length) };
-        const char* shaderName[1] = { "shadercode" };
+        const char* shaderName[1] = { m_filename.c_str() };
         m_shader->setStringsWithLengthsAndNames(shaderCode, shaderLenght, shaderName, 1);
 
         /* TODO: parse でメモリリークしてるぽい。EShLangFragment の時に発生する。
@@ -835,6 +841,116 @@ std::vector<byte_t> ShaderCodeTranspiler::spirvCode() const
 	auto begin = reinterpret_cast<const byte_t*>(m_spirvCode.data());
 	auto end = begin + (m_spirvCode.size() * sizeof(uint32_t));
 	return std::vector<byte_t>(begin, end);
+}
+
+std::vector<byte_t> ShaderCodeTranspiler::generateHlslByteCode() const
+{
+#ifdef _WIN32
+    std::vector<std::pair<std::string, std::string>> macroValues;
+    std::vector<D3D_SHADER_MACRO> macros;
+    for (const auto& text : m_definitions) {
+        const size_t equal = text.find_first_of("=");
+        if (equal != text.npos) {
+            macroValues.push_back({ std::string(text.c_str(), equal), std::string(text.c_str() + equal + 1) });
+            macros.push_back({ macroValues.back().first.c_str(), macroValues.back().second.c_str() });
+        }
+        else {
+            macroValues.push_back({ text, std::string() });
+            macros.push_back({ macroValues.back().first.c_str(), nullptr });
+        }
+    }
+    if (!macros.empty()) {
+        macros.push_back({ nullptr, nullptr });
+    }
+
+
+    class Includer : public ID3DInclude
+    {
+    public:
+        ShaderManager* manager;
+        const List<Path>* includeDirs;
+        std::vector<Ref<ByteBuffer>> cache;
+
+        STDMETHOD(Open)(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) override
+        {
+            switch (IncludeType) {
+            case D3D_INCLUDE_SYSTEM: // #include <>
+                for (const auto& pair : manager->builtinShaderList()) {
+                    if (pair.first == pFileName) {
+                        *ppData = pair.second.c_str();
+                        *pBytes = pair.second.size();
+                        return S_OK;
+                    }
+                }
+                break;
+            case D3D_INCLUDE_LOCAL:  // #include ""
+                for (const auto& dir : (*includeDirs)) {
+                    auto path = Path(dir, String::fromCString(pFileName));
+                    if (FileSystem::existsFile(path)) {
+                        Ref<ByteBuffer> data(new ByteBuffer(FileSystem::readAllBytes(path)), false);
+                        *ppData = data->data();
+                        *pBytes = data->size();
+                        cache.push_back(data);
+                        return S_OK;
+                    }
+                }
+                break;
+            }
+            return E_FAIL;
+        }
+
+        STDMETHOD(Close)(LPCVOID pData) override
+        {
+            return S_OK;
+        }
+    };
+    Includer includer;
+    includer.manager = m_manager;
+    includer.includeDirs = &m_includeDirectories;
+
+
+    const char targetVS[] = "vs_5_0";
+    const char targetPS[] = "ps_5_0";
+    const char* target = nullptr;
+    if (m_stage == ShaderStage2::ShaderStage2_Vertex)
+        target = targetVS;
+    else if (m_stage == ShaderStage2::ShaderStage2_Fragment)
+        target = targetPS;
+
+
+    ID3DBlob* shaderCode = nullptr;
+    ID3DBlob* error = nullptr;
+    UINT flags1 = D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;// D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR;
+    UINT flags2 = 0;
+    HRESULT hr = m_manager->D3DCompile2(
+        m_code.c_str(), m_code.length(), m_filename.c_str(),
+        (macros.empty()) ? nullptr : macros.data(),
+        &includer, m_entryPoint.c_str(), target, flags1, flags2, 0, nullptr, 0, &shaderCode, &error);
+
+    const char* message = error ? (const char*)error->GetBufferPointer() : nullptr;
+
+    if (FAILED(hr)) {
+        if (message) {
+            m_diag->reportError(String::fromCString(message));
+        }
+        else {
+            m_diag->reportError("Unknown compilation error.");
+        }
+        return {};
+    }
+    else {
+        if (message) {
+            m_diag->reportWarning(String::fromCString(message));
+        }
+    }
+
+    const uint8_t* d = static_cast<const uint8_t*>(shaderCode->GetBufferPointer());
+    const size_t s = shaderCode->GetBufferSize();
+    return std::vector<byte_t>(d, d + s);
+
+#else
+    return {};
+#endif
 }
 
 std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
