@@ -114,14 +114,11 @@ RequestBatchResult SpriteTextRenderFeature::drawFlexGlyphRun(detail::RenderFeatu
 void SpriteTextRenderFeature::beginRendering()
 {
 	m_cacheTexture = nullptr;
-}
 
-void SpriteTextRenderFeature::endRendering()
-{
-    for (auto& font : m_renderingFonts) {
-        font->endCacheUsing();
-    }
-    m_renderingFonts.clear();
+	for (auto& font : m_renderingFonts) {
+		font->endCacheUsing();
+	}
+	m_renderingFonts.clear();
 	m_batchData.spriteOffset = 0;
 	m_batchData.spriteCount = 0;
 }

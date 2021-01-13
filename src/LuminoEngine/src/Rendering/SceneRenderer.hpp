@@ -85,6 +85,7 @@ class SceneRenderer
 public:
 	// render の前準備として、効率的な描画を行うためのZソートなどを実施した Element リストを作成する。
 	void prepare(
+		GraphicsContext* graphicsContext,
 		RenderingPipeline* renderingPipeline,
 		RenderingContext* renderingContext,
 		//detail::CommandListServer* commandListServer,

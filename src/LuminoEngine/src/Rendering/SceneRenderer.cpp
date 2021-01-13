@@ -118,6 +118,7 @@ void SceneRenderer::init()
 }
 
 void SceneRenderer::prepare(
+	GraphicsContext* graphicsContext,
 	RenderingPipeline* renderingPipeline,
 	RenderingContext* renderingContext,
 	//detail::CommandListServer* commandListServer,
@@ -136,6 +137,9 @@ void SceneRenderer::prepare(
 	m_renderingElementList.clear();
 	collect(renderingPipeline, m_mainRenderViewInfo.cameraInfo, targetPhase);
 	prepare();
+
+
+	buildBatchList(graphicsContext);
 }
 
 #if 0
@@ -254,8 +258,14 @@ void SceneRenderer::render(
 
 void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext)
 {
-	RenderPass* defaultRenderPass = nullptr;
-	//assert(defaultRenderPass);
+	m_renderFeatureBatchList.clear();
+
+	// TODO: とりいそぎ
+	m_renderFeatureBatchList.m_mainCameraInfo = &m_mainRenderViewInfo.cameraInfo;
+
+	for (auto& renderFeature : m_manager->renderFeatures()) {
+		renderFeature->beginRendering();
+	}
 
 	// Create batch list.
 	{
@@ -384,36 +394,20 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext)
 
 void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass)
 {
+	// TODO: とりいそぎ
+	m_renderFeatureBatchList.renderTarget = renderTarget;
+	m_renderFeatureBatchList.depthBuffer = depthBuffer;
+
 	graphicsContext->resetState();
 
-	//m_renderingElementList.clear();
 
-	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
 	pass->onBeginRender(this, graphicsContext, renderTarget, depthBuffer);
 
 	const detail::RenderViewInfo& cameraInfo = mainRenderViewInfo();
 
-	//pass->overrideCameraInfo(&cameraInfo);
-
-	//collect(/*pass, */cameraInfo);
-
-	//prepare();
-
-	for (auto& renderFeature : m_manager->renderFeatures()) {
-		renderFeature->beginRendering();
-	}
-
-	m_renderFeatureBatchList.clear();
-
-    // TODO: とりいそぎ
-    m_renderFeatureBatchList.renderTarget = renderTarget;
-    m_renderFeatureBatchList.depthBuffer = depthBuffer;
-	m_renderFeatureBatchList.m_mainCameraInfo = &m_mainRenderViewInfo.cameraInfo;
-
 	RenderPass* defaultRenderPass = pass->renderPass();
 	assert(defaultRenderPass);
 
-	buildBatchList(graphicsContext);
 
 	// Render batch-list.
 	{
@@ -551,14 +545,15 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					RenderFeature::updateRenderParametersDefault(descriptor, tech, m_mainRenderViewInfo, m_mainSceneInfo, elementInfo, localSubsetInfo);
 				}
 
-				if (finalMaterial) {
+				// Commit final material
+				{
 					PbrMaterialData pbrMaterialData = finalMaterial->getPbrMaterialData();
 					semanticsManager->updateSubsetVariables_PBR(descriptor, pbrMaterialData);
 					finalMaterial->updateShaderVariables(commandList, descriptor);
 					RenderStage::applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
-				}
 
-				onSetAdditionalShaderPassVariables(descriptor, tech);
+					onSetAdditionalShaderPassVariables(descriptor, tech);
+				}
 
 				for (ShaderPass* pass2 : tech->passes())
 				{
@@ -578,9 +573,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 		}
 	}
 
-	for (auto& renderFeature : m_manager->renderFeatures()) {
-		renderFeature->endRendering();
-	}
+	//for (auto& renderFeature : m_manager->renderFeatures()) {
+	//	renderFeature->endRendering();
+	//}
 
     m_renderPassPoolUsed = 0;
 

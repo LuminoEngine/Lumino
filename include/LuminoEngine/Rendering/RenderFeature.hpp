@@ -133,7 +133,7 @@ class RenderFeature
 {
 public:
 	virtual void beginRendering() {}
-	virtual void endRendering() {}
+	//virtual void endRendering() {}
 
     virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo);
 

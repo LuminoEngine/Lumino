@@ -73,6 +73,7 @@ Material* RenderStage::getMaterialFinal(Material* priorityValue, Material* scene
 	return sceneDefaultMaterial;
 }
 
+// TODO: deprecated: RLIMaterial
 ShadingModel RenderStage::getShadingModelFinal(const Material* finalMaterial) const
 {
 	assert(finalMaterial);
@@ -85,6 +86,7 @@ ShadingModel RenderStage::getShadingModelFinal(const Material* finalMaterial) co
 	return finalMaterial->shadingModel();
 }
 
+// TODO: deprecated: RLIMaterial
 BlendMode RenderStage::getBlendModeFinal(const Material* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->getBlendMode().hasValue())
@@ -98,6 +100,7 @@ BlendMode RenderStage::getBlendModeFinal(const Material* finalMaterial) const
 	return BlendMode::Normal;
 }
 
+// TODO: deprecated: RLIMaterial
 CullMode RenderStage::getCullingModeFinal(const Material* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->getCullingMode().hasValue())
@@ -111,6 +114,7 @@ CullMode RenderStage::getCullingModeFinal(const Material* finalMaterial) const
 	return CullMode::Back;
 }
 
+// TODO: deprecated: RLIMaterial
 ComparisonFunc RenderStage::getDepthTestFuncFinal(const Material* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->isDepthTestEnabled().hasValue())
@@ -124,6 +128,7 @@ ComparisonFunc RenderStage::getDepthTestFuncFinal(const Material* finalMaterial)
     return ComparisonFunc::LessEqual;
 }
 
+// TODO: deprecated: RLIMaterial
 bool RenderStage::isDepthWriteEnabledFinal(const Material* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->isDepthWriteEnabled().hasValue())

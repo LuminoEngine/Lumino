@@ -29,7 +29,10 @@ public:
 
 	RILMaterial();
 	void reset();
-	bool equals(const RILMaterial* other) const;
+	bool equals(const RLIMaterial* other) const;
+
+	// TODO: 移行用一時処理
+	void mergeFrom(const GeometryStageParameters* geometoryParams, Material* finalMaterial);
 };
 
 } // namespace detail
