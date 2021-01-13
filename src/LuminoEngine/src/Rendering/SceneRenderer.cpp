@@ -17,6 +17,7 @@
 #include "RenderingPipeline.hpp"
 #include "RenderingManager.hpp"
 #include "SceneRenderer.hpp"
+#include "RLIs/RLIMaterial.hpp"
 
 namespace ln {
 namespace detail {
@@ -474,7 +475,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 			if (!finalMaterial) {
 				// Shader 使わない描画 (clear)
-				RenderStage::applyGeometryStatus(graphicsContext, currentStage, nullptr);
+				RLIMaterial rm;
+				rm.mergeFrom(currentStage->geometryStageParameters, nullptr);
+				rm.applyRenderStates(graphicsContext);
 				batch->render(graphicsContext);
 			}
 			else {
@@ -550,7 +553,10 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					PbrMaterialData pbrMaterialData = finalMaterial->getPbrMaterialData();
 					semanticsManager->updateSubsetVariables_PBR(descriptor, pbrMaterialData);
 					finalMaterial->updateShaderVariables(commandList, descriptor);
-					RenderStage::applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
+
+					RLIMaterial rm;
+					rm.mergeFrom(currentStage->geometryStageParameters, finalMaterial);
+					rm.applyRenderStates(graphicsContext);
 
 					onSetAdditionalShaderPassVariables(descriptor, tech);
 				}

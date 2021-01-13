@@ -12,7 +12,7 @@ namespace detail {
 //
 // このような実装に至った背景
 // ----------
-// 以前は RenderState は DrawElementList の構築時点で確定すると思っていたが、
+// 以前は RenderState は DrawElementList の構築時点で確定すると考えていたが、
 // RenderFeature の都合 (Instancing 使いたい、シャドウマップ作るときは両面カリングにしたい、等) で、
 // より低いレイヤーでも変更する必要が出てきた。
 // (特にシャドウマップは R32 フォーマットにしているが、適切に RenderState を指定しないと Vulkan の検証レイヤーに指摘される)
@@ -30,6 +30,8 @@ public:
 	RLIMaterial();
 	void reset();
 	bool equals(const RLIMaterial* other) const;
+	void applyRenderStates(GraphicsContext* context) const;
+	static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
 
 	// TODO: 移行用一時処理
 	void mergeFrom(const GeometryStageParameters* geometoryParams, Material* finalMaterial);

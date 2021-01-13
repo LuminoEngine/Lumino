@@ -265,8 +265,8 @@ public:
     const ColorTone& getToneFinal(RenderDrawElement* element) const;
 
 	//static void applyFrameBufferStatus(RenderPass* renderPass, const RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass);
-	static void applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, const Material* priorityMaterial);
-	static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
+	//static void applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, const Material* priorityMaterial);
+	//static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
 
 private:
 
