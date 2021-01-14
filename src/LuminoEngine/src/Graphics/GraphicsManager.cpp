@@ -196,6 +196,9 @@ void GraphicsManager::init(const Settings& settings)
 		if (settings.graphicsAPI == GraphicsAPI::Vulkan) {
 			createVulkanContext(settings);
 		}
+		else if (settings.graphicsAPI == GraphicsAPI::DirectX12) {
+			createDirectX12Context(settings);
+		}
 
 		if (!m_deviceContext) {
 			createOpenGLContext(settings);
