@@ -130,6 +130,53 @@ struct LNCornerRadius
 
 
 /**
+    @brief ログの通知レベル
+*/
+typedef enum tagLNLogLevel
+{
+    /**
+        @brief 
+    */
+    LN_LOG_LEVEL_UNKNOWN = 0,
+
+    /**
+        @brief 
+    */
+    LN_LOG_LEVEL_VERBOSE = 1,
+
+    /**
+        @brief 
+    */
+    LN_LOG_LEVEL_DEBUG = 2,
+
+    /**
+        @brief 
+    */
+    LN_LOG_LEVEL_INFO = 3,
+
+    /**
+        @brief 
+    */
+    LN_LOG_LEVEL_WARNING = 4,
+
+    /**
+        @brief 
+    */
+    LN_LOG_LEVEL_ERROR = 5,
+
+    /**
+        @brief 
+    */
+    LN_LOG_LEVEL_FATAL = 6,
+
+    /**
+        @brief 
+    */
+    LN_LOG_LEVEL_DISBLE = 7,
+
+} LNLogLevel;
+
+/**
     @brief エンコーディングの種類
 */
 typedef enum tagLNEncodingType
@@ -1358,11 +1405,7 @@ typedef LNResult(*LNBoxMeshUpdateHandlerCallback)(LNHandle boxmeshupdatehandler,
 typedef LNResult(*LNPlaneMeshSerializeHandlerCallback)(LNHandle planemeshserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNPlaneMeshPreUpdateHandlerCallback)(LNHandle planemeshpreupdatehandler, LNHandle self);
 typedef LNResult(*LNPlaneMeshUpdateHandlerCallback)(LNHandle planemeshupdatehandler, LNHandle self, float elapsedSeconds);
-typedef LNResult(*LNStaticMeshSerializeHandlerCallback)(LNHandle staticmeshserializehandler, LNHandle self, LNHandle ar);
-typedef LNResult(*LNStaticMeshPreUpdateHandlerCallback)(LNHandle staticmeshpreupdatehandler, LNHandle self);
-typedef LNResult(*LNStaticMeshUpdateHandlerCallback)(LNHandle staticmeshupdatehandler, LNHandle self, float elapsedSeconds);
-typedef LNResult(*LNStaticMeshComponentSerializeHandlerCallback)(LNHandle staticmeshcomponentserializehandler, LNHandle self, LNHandle ar);
-typedef LNResult(*LNSkinnedMeshComponentSerializeHandlerCallback)(LNHandle skinnedmeshcomponentserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNMeshComponentSerializeHandlerCallback)(LNHandle meshcomponentserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNCollisionSerializeHandlerCallback)(LNHandle collisionserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNTriggerBodyComponentSerializeHandlerCallback)(LNHandle triggerbodycomponentserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNParticleEmitterSerializeHandlerCallback)(LNHandle particleemitterserializehandler, LNHandle self, LNHandle ar);
@@ -2186,6 +2229,30 @@ typedef struct tagLNZVTestEventArgs1_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNZVTestEventArgs1_RegisterSubclassTypeInfo(const LNZVTestEventArgs1_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNZVTestEventArgs1_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::Log
+
+/**
+    @brief setLevel
+    @param[] level : 
+*/
+LN_FLAT_API LNResult LNLog_SetLevel(LNLogLevel level);
+
+/**
+    @brief allocConsole
+*/
+LN_FLAT_API LNResult LNLog_AllocConsole();
+
+/**
+    @brief write
+    @param[] level : 
+    @param[] tag : 
+    @param[] text : 
+*/
+LN_FLAT_API LNResult LNLog_Write(LNLogLevel level, const LNChar* tag, const LNChar* text);
+LN_FLAT_API LNResult LNLog_WriteA(LNLogLevel level, const char* tag, const char* text);
+
 
 //==============================================================================
 // ln::Serializer2
@@ -5251,160 +5318,53 @@ extern LN_FLAT_API void LNPlaneMesh_RegisterSubclassTypeInfo(const LNPlaneMesh_S
 extern LN_FLAT_API LNSubinstanceId LNPlaneMesh_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// ln::Mesh
-
-/**
-    @brief load
-    @param[] filePath : 
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
-*/
-LN_FLAT_API LNResult LNStaticMesh_Load(const LNChar* filePath, LNHandle* outReturn);
-LN_FLAT_API LNResult LNStaticMesh_LoadA(const char* filePath, LNHandle* outReturn);
-
-/**
-    @brief 指定した名前の MeshContainer から、衝突判定用の Body を作成します。
-    @param[in] staticmesh : instance
-    @param[out] outReturn : instance.
-*/
-LN_FLAT_API LNResult LNStaticMesh_GetModel(LNHandle staticmesh, LNHandle* outReturn);
-
-/**
-    @brief 指定した名前の MeshContainer から、衝突判定用の Body を作成します。
-    @param[in] staticmesh : instance
-    @param[] meshContainerName : 
-*/
-LN_FLAT_API LNResult LNStaticMesh_MakeCollisionBody(LNHandle staticmesh, const LNChar* meshContainerName);
-LN_FLAT_API LNResult LNStaticMesh_MakeCollisionBodyA(LNHandle staticmesh, const char* meshContainerName);
-
-typedef LNResult(*LNStaticMesh_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
-LN_FLAT_API LNResult LNStaticMesh_OnSerialize_SetOverrideCallback(LNStaticMesh_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LNResult LNStaticMesh_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
-typedef LNResult(*LNStaticMesh_OnPreUpdate_OverrideCallback)(LNHandle worldobject);
-LN_FLAT_API LNResult LNStaticMesh_OnPreUpdate_SetOverrideCallback(LNStaticMesh_OnPreUpdate_OverrideCallback callback);
-LN_FLAT_API LNResult LNStaticMesh_OnPreUpdate_CallOverrideBase(LNHandle worldobject);
-typedef LNResult(*LNStaticMesh_OnUpdate_OverrideCallback)(LNHandle worldobject, float elapsedSeconds);
-LN_FLAT_API LNResult LNStaticMesh_OnUpdate_SetOverrideCallback(LNStaticMesh_OnUpdate_OverrideCallback callback);
-LN_FLAT_API LNResult LNStaticMesh_OnUpdate_CallOverrideBase(LNHandle worldobject, float elapsedSeconds);
-
-/**
-    @brief 
-    @param[in] staticmesh : instance
-    @param[] callback : 
-*/
-LN_FLAT_API LNResult LNStaticMesh_SetPrototype_OnSerialize(LNHandle staticmesh, LNHandle callback);
-
-/**
-    @brief 
-    @param[in] staticmesh : instance
-    @param[] callback : 
-*/
-LN_FLAT_API LNResult LNStaticMesh_SetPrototype_OnPreUpdate(LNHandle staticmesh, LNHandle callback);
-
-/**
-    @brief 
-    @param[in] staticmesh : instance
-    @param[] callback : 
-*/
-LN_FLAT_API LNResult LNStaticMesh_SetPrototype_OnUpdate(LNHandle staticmesh, LNHandle callback);
-
-extern LN_FLAT_API int LNStaticMesh_GetTypeInfoId();
-LN_FLAT_API void LNStaticMesh_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNStaticMesh_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LNSubinstanceAllocFunc subinstanceAllocFunc;
-    LNSubinstanceFreeFunc subinstanceFreeFunc;
-    LNStaticMesh_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
-    LNStaticMesh_OnPreUpdate_OverrideCallback OnPreUpdate_OverrideFunc;
-    LNStaticMesh_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
-
-} LNStaticMesh_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LNStaticMesh_RegisterSubclassTypeInfo(const LNStaticMesh_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNStaticMesh_GetSubinstanceId(LNHandle handle);
-
-//==============================================================================
 // ln::MeshComponent
 
 /**
     @brief init
-    @param[out] outStaticMeshComponent : instance.
+    @param[out] outMeshComponent : instance.
 */
-LN_FLAT_API LNResult LNStaticMeshComponent_Create(LNHandle* outStaticMeshComponent);
+LN_FLAT_API LNResult LNMeshComponent_Create(LNHandle* outMeshComponent);
 
 /**
     @brief setModel
-    @param[in] staticmeshcomponent : instance
+    @param[in] meshcomponent : instance
     @param[] model : 
 */
-LN_FLAT_API LNResult LNStaticMeshComponent_SetModel(LNHandle staticmeshcomponent, LNHandle model);
+LN_FLAT_API LNResult LNMeshComponent_SetModel(LNHandle meshcomponent, LNHandle model);
 
 /**
     @brief 指定した名前の MeshContainer から、衝突判定用の Body を作成します。
-    @param[in] staticmeshcomponent : instance
+    @param[in] meshcomponent : instance
     @param[] meshContainerName : 
 */
-LN_FLAT_API LNResult LNStaticMeshComponent_MakeCollisionBody(LNHandle staticmeshcomponent, const LNChar* meshContainerName);
-LN_FLAT_API LNResult LNStaticMeshComponent_MakeCollisionBodyA(LNHandle staticmeshcomponent, const char* meshContainerName);
+LN_FLAT_API LNResult LNMeshComponent_MakeCollisionBody(LNHandle meshcomponent, const LNChar* meshContainerName);
+LN_FLAT_API LNResult LNMeshComponent_MakeCollisionBodyA(LNHandle meshcomponent, const char* meshContainerName);
 
-typedef LNResult(*LNStaticMeshComponent_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
-LN_FLAT_API LNResult LNStaticMeshComponent_OnSerialize_SetOverrideCallback(LNStaticMeshComponent_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LNResult LNStaticMeshComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+typedef LNResult(*LNMeshComponent_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNMeshComponent_OnSerialize_SetOverrideCallback(LNMeshComponent_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNMeshComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
 
 /**
     @brief 
-    @param[in] staticmeshcomponent : instance
+    @param[in] meshcomponent : instance
     @param[] callback : 
 */
-LN_FLAT_API LNResult LNStaticMeshComponent_SetPrototype_OnSerialize(LNHandle staticmeshcomponent, LNHandle callback);
+LN_FLAT_API LNResult LNMeshComponent_SetPrototype_OnSerialize(LNHandle meshcomponent, LNHandle callback);
 
-extern LN_FLAT_API int LNStaticMeshComponent_GetTypeInfoId();
-LN_FLAT_API void LNStaticMeshComponent_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNStaticMeshComponent_SubclassRegistrationInfo
+extern LN_FLAT_API int LNMeshComponent_GetTypeInfoId();
+LN_FLAT_API void LNMeshComponent_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNMeshComponent_SubclassRegistrationInfo
 {
     int64_t subclassId;	// ManagedTypeInfoId
     LNSubinstanceAllocFunc subinstanceAllocFunc;
     LNSubinstanceFreeFunc subinstanceFreeFunc;
-    LNStaticMeshComponent_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+    LNMeshComponent_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
 
-} LNStaticMeshComponent_SubclassRegistrationInfo;
+} LNMeshComponent_SubclassRegistrationInfo;
 
-extern LN_FLAT_API void LNStaticMeshComponent_RegisterSubclassTypeInfo(const LNStaticMeshComponent_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNStaticMeshComponent_GetSubinstanceId(LNHandle handle);
-
-//==============================================================================
-// ln::SkinnedMeshComponent
-
-/**
-    @brief init
-    @param[out] outSkinnedMeshComponent : instance.
-*/
-LN_FLAT_API LNResult LNSkinnedMeshComponent_Create(LNHandle* outSkinnedMeshComponent);
-
-typedef LNResult(*LNSkinnedMeshComponent_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
-LN_FLAT_API LNResult LNSkinnedMeshComponent_OnSerialize_SetOverrideCallback(LNSkinnedMeshComponent_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LNResult LNSkinnedMeshComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
-
-/**
-    @brief 
-    @param[in] skinnedmeshcomponent : instance
-    @param[] callback : 
-*/
-LN_FLAT_API LNResult LNSkinnedMeshComponent_SetPrototype_OnSerialize(LNHandle skinnedmeshcomponent, LNHandle callback);
-
-extern LN_FLAT_API int LNSkinnedMeshComponent_GetTypeInfoId();
-LN_FLAT_API void LNSkinnedMeshComponent_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNSkinnedMeshComponent_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LNSubinstanceAllocFunc subinstanceAllocFunc;
-    LNSubinstanceFreeFunc subinstanceFreeFunc;
-    LNSkinnedMeshComponent_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
-
-} LNSkinnedMeshComponent_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LNSkinnedMeshComponent_RegisterSubclassTypeInfo(const LNSkinnedMeshComponent_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNSkinnedMeshComponent_GetSubinstanceId(LNHandle handle);
+extern LN_FLAT_API void LNMeshComponent_RegisterSubclassTypeInfo(const LNMeshComponent_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNMeshComponent_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::Collision
@@ -7268,6 +7228,13 @@ extern LN_FLAT_API LNSubinstanceId LNUIListItem_GetSubinstanceId(LNHandle handle
 LN_FLAT_API LNResult LNUIListItemsControl_SetItemsLayoutPanel(LNHandle uilistitemscontrol, LNHandle layout);
 
 /**
+    @brief itemsLayoutPanel
+    @param[in] uilistitemscontrol : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LNResult LNUIListItemsControl_GetItemsLayoutPanel(LNHandle uilistitemscontrol, LNHandle* outReturn);
+
+/**
     @brief UIListSubmitMode (default: Single)
     @param[in] uilistitemscontrol : instance
     @param[] value : 
@@ -7280,6 +7247,14 @@ LN_FLAT_API LNResult LNUIListItemsControl_SetSubmitMode(LNHandle uilistitemscont
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LNResult LNUIListItemsControl_GetSubmitMode(LNHandle uilistitemscontrol, LNUIListSubmitMode* outReturn);
+
+/**
+    @brief Submit イベントの通知を受け取るコールバックを登録します。
+    @param[in] uilistitemscontrol : instance
+    @param[] handler :  (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LNResult LNUIListItemsControl_ConnectOnSubmit(LNHandle uilistitemscontrol, LNHandle handler, LNHandle* outReturn);
 
 typedef LNResult(*LNUIListItemsControl_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNUIListItemsControl_OnSerialize_SetOverrideCallback(LNUIListItemsControl_OnSerialize_OverrideCallback callback);
@@ -9197,84 +9172,20 @@ extern LN_FLAT_API void LNPlaneMeshUpdateHandler_RegisterSubclassTypeInfo(const 
 extern LN_FLAT_API LNSubinstanceId LNPlaneMeshUpdateHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// StaticMeshSerializeHandler
+// MeshComponentSerializeHandler
 
-LN_FLAT_API LNResult LNStaticMeshSerializeHandler_Create(LNStaticMeshSerializeHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNStaticMeshSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNStaticMeshSerializeHandler_SubclassRegistrationInfo
+LN_FLAT_API LNResult LNMeshComponentSerializeHandler_Create(LNMeshComponentSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNMeshComponentSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNMeshComponentSerializeHandler_SubclassRegistrationInfo
 {
     int64_t subclassId;	// ManagedTypeInfoId
     LNSubinstanceAllocFunc subinstanceAllocFunc;
     LNSubinstanceFreeFunc subinstanceFreeFunc;
 
-} LNStaticMeshSerializeHandler_SubclassRegistrationInfo;
+} LNMeshComponentSerializeHandler_SubclassRegistrationInfo;
 
-extern LN_FLAT_API void LNStaticMeshSerializeHandler_RegisterSubclassTypeInfo(const LNStaticMeshSerializeHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNStaticMeshSerializeHandler_GetSubinstanceId(LNHandle handle);
-
-//==============================================================================
-// StaticMeshPreUpdateHandler
-
-LN_FLAT_API LNResult LNStaticMeshPreUpdateHandler_Create(LNStaticMeshPreUpdateHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNStaticMeshPreUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNStaticMeshPreUpdateHandler_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LNSubinstanceAllocFunc subinstanceAllocFunc;
-    LNSubinstanceFreeFunc subinstanceFreeFunc;
-
-} LNStaticMeshPreUpdateHandler_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LNStaticMeshPreUpdateHandler_RegisterSubclassTypeInfo(const LNStaticMeshPreUpdateHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNStaticMeshPreUpdateHandler_GetSubinstanceId(LNHandle handle);
-
-//==============================================================================
-// StaticMeshUpdateHandler
-
-LN_FLAT_API LNResult LNStaticMeshUpdateHandler_Create(LNStaticMeshUpdateHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNStaticMeshUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNStaticMeshUpdateHandler_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LNSubinstanceAllocFunc subinstanceAllocFunc;
-    LNSubinstanceFreeFunc subinstanceFreeFunc;
-
-} LNStaticMeshUpdateHandler_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LNStaticMeshUpdateHandler_RegisterSubclassTypeInfo(const LNStaticMeshUpdateHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNStaticMeshUpdateHandler_GetSubinstanceId(LNHandle handle);
-
-//==============================================================================
-// StaticMeshComponentSerializeHandler
-
-LN_FLAT_API LNResult LNStaticMeshComponentSerializeHandler_Create(LNStaticMeshComponentSerializeHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNStaticMeshComponentSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNStaticMeshComponentSerializeHandler_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LNSubinstanceAllocFunc subinstanceAllocFunc;
-    LNSubinstanceFreeFunc subinstanceFreeFunc;
-
-} LNStaticMeshComponentSerializeHandler_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LNStaticMeshComponentSerializeHandler_RegisterSubclassTypeInfo(const LNStaticMeshComponentSerializeHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNStaticMeshComponentSerializeHandler_GetSubinstanceId(LNHandle handle);
-
-//==============================================================================
-// SkinnedMeshComponentSerializeHandler
-
-LN_FLAT_API LNResult LNSkinnedMeshComponentSerializeHandler_Create(LNSkinnedMeshComponentSerializeHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNSkinnedMeshComponentSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNSkinnedMeshComponentSerializeHandler_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LNSubinstanceAllocFunc subinstanceAllocFunc;
-    LNSubinstanceFreeFunc subinstanceFreeFunc;
-
-} LNSkinnedMeshComponentSerializeHandler_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LNSkinnedMeshComponentSerializeHandler_RegisterSubclassTypeInfo(const LNSkinnedMeshComponentSerializeHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNSkinnedMeshComponentSerializeHandler_GetSubinstanceId(LNHandle handle);
+extern LN_FLAT_API void LNMeshComponentSerializeHandler_RegisterSubclassTypeInfo(const LNMeshComponentSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNMeshComponentSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // CollisionSerializeHandler

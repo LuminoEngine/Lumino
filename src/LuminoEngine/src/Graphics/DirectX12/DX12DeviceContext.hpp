@@ -1,7 +1,12 @@
 ﻿
 #pragma once
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <wrl/client.h>
 #include "../GraphicsDeviceContext.hpp"
 #include "DX12Helper.hpp"
+
+using Microsoft::WRL::ComPtr;
 
 namespace ln {
 namespace detail {
@@ -38,11 +43,26 @@ protected:
     Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
     Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
     Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
+    Ref<IUniformBuffer> onCreateUniformBuffer(uint32_t size) override;
     void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override;
     ICommandQueue* getGraphicsCommandQueue() override;
     ICommandQueue* getComputeCommandQueue() override;
 
 private:
+    void enableDebugLayer() const;
+
+    ComPtr<IDXGIFactory6> m_dxgiFactory;
+    ComPtr<IDXGIAdapter> m_adapter;
+    ComPtr<ID3D12Device> m_device;
+
+    ComPtr<ID3D12CommandAllocator> m_commandAllocator;
+    ComPtr<ID3D12GraphicsCommandList> m_commandList;
+
+
+    //IDXGIFactory6* _dxgiFactory = nullptr;
+    //
+    //ID3D12CommandQueue* _cmdQueue = nullptr;
+    //IDXGISwapChain4* _swapchain = nullptr;
 };
 
 class DX12GraphicsContext
@@ -174,6 +194,21 @@ public:
 protected:
     DX12Device* m_deviceContext;
     GraphicsResourceUsage m_usage;
+};
+
+class DX12UniformBuffer
+    : public IUniformBuffer
+{
+public:
+    DX12UniformBuffer();
+    Result init(DX12Device* deviceContext, uint32_t size);
+    void dispose() override;
+    void* map() override;
+    void unmap() override;
+
+protected:
+    DX12Device* m_deviceContext;
+    uint32_t m_size;
 };
 
 class DX12Texture

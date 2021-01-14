@@ -4,6 +4,9 @@
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "DX12DeviceContext.hpp"
 
+#pragma comment(lib,"d3d12.lib")
+#pragma comment(lib,"dxgi.lib")
+
 namespace ln {
 namespace detail {
 
@@ -19,11 +22,85 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
 	if (LN_REQUIRE(outIsDriverSupported)) return false;
 	*outIsDriverSupported = true;
 
+    // Create factory
+    {
+        if (settings.debugMode) {
+            enableDebugLayer();
+        }
+        if (settings.debugMode) {
+            CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&m_dxgiFactory));
+        }
+        if (!m_dxgiFactory) {
+            if (FAILED(CreateDXGIFactory2(0, IID_PPV_ARGS(&m_dxgiFactory)))) {
+                LN_ERROR("CreateDXGIFactory2 failed.");
+                return false;
+            }
+        }
+    }
+
+    // Select adapter
+    {
+        std::vector<ComPtr<IDXGIAdapter>> adapters;
+        ComPtr<IDXGIAdapter> adapter;
+        for (int i = 0; m_dxgiFactory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
+            adapters.push_back(adapter);
+        }
+
+        for (auto adpt : adapters) {
+            DXGI_ADAPTER_DESC adesc = {};
+            adpt->GetDesc(&adesc);
+            std::wstring strDesc = adesc.Description;
+            if (strDesc.find(L"NVIDIA") != std::string::npos) {
+                m_adapter = adpt;
+                break;
+            }
+        }
+        if (!m_adapter) {
+            LN_ERROR("Adapter not found.");
+            return false;
+        }
+    }
+
+    // Create device
+    {
+        D3D_FEATURE_LEVEL levels[] = {
+            D3D_FEATURE_LEVEL_12_1,
+            D3D_FEATURE_LEVEL_12_0,
+            D3D_FEATURE_LEVEL_11_1,
+            D3D_FEATURE_LEVEL_11_0,
+        };
+        D3D_FEATURE_LEVEL featureLevel;
+        for (auto level : levels) {
+            if (D3D12CreateDevice(m_adapter.Get(), level, IID_PPV_ARGS(&m_device)) == S_OK) {
+                featureLevel = level;
+                break;
+            }
+        }
+    }
+
+
+    if (FAILED(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)))) {
+        LN_ERROR("CreateCommandAllocator failed.");
+        return false;
+    }
+
+
+    if (FAILED(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_commandList)))) {
+        LN_ERROR("CreateCommandList failed.");
+        return false;
+    }
+
 	return true;
 }
 
 void DX12Device::dispose()
 {
+    m_commandList.Reset();
+    m_commandAllocator.Reset();
+    m_device.Reset();
+    m_adapter.Reset();
+    m_dxgiFactory.Reset();
+
     IGraphicsDevice::dispose();
 }
 
@@ -159,6 +236,15 @@ Ref<IShaderPass> DX12Device::onCreateShaderPass(const ShaderPassCreateInfo& crea
     return ptr;
 }
 
+Ref<IUniformBuffer> DX12Device::onCreateUniformBuffer(uint32_t size)
+{
+    auto ptr = makeRef<DX12UniformBuffer>();
+    if (!ptr->init(this, size)) {
+        return nullptr;
+    }
+    return ptr;
+}
+
 void DX12Device::onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
 {
     LN_NOTIMPLEMENTED();
@@ -174,6 +260,16 @@ ICommandQueue* DX12Device::getComputeCommandQueue()
 {
 	LN_NOTIMPLEMENTED();
 	return nullptr;
+}
+
+
+void DX12Device::enableDebugLayer() const
+{
+    ID3D12Debug* debugLayer = nullptr;
+    if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugLayer)))) {
+        debugLayer->EnableDebugLayer();
+        debugLayer->Release();
+    }
 }
 
 //==============================================================================
@@ -498,6 +594,38 @@ void* DX12IndexBuffer::map()
 }
 
 void DX12IndexBuffer::unmap()
+{
+    LN_NOTIMPLEMENTED();
+}
+
+//==============================================================================
+// DX12UniformBuffer
+
+DX12UniformBuffer::DX12UniformBuffer()
+{
+}
+
+Result DX12UniformBuffer::init(DX12Device* deviceContext, uint32_t size)
+{
+    LN_DCHECK(deviceContext);
+    m_deviceContext = deviceContext;
+    m_size = size;
+    LN_NOTIMPLEMENTED();
+    return true;
+}
+
+void DX12UniformBuffer::dispose()
+{
+    IUniformBuffer::dispose();
+}
+
+void* DX12UniformBuffer::map()
+{
+    LN_NOTIMPLEMENTED();
+    return 0;
+}
+
+void DX12UniformBuffer::unmap()
 {
     LN_NOTIMPLEMENTED();
 }

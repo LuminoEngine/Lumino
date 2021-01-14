@@ -1,13 +1,16 @@
 #include "lumino.as"
 
+LNLog_SetLevel LN_LOG_LEVEL_DEBUG
+LNLog_AllocConsole
+
 // Lumino を初期化します
-LNEngine_Init
+LNEngine_Initialize
 
 // 文字列を表示するための UITextBlock オブジェクトを作成します
-LNUITextBlock_CreateWithText "Hello, Lumino!", textBlock
+//LNUITextBlock_CreateWithText "Hello, Lumino!", textBlock
 
 // メインウィンドウへ追加します
-LNUI_Add textBlock
+//LNUI_Add textBlock
 
 // メインループ
 repeat

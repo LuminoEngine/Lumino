@@ -4628,42 +4628,42 @@ LN_FLAT_API LNResult LNPlaneMeshUpdateHandler_Create(LNPlaneMeshUpdateHandlerCal
 
 
 // Auto generated override handler
-using StaticMeshSerializeHandler = ln::Delegate<void(ln::StaticMesh* self, ln::Serializer2* ar)>;
+using MeshComponentSerializeHandler = ln::Delegate<void(ln::MeshComponent* self, ln::Serializer2* ar)>;
 
-class LNWS_StaticMeshSerializeHandler : public StaticMeshSerializeHandler
+class LNWS_MeshComponentSerializeHandler : public MeshComponentSerializeHandler
 {
 public:
     // Override functions per instance for FlatAPI User.
-    struct LNStaticMeshSerializeHandler_OverridePrototypes
+    struct LNMeshComponentSerializeHandler_OverridePrototypes
     {
 
     };
-    std::unique_ptr<LNStaticMeshSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
-    LNStaticMeshSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNStaticMeshSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
+    std::unique_ptr<LNMeshComponentSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNMeshComponentSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNMeshComponentSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
-    static LNStaticMeshSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNStaticMeshSerializeHandler_SubclassRegistrationInfo info; return &info; }
+    static LNMeshComponentSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNMeshComponentSerializeHandler_SubclassRegistrationInfo info; return &info; }
     LNSubinstanceId m_subinstance = 0;
 
-    LNStaticMeshSerializeHandlerCallback m_callback;
+    LNMeshComponentSerializeHandlerCallback m_callback;
 
-    LNWS_StaticMeshSerializeHandler()
-      : StaticMeshSerializeHandler([this](ln::StaticMesh* self, ln::Serializer2* ar) -> void
+    LNWS_MeshComponentSerializeHandler()
+      : MeshComponentSerializeHandler([this](ln::MeshComponent* self, ln::Serializer2* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
-        if (r != LN_OK) { LN_ERROR("LNStaticMeshSerializeHandlerCallback"); }
+        if (r != LN_OK) { LN_ERROR("LNMeshComponentSerializeHandlerCallback"); }
     })
     {
         if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
     }
 
-    ~LNWS_StaticMeshSerializeHandler()
+    ~LNWS_MeshComponentSerializeHandler()
     {
         if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
     }
 
-    bool init(LNStaticMeshSerializeHandlerCallback callback)
+    bool init(LNMeshComponentSerializeHandlerCallback callback)
     {
-        if (!StaticMeshSerializeHandler::init()) return false;
+        if (!MeshComponentSerializeHandler::init()) return false;
         m_callback = callback;
         return true;
     }
@@ -4686,278 +4686,10 @@ public:
 };
 
 
-LN_FLAT_API LNResult LNStaticMeshSerializeHandler_Create(LNStaticMeshSerializeHandlerCallback callback, LNHandle* outDelegate)
+LN_FLAT_API LNResult LNMeshComponentSerializeHandler_Create(LNMeshComponentSerializeHandlerCallback callback, LNHandle* outDelegate)
 {
     LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outDelegate, LNWS_StaticMeshSerializeHandler, init, callback);
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-// Auto generated override handler
-using StaticMeshPreUpdateHandler = ln::Delegate<void(ln::StaticMesh* self)>;
-
-class LNWS_StaticMeshPreUpdateHandler : public StaticMeshPreUpdateHandler
-{
-public:
-    // Override functions per instance for FlatAPI User.
-    struct LNStaticMeshPreUpdateHandler_OverridePrototypes
-    {
-
-    };
-    std::unique_ptr<LNStaticMeshPreUpdateHandler_OverridePrototypes> m_overridePrototypes = nullptr;
-    LNStaticMeshPreUpdateHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNStaticMeshPreUpdateHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
-
-    static LNStaticMeshPreUpdateHandler_SubclassRegistrationInfo* subclassInfo() { static LNStaticMeshPreUpdateHandler_SubclassRegistrationInfo info; return &info; }
-    LNSubinstanceId m_subinstance = 0;
-
-    LNStaticMeshPreUpdateHandlerCallback m_callback;
-
-    LNWS_StaticMeshPreUpdateHandler()
-      : StaticMeshPreUpdateHandler([this](ln::StaticMesh* self) -> void
-    {
-        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self));
-        if (r != LN_OK) { LN_ERROR("LNStaticMeshPreUpdateHandlerCallback"); }
-    })
-    {
-        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
-    }
-
-    ~LNWS_StaticMeshPreUpdateHandler()
-    {
-        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
-    }
-
-    bool init(LNStaticMeshPreUpdateHandlerCallback callback)
-    {
-        if (!StaticMeshPreUpdateHandler::init()) return false;
-        m_callback = callback;
-        return true;
-    }
-
-    // Overrides
-    // TypeInfo
-    ln::TypeInfo* m_typeInfoOverride = nullptr;
-    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
-    {
-        m_typeInfoOverride = value;
-    }
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
-    {
-        if (m_typeInfoOverride)
-            return m_typeInfoOverride;
-        else
-            return ln::TypeInfo::getTypeInfo<Object>();
-    }
-
-};
-
-
-LN_FLAT_API LNResult LNStaticMeshPreUpdateHandler_Create(LNStaticMeshPreUpdateHandlerCallback callback, LNHandle* outDelegate)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outDelegate, LNWS_StaticMeshPreUpdateHandler, init, callback);
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-// Auto generated override handler
-using StaticMeshUpdateHandler = ln::Delegate<void(ln::StaticMesh* self, float elapsedSeconds)>;
-
-class LNWS_StaticMeshUpdateHandler : public StaticMeshUpdateHandler
-{
-public:
-    // Override functions per instance for FlatAPI User.
-    struct LNStaticMeshUpdateHandler_OverridePrototypes
-    {
-
-    };
-    std::unique_ptr<LNStaticMeshUpdateHandler_OverridePrototypes> m_overridePrototypes = nullptr;
-    LNStaticMeshUpdateHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNStaticMeshUpdateHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
-
-    static LNStaticMeshUpdateHandler_SubclassRegistrationInfo* subclassInfo() { static LNStaticMeshUpdateHandler_SubclassRegistrationInfo info; return &info; }
-    LNSubinstanceId m_subinstance = 0;
-
-    LNStaticMeshUpdateHandlerCallback m_callback;
-
-    LNWS_StaticMeshUpdateHandler()
-      : StaticMeshUpdateHandler([this](ln::StaticMesh* self, float elapsedSeconds) -> void
-    {
-        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), elapsedSeconds);
-        if (r != LN_OK) { LN_ERROR("LNStaticMeshUpdateHandlerCallback"); }
-    })
-    {
-        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
-    }
-
-    ~LNWS_StaticMeshUpdateHandler()
-    {
-        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
-    }
-
-    bool init(LNStaticMeshUpdateHandlerCallback callback)
-    {
-        if (!StaticMeshUpdateHandler::init()) return false;
-        m_callback = callback;
-        return true;
-    }
-
-    // Overrides
-    // TypeInfo
-    ln::TypeInfo* m_typeInfoOverride = nullptr;
-    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
-    {
-        m_typeInfoOverride = value;
-    }
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
-    {
-        if (m_typeInfoOverride)
-            return m_typeInfoOverride;
-        else
-            return ln::TypeInfo::getTypeInfo<Object>();
-    }
-
-};
-
-
-LN_FLAT_API LNResult LNStaticMeshUpdateHandler_Create(LNStaticMeshUpdateHandlerCallback callback, LNHandle* outDelegate)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outDelegate, LNWS_StaticMeshUpdateHandler, init, callback);
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-// Auto generated override handler
-using StaticMeshComponentSerializeHandler = ln::Delegate<void(ln::MeshComponent* self, ln::Serializer2* ar)>;
-
-class LNWS_StaticMeshComponentSerializeHandler : public StaticMeshComponentSerializeHandler
-{
-public:
-    // Override functions per instance for FlatAPI User.
-    struct LNStaticMeshComponentSerializeHandler_OverridePrototypes
-    {
-
-    };
-    std::unique_ptr<LNStaticMeshComponentSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
-    LNStaticMeshComponentSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNStaticMeshComponentSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
-
-    static LNStaticMeshComponentSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNStaticMeshComponentSerializeHandler_SubclassRegistrationInfo info; return &info; }
-    LNSubinstanceId m_subinstance = 0;
-
-    LNStaticMeshComponentSerializeHandlerCallback m_callback;
-
-    LNWS_StaticMeshComponentSerializeHandler()
-      : StaticMeshComponentSerializeHandler([this](ln::MeshComponent* self, ln::Serializer2* ar) -> void
-    {
-        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
-        if (r != LN_OK) { LN_ERROR("LNStaticMeshComponentSerializeHandlerCallback"); }
-    })
-    {
-        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
-    }
-
-    ~LNWS_StaticMeshComponentSerializeHandler()
-    {
-        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
-    }
-
-    bool init(LNStaticMeshComponentSerializeHandlerCallback callback)
-    {
-        if (!StaticMeshComponentSerializeHandler::init()) return false;
-        m_callback = callback;
-        return true;
-    }
-
-    // Overrides
-    // TypeInfo
-    ln::TypeInfo* m_typeInfoOverride = nullptr;
-    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
-    {
-        m_typeInfoOverride = value;
-    }
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
-    {
-        if (m_typeInfoOverride)
-            return m_typeInfoOverride;
-        else
-            return ln::TypeInfo::getTypeInfo<Object>();
-    }
-
-};
-
-
-LN_FLAT_API LNResult LNStaticMeshComponentSerializeHandler_Create(LNStaticMeshComponentSerializeHandlerCallback callback, LNHandle* outDelegate)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outDelegate, LNWS_StaticMeshComponentSerializeHandler, init, callback);
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-// Auto generated override handler
-using SkinnedMeshComponentSerializeHandler = ln::Delegate<void(ln::MeshComponent* self, ln::Serializer2* ar)>;
-
-class LNWS_SkinnedMeshComponentSerializeHandler : public SkinnedMeshComponentSerializeHandler
-{
-public:
-    // Override functions per instance for FlatAPI User.
-    struct LNSkinnedMeshComponentSerializeHandler_OverridePrototypes
-    {
-
-    };
-    std::unique_ptr<LNSkinnedMeshComponentSerializeHandler_OverridePrototypes> m_overridePrototypes = nullptr;
-    LNSkinnedMeshComponentSerializeHandler_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNSkinnedMeshComponentSerializeHandler_OverridePrototypes>(); return m_overridePrototypes.get(); }
-
-    static LNSkinnedMeshComponentSerializeHandler_SubclassRegistrationInfo* subclassInfo() { static LNSkinnedMeshComponentSerializeHandler_SubclassRegistrationInfo info; return &info; }
-    LNSubinstanceId m_subinstance = 0;
-
-    LNSkinnedMeshComponentSerializeHandlerCallback m_callback;
-
-    LNWS_SkinnedMeshComponentSerializeHandler()
-      : SkinnedMeshComponentSerializeHandler([this](ln::MeshComponent* self, ln::Serializer2* ar) -> void
-    {
-        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
-        if (r != LN_OK) { LN_ERROR("LNSkinnedMeshComponentSerializeHandlerCallback"); }
-    })
-    {
-        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
-    }
-
-    ~LNWS_SkinnedMeshComponentSerializeHandler()
-    {
-        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
-    }
-
-    bool init(LNSkinnedMeshComponentSerializeHandlerCallback callback)
-    {
-        if (!SkinnedMeshComponentSerializeHandler::init()) return false;
-        m_callback = callback;
-        return true;
-    }
-
-    // Overrides
-    // TypeInfo
-    ln::TypeInfo* m_typeInfoOverride = nullptr;
-    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
-    {
-        m_typeInfoOverride = value;
-    }
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
-    {
-        if (m_typeInfoOverride)
-            return m_typeInfoOverride;
-        else
-            return ln::TypeInfo::getTypeInfo<Object>();
-    }
-
-};
-
-
-LN_FLAT_API LNResult LNSkinnedMeshComponentSerializeHandler_Create(LNSkinnedMeshComponentSerializeHandlerCallback callback, LNHandle* outDelegate)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outDelegate, LNWS_SkinnedMeshComponentSerializeHandler, init, callback);
+    LNI_CREATE_OBJECT(outDelegate, LNWS_MeshComponentSerializeHandler, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -8359,6 +8091,13 @@ public:
 LNZVTestEventArgs1_OnSerialize_OverrideCallback LNWS_ln_ZVTestEventArgs1::s_LNZVTestEventArgs1_OnSerialize_OverrideCallback = nullptr;
 
 
+class LNWS_ln_Log : public ln::Log
+{
+public:
+};
+
+
+
 class LNWS_ln_Serializer2 : public ln::Serializer2
 {
 public:
@@ -11725,35 +11464,33 @@ LNPlaneMesh_OnPreUpdate_OverrideCallback LNWS_ln_PlaneMesh::s_LNPlaneMesh_OnPreU
 LNPlaneMesh_OnUpdate_OverrideCallback LNWS_ln_PlaneMesh::s_LNPlaneMesh_OnUpdate_OverrideCallback = nullptr;
 
 
-class LNWS_ln_StaticMesh : public ln::StaticMesh
+class LNWS_ln_MeshComponent : public ln::MeshComponent
 {
 public:
     // Override functions per instance for FlatAPI User.
-    struct LNStaticMesh_OverridePrototypes
+    struct LNMeshComponent_OverridePrototypes
     {
-        ln::Ref<LNWS_StaticMeshSerializeHandler> OnSerialize_OverrideFunc;
-        ln::Ref<LNWS_StaticMeshPreUpdateHandler> OnPreUpdate_OverrideFunc;
-        ln::Ref<LNWS_StaticMeshUpdateHandler> OnUpdate_OverrideFunc;
+        ln::Ref<LNWS_MeshComponentSerializeHandler> OnSerialize_OverrideFunc;
 
     };
-    std::unique_ptr<LNStaticMesh_OverridePrototypes> m_overridePrototypes = nullptr;
-    LNStaticMesh_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNStaticMesh_OverridePrototypes>(); return m_overridePrototypes.get(); }
+    std::unique_ptr<LNMeshComponent_OverridePrototypes> m_overridePrototypes = nullptr;
+    LNMeshComponent_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNMeshComponent_OverridePrototypes>(); return m_overridePrototypes.get(); }
 
-    static LNStaticMesh_SubclassRegistrationInfo* subclassInfo() { static LNStaticMesh_SubclassRegistrationInfo info; return &info; }
+    static LNMeshComponent_SubclassRegistrationInfo* subclassInfo() { static LNMeshComponent_SubclassRegistrationInfo info; return &info; }
     LNSubinstanceId m_subinstance = 0;
 
-    LNWS_ln_StaticMesh()
+    LNWS_ln_MeshComponent()
     {
         if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
     }
 
-    ~LNWS_ln_StaticMesh()
+    ~LNWS_ln_MeshComponent()
     {
         if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
     }
 
     // Overrides
-    static LNStaticMesh_OnSerialize_OverrideCallback s_LNStaticMesh_OnSerialize_OverrideCallback; // deprecated
+    static LNMeshComponent_OnSerialize_OverrideCallback s_LNMeshComponent_OnSerialize_OverrideCallback; // deprecated
     virtual void onSerialize(ln::Serializer2* ar) override
     {
         if (m_overridePrototypes) {
@@ -11762,105 +11499,7 @@ public:
                 return;
             }
         }
-        if (s_LNStaticMesh_OnSerialize_OverrideCallback) s_LNStaticMesh_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::StaticMesh::onSerialize(ar);
-    }
-    void onSerialize_CallBase(ln::Serializer2* ar)
-    {
-        ln::StaticMesh::onSerialize(ar);
-    }
-
-    static LNStaticMesh_OnPreUpdate_OverrideCallback s_LNStaticMesh_OnPreUpdate_OverrideCallback; // deprecated
-    virtual void onPreUpdate() override
-    {
-        if (m_overridePrototypes) {
-            if (auto func = m_overridePrototypes->OnPreUpdate_OverrideFunc) {
-                func->call(this);
-                return;
-            }
-        }
-        if (s_LNStaticMesh_OnPreUpdate_OverrideCallback) s_LNStaticMesh_OnPreUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
-        ln::StaticMesh::onPreUpdate();
-    }
-    void onPreUpdate_CallBase()
-    {
-        ln::StaticMesh::onPreUpdate();
-    }
-
-    static LNStaticMesh_OnUpdate_OverrideCallback s_LNStaticMesh_OnUpdate_OverrideCallback; // deprecated
-    virtual void onUpdate(float elapsedSeconds) override
-    {
-        if (m_overridePrototypes) {
-            if (auto func = m_overridePrototypes->OnUpdate_OverrideFunc) {
-                func->call(this, elapsedSeconds);
-                return;
-            }
-        }
-        if (s_LNStaticMesh_OnUpdate_OverrideCallback) s_LNStaticMesh_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
-        ln::StaticMesh::onUpdate(elapsedSeconds);
-    }
-    void onUpdate_CallBase(float elapsedSeconds)
-    {
-        ln::StaticMesh::onUpdate(elapsedSeconds);
-    }
-
-    // TypeInfo
-    ln::TypeInfo* m_typeInfoOverride = nullptr;
-    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
-    {
-        m_typeInfoOverride = value;
-    }
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
-    {
-        if (m_typeInfoOverride)
-            return m_typeInfoOverride;
-        else
-            return ln::TypeInfo::getTypeInfo<VisualObject>();
-    }
-
-};
-
-LNStaticMesh_OnSerialize_OverrideCallback LNWS_ln_StaticMesh::s_LNStaticMesh_OnSerialize_OverrideCallback = nullptr;
-LNStaticMesh_OnPreUpdate_OverrideCallback LNWS_ln_StaticMesh::s_LNStaticMesh_OnPreUpdate_OverrideCallback = nullptr;
-LNStaticMesh_OnUpdate_OverrideCallback LNWS_ln_StaticMesh::s_LNStaticMesh_OnUpdate_OverrideCallback = nullptr;
-
-
-class LNWS_ln_StaticMeshComponent : public ln::MeshComponent
-{
-public:
-    // Override functions per instance for FlatAPI User.
-    struct LNStaticMeshComponent_OverridePrototypes
-    {
-        ln::Ref<LNWS_StaticMeshComponentSerializeHandler> OnSerialize_OverrideFunc;
-
-    };
-    std::unique_ptr<LNStaticMeshComponent_OverridePrototypes> m_overridePrototypes = nullptr;
-    LNStaticMeshComponent_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNStaticMeshComponent_OverridePrototypes>(); return m_overridePrototypes.get(); }
-
-    static LNStaticMeshComponent_SubclassRegistrationInfo* subclassInfo() { static LNStaticMeshComponent_SubclassRegistrationInfo info; return &info; }
-    LNSubinstanceId m_subinstance = 0;
-
-    LNWS_ln_StaticMeshComponent()
-    {
-        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
-    }
-
-    ~LNWS_ln_StaticMeshComponent()
-    {
-        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
-    }
-
-    // Overrides
-    static LNStaticMeshComponent_OnSerialize_OverrideCallback s_LNStaticMeshComponent_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
-    {
-        if (m_overridePrototypes) {
-            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
-                func->call(this, ar);
-                return;
-            }
-        }
-        if (s_LNStaticMeshComponent_OnSerialize_OverrideCallback) s_LNStaticMeshComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+        if (s_LNMeshComponent_OnSerialize_OverrideCallback) s_LNMeshComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
         ln::MeshComponent::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
@@ -11884,69 +11523,7 @@ public:
 
 };
 
-LNStaticMeshComponent_OnSerialize_OverrideCallback LNWS_ln_StaticMeshComponent::s_LNStaticMeshComponent_OnSerialize_OverrideCallback = nullptr;
-
-
-class LNWS_ln_SkinnedMeshComponent : public ln::MeshComponent
-{
-public:
-    // Override functions per instance for FlatAPI User.
-    struct LNSkinnedMeshComponent_OverridePrototypes
-    {
-        ln::Ref<LNWS_SkinnedMeshComponentSerializeHandler> OnSerialize_OverrideFunc;
-
-    };
-    std::unique_ptr<LNSkinnedMeshComponent_OverridePrototypes> m_overridePrototypes = nullptr;
-    LNSkinnedMeshComponent_OverridePrototypes* acquireOverridePrototypes() { if (!m_overridePrototypes) m_overridePrototypes = std::make_unique<LNSkinnedMeshComponent_OverridePrototypes>(); return m_overridePrototypes.get(); }
-
-    static LNSkinnedMeshComponent_SubclassRegistrationInfo* subclassInfo() { static LNSkinnedMeshComponent_SubclassRegistrationInfo info; return &info; }
-    LNSubinstanceId m_subinstance = 0;
-
-    LNWS_ln_SkinnedMeshComponent()
-    {
-        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
-    }
-
-    ~LNWS_ln_SkinnedMeshComponent()
-    {
-        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
-    }
-
-    // Overrides
-    static LNSkinnedMeshComponent_OnSerialize_OverrideCallback s_LNSkinnedMeshComponent_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
-    {
-        if (m_overridePrototypes) {
-            if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
-                func->call(this, ar);
-                return;
-            }
-        }
-        if (s_LNSkinnedMeshComponent_OnSerialize_OverrideCallback) s_LNSkinnedMeshComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::MeshComponent::onSerialize(ar);
-    }
-    void onSerialize_CallBase(ln::Serializer2* ar)
-    {
-        ln::MeshComponent::onSerialize(ar);
-    }
-
-    // TypeInfo
-    ln::TypeInfo* m_typeInfoOverride = nullptr;
-    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
-    {
-        m_typeInfoOverride = value;
-    }
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
-    {
-        if (m_typeInfoOverride)
-            return m_typeInfoOverride;
-        else
-            return ln::TypeInfo::getTypeInfo<MeshComponent>();
-    }
-
-};
-
-LNSkinnedMeshComponent_OnSerialize_OverrideCallback LNWS_ln_SkinnedMeshComponent::s_LNSkinnedMeshComponent_OnSerialize_OverrideCallback = nullptr;
+LNMeshComponent_OnSerialize_OverrideCallback LNWS_ln_MeshComponent::s_LNMeshComponent_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_Collision : public ln::Collision
@@ -15170,6 +14747,38 @@ LNSubinstanceId LNZVTestEventArgs1_GetSubinstanceId(LNHandle handle)
     }
     return 0;
 }
+
+LN_FLAT_API LNResult LNLog_SetLevel(LNLogLevel level)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Log::setLevel(static_cast<ln::LogLevel>(level)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNLog_AllocConsole()
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Log::allocConsole());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNLog_Write(LNLogLevel level, const LNChar* tag, const LNChar* text)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Log::write(static_cast<ln::LogLevel>(level), tag, text));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNLog_WriteA(LNLogLevel level, const char* tag, const char* text)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Log::write(static_cast<ln::LogLevel>(level), LNI_ASTRPTR_TO_STRING(tag), LNI_ASTRPTR_TO_STRING(text)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 LN_FLAT_API LNResult LNSerializer2_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
@@ -19952,268 +19561,78 @@ LNSubinstanceId LNPlaneMesh_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
-LN_FLAT_API LNResult LNStaticMesh_Load(const LNChar* filePath, LNHandle* outReturn)
+LN_FLAT_API LNResult LNMeshComponent_Create(LNHandle* outMeshComponent)
 {
     LNI_FUNC_TRY_BEGIN;
-    if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::StaticMesh::load(filePath));
-    }
-    else {
-        (ln::StaticMesh::load(filePath));
-    }
-
+    LNI_CREATE_OBJECT(outMeshComponent, LNWS_ln_MeshComponent, init, );
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LNResult LNStaticMesh_LoadA(const char* filePath, LNHandle* outReturn)
+LN_FLAT_API LNResult LNMeshComponent_SetModel(LNHandle meshcomponent, LNHandle model)
 {
     LNI_FUNC_TRY_BEGIN;
-    if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::StaticMesh::load(LNI_ASTRPTR_TO_STRING(filePath)));
-    }
-    else {
-        (ln::StaticMesh::load(LNI_ASTRPTR_TO_STRING(filePath)));
-    }
-
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshComponent, meshcomponent)->setModel(LNI_HANDLE_TO_OBJECT(ln::MeshModel, model)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LNResult LNStaticMesh_GetModel(LNHandle staticmesh, LNHandle* outReturn)
+LN_FLAT_API LNResult LNMeshComponent_MakeCollisionBody(LNHandle meshcomponent, const LNChar* meshContainerName)
 {
     LNI_FUNC_TRY_BEGIN;
-    if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->model());
-    }
-    else {
-        (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->model());
-    }
-
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshComponent, meshcomponent)->makeCollisionBody(meshContainerName));
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LNResult LNStaticMesh_MakeCollisionBody(LNHandle staticmesh, const LNChar* meshContainerName)
+LN_FLAT_API LNResult LNMeshComponent_MakeCollisionBodyA(LNHandle meshcomponent, const char* meshContainerName)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->makeCollisionBody(meshContainerName));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshComponent, meshcomponent)->makeCollisionBody(LNI_ASTRPTR_TO_STRING(meshContainerName)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LNResult LNStaticMesh_MakeCollisionBodyA(LNHandle staticmesh, const char* meshContainerName)
+LN_FLAT_API LNResult LNMeshComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->makeCollisionBody(LNI_ASTRPTR_TO_STRING(meshContainerName)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
-
-
-LN_FLAT_API LNResult LNStaticMesh_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
+LN_FLAT_API LNResult LNMeshComponent_OnSerialize_SetOverrideCallback(LNMeshComponent_OnSerialize_OverrideCallback callback)
 {
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LNResult LNStaticMesh_OnSerialize_SetOverrideCallback(LNStaticMesh_OnSerialize_OverrideCallback callback)
-{
-    LNWS_ln_StaticMesh::s_LNStaticMesh_OnSerialize_OverrideCallback = callback;
+    LNWS_ln_MeshComponent::s_LNMeshComponent_OnSerialize_OverrideCallback = callback;
     return LN_OK;
 }
 
-LN_FLAT_API LNResult LNStaticMesh_OnPreUpdate_CallOverrideBase(LNHandle worldobject)
+LN_FLAT_API LNResult LNMeshComponent_SetPrototype_OnSerialize(LNHandle meshcomponent, LNHandle callback)
 {
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, worldobject)->onPreUpdate_CallBase());
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LNResult LNStaticMesh_OnPreUpdate_SetOverrideCallback(LNStaticMesh_OnPreUpdate_OverrideCallback callback)
-{
-    LNWS_ln_StaticMesh::s_LNStaticMesh_OnPreUpdate_OverrideCallback = callback;
+    LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshComponent, meshcomponent)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_MeshComponentSerializeHandler, callback);
     return LN_OK;
 }
-
-LN_FLAT_API LNResult LNStaticMesh_OnUpdate_CallOverrideBase(LNHandle worldobject, float elapsedSeconds)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, worldobject)->onUpdate_CallBase(elapsedSeconds));
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LNResult LNStaticMesh_OnUpdate_SetOverrideCallback(LNStaticMesh_OnUpdate_OverrideCallback callback)
-{
-    LNWS_ln_StaticMesh::s_LNStaticMesh_OnUpdate_OverrideCallback = callback;
-    return LN_OK;
-}
-
-LN_FLAT_API LNResult LNStaticMesh_SetPrototype_OnSerialize(LNHandle staticmesh, LNHandle callback)
-{
-    LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_StaticMeshSerializeHandler, callback);
-    return LN_OK;
-}
-LN_FLAT_API LNResult LNStaticMesh_SetPrototype_OnPreUpdate(LNHandle staticmesh, LNHandle callback)
-{
-    LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->acquireOverridePrototypes()->OnPreUpdate_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_StaticMeshPreUpdateHandler, callback);
-    return LN_OK;
-}
-LN_FLAT_API LNResult LNStaticMesh_SetPrototype_OnUpdate(LNHandle staticmesh, LNHandle callback)
-{
-    LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, staticmesh)->acquireOverridePrototypes()->OnUpdate_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_StaticMeshUpdateHandler, callback);
-    return LN_OK;
-}
-extern LN_FLAT_API int LNStaticMesh_GetTypeInfoId()
-{
-    return ln::TypeInfo::getTypeInfo<ln::StaticMesh>()->id();
-}
-
-LN_FLAT_API void LNStaticMesh_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::StaticMesh>(), id);
-}
-
-void LNStaticMesh_RegisterSubclassTypeInfo(const LNStaticMesh_SubclassRegistrationInfo* info)
-{
-    if (info) {
-        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::StaticMesh>(), info->subclassId);
-        *LNWS_ln_StaticMesh::subclassInfo() = *info;
-    }
-}
-
-LNSubinstanceId LNStaticMesh_GetSubinstanceId(LNHandle handle)
-{
-    if (handle) {
-        LNI_FUNC_TRY_BEGIN;
-        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, handle))->m_subinstance;
-        LNI_FUNC_TRY_END_RETURN;
-    }
-    return 0;
-}
-
-LN_FLAT_API LNResult LNStaticMeshComponent_Create(LNHandle* outStaticMeshComponent)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outStaticMeshComponent, LNWS_ln_StaticMeshComponent, init, );
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LNResult LNStaticMeshComponent_SetModel(LNHandle staticmeshcomponent, LNHandle model)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshComponent, staticmeshcomponent)->setModel(LNI_HANDLE_TO_OBJECT(ln::MeshModel, model)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LNResult LNStaticMeshComponent_MakeCollisionBody(LNHandle staticmeshcomponent, const LNChar* meshContainerName)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshComponent, staticmeshcomponent)->makeCollisionBody(meshContainerName));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LNResult LNStaticMeshComponent_MakeCollisionBodyA(LNHandle staticmeshcomponent, const char* meshContainerName)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshComponent, staticmeshcomponent)->makeCollisionBody(LNI_ASTRPTR_TO_STRING(meshContainerName)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LNResult LNStaticMeshComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LNResult LNStaticMeshComponent_OnSerialize_SetOverrideCallback(LNStaticMeshComponent_OnSerialize_OverrideCallback callback)
-{
-    LNWS_ln_StaticMeshComponent::s_LNStaticMeshComponent_OnSerialize_OverrideCallback = callback;
-    return LN_OK;
-}
-
-LN_FLAT_API LNResult LNStaticMeshComponent_SetPrototype_OnSerialize(LNHandle staticmeshcomponent, LNHandle callback)
-{
-    LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshComponent, staticmeshcomponent)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_StaticMeshComponentSerializeHandler, callback);
-    return LN_OK;
-}
-extern LN_FLAT_API int LNStaticMeshComponent_GetTypeInfoId()
+extern LN_FLAT_API int LNMeshComponent_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::MeshComponent>()->id();
 }
 
-LN_FLAT_API void LNStaticMeshComponent_SetManagedTypeInfoId(int64_t id)
+LN_FLAT_API void LNMeshComponent_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::MeshComponent>(), id);
 }
 
-void LNStaticMeshComponent_RegisterSubclassTypeInfo(const LNStaticMeshComponent_SubclassRegistrationInfo* info)
+void LNMeshComponent_RegisterSubclassTypeInfo(const LNMeshComponent_SubclassRegistrationInfo* info)
 {
     if (info) {
         ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::MeshComponent>(), info->subclassId);
-        *LNWS_ln_StaticMeshComponent::subclassInfo() = *info;
+        *LNWS_ln_MeshComponent::subclassInfo() = *info;
     }
 }
 
-LNSubinstanceId LNStaticMeshComponent_GetSubinstanceId(LNHandle handle)
+LNSubinstanceId LNMeshComponent_GetSubinstanceId(LNHandle handle)
 {
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
-        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMeshComponent, handle))->m_subinstance;
-        LNI_FUNC_TRY_END_RETURN;
-    }
-    return 0;
-}
-
-LN_FLAT_API LNResult LNSkinnedMeshComponent_Create(LNHandle* outSkinnedMeshComponent)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outSkinnedMeshComponent, LNWS_ln_SkinnedMeshComponent, init, );
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LNResult LNSkinnedMeshComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SkinnedMeshComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LNResult LNSkinnedMeshComponent_OnSerialize_SetOverrideCallback(LNSkinnedMeshComponent_OnSerialize_OverrideCallback callback)
-{
-    LNWS_ln_SkinnedMeshComponent::s_LNSkinnedMeshComponent_OnSerialize_OverrideCallback = callback;
-    return LN_OK;
-}
-
-LN_FLAT_API LNResult LNSkinnedMeshComponent_SetPrototype_OnSerialize(LNHandle skinnedmeshcomponent, LNHandle callback)
-{
-    LNI_HANDLE_TO_OBJECT(LNWS_ln_SkinnedMeshComponent, skinnedmeshcomponent)->acquireOverridePrototypes()->OnSerialize_OverrideFunc = LNI_HANDLE_TO_OBJECT(LNWS_SkinnedMeshComponentSerializeHandler, callback);
-    return LN_OK;
-}
-extern LN_FLAT_API int LNSkinnedMeshComponent_GetTypeInfoId()
-{
-    return ln::TypeInfo::getTypeInfo<ln::MeshComponent>()->id();
-}
-
-LN_FLAT_API void LNSkinnedMeshComponent_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::MeshComponent>(), id);
-}
-
-void LNSkinnedMeshComponent_RegisterSubclassTypeInfo(const LNSkinnedMeshComponent_SubclassRegistrationInfo* info)
-{
-    if (info) {
-        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::MeshComponent>(), info->subclassId);
-        *LNWS_ln_SkinnedMeshComponent::subclassInfo() = *info;
-    }
-}
-
-LNSubinstanceId LNSkinnedMeshComponent_GetSubinstanceId(LNHandle handle)
-{
-    if (handle) {
-        LNI_FUNC_TRY_BEGIN;
-        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_SkinnedMeshComponent, handle))->m_subinstance;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshComponent, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;
@@ -23174,6 +22593,20 @@ LN_FLAT_API LNResult LNUIListItemsControl_SetItemsLayoutPanel(LNHandle uilistite
 }
 
 
+LN_FLAT_API LNResult LNUIListItemsControl_GetItemsLayoutPanel(LNHandle uilistitemscontrol, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItemsControl, uilistitemscontrol)->itemsLayoutPanel());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItemsControl, uilistitemscontrol)->itemsLayoutPanel());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNUIListItemsControl_SetSubmitMode(LNHandle uilistitemscontrol, LNUIListSubmitMode value)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -23190,6 +22623,20 @@ LN_FLAT_API LNResult LNUIListItemsControl_GetSubmitMode(LNHandle uilistitemscont
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItemsControl, uilistitemscontrol)->submitMode());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNUIListItemsControl_ConnectOnSubmit(LNHandle uilistitemscontrol, LNHandle handler, LNHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItemsControl, uilistitemscontrol)->connectOnSubmit(LNI_HANDLE_TO_OBJECT(ln::UIGeneralEventHandler, handler)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItemsControl, uilistitemscontrol)->connectOnSubmit(LNI_HANDLE_TO_OBJECT(ln::UIGeneralEventHandler, handler)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -26222,116 +25669,24 @@ LNSubinstanceId LNPlaneMeshUpdateHandler_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
-LN_FLAT_API void LNStaticMeshSerializeHandler_SetManagedTypeInfoId(int64_t id)
+LN_FLAT_API void LNMeshComponentSerializeHandler_SetManagedTypeInfoId(int64_t id)
 {
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<StaticMeshSerializeHandler>(), id);
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<MeshComponentSerializeHandler>(), id);
 }
 
-void LNStaticMeshSerializeHandler_RegisterSubclassTypeInfo(const LNStaticMeshSerializeHandler_SubclassRegistrationInfo* info)
+void LNMeshComponentSerializeHandler_RegisterSubclassTypeInfo(const LNMeshComponentSerializeHandler_SubclassRegistrationInfo* info)
 {
     if (info) {
-        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<StaticMeshSerializeHandler>(), info->subclassId);
-        *LNWS_StaticMeshSerializeHandler::subclassInfo() = *info;
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<MeshComponentSerializeHandler>(), info->subclassId);
+        *LNWS_MeshComponentSerializeHandler::subclassInfo() = *info;
     }
 }
 
-LNSubinstanceId LNStaticMeshSerializeHandler_GetSubinstanceId(LNHandle handle)
+LNSubinstanceId LNMeshComponentSerializeHandler_GetSubinstanceId(LNHandle handle)
 {
     if (handle) {
         LNI_FUNC_TRY_BEGIN;
-        return (LNI_HANDLE_TO_OBJECT(LNWS_StaticMeshSerializeHandler, handle))->m_subinstance;
-        LNI_FUNC_TRY_END_RETURN;
-    }
-    return 0;
-}
-
-LN_FLAT_API void LNStaticMeshPreUpdateHandler_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<StaticMeshPreUpdateHandler>(), id);
-}
-
-void LNStaticMeshPreUpdateHandler_RegisterSubclassTypeInfo(const LNStaticMeshPreUpdateHandler_SubclassRegistrationInfo* info)
-{
-    if (info) {
-        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<StaticMeshPreUpdateHandler>(), info->subclassId);
-        *LNWS_StaticMeshPreUpdateHandler::subclassInfo() = *info;
-    }
-}
-
-LNSubinstanceId LNStaticMeshPreUpdateHandler_GetSubinstanceId(LNHandle handle)
-{
-    if (handle) {
-        LNI_FUNC_TRY_BEGIN;
-        return (LNI_HANDLE_TO_OBJECT(LNWS_StaticMeshPreUpdateHandler, handle))->m_subinstance;
-        LNI_FUNC_TRY_END_RETURN;
-    }
-    return 0;
-}
-
-LN_FLAT_API void LNStaticMeshUpdateHandler_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<StaticMeshUpdateHandler>(), id);
-}
-
-void LNStaticMeshUpdateHandler_RegisterSubclassTypeInfo(const LNStaticMeshUpdateHandler_SubclassRegistrationInfo* info)
-{
-    if (info) {
-        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<StaticMeshUpdateHandler>(), info->subclassId);
-        *LNWS_StaticMeshUpdateHandler::subclassInfo() = *info;
-    }
-}
-
-LNSubinstanceId LNStaticMeshUpdateHandler_GetSubinstanceId(LNHandle handle)
-{
-    if (handle) {
-        LNI_FUNC_TRY_BEGIN;
-        return (LNI_HANDLE_TO_OBJECT(LNWS_StaticMeshUpdateHandler, handle))->m_subinstance;
-        LNI_FUNC_TRY_END_RETURN;
-    }
-    return 0;
-}
-
-LN_FLAT_API void LNStaticMeshComponentSerializeHandler_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<StaticMeshComponentSerializeHandler>(), id);
-}
-
-void LNStaticMeshComponentSerializeHandler_RegisterSubclassTypeInfo(const LNStaticMeshComponentSerializeHandler_SubclassRegistrationInfo* info)
-{
-    if (info) {
-        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<StaticMeshComponentSerializeHandler>(), info->subclassId);
-        *LNWS_StaticMeshComponentSerializeHandler::subclassInfo() = *info;
-    }
-}
-
-LNSubinstanceId LNStaticMeshComponentSerializeHandler_GetSubinstanceId(LNHandle handle)
-{
-    if (handle) {
-        LNI_FUNC_TRY_BEGIN;
-        return (LNI_HANDLE_TO_OBJECT(LNWS_StaticMeshComponentSerializeHandler, handle))->m_subinstance;
-        LNI_FUNC_TRY_END_RETURN;
-    }
-    return 0;
-}
-
-LN_FLAT_API void LNSkinnedMeshComponentSerializeHandler_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<SkinnedMeshComponentSerializeHandler>(), id);
-}
-
-void LNSkinnedMeshComponentSerializeHandler_RegisterSubclassTypeInfo(const LNSkinnedMeshComponentSerializeHandler_SubclassRegistrationInfo* info)
-{
-    if (info) {
-        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<SkinnedMeshComponentSerializeHandler>(), info->subclassId);
-        *LNWS_SkinnedMeshComponentSerializeHandler::subclassInfo() = *info;
-    }
-}
-
-LNSubinstanceId LNSkinnedMeshComponentSerializeHandler_GetSubinstanceId(LNHandle handle)
-{
-    if (handle) {
-        LNI_FUNC_TRY_BEGIN;
-        return (LNI_HANDLE_TO_OBJECT(LNWS_SkinnedMeshComponentSerializeHandler, handle))->m_subinstance;
+        return (LNI_HANDLE_TO_OBJECT(LNWS_MeshComponentSerializeHandler, handle))->m_subinstance;
         LNI_FUNC_TRY_END_RETURN;
     }
     return 0;

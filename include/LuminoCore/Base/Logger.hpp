@@ -28,6 +28,7 @@ namespace ln {
 class StringRef;
 
 /** ログの通知レベル */
+LN_ENUM()
 enum class LogLevel
 {
     Unknown,
@@ -41,6 +42,8 @@ enum class LogLevel
     Warning,
     Error,
     Fatal,
+
+    Disble,
 };
 
 /** グローバルなロギング機能をコントロールするためのクラスです。 */

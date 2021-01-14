@@ -53,6 +53,8 @@ enum class GraphicsAPI
 
     /** Vulkan */
     Vulkan,
+
+    DirectX12,
 };
 
 /** レンダーターゲットのクリア方法 */

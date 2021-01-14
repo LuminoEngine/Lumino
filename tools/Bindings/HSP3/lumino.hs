@@ -10,7 +10,7 @@ Lumino
 0.9.0
 
 %date
-2020/12/21
+2021/1/14
 
 %author
 lriki
@@ -3049,6 +3049,99 @@ LNZVTestEventArgs1
 zvtesteventargs1, outReturn
 [in]  zvtesteventargs1 : instance
 [out] outReturn(0)     : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNLog_SetLevel
+setLevel
+%group
+LNLog
+%prm
+level
+[in] level : 
+                LN_LOG_LEVEL_UNKNOWN
+                
+                LN_LOG_LEVEL_VERBOSE
+                
+                LN_LOG_LEVEL_DEBUG
+                
+                LN_LOG_LEVEL_INFO
+                
+                LN_LOG_LEVEL_WARNING
+                
+                LN_LOG_LEVEL_ERROR
+                
+                LN_LOG_LEVEL_FATAL
+                
+                LN_LOG_LEVEL_DISBLE
+                
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNLog_AllocConsole
+allocConsole
+%group
+LNLog
+%prm
+
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNLog_Write
+write
+%group
+LNLog
+%prm
+level, tag, text
+[in] level : 
+                LN_LOG_LEVEL_UNKNOWN
+                
+                LN_LOG_LEVEL_VERBOSE
+                
+                LN_LOG_LEVEL_DEBUG
+                
+                LN_LOG_LEVEL_INFO
+                
+                LN_LOG_LEVEL_WARNING
+                
+                LN_LOG_LEVEL_ERROR
+                
+                LN_LOG_LEVEL_FATAL
+                
+                LN_LOG_LEVEL_DISBLE
+                
+[in] tag   : 
+[in] text  : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7672,76 +7765,13 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNStaticMesh_Load
-load
-%group
-LNStaticMesh
-%prm
-filePath, outReturn
-[in]  filePath  : 
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNStaticMesh_GetModel
-w’è‚µ‚½–¼‘O‚Ì MeshContainer ‚©‚çAÕ“Ë”»’è—p‚Ì Body ‚ğì¬‚µ‚Ü‚·B
-%group
-LNStaticMesh
-%prm
-staticmesh, outReturn
-[in]  staticmesh : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNStaticMesh_MakeCollisionBody
-w’è‚µ‚½–¼‘O‚Ì MeshContainer ‚©‚çAÕ“Ë”»’è—p‚Ì Body ‚ğì¬‚µ‚Ü‚·B
-%group
-LNStaticMesh
-%prm
-staticmesh, meshContainerName
-[in] staticmesh        : instance
-[in] meshContainerName : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNStaticMeshComponent_Create
+LNMeshComponent_Create
 init
 %group
-LNStaticMeshComponent
+LNMeshComponent
 %prm
-outStaticMeshComponent
-[in] outStaticMeshComponent(0) : instance.
+outMeshComponent
+[in] outMeshComponent(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7755,14 +7785,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNStaticMeshComponent_SetModel
+LNMeshComponent_SetModel
 setModel
 %group
-LNStaticMeshComponent
+LNMeshComponent
 %prm
-staticmeshcomponent, model
-[in] staticmeshcomponent : instance
-[in] model               : 
+meshcomponent, model
+[in] meshcomponent : instance
+[in] model         : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7776,34 +7806,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNStaticMeshComponent_MakeCollisionBody
+LNMeshComponent_MakeCollisionBody
 w’è‚µ‚½–¼‘O‚Ì MeshContainer ‚©‚çAÕ“Ë”»’è—p‚Ì Body ‚ğì¬‚µ‚Ü‚·B
 %group
-LNStaticMeshComponent
+LNMeshComponent
 %prm
-staticmeshcomponent, meshContainerName
-[in] staticmeshcomponent : instance
-[in] meshContainerName   : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNSkinnedMeshComponent_Create
-init
-%group
-LNSkinnedMeshComponent
-%prm
-outSkinnedMeshComponent
-[in] outSkinnedMeshComponent(0) : instance.
+meshcomponent, meshContainerName
+[in] meshcomponent     : instance
+[in] meshContainerName : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11635,6 +11645,27 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
+LNUIListItemsControl_GetItemsLayoutPanel
+itemsLayoutPanel
+%group
+LNUIListItemsControl
+%prm
+uilistitemscontrol, outReturn
+[in]  uilistitemscontrol : instance
+[out] outReturn(0)       : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
 LNUIListItemsControl_SetSubmitMode
 UIListSubmitMode (default: Single)
 %group
@@ -11672,6 +11703,28 @@ uilistitemscontrol, outReturn
                               ƒQ[ƒ€UI—pBHover ‚Å‘I‘ğó‘ÔAƒVƒ“ƒOƒ‹ƒNƒŠƒbƒN‚Å Submit. Hover ó‘Ô‚Íg—p‚³‚ê‚È‚¢B
                               LN_UILIST_SUBMIT_MODE_DOUBLE
                               ƒGƒfƒBƒ^UI—pBƒVƒ“ƒOƒ‹ƒNƒŠƒbƒN‚Å‘I‘ğó‘ÔAƒ_ƒuƒ‹ƒNƒŠƒbƒN‚Å Submit.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNUIListItemsControl_ConnectOnSubmit
+Submit ƒCƒxƒ“ƒg‚Ì’Ê’m‚ğó‚¯æ‚éƒR[ƒ‹ƒoƒbƒN‚ğ“o˜^‚µ‚Ü‚·B
+%group
+LNUIListItemsControl
+%prm
+uilistitemscontrol, handler, outReturn
+[in]  uilistitemscontrol : instance
+[in]  handler            : 
+[out] outReturn(0)       : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14814,98 +14867,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNStaticMeshSerializeHandler_Create
+LNMeshComponentSerializeHandler_Create
 
 %group
-LNStaticMeshSerializeHandler
+LNMeshComponentSerializeHandler
 %prm
-callback, outStaticMeshSerializeHandler
-[in] callback                      : 
-[in] outStaticMeshSerializeHandler(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNStaticMeshPreUpdateHandler_Create
-
-%group
-LNStaticMeshPreUpdateHandler
-%prm
-callback, outStaticMeshPreUpdateHandler
-[in] callback                      : 
-[in] outStaticMeshPreUpdateHandler(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNStaticMeshUpdateHandler_Create
-
-%group
-LNStaticMeshUpdateHandler
-%prm
-callback, outStaticMeshUpdateHandler
-[in] callback                   : 
-[in] outStaticMeshUpdateHandler(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNStaticMeshComponentSerializeHandler_Create
-
-%group
-LNStaticMeshComponentSerializeHandler
-%prm
-callback, outStaticMeshComponentSerializeHandler
-[in] callback                               : 
-[in] outStaticMeshComponentSerializeHandler(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNSkinnedMeshComponentSerializeHandler_Create
-
-%group
-LNSkinnedMeshComponentSerializeHandler
-%prm
-callback, outSkinnedMeshComponentSerializeHandler
-[in] callback                                : 
-[in] outSkinnedMeshComponentSerializeHandler(0) : instance.
+callback, outMeshComponentSerializeHandler
+[in] callback                         : 
+[in] outMeshComponentSerializeHandler(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
