@@ -556,6 +556,16 @@ namespace LuminoBuild.Tasks
                 }
             }
 
+            if (BuildEnvironment.FromCI)
+            {
+                // CI 環境でディスク消費を抑えるため、一時ファイルを削除する
+                var buildDir = builder.GetExternalProjectBuildDir(BuildEnvironment.Target);
+                if (Directory.Exists(buildDir))
+                {
+                    Directory.Delete(buildDir, true);
+                }
+            }
+
             builder.CommitCache(builder.GetExternalInstallDir(BuildEnvironment.Target));
         }
     }

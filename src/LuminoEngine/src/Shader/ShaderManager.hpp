@@ -47,7 +47,9 @@ public:
     GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     const std::vector<std::pair<std::string, std::string>>& builtinShaderList() const { return m_builtinShaderList; }
 
+#ifdef _WIN32
     PFN_D3DCompile2 D3DCompile2 = nullptr;
+#endif
 
 private:
     GraphicsManager* m_graphicsManager;
