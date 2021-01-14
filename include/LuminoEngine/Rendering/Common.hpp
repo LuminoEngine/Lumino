@@ -241,7 +241,7 @@ class BuiltinEffectData;
 class RenderDrawElement;
 class SkeletonInstance;
 class CommandListServer;
-
+class RLIMaterial;
 
 enum class RenderDrawElementTypeFlags : uint8_t
 {

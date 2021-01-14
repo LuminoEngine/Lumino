@@ -10,6 +10,7 @@
 #include "RenderingPipeline.hpp"
 #include "RenderStage.hpp"
 #include "RenderElement.hpp"
+#include "RLIs/RLIMaterial.hpp"
 
 namespace ln {
 
@@ -98,6 +99,13 @@ void ForwardGBufferPrepass::onEndRender(SceneRenderer* sceneRenderer)
 RenderPass* ForwardGBufferPrepass::renderPass() const
 {
 	return m_renderPass;
+}
+
+void ForwardGBufferPrepass::overrideFinalMaterial(RLIMaterial* material)
+{
+	// このパスではブレンドを禁止する。
+	// 例えば法線の向きをブレンドしてしまうと描画がおかしくなる。
+	material->blendMode = BlendMode::Normal;
 }
 
 ShaderTechnique* ForwardGBufferPrepass::selectShaderTechnique(

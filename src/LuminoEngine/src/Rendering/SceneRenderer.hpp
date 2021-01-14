@@ -54,6 +54,8 @@ public:
 
 	virtual bool filterElement(RenderDrawElement* element) const;
 
+	virtual void overrideFinalMaterial(RLIMaterial* material) {}
+
 	// Element の情報と派生 Pass から、最終的に使いたい ShaderTechnique を求める
 	virtual ShaderTechnique* selectShaderTechnique(
 		const ShaderTechniqueRequestClasses& requester,
@@ -85,6 +87,7 @@ class SceneRenderer
 public:
 	// render の前準備として、効率的な描画を行うためのZソートなどを実施した Element リストを作成する。
 	void prepare(
+		GraphicsContext* graphicsContext,
 		RenderingPipeline* renderingPipeline,
 		RenderingContext* renderingContext,
 		//detail::CommandListServer* commandListServer,
@@ -130,10 +133,12 @@ protected:
 
 
 public:	// TODO
-	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderPass* defaultRenderPass /*RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer*//*, const ClearInfo& clearInfo*/);
+	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage);
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
 private:
+	void buildBatchList(GraphicsContext* graphicsContext);
+
 	detail::RenderingManager* m_manager;
 	//List<Ref<SceneRendererPass>> m_renderingPassList;
 	RenderFeatureBatchList m_renderFeatureBatchList;

@@ -9,7 +9,7 @@
 float4 LN_AverageBlur5x5(sampler2D s, float2 invSize, float2 uv)
 {
     float2 texelSize = invSize;
-    float4 result = float4(0.0);
+    float4 result = float4(0.0, 0.0, 0.0, 0.0);
 
     for (int i=-2; i<=2; i++) {
         for (int j=-2; j<=2; j++) {

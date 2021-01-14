@@ -166,7 +166,7 @@ RequestBatchResult MeshGeneraterRenderFeature::drawMeshGenerater(const MeshGener
 	return RequestBatchResult::Staging;
 }
 
-void MeshGeneraterRenderFeature::endRendering()
+void MeshGeneraterRenderFeature::beginRendering()
 {
     resetBatchData();
 }

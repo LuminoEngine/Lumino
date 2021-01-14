@@ -58,6 +58,7 @@ class App_Example_glTFSampleViewer : public Application
         auto settings = makeObject<MeshImportSettings>();
         settings->setApplyBoneTransformationsEnabled(false);
         m_mesh = StaticMesh::load(path, settings);
+        m_mesh->setBlendMode(BlendMode::Alpha);
 
         std::cout << path << std::endl;
     }

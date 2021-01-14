@@ -60,6 +60,11 @@ namespace LuminoBuild
             }
         }
 
+        public string GetExternalProjectBuildDir(string targetName)
+        {
+            return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalBuild"));
+        }
+
         public string GetExternalProjectBuildDir(string targetName, string externalProjectName)
         {
             return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalBuild", externalProjectName));

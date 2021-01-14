@@ -29,6 +29,8 @@ public:
 	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
 	virtual RenderPass* renderPass() const;
 
+	virtual void overrideFinalMaterial(RLIMaterial* material) override;
+
 	virtual ShaderTechnique* selectShaderTechnique(
 		const ShaderTechniqueRequestClasses& requester,
 		Shader* requestedShader,
