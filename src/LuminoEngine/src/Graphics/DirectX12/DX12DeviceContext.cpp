@@ -2,6 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include "DX12Helper.hpp"
+#include "DX12VertexBuffer.hpp"
 #include "DX12DeviceContext.hpp"
 
 #pragma comment(lib,"d3d12.lib")
@@ -39,45 +41,77 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
     }
 
     // Select adapter
+    // Create device
     {
-        std::vector<ComPtr<IDXGIAdapter>> adapters;
+        struct Adapter {
+            ComPtr<IDXGIAdapter> adapter;
+            DXGI_ADAPTER_DESC desc;
+        };
+
+        std::vector<Adapter> adapters;
         ComPtr<IDXGIAdapter> adapter;
         for (int i = 0; m_dxgiFactory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
-            adapters.push_back(adapter);
+            DXGI_ADAPTER_DESC desc;
+            adapter->GetDesc(&desc);
+            adapters.push_back({ adapter, desc });
         }
-
-        for (auto adpt : adapters) {
-            DXGI_ADAPTER_DESC adesc = {};
-            adpt->GetDesc(&adesc);
-            std::wstring strDesc = adesc.Description;
-            if (strDesc.find(L"NVIDIA") != std::string::npos) {
-                m_adapter = adpt;
-                break;
-            }
-        }
-        if (!m_adapter) {
+        if (adapters.empty()) {
             LN_ERROR("Adapter not found.");
             return false;
         }
-    }
 
-    // Create device
-    {
-        D3D_FEATURE_LEVEL levels[] = {
-            D3D_FEATURE_LEVEL_12_1,
-            D3D_FEATURE_LEVEL_12_0,
-            D3D_FEATURE_LEVEL_11_1,
-            D3D_FEATURE_LEVEL_11_0,
-        };
-        D3D_FEATURE_LEVEL featureLevel;
-        for (auto level : levels) {
-            if (D3D12CreateDevice(m_adapter.Get(), level, IID_PPV_ARGS(&m_device)) == S_OK) {
-                featureLevel = level;
+        //一番よさそうなものを採用したいので、 VRAM 量でソート
+        // ※ SystemMemory をチェックするのは NG. ソフトウェアドライバを採用してしまうことがある。
+        std::sort(
+            adapters.begin(), adapters.end(),
+            [](const Adapter& a, const Adapter& b) { return a.desc.DedicatedVideoMemory > b.desc.DedicatedVideoMemory; });
+
+        const Adapter* selected = nullptr;
+        for (const auto& adapter : adapters) {
+            const D3D_FEATURE_LEVEL levels[] = {
+                D3D_FEATURE_LEVEL_12_1,
+                D3D_FEATURE_LEVEL_12_0,
+                D3D_FEATURE_LEVEL_11_1,
+                D3D_FEATURE_LEVEL_11_0,
+            };
+            for (auto level : levels) {
+                if (D3D12CreateDevice(adapter.adapter.Get(), level, IID_PPV_ARGS(&m_device)) == S_OK) {
+                    selected = &adapter;
+                    break;
+                }
+            }
+
+            if (m_device) {
+                m_adapter = adapter.adapter;
                 break;
             }
         }
+
+        if (!m_device) {
+            LN_ERROR("CreateDevice failed.");
+            return false;
+        }
+
+        const char* indent = "  ";
+        LN_LOG_INFO << "Adapter: " << selected->desc.DedicatedVideoMemory;
+        LN_LOG_INFO << indent << "Description: " << String::fromCString(selected->desc.Description);
+        LN_LOG_INFO << indent << "DedicatedVideoMemory: " << selected->desc.DedicatedVideoMemory;
+        LN_LOG_INFO << indent << "DedicatedSystemMemory: " << selected->desc.DedicatedSystemMemory;
+        LN_LOG_INFO << indent << "SharedSystemMemory: " << selected->desc.SharedSystemMemory;
     }
 
+    // Command Queue
+    {
+        D3D12_COMMAND_QUEUE_DESC desc = {};
+        desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+        desc.Priority = 0;
+        desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE; // Default command queue
+        desc.NodeMask = 0;                          // 使用する GPU は 1 つだけであるため 0
+        if (FAILED(m_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&m_commandQueue)))) {
+            LN_ERROR("CreateCommandQueue failed.");
+            return false;
+        }
+    }
 
     if (FAILED(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)))) {
         LN_ERROR("CreateCommandAllocator failed.");
@@ -97,6 +131,7 @@ void DX12Device::dispose()
 {
     m_commandList.Reset();
     m_commandAllocator.Reset();
+    m_commandQueue.Reset();
     m_device.Reset();
     m_adapter.Reset();
     m_dxgiFactory.Reset();
@@ -111,10 +146,9 @@ INativeGraphicsInterface* DX12Device::getNativeInterface() const
 
 void DX12Device::onGetCaps(GraphicsDeviceCaps * outCaps)
 {
-    LN_NOTIMPLEMENTED();
-    //outCaps->requestedShaderTriple.target = "spv";
-    //outCaps->requestedShaderTriple.version = 110;
-    //outCaps->requestedShaderTriple.option = "";
+    outCaps->requestedShaderTriple.target = "hlsl";
+    outCaps->requestedShaderTriple.version = 5;
+    outCaps->requestedShaderTriple.option = "";
 }
 
 Ref<ISwapChain> DX12Device::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
@@ -486,6 +520,7 @@ void DX12Pipeline::dispose()
 // DX12VertexDeclaration
 
 DX12VertexDeclaration::DX12VertexDeclaration()
+    : m_elements()
 {
 }
 
@@ -493,7 +528,29 @@ DX12VertexDeclaration::DX12VertexDeclaration()
 Result DX12VertexDeclaration::init(const VertexElement* elements, int elementsCount)
 {
     LN_DCHECK(elements);
-    LN_NOTIMPLEMENTED();
+
+    std::array<UINT, 16> offsets;   // max=16 : https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_input_element_desc
+    UINT offset = 0;
+    for (int i = 0; i < elementsCount; i++) {
+        const VertexElement& e = elements[i];
+        D3D12_INPUT_ELEMENT_DESC desc = {};
+        desc.SemanticName = DX12Helper::LNVertexElementUsageToSemanticName(e.Usage);
+        desc.SemanticIndex = e.UsageIndex;
+        desc.Format = DX12Helper::LNVertexElementTypeToDXFormat(e.Type);
+        desc.InputSlot = e.StreamIndex;
+        desc.AlignedByteOffset = offsets[e.StreamIndex];
+        if (e.rate == VertexInputRate::Vertex) {
+            desc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+            desc.InstanceDataStepRate = 0;
+        }
+        else {
+            desc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+            desc.InstanceDataStepRate = 1;
+        }
+        m_elements.push_back(desc);
+
+        offsets[e.StreamIndex] += GraphicsHelper::getVertexElementTypeSize(elements[i].Type);
+    }
 
     return true;
 }
@@ -501,54 +558,6 @@ Result DX12VertexDeclaration::init(const VertexElement* elements, int elementsCo
 void DX12VertexDeclaration::dispose()
 {
     IVertexDeclaration::dispose();
-}
-
-//==============================================================================
-// DX12VertexBuffer
-
-DX12VertexBuffer::DX12VertexBuffer()
-    : m_usage(GraphicsResourceUsage::Static)
-{
-}
-
-Result DX12VertexBuffer::init(DX12Device* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
-{
-    LN_DCHECK(deviceContext);
-    m_deviceContext = deviceContext;
-
-    LN_NOTIMPLEMENTED();
-
-    m_usage = usage;
-
-    return true;
-}
-
-void DX12VertexBuffer::dispose()
-{
-    LN_NOTIMPLEMENTED();
-    IVertexBuffer::dispose();
-}
-
-size_t DX12VertexBuffer::getBytesSize()
-{
-    LN_NOTIMPLEMENTED();
-    return 0;
-}
-
-GraphicsResourceUsage DX12VertexBuffer::usage() const
-{
-    return m_usage;
-}
-
-void* DX12VertexBuffer::map()
-{
-    LN_NOTIMPLEMENTED();
-    return 0;
-}
-
-void DX12VertexBuffer::unmap()
-{
-    LN_NOTIMPLEMENTED();
 }
 
 //==============================================================================
@@ -602,32 +611,79 @@ void DX12IndexBuffer::unmap()
 // DX12UniformBuffer
 
 DX12UniformBuffer::DX12UniformBuffer()
+    : m_deviceContext(nullptr)
+    , m_size(0)
+    , m_constantBuffer()
+    , m_mappedBuffer(nullptr)
 {
 }
 
-Result DX12UniformBuffer::init(DX12Device* deviceContext, uint32_t size)
+bool DX12UniformBuffer::init(DX12Device* deviceContext, uint32_t size)
 {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
     m_size = size;
-    LN_NOTIMPLEMENTED();
+
+    ID3D12Device* device = m_deviceContext->device();
+
+    // https://github.com/microsoft/DirectX-Graphics-Samples/blob/master/Samples/UWP/D3D12HelloWorld/src/HelloConstBuffers/d3dx12.h#L411
+    D3D12_HEAP_PROPERTIES prop = {};
+    prop.Type = D3D12_HEAP_TYPE_UPLOAD; // フレームごとに全体を書き換えるような運用をするため UPLOAD
+    prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+    prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+    prop.CreationNodeMask = 1;
+    prop.VisibleNodeMask = 1;
+
+    D3D12_RESOURCE_DESC desc = {};
+    desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+    desc.Alignment = 0;
+    desc.Width = m_size;
+    desc.Height = 1;
+    desc.DepthOrArraySize = 1;
+    desc.MipLevels = 1;
+    desc.Format = DXGI_FORMAT_UNKNOWN;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+    desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+    if (FAILED(device->CreateCommittedResource(
+        &prop,
+        D3D12_HEAP_FLAG_NONE,
+        &desc,
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
+        IID_PPV_ARGS(&m_constantBuffer)))) {
+        LN_ERROR("CreateCommittedResource failed.");
+        return false;
+    }
+
+    // Map したままで OK
+    if (FAILED(m_constantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&m_mappedBuffer)))) {
+        LN_ERROR("Map failed.");
+        return false;
+    }
+
     return true;
 }
 
 void DX12UniformBuffer::dispose()
 {
+    if (m_constantBuffer) {
+        m_constantBuffer->Unmap(0, nullptr);
+        m_mappedBuffer = nullptr;
+        m_constantBuffer.Reset();
+    }
     IUniformBuffer::dispose();
 }
 
 void* DX12UniformBuffer::map()
 {
-    LN_NOTIMPLEMENTED();
-    return 0;
+    return m_mappedBuffer;
 }
 
 void DX12UniformBuffer::unmap()
 {
-    LN_NOTIMPLEMENTED();
 }
 
 //==============================================================================
@@ -759,11 +815,23 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
 
     m_deviceContext = deviceContext;
 
-    LN_NOTIMPLEMENTED();
+    //LN_NOTIMPLEMENTED();
 
     m_descriptorTable = makeRef<DX12ShaderDescriptorTable>();
     if (!m_descriptorTable->init(m_deviceContext, this, createInfo.descriptorLayout)) {
         return false;
+    }
+
+    {
+        D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+        desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        desc.NumDescriptors = 1;
+        desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        desc.NodeMask = 0;
+        if (FAILED(m_deviceContext->device()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_descriptorHeap)))) {
+            LN_ERROR("CreateDescriptorHeap failed.");
+            return false;
+        }
     }
 
     return true;

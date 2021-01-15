@@ -1,12 +1,6 @@
 ﻿
 #pragma once
-#include <d3d12.h>
-#include <dxgi1_6.h>
-#include <wrl/client.h>
-#include "../GraphicsDeviceContext.hpp"
 #include "DX12Helper.hpp"
-
-using Microsoft::WRL::ComPtr;
 
 namespace ln {
 namespace detail {
@@ -25,6 +19,8 @@ public:
 	DX12Device();
 	bool init(const Settings& settings, bool* outIsDriverSupported);
 	void dispose() override;
+
+    ID3D12Device* device() const { return m_device.Get(); }
 
 protected:
     INativeGraphicsInterface* getNativeInterface() const override;
@@ -54,6 +50,7 @@ private:
     ComPtr<IDXGIFactory6> m_dxgiFactory;
     ComPtr<IDXGIAdapter> m_adapter;
     ComPtr<ID3D12Device> m_device;
+    ComPtr<ID3D12CommandQueue> m_commandQueue;
 
     ComPtr<ID3D12CommandAllocator> m_commandAllocator;
     ComPtr<ID3D12GraphicsCommandList> m_commandList;
@@ -61,7 +58,7 @@ private:
 
     //IDXGIFactory6* _dxgiFactory = nullptr;
     //
-    //ID3D12CommandQueue* _cmdQueue = nullptr;
+    //
     //IDXGISwapChain4* _swapchain = nullptr;
 };
 
@@ -156,27 +153,10 @@ public:
     Result init(const VertexElement* elements, int elementsCount);
     void dispose() override;
 
-    const std::vector<VertexElement>& elements() const { return m_elements; }
+    const std::vector<D3D12_INPUT_ELEMENT_DESC>& elements() const { return m_elements; }
 
 private:
-    std::vector<VertexElement> m_elements;
-};
-
-class DX12VertexBuffer
-    : public IVertexBuffer
-{
-public:
-    DX12VertexBuffer();
-    Result init(DX12Device* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
-    void dispose() override;
-    size_t getBytesSize() override;
-    GraphicsResourceUsage usage() const override;
-    void* map() override;
-    void unmap() override;
-
-private:
-    DX12Device* m_deviceContext;
-    GraphicsResourceUsage m_usage;
+    std::vector<D3D12_INPUT_ELEMENT_DESC> m_elements;
 };
 
 class DX12IndexBuffer
@@ -201,7 +181,7 @@ class DX12UniformBuffer
 {
 public:
     DX12UniformBuffer();
-    Result init(DX12Device* deviceContext, uint32_t size);
+    bool init(DX12Device* deviceContext, uint32_t size);
     void dispose() override;
     void* map() override;
     void unmap() override;
@@ -209,6 +189,8 @@ public:
 protected:
     DX12Device* m_deviceContext;
     uint32_t m_size;
+    ComPtr<ID3D12Resource> m_constantBuffer;
+    void* m_mappedBuffer;
 };
 
 class DX12Texture
@@ -309,6 +291,7 @@ public:
 private:
     DX12Device* m_deviceContext;
     Ref<DX12ShaderDescriptorTable> m_descriptorTable;
+    ComPtr<ID3D12DescriptorHeap> m_descriptorHeap;
 };
 
 class DX12ShaderDescriptorTable
