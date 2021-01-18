@@ -22,10 +22,11 @@ public:
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 {
+	auto descriptorLayout = m_shader1->descriptorLayout();
+	auto shaderPass = m_shader1->techniques()[0]->passes()[0];
+
 	// # 時計回り (左ねじ) で描画できること
 	{
-		auto descriptorLayout = m_shader1->descriptorLayout();
-
 		Vector4 v[] = { Vector4(0, 0.5, 0, 1), Vector4(0.5, -0.25, 0, 1), Vector4(-0.5, -0.25, 0, 1), };
 		auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
@@ -34,8 +35,6 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
         // ただし、その場合は RenderPass 切り替えのたびにキャッシュを検索する処理が入るのでパフォーマンスが悪くなる。
         // 常に RT,Depth,RenderPass をセットにして、RenderPass は生成後変更しないようにするとパフォーマンスがよくなる。
         auto renderPass = makeObject<RenderPass>();
-
-		auto shaderPass = m_shader1->techniques()[0]->passes()[0];
 
         for (int i = 0; i < 5; i++)
         {
@@ -64,8 +63,8 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, Clear)
 {
-	auto descriptor = m_shader1->descriptor();
-	descriptor->setVector(descriptor->descriptorLayout()->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+	auto descriptorLayout = m_shader1->descriptorLayout();
+	auto shaderPass = m_shader1->techniques()[0]->passes()[0];
 
     Vector4 v[] = { Vector4(0, 0.5, 0, 1), Vector4(0.5, -0.25, 0, 1), Vector4(-0.5, -0.25, 0, 1), };
     auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
@@ -73,10 +72,13 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 	{
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
+		descriptor->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
 		ctx->beginRenderPass(TestEnv::renderPass());
         ctx->setVertexLayout(m_vertexDecl1);
         ctx->setVertexBuffer(0, vertexBuffer);
-        ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
+        ctx->setShaderPass(shaderPass);
+		ctx->setShaderDescriptor(descriptor);
         ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
         ctx->drawPrimitive(0, 1);                           // (ちゃんと全体に clear 効くか確認 & Vulkan 警告回避のため、) 適当に描いてから
 		ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);  // clear
@@ -89,12 +91,15 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 	{
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
+		descriptor->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setViewportRect(Rect(0, 0, 10, 10));
 		ctx->setScissorRect(Rect(0, 0, 10, 10));
         ctx->setVertexLayout(m_vertexDecl1);
         ctx->setVertexBuffer(0, vertexBuffer);
-        ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
+		ctx->setShaderPass(shaderPass);
+		ctx->setShaderDescriptor(descriptor);
         ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
         ctx->drawPrimitive(0, 1);
 		ctx->clear(ClearFlags::All, Color::Green, 1.0f, 0);
@@ -163,8 +168,8 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 {
-	auto descriptor = m_shader1->descriptor();
-	descriptor->setVector(descriptor->descriptorLayout()->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+	auto descriptorLayout = m_shader1->descriptorLayout();
+	auto shaderPass = m_shader1->techniques()[0]->passes()[0];
 
 	struct Param
 	{
@@ -196,11 +201,14 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			auto ctx = TestEnv::beginFrame();
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
+			auto shd = ctx->allocateShaderDescriptor(shaderPass);
+			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
 			ctx->setVertexBuffer(0, vb1);
-			ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
+			ctx->setShaderPass(shaderPass);
+			ctx->setShaderDescriptor(shd);
 
 			Vector4 v1[] = {
 				Vector4(0, 0.5, 0, 1),
@@ -222,6 +230,8 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			auto ctx = TestEnv::beginFrame();
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
+			auto shd = ctx->allocateShaderDescriptor(shaderPass);
+			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 			Vector4 v2[] = {
@@ -234,7 +244,8 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
 			ctx->setVertexBuffer(0, vb1);
-			ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
+			ctx->setShaderPass(shaderPass);
+			ctx->setShaderDescriptor(shd);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 			ctx->drawPrimitive(0, 1);
 			ctx->endRenderPass();
@@ -247,6 +258,8 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			auto ctx = TestEnv::beginFrame();
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
+			auto shd = ctx->allocateShaderDescriptor(shaderPass);
+			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 			Vector4 v2[] = {
@@ -263,7 +276,8 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 
 			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
-			ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
+			ctx->setShaderPass(shaderPass);
+			ctx->setShaderDescriptor(shd);
 			ctx->setVertexBuffer(0, vb2);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 			ctx->drawPrimitive(0, 2);
@@ -278,6 +292,8 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			auto ctx = TestEnv::beginFrame();
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
+			auto shd = ctx->allocateShaderDescriptor(shaderPass);
+			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 			Vector4 v2[] = {
@@ -295,7 +311,8 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 
 			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
-			ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
+			ctx->setShaderPass(shaderPass);
+			ctx->setShaderDescriptor(shd);
 			ctx->setVertexBuffer(0, vb2);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 			ctx->drawPrimitive(0, 3);
@@ -314,6 +331,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("MultiStreamVertexBuffer-1.vsh"), LN_ASSETFILE("MultiStreamVertexBuffer-1.psh"));
+	auto shaderPass = shader1->techniques()[0]->passes()[0];
 
 	struct PosColor
 	{
@@ -346,7 +364,7 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 	ctx->setVertexBuffer(1, vb2);
 	ctx->setVertexBuffer(2, vb3);
 	ctx->setVertexLayout(vd1);
-	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
+	ctx->setShaderPass(shaderPass);
 
 	ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	ctx->drawPrimitive(0, 1);

@@ -1186,12 +1186,14 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 #if 1
             auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
             auto* descriptor = static_cast<VulkanDescriptor2*>(state.descriptor);
-            auto& sets = descriptor->descriptorSets();
-            vkCmdBindDescriptorSets(
-                m_recodingCommandBuffer->vulkanCommandBuffer(),
-                VK_PIPELINE_BIND_POINT_GRAPHICS,
-                shaderPass->vulkanPipelineLayout(), 0,
-                sets.size(), sets.data(), 0, nullptr);
+            if (descriptor) {
+                auto& sets = descriptor->descriptorSets();
+                vkCmdBindDescriptorSets(
+                    m_recodingCommandBuffer->vulkanCommandBuffer(),
+                    VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    shaderPass->vulkanPipelineLayout(), 0,
+                    sets.size(), sets.data(), 0, nullptr);
+            }
 #else
 			auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
 

@@ -535,6 +535,8 @@ detail::ICommandList* GraphicsContext::commitState()
     detail::IShaderPass* shaderPassRHI = nullptr;
     if (m_staging.shaderPass) {
         if (m_staging.shaderDescriptor) {
+            assert(m_staging.shaderPass->shader() == m_staging.shaderDescriptor->shader());
+
             m_staging.shaderPass->submitShaderDescriptor2(this, m_staging.shaderDescriptor, &resourceModified);
         }
         else {
