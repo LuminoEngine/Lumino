@@ -5,7 +5,7 @@
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
-#include <LuminoEngine/Graphics/SwapChain.hpp>
+#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Graphics/ConstantBuffer.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Shader/ShaderDescriptor.hpp>
@@ -618,15 +618,40 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
 
     detail::IShaderDescriptorTable* rhiDescriptorTable = m_rhiPass->descriptorTable();
 
-    LN_ENQUEUE_RENDER_COMMAND_3(
+    detail::IDescriptor* descriptor = commandList->getDescriptorPool(this)->allocate();
+
+    LN_ENQUEUE_RENDER_COMMAND_4(
         ShaderConstantBuffer_submitShaderDescriptor, graphicsContext,
         detail::ICommandList*, rhiCommandList,
         detail::IShaderDescriptorTable*, rhiDescriptorTable,
         detail::ShaderDescriptorTableUpdateInfo, updateInfo,
+        detail::IDescriptor*, descriptor,
         {
+            descriptor->setData(updateInfo);
+            rhiCommandList->setDescriptor(descriptor);
             rhiCommandList->setDescriptorTableData(rhiDescriptorTable, &updateInfo);
         });
 }
+
+Ref<detail::IDescriptorPool> ShaderPass::getDescriptorSetsPool()
+{
+    if (m_descriptorSetsPools.empty()) {
+        return m_owner->m_owner->m_graphicsManager->deviceContext()->createDescriptorPool(m_rhiPass);
+    }
+    else {
+        auto ptr = m_descriptorSetsPools.back();
+        m_descriptorSetsPools.pop_back();
+        return ptr;
+    }
+}
+
+void ShaderPass::releaseDescriptorSetsPool(detail::IDescriptorPool* pool)
+{
+    LN_DCHECK(pool);
+    pool->reset();
+    m_descriptorSetsPools.push_back(pool);
+}
+
 
 //=============================================================================
 // ShaderDefaultDescriptor

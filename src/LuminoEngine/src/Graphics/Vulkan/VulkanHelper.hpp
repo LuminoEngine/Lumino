@@ -404,7 +404,7 @@ public:
     void endRenderPassInRecordingIfNeeded();
     Result submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore);
 
-    Result allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets);
+    //Result allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets);
 
     // TODO: deprecated
     VulkanBuffer* allocateBuffer(size_t size, VkBufferUsageFlags usage);
@@ -446,8 +446,8 @@ private:
 	size_t m_stagingBufferPoolUsed;
 	std::vector<VulkanBuffer> m_stagingBufferPool;
 
-    std::vector<Ref<VulkanShaderPass>> m_usingShaderPasses; // m_usingDescriptorSetsPools で持っている VulkanDescriptorSetsPool は VulkanShaderPass への強い参照を持たないので、これでカバーする
-    std::vector<Ref<VulkanDescriptorSetsPool>> m_usingDescriptorSetsPools;
+    std::vector<Ref<VulkanShaderPass>> m_usingShaderPasses; // deprecate m_usingDescriptorSetsPools で持っている VulkanDescriptorSetsPool は VulkanShaderPass への強い参照を持たないので、これでカバーする
+    std::vector<Ref<VulkanDescriptorSetsPool>> m_usingDescriptorSetsPools; // deprecate
     
 };
 
@@ -479,7 +479,7 @@ public:
     void dispose();
 
     VulkanShaderPass* owner() const { return m_owner; }
-    Result allocateDescriptorSets(VulkanCommandBuffer* commandBuffer, std::array<VkDescriptorSet, DescriptorType_Count>* sets);
+    //Result allocateDescriptorSets(VulkanCommandBuffer* commandBuffer, std::array<VkDescriptorSet, DescriptorType_Count>* sets);
     void reset();
 
 private:

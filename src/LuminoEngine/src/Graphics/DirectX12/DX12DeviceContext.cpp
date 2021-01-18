@@ -93,7 +93,7 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
         }
 
         const char* indent = "  ";
-        LN_LOG_INFO << "Adapter: " << selected->desc.DedicatedVideoMemory;
+        LN_LOG_INFO << "Adapter: ";
         LN_LOG_INFO << indent << "Description: " << String::fromCString(selected->desc.Description);
         LN_LOG_INFO << indent << "DedicatedVideoMemory: " << selected->desc.DedicatedVideoMemory;
         LN_LOG_INFO << indent << "DedicatedSystemMemory: " << selected->desc.DedicatedSystemMemory;
@@ -277,6 +277,12 @@ Ref<IUniformBuffer> DX12Device::onCreateUniformBuffer(uint32_t size)
         return nullptr;
     }
     return ptr;
+}
+
+Ref<IDescriptorPool> DX12Device::onCreateDescriptorPool(IShaderPass* shaderPass)
+{
+    LN_NOTIMPLEMENTED();
+    return nullptr;
 }
 
 void DX12Device::onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)

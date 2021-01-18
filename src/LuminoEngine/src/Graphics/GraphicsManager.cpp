@@ -8,7 +8,6 @@
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "GraphicsManager.hpp"
 #include "RenderTargetTextureCache.hpp"
-#include "OpenGL/OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
 #include "Vulkan/VulkanDeviceContext.hpp"
 #endif
@@ -200,13 +199,9 @@ void GraphicsManager::init(const Settings& settings)
 			createDirectX12Context(settings);
 		}
 
-		if (!m_deviceContext) {
-			createOpenGLContext(settings);
-		}
-
 		// Default
 		if (!m_deviceContext) {
-			createOpenGLContext(settings);
+			createVulkanContext(settings);
 		}
 	}
 
@@ -413,16 +408,6 @@ bool GraphicsManager::checkVulkanSupported()
 #else
 	return false;
 #endif
-}
-
-void GraphicsManager::createOpenGLContext(const Settings& settings)
-{
-	OpenGLDevice::Settings openglSettings;
-	openglSettings.platformManager = m_platformManager;
-	openglSettings.mainWindow = settings.mainWindow;
-	auto ctx = makeRef<OpenGLDevice>();
-	ctx->init(openglSettings);
-	m_deviceContext = ctx;
 }
 
 void GraphicsManager::createVulkanContext(const Settings& settings)

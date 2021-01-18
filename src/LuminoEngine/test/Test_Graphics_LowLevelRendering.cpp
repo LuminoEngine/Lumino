@@ -1,4 +1,6 @@
 ﻿#include "Common.hpp"
+#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
+#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 
 class Test_Graphics_LowLevelRendering : public ::testing::Test
 {
@@ -22,8 +24,9 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 {
 	// # 時計回り (左ねじ) で描画できること
 	{
+		auto descriptorLayout = m_shader1->descriptorLayout();
 		auto descriptor = m_shader1->descriptor();
-		descriptor->setVector(descriptor->descriptorLayout()->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+		descriptor->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
 
 		Vector4 v[] = { Vector4(0, 0.5, 0, 1), Vector4(0.5, -0.25, 0, 1), Vector4(-0.5, -0.25, 0, 1), };
 		auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
@@ -42,10 +45,19 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
             renderPass->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 			auto ctx = TestEnv::beginFrame();
+			ln::detail::GraphicsCommandList* commandList = ctx->commandList();
+			ln::detail::ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(m_shader1);
+			ln::detail::ConstantBufferView view = commandList->allocateUniformBuffer(descriptorLayout->m_buffers[0].size);
+			descriptor->setUniformBuffer(0, view);
+			descriptor->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+			//view.setData(gl->uniforms + uniformOffset, sizeof(GLNVGfragUniforms));
+			//descriptor->setUniformBuffer(0, view);
+
 			ctx->beginRenderPass(renderPass);
             ctx->setVertexLayout(m_vertexDecl1);
             ctx->setVertexBuffer(0, vertexBuffer);
             ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
+			ctx->setShaderDescriptor(descriptor);
             ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
             ctx->drawPrimitive(0, 1);
 			ctx->endRenderPass();

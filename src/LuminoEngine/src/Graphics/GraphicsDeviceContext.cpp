@@ -280,6 +280,11 @@ Ref<IUniformBuffer> IGraphicsDevice::createUniformBuffer(uint32_t size)
 	return ptr;
 }
 
+Ref<IDescriptorPool> IGraphicsDevice::createDescriptorPool(IShaderPass* shaderPass)
+{
+	return onCreateDescriptorPool(shaderPass);
+}
+
 void IGraphicsDevice::flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
 {
 	onFlushCommandBuffer(context, affectRendreTarget);
@@ -478,6 +483,14 @@ void ICommandList::setShaderPass(IShaderPass* value)
         m_staging.shaderPass = value;
         m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_ShaderPass;
     }
+}
+
+void ICommandList::setDescriptor(IDescriptor* value)
+{
+	if (m_staging.descriptor != value) {
+		m_staging.descriptor = value;
+		m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_Descriptor;
+	}
 }
 
 void ICommandList::setPrimitiveTopology(PrimitiveTopology value)

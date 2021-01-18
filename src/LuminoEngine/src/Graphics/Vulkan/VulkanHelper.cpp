@@ -1285,30 +1285,30 @@ Result VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signal
     return true;
 }
 
-Result VulkanCommandBuffer::allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets)
-{
-    LN_DCHECK(shaderPass);
-
-    // このコマンド実行中に新たな ShaderPass が使われるたびに、新しく VulkanShaderPass から Pool を確保しようとする。
-    // ただし、毎回やると重いので簡単なキャッシュを設ける。
-    // 線形探索だけど、ShaderPass が1フレームに 100 も 200 も使われることはそうないだろう。
-
-    int usingShaderPass = -1;
-    for (int i = 0; i < m_usingShaderPasses.size(); i++) {
-        if (m_usingShaderPasses[i] == shaderPass) {
-            usingShaderPass = i;
-        }
-    }
-    
-    if (usingShaderPass == -1) {
-        auto pool = shaderPass->getDescriptorSetsPool();
-        m_usingDescriptorSetsPools.push_back(pool);
-        m_usingShaderPasses.push_back(shaderPass);
-        usingShaderPass = m_usingDescriptorSetsPools.size() - 1;
-    }
-
-    return m_usingDescriptorSetsPools[usingShaderPass]->allocateDescriptorSets(this, outSets);
-}
+//Result VulkanCommandBuffer::allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets)
+//{
+//    LN_DCHECK(shaderPass);
+//
+//    // このコマンド実行中に新たな ShaderPass が使われるたびに、新しく VulkanShaderPass から Pool を確保しようとする。
+//    // ただし、毎回やると重いので簡単なキャッシュを設ける。
+//    // 線形探索だけど、ShaderPass が1フレームに 100 も 200 も使われることはそうないだろう。
+//
+//    int usingShaderPass = -1;
+//    for (int i = 0; i < m_usingShaderPasses.size(); i++) {
+//        if (m_usingShaderPasses[i] == shaderPass) {
+//            usingShaderPass = i;
+//        }
+//    }
+//    
+//    if (usingShaderPass == -1) {
+//        auto pool = shaderPass->getDescriptorSetsPool();
+//        m_usingDescriptorSetsPools.push_back(pool);
+//        m_usingShaderPasses.push_back(shaderPass);
+//        usingShaderPass = m_usingDescriptorSetsPools.size() - 1;
+//    }
+//
+//    return m_usingDescriptorSetsPools[usingShaderPass]->allocateDescriptorSets(this, outSets);
+//}
 
 VulkanBuffer* VulkanCommandBuffer::allocateBuffer(size_t size, VkBufferUsageFlags usage)
 {
@@ -1456,97 +1456,97 @@ void VulkanDescriptorSetsPool::dispose()
 	m_activePage = VK_NULL_HANDLE;
 }
 
-Result VulkanDescriptorSetsPool::allocateDescriptorSets(VulkanCommandBuffer* commandBuffer, std::array<VkDescriptorSet, DescriptorType_Count>* sets)
-{
-	if (!m_activePage || m_activePageUsedCount >= MAX_DESCRIPTOR_SET_COUNT)
-	{
-		// active pool を使い切ったので次の pool を確保
-
-		m_activePage = VK_NULL_HANDLE;
-		if (!m_freePages.empty()) {
-			m_activePage = m_freePages.front();
-			m_freePages.pop_front();
-		}
-
-		if (!m_activePage) {
-			std::array<VkDescriptorPoolSize, DescriptorType_Count> poolSizes;
-			poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			poolSizes[0].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
-			poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//
-			poolSizes[1].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
-            poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;// 
-			poolSizes[2].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
-
-			VkDescriptorPoolCreateInfo poolInfo = {};
-			poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-            poolInfo.maxSets = MAX_DESCRIPTOR_SET_COUNT * 3;    // 基本3セットなので3倍 // static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
-			poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-			poolInfo.pPoolSizes = poolSizes.data();
-
-			LN_VK_CHECK(vkCreateDescriptorPool(m_deviceContext->vulkanDevice(), &poolInfo, m_deviceContext->vulkanAllocator(), &m_activePage));
-			m_pages.push_back(m_activePage);
-
-            // NOTE: 
-            // - VkDescriptorPoolSize::descriptorCount は、この Pool 全体としてみて、作り出せる Descriptor の最大数。
-            // - poolInfo.maxSets は、この Pool から作り出せる VkDescriptorSet の最大数。
-            // この2つに直接的な関連性は無い。
-            // ひとつ VkDescriptorSet を作るときに、どの種類の Descriptor をいくつ消費するかは VkDescriptorSetLayout に依る。
-            // 例えば VkDescriptorSetLayout が
-            // - { .binding = 0, .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER },
-            // - { .binding = 1, .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER },
-            // という2つのエントリからできているなら、VkDescriptorSet を一つ作ると
-            // - VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER から1つ、
-            // - VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER から1つ、
-            // 計2つの Descriptor を消費する。
-            //
-            // もし Descriptor が枯渇した場合、vkAllocateDescriptorSets() で次のようにレポートされる。
-            // - validation layer : Unable to allocate 1 descriptors of type VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER from pool 0x29. This pool only has 0 descriptors of this type remaining.The Vulkan spec states : descriptorPool must have enough free descriptor capacity remaining to allocate the descriptor sets of the specified layouts(https ://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorPool-00307)
-            // - validation layer: Unable to allocate 1 descriptors of type VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER from pool 0x29. This pool only has 0 descriptors of this type remaining. The Vulkan spec states: descriptorPool must have enough free descriptor capacity remaining to allocate the descriptor sets of the specified layouts (https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorPool-00307)
-            // 
-            // DescriptorSet が枯渇した場合、vkAllocateDescriptorSets() で次のようにレポートされる。
-            // - validation layer : Unable to allocate 1 descriptorSets from pool 0x29. This pool only has 0 descriptorSets remaining.The Vulkan spec states : descriptorSetCount must not be greater than the number of sets that are currently available for allocation in descriptorPool(https ://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorSetCount-00306)
-            //
-            // [2020/11/25] 対応方針：
-            // VkDescriptorPoolSize は固定長ではなく、ShaderPass が持っているレイアウト情報から作る。
-            // maxSets は固定長でも構わない。今のように、不足したら Pool 自体を追加していく。
-              
-
-
-            //std::cout << "vkCreateDescriptorPool" << std::endl;
-            /*
-            Note:
-            poolInfo.maxSets = MAX_DESCRIPTOR_COUNT *3 のままだと、
-            GeForce GTX 1060 で vkAllocateDescriptorSets 16 回目くらいで OutOfMemory
-
-            poolInfo.maxSets = MAX_DESCRIPTOR_COUNT にすると、vkAllocateDescriptorSets 11 回目くらいで OutOfMemory
-
-            GeForce GTX 1060:
-                descriptorCount=8
-                maxSets = MAX_DESCRIPTOR_SET_COUNT * 3
-                にすると、5回目の vkAllocateDescriptorSets で OutOfMemory
-            */
-		}
-
-		m_activePageUsedCount = 0;
-	}
-
-    //std::cout << "m_activePageUsedCount:" << m_activePageUsedCount << std::endl;
-
-    VkDescriptorSetAllocateInfo allocInfo;
-    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.pNext = nullptr;
-    allocInfo.descriptorPool = m_activePage;
-    allocInfo.descriptorSetCount = m_owner->descriptorSetLayouts().size();
-    allocInfo.pSetLayouts = m_owner->descriptorSetLayouts().data();
-    LN_VK_CHECK(vkAllocateDescriptorSets(m_deviceContext->vulkanDevice(), &allocInfo, sets->data()));
-    m_activePageUsedCount++;
-
-    const std::vector<VkWriteDescriptorSet>& writeInfos = m_owner->submitDescriptorWriteInfo(commandBuffer, *sets);
-
-    vkUpdateDescriptorSets(m_deviceContext->vulkanDevice(), static_cast<uint32_t>(writeInfos.size()), writeInfos.data(), 0, nullptr);
-
-    return true;
-}
+//Result VulkanDescriptorSetsPool::allocateDescriptorSets(VulkanCommandBuffer* commandBuffer, std::array<VkDescriptorSet, DescriptorType_Count>* sets)
+//{
+//	if (!m_activePage || m_activePageUsedCount >= MAX_DESCRIPTOR_SET_COUNT)
+//	{
+//		// active pool を使い切ったので次の pool を確保
+//
+//		m_activePage = VK_NULL_HANDLE;
+//		if (!m_freePages.empty()) {
+//			m_activePage = m_freePages.front();
+//			m_freePages.pop_front();
+//		}
+//
+//		if (!m_activePage) {
+//			std::array<VkDescriptorPoolSize, DescriptorType_Count> poolSizes;
+//			poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+//			poolSizes[0].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+//			poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//
+//			poolSizes[1].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+//            poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;// 
+//			poolSizes[2].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+//
+//			VkDescriptorPoolCreateInfo poolInfo = {};
+//			poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+//            poolInfo.maxSets = MAX_DESCRIPTOR_SET_COUNT * 3;    // 基本3セットなので3倍 // static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
+//			poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+//			poolInfo.pPoolSizes = poolSizes.data();
+//
+//			LN_VK_CHECK(vkCreateDescriptorPool(m_deviceContext->vulkanDevice(), &poolInfo, m_deviceContext->vulkanAllocator(), &m_activePage));
+//			m_pages.push_back(m_activePage);
+//
+//            // NOTE: 
+//            // - VkDescriptorPoolSize::descriptorCount は、この Pool 全体としてみて、作り出せる Descriptor の最大数。
+//            // - poolInfo.maxSets は、この Pool から作り出せる VkDescriptorSet の最大数。
+//            // この2つに直接的な関連性は無い。
+//            // ひとつ VkDescriptorSet を作るときに、どの種類の Descriptor をいくつ消費するかは VkDescriptorSetLayout に依る。
+//            // 例えば VkDescriptorSetLayout が
+//            // - { .binding = 0, .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER },
+//            // - { .binding = 1, .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER },
+//            // という2つのエントリからできているなら、VkDescriptorSet を一つ作ると
+//            // - VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER から1つ、
+//            // - VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER から1つ、
+//            // 計2つの Descriptor を消費する。
+//            //
+//            // もし Descriptor が枯渇した場合、vkAllocateDescriptorSets() で次のようにレポートされる。
+//            // - validation layer : Unable to allocate 1 descriptors of type VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER from pool 0x29. This pool only has 0 descriptors of this type remaining.The Vulkan spec states : descriptorPool must have enough free descriptor capacity remaining to allocate the descriptor sets of the specified layouts(https ://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorPool-00307)
+//            // - validation layer: Unable to allocate 1 descriptors of type VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER from pool 0x29. This pool only has 0 descriptors of this type remaining. The Vulkan spec states: descriptorPool must have enough free descriptor capacity remaining to allocate the descriptor sets of the specified layouts (https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorPool-00307)
+//            // 
+//            // DescriptorSet が枯渇した場合、vkAllocateDescriptorSets() で次のようにレポートされる。
+//            // - validation layer : Unable to allocate 1 descriptorSets from pool 0x29. This pool only has 0 descriptorSets remaining.The Vulkan spec states : descriptorSetCount must not be greater than the number of sets that are currently available for allocation in descriptorPool(https ://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorSetCount-00306)
+//            //
+//            // [2020/11/25] 対応方針：
+//            // VkDescriptorPoolSize は固定長ではなく、ShaderPass が持っているレイアウト情報から作る。
+//            // maxSets は固定長でも構わない。今のように、不足したら Pool 自体を追加していく。
+//              
+//
+//
+//            //std::cout << "vkCreateDescriptorPool" << std::endl;
+//            /*
+//            Note:
+//            poolInfo.maxSets = MAX_DESCRIPTOR_COUNT *3 のままだと、
+//            GeForce GTX 1060 で vkAllocateDescriptorSets 16 回目くらいで OutOfMemory
+//
+//            poolInfo.maxSets = MAX_DESCRIPTOR_COUNT にすると、vkAllocateDescriptorSets 11 回目くらいで OutOfMemory
+//
+//            GeForce GTX 1060:
+//                descriptorCount=8
+//                maxSets = MAX_DESCRIPTOR_SET_COUNT * 3
+//                にすると、5回目の vkAllocateDescriptorSets で OutOfMemory
+//            */
+//		}
+//
+//		m_activePageUsedCount = 0;
+//	}
+//
+//    //std::cout << "m_activePageUsedCount:" << m_activePageUsedCount << std::endl;
+//
+//    VkDescriptorSetAllocateInfo allocInfo;
+//    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+//    allocInfo.pNext = nullptr;
+//    allocInfo.descriptorPool = m_activePage;
+//    allocInfo.descriptorSetCount = m_owner->descriptorSetLayouts().size();
+//    allocInfo.pSetLayouts = m_owner->descriptorSetLayouts().data();
+//    LN_VK_CHECK(vkAllocateDescriptorSets(m_deviceContext->vulkanDevice(), &allocInfo, sets->data()));
+//    m_activePageUsedCount++;
+//
+//    const std::vector<VkWriteDescriptorSet>& writeInfos = m_owner->submitDescriptorWriteInfo(commandBuffer, *sets);
+//
+//    vkUpdateDescriptorSets(m_deviceContext->vulkanDevice(), static_cast<uint32_t>(writeInfos.size()), writeInfos.data(), 0, nullptr);
+//
+//    return true;
+//}
 
 void VulkanDescriptorSetsPool::reset()
 {

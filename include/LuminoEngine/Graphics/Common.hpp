@@ -371,6 +371,7 @@ class ITexture;
 class ISamplerState;
 class IUniformBuffer;
 class ShaderSecondaryDescriptor;
+class GraphicsCommandList;
 
 static const int MaxMultiRenderTargets = 4;
 static const int MaxVertexStreams = 16;

@@ -22,7 +22,7 @@ class ShaderHelper;
 class ShaderManager;
 class UnifiedShader;
 class IShaderPass;
-//class IShaderUniformBuffer;
+class IDescriptorPool;
 class ShaderTechniqueSemanticsManager;
 class GraphicsCommandList;
 }
@@ -536,6 +536,11 @@ public:
     // TODO: for test
     const ShaderPassDescriptorLayout& descriptorLayout() const { return m_descriptorLayout; }
 
+    // CommandBuffer に対するインターフェイス
+    Ref<detail::IDescriptorPool> getDescriptorSetsPool();
+    void releaseDescriptorSetsPool(detail::IDescriptorPool* pool);
+
+
 protected:
     virtual void onDispose(bool explicitDisposing) override;
 
@@ -558,6 +563,8 @@ private:
     Ref<detail::ShaderRenderState> m_renderState;
     const ShaderDefaultDescriptor* m_lastShaderDescriptor = nullptr;
     int m_lastShaderDescriptorRevision = 0;
+
+    std::vector<Ref<detail::IDescriptorPool>> m_descriptorSetsPools;
 
     friend class Shader;
     friend class ShaderTechnique;

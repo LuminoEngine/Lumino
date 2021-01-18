@@ -5,6 +5,7 @@
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "VulkanDeviceContext.hpp"
+#include "VulkanDescriptorPool.hpp"
 #include "VulkanSingleFrameAllocator.hpp"
 
 namespace ln {
@@ -267,6 +268,15 @@ Ref<IUniformBuffer> VulkanDevice::onCreateUniformBuffer(uint32_t size)
 {
     auto ptr = makeRef<VulkanUniformBuffer>();
     if (!ptr->init(this, size)) {
+        return nullptr;
+    }
+    return ptr;
+}
+
+Ref<IDescriptorPool> VulkanDevice::onCreateDescriptorPool(IShaderPass* shaderPass)
+{
+    auto ptr = makeRef<VulkanDescriptorPool2>();
+    if (!ptr->init(this, static_cast<VulkanShaderPass*>(shaderPass))) {
         return nullptr;
     }
     return ptr;
@@ -1172,12 +1182,23 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 		}
 
 		{
+
+#if 1
+            auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
+            auto* descriptor = static_cast<VulkanDescriptor2*>(state.descriptor);
+            auto& sets = descriptor->descriptorSets();
+            vkCmdBindDescriptorSets(
+                m_recodingCommandBuffer->vulkanCommandBuffer(),
+                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                shaderPass->vulkanPipelineLayout(), 0,
+                sets.size(), sets.data(), 0, nullptr);
+#else
 			auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
 
 			std::array<VkDescriptorSet, DescriptorType_Count> sets;
 			m_recodingCommandBuffer->allocateDescriptorSets(shaderPass, &sets);
 			vkCmdBindDescriptorSets(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
-
+#endif
 		}
 	}
 }
@@ -3449,8 +3470,13 @@ IShaderDescriptorTable* VulkanShaderPass::descriptorTable() const
     return m_descriptorTable;
 }
 
-const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(VulkanCommandBuffer* commandBuffer, const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets)
+const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(
+    VulkanCommandBuffer* commandBuffer,
+    const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets,
+    const ShaderDescriptorTableUpdateInfo& data)
 {
+    m_descriptorTable->setData(&data);
+
     const auto& uniforms = m_descriptorTable->uniforms();
     for (int i = 0; i < uniforms.size(); i++) {
         const auto& uniformBuffer = uniforms[i];
@@ -3507,6 +3533,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
     return m_descriptorWriteInfo;
 }
 
+// deprecated
 Ref<VulkanDescriptorSetsPool> VulkanShaderPass::getDescriptorSetsPool()
 {
     if (m_descriptorSetsPools.empty()) {
@@ -3523,6 +3550,7 @@ Ref<VulkanDescriptorSetsPool> VulkanShaderPass::getDescriptorSetsPool()
     }
 }
 
+// deprecated
 void VulkanShaderPass::releaseDescriptorSetsPool(VulkanDescriptorSetsPool* pool)
 {
     LN_DCHECK(pool);

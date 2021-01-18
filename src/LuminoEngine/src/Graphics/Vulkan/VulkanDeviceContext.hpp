@@ -77,6 +77,7 @@ protected:
 	Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
     Ref<IUniformBuffer> onCreateUniformBuffer(uint32_t size) override;
+    Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) override;
 	void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override;
 	ICommandQueue* getGraphicsCommandQueue() override;
 	ICommandQueue* getComputeCommandQueue() override;
@@ -579,7 +580,10 @@ public:
     VkPipelineLayout vulkanPipelineLayout() const { return m_pipelineLayout; }
     const std::array<VkDescriptorSetLayout, 3>& descriptorSetLayouts() const { return m_descriptorSetLayouts; }
 
-    const std::vector<VkWriteDescriptorSet>& submitDescriptorWriteInfo(VulkanCommandBuffer* commandBuffer, const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets);
+    const std::vector<VkWriteDescriptorSet>& submitDescriptorWriteInfo(
+        VulkanCommandBuffer* commandBuffer, 
+        const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets,
+        const ShaderDescriptorTableUpdateInfo& data);
 
     // CommandBuffer に対するインターフェイス
     Ref<VulkanDescriptorSetsPool> getDescriptorSetsPool();
@@ -596,7 +600,7 @@ private:
     std::string m_fragEntryPointName;
     VkPipelineLayout m_pipelineLayout;
     std::array<VkDescriptorSetLayout, 3> m_descriptorSetLayouts;
-    std::vector<Ref<VulkanDescriptorSetsPool>> m_descriptorSetsPools;
+    std::vector<Ref<VulkanDescriptorSetsPool>> m_descriptorSetsPools;   // deprecated
 
     std::vector<VkWriteDescriptorSet> m_descriptorWriteInfo;
     std::vector<VkDescriptorBufferInfo> m_bufferDescriptorBufferInfo;

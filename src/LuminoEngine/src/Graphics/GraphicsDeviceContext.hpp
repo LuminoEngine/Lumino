@@ -27,6 +27,8 @@ class ISamplerState;
 class IShaderPass;
 class IShaderDescriptorTable;
 class IPipeline;
+class IDescriptorPool;
+class IDescriptor;
 class NativeRenderPassCache;
 class NativePipelineCache;
 
@@ -98,6 +100,7 @@ struct GraphicsContextState
     DeviceRegionRectsState regionRects;
     DevicePrimitiveState primitive;
     IShaderPass* shaderPass = nullptr;
+	IDescriptor* descriptor = nullptr;
 };
 
 enum GraphicsContextStateDirtyFlags
@@ -108,6 +111,7 @@ enum GraphicsContextStateDirtyFlags
     GraphicsContextStateDirtyFlags_RegionRects = 0x0004,
     GraphicsContextStateDirtyFlags_Primitives = 0x0008,
     GraphicsContextStateDirtyFlags_ShaderPass = 0x0010,
+	GraphicsContextStateDirtyFlags_Descriptor = 0x0020,
     GraphicsContextStateDirtyFlags_All = 0xFFFF,
 };
 
@@ -220,6 +224,7 @@ public:
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
 	Ref<IUniformBuffer> createUniformBuffer(uint32_t size);
+	Ref<IDescriptorPool> createDescriptorPool(IShaderPass* shaderPass);
     void releaseObject(IGraphicsDeviceObject* obj) {}
 
 	void flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
@@ -230,7 +235,6 @@ public:
 
     // utility
     Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag);
-	static Result getOpenGLCurrentFramebufferTextureId(int* id);
 
 
 	const std::unique_ptr<NativeRenderPassCache>& renderPassCache() const { return m_renderPassCache; }
@@ -253,6 +257,7 @@ protected:
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
 	virtual Ref<IUniformBuffer> onCreateUniformBuffer(uint32_t size) = 0;
+	virtual Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) = 0;
 	virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) = 0;
 
 public:	// TODO:
@@ -284,6 +289,7 @@ public:
     void setVertexBuffer(int streamIndex, IVertexBuffer* value);
     void setIndexBuffer(IIndexBuffer* value);
     void setShaderPass(IShaderPass* value);
+	void setDescriptor(IDescriptor* value);
     void setPrimitiveTopology(PrimitiveTopology value);
 
     // write only
@@ -568,6 +574,45 @@ private:
 	// TODO: init 用意した方がいい気がする
 	friend class IGraphicsDevice;
 	friend class NativePipelineCache;
+};
+
+// API ごとの Descriptor の実データ Allocate (UniformBuffer,Texture,Sampler,それらをまとめるDescriptorSetなど) 
+// に必要な情報をラップするインターフェイス。VkDescriptorSetPool 相当。
+//
+// 単純に考えるなら CommandList ごとに超巨大なバッファをひとつ作って使えばよいのだが、
+// Vulkan では VkDescriptorSetPool の作成時に必要な要素 (UBO はいくつ？Samplerはいくつ？など) を決めておかなければならない。
+// そのため最もメモリ効率良く確保するには、CommandList と ShaderPass(のもつLayout) をキーとして VkDescriptorSetPool を作る必要がある。
+//
+// また OpenGL サポート中はそれとの整合をとるためこの Descriptor 周りを不自然にラップしていたため、メンテが難しくなる事態が発生していた。
+// OpenGL を切ったので、上位レイヤーで共通化できる部分はそのようにして、少しでも下位レイヤーの複雑さを抑える。
+class IDescriptorPool
+	: public RefObject
+{
+public:
+	virtual void dispose() = 0;
+	virtual void reset() = 0;
+	virtual IDescriptor* allocate() = 0;
+
+protected:
+	virtual ~IDescriptorPool() = default;
+};
+
+class IDescriptor
+	: public RefObject
+{
+public:
+	virtual void setData(const ShaderDescriptorTableUpdateInfo& data) = 0;
+	//void setUniformBuffer(int index, const ShaderDescriptorBufferView& value) { uniforms[index] = value; }
+	//void setTexture(int index, const ShaderDescriptorCombinedSampler& value) { textures[index] = value; }
+	//void setSampler(int index, const ShaderDescriptorCombinedSampler& value) { samplers[index] = value; }
+
+protected:
+	virtual ~IDescriptor() = default;
+
+	//static const int MaxElements = 32;
+	//std::array<ShaderDescriptorBufferView, MaxElements> uniforms = {};
+	//std::array<ShaderDescriptorCombinedSampler, MaxElements> textures = {};
+	//std::array<ShaderDescriptorCombinedSampler, MaxElements> samplers = {};
 };
 
 // IRenderPass のライフサイクル (createとdispose) はこの中で管理する

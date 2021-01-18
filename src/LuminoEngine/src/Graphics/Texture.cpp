@@ -580,14 +580,6 @@ void TextureInternal::setMappedData(Texture2D* texture, const void* data)
     memcpy(surface->rawBuffer()->data(), data, surface->rawBuffer()->size());
 }
 
-void TextureInternal::resetOpenGLTextureIdFromCurrentFramebuffer(RenderTargetTexture* renderTarget)
-{
-	int id;
-	if (IGraphicsDevice::getOpenGLCurrentFramebufferTextureId(&id)) {
-		renderTarget->resetNativeObject(id);
-	}
-}
-
 //==============================================================================
 // Texture3D
 

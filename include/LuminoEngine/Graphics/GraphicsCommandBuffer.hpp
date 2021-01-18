@@ -5,39 +5,38 @@
 namespace ln {
 namespace detail {
 class ICommandList;
+class IDescriptorPool;
 class SingleFrameUniformBufferAllocator;
-}
 
-#if 0
-/**  */
-class GraphicsCommandBuffer
-    : public Object
-    , public IGraphicsResource
+class GraphicsCommandList : public RefObject
 {
 public:
-    detail::UniformBufferView allocateUniformBuffer(size_t size);
-    void end();
-
-protected:
-    virtual void onDispose(bool explicitDisposing) override;
-    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-
-LN_CONSTRUCT_ACCESS:
-	GraphicsCommandBuffer();
-    virtual ~GraphicsCommandBuffer();
-
-    /** @copydoc create(int, int) */
-    void init();
-
-private:
-    detail::ICommandList* resolveRHIObject(GraphicsContext* context, bool* outModified);
-
-    detail::GraphicsManager* m_manager;
-    Ref<detail::ICommandList> m_rhiObject;
+    GraphicsCommandList();
+    void init(GraphicsManager* manager);
+    void dispose();
+    const Ref<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
+    const Ref<LinearAllocator>& allocator_deprecated() const { return m_allocator; }
+    void reset();
+    detail::ConstantBufferView allocateUniformBuffer(size_t size);
     Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;
 
-    friend class detail::GraphicsResourceInternal;
-};
-#endif
+    ShaderSecondaryDescriptor* acquireShaderDescriptor(Shader* shader);
 
+    IDescriptorPool* getDescriptorPool(ShaderPass* shaderPass);
+
+private:
+    struct ShaderPassDescriptorPair
+    {
+        Ref<ShaderPass> shaderPass;// m_usingDescriptorSetsPools で持っている DescriptorSetsPool は ShaderPass への強い参照を持たないので、これでカバーする
+        Ref<IDescriptorPool> descriptorPool;
+    };
+
+    Ref<detail::ICommandList> m_rhiResource;
+    Ref<LinearAllocator> m_allocator;
+    size_t m_uniformBufferOffsetAlignment;
+
+    std::vector<ShaderPassDescriptorPair> m_usingDescriptorPools;
+};
+
+} // namespace detail
 } // namespace ln
