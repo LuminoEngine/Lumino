@@ -11,6 +11,7 @@
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
 
@@ -434,6 +435,13 @@ void GraphicsContext::drawExtension(INativeGraphicsExtension* extension)
 		{
             m_rhiCommandList->drawExtension(extension);
 		});
+}
+
+detail::ShaderSecondaryDescriptor* GraphicsContext::allocateShaderDescriptor(ShaderPass* shaderPass)
+{
+    detail::ShaderSecondaryDescriptor* d = m_commandList->acquireShaderDescriptor(shaderPass->shader());
+    d->reset(m_commandList);
+    return d;
 }
 
 void GraphicsContext::interruptCurrentRenderPassFromResolveRHI()

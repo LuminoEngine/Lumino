@@ -148,6 +148,8 @@ public:
 
 	void drawExtension(INativeGraphicsExtension* extension);
 
+    ln::detail::ShaderSecondaryDescriptor* allocateShaderDescriptor(ShaderPass* shaderPass);
+
     void interruptCurrentRenderPassFromResolveRHI();
 
     // TODO: intenral
