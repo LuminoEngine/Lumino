@@ -527,11 +527,11 @@ void ICommandList::setSubData3D(ITexture* resource, int x, int y, int z, int wid
 {
     onSetSubData3D(resource, x, y, z, width, height, depth, data, dataSize);
 }
-
-void ICommandList::setDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data)
-{
-	onSetDescriptorTableData(resource, data);
-}
+//
+//void ICommandList::setDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data)
+//{
+//	onSetDescriptorTableData(resource, data);
+//}
 
 void ICommandList::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {

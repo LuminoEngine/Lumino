@@ -552,7 +552,6 @@ private:
 
     void setOwner(ShaderTechnique* owner) { m_owner = owner; }
     detail::IShaderPass* resolveRHIObject(GraphicsContext* graphicsContext, bool* outModified);
-    void submitShaderDescriptor(GraphicsContext* graphicsContext, detail::GraphicsCommandList* commandList, const ShaderDefaultDescriptor* descripter, bool* outModified);
     void submitShaderDescriptor2(GraphicsContext* graphicsContext, const detail::ShaderSecondaryDescriptor* descripter, bool* outModified);
 
     ShaderTechnique* m_owner;

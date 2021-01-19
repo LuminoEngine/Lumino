@@ -450,115 +450,6 @@ detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsContext* graphicsConte
     return m_rhiPass;
 }
 
-void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail::GraphicsCommandList* commandList, const ShaderDefaultDescriptor* descripter, bool* outModified)
-{
-    if (descripter) {
-        if (descripter != m_lastShaderDescriptor || m_lastShaderDescriptorRevision != descripter->m_revision) {
-            detail::ICommandList* rhiCommandList = commandList->rhiResource();
-
-            {
-                auto* manager = m_owner->shader()->m_graphicsManager;
-                const ShaderDescriptorLayout* globalLayout = m_owner->m_owner->descriptorLayout();
-                detail::ShaderDescriptorTableUpdateInfo updateInfo;
-
-                //// まず全 UniformBuffer に必要なサイズを測る
-                //// TODO: 事前計算でもよさそう
-                //size_t totalSize = 0;
-                //for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
-                //    if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
-                //        LN_NOTIMPLEMENTED();
-                //        break;
-                //    }
-                //    auto& view = updateInfo.uniforms[i];
-                //    view.size = ;
-                //    //view.offset = totalSize;
-                //    totalSize += view.size;
-                //}
-
-                // 全 UniformBuffer に必要な領域をまとめて確保してデータコピー
-                for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
-                    size_t size = globalLayout->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].size;
-                    auto& view = updateInfo.uniforms[i];
-
-                    // アライメント付きで確保しないと Vulkan 等では正しく描かれない。
-                    // 以前 OpenGL 用のときは事前にまとめて allocate していたが、ひとつずつアライメントされたものを確保する。
-                    auto uniformBufferData = commandList->allocateUniformBuffer(size);
-                    view.buffer = uniformBufferData.buffer->rhiObject();
-                    view.offset = uniformBufferData.offset;
-
-                    // TODO: map しないほうが効率いいか？
-                    void* d = static_cast<byte_t*>(view.buffer->map()) + view.offset;
-                    memcpy(d, descripter->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].data(), size);
-                    view.buffer->unmap();
-                }
-
-                // Textures
-                for (int i = 0; i < m_descriptorLayout.m_textures.size(); i++) {
-                    if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
-                        LN_NOTIMPLEMENTED();
-                        break;
-                    }
-                    const auto& info = m_descriptorLayout.m_textures[i];
-                    Texture* texture = descripter->m_textures[info.dataIndex];
-                    if (!texture) {
-                        texture = manager->whiteTexture();
-                    }
-
-                    SamplerState* sampler = nullptr;
-                    if (texture->samplerState())
-                        sampler = texture->samplerState();
-                    else
-                        sampler = manager->defaultSamplerState();
-
-                    bool modified = false;
-                    auto& view = updateInfo.textures[i];
-                    view.texture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
-                    view.stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
-                    (*outModified) |= modified;
-                }
-
-                // Samplers
-                for (int i = 0; i < m_descriptorLayout.m_samplers.size(); i++) {
-                    if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
-                        LN_NOTIMPLEMENTED();
-                        break;
-                    }
-                    const auto& info = m_descriptorLayout.m_samplers[i];
-                    SamplerState* sampler = descripter->m_samplers[info.dataIndex];
-                    if (!sampler)
-                        sampler = manager->defaultSamplerState();
-
-                    bool modified = false;
-                    auto& view = updateInfo.samplers[i];
-                    view.texture = nullptr;
-                    view.stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
-                    (*outModified) |= modified;
-                }
-
-                detail::IShaderDescriptorTable* rhiDescriptorTable = m_rhiPass->descriptorTable();
-
-                LN_ENQUEUE_RENDER_COMMAND_3(
-                    ShaderConstantBuffer_submitShaderDescriptor, graphicsContext,
-                    detail::ICommandList*, rhiCommandList,
-                    detail::IShaderDescriptorTable*, rhiDescriptorTable,
-                    detail::ShaderDescriptorTableUpdateInfo, updateInfo,
-                    {
-                        rhiCommandList->setDescriptorTableData(rhiDescriptorTable, &updateInfo);
-                    });
-            }
-
-
-            m_lastShaderDescriptor = m_lastShaderDescriptor;
-            m_lastShaderDescriptorRevision = descripter->m_revision;
-        }
-    }
-    else {
-        m_lastShaderDescriptor = nullptr;
-        m_lastShaderDescriptorRevision = 0;
-    }
-
-}
-
 void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const detail::ShaderSecondaryDescriptor* descripter, bool* outModified)
 {
     auto* manager = m_owner->shader()->m_graphicsManager;
@@ -634,7 +525,6 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
         {
             descriptor->setData(updateInfo);
             rhiCommandList->setDescriptor(descriptor);
-            rhiCommandList->setDescriptorTableData(rhiDescriptorTable, &updateInfo);
         });
 }
 

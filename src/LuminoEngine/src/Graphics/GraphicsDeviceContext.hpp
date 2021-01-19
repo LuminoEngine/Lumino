@@ -298,7 +298,7 @@ public:
     void setSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length);
     void setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
     void setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize);
-	void setDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data);
+	//void setDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data);
 
     void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
     void drawPrimitive(int startVertex, int primitiveCount);

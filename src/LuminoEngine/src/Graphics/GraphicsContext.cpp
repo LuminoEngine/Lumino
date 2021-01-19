@@ -532,22 +532,12 @@ detail::ICommandList* GraphicsContext::commitState()
 
     bool resourceModified = false;
 
-    detail::IShaderPass* shaderPassRHI = nullptr;
-    if (m_staging.shaderPass) {
-        if (m_staging.shaderDescriptor) {
-            assert(m_staging.shaderPass->shader() == m_staging.shaderDescriptor->shader());
-
-            m_staging.shaderPass->submitShaderDescriptor2(this, m_staging.shaderDescriptor, &resourceModified);
-        }
-        else {
-            //m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shaderDescriptor, &resourceModified);
-            m_staging.shaderPass->submitShaderDescriptor(this, m_commandList, m_staging.shader->descriptor(), &resourceModified);
-        }
-
-        shaderPassRHI = m_staging.shaderPass->resolveRHIObject(this, &resourceModified);
+    detail::IShaderPass* shaderPassRHI = (m_staging.shaderPass) ? m_staging.shaderPass->resolveRHIObject(this, &resourceModified) : nullptr;
+    if (m_staging.shaderPass && m_staging.shaderDescriptor) {
+        assert(m_staging.shaderPass->shader() == m_staging.shaderDescriptor->shader());
+        m_staging.shaderPass->submitShaderDescriptor2(this, m_staging.shaderDescriptor, &resourceModified);
     }
-
-    if (!m_staging.shaderPass || !m_staging.shaderDescriptor) {
+    else {
         m_commandList->rhiResource()->setDescriptor(nullptr);
     }
 
