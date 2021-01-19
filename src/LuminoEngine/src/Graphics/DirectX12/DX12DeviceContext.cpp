@@ -393,11 +393,6 @@ void DX12GraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z
     LN_NOTIMPLEMENTED();
 }
 
-void DX12GraphicsContext::onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data)
-{
-    LN_NOTIMPLEMENTED();
-}
-
 void DX12GraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
     LN_NOTIMPLEMENTED();
@@ -828,11 +823,6 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
 
     //LN_NOTIMPLEMENTED();
 
-    m_descriptorTable = makeRef<DX12ShaderDescriptorTable>();
-    if (!m_descriptorTable->init(m_deviceContext, this, createInfo.descriptorLayout)) {
-        return false;
-    }
-
     {
         D3D12_DESCRIPTOR_HEAP_DESC desc = {};
         desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -852,33 +842,6 @@ void DX12ShaderPass::dispose()
 {
     LN_NOTIMPLEMENTED();
     IShaderPass::dispose();
-}
-
-IShaderDescriptorTable* DX12ShaderPass::descriptorTable() const
-{
-    return m_descriptorTable;
-}
-
-
-//=============================================================================
-// DX12ShaderDescriptorTable
-
-DX12ShaderDescriptorTable::DX12ShaderDescriptorTable()
-{
-}
-
-bool DX12ShaderDescriptorTable::init(DX12Device* deviceContext, const DX12ShaderPass* ownerPass, const DescriptorLayout* descriptorLayout)
-{
-    LN_NOTIMPLEMENTED();
-
-
-    return true;
-}
-
-void DX12ShaderDescriptorTable::dispose()
-{
-    LN_NOTIMPLEMENTED();
-    IShaderDescriptorTable::dispose();
 }
 
 } // namespace detail

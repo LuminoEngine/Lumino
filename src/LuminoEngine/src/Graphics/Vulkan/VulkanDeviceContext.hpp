@@ -171,7 +171,6 @@ protected:
 	void onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length) override;
 	void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
-    void onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data) override;
 	void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
 	void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) override;
@@ -571,7 +570,6 @@ public:
     VulkanShaderPass();
     Result init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
     void dispose();
-    virtual IShaderDescriptorTable* descriptorTable() const;
     virtual void onBind() override { RefObjectHelper::retain(this); }
     virtual void onUnBind() override { RefObjectHelper::release(this); }
 
@@ -608,7 +606,7 @@ private:
 };
 
 class VulkanShaderDescriptorTable
-    : public IShaderDescriptorTable
+    : public RefObject
 {
 public:
     struct UniformBufferInfo
@@ -629,7 +627,7 @@ public:
 
     VulkanShaderDescriptorTable();
     bool init(VulkanDevice* deviceContext, const VulkanShaderPass* ownerPass, const DescriptorLayout* descriptorLayout);
-    void dispose() override;
+    void dispose();
     void setData(const ShaderDescriptorTableUpdateInfo* data);
 
     const std::vector<UniformBufferInfo>& uniforms() const { return m_uniforms; }

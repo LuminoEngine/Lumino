@@ -512,14 +512,11 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
         (*outModified) |= modified;
     }
 
-    detail::IShaderDescriptorTable* rhiDescriptorTable = m_rhiPass->descriptorTable();
-
     detail::IDescriptor* descriptor = commandList->getDescriptorPool(this)->allocate();
 
-    LN_ENQUEUE_RENDER_COMMAND_4(
+    LN_ENQUEUE_RENDER_COMMAND_3(
         ShaderConstantBuffer_submitShaderDescriptor, graphicsContext,
         detail::ICommandList*, rhiCommandList,
-        detail::IShaderDescriptorTable*, rhiDescriptorTable,
         detail::ShaderDescriptorTableUpdateInfo, updateInfo,
         detail::IDescriptor*, descriptor,
         {

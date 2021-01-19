@@ -1280,12 +1280,6 @@ void VulkanGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int
 	static_cast<VulkanTexture*>(resource)->setSubData3D(this, x, y, z, width, height, depth, data, dataSize);
 }
 
-void VulkanGraphicsContext::onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data)
-{
-    VulkanShaderDescriptorTable* table = static_cast<VulkanShaderDescriptorTable*>(resource);
-    table->setData(data);
-}
-
 void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
     auto* renderPass = static_cast<VulkanRenderPass2*>(currentRenderPass());
@@ -3453,11 +3447,6 @@ void VulkanShaderPass::dispose()
     IShaderPass::dispose();
 }
 
-IShaderDescriptorTable* VulkanShaderPass::descriptorTable() const
-{
-    return m_descriptorTable;
-}
-
 const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(
     VulkanCommandBuffer* commandBuffer,
     const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets,
@@ -3588,11 +3577,6 @@ bool VulkanShaderDescriptorTable::init(VulkanDevice* deviceContext, const Vulkan
 
 void VulkanShaderDescriptorTable::dispose()
 {
-    IShaderDescriptorTable::dispose();
-
-    //for (auto& info : m_uniforms) {
-    //    info.buffer->dispose();
-    //}
     m_uniforms.clear();
     m_textures.clear();
     m_samplers.clear();

@@ -4,7 +4,6 @@
 
 namespace ln {
 namespace detail {
-class DX12ShaderDescriptorTable;
 
 class DX12Device
 	: public IGraphicsDevice
@@ -84,7 +83,6 @@ protected:
     void onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length) override;
     void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
     void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
-    void onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data) override;
     void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
     void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
     void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) override;
@@ -288,24 +286,10 @@ public:
     DX12ShaderPass();
     Result init(DX12Device* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
     void dispose();
-    virtual IShaderDescriptorTable* descriptorTable() const;
 
 private:
     DX12Device* m_deviceContext;
-    Ref<DX12ShaderDescriptorTable> m_descriptorTable;
     ComPtr<ID3D12DescriptorHeap> m_descriptorHeap;
-};
-
-class DX12ShaderDescriptorTable
-    : public IShaderDescriptorTable
-{
-public:
-    DX12ShaderDescriptorTable();
-    bool init(DX12Device* deviceContext, const DX12ShaderPass* ownerPass, const DescriptorLayout* descriptorLayout);
-    void dispose() override;
-
-private:
-
 };
 
 } // namespace detail

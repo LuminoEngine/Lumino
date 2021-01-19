@@ -25,7 +25,6 @@ class ITexture;
 class IDepthBuffer;
 class ISamplerState;
 class IShaderPass;
-class IShaderDescriptorTable;
 class IPipeline;
 class IDescriptorPool;
 class IDescriptor;
@@ -298,7 +297,6 @@ public:
     void setSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length);
     void setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
     void setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize);
-	//void setDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data);
 
     void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
     void drawPrimitive(int startVertex, int primitiveCount);
@@ -330,7 +328,6 @@ public:	// TODO:
 	virtual void onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length) = 0;
 	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
 	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
-	virtual void onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data) = 0;
 
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
@@ -526,7 +523,6 @@ class IShaderPass
 public:
 	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
 	const VertexInputAttribute* findAttribute(VertexElementUsage usage, int usageIndex) const;
-	virtual IShaderDescriptorTable* descriptorTable() const = 0;
 	void dispose() override;
 
 protected:
@@ -539,19 +535,6 @@ private:
 	std::vector<VertexInputAttribute> m_attributes;
 
 	friend class IGraphicsDevice;
-};
-
-// 実装は Backend ごとに結構変わるが、RHI としての使い方は VertexBuffer と同じにしたい。
-// 基本的に CommandBuffer 経由でデータをセットすることになる。
-// IShaderDescriptorTable は IShaderPass と 1:1 で存在する。
-// 更新は ICommandList::setDescriptorData()。
-// State が Submit されるとき、ShaderPass が持っている IShaderDescriptorTable を、Native の CommandBuffer へ乗せる。
-class IShaderDescriptorTable
-	: public IGraphicsDeviceObject
-{
-public:
-
-protected:
 };
 
 class IPipeline
