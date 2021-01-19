@@ -399,6 +399,7 @@ public:
     VkCommandBuffer vulkanCommandBuffer() const { return m_commandBuffer; }
     VkFence vulkanInFlightFence() const { return m_inFlightFence; }
 
+    void wait();
     Result beginRecording();
     Result endRecording();
     void endRenderPassInRecordingIfNeeded();

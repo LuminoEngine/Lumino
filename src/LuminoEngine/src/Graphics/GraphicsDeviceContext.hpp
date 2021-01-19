@@ -307,6 +307,8 @@ public:
 
     /////////
 
+	virtual void wait() = 0;
+
     IGraphicsDevice* device() const { return m_device; }
     IRenderPass* currentRenderPass() const { return m_currentRenderPass; }
 

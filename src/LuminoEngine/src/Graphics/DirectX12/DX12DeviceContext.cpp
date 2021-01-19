@@ -418,6 +418,11 @@ void DX12GraphicsContext::onDrawExtension(INativeGraphicsExtension* extension)
     LN_NOTIMPLEMENTED();
 }
 
+void DX12GraphicsContext::wait()
+{
+    LN_NOTIMPLEMENTED();
+}
+
 //==============================================================================
 // DX12SwapChain
 

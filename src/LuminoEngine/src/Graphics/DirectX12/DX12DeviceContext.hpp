@@ -89,6 +89,7 @@ protected:
     void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
     void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) override;
     void onDrawExtension(INativeGraphicsExtension* extension) override;
+    void wait() override;
 
 private:
 	DX12Device* m_device;

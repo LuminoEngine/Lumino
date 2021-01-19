@@ -52,7 +52,7 @@ void VulkanDescriptorPool2::dispose()
 	}
 	m_pages.clear();
 	m_freePages.clear();
-	m_activePage = VK_NULL_HANDLE;
+	m_activePage = nullptr;
 }
 
 void VulkanDescriptorPool2::reset()
@@ -62,7 +62,7 @@ void VulkanDescriptorPool2::reset()
 		m_freePages.push_back(page.get());
 	}
 
-	m_activePage = VK_NULL_HANDLE;
+	m_activePage = nullptr;
 	m_activePageUsedCount = 0;
 }
 

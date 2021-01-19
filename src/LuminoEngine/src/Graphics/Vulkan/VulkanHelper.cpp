@@ -1203,12 +1203,15 @@ void VulkanCommandBuffer::dispose()
     }
 }
 
-Result VulkanCommandBuffer::beginRecording()
+void VulkanCommandBuffer::wait()
 {
     // もし前回 vkQueueSubmit したコマンドバッファが完了していなければ待つ
-    LN_VK_CHECK(vkWaitForFences(m_deviceContext->vulkanDevice(), 1, &m_inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max()));
+    vkWaitForFences(m_deviceContext->vulkanDevice(), 1, &m_inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max());
+    vkResetCommandBuffer(vulkanCommandBuffer(), VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+}
 
-    LN_VK_CHECK(vkResetCommandBuffer(vulkanCommandBuffer(), VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT));
+Result VulkanCommandBuffer::beginRecording()
+{
 
     m_linearAllocator->cleanup();
     //m_uniformBufferSingleFrameAllocator->cleanup();

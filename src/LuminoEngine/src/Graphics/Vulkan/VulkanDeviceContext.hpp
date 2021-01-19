@@ -153,8 +153,10 @@ public:
     bool init(VulkanDevice* owner);
 	void dispose();
 
-    const Ref<VulkanCommandBuffer>& recodingCommandBuffer() const { return m_recodingCommandBuffer; }
-    void setRecodingCommandBuffer(const Ref<VulkanCommandBuffer>& value) { m_recodingCommandBuffer = value; }
+    const Ref<VulkanCommandBuffer>& recodingCommandBuffer() const { return m_commandBuffer; }
+    //void setRecodingCommandBuffer(const Ref<VulkanCommandBuffer>& value) { m_recodingCommandBuffer = value; }
+
+    void wait() override;
 
 protected:
     void onSaveExternalRenderState() override;
@@ -177,7 +179,7 @@ protected:
 
 private:
 	VulkanDevice* m_device;
-    Ref<VulkanCommandBuffer> m_recodingCommandBuffer;
+    Ref<VulkanCommandBuffer> m_commandBuffer;
 };
 
 class VulkanSwapChain

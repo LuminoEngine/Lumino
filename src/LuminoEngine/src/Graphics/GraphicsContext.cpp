@@ -547,6 +547,10 @@ detail::ICommandList* GraphicsContext::commitState()
         shaderPassRHI = m_staging.shaderPass->resolveRHIObject(this, &resourceModified);
     }
 
+    if (!m_staging.shaderPass || !m_staging.shaderDescriptor) {
+        m_commandList->rhiResource()->setDescriptor(nullptr);
+    }
+
     bool vertexLayoutModified = false;
     detail::IVertexDeclaration* vertexLayoutRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(this, m_staging.VertexLayout, &vertexLayoutModified);
     resourceModified |= vertexLayoutModified;

@@ -1038,7 +1038,7 @@ Result VulkanDevice::transitionImageLayoutImmediately(VkImage image, VkFormat fo
 
 VulkanGraphicsContext::VulkanGraphicsContext()
 	: m_device(nullptr)
-	, m_recodingCommandBuffer(nullptr)
+	, m_commandBuffer(nullptr)
 {
 }
 
@@ -1048,8 +1048,8 @@ bool VulkanGraphicsContext::init(VulkanDevice* owner)
 	ICommandList::init(owner);
 	m_device = owner;
 
-	m_recodingCommandBuffer = makeRef<VulkanCommandBuffer>();
-	if (!m_recodingCommandBuffer->init(m_device)) {
+    m_commandBuffer = makeRef<VulkanCommandBuffer>();
+	if (!m_commandBuffer->init(m_device)) {
 		return false;
 	}
 
@@ -1058,9 +1058,9 @@ bool VulkanGraphicsContext::init(VulkanDevice* owner)
 
 void VulkanGraphicsContext::dispose()
 {
-	if (m_recodingCommandBuffer) {
-		m_recodingCommandBuffer->dispose();
-		m_recodingCommandBuffer = nullptr;
+	if (m_commandBuffer) {
+        m_commandBuffer->dispose();
+        m_commandBuffer = nullptr;
 	}
 
     ICommandList::dispose();
@@ -1076,12 +1076,12 @@ void VulkanGraphicsContext::onRestoreExternalRenderState()
 
 void VulkanGraphicsContext::onBeginCommandRecoding()
 {
-	m_recodingCommandBuffer->beginRecording();
+    m_commandBuffer->beginRecording();
 }
 
 void VulkanGraphicsContext::onEndCommandRecoding()
 {
-	m_recodingCommandBuffer->endRecording();
+    m_commandBuffer->endRecording();
 }
 
 void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
@@ -1121,12 +1121,12 @@ void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
 	renderPassInfo.clearValueCount = count;
 	renderPassInfo.pClearValues = clearValues;
 
-	vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBeginRenderPass(m_commandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
 void VulkanGraphicsContext::onEndRenderPass(IRenderPass* renderPass)
 {
-	vkCmdEndRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer());
+	vkCmdEndRenderPass(m_commandBuffer->vulkanCommandBuffer());
 }
 
 void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline)
@@ -1139,20 +1139,20 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 		viewport.height = -state.regionRects.viewportRect.height;   // height マイナスで、DirectX や OpenGL と同じ座標系になる (1.1+, VK_KHR_maintenance1)
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
-		vkCmdSetViewport(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &viewport);
+		vkCmdSetViewport(m_commandBuffer->vulkanCommandBuffer(), 0, 1, &viewport);
 
 		VkRect2D scissor;
 		scissor.offset.x = state.regionRects.scissorRect.x;
 		scissor.offset.y = state.regionRects.scissorRect.y;
 		scissor.extent.width = state.regionRects.scissorRect.width;
 		scissor.extent.height = state.regionRects.scissorRect.height;
-		vkCmdSetScissor(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &scissor);
+		vkCmdSetScissor(m_commandBuffer->vulkanCommandBuffer(), 0, 1, &scissor);
 	}
 
 	if (submitSource == GraphicsContextSubmitSource_Draw) {
 		if (pipeline) {
 			auto vulkanPipeline = static_cast<VulkanPipeline2*>(pipeline);
-			vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->nativePipeline());
+			vkCmdBindPipeline(m_commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->nativePipeline());
 		}
 
 
@@ -1164,12 +1164,12 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 					auto* vertexBuffer = static_cast<VulkanVertexBuffer*>(state.primitive.vertexBuffers[i]);
 					VkBuffer buffer = vertexBuffer->vulkanBuffer();//[] = { vertexBuffer->vulkanBuffer() };
 					VkDeviceSize offset = 0;//[] = { 0 };
-					vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 1, &buffer, &offset);
+					vkCmdBindVertexBuffers(m_commandBuffer->vulkanCommandBuffer(), i, 1, &buffer, &offset);
 				}
 				//else {
 				//    VkBuffer buffer = VK_NULL_HANDLE;
 				//    VkDeviceSize offset = 0;
-				//    vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 0, &buffer, &offset);
+				//    vkCmdBindVertexBuffers(m_commandBuffer->vulkanCommandBuffer(), i, 0, &buffer, &offset);
 				//}
 			}
 
@@ -1177,7 +1177,7 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 
 
 			if (indexBuffer) {
-				vkCmdBindIndexBuffer(m_recodingCommandBuffer->vulkanCommandBuffer(), indexBuffer->vulkanBuffer(), 0, indexBuffer->indexType());
+				vkCmdBindIndexBuffer(m_commandBuffer->vulkanCommandBuffer(), indexBuffer->vulkanBuffer(), 0, indexBuffer->indexType());
 			}
 		}
 
@@ -1189,7 +1189,7 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
             if (descriptor) {
                 auto& sets = descriptor->descriptorSets();
                 vkCmdBindDescriptorSets(
-                    m_recodingCommandBuffer->vulkanCommandBuffer(),
+                    m_commandBuffer->vulkanCommandBuffer(),
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     shaderPass->vulkanPipelineLayout(), 0,
                     sets.size(), sets.data(), 0, nullptr);
@@ -1198,8 +1198,8 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 			auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
 
 			std::array<VkDescriptorSet, DescriptorType_Count> sets;
-			m_recodingCommandBuffer->allocateDescriptorSets(shaderPass, &sets);
-			vkCmdBindDescriptorSets(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
+            m_commandBuffer->allocateDescriptorSets(shaderPass, &sets);
+			vkCmdBindDescriptorSets(m_commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
 #endif
 		}
 	}
@@ -1213,7 +1213,7 @@ void* VulkanGraphicsContext::onMapResource(IGraphicsRHIBuffer* resource, uint32_
 	}
 
 	// データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+    m_commandBuffer->endRenderPassInRecordingIfNeeded();
 
 	switch (resource->resourceType())
 	{
@@ -1256,7 +1256,7 @@ void VulkanGraphicsContext::onUnmapResource(IGraphicsRHIBuffer* resource)
 void VulkanGraphicsContext::onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length)
 {
     // データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-    m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+    m_commandBuffer->endRenderPassInRecordingIfNeeded();
 
 	VulkanBuffer* buffer = nullptr;
 	switch (resource->resourceType())
@@ -1281,7 +1281,7 @@ void VulkanGraphicsContext::onSetSubData(IGraphicsRHIBuffer* resource, size_t of
 void VulkanGraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
 	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+    m_commandBuffer->endRenderPassInRecordingIfNeeded();
 
 	static_cast<VulkanTexture*>(resource)->setSubData(this, x, y, width, height, data, dataSize);
 }
@@ -1289,7 +1289,7 @@ void VulkanGraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int
 void VulkanGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
 {
 	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+    m_commandBuffer->endRenderPassInRecordingIfNeeded();
 
 	static_cast<VulkanTexture*>(resource)->setSubData3D(this, x, y, z, width, height, depth, data, dataSize);
 }
@@ -1356,7 +1356,7 @@ void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color,
 		}
 
 		vkCmdClearAttachments(
-			m_recodingCommandBuffer->vulkanCommandBuffer()
+            m_commandBuffer->vulkanCommandBuffer()
 			, count
 			, attachments
 			, LN_ARRAY_SIZE_OF(rect)
@@ -1368,14 +1368,14 @@ void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color,
 
 void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
 {
-	vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
+	vkCmdDraw(m_commandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
 }
 
 void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset)
 {
     int ic = (instanceCount == 0) ? 1 : instanceCount;
 	vkCmdDrawIndexed(
-        m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount),
+        m_commandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount),
         ic, startIndex, vertexOffset, 0);
 }
 
@@ -1385,6 +1385,11 @@ void VulkanGraphicsContext::onDrawExtension(INativeGraphicsExtension* extension)
     i->setContext(this);
 	extension->onRender(i);
     i->setContext(nullptr);
+}
+
+void VulkanGraphicsContext::wait()
+{
+    m_commandBuffer->wait();
 }
 
 //==============================================================================

@@ -429,6 +429,11 @@ void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, detail::
 
 void ShaderPass::onDispose(bool explicitDisposing)
 {
+    for (auto& pool : m_descriptorSetsPools) {
+        pool->dispose();
+    }
+    m_descriptorSetsPools.clear();
+
     m_rhiPass = nullptr;
 
     Object::onDispose(explicitDisposing);

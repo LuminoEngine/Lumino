@@ -27,17 +27,21 @@ void GraphicsCommandList::init(GraphicsManager* manager)
 
 void GraphicsCommandList::dispose()
 {
+    reset();
     if (m_rhiResource) {
         m_rhiResource = nullptr;
     }
-    for (const auto& pair : m_usingDescriptorPools) {
-        pair.descriptorPool->dispose();
-    }
+    //for (const auto& pair : m_usingDescriptorPools) {
+    //    pair.descriptorPool->dispose();
+    //}
     m_usingDescriptorPools.clear();
 }
 
 void GraphicsCommandList::reset()
 {
+    // 実行終了を待つ
+    m_rhiResource->wait();
+
     m_allocator->cleanup();
 	//m_singleFrameUniformBufferAllocator->cleanup();
 
