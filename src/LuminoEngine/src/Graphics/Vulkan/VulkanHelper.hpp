@@ -224,7 +224,6 @@ namespace detail {
 class VulkanDevice;
 class VulkanVertexDeclaration;
 class VulkanShaderPass;
-class VulkanDescriptorSetsPool;
 class VulkanRenderPass;
 class VulkanFramebuffer;
 class VulkanSingleFrameAllocator;
@@ -445,60 +444,7 @@ private:
     Ref<VulkanSingleFrameAllocator> m_transferBufferSingleFrameAllocator;
 
 	size_t m_stagingBufferPoolUsed;
-	std::vector<VulkanBuffer> m_stagingBufferPool;
-
-    std::vector<Ref<VulkanShaderPass>> m_usingShaderPasses; // deprecate m_usingDescriptorSetsPools で持っている VulkanDescriptorSetsPool は VulkanShaderPass への強い参照を持たないので、これでカバーする
-    std::vector<Ref<VulkanDescriptorSetsPool>> m_usingDescriptorSetsPools; // deprecate
-    
-};
-
-// DescriptorSet と、それにアタッチした UniformBuffer。
-// vulkanDescriptorSets() を vkCmdBindDescriptorSets にセットする。
-// できるだけ共有できるものは共有したいので、コマンドバッファに入れるとき、前回入れた UniformBuffer と差がなければ共有したい。
-// ので、このインスタンスを前回値として CommandBuffer は持っておく。
-// UniformBuffer は CommandBuffer の LeniarAllocator (cmdCopyBuffer()) からとる。
-//class VulkanDescriptorSets
-//{
-//public:
-//    VulkanDescriptorSets();
-//    Result init();
-//
-//    const std::vector<VkDescriptorSet>& vulkanDescriptorSets() const { return m_vulkanDescriptorSets; }
-//
-//private:
-//    std::vector<VkDescriptorSet> m_vulkanDescriptorSets;
-//};
-
-// Layout の原因である ShaderPass が削除されたら、その Layout をもとに作られているこの Pool も削除したい。
-// そのため、このインスタンスの生成と削除は ShaderPass が担当する。
-class VulkanDescriptorSetsPool
-    : public RefObject
-{
-public:
-    VulkanDescriptorSetsPool();
-    Result init(VulkanDevice* deviceContext, VulkanShaderPass* owner);
-    void dispose();
-
-    VulkanShaderPass* owner() const { return m_owner; }
-    //Result allocateDescriptorSets(VulkanCommandBuffer* commandBuffer, std::array<VkDescriptorSet, DescriptorType_Count>* sets);
-    void reset();
-
-private:
-    // 一度に使える各種類ごとの Descripter 数。
-    // cbuffer だと _Global, LNRenderViewBuffer, LNRenderElementBuffer 等 5,6個。
-    // sampler だと DoF がテクスチャ4つくらい使っている。
-    // TODO: エンジン内部だけならこれで足りるが、ユーザーがいろいろ拡張し始めるとちょっと危ないので、警告とか入れておきたいところ。
-	static const uint32_t MAX_DESCRIPTOR_COUNT2 = 8;       
-
-    static const uint32_t MAX_DESCRIPTOR_SET_COUNT = 32;
-    VulkanDevice* m_deviceContext;
-    VulkanShaderPass* m_owner;
-    //VkDescriptorPool m_descriptorPool;
-
-	std::vector<VkDescriptorPool> m_pages;		// page instances
-	std::deque<VkDescriptorPool> m_freePages;	// page references
-	VkDescriptorPool m_activePage;
-	uint32_t m_activePageUsedCount;
+	std::vector<VulkanBuffer> m_stagingBufferPool;    
 };
 
 template<class T, class TSubClass>

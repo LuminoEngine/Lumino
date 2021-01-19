@@ -96,22 +96,8 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 
 void VulkanDevice::dispose()
 {
-    // まずは CommandBuffer の dispose() を行う。
-    // CommandBuffer は最後に Submit した時、コマンドリストが参照しているリソースを開放しないように、影響リソースの参照を持っている。
-    // CommandBuffer は次回描画開始時や、解放のタイミング (今の時点) で、これらのリソース参照をはずす。
-    // このとき、ShaderPass に対しては、VulkanDescriptorSetsPool を返却する。ShaderPass は dispose でこの VulkanDescriptorSetsPool を削除するので、
-    // ShaderPass を dispose ずる前に CommandBuffer の dispose() を行う必要がある。
-	//if (m_graphicsContext) {
-	//	m_graphicsContext->dispose();
-	//	m_graphicsContext = nullptr;
-	//}
-
     IGraphicsDevice::dispose();
 
-
-    //m_pipelineCache.dispose();
-    //m_framebufferCache.dispose();
-    //m_renderPassCache.dispose();
 
     //m_uniformBufferSingleFrameAllocator = nullptr;
     m_transferBufferSingleFrameAllocator = nullptr;
@@ -3438,11 +3424,6 @@ void VulkanShaderPass::dispose()
             m_descriptorTable = nullptr;
         }
 
-        for (auto& pool : m_descriptorSetsPools) {
-            pool->dispose();
-        }
-        m_descriptorSetsPools.clear();
-
         if (m_pipelineLayout) {
             vkDestroyPipelineLayout(device, m_pipelineLayout, m_deviceContext->vulkanAllocator());
             m_pipelineLayout = VK_NULL_HANDLE;
@@ -3538,31 +3519,6 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
     }
 
     return m_descriptorWriteInfo;
-}
-
-// deprecated
-Ref<VulkanDescriptorSetsPool> VulkanShaderPass::getDescriptorSetsPool()
-{
-    if (m_descriptorSetsPools.empty()) {
-        auto ptr = makeRef<VulkanDescriptorSetsPool>();
-        if (!ptr->init(m_deviceContext, this)) {
-            return nullptr;
-        }
-        return ptr;
-    }
-    else {
-        auto ptr = m_descriptorSetsPools.back();
-        m_descriptorSetsPools.pop_back();
-        return ptr;
-    }
-}
-
-// deprecated
-void VulkanShaderPass::releaseDescriptorSetsPool(VulkanDescriptorSetsPool* pool)
-{
-    LN_DCHECK(pool);
-    pool->reset();
-    m_descriptorSetsPools.push_back(pool);
 }
 
 //=============================================================================

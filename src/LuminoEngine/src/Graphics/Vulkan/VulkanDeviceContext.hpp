@@ -587,10 +587,6 @@ public:
         const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets,
         const ShaderDescriptorTableUpdateInfo& data);
 
-    // CommandBuffer に対するインターフェイス
-    Ref<VulkanDescriptorSetsPool> getDescriptorSetsPool();
-    void releaseDescriptorSetsPool(VulkanDescriptorSetsPool* pool);
-    //VulkanDescriptorSetsPool* recodingPool = nullptr; // CommandBuffer に対する、いわゆる UserData のイメージ
 
     const VkWriteDescriptorSet& witeInfo(int index) const { return m_descriptorWriteInfo[index]; }
 
@@ -602,7 +598,6 @@ private:
     std::string m_fragEntryPointName;
     VkPipelineLayout m_pipelineLayout;
     std::array<VkDescriptorSetLayout, 3> m_descriptorSetLayouts;
-    std::vector<Ref<VulkanDescriptorSetsPool>> m_descriptorSetsPools;   // deprecated
 
     std::vector<VkWriteDescriptorSet> m_descriptorWriteInfo;
     std::vector<VkDescriptorBufferInfo> m_bufferDescriptorBufferInfo;
