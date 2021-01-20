@@ -3,8 +3,30 @@
 LUMINO_APP
 
 *on_init
+    LNEngine_GetRenderView render_view
+    LNWorldRenderView_SetGuideGridEnabled render_view, LN_TRUE
+    LNEngine_GetCamera camera
+    LNCameraOrbitControlComponent_Create orbit_control
+    LNWorldObject_AddComponent camera, orbit_control
+
     LNBoxMesh_Create box
+
+    LNEngine_GetWorld world
+    LNWorld_Add world, box
+
+    LNEngine_GetCamera camera
+    LNWorldObject_SetPositionXYZ camera, 5, 5, -5
+    LNWorldObject_LookAtXYZ camera, 0, 0, 0
+    
     return
 
 *on_update
+    LNMouse_GetPosition p
+    LNRaycaster_FromScreen p, raycaster
+    LNRaycaster_IntersectPlane raycaster, 0, 1, 0, result
+    if result {
+        LNRaycastResult_GetPoint result, p
+        LNWorldObject_SetPosition box, p
+    }
+
     return

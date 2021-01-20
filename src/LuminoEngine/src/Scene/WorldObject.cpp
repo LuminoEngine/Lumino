@@ -143,12 +143,12 @@ bool WorldObject::init(/*ObjectInitializeContext* context*/)
 {
 	if (!Object::init()) return false;
 
-    if (ObjectInitializeContext::Default->autoAdd && detail::EngineDomain::sceneManager()->autoAddingToActiveWorld) {
-        World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
-        if (activeWorld) {
-            activeWorld->add(this);
-        }
-    }
+    //if (ObjectInitializeContext::Default->autoAdd && detail::EngineDomain::sceneManager()->autoAddingToActiveWorld) {
+    //    World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
+    //    if (activeWorld) {
+    //        activeWorld->add(this);
+    //    }
+    //}
 
 	return true;
 }
