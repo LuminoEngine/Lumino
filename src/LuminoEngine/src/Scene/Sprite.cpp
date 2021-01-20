@@ -10,33 +10,6 @@ namespace ln {
 //==============================================================================
 // Sprite
 
-Sprite::Builder& Sprite::Builder::texture(Texture* value) noexcept
-{
-    m_texture = value;
-    return *this;
-}
-
-Sprite::Builder& Sprite::Builder::pixelsParUnit(float value) noexcept
-{
-    m_pixelsParUnit = value;
-    return *this;
-}
-
-Ref<Sprite> Sprite::Builder::build()
-{
-    return makeObject<Sprite>(*this);
-}
-
-Ref<Sprite> Sprite::Builder::buildInMainWorld()
-{
-    auto ptr = build();
-    detail::EngineDomain::mainWorld()->add(ptr);
-    return ptr;
-}
-
-//==============================================================================
-// Sprite
-
 LN_OBJECT_IMPLEMENT(Sprite, VisualObject) {}
 
 Ref<Sprite> Sprite::create()
@@ -80,14 +53,6 @@ Sprite::Sprite()
 
 Sprite::~Sprite()
 {
-}
-
-Result Sprite::init(const Builder& builder)
-{
-    init();
-    setTexture(builder.m_texture);
-    setPixelsParUnit(builder.m_pixelsParUnit);
-    return true;
 }
 
 void Sprite::init()
@@ -195,6 +160,16 @@ bool Sprite::isFlippedY() const
 void Sprite::setPixelsParUnit(float value)
 {
     return m_component->setPixelsParUnit(value);
+}
+
+//==============================================================================
+// Sprite::BuilderDetails
+
+void Sprite::BuilderDetails::apply(Sprite* p) const
+{
+    VisualObject::BuilderDetails::apply(p);
+    p->setTexture(texture);
+    p->setSize(size);
 }
 
 } // namespace ln

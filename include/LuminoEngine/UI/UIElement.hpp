@@ -659,7 +659,6 @@ private:
 //==============================================================================
 // UIElement::Builder
 
-
 struct UIElement::BuilderDetails : public AbstractBuilderDetails
 {
 	LN_BUILDER_DETAILS(UIElement);

@@ -113,6 +113,17 @@ Matrix WorldObjectTransform::getLocalMatrix() const
 
 //==============================================================================
 // WorldObject
+
+void WorldObject::BuilderDetails::apply(WorldObject* p) const
+{
+    //if (width) p->setWidth(*width);
+    //if (height) p->setHeight(*height);
+    //if (backgroundColor) p->setBackgroundColor(*backgroundColor);
+    for (auto& x : m_components) p->addComponent(x.get());
+}
+
+//==============================================================================
+// WorldObject
 //  Transform は Unity のように Component 扱いしない。
 //  Component にしてしまうと、m_components リストを操作するときに混ざりこんでしまって危険かもしれない。
 //  特に必要性が出てくるまではこのスタイルにしておく。
@@ -373,6 +384,13 @@ void WorldObject::updateWorldMatrixHierarchical()
     }
 }
 
+void WorldObject::intoWorld(World* world)
+{
+    World* activeWorld = (world) ? world : detail::EngineDomain::sceneManager()->activeWorld();
+    if (activeWorld) {
+        activeWorld->add(this);
+    }
+}
 
 //==============================================================================
 // WorldObjectAsset

@@ -37,6 +37,79 @@ struct BuilderVariant;
 
 struct AbstractBuilderDetails;
 
+
+template<typename T>
+class FormatArg
+{
+public:
+    FormatArg(T&& value) : m_value(value) {}
+    const T& value() const { return m_value; }
+
+private:
+    T m_value;
+};
+
+// base class of variadic args
+template<typename T>
+class FormatList
+{
+public:
+    FormatList()
+        : m_argList(nullptr)
+        , m_count(0)
+    {}
+
+    const FormatArg<T>& GetArg(int index) const { return m_argList[index]; }
+    int getCount() const { return m_count; }
+
+protected:
+    const FormatArg<T>* m_argList;
+    int m_count;
+};
+
+// variadic args (N > 0)
+template<typename T, int N>
+class FormatListN : public FormatList<T>
+{
+public:
+    template<typename... Args>
+    FormatListN(const Args&... args)
+        : FormatList<T>()
+        , m_argListInstance LN_FMT_BRACED_INIT_WORKAROUND({ FormatArg<T>(args)... }) // extract to -> {FormatArg(e1), FormatArg(e2), FormatArg(e3)} http://en.cppreference.com/w/cpp/language/parameter_pack
+    {
+        static_assert(sizeof...(args) == N, "Invalid args count.");
+        FormatList<T>::m_argList = &m_argListInstance[0];
+        FormatList<T>::m_count = N;
+    }
+
+private:
+    std::array<FormatArg<T>, N> m_argListInstance;
+};
+
+// variadic args (N = 0)
+template<typename T>
+class FormatListN<T, 0> : public FormatList<T>
+{
+public:
+    FormatListN() {}
+};
+
+template<typename T, typename... TArgs>
+static FormatListN<T, sizeof...(TArgs)> makeArgList(const TArgs&... args)
+{
+    return FormatListN<T, sizeof...(args)>(args...);
+}
+
+template<typename T, typename F, typename... TArgs>
+static void foreachArgs(F func, const TArgs&... args)
+{
+    auto argList = makeArgList<T>();
+    for (int i = 0; i < argList.getCount(); i++) {
+        func(argList.GetArg(i).value());
+    }
+}
+
+
 //====================
 template<class B, class D>
 struct AbstractBuilder
@@ -244,6 +317,10 @@ struct Container::BuilderBase : public Element::BuilderBase<B, D>
     /** color property */
     template<class X>
     B& add(const X& value) { base_type::d()->m_shapes.push_back(value); return *static_cast<B*>(this); }
+
+    template<typename... TArgs>
+    B& children(TArgs&&... args) { foreachArgs<BuilderVariant<Shape>>([this](auto& x) { add(x); }, std::forward<TArgs>(args)...); return *static_cast<B*>(this); }
+
 };
 
 struct Container::Builder : public Container::BuilderBase<Builder, Container::BuilderDetails>
@@ -279,6 +356,12 @@ class App_Sandbox_Builder : public Application
             .color(Color{ 255, 0, 0, 255 })
             .build();
 
+        auto shape2 = lib::Shape::Builder()
+            .width(200)
+            .height(500)
+            .color(Color{ 255, 0, 0, 255 })
+            .build();
+
         Ref<lib::Container> container = lib::Container::Builder()
             .width(500)
             .height(100)
@@ -292,6 +375,13 @@ class App_Sandbox_Builder : public Application
                 .width(20)
                 .height(100)
                 .color(Color{ 255, 0, 0, 255 })
+            )
+            .children(
+                shape2,
+                lib::Shape::Builder()
+                    .width(20)
+                    .height(600)
+                    .color(Color{ 255, 0, 0, 255 })
             )
             .build();
 

@@ -2,6 +2,7 @@
 #pragma once
 #include "Common.hpp"
 #include "../Asset/AssetModel.hpp"
+#include "../Base/Builder.hpp"
 #include "../Base/Collection.hpp"
 #include "Component.hpp"
 
@@ -103,6 +104,7 @@ class WorldObject
 	, public IWorldRenderingElement
 {
     LN_OBJECT;
+	LN_BUILDER;
 public:
 
 	const String& name() const { return m_name; }
@@ -277,6 +279,8 @@ public: // TODO:
     void resolveWorldMatrix();
     void updateWorldMatrixHierarchical();
 
+	void intoWorld(World* world = nullptr);
+
     Level* m_parentLevel;
     WorldObject* m_parent;
 
@@ -295,6 +299,44 @@ public: // TODO:
     friend class World;
     friend class Level;
 };
+
+//==============================================================================
+// WorldObject::Builder
+
+struct WorldObject::BuilderDetails : public AbstractBuilderDetails
+{
+	LN_BUILDER_DETAILS(WorldObject);
+
+	//Optional<float> width;
+	//Optional<float> height;
+	//Optional<Color> backgroundColor;
+
+	std::vector<BuilderVariant<Component>> m_components;
+
+	void apply(WorldObject* p) const;
+};
+
+template<class T, class B, class D>
+struct WorldObject::BuilderCore : public AbstractBuilder<T, B, D>
+{
+	LN_BUILDER_CORE(AbstractBuilder);
+
+	///** width property */
+	//B& width(float value) { d()->width = value; return self(); }
+
+	///** height property */
+	//B& height(float value) { d()->height = value; return self(); }
+
+	///** height property */
+	//B& backgroundColor(const Color& value) { d()->backgroundColor = value; return self(); }
+
+	template<typename... TArgs>
+	B& components(TArgs&&... args) { foreach_args<BuilderVariant<Component>>([this](auto& x) { d()->m_components.push_back(x); }, std::forward<TArgs>(args)...); return *static_cast<B*>(this); }
+
+	Ref<T> buildInto(World* world = nullptr) { auto p = build(); p->intoWorld(world); return p; }
+};
+
+LN_BUILDER_IMPLEMENT(WorldObject);
 
 namespace ed {
 

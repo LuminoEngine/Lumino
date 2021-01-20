@@ -12,6 +12,7 @@ class VisualObject
 	: public WorldObject
 {
     LN_OBJECT;
+    LN_BUILDER;
 public:
 	/** 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true) */
     LN_METHOD(Property)
@@ -114,5 +115,23 @@ LN_CONSTRUCT_ACCESS:
 private:
     Ref<VisualComponent> m_component;
 };
+
+//==============================================================================
+// VisualObject::Builder
+
+struct VisualObject::BuilderDetails : public WorldObject::BuilderDetails
+{
+    LN_BUILDER_DETAILS(VisualObject);
+
+    void apply(VisualObject* p) const;
+};
+
+template<class T, class B, class D>
+struct VisualObject::BuilderCore : public WorldObject::BuilderCore<T, B, D>
+{
+    LN_BUILDER_CORE(WorldObject::BuilderCore);
+};
+
+LN_BUILDER_IMPLEMENT(VisualObject);
 
 } // namespace ln

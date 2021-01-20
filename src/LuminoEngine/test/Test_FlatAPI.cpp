@@ -232,6 +232,9 @@ static LNResult Sprite_OnUpdate(LNHandle delegate, LNHandle self, float elapsedS
 
 TEST_F(Test_FlatAPI, VirtualProtoType)
 {
+	LNHandle world;
+	LNEngine_GetWorld(&world);
+
 	LNHandle texture;
 	LNTexture2D_Load(LN_ASSETFILE("Sprite1.png"), &texture);
 
@@ -241,6 +244,7 @@ TEST_F(Test_FlatAPI, VirtualProtoType)
 	LNHandle sprite;
 	LNSprite_CreateWithTexture(texture, &sprite);
 	LNWorldObject_SetScaleS(sprite, 5);
+	LNWorld_Add(world, sprite);
 	LNSprite_SetPrototype_OnUpdate(sprite, delegate);
 
 	g_count = 0;

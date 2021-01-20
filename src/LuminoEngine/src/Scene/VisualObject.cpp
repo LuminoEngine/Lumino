@@ -138,5 +138,13 @@ void VisualObject::setMainVisualComponent(VisualComponent* component)
     m_component = component;
 }
 
+//==============================================================================
+// VisualObject::BuilderDetails
+
+void VisualObject::BuilderDetails::apply(VisualObject* p) const
+{
+    WorldObject::BuilderDetails::apply(p);
+}
+
 } // namespace ln
 

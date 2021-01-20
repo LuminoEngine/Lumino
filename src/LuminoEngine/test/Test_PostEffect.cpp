@@ -10,7 +10,10 @@ public:
 
 TEST_F(Test_PostEffect, Bloom)
 {
-	auto sprite1 = Sprite::create(Texture2D::whiteTexture(), 5, 5);
+	auto sprite1 = Sprite::Builder()// Sprite::create(Texture2D::whiteTexture(), 5, 5);
+		.texture(Texture2D::whiteTexture())
+		.size(5, 5)
+		.into();
 	sprite1->setShadingModel(ShadingModel::Unlit);
 
 	auto bloomEffect = BloomPostEffect::create();

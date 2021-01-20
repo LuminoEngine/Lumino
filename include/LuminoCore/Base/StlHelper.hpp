@@ -9,6 +9,93 @@
 namespace ln {
 class String;
 
+namespace args_detail {
+
+#if defined(_MSC_VER) && _MSC_VER <= 1800 // VS2013
+#define LN_FMT_BRACED_INIT_WORKAROUND2(x) (x)
+#else
+#define LN_FMT_BRACED_INIT_WORKAROUND2(x) \
+    {                                    \
+        x                                \
+    }
+#endif
+
+template<typename T>
+class FormatArg
+{
+public:
+	FormatArg(T&& value) : m_value(value) {}
+	const T& value() const { return m_value; }
+
+private:
+	T m_value;
+};
+
+// base class of variadic args
+template<typename T>
+class FormatList
+{
+public:
+	FormatList()
+		: m_argList(nullptr)
+		, m_count(0)
+	{}
+
+	const FormatArg<T>& GetArg(int index) const { return m_argList[index]; }
+	int getCount() const { return m_count; }
+
+protected:
+	const FormatArg<T>* m_argList;
+	int m_count;
+};
+
+// variadic args (N > 0)
+template<typename T, int N>
+class FormatListN : public FormatList<T>
+{
+public:
+	template<typename... Args>
+	FormatListN(const Args&... args)
+		: FormatList<T>()
+		, m_argListInstance LN_FMT_BRACED_INIT_WORKAROUND2({ FormatArg<T>(args)... }) // extract to -> {FormatArg(e1), FormatArg(e2), FormatArg(e3)} http://en.cppreference.com/w/cpp/language/parameter_pack
+	{
+		static_assert(sizeof...(args) == N, "Invalid args count.");
+		FormatList<T>::m_argList = &m_argListInstance[0];
+		FormatList<T>::m_count = N;
+	}
+
+private:
+	std::array<FormatArg<T>, N> m_argListInstance;
+};
+
+// variadic args (N = 0)
+template<typename T>
+class FormatListN<T, 0> : public FormatList<T>
+{
+public:
+	FormatListN() {}
+};
+
+template<typename T, typename... TArgs>
+static FormatListN<T, sizeof...(TArgs)> makeArgList(TArgs&&... args)
+{
+	return FormatListN<T, sizeof...(args)>(std::forward<TArgs>(args)...);
+}
+
+} // namespace args_detail
+
+template<typename T, typename F, typename... TArgs>
+static void foreach_args(F func, TArgs&&... args)
+{
+	auto argList = args_detail::makeArgList<T>(std::forward<TArgs>(args)...);
+	for (int i = 0; i < argList.getCount(); i++) {
+		func(argList.GetArg(i).value());
+	}
+}
+
+
+
+
 namespace detail {
 
 // STL ユーティリティ
@@ -202,6 +289,7 @@ public:
 		return s1.find(a1) != TString::npos;
 	}
 };
+
 
 } // namespace detail
 } // namespace ln

@@ -29,21 +29,22 @@ class Sprite
 	: public VisualObject
 {
 	LN_OBJECT;
+    LN_BUILDER;
 public:
-    class Builder
-    {
-    public:
-        Builder& texture(Texture* value) noexcept;
-        Builder& pixelsParUnit(float value) noexcept;
-        Ref<Sprite> build();
-        Ref<Sprite> buildInMainWorld();
+    //class Builder
+    //{
+    //public:
+    //    Builder& texture(Texture* value) noexcept;
+    //    Builder& pixelsParUnit(float value) noexcept;
+    //    Ref<Sprite> build();
+    //    Ref<Sprite> buildInMainWorld();
 
-    private:
-        // TODO: 内容は基本的に Component と同じなので共用の構造体を用意してみたい
-        Ref<Texture> m_texture;
-        float m_pixelsParUnit;
-        friend class Sprite;
-    };
+    //private:
+    //    // TODO: 内容は基本的に Component と同じなので共用の構造体を用意してみたい
+    //    Ref<Texture> m_texture;
+    //    float m_pixelsParUnit;
+    //    friend class Sprite;
+    //};
 
     static Ref<Sprite> create();
 	static Ref<Sprite> create(Texture* texture);
@@ -126,8 +127,6 @@ LN_CONSTRUCT_ACCESS:
 	Sprite();
 	virtual ~Sprite();
 
-    Result init(const Builder& builder);
-
     /** init */
     LN_METHOD()
 	void init();
@@ -146,5 +145,30 @@ private:
     Ref<SpriteComponent> m_component;
 	Ref<TestDelegate> m_testDelegate;
 };
+
+//==============================================================================
+// Sprite::Builder
+
+struct Sprite::BuilderDetails : public VisualObject::BuilderDetails
+{
+    LN_BUILDER_DETAILS(Sprite);
+
+    Ref<Texture> texture;
+    Size size;
+
+    void apply(Sprite* p) const;
+};
+
+template<class T, class B, class D>
+struct Sprite::BuilderCore : public VisualObject::BuilderCore<T, B, D>
+{
+    LN_BUILDER_CORE(VisualObject::BuilderCore);
+
+    B& texture(Texture* value) { d()->texture = value; return self(); }
+
+    B& size(float width, float height) { d()->size.set(width, height); return self(); }
+};
+
+LN_BUILDER_IMPLEMENT(Sprite);
 
 } // namespace ln
