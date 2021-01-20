@@ -16,6 +16,9 @@ public:
 	// Binding で、ラインタイム情報をもとに EngineSetting を最終調整するために使用する。
 	std::function<void()> engineManagerPreInit;
 
+	// EngineManager の初期化直後に呼び出される。
+	std::function<void()> engineManagerPostInit;
+
     EngineContext();
 	virtual ~EngineContext();
 	void internalInit();
@@ -61,6 +64,8 @@ public:
 				typeInfo->registerProperty(p);
 				//typeInfo->registerProperty(makeRef<PropertyInfo>(a));
 			}
+
+
 			return typeInfo;
 		}
 		else {

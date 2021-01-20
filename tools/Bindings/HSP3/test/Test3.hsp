@@ -1,21 +1,10 @@
 #include "lumino.as"
 
-LNEngineSettings_SetEngineLogEnabled LN_TRUE
+LUMINO_APP
 
-LNApplication_Create app
-LNApplication_SetPrototype_OnInit app, *App_OnInit
-LNApplication_SetPrototype_OnUpdate app, *App_OnUpdate
+*on_init
+    LNBoxMesh_Create box
+    return
 
-LNApplication_SetOnUpdatePrototype
-
-LNEngine_Run app
-
-end
-
-*App_OnInit
-	mes "Init"
-	return
-	
-*App_OnUpdate
-	mes "OnUpdate"
-	return
+*on_update
+    return

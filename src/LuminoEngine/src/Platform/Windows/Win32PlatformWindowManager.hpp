@@ -59,6 +59,9 @@ public:
     Result init(Win32PlatformWindowManager* windowManager, intptr_t	windowHandle);
 
 private:
+    static LRESULT CALLBACK StaticWndProcHook(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+    
+    WNDPROC m_originalWndProc;
 };
 
 class Win32PlatformWindowManager

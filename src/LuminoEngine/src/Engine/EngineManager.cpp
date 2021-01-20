@@ -620,6 +620,10 @@ bool EngineManager::updateUnitily()
 
 void EngineManager::updateFrame()
 {
+	if (preUpdateCallback) {
+		preUpdateCallback();
+	}
+
     float elapsedSeconds = 0.016 * m_timeScale; // TODO: time
 
     //------------------------------------------------

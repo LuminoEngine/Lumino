@@ -42,6 +42,11 @@ public:
     LN_METHOD()
 	World* world() const;
 
+	/**
+	 * Application の実行を開始します。
+	 */
+	LN_METHOD()
+	void run();
 
 LN_CONSTRUCT_ACCESS:
 	Application();
@@ -60,7 +65,6 @@ private:
 	void initInternal();
 	bool updateInertnal();
 	void finalizeInternal();
-	void run();
 
 	detail::EngineManager* m_manager;
     List<Ref<UICommand>> m_commands;

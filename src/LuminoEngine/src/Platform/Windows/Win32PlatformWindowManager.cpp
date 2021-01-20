@@ -2,6 +2,7 @@
 #ifdef _WIN32
 
 #include "Internal.hpp"
+#include <Windowsx.h>
 #include <shellscalingapi.h>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "Win32PlatformWindowManager.hpp"
@@ -223,11 +224,14 @@ LRESULT AbstractWin32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam,
         /////////////////////////////////////////////// マウス移動
         case WM_MOUSEMOVE:
         {
-            PlatformEventArgs e;
-            e.type = PlatformEventType::MouseMove;
-            e.sender = this;
-            e.mouseMove.screenX = static_cast<short>(LOWORD(lparam));     // 一度 short にキャストしないと、
-            e.mouseMove.screenY = static_cast<short>(HIWORD(lparam));     // マイナス値になったとき 65535 とか値が入る
+            POINT pt;
+            ::GetCursorPos(&pt);
+
+            PlatformEventArgs e = PlatformEventArgs::makeMouseMoveEvent(
+                this,
+                PlatformEventType::MouseMove,
+                pt.x, pt.y,
+                0, 0);  // TODO:
             sendEventToAllListener(e);
 
             *handled = true;
@@ -560,13 +564,33 @@ void Win32PlatformWindow::dispose()
 // WrappedWin32PlatformWindow
 
 WrappedWin32PlatformWindow::WrappedWin32PlatformWindow()
+    : m_originalWndProc(nullptr)
 {
 }
 
 Result WrappedWin32PlatformWindow::init(Win32PlatformWindowManager* windowManager, intptr_t	windowHandle)
 {
     m_hWnd = (HWND)windowHandle;
+
+    BOOL r = ::SetProp(m_hWnd, Win32PlatformWindowManager::PropWinProc, this);
+    if (LN_ENSURE((r != FALSE), "ErrorCode: %d", GetLastError())) return false;
+
+    m_originalWndProc = (WNDPROC)GetWindowLong(m_hWnd, GWLP_WNDPROC);
+    SetWindowLong(m_hWnd, GWLP_WNDPROC, (LONG)StaticWndProcHook);
+    LN_LOG_DEBUG << "Hook WndProc (original: " << m_originalWndProc << ")";
+
     return true;
+}
+
+LRESULT WrappedWin32PlatformWindow::StaticWndProcHook(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+    WrappedWin32PlatformWindow* window = reinterpret_cast<WrappedWin32PlatformWindow*>(::GetProp(hwnd, Win32PlatformWindowManager::PropWinProc));
+
+    bool handled = false;
+    window->WndProc(hwnd, msg, wparam, lparam, &handled);
+    // NOTE: いまのところ handled を確認する必要はなさそうなので様子見
+
+    return CallWindowProc(window->m_originalWndProc, hwnd, msg, wparam, lparam);
 }
 
 //=============================================================================

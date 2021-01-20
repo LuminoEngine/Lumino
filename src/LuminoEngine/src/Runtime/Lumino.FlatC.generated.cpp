@@ -13959,6 +13959,14 @@ LN_FLAT_API LNResult LNPoint_Set(LNPoint* point, float x_, float y_)
 }
 
 
+LN_FLAT_API LNResult LNPoint_Get(const LNPoint* point, float* outX, float* outY)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (reinterpret_cast<const ln::Point*>(point)->get(outX, outY));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LNResult LNSize_SetZeros(LNSize* size)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -23150,7 +23158,7 @@ LN_FLAT_API LNResult LNMouse_Repeated(LNMouseButtons button, LNBool* outReturn)
 }
 
 
-LN_FLAT_API LNResult LNMouse_Position(LNPoint* outReturn)
+LN_FLAT_API LNResult LNMouse_GetPosition(LNPoint* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
@@ -23823,14 +23831,6 @@ LN_FLAT_API LNResult LNEngine_Update(LNBool* outReturn)
 }
 
 
-LN_FLAT_API LNResult LNEngine_Run(LNHandle app)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::Engine::run(LNI_HANDLE_TO_OBJECT(ln::Application, app)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
 LN_FLAT_API LNResult LNEngine_GetTime(double* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -23935,6 +23935,14 @@ LN_FLAT_API LNResult LNApplication_World(LNHandle application, LNHandle* outRetu
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
     }
 
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNApplication_Run(LNHandle application)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->run());
     LNI_FUNC_TRY_END_RETURN;
 }
 

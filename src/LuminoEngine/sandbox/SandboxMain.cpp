@@ -434,7 +434,7 @@ int main(int argc, char** argv)
 	Logger::addStdErrAdapter();
     Logger::setLevel(LogLevel::Debug);
 	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
-	EngineSettings::setGraphicsAPI(GraphicsAPI::DirectX12);//(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
+	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//(GraphicsAPI::DirectX12);//GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	EngineSettings::setUITheme(u"Chocotelier");
     EngineSettings::setGraphicsDebugEnabled(true);
@@ -468,9 +468,9 @@ int main(int argc, char** argv)
 
 
     if (1) {
-		//Sandbox_EmptyApp();
+		Sandbox_EmptyApp();
 		//Example_GameAudio();
-        Example_glTFSampleViewer();
+        //Example_glTFSampleViewer();
         //Example_MainLoop();
 		//Example_MeshViewer();
         //Example_MessageWindow();

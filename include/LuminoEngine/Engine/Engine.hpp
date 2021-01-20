@@ -48,8 +48,7 @@ public:
 	 * この機能を呼び出した場合、Engine::initialize(), Engine::finalize(), Engine::update() を呼び出すことはできなくなります。
 	 * 代わりに Application::onInit(), Application::onUpdate() などを使用してください。
 	 */
-	LN_METHOD()
-	static void run(Application* app);
+	static void run(Application* app);	// TODO: deprecated
 
 
     static void quit();

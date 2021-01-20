@@ -719,6 +719,11 @@ typedef enum tagLNGraphicsAPI
     */
     LN_GRAPHICS_API_VULKAN = 2,
 
+    /**
+        @brief Vulkan
+    */
+    LN_GRAPHICS_API_DIRECT_X12 = 3,
+
 } LNGraphicsAPI;
 
 /**
@@ -1665,6 +1670,15 @@ LN_FLAT_API LNResult LNPoint_SetZeros(LNPoint* point);
     @param[] y_ : 
 */
 LN_FLAT_API LNResult LNPoint_Set(LNPoint* point, float x_, float y_);
+
+
+/**
+    @brief 各要素の値を取得します。
+    @param[in] point : instance
+    @param[] outX : 
+    @param[] outY : 
+*/
+LN_FLAT_API LNResult LNPoint_Get(const LNPoint* point, float* outX, float* outY);
 
 
 //==============================================================================
@@ -7526,7 +7540,7 @@ LN_FLAT_API LNResult LNMouse_Repeated(LNMouseButtons button, LNBool* outReturn);
     @brief マウスポインタの位置を取得します。
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LNResult LNMouse_Position(LNPoint* outReturn);
+LN_FLAT_API LNResult LNMouse_GetPosition(LNPoint* outReturn);
 
 
 //==============================================================================
@@ -7915,13 +7929,6 @@ LN_FLAT_API LNResult LNEngine_Terminate();
 LN_FLAT_API LNResult LNEngine_Update(LNBool* outReturn);
 
 /**
-    @brief 指定した Application の実行を開始します。
-    @param[] app : 
-    @details この機能を呼び出した場合、Engine::initialize(), Engine::finalize(), Engine::update() を呼び出すことはできなくなります。代わりに Application::onInit(), Application::onUpdate() などを使用してください。
-*/
-LN_FLAT_API LNResult LNEngine_Run(LNHandle app);
-
-/**
     @brief アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。
     @param[out] outReturn : instance.
 */
@@ -7979,6 +7986,12 @@ LN_FLAT_API LNResult LNApplication_OnUpdate(LNHandle application);
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LNResult LNApplication_World(LNHandle application, LNHandle* outReturn);
+
+/**
+    @brief Application の実行を開始します。
+    @param[in] application : instance
+*/
+LN_FLAT_API LNResult LNApplication_Run(LNHandle application);
 
 typedef LNResult(*LNApplication_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNApplication_OnSerialize_SetOverrideCallback(LNApplication_OnSerialize_OverrideCallback callback);

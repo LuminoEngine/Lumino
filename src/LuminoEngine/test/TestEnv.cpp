@@ -55,7 +55,6 @@ void TestEnv::teardown()
 
 void TestEnv::updateFrame()
 {
-	//lastBackBuffer = Engine::mainWindow()->swapChain()->currentBackbuffer();
     detail::EngineDomain::engineManager()->updateFrame();
     detail::EngineDomain::engineManager()->renderFrame();
     detail::EngineDomain::engineManager()->presentFrame();

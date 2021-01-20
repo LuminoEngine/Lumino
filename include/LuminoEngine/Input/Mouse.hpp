@@ -41,7 +41,7 @@ public:
     /**
      * マウスポインタの位置を取得します。
      */
-    LN_METHOD()
+    LN_METHOD(Property)
     static Point position();
 
 private:

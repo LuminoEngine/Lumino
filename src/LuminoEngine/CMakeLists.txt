@@ -164,7 +164,7 @@ elseif (WIN32)
         ${LN_SOURCES_Platform}
         ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
         src/Platform/Windows/Win32PlatformInterface.cpp
-        src/Platform/Windows/Win32PlatformWindowManager.cpp
+        src/Platform/Windows/Win32PlatformWindowManager.hpp
         src/Platform/Windows/Win32PlatformWindowManager.cpp
     )
 elseif (APPLE)
