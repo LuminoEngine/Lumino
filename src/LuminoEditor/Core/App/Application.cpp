@@ -245,7 +245,7 @@ void EditorApplication::handleNewProject(ln::UICommandEventArgs* e)
 	dlg->open();
 
 #if 0
-	auto popupContent = ln::makeObject<ln::UITextBlock>();
+	auto popupContent = ln::makeObject<ln::UIText>();
 	popupContent->setText(u"POP");
 
     m_dialog = ln::makeObject<ln::UIDialog>();

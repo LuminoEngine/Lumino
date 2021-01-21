@@ -13,7 +13,6 @@
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIActiveTimer.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
-#include <LuminoEngine/UI/UITextBlock.hpp>
 #include "UIStyleInstance.hpp"
 #include "UIEventArgsPool.hpp"
 #include "UIManager.hpp"
@@ -216,7 +215,7 @@ void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& fr
 
         //if (m_mouseHoverElement) {
         //    printf("m_mouseHoverElement: %p %s\n", m_mouseHoverElement, typeid(*(m_mouseHoverElement.get())).name());
-        //    if (auto tt = dynamic_cast<UITextBlock*>(m_mouseHoverElement.get())) {
+        //    if (auto tt = dynamic_cast<UIText*>(m_mouseHoverElement.get())) {
         //        std::cout << tt->text() << std::endl;
         //    }
         //}

@@ -11,7 +11,7 @@ void RecentProjectListView::init()
 {
     UIListBox::init();
     ////ln::u"test"
-    //auto t = ln::UITextBlock::create(u"test");
+    //auto t = ln::UIText::create(u"test");
     //addElement(t);
 }
 
@@ -67,7 +67,7 @@ ln::Result StartupView::init()
 
 
 
-    auto popupContent = ln::makeObject<ln::UITextBlock>();
+    auto popupContent = ln::makeObject<ln::UIText>();
     popupContent->setText(u"POP");
     auto popup = ln::makeObject<ln::UIDialog>();
     popup->addElement(popupContent);

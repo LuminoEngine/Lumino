@@ -745,7 +745,7 @@ int main(int argc, char** argv)
 		text1->setFontSize(18);
 		Engine::world()->add(text1);
 
-		auto text2 = makeObject<UITextBlock>();
+		auto text2 = makeObject<UIText>();
 		
 		//field1->setWidth(200);
 		//field1->setHeight(30);
@@ -779,7 +779,7 @@ int main(int argc, char** argv)
 
  //   window1->setLayoutPanel(UIStackLayout_Obsolete::create());
 
- //   auto text1 = UITextBlock::create();
+ //   auto text1 = UIText::create();
  //   text1->setText(u"ABCDEFGabcdefg");
  //   //text1->setFontFamily(u"M+ 1c");
  //   //text1->setFontSize(20);
@@ -787,16 +787,16 @@ int main(int argc, char** argv)
  //   //window1->addElement(text1);
 	//Engine::mainWindow()->addElement(text1);
 
- //   auto text2 = UITextBlock::create();
+ //   auto text2 = UIText::create();
  //   text2->setText(u"sc");
  //   //text2->setTextColor(Color::White);
  //   window1->addElement(text2);
 
-	////auto text2 = UITextBlock::create();
+	////auto text2 = UIText::create();
 	////text2->setText(u"Test");
 	////text2->setTextColor(Color::Gray);
 
-	////auto text3 = UITextBlock::create();
+	////auto text3 = UIText::create();
 	////text3->setText(u"Test3");
 	////text3->setTextColor(Color::Gray);
 	////text3->setPosition(Vector3(0, 400, 0));
@@ -1168,7 +1168,7 @@ int main(int argc, char** argv)
     //Engine::terminate();
     //return 0;
 
-    auto uitext = UITextBlock::create();
+    auto uitext = UIText::create();
     uitext->setText(u"text");
 
 

@@ -7,7 +7,7 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
-#include <LuminoEngine/UI/UITextBlock.hpp>
+#include <LuminoEngine/UI/UIText.hpp>
 
 #include "../Font/TextLayoutEngine.hpp"
 #include "../Font/FontManager.hpp"
@@ -21,13 +21,13 @@
 namespace ln {
 
 //==============================================================================
-// UITextBlock
+// UIText
 
-LN_OBJECT_IMPLEMENT(UITextBlock, UIElement) {
-	 typeInfo->registerViewProperty(makeRef<ViewPropertyInfo>(TypeInfo::getTypeInfo<String>(), "text", LN_MAKE_VIEW_PROPERTY_ACCESSOR(UITextBlock, String, text, setText)));
+LN_OBJECT_IMPLEMENT(UIText, UIElement) {
+	 typeInfo->registerViewProperty(makeRef<ViewPropertyInfo>(TypeInfo::getTypeInfo<String>(), "text", LN_MAKE_VIEW_PROPERTY_ACCESSOR(UIText, String, text, setText)));
 }
 
-ViewProperty* UITextBlock::getViewProperty(StringRef name)
+ViewProperty* UIText::getViewProperty(StringRef name)
 {
 	ViewPropertyInfo* info = TypeInfo::getTypeInfo(this)->findViewProperty(name);
 	auto itr = std::find_if(m_viewProperties.begin(), m_viewProperties.end(), [&](auto& x) { return x->m_info == info; });
@@ -43,21 +43,21 @@ ViewProperty* UITextBlock::getViewProperty(StringRef name)
 }
 
 
-Ref<UITextBlock> UITextBlock::create()
+Ref<UIText> UIText::create()
 {
-    return makeObject<UITextBlock>();
+    return makeObject<UIText>();
 }
 
-Ref<UITextBlock> UITextBlock::create(const StringRef& text)
+Ref<UIText> UIText::create(const StringRef& text)
 {
-    return makeObject<UITextBlock>(text);
+    return makeObject<UIText>(text);
 }
 
-UITextBlock::UITextBlock()
+UIText::UIText()
 {
 }
 
-void UITextBlock::init()
+void UIText::init()
 {
     UIElement::init();
 
@@ -93,18 +93,18 @@ void UITextBlock::init()
     //attemptAddToPrimaryElement();
 }
 
-void UITextBlock::init(const StringRef& text)
+void UIText::init(const StringRef& text)
 {
     init();
     setText(text);
 }
 
-void UITextBlock::setText(const StringRef& value)
+void UIText::setText(const StringRef& value)
 {
 	m_text = value;
 }
 
-Size UITextBlock::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+Size UIText::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
 	// TODO: LayoutContext みたいなのを作って、それから dpi scale うけとるようにしてみよう
 	float scale = 1.0f;
@@ -125,7 +125,7 @@ Size UITextBlock::measureOverride(UILayoutContext* layoutContext, const Size& co
 	return baseSize;
 }
 
-void UITextBlock::onRender(UIRenderingContext* context)
+void UIText::onRender(UIRenderingContext* context)
 {
     Rect clientArea = detail::LayoutHelper::arrangeClientArea(this, Rect(0, 0, actualSize()));
 
@@ -154,9 +154,9 @@ void UITextBlock::onRender(UIRenderingContext* context)
 }
 
 //==============================================================================
-// UITextBlock::BuilderDetails
+// UIText::BuilderDetails
 
-void UITextBlock::BuilderDetails::apply(UITextBlock* p) const
+void UIText::BuilderDetails::apply(UIText* p) const
 {
     UIElement::BuilderDetails::apply(p);
     p->setText(text);

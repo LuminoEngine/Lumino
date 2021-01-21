@@ -14,14 +14,14 @@ NewProjectDialog::NewProjectDialog()
 	setBackgroundColor(ln::Color::White);
 
 	auto layout = ln::makeObject<ln::UIBoxLayout>();
-	layout->addChild(ln::UITextBlock::create(u"Project name:"));
+	layout->addChild(ln::UIText::create(u"Project name:"));
 
 	m_projectName = ln::makeObject<ln::UITextField>();
 	m_projectName->setWidth(200);
 	m_projectName->setHeight(20);
 	layout->addChild(m_projectName);
 
-	layout->addChild(ln::UITextBlock::create(u"Project folder:"));
+	layout->addChild(ln::UIText::create(u"Project folder:"));
 
 	m_projectFolder = ln::makeObject<ln::UITextField>();
 	m_projectFolder->setWidth(200);

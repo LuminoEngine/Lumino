@@ -162,7 +162,7 @@ public:
         //label->setBackgroundColor(Color::Blue);
         label->setAlignments(UIHAlignment::Center, UIVAlignment::Center);
 
-        auto textblock = UITextBlock::create("E");
+        auto textblock = UIText::create("E");
         textblock->setBackgroundColor(Color::Gray);
         textblock->setBorderThickness(1);
         textblock->setBorderColor(Color::Red);
@@ -171,7 +171,7 @@ public:
         //textblock->setSize(20, 20);
         label->addInlineVisual(textblock, UIInlinePlacement::Left);
 
-        auto text2 = UITextBlock::create("Examine");
+        auto text2 = UIText::create("Examine");
         text2->setAlignments(UIHAlignment::Center, UIVAlignment::Center);
         text2->setMargin(Thickness(8, 0, 0, 0));
         label->addChild(text2);

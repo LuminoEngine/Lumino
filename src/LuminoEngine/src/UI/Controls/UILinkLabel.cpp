@@ -3,7 +3,7 @@
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UITextBlock.hpp>
+#include <LuminoEngine/UI/UIText.hpp>
 #include <LuminoEngine/UI/Controls/UILinkLabel.hpp>
 
 namespace ln {
@@ -27,7 +27,7 @@ bool UILinkLabel::init()
 void UILinkLabel::setText(const StringRef& value)
 {
     if (!m_textContent) {
-        m_textContent = makeObject<UITextBlock>();
+        m_textContent = makeObject<UIText>();
         addElement(m_textContent);
     }
     m_textContent->setText(value);

@@ -505,7 +505,7 @@ public:	// TODO: internal protected
 		このメソッドの実装から子要素の measure を行う場合は measureLayout() を呼び出します。
 
         複数の子要素を並べてレイアウトしたい場合、サイズの合計を返します。
-        例えば 2 つの UITextBlock を縦に並べる場合は、2つの measureLayout() の結果について、
+        例えば 2 つの UIText を縦に並べる場合は、2つの measureLayout() の結果について、
         - width は 大きい方を返す
         - height は 2 つの合計を返す
 

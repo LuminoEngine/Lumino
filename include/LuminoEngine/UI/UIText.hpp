@@ -3,22 +3,19 @@
 
 namespace ln {
 class RTDocument;
-//namespace detail {
-//class FlexText;
-//}
 
 /**
  * 文字列を表示するための UI 要素です。少量の文字列表示に最適化されています。
  */
 LN_CLASS()
-class UITextBlock
+class UIText
     : public UIElement
 {
     LN_OBJECT;
     LN_BUILDER;
 public:
-    static Ref<UITextBlock> create();
-    static Ref<UITextBlock> create(const StringRef& text);
+    static Ref<UIText> create();
+    static Ref<UIText> create(const StringRef& text);
 
     /** 表示文字列を設定します。 */
     LN_METHOD(Property)
@@ -34,10 +31,10 @@ public:
 
 //LN_CONSTRUCT_ACCESS:
 public: // TODO:
-    UITextBlock();
+    UIText();
     
     /**
-     * UITextBlock を作成します。
+     * UIText を作成します。
      */
     LN_METHOD()
 	void init();
@@ -71,26 +68,26 @@ private:
 };
 
 //==============================================================================
-// UITextBlock::Builder
+// UIText::Builder
 
-struct UITextBlock::BuilderDetails : public UIElement::BuilderDetails
+struct UIText::BuilderDetails : public UIElement::BuilderDetails
 {
-    LN_BUILDER_DETAILS(UITextBlock);
+    LN_BUILDER_DETAILS(UIText);
 
     String text;
 
-    void apply(UITextBlock* p) const;
+    void apply(UIText* p) const;
 };
 
 template<class T, class B, class D>
-struct UITextBlock::BuilderCore : public UIElement::BuilderCore<T, B, D>
+struct UIText::BuilderCore : public UIElement::BuilderCore<T, B, D>
 {
     LN_BUILDER_CORE(UIElement::BuilderCore);
 
     B& text(StringRef value) { d()->text = value; return self(); }
 };
 
-struct UITextBlock::Builder : public BuilderCore<UITextBlock, Builder, BuilderDetails>
+struct UIText::Builder : public BuilderCore<UIText, Builder, BuilderDetails>
 {
     Builder() {}
     Builder(StringRef text) { d()->text = text; }

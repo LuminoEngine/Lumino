@@ -32,7 +32,7 @@ protected:
 private:
 	void raiseRequestNavigateEvent();
 
-    Ref<UITextBlock> m_textContent;
+    Ref<UIText> m_textContent;
 	String m_url;
 	bool m_isPressed;
 };

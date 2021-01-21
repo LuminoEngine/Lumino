@@ -29,7 +29,7 @@ bool LevelEditorPropertyPane::init(LevelEditor* model)
 
 	// FogStartDistance
 	{
-		auto text1 = ln::UITextBlock::create(u"FogStartDistance");
+		auto text1 = ln::UIText::create(u"FogStartDistance");
 		mainLauout->addChild(text1);
 
 		auto field1 = ln::makeObject<ln::UISliderField>();
@@ -40,7 +40,7 @@ bool LevelEditorPropertyPane::init(LevelEditor* model)
 
 	// FogStartDistance
 	{
-		auto text1 = ln::UITextBlock::create(u"FogDensity");
+		auto text1 = ln::UIText::create(u"FogDensity");
 		mainLauout->addChild(text1);
 
 		auto field1 = ln::makeObject<ln::UISliderField>();

@@ -8,13 +8,13 @@ class Test_UI_UITextBlock : public LuminoSceneTest {};
 //## Basic
 TEST_F(Test_UI_UITextBlock, Basic)
 {
-	auto text1 = UITextBlock::create();
+	auto text1 = UIText::create();
 	text1->setText(u"ABCHIJabchij");
 	text1->setTextColor(Color::White);
 	text1->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 	Engine::mainUIView()->addElement(text1);
 
-    auto text2 = UITextBlock::create();
+    auto text2 = UIText::create();
     text2->setText(u"ABCHIJabchij");
     text2->setTextColor(Color::White);
     text2->setPosition(0, 60, 0);

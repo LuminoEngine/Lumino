@@ -94,7 +94,7 @@ class App_Example_Navigator : public Application
 		});
 
 
-		//auto text = UITextBlock::create(u"Test");
+		//auto text = UIText::create(u"Test");
 		//auto viewProp = text->getViewProperty(u"text");
 		////viewProp->bind(&m_actorName, ln::makeObject2<FunctionalPropertyValueConverter>([](Variant* v) { return u"aaa"; }));
 		//viewProp->bind(&m_itemId, ln::makeObject2<FunctionalPropertyValueConverter>([](Variant* v) { return makeVariant(u"aaa"); }));

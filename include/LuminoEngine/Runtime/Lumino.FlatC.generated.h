@@ -6588,10 +6588,10 @@ extern LN_FLAT_API void LNUIElement_RegisterSubclassTypeInfo(const LNUIElement_S
 extern LN_FLAT_API LNSubinstanceId LNUIElement_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// ln::UITextBlock
+// ln::UIText
 
 /**
-    @brief UITextBlock を作成します。
+    @brief UIText を作成します。
     @param[out] outUITextBlock : instance.
 */
 LN_FLAT_API LNResult LNUITextBlock_Create(LNHandle* outUITextBlock);

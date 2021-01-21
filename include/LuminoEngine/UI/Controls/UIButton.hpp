@@ -2,7 +2,7 @@
 #include "../UIContainerElement.hpp"
 
 namespace ln {
-class UITextBlock;
+class UIText;
 
 enum class UICheckState
 {
@@ -34,7 +34,7 @@ protected:
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
 private:
-    Ref<UITextBlock> m_textContent;
+    Ref<UIText> m_textContent;
     Ref<UICommand> m_command;
     bool m_isPressed;
 };

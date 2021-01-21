@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
-#include <LuminoEngine/UI/UITextBlock.hpp>
+#include <LuminoEngine/UI/UIText.hpp>
 #include <LuminoEngine/UI/Controls/UIListView.hpp>
 #include "../UIStyleInstance.hpp"
 
@@ -73,7 +73,7 @@ void UIListView::refresh()
             auto childModel = m_model->getItem(i);
            // auto itemData = m_model->getData(childModel, u"");
 
-            //auto text = makeObject<UITextBlock>();
+            //auto text = makeObject<UIText>();
             //text->setText(itemData);
 
             //auto child = makeObject<UITreeItem>();
@@ -170,7 +170,7 @@ void UIListViewItem2::setContent(int columnId, UIElement* element)
 void UIListViewItem2::setText(int columnId, const ln::String& text)
 {
     // TODO: pooling
-    setContent(columnId, ln::UITextBlock::create(text));
+    setContent(columnId, ln::UIText::create(text));
 }
 
 Size UIListViewItem2::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)

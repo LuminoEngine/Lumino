@@ -55,7 +55,7 @@ public:
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UITextBlock>(u"Button"));
+			layout1->addChild(makeObject<UIText>(u"Button"));
 
 			auto button1 = makeObject<UIButton>();
 			button1->setText(u"Button");
@@ -86,7 +86,7 @@ public:
 		//	layout1->setMargin(margin);
 		//	mainLauout->addChild(layout1);
 
-		//	layout1->addChild(makeObject<UITextBlock>(u"RadioButton"));
+		//	layout1->addChild(makeObject<UIText>(u"RadioButton"));
 
 		//	layout1->addChild(makeObject<UIButton>(u"dummy"));
 		//}
@@ -96,7 +96,7 @@ public:
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UITextBlock>(u"CheckBox"));
+			layout1->addChild(makeObject<UIText>(u"CheckBox"));
 
 			auto checkbox1 = makeObject<UICheckBox>();
 			checkbox1->addChild(u"CheckBox1");
@@ -116,7 +116,7 @@ public:
 		//	layout1->setMargin(margin);
 		//	mainLauout->addChild(layout1);
 
-		//	layout1->addChild(makeObject<UITextBlock>(u"ComboBox"));
+		//	layout1->addChild(makeObject<UIText>(u"ComboBox"));
 
 		//	layout1->addChild(makeObject<UIButton>(u"dummy"));
 		//}
@@ -126,7 +126,7 @@ public:
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UITextBlock>(u"ListBox (Direct)"));
+			layout1->addChild(makeObject<UIText>(u"ListBox (Direct)"));
 
 			auto listbox1 = UIListBox::create();
 			listbox1->addChild(u"item1");
@@ -148,7 +148,7 @@ public:
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UITextBlock>(u"TreeView (Model)"));
+			layout1->addChild(makeObject<UIText>(u"TreeView (Model)"));
 
 			auto model1 = ln::makeObject<ln::UIFileSystemCollectionModel>();
 			model1->setRootPath(LN_LOCALFILE("Assets"));
@@ -171,7 +171,7 @@ public:
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UITextBlock>(u"Splitter"));
+			layout1->addChild(makeObject<UIText>(u"Splitter"));
 
 			auto splitter1 = makeObject<UISplitter>();
 			splitter1->setOrientation(UILayoutOrientation::Horizontal);
@@ -199,7 +199,7 @@ public:
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UITextBlock>(u"Font icon"));
+			layout1->addChild(makeObject<UIText>(u"Font icon"));
 
 			{
 				auto layout2 = makeObject<UIStackLayout>();
@@ -249,7 +249,7 @@ public:
 			auto layout1 = makeObject<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
-			layout1->addChild(makeObject<UITextBlock>(u"TabBar"));
+			layout1->addChild(makeObject<UIText>(u"TabBar"));
 
 
 			auto tabbar1 = makeObject<UITabBar2>();
@@ -290,7 +290,7 @@ public:
 			auto layout1 = makeObject<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
-			layout1->addChild(makeObject<UITextBlock>(u"PropertyFields"));
+			layout1->addChild(makeObject<UIText>(u"PropertyFields"));
 
 			auto field1 = makeObject<UISliderField>();
 			field1->setChanged([](float v) { ln::Debug::print(String::fromNumber(v)); });
@@ -307,7 +307,7 @@ public:
 			auto layout1 = makeObject<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
-			layout1->addChild(makeObject<UITextBlock>(u"ComboBox"));
+			layout1->addChild(makeObject<UIText>(u"ComboBox"));
 
 			auto comboBox1 = makeObject<UIComboBox>();
 			comboBox1->setHAlignment(UIHAlignment::Left);

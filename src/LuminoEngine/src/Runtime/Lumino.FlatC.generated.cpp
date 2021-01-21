@@ -5633,7 +5633,7 @@ LN_FLAT_API LNResult LNUIElementSerializeHandler_Create(LNUIElementSerializeHand
 
 
 // Auto generated override handler
-using UITextBlockSerializeHandler = ln::Delegate<void(ln::UITextBlock* self, ln::Serializer2* ar)>;
+using UITextBlockSerializeHandler = ln::Delegate<void(ln::UIText* self, ln::Serializer2* ar)>;
 
 class LNWS_UITextBlockSerializeHandler : public UITextBlockSerializeHandler
 {
@@ -5652,7 +5652,7 @@ public:
     LNUITextBlockSerializeHandlerCallback m_callback;
 
     LNWS_UITextBlockSerializeHandler()
-      : UITextBlockSerializeHandler([this](ln::UITextBlock* self, ln::Serializer2* ar) -> void
+      : UITextBlockSerializeHandler([this](ln::UIText* self, ln::Serializer2* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUITextBlockSerializeHandlerCallback"); }
@@ -12235,7 +12235,7 @@ public:
 LNUIElement_OnSerialize_OverrideCallback LNWS_ln_UIElement::s_LNUIElement_OnSerialize_OverrideCallback = nullptr;
 
 
-class LNWS_ln_UITextBlock : public ln::UITextBlock
+class LNWS_ln_UITextBlock : public ln::UIText
 {
 public:
     // Override functions per instance for FlatAPI User.
@@ -12271,11 +12271,11 @@ public:
             }
         }
         if (s_LNUITextBlock_OnSerialize_OverrideCallback) s_LNUITextBlock_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UITextBlock::onSerialize(ar);
+        ln::UIText::onSerialize(ar);
     }
     void onSerialize_CallBase(ln::Serializer2* ar)
     {
-        ln::UITextBlock::onSerialize(ar);
+        ln::UIText::onSerialize(ar);
     }
 
     // TypeInfo
@@ -21641,18 +21641,18 @@ LN_FLAT_API LNResult LNUITextBlock_SetPrototype_OnSerialize(LNHandle uitextblock
 }
 extern LN_FLAT_API int LNUITextBlock_GetTypeInfoId()
 {
-    return ln::TypeInfo::getTypeInfo<ln::UITextBlock>()->id();
+    return ln::TypeInfo::getTypeInfo<ln::UIText>()->id();
 }
 
 LN_FLAT_API void LNUITextBlock_SetManagedTypeInfoId(int64_t id)
 {
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UITextBlock>(), id);
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIText>(), id);
 }
 
 void LNUITextBlock_RegisterSubclassTypeInfo(const LNUITextBlock_SubclassRegistrationInfo* info)
 {
     if (info) {
-        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UITextBlock>(), info->subclassId);
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIText>(), info->subclassId);
         *LNWS_ln_UITextBlock::subclassInfo() = *info;
     }
 }
