@@ -11,6 +11,7 @@ class App_Sandbox_EmptyApp : public Application
         //Engine::renderView()->setGuideGridEnabled(true);
         //Engine::camera()->addComponent(CameraOrbitControlComponent::create());
 
+        UITextBlock::With(u"test").buildInto();
 
     }
 

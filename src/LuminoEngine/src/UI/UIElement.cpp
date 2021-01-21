@@ -1273,6 +1273,12 @@ UIElement* UIElement::findFocusedVisualChildLeaf()
     return this;
 }
 
+void UIElement::intoUI(UIElement* parent)
+{
+    UIElement* primaryElement = (parent) ? parent : m_manager->primaryElement();
+    primaryElement->addChild(this);
+}
+
 UIVisualStateManager* UIElement::getVisualStateManager()
 {
     if (!m_visualStateManager) {

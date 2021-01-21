@@ -22,10 +22,10 @@ namespace ln {
 
 //==============================================================================
 // UITextBlock
+
 LN_OBJECT_IMPLEMENT(UITextBlock, UIElement) {
 	 typeInfo->registerViewProperty(makeRef<ViewPropertyInfo>(TypeInfo::getTypeInfo<String>(), "text", LN_MAKE_VIEW_PROPERTY_ACCESSOR(UITextBlock, String, text, setText)));
 }
-
 
 ViewProperty* UITextBlock::getViewProperty(StringRef name)
 {
@@ -151,6 +151,15 @@ void UITextBlock::onRender(UIRenderingContext* context)
     context->setTextColor(color);
 
     context->drawText(m_text);
+}
+
+//==============================================================================
+// UITextBlock::BuilderDetails
+
+void UITextBlock::BuilderDetails::apply(UITextBlock* p) const
+{
+    UIElement::BuilderDetails::apply(p);
+    p->setText(text);
 }
 
 } // namespace ln

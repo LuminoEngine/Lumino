@@ -15,6 +15,7 @@ class UITextBlock
     : public UIElement
 {
     LN_OBJECT;
+    LN_BUILDER;
 public:
     static Ref<UITextBlock> create();
     static Ref<UITextBlock> create(const StringRef& text);
@@ -67,6 +68,32 @@ protected:
 private:
     String m_text;
     Size m_textSize;
+};
+
+//==============================================================================
+// UITextBlock::Builder
+
+struct UITextBlock::BuilderDetails : public UIElement::BuilderDetails
+{
+    LN_BUILDER_DETAILS(UITextBlock);
+
+    String text;
+
+    void apply(UITextBlock* p) const;
+};
+
+template<class T, class B, class D>
+struct UITextBlock::BuilderCore : public UIElement::BuilderCore<T, B, D>
+{
+    LN_BUILDER_CORE(UIElement::BuilderCore);
+
+    B& text(StringRef value) { d()->text = value; return self(); }
+};
+
+struct UITextBlock::Builder : public BuilderCore<UITextBlock, Builder, BuilderDetails>
+{
+    Builder() {}
+    Builder(StringRef text) { d()->text = text; }
 };
 
 } // namespace ln

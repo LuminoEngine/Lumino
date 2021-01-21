@@ -648,6 +648,7 @@ public: // TODO: internal
 
 	int getVisualChildrenCount() const { return (m_visualChildren) ? m_visualChildren->size() : 0; }
 	UIElement* getVisualChild(int index) const { return (m_visualChildren) ? m_visualChildren->at(index) : nullptr; }
+	void intoUI(UIElement* parent = nullptr);
 
 private:
 	void updateEnabledPropertyOnChildren();
@@ -683,6 +684,8 @@ struct UIElement::BuilderCore : public AbstractBuilder<T, B, D>
 
 	/** height property */
 	B& backgroundColor(const Color& value) { d()->backgroundColor = value; return self(); }
+
+	Ref<T> buildInto(UIElement* parent = nullptr) { auto p = AbstractBuilder<T, B, D>::build(); p->intoUI(parent); return p; }
 };
 
 LN_BUILDER_IMPLEMENT(UIElement);
