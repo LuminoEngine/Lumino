@@ -1,14 +1,15 @@
 ﻿#include <Lumino.hpp>
 
-void Main()
+class HelloApp : public Application
 {
-	Engine::init();
+    void onStart() override
+    {
+        auto text = UITextBlock::create(u"Hello, Lumino!");
+    }
 
-	auto text = UITextBlock::create(u"Hello, Lumino!");
+    void onUpdate() override
+    {
+    }
+};
 
-	UI::add(text);
-
-	while (Engine::update()) {
-
-	}
-}
+LUMINO_APP(HelloApp);

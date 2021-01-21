@@ -13,7 +13,7 @@ TEST_F(Test_PostEffect, Bloom)
 	auto sprite1 = Sprite::Builder()// Sprite::create(Texture2D::whiteTexture(), 5, 5);
 		.texture(Texture2D::whiteTexture())
 		.size(5, 5)
-		.into();
+		.buildInto();
 	sprite1->setShadingModel(ShadingModel::Unlit);
 
 	auto bloomEffect = BloomPostEffect::create();
@@ -28,24 +28,25 @@ TEST_F(Test_PostEffect, Bloom)
 
 TEST_F(Test_PostEffect, SSR)
 {
-	auto plane1 = PlaneMesh::create();
 	auto plane1Material = Material::create();
 	plane1Material->setColor(Color::Blue);
 	plane1Material->setRoughness(0.0f);
 	plane1Material->setMetallic(1.0f);
-	plane1->setRotation(-Math::PI / 2, -Math::PI / 3, 0);
-	plane1->setPosition(-2, 0, 0);
-	plane1->planeMeshComponent()->setMaterial(plane1Material);
+	PlaneMesh::Builder()
+		.position(-2, 0, 0)
+		.rotation(-Math::PI / 2, -Math::PI / 3, 0)
+		.material(plane1Material)
+		.buildInto();
 
-	auto box1 = BoxMesh::create();
 	auto box1Material = Material::create();
 	box1Material->setColor(Color::Green);
 	box1Material->setRoughness(1.0f);
 	box1Material->setMetallic(0.0f);
-	box1->boxMeshComponent()->setMaterial(box1Material);
-
-	box1->setScale(5);
-	box1->setPosition(4, 0, 0);
+	BoxMesh::Builder()
+		.position(4, 0, 0)
+		.scale(5)
+		.material(box1Material)
+		.buildInto();
 
 	auto ssrEffect = makeObject<SSRPostEffect>();
 	Engine::renderView()->addPostEffect(ssrEffect);

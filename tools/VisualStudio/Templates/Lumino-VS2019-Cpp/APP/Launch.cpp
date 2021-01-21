@@ -2,23 +2,21 @@
 #include "targetver.h"
 
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <Windows.h>
+#include <LuminoEngine/Platform/Win32PlatformInterface.hpp>
 
-void Main();
+extern "C" ::ln::Application * LuminoCreateApplicationInstance();
 
-int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPWSTR lpCmdLine,
+    _In_ int nCmdShow)
 {
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
-
-    Main();
-
-    ln::Engine::finalize();
-
-    return 0;
+    ln::Application* app = ::LuminoCreateApplicationInstance();
+    return ln::Win32PlatformInterface::WinMain(app);
 }
 
-int main(int argc, const char** argv)
+int main(int argc, char** argv)
 {
     return wWinMain(0, 0, 0, 0);
 }

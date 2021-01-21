@@ -1,24 +1,24 @@
 ﻿Lumino
-========
-Lumino is a framework for building real-time graphics applications such as games and digital art.
-It provides an easy-to-use interface that runs on multiple platforms and is available from multiple programming languages.
+==========
 
-Lumino はゲームやデジタルアートなどのリアルタイムグラフィックスアプリケーションを構築するためのフレームワークです。
-マルチプラットフォームで動作し複数のプログラミング言語から利用できる、使いやすいインターフェイスを提供します。
+Lumino is a open source library for building interactive applications such as games and digital art.
+It provides an simple API that runs on multiple platforms and is available from multiple programming languages.
 
+Lumino はゲームやデジタルアートなどのインタラクティブアプリケーションを構築するためのオープンソースライブラリです。
+マルチプラットフォームで動作し複数のプログラミング言語から利用できる、シンプルな API を提供します。
 
 Build and Unit Tests
---------
+----------
 
 [![Package](https://github.com/LuminoEngine/Lumino/workflows/Package/badge.svg)](https://github.com/LuminoEngine/Lumino/actions)
 
 
 Get started
---------
+----------
 
 [Website](https://luminoengine.github.io/)
 
-[Roadmap](https://github.com/LuminoEngine/Lumino/wiki/ProjectRoadmap)
+[Roadmap](https://github.com/LuminoEngine/Lumino/wiki/ProjectRoadmap) `変更予定`
 
 [How to build](docs/HowToBuild.md)
 
@@ -27,19 +27,52 @@ Get started
 [Blog](http://luminolog.hatenablog.com/)
 
 
-開発状況 / 開発版について
---------
-まだまだすごい開発版です。
+開発状況と目標
+----------
 
-開発はまずプロトタイプを作成してしばらく運用し、そのアーキテクチャが妥当であることを確認する、という流れで進めています。
+`目標整理中…`
 
-一応「リアルタイムグラフィックスアプリケーションのためのフレームワーク」と謳っていますが、根っこはゲームエンジンです。 そういうわけで、実際にゲームを作りながらこちらのエンジンも作成しています。このゲームのリリースに合わせて、1.0.0 リリースを行う予定です。
+### これまでのこと
+
+v0.10.0 ではひとまず 3D ゲームエンジンとしておおよそ必要な機能を実装し終え、ゲームをリリースしユーザーの下で安定動作できるようになりました。
+
+ここからはより多くのタイトルに対応できるように汎用化を進めていく・・・という計画をこれまでは進めていましたが、
+おそらく "ゲームエンジン" として積極的に開発していくのはこのバージョンが最後になると思います。
+
+理由は大きく次の2つです。
+
+- ゲームを作ることが目的である人に対して、強力なアセット管理やエディタを持たないゲームエンジンを勧める理由が無い。
+- ゲームプログラミングを学ぶ人に対しては他に競合ライブラリが多くあるが、それらと比べて明確なコンセプトが無い。
+
+Lumino をゲームエンジンとして使用しても、それ以外の手段で得られる色々な意味での "良さ" に達するのは難しいだろう、という結論に至りました。
+
+### これからのこと
+
+ゲームエンジンからは離れますが、その描画性能や特徴を活かして "インタラクティブアプリケーション" という方向に持っていこうとしています。
+
+この分野だと "メディアアート" や "クリエイティブコーディング" といったキーワードがありますが、おそらくそういったものよりも、ここ数年でユーザーと情報の距離が一気に近くなったことで高まってきた "情報の可視化" と "高速なプロトタイピング" のニーズを意識していくと思います。
+
+私の本業でもいくつかプロトタイプを作ろうとしたときに、コードファーストで 3D シーンを瞬時に作れる Lumino が適しているようなケースに何度か遇うことがありました。当面はそんなユースケースを考えています。
+
+#### 直近で目指したいこと
+
+- アセットの動的生成・更新 (外部リソースに頼りすぎず、コードだけで高速にシーンを構築する)
+- 標準化された外部デバイスを扱う仕組み (カメラ、マイク、VR 等)
+- 各種通信
+- VRM
+
+#### 目指さないこと
+
+- グラフィックのリアリティ
+- ゲームアプリ向けの機能 (キーコンフィグなど)
 
 Screenshots
 --------
 参考のため、開発の中で撮れた画像を置いておきます。
 
 #### Scene rendering
+
+![](docs/Gallery/33-scene.jfif)
 
 ![](docs/Gallery/32-scene.png)
 

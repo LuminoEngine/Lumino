@@ -33,16 +33,6 @@ bool VisualObject::isVisible() const
     return mainVisualComponent()->isVisible();
 }
 
-void VisualObject::setBlendMode(const Optional<BlendMode>& mode)
-{
-    mainVisualComponent()->setBlendMode(mode);
-}
-
-const Optional<BlendMode>& VisualObject::blendMode() const
-{
-    return mainVisualComponent()->blendMode();
-}
-
 void VisualObject::setShadingModel(const Optional<ShadingModel>& value)
 {
     mainVisualComponent()->setShadingModel(value);
@@ -51,6 +41,16 @@ void VisualObject::setShadingModel(const Optional<ShadingModel>& value)
 const Optional<ShadingModel>& VisualObject::shadingModel() const
 {
     return mainVisualComponent()->shadingModel();
+}
+
+void VisualObject::setBlendMode(const Optional<BlendMode>& mode)
+{
+    mainVisualComponent()->setBlendMode(mode);
+}
+
+const Optional<BlendMode>& VisualObject::blendMode() const
+{
+    return mainVisualComponent()->blendMode();
 }
 
 void VisualObject::setDepthTestEnabled(const Optional<bool>& enabled)
@@ -144,6 +144,19 @@ void VisualObject::setMainVisualComponent(VisualComponent* component)
 void VisualObject::BuilderDetails::apply(VisualObject* p) const
 {
     WorldObject::BuilderDetails::apply(p);
+
+    if (visible) p->setVisible(*visible);
+    if (shadingModel) p->setShadingModel(*shadingModel);
+    if (blendMode) p->setBlendMode2(*blendMode);
+    if (cullMode) p->setCullMode(*cullMode);
+
+    if (depthTest) p->setDepthTestEnabled(*depthTest);
+    if (depthWrite) p->setDepthWriteEnabled(*depthWrite);
+
+    if (opacity) p->setOpacity(*opacity);
+    if (colorScale) p->setColorScale(*colorScale);
+    if (blendColor) p->setBlendColor(*blendColor);
+    if (colorTone) p->setTone(*colorTone);
 }
 
 } // namespace ln

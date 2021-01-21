@@ -26,6 +26,12 @@ public:
     /** @name RenderState */
     /** @{ */
 
+    /** ShadingModel を設定します。(default: ShadingModel::Default) */
+    void setShadingModel(const Optional<ShadingModel>& value);
+
+    /** ShadingModel を取得します。*/
+    const Optional<ShadingModel>& shadingModel() const;
+
     /** 合成方法を設定します。(default: BlendMode::Normal) */
     LN_METHOD(Property)
     void setBlendMode2(BlendMode value) { setBlendMode(value); }
@@ -37,12 +43,6 @@ public:
 
     /** 合成方法を取得します。*/
     const Optional<BlendMode>& blendMode() const;
-
-    /** ShadingModel を設定します。(default: ShadingModel::Default) */
-    void setShadingModel(const Optional<ShadingModel>& value);
-
-    /** ShadingModel を取得します。*/
-    const Optional<ShadingModel>& shadingModel() const;
 
     /** このノードを描画する際の深度テストの有無を設定します。(default: true) */
     void setDepthTestEnabled(const Optional<bool>& enabled);
@@ -123,6 +123,19 @@ struct VisualObject::BuilderDetails : public WorldObject::BuilderDetails
 {
     LN_BUILDER_DETAILS(VisualObject);
 
+    Optional<bool> visible;
+    Optional<ShadingModel> shadingModel;
+    Optional<BlendMode> blendMode;
+    Optional<CullMode> cullMode;
+
+    Optional<bool> depthTest;
+    Optional<bool> depthWrite;
+
+    Optional<float> opacity;
+    Optional<Color> colorScale;
+    Optional<Color> blendColor;
+    Optional<ColorTone> colorTone;
+
     void apply(VisualObject* p) const;
 };
 
@@ -130,6 +143,19 @@ template<class T, class B, class D>
 struct VisualObject::BuilderCore : public WorldObject::BuilderCore<T, B, D>
 {
     LN_BUILDER_CORE(WorldObject::BuilderCore);
+
+    B& visible(bool value) { d()->visible = value; return self(); }
+    B& shadingModel(ShadingModel value) { d()->shadingModel = value; return self(); }
+    B& blendMode(BlendMode value) { d()->blendMode = value; return self(); }
+    B& cullMode(CullMode value) { d()->cullMode = value; return self(); }
+
+    B& depthTest(bool value) { d()->depthTest = value; return self(); }
+    B& depthWrite(bool value) { d()->depthWrite = value; return self(); }
+
+    B& opacity(float value) { d()->opacity = value; return self(); }
+    B& colorScale(const Color& value) { d()->colorScale = value; return self(); }
+    B& blendColor(const Color& value) { d()->blendColor = value; return self(); }
+    B& colorTone(const ColorTone& value) { d()->colorTone = value; return self(); }
 };
 
 LN_BUILDER_IMPLEMENT(VisualObject);

@@ -146,6 +146,7 @@
 
 #ifdef LN_MSVC_AUTO_LINK_LIBRARIES
 #pragma comment(lib, "glfw3" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "nanovg" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "ogg" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "spirv-cross-core" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "spirv-cross-cpp" LN_MSVC_AUTO_LINK_POSTFIX ".lib")

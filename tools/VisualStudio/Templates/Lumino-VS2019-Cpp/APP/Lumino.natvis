@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="ln::String">
+    <!-- Watch -->
+    <DisplayString Condition="(m_data.sso.length &amp; 1) == 0">{m_data.sso.buffer}</DisplayString>
+    <DisplayString Condition="(m_data.sso.length &amp; 1) != 0">{m_data.core->m_str,[m_data.core->m_length]}</DisplayString>
+    <!-- Text Visualizer -->
+    <StringView Condition="(m_data.sso.length &amp; 1) == 0">m_data.sso.buffer</StringView>
+    <StringView Condition="(m_data.sso.length &amp; 1) != 0">m_data.core->m_str</StringView>
+  </Type>
+  <Type Name="ln::Ref&lt;*&gt;">
+    <SmartPointer Usage="Minimal">m_ptr</SmartPointer>
+    <DisplayString Condition="m_ptr == 0">empty</DisplayString>
+    <Expand>
+      <Item Condition="m_ptr != 0" Name="[ptr]">m_ptr</Item>
+    </Expand>
+  </Type>
+</AutoVisualizer>

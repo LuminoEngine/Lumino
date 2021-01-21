@@ -33,6 +33,7 @@ extern "C" void InitLuminoRubyRuntimeManager();
 
 
 
+VALUE g_enum_LogLevel;
 VALUE g_enum_EncodingType;
 VALUE g_enum_Keys;
 VALUE g_enum_MouseButtons;
@@ -72,6 +73,7 @@ VALUE g_class_ZVTestPromise1;
 VALUE g_class_ZVTestPromise2;
 VALUE g_class_ZVTestClass1;
 VALUE g_class_ZVTestEventArgs1;
+VALUE g_class_Log;
 VALUE g_class_Serializer2;
 VALUE g_class_AssetObject;
 VALUE g_class_AssetImportSettings;
@@ -123,9 +125,7 @@ VALUE g_class_RaycastResult;
 VALUE g_class_WorldRenderView;
 VALUE g_class_BoxMesh;
 VALUE g_class_PlaneMesh;
-VALUE g_class_StaticMesh;
-VALUE g_class_StaticMeshComponent;
-VALUE g_class_SkinnedMeshComponent;
+VALUE g_class_MeshComponent;
 VALUE g_class_Collision;
 VALUE g_class_TriggerBodyComponent;
 VALUE g_class_ParticleEmitter;
@@ -235,11 +235,7 @@ VALUE g_class_BoxMeshUpdateHandler;
 VALUE g_class_PlaneMeshSerializeHandler;
 VALUE g_class_PlaneMeshPreUpdateHandler;
 VALUE g_class_PlaneMeshUpdateHandler;
-VALUE g_class_StaticMeshSerializeHandler;
-VALUE g_class_StaticMeshPreUpdateHandler;
-VALUE g_class_StaticMeshUpdateHandler;
-VALUE g_class_StaticMeshComponentSerializeHandler;
-VALUE g_class_SkinnedMeshComponentSerializeHandler;
+VALUE g_class_MeshComponentSerializeHandler;
 VALUE g_class_CollisionSerializeHandler;
 VALUE g_class_TriggerBodyComponentSerializeHandler;
 VALUE g_class_ParticleEmitterSerializeHandler;
@@ -1554,6 +1550,27 @@ static VALUE Wrap_LNPoint_Set(int argc, VALUE* argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "ln::Point::Point - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNPoint_Get(int argc, VALUE* argv, VALUE self)
+{
+    LNPoint* selfObj;
+    Data_Get_Struct(self, LNPoint, selfObj);
+    if (2 <= argc && argc <= 2) {
+        VALUE outX;
+        VALUE outY;
+        rb_scan_args(argc, argv, "2", &outX, &outY);
+        if (LNRB_VALUE_IS_FLOAT(outX) && LNRB_VALUE_IS_FLOAT(outY))
+        {
+            float _outX = LNRB_VALUE_TO_FLOAT(outX);
+            float _outY = LNRB_VALUE_TO_FLOAT(outY);
+            LNResult errorCode = LNPoint_Get(selfObj, &_outX, &_outY);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Point::get - wrong argument type.");
     return Qnil;
 }
 
@@ -3703,6 +3720,71 @@ LNResult Wrap_LNZVTestEventArgs1_OnSerialize_OverrideCallback(LNHandle object, L
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_OK;
 }
+
+//==============================================================================
+// ln::Log
+
+struct Wrap_Log
+{
+
+    Wrap_Log()
+    {}
+};
+
+
+static VALUE Wrap_LNLog_SetLevel(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE level;
+        rb_scan_args(argc, argv, "1", &level);
+        if (LNRB_VALUE_IS_NUMBER(level))
+        {
+            LNLogLevel _level = (LNLogLevel)FIX2INT(level);
+            LNResult errorCode = LNLog_SetLevel(_level);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Log::setLevel - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNLog_AllocConsole(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LNResult errorCode = LNLog_AllocConsole();
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Log::allocConsole - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNLog_Write(int argc, VALUE* argv, VALUE self)
+{
+    if (3 <= argc && argc <= 3) {
+        VALUE level;
+        VALUE tag;
+        VALUE text;
+        rb_scan_args(argc, argv, "3", &level, &tag, &text);
+        if (LNRB_VALUE_IS_NUMBER(level) && LNRB_VALUE_IS_STRING(tag) && LNRB_VALUE_IS_STRING(text))
+        {
+            LNLogLevel _level = (LNLogLevel)FIX2INT(level);
+            const char* _tag = LNRB_VALUE_TO_STRING(tag);
+            const char* _text = LNRB_VALUE_TO_STRING(text);
+            LNResult errorCode = LNLog_WriteA(_level, _tag, _text);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Log::write - wrong argument type.");
+    return Qnil;
+}
+
 
 //==============================================================================
 // ln::Serializer2
@@ -10626,187 +10708,63 @@ LNResult Wrap_LNPlaneMesh_OnUpdate_OverrideCallback(LNHandle worldobject, float 
 }
 
 //==============================================================================
-// ln::StaticMesh
+// ln::MeshComponent
 
-struct Wrap_StaticMesh
-    : public Wrap_VisualObject
-{
-    VALUE LNStaticMesh_GetModel_AccessorCache = Qnil;
-
-    Wrap_StaticMesh()
-    {}
-};
-
-static void LNStaticMesh_delete(Wrap_StaticMesh* obj)
-{
-    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
-    delete obj;
-}
-
-static void LNStaticMesh_mark(Wrap_StaticMesh* obj)
-{
-	rb_gc_mark(obj->LNStaticMesh_GetModel_AccessorCache);
-
-
-}
-
-static VALUE LNStaticMesh_allocate(VALUE klass)
-{
-    VALUE obj;
-    Wrap_StaticMesh* internalObj;
-
-    internalObj = new Wrap_StaticMesh();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNStaticMesh_allocate");
-    obj = Data_Wrap_Struct(klass, LNStaticMesh_mark, LNStaticMesh_delete, internalObj);
-
-    return obj;
-}
-
-static VALUE LNStaticMesh_allocateForGetObject(VALUE klass, LNHandle handle)
-{
-    VALUE obj;
-    Wrap_StaticMesh* internalObj;
-
-    internalObj = new Wrap_StaticMesh();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNStaticMesh_allocate");
-    obj = Data_Wrap_Struct(klass, LNStaticMesh_mark, LNStaticMesh_delete, internalObj);
-    
-    internalObj->handle = handle;
-    return obj;
-}
-
-
-static VALUE Wrap_LNStaticMesh_Load(int argc, VALUE* argv, VALUE self)
-{
-    if (1 <= argc && argc <= 1) {
-        VALUE filePath;
-        rb_scan_args(argc, argv, "1", &filePath);
-        if (LNRB_VALUE_IS_STRING(filePath))
-        {
-            const char* _filePath = LNRB_VALUE_TO_STRING(filePath);
-            LNHandle _outReturn;
-            LNResult errorCode = LNStaticMesh_LoadA(_filePath, &_outReturn);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
-            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
-        }
-    }
-    rb_raise(rb_eArgError, "ln::StaticMesh::load - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LNStaticMesh_GetModel(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_StaticMesh* selfObj;
-    Data_Get_Struct(self, Wrap_StaticMesh, selfObj);
-    if (0 <= argc && argc <= 0) {
-
-        {
-            LNHandle _outReturn;
-            LNResult errorCode = LNStaticMesh_GetModel(selfObj->handle, &_outReturn);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
-            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn, selfObj->LNStaticMesh_GetModel_AccessorCache);
-        }
-    }
-    rb_raise(rb_eArgError, "ln::StaticMesh::model - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LNStaticMesh_MakeCollisionBody(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_StaticMesh* selfObj;
-    Data_Get_Struct(self, Wrap_StaticMesh, selfObj);
-    if (1 <= argc && argc <= 1) {
-        VALUE meshContainerName;
-        rb_scan_args(argc, argv, "1", &meshContainerName);
-        if (LNRB_VALUE_IS_STRING(meshContainerName))
-        {
-            const char* _meshContainerName = LNRB_VALUE_TO_STRING(meshContainerName);
-            LNResult errorCode = LNStaticMesh_MakeCollisionBodyA(selfObj->handle, _meshContainerName);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::StaticMesh::makeCollisionBody - wrong argument type.");
-    return Qnil;
-}
-
-LNResult Wrap_LNStaticMesh_OnSerialize_OverrideCallback(LNHandle object, LNHandle ar)
-{
-    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_OK;
-}
-LNResult Wrap_LNStaticMesh_OnPreUpdate_OverrideCallback(LNHandle worldobject)
-{
-    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
-    VALUE retval = rb_funcall(obj, rb_intern("on_pre_update"), 0, 0);
-    return LN_OK;
-}
-LNResult Wrap_LNStaticMesh_OnUpdate_OverrideCallback(LNHandle worldobject, float elapsedSeconds)
-{
-    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
-    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_OK;
-}
-
-//==============================================================================
-// ln::StaticMeshComponent
-
-struct Wrap_StaticMeshComponent
+struct Wrap_MeshComponent
     : public Wrap_VisualComponent
 {
 
-    Wrap_StaticMeshComponent()
+    Wrap_MeshComponent()
     {}
 };
 
-static void LNStaticMeshComponent_delete(Wrap_StaticMeshComponent* obj)
+static void LNMeshComponent_delete(Wrap_MeshComponent* obj)
 {
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 
-static void LNStaticMeshComponent_mark(Wrap_StaticMeshComponent* obj)
+static void LNMeshComponent_mark(Wrap_MeshComponent* obj)
 {
 	
 
 }
 
-static VALUE LNStaticMeshComponent_allocate(VALUE klass)
+static VALUE LNMeshComponent_allocate(VALUE klass)
 {
     VALUE obj;
-    Wrap_StaticMeshComponent* internalObj;
+    Wrap_MeshComponent* internalObj;
 
-    internalObj = new Wrap_StaticMeshComponent();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNStaticMeshComponent_allocate");
-    obj = Data_Wrap_Struct(klass, LNStaticMeshComponent_mark, LNStaticMeshComponent_delete, internalObj);
+    internalObj = new Wrap_MeshComponent();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNMeshComponent_allocate");
+    obj = Data_Wrap_Struct(klass, LNMeshComponent_mark, LNMeshComponent_delete, internalObj);
 
     return obj;
 }
 
-static VALUE LNStaticMeshComponent_allocateForGetObject(VALUE klass, LNHandle handle)
+static VALUE LNMeshComponent_allocateForGetObject(VALUE klass, LNHandle handle)
 {
     VALUE obj;
-    Wrap_StaticMeshComponent* internalObj;
+    Wrap_MeshComponent* internalObj;
 
-    internalObj = new Wrap_StaticMeshComponent();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNStaticMeshComponent_allocate");
-    obj = Data_Wrap_Struct(klass, LNStaticMeshComponent_mark, LNStaticMeshComponent_delete, internalObj);
+    internalObj = new Wrap_MeshComponent();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNMeshComponent_allocate");
+    obj = Data_Wrap_Struct(klass, LNMeshComponent_mark, LNMeshComponent_delete, internalObj);
     
     internalObj->handle = handle;
     return obj;
 }
 
 
-static VALUE Wrap_LNStaticMeshComponent_Create(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LNMeshComponent_Create(int argc, VALUE* argv, VALUE self)
 {
-    Wrap_StaticMeshComponent* selfObj;
-    Data_Get_Struct(self, Wrap_StaticMeshComponent, selfObj);
+    Wrap_MeshComponent* selfObj;
+    Data_Get_Struct(self, Wrap_MeshComponent, selfObj);
     if (0 <= argc && argc <= 0) {
 
         {
 
-            LNResult errorCode = LNStaticMeshComponent_Create(&selfObj->handle);
+            LNResult errorCode = LNMeshComponent_Create(&selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
 
@@ -10814,125 +10772,49 @@ static VALUE Wrap_LNStaticMeshComponent_Create(int argc, VALUE* argv, VALUE self
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "ln::StaticMeshComponent::init - wrong argument type.");
+    rb_raise(rb_eArgError, "ln::MeshComponent::init - wrong argument type.");
     return Qnil;
 }
 
-static VALUE Wrap_LNStaticMeshComponent_SetModel(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LNMeshComponent_SetModel(int argc, VALUE* argv, VALUE self)
 {
-    Wrap_StaticMeshComponent* selfObj;
-    Data_Get_Struct(self, Wrap_StaticMeshComponent, selfObj);
+    Wrap_MeshComponent* selfObj;
+    Data_Get_Struct(self, Wrap_MeshComponent, selfObj);
     if (1 <= argc && argc <= 1) {
         VALUE model;
         rb_scan_args(argc, argv, "1", &model);
         if (LNRB_VALUE_IS_OBJECT(model))
         {
             LNHandle _model = LuminoRubyRuntimeManager::instance->getHandle(model);
-            LNResult errorCode = LNStaticMeshComponent_SetModel(selfObj->handle, _model);
+            LNResult errorCode = LNMeshComponent_SetModel(selfObj->handle, _model);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "ln::StaticMeshComponent::setModel - wrong argument type.");
+    rb_raise(rb_eArgError, "ln::MeshComponent::setModel - wrong argument type.");
     return Qnil;
 }
 
-static VALUE Wrap_LNStaticMeshComponent_MakeCollisionBody(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LNMeshComponent_MakeCollisionBody(int argc, VALUE* argv, VALUE self)
 {
-    Wrap_StaticMeshComponent* selfObj;
-    Data_Get_Struct(self, Wrap_StaticMeshComponent, selfObj);
+    Wrap_MeshComponent* selfObj;
+    Data_Get_Struct(self, Wrap_MeshComponent, selfObj);
     if (1 <= argc && argc <= 1) {
         VALUE meshContainerName;
         rb_scan_args(argc, argv, "1", &meshContainerName);
         if (LNRB_VALUE_IS_STRING(meshContainerName))
         {
             const char* _meshContainerName = LNRB_VALUE_TO_STRING(meshContainerName);
-            LNResult errorCode = LNStaticMeshComponent_MakeCollisionBodyA(selfObj->handle, _meshContainerName);
+            LNResult errorCode = LNMeshComponent_MakeCollisionBodyA(selfObj->handle, _meshContainerName);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "ln::StaticMeshComponent::makeCollisionBody - wrong argument type.");
+    rb_raise(rb_eArgError, "ln::MeshComponent::makeCollisionBody - wrong argument type.");
     return Qnil;
 }
 
-LNResult Wrap_LNStaticMeshComponent_OnSerialize_OverrideCallback(LNHandle object, LNHandle ar)
-{
-    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_OK;
-}
-
-//==============================================================================
-// ln::SkinnedMeshComponent
-
-struct Wrap_SkinnedMeshComponent
-    : public Wrap_StaticMeshComponent
-{
-
-    Wrap_SkinnedMeshComponent()
-    {}
-};
-
-static void LNSkinnedMeshComponent_delete(Wrap_SkinnedMeshComponent* obj)
-{
-    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
-    delete obj;
-}
-
-static void LNSkinnedMeshComponent_mark(Wrap_SkinnedMeshComponent* obj)
-{
-	
-
-}
-
-static VALUE LNSkinnedMeshComponent_allocate(VALUE klass)
-{
-    VALUE obj;
-    Wrap_SkinnedMeshComponent* internalObj;
-
-    internalObj = new Wrap_SkinnedMeshComponent();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNSkinnedMeshComponent_allocate");
-    obj = Data_Wrap_Struct(klass, LNSkinnedMeshComponent_mark, LNSkinnedMeshComponent_delete, internalObj);
-
-    return obj;
-}
-
-static VALUE LNSkinnedMeshComponent_allocateForGetObject(VALUE klass, LNHandle handle)
-{
-    VALUE obj;
-    Wrap_SkinnedMeshComponent* internalObj;
-
-    internalObj = new Wrap_SkinnedMeshComponent();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNSkinnedMeshComponent_allocate");
-    obj = Data_Wrap_Struct(klass, LNSkinnedMeshComponent_mark, LNSkinnedMeshComponent_delete, internalObj);
-    
-    internalObj->handle = handle;
-    return obj;
-}
-
-
-static VALUE Wrap_LNSkinnedMeshComponent_Create(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_SkinnedMeshComponent* selfObj;
-    Data_Get_Struct(self, Wrap_SkinnedMeshComponent, selfObj);
-    if (0 <= argc && argc <= 0) {
-
-        {
-
-            LNResult errorCode = LNSkinnedMeshComponent_Create(&selfObj->handle);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
-            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
-
-            if (rb_block_given_p()) rb_yield(self);
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::SkinnedMeshComponent::init - wrong argument type.");
-    return Qnil;
-}
-
-LNResult Wrap_LNSkinnedMeshComponent_OnSerialize_OverrideCallback(LNHandle object, LNHandle ar)
+LNResult Wrap_LNMeshComponent_OnSerialize_OverrideCallback(LNHandle object, LNHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
@@ -15516,6 +15398,7 @@ LNResult Wrap_LNUIListItem_OnSerialize_OverrideCallback(LNHandle object, LNHandl
 struct Wrap_UIListItemsControl
     : public Wrap_UIControl
 {
+    VALUE LNUIListItemsControl_GetItemsLayoutPanel_AccessorCache = Qnil;
 
     Wrap_UIListItemsControl()
     {}
@@ -15529,7 +15412,8 @@ static void LNUIListItemsControl_delete(Wrap_UIListItemsControl* obj)
 
 static void LNUIListItemsControl_mark(Wrap_UIListItemsControl* obj)
 {
-	
+	rb_gc_mark(obj->LNUIListItemsControl_GetItemsLayoutPanel_AccessorCache);
+
 
 }
 
@@ -15578,6 +15462,23 @@ static VALUE Wrap_LNUIListItemsControl_SetItemsLayoutPanel(int argc, VALUE* argv
     return Qnil;
 }
 
+static VALUE Wrap_LNUIListItemsControl_GetItemsLayoutPanel(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIListItemsControl* selfObj;
+    Data_Get_Struct(self, Wrap_UIListItemsControl, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LNHandle _outReturn;
+            LNResult errorCode = LNUIListItemsControl_GetItemsLayoutPanel(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn, selfObj->LNUIListItemsControl_GetItemsLayoutPanel_AccessorCache);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIListItemsControl::itemsLayoutPanel - wrong argument type.");
+    return Qnil;
+}
+
 static VALUE Wrap_LNUIListItemsControl_SetSubmitMode(int argc, VALUE* argv, VALUE self)
 {
     Wrap_UIListItemsControl* selfObj;
@@ -15611,6 +15512,38 @@ static VALUE Wrap_LNUIListItemsControl_GetSubmitMode(int argc, VALUE* argv, VALU
         }
     }
     rb_raise(rb_eArgError, "ln::UIListItemsControl::submitMode - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNUIListItemsControl_ConnectOnSubmit(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIListItemsControl* selfObj;
+    Data_Get_Struct(self, Wrap_UIListItemsControl, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE handler;
+        rb_scan_args(argc, argv, "1", &handler);
+        if (LNRB_VALUE_IS_OBJECT(handler))
+        {
+            LNHandle _handler = LuminoRubyRuntimeManager::instance->getHandle(handler);
+            LNHandle _outReturn;
+            LNResult errorCode = LNUIListItemsControl_ConnectOnSubmit(selfObj->handle, _handler, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
+        }
+    }
+    if (argc == 0) {
+        VALUE block;
+        rb_scan_args(argc, argv, "0&", &block);
+        if (block != Qnil) {
+            VALUE value = rb_funcall(g_class_UIGeneralEventHandler, rb_intern("new"), 1, block);
+            LNHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
+            LNHandle _outReturn;
+            LNResult result = LNUIListItemsControl_ConnectOnSubmit(selfObj->handle, _value, &_outReturn);
+            if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LNRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIListItemsControl::connectOnSubmit - wrong argument type.");
     return Qnil;
 }
 
@@ -16182,13 +16115,13 @@ static VALUE Wrap_LNMouse_Repeated(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
-static VALUE Wrap_LNMouse_Position(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LNMouse_GetPosition(int argc, VALUE* argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
 
         {
             LNPoint _outReturn;
-            LNResult errorCode = LNMouse_Position(&_outReturn);
+            LNResult errorCode = LNMouse_GetPosition(&_outReturn);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
             VALUE retObj = LNPoint_allocate(g_class_Point);
             *((LNPoint*)DATA_PTR(retObj)) = _outReturn;
@@ -17176,23 +17109,6 @@ static VALUE Wrap_LNEngine_Update(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
-static VALUE Wrap_LNEngine_Run(int argc, VALUE* argv, VALUE self)
-{
-    if (1 <= argc && argc <= 1) {
-        VALUE app;
-        rb_scan_args(argc, argv, "1", &app);
-        if (LNRB_VALUE_IS_OBJECT(app))
-        {
-            LNHandle _app = LuminoRubyRuntimeManager::instance->getHandle(app);
-            LNResult errorCode = LNEngine_Run(_app);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::Engine::run - wrong argument type.");
-    return Qnil;
-}
-
 static VALUE Wrap_LNEngine_GetTime(int argc, VALUE* argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
@@ -17386,6 +17302,23 @@ static VALUE Wrap_LNApplication_World(int argc, VALUE* argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "ln::Application::world - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNApplication_Run(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Application* selfObj;
+    Data_Get_Struct(self, Wrap_Application, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LNResult errorCode = LNApplication_Run(selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Application::run - wrong argument type.");
     return Qnil;
 }
 
@@ -22882,391 +22815,79 @@ static VALUE Wrap_LNPlaneMeshUpdateHandler_Create(int argc, VALUE* argv, VALUE s
 
 
 //==============================================================================
-// StaticMeshSerializeHandler
+// MeshComponentSerializeHandler
 
-struct Wrap_StaticMeshSerializeHandler
+struct Wrap_MeshComponentSerializeHandler
     : public Wrap_RubyObject
 {
 
     VALUE m_proc = Qnil;
-    Wrap_StaticMeshSerializeHandler()
+    Wrap_MeshComponentSerializeHandler()
     {}
 };
 
-static void LNStaticMeshSerializeHandler_delete(Wrap_StaticMeshSerializeHandler* obj)
+static void LNMeshComponentSerializeHandler_delete(Wrap_MeshComponentSerializeHandler* obj)
 {
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 
-static void LNStaticMeshSerializeHandler_mark(Wrap_StaticMeshSerializeHandler* obj)
+static void LNMeshComponentSerializeHandler_mark(Wrap_MeshComponentSerializeHandler* obj)
 {
 	
 rb_gc_mark(obj->m_proc);
 
 }
 
-static VALUE LNStaticMeshSerializeHandler_allocate(VALUE klass)
+static VALUE LNMeshComponentSerializeHandler_allocate(VALUE klass)
 {
     VALUE obj;
-    Wrap_StaticMeshSerializeHandler* internalObj;
+    Wrap_MeshComponentSerializeHandler* internalObj;
 
-    internalObj = new Wrap_StaticMeshSerializeHandler();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNStaticMeshSerializeHandler_allocate");
-    obj = Data_Wrap_Struct(klass, LNStaticMeshSerializeHandler_mark, LNStaticMeshSerializeHandler_delete, internalObj);
+    internalObj = new Wrap_MeshComponentSerializeHandler();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNMeshComponentSerializeHandler_allocate");
+    obj = Data_Wrap_Struct(klass, LNMeshComponentSerializeHandler_mark, LNMeshComponentSerializeHandler_delete, internalObj);
 
     return obj;
 }
 
-static VALUE LNStaticMeshSerializeHandler_allocateForGetObject(VALUE klass, LNHandle handle)
+static VALUE LNMeshComponentSerializeHandler_allocateForGetObject(VALUE klass, LNHandle handle)
 {
     VALUE obj;
-    Wrap_StaticMeshSerializeHandler* internalObj;
+    Wrap_MeshComponentSerializeHandler* internalObj;
 
-    internalObj = new Wrap_StaticMeshSerializeHandler();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNStaticMeshSerializeHandler_allocate");
-    obj = Data_Wrap_Struct(klass, LNStaticMeshSerializeHandler_mark, LNStaticMeshSerializeHandler_delete, internalObj);
+    internalObj = new Wrap_MeshComponentSerializeHandler();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNMeshComponentSerializeHandler_allocate");
+    obj = Data_Wrap_Struct(klass, LNMeshComponentSerializeHandler_mark, LNMeshComponentSerializeHandler_delete, internalObj);
     
     internalObj->handle = handle;
     return obj;
 }
 
 
-static LNResult Wrap_LNStaticMeshSerializeHandler_OnSerialize_ProcCaller(LNHandle staticmeshserializehandler, LNHandle self, LNHandle ar)
+static LNResult Wrap_LNMeshComponentSerializeHandler_OnSerialize_ProcCaller(LNHandle meshcomponentserializehandler, LNHandle self, LNHandle ar)
 {
-    Wrap_StaticMeshSerializeHandler* selfObj;
-    Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(staticmeshserializehandler), Wrap_StaticMeshSerializeHandler, selfObj);
+    Wrap_MeshComponentSerializeHandler* selfObj;
+    Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(meshcomponentserializehandler), Wrap_MeshComponentSerializeHandler, selfObj);
     VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_OK;	// TODO: error handling.
 }
 
-static VALUE Wrap_LNStaticMeshSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LNMeshComponentSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
 {
-    Wrap_StaticMeshSerializeHandler* selfObj;
-    Data_Get_Struct(self, Wrap_StaticMeshSerializeHandler, selfObj);
+    Wrap_MeshComponentSerializeHandler* selfObj;
+    Data_Get_Struct(self, Wrap_MeshComponentSerializeHandler, selfObj);
     if (0 <= argc && argc <= 1) {
         VALUE proc, block;
         rb_scan_args(argc, argv, "01&", &proc, &block); // (handler=nil, &block)
         if (proc != Qnil) selfObj->m_proc = proc;
         if (block != Qnil) selfObj->m_proc = block;
-        LNResult result = LNStaticMeshSerializeHandler_Create(Wrap_LNStaticMeshSerializeHandler_OnSerialize_ProcCaller, &selfObj->handle);
+        LNResult result = LNMeshComponentSerializeHandler_Create(Wrap_LNMeshComponentSerializeHandler_OnSerialize_ProcCaller, &selfObj->handle);
         if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LNRuntime_GetLastErrorMessage());
         LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
         return Qnil;
     }
-    rb_raise(rb_eArgError, "StaticMeshSerializeHandler::init - wrong argument type.");
-    return Qnil;
-}
-
-
-//==============================================================================
-// StaticMeshPreUpdateHandler
-
-struct Wrap_StaticMeshPreUpdateHandler
-    : public Wrap_RubyObject
-{
-
-    VALUE m_proc = Qnil;
-    Wrap_StaticMeshPreUpdateHandler()
-    {}
-};
-
-static void LNStaticMeshPreUpdateHandler_delete(Wrap_StaticMeshPreUpdateHandler* obj)
-{
-    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
-    delete obj;
-}
-
-static void LNStaticMeshPreUpdateHandler_mark(Wrap_StaticMeshPreUpdateHandler* obj)
-{
-	
-rb_gc_mark(obj->m_proc);
-
-}
-
-static VALUE LNStaticMeshPreUpdateHandler_allocate(VALUE klass)
-{
-    VALUE obj;
-    Wrap_StaticMeshPreUpdateHandler* internalObj;
-
-    internalObj = new Wrap_StaticMeshPreUpdateHandler();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNStaticMeshPreUpdateHandler_allocate");
-    obj = Data_Wrap_Struct(klass, LNStaticMeshPreUpdateHandler_mark, LNStaticMeshPreUpdateHandler_delete, internalObj);
-
-    return obj;
-}
-
-static VALUE LNStaticMeshPreUpdateHandler_allocateForGetObject(VALUE klass, LNHandle handle)
-{
-    VALUE obj;
-    Wrap_StaticMeshPreUpdateHandler* internalObj;
-
-    internalObj = new Wrap_StaticMeshPreUpdateHandler();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNStaticMeshPreUpdateHandler_allocate");
-    obj = Data_Wrap_Struct(klass, LNStaticMeshPreUpdateHandler_mark, LNStaticMeshPreUpdateHandler_delete, internalObj);
-    
-    internalObj->handle = handle;
-    return obj;
-}
-
-
-static LNResult Wrap_LNStaticMeshPreUpdateHandler_OnPreUpdate_ProcCaller(LNHandle staticmeshpreupdatehandler, LNHandle self)
-{
-    Wrap_StaticMeshPreUpdateHandler* selfObj;
-    Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(staticmeshpreupdatehandler), Wrap_StaticMeshPreUpdateHandler, selfObj);
-    VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(self));
-    return LN_OK;	// TODO: error handling.
-}
-
-static VALUE Wrap_LNStaticMeshPreUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_StaticMeshPreUpdateHandler* selfObj;
-    Data_Get_Struct(self, Wrap_StaticMeshPreUpdateHandler, selfObj);
-    if (0 <= argc && argc <= 1) {
-        VALUE proc, block;
-        rb_scan_args(argc, argv, "01&", &proc, &block); // (handler=nil, &block)
-        if (proc != Qnil) selfObj->m_proc = proc;
-        if (block != Qnil) selfObj->m_proc = block;
-        LNResult result = LNStaticMeshPreUpdateHandler_Create(Wrap_LNStaticMeshPreUpdateHandler_OnPreUpdate_ProcCaller, &selfObj->handle);
-        if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LNRuntime_GetLastErrorMessage());
-        LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
-        return Qnil;
-    }
-    rb_raise(rb_eArgError, "StaticMeshPreUpdateHandler::init - wrong argument type.");
-    return Qnil;
-}
-
-
-//==============================================================================
-// StaticMeshUpdateHandler
-
-struct Wrap_StaticMeshUpdateHandler
-    : public Wrap_RubyObject
-{
-
-    VALUE m_proc = Qnil;
-    Wrap_StaticMeshUpdateHandler()
-    {}
-};
-
-static void LNStaticMeshUpdateHandler_delete(Wrap_StaticMeshUpdateHandler* obj)
-{
-    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
-    delete obj;
-}
-
-static void LNStaticMeshUpdateHandler_mark(Wrap_StaticMeshUpdateHandler* obj)
-{
-	
-rb_gc_mark(obj->m_proc);
-
-}
-
-static VALUE LNStaticMeshUpdateHandler_allocate(VALUE klass)
-{
-    VALUE obj;
-    Wrap_StaticMeshUpdateHandler* internalObj;
-
-    internalObj = new Wrap_StaticMeshUpdateHandler();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNStaticMeshUpdateHandler_allocate");
-    obj = Data_Wrap_Struct(klass, LNStaticMeshUpdateHandler_mark, LNStaticMeshUpdateHandler_delete, internalObj);
-
-    return obj;
-}
-
-static VALUE LNStaticMeshUpdateHandler_allocateForGetObject(VALUE klass, LNHandle handle)
-{
-    VALUE obj;
-    Wrap_StaticMeshUpdateHandler* internalObj;
-
-    internalObj = new Wrap_StaticMeshUpdateHandler();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNStaticMeshUpdateHandler_allocate");
-    obj = Data_Wrap_Struct(klass, LNStaticMeshUpdateHandler_mark, LNStaticMeshUpdateHandler_delete, internalObj);
-    
-    internalObj->handle = handle;
-    return obj;
-}
-
-
-static LNResult Wrap_LNStaticMeshUpdateHandler_OnUpdate_ProcCaller(LNHandle staticmeshupdatehandler, LNHandle self, float elapsedSeconds)
-{
-    Wrap_StaticMeshUpdateHandler* selfObj;
-    Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(staticmeshupdatehandler), Wrap_StaticMeshUpdateHandler, selfObj);
-    VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_OK;	// TODO: error handling.
-}
-
-static VALUE Wrap_LNStaticMeshUpdateHandler_Create(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_StaticMeshUpdateHandler* selfObj;
-    Data_Get_Struct(self, Wrap_StaticMeshUpdateHandler, selfObj);
-    if (0 <= argc && argc <= 1) {
-        VALUE proc, block;
-        rb_scan_args(argc, argv, "01&", &proc, &block); // (handler=nil, &block)
-        if (proc != Qnil) selfObj->m_proc = proc;
-        if (block != Qnil) selfObj->m_proc = block;
-        LNResult result = LNStaticMeshUpdateHandler_Create(Wrap_LNStaticMeshUpdateHandler_OnUpdate_ProcCaller, &selfObj->handle);
-        if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LNRuntime_GetLastErrorMessage());
-        LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
-        return Qnil;
-    }
-    rb_raise(rb_eArgError, "StaticMeshUpdateHandler::init - wrong argument type.");
-    return Qnil;
-}
-
-
-//==============================================================================
-// StaticMeshComponentSerializeHandler
-
-struct Wrap_StaticMeshComponentSerializeHandler
-    : public Wrap_RubyObject
-{
-
-    VALUE m_proc = Qnil;
-    Wrap_StaticMeshComponentSerializeHandler()
-    {}
-};
-
-static void LNStaticMeshComponentSerializeHandler_delete(Wrap_StaticMeshComponentSerializeHandler* obj)
-{
-    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
-    delete obj;
-}
-
-static void LNStaticMeshComponentSerializeHandler_mark(Wrap_StaticMeshComponentSerializeHandler* obj)
-{
-	
-rb_gc_mark(obj->m_proc);
-
-}
-
-static VALUE LNStaticMeshComponentSerializeHandler_allocate(VALUE klass)
-{
-    VALUE obj;
-    Wrap_StaticMeshComponentSerializeHandler* internalObj;
-
-    internalObj = new Wrap_StaticMeshComponentSerializeHandler();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNStaticMeshComponentSerializeHandler_allocate");
-    obj = Data_Wrap_Struct(klass, LNStaticMeshComponentSerializeHandler_mark, LNStaticMeshComponentSerializeHandler_delete, internalObj);
-
-    return obj;
-}
-
-static VALUE LNStaticMeshComponentSerializeHandler_allocateForGetObject(VALUE klass, LNHandle handle)
-{
-    VALUE obj;
-    Wrap_StaticMeshComponentSerializeHandler* internalObj;
-
-    internalObj = new Wrap_StaticMeshComponentSerializeHandler();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNStaticMeshComponentSerializeHandler_allocate");
-    obj = Data_Wrap_Struct(klass, LNStaticMeshComponentSerializeHandler_mark, LNStaticMeshComponentSerializeHandler_delete, internalObj);
-    
-    internalObj->handle = handle;
-    return obj;
-}
-
-
-static LNResult Wrap_LNStaticMeshComponentSerializeHandler_OnSerialize_ProcCaller(LNHandle staticmeshcomponentserializehandler, LNHandle self, LNHandle ar)
-{
-    Wrap_StaticMeshComponentSerializeHandler* selfObj;
-    Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(staticmeshcomponentserializehandler), Wrap_StaticMeshComponentSerializeHandler, selfObj);
-    VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_OK;	// TODO: error handling.
-}
-
-static VALUE Wrap_LNStaticMeshComponentSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_StaticMeshComponentSerializeHandler* selfObj;
-    Data_Get_Struct(self, Wrap_StaticMeshComponentSerializeHandler, selfObj);
-    if (0 <= argc && argc <= 1) {
-        VALUE proc, block;
-        rb_scan_args(argc, argv, "01&", &proc, &block); // (handler=nil, &block)
-        if (proc != Qnil) selfObj->m_proc = proc;
-        if (block != Qnil) selfObj->m_proc = block;
-        LNResult result = LNStaticMeshComponentSerializeHandler_Create(Wrap_LNStaticMeshComponentSerializeHandler_OnSerialize_ProcCaller, &selfObj->handle);
-        if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LNRuntime_GetLastErrorMessage());
-        LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
-        return Qnil;
-    }
-    rb_raise(rb_eArgError, "StaticMeshComponentSerializeHandler::init - wrong argument type.");
-    return Qnil;
-}
-
-
-//==============================================================================
-// SkinnedMeshComponentSerializeHandler
-
-struct Wrap_SkinnedMeshComponentSerializeHandler
-    : public Wrap_RubyObject
-{
-
-    VALUE m_proc = Qnil;
-    Wrap_SkinnedMeshComponentSerializeHandler()
-    {}
-};
-
-static void LNSkinnedMeshComponentSerializeHandler_delete(Wrap_SkinnedMeshComponentSerializeHandler* obj)
-{
-    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
-    delete obj;
-}
-
-static void LNSkinnedMeshComponentSerializeHandler_mark(Wrap_SkinnedMeshComponentSerializeHandler* obj)
-{
-	
-rb_gc_mark(obj->m_proc);
-
-}
-
-static VALUE LNSkinnedMeshComponentSerializeHandler_allocate(VALUE klass)
-{
-    VALUE obj;
-    Wrap_SkinnedMeshComponentSerializeHandler* internalObj;
-
-    internalObj = new Wrap_SkinnedMeshComponentSerializeHandler();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNSkinnedMeshComponentSerializeHandler_allocate");
-    obj = Data_Wrap_Struct(klass, LNSkinnedMeshComponentSerializeHandler_mark, LNSkinnedMeshComponentSerializeHandler_delete, internalObj);
-
-    return obj;
-}
-
-static VALUE LNSkinnedMeshComponentSerializeHandler_allocateForGetObject(VALUE klass, LNHandle handle)
-{
-    VALUE obj;
-    Wrap_SkinnedMeshComponentSerializeHandler* internalObj;
-
-    internalObj = new Wrap_SkinnedMeshComponentSerializeHandler();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LNSkinnedMeshComponentSerializeHandler_allocate");
-    obj = Data_Wrap_Struct(klass, LNSkinnedMeshComponentSerializeHandler_mark, LNSkinnedMeshComponentSerializeHandler_delete, internalObj);
-    
-    internalObj->handle = handle;
-    return obj;
-}
-
-
-static LNResult Wrap_LNSkinnedMeshComponentSerializeHandler_OnSerialize_ProcCaller(LNHandle skinnedmeshcomponentserializehandler, LNHandle self, LNHandle ar)
-{
-    Wrap_SkinnedMeshComponentSerializeHandler* selfObj;
-    Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(skinnedmeshcomponentserializehandler), Wrap_SkinnedMeshComponentSerializeHandler, selfObj);
-    VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 2, LNRB_HANDLE_WRAP_TO_VALUE(self), LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_OK;	// TODO: error handling.
-}
-
-static VALUE Wrap_LNSkinnedMeshComponentSerializeHandler_Create(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_SkinnedMeshComponentSerializeHandler* selfObj;
-    Data_Get_Struct(self, Wrap_SkinnedMeshComponentSerializeHandler, selfObj);
-    if (0 <= argc && argc <= 1) {
-        VALUE proc, block;
-        rb_scan_args(argc, argv, "01&", &proc, &block); // (handler=nil, &block)
-        if (proc != Qnil) selfObj->m_proc = proc;
-        if (block != Qnil) selfObj->m_proc = block;
-        LNResult result = LNSkinnedMeshComponentSerializeHandler_Create(Wrap_LNSkinnedMeshComponentSerializeHandler_OnSerialize_ProcCaller, &selfObj->handle);
-        if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LNRuntime_GetLastErrorMessage());
-        LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
-        return Qnil;
-    }
-    rb_raise(rb_eArgError, "SkinnedMeshComponentSerializeHandler::init - wrong argument type.");
+    rb_raise(rb_eArgError, "MeshComponentSerializeHandler::init - wrong argument type.");
     return Qnil;
 }
 
@@ -26321,6 +25942,16 @@ extern "C" void Init_Lumino_RubyExt()
     InitLuminoRubyRuntimeManager();
     g_rootModule = rb_define_module("Lumino");
 
+    g_enum_LogLevel = rb_define_module_under(g_rootModule, "LogLevel");
+    rb_define_const(g_enum_LogLevel, "UNKNOWN", INT2FIX(0)); 
+    rb_define_const(g_enum_LogLevel, "VERBOSE", INT2FIX(1)); 
+    rb_define_const(g_enum_LogLevel, "DEBUG", INT2FIX(2)); 
+    rb_define_const(g_enum_LogLevel, "INFO", INT2FIX(3)); 
+    rb_define_const(g_enum_LogLevel, "WARNING", INT2FIX(4)); 
+    rb_define_const(g_enum_LogLevel, "ERROR", INT2FIX(5)); 
+    rb_define_const(g_enum_LogLevel, "FATAL", INT2FIX(6)); 
+    rb_define_const(g_enum_LogLevel, "DISBLE", INT2FIX(7)); 
+
     g_enum_EncodingType = rb_define_module_under(g_rootModule, "EncodingType");
     rb_define_const(g_enum_EncodingType, "UNKNOWN", INT2FIX(0)); 
     rb_define_const(g_enum_EncodingType, "ASCII", INT2FIX(1)); 
@@ -26432,6 +26063,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_const(g_enum_GraphicsAPI, "DEFAULT", INT2FIX(0)); 
     rb_define_const(g_enum_GraphicsAPI, "OPEN_GL", INT2FIX(1)); 
     rb_define_const(g_enum_GraphicsAPI, "VULKAN", INT2FIX(2)); 
+    rb_define_const(g_enum_GraphicsAPI, "DIRECT_X12", INT2FIX(3)); 
 
     g_enum_PixelFormat = rb_define_module_under(g_rootModule, "PixelFormat");
     rb_define_const(g_enum_PixelFormat, "UNKNOWN", INT2FIX(0)); 
@@ -26647,6 +26279,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_Point, "y", LN_TO_RUBY_FUNC(Wrap_LNPoint_GetY), -1);
     rb_define_method(g_class_Point, "y=", LN_TO_RUBY_FUNC(Wrap_LNPoint_SetY), -1);
     rb_define_method(g_class_Point, "initialize", LN_TO_RUBY_FUNC(Wrap_LNPoint_Set), -1);
+    rb_define_method(g_class_Point, "get", LN_TO_RUBY_FUNC(Wrap_LNPoint_Get), -1);
 
     g_class_Size = rb_define_class_under(g_rootModule, "Size", rb_cObject);
     rb_define_alloc_func(g_class_Size, LNSize_allocate);
@@ -26784,6 +26417,11 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_ZVTestEventArgs1, "value", LN_TO_RUBY_FUNC(Wrap_LNZVTestEventArgs1_GetValue), -1);
     LNZVTestEventArgs1_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_ZVTestEventArgs1, LNZVTestEventArgs1_allocateForGetObject));
     LNZVTestEventArgs1_OnSerialize_SetOverrideCallback(Wrap_LNZVTestEventArgs1_OnSerialize_OverrideCallback);
+
+    g_class_Log = rb_define_class_under(g_rootModule, "Log", rb_cObject);
+    rb_define_singleton_method(g_class_Log, "set_level", LN_TO_RUBY_FUNC(Wrap_LNLog_SetLevel), -1);
+    rb_define_singleton_method(g_class_Log, "alloc_console", LN_TO_RUBY_FUNC(Wrap_LNLog_AllocConsole), -1);
+    rb_define_singleton_method(g_class_Log, "write", LN_TO_RUBY_FUNC(Wrap_LNLog_Write), -1);
 
     g_class_Serializer2 = rb_define_class_under(g_rootModule, "Serializer2", g_class_Object);
     rb_define_alloc_func(g_class_Serializer2, LNSerializer2_allocate);
@@ -27250,29 +26888,13 @@ extern "C" void Init_Lumino_RubyExt()
     LNPlaneMesh_OnPreUpdate_SetOverrideCallback(Wrap_LNPlaneMesh_OnPreUpdate_OverrideCallback);
     LNPlaneMesh_OnUpdate_SetOverrideCallback(Wrap_LNPlaneMesh_OnUpdate_OverrideCallback);
 
-    g_class_StaticMesh = rb_define_class_under(g_rootModule, "StaticMesh", g_class_VisualObject);
-    rb_define_alloc_func(g_class_StaticMesh, LNStaticMesh_allocate);
-    rb_define_singleton_method(g_class_StaticMesh, "load", LN_TO_RUBY_FUNC(Wrap_LNStaticMesh_Load), -1);
-    rb_define_method(g_class_StaticMesh, "model", LN_TO_RUBY_FUNC(Wrap_LNStaticMesh_GetModel), -1);
-    rb_define_method(g_class_StaticMesh, "make_collision_body", LN_TO_RUBY_FUNC(Wrap_LNStaticMesh_MakeCollisionBody), -1);
-    LNStaticMesh_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_StaticMesh, LNStaticMesh_allocateForGetObject));
-    LNStaticMesh_OnSerialize_SetOverrideCallback(Wrap_LNStaticMesh_OnSerialize_OverrideCallback);
-    LNStaticMesh_OnPreUpdate_SetOverrideCallback(Wrap_LNStaticMesh_OnPreUpdate_OverrideCallback);
-    LNStaticMesh_OnUpdate_SetOverrideCallback(Wrap_LNStaticMesh_OnUpdate_OverrideCallback);
-
-    g_class_StaticMeshComponent = rb_define_class_under(g_rootModule, "StaticMeshComponent", g_class_VisualComponent);
-    rb_define_alloc_func(g_class_StaticMeshComponent, LNStaticMeshComponent_allocate);
-    rb_define_private_method(g_class_StaticMeshComponent, "initialize", LN_TO_RUBY_FUNC(Wrap_LNStaticMeshComponent_Create), -1);
-    rb_define_method(g_class_StaticMeshComponent, "set_model", LN_TO_RUBY_FUNC(Wrap_LNStaticMeshComponent_SetModel), -1);
-    rb_define_method(g_class_StaticMeshComponent, "make_collision_body", LN_TO_RUBY_FUNC(Wrap_LNStaticMeshComponent_MakeCollisionBody), -1);
-    LNStaticMeshComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_StaticMeshComponent, LNStaticMeshComponent_allocateForGetObject));
-    LNStaticMeshComponent_OnSerialize_SetOverrideCallback(Wrap_LNStaticMeshComponent_OnSerialize_OverrideCallback);
-
-    g_class_SkinnedMeshComponent = rb_define_class_under(g_rootModule, "SkinnedMeshComponent", g_class_StaticMeshComponent);
-    rb_define_alloc_func(g_class_SkinnedMeshComponent, LNSkinnedMeshComponent_allocate);
-    rb_define_private_method(g_class_SkinnedMeshComponent, "initialize", LN_TO_RUBY_FUNC(Wrap_LNSkinnedMeshComponent_Create), -1);
-    LNSkinnedMeshComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_SkinnedMeshComponent, LNSkinnedMeshComponent_allocateForGetObject));
-    LNSkinnedMeshComponent_OnSerialize_SetOverrideCallback(Wrap_LNSkinnedMeshComponent_OnSerialize_OverrideCallback);
+    g_class_MeshComponent = rb_define_class_under(g_rootModule, "MeshComponent", g_class_VisualComponent);
+    rb_define_alloc_func(g_class_MeshComponent, LNMeshComponent_allocate);
+    rb_define_private_method(g_class_MeshComponent, "initialize", LN_TO_RUBY_FUNC(Wrap_LNMeshComponent_Create), -1);
+    rb_define_method(g_class_MeshComponent, "set_model", LN_TO_RUBY_FUNC(Wrap_LNMeshComponent_SetModel), -1);
+    rb_define_method(g_class_MeshComponent, "make_collision_body", LN_TO_RUBY_FUNC(Wrap_LNMeshComponent_MakeCollisionBody), -1);
+    LNMeshComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_MeshComponent, LNMeshComponent_allocateForGetObject));
+    LNMeshComponent_OnSerialize_SetOverrideCallback(Wrap_LNMeshComponent_OnSerialize_OverrideCallback);
 
     g_class_Collision = rb_define_class_under(g_rootModule, "Collision", g_class_Object);
     rb_define_alloc_func(g_class_Collision, LNCollision_allocate);
@@ -27571,8 +27193,10 @@ extern "C" void Init_Lumino_RubyExt()
     g_class_UIListItemsControl = rb_define_class_under(g_rootModule, "UIListItemsControl", g_class_UIControl);
     rb_define_alloc_func(g_class_UIListItemsControl, LNUIListItemsControl_allocate);
     rb_define_method(g_class_UIListItemsControl, "items_layout_panel=", LN_TO_RUBY_FUNC(Wrap_LNUIListItemsControl_SetItemsLayoutPanel), -1);
+    rb_define_method(g_class_UIListItemsControl, "items_layout_panel", LN_TO_RUBY_FUNC(Wrap_LNUIListItemsControl_GetItemsLayoutPanel), -1);
     rb_define_method(g_class_UIListItemsControl, "submit_mode=", LN_TO_RUBY_FUNC(Wrap_LNUIListItemsControl_SetSubmitMode), -1);
     rb_define_method(g_class_UIListItemsControl, "submit_mode", LN_TO_RUBY_FUNC(Wrap_LNUIListItemsControl_GetSubmitMode), -1);
+    rb_define_method(g_class_UIListItemsControl, "connect_on_submit", LN_TO_RUBY_FUNC(Wrap_LNUIListItemsControl_ConnectOnSubmit), -1);
     LNUIListItemsControl_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIListItemsControl, LNUIListItemsControl_allocateForGetObject));
     LNUIListItemsControl_OnSerialize_SetOverrideCallback(Wrap_LNUIListItemsControl_OnSerialize_OverrideCallback);
 
@@ -27616,7 +27240,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_Mouse, "triggered", LN_TO_RUBY_FUNC(Wrap_LNMouse_Triggered), -1);
     rb_define_singleton_method(g_class_Mouse, "triggered_off", LN_TO_RUBY_FUNC(Wrap_LNMouse_TriggeredOff), -1);
     rb_define_singleton_method(g_class_Mouse, "repeated", LN_TO_RUBY_FUNC(Wrap_LNMouse_Repeated), -1);
-    rb_define_singleton_method(g_class_Mouse, "position", LN_TO_RUBY_FUNC(Wrap_LNMouse_Position), -1);
+    rb_define_singleton_method(g_class_Mouse, "position", LN_TO_RUBY_FUNC(Wrap_LNMouse_GetPosition), -1);
 
     g_class_InterpreterCommand = rb_define_class_under(g_rootModule, "InterpreterCommand", g_class_Object);
     rb_define_alloc_func(g_class_InterpreterCommand, LNInterpreterCommand_allocate);
@@ -27680,7 +27304,6 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_Engine, "initialize", LN_TO_RUBY_FUNC(Wrap_LNEngine_Initialize), -1);
     rb_define_singleton_method(g_class_Engine, "terminate", LN_TO_RUBY_FUNC(Wrap_LNEngine_Terminate), -1);
     rb_define_singleton_method(g_class_Engine, "update", LN_TO_RUBY_FUNC(Wrap_LNEngine_Update), -1);
-    rb_define_singleton_method(g_class_Engine, "run", LN_TO_RUBY_FUNC(Wrap_LNEngine_Run), -1);
     rb_define_singleton_method(g_class_Engine, "time", LN_TO_RUBY_FUNC(Wrap_LNEngine_GetTime), -1);
     rb_define_singleton_method(g_class_Engine, "world", LN_TO_RUBY_FUNC(Wrap_LNEngine_GetWorld), -1);
     rb_define_singleton_method(g_class_Engine, "camera", LN_TO_RUBY_FUNC(Wrap_LNEngine_GetCamera), -1);
@@ -27693,6 +27316,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_Application, "on_init", LN_TO_RUBY_FUNC(Wrap_LNApplication_OnInit), -1);
     rb_define_method(g_class_Application, "on_update", LN_TO_RUBY_FUNC(Wrap_LNApplication_OnUpdate), -1);
     rb_define_method(g_class_Application, "world", LN_TO_RUBY_FUNC(Wrap_LNApplication_World), -1);
+    rb_define_method(g_class_Application, "run", LN_TO_RUBY_FUNC(Wrap_LNApplication_Run), -1);
     LNApplication_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Application, LNApplication_allocateForGetObject));
     LNApplication_OnSerialize_SetOverrideCallback(Wrap_LNApplication_OnSerialize_OverrideCallback);
     LNApplication_OnInit_SetOverrideCallback(Wrap_LNApplication_OnInit_OverrideCallback);
@@ -28048,30 +27672,10 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_private_method(g_class_PlaneMeshUpdateHandler, "initialize", LN_TO_RUBY_FUNC(Wrap_LNPlaneMeshUpdateHandler_Create), -1);
     LNPlaneMeshUpdateHandler_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_PlaneMeshUpdateHandler, LNPlaneMeshUpdateHandler_allocateForGetObject));
 
-    g_class_StaticMeshSerializeHandler = rb_define_class_under(g_rootModule, "StaticMeshSerializeHandler", rb_cObject);
-    rb_define_alloc_func(g_class_StaticMeshSerializeHandler, LNStaticMeshSerializeHandler_allocate);
-    rb_define_private_method(g_class_StaticMeshSerializeHandler, "initialize", LN_TO_RUBY_FUNC(Wrap_LNStaticMeshSerializeHandler_Create), -1);
-    LNStaticMeshSerializeHandler_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_StaticMeshSerializeHandler, LNStaticMeshSerializeHandler_allocateForGetObject));
-
-    g_class_StaticMeshPreUpdateHandler = rb_define_class_under(g_rootModule, "StaticMeshPreUpdateHandler", rb_cObject);
-    rb_define_alloc_func(g_class_StaticMeshPreUpdateHandler, LNStaticMeshPreUpdateHandler_allocate);
-    rb_define_private_method(g_class_StaticMeshPreUpdateHandler, "initialize", LN_TO_RUBY_FUNC(Wrap_LNStaticMeshPreUpdateHandler_Create), -1);
-    LNStaticMeshPreUpdateHandler_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_StaticMeshPreUpdateHandler, LNStaticMeshPreUpdateHandler_allocateForGetObject));
-
-    g_class_StaticMeshUpdateHandler = rb_define_class_under(g_rootModule, "StaticMeshUpdateHandler", rb_cObject);
-    rb_define_alloc_func(g_class_StaticMeshUpdateHandler, LNStaticMeshUpdateHandler_allocate);
-    rb_define_private_method(g_class_StaticMeshUpdateHandler, "initialize", LN_TO_RUBY_FUNC(Wrap_LNStaticMeshUpdateHandler_Create), -1);
-    LNStaticMeshUpdateHandler_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_StaticMeshUpdateHandler, LNStaticMeshUpdateHandler_allocateForGetObject));
-
-    g_class_StaticMeshComponentSerializeHandler = rb_define_class_under(g_rootModule, "StaticMeshComponentSerializeHandler", rb_cObject);
-    rb_define_alloc_func(g_class_StaticMeshComponentSerializeHandler, LNStaticMeshComponentSerializeHandler_allocate);
-    rb_define_private_method(g_class_StaticMeshComponentSerializeHandler, "initialize", LN_TO_RUBY_FUNC(Wrap_LNStaticMeshComponentSerializeHandler_Create), -1);
-    LNStaticMeshComponentSerializeHandler_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_StaticMeshComponentSerializeHandler, LNStaticMeshComponentSerializeHandler_allocateForGetObject));
-
-    g_class_SkinnedMeshComponentSerializeHandler = rb_define_class_under(g_rootModule, "SkinnedMeshComponentSerializeHandler", rb_cObject);
-    rb_define_alloc_func(g_class_SkinnedMeshComponentSerializeHandler, LNSkinnedMeshComponentSerializeHandler_allocate);
-    rb_define_private_method(g_class_SkinnedMeshComponentSerializeHandler, "initialize", LN_TO_RUBY_FUNC(Wrap_LNSkinnedMeshComponentSerializeHandler_Create), -1);
-    LNSkinnedMeshComponentSerializeHandler_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_SkinnedMeshComponentSerializeHandler, LNSkinnedMeshComponentSerializeHandler_allocateForGetObject));
+    g_class_MeshComponentSerializeHandler = rb_define_class_under(g_rootModule, "MeshComponentSerializeHandler", rb_cObject);
+    rb_define_alloc_func(g_class_MeshComponentSerializeHandler, LNMeshComponentSerializeHandler_allocate);
+    rb_define_private_method(g_class_MeshComponentSerializeHandler, "initialize", LN_TO_RUBY_FUNC(Wrap_LNMeshComponentSerializeHandler_Create), -1);
+    LNMeshComponentSerializeHandler_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_MeshComponentSerializeHandler, LNMeshComponentSerializeHandler_allocateForGetObject));
 
     g_class_CollisionSerializeHandler = rb_define_class_under(g_rootModule, "CollisionSerializeHandler", rb_cObject);
     rb_define_alloc_func(g_class_CollisionSerializeHandler, LNCollisionSerializeHandler_allocate);

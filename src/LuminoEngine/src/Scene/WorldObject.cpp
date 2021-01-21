@@ -112,13 +112,23 @@ Matrix WorldObjectTransform::getLocalMatrix() const
 } // namespace detail 
 
 //==============================================================================
-// WorldObject
+// WorldObject::BuilderDetails
+
+WorldObject::BuilderDetails::BuilderDetails()
+    : position()
+    , rotation()
+    , scale(1.0f, 1.0f, 1.0)
+{
+}
 
 void WorldObject::BuilderDetails::apply(WorldObject* p) const
 {
     //if (width) p->setWidth(*width);
     //if (height) p->setHeight(*height);
     //if (backgroundColor) p->setBackgroundColor(*backgroundColor);
+    p->setPosition(position);
+    p->setRotation(rotation);
+    p->setScale(scale);
     for (auto& x : m_components) p->addComponent(x.get());
 }
 

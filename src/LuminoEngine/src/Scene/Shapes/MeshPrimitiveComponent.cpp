@@ -6,6 +6,39 @@
 #include "../SceneManager.hpp"
 
 namespace ln {
+    
+//=============================================================================
+// ShapeComponent
+
+LN_OBJECT_IMPLEMENT(ShapeComponent, VisualComponent) {}
+
+ShapeComponent::ShapeComponent()
+    : m_material()
+{
+}
+
+bool ShapeComponent::init()
+{
+    if (!VisualComponent::init()) return false;
+    m_material = detail::EngineDomain::sceneManager()->primitiveMeshDefaultMaterial();
+    return true;
+}
+
+void ShapeComponent::setMaterial(Material* material)
+{
+    m_material = material;
+}
+
+Material* ShapeComponent::material() const
+{
+    return m_material;
+}
+
+void ShapeComponent::serialize(Serializer2& ar)
+{
+    VisualComponent::serialize(ar);
+    ar& makeNVP(u"material", m_material);
+}
 
 //=============================================================================
 // PlaneMeshComponent
@@ -27,27 +60,16 @@ void PlaneMeshComponent::init()
     VisualComponent::init();
 }
 
-void PlaneMeshComponent::setMaterial(Material* material)
-{
-    m_material = material;
-}
-
-Material* PlaneMeshComponent::material() const
-{
-    return m_material;
-}
-
 void PlaneMeshComponent::serialize(Serializer2& ar)
 {
-    VisualComponent::serialize(ar);
+    ShapeComponent::serialize(ar);
     ar & makeNVP(u"size", m_size);
     ar & makeNVP(u"uvParUnit", m_uvParUnit);
-    ar & makeNVP(u"material", m_material);
 }
 
 void PlaneMeshComponent::onRender(RenderingContext* context)
 {
-    context->setMaterial(m_material);
+    context->setMaterial(material());
 
     auto uv1 = Vector2(
         Math::nearEqual(m_uvParUnit.x, 0.0f) ? 1.0f : m_size.x / m_uvParUnit.x,
@@ -67,19 +89,14 @@ SphereMeshComponent::~SphereMeshComponent()
 {
 }
 
-void SphereMeshComponent::init()
+bool SphereMeshComponent::init()
 {
-    VisualComponent::init();
-}
-
-void SphereMeshComponent::setMaterial(Material* material)
-{
-    m_material = material;
+    return ShapeComponent::init();
 }
 
 void SphereMeshComponent::onRender(RenderingContext* context)
 {
-    context->setMaterial(m_material);
+    context->setMaterial(material());
     context->drawSphere(0.5, 16, 16, Color::White);
 }
 
@@ -94,21 +111,21 @@ BoxMeshComponent::~BoxMeshComponent()
 {
 }
 
-void BoxMeshComponent::init(const Vector3& size)
+bool BoxMeshComponent::init()
 {
-	VisualComponent::init();
-	m_material = detail::EngineDomain::sceneManager()->primitiveMeshDefaultMaterial();
-	m_box = Box(Vector3::Zero, size);
+    return ShapeComponent::init();
 }
 
-void BoxMeshComponent::setMaterial(Material* material)
+bool BoxMeshComponent::init(const Vector3& size)
 {
-	m_material = material;
+    if (!init()) return false;
+	m_box = Box(Vector3::Zero, size);
+    return true;
 }
 
 void BoxMeshComponent::onRender(RenderingContext* context)
 {
-	context->setMaterial(m_material);
+    context->setMaterial(material());
 	context->drawBox(m_box, Color::White);
 }
 

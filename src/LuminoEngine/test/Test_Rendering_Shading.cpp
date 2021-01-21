@@ -97,13 +97,14 @@ TEST_F(Test_Rendering_Shading, Fog)
 //------------------------------------------------------------------------------
 TEST_F(Test_Rendering_Shading, EnvironmentLight)
 {
-	auto sphere = SphereMesh::create();
 
 	auto mat1 = Material::create();
 	mat1->setColor(Color::White);
 	mat1->setRoughness(1.0);
 	mat1->setMetallic(0.0);
-	sphere->sphereMeshComponent()->setMaterial(mat1);
+	SphereMesh::Builder()
+		.material(mat1)
+		.buildInto();
 
 	Engine::camera()->setPosition(0, 0, -1);
 
@@ -123,18 +124,14 @@ TEST_F(Test_Rendering_Shading, EnvironmentLight)
 //------------------------------------------------------------------------------
 TEST_F(Test_Rendering_Shading, MaterialEmissive)
 {
-	auto sphere = SphereMesh::create();
-
-	//auto greenTexture = Texture2D::create(32, 32);
-	//greenTexture->clear(Color::Green);
-
 	auto mat1 = Material::create();
 	mat1->setColor(Color::Red);
-	//mat1->setMainTexture(greenTexture);
 	mat1->setRoughness(1.0);
 	mat1->setMetallic(0.0);
 	mat1->setEmissive(Color::Blue);
-	sphere->sphereMeshComponent()->setMaterial(mat1);
+	SphereMesh::Builder()
+		.material(mat1)
+		.buildInto();
 
 	Engine::camera()->setPosition(0, 0, -1);
 

@@ -2,8 +2,10 @@
 #include <cstdarg>
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Runtime/Runtime.hpp>
+#include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
 #include "../Engine/EngineManager.hpp"
 #include "RuntimeManager.hpp"
+
 
 namespace ln {
 
@@ -384,16 +386,18 @@ LNResult LNObject_SetTypeInfoId(LNHandle obj, int typeInfoId)
 //    LN_LOG(static_cast<ln::LogLevel>(level), tag) << ln::String::fromCString(text);
 //}
 //
-//void LNLog_PrintA(LNLogLevel level, const char* tag, const char* format, ...)
-//{
-//    if (::ln::detail::LoggerInterface::getInstance()->checkLevel(static_cast<ln::LogLevel>(level))) {
-//        std::va_list arg;
-//        va_start(arg, format);
-//        auto str = ln::detail::std_string_vprintf(format, arg);
-//        va_end(arg);
-//        LNLog_WriteA(level, tag, str.c_str());
-//    }
-//}
+
+LN_FLAT_API void LNLog_PrintA(LNLogLevel level, const char* tag, const char* format, ...);
+void LNLog_PrintA(LNLogLevel level, const char* tag, const char* format, ...)
+{
+    if (::ln::detail::LoggerInterface::getInstance()->checkLevel(static_cast<ln::LogLevel>(level))) {
+        std::va_list arg;
+        va_start(arg, format);
+        auto str = ln::detail::std_string_vprintf(format, arg);
+        va_end(arg);
+        LNLog_WriteA(level, tag, str.c_str());
+    }
+}
 
 #if 0
 //==============================================================================

@@ -6,9 +6,11 @@
 #include <stack>
 #include <unordered_map>
 #include "FlatCommon.h"
+#include "FlatC.generated.h"
 
+extern "C" LN_FLAT_API void LNLog_PrintA(LNLogLevel level, const char* tag, const char* format, ...);
 #define LNRB_LOG_D(...) LNLog_PrintA(LN_LOG_LEVEL_DEBUG, "RubyRuntime", __VA_ARGS__)
-#define LNRB_LOG_I(...) LNLog_WriteA(LN_LOG_LEVEL_INFO, "RubyRuntime", __VA_ARGS__)
+#define LNRB_LOG_I(...) LNLog_PrintA(LN_LOG_LEVEL_INFO, "RubyRuntime", __VA_ARGS__)
 
 typedef VALUE(*ObjectFactoryFunc)(VALUE klass, LNHandle handle);
 

@@ -77,7 +77,7 @@ TEST_F(Test_Effect_Particle, SingleSprite)
 
 	auto obj1 = WorldObject::Builder()
 		.components(makeObject<ParticleEmitterComponent2>(particleModel))
-		.into();
+		.buildInto();
 
 	// 1フレーム更新 -> 表示される
 	TestEnv::updateFrame();

@@ -310,9 +310,13 @@ struct WorldObject::BuilderDetails : public AbstractBuilderDetails
 	//Optional<float> width;
 	//Optional<float> height;
 	//Optional<Color> backgroundColor;
+	Vector3 position;
+	Quaternion rotation;
+	Vector3 scale;
 
 	std::vector<BuilderVariant<Component>> m_components;
 
+	BuilderDetails();
 	void apply(WorldObject* p) const;
 };
 
@@ -330,10 +334,19 @@ struct WorldObject::BuilderCore : public AbstractBuilder<T, B, D>
 	///** height property */
 	//B& backgroundColor(const Color& value) { d()->backgroundColor = value; return self(); }
 
+	B& position(float x, float y, float z = 0.0f) { d()->position = Vector3(x, y, z); return self(); }
+	
+	B& rotation(float x, float y, float z) { d()->rotation = Quaternion::makeFromYawPitchRoll(y, x, z); return self(); }
+
+	B& scale(float x, float y, float z = 1.0f) { d()->scale = Vector3(x, y, z); return self(); }
+	
+	B& scale(float xyz) { d()->scale = Vector3(xyz, xyz, xyz); return self(); }
+
+
 	template<typename... TArgs>
 	B& components(TArgs&&... args) { foreach_args<BuilderVariant<Component>>([this](auto& x) { d()->m_components.push_back(x); }, std::forward<TArgs>(args)...); return *static_cast<B*>(this); }
 
-	Ref<T> buildInto(World* world = nullptr) { auto p = build(); p->intoWorld(world); return p; }
+	Ref<T> buildInto(World* world = nullptr) { auto p = AbstractBuilder<T, B, D>::build(); p->intoWorld(world); return p; }
 };
 
 LN_BUILDER_IMPLEMENT(WorldObject);

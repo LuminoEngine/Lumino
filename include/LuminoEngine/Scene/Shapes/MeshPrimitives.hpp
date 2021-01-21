@@ -8,12 +8,63 @@ class SphereMeshComponent;
 class PlaneMeshComponent;
 
 /**
+ */
+LN_CLASS()
+class ShapeObject
+	: public VisualObject
+{
+	LN_OBJECT;
+	LN_BUILDER;
+public:
+	void setMaterial(Material* material);
+	Material* material() const;
+
+LN_CONSTRUCT_ACCESS:
+	ShapeObject();
+	bool init();
+};
+
+/**
+ * 平面 (床・地面) のメッシュオブジェクトです。デフォルトのサイズは、各軸 10 です。
+ */
+LN_CLASS()
+class PlaneMesh
+	: public ShapeObject
+{
+	LN_OBJECT;
+	LN_BUILDER;
+public:
+	static Ref<PlaneMesh> create();
+	static Ref<PlaneMesh> create(Material* material);
+
+	PlaneMeshComponent* planeMeshComponent() const;
+
+protected:
+	void serialize(Serializer2& ar) override;
+
+LN_CONSTRUCT_ACCESS:
+	PlaneMesh();
+
+	/**  */
+	LN_METHOD()
+		bool init();
+
+	/**  */
+	bool init(Material* material);
+
+private:
+
+	Ref<PlaneMeshComponent> m_component;
+};
+
+/**
  * 直方体のメッシュオブジェクトです。
  */
 LN_CLASS()
 class BoxMesh
-	: public VisualObject
+	: public ShapeObject
 {
+	LN_BUILDER;
 public:
 	static Ref<BoxMesh> create();
 	static Ref<BoxMesh> create(float width, float height, float depth);
@@ -39,8 +90,9 @@ private:
 };
 
 class SphereMesh
-	: public VisualObject
+	: public ShapeObject
 {
+	LN_BUILDER;
 public:
 	static Ref<SphereMesh> create();
 
@@ -50,43 +102,87 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
 	SphereMesh();
-	void init();
+	bool init();
 
 private:
 	Ref<SphereMeshComponent> m_component;
 };
 
-/**
- * 平面 (床・地面) のメッシュオブジェクトです。デフォルトのサイズは、各軸 10 です。
- */
-LN_CLASS()
-class PlaneMesh
-	: public VisualObject
+
+//==============================================================================
+// ShapeObject::Builder
+
+struct ShapeObject::BuilderDetails : public VisualObject::BuilderDetails
 {
-	LN_OBJECT;
-public:
-	static Ref<PlaneMesh> create();
-	static Ref<PlaneMesh> create(Material* material);
+	LN_BUILDER_DETAILS(ShapeObject);
 
-	PlaneMeshComponent* planeMeshComponent() const;
+	Ref<Material> material;
 
-protected:
-	void serialize(Serializer2& ar) override;
-
-LN_CONSTRUCT_ACCESS:
-	PlaneMesh();
-
-	/**  */
-	LN_METHOD()
-	bool init();
-
-	/**  */
-	bool init(Material* material);
-
-private:
-
-	Ref<PlaneMeshComponent> m_component;
+	void apply(ShapeObject* p) const;
 };
 
+template<class T, class B, class D>
+struct ShapeObject::BuilderCore : public VisualObject::BuilderCore<T, B, D>
+{
+	LN_BUILDER_CORE(VisualObject::BuilderCore);
+
+	B& material(Material* value) { d()->material = value; return self(); }
+};
+
+LN_BUILDER_IMPLEMENT(ShapeObject);
+
+//==============================================================================
+// PlaneMesh::Builder
+
+struct PlaneMesh::BuilderDetails : public ShapeObject::BuilderDetails
+{
+	LN_BUILDER_DETAILS(PlaneMesh);
+
+	void apply(PlaneMesh* p) const;
+};
+
+template<class T, class B, class D>
+struct PlaneMesh::BuilderCore : public ShapeObject::BuilderCore<T, B, D>
+{
+	LN_BUILDER_CORE(ShapeObject::BuilderCore);
+};
+
+LN_BUILDER_IMPLEMENT(PlaneMesh);
+
+//==============================================================================
+// BoxMesh::Builder
+
+struct BoxMesh::BuilderDetails : public ShapeObject::BuilderDetails
+{
+	LN_BUILDER_DETAILS(BoxMesh);
+
+	void apply(BoxMesh* p) const;
+};
+
+template<class T, class B, class D>
+struct BoxMesh::BuilderCore : public ShapeObject::BuilderCore<T, B, D>
+{
+	LN_BUILDER_CORE(ShapeObject::BuilderCore);
+};
+
+LN_BUILDER_IMPLEMENT(BoxMesh);
+
+//==============================================================================
+// SphereMesh::Builder
+
+struct SphereMesh::BuilderDetails : public ShapeObject::BuilderDetails
+{
+	LN_BUILDER_DETAILS(SphereMesh);
+
+	void apply(SphereMesh* p) const;
+};
+
+template<class T, class B, class D>
+struct SphereMesh::BuilderCore : public ShapeObject::BuilderCore<T, B, D>
+{
+	LN_BUILDER_CORE(ShapeObject::BuilderCore);
+};
+
+LN_BUILDER_IMPLEMENT(SphereMesh);
 
 } // namespace ln
