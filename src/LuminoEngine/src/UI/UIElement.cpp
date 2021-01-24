@@ -567,6 +567,12 @@ void UIElement::addChild(const String& child)
 //	m_manager->tryGetInputFocus(this);
 //}
 
+void UIElement::addInto(UIElement* parent)
+{
+    UIElement* primaryElement = (parent) ? parent : m_manager->primaryElement();
+    primaryElement->addChild(this);
+}
+
 void UIElement::setRenderPriority(int value)
 {
     m_renderPriority = value;
@@ -1271,12 +1277,6 @@ UIElement* UIElement::findFocusedVisualChildLeaf()
         return m_focusedVisualChild->findFocusedVisualChildLeaf();
     }
     return this;
-}
-
-void UIElement::intoUI(UIElement* parent)
-{
-    UIElement* primaryElement = (parent) ? parent : m_manager->primaryElement();
-    primaryElement->addChild(this);
 }
 
 UIVisualStateManager* UIElement::getVisualStateManager()

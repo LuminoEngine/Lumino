@@ -1,19 +1,24 @@
 #include "lumino.as"
 
-LNLog_SetLevel LN_LOG_LEVEL_DEBUG
-LNLog_AllocConsole
+LUMINO_APP
 
-// Lumino を初期化します
-LNEngine_Initialize
+*on_init
+    LNBoxMesh_CreateWithSize 1, 1, 1, box
+    LNWorldObject_AddInto box
 
-// 文字列を表示するための UITextBlock オブジェクトを作成します
-//LNUITextBlock_CreateWithText "Hello, Lumino!", textBlock
-
-// メインウィンドウへ追加します
-//LNUI_Add textBlock
-
-// メインループ
-repeat
-    LNEngine_Update
+    LNEngine_GetCamera camera
+    LNWorldObject_SetPositionXYZ camera, 5, 5, -5
+    LNWorldObject_LookAtXYZ camera, 0, 0, 0
     
-loop
+    return
+
+*on_update
+    LNMouse_GetPosition p
+    LNRaycaster_FromScreen p, raycaster   // (1)
+    LNRaycaster_IntersectPlane raycaster, 0, 1, 0, result   // (2)
+    if result != LN_NULL_HANDLE {
+        LNRaycastResult_GetPoint result, p   // (3)
+        LNWorldObject_SetPosition box, p
+    }
+
+    return

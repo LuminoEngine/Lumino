@@ -69,6 +69,8 @@ public:
 	static Ref<BoxMesh> create();
 	static Ref<BoxMesh> create(float width, float height, float depth);
 
+	void setSize(const Vector3& size);
+
 	BoxMeshComponent* boxMeshComponent() const;
 
 protected:
@@ -82,7 +84,7 @@ LN_CONSTRUCT_ACCESS:
 	bool init();
 	
 	/**  */
-	LN_METHOD(OverloadPostfix="XYZ")
+	LN_METHOD(OverloadPostfix="WithSize")
 	bool init(float width, float height, float depth);
 
 private:
@@ -156,6 +158,9 @@ struct BoxMesh::BuilderDetails : public ShapeObject::BuilderDetails
 {
 	LN_BUILDER_DETAILS(BoxMesh);
 
+	Vector3 size;
+
+	BuilderDetails();
 	void apply(BoxMesh* p) const;
 };
 
@@ -163,6 +168,8 @@ template<class T, class B, class D>
 struct BoxMesh::BuilderCore : public ShapeObject::BuilderCore<T, B, D>
 {
 	LN_BUILDER_CORE(ShapeObject::BuilderCore);
+
+	B& size(float x, float y, float z) { d()->size = Vector3(x, y, z); return self(); }
 };
 
 LN_BUILDER_IMPLEMENT(BoxMesh);

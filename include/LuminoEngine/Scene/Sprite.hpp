@@ -169,6 +169,11 @@ struct Sprite::BuilderCore : public VisualObject::BuilderCore<T, B, D>
     B& size(float width, float height) { d()->size.set(width, height); return self(); }
 };
 
-LN_BUILDER_IMPLEMENT(Sprite);
+struct Sprite::Builder : public BuilderCore<Sprite, Builder, BuilderDetails>
+{
+    Builder() {}
+    Builder(Texture* texture) { d()->texture = texture; }
+};
+	
 
 } // namespace ln

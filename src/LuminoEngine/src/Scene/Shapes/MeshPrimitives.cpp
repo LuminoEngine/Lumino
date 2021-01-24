@@ -74,6 +74,11 @@ bool BoxMesh::init(float width, float height, float depth)
 	return true;
 }
 
+void BoxMesh::setSize(const Vector3& size)
+{
+	m_component->setSize(size);
+}
+
 BoxMeshComponent* BoxMesh::boxMeshComponent() const
 {
     return m_component;
@@ -178,9 +183,15 @@ void PlaneMesh::BuilderDetails::apply(PlaneMesh* p) const
 //==============================================================================
 // BoxMesh::BuilderDetails
 
+BoxMesh::BuilderDetails::BuilderDetails()
+	: size(1, 1, 1)
+{
+}
+
 void BoxMesh::BuilderDetails::apply(BoxMesh* p) const
 {
 	ShapeObject::BuilderDetails::apply(p);
+	p->setSize(size);
 }
 
 //==============================================================================

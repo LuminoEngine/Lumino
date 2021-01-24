@@ -170,16 +170,16 @@ int main(int argc, char** argv)
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
 	config->versionString = u"0.9.0";
 
-	//{
-	//	FlatCHeaderGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-	//{
-	//	FlatCSourceGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
+	{
+		FlatCHeaderGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
+	{
+		FlatCSourceGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
 	{
 		RubyExtGenerator g;
 		g.setup(db, config);
@@ -190,11 +190,11 @@ int main(int argc, char** argv)
 		g.setup(db, config);
 		g.generate();
 	}
-	{
-		HSP3HeaderGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
+	//{
+	//	HSP3HeaderGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
 	//{
 	//	HSP3CommandsGenerator g;
 	//	g.setup(db, config);
@@ -205,6 +205,7 @@ int main(int argc, char** argv)
 	//	g.setup(db, config);
 	//	g.generate();
 	//}
+
     //{
     //    DotNetPInvokeGenerator g;
     //    g.setup(db, config);

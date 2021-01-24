@@ -8,15 +8,8 @@ class App_Sandbox_EmptyApp : public Application
 {
     void onInit() override
     {
-        //Engine::renderView()->setGuideGridEnabled(true);
-        //Engine::camera()->addComponent(CameraOrbitControlComponent::create());
-
-        UIText::With(u"test").buildInto();
-
-    }
-
-    void onUpdate() override
-    {
+        auto texture = Texture2D::load(u"picture1.jpg");
+        auto sprite = Sprite::With(texture).buildInto();
     }
 };
 

@@ -123,6 +123,13 @@ bool BoxMeshComponent::init(const Vector3& size)
     return true;
 }
 
+void BoxMeshComponent::setSize(const Vector3& size)
+{
+    m_box.width = size.x;
+    m_box.height = size.y;
+    m_box.depth = size.y;
+}
+
 void BoxMeshComponent::onRender(RenderingContext* context)
 {
     context->setMaterial(material());

@@ -269,6 +269,14 @@ bool WorldObject::traverse(detail::IWorldObjectVisitor* visitor)
     return true;
 }
 
+void WorldObject::addInto(World* world)
+{
+    World* activeWorld = (world) ? world : detail::EngineDomain::sceneManager()->activeWorld();
+    if (activeWorld) {
+        activeWorld->add(this);
+    }
+}
+
 void WorldObject::onPreUpdate()
 {
 }
@@ -391,14 +399,6 @@ void WorldObject::updateWorldMatrixHierarchical()
     for (auto& child : m_children)
     {
         child->updateWorldMatrixHierarchical();
-    }
-}
-
-void WorldObject::intoWorld(World* world)
-{
-    World* activeWorld = (world) ? world : detail::EngineDomain::sceneManager()->activeWorld();
-    if (activeWorld) {
-        activeWorld->add(this);
     }
 }
 

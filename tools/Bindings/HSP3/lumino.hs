@@ -10,7 +10,7 @@ Lumino
 0.9.0
 
 %date
-2021/1/20
+2021/1/22
 
 %author
 lriki
@@ -1671,19 +1671,19 @@ readAllText
 LNAssets
 %prm
 filePath, encoding, outReturn
-[in]  filePath                    : 
-[in]  encoding((LNEncodingType)0) : 
-                                       LN_ENCODING_TYPE_UNKNOWN
-                                       •s–¾‚È•¶šƒGƒ“ƒR[ƒfƒBƒ“ƒO (”»•Ê¸”sB‚Ü‚½‚ÍƒoƒCƒiƒŠƒtƒ@ƒCƒ‹)
-                                       LN_ENCODING_TYPE_ASCII
-                                       ASCII (Šg’£ƒAƒXƒL[‚ÍŠÜ‚Ü‚È‚¢ http://www.asciitable.com/)
-                                       LN_ENCODING_TYPE_UTF8
-                                       UTF-8
-                                       LN_ENCODING_TYPE_UTF8N
-                                       UTF-8 (BOM –³‚µ)
-                                       LN_ENCODING_TYPE_SJIS
-                                       “ú–{Œê (ƒVƒtƒg JIS) -- cp932(MS932) Windows-31J ¦MSÀ‘•
-[out] outReturn(0)                : instance.
+[in]  filePath                           : 
+[in]  encoding(LN_ENCODING_TYPE_UNKNOWN) : 
+                                              LN_ENCODING_TYPE_UNKNOWN
+                                              •s–¾‚È•¶šƒGƒ“ƒR[ƒfƒBƒ“ƒO (”»•Ê¸”sB‚Ü‚½‚ÍƒoƒCƒiƒŠƒtƒ@ƒCƒ‹)
+                                              LN_ENCODING_TYPE_ASCII
+                                              ASCII (Šg’£ƒAƒXƒL[‚ÍŠÜ‚Ü‚È‚¢ http://www.asciitable.com/)
+                                              LN_ENCODING_TYPE_UTF8
+                                              UTF-8
+                                              LN_ENCODING_TYPE_UTF8N
+                                              UTF-8 (BOM –³‚µ)
+                                              LN_ENCODING_TYPE_SJIS
+                                              “ú–{Œê (ƒVƒtƒg JIS) -- cp932(MS932) Windows-31J ¦MSÀ‘•
+[out] outReturn(0)                       : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2350,9 +2350,9 @@ load
 LNShader
 %prm
 filePath, settings, outReturn
-[in]  filePath  : 
-[in]  settings  : 
-[out] outReturn(0) : instance.
+[in]  filePath                 : 
+[in]  settings(LN_NULL_HANDLE) : 
+[out] outReturn(0)             : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2784,9 +2784,9 @@ load
 LNMeshModel
 %prm
 filePath, settings, outReturn
-[in]  filePath  : 
-[in]  settings  : 
-[out] outReturn(0) : instance.
+[in]  filePath                 : 
+[in]  settings(LN_NULL_HANDLE) : 
+[out] outReturn(0)             : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3020,19 +3020,19 @@ LNKeyFrameAnimationCurve_AddKeyFrame
 LNKeyFrameAnimationCurve
 %prm
 keyframeanimationcurve, time, value, rightTangentMode, tangent
-[in] keyframeanimationcurve             : instance
-[in] time                               : 
-[in] value                              : 
-[in] rightTangentMode((LNTangentMode)0) : 
-                                             LN_TANGENT_MODE_LINEAR
-                                             üŒ`•âŠÔ
-                                             LN_TANGENT_MODE_TANGENT
-                                             Úü (‘¬“x) ‚ğg—p‚µ‚½•âŠÔ (ƒGƒ‹ƒ~[ƒgƒXƒvƒ‰ƒCƒ“)
-                                             LN_TANGENT_MODE_AUTO
-                                             ƒL[ƒtƒŒ[ƒ€‚Ì’l‚ğ’Ê‰ß‚·‚é‚È‚ß‚ç‚©‚È•âŠÔ (Catmull-Rom)
-                                             LN_TANGENT_MODE_CONSTANT
-                                             •âŠÔ‚È‚µ
-[in] tangent(0.000000)                  : 
+[in] keyframeanimationcurve                   : instance
+[in] time                                     : 
+[in] value                                    : 
+[in] rightTangentMode(LN_TANGENT_MODE_LINEAR) : 
+                                                   LN_TANGENT_MODE_LINEAR
+                                                   üŒ`•âŠÔ
+                                                   LN_TANGENT_MODE_TANGENT
+                                                   Úü (‘¬“x) ‚ğg—p‚µ‚½•âŠÔ (ƒGƒ‹ƒ~[ƒgƒXƒvƒ‰ƒCƒ“)
+                                                   LN_TANGENT_MODE_AUTO
+                                                   ƒL[ƒtƒŒ[ƒ€‚Ì’l‚ğ’Ê‰ß‚·‚é‚È‚ß‚ç‚©‚È•âŠÔ (Catmull-Rom)
+                                                   LN_TANGENT_MODE_CONSTANT
+                                                   •âŠÔ‚È‚µ
+[in] tangent(0.000000)                        : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4462,6 +4462,27 @@ LNWorldObject
 worldobject, outReturn
 [in]  worldobject : instance
 [out] outReturn(0) : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNWorldObject_AddInto
+‚±‚Ì WorldObject ‚ğw’è‚µ‚½ World ‚Ö’Ç‰Á‚µ‚Ü‚·BÈ—ª‚µ‚½ê‡‚ÍƒfƒtƒHƒ‹ƒg‚Ì World ‚Ö’Ç‰Á‚µ‚Ü‚·B
+%group
+LNWorldObject
+%prm
+worldobject, world
+[in] worldobject           : instance
+[in] world(LN_NULL_HANDLE) : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6088,6 +6109,26 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
+LNPlaneMesh_Create
+
+%group
+LNPlaneMesh
+%prm
+outPlaneMesh
+[in] outPlaneMesh(0) : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
 LNBoxMesh_Create
 Še²‚ÌƒTƒCƒY‚ª 1 ‚Å‚ ‚é BoxMesh ‚ğì¬‚µ‚Ü‚·B
 %group
@@ -6108,7 +6149,7 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNBoxMesh_CreateXYZ
+LNBoxMesh_CreateWithSize
 
 %group
 LNBoxMesh
@@ -6118,26 +6159,6 @@ width, height, depth, outBoxMesh
 [in] height     : 
 [in] depth      : 
 [in] outBoxMesh(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNPlaneMesh_Create
-
-%group
-LNPlaneMesh
-%prm
-outPlaneMesh
-[in] outPlaneMesh(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9161,13 +9182,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNUITextBlock_Create
-UITextBlock ‚ğì¬‚µ‚Ü‚·B
+LNUIElement_AddInto
+‚±‚Ì UIElement ‚ğw’è‚µ‚½ UIElement ‚Öq—v‘f‚Æ‚µ‚Ä’Ç‰Á‚µ‚Ü‚·BÈ—ª‚µ‚½ê‡‚ÍƒfƒtƒHƒ‹ƒg‚Ìƒ‹[ƒg UIElement ‚Ö’Ç‰Á‚µ‚Ü‚·B
 %group
-LNUITextBlock
+LNUIElement
 %prm
-outUITextBlock
-[in] outUITextBlock(0) : instance.
+uielement, parent
+[in] uielement              : instance
+[in] parent(LN_NULL_HANDLE) : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9181,14 +9203,34 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNUITextBlock_CreateWithText
+LNUIText_Create
+UIText ‚ğì¬‚µ‚Ü‚·B
+%group
+LNUIText
+%prm
+outUIText
+[in] outUIText(0) : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNUIText_CreateWithText
 •\¦•¶š—ñ‚ğw’è‚µ‚ÄAUITextBlock ‚ğì¬‚µ‚Ü‚·B
 %group
-LNUITextBlock
+LNUIText
 %prm
-text, outUITextBlock
-[in] text           : 
-[in] outUITextBlock(0) : instance.
+text, outUIText
+[in] text      : 
+[in] outUIText(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9202,14 +9244,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNUITextBlock_SetText
+LNUIText_SetText
 •\¦•¶š—ñ‚ğİ’è‚µ‚Ü‚·B
 %group
-LNUITextBlock
+LNUIText
 %prm
-uitextblock, value
-[in] uitextblock : instance
-[in] value       : 
+uitext, value
+[in] uitext : instance
+[in] value  : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9223,13 +9265,13 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNUITextBlock_GetText
+LNUIText_GetText
 •\¦•¶š—ñ‚ğæ“¾‚µ‚Ü‚·B
 %group
-LNUITextBlock
+LNUIText
 %prm
-uitextblock, outReturn
-[in]  uitextblock : instance
+uitext, outReturn
+[in]  uitext    : instance
 [out] outReturn(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
@@ -13127,14 +13169,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNBoxMeshSerializeHandler_Create
+LNShapeObjectSerializeHandler_Create
 
 %group
-LNBoxMeshSerializeHandler
+LNShapeObjectSerializeHandler
 %prm
-callback, outBoxMeshSerializeHandler
-[in] callback                   : 
-[in] outBoxMeshSerializeHandler(0) : instance.
+callback, outShapeObjectSerializeHandler
+[in] callback                       : 
+[in] outShapeObjectSerializeHandler(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13148,14 +13190,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNBoxMeshPreUpdateHandler_Create
+LNShapeObjectPreUpdateHandler_Create
 
 %group
-LNBoxMeshPreUpdateHandler
+LNShapeObjectPreUpdateHandler
 %prm
-callback, outBoxMeshPreUpdateHandler
-[in] callback                   : 
-[in] outBoxMeshPreUpdateHandler(0) : instance.
+callback, outShapeObjectPreUpdateHandler
+[in] callback                       : 
+[in] outShapeObjectPreUpdateHandler(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13169,14 +13211,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNBoxMeshUpdateHandler_Create
+LNShapeObjectUpdateHandler_Create
 
 %group
-LNBoxMeshUpdateHandler
+LNShapeObjectUpdateHandler
 %prm
-callback, outBoxMeshUpdateHandler
-[in] callback                : 
-[in] outBoxMeshUpdateHandler(0) : instance.
+callback, outShapeObjectUpdateHandler
+[in] callback                    : 
+[in] outShapeObjectUpdateHandler(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13240,6 +13282,69 @@ LNPlaneMeshUpdateHandler
 callback, outPlaneMeshUpdateHandler
 [in] callback                  : 
 [in] outPlaneMeshUpdateHandler(0) : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNBoxMeshSerializeHandler_Create
+
+%group
+LNBoxMeshSerializeHandler
+%prm
+callback, outBoxMeshSerializeHandler
+[in] callback                   : 
+[in] outBoxMeshSerializeHandler(0) : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNBoxMeshPreUpdateHandler_Create
+
+%group
+LNBoxMeshPreUpdateHandler
+%prm
+callback, outBoxMeshPreUpdateHandler
+[in] callback                   : 
+[in] outBoxMeshPreUpdateHandler(0) : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNBoxMeshUpdateHandler_Create
+
+%group
+LNBoxMeshUpdateHandler
+%prm
+callback, outBoxMeshUpdateHandler
+[in] callback                : 
+[in] outBoxMeshUpdateHandler(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13568,14 +13673,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNUITextBlockSerializeHandler_Create
+LNUITextSerializeHandler_Create
 
 %group
-LNUITextBlockSerializeHandler
+LNUITextSerializeHandler
 %prm
-callback, outUITextBlockSerializeHandler
-[in] callback                       : 
-[in] outUITextBlockSerializeHandler(0) : instance.
+callback, outUITextSerializeHandler
+[in] callback                  : 
+[in] outUITextSerializeHandler(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 

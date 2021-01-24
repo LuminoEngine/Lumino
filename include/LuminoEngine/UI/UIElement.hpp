@@ -445,6 +445,11 @@ public:
 	/** ウィンドウを前面にしてアクティブ化することを試みます。 */
 	//void activate();
 
+	
+	/** この UIElement を指定した UIElement へ子要素として追加します。省略した場合はデフォルトのルート UIElement へ追加します。 */
+	LN_METHOD()
+	void addInto(UIElement* parent = nullptr);
+
     UIElement();
     virtual ~UIElement();
 	bool init() { return init(UICreationContext::Default); }
@@ -648,7 +653,6 @@ public: // TODO: internal
 
 	int getVisualChildrenCount() const { return (m_visualChildren) ? m_visualChildren->size() : 0; }
 	UIElement* getVisualChild(int index) const { return (m_visualChildren) ? m_visualChildren->at(index) : nullptr; }
-	void intoUI(UIElement* parent = nullptr);
 
 private:
 	void updateEnabledPropertyOnChildren();
@@ -685,7 +689,7 @@ struct UIElement::BuilderCore : public AbstractBuilder<T, B, D>
 	/** height property */
 	B& backgroundColor(const Color& value) { d()->backgroundColor = value; return self(); }
 
-	Ref<T> buildInto(UIElement* parent = nullptr) { auto p = AbstractBuilder<T, B, D>::build(); p->intoUI(parent); return p; }
+	Ref<T> buildInto(UIElement* parent = nullptr) { auto p = AbstractBuilder<T, B, D>::build(); p->addInto(parent); return p; }
 };
 
 LN_BUILDER_IMPLEMENT(UIElement);

@@ -3003,6 +3003,14 @@ class Lumino::WorldObject
 
 
 
+    # この WorldObject を指定した World へ追加します。省略した場合はデフォルトの World へ追加します。
+    # @param [Lumino::World] world 
+    # 
+    def add_into(*args)
+    end
+
+
+
     # 物理演算・衝突判定の前 (onCollisionStay() などはこの後)
     def on_pre_update(*args)
     end
@@ -3647,6 +3655,22 @@ class Lumino::WorldRenderView
 
 end
 
+# 
+# 
+class Lumino::ShapeObject
+end
+
+# 平面 (床・地面) のメッシュオブジェクトです。デフォルトのサイズは、各軸 10 です。
+# 
+class Lumino::PlaneMesh
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
 # 直方体のメッシュオブジェクトです。
 # 
 class Lumino::BoxMesh
@@ -3659,17 +3683,6 @@ class Lumino::BoxMesh
     #   @param [Float] height 
     #   @param [Float] depth 
     #   
-    def initialize(*args)
-    end
-
-
-
-end
-
-# 平面 (床・地面) のメッシュオブジェクトです。デフォルトのサイズは、各軸 10 です。
-# 
-class Lumino::PlaneMesh
-    # 
     def initialize(*args)
     end
 
@@ -4853,14 +4866,22 @@ class Lumino::UIElement
 
 
 
+    # この UIElement を指定した UIElement へ子要素として追加します。省略した場合はデフォルトのルート UIElement へ追加します。
+    # @param [Lumino::UIElement] parent 
+    # 
+    def add_into(*args)
+    end
+
+
+
 end
 
 # 文字列を表示するための UI 要素です。少量の文字列表示に最適化されています。
 # 
-class Lumino::UITextBlock
-    # UITextBlock を作成します。
+class Lumino::UIText
+    # UIText を作成します。
     # @overload initialize()
-    #   UITextBlock を作成します。
+    #   UIText を作成します。
     # @overload initialize(text)
     #   表示文字列を指定して、UITextBlock を作成します。
     #   @param [] text 
@@ -6705,22 +6726,9 @@ end
 
 # 
 # 
-class Lumino::BoxMeshSerializeHandler
+class Lumino::ShapeObjectSerializeHandler
     # 
-    # @param [Lumino::BoxMeshSerializeHandler_Function] callback 
-    # 
-    def initialize(*args)
-    end
-
-
-
-end
-
-# 
-# 
-class Lumino::BoxMeshPreUpdateHandler
-    # 
-    # @param [Lumino::BoxMeshPreUpdateHandler_Function] callback 
+    # @param [Lumino::ShapeObjectSerializeHandler_Function] callback 
     # 
     def initialize(*args)
     end
@@ -6731,9 +6739,22 @@ end
 
 # 
 # 
-class Lumino::BoxMeshUpdateHandler
+class Lumino::ShapeObjectPreUpdateHandler
     # 
-    # @param [Lumino::BoxMeshUpdateHandler_Function] callback 
+    # @param [Lumino::ShapeObjectPreUpdateHandler_Function] callback 
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
+# 
+# 
+class Lumino::ShapeObjectUpdateHandler
+    # 
+    # @param [Lumino::ShapeObjectUpdateHandler_Function] callback 
     # 
     def initialize(*args)
     end
@@ -6773,6 +6794,45 @@ end
 class Lumino::PlaneMeshUpdateHandler
     # 
     # @param [Lumino::PlaneMeshUpdateHandler_Function] callback 
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
+# 
+# 
+class Lumino::BoxMeshSerializeHandler
+    # 
+    # @param [Lumino::BoxMeshSerializeHandler_Function] callback 
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
+# 
+# 
+class Lumino::BoxMeshPreUpdateHandler
+    # 
+    # @param [Lumino::BoxMeshPreUpdateHandler_Function] callback 
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
+# 
+# 
+class Lumino::BoxMeshUpdateHandler
+    # 
+    # @param [Lumino::BoxMeshUpdateHandler_Function] callback 
     # 
     def initialize(*args)
     end
@@ -6978,9 +7038,9 @@ end
 
 # 
 # 
-class Lumino::UITextBlockSerializeHandler
+class Lumino::UITextSerializeHandler
     # 
-    # @param [Lumino::UITextBlockSerializeHandler_Function] callback 
+    # @param [Lumino::UITextSerializeHandler_Function] callback 
     # 
     def initialize(*args)
     end

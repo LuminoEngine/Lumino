@@ -236,6 +236,10 @@ public:
 	LN_METHOD(Property)
 	ComponentList* components() const { return m_components; }
 
+	/** この WorldObject を指定した World へ追加します。省略した場合はデフォルトの World へ追加します。 */
+	LN_METHOD()
+	void addInto(World* world = nullptr);
+
 protected:
 	/** 物理演算・衝突判定の前 (onCollisionStay() などはこの後) */
 	LN_METHOD()
@@ -279,7 +283,6 @@ public: // TODO:
     void resolveWorldMatrix();
     void updateWorldMatrixHierarchical();
 
-	void intoWorld(World* world = nullptr);
 
     Level* m_parentLevel;
     WorldObject* m_parent;
@@ -346,7 +349,7 @@ struct WorldObject::BuilderCore : public AbstractBuilder<T, B, D>
 	template<typename... TArgs>
 	B& components(TArgs&&... args) { foreach_args<BuilderVariant<Component>>([this](auto& x) { d()->m_components.push_back(x); }, std::forward<TArgs>(args)...); return *static_cast<B*>(this); }
 
-	Ref<T> buildInto(World* world = nullptr) { auto p = AbstractBuilder<T, B, D>::build(); p->intoWorld(world); return p; }
+	Ref<T> buildInto(World* world = nullptr) { auto p = AbstractBuilder<T, B, D>::build(); p->addInto(world); return p; }
 };
 
 LN_BUILDER_IMPLEMENT(WorldObject);

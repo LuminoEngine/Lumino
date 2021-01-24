@@ -68,6 +68,7 @@ class BoxMeshComponent
 	: public ShapeComponent
 {
 public:
+    void setSize(const Vector3& size);
 
 protected:
 	void onRender(RenderingContext* context);

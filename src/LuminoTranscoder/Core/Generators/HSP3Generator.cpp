@@ -7,6 +7,24 @@ static const bool LabelSyntax = true;
 //==============================================================================
 // HSP3GeneratorBase
 
+//ln::String HSP3GeneratorBase::makeFlatConstantValue(const ConstantSymbol* constant) const
+//{
+//    if (constant->type()->isEnum()) {
+//        return ln::String::format(u"({0}){1}", makeFlatClassName(constant->type()), ln::String::fromNumber(constant->value()->get<int>()));
+//    }
+//    else if (constant->type() == PredefinedTypes::boolType) {
+//        return constant->value()->get<bool>() ? u"LN_TRUE" : u"LN_FALSE";
+//    }
+//    else if (constant->type() == PredefinedTypes::floatType) {
+//        return ln::String::fromNumber(constant->value()->get<float>());
+//    }
+//    else if (constant->type() == PredefinedTypes::nullptrType) {
+//        return u"LN_NULL_HANDLE";
+//    }
+//    else {
+//        return ln::String::fromNumber(constant->value()->get<int>());
+//    }
+//}
 
 //==============================================================================
 // HSP3HeaderGenerator
@@ -106,7 +124,10 @@ ln::String HSP3HeaderGenerator::makeClasses() const
                 OutputBuffer argsText;
                 const auto& flatParams = methodSymbol->flatParameters();
                 for (int i = 0; i < flatParams.size(); i++) {
-                    if (flatParams[i]->isReturn())
+                    const auto& param = flatParams[i];
+                    if (param->defaultValue())
+                        paramsText.AppendCommad(u"%{0}={1}", i + 1, makeFlatConstantValue(param->defaultValue()));
+                    else if (param->isReturn())
                         paramsText.AppendCommad(u"%{0}=_ln_return_discard", i + 1);
                     else
                         paramsText.AppendCommad(u"%{0}", i + 1);

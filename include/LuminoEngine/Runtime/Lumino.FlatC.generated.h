@@ -1404,12 +1404,15 @@ typedef LNResult(*LNCameraOrbitControlComponentSerializeHandlerCallback)(LNHandl
 typedef LNResult(*LNRaycasterSerializeHandlerCallback)(LNHandle raycasterserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNRaycastResultSerializeHandlerCallback)(LNHandle raycastresultserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNWorldRenderViewSerializeHandlerCallback)(LNHandle worldrenderviewserializehandler, LNHandle self, LNHandle ar);
-typedef LNResult(*LNBoxMeshSerializeHandlerCallback)(LNHandle boxmeshserializehandler, LNHandle self, LNHandle ar);
-typedef LNResult(*LNBoxMeshPreUpdateHandlerCallback)(LNHandle boxmeshpreupdatehandler, LNHandle self);
-typedef LNResult(*LNBoxMeshUpdateHandlerCallback)(LNHandle boxmeshupdatehandler, LNHandle self, float elapsedSeconds);
+typedef LNResult(*LNShapeObjectSerializeHandlerCallback)(LNHandle shapeobjectserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNShapeObjectPreUpdateHandlerCallback)(LNHandle shapeobjectpreupdatehandler, LNHandle self);
+typedef LNResult(*LNShapeObjectUpdateHandlerCallback)(LNHandle shapeobjectupdatehandler, LNHandle self, float elapsedSeconds);
 typedef LNResult(*LNPlaneMeshSerializeHandlerCallback)(LNHandle planemeshserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNPlaneMeshPreUpdateHandlerCallback)(LNHandle planemeshpreupdatehandler, LNHandle self);
 typedef LNResult(*LNPlaneMeshUpdateHandlerCallback)(LNHandle planemeshupdatehandler, LNHandle self, float elapsedSeconds);
+typedef LNResult(*LNBoxMeshSerializeHandlerCallback)(LNHandle boxmeshserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNBoxMeshPreUpdateHandlerCallback)(LNHandle boxmeshpreupdatehandler, LNHandle self);
+typedef LNResult(*LNBoxMeshUpdateHandlerCallback)(LNHandle boxmeshupdatehandler, LNHandle self, float elapsedSeconds);
 typedef LNResult(*LNMeshComponentSerializeHandlerCallback)(LNHandle meshcomponentserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNCollisionSerializeHandlerCallback)(LNHandle collisionserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNTriggerBodyComponentSerializeHandlerCallback)(LNHandle triggerbodycomponentserializehandler, LNHandle self, LNHandle ar);
@@ -1425,7 +1428,7 @@ typedef LNResult(*LNLevelUpdateHandlerCallback)(LNHandle levelupdatehandler, LNH
 typedef LNResult(*LNUIEventArgsSerializeHandlerCallback)(LNHandle uieventargsserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUILayoutElementSerializeHandlerCallback)(LNHandle uilayoutelementserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIElementSerializeHandlerCallback)(LNHandle uielementserializehandler, LNHandle self, LNHandle ar);
-typedef LNResult(*LNUITextBlockSerializeHandlerCallback)(LNHandle uitextblockserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUITextSerializeHandlerCallback)(LNHandle uitextserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUISpriteSerializeHandlerCallback)(LNHandle uispriteserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIIconSerializeHandlerCallback)(LNHandle uiiconserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIMessageTextAreaSerializeHandlerCallback)(LNHandle uimessagetextareaserializehandler, LNHandle self, LNHandle ar);
@@ -4153,6 +4156,13 @@ LN_FLAT_API LNResult LNWorldObject_Destroy(LNHandle worldobject);
 */
 LN_FLAT_API LNResult LNWorldObject_GetComponents(LNHandle worldobject, LNHandle* outReturn);
 
+/**
+    @brief この WorldObject を指定した World へ追加します。省略した場合はデフォルトの World へ追加します。
+    @param[in] worldobject : instance
+    @param[] world : 
+*/
+LN_FLAT_API LNResult LNWorldObject_AddInto(LNHandle worldobject, LNHandle world);
+
 typedef LNResult(*LNWorldObject_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNWorldObject_OnSerialize_SetOverrideCallback(LNWorldObject_OnSerialize_OverrideCallback callback);
 LN_FLAT_API LNResult LNWorldObject_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
@@ -5211,69 +5221,54 @@ extern LN_FLAT_API void LNWorldRenderView_RegisterSubclassTypeInfo(const LNWorld
 extern LN_FLAT_API LNSubinstanceId LNWorldRenderView_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// ln::BoxMesh
+// ln::ShapeObject
 
-/**
-    @brief 各軸のサイズが 1 である BoxMesh を作成します。
-    @param[out] outBoxMesh : instance.
-*/
-LN_FLAT_API LNResult LNBoxMesh_Create(LNHandle* outBoxMesh);
-
-/**
-    @brief 
-    @param[] width : 
-    @param[] height : 
-    @param[] depth : 
-    @param[out] outBoxMesh : instance.
-*/
-LN_FLAT_API LNResult LNBoxMesh_CreateXYZ(float width, float height, float depth, LNHandle* outBoxMesh);
-
-typedef LNResult(*LNBoxMesh_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
-LN_FLAT_API LNResult LNBoxMesh_OnSerialize_SetOverrideCallback(LNBoxMesh_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LNResult LNBoxMesh_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
-typedef LNResult(*LNBoxMesh_OnPreUpdate_OverrideCallback)(LNHandle worldobject);
-LN_FLAT_API LNResult LNBoxMesh_OnPreUpdate_SetOverrideCallback(LNBoxMesh_OnPreUpdate_OverrideCallback callback);
-LN_FLAT_API LNResult LNBoxMesh_OnPreUpdate_CallOverrideBase(LNHandle worldobject);
-typedef LNResult(*LNBoxMesh_OnUpdate_OverrideCallback)(LNHandle worldobject, float elapsedSeconds);
-LN_FLAT_API LNResult LNBoxMesh_OnUpdate_SetOverrideCallback(LNBoxMesh_OnUpdate_OverrideCallback callback);
-LN_FLAT_API LNResult LNBoxMesh_OnUpdate_CallOverrideBase(LNHandle worldobject, float elapsedSeconds);
+typedef LNResult(*LNShapeObject_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNShapeObject_OnSerialize_SetOverrideCallback(LNShapeObject_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNShapeObject_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+typedef LNResult(*LNShapeObject_OnPreUpdate_OverrideCallback)(LNHandle worldobject);
+LN_FLAT_API LNResult LNShapeObject_OnPreUpdate_SetOverrideCallback(LNShapeObject_OnPreUpdate_OverrideCallback callback);
+LN_FLAT_API LNResult LNShapeObject_OnPreUpdate_CallOverrideBase(LNHandle worldobject);
+typedef LNResult(*LNShapeObject_OnUpdate_OverrideCallback)(LNHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LNResult LNShapeObject_OnUpdate_SetOverrideCallback(LNShapeObject_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LNResult LNShapeObject_OnUpdate_CallOverrideBase(LNHandle worldobject, float elapsedSeconds);
 
 /**
     @brief 
-    @param[in] boxmesh : instance
+    @param[in] shapeobject : instance
     @param[] callback : 
 */
-LN_FLAT_API LNResult LNBoxMesh_SetPrototype_OnSerialize(LNHandle boxmesh, LNHandle callback);
+LN_FLAT_API LNResult LNShapeObject_SetPrototype_OnSerialize(LNHandle shapeobject, LNHandle callback);
 
 /**
     @brief 
-    @param[in] boxmesh : instance
+    @param[in] shapeobject : instance
     @param[] callback : 
 */
-LN_FLAT_API LNResult LNBoxMesh_SetPrototype_OnPreUpdate(LNHandle boxmesh, LNHandle callback);
+LN_FLAT_API LNResult LNShapeObject_SetPrototype_OnPreUpdate(LNHandle shapeobject, LNHandle callback);
 
 /**
     @brief 
-    @param[in] boxmesh : instance
+    @param[in] shapeobject : instance
     @param[] callback : 
 */
-LN_FLAT_API LNResult LNBoxMesh_SetPrototype_OnUpdate(LNHandle boxmesh, LNHandle callback);
+LN_FLAT_API LNResult LNShapeObject_SetPrototype_OnUpdate(LNHandle shapeobject, LNHandle callback);
 
-extern LN_FLAT_API int LNBoxMesh_GetTypeInfoId();
-LN_FLAT_API void LNBoxMesh_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNBoxMesh_SubclassRegistrationInfo
+extern LN_FLAT_API int LNShapeObject_GetTypeInfoId();
+LN_FLAT_API void LNShapeObject_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNShapeObject_SubclassRegistrationInfo
 {
     int64_t subclassId;	// ManagedTypeInfoId
     LNSubinstanceAllocFunc subinstanceAllocFunc;
     LNSubinstanceFreeFunc subinstanceFreeFunc;
-    LNBoxMesh_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
-    LNBoxMesh_OnPreUpdate_OverrideCallback OnPreUpdate_OverrideFunc;
-    LNBoxMesh_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
+    LNShapeObject_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+    LNShapeObject_OnPreUpdate_OverrideCallback OnPreUpdate_OverrideFunc;
+    LNShapeObject_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
 
-} LNBoxMesh_SubclassRegistrationInfo;
+} LNShapeObject_SubclassRegistrationInfo;
 
-extern LN_FLAT_API void LNBoxMesh_RegisterSubclassTypeInfo(const LNBoxMesh_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNBoxMesh_GetSubinstanceId(LNHandle handle);
+extern LN_FLAT_API void LNShapeObject_RegisterSubclassTypeInfo(const LNShapeObject_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNShapeObject_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::PlaneMesh
@@ -5330,6 +5325,71 @@ typedef struct tagLNPlaneMesh_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNPlaneMesh_RegisterSubclassTypeInfo(const LNPlaneMesh_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNPlaneMesh_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::BoxMesh
+
+/**
+    @brief 各軸のサイズが 1 である BoxMesh を作成します。
+    @param[out] outBoxMesh : instance.
+*/
+LN_FLAT_API LNResult LNBoxMesh_Create(LNHandle* outBoxMesh);
+
+/**
+    @brief 
+    @param[] width : 
+    @param[] height : 
+    @param[] depth : 
+    @param[out] outBoxMesh : instance.
+*/
+LN_FLAT_API LNResult LNBoxMesh_CreateWithSize(float width, float height, float depth, LNHandle* outBoxMesh);
+
+typedef LNResult(*LNBoxMesh_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNBoxMesh_OnSerialize_SetOverrideCallback(LNBoxMesh_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNBoxMesh_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+typedef LNResult(*LNBoxMesh_OnPreUpdate_OverrideCallback)(LNHandle worldobject);
+LN_FLAT_API LNResult LNBoxMesh_OnPreUpdate_SetOverrideCallback(LNBoxMesh_OnPreUpdate_OverrideCallback callback);
+LN_FLAT_API LNResult LNBoxMesh_OnPreUpdate_CallOverrideBase(LNHandle worldobject);
+typedef LNResult(*LNBoxMesh_OnUpdate_OverrideCallback)(LNHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LNResult LNBoxMesh_OnUpdate_SetOverrideCallback(LNBoxMesh_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LNResult LNBoxMesh_OnUpdate_CallOverrideBase(LNHandle worldobject, float elapsedSeconds);
+
+/**
+    @brief 
+    @param[in] boxmesh : instance
+    @param[] callback : 
+*/
+LN_FLAT_API LNResult LNBoxMesh_SetPrototype_OnSerialize(LNHandle boxmesh, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] boxmesh : instance
+    @param[] callback : 
+*/
+LN_FLAT_API LNResult LNBoxMesh_SetPrototype_OnPreUpdate(LNHandle boxmesh, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] boxmesh : instance
+    @param[] callback : 
+*/
+LN_FLAT_API LNResult LNBoxMesh_SetPrototype_OnUpdate(LNHandle boxmesh, LNHandle callback);
+
+extern LN_FLAT_API int LNBoxMesh_GetTypeInfoId();
+LN_FLAT_API void LNBoxMesh_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNBoxMesh_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNBoxMesh_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+    LNBoxMesh_OnPreUpdate_OverrideCallback OnPreUpdate_OverrideFunc;
+    LNBoxMesh_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
+
+} LNBoxMesh_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNBoxMesh_RegisterSubclassTypeInfo(const LNBoxMesh_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNBoxMesh_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::MeshComponent
@@ -6562,6 +6622,13 @@ LN_FLAT_API LNResult LNUIElement_SetFocusable(LNHandle uielement, LNBool value);
 */
 LN_FLAT_API LNResult LNUIElement_GetFocusable(LNHandle uielement, LNBool* outReturn);
 
+/**
+    @brief この UIElement を指定した UIElement へ子要素として追加します。省略した場合はデフォルトのルート UIElement へ追加します。
+    @param[in] uielement : instance
+    @param[] parent : 
+*/
+LN_FLAT_API LNResult LNUIElement_AddInto(LNHandle uielement, LNHandle parent);
+
 typedef LNResult(*LNUIElement_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
 LN_FLAT_API LNResult LNUIElement_OnSerialize_SetOverrideCallback(LNUIElement_OnSerialize_OverrideCallback callback);
 LN_FLAT_API LNResult LNUIElement_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
@@ -6592,58 +6659,58 @@ extern LN_FLAT_API LNSubinstanceId LNUIElement_GetSubinstanceId(LNHandle handle)
 
 /**
     @brief UIText を作成します。
-    @param[out] outUITextBlock : instance.
+    @param[out] outUIText : instance.
 */
-LN_FLAT_API LNResult LNUITextBlock_Create(LNHandle* outUITextBlock);
+LN_FLAT_API LNResult LNUIText_Create(LNHandle* outUIText);
 
 /**
     @brief 表示文字列を指定して、UITextBlock を作成します。
     @param[] text : 
-    @param[out] outUITextBlock : instance.
+    @param[out] outUIText : instance.
 */
-LN_FLAT_API LNResult LNUITextBlock_CreateWithText(const LNChar* text, LNHandle* outUITextBlock);
-LN_FLAT_API LNResult LNUITextBlock_CreateWithTextA(const char* text, LNHandle* outUITextBlock);
+LN_FLAT_API LNResult LNUIText_CreateWithText(const LNChar* text, LNHandle* outUIText);
+LN_FLAT_API LNResult LNUIText_CreateWithTextA(const char* text, LNHandle* outUIText);
 
 /**
     @brief 表示文字列を設定します。
-    @param[in] uitextblock : instance
+    @param[in] uitext : instance
     @param[] value : 
 */
-LN_FLAT_API LNResult LNUITextBlock_SetText(LNHandle uitextblock, const LNChar* value);
-LN_FLAT_API LNResult LNUITextBlock_SetTextA(LNHandle uitextblock, const char* value);
+LN_FLAT_API LNResult LNUIText_SetText(LNHandle uitext, const LNChar* value);
+LN_FLAT_API LNResult LNUIText_SetTextA(LNHandle uitext, const char* value);
 
 /**
     @brief 表示文字列を取得します。
-    @param[in] uitextblock : instance
+    @param[in] uitext : instance
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LNResult LNUITextBlock_GetText(LNHandle uitextblock, const LNChar** outReturn);
-LN_FLAT_API LNResult LNUITextBlock_GetTextA(LNHandle uitextblock, const char** outReturn);
+LN_FLAT_API LNResult LNUIText_GetText(LNHandle uitext, const LNChar** outReturn);
+LN_FLAT_API LNResult LNUIText_GetTextA(LNHandle uitext, const char** outReturn);
 
-typedef LNResult(*LNUITextBlock_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
-LN_FLAT_API LNResult LNUITextBlock_OnSerialize_SetOverrideCallback(LNUITextBlock_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LNResult LNUITextBlock_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+typedef LNResult(*LNUIText_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIText_OnSerialize_SetOverrideCallback(LNUIText_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIText_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
 
 /**
     @brief 
-    @param[in] uitextblock : instance
+    @param[in] uitext : instance
     @param[] callback : 
 */
-LN_FLAT_API LNResult LNUITextBlock_SetPrototype_OnSerialize(LNHandle uitextblock, LNHandle callback);
+LN_FLAT_API LNResult LNUIText_SetPrototype_OnSerialize(LNHandle uitext, LNHandle callback);
 
-extern LN_FLAT_API int LNUITextBlock_GetTypeInfoId();
-LN_FLAT_API void LNUITextBlock_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNUITextBlock_SubclassRegistrationInfo
+extern LN_FLAT_API int LNUIText_GetTypeInfoId();
+LN_FLAT_API void LNUIText_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIText_SubclassRegistrationInfo
 {
     int64_t subclassId;	// ManagedTypeInfoId
     LNSubinstanceAllocFunc subinstanceAllocFunc;
     LNSubinstanceFreeFunc subinstanceFreeFunc;
-    LNUITextBlock_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+    LNUIText_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
 
-} LNUITextBlock_SubclassRegistrationInfo;
+} LNUIText_SubclassRegistrationInfo;
 
-extern LN_FLAT_API void LNUITextBlock_RegisterSubclassTypeInfo(const LNUITextBlock_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNUITextBlock_GetSubinstanceId(LNHandle handle);
+extern LN_FLAT_API void LNUIText_RegisterSubclassTypeInfo(const LNUIText_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIText_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::UISprite
@@ -9089,52 +9156,52 @@ extern LN_FLAT_API void LNWorldRenderViewSerializeHandler_RegisterSubclassTypeIn
 extern LN_FLAT_API LNSubinstanceId LNWorldRenderViewSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// BoxMeshSerializeHandler
+// ShapeObjectSerializeHandler
 
-LN_FLAT_API LNResult LNBoxMeshSerializeHandler_Create(LNBoxMeshSerializeHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNBoxMeshSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNBoxMeshSerializeHandler_SubclassRegistrationInfo
+LN_FLAT_API LNResult LNShapeObjectSerializeHandler_Create(LNShapeObjectSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNShapeObjectSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNShapeObjectSerializeHandler_SubclassRegistrationInfo
 {
     int64_t subclassId;	// ManagedTypeInfoId
     LNSubinstanceAllocFunc subinstanceAllocFunc;
     LNSubinstanceFreeFunc subinstanceFreeFunc;
 
-} LNBoxMeshSerializeHandler_SubclassRegistrationInfo;
+} LNShapeObjectSerializeHandler_SubclassRegistrationInfo;
 
-extern LN_FLAT_API void LNBoxMeshSerializeHandler_RegisterSubclassTypeInfo(const LNBoxMeshSerializeHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNBoxMeshSerializeHandler_GetSubinstanceId(LNHandle handle);
+extern LN_FLAT_API void LNShapeObjectSerializeHandler_RegisterSubclassTypeInfo(const LNShapeObjectSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNShapeObjectSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// BoxMeshPreUpdateHandler
+// ShapeObjectPreUpdateHandler
 
-LN_FLAT_API LNResult LNBoxMeshPreUpdateHandler_Create(LNBoxMeshPreUpdateHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNBoxMeshPreUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNBoxMeshPreUpdateHandler_SubclassRegistrationInfo
+LN_FLAT_API LNResult LNShapeObjectPreUpdateHandler_Create(LNShapeObjectPreUpdateHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNShapeObjectPreUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNShapeObjectPreUpdateHandler_SubclassRegistrationInfo
 {
     int64_t subclassId;	// ManagedTypeInfoId
     LNSubinstanceAllocFunc subinstanceAllocFunc;
     LNSubinstanceFreeFunc subinstanceFreeFunc;
 
-} LNBoxMeshPreUpdateHandler_SubclassRegistrationInfo;
+} LNShapeObjectPreUpdateHandler_SubclassRegistrationInfo;
 
-extern LN_FLAT_API void LNBoxMeshPreUpdateHandler_RegisterSubclassTypeInfo(const LNBoxMeshPreUpdateHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNBoxMeshPreUpdateHandler_GetSubinstanceId(LNHandle handle);
+extern LN_FLAT_API void LNShapeObjectPreUpdateHandler_RegisterSubclassTypeInfo(const LNShapeObjectPreUpdateHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNShapeObjectPreUpdateHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// BoxMeshUpdateHandler
+// ShapeObjectUpdateHandler
 
-LN_FLAT_API LNResult LNBoxMeshUpdateHandler_Create(LNBoxMeshUpdateHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNBoxMeshUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNBoxMeshUpdateHandler_SubclassRegistrationInfo
+LN_FLAT_API LNResult LNShapeObjectUpdateHandler_Create(LNShapeObjectUpdateHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNShapeObjectUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNShapeObjectUpdateHandler_SubclassRegistrationInfo
 {
     int64_t subclassId;	// ManagedTypeInfoId
     LNSubinstanceAllocFunc subinstanceAllocFunc;
     LNSubinstanceFreeFunc subinstanceFreeFunc;
 
-} LNBoxMeshUpdateHandler_SubclassRegistrationInfo;
+} LNShapeObjectUpdateHandler_SubclassRegistrationInfo;
 
-extern LN_FLAT_API void LNBoxMeshUpdateHandler_RegisterSubclassTypeInfo(const LNBoxMeshUpdateHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNBoxMeshUpdateHandler_GetSubinstanceId(LNHandle handle);
+extern LN_FLAT_API void LNShapeObjectUpdateHandler_RegisterSubclassTypeInfo(const LNShapeObjectUpdateHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNShapeObjectUpdateHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // PlaneMeshSerializeHandler
@@ -9183,6 +9250,54 @@ typedef struct tagLNPlaneMeshUpdateHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNPlaneMeshUpdateHandler_RegisterSubclassTypeInfo(const LNPlaneMeshUpdateHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNPlaneMeshUpdateHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// BoxMeshSerializeHandler
+
+LN_FLAT_API LNResult LNBoxMeshSerializeHandler_Create(LNBoxMeshSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNBoxMeshSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNBoxMeshSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNBoxMeshSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNBoxMeshSerializeHandler_RegisterSubclassTypeInfo(const LNBoxMeshSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNBoxMeshSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// BoxMeshPreUpdateHandler
+
+LN_FLAT_API LNResult LNBoxMeshPreUpdateHandler_Create(LNBoxMeshPreUpdateHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNBoxMeshPreUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNBoxMeshPreUpdateHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNBoxMeshPreUpdateHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNBoxMeshPreUpdateHandler_RegisterSubclassTypeInfo(const LNBoxMeshPreUpdateHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNBoxMeshPreUpdateHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// BoxMeshUpdateHandler
+
+LN_FLAT_API LNResult LNBoxMeshUpdateHandler_Create(LNBoxMeshUpdateHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNBoxMeshUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNBoxMeshUpdateHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNBoxMeshUpdateHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNBoxMeshUpdateHandler_RegisterSubclassTypeInfo(const LNBoxMeshUpdateHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNBoxMeshUpdateHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // MeshComponentSerializeHandler
@@ -9425,20 +9540,20 @@ extern LN_FLAT_API void LNUIElementSerializeHandler_RegisterSubclassTypeInfo(con
 extern LN_FLAT_API LNSubinstanceId LNUIElementSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// UITextBlockSerializeHandler
+// UITextSerializeHandler
 
-LN_FLAT_API LNResult LNUITextBlockSerializeHandler_Create(LNUITextBlockSerializeHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNUITextBlockSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNUITextBlockSerializeHandler_SubclassRegistrationInfo
+LN_FLAT_API LNResult LNUITextSerializeHandler_Create(LNUITextSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUITextSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUITextSerializeHandler_SubclassRegistrationInfo
 {
     int64_t subclassId;	// ManagedTypeInfoId
     LNSubinstanceAllocFunc subinstanceAllocFunc;
     LNSubinstanceFreeFunc subinstanceFreeFunc;
 
-} LNUITextBlockSerializeHandler_SubclassRegistrationInfo;
+} LNUITextSerializeHandler_SubclassRegistrationInfo;
 
-extern LN_FLAT_API void LNUITextBlockSerializeHandler_RegisterSubclassTypeInfo(const LNUITextBlockSerializeHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNUITextBlockSerializeHandler_GetSubinstanceId(LNHandle handle);
+extern LN_FLAT_API void LNUITextSerializeHandler_RegisterSubclassTypeInfo(const LNUITextSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUITextSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // UISpriteSerializeHandler
