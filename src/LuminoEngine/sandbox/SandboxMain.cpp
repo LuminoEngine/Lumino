@@ -434,7 +434,7 @@ int main(int argc, char** argv)
 	Logger::addStdErrAdapter();
     Logger::setLevel(LogLevel::Debug);
 	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
-	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//(GraphicsAPI::DirectX12);//GraphicsAPI::OpenGL);//
+	EngineSettings::setGraphicsAPI(GraphicsAPI::DirectX12);//GraphicsAPI::Vulkan);//(GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	//EngineSettings::setUITheme(u"Chocotelier");
     EngineSettings::setGraphicsDebugEnabled(true);

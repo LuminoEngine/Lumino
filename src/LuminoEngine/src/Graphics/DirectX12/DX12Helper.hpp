@@ -14,6 +14,8 @@ class DX12Device;
 class DX12Helper
 {
 public:
+	static DXGI_FORMAT LNTextureFormatToDXFormat(TextureFormat value);
+	static TextureFormat DXFormatToLNTextureFormat(DXGI_FORMAT value);
 	static DXGI_FORMAT LNVertexElementTypeToDXFormat(VertexElementType value);
 	static const char* LNVertexElementUsageToSemanticName(VertexElementUsage value);
 };

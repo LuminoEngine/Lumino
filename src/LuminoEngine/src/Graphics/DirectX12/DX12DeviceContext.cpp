@@ -4,6 +4,7 @@
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "DX12Helper.hpp"
 #include "DX12VertexBuffer.hpp"
+#include "DX12Texture.hpp"
 #include "DX12DeviceContext.hpp"
 
 #pragma comment(lib,"d3d12.lib")
@@ -113,15 +114,32 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
         }
     }
 
-    if (FAILED(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)))) {
-        LN_ERROR("CreateCommandAllocator failed.");
-        return false;
-    }
+    // Single Time Command List
+    {
+        if (FAILED(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_singleTimeCommandAllocator)))) {
+            LN_ERROR("CreateCommandAllocator failed.");
+            return false;
+        }
 
+        if (FAILED(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_singleTimeCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_singleTimeCommandList)))) {
+            LN_ERROR("CreateCommandList failed.");
+            return false;
+        }
+        // CommandList は初期状態が "記録中" になっている。この状態では CommandAllocator::Reset() がエラーを返す。
+        // 記録開始時は状態を "記録終了" (非記録状態) にしておく方がコードがシンプルになるので、そうしておく。
+        // https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-close
+        m_singleTimeCommandList->Close();
 
-    if (FAILED(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_commandList)))) {
-        LN_ERROR("CreateCommandList failed.");
-        return false;
+        if (FAILED(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_singleTimeCommandListFence)))) {
+            LN_ERROR("CreateFence failed.");
+            return false;
+        }
+
+        m_singleTimeCommandListEvent = CreateEvent(0, 0, 0, 0);
+        if (!m_singleTimeCommandListEvent) {
+            LN_ERROR("CreateEvent failed.");
+            return false;
+        }
     }
 
 	return true;
@@ -129,14 +147,62 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
 
 void DX12Device::dispose()
 {
-    m_commandList.Reset();
-    m_commandAllocator.Reset();
+    m_singleTimeCommandList.Reset();
+    m_singleTimeCommandAllocator.Reset();
     m_commandQueue.Reset();
     m_device.Reset();
     m_adapter.Reset();
     m_dxgiFactory.Reset();
 
     IGraphicsDevice::dispose();
+}
+
+ID3D12GraphicsCommandList* DX12Device::beginSingleTimeCommandList()
+{
+    // https://docs.microsoft.com/ja-jp/windows/win32/direct3d12/recording-command-lists-and-bundles
+    // 基本的な使い方 (1フレーム内で複数のコマンドリストをマルチスレッドで構築するようなケースではない) の場合、
+    // ID3D12CommandAllocator と ID3D12GraphicsCommandList はワンセットと考えてよい。
+    // 逆にひとつの Allocator から複数の CommandList を作ったとき、Allocator だけ Reset() してしまうと、
+    // 生きている CommandList が使っているメモリが壊れてしまう。
+    if (FAILED(m_singleTimeCommandAllocator->Reset())) {
+        LN_ERROR("Reset failed.");
+        return false;
+    }
+    if (FAILED(m_singleTimeCommandList->Reset(m_singleTimeCommandAllocator.Get(), nullptr))) {
+        LN_ERROR("Reset failed.");
+        return false;
+    }
+
+    return m_singleTimeCommandList.Get();
+}
+
+bool DX12Device::endSingleTimeCommandList(ID3D12GraphicsCommandList* commandList)
+{
+    if (LN_REQUIRE(commandList == m_singleTimeCommandList.Get())) return false;
+
+    // 記録終了
+    commandList->Close();
+
+    // CommandList の実行開始前に、Fence の値を 0 にしておく
+    if (FAILED(m_singleTimeCommandListFence->Signal(0))) {
+        LN_ERROR("Signal(0) failed.");
+        return false;
+    }
+
+    // 実行開始
+    ID3D12CommandList* commandLists[1] = { commandList };
+    m_commandQueue->ExecuteCommandLists(1, commandLists);
+
+    // 実行完了であれば Fence の値が 1 になるようにしておく
+    // ※ExecuteCommandLists() の直後、この Signal の呼び出し時点で完了している場合でも 1 にしてくれる
+    if (FAILED(m_commandQueue->Signal(m_singleTimeCommandListFence.Get(), 1))) {
+        LN_ERROR("Signal(0) failed.");
+        return false;
+    }
+
+    // Fence の値が 1 になるまで待つ
+    m_singleTimeCommandListFence->SetEventOnCompletion(1, m_singleTimeCommandListEvent);
+    WaitForSingleObject(m_singleTimeCommandListEvent, INFINITE);
 }
 
 INativeGraphicsInterface* DX12Device::getNativeInterface() const
@@ -326,11 +392,29 @@ bool DX12GraphicsContext::init(DX12Device* owner)
 	ICommandList::init(owner);
 	m_device = owner;
 
+    ID3D12Device* dxDevice = m_device->device();
+
+    if (FAILED(dxDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_dxCommandAllocator)))) {
+        LN_ERROR("CreateCommandAllocator failed.");
+        return false;
+    }
+
+    if (FAILED(dxDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_dxCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_dxCommandList)))) {
+        LN_ERROR("CreateCommandList failed.");
+        return false;
+    }
+    // CommandList は初期状態が "記録中" になっている。この状態では CommandAllocator::Reset() がエラーを返す。
+    // 記録開始時は状態を "記録終了" (非記録状態) にしておく方がコードがシンプルになるので、そうしておく。
+    // https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-close
+    m_dxCommandList->Close();
+
 	return true;
 }
 
 void DX12GraphicsContext::dispose()
 {
+    m_dxCommandList.Reset();
+    m_dxCommandAllocator.Reset();
     ICommandList::dispose();
 }
 
@@ -422,38 +506,97 @@ void DX12GraphicsContext::wait()
 // DX12SwapChain
 
 DX12SwapChain::DX12SwapChain()
+    : m_device(nullptr)
+    , m_backbufferCount(0)
+    , m_frameIndex(0)
 {
 }
 
 Result DX12SwapChain::init(DX12Device* deviceContext, PlatformWindow* window, const SizeI& backbufferSize)
 {
     LN_DCHECK(deviceContext);
+    m_device = deviceContext;
+    m_backbufferCount = DX12Device::BackBufferCount;
 
-    LN_NOTIMPLEMENTED();
+    HWND hWnd = (HWND)PlatformSupport::getWin32WindowHandle(window);
+    HINSTANCE hInstance = ::GetModuleHandle(NULL);
+
+    DXGI_SWAP_CHAIN_DESC swapChainDesc;
+    ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
+    swapChainDesc.BufferDesc.Width = backbufferSize.width;
+    swapChainDesc.BufferDesc.Height = backbufferSize.height;
+    swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
+    swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+    swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+    swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+    swapChainDesc.SampleDesc.Count = 1;
+    swapChainDesc.SampleDesc.Quality = 0;
+    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swapChainDesc.BufferCount = m_backbufferCount;
+    swapChainDesc.OutputWindow = hWnd;
+    swapChainDesc.Windowed = TRUE;
+    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+
+    IDXGIFactory6* dxgiFactory = m_device->dxgiFactory();
+    ComPtr<IDXGISwapChain> swapChain;
+    HRESULT hr = dxgiFactory->CreateSwapChain(m_device->dxCommandQueue(), &swapChainDesc, &swapChain);
+    if (FAILED(hr)) {
+        LN_ERROR("CreateSwapChain failed.");
+        return false;
+    }
+
+    if (FAILED(swapChain.As(&m_dxgiSwapChain))) {
+        LN_ERROR("Cast to IDXGISwapChain3 failed.");
+        return false;
+    }
+
+    // Create a RTV for each frame.
+    for (int i = 0; i < m_backbufferCount; i++)
+    {
+        ComPtr<ID3D12Resource> dxRenderTarget;
+        if (FAILED(m_dxgiSwapChain->GetBuffer(i, IID_PPV_ARGS(&dxRenderTarget)))) {
+            LN_ERROR("GetBuffer failed.");
+            return false;
+        }
+
+        Ref<DX12RenderTarget> wrapper = makeRef<DX12RenderTarget>();
+        if (!wrapper->init(m_device, dxRenderTarget)) {
+            return false;
+        }
+
+        m_renderTargets.push_back(wrapper);
+    }
+
+    m_frameIndex = m_dxgiSwapChain->GetCurrentBackBufferIndex();
 
 	return true;
 }
 
 void DX12SwapChain::dispose()
 {
+    for (auto& i : m_renderTargets) {
+        i->dispose();
+    }
+    m_renderTargets.clear();
+    m_dxgiSwapChain.Reset();
     ISwapChain::dispose();
 }
 
 uint32_t DX12SwapChain::getBackbufferCount()
 {
-    LN_NOTIMPLEMENTED();
-    return 0;
+    return m_backbufferCount;
 }
 
 void DX12SwapChain::acquireNextImage(int* outIndex)
 {
-    LN_NOTIMPLEMENTED();
+    *outIndex = m_dxgiSwapChain->GetCurrentBackBufferIndex();
 }
 
 ITexture* DX12SwapChain::getRenderTarget(int imageIndex) const
 {
-    LN_NOTIMPLEMENTED();
-	return nullptr;
+	return m_renderTargets[imageIndex];
 }
 
 Result DX12SwapChain::resizeBackbuffer(uint32_t width, uint32_t height)
@@ -723,63 +866,6 @@ void DX12Texture2D::dispose()
 void DX12Texture2D::setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
     LN_NOTIMPLEMENTED();
-}
-
-//==============================================================================
-// DX12SwapchainRenderTargetTexture
-
-DX12RenderTarget::DX12RenderTarget()
-    : m_deviceContext(nullptr)
-{
-}
-
-Result DX12RenderTarget::init(DX12Device* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
-{
-    LN_DCHECK(deviceContext);
-    m_deviceContext = deviceContext;
-    m_size.width = width;
-    m_size.height = height;
-    m_format = requestFormat;
-    LN_NOTIMPLEMENTED();
-
-    return true;
-}
-
-void DX12RenderTarget::dispose()
-{
-    LN_NOTIMPLEMENTED();
-    DX12Texture::dispose();
-}
-
-void DX12RenderTarget::readData(void* outData)
-{
-    LN_NOTIMPLEMENTED();
-}
-
-//==============================================================================
-// DX12DepthBuffer
-
-DX12DepthBuffer::DX12DepthBuffer()
-{
-}
-
-Result DX12DepthBuffer::init(DX12Device* deviceContext, uint32_t width, uint32_t height)
-{
-    LN_DCHECK(deviceContext);
-    if (LN_REQUIRE(width > 0)) return false;
-    if (LN_REQUIRE(height > 0)) return false;
-    m_deviceContext = deviceContext;
-    m_size.width = width;
-    m_size.height = height;
-    LN_NOTIMPLEMENTED();
-
-    return true;
-}
-
-void DX12DepthBuffer::dispose()
-{
-    LN_NOTIMPLEMENTED();
-    IDepthBuffer::dispose();
 }
 
 //==============================================================================

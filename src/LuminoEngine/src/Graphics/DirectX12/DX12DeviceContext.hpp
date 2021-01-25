@@ -4,6 +4,7 @@
 
 namespace ln {
 namespace detail {
+class DX12RenderTarget;
 
 class DX12Device
 	: public IGraphicsDevice
@@ -15,11 +16,19 @@ public:
         bool debugMode = false;
 	};
 
+    static const int BackBufferCount = 2;
+
 	DX12Device();
 	bool init(const Settings& settings, bool* outIsDriverSupported);
 	void dispose() override;
 
+    UINT creationNodeMask() const { return 1; }
+    UINT visibleNodeMask() const { return 1; }
+    IDXGIFactory6* dxgiFactory() const { return m_dxgiFactory.Get(); }
     ID3D12Device* device() const { return m_device.Get(); }
+    ID3D12CommandQueue* dxCommandQueue() const { return m_commandQueue.Get(); }
+    ID3D12GraphicsCommandList* beginSingleTimeCommandList();
+    bool endSingleTimeCommandList(ID3D12GraphicsCommandList* commandList);
 
 protected:
     INativeGraphicsInterface* getNativeInterface() const override;
@@ -52,14 +61,10 @@ private:
     ComPtr<ID3D12Device> m_device;
     ComPtr<ID3D12CommandQueue> m_commandQueue;
 
-    ComPtr<ID3D12CommandAllocator> m_commandAllocator;
-    ComPtr<ID3D12GraphicsCommandList> m_commandList;
-
-
-    //IDXGIFactory6* _dxgiFactory = nullptr;
-    //
-    //
-    //IDXGISwapChain4* _swapchain = nullptr;
+    ComPtr<ID3D12CommandAllocator> m_singleTimeCommandAllocator;
+    ComPtr<ID3D12GraphicsCommandList> m_singleTimeCommandList;
+    ComPtr<ID3D12Fence> m_singleTimeCommandListFence;
+    HANDLE m_singleTimeCommandListEvent;
 };
 
 class DX12GraphicsContext
@@ -91,6 +96,8 @@ protected:
 
 private:
 	DX12Device* m_device;
+    ComPtr<ID3D12CommandAllocator> m_dxCommandAllocator;
+    ComPtr<ID3D12GraphicsCommandList> m_dxCommandList;
 };
 
 class DX12SwapChain
@@ -108,6 +115,10 @@ public:
 
 private:
     DX12Device* m_device;
+    ComPtr<IDXGISwapChain3> m_dxgiSwapChain;
+    uint32_t m_backbufferCount;
+    uint32_t m_frameIndex;
+    std::vector<Ref<DX12RenderTarget>> m_renderTargets;
 };
 
 class DX12Framebuffer2;
@@ -227,44 +238,6 @@ private:
 	SizeI m_size;
 	TextureFormat m_format;
 	uint32_t m_mipLevels;
-};
-
-class DX12RenderTarget
-    : public DX12Texture
-{
-public:
-    DX12RenderTarget();
-    Result init(DX12Device* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
-    virtual void dispose() override;
-    virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
-    virtual SizeI realSize() { return m_size; }
-    virtual TextureFormat getTextureFormat() const { return TextureFormat::RGBA8; }
-    virtual GraphicsResourceUsage usage() const override { return GraphicsResourceUsage::Static; }
-    virtual void readData(void* outData) override;
-    virtual void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) {}
-    virtual void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {}
-
-    //virtual const DX12Image* image() const override { return m_image.get(); }
-
-protected:
-    DX12Device* m_deviceContext;
-    SizeI m_size;
-    TextureFormat m_format;
-};
-
-class DX12DepthBuffer
-	: public IDepthBuffer
-{
-public:
-    DX12DepthBuffer();
-    Result init(DX12Device* deviceContext, uint32_t width, uint32_t height);
-    void dispose();
-    const SizeI& size() const { return m_size; }
-    //const DX12Image* image() const { return &m_image; }
-
-private:
-    DX12Device* m_deviceContext;
-    SizeI m_size;
 };
 
 class DX12SamplerState

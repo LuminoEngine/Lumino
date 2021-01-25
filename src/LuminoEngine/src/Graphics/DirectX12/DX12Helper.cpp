@@ -9,6 +9,34 @@ namespace detail {
 //=============================================================================
 // DX12Helper
 
+static const std::pair<TextureFormat, DXGI_FORMAT> s_textureFormatConversionTable[] =
+{
+	{ TextureFormat::Unknown, DXGI_FORMAT_UNKNOWN },
+	{ TextureFormat::RGBA8, DXGI_FORMAT_R8G8B8A8_UNORM },
+	{ TextureFormat::RGB8, DXGI_FORMAT_UNKNOWN },	// TODO: remove
+	{ TextureFormat::RGBA16F, DXGI_FORMAT_R16G16B16A16_FLOAT },
+	{ TextureFormat::RGBA32F, DXGI_FORMAT_R32G32B32A32_FLOAT },
+	{ TextureFormat::R16F, DXGI_FORMAT_R16_FLOAT },
+	{ TextureFormat::R32F, DXGI_FORMAT_R32_FLOAT },
+	{ TextureFormat::R32S, DXGI_FORMAT_R32_SINT },
+};
+
+DXGI_FORMAT DX12Helper::LNTextureFormatToDXFormat(TextureFormat value)
+{
+	assert(s_textureFormatConversionTable[(int)value].first == value);
+	return s_textureFormatConversionTable[(int)value].second;
+}
+
+TextureFormat DX12Helper::DXFormatToLNTextureFormat(DXGI_FORMAT value)
+{
+	for (auto& i : s_textureFormatConversionTable) {
+		if (i.second == value) {
+			return i.first;
+		}
+	}
+	return TextureFormat::Unknown;
+}
+
 DXGI_FORMAT DX12Helper::LNVertexElementTypeToDXFormat(VertexElementType value)
 {
 	struct VertexElementTypeConversionItem

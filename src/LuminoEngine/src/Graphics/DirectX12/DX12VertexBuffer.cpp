@@ -44,7 +44,7 @@ bool DX12VertexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, siz
     desc.Height = 1;
     desc.DepthOrArraySize = 1;
     desc.MipLevels = 1;
-    DXGI_FORMAT Format = DXGI_FORMAT_UNKNOWN;
+    desc.Format = DXGI_FORMAT_UNKNOWN;
     desc.SampleDesc.Count = 1;
     desc.SampleDesc.Quality = 0;
     desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
@@ -77,7 +77,38 @@ bool DX12VertexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, siz
             m_vertexBuffer->Unmap(0, nullptr);
         }
         else {
-            LN_NOTIMPLEMENTED();
+            // D3D12_HEAP_TYPE_DEFAULT を指定して作成した Resource は Map/Unmap できない。
+            // 転送用の一時バッファ (uploadBuffer) を作って、それ経由でデータを転送する。
+
+            D3D12_HEAP_PROPERTIES uploadProps = props;
+            uploadProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+            D3D12_RESOURCE_DESC uploadDesc = desc;
+
+            ComPtr<ID3D12Resource> uploadBuffer;
+            if (FAILED(dx12Device->CreateCommittedResource(
+                &uploadProps,
+                D3D12_HEAP_FLAG_NONE,
+                &uploadDesc,
+                D3D12_RESOURCE_STATE_GENERIC_READ,
+                nullptr,
+                IID_PPV_ARGS(&uploadBuffer)))) {
+                LN_ERROR("CreateCommittedResource failed.");
+                return false;
+            }
+
+            uint8_t* memory = nullptr;
+            if (FAILED(uploadBuffer->Map(0, nullptr, reinterpret_cast<void**>(&memory)))) {
+                LN_ERROR("Map failed.");
+                return false;
+            }
+            std::memcpy(memory, initialData, m_size);
+            uploadBuffer->Unmap(0, nullptr);
+
+            ID3D12GraphicsCommandList* commandList = m_device->beginSingleTimeCommandList();
+
+            commandList->CopyResource(m_vertexBuffer.Get(), uploadBuffer.Get());
+
+            m_device->endSingleTimeCommandList(commandList);
         }
     }
 
