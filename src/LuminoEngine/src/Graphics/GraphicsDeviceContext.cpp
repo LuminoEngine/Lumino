@@ -285,9 +285,9 @@ Ref<IDescriptorPool> IGraphicsDevice::createDescriptorPool(IShaderPass* shaderPa
 	return onCreateDescriptorPool(shaderPass);
 }
 
-void IGraphicsDevice::flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
+void IGraphicsDevice::submitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
 {
-	onFlushCommandBuffer(context, affectRendreTarget);
+	onSubmitCommandBuffer(context, affectRendreTarget);
 }
 
 Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag)

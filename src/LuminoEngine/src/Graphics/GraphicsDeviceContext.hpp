@@ -226,7 +226,7 @@ public:
 	Ref<IDescriptorPool> createDescriptorPool(IShaderPass* shaderPass);
     void releaseObject(IGraphicsDeviceObject* obj) {}
 
-	void flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
+	void submitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
 
 	virtual INativeGraphicsInterface* getNativeInterface() const = 0;
 	virtual ICommandQueue* getGraphicsCommandQueue() = 0;
@@ -257,7 +257,7 @@ protected:
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
 	virtual Ref<IUniformBuffer> onCreateUniformBuffer(uint32_t size) = 0;
 	virtual Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) = 0;
-	virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) = 0;
+	virtual void onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) = 0;
 
 public:	// TODO:
 	GraphicsDeviceCaps m_caps;

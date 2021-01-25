@@ -5,6 +5,7 @@
 #include "DX12Helper.hpp"
 #include "DX12VertexBuffer.hpp"
 #include "DX12Texture.hpp"
+#include "DX12CommandList.hpp"
 #include "DX12DeviceContext.hpp"
 
 #pragma comment(lib,"d3d12.lib")
@@ -17,6 +18,7 @@ namespace detail {
 // DX12Device
 
 DX12Device::DX12Device()
+    : m_fenceValue(1)
 {
 }
 
@@ -135,7 +137,7 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
             return false;
         }
 
-        m_singleTimeCommandListEvent = CreateEvent(0, 0, 0, 0);
+        m_singleTimeCommandListEvent = ::CreateEvent(0, 0, 0, 0);
         if (!m_singleTimeCommandListEvent) {
             LN_ERROR("CreateEvent failed.");
             return false;
@@ -147,6 +149,11 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
 
 void DX12Device::dispose()
 {
+    if (m_singleTimeCommandListEvent) {
+        ::CloseHandle(m_singleTimeCommandListEvent);
+        m_singleTimeCommandListEvent = nullptr;
+    }
+    m_singleTimeCommandListFence.Reset();
     m_singleTimeCommandList.Reset();
     m_singleTimeCommandAllocator.Reset();
     m_commandQueue.Reset();
@@ -203,6 +210,8 @@ bool DX12Device::endSingleTimeCommandList(ID3D12GraphicsCommandList* commandList
     // Fence の値が 1 になるまで待つ
     m_singleTimeCommandListFence->SetEventOnCompletion(1, m_singleTimeCommandListEvent);
     WaitForSingleObject(m_singleTimeCommandListEvent, INFINITE);
+
+    return true;
 }
 
 INativeGraphicsInterface* DX12Device::getNativeInterface() const
@@ -351,9 +360,16 @@ Ref<IDescriptorPool> DX12Device::onCreateDescriptorPool(IShaderPass* shaderPass)
     return nullptr;
 }
 
-void DX12Device::onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
+void DX12Device::onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
 {
+    DX12GraphicsContext* commandList = static_cast<DX12GraphicsContext*>(context);
+
+    commandList->submit(m_fenceValue);
+
+
+
     LN_NOTIMPLEMENTED();
+    m_fenceValue++;
 }
 
 ICommandQueue* DX12Device::getGraphicsCommandQueue()
@@ -376,130 +392,6 @@ void DX12Device::enableDebugLayer() const
         debugLayer->EnableDebugLayer();
         debugLayer->Release();
     }
-}
-
-//==============================================================================
-// DX12GraphicsContext
-
-DX12GraphicsContext::DX12GraphicsContext()
-	: m_device(nullptr)
-{
-}
-
-bool DX12GraphicsContext::init(DX12Device* owner)
-{
-	LN_CHECK(owner);
-	ICommandList::init(owner);
-	m_device = owner;
-
-    ID3D12Device* dxDevice = m_device->device();
-
-    if (FAILED(dxDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_dxCommandAllocator)))) {
-        LN_ERROR("CreateCommandAllocator failed.");
-        return false;
-    }
-
-    if (FAILED(dxDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_dxCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_dxCommandList)))) {
-        LN_ERROR("CreateCommandList failed.");
-        return false;
-    }
-    // CommandList は初期状態が "記録中" になっている。この状態では CommandAllocator::Reset() がエラーを返す。
-    // 記録開始時は状態を "記録終了" (非記録状態) にしておく方がコードがシンプルになるので、そうしておく。
-    // https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-close
-    m_dxCommandList->Close();
-
-	return true;
-}
-
-void DX12GraphicsContext::dispose()
-{
-    m_dxCommandList.Reset();
-    m_dxCommandAllocator.Reset();
-    ICommandList::dispose();
-}
-
-void DX12GraphicsContext::onSaveExternalRenderState()
-{
-}
-
-void DX12GraphicsContext::onRestoreExternalRenderState()
-{
-}
-
-void DX12GraphicsContext::onBeginCommandRecoding()
-{
-    LN_NOTIMPLEMENTED();
-}
-
-void DX12GraphicsContext::onEndCommandRecoding()
-{
-    LN_NOTIMPLEMENTED();
-}
-
-void DX12GraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
-{
-    LN_NOTIMPLEMENTED();
-}
-
-void DX12GraphicsContext::onEndRenderPass(IRenderPass* renderPass)
-{
-    LN_NOTIMPLEMENTED();
-}
-
-void DX12GraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline)
-{
-    LN_NOTIMPLEMENTED();
-}
-
-void* DX12GraphicsContext::onMapResource(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size)
-{
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
-void DX12GraphicsContext::onUnmapResource(IGraphicsRHIBuffer* resource)
-{
-    LN_NOTIMPLEMENTED();
-}
-
-void DX12GraphicsContext::onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length)
-{
-    LN_NOTIMPLEMENTED();
-}
-
-void DX12GraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
-{
-    LN_NOTIMPLEMENTED();
-}
-
-void DX12GraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
-{
-    LN_NOTIMPLEMENTED();
-}
-
-void DX12GraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
-{
-    LN_NOTIMPLEMENTED();
-}
-
-void DX12GraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
-{
-    LN_NOTIMPLEMENTED();
-}
-
-void DX12GraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset)
-{
-    LN_NOTIMPLEMENTED();
-}
-
-void DX12GraphicsContext::onDrawExtension(INativeGraphicsExtension* extension)
-{
-    LN_NOTIMPLEMENTED();
-}
-
-void DX12GraphicsContext::wait()
-{
-    LN_NOTIMPLEMENTED();
 }
 
 //==============================================================================
@@ -698,7 +590,7 @@ Result DX12VertexDeclaration::init(const VertexElement* elements, int elementsCo
         }
         m_elements.push_back(desc);
 
-        offsets[e.StreamIndex] += GraphicsHelper::getVertexElementTypeSize(elements[i].Type);
+        offsets[e.StreamIndex] += static_cast<UINT>(GraphicsHelper::getVertexElementTypeSize(elements[i].Type));
     }
 
     return true;

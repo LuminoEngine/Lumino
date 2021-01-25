@@ -500,7 +500,7 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
             detail::ICommandList*, m_rhiCommandList,
             detail::ITexture*, rhiObject,
             {
-				device->flushCommandBuffer(m_rhiCommandList, rhiObject);
+				device->submitCommandBuffer(m_rhiCommandList, rhiObject);
             });
     }
 }

@@ -78,7 +78,7 @@ protected:
 	Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
     Ref<IUniformBuffer> onCreateUniformBuffer(uint32_t size) override;
     Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) override;
-	void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override;
+	void onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override;
 	ICommandQueue* getGraphicsCommandQueue() override;
 	ICommandQueue* getComputeCommandQueue() override;
 
@@ -466,8 +466,8 @@ public:
     bool isSwapchainBackbuffer() const { return m_image->IsExternalManagement(); }
     bool isMultisample() const { return m_multisampleColorBuffer != nullptr; }
     VkSampleCountFlagBits msaaSamples() const { return (isMultisample()) ? m_deviceContext->msaaSamples() : VK_SAMPLE_COUNT_1_BIT; }
-    void setImageAvailableSemaphoreRef(VkSemaphore* semaphore) { m_imageAvailableSemaphoreRef = semaphore; }
-    VkSemaphore imageAvailableSemaphore() const { return (m_imageAvailableSemaphoreRef) ? *m_imageAvailableSemaphoreRef : VK_NULL_HANDLE; }
+    void setSwapchainImageAvailableSemaphoreRef(VkSemaphore* semaphore) { m_swapchainImageAvailableSemaphoreRef = semaphore; }
+    VkSemaphore swapchainImageAvailableSemaphore() const { return (m_swapchainImageAvailableSemaphoreRef) ? *m_swapchainImageAvailableSemaphoreRef : VK_NULL_HANDLE; }
     VkSemaphore renderFinishedSemaphore() const { return m_renderFinishedSemaphore; }
 
 	Result reset(uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
@@ -483,7 +483,7 @@ protected:
     // vkAcquireNextImageKHR により準備ができたかどうかを待つためのセマフォ。
     // この RenderTarget が Swapchain の Backbuffer である場合、そのポインタがセットされる。
     // present または readData による　CommandBuffer の Submit 時、これが nullptr でなければ待つようにしなければならない。
-    VkSemaphore* m_imageAvailableSemaphoreRef;
+    VkSemaphore* m_swapchainImageAvailableSemaphoreRef;
 
     VkSemaphore m_renderFinishedSemaphore;
 };

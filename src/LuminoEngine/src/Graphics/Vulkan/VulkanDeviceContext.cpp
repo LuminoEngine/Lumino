@@ -270,20 +270,20 @@ Ref<IDescriptorPool> VulkanDevice::onCreateDescriptorPool(IShaderPass* shaderPas
 
 // TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
 // CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
-void VulkanDevice::onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
+void VulkanDevice::onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
 {
 	auto vulkanContext = static_cast<VulkanGraphicsContext*>(context);
 	auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
 	vulkanContext->recodingCommandBuffer()->submit(
-		t->imageAvailableSemaphore(),
+		t->swapchainImageAvailableSemaphore(),
 		t->renderFinishedSemaphore());
 
-	// [GeForce GTX 1060] 既にシグナル状態のセマフォを vkQueueSubmit で待つように指定すると、vkQueueSubmit が VK_ERROR_DEVICE_LOST を返す。
-	// 通常は vkAcquireNextImageKHR と vkQueueSubmit が交互に実行されるので問題ないが、
-	// RenderTarget の Read で一度 CommnadBuffer を vkQueueSubmit し、続けて CommnadBuffer の記録を再開 → vkQueueSubmit したときに問題になる。
-	// vkQueueSubmit で待ちたいのは vkAcquireNextImageKHR で準備開始された RenderTarget が本当に準備終わったかどうかなので、一度待てば十分。
-	// ということで、一度でも submit したら、↓ は null をセットして、次回の submit では何も待たないようにしておく。
-	t->setImageAvailableSemaphoreRef(nullptr);
+    // 一度でも submit したら、 null をセットして、次回の submit では何も待たないようにしておく。
+	//      [GeForce GTX 1060] 既にシグナル状態のセマフォを vkQueueSubmit で待つように指定すると、vkQueueSubmit が VK_ERROR_DEVICE_LOST を返す。
+	//      通常は vkAcquireNextImageKHR と vkQueueSubmit が交互に実行されるので問題ないが、
+	//      RenderTarget の Read で一度 CommnadBuffer を vkQueueSubmit し、続けて CommnadBuffer の記録を再開 → vkQueueSubmit したときに問題になる。
+	//      vkQueueSubmit で待ちたいのは vkAcquireNextImageKHR で準備開始された RenderTarget が本当に準備終わったかどうかなので、一度待てば十分。
+	t->setSwapchainImageAvailableSemaphoreRef(nullptr);
 }
 
 ICommandQueue* VulkanDevice::getGraphicsCommandQueue()
@@ -1575,7 +1575,7 @@ void VulkanSwapChain::acquireNextImage(int* outIndex)
         std::numeric_limits<uint64_t>::max(), m_imageAvailableSemaphores[m_currentFrame], VK_NULL_HANDLE, &m_imageIndex);
 
     // 次に present や readData など、この RenderTarget への書き込みコマンドを実行するとき、これを待たなければならない
-    m_swapchainRenderTargets[m_imageIndex]->setImageAvailableSemaphoreRef(&m_imageAvailableSemaphores[m_currentFrame]);
+    m_swapchainRenderTargets[m_imageIndex]->setSwapchainImageAvailableSemaphoreRef(&m_imageAvailableSemaphores[m_currentFrame]);
 
     *outIndex = m_imageIndex;
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
@@ -2812,7 +2812,7 @@ VulkanRenderTarget::VulkanRenderTarget()
     : m_deviceContext(nullptr)
     , m_image(nullptr)
     , m_multisampleColorBuffer(nullptr)
-    , m_imageAvailableSemaphoreRef(nullptr)
+    , m_swapchainImageAvailableSemaphoreRef(nullptr)
 {
 }
 
