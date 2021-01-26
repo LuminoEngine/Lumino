@@ -5,6 +5,8 @@
 #include "DX12Helper.hpp"
 #include "DX12VertexBuffer.hpp"
 #include "DX12Texture.hpp"
+#include "DX12ShaderPass.hpp"
+#include "DX12DescriptorPool.hpp"
 #include "DX12CommandList.hpp"
 #include "DX12DeviceContext.hpp"
 
@@ -356,8 +358,11 @@ Ref<IUniformBuffer> DX12Device::onCreateUniformBuffer(uint32_t size)
 
 Ref<IDescriptorPool> DX12Device::onCreateDescriptorPool(IShaderPass* shaderPass)
 {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<DX12DescriptorPool>();
+    if (!ptr->init(this, static_cast<DX12ShaderPass*>(shaderPass))) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 void DX12Device::onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
@@ -781,45 +786,6 @@ void DX12SamplerState::dispose()
 {
     LN_NOTIMPLEMENTED();
 	ISamplerState::dispose();
-}
-
-//==============================================================================
-// DX12ShaderPass
-
-DX12ShaderPass::DX12ShaderPass()
-{
-}
-
-Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
-{
-    LN_DCHECK(deviceContext);
-	if (!IShaderPass::init(createInfo)) {
-		return false;
-	}
-
-    m_deviceContext = deviceContext;
-
-    //LN_NOTIMPLEMENTED();
-
-    {
-        D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-        desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        desc.NumDescriptors = 1;
-        desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        desc.NodeMask = 0;
-        if (FAILED(m_deviceContext->device()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_descriptorHeap)))) {
-            LN_ERROR("CreateDescriptorHeap failed.");
-            return false;
-        }
-    }
-
-    return true;
-}
-
-void DX12ShaderPass::dispose()
-{
-    LN_NOTIMPLEMENTED();
-    IShaderPass::dispose();
 }
 
 } // namespace detail
