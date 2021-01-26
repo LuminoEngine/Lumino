@@ -196,6 +196,43 @@ void DX12DescriptorPool::reset()
 
 IDescriptor* DX12DescriptorPool::allocate()
 {
+	/*
+SetGraphicsRootSignature
+SetPipelineState
+
+SetDescriptorHeaps
+SetGraphicsRootDescriptorTable
+
+
+CreateConstantBufferView
+
+
+
+
+1. CBO を作る
+2. CreateConstantBufferView で DescriptorHeap 内に View を作る。
+https://sites.google.com/site/monshonosuana/directxno-hanashi-1/directx-145
+
+- Vulkan のように、XXXXView というデータ構造があるわけではない。
+- Heap は ヒープメモリのことではないのでイメージの違いに注意。
+  本来の意味の「集合」でイメージする。DescriptorHeap は View の集合と考えてよさそう。
+- CBO は Vulkan と同じくコマンドリストごとに必要。実行中は書き換え禁止。
+
+
+- DescriptorTableは1つで1つのHeap
+
+
+RootSignature は複数の DescriptorTable を持つ
+- ここでいう DescriptorTable と、cmdList->SetGraphicsRootDescriptorTable() は別物。
+- DescriptorTable というオブジェクトがあるわけではなく、D3D12_ROOT_DESCRIPTOR_TABLE 構造体で表される。
+
+
+ROOT_PARAMETER を複数作る必要はある？
+D:\Tech\Graphics\DirectX-Graphics-Samples\Libraries\D3D12RaytracingFallback\src\fallbacklayerunittests.cpp
+
+
+
+*/
 	LN_NOTIMPLEMENTED();
 	return 0;
 }
