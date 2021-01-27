@@ -23,6 +23,17 @@ static D3D12_SHADER_VISIBILITY getShaderVisibility(const DescriptorLayoutItem& i
         return D3D12_SHADER_VISIBILITY_ALL;
 }
 
+static D3D12_SHADER_VISIBILITY getShaderVisibility(const DescriptorLayout* layout, DescriptorType type)
+{
+    if (layout->isReferenceFromVertexStage(type))
+        return D3D12_SHADER_VISIBILITY_VERTEX;
+    else if (layout->isReferenceFromPixelStage(type))
+        return D3D12_SHADER_VISIBILITY_PIXEL;
+    else
+        return D3D12_SHADER_VISIBILITY_ALL;
+}
+
+
 Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
 {
     LN_DCHECK(deviceContext);
@@ -32,9 +43,18 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
 
     m_deviceContext = deviceContext;
 
+    m_layoutInfo.cbvRootParamIndex = -1;
+    m_layoutInfo.cbvCount = createInfo.descriptorLayout->uniformBufferRegister.size();
+    m_layoutInfo.srvRootParamIndex = -1;
+    m_layoutInfo.srvCount = createInfo.descriptorLayout->textureRegister.size();
+    m_layoutInfo.samperRootParamIndex = -1;
+    m_layoutInfo.samplerCount = createInfo.descriptorLayout->samplerRegister.size();
+
     ID3D12Device* dxDevice = m_deviceContext->device();
 
     {
+
+#if 0
         // NOTE: D3D12_ROOT_PARAMETER は複数作るべき？
         //   今は D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE しか使っていないが、他の TYPE を使いたい場合は分ける必要がある。
         //   また ShaderStage ごとにアクセス可否を決めてパフォーマンスを上げる時にも分ける必要がある。
@@ -50,7 +70,6 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         //   サンプルプログラムならともかく、複雑なシーンで DrawCall ごとに切り替えが多く発生するレジスタに対しては Table の方が良い。
         //   https://sites.google.com/site/monshonosuana/directxno-hanashi-1/directx-145
 
-#if 0
         //const size_t paramCount =
         //    createInfo.descriptorLayout->uniformBufferRegister.size() +
         //    createInfo.descriptorLayout->textureRegister.size() +
@@ -127,52 +146,82 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
             paramCount++;
         }
 #else
+        // NOTE: D3D12_ROOT_PARAMETER は複数作るべき？
+        //   前提として、最低限 [CBV,SRV] [SAMPLER] の 2 つは同じ ID3D12DescriptorHeap で
+        //   扱うことができないため、絶対に分けなければならない。
+        //   それなら Vulkan の実装と同じように 3 つ分けてしまった方が似た実装にできるので混乱を避けられそう。
+        //
+        //   ちなみにTableすべてが1つのDescriptorしかバインドしないとしても64個のDescriptorをバインドできる。
+        //   https://sites.google.com/site/monshonosuana/directxno-hanashi-1/directx-145
+
+        // NOTE: D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE 以外の TYPE は使わない？
+        //   それらは、Table を使うまでもない非常に小さいデータや、Table を使うとかえって冗長になってしまうケースで使用する。
+        //   ただ、サンプルプログラムならともかく、複雑なシーンで DrawCall が頻発するようなケース相手にするため
+        //   今はこれ以上実装を複雑にしたくない。
+
         // 1つの DescriptorTable にすべての Descriptor をバインドするパターン。
         // DescriptorHeap もひとつ。
 
         std::array<D3D12_DESCRIPTOR_RANGE, 3> ranges = {};
+        std::array<D3D12_ROOT_PARAMETER, 3> params = {};
         int i = 0;
 
         // 'b' register
-        if (!createInfo.descriptorLayout->uniformBufferRegister.empty()) {
+        if (m_layoutInfo.cbvCount > 0) {
             ranges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-            ranges[i].NumDescriptors = createInfo.descriptorLayout->uniformBufferRegister.size();   // 'b0' ~ 'bn'
-            ranges[i].BaseShaderRegister = 0;                                                       // 'b0' ~ 'bn'
+            ranges[i].NumDescriptors = m_layoutInfo.cbvCount;       // 'b0' ~ 'bn'
+            ranges[i].BaseShaderRegister = 0;                       // 'b0' ~ 'bn'
             ranges[i].RegisterSpace = 0;
             ranges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+            params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+            params[i].DescriptorTable.NumDescriptorRanges = 1;
+            params[i].DescriptorTable.pDescriptorRanges = &ranges[i];
+            params[i].ShaderVisibility = getShaderVisibility(createInfo.descriptorLayout, DescriptorType_UniformBuffer);
+            // NOTE: ↑この getShaderVisibility() は全ての CBV に対しての設定となるため、最適解ではない。
+            // ただ個々の CBV まで対応となると非常に複雑になるためここまでにしておく。
+
+            m_layoutInfo.cbvRootParamIndex = i;
             i++;
         }
 
         // 't' register
-        if (!createInfo.descriptorLayout->textureRegister.empty()) {
+        if (m_layoutInfo.srvCount > 0) {
             ranges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-            ranges[i].NumDescriptors = createInfo.descriptorLayout->textureRegister.size();         // 't0' ~ 'tn'
-            ranges[i].BaseShaderRegister = 0;                                                       // 't0' ~ 'tn'
+            ranges[i].NumDescriptors = m_layoutInfo.srvCount;       // 't0' ~ 'tn'
+            ranges[i].BaseShaderRegister = 0;                       // 't0' ~ 'tn'
             ranges[i].RegisterSpace = 0;
             ranges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+            params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+            params[i].DescriptorTable.NumDescriptorRanges = 1;
+            params[i].DescriptorTable.pDescriptorRanges = &ranges[i];
+            params[i].ShaderVisibility = getShaderVisibility(createInfo.descriptorLayout, DescriptorType_Texture);
+
+            m_layoutInfo.srvRootParamIndex = i;
             i++;
         }
 
         // 's' register
-        if (!createInfo.descriptorLayout->samplerRegister.empty()) {
+        if (m_layoutInfo.samplerCount > 0) {
             ranges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
-            ranges[i].NumDescriptors = createInfo.descriptorLayout->samplerRegister.size();         // 's0' ~ 'sn'
-            ranges[i].BaseShaderRegister = 0;                                                       // 's0' ~ 'sn'
+            ranges[i].NumDescriptors = m_layoutInfo.samplerCount;   // 's0' ~ 'sn'
+            ranges[i].BaseShaderRegister = 0;                       // 's0' ~ 'sn'
             ranges[i].RegisterSpace = 0;
             ranges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+            params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+            params[i].DescriptorTable.NumDescriptorRanges = 1;
+            params[i].DescriptorTable.pDescriptorRanges = &ranges[i];
+            params[i].ShaderVisibility = getShaderVisibility(createInfo.descriptorLayout, DescriptorType_SamplerState);
+
+            m_layoutInfo.samperRootParamIndex = i;
             i++;
         }
 
-        D3D12_ROOT_PARAMETER params[1] = {};
-
-        params[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-        params[0].DescriptorTable.NumDescriptorRanges = i;
-        params[0].DescriptorTable.pDescriptorRanges = &ranges[0];
-        params[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-
         D3D12_ROOT_SIGNATURE_DESC desc = {};
-        desc.NumParameters = 1;
-        desc.pParameters = params;
+        desc.NumParameters = i;
+        desc.pParameters = params.data();
         desc.NumStaticSamplers = 0;
         desc.pStaticSamplers = nullptr;
         desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;

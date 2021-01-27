@@ -92,26 +92,6 @@ private:
 
 class DX12Framebuffer2;
 
-class DX12RenderPass
-	: public IRenderPass
-{
-public:
-    DX12RenderPass();
-	bool init(DX12Device* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
-	void dispose() override;
-
-	ClearFlags clearFlags() const { return m_clearFlags; }
-	const Color& clearColor() const { return m_clearColor; }
-	float clearDepth() const { return m_clearDepth; }
-	uint8_t clearStencil() const { return m_clearStencil; }
-
-private:
-	DX12Device* m_device;
-	ClearFlags m_clearFlags;
-	Color m_clearColor;
-	float m_clearDepth;
-	uint8_t m_clearStencil;
-};
 
 class DX12Pipeline
 	: public IPipeline
@@ -165,6 +145,8 @@ public:
     void dispose() override;
     void* map() override;
     void unmap() override;
+    ID3D12Resource* dxResource() const { return m_constantBuffer.Get(); }
+    uint32_t size() const { return m_size; }
 
 protected:
     DX12Device* m_deviceContext;

@@ -20,6 +20,7 @@ public:
 	bool init(DX12Device* device);
 	void dispose();
     void submit(UINT64 fenceValue);
+    ID3D12GraphicsCommandList* dxCommandList() const { return m_dxCommandList.Get(); }
 
 protected:
     void onSaveExternalRenderState() override;

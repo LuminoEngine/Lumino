@@ -8,6 +8,7 @@ namespace detail {
 class DX12Device;
 class DX12ShaderPass;
 class DX12DescriptorPool;
+class DX12GraphicsContext;
 
 //struct DX12DescriptorHeapView
 //{
@@ -42,11 +43,14 @@ class DX12DescriptorPool;
 //};
 //
 
+static const int MaxDescriptorHandles = 16;
+
+// VulkanDescriptor で使っている VkDescriptorSet 相当
 struct DX12DescriptorHandles
 {
-	ID3D12DescriptorHeap* descriptorHeap;
-	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 16> cpuHandles;
-	std::array<D3D12_GPU_DESCRIPTOR_HANDLE, 16> gpuHandles;
+	ID3D12DescriptorHeap* descriptorHeap = nullptr;
+	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, MaxDescriptorHandles> cpuHandles = {};
+	std::array<D3D12_GPU_DESCRIPTOR_HANDLE, MaxDescriptorHandles> gpuHandles = {};
 };
 
 class DX12DescriptorHeapAllocatorPage
@@ -92,10 +96,15 @@ class DX12Descriptor
 public:
 	DX12Descriptor(DX12DescriptorPool* pool);
 	void setData(const ShaderDescriptorTableUpdateInfo& data) override;
+	std::array<DX12DescriptorHandles, DescriptorType_Count>& descriptorHandles() { return m_descriptorHandles; }
+	bool allocateInternal();
+	void bind(DX12GraphicsContext* commandList);
 
 private:
 	DX12DescriptorPool* m_pool;
-	
+	std::array<DX12DescriptorHandles, DescriptorType_Count> m_descriptorHandles;
+	std::array<ID3D12DescriptorHeap*, DescriptorType_Count> m_heaps;
+	int32_t m_heapCount;
 };
 
 
@@ -109,15 +118,30 @@ public:
 	void dispose() override;
 	void reset() override;
 	IDescriptor* allocate() override;
+	DX12Device* device() const { return m_device; }
+	DX12ShaderPass* shaderPass() const { return m_shaderPass; }
+	const Ref<DX12DescriptorHeapAllocator>& descriptorHeapAllocator_CBV() const { return m_descriptorHeapAllocator_CBV; }
+	const Ref<DX12DescriptorHeapAllocator>& descriptorHeapAllocator_SRV() const { return m_descriptorHeapAllocator_SRV; }
+	const Ref<DX12DescriptorHeapAllocator>& descriptorHeapAllocator_SAMPLER() const { return m_descriptorHeapAllocator_SAMPLER; }
+
 
 private:
-	static const int NumDescriptorsPerPage = 256;
+	static const int AllocatableCountPerPage = 256;
+
+	//void grow(int32_t count);
 
 	DX12Device* m_device;
 	DX12ShaderPass* m_shaderPass;
 
-	Ref<DX12DescriptorHeapAllocator> m_descriptorHeapAllocator_CBV_SRV_UAV;
+	// NOTE: CBV(UniformBuffer) と SRV(Texture) の D3D12_DESCRIPTOR_HEAP_TYPE は同じものを使うのだが、
+	// Layout との対応関係をわかりやすくするため別の Allocator に分けてある。
+
+	Ref<DX12DescriptorHeapAllocator> m_descriptorHeapAllocator_CBV;
+	Ref<DX12DescriptorHeapAllocator> m_descriptorHeapAllocator_SRV;
 	Ref<DX12DescriptorHeapAllocator> m_descriptorHeapAllocator_SAMPLER;
+
+	std::vector<Ref<DX12Descriptor>> m_descriptors;
+	int32_t m_usedDescriptorCount;
 };
 
 } // namespace detail

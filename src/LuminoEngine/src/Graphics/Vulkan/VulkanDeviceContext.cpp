@@ -3276,6 +3276,8 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
                 layoutBinding.descriptorCount = 1;
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_UniformBuffer)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_UniformBuffer)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
+                // NOTE: ↑この getShaderVisibility() は全ての CBV に対しての設定となるため、最適解ではない。
+                // ただ個々の CBV まで対応となると非常に複雑になるためここまでにしておく。
                 layoutBinding.pImmutableSamplers = nullptr;
                 layoutBindings.push_back(layoutBinding);
 
