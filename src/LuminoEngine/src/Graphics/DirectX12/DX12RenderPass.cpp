@@ -27,13 +27,11 @@ bool DX12RenderPass::init(DX12Device* device, const DeviceFramebufferState& buff
 	m_clearDepth = clearDepth;
 	m_clearStencil = clearStencil;
 
-    LN_NOTIMPLEMENTED();
 	return true;
 }
 
 void DX12RenderPass::dispose()
 {
-    LN_NOTIMPLEMENTED();
 	m_device = nullptr;
 	IRenderPass::dispose();
 }

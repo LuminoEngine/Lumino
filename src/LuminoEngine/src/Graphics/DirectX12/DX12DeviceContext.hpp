@@ -159,11 +159,18 @@ class DX12Texture
     : public ITexture
 {
 public:
+    DX12Texture()
+        : m_currentState(D3D12_RESOURCE_STATE_COMMON)
+    {}
     //virtual const DX12Image* image() const = 0;
     virtual void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
     virtual void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
+   
+    virtual ID3D12Resource* dxResource() const = 0;
+    void resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
 
-private:
+protected:
+    D3D12_RESOURCE_STATES m_currentState;
 };
 
 class DX12Texture2D
@@ -183,6 +190,8 @@ public:
 
     //virtual const DX12Image* image() const override { return &m_image; }
 
+    ID3D12Resource* dxResource() const override { LN_NOTIMPLEMENTED(); return nullptr; }
+
 private:
 	DX12Device* m_deviceContext;
 	GraphicsResourceUsage m_usage;
@@ -199,8 +208,9 @@ public:
 	Result init(DX12Device* deviceContext, const SamplerStateData& desc);
 	virtual void dispose() override;
 
-private:
+protected:
 	DX12Device* m_deviceContext;
+
 };
 
 } // namespace detail

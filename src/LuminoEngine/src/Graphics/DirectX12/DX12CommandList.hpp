@@ -41,7 +41,6 @@ protected:
     void onDrawExtension(INativeGraphicsExtension* extension) override;
     void wait() override;
 
-
 private:
 	DX12Device* m_device;
     ComPtr<ID3D12CommandAllocator> m_dxCommandAllocator;
@@ -51,6 +50,15 @@ private:
     State m_state;
     UINT64 m_waitingFenceValue;
 
+    // DirectX の Sample では、実行中に RenderTarget が破棄されることが無いため
+    // グローバルに固定長な1つの DescriptorHeap を作ってそれを使っている。
+    // RenderTarget の破棄を考慮する場合はそれ用のメモリ管理を作る必要があるのだがそれはそれで大変。
+    // なので、CommandList 構築中に RTV, DSV が必要になるたびに View を作り、
+    // 終わったら (というより次回開始時) 全てリセットするような、Shader 用の Allocator を再利用してみる。
+    Ref<DX12DescriptorHeapAllocator> m_descriptorHeapAllocator_RTV;
+    Ref<DX12DescriptorHeapAllocator> m_descriptorHeapAllocator_DSV;
+    std::array<D3D12_CPU_DESCRIPTOR_HANDLE, MaxMultiRenderTargets> m_currentRTVHandles;
+    D3D12_CPU_DESCRIPTOR_HANDLE m_currentDSVHandle;
 };
 
 } // namespace detail

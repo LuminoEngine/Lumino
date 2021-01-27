@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "DX12DeviceContext.hpp"
+#include "DX12RenderPass.hpp"
 #include "DX12CommandList.hpp"
 
 namespace ln {
@@ -48,11 +49,30 @@ bool DX12GraphicsContext::init(DX12Device* device)
         return false;
     }
 
+
+    m_descriptorHeapAllocator_RTV = makeRef<DX12DescriptorHeapAllocator>();
+    if (!m_descriptorHeapAllocator_RTV->init(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 128)) {
+        return false;
+    }
+
+    m_descriptorHeapAllocator_DSV = makeRef<DX12DescriptorHeapAllocator>();
+    if (!m_descriptorHeapAllocator_DSV->init(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 128)) {
+        return false;
+    }
+
 	return true;
 }
 
 void DX12GraphicsContext::dispose()
 {
+    if (m_descriptorHeapAllocator_RTV) {
+        m_descriptorHeapAllocator_RTV->dispose();
+        m_descriptorHeapAllocator_RTV = nullptr;
+    }
+    if (m_descriptorHeapAllocator_DSV) {
+        m_descriptorHeapAllocator_DSV->dispose();
+        m_descriptorHeapAllocator_DSV = nullptr;
+    }
     if (m_event) {
         ::CloseHandle(m_event);
         m_event = nullptr;
@@ -96,14 +116,106 @@ void DX12GraphicsContext::onEndCommandRecoding()
     }
 }
 
-void DX12GraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
+void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)
 {
-    LN_NOTIMPLEMENTED();
+    DX12RenderPass* renderPass = static_cast<DX12RenderPass*>(baseRenderPass);
+    ID3D12Device* dxDevice = m_device->device();
+
+    int renderTargetCount = renderPass->getAvailableRenderTargetCount();
+    DX12DepthBuffer* depthBuffer = renderPass->depthBuffer();
+
+    // CreateRenderTargetView, ResourceBarrior
+    {
+        if (renderTargetCount > 0) {
+            DX12DescriptorHandles rtvHandles;
+            if (!m_descriptorHeapAllocator_RTV->allocate(renderTargetCount, &rtvHandles)) {
+                return;
+            }
+            //std::copy(rtvHandles.cpuHandles.begin(), rtvHandles.cpuHandles.begin() + renderTargetCount, m_currentRTVHandles.begin());
+
+            for (int i = 0; i < renderTargetCount; i++) {
+                DX12RenderTarget* renderTarget = renderPass->renderTarget(i);
+
+                D3D12_RENDER_TARGET_VIEW_DESC desc = {};
+                desc.Format = renderTarget->dxFormat();
+                // TODO: MSAA
+                //if () {
+                //    desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DMS;
+                //}
+                //else
+                {
+                    desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+                }
+                D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = rtvHandles.cpuHandles[i];
+                dxDevice->CreateRenderTargetView(renderTarget->dxResource(), &desc, cpuHandle);
+                m_currentRTVHandles[i] = cpuHandle;
+
+                renderTarget->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET);
+            }
+        }
+
+        if (depthBuffer) {
+            DX12DescriptorHandles dsvHandles;
+            if (!m_descriptorHeapAllocator_DSV->allocate(1, &dsvHandles)) {
+                return;
+            }
+
+            D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
+            desc.Format = depthBuffer->dxFormat();
+
+            // TODO: MSAA
+            //if () {
+            //    desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DMS;
+            //}
+            //else
+            {
+                desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+            }
+
+            D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = dsvHandles.cpuHandles[0];
+            dxDevice->CreateDepthStencilView(depthBuffer->dxResource(), &desc, cpuHandle);
+            m_currentDSVHandle = cpuHandle;
+
+            depthBuffer->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE);
+        }
+
+    }
+
+    m_dxCommandList->OMSetRenderTargets(
+        renderTargetCount,
+        (renderTargetCount > 0) ? m_currentRTVHandles.data() : nullptr,
+        FALSE,
+        (depthBuffer) ? &m_currentDSVHandle : nullptr);
+
+
+    // Clear
+    {
+        const ClearFlags clearFlags = renderPass->clearFlags();
+        const Color& color = renderPass->clearColor();
+
+        if (clearFlags & ClearFlags::Color) {
+            if (renderTargetCount > 0) {
+                float c[4] = { color.r, color.g, color.b, color.a };
+                for (int i = 0; i < renderTargetCount; i++) {
+                    m_dxCommandList->ClearRenderTargetView(m_currentRTVHandles[i], c, 0, nullptr);
+                }
+            }
+        }
+
+        if ((clearFlags & ClearFlags::Depth) || (clearFlags & ClearFlags::Stencil)) {
+            if (depthBuffer) {
+                D3D12_CLEAR_FLAGS flags =
+                    ((clearFlags & ClearFlags::Depth) ? D3D12_CLEAR_FLAG_DEPTH : (D3D12_CLEAR_FLAGS)0) |
+                    ((clearFlags & ClearFlags::Depth) ? D3D12_CLEAR_FLAG_STENCIL : (D3D12_CLEAR_FLAGS)0);
+                m_dxCommandList->ClearDepthStencilView(m_currentDSVHandle, flags, renderPass->clearDepth(), renderPass->clearStencil(), 0, nullptr);
+            }
+        }
+    }
 }
 
 void DX12GraphicsContext::onEndRenderPass(IRenderPass* renderPass)
 {
-    LN_NOTIMPLEMENTED();
+    // TODO: Resolve MSAA
 }
 
 void DX12GraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline)

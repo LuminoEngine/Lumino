@@ -389,12 +389,26 @@ class IRenderPass
 public:
 	uint64_t cacheKeyHash = 0;
 
+	//const std::array<Ref<ITexture>, MaxMultiRenderTargets>& renderTargets() const { return m_renderTargets; }
+
+	//const Ref<IDepthBuffer>& depthBuffer() const { return m_depthBuffer; }
+
+	// TODO: init 時に計算してよい
+	int32_t getAvailableRenderTargetCount() const {
+		for (int32_t i = m_renderTargets.size() - 1; i >= 0; i--) {
+			if (m_renderTargets[i]) {
+				return i + 1;
+			}
+		}
+		return 0;
+	}
+
 	virtual void dispose();
 
 protected:
 	virtual ~IRenderPass() = default;
 
-private:
+protected:
 	IGraphicsDevice* m_device = nullptr;
 	std::array<Ref<ITexture>, MaxMultiRenderTargets> m_renderTargets;
 	Ref<IDepthBuffer> m_depthBuffer;

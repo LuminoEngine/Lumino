@@ -50,6 +50,13 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
     m_layoutInfo.samperRootParamIndex = -1;
     m_layoutInfo.samplerCount = createInfo.descriptorLayout->samplerRegister.size();
 
+    if (createInfo.vsCode) {
+        m_vsCode.assign(createInfo.vsCode, createInfo.vsCode + createInfo.vsCodeLen);
+    }
+    if (createInfo.psCode) {
+        m_psCode.assign(createInfo.psCode, createInfo.psCode + createInfo.psCodeLen);
+    }
+
     ID3D12Device* dxDevice = m_deviceContext->device();
 
     {
@@ -263,6 +270,22 @@ void DX12ShaderPass::dispose()
 {
     LN_NOTIMPLEMENTED();
     IShaderPass::dispose();
+}
+
+D3D12_SHADER_BYTECODE DX12ShaderPass::dxVSByteCode() const
+{
+    if (!m_vsCode.empty())
+        return D3D12_SHADER_BYTECODE{ m_vsCode.data(), m_vsCode.size() };
+    else
+        return D3D12_SHADER_BYTECODE{ nullptr, 0 };
+}
+
+D3D12_SHADER_BYTECODE DX12ShaderPass::dxPSByteCode() const
+{
+    if (!m_psCode.empty())
+        return D3D12_SHADER_BYTECODE{ m_psCode.data(), m_psCode.size() };
+    else
+        return D3D12_SHADER_BYTECODE{ nullptr, 0 };
 }
 
 } // namespace detail

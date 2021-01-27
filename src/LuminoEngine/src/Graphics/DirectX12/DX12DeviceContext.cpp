@@ -522,6 +522,39 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
 	LN_DCHECK(state.renderPass);
 	m_device = deviceContext;
     LN_NOTIMPLEMENTED();
+
+    DX12ShaderPass* shaderPass = static_cast<DX12ShaderPass*>(state.shaderPass);
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
+    psoDesc.pRootSignature = shaderPass->rootSignature();
+
+    psoDesc.VS = shaderPass->dxVSByteCode();
+    psoDesc.PS = shaderPass->dxPSByteCode();
+    psoDesc.DS = { nullptr, 0 };
+    psoDesc.HS = { nullptr, 0 };
+    psoDesc.GS = { nullptr, 0 };
+
+    psoDesc.StreamOutput.pSODeclaration = nullptr;
+    psoDesc.StreamOutput.NumEntries = 0;
+    psoDesc.StreamOutput.pBufferStrides = nullptr;
+    psoDesc.StreamOutput.NumStrides = 0;
+    psoDesc.StreamOutput.RasterizedStream = 0;
+
+    D3D12_BLEND_DESC BlendState;
+    UINT SampleMask;
+    D3D12_RASTERIZER_DESC RasterizerState;
+    D3D12_DEPTH_STENCIL_DESC DepthStencilState;
+    D3D12_INPUT_LAYOUT_DESC InputLayout;
+    D3D12_INDEX_BUFFER_STRIP_CUT_VALUE IBStripCutValue;
+    D3D12_PRIMITIVE_TOPOLOGY_TYPE PrimitiveTopologyType;
+    UINT NumRenderTargets;
+    DXGI_FORMAT RTVFormats[8];
+    DXGI_FORMAT DSVFormat;
+    DXGI_SAMPLE_DESC SampleDesc;
+    UINT NodeMask;
+    D3D12_CACHED_PIPELINE_STATE CachedPSO;
+    D3D12_PIPELINE_STATE_FLAGS Flags;
+
 	return true;
 }
 
@@ -699,6 +732,24 @@ void* DX12UniformBuffer::map()
 
 void DX12UniformBuffer::unmap()
 {
+}
+
+//==============================================================================
+// DX12Texture
+
+void DX12Texture::resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES state)
+{
+    if (m_currentState == state) return;
+
+    D3D12_RESOURCE_BARRIER barrier = {};
+    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+    barrier.Transition.pResource = dxResource();
+    barrier.Transition.StateBefore = m_currentState;
+    barrier.Transition.StateAfter = state;
+    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+    commandList->ResourceBarrier(1, &barrier);
+    m_currentState = state;
 }
 
 //==============================================================================

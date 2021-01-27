@@ -23,11 +23,16 @@ public:
 
     //virtual const DX12Image* image() const override { return m_image.get(); }
 
+    ID3D12Resource* dxResource() const override { return m_dxRenderTarget.Get(); }
+    DXGI_FORMAT dxFormat() const { return m_dxFormat; }
+
 protected:
     DX12Device* m_deviceContext;
     SizeI m_size;
     TextureFormat m_format;
+    
     ComPtr<ID3D12Resource> m_dxRenderTarget;
+    DXGI_FORMAT m_dxFormat;
 };
 
 class DX12DepthBuffer
@@ -38,12 +43,17 @@ public:
     Result init(DX12Device* deviceContext, uint32_t width, uint32_t height);
     void dispose();
     const SizeI& size() const { return m_size; }
-    //const DX12Image* image() const { return &m_image; }
+
+    ID3D12Resource* dxResource() const { return m_dxDepthBuffer.Get(); }
+    DXGI_FORMAT dxFormat() const { return m_dxFormat; }
+    void resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
 
 private:
     DX12Device* m_deviceContext;
     SizeI m_size;
     ComPtr<ID3D12Resource> m_dxDepthBuffer;
+    DXGI_FORMAT m_dxFormat;
+    D3D12_RESOURCE_STATES m_currentState;
 };
 
 } // namespace detail
