@@ -90,15 +90,21 @@ void DX12Descriptor::bind(DX12GraphicsContext* commandList)
     // b0, b1... や t0, t1.. など複数の register(Descriptor) を使っている場合、
     // ID3D12DescriptorHeap::GetGPUDescriptorHandleForHeapStart() を stride として並んでいなければならない。
     // サンプルの D3D12HDR.cpp あたりが参考になる。
-    dxCommandList->SetGraphicsRootDescriptorTable(
-        layout.cbvRootParamIndex,
-        m_descriptorHandles[DescriptorType_UniformBuffer].gpuHandles[0]);   // 'b' register
-    dxCommandList->SetGraphicsRootDescriptorTable(
-        layout.srvRootParamIndex,
-        m_descriptorHandles[DescriptorType_Texture].gpuHandles[0]);         // 't' register
-    dxCommandList->SetGraphicsRootDescriptorTable(
-        layout.samperRootParamIndex,
-        m_descriptorHandles[DescriptorType_SamplerState].gpuHandles[0]);    // 's' register
+    if (layout.cbvRootParamIndex >= 0) {
+        dxCommandList->SetGraphicsRootDescriptorTable(
+            layout.cbvRootParamIndex,
+            m_descriptorHandles[DescriptorType_UniformBuffer].gpuHandles[0]);   // 'b' register
+    }
+    if (layout.srvRootParamIndex >= 0) {
+        dxCommandList->SetGraphicsRootDescriptorTable(
+            layout.srvRootParamIndex,
+            m_descriptorHandles[DescriptorType_Texture].gpuHandles[0]);         // 't' register
+    }
+    if (layout.samperRootParamIndex >= 0) {
+        dxCommandList->SetGraphicsRootDescriptorTable(
+            layout.samperRootParamIndex,
+            m_descriptorHandles[DescriptorType_SamplerState].gpuHandles[0]);    // 's' register
+    }
 }
 
 //==============================================================================

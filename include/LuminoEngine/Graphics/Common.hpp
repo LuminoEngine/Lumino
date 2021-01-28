@@ -374,6 +374,8 @@ class ShaderSecondaryDescriptor;
 class GraphicsCommandList;
 
 static const int MaxMultiRenderTargets = 4;
+
+// max=16 : https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_input_element_desc
 static const int MaxVertexStreams = 16;
 
 struct SamplerStateData

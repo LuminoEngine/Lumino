@@ -54,7 +54,7 @@ bool DX12VertexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, siz
         &props,
         D3D12_HEAP_FLAG_NONE,
         &desc,
-        D3D12_RESOURCE_STATE_GENERIC_READ,
+        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
         nullptr,
         IID_PPV_ARGS(&m_vertexBuffer)))) {
         LN_ERROR("CreateCommittedResource failed.");
@@ -106,7 +106,26 @@ bool DX12VertexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, siz
 
             ID3D12GraphicsCommandList* commandList = m_device->beginSingleTimeCommandList();
 
+
+            D3D12_RESOURCE_BARRIER b1;
+            b1.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+            b1.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+            b1.Transition.pResource = m_vertexBuffer.Get();
+            b1.Transition.StateBefore = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+            b1.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST;
+            b1.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+            commandList->ResourceBarrier(1, &b1);
+
             commandList->CopyResource(m_vertexBuffer.Get(), uploadBuffer.Get());
+
+            D3D12_RESOURCE_BARRIER b2;
+            b2.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+            b2.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+            b2.Transition.pResource = m_vertexBuffer.Get();
+            b2.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+            b2.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+            b2.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+            commandList->ResourceBarrier(1, &b2);
 
             m_device->endSingleTimeCommandList(commandList);
         }

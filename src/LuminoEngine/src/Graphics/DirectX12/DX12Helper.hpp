@@ -2,6 +2,7 @@
 #pragma once
 #include <d3d12.h>
 #include <dxgi1_6.h>
+#include <d3dcompiler.h>
 #include <wrl/client.h>
 #include "../GraphicsDeviceContext.hpp"
 
@@ -10,6 +11,16 @@ using Microsoft::WRL::ComPtr;
 namespace ln {
 namespace detail {
 class DX12Device;
+
+class D3DCompilerAPI
+{
+public:
+	typedef HRESULT(WINAPI* PFN_D3DCreateBlob)(SIZE_T Size, ID3DBlob** ppBlob);
+
+	static bool Initialize();
+	static PFN_D3DCreateBlob D3DCreateBlob;
+	static HMODULE s_hD3DCompilerDLL;
+};
 
 class DX12Helper
 {

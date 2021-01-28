@@ -30,6 +30,10 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
 	if (LN_REQUIRE(outIsDriverSupported)) return false;
 	*outIsDriverSupported = true;
 
+    if (!D3DCompilerAPI::Initialize()) {
+        return false;
+    }
+
     // Create factory
     {
         if (settings.debugMode) {
@@ -390,12 +394,7 @@ Ref<IDescriptorPool> DX12Device::onCreateDescriptorPool(IShaderPass* shaderPass)
 void DX12Device::onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
 {
     DX12GraphicsContext* commandList = static_cast<DX12GraphicsContext*>(context);
-
     commandList->submit(m_fenceValue);
-
-
-
-    LN_NOTIMPLEMENTED();
     m_fenceValue++;
 }
 
@@ -490,11 +489,30 @@ Result DX12SwapChain::init(DX12Device* deviceContext, PlatformWindow* window, co
 
     m_frameIndex = m_dxgiSwapChain->GetCurrentBackBufferIndex();
 
+    // Barrior CommandList
+    {
+        ID3D12Device* dxDevice = m_device->device();
+
+        if (FAILED(dxDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_dxPresentBarriorCommandAllocator)))) {
+            LN_ERROR("CreateCommandAllocator failed.");
+            return false;
+        }
+
+        if (FAILED(dxDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_dxPresentBarriorCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_dxPresentBarriorCommandList)))) {
+            LN_ERROR("CreateCommandList failed.");
+            return false;
+        }
+
+        m_dxPresentBarriorCommandList->Close();
+    }
+
 	return true;
 }
 
 void DX12SwapChain::dispose()
 {
+    m_dxPresentBarriorCommandList.Reset();
+    m_dxPresentBarriorCommandAllocator.Reset();
     for (auto& i : m_renderTargets) {
         i->dispose();
     }
@@ -526,7 +544,37 @@ Result DX12SwapChain::resizeBackbuffer(uint32_t width, uint32_t height)
 
 void DX12SwapChain::present()
 {
-    LN_NOTIMPLEMENTED();
+    // バックバッファ RenderTarget の Resource State を Present へ変更する。
+    // Barrior を張るのに CommandList が必要だが、管理の複雑さを回避するため、
+    // 描画にだけ使いたい DX12CommandList とは独立させて、いる。
+    // 同じ GraphicsQueue で ExecuteCommandLists() することで、実行順序は保証される。
+    {
+        if (FAILED(m_dxPresentBarriorCommandAllocator->Reset())) {
+            LN_ERROR("Reset failed.");
+            return;
+        }
+        if (FAILED(m_dxPresentBarriorCommandList->Reset(m_dxPresentBarriorCommandAllocator.Get(), nullptr))) {
+            LN_ERROR("Reset failed.");
+            return;
+        }
+
+        m_renderTargets[m_frameIndex]->resourceBarrior(m_dxPresentBarriorCommandList.Get(), D3D12_RESOURCE_STATE_PRESENT);
+
+        if (FAILED(m_dxPresentBarriorCommandList->Close())) {
+            LN_ERROR("Close failed.");
+            return;
+        }
+
+        ID3D12CommandList* commandLists[] = { m_dxPresentBarriorCommandList.Get() };
+        m_device->dxCommandQueue()->ExecuteCommandLists(1, commandLists);
+    }
+
+    const bool waitVSync = false;
+    auto hr = m_dxgiSwapChain->Present(waitVSync ? 1 : 0, 0);
+    if (FAILED(hr)) {
+        LN_ERROR("Present failed.");
+        return;
+    }
 }
 
 //==============================================================================
@@ -701,7 +749,10 @@ Result DX12VertexDeclaration::init(const VertexElement* elements, int elementsCo
 {
     LN_DCHECK(elements);
 
-    std::array<UINT, 16> offsets;   // max=16 : https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_input_element_desc
+    //std::array<UINT, 16> offsets;   
+
+    std::fill(m_strides.begin(), m_strides.end(), 0);
+
     UINT offset = 0;
     for (int i = 0; i < elementsCount; i++) {
         const VertexElement& e = elements[i];
@@ -710,7 +761,7 @@ Result DX12VertexDeclaration::init(const VertexElement* elements, int elementsCo
         desc.SemanticIndex = e.UsageIndex;
         desc.Format = DX12Helper::LNVertexElementTypeToDXFormat(e.Type);
         desc.InputSlot = e.StreamIndex;
-        desc.AlignedByteOffset = offsets[e.StreamIndex];
+        desc.AlignedByteOffset = m_strides[e.StreamIndex];
         if (e.rate == VertexInputRate::Vertex) {
             desc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
             desc.InstanceDataStepRate = 0;
@@ -721,7 +772,7 @@ Result DX12VertexDeclaration::init(const VertexElement* elements, int elementsCo
         }
         m_elements.push_back(desc);
 
-        offsets[e.StreamIndex] += static_cast<UINT>(GraphicsHelper::getVertexElementTypeSize(elements[i].Type));
+        m_strides[e.StreamIndex] += static_cast<UINT>(GraphicsHelper::getVertexElementTypeSize(elements[i].Type));
     }
 
     return true;

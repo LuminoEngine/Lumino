@@ -7,6 +7,27 @@ namespace ln {
 namespace detail {
 
 //=============================================================================
+// D3DCompilerAPI
+
+D3DCompilerAPI::PFN_D3DCreateBlob D3DCompilerAPI::D3DCreateBlob;
+HMODULE D3DCompilerAPI::s_hD3DCompilerDLL;
+
+bool D3DCompilerAPI::Initialize()
+{
+    if (!s_hD3DCompilerDLL) {
+        s_hD3DCompilerDLL = ::LoadLibrary(D3DCOMPILER_DLL_W);
+        if (s_hD3DCompilerDLL) {
+            D3DCreateBlob = reinterpret_cast<PFN_D3DCreateBlob>(::GetProcAddress(s_hD3DCompilerDLL, "D3DCreateBlob"));
+        }
+        else {
+            LN_LOG_ERROR << D3DCOMPILER_DLL_A << " not found.";
+            return false;
+        }
+    }
+    return true;
+}
+
+//=============================================================================
 // DX12Helper
 
 static const std::pair<TextureFormat, DXGI_FORMAT> s_textureFormatConversionTable[] =
@@ -162,19 +183,19 @@ D3D12_STENCIL_OP DX12Helper::LNStencilOpToDX12StencilOp(StencilOp value)
     return table[(int)value].second;
 }
 
-//D3D_PRIMITIVE_TOPOLOGY DX12Helper::LNPrimitiveTopologyToDX12PrimitiveTopology(PrimitiveTopology value)
-//{
-//    static const std::pair<PrimitiveTopology, D3D12_PRIMITIVE_TOPOLOGY_TYPE> table[] = {
-//        { PrimitiveTopology::TriangleList, D3D12_STENCIL_OP_KEEP },
-//        { PrimitiveTopology::TriangleStrip, D3D12_STENCIL_OP_KEEP },
-//        { PrimitiveTopology::TriangleFan, D3D12_STENCIL_OP_KEEP },
-//        { PrimitiveTopology::LineList, D3D12_STENCIL_OP_KEEP },
-//        { PrimitiveTopology::LineStrip, D3D12_STENCIL_OP_KEEP },
-//        { PrimitiveTopology::PointList, D3D12_STENCIL_OP_KEEP },
-//    };
-//    assert(table[(int)value].first == value);
-//    return table[(int)value].second;
-//}
+D3D_PRIMITIVE_TOPOLOGY DX12Helper::LNPrimitiveTopologyToDX12PrimitiveTopology(PrimitiveTopology value)
+{
+    static const std::pair<PrimitiveTopology, D3D_PRIMITIVE_TOPOLOGY> table[] = {
+        { PrimitiveTopology::TriangleList, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST },
+        { PrimitiveTopology::TriangleStrip, D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP },
+        { PrimitiveTopology::TriangleFan, D3D_PRIMITIVE_TOPOLOGY_UNDEFINED },
+        { PrimitiveTopology::LineList, D3D_PRIMITIVE_TOPOLOGY_LINELIST },
+        { PrimitiveTopology::LineStrip, D3D_PRIMITIVE_TOPOLOGY_LINESTRIP },
+        { PrimitiveTopology::PointList, D3D_PRIMITIVE_TOPOLOGY_POINTLIST },
+    };
+    assert(table[(int)value].first == value);
+    return table[(int)value].second;
+}
 
 //==============================================================================
 // DX12DescriptorHeapAllocatorPage

@@ -1,7 +1,10 @@
 ﻿
 #include "Internal.hpp"
 #include "DX12DeviceContext.hpp"
+#include "DX12VertexBuffer.hpp"
+#include "DX12ShaderPass.hpp"
 #include "DX12RenderPass.hpp"
+#include "DX12DescriptorPool.hpp"
 #include "DX12CommandList.hpp"
 
 namespace ln {
@@ -147,7 +150,7 @@ void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)
                     desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
                 }
                 D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = rtvHandles.cpuHandles[i];
-                dxDevice->CreateRenderTargetView(renderTarget->dxResource(), &desc, cpuHandle);
+                dxDevice->CreateRenderTargetView(renderTarget->dxResource(), nullptr, cpuHandle);
                 m_currentRTVHandles[i] = cpuHandle;
 
                 renderTarget->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -206,7 +209,7 @@ void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)
             if (depthBuffer) {
                 D3D12_CLEAR_FLAGS flags =
                     ((clearFlags & ClearFlags::Depth) ? D3D12_CLEAR_FLAG_DEPTH : (D3D12_CLEAR_FLAGS)0) |
-                    ((clearFlags & ClearFlags::Depth) ? D3D12_CLEAR_FLAG_STENCIL : (D3D12_CLEAR_FLAGS)0);
+                    ((clearFlags & ClearFlags::Stencil) ? D3D12_CLEAR_FLAG_STENCIL : (D3D12_CLEAR_FLAGS)0);
                 m_dxCommandList->ClearDepthStencilView(m_currentDSVHandle, flags, renderPass->clearDepth(), renderPass->clearStencil(), 0, nullptr);
             }
         }
@@ -218,9 +221,70 @@ void DX12GraphicsContext::onEndRenderPass(IRenderPass* renderPass)
     // TODO: Resolve MSAA
 }
 
-void DX12GraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline)
+void DX12GraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* basePipeline)
 {
-    LN_NOTIMPLEMENTED();
+    // Viewport & Scissor
+    if (stateDirtyFlags & GraphicsContextStateDirtyFlags_RegionRects) {
+        D3D12_VIEWPORT viewport;
+        viewport.TopLeftX = static_cast<float>(state.regionRects.viewportRect.x);
+        viewport.TopLeftY = static_cast<float>(state.regionRects.viewportRect.y);
+        viewport.Width = static_cast<float>(state.regionRects.viewportRect.width);
+        viewport.Height = static_cast<float>(state.regionRects.viewportRect.height);
+        viewport.MinDepth = 0.0f;
+        viewport.MaxDepth = 1.0f;
+        m_dxCommandList->RSSetViewports(1, &viewport);
+
+        D3D12_RECT scissor;
+        scissor.left = state.regionRects.scissorRect.getLeft();
+        scissor.top = state.regionRects.scissorRect.getTop();
+        scissor.right = state.regionRects.scissorRect.getRight();
+        scissor.bottom = state.regionRects.scissorRect.getBottom();
+        m_dxCommandList->RSSetScissorRects(1, &scissor);
+    }
+
+
+    if (submitSource == GraphicsContextSubmitSource_Draw) {
+        DX12ShaderPass* shaderPass = static_cast<DX12ShaderPass*>(state.shaderPass);
+        
+        m_dxCommandList->SetGraphicsRootSignature(shaderPass->rootSignature());
+
+        // Pipeline
+        if (basePipeline) {
+            DX12Pipeline* pipeline = static_cast<DX12Pipeline*>(basePipeline);
+            m_dxCommandList->SetPipelineState(pipeline->dxPipelineState());
+            m_dxCommandList->OMSetStencilRef(state.pipelineState.depthStencilState.stencilReferenceValue);
+        }
+
+        // VertexBuffer
+        {
+            DX12VertexDeclaration* vertexLayout = static_cast<DX12VertexDeclaration*>(state.pipelineState.vertexDeclaration);
+            std::array<D3D12_VERTEX_BUFFER_VIEW, MaxVertexStreams> vertexBufferViews;
+            int vbCount = 0;
+            for (int i = 0; i < state.primitive.vertexBuffers.size(); i++) {
+                DX12VertexBuffer* vertexBuffer = static_cast<DX12VertexBuffer*>(state.primitive.vertexBuffers[i]);
+                if (vertexBuffer) {
+                    vertexBufferViews[i].BufferLocation = vertexBuffer->dxResource()->GetGPUVirtualAddress();
+                    vertexBufferViews[i].StrideInBytes = vertexLayout->stride(i);
+                    vertexBufferViews[i].SizeInBytes = vertexBuffer->getBytesSize();
+                    vbCount++;
+                }
+            }
+            m_dxCommandList->IASetVertexBuffers(0, vbCount, vertexBufferViews.data());
+        }
+
+        // IndexBuffer
+        if (state.primitive.indexBuffer) {
+            LN_NOTIMPLEMENTED();
+            //D3D12_INDEX_BUFFER_VIEW indexView;
+            //m_dxCommandList->IASetIndexBuffer(&indexView);
+        }
+
+        // Descriptor
+        {
+            DX12Descriptor* descriptor = static_cast<DX12Descriptor*>(state.descriptor);
+            descriptor->bind(this);
+        }
+    }
 }
 
 void* DX12GraphicsContext::onMapResource(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size)
@@ -256,7 +320,37 @@ void DX12GraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, f
 
 void DX12GraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
 {
-    LN_NOTIMPLEMENTED();
+    D3D_PRIMITIVE_TOPOLOGY topology;
+    UINT vertexCount;
+    switch (primitive)
+    {
+    case ln::PrimitiveTopology::TriangleList:
+        topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+        vertexCount = primitiveCount * 3;
+        break;
+    case ln::PrimitiveTopology::TriangleStrip:
+        topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+        vertexCount = 2 + primitiveCount;
+        break;
+    case ln::PrimitiveTopology::LineList:
+        topology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+        vertexCount = primitiveCount * 2;
+        break;
+    case ln::PrimitiveTopology::LineStrip:
+        topology = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
+        vertexCount = 1 + primitiveCount;
+        break;
+    case ln::PrimitiveTopology::PointList:
+        topology = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+        vertexCount = primitiveCount;
+        break;
+    default:
+        LN_UNREACHABLE();
+        return;
+    }
+
+    m_dxCommandList->IASetPrimitiveTopology(topology);
+    m_dxCommandList->DrawInstanced(vertexCount, 1, startVertex, 0);
 }
 
 void DX12GraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset)

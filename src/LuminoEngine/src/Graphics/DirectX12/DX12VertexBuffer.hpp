@@ -17,6 +17,8 @@ public:
 	void* map() override;
 	void unmap() override;
 
+	ID3D12Resource* dxResource() const { return m_vertexBuffer.Get(); }
+
 private:
 	DX12Device* m_device;
 	GraphicsResourceUsage m_usage;

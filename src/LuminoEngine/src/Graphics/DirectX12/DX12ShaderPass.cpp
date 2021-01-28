@@ -54,11 +54,22 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         m_layoutInfo.cvbSizes[i] = createInfo.descriptorLayout->uniformBufferRegister[i].size;
     }
 
-    if (createInfo.vsCode) {
-        m_vsCode.assign(createInfo.vsCode, createInfo.vsCode + createInfo.vsCodeLen);
-    }
-    if (createInfo.psCode) {
-        m_psCode.assign(createInfo.psCode, createInfo.psCode + createInfo.psCodeLen);
+    {
+        if (createInfo.vsCodeLen > 0) {
+            if (FAILED(D3DCompilerAPI::D3DCreateBlob(createInfo.vsCodeLen, &m_vsCode))) {
+                LN_ERROR("D3DCreateBlob failed.");
+                return false;
+            }
+            memcpy(m_vsCode->GetBufferPointer(), createInfo.vsCode, createInfo.vsCodeLen);
+        }
+
+        if (createInfo.psCodeLen > 0) {
+            if (FAILED(D3DCompilerAPI::D3DCreateBlob(createInfo.psCodeLen, &m_psCode))) {
+                LN_ERROR("D3DCreateBlob failed.");
+                return false;
+            }
+            memcpy(m_psCode->GetBufferPointer(), createInfo.psCode, createInfo.psCodeLen);
+        }
     }
 
     ID3D12Device* dxDevice = m_deviceContext->device();
@@ -272,22 +283,25 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
 
 void DX12ShaderPass::dispose()
 {
-    LN_NOTIMPLEMENTED();
+    m_descriptorHeap.Reset();
+    m_rootSignature.Reset();
+    m_vsCode.Reset();
+    m_psCode.Reset();
     IShaderPass::dispose();
 }
 
 D3D12_SHADER_BYTECODE DX12ShaderPass::dxVSByteCode() const
 {
-    if (!m_vsCode.empty())
-        return D3D12_SHADER_BYTECODE{ m_vsCode.data(), m_vsCode.size() };
+    if (m_vsCode)
+        return D3D12_SHADER_BYTECODE{ m_vsCode->GetBufferPointer(), m_vsCode->GetBufferSize() };
     else
         return D3D12_SHADER_BYTECODE{ nullptr, 0 };
 }
 
 D3D12_SHADER_BYTECODE DX12ShaderPass::dxPSByteCode() const
 {
-    if (!m_psCode.empty())
-        return D3D12_SHADER_BYTECODE{ m_psCode.data(), m_psCode.size() };
+    if (m_psCode)
+        return D3D12_SHADER_BYTECODE{ m_psCode->GetBufferPointer(), m_psCode->GetBufferSize() };
     else
         return D3D12_SHADER_BYTECODE{ nullptr, 0 };
 }

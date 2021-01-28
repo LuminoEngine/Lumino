@@ -90,6 +90,9 @@ private:
     uint32_t m_backbufferCount;
     uint32_t m_frameIndex;
     std::vector<Ref<DX12RenderTarget>> m_renderTargets;
+
+    ComPtr<ID3D12CommandAllocator> m_dxPresentBarriorCommandAllocator;
+    ComPtr<ID3D12GraphicsCommandList> m_dxPresentBarriorCommandList;
 };
 
 class DX12Framebuffer2;
@@ -102,6 +105,7 @@ public:
 	DX12Pipeline();
     bool init(DX12Device* deviceContext, const DevicePipelineStateDesc& state);
 	void dispose() override;
+    ID3D12PipelineState* dxPipelineState() const { return m_pipelineState.Get(); }
 
 private:
 	DX12Device* m_device;
@@ -117,9 +121,11 @@ public:
     void dispose() override;
 
     const std::vector<D3D12_INPUT_ELEMENT_DESC>& elements() const { return m_elements; }
+    int32_t stride(int streamIndex) const { return m_strides[streamIndex]; }
 
 private:
     std::vector<D3D12_INPUT_ELEMENT_DESC> m_elements;
+    std::array<int32_t, MaxVertexStreams> m_strides;
 };
 
 class DX12IndexBuffer
