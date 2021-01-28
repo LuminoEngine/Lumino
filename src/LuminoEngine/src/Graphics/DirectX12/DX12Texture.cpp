@@ -1,6 +1,9 @@
 ﻿
 #include "Internal.hpp"
+#include "DX12Buffers.hpp"
 #include "DX12Texture.hpp"
+
+#include <LuminoEngine/Graphics/Bitmap.hpp> // TODO: test
 
 namespace ln {
 namespace detail {
@@ -27,6 +30,7 @@ bool DX12RenderTarget::init(DX12Device* deviceContext, uint32_t width, uint32_t 
 
 bool DX12RenderTarget::init(DX12Device* deviceContext, const ComPtr<ID3D12Resource>& dxRenderTarget)
 {
+    m_deviceContext = deviceContext;
     m_dxRenderTarget = dxRenderTarget;
 
     D3D12_RESOURCE_DESC desc = m_dxRenderTarget->GetDesc();
@@ -48,6 +52,60 @@ void DX12RenderTarget::dispose()
 
 void DX12RenderTarget::readData(void* outData)
 {
+    D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
+    D3D12_RESOURCE_DESC textureDesc = m_dxRenderTarget->GetDesc();
+    UINT64 totalSize;
+    m_deviceContext->device()->GetCopyableFootprints(&textureDesc, 0, 1, 0, &footprint, nullptr, nullptr, &totalSize);
+
+
+    // 読み取り用一時バッファ
+    size_t size = totalSize;//m_size.width * m_size.height * DX12Helper::getFormatSize(m_dxFormat);
+    size_t size2 = m_size.width * m_size.height * DX12Helper::getFormatSize(m_dxFormat);//footprint.Footprint.RowPitch * footprint.Footprint.Height;
+    DX12Buffer buffer;
+    if (!buffer.init(m_deviceContext, size, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_STATE_COPY_DEST)) {
+        return;
+    }
+
+
+
+    ID3D12GraphicsCommandList* commandList = m_deviceContext->beginSingleTimeCommandList();
+    if (!commandList) {
+        return;
+    }
+
+    D3D12_TEXTURE_COPY_LOCATION src, dst;
+    src.pResource = m_dxRenderTarget.Get();
+    src.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+    src.SubresourceIndex = 0;
+    dst.pResource = buffer.dxResource();
+    dst.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+    dst.PlacedFootprint = footprint;
+
+    //D3D12_BOX box;
+    //box.left = 0;
+    //box.top = 0;
+    //box.front = 0;
+    //box.right = m_size.width;
+    //box.bottom = m_size.height;
+    //box.back = 1;
+    resourceBarrior(commandList, D3D12_RESOURCE_STATE_COPY_SOURCE);
+    commandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+    resourceBarrior(commandList, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+    if (!m_deviceContext->endSingleTimeCommandList(commandList)) {
+        return;
+    }
+
+    const void* data = buffer.map();
+
+    auto w = footprint.Footprint.RowPitch / 4;
+    auto bitmap = makeObject<Bitmap2D>(w, m_size.height, PixelFormat::RGBA8, data);
+    bitmap->save(u"test2.png");
+
+
+
+    memcpy(outData, data, size2);
+    buffer.unmap();
 }
 
 //==============================================================================

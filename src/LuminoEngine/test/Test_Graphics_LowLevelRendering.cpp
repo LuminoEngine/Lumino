@@ -38,12 +38,11 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 
         for (int i = 0; i < 5; i++)
         {
-            auto target = TestEnv::mainWindowSwapChain()->currentBackbuffer();
-
-            renderPass->setRenderTarget(0, target);
-            renderPass->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 			auto ctx = TestEnv::beginFrame();
+            auto target = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+            renderPass->setRenderTarget(0, target);
+            renderPass->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 			auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
 			descriptor->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
 			ctx->beginRenderPass(renderPass);

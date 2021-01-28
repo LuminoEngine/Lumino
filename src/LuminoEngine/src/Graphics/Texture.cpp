@@ -544,6 +544,7 @@ Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context)
         bitmap->flipVerticalFlow();
     }
     //
+    bitmap->save(u"test.png");
     return bitmap;
 }
 
