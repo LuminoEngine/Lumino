@@ -166,9 +166,15 @@ void DX12DescriptorPool::dispose()
 
 void DX12DescriptorPool::reset()
 {
-    m_descriptorHeapAllocator_CBV->reset();
-    m_descriptorHeapAllocator_SRV->reset();
-    m_descriptorHeapAllocator_SAMPLER->reset();
+    if (m_descriptorHeapAllocator_CBV) {
+        m_descriptorHeapAllocator_CBV->reset();
+    }
+    if (m_descriptorHeapAllocator_SRV) {
+        m_descriptorHeapAllocator_SRV->reset();
+    }
+    if (m_descriptorHeapAllocator_SAMPLER) {
+        m_descriptorHeapAllocator_SAMPLER->reset();
+    }
     m_usedDescriptorCount = 0;
 }
 

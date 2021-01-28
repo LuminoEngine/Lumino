@@ -48,7 +48,6 @@ void DX12RenderTarget::dispose()
 
 void DX12RenderTarget::readData(void* outData)
 {
-    LN_NOTIMPLEMENTED();
 }
 
 //==============================================================================

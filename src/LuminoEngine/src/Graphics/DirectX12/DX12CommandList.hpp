@@ -11,6 +11,7 @@ class DX12GraphicsContext
 public:
     enum State
     {
+        Initial,
         Recording,
         Executing,
         Finished,

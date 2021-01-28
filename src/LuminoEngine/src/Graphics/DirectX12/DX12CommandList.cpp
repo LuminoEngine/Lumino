@@ -63,6 +63,7 @@ bool DX12GraphicsContext::init(DX12Device* device)
         return false;
     }
 
+    m_state = State::Initial;
 	return true;
 }
 
@@ -397,7 +398,6 @@ void DX12GraphicsContext::wait()
 
     const UINT64 fence = m_waitingFenceValue;
 
-
     if (m_fence->GetCompletedValue() < m_waitingFenceValue) {
         if (FAILED(m_fence->SetEventOnCompletion(m_waitingFenceValue, m_event))) {
             LN_ERROR("SetEventOnCompletion failed.");
@@ -406,7 +406,6 @@ void DX12GraphicsContext::wait()
         WaitForSingleObject(m_event, INFINITE);
     }
 
-    LN_NOTIMPLEMENTED();
     m_state = State::Finished;
 }
 

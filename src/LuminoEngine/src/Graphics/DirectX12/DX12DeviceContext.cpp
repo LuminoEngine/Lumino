@@ -1,7 +1,5 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Platform/PlatformWindow.hpp>
-#include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "DX12Helper.hpp"
 #include "DX12VertexBuffer.hpp"
 #include "DX12Texture.hpp"
@@ -9,6 +7,7 @@
 #include "DX12DescriptorPool.hpp"
 #include "DX12RenderPass.hpp"
 #include "DX12CommandList.hpp"
+#include "DX12SwapChain.hpp"
 #include "DX12DeviceContext.hpp"
 
 #pragma comment(lib,"d3d12.lib")
@@ -177,6 +176,8 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
 
 void DX12Device::dispose()
 {
+    IGraphicsDevice::dispose();
+
     if (m_singleTimeCommandListEvent) {
         ::CloseHandle(m_singleTimeCommandListEvent);
         m_singleTimeCommandListEvent = nullptr;
@@ -188,8 +189,6 @@ void DX12Device::dispose()
     m_device.Reset();
     m_adapter.Reset();
     m_dxgiFactory.Reset();
-
-    IGraphicsDevice::dispose();
 }
 
 ID3D12GraphicsCommandList* DX12Device::beginSingleTimeCommandList()
@@ -421,163 +420,6 @@ void DX12Device::enableDebugLayer() const
 }
 
 //==============================================================================
-// DX12SwapChain
-
-DX12SwapChain::DX12SwapChain()
-    : m_device(nullptr)
-    , m_backbufferCount(0)
-    , m_frameIndex(0)
-{
-}
-
-Result DX12SwapChain::init(DX12Device* deviceContext, PlatformWindow* window, const SizeI& backbufferSize)
-{
-    LN_DCHECK(deviceContext);
-    m_device = deviceContext;
-    m_backbufferCount = DX12Device::BackBufferCount;
-
-    HWND hWnd = (HWND)PlatformSupport::getWin32WindowHandle(window);
-    HINSTANCE hInstance = ::GetModuleHandle(NULL);
-
-    DXGI_SWAP_CHAIN_DESC swapChainDesc;
-    ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
-    swapChainDesc.BufferDesc.Width = backbufferSize.width;
-    swapChainDesc.BufferDesc.Height = backbufferSize.height;
-    swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
-    swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-    swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-    swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-    swapChainDesc.SampleDesc.Count = 1;
-    swapChainDesc.SampleDesc.Quality = 0;
-    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapChainDesc.BufferCount = m_backbufferCount;
-    swapChainDesc.OutputWindow = hWnd;
-    swapChainDesc.Windowed = TRUE;
-    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-    swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-
-    IDXGIFactory6* dxgiFactory = m_device->dxgiFactory();
-    ComPtr<IDXGISwapChain> swapChain;
-    HRESULT hr = dxgiFactory->CreateSwapChain(m_device->dxCommandQueue(), &swapChainDesc, &swapChain);
-    if (FAILED(hr)) {
-        LN_ERROR("CreateSwapChain failed.");
-        return false;
-    }
-
-    if (FAILED(swapChain.As(&m_dxgiSwapChain))) {
-        LN_ERROR("Cast to IDXGISwapChain3 failed.");
-        return false;
-    }
-
-    // Create a RTV for each frame.
-    for (int i = 0; i < m_backbufferCount; i++)
-    {
-        ComPtr<ID3D12Resource> dxRenderTarget;
-        if (FAILED(m_dxgiSwapChain->GetBuffer(i, IID_PPV_ARGS(&dxRenderTarget)))) {
-            LN_ERROR("GetBuffer failed.");
-            return false;
-        }
-
-        Ref<DX12RenderTarget> wrapper = makeRef<DX12RenderTarget>();
-        if (!wrapper->init(m_device, dxRenderTarget)) {
-            return false;
-        }
-
-        m_renderTargets.push_back(wrapper);
-    }
-
-    m_frameIndex = m_dxgiSwapChain->GetCurrentBackBufferIndex();
-
-    // Barrior CommandList
-    {
-        ID3D12Device* dxDevice = m_device->device();
-
-        if (FAILED(dxDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_dxPresentBarriorCommandAllocator)))) {
-            LN_ERROR("CreateCommandAllocator failed.");
-            return false;
-        }
-
-        if (FAILED(dxDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_dxPresentBarriorCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_dxPresentBarriorCommandList)))) {
-            LN_ERROR("CreateCommandList failed.");
-            return false;
-        }
-
-        m_dxPresentBarriorCommandList->Close();
-    }
-
-	return true;
-}
-
-void DX12SwapChain::dispose()
-{
-    m_dxPresentBarriorCommandList.Reset();
-    m_dxPresentBarriorCommandAllocator.Reset();
-    for (auto& i : m_renderTargets) {
-        i->dispose();
-    }
-    m_renderTargets.clear();
-    m_dxgiSwapChain.Reset();
-    ISwapChain::dispose();
-}
-
-uint32_t DX12SwapChain::getBackbufferCount()
-{
-    return m_backbufferCount;
-}
-
-void DX12SwapChain::acquireNextImage(int* outIndex)
-{
-    *outIndex = m_dxgiSwapChain->GetCurrentBackBufferIndex();
-}
-
-ITexture* DX12SwapChain::getRenderTarget(int imageIndex) const
-{
-	return m_renderTargets[imageIndex];
-}
-
-Result DX12SwapChain::resizeBackbuffer(uint32_t width, uint32_t height)
-{
-    LN_NOTIMPLEMENTED();
-	return true;
-}
-
-void DX12SwapChain::present()
-{
-    // バックバッファ RenderTarget の Resource State を Present へ変更する。
-    // Barrior を張るのに CommandList が必要だが、管理の複雑さを回避するため、
-    // 描画にだけ使いたい DX12CommandList とは独立させて、いる。
-    // 同じ GraphicsQueue で ExecuteCommandLists() することで、実行順序は保証される。
-    {
-        if (FAILED(m_dxPresentBarriorCommandAllocator->Reset())) {
-            LN_ERROR("Reset failed.");
-            return;
-        }
-        if (FAILED(m_dxPresentBarriorCommandList->Reset(m_dxPresentBarriorCommandAllocator.Get(), nullptr))) {
-            LN_ERROR("Reset failed.");
-            return;
-        }
-
-        m_renderTargets[m_frameIndex]->resourceBarrior(m_dxPresentBarriorCommandList.Get(), D3D12_RESOURCE_STATE_PRESENT);
-
-        if (FAILED(m_dxPresentBarriorCommandList->Close())) {
-            LN_ERROR("Close failed.");
-            return;
-        }
-
-        ID3D12CommandList* commandLists[] = { m_dxPresentBarriorCommandList.Get() };
-        m_device->dxCommandQueue()->ExecuteCommandLists(1, commandLists);
-    }
-
-    const bool waitVSync = false;
-    auto hr = m_dxgiSwapChain->Present(waitVSync ? 1 : 0, 0);
-    if (FAILED(hr)) {
-        LN_ERROR("Present failed.");
-        return;
-    }
-}
-
-//==============================================================================
 // DX12Pipeline
 
 DX12Pipeline::DX12Pipeline()
@@ -641,7 +483,7 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
     {
         psoDesc.RasterizerState.FillMode = DX12Helper::LNFillModeToDX12FillMode(state.rasterizerState.fillMode);
         psoDesc.RasterizerState.CullMode = DX12Helper::LNCullModeToDX12CullMode(state.rasterizerState.cullMode);
-        psoDesc.RasterizerState.FrontCounterClockwise = TRUE;   // Lumino は 左手がデフォルト
+        psoDesc.RasterizerState.FrontCounterClockwise = FALSE;
         psoDesc.RasterizerState.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
         psoDesc.RasterizerState.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
         psoDesc.RasterizerState.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;

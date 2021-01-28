@@ -39,7 +39,8 @@ public:
 
 	static size_t alignUpWithMask(size_t value, size_t mask) { return ((size_t)value + mask) & ~mask; }
 	static size_t alignUp(size_t value, size_t alignment = 256) { return alignUpWithMask(value, alignment - 1); }
-	
+
+	static size_t getFormatSize(DXGI_FORMAT value);
 
 
 	static const char* LNVertexElementUsageToSemanticName(VertexElementUsage value);
@@ -92,6 +93,26 @@ private:
 	UINT m_numDescriptorsPerPage;
 	std::vector<Ref<DX12DescriptorHeapAllocatorPage>> m_pages;
 	int m_activePageIndex;
+};
+
+// ID3D12CommandAllocator と ID3D12GraphicsCommandList をペアで使うことが多いためまとめたもの
+class DX12CommandListCore
+	: public RefObject
+{
+public:
+	DX12CommandListCore();
+	bool init(DX12Device* device);
+	void dispose();
+	bool reset();
+	bool close();
+
+	ID3D12CommandAllocator* dxCommandAllocator() const { return m_dxCommandAllocator.Get(); }
+	ID3D12GraphicsCommandList* dxCommandList() const { return m_dxCommandList.Get(); }
+
+private:
+	ComPtr<ID3D12CommandAllocator> m_dxCommandAllocator;
+	ComPtr<ID3D12GraphicsCommandList> m_dxCommandList;
+
 };
 
 } // namespace detail

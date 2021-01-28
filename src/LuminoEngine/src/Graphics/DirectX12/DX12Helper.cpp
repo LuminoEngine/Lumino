@@ -197,6 +197,29 @@ D3D_PRIMITIVE_TOPOLOGY DX12Helper::LNPrimitiveTopologyToDX12PrimitiveTopology(Pr
     return table[(int)value].second;
 }
 
+size_t DX12Helper::getFormatSize(DXGI_FORMAT value)
+{
+    switch (value)
+    {
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+        return 4;
+    case DXGI_FORMAT_R16G16B16A16_FLOAT:
+        return 8;
+    case DXGI_FORMAT_R32G32B32A32_FLOAT:
+        return 16;
+    case DXGI_FORMAT_R16_FLOAT:
+        return 2;
+    case DXGI_FORMAT_R32_FLOAT:
+        return 4;
+    case DXGI_FORMAT_R32_SINT:
+        return 4;
+    default:
+        LN_NOTIMPLEMENTED();
+        break;
+    }
+    return 0;
+}
+
 //==============================================================================
 // DX12DescriptorHeapAllocatorPage
 
@@ -325,6 +348,63 @@ bool DX12DescriptorHeapAllocator::allocate(int32_t count, DX12DescriptorHandles*
 
     LN_UNREACHABLE();
     return false;
+}
+
+//==============================================================================
+// DX12CommandListCore
+
+DX12CommandListCore::DX12CommandListCore()
+{
+}
+
+bool DX12CommandListCore::init(DX12Device* device)
+{
+    ID3D12Device* dxDevice = device->device();
+
+    if (FAILED(dxDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_dxCommandAllocator)))) {
+        LN_ERROR("CreateCommandAllocator failed.");
+        return false;
+    }
+
+    if (FAILED(dxDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_dxCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_dxCommandList)))) {
+        LN_ERROR("CreateCommandList failed.");
+        return false;
+    }
+
+    m_dxCommandList->Close();
+
+    return true;
+}
+
+void DX12CommandListCore::dispose()
+{
+    m_dxCommandList.Reset();
+    m_dxCommandAllocator.Reset();
+}
+
+bool DX12CommandListCore::reset()
+{
+    if (FAILED(m_dxCommandAllocator->Reset())) {
+        LN_ERROR("Reset failed.");
+        return false;
+    }
+
+    if (FAILED(m_dxCommandList->Reset(m_dxCommandAllocator.Get(), nullptr))) {
+        LN_ERROR("Reset failed.");
+        return false;
+    }
+
+    return true;
+}
+
+bool DX12CommandListCore::close()
+{
+    if (FAILED(m_dxCommandList->Close())) {
+        LN_ERROR("Close failed.");
+        return false;
+    }
+
+    return true;
 }
 
 } // namespace detail

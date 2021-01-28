@@ -17,7 +17,7 @@ public:
         bool debugMode = false;
 	};
 
-    static const int BackBufferCount = 2;
+    static const int BackBufferCount = 3;
 
 	DX12Device();
 	bool init(const Settings& settings, bool* outIsDriverSupported);
@@ -55,7 +55,7 @@ protected:
     ICommandQueue* getGraphicsCommandQueue() override;
     ICommandQueue* getComputeCommandQueue() override;
 
-private:
+public: // TODO:
     void enableDebugLayer() const;
 
     ComPtr<IDXGIFactory6> m_dxgiFactory;
@@ -69,30 +69,6 @@ private:
     ComPtr<ID3D12GraphicsCommandList> m_singleTimeCommandList;
     ComPtr<ID3D12Fence> m_singleTimeCommandListFence;
     HANDLE m_singleTimeCommandListEvent;
-};
-
-class DX12SwapChain
-	: public ISwapChain
-{
-public:
-	DX12SwapChain();
-	Result init(DX12Device* deviceContext, PlatformWindow* window, const SizeI& backbufferSize);
-    void dispose() override;
-    uint32_t getBackbufferCount() override;
-    void acquireNextImage(int* outImageIndex) override;
-	ITexture* getRenderTarget(int imageIndex) const override;
-	Result resizeBackbuffer(uint32_t width, uint32_t height) override;
-	void present() override;
-
-private:
-    DX12Device* m_device;
-    ComPtr<IDXGISwapChain3> m_dxgiSwapChain;
-    uint32_t m_backbufferCount;
-    uint32_t m_frameIndex;
-    std::vector<Ref<DX12RenderTarget>> m_renderTargets;
-
-    ComPtr<ID3D12CommandAllocator> m_dxPresentBarriorCommandAllocator;
-    ComPtr<ID3D12GraphicsCommandList> m_dxPresentBarriorCommandList;
 };
 
 class DX12Framebuffer2;
