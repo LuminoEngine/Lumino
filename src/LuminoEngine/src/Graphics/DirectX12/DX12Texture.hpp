@@ -25,6 +25,7 @@ public:
 
     ID3D12Resource* dxResource() const override { return m_dxRenderTarget.Get(); }
     DXGI_FORMAT dxFormat() const { return m_dxFormat; }
+    bool isMultisample() const override { return false; }
 
 protected:
     DX12Device* m_deviceContext;
@@ -47,6 +48,8 @@ public:
     ID3D12Resource* dxResource() const { return m_dxDepthBuffer.Get(); }
     DXGI_FORMAT dxFormat() const { return m_dxFormat; }
     void resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
+
+    bool isMultisample() const override { return false; }
 
 private:
     DX12Device* m_deviceContext;

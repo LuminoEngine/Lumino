@@ -106,6 +106,27 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
         LN_LOG_INFO << indent << "SharedSystemMemory: " << selected->desc.SharedSystemMemory;
     }
 
+    // Check MSAA Sample count
+    // FIXME: DX12 ではフォーマットフォトに値が変わるような API になっている。問題出るようならフォーマットごとに集計した方がいいかも。
+    {
+        const DXGI_FORMAT BufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+        UINT TargetSampleCount = 8;
+        for (m_sampleCount = TargetSampleCount; m_sampleCount > 1; m_sampleCount--) {
+            D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS levels = { BufferFormat, m_sampleCount };
+            if (FAILED(m_device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &levels, sizeof(levels)))) {
+                continue;
+            }
+
+            if (levels.NumQualityLevels > 0) {
+                break;
+            }
+        }
+
+        if (m_sampleCount < 2) {
+            LN_LOG_INFO << "MSAA not supported.";
+        }
+    }
+
     // Command Queue
     {
         D3D12_COMMAND_QUEUE_DESC desc = {};
@@ -521,7 +542,6 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
 	LN_DCHECK(deviceContext);
 	LN_DCHECK(state.renderPass);
 	m_device = deviceContext;
-    LN_NOTIMPLEMENTED();
 
     DX12ShaderPass* shaderPass = static_cast<DX12ShaderPass*>(state.shaderPass);
 
@@ -540,27 +560,131 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
     psoDesc.StreamOutput.NumStrides = 0;
     psoDesc.StreamOutput.RasterizedStream = 0;
 
-    D3D12_BLEND_DESC BlendState;
-    UINT SampleMask;
-    D3D12_RASTERIZER_DESC RasterizerState;
-    D3D12_DEPTH_STENCIL_DESC DepthStencilState;
-    D3D12_INPUT_LAYOUT_DESC InputLayout;
-    D3D12_INDEX_BUFFER_STRIP_CUT_VALUE IBStripCutValue;
-    D3D12_PRIMITIVE_TOPOLOGY_TYPE PrimitiveTopologyType;
-    UINT NumRenderTargets;
-    DXGI_FORMAT RTVFormats[8];
-    DXGI_FORMAT DSVFormat;
-    DXGI_SAMPLE_DESC SampleDesc;
-    UINT NodeMask;
-    D3D12_CACHED_PIPELINE_STATE CachedPSO;
-    D3D12_PIPELINE_STATE_FLAGS Flags;
+    // BlendState
+    {
+        ZeroMemory(&psoDesc.BlendState, sizeof(psoDesc.BlendState));
+        psoDesc.BlendState.AlphaToCoverageEnable = FALSE;
+        psoDesc.BlendState.IndependentBlendEnable = state.blendState.independentBlendEnable;
+        for (int i = 0; i < BlendStateDesc::MaxRenderTargets; i++) {
+            D3D12_RENDER_TARGET_BLEND_DESC& dst = psoDesc.BlendState.RenderTarget[i];
+            const RenderTargetBlendDesc& src = state.blendState.renderTargets[i];
+            dst.BlendEnable = src.blendEnable;
+            dst.LogicOpEnable = FALSE;
+            dst.SrcBlend = DX12Helper::LNBlendFactorToDX12Blend(src.sourceBlend);
+            dst.DestBlend = DX12Helper::LNBlendFactorToDX12Blend(src.destinationBlend);
+            dst.BlendOp = DX12Helper::LNBlendOpToDX12Blend(src.blendOp);
+            dst.SrcBlendAlpha = DX12Helper::LNBlendFactorToDX12Blend(src.sourceBlendAlpha);
+            dst.DestBlendAlpha = DX12Helper::LNBlendFactorToDX12Blend(src.destinationBlendAlpha);
+            dst.BlendOpAlpha = DX12Helper::LNBlendOpToDX12Blend(src.blendOpAlpha);
+            dst.LogicOp = D3D12_LOGIC_OP_NOOP;;
+            dst.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+            if (!psoDesc.BlendState.IndependentBlendEnable) {
+                // IndependentBlendEnable=FALSE なら、[0] だけ設定すればよい
+                // https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_blend_desc
+                break;
+            }
+        }
+    }
+
+    psoDesc.SampleMask = UINT_MAX;
+
+    // RasterizerState
+    {
+        psoDesc.RasterizerState.FillMode = DX12Helper::LNFillModeToDX12FillMode(state.rasterizerState.fillMode);
+        psoDesc.RasterizerState.CullMode = DX12Helper::LNCullModeToDX12CullMode(state.rasterizerState.cullMode);
+        psoDesc.RasterizerState.FrontCounterClockwise = TRUE;   // Lumino は 左手がデフォルト
+        psoDesc.RasterizerState.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
+        psoDesc.RasterizerState.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
+        psoDesc.RasterizerState.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
+        psoDesc.RasterizerState.DepthClipEnable = TRUE;
+        psoDesc.RasterizerState.MultisampleEnable = FALSE;
+        psoDesc.RasterizerState.AntialiasedLineEnable = FALSE;
+        psoDesc.RasterizerState.ForcedSampleCount = 0;
+        psoDesc.RasterizerState.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+    }
+
+    // DepthStencilState
+    {
+        if (state.renderPass->hasDepthBuffer()) {
+            psoDesc.DepthStencilState.DepthEnable = TRUE;
+            psoDesc.DepthStencilState.DepthWriteMask = state.depthStencilState.depthWriteEnabled ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
+            psoDesc.DepthStencilState.DepthFunc = DX12Helper::LNComparisonFuncToDX12ComparisonFunc(state.depthStencilState.depthTestFunc);
+            psoDesc.DepthStencilState.StencilEnable = state.depthStencilState.stencilEnabled;
+            psoDesc.DepthStencilState.StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK;
+            psoDesc.DepthStencilState.StencilWriteMask = D3D12_DEFAULT_STENCIL_WRITE_MASK;
+            psoDesc.DepthStencilState.FrontFace.StencilFailOp = DX12Helper::LNStencilOpToDX12StencilOp(state.depthStencilState.frontFace.stencilFailOp);
+            psoDesc.DepthStencilState.FrontFace.StencilDepthFailOp = DX12Helper::LNStencilOpToDX12StencilOp(state.depthStencilState.frontFace.stencilDepthFailOp);
+            psoDesc.DepthStencilState.FrontFace.StencilPassOp = DX12Helper::LNStencilOpToDX12StencilOp(state.depthStencilState.frontFace.stencilPassOp);
+            psoDesc.DepthStencilState.FrontFace.StencilFunc = DX12Helper::LNComparisonFuncToDX12ComparisonFunc(state.depthStencilState.frontFace.stencilFunc);
+            psoDesc.DepthStencilState.BackFace.StencilFailOp = DX12Helper::LNStencilOpToDX12StencilOp(state.depthStencilState.backFace.stencilFailOp);
+            psoDesc.DepthStencilState.BackFace.StencilDepthFailOp = DX12Helper::LNStencilOpToDX12StencilOp(state.depthStencilState.backFace.stencilDepthFailOp);
+            psoDesc.DepthStencilState.BackFace.StencilPassOp = DX12Helper::LNStencilOpToDX12StencilOp(state.depthStencilState.backFace.stencilPassOp);
+            psoDesc.DepthStencilState.BackFace.StencilFunc = DX12Helper::LNComparisonFuncToDX12ComparisonFunc(state.depthStencilState.backFace.stencilFunc);
+        }
+        else {
+            ZeroMemory(&psoDesc.DepthStencilState, sizeof(psoDesc.DepthStencilState));
+        }
+    }
+
+    // InputLayout
+    {
+        DX12VertexDeclaration* layout = static_cast<DX12VertexDeclaration*>(state.vertexDeclaration);
+        psoDesc.InputLayout.pInputElementDescs = layout->elements().data();
+        psoDesc.InputLayout.NumElements = layout->elements().size();
+    }
+
+    psoDesc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE; // 実際は ID3D12GraphicsCommandList::IASetPrimitiveTopology() を使う
+    
+    // RenderPass
+    {
+        DX12RenderPass* renderPass = static_cast<DX12RenderPass*>(state.renderPass);
+
+        psoDesc.NumRenderTargets = renderPass->getAvailableRenderTargetCount();
+        int i = 0;
+        for (; i < psoDesc.NumRenderTargets; i++) {
+            psoDesc.RTVFormats[i] = renderPass->renderTarget(i)->dxFormat();
+        }
+        for (; i < LN_ARRAY_SIZE_OF(psoDesc.RTVFormats); i++) {
+            psoDesc.RTVFormats[i] = DXGI_FORMAT_UNKNOWN;
+        }
+
+        if (renderPass->hasDepthBuffer()) {
+            psoDesc.DSVFormat = renderPass->depthBuffer()->dxFormat();
+        }
+        else {
+            psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
+        }
+
+        if (renderPass->isMultisample()) {
+            psoDesc.SampleDesc.Count = m_device->sampleCount();
+            psoDesc.SampleDesc.Quality = 0;
+        }
+        else {
+            psoDesc.SampleDesc.Count = 1;
+            psoDesc.SampleDesc.Quality = 0;
+        }
+    }
+
+    psoDesc.NodeMask = 0;
+    psoDesc.CachedPSO.pCachedBlob = nullptr;
+    psoDesc.CachedPSO.CachedBlobSizeInBytes = 0;
+    psoDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
+
+    ID3D12Device* dxDevice = m_device->device();
+    auto hr = dxDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState));
+    if (FAILED(hr)) {
+        LN_ERROR("CreateGraphicsPipelineState failed.");
+        return false;
+    }
 
 	return true;
 }
 
 void DX12Pipeline::dispose()
 {
-    LN_NOTIMPLEMENTED();
+    m_pipelineState.Reset();
 	IPipeline::dispose();
 }
 

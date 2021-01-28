@@ -17,7 +17,23 @@ public:
 	static DXGI_FORMAT LNTextureFormatToDXFormat(TextureFormat value);
 	static TextureFormat DXFormatToLNTextureFormat(DXGI_FORMAT value);
 	static DXGI_FORMAT LNVertexElementTypeToDXFormat(VertexElementType value);
+
+	static D3D12_BLEND LNBlendFactorToDX12Blend(BlendFactor value);
+	static D3D12_BLEND_OP LNBlendOpToDX12Blend(BlendOp value);
+	static D3D12_FILL_MODE LNFillModeToDX12FillMode(FillMode value);
+	static D3D12_CULL_MODE LNCullModeToDX12CullMode(CullMode value);
+	static D3D12_COMPARISON_FUNC LNComparisonFuncToDX12ComparisonFunc(ComparisonFunc value);
+	static D3D12_STENCIL_OP LNStencilOpToDX12StencilOp(StencilOp value);
+	static D3D_PRIMITIVE_TOPOLOGY LNPrimitiveTopologyToDX12PrimitiveTopology(PrimitiveTopology value);
+
+	static size_t alignUpWithMask(size_t value, size_t mask) { return ((size_t)value + mask) & ~mask; }
+	static size_t alignUp(size_t value, size_t alignment = 256) { return alignUpWithMask(value, alignment - 1); }
+	
+
+
 	static const char* LNVertexElementUsageToSemanticName(VertexElementUsage value);
+
+
 };
 
 

@@ -152,6 +152,32 @@ Ref<IRenderPass> IGraphicsDevice::createRenderPass(const DeviceFramebufferState&
 			ptr->m_renderTargets[i] = buffers.renderTargets[i];
 		}
 		ptr->m_depthBuffer = buffers.depthBuffer;
+
+
+		// 検証。MSAA 有効なら、RenderPass にアタッチされているすべての RenderTarget と DepthBuffer は
+		// MSAA 有効 (同一サンプルレベル) でなければならない。
+		// https://docs.microsoft.com/en-us/windows/win32/api/dxgicommon/ns-dxgicommon-dxgi_sample_desc
+//#ifdef LN_DEBUG
+		int RTCount = 0;
+		int multisampleRTCount = 0;
+		for (int i = 0; i < MaxMultiRenderTargets; i++) {
+			if (ptr->m_renderTargets[i]) {
+				RTCount++;
+				if (ptr->m_renderTargets[i]->isMultisample()) {
+					multisampleRTCount++;
+				}
+			}
+		}
+
+		if (multisampleRTCount > 0) {
+			assert(multisampleRTCount == RTCount);
+			if (ptr->m_depthBuffer) {
+				assert(ptr->m_depthBuffer->isMultisample());
+
+			}
+			ptr->m_isMultisample = true;
+		}
+//#endif
 	}
 	return ptr;
 }

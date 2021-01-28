@@ -30,6 +30,7 @@ public:
     ID3D12CommandQueue* dxCommandQueue() const { return m_commandQueue.Get(); }
     ID3D12GraphicsCommandList* beginSingleTimeCommandList();
     bool endSingleTimeCommandList(ID3D12GraphicsCommandList* commandList);
+    UINT sampleCount() const { return m_sampleCount; }
 
 protected:
     INativeGraphicsInterface* getNativeInterface() const override;
@@ -62,6 +63,7 @@ private:
     ComPtr<ID3D12Device> m_device;
     ComPtr<ID3D12CommandQueue> m_commandQueue;
     UINT64 m_fenceValue;
+    UINT m_sampleCount;
 
     ComPtr<ID3D12CommandAllocator> m_singleTimeCommandAllocator;
     ComPtr<ID3D12GraphicsCommandList> m_singleTimeCommandList;
@@ -103,6 +105,7 @@ public:
 
 private:
 	DX12Device* m_device;
+    ComPtr<ID3D12PipelineState> m_pipelineState;
 };
 
 class DX12VertexDeclaration
@@ -187,6 +190,7 @@ public:
 	virtual void readData(void* outData) { LN_UNREACHABLE(); }
     virtual void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
+    bool isMultisample() const override { return false; }
 
     //virtual const DX12Image* image() const override { return &m_image; }
 

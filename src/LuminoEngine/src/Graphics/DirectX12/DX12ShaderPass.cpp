@@ -49,6 +49,10 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
     m_layoutInfo.srvCount = createInfo.descriptorLayout->textureRegister.size();
     m_layoutInfo.samperRootParamIndex = -1;
     m_layoutInfo.samplerCount = createInfo.descriptorLayout->samplerRegister.size();
+    m_layoutInfo.cvbSizes.resize(m_layoutInfo.cbvCount);
+    for (int i = 0; i < m_layoutInfo.cbvCount; i++) {
+        m_layoutInfo.cvbSizes[i] = createInfo.descriptorLayout->uniformBufferRegister[i].size;
+    }
 
     if (createInfo.vsCode) {
         m_vsCode.assign(createInfo.vsCode, createInfo.vsCode + createInfo.vsCodeLen);

@@ -429,6 +429,7 @@ public:
 	virtual void readData(void* outData) { LN_UNREACHABLE(); }
     virtual void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
+    bool isMultisample() const override { return false; }
 
     virtual const VulkanImage* image() const override { return &m_image; }
 
@@ -464,7 +465,7 @@ public:
     const VulkanImage* multisampleColorBuffer() const { return m_multisampleColorBuffer.get(); }
 
     bool isSwapchainBackbuffer() const { return m_image->IsExternalManagement(); }
-    bool isMultisample() const { return m_multisampleColorBuffer != nullptr; }
+    bool isMultisample() const override { return m_multisampleColorBuffer != nullptr; }
     VkSampleCountFlagBits msaaSamples() const { return (isMultisample()) ? m_deviceContext->msaaSamples() : VK_SAMPLE_COUNT_1_BIT; }
     void setSwapchainImageAvailableSemaphoreRef(VkSemaphore* semaphore) { m_swapchainImageAvailableSemaphoreRef = semaphore; }
     VkSemaphore swapchainImageAvailableSemaphore() const { return (m_swapchainImageAvailableSemaphoreRef) ? *m_swapchainImageAvailableSemaphoreRef : VK_NULL_HANDLE; }
@@ -540,6 +541,7 @@ public:
     const SizeI& size() const { return m_size; }
     const VulkanImage* image() const { return &m_image; }
 	VkFormat nativeFormat() const { return m_deviceContext->findDepthFormat(); }
+    bool isMultisample() const override { return false; }
 
 private:
     VulkanDevice* m_deviceContext;

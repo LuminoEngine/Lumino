@@ -28,7 +28,7 @@ void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
         if (DX12UniformBuffer* buffer = static_cast<DX12UniformBuffer*>(view.buffer)) {
             D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
             desc.BufferLocation = buffer->dxResource()->GetGPUVirtualAddress() + view.offset;
-            desc.SizeInBytes = buffer->size() - view.offset;
+            desc.SizeInBytes = DX12Helper::alignUp(layout.cvbSizes[i]);
             dxDevice->CreateConstantBufferView(&desc, m_descriptorHandles[DescriptorType_UniformBuffer].cpuHandles[i]);
         }
         else {

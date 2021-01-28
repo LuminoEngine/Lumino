@@ -9,6 +9,7 @@ struct DX12ShaderPassLayoutInfo
 {
     int8_t cbvRootParamIndex;
     int8_t cbvCount;            // UniformBuffer
+    std::vector<int32_t> cvbSizes;
     int8_t srvRootParamIndex;
     int8_t srvCount;            // Texture
     int8_t samperRootParamIndex;

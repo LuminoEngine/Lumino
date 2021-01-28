@@ -84,6 +84,98 @@ const char* DX12Helper::LNVertexElementUsageToSemanticName(VertexElementUsage va
 	return s_vertexElementUsageConversionTable[(int)value].dxValue.c_str();
 }
 
+D3D12_BLEND DX12Helper::LNBlendFactorToDX12Blend(BlendFactor value)
+{
+    static const std::pair<BlendFactor, D3D12_BLEND> table[] = {
+        { BlendFactor::Zero, D3D12_BLEND_ZERO },
+        { BlendFactor::One, D3D12_BLEND_ONE },
+        { BlendFactor::SourceColor, D3D12_BLEND_SRC_COLOR },
+        { BlendFactor::InverseSourceColor, D3D12_BLEND_INV_SRC_COLOR },
+        { BlendFactor::SourceAlpha, D3D12_BLEND_SRC_ALPHA },
+        { BlendFactor::InverseSourceAlpha, D3D12_BLEND_INV_SRC_ALPHA },
+        { BlendFactor::DestinationColor, D3D12_BLEND_DEST_COLOR },
+        { BlendFactor::InverseDestinationColor, D3D12_BLEND_INV_DEST_COLOR },
+        { BlendFactor::DestinationAlpha, D3D12_BLEND_DEST_ALPHA },
+        { BlendFactor::InverseDestinationAlpha, D3D12_BLEND_INV_DEST_ALPHA },
+    };
+    assert(table[(int)value].first == value);
+    return table[(int)value].second;
+}
+
+D3D12_BLEND_OP DX12Helper::LNBlendOpToDX12Blend(BlendOp value)
+{
+    static const std::pair<BlendOp, D3D12_BLEND_OP> table[] = {
+        { BlendOp::Add, D3D12_BLEND_OP_ADD },
+        { BlendOp::Subtract, D3D12_BLEND_OP_SUBTRACT },
+        { BlendOp::ReverseSubtract, D3D12_BLEND_OP_REV_SUBTRACT },
+        { BlendOp::Min, D3D12_BLEND_OP_MIN },
+        { BlendOp::Max, D3D12_BLEND_OP_MAX },
+    };
+    assert(table[(int)value].first == value);
+    return table[(int)value].second;
+}
+
+D3D12_FILL_MODE DX12Helper::LNFillModeToDX12FillMode(FillMode value)
+{
+    static const std::pair<FillMode, D3D12_FILL_MODE> table[] = {
+        { FillMode::Solid, D3D12_FILL_MODE_SOLID },
+        { FillMode::Wireframe, D3D12_FILL_MODE_WIREFRAME },
+    };
+    assert(table[(int)value].first == value);
+    return table[(int)value].second;
+}
+
+D3D12_CULL_MODE DX12Helper::LNCullModeToDX12CullMode(CullMode value)
+{
+    static const std::pair<CullMode, D3D12_CULL_MODE> table[] = {
+        { CullMode::None, D3D12_CULL_MODE_NONE },
+        { CullMode::Front, D3D12_CULL_MODE_FRONT },
+        { CullMode::Back, D3D12_CULL_MODE_BACK },
+    };
+    assert(table[(int)value].first == value);
+    return table[(int)value].second;
+}
+
+D3D12_COMPARISON_FUNC DX12Helper::LNComparisonFuncToDX12ComparisonFunc(ComparisonFunc value)
+{
+    static const std::pair<ComparisonFunc, D3D12_COMPARISON_FUNC> table[] = {
+        { ComparisonFunc::Never, D3D12_COMPARISON_FUNC_NEVER },
+        { ComparisonFunc::Less, D3D12_COMPARISON_FUNC_LESS },
+        { ComparisonFunc::LessEqual, D3D12_COMPARISON_FUNC_LESS_EQUAL },
+        { ComparisonFunc::Greater, D3D12_COMPARISON_FUNC_GREATER },
+        { ComparisonFunc::GreaterEqual, D3D12_COMPARISON_FUNC_GREATER_EQUAL },
+        { ComparisonFunc::Equal, D3D12_COMPARISON_FUNC_EQUAL },
+        { ComparisonFunc::NotEqual, D3D12_COMPARISON_FUNC_NOT_EQUAL },
+        { ComparisonFunc::Always, D3D12_COMPARISON_FUNC_ALWAYS },
+    };
+    assert(table[(int)value].first == value);
+    return table[(int)value].second;
+}
+
+D3D12_STENCIL_OP DX12Helper::LNStencilOpToDX12StencilOp(StencilOp value)
+{
+    static const std::pair<StencilOp, D3D12_STENCIL_OP> table[] = {
+        { StencilOp::Keep, D3D12_STENCIL_OP_KEEP },
+        { StencilOp::Replace, D3D12_STENCIL_OP_REPLACE },
+    };
+    assert(table[(int)value].first == value);
+    return table[(int)value].second;
+}
+
+//D3D_PRIMITIVE_TOPOLOGY DX12Helper::LNPrimitiveTopologyToDX12PrimitiveTopology(PrimitiveTopology value)
+//{
+//    static const std::pair<PrimitiveTopology, D3D12_PRIMITIVE_TOPOLOGY_TYPE> table[] = {
+//        { PrimitiveTopology::TriangleList, D3D12_STENCIL_OP_KEEP },
+//        { PrimitiveTopology::TriangleStrip, D3D12_STENCIL_OP_KEEP },
+//        { PrimitiveTopology::TriangleFan, D3D12_STENCIL_OP_KEEP },
+//        { PrimitiveTopology::LineList, D3D12_STENCIL_OP_KEEP },
+//        { PrimitiveTopology::LineStrip, D3D12_STENCIL_OP_KEEP },
+//        { PrimitiveTopology::PointList, D3D12_STENCIL_OP_KEEP },
+//    };
+//    assert(table[(int)value].first == value);
+//    return table[(int)value].second;
+//}
+
 //==============================================================================
 // DX12DescriptorHeapAllocatorPage
 

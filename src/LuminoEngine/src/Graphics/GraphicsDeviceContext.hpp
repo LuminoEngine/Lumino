@@ -403,6 +403,10 @@ public:
 		return 0;
 	}
 
+	bool hasDepthBuffer() const { return m_depthBuffer != nullptr; }
+
+	bool isMultisample() const { return m_isMultisample; }
+
 	virtual void dispose();
 
 protected:
@@ -412,6 +416,7 @@ protected:
 	IGraphicsDevice* m_device = nullptr;
 	std::array<Ref<ITexture>, MaxMultiRenderTargets> m_renderTargets;
 	Ref<IDepthBuffer> m_depthBuffer;
+	bool m_isMultisample = false;
 
 	// TODO: init 用意した方がいい気がする
 	friend class IGraphicsDevice;
@@ -498,6 +503,9 @@ public:
 
 	bool mipmap() const { return m_mipmap; }
 
+	// RenderTarget のみ
+	virtual bool isMultisample() const = 0;
+
 protected:
 	ITexture();
 	virtual ~ITexture() = default;
@@ -515,6 +523,8 @@ class IDepthBuffer
 public:
 
 	virtual int format() const { return 0; }
+
+	virtual bool isMultisample() const = 0;
 
 protected:
 	IDepthBuffer();
