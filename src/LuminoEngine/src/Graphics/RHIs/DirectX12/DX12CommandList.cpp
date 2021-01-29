@@ -130,6 +130,7 @@ void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)
 
     // CreateRenderTargetView, ResourceBarrior
     {
+        m_currentRTVCount = renderTargetCount;
         if (renderTargetCount > 0) {
             DX12DescriptorHandles rtvHandles;
             if (!m_descriptorHeapAllocator_RTV->allocate(renderTargetCount, &rtvHandles)) {
@@ -182,6 +183,9 @@ void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)
 
             depthBuffer->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE);
         }
+        else {
+            m_currentDSVHandle.ptr = 0;
+        }
 
     }
 
@@ -196,24 +200,7 @@ void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)
     {
         const ClearFlags clearFlags = renderPass->clearFlags();
         const Color& color = renderPass->clearColor();
-
-        if (clearFlags & ClearFlags::Color) {
-            if (renderTargetCount > 0) {
-                float c[4] = { color.r, color.g, color.b, color.a };
-                for (int i = 0; i < renderTargetCount; i++) {
-                    m_dxCommandList->ClearRenderTargetView(m_currentRTVHandles[i], c, 0, nullptr);
-                }
-            }
-        }
-
-        if ((clearFlags & ClearFlags::Depth) || (clearFlags & ClearFlags::Stencil)) {
-            if (depthBuffer) {
-                D3D12_CLEAR_FLAGS flags =
-                    ((clearFlags & ClearFlags::Depth) ? D3D12_CLEAR_FLAG_DEPTH : (D3D12_CLEAR_FLAGS)0) |
-                    ((clearFlags & ClearFlags::Stencil) ? D3D12_CLEAR_FLAG_STENCIL : (D3D12_CLEAR_FLAGS)0);
-                m_dxCommandList->ClearDepthStencilView(m_currentDSVHandle, flags, renderPass->clearDepth(), renderPass->clearStencil(), 0, nullptr);
-            }
-        }
+        onClearBuffers(clearFlags, color, renderPass->clearDepth(), renderPass->clearStencil());
     }
 }
 
@@ -314,9 +301,25 @@ void DX12GraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z
     LN_NOTIMPLEMENTED();
 }
 
-void DX12GraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+void DX12GraphicsContext::onClearBuffers(ClearFlags clearFlags, const Color& color, float z, uint8_t stencil)
 {
-    LN_NOTIMPLEMENTED();
+    if (clearFlags & ClearFlags::Color) {
+        if (m_currentRTVCount > 0) {
+            float c[4] = { color.r, color.g, color.b, color.a };
+            for (int i = 0; i < m_currentRTVCount; i++) {
+                m_dxCommandList->ClearRenderTargetView(m_currentRTVHandles[i], c, 0, nullptr);
+            }
+        }
+    }
+
+    if ((clearFlags & ClearFlags::Depth) || (clearFlags & ClearFlags::Stencil)) {
+        if (m_currentDSVHandle.ptr) {
+            D3D12_CLEAR_FLAGS flags =
+                ((clearFlags & ClearFlags::Depth) ? D3D12_CLEAR_FLAG_DEPTH : (D3D12_CLEAR_FLAGS)0) |
+                ((clearFlags & ClearFlags::Stencil) ? D3D12_CLEAR_FLAG_STENCIL : (D3D12_CLEAR_FLAGS)0);
+            m_dxCommandList->ClearDepthStencilView(m_currentDSVHandle, flags, z, stencil, 0, nullptr);
+        }
+    }
 }
 
 void DX12GraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)

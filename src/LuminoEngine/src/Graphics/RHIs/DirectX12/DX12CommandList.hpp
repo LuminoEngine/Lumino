@@ -58,6 +58,7 @@ private:
     // 終わったら (というより次回開始時) 全てリセットするような、Shader 用の Allocator を再利用してみる。
     Ref<DX12DescriptorHeapAllocator> m_descriptorHeapAllocator_RTV;
     Ref<DX12DescriptorHeapAllocator> m_descriptorHeapAllocator_DSV;
+    int32_t m_currentRTVCount;
     std::array<D3D12_CPU_DESCRIPTOR_HANDLE, MaxMultiRenderTargets> m_currentRTVHandles;
     D3D12_CPU_DESCRIPTOR_HANDLE m_currentDSVHandle;
 };
