@@ -2483,15 +2483,15 @@ GraphicsResourceUsage VulkanVertexBuffer::usage() const
     return m_usage;
 }
 
-void* VulkanVertexBuffer::map()
-{
-    return m_buffer.map();
-}
-
-void VulkanVertexBuffer::unmap()
-{
-    m_buffer.unmap();
-}
+//void* VulkanVertexBuffer::map()
+//{
+//    return m_buffer.map();
+//}
+//
+//void VulkanVertexBuffer::unmap()
+//{
+//    m_buffer.unmap();
+//}
 
 //==============================================================================
 // VulkanIndexBuffer
@@ -2553,15 +2553,15 @@ GraphicsResourceUsage VulkanIndexBuffer::usage() const
     return m_usage;
 }
 
-void* VulkanIndexBuffer::map()
-{
-    return m_buffer.map();
-}
-
-void VulkanIndexBuffer::unmap()
-{
-    m_buffer.unmap();
-}
+//void* VulkanIndexBuffer::map()
+//{
+//    return m_buffer.map();
+//}
+//
+//void VulkanIndexBuffer::unmap()
+//{
+//    m_buffer.unmap();
+//}
 
 //==============================================================================
 // VulkanUniformBuffer

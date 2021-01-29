@@ -37,6 +37,7 @@ public:
     bool endSingleTimeCommandList(ID3D12GraphicsCommandList* commandList);
     UINT sampleCount() const { return m_sampleCount; }
     const Ref<DX12SingleFrameAllocatorPageManager>& uploadBufferAllocatorManager() const { return m_uploadBufferAllocatorManager; }
+    ID3DBlob* generateMipMapsShader() const { return m_generateMipMapsShader.Get(); }
 
 protected:
     INativeGraphicsInterface* getNativeInterface() const override;
@@ -77,6 +78,7 @@ public: // TODO:
     HANDLE m_singleTimeCommandListEvent;
 
     Ref<DX12SingleFrameAllocatorPageManager> m_uploadBufferAllocatorManager;
+    ComPtr<ID3DBlob> m_generateMipMapsShader;
 };
 
 class DX12Framebuffer2;
@@ -132,24 +134,6 @@ protected:
     void* m_mappedBuffer;
 };
 
-class DX12Texture
-    : public ITexture
-{
-public:
-    DX12Texture()
-        : m_currentState(D3D12_RESOURCE_STATE_COMMON)
-    {}
-    //virtual const DX12Image* image() const = 0;
-    virtual void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
-    virtual void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
-   
-    virtual ID3D12Resource* dxResource() const = 0;
-    void resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
-
-protected:
-    D3D12_RESOURCE_STATES m_currentState;
-};
-
 class DX12SamplerState
 	: public ISamplerState
 {
@@ -158,9 +142,10 @@ public:
 	Result init(DX12Device* deviceContext, const SamplerStateData& desc);
 	virtual void dispose() override;
 
-protected:
-	DX12Device* m_deviceContext;
+    const D3D12_SAMPLER_DESC& samplerDesc() const { return m_samplerDesc; }
 
+protected:
+    D3D12_SAMPLER_DESC m_samplerDesc;
 };
 
 } // namespace detail

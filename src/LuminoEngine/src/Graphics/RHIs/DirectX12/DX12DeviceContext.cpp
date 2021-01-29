@@ -194,12 +194,33 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
         this, DX12SingleFrameAllocatorPageManager::DefaultPageSize,
         D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ);
 
+    {
+#ifdef _DEBUG
+        UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#else
+        UINT compileFlags = 0;
+#endif
+        ID3DBlob* errorBlob = nullptr;
+        HRESULT hr = D3DCompilerAPI::D3DCompileFromFile(L"C:/Proj/LN/Lumino/src/LuminoEngine/src/Graphics/Resource/GenerateMipMaps.hlsl",
+            nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+            "GenerateMipMaps", "cs_5_1",
+            compileFlags,
+            0, &m_generateMipMapsShader, &errorBlob);
+        if (FAILED(hr)) {
+            const char* err = (const char*)errorBlob->GetBufferPointer();
+            LN_ERROR("CreateEvent failed.");
+            return false;
+        }
+    }
+
 	return true;
 }
 
 void DX12Device::dispose()
 {
     IGraphicsDevice::dispose();
+
+    m_generateMipMapsShader.Reset();
 
     if (m_uploadBufferAllocatorManager) {
         m_uploadBufferAllocatorManager->clear();
@@ -279,6 +300,7 @@ void DX12Device::onGetCaps(GraphicsDeviceCaps * outCaps)
     outCaps->requestedShaderTriple.target = "hlsl";
     outCaps->requestedShaderTriple.version = 5;
     outCaps->requestedShaderTriple.option = "";
+    outCaps->uniformBufferOffsetAlignment = 256;
 }
 
 Ref<ISwapChain> DX12Device::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
@@ -733,43 +755,49 @@ void DX12UniformBuffer::unmap()
 }
 
 //==============================================================================
-// DX12Texture
-
-void DX12Texture::resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES state)
-{
-    if (m_currentState == state) return;
-
-    D3D12_RESOURCE_BARRIER barrier = {};
-    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-    barrier.Transition.pResource = dxResource();
-    barrier.Transition.StateBefore = m_currentState;
-    barrier.Transition.StateAfter = state;
-    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-    commandList->ResourceBarrier(1, &barrier);
-    m_currentState = state;
-}
-
-//==============================================================================
 // DX12SamplerState
 
 DX12SamplerState::DX12SamplerState()
-	: m_deviceContext(nullptr)
+	: m_samplerDesc()
 {
 }
 
 Result DX12SamplerState::init(DX12Device* deviceContext, const SamplerStateData& desc)
 {
 	LN_DCHECK(deviceContext);
-	m_deviceContext = deviceContext;
-    LN_NOTIMPLEMENTED();
+
+    if (desc.filter == TextureFilterMode::Point) {
+        m_samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+    }
+    else {
+        m_samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+    }
+
+    if (desc.address == TextureAddressMode::Repeat) {
+        m_samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+        m_samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+        m_samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+    }
+    else {
+        m_samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+        m_samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+        m_samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+    }
+    m_samplerDesc.MipLODBias = 0;
+    m_samplerDesc.MaxAnisotropy = desc.anisotropy ? 16 : 0;
+    m_samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+    m_samplerDesc.BorderColor[0] = 0.0f;
+    m_samplerDesc.BorderColor[1] = 0.0f;
+    m_samplerDesc.BorderColor[2] = 0.0f;
+    m_samplerDesc.BorderColor[3] = 0.0f;
+    m_samplerDesc.MinLOD = 0.0f;
+    m_samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
 
 	return true;
 }
 
 void DX12SamplerState::dispose()
 {
-    LN_NOTIMPLEMENTED();
 	ISamplerState::dispose();
 }
 

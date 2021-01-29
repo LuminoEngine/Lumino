@@ -228,16 +228,16 @@ GraphicsResourceUsage DX12VertexBuffer::usage() const
     return m_usage;
 }
 
-void* DX12VertexBuffer::map()
-{
-    LN_NOTIMPLEMENTED();
-    return 0;
-}
-
-void DX12VertexBuffer::unmap()
-{
-    LN_NOTIMPLEMENTED();
-}
+//void* DX12VertexBuffer::map()
+//{
+//    LN_NOTIMPLEMENTED();
+//    return 0;
+//}
+//
+//void DX12VertexBuffer::unmap()
+//{
+//    LN_NOTIMPLEMENTED();
+//}
 
 //==============================================================================
 // DX12IndexBuffer
@@ -330,16 +330,16 @@ GraphicsResourceUsage DX12IndexBuffer::usage() const
     return m_usage;
 }
 
-void* DX12IndexBuffer::map()
-{
-    LN_NOTIMPLEMENTED();
-    return 0;
-}
-
-void DX12IndexBuffer::unmap()
-{
-    LN_NOTIMPLEMENTED();
-}
+//void* DX12IndexBuffer::map()
+//{
+//    LN_NOTIMPLEMENTED();
+//    return 0;
+//}
+//
+//void DX12IndexBuffer::unmap()
+//{
+//    LN_NOTIMPLEMENTED();
+//}
 
 } // namespace detail
 } // namespace ln

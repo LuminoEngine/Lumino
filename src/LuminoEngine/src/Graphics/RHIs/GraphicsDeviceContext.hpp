@@ -472,8 +472,8 @@ public:
     virtual DeviceResourceType resourceType() const { return DeviceResourceType::VertexBuffer; }
 	virtual size_t getBytesSize() = 0;
 	virtual GraphicsResourceUsage usage() const = 0;
-	virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
-	virtual void unmap() = 0;
+	//virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
+	//virtual void unmap() = 0;
 
 protected:
 	IVertexBuffer();
@@ -488,8 +488,8 @@ public:
     virtual DeviceResourceType resourceType() const { return DeviceResourceType::IndexBuffer; }
 	virtual size_t getBytesSize() = 0;
 	virtual GraphicsResourceUsage usage() const = 0;
-	virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
-	virtual void unmap() = 0;
+	//virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
+	//virtual void unmap() = 0;
 
 protected:
 	IIndexBuffer();

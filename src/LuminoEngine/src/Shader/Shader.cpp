@@ -502,8 +502,14 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
         }
         const auto& info = m_descriptorLayout.m_samplers[i];
         SamplerState* sampler = descripter->samplerState(info.dataIndex);
-        if (!sampler)
+        if (!sampler) {
+            if (Texture* texture = descripter->texture(info.dataIndex)) {
+                sampler = texture->samplerState();
+            }
+        }
+        if (!sampler) {
             sampler = manager->defaultSamplerState();
+        }
 
         bool modified = false;
         auto& view = updateInfo.samplers[i];

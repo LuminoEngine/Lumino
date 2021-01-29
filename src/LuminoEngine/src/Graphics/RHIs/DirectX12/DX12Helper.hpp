@@ -16,9 +16,19 @@ class D3DCompilerAPI
 {
 public:
 	typedef HRESULT(WINAPI* PFN_D3DCreateBlob)(SIZE_T Size, ID3DBlob** ppBlob);
+	typedef HRESULT(WINAPI* PFN_D3DCompileFromFile)(LPCWSTR pFileName,
+			CONST D3D_SHADER_MACRO* pDefines,
+			ID3DInclude* pInclude,
+			LPCSTR pEntrypoint,
+			LPCSTR pTarget,
+			UINT Flags1,
+			UINT Flags2,
+			ID3DBlob** ppCode,
+			ID3DBlob** ppErrorMsgs);
 
 	static bool Initialize();
 	static PFN_D3DCreateBlob D3DCreateBlob;
+	static PFN_D3DCompileFromFile D3DCompileFromFile;
 	static HMODULE s_hD3DCompilerDLL;
 };
 

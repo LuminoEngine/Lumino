@@ -348,8 +348,8 @@ public:
     void dispose() override;
     size_t getBytesSize() override;
     GraphicsResourceUsage usage() const override;
-    void* map() override;
-    void unmap() override;
+    //void* map() override;
+    //void unmap() override;
 
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.nativeBuffer(); }
@@ -372,8 +372,8 @@ public:
     void dispose() override;
     size_t getBytesSize() override;
     GraphicsResourceUsage usage() const override;
-    void* map() override;
-    void unmap() override;
+    //void* map() override;
+    //void unmap() override;
 
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.nativeBuffer(); }

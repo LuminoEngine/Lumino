@@ -34,8 +34,8 @@ public:
 	void dispose() override;
 	size_t getBytesSize() override;
 	GraphicsResourceUsage usage() const override;
-	void* map() override;
-	void unmap() override;
+	//void* map() override;
+	//void unmap() override;
 
 	const RHIPtr<DX12Buffer>& buffer() const { return m_buffer; }
 	ID3D12Resource* dxResource() const { return m_buffer->dxResource(); }
@@ -57,8 +57,8 @@ public:
 	void dispose() override;
 	size_t getBytesSize() override;
 	GraphicsResourceUsage usage() const override;
-	void* map() override;
-	void unmap() override;
+	//void* map() override;
+	//void unmap() override;
 
 	const RHIPtr<DX12Buffer>& buffer() const { return m_buffer; }
 	ID3D12Resource* dxResource() const { return m_buffer->dxResource(); }

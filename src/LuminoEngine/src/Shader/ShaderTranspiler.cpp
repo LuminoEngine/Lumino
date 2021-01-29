@@ -647,6 +647,11 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
                 item.stageFlags = stageFlags;
                 item.binding = -1;
                 descriptorLayout.textureRegister.push_back(std::move(item));
+
+                // DX12 用の対応。CombinedSamper の場合は t レジスタに対応する s レジスタに SamperState を設定 `しなければならない`
+                if (type->getSampler().isCombined()) {
+                    descriptorLayout.samplerRegister.push_back(std::move(item));
+                }
             }
             else if (info.type == ShaderUniformType_SamplerState) {
                 DescriptorLayoutItem item;

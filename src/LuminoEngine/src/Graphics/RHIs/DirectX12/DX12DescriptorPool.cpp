@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "DX12DeviceContext.hpp"
+#include "DX12Texture.hpp"
 #include "DX12ShaderPass.hpp"
 #include "DX12CommandList.hpp"
 #include "DX12DescriptorPool.hpp"
@@ -38,12 +39,42 @@ void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
 
     // Texture (`t` register)
     for (int i = 0; i < layout.srvCount; i++) {
-        LN_NOTIMPLEMENTED();
+        const ShaderDescriptorCombinedSampler& view = data.textures[i];
+        if (DX12Texture* texture = static_cast<DX12Texture*>(view.texture)) {
+            D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
+            desc.Format = texture->dxFormat();
+            desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+            desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+            desc.Texture2D.MostDetailedMip = 0;
+            desc.Texture2D.MipLevels = texture->mipLevels();
+            desc.Texture2D.PlaneSlice = 0;
+            desc.Texture2D.ResourceMinLODClamp = 0.0f;
+            dxDevice->CreateShaderResourceView(texture->dxResource(), &desc, m_descriptorHandles[DescriptorType_Texture].cpuHandles[i]);
+        }
+        else {
+            LN_ERROR();
+        }
     }
 
     // SamplerState (`s` register)
-    for (int i = 0; i < layout.srvCount; i++) {
-        LN_NOTIMPLEMENTED();
+    for (int i = 0; i < layout.samplerCount; i++) {
+        const ShaderDescriptorCombinedSampler& view = data.samplers[i];
+        if (DX12SamplerState* stamplerState = static_cast<DX12SamplerState*>(view.stamplerState)) {
+            dxDevice->CreateSampler(&stamplerState->samplerDesc(), m_descriptorHandles[DescriptorType_SamplerState].cpuHandles[i]);
+        }
+        else {
+            // シェーダが s を要求しているのに C++ 側から設定が無い場合、
+            // texture が持っている SamplerState を使う。
+            // どうも CombindSampler (sampler2D) があると自動的に s レジスタが要求されるようだ。
+            // TODO: これで本当に CombinedSampler ができるのか調べる
+            const ShaderDescriptorCombinedSampler& view2 = data.textures[i];
+            if (DX12SamplerState* stamplerState = static_cast<DX12SamplerState*>(view2.stamplerState)) {
+                dxDevice->CreateSampler(&stamplerState->samplerDesc(), m_descriptorHandles[DescriptorType_SamplerState].cpuHandles[i]);
+            }
+            else {
+                LN_ERROR();
+            }
+        }
     }
 }
 
