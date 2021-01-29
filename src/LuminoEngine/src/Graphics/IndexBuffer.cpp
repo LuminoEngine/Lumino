@@ -27,7 +27,7 @@ IndexBuffer::IndexBuffer()
     , m_pool(GraphicsResourcePool::Managed)
     , m_primaryIndexCount(0)
     , m_buffer()
-    , m_rhiMappedBuffer(nullptr)
+    //, m_rhiMappedBuffer(nullptr)
     , m_mappedBuffer(nullptr)
     , m_initialUpdate(true)
     , m_modified(false)
@@ -53,7 +53,7 @@ void IndexBuffer::init(int indexCount, IndexBufferFormat format, const void* ini
 {
     IndexBuffer::init(indexCount, format, usage);
     if (initialData) {
-        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createIndexBuffer(m_usage, m_format, indexCount, initialData);
+        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createIndexBuffer(GraphicsResourceUsage::Static, m_format, indexCount, initialData);
         m_modified = false;
     }
 }
@@ -207,7 +207,7 @@ int IndexBuffer::index(int index)
 void IndexBuffer::setResourceUsage(GraphicsResourceUsage usage)
 {
     // Prohibit while direct locking.
-    if (LN_REQUIRE(!m_rhiMappedBuffer)) return;
+    //if (LN_REQUIRE(!m_rhiMappedBuffer)) return;
     if (m_usage != usage) {
         m_usage = usage;
         m_modified = true;
@@ -226,14 +226,15 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject(GraphicsContext* context, bo
 
     if (m_modified) {
         detail::IGraphicsDevice* device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
-        if (m_rhiMappedBuffer) {
-			m_rhiObject->unmap();
-            m_rhiMappedBuffer = nullptr;
-        } else {
+   //     if (m_rhiMappedBuffer) {
+			//m_rhiObject->unmap();
+   //         m_rhiMappedBuffer = nullptr;
+   //     } else 
+        {
 			detail::ICommandList* commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
             size_t requiredSize = bytesSize();
-            if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize || m_rhiObject->usage() != m_usage) {
-                m_rhiObject = device->createIndexBuffer(m_usage, m_format, size(), m_buffer.data());
+            if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize/* || m_rhiObject->usage() != m_usage*/) {
+                m_rhiObject = device->createIndexBuffer(GraphicsResourceUsage::Static, m_format, size(), m_buffer.data());
             } else {
                 context->interruptCurrentRenderPassFromResolveRHI();
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());

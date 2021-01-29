@@ -45,7 +45,7 @@ VertexBuffer::VertexBuffer()
     , m_pool(GraphicsResourcePool::Managed)
     , m_primarySize(0)
     , m_buffer()
-    , m_rhiMappedBuffer(nullptr)
+    //, m_rhiMappedBuffer(nullptr)
     , m_mappedBuffer(nullptr)
     , m_initialUpdate(true)
     , m_modified(false)
@@ -70,7 +70,7 @@ void VertexBuffer::init(size_t bufferSize, const void* initialData, GraphicsReso
 {
     VertexBuffer::init(bufferSize, usage);
     if (initialData) {
-        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createVertexBuffer(m_usage, bufferSize, initialData);
+        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createVertexBuffer(GraphicsResourceUsage::Static, bufferSize, initialData);
         m_modified = false;
     }
 }
@@ -153,7 +153,7 @@ void VertexBuffer::clear()
 void VertexBuffer::setResourceUsage(GraphicsResourceUsage usage)
 {
     // Prohibit while direct locking.
-    if (LN_REQUIRE(!m_rhiMappedBuffer)) return;
+    //if (LN_REQUIRE(!m_rhiMappedBuffer)) return;
     if (m_usage != usage) {
         m_usage = usage;
         m_modified = true;
@@ -172,14 +172,15 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject(GraphicsContext* context, 
 
     if (m_modified) {
 		auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
-        if (m_rhiMappedBuffer) {
-			m_rhiObject->unmap();
-            m_rhiMappedBuffer = nullptr;
-        } else {
+   //     if (m_rhiMappedBuffer) {
+			//m_rhiObject->unmap();
+   //         m_rhiMappedBuffer = nullptr;
+   //     } else
+        {
 			auto commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
             size_t requiredSize = size();
-            if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize || m_rhiObject->usage() != m_usage) {
-                m_rhiObject = device->createVertexBuffer(m_usage, m_buffer.size(), m_buffer.data());
+            if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize/* || m_rhiObject->usage() != m_usage*/) {
+                m_rhiObject = device->createVertexBuffer(GraphicsResourceUsage::Static, m_buffer.size(), m_buffer.data());
             } else {
                 context->interruptCurrentRenderPassFromResolveRHI();
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
