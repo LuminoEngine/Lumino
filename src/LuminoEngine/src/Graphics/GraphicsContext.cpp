@@ -13,7 +13,7 @@
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include "GraphicsManager.hpp"
-#include "GraphicsDeviceContext.hpp"
+#include "RHIs/GraphicsDeviceContext.hpp"
 
 namespace ln {
 

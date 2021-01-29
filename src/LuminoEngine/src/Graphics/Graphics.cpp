@@ -3,7 +3,7 @@
 #include "GraphicsManager.hpp"
 #include <LuminoEngine/Graphics/CommandQueue.hpp>
 #include <LuminoEngine/Graphics/Graphics.hpp>
-#include "GraphicsDeviceContext.hpp"
+#include "RHIs/GraphicsDeviceContext.hpp"
 
 namespace ln {
 

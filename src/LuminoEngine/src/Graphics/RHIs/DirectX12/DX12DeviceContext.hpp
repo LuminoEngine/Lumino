@@ -15,6 +15,7 @@ public:
 	{
 		PlatformWindow* mainWindow = nullptr;
         bool debugMode = false;
+        bool useBasicRenderDriver = true;
 	};
 
     static const int BackBufferCount = 3;
@@ -156,34 +157,6 @@ public:
 
 protected:
     D3D12_RESOURCE_STATES m_currentState;
-};
-
-class DX12Texture2D
-	: public DX12Texture
-{
-public:
-	DX12Texture2D();
-	Result init(DX12Device* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
-    virtual void dispose();
-	virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
-	virtual SizeI realSize() { return m_size; }
-    virtual TextureFormat getTextureFormat() const { return m_format; }
-	virtual GraphicsResourceUsage usage() const override { return m_usage; }
-	virtual void readData(void* outData) { LN_UNREACHABLE(); }
-    virtual void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
-	virtual void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
-    bool isMultisample() const override { return false; }
-
-    //virtual const DX12Image* image() const override { return &m_image; }
-
-    ID3D12Resource* dxResource() const override { LN_NOTIMPLEMENTED(); return nullptr; }
-
-private:
-	DX12Device* m_deviceContext;
-	GraphicsResourceUsage m_usage;
-	SizeI m_size;
-	TextureFormat m_format;
-	uint32_t m_mipLevels;
 };
 
 class DX12SamplerState

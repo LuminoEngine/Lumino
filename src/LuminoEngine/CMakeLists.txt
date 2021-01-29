@@ -62,6 +62,7 @@ file(GLOB LN_SOURCES_Audio_Backend src/Audio/Backend/*.cpp src/Audio/Backend/*.h
 file(GLOB LN_SOURCES_Shader ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/*.hpp src/Shader/*.cpp src/Shader/*.hpp src/Shader/*.md)
 
 file(GLOB LN_SOURCES_Graphics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
+file(GLOB LN_SOURCES_Graphics_RHIs ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/RHIs/*.hpp src/Graphics/RHIs/*.cpp src/Graphics/RHIs/*.hpp)
 
 set(LN_SOURCES_Font
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Font/Common.hpp
@@ -151,7 +152,7 @@ file(GLOB LN_SOURCES_Runtime
 
 if (LN_USE_VULKAN)
     if (WIN32)
-        file(GLOB LN_SOURCES_Graphics_Vulkan src/Graphics/Vulkan/*.cpp src/Graphics/Vulkan/*.hpp)
+        file(GLOB LN_SOURCES_Graphics_RHIs_Vulkan src/Graphics/RHIs/Vulkan/*.cpp src/Graphics/RHIs/Vulkan/*.hpp)
         list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_VULKAN=1)
     endif()
 endif()
@@ -159,7 +160,7 @@ endif()
 
 if (LN_EMSCRIPTEN)
 elseif (WIN32)
-    file(GLOB LN_SOURCES_Graphics_DirectX12 src/Graphics/DirectX12/*.cpp src/Graphics/DirectX12/*.hpp)
+    file(GLOB LN_SOURCES_Graphics_RHIs_DirectX12 src/Graphics/RHIs/DirectX12/*.cpp src/Graphics/RHIs/DirectX12/*.hpp)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
         ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
@@ -189,8 +190,9 @@ source_group("Audio\\Backend" FILES ${LN_SOURCES_Audio_Backend})
 source_group("Audio\\ARIs" FILES ${LN_SOURCES_Audio_ARIs})
 source_group("Shader" FILES ${LN_SOURCES_Shader})
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
-source_group("Graphics\\Vulkan" FILES ${LN_SOURCES_Graphics_Vulkan})
-source_group("Graphics\\DirectX12" FILES ${LN_SOURCES_Graphics_DirectX12})
+source_group("Graphics\\RHIs" FILES ${LN_SOURCES_Graphics_RHIs})
+source_group("Graphics\\RHIs\\Vulkan" FILES ${LN_SOURCES_Graphics_RHIs_Vulkan})
+source_group("Graphics\\RHIs\\DirectX12" FILES ${LN_SOURCES_Graphics_RHIs_DirectX12})
 source_group("Font" FILES ${LN_SOURCES_Font})
 source_group("Mesh" FILES ${LN_SOURCES_Mesh})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
@@ -234,8 +236,9 @@ set(LN_SOURCES
     ${LN_SOURCES_Audio_ARIs}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Graphics}
-    ${LN_SOURCES_Graphics_Vulkan}
-    ${LN_SOURCES_Graphics_DirectX12}
+    ${LN_SOURCES_Graphics_RHIs}
+    ${LN_SOURCES_Graphics_RHIs_Vulkan}
+    ${LN_SOURCES_Graphics_RHIs_DirectX12}
     ${LN_SOURCES_Font}
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Rendering}

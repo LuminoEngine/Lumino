@@ -36,9 +36,9 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
         // 常に RT,Depth,RenderPass をセットにして、RenderPass は生成後変更しないようにするとパフォーマンスがよくなる。
         auto renderPass = makeObject<RenderPass>();
 
-        for (int i = 0; i < 5; i++)
+		// 何回か回して同期の問題が無いことを見る
+        for (int i = 0; i < 10; i++)
         {
-
 			auto ctx = TestEnv::beginFrame();
             auto target = TestEnv::mainWindowSwapChain()->currentBackbuffer();
             renderPass->setRenderTarget(0, target);

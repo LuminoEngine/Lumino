@@ -8,7 +8,7 @@
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include "GraphicsManager.hpp"
-#include "GraphicsDeviceContext.hpp"
+#include "RHIs/GraphicsDeviceContext.hpp"
 #include "../Engine/LinearAllocator.hpp"
 #include "SingleFrameAllocator.hpp"
 
@@ -21,7 +21,7 @@ SwapChain::SwapChain()
     : m_manager(nullptr)
 	, m_rhiObject(nullptr)
     , m_backbuffers()
-    , m_imageIndex(0)
+    , m_imageIndex(-1)
 {
 }
 
@@ -56,8 +56,15 @@ void SwapChain::onChangeDevice(detail::IGraphicsDevice* device)
 {
 }
 
+Size SwapChain::backbufferSize() const
+{
+	const RenderTargetTexture* backbuffers = m_backbuffers[0];
+	return Size(backbuffers->width(), backbuffers->height());
+}
+
 RenderTargetTexture* SwapChain::currentBackbuffer() const
 {
+	if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
     return m_backbuffers[m_imageIndex];
 }
 
@@ -69,17 +76,19 @@ void SwapChain::resizeBackbuffer(int width, int height)
 
 GraphicsContext* SwapChain::beginFrame2()
 {
+	m_rhiObject->acquireNextImage(&m_imageIndex);
+
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, currentCommandList());
 	detail::GraphicsContextInternal::beginCommandRecoding(m_graphicsContext);
 	currentCommandList()->m_singleFrameUniformBufferAllocator->cleanup();
 	m_graphicsContext->resetState();
 
-	m_rhiObject->acquireNextImage(&m_imageIndex);
 	return m_graphicsContext;
 }
 
 RenderPass* SwapChain::currentRenderPass() const
 {
+	if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
 	return m_renderPasses[m_imageIndex];
 }
 
@@ -121,6 +130,7 @@ void SwapChain::resetRHIBackbuffers()
         commandList->init(detail::GraphicsResourceInternal::manager(this));
 		m_commandLists[i] = commandList;
 	}
+	m_imageIndex = -1;
 }
 
 void SwapChain::present(GraphicsContext* context)

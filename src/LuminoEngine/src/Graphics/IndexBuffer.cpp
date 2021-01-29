@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "GraphicsManager.hpp"
-#include "GraphicsDeviceContext.hpp"
+#include "RHIs/GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 

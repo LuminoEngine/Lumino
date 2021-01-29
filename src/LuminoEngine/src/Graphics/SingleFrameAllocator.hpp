@@ -2,7 +2,7 @@
 #pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Graphics/ConstantBuffer.hpp>
-#include "GraphicsDeviceContext.hpp"
+#include "RHIs/GraphicsDeviceContext.hpp"
 
 namespace ln {
 namespace detail {

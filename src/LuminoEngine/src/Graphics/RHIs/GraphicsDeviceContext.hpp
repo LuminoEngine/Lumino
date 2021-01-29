@@ -4,7 +4,8 @@
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Shader/Common.hpp>
-#include "../Shader/UnifiedShader.hpp"
+#include "../../Shader/UnifiedShader.hpp"
+#include "RHIBitmap.hpp"
 
 namespace ln {
 struct SizeI;
@@ -30,6 +31,7 @@ class IDescriptorPool;
 class IDescriptor;
 class NativeRenderPassCache;
 class NativePipelineCache;
+class RHIBitmap;
 
 enum class DeviceResourceType
 {
@@ -499,7 +501,7 @@ public:
 	virtual GraphicsResourceUsage usage() const = 0;
 
 	// データは up flow (上下反転)
-	virtual void readData(void* outData) = 0;
+	virtual RHIPtr<RHIBitmap> readData() = 0;
 
 	bool mipmap() const { return m_mipmap; }
 

@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
-#include "../../Graphics/GraphicsDeviceContext.hpp"
+#include "../../Graphics/RHIs/GraphicsDeviceContext.hpp"
 #include "../RenderStage.hpp"
 
 struct NVGcontext;

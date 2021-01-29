@@ -7,6 +7,39 @@
 
 namespace ln {
 namespace detail {
+    
+//==============================================================================
+// DX12Texture2D
+
+DX12Texture2D::DX12Texture2D()
+	: m_mipLevels(1)
+{
+}
+
+Result DX12Texture2D::init(DX12Device* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+{
+	LN_DCHECK(deviceContext);
+	m_deviceContext = deviceContext;
+	m_usage = usage;
+    m_size.width = width;
+    m_size.height = height;
+    m_format = requestFormat;
+
+    LN_NOTIMPLEMENTED();
+
+	return true;
+}
+
+void DX12Texture2D::dispose()
+{
+    LN_NOTIMPLEMENTED();
+    DX12Texture::dispose();
+}
+
+void DX12Texture2D::setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize)
+{
+    LN_NOTIMPLEMENTED();
+}
 
 //==============================================================================
 // DX12RenderTarget
@@ -50,7 +83,7 @@ void DX12RenderTarget::dispose()
     DX12Texture::dispose();
 }
 
-void DX12RenderTarget::readData(void* outData)
+RHIPtr<RHIBitmap> DX12RenderTarget::readData()
 {
     D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
     D3D12_RESOURCE_DESC textureDesc = m_dxRenderTarget->GetDesc();
@@ -63,14 +96,14 @@ void DX12RenderTarget::readData(void* outData)
     size_t size2 = m_size.width * m_size.height * DX12Helper::getFormatSize(m_dxFormat);//footprint.Footprint.RowPitch * footprint.Footprint.Height;
     DX12Buffer buffer;
     if (!buffer.init(m_deviceContext, size, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_STATE_COPY_DEST)) {
-        return;
+        return nullptr;
     }
 
 
 
     ID3D12GraphicsCommandList* commandList = m_deviceContext->beginSingleTimeCommandList();
     if (!commandList) {
-        return;
+        return nullptr;
     }
 
     D3D12_TEXTURE_COPY_LOCATION src, dst;
@@ -93,19 +126,38 @@ void DX12RenderTarget::readData(void* outData)
     resourceBarrior(commandList, D3D12_RESOURCE_STATE_GENERIC_READ);
 
     if (!m_deviceContext->endSingleTimeCommandList(commandList)) {
-        return;
+        return nullptr;
     }
 
     const void* data = buffer.map();
 
-    auto w = footprint.Footprint.RowPitch / 4;
-    auto bitmap = makeObject<Bitmap2D>(w, m_size.height, PixelFormat::RGBA8, data);
-    bitmap->save(u"test2.png");
+
+    // width が 160 だと 192 に Alignment されることがあった。
+    // 余分は切り捨てて返す。
+    {
+        auto bitmap1 = makeRHIRef<RHIBitmap>();
+        if (!bitmap1->init(4, footprint.Footprint.RowPitch / 4, footprint.Footprint.Height)) {
+            return nullptr;
+        }
+        bitmap1->copyRaw(data, totalSize);
+
+        auto bitmap2 = makeRHIRef<RHIBitmap>();
+        if (!bitmap2->init(4, m_size.width, m_size.height)) {
+            return nullptr;
+        }
+        bitmap2->blit(bitmap1.get());
+
+        return bitmap2;
+    }
+
+
+    //auto bitmap = makeObject<Bitmap2D>(w, m_size.height, PixelFormat::RGBA8, data);
+    //bitmap->save(u"test2.png");
 
 
 
-    memcpy(outData, data, size2);
-    buffer.unmap();
+    //memcpy(outData, data, size2);
+    //buffer.unmap();
 }
 
 //==============================================================================

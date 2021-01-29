@@ -15,7 +15,7 @@
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
 #include "../Font/FontManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
-#include "../Graphics/GraphicsDeviceContext.hpp"
+#include "../Graphics/RHIs/GraphicsDeviceContext.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "../../../build/BuildCache/imgui/imgui.h"
 

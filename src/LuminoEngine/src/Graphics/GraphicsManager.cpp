@@ -9,10 +9,10 @@
 #include "GraphicsManager.hpp"
 #include "RenderTargetTextureCache.hpp"
 #ifdef LN_USE_VULKAN
-#include "Vulkan/VulkanDeviceContext.hpp"
+#include "RHIs/Vulkan/VulkanDeviceContext.hpp"
 #endif
 #ifdef _WIN32
-#include "DirectX12/DX12DeviceContext.hpp"
+#include "RHIs/DirectX12/DX12DeviceContext.hpp"
 #endif
 #include "../Engine/LinearAllocator.hpp"
 #include "../Asset/AssetManager.hpp"

@@ -2915,8 +2915,10 @@ Result VulkanRenderTarget::reset(uint32_t width, uint32_t height, VkFormat forma
 	return true;
 }
 
-void VulkanRenderTarget::readData(void* outData)
+RHIPtr<RHIBitmap> VulkanRenderTarget::readData()
 {
+    RHIPtr<RHIBitmap> bitmap;
+
     // Flush
     //m_deviceContext->recodingCommandBuffer()->submit(imageAvailableSemaphore(), renderFinishedSemaphore());
 
@@ -3013,6 +3015,12 @@ void VulkanRenderTarget::readData(void* outData)
         }
     }
 
+    bitmap = makeRHIRef<RHIBitmap>();
+    if (!bitmap->init(4, width, height)) {
+        return nullptr;
+    }
+    void* outData = bitmap->writableData();
+
     // Blit
     {
         void* rawData = destBuffer.map();
@@ -3060,6 +3068,7 @@ void VulkanRenderTarget::readData(void* outData)
 
 Exit:
     destBuffer.dispose();
+    return bitmap;
 }
 
 //==============================================================================

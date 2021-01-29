@@ -9,7 +9,7 @@
 #include <LuminoEngine/Graphics/ConstantBuffer.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Shader/ShaderDescriptor.hpp>
-#include "../Graphics/GraphicsDeviceContext.hpp"
+#include "../Graphics/RHIs/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "UnifiedShaderCompiler.hpp"
 #include "ShaderManager.hpp"

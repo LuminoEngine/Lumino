@@ -69,11 +69,19 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
             return false;
         }
 
-        //一番よさそうなものを採用したいので、 VRAM 量でソート
-        // ※ SystemMemory をチェックするのは NG. ソフトウェアドライバを採用してしまうことがある。
-        std::sort(
-            adapters.begin(), adapters.end(),
-            [](const Adapter& a, const Adapter& b) { return a.desc.DedicatedVideoMemory > b.desc.DedicatedVideoMemory; });
+        if (!settings.useBasicRenderDriver) {
+            //一番よさそうなものを採用したいので、 VRAM 量でソート
+            // ※ SystemMemory をチェックするのは NG. ソフトウェアドライバを採用してしまうことがある。
+            std::sort(
+                adapters.begin(), adapters.end(),
+                [](const Adapter& a, const Adapter& b) { return a.desc.DedicatedVideoMemory > b.desc.DedicatedVideoMemory; });
+        }
+        else {
+            std::sort(
+                adapters.begin(), adapters.end(),
+                [](const Adapter& a, const Adapter& b) { return a.desc.DedicatedVideoMemory < b.desc.DedicatedVideoMemory; });
+        }
+
 
         const Adapter* selected = nullptr;
         for (const auto& adapter : adapters) {
@@ -107,6 +115,18 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
         LN_LOG_INFO << indent << "DedicatedVideoMemory: " << selected->desc.DedicatedVideoMemory;
         LN_LOG_INFO << indent << "DedicatedSystemMemory: " << selected->desc.DedicatedSystemMemory;
         LN_LOG_INFO << indent << "SharedSystemMemory: " << selected->desc.SharedSystemMemory;
+
+        //{
+        //    D3D12_FEATURE_DATA_D3D12_OPTIONS data;
+        //    m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &data, sizeof(data));
+        //    printf("");
+        //}
+        //{
+        //    D3D12_FEATURE_DATA_SHADER_MODEL data2;
+        //    data2.HighestShaderModel = D3D_SHADER_MODEL_5_1;
+        //    HRESULT hr = m_device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &data2, sizeof(data2));
+        //    printf("");
+        //}
     }
 
     // Check MSAA Sample count
@@ -767,39 +787,6 @@ void DX12Texture::resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_
     barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     commandList->ResourceBarrier(1, &barrier);
     m_currentState = state;
-}
-
-//==============================================================================
-// DX12Texture2D
-
-DX12Texture2D::DX12Texture2D()
-	: m_mipLevels(1)
-{
-}
-
-Result DX12Texture2D::init(DX12Device* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
-{
-	LN_DCHECK(deviceContext);
-	m_deviceContext = deviceContext;
-	m_usage = usage;
-    m_size.width = width;
-    m_size.height = height;
-    m_format = requestFormat;
-
-    LN_NOTIMPLEMENTED();
-
-	return true;
-}
-
-void DX12Texture2D::dispose()
-{
-    LN_NOTIMPLEMENTED();
-    DX12Texture::dispose();
-}
-
-void DX12Texture2D::setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize)
-{
-    LN_NOTIMPLEMENTED();
 }
 
 //==============================================================================

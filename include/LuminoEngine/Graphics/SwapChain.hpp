@@ -36,6 +36,8 @@ class LN_API SwapChain
     , public IGraphicsResource
 {
 public:
+    Size backbufferSize() const;
+
     /** バックバッファを取得します。(返されるインスタンスはフレームごとに異なります。このインスタンスを保持しないでください) */
     RenderTargetTexture* currentBackbuffer() const;
 

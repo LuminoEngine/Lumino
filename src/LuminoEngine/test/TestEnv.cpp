@@ -11,7 +11,7 @@ void TestEnv::setup()
 {
     EngineFeature feature = EngineFeature::Experimental;//EngineFeature::Public; //
 
-	Logger::addStdErrAdapter();
+	//Logger::addStdErrAdapter();
 	EngineSettings::setMainWindowSize(160, 120);
 	//EngineSettings::setMainBackBufferSize(160, 120);
 	EngineSettings::setGraphicsAPI(GraphicsAPI::DirectX12);//GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
@@ -37,8 +37,8 @@ void TestEnv::setup()
         //Engine::mainDirectionalLight()->lookAt(Vector3(0, 0, 0));
     }
 
-	auto backbuffer = Engine::mainWindow()->swapChain()->currentBackbuffer();
-	depthBuffer = DepthBuffer::create(backbuffer->width(), backbuffer->height());
+	const auto backbufferSize = Engine::mainWindow()->swapChain()->backbufferSize();
+	depthBuffer = DepthBuffer::create(backbufferSize.width, backbufferSize.height);
 
 #ifdef LN_OS_WIN32
 	LuminoCLI = Path::combine(Path(ln::Environment::executablePath()).parent().parent().parent().parent(), u"tools", u"LuminoCLI", u"Debug", u"lumino-cli.exe");
