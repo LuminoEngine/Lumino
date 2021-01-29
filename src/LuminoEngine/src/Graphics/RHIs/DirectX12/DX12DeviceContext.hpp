@@ -1,12 +1,16 @@
 ﻿
 #pragma once
 #include "DX12Helper.hpp"
+#include "DX12SingleFrameAllocator.hpp"
 
 namespace ln {
 namespace detail {
 class DX12RenderTarget;
 class DX12GraphicsContext;
 
+// DX12すべきこととすべきでないこと
+// https://developer.nvidia.com/dx12-dos-and-donts
+//
 class DX12Device
 	: public IGraphicsDevice
 {
@@ -32,6 +36,7 @@ public:
     ID3D12GraphicsCommandList* beginSingleTimeCommandList();
     bool endSingleTimeCommandList(ID3D12GraphicsCommandList* commandList);
     UINT sampleCount() const { return m_sampleCount; }
+    const Ref<DX12SingleFrameAllocatorPageManager>& uploadBufferAllocatorManager() const { return m_uploadBufferAllocatorManager; }
 
 protected:
     INativeGraphicsInterface* getNativeInterface() const override;
@@ -70,6 +75,8 @@ public: // TODO:
     ComPtr<ID3D12GraphicsCommandList> m_singleTimeCommandList;
     ComPtr<ID3D12Fence> m_singleTimeCommandListFence;
     HANDLE m_singleTimeCommandListEvent;
+
+    Ref<DX12SingleFrameAllocatorPageManager> m_uploadBufferAllocatorManager;
 };
 
 class DX12Framebuffer2;
@@ -105,22 +112,6 @@ private:
     std::array<int32_t, MaxVertexStreams> m_strides;
 };
 
-class DX12IndexBuffer
-    : public IIndexBuffer
-{
-public:
-    DX12IndexBuffer();
-    Result init(DX12Device* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
-    void dispose() override;
-    size_t getBytesSize() override;
-    GraphicsResourceUsage usage() const override;
-    void* map() override;
-    void unmap() override;
-
-protected:
-    DX12Device* m_deviceContext;
-    GraphicsResourceUsage m_usage;
-};
 
 class DX12UniformBuffer
     : public IUniformBuffer

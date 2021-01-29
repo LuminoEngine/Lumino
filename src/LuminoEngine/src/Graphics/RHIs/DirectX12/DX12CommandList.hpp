@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "DX12Helper.hpp"
+#include "DX12SingleFrameAllocator.hpp"
 
 namespace ln {
 namespace detail {
@@ -61,6 +62,8 @@ private:
     int32_t m_currentRTVCount;
     std::array<D3D12_CPU_DESCRIPTOR_HANDLE, MaxMultiRenderTargets> m_currentRTVHandles;
     D3D12_CPU_DESCRIPTOR_HANDLE m_currentDSVHandle;
+
+    Ref<DX12SingleFrameAllocator> m_uploadBufferAllocator;
 };
 
 } // namespace detail

@@ -5,7 +5,6 @@
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Shader/Common.hpp>
 #include "../../Shader/UnifiedShader.hpp"
-#include "RHIBitmap.hpp"
 
 namespace ln {
 struct SizeI;
@@ -174,6 +173,26 @@ public:
 	static VertexElementUsage AttributeUsageToElementUsage(AttributeUsage value);
 	
 };
+
+
+class RHIObject
+{
+protected:
+	RHIObject() = default;
+
+private:
+	RHIObject(const RHIObject&) = delete;
+	void operator=(const RHIObject&) = delete;
+};
+
+template<class T>
+using RHIPtr = std::shared_ptr<T>;
+
+template<class T, class... TArgs>
+inline RHIPtr<T> makeRHIRef(TArgs&&... args)
+{
+	return std::make_shared<T>(std::forward<TArgs>(args)...);
+}
 
 class IGraphicsDeviceObject
     : public RefObject
@@ -710,4 +729,6 @@ private:
 
 } // namespace detail
 } // namespace ln
+
+#include "RHIBitmap.hpp"
 

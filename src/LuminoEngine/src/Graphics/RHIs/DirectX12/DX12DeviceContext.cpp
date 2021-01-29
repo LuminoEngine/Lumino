@@ -1,7 +1,6 @@
 ﻿
 #include "Internal.hpp"
 #include "DX12Helper.hpp"
-#include "DX12VertexBuffer.hpp"
 #include "DX12Texture.hpp"
 #include "DX12ShaderPass.hpp"
 #include "DX12DescriptorPool.hpp"
@@ -191,12 +190,21 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
         }
     }
 
+    m_uploadBufferAllocatorManager = makeRef<DX12SingleFrameAllocatorPageManager>(
+        this, DX12SingleFrameAllocatorPageManager::DefaultPageSize,
+        D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ);
+
 	return true;
 }
 
 void DX12Device::dispose()
 {
     IGraphicsDevice::dispose();
+
+    if (m_uploadBufferAllocatorManager) {
+        m_uploadBufferAllocatorManager->clear();
+        m_uploadBufferAllocatorManager = nullptr;
+    }
 
     if (m_singleTimeCommandListEvent) {
         ::CloseHandle(m_singleTimeCommandListEvent);
@@ -643,53 +651,6 @@ Result DX12VertexDeclaration::init(const VertexElement* elements, int elementsCo
 void DX12VertexDeclaration::dispose()
 {
     IVertexDeclaration::dispose();
-}
-
-//==============================================================================
-// DX12IndexBuffer
-
-DX12IndexBuffer::DX12IndexBuffer()
-    : m_usage(GraphicsResourceUsage::Static)
-{
-}
-
-Result DX12IndexBuffer::init(DX12Device* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
-{
-    LN_DCHECK(deviceContext);
-    m_deviceContext = deviceContext;
-    LN_NOTIMPLEMENTED();
-
-    m_usage = usage;
-
-    return true;
-}
-
-void DX12IndexBuffer::dispose()
-{
-    LN_NOTIMPLEMENTED();
-    IIndexBuffer::dispose();
-}
-
-size_t DX12IndexBuffer::getBytesSize()
-{
-    LN_NOTIMPLEMENTED();
-    return 0;
-}
-
-GraphicsResourceUsage DX12IndexBuffer::usage() const
-{
-    return m_usage;
-}
-
-void* DX12IndexBuffer::map()
-{
-    LN_NOTIMPLEMENTED();
-    return 0;
-}
-
-void DX12IndexBuffer::unmap()
-{
-    LN_NOTIMPLEMENTED();
 }
 
 //==============================================================================

@@ -213,7 +213,7 @@ Result DX12DepthBuffer::init(DX12Device* deviceContext, uint32_t width, uint32_t
         &props,
         D3D12_HEAP_FLAG_NONE,
         &desc,
-        D3D12_RESOURCE_STATE_DEPTH_WRITE,
+        m_currentState,
         &clearValue,
         IID_PPV_ARGS(&m_dxDepthBuffer)))) {
         LN_ERROR("CreateCommittedResource failed.");

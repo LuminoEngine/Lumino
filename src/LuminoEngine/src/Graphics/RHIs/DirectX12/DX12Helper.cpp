@@ -220,6 +220,36 @@ size_t DX12Helper::getFormatSize(DXGI_FORMAT value)
     return 0;
 }
 
+bool DX12Helper::getDrawPrimitiveData(PrimitiveTopology primitive, int primitiveCount, D3D_PRIMITIVE_TOPOLOGY* outTopology, UINT* outVertexCount)
+{
+    switch (primitive)
+    {
+    case ln::PrimitiveTopology::TriangleList:
+        *outTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+        *outVertexCount = primitiveCount * 3;
+        return true;
+    case ln::PrimitiveTopology::TriangleStrip:
+        *outTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+        *outVertexCount = 2 + primitiveCount;
+        return true;
+    case ln::PrimitiveTopology::LineList:
+        *outTopology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+        *outVertexCount = primitiveCount * 2;
+        return true;
+    case ln::PrimitiveTopology::LineStrip:
+        *outTopology = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
+        *outVertexCount = 1 + primitiveCount;
+        return true;
+    case ln::PrimitiveTopology::PointList:
+        *outTopology = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+        *outVertexCount = primitiveCount;
+        return true;
+    default:
+        LN_UNREACHABLE();
+        return false;
+    }
+}
+
 //==============================================================================
 // DX12DescriptorHeapAllocatorPage
 

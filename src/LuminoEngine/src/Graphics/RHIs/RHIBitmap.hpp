@@ -1,17 +1,8 @@
 ﻿#pragma once
+#include "GraphicsDeviceContext.hpp"
 
 namespace ln {
 namespace detail {
-
-class RHIObject
-{
-protected:
-	RHIObject() = default;
-
-private:
-	RHIObject(const RHIObject&) = delete;
-    void operator=(const RHIObject&) = delete;
-};
 
 class RHIBitmap
 	: public RHIObject
@@ -34,15 +25,6 @@ private:
 	int32_t m_width;
 	int32_t m_height;
 };
-
-template<class T>
-using RHIPtr = std::shared_ptr<T>;
-
-template<class T, class... TArgs>
-inline RHIPtr<T> makeRHIRef(TArgs&&... args)
-{
-	return std::make_shared<T>(std::forward<TArgs>(args)...);
-}
 
 } // namespace detail
 } // namespace ln

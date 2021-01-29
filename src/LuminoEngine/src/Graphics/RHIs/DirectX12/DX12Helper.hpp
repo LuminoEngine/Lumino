@@ -25,6 +25,8 @@ public:
 class DX12Helper
 {
 public:
+	static const size_t Alignment = 256;
+
 	static DXGI_FORMAT LNTextureFormatToDXFormat(TextureFormat value);
 	static TextureFormat DXFormatToLNTextureFormat(DXGI_FORMAT value);
 	static DXGI_FORMAT LNVertexElementTypeToDXFormat(VertexElementType value);
@@ -38,10 +40,10 @@ public:
 	static D3D_PRIMITIVE_TOPOLOGY LNPrimitiveTopologyToDX12PrimitiveTopology(PrimitiveTopology value);
 
 	static size_t alignUpWithMask(size_t value, size_t mask) { return ((size_t)value + mask) & ~mask; }
-	static size_t alignUp(size_t value, size_t alignment = 256) { return alignUpWithMask(value, alignment - 1); }
+	static size_t alignUp(size_t value, size_t alignment = Alignment) { return alignUpWithMask(value, alignment - 1); }
 
 	static size_t getFormatSize(DXGI_FORMAT value);
-
+	static bool getDrawPrimitiveData(PrimitiveTopology primitive, int primitiveCount, D3D_PRIMITIVE_TOPOLOGY* outTopology, UINT* outVertexCount);
 
 	static const char* LNVertexElementUsageToSemanticName(VertexElementUsage value);
 

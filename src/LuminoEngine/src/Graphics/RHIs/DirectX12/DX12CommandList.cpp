@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "DX12DeviceContext.hpp"
-#include "DX12VertexBuffer.hpp"
+#include "DX12Buffers.hpp"
 #include "DX12ShaderPass.hpp"
 #include "DX12RenderPass.hpp"
 #include "DX12DescriptorPool.hpp"
@@ -64,6 +64,9 @@ bool DX12GraphicsContext::init(DX12Device* device)
     }
 
     m_state = State::Initial;
+
+    m_uploadBufferAllocator = makeRef<DX12SingleFrameAllocator>(m_device->uploadBufferAllocatorManager());
+
 	return true;
 }
 
@@ -262,13 +265,16 @@ void DX12GraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint
 
         // IndexBuffer
         if (state.primitive.indexBuffer) {
-            LN_NOTIMPLEMENTED();
-            //D3D12_INDEX_BUFFER_VIEW indexView;
-            //m_dxCommandList->IASetIndexBuffer(&indexView);
+            DX12IndexBuffer* indexBuffer = static_cast<DX12IndexBuffer*>(state.primitive.indexBuffer);
+            D3D12_INDEX_BUFFER_VIEW indexView;
+            indexView.BufferLocation = indexBuffer->dxResource()->GetGPUVirtualAddress();
+            indexView.SizeInBytes = indexBuffer->getBytesSize();
+            indexView.Format = indexBuffer->indexFormat();
+            m_dxCommandList->IASetIndexBuffer(&indexView);
         }
 
         // Descriptor
-        {
+        if (state.descriptor) {
             DX12Descriptor* descriptor = static_cast<DX12Descriptor*>(state.descriptor);
             descriptor->bind(this);
         }
@@ -286,9 +292,49 @@ void DX12GraphicsContext::onUnmapResource(IGraphicsRHIBuffer* resource)
     LN_NOTIMPLEMENTED();
 }
 
-void DX12GraphicsContext::onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length)
+void DX12GraphicsContext::onSetSubData(IGraphicsRHIBuffer* baseResource, size_t offset, const void* data, size_t length)
 {
-    LN_NOTIMPLEMENTED();
+    // UPLOAD Buffer を使った動的なリソース更新は D3D12HDR.cpp が参考になる。
+
+    DX12Buffer* buffer;
+    D3D12_RESOURCE_STATES afterStatus;
+    GraphicsResourceUsage usage;
+    switch (baseResource->resourceType())
+    {
+    case DeviceResourceType::VertexBuffer:
+        usage = static_cast<DX12VertexBuffer*>(baseResource)->usage();
+        if (LN_REQUIRE(usage == GraphicsResourceUsage::Static)) return;
+        buffer = static_cast<DX12VertexBuffer*>(baseResource)->buffer().get();
+        afterStatus = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+        break;
+    case DeviceResourceType::IndexBuffer:
+        usage = static_cast<DX12IndexBuffer*>(baseResource)->usage();
+        if (LN_REQUIRE(usage == GraphicsResourceUsage::Static)) return;
+        buffer = static_cast<DX12IndexBuffer*>(baseResource)->buffer().get();
+        afterStatus = D3D12_RESOURCE_STATE_INDEX_BUFFER;
+        break;
+    default:
+        LN_NOTIMPLEMENTED();
+        break;
+    }
+
+    DX12SingleFrameBufferView view = m_uploadBufferAllocator->allocate(length, DX12Helper::Alignment);
+    ID3D12Resource* uploadBuffer = view.buffer->dxResource();
+
+    D3D12_RANGE range;
+    range.Begin = view.offset;
+    range.End = view.offset + length;
+    void* mapped;
+    if (FAILED(uploadBuffer->Map(0, &range, &mapped))) {
+        LN_ERROR("Map failed.");
+        return;
+    }
+    memcpy(mapped, data, length);
+    uploadBuffer->Unmap(0, nullptr);
+
+    buffer->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_COPY_DEST);
+    m_dxCommandList->CopyBufferRegion(buffer->dxResource(), offset, uploadBuffer, view.offset, length);
+    buffer->resourceBarrior(m_dxCommandList.Get(), afterStatus);
 }
 
 void DX12GraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
@@ -326,30 +372,7 @@ void DX12GraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int start
 {
     D3D_PRIMITIVE_TOPOLOGY topology;
     UINT vertexCount;
-    switch (primitive)
-    {
-    case ln::PrimitiveTopology::TriangleList:
-        topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-        vertexCount = primitiveCount * 3;
-        break;
-    case ln::PrimitiveTopology::TriangleStrip:
-        topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-        vertexCount = 2 + primitiveCount;
-        break;
-    case ln::PrimitiveTopology::LineList:
-        topology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
-        vertexCount = primitiveCount * 2;
-        break;
-    case ln::PrimitiveTopology::LineStrip:
-        topology = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
-        vertexCount = 1 + primitiveCount;
-        break;
-    case ln::PrimitiveTopology::PointList:
-        topology = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
-        vertexCount = primitiveCount;
-        break;
-    default:
-        LN_UNREACHABLE();
+    if (!DX12Helper::getDrawPrimitiveData(primitive, primitiveCount, &topology, &vertexCount)) {
         return;
     }
 
@@ -359,7 +382,14 @@ void DX12GraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int start
 
 void DX12GraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset)
 {
-    LN_NOTIMPLEMENTED();
+    D3D_PRIMITIVE_TOPOLOGY topology;
+    UINT vertexCount;
+    if (!DX12Helper::getDrawPrimitiveData(primitive, primitiveCount, &topology, &vertexCount)) {
+        return;
+    }
+
+    m_dxCommandList->IASetPrimitiveTopology(topology);
+    m_dxCommandList->DrawIndexedInstanced(vertexCount, (instanceCount == 0) ? 1 : instanceCount, startIndex, vertexOffset, 0);
 }
 
 void DX12GraphicsContext::onDrawExtension(INativeGraphicsExtension* extension)
