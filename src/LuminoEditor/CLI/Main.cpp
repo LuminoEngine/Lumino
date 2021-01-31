@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 			//"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx",
 			//"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.fx",
 			//"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/BloomComposite.fx", "C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/BloomComposite.lcfx",
-			"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/nanovg.fx",
+			"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/CopyScreen.fx",
 
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimpleConstantBuffer.fx"

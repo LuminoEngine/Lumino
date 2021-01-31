@@ -1376,6 +1376,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
             ctx->drawPrimitive(0, 1);
 			ctx->endRenderPass();
+
         }
 
         // 次に renderTarget1 からバックバッファへ全体を描く

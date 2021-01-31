@@ -79,7 +79,7 @@ public:
     bool isMultisample() const override { return false; }
 
 protected:
-    DX12Device* m_deviceContext;
+    DX12Device* m_device;
     SizeI m_size;
     TextureFormat m_format;
     

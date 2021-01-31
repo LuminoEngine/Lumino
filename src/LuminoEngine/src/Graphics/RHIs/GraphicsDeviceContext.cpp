@@ -281,6 +281,15 @@ Ref<ISamplerState> IGraphicsDevice::createSamplerState(const SamplerStateData& d
 
 Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
 {
+	// Verification
+	{
+		if (LN_REQUIRE(createInfo.vsCode)) return nullptr;
+		if (LN_REQUIRE(createInfo.vsCodeLen > 0)) return nullptr;
+		if (LN_REQUIRE(createInfo.psCode)) return nullptr;
+		if (LN_REQUIRE(createInfo.psCodeLen > 0)) return nullptr;
+	}
+
+
 	diag->level = ShaderCompilationResultLevel::Success;
 	diag->message.clear();
 

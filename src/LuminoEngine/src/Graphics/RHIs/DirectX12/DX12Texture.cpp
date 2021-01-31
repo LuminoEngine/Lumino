@@ -330,7 +330,7 @@ bool DX12Texture2D::generateMips()
         heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
         heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         
-        dxDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap));
+        hr = dxDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap));
         if (FAILED(hr)) {
             LN_ERROR("CreateDescriptorHeap failed.");
             return false;
@@ -428,25 +428,66 @@ bool DX12Texture2D::generateMips()
 // DX12RenderTarget
 
 DX12RenderTarget::DX12RenderTarget()
-    : m_deviceContext(nullptr)
+    : m_device(nullptr)
 {
 }
 
-bool DX12RenderTarget::init(DX12Device* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
-    LN_DCHECK(deviceContext);
-    m_deviceContext = deviceContext;
+    m_device = device;
     m_size.width = width;
     m_size.height = height;
     m_format = requestFormat;
-    LN_NOTIMPLEMENTED();
+    m_currentState = D3D12_RESOURCE_STATE_GENERIC_READ;
+    m_dxFormat = DX12Helper::LNTextureFormatToDXFormat(m_format);
+    m_mipLevels = 1;
+
+    D3D12_HEAP_PROPERTIES props;
+    props.Type = D3D12_HEAP_TYPE_DEFAULT;
+    props.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+    props.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+    props.CreationNodeMask = device->creationNodeMask();
+    props.VisibleNodeMask = device->visibleNodeMask();
+
+    D3D12_RESOURCE_DESC desc;
+    desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+    desc.Alignment = 0;
+    desc.Width = m_size.width;
+    desc.Height = m_size.height;
+    desc.DepthOrArraySize = 1;
+    desc.MipLevels = m_mipLevels;
+    desc.Format = m_dxFormat;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+    desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+    D3D12_CLEAR_VALUE clearValue;
+    clearValue.Format = m_dxFormat;
+    clearValue.Color[0] = 1.0f;
+    clearValue.Color[1] = 1.0f;
+    clearValue.Color[2] = 1.0f;
+    clearValue.Color[3] = 1.0f;
+
+    ID3D12Device* dxDevice = m_device->device();
+    HRESULT hr = dxDevice->CreateCommittedResource(
+        &props,
+        D3D12_HEAP_FLAG_NONE,
+        &desc,
+        m_currentState,
+        &clearValue,
+        IID_PPV_ARGS(&m_dxResource));
+    if (FAILED(hr)) {
+        LN_ERROR("CreateCommittedResource failed.");
+        return false;
+    }
 
     return true;
 }
 
-bool DX12RenderTarget::init(DX12Device* deviceContext, const ComPtr<ID3D12Resource>& dxRenderTarget)
+bool DX12RenderTarget::init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderTarget)
 {
-    m_deviceContext = deviceContext;
+    m_device = device;
     m_dxResource = dxRenderTarget;
 
     D3D12_RESOURCE_DESC desc = m_dxResource->GetDesc();
@@ -471,20 +512,20 @@ RHIPtr<RHIBitmap> DX12RenderTarget::readData()
     D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
     D3D12_RESOURCE_DESC textureDesc = m_dxResource->GetDesc();
     UINT64 totalSize;
-    m_deviceContext->device()->GetCopyableFootprints(&textureDesc, 0, 1, 0, &footprint, nullptr, nullptr, &totalSize);
+    m_device->device()->GetCopyableFootprints(&textureDesc, 0, 1, 0, &footprint, nullptr, nullptr, &totalSize);
 
 
     // 読み取り用一時バッファ
     size_t size = totalSize;//m_size.width * m_size.height * DX12Helper::getFormatSize(m_dxFormat);
     size_t size2 = m_size.width * m_size.height * DX12Helper::getFormatSize(m_dxFormat);//footprint.Footprint.RowPitch * footprint.Footprint.Height;
     DX12Buffer buffer;
-    if (!buffer.init(m_deviceContext, size, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_STATE_COPY_DEST)) {
+    if (!buffer.init(m_device, size, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_STATE_COPY_DEST)) {
         return nullptr;
     }
 
 
 
-    ID3D12GraphicsCommandList* commandList = m_deviceContext->beginSingleTimeCommandList();
+    ID3D12GraphicsCommandList* commandList = m_device->beginSingleTimeCommandList();
     if (!commandList) {
         return nullptr;
     }
@@ -508,7 +549,7 @@ RHIPtr<RHIBitmap> DX12RenderTarget::readData()
     commandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
     resourceBarrior(commandList, D3D12_RESOURCE_STATE_GENERIC_READ);
 
-    if (!m_deviceContext->endSingleTimeCommandList(commandList)) {
+    if (!m_device->endSingleTimeCommandList(commandList)) {
         return nullptr;
     }
 

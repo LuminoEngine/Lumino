@@ -207,8 +207,21 @@ void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)
     }
 }
 
-void DX12GraphicsContext::onEndRenderPass(IRenderPass* renderPass)
+void DX12GraphicsContext::onEndRenderPass(IRenderPass* baseRenderPass)
 {
+    DX12RenderPass* renderPass = static_cast<DX12RenderPass*>(baseRenderPass);
+    DX12DepthBuffer* depthBuffer = renderPass->depthBuffer();
+
+    for (int i = 0; i < m_currentRTVCount; i++) {
+        DX12RenderTarget* renderTarget = renderPass->renderTarget(i);
+        renderTarget->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_GENERIC_READ);
+    }
+
+    if (depthBuffer) {
+        depthBuffer->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_DEPTH_READ);
+    }
+
+
     // TODO: Resolve MSAA
 }
 
