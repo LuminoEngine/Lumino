@@ -646,12 +646,14 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
                 item.name = info.name;
                 item.stageFlags = stageFlags;
                 item.binding = -1;
-                descriptorLayout.textureRegister.push_back(std::move(item));
 
                 // DX12 用の対応。CombinedSamper の場合は t レジスタに対応する s レジスタに SamperState を設定 `しなければならない`
                 if (type->getSampler().isCombined()) {
-                    descriptorLayout.samplerRegister.push_back(std::move(item));
+                    descriptorLayout.samplerRegister.push_back(item);
                 }
+
+                descriptorLayout.textureRegister.push_back(std::move(item));
+
             }
             else if (info.type == ShaderUniformType_SamplerState) {
                 DescriptorLayoutItem item;
@@ -853,15 +855,23 @@ std::vector<byte_t> ShaderCodeTranspiler::generateHlslByteCode() const
 #ifdef _WIN32
     std::vector<std::pair<std::string, std::string>> macroValues;
     std::vector<D3D_SHADER_MACRO> macros;
+    macroValues.reserve(m_definitions.size());
+    macros.reserve(m_definitions.size() + 1);
     for (const auto& text : m_definitions) {
         const size_t equal = text.find_first_of("=");
         if (equal != text.npos) {
             macroValues.push_back({ std::string(text.c_str(), equal), std::string(text.c_str() + equal + 1) });
-            macros.push_back({ macroValues.back().first.c_str(), macroValues.back().second.c_str() });
         }
         else {
             macroValues.push_back({ text, std::string() });
-            macros.push_back({ macroValues.back().first.c_str(), nullptr });
+        }
+    }
+    for (const auto& value : macroValues) {
+        if (value.second.empty()) {
+            macros.push_back({ value.first.c_str(), nullptr });
+        }
+        else {
+            macros.push_back({ value.first.c_str(), value.second.c_str() });
         }
     }
     if (!macros.empty()) {

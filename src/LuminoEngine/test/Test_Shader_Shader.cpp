@@ -208,6 +208,8 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 
 //------------------------------------------------------------------------------
 //## シェーダ側とホスト側で頂点レイアウトの過不足がある場合のテスト。必要な部分さえあれば描画は可能。
+// NOTE: このテストは実行不能になった。DirectX12 では、VertexLayout と VSStageInput が一致していないと PipelineState の作成に失敗する。
+#if 0
 TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("Shader/NotProvidedVertexAttribute-1.fx"));
@@ -238,3 +240,5 @@ TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
 	TestEnv::endFrame();
     ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-NotProvidedVertexAttribute-1.png"), cbb);
 }
+#endif
+
