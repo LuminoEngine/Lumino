@@ -138,16 +138,24 @@ TEST_F(Test_Shader_Shader, UniformBuffer_WorldMatrix)
     auto shd = ctx->allocateShaderDescriptor(shaderPass1);
 
 
-    struct Element
+    struct Element1
     {
         Matrix _World;
     };
-    Element bufferData;
-    bufferData._World = Matrix::makeTranslation(0.5, 0, 0);
+    struct Element2
+    {
+        Vector4 _Color;
+    };
+    Element1 bufferData1;
+    Element2 bufferData2;
+    bufferData1._World = Matrix::makeTranslation(0.5, 0, 0);
+    bufferData2._Color = Vector4(1, 0, 0, 1);
     //bufferData._World.transpose();
 
-    auto ubIndex = descriptorLayout1->findUniformBufferRegisterIndex(u"Element");
-    shd->setUniformBufferData(ubIndex, &bufferData, sizeof(bufferData));
+    auto ubIndex1 = descriptorLayout1->findUniformBufferRegisterIndex(u"Element1");
+    shd->setUniformBufferData(ubIndex1, &bufferData1, sizeof(bufferData1));
+    auto ubIndex2 = descriptorLayout1->findUniformBufferRegisterIndex(u"Element2");
+    shd->setUniformBufferData(ubIndex2, &bufferData2, sizeof(bufferData2));
 
     crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
     ctx->beginRenderPass(crp);

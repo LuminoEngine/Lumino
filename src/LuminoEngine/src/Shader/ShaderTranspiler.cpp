@@ -935,7 +935,7 @@ std::vector<byte_t> ShaderCodeTranspiler::generateHlslByteCode() const
 
     ID3DBlob* shaderCode = nullptr;
     ID3DBlob* error = nullptr;
-    UINT flags1 = D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;// D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR;
+    UINT flags1 = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;// D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR;
     UINT flags2 = 0;
     //printf("D3DCompile2 s\n");
     HRESULT hr = m_manager->D3DCompile2(

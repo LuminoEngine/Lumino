@@ -257,18 +257,19 @@ void RenderingManager::init(const Settings& settings)
 	}
 
 #define ROOT_PATH u"C:/Proj/LN/Lumino/src/LuminoEngine/"
-	m_builtinShaders[(int)BuiltinShader::FilmicPostEffect] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/FilmicPostEffect.fx");
+	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(ROOT_PATH u"src/Rendering/Resource/Sprite.fx");
+	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ShadowCaster.fx");
 #if 0	// テスト用
+	m_builtinShaders[(int)BuiltinShader::FilmicPostEffect] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/FilmicPostEffect.fx");
 	m_builtinShaders[(int)BuiltinShader::NanoVG] = Shader::create(ROOT_PATH u"src/Rendering/Resource/nanovg.fx");
 
 	m_builtinShaders[(int)BuiltinShader::CopyScreen] = Shader::create(ROOT_PATH u"src/Rendering/Resource/CopyScreen.fx");
-	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(ROOT_PATH u"src/Rendering/Resource/Sprite.fx");
 
 	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ClusteredShadingDefault.fx");
 	m_builtinShaders[(int)BuiltinShader::BlackShader] = Shader::create(ROOT_PATH u"src/Rendering/Resource/BlackShader.fx");
 
 	m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ForwardGBufferPrepass.fx");
-	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ShadowCaster.fx");
+	
 	m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/LuminosityHighPassShader.fx");
 	m_builtinShaders[(int)BuiltinShader::BloomComposite] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/BloomComposite.fx");
 	m_builtinShaders[(int)BuiltinShader::SSRRayTracing] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SSRRayTracing.fx");

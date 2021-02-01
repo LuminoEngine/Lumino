@@ -82,7 +82,8 @@ void* DX12Buffer::map()
 void DX12Buffer::unmap()
 {
     if (LN_REQUIRE(m_mapped)) return;
-    m_dxResource->Unmap(0, nullptr);
+    //m_dxResource->Unmap(0, nullptr);
+    m_mapped = false;
 }
 
 void DX12Buffer::resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState)

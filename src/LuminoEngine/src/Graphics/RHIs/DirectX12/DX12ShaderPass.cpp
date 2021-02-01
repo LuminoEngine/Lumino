@@ -208,7 +208,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
             m_layoutInfo.cbvRootParamIndex = i;
             i++;
         }
-
+        
         // 't' register
         if (m_layoutInfo.srvCount > 0) {
             ranges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;

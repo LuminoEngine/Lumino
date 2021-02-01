@@ -147,6 +147,16 @@ void DX12Descriptor::bind(DX12GraphicsContext* commandList)
 
     dxCommandList->SetDescriptorHeaps(m_heapCount, m_heaps.data());
 
+    for (int i = 0; i < m_heapCount; i++) {
+        if (m_heaps[i] == m_descriptorHandles[DescriptorType_UniformBuffer].descriptorHeap) {
+            dxCommandList->SetGraphicsRootDescriptorTable(i, m_descriptorHandles[DescriptorType_UniformBuffer].gpuHandles[0]);
+        }
+        else if (m_heaps[i] == m_descriptorHandles[DescriptorType_SamplerState].descriptorHeap) {
+            dxCommandList->SetGraphicsRootDescriptorTable(i, m_descriptorHandles[DescriptorType_SamplerState].gpuHandles[0]);
+        }
+    }
+#if 0
+
     // SetGraphicsRootDescriptorTable() の第1引数は D3D12_ROOT_PARAMETER のインデックス と対応する。
     // 第2引数は ID3D12DescriptorHeap のバッファ内にある Descriptor 配列の先頭アドレス。
     // b0, b1... や t0, t1.. など複数の register(Descriptor) を使っている場合、
@@ -167,6 +177,7 @@ void DX12Descriptor::bind(DX12GraphicsContext* commandList)
             layout.samperRootParamIndex,
             m_descriptorHandles[DescriptorType_SamplerState].gpuHandles[0]);    // 's' register
     }
+#endif
 }
 
 //==============================================================================

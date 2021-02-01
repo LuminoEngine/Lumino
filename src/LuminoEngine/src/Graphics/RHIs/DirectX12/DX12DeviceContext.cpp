@@ -727,7 +727,8 @@ bool DX12UniformBuffer::init(DX12Device* deviceContext, uint32_t size)
     }
 
     // Map したままで OK
-    if (FAILED(m_constantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&m_mappedBuffer)))) {
+    D3D12_RANGE readRange = { 0, 0 };
+    if (FAILED(m_constantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&m_mappedBuffer)))) {
         LN_ERROR("Map failed.");
         return false;
     }
@@ -747,11 +748,20 @@ void DX12UniformBuffer::dispose()
 
 void* DX12UniformBuffer::map()
 {
+    //if (LN_REQUIRE(!m_mappedBuffer)) return nullptr;
+    //D3D12_RANGE readRange = { 0, 0 };
+    //if (FAILED(m_constantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&m_mappedBuffer)))) {
+    //    LN_ERROR("Map failed.");
+    //    return false;
+    //}
     return m_mappedBuffer;
 }
 
 void DX12UniformBuffer::unmap()
 {
+    //if (LN_REQUIRE(m_mappedBuffer)) return;
+    //m_constantBuffer->Unmap(0, nullptr);
+    //m_mappedBuffer = nullptr;
 }
 
 //==============================================================================

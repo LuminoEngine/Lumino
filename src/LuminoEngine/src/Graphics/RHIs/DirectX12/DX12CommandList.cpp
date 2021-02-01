@@ -100,6 +100,8 @@ void DX12GraphicsContext::onRestoreExternalRenderState()
 
 void DX12GraphicsContext::onBeginCommandRecoding()
 {
+    m_uploadBufferAllocator->cleanup();
+
     // https://docs.microsoft.com/ja-jp/windows/win32/direct3d12/recording-command-lists-and-bundles
     // 基本的な使い方 (1フレーム内で複数のコマンドリストをマルチスレッドで構築するようなケースではない) の場合、
     // ID3D12CommandAllocator と ID3D12GraphicsCommandList はワンセットと考えてよい。
@@ -334,16 +336,18 @@ void DX12GraphicsContext::onSetSubData(IGraphicsRHIBuffer* baseResource, size_t 
     DX12SingleFrameBufferView view = m_uploadBufferAllocator->allocate(length, DX12Helper::Alignment);
     ID3D12Resource* uploadBuffer = view.buffer->dxResource();
 
-    D3D12_RANGE range;
-    range.Begin = view.offset;
-    range.End = view.offset + length;
+    D3D12_RANGE readRange = { 0, 0 };
+    //D3D12_RANGE range;
+    //range.Begin = view.offset;
+    //range.End = view.offset + length;
     void* mapped;
-    if (FAILED(uploadBuffer->Map(0, &range, &mapped))) {
+    if (FAILED(uploadBuffer->Map(0, &readRange, &mapped))) {
         LN_ERROR("Map failed.");
         return;
     }
-    memcpy(mapped, data, length);
-    uploadBuffer->Unmap(0, nullptr);
+    memcpy(static_cast<uint8_t*>(mapped) + view.offset, data, length);
+    D3D12_RANGE writtenRange = { view.offset, view.offset + length };
+    uploadBuffer->Unmap(0, &writtenRange);
 
     buffer->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_COPY_DEST);
     m_dxCommandList->CopyBufferRegion(buffer->dxResource(), offset, uploadBuffer, view.offset, length);
