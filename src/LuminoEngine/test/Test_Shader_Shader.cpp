@@ -113,6 +113,55 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
     ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-UniformBuffer-1.png"), cbb);
 }
 
+
+//------------------------------------------------------------------------------
+//## UniformBufferTest-WorldMatrix
+TEST_F(Test_Shader_Shader, UniformBuffer_WorldMatrix)
+{
+    auto shader1 = Shader::create(LN_ASSETFILE("Shader/UniformBufferTest-WorldMatrix.fx"));
+    auto descriptorLayout1 = shader1->descriptorLayout();
+    auto shaderPass1 = shader1->techniques()[0]->passes()[0];
+
+    auto vertexDecl1 = makeObject<VertexLayout>();
+    vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+
+    Vector3 v[] = {
+        { 0, 0.5, 0 },
+        { 0.5, -0.25, 0 },
+        { -0.5, -0.25, 0 },
+    };
+    auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+
+    auto ctx = TestEnv::beginFrame();
+    auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+    auto crp = TestEnv::renderPass();
+    auto shd = ctx->allocateShaderDescriptor(shaderPass1);
+
+
+    struct Element
+    {
+        Matrix _World;
+    };
+    Element bufferData;
+    bufferData._World = Matrix::makeTranslation(0.5, 0, 0);
+    //bufferData._World.transpose();
+
+    auto ubIndex = descriptorLayout1->findUniformBufferRegisterIndex(u"Element");
+    shd->setUniformBufferData(ubIndex, &bufferData, sizeof(bufferData));
+
+    crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+    ctx->beginRenderPass(crp);
+    ctx->setVertexLayout(vertexDecl1);
+    ctx->setVertexBuffer(0, vb1);
+    ctx->setShaderPass(shaderPass1);
+    ctx->setShaderDescriptor(shd);
+    ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+    ctx->drawPrimitive(0, 1);
+    ctx->endRenderPass();
+    TestEnv::endFrame();
+    ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-UniformBuffer_WorldMatrix-1.png"), cbb);
+}
+
 //------------------------------------------------------------------------------
 //## MultiTechMultiTexture
 TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
