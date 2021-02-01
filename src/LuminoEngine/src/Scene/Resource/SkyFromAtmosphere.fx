@@ -7,12 +7,12 @@ const float _SunSize = 0.04;
 const float _SunSizeConvergence = 5.0;
 
 #if 1
-const float EARTH_RADIUS = 6370997.0;//10.0
+#define EARTH_RADIUS 6370997.0//10.0
 const float PI = 3.14159;
 const float Kr = 0.0020;		// Rayleigh scattering constant
 const float Km = 0.0005;		// Mie scattering constant
 const float ESun = 1300.0;		// Sun brightness constant
-const float exposure = 0.04;//1.3;//0.08;//
+#define exposure 0.04//1.3;//0.08;//
 #else
 const float EARTH_RADIUS = 6370997.0;//10.0
 const float PI = 3.14159;
@@ -26,22 +26,22 @@ const float3 fWavelength = float3(0.650, 0.570, 0.475);
 float3 v3CameraPos;		// The camera's current position
 //const float fCameraHeight = 0.1;	// The camera's current height
 
-const float3 _Exposure = exposure;
+const float3 _Exposure = float3(exposure, exposure, exposure);
 const float3 _LightColor0 = float3(1, 1, 1);
 const float3 _GroundColor = float3(0.369, 0.349, 0.341);//float3(1, 1, 1);
 
 const float3 v3LightPos = normalize(float3(0, 0, 1));		// The direction vector to the light source
-const float fOuterRadius = EARTH_RADIUS * 1.025;						// The outer (atmosphere) radius
-const float fOuterRadius2 = fOuterRadius * fOuterRadius;	// fOuterRadius^2
-const float fInnerRadius = EARTH_RADIUS;							// The inner (planetary) radius
-const float fInnerRadius2 = fInnerRadius * fInnerRadius;	// fInnerRadius^2
-const float fKrESun = Kr * ESun;
-const float fKmESun = Km * ESun;
-const float fKr4PI = Kr * 4.0 * PI;
-const float fKm4PI = Km * 4.0 * PI;
-const float fScale = 1.0 / (fOuterRadius - fInnerRadius);			// 1 / (fOuterRadius - fInnerRadius)
-const float fScaleDepth = 0.25;		// The scale depth (i.e. the altitude at which the atmosphere's average density is found)
-const float fScaleOverScaleDepth = ((1.0 / (fOuterRadius - fInnerRadius)) / fScaleDepth);
+static const float fOuterRadius = EARTH_RADIUS * 1.025;						// The outer (atmosphere) radius
+static const float fOuterRadius2 = fOuterRadius * fOuterRadius;	// fOuterRadius^2
+static const float fInnerRadius = EARTH_RADIUS;							// The inner (planetary) radius
+static const float fInnerRadius2 = fInnerRadius * fInnerRadius;	// fInnerRadius^2
+static const float fKrESun = Kr * ESun;
+static const float fKmESun = Km * ESun;
+static const float fKr4PI = Kr * 4.0 * PI;
+static const float fKm4PI = Km * 4.0 * PI;
+static const float fScale = 1.0 / (fOuterRadius - fInnerRadius);			// 1 / (fOuterRadius - fInnerRadius)
+static const float fScaleDepth = 0.25;		// The scale depth (i.e. the altitude at which the atmosphere's average density is found)
+static const float fScaleOverScaleDepth = ((1.0 / (fOuterRadius - fInnerRadius)) / fScaleDepth);
 
 const int nSamples = 5;//2
 const float fSamples = 5.0;//2.0
@@ -199,8 +199,8 @@ VSOutput VS_Main(LN_VSInput v)
 	}
 
 	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
-	/* secondaryColor */ float3 FrontSecondaryColor.rgb = v3FrontColor * fKmESun;
-	/* primaryColor */ float3 FrontColor.rgb = v3FrontColor * (v3InvWavelength * fKrESun);
+	/* secondaryColor */ float3 FrontSecondaryColor = v3FrontColor * fKmESun;
+	/* primaryColor */ float3 FrontColor = v3FrontColor * (v3InvWavelength * fKrESun);
 	float3 v3Direction = -v3Ray;
 
 

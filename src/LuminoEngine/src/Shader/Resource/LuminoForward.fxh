@@ -83,19 +83,20 @@ LN_VSOutput_ClusteredForward LN_ProcessVertex_ClusteredForward(LN_VSInput input)
     return output;
 }
 
-
 void _LN_ProcessVertex_ClusteredForward(
     LN_VSInput input,
-    out float3 outWorldPos, out float3 outVertexPos, out float4 outvInLightPosition)
+    out float3 outVertexPos,
+    out float3 outWorldPos,
+    out float3 outViewPos,
+    out float4 outvInLightPosition)
 {
-    outVertexPos = input.Pos;
-    
     float4 worldPos = mul(float4(input.Pos, 1.0), ln_World);
-    outWorldPos = worldPos.xyz;
 
+    outVertexPos = input.Pos;
+    outWorldPos = worldPos.xyz;
+    outViewPos = mul(worldPos, ln_View).xyz;
     outvInLightPosition = mul(worldPos, ln_ViewProjection_Light0);
 }
-
 
 struct GlobalLightInfo
 {
@@ -114,6 +115,15 @@ struct LightInfo
     float2    spotAngles;
 };
 
+void _LN_ClearLightInfo(out LightInfo light)
+{
+    light.position = float3(0.0, 0.0, 0.0);
+    light.range = 0.0;
+    light.attenuation = 0.0;
+    light.color = float3(0.0, 0.0, 0.0);
+    light.direction = float3(0.0, 0.0, 0.0);
+    light.spotAngles = float2(0.0, 0.0);
+}
 
 
 GlobalLightInfo _LN_GetGlobalLightInfo(int index)
@@ -130,8 +140,11 @@ GlobalLightInfo _LN_GetGlobalLightInfo(int index)
     //info.groundColor = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(1.5, y) * s));
     //info.directionAndType = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(2.5, y) * s));
     
-    info.color = tex2D(ln_GlobalLightInfoTexture, (float2(0.0, y) * s));
-    info.groundColor = tex2D(ln_GlobalLightInfoTexture, (float2(1.5, y) * s));
+    float4 color = tex2D(ln_GlobalLightInfoTexture, (float2(0.0, y) * s));
+    float4 groundColor = tex2D(ln_GlobalLightInfoTexture, (float2(1.5, y) * s));
+
+    info.color = color.rgb * color.a;
+    info.groundColor = groundColor.rgb * groundColor.a;
     info.directionAndType = tex2D(ln_GlobalLightInfoTexture, (float2(2.5, y) * s));
     return info;
 }
@@ -168,7 +181,7 @@ LightInfo _LN_GetLightInfoClusterd(int index)
     light.position = posAndRange.xyz;
     light.range = posAndRange.w;
     light.attenuation = spotDirection.w;
-    light.color = color;
+    light.color = (color.rgb * color.a);
     light.direction = spotDirection.xyz;
     light.spotAngles = spotAngle.xy;
     
@@ -249,6 +262,7 @@ bool _LN_GetLocalLightInfo(_LN_LocalLightContext context, float index, out Light
         return true;
     }
     else {
+        _LN_ClearLightInfo(light);
         return false;
     }
 }

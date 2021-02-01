@@ -54,9 +54,16 @@ public:
 	void bind(DX12GraphicsContext* commandList);
 
 private:
+	enum HeapIndex
+	{
+		HeapIndex_CBV_SRV_UAV = 0,
+		HeapIndex_Sampler = 1,
+		HeapIndex_Count = 2,
+	};
+
 	DX12DescriptorPool* m_pool;
 	std::array<DX12DescriptorHandles, DescriptorType_Count> m_descriptorHandles;
-	std::array<ID3D12DescriptorHeap*, DescriptorType_Count> m_heaps;
+	std::array<ID3D12DescriptorHeap*, HeapIndex_Count> m_heaps;
 	int32_t m_heapCount;
 };
 
@@ -73,8 +80,7 @@ public:
 	IDescriptor* allocate() override;
 	DX12Device* device() const { return m_device; }
 	DX12ShaderPass* shaderPass() const { return m_shaderPass; }
-	const Ref<DX12DescriptorHeapAllocator>& descriptorHeapAllocator_CBV() const { return m_descriptorHeapAllocator_CBV; }
-	const Ref<DX12DescriptorHeapAllocator>& descriptorHeapAllocator_SRV() const { return m_descriptorHeapAllocator_SRV; }
+	const Ref<DX12DescriptorHeapAllocator>& descriptorHeapAllocator_CBV_SRV_UAV() const { return m_descriptorHeapAllocator_CBV_SRV_UAV; }
 	const Ref<DX12DescriptorHeapAllocator>& descriptorHeapAllocator_SAMPLER() const { return m_descriptorHeapAllocator_SAMPLER; }
 
 
@@ -86,12 +92,9 @@ private:
 	DX12Device* m_device;
 	DX12ShaderPass* m_shaderPass;
 
-	// NOTE: CBV(UniformBuffer) と SRV(Texture) の D3D12_DESCRIPTOR_HEAP_TYPE は同じものを使うのだが、
-	// Layout との対応関係をわかりやすくするため別の Allocator に分けてある。
-
-	Ref<DX12DescriptorHeapAllocator> m_descriptorHeapAllocator_CBV;
-	Ref<DX12DescriptorHeapAllocator> m_descriptorHeapAllocator_SRV;
-	Ref<DX12DescriptorHeapAllocator> m_descriptorHeapAllocator_SAMPLER;
+	// SetDescriptorHeaps() は、同一の Type である Heap を複数登録できない。必ずこの2つにする必要がある。
+	Ref<DX12DescriptorHeapAllocator> m_descriptorHeapAllocator_CBV_SRV_UAV;	// `b`, `t` register
+	Ref<DX12DescriptorHeapAllocator> m_descriptorHeapAllocator_SAMPLER;		// `s` register
 
 	std::vector<Ref<DX12Descriptor>> m_descriptors;
 	int32_t m_usedDescriptorCount;

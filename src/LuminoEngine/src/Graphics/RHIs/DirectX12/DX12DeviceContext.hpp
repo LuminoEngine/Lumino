@@ -19,7 +19,7 @@ public:
 	{
 		PlatformWindow* mainWindow = nullptr;
         bool debugMode = false;
-        bool useBasicRenderDriver = false;
+        bool useBasicRenderDriver = true;
 	};
 
     static const int BackBufferCount = 3;

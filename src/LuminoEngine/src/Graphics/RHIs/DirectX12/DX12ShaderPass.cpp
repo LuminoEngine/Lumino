@@ -25,12 +25,14 @@ static D3D12_SHADER_VISIBILITY getShaderVisibility(const DescriptorLayoutItem& i
 
 static D3D12_SHADER_VISIBILITY getShaderVisibility(const DescriptorLayout* layout, DescriptorType type)
 {
-    if (layout->isReferenceFromVertexStage(type))
-        return D3D12_SHADER_VISIBILITY_VERTEX;
-    else if (layout->isReferenceFromPixelStage(type))
-        return D3D12_SHADER_VISIBILITY_PIXEL;
-    else
+    bool vs = layout->isReferenceFromVertexStage(type);
+    bool ps = layout->isReferenceFromPixelStage(type);
+    if (vs && ps)
         return D3D12_SHADER_VISIBILITY_ALL;
+    else if (vs)
+        return D3D12_SHADER_VISIBILITY_VERTEX;
+    else
+        return D3D12_SHADER_VISIBILITY_PIXEL;
 }
 
 
@@ -263,8 +265,6 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
 #endif
 
     }
-
-    //LN_NOTIMPLEMENTED();
 
     {
         D3D12_DESCRIPTOR_HEAP_DESC desc = {};

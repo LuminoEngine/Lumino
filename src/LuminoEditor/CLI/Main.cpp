@@ -43,10 +43,10 @@ int main(int argc, char** argv)
 
             //"fxc", "Assets/LineWave.fx",
             //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ForwardGBufferPrepass.fx",
-			//"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx",
+			"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx", "-e", "D:/tmp/shader"
 			//"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.fx",
 			//"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/BloomComposite.fx", "C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/BloomComposite.lcfx",
-			"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/CopyScreen.fx",
+			//"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/CopyScreen.fx",
 
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimpleConstantBuffer.fx"

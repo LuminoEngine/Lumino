@@ -14,7 +14,8 @@ void _LN_ProcessVertex_NormalMap(
     out float3 outTangent, out float3 outBitangent)
 {
     const float3 objectTangent = input.tangent.xyz;
-    const float3 transformedTangent = ( ln_WorldView * float4( objectTangent, 0.0 ) ).xyz;
+    //const float3 transformedTangent = ( ln_WorldView * float4( objectTangent, 0.0 ) ).xyz;
+    const float3 transformedTangent = mul(float4(objectTangent, 0.0), ln_WorldView).xyz;
     const float3 tangent = normalize( transformedTangent );
     outTangent = tangent;
     outBitangent= normalize( cross( viewNormal, tangent) * input.tangent.w );
@@ -53,7 +54,7 @@ float3 LN_GetPixelNormalFromNormalMap(float2 texUV, float3 viewSpaceTangent, flo
     const float3 tangent = normalize(viewSpaceTangent);
     const float3 bitangent = normalize(viewSpaceBitangent);
     const float3 normal = normalize(viewSpaceNormal);
-    const float3 mapNormal = LN_UnpackNormal(tex2D(ln_NormalMap, texUV));
+    const float3 mapNormal = LN_UnpackNormal(tex2D(ln_NormalMap, texUV).rgb);
 
     const float3x3 TBN = float3x3(tangent, bitangent, normal);
     return mul(mapNormal, TBN);

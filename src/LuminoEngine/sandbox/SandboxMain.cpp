@@ -468,7 +468,7 @@ int main(int argc, char** argv)
 
 
     if (1) {
-		Sandbox_EmptyApp();
+		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_glTFSampleViewer();
         //Example_MainLoop();
@@ -477,7 +477,7 @@ int main(int argc, char** argv)
         //Example_Navigator();
         //Example_Shader();
 		//Example_SoundControl();
-        //Example_Sprite();
+        Example_Sprite();
         //Example_UIControls();
 		//Example_Tilemap();
         //Experiment_CharacterController();

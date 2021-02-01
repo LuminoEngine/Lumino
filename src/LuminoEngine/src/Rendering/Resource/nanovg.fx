@@ -117,7 +117,7 @@ float4 PSMain(PSInput input) : SV_TARGET
         float4 color = tex2D(tex, pt);
 
         if (texType == 1) color = float4(color.xyz*color.w,color.w);
-        if (texType == 2) color = float4(color.x);
+        if (texType == 2) color = float4(color.x, color.x, color.x, color.x);
         // Apply color tint and alpha.
         color *= innerCol;
         // Combine alpha
@@ -130,7 +130,7 @@ float4 PSMain(PSInput input) : SV_TARGET
         float4 color = tex2D(tex, input.ftcoord);
 
         if (texType == 1) color = float4(color.xyz*color.w,color.w);
-        if (texType == 2) color = float4(color.x);
+        if (texType == 2) color = float4(color.x, color.x, color.x, color.x);
         color *= scissor;
         result = color * innerCol;
     }

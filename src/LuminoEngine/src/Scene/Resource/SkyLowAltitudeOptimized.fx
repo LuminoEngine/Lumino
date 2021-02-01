@@ -55,12 +55,12 @@ const float3 totalRayleigh = float3( 0.0000001, 0.0000001, 0.0000001);// * (floa
 
 // mie stuff
 // K coefficient for the primaries
-const float v = 4.0;
-const float3 K = float3( 0.686, 0.678, 0.666 );
+static const float v = 4.0;
+static const float3 K = float3( 0.686, 0.678, 0.666 );
 //const float3 K = float3( 0.5, 0.5, 0.0 );
 		//'const float3 K = float3( 0.5, 0.5, 5.0 );
 // MieConst = pi * pow( ( 2.0 * pi ) / lambda, float3( v - 2.0 ) ) * K
-const float3 MieConst = pi * pow( ( 2.0 * pi ) / lambda, float3( v - 2.0 ) ) * K;
+static const float3 MieConst = pi * pow( ( 2.0 * pi ) / lambda, float3(v-2.0, v-2.0, v-2.0) ) * K;
 		//'const float3 MieConst = float3( 1.8399918514433978E14, 2.7798023919660528E14, 4.0790479543861094E14 );
 
 // earth shadow hack
@@ -84,7 +84,8 @@ VSOutput VS_Main(LN_VSInput v)
 	VSOutput o;
 
 	//float4 worldPosition = modelMatrix * float4( position, 1.0 );
-	float4 worldPosition = ln_World * float4( v.Pos, 1.0 );
+	//float4 worldPosition = ln_World * float4( v.Pos, 1.0 );
+	float4 worldPosition = mul(float4( v.Pos, 1.0 ), ln_World);
 	o.vWorldPosition = v.Pos.xyz;
 
 	//gl_Position = projectionMatrix * modelViewMatrix * float4( position, 1.0 );
@@ -182,8 +183,8 @@ float4 PS_Main(PSInput input) : SV_TARGET
 	float mPhase = hgPhase( cosTheta, mieDirectionalG );
 	float3 betaMTheta = input.vBetaM * mPhase;
 
-	float3 Lin = pow( input.vSunE * ( ( betaRTheta + betaMTheta ) / ( input.vBetaR + input.vBetaM ) ) * ( 1.0 - Fex ), float3( 1.5 ) );
-	Lin *= lerp( float3( 1.0 ), pow( input.vSunE * ( ( betaRTheta + betaMTheta ) / ( input.vBetaR + input.vBetaM ) ) * Fex, float3( 1.0 / 2.0 ) ), clamp( pow( 1.0 - dot( up, input.vSunDirection ), 5.0 ), 0.0, 1.0 ) );
+	float3 Lin = pow( input.vSunE * ( ( betaRTheta + betaMTheta ) / ( input.vBetaR + input.vBetaM ) ) * ( 1.0 - Fex ), float3( 1.5, 1.5, 1.5 ) );
+	Lin *= lerp( float3(1.0, 1.0, 1.0), pow( input.vSunE * ( ( betaRTheta + betaMTheta ) / ( input.vBetaR + input.vBetaM ) ) * Fex, float3(0.5, 0.5, 0.5) ), clamp( pow( 1.0 - dot( up, input.vSunDirection ), 5.0 ), 0.0, 1.0 ) );
 
 // この時点では K の色と同じ
 // でも、夕方、Gを増やすと、太陽の輪郭回りはKだが、外回りに逆色が広がる。
@@ -195,7 +196,7 @@ float4 PS_Main(PSInput input) : SV_TARGET
 	float theta = acos( direction.y ); // elevation --> y-axis, [-pi/2, pi/2]
 	float phi = atan2( direction.z, direction.x ); // azimuth --> x-axis [-pi/2, pi/2]
 	float2 uv = float2( phi, theta ) / float2( 2.0 * pi, pi ) + float2( 0.5, 0.0 );
-	float3 L0 = float3( 0.1 ) * Fex;
+	float3 L0 = float3(0.1, 0.1, 0.1) * Fex;
 
 // composition + solar disc
 	float sundisk = smoothstep( sunAngularDiameterCos, sunAngularDiameterCos + 0.00002, cosTheta );
@@ -209,7 +210,8 @@ float4 PS_Main(PSInput input) : SV_TARGET
 	float3 curr = Uncharted2Tonemap( ( log2( 2.0 / pow( luminance, 4.0 ) ) ) * texColor );
 	float3 color = curr * whiteScale;
 
-	float3 retColor = pow( color, float3( 1.0 / ( 1.2 + ( 1.2 * input.vSunfade ) ) ) );
+	float ac = 1.0 / ( 1.2 + ( 1.2 * input.vSunfade ) );
+	float3 retColor = pow( color, float3(ac, ac, ac) );
 
 	//gl_FragColor = float4( retColor, 1.0 );
 	return float4( retColor, 1.0 );

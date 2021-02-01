@@ -1,12 +1,7 @@
 
 #include <Lumino.fxh>
 
-LN_VSOutput_Common VS_ClusteredForward_Geometry(LN_VSInput input)
-{
-    return LN_ProcessVertex_Common(input);
-}
-
-float4 PS_Main(LN_PSInput_Common input) : SV_TARGET
+float4 PS_Main(LN_PSInput input) : SV_TARGET0
 {
     //return float4(1, 0, 0, 1);
     float4 color = tex2D(ln_MaterialTexture, input.UV) * input.Color;
@@ -25,6 +20,7 @@ struct LN_VSIInput
     float3    Normal            : NORMAL0;
     float2    UV                : TEXCOORD0;
     float4    Color            : COLOR0;
+    float4  tangent: TANGENT;
 
     float4 InstanceTransform0 : POSITION1;
     float4 InstanceTransform1 : POSITION2;
@@ -34,22 +30,25 @@ struct LN_VSIInput
     float4 InstanceColorScale: COLOR1;
 };
 
+/*
 struct LN_VSIOutput
 {
-    float4    svPos        : SV_POSITION;
-    float3    Normal        : NORMAL0;
+    //float3    Normal        : NORMAL0;
     float2    UV            : TEXCOORD0;
     float4    Color        : COLOR0;
+    float4    svPos        : SV_POSITION;
 };
+*/
 
 struct LN_PSIInput
 {
-    float3    Normal        : NORMAL0;
+    //float3    Normal        : NORMAL0;
     float2    UV            : TEXCOORD0;
     float4    Color        : COLOR0;
+    float4    svPos        : SV_POSITION;
 };
 
-LN_VSIOutput VSI_Main(LN_VSIInput input)
+LN_PSIInput VSI_Main(LN_VSIInput input)
 {
     //float4x4 worldMatrix = float4x4(
     //    input.InstanceTransform1.x, input.InstanceTransform2.x, input.InstanceTransform3.x, 0.0,
@@ -68,7 +67,7 @@ LN_VSIOutput VSI_Main(LN_VSIInput input)
     worldPos.xyz += input.InstanceTransform3.xyz;
 #endif
 
-    LN_VSIOutput o;
+    LN_PSIInput o;
     //o.svPos            = mul(worldPos, ln_View);
     //o.svPos            = mul(o.svPos, ln_Projection);
     //o.svPos            = mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
@@ -76,13 +75,13 @@ LN_VSIOutput VSI_Main(LN_VSIInput input)
     o.svPos            = mul(worldPos, ln_World);
     o.svPos            = mul(o.svPos, ln_View);
     o.svPos            = mul(o.svPos, ln_Projection);
-    o.Normal        = mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
+    //o.Normal        = mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
     o.UV            = input.UV + input.InstanceUVOffset.xy;
     o.Color            = input.Color * input.InstanceColorScale;
     return o;
 }
 
-float4 PSI_Main(LN_PSIInput input) : SV_TARGET
+float4 PSI_Main2(LN_PSIInput input) : SV_TARGET
 {
     //return float4(1, 0, 0, 1);
     float4 color = tex2D(ln_MaterialTexture, input.UV) * input.Color;
@@ -97,12 +96,12 @@ techniques:
     Forward_Geometry_UnLighting:
         passes:
         -   Pass0:
-                vertexShader: VS_ClusteredForward_Geometry
+                vertexShader: LN_VSMain
                 pixelShader: PS_Main
 
     Forward_Geometry_UnLighting_Instancing:
         passes:
         -   Pass0:
                 vertexShader: VSI_Main
-                pixelShader: PSI_Main
+                pixelShader: PSI_Main2
 @end

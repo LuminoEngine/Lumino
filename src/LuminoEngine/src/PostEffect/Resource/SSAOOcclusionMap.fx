@@ -28,7 +28,7 @@ cbuffer LocalBuffer
 
 const float SamplingRange = 0.7;
 
-const int SamplingCount = 16;
+static const int SamplingCount = 16;
 
 // 球内の一様分布
 const float3 SamplingOffsets[SamplingCount] = {

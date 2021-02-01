@@ -13,6 +13,7 @@ VSOutput VSMain(LN_VSInput vsi)
 {
     VSOutput output;
     LN_ProcessVertex(vsi, output);
+    output.viewPos = float3(0.0, 0.0, 0.0);
     return output;
 }
 

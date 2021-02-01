@@ -83,19 +83,50 @@ bool DX12Descriptor::allocateInternal()
     const DX12ShaderPassLayoutInfo& layout = m_pool->shaderPass()->layoutInfo();
 
     m_heapCount = 0;
-    if (layout.cbvCount > 0) {
-        if (!m_pool->descriptorHeapAllocator_CBV()->allocate(layout.cbvCount, &m_descriptorHandles[DescriptorType_UniformBuffer])) {
-            return false;
+    if (layout.cbvCount > 0 || layout.srvCount > 0) {
+        //DX12DescriptorHandles handles;
+        if (layout.cbvCount > 0) {
+            if (!m_pool->descriptorHeapAllocator_CBV_SRV_UAV()->allocate(layout.cbvCount, &m_descriptorHandles[DescriptorType_UniformBuffer])) {
+                return false;
+            }
         }
-        m_heaps[m_heapCount] = m_descriptorHandles[DescriptorType_UniformBuffer].descriptorHeap;
-        m_heapCount++;
-    }
-    if (layout.srvCount > 0) {
-        if (!m_pool->descriptorHeapAllocator_SRV()->allocate(layout.srvCount, &m_descriptorHandles[DescriptorType_Texture])) {
-            return false;
+        if (layout.srvCount > 0) {
+            if (!m_pool->descriptorHeapAllocator_CBV_SRV_UAV()->allocate(layout.srvCount, &m_descriptorHandles[DescriptorType_Texture])) {
+                return false;
+            }
         }
-        m_heaps[m_heapCount] = m_descriptorHandles[DescriptorType_Texture].descriptorHeap;
-        m_heapCount++;
+
+        if (layout.cbvCount > 0 && layout.srvCount > 0) {
+            // Allocator は (layout.cbvCount + layout.srvCount) の倍数で作ってあるので、必ず同じ Heap から Allocate されるはず
+            assert(m_descriptorHandles[DescriptorType_UniformBuffer].descriptorHeap == m_descriptorHandles[DescriptorType_Texture].descriptorHeap);
+        }
+        
+        // 'b' 't' の2つの register は同一の TYPE (D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) を使用する必要がある。
+        // 同じ TYPE を持つ複数の Heap は SetDescriptorHeaps() で設定することができないため、
+        // 'b' 't' は同じ Heap を使う必要がある。
+        // http://masafumi.cocolog-nifty.com/masafumis_diary/2016/01/id3d12graphicsc.html
+        if (layout.cbvCount > 0) {
+            m_heaps[m_heapCount] = m_descriptorHandles[DescriptorType_UniformBuffer].descriptorHeap;
+            m_heapCount++;
+        }
+        else if (layout.srvCount > 0) {
+            m_heaps[m_heapCount] = m_descriptorHandles[DescriptorType_Texture].descriptorHeap;
+            m_heapCount++;
+        }
+        else {
+            // 'b' 't' 両方未使用
+        }
+
+        //if (handles_CBV.descriptorHeap == handles_SRV.descriptorHeap) {
+        //    m_heaps[m_heapCount] = handles_CBV.descriptorHeap;
+        //    m_heapCount++;
+        //}
+        //else {
+        //    m_heaps[m_heapCount] = handles_CBV.descriptorHeap;
+        //    m_heapCount++;
+        //    m_heaps[m_heapCount] = handles_SRV.descriptorHeap;
+        //    m_heapCount++;
+        //}
     }
     if (layout.samplerCount > 0) {
         if (!m_pool->descriptorHeapAllocator_SAMPLER()->allocate(layout.samplerCount, &m_descriptorHandles[DescriptorType_SamplerState])) {
@@ -155,16 +186,9 @@ bool DX12DescriptorPool::init(DX12Device* device, DX12ShaderPass* shaderPass)
 
     const auto& layout = shaderPass->layoutInfo();
 
-    if (layout.cbvCount > 0) {
-        m_descriptorHeapAllocator_CBV = makeRef<DX12DescriptorHeapAllocator>();
-        if (!m_descriptorHeapAllocator_CBV->init(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, layout.cbvCount * AllocatableCountPerPage)) {
-            return false;
-        }
-    }
-
-    if (layout.srvCount > 0) {
-        m_descriptorHeapAllocator_SRV = makeRef<DX12DescriptorHeapAllocator>();
-        if (!m_descriptorHeapAllocator_SRV->init(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, layout.srvCount * AllocatableCountPerPage)) {
+    if (layout.cbvCount > 0 || layout.srvCount > 0) {
+        m_descriptorHeapAllocator_CBV_SRV_UAV = makeRef<DX12DescriptorHeapAllocator>();
+        if (!m_descriptorHeapAllocator_CBV_SRV_UAV->init(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, (layout.cbvCount + layout.srvCount) * AllocatableCountPerPage)) {
             return false;
         }
     }
@@ -181,13 +205,9 @@ bool DX12DescriptorPool::init(DX12Device* device, DX12ShaderPass* shaderPass)
 
 void DX12DescriptorPool::dispose()
 {
-    if (m_descriptorHeapAllocator_CBV) {
-        m_descriptorHeapAllocator_CBV->dispose();
-        m_descriptorHeapAllocator_CBV = nullptr;
-    }
-    if (m_descriptorHeapAllocator_SRV) {
-        m_descriptorHeapAllocator_SRV->dispose();
-        m_descriptorHeapAllocator_SRV = nullptr;
+    if (m_descriptorHeapAllocator_CBV_SRV_UAV) {
+        m_descriptorHeapAllocator_CBV_SRV_UAV->dispose();
+        m_descriptorHeapAllocator_CBV_SRV_UAV = nullptr;
     }
     if (m_descriptorHeapAllocator_SAMPLER) {
         m_descriptorHeapAllocator_SAMPLER->dispose();
@@ -197,11 +217,8 @@ void DX12DescriptorPool::dispose()
 
 void DX12DescriptorPool::reset()
 {
-    if (m_descriptorHeapAllocator_CBV) {
-        m_descriptorHeapAllocator_CBV->reset();
-    }
-    if (m_descriptorHeapAllocator_SRV) {
-        m_descriptorHeapAllocator_SRV->reset();
+    if (m_descriptorHeapAllocator_CBV_SRV_UAV) {
+        m_descriptorHeapAllocator_CBV_SRV_UAV->reset();
     }
     if (m_descriptorHeapAllocator_SAMPLER) {
         m_descriptorHeapAllocator_SAMPLER->reset();

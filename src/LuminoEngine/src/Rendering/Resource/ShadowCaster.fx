@@ -14,6 +14,7 @@ struct VSOutput
 
 struct PSInput
 {
+    float4    svPos        : SV_POSITION;
     float4    Pos            : TEXCOORD0;
 };
 

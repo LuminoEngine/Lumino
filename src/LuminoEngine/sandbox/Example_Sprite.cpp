@@ -9,6 +9,8 @@ class App_Example_Sprite : public Application
     {
 		auto texture = Texture2D::load(u"picture1.jpg");
 		auto sprite = Sprite::create(texture);
+        sprite->setSize(2, 1);
+        sprite->addInto();
     }
 
     virtual void onUpdate() override

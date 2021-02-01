@@ -25,12 +25,6 @@ float steprange(float gray, float factor, float vague)
 
 
 
-
-LN_VSOutput_Common VS_ClusteredForward_Geometry(LN_VSInput input)
-{
-    return LN_ProcessVertex_Common(input);
-}
-
 float4 PS_Main(LN_PSInput_Common input) : SV_TARGET
 {
     float gray = tex2D(_MaskTexture, input.UV).r;
@@ -119,7 +113,7 @@ techniques:
     Forward_Geometry_UnLighting:
         passes:
         -   Pass0:
-                vertexShader: VS_ClusteredForward_Geometry
+                vertexShader: LN_VSMain
                 pixelShader: PS_Main
 
     Forward_Geometry_UnLighting_Instancing:
