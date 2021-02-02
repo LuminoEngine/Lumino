@@ -37,6 +37,7 @@ class App_Experiment_SSR : public Application
         //groundMaterial->setNormalMap(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-normal-dx.jpg"));
         m_ground = PlaneMesh::create(groundMaterial);
         m_ground->setScale(4);
+        m_ground->addInto();
 
         auto wallMaterial = Material::create();
         //wallMaterial.bumpMap = textureLoader.load('assets/textures/brick_bump.jpg');
@@ -50,30 +51,35 @@ class App_Experiment_SSR : public Application
         m_walls[0]->setPosition(-20, 20, 0);
         m_walls[0]->setRotation(-Math::PI / 2, -Math::PI / 2, 0);
         m_walls[0]->setScale(4);
+        m_walls[0]->addInto();
 
         // X+
         m_walls[1] = PlaneMesh::create(wallMaterial);
         m_walls[1]->setPosition(20, 20, 0);
         m_walls[1]->setRotation(-Math::PI / 2, Math::PI / 2, 0);
         m_walls[1]->setScale(4);
+        m_walls[1]->addInto();
 
         // Z-
         m_walls[2] = PlaneMesh::create(wallMaterial);
         m_walls[2]->setPosition(0, 20, -20);
         m_walls[2]->setRotation(-Math::PI / 2, Math::PI, 0);
         m_walls[2]->setScale(4);
+        m_walls[2]->addInto();
 
         // Z+
         m_walls[3] = PlaneMesh::create(wallMaterial);
         m_walls[3]->setPosition(0, 20, 20);
         m_walls[3]->setRotation(-Math::PI / 2, 0, 0);
         m_walls[3]->setScale(4);
+        m_walls[3]->addInto();
 
         auto boxMaterial = Material::create();
         boxMaterial->setColor(Color::Green);
         m_box = BoxMesh::create();
         m_box->boxMeshComponent()->setMaterial(boxMaterial);
         m_box->setScale(5, 10, 5);
+        m_box->addInto();
 
         auto sphereMaterial = Material::create();
         sphereMaterial->setColor(Color::Red);
@@ -81,6 +87,7 @@ class App_Experiment_SSR : public Application
         //m_sphere->setScale(1.5);
         m_sphere->sphereMeshComponent()->setMaterial(sphereMaterial);
         m_sphere->setScale(5);
+        m_sphere->addInto();
 
 
         auto ssrPostEffect = makeObject<SSRPostEffect>();
