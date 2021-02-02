@@ -7,8 +7,8 @@
 
 // TODO:
 // https://veldrid.dev/articles/backend-differences.html
-const float ln_ClipSpaceNearZ = 0.0;    // DX,Metal,Vulkan.  OpenGL の場合は -1.0
-const float ln_ClipSpaceFarZ = 1.0;
+//const float ln_ClipSpaceNearZ = 0.0;    // DX,Metal,Vulkan.  OpenGL の場合は -1.0
+//const float ln_ClipSpaceFarZ = 1.0;
 
 //==============================================================================
 // Uniforms
@@ -46,16 +46,16 @@ VS_Output VS_Main(LN_VSInput input)
 
 //#define MAX_ITERATIONS 300
 //#define MAX_BINARY_SEARCH_ITERATIONS 64
-const float _Iterations = 50.0;                   // maximum ray iterations
-const float _BinarySearchIterations = 4.0;       // maximum binary search refinement iterations
+static const float _Iterations = 50.0;                   // maximum ray iterations
+static const float _BinarySearchIterations = 4.0;       // maximum binary search refinement iterations
 //float _Iterations;
 //float _BinarySearchIterations;
-const float _Thickness = 1.0;                    // Z size in camera space of a pixel in the depth buffer = _Thickness
-const float _MaxRayDistance = 20.0;               // maximum distance of a ray
-const float _EdgeDistance = 50.0;
-const float _EdgeExponent = 1.0;
-const float _FadeDistance = 10.0;
-const float _FadeExponent = 1.0;
+static const float _Thickness = 1.0;                    // Z size in camera space of a pixel in the depth buffer = _Thickness
+static const float _MaxRayDistance = 20.0;               // maximum distance of a ray
+static const float _EdgeDistance = 50.0;
+static const float _EdgeExponent = 1.0;
+static const float _FadeDistance = 10.0;
+static const float _FadeExponent = 1.0;
 
 // LH. far=Z+
 float GetViewSpaceLinearZ(float2 uv) {
@@ -215,6 +215,7 @@ float CalculateAlpha(
 
 struct PS_Input
 {
+    float4 Pos : SV_POSITION;
     float2 UV : TEXCOORD0;
 };
 

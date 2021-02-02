@@ -36,6 +36,7 @@ sampler2D _SSRSampler;
 
 struct PS_Input
 {
+    float4 Pos : SV_POSITION;
     float2 UV : TEXCOORD0;
 };
 

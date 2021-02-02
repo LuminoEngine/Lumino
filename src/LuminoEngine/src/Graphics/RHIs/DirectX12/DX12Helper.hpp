@@ -25,10 +25,15 @@ public:
 			UINT Flags2,
 			ID3DBlob** ppCode,
 			ID3DBlob** ppErrorMsgs);
+	typedef HRESULT(WINAPI* PFN_D3DReflect)(LPCVOID pSrcData,
+			SIZE_T SrcDataSize,
+			REFIID pInterface,
+			void** ppReflector);
 
 	static bool Initialize();
 	static PFN_D3DCreateBlob D3DCreateBlob;
 	static PFN_D3DCompileFromFile D3DCompileFromFile;
+	static PFN_D3DReflect D3DReflect;
 	static HMODULE s_hD3DCompilerDLL;
 };
 
@@ -60,15 +65,12 @@ public:
 
 };
 
-
-static const int MaxDescriptorHandles = 16;
-
 // VulkanDescriptor で使っている VkDescriptorSet 相当
 struct DX12DescriptorHandles
 {
 	ID3D12DescriptorHeap* descriptorHeap = nullptr;
-	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, MaxDescriptorHandles> cpuHandles = {};
-	std::array<D3D12_GPU_DESCRIPTOR_HANDLE, MaxDescriptorHandles> gpuHandles = {};
+	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, MaxDescriptors> cpuHandles = {};
+	std::array<D3D12_GPU_DESCRIPTOR_HANDLE, MaxDescriptors> gpuHandles = {};
 };
 
 class DX12DescriptorHeapAllocatorPage

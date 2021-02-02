@@ -468,11 +468,11 @@ int main(int argc, char** argv)
 
 
     if (1) {
-		Sandbox_EmptyApp();
+		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_glTFSampleViewer();
         //Example_MainLoop();
-		//Example_MeshViewer();
+		Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
         //Example_Shader();

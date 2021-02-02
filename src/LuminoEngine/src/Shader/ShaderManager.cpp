@@ -5,6 +5,10 @@
 #include "ShaderTranspiler.hpp"
 #include "../Asset/AssetManager.hpp"
 
+#ifdef _WIN32
+#include "../Graphics/RHIs/DirectX12/DX12Helper.hpp"
+#endif
+
 namespace ln {
 namespace detail {
 
@@ -104,6 +108,7 @@ void ShaderManager::init(const Settings& settings)
     else {
         LN_LOG_ERROR << D3DCOMPILER_DLL_A << " not found.";
     }
+    D3DCompilerAPI::Initialize();
 #endif
 
     LN_LOG_DEBUG << "ShaderManager Initialization ended.";

@@ -38,6 +38,7 @@ VS_Output VS_Main(LN_VSInput input)
 
 struct PS_Input
 {
+    float4 Pos : SV_POSITION;
     float2 UV : TEXCOORD0;
 };
 

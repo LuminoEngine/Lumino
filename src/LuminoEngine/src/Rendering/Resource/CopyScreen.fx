@@ -29,7 +29,6 @@ struct PS_Input
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
-    return float4(0, 1, 0, 1);
     return tex2D(ln_MaterialTexture, input.UV);
 }
 

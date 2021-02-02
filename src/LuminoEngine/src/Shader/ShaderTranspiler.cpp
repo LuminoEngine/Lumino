@@ -16,6 +16,10 @@
 #include "ShaderManager.hpp"
 #include "ShaderTranspiler.hpp"
 
+#ifdef _WIN32
+#include "../Graphics/RHIs/DirectX12/DX12Helper.hpp"
+#endif
+
 namespace ln {
 namespace detail {
 
@@ -933,6 +937,7 @@ std::vector<byte_t> ShaderCodeTranspiler::generateHlslByteCode() const
         target = targetPS;
 
 
+    // TODO: release
     ID3DBlob* shaderCode = nullptr;
     ID3DBlob* error = nullptr;
     UINT flags1 = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;// D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR;
@@ -960,6 +965,25 @@ std::vector<byte_t> ShaderCodeTranspiler::generateHlslByteCode() const
             m_diag->reportWarning(String::fromCString(message));
         }
     }
+
+
+    //ComPtr<ID3D12ShaderReflection> shaderReflection;
+    //D3DCompilerAPI::D3DReflect(shaderCode->GetBufferPointer(), shaderCode->GetBufferSize(), IID_PPV_ARGS(&shaderReflection));
+
+
+    //D3D12_SHADER_DESC desc{};
+    //shaderReflection->GetDesc(&desc);
+
+    //const auto cbCount = desc.ConstantBuffers;
+    //for (auto i = 0; i < cbCount; ++i)
+    //{
+    //    D3D12_SHADER_BUFFER_DESC shaderBufDesc{};
+    //    auto cbuffer = shaderReflection->GetConstantBufferByIndex(i);
+    //    cbuffer->GetDesc(&shaderBufDesc);
+
+    //    std::cout << "  " << shaderBufDesc.Name << std::endl;
+    //}
+
 
     const uint8_t* d = static_cast<const uint8_t*>(shaderCode->GetBufferPointer());
     const size_t s = shaderCode->GetBufferSize();

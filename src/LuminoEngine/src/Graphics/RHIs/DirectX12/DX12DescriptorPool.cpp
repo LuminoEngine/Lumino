@@ -24,12 +24,12 @@ void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
     const DX12ShaderPassLayoutInfo& layout = m_pool->shaderPass()->layoutInfo();
 
     // Constant buffer (`b` register)
-    for (int i = 0; i < layout.vs_CBV_Count; i++) {
-        const ShaderDescriptorBufferView& view = data.uniforms[layout.vsDescriptors.bufferDescriptors[i]];
+    for (int i = 0; i < layout.vs_CBV_Count(); i++) {
+        const ShaderDescriptorBufferView& view = data.uniforms[layout.vsDescriptors.bufferDescriptors[i].itemIndex];
         if (DX12UniformBuffer* buffer = static_cast<DX12UniformBuffer*>(view.buffer)) {
             D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
             desc.BufferLocation = buffer->dxResource()->GetGPUVirtualAddress() + view.offset;
-            desc.SizeInBytes = DX12Helper::alignUp(layout.vsDescriptors.bufferSizes[i]);
+            desc.SizeInBytes = DX12Helper::alignUp(layout.vsDescriptors.bufferDescriptors[i].size);
             dxDevice->CreateConstantBufferView(&desc, m_descriptorHandles2[DescriptorParamIndex_VS_CBV].cpuHandles[i]);
         }
         else {
@@ -38,8 +38,8 @@ void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
     }
 
     // Texture (`t` register)
-    for (int i = 0; i < layout.vs_SRV_Count; i++) {
-        const ShaderDescriptorCombinedSampler& view = data.textures[layout.vsDescriptors.textureDescriptors[i]];
+    for (int i = 0; i < layout.vs_SRV_Count(); i++) {
+        const ShaderDescriptorCombinedSampler& view = data.textures[layout.vsDescriptors.textureDescriptors[i].itemIndex];
         if (DX12Texture* texture = static_cast<DX12Texture*>(view.texture)) {
             D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
             desc.Format = texture->dxFormat();
@@ -57,8 +57,8 @@ void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
     }
 
     // SamplerState (`s` register)
-    for (int i = 0; i < layout.vs_Sampler_Count; i++) {
-        const ShaderDescriptorCombinedSampler& view = data.samplers[layout.vsDescriptors.samplerDescriptors[i]];
+    for (int i = 0; i < layout.vs_Sampler_Count(); i++) {
+        const ShaderDescriptorCombinedSampler& view = data.samplers[layout.vsDescriptors.samplerDescriptors[i].itemIndex];
         if (DX12SamplerState* stamplerState = static_cast<DX12SamplerState*>(view.stamplerState)) {
             dxDevice->CreateSampler(&stamplerState->samplerDesc(), m_descriptorHandles2[DescriptorParamIndex_VS_Sampler].cpuHandles[i]);
         }
@@ -82,12 +82,12 @@ void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
 
 
     // Constant buffer (`b` register)
-    for (int i = 0; i < layout.ps_CBV_Count; i++) {
-        const ShaderDescriptorBufferView& view = data.uniforms[layout.psDescriptors.bufferDescriptors[i]];
+    for (int i = 0; i < layout.ps_CBV_Count(); i++) {
+        const ShaderDescriptorBufferView& view = data.uniforms[layout.psDescriptors.bufferDescriptors[i].itemIndex];
         if (DX12UniformBuffer* buffer = static_cast<DX12UniformBuffer*>(view.buffer)) {
             D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
             desc.BufferLocation = buffer->dxResource()->GetGPUVirtualAddress() + view.offset;
-            desc.SizeInBytes = DX12Helper::alignUp(layout.psDescriptors.bufferSizes[i]);
+            desc.SizeInBytes = DX12Helper::alignUp(layout.psDescriptors.bufferDescriptors[i].size);
             dxDevice->CreateConstantBufferView(&desc, m_descriptorHandles2[DescriptorParamIndex_PS_CBV].cpuHandles[i]);
         }
         else {
@@ -96,8 +96,8 @@ void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
     }
 
     // Texture (`t` register)
-    for (int i = 0; i < layout.ps_SRV_Count; i++) {
-        const ShaderDescriptorCombinedSampler& view = data.textures[layout.psDescriptors.textureDescriptors[i]];
+    for (int i = 0; i < layout.ps_SRV_Count(); i++) {
+        const ShaderDescriptorCombinedSampler& view = data.textures[layout.psDescriptors.textureDescriptors[i].itemIndex];
         if (DX12Texture* texture = static_cast<DX12Texture*>(view.texture)) {
             D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
             desc.Format = texture->dxFormat();
@@ -115,8 +115,8 @@ void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
     }
 
     // SamplerState (`s` register)
-    for (int i = 0; i < layout.ps_Sampler_Count; i++) {
-        const ShaderDescriptorCombinedSampler& view = data.samplers[layout.psDescriptors.samplerDescriptors[i]];
+    for (int i = 0; i < layout.ps_Sampler_Count(); i++) {
+        const ShaderDescriptorCombinedSampler& view = data.samplers[layout.psDescriptors.samplerDescriptors[i].itemIndex];
         if (DX12SamplerState* stamplerState = static_cast<DX12SamplerState*>(view.stamplerState)) {
             dxDevice->CreateSampler(&stamplerState->samplerDesc(), m_descriptorHandles2[DescriptorParamIndex_PS_Sampler].cpuHandles[i]);
         }
@@ -143,30 +143,30 @@ bool DX12Descriptor::allocateInternal()
     m_heapCount = 0;
     m_heaps = {};
 
-    if (layout.vs_CBV_Count > 0 || layout.vs_SRV_Count > 0 ||
-        layout.ps_CBV_Count > 0 || layout.ps_SRV_Count > 0) {
-        if (layout.vs_CBV_Count > 0) {
-            if (!m_pool->descriptorHeapAllocator_CBV_SRV_UAV()->allocate(layout.vs_CBV_Count, &m_descriptorHandles2[DescriptorParamIndex_VS_CBV])) {
+    if (layout.vs_CBV_Count() > 0 || layout.vs_SRV_Count() > 0 ||
+        layout.ps_CBV_Count() > 0 || layout.ps_SRV_Count() > 0) {
+        if (layout.vs_CBV_Count() > 0) {
+            if (!m_pool->descriptorHeapAllocator_CBV_SRV_UAV()->allocate(layout.vs_CBV_Count(), &m_descriptorHandles2[DescriptorParamIndex_VS_CBV])) {
                 return false;
             }
         }
-        if (layout.vs_SRV_Count > 0) {
-            if (!m_pool->descriptorHeapAllocator_CBV_SRV_UAV()->allocate(layout.vs_SRV_Count, &m_descriptorHandles2[DescriptorParamIndex_VS_SRV])) {
+        if (layout.vs_SRV_Count() > 0) {
+            if (!m_pool->descriptorHeapAllocator_CBV_SRV_UAV()->allocate(layout.vs_SRV_Count(), &m_descriptorHandles2[DescriptorParamIndex_VS_SRV])) {
                 return false;
             }
         }
-        if (layout.ps_CBV_Count > 0) {
-            if (!m_pool->descriptorHeapAllocator_CBV_SRV_UAV()->allocate(layout.ps_CBV_Count, &m_descriptorHandles2[DescriptorParamIndex_PS_CBV])) {
+        if (layout.ps_CBV_Count() > 0) {
+            if (!m_pool->descriptorHeapAllocator_CBV_SRV_UAV()->allocate(layout.ps_CBV_Count(), &m_descriptorHandles2[DescriptorParamIndex_PS_CBV])) {
                 return false;
             }
         }
-        if (layout.ps_SRV_Count > 0) {
-            if (!m_pool->descriptorHeapAllocator_CBV_SRV_UAV()->allocate(layout.ps_SRV_Count, &m_descriptorHandles2[DescriptorParamIndex_PS_SRV])) {
+        if (layout.ps_SRV_Count() > 0) {
+            if (!m_pool->descriptorHeapAllocator_CBV_SRV_UAV()->allocate(layout.ps_SRV_Count(), &m_descriptorHandles2[DescriptorParamIndex_PS_SRV])) {
                 return false;
             }
         }
 
-        if (layout.vs_CBV_Count > 0 && layout.vs_SRV_Count > 0) {
+        if (layout.vs_CBV_Count() > 0 && layout.vs_SRV_Count() > 0) {
             // Allocator は (layout.cbvCount + layout.srvCount) の倍数で作ってあるので、必ず同じ Heap から Allocate されるはず
             assert(m_descriptorHandles2[DescriptorParamIndex_VS_CBV].descriptorHeap == m_descriptorHandles2[DescriptorParamIndex_VS_SRV].descriptorHeap);
         }
@@ -175,19 +175,19 @@ bool DX12Descriptor::allocateInternal()
         // 同じ TYPE を持つ複数の Heap は SetDescriptorHeaps() で設定することができないため、
         // 'b' 't' は同じ Heap を使う必要がある。
         // http://masafumi.cocolog-nifty.com/masafumis_diary/2016/01/id3d12graphicsc.html
-        if (layout.vs_CBV_Count > 0) {
+        if (layout.vs_CBV_Count() > 0) {
             m_heaps[m_heapCount] = m_descriptorHandles2[DescriptorParamIndex_VS_CBV].descriptorHeap;
             m_heapCount++;
         }
-        else if (layout.vs_SRV_Count > 0) {
+        else if (layout.vs_SRV_Count() > 0) {
             m_heaps[m_heapCount] = m_descriptorHandles2[DescriptorParamIndex_VS_SRV].descriptorHeap;
             m_heapCount++;
         }
-        else if (layout.ps_CBV_Count > 0) {
-            m_heaps[m_heapCount] = m_descriptorHandles2[DescriptorParamIndex_PS_SRV].descriptorHeap;
+        else if (layout.ps_CBV_Count() > 0) {
+            m_heaps[m_heapCount] = m_descriptorHandles2[DescriptorParamIndex_PS_CBV].descriptorHeap;
             m_heapCount++;
         }
-        else if (layout.ps_SRV_Count > 0) {
+        else if (layout.ps_SRV_Count() > 0) {
             m_heaps[m_heapCount] = m_descriptorHandles2[DescriptorParamIndex_PS_SRV].descriptorHeap;
             m_heapCount++;
         }
@@ -206,15 +206,15 @@ bool DX12Descriptor::allocateInternal()
         //    m_heapCount++;
         //}
     }
-    if (layout.vs_Sampler_Count > 0) {
-        if (!m_pool->descriptorHeapAllocator_SAMPLER()->allocate(layout.vs_Sampler_Count, &m_descriptorHandles2[DescriptorParamIndex_VS_Sampler])) {
+    if (layout.vs_Sampler_Count() > 0) {
+        if (!m_pool->descriptorHeapAllocator_SAMPLER()->allocate(layout.vs_Sampler_Count(), &m_descriptorHandles2[DescriptorParamIndex_VS_Sampler])) {
             return false;
         }
         m_heaps[m_heapCount] = m_descriptorHandles2[DescriptorParamIndex_VS_Sampler].descriptorHeap;
         m_heapCount++;
     }
-    if (layout.ps_Sampler_Count > 0) {
-        if (!m_pool->descriptorHeapAllocator_SAMPLER()->allocate(layout.ps_Sampler_Count, &m_descriptorHandles2[DescriptorParamIndex_PS_Sampler])) {
+    if (layout.ps_Sampler_Count() > 0) {
+        if (!m_pool->descriptorHeapAllocator_SAMPLER()->allocate(layout.ps_Sampler_Count(), &m_descriptorHandles2[DescriptorParamIndex_PS_Sampler])) {
             return false;
         }
 
@@ -307,17 +307,17 @@ bool DX12DescriptorPool::init(DX12Device* device, DX12ShaderPass* shaderPass)
 
     const auto& layout = shaderPass->layoutInfo();
 
-    if (layout.vs_CBV_Count > 0 || layout.vs_SRV_Count > 0 ||
-        layout.ps_CBV_Count > 0 || layout.ps_SRV_Count > 0) {
+    if (layout.vs_CBV_Count() > 0 || layout.vs_SRV_Count() > 0 ||
+        layout.ps_CBV_Count() > 0 || layout.ps_SRV_Count() > 0) {
         m_descriptorHeapAllocator_CBV_SRV_UAV = makeRef<DX12DescriptorHeapAllocator>();
-        if (!m_descriptorHeapAllocator_CBV_SRV_UAV->init(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, (layout.vs_CBV_Count + layout.vs_SRV_Count + layout.ps_CBV_Count + layout.ps_SRV_Count) * AllocatableCountPerPage)) {
+        if (!m_descriptorHeapAllocator_CBV_SRV_UAV->init(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, (layout.vs_CBV_Count() + layout.vs_SRV_Count() + layout.ps_CBV_Count() + layout.ps_SRV_Count()) * AllocatableCountPerPage)) {
             return false;
         }
     }
 
-    if (layout.vs_Sampler_Count > 0 || layout.ps_Sampler_Count > 0) {
+    if (layout.vs_Sampler_Count() > 0 || layout.ps_Sampler_Count() > 0) {
         m_descriptorHeapAllocator_SAMPLER = makeRef<DX12DescriptorHeapAllocator>();
-        if (!m_descriptorHeapAllocator_SAMPLER->init(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, (layout.vs_Sampler_Count + layout.ps_Sampler_Count) * AllocatableCountPerPage)) {
+        if (!m_descriptorHeapAllocator_SAMPLER->init(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, (layout.vs_Sampler_Count() + layout.ps_Sampler_Count()) * AllocatableCountPerPage)) {
             return false;
         }
     }

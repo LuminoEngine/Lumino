@@ -201,6 +201,7 @@ enum ShaderStage2
 {
 	ShaderStage2_Vertex = 0,
 	ShaderStage2_Fragment = 1,
+    ShaderStage2_Count = 2,
 };
 
 enum ShaderStageFlags
