@@ -7,15 +7,37 @@ namespace detail {
 
 struct DX12ShaderPassLayoutInfo
 {
-    int8_t cbvRootParamIndex;
-    int8_t cbvCount;            // UniformBuffer
-    std::vector<int32_t> cvbSizes;
-    int8_t srvRootParamIndex;
-    int8_t srvCount;            // Texture
-    int8_t samperRootParamIndex;
-    int8_t samplerCount;        // Sampler
+    struct Descriptors
+    {
+        std::vector<int> bufferDescriptors;
+        std::vector<size_t> bufferSizes;
+        std::vector<int> textureDescriptors;
+        std::vector<int> samplerDescriptors;
+    };
+    Descriptors vsDescriptors;
+    Descriptors psDescriptors;
+
+    // [VertexShader Stage] ConstantBuffer
+    int8_t vs_CBV_RootParamIndex;
+    int8_t vs_CBV_Count;
+    // [VertexShader Stage] Texture
+    int8_t vs_SRV_RootParamIndex;
+    int8_t vs_SRV_Count;
+    // [VertexShader Stage] Sampler
+    int8_t vs_Sampler_RootParamIndex;
+    int8_t vs_Sampler_Count;
+
+    // [PixelShader Stage] ConstantBuffer
+    int8_t ps_CBV_RootParamIndex;
+    int8_t ps_CBV_Count;
+    // [PixelShader Stage] Texture
+    int8_t ps_SRV_RootParamIndex;
+    int8_t ps_SRV_Count;
+    // [PixelShader Stage] Sampler
+    int8_t ps_Sampler_RootParamIndex;
+    int8_t ps_Sampler_Count;
 };
-	
+
 class DX12ShaderPass
     : public IShaderPass
 {
@@ -35,7 +57,7 @@ private:
     DX12Device* m_deviceContext;
     DX12ShaderPassLayoutInfo m_layoutInfo;
     ComPtr<ID3D12RootSignature> m_rootSignature;
-    ComPtr<ID3D12DescriptorHeap> m_descriptorHeap;
+    //ComPtr<ID3D12DescriptorHeap> m_descriptorHeap;
     //std::vector<uint8_t> m_vsCode;
     //std::vector<uint8_t> m_psCode;
 

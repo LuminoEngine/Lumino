@@ -45,16 +45,27 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
 
     m_deviceContext = deviceContext;
 
-    m_layoutInfo.cbvRootParamIndex = -1;
-    m_layoutInfo.cbvCount = createInfo.descriptorLayout->uniformBufferRegister.size();
-    m_layoutInfo.srvRootParamIndex = -1;
-    m_layoutInfo.srvCount = createInfo.descriptorLayout->textureRegister.size();
-    m_layoutInfo.samperRootParamIndex = -1;
-    m_layoutInfo.samplerCount = createInfo.descriptorLayout->samplerRegister.size();
-    m_layoutInfo.cvbSizes.resize(m_layoutInfo.cbvCount);
-    for (int i = 0; i < m_layoutInfo.cbvCount; i++) {
-        m_layoutInfo.cvbSizes[i] = createInfo.descriptorLayout->uniformBufferRegister[i].size;
-    }
+    m_layoutInfo.vs_CBV_RootParamIndex = -1;
+    m_layoutInfo.vs_CBV_Count = 0;
+    m_layoutInfo.vs_SRV_RootParamIndex = -1;
+    m_layoutInfo.vs_SRV_Count = 0;
+    m_layoutInfo.vs_Sampler_RootParamIndex = -1;
+    m_layoutInfo.vs_Sampler_Count = 0;
+    m_layoutInfo.ps_CBV_RootParamIndex = -1;
+    m_layoutInfo.ps_CBV_Count = 0;
+    m_layoutInfo.ps_SRV_RootParamIndex = -1;
+    m_layoutInfo.ps_SRV_Count = 0;
+    m_layoutInfo.ps_Sampler_RootParamIndex = -1;
+    m_layoutInfo.ps_Sampler_Count = 0;
+
+    //m_layoutInfo.srvRootParamIndex = -1;
+    //m_layoutInfo.srvCount = createInfo.descriptorLayout->textureRegister.size();
+    //m_layoutInfo.samperRootParamIndex = -1;
+    //m_layoutInfo.samplerCount = createInfo.descriptorLayout->samplerRegister.size();
+    //m_layoutInfo.cvbSizes.resize(m_layoutInfo.cbvCount);
+    //for (int i = 0; i < m_layoutInfo.cbvCount; i++) {
+    //    m_layoutInfo.cvbSizes[i] = createInfo.descriptorLayout->uniformBufferRegister[i].size;
+    //}
 
     {
         if (createInfo.vsCodeLen > 0) {
@@ -169,7 +180,8 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
 
             paramCount++;
         }
-#else
+#endif
+#if 0
         // NOTE: D3D12_ROOT_PARAMETER は複数作るべき？
         //   前提として、最低限 [CBV,SRV] [SAMPLER] の 2 つは同じ ID3D12DescriptorHeap で
         //   扱うことができないため、絶対に分けなければならない。
@@ -263,27 +275,228 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
             return false;
         }
 #endif
+#if 1
+        // DirectX12 では ShaderVisibility を、実際にシェーダコードが要求しているものと完全に一致させなければならない。
+        // 例えば次のようなコードを考えてみる。
+        // 
+        // ```
+        // cbuffer Camera {
+        //     ...
+        // }
+        // cbuffer Material {
+        //     ...
+        // }
+        // void VSMain() {
+        //    // Camera を使って座標変換
+        // }
+        // void PSMain() {
+        //    // Material を使ってシェーディング
+        // }
+        // ```
+        // 
+        // Vulkan では最適化を考えず雑に "VS と PS 両方で使用可能な Descriptor を 2 つ作る" でも問題なかった。
+        //
+        // DirectX12 では、HLSL で register を省略した場合、
+        // - VS としては、Camera が b0 (Material は未使用)
+        // - PS としては、Material が b0 (Camera は未使用)
+        // というような割り当てが行われる。(RenderDoc で確認できる)
+        //
+        // ここでもし D3D12_DESCRIPTOR_RANGE_TYPE_CBV, BaseShaderRegister=0, D3D12_SHADER_VISIBILITY_ALL な Range を作ってしまうと、
+        // PS の b0 が Camera を参照してしまう。この矛盾はデバッグレイヤーで通知されない。
+        // 
 
-    }
+        DX12ShaderPassLayoutInfo::Descriptors& vsDescriptors = m_layoutInfo.vsDescriptors;
+        DX12ShaderPassLayoutInfo::Descriptors& psDescriptors = m_layoutInfo.psDescriptors;
 
-    {
-        D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-        desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        desc.NumDescriptors = 1;
-        desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        desc.NodeMask = 0;
-        if (FAILED(m_deviceContext->device()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_descriptorHeap)))) {
-            LN_ERROR("CreateDescriptorHeap failed.");
-            return false;
+        // VS, PS ごとに集計
+        {
+            // 'b' register
+            for (size_t i = 0; i < createInfo.descriptorLayout->uniformBufferRegister.size(); i++) {
+                const DescriptorLayoutItem& item = createInfo.descriptorLayout->uniformBufferRegister[i];
+                if (item.stageFlags & ShaderStageFlags_Vertex) {
+                    vsDescriptors.bufferDescriptors.push_back(i);
+                    vsDescriptors.bufferSizes.push_back(item.size);
+                }
+                if (item.stageFlags & ShaderStageFlags_Pixel) {
+                    psDescriptors.bufferDescriptors.push_back(i);
+                    psDescriptors.bufferSizes.push_back(item.size);
+                }
+            }
+            // 't' register
+            for (size_t i = 0; i < createInfo.descriptorLayout->textureRegister.size(); i++) {
+                const DescriptorLayoutItem& item = createInfo.descriptorLayout->textureRegister[i];
+                if (item.stageFlags & ShaderStageFlags_Vertex) {
+                    vsDescriptors.textureDescriptors.push_back(i);
+                }
+                if (item.stageFlags & ShaderStageFlags_Pixel) {
+                    psDescriptors.textureDescriptors.push_back(i);
+                }
+            }
+            // 's' register
+            for (size_t i = 0; i < createInfo.descriptorLayout->samplerRegister.size(); i++) {
+                const DescriptorLayoutItem& item = createInfo.descriptorLayout->samplerRegister[i];
+                if (item.stageFlags & ShaderStageFlags_Vertex) {
+                    vsDescriptors.samplerDescriptors.push_back(i);
+                }
+                if (item.stageFlags & ShaderStageFlags_Pixel) {
+                    psDescriptors.samplerDescriptors.push_back(i);
+                }
+            }
         }
+
+        std::array<D3D12_DESCRIPTOR_RANGE, 6> ranges = {};
+        std::array<D3D12_ROOT_PARAMETER, 6> params = {};
+        int i = 0;
+        int paramCount = 0;
+        {
+            // [VertexShader Stage] 'b0' ~ 'bn'
+            if (vsDescriptors.bufferDescriptors.size() > 0) {
+                ranges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+                ranges[i].NumDescriptors = vsDescriptors.bufferDescriptors.size();
+                ranges[i].BaseShaderRegister = 0;
+                ranges[i].RegisterSpace = 0;
+                ranges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+                params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+                params[i].DescriptorTable.NumDescriptorRanges = 1;
+                params[i].DescriptorTable.pDescriptorRanges = &ranges[i];
+                params[i].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
+                m_layoutInfo.vs_CBV_RootParamIndex = i;
+                m_layoutInfo.vs_CBV_Count = vsDescriptors.bufferDescriptors.size();
+                i++;
+            }
+            // [VertexShader Stage] 't0' ~ 'tn'
+            if (vsDescriptors.textureDescriptors.size() > 0) {
+                ranges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+                ranges[i].NumDescriptors = vsDescriptors.textureDescriptors.size();
+                ranges[i].BaseShaderRegister = 0;
+                ranges[i].RegisterSpace = 0;
+                ranges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+                params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+                params[i].DescriptorTable.NumDescriptorRanges = 1;
+                params[i].DescriptorTable.pDescriptorRanges = &ranges[i];
+                params[i].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
+                m_layoutInfo.vs_SRV_RootParamIndex = i;
+                m_layoutInfo.vs_SRV_Count = vsDescriptors.textureDescriptors.size();
+                i++;
+            }
+            // [VertexShader Stage] 's0' ~ 'sn'
+            if (vsDescriptors.samplerDescriptors.size() > 0) {
+                ranges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+                ranges[i].NumDescriptors = vsDescriptors.samplerDescriptors.size();
+                ranges[i].BaseShaderRegister = 0;
+                ranges[i].RegisterSpace = 0;
+                ranges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+                params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+                params[i].DescriptorTable.NumDescriptorRanges = 1;
+                params[i].DescriptorTable.pDescriptorRanges = &ranges[i];
+                params[i].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
+                m_layoutInfo.vs_Sampler_RootParamIndex = i;
+                m_layoutInfo.vs_Sampler_Count = vsDescriptors.samplerDescriptors.size();
+                i++;
+            }
+
+            // [PixelShader Stage] 'b0' ~ 'bn'
+            if (psDescriptors.bufferDescriptors.size() > 0) {
+                ranges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+                ranges[i].NumDescriptors = psDescriptors.bufferDescriptors.size();
+                ranges[i].BaseShaderRegister = 0;
+                ranges[i].RegisterSpace = 0;
+                ranges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+                params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+                params[i].DescriptorTable.NumDescriptorRanges = 1;
+                params[i].DescriptorTable.pDescriptorRanges = &ranges[i];
+                params[i].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+                m_layoutInfo.ps_CBV_RootParamIndex = i;
+                m_layoutInfo.ps_CBV_Count = psDescriptors.bufferDescriptors.size();
+                i++;
+            }
+            // [PixelShader Stage] 't0' ~ 'tn'
+            if (psDescriptors.textureDescriptors.size() > 0) {
+                ranges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+                ranges[i].NumDescriptors = psDescriptors.textureDescriptors.size();
+                ranges[i].BaseShaderRegister = 0;
+                ranges[i].RegisterSpace = 0;
+                ranges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+                params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+                params[i].DescriptorTable.NumDescriptorRanges = 1;
+                params[i].DescriptorTable.pDescriptorRanges = &ranges[i];
+                params[i].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+                m_layoutInfo.ps_SRV_RootParamIndex = i;
+                m_layoutInfo.ps_SRV_Count = psDescriptors.textureDescriptors.size();
+                i++;
+            }
+            // [PixelShader Stage] 's0' ~ 'sn'
+            if (psDescriptors.samplerDescriptors.size() > 0) {
+                ranges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+                ranges[i].NumDescriptors = psDescriptors.samplerDescriptors.size();
+                ranges[i].BaseShaderRegister = 0;
+                ranges[i].RegisterSpace = 0;
+                ranges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+                params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+                params[i].DescriptorTable.NumDescriptorRanges = 1;
+                params[i].DescriptorTable.pDescriptorRanges = &ranges[i];
+                params[i].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+                m_layoutInfo.ps_Sampler_RootParamIndex = i;
+                m_layoutInfo.ps_Sampler_Count = psDescriptors.samplerDescriptors.size();
+                i++;
+            }
+        }
+
+        {
+            D3D12_ROOT_SIGNATURE_DESC desc = {};
+            desc.NumParameters = i;
+            desc.pParameters = params.data();
+            desc.NumStaticSamplers = 0;
+            desc.pStaticSamplers = nullptr;
+            desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+            ComPtr<ID3DBlob> signature;
+            ComPtr<ID3DBlob> error;
+            if (FAILED(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error))) {
+                const char* message = static_cast<const char*>(error->GetBufferPointer());
+                LN_ERROR("D3D12SerializeRootSignature failed.");
+                return false;
+            }
+
+            if (FAILED(dxDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)))) {
+                LN_ERROR("CreateRootSignature failed.");
+                return false;
+            }
     }
+#endif
+
+    }
+
+    //{
+    //    D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+    //    desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    //    desc.NumDescriptors = 1;
+    //    desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    //    desc.NodeMask = 0;
+    //    if (FAILED(m_deviceContext->device()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_descriptorHeap)))) {
+    //        LN_ERROR("CreateDescriptorHeap failed.");
+    //        return false;
+    //    }
+    //}
 
     return true;
 }
 
 void DX12ShaderPass::dispose()
 {
-    m_descriptorHeap.Reset();
+    //m_descriptorHeap.Reset();
     m_rootSignature.Reset();
     m_vsCode.Reset();
     m_psCode.Reset();

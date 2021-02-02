@@ -100,6 +100,9 @@ void DX12GraphicsContext::onRestoreExternalRenderState()
 
 void DX12GraphicsContext::onBeginCommandRecoding()
 {
+    //printf("-----\n");
+    m_uploadBufferAllocator->cleanup();
+
     // https://docs.microsoft.com/ja-jp/windows/win32/direct3d12/recording-command-lists-and-bundles
     // 基本的な使い方 (1フレーム内で複数のコマンドリストをマルチスレッドで構築するようなケースではない) の場合、
     // ID3D12CommandAllocator と ID3D12GraphicsCommandList はワンセットと考えてよい。
@@ -331,19 +334,41 @@ void DX12GraphicsContext::onSetSubData(IGraphicsRHIBuffer* baseResource, size_t 
         break;
     }
 
+
+    //D3D12_RANGE readRange = { 0, 0 };
+    ////D3D12_RANGE range;
+    ////range.Begin = view.offset;
+    ////range.End = view.offset + length;
+    //void* mapped;
+    //if (FAILED(uploadBuffer->Map(0, &readRange, &mapped))) {
+    //    LN_ERROR("Map failed.");
+    //    return;
+    //}
+    //memcpy(static_cast<uint8_t*>(mapped) + view.offset, data, length);
+    //D3D12_RANGE writtenRange = { view.offset, view.offset + length };
+    //uploadBuffer->Unmap(0, &writtenRange);
+
+
+
+
     DX12SingleFrameBufferView view = m_uploadBufferAllocator->allocate(length, DX12Helper::Alignment);
     ID3D12Resource* uploadBuffer = view.buffer->dxResource();
+    //std::cout << "onSetSubData " << view.offset << std::endl;
 
-    D3D12_RANGE range;
-    range.Begin = view.offset;
-    range.End = view.offset + length;
+    //D3D12_RANGE range;
+    //range.Begin = view.offset;
+    //range.End = view.offset + length;
+    D3D12_RANGE readRange = { 0, 0 };
     void* mapped;
-    if (FAILED(uploadBuffer->Map(0, &range, &mapped))) {
+    if (FAILED(uploadBuffer->Map(0, &readRange, &mapped))) {
         LN_ERROR("Map failed.");
         return;
     }
-    memcpy(mapped, data, length);
-    uploadBuffer->Unmap(0, nullptr);
+    //memcpy(mapped, data, length);
+    memcpy(static_cast<uint8_t*>(mapped) + view.offset, data, length);
+    D3D12_RANGE writtenRange = { view.offset, view.offset + length };
+    uploadBuffer->Unmap(0, &writtenRange);
+    //uploadBuffer->Unmap(0, nullptr);
 
     buffer->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_COPY_DEST);
     m_dxCommandList->CopyBufferRegion(buffer->dxResource(), offset, uploadBuffer, view.offset, length);
@@ -352,7 +377,61 @@ void DX12GraphicsContext::onSetSubData(IGraphicsRHIBuffer* baseResource, size_t 
 
 void DX12GraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
-    LN_NOTIMPLEMENTED();
+    ID3D12Device* dxDevice = m_device->device();
+    DX12Texture2D* texture = static_cast<DX12Texture2D*>(resource);
+
+    D3D12_RESOURCE_DESC srcDesc;
+    srcDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+    srcDesc.Alignment = 0;
+    srcDesc.Width = width;
+    srcDesc.Height = height;
+    srcDesc.DepthOrArraySize = 1;
+    srcDesc.MipLevels = 1;
+    srcDesc.Format = texture->dxFormat();
+    srcDesc.SampleDesc.Count = 1;
+    srcDesc.SampleDesc.Quality = 0;
+    srcDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+    srcDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+    D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
+    UINT numRows;
+    UINT64 rowSizeInBytes;
+    UINT64 totalBytes;
+    dxDevice->GetCopyableFootprints(&srcDesc, 0, 1, 0, &footprint, &numRows, &rowSizeInBytes, &totalBytes);
+
+    DX12SingleFrameBufferView view = m_uploadBufferAllocator->allocate(totalBytes, DX12Helper::Alignment);
+    ID3D12Resource* uploadBuffer = view.buffer->dxResource();
+    //std::cout << "onSetSubData2D " << view.offset << std::endl;
+
+    D3D12_RANGE readRange = { 0, 0 };
+    void* mapped;
+    if (FAILED(uploadBuffer->Map(0, &readRange, &mapped))) {
+        LN_ERROR("Map failed.");
+        return;
+    }
+
+    int32_t pixelSize = DX12Helper::getFormatSize(srcDesc.Format);
+    RHIBitmap bmp1, bmp2;
+    bmp1.initWrap(data, pixelSize, width, height);
+    bmp2.initWritableWrap(mapped, pixelSize, footprint.Footprint.RowPitch / pixelSize, footprint.Footprint.Height);
+    bmp2.blit(&bmp1);
+
+    D3D12_RANGE writtenRange = { view.offset, view.offset + totalBytes };
+    uploadBuffer->Unmap(0, &writtenRange);
+
+    D3D12_TEXTURE_COPY_LOCATION dst;
+    dst.pResource = texture->dxResource();
+    dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+    dst.SubresourceIndex = 0;
+
+    D3D12_TEXTURE_COPY_LOCATION src;
+    src.pResource = uploadBuffer;
+    src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+    src.PlacedFootprint = footprint;
+
+    texture->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_COPY_DEST);
+    m_dxCommandList->CopyTextureRegion(&dst, x, y, 0, &src, nullptr);
+    texture->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_GENERIC_READ);
 }
 
 void DX12GraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)

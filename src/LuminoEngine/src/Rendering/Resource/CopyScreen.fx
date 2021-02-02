@@ -1,14 +1,8 @@
-
-sampler2D ln_MaterialTexture;
+#include <Lumino.fxh>
+//sampler2D ln_MaterialTexture;
 
 //==============================================================================
 // Vertex shader
-
-struct VS_Input
-{
-    float3 Pos : POSITION;
-    float2 UV : TEXCOORD0;
-};
 
 struct VS_Output
 {
@@ -16,7 +10,7 @@ struct VS_Output
     float2 UV : TEXCOORD0;
 };
 
-VS_Output VS_Main(VS_Input input)
+VS_Output VS_Main(LN_VSInput input)
 {
     VS_Output output;
     output.Pos = float4(input.Pos, 1.0);
@@ -35,6 +29,7 @@ struct PS_Input
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
+    return float4(0, 1, 0, 1);
     return tex2D(ln_MaterialTexture, input.UV);
 }
 

@@ -47,9 +47,20 @@ class DX12Descriptor
 	: public IDescriptor
 {
 public:
+	enum DescriptorParamIndex
+	{
+		DescriptorParamIndex_VS_CBV = 0,
+		DescriptorParamIndex_VS_SRV = 1,
+		DescriptorParamIndex_VS_Sampler = 2,
+		DescriptorParamIndex_PS_CBV = 3,
+		DescriptorParamIndex_PS_SRV = 4,
+		DescriptorParamIndex_PS_Sampler = 5,
+		DescriptorParamIndex_Count = 6,
+	};
+
 	DX12Descriptor(DX12DescriptorPool* pool);
 	void setData(const ShaderDescriptorTableUpdateInfo& data) override;
-	std::array<DX12DescriptorHandles, DescriptorType_Count>& descriptorHandles() { return m_descriptorHandles; }
+	//std::array<DX12DescriptorHandles, DescriptorParamIndex_Count>& descriptorHandles2() { return m_descriptorHandles2; }
 	bool allocateInternal();
 	void bind(DX12GraphicsContext* commandList);
 
@@ -62,7 +73,7 @@ private:
 	};
 
 	DX12DescriptorPool* m_pool;
-	std::array<DX12DescriptorHandles, DescriptorType_Count> m_descriptorHandles;
+	std::array<DX12DescriptorHandles, DescriptorParamIndex_Count> m_descriptorHandles2;
 	std::array<ID3D12DescriptorHeap*, HeapIndex_Count> m_heaps;
 	int32_t m_heapCount;
 };

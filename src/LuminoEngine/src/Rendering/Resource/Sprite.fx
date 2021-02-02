@@ -1,9 +1,25 @@
 
 #include <Lumino.fxh>
 
-float4 PS_Main(LN_PSInput input) : SV_TARGET0
+struct PSInput
 {
-    //return float4(1, 0, 0, 1);
+    float4 svPos    : SV_POSITION;
+    float2 UV       : TEXCOORD0;
+    float4 Color    : COLOR0;
+};
+
+PSInput VS_ClusteredForward_Geometry(LN_VSInput input)
+{
+    PSInput o;
+    o.svPos = mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
+    //o.svPos = mul(ln_WorldViewProjection, float4(input.Pos, 1.0f));
+    o.UV = input.UV;
+    o.Color = input.Color;
+    return o;
+}
+
+float4 PS_Main(PSInput input) : SV_TARGET0
+{
     float4 color = tex2D(ln_MaterialTexture, input.UV) * input.Color;
     
     // Alpha test
@@ -96,7 +112,7 @@ techniques:
     Forward_Geometry_UnLighting:
         passes:
         -   Pass0:
-                vertexShader: LN_VSMain
+                vertexShader: VS_ClusteredForward_Geometry
                 pixelShader: PS_Main
 
     Forward_Geometry_UnLighting_Instancing:

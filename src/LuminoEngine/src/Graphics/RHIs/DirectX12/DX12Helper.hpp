@@ -35,7 +35,7 @@ public:
 class DX12Helper
 {
 public:
-	static const size_t Alignment = 256;
+	static const size_t Alignment = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
 
 	static DXGI_FORMAT LNTextureFormatToDXFormat(TextureFormat value);
 	static TextureFormat DXFormatToLNTextureFormat(DXGI_FORMAT value);
