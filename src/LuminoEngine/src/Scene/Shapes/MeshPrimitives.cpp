@@ -1,12 +1,38 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitives.hpp>
 #include "../../Mesh/MeshManager.hpp"
 
 namespace ln {
+	
+//=============================================================================
+// ShapeComponent
+
+LN_OBJECT_IMPLEMENT(ShapeObject, VisualObject) {}
+
+ShapeObject::ShapeObject()
+{
+}
+
+bool ShapeObject::init()
+{
+    if (!VisualObject::init()) return false;
+    return true;
+}
+
+void ShapeObject::setMaterial(Material* material)
+{
+	static_cast<ShapeComponent*>(mainVisualComponent().get())->setMaterial(material);
+}
+
+Material* ShapeObject::material() const
+{
+    return static_cast<ShapeComponent*>(mainVisualComponent().get())->material();
+}
 
 //==============================================================================
 // BoxMesh
@@ -48,6 +74,11 @@ bool BoxMesh::init(float width, float height, float depth)
 	return true;
 }
 
+void BoxMesh::setSize(const Vector3& size)
+{
+	m_component->setSize(size);
+}
+
 BoxMeshComponent* BoxMesh::boxMeshComponent() const
 {
     return m_component;
@@ -65,12 +96,13 @@ SphereMesh::SphereMesh()
 {
 }
 
-void SphereMesh::init()
+bool SphereMesh::init()
 {
-	VisualObject::init();
+	if (!ShapeObject::init()) return false;
 	m_component = makeObject<SphereMeshComponent>();
 	addComponent(m_component);
 	setMainVisualComponent(m_component);
+	return true;
 }
 
 SphereMeshComponent* SphereMesh::sphereMeshComponent() const
@@ -129,6 +161,45 @@ void PlaneMesh::serialize(Serializer2& ar)
 			setMainVisualComponent(m_component);
 		}
 	}
+}
+
+//==============================================================================
+// PlaneMesh::BuilderDetails
+
+void ShapeObject::BuilderDetails::apply(ShapeObject* p) const
+{
+	VisualObject::BuilderDetails::apply(p);
+	p->setMaterial(material);
+}
+
+//==============================================================================
+// PlaneMesh::BuilderDetails
+
+void PlaneMesh::BuilderDetails::apply(PlaneMesh* p) const
+{
+	ShapeObject::BuilderDetails::apply(p);
+}
+
+//==============================================================================
+// BoxMesh::BuilderDetails
+
+BoxMesh::BuilderDetails::BuilderDetails()
+	: size(1, 1, 1)
+{
+}
+
+void BoxMesh::BuilderDetails::apply(BoxMesh* p) const
+{
+	ShapeObject::BuilderDetails::apply(p);
+	p->setSize(size);
+}
+
+//==============================================================================
+// SphereMesh::BuilderDetailsB
+
+void SphereMesh::BuilderDetails::apply(SphereMesh* p) const
+{
+	ShapeObject::BuilderDetails::apply(p);
 }
 
 } // namespace ln

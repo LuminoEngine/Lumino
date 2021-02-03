@@ -85,18 +85,18 @@ typedef enum tagLNBool
 
 } LNBool;
 
-/** ログの通知レベル */
-typedef enum tagLNLogLevel
-{
-    LN_LOG_LEVEL_UNKNOWN = 0,
-    LN_LOG_LEVEL_VERBOSE,
-    LN_LOG_LEVEL_DEBUG,
-    LN_LOG_LEVEL_INFO,
-    LN_LOG_LEVEL_WARN,
-    LN_LOG_LEVEL_ERROR,
-    LN_LOG_LEVEL_FATAL,
-
-} LNLogLevel;
+///** ログの通知レベル */
+//typedef enum tagLNLogLevel
+//{
+//    LN_LOG_LEVEL_UNKNOWN = 0,
+//    LN_LOG_LEVEL_VERBOSE,
+//    LN_LOG_LEVEL_DEBUG,
+//    LN_LOG_LEVEL_INFO,
+//    LN_LOG_LEVEL_WARN,
+//    LN_LOG_LEVEL_ERROR,
+//    LN_LOG_LEVEL_FATAL,
+//
+//} LNLogLevel;
 
 //==============================================================================
 // Internal API
@@ -178,10 +178,11 @@ LN_FLAT_API LNResult LNObject_SetTypeInfoId(LNHandle obj, int typeInfoId);
 
 //==============================================================================
 
-LN_FLAT_API void LNLog_SetLevel(LNLogLevel level);
-LN_FLAT_API void LNLog_Write(LNLogLevel level, const LNChar* tag, const LNChar* text);
-LN_FLAT_API void LNLog_WriteA(LNLogLevel level, const char* tag, const char* text);
-LN_FLAT_API void LNLog_PrintA(LNLogLevel level, const char* tag, const char* format, ...);
+//LN_FLAT_API void LNLog_SetLevel(LNLogLevel level);
+//LN_FLAT_API void LNLog_AllocConsole(LNLogLevel level);
+//LN_FLAT_API void LNLog_Write(LNLogLevel level, const LNChar* tag, const LNChar* text);
+//LN_FLAT_API void LNLog_WriteA(LNLogLevel level, const char* tag, const char* text);
+//LN_FLAT_API void LNLog_PrintA(LNLogLevel level, const char* tag, const char* format, ...);
 
 #ifdef __cplusplus
 } // extern "C"

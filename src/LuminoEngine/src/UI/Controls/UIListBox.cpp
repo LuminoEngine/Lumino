@@ -4,7 +4,7 @@
 #include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
-#include <LuminoEngine/UI/UITextBlock.hpp>
+#include <LuminoEngine/UI/UIText.hpp>
 #include <LuminoEngine/UI/Controls/UIListBox.hpp>
 
 namespace ln {
@@ -393,7 +393,7 @@ bool UIListBoxItem::init()
 bool UIListBoxItem::init(StringRef text)
 {
 	if (!init()) return false;
-	addChild(makeObject<UITextBlock>(text));
+	addChild(makeObject<UIText>(text));
 	return true;
 }
 
@@ -406,7 +406,7 @@ bool UIListBoxItem::init(UIElement* content)
 
 void UIListBoxItem::bind(ObservablePropertyBase* prop)
 {
-	auto textblock = makeObject<UITextBlock>();
+	auto textblock = makeObject<UIText>();
 	auto viewProp = textblock->getViewProperty(u"text");
 	viewProp->bind(prop);
 	addChild(textblock);

@@ -70,6 +70,10 @@ void EngineContext::initializeEngineManager()
 
 		m_engineManager = makeRef<detail::EngineManager>();
 		m_engineManager->init(detail::EngineManager::s_settings);
+
+		if (engineManagerPostInit) {
+			engineManagerPostInit();
+		}
 	}
 }
 

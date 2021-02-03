@@ -143,25 +143,31 @@ enum class ObjectFlags
 	template<class T> friend class TypeInfoTraits; \
     static ::ln::TypeInfo* _lnref_getTypeInfo(); \
     virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override; \
-	static ::ln::TypeInfo* const _lnref_typeInfo LN_ATTRIBUTE_UNUSED_; \
+	static ::ln::TypeInfo* _lnref_typeInfo; \
 	static ::ln::TypeInfo* _lnref_registerTypeInfo(); \
 	static void _lnref_registerTypeInfoInitializer(::ln::EngineContext* context, ::ln::TypeInfo* typeInfo);
 
 #define LN_OBJECT_IMPLEMENT(classType, baseclassType) \
     ::ln::TypeInfo* classType::_lnref_getTypeInfo() \
     { \
+        /*if (!_lnref_typeInfo) */_lnref_registerTypeInfo(); \
 		return _lnref_typeInfo; \
     } \
     ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); } \
-	::ln::TypeInfo* const classType::_lnref_typeInfo = classType::_lnref_registerTypeInfo(); \
+	::ln::TypeInfo* classType::_lnref_typeInfo = nullptr; \
 	::ln::TypeInfo* classType::_lnref_registerTypeInfo() \
 	{ \
 		::ln::EngineContext* context = ::ln::EngineContext::current(); \
 		::ln::TypeInfo* typeInfo = context->registerType<classType>(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>(), {}); \
 		_lnref_registerTypeInfoInitializer(context, typeInfo); \
+        _lnref_typeInfo = typeInfo; \
 		return typeInfo; \
 	} \
 	void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext* context, ::ln::TypeInfo* typeInfo)
+
+// [2021/1/20] main の外側で _lnref_typeInfo が初期化されることがあるが、以前は通っていた処理が、このコメント時点の VS2019 最新では _lnref_typeInfo の参照先のインスタンスが死んでいたりした。
+// コンパイラによっていろいろ変わりそうなので、自動初期化はやめたほうがよさそう。
+// 今は _lnref_registerTypeInfo を毎回呼ぶことで対策しているが、オーバーヘッドあるので対策必要。
 
 #define LN_INTERNAL_NEW_OBJECT \
     template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \

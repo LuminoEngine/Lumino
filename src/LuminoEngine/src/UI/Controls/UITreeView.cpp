@@ -3,7 +3,6 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/Controls/UIButton.hpp>
-#include <LuminoEngine/UI/UITextBlock.hpp>
 #include <LuminoEngine/UI/Controls/UIScrollView.hpp>
 #include <LuminoEngine/UI/Controls/UITreeView.hpp>
 #include "../UIStyleInstance.hpp"
@@ -250,7 +249,7 @@ void UITreeView::init()
 //    //    auto itemModel = m_model->getIndex(i, 0, nullptr);
 //    //    auto itemData = m_model->getData(itemModel, u"");
 //
-//    //    auto text = makeObject<UITextBlock>();
+//    //    auto text = makeObject<UIText>();
 //    //    text->setText(itemData);
 //
 //    //    auto item = makeObject<UITreeItem>();
@@ -382,7 +381,7 @@ void UITreeView::makeChildItems(UITreeItem* item)
                 auto childModel = itemModel->getItem(i);
                 //auto itemData = m_model->getData(childModel, u"");
 
-                //auto text = makeObject<UITextBlock>();
+                //auto text = makeObject<UIText>();
                 //text->setText(itemData);
 
                 //auto child = makeObject<UITreeItem>();

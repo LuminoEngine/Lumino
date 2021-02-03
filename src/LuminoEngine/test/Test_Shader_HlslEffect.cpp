@@ -1,4 +1,6 @@
 ﻿#include "Common.hpp"
+#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
+#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 
 class Test_Graphics_HlslEffect : public ::testing::Test
 {
@@ -29,16 +31,20 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 	//* [ ] Basic rendering
 	{
 		auto shader1 = makeObject<Shader>(LN_ASSETFILE("Basic.fx"));
-		shader1->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
+		auto descriptorLayout1 = shader1->descriptorLayout();
+		auto shaderPass1 = shader1->techniques()[0]->passes()[0];
 
 		auto ctx = TestEnv::beginFrame();
 		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
+		auto shd = ctx->allocateShaderDescriptor(shaderPass1);
+		shd->setVector(descriptorLayout1->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vd1);
 		ctx->setVertexBuffer(0, vb1);
-		ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
+		ctx->setShaderPass(shaderPass1);
+		ctx->setShaderDescriptor(shd);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
@@ -49,16 +55,20 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 	//* [ ] Nested struct
 	{
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("NestedStruct.fx"));
-		shader2->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
+		auto descriptorLayout2 = shader2->descriptorLayout();
+		auto shaderPass2 = shader2->techniques()[0]->passes()[0];
 
 		auto ctx = TestEnv::beginFrame();
 		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
+		auto shd = ctx->allocateShaderDescriptor(shaderPass2);
+		shd->setVector(descriptorLayout2->findUniformMemberIndex(u"g_color"), Vector4(0, 1, 0, 1));
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vd1);
 		ctx->setVertexBuffer(0, vb1);
-		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
+		ctx->setShaderPass(shaderPass2);
+		ctx->setShaderDescriptor(shd);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
@@ -92,6 +102,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		auto props = makeObject<ShaderCompilationProperties>();
 		props->addDefinition(u"GREEN=1");
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest2.fx"), props);
+		auto shaderPass2 = shader2->techniques()[0]->passes()[0];
 
 		auto ctx = TestEnv::beginFrame();
 		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
@@ -100,7 +111,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		ctx->beginRenderPass(crp);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setVertexLayout(vd1);
-		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
+		ctx->setShaderPass(shaderPass2);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
@@ -113,6 +124,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		auto props = makeObject<ShaderCompilationProperties>();
 		props->addDefinition(u"BLUE");
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest2.fx"), props);
+		auto shaderPass2 = shader2->techniques()[0]->passes()[0];
 
 		auto ctx = TestEnv::beginFrame();
 		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
@@ -121,7 +133,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		ctx->beginRenderPass(crp);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setVertexLayout(vd1);
-		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
+		ctx->setShaderPass(shaderPass2);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
@@ -134,16 +146,20 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		auto props = makeObject<ShaderCompilationProperties>();
 		props->addIncludeDirectory(LN_ASSETFILE(""));
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest.fx"), props);
-		shader2->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
+		auto descriptorLayout2 = shader2->descriptorLayout();
+		auto shaderPass2 = shader2->techniques()[0]->passes()[0];
 
 		auto ctx = TestEnv::beginFrame();
 		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
+		auto shd = ctx->allocateShaderDescriptor(shaderPass2);
+		shd->setVector(descriptorLayout2->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setVertexLayout(vd1);
-		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
+		ctx->setShaderPass(shaderPass2);
+		ctx->setShaderDescriptor(shd);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();

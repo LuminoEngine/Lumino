@@ -9,8 +9,6 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "MakeNativePackage";
 
-        //public override List<string> Dependencies => new List<string>() { "BuildEngine_MSVC" };
-
         public bool fileMoving = false;
 
         public override void Build(Builder builder)
@@ -20,7 +18,7 @@ namespace LuminoBuild.Tasks
             Directory.CreateDirectory(destinationRootDir);
             Directory.CreateDirectory(destinationToolDir);
 
-            foreach (var target in BuildEnvironment.Targets)
+            foreach (var target in BuildEnvironment.Targets.Where(x => x.Package))
             {
                 string sourceBuildDir = Path.Combine(builder.LuminoBuildDir, target.Name);
                 if (Directory.Exists(sourceBuildDir))

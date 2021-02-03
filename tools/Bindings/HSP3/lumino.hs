@@ -10,7 +10,7 @@ Lumino
 0.9.0
 
 %date
-2020/12/21
+2021/1/22
 
 %author
 lriki
@@ -23,132 +23,6 @@ lumino.as ‚ğƒCƒ“ƒNƒ‹[ƒh‚µ‚Ä‚­‚¾‚³‚¢
 
 %url
 http ://nnmy.sakura.ne.jp/
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNVector3_GetX
-
-%group
-LNVector3
-%prm
-vector3, outReturn
-[in]  vector3   : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNVector3_SetX
-
-%group
-LNVector3
-%prm
-vector3, value
-[in] vector3 : instance
-[in] value   : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNVector3_GetY
-
-%group
-LNVector3
-%prm
-vector3, outReturn
-[in]  vector3   : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNVector3_SetY
-
-%group
-LNVector3
-%prm
-vector3, value
-[in] vector3 : instance
-[in] value   : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNVector3_GetZ
-
-%group
-LNVector3
-%prm
-vector3, outReturn
-[in]  vector3   : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNVector3_SetZ
-
-%group
-LNVector3
-%prm
-vector3, value
-[in] vector3 : instance
-[in] value   : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
 
 
 
@@ -328,174 +202,6 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNVector4_GetX
-
-%group
-LNVector4
-%prm
-vector4, outReturn
-[in]  vector4   : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNVector4_SetX
-
-%group
-LNVector4
-%prm
-vector4, value
-[in] vector4 : instance
-[in] value   : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNVector4_GetY
-
-%group
-LNVector4
-%prm
-vector4, outReturn
-[in]  vector4   : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNVector4_SetY
-
-%group
-LNVector4
-%prm
-vector4, value
-[in] vector4 : instance
-[in] value   : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNVector4_GetZ
-
-%group
-LNVector4
-%prm
-vector4, outReturn
-[in]  vector4   : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNVector4_SetZ
-
-%group
-LNVector4
-%prm
-vector4, value
-[in] vector4 : instance
-[in] value   : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNVector4_GetW
-
-%group
-LNVector4
-%prm
-vector4, outReturn
-[in]  vector4   : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNVector4_SetW
-
-%group
-LNVector4
-%prm
-vector4, value
-[in] vector4 : instance
-[in] value   : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
 LNVector4_SetZeros
 ‚·‚×‚Ä‚Ì—v‘f‚ğ 0.0 ‚Éİ’è‚µ‚ÄƒCƒ“ƒXƒ^ƒ“ƒX‚ğ‰Šú‰»‚µ‚Ü‚·B
 %group
@@ -527,174 +233,6 @@ vector4, x, y, z, w
 [in] y       : 
 [in] z       : 
 [in] w       : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNQuaternion_GetX
-
-%group
-LNQuaternion
-%prm
-quaternion, outReturn
-[in]  quaternion : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNQuaternion_SetX
-
-%group
-LNQuaternion
-%prm
-quaternion, value
-[in] quaternion : instance
-[in] value      : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNQuaternion_GetY
-
-%group
-LNQuaternion
-%prm
-quaternion, outReturn
-[in]  quaternion : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNQuaternion_SetY
-
-%group
-LNQuaternion
-%prm
-quaternion, value
-[in] quaternion : instance
-[in] value      : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNQuaternion_GetZ
-
-%group
-LNQuaternion
-%prm
-quaternion, outReturn
-[in]  quaternion : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNQuaternion_SetZ
-
-%group
-LNQuaternion
-%prm
-quaternion, value
-[in] quaternion : instance
-[in] value      : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNQuaternion_GetW
-
-%group
-LNQuaternion
-%prm
-quaternion, outReturn
-[in]  quaternion : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNQuaternion_SetW
-
-%group
-LNQuaternion
-%prm
-quaternion, value
-[in] quaternion : instance
-[in] value      : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -774,174 +312,6 @@ axis ‚ª’PˆÊƒxƒNƒgƒ‹‚Å‚È‚¯‚ê‚Î³‹K‰»‚µ‚Ä‚©‚çŒvZ‚ğs‚¢‚Ü‚·B
 ;
 ;------------------------------------------------------------
 %index
-LNMatrix_GetRow0
-
-%group
-LNMatrix
-%prm
-matrix, outReturn
-[in]  matrix    : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNMatrix_SetRow0
-
-%group
-LNMatrix
-%prm
-matrix, value
-[in] matrix : instance
-[in] value  : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNMatrix_GetRow1
-
-%group
-LNMatrix
-%prm
-matrix, outReturn
-[in]  matrix    : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNMatrix_SetRow1
-
-%group
-LNMatrix
-%prm
-matrix, value
-[in] matrix : instance
-[in] value  : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNMatrix_GetRow2
-
-%group
-LNMatrix
-%prm
-matrix, outReturn
-[in]  matrix    : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNMatrix_SetRow2
-
-%group
-LNMatrix
-%prm
-matrix, value
-[in] matrix : instance
-[in] value  : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNMatrix_GetRow3
-
-%group
-LNMatrix
-%prm
-matrix, outReturn
-[in]  matrix    : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNMatrix_SetRow3
-
-%group
-LNMatrix
-%prm
-matrix, value
-[in] matrix : instance
-[in] value  : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
 LNMatrix_SetZeros
 ’PˆÊs—ñ‚ğİ’è‚µ‚ÄƒCƒ“ƒXƒ^ƒ“ƒX‚ğ‰Šú‰»‚µ‚Ü‚·B
 %group
@@ -985,174 +355,6 @@ matrix, m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m4
 [in] m42    : 
 [in] m43    : 
 [in] m44    : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColor_GetR
-
-%group
-LNColor
-%prm
-color, outReturn
-[in]  color     : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColor_SetR
-
-%group
-LNColor
-%prm
-color, value
-[in] color : instance
-[in] value : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColor_GetG
-
-%group
-LNColor
-%prm
-color, outReturn
-[in]  color     : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColor_SetG
-
-%group
-LNColor
-%prm
-color, value
-[in] color : instance
-[in] value : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColor_GetB
-
-%group
-LNColor
-%prm
-color, outReturn
-[in]  color     : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColor_SetB
-
-%group
-LNColor
-%prm
-color, value
-[in] color : instance
-[in] value : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColor_GetA
-
-%group
-LNColor
-%prm
-color, outReturn
-[in]  color     : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColor_SetA
-
-%group
-LNColor
-%prm
-color, value
-[in] color : instance
-[in] value : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1210,174 +412,6 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNColorTone_GetR
-
-%group
-LNColorTone
-%prm
-colortone, outReturn
-[in]  colortone : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColorTone_SetR
-
-%group
-LNColorTone
-%prm
-colortone, value
-[in] colortone : instance
-[in] value     : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColorTone_GetG
-
-%group
-LNColorTone
-%prm
-colortone, outReturn
-[in]  colortone : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColorTone_SetG
-
-%group
-LNColorTone
-%prm
-colortone, value
-[in] colortone : instance
-[in] value     : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColorTone_GetB
-
-%group
-LNColorTone
-%prm
-colortone, outReturn
-[in]  colortone : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColorTone_SetB
-
-%group
-LNColorTone
-%prm
-colortone, value
-[in] colortone : instance
-[in] value     : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColorTone_GetS
-
-%group
-LNColorTone
-%prm
-colortone, outReturn
-[in]  colortone : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNColorTone_SetS
-
-%group
-LNColorTone
-%prm
-colortone, value
-[in] colortone : instance
-[in] value     : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
 LNColorTone_SetZeros
 ‚·‚×‚Ä‚Ì—v‘f‚ğ 0.0 ‚Å‰Šú‰»‚µ‚Ü‚·B
 %group
@@ -1409,90 +443,6 @@ colortone, r_, g_, b_, s_
 [in] g_        : 
 [in] b_        : 
 [in] s_        : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNPoint_GetX
-
-%group
-LNPoint
-%prm
-point, outReturn
-[in]  point     : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNPoint_SetX
-
-%group
-LNPoint
-%prm
-point, value
-[in] point : instance
-[in] value : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNPoint_GetY
-
-%group
-LNPoint
-%prm
-point, outReturn
-[in]  point     : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNPoint_SetY
-
-%group
-LNPoint
-%prm
-point, value
-[in] point : instance
-[in] value : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1548,77 +498,15 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNSize_GetWidth
-
+LNPoint_Get
+Še—v‘f‚Ì’l‚ğæ“¾‚µ‚Ü‚·B
 %group
-LNSize
+LNPoint
 %prm
-size, outReturn
-[in]  size      : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNSize_SetWidth
-
-%group
-LNSize
-%prm
-size, value
-[in] size  : instance
-[in] value : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNSize_GetHeight
-
-%group
-LNSize
-%prm
-size, outReturn
-[in]  size      : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNSize_SetHeight
-
-%group
-LNSize
-%prm
-size, value
-[in] size  : instance
-[in] value : 
+point, outX, outY
+[in]  point : instance
+[out] outX  : 
+[out] outY  : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1661,174 +549,6 @@ size, w, h
 [in] size : instance
 [in] w    : 
 [in] h    : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNRect_GetX
-
-%group
-LNRect
-%prm
-rect, outReturn
-[in]  rect      : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNRect_SetX
-
-%group
-LNRect
-%prm
-rect, value
-[in] rect  : instance
-[in] value : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNRect_GetY
-
-%group
-LNRect
-%prm
-rect, outReturn
-[in]  rect      : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNRect_SetY
-
-%group
-LNRect
-%prm
-rect, value
-[in] rect  : instance
-[in] value : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNRect_GetWidth
-
-%group
-LNRect
-%prm
-rect, outReturn
-[in]  rect      : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNRect_SetWidth
-
-%group
-LNRect
-%prm
-rect, value
-[in] rect  : instance
-[in] value : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNRect_GetHeight
-
-%group
-LNRect
-%prm
-rect, outReturn
-[in]  rect      : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNRect_SetHeight
-
-%group
-LNRect
-%prm
-rect, value
-[in] rect  : instance
-[in] value : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1949,174 +669,6 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNThickness_GetLeft
-
-%group
-LNThickness
-%prm
-thickness, outReturn
-[in]  thickness : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNThickness_SetLeft
-
-%group
-LNThickness
-%prm
-thickness, value
-[in] thickness : instance
-[in] value     : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNThickness_GetTop
-
-%group
-LNThickness
-%prm
-thickness, outReturn
-[in]  thickness : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNThickness_SetTop
-
-%group
-LNThickness
-%prm
-thickness, value
-[in] thickness : instance
-[in] value     : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNThickness_GetRight
-
-%group
-LNThickness
-%prm
-thickness, outReturn
-[in]  thickness : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNThickness_SetRight
-
-%group
-LNThickness
-%prm
-thickness, value
-[in] thickness : instance
-[in] value     : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNThickness_GetBottom
-
-%group
-LNThickness
-%prm
-thickness, outReturn
-[in]  thickness : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNThickness_SetBottom
-
-%group
-LNThickness
-%prm
-thickness, value
-[in] thickness : instance
-[in] value     : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
 LNThickness_SetZeros
 ‚·‚×‚Ä‚Ì—v‘f‚ğ 0 ‚Å‰Šú‰»‚µ‚Ü‚·B
 %group
@@ -2148,174 +700,6 @@ thickness, left_, top_, right_, bottom_
 [in] top_      : 
 [in] right_    : 
 [in] bottom_   : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNCornerRadius_GetTopleft
-
-%group
-LNCornerRadius
-%prm
-cornerradius, outReturn
-[in]  cornerradius : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNCornerRadius_SetTopleft
-
-%group
-LNCornerRadius
-%prm
-cornerradius, value
-[in] cornerradius : instance
-[in] value        : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNCornerRadius_GetTopright
-
-%group
-LNCornerRadius
-%prm
-cornerradius, outReturn
-[in]  cornerradius : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNCornerRadius_SetTopright
-
-%group
-LNCornerRadius
-%prm
-cornerradius, value
-[in] cornerradius : instance
-[in] value        : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNCornerRadius_GetBottomright
-
-%group
-LNCornerRadius
-%prm
-cornerradius, outReturn
-[in]  cornerradius : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNCornerRadius_SetBottomright
-
-%group
-LNCornerRadius
-%prm
-cornerradius, value
-[in] cornerradius : instance
-[in] value        : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNCornerRadius_GetBottomleft
-
-%group
-LNCornerRadius
-%prm
-cornerradius, outReturn
-[in]  cornerradius : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNCornerRadius_SetBottomleft
-
-%group
-LNCornerRadius
-%prm
-cornerradius, value
-[in] cornerradius : instance
-[in] value        : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3062,6 +1446,99 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
+LNLog_SetLevel
+setLevel
+%group
+LNLog
+%prm
+level
+[in] level : 
+                LN_LOG_LEVEL_UNKNOWN
+                
+                LN_LOG_LEVEL_VERBOSE
+                
+                LN_LOG_LEVEL_DEBUG
+                
+                LN_LOG_LEVEL_INFO
+                
+                LN_LOG_LEVEL_WARNING
+                
+                LN_LOG_LEVEL_ERROR
+                
+                LN_LOG_LEVEL_FATAL
+                
+                LN_LOG_LEVEL_DISBLE
+                
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNLog_AllocConsole
+allocConsole
+%group
+LNLog
+%prm
+
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNLog_Write
+write
+%group
+LNLog
+%prm
+level, tag, text
+[in] level : 
+                LN_LOG_LEVEL_UNKNOWN
+                
+                LN_LOG_LEVEL_VERBOSE
+                
+                LN_LOG_LEVEL_DEBUG
+                
+                LN_LOG_LEVEL_INFO
+                
+                LN_LOG_LEVEL_WARNING
+                
+                LN_LOG_LEVEL_ERROR
+                
+                LN_LOG_LEVEL_FATAL
+                
+                LN_LOG_LEVEL_DISBLE
+                
+[in] tag   : 
+[in] text  : 
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
 LNAssetModel_Create
 init
 %group
@@ -3194,19 +1671,19 @@ readAllText
 LNAssets
 %prm
 filePath, encoding, outReturn
-[in]  filePath                    : 
-[in]  encoding((LNEncodingType)0) : 
-                                       LN_ENCODING_TYPE_UNKNOWN
-                                       •s–¾‚È•¶šƒGƒ“ƒR[ƒfƒBƒ“ƒO (”»•Ê¸”sB‚Ü‚½‚ÍƒoƒCƒiƒŠƒtƒ@ƒCƒ‹)
-                                       LN_ENCODING_TYPE_ASCII
-                                       ASCII (Šg’£ƒAƒXƒL[‚ÍŠÜ‚Ü‚È‚¢ http://www.asciitable.com/)
-                                       LN_ENCODING_TYPE_UTF8
-                                       UTF-8
-                                       LN_ENCODING_TYPE_UTF8N
-                                       UTF-8 (BOM –³‚µ)
-                                       LN_ENCODING_TYPE_SJIS
-                                       “ú–{Œê (ƒVƒtƒg JIS) -- cp932(MS932) Windows-31J ¦MSÀ‘•
-[out] outReturn(0)                : instance.
+[in]  filePath                           : 
+[in]  encoding(LN_ENCODING_TYPE_UNKNOWN) : 
+                                              LN_ENCODING_TYPE_UNKNOWN
+                                              •s–¾‚È•¶šƒGƒ“ƒR[ƒfƒBƒ“ƒO (”»•Ê¸”sB‚Ü‚½‚ÍƒoƒCƒiƒŠƒtƒ@ƒCƒ‹)
+                                              LN_ENCODING_TYPE_ASCII
+                                              ASCII (Šg’£ƒAƒXƒL[‚ÍŠÜ‚Ü‚È‚¢ http://www.asciitable.com/)
+                                              LN_ENCODING_TYPE_UTF8
+                                              UTF-8
+                                              LN_ENCODING_TYPE_UTF8N
+                                              UTF-8 (BOM –³‚µ)
+                                              LN_ENCODING_TYPE_SJIS
+                                              “ú–{Œê (ƒVƒtƒg JIS) -- cp932(MS932) Windows-31J ¦MSÀ‘•
+[out] outReturn(0)                       : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3749,6 +2226,8 @@ outReturn
                      OpenGL
                      LN_GRAPHICS_API_VULKAN
                      Vulkan
+                     LN_GRAPHICS_API_DIRECT_X12
+                     Vulkan
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3871,9 +2350,9 @@ load
 LNShader
 %prm
 filePath, settings, outReturn
-[in]  filePath  : 
-[in]  settings  : 
-[out] outReturn(0) : instance.
+[in]  filePath                 : 
+[in]  settings(LN_NULL_HANDLE) : 
+[out] outReturn(0)             : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4305,9 +2784,9 @@ load
 LNMeshModel
 %prm
 filePath, settings, outReturn
-[in]  filePath  : 
-[in]  settings  : 
-[out] outReturn(0) : instance.
+[in]  filePath                 : 
+[in]  settings(LN_NULL_HANDLE) : 
+[out] outReturn(0)             : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4541,19 +3020,19 @@ LNKeyFrameAnimationCurve_AddKeyFrame
 LNKeyFrameAnimationCurve
 %prm
 keyframeanimationcurve, time, value, rightTangentMode, tangent
-[in] keyframeanimationcurve             : instance
-[in] time                               : 
-[in] value                              : 
-[in] rightTangentMode((LNTangentMode)0) : 
-                                             LN_TANGENT_MODE_LINEAR
-                                             üŒ`•âŠÔ
-                                             LN_TANGENT_MODE_TANGENT
-                                             Úü (‘¬“x) ‚ğg—p‚µ‚½•âŠÔ (ƒGƒ‹ƒ~[ƒgƒXƒvƒ‰ƒCƒ“)
-                                             LN_TANGENT_MODE_AUTO
-                                             ƒL[ƒtƒŒ[ƒ€‚Ì’l‚ğ’Ê‰ß‚·‚é‚È‚ß‚ç‚©‚È•âŠÔ (Catmull-Rom)
-                                             LN_TANGENT_MODE_CONSTANT
-                                             •âŠÔ‚È‚µ
-[in] tangent(0.000000)                  : 
+[in] keyframeanimationcurve                   : instance
+[in] time                                     : 
+[in] value                                    : 
+[in] rightTangentMode(LN_TANGENT_MODE_LINEAR) : 
+                                                   LN_TANGENT_MODE_LINEAR
+                                                   üŒ`•âŠÔ
+                                                   LN_TANGENT_MODE_TANGENT
+                                                   Úü (‘¬“x) ‚ğg—p‚µ‚½•âŠÔ (ƒGƒ‹ƒ~[ƒgƒXƒvƒ‰ƒCƒ“)
+                                                   LN_TANGENT_MODE_AUTO
+                                                   ƒL[ƒtƒŒ[ƒ€‚Ì’l‚ğ’Ê‰ß‚·‚é‚È‚ß‚ç‚©‚È•âŠÔ (Catmull-Rom)
+                                                   LN_TANGENT_MODE_CONSTANT
+                                                   •âŠÔ‚È‚µ
+[in] tangent(0.000000)                        : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5983,6 +4462,27 @@ LNWorldObject
 worldobject, outReturn
 [in]  worldobject : instance
 [out] outReturn(0) : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNWorldObject_AddInto
+‚±‚Ì WorldObject ‚ğw’è‚µ‚½ World ‚Ö’Ç‰Á‚µ‚Ü‚·BÈ—ª‚µ‚½ê‡‚ÍƒfƒtƒHƒ‹ƒg‚Ì World ‚Ö’Ç‰Á‚µ‚Ü‚·B
+%group
+LNWorldObject
+%prm
+worldobject, world
+[in] worldobject           : instance
+[in] world(LN_NULL_HANDLE) : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7609,6 +6109,26 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
+LNPlaneMesh_Create
+
+%group
+LNPlaneMesh
+%prm
+outPlaneMesh
+[in] outPlaneMesh(0) : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
 LNBoxMesh_Create
 Še²‚ÌƒTƒCƒY‚ª 1 ‚Å‚ ‚é BoxMesh ‚ğì¬‚µ‚Ü‚·B
 %group
@@ -7629,7 +6149,7 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNBoxMesh_CreateXYZ
+LNBoxMesh_CreateWithSize
 
 %group
 LNBoxMesh
@@ -7652,96 +6172,13 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNPlaneMesh_Create
-
-%group
-LNPlaneMesh
-%prm
-outPlaneMesh
-[in] outPlaneMesh(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNStaticMesh_Load
-load
-%group
-LNStaticMesh
-%prm
-filePath, outReturn
-[in]  filePath  : 
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNStaticMesh_GetModel
-w’è‚µ‚½–¼‘O‚Ì MeshContainer ‚©‚çAÕ“Ë”»’è—p‚Ì Body ‚ğì¬‚µ‚Ü‚·B
-%group
-LNStaticMesh
-%prm
-staticmesh, outReturn
-[in]  staticmesh : instance
-[out] outReturn(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNStaticMesh_MakeCollisionBody
-w’è‚µ‚½–¼‘O‚Ì MeshContainer ‚©‚çAÕ“Ë”»’è—p‚Ì Body ‚ğì¬‚µ‚Ü‚·B
-%group
-LNStaticMesh
-%prm
-staticmesh, meshContainerName
-[in] staticmesh        : instance
-[in] meshContainerName : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNStaticMeshComponent_Create
+LNMeshComponent_Create
 init
 %group
-LNStaticMeshComponent
+LNMeshComponent
 %prm
-outStaticMeshComponent
-[in] outStaticMeshComponent(0) : instance.
+outMeshComponent
+[in] outMeshComponent(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7755,14 +6192,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNStaticMeshComponent_SetModel
+LNMeshComponent_SetModel
 setModel
 %group
-LNStaticMeshComponent
+LNMeshComponent
 %prm
-staticmeshcomponent, model
-[in] staticmeshcomponent : instance
-[in] model               : 
+meshcomponent, model
+[in] meshcomponent : instance
+[in] model         : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7776,34 +6213,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNStaticMeshComponent_MakeCollisionBody
+LNMeshComponent_MakeCollisionBody
 w’è‚µ‚½–¼‘O‚Ì MeshContainer ‚©‚çAÕ“Ë”»’è—p‚Ì Body ‚ğì¬‚µ‚Ü‚·B
 %group
-LNStaticMeshComponent
+LNMeshComponent
 %prm
-staticmeshcomponent, meshContainerName
-[in] staticmeshcomponent : instance
-[in] meshContainerName   : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNSkinnedMeshComponent_Create
-init
-%group
-LNSkinnedMeshComponent
-%prm
-outSkinnedMeshComponent
-[in] outSkinnedMeshComponent(0) : instance.
+meshcomponent, meshContainerName
+[in] meshcomponent     : instance
+[in] meshContainerName : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10765,13 +9182,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNUITextBlock_Create
-UITextBlock ‚ğì¬‚µ‚Ü‚·B
+LNUIElement_AddInto
+‚±‚Ì UIElement ‚ğw’è‚µ‚½ UIElement ‚Öq—v‘f‚Æ‚µ‚Ä’Ç‰Á‚µ‚Ü‚·BÈ—ª‚µ‚½ê‡‚ÍƒfƒtƒHƒ‹ƒg‚Ìƒ‹[ƒg UIElement ‚Ö’Ç‰Á‚µ‚Ü‚·B
 %group
-LNUITextBlock
+LNUIElement
 %prm
-outUITextBlock
-[in] outUITextBlock(0) : instance.
+uielement, parent
+[in] uielement              : instance
+[in] parent(LN_NULL_HANDLE) : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10785,14 +9203,34 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNUITextBlock_CreateWithText
+LNUIText_Create
+UIText ‚ğì¬‚µ‚Ü‚·B
+%group
+LNUIText
+%prm
+outUIText
+[in] outUIText(0) : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNUIText_CreateWithText
 •\¦•¶š—ñ‚ğw’è‚µ‚ÄAUITextBlock ‚ğì¬‚µ‚Ü‚·B
 %group
-LNUITextBlock
+LNUIText
 %prm
-text, outUITextBlock
-[in] text           : 
-[in] outUITextBlock(0) : instance.
+text, outUIText
+[in] text      : 
+[in] outUIText(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10806,14 +9244,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNUITextBlock_SetText
+LNUIText_SetText
 •\¦•¶š—ñ‚ğİ’è‚µ‚Ü‚·B
 %group
-LNUITextBlock
+LNUIText
 %prm
-uitextblock, value
-[in] uitextblock : instance
-[in] value       : 
+uitext, value
+[in] uitext : instance
+[in] value  : 
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10827,13 +9265,13 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNUITextBlock_GetText
+LNUIText_GetText
 •\¦•¶š—ñ‚ğæ“¾‚µ‚Ü‚·B
 %group
-LNUITextBlock
+LNUIText
 %prm
-uitextblock, outReturn
-[in]  uitextblock : instance
+uitext, outReturn
+[in]  uitext    : instance
 [out] outReturn(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
@@ -11635,6 +10073,27 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
+LNUIListItemsControl_GetItemsLayoutPanel
+itemsLayoutPanel
+%group
+LNUIListItemsControl
+%prm
+uilistitemscontrol, outReturn
+[in]  uilistitemscontrol : instance
+[out] outReturn(0)       : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
 LNUIListItemsControl_SetSubmitMode
 UIListSubmitMode (default: Single)
 %group
@@ -11672,6 +10131,28 @@ uilistitemscontrol, outReturn
                               ƒQ[ƒ€UI—pBHover ‚Å‘I‘ğó‘ÔAƒVƒ“ƒOƒ‹ƒNƒŠƒbƒN‚Å Submit. Hover ó‘Ô‚Íg—p‚³‚ê‚È‚¢B
                               LN_UILIST_SUBMIT_MODE_DOUBLE
                               ƒGƒfƒBƒ^UI—pBƒVƒ“ƒOƒ‹ƒNƒŠƒbƒN‚Å‘I‘ğó‘ÔAƒ_ƒuƒ‹ƒNƒŠƒbƒN‚Å Submit.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNUIListItemsControl_ConnectOnSubmit
+Submit ƒCƒxƒ“ƒg‚Ì’Ê’m‚ğó‚¯æ‚éƒR[ƒ‹ƒoƒbƒN‚ğ“o˜^‚µ‚Ü‚·B
+%group
+LNUIListItemsControl
+%prm
+uilistitemscontrol, handler, outReturn
+[in]  uilistitemscontrol : instance
+[in]  handler            : 
+[out] outReturn(0)       : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12252,7 +10733,7 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNMouse_Position
+LNMouse_GetPosition
 ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ÌˆÊ’u‚ğæ“¾‚µ‚Ü‚·B
 %group
 LNMouse
@@ -13061,26 +11542,6 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNEngine_Run
-w’è‚µ‚½ Application ‚ÌÀs‚ğŠJn‚µ‚Ü‚·B
-%group
-LNEngine
-%prm
-app
-[in] app : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-‚±‚Ì‹@”\‚ğŒÄ‚Ño‚µ‚½ê‡AEngine::initialize(), Engine::finalize(), Engine::update() ‚ğŒÄ‚Ño‚·‚±‚Æ‚Í‚Å‚«‚È‚­‚È‚è‚Ü‚·B‘ã‚í‚è‚É Application::onInit(), Application::onUpdate() ‚È‚Ç‚ğg—p‚µ‚Ä‚­‚¾‚³‚¢B
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
 LNEngine_GetTime
 ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŠJn‚©‚ç‚ÌŒo‰ßŠÔ‚ğæ“¾‚µ‚Ü‚·B‚±‚Ì’l‚Íƒ^ƒCƒ€ƒXƒP[ƒ‹‚Ì‰e‹¿‚ğó‚¯‚Ü‚·B
 %group
@@ -13249,6 +11710,26 @@ LNApplication
 application, outReturn
 [in]  application : instance
 [out] outReturn(0) : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNApplication_Run
+Application ‚ÌÀs‚ğŠJn‚µ‚Ü‚·B
+%group
+LNApplication
+%prm
+application
+[in] application : instance
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14688,14 +13169,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNBoxMeshSerializeHandler_Create
+LNShapeObjectSerializeHandler_Create
 
 %group
-LNBoxMeshSerializeHandler
+LNShapeObjectSerializeHandler
 %prm
-callback, outBoxMeshSerializeHandler
-[in] callback                   : 
-[in] outBoxMeshSerializeHandler(0) : instance.
+callback, outShapeObjectSerializeHandler
+[in] callback                       : 
+[in] outShapeObjectSerializeHandler(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14709,14 +13190,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNBoxMeshPreUpdateHandler_Create
+LNShapeObjectPreUpdateHandler_Create
 
 %group
-LNBoxMeshPreUpdateHandler
+LNShapeObjectPreUpdateHandler
 %prm
-callback, outBoxMeshPreUpdateHandler
-[in] callback                   : 
-[in] outBoxMeshPreUpdateHandler(0) : instance.
+callback, outShapeObjectPreUpdateHandler
+[in] callback                       : 
+[in] outShapeObjectPreUpdateHandler(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14730,14 +13211,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNBoxMeshUpdateHandler_Create
+LNShapeObjectUpdateHandler_Create
 
 %group
-LNBoxMeshUpdateHandler
+LNShapeObjectUpdateHandler
 %prm
-callback, outBoxMeshUpdateHandler
-[in] callback                : 
-[in] outBoxMeshUpdateHandler(0) : instance.
+callback, outShapeObjectUpdateHandler
+[in] callback                    : 
+[in] outShapeObjectUpdateHandler(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14814,56 +13295,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNStaticMeshSerializeHandler_Create
+LNBoxMeshSerializeHandler_Create
 
 %group
-LNStaticMeshSerializeHandler
+LNBoxMeshSerializeHandler
 %prm
-callback, outStaticMeshSerializeHandler
-[in] callback                      : 
-[in] outStaticMeshSerializeHandler(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNStaticMeshPreUpdateHandler_Create
-
-%group
-LNStaticMeshPreUpdateHandler
-%prm
-callback, outStaticMeshPreUpdateHandler
-[in] callback                      : 
-[in] outStaticMeshPreUpdateHandler(0) : instance.
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNStaticMeshUpdateHandler_Create
-
-%group
-LNStaticMeshUpdateHandler
-%prm
-callback, outStaticMeshUpdateHandler
+callback, outBoxMeshSerializeHandler
 [in] callback                   : 
-[in] outStaticMeshUpdateHandler(0) : instance.
+[in] outBoxMeshSerializeHandler(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14877,14 +13316,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNStaticMeshComponentSerializeHandler_Create
+LNBoxMeshPreUpdateHandler_Create
 
 %group
-LNStaticMeshComponentSerializeHandler
+LNBoxMeshPreUpdateHandler
 %prm
-callback, outStaticMeshComponentSerializeHandler
-[in] callback                               : 
-[in] outStaticMeshComponentSerializeHandler(0) : instance.
+callback, outBoxMeshPreUpdateHandler
+[in] callback                   : 
+[in] outBoxMeshPreUpdateHandler(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14898,14 +13337,35 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNSkinnedMeshComponentSerializeHandler_Create
+LNBoxMeshUpdateHandler_Create
 
 %group
-LNSkinnedMeshComponentSerializeHandler
+LNBoxMeshUpdateHandler
 %prm
-callback, outSkinnedMeshComponentSerializeHandler
-[in] callback                                : 
-[in] outSkinnedMeshComponentSerializeHandler(0) : instance.
+callback, outBoxMeshUpdateHandler
+[in] callback                : 
+[in] outBoxMeshUpdateHandler(0) : instance.
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNMeshComponentSerializeHandler_Create
+
+%group
+LNMeshComponentSerializeHandler
+%prm
+callback, outMeshComponentSerializeHandler
+[in] callback                         : 
+[in] outMeshComponentSerializeHandler(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -15213,14 +13673,14 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNUITextBlockSerializeHandler_Create
+LNUITextSerializeHandler_Create
 
 %group
-LNUITextBlockSerializeHandler
+LNUITextSerializeHandler
 %prm
-callback, outUITextBlockSerializeHandler
-[in] callback                       : 
-[in] outUITextBlockSerializeHandler(0) : instance.
+callback, outUITextSerializeHandler
+[in] callback                  : 
+[in] outUITextSerializeHandler(0) : instance.
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 

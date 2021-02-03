@@ -106,6 +106,7 @@ public:
 
 	// e.g) -> LN_PIXEL_FORMAT_A8
 	ln::String makeFlatEnumMemberName(const TypeSymbol* enumType, const ConstantSymbol* member) const;
+	ln::String makeFlatEnumMemberNameFromValue(const ConstantSymbol* member) const;
 
 private:
 	SymbolDatabase* m_database;

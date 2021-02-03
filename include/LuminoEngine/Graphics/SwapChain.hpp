@@ -22,26 +22,6 @@ class SwapChainInternal;
 class SingleFrameUniformBufferAllocator;
 
 
-class GraphicsCommandList : public RefObject
-{
-public:
-    GraphicsCommandList();
-    void init(GraphicsManager* manager);
-    void dispose();
-    const Ref<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
-    const Ref<LinearAllocator>& allocator_deprecated() const { return m_allocator; }
-    void reset();
-    detail::ConstantBufferView allocateUniformBuffer(size_t size);
-    Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;
-
-    ShaderSecondaryDescriptor* acquireShaderDescriptor(Shader* shader);
-
-private:
-    Ref<detail::ICommandList> m_rhiResource;
-    Ref<LinearAllocator> m_allocator;
-    size_t m_uniformBufferOffsetAlignment;
-};
-
 }
 
 /** スワップチェーンのクラスです。 */
@@ -56,6 +36,8 @@ class LN_API SwapChain
     , public IGraphicsResource
 {
 public:
+    Size backbufferSize() const;
+
     /** バックバッファを取得します。(返されるインスタンスはフレームごとに異なります。このインスタンスを保持しないでください) */
     RenderTargetTexture* currentBackbuffer() const;
 

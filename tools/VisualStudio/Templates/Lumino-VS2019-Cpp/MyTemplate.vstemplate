@@ -21,6 +21,7 @@
     <Project TargetFileName="LuminoProject.vcxproj" File="LuminoProject.vcxproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="false" TargetFileName="$projectname$.vcxproj.filters">LuminoProject.vcxproj.filters</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Launch.cpp">APP\Launch.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Lumino.natvis">APP\Lumino.natvis</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="pch.cpp">APP\pch.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="pch.h">APP\pch.h</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="resource.h">APP\resource.h</ProjectItem>
@@ -28,7 +29,7 @@
       <ProjectItem ReplaceParameters="false" TargetFileName="app.rc">APP\app.rc</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="app.ico">APP\app.ico</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="small.ico">APP\small.ico</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="Main.cpp">Main.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Main.cpp" OpenInEditor="true">Main.cpp</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>

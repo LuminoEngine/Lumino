@@ -10,7 +10,7 @@
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include "GraphicsManager.hpp"
-#include "GraphicsDeviceContext.hpp"
+#include "RHIs/GraphicsDeviceContext.hpp"
 
 namespace ln {
 

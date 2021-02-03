@@ -445,6 +445,11 @@ public:
 	/** ウィンドウを前面にしてアクティブ化することを試みます。 */
 	//void activate();
 
+	
+	/** この UIElement を指定した UIElement へ子要素として追加します。省略した場合はデフォルトのルート UIElement へ追加します。 */
+	LN_METHOD()
+	void addInto(UIElement* parent = nullptr);
+
     UIElement();
     virtual ~UIElement();
 	bool init() { return init(UICreationContext::Default); }
@@ -505,7 +510,7 @@ public:	// TODO: internal protected
 		このメソッドの実装から子要素の measure を行う場合は measureLayout() を呼び出します。
 
         複数の子要素を並べてレイアウトしたい場合、サイズの合計を返します。
-        例えば 2 つの UITextBlock を縦に並べる場合は、2つの measureLayout() の結果について、
+        例えば 2 つの UIText を縦に並べる場合は、2つの measureLayout() の結果について、
         - width は 大きい方を返す
         - height は 2 つの合計を返す
 
@@ -659,7 +664,6 @@ private:
 //==============================================================================
 // UIElement::Builder
 
-
 struct UIElement::BuilderDetails : public AbstractBuilderDetails
 {
 	LN_BUILDER_DETAILS(UIElement);
@@ -684,6 +688,8 @@ struct UIElement::BuilderCore : public AbstractBuilder<T, B, D>
 
 	/** height property */
 	B& backgroundColor(const Color& value) { d()->backgroundColor = value; return self(); }
+
+	Ref<T> buildInto(UIElement* parent = nullptr) { auto p = AbstractBuilder<T, B, D>::build(); p->addInto(parent); return p; }
 };
 
 LN_BUILDER_IMPLEMENT(UIElement);

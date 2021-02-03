@@ -7,7 +7,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Graphics/SwapChain.hpp>
+#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Shader/ShaderDescriptor.hpp>
@@ -15,7 +15,7 @@
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
 #include "../Font/FontManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
-#include "../Graphics/GraphicsDeviceContext.hpp"
+#include "../Graphics/RHIs/GraphicsDeviceContext.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "../../../build/BuildCache/imgui/imgui.h"
 

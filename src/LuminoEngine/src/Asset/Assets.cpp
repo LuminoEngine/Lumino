@@ -4,7 +4,7 @@
 #include "AssetManager.hpp"
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
-#include "../Graphics/MixHash.hpp"
+#include "../Graphics/RHIs/MixHash.hpp"
 
 // TODO: for importer
 #include <LuminoEngine/Graphics/Texture.hpp>

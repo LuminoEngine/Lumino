@@ -39,7 +39,7 @@ struct PSInput
 float4 LN_5x5AverageBlur(sampler2D s, float2 resolution, float2 uv)
 {
     float2 texelSize = (1.0 / resolution);
-    float4 result = float4(0.0);
+    float4 result = float4(0.0, 0.0, 0.0, 0.0);
 
     for (int i=-2; i<=2; i++) {
         for (int j=-2; j<=2; j++) {

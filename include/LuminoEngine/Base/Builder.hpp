@@ -83,7 +83,8 @@ inline Ref<T> AbstractBuilder<T, B, D>::build() const
     template<class T, class B, class D> struct BuilderCore; \
     struct BuilderDetails; \
 	public: \
-    struct Builder;
+    struct Builder; \
+    using With = Builder;
 
 #define LN_BUILDER_IMPLEMENT(type) \
 	struct type::Builder : public BuilderCore<type, Builder, BuilderDetails> { };

@@ -13,6 +13,14 @@
 #const global LN_NULL_HANDLE 0
 _ln_return_discard = 0
 
+#const global LN_LOG_LEVEL_UNKNOWN 0
+#const global LN_LOG_LEVEL_VERBOSE 1
+#const global LN_LOG_LEVEL_DEBUG 2
+#const global LN_LOG_LEVEL_INFO 3
+#const global LN_LOG_LEVEL_WARNING 4
+#const global LN_LOG_LEVEL_ERROR 5
+#const global LN_LOG_LEVEL_FATAL 6
+#const global LN_LOG_LEVEL_DISBLE 7
 #const global LN_ENCODING_TYPE_UNKNOWN 0
 #const global LN_ENCODING_TYPE_ASCII 1
 #const global LN_ENCODING_TYPE_UTF8 2
@@ -115,6 +123,7 @@ _ln_return_discard = 0
 #const global LN_GRAPHICS_API_DEFAULT 0
 #const global LN_GRAPHICS_API_OPEN_GL 1
 #const global LN_GRAPHICS_API_VULKAN 2
+#const global LN_GRAPHICS_API_DIRECT_X12 3
 #const global LN_PIXEL_FORMAT_UNKNOWN 0
 #const global LN_PIXEL_FORMAT_A8 1
 #const global LN_PIXEL_FORMAT_RGBA8 2
@@ -210,1475 +219,1486 @@ _ln_return_discard = 0
 #const global LN_UILIST_SUBMIT_MODE_SINGLE 0
 #const global LN_UILIST_SUBMIT_MODE_DOUBLE 1
 
-#cmd LNVector3 $2C
-#cmd LNVector3_GetX $5A0
-#cmd LNVector3_SetX $5A2
-#cmd LNVector3_GetY $5A3
-#cmd LNVector3_SetY $5A5
-#cmd LNVector3_GetZ $5A6
-#cmd LNVector3_SetZ $5A8
-#cmd LNVector3_SetZeros $30
-#cmd LNVector3_Set $31
-#cmd LNVector3_Get $35
-#cmd LNVector3_Length $39
-#cmd LNVector3_LengthSquared $3A
-#cmd LNVector3_MutatingNormalize $3B
-#cmd LNVector3_NormalizeXYZ $3C
-#cmd LNVector3_Normalize $40
-#cmd LNVector4 $42
-#cmd LNVector4_GetX $5BF
-#cmd LNVector4_SetX $5C1
-#cmd LNVector4_GetY $5C2
-#cmd LNVector4_SetY $5C4
-#cmd LNVector4_GetZ $5C5
-#cmd LNVector4_SetZ $5C7
-#cmd LNVector4_GetW $5C8
-#cmd LNVector4_SetW $5CA
-#cmd LNVector4_SetZeros $47
-#cmd LNVector4_Set $48
-#cmd LNQuaternion $4D
-#cmd LNQuaternion_GetX $5DD
-#cmd LNQuaternion_SetX $5DF
-#cmd LNQuaternion_GetY $5E0
-#cmd LNQuaternion_SetY $5E2
-#cmd LNQuaternion_GetZ $5E3
-#cmd LNQuaternion_SetZ $5E5
-#cmd LNQuaternion_GetW $5E6
-#cmd LNQuaternion_SetW $5E8
-#cmd LNQuaternion_SetZeros $52
-#cmd LNQuaternion_Set $53
-#cmd LNQuaternion_SetFromAxis $58
-#cmd LNMatrix $5B
-#cmd LNMatrix_GetRow0 $5FC
-#cmd LNMatrix_SetRow0 $5FE
-#cmd LNMatrix_GetRow1 $5FF
-#cmd LNMatrix_SetRow1 $601
-#cmd LNMatrix_GetRow2 $602
-#cmd LNMatrix_SetRow2 $604
-#cmd LNMatrix_GetRow3 $605
-#cmd LNMatrix_SetRow3 $607
-#cmd LNMatrix_SetZeros $60
-#cmd LNMatrix_Set $61
-#cmd LNColor $17A
-#cmd LNColor_GetR $69B
-#cmd LNColor_SetR $69D
-#cmd LNColor_GetG $69E
-#cmd LNColor_SetG $6A0
-#cmd LNColor_GetB $6A1
-#cmd LNColor_SetB $6A3
-#cmd LNColor_GetA $6A4
-#cmd LNColor_SetA $6A6
-#cmd LNColor_SetZeros $17F
-#cmd LNColor_Set $180
-#cmd LNColorTone $185
-#cmd LNColorTone_GetR $6BA
-#cmd LNColorTone_SetR $6BC
-#cmd LNColorTone_GetG $6BD
-#cmd LNColorTone_SetG $6BF
-#cmd LNColorTone_GetB $6C0
-#cmd LNColorTone_SetB $6C2
-#cmd LNColorTone_GetS $6C3
-#cmd LNColorTone_SetS $6C5
-#cmd LNColorTone_SetZeros $18A
-#cmd LNColorTone_Set $18B
-#cmd LNPoint $190
-#cmd LNPoint_GetX $6D8
-#cmd LNPoint_SetX $6DA
-#cmd LNPoint_GetY $6DB
-#cmd LNPoint_SetY $6DD
-#cmd LNPoint_SetZeros $193
-#cmd LNPoint_Set $194
-#cmd LNSize $197
-#cmd LNSize_GetWidth $6E8
-#cmd LNSize_SetWidth $6EA
-#cmd LNSize_GetHeight $6EB
-#cmd LNSize_SetHeight $6ED
-#cmd LNSize_SetZeros $19A
-#cmd LNSize_Set $19B
-#cmd LNRect $19E
-#cmd LNRect_GetX $6F8
-#cmd LNRect_SetX $6FA
-#cmd LNRect_GetY $6FB
-#cmd LNRect_SetY $6FD
-#cmd LNRect_GetWidth $6FE
-#cmd LNRect_SetWidth $700
-#cmd LNRect_GetHeight $701
-#cmd LNRect_SetHeight $703
-#cmd LNRect_SetZeros $1A3
-#cmd LNRect_Set $1A4
-#cmd LNRect_GetLeft $1A9
-#cmd LNRect_SetSize $1AA
-#cmd LNRect_GetSize $1AC
-#cmd LNThickness $1AD
-#cmd LNThickness_GetLeft $71C
-#cmd LNThickness_SetLeft $71E
-#cmd LNThickness_GetTop $71F
-#cmd LNThickness_SetTop $721
-#cmd LNThickness_GetRight $722
-#cmd LNThickness_SetRight $724
-#cmd LNThickness_GetBottom $725
-#cmd LNThickness_SetBottom $727
-#cmd LNThickness_SetZeros $1B2
-#cmd LNThickness_Set $1B3
-#cmd LNCornerRadius $1B8
-#cmd LNCornerRadius_GetTopleft $73A
-#cmd LNCornerRadius_SetTopleft $73C
-#cmd LNCornerRadius_GetTopright $73D
-#cmd LNCornerRadius_SetTopright $73F
-#cmd LNCornerRadius_GetBottomright $740
-#cmd LNCornerRadius_SetBottomright $742
-#cmd LNCornerRadius_GetBottomleft $743
-#cmd LNCornerRadius_SetBottomleft $745
-#cmd LNCornerRadius_SetZeros $1BD
-#cmd LNCornerRadius_Set $1BE
+#cmd LNVector3 $35
+#cmd LNVector3_GetX $5B4
+#cmd LNVector3_SetX $5B6
+#cmd LNVector3_GetY $5B7
+#cmd LNVector3_SetY $5B9
+#cmd LNVector3_GetZ $5BA
+#cmd LNVector3_SetZ $5BC
+#cmd LNVector3_SetZeros $39
+#cmd LNVector3_Set $3A
+#cmd LNVector3_Get $3E
+#cmd LNVector3_Length $42
+#cmd LNVector3_LengthSquared $43
+#cmd LNVector3_MutatingNormalize $44
+#cmd LNVector3_NormalizeXYZ $45
+#cmd LNVector3_Normalize $49
+#cmd LNVector4 $4B
+#cmd LNVector4_GetX $5D3
+#cmd LNVector4_SetX $5D5
+#cmd LNVector4_GetY $5D6
+#cmd LNVector4_SetY $5D8
+#cmd LNVector4_GetZ $5D9
+#cmd LNVector4_SetZ $5DB
+#cmd LNVector4_GetW $5DC
+#cmd LNVector4_SetW $5DE
+#cmd LNVector4_SetZeros $50
+#cmd LNVector4_Set $51
+#cmd LNQuaternion $56
+#cmd LNQuaternion_GetX $5F1
+#cmd LNQuaternion_SetX $5F3
+#cmd LNQuaternion_GetY $5F4
+#cmd LNQuaternion_SetY $5F6
+#cmd LNQuaternion_GetZ $5F7
+#cmd LNQuaternion_SetZ $5F9
+#cmd LNQuaternion_GetW $5FA
+#cmd LNQuaternion_SetW $5FC
+#cmd LNQuaternion_SetZeros $5B
+#cmd LNQuaternion_Set $5C
+#cmd LNQuaternion_SetFromAxis $61
+#cmd LNMatrix $64
+#cmd LNMatrix_GetRow0 $610
+#cmd LNMatrix_SetRow0 $612
+#cmd LNMatrix_GetRow1 $613
+#cmd LNMatrix_SetRow1 $615
+#cmd LNMatrix_GetRow2 $616
+#cmd LNMatrix_SetRow2 $618
+#cmd LNMatrix_GetRow3 $619
+#cmd LNMatrix_SetRow3 $61B
+#cmd LNMatrix_SetZeros $69
+#cmd LNMatrix_Set $6A
+#cmd LNColor $18C
+#cmd LNColor_GetR $6AF
+#cmd LNColor_SetR $6B1
+#cmd LNColor_GetG $6B2
+#cmd LNColor_SetG $6B4
+#cmd LNColor_GetB $6B5
+#cmd LNColor_SetB $6B7
+#cmd LNColor_GetA $6B8
+#cmd LNColor_SetA $6BA
+#cmd LNColor_SetZeros $191
+#cmd LNColor_Set $192
+#cmd LNColorTone $197
+#cmd LNColorTone_GetR $6CE
+#cmd LNColorTone_SetR $6D0
+#cmd LNColorTone_GetG $6D1
+#cmd LNColorTone_SetG $6D3
+#cmd LNColorTone_GetB $6D4
+#cmd LNColorTone_SetB $6D6
+#cmd LNColorTone_GetS $6D7
+#cmd LNColorTone_SetS $6D9
+#cmd LNColorTone_SetZeros $19C
+#cmd LNColorTone_Set $19D
+#cmd LNPoint $1A2
+#cmd LNPoint_GetX $6EC
+#cmd LNPoint_SetX $6EE
+#cmd LNPoint_GetY $6EF
+#cmd LNPoint_SetY $6F1
+#cmd LNPoint_SetZeros $1A5
+#cmd LNPoint_Set $1A6
+#cmd LNPoint_Get $1A9
+#cmd LNSize $1AC
+#cmd LNSize_GetWidth $6FD
+#cmd LNSize_SetWidth $6FF
+#cmd LNSize_GetHeight $700
+#cmd LNSize_SetHeight $702
+#cmd LNSize_SetZeros $1AF
+#cmd LNSize_Set $1B0
+#cmd LNRect $1B3
+#cmd LNRect_GetX $70D
+#cmd LNRect_SetX $70F
+#cmd LNRect_GetY $710
+#cmd LNRect_SetY $712
+#cmd LNRect_GetWidth $713
+#cmd LNRect_SetWidth $715
+#cmd LNRect_GetHeight $716
+#cmd LNRect_SetHeight $718
+#cmd LNRect_SetZeros $1B8
+#cmd LNRect_Set $1B9
+#cmd LNRect_GetLeft $1BE
+#cmd LNRect_SetSize $1BF
+#cmd LNRect_GetSize $1C1
+#cmd LNThickness $1C2
+#cmd LNThickness_GetLeft $731
+#cmd LNThickness_SetLeft $733
+#cmd LNThickness_GetTop $734
+#cmd LNThickness_SetTop $736
+#cmd LNThickness_GetRight $737
+#cmd LNThickness_SetRight $739
+#cmd LNThickness_GetBottom $73A
+#cmd LNThickness_SetBottom $73C
+#cmd LNThickness_SetZeros $1C7
+#cmd LNThickness_Set $1C8
+#cmd LNCornerRadius $1CD
+#cmd LNCornerRadius_GetTopleft $74F
+#cmd LNCornerRadius_SetTopleft $751
+#cmd LNCornerRadius_GetTopright $752
+#cmd LNCornerRadius_SetTopright $754
+#cmd LNCornerRadius_GetBottomright $755
+#cmd LNCornerRadius_SetBottomright $757
+#cmd LNCornerRadius_GetBottomleft $758
+#cmd LNCornerRadius_SetBottomleft $75A
+#cmd LNCornerRadius_SetZeros $1D2
+#cmd LNCornerRadius_Set $1D3
 
-#cmd _LNObject_Release $7B
+#cmd _LNObject_Release $84
 #define LNObject_Release(%1) _LNObject_Release %1
-#cmd _LNObject_Retain $7C
+#cmd _LNObject_Retain $85
 #define LNObject_Retain(%1) _LNObject_Retain %1
-#cmd _LNObject_GetReferenceCount $7D
+#cmd _LNObject_GetReferenceCount $86
 #define LNObject_GetReferenceCount(%1, %2=_ln_return_discard) _LNObject_GetReferenceCount %1, %2
-#cmd LNObject_SetPrototype_OnSerialize $A17
-#cmd LNEventConnection_SetPrototype_OnSerialize $A22
-#cmd _LNPromiseFailureDelegate_Create $622
+#cmd LNObject_SetPrototype_OnSerialize $A33
+#cmd LNEventConnection_SetPrototype_OnSerialize $A3E
+#cmd _LNPromiseFailureDelegate_Create $636
 #define LNPromiseFailureDelegate_Create(%1, %2=_ln_return_discard) _LNPromiseFailureDelegate_Create %1, %2
-#cmd _LNVariant_Create $82
+#cmd _LNVariant_Create $8B
 #define LNVariant_Create(%1=_ln_return_discard) _LNVariant_Create %1
-#cmd _LNVariant_SetInt $83
+#cmd _LNVariant_SetInt $8C
 #define LNVariant_SetInt(%1, %2) _LNVariant_SetInt %1, %2
-#cmd _LNVariant_GetInt $85
+#cmd _LNVariant_GetInt $8E
 #define LNVariant_GetInt(%1, %2=_ln_return_discard) _LNVariant_GetInt %1, %2
-#cmd LNVariant_SetPrototype_OnSerialize $A2D
-#cmd _LNZVTestDelegate1_Create $62B
+#cmd LNVariant_SetPrototype_OnSerialize $A49
+#cmd _LNZVTestDelegate1_Create $63F
 #define LNZVTestDelegate1_Create(%1, %2=_ln_return_discard) _LNZVTestDelegate1_Create %1, %2
-#cmd _LNZVTestDelegate2_Create $631
+#cmd _LNZVTestDelegate2_Create $645
 #define LNZVTestDelegate2_Create(%1, %2=_ln_return_discard) _LNZVTestDelegate2_Create %1, %2
-#cmd _LNZVTestDelegate3_Create $636
+#cmd _LNZVTestDelegate3_Create $64A
 #define LNZVTestDelegate3_Create(%1, %2=_ln_return_discard) _LNZVTestDelegate3_Create %1, %2
-#cmd _LNZVTestEventHandler1_Create $63B
+#cmd _LNZVTestEventHandler1_Create $64F
 #define LNZVTestEventHandler1_Create(%1, %2=_ln_return_discard) _LNZVTestEventHandler1_Create %1, %2
-#cmd _LNZVTestEventHandler2_Create $640
+#cmd _LNZVTestEventHandler2_Create $654
 #define LNZVTestEventHandler2_Create(%1, %2=_ln_return_discard) _LNZVTestEventHandler2_Create %1, %2
-#cmd _LNZVTestPromise1_ThenWith $643
+#cmd _LNZVTestPromise1_ThenWith $657
 #define LNZVTestPromise1_ThenWith(%1, %2) _LNZVTestPromise1_ThenWith %1, %2
-#cmd _LNZVTestPromise1_CatchWith $645
+#cmd _LNZVTestPromise1_CatchWith $659
 #define LNZVTestPromise1_CatchWith(%1, %2) _LNZVTestPromise1_CatchWith %1, %2
-#cmd _LNZVTestPromise2_ThenWith $649
+#cmd _LNZVTestPromise2_ThenWith $65D
 #define LNZVTestPromise2_ThenWith(%1, %2) _LNZVTestPromise2_ThenWith %1, %2
-#cmd _LNZVTestPromise2_CatchWith $64B
+#cmd _LNZVTestPromise2_CatchWith $65F
 #define LNZVTestPromise2_CatchWith(%1, %2) _LNZVTestPromise2_CatchWith %1, %2
-#cmd _LNZVTestClass1_Create $AE
+#cmd _LNZVTestClass1_Create $B7
 #define LNZVTestClass1_Create(%1=_ln_return_discard) _LNZVTestClass1_Create %1
-#cmd _LNZVTestClass1_SetTestDelegate1 $98
+#cmd _LNZVTestClass1_SetTestDelegate1 $A1
 #define LNZVTestClass1_SetTestDelegate1(%1, %2) _LNZVTestClass1_SetTestDelegate1 %1, %2
-#cmd _LNZVTestClass1_SetTestDelegate2 $9A
+#cmd _LNZVTestClass1_SetTestDelegate2 $A3
 #define LNZVTestClass1_SetTestDelegate2(%1, %2) _LNZVTestClass1_SetTestDelegate2 %1, %2
-#cmd _LNZVTestClass1_SetTestDelegate3 $9C
+#cmd _LNZVTestClass1_SetTestDelegate3 $A5
 #define LNZVTestClass1_SetTestDelegate3(%1, %2) _LNZVTestClass1_SetTestDelegate3 %1, %2
-#cmd _LNZVTestClass1_CallTestDelegate1 $9E
+#cmd _LNZVTestClass1_CallTestDelegate1 $A7
 #define LNZVTestClass1_CallTestDelegate1(%1, %2) _LNZVTestClass1_CallTestDelegate1 %1, %2
-#cmd _LNZVTestClass1_CallTestDelegate2 $A0
+#cmd _LNZVTestClass1_CallTestDelegate2 $A9
 #define LNZVTestClass1_CallTestDelegate2(%1, %2, %3, %4=_ln_return_discard) _LNZVTestClass1_CallTestDelegate2 %1, %2, %3, %4
-#cmd _LNZVTestClass1_CallTestDelegate3 $A3
+#cmd _LNZVTestClass1_CallTestDelegate3 $AC
 #define LNZVTestClass1_CallTestDelegate3(%1) _LNZVTestClass1_CallTestDelegate3 %1
-#cmd _LNZVTestClass1_LoadAsync $A4
+#cmd _LNZVTestClass1_LoadAsync $AD
 #define LNZVTestClass1_LoadAsync(%1, %2=_ln_return_discard) _LNZVTestClass1_LoadAsync %1, %2
-#cmd _LNZVTestClass1_ExecuteAsync $A6
+#cmd _LNZVTestClass1_ExecuteAsync $AF
 #define LNZVTestClass1_ExecuteAsync(%1, %2=_ln_return_discard) _LNZVTestClass1_ExecuteAsync %1, %2
-#cmd _LNZVTestClass1_GetFilePath $A7
+#cmd _LNZVTestClass1_GetFilePath $B0
 #define LNZVTestClass1_GetFilePath(%1, %2=_ln_return_discard) _LNZVTestClass1_GetFilePath %1, %2
-#cmd _LNZVTestClass1_ConnectOnEvent1 $A8
+#cmd _LNZVTestClass1_ConnectOnEvent1 $B1
 #define LNZVTestClass1_ConnectOnEvent1(%1, %2, %3=_ln_return_discard) _LNZVTestClass1_ConnectOnEvent1 %1, %2, %3
-#cmd _LNZVTestClass1_RaiseEvent1 $AA
+#cmd _LNZVTestClass1_RaiseEvent1 $B3
 #define LNZVTestClass1_RaiseEvent1(%1) _LNZVTestClass1_RaiseEvent1 %1
-#cmd _LNZVTestClass1_ConnectOnEvent2 $AB
+#cmd _LNZVTestClass1_ConnectOnEvent2 $B4
 #define LNZVTestClass1_ConnectOnEvent2(%1, %2, %3=_ln_return_discard) _LNZVTestClass1_ConnectOnEvent2 %1, %2, %3
-#cmd _LNZVTestClass1_RaiseEvent2 $AD
+#cmd _LNZVTestClass1_RaiseEvent2 $B6
 #define LNZVTestClass1_RaiseEvent2(%1) _LNZVTestClass1_RaiseEvent2 %1
-#cmd LNZVTestClass1_SetPrototype_OnSerialize $A38
-#cmd _LNZVTestEventArgs1_Create $B1
+#cmd LNZVTestClass1_SetPrototype_OnSerialize $A54
+#cmd _LNZVTestEventArgs1_Create $BA
 #define LNZVTestEventArgs1_Create(%1=_ln_return_discard) _LNZVTestEventArgs1_Create %1
-#cmd _LNZVTestEventArgs1_CreateWithValue $B2
+#cmd _LNZVTestEventArgs1_CreateWithValue $BB
 #define LNZVTestEventArgs1_CreateWithValue(%1, %2=_ln_return_discard) _LNZVTestEventArgs1_CreateWithValue %1, %2
-#cmd _LNZVTestEventArgs1_GetValue $B0
+#cmd _LNZVTestEventArgs1_GetValue $B9
 #define LNZVTestEventArgs1_GetValue(%1, %2=_ln_return_discard) _LNZVTestEventArgs1_GetValue %1, %2
-#cmd LNZVTestEventArgs1_SetPrototype_OnSerialize $A43
-#cmd LNSerializer2_SetPrototype_OnSerialize $A4E
-#cmd LNAssetObject_SetPrototype_OnSerialize $A59
-#cmd LNAssetImportSettings_SetPrototype_OnSerialize $A64
-#cmd _LNAssetModel_Create $114
+#cmd LNZVTestEventArgs1_SetPrototype_OnSerialize $A5F
+#cmd _LNLog_SetLevel $BE
+#define LNLog_SetLevel(%1) _LNLog_SetLevel %1
+#cmd _LNLog_AllocConsole $C0
+#define LNLog_AllocConsole _LNLog_AllocConsole
+#cmd _LNLog_Write $C1
+#define LNLog_Write(%1, %2, %3) _LNLog_Write %1, %2, %3
+#cmd LNSerializer2_SetPrototype_OnSerialize $A6A
+#cmd LNAssetObject_SetPrototype_OnSerialize $A75
+#cmd LNAssetImportSettings_SetPrototype_OnSerialize $A80
+#cmd _LNAssetModel_Create $125
 #define LNAssetModel_Create(%1, %2=_ln_return_discard) _LNAssetModel_Create %1, %2
-#cmd _LNAssetModel_Target $113
+#cmd _LNAssetModel_Target $124
 #define LNAssetModel_Target(%1, %2=_ln_return_discard) _LNAssetModel_Target %1, %2
-#cmd LNAssetModel_SetPrototype_OnSerialize $A6F
-#cmd _LNAssets_SaveAssetToLocalFile $117
+#cmd LNAssetModel_SetPrototype_OnSerialize $A8B
+#cmd _LNAssets_SaveAssetToLocalFile $128
 #define LNAssets_SaveAssetToLocalFile(%1, %2) _LNAssets_SaveAssetToLocalFile %1, %2
-#cmd _LNAssets_LoadAssetFromLocalFile $11A
+#cmd _LNAssets_LoadAssetFromLocalFile $12B
 #define LNAssets_LoadAssetFromLocalFile(%1, %2=_ln_return_discard) _LNAssets_LoadAssetFromLocalFile %1, %2
-#cmd _LNAssets_LoadAsset $11C
+#cmd _LNAssets_LoadAsset $12D
 #define LNAssets_LoadAsset(%1, %2=_ln_return_discard) _LNAssets_LoadAsset %1, %2
-#cmd _LNAssets_ReloadAsset $11E
+#cmd _LNAssets_ReloadAsset $12F
 #define LNAssets_ReloadAsset(%1, %2) _LNAssets_ReloadAsset %1, %2
-#cmd _LNAssets_ReadAllText $121
-#define LNAssets_ReadAllText(%1, %2, %3=_ln_return_discard) _LNAssets_ReadAllText %1, %2, %3
-#cmd _LNSound_SetVolume $12B
+#cmd _LNAssets_ReadAllText $132
+#define LNAssets_ReadAllText(%1, %2=LN_ENCODING_TYPE_UNKNOWN, %3=_ln_return_discard) _LNAssets_ReadAllText %1, %2, %3
+#cmd _LNSound_SetVolume $13C
 #define LNSound_SetVolume(%1, %2) _LNSound_SetVolume %1, %2
-#cmd _LNSound_GetVolume $12D
+#cmd _LNSound_GetVolume $13E
 #define LNSound_GetVolume(%1, %2=_ln_return_discard) _LNSound_GetVolume %1, %2
-#cmd _LNSound_SetPitch $12E
+#cmd _LNSound_SetPitch $13F
 #define LNSound_SetPitch(%1, %2) _LNSound_SetPitch %1, %2
-#cmd _LNSound_GetPitch $130
+#cmd _LNSound_GetPitch $141
 #define LNSound_GetPitch(%1, %2=_ln_return_discard) _LNSound_GetPitch %1, %2
-#cmd _LNSound_SetLoopEnabled $131
+#cmd _LNSound_SetLoopEnabled $142
 #define LNSound_SetLoopEnabled(%1, %2) _LNSound_SetLoopEnabled %1, %2
-#cmd _LNSound_IsLoopEnabled $133
+#cmd _LNSound_IsLoopEnabled $144
 #define LNSound_IsLoopEnabled(%1, %2=_ln_return_discard) _LNSound_IsLoopEnabled %1, %2
-#cmd _LNSound_SetLoopRange $134
+#cmd _LNSound_SetLoopRange $145
 #define LNSound_SetLoopRange(%1, %2, %3) _LNSound_SetLoopRange %1, %2, %3
-#cmd _LNSound_Play $137
+#cmd _LNSound_Play $148
 #define LNSound_Play(%1) _LNSound_Play %1
-#cmd _LNSound_Stop $138
+#cmd _LNSound_Stop $149
 #define LNSound_Stop(%1) _LNSound_Stop %1
-#cmd _LNSound_Pause $139
+#cmd _LNSound_Pause $14A
 #define LNSound_Pause(%1) _LNSound_Pause %1
-#cmd _LNSound_Resume $13A
+#cmd _LNSound_Resume $14B
 #define LNSound_Resume(%1) _LNSound_Resume %1
-#cmd _LNSound_FadeVolume $13B
+#cmd _LNSound_FadeVolume $14C
 #define LNSound_FadeVolume(%1, %2, %3, %4) _LNSound_FadeVolume %1, %2, %3, %4
-#cmd LNSound_SetPrototype_OnSerialize $A7A
-#cmd _LNAudio_PlayBGM $140
-#define LNAudio_PlayBGM(%1, %2, %3, %4) _LNAudio_PlayBGM %1, %2, %3, %4
-#cmd _LNAudio_StopBGM $145
-#define LNAudio_StopBGM(%1) _LNAudio_StopBGM %1
-#cmd _LNAudio_PlayBGS $147
-#define LNAudio_PlayBGS(%1, %2, %3, %4) _LNAudio_PlayBGS %1, %2, %3, %4
-#cmd _LNAudio_StopBGS $14C
-#define LNAudio_StopBGS(%1) _LNAudio_StopBGS %1
-#cmd _LNAudio_PlayME $14E
-#define LNAudio_PlayME(%1, %2, %3) _LNAudio_PlayME %1, %2, %3
-#cmd _LNAudio_StopME $152
+#cmd LNSound_SetPrototype_OnSerialize $A96
+#cmd _LNAudio_PlayBGM $151
+#define LNAudio_PlayBGM(%1, %2=1.000000, %3=1.000000, %4=0.000000) _LNAudio_PlayBGM %1, %2, %3, %4
+#cmd _LNAudio_StopBGM $156
+#define LNAudio_StopBGM(%1=0.000000) _LNAudio_StopBGM %1
+#cmd _LNAudio_PlayBGS $158
+#define LNAudio_PlayBGS(%1, %2=1.000000, %3=1.000000, %4=0.000000) _LNAudio_PlayBGS %1, %2, %3, %4
+#cmd _LNAudio_StopBGS $15D
+#define LNAudio_StopBGS(%1=0.000000) _LNAudio_StopBGS %1
+#cmd _LNAudio_PlayME $15F
+#define LNAudio_PlayME(%1, %2=1.000000, %3=1.000000) _LNAudio_PlayME %1, %2, %3
+#cmd _LNAudio_StopME $163
 #define LNAudio_StopME _LNAudio_StopME
-#cmd _LNAudio_PlaySE $153
-#define LNAudio_PlaySE(%1, %2, %3) _LNAudio_PlaySE %1, %2, %3
-#cmd _LNAudio_PlaySE3D $157
-#define LNAudio_PlaySE3D(%1, %2, %3, %4, %5) _LNAudio_PlaySE3D %1, %2, %3, %4, %5
-#cmd _LNAudio_StopSE $15D
+#cmd _LNAudio_PlaySE $164
+#define LNAudio_PlaySE(%1, %2=1.000000, %3=1.000000) _LNAudio_PlaySE %1, %2, %3
+#cmd _LNAudio_PlaySE3D $168
+#define LNAudio_PlaySE3D(%1, %2, %3, %4=1.000000, %5=1.000000) _LNAudio_PlaySE3D %1, %2, %3, %4, %5
+#cmd _LNAudio_StopSE $16E
 #define LNAudio_StopSE _LNAudio_StopSE
-#cmd _LNTexture2DDelegate_Create $691
+#cmd _LNTexture2DDelegate_Create $6A5
 #define LNTexture2DDelegate_Create(%1, %2=_ln_return_discard) _LNTexture2DDelegate_Create %1, %2
-#cmd _LNTexture2DPromise_ThenWith $694
+#cmd _LNTexture2DPromise_ThenWith $6A8
 #define LNTexture2DPromise_ThenWith(%1, %2) _LNTexture2DPromise_ThenWith %1, %2
-#cmd _LNTexture2DPromise_CatchWith $696
+#cmd _LNTexture2DPromise_CatchWith $6AA
 #define LNTexture2DPromise_CatchWith(%1, %2) _LNTexture2DPromise_CatchWith %1, %2
-#cmd _LNGraphics_GetActiveGraphicsAPI $179
+#cmd _LNGraphics_GetActiveGraphicsAPI $18B
 #define LNGraphics_GetActiveGraphicsAPI(%1=_ln_return_discard) _LNGraphics_GetActiveGraphicsAPI %1
-#cmd LNTexture_SetPrototype_OnSerialize $A85
-#cmd _LNTexture2D_Create $1C9
+#cmd LNTexture_SetPrototype_OnSerialize $AA1
+#cmd _LNTexture2D_Create $1DE
 #define LNTexture2D_Create(%1, %2, %3=_ln_return_discard) _LNTexture2D_Create %1, %2, %3
-#cmd _LNTexture2D_CreateWithFormat $1CC
+#cmd _LNTexture2D_CreateWithFormat $1E1
 #define LNTexture2D_CreateWithFormat(%1, %2, %3, %4=_ln_return_discard) _LNTexture2D_CreateWithFormat %1, %2, %3, %4
-#cmd _LNTexture2D_Load $1C5
+#cmd _LNTexture2D_Load $1DA
 #define LNTexture2D_Load(%1, %2=_ln_return_discard) _LNTexture2D_Load %1, %2
-#cmd _LNTexture2D_LoadEmoji $1C7
+#cmd _LNTexture2D_LoadEmoji $1DC
 #define LNTexture2D_LoadEmoji(%1, %2=_ln_return_discard) _LNTexture2D_LoadEmoji %1, %2
-#cmd LNTexture2D_SetPrototype_OnSerialize $A90
-#cmd _LNShader_Load $1D1
-#define LNShader_Load(%1, %2, %3=_ln_return_discard) _LNShader_Load %1, %2, %3
-#cmd _LNShader_SetFloat $1D4
+#cmd LNTexture2D_SetPrototype_OnSerialize $AAC
+#cmd _LNShader_Load $1E6
+#define LNShader_Load(%1, %2=LN_NULL_HANDLE, %3=_ln_return_discard) _LNShader_Load %1, %2, %3
+#cmd _LNShader_SetFloat $1E9
 #define LNShader_SetFloat(%1, %2, %3) _LNShader_SetFloat %1, %2, %3
-#cmd _LNShader_SetVector3 $1D7
+#cmd _LNShader_SetVector3 $1EC
 #define LNShader_SetVector3(%1, %2, %3) _LNShader_SetVector3 %1, %2, %3
-#cmd _LNShader_SetVector4 $1DA
+#cmd _LNShader_SetVector4 $1EF
 #define LNShader_SetVector4(%1, %2, %3) _LNShader_SetVector4 %1, %2, %3
-#cmd _LNShader_SetTexture $1DD
+#cmd _LNShader_SetTexture $1F2
 #define LNShader_SetTexture(%1, %2, %3) _LNShader_SetTexture %1, %2, %3
-#cmd LNShader_SetPrototype_OnSerialize $A9B
-#cmd LNRenderView_SetPrototype_OnSerialize $AA6
-#cmd _LNMaterial_Create $202
+#cmd LNShader_SetPrototype_OnSerialize $AB7
+#cmd LNRenderView_SetPrototype_OnSerialize $AC2
+#cmd _LNMaterial_Create $217
 #define LNMaterial_Create(%1=_ln_return_discard) _LNMaterial_Create %1
-#cmd _LNMaterial_SetMainTexture $1F1
+#cmd _LNMaterial_SetMainTexture $206
 #define LNMaterial_SetMainTexture(%1, %2) _LNMaterial_SetMainTexture %1, %2
-#cmd _LNMaterial_GetMainTexture $1F3
+#cmd _LNMaterial_GetMainTexture $208
 #define LNMaterial_GetMainTexture(%1, %2=_ln_return_discard) _LNMaterial_GetMainTexture %1, %2
-#cmd _LNMaterial_SetColor $1F4
+#cmd _LNMaterial_SetColor $209
 #define LNMaterial_SetColor(%1, %2) _LNMaterial_SetColor %1, %2
-#cmd _LNMaterial_SetRoughness $1F6
+#cmd _LNMaterial_SetRoughness $20B
 #define LNMaterial_SetRoughness(%1, %2) _LNMaterial_SetRoughness %1, %2
-#cmd _LNMaterial_SetMetallic $1F8
+#cmd _LNMaterial_SetMetallic $20D
 #define LNMaterial_SetMetallic(%1, %2) _LNMaterial_SetMetallic %1, %2
-#cmd _LNMaterial_SetEmissive $1FA
+#cmd _LNMaterial_SetEmissive $20F
 #define LNMaterial_SetEmissive(%1, %2) _LNMaterial_SetEmissive %1, %2
-#cmd _LNMaterial_SetShadingModel $1FC
+#cmd _LNMaterial_SetShadingModel $211
 #define LNMaterial_SetShadingModel(%1, %2) _LNMaterial_SetShadingModel %1, %2
-#cmd _LNMaterial_GetShadingModel $1FE
+#cmd _LNMaterial_GetShadingModel $213
 #define LNMaterial_GetShadingModel(%1, %2=_ln_return_discard) _LNMaterial_GetShadingModel %1, %2
-#cmd _LNMaterial_SetShader $1FF
+#cmd _LNMaterial_SetShader $214
 #define LNMaterial_SetShader(%1, %2) _LNMaterial_SetShader %1, %2
-#cmd _LNMaterial_GetShader $201
+#cmd _LNMaterial_GetShader $216
 #define LNMaterial_GetShader(%1, %2=_ln_return_discard) _LNMaterial_GetShader %1, %2
-#cmd LNMaterial_SetPrototype_OnSerialize $AB1
-#cmd _LNMeshNode_SetVisible $204
+#cmd LNMaterial_SetPrototype_OnSerialize $ACD
+#cmd _LNMeshNode_SetVisible $219
 #define LNMeshNode_SetVisible(%1, %2) _LNMeshNode_SetVisible %1, %2
-#cmd _LNMeshNode_IsVisible $206
+#cmd _LNMeshNode_IsVisible $21B
 #define LNMeshNode_IsVisible(%1, %2=_ln_return_discard) _LNMeshNode_IsVisible %1, %2
-#cmd LNMeshNode_SetPrototype_OnSerialize $ABC
-#cmd _LNAnimationController_AddClip $208
+#cmd LNMeshNode_SetPrototype_OnSerialize $AD8
+#cmd _LNAnimationController_AddClip $21D
 #define LNAnimationController_AddClip(%1, %2, %3=_ln_return_discard) _LNAnimationController_AddClip %1, %2, %3
-#cmd _LNAnimationController_Play $20A
-#define LNAnimationController_Play(%1, %2, %3) _LNAnimationController_Play %1, %2, %3
-#cmd LNAnimationController_SetPrototype_OnSerialize $AC7
-#cmd _LNMeshModel_Load $20E
-#define LNMeshModel_Load(%1, %2, %3=_ln_return_discard) _LNMeshModel_Load %1, %2, %3
-#cmd _LNMeshModel_FindNode $211
+#cmd _LNAnimationController_Play $21F
+#define LNAnimationController_Play(%1, %2, %3=0.300000) _LNAnimationController_Play %1, %2, %3
+#cmd LNAnimationController_SetPrototype_OnSerialize $AE3
+#cmd _LNMeshModel_Load $223
+#define LNMeshModel_Load(%1, %2=LN_NULL_HANDLE, %3=_ln_return_discard) _LNMeshModel_Load %1, %2, %3
+#cmd _LNMeshModel_FindNode $226
 #define LNMeshModel_FindNode(%1, %2, %3=_ln_return_discard) _LNMeshModel_FindNode %1, %2, %3
-#cmd _LNMeshModel_FindMaterial $213
+#cmd _LNMeshModel_FindMaterial $228
 #define LNMeshModel_FindMaterial(%1, %2, %3=_ln_return_discard) _LNMeshModel_FindMaterial %1, %2, %3
-#cmd _LNMeshModel_MaterialCount $215
+#cmd _LNMeshModel_MaterialCount $22A
 #define LNMeshModel_MaterialCount(%1, %2=_ln_return_discard) _LNMeshModel_MaterialCount %1, %2
-#cmd _LNMeshModel_Material $216
+#cmd _LNMeshModel_Material $22B
 #define LNMeshModel_Material(%1, %2, %3=_ln_return_discard) _LNMeshModel_Material %1, %2, %3
-#cmd _LNMeshModel_GetAnimationController $218
+#cmd _LNMeshModel_GetAnimationController $22D
 #define LNMeshModel_GetAnimationController(%1, %2=_ln_return_discard) _LNMeshModel_GetAnimationController %1, %2
-#cmd LNMeshModel_SetPrototype_OnSerialize $AD2
-#cmd _LNMeshImportSettings_Create $21A
+#cmd LNMeshModel_SetPrototype_OnSerialize $AEE
+#cmd _LNMeshImportSettings_Create $22F
 #define LNMeshImportSettings_Create(%1=_ln_return_discard) _LNMeshImportSettings_Create %1
-#cmd LNMeshImportSettings_SetPrototype_OnSerialize $ADD
-#cmd LNSkinnedMeshModel_SetPrototype_OnSerialize $AE8
-#cmd LNCollisionShape_SetPrototype_OnSerialize $AF3
-#cmd _LNBoxCollisionShape_Create $21E
+#cmd LNMeshImportSettings_SetPrototype_OnSerialize $AF9
+#cmd LNSkinnedMeshModel_SetPrototype_OnSerialize $B04
+#cmd LNCollisionShape_SetPrototype_OnSerialize $B0F
+#cmd _LNBoxCollisionShape_Create $233
 #define LNBoxCollisionShape_Create(%1, %2=_ln_return_discard) _LNBoxCollisionShape_Create %1, %2
-#cmd _LNBoxCollisionShape_CreateWHD $220
+#cmd _LNBoxCollisionShape_CreateWHD $235
 #define LNBoxCollisionShape_CreateWHD(%1, %2, %3, %4=_ln_return_discard) _LNBoxCollisionShape_CreateWHD %1, %2, %3, %4
-#cmd LNBoxCollisionShape_SetPrototype_OnSerialize $AFE
-#cmd _LNAnimationCurve_Evaluate $22E
+#cmd LNBoxCollisionShape_SetPrototype_OnSerialize $B1A
+#cmd _LNAnimationCurve_Evaluate $243
 #define LNAnimationCurve_Evaluate(%1, %2, %3=_ln_return_discard) _LNAnimationCurve_Evaluate %1, %2, %3
-#cmd LNAnimationCurve_SetPrototype_OnSerialize $B09
-#cmd _LNKeyFrameAnimationCurve_Create $23B
+#cmd LNAnimationCurve_SetPrototype_OnSerialize $B25
+#cmd _LNKeyFrameAnimationCurve_Create $250
 #define LNKeyFrameAnimationCurve_Create(%1=_ln_return_discard) _LNKeyFrameAnimationCurve_Create %1
-#cmd _LNKeyFrameAnimationCurve_AddKeyFrame $236
-#define LNKeyFrameAnimationCurve_AddKeyFrame(%1, %2, %3, %4, %5) _LNKeyFrameAnimationCurve_AddKeyFrame %1, %2, %3, %4, %5
-#cmd LNKeyFrameAnimationCurve_SetPrototype_OnSerialize $B14
-#cmd _LNAnimationClip_Load $23D
+#cmd _LNKeyFrameAnimationCurve_AddKeyFrame $24B
+#define LNKeyFrameAnimationCurve_AddKeyFrame(%1, %2, %3, %4=LN_TANGENT_MODE_LINEAR, %5=0.000000) _LNKeyFrameAnimationCurve_AddKeyFrame %1, %2, %3, %4, %5
+#cmd LNKeyFrameAnimationCurve_SetPrototype_OnSerialize $B30
+#cmd _LNAnimationClip_Load $252
 #define LNAnimationClip_Load(%1, %2=_ln_return_discard) _LNAnimationClip_Load %1, %2
-#cmd _LNAnimationClip_SetWrapMode $23F
+#cmd _LNAnimationClip_SetWrapMode $254
 #define LNAnimationClip_SetWrapMode(%1, %2) _LNAnimationClip_SetWrapMode %1, %2
-#cmd _LNAnimationClip_GetWrapMode $241
+#cmd _LNAnimationClip_GetWrapMode $256
 #define LNAnimationClip_GetWrapMode(%1, %2=_ln_return_discard) _LNAnimationClip_GetWrapMode %1, %2
-#cmd _LNAnimationClip_SetHierarchicalAnimationMode $242
+#cmd _LNAnimationClip_SetHierarchicalAnimationMode $257
 #define LNAnimationClip_SetHierarchicalAnimationMode(%1, %2) _LNAnimationClip_SetHierarchicalAnimationMode %1, %2
-#cmd _LNAnimationClip_GetHierarchicalAnimationMode $244
+#cmd _LNAnimationClip_GetHierarchicalAnimationMode $259
 #define LNAnimationClip_GetHierarchicalAnimationMode(%1, %2=_ln_return_discard) _LNAnimationClip_GetHierarchicalAnimationMode %1, %2
-#cmd LNAnimationClip_SetPrototype_OnSerialize $B1F
-#cmd LNAnimationState_SetPrototype_OnSerialize $B2A
-#cmd LNEffectResource_SetPrototype_OnSerialize $B35
-#cmd _LNParticleEmitterModel_Create $269
+#cmd LNAnimationClip_SetPrototype_OnSerialize $B3B
+#cmd LNAnimationState_SetPrototype_OnSerialize $B46
+#cmd LNEffectResource_SetPrototype_OnSerialize $B51
+#cmd _LNParticleEmitterModel_Create $27E
 #define LNParticleEmitterModel_Create(%1=_ln_return_discard) _LNParticleEmitterModel_Create %1
-#cmd _LNParticleEmitterModel_SetMaxParticles $251
+#cmd _LNParticleEmitterModel_SetMaxParticles $266
 #define LNParticleEmitterModel_SetMaxParticles(%1, %2) _LNParticleEmitterModel_SetMaxParticles %1, %2
-#cmd _LNParticleEmitterModel_SetSpawnRate $253
+#cmd _LNParticleEmitterModel_SetSpawnRate $268
 #define LNParticleEmitterModel_SetSpawnRate(%1, %2) _LNParticleEmitterModel_SetSpawnRate %1, %2
-#cmd _LNParticleEmitterModel_SetLifeTime $255
+#cmd _LNParticleEmitterModel_SetLifeTime $26A
 #define LNParticleEmitterModel_SetLifeTime(%1, %2) _LNParticleEmitterModel_SetLifeTime %1, %2
-#cmd _LNParticleEmitterModel_SetupBoxShape $257
+#cmd _LNParticleEmitterModel_SetupBoxShape $26C
 #define LNParticleEmitterModel_SetupBoxShape(%1, %2) _LNParticleEmitterModel_SetupBoxShape %1, %2
-#cmd _LNParticleEmitterModel_SetSize $259
+#cmd _LNParticleEmitterModel_SetSize $26E
 #define LNParticleEmitterModel_SetSize(%1, %2) _LNParticleEmitterModel_SetSize %1, %2
-#cmd _LNParticleEmitterModel_SetSizeVelocity $25B
+#cmd _LNParticleEmitterModel_SetSizeVelocity $270
 #define LNParticleEmitterModel_SetSizeVelocity(%1, %2) _LNParticleEmitterModel_SetSizeVelocity %1, %2
-#cmd _LNParticleEmitterModel_SetSizeAcceleration $25D
+#cmd _LNParticleEmitterModel_SetSizeAcceleration $272
 #define LNParticleEmitterModel_SetSizeAcceleration(%1, %2) _LNParticleEmitterModel_SetSizeAcceleration %1, %2
-#cmd _LNParticleEmitterModel_SetForwardVelocityMin $25F
+#cmd _LNParticleEmitterModel_SetForwardVelocityMin $274
 #define LNParticleEmitterModel_SetForwardVelocityMin(%1, %2) _LNParticleEmitterModel_SetForwardVelocityMin %1, %2
-#cmd _LNParticleEmitterModel_SetForwardVelocityMax $261
+#cmd _LNParticleEmitterModel_SetForwardVelocityMax $276
 #define LNParticleEmitterModel_SetForwardVelocityMax(%1, %2) _LNParticleEmitterModel_SetForwardVelocityMax %1, %2
-#cmd _LNParticleEmitterModel_SetForwardScale $263
+#cmd _LNParticleEmitterModel_SetForwardScale $278
 #define LNParticleEmitterModel_SetForwardScale(%1, %2) _LNParticleEmitterModel_SetForwardScale %1, %2
-#cmd _LNParticleEmitterModel_SetGeometryDirection $265
+#cmd _LNParticleEmitterModel_SetGeometryDirection $27A
 #define LNParticleEmitterModel_SetGeometryDirection(%1, %2) _LNParticleEmitterModel_SetGeometryDirection %1, %2
-#cmd _LNParticleEmitterModel_SetupSpriteModule $267
+#cmd _LNParticleEmitterModel_SetupSpriteModule $27C
 #define LNParticleEmitterModel_SetupSpriteModule(%1, %2) _LNParticleEmitterModel_SetupSpriteModule %1, %2
-#cmd LNParticleEmitterModel_SetPrototype_OnSerialize $B40
-#cmd _LNParticleModel_Create $270
+#cmd LNParticleEmitterModel_SetPrototype_OnSerialize $B5C
+#cmd _LNParticleModel_Create $285
 #define LNParticleModel_Create(%1=_ln_return_discard) _LNParticleModel_Create %1
-#cmd _LNParticleModel_SetLoop $26B
+#cmd _LNParticleModel_SetLoop $280
 #define LNParticleModel_SetLoop(%1, %2) _LNParticleModel_SetLoop %1, %2
-#cmd _LNParticleModel_IsLoop $26D
+#cmd _LNParticleModel_IsLoop $282
 #define LNParticleModel_IsLoop(%1, %2=_ln_return_discard) _LNParticleModel_IsLoop %1, %2
-#cmd _LNParticleModel_AddEmitter $26E
+#cmd _LNParticleModel_AddEmitter $283
 #define LNParticleModel_AddEmitter(%1, %2) _LNParticleModel_AddEmitter %1, %2
-#cmd LNParticleModel_SetPrototype_OnSerialize $B4B
-#cmd LNComponent_SetPrototype_OnSerialize $B56
-#cmd _LNVisualComponent_SetVisible $273
+#cmd LNParticleModel_SetPrototype_OnSerialize $B67
+#cmd LNComponent_SetPrototype_OnSerialize $B72
+#cmd _LNVisualComponent_SetVisible $288
 #define LNVisualComponent_SetVisible(%1, %2) _LNVisualComponent_SetVisible %1, %2
-#cmd _LNVisualComponent_IsVisible $275
+#cmd _LNVisualComponent_IsVisible $28A
 #define LNVisualComponent_IsVisible(%1, %2=_ln_return_discard) _LNVisualComponent_IsVisible %1, %2
-#cmd LNVisualComponent_SetPrototype_OnSerialize $B61
-#cmd _LNSpriteComponent_SetTexture $277
+#cmd LNVisualComponent_SetPrototype_OnSerialize $B7D
+#cmd _LNSpriteComponent_SetTexture $28C
 #define LNSpriteComponent_SetTexture(%1, %2) _LNSpriteComponent_SetTexture %1, %2
-#cmd LNSpriteComponent_SetPrototype_OnSerialize $B6C
-#cmd _LNCollisionEventHandler_Create $7C8
+#cmd LNSpriteComponent_SetPrototype_OnSerialize $B88
+#cmd _LNCollisionEventHandler_Create $7DF
 #define LNCollisionEventHandler_Create(%1, %2=_ln_return_discard) _LNCollisionEventHandler_Create %1, %2
-#cmd _LNCharacterController_Create $297
+#cmd _LNCharacterController_Create $2AC
 #define LNCharacterController_Create(%1=_ln_return_discard) _LNCharacterController_Create %1
-#cmd _LNCharacterController_SetWalkVelocity $281
+#cmd _LNCharacterController_SetWalkVelocity $296
 #define LNCharacterController_SetWalkVelocity(%1, %2) _LNCharacterController_SetWalkVelocity %1, %2
-#cmd _LNCharacterController_GetWalkVelocity $283
+#cmd _LNCharacterController_GetWalkVelocity $298
 #define LNCharacterController_GetWalkVelocity(%1, %2=_ln_return_discard) _LNCharacterController_GetWalkVelocity %1, %2
-#cmd _LNCharacterController_SetVelocity $284
+#cmd _LNCharacterController_SetVelocity $299
 #define LNCharacterController_SetVelocity(%1, %2) _LNCharacterController_SetVelocity %1, %2
-#cmd _LNCharacterController_GetVelocity $286
+#cmd _LNCharacterController_GetVelocity $29B
 #define LNCharacterController_GetVelocity(%1, %2=_ln_return_discard) _LNCharacterController_GetVelocity %1, %2
-#cmd _LNCharacterController_SetInputControlEnabled $287
+#cmd _LNCharacterController_SetInputControlEnabled $29C
 #define LNCharacterController_SetInputControlEnabled(%1, %2) _LNCharacterController_SetInputControlEnabled %1, %2
-#cmd _LNCharacterController_SetCameraControlEnabled $289
+#cmd _LNCharacterController_SetCameraControlEnabled $29E
 #define LNCharacterController_SetCameraControlEnabled(%1, %2) _LNCharacterController_SetCameraControlEnabled %1, %2
-#cmd _LNCharacterController_SetHeight $28B
+#cmd _LNCharacterController_SetHeight $2A0
 #define LNCharacterController_SetHeight(%1, %2) _LNCharacterController_SetHeight %1, %2
-#cmd _LNCharacterController_GetHeight $28D
+#cmd _LNCharacterController_GetHeight $2A2
 #define LNCharacterController_GetHeight(%1, %2=_ln_return_discard) _LNCharacterController_GetHeight %1, %2
-#cmd _LNCharacterController_SetCameraRadius $28E
+#cmd _LNCharacterController_SetCameraRadius $2A3
 #define LNCharacterController_SetCameraRadius(%1, %2) _LNCharacterController_SetCameraRadius %1, %2
-#cmd _LNCharacterController_GetCameraRadius $290
+#cmd _LNCharacterController_GetCameraRadius $2A5
 #define LNCharacterController_GetCameraRadius(%1, %2=_ln_return_discard) _LNCharacterController_GetCameraRadius %1, %2
-#cmd _LNCharacterController_SetCollisionEnter $291
+#cmd _LNCharacterController_SetCollisionEnter $2A6
 #define LNCharacterController_SetCollisionEnter(%1, %2) _LNCharacterController_SetCollisionEnter %1, %2
-#cmd _LNCharacterController_SetCollisionLeave $293
+#cmd _LNCharacterController_SetCollisionLeave $2A8
 #define LNCharacterController_SetCollisionLeave(%1, %2) _LNCharacterController_SetCollisionLeave %1, %2
-#cmd _LNCharacterController_SetCollisionStay $295
+#cmd _LNCharacterController_SetCollisionStay $2AA
 #define LNCharacterController_SetCollisionStay(%1, %2) _LNCharacterController_SetCollisionStay %1, %2
-#cmd LNCharacterController_SetPrototype_OnSerialize $B77
-#cmd _LNWorld_Add $299
+#cmd LNCharacterController_SetPrototype_OnSerialize $B93
+#cmd _LNWorld_Add $2AE
 #define LNWorld_Add(%1, %2) _LNWorld_Add %1, %2
-#cmd LNWorld_SetPrototype_OnSerialize $B82
-#cmd _LNComponentList_GetLength $7E8
+#cmd LNWorld_SetPrototype_OnSerialize $B9E
+#cmd _LNComponentList_GetLength $7FF
 #define LNComponentList_GetLength(%1, %2=_ln_return_discard) _LNComponentList_GetLength %1, %2
-#cmd _LNComponentList_GetItem $7EA
+#cmd _LNComponentList_GetItem $801
 #define LNComponentList_GetItem(%1, %2, %3=_ln_return_discard) _LNComponentList_GetItem %1, %2, %3
-#cmd LNComponentList_SetPrototype_OnSerialize $B8D
-#cmd _LNWorldObject_Create $2D0
+#cmd LNComponentList_SetPrototype_OnSerialize $BA9
+#cmd _LNWorldObject_Create $2E7
 #define LNWorldObject_Create(%1=_ln_return_discard) _LNWorldObject_Create %1
-#cmd _LNWorldObject_SetPosition $29D
+#cmd _LNWorldObject_SetPosition $2B2
 #define LNWorldObject_SetPosition(%1, %2) _LNWorldObject_SetPosition %1, %2
-#cmd _LNWorldObject_SetPositionXYZ $29F
-#define LNWorldObject_SetPositionXYZ(%1, %2, %3, %4) _LNWorldObject_SetPositionXYZ %1, %2, %3, %4
-#cmd _LNWorldObject_GetPosition $2A3
+#cmd _LNWorldObject_SetPositionXYZ $2B4
+#define LNWorldObject_SetPositionXYZ(%1, %2, %3, %4=0.000000) _LNWorldObject_SetPositionXYZ %1, %2, %3, %4
+#cmd _LNWorldObject_GetPosition $2B8
 #define LNWorldObject_GetPosition(%1, %2=_ln_return_discard) _LNWorldObject_GetPosition %1, %2
-#cmd _LNWorldObject_SetRotationQuaternion $2A4
+#cmd _LNWorldObject_SetRotationQuaternion $2B9
 #define LNWorldObject_SetRotationQuaternion(%1, %2) _LNWorldObject_SetRotationQuaternion %1, %2
-#cmd _LNWorldObject_SetRotation $2A6
+#cmd _LNWorldObject_SetRotation $2BB
 #define LNWorldObject_SetRotation(%1, %2, %3, %4) _LNWorldObject_SetRotation %1, %2, %3, %4
-#cmd _LNWorldObject_GetRotation $2AA
+#cmd _LNWorldObject_GetRotation $2BF
 #define LNWorldObject_GetRotation(%1, %2=_ln_return_discard) _LNWorldObject_GetRotation %1, %2
-#cmd _LNWorldObject_SetScale $2AB
+#cmd _LNWorldObject_SetScale $2C0
 #define LNWorldObject_SetScale(%1, %2) _LNWorldObject_SetScale %1, %2
-#cmd _LNWorldObject_SetScaleS $2AD
+#cmd _LNWorldObject_SetScaleS $2C2
 #define LNWorldObject_SetScaleS(%1, %2) _LNWorldObject_SetScaleS %1, %2
-#cmd _LNWorldObject_SetScaleXYZ $2AF
-#define LNWorldObject_SetScaleXYZ(%1, %2, %3, %4) _LNWorldObject_SetScaleXYZ %1, %2, %3, %4
-#cmd _LNWorldObject_GetScale $2B3
+#cmd _LNWorldObject_SetScaleXYZ $2C4
+#define LNWorldObject_SetScaleXYZ(%1, %2, %3, %4=1.000000) _LNWorldObject_SetScaleXYZ %1, %2, %3, %4
+#cmd _LNWorldObject_GetScale $2C8
 #define LNWorldObject_GetScale(%1, %2=_ln_return_discard) _LNWorldObject_GetScale %1, %2
-#cmd _LNWorldObject_SetCenterPoint $2B4
+#cmd _LNWorldObject_SetCenterPoint $2C9
 #define LNWorldObject_SetCenterPoint(%1, %2) _LNWorldObject_SetCenterPoint %1, %2
-#cmd _LNWorldObject_SetCenterPointXYZ $2B6
-#define LNWorldObject_SetCenterPointXYZ(%1, %2, %3, %4) _LNWorldObject_SetCenterPointXYZ %1, %2, %3, %4
-#cmd _LNWorldObject_GetCenterPoint $2BA
+#cmd _LNWorldObject_SetCenterPointXYZ $2CB
+#define LNWorldObject_SetCenterPointXYZ(%1, %2, %3, %4=0.000000) _LNWorldObject_SetCenterPointXYZ %1, %2, %3, %4
+#cmd _LNWorldObject_GetCenterPoint $2CF
 #define LNWorldObject_GetCenterPoint(%1, %2=_ln_return_discard) _LNWorldObject_GetCenterPoint %1, %2
-#cmd _LNWorldObject_LookAt $2BB
+#cmd _LNWorldObject_LookAt $2D0
 #define LNWorldObject_LookAt(%1, %2) _LNWorldObject_LookAt %1, %2
-#cmd _LNWorldObject_LookAtXYZ $2BD
+#cmd _LNWorldObject_LookAtXYZ $2D2
 #define LNWorldObject_LookAtXYZ(%1, %2, %3, %4) _LNWorldObject_LookAtXYZ %1, %2, %3, %4
-#cmd _LNWorldObject_AddComponent $2C1
+#cmd _LNWorldObject_AddComponent $2D6
 #define LNWorldObject_AddComponent(%1, %2) _LNWorldObject_AddComponent %1, %2
-#cmd _LNWorldObject_RemoveComponent $2C3
+#cmd _LNWorldObject_RemoveComponent $2D8
 #define LNWorldObject_RemoveComponent(%1, %2) _LNWorldObject_RemoveComponent %1, %2
-#cmd _LNWorldObject_AddTag $2C5
+#cmd _LNWorldObject_AddTag $2DA
 #define LNWorldObject_AddTag(%1, %2) _LNWorldObject_AddTag %1, %2
-#cmd _LNWorldObject_RemoveTag $2C7
+#cmd _LNWorldObject_RemoveTag $2DC
 #define LNWorldObject_RemoveTag(%1, %2) _LNWorldObject_RemoveTag %1, %2
-#cmd _LNWorldObject_HasTag $2C9
+#cmd _LNWorldObject_HasTag $2DE
 #define LNWorldObject_HasTag(%1, %2, %3=_ln_return_discard) _LNWorldObject_HasTag %1, %2, %3
-#cmd _LNWorldObject_Destroy $2CB
+#cmd _LNWorldObject_Destroy $2E0
 #define LNWorldObject_Destroy(%1) _LNWorldObject_Destroy %1
-#cmd _LNWorldObject_GetComponents $2CC
+#cmd _LNWorldObject_GetComponents $2E1
 #define LNWorldObject_GetComponents(%1, %2=_ln_return_discard) _LNWorldObject_GetComponents %1, %2
-#cmd LNWorldObject_SetPrototype_OnSerialize $B98
-#cmd LNWorldObject_SetPrototype_OnPreUpdate $BA3
-#cmd LNWorldObject_SetPrototype_OnUpdate $BAE
-#cmd _LNVisualObject_SetVisible $2D2
+#cmd _LNWorldObject_AddInto $2E2
+#define LNWorldObject_AddInto(%1, %2=LN_NULL_HANDLE) _LNWorldObject_AddInto %1, %2
+#cmd LNWorldObject_SetPrototype_OnSerialize $BB4
+#cmd LNWorldObject_SetPrototype_OnPreUpdate $BBF
+#cmd LNWorldObject_SetPrototype_OnUpdate $BCA
+#cmd _LNVisualObject_SetVisible $2E9
 #define LNVisualObject_SetVisible(%1, %2) _LNVisualObject_SetVisible %1, %2
-#cmd _LNVisualObject_IsVisible $2D4
+#cmd _LNVisualObject_IsVisible $2EB
 #define LNVisualObject_IsVisible(%1, %2=_ln_return_discard) _LNVisualObject_IsVisible %1, %2
-#cmd _LNVisualObject_SetBlendMode2 $2D5
+#cmd _LNVisualObject_SetBlendMode2 $2EC
 #define LNVisualObject_SetBlendMode2(%1, %2) _LNVisualObject_SetBlendMode2 %1, %2
-#cmd _LNVisualObject_SetOpacity $2D7
+#cmd _LNVisualObject_SetOpacity $2EE
 #define LNVisualObject_SetOpacity(%1, %2) _LNVisualObject_SetOpacity %1, %2
-#cmd _LNVisualObject_GetOpacity $2D9
+#cmd _LNVisualObject_GetOpacity $2F0
 #define LNVisualObject_GetOpacity(%1, %2=_ln_return_discard) _LNVisualObject_GetOpacity %1, %2
-#cmd LNVisualObject_SetPrototype_OnSerialize $BB9
-#cmd LNVisualObject_SetPrototype_OnPreUpdate $BC4
-#cmd LNVisualObject_SetPrototype_OnUpdate $BCF
-#cmd LNCamera_SetPrototype_OnSerialize $BDA
-#cmd LNCamera_SetPrototype_OnPreUpdate $BE5
-#cmd LNCamera_SetPrototype_OnUpdate $BF0
-#cmd _LNEnvironmentLight_SetEnabled $2DC
+#cmd LNVisualObject_SetPrototype_OnSerialize $BD5
+#cmd LNVisualObject_SetPrototype_OnPreUpdate $BE0
+#cmd LNVisualObject_SetPrototype_OnUpdate $BEB
+#cmd LNCamera_SetPrototype_OnSerialize $BF6
+#cmd LNCamera_SetPrototype_OnPreUpdate $C01
+#cmd LNCamera_SetPrototype_OnUpdate $C0C
+#cmd _LNEnvironmentLight_SetEnabled $2F3
 #define LNEnvironmentLight_SetEnabled(%1, %2) _LNEnvironmentLight_SetEnabled %1, %2
-#cmd _LNEnvironmentLight_IsEnabled $2DE
+#cmd _LNEnvironmentLight_IsEnabled $2F5
 #define LNEnvironmentLight_IsEnabled(%1, %2=_ln_return_discard) _LNEnvironmentLight_IsEnabled %1, %2
-#cmd _LNEnvironmentLight_SetColor $2DF
+#cmd _LNEnvironmentLight_SetColor $2F6
 #define LNEnvironmentLight_SetColor(%1, %2) _LNEnvironmentLight_SetColor %1, %2
-#cmd _LNEnvironmentLight_GetColor $2E1
+#cmd _LNEnvironmentLight_GetColor $2F8
 #define LNEnvironmentLight_GetColor(%1, %2=_ln_return_discard) _LNEnvironmentLight_GetColor %1, %2
-#cmd _LNEnvironmentLight_SetAmbientColor $2E2
+#cmd _LNEnvironmentLight_SetAmbientColor $2F9
 #define LNEnvironmentLight_SetAmbientColor(%1, %2) _LNEnvironmentLight_SetAmbientColor %1, %2
-#cmd _LNEnvironmentLight_GetAmbientColor $2E4
+#cmd _LNEnvironmentLight_GetAmbientColor $2FB
 #define LNEnvironmentLight_GetAmbientColor(%1, %2=_ln_return_discard) _LNEnvironmentLight_GetAmbientColor %1, %2
-#cmd _LNEnvironmentLight_GetSkyColor $2E5
+#cmd _LNEnvironmentLight_GetSkyColor $2FC
 #define LNEnvironmentLight_GetSkyColor(%1, %2=_ln_return_discard) _LNEnvironmentLight_GetSkyColor %1, %2
-#cmd _LNEnvironmentLight_SetSkyColor $2E6
+#cmd _LNEnvironmentLight_SetSkyColor $2FD
 #define LNEnvironmentLight_SetSkyColor(%1, %2) _LNEnvironmentLight_SetSkyColor %1, %2
-#cmd _LNEnvironmentLight_GetGroundColor $2E8
+#cmd _LNEnvironmentLight_GetGroundColor $2FF
 #define LNEnvironmentLight_GetGroundColor(%1, %2=_ln_return_discard) _LNEnvironmentLight_GetGroundColor %1, %2
-#cmd _LNEnvironmentLight_SetGroundColor $2E9
+#cmd _LNEnvironmentLight_SetGroundColor $300
 #define LNEnvironmentLight_SetGroundColor(%1, %2) _LNEnvironmentLight_SetGroundColor %1, %2
-#cmd _LNEnvironmentLight_SetIntensity $2EB
+#cmd _LNEnvironmentLight_SetIntensity $302
 #define LNEnvironmentLight_SetIntensity(%1, %2) _LNEnvironmentLight_SetIntensity %1, %2
-#cmd _LNEnvironmentLight_GetIntensity $2ED
+#cmd _LNEnvironmentLight_GetIntensity $304
 #define LNEnvironmentLight_GetIntensity(%1, %2=_ln_return_discard) _LNEnvironmentLight_GetIntensity %1, %2
-#cmd _LNEnvironmentLight_SetShadowEffectiveDistance $2EE
+#cmd _LNEnvironmentLight_SetShadowEffectiveDistance $305
 #define LNEnvironmentLight_SetShadowEffectiveDistance(%1, %2) _LNEnvironmentLight_SetShadowEffectiveDistance %1, %2
-#cmd _LNEnvironmentLight_GetShadowEffectiveDistance $2F0
+#cmd _LNEnvironmentLight_GetShadowEffectiveDistance $307
 #define LNEnvironmentLight_GetShadowEffectiveDistance(%1, %2=_ln_return_discard) _LNEnvironmentLight_GetShadowEffectiveDistance %1, %2
-#cmd _LNEnvironmentLight_SetShadowEffectiveDepth $2F1
+#cmd _LNEnvironmentLight_SetShadowEffectiveDepth $308
 #define LNEnvironmentLight_SetShadowEffectiveDepth(%1, %2) _LNEnvironmentLight_SetShadowEffectiveDepth %1, %2
-#cmd _LNEnvironmentLight_GetShadowEffectiveDepth $2F3
+#cmd _LNEnvironmentLight_GetShadowEffectiveDepth $30A
 #define LNEnvironmentLight_GetShadowEffectiveDepth(%1, %2=_ln_return_discard) _LNEnvironmentLight_GetShadowEffectiveDepth %1, %2
-#cmd LNEnvironmentLight_SetPrototype_OnSerialize $BFB
-#cmd LNEnvironmentLight_SetPrototype_OnPreUpdate $C06
-#cmd LNEnvironmentLight_SetPrototype_OnUpdate $C11
-#cmd _LNDirectionalLight_Create $304
+#cmd LNEnvironmentLight_SetPrototype_OnSerialize $C17
+#cmd LNEnvironmentLight_SetPrototype_OnPreUpdate $C22
+#cmd LNEnvironmentLight_SetPrototype_OnUpdate $C2D
+#cmd _LNDirectionalLight_Create $31B
 #define LNDirectionalLight_Create(%1=_ln_return_discard) _LNDirectionalLight_Create %1
-#cmd _LNDirectionalLight_CreateWithColor $305
+#cmd _LNDirectionalLight_CreateWithColor $31C
 #define LNDirectionalLight_CreateWithColor(%1, %2=_ln_return_discard) _LNDirectionalLight_CreateWithColor %1, %2
-#cmd _LNDirectionalLight_SetEnabled $2F5
+#cmd _LNDirectionalLight_SetEnabled $30C
 #define LNDirectionalLight_SetEnabled(%1, %2) _LNDirectionalLight_SetEnabled %1, %2
-#cmd _LNDirectionalLight_IsEnabled $2F7
+#cmd _LNDirectionalLight_IsEnabled $30E
 #define LNDirectionalLight_IsEnabled(%1, %2=_ln_return_discard) _LNDirectionalLight_IsEnabled %1, %2
-#cmd _LNDirectionalLight_SetColor $2F8
+#cmd _LNDirectionalLight_SetColor $30F
 #define LNDirectionalLight_SetColor(%1, %2) _LNDirectionalLight_SetColor %1, %2
-#cmd _LNDirectionalLight_GetColor $2FA
+#cmd _LNDirectionalLight_GetColor $311
 #define LNDirectionalLight_GetColor(%1, %2=_ln_return_discard) _LNDirectionalLight_GetColor %1, %2
-#cmd _LNDirectionalLight_SetIntensity $2FB
+#cmd _LNDirectionalLight_SetIntensity $312
 #define LNDirectionalLight_SetIntensity(%1, %2) _LNDirectionalLight_SetIntensity %1, %2
-#cmd _LNDirectionalLight_GetIntensity $2FD
+#cmd _LNDirectionalLight_GetIntensity $314
 #define LNDirectionalLight_GetIntensity(%1, %2=_ln_return_discard) _LNDirectionalLight_GetIntensity %1, %2
-#cmd _LNDirectionalLight_SetShadowEffectiveDistance $2FE
+#cmd _LNDirectionalLight_SetShadowEffectiveDistance $315
 #define LNDirectionalLight_SetShadowEffectiveDistance(%1, %2) _LNDirectionalLight_SetShadowEffectiveDistance %1, %2
-#cmd _LNDirectionalLight_GetShadowEffectiveDistance $300
+#cmd _LNDirectionalLight_GetShadowEffectiveDistance $317
 #define LNDirectionalLight_GetShadowEffectiveDistance(%1, %2=_ln_return_discard) _LNDirectionalLight_GetShadowEffectiveDistance %1, %2
-#cmd _LNDirectionalLight_SetShadowEffectiveDepth $301
+#cmd _LNDirectionalLight_SetShadowEffectiveDepth $318
 #define LNDirectionalLight_SetShadowEffectiveDepth(%1, %2) _LNDirectionalLight_SetShadowEffectiveDepth %1, %2
-#cmd _LNDirectionalLight_GetShadowEffectiveDepth $303
+#cmd _LNDirectionalLight_GetShadowEffectiveDepth $31A
 #define LNDirectionalLight_GetShadowEffectiveDepth(%1, %2=_ln_return_discard) _LNDirectionalLight_GetShadowEffectiveDepth %1, %2
-#cmd LNDirectionalLight_SetPrototype_OnSerialize $C1C
-#cmd LNDirectionalLight_SetPrototype_OnPreUpdate $C27
-#cmd LNDirectionalLight_SetPrototype_OnUpdate $C32
-#cmd _LNPointLight_Create $317
+#cmd LNDirectionalLight_SetPrototype_OnSerialize $C38
+#cmd LNDirectionalLight_SetPrototype_OnPreUpdate $C43
+#cmd LNDirectionalLight_SetPrototype_OnUpdate $C4E
+#cmd _LNPointLight_Create $32E
 #define LNPointLight_Create(%1=_ln_return_discard) _LNPointLight_Create %1
-#cmd _LNPointLight_CreateWithColorAndRange $318
+#cmd _LNPointLight_CreateWithColorAndRange $32F
 #define LNPointLight_CreateWithColorAndRange(%1, %2, %3=_ln_return_discard) _LNPointLight_CreateWithColorAndRange %1, %2, %3
-#cmd _LNPointLight_SetEnabled $308
+#cmd _LNPointLight_SetEnabled $31F
 #define LNPointLight_SetEnabled(%1, %2) _LNPointLight_SetEnabled %1, %2
-#cmd _LNPointLight_IsEnabled $30A
+#cmd _LNPointLight_IsEnabled $321
 #define LNPointLight_IsEnabled(%1, %2=_ln_return_discard) _LNPointLight_IsEnabled %1, %2
-#cmd _LNPointLight_SetColor $30B
+#cmd _LNPointLight_SetColor $322
 #define LNPointLight_SetColor(%1, %2) _LNPointLight_SetColor %1, %2
-#cmd _LNPointLight_GetColor $30D
+#cmd _LNPointLight_GetColor $324
 #define LNPointLight_GetColor(%1, %2=_ln_return_discard) _LNPointLight_GetColor %1, %2
-#cmd _LNPointLight_SetIntensity $30E
+#cmd _LNPointLight_SetIntensity $325
 #define LNPointLight_SetIntensity(%1, %2) _LNPointLight_SetIntensity %1, %2
-#cmd _LNPointLight_GetIntensity $310
+#cmd _LNPointLight_GetIntensity $327
 #define LNPointLight_GetIntensity(%1, %2=_ln_return_discard) _LNPointLight_GetIntensity %1, %2
-#cmd _LNPointLight_SetRange $311
+#cmd _LNPointLight_SetRange $328
 #define LNPointLight_SetRange(%1, %2) _LNPointLight_SetRange %1, %2
-#cmd _LNPointLight_GetRange $313
+#cmd _LNPointLight_GetRange $32A
 #define LNPointLight_GetRange(%1, %2=_ln_return_discard) _LNPointLight_GetRange %1, %2
-#cmd _LNPointLight_SetAttenuation $314
+#cmd _LNPointLight_SetAttenuation $32B
 #define LNPointLight_SetAttenuation(%1, %2) _LNPointLight_SetAttenuation %1, %2
-#cmd _LNPointLight_GetAttenuation $316
+#cmd _LNPointLight_GetAttenuation $32D
 #define LNPointLight_GetAttenuation(%1, %2=_ln_return_discard) _LNPointLight_GetAttenuation %1, %2
-#cmd LNPointLight_SetPrototype_OnSerialize $C3D
-#cmd LNPointLight_SetPrototype_OnPreUpdate $C48
-#cmd LNPointLight_SetPrototype_OnUpdate $C53
-#cmd _LNSpotLight_Create $331
+#cmd LNPointLight_SetPrototype_OnSerialize $C59
+#cmd LNPointLight_SetPrototype_OnPreUpdate $C64
+#cmd LNPointLight_SetPrototype_OnUpdate $C6F
+#cmd _LNSpotLight_Create $348
 #define LNSpotLight_Create(%1=_ln_return_discard) _LNSpotLight_Create %1
-#cmd _LNSpotLight_CreateWithColorAndRange $332
+#cmd _LNSpotLight_CreateWithColorAndRange $349
 #define LNSpotLight_CreateWithColorAndRange(%1, %2, %3, %4=_ln_return_discard) _LNSpotLight_CreateWithColorAndRange %1, %2, %3, %4
-#cmd _LNSpotLight_SetEnabled $31C
+#cmd _LNSpotLight_SetEnabled $333
 #define LNSpotLight_SetEnabled(%1, %2) _LNSpotLight_SetEnabled %1, %2
-#cmd _LNSpotLight_IsEnabled $31E
+#cmd _LNSpotLight_IsEnabled $335
 #define LNSpotLight_IsEnabled(%1, %2=_ln_return_discard) _LNSpotLight_IsEnabled %1, %2
-#cmd _LNSpotLight_SetColor $31F
+#cmd _LNSpotLight_SetColor $336
 #define LNSpotLight_SetColor(%1, %2) _LNSpotLight_SetColor %1, %2
-#cmd _LNSpotLight_GetColor $321
+#cmd _LNSpotLight_GetColor $338
 #define LNSpotLight_GetColor(%1, %2=_ln_return_discard) _LNSpotLight_GetColor %1, %2
-#cmd _LNSpotLight_SetIntensity $322
+#cmd _LNSpotLight_SetIntensity $339
 #define LNSpotLight_SetIntensity(%1, %2) _LNSpotLight_SetIntensity %1, %2
-#cmd _LNSpotLight_GetIntensity $324
+#cmd _LNSpotLight_GetIntensity $33B
 #define LNSpotLight_GetIntensity(%1, %2=_ln_return_discard) _LNSpotLight_GetIntensity %1, %2
-#cmd _LNSpotLight_SetRange $325
+#cmd _LNSpotLight_SetRange $33C
 #define LNSpotLight_SetRange(%1, %2) _LNSpotLight_SetRange %1, %2
-#cmd _LNSpotLight_GetRange $327
+#cmd _LNSpotLight_GetRange $33E
 #define LNSpotLight_GetRange(%1, %2=_ln_return_discard) _LNSpotLight_GetRange %1, %2
-#cmd _LNSpotLight_SetAttenuation $328
+#cmd _LNSpotLight_SetAttenuation $33F
 #define LNSpotLight_SetAttenuation(%1, %2) _LNSpotLight_SetAttenuation %1, %2
-#cmd _LNSpotLight_GetAttenuation $32A
+#cmd _LNSpotLight_GetAttenuation $341
 #define LNSpotLight_GetAttenuation(%1, %2=_ln_return_discard) _LNSpotLight_GetAttenuation %1, %2
-#cmd _LNSpotLight_SetAngle $32B
+#cmd _LNSpotLight_SetAngle $342
 #define LNSpotLight_SetAngle(%1, %2) _LNSpotLight_SetAngle %1, %2
-#cmd _LNSpotLight_GetAngle $32D
+#cmd _LNSpotLight_GetAngle $344
 #define LNSpotLight_GetAngle(%1, %2=_ln_return_discard) _LNSpotLight_GetAngle %1, %2
-#cmd _LNSpotLight_SetPenumbra $32E
+#cmd _LNSpotLight_SetPenumbra $345
 #define LNSpotLight_SetPenumbra(%1, %2) _LNSpotLight_SetPenumbra %1, %2
-#cmd _LNSpotLight_GetPenumbra $330
+#cmd _LNSpotLight_GetPenumbra $347
 #define LNSpotLight_GetPenumbra(%1, %2=_ln_return_discard) _LNSpotLight_GetPenumbra %1, %2
-#cmd LNSpotLight_SetPrototype_OnSerialize $C5E
-#cmd LNSpotLight_SetPrototype_OnPreUpdate $C69
-#cmd LNSpotLight_SetPrototype_OnUpdate $C74
-#cmd _LNTestDelegate_Create $896
+#cmd LNSpotLight_SetPrototype_OnSerialize $C7A
+#cmd LNSpotLight_SetPrototype_OnPreUpdate $C85
+#cmd LNSpotLight_SetPrototype_OnUpdate $C90
+#cmd _LNTestDelegate_Create $8AF
 #define LNTestDelegate_Create(%1, %2=_ln_return_discard) _LNTestDelegate_Create %1, %2
-#cmd _LNSprite_Create $348
+#cmd _LNSprite_Create $35F
 #define LNSprite_Create(%1=_ln_return_discard) _LNSprite_Create %1
-#cmd _LNSprite_CreateWithTexture $349
+#cmd _LNSprite_CreateWithTexture $360
 #define LNSprite_CreateWithTexture(%1, %2=_ln_return_discard) _LNSprite_CreateWithTexture %1, %2
-#cmd _LNSprite_CreateWithTextureAndSize $34B
+#cmd _LNSprite_CreateWithTextureAndSize $362
 #define LNSprite_CreateWithTextureAndSize(%1, %2, %3, %4=_ln_return_discard) _LNSprite_CreateWithTextureAndSize %1, %2, %3, %4
-#cmd _LNSprite_SetTexture $33A
+#cmd _LNSprite_SetTexture $351
 #define LNSprite_SetTexture(%1, %2) _LNSprite_SetTexture %1, %2
-#cmd _LNSprite_SetSize $33C
+#cmd _LNSprite_SetSize $353
 #define LNSprite_SetSize(%1, %2) _LNSprite_SetSize %1, %2
-#cmd _LNSprite_SetSizeWH $33E
+#cmd _LNSprite_SetSizeWH $355
 #define LNSprite_SetSizeWH(%1, %2, %3) _LNSprite_SetSizeWH %1, %2, %3
-#cmd _LNSprite_SetSourceRectXYWH $341
+#cmd _LNSprite_SetSourceRectXYWH $358
 #define LNSprite_SetSourceRectXYWH(%1, %2, %3, %4, %5) _LNSprite_SetSourceRectXYWH %1, %2, %3, %4, %5
-#cmd _LNSprite_SetCallerTest $346
+#cmd _LNSprite_SetCallerTest $35D
 #define LNSprite_SetCallerTest(%1, %2) _LNSprite_SetCallerTest %1, %2
-#cmd LNSprite_SetPrototype_OnSerialize $C7F
-#cmd LNSprite_SetPrototype_OnPreUpdate $C8A
-#cmd LNSprite_SetPrototype_OnUpdate $C95
-#cmd _LNCameraOrbitControlComponent_Create $350
+#cmd LNSprite_SetPrototype_OnSerialize $C9B
+#cmd LNSprite_SetPrototype_OnPreUpdate $CA6
+#cmd LNSprite_SetPrototype_OnUpdate $CB1
+#cmd _LNCameraOrbitControlComponent_Create $367
 #define LNCameraOrbitControlComponent_Create(%1=_ln_return_discard) _LNCameraOrbitControlComponent_Create %1
-#cmd LNCameraOrbitControlComponent_SetPrototype_OnSerialize $CA0
-#cmd _LNRaycaster_FromScreen $352
+#cmd LNCameraOrbitControlComponent_SetPrototype_OnSerialize $CBC
+#cmd _LNRaycaster_FromScreen $369
 #define LNRaycaster_FromScreen(%1, %2=_ln_return_discard) _LNRaycaster_FromScreen %1, %2
-#cmd _LNRaycaster_IntersectPlane $354
+#cmd _LNRaycaster_IntersectPlane $36B
 #define LNRaycaster_IntersectPlane(%1, %2, %3, %4, %5=_ln_return_discard) _LNRaycaster_IntersectPlane %1, %2, %3, %4, %5
-#cmd LNRaycaster_SetPrototype_OnSerialize $CAB
-#cmd _LNRaycastResult_GetPoint $359
+#cmd LNRaycaster_SetPrototype_OnSerialize $CC7
+#cmd _LNRaycastResult_GetPoint $370
 #define LNRaycastResult_GetPoint(%1, %2=_ln_return_discard) _LNRaycastResult_GetPoint %1, %2
-#cmd LNRaycastResult_SetPrototype_OnSerialize $CB6
-#cmd _LNWorldRenderView_SetGuideGridEnabled $35B
+#cmd LNRaycastResult_SetPrototype_OnSerialize $CD2
+#cmd _LNWorldRenderView_SetGuideGridEnabled $372
 #define LNWorldRenderView_SetGuideGridEnabled(%1, %2) _LNWorldRenderView_SetGuideGridEnabled %1, %2
-#cmd _LNWorldRenderView_GetGuideGridEnabled $35D
+#cmd _LNWorldRenderView_GetGuideGridEnabled $374
 #define LNWorldRenderView_GetGuideGridEnabled(%1, %2=_ln_return_discard) _LNWorldRenderView_GetGuideGridEnabled %1, %2
-#cmd LNWorldRenderView_SetPrototype_OnSerialize $CC1
-#cmd _LNBoxMesh_Create $35F
-#define LNBoxMesh_Create(%1=_ln_return_discard) _LNBoxMesh_Create %1
-#cmd _LNBoxMesh_CreateXYZ $360
-#define LNBoxMesh_CreateXYZ(%1, %2, %3, %4=_ln_return_discard) _LNBoxMesh_CreateXYZ %1, %2, %3, %4
-#cmd LNBoxMesh_SetPrototype_OnSerialize $CCC
-#cmd LNBoxMesh_SetPrototype_OnPreUpdate $CD7
-#cmd LNBoxMesh_SetPrototype_OnUpdate $CE2
-#cmd _LNPlaneMesh_Create $365
+#cmd LNWorldRenderView_SetPrototype_OnSerialize $CDD
+#cmd LNShapeObject_SetPrototype_OnSerialize $CE8
+#cmd LNShapeObject_SetPrototype_OnPreUpdate $CF3
+#cmd LNShapeObject_SetPrototype_OnUpdate $CFE
+#cmd _LNPlaneMesh_Create $377
 #define LNPlaneMesh_Create(%1=_ln_return_discard) _LNPlaneMesh_Create %1
-#cmd LNPlaneMesh_SetPrototype_OnSerialize $CED
-#cmd LNPlaneMesh_SetPrototype_OnPreUpdate $CF8
-#cmd LNPlaneMesh_SetPrototype_OnUpdate $D03
-#cmd _LNStaticMesh_Load $367
-#define LNStaticMesh_Load(%1, %2=_ln_return_discard) _LNStaticMesh_Load %1, %2
-#cmd _LNStaticMesh_GetModel $369
-#define LNStaticMesh_GetModel(%1, %2=_ln_return_discard) _LNStaticMesh_GetModel %1, %2
-#cmd _LNStaticMesh_MakeCollisionBody $36A
-#define LNStaticMesh_MakeCollisionBody(%1, %2) _LNStaticMesh_MakeCollisionBody %1, %2
-#cmd LNStaticMesh_SetPrototype_OnSerialize $D0E
-#cmd LNStaticMesh_SetPrototype_OnPreUpdate $D19
-#cmd LNStaticMesh_SetPrototype_OnUpdate $D24
-#cmd _LNStaticMeshComponent_Create $371
-#define LNStaticMeshComponent_Create(%1=_ln_return_discard) _LNStaticMeshComponent_Create %1
-#cmd _LNStaticMeshComponent_SetModel $36D
-#define LNStaticMeshComponent_SetModel(%1, %2) _LNStaticMeshComponent_SetModel %1, %2
-#cmd _LNStaticMeshComponent_MakeCollisionBody $36F
-#define LNStaticMeshComponent_MakeCollisionBody(%1, %2) _LNStaticMeshComponent_MakeCollisionBody %1, %2
-#cmd LNStaticMeshComponent_SetPrototype_OnSerialize $D2F
-#cmd _LNSkinnedMeshComponent_Create $373
-#define LNSkinnedMeshComponent_Create(%1=_ln_return_discard) _LNSkinnedMeshComponent_Create %1
-#cmd LNSkinnedMeshComponent_SetPrototype_OnSerialize $D3A
-#cmd _LNCollision_GetWorldObject $375
+#cmd LNPlaneMesh_SetPrototype_OnSerialize $D09
+#cmd LNPlaneMesh_SetPrototype_OnPreUpdate $D14
+#cmd LNPlaneMesh_SetPrototype_OnUpdate $D1F
+#cmd _LNBoxMesh_Create $379
+#define LNBoxMesh_Create(%1=_ln_return_discard) _LNBoxMesh_Create %1
+#cmd _LNBoxMesh_CreateWithSize $37A
+#define LNBoxMesh_CreateWithSize(%1, %2, %3, %4=_ln_return_discard) _LNBoxMesh_CreateWithSize %1, %2, %3, %4
+#cmd LNBoxMesh_SetPrototype_OnSerialize $D2A
+#cmd LNBoxMesh_SetPrototype_OnPreUpdate $D35
+#cmd LNBoxMesh_SetPrototype_OnUpdate $D40
+#cmd _LNMeshComponent_Create $383
+#define LNMeshComponent_Create(%1=_ln_return_discard) _LNMeshComponent_Create %1
+#cmd _LNMeshComponent_SetModel $37F
+#define LNMeshComponent_SetModel(%1, %2) _LNMeshComponent_SetModel %1, %2
+#cmd _LNMeshComponent_MakeCollisionBody $381
+#define LNMeshComponent_MakeCollisionBody(%1, %2) _LNMeshComponent_MakeCollisionBody %1, %2
+#cmd LNMeshComponent_SetPrototype_OnSerialize $D4B
+#cmd _LNCollision_GetWorldObject $385
 #define LNCollision_GetWorldObject(%1, %2=_ln_return_discard) _LNCollision_GetWorldObject %1, %2
-#cmd LNCollision_SetPrototype_OnSerialize $D45
-#cmd _LNTriggerBodyComponent_Create $379
+#cmd LNCollision_SetPrototype_OnSerialize $D56
+#cmd _LNTriggerBodyComponent_Create $389
 #define LNTriggerBodyComponent_Create(%1=_ln_return_discard) _LNTriggerBodyComponent_Create %1
-#cmd _LNTriggerBodyComponent_AddCollisionShape $377
+#cmd _LNTriggerBodyComponent_AddCollisionShape $387
 #define LNTriggerBodyComponent_AddCollisionShape(%1, %2) _LNTriggerBodyComponent_AddCollisionShape %1, %2
-#cmd LNTriggerBodyComponent_SetPrototype_OnSerialize $D50
-#cmd _LNParticleEmitter_Create $37B
+#cmd LNTriggerBodyComponent_SetPrototype_OnSerialize $D61
+#cmd _LNParticleEmitter_Create $38B
 #define LNParticleEmitter_Create(%1, %2=_ln_return_discard) _LNParticleEmitter_Create %1, %2
-#cmd LNParticleEmitter_SetPrototype_OnSerialize $D5B
-#cmd LNParticleEmitter_SetPrototype_OnPreUpdate $D66
-#cmd LNParticleEmitter_SetPrototype_OnUpdate $D71
-#cmd _LNScene_SetClearMode $37E
+#cmd LNParticleEmitter_SetPrototype_OnSerialize $D6C
+#cmd LNParticleEmitter_SetPrototype_OnPreUpdate $D77
+#cmd LNParticleEmitter_SetPrototype_OnUpdate $D82
+#cmd _LNScene_SetClearMode $38E
 #define LNScene_SetClearMode(%1) _LNScene_SetClearMode %1
-#cmd _LNScene_SetSkyColor $380
+#cmd _LNScene_SetSkyColor $390
 #define LNScene_SetSkyColor(%1) _LNScene_SetSkyColor %1
-#cmd _LNScene_SetSkyHorizonColor $382
+#cmd _LNScene_SetSkyHorizonColor $392
 #define LNScene_SetSkyHorizonColor(%1) _LNScene_SetSkyHorizonColor %1
-#cmd _LNScene_SetSkyCloudColor $384
+#cmd _LNScene_SetSkyCloudColor $394
 #define LNScene_SetSkyCloudColor(%1) _LNScene_SetSkyCloudColor %1
-#cmd _LNScene_SetSkyOverlayColor $386
+#cmd _LNScene_SetSkyOverlayColor $396
 #define LNScene_SetSkyOverlayColor(%1) _LNScene_SetSkyOverlayColor %1
-#cmd _LNScene_GotoLevel $388
-#define LNScene_GotoLevel(%1, %2) _LNScene_GotoLevel %1, %2
-#cmd _LNScene_CallLevel $38B
-#define LNScene_CallLevel(%1, %2) _LNScene_CallLevel %1, %2
-#cmd _LNScene_ReturnLevel $38E
-#define LNScene_ReturnLevel(%1) _LNScene_ReturnLevel %1
-#cmd _LNScene_ActiveLevel $390
+#cmd _LNScene_GotoLevel $398
+#define LNScene_GotoLevel(%1, %2=LN_TRUE) _LNScene_GotoLevel %1, %2
+#cmd _LNScene_CallLevel $39B
+#define LNScene_CallLevel(%1, %2=LN_TRUE) _LNScene_CallLevel %1, %2
+#cmd _LNScene_ReturnLevel $39E
+#define LNScene_ReturnLevel(%1=LN_TRUE) _LNScene_ReturnLevel %1
+#cmd _LNScene_ActiveLevel $3A0
 #define LNScene_ActiveLevel(%1=_ln_return_discard) _LNScene_ActiveLevel %1
-#cmd _LNScene_IsTransitionEffectRunning $391
+#cmd _LNScene_IsTransitionEffectRunning $3A1
 #define LNScene_IsTransitionEffectRunning(%1=_ln_return_discard) _LNScene_IsTransitionEffectRunning %1
-#cmd _LNScene_SetTransitionEffectMode $392
+#cmd _LNScene_SetTransitionEffectMode $3A2
 #define LNScene_SetTransitionEffectMode(%1) _LNScene_SetTransitionEffectMode %1
-#cmd _LNScene_TransitionEffectMode $394
+#cmd _LNScene_TransitionEffectMode $3A4
 #define LNScene_TransitionEffectMode(%1=_ln_return_discard) _LNScene_TransitionEffectMode %1
-#cmd _LNScene_SetTransitionDuration $395
+#cmd _LNScene_SetTransitionDuration $3A5
 #define LNScene_SetTransitionDuration(%1) _LNScene_SetTransitionDuration %1
-#cmd _LNScene_TransitionDuration $397
+#cmd _LNScene_TransitionDuration $3A7
 #define LNScene_TransitionDuration(%1=_ln_return_discard) _LNScene_TransitionDuration %1
-#cmd _LNScene_SetTransitionEffectColor $398
+#cmd _LNScene_SetTransitionEffectColor $3A8
 #define LNScene_SetTransitionEffectColor(%1) _LNScene_SetTransitionEffectColor %1
-#cmd _LNScene_TransitionEffectColor $39A
+#cmd _LNScene_TransitionEffectColor $3AA
 #define LNScene_TransitionEffectColor(%1=_ln_return_discard) _LNScene_TransitionEffectColor %1
-#cmd _LNScene_SetTransitionEffectMaskTexture $39B
+#cmd _LNScene_SetTransitionEffectMaskTexture $3AB
 #define LNScene_SetTransitionEffectMaskTexture(%1) _LNScene_SetTransitionEffectMaskTexture %1
-#cmd _LNScene_TransitionEffectMaskTexture $39D
+#cmd _LNScene_TransitionEffectMaskTexture $3AD
 #define LNScene_TransitionEffectMaskTexture(%1=_ln_return_discard) _LNScene_TransitionEffectMaskTexture %1
-#cmd _LNScene_SetTransitionEffectVague $39E
+#cmd _LNScene_SetTransitionEffectVague $3AE
 #define LNScene_SetTransitionEffectVague(%1) _LNScene_SetTransitionEffectVague %1
-#cmd _LNScene_TransitionEffectVague $3A0
+#cmd _LNScene_TransitionEffectVague $3B0
 #define LNScene_TransitionEffectVague(%1=_ln_return_discard) _LNScene_TransitionEffectVague %1
-#cmd _LNScene_StartFadeOut $3A1
+#cmd _LNScene_StartFadeOut $3B1
 #define LNScene_StartFadeOut _LNScene_StartFadeOut
-#cmd _LNScene_StartFadeIn $3A2
+#cmd _LNScene_StartFadeIn $3B2
 #define LNScene_StartFadeIn _LNScene_StartFadeIn
-#cmd _LNScene_SetFogStartDistance $3A3
+#cmd _LNScene_SetFogStartDistance $3B3
 #define LNScene_SetFogStartDistance(%1) _LNScene_SetFogStartDistance %1
-#cmd _LNScene_SetFogColor $3A5
+#cmd _LNScene_SetFogColor $3B5
 #define LNScene_SetFogColor(%1) _LNScene_SetFogColor %1
-#cmd _LNScene_SetFogDensity $3A7
+#cmd _LNScene_SetFogDensity $3B7
 #define LNScene_SetFogDensity(%1) _LNScene_SetFogDensity %1
-#cmd _LNScene_SetFogHeightDensity $3A9
+#cmd _LNScene_SetFogHeightDensity $3B9
 #define LNScene_SetFogHeightDensity(%1) _LNScene_SetFogHeightDensity %1
-#cmd _LNScene_SetFogLowerHeight $3AB
+#cmd _LNScene_SetFogLowerHeight $3BB
 #define LNScene_SetFogLowerHeight(%1) _LNScene_SetFogLowerHeight %1
-#cmd _LNScene_SetFogUpperHeight $3AD
+#cmd _LNScene_SetFogUpperHeight $3BD
 #define LNScene_SetFogUpperHeight(%1) _LNScene_SetFogUpperHeight %1
-#cmd _LNScene_SetHDREnabled $3AF
+#cmd _LNScene_SetHDREnabled $3BF
 #define LNScene_SetHDREnabled(%1) _LNScene_SetHDREnabled %1
-#cmd _LNScene_IsHDREnabled $3B1
+#cmd _LNScene_IsHDREnabled $3C1
 #define LNScene_IsHDREnabled(%1=_ln_return_discard) _LNScene_IsHDREnabled %1
-#cmd _LNScene_SetScreenBlendColor $3B2
+#cmd _LNScene_SetScreenBlendColor $3C2
 #define LNScene_SetScreenBlendColor(%1) _LNScene_SetScreenBlendColor %1
-#cmd _LNScene_ScreenBlendColor $3B4
+#cmd _LNScene_ScreenBlendColor $3C4
 #define LNScene_ScreenBlendColor(%1=_ln_return_discard) _LNScene_ScreenBlendColor %1
-#cmd _LNScene_SetColorTone $3B5
+#cmd _LNScene_SetColorTone $3C5
 #define LNScene_SetColorTone(%1) _LNScene_SetColorTone %1
-#cmd _LNScene_ColorTone $3B7
+#cmd _LNScene_ColorTone $3C7
 #define LNScene_ColorTone(%1=_ln_return_discard) _LNScene_ColorTone %1
-#cmd _LNScene_SetAntialiasEnabled $3B8
+#cmd _LNScene_SetAntialiasEnabled $3C8
 #define LNScene_SetAntialiasEnabled(%1) _LNScene_SetAntialiasEnabled %1
-#cmd _LNScene_IsAntialiasEnabled $3BA
+#cmd _LNScene_IsAntialiasEnabled $3CA
 #define LNScene_IsAntialiasEnabled(%1=_ln_return_discard) _LNScene_IsAntialiasEnabled %1
-#cmd _LNScene_SetSSREnabled $3BB
+#cmd _LNScene_SetSSREnabled $3CB
 #define LNScene_SetSSREnabled(%1) _LNScene_SetSSREnabled %1
-#cmd _LNScene_IsSSREnabled $3BD
+#cmd _LNScene_IsSSREnabled $3CD
 #define LNScene_IsSSREnabled(%1=_ln_return_discard) _LNScene_IsSSREnabled %1
-#cmd _LNScene_SetSSAOEnabled $3BE
+#cmd _LNScene_SetSSAOEnabled $3CE
 #define LNScene_SetSSAOEnabled(%1) _LNScene_SetSSAOEnabled %1
-#cmd _LNScene_IsSSAOEnabled $3C0
+#cmd _LNScene_IsSSAOEnabled $3D0
 #define LNScene_IsSSAOEnabled(%1=_ln_return_discard) _LNScene_IsSSAOEnabled %1
-#cmd _LNScene_SetBloomEnabled $3C1
+#cmd _LNScene_SetBloomEnabled $3D1
 #define LNScene_SetBloomEnabled(%1) _LNScene_SetBloomEnabled %1
-#cmd _LNScene_IsBloomEnabled $3C3
+#cmd _LNScene_IsBloomEnabled $3D3
 #define LNScene_IsBloomEnabled(%1=_ln_return_discard) _LNScene_IsBloomEnabled %1
-#cmd _LNScene_SetDOFEnabled $3C4
+#cmd _LNScene_SetDOFEnabled $3D4
 #define LNScene_SetDOFEnabled(%1) _LNScene_SetDOFEnabled %1
-#cmd _LNScene_IsDOFEnabled $3C6
+#cmd _LNScene_IsDOFEnabled $3D6
 #define LNScene_IsDOFEnabled(%1=_ln_return_discard) _LNScene_IsDOFEnabled %1
-#cmd _LNScene_SetTonemapEnabled $3C7
+#cmd _LNScene_SetTonemapEnabled $3D7
 #define LNScene_SetTonemapEnabled(%1) _LNScene_SetTonemapEnabled %1
-#cmd _LNScene_IsTonemapEnabled $3C9
+#cmd _LNScene_IsTonemapEnabled $3D9
 #define LNScene_IsTonemapEnabled(%1=_ln_return_discard) _LNScene_IsTonemapEnabled %1
-#cmd _LNScene_SetVignetteEnabled $3CA
+#cmd _LNScene_SetVignetteEnabled $3DA
 #define LNScene_SetVignetteEnabled(%1) _LNScene_SetVignetteEnabled %1
-#cmd _LNScene_IsVignetteEnabled $3CC
+#cmd _LNScene_IsVignetteEnabled $3DC
 #define LNScene_IsVignetteEnabled(%1=_ln_return_discard) _LNScene_IsVignetteEnabled %1
-#cmd _LNScene_SetGammaEnabled $3CD
+#cmd _LNScene_SetGammaEnabled $3DD
 #define LNScene_SetGammaEnabled(%1) _LNScene_SetGammaEnabled %1
-#cmd _LNScene_IsGammaEnabled $3CF
+#cmd _LNScene_IsGammaEnabled $3DF
 #define LNScene_IsGammaEnabled(%1=_ln_return_discard) _LNScene_IsGammaEnabled %1
-#cmd _LNScene_SetTonemapExposure $3D0
+#cmd _LNScene_SetTonemapExposure $3E0
 #define LNScene_SetTonemapExposure(%1) _LNScene_SetTonemapExposure %1
-#cmd _LNScene_SetTonemapLinearWhite $3D2
+#cmd _LNScene_SetTonemapLinearWhite $3E2
 #define LNScene_SetTonemapLinearWhite(%1) _LNScene_SetTonemapLinearWhite %1
-#cmd _LNScene_SetTonemapShoulderStrength $3D4
+#cmd _LNScene_SetTonemapShoulderStrength $3E4
 #define LNScene_SetTonemapShoulderStrength(%1) _LNScene_SetTonemapShoulderStrength %1
-#cmd _LNScene_SetTonemapLinearStrength $3D6
+#cmd _LNScene_SetTonemapLinearStrength $3E6
 #define LNScene_SetTonemapLinearStrength(%1) _LNScene_SetTonemapLinearStrength %1
-#cmd _LNScene_SetTonemapLinearAngle $3D8
+#cmd _LNScene_SetTonemapLinearAngle $3E8
 #define LNScene_SetTonemapLinearAngle(%1) _LNScene_SetTonemapLinearAngle %1
-#cmd _LNScene_SetTonemapToeStrength $3DA
+#cmd _LNScene_SetTonemapToeStrength $3EA
 #define LNScene_SetTonemapToeStrength(%1) _LNScene_SetTonemapToeStrength %1
-#cmd _LNScene_SetTonemapToeNumerator $3DC
+#cmd _LNScene_SetTonemapToeNumerator $3EC
 #define LNScene_SetTonemapToeNumerator(%1) _LNScene_SetTonemapToeNumerator %1
-#cmd _LNScene_SetTonemapToeDenominator $3DE
+#cmd _LNScene_SetTonemapToeDenominator $3EE
 #define LNScene_SetTonemapToeDenominator(%1) _LNScene_SetTonemapToeDenominator %1
-#cmd _LNLevel_Create $3EF
+#cmd _LNLevel_Create $3FF
 #define LNLevel_Create(%1=_ln_return_discard) _LNLevel_Create %1
-#cmd _LNLevel_AddObject $3E1
+#cmd _LNLevel_AddObject $3F1
 #define LNLevel_AddObject(%1, %2) _LNLevel_AddObject %1, %2
-#cmd _LNLevel_RemoveObject $3E3
+#cmd _LNLevel_RemoveObject $3F3
 #define LNLevel_RemoveObject(%1, %2) _LNLevel_RemoveObject %1, %2
-#cmd _LNLevel_AddSubLevel $3E5
+#cmd _LNLevel_AddSubLevel $3F5
 #define LNLevel_AddSubLevel(%1, %2) _LNLevel_AddSubLevel %1, %2
-#cmd _LNLevel_RemoveSubLevel $3E7
+#cmd _LNLevel_RemoveSubLevel $3F7
 #define LNLevel_RemoveSubLevel(%1, %2) _LNLevel_RemoveSubLevel %1, %2
-#cmd _LNLevel_RemoveAllSubLevels $3E9
+#cmd _LNLevel_RemoveAllSubLevels $3F9
 #define LNLevel_RemoveAllSubLevels(%1) _LNLevel_RemoveAllSubLevels %1
-#cmd LNLevel_SetPrototype_OnSerialize $D7C
-#cmd LNLevel_SetPrototype_OnStart $D87
-#cmd LNLevel_SetPrototype_OnStop $D92
-#cmd LNLevel_SetPrototype_OnPause $D9D
-#cmd LNLevel_SetPrototype_OnResume $DA8
-#cmd LNLevel_SetPrototype_OnUpdate $DB3
-#cmd _LNUIColors_Red $40F
-#define LNUIColors_Red(%1, %2=_ln_return_discard) _LNUIColors_Red %1, %2
-#cmd _LNUIColors_Pink $411
-#define LNUIColors_Pink(%1, %2=_ln_return_discard) _LNUIColors_Pink %1, %2
-#cmd _LNUIColors_Purple $413
-#define LNUIColors_Purple(%1, %2=_ln_return_discard) _LNUIColors_Purple %1, %2
-#cmd _LNUIColors_DeepPurple $415
-#define LNUIColors_DeepPurple(%1, %2=_ln_return_discard) _LNUIColors_DeepPurple %1, %2
-#cmd _LNUIColors_Indigo $417
-#define LNUIColors_Indigo(%1, %2=_ln_return_discard) _LNUIColors_Indigo %1, %2
-#cmd _LNUIColors_Blue $419
-#define LNUIColors_Blue(%1, %2=_ln_return_discard) _LNUIColors_Blue %1, %2
-#cmd _LNUIColors_LightBlue $41B
-#define LNUIColors_LightBlue(%1, %2=_ln_return_discard) _LNUIColors_LightBlue %1, %2
-#cmd _LNUIColors_Cyan $41D
-#define LNUIColors_Cyan(%1, %2=_ln_return_discard) _LNUIColors_Cyan %1, %2
-#cmd _LNUIColors_Teal $41F
-#define LNUIColors_Teal(%1, %2=_ln_return_discard) _LNUIColors_Teal %1, %2
-#cmd _LNUIColors_Green $421
-#define LNUIColors_Green(%1, %2=_ln_return_discard) _LNUIColors_Green %1, %2
-#cmd _LNUIColors_LightGreen $423
-#define LNUIColors_LightGreen(%1, %2=_ln_return_discard) _LNUIColors_LightGreen %1, %2
-#cmd _LNUIColors_Lime $425
-#define LNUIColors_Lime(%1, %2=_ln_return_discard) _LNUIColors_Lime %1, %2
-#cmd _LNUIColors_Yellow $427
-#define LNUIColors_Yellow(%1, %2=_ln_return_discard) _LNUIColors_Yellow %1, %2
-#cmd _LNUIColors_Amber $429
-#define LNUIColors_Amber(%1, %2=_ln_return_discard) _LNUIColors_Amber %1, %2
-#cmd _LNUIColors_Orange $42B
-#define LNUIColors_Orange(%1, %2=_ln_return_discard) _LNUIColors_Orange %1, %2
-#cmd _LNUIColors_DeepOrange $42D
-#define LNUIColors_DeepOrange(%1, %2=_ln_return_discard) _LNUIColors_DeepOrange %1, %2
-#cmd _LNUIColors_Brown $42F
-#define LNUIColors_Brown(%1, %2=_ln_return_discard) _LNUIColors_Brown %1, %2
-#cmd _LNUIColors_Grey $431
-#define LNUIColors_Grey(%1, %2=_ln_return_discard) _LNUIColors_Grey %1, %2
-#cmd _LNUIColors_Get $433
-#define LNUIColors_Get(%1, %2, %3=_ln_return_discard) _LNUIColors_Get %1, %2, %3
-#cmd _LNUIEventArgs_Sender $437
+#cmd LNLevel_SetPrototype_OnSerialize $D8D
+#cmd LNLevel_SetPrototype_OnStart $D98
+#cmd LNLevel_SetPrototype_OnStop $DA3
+#cmd LNLevel_SetPrototype_OnPause $DAE
+#cmd LNLevel_SetPrototype_OnResume $DB9
+#cmd LNLevel_SetPrototype_OnUpdate $DC4
+#cmd _LNUIColors_Red $41F
+#define LNUIColors_Red(%1=5, %2=_ln_return_discard) _LNUIColors_Red %1, %2
+#cmd _LNUIColors_Pink $421
+#define LNUIColors_Pink(%1=5, %2=_ln_return_discard) _LNUIColors_Pink %1, %2
+#cmd _LNUIColors_Purple $423
+#define LNUIColors_Purple(%1=5, %2=_ln_return_discard) _LNUIColors_Purple %1, %2
+#cmd _LNUIColors_DeepPurple $425
+#define LNUIColors_DeepPurple(%1=5, %2=_ln_return_discard) _LNUIColors_DeepPurple %1, %2
+#cmd _LNUIColors_Indigo $427
+#define LNUIColors_Indigo(%1=5, %2=_ln_return_discard) _LNUIColors_Indigo %1, %2
+#cmd _LNUIColors_Blue $429
+#define LNUIColors_Blue(%1=5, %2=_ln_return_discard) _LNUIColors_Blue %1, %2
+#cmd _LNUIColors_LightBlue $42B
+#define LNUIColors_LightBlue(%1=5, %2=_ln_return_discard) _LNUIColors_LightBlue %1, %2
+#cmd _LNUIColors_Cyan $42D
+#define LNUIColors_Cyan(%1=5, %2=_ln_return_discard) _LNUIColors_Cyan %1, %2
+#cmd _LNUIColors_Teal $42F
+#define LNUIColors_Teal(%1=5, %2=_ln_return_discard) _LNUIColors_Teal %1, %2
+#cmd _LNUIColors_Green $431
+#define LNUIColors_Green(%1=5, %2=_ln_return_discard) _LNUIColors_Green %1, %2
+#cmd _LNUIColors_LightGreen $433
+#define LNUIColors_LightGreen(%1=5, %2=_ln_return_discard) _LNUIColors_LightGreen %1, %2
+#cmd _LNUIColors_Lime $435
+#define LNUIColors_Lime(%1=5, %2=_ln_return_discard) _LNUIColors_Lime %1, %2
+#cmd _LNUIColors_Yellow $437
+#define LNUIColors_Yellow(%1=5, %2=_ln_return_discard) _LNUIColors_Yellow %1, %2
+#cmd _LNUIColors_Amber $439
+#define LNUIColors_Amber(%1=5, %2=_ln_return_discard) _LNUIColors_Amber %1, %2
+#cmd _LNUIColors_Orange $43B
+#define LNUIColors_Orange(%1=5, %2=_ln_return_discard) _LNUIColors_Orange %1, %2
+#cmd _LNUIColors_DeepOrange $43D
+#define LNUIColors_DeepOrange(%1=5, %2=_ln_return_discard) _LNUIColors_DeepOrange %1, %2
+#cmd _LNUIColors_Brown $43F
+#define LNUIColors_Brown(%1=5, %2=_ln_return_discard) _LNUIColors_Brown %1, %2
+#cmd _LNUIColors_Grey $441
+#define LNUIColors_Grey(%1=5, %2=_ln_return_discard) _LNUIColors_Grey %1, %2
+#cmd _LNUIColors_Get $443
+#define LNUIColors_Get(%1, %2=5, %3=_ln_return_discard) _LNUIColors_Get %1, %2, %3
+#cmd _LNUIEventArgs_Sender $447
 #define LNUIEventArgs_Sender(%1, %2=_ln_return_discard) _LNUIEventArgs_Sender %1, %2
-#cmd LNUIEventArgs_SetPrototype_OnSerialize $DBE
-#cmd _LNUIGeneralEventHandler_Create $91B
+#cmd LNUIEventArgs_SetPrototype_OnSerialize $DCF
+#cmd _LNUIGeneralEventHandler_Create $92E
 #define LNUIGeneralEventHandler_Create(%1, %2=_ln_return_discard) _LNUIGeneralEventHandler_Create %1, %2
-#cmd _LNUIEventHandler_Create $920
+#cmd _LNUIEventHandler_Create $933
 #define LNUIEventHandler_Create(%1, %2=_ln_return_discard) _LNUIEventHandler_Create %1, %2
-#cmd LNUILayoutElement_SetPrototype_OnSerialize $DC9
-#cmd _LNUIElement_SetSize $449
+#cmd LNUILayoutElement_SetPrototype_OnSerialize $DDA
+#cmd _LNUIElement_SetSize $459
 #define LNUIElement_SetSize(%1, %2) _LNUIElement_SetSize %1, %2
-#cmd _LNUIElement_SetSizeWH $44B
+#cmd _LNUIElement_SetSizeWH $45B
 #define LNUIElement_SetSizeWH(%1, %2, %3) _LNUIElement_SetSizeWH %1, %2, %3
-#cmd _LNUIElement_SetWidth $44E
+#cmd _LNUIElement_SetWidth $45E
 #define LNUIElement_SetWidth(%1, %2) _LNUIElement_SetWidth %1, %2
-#cmd _LNUIElement_GetWidth $450
+#cmd _LNUIElement_GetWidth $460
 #define LNUIElement_GetWidth(%1, %2=_ln_return_discard) _LNUIElement_GetWidth %1, %2
-#cmd _LNUIElement_SetHeight $451
+#cmd _LNUIElement_SetHeight $461
 #define LNUIElement_SetHeight(%1, %2) _LNUIElement_SetHeight %1, %2
-#cmd _LNUIElement_GetHeight $453
+#cmd _LNUIElement_GetHeight $463
 #define LNUIElement_GetHeight(%1, %2=_ln_return_discard) _LNUIElement_GetHeight %1, %2
-#cmd _LNUIElement_SetMargin $454
+#cmd _LNUIElement_SetMargin $464
 #define LNUIElement_SetMargin(%1, %2) _LNUIElement_SetMargin %1, %2
-#cmd _LNUIElement_GetMargin $456
+#cmd _LNUIElement_GetMargin $466
 #define LNUIElement_GetMargin(%1, %2=_ln_return_discard) _LNUIElement_GetMargin %1, %2
-#cmd _LNUIElement_SetPadding $457
+#cmd _LNUIElement_SetPadding $467
 #define LNUIElement_SetPadding(%1, %2) _LNUIElement_SetPadding %1, %2
-#cmd _LNUIElement_GetPadding $459
+#cmd _LNUIElement_GetPadding $469
 #define LNUIElement_GetPadding(%1, %2=_ln_return_discard) _LNUIElement_GetPadding %1, %2
-#cmd _LNUIElement_SetHAlignment $45A
+#cmd _LNUIElement_SetHAlignment $46A
 #define LNUIElement_SetHAlignment(%1, %2) _LNUIElement_SetHAlignment %1, %2
-#cmd _LNUIElement_GetHAlignment $45C
+#cmd _LNUIElement_GetHAlignment $46C
 #define LNUIElement_GetHAlignment(%1, %2=_ln_return_discard) _LNUIElement_GetHAlignment %1, %2
-#cmd _LNUIElement_SetVAlignment $45D
+#cmd _LNUIElement_SetVAlignment $46D
 #define LNUIElement_SetVAlignment(%1, %2) _LNUIElement_SetVAlignment %1, %2
-#cmd _LNUIElement_GetVAlignment $45F
+#cmd _LNUIElement_GetVAlignment $46F
 #define LNUIElement_GetVAlignment(%1, %2=_ln_return_discard) _LNUIElement_GetVAlignment %1, %2
-#cmd _LNUIElement_SetAlignments $460
+#cmd _LNUIElement_SetAlignments $470
 #define LNUIElement_SetAlignments(%1, %2, %3) _LNUIElement_SetAlignments %1, %2, %3
-#cmd _LNUIElement_SetPosition $463
+#cmd _LNUIElement_SetPosition $473
 #define LNUIElement_SetPosition(%1, %2) _LNUIElement_SetPosition %1, %2
-#cmd _LNUIElement_SetPositionXYZ $465
-#define LNUIElement_SetPositionXYZ(%1, %2, %3, %4) _LNUIElement_SetPositionXYZ %1, %2, %3, %4
-#cmd _LNUIElement_GetPosition $469
+#cmd _LNUIElement_SetPositionXYZ $475
+#define LNUIElement_SetPositionXYZ(%1, %2, %3, %4=0.000000) _LNUIElement_SetPositionXYZ %1, %2, %3, %4
+#cmd _LNUIElement_GetPosition $479
 #define LNUIElement_GetPosition(%1, %2=_ln_return_discard) _LNUIElement_GetPosition %1, %2
-#cmd _LNUIElement_SetRotation $46A
+#cmd _LNUIElement_SetRotation $47A
 #define LNUIElement_SetRotation(%1, %2) _LNUIElement_SetRotation %1, %2
-#cmd _LNUIElement_SetEulerAngles $46C
+#cmd _LNUIElement_SetEulerAngles $47C
 #define LNUIElement_SetEulerAngles(%1, %2, %3, %4) _LNUIElement_SetEulerAngles %1, %2, %3, %4
-#cmd _LNUIElement_GetRotation $470
+#cmd _LNUIElement_GetRotation $480
 #define LNUIElement_GetRotation(%1, %2=_ln_return_discard) _LNUIElement_GetRotation %1, %2
-#cmd _LNUIElement_SetScale $471
+#cmd _LNUIElement_SetScale $481
 #define LNUIElement_SetScale(%1, %2) _LNUIElement_SetScale %1, %2
-#cmd _LNUIElement_SetScaleS $473
+#cmd _LNUIElement_SetScaleS $483
 #define LNUIElement_SetScaleS(%1, %2) _LNUIElement_SetScaleS %1, %2
-#cmd _LNUIElement_SetScaleXY $475
+#cmd _LNUIElement_SetScaleXY $485
 #define LNUIElement_SetScaleXY(%1, %2, %3) _LNUIElement_SetScaleXY %1, %2, %3
-#cmd _LNUIElement_GetScale $478
+#cmd _LNUIElement_GetScale $488
 #define LNUIElement_GetScale(%1, %2=_ln_return_discard) _LNUIElement_GetScale %1, %2
-#cmd _LNUIElement_SetCenterPoint $479
+#cmd _LNUIElement_SetCenterPoint $489
 #define LNUIElement_SetCenterPoint(%1, %2) _LNUIElement_SetCenterPoint %1, %2
-#cmd _LNUIElement_SetCenterPointXYZ $47B
-#define LNUIElement_SetCenterPointXYZ(%1, %2, %3, %4) _LNUIElement_SetCenterPointXYZ %1, %2, %3, %4
-#cmd _LNUIElement_GetCenterPoint $47F
+#cmd _LNUIElement_SetCenterPointXYZ $48B
+#define LNUIElement_SetCenterPointXYZ(%1, %2, %3, %4=0.000000) _LNUIElement_SetCenterPointXYZ %1, %2, %3, %4
+#cmd _LNUIElement_GetCenterPoint $48F
 #define LNUIElement_GetCenterPoint(%1, %2=_ln_return_discard) _LNUIElement_GetCenterPoint %1, %2
-#cmd _LNUIElement_SetEnabled $480
+#cmd _LNUIElement_SetEnabled $490
 #define LNUIElement_SetEnabled(%1, %2) _LNUIElement_SetEnabled %1, %2
-#cmd _LNUIElement_IsEnabled $482
+#cmd _LNUIElement_IsEnabled $492
 #define LNUIElement_IsEnabled(%1, %2=_ln_return_discard) _LNUIElement_IsEnabled %1, %2
-#cmd _LNUIElement_SetData $483
+#cmd _LNUIElement_SetData $493
 #define LNUIElement_SetData(%1, %2) _LNUIElement_SetData %1, %2
-#cmd _LNUIElement_GetData $485
+#cmd _LNUIElement_GetData $495
 #define LNUIElement_GetData(%1, %2=_ln_return_discard) _LNUIElement_GetData %1, %2
-#cmd _LNUIElement_SetBackgroundColor $486
+#cmd _LNUIElement_SetBackgroundColor $496
 #define LNUIElement_SetBackgroundColor(%1, %2) _LNUIElement_SetBackgroundColor %1, %2
-#cmd _LNUIElement_GetBackgroundColor $488
+#cmd _LNUIElement_GetBackgroundColor $498
 #define LNUIElement_GetBackgroundColor(%1, %2=_ln_return_discard) _LNUIElement_GetBackgroundColor %1, %2
-#cmd _LNUIElement_SetBorderThickness $489
+#cmd _LNUIElement_SetBorderThickness $499
 #define LNUIElement_SetBorderThickness(%1, %2) _LNUIElement_SetBorderThickness %1, %2
-#cmd _LNUIElement_GetBorderThickness $48B
+#cmd _LNUIElement_GetBorderThickness $49B
 #define LNUIElement_GetBorderThickness(%1, %2=_ln_return_discard) _LNUIElement_GetBorderThickness %1, %2
-#cmd _LNUIElement_SetBorderColor $48C
+#cmd _LNUIElement_SetBorderColor $49C
 #define LNUIElement_SetBorderColor(%1, %2) _LNUIElement_SetBorderColor %1, %2
-#cmd _LNUIElement_GetBorderColor $48E
+#cmd _LNUIElement_GetBorderColor $49E
 #define LNUIElement_GetBorderColor(%1, %2=_ln_return_discard) _LNUIElement_GetBorderColor %1, %2
-#cmd _LNUIElement_SetCornerRadius $48F
+#cmd _LNUIElement_SetCornerRadius $49F
 #define LNUIElement_SetCornerRadius(%1, %2) _LNUIElement_SetCornerRadius %1, %2
-#cmd _LNUIElement_GetCornerRadius $491
+#cmd _LNUIElement_GetCornerRadius $4A1
 #define LNUIElement_GetCornerRadius(%1, %2=_ln_return_discard) _LNUIElement_GetCornerRadius %1, %2
-#cmd _LNUIElement_SetVisibility $492
+#cmd _LNUIElement_SetVisibility $4A2
 #define LNUIElement_SetVisibility(%1, %2) _LNUIElement_SetVisibility %1, %2
-#cmd _LNUIElement_GetVisibility $494
+#cmd _LNUIElement_GetVisibility $4A4
 #define LNUIElement_GetVisibility(%1, %2=_ln_return_discard) _LNUIElement_GetVisibility %1, %2
-#cmd _LNUIElement_SetOpacity $495
+#cmd _LNUIElement_SetOpacity $4A5
 #define LNUIElement_SetOpacity(%1, %2) _LNUIElement_SetOpacity %1, %2
-#cmd _LNUIElement_GetOpacity $497
+#cmd _LNUIElement_GetOpacity $4A7
 #define LNUIElement_GetOpacity(%1, %2=_ln_return_discard) _LNUIElement_GetOpacity %1, %2
-#cmd _LNUIElement_AddChild $498
+#cmd _LNUIElement_AddChild $4A8
 #define LNUIElement_AddChild(%1, %2) _LNUIElement_AddChild %1, %2
-#cmd _LNUIElement_SetFocusable $49A
+#cmd _LNUIElement_SetFocusable $4AA
 #define LNUIElement_SetFocusable(%1, %2) _LNUIElement_SetFocusable %1, %2
-#cmd _LNUIElement_GetFocusable $49C
+#cmd _LNUIElement_GetFocusable $4AC
 #define LNUIElement_GetFocusable(%1, %2=_ln_return_discard) _LNUIElement_GetFocusable %1, %2
-#cmd LNUIElement_SetPrototype_OnSerialize $DD4
-#cmd _LNUITextBlock_Create $4A1
-#define LNUITextBlock_Create(%1=_ln_return_discard) _LNUITextBlock_Create %1
-#cmd _LNUITextBlock_CreateWithText $4A2
-#define LNUITextBlock_CreateWithText(%1, %2=_ln_return_discard) _LNUITextBlock_CreateWithText %1, %2
-#cmd _LNUITextBlock_SetText $49E
-#define LNUITextBlock_SetText(%1, %2) _LNUITextBlock_SetText %1, %2
-#cmd _LNUITextBlock_GetText $4A0
-#define LNUITextBlock_GetText(%1, %2=_ln_return_discard) _LNUITextBlock_GetText %1, %2
-#cmd LNUITextBlock_SetPrototype_OnSerialize $DDF
-#cmd _LNUISprite_Create $4B1
+#cmd _LNUIElement_AddInto $4AD
+#define LNUIElement_AddInto(%1, %2=LN_NULL_HANDLE) _LNUIElement_AddInto %1, %2
+#cmd LNUIElement_SetPrototype_OnSerialize $DE5
+#cmd _LNUIText_Create $4B3
+#define LNUIText_Create(%1=_ln_return_discard) _LNUIText_Create %1
+#cmd _LNUIText_CreateWithText $4B4
+#define LNUIText_CreateWithText(%1, %2=_ln_return_discard) _LNUIText_CreateWithText %1, %2
+#cmd _LNUIText_SetText $4B0
+#define LNUIText_SetText(%1, %2) _LNUIText_SetText %1, %2
+#cmd _LNUIText_GetText $4B2
+#define LNUIText_GetText(%1, %2=_ln_return_discard) _LNUIText_GetText %1, %2
+#cmd LNUIText_SetPrototype_OnSerialize $DF0
+#cmd _LNUISprite_Create $4C3
 #define LNUISprite_Create(%1=_ln_return_discard) _LNUISprite_Create %1
-#cmd _LNUISprite_CreateWithTexture $4B2
+#cmd _LNUISprite_CreateWithTexture $4C4
 #define LNUISprite_CreateWithTexture(%1, %2=_ln_return_discard) _LNUISprite_CreateWithTexture %1, %2
-#cmd _LNUISprite_SetTexture $4A5
+#cmd _LNUISprite_SetTexture $4B7
 #define LNUISprite_SetTexture(%1, %2) _LNUISprite_SetTexture %1, %2
-#cmd _LNUISprite_SetSourceRect $4A7
+#cmd _LNUISprite_SetSourceRect $4B9
 #define LNUISprite_SetSourceRect(%1, %2) _LNUISprite_SetSourceRect %1, %2
-#cmd _LNUISprite_SetSourceRectXYWH $4A9
+#cmd _LNUISprite_SetSourceRectXYWH $4BB
 #define LNUISprite_SetSourceRectXYWH(%1, %2, %3, %4, %5) _LNUISprite_SetSourceRectXYWH %1, %2, %3, %4, %5
-#cmd _LNUISprite_GetSourceRect $4AE
+#cmd _LNUISprite_GetSourceRect $4C0
 #define LNUISprite_GetSourceRect(%1, %2=_ln_return_discard) _LNUISprite_GetSourceRect %1, %2
-#cmd _LNUISprite_SetShader $4AF
+#cmd _LNUISprite_SetShader $4C1
 #define LNUISprite_SetShader(%1, %2) _LNUISprite_SetShader %1, %2
-#cmd LNUISprite_SetPrototype_OnSerialize $DEA
-#cmd _LNUIIcon_LoadFontIcon $4B5
+#cmd LNUISprite_SetPrototype_OnSerialize $DFB
+#cmd _LNUIIcon_LoadFontIcon $4C7
 #define LNUIIcon_LoadFontIcon(%1, %2=_ln_return_discard) _LNUIIcon_LoadFontIcon %1, %2
-#cmd _LNUIIcon_LoadFontIconWithNameSize $4B7
+#cmd _LNUIIcon_LoadFontIconWithNameSize $4C9
 #define LNUIIcon_LoadFontIconWithNameSize(%1, %2, %3=_ln_return_discard) _LNUIIcon_LoadFontIconWithNameSize %1, %2, %3
-#cmd _LNUIIcon_LoadFontIconWithNameSizeColor $4BA
+#cmd _LNUIIcon_LoadFontIconWithNameSizeColor $4CC
 #define LNUIIcon_LoadFontIconWithNameSizeColor(%1, %2, %3, %4=_ln_return_discard) _LNUIIcon_LoadFontIconWithNameSizeColor %1, %2, %3, %4
-#cmd LNUIIcon_SetPrototype_OnSerialize $DF5
-#cmd _LNUIMessageTextArea_Create $4C3
+#cmd LNUIIcon_SetPrototype_OnSerialize $E06
+#cmd _LNUIMessageTextArea_Create $4D5
 #define LNUIMessageTextArea_Create(%1=_ln_return_discard) _LNUIMessageTextArea_Create %1
-#cmd _LNUIMessageTextArea_SetText $4BF
+#cmd _LNUIMessageTextArea_SetText $4D1
 #define LNUIMessageTextArea_SetText(%1, %2) _LNUIMessageTextArea_SetText %1, %2
-#cmd _LNUIMessageTextArea_SetTypingSpeed $4C1
+#cmd _LNUIMessageTextArea_SetTypingSpeed $4D3
 #define LNUIMessageTextArea_SetTypingSpeed(%1, %2) _LNUIMessageTextArea_SetTypingSpeed %1, %2
-#cmd LNUIMessageTextArea_SetPrototype_OnSerialize $E00
-#cmd _LNUI_Add $4C5
+#cmd LNUIMessageTextArea_SetPrototype_OnSerialize $E11
+#cmd _LNUI_Add $4D7
 #define LNUI_Add(%1) _LNUI_Add %1
-#cmd _LNUI_Remove $4C7
+#cmd _LNUI_Remove $4D9
 #define LNUI_Remove(%1) _LNUI_Remove %1
-#cmd LNUILayoutPanel_SetPrototype_OnSerialize $E0B
-#cmd _LNUIBoxLayout_Create $4CE
+#cmd LNUILayoutPanel_SetPrototype_OnSerialize $E1C
+#cmd _LNUIBoxLayout_Create $4E0
 #define LNUIBoxLayout_Create(%1=_ln_return_discard) _LNUIBoxLayout_Create %1
-#cmd _LNUIBoxLayout_SetOrientation $4CB
+#cmd _LNUIBoxLayout_SetOrientation $4DD
 #define LNUIBoxLayout_SetOrientation(%1, %2) _LNUIBoxLayout_SetOrientation %1, %2
-#cmd _LNUIBoxLayout_GetOrientation $4CD
+#cmd _LNUIBoxLayout_GetOrientation $4DF
 #define LNUIBoxLayout_GetOrientation(%1, %2=_ln_return_discard) _LNUIBoxLayout_GetOrientation %1, %2
-#cmd LNUIBoxLayout_SetPrototype_OnSerialize $E16
-#cmd _LNUIStackLayout_Create $4D3
+#cmd LNUIBoxLayout_SetPrototype_OnSerialize $E27
+#cmd _LNUIStackLayout_Create $4E5
 #define LNUIStackLayout_Create(%1=_ln_return_discard) _LNUIStackLayout_Create %1
-#cmd _LNUIStackLayout_SetOrientation $4D0
+#cmd _LNUIStackLayout_SetOrientation $4E2
 #define LNUIStackLayout_SetOrientation(%1, %2) _LNUIStackLayout_SetOrientation %1, %2
-#cmd _LNUIStackLayout_GetOrientation $4D2
+#cmd _LNUIStackLayout_GetOrientation $4E4
 #define LNUIStackLayout_GetOrientation(%1, %2=_ln_return_discard) _LNUIStackLayout_GetOrientation %1, %2
-#cmd LNUIStackLayout_SetPrototype_OnSerialize $E21
-#cmd _LNUIGridLayout_Create $4E3
+#cmd LNUIStackLayout_SetPrototype_OnSerialize $E32
+#cmd _LNUIGridLayout_Create $4F5
 #define LNUIGridLayout_Create(%1=_ln_return_discard) _LNUIGridLayout_Create %1
-#cmd _LNUIGridLayout_SetColumnCount $4D5
+#cmd _LNUIGridLayout_SetColumnCount $4E7
 #define LNUIGridLayout_SetColumnCount(%1, %2) _LNUIGridLayout_SetColumnCount %1, %2
-#cmd _LNUIGridLayout_SetRow $4D7
+#cmd _LNUIGridLayout_SetRow $4E9
 #define LNUIGridLayout_SetRow(%1, %2) _LNUIGridLayout_SetRow %1, %2
-#cmd _LNUIGridLayout_SetColumn $4DA
+#cmd _LNUIGridLayout_SetColumn $4EC
 #define LNUIGridLayout_SetColumn(%1, %2) _LNUIGridLayout_SetColumn %1, %2
-#cmd _LNUIGridLayout_SetPlacement $4DD
-#define LNUIGridLayout_SetPlacement(%1, %2, %3, %4, %5) _LNUIGridLayout_SetPlacement %1, %2, %3, %4, %5
-#cmd LNUIGridLayout_SetPrototype_OnSerialize $E2C
-#cmd _LNUIControl_Create $4EF
+#cmd _LNUIGridLayout_SetPlacement $4EF
+#define LNUIGridLayout_SetPlacement(%1, %2, %3, %4=1, %5=1) _LNUIGridLayout_SetPlacement %1, %2, %3, %4, %5
+#cmd LNUIGridLayout_SetPrototype_OnSerialize $E3D
+#cmd _LNUIControl_Create $501
 #define LNUIControl_Create(%1=_ln_return_discard) _LNUIControl_Create %1
-#cmd _LNUIControl_AddInlineVisual $4F0
+#cmd _LNUIControl_AddInlineVisual $502
 #define LNUIControl_AddInlineVisual(%1, %2, %3) _LNUIControl_AddInlineVisual %1, %2, %3
-#cmd LNUIControl_SetPrototype_OnSerialize $E37
-#cmd _LNUIButtonBase_SetText $4F4
+#cmd LNUIControl_SetPrototype_OnSerialize $E48
+#cmd _LNUIButtonBase_SetText $506
 #define LNUIButtonBase_SetText(%1, %2) _LNUIButtonBase_SetText %1, %2
-#cmd LNUIButtonBase_SetPrototype_OnSerialize $E42
-#cmd _LNUIButton_Create $4F7
+#cmd LNUIButtonBase_SetPrototype_OnSerialize $E53
+#cmd _LNUIButton_Create $509
 #define LNUIButton_Create(%1=_ln_return_discard) _LNUIButton_Create %1
-#cmd _LNUIButton_CreateWithText $4F8
+#cmd _LNUIButton_CreateWithText $50A
 #define LNUIButton_CreateWithText(%1, %2=_ln_return_discard) _LNUIButton_CreateWithText %1, %2
-#cmd _LNUIButton_ConnectOnClicked $4FA
+#cmd _LNUIButton_ConnectOnClicked $50C
 #define LNUIButton_ConnectOnClicked(%1, %2, %3=_ln_return_discard) _LNUIButton_ConnectOnClicked %1, %2, %3
-#cmd LNUIButton_SetPrototype_OnSerialize $E4D
-#cmd _LNUIWindow_Create $4FD
+#cmd LNUIButton_SetPrototype_OnSerialize $E5E
+#cmd _LNUIWindow_Create $50F
 #define LNUIWindow_Create(%1=_ln_return_discard) _LNUIWindow_Create %1
-#cmd LNUIWindow_SetPrototype_OnSerialize $E58
-#cmd _LNUIListItem_ConnectOnSubmit $502
+#cmd LNUIWindow_SetPrototype_OnSerialize $E69
+#cmd _LNUIListItem_ConnectOnSubmit $514
 #define LNUIListItem_ConnectOnSubmit(%1, %2, %3=_ln_return_discard) _LNUIListItem_ConnectOnSubmit %1, %2, %3
-#cmd LNUIListItem_SetPrototype_OnSerialize $E63
-#cmd _LNUIListItemsControl_SetItemsLayoutPanel $505
+#cmd LNUIListItem_SetPrototype_OnSerialize $E74
+#cmd _LNUIListItemsControl_SetItemsLayoutPanel $517
 #define LNUIListItemsControl_SetItemsLayoutPanel(%1, %2) _LNUIListItemsControl_SetItemsLayoutPanel %1, %2
-#cmd _LNUIListItemsControl_SetSubmitMode $507
+#cmd _LNUIListItemsControl_GetItemsLayoutPanel $519
+#define LNUIListItemsControl_GetItemsLayoutPanel(%1, %2=_ln_return_discard) _LNUIListItemsControl_GetItemsLayoutPanel %1, %2
+#cmd _LNUIListItemsControl_SetSubmitMode $51A
 #define LNUIListItemsControl_SetSubmitMode(%1, %2) _LNUIListItemsControl_SetSubmitMode %1, %2
-#cmd _LNUIListItemsControl_GetSubmitMode $509
+#cmd _LNUIListItemsControl_GetSubmitMode $51C
 #define LNUIListItemsControl_GetSubmitMode(%1, %2=_ln_return_discard) _LNUIListItemsControl_GetSubmitMode %1, %2
-#cmd LNUIListItemsControl_SetPrototype_OnSerialize $E6E
-#cmd _LNUIListBoxItem_Create $50B
+#cmd _LNUIListItemsControl_ConnectOnSubmit $51D
+#define LNUIListItemsControl_ConnectOnSubmit(%1, %2, %3=_ln_return_discard) _LNUIListItemsControl_ConnectOnSubmit %1, %2, %3
+#cmd LNUIListItemsControl_SetPrototype_OnSerialize $E7F
+#cmd _LNUIListBoxItem_Create $520
 #define LNUIListBoxItem_Create(%1, %2=_ln_return_discard) _LNUIListBoxItem_Create %1, %2
-#cmd LNUIListBoxItem_SetPrototype_OnSerialize $E79
-#cmd _LNUIListBox_Create $510
+#cmd LNUIListBoxItem_SetPrototype_OnSerialize $E8A
+#cmd _LNUIListBox_Create $525
 #define LNUIListBox_Create(%1=_ln_return_discard) _LNUIListBox_Create %1
-#cmd _LNUIListBox_AddItem $50E
+#cmd _LNUIListBox_AddItem $523
 #define LNUIListBox_AddItem(%1, %2, %3=_ln_return_discard) _LNUIListBox_AddItem %1, %2, %3
-#cmd LNUIListBox_SetPrototype_OnSerialize $E84
-#cmd LNInputGesture_SetPrototype_OnSerialize $E8F
-#cmd _LNKeyGesture_Create $513
+#cmd LNUIListBox_SetPrototype_OnSerialize $E95
+#cmd LNInputGesture_SetPrototype_OnSerialize $EA0
+#cmd _LNKeyGesture_Create $528
 #define LNKeyGesture_Create(%1, %2=_ln_return_discard) _LNKeyGesture_Create %1, %2
-#cmd LNKeyGesture_SetPrototype_OnSerialize $E9A
-#cmd _LNInput_IsPressed $516
+#cmd LNKeyGesture_SetPrototype_OnSerialize $EAB
+#cmd _LNInput_IsPressed $52B
 #define LNInput_IsPressed(%1, %2=_ln_return_discard) _LNInput_IsPressed %1, %2
-#cmd _LNInput_IsTriggered $518
+#cmd _LNInput_IsTriggered $52D
 #define LNInput_IsTriggered(%1, %2=_ln_return_discard) _LNInput_IsTriggered %1, %2
-#cmd _LNInput_IsTriggeredOff $51A
+#cmd _LNInput_IsTriggeredOff $52F
 #define LNInput_IsTriggeredOff(%1, %2=_ln_return_discard) _LNInput_IsTriggeredOff %1, %2
-#cmd _LNInput_IsRepeated $51C
+#cmd _LNInput_IsRepeated $531
 #define LNInput_IsRepeated(%1, %2=_ln_return_discard) _LNInput_IsRepeated %1, %2
-#cmd _LNInput_GetAxisValue $51E
+#cmd _LNInput_GetAxisValue $533
 #define LNInput_GetAxisValue(%1, %2=_ln_return_discard) _LNInput_GetAxisValue %1, %2
-#cmd _LNInput_AddBinding $520
+#cmd _LNInput_AddBinding $535
 #define LNInput_AddBinding(%1, %2) _LNInput_AddBinding %1, %2
-#cmd _LNInput_RemoveBinding $523
+#cmd _LNInput_RemoveBinding $538
 #define LNInput_RemoveBinding(%1) _LNInput_RemoveBinding %1
-#cmd _LNInput_ClearBindings $525
+#cmd _LNInput_ClearBindings $53A
 #define LNInput_ClearBindings(%1) _LNInput_ClearBindings %1
-#cmd _LNInput_ClearAllBindings $527
+#cmd _LNInput_ClearAllBindings $53C
 #define LNInput_ClearAllBindings _LNInput_ClearAllBindings
-#cmd _LNMouse_Pressed $529
+#cmd _LNMouse_Pressed $53E
 #define LNMouse_Pressed(%1, %2=_ln_return_discard) _LNMouse_Pressed %1, %2
-#cmd _LNMouse_Triggered $52B
+#cmd _LNMouse_Triggered $540
 #define LNMouse_Triggered(%1, %2=_ln_return_discard) _LNMouse_Triggered %1, %2
-#cmd _LNMouse_TriggeredOff $52D
+#cmd _LNMouse_TriggeredOff $542
 #define LNMouse_TriggeredOff(%1, %2=_ln_return_discard) _LNMouse_TriggeredOff %1, %2
-#cmd _LNMouse_Repeated $52F
+#cmd _LNMouse_Repeated $544
 #define LNMouse_Repeated(%1, %2=_ln_return_discard) _LNMouse_Repeated %1, %2
-#cmd _LNMouse_Position $531
-#define LNMouse_Position(%1=_ln_return_discard) _LNMouse_Position %1
-#cmd _LNInterpreterCommand_Code $533
+#cmd _LNMouse_GetPosition $546
+#define LNMouse_GetPosition(%1=_ln_return_discard) _LNMouse_GetPosition %1
+#cmd _LNInterpreterCommand_Code $548
 #define LNInterpreterCommand_Code(%1, %2=_ln_return_discard) _LNInterpreterCommand_Code %1, %2
-#cmd _LNInterpreterCommand_ParamsCount $534
+#cmd _LNInterpreterCommand_ParamsCount $549
 #define LNInterpreterCommand_ParamsCount(%1, %2=_ln_return_discard) _LNInterpreterCommand_ParamsCount %1, %2
-#cmd _LNInterpreterCommand_Param $535
+#cmd _LNInterpreterCommand_Param $54A
 #define LNInterpreterCommand_Param(%1, %2, %3=_ln_return_discard) _LNInterpreterCommand_Param %1, %2, %3
-#cmd LNInterpreterCommand_SetPrototype_OnSerialize $EA5
-#cmd _LNInterpreterCommandList_Create $54C
+#cmd LNInterpreterCommand_SetPrototype_OnSerialize $EB6
+#cmd _LNInterpreterCommandList_Create $561
 #define LNInterpreterCommandList_Create(%1=_ln_return_discard) _LNInterpreterCommandList_Create %1
-#cmd _LNInterpreterCommandList_AddCommand $538
+#cmd _LNInterpreterCommandList_AddCommand $54D
 #define LNInterpreterCommandList_AddCommand(%1, %2) _LNInterpreterCommandList_AddCommand %1, %2
-#cmd _LNInterpreterCommandList_AddCommand1 $53A
+#cmd _LNInterpreterCommandList_AddCommand1 $54F
 #define LNInterpreterCommandList_AddCommand1(%1, %2, %3) _LNInterpreterCommandList_AddCommand1 %1, %2, %3
-#cmd _LNInterpreterCommandList_AddCommand2 $53D
+#cmd _LNInterpreterCommandList_AddCommand2 $552
 #define LNInterpreterCommandList_AddCommand2(%1, %2, %3, %4) _LNInterpreterCommandList_AddCommand2 %1, %2, %3, %4
-#cmd _LNInterpreterCommandList_AddCommand3 $541
+#cmd _LNInterpreterCommandList_AddCommand3 $556
 #define LNInterpreterCommandList_AddCommand3(%1, %2, %3, %4, %5) _LNInterpreterCommandList_AddCommand3 %1, %2, %3, %4, %5
-#cmd _LNInterpreterCommandList_AddCommand4 $546
+#cmd _LNInterpreterCommandList_AddCommand4 $55B
 #define LNInterpreterCommandList_AddCommand4(%1, %2, %3, %4, %5, %6) _LNInterpreterCommandList_AddCommand4 %1, %2, %3, %4, %5, %6
-#cmd LNInterpreterCommandList_SetPrototype_OnSerialize $EB0
-#cmd _LNInterpreterCommandDelegate_Create $9E6
+#cmd LNInterpreterCommandList_SetPrototype_OnSerialize $EC1
+#cmd _LNInterpreterCommandDelegate_Create $A01
 #define LNInterpreterCommandDelegate_Create(%1, %2=_ln_return_discard) _LNInterpreterCommandDelegate_Create %1, %2
-#cmd _LNInterpreter_Create $560
+#cmd _LNInterpreter_Create $575
 #define LNInterpreter_Create(%1=_ln_return_discard) _LNInterpreter_Create %1
-#cmd _LNInterpreter_Clear $551
+#cmd _LNInterpreter_Clear $566
 #define LNInterpreter_Clear(%1) _LNInterpreter_Clear %1
-#cmd _LNInterpreter_Run $552
+#cmd _LNInterpreter_Run $567
 #define LNInterpreter_Run(%1, %2) _LNInterpreter_Run %1, %2
-#cmd _LNInterpreter_IsRunning $554
+#cmd _LNInterpreter_IsRunning $569
 #define LNInterpreter_IsRunning(%1, %2=_ln_return_discard) _LNInterpreter_IsRunning %1, %2
-#cmd _LNInterpreter_Update $555
+#cmd _LNInterpreter_Update $56A
 #define LNInterpreter_Update(%1) _LNInterpreter_Update %1
-#cmd _LNInterpreter_Terminate $556
+#cmd _LNInterpreter_Terminate $56B
 #define LNInterpreter_Terminate(%1) _LNInterpreter_Terminate %1
-#cmd _LNInterpreter_RegisterCommandHandler $557
+#cmd _LNInterpreter_RegisterCommandHandler $56C
 #define LNInterpreter_RegisterCommandHandler(%1, %2, %3) _LNInterpreter_RegisterCommandHandler %1, %2, %3
-#cmd _LNInterpreter_SetWaitMode $55A
+#cmd _LNInterpreter_SetWaitMode $56F
 #define LNInterpreter_SetWaitMode(%1, %2) _LNInterpreter_SetWaitMode %1, %2
-#cmd _LNInterpreter_GetWaitMode $55C
+#cmd _LNInterpreter_GetWaitMode $571
 #define LNInterpreter_GetWaitMode(%1, %2=_ln_return_discard) _LNInterpreter_GetWaitMode %1, %2
-#cmd _LNInterpreter_SetWaitCount $55D
+#cmd _LNInterpreter_SetWaitCount $572
 #define LNInterpreter_SetWaitCount(%1, %2) _LNInterpreter_SetWaitCount %1, %2
-#cmd _LNInterpreter_GetWaitCount $55F
+#cmd _LNInterpreter_GetWaitCount $574
 #define LNInterpreter_GetWaitCount(%1, %2=_ln_return_discard) _LNInterpreter_GetWaitCount %1, %2
-#cmd LNInterpreter_SetPrototype_OnSerialize $EBB
-#cmd LNInterpreter_SetPrototype_OnUpdateWait $EC7
-#cmd _LNEngineSettings_SetMainWindowSize $563
+#cmd LNInterpreter_SetPrototype_OnSerialize $ECC
+#cmd LNInterpreter_SetPrototype_OnUpdateWait $ED8
+#cmd _LNEngineSettings_SetMainWindowSize $578
 #define LNEngineSettings_SetMainWindowSize(%1, %2) _LNEngineSettings_SetMainWindowSize %1, %2
-#cmd _LNEngineSettings_SetMainWorldViewSize $566
+#cmd _LNEngineSettings_SetMainWorldViewSize $57B
 #define LNEngineSettings_SetMainWorldViewSize(%1, %2) _LNEngineSettings_SetMainWorldViewSize %1, %2
-#cmd _LNEngineSettings_SetMainWindowTitle $569
+#cmd _LNEngineSettings_SetMainWindowTitle $57E
 #define LNEngineSettings_SetMainWindowTitle(%1) _LNEngineSettings_SetMainWindowTitle %1
-#cmd _LNEngineSettings_SetMainWindowResizable $56B
+#cmd _LNEngineSettings_SetMainWindowResizable $580
 #define LNEngineSettings_SetMainWindowResizable(%1) _LNEngineSettings_SetMainWindowResizable %1
-#cmd _LNEngineSettings_AddAssetDirectory $56D
+#cmd _LNEngineSettings_AddAssetDirectory $582
 #define LNEngineSettings_AddAssetDirectory(%1) _LNEngineSettings_AddAssetDirectory %1
-#cmd _LNEngineSettings_AddAssetArchive $56F
+#cmd _LNEngineSettings_AddAssetArchive $584
 #define LNEngineSettings_AddAssetArchive(%1, %2) _LNEngineSettings_AddAssetArchive %1, %2
-#cmd _LNEngineSettings_SetFrameRate $572
+#cmd _LNEngineSettings_SetFrameRate $587
 #define LNEngineSettings_SetFrameRate(%1) _LNEngineSettings_SetFrameRate %1
-#cmd _LNEngineSettings_SetUITheme $574
+#cmd _LNEngineSettings_SetUITheme $589
 #define LNEngineSettings_SetUITheme(%1) _LNEngineSettings_SetUITheme %1
-#cmd _LNEngineSettings_SetFontFile $576
+#cmd _LNEngineSettings_SetFontFile $58B
 #define LNEngineSettings_SetFontFile(%1) _LNEngineSettings_SetFontFile %1
-#cmd _LNEngineSettings_SetDebugToolEnabled $578
+#cmd _LNEngineSettings_SetDebugToolEnabled $58D
 #define LNEngineSettings_SetDebugToolEnabled(%1) _LNEngineSettings_SetDebugToolEnabled %1
-#cmd _LNEngineSettings_SetEngineLogEnabled $57A
+#cmd _LNEngineSettings_SetEngineLogEnabled $58F
 #define LNEngineSettings_SetEngineLogEnabled(%1) _LNEngineSettings_SetEngineLogEnabled %1
-#cmd _LNEngineSettings_SetEngineLogFilePath $57C
+#cmd _LNEngineSettings_SetEngineLogFilePath $591
 #define LNEngineSettings_SetEngineLogFilePath(%1) _LNEngineSettings_SetEngineLogFilePath %1
-#cmd _LNEngineSettings_SetDeveloperToolEnabled $57E
+#cmd _LNEngineSettings_SetDeveloperToolEnabled $593
 #define LNEngineSettings_SetDeveloperToolEnabled(%1) _LNEngineSettings_SetDeveloperToolEnabled %1
-#cmd _LNEngineSettings_SetUserMainWindow $580
+#cmd _LNEngineSettings_SetUserMainWindow $595
 #define LNEngineSettings_SetUserMainWindow(%1) _LNEngineSettings_SetUserMainWindow %1
-#cmd _LNEngine_Initialize $583
+#cmd _LNEngine_Initialize $598
 #define LNEngine_Initialize _LNEngine_Initialize
-#cmd _LNEngine_Terminate $584
+#cmd _LNEngine_Terminate $599
 #define LNEngine_Terminate _LNEngine_Terminate
-#cmd _LNEngine_Update $585
+#cmd _LNEngine_Update $59A
 #define LNEngine_Update(%1=_ln_return_discard) _LNEngine_Update %1
-#cmd _LNEngine_Run $586
-#define LNEngine_Run(%1) _LNEngine_Run %1
-#cmd _LNEngine_GetTime $588
+#cmd _LNEngine_GetTime $59B
 #define LNEngine_GetTime(%1=_ln_return_discard) _LNEngine_GetTime %1
-#cmd _LNEngine_GetWorld $589
+#cmd _LNEngine_GetWorld $59C
 #define LNEngine_GetWorld(%1=_ln_return_discard) _LNEngine_GetWorld %1
-#cmd _LNEngine_GetCamera $58A
+#cmd _LNEngine_GetCamera $59D
 #define LNEngine_GetCamera(%1=_ln_return_discard) _LNEngine_GetCamera %1
-#cmd _LNEngine_GetMainLight $58B
+#cmd _LNEngine_GetMainLight $59E
 #define LNEngine_GetMainLight(%1=_ln_return_discard) _LNEngine_GetMainLight %1
-#cmd _LNEngine_GetRenderView $58C
+#cmd _LNEngine_GetRenderView $59F
 #define LNEngine_GetRenderView(%1=_ln_return_discard) _LNEngine_GetRenderView %1
-#cmd _LNApplication_Create $591
+#cmd _LNApplication_Create $5A5
 #define LNApplication_Create(%1=_ln_return_discard) _LNApplication_Create %1
-#cmd _LNApplication_OnInit $58E
+#cmd _LNApplication_OnInit $5A1
 #define LNApplication_OnInit(%1) _LNApplication_OnInit %1
-#cmd _LNApplication_OnUpdate $58F
+#cmd _LNApplication_OnUpdate $5A2
 #define LNApplication_OnUpdate(%1) _LNApplication_OnUpdate %1
-#cmd _LNApplication_World $590
+#cmd _LNApplication_World $5A3
 #define LNApplication_World(%1, %2=_ln_return_discard) _LNApplication_World %1, %2
-#cmd LNApplication_SetPrototype_OnSerialize $ED2
-#cmd LNApplication_SetPrototype_OnInit $EDD
-#cmd LNApplication_SetPrototype_OnUpdate $EE8
-#cmd _LNDebug_SetGuideGridEnabled $593
+#cmd _LNApplication_Run $5A4
+#define LNApplication_Run(%1) _LNApplication_Run %1
+#cmd LNApplication_SetPrototype_OnSerialize $EE3
+#cmd LNApplication_SetPrototype_OnInit $EEE
+#cmd LNApplication_SetPrototype_OnUpdate $EF9
+#cmd _LNDebug_SetGuideGridEnabled $5A7
 #define LNDebug_SetGuideGridEnabled(%1) _LNDebug_SetGuideGridEnabled %1
-#cmd _LNDebug_SetPhysicsDebugDrawEnabled $595
+#cmd _LNDebug_SetPhysicsDebugDrawEnabled $5A9
 #define LNDebug_SetPhysicsDebugDrawEnabled(%1) _LNDebug_SetPhysicsDebugDrawEnabled %1
-#cmd _LNDebug_Print $597
+#cmd _LNDebug_Print $5AB
 #define LNDebug_Print(%1) _LNDebug_Print %1
-#cmd _LNDebug_PrintWithTime $599
+#cmd _LNDebug_PrintWithTime $5AD
 #define LNDebug_PrintWithTime(%1, %2) _LNDebug_PrintWithTime %1, %2
-#cmd _LNDebug_PrintWithTimeAndColor $59C
+#cmd _LNDebug_PrintWithTimeAndColor $5B0
 #define LNDebug_PrintWithTimeAndColor(%1, %2, %3) _LNDebug_PrintWithTimeAndColor %1, %2, %3
-#cmd _LNObjectSerializeHandler_Create $A15
+#cmd _LNObjectSerializeHandler_Create $A31
 #define LNObjectSerializeHandler_Create(%1, %2=_ln_return_discard) _LNObjectSerializeHandler_Create %1, %2
-#cmd _LNEventConnectionSerializeHandler_Create $A20
+#cmd _LNEventConnectionSerializeHandler_Create $A3C
 #define LNEventConnectionSerializeHandler_Create(%1, %2=_ln_return_discard) _LNEventConnectionSerializeHandler_Create %1, %2
-#cmd _LNVariantSerializeHandler_Create $A2B
+#cmd _LNVariantSerializeHandler_Create $A47
 #define LNVariantSerializeHandler_Create(%1, %2=_ln_return_discard) _LNVariantSerializeHandler_Create %1, %2
-#cmd _LNZVTestClass1SerializeHandler_Create $A36
+#cmd _LNZVTestClass1SerializeHandler_Create $A52
 #define LNZVTestClass1SerializeHandler_Create(%1, %2=_ln_return_discard) _LNZVTestClass1SerializeHandler_Create %1, %2
-#cmd _LNZVTestEventArgs1SerializeHandler_Create $A41
+#cmd _LNZVTestEventArgs1SerializeHandler_Create $A5D
 #define LNZVTestEventArgs1SerializeHandler_Create(%1, %2=_ln_return_discard) _LNZVTestEventArgs1SerializeHandler_Create %1, %2
-#cmd _LNSerializer2SerializeHandler_Create $A4C
+#cmd _LNSerializer2SerializeHandler_Create $A68
 #define LNSerializer2SerializeHandler_Create(%1, %2=_ln_return_discard) _LNSerializer2SerializeHandler_Create %1, %2
-#cmd _LNAssetObjectSerializeHandler_Create $A57
+#cmd _LNAssetObjectSerializeHandler_Create $A73
 #define LNAssetObjectSerializeHandler_Create(%1, %2=_ln_return_discard) _LNAssetObjectSerializeHandler_Create %1, %2
-#cmd _LNAssetImportSettingsSerializeHandler_Create $A62
+#cmd _LNAssetImportSettingsSerializeHandler_Create $A7E
 #define LNAssetImportSettingsSerializeHandler_Create(%1, %2=_ln_return_discard) _LNAssetImportSettingsSerializeHandler_Create %1, %2
-#cmd _LNAssetModelSerializeHandler_Create $A6D
+#cmd _LNAssetModelSerializeHandler_Create $A89
 #define LNAssetModelSerializeHandler_Create(%1, %2=_ln_return_discard) _LNAssetModelSerializeHandler_Create %1, %2
-#cmd _LNSoundSerializeHandler_Create $A78
+#cmd _LNSoundSerializeHandler_Create $A94
 #define LNSoundSerializeHandler_Create(%1, %2=_ln_return_discard) _LNSoundSerializeHandler_Create %1, %2
-#cmd _LNTextureSerializeHandler_Create $A83
+#cmd _LNTextureSerializeHandler_Create $A9F
 #define LNTextureSerializeHandler_Create(%1, %2=_ln_return_discard) _LNTextureSerializeHandler_Create %1, %2
-#cmd _LNTexture2DSerializeHandler_Create $A8E
+#cmd _LNTexture2DSerializeHandler_Create $AAA
 #define LNTexture2DSerializeHandler_Create(%1, %2=_ln_return_discard) _LNTexture2DSerializeHandler_Create %1, %2
-#cmd _LNShaderSerializeHandler_Create $A99
+#cmd _LNShaderSerializeHandler_Create $AB5
 #define LNShaderSerializeHandler_Create(%1, %2=_ln_return_discard) _LNShaderSerializeHandler_Create %1, %2
-#cmd _LNRenderViewSerializeHandler_Create $AA4
+#cmd _LNRenderViewSerializeHandler_Create $AC0
 #define LNRenderViewSerializeHandler_Create(%1, %2=_ln_return_discard) _LNRenderViewSerializeHandler_Create %1, %2
-#cmd _LNMaterialSerializeHandler_Create $AAF
+#cmd _LNMaterialSerializeHandler_Create $ACB
 #define LNMaterialSerializeHandler_Create(%1, %2=_ln_return_discard) _LNMaterialSerializeHandler_Create %1, %2
-#cmd _LNMeshNodeSerializeHandler_Create $ABA
+#cmd _LNMeshNodeSerializeHandler_Create $AD6
 #define LNMeshNodeSerializeHandler_Create(%1, %2=_ln_return_discard) _LNMeshNodeSerializeHandler_Create %1, %2
-#cmd _LNAnimationControllerSerializeHandler_Create $AC5
+#cmd _LNAnimationControllerSerializeHandler_Create $AE1
 #define LNAnimationControllerSerializeHandler_Create(%1, %2=_ln_return_discard) _LNAnimationControllerSerializeHandler_Create %1, %2
-#cmd _LNMeshModelSerializeHandler_Create $AD0
+#cmd _LNMeshModelSerializeHandler_Create $AEC
 #define LNMeshModelSerializeHandler_Create(%1, %2=_ln_return_discard) _LNMeshModelSerializeHandler_Create %1, %2
-#cmd _LNMeshImportSettingsSerializeHandler_Create $ADB
+#cmd _LNMeshImportSettingsSerializeHandler_Create $AF7
 #define LNMeshImportSettingsSerializeHandler_Create(%1, %2=_ln_return_discard) _LNMeshImportSettingsSerializeHandler_Create %1, %2
-#cmd _LNSkinnedMeshModelSerializeHandler_Create $AE6
+#cmd _LNSkinnedMeshModelSerializeHandler_Create $B02
 #define LNSkinnedMeshModelSerializeHandler_Create(%1, %2=_ln_return_discard) _LNSkinnedMeshModelSerializeHandler_Create %1, %2
-#cmd _LNCollisionShapeSerializeHandler_Create $AF1
+#cmd _LNCollisionShapeSerializeHandler_Create $B0D
 #define LNCollisionShapeSerializeHandler_Create(%1, %2=_ln_return_discard) _LNCollisionShapeSerializeHandler_Create %1, %2
-#cmd _LNBoxCollisionShapeSerializeHandler_Create $AFC
+#cmd _LNBoxCollisionShapeSerializeHandler_Create $B18
 #define LNBoxCollisionShapeSerializeHandler_Create(%1, %2=_ln_return_discard) _LNBoxCollisionShapeSerializeHandler_Create %1, %2
-#cmd _LNAnimationCurveSerializeHandler_Create $B07
+#cmd _LNAnimationCurveSerializeHandler_Create $B23
 #define LNAnimationCurveSerializeHandler_Create(%1, %2=_ln_return_discard) _LNAnimationCurveSerializeHandler_Create %1, %2
-#cmd _LNKeyFrameAnimationCurveSerializeHandler_Create $B12
+#cmd _LNKeyFrameAnimationCurveSerializeHandler_Create $B2E
 #define LNKeyFrameAnimationCurveSerializeHandler_Create(%1, %2=_ln_return_discard) _LNKeyFrameAnimationCurveSerializeHandler_Create %1, %2
-#cmd _LNAnimationClipSerializeHandler_Create $B1D
+#cmd _LNAnimationClipSerializeHandler_Create $B39
 #define LNAnimationClipSerializeHandler_Create(%1, %2=_ln_return_discard) _LNAnimationClipSerializeHandler_Create %1, %2
-#cmd _LNAnimationStateSerializeHandler_Create $B28
+#cmd _LNAnimationStateSerializeHandler_Create $B44
 #define LNAnimationStateSerializeHandler_Create(%1, %2=_ln_return_discard) _LNAnimationStateSerializeHandler_Create %1, %2
-#cmd _LNEffectResourceSerializeHandler_Create $B33
+#cmd _LNEffectResourceSerializeHandler_Create $B4F
 #define LNEffectResourceSerializeHandler_Create(%1, %2=_ln_return_discard) _LNEffectResourceSerializeHandler_Create %1, %2
-#cmd _LNParticleEmitterModelSerializeHandler_Create $B3E
+#cmd _LNParticleEmitterModelSerializeHandler_Create $B5A
 #define LNParticleEmitterModelSerializeHandler_Create(%1, %2=_ln_return_discard) _LNParticleEmitterModelSerializeHandler_Create %1, %2
-#cmd _LNParticleModelSerializeHandler_Create $B49
+#cmd _LNParticleModelSerializeHandler_Create $B65
 #define LNParticleModelSerializeHandler_Create(%1, %2=_ln_return_discard) _LNParticleModelSerializeHandler_Create %1, %2
-#cmd _LNComponentSerializeHandler_Create $B54
+#cmd _LNComponentSerializeHandler_Create $B70
 #define LNComponentSerializeHandler_Create(%1, %2=_ln_return_discard) _LNComponentSerializeHandler_Create %1, %2
-#cmd _LNVisualComponentSerializeHandler_Create $B5F
+#cmd _LNVisualComponentSerializeHandler_Create $B7B
 #define LNVisualComponentSerializeHandler_Create(%1, %2=_ln_return_discard) _LNVisualComponentSerializeHandler_Create %1, %2
-#cmd _LNSpriteComponentSerializeHandler_Create $B6A
+#cmd _LNSpriteComponentSerializeHandler_Create $B86
 #define LNSpriteComponentSerializeHandler_Create(%1, %2=_ln_return_discard) _LNSpriteComponentSerializeHandler_Create %1, %2
-#cmd _LNCharacterControllerSerializeHandler_Create $B75
+#cmd _LNCharacterControllerSerializeHandler_Create $B91
 #define LNCharacterControllerSerializeHandler_Create(%1, %2=_ln_return_discard) _LNCharacterControllerSerializeHandler_Create %1, %2
-#cmd _LNWorldSerializeHandler_Create $B80
+#cmd _LNWorldSerializeHandler_Create $B9C
 #define LNWorldSerializeHandler_Create(%1, %2=_ln_return_discard) _LNWorldSerializeHandler_Create %1, %2
-#cmd _LNComponentListSerializeHandler_Create $B8B
+#cmd _LNComponentListSerializeHandler_Create $BA7
 #define LNComponentListSerializeHandler_Create(%1, %2=_ln_return_discard) _LNComponentListSerializeHandler_Create %1, %2
-#cmd _LNWorldObjectSerializeHandler_Create $B96
+#cmd _LNWorldObjectSerializeHandler_Create $BB2
 #define LNWorldObjectSerializeHandler_Create(%1, %2=_ln_return_discard) _LNWorldObjectSerializeHandler_Create %1, %2
-#cmd _LNWorldObjectPreUpdateHandler_Create $BA1
+#cmd _LNWorldObjectPreUpdateHandler_Create $BBD
 #define LNWorldObjectPreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNWorldObjectPreUpdateHandler_Create %1, %2
-#cmd _LNWorldObjectUpdateHandler_Create $BAC
+#cmd _LNWorldObjectUpdateHandler_Create $BC8
 #define LNWorldObjectUpdateHandler_Create(%1, %2=_ln_return_discard) _LNWorldObjectUpdateHandler_Create %1, %2
-#cmd _LNVisualObjectSerializeHandler_Create $BB7
+#cmd _LNVisualObjectSerializeHandler_Create $BD3
 #define LNVisualObjectSerializeHandler_Create(%1, %2=_ln_return_discard) _LNVisualObjectSerializeHandler_Create %1, %2
-#cmd _LNVisualObjectPreUpdateHandler_Create $BC2
+#cmd _LNVisualObjectPreUpdateHandler_Create $BDE
 #define LNVisualObjectPreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNVisualObjectPreUpdateHandler_Create %1, %2
-#cmd _LNVisualObjectUpdateHandler_Create $BCD
+#cmd _LNVisualObjectUpdateHandler_Create $BE9
 #define LNVisualObjectUpdateHandler_Create(%1, %2=_ln_return_discard) _LNVisualObjectUpdateHandler_Create %1, %2
-#cmd _LNCameraSerializeHandler_Create $BD8
+#cmd _LNCameraSerializeHandler_Create $BF4
 #define LNCameraSerializeHandler_Create(%1, %2=_ln_return_discard) _LNCameraSerializeHandler_Create %1, %2
-#cmd _LNCameraPreUpdateHandler_Create $BE3
+#cmd _LNCameraPreUpdateHandler_Create $BFF
 #define LNCameraPreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNCameraPreUpdateHandler_Create %1, %2
-#cmd _LNCameraUpdateHandler_Create $BEE
+#cmd _LNCameraUpdateHandler_Create $C0A
 #define LNCameraUpdateHandler_Create(%1, %2=_ln_return_discard) _LNCameraUpdateHandler_Create %1, %2
-#cmd _LNEnvironmentLightSerializeHandler_Create $BF9
+#cmd _LNEnvironmentLightSerializeHandler_Create $C15
 #define LNEnvironmentLightSerializeHandler_Create(%1, %2=_ln_return_discard) _LNEnvironmentLightSerializeHandler_Create %1, %2
-#cmd _LNEnvironmentLightPreUpdateHandler_Create $C04
+#cmd _LNEnvironmentLightPreUpdateHandler_Create $C20
 #define LNEnvironmentLightPreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNEnvironmentLightPreUpdateHandler_Create %1, %2
-#cmd _LNEnvironmentLightUpdateHandler_Create $C0F
+#cmd _LNEnvironmentLightUpdateHandler_Create $C2B
 #define LNEnvironmentLightUpdateHandler_Create(%1, %2=_ln_return_discard) _LNEnvironmentLightUpdateHandler_Create %1, %2
-#cmd _LNDirectionalLightSerializeHandler_Create $C1A
+#cmd _LNDirectionalLightSerializeHandler_Create $C36
 #define LNDirectionalLightSerializeHandler_Create(%1, %2=_ln_return_discard) _LNDirectionalLightSerializeHandler_Create %1, %2
-#cmd _LNDirectionalLightPreUpdateHandler_Create $C25
+#cmd _LNDirectionalLightPreUpdateHandler_Create $C41
 #define LNDirectionalLightPreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNDirectionalLightPreUpdateHandler_Create %1, %2
-#cmd _LNDirectionalLightUpdateHandler_Create $C30
+#cmd _LNDirectionalLightUpdateHandler_Create $C4C
 #define LNDirectionalLightUpdateHandler_Create(%1, %2=_ln_return_discard) _LNDirectionalLightUpdateHandler_Create %1, %2
-#cmd _LNPointLightSerializeHandler_Create $C3B
+#cmd _LNPointLightSerializeHandler_Create $C57
 #define LNPointLightSerializeHandler_Create(%1, %2=_ln_return_discard) _LNPointLightSerializeHandler_Create %1, %2
-#cmd _LNPointLightPreUpdateHandler_Create $C46
+#cmd _LNPointLightPreUpdateHandler_Create $C62
 #define LNPointLightPreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNPointLightPreUpdateHandler_Create %1, %2
-#cmd _LNPointLightUpdateHandler_Create $C51
+#cmd _LNPointLightUpdateHandler_Create $C6D
 #define LNPointLightUpdateHandler_Create(%1, %2=_ln_return_discard) _LNPointLightUpdateHandler_Create %1, %2
-#cmd _LNSpotLightSerializeHandler_Create $C5C
+#cmd _LNSpotLightSerializeHandler_Create $C78
 #define LNSpotLightSerializeHandler_Create(%1, %2=_ln_return_discard) _LNSpotLightSerializeHandler_Create %1, %2
-#cmd _LNSpotLightPreUpdateHandler_Create $C67
+#cmd _LNSpotLightPreUpdateHandler_Create $C83
 #define LNSpotLightPreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNSpotLightPreUpdateHandler_Create %1, %2
-#cmd _LNSpotLightUpdateHandler_Create $C72
+#cmd _LNSpotLightUpdateHandler_Create $C8E
 #define LNSpotLightUpdateHandler_Create(%1, %2=_ln_return_discard) _LNSpotLightUpdateHandler_Create %1, %2
-#cmd _LNSpriteSerializeHandler_Create $C7D
+#cmd _LNSpriteSerializeHandler_Create $C99
 #define LNSpriteSerializeHandler_Create(%1, %2=_ln_return_discard) _LNSpriteSerializeHandler_Create %1, %2
-#cmd _LNSpritePreUpdateHandler_Create $C88
+#cmd _LNSpritePreUpdateHandler_Create $CA4
 #define LNSpritePreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNSpritePreUpdateHandler_Create %1, %2
-#cmd _LNSpriteUpdateHandler_Create $C93
+#cmd _LNSpriteUpdateHandler_Create $CAF
 #define LNSpriteUpdateHandler_Create(%1, %2=_ln_return_discard) _LNSpriteUpdateHandler_Create %1, %2
-#cmd _LNCameraOrbitControlComponentSerializeHandler_Create $C9E
+#cmd _LNCameraOrbitControlComponentSerializeHandler_Create $CBA
 #define LNCameraOrbitControlComponentSerializeHandler_Create(%1, %2=_ln_return_discard) _LNCameraOrbitControlComponentSerializeHandler_Create %1, %2
-#cmd _LNRaycasterSerializeHandler_Create $CA9
+#cmd _LNRaycasterSerializeHandler_Create $CC5
 #define LNRaycasterSerializeHandler_Create(%1, %2=_ln_return_discard) _LNRaycasterSerializeHandler_Create %1, %2
-#cmd _LNRaycastResultSerializeHandler_Create $CB4
+#cmd _LNRaycastResultSerializeHandler_Create $CD0
 #define LNRaycastResultSerializeHandler_Create(%1, %2=_ln_return_discard) _LNRaycastResultSerializeHandler_Create %1, %2
-#cmd _LNWorldRenderViewSerializeHandler_Create $CBF
+#cmd _LNWorldRenderViewSerializeHandler_Create $CDB
 #define LNWorldRenderViewSerializeHandler_Create(%1, %2=_ln_return_discard) _LNWorldRenderViewSerializeHandler_Create %1, %2
-#cmd _LNBoxMeshSerializeHandler_Create $CCA
-#define LNBoxMeshSerializeHandler_Create(%1, %2=_ln_return_discard) _LNBoxMeshSerializeHandler_Create %1, %2
-#cmd _LNBoxMeshPreUpdateHandler_Create $CD5
-#define LNBoxMeshPreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNBoxMeshPreUpdateHandler_Create %1, %2
-#cmd _LNBoxMeshUpdateHandler_Create $CE0
-#define LNBoxMeshUpdateHandler_Create(%1, %2=_ln_return_discard) _LNBoxMeshUpdateHandler_Create %1, %2
-#cmd _LNPlaneMeshSerializeHandler_Create $CEB
+#cmd _LNShapeObjectSerializeHandler_Create $CE6
+#define LNShapeObjectSerializeHandler_Create(%1, %2=_ln_return_discard) _LNShapeObjectSerializeHandler_Create %1, %2
+#cmd _LNShapeObjectPreUpdateHandler_Create $CF1
+#define LNShapeObjectPreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNShapeObjectPreUpdateHandler_Create %1, %2
+#cmd _LNShapeObjectUpdateHandler_Create $CFC
+#define LNShapeObjectUpdateHandler_Create(%1, %2=_ln_return_discard) _LNShapeObjectUpdateHandler_Create %1, %2
+#cmd _LNPlaneMeshSerializeHandler_Create $D07
 #define LNPlaneMeshSerializeHandler_Create(%1, %2=_ln_return_discard) _LNPlaneMeshSerializeHandler_Create %1, %2
-#cmd _LNPlaneMeshPreUpdateHandler_Create $CF6
+#cmd _LNPlaneMeshPreUpdateHandler_Create $D12
 #define LNPlaneMeshPreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNPlaneMeshPreUpdateHandler_Create %1, %2
-#cmd _LNPlaneMeshUpdateHandler_Create $D01
+#cmd _LNPlaneMeshUpdateHandler_Create $D1D
 #define LNPlaneMeshUpdateHandler_Create(%1, %2=_ln_return_discard) _LNPlaneMeshUpdateHandler_Create %1, %2
-#cmd _LNStaticMeshSerializeHandler_Create $D0C
-#define LNStaticMeshSerializeHandler_Create(%1, %2=_ln_return_discard) _LNStaticMeshSerializeHandler_Create %1, %2
-#cmd _LNStaticMeshPreUpdateHandler_Create $D17
-#define LNStaticMeshPreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNStaticMeshPreUpdateHandler_Create %1, %2
-#cmd _LNStaticMeshUpdateHandler_Create $D22
-#define LNStaticMeshUpdateHandler_Create(%1, %2=_ln_return_discard) _LNStaticMeshUpdateHandler_Create %1, %2
-#cmd _LNStaticMeshComponentSerializeHandler_Create $D2D
-#define LNStaticMeshComponentSerializeHandler_Create(%1, %2=_ln_return_discard) _LNStaticMeshComponentSerializeHandler_Create %1, %2
-#cmd _LNSkinnedMeshComponentSerializeHandler_Create $D38
-#define LNSkinnedMeshComponentSerializeHandler_Create(%1, %2=_ln_return_discard) _LNSkinnedMeshComponentSerializeHandler_Create %1, %2
-#cmd _LNCollisionSerializeHandler_Create $D43
+#cmd _LNBoxMeshSerializeHandler_Create $D28
+#define LNBoxMeshSerializeHandler_Create(%1, %2=_ln_return_discard) _LNBoxMeshSerializeHandler_Create %1, %2
+#cmd _LNBoxMeshPreUpdateHandler_Create $D33
+#define LNBoxMeshPreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNBoxMeshPreUpdateHandler_Create %1, %2
+#cmd _LNBoxMeshUpdateHandler_Create $D3E
+#define LNBoxMeshUpdateHandler_Create(%1, %2=_ln_return_discard) _LNBoxMeshUpdateHandler_Create %1, %2
+#cmd _LNMeshComponentSerializeHandler_Create $D49
+#define LNMeshComponentSerializeHandler_Create(%1, %2=_ln_return_discard) _LNMeshComponentSerializeHandler_Create %1, %2
+#cmd _LNCollisionSerializeHandler_Create $D54
 #define LNCollisionSerializeHandler_Create(%1, %2=_ln_return_discard) _LNCollisionSerializeHandler_Create %1, %2
-#cmd _LNTriggerBodyComponentSerializeHandler_Create $D4E
+#cmd _LNTriggerBodyComponentSerializeHandler_Create $D5F
 #define LNTriggerBodyComponentSerializeHandler_Create(%1, %2=_ln_return_discard) _LNTriggerBodyComponentSerializeHandler_Create %1, %2
-#cmd _LNParticleEmitterSerializeHandler_Create $D59
+#cmd _LNParticleEmitterSerializeHandler_Create $D6A
 #define LNParticleEmitterSerializeHandler_Create(%1, %2=_ln_return_discard) _LNParticleEmitterSerializeHandler_Create %1, %2
-#cmd _LNParticleEmitterPreUpdateHandler_Create $D64
+#cmd _LNParticleEmitterPreUpdateHandler_Create $D75
 #define LNParticleEmitterPreUpdateHandler_Create(%1, %2=_ln_return_discard) _LNParticleEmitterPreUpdateHandler_Create %1, %2
-#cmd _LNParticleEmitterUpdateHandler_Create $D6F
+#cmd _LNParticleEmitterUpdateHandler_Create $D80
 #define LNParticleEmitterUpdateHandler_Create(%1, %2=_ln_return_discard) _LNParticleEmitterUpdateHandler_Create %1, %2
-#cmd _LNLevelSerializeHandler_Create $D7A
+#cmd _LNLevelSerializeHandler_Create $D8B
 #define LNLevelSerializeHandler_Create(%1, %2=_ln_return_discard) _LNLevelSerializeHandler_Create %1, %2
-#cmd _LNLevelStartHandler_Create $D85
+#cmd _LNLevelStartHandler_Create $D96
 #define LNLevelStartHandler_Create(%1, %2=_ln_return_discard) _LNLevelStartHandler_Create %1, %2
-#cmd _LNLevelStopHandler_Create $D90
+#cmd _LNLevelStopHandler_Create $DA1
 #define LNLevelStopHandler_Create(%1, %2=_ln_return_discard) _LNLevelStopHandler_Create %1, %2
-#cmd _LNLevelPauseHandler_Create $D9B
+#cmd _LNLevelPauseHandler_Create $DAC
 #define LNLevelPauseHandler_Create(%1, %2=_ln_return_discard) _LNLevelPauseHandler_Create %1, %2
-#cmd _LNLevelResumeHandler_Create $DA6
+#cmd _LNLevelResumeHandler_Create $DB7
 #define LNLevelResumeHandler_Create(%1, %2=_ln_return_discard) _LNLevelResumeHandler_Create %1, %2
-#cmd _LNLevelUpdateHandler_Create $DB1
+#cmd _LNLevelUpdateHandler_Create $DC2
 #define LNLevelUpdateHandler_Create(%1, %2=_ln_return_discard) _LNLevelUpdateHandler_Create %1, %2
-#cmd _LNUIEventArgsSerializeHandler_Create $DBC
+#cmd _LNUIEventArgsSerializeHandler_Create $DCD
 #define LNUIEventArgsSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIEventArgsSerializeHandler_Create %1, %2
-#cmd _LNUILayoutElementSerializeHandler_Create $DC7
+#cmd _LNUILayoutElementSerializeHandler_Create $DD8
 #define LNUILayoutElementSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUILayoutElementSerializeHandler_Create %1, %2
-#cmd _LNUIElementSerializeHandler_Create $DD2
+#cmd _LNUIElementSerializeHandler_Create $DE3
 #define LNUIElementSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIElementSerializeHandler_Create %1, %2
-#cmd _LNUITextBlockSerializeHandler_Create $DDD
-#define LNUITextBlockSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUITextBlockSerializeHandler_Create %1, %2
-#cmd _LNUISpriteSerializeHandler_Create $DE8
+#cmd _LNUITextSerializeHandler_Create $DEE
+#define LNUITextSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUITextSerializeHandler_Create %1, %2
+#cmd _LNUISpriteSerializeHandler_Create $DF9
 #define LNUISpriteSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUISpriteSerializeHandler_Create %1, %2
-#cmd _LNUIIconSerializeHandler_Create $DF3
+#cmd _LNUIIconSerializeHandler_Create $E04
 #define LNUIIconSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIIconSerializeHandler_Create %1, %2
-#cmd _LNUIMessageTextAreaSerializeHandler_Create $DFE
+#cmd _LNUIMessageTextAreaSerializeHandler_Create $E0F
 #define LNUIMessageTextAreaSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIMessageTextAreaSerializeHandler_Create %1, %2
-#cmd _LNUILayoutPanelSerializeHandler_Create $E09
+#cmd _LNUILayoutPanelSerializeHandler_Create $E1A
 #define LNUILayoutPanelSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUILayoutPanelSerializeHandler_Create %1, %2
-#cmd _LNUIBoxLayoutSerializeHandler_Create $E14
+#cmd _LNUIBoxLayoutSerializeHandler_Create $E25
 #define LNUIBoxLayoutSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIBoxLayoutSerializeHandler_Create %1, %2
-#cmd _LNUIStackLayoutSerializeHandler_Create $E1F
+#cmd _LNUIStackLayoutSerializeHandler_Create $E30
 #define LNUIStackLayoutSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIStackLayoutSerializeHandler_Create %1, %2
-#cmd _LNUIGridLayoutSerializeHandler_Create $E2A
+#cmd _LNUIGridLayoutSerializeHandler_Create $E3B
 #define LNUIGridLayoutSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIGridLayoutSerializeHandler_Create %1, %2
-#cmd _LNUIControlSerializeHandler_Create $E35
+#cmd _LNUIControlSerializeHandler_Create $E46
 #define LNUIControlSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIControlSerializeHandler_Create %1, %2
-#cmd _LNUIButtonBaseSerializeHandler_Create $E40
+#cmd _LNUIButtonBaseSerializeHandler_Create $E51
 #define LNUIButtonBaseSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIButtonBaseSerializeHandler_Create %1, %2
-#cmd _LNUIButtonSerializeHandler_Create $E4B
+#cmd _LNUIButtonSerializeHandler_Create $E5C
 #define LNUIButtonSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIButtonSerializeHandler_Create %1, %2
-#cmd _LNUIWindowSerializeHandler_Create $E56
+#cmd _LNUIWindowSerializeHandler_Create $E67
 #define LNUIWindowSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIWindowSerializeHandler_Create %1, %2
-#cmd _LNUIListItemSerializeHandler_Create $E61
+#cmd _LNUIListItemSerializeHandler_Create $E72
 #define LNUIListItemSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIListItemSerializeHandler_Create %1, %2
-#cmd _LNUIListItemsControlSerializeHandler_Create $E6C
+#cmd _LNUIListItemsControlSerializeHandler_Create $E7D
 #define LNUIListItemsControlSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIListItemsControlSerializeHandler_Create %1, %2
-#cmd _LNUIListBoxItemSerializeHandler_Create $E77
+#cmd _LNUIListBoxItemSerializeHandler_Create $E88
 #define LNUIListBoxItemSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIListBoxItemSerializeHandler_Create %1, %2
-#cmd _LNUIListBoxSerializeHandler_Create $E82
+#cmd _LNUIListBoxSerializeHandler_Create $E93
 #define LNUIListBoxSerializeHandler_Create(%1, %2=_ln_return_discard) _LNUIListBoxSerializeHandler_Create %1, %2
-#cmd _LNInputGestureSerializeHandler_Create $E8D
+#cmd _LNInputGestureSerializeHandler_Create $E9E
 #define LNInputGestureSerializeHandler_Create(%1, %2=_ln_return_discard) _LNInputGestureSerializeHandler_Create %1, %2
-#cmd _LNKeyGestureSerializeHandler_Create $E98
+#cmd _LNKeyGestureSerializeHandler_Create $EA9
 #define LNKeyGestureSerializeHandler_Create(%1, %2=_ln_return_discard) _LNKeyGestureSerializeHandler_Create %1, %2
-#cmd _LNInterpreterCommandSerializeHandler_Create $EA3
+#cmd _LNInterpreterCommandSerializeHandler_Create $EB4
 #define LNInterpreterCommandSerializeHandler_Create(%1, %2=_ln_return_discard) _LNInterpreterCommandSerializeHandler_Create %1, %2
-#cmd _LNInterpreterCommandListSerializeHandler_Create $EAE
+#cmd _LNInterpreterCommandListSerializeHandler_Create $EBF
 #define LNInterpreterCommandListSerializeHandler_Create(%1, %2=_ln_return_discard) _LNInterpreterCommandListSerializeHandler_Create %1, %2
-#cmd _LNInterpreterSerializeHandler_Create $EB9
+#cmd _LNInterpreterSerializeHandler_Create $ECA
 #define LNInterpreterSerializeHandler_Create(%1, %2=_ln_return_discard) _LNInterpreterSerializeHandler_Create %1, %2
-#cmd _LNInterpreterUpdateWaitHandler_Create $EC5
+#cmd _LNInterpreterUpdateWaitHandler_Create $ED6
 #define LNInterpreterUpdateWaitHandler_Create(%1, %2=_ln_return_discard) _LNInterpreterUpdateWaitHandler_Create %1, %2
-#cmd _LNApplicationSerializeHandler_Create $ED0
+#cmd _LNApplicationSerializeHandler_Create $EE1
 #define LNApplicationSerializeHandler_Create(%1, %2=_ln_return_discard) _LNApplicationSerializeHandler_Create %1, %2
-#cmd _LNApplicationInitHandler_Create $EDB
+#cmd _LNApplicationInitHandler_Create $EEC
 #define LNApplicationInitHandler_Create(%1, %2=_ln_return_discard) _LNApplicationInitHandler_Create %1, %2
-#cmd _LNApplicationUpdateHandler_Create $EE6
+#cmd _LNApplicationUpdateHandler_Create $EF7
 #define LNApplicationUpdateHandler_Create(%1, %2=_ln_return_discard) _LNApplicationUpdateHandler_Create %1, %2
 
 
 
 #cmd ln_args $1
 #cmd ln_set_args $2
+
+#define LUMINO_APP _ln_local_app = LN_NULL_HANDLE :\
+    LNApplication_Create _ln_local_app :\
+    LNApplication_SetPrototype_OnInit _ln_local_app, *on_init :\
+    LNApplication_SetPrototype_OnUpdate _ln_local_app, *on_update :\
+    LNApplication_Run _ln_local_app :\
+    end
 
 #endif // __lumino__

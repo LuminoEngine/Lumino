@@ -123,7 +123,16 @@ protected:
 		ar & LN_NVP(name);
 		ar & LN_NVP(isConst);
 		ar & LN_NVP(isPointer);
+
+		bool hasDefaultValue = (defaultValue != nullptr);
+		ar & LN_NVP(hasDefaultValue);
 		ar & LN_NVP(defaultValue);
+		
+		if (ar.isLoading()) {
+			if (hasDefaultValue && !defaultValue) {
+				defaultValue = ln::makeVariant();
+			}
+		}
 	}
 };
 

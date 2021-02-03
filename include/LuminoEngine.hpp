@@ -112,7 +112,7 @@
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
 #include "LuminoEngine/UI/UIViewport.hpp"
 #include "LuminoEngine/UI/UISprite.hpp"
-#include "LuminoEngine/UI/UITextBlock.hpp"
+#include "LuminoEngine/UI/UIText.hpp"
 #include "LuminoEngine/UI/UIIcon.hpp"
 #include "LuminoEngine/UI/Layout/UILayoutPanel.hpp"
 #include "LuminoEngine/UI/Layout/UIGridLayout.hpp"
@@ -146,6 +146,7 @@
 
 #ifdef LN_MSVC_AUTO_LINK_LIBRARIES
 #pragma comment(lib, "glfw3" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "nanovg" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "ogg" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "spirv-cross-core" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "spirv-cross-cpp" LN_MSVC_AUTO_LINK_POSTFIX ".lib")

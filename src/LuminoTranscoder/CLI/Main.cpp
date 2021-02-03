@@ -21,6 +21,7 @@ int main(int argc, char** argv)
 
 		ln::List<ln::Path> files_LuminoCore =
 		{
+			TEST_ROOT "include/LuminoCore/Base/Logger.hpp",
 			//TEST_ROOT "include/LuminoCore/Math/Vector2.hpp",
 			TEST_ROOT "include/LuminoCore/Math/Vector3.hpp",
 			TEST_ROOT "include/LuminoCore/Math/Vector4.hpp",
@@ -37,6 +38,7 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/Base/Promise.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Variant.hpp",
 			TEST_ROOT "src/LuminoEngine/src/Runtime/BindingValidation.hpp",
+			TEST_ROOT "include/LuminoEngine/Runtime/RuntimeLog.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Collection.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Serializer.hpp",
 			TEST_ROOT "include/LuminoEngine/Platform/PlatformEvent.hpp",
@@ -55,7 +57,7 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/Rendering/Common.hpp",
 			TEST_ROOT "include/LuminoEngine/Rendering/RenderView.hpp",
 			TEST_ROOT "include/LuminoEngine/Rendering/Material.hpp",
-			TEST_ROOT "include/LuminoEngine/Mesh/Mesh.hpp",
+			TEST_ROOT "include/LuminoEngine/Mesh/MeshPrimitive.hpp",
 			TEST_ROOT "include/LuminoEngine/Mesh/AnimationController.hpp",
 			TEST_ROOT "include/LuminoEngine/Mesh/MeshModel.hpp",
 			TEST_ROOT "include/LuminoEngine/Mesh/SkinnedMeshModel.hpp",
@@ -94,7 +96,7 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/UI/UIEvents.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UILayoutElement.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIElement.hpp",
-			TEST_ROOT "include/LuminoEngine/UI/UITextBlock.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/UIText.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UISprite.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIIcon.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIMessageTextArea.hpp",
@@ -168,41 +170,42 @@ int main(int argc, char** argv)
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
 	config->versionString = u"0.9.0";
 
-	//{
-	//	FlatCHeaderGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-	//{
-	//	FlatCSourceGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-	//{
-	//	RubyExtGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-	//{
-	//	RubyYARDOCSourceGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
+	{
+		FlatCHeaderGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
+	{
+		FlatCSourceGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
+	{
+		RubyExtGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
+	{
+		RubyYARDOCSourceGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
 	//{
 	//	HSP3HeaderGenerator g;
 	//	g.setup(db, config);
 	//	g.generate();
 	//}
-	{
-		HSP3CommandsGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
+	//{
+	//	HSP3CommandsGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
 	//{
 	//	HSP3HelpGenerator g;
 	//	g.setup(db, config);
 	//	g.generate();
 	//}
+
     //{
     //    DotNetPInvokeGenerator g;
     //    g.setup(db, config);

@@ -8,10 +8,12 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
+#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include "GraphicsManager.hpp"
-#include "GraphicsDeviceContext.hpp"
+#include "RHIs/GraphicsDeviceContext.hpp"
 
 namespace ln {
 
@@ -435,6 +437,13 @@ void GraphicsContext::drawExtension(INativeGraphicsExtension* extension)
 		});
 }
 
+detail::ShaderSecondaryDescriptor* GraphicsContext::allocateShaderDescriptor(ShaderPass* shaderPass)
+{
+    detail::ShaderSecondaryDescriptor* d = m_commandList->acquireShaderDescriptor(shaderPass->shader());
+    d->reset(m_commandList);
+    return d;
+}
+
 void GraphicsContext::interruptCurrentRenderPassFromResolveRHI()
 {
     if (m_renderPassStep == RenderPassStep::Active && m_currentRHIRenderPass) {
@@ -491,7 +500,7 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
             detail::ICommandList*, m_rhiCommandList,
             detail::ITexture*, rhiObject,
             {
-				device->flushCommandBuffer(m_rhiCommandList, rhiObject);
+				device->submitCommandBuffer(m_rhiCommandList, rhiObject);
             });
     }
 }
@@ -523,17 +532,13 @@ detail::ICommandList* GraphicsContext::commitState()
 
     bool resourceModified = false;
 
-    detail::IShaderPass* shaderPassRHI = nullptr;
-    if (m_staging.shaderPass) {
-        if (m_staging.shaderDescriptor) {
-            m_staging.shaderPass->submitShaderDescriptor2(this, m_staging.shaderDescriptor, &resourceModified);
-        }
-        else {
-            //m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shaderDescriptor, &resourceModified);
-            m_staging.shaderPass->submitShaderDescriptor(this, m_commandList, m_staging.shader->descriptor(), &resourceModified);
-        }
-
-        shaderPassRHI = m_staging.shaderPass->resolveRHIObject(this, &resourceModified);
+    detail::IShaderPass* shaderPassRHI = (m_staging.shaderPass) ? m_staging.shaderPass->resolveRHIObject(this, &resourceModified) : nullptr;
+    if (m_staging.shaderPass && m_staging.shaderDescriptor) {
+        assert(m_staging.shaderPass->shader() == m_staging.shaderDescriptor->shader());
+        m_staging.shaderPass->submitShaderDescriptor2(this, m_staging.shaderDescriptor, &resourceModified);
+    }
+    else {
+        m_commandList->rhiResource()->setDescriptor(nullptr);
     }
 
     bool vertexLayoutModified = false;

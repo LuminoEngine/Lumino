@@ -7,6 +7,24 @@ static const bool LabelSyntax = true;
 //==============================================================================
 // HSP3GeneratorBase
 
+//ln::String HSP3GeneratorBase::makeFlatConstantValue(const ConstantSymbol* constant) const
+//{
+//    if (constant->type()->isEnum()) {
+//        return ln::String::format(u"({0}){1}", makeFlatClassName(constant->type()), ln::String::fromNumber(constant->value()->get<int>()));
+//    }
+//    else if (constant->type() == PredefinedTypes::boolType) {
+//        return constant->value()->get<bool>() ? u"LN_TRUE" : u"LN_FALSE";
+//    }
+//    else if (constant->type() == PredefinedTypes::floatType) {
+//        return ln::String::fromNumber(constant->value()->get<float>());
+//    }
+//    else if (constant->type() == PredefinedTypes::nullptrType) {
+//        return u"LN_NULL_HANDLE";
+//    }
+//    else {
+//        return ln::String::fromNumber(constant->value()->get<int>());
+//    }
+//}
 
 //==============================================================================
 // HSP3HeaderGenerator
@@ -30,6 +48,13 @@ _ln_return_discard = 0
 
 #cmd ln_args $1
 #cmd ln_set_args $2
+
+#define LUMINO_APP _ln_local_app = LN_NULL_HANDLE :\
+    LNApplication_Create _ln_local_app :\
+    LNApplication_SetPrototype_OnInit _ln_local_app, *on_init :\
+    LNApplication_SetPrototype_OnUpdate _ln_local_app, *on_update :\
+    LNApplication_Run _ln_local_app :\
+    end
 
 #endif // __lumino__
 )";
@@ -86,27 +111,35 @@ ln::String HSP3HeaderGenerator::makeClasses() const
     OutputBuffer code;
     for (const auto& classSymbol : db()->classes()) {
         for (const auto& methodSymbol : classSymbol->publicMethods()) {
-            const auto funcName = makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode);
-            code.AppendLine(u"#cmd _{0} ${1:X}", funcName, getCommandId(methodSymbol));
-
-            // Engine::update やイベントの connect など、戻り値が不要な場合は省略できるようにしたい。
-            // ただ #cmd では Val 型の省略ができないため、#define でラップすることで対策する。
-            OutputBuffer paramsText;
-            OutputBuffer argsText;
-            const auto& flatParams = methodSymbol->flatParameters();
-            for (int i = 0; i < flatParams.size(); i++) {
-                if (flatParams[i]->isReturn())
-                    paramsText.AppendCommad(u"%{0}=_ln_return_discard", i + 1);
-                else
-                    paramsText.AppendCommad(u"%{0}", i+1);
-
-                argsText.AppendCommad(u"%{0}", i + 1);
+            if (methodSymbol->isFieldAccessor()) {
+                // 個別フィールドアクセスはひとまず見送り。HSP3 だと冗長になりすぎる。まとめて取得する Get だけで十分だろう。
             }
+            else {
+                const auto funcName = makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode);
+                code.AppendLine(u"#cmd _{0} ${1:X}", funcName, getCommandId(methodSymbol));
 
-            if (paramsText.isEmpty())
-                code.AppendLine(u"#define {0} _{0}", funcName, paramsText.toString());
-            else
-                code.AppendLine(u"#define {0}({1}) _{0} {2}", funcName, paramsText.toString(), argsText.toString());
+                // Engine::update やイベントの connect など、戻り値が不要な場合は省略できるようにしたい。
+                // ただ #cmd では Val 型の省略ができないため、#define でラップすることで対策する。
+                OutputBuffer paramsText;
+                OutputBuffer argsText;
+                const auto& flatParams = methodSymbol->flatParameters();
+                for (int i = 0; i < flatParams.size(); i++) {
+                    const auto& param = flatParams[i];
+                    if (param->defaultValue())
+                        paramsText.AppendCommad(u"%{0}={1}", i + 1, makeFlatConstantValue(param->defaultValue()));
+                    else if (param->isReturn())
+                        paramsText.AppendCommad(u"%{0}=_ln_return_discard", i + 1);
+                    else
+                        paramsText.AppendCommad(u"%{0}", i + 1);
+
+                    argsText.AppendCommad(u"%{0}", i + 1);
+                }
+
+                if (paramsText.isEmpty())
+                    code.AppendLine(u"#define {0} _{0}", funcName, paramsText.toString());
+                else
+                    code.AppendLine(u"#define {0}({1}) _{0} {2}", funcName, paramsText.toString(), argsText.toString());
+            }
         }
 
         const auto virtualMethods = classSymbol->virtualPrototypeSetters();
@@ -498,7 +531,7 @@ ln::String HSP3CommandsGenerator::make_cmdfunc() const
         auto methods = structSymbol->publicMethods();
         for (const auto& methodSymbol : methods) {
             if (methodSymbol->isFieldAccessor()) {
-                // TODO: とりあえずすぐ必要だった Vector3 は get() を用意することで逃げた
+                // 個別フィールドアクセスはひとまず見送り。HSP3 だと冗長になりすぎる。まとめて取得する Get だけで十分だろう。
             }
             else {
                 code.AppendLine(u"// " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii));
@@ -778,7 +811,12 @@ void HSP3HelpGenerator::generate()
     // Structs
     for (const auto& structSymbol : db()->structs()) {
         for (auto& methodSymbol : structSymbol->publicMethods()) {
-            code.AppendLines(makeFuncDocument(methodSymbol));
+            if (methodSymbol->isFieldAccessor()) {
+                // 個別フィールドアクセスはひとまず見送り。HSP3 だと冗長になりすぎる。まとめて取得する Get だけで十分だろう。
+            }
+            else {
+                code.AppendLines(makeFuncDocument(methodSymbol));
+            }
         }
     }
 

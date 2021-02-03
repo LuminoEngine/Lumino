@@ -78,7 +78,7 @@ private:
     size_t m_primarySize;
 
     std::vector<byte_t> m_buffer;
-    void* m_rhiMappedBuffer;
+    //void* m_rhiMappedBuffer;
     void* m_mappedBuffer;
     bool m_initialUpdate;
     bool m_modified;

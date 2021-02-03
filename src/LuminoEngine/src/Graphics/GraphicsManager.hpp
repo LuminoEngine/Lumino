@@ -84,14 +84,8 @@ public:
 	static bool checkVulkanSupported();
 
 private:
-	//struct ExtensionInfo
-	//{
-
-	//	INativeGraphicsExtension* extension;
-	//};
-
-	void createOpenGLContext(const Settings& settings);
 	void createVulkanContext(const Settings& settings);
+	void createDirectX12Context(const Settings& settings);
 
     AssetManager* m_assetManager;
 	PlatformManager* m_platformManager;

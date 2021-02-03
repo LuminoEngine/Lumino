@@ -179,6 +179,8 @@ public:
 
 	const Ref<DebugInterface>& debugInterface() const { return m_debugInterface; }
 
+	std::function<void(void)> preUpdateCallback;
+
 private:
 	enum class DebugToolMode
 	{

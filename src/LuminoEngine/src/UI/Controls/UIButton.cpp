@@ -3,7 +3,7 @@
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UITextBlock.hpp>
+#include <LuminoEngine/UI/UIText.hpp>
 #include <LuminoEngine/UI/Controls/UIButton.hpp>
 
 namespace ln {
@@ -29,7 +29,7 @@ bool UIButtonBase::init(const UICreationContext* context)
 void UIButtonBase::setText(const StringRef& text)
 {
     if (!m_textContent) {
-        m_textContent = makeObject<UITextBlock>();
+        m_textContent = makeObject<UIText>();
         addElement(m_textContent);
     }
     m_textContent->setText(text);

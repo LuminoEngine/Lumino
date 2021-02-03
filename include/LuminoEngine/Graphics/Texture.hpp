@@ -270,7 +270,6 @@ public:
 	static void resetRHIObject(RenderTargetTexture* renderTarget, detail::ITexture* rhiObject) { renderTarget->resetRHIObject(rhiObject); }
     static void resetNativeObject(RenderTargetTexture* renderTarget, intptr_t value) { renderTarget->resetNativeObject(value); }
     static void resetSize(RenderTargetTexture* renderTarget, int width, int height) { renderTarget->resetSize(width, height); }
-    static void resetOpenGLTextureIdFromCurrentFramebuffer(RenderTargetTexture* renderTarget);
 };
 
 class Texture3D

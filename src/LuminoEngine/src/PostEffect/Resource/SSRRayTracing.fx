@@ -7,8 +7,8 @@
 
 // TODO:
 // https://veldrid.dev/articles/backend-differences.html
-const float ln_ClipSpaceNearZ = 0.0;    // DX,Metal,Vulkan.  OpenGL の場合は -1.0
-const float ln_ClipSpaceFarZ = 1.0;
+//const float ln_ClipSpaceNearZ = 0.0;    // DX,Metal,Vulkan.  OpenGL の場合は -1.0
+//const float ln_ClipSpaceFarZ = 1.0;
 
 //==============================================================================
 // Uniforms
@@ -44,16 +44,18 @@ VS_Output VS_Main(LN_VSInput input)
 //==============================================================================
 // Pixel shader
 
-#define MAX_ITERATIONS 300
-#define MAX_BINARY_SEARCH_ITERATIONS 64
-const float _Iterations = 50.0;                   // maximum ray iterations
-const float _BinarySearchIterations = 4.0;       // maximum binary search refinement iterations
-const float _Thickness = 1.0;                    // Z size in camera space of a pixel in the depth buffer = _Thickness
-const float _MaxRayDistance = 20.0;               // maximum distance of a ray
-const float _EdgeDistance = 50.0;
-const float _EdgeExponent = 1.0;
-const float _FadeDistance = 10.0;
-const float _FadeExponent = 1.0;
+//#define MAX_ITERATIONS 300
+//#define MAX_BINARY_SEARCH_ITERATIONS 64
+static const float _Iterations = 50.0;                   // maximum ray iterations
+static const float _BinarySearchIterations = 4.0;       // maximum binary search refinement iterations
+//float _Iterations;
+//float _BinarySearchIterations;
+static const float _Thickness = 1.0;                    // Z size in camera space of a pixel in the depth buffer = _Thickness
+static const float _MaxRayDistance = 20.0;               // maximum distance of a ray
+static const float _EdgeDistance = 50.0;
+static const float _EdgeExponent = 1.0;
+static const float _FadeDistance = 10.0;
+static const float _FadeExponent = 1.0;
 
 // LH. far=Z+
 float GetViewSpaceLinearZ(float2 uv) {
@@ -128,9 +130,11 @@ bool TraceCameraSpaceRay(
     // Track ray step and derivatives in a float4 to parallelize
     bool intersect = false;
     float count = 0.0;
-    for (int i=0; i<MAX_ITERATIONS; i++)
+    const int MAX_ITERATIONS = (int)_Iterations;
+    //[unroll(300)] for (int i=0; i<MAX_ITERATIONS; i++)
+    [loop] for (int i=0; i<MAX_ITERATIONS; i++) // [loop]: https://akinow.livedoor.blog/archives/52404331.html
     {
-        if (float(i) >= _Iterations) break;
+        //if (float(i) >= _Iterations) break;
         if (intersect) break;
 
         // ViewSpace 上のサンプリング点を進める
@@ -154,9 +158,11 @@ bool TraceCameraSpaceRay(
         float originalStride = _BinarySearchIterations * 0.5;
         float stride = originalStride;
 
-        for (int j=0; j<MAX_BINARY_SEARCH_ITERATIONS; j++)
+        const int MAX_BINARY_SEARCH_ITERATIONS = (int)_BinarySearchIterations;
+        //[unroll(64)] for (int j=0; j<MAX_BINARY_SEARCH_ITERATIONS; j++)
+        [loop] for (int i=0; i<MAX_ITERATIONS; i++)
         {
-            if (float(j) >= _BinarySearchIterations) break;
+            //if (float(j) >= _BinarySearchIterations) break;
 
             Q += deltaStep * stride;
             hitPixel = GetUVFromViewSpacePosition(Q);
@@ -190,7 +196,7 @@ float CalculateAlpha(
     // float h = max(0.0, hitPoint.y - viewPosition.y);
     // alpha = saturate(1.0 - pow(h / _FadeDistance, _FadeExponent));
     float d = length(rayOrg - hitPoint);
-    alpha *= saturate(1.0 - pow(d / _FadeDistance, _FadeExponent));
+    alpha *= saturate(1.0 - pow(abs(d / _FadeDistance), _FadeExponent));
 
     /// ScreenEdge Fade
     float2 edgeuv = uv * (1.0 - uv.yx);
@@ -209,6 +215,7 @@ float CalculateAlpha(
 
 struct PS_Input
 {
+    float4 Pos : SV_POSITION;
     float2 UV : TEXCOORD0;
 };
 
@@ -259,7 +266,7 @@ float4 PS_Main(PS_Input input) : SV_TARGET
     
     float3 color = tex2D(_ColorSampler, hitPixel).xyz;
 
-    color = lerp(float3(.3), color, projectedZ < 1.0 ? 1.0 : 0.0);
+    color = lerp(float3(0.3, 0.3, 0.3), color, projectedZ < 1.0 ? 1.0 : 0.0);
 
     return float4(color.xyz, alpha);
 }

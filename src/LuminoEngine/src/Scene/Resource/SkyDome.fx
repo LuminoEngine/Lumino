@@ -217,13 +217,13 @@ struct VS_INPUT
     float3 Pos : POSITION;
     float4 TexUV : TEXCOORD;
 };
- 
+
 struct VS_OUTPUT
 {
     float4 Pos : SV_POSITION;
     float4 TexUV : TEXCOORD;
 };
- 
+
 VS_OUTPUT vsMain(VS_INPUT input)
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
@@ -249,7 +249,8 @@ float4 psMain(PS_INPUT input) : SV_TARGET
     //result.rgb *= 0.5;
 
     // gamma
-    result = pow(result, float3(1.0 / 2.2));
+    const float g = 1.0 / 2.2;
+    result = pow(result, float3(g, g, g));
 
     return float4(result, 1.0);
 }

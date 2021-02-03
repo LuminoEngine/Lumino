@@ -1,3 +1,23 @@
+# LogLevel
+module Lumino::LogLevel
+    # 
+    UNKNOWN = 0
+    # 
+    VERBOSE = 1
+    # 
+    DEBUG = 2
+    # 
+    INFO = 3
+    # 
+    WARNING = 4
+    # 
+    ERROR = 5
+    # 
+    FATAL = 6
+    # 
+    DISBLE = 7
+end
+
 # EncodingType
 module Lumino::EncodingType
     # 不明な文字エンコーディング (判別失敗。またはバイナリファイル)
@@ -220,6 +240,8 @@ module Lumino::GraphicsAPI
     OPEN_GL = 1
     # Vulkan
     VULKAN = 2
+    # Vulkan
+    DIRECT_X12 = 3
 end
 
 # PixelFormat
@@ -1063,6 +1085,15 @@ class Lumino::Point
 
 
 
+    # 各要素の値を取得します。
+    # @param [Float] outX 
+    # @param [Float] outY 
+    # 
+    def get(*args)
+    end
+
+
+
 end
 
 # 2次元上のオブジェクトサイズを表します。
@@ -1688,6 +1719,35 @@ class Lumino::ZVTestEventArgs1
     # value method.
     # @return [Integer] 
     def value(*args)
+    end
+
+
+
+end
+
+# log
+# 
+class Lumino::Log
+    # setLevel
+    # @param [Lumino::LogLevel] level 
+    # 
+    def set_level(*args)
+    end
+
+
+
+    # allocConsole
+    def alloc_console(*args)
+    end
+
+
+
+    # write
+    # @param [Lumino::LogLevel] level 
+    # @param [] tag 
+    # @param [] text 
+    # 
+    def write(*args)
     end
 
 
@@ -2943,6 +3003,14 @@ class Lumino::WorldObject
 
 
 
+    # この WorldObject を指定した World へ追加します。省略した場合はデフォルトの World へ追加します。
+    # @param [Lumino::World] world 
+    # 
+    def add_into(*args)
+    end
+
+
+
     # 物理演算・衝突判定の前 (onCollisionStay() などはこの後)
     def on_pre_update(*args)
     end
@@ -3587,6 +3655,22 @@ class Lumino::WorldRenderView
 
 end
 
+# 
+# 
+class Lumino::ShapeObject
+end
+
+# 平面 (床・地面) のメッシュオブジェクトです。デフォルトのサイズは、各軸 10 です。
+# 
+class Lumino::PlaneMesh
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
 # 直方体のメッシュオブジェクトです。
 # 
 class Lumino::BoxMesh
@@ -3606,49 +3690,9 @@ class Lumino::BoxMesh
 
 end
 
-# 平面 (床・地面) のメッシュオブジェクトです。デフォルトのサイズは、各軸 10 です。
-# 
-class Lumino::PlaneMesh
-    # 
-    def initialize(*args)
-    end
-
-
-
-end
-
-# StaticMesh
-# 
-class Lumino::StaticMesh
-    # load
-    # @param [] filePath 
-    # 
-    # @return [Lumino::StaticMesh] 
-    def load(*args)
-    end
-
-
-
-    # 指定した名前の MeshContainer から、衝突判定用の Body を作成します。
-    # @return [Lumino::MeshModel] 
-    def model(*args)
-    end
-
-
-
-    # 指定した名前の MeshContainer から、衝突判定用の Body を作成します。
-    # @param [] meshContainerName 
-    # 
-    def make_collision_body(*args)
-    end
-
-
-
-end
-
 # UIElement
 # 
-class Lumino::StaticMeshComponent
+class Lumino::MeshComponent
     # init
     def initialize(*args)
     end
@@ -3667,17 +3711,6 @@ class Lumino::StaticMeshComponent
     # @param [] meshContainerName 
     # 
     def make_collision_body(*args)
-    end
-
-
-
-end
-
-# SkinnedMeshComponent
-# 
-class Lumino::SkinnedMeshComponent
-    # init
-    def initialize(*args)
     end
 
 
@@ -4833,14 +4866,22 @@ class Lumino::UIElement
 
 
 
+    # この UIElement を指定した UIElement へ子要素として追加します。省略した場合はデフォルトのルート UIElement へ追加します。
+    # @param [Lumino::UIElement] parent 
+    # 
+    def add_into(*args)
+    end
+
+
+
 end
 
 # 文字列を表示するための UI 要素です。少量の文字列表示に最適化されています。
 # 
-class Lumino::UITextBlock
-    # UITextBlock を作成します。
+class Lumino::UIText
+    # UIText を作成します。
     # @overload initialize()
-    #   UITextBlock を作成します。
+    #   UIText を作成します。
     # @overload initialize(text)
     #   表示文字列を指定して、UITextBlock を作成します。
     #   @param [] text 
@@ -5202,6 +5243,13 @@ class Lumino::UIListItemsControl
 
 
 
+    # itemsLayoutPanel
+    # @return [Lumino::UILayoutPanel] 
+    def items_layout_panel(*args)
+    end
+
+
+
     # UIListSubmitMode (default: Single)
     # @param [Lumino::UIListSubmitMode] value 
     # 
@@ -5213,6 +5261,15 @@ class Lumino::UIListItemsControl
     # UIListSubmitMode
     # @return [Lumino::UIListSubmitMode] 
     def submit_mode(*args)
+    end
+
+
+
+    # Submit イベントの通知を受け取るコールバックを登録します。
+    # @param [Lumino::UIGeneralEventHandler] handler 
+    # 
+    # @return [Lumino::EventConnection] 
+    def connect_on_submit(*args)
     end
 
 
@@ -5733,15 +5790,6 @@ class Lumino::Engine
 
 
 
-    # 指定した Application の実行を開始します。
-    #   この機能を呼び出した場合、Engine::initialize(), Engine::finalize(), Engine::update() を呼び出すことはできなくなります。代わりに Application::onInit(), Application::onUpdate() などを使用してください。
-    # @param [Lumino::Application] app 
-    # 
-    def run(*args)
-    end
-
-
-
     # アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。
     # @return [] 
     def time(*args)
@@ -5803,6 +5851,12 @@ class Lumino::Application
     # デフォルトで作成されるメインの World を取得します。
     # @return [Lumino::World] 
     def world(*args)
+    end
+
+
+
+    # Application の実行を開始します。
+    def run(*args)
     end
 
 
@@ -6672,22 +6726,9 @@ end
 
 # 
 # 
-class Lumino::BoxMeshSerializeHandler
+class Lumino::ShapeObjectSerializeHandler
     # 
-    # @param [Lumino::BoxMeshSerializeHandler_Function] callback 
-    # 
-    def initialize(*args)
-    end
-
-
-
-end
-
-# 
-# 
-class Lumino::BoxMeshPreUpdateHandler
-    # 
-    # @param [Lumino::BoxMeshPreUpdateHandler_Function] callback 
+    # @param [Lumino::ShapeObjectSerializeHandler_Function] callback 
     # 
     def initialize(*args)
     end
@@ -6698,9 +6739,22 @@ end
 
 # 
 # 
-class Lumino::BoxMeshUpdateHandler
+class Lumino::ShapeObjectPreUpdateHandler
     # 
-    # @param [Lumino::BoxMeshUpdateHandler_Function] callback 
+    # @param [Lumino::ShapeObjectPreUpdateHandler_Function] callback 
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
+# 
+# 
+class Lumino::ShapeObjectUpdateHandler
+    # 
+    # @param [Lumino::ShapeObjectUpdateHandler_Function] callback 
     # 
     def initialize(*args)
     end
@@ -6750,22 +6804,9 @@ end
 
 # 
 # 
-class Lumino::StaticMeshSerializeHandler
+class Lumino::BoxMeshSerializeHandler
     # 
-    # @param [Lumino::StaticMeshSerializeHandler_Function] callback 
-    # 
-    def initialize(*args)
-    end
-
-
-
-end
-
-# 
-# 
-class Lumino::StaticMeshPreUpdateHandler
-    # 
-    # @param [Lumino::StaticMeshPreUpdateHandler_Function] callback 
+    # @param [Lumino::BoxMeshSerializeHandler_Function] callback 
     # 
     def initialize(*args)
     end
@@ -6776,22 +6817,9 @@ end
 
 # 
 # 
-class Lumino::StaticMeshUpdateHandler
+class Lumino::BoxMeshPreUpdateHandler
     # 
-    # @param [Lumino::StaticMeshUpdateHandler_Function] callback 
-    # 
-    def initialize(*args)
-    end
-
-
-
-end
-
-# 
-# 
-class Lumino::StaticMeshComponentSerializeHandler
-    # 
-    # @param [Lumino::StaticMeshComponentSerializeHandler_Function] callback 
+    # @param [Lumino::BoxMeshPreUpdateHandler_Function] callback 
     # 
     def initialize(*args)
     end
@@ -6802,9 +6830,22 @@ end
 
 # 
 # 
-class Lumino::SkinnedMeshComponentSerializeHandler
+class Lumino::BoxMeshUpdateHandler
     # 
-    # @param [Lumino::SkinnedMeshComponentSerializeHandler_Function] callback 
+    # @param [Lumino::BoxMeshUpdateHandler_Function] callback 
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
+# 
+# 
+class Lumino::MeshComponentSerializeHandler
+    # 
+    # @param [Lumino::MeshComponentSerializeHandler_Function] callback 
     # 
     def initialize(*args)
     end
@@ -6997,9 +7038,9 @@ end
 
 # 
 # 
-class Lumino::UITextBlockSerializeHandler
+class Lumino::UITextSerializeHandler
     # 
-    # @param [Lumino::UITextBlockSerializeHandler_Function] callback 
+    # @param [Lumino::UITextSerializeHandler_Function] callback 
     # 
     def initialize(*args)
     end

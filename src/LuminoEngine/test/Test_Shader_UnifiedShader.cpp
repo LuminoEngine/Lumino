@@ -50,7 +50,8 @@ TEST_F(Test_Shader_UnifiedShader, Basic)
         ASSERT_EQ(1, passDL.m_textures[1].dataIndex);
         ASSERT_EQ(detail::ShaderStageFlags_Pixel, passDL.m_textures[1].stageFlags);
 
-        ASSERT_EQ(0, passDL.m_samplers.size());
+        // sampler 型の uniform 変数がある場合、't' 's' register が追加される。
+        ASSERT_EQ(2, passDL.m_samplers.size());
     }
 
     // Pass1
@@ -110,14 +111,20 @@ TEST_F(Test_Shader_UnifiedShader, LayoutTest2)
         ASSERT_EQ(1, passDL.m_buffers[1].dataIndex);
         ASSERT_EQ(1, passDL.m_buffers[1].bindingIndex);
 
-        // sampler2D _Texture1 : register(s0);
+        // sampler2D _Texture1 : register(t0);
         ASSERT_EQ(0, passDL.m_textures[0].bindingIndex);
         ASSERT_EQ(0, passDL.m_textures[0].dataIndex);
 
-        // sampler2D _Texture2 : register(s1);
+        // sampler2D _Texture2 : register(t1);
         ASSERT_EQ(1, passDL.m_textures[1].bindingIndex);
         ASSERT_EQ(1, passDL.m_textures[1].dataIndex);
 
-        ASSERT_EQ(0, passDL.m_samplers.size());
+        // sampler2D _Texture1 : register(s0);
+        ASSERT_EQ(0, passDL.m_samplers[0].bindingIndex);
+        ASSERT_EQ(0, passDL.m_samplers[0].dataIndex);
+
+        // sampler2D _Texture2 : register(s1);
+        ASSERT_EQ(1, passDL.m_samplers[1].bindingIndex);
+        ASSERT_EQ(1, passDL.m_samplers[1].dataIndex);
     }
 }

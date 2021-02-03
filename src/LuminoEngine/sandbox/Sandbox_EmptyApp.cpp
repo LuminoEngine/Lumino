@@ -8,15 +8,11 @@ class App_Sandbox_EmptyApp : public Application
 {
     void onInit() override
     {
-        //Engine::renderView()->setGuideGridEnabled(true);
-        //Engine::camera()->addComponent(CameraOrbitControlComponent::create());
-
-
-        auto mesh = ln::SkinnedMesh::load(u"D:/Documents/Modeling/HC4-10.glb");
-    }
-
-    void onUpdate() override
-    {
+        auto texture = Texture2D::load(u"picture1.jpg");
+        //auto sprite = Sprite::With(texture).buildInto();
+        auto box = BoxMesh::With()
+            .size(1, 1, 1)
+            .buildInto();
     }
 };
 

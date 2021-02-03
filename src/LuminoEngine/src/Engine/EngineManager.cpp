@@ -384,7 +384,8 @@ void EngineManager::initializePlatformManager()
 		settings.mainWindowSettings.resizable = m_settings.mainWindowResizable;
 		settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
 
-		if (m_activeGraphicsAPI == GraphicsAPI::Vulkan) {
+		if (m_activeGraphicsAPI == GraphicsAPI::Vulkan ||
+			m_activeGraphicsAPI == GraphicsAPI::DirectX12) {
 			settings.glfwWithOpenGLAPI = false;
 		}
 		else {
@@ -619,6 +620,10 @@ bool EngineManager::updateUnitily()
 
 void EngineManager::updateFrame()
 {
+	if (preUpdateCallback) {
+		preUpdateCallback();
+	}
+
     float elapsedSeconds = 0.016 * m_timeScale; // TODO: time
 
     //------------------------------------------------

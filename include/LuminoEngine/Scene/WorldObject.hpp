@@ -2,6 +2,7 @@
 #pragma once
 #include "Common.hpp"
 #include "../Asset/AssetModel.hpp"
+#include "../Base/Builder.hpp"
 #include "../Base/Collection.hpp"
 #include "Component.hpp"
 
@@ -103,6 +104,7 @@ class WorldObject
 	, public IWorldRenderingElement
 {
     LN_OBJECT;
+	LN_BUILDER;
 public:
 
 	const String& name() const { return m_name; }
@@ -234,6 +236,10 @@ public:
 	LN_METHOD(Property)
 	ComponentList* components() const { return m_components; }
 
+	/** この WorldObject を指定した World へ追加します。省略した場合はデフォルトの World へ追加します。 */
+	LN_METHOD()
+	void addInto(World* world = nullptr);
+
 protected:
 	/** 物理演算・衝突判定の前 (onCollisionStay() などはこの後) */
 	LN_METHOD()
@@ -277,6 +283,7 @@ public: // TODO:
     void resolveWorldMatrix();
     void updateWorldMatrixHierarchical();
 
+
     Level* m_parentLevel;
     WorldObject* m_parent;
 
@@ -295,6 +302,57 @@ public: // TODO:
     friend class World;
     friend class Level;
 };
+
+//==============================================================================
+// WorldObject::Builder
+
+struct WorldObject::BuilderDetails : public AbstractBuilderDetails
+{
+	LN_BUILDER_DETAILS(WorldObject);
+
+	//Optional<float> width;
+	//Optional<float> height;
+	//Optional<Color> backgroundColor;
+	Vector3 position;
+	Quaternion rotation;
+	Vector3 scale;
+
+	std::vector<BuilderVariant<Component>> m_components;
+
+	BuilderDetails();
+	void apply(WorldObject* p) const;
+};
+
+template<class T, class B, class D>
+struct WorldObject::BuilderCore : public AbstractBuilder<T, B, D>
+{
+	LN_BUILDER_CORE(AbstractBuilder);
+
+	///** width property */
+	//B& width(float value) { d()->width = value; return self(); }
+
+	///** height property */
+	//B& height(float value) { d()->height = value; return self(); }
+
+	///** height property */
+	//B& backgroundColor(const Color& value) { d()->backgroundColor = value; return self(); }
+
+	B& position(float x, float y, float z = 0.0f) { d()->position = Vector3(x, y, z); return self(); }
+	
+	B& rotation(float x, float y, float z) { d()->rotation = Quaternion::makeFromYawPitchRoll(y, x, z); return self(); }
+
+	B& scale(float x, float y, float z = 1.0f) { d()->scale = Vector3(x, y, z); return self(); }
+	
+	B& scale(float xyz) { d()->scale = Vector3(xyz, xyz, xyz); return self(); }
+
+
+	template<typename... TArgs>
+	B& components(TArgs&&... args) { foreach_args<BuilderVariant<Component>>([this](auto& x) { d()->m_components.push_back(x); }, std::forward<TArgs>(args)...); return *static_cast<B*>(this); }
+
+	Ref<T> buildInto(World* world = nullptr) { auto p = AbstractBuilder<T, B, D>::build(); p->addInto(world); return p; }
+};
+
+LN_BUILDER_IMPLEMENT(WorldObject);
 
 namespace ed {
 

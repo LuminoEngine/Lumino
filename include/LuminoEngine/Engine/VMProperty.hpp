@@ -4,7 +4,7 @@
 	Ruby:
 		# Model-View の Binding
 		@prop1 = IntProperty.new(100)
-		@text_block.bind(UITextBlock.text_property_id, @prop1)	# idea.1
+		@text_block.bind(UIText.text_property_id, @prop1)	# idea.1
 		@text_block.bind("text", @prop1)						# idea.2 こっちの方が結果的にすっきりするか…
 		@prop1.value = 1
 		p @prop1.value

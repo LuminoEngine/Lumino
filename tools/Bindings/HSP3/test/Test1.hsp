@@ -1,6 +1,10 @@
+#define LUMINO_DEBUG
 #include "lumino.as"
 
-LnEngine_Initialize
+LNLog_SetLevel LN_LOG_LEVEL_DEBUG
+LNLog_AllocConsole
+
+LNEngine_Initialize
 
 // *delegate1_callback ‚ð delegate1 ‚Åƒ‰ƒbƒv
 LnZVTestDelegate1_Create *delegate1_callback, delegate1
@@ -21,7 +25,6 @@ repeat
 	await 1000/60
 loop
 
-LnEngine_Finalize
 end
 
 *delegate1_callback

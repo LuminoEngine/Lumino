@@ -2,8 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
-#include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Graphics/ConstantBuffer.hpp>
+#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 
 namespace ln {

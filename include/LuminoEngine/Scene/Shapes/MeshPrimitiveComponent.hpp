@@ -4,10 +4,28 @@
 #include "../../Visual/VisualComponent.hpp"
 
 namespace ln {
+    
+class ShapeComponent
+    : public VisualComponent
+{
+    LN_OBJECT;
+public:
+    void setMaterial(Material* material);
+    Material* material() const;
 
+protected:
+    void serialize(Serializer2& ar) override;
+
+LN_CONSTRUCT_ACCESS:
+    ShapeComponent();
+    bool init();
+
+private:
+    Ref<Material> m_material;
+};
 
 class PlaneMeshComponent
-    : public VisualComponent
+    : public ShapeComponent
 {
     LN_OBJECT;
 public:
@@ -15,9 +33,6 @@ public:
     void setSize(float sizeX, float sizeY) { setSize(Vector2(sizeX, sizeY)); }
 
     void setUVParUnit(const Vector2& value) { m_uvParUnit = value; }
-
-    void setMaterial(Material* material);
-    Material* material() const;
 
 protected:
     void serialize(Serializer2& ar) override;
@@ -30,17 +45,13 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     Vector2 m_size;
-    //float m_sizeX;
-    //float m_sizeY;
     Vector2 m_uvParUnit;
-    Ref<Material> m_material;
 };
 
 class SphereMeshComponent
-	: public VisualComponent
+    : public ShapeComponent
 {
 public:
-    void setMaterial(Material* material);
 
 protected:
     void onRender(RenderingContext* context);
@@ -48,17 +59,16 @@ protected:
 LN_CONSTRUCT_ACCESS:
     SphereMeshComponent();
     virtual ~SphereMeshComponent();
-	void init();
+    bool init();
 
 private:
-    Ref<Material> m_material;
 };
 
 class BoxMeshComponent
-	: public VisualComponent
+	: public ShapeComponent
 {
 public:
-	void setMaterial(Material* material);
+    void setSize(const Vector3& size);
 
 protected:
 	void onRender(RenderingContext* context);
@@ -66,10 +76,10 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	BoxMeshComponent();
 	virtual ~BoxMeshComponent();
-	void init(const Vector3& size);
+    bool init();
+    bool init(const Vector3& size);
 
 private:
-	Ref<Material> m_material;
 	Box m_box;
 };
 

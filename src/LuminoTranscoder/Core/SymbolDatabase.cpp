@@ -264,6 +264,10 @@ ln::Result MethodParameterSymbol::link()
 					if (!m_defaultValue->init(PredefinedTypes::intType, m_pi->defaultValue)) return false;
 				}
 			}
+			else if (m_pi->defaultValue->type() == ln::VariantType::Null) {
+				m_defaultValue = ln::makeRef<ConstantSymbol>(db());
+				if (!m_defaultValue->init(PredefinedTypes::nullptrType, m_pi->defaultValue)) return false;
+			}
 			else {
 				LN_NOTIMPLEMENTED();
 				return false;

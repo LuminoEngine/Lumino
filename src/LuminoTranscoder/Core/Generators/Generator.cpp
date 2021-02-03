@@ -321,13 +321,17 @@ ln::String Generator::makeFlatArgList(const MethodSymbol* method) const
 ln::String Generator::makeFlatConstantValue(const ConstantSymbol* constant) const
 {
 	if (constant->type()->isEnum()) {
-		return ln::String::format(u"({0}){1}", makeFlatClassName(constant->type()), ln::String::fromNumber(constant->value()->get<int>()));
+		return makeFlatEnumMemberNameFromValue(constant);
+		//return ln::String::format(u"({0}){1}", makeFlatClassName(constant->type()), ln::String::fromNumber(constant->value()->get<int>()));
 	}
 	else if (constant->type() == PredefinedTypes::boolType) {
 		return constant->value()->get<bool>() ? u"LN_TRUE" : u"LN_FALSE";
 	}
 	else if (constant->type() == PredefinedTypes::floatType) {
 		return ln::String::fromNumber(constant->value()->get<float>());
+	}
+	else if (constant->type() == PredefinedTypes::nullptrType) {
+		return u"LN_NULL_HANDLE";
 	}
 	else {
 		return ln::String::fromNumber(constant->value()->get<int>());
@@ -337,4 +341,19 @@ ln::String Generator::makeFlatConstantValue(const ConstantSymbol* constant) cons
 ln::String Generator::makeFlatEnumMemberName(const TypeSymbol* enumType, const ConstantSymbol* member) const
 {
 	return config()->flatCOutputModuleName.toUpper() + u"_" + Generator::makeUpperSnakeName(enumType->shortName()) + u"_" + Generator::makeUpperSnakeName(member->name());
+}
+
+ln::String Generator::makeFlatEnumMemberNameFromValue(const ConstantSymbol* member) const
+{
+	const auto& type = member->type();
+	if (LN_REQUIRE(type->isEnum())) return u"";
+	
+	auto value = type->constants().findIf([&](const Ref<ConstantSymbol>& x) { return x->value()->get<int>() == member->value()->get<int>(); });
+	if (value) {
+		return makeFlatEnumMemberName(type, (*value));
+	}
+	else {
+		LN_ERROR();
+		return u"";
+	}
 }

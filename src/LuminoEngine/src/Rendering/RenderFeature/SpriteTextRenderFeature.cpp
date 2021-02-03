@@ -8,7 +8,7 @@
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../../Font/FontCore.hpp"
-#include "../../Graphics/GraphicsDeviceContext.hpp"
+#include "../../Graphics/RHIs/GraphicsDeviceContext.hpp"
 #include "../../Graphics/GraphicsManager.hpp"
 #include "../../Rendering/RenderingManager.hpp"
 #include "SpriteTextRenderFeature.hpp"

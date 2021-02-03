@@ -111,7 +111,10 @@ void DiagnosticsManager::registerProfilingItem(ProfilingItem* item)
 
 void DiagnosticsManager::setCounterValue(const ProfilingItem* key, int64_t value)
 {
-	m_profilingValues[key]->setValue(value);
+	auto itr = m_profilingValues.find(key);
+	if (itr != m_profilingValues.end()) {
+		itr->second->setValue(value);
+	}
 }
 
 void DiagnosticsManager::commitFrame()

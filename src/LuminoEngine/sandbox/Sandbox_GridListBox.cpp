@@ -29,7 +29,7 @@ class App_Sandbox_GridListBox : public Application
 			icon->setFontSize(40);
 			icon->setAlignments(UIHAlignment::Center, UIVAlignment::Top);
 
-			auto text = makeObject<UITextBlock>(u"Item1");
+			auto text = makeObject<UIText>(u"Item1");
 			text->setAlignments(UIHAlignment::Center, UIVAlignment::Bottom);
 
 			auto item = makeObject<UIListBoxItem>();
@@ -53,7 +53,7 @@ class App_Sandbox_GridListBox : public Application
 		auto item4 = listbox1->addItem(u"item4");
 		UIGridLayout::setPlacement(item4, 1, 0);
 
-		auto text = makeObject<UITextBlock>(u"Inventory");
+		auto text = makeObject<UIText>(u"Inventory");
 		text->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 
 		auto layout = makeObject<UIBoxLayout>();

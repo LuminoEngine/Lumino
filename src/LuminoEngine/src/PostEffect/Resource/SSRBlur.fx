@@ -33,13 +33,14 @@ VS_Output VS_Main(LN_VSInput input)
 
 struct PS_Input
 {
+    float4 Pos : SV_POSITION;
     float2 UV : TEXCOORD0;
 };
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
     float2 texelSize = (1.0 / ln_Resolution.xy);
-    float4 result = float4(0.0);
+    float4 result = float4(0.0, 0.0, 0.0, 0.0);
 
     for (int i=-2; i<=2; i++) {
         for (int j=-2; j<=2; j++) {

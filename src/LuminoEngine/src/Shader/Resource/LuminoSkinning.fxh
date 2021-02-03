@@ -70,7 +70,7 @@ struct LN_SkinningOutput
 
 float4x3 LN_GetBoneMatrix(int boneIndex)
 {
-    float2 uv = ln_BoneTextureReciprocalSize;
+    float2 uv = ln_BoneTextureReciprocalSize.xy;
     float4 tc0 = float4( 0.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );    // +0.5 は半ピクセル分
     float4 tc1 = float4( 1.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
     float4 tc2 = float4( 2.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
@@ -102,7 +102,7 @@ float4x4 LN_GetBoneMatrix4x4(int boneIndex)
     //    0, 0, 1, 0,
     //    0, 0, 0, 1);
     float offset = 0.25;    // DX9 の half pixel offset に備える
-    float2 uv = ln_BoneTextureReciprocalSize;
+    float2 uv = ln_BoneTextureReciprocalSize.xy;
     float4 tc0 = float4( (0.0 + offset) * uv.x, (boneIndex + offset) * uv.y, 0, 1 );    
     float4 tc1 = float4( (1.0 + offset) * uv.x, (boneIndex + offset) * uv.y, 0, 1 );
     float4 tc2 = float4( (2.0 + offset) * uv.x, (boneIndex + offset) * uv.y, 0, 1 );
@@ -131,7 +131,7 @@ float4x4 LN_GetBoneMatrix4x4(int boneIndex)
 float4 LN_GetBoneLocalQuaternion(int boneIndex)
 {
     float offset = 0.25;    // DX9 の half pixel offset に備える
-    float2 uv = ln_BoneTextureReciprocalSize;
+    float2 uv = ln_BoneTextureReciprocalSize.xy;
     float4 tc0 = float4(offset, (boneIndex + offset) * uv.y, 0, 1);
     //return ln_BoneLocalQuaternionTexture.SampleLevel(ln_BoneLocalQuaternionTextureSamplerState, tc0, 0);
     return tex2Dlod(ln_BoneLocalQuaternionTexture, tc0);
@@ -287,14 +287,14 @@ LN_SkinningOutput LN_SkinningVertex(
     for (int i = 0; i < 3; i++)
     {
         lastWeight += blendWeights[i];
-        float4x4 mat = LN_GetBoneMatrix4x4(BlendIndices[i]);
-        pos.xyz += mul(float4(position.xyz, 1.0f), mat) * blendWeights[i];
-        nml.xyz += mul(float4(normal.xyz, 1.0f), mat) * blendWeights[i];
+        float4x4 mat = LN_GetBoneMatrix4x4((int)BlendIndices[i]);
+        pos.xyz += mul(float4(position.xyz, 1.0f), mat).xyz * blendWeights[i];
+        nml.xyz += mul(float4(normal.xyz, 1.0f), mat).xyz * blendWeights[i];
     }
     lastWeight = 1.0f - lastWeight;
-    float4x4 mat = LN_GetBoneMatrix4x4(BlendIndices[3]);
-    pos.xyz += mul(float4(position.xyz, 1.0f), mat) * lastWeight;
-    nml.xyz += mul(float4(normal.xyz, 1.0f), mat) * lastWeight;
+    float4x4 mat = LN_GetBoneMatrix4x4((int)BlendIndices[3]);
+    pos.xyz += mul(float4(position.xyz, 1.0f), mat).xyz * lastWeight;
+    nml.xyz += mul(float4(normal.xyz, 1.0f), mat).xyz * lastWeight;
     
     LN_SkinningOutput o;
     o.Position = pos.xyz;

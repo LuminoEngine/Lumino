@@ -187,6 +187,16 @@ void LN_GetDirectionalDirectLightIrradiance(const LN_DirectionalLight directiona
     directLight.visible = true;
 }
 
+bool LN_IsZeros(float3 v)
+{
+    // TODO: どちらが高速？
+#if 1
+    return (v.x + v.y + v.z) == 0.0;
+#else
+    return v.x == 0.0 && v.x == 0.0 && v.x == 0.0;
+#endif
+}
+
 // ポイントライトの放射輝度の計算
 void LN_GetPointDirectLightIrradiance(const in LN_PointLight pointLight, const in LN_PBRGeometry geometry, out LN_IncidentLight directLight)
 {
@@ -197,7 +207,7 @@ void LN_GetPointDirectLightIrradiance(const in LN_PointLight pointLight, const i
 
     directLight.color = pointLight.color;
     directLight.color *= LN_PunctualLightIntensityToIrradianceFactor( lightDistance, pointLight.distance, pointLight.decay );
-    directLight.visible = ( directLight.color != float3(0.0, 0.0, 0.0) );
+directLight.visible =  !LN_IsZeros(directLight.color); //(directLight.color != float3(0.0, 0.0, 0.0) );
     /*
     float3 L = pointLight.position - geometry.position;
     directLight.direction = normalize(L);

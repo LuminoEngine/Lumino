@@ -77,7 +77,7 @@ TreeView みたいに onGenerateItem を実装すれば？とか思ったけど�
 ~Box 系は Item を細かく制御でき、柔軟なレイアウトを実現するのに使いたい。
 
 なので大方針は、
-- addChild(String) -> 内部で UITextBlock と UIComboBoxItem を作り、UIComboBoxItem は UITextBlock を Content として持つ。
+- addChild(String) -> 内部で UIText と UIComboBoxItem を作り、UIComboBoxItem は UIText を Content として持つ。
 - addChild(UIElement) -> 内部で UIComboBoxItem を作り、UIComboBoxItem は指定された UIElement を Content として持つ。
 - addChild(UIComboBoxItem) -> 指定された UIComboBoxItem をそのまま Item として使う。
 

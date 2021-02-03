@@ -79,7 +79,7 @@ PSOutput PS_WriteLinearDepth(PSInput input)
     output.Depth = float4(clipSpaceZ, linearZ, 0.0, 1.0);
 
 #ifdef LN_USE_ROUGHNESS_MAP
-    float roughness = tex2D(ln_MaterialRoughnessMap, input.UV);
+    float roughness = tex2D(ln_MaterialRoughnessMap, input.UV).r;
     // TODO: ln_MaterialRoughness を乗算する？
 #else
     float roughness = ln_MaterialRoughness;

@@ -62,7 +62,7 @@ file(GLOB LN_SOURCES_Audio_Backend src/Audio/Backend/*.cpp src/Audio/Backend/*.h
 file(GLOB LN_SOURCES_Shader ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/*.hpp src/Shader/*.cpp src/Shader/*.hpp src/Shader/*.md)
 
 file(GLOB LN_SOURCES_Graphics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
-file(GLOB LN_SOURCES_Graphics_OpenGL src/Graphics/OpenGL/*.cpp src/Graphics/OpenGL/*.hpp)
+file(GLOB LN_SOURCES_Graphics_RHIs ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/RHIs/*.hpp src/Graphics/RHIs/*.cpp src/Graphics/RHIs/*.hpp)
 
 set(LN_SOURCES_Font
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Font/Common.hpp
@@ -152,7 +152,7 @@ file(GLOB LN_SOURCES_Runtime
 
 if (LN_USE_VULKAN)
     if (WIN32)
-        file(GLOB LN_SOURCES_Graphics_Vulkan src/Graphics/Vulkan/*.cpp src/Graphics/Vulkan/*.hpp)
+        file(GLOB LN_SOURCES_Graphics_RHIs_Vulkan src/Graphics/RHIs/Vulkan/*.cpp src/Graphics/RHIs/Vulkan/*.hpp)
         list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_VULKAN=1)
     endif()
 endif()
@@ -160,12 +160,12 @@ endif()
 
 if (LN_EMSCRIPTEN)
 elseif (WIN32)
-    file(GLOB LN_SOURCES_Graphics_DirectX12 src/Graphics/DirectX12/*.cpp src/Graphics/DirectX12/*.hpp)
+    file(GLOB LN_SOURCES_Graphics_RHIs_DirectX12 src/Graphics/RHIs/DirectX12/*.cpp src/Graphics/RHIs/DirectX12/*.hpp)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
         ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
         src/Platform/Windows/Win32PlatformInterface.cpp
-        src/Platform/Windows/Win32PlatformWindowManager.cpp
+        src/Platform/Windows/Win32PlatformWindowManager.hpp
         src/Platform/Windows/Win32PlatformWindowManager.cpp
     )
 elseif (APPLE)
@@ -190,9 +190,9 @@ source_group("Audio\\Backend" FILES ${LN_SOURCES_Audio_Backend})
 source_group("Audio\\ARIs" FILES ${LN_SOURCES_Audio_ARIs})
 source_group("Shader" FILES ${LN_SOURCES_Shader})
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
-source_group("Graphics\\Vulkan" FILES ${LN_SOURCES_Graphics_Vulkan})
-source_group("Graphics\\DirectX12" FILES ${LN_SOURCES_Graphics_DirectX12})
-source_group("Graphics\\OpenGL" FILES ${LN_SOURCES_Graphics_OpenGL})
+source_group("Graphics\\RHIs" FILES ${LN_SOURCES_Graphics_RHIs})
+source_group("Graphics\\RHIs\\Vulkan" FILES ${LN_SOURCES_Graphics_RHIs_Vulkan})
+source_group("Graphics\\RHIs\\DirectX12" FILES ${LN_SOURCES_Graphics_RHIs_DirectX12})
 source_group("Font" FILES ${LN_SOURCES_Font})
 source_group("Mesh" FILES ${LN_SOURCES_Mesh})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
@@ -236,9 +236,9 @@ set(LN_SOURCES
     ${LN_SOURCES_Audio_ARIs}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Graphics}
-    ${LN_SOURCES_Graphics_Vulkan}
-    ${LN_SOURCES_Graphics_DirectX12}
-    ${LN_SOURCES_Graphics_OpenGL}
+    ${LN_SOURCES_Graphics_RHIs}
+    ${LN_SOURCES_Graphics_RHIs_Vulkan}
+    ${LN_SOURCES_Graphics_RHIs_DirectX12}
     ${LN_SOURCES_Font}
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Rendering}
@@ -280,13 +280,8 @@ if (LN_EMSCRIPTEN)
     list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_OPENAL=1)
 
 elseif (LN_IOS)
-    FIND_LIBRARY( OPENGLES_FRAMEWORKS OpenGLES )
-    if(OPENGLES_FRAMEWORKS)
-        list(APPEND LN_PLATFORM_LIBS "-framework OpenGLES")
-    endif()
 
 elseif (WIN32)
-    find_package(OpenGL)
     list(APPEND LN_PLATFORM_LIBS glfw GLAD)
     #list(APPEND LN_PLATFORM_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid)
     list(APPEND LN_PLATFORM_LIBS winmm imm32 version)
@@ -373,7 +368,7 @@ target_include_directories(LuminoEngine-static PUBLIC
 target_include_directories(LuminoEngine-static PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
 #target_compile_definitions(LuminoEngine-static PUBLIC LUMINO_BUILD_DLL=1)
 target_compile_definitions(LuminoEngine-static PRIVATE ${LN_PLATFORM_DEFINITIONS})
-target_link_libraries(LuminoEngine-static INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
+target_link_libraries(LuminoEngine-static INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
 
 #target_link_libraries(LuminoEngine-static PRIVATE glslang)
@@ -414,15 +409,11 @@ endif()
 
 # Shared library
 if (LN_BUILD_SHARED_LIBRARY)
-    #add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib} ${LN_SOURCES})
     add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib})
     target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
-    #target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1 ${LN_PLATFORM_DEFINITIONS})
     target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1)
     target_link_libraries(LuminoEngine PRIVATE LuminoEngine-static)
-    #target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS} LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
     set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
-    #ln_add_pch(LuminoEngine "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
     # Export symbols defined in another static library.
     if (MSVC)

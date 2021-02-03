@@ -16,7 +16,7 @@ class UIViewport;
 class UIControl;
 class UIListItemsControl;
 class UIListBox;
-class UITextBlock;
+class UIText;
 class UIPopup;
 
 /** コントロールのレイアウト方向を示します。*/

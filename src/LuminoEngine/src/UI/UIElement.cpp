@@ -12,7 +12,7 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/Controls/UIControl.hpp>
-#include <LuminoEngine/UI/UITextBlock.hpp>
+#include <LuminoEngine/UI/UIText.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "UIStyleInstance.hpp"
 #include "UIManager.hpp"
@@ -538,11 +538,11 @@ void UIElement::setContent(const String& content)
 {
     // TODO: CreationContext とか用意したほうがいいかも。init を public にしないとダメだし。
     //m_expanderButton = makeObject<UIToggleButton>();
-    auto textblock = makeRef<UITextBlock>();
+    auto textblock = makeRef<UIText>();
     textblock->m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
     textblock->init();
 
-    //auto textblock = makeObject<UITextBlock>();
+    //auto textblock = makeObject<UIText>();
     textblock->setText(content);
     setContent(textblock);
 }
@@ -554,7 +554,7 @@ void UIElement::addChild(UIElement* child)
 
 void UIElement::addChild(const String& child)
 {
-    auto textblock = makeObject<UITextBlock>();
+    auto textblock = makeObject<UIText>();
     textblock->setText(child);
     addChild(textblock);
 }
@@ -566,6 +566,12 @@ void UIElement::addChild(const String& child)
 //	//}
 //	m_manager->tryGetInputFocus(this);
 //}
+
+void UIElement::addInto(UIElement* parent)
+{
+    UIElement* primaryElement = (parent) ? parent : m_manager->primaryElement();
+    primaryElement->addChild(this);
+}
 
 void UIElement::setRenderPriority(int value)
 {

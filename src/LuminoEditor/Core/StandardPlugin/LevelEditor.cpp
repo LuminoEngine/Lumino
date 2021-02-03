@@ -42,7 +42,7 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
     m_mainLayout->setName(u"---");
     frame->addElement(m_mainLayout);
     {
-        auto t = ln::UITextBlock::create(u"test");
+        auto t = ln::UIText::create(u"test");
 		t->getGridLayoutInfo()->layoutWeight = 0;
 		//t->setVAlignment(ln::UIVAlignment::Center);
         m_mainLayout->addChild(t);

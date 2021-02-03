@@ -2,6 +2,7 @@
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/Runtime/Runtime.hpp>
 #include "../../../src/LuminoEngine/src/Engine/EngineManager.hpp"
+#include "../../../src/LuminoEngine/src/Engine/EngineDomain.hpp"
 #include "LuminoHSP.h"
 
 extern bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr);
@@ -65,15 +66,23 @@ static void OnPreInitEngineManager()
 	}
 }
 
+static void OnPostInitEngineManager()
+{
+	ln::detail::EngineDomain::engineManager()->preUpdateCallback = []() {
+		// update から抜けて HSP3 Runtime へ制御を返すとき、await を呼んでもらうようにする。
+		// こうしておかないと HSP3 として必要なメッセージディスパッチが呼ばれない。
+		ctx->waitcount = p1;
+		ctx->waittick = -1;
+		ctx->runmode = RUNMODE_AWAIT;
+		ctx->msgfunc(ctx);
+	};
+}
+
 //-----------------------------------------------------------------------------
 // Entry point for HSP plugin.
 //-----------------------------------------------------------------------------
 EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO* info)
 {
-	//ln::Logger::setLevel(ln::LogLevel::Debug);
-	//ln::Logger::addStdErrAdapter();
-	ln::Console::allocate();
-
 	//		プラグイン初期化 (実行・終了処理を登録します)
 	//
 	hsp3sdk_init(info);			// SDKの初期化(最初に行なって下さい)
@@ -99,6 +108,8 @@ EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO* info)
 	ln::Runtime::setAStringEncoding(ln::TextEncoding::systemMultiByteEncoding());
 
 	ln::EngineContext::current()->engineManagerPreInit = OnPreInitEngineManager;
+	ln::EngineContext::current()->engineManagerPostInit = OnPostInitEngineManager;
+	
 
 	// NOTE: メインウィンドウの HWND は active_window マクロでとれるが、この時点では NULL なので注意。
 	// プラグインロード時にメインウィンドウにアタッチすることはできない。

@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "GraphicsManager.hpp"
-#include "GraphicsDeviceContext.hpp"
+#include "RHIs/GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
@@ -529,21 +529,20 @@ Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context)
     detail::ITexture* rhiObject = resolveRHIObject(nullptr, &modified);
 
     SizeI size = rhiObject->realSize();
-    auto bitmap = makeObject<Bitmap2D>(size.width, size.height, GraphicsHelper::translateToPixelFormat(rhiObject->getTextureFormat()));
 
-  //  if (detail::GraphicsContextInternal::getRenderingType(context) == RenderingType::Threaded) {
-  //      LN_NOTIMPLEMENTED();
-  //  } else {
-  ////      detail::GraphicsContextInternal::flushCommandRecoding(context, this);
-		////detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(context);
-        rhiObject->readData(bitmap->data());
-  //  }
+    auto rhiBitmap = rhiObject->readData();
+
+    auto bitmap = makeObject<Bitmap2D>(
+        size.width, size.height,
+        GraphicsHelper::translateToPixelFormat(rhiObject->getTextureFormat()),
+        rhiBitmap->data());
+
 
     detail::IGraphicsDevice* deviceContext = detail::GraphicsResourceInternal::manager(this)->deviceContext();
     if (deviceContext->caps().imageLayoytVFlip) {
         bitmap->flipVerticalFlow();
     }
-    //
+
     return bitmap;
 }
 
@@ -578,14 +577,6 @@ void TextureInternal::setMappedData(Texture2D* texture, const void* data)
 {
     Bitmap2D* surface = texture->map(MapMode::Write);
     memcpy(surface->rawBuffer()->data(), data, surface->rawBuffer()->size());
-}
-
-void TextureInternal::resetOpenGLTextureIdFromCurrentFramebuffer(RenderTargetTexture* renderTarget)
-{
-	int id;
-	if (IGraphicsDevice::getOpenGLCurrentFramebufferTextureId(&id)) {
-		renderTarget->resetNativeObject(id);
-	}
 }
 
 //==============================================================================

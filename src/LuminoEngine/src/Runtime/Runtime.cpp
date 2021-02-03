@@ -2,8 +2,10 @@
 #include <cstdarg>
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Runtime/Runtime.hpp>
+#include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
 #include "../Engine/EngineManager.hpp"
 #include "RuntimeManager.hpp"
+
 
 namespace ln {
 
@@ -363,22 +365,29 @@ LNResult LNObject_SetTypeInfoId(LNHandle obj, int typeInfoId)
 
 //==============================================================================
 
-void LNLog_SetLevel(LNLogLevel level)
-{
-	ln::Logger::addStdErrAdapter();	// TODO: とりいそぎ
-    ln::Logger::setLevel(static_cast<ln::LogLevel>(level));
-}
+//void LNLog_SetLevel(LNLogLevel level)
+//{
+//	ln::Logger::addStdErrAdapter();	// TODO: とりいそぎ
+//    ln::Logger::setLevel(static_cast<ln::LogLevel>(level));
+//}
+//
+//void LNLog_AllocConsole()
+//{
+//    ln::Console::allocate();
+//}
+//
+//void LNLog_Write(LNLogLevel level, const LNChar* tag, const LNChar* text)
+//{
+//    LN_LOG(static_cast<ln::LogLevel>(level), ln::String(tag).toStdString().c_str()) << ln::String(text);
+//}
+//
+//void LNLog_WriteA(LNLogLevel level, const char* tag, const char* text)
+//{
+//    LN_LOG(static_cast<ln::LogLevel>(level), tag) << ln::String::fromCString(text);
+//}
+//
 
-void LNLog_Write(LNLogLevel level, const LNChar* tag, const LNChar* text)
-{
-    LN_LOG(static_cast<ln::LogLevel>(level), ln::String(tag).toStdString().c_str()) << ln::String(text);
-}
-
-void LNLog_WriteA(LNLogLevel level, const char* tag, const char* text)
-{
-    LN_LOG(static_cast<ln::LogLevel>(level), tag) << ln::String::fromCString(text);
-}
-
+LN_FLAT_API void LNLog_PrintA(LNLogLevel level, const char* tag, const char* format, ...);
 void LNLog_PrintA(LNLogLevel level, const char* tag, const char* format, ...)
 {
     if (::ln::detail::LoggerInterface::getInstance()->checkLevel(static_cast<ln::LogLevel>(level))) {

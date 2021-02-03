@@ -5,56 +5,14 @@
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include "GraphicsManager.hpp"
-#include "GraphicsDeviceContext.hpp"
-#include "OpenGL/OpenGLDeviceContext.hpp"
+#include "RHIs/GraphicsDeviceContext.hpp"
 #include "../Engine/LinearAllocator.hpp"
 #include "SingleFrameAllocator.hpp"
 
 namespace ln {
-
-//==============================================================================
-// GraphicsCommandList
-
-namespace detail {
-
-GraphicsCommandList::GraphicsCommandList()
-{
-}
-
-void GraphicsCommandList::init(GraphicsManager* manager)
-{
-    m_rhiResource = manager->deviceContext()->createCommandList();
-    m_allocator = makeRef<LinearAllocator>(manager->linearAllocatorPageManager());
-	m_singleFrameUniformBufferAllocator = makeRef<detail::SingleFrameUniformBufferAllocator>(manager->singleFrameUniformBufferAllocatorPageManager());
-	m_uniformBufferOffsetAlignment = manager->deviceContext()->caps().uniformBufferOffsetAlignment;
-}
-
-void GraphicsCommandList::dispose()
-{
-    if (m_rhiResource) {
-        m_rhiResource = nullptr;
-    }
-}
-
-void GraphicsCommandList::reset()
-{
-    m_allocator->cleanup();
-	//m_singleFrameUniformBufferAllocator->cleanup();
-}
-
-detail::ConstantBufferView GraphicsCommandList::allocateUniformBuffer(size_t size)
-{
-	return m_singleFrameUniformBufferAllocator->allocate(size, m_uniformBufferOffsetAlignment);
-}
-
-ShaderSecondaryDescriptor* GraphicsCommandList::acquireShaderDescriptor(Shader* shader)
-{
-	return shader->acquireDescriptor();
-}
-
-} // namespace detail
 
 //==============================================================================
 // SwapChain
@@ -63,7 +21,7 @@ SwapChain::SwapChain()
     : m_manager(nullptr)
 	, m_rhiObject(nullptr)
     , m_backbuffers()
-    , m_imageIndex(0)
+    , m_imageIndex(-1)
 {
 }
 
@@ -98,8 +56,15 @@ void SwapChain::onChangeDevice(detail::IGraphicsDevice* device)
 {
 }
 
+Size SwapChain::backbufferSize() const
+{
+	const RenderTargetTexture* backbuffers = m_backbuffers[0];
+	return Size(backbuffers->width(), backbuffers->height());
+}
+
 RenderTargetTexture* SwapChain::currentBackbuffer() const
 {
+	if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
     return m_backbuffers[m_imageIndex];
 }
 
@@ -111,17 +76,19 @@ void SwapChain::resizeBackbuffer(int width, int height)
 
 GraphicsContext* SwapChain::beginFrame2()
 {
+	m_rhiObject->acquireNextImage(&m_imageIndex);
+
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, currentCommandList());
 	detail::GraphicsContextInternal::beginCommandRecoding(m_graphicsContext);
 	currentCommandList()->m_singleFrameUniformBufferAllocator->cleanup();
 	m_graphicsContext->resetState();
 
-	m_rhiObject->acquireNextImage(&m_imageIndex);
 	return m_graphicsContext;
 }
 
 RenderPass* SwapChain::currentRenderPass() const
 {
+	if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
 	return m_renderPasses[m_imageIndex];
 }
 
@@ -163,6 +130,7 @@ void SwapChain::resetRHIBackbuffers()
         commandList->init(detail::GraphicsResourceInternal::manager(this));
 		m_commandLists[i] = commandList;
 	}
+	m_imageIndex = -1;
 }
 
 void SwapChain::present(GraphicsContext* context)
@@ -195,18 +163,12 @@ namespace detail {
 
 void SwapChainInternal::setBackendBufferSize(SwapChain* swapChain, int width, int height)
 {
-    LN_DCHECK(swapChain);
-    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, swapChain, nullptr))) {
-        glswap->setBackendBufferSize(width, height);
-    }
+	LN_NOTIMPLEMENTED();
 }
 
 void SwapChainInternal::setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id)
 {
-    LN_DCHECK(swapChain);
-    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, swapChain, nullptr))) {
-        glswap->setDefaultFBO(id);
-    }
+	LN_NOTIMPLEMENTED();
 }
 
 } // namespace detail

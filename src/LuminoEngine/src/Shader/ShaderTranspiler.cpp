@@ -16,6 +16,10 @@
 #include "ShaderManager.hpp"
 #include "ShaderTranspiler.hpp"
 
+#ifdef _WIN32
+#include "../Graphics/RHIs/DirectX12/DX12Helper.hpp"
+#endif
+
 namespace ln {
 namespace detail {
 
@@ -646,7 +650,14 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
                 item.name = info.name;
                 item.stageFlags = stageFlags;
                 item.binding = -1;
+
+                // DX12 用の対応。CombinedSamper の場合は t レジスタに対応する s レジスタに SamperState を設定 `しなければならない`
+                if (type->getSampler().isCombined()) {
+                    descriptorLayout.samplerRegister.push_back(item);
+                }
+
                 descriptorLayout.textureRegister.push_back(std::move(item));
+
             }
             else if (info.type == ShaderUniformType_SamplerState) {
                 DescriptorLayoutItem item;
@@ -848,15 +859,23 @@ std::vector<byte_t> ShaderCodeTranspiler::generateHlslByteCode() const
 #ifdef _WIN32
     std::vector<std::pair<std::string, std::string>> macroValues;
     std::vector<D3D_SHADER_MACRO> macros;
+    macroValues.reserve(m_definitions.size());
+    macros.reserve(m_definitions.size() + 1);
     for (const auto& text : m_definitions) {
         const size_t equal = text.find_first_of("=");
         if (equal != text.npos) {
             macroValues.push_back({ std::string(text.c_str(), equal), std::string(text.c_str() + equal + 1) });
-            macros.push_back({ macroValues.back().first.c_str(), macroValues.back().second.c_str() });
         }
         else {
             macroValues.push_back({ text, std::string() });
-            macros.push_back({ macroValues.back().first.c_str(), nullptr });
+        }
+    }
+    for (const auto& value : macroValues) {
+        if (value.second.empty()) {
+            macros.push_back({ value.first.c_str(), nullptr });
+        }
+        else {
+            macros.push_back({ value.first.c_str(), value.second.c_str() });
         }
     }
     if (!macros.empty()) {
@@ -918,14 +937,17 @@ std::vector<byte_t> ShaderCodeTranspiler::generateHlslByteCode() const
         target = targetPS;
 
 
+    // TODO: release
     ID3DBlob* shaderCode = nullptr;
     ID3DBlob* error = nullptr;
-    UINT flags1 = D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;// D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR;
+    UINT flags1 = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;// D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR;
     UINT flags2 = 0;
+    //printf("D3DCompile2 s\n");
     HRESULT hr = m_manager->D3DCompile2(
         m_code.c_str(), m_code.length(), m_filename.c_str(),
         (macros.empty()) ? nullptr : macros.data(),
         &includer, m_entryPoint.c_str(), target, flags1, flags2, 0, nullptr, 0, &shaderCode, &error);
+    //printf("D3DCompile2 e\n");
 
     const char* message = error ? (const char*)error->GetBufferPointer() : nullptr;
 
@@ -943,6 +965,25 @@ std::vector<byte_t> ShaderCodeTranspiler::generateHlslByteCode() const
             m_diag->reportWarning(String::fromCString(message));
         }
     }
+
+
+    //ComPtr<ID3D12ShaderReflection> shaderReflection;
+    //D3DCompilerAPI::D3DReflect(shaderCode->GetBufferPointer(), shaderCode->GetBufferSize(), IID_PPV_ARGS(&shaderReflection));
+
+
+    //D3D12_SHADER_DESC desc{};
+    //shaderReflection->GetDesc(&desc);
+
+    //const auto cbCount = desc.ConstantBuffers;
+    //for (auto i = 0; i < cbCount; ++i)
+    //{
+    //    D3D12_SHADER_BUFFER_DESC shaderBufDesc{};
+    //    auto cbuffer = shaderReflection->GetConstantBufferByIndex(i);
+    //    cbuffer->GetDesc(&shaderBufDesc);
+
+    //    std::cout << "  " << shaderBufDesc.Name << std::endl;
+    //}
+
 
     const uint8_t* d = static_cast<const uint8_t*>(shaderCode->GetBufferPointer());
     const size_t s = shaderCode->GetBufferSize();

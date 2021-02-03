@@ -8,9 +8,11 @@
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "GraphicsManager.hpp"
 #include "RenderTargetTextureCache.hpp"
-#include "OpenGL/OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
-#include "Vulkan/VulkanDeviceContext.hpp"
+#include "RHIs/Vulkan/VulkanDeviceContext.hpp"
+#endif
+#ifdef _WIN32
+#include "RHIs/DirectX12/DX12DeviceContext.hpp"
 #endif
 #include "../Engine/LinearAllocator.hpp"
 #include "../Asset/AssetManager.hpp"
@@ -193,14 +195,13 @@ void GraphicsManager::init(const Settings& settings)
 		if (settings.graphicsAPI == GraphicsAPI::Vulkan) {
 			createVulkanContext(settings);
 		}
-
-		if (!m_deviceContext) {
-			createOpenGLContext(settings);
+		else if (settings.graphicsAPI == GraphicsAPI::DirectX12) {
+			createDirectX12Context(settings);
 		}
 
 		// Default
 		if (!m_deviceContext) {
-			createOpenGLContext(settings);
+			createVulkanContext(settings);
 		}
 	}
 
@@ -409,16 +410,6 @@ bool GraphicsManager::checkVulkanSupported()
 #endif
 }
 
-void GraphicsManager::createOpenGLContext(const Settings& settings)
-{
-	OpenGLDevice::Settings openglSettings;
-	openglSettings.platformManager = m_platformManager;
-	openglSettings.mainWindow = settings.mainWindow;
-	auto ctx = makeRef<OpenGLDevice>();
-	ctx->init(openglSettings);
-	m_deviceContext = ctx;
-}
-
 void GraphicsManager::createVulkanContext(const Settings& settings)
 {
 #ifdef LN_USE_VULKAN
@@ -427,6 +418,29 @@ void GraphicsManager::createVulkanContext(const Settings& settings)
     dcSettings.mainWindow = settings.mainWindow;
 	dcSettings.debugMode = settings.debugMode;
 	auto ctx = makeRef<VulkanDevice>();
+	bool driverSupported = false;
+	if (!ctx->init(dcSettings, &driverSupported)) {
+		if (!driverSupported) {
+			// ドライバが Vulkan をサポートしていない。継続する。
+		}
+		else {
+			LN_ERROR("Vulkan driver initialization failed.");
+			return;
+		}
+	}
+	else {
+		m_deviceContext = ctx;
+	}
+#endif
+}
+
+void GraphicsManager::createDirectX12Context(const Settings& settings)
+{
+#if _WIN32
+	DX12Device::Settings dcSettings;
+	dcSettings.mainWindow = settings.mainWindow;
+	dcSettings.debugMode = settings.debugMode;
+	auto ctx = makeRef<DX12Device>();
 	bool driverSupported = false;
 	if (!ctx->init(dcSettings, &driverSupported)) {
 		if (!driverSupported) {

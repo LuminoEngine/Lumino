@@ -1,24 +1,24 @@
 ﻿Lumino
-========
-Lumino is a framework for building real-time graphics applications such as games and digital art.
-It provides an easy-to-use interface that runs on multiple platforms and is available from multiple programming languages.
+==========
 
-Lumino はゲームやデジタルアートなどのリアルタイムグラフィックスアプリケーションを構築するためのフレームワークです。
-マルチプラットフォームで動作し複数のプログラミング言語から利用できる、使いやすいインターフェイスを提供します。
+Lumino is a open source library for building interactive applications such as games and digital art.
+It provides an simple API that runs on multiple platforms and is available from multiple programming languages.
 
+Lumino はゲームやデジタルアートなどのインタラクティブアプリケーションを構築するためのオープンソースライブラリです。
+マルチプラットフォームで動作し複数のプログラミング言語から利用できる、シンプルな API を提供します。
 
 Build and Unit Tests
---------
+----------
 
 [![Package](https://github.com/LuminoEngine/Lumino/workflows/Package/badge.svg)](https://github.com/LuminoEngine/Lumino/actions)
 
 
 Get started
---------
+----------
 
 [Website](https://luminoengine.github.io/)
 
-[Roadmap](https://github.com/LuminoEngine/Lumino/wiki/ProjectRoadmap)
+[Roadmap](https://github.com/LuminoEngine/Lumino/wiki/ProjectRoadmap) `変更予定`
 
 [How to build](docs/HowToBuild.md)
 
@@ -27,19 +27,18 @@ Get started
 [Blog](http://luminolog.hatenablog.com/)
 
 
-開発状況 / 開発版について
---------
-まだまだすごい開発版です。
+開発状況と目標
+----------
 
-開発はまずプロトタイプを作成してしばらく運用し、そのアーキテクチャが妥当であることを確認する、という流れで進めています。
-
-一応「リアルタイムグラフィックスアプリケーションのためのフレームワーク」と謳っていますが、根っこはゲームエンジンです。 そういうわけで、実際にゲームを作りながらこちらのエンジンも作成しています。このゲームのリリースに合わせて、1.0.0 リリースを行う予定です。
+`目標整理中…`
 
 Screenshots
 --------
 参考のため、開発の中で撮れた画像を置いておきます。
 
 #### Scene rendering
+
+![](docs/Gallery/33-scene.jfif)
 
 ![](docs/Gallery/32-scene.png)
 

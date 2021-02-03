@@ -58,12 +58,16 @@ public:
     /** 位置を指定して初期化します。*/
     Point(const Vector2& v) { set(v.x, v.y); }
 
-    /** 各要素を設定します。 */
+    /** 各要素の値を設定します。 */
     void set(float x_, float y_)
     {
         x = x_;
         y = y_;
     }
+
+    /** 各要素の値を取得します。 */
+    LN_METHOD()
+    void get(float* outX, float* outY) const { *outX = x; *outY = y; }
 
     /** 要素がすべて 0 であるかを判定します。*/
     bool isZero() const { return (x == 0 && y == 0); }
