@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "VulkanDeviceContext.hpp"
+#include "VulkanBuffers.hpp"
 #include "VulkanSingleFrameAllocator.hpp"
 
 namespace ln {

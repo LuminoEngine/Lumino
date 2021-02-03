@@ -3,7 +3,7 @@
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "DX12DeviceContext.hpp"
-#include "DX12Texture.hpp"
+#include "DX12Textures.hpp"
 #include "DX12SwapChain.hpp"
 
 namespace ln {

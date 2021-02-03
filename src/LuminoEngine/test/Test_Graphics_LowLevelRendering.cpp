@@ -1492,3 +1492,82 @@ TEST_F(Test_Graphics_LowLevelRendering, Instancing)
 	ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/LowLevelRendering-Instancing-1.png"), cbb);
 	
 }
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_LowLevelRendering, MipMap)
+{
+	auto shader1 = Shader::create(LN_ASSETFILE("TextureTest-1.vsh"), LN_ASSETFILE("TextureTest-1.psh"));
+	auto descriptorLayout = shader1->descriptorLayout();
+	auto shaderPass = shader1->techniques()[0]->passes()[0];
+
+	auto vertexDecl1 = makeObject<VertexLayout>();
+	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	vertexDecl1->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+
+	struct Vertex
+	{
+		Vector3 pos;
+		Vector2 uv;
+	};
+	Vertex v[] = {
+		{ { -0.5, 0, 0 }, { 0, 0 }, },	// far
+		{ {  0.5, 0, 0 }, { 1, 0 }, },	// far
+		{ { -1, -1, 1 }, { 0, 1 }, },	// near
+		{ {  1, -1, 1 }, { 1, 1 }, },	// near
+	};
+	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+
+	// 四辺に黒線を引いたテクスチャ
+	SizeI gridTexSize(128, 128);
+	auto gridTex = makeObject<Texture2D>(gridTexSize.width, gridTexSize.height, TextureFormat::RGBA8);
+	gridTex->setMipmapEnabled(true);
+	gridTex->setResourceUsage(GraphicsResourceUsage::Static);
+	gridTex->clear(Color::White);
+	for (int x = 0; x < gridTexSize.width; ++x) {
+		gridTex->setPixel(x, 0, Color::Black);
+		gridTex->setPixel(x, 1, Color::Black);
+		gridTex->setPixel(x, 2, Color::Black);
+		gridTex->setPixel(x, 3, Color::Black);
+		gridTex->setPixel(x, 4, Color::Black);
+		gridTex->setPixel(x, gridTexSize.width - 1, Color::Black);
+		gridTex->setPixel(x, gridTexSize.width - 2, Color::Black);
+		gridTex->setPixel(x, gridTexSize.width - 3, Color::Black);
+		gridTex->setPixel(x, gridTexSize.width - 4, Color::Black);
+		gridTex->setPixel(x, gridTexSize.width - 5, Color::Black);
+	}
+	for (int y = 0; y < gridTexSize.height; ++y) {
+		gridTex->setPixel(0, y, Color::Black);
+		gridTex->setPixel(1, y, Color::Black);
+		gridTex->setPixel(2, y, Color::Black);
+		gridTex->setPixel(3, y, Color::Black);
+		gridTex->setPixel(4, y, Color::Black);
+		gridTex->setPixel(gridTexSize.height - 1, y, Color::Black);
+		gridTex->setPixel(gridTexSize.height - 2, y, Color::Black);
+		gridTex->setPixel(gridTexSize.height - 3, y, Color::Black);
+		gridTex->setPixel(gridTexSize.height - 4, y, Color::Black);
+		gridTex->setPixel(gridTexSize.height - 5, y, Color::Black);
+	}
+
+	{
+		auto ctx = TestEnv::beginFrame();
+		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		auto shd = ctx->allocateShaderDescriptor(shaderPass);
+		shd->setTexture(descriptorLayout->findTextureRegisterIndex(u"g_texture1"), gridTex);
+		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
+		ctx->setVertexLayout(vertexDecl1);
+		ctx->setVertexBuffer(0, vb1);
+		ctx->setIndexBuffer(nullptr);
+		ctx->setShaderPass(shaderPass);
+		ctx->setShaderDescriptor(shd);
+
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);
+
+		ctx->endRenderPass();
+		TestEnv::endFrame();
+		ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-MipMap-1.png"), cbb);
+		// MipMap が正しく生成されていれば、内側の境界がぼかされるのでグレーになっているはず
+	}
+}

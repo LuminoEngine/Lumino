@@ -24,24 +24,24 @@ struct DX12ShaderPassLayoutInfo
     Descriptors psDescriptors;
 
     // [VertexShader Stage] ConstantBuffer
-    int8_t vs_CBV_RootParamIndex;
-    int8_t vs_CBV_Count() const { return vsDescriptors.bufferDescriptors.size(); }
+    int32_t vs_CBV_RootParamIndex;
+    int32_t vs_CBV_Count() const { return static_cast<int32_t>(vsDescriptors.bufferDescriptors.size()); }
     // [VertexShader Stage] Texture
-    int8_t vs_SRV_RootParamIndex;
-    int8_t vs_SRV_Count() const { return vsDescriptors.textureDescriptors.size(); }
+    int32_t vs_SRV_RootParamIndex;
+    int32_t vs_SRV_Count() const { return static_cast<int32_t>(vsDescriptors.textureDescriptors.size()); }
     // [VertexShader Stage] Sampler
-    int8_t vs_Sampler_RootParamIndex;
-    int8_t vs_Sampler_Count() const { return vsDescriptors.samplerDescriptors.size(); }
+    int32_t vs_Sampler_RootParamIndex;
+    int32_t vs_Sampler_Count() const { return static_cast<int32_t>(vsDescriptors.samplerDescriptors.size()); }
 
     // [PixelShader Stage] ConstantBuffer
-    int8_t ps_CBV_RootParamIndex;
-    int8_t ps_CBV_Count() const { return psDescriptors.bufferDescriptors.size(); }
+    int32_t ps_CBV_RootParamIndex;
+    int32_t ps_CBV_Count() const { return static_cast<int32_t>(psDescriptors.bufferDescriptors.size()); }
     // [PixelShader Stage] Texture
-    int8_t ps_SRV_RootParamIndex;
-    int8_t ps_SRV_Count() const { return psDescriptors.textureDescriptors.size(); }
+    int32_t ps_SRV_RootParamIndex;
+    int32_t ps_SRV_Count() const { return static_cast<int32_t>(psDescriptors.textureDescriptors.size()); }
     // [PixelShader Stage] Sampler
-    int8_t ps_Sampler_RootParamIndex;
-    int8_t ps_Sampler_Count() const { return psDescriptors.samplerDescriptors.size(); }
+    int32_t ps_Sampler_RootParamIndex;
+    int32_t ps_Sampler_Count() const { return static_cast<int32_t>(psDescriptors.samplerDescriptors.size()); }
 };
 
 class DX12ShaderPass

@@ -272,7 +272,7 @@ void DX12GraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint
                 if (vertexBuffer) {
                     vertexBufferViews[i].BufferLocation = vertexBuffer->dxResource()->GetGPUVirtualAddress();
                     vertexBufferViews[i].StrideInBytes = vertexLayout->stride(i);
-                    vertexBufferViews[i].SizeInBytes = vertexBuffer->getBytesSize();
+                    vertexBufferViews[i].SizeInBytes = static_cast<UINT>(vertexBuffer->getBytesSize());
                     vbCount++;
                 }
             }
@@ -284,7 +284,7 @@ void DX12GraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint
             DX12IndexBuffer* indexBuffer = static_cast<DX12IndexBuffer*>(state.primitive.indexBuffer);
             D3D12_INDEX_BUFFER_VIEW indexView;
             indexView.BufferLocation = indexBuffer->dxResource()->GetGPUVirtualAddress();
-            indexView.SizeInBytes = indexBuffer->getBytesSize();
+            indexView.SizeInBytes = static_cast<UINT>(indexBuffer->getBytesSize());
             indexView.Format = indexBuffer->indexFormat();
             m_dxCommandList->IASetIndexBuffer(&indexView);
         }

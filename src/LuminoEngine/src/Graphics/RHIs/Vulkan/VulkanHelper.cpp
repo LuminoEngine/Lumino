@@ -4,6 +4,8 @@
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "VulkanHelper.hpp"
 #include "VulkanDeviceContext.hpp"
+#include "VulkanBuffers.hpp"
+#include "VulkanTextures.hpp"
 #include "VulkanSingleFrameAllocator.hpp"
 #include <LuminoEngine/Graphics/GraphicsExtensionVulkan.hpp>
 
@@ -950,98 +952,6 @@ void* VulkanLinearAllocator::realloc(void* ptr, size_t size, size_t alignment, V
 void VulkanLinearAllocator::free(void* ptr) noexcept
 {
 	// フレーム終了時にすべてクリアされるため不要
-}
-
-//=============================================================================
-// VulkanBuffer
-
-VulkanBuffer::VulkanBuffer()
-    : m_deviceContext(nullptr)
-    , m_nativeBuffer(VK_NULL_HANDLE)
-    , m_nativeBufferMemory(VK_NULL_HANDLE)
-    , m_size(0)
-	, m_allocator(nullptr)
-{
-}
-
-Result VulkanBuffer::init(VulkanDevice* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator)
-{
-	if (LN_REQUIRE(deviceContext)) return false;
-    dispose();
-
-	m_deviceContext = deviceContext;
-    m_size = size;
-    allocator = (allocator) ? allocator : m_deviceContext->vulkanAllocator();
-    m_allocator = allocator;
-
-    auto device = m_deviceContext->vulkanDevice();
-
-    VkBufferCreateInfo bufferInfo = {};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = size;
-    bufferInfo.usage = usage;
-    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    LN_VK_CHECK(vkCreateBuffer(device, &bufferInfo, m_allocator, &m_nativeBuffer));
-
-    VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(device, m_nativeBuffer, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo = {};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;    // アライメントされたサイズ
-    m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
-
-    LN_VK_CHECK(vkAllocateMemory(device, &allocInfo, m_allocator, &m_nativeBufferMemory));
-    LN_VK_CHECK(vkBindBufferMemory(device, m_nativeBuffer, m_nativeBufferMemory, 0));
-
-    return true;
-}
-
-void VulkanBuffer::dispose()
-{
-    if (m_deviceContext)
-    {
-        auto device = m_deviceContext->vulkanDevice();
-        const VkAllocationCallbacks* allocator = m_allocator ? m_allocator : m_deviceContext->vulkanAllocator();
-
-        if (m_nativeBufferMemory) {
-            vkFreeMemory(device, m_nativeBufferMemory, allocator);
-            m_nativeBufferMemory = VK_NULL_HANDLE;
-        }
-
-        if (m_nativeBuffer) {
-            vkDestroyBuffer(device, m_nativeBuffer, allocator);
-            m_nativeBuffer = VK_NULL_HANDLE;
-        }
-
-        m_deviceContext = nullptr;
-    }
-}
-
-void* VulkanBuffer::map()
-{
-    void* mapped;
-    if (vkMapMemory(m_deviceContext->vulkanDevice(), m_nativeBufferMemory, 0, m_size, 0, &mapped) != VK_SUCCESS) {
-        LN_LOG_ERROR << "Failed vkMapMemory";
-        return nullptr;
-    }
-    return mapped;
-}
-
-void VulkanBuffer::unmap()
-{
-    vkUnmapMemory(m_deviceContext->vulkanDevice(), m_nativeBufferMemory);
-}
-
-void VulkanBuffer::setData(size_t offset, const void* data, VkDeviceSize size)
-{
-    if (LN_REQUIRE(data)) return;
-    if (LN_REQUIRE((offset + size) <= m_size)) return;
-
-    if (auto mapped = reinterpret_cast<unsigned char*>(map())) {
-        memcpy(mapped + offset, data, size);
-        unmap();
-    }
 }
 
 //=============================================================================

@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "DX12Helper.hpp"
-#include "DX12Texture.hpp"
+#include "DX12Textures.hpp"
 
 namespace ln {
 namespace detail {

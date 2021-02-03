@@ -71,5 +71,24 @@ protected:
 	DXGI_FORMAT m_indexFormat;
 };
 
+class DX12UniformBuffer
+	: public IUniformBuffer
+{
+public:
+	DX12UniformBuffer();
+	bool init(DX12Device* deviceContext, uint32_t size);
+	void dispose() override;
+	void* map() override;
+	void unmap() override;
+	ID3D12Resource* dxResource() const { return m_constantBuffer.Get(); }
+	uint32_t size() const { return m_size; }
+
+protected:
+	DX12Device* m_deviceContext;
+	uint32_t m_size;
+	ComPtr<ID3D12Resource> m_constantBuffer;
+	void* m_mappedBuffer;
+};
+
 } // namespace detail
 } // namespace ln

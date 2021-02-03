@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "DX12DeviceContext.hpp"
-#include "DX12Texture.hpp"
+#include "DX12Textures.hpp"
 #include "DX12ShaderPass.hpp"
 #include "DX12CommandList.hpp"
 #include "DX12DescriptorPool.hpp"

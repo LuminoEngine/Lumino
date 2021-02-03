@@ -201,7 +201,7 @@ D3D_PRIMITIVE_TOPOLOGY DX12Helper::LNPrimitiveTopologyToDX12PrimitiveTopology(Pr
     return table[(int)value].second;
 }
 
-size_t DX12Helper::getFormatSize(DXGI_FORMAT value)
+int32_t DX12Helper::getFormatSize(DXGI_FORMAT value)
 {
     switch (value)
     {

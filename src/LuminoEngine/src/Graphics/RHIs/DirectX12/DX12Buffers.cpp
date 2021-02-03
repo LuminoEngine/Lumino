@@ -388,16 +388,84 @@ GraphicsResourceUsage DX12IndexBuffer::usage() const
     return m_usage;
 }
 
-//void* DX12IndexBuffer::map()
-//{
-//    LN_NOTIMPLEMENTED();
-//    return 0;
-//}
-//
-//void DX12IndexBuffer::unmap()
-//{
-//    LN_NOTIMPLEMENTED();
-//}
+//==============================================================================
+// DX12UniformBuffer
+
+DX12UniformBuffer::DX12UniformBuffer()
+    : m_deviceContext(nullptr)
+    , m_size(0)
+    , m_constantBuffer()
+    , m_mappedBuffer(nullptr)
+{
+}
+
+bool DX12UniformBuffer::init(DX12Device* deviceContext, uint32_t size)
+{
+    LN_DCHECK(deviceContext);
+    m_deviceContext = deviceContext;
+    m_size = size;
+
+    ID3D12Device* device = m_deviceContext->device();
+
+    // https://github.com/microsoft/DirectX-Graphics-Samples/blob/master/Samples/UWP/D3D12HelloWorld/src/HelloConstBuffers/d3dx12.h#L411
+    D3D12_HEAP_PROPERTIES prop = {};
+    prop.Type = D3D12_HEAP_TYPE_UPLOAD; // フレームごとに全体を書き換えるような運用をするため UPLOAD
+    prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+    prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+    prop.CreationNodeMask = 1;
+    prop.VisibleNodeMask = 1;
+
+    D3D12_RESOURCE_DESC desc = {};
+    desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+    desc.Alignment = 0;
+    desc.Width = m_size;
+    desc.Height = 1;
+    desc.DepthOrArraySize = 1;
+    desc.MipLevels = 1;
+    desc.Format = DXGI_FORMAT_UNKNOWN;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+    desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+    if (FAILED(device->CreateCommittedResource(
+        &prop,
+        D3D12_HEAP_FLAG_NONE,
+        &desc,
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
+        IID_PPV_ARGS(&m_constantBuffer)))) {
+        LN_ERROR("CreateCommittedResource failed.");
+        return false;
+    }
+
+    // Map したままで OK
+    if (FAILED(m_constantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&m_mappedBuffer)))) {
+        LN_ERROR("Map failed.");
+        return false;
+    }
+
+    return true;
+}
+
+void DX12UniformBuffer::dispose()
+{
+    if (m_constantBuffer) {
+        m_constantBuffer->Unmap(0, nullptr);
+        m_mappedBuffer = nullptr;
+        m_constantBuffer.Reset();
+    }
+    IUniformBuffer::dispose();
+}
+
+void* DX12UniformBuffer::map()
+{
+    return m_mappedBuffer;
+}
+
+void DX12UniformBuffer::unmap()
+{
+}
 
 } // namespace detail
 } // namespace ln

@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "DX12Buffers.hpp"
-#include "DX12Texture.hpp"
+#include "DX12Textures.hpp"
 
 #include <LuminoEngine/Graphics/Bitmap.hpp> // TODO: test
 
@@ -175,7 +175,7 @@ bool DX12Texture2D::generateMips()
     const uint32_t width = m_size.width;
     const uint32_t height = m_size.height;
     const uint32_t depth = 1;
-    const uint32_t mipMaps = 8;
+    const uint32_t mipMaps = m_mipLevels;
     const uint32_t requiredHeapSize = mipMaps;
     ID3D12GraphicsCommandList* commandList = m_device->beginSingleTimeCommandList();
 
@@ -341,7 +341,9 @@ bool DX12Texture2D::generateMips()
 
     commandList->SetComputeRootSignature(mipMapRootSignature.Get());
     commandList->SetPipelineState(psoMipMaps.Get());
-    commandList->SetDescriptorHeaps(1, &descriptorHeap);
+
+    ID3D12DescriptorHeap* heaps[] = { descriptorHeap.Get() };
+    commandList->SetDescriptorHeaps(1, heaps);
 
     D3D12_CPU_DESCRIPTOR_HANDLE currentCPUHandle = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
     D3D12_GPU_DESCRIPTOR_HANDLE currentGPUHandle = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
