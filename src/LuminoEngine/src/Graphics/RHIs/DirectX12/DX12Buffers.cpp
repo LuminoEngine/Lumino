@@ -8,6 +8,64 @@ namespace detail {
 	
 //==============================================================================
 // DX12Buffer
+
+/*
+D3D12_HEAP_TYPE_UPLOAD について
+----------
+
+- [D3D12_HEAP_TYPE](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ne-d3d12-d3d12_heap_type)
+
+- [D3D12HelloTriangle.cpp の注意書き](https://github.com/microsoft/DirectX-Graphics-Samples/blob/master/Samples/Desktop/D3D12HelloWorld/src/HelloTriangle/D3D12HelloTriangle.cpp#L210-L213)
+
+- [注意書きに対する質問](https://github.com/microsoft/DirectX-Graphics-Samples/issues/147)
+
+## CPU-write-once, GPU-read-once とは
+
+1つの大きなバッファに対して memcpy による書き込みや DrawXXXX() による読み取りが複数回発生してもよいが、
+CPU 側は write する範囲、GPU 側は読み取る範囲が重なってはならない、ということ。（と解釈した）
+
+結論としては今の DX12SingleFrameAllocator (DirectX-Graphics-Samples の LinearAllocator) の考え方で問題ない。
+
+write 側が重なるのは論外としても、read 側が重なるとダメなのは、その時点で CPU までデータを取りに行くから、とのこと。
+
+## ダメなケース
+
+これが響いてくるのは、CPU 側は1度の write でメッシュを作り、コマンドリストでそのメッシュを繰り返し描画する、という場合。
+
+Sprite は特にそうだが Lumino の場合は Box や Sphere 等簡易的なプリミティブの描画・デバッグ描画など、
+これらはシーンレンダリングの最初に頂点バッファを動的に構築してから描画を行う。
+この頂点バッファは通常の描画の他、シャドウマップの生成など複数の描画パスで使われる。
+
+頂点バッファの構築と描画が 1:1 であれば DEFAULT なバッファにデータを送信するのと差は無いのだが、
+複数回描画が発生するとその分だけ GPU 側はデータをプルしようとする。
+
+
+## よさそうな方針
+
+前述の質問には「CPU-write-once, GPU-read-once にならない場合、常に UPLOAD から DEFAULT へのコピーを実装するのはやりすぎか？」
+というのがあるが、回答は「やりすぎではない。ただしあなたのアプリの目的に応じてプロファイリングしてね」とのこと。
+
+実際のところ描画のたびに本当に GPU からのプルが走るのかは、GPU やドライバの実装によるものと考えられる。
+少なくとも GPU のキャッシュが無効の場合は上記のように動くのが一般的。
+
+ちなみに DirectX12 には Microsoft によるソフトウェアドライバの実装もあるので、実装は本当に様々。
+なので MSDN にはあまり詳しく書かれていないのだろうか？
+
+とりあえず Lumino だと、次のようなのがよさそう。
+
+- 3Dシーンの描画では UPLOAD から DEFAULT へのコピー
+- GUI (2D) の描画では UPLOAD だけでもかまわない
+
+でも区別するの大変なので、当面は UPLOAD から DEFAULT へのコピーを基本にしてみる。
+
+## ちなみに
+
+UPLOAD は使い勝手いいので全部 UPLOAD にしてしまえ、は論外。実行速度を考えないサンプルならいいけど…。
+
+3Dモデルでこれをやると悲惨な描画速度になる。
+
+
+*/
     
 DX12Buffer::DX12Buffer()
 	: m_dxResource()

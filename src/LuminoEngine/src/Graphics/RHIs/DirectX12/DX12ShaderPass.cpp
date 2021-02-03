@@ -473,6 +473,9 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
 
 
 #if 1
+        // ShaderVisibility
+        // ----------
+        //
         // DirectX12 では ShaderVisibility を、実際にシェーダコードが要求しているものと完全に一致させなければならない。
         // 例えば次のようなコードを考えてみる。
         // 
@@ -502,8 +505,64 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         // PS の b0 が Camera を参照してしまう。この矛盾はデバッグレイヤーで通知されない。
         // 
 
+
+        /*
+        Layout(BindingIndex)
+        ----------
+
+        register 指定の無い HLSL コードを入力した場合、コンパイラによって自動割り当てが行われるが、
+        glslangValidator と fxc では異なる BindingIndex を出力する。
+
+        例えば次のようなコードをコンパイルした場合、
+        
+        ```
+        sampler2D _ColorSampler;
+        sampler2D _NormalAndDepthSampler;
+        sampler2D _ViewDepthSampler;
+        sampler2D _MetalRoughSampler;
+        ```
+
+        spirv-dis の出力は次のようになる。
+
+        ```
+        OpDecorate %_MetalRoughSampler Location 3
+        OpDecorate %_MetalRoughSampler DescriptorSet 1
+        OpDecorate %_MetalRoughSampler Binding 0
+        OpDecorate %_NormalAndDepthSampler Location 1
+        OpDecorate %_NormalAndDepthSampler DescriptorSet 1
+        OpDecorate %_NormalAndDepthSampler Binding 1
+        OpDecorate %_ViewDepthSampler Location 2
+        OpDecorate %_ViewDepthSampler DescriptorSet 1
+        OpDecorate %_ViewDepthSampler Binding 2
+        OpDecorate %_ColorSampler Location 0
+        OpDecorate %_ColorSampler DescriptorSet 1
+        OpDecorate %_ColorSampler Binding 3
+        ```
+
+        fxc -dumpbin の出力は次のようになる。
+
+        ```
+        // Name                                 Type  Format         Dim      HLSL Bind  Count
+        // ------------------------------ ---------- ------- ----------- -------------- ------
+        // _ColorSampler                     sampler      NA          NA             s0      1
+        // _NormalAndDepthSampler            sampler      NA          NA             s1      1
+        // _ViewDepthSampler                 sampler      NA          NA             s2      1
+        // _MetalRoughSampler                sampler      NA          NA             s3      1
+        // _ViewDepthSampler                 texture  float4          2d             t0      1
+        // _MetalRoughSampler                texture  float4          2d             t1      1
+        // _NormalAndDepthSampler            texture  float4          2d             t2      1
+        // _ColorSampler                     texture  float4          2d             t3      1
+        ```
+
+        CombindSampler を使用した場合、 D3DCompiler の方は Texture-Sampler のペア間でも Bind が一致しないことがある。
+
+        このため RootSignature を作るための Refrection に、glslang を利用することはできない。
+        HLSL bitcode を D3DCompiler で作ったのであれば、Refrection も D3DCompiler を使わなければならない。
+        */
+
         struct Descriptor
         {
+            DescriptorType type;
             std::string name;
             int32_t bindingIndex;
         };
@@ -547,13 +606,25 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
             for (UINT i = 0; i < desc.BoundResources; ++i) {
                 D3D12_SHADER_INPUT_BIND_DESC desc2;
                 shaderReflection->GetResourceBindingDesc(i,&desc2);
-                reflections[iStage].descriptors.push_back({ desc2.Name, (int32_t)desc2.BindPoint });
+
+                DescriptorType type = DescriptorType_Count;
+                if (desc2.Type == D3D_SIT_CBUFFER)
+                    type = DescriptorType_UniformBuffer;
+                else if (desc2.Type == D3D_SIT_TEXTURE)
+                    type = DescriptorType_Texture;
+                else if (desc2.Type == D3D_SIT_SAMPLER)
+                    type = DescriptorType_SamplerState;
+
+                if (type != DescriptorType_Count) {
+                    reflections[iStage].descriptors.push_back({ type, desc2.Name, (int32_t)desc2.BindPoint });
+                }
             }
         }
 
-        auto getBindingIndex = [&](ShaderStage2 stage, const std::string& name) -> int32_t {
+        auto getBindingIndex = [&](ShaderStage2 stage, DescriptorType type, const std::string& name) -> int32_t {
             const auto& list = reflections[stage].descriptors;
-            const auto itr = std::find_if(list.begin(), list.end(), [&name](const Descriptor& d) {
+            const auto itr = std::find_if(list.begin(), list.end(), [&](const Descriptor& d) {
+                if (d.type != type) return false;
                 if (name == "$Global")
                     return d.name == "$Globals";
                 else
@@ -587,11 +658,11 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
             for (int32_t i = 0; i < createInfo.descriptorLayout->uniformBufferRegister.size(); i++) {
                 const DescriptorLayoutItem& item = createInfo.descriptorLayout->uniformBufferRegister[i];
                 if (item.stageFlags & ShaderStageFlags_Vertex) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Vertex, item.name);
+                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Vertex, DescriptorType_UniformBuffer, item.name);
                     if (bindingIndex >= 0) vsDescriptors.bufferDescriptors.push_back({ i, bindingIndex, (int32_t)item.size });
                 }
                 if (item.stageFlags & ShaderStageFlags_Pixel) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Fragment, item.name);
+                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Fragment, DescriptorType_UniformBuffer, item.name);
                     if (bindingIndex >= 0) psDescriptors.bufferDescriptors.push_back({ i, bindingIndex, (int32_t)item.size });
                 }
             }
@@ -599,11 +670,11 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
             for (int32_t i = 0; i < createInfo.descriptorLayout->textureRegister.size(); i++) {
                 const DescriptorLayoutItem& item = createInfo.descriptorLayout->textureRegister[i];
                 if (item.stageFlags & ShaderStageFlags_Vertex) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Vertex, item.name);
+                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Vertex, DescriptorType_Texture, item.name);
                     if (bindingIndex >= 0) vsDescriptors.textureDescriptors.push_back({ i,bindingIndex, 0 });
                 }
                 if (item.stageFlags & ShaderStageFlags_Pixel) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Fragment, item.name);
+                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Fragment, DescriptorType_Texture, item.name);
                     if (bindingIndex >= 0) psDescriptors.textureDescriptors.push_back({ i, bindingIndex, 0 });
                 }
             }
@@ -611,11 +682,11 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
             for (int32_t i = 0; i < createInfo.descriptorLayout->samplerRegister.size(); i++) {
                 const DescriptorLayoutItem& item = createInfo.descriptorLayout->samplerRegister[i];
                 if (item.stageFlags & ShaderStageFlags_Vertex) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Vertex, item.name);
+                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Vertex, DescriptorType_SamplerState, item.name);
                     if (bindingIndex >= 0) vsDescriptors.samplerDescriptors.push_back({ i, bindingIndex, 0 });
                 }
                 if (item.stageFlags & ShaderStageFlags_Pixel) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Fragment, item.name);
+                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Fragment, DescriptorType_SamplerState, item.name);
                     if (bindingIndex >= 0) psDescriptors.samplerDescriptors.push_back({ i, bindingIndex, 0 });
                 }
             }
