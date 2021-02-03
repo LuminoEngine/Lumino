@@ -575,7 +575,25 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
     }
 
     psoDesc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
-    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE; // 実際は ID3D12GraphicsCommandList::IASetPrimitiveTopology() を使う
+
+
+    switch (state.topology)
+    {
+    case PrimitiveTopology::TriangleList:
+    case PrimitiveTopology::TriangleStrip:
+        psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        break;
+    case PrimitiveTopology::LineList:
+    case PrimitiveTopology::LineStrip:
+        psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+        break;
+    case PrimitiveTopology::PointList:
+        psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+        break;
+    default:
+        LN_UNREACHABLE();
+        return false;
+    }
     
     // RenderPass
     {
