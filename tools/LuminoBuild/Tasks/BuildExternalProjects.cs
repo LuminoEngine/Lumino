@@ -560,11 +560,7 @@ namespace LuminoBuild.Tasks
             {
                 // CI 環境でディスク消費を抑えるため、一時ファイルを削除する
                 var buildDir = builder.GetExternalProjectBuildDir(BuildEnvironment.Target);
-                if (Directory.Exists(buildDir))
-                {
-                    Directory.Delete(buildDir, true);
-                    Console.WriteLine($"Removed: {buildDir}");
-                }
+                Utils.DeleteDirectory(buildDir);
             }
 
             builder.CommitCache(builder.GetExternalInstallDir(BuildEnvironment.Target));

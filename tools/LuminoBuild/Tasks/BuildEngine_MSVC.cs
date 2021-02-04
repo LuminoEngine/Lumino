@@ -102,11 +102,7 @@ namespace LuminoBuild.Tasks
                     Utils.CallProcess("ctest", $"-C Debug --output-on-failure --verbose");
                     Utils.CallProcess("cmake", $"--build . --config Debug --target INSTALL");
 
-                    if (BuildEnvironment.FromCI)
-                    {
-                        Directory.Delete(targetBuildDir, true);    // Disk space saving
-                        Console.WriteLine($"Removed: {targetBuildDir}");
-                    }
+                    if (BuildEnvironment.FromCI) Utils.DeleteDirectory(targetBuildDir);   // Disk space saving
                 }
 
                 if (string.IsNullOrEmpty(BuildEnvironment.Configuration) || BuildEnvironment.Configuration == "Release")
@@ -115,11 +111,7 @@ namespace LuminoBuild.Tasks
                     Utils.CallProcess("ctest", $"-C Release --output-on-failure --verbose");
                     Utils.CallProcess("cmake", $"--build . --config Release --target INSTALL");
 
-                    if (BuildEnvironment.FromCI)
-                    {
-                        Directory.Delete(targetBuildDir, true);    // Disk space saving
-                        Console.WriteLine($"Removed: {targetBuildDir}");
-                    }
+                    if (BuildEnvironment.FromCI) Utils.DeleteDirectory(targetBuildDir);   // Disk space saving
                 }
             }
 
