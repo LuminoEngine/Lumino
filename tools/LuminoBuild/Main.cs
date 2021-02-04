@@ -18,7 +18,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                //args = new string[] { "BuildLocalPackage", "MSVC2019-x64-MT" };
+                args = new string[] { "BuildLocalPackage", "MSVC2019-x64-MT" };
                 //args = new string[] { "BuildLocalPackage", "MSVC2019-x86-MT" };
                 //args = new string[] { "BuildLocalPackage", "Android-x86_64" };
                 //args = new string[] { "BuildLocalPackage", "Emscripten" };
@@ -36,7 +36,7 @@ namespace LuminoBuild
                 //args = new string[] { "BuildLLVM" };
                 //args = new string[] { "BuildEmbeddedResources" };
 
-                args = new string[] { "MakeNativePackage" };
+                //args = new string[] { "MakeNativePackage" };
                 //args = new string[] { "MakeInstaller_Win32" };
             }
 
@@ -64,9 +64,6 @@ namespace LuminoBuild
             BuildEnvironment.Target = (positionalArgs.Count > 1) ? args[1] : "";
             BuildEnvironment.Configuration = (positionalArgs.Count > 2) ? args[2] : "";
             BuildEnvironment.Initialize(builder);
-            EmscriptenBuildEnv.Initialize(builder);
-
-            Console.WriteLine("RootDir: {0}", builder.LuminoRootDir);
 
 
             builder.Tasks = new List<LuminoBuild.BuildTask>();

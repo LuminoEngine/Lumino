@@ -563,6 +563,7 @@ namespace LuminoBuild.Tasks
                 if (Directory.Exists(buildDir))
                 {
                     Directory.Delete(buildDir, true);
+                    Console.WriteLine($"Removed: {buildDir}");
                 }
             }
 

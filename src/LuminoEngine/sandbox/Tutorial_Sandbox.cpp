@@ -1,18 +1,24 @@
-﻿#include <Lumino.hpp>
+﻿
+#include <Lumino.hpp>
 
 class App : public Application
 {
-    void onInit() override
+    virtual void onUpdate() override
     {
-        auto box = BoxMesh::With()
-            .size(1, 1, 1)
-            .buildInto();
-
-        auto camera = Engine::camera();
-        camera->setPosition(5, 5, -5);
-        camera->lookAt(0, 0, 0);
+        if (Input::isPressed(u"left")) Debug::print(0, u"left");
+        if (Input::isPressed(u"right")) Debug::print(0, u"right");
+        if (Input::isPressed(u"up")) Debug::print(0, u"up");
+        if (Input::isPressed(u"down")) Debug::print(0, u"down");
+        if (Input::isPressed(u"submit")) Debug::print(0, u"submit");
+        if (Input::isPressed(u"cancel")) Debug::print(0, u"cancel");
+        if (Input::isPressed(u"menu")) Debug::print(0, u"menu");
+        if (Input::isPressed(u"shift")) Debug::print(0, u"shift");
+        if (Input::isPressed(u"pageup")) Debug::print(0, u"pageup");
+        if (Input::isPressed(u"pagedown")) Debug::print(0, u"pagedown");
+        if (Input::isPressed(u"any")) Debug::print(0, u"any");
     }
 };
+
 
 //--------------------------------------------------------------------------------
 
