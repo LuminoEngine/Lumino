@@ -879,7 +879,7 @@ int StringHelper::int64ToString(int64_t value, char format, char* outStr, int bu
 	}
 
 	os << value;
-	return b.length();
+	return static_cast<int>(b.length());
 }
 
 int StringHelper::uint64ToString(uint64_t value, char format, char* outStr, int bufSize)
@@ -898,7 +898,7 @@ int StringHelper::uint64ToString(uint64_t value, char format, char* outStr, int 
 	}
 
 	os << value;
-	return b.length();
+	return static_cast<int>(b.length());
 }
 
 int StringHelper::doubleToString(double value, char format, int precision, char* outStr, int bufSize)
@@ -922,7 +922,7 @@ int StringHelper::doubleToString(double value, char format, int precision, char*
 	}
 
 	os << value;
-	return b.length();
+	return static_cast<int>(b.length());
 }
 
 //==============================================================================

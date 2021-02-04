@@ -12,7 +12,7 @@ class AssetModel;
 namespace detail {
 class AssetArchive;
 class FileSystemReader;
-class AssetRequiredPathSet;
+struct AssetRequiredPathSet;
 
 class AssetManager
 	: public RefObject

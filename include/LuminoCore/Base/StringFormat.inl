@@ -92,7 +92,7 @@ void GenericFormatStringBuilder<TChar>::appendString(const TChar* str)
 }
 
 template<typename TChar>
-void GenericFormatStringBuilder<TChar>::appendString(const TChar* str, int length)
+void GenericFormatStringBuilder<TChar>::appendString(const TChar* str, size_t length)
 {
     appendIntenal(str, length);
 }
@@ -110,13 +110,13 @@ const TChar* GenericFormatStringBuilder<TChar>::c_str() const
 }
 
 template<typename TChar>
-int GenericFormatStringBuilder<TChar>::length() const
+size_t GenericFormatStringBuilder<TChar>::length() const
 {
     return m_bufferUsed / sizeof(TChar);
 }
 
 template<typename TChar>
-void GenericFormatStringBuilder<TChar>::appendIntenal(const TChar* str, int length)
+void GenericFormatStringBuilder<TChar>::appendIntenal(const TChar* str, size_t length)
 {
     size_t byteCount = sizeof(TChar) * length;
     byte_t* writeBegin = nullptr;
@@ -135,7 +135,7 @@ void GenericFormatStringBuilder<TChar>::appendIntenal(const TChar* str, int leng
 		size_t bufferSize = static_cast<size_t>(m_buffer.size());
         if (m_bufferUsed + byteCount > bufferSize) {
             size_t newSize = m_buffer.size() + LN_MAX(bufferSize, byteCount); // 最低でも byteCount 分を拡張する
-            m_buffer.resize(newSize);
+            m_buffer.resize(static_cast<int>(newSize));
         }
 
         writeBegin = &(m_buffer.data()[m_bufferUsed]);
@@ -176,7 +176,7 @@ void formatInternal_Numeric(GenericStringFormatter<TChar>& formatter, const TVal
     if (!formatParam.isEmpty()) {
         NumberConversionResult result;
         const TChar* dummy;
-        precision = StringHelper::toInt32(formatParam.begin(), formatParam.length(), 10, &dummy, &result);
+        precision = StringHelper::toInt32(formatParam.begin(), static_cast<int>(formatParam.length()), 10, &dummy, &result);
         if (LN_ENSURE(result == NumberConversionResult::Success)) return;
     }
 
@@ -226,8 +226,8 @@ void formatInternal_Numeric(GenericStringFormatter<TChar>& formatter, const TVal
 
     // convert
     {
-        int len = b.length();
-        for (int i = 0; i < len; i++) {
+        size_t len = b.length();
+        for (size_t i = 0; i < len; i++) {
             formatter.getSB().appendChar(buf[i]);
         }
     }
@@ -407,7 +407,7 @@ static FormatListN<TChar, sizeof...(TArgs)> makeArgList(const TArgs&... args)
 }
 
 template<typename TChar>
-bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* outStr, const TChar* format, int formatLen, const FormatList<TChar>& args)
+bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* outStr, const TChar* format, size_t formatLen, const FormatList<TChar>& args)
 {
     enum NumberingState
     {
@@ -436,7 +436,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
                     ++pos;
                 } else {
                     // Error: 単発の } が現れてはならない
-                    formatter.reportError("parse error '}'", format - pos);
+                    formatter.reportError("parse error '}'", static_cast<int>(format - pos));
                     return false;
                 }
             }
@@ -446,7 +446,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
                     ++pos;
                 } else if (pos >= end) {
                     // Error: 単発の { で終わった
-                    formatter.reportError("parse error '{'", format - pos);
+                    formatter.reportError("parse error '{'", static_cast<int>(format - pos));
                     return false;
                 } else {
                     break;
@@ -472,10 +472,10 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
         if (numberingState == NumberingState::Prologue) {
             numberingState = requireNumberingState;
         } else if (numberingState == NumberingState::Manual && requireNumberingState == NumberingState::Auto) {
-            formatter.reportError("cannot switch from manual field specification to automatic field numbering", format - pos);
+            formatter.reportError("cannot switch from manual field specification to automatic field numbering", static_cast<int>(format - pos));
             return false;
         } else if (numberingState == NumberingState::Auto && requireNumberingState == NumberingState::Manual) {
-            formatter.reportError("cannot switch from automatic field numbering to manual field specification", format - pos);
+            formatter.reportError("cannot switch from automatic field numbering to manual field specification", static_cast<int>(format - pos));
             return false;
         } else {
             // numberingState equals requireNumberingState
@@ -490,7 +490,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
                 ++pos;
                 if (pos >= end) {
                     // Error: インデックス解析中に \0 になった
-                    formatter.reportError("expected index number", format - pos);
+                    formatter.reportError("expected index number", static_cast<int>(format - pos));
                     return false;
                 }
 
@@ -498,7 +498,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
 
             if (index >= args.getCount()) {
                 // Error: 引数の数よりも大きいインデックスがある
-                formatter.reportError("index is out of args range", format - pos);
+                formatter.reportError("index is out of args range", static_cast<int>(format - pos));
                 return false;
             }
         } else {
@@ -521,7 +521,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
             }
             if (pos >= end) {
                 // Error: EOF
-                formatter.reportError("parse error alignment component", format - pos);
+                formatter.reportError("parse error alignment component", static_cast<int>(format - pos));
                 return false;
             }
 
@@ -531,7 +531,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
                 ++pos;
                 if (pos >= end) {
                     // Error: EOF
-                    formatter.reportError("parse error alignment component", format - pos);
+                    formatter.reportError("parse error alignment component", static_cast<int>(format - pos));
                     return false;
                 }
             }
@@ -539,7 +539,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
             // 次は絶対数字
             if ('0' <= *pos && *pos <= '9') {
             } else {
-                formatter.reportError("expected number", format - pos);
+                formatter.reportError("expected number", static_cast<int>(format - pos));
                 return false;
             }
 
@@ -548,7 +548,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
                 ++pos;
                 if (pos >= end) {
                     // Error: EOF
-                    formatter.reportError("parse error alignment component", format - pos);
+                    formatter.reportError("parse error alignment component", static_cast<int>(format - pos));
                     return false;
                 }
 
@@ -569,7 +569,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
             while (true) {
                 if (pos >= end) {
                     // Error: EOF
-                    formatter.reportError("parse error FormatString component", format - pos);
+                    formatter.reportError("parse error FormatString component", static_cast<int>(format - pos));
                     return false;
                 }
 
@@ -595,7 +595,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
 
         // 最後は } でなければならない
         if (*pos != '}') {
-            formatter.reportError("expected number", format - pos);
+            formatter.reportError("expected number", static_cast<int>(format - pos));
             return false;
         }
 
@@ -608,7 +608,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
         }
 
         auto& str = formatter.getSB();
-        int pad = width - str.length();
+        int pad = static_cast<int>(width - str.length());
         if (!leftJustify && pad > 0) outStr->appendChar(' ', pad);
         outStr->appendString(str.c_str(), str.length());
         if (leftJustify && pad > 0) outStr->appendChar(' ', pad);
@@ -647,7 +647,7 @@ inline String String::format(const StringRef& format, TArgs&&... args)
     auto argList = fmt::detail::makeArgList<Char>(std::forward<TArgs>(args)...);
     fmt::GenericFormatStringBuilder<Char> sb;
     if (fmt::detail::formatInternal<Char>(Locale::getC(), &sb, format.data(), format.length(), argList)) {
-        return String(sb.c_str(), sb.length());
+        return String(sb.c_str(), static_cast<int>(sb.length()));
     } else {
         return String();
     }

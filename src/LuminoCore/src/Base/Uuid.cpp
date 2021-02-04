@@ -180,7 +180,7 @@ namespace std {
 // for unordered_map key
 std::size_t hash<ln::Uuid>::operator()(const ln::Uuid& key) const
 {
-    return ln::CRCHash::compute((const char*)key.data().data(), key.data().size());
+    return ln::CRCHash::compute((const char*)key.data().data(), static_cast<int>(key.data().size()));
 }
 
 } // namespace std

@@ -82,15 +82,15 @@
 #error "You must not have both LUMINO_DLL and LUMINO_BUILD_DLL defined"
 #endif
 
-#if defined(_WIN32) && defined(LUMINO_BUILD_DLL)
-#define LN_API __declspec(dllexport)
-#elif defined(_WIN32) && defined(LUMINO_DLL)
-#define LN_API __declspec(dllimport)
-#elif defined(__GNUC__) && defined(LUMINO_BUILD_DLL)
-#define LN_API __attribute__((visibility("default")))
-#else
+//#if defined(_WIN32) && defined(LUMINO_BUILD_DLL)
+//#define LN_API __declspec(dllexport)
+//#elif defined(_WIN32) && defined(LUMINO_DLL)
+//#define LN_API __declspec(dllimport)
+//#elif defined(__GNUC__) && defined(LUMINO_BUILD_DLL)
+//#define LN_API __attribute__((visibility("default")))
+//#else
 #define LN_API
-#endif
+//#endif
 
 //------------------------------------------------------------------------------
 // string

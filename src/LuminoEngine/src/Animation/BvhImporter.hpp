@@ -40,7 +40,7 @@ public:
 	int lineLength() const { return m_lineLength; }
 	const Token& token() const { return m_lineTokens[m_lineTokenIndex]; }
 	const Token& token(int index) const { return m_lineTokens[index]; }
-	int tokenCount() const { return m_lineTokens.size(); }
+	int tokenCount() const { return static_cast<int>(m_lineTokens.size()); }
 
 
 	bool startWith(const char* str, int len) const {

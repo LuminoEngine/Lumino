@@ -62,7 +62,7 @@ public:
     void resize(int size);
 
     /** 要素の数を取得します。*/
-    int size() const LN_NOEXCEPT { return m_size; }
+    int size() const LN_NOEXCEPT { return static_cast<int>(m_size); }
 
     /** バッファが空であるかを確認します。*/
     bool isEmpty() const LN_NOEXCEPT { return m_size == 0; }
@@ -93,8 +93,8 @@ private:
     void resizeInternal(int size, bool clear);
 
     byte_t* m_buffer;
-    int m_capacity;
-    int m_size;
+    size_t m_capacity;
+    size_t m_size;
     bool m_autoClear;
 
     friend class detail::GenericBufferHelper;

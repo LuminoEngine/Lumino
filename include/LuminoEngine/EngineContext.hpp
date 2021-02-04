@@ -43,7 +43,7 @@ public:
 		// Managed 側の TypeInfo とマッピングさせるために異なるインスタンスを生成する必要がある。
 		if (localName == u"__Promise") {
 			auto typeInfo = makeRef<TypeInfo>(className, baseType);
-			typeInfo->m_id = m_typeInfos.size();
+			typeInfo->m_id = static_cast<int>(m_typeInfos.size());
 			m_typeInfos.push_back(typeInfo);
 			return typeInfo;
 		}
