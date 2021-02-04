@@ -4,7 +4,7 @@ class HelloApp : public Application
 {
     void onStart() override
     {
-        auto text = UITextBlock::create(u"Hello, Lumino!");
+        auto text = UIText::With(u"Hello, Lumino!").buildInto();
     }
 
     void onUpdate() override

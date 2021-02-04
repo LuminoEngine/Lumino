@@ -71,6 +71,8 @@ struct EngineSettings
 	String engineLogFilePath;
 	String engineResourcesPath;
 
+	String priorityGPUName;
+
     intptr_t userMainWindow = 0;
 	bool standaloneFpsControl = true;
 	bool createMainLights = false;

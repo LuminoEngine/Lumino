@@ -68,18 +68,32 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
             return false;
         }
 
-        if (!settings.useBasicRenderDriver) {
-            //一番よさそうなものを採用したいので、 VRAM 量でソート
-            // ※ SystemMemory をチェックするのは NG. ソフトウェアドライバを採用してしまうことがある。
-            std::sort(
-                adapters.begin(), adapters.end(),
-                [](const Adapter& a, const Adapter& b) { return a.desc.DedicatedVideoMemory > b.desc.DedicatedVideoMemory; });
+
+        //一番よさそうなものを採用したいので、 VRAM 量でソート
+        // ※ SystemMemory をチェックするのは NG. ソフトウェアドライバを採用してしまうことがある。
+        std::sort(
+            adapters.begin(), adapters.end(),
+            [](const Adapter& a, const Adapter& b) { return a.desc.DedicatedVideoMemory > b.desc.DedicatedVideoMemory; });
+
+        if (!settings.priorityAdapterName.empty()) {
+            auto itr = std::find_if(adapters.begin(), adapters.end(), [&](const Adapter& a) { return settings.priorityAdapterName == a.desc.Description; });
+            if (itr != adapters.end()) {
+                Adapter t = *itr;
+                adapters.erase(itr);
+                adapters.insert(adapters.begin(), t);
+            }
         }
-        else {
-            std::sort(
-                adapters.begin(), adapters.end(),
-                [](const Adapter& a, const Adapter& b) { return a.desc.DedicatedVideoMemory < b.desc.DedicatedVideoMemory; });
-        }
+
+
+        //if ()
+
+        //if (!settings.useBasicRenderDriver) {
+        //}
+        //else {
+        //    std::sort(
+        //        adapters.begin(), adapters.end(),
+        //        [](const Adapter& a, const Adapter& b) { return a.desc.DedicatedVideoMemory < b.desc.DedicatedVideoMemory; });
+        //}
 
 
         const Adapter* selected = nullptr;

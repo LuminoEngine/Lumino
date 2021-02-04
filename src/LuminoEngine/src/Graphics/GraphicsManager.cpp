@@ -440,6 +440,7 @@ void GraphicsManager::createDirectX12Context(const Settings& settings)
 	DX12Device::Settings dcSettings;
 	dcSettings.mainWindow = settings.mainWindow;
 	dcSettings.debugMode = settings.debugMode;
+	dcSettings.priorityAdapterName = settings.priorityGPUName.toStdWString();
 	auto ctx = makeRef<DX12Device>();
 	bool driverSupported = false;
 	if (!ctx->init(dcSettings, &driverSupported)) {

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#pragma warning(disable: 5033)	// disable warning in bullet headers
 #include <BulletSoftBody/btSoftRigidDynamicsWorld.h>
 #include <BulletSoftBody/btSoftBodyHelpers.h>
 #include <BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h>

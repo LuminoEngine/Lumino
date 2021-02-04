@@ -393,13 +393,16 @@ void DX12GraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int w
     srcDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
     srcDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
+    //D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
+    //D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT;
+
     D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
     UINT numRows;
     UINT64 rowSizeInBytes;
     UINT64 totalBytes;
     dxDevice->GetCopyableFootprints(&srcDesc, 0, 1, 0, &footprint, &numRows, &rowSizeInBytes, &totalBytes);
 
-    DX12SingleFrameBufferView view = m_uploadBufferAllocator->allocate(totalBytes, DX12Helper::Alignment);
+    DX12SingleFrameBufferView view = m_uploadBufferAllocator->allocate(totalBytes, D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT);
     ID3D12Resource* uploadBuffer = view.buffer->dxResource();
     //std::cout << "onSetSubData2D " << view.offset << std::endl;
 
@@ -428,6 +431,7 @@ void DX12GraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int w
     src.pResource = uploadBuffer;
     src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
     src.PlacedFootprint = footprint;
+    src.PlacedFootprint.Offset = view.offset;
 
     texture->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_COPY_DEST);
     m_dxCommandList->CopyTextureRegion(&dst, x, y, 0, &src, nullptr);

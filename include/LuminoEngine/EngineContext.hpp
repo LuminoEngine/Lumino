@@ -53,7 +53,7 @@ public:
 		{
 			auto typeInfo = makeRef<TypeInfo>(className, baseType);
 
-            typeInfo->m_id = m_typeInfos.size();
+            typeInfo->m_id = static_cast<int>(m_typeInfos.size());
             m_typeInfos.push_back(typeInfo);
 
 			typeInfo->m_factory = [](const TypeInfo*) { return detail::makeObjectHelper<TClassType>(); };
