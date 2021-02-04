@@ -7,6 +7,7 @@ on:
 
 env:
   cache-version: v1
+  LN_BUILD_FROM_CI: 1
 
 jobs:
       

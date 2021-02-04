@@ -181,6 +181,7 @@ namespace LuminoBuild
 
         private void ExecuteTask(BuildTask task)
         {
+            Logger.WriteLine("--------------------------------------------------------------------------------");
             Logger.WriteLine("[{0}] Task started.", task.CommandName);
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
@@ -197,6 +198,7 @@ namespace LuminoBuild
 
             sw.Stop();
             Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.Elapsed.ToString());
+            Logger.WriteLine("--------------------------------------------------------------------------------");
         }
 
         public bool HasFlagArgument(string name)
