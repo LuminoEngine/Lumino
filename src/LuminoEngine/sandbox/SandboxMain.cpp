@@ -435,7 +435,7 @@ int main(int argc, char** argv)
     Logger::setLevel(LogLevel::Debug);
 	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
 	EngineSettings::setGraphicsAPI(GraphicsAPI::DirectX12);//GraphicsAPI::Vulkan);//(GraphicsAPI::OpenGL);//
-    EngineSettings::setPriorityGPUName(u"Microsoft Basic Render Driver");
+    //EngineSettings::setPriorityGPUName(u"Microsoft Basic Render Driver");
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	//EngineSettings::setUITheme(u"Chocotelier");
     EngineSettings::setGraphicsDebugEnabled(true);
@@ -471,7 +471,7 @@ int main(int argc, char** argv)
     if (1) {
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
-        //Example_glTFSampleViewer();
+        Example_glTFSampleViewer();
         //Example_MainLoop();
 		//Example_MeshViewer();
         //Example_MessageWindow();
@@ -500,7 +500,7 @@ int main(int argc, char** argv)
         //Sandbox_PostEffect();
         //Sandbox_Sky();
         //Sandbox_UIShader();
-		Tutorial_Sandbox();
+		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
 		//UISandboxMain();
         return 0;

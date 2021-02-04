@@ -18,6 +18,7 @@ namespace LuminoBuild
     {
         public const string VSWhereUrl = @"https://github.com/Microsoft/vswhere/releases/download/2.5.2/vswhere.exe";
 
+        public const string EngineBuildDirName = "EngineBuild";
         public const string EngineInstallDirName = "EngineInstall";
 
         public static string BuildToolsDir { get; set; }

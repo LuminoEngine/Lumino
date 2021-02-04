@@ -59,7 +59,7 @@ namespace LuminoBuild.Tasks
         {
             var fileMoving = false;
 
-            var targetBuildDir = Path.Combine(builder.LuminoBuildDir, targetName);
+            var targetBuildDir = Path.Combine(builder.LuminoBuildDir, targetName, BuildEnvironment.EngineBuildDirName);
             var installDir = Path.Combine(builder.LuminoRootDir, "build", targetName, BuildEnvironment.EngineInstallDirName);
 
             Directory.CreateDirectory(targetBuildDir);
@@ -86,7 +86,7 @@ namespace LuminoBuild.Tasks
                     $"-DLN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=ON",
                     $"-DLN_TARGET_ARCH:STRING={targetName}",
                     additional,
-                    $" ../..",
+                    builder.LuminoRootDir,
                 };
                 Utils.CallProcess("cmake", string.Join(' ', args));
 
@@ -101,6 +101,8 @@ namespace LuminoBuild.Tasks
                     Utils.CallProcess("cmake", $"--build . --config Debug");
                     Utils.CallProcess("ctest", $"-C Debug --output-on-failure --verbose");
                     Utils.CallProcess("cmake", $"--build . --config Debug --target INSTALL");
+
+                    if (BuildEnvironment.FromCI) Directory.Delete(targetBuildDir, true);    // Disk space saving
                 }
 
                 if (string.IsNullOrEmpty(BuildEnvironment.Configuration) || BuildEnvironment.Configuration == "Release")
@@ -108,6 +110,8 @@ namespace LuminoBuild.Tasks
                     Utils.CallProcess("cmake", $"--build . --config Release");
                     Utils.CallProcess("ctest", $"-C Release --output-on-failure --verbose");
                     Utils.CallProcess("cmake", $"--build . --config Release --target INSTALL");
+
+                    if (BuildEnvironment.FromCI) Directory.Delete(targetBuildDir, true);    // Disk space saving
                 }
             }
 
