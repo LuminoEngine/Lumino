@@ -4,6 +4,7 @@
  *  https://docs.unrealengine.com/ja/Engine/Physics/Constraints/ConstraintsReference/index.html
  */
 #include "Internal.hpp"
+#pragma warning(disable: 5033)	// disable warning in bullet headers
 #include <BulletCollision/CollisionShapes/btCollisionShape.h>
 #include <btBulletDynamicsCommon.h>
 #include <BulletSoftBody/btSoftRigidDynamicsWorld.h>

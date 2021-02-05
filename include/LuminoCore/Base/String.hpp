@@ -406,14 +406,14 @@ private:
     void release() LN_NOEXCEPT;
     void copy(const String& str);
     void move(String&& str) LN_NOEXCEPT;
-    Char* lockBuffer(int requestSize, detail::StringLockContext* context);
+    Char* lockBuffer(size_t requestSize, detail::StringLockContext* context);
     void unlockBuffer(int confirmedSize, detail::StringLockContext* context);
     Char* getBuffer();
     const Char* getBuffer() const LN_NOEXCEPT;
 
     // sso operation
-    void setSSOLength(int len);
-    int getSSOLength() const LN_NOEXCEPT;
+    void setSSOLength(size_t len);
+    size_t getSSOLength() const LN_NOEXCEPT;
     void setSSO();
     void setNonSSO();
     bool isSSO() const LN_NOEXCEPT { return !detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
@@ -511,7 +511,7 @@ public:
 #endif
 
     /** 文字列の長さを取得します。 */
-    LN_CONSTEXPR int length() const LN_NOEXCEPT { return m_len; }
+    LN_CONSTEXPR int length() const LN_NOEXCEPT { return static_cast<int>(m_len); }
 
     /** 文字列が空かどうかを判定します。 */
     LN_CONSTEXPR bool isEmpty() const LN_NOEXCEPT { return (data() == nullptr || length() <= 0); }
@@ -544,7 +544,7 @@ private:
 
     const String* m_string;
     const Char* m_str;
-    int m_len;
+    size_t m_len;
     bool m_localAlloc;
 };
 
@@ -559,7 +559,7 @@ public:
     GenericFormatStringRef(const GenericFormatStringRef& str);
 
     bool isEmpty() const { return m_length == 0; }
-    int length() const { return m_length; }
+    size_t length() const { return m_length; }
     const TChar* begin() const { return m_str; }
     const TChar* end() const { return m_str + m_length; }
 
@@ -567,7 +567,7 @@ public:
 
 private:
     const TChar* m_str;
-    int m_length;
+    size_t m_length;
 };
 
 template<typename TChar>
@@ -581,14 +581,14 @@ public:
     void appendChar(TChar ch);
     void appendChar(TChar ch, int count);
     void appendString(const TChar* str);
-    void appendString(const TChar* str, int length);
+    void appendString(const TChar* str, size_t length);
     void appendString(const String& str);
     const TChar* c_str() const;
-    int length() const;
+    size_t length() const;
     bool isFixedBufferOver() const { return m_fixedBufferOver; }
 
 private:
-    void appendIntenal(const TChar* str, int length);
+    void appendIntenal(const TChar* str, size_t length);
 
     ByteBuffer m_buffer;
     size_t m_bufferUsed;
@@ -684,12 +684,12 @@ inline const Char* String::c_str() const LN_NOEXCEPT
 
 inline int String::length() const LN_NOEXCEPT
 {
-    return (isSSO()) ? getSSOLength() : ((m_data.core) ? m_data.core->length() : 0);
+    return static_cast<int>((isSSO()) ? getSSOLength() : ((m_data.core) ? m_data.core->length() : 0));
 }
 
 inline int String::capacity() const LN_NOEXCEPT
 {
-    return (isSSO()) ? SSOCapacity : ((m_data.core) ? m_data.core->capacity() : 0);
+    return static_cast<int>((isSSO()) ? SSOCapacity : ((m_data.core) ? m_data.core->capacity() : 0));
 }
 
 inline CharRef String::operator[](int index)

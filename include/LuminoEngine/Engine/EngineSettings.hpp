@@ -11,6 +11,9 @@ LN_CLASS(Static)
 class EngineSettings
 {
 public:
+	/** メインウィンドウのタイトル文字列を設定します。*/
+	LN_METHOD()
+	static void setMainWindowTitle(const String& title);
 
 	/** メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480) */
 	LN_METHOD()
@@ -19,12 +22,8 @@ public:
 	/** メインウィンドウに対して作成される WorldView のサイズを設定します。(default: クライアント領域のサイズと同等) */
 	LN_METHOD()
 	static void setMainWorldViewSize(int width, int height);
-
-	/** メインウィンドウのタイトル文字列を設定します。*/
-	LN_METHOD()
-	static void setMainWindowTitle(const String& title);
 	
-	/** メインウィンドウをユーザーがサイズ変更できるかどうかを指定します。(default: false) */
+	/** メインウィンドウのサイズをユーザーが変更できるかどうかを指定します。(default: false) */
 	LN_METHOD()
 	static void setMainWindowResizable(bool value);
 
@@ -116,7 +115,14 @@ public:
 	 */
 	LN_METHOD()
 	static void setEngineLogFilePath(const String& filePath);
-
+	
+	/**
+	 * 優先的に使用する GPU の名前を指定します。
+	 * 
+	 * 現在は DirectX12 を使用する場合のみ有効で、デフォルトの GPU では動作が不安定な場合に "Microsoft Basic Render Driver" 等を試すことができます。
+	 */
+	LN_METHOD()
+	static void setPriorityGPUName(const String& filePath);
 
 	/**
 	 * setDeveloperToolEnabled

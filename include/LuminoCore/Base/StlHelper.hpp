@@ -221,7 +221,7 @@ public:
 		std::basic_streambuf<TChar, std::char_traits<TChar> >::setg(buffer, buffer, bufferEnd);
 	}
 
-	int length() const
+	size_t length() const
 	{
 		return std::basic_streambuf<TChar, std::char_traits<TChar> >::pptr() - m_begin;
 	}

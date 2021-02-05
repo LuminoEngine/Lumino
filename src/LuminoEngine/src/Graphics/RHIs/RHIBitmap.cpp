@@ -54,11 +54,12 @@ void RHIBitmap::blit(const RHIBitmap* srcBitmap)
 	const int32_t height = std::min(m_height, srcBitmap->m_height);
 	const int32_t dstPitch = m_width * m_elementSize;
 	const int32_t srcPitch = srcBitmap->m_width * srcBitmap->m_elementSize;
+	const int32_t copyPitch = std::min(dstPitch, srcPitch);
 
 	for (int32_t y = 0; y < height; y++) {
 		byte_t* d = static_cast<byte_t*>(dst) + (dstPitch * y);
 		const byte_t* s = static_cast<const byte_t*>(src) + (srcPitch * y);
-		memcpy(d, s, dstPitch);
+		memcpy(d, s, copyPitch);
 	}
 }
 

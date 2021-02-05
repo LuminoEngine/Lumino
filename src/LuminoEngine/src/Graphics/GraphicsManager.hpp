@@ -16,7 +16,7 @@ class RenderTargetTextureCacheManager;
 class DepthBufferCacheManager;
 class FrameBufferCache;
 class RenderingQueue;
-class AssetRequiredPathSet;
+struct AssetRequiredPathSet;
 class SingleFrameUniformBufferAllocatorPageManager;
 
 class GraphicsManager
@@ -29,6 +29,7 @@ public:
 		PlatformManager* platformManager = nullptr;
 		PlatformWindow* mainWindow = nullptr;
 		GraphicsAPI graphicsAPI;
+		String priorityGPUName;
 		bool debugMode = false;
 	};
 

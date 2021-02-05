@@ -185,7 +185,7 @@ private:
 	{
 		if (m_maxCacheObjectCount > 0)
 		{
-			int count = m_freeList.size() - m_maxCacheObjectCount;
+			int count = static_cast<int>(m_freeList.size() - m_maxCacheObjectCount);
 			if (count > 0) {
 				for (int i = 0; i < count; i++) {
 					m_freeList.pop_front();

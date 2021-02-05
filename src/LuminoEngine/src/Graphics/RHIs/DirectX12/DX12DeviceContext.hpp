@@ -19,7 +19,8 @@ public:
 	{
 		PlatformWindow* mainWindow = nullptr;
         bool debugMode = false;
-        bool useBasicRenderDriver = true;
+        std::wstring priorityAdapterName;
+        //bool useBasicRenderDriver = true;
 	};
 
     static const int BackBufferCount = 3;

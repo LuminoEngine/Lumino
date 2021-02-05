@@ -152,7 +152,7 @@ void Exception_setSourceLocationInfo(Exception& e, ExceptionLevel level, const c
 // core errors
 
 /** アプリケーションの実行中に発生したエラーを表します。 */
-class LN_API Exception
+class Exception
 {
 public:
 	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(Exception);
@@ -204,7 +204,7 @@ private:
 };
 
 /** 前提条件の間違いなどプログラム内の論理的な誤りが原因で発生したエラーを表します。 */
-class LN_API LogicException
+class LogicException
 	: public Exception
 {
 public:
@@ -214,7 +214,7 @@ public:
 };
 
 /** 主にアプリケーションの実行環境が原因で発生したエラーを表します。 */
-class LN_API RuntimeException
+class RuntimeException
 	: public Exception
 {
 public:
@@ -224,7 +224,7 @@ public:
 };
 
 /** アプリケーションの継続が難しい致命的なエラーを表します。 */
-class LN_API FatalException
+class FatalException
 	: public Exception
 {
 public:
@@ -237,7 +237,7 @@ public:
 // extension errors
 
 /** 未実装の機能を呼び出した場合のエラーを表します。 */
-class LN_API NotImplementedException
+class NotImplementedException
 	: public LogicException
 {
 public:
@@ -247,7 +247,7 @@ public:
 };
 
 /** I/O エラーが発生した場合のエラーを表します。 */
-class LN_API IOException
+class IOException
 	: public RuntimeException
 {
 public:

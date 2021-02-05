@@ -399,9 +399,8 @@ void DX12GraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int w
     UINT64 totalBytes;
     dxDevice->GetCopyableFootprints(&srcDesc, 0, 1, 0, &footprint, &numRows, &rowSizeInBytes, &totalBytes);
 
-    DX12SingleFrameBufferView view = m_uploadBufferAllocator->allocate(totalBytes, DX12Helper::Alignment);
+    DX12SingleFrameBufferView view = m_uploadBufferAllocator->allocate(totalBytes, D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT);
     ID3D12Resource* uploadBuffer = view.buffer->dxResource();
-    //std::cout << "onSetSubData2D " << view.offset << std::endl;
 
     D3D12_RANGE readRange = { 0, 0 };
     void* mapped;
@@ -413,7 +412,7 @@ void DX12GraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int w
     int32_t pixelSize = DX12Helper::getFormatSize(srcDesc.Format);
     RHIBitmap bmp1, bmp2;
     bmp1.initWrap(data, pixelSize, width, height);
-    bmp2.initWritableWrap(mapped, pixelSize, footprint.Footprint.RowPitch / pixelSize, footprint.Footprint.Height);
+    bmp2.initWritableWrap(static_cast<uint8_t*>(mapped) + view.offset, pixelSize, footprint.Footprint.RowPitch / pixelSize, footprint.Footprint.Height);
     bmp2.blit(&bmp1);
 
     D3D12_RANGE writtenRange = { view.offset, view.offset + totalBytes };
@@ -428,6 +427,7 @@ void DX12GraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int w
     src.pResource = uploadBuffer;
     src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
     src.PlacedFootprint = footprint;
+    src.PlacedFootprint.Offset = view.offset;
 
     texture->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_COPY_DEST);
     m_dxCommandList->CopyTextureRegion(&dst, x, y, 0, &src, nullptr);

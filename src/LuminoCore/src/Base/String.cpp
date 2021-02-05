@@ -176,7 +176,7 @@ String::String(const Char* str, int length)
 String::String(const Char* begin, const Char* end)
     : String()
 {
-    assign(begin, end - begin);
+    assign(begin, static_cast<int>(end - begin));
 }
 
 String::String(int count, Char ch)
@@ -452,7 +452,7 @@ List<String> String::split(const StringRef& delim, StringSplitOptions option) co
 {
     List<String> result;
     StringHelper::SplitHelper(
-        c_str(), c_str() + length(), delim.data(), delim.length(), option, CaseSensitivity::CaseSensitive, [&result](const Char* begin, const Char* end) { result.add(String(begin, end - begin)); });
+        c_str(), c_str() + length(), delim.data(), delim.length(), option, CaseSensitivity::CaseSensitive, [&result](const Char* begin, const Char* end) { result.add(String(begin, static_cast<int>(end - begin))); });
     return result;
 }
 
@@ -687,12 +687,12 @@ String String::fromCString(const wchar_t* str, int length)
 
 String String::fromStdString(const std::string& str, TextEncoding* encoding)
 {
-    return fromCString(str.c_str(), str.length(), encoding);
+    return fromCString(str.c_str(), static_cast<int>(str.length()), encoding);
 }
 
 String String::fromStdString(const std::wstring& str)
 {
-    return fromCString(str.c_str(), str.length());
+    return fromCString(str.c_str(), static_cast<int>(str.length()));
 }
 
 String String::fromNumber(int32_t value, Char format)
@@ -789,7 +789,7 @@ void String::move(String&& str) LN_NOEXCEPT
 // 今は自己代入回避のための細工に使っている。必ず unlockBuffer() に渡すこと。
 // unlock するまでは \0 終端を保障しない。
 // また、lock 前後でサイズが変わらなくても変更であるとみなし、COW 共有は解除され独立したバッファになる。
-Char* String::lockBuffer(int requestSize, detail::StringLockContext* context)
+Char* String::lockBuffer(size_t requestSize, detail::StringLockContext* context)
 {
     context->newCore = nullptr;
     context->oldCore = nullptr;
@@ -876,13 +876,13 @@ const Char* String::getBuffer() const LN_NOEXCEPT
     return (isSSO()) ? m_data.sso.buffer : m_data.core->get();
 }
 
-void String::setSSOLength(int len)
+void String::setSSOLength(size_t len)
 {
-    m_data.sso.length = (static_cast<size_t>(len) & 0x7F) << 1;
+    m_data.sso.length = (len & 0x7F) << 1;
     m_data.sso.buffer[len] = '\0';
 }
 
-int String::getSSOLength() const LN_NOEXCEPT
+size_t String::getSSOLength() const LN_NOEXCEPT
 {
     return m_data.sso.length >> 1;
 }
@@ -913,7 +913,7 @@ void String::append(const String& str)
 
 void String::assign(const Char* str)
 {
-    assign(str, detail::UStringHelper::strlen(str));
+    assign(str, static_cast<int>(detail::UStringHelper::strlen(str)));
 }
 
 void String::assign(const Char* str, int length)

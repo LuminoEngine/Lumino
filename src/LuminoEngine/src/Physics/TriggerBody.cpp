@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#pragma warning(disable: 5033)	// disable warning in bullet headers
 #include <BulletCollision/CollisionDispatch/btGhostObject.h>
 #include <BulletSoftBody/btSoftRigidDynamicsWorld.h>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>

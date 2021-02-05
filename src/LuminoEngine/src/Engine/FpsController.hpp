@@ -52,8 +52,8 @@ public:
     // この値がフレームレートの値よりも大きいほど、処理に余裕があります。
     // この関数で値を取得できるようにするには、setEnableFpsTest() に true を設定してください。
     float externalFps() const { return m_externalFps; }
-    float minFrameMillisecondsPerSeconds() const { return m_minFrameMillisecondsPerSeconds; }
-    float maxFrameMillisecondsPerSeconds() const { return m_maxFrameMillisecondsPerSeconds; }
+    float minFrameMillisecondsPerSeconds() const { return static_cast<float>(m_minFrameMillisecondsPerSeconds); }
+    float maxFrameMillisecondsPerSeconds() const { return static_cast<float>(m_maxFrameMillisecondsPerSeconds); }
 
 private:
     void measureTimes(uint64_t externalElapsedTime, uint64_t frameElapsedTime);

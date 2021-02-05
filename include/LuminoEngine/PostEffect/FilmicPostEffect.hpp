@@ -117,7 +117,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 
-	float m_focusedLinearDepth = 0.1;
+	float m_focusedLinearDepth = 0.1f;
 	Color m_screenBlendColor;
 	ColorTone m_screenColorTone;
 

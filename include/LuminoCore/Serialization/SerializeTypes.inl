@@ -104,7 +104,7 @@ void serialize(Archive& ar, Optional<TValue>& value)
 template<typename TKey, typename TValue>
 void serialize(Archive& ar, std::unordered_map<TKey, TValue>& value)
 {
-	int size = value.size();
+	int size = static_cast<int>(value.size());
 	ar.makeMapTag(&size);
 	if (ar.isSaving()) {
 		for (auto& p : value) {

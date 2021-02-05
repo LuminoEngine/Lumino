@@ -181,6 +181,7 @@ namespace LuminoBuild
 
         private void ExecuteTask(BuildTask task)
         {
+            Logger.WriteLine("--------------------------------------------------------------------------------");
             Logger.WriteLine("[{0}] Task started.", task.CommandName);
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
@@ -197,6 +198,7 @@ namespace LuminoBuild
 
             sw.Stop();
             Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.Elapsed.ToString());
+            Logger.WriteLine("--------------------------------------------------------------------------------");
         }
 
         public bool HasFlagArgument(string name)
@@ -476,6 +478,35 @@ namespace LuminoBuild
             }
 
             File.Move(sourceFileName, destFileName);
+        }
+
+        public static void DeleteDirectory(string dirPath)
+        {
+            if (File.Exists(dirPath))
+            {
+                const int TryCount = 10;
+                int i = 0;
+                IOException e2 = null;
+                for (; i < TryCount; i++)
+                {
+                    System.Threading.Thread.Sleep(2000);
+                    try
+                    {
+                        Directory.Delete(dirPath, true);
+                    }
+                    catch (IOException e)
+                    {
+                        e2 = e;
+                    }
+                }
+
+                if (i >= TryCount && e2 != null)
+                {
+                    throw e2;
+                }
+
+                Console.WriteLine($"Removed: {dirPath}");
+            }
         }
 
         /// <summary>

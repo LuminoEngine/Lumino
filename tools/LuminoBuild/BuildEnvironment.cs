@@ -18,6 +18,7 @@ namespace LuminoBuild
     {
         public const string VSWhereUrl = @"https://github.com/Microsoft/vswhere/releases/download/2.5.2/vswhere.exe";
 
+        public const string EngineBuildDirName = "EngineBuild";
         public const string EngineInstallDirName = "EngineInstall";
 
         public static string BuildToolsDir { get; set; }
@@ -60,6 +61,11 @@ namespace LuminoBuild
 
             InstallTools(builder);
             FindFbxSdk();
+            EmscriptenBuildEnv.Initialize(builder);
+
+            Console.WriteLine("BuildEnv initialization succeeded");
+            Console.WriteLine("  FromCI: {0}", FromCI);
+            Console.WriteLine("  RootDir: {0}", builder.LuminoRootDir);
         }
 
         private static void InstallTools(Builder builder)

@@ -26,7 +26,11 @@ namespace ln {
 //==============================================================================
 // Engine
 
-/** メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480) */
+void EngineSettings::setMainWindowTitle(const String& title)
+{
+	detail::EngineManager::s_settings.mainWindowTitle = title;
+}
+
 void EngineSettings::setMainWindowSize(int width, int height)
 {
 	detail::EngineManager::s_settings.mainWindowSize.set(width, height);
@@ -35,11 +39,6 @@ void EngineSettings::setMainWindowSize(int width, int height)
 void EngineSettings::setMainWorldViewSize(int width, int height)
 {
 	detail::EngineManager::s_settings.mainWorldViewSize.set(width, height);
-}
-
-void EngineSettings::setMainWindowTitle(const String& title)
-{
-	detail::EngineManager::s_settings.mainWindowTitle = title;
 }
 
 void EngineSettings::setMainWindowResizable(bool value)
@@ -105,6 +104,11 @@ void EngineSettings::setEngineLogEnabled(bool enabled)
 void EngineSettings::setEngineLogFilePath(const ln::String& filePath)
 {
 	detail::EngineManager::s_settings.engineLogFilePath = filePath;
+}
+
+void EngineSettings::setPriorityGPUName(const String& filePath)
+{
+    detail::EngineManager::s_settings.priorityGPUName = filePath;
 }
 
 void EngineSettings::setUserMainWindow(intptr_t value)
