@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "VulkanDeviceContext.hpp"
 #include "VulkanBuffers.hpp"
+#include "VulkanCommandList.hpp"
 #include "VulkanTextures.hpp"
 
 namespace ln {

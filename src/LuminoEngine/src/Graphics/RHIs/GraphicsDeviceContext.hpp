@@ -416,7 +416,8 @@ public:
 
 	// TODO: init 時に計算してよい
 	int32_t getAvailableRenderTargetCount() const {
-		for (int32_t i = m_renderTargets.size() - 1; i >= 0; i--) {
+		int32_t count = static_cast<int>(m_renderTargets.size());
+		for (int32_t i = count - 1; i >= 0; i--) {
 			if (m_renderTargets[i]) {
 				return i + 1;
 			}
