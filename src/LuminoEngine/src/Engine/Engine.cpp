@@ -310,7 +310,7 @@ World* Engine::world()
     return detail::EngineDomain::engineManager()->mainWorld();
 }
 
-Camera* Engine::camera()
+Camera* Engine::mainCamera()
 {
     return detail::EngineDomain::engineManager()->mainCamera();
 }

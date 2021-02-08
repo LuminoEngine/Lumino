@@ -10,7 +10,7 @@ class App_Experiment_Scripting : public Application
     void onInit() override
     {
 		Engine::renderView()->setGuideGridEnabled(true);
-		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+		Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 
 
 

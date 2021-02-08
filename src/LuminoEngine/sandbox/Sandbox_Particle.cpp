@@ -9,7 +9,7 @@ class App_Sandbox_Particle : public Application
     void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
-        Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+        Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
 #if 0
         auto material = Material::create();
@@ -263,7 +263,7 @@ class App_Sandbox_Particle : public Application
     void onUpdate() override
     {
         if (m_particleObj) {
-            auto pos = Engine::camera()->position();
+            auto pos = Engine::mainCamera()->position();
             pos.y = 10;
 
             //pos.x = std::cos(Engine::time()) * 10;

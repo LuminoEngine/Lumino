@@ -60,7 +60,7 @@ TEST_F(Test_Effect_Particle, Lifetime)
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, SingleSprite)
 {
-	Engine::camera()->setPosition(0, 0, -2);
+	Engine::mainCamera()->setPosition(0, 0, -2);
 
 	auto material = Material::create();
 	material->setMainTexture(Texture2D::load("Effect/ColorGrid.png"));
@@ -234,7 +234,7 @@ TEST_F(Test_Effect_Particle, Trail)
 {
 	// TODO: このテストは、プロトで作った Trail のテスト用。Trail 正式対応後、直した方がいいかも。
 
-	Engine::camera()->setPosition(0, 0, -5);
+	Engine::mainCamera()->setPosition(0, 0, -5);
 
 	auto material = Material::create();
 	material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/ColorGrid.png"));

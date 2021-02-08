@@ -12,7 +12,7 @@ class App_Example_glTFSampleViewer : public Application
     void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
-        Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+        Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         //Engine::renderView()->setBackgroundColor(Color::Gray);
 
         namespace fs = std::filesystem;

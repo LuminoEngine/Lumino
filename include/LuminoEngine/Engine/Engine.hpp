@@ -86,7 +86,7 @@ public:
 
 	/** デフォルトで作成されるメインの Camera です。 */
 	LN_METHOD(Property)
-    static Camera* camera();
+    static Camera* mainCamera();
 
 	/** デフォルトで作成されるメインの Light です。 */
 	LN_METHOD(Property)

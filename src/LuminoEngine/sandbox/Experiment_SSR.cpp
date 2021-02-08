@@ -15,13 +15,13 @@ class App_Experiment_SSR : public Application
     virtual void onInit() override
     {
         //Engine::renderView()->setGuideGridEnabled(true);
-        Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+        Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
 
         //Engine::camera()->setFarClip(100);
-        Engine::camera()->setFov(Math::degreesToRadians(50));
-        Engine::camera()->setPosition(0, 20, -50);
-        Engine::camera()->lookAt(0, 0, 0);
+        Engine::mainCamera()->setFov(Math::degreesToRadians(50));
+        Engine::mainCamera()->setPosition(0, 20, -50);
+        Engine::mainCamera()->lookAt(0, 0, 0);
 
         Engine::mainLight()->setIntensity(3);
 

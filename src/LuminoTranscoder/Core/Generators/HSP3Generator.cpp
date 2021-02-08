@@ -896,7 +896,7 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
     }
 
     detailText.NewLine();
-    detailText.AppendLine(u"stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)");
+    detailText.AppendLine(u"stat : 0=成功, 負値=失敗");
 
     return FuncTemplate
         .replace("_NAME_", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode))    // FlatCharset::Unicode を指定して、"A" をつけないようにする

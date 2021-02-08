@@ -16004,14 +16004,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
-        // LNEngine_GetCamera
+        // LNEngine_GetMainCamera
         case 0x59F : {
             // Fetch outReturn
             PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LNHandle local_outReturn;
 
-            stat = LNEngine_GetCamera(&local_outReturn);
+            stat = LNEngine_GetMainCamera(&local_outReturn);
             setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             return true;

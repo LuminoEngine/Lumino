@@ -106,7 +106,7 @@ TEST_F(Test_Rendering_Shading, EnvironmentLight)
 		.material(mat1)
 		.buildInto();
 
-	Engine::camera()->setPosition(0, 0, -1);
+	Engine::mainCamera()->setPosition(0, 0, -1);
 
 	auto light = Engine::world()->mainLight();
 	light->setIntensity(0.0f);
@@ -133,7 +133,7 @@ TEST_F(Test_Rendering_Shading, MaterialEmissive)
 		.material(mat1)
 		.buildInto();
 
-	Engine::camera()->setPosition(0, 0, -1);
+	Engine::mainCamera()->setPosition(0, 0, -1);
 
 	auto light = Engine::world()->mainLight();
 	light->setIntensity(0.0f);

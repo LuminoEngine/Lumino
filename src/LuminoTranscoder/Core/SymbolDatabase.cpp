@@ -492,7 +492,8 @@ ln::Result MethodSymbol::makeFlatParameters()
 
         // documetation
         auto param = ln::makeRef<ParameterDocumentInfo>();
-        if (!param->init(u"outReturn", u"out", "instance.")) return false;
+		auto desc = ln::String::format(u"結果を格納する変数。", m_ownerType->shortName());
+        if (!param->init(u"outReturn", u"out", desc)) return false;
         doc->m_flatParams.add(param);
 	}
 
@@ -506,11 +507,13 @@ ln::Result MethodSymbol::makeFlatParameters()
 			if (!s->init(QualType{ m_ownerType }, name)) return false;
 			s->m_isReturn = true;
 			s->m_flatParamIndex = doc->m_flatParams.size();
+			s->setIO(false, true);
 			m_flatParameters.add(s);
 
             // documetation
             auto param = ln::makeRef<ParameterDocumentInfo>();
-            if (!param->init(name, u"out", "instance.")) return false;
+			auto desc = ln::String::format(u"作成された {0} のハンドルを格納する変数。", m_ownerType->shortName());
+            if (!param->init(name, u"out", desc)) return false;
             doc->m_flatParams.add(param);
 		}
 	}

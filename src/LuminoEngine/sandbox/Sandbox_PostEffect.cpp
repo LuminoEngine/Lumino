@@ -13,12 +13,12 @@ class App_Sandbox_PostEffect : public Application
     void onInit() override
     {
         //Engine::renderView()->setGuideGridEnabled(true);
-        Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+        Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Black);
 		Engine::renderView()->setClearMode(SceneClearMode::SkyDome);
 		//Engine::ambientLight()->setIntensity(0.5);
 
-		Engine::camera()->setFarClip(100);
+		Engine::mainCamera()->setFarClip(100);
         //auto mesh = Mesh::create(u"D:/Tech/Tools/cornellBox/BJS-2.79-Cycles-gltf/assets/cornellBox-2.79-Cycles-gltf.bin");
 
 		float size = 10.0f;

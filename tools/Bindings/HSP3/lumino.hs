@@ -103,7 +103,7 @@ LNVector3
 %prm
 vector3, outReturn
 [in]  vector3   : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Vector3 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -124,7 +124,7 @@ LNVector3
 %prm
 vector3, outReturn
 [in]  vector3   : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Vector3 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -167,7 +167,7 @@ x, y, z, outReturn
 [in]  x         : 
 [in]  y         : 
 [in]  z         : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Vector3 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -188,7 +188,7 @@ LNVector3
 %prm
 vec, outReturn
 [in]  vec       : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Vector3 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -613,7 +613,7 @@ LNRect
 %prm
 rect, outReturn
 [in]  rect      : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Rect ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -655,7 +655,7 @@ LNRect
 %prm
 rect, outReturn
 [in]  rect      : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Rect ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -804,7 +804,7 @@ LNObject
 %prm
 object, outReturn
 [in]  object    : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Object ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -824,8 +824,8 @@ LNPromiseFailureDelegate_Create
 LNPromiseFailureDelegate
 %prm
 callback, outPromiseFailureDelegate
-[in] callback                  : 
-[in] outPromiseFailureDelegate(0) : instance.
+[in]  callback                  : 
+[out] outPromiseFailureDelegate(0) : ì¬‚³‚ê‚½ PromiseFailureDelegate ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -845,7 +845,7 @@ init.
 LNVariant
 %prm
 outVariant
-[in] outVariant(0) : instance.
+[out] outVariant(0) : ì¬‚³‚ê‚½ Variant ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -887,7 +887,7 @@ LNVariant
 %prm
 variant, outReturn
 [in]  variant   : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Variant ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -907,8 +907,8 @@ LNZVTestDelegate1_Create
 LNZVTestDelegate1
 %prm
 callback, outZVTestDelegate1
-[in] callback           : 
-[in] outZVTestDelegate1(0) : instance.
+[in]  callback           : 
+[out] outZVTestDelegate1(0) : ì¬‚³‚ê‚½ ZVTestDelegate1 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -928,8 +928,8 @@ LNZVTestDelegate2_Create
 LNZVTestDelegate2
 %prm
 callback, outZVTestDelegate2
-[in] callback           : 
-[in] outZVTestDelegate2(0) : instance.
+[in]  callback           : 
+[out] outZVTestDelegate2(0) : ì¬‚³‚ê‚½ ZVTestDelegate2 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -949,8 +949,8 @@ LNZVTestDelegate3_Create
 LNZVTestDelegate3
 %prm
 callback, outZVTestDelegate3
-[in] callback           : 
-[in] outZVTestDelegate3(0) : instance.
+[in]  callback           : 
+[out] outZVTestDelegate3(0) : ì¬‚³‚ê‚½ ZVTestDelegate3 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -970,8 +970,8 @@ LNZVTestEventHandler1_Create
 LNZVTestEventHandler1
 %prm
 callback, outZVTestEventHandler1
-[in] callback               : 
-[in] outZVTestEventHandler1(0) : instance.
+[in]  callback               : 
+[out] outZVTestEventHandler1(0) : ì¬‚³‚ê‚½ ZVTestEventHandler1 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -991,8 +991,8 @@ LNZVTestEventHandler2_Create
 LNZVTestEventHandler2
 %prm
 callback, outZVTestEventHandler2
-[in] callback               : 
-[in] outZVTestEventHandler2(0) : instance.
+[in]  callback               : 
+[out] outZVTestEventHandler2(0) : ì¬‚³‚ê‚½ ZVTestEventHandler2 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1096,7 +1096,7 @@ init method.
 LNZVTestClass1
 %prm
 outZVTestClass1
-[in] outZVTestClass1(0) : instance.
+[out] outZVTestClass1(0) : ì¬‚³‚ê‚½ ZVTestClass1 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1203,7 +1203,7 @@ zvtestclass1, a, b, outReturn
 [in]  zvtestclass1 : instance
 [in]  a            : 
 [in]  b            : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : ZVTestClass1 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1244,7 +1244,7 @@ LNZVTestClass1
 %prm
 filePath, outReturn
 [in]  filePath  : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : ZVTestClass1 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1265,7 +1265,7 @@ LNZVTestClass1
 %prm
 zvtestclass1, outReturn
 [in]  zvtestclass1 : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : ZVTestClass1 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1286,7 +1286,7 @@ LNZVTestClass1
 %prm
 zvtestclass1, outReturn
 [in]  zvtestclass1 : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : ZVTestClass1 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1308,7 +1308,7 @@ LNZVTestClass1
 zvtestclass1, handler, outReturn
 [in]  zvtestclass1 : instance
 [in]  handler      : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : ZVTestClass1 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1350,7 +1350,7 @@ LNZVTestClass1
 zvtestclass1, handler, outReturn
 [in]  zvtestclass1 : instance
 [in]  handler      : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : ZVTestClass1 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1390,7 +1390,7 @@ init method.
 LNZVTestEventArgs1
 %prm
 outZVTestEventArgs1
-[in] outZVTestEventArgs1(0) : instance.
+[out] outZVTestEventArgs1(0) : ì¬‚³‚ê‚½ ZVTestEventArgs1 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1410,8 +1410,8 @@ init method.
 LNZVTestEventArgs1
 %prm
 v, outZVTestEventArgs1
-[in] v                   : 
-[in] outZVTestEventArgs1(0) : instance.
+[in]  v                   : 
+[out] outZVTestEventArgs1(0) : ì¬‚³‚ê‚½ ZVTestEventArgs1 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1432,7 +1432,7 @@ LNZVTestEventArgs1
 %prm
 zvtesteventargs1, outReturn
 [in]  zvtesteventargs1 : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : ZVTestEventArgs1 ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1545,8 +1545,8 @@ init
 LNAssetModel
 %prm
 target, outAssetModel
-[in] target        : 
-[in] outAssetModel(0) : instance.
+[in]  target        : 
+[out] outAssetModel(0) : ì¬‚³‚ê‚½ AssetModel ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1567,7 +1567,7 @@ LNAssetModel
 %prm
 assetmodel, outReturn
 [in]  assetmodel : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : AssetModel ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1609,7 +1609,7 @@ LNAssets
 %prm
 filePath, outReturn
 [in]  filePath  : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Assets ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1630,7 +1630,7 @@ LNAssets
 %prm
 filePath, outReturn
 [in]  filePath  : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Assets ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1683,7 +1683,7 @@ filePath, encoding, outReturn
                                               UTF-8 (BOM –³‚µ)
                                               LN_ENCODING_TYPE_SJIS
                                               “ú–{Œê (ƒVƒtƒg JIS) -- cp932(MS932) Windows-31J ¦MSÀ‘•
-[out] outReturn(0)                       : instance.
+[out] outReturn(0)                       : Assets ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1725,7 +1725,7 @@ LNSound
 %prm
 sound, outReturn
 [in]  sound     : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Sound ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1767,7 +1767,7 @@ LNSound
 %prm
 sound, outReturn
 [in]  sound     : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Sound ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -1809,7 +1809,7 @@ LNSound
 %prm
 sound, outReturn
 [in]  sound     : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Sound ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2156,8 +2156,8 @@ LNTexture2DDelegate_Create
 LNTexture2DDelegate
 %prm
 callback, outTexture2DDelegate
-[in] callback             : 
-[in] outTexture2DDelegate(0) : instance.
+[in]  callback             : 
+[out] outTexture2DDelegate(0) : ì¬‚³‚ê‚½ Texture2DDelegate ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2219,7 +2219,7 @@ activeGraphicsAPI
 LNGraphics
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Graphics ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
                      LN_GRAPHICS_API_DEFAULT
                      ©“®‘I‘ğ
                      LN_GRAPHICS_API_OPEN_GL
@@ -2247,9 +2247,9 @@ LNTexture2D_Create
 LNTexture2D
 %prm
 width, height, outTexture2D
-[in] width        : 
-[in] height       : 
-[in] outTexture2D(0) : instance.
+[in]  width        : 
+[in]  height       : 
+[out] outTexture2D(0) : ì¬‚³‚ê‚½ Texture2D ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2269,26 +2269,26 @@ LNTexture2D_CreateWithFormat
 LNTexture2D
 %prm
 width, height, format, outTexture2D
-[in] width        : 
-[in] height       : 
-[in] format       : 
-                       LN_TEXTURE_FORMAT_UNKNOWN
-                       Unknown
-                       LN_TEXTURE_FORMAT_RGBA8
-                       RGBA ƒI[ƒ_[‚ÌŠe—v‘f 8bit ƒtƒH[ƒ}ƒbƒg
-                       LN_TEXTURE_FORMAT_RGB8
-                       RGB ƒI[ƒ_[‚ÌŠe—v‘f 8bit ƒtƒH[ƒ}ƒbƒg
-                       LN_TEXTURE_FORMAT_RGBA16F
-                       RGBA ƒI[ƒ_[‚ÌŠe—v‘f 16bit •‚“®¬”“_ƒtƒH[ƒ}ƒbƒg
-                       LN_TEXTURE_FORMAT_RGBA32F
-                       RGBA ƒI[ƒ_[‚ÌŠe—v‘f 32bit •‚“®¬”“_ƒtƒH[ƒ}ƒbƒg
-                       LN_TEXTURE_FORMAT_R16F
-                       16bit •‚“®¬”“_ƒtƒH[ƒ}ƒbƒg
-                       LN_TEXTURE_FORMAT_R32F
-                       32bit •‚“®¬”“_ƒtƒH[ƒ}ƒbƒg
-                       LN_TEXTURE_FORMAT_R32S
-                       32bit ‚Ì•„†‚ ‚è®”ƒtƒH[ƒ}ƒbƒg
-[in] outTexture2D(0) : instance.
+[in]  width        : 
+[in]  height       : 
+[in]  format       : 
+                        LN_TEXTURE_FORMAT_UNKNOWN
+                        Unknown
+                        LN_TEXTURE_FORMAT_RGBA8
+                        RGBA ƒI[ƒ_[‚ÌŠe—v‘f 8bit ƒtƒH[ƒ}ƒbƒg
+                        LN_TEXTURE_FORMAT_RGB8
+                        RGB ƒI[ƒ_[‚ÌŠe—v‘f 8bit ƒtƒH[ƒ}ƒbƒg
+                        LN_TEXTURE_FORMAT_RGBA16F
+                        RGBA ƒI[ƒ_[‚ÌŠe—v‘f 16bit •‚“®¬”“_ƒtƒH[ƒ}ƒbƒg
+                        LN_TEXTURE_FORMAT_RGBA32F
+                        RGBA ƒI[ƒ_[‚ÌŠe—v‘f 32bit •‚“®¬”“_ƒtƒH[ƒ}ƒbƒg
+                        LN_TEXTURE_FORMAT_R16F
+                        16bit •‚“®¬”“_ƒtƒH[ƒ}ƒbƒg
+                        LN_TEXTURE_FORMAT_R32F
+                        32bit •‚“®¬”“_ƒtƒH[ƒ}ƒbƒg
+                        LN_TEXTURE_FORMAT_R32S
+                        32bit ‚Ì•„†‚ ‚è®”ƒtƒH[ƒ}ƒbƒg
+[out] outTexture2D(0) : ì¬‚³‚ê‚½ Texture2D ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2309,7 +2309,7 @@ LNTexture2D
 %prm
 filePath, outReturn
 [in]  filePath  : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Texture2D ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2330,7 +2330,7 @@ LNTexture2D
 %prm
 code, outReturn
 [in]  code      : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Texture2D ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2352,7 +2352,7 @@ LNShader
 filePath, settings, outReturn
 [in]  filePath                 : 
 [in]  settings(LN_NULL_HANDLE) : 
-[out] outReturn(0)             : instance.
+[out] outReturn(0)             : Shader ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2460,7 +2460,7 @@ init
 LNMaterial
 %prm
 outMaterial
-[in] outMaterial(0) : instance.
+[out] outMaterial(0) : ì¬‚³‚ê‚½ Material ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2502,7 +2502,7 @@ LNMaterial
 %prm
 material, outReturn
 [in]  material  : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Material ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2632,7 +2632,7 @@ LNMaterial
 %prm
 material, outReturn
 [in]  material  : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Material ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
                      LN_SHADING_MODEL_DEFAULT
                      Default
                      LN_SHADING_MODEL_UNLIT
@@ -2678,7 +2678,7 @@ LNMaterial
 %prm
 material, outReturn
 [in]  material  : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Material ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2720,7 +2720,7 @@ LNMeshNode
 %prm
 meshnode, outReturn
 [in]  meshnode  : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : MeshNode ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2742,7 +2742,7 @@ LNAnimationController
 animationcontroller, animationClip, outReturn
 [in]  animationcontroller : instance
 [in]  animationClip       : 
-[out] outReturn(0)        : instance.
+[out] outReturn(0)        : AnimationController ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2786,7 +2786,7 @@ LNMeshModel
 filePath, settings, outReturn
 [in]  filePath                 : 
 [in]  settings(LN_NULL_HANDLE) : 
-[out] outReturn(0)             : instance.
+[out] outReturn(0)             : MeshModel ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2808,7 +2808,7 @@ LNMeshModel
 meshmodel, name, outReturn
 [in]  meshmodel : instance
 [in]  name      : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : MeshModel ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2830,7 +2830,7 @@ LNMeshModel
 meshmodel, name, outReturn
 [in]  meshmodel : instance
 [in]  name      : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : MeshModel ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2851,7 +2851,7 @@ LNMeshModel
 %prm
 meshmodel, outReturn
 [in]  meshmodel : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : MeshModel ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2873,7 +2873,7 @@ LNMeshModel
 meshmodel, index, outReturn
 [in]  meshmodel : instance
 [in]  index     : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : MeshModel ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2894,7 +2894,7 @@ LNMeshModel
 %prm
 meshmodel, outReturn
 [in]  meshmodel : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : MeshModel ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2914,7 +2914,7 @@ init
 LNMeshImportSettings
 %prm
 outMeshImportSettings
-[in] outMeshImportSettings(0) : instance.
+[out] outMeshImportSettings(0) : ì¬‚³‚ê‚½ MeshImportSettings ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2934,8 +2934,8 @@ init
 LNBoxCollisionShape
 %prm
 size, outBoxCollisionShape
-[in] size                 : 
-[in] outBoxCollisionShape(0) : instance.
+[in]  size                 : 
+[out] outBoxCollisionShape(0) : ì¬‚³‚ê‚½ BoxCollisionShape ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2955,10 +2955,10 @@ init
 LNBoxCollisionShape
 %prm
 width, height, depth, outBoxCollisionShape
-[in] width                : 
-[in] height               : 
-[in] depth                : 
-[in] outBoxCollisionShape(0) : instance.
+[in]  width                : 
+[in]  height               : 
+[in]  depth                : 
+[out] outBoxCollisionShape(0) : ì¬‚³‚ê‚½ BoxCollisionShape ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -2980,7 +2980,7 @@ LNAnimationCurve
 animationcurve, time, outReturn
 [in]  animationcurve : instance
 [in]  time           : 
-[out] outReturn(0)   : instance.
+[out] outReturn(0)   : AnimationCurve ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3000,7 +3000,7 @@ init
 LNKeyFrameAnimationCurve
 %prm
 outKeyFrameAnimationCurve
-[in] outKeyFrameAnimationCurve(0) : instance.
+[out] outKeyFrameAnimationCurve(0) : ì¬‚³‚ê‚½ KeyFrameAnimationCurve ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3053,7 +3053,7 @@ LNAnimationClip
 %prm
 filePath, outReturn
 [in]  filePath  : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : AnimationClip ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3101,7 +3101,7 @@ LNAnimationClip
 %prm
 animationclip, outReturn
 [in]  animationclip : instance
-[out] outReturn(0)  : instance.
+[out] outReturn(0)  : AnimationClip ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
                          LN_ANIMATION_WRAP_MODE_ONCE
                          ŒJ‚è•Ô‚µ‚ğs‚í‚¸A1“x‚¾‚¯Ä¶‚µ‚Ü‚·B
                          LN_ANIMATION_WRAP_MODE_LOOP
@@ -3157,7 +3157,7 @@ LNAnimationClip
 %prm
 animationclip, outReturn
 [in]  animationclip : instance
-[out] outReturn(0)  : instance.
+[out] outReturn(0)  : AnimationClip ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
                          LN_HIERARCHICAL_ANIMATION_MODE_ALLOW_TRANSLATION_ONLY_ROOT
                          ƒ‹[ƒgƒm[ƒh‚Ì‚İA•½sˆÚ“®‚ğ—LŒø‰»‚µ‚Ü‚·B
                          LN_HIERARCHICAL_ANIMATION_MODE_ALLOW_TRANSLATION_ONLY_ROOT_Y
@@ -3185,7 +3185,7 @@ init
 LNParticleEmitterModel
 %prm
 outParticleEmitterModel
-[in] outParticleEmitterModel(0) : instance.
+[out] outParticleEmitterModel(0) : ì¬‚³‚ê‚½ ParticleEmitterModel ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3465,7 +3465,7 @@ init
 LNParticleModel
 %prm
 outParticleModel
-[in] outParticleModel(0) : instance.
+[out] outParticleModel(0) : ì¬‚³‚ê‚½ ParticleModel ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3507,7 +3507,7 @@ LNParticleModel
 %prm
 particlemodel, outReturn
 [in]  particlemodel : instance
-[out] outReturn(0)  : instance.
+[out] outReturn(0)  : ParticleModel ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3570,7 +3570,7 @@ LNVisualComponent
 %prm
 visualcomponent, outReturn
 [in]  visualcomponent : instance
-[out] outReturn(0)    : instance.
+[out] outReturn(0)    : VisualComponent ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3611,8 +3611,8 @@ LNCollisionEventHandler_Create
 LNCollisionEventHandler
 %prm
 callback, outCollisionEventHandler
-[in] callback                 : 
-[in] outCollisionEventHandler(0) : instance.
+[in]  callback                 : 
+[out] outCollisionEventHandler(0) : ì¬‚³‚ê‚½ CollisionEventHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3632,7 +3632,7 @@ CharacterController ‚ğì¬‚µ‚Ü‚·B
 LNCharacterController
 %prm
 outCharacterController
-[in] outCharacterController(0) : instance.
+[out] outCharacterController(0) : ì¬‚³‚ê‚½ CharacterController ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3674,7 +3674,7 @@ LNCharacterController
 %prm
 charactercontroller, outReturn
 [in]  charactercontroller : instance
-[out] outReturn(0)        : instance.
+[out] outReturn(0)        : CharacterController ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3716,7 +3716,7 @@ LNCharacterController
 %prm
 charactercontroller, outReturn
 [in]  charactercontroller : instance
-[out] outReturn(0)        : instance.
+[out] outReturn(0)        : CharacterController ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3800,7 +3800,7 @@ LNCharacterController
 %prm
 charactercontroller, outReturn
 [in]  charactercontroller : instance
-[out] outReturn(0)        : instance.
+[out] outReturn(0)        : CharacterController ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3842,7 +3842,7 @@ LNCharacterController
 %prm
 charactercontroller, outReturn
 [in]  charactercontroller : instance
-[out] outReturn(0)        : instance.
+[out] outReturn(0)        : CharacterController ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3947,7 +3947,7 @@ LNComponentList
 %prm
 componentlist, outReturn
 [in]  componentlist : instance
-[out] outReturn(0)  : instance.
+[out] outReturn(0)  : ComponentList ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3969,7 +3969,7 @@ LNComponentList
 componentlist, index, outReturn
 [in]  componentlist : instance
 [in]  index         : 
-[out] outReturn(0)  : instance.
+[out] outReturn(0)  : ComponentList ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3989,7 +3989,7 @@ WorldObject ‚ğì¬‚µ‚Ü‚·B
 LNWorldObject
 %prm
 outWorldObject
-[in] outWorldObject(0) : instance.
+[out] outWorldObject(0) : ì¬‚³‚ê‚½ WorldObject ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4054,7 +4054,7 @@ LNWorldObject
 %prm
 worldobject, outReturn
 [in]  worldobject : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : WorldObject ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4119,7 +4119,7 @@ LNWorldObject
 %prm
 worldobject, outReturn
 [in]  worldobject : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : WorldObject ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4205,7 +4205,7 @@ LNWorldObject
 %prm
 worldobject, outReturn
 [in]  worldobject : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : WorldObject ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4270,7 +4270,7 @@ LNWorldObject
 %prm
 worldobject, outReturn
 [in]  worldobject : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : WorldObject ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4420,7 +4420,7 @@ LNWorldObject
 worldobject, tag, outReturn
 [in]  worldobject : instance
 [in]  tag         : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : WorldObject ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4461,7 +4461,7 @@ LNWorldObject
 %prm
 worldobject, outReturn
 [in]  worldobject : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : WorldObject ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4524,7 +4524,7 @@ LNVisualObject
 %prm
 visualobject, outReturn
 [in]  visualobject : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : VisualObject ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4597,7 +4597,7 @@ LNVisualObject
 %prm
 visualobject, outReturn
 [in]  visualobject : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : VisualObject ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4639,7 +4639,7 @@ LNEnvironmentLight
 %prm
 environmentlight, outReturn
 [in]  environmentlight : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4681,7 +4681,7 @@ LNEnvironmentLight
 %prm
 environmentlight, outReturn
 [in]  environmentlight : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4723,7 +4723,7 @@ LNEnvironmentLight
 %prm
 environmentlight, outReturn
 [in]  environmentlight : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4744,7 +4744,7 @@ LNEnvironmentLight
 %prm
 environmentlight, outReturn
 [in]  environmentlight : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4786,7 +4786,7 @@ LNEnvironmentLight
 %prm
 environmentlight, outReturn
 [in]  environmentlight : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4849,7 +4849,7 @@ LNEnvironmentLight
 %prm
 environmentlight, outReturn
 [in]  environmentlight : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4891,7 +4891,7 @@ LNEnvironmentLight
 %prm
 environmentlight, outReturn
 [in]  environmentlight : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4933,7 +4933,7 @@ LNEnvironmentLight
 %prm
 environmentlight, outReturn
 [in]  environmentlight : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4953,7 +4953,7 @@ LNDirectionalLight_Create
 LNDirectionalLight
 %prm
 outDirectionalLight
-[in] outDirectionalLight(0) : instance.
+[out] outDirectionalLight(0) : ì¬‚³‚ê‚½ DirectionalLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -4973,8 +4973,8 @@ LNDirectionalLight_CreateWithColor
 LNDirectionalLight
 %prm
 color, outDirectionalLight
-[in] color               : 
-[in] outDirectionalLight(0) : instance.
+[in]  color               : 
+[out] outDirectionalLight(0) : ì¬‚³‚ê‚½ DirectionalLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5016,7 +5016,7 @@ LNDirectionalLight
 %prm
 directionallight, outReturn
 [in]  directionallight : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : DirectionalLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5058,7 +5058,7 @@ LNDirectionalLight
 %prm
 directionallight, outReturn
 [in]  directionallight : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : DirectionalLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5100,7 +5100,7 @@ LNDirectionalLight
 %prm
 directionallight, outReturn
 [in]  directionallight : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : DirectionalLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5142,7 +5142,7 @@ LNDirectionalLight
 %prm
 directionallight, outReturn
 [in]  directionallight : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : DirectionalLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5184,7 +5184,7 @@ LNDirectionalLight
 %prm
 directionallight, outReturn
 [in]  directionallight : instance
-[out] outReturn(0)     : instance.
+[out] outReturn(0)     : DirectionalLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5204,7 +5204,7 @@ LNPointLight_Create
 LNPointLight
 %prm
 outPointLight
-[in] outPointLight(0) : instance.
+[out] outPointLight(0) : ì¬‚³‚ê‚½ PointLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5224,9 +5224,9 @@ LNPointLight_CreateWithColorAndRange
 LNPointLight
 %prm
 color, range, outPointLight
-[in] color         : 
-[in] range         : 
-[in] outPointLight(0) : instance.
+[in]  color         : 
+[in]  range         : 
+[out] outPointLight(0) : ì¬‚³‚ê‚½ PointLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5268,7 +5268,7 @@ LNPointLight
 %prm
 pointlight, outReturn
 [in]  pointlight : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : PointLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5310,7 +5310,7 @@ LNPointLight
 %prm
 pointlight, outReturn
 [in]  pointlight : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : PointLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5352,7 +5352,7 @@ LNPointLight
 %prm
 pointlight, outReturn
 [in]  pointlight : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : PointLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5394,7 +5394,7 @@ LNPointLight
 %prm
 pointlight, outReturn
 [in]  pointlight : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : PointLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5436,7 +5436,7 @@ LNPointLight
 %prm
 pointlight, outReturn
 [in]  pointlight : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : PointLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5456,7 +5456,7 @@ LNSpotLight_Create
 LNSpotLight
 %prm
 outSpotLight
-[in] outSpotLight(0) : instance.
+[out] outSpotLight(0) : ì¬‚³‚ê‚½ SpotLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5476,10 +5476,10 @@ LNSpotLight_CreateWithColorAndRange
 LNSpotLight
 %prm
 color, range, angle, outSpotLight
-[in] color        : 
-[in] range        : 
-[in] angle        : 
-[in] outSpotLight(0) : instance.
+[in]  color        : 
+[in]  range        : 
+[in]  angle        : 
+[out] outSpotLight(0) : ì¬‚³‚ê‚½ SpotLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5521,7 +5521,7 @@ LNSpotLight
 %prm
 spotlight, outReturn
 [in]  spotlight : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : SpotLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5563,7 +5563,7 @@ LNSpotLight
 %prm
 spotlight, outReturn
 [in]  spotlight : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : SpotLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5605,7 +5605,7 @@ LNSpotLight
 %prm
 spotlight, outReturn
 [in]  spotlight : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : SpotLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5647,7 +5647,7 @@ LNSpotLight
 %prm
 spotlight, outReturn
 [in]  spotlight : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : SpotLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5689,7 +5689,7 @@ LNSpotLight
 %prm
 spotlight, outReturn
 [in]  spotlight : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : SpotLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5731,7 +5731,7 @@ LNSpotLight
 %prm
 spotlight, outReturn
 [in]  spotlight : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : SpotLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5773,7 +5773,7 @@ LNSpotLight
 %prm
 spotlight, outReturn
 [in]  spotlight : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : SpotLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5793,8 +5793,8 @@ LNTestDelegate_Create
 LNTestDelegate
 %prm
 callback, outTestDelegate
-[in] callback        : 
-[in] outTestDelegate(0) : instance.
+[in]  callback        : 
+[out] outTestDelegate(0) : ì¬‚³‚ê‚½ TestDelegate ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5814,7 +5814,7 @@ init
 LNSprite
 %prm
 outSprite
-[in] outSprite(0) : instance.
+[out] outSprite(0) : ì¬‚³‚ê‚½ Sprite ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5834,8 +5834,8 @@ init
 LNSprite
 %prm
 texture, outSprite
-[in] texture   : 
-[in] outSprite(0) : instance.
+[in]  texture   : 
+[out] outSprite(0) : ì¬‚³‚ê‚½ Sprite ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5855,10 +5855,10 @@ init
 LNSprite
 %prm
 texture, width, height, outSprite
-[in] texture   : 
-[in] width     : 
-[in] height    : 
-[in] outSprite(0) : instance.
+[in]  texture   : 
+[in]  width     : 
+[in]  height    : 
+[out] outSprite(0) : ì¬‚³‚ê‚½ Sprite ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -5987,7 +5987,7 @@ CameraOrbitControlComponent ‚ğì¬‚µ‚Ü‚·B
 LNCameraOrbitControlComponent
 %prm
 outCameraOrbitControlComponent
-[in] outCameraOrbitControlComponent(0) : instance.
+[out] outCameraOrbitControlComponent(0) : ì¬‚³‚ê‚½ CameraOrbitControlComponent ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6008,7 +6008,7 @@ LNRaycaster
 %prm
 point, outReturn
 [in]  point     : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Raycaster ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6032,7 +6032,7 @@ raycaster, normalX, normalY, normalZ, outReturn
 [in]  normalX   : 
 [in]  normalY   : 
 [in]  normalZ   : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Raycaster ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6053,7 +6053,7 @@ LNRaycastResult
 %prm
 raycastresult, outReturn
 [in]  raycastresult : instance
-[out] outReturn(0)  : instance.
+[out] outReturn(0)  : RaycastResult ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6095,7 +6095,7 @@ LNWorldRenderView
 %prm
 worldrenderview, outReturn
 [in]  worldrenderview : instance
-[out] outReturn(0)    : instance.
+[out] outReturn(0)    : WorldRenderView ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6115,7 +6115,7 @@ LNPlaneMesh_Create
 LNPlaneMesh
 %prm
 outPlaneMesh
-[in] outPlaneMesh(0) : instance.
+[out] outPlaneMesh(0) : ì¬‚³‚ê‚½ PlaneMesh ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6135,7 +6135,7 @@ LNBoxMesh_Create
 LNBoxMesh
 %prm
 outBoxMesh
-[in] outBoxMesh(0) : instance.
+[out] outBoxMesh(0) : ì¬‚³‚ê‚½ BoxMesh ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6155,10 +6155,10 @@ LNBoxMesh_CreateWithSize
 LNBoxMesh
 %prm
 width, height, depth, outBoxMesh
-[in] width      : 
-[in] height     : 
-[in] depth      : 
-[in] outBoxMesh(0) : instance.
+[in]  width      : 
+[in]  height     : 
+[in]  depth      : 
+[out] outBoxMesh(0) : ì¬‚³‚ê‚½ BoxMesh ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6178,7 +6178,7 @@ init
 LNMeshComponent
 %prm
 outMeshComponent
-[in] outMeshComponent(0) : instance.
+[out] outMeshComponent(0) : ì¬‚³‚ê‚½ MeshComponent ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6241,7 +6241,7 @@ LNCollision
 %prm
 collision, outReturn
 [in]  collision : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Collision ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6261,7 +6261,7 @@ init
 LNTriggerBodyComponent
 %prm
 outTriggerBodyComponent
-[in] outTriggerBodyComponent(0) : instance.
+[out] outTriggerBodyComponent(0) : ì¬‚³‚ê‚½ TriggerBodyComponent ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6302,8 +6302,8 @@ init
 LNParticleEmitter
 %prm
 model, outParticleEmitter
-[in] model              : 
-[in] outParticleEmitter(0) : instance.
+[in]  model              : 
+[out] outParticleEmitter(0) : ì¬‚³‚ê‚½ ParticleEmitter ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6495,7 +6495,7 @@ LNScene_ActiveLevel
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6515,7 +6515,7 @@ LNScene_IsTransitionEffectRunning
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6561,7 +6561,7 @@ LNScene_TransitionEffectMode
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
                      LN_LEVEL_TRANSITION_EFFECT_MODE_NONE
                      ƒGƒtƒFƒNƒg–³‚µ
                      LN_LEVEL_TRANSITION_EFFECT_MODE_FADE_IN_OUT
@@ -6607,7 +6607,7 @@ LNScene_TransitionDuration
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6647,7 +6647,7 @@ LNScene_TransitionEffectColor
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6687,7 +6687,7 @@ LNScene_TransitionEffectMaskTexture
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6727,7 +6727,7 @@ LNScene_TransitionEffectVague
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6925,7 +6925,7 @@ HDR ƒŒƒ“ƒ_ƒŠƒ“ƒO‚Ì—L–³‚ğæ“¾‚µ‚Ü‚·B
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -6965,7 +6965,7 @@ LNScene_ScreenBlendColor
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7005,7 +7005,7 @@ colorTone
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7045,7 +7045,7 @@ LNScene_IsAntialiasEnabled
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7085,7 +7085,7 @@ SSR ‚Ì—L–³‚ğæ“¾‚µ‚Ü‚·B
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7125,7 +7125,7 @@ SSAO ‚Ì—L–³‚ğæ“¾‚µ‚Ü‚·B
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7165,7 +7165,7 @@ LNScene_IsBloomEnabled
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7205,7 +7205,7 @@ LNScene_IsDOFEnabled
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7245,7 +7245,7 @@ LNScene_IsTonemapEnabled
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7285,7 +7285,7 @@ LNScene_IsVignetteEnabled
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7325,7 +7325,7 @@ LNScene_IsGammaEnabled
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Scene ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7505,7 +7505,7 @@ Initialize
 LNLevel
 %prm
 outLevel
-[in] outLevel(0) : instance.
+[out] outLevel(0) : ì¬‚³‚ê‚½ Level ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7630,7 +7630,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7651,7 +7651,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7672,7 +7672,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7693,7 +7693,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7714,7 +7714,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7735,7 +7735,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7756,7 +7756,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7777,7 +7777,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7798,7 +7798,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7819,7 +7819,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7840,7 +7840,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7861,7 +7861,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7882,7 +7882,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7903,7 +7903,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7924,7 +7924,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7945,7 +7945,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7966,7 +7966,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -7987,7 +7987,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8049,7 +8049,7 @@ hue, shades, outReturn
                      LN_UICOLOR_HUES_WHITE
                      
 [in]  shades(5) : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIColors ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8070,7 +8070,7 @@ LNUIEventArgs
 %prm
 uieventargs, outReturn
 [in]  uieventargs : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIEventArgs ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8090,8 +8090,8 @@ LNUIGeneralEventHandler_Create
 LNUIGeneralEventHandler
 %prm
 callback, outUIGeneralEventHandler
-[in] callback                 : 
-[in] outUIGeneralEventHandler(0) : instance.
+[in]  callback                 : 
+[out] outUIGeneralEventHandler(0) : ì¬‚³‚ê‚½ UIGeneralEventHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8111,8 +8111,8 @@ LNUIEventHandler_Create
 LNUIEventHandler
 %prm
 callback, outUIEventHandler
-[in] callback          : 
-[in] outUIEventHandler(0) : instance.
+[in]  callback          : 
+[out] outUIEventHandler(0) : ì¬‚³‚ê‚½ UIEventHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8197,7 +8197,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8239,7 +8239,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8281,7 +8281,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8323,7 +8323,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8373,7 +8373,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
                      LN_UIHALIGNMENT_LEFT
                      q—v‘f‚ğAe‚ÌƒŒƒCƒAƒEƒg ƒXƒƒbƒg‚Ì¶‘¤‚É‘µ‚¦‚Ä”z’u‚µ‚Ü‚·B
                      LN_UIHALIGNMENT_CENTER
@@ -8431,7 +8431,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
                      LN_UIVALIGNMENT_TOP
                      q—v‘f‚ğAe‚ÌƒŒƒCƒAƒEƒg ƒXƒƒbƒg‚Ìã’[‚É‘µ‚¦‚Ä”z’u‚µ‚Ü‚·B
                      LN_UIVALIGNMENT_CENTER
@@ -8542,7 +8542,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8607,7 +8607,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8692,7 +8692,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8757,7 +8757,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8799,7 +8799,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8841,7 +8841,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8883,7 +8883,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8925,7 +8925,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -8967,7 +8967,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9009,7 +9009,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9057,7 +9057,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
                      LN_UIVISIBILITY_VISIBLE
                      —v‘f‚ğ•\¦‚µ‚Ü‚·B
                      LN_UIVISIBILITY_HIDDEN
@@ -9105,7 +9105,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9168,7 +9168,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIElement ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9209,7 +9209,7 @@ UIText ‚ğì¬‚µ‚Ü‚·B
 LNUIText
 %prm
 outUIText
-[in] outUIText(0) : instance.
+[out] outUIText(0) : ì¬‚³‚ê‚½ UIText ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9229,8 +9229,8 @@ LNUIText_CreateWithText
 LNUIText
 %prm
 text, outUIText
-[in] text      : 
-[in] outUIText(0) : instance.
+[in]  text      : 
+[out] outUIText(0) : ì¬‚³‚ê‚½ UIText ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9272,7 +9272,7 @@ LNUIText
 %prm
 uitext, outReturn
 [in]  uitext    : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIText ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9292,7 +9292,7 @@ UISprite ‚ğì¬‚µ‚Ü‚·B
 LNUISprite
 %prm
 outUISprite
-[in] outUISprite(0) : instance.
+[out] outUISprite(0) : ì¬‚³‚ê‚½ UISprite ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9312,8 +9312,8 @@ LNUISprite_CreateWithTexture
 LNUISprite
 %prm
 texture, outUISprite
-[in] texture     : 
-[in] outUISprite(0) : instance.
+[in]  texture     : 
+[out] outUISprite(0) : ì¬‚³‚ê‚½ UISprite ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9400,7 +9400,7 @@ LNUISprite
 %prm
 uisprite, outReturn
 [in]  uisprite  : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UISprite ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9442,7 +9442,7 @@ LNUIIcon
 %prm
 iconName, outReturn
 [in]  iconName  : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIIcon ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9464,7 +9464,7 @@ LNUIIcon
 iconName, size, outReturn
 [in]  iconName  : 
 [in]  size      : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIIcon ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9487,7 +9487,7 @@ iconName, size, color, outReturn
 [in]  iconName  : 
 [in]  size      : 
 [in]  color     : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIIcon ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9507,7 +9507,7 @@ init
 LNUIMessageTextArea
 %prm
 outUIMessageTextArea
-[in] outUIMessageTextArea(0) : instance.
+[out] outUIMessageTextArea(0) : ì¬‚³‚ê‚½ UIMessageTextArea ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9609,7 +9609,7 @@ init
 LNUIBoxLayout
 %prm
 outUIBoxLayout
-[in] outUIBoxLayout(0) : instance.
+[out] outUIBoxLayout(0) : ì¬‚³‚ê‚½ UIBoxLayout ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9659,7 +9659,7 @@ LNUIBoxLayout
 %prm
 uiboxlayout, outReturn
 [in]  uiboxlayout : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIBoxLayout ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
                        LN_UILAYOUT_ORIENTATION_HORIZONTAL
                        …•½•ûŒü‚É”z’u‚µ‚Ü‚·B
                        LN_UILAYOUT_ORIENTATION_VERTICAL
@@ -9687,7 +9687,7 @@ init
 LNUIStackLayout
 %prm
 outUIStackLayout
-[in] outUIStackLayout(0) : instance.
+[out] outUIStackLayout(0) : ì¬‚³‚ê‚½ UIStackLayout ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9737,7 +9737,7 @@ LNUIStackLayout
 %prm
 uistacklayout, outReturn
 [in]  uistacklayout : instance
-[out] outReturn(0)  : instance.
+[out] outReturn(0)  : UIStackLayout ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
                          LN_UILAYOUT_ORIENTATION_HORIZONTAL
                          …•½•ûŒü‚É”z’u‚µ‚Ü‚·B
                          LN_UILAYOUT_ORIENTATION_VERTICAL
@@ -9765,7 +9765,7 @@ init
 LNUIGridLayout
 %prm
 outUIGridLayout
-[in] outUIGridLayout(0) : instance.
+[out] outUIGridLayout(0) : ì¬‚³‚ê‚½ UIGridLayout ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9872,7 +9872,7 @@ init
 LNUIControl
 %prm
 outUIControl
-[in] outUIControl(0) : instance.
+[out] outUIControl(0) : ì¬‚³‚ê‚½ UIControl ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9953,7 +9953,7 @@ init.
 LNUIButton
 %prm
 outUIButton
-[in] outUIButton(0) : instance.
+[out] outUIButton(0) : ì¬‚³‚ê‚½ UIButton ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9973,8 +9973,8 @@ LNUIButton_CreateWithText
 LNUIButton
 %prm
 text, outUIButton
-[in] text        : 
-[in] outUIButton(0) : instance.
+[in]  text        : 
+[out] outUIButton(0) : ì¬‚³‚ê‚½ UIButton ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -9996,7 +9996,7 @@ LNUIButton
 uibutton, handler, outReturn
 [in]  uibutton  : instance
 [in]  handler   : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIButton ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10016,7 +10016,7 @@ init
 LNUIWindow
 %prm
 outUIWindow
-[in] outUIWindow(0) : instance.
+[out] outUIWindow(0) : ì¬‚³‚ê‚½ UIWindow ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10038,7 +10038,7 @@ LNUIListItem
 uilistitem, handler, outReturn
 [in]  uilistitem : instance
 [in]  handler    : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIListItem ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10080,7 +10080,7 @@ LNUIListItemsControl
 %prm
 uilistitemscontrol, outReturn
 [in]  uilistitemscontrol : instance
-[out] outReturn(0)       : instance.
+[out] outReturn(0)       : UIListItemsControl ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10126,7 +10126,7 @@ LNUIListItemsControl
 %prm
 uilistitemscontrol, outReturn
 [in]  uilistitemscontrol : instance
-[out] outReturn(0)       : instance.
+[out] outReturn(0)       : UIListItemsControl ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
                               LN_UILIST_SUBMIT_MODE_SINGLE
                               ƒQ[ƒ€UI—pBHover ‚Å‘I‘ğó‘ÔAƒVƒ“ƒOƒ‹ƒNƒŠƒbƒN‚Å Submit. Hover ó‘Ô‚Íg—p‚³‚ê‚È‚¢B
                               LN_UILIST_SUBMIT_MODE_DOUBLE
@@ -10152,7 +10152,7 @@ LNUIListItemsControl
 uilistitemscontrol, handler, outReturn
 [in]  uilistitemscontrol : instance
 [in]  handler            : 
-[out] outReturn(0)       : instance.
+[out] outReturn(0)       : UIListItemsControl ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10172,8 +10172,8 @@ init
 LNUIListBoxItem
 %prm
 content, outUIListBoxItem
-[in] content          : 
-[in] outUIListBoxItem(0) : instance.
+[in]  content          : 
+[out] outUIListBoxItem(0) : ì¬‚³‚ê‚½ UIListBoxItem ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10193,7 +10193,7 @@ init
 LNUIListBox
 %prm
 outUIListBox
-[in] outUIListBox(0) : instance.
+[out] outUIListBox(0) : ì¬‚³‚ê‚½ UIListBox ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10215,7 +10215,7 @@ LNUIListBox
 uilistbox, content, outReturn
 [in]  uilistbox : instance
 [in]  content   : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : UIListBox ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10235,174 +10235,174 @@ init
 LNKeyGesture
 %prm
 key, outKeyGesture
-[in] key           : 
-                        LN_KEYS_UNKNOWN
-                        
-                        LN_KEYS_A
-                        
-                        LN_KEYS_B
-                        
-                        LN_KEYS_C
-                        
-                        LN_KEYS_D
-                        
-                        LN_KEYS_E
-                        
-                        LN_KEYS_F
-                        
-                        LN_KEYS_G
-                        
-                        LN_KEYS_H
-                        
-                        LN_KEYS_I
-                        
-                        LN_KEYS_J
-                        
-                        LN_KEYS_K
-                        
-                        LN_KEYS_L
-                        
-                        LN_KEYS_M
-                        
-                        LN_KEYS_N
-                        
-                        LN_KEYS_O
-                        
-                        LN_KEYS_P
-                        
-                        LN_KEYS_Q
-                        
-                        LN_KEYS_R
-                        
-                        LN_KEYS_S
-                        
-                        LN_KEYS_T
-                        
-                        LN_KEYS_U
-                        
-                        LN_KEYS_V
-                        
-                        LN_KEYS_W
-                        
-                        LN_KEYS_X
-                        
-                        LN_KEYS_Y
-                        
-                        LN_KEYS_Z
-                        
-                        LN_KEYS_D0
-                        
-                        LN_KEYS_D1
-                        
-                        LN_KEYS_D2
-                        
-                        LN_KEYS_D3
-                        
-                        LN_KEYS_D4
-                        
-                        LN_KEYS_D5
-                        
-                        LN_KEYS_D6
-                        
-                        LN_KEYS_D7
-                        
-                        LN_KEYS_D8
-                        
-                        LN_KEYS_D9
-                        
-                        LN_KEYS_F1
-                        
-                        LN_KEYS_F2
-                        
-                        LN_KEYS_F3
-                        
-                        LN_KEYS_F4
-                        
-                        LN_KEYS_F5
-                        
-                        LN_KEYS_F6
-                        
-                        LN_KEYS_F7
-                        
-                        LN_KEYS_F8
-                        
-                        LN_KEYS_F9
-                        
-                        LN_KEYS_F10
-                        
-                        LN_KEYS_F11
-                        
-                        LN_KEYS_F12
-                        
-                        LN_KEYS_SPACE
-                        
-                        LN_KEYS_ESCAPE
-                        
-                        LN_KEYS_UP
-                        
-                        LN_KEYS_DOWN
-                        
-                        LN_KEYS_LEFT
-                        
-                        LN_KEYS_RIGHT
-                        
-                        LN_KEYS_LSHIFT
-                        
-                        LN_KEYS_RSHIFT
-                        
-                        LN_KEYS_LCTRL
-                        
-                        LN_KEYS_RCTRL
-                        
-                        LN_KEYS_LALT
-                        
-                        LN_KEYS_RALT
-                        
-                        LN_KEYS_TAB
-                        
-                        LN_KEYS_ENTER
-                        
-                        LN_KEYS_BACK_SPACE
-                        
-                        LN_KEYS_INSERT
-                        
-                        LN_KEYS_DELETE
-                        
-                        LN_KEYS_PAGE_UP
-                        
-                        LN_KEYS_PAGE_DOWN
-                        
-                        LN_KEYS_HOME
-                        
-                        LN_KEYS_END
-                        
-                        LN_KEYS_COLON
-                        [”ñ„§ GLFW‚Å‚Í;]
-                        LN_KEYS_SEMICOLON
-                        ;	[”ñ„§ GLFW‚Å‚Í=]
-                        LN_KEYS_COMMA
-                        ,
-                        LN_KEYS_PERIOD
-                        .
-                        LN_KEYS_SLASH
-                        /
-                        LN_KEYS_MINUS
-                        -
-                        LN_KEYS_BACKSLASH
-                        \(ƒoƒbƒNƒXƒ‰ƒbƒVƒ…) [”ñ„§ GLFW‚Å‚ÍNOWORD2]
-                        LN_KEYS_YEN
-                        \(BaskSpaceƒL[‚Ì¶‚Ì\ƒL[) [”ñ„§ GLFW‚Å‚ÍI]
-                        LN_KEYS_CARET
-                        ^ [”ñ„§ GLFW‚Å‚ÍGLFW_KEY_APOSTROPHE(')]
-                        LN_KEYS_LBRACKET
-                        [
-                        LN_KEYS_RBRACKET
-                        ]
-                        LN_KEYS_ANDROID_PLUS
-                        Android '+'
-                        LN_KEYS_TERMINATOR
-                        
-[in] outKeyGesture(0) : instance.
+[in]  key           : 
+                         LN_KEYS_UNKNOWN
+                         
+                         LN_KEYS_A
+                         
+                         LN_KEYS_B
+                         
+                         LN_KEYS_C
+                         
+                         LN_KEYS_D
+                         
+                         LN_KEYS_E
+                         
+                         LN_KEYS_F
+                         
+                         LN_KEYS_G
+                         
+                         LN_KEYS_H
+                         
+                         LN_KEYS_I
+                         
+                         LN_KEYS_J
+                         
+                         LN_KEYS_K
+                         
+                         LN_KEYS_L
+                         
+                         LN_KEYS_M
+                         
+                         LN_KEYS_N
+                         
+                         LN_KEYS_O
+                         
+                         LN_KEYS_P
+                         
+                         LN_KEYS_Q
+                         
+                         LN_KEYS_R
+                         
+                         LN_KEYS_S
+                         
+                         LN_KEYS_T
+                         
+                         LN_KEYS_U
+                         
+                         LN_KEYS_V
+                         
+                         LN_KEYS_W
+                         
+                         LN_KEYS_X
+                         
+                         LN_KEYS_Y
+                         
+                         LN_KEYS_Z
+                         
+                         LN_KEYS_D0
+                         
+                         LN_KEYS_D1
+                         
+                         LN_KEYS_D2
+                         
+                         LN_KEYS_D3
+                         
+                         LN_KEYS_D4
+                         
+                         LN_KEYS_D5
+                         
+                         LN_KEYS_D6
+                         
+                         LN_KEYS_D7
+                         
+                         LN_KEYS_D8
+                         
+                         LN_KEYS_D9
+                         
+                         LN_KEYS_F1
+                         
+                         LN_KEYS_F2
+                         
+                         LN_KEYS_F3
+                         
+                         LN_KEYS_F4
+                         
+                         LN_KEYS_F5
+                         
+                         LN_KEYS_F6
+                         
+                         LN_KEYS_F7
+                         
+                         LN_KEYS_F8
+                         
+                         LN_KEYS_F9
+                         
+                         LN_KEYS_F10
+                         
+                         LN_KEYS_F11
+                         
+                         LN_KEYS_F12
+                         
+                         LN_KEYS_SPACE
+                         
+                         LN_KEYS_ESCAPE
+                         
+                         LN_KEYS_UP
+                         
+                         LN_KEYS_DOWN
+                         
+                         LN_KEYS_LEFT
+                         
+                         LN_KEYS_RIGHT
+                         
+                         LN_KEYS_LSHIFT
+                         
+                         LN_KEYS_RSHIFT
+                         
+                         LN_KEYS_LCTRL
+                         
+                         LN_KEYS_RCTRL
+                         
+                         LN_KEYS_LALT
+                         
+                         LN_KEYS_RALT
+                         
+                         LN_KEYS_TAB
+                         
+                         LN_KEYS_ENTER
+                         
+                         LN_KEYS_BACK_SPACE
+                         
+                         LN_KEYS_INSERT
+                         
+                         LN_KEYS_DELETE
+                         
+                         LN_KEYS_PAGE_UP
+                         
+                         LN_KEYS_PAGE_DOWN
+                         
+                         LN_KEYS_HOME
+                         
+                         LN_KEYS_END
+                         
+                         LN_KEYS_COLON
+                         [”ñ„§ GLFW‚Å‚Í;]
+                         LN_KEYS_SEMICOLON
+                         ;	[”ñ„§ GLFW‚Å‚Í=]
+                         LN_KEYS_COMMA
+                         ,
+                         LN_KEYS_PERIOD
+                         .
+                         LN_KEYS_SLASH
+                         /
+                         LN_KEYS_MINUS
+                         -
+                         LN_KEYS_BACKSLASH
+                         \(ƒoƒbƒNƒXƒ‰ƒbƒVƒ…) [”ñ„§ GLFW‚Å‚ÍNOWORD2]
+                         LN_KEYS_YEN
+                         \(BaskSpaceƒL[‚Ì¶‚Ì\ƒL[) [”ñ„§ GLFW‚Å‚ÍI]
+                         LN_KEYS_CARET
+                         ^ [”ñ„§ GLFW‚Å‚ÍGLFW_KEY_APOSTROPHE(')]
+                         LN_KEYS_LBRACKET
+                         [
+                         LN_KEYS_RBRACKET
+                         ]
+                         LN_KEYS_ANDROID_PLUS
+                         Android '+'
+                         LN_KEYS_TERMINATOR
+                         
+[out] outKeyGesture(0) : ì¬‚³‚ê‚½ KeyGesture ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10423,7 +10423,7 @@ LNInput
 %prm
 buttonName, outReturn
 [in]  buttonName : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Input ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10444,7 +10444,7 @@ LNInput
 %prm
 buttonName, outReturn
 [in]  buttonName : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Input ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10465,7 +10465,7 @@ LNInput
 %prm
 buttonName, outReturn
 [in]  buttonName : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Input ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10486,7 +10486,7 @@ LNInput
 %prm
 buttonName, outReturn
 [in]  buttonName : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Input ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10507,7 +10507,7 @@ LNInput
 %prm
 buttonName, outReturn
 [in]  buttonName : 
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Input ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10620,7 +10620,7 @@ button, outReturn
                      Šg’£ƒ{ƒ^ƒ“1
                      LN_MOUSE_BUTTONS_X2
                      Šg’£ƒ{ƒ^ƒ“2
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Mouse ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10653,7 +10653,7 @@ button, outReturn
                      Šg’£ƒ{ƒ^ƒ“1
                      LN_MOUSE_BUTTONS_X2
                      Šg’£ƒ{ƒ^ƒ“2
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Mouse ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10686,7 +10686,7 @@ button, outReturn
                      Šg’£ƒ{ƒ^ƒ“1
                      LN_MOUSE_BUTTONS_X2
                      Šg’£ƒ{ƒ^ƒ“2
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Mouse ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10719,7 +10719,7 @@ button, outReturn
                      Šg’£ƒ{ƒ^ƒ“1
                      LN_MOUSE_BUTTONS_X2
                      Šg’£ƒ{ƒ^ƒ“2
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Mouse ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10739,7 +10739,7 @@ LNMouse_GetPosition
 LNMouse
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Mouse ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10760,7 +10760,7 @@ LNInterpreterCommand
 %prm
 interpretercommand, outReturn
 [in]  interpretercommand : instance
-[out] outReturn(0)       : instance.
+[out] outReturn(0)       : InterpreterCommand ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10781,7 +10781,7 @@ LNInterpreterCommand
 %prm
 interpretercommand, outReturn
 [in]  interpretercommand : instance
-[out] outReturn(0)       : instance.
+[out] outReturn(0)       : InterpreterCommand ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10803,7 +10803,7 @@ LNInterpreterCommand
 interpretercommand, index, outReturn
 [in]  interpretercommand : instance
 [in]  index              : 
-[out] outReturn(0)       : instance.
+[out] outReturn(0)       : InterpreterCommand ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10823,7 +10823,7 @@ InterpreterCommandList ‚ğì¬‚µ‚Ü‚·B
 LNInterpreterCommandList
 %prm
 outInterpreterCommandList
-[in] outInterpreterCommandList(0) : instance.
+[out] outInterpreterCommandList(0) : ì¬‚³‚ê‚½ InterpreterCommandList ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10958,8 +10958,8 @@ LNInterpreterCommandDelegate_Create
 LNInterpreterCommandDelegate
 %prm
 callback, outInterpreterCommandDelegate
-[in] callback                      : 
-[in] outInterpreterCommandDelegate(0) : instance.
+[in]  callback                      : 
+[out] outInterpreterCommandDelegate(0) : ì¬‚³‚ê‚½ InterpreterCommandDelegate ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -10979,7 +10979,7 @@ Interpreter ‚ğì¬‚µ‚Ü‚·B
 LNInterpreter
 %prm
 outInterpreter
-[in] outInterpreter(0) : instance.
+[out] outInterpreter(0) : ì¬‚³‚ê‚½ Interpreter ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11041,7 +11041,7 @@ LNInterpreter
 %prm
 interpreter, outReturn
 [in]  interpreter : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Interpreter ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11145,7 +11145,7 @@ LNInterpreter
 %prm
 interpreter, outReturn
 [in]  interpreter : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Interpreter ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11187,7 +11187,7 @@ LNInterpreter
 %prm
 interpreter, outReturn
 [in]  interpreter : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Interpreter ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11548,7 +11548,7 @@ LNEngine_Update
 LNEngine
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Engine ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11568,7 +11568,7 @@ LNEngine_GetTime
 LNEngine
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Engine ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11588,7 +11588,7 @@ LNEngine_GetWorld
 LNEngine
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Engine ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11602,13 +11602,13 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNEngine_GetCamera
+LNEngine_GetMainCamera
 ƒfƒtƒHƒ‹ƒg‚Åì¬‚³‚ê‚éƒƒCƒ“‚Ì Camera ‚Å‚·B
 %group
 LNEngine
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Engine ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11628,7 +11628,7 @@ LNEngine_GetMainLight
 LNEngine
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Engine ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11648,7 +11648,7 @@ LNEngine_GetRenderView
 LNEngine
 %prm
 outReturn
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Engine ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11668,7 +11668,7 @@ LNApplication_Create
 LNApplication
 %prm
 outApplication
-[in] outApplication(0) : instance.
+[out] outApplication(0) : ì¬‚³‚ê‚½ Application ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11729,7 +11729,7 @@ LNApplication
 %prm
 application, outReturn
 [in]  application : instance
-[out] outReturn(0) : instance.
+[out] outReturn(0) : Application ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11872,8 +11872,8 @@ LNObjectSerializeHandler_Create
 LNObjectSerializeHandler
 %prm
 callback, outObjectSerializeHandler
-[in] callback                  : 
-[in] outObjectSerializeHandler(0) : instance.
+[in]  callback                  : 
+[out] outObjectSerializeHandler(0) : ì¬‚³‚ê‚½ ObjectSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11893,8 +11893,8 @@ LNEventConnectionSerializeHandler_Create
 LNEventConnectionSerializeHandler
 %prm
 callback, outEventConnectionSerializeHandler
-[in] callback                           : 
-[in] outEventConnectionSerializeHandler(0) : instance.
+[in]  callback                           : 
+[out] outEventConnectionSerializeHandler(0) : ì¬‚³‚ê‚½ EventConnectionSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11914,8 +11914,8 @@ LNVariantSerializeHandler_Create
 LNVariantSerializeHandler
 %prm
 callback, outVariantSerializeHandler
-[in] callback                   : 
-[in] outVariantSerializeHandler(0) : instance.
+[in]  callback                   : 
+[out] outVariantSerializeHandler(0) : ì¬‚³‚ê‚½ VariantSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11935,8 +11935,8 @@ LNZVTestClass1SerializeHandler_Create
 LNZVTestClass1SerializeHandler
 %prm
 callback, outZVTestClass1SerializeHandler
-[in] callback                        : 
-[in] outZVTestClass1SerializeHandler(0) : instance.
+[in]  callback                        : 
+[out] outZVTestClass1SerializeHandler(0) : ì¬‚³‚ê‚½ ZVTestClass1SerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11956,8 +11956,8 @@ LNZVTestEventArgs1SerializeHandler_Create
 LNZVTestEventArgs1SerializeHandler
 %prm
 callback, outZVTestEventArgs1SerializeHandler
-[in] callback                            : 
-[in] outZVTestEventArgs1SerializeHandler(0) : instance.
+[in]  callback                            : 
+[out] outZVTestEventArgs1SerializeHandler(0) : ì¬‚³‚ê‚½ ZVTestEventArgs1SerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11977,8 +11977,8 @@ LNSerializer2SerializeHandler_Create
 LNSerializer2SerializeHandler
 %prm
 callback, outSerializer2SerializeHandler
-[in] callback                       : 
-[in] outSerializer2SerializeHandler(0) : instance.
+[in]  callback                       : 
+[out] outSerializer2SerializeHandler(0) : ì¬‚³‚ê‚½ Serializer2SerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -11998,8 +11998,8 @@ LNAssetObjectSerializeHandler_Create
 LNAssetObjectSerializeHandler
 %prm
 callback, outAssetObjectSerializeHandler
-[in] callback                       : 
-[in] outAssetObjectSerializeHandler(0) : instance.
+[in]  callback                       : 
+[out] outAssetObjectSerializeHandler(0) : ì¬‚³‚ê‚½ AssetObjectSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12019,8 +12019,8 @@ LNAssetImportSettingsSerializeHandler_Create
 LNAssetImportSettingsSerializeHandler
 %prm
 callback, outAssetImportSettingsSerializeHandler
-[in] callback                               : 
-[in] outAssetImportSettingsSerializeHandler(0) : instance.
+[in]  callback                               : 
+[out] outAssetImportSettingsSerializeHandler(0) : ì¬‚³‚ê‚½ AssetImportSettingsSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12040,8 +12040,8 @@ LNAssetModelSerializeHandler_Create
 LNAssetModelSerializeHandler
 %prm
 callback, outAssetModelSerializeHandler
-[in] callback                      : 
-[in] outAssetModelSerializeHandler(0) : instance.
+[in]  callback                      : 
+[out] outAssetModelSerializeHandler(0) : ì¬‚³‚ê‚½ AssetModelSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12061,8 +12061,8 @@ LNSoundSerializeHandler_Create
 LNSoundSerializeHandler
 %prm
 callback, outSoundSerializeHandler
-[in] callback                 : 
-[in] outSoundSerializeHandler(0) : instance.
+[in]  callback                 : 
+[out] outSoundSerializeHandler(0) : ì¬‚³‚ê‚½ SoundSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12082,8 +12082,8 @@ LNTextureSerializeHandler_Create
 LNTextureSerializeHandler
 %prm
 callback, outTextureSerializeHandler
-[in] callback                   : 
-[in] outTextureSerializeHandler(0) : instance.
+[in]  callback                   : 
+[out] outTextureSerializeHandler(0) : ì¬‚³‚ê‚½ TextureSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12103,8 +12103,8 @@ LNTexture2DSerializeHandler_Create
 LNTexture2DSerializeHandler
 %prm
 callback, outTexture2DSerializeHandler
-[in] callback                     : 
-[in] outTexture2DSerializeHandler(0) : instance.
+[in]  callback                     : 
+[out] outTexture2DSerializeHandler(0) : ì¬‚³‚ê‚½ Texture2DSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12124,8 +12124,8 @@ LNShaderSerializeHandler_Create
 LNShaderSerializeHandler
 %prm
 callback, outShaderSerializeHandler
-[in] callback                  : 
-[in] outShaderSerializeHandler(0) : instance.
+[in]  callback                  : 
+[out] outShaderSerializeHandler(0) : ì¬‚³‚ê‚½ ShaderSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12145,8 +12145,8 @@ LNRenderViewSerializeHandler_Create
 LNRenderViewSerializeHandler
 %prm
 callback, outRenderViewSerializeHandler
-[in] callback                      : 
-[in] outRenderViewSerializeHandler(0) : instance.
+[in]  callback                      : 
+[out] outRenderViewSerializeHandler(0) : ì¬‚³‚ê‚½ RenderViewSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12166,8 +12166,8 @@ LNMaterialSerializeHandler_Create
 LNMaterialSerializeHandler
 %prm
 callback, outMaterialSerializeHandler
-[in] callback                    : 
-[in] outMaterialSerializeHandler(0) : instance.
+[in]  callback                    : 
+[out] outMaterialSerializeHandler(0) : ì¬‚³‚ê‚½ MaterialSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12187,8 +12187,8 @@ LNMeshNodeSerializeHandler_Create
 LNMeshNodeSerializeHandler
 %prm
 callback, outMeshNodeSerializeHandler
-[in] callback                    : 
-[in] outMeshNodeSerializeHandler(0) : instance.
+[in]  callback                    : 
+[out] outMeshNodeSerializeHandler(0) : ì¬‚³‚ê‚½ MeshNodeSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12208,8 +12208,8 @@ LNAnimationControllerSerializeHandler_Create
 LNAnimationControllerSerializeHandler
 %prm
 callback, outAnimationControllerSerializeHandler
-[in] callback                               : 
-[in] outAnimationControllerSerializeHandler(0) : instance.
+[in]  callback                               : 
+[out] outAnimationControllerSerializeHandler(0) : ì¬‚³‚ê‚½ AnimationControllerSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12229,8 +12229,8 @@ LNMeshModelSerializeHandler_Create
 LNMeshModelSerializeHandler
 %prm
 callback, outMeshModelSerializeHandler
-[in] callback                     : 
-[in] outMeshModelSerializeHandler(0) : instance.
+[in]  callback                     : 
+[out] outMeshModelSerializeHandler(0) : ì¬‚³‚ê‚½ MeshModelSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12250,8 +12250,8 @@ LNMeshImportSettingsSerializeHandler_Create
 LNMeshImportSettingsSerializeHandler
 %prm
 callback, outMeshImportSettingsSerializeHandler
-[in] callback                              : 
-[in] outMeshImportSettingsSerializeHandler(0) : instance.
+[in]  callback                              : 
+[out] outMeshImportSettingsSerializeHandler(0) : ì¬‚³‚ê‚½ MeshImportSettingsSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12271,8 +12271,8 @@ LNSkinnedMeshModelSerializeHandler_Create
 LNSkinnedMeshModelSerializeHandler
 %prm
 callback, outSkinnedMeshModelSerializeHandler
-[in] callback                            : 
-[in] outSkinnedMeshModelSerializeHandler(0) : instance.
+[in]  callback                            : 
+[out] outSkinnedMeshModelSerializeHandler(0) : ì¬‚³‚ê‚½ SkinnedMeshModelSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12292,8 +12292,8 @@ LNCollisionShapeSerializeHandler_Create
 LNCollisionShapeSerializeHandler
 %prm
 callback, outCollisionShapeSerializeHandler
-[in] callback                          : 
-[in] outCollisionShapeSerializeHandler(0) : instance.
+[in]  callback                          : 
+[out] outCollisionShapeSerializeHandler(0) : ì¬‚³‚ê‚½ CollisionShapeSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12313,8 +12313,8 @@ LNBoxCollisionShapeSerializeHandler_Create
 LNBoxCollisionShapeSerializeHandler
 %prm
 callback, outBoxCollisionShapeSerializeHandler
-[in] callback                             : 
-[in] outBoxCollisionShapeSerializeHandler(0) : instance.
+[in]  callback                             : 
+[out] outBoxCollisionShapeSerializeHandler(0) : ì¬‚³‚ê‚½ BoxCollisionShapeSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12334,8 +12334,8 @@ LNAnimationCurveSerializeHandler_Create
 LNAnimationCurveSerializeHandler
 %prm
 callback, outAnimationCurveSerializeHandler
-[in] callback                          : 
-[in] outAnimationCurveSerializeHandler(0) : instance.
+[in]  callback                          : 
+[out] outAnimationCurveSerializeHandler(0) : ì¬‚³‚ê‚½ AnimationCurveSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12355,8 +12355,8 @@ LNKeyFrameAnimationCurveSerializeHandler_Create
 LNKeyFrameAnimationCurveSerializeHandler
 %prm
 callback, outKeyFrameAnimationCurveSerializeHandler
-[in] callback                                  : 
-[in] outKeyFrameAnimationCurveSerializeHandler(0) : instance.
+[in]  callback                                  : 
+[out] outKeyFrameAnimationCurveSerializeHandler(0) : ì¬‚³‚ê‚½ KeyFrameAnimationCurveSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12376,8 +12376,8 @@ LNAnimationClipSerializeHandler_Create
 LNAnimationClipSerializeHandler
 %prm
 callback, outAnimationClipSerializeHandler
-[in] callback                         : 
-[in] outAnimationClipSerializeHandler(0) : instance.
+[in]  callback                         : 
+[out] outAnimationClipSerializeHandler(0) : ì¬‚³‚ê‚½ AnimationClipSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12397,8 +12397,8 @@ LNAnimationStateSerializeHandler_Create
 LNAnimationStateSerializeHandler
 %prm
 callback, outAnimationStateSerializeHandler
-[in] callback                          : 
-[in] outAnimationStateSerializeHandler(0) : instance.
+[in]  callback                          : 
+[out] outAnimationStateSerializeHandler(0) : ì¬‚³‚ê‚½ AnimationStateSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12418,8 +12418,8 @@ LNEffectResourceSerializeHandler_Create
 LNEffectResourceSerializeHandler
 %prm
 callback, outEffectResourceSerializeHandler
-[in] callback                          : 
-[in] outEffectResourceSerializeHandler(0) : instance.
+[in]  callback                          : 
+[out] outEffectResourceSerializeHandler(0) : ì¬‚³‚ê‚½ EffectResourceSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12439,8 +12439,8 @@ LNParticleEmitterModelSerializeHandler_Create
 LNParticleEmitterModelSerializeHandler
 %prm
 callback, outParticleEmitterModelSerializeHandler
-[in] callback                                : 
-[in] outParticleEmitterModelSerializeHandler(0) : instance.
+[in]  callback                                : 
+[out] outParticleEmitterModelSerializeHandler(0) : ì¬‚³‚ê‚½ ParticleEmitterModelSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12460,8 +12460,8 @@ LNParticleModelSerializeHandler_Create
 LNParticleModelSerializeHandler
 %prm
 callback, outParticleModelSerializeHandler
-[in] callback                         : 
-[in] outParticleModelSerializeHandler(0) : instance.
+[in]  callback                         : 
+[out] outParticleModelSerializeHandler(0) : ì¬‚³‚ê‚½ ParticleModelSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12481,8 +12481,8 @@ LNComponentSerializeHandler_Create
 LNComponentSerializeHandler
 %prm
 callback, outComponentSerializeHandler
-[in] callback                     : 
-[in] outComponentSerializeHandler(0) : instance.
+[in]  callback                     : 
+[out] outComponentSerializeHandler(0) : ì¬‚³‚ê‚½ ComponentSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12502,8 +12502,8 @@ LNVisualComponentSerializeHandler_Create
 LNVisualComponentSerializeHandler
 %prm
 callback, outVisualComponentSerializeHandler
-[in] callback                           : 
-[in] outVisualComponentSerializeHandler(0) : instance.
+[in]  callback                           : 
+[out] outVisualComponentSerializeHandler(0) : ì¬‚³‚ê‚½ VisualComponentSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12523,8 +12523,8 @@ LNSpriteComponentSerializeHandler_Create
 LNSpriteComponentSerializeHandler
 %prm
 callback, outSpriteComponentSerializeHandler
-[in] callback                           : 
-[in] outSpriteComponentSerializeHandler(0) : instance.
+[in]  callback                           : 
+[out] outSpriteComponentSerializeHandler(0) : ì¬‚³‚ê‚½ SpriteComponentSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12544,8 +12544,8 @@ LNCharacterControllerSerializeHandler_Create
 LNCharacterControllerSerializeHandler
 %prm
 callback, outCharacterControllerSerializeHandler
-[in] callback                               : 
-[in] outCharacterControllerSerializeHandler(0) : instance.
+[in]  callback                               : 
+[out] outCharacterControllerSerializeHandler(0) : ì¬‚³‚ê‚½ CharacterControllerSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12565,8 +12565,8 @@ LNWorldSerializeHandler_Create
 LNWorldSerializeHandler
 %prm
 callback, outWorldSerializeHandler
-[in] callback                 : 
-[in] outWorldSerializeHandler(0) : instance.
+[in]  callback                 : 
+[out] outWorldSerializeHandler(0) : ì¬‚³‚ê‚½ WorldSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12586,8 +12586,8 @@ LNComponentListSerializeHandler_Create
 LNComponentListSerializeHandler
 %prm
 callback, outComponentListSerializeHandler
-[in] callback                         : 
-[in] outComponentListSerializeHandler(0) : instance.
+[in]  callback                         : 
+[out] outComponentListSerializeHandler(0) : ì¬‚³‚ê‚½ ComponentListSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12607,8 +12607,8 @@ LNWorldObjectSerializeHandler_Create
 LNWorldObjectSerializeHandler
 %prm
 callback, outWorldObjectSerializeHandler
-[in] callback                       : 
-[in] outWorldObjectSerializeHandler(0) : instance.
+[in]  callback                       : 
+[out] outWorldObjectSerializeHandler(0) : ì¬‚³‚ê‚½ WorldObjectSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12628,8 +12628,8 @@ LNWorldObjectPreUpdateHandler_Create
 LNWorldObjectPreUpdateHandler
 %prm
 callback, outWorldObjectPreUpdateHandler
-[in] callback                       : 
-[in] outWorldObjectPreUpdateHandler(0) : instance.
+[in]  callback                       : 
+[out] outWorldObjectPreUpdateHandler(0) : ì¬‚³‚ê‚½ WorldObjectPreUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12649,8 +12649,8 @@ LNWorldObjectUpdateHandler_Create
 LNWorldObjectUpdateHandler
 %prm
 callback, outWorldObjectUpdateHandler
-[in] callback                    : 
-[in] outWorldObjectUpdateHandler(0) : instance.
+[in]  callback                    : 
+[out] outWorldObjectUpdateHandler(0) : ì¬‚³‚ê‚½ WorldObjectUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12670,8 +12670,8 @@ LNVisualObjectSerializeHandler_Create
 LNVisualObjectSerializeHandler
 %prm
 callback, outVisualObjectSerializeHandler
-[in] callback                        : 
-[in] outVisualObjectSerializeHandler(0) : instance.
+[in]  callback                        : 
+[out] outVisualObjectSerializeHandler(0) : ì¬‚³‚ê‚½ VisualObjectSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12691,8 +12691,8 @@ LNVisualObjectPreUpdateHandler_Create
 LNVisualObjectPreUpdateHandler
 %prm
 callback, outVisualObjectPreUpdateHandler
-[in] callback                        : 
-[in] outVisualObjectPreUpdateHandler(0) : instance.
+[in]  callback                        : 
+[out] outVisualObjectPreUpdateHandler(0) : ì¬‚³‚ê‚½ VisualObjectPreUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12712,8 +12712,8 @@ LNVisualObjectUpdateHandler_Create
 LNVisualObjectUpdateHandler
 %prm
 callback, outVisualObjectUpdateHandler
-[in] callback                     : 
-[in] outVisualObjectUpdateHandler(0) : instance.
+[in]  callback                     : 
+[out] outVisualObjectUpdateHandler(0) : ì¬‚³‚ê‚½ VisualObjectUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12733,8 +12733,8 @@ LNCameraSerializeHandler_Create
 LNCameraSerializeHandler
 %prm
 callback, outCameraSerializeHandler
-[in] callback                  : 
-[in] outCameraSerializeHandler(0) : instance.
+[in]  callback                  : 
+[out] outCameraSerializeHandler(0) : ì¬‚³‚ê‚½ CameraSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12754,8 +12754,8 @@ LNCameraPreUpdateHandler_Create
 LNCameraPreUpdateHandler
 %prm
 callback, outCameraPreUpdateHandler
-[in] callback                  : 
-[in] outCameraPreUpdateHandler(0) : instance.
+[in]  callback                  : 
+[out] outCameraPreUpdateHandler(0) : ì¬‚³‚ê‚½ CameraPreUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12775,8 +12775,8 @@ LNCameraUpdateHandler_Create
 LNCameraUpdateHandler
 %prm
 callback, outCameraUpdateHandler
-[in] callback               : 
-[in] outCameraUpdateHandler(0) : instance.
+[in]  callback               : 
+[out] outCameraUpdateHandler(0) : ì¬‚³‚ê‚½ CameraUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12796,8 +12796,8 @@ LNEnvironmentLightSerializeHandler_Create
 LNEnvironmentLightSerializeHandler
 %prm
 callback, outEnvironmentLightSerializeHandler
-[in] callback                            : 
-[in] outEnvironmentLightSerializeHandler(0) : instance.
+[in]  callback                            : 
+[out] outEnvironmentLightSerializeHandler(0) : ì¬‚³‚ê‚½ EnvironmentLightSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12817,8 +12817,8 @@ LNEnvironmentLightPreUpdateHandler_Create
 LNEnvironmentLightPreUpdateHandler
 %prm
 callback, outEnvironmentLightPreUpdateHandler
-[in] callback                            : 
-[in] outEnvironmentLightPreUpdateHandler(0) : instance.
+[in]  callback                            : 
+[out] outEnvironmentLightPreUpdateHandler(0) : ì¬‚³‚ê‚½ EnvironmentLightPreUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12838,8 +12838,8 @@ LNEnvironmentLightUpdateHandler_Create
 LNEnvironmentLightUpdateHandler
 %prm
 callback, outEnvironmentLightUpdateHandler
-[in] callback                         : 
-[in] outEnvironmentLightUpdateHandler(0) : instance.
+[in]  callback                         : 
+[out] outEnvironmentLightUpdateHandler(0) : ì¬‚³‚ê‚½ EnvironmentLightUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12859,8 +12859,8 @@ LNDirectionalLightSerializeHandler_Create
 LNDirectionalLightSerializeHandler
 %prm
 callback, outDirectionalLightSerializeHandler
-[in] callback                            : 
-[in] outDirectionalLightSerializeHandler(0) : instance.
+[in]  callback                            : 
+[out] outDirectionalLightSerializeHandler(0) : ì¬‚³‚ê‚½ DirectionalLightSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12880,8 +12880,8 @@ LNDirectionalLightPreUpdateHandler_Create
 LNDirectionalLightPreUpdateHandler
 %prm
 callback, outDirectionalLightPreUpdateHandler
-[in] callback                            : 
-[in] outDirectionalLightPreUpdateHandler(0) : instance.
+[in]  callback                            : 
+[out] outDirectionalLightPreUpdateHandler(0) : ì¬‚³‚ê‚½ DirectionalLightPreUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12901,8 +12901,8 @@ LNDirectionalLightUpdateHandler_Create
 LNDirectionalLightUpdateHandler
 %prm
 callback, outDirectionalLightUpdateHandler
-[in] callback                         : 
-[in] outDirectionalLightUpdateHandler(0) : instance.
+[in]  callback                         : 
+[out] outDirectionalLightUpdateHandler(0) : ì¬‚³‚ê‚½ DirectionalLightUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12922,8 +12922,8 @@ LNPointLightSerializeHandler_Create
 LNPointLightSerializeHandler
 %prm
 callback, outPointLightSerializeHandler
-[in] callback                      : 
-[in] outPointLightSerializeHandler(0) : instance.
+[in]  callback                      : 
+[out] outPointLightSerializeHandler(0) : ì¬‚³‚ê‚½ PointLightSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12943,8 +12943,8 @@ LNPointLightPreUpdateHandler_Create
 LNPointLightPreUpdateHandler
 %prm
 callback, outPointLightPreUpdateHandler
-[in] callback                      : 
-[in] outPointLightPreUpdateHandler(0) : instance.
+[in]  callback                      : 
+[out] outPointLightPreUpdateHandler(0) : ì¬‚³‚ê‚½ PointLightPreUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12964,8 +12964,8 @@ LNPointLightUpdateHandler_Create
 LNPointLightUpdateHandler
 %prm
 callback, outPointLightUpdateHandler
-[in] callback                   : 
-[in] outPointLightUpdateHandler(0) : instance.
+[in]  callback                   : 
+[out] outPointLightUpdateHandler(0) : ì¬‚³‚ê‚½ PointLightUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -12985,8 +12985,8 @@ LNSpotLightSerializeHandler_Create
 LNSpotLightSerializeHandler
 %prm
 callback, outSpotLightSerializeHandler
-[in] callback                     : 
-[in] outSpotLightSerializeHandler(0) : instance.
+[in]  callback                     : 
+[out] outSpotLightSerializeHandler(0) : ì¬‚³‚ê‚½ SpotLightSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13006,8 +13006,8 @@ LNSpotLightPreUpdateHandler_Create
 LNSpotLightPreUpdateHandler
 %prm
 callback, outSpotLightPreUpdateHandler
-[in] callback                     : 
-[in] outSpotLightPreUpdateHandler(0) : instance.
+[in]  callback                     : 
+[out] outSpotLightPreUpdateHandler(0) : ì¬‚³‚ê‚½ SpotLightPreUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13027,8 +13027,8 @@ LNSpotLightUpdateHandler_Create
 LNSpotLightUpdateHandler
 %prm
 callback, outSpotLightUpdateHandler
-[in] callback                  : 
-[in] outSpotLightUpdateHandler(0) : instance.
+[in]  callback                  : 
+[out] outSpotLightUpdateHandler(0) : ì¬‚³‚ê‚½ SpotLightUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13048,8 +13048,8 @@ LNSpriteSerializeHandler_Create
 LNSpriteSerializeHandler
 %prm
 callback, outSpriteSerializeHandler
-[in] callback                  : 
-[in] outSpriteSerializeHandler(0) : instance.
+[in]  callback                  : 
+[out] outSpriteSerializeHandler(0) : ì¬‚³‚ê‚½ SpriteSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13069,8 +13069,8 @@ LNSpritePreUpdateHandler_Create
 LNSpritePreUpdateHandler
 %prm
 callback, outSpritePreUpdateHandler
-[in] callback                  : 
-[in] outSpritePreUpdateHandler(0) : instance.
+[in]  callback                  : 
+[out] outSpritePreUpdateHandler(0) : ì¬‚³‚ê‚½ SpritePreUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13090,8 +13090,8 @@ LNSpriteUpdateHandler_Create
 LNSpriteUpdateHandler
 %prm
 callback, outSpriteUpdateHandler
-[in] callback               : 
-[in] outSpriteUpdateHandler(0) : instance.
+[in]  callback               : 
+[out] outSpriteUpdateHandler(0) : ì¬‚³‚ê‚½ SpriteUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13111,8 +13111,8 @@ LNCameraOrbitControlComponentSerializeHandler_Create
 LNCameraOrbitControlComponentSerializeHandler
 %prm
 callback, outCameraOrbitControlComponentSerializeHandler
-[in] callback                                       : 
-[in] outCameraOrbitControlComponentSerializeHandler(0) : instance.
+[in]  callback                                       : 
+[out] outCameraOrbitControlComponentSerializeHandler(0) : ì¬‚³‚ê‚½ CameraOrbitControlComponentSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13132,8 +13132,8 @@ LNRaycasterSerializeHandler_Create
 LNRaycasterSerializeHandler
 %prm
 callback, outRaycasterSerializeHandler
-[in] callback                     : 
-[in] outRaycasterSerializeHandler(0) : instance.
+[in]  callback                     : 
+[out] outRaycasterSerializeHandler(0) : ì¬‚³‚ê‚½ RaycasterSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13153,8 +13153,8 @@ LNRaycastResultSerializeHandler_Create
 LNRaycastResultSerializeHandler
 %prm
 callback, outRaycastResultSerializeHandler
-[in] callback                         : 
-[in] outRaycastResultSerializeHandler(0) : instance.
+[in]  callback                         : 
+[out] outRaycastResultSerializeHandler(0) : ì¬‚³‚ê‚½ RaycastResultSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13174,8 +13174,8 @@ LNWorldRenderViewSerializeHandler_Create
 LNWorldRenderViewSerializeHandler
 %prm
 callback, outWorldRenderViewSerializeHandler
-[in] callback                           : 
-[in] outWorldRenderViewSerializeHandler(0) : instance.
+[in]  callback                           : 
+[out] outWorldRenderViewSerializeHandler(0) : ì¬‚³‚ê‚½ WorldRenderViewSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13195,8 +13195,8 @@ LNShapeObjectSerializeHandler_Create
 LNShapeObjectSerializeHandler
 %prm
 callback, outShapeObjectSerializeHandler
-[in] callback                       : 
-[in] outShapeObjectSerializeHandler(0) : instance.
+[in]  callback                       : 
+[out] outShapeObjectSerializeHandler(0) : ì¬‚³‚ê‚½ ShapeObjectSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13216,8 +13216,8 @@ LNShapeObjectPreUpdateHandler_Create
 LNShapeObjectPreUpdateHandler
 %prm
 callback, outShapeObjectPreUpdateHandler
-[in] callback                       : 
-[in] outShapeObjectPreUpdateHandler(0) : instance.
+[in]  callback                       : 
+[out] outShapeObjectPreUpdateHandler(0) : ì¬‚³‚ê‚½ ShapeObjectPreUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13237,8 +13237,8 @@ LNShapeObjectUpdateHandler_Create
 LNShapeObjectUpdateHandler
 %prm
 callback, outShapeObjectUpdateHandler
-[in] callback                    : 
-[in] outShapeObjectUpdateHandler(0) : instance.
+[in]  callback                    : 
+[out] outShapeObjectUpdateHandler(0) : ì¬‚³‚ê‚½ ShapeObjectUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13258,8 +13258,8 @@ LNPlaneMeshSerializeHandler_Create
 LNPlaneMeshSerializeHandler
 %prm
 callback, outPlaneMeshSerializeHandler
-[in] callback                     : 
-[in] outPlaneMeshSerializeHandler(0) : instance.
+[in]  callback                     : 
+[out] outPlaneMeshSerializeHandler(0) : ì¬‚³‚ê‚½ PlaneMeshSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13279,8 +13279,8 @@ LNPlaneMeshPreUpdateHandler_Create
 LNPlaneMeshPreUpdateHandler
 %prm
 callback, outPlaneMeshPreUpdateHandler
-[in] callback                     : 
-[in] outPlaneMeshPreUpdateHandler(0) : instance.
+[in]  callback                     : 
+[out] outPlaneMeshPreUpdateHandler(0) : ì¬‚³‚ê‚½ PlaneMeshPreUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13300,8 +13300,8 @@ LNPlaneMeshUpdateHandler_Create
 LNPlaneMeshUpdateHandler
 %prm
 callback, outPlaneMeshUpdateHandler
-[in] callback                  : 
-[in] outPlaneMeshUpdateHandler(0) : instance.
+[in]  callback                  : 
+[out] outPlaneMeshUpdateHandler(0) : ì¬‚³‚ê‚½ PlaneMeshUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13321,8 +13321,8 @@ LNBoxMeshSerializeHandler_Create
 LNBoxMeshSerializeHandler
 %prm
 callback, outBoxMeshSerializeHandler
-[in] callback                   : 
-[in] outBoxMeshSerializeHandler(0) : instance.
+[in]  callback                   : 
+[out] outBoxMeshSerializeHandler(0) : ì¬‚³‚ê‚½ BoxMeshSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13342,8 +13342,8 @@ LNBoxMeshPreUpdateHandler_Create
 LNBoxMeshPreUpdateHandler
 %prm
 callback, outBoxMeshPreUpdateHandler
-[in] callback                   : 
-[in] outBoxMeshPreUpdateHandler(0) : instance.
+[in]  callback                   : 
+[out] outBoxMeshPreUpdateHandler(0) : ì¬‚³‚ê‚½ BoxMeshPreUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13363,8 +13363,8 @@ LNBoxMeshUpdateHandler_Create
 LNBoxMeshUpdateHandler
 %prm
 callback, outBoxMeshUpdateHandler
-[in] callback                : 
-[in] outBoxMeshUpdateHandler(0) : instance.
+[in]  callback                : 
+[out] outBoxMeshUpdateHandler(0) : ì¬‚³‚ê‚½ BoxMeshUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13384,8 +13384,8 @@ LNMeshComponentSerializeHandler_Create
 LNMeshComponentSerializeHandler
 %prm
 callback, outMeshComponentSerializeHandler
-[in] callback                         : 
-[in] outMeshComponentSerializeHandler(0) : instance.
+[in]  callback                         : 
+[out] outMeshComponentSerializeHandler(0) : ì¬‚³‚ê‚½ MeshComponentSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13405,8 +13405,8 @@ LNCollisionSerializeHandler_Create
 LNCollisionSerializeHandler
 %prm
 callback, outCollisionSerializeHandler
-[in] callback                     : 
-[in] outCollisionSerializeHandler(0) : instance.
+[in]  callback                     : 
+[out] outCollisionSerializeHandler(0) : ì¬‚³‚ê‚½ CollisionSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13426,8 +13426,8 @@ LNTriggerBodyComponentSerializeHandler_Create
 LNTriggerBodyComponentSerializeHandler
 %prm
 callback, outTriggerBodyComponentSerializeHandler
-[in] callback                                : 
-[in] outTriggerBodyComponentSerializeHandler(0) : instance.
+[in]  callback                                : 
+[out] outTriggerBodyComponentSerializeHandler(0) : ì¬‚³‚ê‚½ TriggerBodyComponentSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13447,8 +13447,8 @@ LNParticleEmitterSerializeHandler_Create
 LNParticleEmitterSerializeHandler
 %prm
 callback, outParticleEmitterSerializeHandler
-[in] callback                           : 
-[in] outParticleEmitterSerializeHandler(0) : instance.
+[in]  callback                           : 
+[out] outParticleEmitterSerializeHandler(0) : ì¬‚³‚ê‚½ ParticleEmitterSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13468,8 +13468,8 @@ LNParticleEmitterPreUpdateHandler_Create
 LNParticleEmitterPreUpdateHandler
 %prm
 callback, outParticleEmitterPreUpdateHandler
-[in] callback                           : 
-[in] outParticleEmitterPreUpdateHandler(0) : instance.
+[in]  callback                           : 
+[out] outParticleEmitterPreUpdateHandler(0) : ì¬‚³‚ê‚½ ParticleEmitterPreUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13489,8 +13489,8 @@ LNParticleEmitterUpdateHandler_Create
 LNParticleEmitterUpdateHandler
 %prm
 callback, outParticleEmitterUpdateHandler
-[in] callback                        : 
-[in] outParticleEmitterUpdateHandler(0) : instance.
+[in]  callback                        : 
+[out] outParticleEmitterUpdateHandler(0) : ì¬‚³‚ê‚½ ParticleEmitterUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13510,8 +13510,8 @@ LNLevelSerializeHandler_Create
 LNLevelSerializeHandler
 %prm
 callback, outLevelSerializeHandler
-[in] callback                 : 
-[in] outLevelSerializeHandler(0) : instance.
+[in]  callback                 : 
+[out] outLevelSerializeHandler(0) : ì¬‚³‚ê‚½ LevelSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13531,8 +13531,8 @@ LNLevelStartHandler_Create
 LNLevelStartHandler
 %prm
 callback, outLevelStartHandler
-[in] callback             : 
-[in] outLevelStartHandler(0) : instance.
+[in]  callback             : 
+[out] outLevelStartHandler(0) : ì¬‚³‚ê‚½ LevelStartHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13552,8 +13552,8 @@ LNLevelStopHandler_Create
 LNLevelStopHandler
 %prm
 callback, outLevelStopHandler
-[in] callback            : 
-[in] outLevelStopHandler(0) : instance.
+[in]  callback            : 
+[out] outLevelStopHandler(0) : ì¬‚³‚ê‚½ LevelStopHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13573,8 +13573,8 @@ LNLevelPauseHandler_Create
 LNLevelPauseHandler
 %prm
 callback, outLevelPauseHandler
-[in] callback             : 
-[in] outLevelPauseHandler(0) : instance.
+[in]  callback             : 
+[out] outLevelPauseHandler(0) : ì¬‚³‚ê‚½ LevelPauseHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13594,8 +13594,8 @@ LNLevelResumeHandler_Create
 LNLevelResumeHandler
 %prm
 callback, outLevelResumeHandler
-[in] callback              : 
-[in] outLevelResumeHandler(0) : instance.
+[in]  callback              : 
+[out] outLevelResumeHandler(0) : ì¬‚³‚ê‚½ LevelResumeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13615,8 +13615,8 @@ LNLevelUpdateHandler_Create
 LNLevelUpdateHandler
 %prm
 callback, outLevelUpdateHandler
-[in] callback              : 
-[in] outLevelUpdateHandler(0) : instance.
+[in]  callback              : 
+[out] outLevelUpdateHandler(0) : ì¬‚³‚ê‚½ LevelUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13636,8 +13636,8 @@ LNUIEventArgsSerializeHandler_Create
 LNUIEventArgsSerializeHandler
 %prm
 callback, outUIEventArgsSerializeHandler
-[in] callback                       : 
-[in] outUIEventArgsSerializeHandler(0) : instance.
+[in]  callback                       : 
+[out] outUIEventArgsSerializeHandler(0) : ì¬‚³‚ê‚½ UIEventArgsSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13657,8 +13657,8 @@ LNUILayoutElementSerializeHandler_Create
 LNUILayoutElementSerializeHandler
 %prm
 callback, outUILayoutElementSerializeHandler
-[in] callback                           : 
-[in] outUILayoutElementSerializeHandler(0) : instance.
+[in]  callback                           : 
+[out] outUILayoutElementSerializeHandler(0) : ì¬‚³‚ê‚½ UILayoutElementSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13678,8 +13678,8 @@ LNUIElementSerializeHandler_Create
 LNUIElementSerializeHandler
 %prm
 callback, outUIElementSerializeHandler
-[in] callback                     : 
-[in] outUIElementSerializeHandler(0) : instance.
+[in]  callback                     : 
+[out] outUIElementSerializeHandler(0) : ì¬‚³‚ê‚½ UIElementSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13699,8 +13699,8 @@ LNUITextSerializeHandler_Create
 LNUITextSerializeHandler
 %prm
 callback, outUITextSerializeHandler
-[in] callback                  : 
-[in] outUITextSerializeHandler(0) : instance.
+[in]  callback                  : 
+[out] outUITextSerializeHandler(0) : ì¬‚³‚ê‚½ UITextSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13720,8 +13720,8 @@ LNUISpriteSerializeHandler_Create
 LNUISpriteSerializeHandler
 %prm
 callback, outUISpriteSerializeHandler
-[in] callback                    : 
-[in] outUISpriteSerializeHandler(0) : instance.
+[in]  callback                    : 
+[out] outUISpriteSerializeHandler(0) : ì¬‚³‚ê‚½ UISpriteSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13741,8 +13741,8 @@ LNUIIconSerializeHandler_Create
 LNUIIconSerializeHandler
 %prm
 callback, outUIIconSerializeHandler
-[in] callback                  : 
-[in] outUIIconSerializeHandler(0) : instance.
+[in]  callback                  : 
+[out] outUIIconSerializeHandler(0) : ì¬‚³‚ê‚½ UIIconSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13762,8 +13762,8 @@ LNUIMessageTextAreaSerializeHandler_Create
 LNUIMessageTextAreaSerializeHandler
 %prm
 callback, outUIMessageTextAreaSerializeHandler
-[in] callback                             : 
-[in] outUIMessageTextAreaSerializeHandler(0) : instance.
+[in]  callback                             : 
+[out] outUIMessageTextAreaSerializeHandler(0) : ì¬‚³‚ê‚½ UIMessageTextAreaSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13783,8 +13783,8 @@ LNUILayoutPanelSerializeHandler_Create
 LNUILayoutPanelSerializeHandler
 %prm
 callback, outUILayoutPanelSerializeHandler
-[in] callback                         : 
-[in] outUILayoutPanelSerializeHandler(0) : instance.
+[in]  callback                         : 
+[out] outUILayoutPanelSerializeHandler(0) : ì¬‚³‚ê‚½ UILayoutPanelSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13804,8 +13804,8 @@ LNUIBoxLayoutSerializeHandler_Create
 LNUIBoxLayoutSerializeHandler
 %prm
 callback, outUIBoxLayoutSerializeHandler
-[in] callback                       : 
-[in] outUIBoxLayoutSerializeHandler(0) : instance.
+[in]  callback                       : 
+[out] outUIBoxLayoutSerializeHandler(0) : ì¬‚³‚ê‚½ UIBoxLayoutSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13825,8 +13825,8 @@ LNUIStackLayoutSerializeHandler_Create
 LNUIStackLayoutSerializeHandler
 %prm
 callback, outUIStackLayoutSerializeHandler
-[in] callback                         : 
-[in] outUIStackLayoutSerializeHandler(0) : instance.
+[in]  callback                         : 
+[out] outUIStackLayoutSerializeHandler(0) : ì¬‚³‚ê‚½ UIStackLayoutSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13846,8 +13846,8 @@ LNUIGridLayoutSerializeHandler_Create
 LNUIGridLayoutSerializeHandler
 %prm
 callback, outUIGridLayoutSerializeHandler
-[in] callback                        : 
-[in] outUIGridLayoutSerializeHandler(0) : instance.
+[in]  callback                        : 
+[out] outUIGridLayoutSerializeHandler(0) : ì¬‚³‚ê‚½ UIGridLayoutSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13867,8 +13867,8 @@ LNUIControlSerializeHandler_Create
 LNUIControlSerializeHandler
 %prm
 callback, outUIControlSerializeHandler
-[in] callback                     : 
-[in] outUIControlSerializeHandler(0) : instance.
+[in]  callback                     : 
+[out] outUIControlSerializeHandler(0) : ì¬‚³‚ê‚½ UIControlSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13888,8 +13888,8 @@ LNUIButtonBaseSerializeHandler_Create
 LNUIButtonBaseSerializeHandler
 %prm
 callback, outUIButtonBaseSerializeHandler
-[in] callback                        : 
-[in] outUIButtonBaseSerializeHandler(0) : instance.
+[in]  callback                        : 
+[out] outUIButtonBaseSerializeHandler(0) : ì¬‚³‚ê‚½ UIButtonBaseSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13909,8 +13909,8 @@ LNUIButtonSerializeHandler_Create
 LNUIButtonSerializeHandler
 %prm
 callback, outUIButtonSerializeHandler
-[in] callback                    : 
-[in] outUIButtonSerializeHandler(0) : instance.
+[in]  callback                    : 
+[out] outUIButtonSerializeHandler(0) : ì¬‚³‚ê‚½ UIButtonSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13930,8 +13930,8 @@ LNUIWindowSerializeHandler_Create
 LNUIWindowSerializeHandler
 %prm
 callback, outUIWindowSerializeHandler
-[in] callback                    : 
-[in] outUIWindowSerializeHandler(0) : instance.
+[in]  callback                    : 
+[out] outUIWindowSerializeHandler(0) : ì¬‚³‚ê‚½ UIWindowSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13951,8 +13951,8 @@ LNUIListItemSerializeHandler_Create
 LNUIListItemSerializeHandler
 %prm
 callback, outUIListItemSerializeHandler
-[in] callback                      : 
-[in] outUIListItemSerializeHandler(0) : instance.
+[in]  callback                      : 
+[out] outUIListItemSerializeHandler(0) : ì¬‚³‚ê‚½ UIListItemSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13972,8 +13972,8 @@ LNUIListItemsControlSerializeHandler_Create
 LNUIListItemsControlSerializeHandler
 %prm
 callback, outUIListItemsControlSerializeHandler
-[in] callback                              : 
-[in] outUIListItemsControlSerializeHandler(0) : instance.
+[in]  callback                              : 
+[out] outUIListItemsControlSerializeHandler(0) : ì¬‚³‚ê‚½ UIListItemsControlSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -13993,8 +13993,8 @@ LNUIListBoxItemSerializeHandler_Create
 LNUIListBoxItemSerializeHandler
 %prm
 callback, outUIListBoxItemSerializeHandler
-[in] callback                         : 
-[in] outUIListBoxItemSerializeHandler(0) : instance.
+[in]  callback                         : 
+[out] outUIListBoxItemSerializeHandler(0) : ì¬‚³‚ê‚½ UIListBoxItemSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14014,8 +14014,8 @@ LNUIListBoxSerializeHandler_Create
 LNUIListBoxSerializeHandler
 %prm
 callback, outUIListBoxSerializeHandler
-[in] callback                     : 
-[in] outUIListBoxSerializeHandler(0) : instance.
+[in]  callback                     : 
+[out] outUIListBoxSerializeHandler(0) : ì¬‚³‚ê‚½ UIListBoxSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14035,8 +14035,8 @@ LNInputGestureSerializeHandler_Create
 LNInputGestureSerializeHandler
 %prm
 callback, outInputGestureSerializeHandler
-[in] callback                        : 
-[in] outInputGestureSerializeHandler(0) : instance.
+[in]  callback                        : 
+[out] outInputGestureSerializeHandler(0) : ì¬‚³‚ê‚½ InputGestureSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14056,8 +14056,8 @@ LNKeyGestureSerializeHandler_Create
 LNKeyGestureSerializeHandler
 %prm
 callback, outKeyGestureSerializeHandler
-[in] callback                      : 
-[in] outKeyGestureSerializeHandler(0) : instance.
+[in]  callback                      : 
+[out] outKeyGestureSerializeHandler(0) : ì¬‚³‚ê‚½ KeyGestureSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14077,8 +14077,8 @@ LNInterpreterCommandSerializeHandler_Create
 LNInterpreterCommandSerializeHandler
 %prm
 callback, outInterpreterCommandSerializeHandler
-[in] callback                              : 
-[in] outInterpreterCommandSerializeHandler(0) : instance.
+[in]  callback                              : 
+[out] outInterpreterCommandSerializeHandler(0) : ì¬‚³‚ê‚½ InterpreterCommandSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14098,8 +14098,8 @@ LNInterpreterCommandListSerializeHandler_Create
 LNInterpreterCommandListSerializeHandler
 %prm
 callback, outInterpreterCommandListSerializeHandler
-[in] callback                                  : 
-[in] outInterpreterCommandListSerializeHandler(0) : instance.
+[in]  callback                                  : 
+[out] outInterpreterCommandListSerializeHandler(0) : ì¬‚³‚ê‚½ InterpreterCommandListSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14119,8 +14119,8 @@ LNInterpreterSerializeHandler_Create
 LNInterpreterSerializeHandler
 %prm
 callback, outInterpreterSerializeHandler
-[in] callback                       : 
-[in] outInterpreterSerializeHandler(0) : instance.
+[in]  callback                       : 
+[out] outInterpreterSerializeHandler(0) : ì¬‚³‚ê‚½ InterpreterSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14140,8 +14140,8 @@ LNInterpreterUpdateWaitHandler_Create
 LNInterpreterUpdateWaitHandler
 %prm
 callback, outInterpreterUpdateWaitHandler
-[in] callback                        : 
-[in] outInterpreterUpdateWaitHandler(0) : instance.
+[in]  callback                        : 
+[out] outInterpreterUpdateWaitHandler(0) : ì¬‚³‚ê‚½ InterpreterUpdateWaitHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14161,8 +14161,8 @@ LNApplicationSerializeHandler_Create
 LNApplicationSerializeHandler
 %prm
 callback, outApplicationSerializeHandler
-[in] callback                       : 
-[in] outApplicationSerializeHandler(0) : instance.
+[in]  callback                       : 
+[out] outApplicationSerializeHandler(0) : ì¬‚³‚ê‚½ ApplicationSerializeHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14182,8 +14182,8 @@ LNApplicationInitHandler_Create
 LNApplicationInitHandler
 %prm
 callback, outApplicationInitHandler
-[in] callback                  : 
-[in] outApplicationInitHandler(0) : instance.
+[in]  callback                  : 
+[out] outApplicationInitHandler(0) : ì¬‚³‚ê‚½ ApplicationInitHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -14203,8 +14203,8 @@ LNApplicationUpdateHandler_Create
 LNApplicationUpdateHandler
 %prm
 callback, outApplicationUpdateHandler
-[in] callback                    : 
-[in] outApplicationUpdateHandler(0) : instance.
+[in]  callback                    : 
+[out] outApplicationUpdateHandler(0) : ì¬‚³‚ê‚½ ApplicationUpdateHandler ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 

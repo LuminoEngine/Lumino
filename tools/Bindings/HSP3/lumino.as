@@ -1437,8 +1437,8 @@ _ln_return_discard = 0
 #define LNEngine_GetTime(%1=_ln_return_discard) _LNEngine_GetTime %1
 #cmd _LNEngine_GetWorld $59E
 #define LNEngine_GetWorld(%1=_ln_return_discard) _LNEngine_GetWorld %1
-#cmd _LNEngine_GetCamera $59F
-#define LNEngine_GetCamera(%1=_ln_return_discard) _LNEngine_GetCamera %1
+#cmd _LNEngine_GetMainCamera $59F
+#define LNEngine_GetMainCamera(%1=_ln_return_discard) _LNEngine_GetMainCamera %1
 #cmd _LNEngine_GetMainLight $5A0
 #define LNEngine_GetMainLight(%1=_ln_return_discard) _LNEngine_GetMainLight %1
 #cmd _LNEngine_GetRenderView $5A1

@@ -18,7 +18,7 @@ public:
     virtual void onInit() override
     {
 		Engine::renderView()->setGuideGridEnabled(true);
-		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+		Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 		//ln::detail::EngineDomain::sceneManager()->m_editorMode = true;
 		Engine::renderView()->setClearMode(SceneClearMode::SkyDome);
 

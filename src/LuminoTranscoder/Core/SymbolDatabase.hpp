@@ -215,6 +215,8 @@ public:
 	bool isThis() const { return m_isThis; }		// for flat parameters
 	bool isReturn() const { return m_isReturn; }	// for flat parameters
 
+	void setIO(bool in, bool out) { m_isIn = in; m_isOut = out; }
+
 	ln::String getFullQualTypeName() const;
 	int flatParamIndex() const { return m_flatParamIndex; }
 

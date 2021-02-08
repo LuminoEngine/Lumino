@@ -5815,7 +5815,7 @@ class Lumino::Engine
 
     # デフォルトで作成されるメインの Camera です。
     # @return [Lumino::Camera] 
-    def camera(*args)
+    def main_camera(*args)
     end
 
 

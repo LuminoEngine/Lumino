@@ -24271,14 +24271,14 @@ LN_FLAT_API LNResult LNEngine_GetWorld(LNHandle* outReturn)
 }
 
 
-LN_FLAT_API LNResult LNEngine_GetCamera(LNHandle* outReturn)
+LN_FLAT_API LNResult LNEngine_GetMainCamera(LNHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::camera());
+        *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::mainCamera());
     }
     else {
-        (ln::Engine::camera());
+        (ln::Engine::mainCamera());
     }
 
     LNI_FUNC_TRY_END_RETURN;

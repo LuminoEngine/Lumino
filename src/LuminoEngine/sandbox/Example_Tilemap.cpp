@@ -8,7 +8,7 @@ class App_Example_Tilemap : public Application
 
     virtual void onInit() override
     {
-		Engine::camera()->addComponent(makeObject<CameraOrbitControlComponent>());
+		Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
 
 
 		auto tilesetTexture = ln::Texture2D::load(u"C:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/Tileset-1.png");

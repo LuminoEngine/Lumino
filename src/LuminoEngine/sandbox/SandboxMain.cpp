@@ -579,7 +579,7 @@ int main(int argc, char** argv)
     
     //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
 
-	Camera* camera = Engine::camera();
+	Camera* camera = Engine::mainCamera();
 	camera->addComponent(makeObject<CameraOrbitControlComponent>());
     //Engine::mainCamera()->setPosition(0, 0, 25);
 	camera->setBackgroundColor(Color::Gray);
@@ -715,7 +715,7 @@ int main(int argc, char** argv)
 
 #if 1
 	{
-		Engine::camera()->setBackgroundColor(Color::White);
+		Engine::mainCamera()->setBackgroundColor(Color::White);
 
 		//auto s = u'🐈';
 		//auto t = Texture2D::loadEmoji(U'🐈');
@@ -903,9 +903,9 @@ int main(int argc, char** argv)
 
 
     auto ctl = makeObject<CameraOrbitControlComponent>();
-    Engine::camera()->addComponent(ctl);
-    Engine::camera()->setPosition(0, 5, -10);
-    Engine::camera()->setBackgroundColor(Color::Gray);
+    Engine::mainCamera()->addComponent(ctl);
+    Engine::mainCamera()->setPosition(0, 5, -10);
+    Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
 
     struct PosColor
