@@ -16914,6 +16914,23 @@ struct Wrap_EngineSettings
 };
 
 
+static VALUE Wrap_LNEngineSettings_SetMainWindowTitle(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE title;
+        rb_scan_args(argc, argv, "1", &title);
+        if (LNRB_VALUE_IS_STRING(title))
+        {
+            const char* _title = LNRB_VALUE_TO_STRING(title);
+            LNResult errorCode = LNEngineSettings_SetMainWindowTitleA(_title);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setMainWindowTitle - wrong argument type.");
+    return Qnil;
+}
+
 static VALUE Wrap_LNEngineSettings_SetMainWindowSize(int argc, VALUE* argv, VALUE self)
 {
     if (2 <= argc && argc <= 2) {
@@ -16949,23 +16966,6 @@ static VALUE Wrap_LNEngineSettings_SetMainWorldViewSize(int argc, VALUE* argv, V
         }
     }
     rb_raise(rb_eArgError, "ln::EngineSettings::setMainWorldViewSize - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LNEngineSettings_SetMainWindowTitle(int argc, VALUE* argv, VALUE self)
-{
-    if (1 <= argc && argc <= 1) {
-        VALUE title;
-        rb_scan_args(argc, argv, "1", &title);
-        if (LNRB_VALUE_IS_STRING(title))
-        {
-            const char* _title = LNRB_VALUE_TO_STRING(title);
-            LNResult errorCode = LNEngineSettings_SetMainWindowTitleA(_title);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::EngineSettings::setMainWindowTitle - wrong argument type.");
     return Qnil;
 }
 
@@ -17121,6 +17121,23 @@ static VALUE Wrap_LNEngineSettings_SetEngineLogFilePath(int argc, VALUE* argv, V
         }
     }
     rb_raise(rb_eArgError, "ln::EngineSettings::setEngineLogFilePath - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LNEngineSettings_SetPriorityGPUName(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE filePath;
+        rb_scan_args(argc, argv, "1", &filePath);
+        if (LNRB_VALUE_IS_STRING(filePath))
+        {
+            const char* _filePath = LNRB_VALUE_TO_STRING(filePath);
+            LNResult errorCode = LNEngineSettings_SetPriorityGPUNameA(_filePath);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setPriorityGPUName - wrong argument type.");
     return Qnil;
 }
 
@@ -27638,9 +27655,9 @@ extern "C" void Init_Lumino_RubyExt()
     LNInterpreter_OnUpdateWait_SetOverrideCallback(Wrap_LNInterpreter_OnUpdateWait_OverrideCallback);
 
     g_class_EngineSettings = rb_define_class_under(g_rootModule, "EngineSettings", rb_cObject);
+    rb_define_singleton_method(g_class_EngineSettings, "set_main_window_title", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetMainWindowTitle), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_main_window_size", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetMainWindowSize), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_main_world_view_size", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetMainWorldViewSize), -1);
-    rb_define_singleton_method(g_class_EngineSettings, "set_main_window_title", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetMainWindowTitle), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_main_window_resizable", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetMainWindowResizable), -1);
     rb_define_singleton_method(g_class_EngineSettings, "add_asset_directory", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_AddAssetDirectory), -1);
     rb_define_singleton_method(g_class_EngineSettings, "add_asset_archive", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_AddAssetArchive), -1);
@@ -27650,6 +27667,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_EngineSettings, "set_debug_tool_enabled", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetDebugToolEnabled), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_engine_log_enabled", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetEngineLogEnabled), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_engine_log_file_path", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetEngineLogFilePath), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "set_priority_gpu_name", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetPriorityGPUName), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_developer_tool_enabled", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetDeveloperToolEnabled), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_user_main_window", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetUserMainWindow), -1);
 

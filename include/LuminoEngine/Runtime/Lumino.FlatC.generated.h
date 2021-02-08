@@ -7882,6 +7882,13 @@ extern LN_FLAT_API LNSubinstanceId LNInterpreter_GetSubinstanceId(LNHandle handl
 // ln::EngineSettings
 
 /**
+    @brief メインウィンドウのタイトル文字列を設定します。
+    @param[] title : 
+*/
+LN_FLAT_API LNResult LNEngineSettings_SetMainWindowTitle(const LNChar* title);
+LN_FLAT_API LNResult LNEngineSettings_SetMainWindowTitleA(const char* title);
+
+/**
     @brief メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480)
     @param[] width : 
     @param[] height : 
@@ -7896,14 +7903,7 @@ LN_FLAT_API LNResult LNEngineSettings_SetMainWindowSize(int width, int height);
 LN_FLAT_API LNResult LNEngineSettings_SetMainWorldViewSize(int width, int height);
 
 /**
-    @brief メインウィンドウのタイトル文字列を設定します。
-    @param[] title : 
-*/
-LN_FLAT_API LNResult LNEngineSettings_SetMainWindowTitle(const LNChar* title);
-LN_FLAT_API LNResult LNEngineSettings_SetMainWindowTitleA(const char* title);
-
-/**
-    @brief メインウィンドウをユーザーがサイズ変更できるかどうかを指定します。(default: false)
+    @brief メインウィンドウのサイズをユーザーが変更できるかどうかを指定します。(default: false)
     @param[] value : 
 */
 LN_FLAT_API LNResult LNEngineSettings_SetMainWindowResizable(LNBool value);
@@ -7961,6 +7961,14 @@ LN_FLAT_API LNResult LNEngineSettings_SetEngineLogEnabled(LNBool enabled);
 */
 LN_FLAT_API LNResult LNEngineSettings_SetEngineLogFilePath(const LNChar* filePath);
 LN_FLAT_API LNResult LNEngineSettings_SetEngineLogFilePathA(const char* filePath);
+
+/**
+    @brief 優先的に使用する GPU の名前を指定します。
+    @param[] filePath : 
+    @details 現在は DirectX12 を使用する場合のみ有効で、デフォルトの GPU では動作が不安定な場合に "Microsoft Basic Render Driver" 等を試すことができます。
+*/
+LN_FLAT_API LNResult LNEngineSettings_SetPriorityGPUName(const LNChar* filePath);
+LN_FLAT_API LNResult LNEngineSettings_SetPriorityGPUNameA(const char* filePath);
 
 /**
     @brief setDeveloperToolEnabled

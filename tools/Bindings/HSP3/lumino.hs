@@ -10,7 +10,7 @@ Lumino
 0.9.0
 
 %date
-2021/1/22
+2021/2/8
 
 %author
 lriki
@@ -11201,6 +11201,26 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
+LNEngineSettings_SetMainWindowTitle
+ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ìƒ^ƒCƒgƒ‹•¶š—ñ‚ğİ’è‚µ‚Ü‚·B
+%group
+LNEngineSettings
+%prm
+title
+[in] title : 
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
 LNEngineSettings_SetMainWindowSize
 ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚ÌƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚Ì•‚Æ‚‚³‚ğİ’è‚µ‚Ü‚·B(default: 640x480)
 %group
@@ -11243,28 +11263,8 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;------------------------------------------------------------
 %index
-LNEngineSettings_SetMainWindowTitle
-ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ìƒ^ƒCƒgƒ‹•¶š—ñ‚ğİ’è‚µ‚Ü‚·B
-%group
-LNEngineSettings
-%prm
-title
-[in] title : 
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
 LNEngineSettings_SetMainWindowResizable
-ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚ğƒ†[ƒU[‚ªƒTƒCƒY•ÏX‚Å‚«‚é‚©‚Ç‚¤‚©‚ğw’è‚µ‚Ü‚·B(default: false)
+ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ğƒ†[ƒU[‚ª•ÏX‚Å‚«‚é‚©‚Ç‚¤‚©‚ğw’è‚µ‚Ü‚·B(default: false)
 %group
 LNEngineSettings
 %prm
@@ -11436,6 +11436,26 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 
 %inst
 
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNEngineSettings_SetPriorityGPUName
+—Dæ“I‚Ég—p‚·‚é GPU ‚Ì–¼‘O‚ğw’è‚µ‚Ü‚·B
+%group
+LNEngineSettings
+%prm
+filePath
+[in] filePath : 
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+Œ»İ‚Í DirectX12 ‚ğg—p‚·‚éê‡‚Ì‚İ—LŒø‚ÅAƒfƒtƒHƒ‹ƒg‚Ì GPU ‚Å‚Í“®ì‚ª•sˆÀ’è‚Èê‡‚É "Microsoft Basic Render Driver" “™‚ğ‚·‚±‚Æ‚ª‚Å‚«‚Ü‚·B
 %href
 
 

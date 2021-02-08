@@ -5651,6 +5651,14 @@ end
 # アプリケーション起動時に参照する初期化設定です。
 # 
 class Lumino::EngineSettings
+    # メインウィンドウのタイトル文字列を設定します。
+    # @param [String] title 
+    # 
+    def set_main_window_title(*args)
+    end
+
+
+
     # メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480)
     # @param [Integer] width 
     # @param [Integer] height 
@@ -5669,15 +5677,7 @@ class Lumino::EngineSettings
 
 
 
-    # メインウィンドウのタイトル文字列を設定します。
-    # @param [String] title 
-    # 
-    def set_main_window_title(*args)
-    end
-
-
-
-    # メインウィンドウをユーザーがサイズ変更できるかどうかを指定します。(default: false)
+    # メインウィンドウのサイズをユーザーが変更できるかどうかを指定します。(default: false)
     # @param [Boolean] value 
     # 
     def set_main_window_resizable(*args)
@@ -5746,6 +5746,15 @@ class Lumino::EngineSettings
     # @param [String] filePath 
     # 
     def set_engine_log_file_path(*args)
+    end
+
+
+
+    # 優先的に使用する GPU の名前を指定します。
+    #   現在は DirectX12 を使用する場合のみ有効で、デフォルトの GPU では動作が不安定な場合に "Microsoft Basic Render Driver" 等を試すことができます。
+    # @param [String] filePath 
+    # 
+    def set_priority_gpu_name(*args)
     end
 
 
