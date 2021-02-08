@@ -15,6 +15,7 @@ void TestEnv::setup()
 	EngineSettings::setMainWindowSize(160, 120);
 	//EngineSettings::setMainBackBufferSize(160, 120);
 	EngineSettings::setGraphicsAPI(GraphicsAPI::DirectX12);//GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
+    EngineSettings::setPriorityGPUName(u"Microsoft Basic Render Driver");
 	EngineSettings::setGraphicsDebugEnabled(true);
     EngineSettings::setEngineFeatures(feature);
 	EngineSettings::addAssetDirectory(LN_LOCALFILE(u"Assets"));
