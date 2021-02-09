@@ -38,7 +38,8 @@ public:
     bool endSingleTimeCommandList(ID3D12GraphicsCommandList* commandList);
     UINT sampleCount() const { return m_sampleCount; }
     const Ref<DX12SingleFrameAllocatorPageManager>& uploadBufferAllocatorManager() const { return m_uploadBufferAllocatorManager; }
-    ID3DBlob* generateMipMapsShader() const { return m_generateMipMapsShader.Get(); }
+    ID3D12RootSignature* mipmapRootSignature() const { return m_mipmapRootSignature.Get(); }
+    ID3D12PipelineState* mipmapPipelineState() const { return m_mipmapPipelineState.Get(); }
 
 protected:
     INativeGraphicsInterface* getNativeInterface() const override;
@@ -79,7 +80,8 @@ public: // TODO:
     HANDLE m_singleTimeCommandListEvent;
 
     Ref<DX12SingleFrameAllocatorPageManager> m_uploadBufferAllocatorManager;
-    ComPtr<ID3DBlob> m_generateMipMapsShader;
+    ComPtr<ID3D12RootSignature> m_mipmapRootSignature;
+    ComPtr<ID3D12PipelineState> m_mipmapPipelineState;
 };
 
 class DX12Framebuffer2;

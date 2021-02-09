@@ -1,3 +1,6 @@
+/*
+ * fxc /T cs_5_1 /E GenerateMipMaps /Fh GenerateMipMaps.hlsl.inl GenerateMipMaps.hlsl
+ */
 
 SamplerState BilinearClamp : register(s0);
 Texture2D<float4> SrcTexture : register(t0);

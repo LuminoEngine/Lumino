@@ -348,6 +348,7 @@ void RenderingManager::dispose()
 	m_meshRenderFeature = nullptr;
 	m_spriteRenderFeature2 = nullptr;
     m_blitRenderFeature = nullptr;
+	m_standardVertexDeclarationRHI = nullptr;
 	m_standardVertexDeclaration = nullptr;
     m_renderFeatures.clear();
 }

@@ -1,33 +1,14 @@
-#define LUMINO_DEBUG
 #include "lumino.as"
-
 LNLog_SetLevel LN_LOG_LEVEL_DEBUG
-LNLog_AllocConsole
+LNEngineSettings_SetEngineLogEnabled LN_TRUE
 
-LNEngine_Initialize
+LNEngineSettings_SetPriorityGPUName "Microsoft Basic Render Driver"
+LUMINO_APP
 
-// *delegate1_callback を delegate1 でラップ
-LnZVTestDelegate1_Create *delegate1_callback, delegate1
+*on_init
+	LNUIText_CreateWithText "Hello, Lumino!", text
+	LNUIElement_AddInto text
+    return
 
-// いろいろな Delegate を保持するクラス
-LnZVTestClass1_Create testClass1
-
-LnZVTestClass1_SetTestDelegate1 testClass1, delegate1
-
-LnZVTestClass1_CallTestDelegate1 testClass1, 500
-
-repeat
-	running = 0
-	LnEngine_Update running
-
-	if running == LN_FALSE: break
-
-	await 1000/60
-loop
-
-end
-
-*delegate1_callback
-	mes ln_args(0)
-	mes ln_args(1)
-	return
+*on_update
+    return
