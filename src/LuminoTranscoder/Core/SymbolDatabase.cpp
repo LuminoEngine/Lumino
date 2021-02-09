@@ -417,7 +417,8 @@ ln::Result MethodSymbol::makeFlatParameters()
 
             // documetation
             auto param = ln::makeRef<ParameterDocumentInfo>();
-            if (!param->init(name, u"in", "instance")) return false;
+			auto desc = ln::String::format(u"{0}", m_ownerType->shortName());
+            if (!param->init(name, u"in", desc)) return false;
             doc->m_flatParams.add(param);
 		}
 		else if (isConstructor()) {
@@ -434,7 +435,8 @@ ln::Result MethodSymbol::makeFlatParameters()
 
             // documetation
             auto param = ln::makeRef<ParameterDocumentInfo>();
-            if (!param->init(name, u"in", "instance")) return false;
+			auto desc = ln::String::format(u"{0} のハンドル", m_ownerType->shortName());
+            if (!param->init(name, u"in", desc)) return false;
             doc->m_flatParams.add(param);
 		}
 		else {

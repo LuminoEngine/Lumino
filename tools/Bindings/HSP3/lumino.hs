@@ -10,7 +10,7 @@ Lumino
 0.9.0
 
 %date
-2021/2/8
+2021/2/9
 
 %author
 lriki
@@ -36,11 +36,12 @@ LNVector3_SetZeros
 LNVector3
 %prm
 vector3
-[in] vector3 : instance
+[in] vector3 : Vector3
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -56,14 +57,15 @@ LNVector3_Set
 LNVector3
 %prm
 vector3, x, y, z
-[in] vector3 : instance
+[in] vector3 : Vector3
 [in] x       : 
 [in] y       : 
 [in] z       : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -79,14 +81,15 @@ get
 LNVector3
 %prm
 vector3, outX, outY, outZ
-[in]  vector3 : instance
+[in]  vector3 : Vector3
 [out] outX    : 
 [out] outY    : 
 [out] outZ    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -102,12 +105,13 @@ LNVector3_Length
 LNVector3
 %prm
 vector3, outReturn
-[in]  vector3   : instance
-[out] outReturn(0) : Vector3 のハンドルを格納する変数。
+[in]  vector3   : Vector3
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -123,12 +127,13 @@ LNVector3_LengthSquared
 LNVector3
 %prm
 vector3, outReturn
-[in]  vector3   : instance
-[out] outReturn(0) : Vector3 のハンドルを格納する変数。
+[in]  vector3   : Vector3
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -144,12 +149,13 @@ LNVector3_MutatingNormalize
 LNVector3
 %prm
 vector3
-[in] vector3 : instance
+[in] vector3 : Vector3
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
 ベクトルの長さが 0 の場合は正規化を行いません。
+
 %href
 
 
@@ -167,11 +173,12 @@ x, y, z, outReturn
 [in]  x         : 
 [in]  y         : 
 [in]  z         : 
-[out] outReturn(0) : Vector3 のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -188,11 +195,12 @@ LNVector3
 %prm
 vec, outReturn
 [in]  vec       : 
-[out] outReturn(0) : Vector3 のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -208,11 +216,12 @@ LNVector4_SetZeros
 LNVector4
 %prm
 vector4
-[in] vector4 : instance
+[in] vector4 : Vector4
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -228,15 +237,16 @@ LNVector4_Set
 LNVector4
 %prm
 vector4, x, y, z, w
-[in] vector4 : instance
+[in] vector4 : Vector4
 [in] x       : 
 [in] y       : 
 [in] z       : 
 [in] w       : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -252,11 +262,12 @@ LNQuaternion_SetZeros
 LNQuaternion
 %prm
 quaternion
-[in] quaternion : instance
+[in] quaternion : Quaternion
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -272,15 +283,16 @@ LNQuaternion_Set
 LNQuaternion
 %prm
 quaternion, x, y, z, w
-[in] quaternion : instance
+[in] quaternion : Quaternion
 [in] x          : 
 [in] y          : 
 [in] z          : 
 [in] w          : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -296,14 +308,15 @@ LNQuaternion_SetFromAxis
 LNQuaternion
 %prm
 quaternion, axis, r
-[in] quaternion : instance
+[in] quaternion : Quaternion
 [in] axis       : 
 [in] r          : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
 axis が単位ベクトルでなければ正規化してから計算を行います。
+
 %href
 
 
@@ -318,11 +331,12 @@ LNMatrix_SetZeros
 LNMatrix
 %prm
 matrix
-[in] matrix : instance
+[in] matrix : Matrix
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -338,7 +352,7 @@ LNMatrix_Set
 LNMatrix
 %prm
 matrix, m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44
-[in] matrix : instance
+[in] matrix : Matrix
 [in] m11    : 
 [in] m12    : 
 [in] m13    : 
@@ -356,9 +370,10 @@ matrix, m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m4
 [in] m43    : 
 [in] m44    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -374,11 +389,12 @@ LNColor_SetZeros
 LNColor
 %prm
 color
-[in] color : instance
+[in] color : Color
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -394,15 +410,16 @@ LNColor_Set
 LNColor
 %prm
 color, r_, g_, b_, a_
-[in] color        : instance
+[in] color        : Color
 [in] r_           : 
 [in] g_           : 
 [in] b_           : 
 [in] a_(1.000000) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -418,11 +435,12 @@ LNColorTone_SetZeros
 LNColorTone
 %prm
 colortone
-[in] colortone : instance
+[in] colortone : ColorTone
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -438,15 +456,16 @@ LNColorTone_Set
 LNColorTone
 %prm
 colortone, r_, g_, b_, s_
-[in] colortone : instance
+[in] colortone : ColorTone
 [in] r_        : 
 [in] g_        : 
 [in] b_        : 
 [in] s_        : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -462,11 +481,12 @@ LNPoint_SetZeros
 LNPoint
 %prm
 point
-[in] point : instance
+[in] point : Point
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -482,13 +502,14 @@ LNPoint_Set
 LNPoint
 %prm
 point, x_, y_
-[in] point : instance
+[in] point : Point
 [in] x_    : 
 [in] y_    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -504,13 +525,14 @@ LNPoint_Get
 LNPoint
 %prm
 point, outX, outY
-[in]  point : instance
+[in]  point : Point
 [out] outX  : 
 [out] outY  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -526,11 +548,12 @@ LNSize_SetZeros
 LNSize
 %prm
 size
-[in] size : instance
+[in] size : Size
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -546,13 +569,14 @@ LNSize_Set
 LNSize
 %prm
 size, w, h
-[in] size : instance
+[in] size : Size
 [in] w    : 
 [in] h    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -568,11 +592,12 @@ LNRect_SetZeros
 LNRect
 %prm
 rect
-[in] rect : instance
+[in] rect : Rect
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -588,15 +613,16 @@ LNRect_Set
 LNRect
 %prm
 rect, x, y, width, height
-[in] rect   : instance
+[in] rect   : Rect
 [in] x      : 
 [in] y      : 
 [in] width  : 
 [in] height : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -612,12 +638,13 @@ LNRect_GetLeft
 LNRect
 %prm
 rect, outReturn
-[in]  rect      : instance
-[out] outReturn(0) : Rect のハンドルを格納する変数。
+[in]  rect      : Rect
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -633,12 +660,13 @@ LNRect_SetSize
 LNRect
 %prm
 rect, size
-[in] rect : instance
+[in] rect : Rect
 [in] size : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -654,12 +682,13 @@ LNRect_GetSize
 LNRect
 %prm
 rect, outReturn
-[in]  rect      : instance
-[out] outReturn(0) : Rect のハンドルを格納する変数。
+[in]  rect      : Rect
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -675,11 +704,12 @@ LNThickness_SetZeros
 LNThickness
 %prm
 thickness
-[in] thickness : instance
+[in] thickness : Thickness
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -695,15 +725,16 @@ LNThickness_Set
 LNThickness
 %prm
 thickness, left_, top_, right_, bottom_
-[in] thickness : instance
+[in] thickness : Thickness
 [in] left_     : 
 [in] top_      : 
 [in] right_    : 
 [in] bottom_   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -719,11 +750,12 @@ LNCornerRadius_SetZeros
 LNCornerRadius
 %prm
 cornerradius
-[in] cornerradius : instance
+[in] cornerradius : CornerRadius
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -739,15 +771,16 @@ LNCornerRadius_Set
 LNCornerRadius
 %prm
 cornerradius, topLeft, topRight, bottomRight, bottomLeft
-[in] cornerradius : instance
+[in] cornerradius : CornerRadius
 [in] topLeft      : 
 [in] topRight     : 
 [in] bottomRight  : 
 [in] bottomLeft   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -763,11 +796,12 @@ LNObject_Release
 LNObject
 %prm
 object
-[in] object : instance
+[in] object : Object のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -783,11 +817,12 @@ LNObject_Retain
 LNObject
 %prm
 object
-[in] object : instance
+[in] object : Object のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -803,12 +838,13 @@ LNObject_GetReferenceCount
 LNObject
 %prm
 object, outReturn
-[in]  object    : instance
-[out] outReturn(0) : Object のハンドルを格納する変数。
+[in]  object    : Object のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -827,9 +863,14 @@ callback, outPromiseFailureDelegate
 [in]  callback                  : 
 [out] outPromiseFailureDelegate(0) : 作成された PromiseFailureDelegate のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PromiseFailureDelegate は Object のサブモジュールです。PromiseFailureDelegate のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -847,9 +888,14 @@ LNVariant
 outVariant
 [out] outVariant(0) : 作成された Variant のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Variant は Object のサブモジュールです。Variant のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -865,12 +911,17 @@ setInt
 LNVariant
 %prm
 variant, value
-[in] variant : instance
+[in] variant : Variant のハンドル
 [in] value   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Variant は Object のサブモジュールです。Variant のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -886,12 +937,17 @@ getInt
 LNVariant
 %prm
 variant, outReturn
-[in]  variant   : instance
-[out] outReturn(0) : Variant のハンドルを格納する変数。
+[in]  variant   : Variant のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Variant は Object のサブモジュールです。Variant のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -910,9 +966,14 @@ callback, outZVTestDelegate1
 [in]  callback           : 
 [out] outZVTestDelegate1(0) : 作成された ZVTestDelegate1 のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestDelegate1 は Object のサブモジュールです。ZVTestDelegate1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -931,9 +992,14 @@ callback, outZVTestDelegate2
 [in]  callback           : 
 [out] outZVTestDelegate2(0) : 作成された ZVTestDelegate2 のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestDelegate2 は Object のサブモジュールです。ZVTestDelegate2 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -952,9 +1018,14 @@ callback, outZVTestDelegate3
 [in]  callback           : 
 [out] outZVTestDelegate3(0) : 作成された ZVTestDelegate3 のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestDelegate3 は Object のサブモジュールです。ZVTestDelegate3 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -973,9 +1044,14 @@ callback, outZVTestEventHandler1
 [in]  callback               : 
 [out] outZVTestEventHandler1(0) : 作成された ZVTestEventHandler1 のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestEventHandler1 は Object のサブモジュールです。ZVTestEventHandler1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -994,9 +1070,14 @@ callback, outZVTestEventHandler2
 [in]  callback               : 
 [out] outZVTestEventHandler2(0) : 作成された ZVTestEventHandler2 のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestEventHandler2 は Object のサブモジュールです。ZVTestEventHandler2 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1012,12 +1093,17 @@ LNZVTestPromise1_ThenWith
 LNZVTestPromise1
 %prm
 zvtestpromise1, callback
-[in] zvtestpromise1 : instance
+[in] zvtestpromise1 : ZVTestPromise1 のハンドル
 [in] callback       : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestPromise1 は Object のサブモジュールです。ZVTestPromise1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1033,12 +1119,17 @@ LNZVTestPromise1_CatchWith
 LNZVTestPromise1
 %prm
 zvtestpromise1, callback
-[in] zvtestpromise1 : instance
+[in] zvtestpromise1 : ZVTestPromise1 のハンドル
 [in] callback       : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestPromise1 は Object のサブモジュールです。ZVTestPromise1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1054,12 +1145,17 @@ LNZVTestPromise2_ThenWith
 LNZVTestPromise2
 %prm
 zvtestpromise2, callback
-[in] zvtestpromise2 : instance
+[in] zvtestpromise2 : ZVTestPromise2 のハンドル
 [in] callback       : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestPromise2 は Object のサブモジュールです。ZVTestPromise2 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1075,12 +1171,17 @@ LNZVTestPromise2_CatchWith
 LNZVTestPromise2
 %prm
 zvtestpromise2, callback
-[in] zvtestpromise2 : instance
+[in] zvtestpromise2 : ZVTestPromise2 のハンドル
 [in] callback       : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestPromise2 は Object のサブモジュールです。ZVTestPromise2 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1098,9 +1199,14 @@ LNZVTestClass1
 outZVTestClass1
 [out] outZVTestClass1(0) : 作成された ZVTestClass1 のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1116,12 +1222,17 @@ setTestDelegate1 method.
 LNZVTestClass1
 %prm
 zvtestclass1, value
-[in] zvtestclass1 : instance
+[in] zvtestclass1 : ZVTestClass1 のハンドル
 [in] value        : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1137,12 +1248,17 @@ setTestDelegate2 method.
 LNZVTestClass1
 %prm
 zvtestclass1, value
-[in] zvtestclass1 : instance
+[in] zvtestclass1 : ZVTestClass1 のハンドル
 [in] value        : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1158,12 +1274,17 @@ setTestDelegate3 method.
 LNZVTestClass1
 %prm
 zvtestclass1, value
-[in] zvtestclass1 : instance
+[in] zvtestclass1 : ZVTestClass1 のハンドル
 [in] value        : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1179,12 +1300,17 @@ callTestDelegate1 method.
 LNZVTestClass1
 %prm
 zvtestclass1, a
-[in] zvtestclass1 : instance
+[in] zvtestclass1 : ZVTestClass1 のハンドル
 [in] a            : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1200,14 +1326,19 @@ callTestDelegate2 method.
 LNZVTestClass1
 %prm
 zvtestclass1, a, b, outReturn
-[in]  zvtestclass1 : instance
+[in]  zvtestclass1 : ZVTestClass1 のハンドル
 [in]  a            : 
 [in]  b            : 
-[out] outReturn(0) : ZVTestClass1 のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1223,11 +1354,16 @@ callTestDelegate3 method. (create object in internal)
 LNZVTestClass1
 %prm
 zvtestclass1
-[in] zvtestclass1 : instance
+[in] zvtestclass1 : ZVTestClass1 のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1244,11 +1380,16 @@ LNZVTestClass1
 %prm
 filePath, outReturn
 [in]  filePath  : 
-[out] outReturn(0) : ZVTestClass1 のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1264,12 +1405,17 @@ Promise test method. (instance)
 LNZVTestClass1
 %prm
 zvtestclass1, outReturn
-[in]  zvtestclass1 : instance
-[out] outReturn(0) : ZVTestClass1 のハンドルを格納する変数。
+[in]  zvtestclass1 : ZVTestClass1 のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1285,12 +1431,17 @@ Promise test method.
 LNZVTestClass1
 %prm
 zvtestclass1, outReturn
-[in]  zvtestclass1 : instance
-[out] outReturn(0) : ZVTestClass1 のハンドルを格納する変数。
+[in]  zvtestclass1 : ZVTestClass1 のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1306,13 +1457,18 @@ connectOnEvent1 method.
 LNZVTestClass1
 %prm
 zvtestclass1, handler, outReturn
-[in]  zvtestclass1 : instance
+[in]  zvtestclass1 : ZVTestClass1 のハンドル
 [in]  handler      : 
-[out] outReturn(0) : ZVTestClass1 のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1328,11 +1484,16 @@ raiseEvent1 method.
 LNZVTestClass1
 %prm
 zvtestclass1
-[in] zvtestclass1 : instance
+[in] zvtestclass1 : ZVTestClass1 のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1348,13 +1509,18 @@ connectOnEvent2 method.
 LNZVTestClass1
 %prm
 zvtestclass1, handler, outReturn
-[in]  zvtestclass1 : instance
+[in]  zvtestclass1 : ZVTestClass1 のハンドル
 [in]  handler      : 
-[out] outReturn(0) : ZVTestClass1 のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1370,11 +1536,16 @@ raiseEvent2 method.
 LNZVTestClass1
 %prm
 zvtestclass1
-[in] zvtestclass1 : instance
+[in] zvtestclass1 : ZVTestClass1 のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestClass1 は Object のサブモジュールです。ZVTestClass1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1392,9 +1563,14 @@ LNZVTestEventArgs1
 outZVTestEventArgs1
 [out] outZVTestEventArgs1(0) : 作成された ZVTestEventArgs1 のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestEventArgs1 は Object のサブモジュールです。ZVTestEventArgs1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1413,9 +1589,14 @@ v, outZVTestEventArgs1
 [in]  v                   : 
 [out] outZVTestEventArgs1(0) : 作成された ZVTestEventArgs1 のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestEventArgs1 は Object のサブモジュールです。ZVTestEventArgs1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1431,12 +1612,17 @@ value method.
 LNZVTestEventArgs1
 %prm
 zvtesteventargs1, outReturn
-[in]  zvtesteventargs1 : instance
-[out] outReturn(0)     : ZVTestEventArgs1 のハンドルを格納する変数。
+[in]  zvtesteventargs1 : ZVTestEventArgs1 のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ZVTestEventArgs1 は Object のサブモジュールです。ZVTestEventArgs1 のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1470,9 +1656,10 @@ level
                 LN_LOG_LEVEL_DISBLE
                 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -1489,9 +1676,10 @@ LNLog
 %prm
 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -1527,9 +1715,10 @@ level, tag, text
 [in] tag   : 
 [in] text  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -1548,9 +1737,14 @@ target, outAssetModel
 [in]  target        : 
 [out] outAssetModel(0) : 作成された AssetModel のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+AssetModel は Object のサブモジュールです。AssetModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1566,12 +1760,17 @@ target
 LNAssetModel
 %prm
 assetmodel, outReturn
-[in]  assetmodel : instance
-[out] outReturn(0) : AssetModel のハンドルを格納する変数。
+[in]  assetmodel : AssetModel のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+AssetModel は Object のサブモジュールです。AssetModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1590,9 +1789,10 @@ asset, filePath
 [in] asset    : 
 [in] filePath : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -1609,11 +1809,12 @@ LNAssets
 %prm
 filePath, outReturn
 [in]  filePath  : 
-[out] outReturn(0) : Assets のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -1630,12 +1831,13 @@ LNAssets
 %prm
 filePath, outReturn
 [in]  filePath  : 
-[out] outReturn(0) : Assets のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
 ファイルの拡張子は .lnasset です。ただし、filePath に指定する値は拡張子を省略可能です。
+
 %href
 
 
@@ -1653,10 +1855,11 @@ filePath, obj
 [in] filePath : 
 [in] obj      : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
 このメソッドは Lumino の型システムを使用しないオブジェクトの読み込みに使用します。
+
 %href
 
 
@@ -1683,11 +1886,12 @@ filePath, encoding, outReturn
                                               UTF-8 (BOM 無し)
                                               LN_ENCODING_TYPE_SJIS
                                               日本語 (シフト JIS) -- cp932(MS932) Windows-31J ※MS実装
-[out] outReturn(0)                       : Assets のハンドルを格納する変数。
+[out] outReturn(0)                       : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -1703,12 +1907,17 @@ LNSound_SetVolume
 LNSound
 %prm
 sound, value
-[in] sound : instance
+[in] sound : Sound のハンドル
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sound は Object のサブモジュールです。Sound のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1724,12 +1933,17 @@ LNSound_GetVolume
 LNSound
 %prm
 sound, outReturn
-[in]  sound     : instance
-[out] outReturn(0) : Sound のハンドルを格納する変数。
+[in]  sound     : Sound のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sound は Object のサブモジュールです。Sound のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1745,12 +1959,17 @@ LNSound_SetPitch
 LNSound
 %prm
 sound, value
-[in] sound : instance
+[in] sound : Sound のハンドル
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sound は Object のサブモジュールです。Sound のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1766,12 +1985,17 @@ LNSound_GetPitch
 LNSound
 %prm
 sound, outReturn
-[in]  sound     : instance
-[out] outReturn(0) : Sound のハンドルを格納する変数。
+[in]  sound     : Sound のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sound は Object のサブモジュールです。Sound のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1787,12 +2011,17 @@ LNSound_SetLoopEnabled
 LNSound
 %prm
 sound, enabled
-[in] sound   : instance
+[in] sound   : Sound のハンドル
 [in] enabled : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sound は Object のサブモジュールです。Sound のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1808,12 +2037,17 @@ LNSound_IsLoopEnabled
 LNSound
 %prm
 sound, outReturn
-[in]  sound     : instance
-[out] outReturn(0) : Sound のハンドルを格納する変数。
+[in]  sound     : Sound のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sound は Object のサブモジュールです。Sound のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1829,13 +2063,18 @@ LNSound_SetLoopRange
 LNSound
 %prm
 sound, begin, length
-[in] sound  : instance
+[in] sound  : Sound のハンドル
 [in] begin  : 
 [in] length : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sound は Object のサブモジュールです。Sound のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1851,11 +2090,16 @@ LNSound_Play
 LNSound
 %prm
 sound
-[in] sound : instance
+[in] sound : Sound のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sound は Object のサブモジュールです。Sound のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1871,11 +2115,16 @@ LNSound_Stop
 LNSound
 %prm
 sound
-[in] sound : instance
+[in] sound : Sound のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sound は Object のサブモジュールです。Sound のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1891,11 +2140,16 @@ LNSound_Pause
 LNSound
 %prm
 sound
-[in] sound : instance
+[in] sound : Sound のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sound は Object のサブモジュールです。Sound のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1911,11 +2165,16 @@ LNSound_Resume
 LNSound
 %prm
 sound
-[in] sound : instance
+[in] sound : Sound のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sound は Object のサブモジュールです。Sound のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1931,7 +2190,7 @@ LNSound_FadeVolume
 LNSound
 %prm
 sound, targetVolume, time, behavior
-[in] sound        : instance
+[in] sound        : Sound のハンドル
 [in] targetVolume : 
 [in] time         : 
 [in] behavior     : 
@@ -1946,9 +2205,14 @@ sound, targetVolume, time, behavior
                        LN_SOUND_FADE_BEHAVIOR_PAUSE_RESET
                        一時停止して、次の再生に備えてサウンドの音量を元の値に戻す
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sound は Object のサブモジュールです。Sound のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -1969,9 +2233,10 @@ filePath, volume, pitch, fadeTime
 [in] pitch(1.000000)    : 
 [in] fadeTime(0.000000) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -1989,9 +2254,10 @@ LNAudio
 fadeTime
 [in] fadeTime(0.000000) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -2012,9 +2278,10 @@ filePath, volume, pitch, fadeTime
 [in] pitch(1.000000)    : 
 [in] fadeTime(0.000000) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -2032,9 +2299,10 @@ LNAudio
 fadeTime
 [in] fadeTime(0.000000) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -2054,9 +2322,10 @@ filePath, volume, pitch
 [in] volume(1.000000) : 
 [in] pitch(1.000000)  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -2073,9 +2342,10 @@ LNAudio
 %prm
 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -2095,9 +2365,10 @@ filePath, volume, pitch
 [in] volume(1.000000) : 
 [in] pitch(1.000000)  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -2119,9 +2390,10 @@ filePath, position, distance, volume, pitch
 [in] volume(1.000000) : 
 [in] pitch(1.000000)  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -2138,9 +2410,10 @@ LNAudio
 %prm
 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -2159,9 +2432,14 @@ callback, outTexture2DDelegate
 [in]  callback             : 
 [out] outTexture2DDelegate(0) : 作成された Texture2DDelegate のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Texture2DDelegate は Object のサブモジュールです。Texture2DDelegate のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2177,12 +2455,17 @@ LNTexture2DPromise_ThenWith
 LNTexture2DPromise
 %prm
 texture2dpromise, callback
-[in] texture2dpromise : instance
+[in] texture2dpromise : Texture2DPromise のハンドル
 [in] callback         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Texture2DPromise は Object のサブモジュールです。Texture2DPromise のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2198,12 +2481,17 @@ LNTexture2DPromise_CatchWith
 LNTexture2DPromise
 %prm
 texture2dpromise, callback
-[in] texture2dpromise : instance
+[in] texture2dpromise : Texture2DPromise のハンドル
 [in] callback         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Texture2DPromise は Object のサブモジュールです。Texture2DPromise のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2219,7 +2507,7 @@ activeGraphicsAPI
 LNGraphics
 %prm
 outReturn
-[out] outReturn(0) : Graphics のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
                      LN_GRAPHICS_API_DEFAULT
                      自動選択
                      LN_GRAPHICS_API_OPEN_GL
@@ -2229,9 +2517,10 @@ outReturn
                      LN_GRAPHICS_API_DIRECT_X12
                      Vulkan
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -2251,9 +2540,14 @@ width, height, outTexture2D
 [in]  height       : 
 [out] outTexture2D(0) : 作成された Texture2D のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Texture2D は Texture のサブモジュールです。Texture2D のハンドルを使って、 LNTexture_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2290,9 +2584,14 @@ width, height, format, outTexture2D
                         32bit の符号あり整数フォーマット
 [out] outTexture2D(0) : 作成された Texture2D のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Texture2D は Texture のサブモジュールです。Texture2D のハンドルを使って、 LNTexture_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2309,12 +2608,17 @@ LNTexture2D
 %prm
 filePath, outReturn
 [in]  filePath  : 
-[out] outReturn(0) : Texture2D のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
 サポートしているフォーマットは次の通りです。PNG(.png), JPG(.jpg), TGA(.tga), BMP(.bmp), GIF(.gif)
+
+備考
+--------------------
+Texture2D は Texture のサブモジュールです。Texture2D のハンドルを使って、 LNTexture_ から始まるすべての命令を実行できます。
+
 %href
 
 
@@ -2330,11 +2634,16 @@ LNTexture2D
 %prm
 code, outReturn
 [in]  code      : 
-[out] outReturn(0) : Texture2D のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Texture2D は Texture のサブモジュールです。Texture2D のハンドルを使って、 LNTexture_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2352,11 +2661,16 @@ LNShader
 filePath, settings, outReturn
 [in]  filePath                 : 
 [in]  settings(LN_NULL_HANDLE) : 
-[out] outReturn(0)             : Shader のハンドルを格納する変数。
+[out] outReturn(0)             : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Shader は AssetObject のサブモジュールです。Shader のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2372,13 +2686,18 @@ LNShader_SetFloat
 LNShader
 %prm
 shader, parameterName, value
-[in] shader        : instance
+[in] shader        : Shader のハンドル
 [in] parameterName : 
 [in] value         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Shader は AssetObject のサブモジュールです。Shader のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2394,13 +2713,18 @@ LNShader_SetVector3
 LNShader
 %prm
 shader, parameterName, value
-[in] shader        : instance
+[in] shader        : Shader のハンドル
 [in] parameterName : 
 [in] value         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Shader は AssetObject のサブモジュールです。Shader のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2416,13 +2740,18 @@ LNShader_SetVector4
 LNShader
 %prm
 shader, parameterName, value
-[in] shader        : instance
+[in] shader        : Shader のハンドル
 [in] parameterName : 
 [in] value         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Shader は AssetObject のサブモジュールです。Shader のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2438,13 +2767,18 @@ setTexture
 LNShader
 %prm
 shader, parameterName, value
-[in] shader        : instance
+[in] shader        : Shader のハンドル
 [in] parameterName : 
 [in] value         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Shader は AssetObject のサブモジュールです。Shader のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2462,9 +2796,14 @@ LNMaterial
 outMaterial
 [out] outMaterial(0) : 作成された Material のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Material は Object のサブモジュールです。Material のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2480,12 +2819,17 @@ mainTexture
 LNMaterial
 %prm
 material, value
-[in] material : instance
+[in] material : Material のハンドル
 [in] value    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Material は Object のサブモジュールです。Material のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2501,12 +2845,17 @@ mainTexture
 LNMaterial
 %prm
 material, outReturn
-[in]  material  : instance
-[out] outReturn(0) : Material のハンドルを格納する変数。
+[in]  material  : Material のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Material は Object のサブモジュールです。Material のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2522,12 +2871,17 @@ setColor
 LNMaterial
 %prm
 material, value
-[in] material : instance
+[in] material : Material のハンドル
 [in] value    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Material は Object のサブモジュールです。Material のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2543,12 +2897,17 @@ setRoughness
 LNMaterial
 %prm
 material, value
-[in] material : instance
+[in] material : Material のハンドル
 [in] value    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Material は Object のサブモジュールです。Material のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2564,12 +2923,17 @@ setMetallic
 LNMaterial
 %prm
 material, value
-[in] material : instance
+[in] material : Material のハンドル
 [in] value    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Material は Object のサブモジュールです。Material のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2585,12 +2949,17 @@ setEmissive
 LNMaterial
 %prm
 material, value
-[in] material : instance
+[in] material : Material のハンドル
 [in] value    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Material は Object のサブモジュールです。Material のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2606,16 +2975,21 @@ setShadingModel
 LNMaterial
 %prm
 material, value
-[in] material : instance
+[in] material : Material のハンドル
 [in] value    : 
                    LN_SHADING_MODEL_DEFAULT
                    Default
                    LN_SHADING_MODEL_UNLIT
                    Unlit
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Material は Object のサブモジュールです。Material のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2631,16 +3005,21 @@ shadingModel
 LNMaterial
 %prm
 material, outReturn
-[in]  material  : instance
-[out] outReturn(0) : Material のハンドルを格納する変数。
+[in]  material  : Material のハンドル
+[out] outReturn(0) : 結果を格納する変数。
                      LN_SHADING_MODEL_DEFAULT
                      Default
                      LN_SHADING_MODEL_UNLIT
                      Unlit
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Material は Object のサブモジュールです。Material のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2656,12 +3035,17 @@ shader
 LNMaterial
 %prm
 material, shader
-[in] material : instance
+[in] material : Material のハンドル
 [in] shader   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Material は Object のサブモジュールです。Material のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2677,12 +3061,17 @@ shader
 LNMaterial
 %prm
 material, outReturn
-[in]  material  : instance
-[out] outReturn(0) : Material のハンドルを格納する変数。
+[in]  material  : Material のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Material は Object のサブモジュールです。Material のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2698,12 +3087,17 @@ LNMeshNode_SetVisible
 LNMeshNode
 %prm
 meshnode, value
-[in] meshnode : instance
+[in] meshnode : MeshNode のハンドル
 [in] value    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+MeshNode は Object のサブモジュールです。MeshNode のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2719,12 +3113,17 @@ LNMeshNode_IsVisible
 LNMeshNode
 %prm
 meshnode, outReturn
-[in]  meshnode  : instance
-[out] outReturn(0) : MeshNode のハンドルを格納する変数。
+[in]  meshnode  : MeshNode のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+MeshNode は Object のサブモジュールです。MeshNode のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2740,13 +3139,18 @@ LNAnimationController_AddClip
 LNAnimationController
 %prm
 animationcontroller, animationClip, outReturn
-[in]  animationcontroller : instance
+[in]  animationcontroller : AnimationController のハンドル
 [in]  animationClip       : 
-[out] outReturn(0)        : AnimationController のハンドルを格納する変数。
+[out] outReturn(0)        : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+AnimationController は Object のサブモジュールです。AnimationController のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2762,13 +3166,18 @@ play
 LNAnimationController
 %prm
 animationcontroller, state, duration
-[in] animationcontroller : instance
+[in] animationcontroller : AnimationController のハンドル
 [in] state               : 
 [in] duration(0.300000)  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+AnimationController は Object のサブモジュールです。AnimationController のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2786,11 +3195,16 @@ LNMeshModel
 filePath, settings, outReturn
 [in]  filePath                 : 
 [in]  settings(LN_NULL_HANDLE) : 
-[out] outReturn(0)             : MeshModel のハンドルを格納する変数。
+[out] outReturn(0)             : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+MeshModel は Object のサブモジュールです。MeshModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2806,13 +3220,18 @@ findNode
 LNMeshModel
 %prm
 meshmodel, name, outReturn
-[in]  meshmodel : instance
+[in]  meshmodel : MeshModel のハンドル
 [in]  name      : 
-[out] outReturn(0) : MeshModel のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+MeshModel は Object のサブモジュールです。MeshModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2828,13 +3247,18 @@ findMaterial
 LNMeshModel
 %prm
 meshmodel, name, outReturn
-[in]  meshmodel : instance
+[in]  meshmodel : MeshModel のハンドル
 [in]  name      : 
-[out] outReturn(0) : MeshModel のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+MeshModel は Object のサブモジュールです。MeshModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2850,12 +3274,17 @@ materialCount
 LNMeshModel
 %prm
 meshmodel, outReturn
-[in]  meshmodel : instance
-[out] outReturn(0) : MeshModel のハンドルを格納する変数。
+[in]  meshmodel : MeshModel のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+MeshModel は Object のサブモジュールです。MeshModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2871,13 +3300,18 @@ load
 LNMeshModel
 %prm
 meshmodel, index, outReturn
-[in]  meshmodel : instance
+[in]  meshmodel : MeshModel のハンドル
 [in]  index     : 
-[out] outReturn(0) : MeshModel のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+MeshModel は Object のサブモジュールです。MeshModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2893,12 +3327,17 @@ animationController
 LNMeshModel
 %prm
 meshmodel, outReturn
-[in]  meshmodel : instance
-[out] outReturn(0) : MeshModel のハンドルを格納する変数。
+[in]  meshmodel : MeshModel のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+MeshModel は Object のサブモジュールです。MeshModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2916,9 +3355,14 @@ LNMeshImportSettings
 outMeshImportSettings
 [out] outMeshImportSettings(0) : 作成された MeshImportSettings のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+MeshImportSettings は Object のサブモジュールです。MeshImportSettings のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2937,9 +3381,14 @@ size, outBoxCollisionShape
 [in]  size                 : 
 [out] outBoxCollisionShape(0) : 作成された BoxCollisionShape のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+BoxCollisionShape は CollisionShape のサブモジュールです。BoxCollisionShape のハンドルを使って、 LNCollisionShape_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2960,9 +3409,14 @@ width, height, depth, outBoxCollisionShape
 [in]  depth                : 
 [out] outBoxCollisionShape(0) : 作成された BoxCollisionShape のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+BoxCollisionShape は CollisionShape のサブモジュールです。BoxCollisionShape のハンドルを使って、 LNCollisionShape_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -2978,13 +3432,18 @@ LNAnimationCurve_Evaluate
 LNAnimationCurve
 %prm
 animationcurve, time, outReturn
-[in]  animationcurve : instance
+[in]  animationcurve : AnimationCurve のハンドル
 [in]  time           : 
-[out] outReturn(0)   : AnimationCurve のハンドルを格納する変数。
+[out] outReturn(0)   : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+AnimationCurve は Object のサブモジュールです。AnimationCurve のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3002,9 +3461,14 @@ LNKeyFrameAnimationCurve
 outKeyFrameAnimationCurve
 [out] outKeyFrameAnimationCurve(0) : 作成された KeyFrameAnimationCurve のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+KeyFrameAnimationCurve は AnimationCurve のサブモジュールです。KeyFrameAnimationCurve のハンドルを使って、 LNAnimationCurve_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3020,7 +3484,7 @@ LNKeyFrameAnimationCurve_AddKeyFrame
 LNKeyFrameAnimationCurve
 %prm
 keyframeanimationcurve, time, value, rightTangentMode, tangent
-[in] keyframeanimationcurve                   : instance
+[in] keyframeanimationcurve                   : KeyFrameAnimationCurve のハンドル
 [in] time                                     : 
 [in] value                                    : 
 [in] rightTangentMode(LN_TANGENT_MODE_LINEAR) : 
@@ -3034,10 +3498,15 @@ keyframeanimationcurve, time, value, rightTangentMode, tangent
                                                    補間なし
 [in] tangent(0.000000)                        : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
 rightTangentMode は、新しく追加するキーフレームの右側の補間方法です。新しく追加するキーフレームの左側の保管方法は、そのひとつ前のキーフレームの右側の保管方法が設定されます。
+
+備考
+--------------------
+KeyFrameAnimationCurve は AnimationCurve のサブモジュールです。KeyFrameAnimationCurve のハンドルを使って、 LNAnimationCurve_ から始まるすべての命令を実行できます。
+
 %href
 
 
@@ -3053,11 +3522,16 @@ LNAnimationClip
 %prm
 filePath, outReturn
 [in]  filePath  : 
-[out] outReturn(0) : AnimationClip のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+AnimationClip は AssetObject のサブモジュールです。AnimationClip のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3073,7 +3547,7 @@ LNAnimationClip_SetWrapMode
 LNAnimationClip
 %prm
 animationclip, value
-[in] animationclip : instance
+[in] animationclip : AnimationClip のハンドル
 [in] value         : 
                         LN_ANIMATION_WRAP_MODE_ONCE
                         繰り返しを行わず、1度だけ再生します。
@@ -3082,9 +3556,14 @@ animationclip, value
                         LN_ANIMATION_WRAP_MODE_ALTERNATE
                         最後まで再生された後、逆方向に戻ってループします。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+AnimationClip は AssetObject のサブモジュールです。AnimationClip のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3100,8 +3579,8 @@ LNAnimationClip_GetWrapMode
 LNAnimationClip
 %prm
 animationclip, outReturn
-[in]  animationclip : instance
-[out] outReturn(0)  : AnimationClip のハンドルを格納する変数。
+[in]  animationclip : AnimationClip のハンドル
+[out] outReturn(0)  : 結果を格納する変数。
                          LN_ANIMATION_WRAP_MODE_ONCE
                          繰り返しを行わず、1度だけ再生します。
                          LN_ANIMATION_WRAP_MODE_LOOP
@@ -3109,9 +3588,14 @@ animationclip, outReturn
                          LN_ANIMATION_WRAP_MODE_ALTERNATE
                          最後まで再生された後、逆方向に戻ってループします。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+AnimationClip は AssetObject のサブモジュールです。AnimationClip のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3127,7 +3611,7 @@ LNAnimationClip_SetHierarchicalAnimationMode
 LNAnimationClip
 %prm
 animationclip, value
-[in] animationclip : instance
+[in] animationclip : AnimationClip のハンドル
 [in] value         : 
                         LN_HIERARCHICAL_ANIMATION_MODE_ALLOW_TRANSLATION_ONLY_ROOT
                         ルートノードのみ、平行移動を有効化します。
@@ -3138,9 +3622,14 @@ animationclip, value
                         LN_HIERARCHICAL_ANIMATION_MODE_DISABLE_TRANSLATION
                         平行移動を無効化します。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+AnimationClip は AssetObject のサブモジュールです。AnimationClip のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3156,8 +3645,8 @@ LNAnimationClip_GetHierarchicalAnimationMode
 LNAnimationClip
 %prm
 animationclip, outReturn
-[in]  animationclip : instance
-[out] outReturn(0)  : AnimationClip のハンドルを格納する変数。
+[in]  animationclip : AnimationClip のハンドル
+[out] outReturn(0)  : 結果を格納する変数。
                          LN_HIERARCHICAL_ANIMATION_MODE_ALLOW_TRANSLATION_ONLY_ROOT
                          ルートノードのみ、平行移動を有効化します。
                          LN_HIERARCHICAL_ANIMATION_MODE_ALLOW_TRANSLATION_ONLY_ROOT_Y
@@ -3167,9 +3656,14 @@ animationclip, outReturn
                          LN_HIERARCHICAL_ANIMATION_MODE_DISABLE_TRANSLATION
                          平行移動を無効化します。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+AnimationClip は AssetObject のサブモジュールです。AnimationClip のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3187,9 +3681,14 @@ LNParticleEmitterModel
 outParticleEmitterModel
 [out] outParticleEmitterModel(0) : 作成された ParticleEmitterModel のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitterModel は Object のサブモジュールです。ParticleEmitterModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3205,12 +3704,17 @@ LNParticleEmitterModel_SetMaxParticles
 LNParticleEmitterModel
 %prm
 particleemittermodel, count
-[in] particleemittermodel : instance
+[in] particleemittermodel : ParticleEmitterModel のハンドル
 [in] count                : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitterModel は Object のサブモジュールです。ParticleEmitterModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3226,12 +3730,17 @@ LNParticleEmitterModel_SetSpawnRate
 LNParticleEmitterModel
 %prm
 particleemittermodel, rate
-[in] particleemittermodel : instance
+[in] particleemittermodel : ParticleEmitterModel のハンドル
 [in] rate                 : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitterModel は Object のサブモジュールです。ParticleEmitterModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3247,12 +3756,17 @@ LNParticleEmitterModel_SetLifeTime
 LNParticleEmitterModel
 %prm
 particleemittermodel, time
-[in] particleemittermodel : instance
+[in] particleemittermodel : ParticleEmitterModel のハンドル
 [in] time                 : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitterModel は Object のサブモジュールです。ParticleEmitterModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3268,12 +3782,17 @@ setupBoxShape
 LNParticleEmitterModel
 %prm
 particleemittermodel, size
-[in] particleemittermodel : instance
+[in] particleemittermodel : ParticleEmitterModel のハンドル
 [in] size                 : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitterModel は Object のサブモジュールです。ParticleEmitterModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3289,12 +3808,17 @@ LNParticleEmitterModel_SetSize
 LNParticleEmitterModel
 %prm
 particleemittermodel, value
-[in] particleemittermodel : instance
+[in] particleemittermodel : ParticleEmitterModel のハンドル
 [in] value                : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitterModel は Object のサブモジュールです。ParticleEmitterModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3310,12 +3834,17 @@ LNParticleEmitterModel_SetSizeVelocity
 LNParticleEmitterModel
 %prm
 particleemittermodel, value
-[in] particleemittermodel : instance
+[in] particleemittermodel : ParticleEmitterModel のハンドル
 [in] value                : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitterModel は Object のサブモジュールです。ParticleEmitterModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3331,12 +3860,17 @@ LNParticleEmitterModel_SetSizeAcceleration
 LNParticleEmitterModel
 %prm
 particleemittermodel, value
-[in] particleemittermodel : instance
+[in] particleemittermodel : ParticleEmitterModel のハンドル
 [in] value                : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitterModel は Object のサブモジュールです。ParticleEmitterModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3352,12 +3886,17 @@ LNParticleEmitterModel_SetForwardVelocityMin
 LNParticleEmitterModel
 %prm
 particleemittermodel, value
-[in] particleemittermodel : instance
+[in] particleemittermodel : ParticleEmitterModel のハンドル
 [in] value                : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitterModel は Object のサブモジュールです。ParticleEmitterModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3373,12 +3912,17 @@ LNParticleEmitterModel_SetForwardVelocityMax
 LNParticleEmitterModel
 %prm
 particleemittermodel, value
-[in] particleemittermodel : instance
+[in] particleemittermodel : ParticleEmitterModel のハンドル
 [in] value                : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitterModel は Object のサブモジュールです。ParticleEmitterModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3394,12 +3938,17 @@ LNParticleEmitterModel_SetForwardScale
 LNParticleEmitterModel
 %prm
 particleemittermodel, value
-[in] particleemittermodel : instance
+[in] particleemittermodel : ParticleEmitterModel のハンドル
 [in] value                : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitterModel は Object のサブモジュールです。ParticleEmitterModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3415,7 +3964,7 @@ LNParticleEmitterModel_SetGeometryDirection
 LNParticleEmitterModel
 %prm
 particleemittermodel, value
-[in] particleemittermodel : instance
+[in] particleemittermodel : ParticleEmitterModel のハンドル
 [in] value                : 
                                LN_PARTICLE_GEOMETRY_DIRECTION_TO_VIEW
                                常に視点方向を向く
@@ -3426,9 +3975,14 @@ particleemittermodel, value
                                LN_PARTICLE_GEOMETRY_DIRECTION_HORIZONTAL_BILLBOARD
                                XZ 軸上の「床」平面と平行になります。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitterModel は Object のサブモジュールです。ParticleEmitterModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3444,12 +3998,17 @@ setupSpriteModule
 LNParticleEmitterModel
 %prm
 particleemittermodel, material
-[in] particleemittermodel : instance
+[in] particleemittermodel : ParticleEmitterModel のハンドル
 [in] material             : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitterModel は Object のサブモジュールです。ParticleEmitterModel のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3467,9 +4026,14 @@ LNParticleModel
 outParticleModel
 [out] outParticleModel(0) : 作成された ParticleModel のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleModel は EffectResource のサブモジュールです。ParticleModel のハンドルを使って、 LNEffectResource_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3485,12 +4049,17 @@ setLoop
 LNParticleModel
 %prm
 particlemodel, value
-[in] particlemodel : instance
+[in] particlemodel : ParticleModel のハンドル
 [in] value         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleModel は EffectResource のサブモジュールです。ParticleModel のハンドルを使って、 LNEffectResource_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3506,12 +4075,17 @@ setLoop
 LNParticleModel
 %prm
 particlemodel, outReturn
-[in]  particlemodel : instance
-[out] outReturn(0)  : ParticleModel のハンドルを格納する変数。
+[in]  particlemodel : ParticleModel のハンドル
+[out] outReturn(0)  : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleModel は EffectResource のサブモジュールです。ParticleModel のハンドルを使って、 LNEffectResource_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3527,12 +4101,17 @@ setLoop
 LNParticleModel
 %prm
 particlemodel, emitter
-[in] particlemodel : instance
+[in] particlemodel : ParticleModel のハンドル
 [in] emitter       : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleModel は EffectResource のサブモジュールです。ParticleModel のハンドルを使って、 LNEffectResource_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3548,12 +4127,17 @@ LNVisualComponent_SetVisible
 LNVisualComponent
 %prm
 visualcomponent, value
-[in] visualcomponent : instance
+[in] visualcomponent : VisualComponent のハンドル
 [in] value           : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+VisualComponent は Component のサブモジュールです。VisualComponent のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3569,12 +4153,17 @@ LNVisualComponent_IsVisible
 LNVisualComponent
 %prm
 visualcomponent, outReturn
-[in]  visualcomponent : instance
-[out] outReturn(0)    : VisualComponent のハンドルを格納する変数。
+[in]  visualcomponent : VisualComponent のハンドル
+[out] outReturn(0)    : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+VisualComponent は Component のサブモジュールです。VisualComponent のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3590,12 +4179,17 @@ LNSpriteComponent_SetTexture
 LNSpriteComponent
 %prm
 spritecomponent, texture
-[in] spritecomponent : instance
+[in] spritecomponent : SpriteComponent のハンドル
 [in] texture         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpriteComponent は VisualComponent のサブモジュールです。SpriteComponent のハンドルを使って、 LNVisualComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3614,9 +4208,14 @@ callback, outCollisionEventHandler
 [in]  callback                 : 
 [out] outCollisionEventHandler(0) : 作成された CollisionEventHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CollisionEventHandler は Object のサブモジュールです。CollisionEventHandler のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3634,9 +4233,14 @@ LNCharacterController
 outCharacterController
 [out] outCharacterController(0) : 作成された CharacterController のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3652,12 +4256,17 @@ walkVelocity
 LNCharacterController
 %prm
 charactercontroller, value
-[in] charactercontroller : instance
+[in] charactercontroller : CharacterController のハンドル
 [in] value               : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3673,12 +4282,17 @@ walkVelocity
 LNCharacterController
 %prm
 charactercontroller, outReturn
-[in]  charactercontroller : instance
-[out] outReturn(0)        : CharacterController のハンドルを格納する変数。
+[in]  charactercontroller : CharacterController のハンドル
+[out] outReturn(0)        : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3694,12 +4308,17 @@ setVelocity
 LNCharacterController
 %prm
 charactercontroller, value
-[in] charactercontroller : instance
+[in] charactercontroller : CharacterController のハンドル
 [in] value               : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3715,12 +4334,17 @@ velocity
 LNCharacterController
 %prm
 charactercontroller, outReturn
-[in]  charactercontroller : instance
-[out] outReturn(0)        : CharacterController のハンドルを格納する変数。
+[in]  charactercontroller : CharacterController のハンドル
+[out] outReturn(0)        : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3736,13 +4360,18 @@ LNCharacterController_SetInputControlEnabled
 LNCharacterController
 %prm
 charactercontroller, value
-[in] charactercontroller : instance
+[in] charactercontroller : CharacterController のハンドル
 [in] value               : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
 false を指定した場合、キャラクターの想定外の自走を防止するため、速度も 0 にリセットされます。
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
+
 %href
 
 
@@ -3757,13 +4386,18 @@ LNCharacterController_SetCameraControlEnabled
 LNCharacterController
 %prm
 charactercontroller, value
-[in] charactercontroller : instance
+[in] charactercontroller : CharacterController のハンドル
 [in] value               : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
 有効である場合、関連付けられているカメラを通じて、描画先となるビューの MouseGrab を取得します。つまり、マウスカーソルは非表示となり UI をポイントしてクリックする等の操作はできなくなります。
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
+
 %href
 
 
@@ -3778,12 +4412,17 @@ LNCharacterController_SetHeight
 LNCharacterController
 %prm
 charactercontroller, value
-[in] charactercontroller : instance
+[in] charactercontroller : CharacterController のハンドル
 [in] value               : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3799,12 +4438,17 @@ LNCharacterController_GetHeight
 LNCharacterController
 %prm
 charactercontroller, outReturn
-[in]  charactercontroller : instance
-[out] outReturn(0)        : CharacterController のハンドルを格納する変数。
+[in]  charactercontroller : CharacterController のハンドル
+[out] outReturn(0)        : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3820,12 +4464,17 @@ LNCharacterController_SetCameraRadius
 LNCharacterController
 %prm
 charactercontroller, value
-[in] charactercontroller : instance
+[in] charactercontroller : CharacterController のハンドル
 [in] value               : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3841,12 +4490,17 @@ LNCharacterController_GetCameraRadius
 LNCharacterController
 %prm
 charactercontroller, outReturn
-[in]  charactercontroller : instance
-[out] outReturn(0)        : CharacterController のハンドルを格納する変数。
+[in]  charactercontroller : CharacterController のハンドル
+[out] outReturn(0)        : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3862,12 +4516,17 @@ CollisionEnter イベントの通知を受け取るコールバックを登録します。
 LNCharacterController
 %prm
 charactercontroller, handler
-[in] charactercontroller : instance
+[in] charactercontroller : CharacterController のハンドル
 [in] handler             : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3883,12 +4542,17 @@ CollisionLeave イベントの通知を受け取るコールバックを登録します。
 LNCharacterController
 %prm
 charactercontroller, handler
-[in] charactercontroller : instance
+[in] charactercontroller : CharacterController のハンドル
 [in] handler             : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3904,12 +4568,17 @@ CollisionStay イベントの通知を受け取るコールバックを登録します。
 LNCharacterController
 %prm
 charactercontroller, handler
-[in] charactercontroller : instance
+[in] charactercontroller : CharacterController のハンドル
 [in] handler             : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CharacterController は Component のサブモジュールです。CharacterController のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3925,12 +4594,17 @@ LNWorld_Add
 LNWorld
 %prm
 world, obj
-[in] world : instance
+[in] world : World のハンドル
 [in] obj   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+World は Object のサブモジュールです。World のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3946,12 +4620,17 @@ LNComponentList_GetLength
 LNComponentList
 %prm
 componentlist, outReturn
-[in]  componentlist : instance
-[out] outReturn(0)  : ComponentList のハンドルを格納する変数。
+[in]  componentlist : ComponentList のハンドル
+[out] outReturn(0)  : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ComponentList は Object のサブモジュールです。ComponentList のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3967,13 +4646,18 @@ LNComponentList_GetItem
 LNComponentList
 %prm
 componentlist, index, outReturn
-[in]  componentlist : instance
+[in]  componentlist : ComponentList のハンドル
 [in]  index         : 
-[out] outReturn(0)  : ComponentList のハンドルを格納する変数。
+[out] outReturn(0)  : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ComponentList は Object のサブモジュールです。ComponentList のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -3991,9 +4675,14 @@ LNWorldObject
 outWorldObject
 [out] outWorldObject(0) : 作成された WorldObject のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4009,12 +4698,17 @@ LNWorldObject_SetPosition
 LNWorldObject
 %prm
 worldobject, pos
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] pos         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4030,14 +4724,19 @@ LNWorldObject_SetPositionXYZ
 LNWorldObject
 %prm
 worldobject, x, y, z
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] x           : 
 [in] y           : 
 [in] z(0.000000) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4053,12 +4752,17 @@ LNWorldObject_GetPosition
 LNWorldObject
 %prm
 worldobject, outReturn
-[in]  worldobject : instance
-[out] outReturn(0) : WorldObject のハンドルを格納する変数。
+[in]  worldobject : WorldObject のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4074,12 +4778,17 @@ LNWorldObject_SetRotationQuaternion
 LNWorldObject
 %prm
 worldobject, rot
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] rot         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4095,14 +4804,19 @@ LNWorldObject_SetRotation
 LNWorldObject
 %prm
 worldobject, x, y, z
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] x           : 
 [in] y           : 
 [in] z           : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4118,12 +4832,17 @@ LNWorldObject_GetRotation
 LNWorldObject
 %prm
 worldobject, outReturn
-[in]  worldobject : instance
-[out] outReturn(0) : WorldObject のハンドルを格納する変数。
+[in]  worldobject : WorldObject のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4139,12 +4858,17 @@ LNWorldObject_SetScale
 LNWorldObject
 %prm
 worldobject, scale
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] scale       : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4160,12 +4884,17 @@ LNWorldObject_SetScaleS
 LNWorldObject
 %prm
 worldobject, xyz
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] xyz         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4181,14 +4910,19 @@ LNWorldObject_SetScaleXYZ
 LNWorldObject
 %prm
 worldobject, x, y, z
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] x           : 
 [in] y           : 
 [in] z(1.000000) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4204,12 +4938,17 @@ LNWorldObject_GetScale
 LNWorldObject
 %prm
 worldobject, outReturn
-[in]  worldobject : instance
-[out] outReturn(0) : WorldObject のハンドルを格納する変数。
+[in]  worldobject : WorldObject のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4225,12 +4964,17 @@ LNWorldObject_SetCenterPoint
 LNWorldObject
 %prm
 worldobject, value
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] value       : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4246,14 +4990,19 @@ LNWorldObject_SetCenterPointXYZ
 LNWorldObject
 %prm
 worldobject, x, y, z
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] x           : 
 [in] y           : 
 [in] z(0.000000) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4269,12 +5018,17 @@ LNWorldObject_GetCenterPoint
 LNWorldObject
 %prm
 worldobject, outReturn
-[in]  worldobject : instance
-[out] outReturn(0) : WorldObject のハンドルを格納する変数。
+[in]  worldobject : WorldObject のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4290,12 +5044,17 @@ LNWorldObject_LookAt
 LNWorldObject
 %prm
 worldobject, target
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] target      : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4311,14 +5070,19 @@ LNWorldObject_LookAtXYZ
 LNWorldObject
 %prm
 worldobject, x, y, z
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] x           : 
 [in] y           : 
 [in] z           : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4334,12 +5098,17 @@ Component を追加します。
 LNWorldObject
 %prm
 worldobject, component
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] component   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4355,12 +5124,17 @@ Component を除外します。
 LNWorldObject
 %prm
 worldobject, component
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] component   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4376,12 +5150,17 @@ LNWorldObject_AddTag
 LNWorldObject
 %prm
 worldobject, tag
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] tag         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4397,12 +5176,17 @@ LNWorldObject_RemoveTag
 LNWorldObject
 %prm
 worldobject, tag
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 [in] tag         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4418,13 +5202,18 @@ LNWorldObject_HasTag
 LNWorldObject
 %prm
 worldobject, tag, outReturn
-[in]  worldobject : instance
+[in]  worldobject : WorldObject のハンドル
 [in]  tag         : 
-[out] outReturn(0) : WorldObject のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4440,12 +5229,17 @@ WorldObject を破棄します。
 LNWorldObject
 %prm
 worldobject
-[in] worldobject : instance
+[in] worldobject : WorldObject のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
 実際の削除は、現在のフレームのアップデート処理後に行われます。削除された WorldObject は、親の World, Level, WorldObject からも除外されます。
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
+
 %href
 
 
@@ -4460,12 +5254,17 @@ LNWorldObject_GetComponents
 LNWorldObject
 %prm
 worldobject, outReturn
-[in]  worldobject : instance
-[out] outReturn(0) : WorldObject のハンドルを格納する変数。
+[in]  worldobject : WorldObject のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4481,12 +5280,17 @@ LNWorldObject_AddInto
 LNWorldObject
 %prm
 worldobject, world
-[in] worldobject           : instance
+[in] worldobject           : WorldObject のハンドル
 [in] world(LN_NULL_HANDLE) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldObject は Object のサブモジュールです。WorldObject のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4502,12 +5306,17 @@ LNVisualObject_SetVisible
 LNVisualObject
 %prm
 visualobject, value
-[in] visualobject : instance
+[in] visualobject : VisualObject のハンドル
 [in] value        : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+VisualObject は WorldObject のサブモジュールです。VisualObject のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4523,12 +5332,17 @@ LNVisualObject_IsVisible
 LNVisualObject
 %prm
 visualobject, outReturn
-[in]  visualobject : instance
-[out] outReturn(0) : VisualObject のハンドルを格納する変数。
+[in]  visualobject : VisualObject のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+VisualObject は WorldObject のサブモジュールです。VisualObject のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4544,7 +5358,7 @@ LNVisualObject_SetBlendMode2
 LNVisualObject
 %prm
 visualobject, value
-[in] visualobject : instance
+[in] visualobject : VisualObject のハンドル
 [in] value        : 
                        LN_BLEND_MODE_NORMAL
                        通常
@@ -4557,9 +5371,14 @@ visualobject, value
                        LN_BLEND_MODE_MULTIPLY
                        乗算合成
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+VisualObject は WorldObject のサブモジュールです。VisualObject のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4575,12 +5394,17 @@ LNVisualObject_SetOpacity
 LNVisualObject
 %prm
 visualobject, value
-[in] visualobject : instance
+[in] visualobject : VisualObject のハンドル
 [in] value        : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+VisualObject は WorldObject のサブモジュールです。VisualObject のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4596,12 +5420,17 @@ LNVisualObject_GetOpacity
 LNVisualObject
 %prm
 visualobject, outReturn
-[in]  visualobject : instance
-[out] outReturn(0) : VisualObject のハンドルを格納する変数。
+[in]  visualobject : VisualObject のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+VisualObject は WorldObject のサブモジュールです。VisualObject のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4617,12 +5446,17 @@ LNEnvironmentLight_SetEnabled
 LNEnvironmentLight
 %prm
 environmentlight, enabled
-[in] environmentlight : instance
+[in] environmentlight : EnvironmentLight のハンドル
 [in] enabled          : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4638,12 +5472,17 @@ LNEnvironmentLight_IsEnabled
 LNEnvironmentLight
 %prm
 environmentlight, outReturn
-[in]  environmentlight : instance
-[out] outReturn(0)     : EnvironmentLight のハンドルを格納する変数。
+[in]  environmentlight : EnvironmentLight のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4659,12 +5498,17 @@ LNEnvironmentLight_SetColor
 LNEnvironmentLight
 %prm
 environmentlight, value
-[in] environmentlight : instance
+[in] environmentlight : EnvironmentLight のハンドル
 [in] value            : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4680,12 +5524,17 @@ LNEnvironmentLight_GetColor
 LNEnvironmentLight
 %prm
 environmentlight, outReturn
-[in]  environmentlight : instance
-[out] outReturn(0)     : EnvironmentLight のハンドルを格納する変数。
+[in]  environmentlight : EnvironmentLight のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4701,12 +5550,17 @@ LNEnvironmentLight_SetAmbientColor
 LNEnvironmentLight
 %prm
 environmentlight, value
-[in] environmentlight : instance
+[in] environmentlight : EnvironmentLight のハンドル
 [in] value            : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4722,12 +5576,17 @@ LNEnvironmentLight_GetAmbientColor
 LNEnvironmentLight
 %prm
 environmentlight, outReturn
-[in]  environmentlight : instance
-[out] outReturn(0)     : EnvironmentLight のハンドルを格納する変数。
+[in]  environmentlight : EnvironmentLight のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4743,12 +5602,17 @@ LNEnvironmentLight_GetSkyColor
 LNEnvironmentLight
 %prm
 environmentlight, outReturn
-[in]  environmentlight : instance
-[out] outReturn(0)     : EnvironmentLight のハンドルを格納する変数。
+[in]  environmentlight : EnvironmentLight のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4764,12 +5628,17 @@ LNEnvironmentLight_SetSkyColor
 LNEnvironmentLight
 %prm
 environmentlight, value
-[in] environmentlight : instance
+[in] environmentlight : EnvironmentLight のハンドル
 [in] value            : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4785,12 +5654,17 @@ LNEnvironmentLight_GetGroundColor
 LNEnvironmentLight
 %prm
 environmentlight, outReturn
-[in]  environmentlight : instance
-[out] outReturn(0)     : EnvironmentLight のハンドルを格納する変数。
+[in]  environmentlight : EnvironmentLight のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4806,12 +5680,17 @@ LNEnvironmentLight_SetGroundColor
 LNEnvironmentLight
 %prm
 environmentlight, value
-[in] environmentlight : instance
+[in] environmentlight : EnvironmentLight のハンドル
 [in] value            : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4827,12 +5706,17 @@ LNEnvironmentLight_SetIntensity
 LNEnvironmentLight
 %prm
 environmentlight, intensity
-[in] environmentlight : instance
+[in] environmentlight : EnvironmentLight のハンドル
 [in] intensity        : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4848,12 +5732,17 @@ LNEnvironmentLight_GetIntensity
 LNEnvironmentLight
 %prm
 environmentlight, outReturn
-[in]  environmentlight : instance
-[out] outReturn(0)     : EnvironmentLight のハンドルを格納する変数。
+[in]  environmentlight : EnvironmentLight のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4869,12 +5758,17 @@ LNEnvironmentLight_SetShadowEffectiveDistance
 LNEnvironmentLight
 %prm
 environmentlight, value
-[in] environmentlight : instance
+[in] environmentlight : EnvironmentLight のハンドル
 [in] value            : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4890,12 +5784,17 @@ LNEnvironmentLight_GetShadowEffectiveDistance
 LNEnvironmentLight
 %prm
 environmentlight, outReturn
-[in]  environmentlight : instance
-[out] outReturn(0)     : EnvironmentLight のハンドルを格納する変数。
+[in]  environmentlight : EnvironmentLight のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4911,12 +5810,17 @@ LNEnvironmentLight_SetShadowEffectiveDepth
 LNEnvironmentLight
 %prm
 environmentlight, value
-[in] environmentlight : instance
+[in] environmentlight : EnvironmentLight のハンドル
 [in] value            : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4932,12 +5836,17 @@ LNEnvironmentLight_GetShadowEffectiveDepth
 LNEnvironmentLight
 %prm
 environmentlight, outReturn
-[in]  environmentlight : instance
-[out] outReturn(0)     : EnvironmentLight のハンドルを格納する変数。
+[in]  environmentlight : EnvironmentLight のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+EnvironmentLight は WorldObject のサブモジュールです。EnvironmentLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4955,9 +5864,14 @@ LNDirectionalLight
 outDirectionalLight
 [out] outDirectionalLight(0) : 作成された DirectionalLight のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+DirectionalLight は WorldObject のサブモジュールです。DirectionalLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4976,9 +5890,14 @@ color, outDirectionalLight
 [in]  color               : 
 [out] outDirectionalLight(0) : 作成された DirectionalLight のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+DirectionalLight は WorldObject のサブモジュールです。DirectionalLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -4994,12 +5913,17 @@ LNDirectionalLight_SetEnabled
 LNDirectionalLight
 %prm
 directionallight, enabled
-[in] directionallight : instance
+[in] directionallight : DirectionalLight のハンドル
 [in] enabled          : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+DirectionalLight は WorldObject のサブモジュールです。DirectionalLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5015,12 +5939,17 @@ LNDirectionalLight_IsEnabled
 LNDirectionalLight
 %prm
 directionallight, outReturn
-[in]  directionallight : instance
-[out] outReturn(0)     : DirectionalLight のハンドルを格納する変数。
+[in]  directionallight : DirectionalLight のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+DirectionalLight は WorldObject のサブモジュールです。DirectionalLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5036,12 +5965,17 @@ LNDirectionalLight_SetColor
 LNDirectionalLight
 %prm
 directionallight, color
-[in] directionallight : instance
+[in] directionallight : DirectionalLight のハンドル
 [in] color            : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+DirectionalLight は WorldObject のサブモジュールです。DirectionalLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5057,12 +5991,17 @@ LNDirectionalLight_GetColor
 LNDirectionalLight
 %prm
 directionallight, outReturn
-[in]  directionallight : instance
-[out] outReturn(0)     : DirectionalLight のハンドルを格納する変数。
+[in]  directionallight : DirectionalLight のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+DirectionalLight は WorldObject のサブモジュールです。DirectionalLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5078,12 +6017,17 @@ LNDirectionalLight_SetIntensity
 LNDirectionalLight
 %prm
 directionallight, intensity
-[in] directionallight : instance
+[in] directionallight : DirectionalLight のハンドル
 [in] intensity        : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+DirectionalLight は WorldObject のサブモジュールです。DirectionalLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5099,12 +6043,17 @@ LNDirectionalLight_GetIntensity
 LNDirectionalLight
 %prm
 directionallight, outReturn
-[in]  directionallight : instance
-[out] outReturn(0)     : DirectionalLight のハンドルを格納する変数。
+[in]  directionallight : DirectionalLight のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+DirectionalLight は WorldObject のサブモジュールです。DirectionalLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5120,12 +6069,17 @@ LNDirectionalLight_SetShadowEffectiveDistance
 LNDirectionalLight
 %prm
 directionallight, value
-[in] directionallight : instance
+[in] directionallight : DirectionalLight のハンドル
 [in] value            : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+DirectionalLight は WorldObject のサブモジュールです。DirectionalLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5141,12 +6095,17 @@ LNDirectionalLight_GetShadowEffectiveDistance
 LNDirectionalLight
 %prm
 directionallight, outReturn
-[in]  directionallight : instance
-[out] outReturn(0)     : DirectionalLight のハンドルを格納する変数。
+[in]  directionallight : DirectionalLight のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+DirectionalLight は WorldObject のサブモジュールです。DirectionalLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5162,12 +6121,17 @@ LNDirectionalLight_SetShadowEffectiveDepth
 LNDirectionalLight
 %prm
 directionallight, value
-[in] directionallight : instance
+[in] directionallight : DirectionalLight のハンドル
 [in] value            : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+DirectionalLight は WorldObject のサブモジュールです。DirectionalLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5183,12 +6147,17 @@ LNDirectionalLight_GetShadowEffectiveDepth
 LNDirectionalLight
 %prm
 directionallight, outReturn
-[in]  directionallight : instance
-[out] outReturn(0)     : DirectionalLight のハンドルを格納する変数。
+[in]  directionallight : DirectionalLight のハンドル
+[out] outReturn(0)     : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+DirectionalLight は WorldObject のサブモジュールです。DirectionalLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5206,9 +6175,14 @@ LNPointLight
 outPointLight
 [out] outPointLight(0) : 作成された PointLight のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PointLight は WorldObject のサブモジュールです。PointLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5228,9 +6202,14 @@ color, range, outPointLight
 [in]  range         : 
 [out] outPointLight(0) : 作成された PointLight のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PointLight は WorldObject のサブモジュールです。PointLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5246,12 +6225,17 @@ LNPointLight_SetEnabled
 LNPointLight
 %prm
 pointlight, enabled
-[in] pointlight : instance
+[in] pointlight : PointLight のハンドル
 [in] enabled    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PointLight は WorldObject のサブモジュールです。PointLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5267,12 +6251,17 @@ LNPointLight_IsEnabled
 LNPointLight
 %prm
 pointlight, outReturn
-[in]  pointlight : instance
-[out] outReturn(0) : PointLight のハンドルを格納する変数。
+[in]  pointlight : PointLight のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PointLight は WorldObject のサブモジュールです。PointLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5288,12 +6277,17 @@ LNPointLight_SetColor
 LNPointLight
 %prm
 pointlight, color
-[in] pointlight : instance
+[in] pointlight : PointLight のハンドル
 [in] color      : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PointLight は WorldObject のサブモジュールです。PointLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5309,12 +6303,17 @@ LNPointLight_GetColor
 LNPointLight
 %prm
 pointlight, outReturn
-[in]  pointlight : instance
-[out] outReturn(0) : PointLight のハンドルを格納する変数。
+[in]  pointlight : PointLight のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PointLight は WorldObject のサブモジュールです。PointLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5330,12 +6329,17 @@ LNPointLight_SetIntensity
 LNPointLight
 %prm
 pointlight, intensity
-[in] pointlight : instance
+[in] pointlight : PointLight のハンドル
 [in] intensity  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PointLight は WorldObject のサブモジュールです。PointLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5351,12 +6355,17 @@ LNPointLight_GetIntensity
 LNPointLight
 %prm
 pointlight, outReturn
-[in]  pointlight : instance
-[out] outReturn(0) : PointLight のハンドルを格納する変数。
+[in]  pointlight : PointLight のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PointLight は WorldObject のサブモジュールです。PointLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5372,12 +6381,17 @@ LNPointLight_SetRange
 LNPointLight
 %prm
 pointlight, range
-[in] pointlight : instance
+[in] pointlight : PointLight のハンドル
 [in] range      : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PointLight は WorldObject のサブモジュールです。PointLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5393,12 +6407,17 @@ LNPointLight_GetRange
 LNPointLight
 %prm
 pointlight, outReturn
-[in]  pointlight : instance
-[out] outReturn(0) : PointLight のハンドルを格納する変数。
+[in]  pointlight : PointLight のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PointLight は WorldObject のサブモジュールです。PointLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5414,12 +6433,17 @@ LNPointLight_SetAttenuation
 LNPointLight
 %prm
 pointlight, attenuation
-[in] pointlight  : instance
+[in] pointlight  : PointLight のハンドル
 [in] attenuation : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PointLight は WorldObject のサブモジュールです。PointLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5435,12 +6459,17 @@ LNPointLight_GetAttenuation
 LNPointLight
 %prm
 pointlight, outReturn
-[in]  pointlight : instance
-[out] outReturn(0) : PointLight のハンドルを格納する変数。
+[in]  pointlight : PointLight のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PointLight は WorldObject のサブモジュールです。PointLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5458,9 +6487,14 @@ LNSpotLight
 outSpotLight
 [out] outSpotLight(0) : 作成された SpotLight のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5481,9 +6515,14 @@ color, range, angle, outSpotLight
 [in]  angle        : 
 [out] outSpotLight(0) : 作成された SpotLight のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5499,12 +6538,17 @@ LNSpotLight_SetEnabled
 LNSpotLight
 %prm
 spotlight, enabled
-[in] spotlight : instance
+[in] spotlight : SpotLight のハンドル
 [in] enabled   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5520,12 +6564,17 @@ LNSpotLight_IsEnabled
 LNSpotLight
 %prm
 spotlight, outReturn
-[in]  spotlight : instance
-[out] outReturn(0) : SpotLight のハンドルを格納する変数。
+[in]  spotlight : SpotLight のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5541,12 +6590,17 @@ LNSpotLight_SetColor
 LNSpotLight
 %prm
 spotlight, color
-[in] spotlight : instance
+[in] spotlight : SpotLight のハンドル
 [in] color     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5562,12 +6616,17 @@ LNSpotLight_GetColor
 LNSpotLight
 %prm
 spotlight, outReturn
-[in]  spotlight : instance
-[out] outReturn(0) : SpotLight のハンドルを格納する変数。
+[in]  spotlight : SpotLight のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5583,12 +6642,17 @@ LNSpotLight_SetIntensity
 LNSpotLight
 %prm
 spotlight, intensity
-[in] spotlight : instance
+[in] spotlight : SpotLight のハンドル
 [in] intensity : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5604,12 +6668,17 @@ LNSpotLight_GetIntensity
 LNSpotLight
 %prm
 spotlight, outReturn
-[in]  spotlight : instance
-[out] outReturn(0) : SpotLight のハンドルを格納する変数。
+[in]  spotlight : SpotLight のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5625,12 +6694,17 @@ LNSpotLight_SetRange
 LNSpotLight
 %prm
 spotlight, range
-[in] spotlight : instance
+[in] spotlight : SpotLight のハンドル
 [in] range     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5646,12 +6720,17 @@ LNSpotLight_GetRange
 LNSpotLight
 %prm
 spotlight, outReturn
-[in]  spotlight : instance
-[out] outReturn(0) : SpotLight のハンドルを格納する変数。
+[in]  spotlight : SpotLight のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5667,12 +6746,17 @@ LNSpotLight_SetAttenuation
 LNSpotLight
 %prm
 spotlight, attenuation
-[in] spotlight   : instance
+[in] spotlight   : SpotLight のハンドル
 [in] attenuation : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5688,12 +6772,17 @@ LNSpotLight_GetAttenuation
 LNSpotLight
 %prm
 spotlight, outReturn
-[in]  spotlight : instance
-[out] outReturn(0) : SpotLight のハンドルを格納する変数。
+[in]  spotlight : SpotLight のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5709,12 +6798,17 @@ LNSpotLight_SetAngle
 LNSpotLight
 %prm
 spotlight, angle
-[in] spotlight : instance
+[in] spotlight : SpotLight のハンドル
 [in] angle     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5730,12 +6824,17 @@ LNSpotLight_GetAngle
 LNSpotLight
 %prm
 spotlight, outReturn
-[in]  spotlight : instance
-[out] outReturn(0) : SpotLight のハンドルを格納する変数。
+[in]  spotlight : SpotLight のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5751,12 +6850,17 @@ LNSpotLight_SetPenumbra
 LNSpotLight
 %prm
 spotlight, penumbra
-[in] spotlight : instance
+[in] spotlight : SpotLight のハンドル
 [in] penumbra  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5772,12 +6876,17 @@ LNSpotLight_GetPenumbra
 LNSpotLight
 %prm
 spotlight, outReturn
-[in]  spotlight : instance
-[out] outReturn(0) : SpotLight のハンドルを格納する変数。
+[in]  spotlight : SpotLight のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+SpotLight は WorldObject のサブモジュールです。SpotLight のハンドルを使って、 LNWorldObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5796,9 +6905,14 @@ callback, outTestDelegate
 [in]  callback        : 
 [out] outTestDelegate(0) : 作成された TestDelegate のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+TestDelegate は Object のサブモジュールです。TestDelegate のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5816,9 +6930,14 @@ LNSprite
 outSprite
 [out] outSprite(0) : 作成された Sprite のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sprite は VisualObject のサブモジュールです。Sprite のハンドルを使って、 LNVisualObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5837,9 +6956,14 @@ texture, outSprite
 [in]  texture   : 
 [out] outSprite(0) : 作成された Sprite のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sprite は VisualObject のサブモジュールです。Sprite のハンドルを使って、 LNVisualObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5860,9 +6984,14 @@ texture, width, height, outSprite
 [in]  height    : 
 [out] outSprite(0) : 作成された Sprite のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sprite は VisualObject のサブモジュールです。Sprite のハンドルを使って、 LNVisualObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5878,12 +7007,17 @@ LNSprite_SetTexture
 LNSprite
 %prm
 sprite, value
-[in] sprite : instance
+[in] sprite : Sprite のハンドル
 [in] value  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sprite は VisualObject のサブモジュールです。Sprite のハンドルを使って、 LNVisualObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5899,12 +7033,17 @@ LNSprite_SetSize
 LNSprite
 %prm
 sprite, value
-[in] sprite : instance
+[in] sprite : Sprite のハンドル
 [in] value  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sprite は VisualObject のサブモジュールです。Sprite のハンドルを使って、 LNVisualObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5920,13 +7059,18 @@ LNSprite_SetSizeWH
 LNSprite
 %prm
 sprite, width, height
-[in] sprite : instance
+[in] sprite : Sprite のハンドル
 [in] width  : 
 [in] height : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sprite は VisualObject のサブモジュールです。Sprite のハンドルを使って、 LNVisualObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5942,15 +7086,20 @@ LNSprite_SetSourceRectXYWH
 LNSprite
 %prm
 sprite, x, y, width, height
-[in] sprite : instance
+[in] sprite : Sprite のハンドル
 [in] x      : 
 [in] y      : 
 [in] width  : 
 [in] height : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sprite は VisualObject のサブモジュールです。Sprite のハンドルを使って、 LNVisualObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5966,12 +7115,17 @@ test
 LNSprite
 %prm
 sprite, callback
-[in] sprite   : instance
+[in] sprite   : Sprite のハンドル
 [in] callback : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Sprite は VisualObject のサブモジュールです。Sprite のハンドルを使って、 LNVisualObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -5989,9 +7143,14 @@ LNCameraOrbitControlComponent
 outCameraOrbitControlComponent
 [out] outCameraOrbitControlComponent(0) : 作成された CameraOrbitControlComponent のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+CameraOrbitControlComponent は Component のサブモジュールです。CameraOrbitControlComponent のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6008,11 +7167,16 @@ LNRaycaster
 %prm
 point, outReturn
 [in]  point     : 
-[out] outReturn(0) : Raycaster のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Raycaster は Object のサブモジュールです。Raycaster のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6028,15 +7192,20 @@ LNRaycaster_IntersectPlane
 LNRaycaster
 %prm
 raycaster, normalX, normalY, normalZ, outReturn
-[in]  raycaster : instance
+[in]  raycaster : Raycaster のハンドル
 [in]  normalX   : 
 [in]  normalY   : 
 [in]  normalZ   : 
-[out] outReturn(0) : Raycaster のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Raycaster は Object のサブモジュールです。Raycaster のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6052,12 +7221,17 @@ LNRaycastResult_GetPoint
 LNRaycastResult
 %prm
 raycastresult, outReturn
-[in]  raycastresult : instance
-[out] outReturn(0)  : RaycastResult のハンドルを格納する変数。
+[in]  raycastresult : RaycastResult のハンドル
+[out] outReturn(0)  : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+RaycastResult は Object のサブモジュールです。RaycastResult のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6073,12 +7247,17 @@ LNWorldRenderView_SetGuideGridEnabled
 LNWorldRenderView
 %prm
 worldrenderview, value
-[in] worldrenderview : instance
+[in] worldrenderview : WorldRenderView のハンドル
 [in] value           : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldRenderView は RenderView のサブモジュールです。WorldRenderView のハンドルを使って、 LNRenderView_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6094,12 +7273,17 @@ LNWorldRenderView_GetGuideGridEnabled
 LNWorldRenderView
 %prm
 worldrenderview, outReturn
-[in]  worldrenderview : instance
-[out] outReturn(0)    : WorldRenderView のハンドルを格納する変数。
+[in]  worldrenderview : WorldRenderView のハンドル
+[out] outReturn(0)    : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+WorldRenderView は RenderView のサブモジュールです。WorldRenderView のハンドルを使って、 LNRenderView_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6117,9 +7301,14 @@ LNPlaneMesh
 outPlaneMesh
 [out] outPlaneMesh(0) : 作成された PlaneMesh のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+PlaneMesh は ShapeObject のサブモジュールです。PlaneMesh のハンドルを使って、 LNShapeObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6137,9 +7326,14 @@ LNBoxMesh
 outBoxMesh
 [out] outBoxMesh(0) : 作成された BoxMesh のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+BoxMesh は ShapeObject のサブモジュールです。BoxMesh のハンドルを使って、 LNShapeObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6160,9 +7354,14 @@ width, height, depth, outBoxMesh
 [in]  depth      : 
 [out] outBoxMesh(0) : 作成された BoxMesh のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+BoxMesh は ShapeObject のサブモジュールです。BoxMesh のハンドルを使って、 LNShapeObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6180,9 +7379,14 @@ LNMeshComponent
 outMeshComponent
 [out] outMeshComponent(0) : 作成された MeshComponent のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+MeshComponent は VisualComponent のサブモジュールです。MeshComponent のハンドルを使って、 LNVisualComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6198,12 +7402,17 @@ setModel
 LNMeshComponent
 %prm
 meshcomponent, model
-[in] meshcomponent : instance
+[in] meshcomponent : MeshComponent のハンドル
 [in] model         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+MeshComponent は VisualComponent のサブモジュールです。MeshComponent のハンドルを使って、 LNVisualComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6219,12 +7428,17 @@ LNMeshComponent_MakeCollisionBody
 LNMeshComponent
 %prm
 meshcomponent, meshContainerName
-[in] meshcomponent     : instance
+[in] meshcomponent     : MeshComponent のハンドル
 [in] meshContainerName : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+MeshComponent は VisualComponent のサブモジュールです。MeshComponent のハンドルを使って、 LNVisualComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6240,12 +7454,17 @@ LNCollision_GetWorldObject
 LNCollision
 %prm
 collision, outReturn
-[in]  collision : instance
-[out] outReturn(0) : Collision のハンドルを格納する変数。
+[in]  collision : Collision のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Collision は Object のサブモジュールです。Collision のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6263,9 +7482,14 @@ LNTriggerBodyComponent
 outTriggerBodyComponent
 [out] outTriggerBodyComponent(0) : 作成された TriggerBodyComponent のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+TriggerBodyComponent は Component のサブモジュールです。TriggerBodyComponent のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6281,12 +7505,17 @@ addCollisionShape
 LNTriggerBodyComponent
 %prm
 triggerbodycomponent, shape
-[in] triggerbodycomponent : instance
+[in] triggerbodycomponent : TriggerBodyComponent のハンドル
 [in] shape                : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+TriggerBodyComponent は Component のサブモジュールです。TriggerBodyComponent のハンドルを使って、 LNComponent_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6305,9 +7534,14 @@ model, outParticleEmitter
 [in]  model              : 
 [out] outParticleEmitter(0) : 作成された ParticleEmitter のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+ParticleEmitter は VisualObject のサブモジュールです。ParticleEmitter のハンドルを使って、 LNVisualObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -6335,9 +7569,10 @@ value
                 LN_SCENE_CLEAR_MODE_SKY_DOME
                 スカイドームでクリアします。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6355,9 +7590,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6375,9 +7611,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6395,9 +7632,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6415,9 +7653,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6436,9 +7675,10 @@ level, withEffect
 [in] level               : 
 [in] withEffect(LN_TRUE) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6457,9 +7697,10 @@ level, withEffect
 [in] level               : 
 [in] withEffect(LN_TRUE) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6477,9 +7718,10 @@ LNScene
 withEffect
 [in] withEffect(LN_TRUE) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6495,11 +7737,12 @@ LNScene_ActiveLevel
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6515,11 +7758,12 @@ LNScene_IsTransitionEffectRunning
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6543,9 +7787,10 @@ value
                 LN_LEVEL_TRANSITION_EFFECT_MODE_CROSS_FADE
                 クロスフェード
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6561,7 +7806,7 @@ LNScene_TransitionEffectMode
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
                      LN_LEVEL_TRANSITION_EFFECT_MODE_NONE
                      エフェクト無し
                      LN_LEVEL_TRANSITION_EFFECT_MODE_FADE_IN_OUT
@@ -6569,9 +7814,10 @@ outReturn
                      LN_LEVEL_TRANSITION_EFFECT_MODE_CROSS_FADE
                      クロスフェード
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6589,9 +7835,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6607,11 +7854,12 @@ LNScene_TransitionDuration
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6629,9 +7877,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6647,11 +7896,12 @@ LNScene_TransitionEffectColor
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6669,9 +7919,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6687,11 +7938,12 @@ LNScene_TransitionEffectMaskTexture
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6709,9 +7961,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6727,11 +7980,12 @@ LNScene_TransitionEffectVague
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6748,9 +8002,10 @@ LNScene
 %prm
 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6767,9 +8022,10 @@ LNScene
 %prm
 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6787,9 +8043,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6807,9 +8064,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6827,9 +8085,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6847,9 +8106,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6867,9 +8127,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6887,9 +8148,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6907,9 +8169,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6925,11 +8188,12 @@ HDR レンダリングの有無を取得します。
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6947,9 +8211,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6965,11 +8230,12 @@ LNScene_ScreenBlendColor
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -6987,9 +8253,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7005,11 +8272,12 @@ colorTone
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7027,9 +8295,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7045,11 +8314,12 @@ LNScene_IsAntialiasEnabled
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7067,9 +8337,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7085,11 +8356,12 @@ SSR の有無を取得します。
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7107,9 +8379,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7125,11 +8398,12 @@ SSAO の有無を取得します。
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7147,9 +8421,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7165,11 +8440,12 @@ LNScene_IsBloomEnabled
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7187,9 +8463,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7205,11 +8482,12 @@ LNScene_IsDOFEnabled
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7227,9 +8505,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7245,11 +8524,12 @@ LNScene_IsTonemapEnabled
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7267,9 +8547,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7285,11 +8566,12 @@ LNScene_IsVignetteEnabled
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7307,9 +8589,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7325,11 +8608,12 @@ LNScene_IsGammaEnabled
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Scene のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7347,9 +8631,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7367,9 +8652,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7387,9 +8673,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7407,9 +8694,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7427,9 +8715,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7447,9 +8736,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7467,9 +8757,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7487,9 +8778,10 @@ LNScene
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7507,9 +8799,14 @@ LNLevel
 outLevel
 [out] outLevel(0) : 作成された Level のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Level は AssetObject のサブモジュールです。Level のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -7525,12 +8822,17 @@ LNLevel_AddObject
 LNLevel
 %prm
 level, obj
-[in] level : instance
+[in] level : Level のハンドル
 [in] obj   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Level は AssetObject のサブモジュールです。Level のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -7546,12 +8848,17 @@ LNLevel_RemoveObject
 LNLevel
 %prm
 level, obj
-[in] level : instance
+[in] level : Level のハンドル
 [in] obj   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Level は AssetObject のサブモジュールです。Level のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -7567,12 +8874,17 @@ LNLevel_AddSubLevel
 LNLevel
 %prm
 level, sublevel
-[in] level    : instance
+[in] level    : Level のハンドル
 [in] sublevel : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Level は AssetObject のサブモジュールです。Level のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -7588,12 +8900,17 @@ LNLevel_RemoveSubLevel
 LNLevel
 %prm
 level, sublevel
-[in] level    : instance
+[in] level    : Level のハンドル
 [in] sublevel : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Level は AssetObject のサブモジュールです。Level のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -7609,11 +8926,16 @@ LNLevel_RemoveAllSubLevels
 LNLevel
 %prm
 level
-[in] level : instance
+[in] level : Level のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Level は AssetObject のサブモジュールです。Level のハンドルを使って、 LNAssetObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -7630,11 +8952,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7651,11 +8974,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7672,11 +8996,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7693,11 +9018,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7714,11 +9040,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7735,11 +9062,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7756,11 +9084,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7777,11 +9106,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7798,11 +9128,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7819,11 +9150,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7840,11 +9172,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7861,11 +9194,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7882,11 +9216,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7903,11 +9238,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7924,11 +9260,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7945,11 +9282,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7966,11 +9304,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -7987,11 +9326,12 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -8049,11 +9389,12 @@ hue, shades, outReturn
                      LN_UICOLOR_HUES_WHITE
                      
 [in]  shades(5) : 
-[out] outReturn(0) : UIColors のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -8069,12 +9410,17 @@ LNUIEventArgs_Sender
 LNUIEventArgs
 %prm
 uieventargs, outReturn
-[in]  uieventargs : instance
-[out] outReturn(0) : UIEventArgs のハンドルを格納する変数。
+[in]  uieventargs : UIEventArgs のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIEventArgs は Object のサブモジュールです。UIEventArgs のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8093,9 +9439,14 @@ callback, outUIGeneralEventHandler
 [in]  callback                 : 
 [out] outUIGeneralEventHandler(0) : 作成された UIGeneralEventHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIGeneralEventHandler は Object のサブモジュールです。UIGeneralEventHandler のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8114,9 +9465,14 @@ callback, outUIEventHandler
 [in]  callback          : 
 [out] outUIEventHandler(0) : 作成された UIEventHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIEventHandler は Object のサブモジュールです。UIEventHandler のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8132,12 +9488,17 @@ LNUIElement_SetSize
 LNUIElement
 %prm
 uielement, size
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] size      : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8153,13 +9514,18 @@ LNUIElement_SetSizeWH
 LNUIElement
 %prm
 uielement, width, height
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] width     : 
 [in] height    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8175,12 +9541,17 @@ setWidth
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8196,12 +9567,17 @@ width
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8217,12 +9593,17 @@ setHeight
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8238,12 +9619,17 @@ height
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8259,12 +9645,17 @@ LNUIElement_SetMargin
 LNUIElement
 %prm
 uielement, margin
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] margin    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8280,12 +9671,17 @@ LNUIElement_GetMargin
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8301,12 +9697,17 @@ LNUIElement_SetPadding
 LNUIElement
 %prm
 uielement, padding
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] padding   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8322,12 +9723,17 @@ LNUIElement_GetPadding
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8343,7 +9749,7 @@ LNUIElement_SetHAlignment
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
                     LN_UIHALIGNMENT_LEFT
                     子要素を、親のレイアウト スロットの左側に揃えて配置します。
@@ -8354,9 +9760,14 @@ uielement, value
                     LN_UIHALIGNMENT_STRETCH
                     子要素を、親のレイアウト スロット全体に引き伸ばします。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8372,8 +9783,8 @@ LNUIElement_GetHAlignment
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
                      LN_UIHALIGNMENT_LEFT
                      子要素を、親のレイアウト スロットの左側に揃えて配置します。
                      LN_UIHALIGNMENT_CENTER
@@ -8383,9 +9794,14 @@ uielement, outReturn
                      LN_UIHALIGNMENT_STRETCH
                      子要素を、親のレイアウト スロット全体に引き伸ばします。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8401,7 +9817,7 @@ LNUIElement_SetVAlignment
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
                     LN_UIVALIGNMENT_TOP
                     子要素を、親のレイアウト スロットの上端に揃えて配置します。
@@ -8412,9 +9828,14 @@ uielement, value
                     LN_UIVALIGNMENT_STRETCH
                     子要素を、親のレイアウト スロット全体に引き伸ばします。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8430,8 +9851,8 @@ LNUIElement_GetVAlignment
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
                      LN_UIVALIGNMENT_TOP
                      子要素を、親のレイアウト スロットの上端に揃えて配置します。
                      LN_UIVALIGNMENT_CENTER
@@ -8441,9 +9862,14 @@ uielement, outReturn
                      LN_UIVALIGNMENT_STRETCH
                      子要素を、親のレイアウト スロット全体に引き伸ばします。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8459,7 +9885,7 @@ LNUIElement_SetAlignments
 LNUIElement
 %prm
 uielement, halign, valign
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] halign    : 
                     LN_UIHALIGNMENT_LEFT
                     子要素を、親のレイアウト スロットの左側に揃えて配置します。
@@ -8479,9 +9905,14 @@ uielement, halign, valign
                     LN_UIVALIGNMENT_STRETCH
                     子要素を、親のレイアウト スロット全体に引き伸ばします。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8497,12 +9928,17 @@ LNUIElement_SetPosition
 LNUIElement
 %prm
 uielement, pos
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] pos       : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8518,14 +9954,19 @@ LNUIElement_SetPositionXYZ
 LNUIElement
 %prm
 uielement, x, y, z
-[in] uielement   : instance
+[in] uielement   : UIElement のハンドル
 [in] x           : 
 [in] y           : 
 [in] z(0.000000) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8541,12 +9982,17 @@ LNUIElement_GetPosition
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8562,12 +10008,17 @@ LNUIElement_SetRotation
 LNUIElement
 %prm
 uielement, rot
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] rot       : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8583,14 +10034,19 @@ LNUIElement_SetEulerAngles
 LNUIElement
 %prm
 uielement, x, y, z
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] x         : 
 [in] y         : 
 [in] z         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8606,12 +10062,17 @@ LNUIElement_GetRotation
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8627,12 +10088,17 @@ LNUIElement_SetScale
 LNUIElement
 %prm
 uielement, scale
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] scale     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8648,12 +10114,17 @@ LNUIElement_SetScaleS
 LNUIElement
 %prm
 uielement, xyz
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] xyz       : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8669,13 +10140,18 @@ LNUIElement_SetScaleXY
 LNUIElement
 %prm
 uielement, x, y
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] x         : 
 [in] y         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8691,12 +10167,17 @@ LNUIElement_GetScale
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8712,12 +10193,17 @@ LNUIElement_SetCenterPoint
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8733,14 +10219,19 @@ LNUIElement_SetCenterPointXYZ
 LNUIElement
 %prm
 uielement, x, y, z
-[in] uielement   : instance
+[in] uielement   : UIElement のハンドル
 [in] x           : 
 [in] y           : 
 [in] z(0.000000) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8756,12 +10247,17 @@ LNUIElement_GetCenterPoint
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8777,12 +10273,17 @@ LNUIElement_SetEnabled
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8798,12 +10299,17 @@ LNUIElement_IsEnabled
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8819,12 +10325,17 @@ LNUIElement_SetData
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8840,12 +10351,17 @@ LNUIElement_GetData
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8861,12 +10377,17 @@ LNUIElement_SetBackgroundColor
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8882,12 +10403,17 @@ LNUIElement_GetBackgroundColor
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8903,12 +10429,17 @@ LNUIElement_SetBorderThickness
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8924,12 +10455,17 @@ LNUIElement_GetBorderThickness
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8945,12 +10481,17 @@ LNUIElement_SetBorderColor
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8966,12 +10507,17 @@ LNUIElement_GetBorderColor
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -8987,12 +10533,17 @@ LNUIElement_SetCornerRadius
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9008,12 +10559,17 @@ LNUIElement_GetCornerRadius
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9029,7 +10585,7 @@ LNUIElement_SetVisibility
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
                     LN_UIVISIBILITY_VISIBLE
                     要素を表示します。
@@ -9038,9 +10594,14 @@ uielement, value
                     LN_UIVISIBILITY_COLLAPSED
                     要素を表示しません。また、その要素の領域もレイアウト内に予約しません。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9056,8 +10617,8 @@ LNUIElement_GetVisibility
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
                      LN_UIVISIBILITY_VISIBLE
                      要素を表示します。
                      LN_UIVISIBILITY_HIDDEN
@@ -9065,9 +10626,14 @@ uielement, outReturn
                      LN_UIVISIBILITY_COLLAPSED
                      要素を表示しません。また、その要素の領域もレイアウト内に予約しません。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9083,12 +10649,17 @@ LNUIElement_SetOpacity
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9104,12 +10675,17 @@ LNUIElement_GetOpacity
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9125,12 +10701,17 @@ Add element to container. 論理的な子要素として追加する。
 LNUIElement
 %prm
 uielement, child
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] child     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9146,12 +10727,17 @@ LNUIElement_SetFocusable
 LNUIElement
 %prm
 uielement, value
-[in] uielement : instance
+[in] uielement : UIElement のハンドル
 [in] value     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9167,12 +10753,17 @@ LNUIElement_GetFocusable
 LNUIElement
 %prm
 uielement, outReturn
-[in]  uielement : instance
-[out] outReturn(0) : UIElement のハンドルを格納する変数。
+[in]  uielement : UIElement のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9188,12 +10779,17 @@ LNUIElement_AddInto
 LNUIElement
 %prm
 uielement, parent
-[in] uielement              : instance
+[in] uielement              : UIElement のハンドル
 [in] parent(LN_NULL_HANDLE) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIElement は UILayoutElement のサブモジュールです。UIElement のハンドルを使って、 LNUILayoutElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9211,9 +10807,14 @@ LNUIText
 outUIText
 [out] outUIText(0) : 作成された UIText のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIText は UIElement のサブモジュールです。UIText のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9232,9 +10833,14 @@ text, outUIText
 [in]  text      : 
 [out] outUIText(0) : 作成された UIText のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIText は UIElement のサブモジュールです。UIText のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9250,12 +10856,17 @@ LNUIText_SetText
 LNUIText
 %prm
 uitext, value
-[in] uitext : instance
+[in] uitext : UIText のハンドル
 [in] value  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIText は UIElement のサブモジュールです。UIText のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9271,12 +10882,17 @@ LNUIText_GetText
 LNUIText
 %prm
 uitext, outReturn
-[in]  uitext    : instance
-[out] outReturn(0) : UIText のハンドルを格納する変数。
+[in]  uitext    : UIText のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIText は UIElement のサブモジュールです。UIText のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9294,9 +10910,14 @@ LNUISprite
 outUISprite
 [out] outUISprite(0) : 作成された UISprite のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UISprite は UIElement のサブモジュールです。UISprite のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9315,9 +10936,14 @@ texture, outUISprite
 [in]  texture     : 
 [out] outUISprite(0) : 作成された UISprite のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UISprite は UIElement のサブモジュールです。UISprite のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9333,12 +10959,17 @@ LNUISprite_SetTexture
 LNUISprite
 %prm
 uisprite, texture
-[in] uisprite : instance
+[in] uisprite : UISprite のハンドル
 [in] texture  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UISprite は UIElement のサブモジュールです。UISprite のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9354,12 +10985,17 @@ LNUISprite_SetSourceRect
 LNUISprite
 %prm
 uisprite, rect
-[in] uisprite : instance
+[in] uisprite : UISprite のハンドル
 [in] rect     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UISprite は UIElement のサブモジュールです。UISprite のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9375,15 +11011,20 @@ LNUISprite_SetSourceRectXYWH
 LNUISprite
 %prm
 uisprite, x, y, width, height
-[in] uisprite : instance
+[in] uisprite : UISprite のハンドル
 [in] x        : 
 [in] y        : 
 [in] width    : 
 [in] height   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UISprite は UIElement のサブモジュールです。UISprite のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9399,12 +11040,17 @@ LNUISprite_GetSourceRect
 LNUISprite
 %prm
 uisprite, outReturn
-[in]  uisprite  : instance
-[out] outReturn(0) : UISprite のハンドルを格納する変数。
+[in]  uisprite  : UISprite のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UISprite は UIElement のサブモジュールです。UISprite のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9420,12 +11066,17 @@ setShader
 LNUISprite
 %prm
 uisprite, shader
-[in] uisprite : instance
+[in] uisprite : UISprite のハンドル
 [in] shader   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UISprite は UIElement のサブモジュールです。UISprite のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9442,11 +11093,16 @@ LNUIIcon
 %prm
 iconName, outReturn
 [in]  iconName  : 
-[out] outReturn(0) : UIIcon のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIIcon は UIElement のサブモジュールです。UIIcon のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9464,11 +11120,16 @@ LNUIIcon
 iconName, size, outReturn
 [in]  iconName  : 
 [in]  size      : 
-[out] outReturn(0) : UIIcon のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIIcon は UIElement のサブモジュールです。UIIcon のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9487,11 +11148,16 @@ iconName, size, color, outReturn
 [in]  iconName  : 
 [in]  size      : 
 [in]  color     : 
-[out] outReturn(0) : UIIcon のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIIcon は UIElement のサブモジュールです。UIIcon のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9509,9 +11175,14 @@ LNUIMessageTextArea
 outUIMessageTextArea
 [out] outUIMessageTextArea(0) : 作成された UIMessageTextArea のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIMessageTextArea は UIElement のサブモジュールです。UIMessageTextArea のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9527,12 +11198,17 @@ setText
 LNUIMessageTextArea
 %prm
 uimessagetextarea, value
-[in] uimessagetextarea : instance
+[in] uimessagetextarea : UIMessageTextArea のハンドル
 [in] value             : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIMessageTextArea は UIElement のサブモジュールです。UIMessageTextArea のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9548,12 +11224,17 @@ setTypingSpeed
 LNUIMessageTextArea
 %prm
 uimessagetextarea, value
-[in] uimessagetextarea : instance
+[in] uimessagetextarea : UIMessageTextArea のハンドル
 [in] value             : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIMessageTextArea は UIElement のサブモジュールです。UIMessageTextArea のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9571,9 +11252,10 @@ LNUI
 element
 [in] element : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -9591,9 +11273,10 @@ LNUI
 element
 [in] element : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -9611,9 +11294,14 @@ LNUIBoxLayout
 outUIBoxLayout
 [out] outUIBoxLayout(0) : 作成された UIBoxLayout のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIBoxLayout は UILayoutPanel のサブモジュールです。UIBoxLayout のハンドルを使って、 LNUILayoutPanel_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9629,7 +11317,7 @@ LNUIBoxLayout_SetOrientation
 LNUIBoxLayout
 %prm
 uiboxlayout, orientation
-[in] uiboxlayout : instance
+[in] uiboxlayout : UIBoxLayout のハンドル
 [in] orientation : 
                       LN_UILAYOUT_ORIENTATION_HORIZONTAL
                       水平方向に配置します。
@@ -9640,9 +11328,14 @@ uiboxlayout, orientation
                       LN_UILAYOUT_ORIENTATION_REVERSE_VERTICAL
                       垂直方向（下から上）に配置します。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIBoxLayout は UILayoutPanel のサブモジュールです。UIBoxLayout のハンドルを使って、 LNUILayoutPanel_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9658,8 +11351,8 @@ LNUIBoxLayout_GetOrientation
 LNUIBoxLayout
 %prm
 uiboxlayout, outReturn
-[in]  uiboxlayout : instance
-[out] outReturn(0) : UIBoxLayout のハンドルを格納する変数。
+[in]  uiboxlayout : UIBoxLayout のハンドル
+[out] outReturn(0) : 結果を格納する変数。
                        LN_UILAYOUT_ORIENTATION_HORIZONTAL
                        水平方向に配置します。
                        LN_UILAYOUT_ORIENTATION_VERTICAL
@@ -9669,9 +11362,14 @@ uiboxlayout, outReturn
                        LN_UILAYOUT_ORIENTATION_REVERSE_VERTICAL
                        垂直方向（下から上）に配置します。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIBoxLayout は UILayoutPanel のサブモジュールです。UIBoxLayout のハンドルを使って、 LNUILayoutPanel_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9689,9 +11387,14 @@ LNUIStackLayout
 outUIStackLayout
 [out] outUIStackLayout(0) : 作成された UIStackLayout のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIStackLayout は UILayoutPanel のサブモジュールです。UIStackLayout のハンドルを使って、 LNUILayoutPanel_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9707,7 +11410,7 @@ LNUIStackLayout_SetOrientation
 LNUIStackLayout
 %prm
 uistacklayout, orientation
-[in] uistacklayout : instance
+[in] uistacklayout : UIStackLayout のハンドル
 [in] orientation   : 
                         LN_UILAYOUT_ORIENTATION_HORIZONTAL
                         水平方向に配置します。
@@ -9718,9 +11421,14 @@ uistacklayout, orientation
                         LN_UILAYOUT_ORIENTATION_REVERSE_VERTICAL
                         垂直方向（下から上）に配置します。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIStackLayout は UILayoutPanel のサブモジュールです。UIStackLayout のハンドルを使って、 LNUILayoutPanel_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9736,8 +11444,8 @@ LNUIStackLayout_GetOrientation
 LNUIStackLayout
 %prm
 uistacklayout, outReturn
-[in]  uistacklayout : instance
-[out] outReturn(0)  : UIStackLayout のハンドルを格納する変数。
+[in]  uistacklayout : UIStackLayout のハンドル
+[out] outReturn(0)  : 結果を格納する変数。
                          LN_UILAYOUT_ORIENTATION_HORIZONTAL
                          水平方向に配置します。
                          LN_UILAYOUT_ORIENTATION_VERTICAL
@@ -9747,9 +11455,14 @@ uistacklayout, outReturn
                          LN_UILAYOUT_ORIENTATION_REVERSE_VERTICAL
                          垂直方向（下から上）に配置します。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIStackLayout は UILayoutPanel のサブモジュールです。UIStackLayout のハンドルを使って、 LNUILayoutPanel_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9767,9 +11480,14 @@ LNUIGridLayout
 outUIGridLayout
 [out] outUIGridLayout(0) : 作成された UIGridLayout のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIGridLayout は UILayoutPanel のサブモジュールです。UIGridLayout のハンドルを使って、 LNUILayoutPanel_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9785,12 +11503,17 @@ setColumnCount
 LNUIGridLayout
 %prm
 uigridlayout, value
-[in] uigridlayout : instance
+[in] uigridlayout : UIGridLayout のハンドル
 [in] value        : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIGridLayout は UILayoutPanel のサブモジュールです。UIGridLayout のハンドルを使って、 LNUILayoutPanel_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9809,9 +11532,14 @@ element, row
 [in] element : 
 [in] row     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIGridLayout は UILayoutPanel のサブモジュールです。UIGridLayout のハンドルを使って、 LNUILayoutPanel_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9830,9 +11558,14 @@ element, column
 [in] element : 
 [in] column  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIGridLayout は UILayoutPanel のサブモジュールです。UIGridLayout のハンドルを使って、 LNUILayoutPanel_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9854,9 +11587,14 @@ element, row, column, rowSpan, columnSpan
 [in] rowSpan(1)    : 
 [in] columnSpan(1) : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIGridLayout は UILayoutPanel のサブモジュールです。UIGridLayout のハンドルを使って、 LNUILayoutPanel_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9874,9 +11612,14 @@ LNUIControl
 outUIControl
 [out] outUIControl(0) : 作成された UIControl のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIControl は UIElement のサブモジュールです。UIControl のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9892,7 +11635,7 @@ addInlineVisual
 LNUIControl
 %prm
 uicontrol, element, layout
-[in] uicontrol : instance
+[in] uicontrol : UIControl のハンドル
 [in] element   : 
 [in] layout    : 
                     LN_UIINLINE_PLACEMENT_TOP_LEFT
@@ -9914,9 +11657,14 @@ uicontrol, element, layout
                     LN_UIINLINE_PLACEMENT_BOTTOM_RIGHT
                     BottomRight
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIControl は UIElement のサブモジュールです。UIControl のハンドルを使って、 LNUIElement_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9932,12 +11680,17 @@ set text.
 LNUIButtonBase
 %prm
 uibuttonbase, text
-[in] uibuttonbase : instance
+[in] uibuttonbase : UIButtonBase のハンドル
 [in] text         : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIButtonBase は UIControl のサブモジュールです。UIButtonBase のハンドルを使って、 LNUIControl_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9955,9 +11708,14 @@ LNUIButton
 outUIButton
 [out] outUIButton(0) : 作成された UIButton のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIButton は UIButtonBase のサブモジュールです。UIButton のハンドルを使って、 LNUIButtonBase_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9976,9 +11734,14 @@ text, outUIButton
 [in]  text        : 
 [out] outUIButton(0) : 作成された UIButton のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIButton は UIButtonBase のサブモジュールです。UIButton のハンドルを使って、 LNUIButtonBase_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -9994,13 +11757,18 @@ Clicked イベントの通知を受け取るコールバックを登録します。
 LNUIButton
 %prm
 uibutton, handler, outReturn
-[in]  uibutton  : instance
+[in]  uibutton  : UIButton のハンドル
 [in]  handler   : 
-[out] outReturn(0) : UIButton のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIButton は UIButtonBase のサブモジュールです。UIButton のハンドルを使って、 LNUIButtonBase_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10018,9 +11786,14 @@ LNUIWindow
 outUIWindow
 [out] outUIWindow(0) : 作成された UIWindow のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIWindow は UIControl のサブモジュールです。UIWindow のハンドルを使って、 LNUIControl_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10036,13 +11809,18 @@ Submit イベントの通知を受け取るコールバックを登録します。
 LNUIListItem
 %prm
 uilistitem, handler, outReturn
-[in]  uilistitem : instance
+[in]  uilistitem : UIListItem のハンドル
 [in]  handler    : 
-[out] outReturn(0) : UIListItem のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIListItem は UIControl のサブモジュールです。UIListItem のハンドルを使って、 LNUIControl_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10058,12 +11836,17 @@ setItemsLayoutPanel
 LNUIListItemsControl
 %prm
 uilistitemscontrol, layout
-[in] uilistitemscontrol : instance
+[in] uilistitemscontrol : UIListItemsControl のハンドル
 [in] layout             : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIListItemsControl は UIControl のサブモジュールです。UIListItemsControl のハンドルを使って、 LNUIControl_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10079,12 +11862,17 @@ itemsLayoutPanel
 LNUIListItemsControl
 %prm
 uilistitemscontrol, outReturn
-[in]  uilistitemscontrol : instance
-[out] outReturn(0)       : UIListItemsControl のハンドルを格納する変数。
+[in]  uilistitemscontrol : UIListItemsControl のハンドル
+[out] outReturn(0)       : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIListItemsControl は UIControl のサブモジュールです。UIListItemsControl のハンドルを使って、 LNUIControl_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10100,16 +11888,21 @@ UIListSubmitMode (default: Single)
 LNUIListItemsControl
 %prm
 uilistitemscontrol, value
-[in] uilistitemscontrol : instance
+[in] uilistitemscontrol : UIListItemsControl のハンドル
 [in] value              : 
                              LN_UILIST_SUBMIT_MODE_SINGLE
                              ゲームUI用。Hover で選択状態、シングルクリックで Submit. Hover 状態は使用されない。
                              LN_UILIST_SUBMIT_MODE_DOUBLE
                              エディタUI用。シングルクリックで選択状態、ダブルクリックで Submit.
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIListItemsControl は UIControl のサブモジュールです。UIListItemsControl のハンドルを使って、 LNUIControl_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10125,16 +11918,21 @@ UIListSubmitMode
 LNUIListItemsControl
 %prm
 uilistitemscontrol, outReturn
-[in]  uilistitemscontrol : instance
-[out] outReturn(0)       : UIListItemsControl のハンドルを格納する変数。
+[in]  uilistitemscontrol : UIListItemsControl のハンドル
+[out] outReturn(0)       : 結果を格納する変数。
                               LN_UILIST_SUBMIT_MODE_SINGLE
                               ゲームUI用。Hover で選択状態、シングルクリックで Submit. Hover 状態は使用されない。
                               LN_UILIST_SUBMIT_MODE_DOUBLE
                               エディタUI用。シングルクリックで選択状態、ダブルクリックで Submit.
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIListItemsControl は UIControl のサブモジュールです。UIListItemsControl のハンドルを使って、 LNUIControl_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10150,13 +11948,18 @@ Submit イベントの通知を受け取るコールバックを登録します。
 LNUIListItemsControl
 %prm
 uilistitemscontrol, handler, outReturn
-[in]  uilistitemscontrol : instance
+[in]  uilistitemscontrol : UIListItemsControl のハンドル
 [in]  handler            : 
-[out] outReturn(0)       : UIListItemsControl のハンドルを格納する変数。
+[out] outReturn(0)       : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIListItemsControl は UIControl のサブモジュールです。UIListItemsControl のハンドルを使って、 LNUIControl_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10175,9 +11978,14 @@ content, outUIListBoxItem
 [in]  content          : 
 [out] outUIListBoxItem(0) : 作成された UIListBoxItem のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIListBoxItem は UIListItem のサブモジュールです。UIListBoxItem のハンドルを使って、 LNUIListItem_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10195,9 +12003,14 @@ LNUIListBox
 outUIListBox
 [out] outUIListBox(0) : 作成された UIListBox のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIListBox は UIListItemsControl のサブモジュールです。UIListBox のハンドルを使って、 LNUIListItemsControl_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10213,13 +12026,18 @@ UIListBoxItem を追加し、そのインスタンスを返します。
 LNUIListBox
 %prm
 uilistbox, content, outReturn
-[in]  uilistbox : instance
+[in]  uilistbox : UIListBox のハンドル
 [in]  content   : 
-[out] outReturn(0) : UIListBox のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+UIListBox は UIListItemsControl のサブモジュールです。UIListBox のハンドルを使って、 LNUIListItemsControl_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10404,9 +12222,14 @@ key, outKeyGesture
                          
 [out] outKeyGesture(0) : 作成された KeyGesture のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+KeyGesture は InputGesture のサブモジュールです。KeyGesture のハンドルを使って、 LNInputGesture_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10423,11 +12246,12 @@ LNInput
 %prm
 buttonName, outReturn
 [in]  buttonName : 
-[out] outReturn(0) : Input のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10444,11 +12268,12 @@ LNInput
 %prm
 buttonName, outReturn
 [in]  buttonName : 
-[out] outReturn(0) : Input のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10465,11 +12290,12 @@ LNInput
 %prm
 buttonName, outReturn
 [in]  buttonName : 
-[out] outReturn(0) : Input のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10486,11 +12312,12 @@ LNInput
 %prm
 buttonName, outReturn
 [in]  buttonName : 
-[out] outReturn(0) : Input のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10507,11 +12334,12 @@ LNInput
 %prm
 buttonName, outReturn
 [in]  buttonName : 
-[out] outReturn(0) : Input のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10530,9 +12358,10 @@ buttonName, gesture
 [in] buttonName : 
 [in] gesture    : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10550,9 +12379,10 @@ LNInput
 gesture
 [in] gesture : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10570,9 +12400,10 @@ LNInput
 buttonName
 [in] buttonName : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10589,9 +12420,10 @@ LNInput
 %prm
 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10620,11 +12452,12 @@ button, outReturn
                      拡張ボタン1
                      LN_MOUSE_BUTTONS_X2
                      拡張ボタン2
-[out] outReturn(0) : Mouse のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10653,11 +12486,12 @@ button, outReturn
                      拡張ボタン1
                      LN_MOUSE_BUTTONS_X2
                      拡張ボタン2
-[out] outReturn(0) : Mouse のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10686,11 +12520,12 @@ button, outReturn
                      拡張ボタン1
                      LN_MOUSE_BUTTONS_X2
                      拡張ボタン2
-[out] outReturn(0) : Mouse のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10719,11 +12554,12 @@ button, outReturn
                      拡張ボタン1
                      LN_MOUSE_BUTTONS_X2
                      拡張ボタン2
-[out] outReturn(0) : Mouse のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10739,11 +12575,12 @@ LNMouse_GetPosition
 LNMouse
 %prm
 outReturn
-[out] outReturn(0) : Mouse のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -10759,12 +12596,17 @@ LNInterpreterCommand_Code
 LNInterpreterCommand
 %prm
 interpretercommand, outReturn
-[in]  interpretercommand : instance
-[out] outReturn(0)       : InterpreterCommand のハンドルを格納する変数。
+[in]  interpretercommand : InterpreterCommand のハンドル
+[out] outReturn(0)       : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+InterpreterCommand は Object のサブモジュールです。InterpreterCommand のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10780,12 +12622,17 @@ LNInterpreterCommand_ParamsCount
 LNInterpreterCommand
 %prm
 interpretercommand, outReturn
-[in]  interpretercommand : instance
-[out] outReturn(0)       : InterpreterCommand のハンドルを格納する変数。
+[in]  interpretercommand : InterpreterCommand のハンドル
+[out] outReturn(0)       : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+InterpreterCommand は Object のサブモジュールです。InterpreterCommand のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10801,13 +12648,18 @@ LNInterpreterCommand_Param
 LNInterpreterCommand
 %prm
 interpretercommand, index, outReturn
-[in]  interpretercommand : instance
+[in]  interpretercommand : InterpreterCommand のハンドル
 [in]  index              : 
-[out] outReturn(0)       : InterpreterCommand のハンドルを格納する変数。
+[out] outReturn(0)       : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+InterpreterCommand は Object のサブモジュールです。InterpreterCommand のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10825,9 +12677,14 @@ LNInterpreterCommandList
 outInterpreterCommandList
 [out] outInterpreterCommandList(0) : 作成された InterpreterCommandList のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+InterpreterCommandList は Object のサブモジュールです。InterpreterCommandList のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10843,12 +12700,17 @@ LNInterpreterCommandList_AddCommand
 LNInterpreterCommandList
 %prm
 interpretercommandlist, code
-[in] interpretercommandlist : instance
+[in] interpretercommandlist : InterpreterCommandList のハンドル
 [in] code                   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+InterpreterCommandList は Object のサブモジュールです。InterpreterCommandList のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10864,13 +12726,18 @@ LNInterpreterCommandList_AddCommand1
 LNInterpreterCommandList
 %prm
 interpretercommandlist, code, param0
-[in] interpretercommandlist : instance
+[in] interpretercommandlist : InterpreterCommandList のハンドル
 [in] code                   : 
 [in] param0                 : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+InterpreterCommandList は Object のサブモジュールです。InterpreterCommandList のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10886,14 +12753,19 @@ LNInterpreterCommandList_AddCommand2
 LNInterpreterCommandList
 %prm
 interpretercommandlist, code, param0, param1
-[in] interpretercommandlist : instance
+[in] interpretercommandlist : InterpreterCommandList のハンドル
 [in] code                   : 
 [in] param0                 : 
 [in] param1                 : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+InterpreterCommandList は Object のサブモジュールです。InterpreterCommandList のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10909,15 +12781,20 @@ LNInterpreterCommandList_AddCommand3
 LNInterpreterCommandList
 %prm
 interpretercommandlist, code, param0, param1, param2
-[in] interpretercommandlist : instance
+[in] interpretercommandlist : InterpreterCommandList のハンドル
 [in] code                   : 
 [in] param0                 : 
 [in] param1                 : 
 [in] param2                 : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+InterpreterCommandList は Object のサブモジュールです。InterpreterCommandList のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10933,16 +12810,21 @@ LNInterpreterCommandList_AddCommand4
 LNInterpreterCommandList
 %prm
 interpretercommandlist, code, param0, param1, param2, param3
-[in] interpretercommandlist : instance
+[in] interpretercommandlist : InterpreterCommandList のハンドル
 [in] code                   : 
 [in] param0                 : 
 [in] param1                 : 
 [in] param2                 : 
 [in] param3                 : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+InterpreterCommandList は Object のサブモジュールです。InterpreterCommandList のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10961,9 +12843,14 @@ callback, outInterpreterCommandDelegate
 [in]  callback                      : 
 [out] outInterpreterCommandDelegate(0) : 作成された InterpreterCommandDelegate のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+InterpreterCommandDelegate は Object のサブモジュールです。InterpreterCommandDelegate のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10981,9 +12868,14 @@ LNInterpreter
 outInterpreter
 [out] outInterpreter(0) : 作成された Interpreter のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Interpreter は Object のサブモジュールです。Interpreter のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -10999,11 +12891,16 @@ LNInterpreter_Clear
 LNInterpreter
 %prm
 interpreter
-[in] interpreter : instance
+[in] interpreter : Interpreter のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Interpreter は Object のサブモジュールです。Interpreter のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11019,12 +12916,17 @@ LNInterpreter_Run
 LNInterpreter
 %prm
 interpreter, commandList
-[in] interpreter : instance
+[in] interpreter : Interpreter のハンドル
 [in] commandList : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Interpreter は Object のサブモジュールです。Interpreter のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11040,12 +12942,17 @@ LNInterpreter_IsRunning
 LNInterpreter
 %prm
 interpreter, outReturn
-[in]  interpreter : instance
-[out] outReturn(0) : Interpreter のハンドルを格納する変数。
+[in]  interpreter : Interpreter のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Interpreter は Object のサブモジュールです。Interpreter のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11061,11 +12968,16 @@ LNInterpreter_Update
 LNInterpreter
 %prm
 interpreter
-[in] interpreter : instance
+[in] interpreter : Interpreter のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Interpreter は Object のサブモジュールです。Interpreter のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11081,11 +12993,16 @@ LNInterpreter_Terminate
 LNInterpreter
 %prm
 interpreter
-[in] interpreter : instance
+[in] interpreter : Interpreter のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Interpreter は Object のサブモジュールです。Interpreter のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11101,13 +13018,18 @@ LNInterpreter_RegisterCommandHandler
 LNInterpreter
 %prm
 interpreter, name, handler
-[in] interpreter : instance
+[in] interpreter : Interpreter のハンドル
 [in] name        : 
 [in] handler     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Interpreter は Object のサブモジュールです。Interpreter のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11123,12 +13045,17 @@ setWaitMode
 LNInterpreter
 %prm
 interpreter, mode
-[in] interpreter : instance
+[in] interpreter : Interpreter のハンドル
 [in] mode        : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Interpreter は Object のサブモジュールです。Interpreter のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11144,12 +13071,17 @@ waitMode
 LNInterpreter
 %prm
 interpreter, outReturn
-[in]  interpreter : instance
-[out] outReturn(0) : Interpreter のハンドルを格納する変数。
+[in]  interpreter : Interpreter のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Interpreter は Object のサブモジュールです。Interpreter のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11165,12 +13097,17 @@ setWaitCount
 LNInterpreter
 %prm
 interpreter, count
-[in] interpreter : instance
+[in] interpreter : Interpreter のハンドル
 [in] count       : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Interpreter は Object のサブモジュールです。Interpreter のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11186,12 +13123,17 @@ waitCount
 LNInterpreter
 %prm
 interpreter, outReturn
-[in]  interpreter : instance
-[out] outReturn(0) : Interpreter のハンドルを格納する変数。
+[in]  interpreter : Interpreter のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Interpreter は Object のサブモジュールです。Interpreter のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11209,9 +13151,10 @@ LNEngineSettings
 title
 [in] title : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11230,9 +13173,10 @@ width, height
 [in] width  : 
 [in] height : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11251,9 +13195,10 @@ width, height
 [in] width  : 
 [in] height : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11271,9 +13216,10 @@ LNEngineSettings
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11291,9 +13237,10 @@ LNEngineSettings
 path
 [in] path : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11312,9 +13259,10 @@ fileFullPath, password
 [in] fileFullPath : 
 [in] password     : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11332,9 +13280,10 @@ LNEngineSettings
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11352,9 +13301,10 @@ LNEngineSettings
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11372,9 +13322,10 @@ LNEngineSettings
 filePath
 [in] filePath : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11392,9 +13343,10 @@ LNEngineSettings
 enabled
 [in] enabled : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11412,9 +13364,10 @@ LNEngineSettings
 enabled
 [in] enabled : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11432,9 +13385,10 @@ LNEngineSettings
 filePath
 [in] filePath : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11452,10 +13406,11 @@ LNEngineSettings
 filePath
 [in] filePath : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
 現在は DirectX12 を使用する場合のみ有効で、デフォルトの GPU では動作が不安定な場合に "Microsoft Basic Render Driver" 等を試すことができます。
+
 %href
 
 
@@ -11472,9 +13427,10 @@ LNEngineSettings
 enabled
 [in] enabled : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11492,9 +13448,10 @@ LNEngineSettings
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11511,9 +13468,10 @@ LNEngine
 %prm
 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11530,9 +13488,10 @@ LNEngine
 %prm
 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11548,11 +13507,12 @@ LNEngine_Update
 LNEngine
 %prm
 outReturn
-[out] outReturn(0) : Engine のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11568,11 +13528,12 @@ LNEngine_GetTime
 LNEngine
 %prm
 outReturn
-[out] outReturn(0) : Engine のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11588,11 +13549,12 @@ LNEngine_GetWorld
 LNEngine
 %prm
 outReturn
-[out] outReturn(0) : Engine のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11608,11 +13570,12 @@ LNEngine_GetMainCamera
 LNEngine
 %prm
 outReturn
-[out] outReturn(0) : Engine のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11628,11 +13591,12 @@ LNEngine_GetMainLight
 LNEngine
 %prm
 outReturn
-[out] outReturn(0) : Engine のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11648,11 +13612,12 @@ LNEngine_GetRenderView
 LNEngine
 %prm
 outReturn
-[out] outReturn(0) : Engine のハンドルを格納する変数。
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11670,9 +13635,14 @@ LNApplication
 outApplication
 [out] outApplication(0) : 作成された Application のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Application は Object のサブモジュールです。Application のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11688,11 +13658,16 @@ LNApplication_OnInit
 LNApplication
 %prm
 application
-[in] application : instance
+[in] application : Application のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Application は Object のサブモジュールです。Application のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11708,11 +13683,16 @@ LNApplication_OnUpdate
 LNApplication
 %prm
 application
-[in] application : instance
+[in] application : Application のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Application は Object のサブモジュールです。Application のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11728,12 +13708,17 @@ LNApplication_World
 LNApplication
 %prm
 application, outReturn
-[in]  application : instance
-[out] outReturn(0) : Application のハンドルを格納する変数。
+[in]  application : Application のハンドル
+[out] outReturn(0) : 結果を格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Application は Object のサブモジュールです。Application のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11749,11 +13734,16 @@ Application の実行を開始します。
 LNApplication
 %prm
 application
-[in] application : instance
+[in] application : Application のハンドル
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
+
+備考
+--------------------
+Application は Object のサブモジュールです。Application のハンドルを使って、 LNObject_ から始まるすべての命令を実行できます。
 
 %href
 
@@ -11771,9 +13761,10 @@ LNDebug
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11791,9 +13782,10 @@ LNDebug
 value
 [in] value : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11811,9 +13803,10 @@ LNDebug
 str
 [in] str : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11832,9 +13825,10 @@ time, str
 [in] time : 
 [in] str  : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11854,9 +13848,10 @@ time, color, str
 [in] color : 
 [in] str   : 
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11875,9 +13870,10 @@ callback, outObjectSerializeHandler
 [in]  callback                  : 
 [out] outObjectSerializeHandler(0) : 作成された ObjectSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11896,9 +13892,10 @@ callback, outEventConnectionSerializeHandler
 [in]  callback                           : 
 [out] outEventConnectionSerializeHandler(0) : 作成された EventConnectionSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11917,9 +13914,10 @@ callback, outVariantSerializeHandler
 [in]  callback                   : 
 [out] outVariantSerializeHandler(0) : 作成された VariantSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11938,9 +13936,10 @@ callback, outZVTestClass1SerializeHandler
 [in]  callback                        : 
 [out] outZVTestClass1SerializeHandler(0) : 作成された ZVTestClass1SerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11959,9 +13958,10 @@ callback, outZVTestEventArgs1SerializeHandler
 [in]  callback                            : 
 [out] outZVTestEventArgs1SerializeHandler(0) : 作成された ZVTestEventArgs1SerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -11980,9 +13980,10 @@ callback, outSerializer2SerializeHandler
 [in]  callback                       : 
 [out] outSerializer2SerializeHandler(0) : 作成された Serializer2SerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12001,9 +14002,10 @@ callback, outAssetObjectSerializeHandler
 [in]  callback                       : 
 [out] outAssetObjectSerializeHandler(0) : 作成された AssetObjectSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12022,9 +14024,10 @@ callback, outAssetImportSettingsSerializeHandler
 [in]  callback                               : 
 [out] outAssetImportSettingsSerializeHandler(0) : 作成された AssetImportSettingsSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12043,9 +14046,10 @@ callback, outAssetModelSerializeHandler
 [in]  callback                      : 
 [out] outAssetModelSerializeHandler(0) : 作成された AssetModelSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12064,9 +14068,10 @@ callback, outSoundSerializeHandler
 [in]  callback                 : 
 [out] outSoundSerializeHandler(0) : 作成された SoundSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12085,9 +14090,10 @@ callback, outTextureSerializeHandler
 [in]  callback                   : 
 [out] outTextureSerializeHandler(0) : 作成された TextureSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12106,9 +14112,10 @@ callback, outTexture2DSerializeHandler
 [in]  callback                     : 
 [out] outTexture2DSerializeHandler(0) : 作成された Texture2DSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12127,9 +14134,10 @@ callback, outShaderSerializeHandler
 [in]  callback                  : 
 [out] outShaderSerializeHandler(0) : 作成された ShaderSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12148,9 +14156,10 @@ callback, outRenderViewSerializeHandler
 [in]  callback                      : 
 [out] outRenderViewSerializeHandler(0) : 作成された RenderViewSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12169,9 +14178,10 @@ callback, outMaterialSerializeHandler
 [in]  callback                    : 
 [out] outMaterialSerializeHandler(0) : 作成された MaterialSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12190,9 +14200,10 @@ callback, outMeshNodeSerializeHandler
 [in]  callback                    : 
 [out] outMeshNodeSerializeHandler(0) : 作成された MeshNodeSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12211,9 +14222,10 @@ callback, outAnimationControllerSerializeHandler
 [in]  callback                               : 
 [out] outAnimationControllerSerializeHandler(0) : 作成された AnimationControllerSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12232,9 +14244,10 @@ callback, outMeshModelSerializeHandler
 [in]  callback                     : 
 [out] outMeshModelSerializeHandler(0) : 作成された MeshModelSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12253,9 +14266,10 @@ callback, outMeshImportSettingsSerializeHandler
 [in]  callback                              : 
 [out] outMeshImportSettingsSerializeHandler(0) : 作成された MeshImportSettingsSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12274,9 +14288,10 @@ callback, outSkinnedMeshModelSerializeHandler
 [in]  callback                            : 
 [out] outSkinnedMeshModelSerializeHandler(0) : 作成された SkinnedMeshModelSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12295,9 +14310,10 @@ callback, outCollisionShapeSerializeHandler
 [in]  callback                          : 
 [out] outCollisionShapeSerializeHandler(0) : 作成された CollisionShapeSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12316,9 +14332,10 @@ callback, outBoxCollisionShapeSerializeHandler
 [in]  callback                             : 
 [out] outBoxCollisionShapeSerializeHandler(0) : 作成された BoxCollisionShapeSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12337,9 +14354,10 @@ callback, outAnimationCurveSerializeHandler
 [in]  callback                          : 
 [out] outAnimationCurveSerializeHandler(0) : 作成された AnimationCurveSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12358,9 +14376,10 @@ callback, outKeyFrameAnimationCurveSerializeHandler
 [in]  callback                                  : 
 [out] outKeyFrameAnimationCurveSerializeHandler(0) : 作成された KeyFrameAnimationCurveSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12379,9 +14398,10 @@ callback, outAnimationClipSerializeHandler
 [in]  callback                         : 
 [out] outAnimationClipSerializeHandler(0) : 作成された AnimationClipSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12400,9 +14420,10 @@ callback, outAnimationStateSerializeHandler
 [in]  callback                          : 
 [out] outAnimationStateSerializeHandler(0) : 作成された AnimationStateSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12421,9 +14442,10 @@ callback, outEffectResourceSerializeHandler
 [in]  callback                          : 
 [out] outEffectResourceSerializeHandler(0) : 作成された EffectResourceSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12442,9 +14464,10 @@ callback, outParticleEmitterModelSerializeHandler
 [in]  callback                                : 
 [out] outParticleEmitterModelSerializeHandler(0) : 作成された ParticleEmitterModelSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12463,9 +14486,10 @@ callback, outParticleModelSerializeHandler
 [in]  callback                         : 
 [out] outParticleModelSerializeHandler(0) : 作成された ParticleModelSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12484,9 +14508,10 @@ callback, outComponentSerializeHandler
 [in]  callback                     : 
 [out] outComponentSerializeHandler(0) : 作成された ComponentSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12505,9 +14530,10 @@ callback, outVisualComponentSerializeHandler
 [in]  callback                           : 
 [out] outVisualComponentSerializeHandler(0) : 作成された VisualComponentSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12526,9 +14552,10 @@ callback, outSpriteComponentSerializeHandler
 [in]  callback                           : 
 [out] outSpriteComponentSerializeHandler(0) : 作成された SpriteComponentSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12547,9 +14574,10 @@ callback, outCharacterControllerSerializeHandler
 [in]  callback                               : 
 [out] outCharacterControllerSerializeHandler(0) : 作成された CharacterControllerSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12568,9 +14596,10 @@ callback, outWorldSerializeHandler
 [in]  callback                 : 
 [out] outWorldSerializeHandler(0) : 作成された WorldSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12589,9 +14618,10 @@ callback, outComponentListSerializeHandler
 [in]  callback                         : 
 [out] outComponentListSerializeHandler(0) : 作成された ComponentListSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12610,9 +14640,10 @@ callback, outWorldObjectSerializeHandler
 [in]  callback                       : 
 [out] outWorldObjectSerializeHandler(0) : 作成された WorldObjectSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12631,9 +14662,10 @@ callback, outWorldObjectPreUpdateHandler
 [in]  callback                       : 
 [out] outWorldObjectPreUpdateHandler(0) : 作成された WorldObjectPreUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12652,9 +14684,10 @@ callback, outWorldObjectUpdateHandler
 [in]  callback                    : 
 [out] outWorldObjectUpdateHandler(0) : 作成された WorldObjectUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12673,9 +14706,10 @@ callback, outVisualObjectSerializeHandler
 [in]  callback                        : 
 [out] outVisualObjectSerializeHandler(0) : 作成された VisualObjectSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12694,9 +14728,10 @@ callback, outVisualObjectPreUpdateHandler
 [in]  callback                        : 
 [out] outVisualObjectPreUpdateHandler(0) : 作成された VisualObjectPreUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12715,9 +14750,10 @@ callback, outVisualObjectUpdateHandler
 [in]  callback                     : 
 [out] outVisualObjectUpdateHandler(0) : 作成された VisualObjectUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12736,9 +14772,10 @@ callback, outCameraSerializeHandler
 [in]  callback                  : 
 [out] outCameraSerializeHandler(0) : 作成された CameraSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12757,9 +14794,10 @@ callback, outCameraPreUpdateHandler
 [in]  callback                  : 
 [out] outCameraPreUpdateHandler(0) : 作成された CameraPreUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12778,9 +14816,10 @@ callback, outCameraUpdateHandler
 [in]  callback               : 
 [out] outCameraUpdateHandler(0) : 作成された CameraUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12799,9 +14838,10 @@ callback, outEnvironmentLightSerializeHandler
 [in]  callback                            : 
 [out] outEnvironmentLightSerializeHandler(0) : 作成された EnvironmentLightSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12820,9 +14860,10 @@ callback, outEnvironmentLightPreUpdateHandler
 [in]  callback                            : 
 [out] outEnvironmentLightPreUpdateHandler(0) : 作成された EnvironmentLightPreUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12841,9 +14882,10 @@ callback, outEnvironmentLightUpdateHandler
 [in]  callback                         : 
 [out] outEnvironmentLightUpdateHandler(0) : 作成された EnvironmentLightUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12862,9 +14904,10 @@ callback, outDirectionalLightSerializeHandler
 [in]  callback                            : 
 [out] outDirectionalLightSerializeHandler(0) : 作成された DirectionalLightSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12883,9 +14926,10 @@ callback, outDirectionalLightPreUpdateHandler
 [in]  callback                            : 
 [out] outDirectionalLightPreUpdateHandler(0) : 作成された DirectionalLightPreUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12904,9 +14948,10 @@ callback, outDirectionalLightUpdateHandler
 [in]  callback                         : 
 [out] outDirectionalLightUpdateHandler(0) : 作成された DirectionalLightUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12925,9 +14970,10 @@ callback, outPointLightSerializeHandler
 [in]  callback                      : 
 [out] outPointLightSerializeHandler(0) : 作成された PointLightSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12946,9 +14992,10 @@ callback, outPointLightPreUpdateHandler
 [in]  callback                      : 
 [out] outPointLightPreUpdateHandler(0) : 作成された PointLightPreUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12967,9 +15014,10 @@ callback, outPointLightUpdateHandler
 [in]  callback                   : 
 [out] outPointLightUpdateHandler(0) : 作成された PointLightUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -12988,9 +15036,10 @@ callback, outSpotLightSerializeHandler
 [in]  callback                     : 
 [out] outSpotLightSerializeHandler(0) : 作成された SpotLightSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13009,9 +15058,10 @@ callback, outSpotLightPreUpdateHandler
 [in]  callback                     : 
 [out] outSpotLightPreUpdateHandler(0) : 作成された SpotLightPreUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13030,9 +15080,10 @@ callback, outSpotLightUpdateHandler
 [in]  callback                  : 
 [out] outSpotLightUpdateHandler(0) : 作成された SpotLightUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13051,9 +15102,10 @@ callback, outSpriteSerializeHandler
 [in]  callback                  : 
 [out] outSpriteSerializeHandler(0) : 作成された SpriteSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13072,9 +15124,10 @@ callback, outSpritePreUpdateHandler
 [in]  callback                  : 
 [out] outSpritePreUpdateHandler(0) : 作成された SpritePreUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13093,9 +15146,10 @@ callback, outSpriteUpdateHandler
 [in]  callback               : 
 [out] outSpriteUpdateHandler(0) : 作成された SpriteUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13114,9 +15168,10 @@ callback, outCameraOrbitControlComponentSerializeHandler
 [in]  callback                                       : 
 [out] outCameraOrbitControlComponentSerializeHandler(0) : 作成された CameraOrbitControlComponentSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13135,9 +15190,10 @@ callback, outRaycasterSerializeHandler
 [in]  callback                     : 
 [out] outRaycasterSerializeHandler(0) : 作成された RaycasterSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13156,9 +15212,10 @@ callback, outRaycastResultSerializeHandler
 [in]  callback                         : 
 [out] outRaycastResultSerializeHandler(0) : 作成された RaycastResultSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13177,9 +15234,10 @@ callback, outWorldRenderViewSerializeHandler
 [in]  callback                           : 
 [out] outWorldRenderViewSerializeHandler(0) : 作成された WorldRenderViewSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13198,9 +15256,10 @@ callback, outShapeObjectSerializeHandler
 [in]  callback                       : 
 [out] outShapeObjectSerializeHandler(0) : 作成された ShapeObjectSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13219,9 +15278,10 @@ callback, outShapeObjectPreUpdateHandler
 [in]  callback                       : 
 [out] outShapeObjectPreUpdateHandler(0) : 作成された ShapeObjectPreUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13240,9 +15300,10 @@ callback, outShapeObjectUpdateHandler
 [in]  callback                    : 
 [out] outShapeObjectUpdateHandler(0) : 作成された ShapeObjectUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13261,9 +15322,10 @@ callback, outPlaneMeshSerializeHandler
 [in]  callback                     : 
 [out] outPlaneMeshSerializeHandler(0) : 作成された PlaneMeshSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13282,9 +15344,10 @@ callback, outPlaneMeshPreUpdateHandler
 [in]  callback                     : 
 [out] outPlaneMeshPreUpdateHandler(0) : 作成された PlaneMeshPreUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13303,9 +15366,10 @@ callback, outPlaneMeshUpdateHandler
 [in]  callback                  : 
 [out] outPlaneMeshUpdateHandler(0) : 作成された PlaneMeshUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13324,9 +15388,10 @@ callback, outBoxMeshSerializeHandler
 [in]  callback                   : 
 [out] outBoxMeshSerializeHandler(0) : 作成された BoxMeshSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13345,9 +15410,10 @@ callback, outBoxMeshPreUpdateHandler
 [in]  callback                   : 
 [out] outBoxMeshPreUpdateHandler(0) : 作成された BoxMeshPreUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13366,9 +15432,10 @@ callback, outBoxMeshUpdateHandler
 [in]  callback                : 
 [out] outBoxMeshUpdateHandler(0) : 作成された BoxMeshUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13387,9 +15454,10 @@ callback, outMeshComponentSerializeHandler
 [in]  callback                         : 
 [out] outMeshComponentSerializeHandler(0) : 作成された MeshComponentSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13408,9 +15476,10 @@ callback, outCollisionSerializeHandler
 [in]  callback                     : 
 [out] outCollisionSerializeHandler(0) : 作成された CollisionSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13429,9 +15498,10 @@ callback, outTriggerBodyComponentSerializeHandler
 [in]  callback                                : 
 [out] outTriggerBodyComponentSerializeHandler(0) : 作成された TriggerBodyComponentSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13450,9 +15520,10 @@ callback, outParticleEmitterSerializeHandler
 [in]  callback                           : 
 [out] outParticleEmitterSerializeHandler(0) : 作成された ParticleEmitterSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13471,9 +15542,10 @@ callback, outParticleEmitterPreUpdateHandler
 [in]  callback                           : 
 [out] outParticleEmitterPreUpdateHandler(0) : 作成された ParticleEmitterPreUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13492,9 +15564,10 @@ callback, outParticleEmitterUpdateHandler
 [in]  callback                        : 
 [out] outParticleEmitterUpdateHandler(0) : 作成された ParticleEmitterUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13513,9 +15586,10 @@ callback, outLevelSerializeHandler
 [in]  callback                 : 
 [out] outLevelSerializeHandler(0) : 作成された LevelSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13534,9 +15608,10 @@ callback, outLevelStartHandler
 [in]  callback             : 
 [out] outLevelStartHandler(0) : 作成された LevelStartHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13555,9 +15630,10 @@ callback, outLevelStopHandler
 [in]  callback            : 
 [out] outLevelStopHandler(0) : 作成された LevelStopHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13576,9 +15652,10 @@ callback, outLevelPauseHandler
 [in]  callback             : 
 [out] outLevelPauseHandler(0) : 作成された LevelPauseHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13597,9 +15674,10 @@ callback, outLevelResumeHandler
 [in]  callback              : 
 [out] outLevelResumeHandler(0) : 作成された LevelResumeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13618,9 +15696,10 @@ callback, outLevelUpdateHandler
 [in]  callback              : 
 [out] outLevelUpdateHandler(0) : 作成された LevelUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13639,9 +15718,10 @@ callback, outUIEventArgsSerializeHandler
 [in]  callback                       : 
 [out] outUIEventArgsSerializeHandler(0) : 作成された UIEventArgsSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13660,9 +15740,10 @@ callback, outUILayoutElementSerializeHandler
 [in]  callback                           : 
 [out] outUILayoutElementSerializeHandler(0) : 作成された UILayoutElementSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13681,9 +15762,10 @@ callback, outUIElementSerializeHandler
 [in]  callback                     : 
 [out] outUIElementSerializeHandler(0) : 作成された UIElementSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13702,9 +15784,10 @@ callback, outUITextSerializeHandler
 [in]  callback                  : 
 [out] outUITextSerializeHandler(0) : 作成された UITextSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13723,9 +15806,10 @@ callback, outUISpriteSerializeHandler
 [in]  callback                    : 
 [out] outUISpriteSerializeHandler(0) : 作成された UISpriteSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13744,9 +15828,10 @@ callback, outUIIconSerializeHandler
 [in]  callback                  : 
 [out] outUIIconSerializeHandler(0) : 作成された UIIconSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13765,9 +15850,10 @@ callback, outUIMessageTextAreaSerializeHandler
 [in]  callback                             : 
 [out] outUIMessageTextAreaSerializeHandler(0) : 作成された UIMessageTextAreaSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13786,9 +15872,10 @@ callback, outUILayoutPanelSerializeHandler
 [in]  callback                         : 
 [out] outUILayoutPanelSerializeHandler(0) : 作成された UILayoutPanelSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13807,9 +15894,10 @@ callback, outUIBoxLayoutSerializeHandler
 [in]  callback                       : 
 [out] outUIBoxLayoutSerializeHandler(0) : 作成された UIBoxLayoutSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13828,9 +15916,10 @@ callback, outUIStackLayoutSerializeHandler
 [in]  callback                         : 
 [out] outUIStackLayoutSerializeHandler(0) : 作成された UIStackLayoutSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13849,9 +15938,10 @@ callback, outUIGridLayoutSerializeHandler
 [in]  callback                        : 
 [out] outUIGridLayoutSerializeHandler(0) : 作成された UIGridLayoutSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13870,9 +15960,10 @@ callback, outUIControlSerializeHandler
 [in]  callback                     : 
 [out] outUIControlSerializeHandler(0) : 作成された UIControlSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13891,9 +15982,10 @@ callback, outUIButtonBaseSerializeHandler
 [in]  callback                        : 
 [out] outUIButtonBaseSerializeHandler(0) : 作成された UIButtonBaseSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13912,9 +16004,10 @@ callback, outUIButtonSerializeHandler
 [in]  callback                    : 
 [out] outUIButtonSerializeHandler(0) : 作成された UIButtonSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13933,9 +16026,10 @@ callback, outUIWindowSerializeHandler
 [in]  callback                    : 
 [out] outUIWindowSerializeHandler(0) : 作成された UIWindowSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13954,9 +16048,10 @@ callback, outUIListItemSerializeHandler
 [in]  callback                      : 
 [out] outUIListItemSerializeHandler(0) : 作成された UIListItemSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13975,9 +16070,10 @@ callback, outUIListItemsControlSerializeHandler
 [in]  callback                              : 
 [out] outUIListItemsControlSerializeHandler(0) : 作成された UIListItemsControlSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -13996,9 +16092,10 @@ callback, outUIListBoxItemSerializeHandler
 [in]  callback                         : 
 [out] outUIListBoxItemSerializeHandler(0) : 作成された UIListBoxItemSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -14017,9 +16114,10 @@ callback, outUIListBoxSerializeHandler
 [in]  callback                     : 
 [out] outUIListBoxSerializeHandler(0) : 作成された UIListBoxSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -14038,9 +16136,10 @@ callback, outInputGestureSerializeHandler
 [in]  callback                        : 
 [out] outInputGestureSerializeHandler(0) : 作成された InputGestureSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -14059,9 +16158,10 @@ callback, outKeyGestureSerializeHandler
 [in]  callback                      : 
 [out] outKeyGestureSerializeHandler(0) : 作成された KeyGestureSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -14080,9 +16180,10 @@ callback, outInterpreterCommandSerializeHandler
 [in]  callback                              : 
 [out] outInterpreterCommandSerializeHandler(0) : 作成された InterpreterCommandSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -14101,9 +16202,10 @@ callback, outInterpreterCommandListSerializeHandler
 [in]  callback                                  : 
 [out] outInterpreterCommandListSerializeHandler(0) : 作成された InterpreterCommandListSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -14122,9 +16224,10 @@ callback, outInterpreterSerializeHandler
 [in]  callback                       : 
 [out] outInterpreterSerializeHandler(0) : 作成された InterpreterSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -14143,9 +16246,10 @@ callback, outInterpreterUpdateWaitHandler
 [in]  callback                        : 
 [out] outInterpreterUpdateWaitHandler(0) : 作成された InterpreterUpdateWaitHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -14164,9 +16268,10 @@ callback, outApplicationSerializeHandler
 [in]  callback                       : 
 [out] outApplicationSerializeHandler(0) : 作成された ApplicationSerializeHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -14185,9 +16290,10 @@ callback, outApplicationInitHandler
 [in]  callback                  : 
 [out] outApplicationInitHandler(0) : 作成された ApplicationInitHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
@@ -14206,9 +16312,10 @@ callback, outApplicationUpdateHandler
 [in]  callback                    : 
 [out] outApplicationUpdateHandler(0) : 作成された ApplicationUpdateHandler のハンドルを格納する変数。
 
-stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+stat : 0=成功, 負値=失敗
 
 %inst
+
 
 %href
 
