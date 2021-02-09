@@ -3839,7 +3839,7 @@ class Lumino::Scene
 
     # レベルの遷移エフェクトを実行中であるかを確認します。
     # @return [Boolean] 
-    def is_transition_effect_running(*args)
+    def transition_effect_running?(*args)
     end
 
 
@@ -3989,7 +3989,7 @@ class Lumino::Scene
 
     # HDR レンダリングの有無を取得します。
     # @return [Boolean] 
-    def is_hdr_enabled(*args)
+    def hdr_enabled?(*args)
     end
 
 
@@ -5334,7 +5334,7 @@ class Lumino::Input
     # @param [] buttonName 
     # 
     # @return [Boolean] 
-    def is_pressed(*args)
+    def pressed?(*args)
     end
 
 
@@ -5343,7 +5343,7 @@ class Lumino::Input
     # @param [] buttonName 
     # 
     # @return [Boolean] 
-    def is_triggered(*args)
+    def triggered?(*args)
     end
 
 
@@ -5352,7 +5352,7 @@ class Lumino::Input
     # @param [] buttonName 
     # 
     # @return [Boolean] 
-    def is_triggered_off(*args)
+    def triggered_off?(*args)
     end
 
 
@@ -5361,7 +5361,7 @@ class Lumino::Input
     # @param [] buttonName 
     # 
     # @return [Boolean] 
-    def is_repeated(*args)
+    def repeated?(*args)
     end
 
 

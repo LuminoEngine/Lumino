@@ -27296,7 +27296,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_Scene, "call_level", LN_TO_RUBY_FUNC(Wrap_LNScene_CallLevel), -1);
     rb_define_singleton_method(g_class_Scene, "return_level", LN_TO_RUBY_FUNC(Wrap_LNScene_ReturnLevel), -1);
     rb_define_singleton_method(g_class_Scene, "active_level", LN_TO_RUBY_FUNC(Wrap_LNScene_ActiveLevel), -1);
-    rb_define_singleton_method(g_class_Scene, "is_transition_effect_running", LN_TO_RUBY_FUNC(Wrap_LNScene_IsTransitionEffectRunning), -1);
+    rb_define_singleton_method(g_class_Scene, "transition_effect_running?", LN_TO_RUBY_FUNC(Wrap_LNScene_IsTransitionEffectRunning), -1);
     rb_define_singleton_method(g_class_Scene, "set_transition_effect_mode", LN_TO_RUBY_FUNC(Wrap_LNScene_SetTransitionEffectMode), -1);
     rb_define_singleton_method(g_class_Scene, "transition_effect_mode", LN_TO_RUBY_FUNC(Wrap_LNScene_TransitionEffectMode), -1);
     rb_define_singleton_method(g_class_Scene, "set_transition_duration", LN_TO_RUBY_FUNC(Wrap_LNScene_SetTransitionDuration), -1);
@@ -27316,7 +27316,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_Scene, "set_fog_lower_height", LN_TO_RUBY_FUNC(Wrap_LNScene_SetFogLowerHeight), -1);
     rb_define_singleton_method(g_class_Scene, "set_fog_upper_height", LN_TO_RUBY_FUNC(Wrap_LNScene_SetFogUpperHeight), -1);
     rb_define_singleton_method(g_class_Scene, "set_hdr_enabled", LN_TO_RUBY_FUNC(Wrap_LNScene_SetHDREnabled), -1);
-    rb_define_singleton_method(g_class_Scene, "is_hdr_enabled", LN_TO_RUBY_FUNC(Wrap_LNScene_IsHDREnabled), -1);
+    rb_define_singleton_method(g_class_Scene, "hdr_enabled?", LN_TO_RUBY_FUNC(Wrap_LNScene_IsHDREnabled), -1);
     rb_define_singleton_method(g_class_Scene, "set_screen_blend_color", LN_TO_RUBY_FUNC(Wrap_LNScene_SetScreenBlendColor), -1);
     rb_define_singleton_method(g_class_Scene, "screen_blend_color", LN_TO_RUBY_FUNC(Wrap_LNScene_ScreenBlendColor), -1);
     rb_define_singleton_method(g_class_Scene, "set_color_tone", LN_TO_RUBY_FUNC(Wrap_LNScene_SetColorTone), -1);
@@ -27595,10 +27595,10 @@ extern "C" void Init_Lumino_RubyExt()
     LNKeyGesture_OnSerialize_SetOverrideCallback(Wrap_LNKeyGesture_OnSerialize_OverrideCallback);
 
     g_class_Input = rb_define_class_under(g_rootModule, "Input", rb_cObject);
-    rb_define_singleton_method(g_class_Input, "is_pressed", LN_TO_RUBY_FUNC(Wrap_LNInput_IsPressed), -1);
-    rb_define_singleton_method(g_class_Input, "is_triggered", LN_TO_RUBY_FUNC(Wrap_LNInput_IsTriggered), -1);
-    rb_define_singleton_method(g_class_Input, "is_triggered_off", LN_TO_RUBY_FUNC(Wrap_LNInput_IsTriggeredOff), -1);
-    rb_define_singleton_method(g_class_Input, "is_repeated", LN_TO_RUBY_FUNC(Wrap_LNInput_IsRepeated), -1);
+    rb_define_singleton_method(g_class_Input, "pressed?", LN_TO_RUBY_FUNC(Wrap_LNInput_IsPressed), -1);
+    rb_define_singleton_method(g_class_Input, "triggered?", LN_TO_RUBY_FUNC(Wrap_LNInput_IsTriggered), -1);
+    rb_define_singleton_method(g_class_Input, "triggered_off?", LN_TO_RUBY_FUNC(Wrap_LNInput_IsTriggeredOff), -1);
+    rb_define_singleton_method(g_class_Input, "repeated?", LN_TO_RUBY_FUNC(Wrap_LNInput_IsRepeated), -1);
     rb_define_singleton_method(g_class_Input, "get_axis_value", LN_TO_RUBY_FUNC(Wrap_LNInput_GetAxisValue), -1);
     rb_define_singleton_method(g_class_Input, "add_binding", LN_TO_RUBY_FUNC(Wrap_LNInput_AddBinding), -1);
     rb_define_singleton_method(g_class_Input, "remove_binding", LN_TO_RUBY_FUNC(Wrap_LNInput_RemoveBinding), -1);

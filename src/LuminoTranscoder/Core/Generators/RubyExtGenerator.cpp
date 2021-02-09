@@ -83,7 +83,7 @@ ln::String RubyGeneratorBase::makeRubyMethodName(MethodSymbol* method) const
 		auto prop = method->ownerProperty();
 		name = makeSnakeStyleName(prop->shortName());
 
-		// bool 型の getter である場合、is を外して ? を付ける
+		// bool 型の getter である場合 ? を付ける。先頭が is であれば外す
 		if (method->isPropertyGetter() && method->returnType().type == PredefinedTypes::boolType) {
 			if (name.indexOf(u"is_") == 0) {
 				if (!isdigit(name[3])) {    // 変換した結果数値が識別子の先頭にならないこと
@@ -99,6 +99,11 @@ ln::String RubyGeneratorBase::makeRubyMethodName(MethodSymbol* method) const
 	}
 	else {
 		name = makeSnakeStyleName(method->shortName());
+
+		// Property ではなくても、元々の名前が is で始まり bool を返すものは is を外して ? を付ける
+		if (name.indexOf(u"is_") == 0 && method->returnType().type == PredefinedTypes::boolType) {
+			name = ln::String(name.substr(3)) + u"?";
+		}
 	}
 
 	return name;
