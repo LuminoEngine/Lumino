@@ -88,6 +88,7 @@ struct LN_PBRMaterial
     float3 diffuseColor;
     float specularRoughness;
     float3 specularColor;
+    float occlusion;
 };
 
 //------------------------------------------------------------------------------
@@ -451,6 +452,8 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
 
     // see lights_fragment_end.glsl.js
     LN_RE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );
+
+    reflectedLight.indirectDiffuse *= material.occlusion;
 
     float3 outgoingLight =
         reflectedLight.directDiffuse +

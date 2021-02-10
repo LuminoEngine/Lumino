@@ -164,7 +164,7 @@ struct SubsetInfo
     // common material
     Texture* materialTexture;
     Texture* normalMap;
-    Texture* roughnessMap;
+    Texture* metallicRoughnessTexture;
 
     // builtin effect
     float opacity;
@@ -176,7 +176,7 @@ struct SubsetInfo
 	{
 		materialTexture = nullptr;
         normalMap = nullptr;
-        roughnessMap = nullptr;
+        metallicRoughnessTexture = nullptr;
 		opacity = 0.0f;
 		colorScale = Color();
 		blendColor = Color();
@@ -188,7 +188,7 @@ struct SubsetInfo
 		return
 			lhs.materialTexture == rhs.materialTexture &&
             lhs.normalMap == rhs.normalMap &&
-            lhs.roughnessMap == rhs.roughnessMap &&
+            lhs.metallicRoughnessTexture == rhs.metallicRoughnessTexture &&
 			Math::nearEqual(lhs.opacity, rhs.opacity) &&
 			Color::nearEqual(lhs.colorScale, rhs.colorScale) &&
 			Color::nearEqual(lhs.blendColor, rhs.blendColor) &&
@@ -261,7 +261,7 @@ enum BuiltinShaderTextures
 {
     BuiltinShaderTextures_ln_MaterialTexture, // TODO: MaterialMainTexture
     BuiltinShaderTextures_ln_NormalMap, // TODO: MaterialNormalMap
-    BuiltinShaderTextures_ln_MaterialRoughnessMap,
+    BuiltinShaderTextures_ln_MetallicRoughnessTexture,
     BuiltinShaderTextures_ln_mainLightShadowMap,
     BuiltinShaderTextures_ln_BoneTexture,
     BuiltinShaderTextures_ln_BoneLocalQuaternionTexture,

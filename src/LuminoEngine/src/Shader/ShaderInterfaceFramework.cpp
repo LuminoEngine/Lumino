@@ -78,7 +78,7 @@ static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTe
 {
     {_LT("ln_MaterialTexture"), BuiltinShaderTextures_ln_MaterialTexture},
     {_LT("ln_NormalMap"), BuiltinShaderTextures_ln_NormalMap},
-    {_LT("ln_MaterialRoughnessMap"), BuiltinShaderTextures_ln_MaterialRoughnessMap},
+    {_LT("ln_MetallicRoughnessTexture"), BuiltinShaderTextures_ln_MetallicRoughnessTexture},
     {_LT("ln_BoneTexture"), BuiltinShaderTextures_ln_BoneTexture},
     {_LT("ln_BoneLocalQuaternionTexture"), BuiltinShaderTextures_ln_BoneLocalQuaternionTexture},
     {_LT("ln_mainLightShadowMap"), BuiltinShaderTextures_ln_mainLightShadowMap},
@@ -256,10 +256,10 @@ void ShaderTechniqueSemanticsManager::updateSubsetVariables(ShaderSecondaryDescr
         descriptor->setTexture(index, info.normalMap);
     }
 
-    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_MaterialRoughnessMap];
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_MetallicRoughnessTexture];
     if (index >= 0) {
-        LN_DCHECK(info.roughnessMap);
-        descriptor->setTexture(index, info.roughnessMap);
+        LN_DCHECK(info.metallicRoughnessTexture);
+        descriptor->setTexture(index, info.metallicRoughnessTexture);
     }
 }
 

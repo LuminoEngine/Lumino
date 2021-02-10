@@ -905,10 +905,15 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
         detailText.NewLine();
         detailText.AppendLine(u"備考");
         detailText.AppendLine(u"--------------------");
-        detailText.AppendLine(u"{0} は {1} のサブクラスです。{0} のハンドルを使って、 {2}_ から始まるすべての命令を実行できます。",
-            methodSymbol->ownerType()->shortName(),
-            baseClass->shortName(),
-            makeFlatClassName(baseClass));
+
+        TypeSymbol* thisClass = methodSymbol->ownerType();
+        while (baseClass) {
+            detailText.AppendLine(u"{0} は {1} のサブクラスです。{0} ハンドルは {1} ハンドルとして扱うことができ、 {2}_ から始まる命令等で使用できます。",
+                thisClass->shortName(),
+                baseClass->shortName(),
+                makeFlatClassName(baseClass));
+            baseClass = baseClass->baseClass();
+        }
     }
 
     return FuncTemplate
@@ -940,8 +945,8 @@ ln::String HSP3HelpGenerator::makeIOName(const MethodParameterSymbol* paramSymbo
 ln::String HSP3HelpGenerator::translateComment(const ln::String& text) const
 {
     auto result = text.replace("関数", "命令")
-        .replace("のポインタ", "")
-        .replace("クラス", "モジュール");
+        .replace("のポインタ", "");
+        //.replace("クラス", "モジュール")
 
     return result;
 

@@ -56,7 +56,7 @@ cbuffer LNEffectColorBuffer
 };
 
 sampler2D ln_MaterialTexture;
-sampler2D ln_MaterialRoughnessMap;
+sampler2D ln_MetallicRoughnessTexture;
 
 struct LN_VSInput
 {
@@ -111,7 +111,10 @@ struct LN_Surface
     float3    Normal;        // tangent space normal, if written
     float3    Emission;
     float    Specular;    // specular power in 0..1 range
-    float3    Gloss;        // specular intensity
+    
+    float Metallic;      // 0=非メタル, 1=メタル
+    float Roughness;    //  1=滑らか, 0=粗い (逆は Smoothness(Unity))
+    float Occlusion;     // オクルージョン (デフォルト 1)
 };
 
 void _LN_InitSurfaceOutput(float2 uv, float4 color, float3 normal, inout LN_Surface surface)
@@ -120,11 +123,20 @@ void _LN_InitSurfaceOutput(float2 uv, float4 color, float3 normal, inout LN_Surf
     surface.Normal = normal;
     //surface.Emission = float3(0, 0, 0);
     surface.Specular = 0;
-    surface.Gloss = float3(0, 0, 0);
     
     surface.Albedo = tex2D(ln_MaterialTexture, uv) * ln_MaterialColor * color;
-    clip(surface.Albedo .a - 0.0001);
+    clip(surface.Albedo.a - 0.0001);
     surface.Emission = (ln_MaterialEmissive.rgb * ln_MaterialEmissive.a);
+    
+    // metallic 値は .b からサンプリングする。
+    // roughness 値は .g からサンプリングする。
+    // それぞれマテリアルの metallic, roughness 値と乗算しなければならない。
+    // https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#pbrmetallicroughnessmetallicroughnesstexture
+    // https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#pbrmetallicroughnessroughnessfactor
+    const float4 mr = tex2D(ln_MetallicRoughnessTexture, uv);
+    surface.Metallic = mr.b * ln_MaterialMetallic;
+    surface.Roughness = mr.g * ln_MaterialRoughness;
+    surface.Occlusion = mr.r;
 }
 
 // deprecated: see _LN_ProcessVertex_StaticMesh
@@ -336,14 +348,17 @@ float4 _LN_PS_ClusteredLighting_PBRShading(
 
     // Create Material infomation.
     LN_PBRMaterial material;
-    material.diffuseColor = lerp(surface.Albedo.xyz, float3(0, 0, 0), ln_MaterialMetallic);
-    material.specularColor = lerp(float3(0.04, 0.04, 0.04), surface.Albedo.xyz, ln_MaterialMetallic);
-    material.specularRoughness = clamp(ln_MaterialRoughness, 0.04, 1.0 );
+    material.diffuseColor = lerp(surface.Albedo.xyz, float3(0, 0, 0), surface.Metallic); // 鏡面反射率が 1.0 の時、入射光 (Incident Ray) は物体内部で散乱しないため、物体の色が影響することは無い
+    material.specularColor = lerp(float3(0.04, 0.04, 0.04), surface.Albedo.xyz, surface.Metallic);
+    material.specularRoughness = clamp(surface.Roughness, 0.04, 1.0);
+    material.occlusion = surface.Occlusion;
 
     // Shading
     _LN_LocalLightContext localLightContext;
     _LN_InitLocalLightContext(localLightContext, vertexPos, viewPos);
+return float4(material.diffuseColor, 1);
     float3 outgoingLight = _LN_ComputePBRLocalLights(localLightContext, geometry, material);
+return float4(outgoingLight, surface.Albedo.a);
 
     // Shadow
     float4 posInLight = positionInLightSpace;
@@ -370,6 +385,7 @@ float4 _LN_ProcessPixel(float3 worldPos, float3 vertexPos, float4 positionInLigh
     color = _LN_PS_ClusteredLighting_PBRShading(worldPos, vertexPos, positionInLightSpace, surface);
 #endif
 
+    return color;
     color = LN_GetBuiltinEffectColor(color);
     return color;
 }

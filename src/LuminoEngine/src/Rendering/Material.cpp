@@ -101,14 +101,14 @@ Texture* Material::normalMap() const
     return m_normalMap;
 }
 
-void Material::setRoughnessMap(Texture* value)
+void Material::setMetallicRoughnessTexture(Texture* value)
 {
-    m_roughnessMap = value;
+    m_metallicRoughnessTexture = value;
 }
 
-Texture* Material::roughnessMap() const
+Texture* Material::metallicRoughnessTexture() const
 {
-    return m_roughnessMap;
+    return m_metallicRoughnessTexture;
 }
 
 void Material::setColor(const Color& value)
