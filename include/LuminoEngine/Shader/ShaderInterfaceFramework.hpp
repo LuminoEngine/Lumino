@@ -165,6 +165,7 @@ struct SubsetInfo
     Texture* materialTexture;
     Texture* normalMap;
     Texture* metallicRoughnessTexture;
+    Texture* occlusionTexture;
 
     // builtin effect
     float opacity;
@@ -262,6 +263,7 @@ enum BuiltinShaderTextures
     BuiltinShaderTextures_ln_MaterialTexture, // TODO: MaterialMainTexture
     BuiltinShaderTextures_ln_NormalMap, // TODO: MaterialNormalMap
     BuiltinShaderTextures_ln_MetallicRoughnessTexture,
+    BuiltinShaderTextures_ln_OcclusionTexture,
     BuiltinShaderTextures_ln_mainLightShadowMap,
     BuiltinShaderTextures_ln_BoneTexture,
     BuiltinShaderTextures_ln_BoneLocalQuaternionTexture,

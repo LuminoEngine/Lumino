@@ -55,6 +55,12 @@ public:
 	/** metallic-roughness テクスチャを取得します。 */
 	Texture* metallicRoughnessTexture() const;
 
+	/** occlusion テクスチャを設定します。 */
+	void setOcclusionTexture(Texture* value);
+
+	/** occlusion テクスチャを取得します。 */
+	Texture* occlusionTexture() const;
+
 	//metallicRoughnessTexture
 
 	/** setColor */
@@ -235,6 +241,7 @@ protected:  // TODO:
 	Ref<Texture> m_mainTexture;
 	Ref<Texture> m_normalMap;
 	Ref<Texture> m_metallicRoughnessTexture;
+	Ref<Texture> m_occlusionTexture;
 	std::vector<std::pair<String, std::shared_ptr<detail::ShaderParameterValue>>> m_values;
 	std::vector<UniformBufferEntiry> m_uniformBufferData;
 

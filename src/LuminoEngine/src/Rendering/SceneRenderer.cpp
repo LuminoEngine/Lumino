@@ -326,11 +326,13 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext)
 						subsetInfo.materialTexture = finalMaterial->mainTexture();
 						subsetInfo.normalMap = finalMaterial->normalMap();
 						subsetInfo.metallicRoughnessTexture = finalMaterial->metallicRoughnessTexture();
+						subsetInfo.occlusionTexture = finalMaterial->occlusionTexture();
 					}
 					else {
 						subsetInfo.materialTexture = nullptr;
 						subsetInfo.normalMap = nullptr;
 						subsetInfo.metallicRoughnessTexture = nullptr;
+						subsetInfo.occlusionTexture = nullptr;
 					}
 					subsetInfo.opacity = stage->getOpacityFinal(element);
 					subsetInfo.colorScale = stage->getColorScaleFinal(element);
@@ -537,6 +539,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					//   B=Roughness. マテリアル自体の Roughness と乗算されるため、1.0 でよい。
 					//   A=未使用
 					localSubsetInfo.metallicRoughnessTexture = m_manager->graphicsManager()->whiteTexture();
+				}
+				if (!localSubsetInfo.occlusionTexture) {
+					localSubsetInfo.occlusionTexture = m_manager->graphicsManager()->whiteTexture();
 				}
 
 

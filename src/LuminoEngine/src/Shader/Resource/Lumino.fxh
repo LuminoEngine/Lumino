@@ -56,7 +56,10 @@ cbuffer LNEffectColorBuffer
 };
 
 sampler2D ln_MaterialTexture;
+
+// TODO: 以下の SamplerState は ln_MaterialTexture と併せたいので、やっぱり SamplerState は分離したい
 sampler2D ln_MetallicRoughnessTexture;
+sampler2D ln_OcclusionTexture;
 
 struct LN_VSInput
 {
@@ -136,7 +139,7 @@ void _LN_InitSurfaceOutput(float2 uv, float4 color, float3 normal, inout LN_Surf
     const float4 mr = tex2D(ln_MetallicRoughnessTexture, uv);
     surface.Metallic = mr.b * ln_MaterialMetallic;
     surface.Roughness = mr.g * ln_MaterialRoughness;
-    surface.Occlusion = mr.r;
+    surface.Occlusion = tex2D(ln_OcclusionTexture, uv).r;
 }
 
 // deprecated: see _LN_ProcessVertex_StaticMesh

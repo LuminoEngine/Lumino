@@ -332,12 +332,8 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 			auto itr2 = value.second.json_double_value.find("index");
 			assert(itr2 != value.second.json_double_value.end());
 			int index = static_cast<int>(itr2->second);
-			// TODO:
-			m_diag->reportWarning(u"occlusionTexture not supported.");
-
-			// material.occlusionTexture
-			// https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#materialocclusiontexture
-			// .r からのみサンプリングする
+			const tinygltf::Texture& texture = m_model->textures[index];
+			coreMaterial->setOcclusionTexture(loadTexture(texture));
 		}
 		else {
 			m_diag->reportWarning(String::format(u"Material field '{}' is not supported.", String::fromStdString(value.first)));

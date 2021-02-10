@@ -111,6 +111,16 @@ Texture* Material::metallicRoughnessTexture() const
     return m_metallicRoughnessTexture;
 }
 
+void Material::setOcclusionTexture(Texture* value)
+{
+    m_occlusionTexture = value;
+}
+
+Texture* Material::occlusionTexture() const
+{
+    return m_occlusionTexture;
+}
+
 void Material::setColor(const Color& value)
 {
     m_data.color = value;
