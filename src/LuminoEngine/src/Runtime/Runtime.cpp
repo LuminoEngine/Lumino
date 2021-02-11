@@ -201,7 +201,7 @@ void LNInternalEngineSettings_SetEngineResourcesPathA(const char* path)
 //==============================================================================
 // LNTypeInfo
 
-LNResult LNTypeInfo_Acquire(const LNChar* typeName, int* outTypeInfoId)
+LNResult LNTypeInfo_Acquire(const LNChar* typeName, int32_t* outTypeInfoId)
 {
     LNI_FUNC_TRY_BEGIN;
     if (LN_REQUIRE(outTypeInfoId)) return LN_ERROR_UNKNOWN;
@@ -215,12 +215,12 @@ LNResult LNTypeInfo_Acquire(const LNChar* typeName, int* outTypeInfoId)
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LNResult LNTypeInfo_AcquireA(const char* typeName, int* outTypeInfoId)
+LNResult LNTypeInfo_AcquireA(const char* typeName, int32_t* outTypeInfoId)
 {
     return LNTypeInfo_Acquire(ln::String::fromCString(typeName).c_str(), outTypeInfoId);
 }
 
-LNResult LNTypeInfo_Find(const LNChar* typeName, int* outTypeInfoId)
+LNResult LNTypeInfo_Find(const LNChar* typeName, int32_t* outTypeInfoId)
 {
     LNI_FUNC_TRY_BEGIN;
     if (LN_REQUIRE(outTypeInfoId)) return LN_ERROR_UNKNOWN;
@@ -234,12 +234,12 @@ LNResult LNTypeInfo_Find(const LNChar* typeName, int* outTypeInfoId)
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LNResult LNTypeInfo_FindA(const char* typeName, int* outTypeInfoId)
+LNResult LNTypeInfo_FindA(const char* typeName, int32_t* outTypeInfoId)
 {
     return LNTypeInfo_Find(ln::String::fromCString(typeName).c_str(), outTypeInfoId);
 }
 
-LNResult LNTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId)
+LNResult LNTypeInfo_SetBaseClass(int32_t typeInfoId, int32_t baseClassTypeInfoId)
 {
     LNI_FUNC_TRY_BEGIN;
     ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId);
@@ -254,7 +254,7 @@ LNResult LNTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId)
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LNResult LNTypeInfo_SetCreateInstanceCallback(int typeInfoId, LNTypeInfoCreateInstanceCallback callback)
+LNResult LNTypeInfo_SetCreateInstanceCallback(int32_t typeInfoId, LNTypeInfoCreateInstanceCallback callback)
 {
     LNI_FUNC_TRY_BEGIN;
     if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
@@ -278,7 +278,7 @@ LNResult LNTypeInfo_SetCreateInstanceCallback(int typeInfoId, LNTypeInfoCreateIn
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LNResult LNTypeInfo_SetManagedTypeInfoId(int typeInfoId, int managedTypeInfoId)
+LNResult LNTypeInfo_SetManagedTypeInfoId(int32_t typeInfoId, int32_t managedTypeInfoId)
 {
     LNI_FUNC_TRY_BEGIN;
     if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
@@ -291,11 +291,11 @@ LNResult LNTypeInfo_SetManagedTypeInfoId(int typeInfoId, int managedTypeInfoId)
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LNResult LNTypeInfo_GetManagedTypeInfoId(int typeInfoId, int* outManagedTypeInfoId)
+LNResult LNTypeInfo_GetManagedTypeInfoId(int32_t typeInfoId, int32_t* outManagedTypeInfoId)
 {
     LNI_FUNC_TRY_BEGIN;
     if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
-        *outManagedTypeInfoId = ln::detail::TypeInfoInternal::getManagedTypeInfoId(t);
+        *outManagedTypeInfoId = static_cast<int32_t>(ln::detail::TypeInfoInternal::getManagedTypeInfoId(t));
         return LN_OK;
     }
     else {

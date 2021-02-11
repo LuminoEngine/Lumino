@@ -10106,7 +10106,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
-        // LNWorldObject_SetRotationQuaternion
+        // LNWorldObject_SetRotation
         case 0x2B9 : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
@@ -10114,12 +10114,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             PVal* pval_rot;
             CodeGetVA_TypeChecked(&pval_rot, LNQuaternion);
 
-            stat = LNWorldObject_SetRotationQuaternion(static_cast<LNHandle>(local_worldobject), reinterpret_cast<LNQuaternion*>(pval_rot->pt));
+            stat = LNWorldObject_SetRotation(static_cast<LNHandle>(local_worldobject), reinterpret_cast<LNQuaternion*>(pval_rot->pt));
 
 
             return true;
         }
-        // LNWorldObject_SetRotation
+        // LNWorldObject_SetRotationXYZ
         case 0x2BB : {
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
@@ -10130,7 +10130,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch z
             const auto local_z = fetchVADouble();
 
-            stat = LNWorldObject_SetRotation(static_cast<LNHandle>(local_worldobject), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z));
+            stat = LNWorldObject_SetRotationXYZ(static_cast<LNHandle>(local_worldobject), static_cast<float>(local_x), static_cast<float>(local_y), static_cast<float>(local_z));
 
 
             return true;
@@ -15900,12 +15900,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 
             return true;
         }
-        // LNEngineSettings_SetEngineLogEnabled
+        // LNEngineSettings_SetDebugMode
         case 0x58F : {
             // Fetch enabled
             const auto local_enabled = static_cast<LNBool>(fetchVAInt());
 
-            stat = LNEngineSettings_SetEngineLogEnabled(static_cast<LNBool>(local_enabled));
+            stat = LNEngineSettings_SetDebugMode(static_cast<LNBool>(local_enabled));
 
 
             return true;

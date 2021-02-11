@@ -679,10 +679,10 @@ _ln_return_discard = 0
 #define LNWorldObject_SetPositionXYZ(%1, %2, %3, %4=0.000000) _LNWorldObject_SetPositionXYZ %1, %2, %3, %4
 #cmd _LNWorldObject_GetPosition $2B8
 #define LNWorldObject_GetPosition(%1, %2=_ln_return_discard) _LNWorldObject_GetPosition %1, %2
-#cmd _LNWorldObject_SetRotationQuaternion $2B9
-#define LNWorldObject_SetRotationQuaternion(%1, %2) _LNWorldObject_SetRotationQuaternion %1, %2
-#cmd _LNWorldObject_SetRotation $2BB
-#define LNWorldObject_SetRotation(%1, %2, %3, %4) _LNWorldObject_SetRotation %1, %2, %3, %4
+#cmd _LNWorldObject_SetRotation $2B9
+#define LNWorldObject_SetRotation(%1, %2) _LNWorldObject_SetRotation %1, %2
+#cmd _LNWorldObject_SetRotationXYZ $2BB
+#define LNWorldObject_SetRotationXYZ(%1, %2, %3, %4) _LNWorldObject_SetRotationXYZ %1, %2, %3, %4
 #cmd _LNWorldObject_GetRotation $2BF
 #define LNWorldObject_GetRotation(%1, %2=_ln_return_discard) _LNWorldObject_GetRotation %1, %2
 #cmd _LNWorldObject_SetScale $2C0
@@ -1417,8 +1417,8 @@ _ln_return_discard = 0
 #define LNEngineSettings_SetFontFile(%1) _LNEngineSettings_SetFontFile %1
 #cmd _LNEngineSettings_SetDebugToolEnabled $58D
 #define LNEngineSettings_SetDebugToolEnabled(%1) _LNEngineSettings_SetDebugToolEnabled %1
-#cmd _LNEngineSettings_SetEngineLogEnabled $58F
-#define LNEngineSettings_SetEngineLogEnabled(%1) _LNEngineSettings_SetEngineLogEnabled %1
+#cmd _LNEngineSettings_SetDebugMode $58F
+#define LNEngineSettings_SetDebugMode(%1) _LNEngineSettings_SetDebugMode %1
 #cmd _LNEngineSettings_SetEngineLogFilePath $591
 #define LNEngineSettings_SetEngineLogFilePath(%1) _LNEngineSettings_SetEngineLogFilePath %1
 #cmd _LNEngineSettings_SetPriorityGPUName $593

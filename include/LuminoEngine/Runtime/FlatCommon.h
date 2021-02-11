@@ -131,14 +131,14 @@ extern LN_FLAT_API void LNInternalEngineSettings_SetEngineResourcesPathA(const c
 
 typedef void(*LNTypeInfoCreateInstanceCallback)(int typeInfoId, LNHandle* outHandle);
 
-extern LN_FLAT_API LNResult LNTypeInfo_Acquire(const LNChar* typeName, int* outTypeInfoId);
-extern LN_FLAT_API LNResult LNTypeInfo_AcquireA(const char* typeName, int* outTypeInfoId);
-extern LN_FLAT_API LNResult LNTypeInfo_Find(const LNChar* typeName, int* outTypeInfoId);
-extern LN_FLAT_API LNResult LNTypeInfo_FindA(const char* typeName, int* outTypeInfoId);
-extern LN_FLAT_API LNResult LNTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId);
-extern LN_FLAT_API LNResult LNTypeInfo_SetCreateInstanceCallback(int typeInfoId, LNTypeInfoCreateInstanceCallback callback);
-extern LN_FLAT_API LNResult LNTypeInfo_SetManagedTypeInfoId(int typeInfoId, int managedTypeInfoId);
-extern LN_FLAT_API LNResult LNTypeInfo_GetManagedTypeInfoId(int typeInfoId, int* outManagedTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_Acquire(const LNChar* typeName, int32_t* outTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_AcquireA(const char* typeName, int32_t* outTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_Find(const LNChar* typeName, int32_t* outTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_FindA(const char* typeName, int32_t* outTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_SetBaseClass(int32_t typeInfoId, int32_t baseClassTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_SetCreateInstanceCallback(int32_t typeInfoId, LNTypeInfoCreateInstanceCallback callback);
+extern LN_FLAT_API LNResult LNTypeInfo_SetManagedTypeInfoId(int32_t typeInfoId, int32_t managedTypeInfoId);
+extern LN_FLAT_API LNResult LNTypeInfo_GetManagedTypeInfoId(int32_t typeInfoId, int32_t* outManagedTypeInfoId);
 
 typedef uint64_t LNSubinstanceId;
 typedef LNSubinstanceId(*LNSubinstanceAllocFunc)(LNHandle object);

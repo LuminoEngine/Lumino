@@ -7971,7 +7971,7 @@ static VALUE Wrap_LNWorldObject_SetRotation(int argc, VALUE* argv, VALUE self)
         if (LNRB_VALUE_IS_OBJECT(rot))
         {
             LNQuaternion* tmp__rot; Data_Get_Struct(rot, LNQuaternion, tmp__rot);LNQuaternion& _rot = *tmp__rot;
-            LNResult errorCode = LNWorldObject_SetRotationQuaternion(selfObj->handle, &_rot);
+            LNResult errorCode = LNWorldObject_SetRotation(selfObj->handle, &_rot);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -7986,7 +7986,7 @@ static VALUE Wrap_LNWorldObject_SetRotation(int argc, VALUE* argv, VALUE self)
             float _x = LNRB_VALUE_TO_FLOAT(x);
             float _y = LNRB_VALUE_TO_FLOAT(y);
             float _z = LNRB_VALUE_TO_FLOAT(z);
-            LNResult errorCode = LNWorldObject_SetRotation(selfObj->handle, _x, _y, _z);
+            LNResult errorCode = LNWorldObject_SetRotationXYZ(selfObj->handle, _x, _y, _z);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -17090,7 +17090,7 @@ static VALUE Wrap_LNEngineSettings_SetDebugToolEnabled(int argc, VALUE* argv, VA
     return Qnil;
 }
 
-static VALUE Wrap_LNEngineSettings_SetEngineLogEnabled(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LNEngineSettings_SetDebugMode(int argc, VALUE* argv, VALUE self)
 {
     if (1 <= argc && argc <= 1) {
         VALUE enabled;
@@ -17098,12 +17098,12 @@ static VALUE Wrap_LNEngineSettings_SetEngineLogEnabled(int argc, VALUE* argv, VA
         if (LNRB_VALUE_IS_BOOL(enabled))
         {
             LNBool _enabled = LNRB_VALUE_TO_BOOL(enabled);
-            LNResult errorCode = LNEngineSettings_SetEngineLogEnabled(_enabled);
+            LNResult errorCode = LNEngineSettings_SetDebugMode(_enabled);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LNRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "ln::EngineSettings::setEngineLogEnabled - wrong argument type.");
+    rb_raise(rb_eArgError, "ln::EngineSettings::setDebugMode - wrong argument type.");
     return Qnil;
 }
 
@@ -27665,7 +27665,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_EngineSettings, "set_ui_theme", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetUITheme), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_font_file", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetFontFile), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_debug_tool_enabled", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetDebugToolEnabled), -1);
-    rb_define_singleton_method(g_class_EngineSettings, "set_engine_log_enabled", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetEngineLogEnabled), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "set_debug_mode", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetDebugMode), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_engine_log_file_path", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetEngineLogFilePath), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_priority_gpu_name", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetPriorityGPUName), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_developer_tool_enabled", LN_TO_RUBY_FUNC(Wrap_LNEngineSettings_SetDeveloperToolEnabled), -1);

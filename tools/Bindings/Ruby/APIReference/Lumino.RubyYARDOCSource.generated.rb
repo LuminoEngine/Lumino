@@ -2168,7 +2168,7 @@ end
 class Lumino::RenderView
 end
 
-# 
+# ### metallic-roughness テクスチャMetallic 値は B チャネル、Roughness 値は G チャネルからサンプリングされます。https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#pbrmetallicroughnessmetallicroughnesstexture
 # 
 class Lumino::Material
     # init
@@ -2859,13 +2859,13 @@ class Lumino::WorldObject
 
 
 
-    # このオブジェクトの回転をオイラー角から設定します(radian) 。回転順序は Z(Roll) > X(Pich) > Y(Yaw) です。
+    # このオブジェクトの回転を設定します。
     # @overload set_rotation(rot)
     #   このオブジェクトの回転を設定します。
     #   @param [Lumino::Quaternion] rot 
     #   
     # @overload set_rotation(x, y, z)
-    #   このオブジェクトの回転をオイラー角から設定します(radian) 。回転順序は Z(Roll) > X(Pich) > Y(Yaw) です。
+    #   このオブジェクトの回転をオイラー角から設定します(radian単位) 。回転順序は Z(Roll) > X(Pich) > Y(Yaw) です。
     #   @param [Float] x 
     #   @param [Float] y 
     #   @param [Float] z 
@@ -5734,10 +5734,10 @@ class Lumino::EngineSettings
 
 
 
-    # デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
+    # デバッグモードの有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
     # @param [Boolean] enabled 
     # 
-    def set_engine_log_enabled(*args)
+    def set_debug_mode(*args)
     end
 
 

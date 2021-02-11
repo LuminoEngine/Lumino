@@ -105,10 +105,10 @@ public:
 	static void setDebugToolEnabled(bool enabled);
 
 	/**
-	 * デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
+	 * デバッグモードの有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
 	 */
 	LN_METHOD()
-	static void setEngineLogEnabled(bool enabled);
+	static void setDebugMode(bool enabled);
 	
 	/**
 	 * デバッグ用のログファイルの出力先ファイルパスを設定します。(default: Empty(実行ファイルのディレクトリへ出力))

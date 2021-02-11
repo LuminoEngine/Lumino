@@ -123,11 +123,11 @@ public:
 	const Vector3& position() const { return m_transform->position(); }
 
 	/** このオブジェクトの回転を設定します。 */
-	LN_METHOD(OverloadPostfix = "Quaternion")
+	LN_METHOD()
 	void setRotation(const Quaternion& rot) { m_transform->setRotation(rot); }
 
-	/** このオブジェクトの回転をオイラー角から設定します(radian) 。回転順序は Z(Roll) > X(Pich) > Y(Yaw) です。 */
-	LN_METHOD()
+	/** このオブジェクトの回転をオイラー角から設定します(radian単位) 。回転順序は Z(Roll) > X(Pich) > Y(Yaw) です。 */
+	LN_METHOD(OverloadPostfix = "XYZ")
 	void setRotation(float x, float y, float z) { setRotation(Quaternion::makeFromYawPitchRoll(y, x, z)); }
 
 	/** このオブジェクトの回転を取得します。 */

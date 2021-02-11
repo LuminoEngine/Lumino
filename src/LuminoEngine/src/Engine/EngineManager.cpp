@@ -308,10 +308,16 @@ void EngineManager::initializeCommon()
 
 #if defined(LN_OS_DESKTOP)
 		{
-			if (m_settings.engineLogEnabled) {
+			if (m_settings.debugMode) {
 				// engineLogFilePath 未指定の場合、スクリプト系言語だとそのランタイム実行ファイルを指してしまうので、カレントディレクトリに出力するようにする。
 				auto logfile = (m_settings.engineLogFilePath.isEmpty()) ? Path(u"lumino.log") : Path(m_settings.engineLogFilePath);
 				Logger::addFileAdapter(logfile.str().toStdString());
+				ln::Console::allocate();
+				ln::Logger::addStdErrAdapter();
+
+				if (Logger::level() > LogLevel::Debug) {
+					Logger::setLevel(LogLevel::Debug);
+				}
 			}
 		}
 #endif

@@ -880,6 +880,9 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
         paramsDetailText.append(ln::String::format(u"{0,-" + ln::String::fromNumber(ioColumnWidth) + u"}", u"[" + makeIOName(param) + "]"));
         paramsDetailText.append(ln::String::format(u" {0,-" + ln::String::fromNumber(nameColumnWidth) + u"}", name));
         paramsDetailText.append(u" : ");
+        if (param->type()->isStruct()) {
+            paramsDetailText.append(u"({0} 型の値) ", param->type()->shortName());
+        }
         paramsDetailText.append(translateComment(methodSymbol->document()->flatParams()[param->flatParamIndex()]->description()));
         paramsDetailText.NewLine();
 

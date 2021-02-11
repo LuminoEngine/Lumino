@@ -1,28 +1,11 @@
 #include "lumino.as"
+LNEngineSettings_SetDebugMode LN_TRUE
+LNLog_SetLevel LN_LOG_LEVEL_DEBUG
 
 LUMINO_APP
 
 *on_init
-    LNEngine_GetRenderView render_view
-    LNWorldRenderView_SetGuideGridEnabled render_view, LN_TRUE
-
-    LNEngine_GetMainCamera camera
-    LNWorldObject_SetPositionXYZ camera, 5, 5, -5
-    LNWorldObject_LookAtXYZ camera, 0, 0, 0
-
-    LNBoxMesh_Create box
-    LNWorldObject_AddInto box
-    
-    return
+	return
 
 *on_update
-    LNMouse_GetPosition p
-
-    r = 0.0
-    
-    //LNWorldObject_SetRotationXYZ box, 0, r, 0
-    LNWorldObject_SetRotation box, 0, r, 0
-    
-    LNDebug_PrintWithTime 0, strf("angle: %f", r)
-    
     return

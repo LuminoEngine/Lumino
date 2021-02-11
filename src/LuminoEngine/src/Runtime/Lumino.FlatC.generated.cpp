@@ -17855,7 +17855,7 @@ LN_FLAT_API LNResult LNWorldObject_GetPosition(LNHandle worldobject, LNVector3* 
 }
 
 
-LN_FLAT_API LNResult LNWorldObject_SetRotationQuaternion(LNHandle worldobject, const LNQuaternion* rot)
+LN_FLAT_API LNResult LNWorldObject_SetRotation(LNHandle worldobject, const LNQuaternion* rot)
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->setRotation(*reinterpret_cast<const ln::Quaternion*>(rot)));
@@ -17863,7 +17863,7 @@ LN_FLAT_API LNResult LNWorldObject_SetRotationQuaternion(LNHandle worldobject, c
 }
 
 
-LN_FLAT_API LNResult LNWorldObject_SetRotation(LNHandle worldobject, float x, float y, float z)
+LN_FLAT_API LNResult LNWorldObject_SetRotationXYZ(LNHandle worldobject, float x, float y, float z)
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->setRotation(x, y, z));
@@ -24157,10 +24157,10 @@ LN_FLAT_API LNResult LNEngineSettings_SetDebugToolEnabled(LNBool enabled)
 }
 
 
-LN_FLAT_API LNResult LNEngineSettings_SetEngineLogEnabled(LNBool enabled)
+LN_FLAT_API LNResult LNEngineSettings_SetDebugMode(LNBool enabled)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setEngineLogEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    (ln::EngineSettings::setDebugMode(LNI_LNBOOL_TO_BOOL(enabled)));
     LNI_FUNC_TRY_END_RETURN;
 }
 

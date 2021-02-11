@@ -10,7 +10,7 @@ Lumino
 0.9.0
 
 %date
-2021/2/10
+2021/2/11
 
 %author
 lriki
@@ -36,7 +36,7 @@ LNVector3_SetZeros
 LNVector3
 %prm
 vector3
-[in] vector3 : Vector3
+[in] vector3 : (Vector3 Œ^‚Ì’l) Vector3
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -57,7 +57,7 @@ LNVector3_Set
 LNVector3
 %prm
 vector3, x, y, z
-[in] vector3 : Vector3
+[in] vector3 : (Vector3 Œ^‚Ì’l) Vector3
 [in] x       : 
 [in] y       : 
 [in] z       : 
@@ -81,7 +81,7 @@ get
 LNVector3
 %prm
 vector3, outX, outY, outZ
-[in]  vector3 : Vector3
+[in]  vector3 : (Vector3 Œ^‚Ì’l) Vector3
 [out] outX    : 
 [out] outY    : 
 [out] outZ    : 
@@ -105,7 +105,7 @@ LNVector3_Length
 LNVector3
 %prm
 vector3, outReturn
-[in]  vector3   : Vector3
+[in]  vector3   : (Vector3 Œ^‚Ì’l) Vector3
 [out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
@@ -127,7 +127,7 @@ LNVector3_LengthSquared
 LNVector3
 %prm
 vector3, outReturn
-[in]  vector3   : Vector3
+[in]  vector3   : (Vector3 Œ^‚Ì’l) Vector3
 [out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
@@ -149,7 +149,7 @@ LNVector3_MutatingNormalize
 LNVector3
 %prm
 vector3
-[in] vector3 : Vector3
+[in] vector3 : (Vector3 Œ^‚Ì’l) Vector3
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -173,7 +173,7 @@ x, y, z, outReturn
 [in]  x         : 
 [in]  y         : 
 [in]  z         : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Vector3 Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -194,8 +194,8 @@ LNVector3_Normalize
 LNVector3
 %prm
 vec, outReturn
-[in]  vec       : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[in]  vec       : (Vector3 Œ^‚Ì’l) 
+[out] outReturn(0) : (Vector3 Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -216,7 +216,7 @@ LNVector4_SetZeros
 LNVector4
 %prm
 vector4
-[in] vector4 : Vector4
+[in] vector4 : (Vector4 Œ^‚Ì’l) Vector4
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -237,7 +237,7 @@ LNVector4_Set
 LNVector4
 %prm
 vector4, x, y, z, w
-[in] vector4 : Vector4
+[in] vector4 : (Vector4 Œ^‚Ì’l) Vector4
 [in] x       : 
 [in] y       : 
 [in] z       : 
@@ -262,7 +262,7 @@ LNQuaternion_SetZeros
 LNQuaternion
 %prm
 quaternion
-[in] quaternion : Quaternion
+[in] quaternion : (Quaternion Œ^‚Ì’l) Quaternion
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -283,7 +283,7 @@ LNQuaternion_Set
 LNQuaternion
 %prm
 quaternion, x, y, z, w
-[in] quaternion : Quaternion
+[in] quaternion : (Quaternion Œ^‚Ì’l) Quaternion
 [in] x          : 
 [in] y          : 
 [in] z          : 
@@ -308,8 +308,8 @@ LNQuaternion_SetFromAxis
 LNQuaternion
 %prm
 quaternion, axis, r
-[in] quaternion : Quaternion
-[in] axis       : 
+[in] quaternion : (Quaternion Œ^‚Ì’l) Quaternion
+[in] axis       : (Vector3 Œ^‚Ì’l) 
 [in] r          : 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
@@ -331,7 +331,7 @@ LNMatrix_SetZeros
 LNMatrix
 %prm
 matrix
-[in] matrix : Matrix
+[in] matrix : (Matrix Œ^‚Ì’l) Matrix
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -352,7 +352,7 @@ LNMatrix_Set
 LNMatrix
 %prm
 matrix, m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44
-[in] matrix : Matrix
+[in] matrix : (Matrix Œ^‚Ì’l) Matrix
 [in] m11    : 
 [in] m12    : 
 [in] m13    : 
@@ -389,7 +389,7 @@ LNColor_SetZeros
 LNColor
 %prm
 color
-[in] color : Color
+[in] color : (Color Œ^‚Ì’l) Color
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -410,7 +410,7 @@ LNColor_Set
 LNColor
 %prm
 color, r_, g_, b_, a_
-[in] color        : Color
+[in] color        : (Color Œ^‚Ì’l) Color
 [in] r_           : 
 [in] g_           : 
 [in] b_           : 
@@ -435,7 +435,7 @@ LNColorTone_SetZeros
 LNColorTone
 %prm
 colortone
-[in] colortone : ColorTone
+[in] colortone : (ColorTone Œ^‚Ì’l) ColorTone
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -456,7 +456,7 @@ LNColorTone_Set
 LNColorTone
 %prm
 colortone, r_, g_, b_, s_
-[in] colortone : ColorTone
+[in] colortone : (ColorTone Œ^‚Ì’l) ColorTone
 [in] r_        : 
 [in] g_        : 
 [in] b_        : 
@@ -481,7 +481,7 @@ LNPoint_SetZeros
 LNPoint
 %prm
 point
-[in] point : Point
+[in] point : (Point Œ^‚Ì’l) Point
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -502,7 +502,7 @@ LNPoint_Set
 LNPoint
 %prm
 point, x_, y_
-[in] point : Point
+[in] point : (Point Œ^‚Ì’l) Point
 [in] x_    : 
 [in] y_    : 
 
@@ -525,7 +525,7 @@ LNPoint_Get
 LNPoint
 %prm
 point, outX, outY
-[in]  point : Point
+[in]  point : (Point Œ^‚Ì’l) Point
 [out] outX  : 
 [out] outY  : 
 
@@ -548,7 +548,7 @@ LNSize_SetZeros
 LNSize
 %prm
 size
-[in] size : Size
+[in] size : (Size Œ^‚Ì’l) Size
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -569,7 +569,7 @@ LNSize_Set
 LNSize
 %prm
 size, w, h
-[in] size : Size
+[in] size : (Size Œ^‚Ì’l) Size
 [in] w    : 
 [in] h    : 
 
@@ -592,7 +592,7 @@ LNRect_SetZeros
 LNRect
 %prm
 rect
-[in] rect : Rect
+[in] rect : (Rect Œ^‚Ì’l) Rect
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -613,7 +613,7 @@ LNRect_Set
 LNRect
 %prm
 rect, x, y, width, height
-[in] rect   : Rect
+[in] rect   : (Rect Œ^‚Ì’l) Rect
 [in] x      : 
 [in] y      : 
 [in] width  : 
@@ -638,7 +638,7 @@ LNRect_GetLeft
 LNRect
 %prm
 rect, outReturn
-[in]  rect      : Rect
+[in]  rect      : (Rect Œ^‚Ì’l) Rect
 [out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
@@ -660,8 +660,8 @@ LNRect_SetSize
 LNRect
 %prm
 rect, size
-[in] rect : Rect
-[in] size : 
+[in] rect : (Rect Œ^‚Ì’l) Rect
+[in] size : (Size Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -682,8 +682,8 @@ LNRect_GetSize
 LNRect
 %prm
 rect, outReturn
-[in]  rect      : Rect
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[in]  rect      : (Rect Œ^‚Ì’l) Rect
+[out] outReturn(0) : (Size Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -704,7 +704,7 @@ LNThickness_SetZeros
 LNThickness
 %prm
 thickness
-[in] thickness : Thickness
+[in] thickness : (Thickness Œ^‚Ì’l) Thickness
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -725,7 +725,7 @@ LNThickness_Set
 LNThickness
 %prm
 thickness, left_, top_, right_, bottom_
-[in] thickness : Thickness
+[in] thickness : (Thickness Œ^‚Ì’l) Thickness
 [in] left_     : 
 [in] top_      : 
 [in] right_    : 
@@ -750,7 +750,7 @@ LNCornerRadius_SetZeros
 LNCornerRadius
 %prm
 cornerradius
-[in] cornerradius : CornerRadius
+[in] cornerradius : (CornerRadius Œ^‚Ì’l) CornerRadius
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -771,7 +771,7 @@ LNCornerRadius_Set
 LNCornerRadius
 %prm
 cornerradius, topLeft, topRight, bottomRight, bottomLeft
-[in] cornerradius : CornerRadius
+[in] cornerradius : (CornerRadius Œ^‚Ì’l) CornerRadius
 [in] topLeft      : 
 [in] topRight     : 
 [in] bottomRight  : 
@@ -2385,7 +2385,7 @@ LNAudio
 %prm
 filePath, position, distance, volume, pitch
 [in] filePath         : 
-[in] position         : 
+[in] position         : (Vector3 Œ^‚Ì’l) 
 [in] distance         : 
 [in] volume(1.000000) : 
 [in] pitch(1.000000)  : 
@@ -2725,7 +2725,7 @@ LNShader
 shader, parameterName, value
 [in] shader        : Shader ‚Ìƒnƒ“ƒhƒ‹
 [in] parameterName : 
-[in] value         : 
+[in] value         : (Vector3 Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -2753,7 +2753,7 @@ LNShader
 shader, parameterName, value
 [in] shader        : Shader ‚Ìƒnƒ“ƒhƒ‹
 [in] parameterName : 
-[in] value         : 
+[in] value         : (Vector4 Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -2885,7 +2885,7 @@ LNMaterial
 %prm
 material, value
 [in] material : Material ‚Ìƒnƒ“ƒhƒ‹
-[in] value    : 
+[in] value    : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -2963,7 +2963,7 @@ LNMaterial
 %prm
 material, value
 [in] material : Material ‚Ìƒnƒ“ƒhƒ‹
-[in] value    : 
+[in] value    : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -3391,7 +3391,7 @@ init
 LNBoxCollisionShape
 %prm
 size, outBoxCollisionShape
-[in]  size                 : 
+[in]  size                 : (Vector3 Œ^‚Ì’l) 
 [out] outBoxCollisionShape(0) : ì¬‚³‚ê‚½ BoxCollisionShape ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
@@ -3805,7 +3805,7 @@ LNParticleEmitterModel
 %prm
 particleemittermodel, size
 [in] particleemittermodel : ParticleEmitterModel ‚Ìƒnƒ“ƒhƒ‹
-[in] size                 : 
+[in] size                 : (Vector3 Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -4346,7 +4346,7 @@ LNCharacterController
 %prm
 charactercontroller, value
 [in] charactercontroller : CharacterController ‚Ìƒnƒ“ƒhƒ‹
-[in] value               : 
+[in] value               : (Vector3 Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -4373,7 +4373,7 @@ LNCharacterController
 %prm
 charactercontroller, outReturn
 [in]  charactercontroller : CharacterController ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0)        : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0)        : (Vector3 Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -4747,7 +4747,7 @@ LNWorldObject
 %prm
 worldobject, pos
 [in] worldobject : WorldObject ‚Ìƒnƒ“ƒhƒ‹
-[in] pos         : 
+[in] pos         : (Vector3 Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -4801,33 +4801,7 @@ LNWorldObject
 %prm
 worldobject, outReturn
 [in]  worldobject : WorldObject ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
-
-stat : 0=¬Œ÷, •‰’l=¸”s
-
-%inst
-
-
-”õl
---------------------
-WorldObject ‚Í Object ‚ÌƒTƒuƒNƒ‰ƒX‚Å‚·BWorldObject ƒnƒ“ƒhƒ‹‚Í Object ƒnƒ“ƒhƒ‹‚Æ‚µ‚Äˆµ‚¤‚±‚Æ‚ª‚Å‚«A LNObject_ ‚©‚çn‚Ü‚é–½—ß“™‚Åg—p‚Å‚«‚Ü‚·B
-
-%href
-
-
-
-;------------------------------------------------------------
-;
-;------------------------------------------------------------
-%index
-LNWorldObject_SetRotationQuaternion
-‚±‚ÌƒIƒuƒWƒFƒNƒg‚Ì‰ñ“]‚ğİ’è‚µ‚Ü‚·B
-%group
-LNWorldObject
-%prm
-worldobject, rot
-[in] worldobject : WorldObject ‚Ìƒnƒ“ƒhƒ‹
-[in] rot         : 
+[out] outReturn(0) : (Vector3 Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -4847,7 +4821,33 @@ WorldObject ‚Í Object ‚ÌƒTƒuƒNƒ‰ƒX‚Å‚·BWorldObject ƒnƒ“ƒhƒ‹‚Í Object ƒnƒ“ƒhƒ‹‚Æ
 ;------------------------------------------------------------
 %index
 LNWorldObject_SetRotation
-‚±‚ÌƒIƒuƒWƒFƒNƒg‚Ì‰ñ“]‚ğƒIƒCƒ‰[Šp‚©‚çİ’è‚µ‚Ü‚·(radian) B‰ñ“]‡˜‚Í Z(Roll) > X(Pich) > Y(Yaw) ‚Å‚·B
+‚±‚ÌƒIƒuƒWƒFƒNƒg‚Ì‰ñ“]‚ğİ’è‚µ‚Ü‚·B
+%group
+LNWorldObject
+%prm
+worldobject, rot
+[in] worldobject : WorldObject ‚Ìƒnƒ“ƒhƒ‹
+[in] rot         : (Quaternion Œ^‚Ì’l) 
+
+stat : 0=¬Œ÷, •‰’l=¸”s
+
+%inst
+
+
+”õl
+--------------------
+WorldObject ‚Í Object ‚ÌƒTƒuƒNƒ‰ƒX‚Å‚·BWorldObject ƒnƒ“ƒhƒ‹‚Í Object ƒnƒ“ƒhƒ‹‚Æ‚µ‚Äˆµ‚¤‚±‚Æ‚ª‚Å‚«A LNObject_ ‚©‚çn‚Ü‚é–½—ß“™‚Åg—p‚Å‚«‚Ü‚·B
+
+%href
+
+
+
+;------------------------------------------------------------
+;
+;------------------------------------------------------------
+%index
+LNWorldObject_SetRotationXYZ
+‚±‚ÌƒIƒuƒWƒFƒNƒg‚Ì‰ñ“]‚ğƒIƒCƒ‰[Šp‚©‚çİ’è‚µ‚Ü‚·(radian’PˆÊ) B‰ñ“]‡˜‚Í Z(Roll) > X(Pich) > Y(Yaw) ‚Å‚·B
 %group
 LNWorldObject
 %prm
@@ -4881,7 +4881,7 @@ LNWorldObject
 %prm
 worldobject, outReturn
 [in]  worldobject : WorldObject ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Quaternion Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -4907,7 +4907,7 @@ LNWorldObject
 %prm
 worldobject, scale
 [in] worldobject : WorldObject ‚Ìƒnƒ“ƒhƒ‹
-[in] scale       : 
+[in] scale       : (Vector3 Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -4987,7 +4987,7 @@ LNWorldObject
 %prm
 worldobject, outReturn
 [in]  worldobject : WorldObject ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Vector3 Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -5013,7 +5013,7 @@ LNWorldObject
 %prm
 worldobject, value
 [in] worldobject : WorldObject ‚Ìƒnƒ“ƒhƒ‹
-[in] value       : 
+[in] value       : (Vector3 Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -5067,7 +5067,7 @@ LNWorldObject
 %prm
 worldobject, outReturn
 [in]  worldobject : WorldObject ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Vector3 Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -5093,7 +5093,7 @@ LNWorldObject
 %prm
 worldobject, target
 [in] worldobject : WorldObject ‚Ìƒnƒ“ƒhƒ‹
-[in] target      : 
+[in] target      : (Vector3 Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -5554,7 +5554,7 @@ LNEnvironmentLight
 %prm
 environmentlight, value
 [in] environmentlight : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹
-[in] value            : 
+[in] value            : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -5581,7 +5581,7 @@ LNEnvironmentLight
 %prm
 environmentlight, outReturn
 [in]  environmentlight : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0)     : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0)     : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -5608,7 +5608,7 @@ LNEnvironmentLight
 %prm
 environmentlight, value
 [in] environmentlight : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹
-[in] value            : 
+[in] value            : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -5635,7 +5635,7 @@ LNEnvironmentLight
 %prm
 environmentlight, outReturn
 [in]  environmentlight : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0)     : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0)     : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -5662,7 +5662,7 @@ LNEnvironmentLight
 %prm
 environmentlight, outReturn
 [in]  environmentlight : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0)     : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0)     : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -5689,7 +5689,7 @@ LNEnvironmentLight
 %prm
 environmentlight, value
 [in] environmentlight : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹
-[in] value            : 
+[in] value            : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -5716,7 +5716,7 @@ LNEnvironmentLight
 %prm
 environmentlight, outReturn
 [in]  environmentlight : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0)     : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0)     : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -5743,7 +5743,7 @@ LNEnvironmentLight
 %prm
 environmentlight, value
 [in] environmentlight : EnvironmentLight ‚Ìƒnƒ“ƒhƒ‹
-[in] value            : 
+[in] value            : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -5957,7 +5957,7 @@ LNDirectionalLight_CreateWithColor
 LNDirectionalLight
 %prm
 color, outDirectionalLight
-[in]  color               : 
+[in]  color               : (Color Œ^‚Ì’l) 
 [out] outDirectionalLight(0) : ì¬‚³‚ê‚½ DirectionalLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
@@ -6039,7 +6039,7 @@ LNDirectionalLight
 %prm
 directionallight, color
 [in] directionallight : DirectionalLight ‚Ìƒnƒ“ƒhƒ‹
-[in] color            : 
+[in] color            : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -6066,7 +6066,7 @@ LNDirectionalLight
 %prm
 directionallight, outReturn
 [in]  directionallight : DirectionalLight ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0)     : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0)     : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -6280,7 +6280,7 @@ LNPointLight_CreateWithColorAndRange
 LNPointLight
 %prm
 color, range, outPointLight
-[in]  color         : 
+[in]  color         : (Color Œ^‚Ì’l) 
 [in]  range         : 
 [out] outPointLight(0) : ì¬‚³‚ê‚½ PointLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
 
@@ -6363,7 +6363,7 @@ LNPointLight
 %prm
 pointlight, color
 [in] pointlight : PointLight ‚Ìƒnƒ“ƒhƒ‹
-[in] color      : 
+[in] color      : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -6390,7 +6390,7 @@ LNPointLight
 %prm
 pointlight, outReturn
 [in]  pointlight : PointLight ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -6604,7 +6604,7 @@ LNSpotLight_CreateWithColorAndRange
 LNSpotLight
 %prm
 color, range, angle, outSpotLight
-[in]  color        : 
+[in]  color        : (Color Œ^‚Ì’l) 
 [in]  range        : 
 [in]  angle        : 
 [out] outSpotLight(0) : ì¬‚³‚ê‚½ SpotLight ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”B
@@ -6688,7 +6688,7 @@ LNSpotLight
 %prm
 spotlight, color
 [in] spotlight : SpotLight ‚Ìƒnƒ“ƒhƒ‹
-[in] color     : 
+[in] color     : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -6715,7 +6715,7 @@ LNSpotLight
 %prm
 spotlight, outReturn
 [in]  spotlight : SpotLight ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -7151,7 +7151,7 @@ LNSprite
 %prm
 sprite, value
 [in] sprite : Sprite ‚Ìƒnƒ“ƒhƒ‹
-[in] value  : 
+[in] value  : (Size Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -7292,7 +7292,7 @@ LNRaycaster_FromScreen
 LNRaycaster
 %prm
 point, outReturn
-[in]  point     : 
+[in]  point     : (Point Œ^‚Ì’l) 
 [out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
@@ -7348,7 +7348,7 @@ LNRaycastResult
 %prm
 raycastresult, outReturn
 [in]  raycastresult : RaycastResult ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0)  : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0)  : (Vector3 Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -7735,7 +7735,7 @@ ClearMode ‚ª SkyDome ‚Å‚ ‚é‚Æ‚«‚Ég—p‚·‚éA‹ó‚ÌŠî–{F‚ğİ’è‚µ‚Ü‚·BƒAƒ‹ƒtƒ@’l‚Í
 LNScene
 %prm
 value
-[in] value : 
+[in] value : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -7756,7 +7756,7 @@ ClearMode ‚ª SkyDome ‚Å‚ ‚é‚Æ‚«‚Ég—p‚·‚éA’n•½‚ÌŠî–{F‚ğİ’è‚µ‚Ü‚·BƒAƒ‹ƒtƒ@’l‚
 LNScene
 %prm
 value
-[in] value : 
+[in] value : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -7777,7 +7777,7 @@ ClearMode ‚ª SkyDome ‚Å‚ ‚é‚Æ‚«‚Ég—p‚·‚éA‰_‚ÌŠî–{F‚ğİ’è‚µ‚Ü‚·BƒAƒ‹ƒtƒ@’l‚Í
 LNScene
 %prm
 value
-[in] value : 
+[in] value : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -7798,7 +7798,7 @@ ClearMode ‚ª SkyDome ‚Å‚ ‚é‚Æ‚«‚Ég—p‚·‚éA‹ó‘S‘Ì‚É‰e‹¿‚·‚éF‚ğİ’è‚µ‚Ü‚·BƒAƒ‹ƒ
 LNScene
 %prm
 value
-[in] value : 
+[in] value : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -8022,7 +8022,7 @@ LNScene_SetTransitionEffectColor
 LNScene
 %prm
 value
-[in] value : 
+[in] value : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -8043,7 +8043,7 @@ LNScene_TransitionEffectColor
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -8209,7 +8209,7 @@ LNScene_SetFogColor
 LNScene
 %prm
 value
-[in] value : 
+[in] value : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -8356,7 +8356,7 @@ LNScene_SetScreenBlendColor
 LNScene
 %prm
 value
-[in] value : 
+[in] value : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -8377,7 +8377,7 @@ LNScene_ScreenBlendColor
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -8398,7 +8398,7 @@ setColorTone
 LNScene
 %prm
 value
-[in] value : 
+[in] value : (ColorTone Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -8419,7 +8419,7 @@ colorTone
 LNScene
 %prm
 outReturn
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (ColorTone Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9105,7 +9105,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9127,7 +9127,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9149,7 +9149,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9171,7 +9171,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9193,7 +9193,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9215,7 +9215,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9237,7 +9237,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9259,7 +9259,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9281,7 +9281,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9303,7 +9303,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9325,7 +9325,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9347,7 +9347,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9369,7 +9369,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9391,7 +9391,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9413,7 +9413,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9435,7 +9435,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9457,7 +9457,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9479,7 +9479,7 @@ LNUIColors
 %prm
 shades, outReturn
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9542,7 +9542,7 @@ hue, shades, outReturn
                      LN_UICOLOR_HUES_WHITE
                      
 [in]  shades(5) : 
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9642,7 +9642,7 @@ LNUIElement
 %prm
 uielement, size
 [in] uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[in] size      : 
+[in] size      : (Size Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9805,7 +9805,7 @@ LNUIElement
 %prm
 uielement, margin
 [in] uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[in] margin    : 
+[in] margin    : (Thickness Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9832,7 +9832,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Thickness Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9859,7 +9859,7 @@ LNUIElement
 %prm
 uielement, padding
 [in] uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[in] padding   : 
+[in] padding   : (Thickness Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -9886,7 +9886,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Thickness Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10097,7 +10097,7 @@ LNUIElement
 %prm
 uielement, pos
 [in] uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[in] pos       : 
+[in] pos       : (Vector3 Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10153,7 +10153,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Vector3 Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10180,7 +10180,7 @@ LNUIElement
 %prm
 uielement, rot
 [in] uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[in] rot       : 
+[in] rot       : (Quaternion Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10236,7 +10236,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Quaternion Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10263,7 +10263,7 @@ LNUIElement
 %prm
 uielement, scale
 [in] uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[in] scale     : 
+[in] scale     : (Vector3 Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10345,7 +10345,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Vector3 Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10372,7 +10372,7 @@ LNUIElement
 %prm
 uielement, value
 [in] uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[in] value     : 
+[in] value     : (Vector3 Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10428,7 +10428,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Vector3 Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10563,7 +10563,7 @@ LNUIElement
 %prm
 uielement, value
 [in] uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[in] value     : 
+[in] value     : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10590,7 +10590,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10617,7 +10617,7 @@ LNUIElement
 %prm
 uielement, value
 [in] uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[in] value     : 
+[in] value     : (Thickness Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10644,7 +10644,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Thickness Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10671,7 +10671,7 @@ LNUIElement
 %prm
 uielement, value
 [in] uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[in] value     : 
+[in] value     : (Color Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10698,7 +10698,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Color Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10725,7 +10725,7 @@ LNUIElement
 %prm
 uielement, value
 [in] uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[in] value     : 
+[in] value     : (CornerRadius Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -10752,7 +10752,7 @@ LNUIElement
 %prm
 uielement, outReturn
 [in]  uielement : UIElement ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (CornerRadius Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -11201,7 +11201,7 @@ LNUISprite
 %prm
 uisprite, rect
 [in] uisprite : UISprite ‚Ìƒnƒ“ƒhƒ‹
-[in] rect     : 
+[in] rect     : (Rect Œ^‚Ì’l) 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -11260,7 +11260,7 @@ LNUISprite
 %prm
 uisprite, outReturn
 [in]  uisprite  : UISprite ‚Ìƒnƒ“ƒhƒ‹
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Rect Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -11374,7 +11374,7 @@ LNUIIcon
 iconName, size, color, outReturn
 [in]  iconName  : 
 [in]  size      : 
-[in]  color     : 
+[in]  color     : (Color Œ^‚Ì’l) 
 [out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
@@ -12896,7 +12896,7 @@ LNMouse_GetPosition
 LNMouse
 %prm
 outReturn
-[out] outReturn(0) : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
+[out] outReturn(0) : (Point Œ^‚Ì’l) Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”B
 
 stat : 0=¬Œ÷, •‰’l=¸”s
 
@@ -13677,8 +13677,8 @@ stat : 0=¬Œ÷, •‰’l=¸”s
 ;
 ;------------------------------------------------------------
 %index
-LNEngineSettings_SetEngineLogEnabled
-ƒfƒoƒbƒO—p‚ÌƒƒOƒtƒ@ƒCƒ‹‚Ìo—Í—L–³‚ğİ’è‚µ‚Ü‚·B(default: Debug ƒrƒ‹ƒh‚Ìê‡trueA‚»‚êˆÈŠO‚Í false)
+LNEngineSettings_SetDebugMode
+ƒfƒoƒbƒOƒ‚[ƒh‚Ì—L–³‚ğİ’è‚µ‚Ü‚·B(default: Debug ƒrƒ‹ƒh‚Ìê‡trueA‚»‚êˆÈŠO‚Í false)
 %group
 LNEngineSettings
 %prm
@@ -14166,7 +14166,7 @@ LNDebug
 %prm
 time, color, str
 [in] time  : 
-[in] color : 
+[in] color : (Color Œ^‚Ì’l) 
 [in] str   : 
 
 stat : 0=¬Œ÷, •‰’l=¸”s
