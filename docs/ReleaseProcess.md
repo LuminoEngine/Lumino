@@ -7,8 +7,7 @@
 - src/LuminoCore/NuGet/Lumino.Core.nuspec
 - tools/LuminoBuild/LuminoBuildTool.cs
     - GUID も修正する。`powershell -Command "[Guid]::NewGuid()"` で打ち出せる。
-
-
+- tools/Bindings/Ruby/GemProject/lib/lumino/version.rb
 
 
 

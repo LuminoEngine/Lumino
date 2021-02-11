@@ -32,7 +32,7 @@ rake build
 ### ローカルインストール
 
 ```
-gem install pkg/lumino-0.9.0.gem
+gem install pkg/lumino-0.10.0.gem
 ```
 
 ### アンインストール
@@ -131,23 +131,23 @@ rake build
 
 デバッグ
 ```
-gem install pkg/lumino-0.9.0.pre.gem
+gem install pkg/lumino-0.10.0.pre.gem
 gem uninstall lumino
 ```
 
 インストール時にビルドが走る
 ```
->gem install pkg/lumino-0.9.0.gem
+>gem install pkg/lumino-0.10.0.gem
 Temporarily enhancing PATH for MSYS/MINGW...
 Building native extensions. This could take a while...
-Successfully installed lumino-0.9.0
-Parsing documentation for lumino-0.9.0
-Installing ri documentation for lumino-0.9.0
+Successfully installed lumino-0.10.0
+Parsing documentation for lumino-0.10.0
+Installing ri documentation for lumino-0.10.0
 Done installing documentation for lumino after 0 seconds
 1 gem installed
 ```
 
-C:\tools\ruby26\lib\ruby\gems\2.6.0\gems\lumino-0.9.0
+C:\tools\ruby26\lib\ruby\gems\2.6.0\gems\lumino-0.10.0
 
 
 spec.files
