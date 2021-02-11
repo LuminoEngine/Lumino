@@ -16,7 +16,7 @@ class App_Experiment_Shadow : public Application
     void onInit() override
     {
 		Engine::renderView()->setGuideGridEnabled(true);
-		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+		Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 		Engine::mainLight()->setShadowEffectiveDistance(50);
 		Engine::mainLight()->setShadowEffectiveDepth(500);
 

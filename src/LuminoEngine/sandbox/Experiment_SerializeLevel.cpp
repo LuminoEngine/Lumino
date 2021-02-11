@@ -14,7 +14,7 @@ class App_Experiment_SerializeLevel : public Application
     void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
-        Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+        Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 
         if (0)
         {

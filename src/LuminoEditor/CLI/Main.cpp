@@ -193,8 +193,8 @@ static int processCommands(int argc, char** argv)
 	//--------------------------------------------------------------------------------
 	// new-asset command
 	auto newAssetCommand = parser.addCommand(u"new-asset", u"Create a new asset file.");
-	auto newAssetCommand_nameArg = newCommand->addPositionalArgument(u"name", u"Asset type name.");
-	auto newAssetCommand_outputArg = newCommand->addValueOption(u"o", u"output", u"Output file path.");
+	auto newAssetCommand_nameArg = newAssetCommand->addPositionalArgument(u"name", u"Asset type name.");
+	auto newAssetCommand_outputArg = newAssetCommand->addValueOption(u"o", u"output", u"Output file path.");
 
 	//--------------------------------------------------------------------------------
 	// build-assets command

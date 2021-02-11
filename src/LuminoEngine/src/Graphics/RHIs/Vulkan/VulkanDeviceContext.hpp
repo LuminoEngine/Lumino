@@ -146,42 +146,6 @@ public: // TODO:
     bool m_enableValidationLayers;
 };
 
-class VulkanGraphicsContext
-	: public ICommandList
-{
-public:
-	VulkanGraphicsContext();
-    bool init(VulkanDevice* owner);
-	void dispose();
-
-    const Ref<VulkanCommandBuffer>& recodingCommandBuffer() const { return m_commandBuffer; }
-    //void setRecodingCommandBuffer(const Ref<VulkanCommandBuffer>& value) { m_recodingCommandBuffer = value; }
-
-    void wait() override;
-
-protected:
-    void onSaveExternalRenderState() override;
-    void onRestoreExternalRenderState() override;
-	void onBeginCommandRecoding() override;
-	void onEndCommandRecoding() override;
-	void onBeginRenderPass(IRenderPass* renderPass) override;
-	void onEndRenderPass(IRenderPass* renderPass) override;
-	void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) override;
-	void* onMapResource(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size) override;
-	void onUnmapResource(IGraphicsRHIBuffer* resource) override;
-	void onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length) override;
-	void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
-	void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
-	void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
-	void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
-	void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) override;
-	void onDrawExtension(INativeGraphicsExtension* extension) override;
-
-private:
-	VulkanDevice* m_device;
-    Ref<VulkanCommandBuffer> m_commandBuffer;
-};
-
 class VulkanSwapChain
 	: public ISwapChain
 {
@@ -447,20 +411,16 @@ private:
 class VulkanNativeGraphicsInterface : public IVulkanNativeGraphicsInterface
 {
 public:
-	VulkanNativeGraphicsInterface(VulkanDevice* device)
-		: m_device(device)
-        , m_context(nullptr)
-	{}
+    VulkanNativeGraphicsInterface(VulkanDevice* device);
+    void setContext(VulkanGraphicsContext* context);
 
-    void setContext(VulkanGraphicsContext* context) { m_context = context; }
-
-	virtual GraphicsAPI getGraphicsAPI() const override { return GraphicsAPI::Vulkan; }
-	virtual VkInstance getInstance() const override { return m_device->vulkanInstance(); }
-	virtual VkPhysicalDevice getPhysicalDevice() const override { return m_device->vulkanPhysicalDevice(); }
-	virtual VkDevice getDevice() const override { return m_device->vulkanDevice(); }
-	virtual VkQueue getGraphicsQueue() const override { return m_device->m_graphicsQueue; }
-	virtual uint32_t getGraphicsQueueFamilyIndex() const override { return m_device->m_graphicsQueueFamilyIndex; }
-    virtual VkCommandBuffer getRecordingCommandBuffer() const { return m_context->recodingCommandBuffer()->vulkanCommandBuffer(); }
+    virtual GraphicsAPI getGraphicsAPI() const override;
+    virtual VkInstance getInstance() const override;
+    virtual VkPhysicalDevice getPhysicalDevice() const override;
+    virtual VkDevice getDevice() const override;
+    virtual VkQueue getGraphicsQueue() const override;
+    virtual uint32_t getGraphicsQueueFamilyIndex() const override;
+    virtual VkCommandBuffer getRecordingCommandBuffer() const;
 
 private:
 	VulkanDevice* m_device;

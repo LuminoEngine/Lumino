@@ -57,6 +57,7 @@ class WrappedWin32PlatformWindow
 public:
     WrappedWin32PlatformWindow();
     Result init(Win32PlatformWindowManager* windowManager, intptr_t	windowHandle);
+    void dispose() override;
 
 private:
     static LRESULT CALLBACK StaticWndProcHook(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);

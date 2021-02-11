@@ -5,7 +5,6 @@ namespace ln {
     
 void Log::setLevel(LogLevel level)
 {
-    ln::Logger::addStdErrAdapter();	// TODO: とりいそぎ
     ln::Logger::setLevel(static_cast<ln::LogLevel>(level));
 }
 

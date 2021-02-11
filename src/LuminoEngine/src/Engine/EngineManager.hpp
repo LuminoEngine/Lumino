@@ -67,7 +67,7 @@ struct EngineSettings
 	GraphicsAPI graphicsAPI = GraphicsAPI::Default;
 	bool graphicsDebugEnabled = false;
 
-	bool engineLogEnabled = false;
+	bool debugMode = false;
 	String engineLogFilePath;
 	String engineResourcesPath;
 
@@ -94,7 +94,7 @@ struct EngineSettings
 	EngineSettings()
 	{
 #ifdef LN_DEBUG
-		engineLogEnabled = true;
+		debugMode = true;
 		debugToolEnabled = true;
 #endif
 	}

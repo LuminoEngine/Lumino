@@ -12,7 +12,7 @@ class App_Experiment_Reflector : public Application
     virtual void onInit() override
     {
 		//Engine::renderView()->setGuideGridEnabled(true);
-		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+		Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 
         auto boxMaterial = Material::create();
         boxMaterial->setColor(Color::Green);

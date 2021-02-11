@@ -315,7 +315,6 @@ jobs:
 
     - name: Build and test with Rake
       run: |
-        gem install bundler
         dotnet run -- MakePackage_HSP3
 
     - uses: actions/upload-artifact@v1

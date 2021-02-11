@@ -15,13 +15,13 @@ class App_Experiment_SSR : public Application
     virtual void onInit() override
     {
         //Engine::renderView()->setGuideGridEnabled(true);
-        Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+        Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
 
         //Engine::camera()->setFarClip(100);
-        Engine::camera()->setFov(Math::degreesToRadians(50));
-        Engine::camera()->setPosition(0, 20, -50);
-        Engine::camera()->lookAt(0, 0, 0);
+        Engine::mainCamera()->setFov(Math::degreesToRadians(50));
+        Engine::mainCamera()->setPosition(0, 20, -50);
+        Engine::mainCamera()->lookAt(0, 0, 0);
 
         Engine::mainLight()->setIntensity(3);
 
@@ -33,7 +33,7 @@ class App_Experiment_SSR : public Application
         //m_sprite->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 
         auto groundMaterial = Material::create(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-albedo.jpg"));
-        groundMaterial->setRoughnessMap(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-roughness.jpg"));
+        groundMaterial->setMetallicRoughnessTexture(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-roughness.jpg"));
         //groundMaterial->setNormalMap(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-normal-dx.jpg"));
         m_ground = PlaneMesh::create(groundMaterial);
         m_ground->setScale(4);
@@ -42,7 +42,7 @@ class App_Experiment_SSR : public Application
         auto wallMaterial = Material::create();
         //wallMaterial.bumpMap = textureLoader.load('assets/textures/brick_bump.jpg');
         wallMaterial->setMainTexture(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/brick_diffuse.jpg"));
-        //wallMaterial.roughnessMap = textureLoader.load('assets/textures/brick_roughness.jpg');
+        //wallMaterial.metallicRoughnessTexture = textureLoader.load('assets/textures/brick_roughness.jpg');
         //wallMaterial.bumpScale = 0.1;
         //wallMaterial->shadingModel = ShadingModel::Unlit;
 

@@ -8,8 +8,13 @@
 namespace ln {
 
 /**
-	@brief
-*/
+ *
+ * ### metallic-roughness テクスチャ
+ * Metallic 値は B チャネル、Roughness 値は G チャネルからサンプリングされます。
+ * https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#pbrmetallicroughnessmetallicroughnesstexture
+ * 
+ * 
+ */
 // TODO: フレーム開始～描画に使われた後にパラメータを変更できないようにする。わかりにくい不具合のもとになる。
 LN_CLASS()
 class Material
@@ -43,10 +48,20 @@ public:
 
 	void setNormalMap(Texture* value);
 	Texture* normalMap() const;
-	void setRoughnessMap(Texture* value);
-	Texture* roughnessMap() const;
 
+	/** metallic-roughness テクスチャを設定します。 */
+	void setMetallicRoughnessTexture(Texture* value);
 
+	/** metallic-roughness テクスチャを取得します。 */
+	Texture* metallicRoughnessTexture() const;
+
+	/** occlusion テクスチャを設定します。 */
+	void setOcclusionTexture(Texture* value);
+
+	/** occlusion テクスチャを取得します。 */
+	Texture* occlusionTexture() const;
+
+	//metallicRoughnessTexture
 
 	/** setColor */
 	LN_METHOD(Property)
@@ -225,7 +240,8 @@ protected:  // TODO:
 	Ref<Shader> m_shader;
 	Ref<Texture> m_mainTexture;
 	Ref<Texture> m_normalMap;
-	Ref<Texture> m_roughnessMap;
+	Ref<Texture> m_metallicRoughnessTexture;
+	Ref<Texture> m_occlusionTexture;
 	std::vector<std::pair<String, std::shared_ptr<detail::ShaderParameterValue>>> m_values;
 	std::vector<UniformBufferEntiry> m_uniformBufferData;
 

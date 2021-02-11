@@ -17855,7 +17855,7 @@ LN_FLAT_API LNResult LNWorldObject_GetPosition(LNHandle worldobject, LNVector3* 
 }
 
 
-LN_FLAT_API LNResult LNWorldObject_SetRotationQuaternion(LNHandle worldobject, const LNQuaternion* rot)
+LN_FLAT_API LNResult LNWorldObject_SetRotation(LNHandle worldobject, const LNQuaternion* rot)
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->setRotation(*reinterpret_cast<const ln::Quaternion*>(rot)));
@@ -17863,7 +17863,7 @@ LN_FLAT_API LNResult LNWorldObject_SetRotationQuaternion(LNHandle worldobject, c
 }
 
 
-LN_FLAT_API LNResult LNWorldObject_SetRotation(LNHandle worldobject, float x, float y, float z)
+LN_FLAT_API LNResult LNWorldObject_SetRotationXYZ(LNHandle worldobject, float x, float y, float z)
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->setRotation(x, y, z));
@@ -24037,22 +24037,6 @@ LNSubinstanceId LNInterpreter_GetSubinstanceId(LNHandle handle)
     return 0;
 }
 
-LN_FLAT_API LNResult LNEngineSettings_SetMainWindowSize(int width, int height)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setMainWindowSize(width, height));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LNResult LNEngineSettings_SetMainWorldViewSize(int width, int height)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setMainWorldViewSize(width, height));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
 LN_FLAT_API LNResult LNEngineSettings_SetMainWindowTitle(const LNChar* title)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -24065,6 +24049,22 @@ LN_FLAT_API LNResult LNEngineSettings_SetMainWindowTitleA(const char* title)
 {
     LNI_FUNC_TRY_BEGIN;
     (ln::EngineSettings::setMainWindowTitle(LNI_ASTRPTR_TO_STRING(title)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNEngineSettings_SetMainWindowSize(int width, int height)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWindowSize(width, height));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNEngineSettings_SetMainWorldViewSize(int width, int height)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWorldViewSize(width, height));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -24157,10 +24157,10 @@ LN_FLAT_API LNResult LNEngineSettings_SetDebugToolEnabled(LNBool enabled)
 }
 
 
-LN_FLAT_API LNResult LNEngineSettings_SetEngineLogEnabled(LNBool enabled)
+LN_FLAT_API LNResult LNEngineSettings_SetDebugMode(LNBool enabled)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setEngineLogEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    (ln::EngineSettings::setDebugMode(LNI_LNBOOL_TO_BOOL(enabled)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -24177,6 +24177,22 @@ LN_FLAT_API LNResult LNEngineSettings_SetEngineLogFilePathA(const char* filePath
 {
     LNI_FUNC_TRY_BEGIN;
     (ln::EngineSettings::setEngineLogFilePath(LNI_ASTRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNEngineSettings_SetPriorityGPUName(const LNChar* filePath)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setPriorityGPUName(filePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LNResult LNEngineSettings_SetPriorityGPUNameA(const char* filePath)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setPriorityGPUName(LNI_ASTRPTR_TO_STRING(filePath)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -24255,14 +24271,14 @@ LN_FLAT_API LNResult LNEngine_GetWorld(LNHandle* outReturn)
 }
 
 
-LN_FLAT_API LNResult LNEngine_GetCamera(LNHandle* outReturn)
+LN_FLAT_API LNResult LNEngine_GetMainCamera(LNHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::camera());
+        *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::mainCamera());
     }
     else {
-        (ln::Engine::camera());
+        (ln::Engine::mainCamera());
     }
 
     LNI_FUNC_TRY_END_RETURN;

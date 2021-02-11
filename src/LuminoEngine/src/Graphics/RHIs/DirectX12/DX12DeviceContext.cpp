@@ -209,22 +209,101 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
         D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ);
 
     {
-#ifdef _DEBUG
-        UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
-        UINT compileFlags = 0;
-#endif
-        ID3DBlob* errorBlob = nullptr;
-        HRESULT hr = D3DCompilerAPI::D3DCompileFromFile(L"C:/Proj/LN/Lumino/src/LuminoEngine/src/Graphics/Resource/GenerateMipMaps.hlsl",
-            nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
-            "GenerateMipMaps", "cs_5_1",
-            compileFlags,
-            0, &m_generateMipMapsShader, &errorBlob);
+
+        // CreateRootSignature
+        {
+            // 線形補間 SamplerState
+            D3D12_STATIC_SAMPLER_DESC samplerDesc = {};
+            samplerDesc.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+            samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+            samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+            samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+            samplerDesc.MipLODBias = 0.0f;
+            samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+            samplerDesc.MinLOD = 0.0f;
+            samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
+            samplerDesc.MaxAnisotropy = 0;
+            samplerDesc.BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
+            samplerDesc.ShaderRegister = 0;
+            samplerDesc.RegisterSpace = 0;
+            samplerDesc.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+            D3D12_DESCRIPTOR_RANGE srvCbvRanges[2];
+            D3D12_ROOT_PARAMETER rootParameters[3];
+            srvCbvRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+            srvCbvRanges[0].NumDescriptors = 1;
+            srvCbvRanges[0].BaseShaderRegister = 0;
+            srvCbvRanges[0].RegisterSpace = 0;
+            srvCbvRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+            srvCbvRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+            srvCbvRanges[1].NumDescriptors = 1;
+            srvCbvRanges[1].BaseShaderRegister = 0;
+            srvCbvRanges[1].RegisterSpace = 0;
+            srvCbvRanges[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+            rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+            rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+            rootParameters[0].Constants.ShaderRegister = 0;
+            rootParameters[0].Constants.RegisterSpace = 0;
+            rootParameters[0].Constants.Num32BitValues = 3; // float2 + float
+            rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+            rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+            rootParameters[1].DescriptorTable.NumDescriptorRanges = 1;
+            rootParameters[1].DescriptorTable.pDescriptorRanges = &srvCbvRanges[0];
+            rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+            rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+            rootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
+            rootParameters[2].DescriptorTable.pDescriptorRanges = &srvCbvRanges[1];
+
+            ComPtr<ID3DBlob> signature;
+            ComPtr<ID3DBlob> error;
+            D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+            rootSignatureDesc.NumParameters = _countof(rootParameters);
+            rootSignatureDesc.pParameters = rootParameters;
+            rootSignatureDesc.NumStaticSamplers = 1;
+            rootSignatureDesc.pStaticSamplers = &samplerDesc;
+            rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+            HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+            if (FAILED(hr)) {
+                LN_ERROR("D3D12SerializeRootSignature failed.");
+                return false;
+            }
+
+            hr = m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_mipmapRootSignature));
+            if (FAILED(hr)) {
+                LN_ERROR("CreateRootSignature failed.");
+                return false;
+            }
+        }
+
+        // CreateComputePipelineState
+#include "../../Resource/GenerateMipMaps.hlsl.inl"
+        D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc = {};
+        psoDesc.pRootSignature = m_mipmapRootSignature.Get();
+        psoDesc.CS = { g_GenerateMipMaps, LN_ARRAY_SIZE_OF(g_GenerateMipMaps) };
+
+        HRESULT hr = m_device->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&m_mipmapPipelineState));
         if (FAILED(hr)) {
-            const char* err = (const char*)errorBlob->GetBufferPointer();
-            LN_ERROR("CreateEvent failed.");
+            LN_ERROR("CreateComputePipelineState failed.");
             return false;
         }
+
+//#ifdef _DEBUG
+//        UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+//#else
+//        UINT compileFlags = 0;
+//#endif
+//        ID3DBlob* errorBlob = nullptr;
+//        HRESULT hr = D3DCompilerAPI::D3DCompileFromFile(L"C:/Proj/LN/Lumino/src/LuminoEngine/src/Graphics/Resource/GenerateMipMaps.hlsl",
+//            nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+//            "GenerateMipMaps", "cs_5_1",
+//            compileFlags,
+//            0, &m_generateMipMapsShader, &errorBlob);
+//        if (FAILED(hr)) {
+//            const char* err = (const char*)errorBlob->GetBufferPointer();
+//            LN_ERROR("D3DCompileFromFile failed.");
+//            return false;
+//        }
     }
 
 	return true;
@@ -234,7 +313,8 @@ void DX12Device::dispose()
 {
     IGraphicsDevice::dispose();
 
-    m_generateMipMapsShader.Reset();
+    m_pipelineCache.reset();
+    m_mipmapRootSignature.Reset();
 
     if (m_uploadBufferAllocatorManager) {
         m_uploadBufferAllocatorManager->clear();

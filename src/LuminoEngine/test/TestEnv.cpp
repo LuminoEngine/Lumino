@@ -15,6 +15,7 @@ void TestEnv::setup()
 	EngineSettings::setMainWindowSize(160, 120);
 	//EngineSettings::setMainBackBufferSize(160, 120);
 	EngineSettings::setGraphicsAPI(GraphicsAPI::DirectX12);//GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
+    EngineSettings::setPriorityGPUName(u"Microsoft Basic Render Driver");
 	EngineSettings::setGraphicsDebugEnabled(true);
     EngineSettings::setEngineFeatures(feature);
 	EngineSettings::addAssetDirectory(LN_LOCALFILE(u"Assets"));
@@ -27,7 +28,7 @@ void TestEnv::setup()
     if (feature == EngineFeature::Experimental)  // Experimental
     {
         Font::registerFontFromFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
-        Engine::camera()->setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0));
+        Engine::mainCamera()->setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0));
 
         //Engine::mainAmbientLight()->setColor(Color::White);
         //Engine::mainAmbientLight()->setIntensity(0.5);
@@ -64,8 +65,8 @@ void TestEnv::resetScene()
 {
 	Engine::world()->removeAllObjects();
 	Engine::mainUIView()->removeAllChildren();
-	Engine::camera()->setPosition(0, 0, -10);
-	Engine::camera()->lookAt(Vector3(0, 0, 0));
+	Engine::mainCamera()->setPosition(0, 0, -10);
+	Engine::mainCamera()->lookAt(Vector3(0, 0, 0));
 	Engine::mainLight()->lookAt(0, -1, 0);
 	Engine::mainLight()->setEnabled(true);
 	Engine::mainLight()->setSkyColor(Color::Black);

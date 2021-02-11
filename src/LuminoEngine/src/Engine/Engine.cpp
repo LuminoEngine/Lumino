@@ -96,9 +96,9 @@ void EngineSettings::setDebugToolEnabled(bool enabled)
 	detail::EngineManager::s_settings.debugToolEnabled = enabled;
 }
 
-void EngineSettings::setEngineLogEnabled(bool enabled)
+void EngineSettings::setDebugMode(bool enabled)
 {
-	detail::EngineManager::s_settings.engineLogEnabled = enabled;
+	detail::EngineManager::s_settings.debugMode = enabled;
 }
 
 void EngineSettings::setEngineLogFilePath(const ln::String& filePath)
@@ -310,7 +310,7 @@ World* Engine::world()
     return detail::EngineDomain::engineManager()->mainWorld();
 }
 
-Camera* Engine::camera()
+Camera* Engine::mainCamera()
 {
     return detail::EngineDomain::engineManager()->mainCamera();
 }

@@ -865,7 +865,7 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
     ioColumnWidth += 2; // 前後の [ ] の分
 
     // 引数の1行説明
-    OutputBuffer detailText;
+    OutputBuffer paramsDetailText;
     for (const auto& param : methodSymbol->flatParameters()) {
         auto name = param->name();
 
@@ -877,11 +877,14 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
             name += u"(0)";
         }
 
-        detailText.append(ln::String::format(u"{0,-" + ln::String::fromNumber(ioColumnWidth) + u"}", u"[" + makeIOName(param) + "]"));
-        detailText.append(ln::String::format(u" {0,-" + ln::String::fromNumber(nameColumnWidth) + u"}", name));
-        detailText.append(u" : ");
-        detailText.append(translateComment(methodSymbol->document()->flatParams()[param->flatParamIndex()]->description()));
-        detailText.NewLine();
+        paramsDetailText.append(ln::String::format(u"{0,-" + ln::String::fromNumber(ioColumnWidth) + u"}", u"[" + makeIOName(param) + "]"));
+        paramsDetailText.append(ln::String::format(u" {0,-" + ln::String::fromNumber(nameColumnWidth) + u"}", name));
+        paramsDetailText.append(u" : ");
+        if (param->type()->isStruct()) {
+            paramsDetailText.append(u"({0} 型の値) ", param->type()->shortName());
+        }
+        paramsDetailText.append(translateComment(methodSymbol->document()->flatParams()[param->flatParamIndex()]->description()));
+        paramsDetailText.NewLine();
 
         // enum 型の場合は候補値も追加しておく
         const auto& enumType = param->type();
@@ -889,23 +892,41 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
             const auto indent = ln::String::format(u" {0,-" + ln::String::fromNumber(ioColumnWidth + 3 + nameColumnWidth + 3) + u"}", u" ");
 
             for (const auto& member : enumType->constants()) {
-                detailText.AppendLine(indent + makeFlatEnumMemberName(enumType, member));
-                detailText.AppendLine(indent + member->document()->summary());
+                paramsDetailText.AppendLine(indent + makeFlatEnumMemberName(enumType, member));
+                paramsDetailText.AppendLine(indent + member->document()->summary());
             }
         }
     }
 
-    detailText.NewLine();
-    detailText.AppendLine(u"stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)");
+    paramsDetailText.NewLine();
+    paramsDetailText.AppendLine(u"stat : 0=成功, 負値=失敗");
+
+
+    OutputBuffer detailText;
+    detailText.AppendLines(methodSymbol->document()->details());
+    if (TypeSymbol* baseClass = methodSymbol->ownerType()->baseClass()) {
+        detailText.NewLine();
+        detailText.AppendLine(u"備考");
+        detailText.AppendLine(u"--------------------");
+
+        TypeSymbol* thisClass = methodSymbol->ownerType();
+        while (baseClass) {
+            detailText.AppendLine(u"{0} は {1} のサブクラスです。{0} ハンドルは {1} ハンドルとして扱うことができ、 {2}_ から始まる命令等で使用できます。",
+                thisClass->shortName(),
+                baseClass->shortName(),
+                makeFlatClassName(baseClass));
+            baseClass = baseClass->baseClass();
+        }
+    }
 
     return FuncTemplate
         .replace("_NAME_", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode))    // FlatCharset::Unicode を指定して、"A" をつけないようにする
         .replace("_BRIEF_", translateComment(methodSymbol->document()->summary()))
-        .replace("_INST_", translateComment(methodSymbol->document()->details()))
+        .replace("_INST_", translateComment(detailText.toString()))
         .replace("_HREF_", "")
         .replace("_GROUP_", makeFlatClassName(methodSymbol->ownerType()))
         .replace("_PRM_LIST_", params.toString())
-        .replace("_PRM_DETAIL_", detailText.toString());
+        .replace("_PRM_DETAIL_", paramsDetailText.toString());
 
     // サンプルコード
     //TestCode sampleCode;
@@ -927,8 +948,8 @@ ln::String HSP3HelpGenerator::makeIOName(const MethodParameterSymbol* paramSymbo
 ln::String HSP3HelpGenerator::translateComment(const ln::String& text) const
 {
     auto result = text.replace("関数", "命令")
-        .replace("のポインタ", "")
-        .replace("クラス", "モジュール");
+        .replace("のポインタ", "");
+        //.replace("クラス", "モジュール")
 
     return result;
 

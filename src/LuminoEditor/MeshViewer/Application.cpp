@@ -108,7 +108,7 @@ void Application::onInit()
 {
 	setupMainWindow(ln::makeObject<MainWindow>(), true);
     ln::Engine::renderView()->setGuideGridEnabled(true);
-    ln::Engine::camera()->addComponent(ln::CameraOrbitControlComponent::create());
+    ln::Engine::mainCamera()->addComponent(ln::CameraOrbitControlComponent::create());
     ln::Engine::renderView()->setBackgroundColor(ln::Color::Gray);
     ln::Engine::renderView()->setGizmoEnabled(true);
     

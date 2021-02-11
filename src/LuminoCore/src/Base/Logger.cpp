@@ -392,4 +392,9 @@ void Logger::setLevel(LogLevel level)
 	detail::g_maxLevel = level;
 }
 
+LogLevel Logger::level()
+{
+    return detail::g_maxLevel;
+}
+
 } // namespace ln

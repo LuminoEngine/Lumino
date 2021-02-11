@@ -12,7 +12,7 @@ class App_Example_glTFSampleViewer : public Application
     void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
-        Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+        Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         //Engine::renderView()->setBackgroundColor(Color::Gray);
 
         namespace fs = std::filesystem;
@@ -59,6 +59,7 @@ class App_Example_glTFSampleViewer : public Application
         settings->setApplyBoneTransformationsEnabled(false);
         m_mesh = StaticMesh::load(path, settings);
         m_mesh->setBlendMode(BlendMode::Alpha);
+        m_mesh->addInto();
 
         std::cout << path << std::endl;
     }

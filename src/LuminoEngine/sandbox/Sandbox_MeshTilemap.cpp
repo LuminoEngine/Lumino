@@ -22,7 +22,7 @@ class Sandbox_MeshTilemap_App : public Application
 	virtual void onInit() override
 	{
 		Engine::renderView()->setGuideGridEnabled(true);
-		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+		Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 
 		//auto tex = Texture2D::load(u"autotile1");
 		////auto sprite = Sprite::create(tex);

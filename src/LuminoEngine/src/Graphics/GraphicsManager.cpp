@@ -200,8 +200,16 @@ void GraphicsManager::init(const Settings& settings)
 		}
 
 		// Default
-		if (!m_deviceContext) {
-			createVulkanContext(settings);
+		{
+#ifdef _WIN32
+			if (!m_deviceContext) {
+				createDirectX12Context(settings);
+			}
+#else
+			if (!m_deviceContext) {
+				createVulkanContext(settings);
+			}
+#endif
 		}
 	}
 

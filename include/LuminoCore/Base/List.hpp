@@ -349,7 +349,7 @@ int List<T>::size() const LN_NOEXCEPT
 template<typename T>
 int List<T>::capacity() const LN_NOEXCEPT
 {
-    return m_data.capacity();
+    return static_cast<int>(m_data.capacity());
 }
 
 template<typename T>

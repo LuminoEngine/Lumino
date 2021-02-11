@@ -25,7 +25,7 @@ public:
 
     virtual void onInit() override
     {
-        Engine::camera()->setBackgroundColor(Color::Gray);
+        Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
         auto windowSkin = Texture2D::load(u"Window1");
 

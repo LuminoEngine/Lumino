@@ -79,12 +79,19 @@ PSOutput PS_WriteLinearDepth(PSInput input)
     output.Depth = float4(clipSpaceZ, linearZ, 0.0, 1.0);
 
 #ifdef LN_USE_ROUGHNESS_MAP
-    float roughness = tex2D(ln_MaterialRoughnessMap, input.UV).r;
-    // TODO: ln_MaterialRoughness を乗算する？
+    // metallic 値は .b からサンプリングする。
+    // roughness 値は .g からサンプリングする。
+    // それぞれマテリアルの metallic, roughness 値と乗算しなければならない。
+    // https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#pbrmetallicroughnessmetallicroughnesstexture
+    // https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#pbrmetallicroughnessroughnessfactor
+    const float4 mr = tex2D(ln_MetallicRoughnessTexture, input.UV);
+    const float metallic = mr.b * ln_MaterialMetallic;
+    const float roughness = mr.g * ln_MaterialRoughness;
 #else
-    float roughness = ln_MaterialRoughness;
+    const float metallic = ln_MaterialMetallic;
+    const float roughness = ln_MaterialRoughness;
 #endif
-    output.Material = float4(ln_MaterialMetallic, linearZ, roughness, 1);
+    output.Material = float4(metallic, linearZ, roughness, 1);
 
     output.ObjectId = uint4(ln_objectId, 0, 0, 0);
 

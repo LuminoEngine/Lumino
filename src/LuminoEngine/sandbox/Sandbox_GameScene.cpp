@@ -66,7 +66,7 @@ class App_Sandbox_GameScene : public Application
 	void onInit() override
 	{
 		Engine::renderView()->setGuideGridEnabled(true);
-		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+		Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 
 
 		//auto transitionPostEffect = TransitionPostEffect::create();

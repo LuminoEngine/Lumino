@@ -575,11 +575,20 @@ Result WrappedWin32PlatformWindow::init(Win32PlatformWindowManager* windowManage
     BOOL r = ::SetProp(m_hWnd, Win32PlatformWindowManager::PropWinProc, this);
     if (LN_ENSURE((r != FALSE), "ErrorCode: %d", GetLastError())) return false;
 
-    m_originalWndProc = (WNDPROC)GetWindowLong(m_hWnd, GWLP_WNDPROC);
-    SetWindowLong(m_hWnd, GWLP_WNDPROC, (LONG)StaticWndProcHook);
+    m_originalWndProc = (WNDPROC)::GetWindowLong(m_hWnd, GWLP_WNDPROC);
+    ::SetWindowLong(m_hWnd, GWLP_WNDPROC, (LONG)StaticWndProcHook);
     LN_LOG_DEBUG << "Hook WndProc (original: " << m_originalWndProc << ")";
 
     return true;
+}
+
+void WrappedWin32PlatformWindow::dispose()
+{
+    if (m_originalWndProc) {
+        ::SetWindowLong(m_hWnd, GWLP_WNDPROC, (LONG)m_originalWndProc);
+        m_originalWndProc = nullptr;
+        LN_LOG_DEBUG << "Unhooked WndProc";
+    }
 }
 
 LRESULT WrappedWin32PlatformWindow::StaticWndProcHook(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)

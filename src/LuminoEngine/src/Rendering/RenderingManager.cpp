@@ -257,6 +257,8 @@ void RenderingManager::init(const Settings& settings)
 	}
 
 #define ROOT_PATH u"C:/Proj/LN/Lumino/src/LuminoEngine/"
+	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ClusteredShadingDefault.fx");
+	m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ForwardGBufferPrepass.fx");
 #if 0	// テスト用
 	m_builtinShaders[(int)BuiltinShader::CopyScreen] = Shader::create(ROOT_PATH u"src/Rendering/Resource/CopyScreen.fx");
 	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(ROOT_PATH u"src/Rendering/Resource/Sprite.fx");
@@ -271,10 +273,8 @@ void RenderingManager::init(const Settings& settings)
 	m_builtinShaders[(int)BuiltinShader::NanoVG] = Shader::create(ROOT_PATH u"src/Rendering/Resource/nanovg.fx");
 
 
-	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ClusteredShadingDefault.fx");
 	m_builtinShaders[(int)BuiltinShader::BlackShader] = Shader::create(ROOT_PATH u"src/Rendering/Resource/BlackShader.fx");
 
-	m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ForwardGBufferPrepass.fx");
 	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ShadowCaster.fx");
 #endif
 
@@ -348,6 +348,7 @@ void RenderingManager::dispose()
 	m_meshRenderFeature = nullptr;
 	m_spriteRenderFeature2 = nullptr;
     m_blitRenderFeature = nullptr;
+	m_standardVertexDeclarationRHI = nullptr;
 	m_standardVertexDeclaration = nullptr;
     m_renderFeatures.clear();
 }

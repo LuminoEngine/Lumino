@@ -79,6 +79,8 @@ public:
 	 */
 	static void setLevel(LogLevel level);
 
+    static LogLevel level();
+
 	static bool hasAnyAdapter();
 };
 

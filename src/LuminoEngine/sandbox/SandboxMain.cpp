@@ -434,7 +434,7 @@ int main(int argc, char** argv)
 	Logger::addStdErrAdapter();
     Logger::setLevel(LogLevel::Debug);
 	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
-	EngineSettings::setGraphicsAPI(GraphicsAPI::DirectX12);//GraphicsAPI::Vulkan);//(GraphicsAPI::OpenGL);//
+	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::DirectX12);//(GraphicsAPI::OpenGL);//
     //EngineSettings::setPriorityGPUName(u"Microsoft Basic Render Driver");
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	//EngineSettings::setUITheme(u"Chocotelier");
@@ -471,7 +471,7 @@ int main(int argc, char** argv)
     if (1) {
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
-        //Example_glTFSampleViewer();
+        Example_glTFSampleViewer();
         //Example_MainLoop();
 		//Example_MeshViewer();
         //Example_MessageWindow();
@@ -501,7 +501,7 @@ int main(int argc, char** argv)
         //Sandbox_Sky();
         //Sandbox_UIShader();
 		//Sandbox_Voxel();
-		Tutorial_Sandbox();
+		//Tutorial_Sandbox();
 		//UISandboxMain();
         return 0;
     }
@@ -579,7 +579,7 @@ int main(int argc, char** argv)
     
     //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
 
-	Camera* camera = Engine::camera();
+	Camera* camera = Engine::mainCamera();
 	camera->addComponent(makeObject<CameraOrbitControlComponent>());
     //Engine::mainCamera()->setPosition(0, 0, 25);
 	camera->setBackgroundColor(Color::Gray);
@@ -715,7 +715,7 @@ int main(int argc, char** argv)
 
 #if 1
 	{
-		Engine::camera()->setBackgroundColor(Color::White);
+		Engine::mainCamera()->setBackgroundColor(Color::White);
 
 		//auto s = u'🐈';
 		//auto t = Texture2D::loadEmoji(U'🐈');
@@ -903,9 +903,9 @@ int main(int argc, char** argv)
 
 
     auto ctl = makeObject<CameraOrbitControlComponent>();
-    Engine::camera()->addComponent(ctl);
-    Engine::camera()->setPosition(0, 5, -10);
-    Engine::camera()->setBackgroundColor(Color::Gray);
+    Engine::mainCamera()->addComponent(ctl);
+    Engine::mainCamera()->setPosition(0, 5, -10);
+    Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
 
     struct PosColor

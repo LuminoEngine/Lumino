@@ -2168,7 +2168,7 @@ end
 class Lumino::RenderView
 end
 
-# 
+# ### metallic-roughness テクスチャMetallic 値は B チャネル、Roughness 値は G チャネルからサンプリングされます。https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#pbrmetallicroughnessmetallicroughnesstexture
 # 
 class Lumino::Material
     # init
@@ -2859,13 +2859,13 @@ class Lumino::WorldObject
 
 
 
-    # このオブジェクトの回転をオイラー角から設定します(radian) 。回転順序は Z(Roll) > X(Pich) > Y(Yaw) です。
+    # このオブジェクトの回転を設定します。
     # @overload set_rotation(rot)
     #   このオブジェクトの回転を設定します。
     #   @param [Lumino::Quaternion] rot 
     #   
     # @overload set_rotation(x, y, z)
-    #   このオブジェクトの回転をオイラー角から設定します(radian) 。回転順序は Z(Roll) > X(Pich) > Y(Yaw) です。
+    #   このオブジェクトの回転をオイラー角から設定します(radian単位) 。回転順序は Z(Roll) > X(Pich) > Y(Yaw) です。
     #   @param [Float] x 
     #   @param [Float] y 
     #   @param [Float] z 
@@ -3839,7 +3839,7 @@ class Lumino::Scene
 
     # レベルの遷移エフェクトを実行中であるかを確認します。
     # @return [Boolean] 
-    def is_transition_effect_running(*args)
+    def transition_effect_running?(*args)
     end
 
 
@@ -3989,7 +3989,7 @@ class Lumino::Scene
 
     # HDR レンダリングの有無を取得します。
     # @return [Boolean] 
-    def is_hdr_enabled(*args)
+    def hdr_enabled?(*args)
     end
 
 
@@ -5334,7 +5334,7 @@ class Lumino::Input
     # @param [] buttonName 
     # 
     # @return [Boolean] 
-    def is_pressed(*args)
+    def pressed?(*args)
     end
 
 
@@ -5343,7 +5343,7 @@ class Lumino::Input
     # @param [] buttonName 
     # 
     # @return [Boolean] 
-    def is_triggered(*args)
+    def triggered?(*args)
     end
 
 
@@ -5352,7 +5352,7 @@ class Lumino::Input
     # @param [] buttonName 
     # 
     # @return [Boolean] 
-    def is_triggered_off(*args)
+    def triggered_off?(*args)
     end
 
 
@@ -5361,7 +5361,7 @@ class Lumino::Input
     # @param [] buttonName 
     # 
     # @return [Boolean] 
-    def is_repeated(*args)
+    def repeated?(*args)
     end
 
 
@@ -5651,6 +5651,14 @@ end
 # アプリケーション起動時に参照する初期化設定です。
 # 
 class Lumino::EngineSettings
+    # メインウィンドウのタイトル文字列を設定します。
+    # @param [String] title 
+    # 
+    def set_main_window_title(*args)
+    end
+
+
+
     # メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480)
     # @param [Integer] width 
     # @param [Integer] height 
@@ -5669,15 +5677,7 @@ class Lumino::EngineSettings
 
 
 
-    # メインウィンドウのタイトル文字列を設定します。
-    # @param [String] title 
-    # 
-    def set_main_window_title(*args)
-    end
-
-
-
-    # メインウィンドウをユーザーがサイズ変更できるかどうかを指定します。(default: false)
+    # メインウィンドウのサイズをユーザーが変更できるかどうかを指定します。(default: false)
     # @param [Boolean] value 
     # 
     def set_main_window_resizable(*args)
@@ -5734,10 +5734,10 @@ class Lumino::EngineSettings
 
 
 
-    # デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
+    # デバッグモードの有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
     # @param [Boolean] enabled 
     # 
-    def set_engine_log_enabled(*args)
+    def set_debug_mode(*args)
     end
 
 
@@ -5746,6 +5746,15 @@ class Lumino::EngineSettings
     # @param [String] filePath 
     # 
     def set_engine_log_file_path(*args)
+    end
+
+
+
+    # 優先的に使用する GPU の名前を指定します。
+    #   現在は DirectX12 を使用する場合のみ有効で、デフォルトの GPU では動作が不安定な場合に "Microsoft Basic Render Driver" 等を試すことができます。
+    # @param [String] filePath 
+    # 
+    def set_priority_gpu_name(*args)
     end
 
 
@@ -5806,7 +5815,7 @@ class Lumino::Engine
 
     # デフォルトで作成されるメインの Camera です。
     # @return [Lumino::Camera] 
-    def camera(*args)
+    def main_camera(*args)
     end
 
 

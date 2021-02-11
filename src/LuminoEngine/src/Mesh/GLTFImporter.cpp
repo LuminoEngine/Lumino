@@ -282,8 +282,11 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 {
     auto coreMaterial = makeObject<Material>();
 	coreMaterial->m_name = String::fromStdString(material.name);
-	coreMaterial->setMetallic(1.0f);    // glTF default
-	coreMaterial->setRoughness(1.0f);    // glTF default
+
+	// glTF default
+	// https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#pbrmetallicroughness
+	coreMaterial->setMetallic(1.0f);    
+	coreMaterial->setRoughness(1.0f);
 
 	for (const auto& value : material.values) {
 		if (value.first == "baseColorFactor") {
@@ -310,8 +313,8 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 			auto itr2 = value.second.json_double_value.find("index");
 			assert(itr2 != value.second.json_double_value.end());
 			int index = static_cast<int>(itr2->second);
-			// TODO:
-			m_diag->reportWarning(u"metallicRoughnessTexture not supported.");
+			const tinygltf::Texture& texture = m_model->textures[index];
+			coreMaterial->setMetallicRoughnessTexture(loadTexture(texture));
 		}
 		else if (value.first == "normalTexture") {
 			auto itr2 = value.second.json_double_value.find("index");
@@ -329,8 +332,8 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 			auto itr2 = value.second.json_double_value.find("index");
 			assert(itr2 != value.second.json_double_value.end());
 			int index = static_cast<int>(itr2->second);
-			// TODO:
-			m_diag->reportWarning(u"occlusionTexture not supported.");
+			const tinygltf::Texture& texture = m_model->textures[index];
+			coreMaterial->setOcclusionTexture(loadTexture(texture));
 		}
 		else {
 			m_diag->reportWarning(String::format(u"Material field '{}' is not supported.", String::fromStdString(value.first)));

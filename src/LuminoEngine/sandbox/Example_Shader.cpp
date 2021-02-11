@@ -7,7 +7,7 @@ class App_Example_Shader : public Application
     virtual void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
-        Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+        Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 
         auto plane = PlaneMesh::create();
         plane->setScale(5);

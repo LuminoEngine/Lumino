@@ -12,7 +12,7 @@ class App_Experiment_MeshCollider : public Application
     {
         Engine::renderView()->setGuideGridEnabled(true);
         //Engine::renderView()->setPhysicsDebugDrawEnabled(true);
-        Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+        Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 
         auto staticMesh = StaticMesh::load(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Map-1.glb");
         auto model = staticMesh->staticMeshComponent()->model();

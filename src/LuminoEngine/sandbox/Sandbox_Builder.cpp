@@ -342,7 +342,7 @@ class App_Sandbox_Builder : public Application
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::renderView()->setPhysicsDebugDrawEnabled(true);
-        Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+        Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
 
         auto element1 = lib::Element::Builder()

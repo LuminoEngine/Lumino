@@ -325,12 +325,14 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext)
 					if (finalMaterial) {
 						subsetInfo.materialTexture = finalMaterial->mainTexture();
 						subsetInfo.normalMap = finalMaterial->normalMap();
-						subsetInfo.roughnessMap = finalMaterial->roughnessMap();
+						subsetInfo.metallicRoughnessTexture = finalMaterial->metallicRoughnessTexture();
+						subsetInfo.occlusionTexture = finalMaterial->occlusionTexture();
 					}
 					else {
 						subsetInfo.materialTexture = nullptr;
 						subsetInfo.normalMap = nullptr;
-						subsetInfo.roughnessMap = nullptr;
+						subsetInfo.metallicRoughnessTexture = nullptr;
+						subsetInfo.occlusionTexture = nullptr;
 					}
 					subsetInfo.opacity = stage->getOpacityFinal(element);
 					subsetInfo.colorScale = stage->getColorScaleFinal(element);
@@ -499,12 +501,18 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					(elementInfo.boneTexture) ? ShaderTechniqueClass_MeshProcess::SkinnedMesh : ShaderTechniqueClass_MeshProcess::StaticMesh,
 					(batch->instancing) ? ShaderTechniqueClass_DrawMode::Instancing : ShaderTechniqueClass_DrawMode::Primitive,
 					(subsetInfo.normalMap) ? ShaderTechniqueClass_Normal::NormalMap : ShaderTechniqueClass_Normal::Default,
-					(subsetInfo.roughnessMap) ? ShaderTechniqueClass_Roughness::RoughnessMap : ShaderTechniqueClass_Roughness::Default,
+					(subsetInfo.metallicRoughnessTexture) ? ShaderTechniqueClass_Roughness::RoughnessMap : ShaderTechniqueClass_Roughness::Default,
 				};
+
+				const ShadingModel shadingModel = stage->getShadingModelFinal(finalMaterial);
 				ShaderTechnique* tech = pass->selectShaderTechnique(
 					requester,
 					finalMaterial->shader(),
-					stage->getShadingModelFinal(finalMaterial));
+					shadingModel);
+
+				if (subsetInfo.normalMap) {
+					printf("");
+				}
 
 
 				SubsetInfo localSubsetInfo = subsetInfo;
@@ -524,8 +532,16 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				if (!localSubsetInfo.normalMap) {
 					localSubsetInfo.normalMap = m_manager->graphicsManager()->defaultNormalMap();
 				}
-				if (!localSubsetInfo.roughnessMap) {
-					localSubsetInfo.roughnessMap = m_manager->graphicsManager()->blackTexture();
+				if (!localSubsetInfo.metallicRoughnessTexture) {
+					// ダミーは WhiteTexture でよい。
+					//   R=遮蔽率の逆。(1.0 に近づくほど、完全な光の下、オリジナルに近い色になる)
+					//   G=Metallic. マテリアル自体の Metallic と乗算されるため、1.0 でよい。
+					//   B=Roughness. マテリアル自体の Roughness と乗算されるため、1.0 でよい。
+					//   A=未使用
+					localSubsetInfo.metallicRoughnessTexture = m_manager->graphicsManager()->whiteTexture();
+				}
+				if (!localSubsetInfo.occlusionTexture) {
+					localSubsetInfo.occlusionTexture = m_manager->graphicsManager()->whiteTexture();
 				}
 
 

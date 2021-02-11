@@ -13,7 +13,7 @@ class App_Sandbox_Sky : public Application
     void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
-        Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+        Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Black);
         Engine::renderView()->setClearMode(SceneClearMode::SkyDome);
     }
