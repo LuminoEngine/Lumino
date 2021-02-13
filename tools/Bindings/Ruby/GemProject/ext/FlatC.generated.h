@@ -1460,14 +1460,14 @@ typedef LNResult(*LNApplicationUpdateHandlerCallback)(LNHandle applicationupdate
 
 /**
     @brief すべての要素を 0.0 に設定してインスタンスを初期化します。
-    @param[in] vector3 : instance
+    @param[in] vector3 : Vector3
 */
 LN_FLAT_API LNResult LNVector3_SetZeros(LNVector3* vector3);
 
 
 /**
     @brief 指定した値を使用してインスタンスを初期化します。
-    @param[in] vector3 : instance
+    @param[in] vector3 : Vector3
     @param[] x : 
     @param[] y : 
     @param[] z : 
@@ -1477,7 +1477,7 @@ LN_FLAT_API LNResult LNVector3_Set(LNVector3* vector3, float x, float y, float z
 
 /**
     @brief get
-    @param[in] vector3 : instance
+    @param[in] vector3 : Vector3
     @param[] outX : 
     @param[] outY : 
     @param[] outZ : 
@@ -1487,23 +1487,23 @@ LN_FLAT_API LNResult LNVector3_Get(const LNVector3* vector3, float* outX, float*
 
 /**
     @brief ベクトルの長さを返します。
-    @param[in] vector3 : instance
-    @param[out] outReturn : instance.
+    @param[in] vector3 : Vector3
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNVector3_Length(const LNVector3* vector3, float* outReturn);
 
 
 /**
     @brief ベクトルの長さの 2 乗を返します。
-    @param[in] vector3 : instance
-    @param[out] outReturn : instance.
+    @param[in] vector3 : Vector3
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNVector3_LengthSquared(const LNVector3* vector3, float* outReturn);
 
 
 /**
     @brief このベクトルを正規化します。
-    @param[in] vector3 : instance
+    @param[in] vector3 : Vector3
     @details ベクトルの長さが 0 の場合は正規化を行いません。
 */
 LN_FLAT_API LNResult LNVector3_MutatingNormalize(LNVector3* vector3);
@@ -1514,7 +1514,7 @@ LN_FLAT_API LNResult LNVector3_MutatingNormalize(LNVector3* vector3);
     @param[] x : 
     @param[] y : 
     @param[] z : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
     @return 正規化されたベクトル
 */
 LN_FLAT_API LNResult LNVector3_NormalizeXYZ(float x, float y, float z, LNVector3* outReturn);
@@ -1523,7 +1523,7 @@ LN_FLAT_API LNResult LNVector3_NormalizeXYZ(float x, float y, float z, LNVector3
 /**
     @brief 指定ベクトルを正規化したベクトルを返します。
     @param[] vec : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
     @return 正規化されたベクトル
 */
 LN_FLAT_API LNResult LNVector3_Normalize(const LNVector3* vec, LNVector3* outReturn);
@@ -1534,14 +1534,14 @@ LN_FLAT_API LNResult LNVector3_Normalize(const LNVector3* vec, LNVector3* outRet
 
 /**
     @brief すべての要素を 0.0 に設定してインスタンスを初期化します。
-    @param[in] vector4 : instance
+    @param[in] vector4 : Vector4
 */
 LN_FLAT_API LNResult LNVector4_SetZeros(LNVector4* vector4);
 
 
 /**
     @brief 指定した値を使用してインスタンスを初期化します。
-    @param[in] vector4 : instance
+    @param[in] vector4 : Vector4
     @param[] x : 
     @param[] y : 
     @param[] z : 
@@ -1555,14 +1555,14 @@ LN_FLAT_API LNResult LNVector4_Set(LNVector4* vector4, float x, float y, float z
 
 /**
     @brief 単位クォータニオンを設定してインスタンスを初期化します。
-    @param[in] quaternion : instance
+    @param[in] quaternion : Quaternion
 */
 LN_FLAT_API LNResult LNQuaternion_SetZeros(LNQuaternion* quaternion);
 
 
 /**
     @brief 指定した値を使用してインスタンスを初期化します。
-    @param[in] quaternion : instance
+    @param[in] quaternion : Quaternion
     @param[] x : 
     @param[] y : 
     @param[] z : 
@@ -1573,7 +1573,7 @@ LN_FLAT_API LNResult LNQuaternion_Set(LNQuaternion* quaternion, float x, float y
 
 /**
     @brief 回転軸と回転角度を指定してインスタンスを初期化します。
-    @param[in] quaternion : instance
+    @param[in] quaternion : Quaternion
     @param[] axis : 
     @param[] r : 
     @details axis が単位ベクトルでなければ正規化してから計算を行います。
@@ -1586,14 +1586,14 @@ LN_FLAT_API LNResult LNQuaternion_SetFromAxis(LNQuaternion* quaternion, const LN
 
 /**
     @brief 単位行列を設定してインスタンスを初期化します。
-    @param[in] matrix : instance
+    @param[in] matrix : Matrix
 */
 LN_FLAT_API LNResult LNMatrix_SetZeros(LNMatrix* matrix);
 
 
 /**
     @brief 各要素を指定してインスタンスを初期化します。
-    @param[in] matrix : instance
+    @param[in] matrix : Matrix
     @param[] m11 : 
     @param[] m12 : 
     @param[] m13 : 
@@ -1619,14 +1619,14 @@ LN_FLAT_API LNResult LNMatrix_Set(LNMatrix* matrix, float m11, float m12, float 
 
 /**
     @brief すべての要素を 0.0 で初期化します。
-    @param[in] color : instance
+    @param[in] color : Color
 */
 LN_FLAT_API LNResult LNColor_SetZeros(LNColor* color);
 
 
 /**
     @brief 各要素を指定して初期化します。
-    @param[in] color : instance
+    @param[in] color : Color
     @param[] r_ : 
     @param[] g_ : 
     @param[] b_ : 
@@ -1640,14 +1640,14 @@ LN_FLAT_API LNResult LNColor_Set(LNColor* color, float r_, float g_, float b_, f
 
 /**
     @brief すべての要素を 0.0 で初期化します。
-    @param[in] colortone : instance
+    @param[in] colortone : ColorTone
 */
 LN_FLAT_API LNResult LNColorTone_SetZeros(LNColorTone* colortone);
 
 
 /**
     @brief 各要素を指定して初期化します。
-    @param[in] colortone : instance
+    @param[in] colortone : ColorTone
     @param[] r_ : 
     @param[] g_ : 
     @param[] b_ : 
@@ -1661,14 +1661,14 @@ LN_FLAT_API LNResult LNColorTone_Set(LNColorTone* colortone, float r_, float g_,
 
 /**
     @brief すべての要素を 0 で初期化します。
-    @param[in] point : instance
+    @param[in] point : Point
 */
 LN_FLAT_API LNResult LNPoint_SetZeros(LNPoint* point);
 
 
 /**
     @brief 位置を指定して初期化します。
-    @param[in] point : instance
+    @param[in] point : Point
     @param[] x_ : 
     @param[] y_ : 
 */
@@ -1677,7 +1677,7 @@ LN_FLAT_API LNResult LNPoint_Set(LNPoint* point, float x_, float y_);
 
 /**
     @brief 各要素の値を取得します。
-    @param[in] point : instance
+    @param[in] point : Point
     @param[] outX : 
     @param[] outY : 
 */
@@ -1689,14 +1689,14 @@ LN_FLAT_API LNResult LNPoint_Get(const LNPoint* point, float* outX, float* outY)
 
 /**
     @brief すべての要素を 0 で初期化します。
-    @param[in] size : instance
+    @param[in] size : Size
 */
 LN_FLAT_API LNResult LNSize_SetZeros(LNSize* size);
 
 
 /**
     @brief 幅と高さを指定して初期化します。
-    @param[in] size : instance
+    @param[in] size : Size
     @param[] w : 
     @param[] h : 
 */
@@ -1708,14 +1708,14 @@ LN_FLAT_API LNResult LNSize_Set(LNSize* size, float w, float h);
 
 /**
     @brief すべての要素を 0 で初期化します。
-    @param[in] rect : instance
+    @param[in] rect : Rect
 */
 LN_FLAT_API LNResult LNRect_SetZeros(LNRect* rect);
 
 
 /**
     @brief 位置とサイズを指定して初期化します。
-    @param[in] rect : instance
+    @param[in] rect : Rect
     @param[] x : 
     @param[] y : 
     @param[] width : 
@@ -1726,15 +1726,15 @@ LN_FLAT_API LNResult LNRect_Set(LNRect* rect, float x, float y, float width, flo
 
 /**
     @brief 左辺の x 軸の値を取得します。
-    @param[in] rect : instance
-    @param[out] outReturn : instance.
+    @param[in] rect : Rect
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNRect_GetLeft(const LNRect* rect, float* outReturn);
 
 
 /**
     @brief 幅と高さを設定します。
-    @param[in] rect : instance
+    @param[in] rect : Rect
     @param[] size : 
 */
 LN_FLAT_API LNResult LNRect_SetSize(LNRect* rect, const LNSize* size);
@@ -1742,8 +1742,8 @@ LN_FLAT_API LNResult LNRect_SetSize(LNRect* rect, const LNSize* size);
 
 /**
     @brief 幅と高さを取得します。
-    @param[in] rect : instance
-    @param[out] outReturn : instance.
+    @param[in] rect : Rect
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNRect_GetSize(const LNRect* rect, LNSize* outReturn);
 
@@ -1753,14 +1753,14 @@ LN_FLAT_API LNResult LNRect_GetSize(const LNRect* rect, LNSize* outReturn);
 
 /**
     @brief すべての要素を 0 で初期化します。
-    @param[in] thickness : instance
+    @param[in] thickness : Thickness
 */
 LN_FLAT_API LNResult LNThickness_SetZeros(LNThickness* thickness);
 
 
 /**
     @brief 各辺の幅を指定して初期化します。
-    @param[in] thickness : instance
+    @param[in] thickness : Thickness
     @param[] left_ : 
     @param[] top_ : 
     @param[] right_ : 
@@ -1774,14 +1774,14 @@ LN_FLAT_API LNResult LNThickness_Set(LNThickness* thickness, float left_, float 
 
 /**
     @brief すべての要素を 0 で初期化します。
-    @param[in] cornerradius : instance
+    @param[in] cornerradius : CornerRadius
 */
 LN_FLAT_API LNResult LNCornerRadius_SetZeros(LNCornerRadius* cornerradius);
 
 
 /**
     @brief 各要素の値を指定して初期化します。
-    @param[in] cornerradius : instance
+    @param[in] cornerradius : CornerRadius
     @param[] topLeft : 
     @param[] topRight : 
     @param[] bottomRight : 
@@ -1797,20 +1797,20 @@ LN_FLAT_API LNResult LNCornerRadius_Set(LNCornerRadius* cornerradius, float topL
 
 /**
     @brief オブジェクトの参照を開放します。
-    @param[in] object : instance
+    @param[in] object : Object のハンドル
 */
 LN_FLAT_API LNResult LNObject_Release(LNHandle object);
 
 /**
     @brief オブジェクトの参照を取得します。
-    @param[in] object : instance
+    @param[in] object : Object のハンドル
 */
 LN_FLAT_API LNResult LNObject_Retain(LNHandle object);
 
 /**
     @brief オブジェクトの参照カウントを取得します。これは内部的に使用される関数です。
-    @param[in] object : instance
-    @param[out] outReturn : instance.
+    @param[in] object : Object のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNObject_GetReferenceCount(LNHandle object, int* outReturn);
 
@@ -1820,7 +1820,7 @@ LN_FLAT_API LNResult LNObject_OnSerialize_CallOverrideBase(LNHandle object, LNHa
 
 /**
     @brief 
-    @param[in] object : instance
+    @param[in] object : Object のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNObject_SetPrototype_OnSerialize(LNHandle object, LNHandle callback);
@@ -1848,7 +1848,7 @@ LN_FLAT_API LNResult LNEventConnection_OnSerialize_CallOverrideBase(LNHandle obj
 
 /**
     @brief 
-    @param[in] eventconnection : instance
+    @param[in] eventconnection : EventConnection のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNEventConnection_SetPrototype_OnSerialize(LNHandle eventconnection, LNHandle callback);
@@ -1888,21 +1888,21 @@ extern LN_FLAT_API LNSubinstanceId LNPromiseFailureDelegate_GetSubinstanceId(LNH
 
 /**
     @brief init.
-    @param[out] outVariant : instance.
+    @param[out] outVariant : 作成された Variant のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNVariant_Create(LNHandle* outVariant);
 
 /**
     @brief setInt
-    @param[in] variant : instance
+    @param[in] variant : Variant のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNVariant_SetInt(LNHandle variant, int value);
 
 /**
     @brief getInt
-    @param[in] variant : instance
-    @param[out] outReturn : instance.
+    @param[in] variant : Variant のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNVariant_GetInt(LNHandle variant, int* outReturn);
 
@@ -1912,7 +1912,7 @@ LN_FLAT_API LNResult LNVariant_OnSerialize_CallOverrideBase(LNHandle object, LNH
 
 /**
     @brief 
-    @param[in] variant : instance
+    @param[in] variant : Variant のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNVariant_SetPrototype_OnSerialize(LNHandle variant, LNHandle callback);
@@ -2016,14 +2016,14 @@ extern LN_FLAT_API LNSubinstanceId LNZVTestEventHandler2_GetSubinstanceId(LNHand
 
 /**
     @brief 
-    @param[in] zvtestpromise1 : instance
+    @param[in] zvtestpromise1 : ZVTestPromise1 のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNZVTestPromise1_ThenWith(LNHandle zvtestpromise1, LNHandle callback);
 
 /**
     @brief 
-    @param[in] zvtestpromise1 : instance
+    @param[in] zvtestpromise1 : ZVTestPromise1 のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNZVTestPromise1_CatchWith(LNHandle zvtestpromise1, LNHandle callback);
@@ -2046,14 +2046,14 @@ extern LN_FLAT_API LNSubinstanceId LNZVTestPromise1_GetSubinstanceId(LNHandle ha
 
 /**
     @brief 
-    @param[in] zvtestpromise2 : instance
+    @param[in] zvtestpromise2 : ZVTestPromise2 のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNZVTestPromise2_ThenWith(LNHandle zvtestpromise2, LNHandle callback);
 
 /**
     @brief 
-    @param[in] zvtestpromise2 : instance
+    @param[in] zvtestpromise2 : ZVTestPromise2 のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNZVTestPromise2_CatchWith(LNHandle zvtestpromise2, LNHandle callback);
@@ -2076,101 +2076,101 @@ extern LN_FLAT_API LNSubinstanceId LNZVTestPromise2_GetSubinstanceId(LNHandle ha
 
 /**
     @brief init method.
-    @param[out] outZVTestClass1 : instance.
+    @param[out] outZVTestClass1 : 作成された ZVTestClass1 のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNZVTestClass1_Create(LNHandle* outZVTestClass1);
 
 /**
     @brief setTestDelegate1 method.
-    @param[in] zvtestclass1 : instance
+    @param[in] zvtestclass1 : ZVTestClass1 のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNZVTestClass1_SetTestDelegate1(LNHandle zvtestclass1, LNHandle value);
 
 /**
     @brief setTestDelegate2 method.
-    @param[in] zvtestclass1 : instance
+    @param[in] zvtestclass1 : ZVTestClass1 のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNZVTestClass1_SetTestDelegate2(LNHandle zvtestclass1, LNHandle value);
 
 /**
     @brief setTestDelegate3 method.
-    @param[in] zvtestclass1 : instance
+    @param[in] zvtestclass1 : ZVTestClass1 のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNZVTestClass1_SetTestDelegate3(LNHandle zvtestclass1, LNHandle value);
 
 /**
     @brief callTestDelegate1 method.
-    @param[in] zvtestclass1 : instance
+    @param[in] zvtestclass1 : ZVTestClass1 のハンドル
     @param[] a : 
 */
 LN_FLAT_API LNResult LNZVTestClass1_CallTestDelegate1(LNHandle zvtestclass1, int a);
 
 /**
     @brief callTestDelegate2 method.
-    @param[in] zvtestclass1 : instance
+    @param[in] zvtestclass1 : ZVTestClass1 のハンドル
     @param[] a : 
     @param[] b : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNZVTestClass1_CallTestDelegate2(LNHandle zvtestclass1, int a, int b, int* outReturn);
 
 /**
     @brief callTestDelegate3 method. (create object in internal)
-    @param[in] zvtestclass1 : instance
+    @param[in] zvtestclass1 : ZVTestClass1 のハンドル
 */
 LN_FLAT_API LNResult LNZVTestClass1_CallTestDelegate3(LNHandle zvtestclass1);
 
 /**
     @brief Promise test method. (static)
     @param[] filePath : 
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNZVTestClass1_LoadAsync(const LNChar* filePath, LNHandle* outReturn);
 LN_FLAT_API LNResult LNZVTestClass1_LoadAsyncA(const char* filePath, LNHandle* outReturn);
 
 /**
     @brief Promise test method. (instance)
-    @param[in] zvtestclass1 : instance
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[in] zvtestclass1 : ZVTestClass1 のハンドル
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNZVTestClass1_ExecuteAsync(LNHandle zvtestclass1, LNHandle* outReturn);
 
 /**
     @brief Promise test method.
-    @param[in] zvtestclass1 : instance
-    @param[out] outReturn : instance.
+    @param[in] zvtestclass1 : ZVTestClass1 のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNZVTestClass1_GetFilePath(LNHandle zvtestclass1, const LNChar** outReturn);
 LN_FLAT_API LNResult LNZVTestClass1_GetFilePathA(LNHandle zvtestclass1, const char** outReturn);
 
 /**
     @brief connectOnEvent1 method.
-    @param[in] zvtestclass1 : instance
+    @param[in] zvtestclass1 : ZVTestClass1 のハンドル
     @param[] handler :  (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNZVTestClass1_ConnectOnEvent1(LNHandle zvtestclass1, LNHandle handler, LNHandle* outReturn);
 
 /**
     @brief raiseEvent1 method.
-    @param[in] zvtestclass1 : instance
+    @param[in] zvtestclass1 : ZVTestClass1 のハンドル
 */
 LN_FLAT_API LNResult LNZVTestClass1_RaiseEvent1(LNHandle zvtestclass1);
 
 /**
     @brief connectOnEvent2 method.
-    @param[in] zvtestclass1 : instance
+    @param[in] zvtestclass1 : ZVTestClass1 のハンドル
     @param[] handler :  (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNZVTestClass1_ConnectOnEvent2(LNHandle zvtestclass1, LNHandle handler, LNHandle* outReturn);
 
 /**
     @brief raiseEvent2 method.
-    @param[in] zvtestclass1 : instance
+    @param[in] zvtestclass1 : ZVTestClass1 のハンドル
 */
 LN_FLAT_API LNResult LNZVTestClass1_RaiseEvent2(LNHandle zvtestclass1);
 
@@ -2180,7 +2180,7 @@ LN_FLAT_API LNResult LNZVTestClass1_OnSerialize_CallOverrideBase(LNHandle object
 
 /**
     @brief 
-    @param[in] zvtestclass1 : instance
+    @param[in] zvtestclass1 : ZVTestClass1 のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNZVTestClass1_SetPrototype_OnSerialize(LNHandle zvtestclass1, LNHandle callback);
@@ -2204,21 +2204,21 @@ extern LN_FLAT_API LNSubinstanceId LNZVTestClass1_GetSubinstanceId(LNHandle hand
 
 /**
     @brief init method.
-    @param[out] outZVTestEventArgs1 : instance.
+    @param[out] outZVTestEventArgs1 : 作成された ZVTestEventArgs1 のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNZVTestEventArgs1_Create(LNHandle* outZVTestEventArgs1);
 
 /**
     @brief init method.
     @param[] v : 
-    @param[out] outZVTestEventArgs1 : instance.
+    @param[out] outZVTestEventArgs1 : 作成された ZVTestEventArgs1 のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNZVTestEventArgs1_CreateWithValue(int v, LNHandle* outZVTestEventArgs1);
 
 /**
     @brief value method.
-    @param[in] zvtesteventargs1 : instance
-    @param[out] outReturn : instance.
+    @param[in] zvtesteventargs1 : ZVTestEventArgs1 のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNZVTestEventArgs1_GetValue(LNHandle zvtesteventargs1, int* outReturn);
 
@@ -2228,7 +2228,7 @@ LN_FLAT_API LNResult LNZVTestEventArgs1_OnSerialize_CallOverrideBase(LNHandle ob
 
 /**
     @brief 
-    @param[in] zvtesteventargs1 : instance
+    @param[in] zvtesteventargs1 : ZVTestEventArgs1 のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNZVTestEventArgs1_SetPrototype_OnSerialize(LNHandle zvtesteventargs1, LNHandle callback);
@@ -2280,7 +2280,7 @@ LN_FLAT_API LNResult LNSerializer2_OnSerialize_CallOverrideBase(LNHandle object,
 
 /**
     @brief 
-    @param[in] serializer2 : instance
+    @param[in] serializer2 : Serializer2 のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNSerializer2_SetPrototype_OnSerialize(LNHandle serializer2, LNHandle callback);
@@ -2308,7 +2308,7 @@ LN_FLAT_API LNResult LNAssetObject_OnSerialize_CallOverrideBase(LNHandle object,
 
 /**
     @brief 
-    @param[in] assetobject : instance
+    @param[in] assetobject : AssetObject のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNAssetObject_SetPrototype_OnSerialize(LNHandle assetobject, LNHandle callback);
@@ -2336,7 +2336,7 @@ LN_FLAT_API LNResult LNAssetImportSettings_OnSerialize_CallOverrideBase(LNHandle
 
 /**
     @brief 
-    @param[in] assetimportsettings : instance
+    @param[in] assetimportsettings : AssetImportSettings のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNAssetImportSettings_SetPrototype_OnSerialize(LNHandle assetimportsettings, LNHandle callback);
@@ -2361,14 +2361,14 @@ extern LN_FLAT_API LNSubinstanceId LNAssetImportSettings_GetSubinstanceId(LNHand
 /**
     @brief init
     @param[] target : 
-    @param[out] outAssetModel : instance.
+    @param[out] outAssetModel : 作成された AssetModel のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNAssetModel_Create(LNHandle target, LNHandle* outAssetModel);
 
 /**
     @brief target
-    @param[in] assetmodel : instance
-    @param[out] outReturn : instance.
+    @param[in] assetmodel : AssetModel のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNAssetModel_Target(LNHandle assetmodel, LNHandle* outReturn);
 
@@ -2378,7 +2378,7 @@ LN_FLAT_API LNResult LNAssetModel_OnSerialize_CallOverrideBase(LNHandle object, 
 
 /**
     @brief 
-    @param[in] assetmodel : instance
+    @param[in] assetmodel : AssetModel のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNAssetModel_SetPrototype_OnSerialize(LNHandle assetmodel, LNHandle callback);
@@ -2411,7 +2411,7 @@ LN_FLAT_API LNResult LNAssets_SaveAssetToLocalFileA(LNHandle asset, const char* 
 /**
     @brief Internal
     @param[] filePath : 
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNAssets_LoadAssetFromLocalFile(const LNChar* filePath, LNHandle* outReturn);
 LN_FLAT_API LNResult LNAssets_LoadAssetFromLocalFileA(const char* filePath, LNHandle* outReturn);
@@ -2419,7 +2419,7 @@ LN_FLAT_API LNResult LNAssets_LoadAssetFromLocalFileA(const char* filePath, LNHa
 /**
     @brief 指定したアセットファイルを読み込み、オブジェクト生成します。
     @param[] filePath : 
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
     @details ファイルの拡張子は .lnasset です。ただし、filePath に指定する値は拡張子を省略可能です。
 */
 LN_FLAT_API LNResult LNAssets_LoadAsset(const LNChar* filePath, LNHandle* outReturn);
@@ -2438,7 +2438,7 @@ LN_FLAT_API LNResult LNAssets_ReloadAssetA(const char* filePath, LNHandle obj);
     @brief readAllText
     @param[] filePath : 
     @param[] encoding : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNAssets_ReadAllText(const LNChar* filePath, LNEncodingType encoding, const LNChar** outReturn);
 LN_FLAT_API LNResult LNAssets_ReadAllTextA(const char* filePath, LNEncodingType encoding, const char** outReturn);
@@ -2449,49 +2449,49 @@ LN_FLAT_API LNResult LNAssets_ReadAllTextA(const char* filePath, LNEncodingType 
 
 /**
     @brief この Sound の音量を設定します。
-    @param[in] sound : instance
+    @param[in] sound : Sound のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNSound_SetVolume(LNHandle sound, float value);
 
 /**
     @brief この Sound の音量を取得します。
-    @param[in] sound : instance
-    @param[out] outReturn : instance.
+    @param[in] sound : Sound のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNSound_GetVolume(LNHandle sound, float* outReturn);
 
 /**
     @brief この Sound のピッチ (音高) を設定します。
-    @param[in] sound : instance
+    @param[in] sound : Sound のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNSound_SetPitch(LNHandle sound, float value);
 
 /**
     @brief この Sound のピッチ (音高) を取得します。
-    @param[in] sound : instance
-    @param[out] outReturn : instance.
+    @param[in] sound : Sound のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNSound_GetPitch(LNHandle sound, float* outReturn);
 
 /**
     @brief ループ再生の有無を設定します。
-    @param[in] sound : instance
+    @param[in] sound : Sound のハンドル
     @param[] enabled : 
 */
 LN_FLAT_API LNResult LNSound_SetLoopEnabled(LNHandle sound, LNBool enabled);
 
 /**
     @brief ループ再生が有効かを確認します。
-    @param[in] sound : instance
-    @param[out] outReturn : instance.
+    @param[in] sound : Sound のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNSound_IsLoopEnabled(LNHandle sound, LNBool* outReturn);
 
 /**
     @brief ループ範囲を設定します。
-    @param[in] sound : instance
+    @param[in] sound : Sound のハンドル
     @param[] begin : 
     @param[] length : 
 */
@@ -2499,31 +2499,31 @@ LN_FLAT_API LNResult LNSound_SetLoopRange(LNHandle sound, uint32_t begin, uint32
 
 /**
     @brief この Sound の再生を開始します。
-    @param[in] sound : instance
+    @param[in] sound : Sound のハンドル
 */
 LN_FLAT_API LNResult LNSound_Play(LNHandle sound);
 
 /**
     @brief この Sound の再生を停止します。
-    @param[in] sound : instance
+    @param[in] sound : Sound のハンドル
 */
 LN_FLAT_API LNResult LNSound_Stop(LNHandle sound);
 
 /**
     @brief この Sound の再生を一時停止します。
-    @param[in] sound : instance
+    @param[in] sound : Sound のハンドル
 */
 LN_FLAT_API LNResult LNSound_Pause(LNHandle sound);
 
 /**
     @brief 一時停止中の再生を再開します。
-    @param[in] sound : instance
+    @param[in] sound : Sound のハンドル
 */
 LN_FLAT_API LNResult LNSound_Resume(LNHandle sound);
 
 /**
     @brief 音量のフェードを開始します。
-    @param[in] sound : instance
+    @param[in] sound : Sound のハンドル
     @param[] targetVolume : 
     @param[] time : 
     @param[] behavior : 
@@ -2536,7 +2536,7 @@ LN_FLAT_API LNResult LNSound_OnSerialize_CallOverrideBase(LNHandle object, LNHan
 
 /**
     @brief 
-    @param[in] sound : instance
+    @param[in] sound : Sound のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNSound_SetPrototype_OnSerialize(LNHandle sound, LNHandle callback);
@@ -2651,14 +2651,14 @@ extern LN_FLAT_API LNSubinstanceId LNTexture2DDelegate_GetSubinstanceId(LNHandle
 
 /**
     @brief 
-    @param[in] texture2dpromise : instance
+    @param[in] texture2dpromise : Texture2DPromise のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNTexture2DPromise_ThenWith(LNHandle texture2dpromise, LNHandle callback);
 
 /**
     @brief 
-    @param[in] texture2dpromise : instance
+    @param[in] texture2dpromise : Texture2DPromise のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNTexture2DPromise_CatchWith(LNHandle texture2dpromise, LNHandle callback);
@@ -2681,7 +2681,7 @@ extern LN_FLAT_API LNSubinstanceId LNTexture2DPromise_GetSubinstanceId(LNHandle 
 
 /**
     @brief activeGraphicsAPI
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNGraphics_GetActiveGraphicsAPI(LNGraphicsAPI* outReturn);
 
@@ -2695,7 +2695,7 @@ LN_FLAT_API LNResult LNTexture_OnSerialize_CallOverrideBase(LNHandle object, LNH
 
 /**
     @brief 
-    @param[in] texture : instance
+    @param[in] texture : Texture のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNTexture_SetPrototype_OnSerialize(LNHandle texture, LNHandle callback);
@@ -2721,7 +2721,7 @@ extern LN_FLAT_API LNSubinstanceId LNTexture_GetSubinstanceId(LNHandle handle);
     @brief テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
     @param[] width : 
     @param[] height : 
-    @param[out] outTexture2D : instance.
+    @param[out] outTexture2D : 作成された Texture2D のハンドルを格納する変数。
     @return 作成されたテクスチャ
 */
 LN_FLAT_API LNResult LNTexture2D_Create(int width, int height, LNHandle* outTexture2D);
@@ -2731,14 +2731,14 @@ LN_FLAT_API LNResult LNTexture2D_Create(int width, int height, LNHandle* outText
     @param[] width : 
     @param[] height : 
     @param[] format : 
-    @param[out] outTexture2D : instance.
+    @param[out] outTexture2D : 作成された Texture2D のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNTexture2D_CreateWithFormat(int width, int height, LNTextureFormat format, LNHandle* outTexture2D);
 
 /**
     @brief アセットからテクスチャを読み込みます。
     @param[] filePath : 
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
     @details サポートしているフォーマットは次の通りです。PNG(.png), JPG(.jpg), TGA(.tga), BMP(.bmp), GIF(.gif)
 */
 LN_FLAT_API LNResult LNTexture2D_Load(const LNChar* filePath, LNHandle* outReturn);
@@ -2747,7 +2747,7 @@ LN_FLAT_API LNResult LNTexture2D_LoadA(const char* filePath, LNHandle* outReturn
 /**
     @brief loadEmoji
     @param[] code : 
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNTexture2D_LoadEmoji(const LNChar* code, LNHandle* outReturn);
 LN_FLAT_API LNResult LNTexture2D_LoadEmojiA(const char* code, LNHandle* outReturn);
@@ -2758,7 +2758,7 @@ LN_FLAT_API LNResult LNTexture2D_OnSerialize_CallOverrideBase(LNHandle object, L
 
 /**
     @brief 
-    @param[in] texture2d : instance
+    @param[in] texture2d : Texture2D のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNTexture2D_SetPrototype_OnSerialize(LNHandle texture2d, LNHandle callback);
@@ -2784,14 +2784,14 @@ extern LN_FLAT_API LNSubinstanceId LNTexture2D_GetSubinstanceId(LNHandle handle)
     @brief load
     @param[] filePath : 
     @param[] settings : 
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNShader_Load(const LNChar* filePath, LNHandle settings, LNHandle* outReturn);
 LN_FLAT_API LNResult LNShader_LoadA(const char* filePath, LNHandle settings, LNHandle* outReturn);
 
 /**
     @brief 浮動小数点値を設定します。
-    @param[in] shader : instance
+    @param[in] shader : Shader のハンドル
     @param[] parameterName : 
     @param[] value : 
 */
@@ -2800,7 +2800,7 @@ LN_FLAT_API LNResult LNShader_SetFloatA(LNHandle shader, const char* parameterNa
 
 /**
     @brief ベクトル値を設定します。
-    @param[in] shader : instance
+    @param[in] shader : Shader のハンドル
     @param[] parameterName : 
     @param[] value : 
 */
@@ -2809,7 +2809,7 @@ LN_FLAT_API LNResult LNShader_SetVector3A(LNHandle shader, const char* parameter
 
 /**
     @brief ベクトル値を設定します。
-    @param[in] shader : instance
+    @param[in] shader : Shader のハンドル
     @param[] parameterName : 
     @param[] value : 
 */
@@ -2818,7 +2818,7 @@ LN_FLAT_API LNResult LNShader_SetVector4A(LNHandle shader, const char* parameter
 
 /**
     @brief setTexture
-    @param[in] shader : instance
+    @param[in] shader : Shader のハンドル
     @param[] parameterName : 
     @param[] value : 
 */
@@ -2831,7 +2831,7 @@ LN_FLAT_API LNResult LNShader_OnSerialize_CallOverrideBase(LNHandle object, LNHa
 
 /**
     @brief 
-    @param[in] shader : instance
+    @param[in] shader : Shader のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNShader_SetPrototype_OnSerialize(LNHandle shader, LNHandle callback);
@@ -2859,7 +2859,7 @@ LN_FLAT_API LNResult LNRenderView_OnSerialize_CallOverrideBase(LNHandle object, 
 
 /**
     @brief 
-    @param[in] renderview : instance
+    @param[in] renderview : RenderView のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNRenderView_SetPrototype_OnSerialize(LNHandle renderview, LNHandle callback);
@@ -2883,77 +2883,77 @@ extern LN_FLAT_API LNSubinstanceId LNRenderView_GetSubinstanceId(LNHandle handle
 
 /**
     @brief init
-    @param[out] outMaterial : instance.
+    @param[out] outMaterial : 作成された Material のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNMaterial_Create(LNHandle* outMaterial);
 
 /**
     @brief mainTexture
-    @param[in] material : instance
+    @param[in] material : Material のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle value);
 
 /**
     @brief mainTexture
-    @param[in] material : instance
-    @param[out] outReturn : instance.
+    @param[in] material : Material のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMaterial_GetMainTexture(LNHandle material, LNHandle* outReturn);
 
 /**
     @brief setColor
-    @param[in] material : instance
+    @param[in] material : Material のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNMaterial_SetColor(LNHandle material, const LNColor* value);
 
 /**
     @brief setRoughness
-    @param[in] material : instance
+    @param[in] material : Material のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNMaterial_SetRoughness(LNHandle material, float value);
 
 /**
     @brief setMetallic
-    @param[in] material : instance
+    @param[in] material : Material のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNMaterial_SetMetallic(LNHandle material, float value);
 
 /**
     @brief setEmissive
-    @param[in] material : instance
+    @param[in] material : Material のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNMaterial_SetEmissive(LNHandle material, const LNColor* value);
 
 /**
     @brief setShadingModel
-    @param[in] material : instance
+    @param[in] material : Material のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNMaterial_SetShadingModel(LNHandle material, LNShadingModel value);
 
 /**
     @brief shadingModel
-    @param[in] material : instance
-    @param[out] outReturn : instance.
+    @param[in] material : Material のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMaterial_GetShadingModel(LNHandle material, LNShadingModel* outReturn);
 
 /**
     @brief shader
-    @param[in] material : instance
+    @param[in] material : Material のハンドル
     @param[] shader : 
 */
 LN_FLAT_API LNResult LNMaterial_SetShader(LNHandle material, LNHandle shader);
 
 /**
     @brief shader
-    @param[in] material : instance
-    @param[out] outReturn : instance.
+    @param[in] material : Material のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMaterial_GetShader(LNHandle material, LNHandle* outReturn);
 
@@ -2963,7 +2963,7 @@ LN_FLAT_API LNResult LNMaterial_OnSerialize_CallOverrideBase(LNHandle object, LN
 
 /**
     @brief 
-    @param[in] material : instance
+    @param[in] material : Material のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNMaterial_SetPrototype_OnSerialize(LNHandle material, LNHandle callback);
@@ -2987,15 +2987,15 @@ extern LN_FLAT_API LNSubinstanceId LNMaterial_GetSubinstanceId(LNHandle handle);
 
 /**
     @brief 可視状態を設定します。false の場合、このメッシュの描画は行われません。(default: true)
-    @param[in] meshnode : instance
+    @param[in] meshnode : MeshNode のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNMeshNode_SetVisible(LNHandle meshnode, LNBool value);
 
 /**
     @brief 可視状態を取得します。
-    @param[in] meshnode : instance
-    @param[out] outReturn : instance.
+    @param[in] meshnode : MeshNode のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMeshNode_IsVisible(LNHandle meshnode, LNBool* outReturn);
 
@@ -3005,7 +3005,7 @@ LN_FLAT_API LNResult LNMeshNode_OnSerialize_CallOverrideBase(LNHandle object, LN
 
 /**
     @brief 
-    @param[in] meshnode : instance
+    @param[in] meshnode : MeshNode のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNMeshNode_SetPrototype_OnSerialize(LNHandle meshnode, LNHandle callback);
@@ -3029,15 +3029,15 @@ extern LN_FLAT_API LNSubinstanceId LNMeshNode_GetSubinstanceId(LNHandle handle);
 
 /**
     @brief アニメーションクリップを追加します。 (レイヤー0 へ追加されます)
-    @param[in] animationcontroller : instance
+    @param[in] animationcontroller : AnimationController のハンドル
     @param[] animationClip : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNAnimationController_AddClip(LNHandle animationcontroller, LNHandle animationClip, LNHandle* outReturn);
 
 /**
     @brief play
-    @param[in] animationcontroller : instance
+    @param[in] animationcontroller : AnimationController のハンドル
     @param[] state : 
     @param[] duration : 
 */
@@ -3049,7 +3049,7 @@ LN_FLAT_API LNResult LNAnimationController_OnSerialize_CallOverrideBase(LNHandle
 
 /**
     @brief 
-    @param[in] animationcontroller : instance
+    @param[in] animationcontroller : AnimationController のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNAnimationController_SetPrototype_OnSerialize(LNHandle animationcontroller, LNHandle callback);
@@ -3075,48 +3075,48 @@ extern LN_FLAT_API LNSubinstanceId LNAnimationController_GetSubinstanceId(LNHand
     @brief load
     @param[] filePath : 
     @param[] settings : 
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNMeshModel_Load(const LNChar* filePath, LNHandle settings, LNHandle* outReturn);
 LN_FLAT_API LNResult LNMeshModel_LoadA(const char* filePath, LNHandle settings, LNHandle* outReturn);
 
 /**
     @brief findNode
-    @param[in] meshmodel : instance
+    @param[in] meshmodel : MeshModel のハンドル
     @param[] name : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMeshModel_FindNode(LNHandle meshmodel, const LNChar* name, LNHandle* outReturn);
 LN_FLAT_API LNResult LNMeshModel_FindNodeA(LNHandle meshmodel, const char* name, LNHandle* outReturn);
 
 /**
     @brief findMaterial
-    @param[in] meshmodel : instance
+    @param[in] meshmodel : MeshModel のハンドル
     @param[] name : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMeshModel_FindMaterial(LNHandle meshmodel, const LNChar* name, LNHandle* outReturn);
 LN_FLAT_API LNResult LNMeshModel_FindMaterialA(LNHandle meshmodel, const char* name, LNHandle* outReturn);
 
 /**
     @brief materialCount
-    @param[in] meshmodel : instance
-    @param[out] outReturn : instance.
+    @param[in] meshmodel : MeshModel のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMeshModel_MaterialCount(LNHandle meshmodel, int* outReturn);
 
 /**
     @brief load
-    @param[in] meshmodel : instance
+    @param[in] meshmodel : MeshModel のハンドル
     @param[] index : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMeshModel_Material(LNHandle meshmodel, int index, LNHandle* outReturn);
 
 /**
     @brief animationController
-    @param[in] meshmodel : instance
-    @param[out] outReturn : instance.
+    @param[in] meshmodel : MeshModel のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMeshModel_GetAnimationController(LNHandle meshmodel, LNHandle* outReturn);
 
@@ -3126,7 +3126,7 @@ LN_FLAT_API LNResult LNMeshModel_OnSerialize_CallOverrideBase(LNHandle object, L
 
 /**
     @brief 
-    @param[in] meshmodel : instance
+    @param[in] meshmodel : MeshModel のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNMeshModel_SetPrototype_OnSerialize(LNHandle meshmodel, LNHandle callback);
@@ -3150,7 +3150,7 @@ extern LN_FLAT_API LNSubinstanceId LNMeshModel_GetSubinstanceId(LNHandle handle)
 
 /**
     @brief init
-    @param[out] outMeshImportSettings : instance.
+    @param[out] outMeshImportSettings : 作成された MeshImportSettings のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNMeshImportSettings_Create(LNHandle* outMeshImportSettings);
 
@@ -3160,7 +3160,7 @@ LN_FLAT_API LNResult LNMeshImportSettings_OnSerialize_CallOverrideBase(LNHandle 
 
 /**
     @brief 
-    @param[in] meshimportsettings : instance
+    @param[in] meshimportsettings : MeshImportSettings のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNMeshImportSettings_SetPrototype_OnSerialize(LNHandle meshimportsettings, LNHandle callback);
@@ -3188,7 +3188,7 @@ LN_FLAT_API LNResult LNSkinnedMeshModel_OnSerialize_CallOverrideBase(LNHandle ob
 
 /**
     @brief 
-    @param[in] skinnedmeshmodel : instance
+    @param[in] skinnedmeshmodel : SkinnedMeshModel のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNSkinnedMeshModel_SetPrototype_OnSerialize(LNHandle skinnedmeshmodel, LNHandle callback);
@@ -3216,7 +3216,7 @@ LN_FLAT_API LNResult LNCollisionShape_OnSerialize_CallOverrideBase(LNHandle obje
 
 /**
     @brief 
-    @param[in] collisionshape : instance
+    @param[in] collisionshape : CollisionShape のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNCollisionShape_SetPrototype_OnSerialize(LNHandle collisionshape, LNHandle callback);
@@ -3241,7 +3241,7 @@ extern LN_FLAT_API LNSubinstanceId LNCollisionShape_GetSubinstanceId(LNHandle ha
 /**
     @brief init
     @param[] size : 
-    @param[out] outBoxCollisionShape : instance.
+    @param[out] outBoxCollisionShape : 作成された BoxCollisionShape のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNBoxCollisionShape_Create(const LNVector3* size, LNHandle* outBoxCollisionShape);
 
@@ -3250,7 +3250,7 @@ LN_FLAT_API LNResult LNBoxCollisionShape_Create(const LNVector3* size, LNHandle*
     @param[] width : 
     @param[] height : 
     @param[] depth : 
-    @param[out] outBoxCollisionShape : instance.
+    @param[out] outBoxCollisionShape : 作成された BoxCollisionShape のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNBoxCollisionShape_CreateWHD(float width, float height, float depth, LNHandle* outBoxCollisionShape);
 
@@ -3260,7 +3260,7 @@ LN_FLAT_API LNResult LNBoxCollisionShape_OnSerialize_CallOverrideBase(LNHandle o
 
 /**
     @brief 
-    @param[in] boxcollisionshape : instance
+    @param[in] boxcollisionshape : BoxCollisionShape のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNBoxCollisionShape_SetPrototype_OnSerialize(LNHandle boxcollisionshape, LNHandle callback);
@@ -3284,9 +3284,9 @@ extern LN_FLAT_API LNSubinstanceId LNBoxCollisionShape_GetSubinstanceId(LNHandle
 
 /**
     @brief 指定した時間における値を評価します。
-    @param[in] animationcurve : instance
+    @param[in] animationcurve : AnimationCurve のハンドル
     @param[] time : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNAnimationCurve_Evaluate(LNHandle animationcurve, float time, float* outReturn);
 
@@ -3296,7 +3296,7 @@ LN_FLAT_API LNResult LNAnimationCurve_OnSerialize_CallOverrideBase(LNHandle obje
 
 /**
     @brief 
-    @param[in] animationcurve : instance
+    @param[in] animationcurve : AnimationCurve のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNAnimationCurve_SetPrototype_OnSerialize(LNHandle animationcurve, LNHandle callback);
@@ -3320,13 +3320,13 @@ extern LN_FLAT_API LNSubinstanceId LNAnimationCurve_GetSubinstanceId(LNHandle ha
 
 /**
     @brief init
-    @param[out] outKeyFrameAnimationCurve : instance.
+    @param[out] outKeyFrameAnimationCurve : 作成された KeyFrameAnimationCurve のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNKeyFrameAnimationCurve_Create(LNHandle* outKeyFrameAnimationCurve);
 
 /**
     @brief キーフレームを追加します。
-    @param[in] keyframeanimationcurve : instance
+    @param[in] keyframeanimationcurve : KeyFrameAnimationCurve のハンドル
     @param[] time : 
     @param[] value : 
     @param[] rightTangentMode : 
@@ -3341,7 +3341,7 @@ LN_FLAT_API LNResult LNKeyFrameAnimationCurve_OnSerialize_CallOverrideBase(LNHan
 
 /**
     @brief 
-    @param[in] keyframeanimationcurve : instance
+    @param[in] keyframeanimationcurve : KeyFrameAnimationCurve のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNKeyFrameAnimationCurve_SetPrototype_OnSerialize(LNHandle keyframeanimationcurve, LNHandle callback);
@@ -3366,36 +3366,36 @@ extern LN_FLAT_API LNSubinstanceId LNKeyFrameAnimationCurve_GetSubinstanceId(LNH
 /**
     @brief load
     @param[] filePath : 
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNAnimationClip_Load(const LNChar* filePath, LNHandle* outReturn);
 LN_FLAT_API LNResult LNAnimationClip_LoadA(const char* filePath, LNHandle* outReturn);
 
 /**
     @brief アニメーションの繰り返しの動作を取得します。(default: Loop)
-    @param[in] animationclip : instance
+    @param[in] animationclip : AnimationClip のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNAnimationClip_SetWrapMode(LNHandle animationclip, LNAnimationWrapMode value);
 
 /**
     @brief アニメーションの繰り返しの動作を取得します。
-    @param[in] animationclip : instance
-    @param[out] outReturn : instance.
+    @param[in] animationclip : AnimationClip のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNAnimationClip_GetWrapMode(LNHandle animationclip, LNAnimationWrapMode* outReturn);
 
 /**
     @brief 階層構造を持つアニメーションデータの動作モード。(default: AllowTranslationOnlyRoot)
-    @param[in] animationclip : instance
+    @param[in] animationclip : AnimationClip のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNAnimationClip_SetHierarchicalAnimationMode(LNHandle animationclip, LNHierarchicalAnimationMode value);
 
 /**
     @brief 階層構造を持つアニメーションデータの動作モード。
-    @param[in] animationclip : instance
-    @param[out] outReturn : instance.
+    @param[in] animationclip : AnimationClip のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNAnimationClip_GetHierarchicalAnimationMode(LNHandle animationclip, LNHierarchicalAnimationMode* outReturn);
 
@@ -3405,7 +3405,7 @@ LN_FLAT_API LNResult LNAnimationClip_OnSerialize_CallOverrideBase(LNHandle objec
 
 /**
     @brief 
-    @param[in] animationclip : instance
+    @param[in] animationclip : AnimationClip のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNAnimationClip_SetPrototype_OnSerialize(LNHandle animationclip, LNHandle callback);
@@ -3433,7 +3433,7 @@ LN_FLAT_API LNResult LNAnimationState_OnSerialize_CallOverrideBase(LNHandle obje
 
 /**
     @brief 
-    @param[in] animationstate : instance
+    @param[in] animationstate : AnimationState のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNAnimationState_SetPrototype_OnSerialize(LNHandle animationstate, LNHandle callback);
@@ -3461,7 +3461,7 @@ LN_FLAT_API LNResult LNEffectResource_OnSerialize_CallOverrideBase(LNHandle obje
 
 /**
     @brief 
-    @param[in] effectresource : instance
+    @param[in] effectresource : EffectResource のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNEffectResource_SetPrototype_OnSerialize(LNHandle effectresource, LNHandle callback);
@@ -3485,90 +3485,90 @@ extern LN_FLAT_API LNSubinstanceId LNEffectResource_GetSubinstanceId(LNHandle ha
 
 /**
     @brief init
-    @param[out] outParticleEmitterModel : instance.
+    @param[out] outParticleEmitterModel : 作成された ParticleEmitterModel のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_Create(LNHandle* outParticleEmitterModel);
 
 /**
     @brief 同時に表示できるパーティクルの最大数を設定します。(default: 100)
-    @param[in] particleemittermodel : instance
+    @param[in] particleemittermodel : ParticleEmitterModel のハンドル
     @param[] count : 
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_SetMaxParticles(LNHandle particleemittermodel, int count);
 
 /**
     @brief 1秒間に放出するパーティクルの数を設定します。(default: 1)
-    @param[in] particleemittermodel : instance
+    @param[in] particleemittermodel : ParticleEmitterModel のハンドル
     @param[] rate : 
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_SetSpawnRate(LNHandle particleemittermodel, float rate);
 
 /**
     @brief パーティクルの生存時間を設定します。(default: 5.0)
-    @param[in] particleemittermodel : instance
+    @param[in] particleemittermodel : ParticleEmitterModel のハンドル
     @param[] time : 
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_SetLifeTime(LNHandle particleemittermodel, float time);
 
 /**
     @brief setupBoxShape
-    @param[in] particleemittermodel : instance
+    @param[in] particleemittermodel : ParticleEmitterModel のハンドル
     @param[] size : 
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_SetupBoxShape(LNHandle particleemittermodel, const LNVector3* size);
 
 /**
     @brief (default: 1.0)
-    @param[in] particleemittermodel : instance
+    @param[in] particleemittermodel : ParticleEmitterModel のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_SetSize(LNHandle particleemittermodel, float value);
 
 /**
     @brief 
-    @param[in] particleemittermodel : instance
+    @param[in] particleemittermodel : ParticleEmitterModel のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_SetSizeVelocity(LNHandle particleemittermodel, float value);
 
 /**
     @brief 
-    @param[in] particleemittermodel : instance
+    @param[in] particleemittermodel : ParticleEmitterModel のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_SetSizeAcceleration(LNHandle particleemittermodel, float value);
 
 /**
     @brief (default: 0)
-    @param[in] particleemittermodel : instance
+    @param[in] particleemittermodel : ParticleEmitterModel のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_SetForwardVelocityMin(LNHandle particleemittermodel, float value);
 
 /**
     @brief (default: 0)
-    @param[in] particleemittermodel : instance
+    @param[in] particleemittermodel : ParticleEmitterModel のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_SetForwardVelocityMax(LNHandle particleemittermodel, float value);
 
 /**
     @brief 進行方向に対するスケール値。通常、Z軸。ParticleGeometryDirection::ToView では Y scale (default: 1.0)
-    @param[in] particleemittermodel : instance
+    @param[in] particleemittermodel : ParticleEmitterModel のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_SetForwardScale(LNHandle particleemittermodel, float value);
 
 /**
     @brief (default: ToView)
-    @param[in] particleemittermodel : instance
+    @param[in] particleemittermodel : ParticleEmitterModel のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_SetGeometryDirection(LNHandle particleemittermodel, LNParticleGeometryDirection value);
 
 /**
     @brief setupSpriteModule
-    @param[in] particleemittermodel : instance
+    @param[in] particleemittermodel : ParticleEmitterModel のハンドル
     @param[] material : 
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_SetupSpriteModule(LNHandle particleemittermodel, LNHandle material);
@@ -3579,7 +3579,7 @@ LN_FLAT_API LNResult LNParticleEmitterModel_OnSerialize_CallOverrideBase(LNHandl
 
 /**
     @brief 
-    @param[in] particleemittermodel : instance
+    @param[in] particleemittermodel : ParticleEmitterModel のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNParticleEmitterModel_SetPrototype_OnSerialize(LNHandle particleemittermodel, LNHandle callback);
@@ -3603,27 +3603,27 @@ extern LN_FLAT_API LNSubinstanceId LNParticleEmitterModel_GetSubinstanceId(LNHan
 
 /**
     @brief init
-    @param[out] outParticleModel : instance.
+    @param[out] outParticleModel : 作成された ParticleModel のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNParticleModel_Create(LNHandle* outParticleModel);
 
 /**
     @brief setLoop
-    @param[in] particlemodel : instance
+    @param[in] particlemodel : ParticleModel のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNParticleModel_SetLoop(LNHandle particlemodel, LNBool value);
 
 /**
     @brief setLoop
-    @param[in] particlemodel : instance
-    @param[out] outReturn : instance.
+    @param[in] particlemodel : ParticleModel のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNParticleModel_IsLoop(LNHandle particlemodel, LNBool* outReturn);
 
 /**
     @brief setLoop
-    @param[in] particlemodel : instance
+    @param[in] particlemodel : ParticleModel のハンドル
     @param[] emitter : 
 */
 LN_FLAT_API LNResult LNParticleModel_AddEmitter(LNHandle particlemodel, LNHandle emitter);
@@ -3634,7 +3634,7 @@ LN_FLAT_API LNResult LNParticleModel_OnSerialize_CallOverrideBase(LNHandle objec
 
 /**
     @brief 
-    @param[in] particlemodel : instance
+    @param[in] particlemodel : ParticleModel のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNParticleModel_SetPrototype_OnSerialize(LNHandle particlemodel, LNHandle callback);
@@ -3662,7 +3662,7 @@ LN_FLAT_API LNResult LNComponent_OnSerialize_CallOverrideBase(LNHandle object, L
 
 /**
     @brief 
-    @param[in] component : instance
+    @param[in] component : Component のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNComponent_SetPrototype_OnSerialize(LNHandle component, LNHandle callback);
@@ -3686,15 +3686,15 @@ extern LN_FLAT_API LNSubinstanceId LNComponent_GetSubinstanceId(LNHandle handle)
 
 /**
     @brief 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true)
-    @param[in] visualcomponent : instance
+    @param[in] visualcomponent : VisualComponent のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNVisualComponent_SetVisible(LNHandle visualcomponent, LNBool value);
 
 /**
     @brief 可視状態を取得します。
-    @param[in] visualcomponent : instance
-    @param[out] outReturn : instance.
+    @param[in] visualcomponent : VisualComponent のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNVisualComponent_IsVisible(LNHandle visualcomponent, LNBool* outReturn);
 
@@ -3704,7 +3704,7 @@ LN_FLAT_API LNResult LNVisualComponent_OnSerialize_CallOverrideBase(LNHandle obj
 
 /**
     @brief 
-    @param[in] visualcomponent : instance
+    @param[in] visualcomponent : VisualComponent のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNVisualComponent_SetPrototype_OnSerialize(LNHandle visualcomponent, LNHandle callback);
@@ -3728,7 +3728,7 @@ extern LN_FLAT_API LNSubinstanceId LNVisualComponent_GetSubinstanceId(LNHandle h
 
 /**
     @brief スプライトが表示するテクスチャを設定します。
-    @param[in] spritecomponent : instance
+    @param[in] spritecomponent : SpriteComponent のハンドル
     @param[] texture : 
 */
 LN_FLAT_API LNResult LNSpriteComponent_SetTexture(LNHandle spritecomponent, LNHandle texture);
@@ -3739,7 +3739,7 @@ LN_FLAT_API LNResult LNSpriteComponent_OnSerialize_CallOverrideBase(LNHandle obj
 
 /**
     @brief 
-    @param[in] spritecomponent : instance
+    @param[in] spritecomponent : SpriteComponent のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNSpriteComponent_SetPrototype_OnSerialize(LNHandle spritecomponent, LNHandle callback);
@@ -3779,41 +3779,41 @@ extern LN_FLAT_API LNSubinstanceId LNCollisionEventHandler_GetSubinstanceId(LNHa
 
 /**
     @brief CharacterController を作成します。
-    @param[out] outCharacterController : instance.
+    @param[out] outCharacterController : 作成された CharacterController のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNCharacterController_Create(LNHandle* outCharacterController);
 
 /**
     @brief walkVelocity
-    @param[in] charactercontroller : instance
+    @param[in] charactercontroller : CharacterController のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNCharacterController_SetWalkVelocity(LNHandle charactercontroller, float value);
 
 /**
     @brief walkVelocity
-    @param[in] charactercontroller : instance
-    @param[out] outReturn : instance.
+    @param[in] charactercontroller : CharacterController のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNCharacterController_GetWalkVelocity(LNHandle charactercontroller, float* outReturn);
 
 /**
     @brief setVelocity
-    @param[in] charactercontroller : instance
+    @param[in] charactercontroller : CharacterController のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNCharacterController_SetVelocity(LNHandle charactercontroller, const LNVector3* value);
 
 /**
     @brief velocity
-    @param[in] charactercontroller : instance
-    @param[out] outReturn : instance.
+    @param[in] charactercontroller : CharacterController のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNCharacterController_GetVelocity(LNHandle charactercontroller, LNVector3* outReturn);
 
 /**
     @brief キーボードやゲームパッドによる操作の有効状態を設定します。 (default: true)
-    @param[in] charactercontroller : instance
+    @param[in] charactercontroller : CharacterController のハンドル
     @param[] value : 
     @details false を指定した場合、キャラクターの想定外の自走を防止するため、速度も 0 にリセットされます。
 */
@@ -3821,7 +3821,7 @@ LN_FLAT_API LNResult LNCharacterController_SetInputControlEnabled(LNHandle chara
 
 /**
     @brief マウスによるカメラ操作の有効状態を設定します。 (default: true)
-    @param[in] charactercontroller : instance
+    @param[in] charactercontroller : CharacterController のハンドル
     @param[] value : 
     @details 有効である場合、関連付けられているカメラを通じて、描画先となるビューの MouseGrab を取得します。つまり、マウスカーソルは非表示となり UI をポイントしてクリックする等の操作はできなくなります。
 */
@@ -3829,49 +3829,49 @@ LN_FLAT_API LNResult LNCharacterController_SetCameraControlEnabled(LNHandle char
 
 /**
     @brief キャラクターの高さを設定します。この値はカプセルコライダーの高さや、カメラの注視点として使用されます。 (default: 2.0)
-    @param[in] charactercontroller : instance
+    @param[in] charactercontroller : CharacterController のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNCharacterController_SetHeight(LNHandle charactercontroller, float value);
 
 /**
     @brief キャラクターの高さを取得します。
-    @param[in] charactercontroller : instance
-    @param[out] outReturn : instance.
+    @param[in] charactercontroller : CharacterController のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNCharacterController_GetHeight(LNHandle charactercontroller, float* outReturn);
 
 /**
     @brief キャラクターとカメラの距離を設定します。(default: 5.0)
-    @param[in] charactercontroller : instance
+    @param[in] charactercontroller : CharacterController のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNCharacterController_SetCameraRadius(LNHandle charactercontroller, float value);
 
 /**
     @brief キャラクターとカメラの距離を取得します。
-    @param[in] charactercontroller : instance
-    @param[out] outReturn : instance.
+    @param[in] charactercontroller : CharacterController のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNCharacterController_GetCameraRadius(LNHandle charactercontroller, float* outReturn);
 
 /**
     @brief CollisionEnter イベントの通知を受け取るコールバックを登録します。
-    @param[in] charactercontroller : instance
+    @param[in] charactercontroller : CharacterController のハンドル
     @param[] handler :  (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNCharacterController_SetCollisionEnter(LNHandle charactercontroller, LNHandle handler);
 
 /**
     @brief CollisionLeave イベントの通知を受け取るコールバックを登録します。
-    @param[in] charactercontroller : instance
+    @param[in] charactercontroller : CharacterController のハンドル
     @param[] handler :  (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNCharacterController_SetCollisionLeave(LNHandle charactercontroller, LNHandle handler);
 
 /**
     @brief CollisionStay イベントの通知を受け取るコールバックを登録します。
-    @param[in] charactercontroller : instance
+    @param[in] charactercontroller : CharacterController のハンドル
     @param[] handler :  (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNCharacterController_SetCollisionStay(LNHandle charactercontroller, LNHandle handler);
@@ -3882,7 +3882,7 @@ LN_FLAT_API LNResult LNCharacterController_OnSerialize_CallOverrideBase(LNHandle
 
 /**
     @brief 
-    @param[in] charactercontroller : instance
+    @param[in] charactercontroller : CharacterController のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNCharacterController_SetPrototype_OnSerialize(LNHandle charactercontroller, LNHandle callback);
@@ -3906,7 +3906,7 @@ extern LN_FLAT_API LNSubinstanceId LNCharacterController_GetSubinstanceId(LNHand
 
 /**
     @brief オブジェクトを World に追加します。
-    @param[in] world : instance
+    @param[in] world : World のハンドル
     @param[] obj : 
 */
 LN_FLAT_API LNResult LNWorld_Add(LNHandle world, LNHandle obj);
@@ -3917,7 +3917,7 @@ LN_FLAT_API LNResult LNWorld_OnSerialize_CallOverrideBase(LNHandle object, LNHan
 
 /**
     @brief 
-    @param[in] world : instance
+    @param[in] world : World のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNWorld_SetPrototype_OnSerialize(LNHandle world, LNHandle callback);
@@ -3941,16 +3941,16 @@ extern LN_FLAT_API LNSubinstanceId LNWorld_GetSubinstanceId(LNHandle handle);
 
 /**
     @brief 
-    @param[in] componentlist : instance
-    @param[out] outReturn : instance.
+    @param[in] componentlist : ComponentList のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNComponentList_GetLength(LNHandle componentlist, int* outReturn);
 
 /**
     @brief 
-    @param[in] componentlist : instance
+    @param[in] componentlist : ComponentList のハンドル
     @param[] index : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNComponentList_GetItem(LNHandle componentlist, int index, LNHandle* outReturn);
 
@@ -3960,7 +3960,7 @@ LN_FLAT_API LNResult LNComponentList_OnSerialize_CallOverrideBase(LNHandle objec
 
 /**
     @brief 
-    @param[in] componentlist : instance
+    @param[in] componentlist : ComponentList のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNComponentList_SetPrototype_OnSerialize(LNHandle componentlist, LNHandle callback);
@@ -3984,20 +3984,20 @@ extern LN_FLAT_API LNSubinstanceId LNComponentList_GetSubinstanceId(LNHandle han
 
 /**
     @brief WorldObject を作成します。
-    @param[out] outWorldObject : instance.
+    @param[out] outWorldObject : 作成された WorldObject のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNWorldObject_Create(LNHandle* outWorldObject);
 
 /**
     @brief このオブジェクトの位置を設定します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] pos : 
 */
 LN_FLAT_API LNResult LNWorldObject_SetPosition(LNHandle worldobject, const LNVector3* pos);
 
 /**
     @brief このオブジェクトの位置を設定します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] x : 
     @param[] y : 
     @param[] z : 
@@ -4006,51 +4006,51 @@ LN_FLAT_API LNResult LNWorldObject_SetPositionXYZ(LNHandle worldobject, float x,
 
 /**
     @brief このオブジェクトの位置を位置を取得します。
-    @param[in] worldobject : instance
-    @param[out] outReturn : instance.
+    @param[in] worldobject : WorldObject のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNWorldObject_GetPosition(LNHandle worldobject, LNVector3* outReturn);
 
 /**
     @brief このオブジェクトの回転を設定します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] rot : 
 */
-LN_FLAT_API LNResult LNWorldObject_SetRotationQuaternion(LNHandle worldobject, const LNQuaternion* rot);
+LN_FLAT_API LNResult LNWorldObject_SetRotation(LNHandle worldobject, const LNQuaternion* rot);
 
 /**
-    @brief このオブジェクトの回転をオイラー角から設定します(radian) 。回転順序は Z(Roll) > X(Pich) > Y(Yaw) です。
-    @param[in] worldobject : instance
+    @brief このオブジェクトの回転をオイラー角から設定します(radian単位) 。回転順序は Z(Roll) > X(Pich) > Y(Yaw) です。
+    @param[in] worldobject : WorldObject のハンドル
     @param[] x : 
     @param[] y : 
     @param[] z : 
 */
-LN_FLAT_API LNResult LNWorldObject_SetRotation(LNHandle worldobject, float x, float y, float z);
+LN_FLAT_API LNResult LNWorldObject_SetRotationXYZ(LNHandle worldobject, float x, float y, float z);
 
 /**
     @brief このオブジェクトの回転を取得します。
-    @param[in] worldobject : instance
-    @param[out] outReturn : instance.
+    @param[in] worldobject : WorldObject のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNWorldObject_GetRotation(LNHandle worldobject, LNQuaternion* outReturn);
 
 /**
     @brief このオブジェクトの拡大率を設定します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] scale : 
 */
 LN_FLAT_API LNResult LNWorldObject_SetScale(LNHandle worldobject, const LNVector3* scale);
 
 /**
     @brief このオブジェクトの拡大率を設定します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] xyz : 
 */
 LN_FLAT_API LNResult LNWorldObject_SetScaleS(LNHandle worldobject, float xyz);
 
 /**
     @brief このオブジェクトの拡大率を設定します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] x : 
     @param[] y : 
     @param[] z : 
@@ -4059,21 +4059,21 @@ LN_FLAT_API LNResult LNWorldObject_SetScaleXYZ(LNHandle worldobject, float x, fl
 
 /**
     @brief このオブジェクトの拡大率を取得します。
-    @param[in] worldobject : instance
-    @param[out] outReturn : instance.
+    @param[in] worldobject : WorldObject のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNWorldObject_GetScale(LNHandle worldobject, LNVector3* outReturn);
 
 /**
     @brief このオブジェクトのローカルの中心位置を設定します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNWorldObject_SetCenterPoint(LNHandle worldobject, const LNVector3* value);
 
 /**
     @brief このオブジェクトのローカルの中心位置を設定します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] x : 
     @param[] y : 
     @param[] z : 
@@ -4082,21 +4082,21 @@ LN_FLAT_API LNResult LNWorldObject_SetCenterPointXYZ(LNHandle worldobject, float
 
 /**
     @brief このオブジェクトのローカルの中心位置を取得します。
-    @param[in] worldobject : instance
-    @param[out] outReturn : instance.
+    @param[in] worldobject : WorldObject のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNWorldObject_GetCenterPoint(LNHandle worldobject, LNVector3* outReturn);
 
 /**
     @brief 指定した座標を向くように、オブジェクトを回転させます。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] target : 
 */
 LN_FLAT_API LNResult LNWorldObject_LookAt(LNHandle worldobject, const LNVector3* target);
 
 /**
     @brief 指定した座標を向くように、オブジェクトを回転させます。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] x : 
     @param[] y : 
     @param[] z : 
@@ -4105,21 +4105,21 @@ LN_FLAT_API LNResult LNWorldObject_LookAtXYZ(LNHandle worldobject, float x, floa
 
 /**
     @brief Component を追加します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] component : 
 */
 LN_FLAT_API LNResult LNWorldObject_AddComponent(LNHandle worldobject, LNHandle component);
 
 /**
     @brief Component を除外します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] component : 
 */
 LN_FLAT_API LNResult LNWorldObject_RemoveComponent(LNHandle worldobject, LNHandle component);
 
 /**
     @brief タグを追加します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] tag : 
 */
 LN_FLAT_API LNResult LNWorldObject_AddTag(LNHandle worldobject, const LNChar* tag);
@@ -4127,7 +4127,7 @@ LN_FLAT_API LNResult LNWorldObject_AddTagA(LNHandle worldobject, const char* tag
 
 /**
     @brief タグを除外します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] tag : 
 */
 LN_FLAT_API LNResult LNWorldObject_RemoveTag(LNHandle worldobject, const LNChar* tag);
@@ -4135,30 +4135,30 @@ LN_FLAT_API LNResult LNWorldObject_RemoveTagA(LNHandle worldobject, const char* 
 
 /**
     @brief 指定したタグを持っているかを確認します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] tag : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNWorldObject_HasTag(LNHandle worldobject, const LNChar* tag, LNBool* outReturn);
 LN_FLAT_API LNResult LNWorldObject_HasTagA(LNHandle worldobject, const char* tag, LNBool* outReturn);
 
 /**
     @brief WorldObject を破棄します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @details 実際の削除は、現在のフレームのアップデート処理後に行われます。削除された WorldObject は、親の World, Level, WorldObject からも除外されます。
 */
 LN_FLAT_API LNResult LNWorldObject_Destroy(LNHandle worldobject);
 
 /**
     @brief 
-    @param[in] worldobject : instance
-    @param[out] outReturn : instance.
+    @param[in] worldobject : WorldObject のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNWorldObject_GetComponents(LNHandle worldobject, LNHandle* outReturn);
 
 /**
     @brief この WorldObject を指定した World へ追加します。省略した場合はデフォルトの World へ追加します。
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] world : 
 */
 LN_FLAT_API LNResult LNWorldObject_AddInto(LNHandle worldobject, LNHandle world);
@@ -4175,21 +4175,21 @@ LN_FLAT_API LNResult LNWorldObject_OnUpdate_CallOverrideBase(LNHandle worldobjec
 
 /**
     @brief 
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNWorldObject_SetPrototype_OnSerialize(LNHandle worldobject, LNHandle callback);
 
 /**
     @brief 
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNWorldObject_SetPrototype_OnPreUpdate(LNHandle worldobject, LNHandle callback);
 
 /**
     @brief 
-    @param[in] worldobject : instance
+    @param[in] worldobject : WorldObject のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNWorldObject_SetPrototype_OnUpdate(LNHandle worldobject, LNHandle callback);
@@ -4215,36 +4215,36 @@ extern LN_FLAT_API LNSubinstanceId LNWorldObject_GetSubinstanceId(LNHandle handl
 
 /**
     @brief 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true)
-    @param[in] visualobject : instance
+    @param[in] visualobject : VisualObject のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNVisualObject_SetVisible(LNHandle visualobject, LNBool value);
 
 /**
     @brief 可視状態を取得します。
-    @param[in] visualobject : instance
-    @param[out] outReturn : instance.
+    @param[in] visualobject : VisualObject のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNVisualObject_IsVisible(LNHandle visualobject, LNBool* outReturn);
 
 /**
     @brief 合成方法を設定します。(default: BlendMode::Normal)
-    @param[in] visualobject : instance
+    @param[in] visualobject : VisualObject のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNVisualObject_SetBlendMode2(LNHandle visualobject, LNBlendMode value);
 
 /**
     @brief 不透明度を設定します。(default: 1.0)
-    @param[in] visualobject : instance
+    @param[in] visualobject : VisualObject のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNVisualObject_SetOpacity(LNHandle visualobject, float value);
 
 /**
     @brief 不透明度を取得します。
-    @param[in] visualobject : instance
-    @param[out] outReturn : instance.
+    @param[in] visualobject : VisualObject のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNVisualObject_GetOpacity(LNHandle visualobject, float* outReturn);
 
@@ -4260,21 +4260,21 @@ LN_FLAT_API LNResult LNVisualObject_OnUpdate_CallOverrideBase(LNHandle worldobje
 
 /**
     @brief 
-    @param[in] visualobject : instance
+    @param[in] visualobject : VisualObject のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNVisualObject_SetPrototype_OnSerialize(LNHandle visualobject, LNHandle callback);
 
 /**
     @brief 
-    @param[in] visualobject : instance
+    @param[in] visualobject : VisualObject のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNVisualObject_SetPrototype_OnPreUpdate(LNHandle visualobject, LNHandle callback);
 
 /**
     @brief 
-    @param[in] visualobject : instance
+    @param[in] visualobject : VisualObject のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNVisualObject_SetPrototype_OnUpdate(LNHandle visualobject, LNHandle callback);
@@ -4310,21 +4310,21 @@ LN_FLAT_API LNResult LNCamera_OnUpdate_CallOverrideBase(LNHandle worldobject, fl
 
 /**
     @brief 
-    @param[in] camera : instance
+    @param[in] camera : Camera のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNCamera_SetPrototype_OnSerialize(LNHandle camera, LNHandle callback);
 
 /**
     @brief 
-    @param[in] camera : instance
+    @param[in] camera : Camera のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNCamera_SetPrototype_OnPreUpdate(LNHandle camera, LNHandle callback);
 
 /**
     @brief 
-    @param[in] camera : instance
+    @param[in] camera : Camera のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNCamera_SetPrototype_OnUpdate(LNHandle camera, LNHandle callback);
@@ -4350,113 +4350,113 @@ extern LN_FLAT_API LNSubinstanceId LNCamera_GetSubinstanceId(LNHandle handle);
 
 /**
     @brief ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
-    @param[in] environmentlight : instance
+    @param[in] environmentlight : EnvironmentLight のハンドル
     @param[] enabled : 
 */
 LN_FLAT_API LNResult LNEnvironmentLight_SetEnabled(LNHandle environmentlight, LNBool enabled);
 
 /**
     @brief ライトの有効状態を取得します。
-    @param[in] environmentlight : instance
-    @param[out] outReturn : instance.
+    @param[in] environmentlight : EnvironmentLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNEnvironmentLight_IsEnabled(LNHandle environmentlight, LNBool* outReturn);
 
 /**
     @brief ディレクショナルライトの光源色を設定します。(default: White)
-    @param[in] environmentlight : instance
+    @param[in] environmentlight : EnvironmentLight のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNEnvironmentLight_SetColor(LNHandle environmentlight, const LNColor* value);
 
 /**
     @brief ディレクショナルライトの光源色を取得します。
-    @param[in] environmentlight : instance
-    @param[out] outReturn : instance.
+    @param[in] environmentlight : EnvironmentLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNEnvironmentLight_GetColor(LNHandle environmentlight, LNColor* outReturn);
 
 /**
     @brief シーン全体の環境光の色を設定します。(default: 0.5, 0.5, 0.5)
-    @param[in] environmentlight : instance
+    @param[in] environmentlight : EnvironmentLight のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNEnvironmentLight_SetAmbientColor(LNHandle environmentlight, const LNColor* value);
 
 /**
     @brief シーン全体の環境光の色を取得します。
-    @param[in] environmentlight : instance
-    @param[out] outReturn : instance.
+    @param[in] environmentlight : EnvironmentLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNEnvironmentLight_GetAmbientColor(LNHandle environmentlight, LNColor* outReturn);
 
 /**
     @brief 空の環境光の色を取得します。
-    @param[in] environmentlight : instance
-    @param[out] outReturn : instance.
+    @param[in] environmentlight : EnvironmentLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNEnvironmentLight_GetSkyColor(LNHandle environmentlight, LNColor* outReturn);
 
 /**
     @brief 空の環境光の色を設定します。(default: Black)
-    @param[in] environmentlight : instance
+    @param[in] environmentlight : EnvironmentLight のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNEnvironmentLight_SetSkyColor(LNHandle environmentlight, const LNColor* value);
 
 /**
     @brief 地面の環境光の色を取得します。
-    @param[in] environmentlight : instance
-    @param[out] outReturn : instance.
+    @param[in] environmentlight : EnvironmentLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNEnvironmentLight_GetGroundColor(LNHandle environmentlight, LNColor* outReturn);
 
 /**
     @brief 地面の環境光の色を設定します。(default: Black)
-    @param[in] environmentlight : instance
+    @param[in] environmentlight : EnvironmentLight のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNEnvironmentLight_SetGroundColor(LNHandle environmentlight, const LNColor* value);
 
 /**
     @brief ライトの明るさを設定します。(default: 0.5)
-    @param[in] environmentlight : instance
+    @param[in] environmentlight : EnvironmentLight のハンドル
     @param[] intensity : 
 */
 LN_FLAT_API LNResult LNEnvironmentLight_SetIntensity(LNHandle environmentlight, float intensity);
 
 /**
     @brief ライトの明るさを取得します。
-    @param[in] environmentlight : instance
-    @param[out] outReturn : instance.
+    @param[in] environmentlight : EnvironmentLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNEnvironmentLight_GetIntensity(LNHandle environmentlight, float* outReturn);
 
 /**
     @brief 視点からの、影を生成できる距離を指定します。 (default: 0.0f)
-    @param[in] environmentlight : instance
+    @param[in] environmentlight : EnvironmentLight のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNEnvironmentLight_SetShadowEffectiveDistance(LNHandle environmentlight, float value);
 
 /**
     @brief 視点からの、影を生成できる距離を取得します。
-    @param[in] environmentlight : instance
-    @param[out] outReturn : instance.
+    @param[in] environmentlight : EnvironmentLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNEnvironmentLight_GetShadowEffectiveDistance(LNHandle environmentlight, float* outReturn);
 
 /**
     @brief 光源方向からの、影を生成できる距離を指定します。 (default: 0.0f) ※これはシャドウマップの深度値の範囲となります。
-    @param[in] environmentlight : instance
+    @param[in] environmentlight : EnvironmentLight のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNEnvironmentLight_SetShadowEffectiveDepth(LNHandle environmentlight, float value);
 
 /**
     @brief 光源方向からの、影を生成できる距離を指定します。
-    @param[in] environmentlight : instance
-    @param[out] outReturn : instance.
+    @param[in] environmentlight : EnvironmentLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNEnvironmentLight_GetShadowEffectiveDepth(LNHandle environmentlight, float* outReturn);
 
@@ -4472,21 +4472,21 @@ LN_FLAT_API LNResult LNEnvironmentLight_OnUpdate_CallOverrideBase(LNHandle world
 
 /**
     @brief 
-    @param[in] environmentlight : instance
+    @param[in] environmentlight : EnvironmentLight のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNEnvironmentLight_SetPrototype_OnSerialize(LNHandle environmentlight, LNHandle callback);
 
 /**
     @brief 
-    @param[in] environmentlight : instance
+    @param[in] environmentlight : EnvironmentLight のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNEnvironmentLight_SetPrototype_OnPreUpdate(LNHandle environmentlight, LNHandle callback);
 
 /**
     @brief 
-    @param[in] environmentlight : instance
+    @param[in] environmentlight : EnvironmentLight のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNEnvironmentLight_SetPrototype_OnUpdate(LNHandle environmentlight, LNHandle callback);
@@ -4512,84 +4512,84 @@ extern LN_FLAT_API LNSubinstanceId LNEnvironmentLight_GetSubinstanceId(LNHandle 
 
 /**
     @brief 既定の設定でディレクショナルライトを作成します。
-    @param[out] outDirectionalLight : instance.
+    @param[out] outDirectionalLight : 作成された DirectionalLight のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNDirectionalLight_Create(LNHandle* outDirectionalLight);
 
 /**
     @brief 色を指定してディレクショナルライトを作成します。
     @param[] color : 
-    @param[out] outDirectionalLight : instance.
+    @param[out] outDirectionalLight : 作成された DirectionalLight のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNDirectionalLight_CreateWithColor(const LNColor* color, LNHandle* outDirectionalLight);
 
 /**
     @brief ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
-    @param[in] directionallight : instance
+    @param[in] directionallight : DirectionalLight のハンドル
     @param[] enabled : 
 */
 LN_FLAT_API LNResult LNDirectionalLight_SetEnabled(LNHandle directionallight, LNBool enabled);
 
 /**
     @brief ライトの有効状態を取得します。
-    @param[in] directionallight : instance
-    @param[out] outReturn : instance.
+    @param[in] directionallight : DirectionalLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNDirectionalLight_IsEnabled(LNHandle directionallight, LNBool* outReturn);
 
 /**
     @brief ライトカラーを設定します。(default: White)
-    @param[in] directionallight : instance
+    @param[in] directionallight : DirectionalLight のハンドル
     @param[] color : 
 */
 LN_FLAT_API LNResult LNDirectionalLight_SetColor(LNHandle directionallight, const LNColor* color);
 
 /**
     @brief ライトカラーを取得します。
-    @param[in] directionallight : instance
-    @param[out] outReturn : instance.
+    @param[in] directionallight : DirectionalLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNDirectionalLight_GetColor(LNHandle directionallight, LNColor* outReturn);
 
 /**
     @brief ライトの明るさを設定します。(default: 0.5)
-    @param[in] directionallight : instance
+    @param[in] directionallight : DirectionalLight のハンドル
     @param[] intensity : 
 */
 LN_FLAT_API LNResult LNDirectionalLight_SetIntensity(LNHandle directionallight, float intensity);
 
 /**
     @brief ライトの明るさを取得します。
-    @param[in] directionallight : instance
-    @param[out] outReturn : instance.
+    @param[in] directionallight : DirectionalLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNDirectionalLight_GetIntensity(LNHandle directionallight, float* outReturn);
 
 /**
     @brief 視点からの、影を生成できる距離を指定します。 (default: 0.0f)
-    @param[in] directionallight : instance
+    @param[in] directionallight : DirectionalLight のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNDirectionalLight_SetShadowEffectiveDistance(LNHandle directionallight, float value);
 
 /**
     @brief 視点からの、影を生成できる距離を取得します。
-    @param[in] directionallight : instance
-    @param[out] outReturn : instance.
+    @param[in] directionallight : DirectionalLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNDirectionalLight_GetShadowEffectiveDistance(LNHandle directionallight, float* outReturn);
 
 /**
     @brief 光源方向からの、影を生成できる距離を指定します。 (default: 0.0f) ※これはシャドウマップの深度値の範囲となります。
-    @param[in] directionallight : instance
+    @param[in] directionallight : DirectionalLight のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNDirectionalLight_SetShadowEffectiveDepth(LNHandle directionallight, float value);
 
 /**
     @brief 光源方向からの、影を生成できる距離を指定します。
-    @param[in] directionallight : instance
-    @param[out] outReturn : instance.
+    @param[in] directionallight : DirectionalLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNDirectionalLight_GetShadowEffectiveDepth(LNHandle directionallight, float* outReturn);
 
@@ -4605,21 +4605,21 @@ LN_FLAT_API LNResult LNDirectionalLight_OnUpdate_CallOverrideBase(LNHandle world
 
 /**
     @brief 
-    @param[in] directionallight : instance
+    @param[in] directionallight : DirectionalLight のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNDirectionalLight_SetPrototype_OnSerialize(LNHandle directionallight, LNHandle callback);
 
 /**
     @brief 
-    @param[in] directionallight : instance
+    @param[in] directionallight : DirectionalLight のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNDirectionalLight_SetPrototype_OnPreUpdate(LNHandle directionallight, LNHandle callback);
 
 /**
     @brief 
-    @param[in] directionallight : instance
+    @param[in] directionallight : DirectionalLight のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNDirectionalLight_SetPrototype_OnUpdate(LNHandle directionallight, LNHandle callback);
@@ -4645,7 +4645,7 @@ extern LN_FLAT_API LNSubinstanceId LNDirectionalLight_GetSubinstanceId(LNHandle 
 
 /**
     @brief 既定の設定でポイントライトを作成します。
-    @param[out] outPointLight : instance.
+    @param[out] outPointLight : 作成された PointLight のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNPointLight_Create(LNHandle* outPointLight);
 
@@ -4653,77 +4653,77 @@ LN_FLAT_API LNResult LNPointLight_Create(LNHandle* outPointLight);
     @brief 色と範囲を指定してポイントライトを作成します。
     @param[] color : 
     @param[] range : 
-    @param[out] outPointLight : instance.
+    @param[out] outPointLight : 作成された PointLight のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNPointLight_CreateWithColorAndRange(const LNColor* color, float range, LNHandle* outPointLight);
 
 /**
     @brief ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
-    @param[in] pointlight : instance
+    @param[in] pointlight : PointLight のハンドル
     @param[] enabled : 
 */
 LN_FLAT_API LNResult LNPointLight_SetEnabled(LNHandle pointlight, LNBool enabled);
 
 /**
     @brief ライトの有効状態を取得します。
-    @param[in] pointlight : instance
-    @param[out] outReturn : instance.
+    @param[in] pointlight : PointLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNPointLight_IsEnabled(LNHandle pointlight, LNBool* outReturn);
 
 /**
     @brief ライトカラーを設定します。(default: White)
-    @param[in] pointlight : instance
+    @param[in] pointlight : PointLight のハンドル
     @param[] color : 
 */
 LN_FLAT_API LNResult LNPointLight_SetColor(LNHandle pointlight, const LNColor* color);
 
 /**
     @brief ライトカラーを取得します。
-    @param[in] pointlight : instance
-    @param[out] outReturn : instance.
+    @param[in] pointlight : PointLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNPointLight_GetColor(LNHandle pointlight, LNColor* outReturn);
 
 /**
     @brief ライトの明るさを設定します。(default: 1.0)
-    @param[in] pointlight : instance
+    @param[in] pointlight : PointLight のハンドル
     @param[] intensity : 
 */
 LN_FLAT_API LNResult LNPointLight_SetIntensity(LNHandle pointlight, float intensity);
 
 /**
     @brief ライトの明るさを取得します。
-    @param[in] pointlight : instance
-    @param[out] outReturn : instance.
+    @param[in] pointlight : PointLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNPointLight_GetIntensity(LNHandle pointlight, float* outReturn);
 
 /**
     @brief ライトの影響範囲を設定します。(default: 10.0)
-    @param[in] pointlight : instance
+    @param[in] pointlight : PointLight のハンドル
     @param[] range : 
 */
 LN_FLAT_API LNResult LNPointLight_SetRange(LNHandle pointlight, float range);
 
 /**
     @brief ライトの影響範囲を取得します。
-    @param[in] pointlight : instance
-    @param[out] outReturn : instance.
+    @param[in] pointlight : PointLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNPointLight_GetRange(LNHandle pointlight, float* outReturn);
 
 /**
     @brief ライトの減衰を設定します。(default: 1.0)
-    @param[in] pointlight : instance
+    @param[in] pointlight : PointLight のハンドル
     @param[] attenuation : 
 */
 LN_FLAT_API LNResult LNPointLight_SetAttenuation(LNHandle pointlight, float attenuation);
 
 /**
     @brief ライトの減衰を取得します。
-    @param[in] pointlight : instance
-    @param[out] outReturn : instance.
+    @param[in] pointlight : PointLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNPointLight_GetAttenuation(LNHandle pointlight, float* outReturn);
 
@@ -4739,21 +4739,21 @@ LN_FLAT_API LNResult LNPointLight_OnUpdate_CallOverrideBase(LNHandle worldobject
 
 /**
     @brief 
-    @param[in] pointlight : instance
+    @param[in] pointlight : PointLight のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNPointLight_SetPrototype_OnSerialize(LNHandle pointlight, LNHandle callback);
 
 /**
     @brief 
-    @param[in] pointlight : instance
+    @param[in] pointlight : PointLight のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNPointLight_SetPrototype_OnPreUpdate(LNHandle pointlight, LNHandle callback);
 
 /**
     @brief 
-    @param[in] pointlight : instance
+    @param[in] pointlight : PointLight のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNPointLight_SetPrototype_OnUpdate(LNHandle pointlight, LNHandle callback);
@@ -4779,7 +4779,7 @@ extern LN_FLAT_API LNSubinstanceId LNPointLight_GetSubinstanceId(LNHandle handle
 
 /**
     @brief 既定の設定でスポットライトを作成します。
-    @param[out] outSpotLight : instance.
+    @param[out] outSpotLight : 作成された SpotLight のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNSpotLight_Create(LNHandle* outSpotLight);
 
@@ -4788,105 +4788,105 @@ LN_FLAT_API LNResult LNSpotLight_Create(LNHandle* outSpotLight);
     @param[] color : 
     @param[] range : 
     @param[] angle : 
-    @param[out] outSpotLight : instance.
+    @param[out] outSpotLight : 作成された SpotLight のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNSpotLight_CreateWithColorAndRange(const LNColor* color, float range, float angle, LNHandle* outSpotLight);
 
 /**
     @brief ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
-    @param[in] spotlight : instance
+    @param[in] spotlight : SpotLight のハンドル
     @param[] enabled : 
 */
 LN_FLAT_API LNResult LNSpotLight_SetEnabled(LNHandle spotlight, LNBool enabled);
 
 /**
     @brief ライトの有効状態を取得します。
-    @param[in] spotlight : instance
-    @param[out] outReturn : instance.
+    @param[in] spotlight : SpotLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNSpotLight_IsEnabled(LNHandle spotlight, LNBool* outReturn);
 
 /**
     @brief ライトカラーを設定します。(default: White)
-    @param[in] spotlight : instance
+    @param[in] spotlight : SpotLight のハンドル
     @param[] color : 
 */
 LN_FLAT_API LNResult LNSpotLight_SetColor(LNHandle spotlight, const LNColor* color);
 
 /**
     @brief ライトカラーを取得します。
-    @param[in] spotlight : instance
-    @param[out] outReturn : instance.
+    @param[in] spotlight : SpotLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNSpotLight_GetColor(LNHandle spotlight, LNColor* outReturn);
 
 /**
     @brief ライトの明るさを設定します。(default: 1.0)
-    @param[in] spotlight : instance
+    @param[in] spotlight : SpotLight のハンドル
     @param[] intensity : 
 */
 LN_FLAT_API LNResult LNSpotLight_SetIntensity(LNHandle spotlight, float intensity);
 
 /**
     @brief ライトの明るさを取得します。
-    @param[in] spotlight : instance
-    @param[out] outReturn : instance.
+    @param[in] spotlight : SpotLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNSpotLight_GetIntensity(LNHandle spotlight, float* outReturn);
 
 /**
     @brief ライトの影響範囲を設定します。(default: 10.0)
-    @param[in] spotlight : instance
+    @param[in] spotlight : SpotLight のハンドル
     @param[] range : 
 */
 LN_FLAT_API LNResult LNSpotLight_SetRange(LNHandle spotlight, float range);
 
 /**
     @brief ライトの影響範囲を取得します。
-    @param[in] spotlight : instance
-    @param[out] outReturn : instance.
+    @param[in] spotlight : SpotLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNSpotLight_GetRange(LNHandle spotlight, float* outReturn);
 
 /**
     @brief ライトの減衰を設定します。(default: 1.0)
-    @param[in] spotlight : instance
+    @param[in] spotlight : SpotLight のハンドル
     @param[] attenuation : 
 */
 LN_FLAT_API LNResult LNSpotLight_SetAttenuation(LNHandle spotlight, float attenuation);
 
 /**
     @brief ライトの減衰を取得します。
-    @param[in] spotlight : instance
-    @param[out] outReturn : instance.
+    @param[in] spotlight : SpotLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNSpotLight_GetAttenuation(LNHandle spotlight, float* outReturn);
 
 /**
     @brief スポットライトのコーン角度を設定します。(ラジアン単位、default: PI / 3)
-    @param[in] spotlight : instance
+    @param[in] spotlight : SpotLight のハンドル
     @param[] angle : 
 */
 LN_FLAT_API LNResult LNSpotLight_SetAngle(LNHandle spotlight, float angle);
 
 /**
     @brief スポットライトのコーン角度を取得します。(ラジアン単位)
-    @param[in] spotlight : instance
-    @param[out] outReturn : instance.
+    @param[in] spotlight : SpotLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNSpotLight_GetAngle(LNHandle spotlight, float* outReturn);
 
 /**
     @brief スポットライトのコーン角度に対する減衰率を設定します。(0..1, default: 0)
-    @param[in] spotlight : instance
+    @param[in] spotlight : SpotLight のハンドル
     @param[] penumbra : 
 */
 LN_FLAT_API LNResult LNSpotLight_SetPenumbra(LNHandle spotlight, float penumbra);
 
 /**
     @brief スポットライトのコーン角度に対する減衰率を設定します。
-    @param[in] spotlight : instance
-    @param[out] outReturn : instance.
+    @param[in] spotlight : SpotLight のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNSpotLight_GetPenumbra(LNHandle spotlight, float* outReturn);
 
@@ -4902,21 +4902,21 @@ LN_FLAT_API LNResult LNSpotLight_OnUpdate_CallOverrideBase(LNHandle worldobject,
 
 /**
     @brief 
-    @param[in] spotlight : instance
+    @param[in] spotlight : SpotLight のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNSpotLight_SetPrototype_OnSerialize(LNHandle spotlight, LNHandle callback);
 
 /**
     @brief 
-    @param[in] spotlight : instance
+    @param[in] spotlight : SpotLight のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNSpotLight_SetPrototype_OnPreUpdate(LNHandle spotlight, LNHandle callback);
 
 /**
     @brief 
-    @param[in] spotlight : instance
+    @param[in] spotlight : SpotLight のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNSpotLight_SetPrototype_OnUpdate(LNHandle spotlight, LNHandle callback);
@@ -4958,14 +4958,14 @@ extern LN_FLAT_API LNSubinstanceId LNTestDelegate_GetSubinstanceId(LNHandle hand
 
 /**
     @brief init
-    @param[out] outSprite : instance.
+    @param[out] outSprite : 作成された Sprite のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNSprite_Create(LNHandle* outSprite);
 
 /**
     @brief init
     @param[] texture : 
-    @param[out] outSprite : instance.
+    @param[out] outSprite : 作成された Sprite のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNSprite_CreateWithTexture(LNHandle texture, LNHandle* outSprite);
 
@@ -4974,27 +4974,27 @@ LN_FLAT_API LNResult LNSprite_CreateWithTexture(LNHandle texture, LNHandle* outS
     @param[] texture : 
     @param[] width : 
     @param[] height : 
-    @param[out] outSprite : instance.
+    @param[out] outSprite : 作成された Sprite のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNSprite_CreateWithTextureAndSize(LNHandle texture, float width, float height, LNHandle* outSprite);
 
 /**
     @brief スプライトが表示するテクスチャを設定します。
-    @param[in] sprite : instance
+    @param[in] sprite : Sprite のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNSprite_SetTexture(LNHandle sprite, LNHandle value);
 
 /**
     @brief スプライトの大きさを設定します。
-    @param[in] sprite : instance
+    @param[in] sprite : Sprite のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNSprite_SetSize(LNHandle sprite, const LNSize* value);
 
 /**
     @brief スプライトの大きさを設定します。
-    @param[in] sprite : instance
+    @param[in] sprite : Sprite のハンドル
     @param[] width : 
     @param[] height : 
 */
@@ -5002,7 +5002,7 @@ LN_FLAT_API LNResult LNSprite_SetSizeWH(LNHandle sprite, float width, float heig
 
 /**
     @brief 
-    @param[in] sprite : instance
+    @param[in] sprite : Sprite のハンドル
     @param[] x : 
     @param[] y : 
     @param[] width : 
@@ -5012,7 +5012,7 @@ LN_FLAT_API LNResult LNSprite_SetSourceRectXYWH(LNHandle sprite, float x, float 
 
 /**
     @brief test
-    @param[in] sprite : instance
+    @param[in] sprite : Sprite のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNSprite_SetCallerTest(LNHandle sprite, LNHandle callback);
@@ -5029,21 +5029,21 @@ LN_FLAT_API LNResult LNSprite_OnUpdate_CallOverrideBase(LNHandle worldobject, fl
 
 /**
     @brief 
-    @param[in] sprite : instance
+    @param[in] sprite : Sprite のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNSprite_SetPrototype_OnSerialize(LNHandle sprite, LNHandle callback);
 
 /**
     @brief 
-    @param[in] sprite : instance
+    @param[in] sprite : Sprite のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNSprite_SetPrototype_OnPreUpdate(LNHandle sprite, LNHandle callback);
 
 /**
     @brief 
-    @param[in] sprite : instance
+    @param[in] sprite : Sprite のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNSprite_SetPrototype_OnUpdate(LNHandle sprite, LNHandle callback);
@@ -5069,7 +5069,7 @@ extern LN_FLAT_API LNSubinstanceId LNSprite_GetSubinstanceId(LNHandle handle);
 
 /**
     @brief CameraOrbitControlComponent を作成します。
-    @param[out] outCameraOrbitControlComponent : instance.
+    @param[out] outCameraOrbitControlComponent : 作成された CameraOrbitControlComponent のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNCameraOrbitControlComponent_Create(LNHandle* outCameraOrbitControlComponent);
 
@@ -5079,7 +5079,7 @@ LN_FLAT_API LNResult LNCameraOrbitControlComponent_OnSerialize_CallOverrideBase(
 
 /**
     @brief 
-    @param[in] cameraorbitcontrolcomponent : instance
+    @param[in] cameraorbitcontrolcomponent : CameraOrbitControlComponent のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNCameraOrbitControlComponent_SetPrototype_OnSerialize(LNHandle cameraorbitcontrolcomponent, LNHandle callback);
@@ -5104,17 +5104,17 @@ extern LN_FLAT_API LNSubinstanceId LNCameraOrbitControlComponent_GetSubinstanceI
 /**
     @brief メインのカメラを使用して、指定したスクリーン座標から正面に向かうレイを定義した Raycaster を取得します。
     @param[] point : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNRaycaster_FromScreen(const LNPoint* point, LNHandle* outReturn);
 
 /**
     @brief 指定した向きの平面との交差判定を行います。
-    @param[in] raycaster : instance
+    @param[in] raycaster : Raycaster のハンドル
     @param[] normalX : 
     @param[] normalY : 
     @param[] normalZ : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNRaycaster_IntersectPlane(LNHandle raycaster, float normalX, float normalY, float normalZ, LNHandle* outReturn);
 
@@ -5124,7 +5124,7 @@ LN_FLAT_API LNResult LNRaycaster_OnSerialize_CallOverrideBase(LNHandle object, L
 
 /**
     @brief 
-    @param[in] raycaster : instance
+    @param[in] raycaster : Raycaster のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNRaycaster_SetPrototype_OnSerialize(LNHandle raycaster, LNHandle callback);
@@ -5148,8 +5148,8 @@ extern LN_FLAT_API LNSubinstanceId LNRaycaster_GetSubinstanceId(LNHandle handle)
 
 /**
     @brief ワールド座標上の交差点
-    @param[in] raycastresult : instance
-    @param[out] outReturn : instance.
+    @param[in] raycastresult : RaycastResult のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNRaycastResult_GetPoint(LNHandle raycastresult, LNVector3* outReturn);
 
@@ -5159,7 +5159,7 @@ LN_FLAT_API LNResult LNRaycastResult_OnSerialize_CallOverrideBase(LNHandle objec
 
 /**
     @brief 
-    @param[in] raycastresult : instance
+    @param[in] raycastresult : RaycastResult のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNRaycastResult_SetPrototype_OnSerialize(LNHandle raycastresult, LNHandle callback);
@@ -5183,15 +5183,15 @@ extern LN_FLAT_API LNSubinstanceId LNRaycastResult_GetSubinstanceId(LNHandle han
 
 /**
     @brief この WorldRenderView が描画する 3D シーン上に、グリッドを表示するかどうかを設定します。
-    @param[in] worldrenderview : instance
+    @param[in] worldrenderview : WorldRenderView のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNWorldRenderView_SetGuideGridEnabled(LNHandle worldrenderview, LNBool value);
 
 /**
     @brief この WorldRenderView が描画する 3D シーン上に、グリッドを表示するかどうかを取得します。
-    @param[in] worldrenderview : instance
-    @param[out] outReturn : instance.
+    @param[in] worldrenderview : WorldRenderView のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNWorldRenderView_GetGuideGridEnabled(LNHandle worldrenderview, LNBool* outReturn);
 
@@ -5201,7 +5201,7 @@ LN_FLAT_API LNResult LNWorldRenderView_OnSerialize_CallOverrideBase(LNHandle obj
 
 /**
     @brief 
-    @param[in] worldrenderview : instance
+    @param[in] worldrenderview : WorldRenderView のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNWorldRenderView_SetPrototype_OnSerialize(LNHandle worldrenderview, LNHandle callback);
@@ -5235,21 +5235,21 @@ LN_FLAT_API LNResult LNShapeObject_OnUpdate_CallOverrideBase(LNHandle worldobjec
 
 /**
     @brief 
-    @param[in] shapeobject : instance
+    @param[in] shapeobject : ShapeObject のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNShapeObject_SetPrototype_OnSerialize(LNHandle shapeobject, LNHandle callback);
 
 /**
     @brief 
-    @param[in] shapeobject : instance
+    @param[in] shapeobject : ShapeObject のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNShapeObject_SetPrototype_OnPreUpdate(LNHandle shapeobject, LNHandle callback);
 
 /**
     @brief 
-    @param[in] shapeobject : instance
+    @param[in] shapeobject : ShapeObject のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNShapeObject_SetPrototype_OnUpdate(LNHandle shapeobject, LNHandle callback);
@@ -5275,7 +5275,7 @@ extern LN_FLAT_API LNSubinstanceId LNShapeObject_GetSubinstanceId(LNHandle handl
 
 /**
     @brief 
-    @param[out] outPlaneMesh : instance.
+    @param[out] outPlaneMesh : 作成された PlaneMesh のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNPlaneMesh_Create(LNHandle* outPlaneMesh);
 
@@ -5291,21 +5291,21 @@ LN_FLAT_API LNResult LNPlaneMesh_OnUpdate_CallOverrideBase(LNHandle worldobject,
 
 /**
     @brief 
-    @param[in] planemesh : instance
+    @param[in] planemesh : PlaneMesh のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNPlaneMesh_SetPrototype_OnSerialize(LNHandle planemesh, LNHandle callback);
 
 /**
     @brief 
-    @param[in] planemesh : instance
+    @param[in] planemesh : PlaneMesh のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNPlaneMesh_SetPrototype_OnPreUpdate(LNHandle planemesh, LNHandle callback);
 
 /**
     @brief 
-    @param[in] planemesh : instance
+    @param[in] planemesh : PlaneMesh のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNPlaneMesh_SetPrototype_OnUpdate(LNHandle planemesh, LNHandle callback);
@@ -5331,7 +5331,7 @@ extern LN_FLAT_API LNSubinstanceId LNPlaneMesh_GetSubinstanceId(LNHandle handle)
 
 /**
     @brief 各軸のサイズが 1 である BoxMesh を作成します。
-    @param[out] outBoxMesh : instance.
+    @param[out] outBoxMesh : 作成された BoxMesh のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNBoxMesh_Create(LNHandle* outBoxMesh);
 
@@ -5340,7 +5340,7 @@ LN_FLAT_API LNResult LNBoxMesh_Create(LNHandle* outBoxMesh);
     @param[] width : 
     @param[] height : 
     @param[] depth : 
-    @param[out] outBoxMesh : instance.
+    @param[out] outBoxMesh : 作成された BoxMesh のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNBoxMesh_CreateWithSize(float width, float height, float depth, LNHandle* outBoxMesh);
 
@@ -5356,21 +5356,21 @@ LN_FLAT_API LNResult LNBoxMesh_OnUpdate_CallOverrideBase(LNHandle worldobject, f
 
 /**
     @brief 
-    @param[in] boxmesh : instance
+    @param[in] boxmesh : BoxMesh のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNBoxMesh_SetPrototype_OnSerialize(LNHandle boxmesh, LNHandle callback);
 
 /**
     @brief 
-    @param[in] boxmesh : instance
+    @param[in] boxmesh : BoxMesh のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNBoxMesh_SetPrototype_OnPreUpdate(LNHandle boxmesh, LNHandle callback);
 
 /**
     @brief 
-    @param[in] boxmesh : instance
+    @param[in] boxmesh : BoxMesh のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNBoxMesh_SetPrototype_OnUpdate(LNHandle boxmesh, LNHandle callback);
@@ -5396,20 +5396,20 @@ extern LN_FLAT_API LNSubinstanceId LNBoxMesh_GetSubinstanceId(LNHandle handle);
 
 /**
     @brief init
-    @param[out] outMeshComponent : instance.
+    @param[out] outMeshComponent : 作成された MeshComponent のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNMeshComponent_Create(LNHandle* outMeshComponent);
 
 /**
     @brief setModel
-    @param[in] meshcomponent : instance
+    @param[in] meshcomponent : MeshComponent のハンドル
     @param[] model : 
 */
 LN_FLAT_API LNResult LNMeshComponent_SetModel(LNHandle meshcomponent, LNHandle model);
 
 /**
     @brief 指定した名前の MeshContainer から、衝突判定用の Body を作成します。
-    @param[in] meshcomponent : instance
+    @param[in] meshcomponent : MeshComponent のハンドル
     @param[] meshContainerName : 
 */
 LN_FLAT_API LNResult LNMeshComponent_MakeCollisionBody(LNHandle meshcomponent, const LNChar* meshContainerName);
@@ -5421,7 +5421,7 @@ LN_FLAT_API LNResult LNMeshComponent_OnSerialize_CallOverrideBase(LNHandle objec
 
 /**
     @brief 
-    @param[in] meshcomponent : instance
+    @param[in] meshcomponent : MeshComponent のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNMeshComponent_SetPrototype_OnSerialize(LNHandle meshcomponent, LNHandle callback);
@@ -5445,8 +5445,8 @@ extern LN_FLAT_API LNSubinstanceId LNMeshComponent_GetSubinstanceId(LNHandle han
 
 /**
     @brief 自分自身と衝突している他の WorldObject
-    @param[in] collision : instance
-    @param[out] outReturn : instance.
+    @param[in] collision : Collision のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNCollision_GetWorldObject(LNHandle collision, LNHandle* outReturn);
 
@@ -5456,7 +5456,7 @@ LN_FLAT_API LNResult LNCollision_OnSerialize_CallOverrideBase(LNHandle object, L
 
 /**
     @brief 
-    @param[in] collision : instance
+    @param[in] collision : Collision のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNCollision_SetPrototype_OnSerialize(LNHandle collision, LNHandle callback);
@@ -5480,13 +5480,13 @@ extern LN_FLAT_API LNSubinstanceId LNCollision_GetSubinstanceId(LNHandle handle)
 
 /**
     @brief init
-    @param[out] outTriggerBodyComponent : instance.
+    @param[out] outTriggerBodyComponent : 作成された TriggerBodyComponent のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNTriggerBodyComponent_Create(LNHandle* outTriggerBodyComponent);
 
 /**
     @brief addCollisionShape
-    @param[in] triggerbodycomponent : instance
+    @param[in] triggerbodycomponent : TriggerBodyComponent のハンドル
     @param[] shape : 
 */
 LN_FLAT_API LNResult LNTriggerBodyComponent_AddCollisionShape(LNHandle triggerbodycomponent, LNHandle shape);
@@ -5497,7 +5497,7 @@ LN_FLAT_API LNResult LNTriggerBodyComponent_OnSerialize_CallOverrideBase(LNHandl
 
 /**
     @brief 
-    @param[in] triggerbodycomponent : instance
+    @param[in] triggerbodycomponent : TriggerBodyComponent のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNTriggerBodyComponent_SetPrototype_OnSerialize(LNHandle triggerbodycomponent, LNHandle callback);
@@ -5522,7 +5522,7 @@ extern LN_FLAT_API LNSubinstanceId LNTriggerBodyComponent_GetSubinstanceId(LNHan
 /**
     @brief init
     @param[] model : 
-    @param[out] outParticleEmitter : instance.
+    @param[out] outParticleEmitter : 作成された ParticleEmitter のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNParticleEmitter_Create(LNHandle model, LNHandle* outParticleEmitter);
 
@@ -5538,21 +5538,21 @@ LN_FLAT_API LNResult LNParticleEmitter_OnUpdate_CallOverrideBase(LNHandle worldo
 
 /**
     @brief 
-    @param[in] particleemitter : instance
+    @param[in] particleemitter : ParticleEmitter のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNParticleEmitter_SetPrototype_OnSerialize(LNHandle particleemitter, LNHandle callback);
 
 /**
     @brief 
-    @param[in] particleemitter : instance
+    @param[in] particleemitter : ParticleEmitter のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNParticleEmitter_SetPrototype_OnPreUpdate(LNHandle particleemitter, LNHandle callback);
 
 /**
     @brief 
-    @param[in] particleemitter : instance
+    @param[in] particleemitter : ParticleEmitter のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNParticleEmitter_SetPrototype_OnUpdate(LNHandle particleemitter, LNHandle callback);
@@ -5628,13 +5628,13 @@ LN_FLAT_API LNResult LNScene_ReturnLevel(LNBool withEffect);
 
 /**
     @brief 現在のアクティブなレベルを取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_ActiveLevel(LNHandle* outReturn);
 
 /**
     @brief レベルの遷移エフェクトを実行中であるかを確認します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_IsTransitionEffectRunning(LNBool* outReturn);
 
@@ -5646,7 +5646,7 @@ LN_FLAT_API LNResult LNScene_SetTransitionEffectMode(LNLevelTransitionEffectMode
 
 /**
     @brief レベル遷移時のエフェクトの種類を取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_TransitionEffectMode(LNLevelTransitionEffectMode* outReturn);
 
@@ -5658,7 +5658,7 @@ LN_FLAT_API LNResult LNScene_SetTransitionDuration(float value);
 
 /**
     @brief レベルの遷移にかける時間を取得します。(Unit: 秒)
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_TransitionDuration(float* outReturn);
 
@@ -5670,7 +5670,7 @@ LN_FLAT_API LNResult LNScene_SetTransitionEffectColor(const LNColor* value);
 
 /**
     @brief レベルの遷移モードが FadeInOut である場合に使用する色を取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_TransitionEffectColor(LNColor* outReturn);
 
@@ -5682,7 +5682,7 @@ LN_FLAT_API LNResult LNScene_SetTransitionEffectMaskTexture(LNHandle value);
 
 /**
     @brief レベルの遷移エフェクトで使用するマスクテクスチャを取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_TransitionEffectMaskTexture(LNHandle* outReturn);
 
@@ -5694,7 +5694,7 @@ LN_FLAT_API LNResult LNScene_SetTransitionEffectVague(float value);
 
 /**
     @brief レベルの遷移エフェクトの境界のあいまいさを取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_TransitionEffectVague(float* outReturn);
 
@@ -5752,7 +5752,7 @@ LN_FLAT_API LNResult LNScene_SetHDREnabled(LNBool value);
 
 /**
     @brief HDR レンダリングの有無を取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_IsHDREnabled(LNBool* outReturn);
 
@@ -5764,7 +5764,7 @@ LN_FLAT_API LNResult LNScene_SetScreenBlendColor(const LNColor* value);
 
 /**
     @brief 画面全体へのブレンドカラーを取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_ScreenBlendColor(LNColor* outReturn);
 
@@ -5776,7 +5776,7 @@ LN_FLAT_API LNResult LNScene_SetColorTone(const LNColorTone* value);
 
 /**
     @brief colorTone
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_ColorTone(LNColorTone* outReturn);
 
@@ -5788,7 +5788,7 @@ LN_FLAT_API LNResult LNScene_SetAntialiasEnabled(LNBool value);
 
 /**
     @brief アンチエイリアスの有無を取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_IsAntialiasEnabled(LNBool* outReturn);
 
@@ -5800,7 +5800,7 @@ LN_FLAT_API LNResult LNScene_SetSSREnabled(LNBool value);
 
 /**
     @brief SSR の有無を取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_IsSSREnabled(LNBool* outReturn);
 
@@ -5812,7 +5812,7 @@ LN_FLAT_API LNResult LNScene_SetSSAOEnabled(LNBool value);
 
 /**
     @brief SSAO の有無を取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_IsSSAOEnabled(LNBool* outReturn);
 
@@ -5824,7 +5824,7 @@ LN_FLAT_API LNResult LNScene_SetBloomEnabled(LNBool value);
 
 /**
     @brief ブルームエフェクトの有無を取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_IsBloomEnabled(LNBool* outReturn);
 
@@ -5836,7 +5836,7 @@ LN_FLAT_API LNResult LNScene_SetDOFEnabled(LNBool value);
 
 /**
     @brief 被写界深度の有無を取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_IsDOFEnabled(LNBool* outReturn);
 
@@ -5848,7 +5848,7 @@ LN_FLAT_API LNResult LNScene_SetTonemapEnabled(LNBool value);
 
 /**
     @brief トーンマッピングの有無を取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_IsTonemapEnabled(LNBool* outReturn);
 
@@ -5860,7 +5860,7 @@ LN_FLAT_API LNResult LNScene_SetVignetteEnabled(LNBool value);
 
 /**
     @brief ビネットエフェクトの有無を取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_IsVignetteEnabled(LNBool* outReturn);
 
@@ -5872,7 +5872,7 @@ LN_FLAT_API LNResult LNScene_SetGammaEnabled(LNBool value);
 
 /**
     @brief ガンマ補正の有無を取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNScene_IsGammaEnabled(LNBool* outReturn);
 
@@ -5930,41 +5930,41 @@ LN_FLAT_API LNResult LNScene_SetTonemapToeDenominator(float value);
 
 /**
     @brief Initialize
-    @param[out] outLevel : instance.
+    @param[out] outLevel : 作成された Level のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNLevel_Create(LNHandle* outLevel);
 
 /**
     @brief 指定した WorldObject を、この Level 子オブジェクトとして追加します。
-    @param[in] level : instance
+    @param[in] level : Level のハンドル
     @param[] obj : 
 */
 LN_FLAT_API LNResult LNLevel_AddObject(LNHandle level, LNHandle obj);
 
 /**
     @brief 指定した WorldObject を、この Level 子オブジェクトか除外します。
-    @param[in] level : instance
+    @param[in] level : Level のハンドル
     @param[] obj : 
 */
 LN_FLAT_API LNResult LNLevel_RemoveObject(LNHandle level, LNHandle obj);
 
 /**
     @brief 指定した Level を、この Level の Sub-Level として追加します。
-    @param[in] level : instance
+    @param[in] level : Level のハンドル
     @param[] sublevel : 
 */
 LN_FLAT_API LNResult LNLevel_AddSubLevel(LNHandle level, LNHandle sublevel);
 
 /**
     @brief 指定した Level を、この Level の Sub-Level から除外します。
-    @param[in] level : instance
+    @param[in] level : Level のハンドル
     @param[] sublevel : 
 */
 LN_FLAT_API LNResult LNLevel_RemoveSubLevel(LNHandle level, LNHandle sublevel);
 
 /**
     @brief すべての Sub-Level を除外します。
-    @param[in] level : instance
+    @param[in] level : Level のハンドル
 */
 LN_FLAT_API LNResult LNLevel_RemoveAllSubLevels(LNHandle level);
 
@@ -5989,42 +5989,42 @@ LN_FLAT_API LNResult LNLevel_OnUpdate_CallOverrideBase(LNHandle level);
 
 /**
     @brief 
-    @param[in] level : instance
+    @param[in] level : Level のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNLevel_SetPrototype_OnSerialize(LNHandle level, LNHandle callback);
 
 /**
     @brief 
-    @param[in] level : instance
+    @param[in] level : Level のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNLevel_SetPrototype_OnStart(LNHandle level, LNHandle callback);
 
 /**
     @brief 
-    @param[in] level : instance
+    @param[in] level : Level のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNLevel_SetPrototype_OnStop(LNHandle level, LNHandle callback);
 
 /**
     @brief 
-    @param[in] level : instance
+    @param[in] level : Level のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNLevel_SetPrototype_OnPause(LNHandle level, LNHandle callback);
 
 /**
     @brief 
-    @param[in] level : instance
+    @param[in] level : Level のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNLevel_SetPrototype_OnResume(LNHandle level, LNHandle callback);
 
 /**
     @brief 
-    @param[in] level : instance
+    @param[in] level : Level のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNLevel_SetPrototype_OnUpdate(LNHandle level, LNHandle callback);
@@ -6054,126 +6054,126 @@ extern LN_FLAT_API LNSubinstanceId LNLevel_GetSubinstanceId(LNHandle handle);
 /**
     @brief 色の濃さ (0~9) を指定して、 Red カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Red(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 Pink カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Pink(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 Purple カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Purple(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 DeepPurple カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_DeepPurple(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 Indigo カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Indigo(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 Blue カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Blue(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 LightBlue カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_LightBlue(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 Cyan カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Cyan(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 Teal カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Teal(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 Green カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Green(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 LightGreen カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_LightGreen(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 Lime カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Lime(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 Yellow カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Yellow(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 Amber カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Amber(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 Orange カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Orange(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 DeepOrange カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_DeepOrange(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 Brown カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Brown(int shades, LNColor* outReturn);
 
 /**
     @brief 色の濃さ (0~9) を指定して、 Grey カラーパレットの色を取得します。
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Grey(int shades, LNColor* outReturn);
 
@@ -6181,7 +6181,7 @@ LN_FLAT_API LNResult LNUIColors_Grey(int shades, LNColor* outReturn);
     @brief カラーインデックスと色の濃さ (0~9) を指定して、色を取得します。
     @param[] hue : 
     @param[] shades : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIColors_Get(LNUIColorHues hue, int shades, LNColor* outReturn);
 
@@ -6191,8 +6191,8 @@ LN_FLAT_API LNResult LNUIColors_Get(LNUIColorHues hue, int shades, LNColor* outR
 
 /**
     @brief イベントの発生元となった要素を取得します。
-    @param[in] uieventargs : instance
-    @param[out] outReturn : instance.
+    @param[in] uieventargs : UIEventArgs のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIEventArgs_Sender(LNHandle uieventargs, LNHandle* outReturn);
 
@@ -6202,7 +6202,7 @@ LN_FLAT_API LNResult LNUIEventArgs_OnSerialize_CallOverrideBase(LNHandle object,
 
 /**
     @brief 
-    @param[in] uieventargs : instance
+    @param[in] uieventargs : UIEventArgs のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIEventArgs_SetPrototype_OnSerialize(LNHandle uieventargs, LNHandle callback);
@@ -6262,7 +6262,7 @@ LN_FLAT_API LNResult LNUILayoutElement_OnSerialize_CallOverrideBase(LNHandle obj
 
 /**
     @brief 
-    @param[in] uilayoutelement : instance
+    @param[in] uilayoutelement : UILayoutElement のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUILayoutElement_SetPrototype_OnSerialize(LNHandle uilayoutelement, LNHandle callback);
@@ -6286,14 +6286,14 @@ extern LN_FLAT_API LNSubinstanceId LNUILayoutElement_GetSubinstanceId(LNHandle h
 
 /**
     @brief 要素のサイズを設定します。サイズには、border と padding の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります)
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] size : 
 */
 LN_FLAT_API LNResult LNUIElement_SetSize(LNHandle uielement, const LNSize* size);
 
 /**
     @brief 要素のサイズを設定します。サイズには、border と padding の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります)
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] width : 
     @param[] height : 
 */
@@ -6301,91 +6301,91 @@ LN_FLAT_API LNResult LNUIElement_SetSizeWH(LNHandle uielement, float width, floa
 
 /**
     @brief setWidth
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetWidth(LNHandle uielement, float value);
 
 /**
     @brief width
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetWidth(LNHandle uielement, float* outReturn);
 
 /**
     @brief setHeight
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetHeight(LNHandle uielement, float value);
 
 /**
     @brief height
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetHeight(LNHandle uielement, float* outReturn);
 
 /**
     @brief 要素の margin 値 (外側の余白) を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] margin : 
 */
 LN_FLAT_API LNResult LNUIElement_SetMargin(LNHandle uielement, const LNThickness* margin);
 
 /**
     @brief 要素の margin 値 (外側の余白) を取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetMargin(LNHandle uielement, LNThickness* outReturn);
 
 /**
     @brief 要素の padding 値 (内側の余白) を設定します。この余白は論理ツリーの子要素のレイアウトに影響します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] padding : 
 */
 LN_FLAT_API LNResult LNUIElement_SetPadding(LNHandle uielement, const LNThickness* padding);
 
 /**
     @brief 要素の padding 値 (内側の余白) を取得します。この余白は論理ツリーの子要素のレイアウトに影響します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetPadding(LNHandle uielement, LNThickness* outReturn);
 
 /**
     @brief 要素の横方向の配置方法を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetHAlignment(LNHandle uielement, LNUIHAlignment value);
 
 /**
     @brief 要素の横方向の配置方法を取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetHAlignment(LNHandle uielement, LNUIHAlignment* outReturn);
 
 /**
     @brief 要素の縦方向の配置方法を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetVAlignment(LNHandle uielement, LNUIVAlignment value);
 
 /**
     @brief 要素の縦方向の配置方法を取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetVAlignment(LNHandle uielement, LNUIVAlignment* outReturn);
 
 /**
     @brief 要素の配置方法を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] halign : 
     @param[] valign : 
 */
@@ -6393,14 +6393,14 @@ LN_FLAT_API LNResult LNUIElement_SetAlignments(LNHandle uielement, LNUIHAlignmen
 
 /**
     @brief このオブジェクトの位置を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] pos : 
 */
 LN_FLAT_API LNResult LNUIElement_SetPosition(LNHandle uielement, const LNVector3* pos);
 
 /**
     @brief このオブジェクトの位置を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] x : 
     @param[] y : 
     @param[] z : 
@@ -6409,21 +6409,21 @@ LN_FLAT_API LNResult LNUIElement_SetPositionXYZ(LNHandle uielement, float x, flo
 
 /**
     @brief このオブジェクトの位置を位置を取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetPosition(LNHandle uielement, LNVector3* outReturn);
 
 /**
     @brief このオブジェクトの回転を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] rot : 
 */
 LN_FLAT_API LNResult LNUIElement_SetRotation(LNHandle uielement, const LNQuaternion* rot);
 
 /**
     @brief このオブジェクトの回転をオイラー角から設定します。(radian)
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] x : 
     @param[] y : 
     @param[] z : 
@@ -6432,28 +6432,28 @@ LN_FLAT_API LNResult LNUIElement_SetEulerAngles(LNHandle uielement, float x, flo
 
 /**
     @brief このオブジェクトの回転を取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetRotation(LNHandle uielement, LNQuaternion* outReturn);
 
 /**
     @brief このオブジェクトの拡大率を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] scale : 
 */
 LN_FLAT_API LNResult LNUIElement_SetScale(LNHandle uielement, const LNVector3* scale);
 
 /**
     @brief このオブジェクトの拡大率を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] xyz : 
 */
 LN_FLAT_API LNResult LNUIElement_SetScaleS(LNHandle uielement, float xyz);
 
 /**
     @brief このオブジェクトの拡大率を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] x : 
     @param[] y : 
 */
@@ -6461,21 +6461,21 @@ LN_FLAT_API LNResult LNUIElement_SetScaleXY(LNHandle uielement, float x, float y
 
 /**
     @brief このオブジェクトの拡大率を取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetScale(LNHandle uielement, LNVector3* outReturn);
 
 /**
     @brief このオブジェクトのローカルの中心位置を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetCenterPoint(LNHandle uielement, const LNVector3* value);
 
 /**
     @brief このオブジェクトのローカルの中心位置を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] x : 
     @param[] y : 
     @param[] z : 
@@ -6484,147 +6484,147 @@ LN_FLAT_API LNResult LNUIElement_SetCenterPointXYZ(LNHandle uielement, float x, 
 
 /**
     @brief このオブジェクトのローカルの中心位置を取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetCenterPoint(LNHandle uielement, LNVector3* outReturn);
 
 /**
     @brief 要素の有効状態を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetEnabled(LNHandle uielement, LNBool value);
 
 /**
     @brief 要素の有効状態を取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_IsEnabled(LNHandle uielement, LNBool* outReturn);
 
 /**
     @brief 任意のユーザーデータを設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetData(LNHandle uielement, LNHandle value);
 
 /**
     @brief 任意のユーザーデータを取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetData(LNHandle uielement, LNHandle* outReturn);
 
 /**
     @brief 背景の色を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetBackgroundColor(LNHandle uielement, const LNColor* value);
 
 /**
     @brief 背景の色を取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetBackgroundColor(LNHandle uielement, LNColor* outReturn);
 
 /**
     @brief 枠線の太さを設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetBorderThickness(LNHandle uielement, const LNThickness* value);
 
 /**
     @brief 枠線の太さを取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetBorderThickness(LNHandle uielement, LNThickness* outReturn);
 
 /**
     @brief 枠線の色を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetBorderColor(LNHandle uielement, const LNColor* value);
 
 /**
     @brief 枠線の色を取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetBorderColor(LNHandle uielement, LNColor* outReturn);
 
 /**
     @brief 四角形の角の半径を設定します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetCornerRadius(LNHandle uielement, const LNCornerRadius* value);
 
 /**
     @brief 四角形の角の半径を取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetCornerRadius(LNHandle uielement, LNCornerRadius* outReturn);
 
 /**
     @brief 可視状態を設定します。(default: UIVisibility::Visible)
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetVisibility(LNHandle uielement, LNUIVisibility value);
 
 /**
     @brief 可視状態を取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetVisibility(LNHandle uielement, LNUIVisibility* outReturn);
 
 /**
     @brief 不透明度を設定します。(default: 1.0)
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetOpacity(LNHandle uielement, float value);
 
 /**
     @brief 不透明度を取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetOpacity(LNHandle uielement, float* outReturn);
 
 /**
     @brief Add element to container. 論理的な子要素として追加する。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] child : 
 */
 LN_FLAT_API LNResult LNUIElement_AddChild(LNHandle uielement, LNHandle child);
 
 /**
     @brief 入力フォーカスを得ることができるかどうかを設定します。(default: false)
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIElement_SetFocusable(LNHandle uielement, LNBool value);
 
 /**
     @brief 入力フォーカスを得ることができるかどうかを取得します。
-    @param[in] uielement : instance
-    @param[out] outReturn : instance.
+    @param[in] uielement : UIElement のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIElement_GetFocusable(LNHandle uielement, LNBool* outReturn);
 
 /**
     @brief この UIElement を指定した UIElement へ子要素として追加します。省略した場合はデフォルトのルート UIElement へ追加します。
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] parent : 
 */
 LN_FLAT_API LNResult LNUIElement_AddInto(LNHandle uielement, LNHandle parent);
@@ -6635,7 +6635,7 @@ LN_FLAT_API LNResult LNUIElement_OnSerialize_CallOverrideBase(LNHandle object, L
 
 /**
     @brief 
-    @param[in] uielement : instance
+    @param[in] uielement : UIElement のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIElement_SetPrototype_OnSerialize(LNHandle uielement, LNHandle callback);
@@ -6659,21 +6659,21 @@ extern LN_FLAT_API LNSubinstanceId LNUIElement_GetSubinstanceId(LNHandle handle)
 
 /**
     @brief UIText を作成します。
-    @param[out] outUIText : instance.
+    @param[out] outUIText : 作成された UIText のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUIText_Create(LNHandle* outUIText);
 
 /**
     @brief 表示文字列を指定して、UITextBlock を作成します。
     @param[] text : 
-    @param[out] outUIText : instance.
+    @param[out] outUIText : 作成された UIText のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUIText_CreateWithText(const LNChar* text, LNHandle* outUIText);
 LN_FLAT_API LNResult LNUIText_CreateWithTextA(const char* text, LNHandle* outUIText);
 
 /**
     @brief 表示文字列を設定します。
-    @param[in] uitext : instance
+    @param[in] uitext : UIText のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIText_SetText(LNHandle uitext, const LNChar* value);
@@ -6681,8 +6681,8 @@ LN_FLAT_API LNResult LNUIText_SetTextA(LNHandle uitext, const char* value);
 
 /**
     @brief 表示文字列を取得します。
-    @param[in] uitext : instance
-    @param[out] outReturn : instance.
+    @param[in] uitext : UIText のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIText_GetText(LNHandle uitext, const LNChar** outReturn);
 LN_FLAT_API LNResult LNUIText_GetTextA(LNHandle uitext, const char** outReturn);
@@ -6693,7 +6693,7 @@ LN_FLAT_API LNResult LNUIText_OnSerialize_CallOverrideBase(LNHandle object, LNHa
 
 /**
     @brief 
-    @param[in] uitext : instance
+    @param[in] uitext : UIText のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIText_SetPrototype_OnSerialize(LNHandle uitext, LNHandle callback);
@@ -6717,34 +6717,34 @@ extern LN_FLAT_API LNSubinstanceId LNUIText_GetSubinstanceId(LNHandle handle);
 
 /**
     @brief UISprite を作成します。
-    @param[out] outUISprite : instance.
+    @param[out] outUISprite : 作成された UISprite のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUISprite_Create(LNHandle* outUISprite);
 
 /**
     @brief テクスチャを指定して UISprite を作成します。
     @param[] texture : 
-    @param[out] outUISprite : instance.
+    @param[out] outUISprite : 作成された UISprite のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUISprite_CreateWithTexture(LNHandle texture, LNHandle* outUISprite);
 
 /**
     @brief スプライトが表示するテクスチャを設定します。
-    @param[in] uisprite : instance
+    @param[in] uisprite : UISprite のハンドル
     @param[] texture : 
 */
 LN_FLAT_API LNResult LNUISprite_SetTexture(LNHandle uisprite, LNHandle texture);
 
 /**
     @brief テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) デフォルトは Rect::Empty で、テクスチャ全体を転送することを示します。
-    @param[in] uisprite : instance
+    @param[in] uisprite : UISprite のハンドル
     @param[] rect : 
 */
 LN_FLAT_API LNResult LNUISprite_SetSourceRect(LNHandle uisprite, const LNRect* rect);
 
 /**
     @brief 
-    @param[in] uisprite : instance
+    @param[in] uisprite : UISprite のハンドル
     @param[] x : 
     @param[] y : 
     @param[] width : 
@@ -6754,14 +6754,14 @@ LN_FLAT_API LNResult LNUISprite_SetSourceRectXYWH(LNHandle uisprite, float x, fl
 
 /**
     @brief テクスチャのどの部分を表示するかを示す転送矩形を取得します。(ピクセル単位)
-    @param[in] uisprite : instance
-    @param[out] outReturn : instance.
+    @param[in] uisprite : UISprite のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUISprite_GetSourceRect(LNHandle uisprite, LNRect* outReturn);
 
 /**
     @brief setShader
-    @param[in] uisprite : instance
+    @param[in] uisprite : UISprite のハンドル
     @param[] shader : 
 */
 LN_FLAT_API LNResult LNUISprite_SetShader(LNHandle uisprite, LNHandle shader);
@@ -6772,7 +6772,7 @@ LN_FLAT_API LNResult LNUISprite_OnSerialize_CallOverrideBase(LNHandle object, LN
 
 /**
     @brief 
-    @param[in] uisprite : instance
+    @param[in] uisprite : UISprite のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUISprite_SetPrototype_OnSerialize(LNHandle uisprite, LNHandle callback);
@@ -6797,7 +6797,7 @@ extern LN_FLAT_API LNSubinstanceId LNUISprite_GetSubinstanceId(LNHandle handle);
 /**
     @brief アイコン名を指定して UIIcon を作成します。
     @param[] iconName : 
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNUIIcon_LoadFontIcon(const LNChar* iconName, LNHandle* outReturn);
 LN_FLAT_API LNResult LNUIIcon_LoadFontIconA(const char* iconName, LNHandle* outReturn);
@@ -6806,7 +6806,7 @@ LN_FLAT_API LNResult LNUIIcon_LoadFontIconA(const char* iconName, LNHandle* outR
     @brief アイコン名・サイズ を指定して UIIcon を作成します。
     @param[] iconName : 
     @param[] size : 
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNUIIcon_LoadFontIconWithNameSize(const LNChar* iconName, int size, LNHandle* outReturn);
 LN_FLAT_API LNResult LNUIIcon_LoadFontIconWithNameSizeA(const char* iconName, int size, LNHandle* outReturn);
@@ -6816,7 +6816,7 @@ LN_FLAT_API LNResult LNUIIcon_LoadFontIconWithNameSizeA(const char* iconName, in
     @param[] iconName : 
     @param[] size : 
     @param[] color : 
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNUIIcon_LoadFontIconWithNameSizeColor(const LNChar* iconName, int size, const LNColor* color, LNHandle* outReturn);
 LN_FLAT_API LNResult LNUIIcon_LoadFontIconWithNameSizeColorA(const char* iconName, int size, const LNColor* color, LNHandle* outReturn);
@@ -6827,7 +6827,7 @@ LN_FLAT_API LNResult LNUIIcon_OnSerialize_CallOverrideBase(LNHandle object, LNHa
 
 /**
     @brief 
-    @param[in] uiicon : instance
+    @param[in] uiicon : UIIcon のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIIcon_SetPrototype_OnSerialize(LNHandle uiicon, LNHandle callback);
@@ -6851,13 +6851,13 @@ extern LN_FLAT_API LNSubinstanceId LNUIIcon_GetSubinstanceId(LNHandle handle);
 
 /**
     @brief init
-    @param[out] outUIMessageTextArea : instance.
+    @param[out] outUIMessageTextArea : 作成された UIMessageTextArea のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUIMessageTextArea_Create(LNHandle* outUIMessageTextArea);
 
 /**
     @brief setText
-    @param[in] uimessagetextarea : instance
+    @param[in] uimessagetextarea : UIMessageTextArea のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIMessageTextArea_SetText(LNHandle uimessagetextarea, const LNChar* value);
@@ -6865,7 +6865,7 @@ LN_FLAT_API LNResult LNUIMessageTextArea_SetTextA(LNHandle uimessagetextarea, co
 
 /**
     @brief setTypingSpeed
-    @param[in] uimessagetextarea : instance
+    @param[in] uimessagetextarea : UIMessageTextArea のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIMessageTextArea_SetTypingSpeed(LNHandle uimessagetextarea, float value);
@@ -6876,7 +6876,7 @@ LN_FLAT_API LNResult LNUIMessageTextArea_OnSerialize_CallOverrideBase(LNHandle o
 
 /**
     @brief 
-    @param[in] uimessagetextarea : instance
+    @param[in] uimessagetextarea : UIMessageTextArea のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIMessageTextArea_SetPrototype_OnSerialize(LNHandle uimessagetextarea, LNHandle callback);
@@ -6920,7 +6920,7 @@ LN_FLAT_API LNResult LNUILayoutPanel_OnSerialize_CallOverrideBase(LNHandle objec
 
 /**
     @brief 
-    @param[in] uilayoutpanel : instance
+    @param[in] uilayoutpanel : UILayoutPanel のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUILayoutPanel_SetPrototype_OnSerialize(LNHandle uilayoutpanel, LNHandle callback);
@@ -6944,21 +6944,21 @@ extern LN_FLAT_API LNSubinstanceId LNUILayoutPanel_GetSubinstanceId(LNHandle han
 
 /**
     @brief init
-    @param[out] outUIBoxLayout : instance.
+    @param[out] outUIBoxLayout : 作成された UIBoxLayout のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUIBoxLayout_Create(LNHandle* outUIBoxLayout);
 
 /**
     @brief レイアウト方向を設定します。(default: Vertical)
-    @param[in] uiboxlayout : instance
+    @param[in] uiboxlayout : UIBoxLayout のハンドル
     @param[] orientation : 
 */
 LN_FLAT_API LNResult LNUIBoxLayout_SetOrientation(LNHandle uiboxlayout, LNUILayoutOrientation orientation);
 
 /**
     @brief レイアウト方向を取得します。
-    @param[in] uiboxlayout : instance
-    @param[out] outReturn : instance.
+    @param[in] uiboxlayout : UIBoxLayout のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIBoxLayout_GetOrientation(LNHandle uiboxlayout, LNUILayoutOrientation* outReturn);
 
@@ -6968,7 +6968,7 @@ LN_FLAT_API LNResult LNUIBoxLayout_OnSerialize_CallOverrideBase(LNHandle object,
 
 /**
     @brief 
-    @param[in] uiboxlayout : instance
+    @param[in] uiboxlayout : UIBoxLayout のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIBoxLayout_SetPrototype_OnSerialize(LNHandle uiboxlayout, LNHandle callback);
@@ -6992,21 +6992,21 @@ extern LN_FLAT_API LNSubinstanceId LNUIBoxLayout_GetSubinstanceId(LNHandle handl
 
 /**
     @brief init
-    @param[out] outUIStackLayout : instance.
+    @param[out] outUIStackLayout : 作成された UIStackLayout のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUIStackLayout_Create(LNHandle* outUIStackLayout);
 
 /**
     @brief (default: Vertical)
-    @param[in] uistacklayout : instance
+    @param[in] uistacklayout : UIStackLayout のハンドル
     @param[] orientation : 
 */
 LN_FLAT_API LNResult LNUIStackLayout_SetOrientation(LNHandle uistacklayout, LNUILayoutOrientation orientation);
 
 /**
     @brief 
-    @param[in] uistacklayout : instance
-    @param[out] outReturn : instance.
+    @param[in] uistacklayout : UIStackLayout のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIStackLayout_GetOrientation(LNHandle uistacklayout, LNUILayoutOrientation* outReturn);
 
@@ -7016,7 +7016,7 @@ LN_FLAT_API LNResult LNUIStackLayout_OnSerialize_CallOverrideBase(LNHandle objec
 
 /**
     @brief 
-    @param[in] uistacklayout : instance
+    @param[in] uistacklayout : UIStackLayout のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIStackLayout_SetPrototype_OnSerialize(LNHandle uistacklayout, LNHandle callback);
@@ -7040,13 +7040,13 @@ extern LN_FLAT_API LNSubinstanceId LNUIStackLayout_GetSubinstanceId(LNHandle han
 
 /**
     @brief init
-    @param[out] outUIGridLayout : instance.
+    @param[out] outUIGridLayout : 作成された UIGridLayout のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUIGridLayout_Create(LNHandle* outUIGridLayout);
 
 /**
     @brief setColumnCount
-    @param[in] uigridlayout : instance
+    @param[in] uigridlayout : UIGridLayout のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIGridLayout_SetColumnCount(LNHandle uigridlayout, int value);
@@ -7081,7 +7081,7 @@ LN_FLAT_API LNResult LNUIGridLayout_OnSerialize_CallOverrideBase(LNHandle object
 
 /**
     @brief 
-    @param[in] uigridlayout : instance
+    @param[in] uigridlayout : UIGridLayout のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIGridLayout_SetPrototype_OnSerialize(LNHandle uigridlayout, LNHandle callback);
@@ -7105,13 +7105,13 @@ extern LN_FLAT_API LNSubinstanceId LNUIGridLayout_GetSubinstanceId(LNHandle hand
 
 /**
     @brief init
-    @param[out] outUIControl : instance.
+    @param[out] outUIControl : 作成された UIControl のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUIControl_Create(LNHandle* outUIControl);
 
 /**
     @brief addInlineVisual
-    @param[in] uicontrol : instance
+    @param[in] uicontrol : UIControl のハンドル
     @param[] element : 
     @param[] layout : 
 */
@@ -7123,7 +7123,7 @@ LN_FLAT_API LNResult LNUIControl_OnSerialize_CallOverrideBase(LNHandle object, L
 
 /**
     @brief 
-    @param[in] uicontrol : instance
+    @param[in] uicontrol : UIControl のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIControl_SetPrototype_OnSerialize(LNHandle uicontrol, LNHandle callback);
@@ -7147,7 +7147,7 @@ extern LN_FLAT_API LNSubinstanceId LNUIControl_GetSubinstanceId(LNHandle handle)
 
 /**
     @brief set text.
-    @param[in] uibuttonbase : instance
+    @param[in] uibuttonbase : UIButtonBase のハンドル
     @param[] text : 
 */
 LN_FLAT_API LNResult LNUIButtonBase_SetText(LNHandle uibuttonbase, const LNChar* text);
@@ -7159,7 +7159,7 @@ LN_FLAT_API LNResult LNUIButtonBase_OnSerialize_CallOverrideBase(LNHandle object
 
 /**
     @brief 
-    @param[in] uibuttonbase : instance
+    @param[in] uibuttonbase : UIButtonBase のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIButtonBase_SetPrototype_OnSerialize(LNHandle uibuttonbase, LNHandle callback);
@@ -7183,23 +7183,23 @@ extern LN_FLAT_API LNSubinstanceId LNUIButtonBase_GetSubinstanceId(LNHandle hand
 
 /**
     @brief init.
-    @param[out] outUIButton : instance.
+    @param[out] outUIButton : 作成された UIButton のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUIButton_Create(LNHandle* outUIButton);
 
 /**
     @brief 表示文字列を指定して UIButton を作成します。
     @param[] text : 
-    @param[out] outUIButton : instance.
+    @param[out] outUIButton : 作成された UIButton のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUIButton_CreateWithText(const LNChar* text, LNHandle* outUIButton);
 LN_FLAT_API LNResult LNUIButton_CreateWithTextA(const char* text, LNHandle* outUIButton);
 
 /**
     @brief Clicked イベントの通知を受け取るコールバックを登録します。
-    @param[in] uibutton : instance
+    @param[in] uibutton : UIButton のハンドル
     @param[] handler :  (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNUIButton_ConnectOnClicked(LNHandle uibutton, LNHandle handler, LNHandle* outReturn);
 
@@ -7209,7 +7209,7 @@ LN_FLAT_API LNResult LNUIButton_OnSerialize_CallOverrideBase(LNHandle object, LN
 
 /**
     @brief 
-    @param[in] uibutton : instance
+    @param[in] uibutton : UIButton のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIButton_SetPrototype_OnSerialize(LNHandle uibutton, LNHandle callback);
@@ -7233,7 +7233,7 @@ extern LN_FLAT_API LNSubinstanceId LNUIButton_GetSubinstanceId(LNHandle handle);
 
 /**
     @brief init
-    @param[out] outUIWindow : instance.
+    @param[out] outUIWindow : 作成された UIWindow のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUIWindow_Create(LNHandle* outUIWindow);
 
@@ -7243,7 +7243,7 @@ LN_FLAT_API LNResult LNUIWindow_OnSerialize_CallOverrideBase(LNHandle object, LN
 
 /**
     @brief 
-    @param[in] uiwindow : instance
+    @param[in] uiwindow : UIWindow のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIWindow_SetPrototype_OnSerialize(LNHandle uiwindow, LNHandle callback);
@@ -7267,9 +7267,9 @@ extern LN_FLAT_API LNSubinstanceId LNUIWindow_GetSubinstanceId(LNHandle handle);
 
 /**
     @brief Submit イベントの通知を受け取るコールバックを登録します。
-    @param[in] uilistitem : instance
+    @param[in] uilistitem : UIListItem のハンドル
     @param[] handler :  (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNUIListItem_ConnectOnSubmit(LNHandle uilistitem, LNHandle handler, LNHandle* outReturn);
 
@@ -7279,7 +7279,7 @@ LN_FLAT_API LNResult LNUIListItem_OnSerialize_CallOverrideBase(LNHandle object, 
 
 /**
     @brief 
-    @param[in] uilistitem : instance
+    @param[in] uilistitem : UIListItem のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIListItem_SetPrototype_OnSerialize(LNHandle uilistitem, LNHandle callback);
@@ -7303,37 +7303,37 @@ extern LN_FLAT_API LNSubinstanceId LNUIListItem_GetSubinstanceId(LNHandle handle
 
 /**
     @brief setItemsLayoutPanel
-    @param[in] uilistitemscontrol : instance
+    @param[in] uilistitemscontrol : UIListItemsControl のハンドル
     @param[] layout : 
 */
 LN_FLAT_API LNResult LNUIListItemsControl_SetItemsLayoutPanel(LNHandle uilistitemscontrol, LNHandle layout);
 
 /**
     @brief itemsLayoutPanel
-    @param[in] uilistitemscontrol : instance
-    @param[out] outReturn : instance.
+    @param[in] uilistitemscontrol : UIListItemsControl のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIListItemsControl_GetItemsLayoutPanel(LNHandle uilistitemscontrol, LNHandle* outReturn);
 
 /**
     @brief UIListSubmitMode (default: Single)
-    @param[in] uilistitemscontrol : instance
+    @param[in] uilistitemscontrol : UIListItemsControl のハンドル
     @param[] value : 
 */
 LN_FLAT_API LNResult LNUIListItemsControl_SetSubmitMode(LNHandle uilistitemscontrol, LNUIListSubmitMode value);
 
 /**
     @brief UIListSubmitMode
-    @param[in] uilistitemscontrol : instance
-    @param[out] outReturn : instance.
+    @param[in] uilistitemscontrol : UIListItemsControl のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIListItemsControl_GetSubmitMode(LNHandle uilistitemscontrol, LNUIListSubmitMode* outReturn);
 
 /**
     @brief Submit イベントの通知を受け取るコールバックを登録します。
-    @param[in] uilistitemscontrol : instance
+    @param[in] uilistitemscontrol : UIListItemsControl のハンドル
     @param[] handler :  (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
-    @param[out] outReturn : instance. (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
 LN_FLAT_API LNResult LNUIListItemsControl_ConnectOnSubmit(LNHandle uilistitemscontrol, LNHandle handler, LNHandle* outReturn);
 
@@ -7343,7 +7343,7 @@ LN_FLAT_API LNResult LNUIListItemsControl_OnSerialize_CallOverrideBase(LNHandle 
 
 /**
     @brief 
-    @param[in] uilistitemscontrol : instance
+    @param[in] uilistitemscontrol : UIListItemsControl のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIListItemsControl_SetPrototype_OnSerialize(LNHandle uilistitemscontrol, LNHandle callback);
@@ -7368,7 +7368,7 @@ extern LN_FLAT_API LNSubinstanceId LNUIListItemsControl_GetSubinstanceId(LNHandl
 /**
     @brief init
     @param[] content : 
-    @param[out] outUIListBoxItem : instance.
+    @param[out] outUIListBoxItem : 作成された UIListBoxItem のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUIListBoxItem_Create(LNHandle content, LNHandle* outUIListBoxItem);
 
@@ -7378,7 +7378,7 @@ LN_FLAT_API LNResult LNUIListBoxItem_OnSerialize_CallOverrideBase(LNHandle objec
 
 /**
     @brief 
-    @param[in] uilistboxitem : instance
+    @param[in] uilistboxitem : UIListBoxItem のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIListBoxItem_SetPrototype_OnSerialize(LNHandle uilistboxitem, LNHandle callback);
@@ -7402,15 +7402,15 @@ extern LN_FLAT_API LNSubinstanceId LNUIListBoxItem_GetSubinstanceId(LNHandle han
 
 /**
     @brief init
-    @param[out] outUIListBox : instance.
+    @param[out] outUIListBox : 作成された UIListBox のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNUIListBox_Create(LNHandle* outUIListBox);
 
 /**
     @brief UIListBoxItem を追加し、そのインスタンスを返します。
-    @param[in] uilistbox : instance
+    @param[in] uilistbox : UIListBox のハンドル
     @param[] content : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNUIListBox_AddItem(LNHandle uilistbox, LNHandle content, LNHandle* outReturn);
 
@@ -7420,7 +7420,7 @@ LN_FLAT_API LNResult LNUIListBox_OnSerialize_CallOverrideBase(LNHandle object, L
 
 /**
     @brief 
-    @param[in] uilistbox : instance
+    @param[in] uilistbox : UIListBox のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNUIListBox_SetPrototype_OnSerialize(LNHandle uilistbox, LNHandle callback);
@@ -7448,7 +7448,7 @@ LN_FLAT_API LNResult LNInputGesture_OnSerialize_CallOverrideBase(LNHandle object
 
 /**
     @brief 
-    @param[in] inputgesture : instance
+    @param[in] inputgesture : InputGesture のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNInputGesture_SetPrototype_OnSerialize(LNHandle inputgesture, LNHandle callback);
@@ -7473,7 +7473,7 @@ extern LN_FLAT_API LNSubinstanceId LNInputGesture_GetSubinstanceId(LNHandle hand
 /**
     @brief init
     @param[] key : 
-    @param[out] outKeyGesture : instance.
+    @param[out] outKeyGesture : 作成された KeyGesture のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNKeyGesture_Create(LNKeys key, LNHandle* outKeyGesture);
 
@@ -7483,7 +7483,7 @@ LN_FLAT_API LNResult LNKeyGesture_OnSerialize_CallOverrideBase(LNHandle object, 
 
 /**
     @brief 
-    @param[in] keygesture : instance
+    @param[in] keygesture : KeyGesture のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNKeyGesture_SetPrototype_OnSerialize(LNHandle keygesture, LNHandle callback);
@@ -7508,7 +7508,7 @@ extern LN_FLAT_API LNSubinstanceId LNKeyGesture_GetSubinstanceId(LNHandle handle
 /**
     @brief ボタンが現在押されているかを判定します。
     @param[] buttonName : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNInput_IsPressed(const LNChar* buttonName, LNBool* outReturn);
 LN_FLAT_API LNResult LNInput_IsPressedA(const char* buttonName, LNBool* outReturn);
@@ -7516,7 +7516,7 @@ LN_FLAT_API LNResult LNInput_IsPressedA(const char* buttonName, LNBool* outRetur
 /**
     @brief ボタンが新しく押された瞬間を判定します。
     @param[] buttonName : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNInput_IsTriggered(const LNChar* buttonName, LNBool* outReturn);
 LN_FLAT_API LNResult LNInput_IsTriggeredA(const char* buttonName, LNBool* outReturn);
@@ -7524,7 +7524,7 @@ LN_FLAT_API LNResult LNInput_IsTriggeredA(const char* buttonName, LNBool* outRet
 /**
     @brief ボタンが離された瞬間を判定します。
     @param[] buttonName : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNInput_IsTriggeredOff(const LNChar* buttonName, LNBool* outReturn);
 LN_FLAT_API LNResult LNInput_IsTriggeredOffA(const char* buttonName, LNBool* outReturn);
@@ -7532,7 +7532,7 @@ LN_FLAT_API LNResult LNInput_IsTriggeredOffA(const char* buttonName, LNBool* out
 /**
     @brief ボタンが新しく押された瞬間とリピート状態を判定します。
     @param[] buttonName : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNInput_IsRepeated(const LNChar* buttonName, LNBool* outReturn);
 LN_FLAT_API LNResult LNInput_IsRepeatedA(const char* buttonName, LNBool* outReturn);
@@ -7540,7 +7540,7 @@ LN_FLAT_API LNResult LNInput_IsRepeatedA(const char* buttonName, LNBool* outRetu
 /**
     @brief 指定した軸のアナログ値を取得します。
     @param[] buttonName : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNInput_GetAxisValue(const LNChar* buttonName, float* outReturn);
 LN_FLAT_API LNResult LNInput_GetAxisValueA(const char* buttonName, float* outReturn);
@@ -7578,34 +7578,34 @@ LN_FLAT_API LNResult LNInput_ClearAllBindings();
 /**
     @brief ボタンが現在押されているかを判定します。
     @param[] button : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMouse_Pressed(LNMouseButtons button, LNBool* outReturn);
 
 /**
     @brief ボタンが新しく押された瞬間を判定します。
     @param[] button : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMouse_Triggered(LNMouseButtons button, LNBool* outReturn);
 
 /**
     @brief ボタンが離された瞬間を判定します。
     @param[] button : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMouse_TriggeredOff(LNMouseButtons button, LNBool* outReturn);
 
 /**
     @brief ボタンが新しく押された瞬間とリピート状態を判定します。
     @param[] button : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMouse_Repeated(LNMouseButtons button, LNBool* outReturn);
 
 /**
     @brief マウスポインタの位置を取得します。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNMouse_GetPosition(LNPoint* outReturn);
 
@@ -7615,24 +7615,24 @@ LN_FLAT_API LNResult LNMouse_GetPosition(LNPoint* outReturn);
 
 /**
     @brief コマンドの実行コードを取得します。
-    @param[in] interpretercommand : instance
-    @param[out] outReturn : instance.
+    @param[in] interpretercommand : InterpreterCommand のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNInterpreterCommand_Code(LNHandle interpretercommand, const LNChar** outReturn);
 LN_FLAT_API LNResult LNInterpreterCommand_CodeA(LNHandle interpretercommand, const char** outReturn);
 
 /**
     @brief コマンドのパラメータ数を取得します。
-    @param[in] interpretercommand : instance
-    @param[out] outReturn : instance.
+    @param[in] interpretercommand : InterpreterCommand のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNInterpreterCommand_ParamsCount(LNHandle interpretercommand, int* outReturn);
 
 /**
     @brief コマンドのパラメータを取得します。
-    @param[in] interpretercommand : instance
+    @param[in] interpretercommand : InterpreterCommand のハンドル
     @param[] index : 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNInterpreterCommand_Param(LNHandle interpretercommand, int index, const LNChar** outReturn);
 LN_FLAT_API LNResult LNInterpreterCommand_ParamA(LNHandle interpretercommand, int index, const char** outReturn);
@@ -7643,7 +7643,7 @@ LN_FLAT_API LNResult LNInterpreterCommand_OnSerialize_CallOverrideBase(LNHandle 
 
 /**
     @brief 
-    @param[in] interpretercommand : instance
+    @param[in] interpretercommand : InterpreterCommand のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNInterpreterCommand_SetPrototype_OnSerialize(LNHandle interpretercommand, LNHandle callback);
@@ -7667,13 +7667,13 @@ extern LN_FLAT_API LNSubinstanceId LNInterpreterCommand_GetSubinstanceId(LNHandl
 
 /**
     @brief InterpreterCommandList を作成します。
-    @param[out] outInterpreterCommandList : instance.
+    @param[out] outInterpreterCommandList : 作成された InterpreterCommandList のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNInterpreterCommandList_Create(LNHandle* outInterpreterCommandList);
 
 /**
     @brief コマンドを追加します。
-    @param[in] interpretercommandlist : instance
+    @param[in] interpretercommandlist : InterpreterCommandList のハンドル
     @param[] code : 
 */
 LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand(LNHandle interpretercommandlist, const LNChar* code);
@@ -7681,7 +7681,7 @@ LN_FLAT_API LNResult LNInterpreterCommandList_AddCommandA(LNHandle interpreterco
 
 /**
     @brief コマンドと 1 つのパラメータを追加します。
-    @param[in] interpretercommandlist : instance
+    @param[in] interpretercommandlist : InterpreterCommandList のハンドル
     @param[] code : 
     @param[] param0 : 
 */
@@ -7690,7 +7690,7 @@ LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand1A(LNHandle interpreterc
 
 /**
     @brief コマンドと 2 つのパラメータを追加します。
-    @param[in] interpretercommandlist : instance
+    @param[in] interpretercommandlist : InterpreterCommandList のハンドル
     @param[] code : 
     @param[] param0 : 
     @param[] param1 : 
@@ -7700,7 +7700,7 @@ LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand2A(LNHandle interpreterc
 
 /**
     @brief コマンドと 3 つのパラメータを追加します。
-    @param[in] interpretercommandlist : instance
+    @param[in] interpretercommandlist : InterpreterCommandList のハンドル
     @param[] code : 
     @param[] param0 : 
     @param[] param1 : 
@@ -7711,7 +7711,7 @@ LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand3A(LNHandle interpreterc
 
 /**
     @brief コマンドと 4 つのパラメータを追加します。
-    @param[in] interpretercommandlist : instance
+    @param[in] interpretercommandlist : InterpreterCommandList のハンドル
     @param[] code : 
     @param[] param0 : 
     @param[] param1 : 
@@ -7727,7 +7727,7 @@ LN_FLAT_API LNResult LNInterpreterCommandList_OnSerialize_CallOverrideBase(LNHan
 
 /**
     @brief 
-    @param[in] interpretercommandlist : instance
+    @param[in] interpretercommandlist : InterpreterCommandList のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNInterpreterCommandList_SetPrototype_OnSerialize(LNHandle interpretercommandlist, LNHandle callback);
@@ -7767,45 +7767,45 @@ extern LN_FLAT_API LNSubinstanceId LNInterpreterCommandDelegate_GetSubinstanceId
 
 /**
     @brief Interpreter を作成します。
-    @param[out] outInterpreter : instance.
+    @param[out] outInterpreter : 作成された Interpreter のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNInterpreter_Create(LNHandle* outInterpreter);
 
 /**
     @brief コマンドリストをクリアします。実行中のコマンドリストは強制的に破棄されます。
-    @param[in] interpreter : instance
+    @param[in] interpreter : Interpreter のハンドル
 */
 LN_FLAT_API LNResult LNInterpreter_Clear(LNHandle interpreter);
 
 /**
     @brief コマンドリストを設定し、実行を開始します。
-    @param[in] interpreter : instance
+    @param[in] interpreter : Interpreter のハンドル
     @param[] commandList : 
 */
 LN_FLAT_API LNResult LNInterpreter_Run(LNHandle interpreter, LNHandle commandList);
 
 /**
     @brief コマンドリストの実行中であるかを確認します。
-    @param[in] interpreter : instance
-    @param[out] outReturn : instance.
+    @param[in] interpreter : Interpreter のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNInterpreter_IsRunning(LNHandle interpreter, LNBool* outReturn);
 
 /**
     @brief 
-    @param[in] interpreter : instance
+    @param[in] interpreter : Interpreter のハンドル
 */
 LN_FLAT_API LNResult LNInterpreter_Update(LNHandle interpreter);
 
 /**
     @brief 
-    @param[in] interpreter : instance
+    @param[in] interpreter : Interpreter のハンドル
 */
 LN_FLAT_API LNResult LNInterpreter_Terminate(LNHandle interpreter);
 
 /**
     @brief 
-    @param[in] interpreter : instance
+    @param[in] interpreter : Interpreter のハンドル
     @param[] name : 
     @param[] handler :  (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
 */
@@ -7814,7 +7814,7 @@ LN_FLAT_API LNResult LNInterpreter_RegisterCommandHandlerA(LNHandle interpreter,
 
 /**
     @brief setWaitMode
-    @param[in] interpreter : instance
+    @param[in] interpreter : Interpreter のハンドル
     @param[] mode : 
 */
 LN_FLAT_API LNResult LNInterpreter_SetWaitMode(LNHandle interpreter, const LNChar* mode);
@@ -7822,23 +7822,23 @@ LN_FLAT_API LNResult LNInterpreter_SetWaitModeA(LNHandle interpreter, const char
 
 /**
     @brief waitMode
-    @param[in] interpreter : instance
-    @param[out] outReturn : instance.
+    @param[in] interpreter : Interpreter のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNInterpreter_GetWaitMode(LNHandle interpreter, const LNChar** outReturn);
 LN_FLAT_API LNResult LNInterpreter_GetWaitModeA(LNHandle interpreter, const char** outReturn);
 
 /**
     @brief setWaitCount
-    @param[in] interpreter : instance
+    @param[in] interpreter : Interpreter のハンドル
     @param[] count : 
 */
 LN_FLAT_API LNResult LNInterpreter_SetWaitCount(LNHandle interpreter, int count);
 
 /**
     @brief waitCount
-    @param[in] interpreter : instance
-    @param[out] outReturn : instance.
+    @param[in] interpreter : Interpreter のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNInterpreter_GetWaitCount(LNHandle interpreter, int* outReturn);
 
@@ -7851,14 +7851,14 @@ LN_FLAT_API LNResult LNInterpreter_OnUpdateWait_CallOverrideBase(LNHandle interp
 
 /**
     @brief 
-    @param[in] interpreter : instance
+    @param[in] interpreter : Interpreter のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNInterpreter_SetPrototype_OnSerialize(LNHandle interpreter, LNHandle callback);
 
 /**
     @brief 
-    @param[in] interpreter : instance
+    @param[in] interpreter : Interpreter のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNInterpreter_SetPrototype_OnUpdateWait(LNHandle interpreter, LNHandle callback);
@@ -7950,10 +7950,10 @@ LN_FLAT_API LNResult LNEngineSettings_SetFontFileA(const char* filePath);
 LN_FLAT_API LNResult LNEngineSettings_SetDebugToolEnabled(LNBool enabled);
 
 /**
-    @brief デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
+    @brief デバッグモードの有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
     @param[] enabled : 
 */
-LN_FLAT_API LNResult LNEngineSettings_SetEngineLogEnabled(LNBool enabled);
+LN_FLAT_API LNResult LNEngineSettings_SetDebugMode(LNBool enabled);
 
 /**
     @brief デバッグ用のログファイルの出力先ファイルパスを設定します。(default: Empty(実行ファイルのディレクトリへ出力))
@@ -7998,38 +7998,38 @@ LN_FLAT_API LNResult LNEngine_Terminate();
 
 /**
     @brief 
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
     @return アプリケーションの終了が要求されている場合は false を返します。
 */
 LN_FLAT_API LNResult LNEngine_Update(LNBool* outReturn);
 
 /**
     @brief アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNEngine_GetTime(double* outReturn);
 
 /**
     @brief デフォルトで作成されるメインの World です。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNEngine_GetWorld(LNHandle* outReturn);
 
 /**
     @brief デフォルトで作成されるメインの Camera です。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
-LN_FLAT_API LNResult LNEngine_GetCamera(LNHandle* outReturn);
+LN_FLAT_API LNResult LNEngine_GetMainCamera(LNHandle* outReturn);
 
 /**
     @brief デフォルトで作成されるメインの Light です。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNEngine_GetMainLight(LNHandle* outReturn);
 
 /**
     @brief デフォルトで作成されるメインの RenderView です。
-    @param[out] outReturn : instance.
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNEngine_GetRenderView(LNHandle* outReturn);
 
@@ -8039,32 +8039,32 @@ LN_FLAT_API LNResult LNEngine_GetRenderView(LNHandle* outReturn);
 
 /**
     @brief 
-    @param[out] outApplication : instance.
+    @param[out] outApplication : 作成された Application のハンドルを格納する変数。
 */
 LN_FLAT_API LNResult LNApplication_Create(LNHandle* outApplication);
 
 /**
     @brief エンジンの初期化処理が完了した後に呼び出されます。
-    @param[in] application : instance
+    @param[in] application : Application のハンドル
 */
 LN_FLAT_API LNResult LNApplication_OnInit(LNHandle application);
 
 /**
     @brief 毎フレーム呼び出されます。
-    @param[in] application : instance
+    @param[in] application : Application のハンドル
 */
 LN_FLAT_API LNResult LNApplication_OnUpdate(LNHandle application);
 
 /**
     @brief デフォルトで作成されるメインの World を取得します。
-    @param[in] application : instance
-    @param[out] outReturn : instance.
+    @param[in] application : Application のハンドル
+    @param[out] outReturn : 結果を格納する変数。
 */
 LN_FLAT_API LNResult LNApplication_World(LNHandle application, LNHandle* outReturn);
 
 /**
     @brief Application の実行を開始します。
-    @param[in] application : instance
+    @param[in] application : Application のハンドル
 */
 LN_FLAT_API LNResult LNApplication_Run(LNHandle application);
 
@@ -8080,21 +8080,21 @@ LN_FLAT_API LNResult LNApplication_OnUpdate_CallOverrideBase(LNHandle applicatio
 
 /**
     @brief 
-    @param[in] application : instance
+    @param[in] application : Application のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNApplication_SetPrototype_OnSerialize(LNHandle application, LNHandle callback);
 
 /**
     @brief 
-    @param[in] application : instance
+    @param[in] application : Application のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNApplication_SetPrototype_OnInit(LNHandle application, LNHandle callback);
 
 /**
     @brief 
-    @param[in] application : instance
+    @param[in] application : Application のハンドル
     @param[] callback : 
 */
 LN_FLAT_API LNResult LNApplication_SetPrototype_OnUpdate(LNHandle application, LNHandle callback);

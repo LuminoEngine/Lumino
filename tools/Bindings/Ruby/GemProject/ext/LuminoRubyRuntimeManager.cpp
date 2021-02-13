@@ -91,7 +91,7 @@ void LuminoRubyRuntimeManager::init()
         if (LUMINO_LOG_LEVEL != Qnil) {
             s_logLevel = (LNLogLevel)FIX2INT(LUMINO_LOG_LEVEL);
             LNLog_SetLevel(s_logLevel);
-            LNEngineSettings_SetEngineLogEnabled(LN_TRUE);
+            LNEngineSettings_SetDebugMode(LN_TRUE);
         }
         
         VALUE LUMINO_ENGINE_RESOURCES_DIR = rb_eval_string_protect("$LUMINO_ENGINE_RESOURCES_DIR", NULL);
