@@ -1,3 +1,4 @@
+//#define LUMINO_DEBUG 1
 #include "lumino.as"
 LNEngineSettings_SetDebugMode LN_TRUE
 LNLog_SetLevel LN_LOG_LEVEL_DEBUG

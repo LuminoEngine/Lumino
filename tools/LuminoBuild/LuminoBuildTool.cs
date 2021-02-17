@@ -13,9 +13,9 @@ namespace LuminoBuild
     class Builder
     {
         // リリースのたびに変更する必要がある情報
-        public string InstallerProductGUID = "851a1410-ec9f-4493-b0f8-b78d44da621d";
+        public string InstallerProductGUID = "f36ad49a-f86a-4196-aa55-07d8a61e02f3";
         public int MajorVersion = 0;
-        public int MinorVersion = 9;
+        public int MinorVersion = 10;
         public int RevisionVersion = 0;
         public int BuildVersion = 0;
         public string VersionString => string.Format("{0}.{1}.{2}", MajorVersion, MinorVersion, RevisionVersion);
