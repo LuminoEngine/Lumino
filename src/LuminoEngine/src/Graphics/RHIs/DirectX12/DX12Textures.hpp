@@ -5,6 +5,33 @@
 namespace ln {
 namespace detail {
 
+class DX12Image
+    : public RHIObject
+{
+public:
+    DX12Image();
+    bool init(DX12Device* device, uint32_t width, uint32_t height, uint32_t mipLevels, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initialState);
+    bool init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderTarget);
+    void dispose();
+
+    const RHISizeI& size() const { return m_size; }
+    DXGI_FORMAT dxFormat() const { return m_dxFormat; }
+    UINT mipLevels() const { return m_mipLevels; }
+    ID3D12Resource* dxResource() const { return m_dxResource.Get(); }
+    UINT64 uploadBufferSize() const { return m_uploadBufferSize; }
+    const D3D12_PLACED_SUBRESOURCE_FOOTPRINT& dxFootprint() const { return m_footprint; }
+    void resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
+
+private:
+    ComPtr<ID3D12Resource> m_dxResource;
+    RHISizeI m_size;
+    UINT m_mipLevels;
+    DXGI_FORMAT m_dxFormat;
+    D3D12_RESOURCE_STATES m_currentState;
+    UINT64 m_uploadBufferSize;
+    D3D12_PLACED_SUBRESOURCE_FOOTPRINT m_footprint;
+};
+
 class DX12Texture
     : public ITexture
 {
@@ -14,16 +41,14 @@ public:
     virtual void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
     virtual void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
-    UINT mipLevels() const { return m_mipLevels; }
-    DXGI_FORMAT dxFormat() const { return m_dxFormat; }
-    ID3D12Resource* dxResource() const { return m_dxResource.Get(); }
-    void resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
+    //UINT mipLevels() const { return m_mipLevels; }
+    DX12Image* image() const { return m_image.get(); }
+    DXGI_FORMAT dxFormat() const { return m_image->dxFormat(); }
+    UINT mipLevels() const { return m_image->mipLevels(); }
+    ID3D12Resource* dxResource() const { return m_image->dxResource(); }
 
 protected:
-    UINT m_mipLevels;
-    DXGI_FORMAT m_dxFormat;
-    D3D12_RESOURCE_STATES m_currentState;
-    ComPtr<ID3D12Resource> m_dxResource;
+    RHIPtr<DX12Image> m_image;
 };
 
 class DX12Texture2D
@@ -31,11 +56,11 @@ class DX12Texture2D
 {
 public:
 	DX12Texture2D();
-	Result init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
+	Result init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData);
     virtual void dispose();
 	virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
 	virtual SizeI realSize() { return m_size; }
-    virtual TextureFormat getTextureFormat() const { return m_format; }
+    virtual TextureFormat getTextureFormat() const { return DX12Helper::DXFormatToLNTextureFormat(m_image->dxFormat()); }
 	virtual GraphicsResourceUsage usage() const override { return m_usage; }
     virtual RHIPtr<RHIBitmap> readData() { LN_UNREACHABLE(); return nullptr; }
     virtual void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
@@ -45,7 +70,7 @@ public:
     //virtual const DX12Image* image() const override { return &m_image; }
 
     //ID3D12Resource* dxResource() const override { LN_NOTIMPLEMENTED(); return nullptr; }
-    void resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
+    //void resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
 
 private:
     bool generateMips();
@@ -53,8 +78,6 @@ private:
 	DX12Device* m_device;
 	GraphicsResourceUsage m_usage;
 	SizeI m_size;
-	TextureFormat m_format;
-    D3D12_PLACED_SUBRESOURCE_FOOTPRINT m_footprint;
 };
 
 class DX12RenderTarget
@@ -77,6 +100,8 @@ public:
 
     //ID3D12Resource* dxResource() const override { return m_dxRenderTarget.Get(); }
     bool isMultisample() const override { return false; }
+    //const VulkanImage* multisampleColorBuffer() const { return m_multisampleColorBuffer.get(); }
+
 
 protected:
     DX12Device* m_device;

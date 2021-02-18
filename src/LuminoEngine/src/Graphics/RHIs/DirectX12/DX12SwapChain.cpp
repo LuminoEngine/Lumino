@@ -181,7 +181,7 @@ void DX12SwapChain::present()
             return;
         }
 
-        m_renderTargets[m_frameIndex]->resourceBarrior(commandList->dxCommandList(), D3D12_RESOURCE_STATE_PRESENT);
+        m_renderTargets[m_frameIndex]->image()->resourceBarrior(commandList->dxCommandList(), D3D12_RESOURCE_STATE_PRESENT);
 
         if (!commandList->close()) {
             return;

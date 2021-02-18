@@ -161,7 +161,7 @@ void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)
                 dxDevice->CreateRenderTargetView(renderTarget->dxResource(), nullptr, cpuHandle);
                 m_currentRTVHandles[i] = cpuHandle;
 
-                renderTarget->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET);
+                renderTarget->image()->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET);
             }
         }
 
@@ -217,7 +217,7 @@ void DX12GraphicsContext::onEndRenderPass(IRenderPass* baseRenderPass)
 
     for (int i = 0; i < m_currentRTVCount; i++) {
         DX12RenderTarget* renderTarget = renderPass->renderTarget(i);
-        renderTarget->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_GENERIC_READ);
+        renderTarget->image()->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_GENERIC_READ);
     }
 
     if (depthBuffer) {
@@ -429,9 +429,9 @@ void DX12GraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int w
     src.PlacedFootprint = footprint;
     src.PlacedFootprint.Offset = view.offset;
 
-    texture->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_COPY_DEST);
+    texture->image()->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_COPY_DEST);
     m_dxCommandList->CopyTextureRegion(&dst, x, y, 0, &src, nullptr);
-    texture->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_GENERIC_READ);
+    texture->image()->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_GENERIC_READ);
 }
 
 void DX12GraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
