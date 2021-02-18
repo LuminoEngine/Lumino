@@ -97,7 +97,6 @@ TEST_F(Test_Rendering_Shading, Fog)
 //------------------------------------------------------------------------------
 TEST_F(Test_Rendering_Shading, EnvironmentLight)
 {
-
 	auto mat1 = Material::create();
 	mat1->setColor(Color::White);
 	mat1->setRoughness(1.0);
