@@ -4,6 +4,9 @@
     <Filter Include="app">
       <UniqueIdentifier>{22792e8f-6bfe-43c8-96dd-86f5e61e7979}</UniqueIdentifier>
     </Filter>
+    <Filter Include="assets">
+      <UniqueIdentifier>{7d2d520e-4c40-4dbd-9f1f-36c9f496329f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="app\small.ico">
@@ -42,5 +45,16 @@
     <Natvis Include="app\Lumino.natvis">
       <Filter>app</Filter>
     </Natvis>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\icon256.png">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="assets\LineWave.fx">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="assets\picture1.jpg">
+      <Filter>assets</Filter>
+    </None>
   </ItemGroup>
 </Project>

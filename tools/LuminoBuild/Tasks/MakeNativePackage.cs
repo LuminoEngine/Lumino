@@ -155,13 +155,6 @@ namespace LuminoBuild.Tasks
                     Path.Combine(builder.LuminoToolsDir, "EngineResources"),
                     Path.Combine(destinationToolDir, "EngineResources"));
             }
-            
-            // Distributable assets
-            {
-                Utils.CreateZipFile(
-                    Path.Combine(builder.LuminoRootDir, "assets/Distributable"),
-                    Path.Combine(builder.LuminoBuildDir, "assets.zip"));
-            }
         }
 
         public static void GenerateReadme(Builder builder, string dstDir)
