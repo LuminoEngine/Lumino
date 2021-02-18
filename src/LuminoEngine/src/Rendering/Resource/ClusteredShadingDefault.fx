@@ -13,7 +13,6 @@ VSOutput VSMain(LN_VSInput vsi)
 {
     VSOutput output;
     LN_ProcessVertex(vsi, output);
-    output.viewPos = float3(0.0, 0.0, 0.0);
     return output;
 }
 
@@ -29,14 +28,6 @@ float4 PSMain(PSInput input) : SV_TARGET0
 {
     LN_Surface surface;
     LN_ProcessSurface(input, surface);
-
-    const float4 mr = tex2D(ln_MetallicRoughnessTexture, input.UV);
-    
-    //surface.Metallic = mr.b * ln_MaterialMetallic;
-    //return float4(mr.b * ln_MaterialMetallic, 0, 0, 1);
-
-    //return float4(0, surface.Metallic, 0, 1);
-
     return LN_ProcessPixel(input, surface);
 }
 

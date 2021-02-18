@@ -359,9 +359,7 @@ float4 _LN_PS_ClusteredLighting_PBRShading(
     // Shading
     _LN_LocalLightContext localLightContext;
     _LN_InitLocalLightContext(localLightContext, vertexPos, viewPos);
-return float4(material.diffuseColor, 1);
     float3 outgoingLight = _LN_ComputePBRLocalLights(localLightContext, geometry, material);
-return float4(outgoingLight, surface.Albedo.a);
 
     // Shadow
     float4 posInLight = positionInLightSpace;
@@ -388,7 +386,6 @@ float4 _LN_ProcessPixel(float3 worldPos, float3 vertexPos, float4 positionInLigh
     color = _LN_PS_ClusteredLighting_PBRShading(worldPos, vertexPos, positionInLightSpace, surface);
 #endif
 
-    return color;
     color = LN_GetBuiltinEffectColor(color);
     return color;
 }
