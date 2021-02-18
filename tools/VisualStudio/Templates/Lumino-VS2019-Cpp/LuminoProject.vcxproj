@@ -33,6 +33,11 @@
   <ItemGroup>
     <Natvis Include="app\Lumino.natvis" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\icon256.png" />
+    <None Include="assets\LineWave.fx" />
+    <None Include="assets\picture1.jpg" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
