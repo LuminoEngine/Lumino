@@ -21,7 +21,7 @@ DX12Image::DX12Image()
 {
 }
 
-bool DX12Image::init(DX12Device* device, uint32_t width, uint32_t height, uint32_t mipLevels, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initialState)
+bool DX12Image::init(DX12Device* device, uint32_t width, uint32_t height, uint32_t mipLevels, bool msaa, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initialState)
 {
     m_size.width = width;
     m_size.height = height;
@@ -44,17 +44,29 @@ bool DX12Image::init(DX12Device* device, uint32_t width, uint32_t height, uint32
     desc.DepthOrArraySize = 1;
     desc.MipLevels = mipLevels;
     desc.Format = m_dxFormat;
-    desc.SampleDesc.Count = 1;
-    desc.SampleDesc.Quality = 0;
+    desc.SampleDesc.Count = (msaa) ? device->msaaSampleCount() : 1;
+    desc.SampleDesc.Quality = (msaa) ? device->msaaQualityLevel() : 0;
     desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
     desc.Flags = flags;
 
+    bool useClearValue = false;
     D3D12_CLEAR_VALUE clearValue;
-    clearValue.Format = m_dxFormat;
-    clearValue.Color[0] = 1.0f;
-    clearValue.Color[1] = 1.0f;
-    clearValue.Color[2] = 1.0f;
-    clearValue.Color[3] = 1.0f;
+    if ((flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0)
+    {
+        clearValue.Format = m_dxFormat;
+        clearValue.Color[0] = 1.0f;
+        clearValue.Color[1] = 1.0f;
+        clearValue.Color[2] = 1.0f;
+        clearValue.Color[3] = 1.0f;
+        useClearValue = true;
+    }
+    else if ((flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL) != 0)
+    {
+        clearValue.Format = format;
+        clearValue.DepthStencil.Depth = 1.0f;
+        clearValue.DepthStencil.Stencil = 0;
+        useClearValue = true;
+    }
 
     ID3D12Device* dxDevice = device->device();
     HRESULT hr = dxDevice->CreateCommittedResource(
@@ -62,7 +74,7 @@ bool DX12Image::init(DX12Device* device, uint32_t width, uint32_t height, uint32
         D3D12_HEAP_FLAG_NONE,
         &desc,
         m_currentState,
-        (flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) ? &clearValue : nullptr,
+        (useClearValue) ? &clearValue : nullptr,
         IID_PPV_ARGS(&m_dxResource));
     if (FAILED(hr)) {
         LN_ERROR("CreateCommittedResource failed.");
@@ -74,7 +86,7 @@ bool DX12Image::init(DX12Device* device, uint32_t width, uint32_t height, uint32
     return true;
 }
 
-bool DX12Image::init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderTarget)
+bool DX12Image::init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderTarget, D3D12_RESOURCE_STATES state)
 {
     m_dxResource = dxRenderTarget;
 
@@ -84,7 +96,7 @@ bool DX12Image::init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderT
     m_dxFormat = desc.Format;
     //m_format = DX12Helper::DXFormatToLNTextureFormat(desc.Format);
     //m_dxFormat = desc.Format;
-    //m_currentState = D3D12_RESOURCE_STATE_PRESENT;
+    m_currentState = state;
     //if (LN_REQUIRE(m_format != TextureFormat::Unknown)) return false;
 
     return true;
@@ -138,7 +150,7 @@ Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint
 
     m_image = makeRHIRef<DX12Image>();
     if (!m_image->init(
-        device, width, height, mipLevels,
+        device, width, height, mipLevels, false,
         DX12Helper::LNTextureFormatToDXFormat(format),
         D3D12_RESOURCE_FLAG_NONE,
         (initialData) ? D3D12_RESOURCE_STATE_COPY_DEST : D3D12_RESOURCE_STATE_GENERIC_READ)) {
@@ -396,7 +408,7 @@ DX12RenderTarget::DX12RenderTarget()
 {
 }
 
-bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
     m_device = device;
     m_size.width = width;
@@ -408,7 +420,7 @@ bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height,
 
     m_image = makeRHIRef<DX12Image>();
     if (!m_image->init(
-        device, width, height, 1,
+        device, width, height, 1, msaa,
         DX12Helper::LNTextureFormatToDXFormat(m_format),
         D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
         D3D12_RESOURCE_STATE_GENERIC_READ)) {
@@ -463,7 +475,16 @@ bool DX12RenderTarget::init(DX12Device* device, const ComPtr<ID3D12Resource>& dx
     m_device = device;
 
     m_image = makeRHIRef<DX12Image>();
-    if (!m_image->init(device, dxRenderTarget)) {
+    if (!m_image->init(device, dxRenderTarget, D3D12_RESOURCE_STATE_PRESENT)) {
+        return false;
+    }
+
+    m_multisampleBuffer = makeRHIRef<DX12Image>();
+    if (!m_multisampleBuffer->init(
+        device, m_image->size().width, m_image->size().height, 1, true,
+        m_image->dxFormat(),
+        D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
+        D3D12_RESOURCE_STATE_GENERIC_READ)) {
         return false;
     }
 
@@ -478,6 +499,10 @@ void DX12RenderTarget::dispose()
     if (m_image) {
         m_image->dispose();
         m_image = nullptr;
+    }
+    if (m_multisampleBuffer) {
+        m_multisampleBuffer->dispose();
+        m_multisampleBuffer = nullptr;
     }
     DX12Texture::dispose();
 }
@@ -565,57 +590,32 @@ RHIPtr<RHIBitmap> DX12RenderTarget::readData()
 DX12DepthBuffer::DX12DepthBuffer()
     : m_deviceContext(nullptr)
     , m_size(0, 0)
-    , m_dxDepthBuffer()
 {
 }
 
-Result DX12DepthBuffer::init(DX12Device* deviceContext, uint32_t width, uint32_t height)
+Result DX12DepthBuffer::init(DX12Device* device, uint32_t width, uint32_t height)
 {
-    LN_DCHECK(deviceContext);
     if (LN_REQUIRE(width > 0)) return false;
     if (LN_REQUIRE(height > 0)) return false;
-    m_deviceContext = deviceContext;
+    m_deviceContext = device;
     m_size.width = width;
     m_size.height = height;
 
-    m_dxFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    m_currentState = D3D12_RESOURCE_STATE_DEPTH_READ;
+    m_image = makeRHIRef<DX12Image>();
+    if (!m_image->init(
+        device, width, height, 1, false,
+        DXGI_FORMAT_D24_UNORM_S8_UINT,
+        D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
+        D3D12_RESOURCE_STATE_GENERIC_READ)) {
+        return false;
+    }
 
-    ID3D12Device* dxDevice = m_deviceContext->device();
-
-    D3D12_HEAP_PROPERTIES props;
-    props.Type = D3D12_HEAP_TYPE_DEFAULT;
-    props.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-    props.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-    props.CreationNodeMask = m_deviceContext->creationNodeMask();
-    props.VisibleNodeMask = m_deviceContext->visibleNodeMask();
-
-    D3D12_RESOURCE_DESC desc;
-    desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-    desc.Alignment = 0;
-    desc.Width = m_size.width;
-    desc.Height = m_size.height;
-    desc.DepthOrArraySize = 1;  // This depth stencil view has only one texture.
-    desc.MipLevels = 1;         // Use a single mipmap level.
-    desc.Format = m_dxFormat;
-    desc.SampleDesc.Count = 1;
-    desc.SampleDesc.Quality = 0;
-    desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-    desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-
-    D3D12_CLEAR_VALUE clearValue = {};
-    clearValue.Format = m_dxFormat;
-    clearValue.DepthStencil.Depth = 1.0f;
-    clearValue.DepthStencil.Stencil = 0;
-
-    if (FAILED(dxDevice->CreateCommittedResource(
-        &props,
-        D3D12_HEAP_FLAG_NONE,
-        &desc,
-        m_currentState,
-        &clearValue,
-        IID_PPV_ARGS(&m_dxDepthBuffer)))) {
-        LN_ERROR("CreateCommittedResource failed.");
+    m_multisampleBuffer = makeRHIRef<DX12Image>();
+    if (!m_multisampleBuffer->init(
+        device, width, height, 1, true,
+        DXGI_FORMAT_D24_UNORM_S8_UINT,
+        D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
+        D3D12_RESOURCE_STATE_GENERIC_READ)) {
         return false;
     }
 
@@ -624,23 +624,15 @@ Result DX12DepthBuffer::init(DX12Device* deviceContext, uint32_t width, uint32_t
 
 void DX12DepthBuffer::dispose()
 {
-    m_dxDepthBuffer.Reset();
+    if (m_image) {
+        m_image->dispose();
+        m_image = nullptr;
+    }
+    if (m_multisampleBuffer) {
+        m_multisampleBuffer->dispose();
+        m_multisampleBuffer = nullptr;
+    }
     IDepthBuffer::dispose();
-}
-
-void DX12DepthBuffer::resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState)
-{
-    if (m_currentState == newState) return;
-
-    D3D12_RESOURCE_BARRIER barrier = {};
-    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-    barrier.Transition.pResource = m_dxDepthBuffer.Get();
-    barrier.Transition.StateBefore = m_currentState;
-    barrier.Transition.StateAfter = newState;
-    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-    commandList->ResourceBarrier(1, &barrier);
-    m_currentState = newState;
 }
 
 } // namespace detail

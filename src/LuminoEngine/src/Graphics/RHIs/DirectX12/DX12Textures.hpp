@@ -10,8 +10,8 @@ class DX12Image
 {
 public:
     DX12Image();
-    bool init(DX12Device* device, uint32_t width, uint32_t height, uint32_t mipLevels, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initialState);
-    bool init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderTarget);
+    bool init(DX12Device* device, uint32_t width, uint32_t height, uint32_t mipLevels, bool msaa, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initialState);
+    bool init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderTarget, D3D12_RESOURCE_STATES state);
     void dispose();
 
     const RHISizeI& size() const { return m_size; }
@@ -85,7 +85,7 @@ class DX12RenderTarget
 {
 public:
     DX12RenderTarget();
-    bool init(DX12Device* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
+    bool init(DX12Device* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
     bool init(DX12Device* deviceContext, const ComPtr<ID3D12Resource>& dxRenderTarget);
     void dispose() override;
     DeviceTextureType type() const override { return DeviceTextureType::RenderTarget; }
@@ -99,16 +99,15 @@ public:
     //virtual const DX12Image* image() const override { return m_image.get(); }
 
     //ID3D12Resource* dxResource() const override { return m_dxRenderTarget.Get(); }
-    bool isMultisample() const override { return false; }
-    //const VulkanImage* multisampleColorBuffer() const { return m_multisampleColorBuffer.get(); }
+    bool isMultisample() const override { return m_multisampleBuffer != nullptr; }
+    DX12Image* multisampleBuffer() const { return m_multisampleBuffer.get(); }
 
 
 protected:
     DX12Device* m_device;
     SizeI m_size;
     TextureFormat m_format;
-    
-    //ComPtr<ID3D12Resource> m_dxRenderTarget;
+    RHIPtr<DX12Image> m_multisampleBuffer;
 };
 
 class DX12DepthBuffer
@@ -116,22 +115,22 @@ class DX12DepthBuffer
 {
 public:
     DX12DepthBuffer();
-    Result init(DX12Device* deviceContext, uint32_t width, uint32_t height);
+    Result init(DX12Device* device, uint32_t width, uint32_t height);
     void dispose();
     const SizeI& size() const { return m_size; }
 
-    ID3D12Resource* dxResource() const { return m_dxDepthBuffer.Get(); }
-    DXGI_FORMAT dxFormat() const { return m_dxFormat; }
-    void resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
+    DX12Image* image() const { return m_image.get(); }
+    DXGI_FORMAT dxFormat() const { return m_image->dxFormat(); }
+    ID3D12Resource* dxResource() const { return m_image->dxResource(); }
 
-    bool isMultisample() const override { return false; }
+    bool isMultisample() const override { return m_multisampleBuffer != nullptr; }
+    DX12Image* multisampleBuffer() const { return m_multisampleBuffer.get(); }
 
 private:
     DX12Device* m_deviceContext;
     SizeI m_size;
-    ComPtr<ID3D12Resource> m_dxDepthBuffer;
-    DXGI_FORMAT m_dxFormat;
-    D3D12_RESOURCE_STATES m_currentState;
+    RHIPtr<DX12Image> m_image;
+    RHIPtr<DX12Image> m_multisampleBuffer;
 };
 
 } // namespace detail
