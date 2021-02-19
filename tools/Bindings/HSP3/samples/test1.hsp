@@ -1,0 +1,10 @@
+#include "lumino.as"
+LUMINO_APP
+
+*on_init
+	LNUIText_CreateWithText "Hello, Lumino!", text
+	LNUIElement_AddInto text
+    return
+
+*on_update
+	return
