@@ -27,13 +27,12 @@
       <ProjectItem ReplaceParameters="false" TargetFileName="targetver.h">APP\targetver.h</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="app.rc">APP\app.rc</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="app.ico">APP\app.ico</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="small.ico">APP\small.ico</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Lumino.natvis">APP\Lumino.natvis</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="Main.cpp">Main.cpp</ProjectItem>
-      <Folder Name="assets" TargetFolderName="assets">
-        <ProjectItem ReplaceParameters="false" TargetFileName="icon256.png">ASSETS\icon256.png</ProjectItem>
-        <ProjectItem ReplaceParameters="false" TargetFileName="LineWave.fx">ASSETS\LineWave.fx</ProjectItem>
-        <ProjectItem ReplaceParameters="false" TargetFileName="picture1.jpg">ASSETS\picture1.jpg</ProjectItem>
-      </Folder>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Main.cpp" OpenInEditor="true">Main.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="icon256.png">ASSETS\icon256.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="LineWave.fx">ASSETS\LineWave.fx</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="picture1.jpg">ASSETS\picture1.jpg</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>

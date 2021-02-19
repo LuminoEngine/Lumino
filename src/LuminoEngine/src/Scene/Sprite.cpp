@@ -165,6 +165,12 @@ void Sprite::setPixelsParUnit(float value)
 //==============================================================================
 // Sprite::BuilderDetails
 
+Sprite::BuilderDetails::BuilderDetails()
+    : texture()
+    , size(-1.f, 1.f)
+{
+}
+
 void Sprite::BuilderDetails::apply(Sprite* p) const
 {
     VisualObject::BuilderDetails::apply(p);
