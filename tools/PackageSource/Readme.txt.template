@@ -3,22 +3,13 @@
 
 概要
 --------------------
-Lumino はリアルタイムグラフィックスアプリケーションのためのオープンソースフレームワークです。
-現在は主にゲーム開発を支援するためのゲームエンジンとして開発を進めています。
-
-
-推奨動作環境
---------------------
-OS              Windows /7/8.1/10 32/64Bit (DirectX 9.0c 以上)
-CPU             Pentium または互換性のあるCPU (2Core以上推奨)
-メモリ          1GB以上
-サウンドカード  XAudio2 互換
+Lumino はリアルタイムグラフィックスアプリケーションのためのオープンソースライブラリです。
 
 
 ライセンス
 --------------------
 The MIT license.
-Lumino Copyright (c) 2013-2020 lriki
+Lumino Copyright (c) 2013-2021 lriki
 
 Lumino は MIT ライセンスで提供されています。
 https://opensource.org/licenses/mit-license.php

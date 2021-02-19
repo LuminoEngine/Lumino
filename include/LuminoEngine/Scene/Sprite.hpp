@@ -156,6 +156,7 @@ struct Sprite::BuilderDetails : public VisualObject::BuilderDetails
     Ref<Texture> texture;
     Size size;
 
+    BuilderDetails();
     void apply(Sprite* p) const;
 };
 
