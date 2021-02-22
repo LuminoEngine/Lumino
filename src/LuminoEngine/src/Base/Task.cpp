@@ -194,6 +194,7 @@ void TaskScheduler::init()
 void TaskScheduler::finalizeInternal()
 {
 	if (s_instance) {
+        s_instance->dispose();
 		RefObjectHelper::release(s_instance);
 		s_instance = nullptr;
 	}
@@ -218,6 +219,11 @@ TaskScheduler::TaskScheduler(int threadCount)
 
 TaskScheduler::~TaskScheduler()
 {
+    LN_CHECK(m_threadList.isEmpty());
+}
+
+void TaskScheduler::dispose()
+{
     m_endRequested = true;
 
     for (int i = 0; i < m_threadList.size(); i++)	// スレッドの数だけセマフォ増やして全部起こして、
@@ -229,6 +235,8 @@ TaskScheduler::~TaskScheduler()
         thr->join();
     }
     m_threadList.clear();
+
+    LN_CHECK(m_taskQueue.isEmpty());
 }
 
 int TaskScheduler::maxConcurrencyLevel() const
@@ -302,11 +310,6 @@ void TaskScheduler::executeThread()
             }
 
             queueEmpty = m_taskQueue.isEmpty();
-
-            //task = m_taskQueue.front();
-            //m_taskQueue.pop_front();
-
-
         }
 
         // 実行。状態変化は内部で行う

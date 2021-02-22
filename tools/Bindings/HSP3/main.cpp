@@ -53,8 +53,10 @@ static void* reffunc(int* type_res, int cmd)
 
 static int termfunc(int option)
 {
+	LNLog_Write(LN_LOG_LEVEL_DEBUG, u"HSP3", u"termfunc() started.");
 	LNEngine_Terminate();
 	LNRuntime_Finalize();
+	LNLog_Write(LN_LOG_LEVEL_DEBUG, u"HSP3", u"termfunc() finished.");
 	return 0;
 }
 
