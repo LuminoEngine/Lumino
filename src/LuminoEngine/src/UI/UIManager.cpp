@@ -155,6 +155,8 @@ void UIManager::init(const Settings& settings)
 
 void UIManager::dispose()
 {
+    LN_LOG_DEBUG << "UIManager dispose started.";
+
     UICreationContext::Default = nullptr;
     UICreationContext::DisabledAutoAddToPrimaryElement = nullptr;
 
@@ -162,6 +164,8 @@ void UIManager::dispose()
     //m_mainContext = nullptr;
     m_styleContext = nullptr;
     m_finalDefaultStyle = nullptr;
+
+    LN_LOG_DEBUG << "UIManager dispose finished.";
 }
 
 void UIManager::onElementDisposing(UIElement* element)

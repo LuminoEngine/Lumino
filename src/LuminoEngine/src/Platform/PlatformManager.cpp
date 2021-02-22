@@ -62,6 +62,8 @@ Result PlatformManager::init(const Settings& settings)
 
 void PlatformManager::dispose()
 {
+    LN_LOG_DEBUG << "PlatformManager dispose started.";
+
 	if (m_mainWindow) {
 		m_windowManager->destroyWindow(m_mainWindow);
 		m_mainWindow = nullptr;
@@ -70,6 +72,8 @@ void PlatformManager::dispose()
 		m_windowManager->dispose();
 		m_windowManager = nullptr;
 	}
+
+    LN_LOG_DEBUG << "PlatformManager dispose finished.";
 }
 
 OpenGLContext* PlatformManager::openGLContext() const

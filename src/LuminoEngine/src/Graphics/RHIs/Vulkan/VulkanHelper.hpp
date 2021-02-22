@@ -268,7 +268,7 @@ public:
 
     static const char* getVkResultName(VkResult result);
     static bool hasStencilComponent(VkFormat format) { return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT; }
-    static bool checkValidationLayerSupport();
+    static std::vector<const char*> checkValidationLayerSupport();
     static int getPrimitiveVertexCount(PrimitiveTopology primitive, int primitiveCount);
 
     static Result createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView);

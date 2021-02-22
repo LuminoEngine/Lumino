@@ -212,7 +212,8 @@ namespace detail {
 
 const std::vector<const char*> VulkanHelper::validationLayers =
 {
-    "VK_LAYER_KHRONOS_validation"
+    "VK_LAYER_KHRONOS_validation",
+    "VK_LAYER_LUNARG_standard_validation",
 };
 
 struct FormatConversionItem
@@ -757,7 +758,7 @@ const char* VulkanHelper::getVkResultName(VkResult result)
     return "<Unkonwn VkResult>";
 }
 
-bool VulkanHelper::checkValidationLayerSupport()
+std::vector<const char*> VulkanHelper::checkValidationLayerSupport()
 {
     uint32_t layerCount;
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -765,22 +766,20 @@ bool VulkanHelper::checkValidationLayerSupport()
     std::vector<VkLayerProperties> availableLayers(layerCount);
     vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
+    std::vector<const char*> result;
+
     for (const char* layerName : validationLayers) {
         bool layerFound = false;
 
         for (const auto& layerProperties : availableLayers) {
             if (strcmp(layerName, layerProperties.layerName) == 0) {
-                layerFound = true;
+                result.push_back(layerName);
                 break;
             }
         }
-
-        if (!layerFound) {
-            return false;
-        }
     }
 
-    return true;
+    return result;
 }
 
 int VulkanHelper::getPrimitiveVertexCount(PrimitiveTopology primitive, int primitiveCount)

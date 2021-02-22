@@ -332,11 +332,13 @@ void RenderingManager::init(const Settings& settings)
         m_builtinMaterials[(int)BuiltinMaterial::Unlit] = material;
     }
 
-    LN_LOG_DEBUG << "RenderingManager Initialization ended.";
+    LN_LOG_DEBUG << "RenderingManager Initialization finished.";
 }
 
 void RenderingManager::dispose()
 {
+	LN_LOG_DEBUG << "RenderingManager dispose started.";
+
 	for (int i = 0; i < m_builtinShaders.size(); i++) {
 		m_builtinShaders[i] = nullptr;
 	}
@@ -351,6 +353,8 @@ void RenderingManager::dispose()
 	m_standardVertexDeclarationRHI = nullptr;
 	m_standardVertexDeclaration = nullptr;
     m_renderFeatures.clear();
+
+	LN_LOG_DEBUG << "RenderingManager dispose finished.";
 }
 
 void RenderingManager::createBuiltinShader(BuiltinShader index, const Char* name, const void* data, int dataLen)
