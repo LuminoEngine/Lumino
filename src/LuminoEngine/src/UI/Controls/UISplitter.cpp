@@ -15,7 +15,7 @@ UISplitter::UISplitter()
 
 void UISplitter::init()
 {
-    UIControl::init(nullptr);
+    UIControl::init();
 }
 
 void UISplitter::setOrientation(UILayoutOrientation value)

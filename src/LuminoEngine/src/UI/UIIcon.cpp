@@ -38,7 +38,7 @@ UIIcon::UIIcon()
 
 bool UIIcon::init()
 {
-	if (!UIElement::init(nullptr)) return false;
+	if (!UIElement::init()) return false;
 	setAlignments(UIHAlignment::Center, UIVAlignment::Center);
 	return true;
 }

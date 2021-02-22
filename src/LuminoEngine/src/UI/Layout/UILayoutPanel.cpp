@@ -53,7 +53,7 @@ UILayoutPanel::UILayoutPanel()
 
 bool UILayoutPanel::init()
 {
-    return UIElement::init(nullptr);
+    return UIElement::init();
 }
 
 void UILayoutPanel::removeChild(UIElement* child)

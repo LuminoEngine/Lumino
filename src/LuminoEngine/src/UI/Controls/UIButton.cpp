@@ -18,9 +18,9 @@ UIButtonBase::UIButtonBase()
 {
 }
 
-bool UIButtonBase::init(const UICreationContext* context)
+bool UIButtonBase::init()
 {
-    if (!UIControl::init(context)) return false;
+    if (!UIControl::init()) return false;
     auto vsm = getVisualStateManager();
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Pressed);
     return true;
@@ -107,9 +107,9 @@ UIButton::UIButton()
 {
 }
 
-bool UIButton::init(const UICreationContext* context)
+bool UIButton::init()
 {
-    if (!UIButtonBase::init(context)) return false;
+    if (!UIButtonBase::init()) return false;
     return true;
 }
 
@@ -143,9 +143,9 @@ UIToggleButton::UIToggleButton()
 {
 }
 
-bool UIToggleButton::init(const UICreationContext* context)
+bool UIToggleButton::init()
 {
-    if (!UIButtonBase::init(context)) return false;
+    if (!UIButtonBase::init()) return false;
 
 	auto* vsm = getVisualStateManager();
 	vsm->registerState(UIVisualStates::CheckStates, UIVisualStates::CheckedState);

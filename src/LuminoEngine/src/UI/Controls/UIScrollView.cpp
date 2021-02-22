@@ -16,7 +16,7 @@ UIScrollView::UIScrollView()
 
 void UIScrollView::init()
 {
-	UIControl::init(nullptr);
+	UIControl::init();
 }
 
 
@@ -35,7 +35,7 @@ UIThumb::~UIThumb()
 
 void UIThumb::init()
 {
-	UIElement::init(nullptr);
+	UIElement::init();
 }
 
 void UIThumb::onRoutedEvent(UIEventArgs* e)
@@ -135,7 +135,7 @@ UIRangeBase::~UIRangeBase()
 
 void UIRangeBase::init()
 {
-	UIElement::init(nullptr);
+	UIElement::init();
 }
 
 void UIRangeBase::setValue(float value)
@@ -223,16 +223,16 @@ UITrack::~UITrack()
 
 void UITrack::init()
 {
-	UIElement::init(nullptr);
+	UIElement::init();
 
 	// register VisualState
 	auto* vsm = getVisualStateManager();
 	vsm->registerState(OrientationStates, HorizontalState);
 	vsm->registerState(OrientationStates, VerticalState);
 
-	//m_decreaseButton = makeObject<UIButton>(UICreationContext::DisabledAutoAddToPrimaryElement);
+	//m_decreaseButton = makeObject<UIButton>();
 	m_thumb = makeObject<UIThumb>();
-	//m_increaseButton = makeObject<UIButton>(UICreationContext::DisabledAutoAddToPrimaryElement);
+	//m_increaseButton = makeObject<UIButton>();
 
 	//m_decreaseButton->addClass(u"UITrack-DecreaseButton");
 	m_thumb->addClass(u"UITrack-Thumb");
@@ -514,7 +514,7 @@ UIScrollBar::~UIScrollBar()
 
 void UIScrollBar::init()
 {
-    UIElement::init(nullptr);
+    UIElement::init();
 
     // register VisualState
     auto* vsm = getVisualStateManager();

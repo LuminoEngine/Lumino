@@ -119,13 +119,6 @@ void UIManager::init(const Settings& settings)
     m_commonInputCommands.submit->addInputGesture(makeObject<KeyGesture>(Keys::Z, ModifierKeys::None));
     m_commonInputCommands.cancel->addInputGesture(makeObject<KeyGesture>(Keys::X, ModifierKeys::None));
 
-
-    UICreationContext::Default = makeObject<UICreationContext>();
-    UICreationContext::Default->m_autoAddToPrimaryElement = true;
-
-    UICreationContext::DisabledAutoAddToPrimaryElement = makeObject<UICreationContext>();
-    UICreationContext::DisabledAutoAddToPrimaryElement->m_autoAddToPrimaryElement = false;
-
     {
         m_finalDefaultStyle = makeRef<detail::UIStyleInstance>();
         m_styleContext = makeObject<UIStyleContext>();
@@ -156,9 +149,6 @@ void UIManager::init(const Settings& settings)
 void UIManager::dispose()
 {
     LN_LOG_DEBUG << "UIManager dispose started.";
-
-    UICreationContext::Default = nullptr;
-    UICreationContext::DisabledAutoAddToPrimaryElement = nullptr;
 
     m_eventArgsPool = nullptr;
     //m_mainContext = nullptr;

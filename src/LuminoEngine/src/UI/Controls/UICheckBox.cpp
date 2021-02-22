@@ -26,7 +26,7 @@ bool UICheckBox::init()
 	//auto vsm = getVisualStateManager();
 	//vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Pressed);
 
-	m_checkMark = makeObject<UIElement>(UICreationContext::DisabledAutoAddToPrimaryElement);
+	m_checkMark = makeObject<UIElement>();
 	m_checkMark->setVAlignment(UIVAlignment::Center);
 	m_checkMark->addClass(u"UICheckBox-CheckMark");
 	m_checkMark->setPartParent(this);

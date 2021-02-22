@@ -22,7 +22,7 @@ UISliderField::UISliderField()
 
 void UISliderField::init()
 {
-	UIControl::init(nullptr);
+	UIControl::init();
 
 	//setBackgroundColor(Color::White.withAlpha(0.5));
 	//setBorderColor(Color::Gray);
