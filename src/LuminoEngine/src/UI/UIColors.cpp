@@ -8,7 +8,7 @@ namespace ln {
 // UIColors
 
 static bool g_colorsInit = false;
-static Color g_colors[20][UIColors::MaxShades];
+static std::array<std::array<Color, UIColors::MaxShades>, 21> g_colors;
 
 static const void InitColors()
 {
