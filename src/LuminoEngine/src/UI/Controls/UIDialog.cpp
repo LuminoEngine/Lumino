@@ -19,7 +19,7 @@ UIDialog::UIDialog()
 
 void UIDialog::init()
 {
-	UIElement::init(nullptr);
+	UIElement::init();
     specialElementFlags().set(detail::UISpecialElementFlags::Popup);
 
     // UIAdorner で左上を PlacementTarget と合わせてもらう

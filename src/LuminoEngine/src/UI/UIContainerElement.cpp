@@ -22,7 +22,7 @@ UIContainerElement::UIContainerElement()
 
 bool UIContainerElement::init()
 {
-    return UIControl::init(nullptr);
+    return UIControl::init();
 }
 
 //==============================================================================

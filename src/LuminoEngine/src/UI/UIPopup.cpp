@@ -19,7 +19,7 @@ UIPopup::UIPopup()
 
 void UIPopup::init()
 {
-	UIElement::init(nullptr);
+	UIElement::init();
     specialElementFlags().set(detail::UISpecialElementFlags::Popup);
 
     // UIAdorner で左上を PlacementTarget と合わせてもらう

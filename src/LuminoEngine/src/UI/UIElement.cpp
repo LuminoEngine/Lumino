@@ -18,9 +18,6 @@
 #include "UIManager.hpp"
 
 namespace ln {
-    
-Ref<UICreationContext> UICreationContext::Default;
-Ref<UICreationContext> UICreationContext::DisabledAutoAddToPrimaryElement;
 
 //==============================================================================
 // UIViewModel
@@ -127,10 +124,9 @@ void UIElement::onDispose(bool explicitDisposing)
     UILayoutElement::onDispose(explicitDisposing);
 }
 
-bool UIElement::init(const UICreationContext* context)
+bool UIElement::init()
 {
 	UILayoutElement::init(m_finalStyle);
-    context = (context) ? context : UICreationContext::Default;
     m_manager = detail::EngineDomain::uiManager();
     //if (LN_REQUIRE(m_manager->mainContext())) return false;
 

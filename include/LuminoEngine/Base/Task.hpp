@@ -196,6 +196,7 @@ public:
 private:
     TaskScheduler(int threadCount);
     ~TaskScheduler();
+    void dispose();
 
     void queueTask(Task* task);
     void executeThread();

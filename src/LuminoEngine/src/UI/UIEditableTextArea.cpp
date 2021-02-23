@@ -579,7 +579,7 @@ UITextArea::UITextArea()
 
 void UITextArea::init()
 {
-	UIElement::init(nullptr);
+	UIElement::init();
 	m_textLayout = makeObject<detail::UITextLayout>();
     focus();    // TODO: test
 

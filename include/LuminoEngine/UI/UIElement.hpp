@@ -61,25 +61,7 @@ struct GridLayoutInfo
 									// -1 は Ratio というより、LayoutPanel のデフォルトに任せますよ、という意思表示。
 };
 
-}
-
-//class UILayoutContext
-//	: public Object
-//{
-//public:
-//	float m_dpiScaleFactor;
-//};
-
-
-class UICreationContext
-	: public Object
-{
-public:
-	bool m_autoAddToPrimaryElement = true;
-
-	static Ref<UICreationContext> Default;
-	static Ref<UICreationContext> DisabledAutoAddToPrimaryElement;
-};
+} // namespace detail
 
 class UIViewModel
 	: public Object
@@ -452,8 +434,7 @@ public:
 
     UIElement();
     virtual ~UIElement();
-	bool init() { return init(UICreationContext::Default); }
-	bool init(const UICreationContext* context);
+	bool init();
 
 public: // TODO: internal
     void setRenderPriority(int value);

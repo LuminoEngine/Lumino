@@ -17,7 +17,10 @@ RefObject::RefObject()
 
 RefObject::~RefObject()
 {
-	LN_CHECK(m_referenceCount <= 1);
+    if (m_referenceCount > 1) {
+        LN_ERROR("Forcibly delete the instance with the remaining reference. (0x%p, refCount:%d)", this, m_referenceCount.load());
+        LN_CHECK(m_referenceCount <= 1);
+    }
 }
 
 void RefObject::finalize()
@@ -43,8 +46,8 @@ int32_t RefObject::retain()
 
 int32_t RefObject::release()
 {
-    int32_t count = (--m_referenceCount);
-    int32_t count2 = m_internalReferenceCount;
+    const int32_t count = (--m_referenceCount);
+    const int32_t count2 = m_internalReferenceCount;
 
 	if (getObjectFlag(detail::RefObjectFlags_ReferenceTracking)) {
 		onReleased();

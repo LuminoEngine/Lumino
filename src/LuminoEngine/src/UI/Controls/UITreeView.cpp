@@ -27,7 +27,7 @@ void UITreeItem::init()
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Pressed);
 
     // TODO: CreationContext とか用意したほうがいいかも。init を public にしないとダメだし。
-	m_expanderButton = makeObject<UIToggleButton>(UICreationContext::DisabledAutoAddToPrimaryElement);
+	m_expanderButton = makeObject<UIToggleButton>();
     //m_expanderButton = makeRef<UIToggleButton>();
     //m_expanderButton->m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
     //m_expanderButton->init();
@@ -434,7 +434,7 @@ bool UITreeItem2::init()
     vsm->gotoState(UIVisualStates::Unselected);
 
     // TODO: CreationContext とか用意したほうがいいかも。init を public にしないとダメだし。
-    m_expanderButton = makeObject<UIToggleButton>(UICreationContext::DisabledAutoAddToPrimaryElement);
+    m_expanderButton = makeObject<UIToggleButton>();
     m_expanderButton->addClass(u"UITreeItem-Expander");
     m_expanderButton->connectOnChecked(bind(this, &UITreeItem2::expander_Checked));
     m_expanderButton->connectOnUnchecked(bind(this, &UITreeItem2::expander_Unchecked));

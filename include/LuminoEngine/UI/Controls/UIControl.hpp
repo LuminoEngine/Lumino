@@ -134,9 +134,7 @@ public:
 
     /** init */
     LN_METHOD()
-    bool init() { return init(UICreationContext::Default); }
-
-    bool init(const UICreationContext* context);
+    bool init();
     virtual void onDispose(bool explicitDisposing) override;
 
 

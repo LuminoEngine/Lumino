@@ -19,8 +19,7 @@ class UIButtonBase
 	LN_OBJECT;
 public:
 	UIButtonBase();
-	bool init() { return init(UICreationContext::Default); }
-	bool init(const UICreationContext* context);
+	bool init();
 
 	/** set text. */
 	LN_METHOD()
@@ -53,8 +52,7 @@ public:
 
 	/** init. */
 	LN_METHOD()
-	bool init() { return init(UICreationContext::Default); }
-	bool init(const UICreationContext* context);
+	bool init();
 
 	/** 表示文字列を指定して UIButton を作成します。 */
 	LN_METHOD(OverloadPostfix = "WithText")
@@ -96,8 +94,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	UIToggleButton();
-	bool init() { return init(UICreationContext::Default); }
-	bool init(const UICreationContext* context);
+	bool init();
 
 protected:
 	virtual const String& elementName() const  override { static String name = u"UIToggleButton"; return name; }

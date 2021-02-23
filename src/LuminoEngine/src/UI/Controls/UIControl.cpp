@@ -24,9 +24,9 @@ UIControl::UIControl()
     setFocusable(true);
 }
 
-bool UIControl::init(const UICreationContext* context)
+bool UIControl::init()
 {
-    if (!UIElement::init(context)) return false;
+    if (!UIElement::init()) return false;
     auto vsm = getVisualStateManager();
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Normal);
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::MouseOver);

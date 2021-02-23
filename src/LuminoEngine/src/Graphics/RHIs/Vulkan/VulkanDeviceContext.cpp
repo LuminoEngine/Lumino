@@ -40,6 +40,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 VulkanDevice::VulkanDevice()
     : m_instance(VK_NULL_HANDLE)
     , m_debugMessenger(VK_NULL_HANDLE)
+    , m_activePhysicalDeviceInfoIndex(-1)
 	//, m_graphicsContext(nullptr)
     , m_enableValidationLayers(false)
 {
@@ -136,7 +137,7 @@ void VulkanDevice::onGetCaps(GraphicsDeviceCaps * outCaps)
     outCaps->requestedShaderTriple.target = "spv";
     outCaps->requestedShaderTriple.version = 110;
     outCaps->requestedShaderTriple.option = "";
-    outCaps->uniformBufferOffsetAlignment = 64; // TODO: limits からとれる？
+    outCaps->uniformBufferOffsetAlignment = m_physicalDeviceInfos[m_activePhysicalDeviceInfoIndex].deviceProperty.limits.minUniformBufferOffsetAlignment;
 }
 
 Ref<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
@@ -316,13 +317,13 @@ Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags p
 
 Result VulkanDevice::createInstance()
 {
-    if (m_enableValidationLayers && !VulkanHelper::checkValidationLayerSupport()) {
-        LN_LOG_ERROR << "validation layers requested, but not available!";
-        return false;
+    if (m_enableValidationLayers) {
+        m_availableValidationLayers = VulkanHelper::checkValidationLayerSupport();
+        if (m_availableValidationLayers.empty()) {
+            LN_LOG_ERROR << "validation layers requested, but not available!";
+            return false;
+        }
     }
-
-    //uint32_t apiVersion;
-    //VkResult r = vkEnumerateInstanceVersion(&apiVersion);
 
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -356,8 +357,8 @@ Result VulkanDevice::createInstance()
     createInfo.ppEnabledExtensionNames = extensions.data();
 
     if (m_enableValidationLayers) {
-        createInfo.enabledLayerCount = static_cast<uint32_t>(VulkanHelper::validationLayers.size());
-        createInfo.ppEnabledLayerNames = VulkanHelper::validationLayers.data();
+        createInfo.enabledLayerCount = static_cast<uint32_t>(m_availableValidationLayers.size());
+        createInfo.ppEnabledLayerNames = m_availableValidationLayers.data();
     }
     else {
         createInfo.enabledLayerCount = 0;
@@ -479,6 +480,7 @@ Result VulkanDevice::pickPhysicalDevice()
         return a.deviceProperty.limits.maxImageDimension2D < b.deviceProperty.limits.maxImageDimension2D;
     });
     int index = itr - m_physicalDeviceInfos.begin();
+    m_activePhysicalDeviceInfoIndex = index;
 
     const PhysicalDeviceInfo& info = m_physicalDeviceInfos[index];
     m_physicalDevice = info.device;
@@ -746,8 +748,8 @@ Result VulkanDevice::createLogicalDevice()
 	createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
 	if (m_enableValidationLayers) {
-		createInfo.enabledLayerCount = static_cast<uint32_t>(VulkanHelper::validationLayers.size());
-		createInfo.ppEnabledLayerNames = VulkanHelper::validationLayers.data();
+		createInfo.enabledLayerCount = static_cast<uint32_t>(m_availableValidationLayers.size());
+		createInfo.ppEnabledLayerNames = m_availableValidationLayers.data();
 	}
 	else {
 		createInfo.enabledLayerCount = 0;

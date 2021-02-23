@@ -119,6 +119,7 @@ public: // TODO:
 	//GLFWwindow* m_mainWindow; // TODO:
     VulkanSwapChain* m_mainSwapchain = nullptr; // TODO:
 
+    std::vector<const char*> m_availableValidationLayers;
     VkInstance m_instance;
     VkDebugUtilsMessengerEXT m_debugMessenger;
     VkPhysicalDevice m_physicalDevice;
@@ -142,6 +143,7 @@ public: // TODO:
     std::vector<ImageFormatProperty> m_imageFormatProperties;
     VkPhysicalDeviceMemoryProperties m_deviceMemoryProperties;
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
+    int32_t m_activePhysicalDeviceInfoIndex;
     VkSampleCountFlagBits m_msaaSamples;
     bool m_enableValidationLayers;
 };

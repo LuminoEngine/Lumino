@@ -397,7 +397,7 @@ UIMessageTextArea::UIMessageTextArea()
 
 bool UIMessageTextArea::init()
 {
-    if (!UIElement::init(nullptr)) return false;
+    if (!UIElement::init()) return false;
 
 	m_document = makeObject<detail::RTDocument>();
 
@@ -493,7 +493,7 @@ UIMessageTextWindow::UIMessageTextWindow()
 
 void UIMessageTextWindow::init()
 {
-    UIElement::init(nullptr);
+    UIElement::init();
     m_document = makeObject<detail::RTDocument>();
 }
 
