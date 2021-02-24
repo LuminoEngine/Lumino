@@ -15,6 +15,7 @@ class App_Example_glTFSampleViewer : public Application
         Engine::renderView()->setGizmoEnabled(true);
         Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         //Engine::renderView()->setBackgroundColor(Color::Gray);
+        //Scene::setAntialiasEnabled(false);
 
         namespace fs = std::filesystem;
 

@@ -187,6 +187,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
         if (m_hdrEnabled) {
             m_hdrRenderTarget = RenderTargetTexture::realloc(m_hdrRenderTarget, m_viewPoint->viewPixelSize.width, m_viewPoint->viewPixelSize.height, TextureFormat::RGBA32F, false, SamplerState::pointClamp());
+            //m_hdrRenderTarget->m_msaa = true;
         }
 
 

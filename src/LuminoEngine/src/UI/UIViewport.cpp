@@ -261,7 +261,8 @@ void UIViewport::onRoutedEvent(UIEventArgs* e)
 void UIViewport::acquirePrimaryTarget(const SizeI& viewPixelSize)
 {
 	if (!m_primaryTarget || m_primaryTarget->width() != viewPixelSize.width || m_primaryTarget->height() != viewPixelSize.height) {
-		m_primaryTarget = makeObject<RenderTargetTexture>(viewPixelSize.width, viewPixelSize.height, TextureFormat::RGBA8, false);
+		m_primaryTarget = makeObject<RenderTargetTexture>(viewPixelSize.width, viewPixelSize.height, TextureFormat::RGBA8, false, false);
+		//m_primaryTarget->m_msaa = true;
 	}
 }
 

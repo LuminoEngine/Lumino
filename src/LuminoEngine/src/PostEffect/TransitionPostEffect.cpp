@@ -159,11 +159,11 @@ bool TransitionPostEffectInstance::preparePreviousFrameTarget(int width, int hei
         // こちらは初回だけ適当なサイズで作ればOK.
         // freeze のたびに m_previousFrameTarget と swap されるので、その際にサイズが足りなければ ↓ の
         // m_previousFrameTarget の再構築処理で再構築される。
-        m_overrayTarget = makeObject<RenderTargetTexture>(width, height, TextureFormat::RGBA8, false);
+        m_overrayTarget = makeObject<RenderTargetTexture>(width, height, TextureFormat::RGBA8, false, false);
     }
 
     if (!m_previousFrameTarget || (m_previousFrameTarget->width() != width || m_previousFrameTarget->height() != height)) {
-        m_previousFrameTarget = makeObject<RenderTargetTexture>(width, height, TextureFormat::RGBA8, false);
+        m_previousFrameTarget = makeObject<RenderTargetTexture>(width, height, TextureFormat::RGBA8, false, false);
         return true;
     }
     else {

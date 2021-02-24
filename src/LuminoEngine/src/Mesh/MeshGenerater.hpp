@@ -147,6 +147,45 @@ public:
     LN_MESHGENERATOR_CLONE_IMPLEMENT(SingleLineGenerater);
 };
 
+class LineListPrimitiveGenerater
+    : public MeshGenerater
+{
+public:
+    int pointCount;
+    const Vector3* points;
+    int colorCount;
+    const Color* colors;
+
+    int vertexCount() const override { return pointCount; }
+    int indexCount() const override { return pointCount; }
+    PrimitiveTopology primitiveType() const override { return PrimitiveTopology::LineList; }
+    void onGenerate(MeshGeneraterBuffer* buf) override
+    {
+        if (colorCount == 1) {
+            for (int i = 0; i < pointCount; i++) {
+                buf->setV(i, Vertex{ points[i], Vector3::UnitY, Vector2::Zero, colors[0] });
+                buf->setI(i, i);
+            }
+        }
+        else {
+            LN_CHECK(pointCount == colorCount);
+            for (int i = 0; i < pointCount; i++) {
+                buf->setV(i, Vertex{ points[i], Vector3::UnitY, Vector2::Zero, colors[i] });
+                buf->setI(i, i);
+            }
+        }
+    }
+    void copyFrom(const LineListPrimitiveGenerater* other)
+    {
+        MeshGenerater::copyFrom(other);
+        pointCount = other->pointCount;
+        points = other->points;
+        colorCount = other->colorCount;
+        colors = other->colors;
+    }
+    LN_MESHGENERATOR_CLONE_IMPLEMENT(LineListPrimitiveGenerater);
+};
+
 class LineStripPrimitiveGenerater
     : public MeshGenerater
 {

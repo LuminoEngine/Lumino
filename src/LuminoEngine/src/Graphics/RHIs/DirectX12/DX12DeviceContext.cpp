@@ -477,11 +477,6 @@ Ref<ITexture> DX12Device::onCreateTexture3D(GraphicsResourceUsage usage, uint32_
 
 Ref<ITexture> DX12Device::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
-    if (msaa) {
-        LN_NOTIMPLEMENTED();
-        return nullptr;
-    }
-
     auto ptr = makeRef<DX12RenderTarget>();
     if (!ptr->init(this, width, height, requestFormat, mipmap, msaa)) {
         return nullptr;

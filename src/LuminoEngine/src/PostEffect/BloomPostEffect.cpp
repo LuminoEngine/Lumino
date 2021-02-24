@@ -175,18 +175,18 @@ void BloomPostEffectCore::resetResources(int resx, int resy)
     m_renderTargetsHorizontal.clear();
     m_renderTargetsVertical.clear();
 
-    m_renderTargetBright = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false);
+    m_renderTargetBright = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
     m_renderTargetBright->setSamplerState(m_samplerState);
 
     // Create render targets for down sampling.
     auto rx = std::round(resx / 2);
     auto ry = std::round(resy / 2);
     for (int i = 0; i < MIPS; i++) {
-        auto renderTargetHorizonal = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false);
+        auto renderTargetHorizonal = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false, false);
         renderTargetHorizonal->setSamplerState(m_samplerState);
         m_renderTargetsHorizontal.add(renderTargetHorizonal);
 
-        auto renderTargetVertical = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false);
+        auto renderTargetVertical = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false, false);
         renderTargetVertical->setSamplerState(m_samplerState);
         m_renderTargetsVertical.add(renderTargetVertical);
 

@@ -220,6 +220,8 @@ public:
 
     bool m_cleared = false;
 
+    bool m_msaa = false;
+
 
     static Ref<RenderTargetTexture> realloc(RenderTargetTexture* renderTarget, int width, int height, TextureFormat format, bool mipmap, SamplerState* samplerState);
 
@@ -238,7 +240,7 @@ LN_CONSTRUCT_ACCESS:
     /** @copydoc create(int, int, TextureFormat) */
     void init(int width, int height, TextureFormat format);
 
-    void init(int width, int height, TextureFormat format, bool mipmap);
+    void init(int width, int height, TextureFormat format, bool mipmap, bool msaa);
     void init(SwapChain* owner);
     void init(intptr_t nativeObject, TextureFormat format);
     void resetNativeObject(intptr_t nativeObject);

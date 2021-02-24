@@ -165,7 +165,12 @@ void MeshComponent::onRender(RenderingContext* context)
 void MeshComponent::onRenderGizmo(RenderingContext* context)
 {
     CommandList* commandList = context->getCommandList(ln::RenderPart::Gizmo, ln::detail::ProjectionKind::ViewProjection3D);
-    commandList->drawLine(Vector3(0, 0, 0), Color::Red, Vector3(1, 1, 0), Color::Blue);
+
+    Vector3 lines[] = {
+        { -1, 1, 1 }, { 1, 1, 1 },
+        { 1, 1, 1 }, { 1, 1, -1 },
+    };
+    commandList->drawLineList(lines, 4, Color::Red);
 }
 
 } // namespace ln

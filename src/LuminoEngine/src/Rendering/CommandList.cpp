@@ -189,6 +189,34 @@ void CommandList::drawLine(const Vector3& from, const Color& fromColor, const Ve
 	//ptr->makeBoundingSphere(Vector3::min(position1, position2), Vector3::max(position1, position2));
 }
 
+void CommandList::drawLineList(const Vector3* points, int pointCount, const Color& color)
+{
+	struct DrawLineListPrimitive : public detail::RenderDrawElement
+	{
+		detail::LineListPrimitiveGenerater data;
+		Color color;
+
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
+		}
+	};
+
+	m_builder->setPrimitiveTopology(PrimitiveTopology::LineList);
+
+	auto* element = m_builder->addNewDrawElement<DrawLineListPrimitive>(m_manager->meshGeneraterRenderFeature());
+
+	size_t pointsSize = sizeof(Vector3) * pointCount;
+	element->data.points = reinterpret_cast<Vector3*>(m_builder->targetList()->newFrameRawData(pointsSize, points));
+	element->data.pointCount = pointCount;
+	element->color = color;
+	element->data.colors = &element->color;
+	element->data.colorCount = 1;
+
+	// TODO:
+	//ptr->makeBoundingSphere(Vector3::min(position1, position2), Vector3::max(position1, position2));
+}
+
 void CommandList::drawLineStripPrimitive(int pointCount, const Vector3* points, const Color* colors)
 {
 	class DrawLineStripPrimitive : public detail::RenderDrawElement
