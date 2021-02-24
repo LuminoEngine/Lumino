@@ -56,10 +56,7 @@ sampler2D _dofTexture0;
 sampler2D _dofTexture1;
 sampler2D _dofTexture2;
 sampler2D _dofTexture3;
-const int MaxDOFMips = 4;
-
-//==============================================================================
-// Vertex shader
+static const int MaxDOFMips = 4;
 
 struct VSInput
 {
@@ -67,15 +64,18 @@ struct VSInput
     float2 uv  : TEXCOORD0;
 };
 
-struct VSOutput
+struct PSInput
 {
     float4 pos : SV_POSITION;
     float4 uv  : TEXCOORD0;
 };
 
-VSOutput VSMain(VSInput input)
+//==============================================================================
+// Vertex shader
+
+PSInput VSMain(VSInput input)
 {
-    VSOutput output;
+    PSInput output;
     output.pos = float4(input.pos, 1.0);
     output.uv = float4(
         input.uv,
@@ -85,11 +85,6 @@ VSOutput VSMain(VSInput input)
 
 //==============================================================================
 // Pixel shader
-
-struct PSInput
-{
-    float4 uv : TEXCOORD0;
-};
 
 #if 0   // バイラテラルフィルタ。TODO: 2パス必要なので後で。
 #define KERNEL_RADIUS 15

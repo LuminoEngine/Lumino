@@ -797,6 +797,13 @@ void MeshPrimitive::calculateTangents()
 	}
 }
 
+void MeshPrimitive::calculateBoundingBox()
+{
+	Vertex* vertices = reinterpret_cast<Vertex*>(acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
+
+
+}
+
 VertexBuffer* MeshPrimitive::vertexBuffer(InterleavedVertexGroup group) const
 {
 	switch (group)

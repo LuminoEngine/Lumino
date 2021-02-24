@@ -30,6 +30,7 @@ protected:
     void serialize(Serializer2& ar) override;
     void onUpdate(float elapsedSeconds) override;
     void onRender(RenderingContext* context) override;
+    void onRenderGizmo(RenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:
     MeshComponent();

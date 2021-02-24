@@ -26,12 +26,12 @@ cbuffer LocalBuffer
 
 //==============================================================================
 
-const float SamplingRange = 0.7;
+static const float SamplingRange = 0.7;
 
 static const int SamplingCount = 16;
 
 // 球内の一様分布
-const float3 SamplingOffsets[SamplingCount] = {
+static const float3 SamplingOffsets[SamplingCount] = {
     float3(0.467928, -0.026220, -0.194384), // len:0.507375
     float3(-0.105969, 0.301316, -0.520884), // len:0.611017
     float3(0.043972, 0.077468, 0.154309),   // len:0.178175
@@ -60,24 +60,24 @@ for (int i = 0; i < 60; i++) {
 }
 */
 
-//==============================================================================
-// Vertex shader
-
 struct VSInput
 {
     float3 Pos : POSITION0;
     float2 UV  : TEXCOORD0;
 };
 
-struct VSOutput
+struct PSInput
 {
     float4 Pos : SV_POSITION;
-    float2 UV  : TEXCOORD0;
+    float2 UV : TEXCOORD0;
 };
 
-VSOutput VSMain(VSInput input)
+//==============================================================================
+// Vertex shader
+
+PSInput VSMain(VSInput input)
 {
-    VSOutput output;
+    PSInput output;
     output.Pos = float4(input.Pos, 1.0);
     output.UV = input.UV;
     return output;
@@ -85,11 +85,6 @@ VSOutput VSMain(VSInput input)
 
 //==============================================================================
 // Pixel shader
-
-struct PSInput
-{
-    float2 UV : TEXCOORD0;
-};
 
 float3x3 _LN_MakeLazyToRot(float3 lookAt)
 {
@@ -156,10 +151,10 @@ float ExSdSSAO_GetZ(float2 uv) {
     return tex2D(_viewDepthMap, uv).g;
 }
 
-const float rad = 0.05;
-const float strength = 5.0;
-const float falloff = 0.1;//1.0;
-const float3 ObjXYZ = float3(1, 1, 1);
+static const float rad = 0.05;
+static const float strength = 5.0;
+static const float falloff = 0.1;//1.0;
+static const float3 ObjXYZ = float3(1, 1, 1);
 #define invSamples (1.0f / SAMPLES)
 #define rnd_offset 18.0f
 

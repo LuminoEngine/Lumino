@@ -150,9 +150,9 @@ void Shader::init(const String& name, Stream* stream)
     Shader::init();
     Ref<DiagnosticsManager> localDiag = makeObject<DiagnosticsManager>();
 
-    createFromStream(stream, localDiag);
-
     m_name = name;
+
+    createFromStream(stream, localDiag);
 
     if (localDiag->hasError()) {
         LN_LOG_ERROR << localDiag->toString();
@@ -168,6 +168,8 @@ bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, Shade
     Ref<DiagnosticsManager> localDiag = nullptr;
     if (properties) localDiag = properties->m_diag;
     if (!localDiag) localDiag = makeObject<DiagnosticsManager>();
+
+    m_name = path.path().fileNameWithoutExtension();
 
     //Path path = filePath;
     //if (path.hasExtension(detail::UnifiedShader::FileExt)) {
@@ -206,7 +208,6 @@ bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, Shade
 #endif
     }
 
-    m_name = path.path().fileNameWithoutExtension();
 
     if (!properties || !properties->m_diag) {
         if (localDiag->hasError()) {
@@ -231,6 +232,7 @@ void Shader::createFromStream(Stream* stream, DiagnosticsManager* diag)
 
 void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag)
 {
+    const std::string asciiName = m_name.toStdString();
     m_descriptorLayout = makeObject<ShaderDescriptorLayout>(unifiedShader->globalDescriptorLayout());
     m_descriptor = makeObject<ShaderDefaultDescriptor>(this);
 
@@ -244,7 +246,7 @@ void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, Diagn
 		for (int iPass = 0; iPass < passCount; iPass++) {
 			detail::UnifiedShader::PassId passId = unifiedShader->getPassIdInTechnique(techId, iPass);
 
-			auto rhiPass = m_graphicsManager->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, passId, diag);
+			auto rhiPass = m_graphicsManager->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, passId, asciiName, diag);
 			if (rhiPass) {
 				auto pass = makeObject<ShaderPass>(
                     String::fromStdString(unifiedShader->passName(passId)),

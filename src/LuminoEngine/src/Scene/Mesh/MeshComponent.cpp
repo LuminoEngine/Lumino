@@ -3,6 +3,7 @@
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Physics/CollisionShape.hpp>
@@ -159,6 +160,12 @@ void MeshComponent::onRender(RenderingContext* context)
             }
         }
     }
+}
+
+void MeshComponent::onRenderGizmo(RenderingContext* context)
+{
+    CommandList* commandList = context->getCommandList(ln::RenderPart::Gizmo, ln::detail::ProjectionKind::ViewProjection3D);
+    commandList->drawLine(Vector3(0, 0, 0), Color::Red, Vector3(1, 1, 0), Color::Blue);
 }
 
 } // namespace ln

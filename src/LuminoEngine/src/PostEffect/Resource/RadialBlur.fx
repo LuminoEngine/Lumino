@@ -8,9 +8,9 @@
 // Uniforms
 
 sampler2D _LensflareOcclusionMap;
-const float radialBlurScale = 0.35;
-const float radialBlurStrength = 0.75;
-const float2 radialOrigin = float2(0.0, 0.0);   // screen space. center:(0,0) top-left:(-1,1)
+static const float radialBlurScale = 0.35;
+static const float radialBlurStrength = 0.75;
+static const float2 radialOrigin = float2(0.0, 0.0);   // screen space. center:(0,0) top-left:(-1,1)
 
 //==============================================================================
 // Vertex shader

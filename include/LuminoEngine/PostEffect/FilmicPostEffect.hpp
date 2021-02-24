@@ -13,7 +13,7 @@ class FilmicPostEffect
     : public PostEffect
 {
 public:
-	/** アンチエイリアスの有無を設定します。(default: false) */
+	/** アンチエイリアスの有無を設定します。(default: true) */
 	LN_METHOD(Property)
 	void setAntialiasEnabled(bool value) { m_antialiasEnabled = value; }
 

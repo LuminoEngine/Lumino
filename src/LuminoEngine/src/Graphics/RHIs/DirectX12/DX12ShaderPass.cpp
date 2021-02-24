@@ -570,53 +570,80 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         {
             std::vector<Descriptor> descriptors;
         };
-        std::pair<const void*, size_t> shaderCodes[ShaderStage2_Count] = { { createInfo.vsCode, createInfo.vsCodeLen },  { createInfo.psCode, createInfo.psCodeLen } };
         Reflection reflections[ShaderStage2_Count];
 
-        for (int iStage = 0; iStage < ShaderStage2_Count; iStage++) {
-            ComPtr<ID3D12ShaderReflection> shaderReflection;
-            if (FAILED(D3DCompilerAPI::D3DReflect(shaderCodes[iStage].first, shaderCodes[iStage].second, IID_PPV_ARGS(&shaderReflection)))) {
-                LN_ERROR("D3DReflect failed.");
-                return false;
-            }
+        // まず D3DReflect を使って、D3DCompiler が必要としている Descriptor を取得する。
+        // この時点で、glslang では最適化で削除された Descriptor が、D3DCompiler では存在していることもある。 
+        {
+            std::pair<const void*, size_t> shaderCodes[ShaderStage2_Count] = { { createInfo.vsCode, createInfo.vsCodeLen },  { createInfo.psCode, createInfo.psCodeLen } };
+            for (int iStage = 0; iStage < ShaderStage2_Count; iStage++) {
+                ComPtr<ID3D12ShaderReflection> shaderReflection;
+                if (FAILED(D3DCompilerAPI::D3DReflect(shaderCodes[iStage].first, shaderCodes[iStage].second, IID_PPV_ARGS(&shaderReflection)))) {
+                    LN_ERROR("D3DReflect failed.");
+                    return false;
+                }
 
-            D3D12_SHADER_DESC desc;
-            shaderReflection->GetDesc(&desc);
+                D3D12_SHADER_DESC desc;
+                shaderReflection->GetDesc(&desc);
 
-#if 0
-            for (UINT i = 0; i < desc.ConstantBuffers; ++i) {
-                ID3D12ShaderReflectionConstantBuffer* cbuffer = shaderReflection->GetConstantBufferByIndex(i);
-                D3D12_SHADER_BUFFER_DESC desc;
-                cbuffer->GetDesc(&desc);
+                for (UINT i = 0; i < desc.ConstantBuffers; ++i) {
+                    ID3D12ShaderReflectionConstantBuffer* cbuffer = shaderReflection->GetConstantBufferByIndex(i);
+                    D3D12_SHADER_BUFFER_DESC desc;
+                    cbuffer->GetDesc(&desc);
+                    LN_LOG_VERBOSE << "ConstantBuffer '" << desc.Name << "':";
 
-                for (auto j = 0; j < desc.Variables; ++j)
-                {
-                    D3D12_SHADER_VARIABLE_DESC varDesc{};
-                    D3D12_SHADER_TYPE_DESC typeDesc;
-                    ID3D12ShaderReflectionVariable* varRefl = cbuffer->GetVariableByIndex(j);
-                    ID3D12ShaderReflectionType* varTypeRefl = varRefl->GetType();
+                    for (UINT iVariable = 0; iVariable < desc.Variables; iVariable++) {
+                        D3D12_SHADER_VARIABLE_DESC varDesc;
+                        D3D12_SHADER_TYPE_DESC typeDesc;
+                        ID3D12ShaderReflectionVariable* varRefl = cbuffer->GetVariableByIndex(iVariable);
+                        ID3D12ShaderReflectionType* varTypeRefl = varRefl->GetType();
+                        varRefl->GetDesc(&varDesc);
+                        varTypeRefl->GetDesc(&typeDesc);
+                        if (varDesc.uFlags & D3D_SVF_USED) {
+                            LN_LOG_VERBOSE << "  '" << varDesc.Name << "' used.";
+                        }
+                        else {
+                            LN_LOG_VERBOSE << "  '" << varDesc.Name << "' unused.";
+                        }
+                    }
+                }
 
-                    varRefl->GetDesc(&varDesc);
-                    varTypeRefl->GetDesc(&typeDesc);
-                    std::cout << varDesc.Name << std::endl; //D3D_SVF_USED
+                for (UINT i = 0; i < desc.BoundResources; ++i) {
+                    D3D12_SHADER_INPUT_BIND_DESC desc2;
+                    shaderReflection->GetResourceBindingDesc(i, &desc2);
+
+                    DescriptorType type = DescriptorType_Count;
+                    if (desc2.Type == D3D_SIT_CBUFFER)
+                        type = DescriptorType_UniformBuffer;
+                    else if (desc2.Type == D3D_SIT_TEXTURE)
+                        type = DescriptorType_Texture;
+                    else if (desc2.Type == D3D_SIT_SAMPLER)
+                        type = DescriptorType_SamplerState;
+
+                    if (type != DescriptorType_Count) {
+                        std::string name = desc2.Name;
+                        if (name == "$Globals") name = "$Global";
+                        reflections[iStage].descriptors.push_back({ type, std::move(name), (int32_t)desc2.BindPoint });
+                    }
                 }
             }
-#endif
+        }
 
-            for (UINT i = 0; i < desc.BoundResources; ++i) {
-                D3D12_SHADER_INPUT_BIND_DESC desc2;
-                shaderReflection->GetResourceBindingDesc(i,&desc2);
-
-                DescriptorType type = DescriptorType_Count;
-                if (desc2.Type == D3D_SIT_CBUFFER)
-                    type = DescriptorType_UniformBuffer;
-                else if (desc2.Type == D3D_SIT_TEXTURE)
-                    type = DescriptorType_Texture;
-                else if (desc2.Type == D3D_SIT_SAMPLER)
-                    type = DescriptorType_SamplerState;
-
-                if (type != DescriptorType_Count) {
-                    reflections[iStage].descriptors.push_back({ type, desc2.Name, (int32_t)desc2.BindPoint });
+        // D3DCompiler では static キーワードが無いと $Global に変数が含まれてしまう。
+        // そのまま進むと PipelineState 作成時に次のような検証エラーとなる。
+        // > Root Signature doesn't match Pixel Shader: Shader CBV descriptor range (BaseShaderRegister=0, NumDescriptors=1, RegisterSpace=0) is not fully bound in root signature
+        // glslang だと定数として扱われるため、問題の原因が変わりづらい。
+        // ひとまずの対策として、glslang が検出したものと不一致があればエラーとして通知する。
+        {
+            const auto& requiredDescriptors = createInfo.descriptorLayout->uniformBufferRegister;
+            for (const auto& reflection : reflections) {
+                for (const auto& descriptor : reflection.descriptors) {
+                    if (descriptor.type == DescriptorType_UniformBuffer) {
+                        if (std::find_if(requiredDescriptors.begin(), requiredDescriptors.end(), [&](const DescriptorLayoutItem& item) { return item.name == descriptor.name; }) == requiredDescriptors.end()) {
+                            LN_ERROR("Variables that appear to be constants are visible in '%s'. Use the 'static' keyword.", descriptor.name.c_str());
+                            return false;
+                        }
+                    }
                 }
             }
         }
@@ -625,10 +652,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
             const auto& list = reflections[stage].descriptors;
             const auto itr = std::find_if(list.begin(), list.end(), [&](const Descriptor& d) {
                 if (d.type != type) return false;
-                if (name == "$Global")
-                    return d.name == "$Globals";
-                else
-                    return d.name == name;
+                return d.name == name;
             });
             if (itr != list.end()) {
                 return itr->bindingIndex;

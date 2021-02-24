@@ -220,6 +220,7 @@ public:
 	VertexElementType findVertexElementType(VertexElementUsage usage, int usageIndex) const;
 	IndexBufferFormat indexBufferFormat() const { return m_indexFormat; }
 	void calculateTangents();
+	void calculateBoundingBox();
 	bool isAllTriangleLists() const { return !m_sections.containsIf([](const MeshSection2& x) { return x.topology != PrimitiveTopology::TriangleList; }); }
 
 	VertexBuffer* vertexBuffer(InterleavedVertexGroup group) const;
@@ -277,6 +278,8 @@ private:
 	int m_indexCount;
 	IndexBufferFormat m_indexFormat;
 	GraphicsResourceUsage m_resourceUsage;
+
+
 
 	friend class MeshGeometryBuilder;
 	//friend class MeshContainer

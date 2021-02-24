@@ -36,6 +36,14 @@ protected:
     virtual void onApplyPhysicsFeedForward();
     virtual void onPrepareRender(RenderingContext* context);
     virtual void onRender(RenderingContext* context);
+
+    /**
+     * 調整やデバッグのためのコンテンツを描画するべき時に呼び出されます。
+     * 
+     * RenderView によりデバッグ描画が要求されている場合等に呼び出されます。
+     * あくまで開発者にとって有用な情報を描画する際に利用するべきです。
+     * キャラクターのネームプレートなど、エンドユーザーに示したい情報は onRender() で描画してください。
+     */
     virtual void onRenderGizmo(RenderingContext* context);
 
 LN_CONSTRUCT_ACCESS:

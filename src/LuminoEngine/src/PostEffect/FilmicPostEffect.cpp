@@ -21,7 +21,7 @@ FilmicPostEffect::FilmicPostEffect()
     , m_vignetteColor(0.0f, 0.0f, 0.0f, 1.0)
     , m_vignetteCenter(0.5f, 0.5f)
     , m_vignetteSettings(0.65f, 0.5f, 1.0f, 0.0f) // x: intensity, y: smoothness, z: roundness, w: rounded
-    , m_antialiasEnabled(false)
+    , m_antialiasEnabled(true)
     , m_ssrEnabled(false)
     , m_ssaoEnabled(false)
     , m_bloomEnabled(false)
