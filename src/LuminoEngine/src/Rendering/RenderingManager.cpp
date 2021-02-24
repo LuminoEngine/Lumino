@@ -210,7 +210,7 @@ void RenderingManager::init(const Settings& settings)
 		const unsigned char data[] = {
 #include "../PostEffect/Resource/RadialBlur.lcfx.inl"
 		};
-		//createBuiltinShader(BuiltinShader::RadialBlur, u"RadialBlur", data, LN_ARRAY_SIZE_OF(data));
+		createBuiltinShader(BuiltinShader::RadialBlur, u"RadialBlur", data, LN_ARRAY_SIZE_OF(data));
 	}
 
 	// SSAOOcclusionMap
@@ -218,14 +218,14 @@ void RenderingManager::init(const Settings& settings)
 		const unsigned char data[] = {
 #include "../PostEffect/Resource/SSAOOcclusionMap.lcfx.inl"
 		};
-		//createBuiltinShader(BuiltinShader::SSAOOcclusionMap, u"SSAOOcclusionMap", data, LN_ARRAY_SIZE_OF(data));
+		createBuiltinShader(BuiltinShader::SSAOOcclusionMap, u"SSAOOcclusionMap", data, LN_ARRAY_SIZE_OF(data));
 	}
 	// FilmicPostEffect
 	{
 		const unsigned char data[] = {
 #include "../PostEffect/Resource/FilmicPostEffect.lcfx.inl"
 		};
-		//createBuiltinShader(BuiltinShader::FilmicPostEffect, u"FilmicPostEffect", data, LN_ARRAY_SIZE_OF(data));
+		createBuiltinShader(BuiltinShader::FilmicPostEffect, u"FilmicPostEffect", data, LN_ARRAY_SIZE_OF(data));
 	}
 	// Copy
 	{
@@ -257,10 +257,10 @@ void RenderingManager::init(const Settings& settings)
 	}
 
 #define ROOT_PATH u"C:/Proj/LN/Lumino/src/LuminoEngine/"
+#if 0	// テスト用
 	m_builtinShaders[(int)BuiltinShader::SSAOOcclusionMap] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SSAOOcclusionMap.fx");
 	m_builtinShaders[(int)BuiltinShader::RadialBlur] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/RadialBlur.fx");
 	m_builtinShaders[(int)BuiltinShader::FilmicPostEffect] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/FilmicPostEffect.fx");
-#if 0	// テスト用
 	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ClusteredShadingDefault.fx");
 	m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ForwardGBufferPrepass.fx");
 	m_builtinShaders[(int)BuiltinShader::CopyScreen] = Shader::create(ROOT_PATH u"src/Rendering/Resource/CopyScreen.fx");
