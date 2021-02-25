@@ -91,7 +91,7 @@ MorphInstance::MorphInstance(MeshModelInstance* owner, int meshContainerIndex)
 {
 	const auto& meshContainer = owner->model()->meshContainers()[m_meshContainerIndex];
 	const auto& meshPrimitive = meshContainer->meshPrimitives()[0];
-	m_weights.resize(meshPrimitive->morphTargetCount());
+	m_weights.resize(meshPrimitive->morphTargetCount(), 0.0f);
 
 	// TODO: tmp
 	updatePriorityTargets();

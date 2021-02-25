@@ -1248,7 +1248,7 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 			data.scaleValues = reinterpret_cast<const Vector3*>(outputData);
 			data.scaleInterpolation = TransformTrackData::getInterpolation(sampler.interpolation);
 		}
-		if (channel.target_path == "weights") {
+		else if (channel.target_path == "weights") {
 			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_SCALAR)) return nullptr;
 
 			if (LN_REQUIRE(channel.target_node >= 0)) return nullptr;
@@ -1319,11 +1319,11 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 		// glTF の animation の姿勢には Node の初期姿勢が含まれている。
 		// Lumino としては初期姿勢からの相対変化量だけほしいので、初期姿勢の分を打ち消す。
 		{
-			//const auto& meshModelNode = m_meshModel->m_nodes[pair.first];
-			const auto nodeInversePos = Vector3(-node.translation[0], -node.translation[1], -node.translation[2]);
-			for (auto& k : track->m_translationKeys) {
-				k.value += nodeInversePos;
-				//k.value = -meshModelNode->initialLocalTransform().position();
+			if (!node.translation.empty()) {
+				const auto nodeInversePos = Vector3(-node.translation[0], -node.translation[1], -node.translation[2]);
+				for (auto& k : track->m_translationKeys) {
+					k.value += nodeInversePos;
+				}
 			}
 
 			if (node.rotation.size() == 4) {

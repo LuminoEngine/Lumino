@@ -267,6 +267,9 @@ public:
     /** 指定したインデックスがこの配列の境界の範囲外かを確認します。*/
     bool isOutOfRange(int index) const;
 
+    /** 指定したインデックスがこの配列の境界の範囲内かを確認します。*/
+    bool isValidRange(int index) const;
+
 private:
     std::vector<T> m_data;
 };
@@ -608,6 +611,11 @@ bool List<T>::isOutOfRange(int index) const
     return (index < 0 || size() <= index);
 }
 
+template<typename T>
+bool List<T>::isValidRange(int index) const
+{
+    return (0 <= index && index < size());
+}
 
 
 //================================================================================

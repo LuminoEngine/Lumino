@@ -516,11 +516,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					finalMaterial->shader(),
 					shadingModel);
 
-				if (subsetInfo.normalMap) {
-					printf("");
-				}
-
-
 				SubsetInfo localSubsetInfo = subsetInfo;
 				if (batch->overrideTexture) {
 					localSubsetInfo.materialTexture = batch->overrideTexture;

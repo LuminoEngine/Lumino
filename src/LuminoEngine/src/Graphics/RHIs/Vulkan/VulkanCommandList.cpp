@@ -133,24 +133,46 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 
 
 		{
+			//VulkanVertexDeclaration* layout = static_cast<VulkanVertexDeclaration*>(state.pipelineState.vertexDeclaration);
+
+			//std::array<VkBuffer, MaxVertexStreams> vertexBufferHandles;
+			//std::array<VkDeviceSize, MaxVertexStreams> vertexBufferOffsets;
+			//int i = 0;
+			//for (; i < layout->elements>; i++) {
+			//	if (state.primitive.vertexBuffers[i]) {
+			//		auto* vertexBuffer = static_cast<VulkanVertexBuffer*>(state.primitive.vertexBuffers[i]);
+			//		vertexBufferHandles[i] = vertexBuffer->vulkanBuffer();
+			//		vertexBufferOffsets[i] = 0;
+			//	}
+			//	else {
+			//		vertexBufferHandles[i] = VK_NULL_HANDLE;
+			//		vertexBufferOffsets[i] = 0;
+			//	}
+			//}
+			//vkCmdBindVertexBuffers(m_commandBuffer->vulkanCommandBuffer(), 0, MaxVertexStreams, vertexBufferHandles.data(), vertexBufferOffsets.data());
+
+
+			// VertexLayout で要求されている StreamIndex へは必ず VertexBuffer を Bind する必要がある。
+			// 例えば VertexLayout で [0, 1, 3] といったように途中抜けの StreamIndex を使うことは可能だが、
+			// これらに VK_NULL_HANDLE を Bind することはできない。
+			// 未使用を丁寧にリセットするつもりで VK_NULL_HANDLE を指定しても検証エラーとなるため注意。
+			// https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBindVertexBuffers.html
 			std::array<VkBuffer, MaxVertexStreams> vertexBuffers;
 			int vbCount = 0;
 			for (int i = 0; i < state.primitive.vertexBuffers.size(); i++) {
 				if (state.primitive.vertexBuffers[i]) {
 					auto* vertexBuffer = static_cast<VulkanVertexBuffer*>(state.primitive.vertexBuffers[i]);
-					VkBuffer buffer = vertexBuffer->vulkanBuffer();//[] = { vertexBuffer->vulkanBuffer() };
-					VkDeviceSize offset = 0;//[] = { 0 };
+					VkBuffer buffer = vertexBuffer->vulkanBuffer();
+					VkDeviceSize offset = 0;
 					vkCmdBindVertexBuffers(m_commandBuffer->vulkanCommandBuffer(), i, 1, &buffer, &offset);
 				}
-				//else {
-				//    VkBuffer buffer = VK_NULL_HANDLE;
-				//    VkDeviceSize offset = 0;
-				//    vkCmdBindVertexBuffers(m_commandBuffer->vulkanCommandBuffer(), i, 0, &buffer, &offset);
-				//}
 			}
 
-			auto* indexBuffer = static_cast<VulkanIndexBuffer*>(state.primitive.indexBuffer);
+			//VkBuffer buffer = VK_NULL_HANDLE;
+			//VkDeviceSize offset = 0;
+			//vkCmdBindVertexBuffers(m_commandBuffer->vulkanCommandBuffer(), 3, 1, &buffer, &offset);
 
+			auto* indexBuffer = static_cast<VulkanIndexBuffer*>(state.primitive.indexBuffer);
 
 			if (indexBuffer) {
 				vkCmdBindIndexBuffer(m_commandBuffer->vulkanCommandBuffer(), indexBuffer->vulkanBuffer(), 0, indexBuffer->indexType());

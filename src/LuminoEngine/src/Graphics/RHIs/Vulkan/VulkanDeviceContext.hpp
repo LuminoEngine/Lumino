@@ -300,6 +300,7 @@ public:
     void dispose() override;
 
     const std::vector<VertexElement>& elements() const { return m_elements; }
+    uint32_t maxStreamCount() const { return m_maxStreamCount; }
     const std::vector<VkVertexInputBindingDescription>& vertexBindingDescriptions() const { return m_bindings; }
     const std::vector<AttributeDescriptionSource>& vertexAttributeDescriptionSources() const { return m_attributeSources; }
     const VulkanVertexDeclaration::AttributeDescriptionSource* findAttributeDescriptionSource(AttributeUsage usage, int usageIndex) const;

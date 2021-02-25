@@ -302,30 +302,18 @@ LN_SkinningOutput LN_SkinningVertex(
     return o;
 }
 
-// deprecated: see _LN_ProcessVertex_SkinnedMesh
-LN_VSOutput_Common LN_ProcessVertex_SkinnedCommon(LN_VSInput input)
-{
-    LN_SkinningOutput local = LN_SkinningVertex(input.Pos, input.Normal, input.BlendWeight, input.BlendIndices);
-
-    LN_VSOutput_Common o;
-    o.svPos            = mul(float4(local.Position, 1.0f), ln_WorldViewProjection);
-    o.Normal        = mul(float4(local.Normal, 1.0f), ln_WorldViewIT).xyz;
-    o.UV            = input.UV + (float2(0.5, 0.5) / ln_Resolution.xy);
-    o.Color            = input.Color;
-    return o;
-}
-
 void _LN_ProcessVertex_SkinnedMesh(
-    LN_VSInput input,
-    out float4 outSVPos, out float3 outViewNormal, out float2 outUV, out float4 outColor)
+    const float3 position,
+    float3    normal,
+    float4    blendIndices,
+    float4    blendWeight,
+    out float4 outSVPos, out float3 outViewNormal)
 {
-    LN_SkinningOutput local = LN_SkinningVertex(input.Pos, input.Normal, input.BlendWeight, input.BlendIndices);
+    LN_SkinningOutput local = LN_SkinningVertex(position, normal, blendWeight, blendIndices);
 
     LN_VSOutput_Common o;
     outSVPos = mul(float4(local.Position, 1.0f), ln_WorldViewProjection);
     outViewNormal = mul(float4(local.Normal, 1.0f), ln_WorldViewIT).xyz;
-    outUV = input.UV + (float2(0.5, 0.5) / ln_Resolution.xy);
-    outColor = input.Color;
 }
 
 #endif // LUMINOSKINNING_INCLUDED

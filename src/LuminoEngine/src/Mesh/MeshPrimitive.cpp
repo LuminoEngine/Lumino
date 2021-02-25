@@ -505,11 +505,10 @@ void MeshPrimitive::commitRenderData(int sectionIndex, detail::MorphInstance* mo
 
 	if (!m_morphVertexBuffer.isEmpty()) {
 		for (int i = 0; i < MaxRenderMorphTargets; i++) {
-			if (m_morphVertexBuffer.isOutOfRange(i))
-				(*outVBs)[streamIndex] = nullptr;
-			else
+			if (m_morphVertexBuffer.isValidRange(i)) {
 				(*outVBs)[streamIndex] = m_morphVertexBuffer[i].buffer;
-			streamIndex++;
+				streamIndex++;
+			}
 		}
 	}
 
@@ -880,10 +879,12 @@ void MeshPrimitive::attemptResetVertexLayout()
 
 		if (!m_morphVertexBuffer.isEmpty()) {
 			for (int i = 0; i < MaxRenderMorphTargets; i++) {
-				m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Position, 1 + i);
-				m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Normal, 1 + i);
-				m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Tangent, 1 + i);
-				streamIndex++;
+				if (m_morphVertexBuffer.isValidRange(i)) {
+					m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Position, 1 + i);
+					m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Normal, 1 + i);
+					m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Tangent, 1 + i);
+					streamIndex++;
+				}
 			}
 		}
 
