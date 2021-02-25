@@ -118,13 +118,13 @@ void SSRPostEffectCore::render(CommandList* context, RenderTargetTexture* source
 void SSRPostEffectCore::resetResources(int resx, int resy)
 {
     // TODO: tempolary からとっていいかも
-    m_ssrTarget = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false);
+    m_ssrTarget = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
     m_ssrTarget->setSamplerState(m_samplerState);
-    m_blurTarget1 = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false);
+    m_blurTarget1 = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
     m_blurTarget1->setSamplerState(m_samplerState);
-    m_blurTarget2 = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false);
+    m_blurTarget2 = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
     m_blurTarget2->setSamplerState(m_samplerState);
-    m_compositeTarget = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false);
+    m_compositeTarget = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
     m_compositeTarget->setSamplerState(m_samplerState);
 
     m_viewWidth = resx;

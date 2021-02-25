@@ -302,6 +302,7 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 
 	if (ptr) {
 		ptr->m_device = this;
+		ptr->m_name = createInfo.name;
 		m_aliveObjects.push_back(ptr);
 	}
 	return ptr;
@@ -326,7 +327,7 @@ void IGraphicsDevice::submitCommandBuffer(ICommandList* context, ITexture* affec
 	onSubmitCommandBuffer(context, affectRendreTarget);
 }
 
-Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag)
+Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, const std::string& name, DiagnosticsManager* diag)
 {
     LN_DCHECK(unifiedShader);
     LN_DCHECK(diag);
@@ -350,8 +351,8 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
         pscode = unifiedShader->findCode(pscodeId, triple);
     }
 
-    detail::ShaderPassCreateInfo createInfo =
-    {
+    detail::ShaderPassCreateInfo createInfo = {
+		name.c_str(),
         (vscode) ? vscode->code.data() : nullptr,
         (vscode) ? vscode->code.size() : 0,
         (pscode) ? pscode->code.data() : nullptr,

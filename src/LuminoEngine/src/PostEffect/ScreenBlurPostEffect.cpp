@@ -103,7 +103,7 @@ bool ScreenBlurPostEffectInstance::onRender(RenderView* renderView, CommandList*
         // m_accumTexture と source のサイズが異なる場合は作り直す
         if (m_accumTexture == nullptr || (m_accumTexture->width() != source->width() || m_accumTexture->height() != source->height()))
         {
-            m_accumTexture = makeObject<RenderTargetTexture>(source->width(), source->height(), source->format(), false);
+            m_accumTexture = makeObject<RenderTargetTexture>(source->width(), source->height(), source->format(), false, false);
             context->blit(m_materialForCopySourceTo, m_accumTexture);
         }
 

@@ -184,7 +184,7 @@ public:
 	static const ColorTone& colorTone();
 
 	
-	/** アンチエイリアスの有無を設定します。(default: false) */
+	/** アンチエイリアスの有無を設定します。(default: true) */
 	LN_METHOD(Property)
 	static void setAntialiasEnabled(bool value);
 

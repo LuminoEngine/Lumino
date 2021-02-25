@@ -43,7 +43,7 @@ float4 LN_GaussianBlur5(sampler2D s, float2 invSize, float2 uv, float2 direction
 //==============================================================================
 // FXAA
 
-const float FxaaSubpixShift = 1.0/4.0;  // Use from VS
+static const float FxaaSubpixShift = 1.0/4.0;  // Use from VS
 
 float4 FxaaTexOff(sampler2D tex, float2 invTexSize, float2 pos, float2 offset)
 {

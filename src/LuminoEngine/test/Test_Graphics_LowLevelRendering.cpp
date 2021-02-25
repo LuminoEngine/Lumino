@@ -1356,7 +1356,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
         vertexDecl2->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
         vertexDecl2->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
-        auto renderTarget1 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false);
+        auto renderTarget1 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false, false);
 
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
@@ -1413,8 +1413,8 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiRenderTarget)
 	auto vertexDecl1 = makeObject<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
-	auto renderTarget0 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false);
-	auto renderTarget1 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false);
+	auto renderTarget0 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false, false);
+	auto renderTarget1 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false, false);
 
 	auto ctx = TestEnv::beginFrame();
 	auto renderPass1 = makeObject<RenderPass>();

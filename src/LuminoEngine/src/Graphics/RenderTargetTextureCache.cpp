@@ -122,7 +122,7 @@ RenderTargetTexture* RenderTargetTextureCacheManager::requestObject(const SizeI&
 	Object* obj = findBase(key);
 	if (obj) return static_cast<RenderTargetTexture*>(obj);
 
-	auto t = makeObject<RenderTargetTexture>(size.width, size.height, format, mipmap);
+	auto t = makeObject<RenderTargetTexture>(size.width, size.height, format, mipmap, false);
 	insertBase(key, t);
 	return t;
 }

@@ -477,13 +477,8 @@ Ref<ITexture> DX12Device::onCreateTexture3D(GraphicsResourceUsage usage, uint32_
 
 Ref<ITexture> DX12Device::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
-    if (msaa) {
-        LN_NOTIMPLEMENTED();
-        return nullptr;
-    }
-
     auto ptr = makeRef<DX12RenderTarget>();
-    if (!ptr->init(this, width, height, requestFormat, mipmap)) {
+    if (!ptr->init(this, width, height, requestFormat, mipmap, msaa)) {
         return nullptr;
     }
     return ptr;
@@ -710,8 +705,8 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
         }
 
         if (renderPass->isMultisample()) {
-            psoDesc.SampleDesc.Count = m_device->sampleCount();
-            psoDesc.SampleDesc.Quality = 0;
+            psoDesc.SampleDesc.Count = m_device->msaaSampleCount();
+            psoDesc.SampleDesc.Quality = m_device->msaaQualityLevel();
         }
         else {
             psoDesc.SampleDesc.Count = 1;

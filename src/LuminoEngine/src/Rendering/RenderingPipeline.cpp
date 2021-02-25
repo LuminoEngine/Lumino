@@ -66,7 +66,7 @@ void SceneRenderingPipeline::init()
 
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
-    m_shadowMap = makeObject<RenderTargetTexture>(1024, 1024, TextureFormat::RGBA32F, false);
+    m_shadowMap = makeObject<RenderTargetTexture>(1024, 1024, TextureFormat::RGBA32F, false, false);
     m_shadowMap->setSamplerState(m_samplerState);
     m_shadowMapDepthBuffer = makeObject<DepthBuffer>(1024, 1024);
 

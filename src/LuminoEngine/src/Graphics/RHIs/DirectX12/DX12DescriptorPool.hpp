@@ -96,7 +96,9 @@ public:
 
 
 private:
-	static const int AllocatableCountPerPage = 256;
+	// TODO: 一度の CreateDescriptorTable で作成できる Descriptor 数は決まっている (Microsoft Render Driver だと 2048)
+	// これが定数のままだと、テクスチャをたくさん使うときに CreateDescriptorTable でエラーになる。
+	static const int AllocatableCountPerPage = 128;
 
 	//void grow(int32_t count);
 

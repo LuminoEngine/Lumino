@@ -441,7 +441,7 @@ Ref<RenderTargetTexture> RenderTargetTexture::realloc(RenderTargetTexture* rende
         renderTarget->height() != height ||
         renderTarget->format() != format ||
         renderTarget->mipmap() != mipmap) { // NOTE: SamplerState はチェック不要。というかどこかで変えたのを戻し忘れると毎回 RenderTarget 作り直しになってしまう
-        auto ptr = makeObject<RenderTargetTexture>(width, height, format, mipmap);
+        auto ptr = makeObject<RenderTargetTexture>(width, height, format, mipmap, false);
         ptr->setSamplerState(samplerState);
         return ptr;
     }
@@ -465,18 +465,19 @@ RenderTargetTexture::~RenderTargetTexture()
 
 void RenderTargetTexture::init(int width, int height)
 {
-    init(width, height, TextureFormat::RGBA8, false);
+    init(width, height, TextureFormat::RGBA8, false, false);
 }
 
 void RenderTargetTexture::init(int width, int height, TextureFormat format)
 {
-    init(width, height, format, true);
+    init(width, height, format, true, false);
 }
 
-void RenderTargetTexture::init(int width, int height, TextureFormat format, bool mipmap)
+void RenderTargetTexture::init(int width, int height, TextureFormat format, bool mipmap, bool msaa)
 {
     width = std::max(1, width);
     height = std::max(1, height);
+    m_msaa = msaa;
     Texture::init();
     detail::TextureInternal::setDesc(this, width, height, format);
     detail::TextureInternal::setMipmapEnabled(this, mipmap);
@@ -555,7 +556,7 @@ detail::ITexture* RenderTargetTexture::resolveRHIObject(GraphicsContext* context
             m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createWrappedRenderTarget(m_nativeObject, width(), height());
         }
         else {
-            m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width(), height(), format(), mipmap(), false);
+            m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width(), height(), format(), mipmap(), m_msaa);
         }
     }
 

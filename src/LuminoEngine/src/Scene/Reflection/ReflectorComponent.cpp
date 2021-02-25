@@ -23,7 +23,7 @@ bool ReflectorComponent::init()
 {
 	if (!VisualComponent::init()) return false;
 
-    m_renderTarget = makeObject<RenderTargetTexture>(512, 512, TextureFormat::RGBA8, false);
+    m_renderTarget = makeObject<RenderTargetTexture>(512, 512, TextureFormat::RGBA8, false, false);
 
     m_offscreenRenderView = makeObject<OffscreenWorldRenderView>();
     m_offscreenRenderView->setRenderTarget(m_renderTarget);

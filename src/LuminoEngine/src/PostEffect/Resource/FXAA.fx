@@ -4,7 +4,7 @@
 //==============================================================================
 // Vertex shader
 
-const float FxaaSubpixShift = 1.0/4.0;
+static const float FxaaSubpixShift = 1.0/4.0;
 
 struct VSInput
 {

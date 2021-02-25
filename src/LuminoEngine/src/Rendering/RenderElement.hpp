@@ -119,9 +119,11 @@ public:
 	}
 
 	// デストラクタ呼び出し不要の Raw データ
-	void* newFrameRawData(size_t size)
+	void* newFrameRawData(size_t size, const void* data = nullptr)
 	{
-		return m_dataAllocator->allocate(size);
+		void* b = m_dataAllocator->allocate(size);
+		if (data) memcpy(b, data, size);
+		return b;
 	}
 
 	RenderStage* addNewRenderStage();

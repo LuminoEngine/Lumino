@@ -157,6 +157,7 @@ void DX12Buffer::resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_R
     barrier.Transition.StateAfter = newState;
     barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     commandList->ResourceBarrier(1, &barrier);
+
     m_resourceState = newState;
 }
 

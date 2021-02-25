@@ -156,6 +156,7 @@ struct ShaderDescriptorTableUpdateInfo
 
 struct ShaderPassCreateInfo
 {
+	const char* name;
     const byte_t* vsCode;
     size_t vsCodeLen;
     const byte_t* psCode;
@@ -254,7 +255,7 @@ public:
 	virtual ICommandQueue* getComputeCommandQueue() = 0;
 
     // utility
-    Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag);
+    Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, const std::string& name, DiagnosticsManager* diag);
 
 
 	const std::unique_ptr<NativeRenderPassCache>& renderPassCache() const { return m_renderPassCache; }
@@ -578,6 +579,7 @@ protected:
 
 private:
 	IGraphicsDevice* m_device = nullptr;
+	std::string m_name;
 	std::vector<VertexInputAttribute> m_attributes;
 
 	friend class IGraphicsDevice;

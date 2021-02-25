@@ -83,7 +83,7 @@ void DepthOfFieldPostEffectCore::resetResources(int resx, int resy)
     auto rx = std::round(resx / 2);
     auto ry = std::round(resy / 2);
     for (int i = 0; i < MaxMips; i++) {
-        auto renderTargetHorizonal = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false);
+        auto renderTargetHorizonal = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false, false);
         renderTargetHorizonal->setSamplerState(m_samplerState);
         m_mipTargets.add(renderTargetHorizonal);
 

@@ -20,7 +20,6 @@ public:
 		PlatformWindow* mainWindow = nullptr;
         bool debugMode = false;
         std::wstring priorityAdapterName;
-        //bool useBasicRenderDriver = true;
 	};
 
     static const int BackBufferCount = 3;
@@ -36,7 +35,8 @@ public:
     ID3D12CommandQueue* dxCommandQueue() const { return m_commandQueue.Get(); }
     ID3D12GraphicsCommandList* beginSingleTimeCommandList();
     bool endSingleTimeCommandList(ID3D12GraphicsCommandList* commandList);
-    UINT sampleCount() const { return m_sampleCount; }
+    UINT msaaSampleCount() const { return m_sampleCount; }
+    UINT msaaQualityLevel() const { return 0; }
     const Ref<DX12SingleFrameAllocatorPageManager>& uploadBufferAllocatorManager() const { return m_uploadBufferAllocatorManager; }
     ID3D12RootSignature* mipmapRootSignature() const { return m_mipmapRootSignature.Get(); }
     ID3D12PipelineState* mipmapPipelineState() const { return m_mipmapPipelineState.Get(); }

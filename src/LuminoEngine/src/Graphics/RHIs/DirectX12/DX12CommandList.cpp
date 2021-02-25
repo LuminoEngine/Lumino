@@ -131,7 +131,7 @@ void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)
     DX12RenderPass* renderPass = static_cast<DX12RenderPass*>(baseRenderPass);
     ID3D12Device* dxDevice = m_device->device();
 
-    int renderTargetCount = renderPass->getAvailableRenderTargetCount();
+    int32_t renderTargetCount = renderPass->getAvailableRenderTargetCount();
     DX12DepthBuffer* depthBuffer = renderPass->depthBuffer();
 
     // CreateRenderTargetView, ResourceBarrior
@@ -142,26 +142,26 @@ void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)
             if (!m_descriptorHeapAllocator_RTV->allocate(renderTargetCount, &rtvHandles)) {
                 return;
             }
-            //std::copy(rtvHandles.cpuHandles.begin(), rtvHandles.cpuHandles.begin() + renderTargetCount, m_currentRTVHandles.begin());
 
-            for (int i = 0; i < renderTargetCount; i++) {
+            for (int32_t i = 0; i < renderTargetCount; i++) {
                 DX12RenderTarget* renderTarget = renderPass->renderTarget(i);
-
+                DX12Image* image;
                 D3D12_RENDER_TARGET_VIEW_DESC desc = {};
                 desc.Format = renderTarget->dxFormat();
-                // TODO: MSAA
-                //if () {
-                //    desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DMS;
-                //}
-                //else
-                {
-                    desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+                if (renderPass->isMultisample() && renderTarget->isMultisample()) {
+                    desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DMS;
+                    image = renderTarget->multisampleBuffer();
                 }
+                else {
+                    desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+                    image = renderTarget->image();
+                }
+
                 D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = rtvHandles.cpuHandles[i];
-                dxDevice->CreateRenderTargetView(renderTarget->dxResource(), nullptr, cpuHandle);
+                dxDevice->CreateRenderTargetView(image->dxResource(), nullptr, cpuHandle);
                 m_currentRTVHandles[i] = cpuHandle;
 
-                renderTarget->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET);
+                image->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET);
             }
         }
 
@@ -171,28 +171,27 @@ void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)
                 return;
             }
 
+            DX12Image* image;
             D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
             desc.Format = depthBuffer->dxFormat();
-
-            // TODO: MSAA
-            //if () {
-            //    desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DMS;
-            //}
-            //else
-            {
+            if (renderPass->isMultisample() && depthBuffer->isMultisample()) {
+                desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DMS;
+                image = depthBuffer->multisampleBuffer();
+            }
+            else {
                 desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+                image = depthBuffer->image();
             }
 
             D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = dsvHandles.cpuHandles[0];
-            dxDevice->CreateDepthStencilView(depthBuffer->dxResource(), &desc, cpuHandle);
+            dxDevice->CreateDepthStencilView(image->dxResource(), &desc, cpuHandle);
             m_currentDSVHandle = cpuHandle;
 
-            depthBuffer->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE);
+            image->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE);
         }
         else {
             m_currentDSVHandle.ptr = 0;
         }
-
     }
 
     m_dxCommandList->OMSetRenderTargets(
@@ -200,7 +199,6 @@ void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)
         (renderTargetCount > 0) ? m_currentRTVHandles.data() : nullptr,
         FALSE,
         (depthBuffer) ? &m_currentDSVHandle : nullptr);
-
 
     // Clear
     {
@@ -213,19 +211,38 @@ void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)
 void DX12GraphicsContext::onEndRenderPass(IRenderPass* baseRenderPass)
 {
     DX12RenderPass* renderPass = static_cast<DX12RenderPass*>(baseRenderPass);
-    DX12DepthBuffer* depthBuffer = renderPass->depthBuffer();
 
     for (int i = 0; i < m_currentRTVCount; i++) {
         DX12RenderTarget* renderTarget = renderPass->renderTarget(i);
-        renderTarget->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_GENERIC_READ);
+
+        // Resolve MSAA
+        if (renderTarget->isMultisample()) {
+            DX12Image* src = renderTarget->multisampleBuffer();
+            DX12Image* dst = renderTarget->image();
+            src->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_RESOLVE_SOURCE);
+            dst->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_RESOLVE_DEST);
+            m_dxCommandList->ResolveSubresource(dst->dxResource(), 0, src->dxResource(), 0, dst->dxFormat());
+        }
+
+        renderTarget->image()->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_GENERIC_READ);
     }
 
+    DX12DepthBuffer* depthBuffer = renderPass->depthBuffer();
     if (depthBuffer) {
-        depthBuffer->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_DEPTH_READ);
+
+        // Resolve MSAA
+#if 0
+        if (depthBuffer->isMultisample()) {
+            DX12Image* src = depthBuffer->multisampleBuffer();
+            DX12Image* dst = depthBuffer->image();
+            src->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_RESOLVE_SOURCE);
+            dst->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_RESOLVE_DEST);
+            m_dxCommandList->ResolveSubresource(dst->dxResource(), 0, src->dxResource(), 0, dst->dxFormat());
+        }
+#endif
+
+        depthBuffer->image()->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_DEPTH_READ);
     }
-
-
-    // TODO: Resolve MSAA
 }
 
 void DX12GraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* basePipeline)
@@ -429,9 +446,9 @@ void DX12GraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int w
     src.PlacedFootprint = footprint;
     src.PlacedFootprint.Offset = view.offset;
 
-    texture->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_COPY_DEST);
+    texture->image()->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_COPY_DEST);
     m_dxCommandList->CopyTextureRegion(&dst, x, y, 0, &src, nullptr);
-    texture->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_GENERIC_READ);
+    texture->image()->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_GENERIC_READ);
 }
 
 void DX12GraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
