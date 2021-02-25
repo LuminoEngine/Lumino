@@ -3,6 +3,7 @@
 
 void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 {
+	return;
 
 	ln::CommandList* commandList = context->getCommandList(ln::RenderPart::Gizmo2D, ln::detail::ProjectionKind::Independent2D);
 	commandList->pushState();

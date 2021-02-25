@@ -228,8 +228,8 @@ public:
 	IndexBuffer* indexBuffer() const;
 
 
-	VertexMorphTarget* acquireMappedMorphVertexBuffer(int morphTargetIndex);
-	int morphTargetCount() const { return m_morphVertexBuffer.size(); }
+	void* acquireMappedMorphVertexBuffer(int morphTargetIndex, VertexElementUsage usage);
+	int morphTargetCount() const { return m_morphVertexBuffers.size(); }
 
 LN_CONSTRUCT_ACCESS:
 	MeshPrimitive();
@@ -258,6 +258,13 @@ private:
 		void reset();
 	};
 
+	struct MorphVertexBuffers
+	{
+		VertexBufferEntry positionVertexBuffer;
+		VertexBufferEntry normalVertexBuffer;
+		VertexBufferEntry tangentVertexBuffer;
+	};
+
 	struct VertexBufferAttribute
 	{
         VertexElementType type;
@@ -270,7 +277,7 @@ private:
 	VertexBufferEntry m_mainVertexBuffer;		// struct Vertex. (Pos0, Normal0, UV0, Color0)
 	VertexBufferEntry m_skinningVertexBuffer;	// BlendWeignt0, BlendIndex0
 	VertexBufferEntry m_additionalUVVertexBuffer;	// TEXCOORD_1, TEXCOORD_2,TEXCOORD_3
-	List<VertexBufferEntry> m_morphVertexBuffer;
+	List<MorphVertexBuffers> m_morphVertexBuffers;
 	List<VertexBufferAttribute> m_extraVertexBuffers;
 	IndexBufferEntry m_indexBuffer;
     Ref<VertexLayout> m_vertexLayout;

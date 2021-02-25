@@ -332,11 +332,15 @@ void _LN_ProcessVertex_Common(
         (ln_MorphWeights.y * input.MorphTargetNormal1) +
         (ln_MorphWeights.z * input.MorphTargetNormal2) +
         (ln_MorphWeights.w * input.MorphTargetNormal3);
+#if 1
+    float3 tangent = input.tangent;
+#else
     float3 tangent = input.tangent +
         (ln_MorphWeights.x * input.MorphTargetTangent0) +
         (ln_MorphWeights.y * input.MorphTargetTangent1) +
         (ln_MorphWeights.z * input.MorphTargetTangent2) +
         (ln_MorphWeights.w * input.MorphTargetTangent3);
+#endif
     _LN_ProcessVertex_SkinnedMesh(
         input.Pos, input.Normal, input.BlendIndices, input.BlendWeight,
         outSVPos, outViewNormal);

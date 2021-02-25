@@ -71,6 +71,7 @@ private:
 
 	struct MeshView
 	{
+		String name;
 		std::vector<MeshPrimitiveView> sectionViews;
 	};
 

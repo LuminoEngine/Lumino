@@ -228,6 +228,38 @@ bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, 
 
 bool GLTFImporter::readCommon(MeshModel* meshModel)
 {
+	// VRM
+	{
+		const auto& vrm = m_model->extensions["VRM"];
+		const auto& blendShapeMaster = vrm.Get("blendShapeMaster");
+		const auto& blendShapeGroups = blendShapeMaster.Get("blendShapeGroups");
+
+		const size_t len = blendShapeGroups.ArrayLen();
+		for (size_t i = 0; i < len; i++) {
+			const auto& group = blendShapeGroups.Get(i);
+
+			for (const auto& key : group.Keys()) {
+				const auto& value = group.Get(key);
+
+				if (value.IsBool())std::cout << key << " : " << value.Get<bool>() << std::endl;
+				if (value.IsInt())std::cout << key << " : " << value.Get<int>() << std::endl;
+				if (value.IsNumber())std::cout << key << " : " << value.Get<double>() << std::endl;
+				if (value.IsString())std::cout << key << " : " << value.Get<std::string>() << std::endl;
+				if (value.IsArray())std::cout << key << " : <Array>" << std::endl;
+				if (value.IsObject())std::cout << key << " : <Object>" << std::endl;
+				if (value.IsBinary())std::cout << key << " : <Binary>" << std::endl;
+
+				
+			}
+
+			printf("");
+		}
+
+		printf("");
+	}
+
+
+
 	for (auto& material : m_model->materials) {
 		meshModel->addMaterial(readMaterial(material));
 	}
@@ -274,6 +306,8 @@ bool GLTFImporter::readCommon(MeshModel* meshModel)
 	}
 
 	meshModel->updateNodeTransforms();
+
+
 
 	return true;
 }
@@ -452,6 +486,7 @@ bool GLTFImporter::readNode(MeshNode* coreNode, const tinygltf::Node& node)
 Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 {
     MeshView meshView;
+	meshView.name = String::fromStdString(mesh.name);
 
     int indexBufferViewIndex = -1;
     int indexComponentType = -1;
@@ -740,24 +775,12 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 							LN_WARNING("Ignored morph target.");
 						}
 					}
-					if (position == -1) {
-						LN_ERROR("Morph Target 'POSITION' vertex not found.");
-						return nullptr;
-					}
-					if (normal == -1) {
-						LN_ERROR("Morph Target 'NORMAL' vertex not found.");
-						return nullptr;
-					}
-					if (tangent == -1) {
-						LN_ERROR("Morph Target 'TANGENT' vertex not found.");
-						return nullptr;
-					}
 				}
 
 				VertexMorphTargetView view;
-				view.positions = static_cast<const Vector3*>(getRawData(m_model->accessors[position]));
-				view.normals = static_cast<const Vector3*>(getRawData(m_model->accessors[normal]));
-				view.tangents = static_cast<const Vector3*>(getRawData(m_model->accessors[tangent]));
+				view.positions = (position >= 0) ? static_cast<const Vector3*>(getRawData(m_model->accessors[position])) : nullptr;
+				view.normals = (normal >= 0) ? static_cast<const Vector3*>(getRawData(m_model->accessors[normal])) : nullptr;
+				view.tangents = (tangent >= 0) ? static_cast<const Vector3*>(getRawData(m_model->accessors[tangent])) : nullptr;
 				sectionView.morphTargetViews.push_back(std::move(view));
 			}
 		}
@@ -802,7 +825,7 @@ Ref<MeshContainer> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 	auto meshContainer = makeObject<MeshContainer>();
 
-	for (const auto& primitiveView : meshView.sectionViews) {
+	for (const MeshPrimitiveView& primitiveView : meshView.sectionViews) {
 		int vertexCount = primitiveView.vertexBufferViews[0].count;
 		int indexCount = primitiveView.indexCount;
 		IndexBufferFormat indexForamt = GraphicsHelper::selectIndexBufferFormat(vertexCount);
@@ -926,11 +949,11 @@ Ref<MeshContainer> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 				if (indexForamt == IndexBufferFormat::UInt16) {
 					if (primitiveView.indexElementSize == 1) {
-auto* b = static_cast<uint16_t*>(buf) + indexOffset;
-auto* s = static_cast<const uint8_t*>(primitiveView.indexData);
-for (int i = 0; i < primitiveView.indexCount; i++) {
-	b[i] = beginVertexIndex + s[i];
-	assert(b[i] < vertexCount);
+					auto* b = static_cast<uint16_t*>(buf) + indexOffset;
+					auto* s = static_cast<const uint8_t*>(primitiveView.indexData);
+					for (int i = 0; i < primitiveView.indexCount; i++) {
+						b[i] = beginVertexIndex + s[i];
+						assert(b[i] < vertexCount);
 }
 					}
 					else if (primitiveView.indexElementSize == 2) {
@@ -1029,11 +1052,17 @@ for (int i = 0; i < primitiveView.indexCount; i++) {
 		// Morph Targets
 		for (int i = 0; i < primitiveView.morphTargetViews.size(); i++) {
 			const VertexMorphTargetView& morphTargetView = primitiveView.morphTargetViews[i];
-			VertexMorphTarget* vertices = meshPrimitive->acquireMappedMorphVertexBuffer(i);
-			for (int iVertex = 0; iVertex < vertexCount; iVertex++) {
-				vertices[iVertex].position = morphTargetView.positions[iVertex];
-				vertices[iVertex].normal = morphTargetView.normals[iVertex];
-				vertices[iVertex].tangent = morphTargetView.tangents[iVertex];
+			if (morphTargetView.positions) {
+				Vector3* vertices = static_cast<Vector3*>(meshPrimitive->acquireMappedMorphVertexBuffer(i, VertexElementUsage::Position));
+				for (int iVertex = 0; iVertex < vertexCount; iVertex++) vertices[iVertex] = morphTargetView.positions[iVertex];
+			}
+			if (morphTargetView.normals) {
+				Vector3* vertices = static_cast<Vector3*>(meshPrimitive->acquireMappedMorphVertexBuffer(i, VertexElementUsage::Normal));
+				for (int iVertex = 0; iVertex < vertexCount; iVertex++) vertices[iVertex] = morphTargetView.normals[iVertex];
+			}
+			if (morphTargetView.tangents) {
+				Vector3* vertices = static_cast<Vector3*>(meshPrimitive->acquireMappedMorphVertexBuffer(i, VertexElementUsage::Tangent));
+				for (int iVertex = 0; iVertex < vertexCount; iVertex++) vertices[iVertex] = morphTargetView.tangents[iVertex];
 			}
 		}
 

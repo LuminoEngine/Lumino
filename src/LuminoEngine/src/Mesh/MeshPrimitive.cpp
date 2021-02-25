@@ -14,6 +14,7 @@
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include "MeshManager.hpp"
+#include "MeshModelInstance.hpp"
 
 namespace ln {
 
@@ -503,14 +504,40 @@ void MeshPrimitive::commitRenderData(int sectionIndex, detail::MorphInstance* mo
 		streamIndex++;
 	}
 
-	if (!m_morphVertexBuffer.isEmpty()) {
-		for (int i = 0; i < MaxRenderMorphTargets; i++) {
-			if (m_morphVertexBuffer.isValidRange(i)) {
-				(*outVBs)[streamIndex] = m_morphVertexBuffer[i].buffer;
+	for (int i = 0; i < MaxRenderMorphTargets; i++) {
+		int targetIndex = morph->priorityTargets()[i];
+		if (targetIndex >= 0) {
+			const MorphVertexBuffers& b = m_morphVertexBuffers[targetIndex];
+			if (b.positionVertexBuffer.buffer) {
+				(*outVBs)[streamIndex] = b.positionVertexBuffer.buffer;
+				streamIndex++;
+			}
+			if (b.normalVertexBuffer.buffer) {
+				(*outVBs)[streamIndex] = b.normalVertexBuffer.buffer;
+				streamIndex++;
+			}
+			if (b.tangentVertexBuffer.buffer) {
+				(*outVBs)[streamIndex] = b.tangentVertexBuffer.buffer;
 				streamIndex++;
 			}
 		}
 	}
+
+	//for (int i = 0; i < m_morphVertexBuffers.size(); i++) {
+	//	const MorphVertexBuffers& b = m_morphVertexBuffers[i];
+	//	if (b.positionVertexBuffer.buffer) {
+	//		(*outVBs)[streamIndex] = b.positionVertexBuffer.buffer;
+	//		streamIndex++;
+	//	}
+	//	if (b.normalVertexBuffer.buffer) {
+	//		(*outVBs)[streamIndex] = b.normalVertexBuffer.buffer;
+	//		streamIndex++;
+	//	}
+	//	if (b.tangentVertexBuffer.buffer) {
+	//		(*outVBs)[streamIndex] = b.tangentVertexBuffer.buffer;
+	//		streamIndex++;
+	//	}
+	//}
 
     for (int i = 0; i < m_extraVertexBuffers.size(); i++) {
         (*outVBs)[streamIndex] = m_extraVertexBuffers[i].entry.buffer;
@@ -836,23 +863,37 @@ IndexBuffer* MeshPrimitive::indexBuffer() const
 	return m_indexBuffer.buffer;
 }
 
-VertexMorphTarget* MeshPrimitive::acquireMappedMorphVertexBuffer(int morphTargetIndex)
+// NOTE: MorphVertexBuffers で１つのターゲットメッシュを表すイメージ。
+// VRM モデルだと表情の数だけ作られる。
+void* MeshPrimitive::acquireMappedMorphVertexBuffer(int morphTargetIndex, VertexElementUsage usage)
 {
 	// Grow
-	if (morphTargetIndex >= m_morphVertexBuffer.size()) {
-		m_morphVertexBuffer.resize(morphTargetIndex + 1);
+	if (morphTargetIndex >= m_morphVertexBuffers.size()) {
+		m_morphVertexBuffers.resize(morphTargetIndex + 1);
 	}
 
-	VertexBufferEntry& e = m_morphVertexBuffer[morphTargetIndex];
-	if (!e.buffer) {
-		e.buffer = makeObject<VertexBuffer>(sizeof(VertexMorphTarget) * m_vertexCount, m_resourceUsage);
+	MorphVertexBuffers& b = m_morphVertexBuffers[morphTargetIndex];
+	VertexBufferEntry* e;
+	if (usage == VertexElementUsage::Position)
+		e = &b.positionVertexBuffer;
+	else if (usage == VertexElementUsage::Normal)
+		e = &b.normalVertexBuffer;
+	else if (usage == VertexElementUsage::Tangent)
+		e = &b.tangentVertexBuffer;
+	else {
+		LN_ERROR();
+		return nullptr;
+	}
+		
+	if (!e->buffer) {
+		e->buffer = makeObject<VertexBuffer>(sizeof(VertexMorphTarget) * m_vertexCount, m_resourceUsage);
 	}
 
-	if (!e.mappedBuffer) {
-		e.mappedBuffer = e.buffer->map(MapMode::Write);
+	if (!e->mappedBuffer) {
+		e->mappedBuffer = e->buffer->map(MapMode::Write);
 	}
 
-	return static_cast<VertexMorphTarget*>(e.mappedBuffer);
+	return static_cast<VertexMorphTarget*>(e->mappedBuffer);
 }
 
 void MeshPrimitive::attemptResetVertexLayout()
@@ -877,11 +918,19 @@ void MeshPrimitive::attemptResetVertexLayout()
 			streamIndex++;
 		}
 
-		if (!m_morphVertexBuffer.isEmpty()) {
-			for (int i = 0; i < MaxRenderMorphTargets; i++) {
-				if (m_morphVertexBuffer.isValidRange(i)) {
+		// MorphTarget は最大 MaxRenderMorphTargets 個までを詰め込む
+		for (int i = 0; i < MaxRenderMorphTargets; i++) {
+			if (m_morphVertexBuffers.isValidRange(i)) {
+				const MorphVertexBuffers& b = m_morphVertexBuffers[i];
+				if (b.positionVertexBuffer.buffer) {
 					m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Position, 1 + i);
+					streamIndex++;
+				}
+				if (b.normalVertexBuffer.buffer) {
 					m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Normal, 1 + i);
+					streamIndex++;
+				}
+				if (b.tangentVertexBuffer.buffer) {
 					m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Tangent, 1 + i);
 					streamIndex++;
 				}
