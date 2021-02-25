@@ -1427,8 +1427,19 @@ Ref<Texture> GLTFImporter::loadTexture(const tinygltf::Texture& texture)
 		return nullptr;
 	}
 
+	// 検索キー
+	String textureName;
+	if (!image.uri.empty()) {
+		textureName = String::fromStdString(image.uri);
+	}
+	else {
+		if (LN_REQUIRE(!m_meshModel->m_name.isEmpty())) return nullptr;
+		textureName = String::concat(m_meshModel->m_name, u":", String::fromNumber(texture.source));
+	}
+
+
 	if (1) {
-		return m_meshManager->graphicsManager()->loadTexture2DFromOnMemoryData(&m_basedir, String::fromStdString(image.uri), [&](const AssetRequiredPathSet* x) {
+		return m_meshManager->graphicsManager()->loadTexture2DFromOnMemoryData(&m_basedir, textureName, [&](const AssetRequiredPathSet* x) {
 			Ref<Bitmap2D> bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
 			return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
 		});

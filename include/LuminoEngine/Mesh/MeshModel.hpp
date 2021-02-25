@@ -191,6 +191,7 @@ public:	// TODO:
     void updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform, bool hierarchical);
 
 	detail::AssetPath m_filePath;
+	String m_name;
 	float m_scale;
 
     detail::InternalMeshModelType m_type;

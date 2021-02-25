@@ -293,6 +293,7 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 	if (path) {
 
 		Ref<SkinnedMeshModel> mesh = makeObject<SkinnedMeshModel>();
+		mesh->m_name = filePath.fileNameWithoutExtension();
 		auto diag = makeObject<DiagnosticsManager>();
 
 		if (path->path().hasExtension(u".pmx")) {
