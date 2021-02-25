@@ -63,6 +63,15 @@ class App_Example_glTFSampleViewer : public Application
         m_mesh->setBlendMode(BlendMode::Alpha);
         m_mesh->addInto();
 
+
+        const auto model = m_mesh->model();
+        const auto aabb = model->boundingBox();
+        float modelRadius = Vector3::distance(aabb.max, aabb.min) * .5f;
+        //const Vector3 eye = (aabb.min + aabb.max) * .5f + Vector3(modelRadius, modelRadius, -modelRadius);
+        const Vector3 eye = (aabb.min + aabb.max) * .5f + Vector3(0, 0, -modelRadius * 1.5f);
+        Engine::mainCamera()->setPosition(eye);
+        Engine::mainCamera()->lookAt(Vector3::Zero);
+
         std::cout << path << std::endl;
     }
 };

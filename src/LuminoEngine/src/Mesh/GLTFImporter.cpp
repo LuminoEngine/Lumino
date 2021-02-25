@@ -1034,6 +1034,7 @@ Ref<MeshContainer> GLTFImporter::generateMesh(const MeshView& meshView) const
 			}
 		}
 
+		meshPrimitive->calculateBoundingBox();
 
 		meshContainer->addMeshPrimitive(meshPrimitive);
 	}

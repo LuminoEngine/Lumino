@@ -142,6 +142,10 @@ public:
 
 	MeshNode* findHumanoidBone(HumanoidBones boneKind) const;
 
+
+	AABB boundingBox() const;
+
+
     void addRootNode(int index);
 
 	/** 全ノードの Local Transform をリセットします。(アニメーション適用前の、デフォルトの姿勢に戻します) */

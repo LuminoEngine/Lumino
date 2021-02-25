@@ -192,6 +192,16 @@ MeshNode* MeshModel::findHumanoidBone(HumanoidBones boneKind) const
 		return nullptr;
 }
 
+AABB MeshModel::boundingBox() const
+{
+	AABB result;
+	for (const auto& meshContainer : m_meshContainers) {
+		const auto& meshPrimitive = meshContainer->meshPrimitives()[0];
+		result.attemptInfrate(meshPrimitive->boundingBox());
+	}
+	return result;
+}
+
 void MeshModel::addRootNode(int index)
 {
     m_rootNodes.add(index);

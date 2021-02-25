@@ -133,44 +133,97 @@ void MeshComponent::onUpdate(float elapsedSeconds)
 
 void MeshComponent::onRender(RenderingContext* context)
 {
-    if (!m_model) return;
+    CommandList* commandList = context->commandList();
+    forEachVisibleMeshPrimitives(commandList, [this, commandList](MeshNode* node, MeshPrimitive* meshPrimitive) {
+        for (int iSection = 0; iSection < meshPrimitive->sections().size(); iSection++) {
+            int materialIndex = meshPrimitive->sections()[iSection].materialIndex;
+            if (materialIndex >= 0) {
+                commandList->setMaterial(m_model->materials()[materialIndex]);
 
-    for (const auto& node : m_model->meshNodes()) {
-        if (node->isVisible() && node->meshContainerIndex() >= 0) {
-
-            context->setTransfrom(m_model->nodeGlobalTransform(node->index()));
-            const auto& meshContainer = m_model->meshContainers()[node->meshContainerIndex()];
-            if (meshContainer->isVisible()) {
-                for (const auto& mesh : meshContainer->meshPrimitives()) {
-
-                    for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
-                        int materialIndex = mesh->sections()[iSection].materialIndex;
-                        if (materialIndex >= 0) {
-                            context->setMaterial(m_model->materials()[materialIndex]);
-
-                            if (m_modelInstance && node->skeletonIndex >= 0) {
-                                context->drawSkinnedMesh(mesh, iSection, m_modelInstance->skeletons()[node->skeletonIndex]);
-                            }
-                            else {
-                                context->drawMesh(mesh, iSection);
-                            }
-                        }
-                    }
+                if (m_modelInstance && node->skeletonIndex >= 0) {
+                    commandList->drawSkinnedMesh(meshPrimitive, iSection, m_modelInstance->skeletons()[node->skeletonIndex]);
+                }
+                else {
+                    commandList->drawMesh(meshPrimitive, iSection);
                 }
             }
         }
-    }
+    });
 }
 
 void MeshComponent::onRenderGizmo(RenderingContext* context)
 {
     CommandList* commandList = context->getCommandList(ln::RenderPart::Gizmo, ln::detail::ProjectionKind::ViewProjection3D);
 
+    const auto p = m_model->boundingBox().getCorners();
     Vector3 lines[] = {
-        { -1, 1, 1 }, { 1, 1, 1 },
-        { 1, 1, 1 }, { 1, 1, -1 },
+        p[0], p[1],
+        p[1], p[2],
+        p[2], p[3],
+        p[3], p[0],
+        p[4], p[5],
+        p[5], p[6],
+        p[6], p[7],
+        p[7], p[4],
+        p[0], p[4],
+        p[1], p[5],
+        p[2], p[6],
+        p[3], p[7],
     };
-    commandList->drawLineList(lines, 4, Color::Red);
+    commandList->drawLineList(lines, 24, Color::Red);
+
+    /*
+    forEachVisibleMeshPrimitives(commandList, [this, commandList](MeshNode* node, MeshPrimitive* meshPrimitive) {
+        const auto p = meshPrimitive->boundingBox().getCorners();
+        Vector3 lines[] = {
+            p[0], p[1],
+            p[1], p[2],
+            p[2], p[3],
+            p[3], p[0],
+            p[4], p[5],
+            p[5], p[6],
+            p[6], p[7],
+            p[7], p[4],
+            p[0], p[4],
+            p[1], p[5],
+            p[2], p[6],
+            p[3], p[7],
+        };
+        commandList->drawLineList(lines, 24, Color::Red);
+    });
+    */
+}
+
+void MeshComponent::forEachVisibleMeshPrimitives(CommandList* commandList, std::function<void(MeshNode* node, MeshPrimitive* meshPrimitive)> callback)
+{
+    if (!m_model) return;
+
+    for (const auto& node : m_model->meshNodes()) {
+        if (node->isVisible() && node->meshContainerIndex() >= 0) {
+
+            commandList->setTransfrom(m_model->nodeGlobalTransform(node->index()));
+
+            const auto& meshContainer = m_model->meshContainers()[node->meshContainerIndex()];
+            if (meshContainer->isVisible()) {
+                for (const auto& mesh : meshContainer->meshPrimitives()) {
+                    callback(node, mesh);
+                    //for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
+                    //    int materialIndex = mesh->sections()[iSection].materialIndex;
+                    //    if (materialIndex >= 0) {
+                    //        context->setMaterial(m_model->materials()[materialIndex]);
+
+                    //        if (m_modelInstance && node->skeletonIndex >= 0) {
+                    //            context->drawSkinnedMesh(mesh, iSection, m_modelInstance->skeletons()[node->skeletonIndex]);
+                    //        }
+                    //        else {
+                    //            context->drawMesh(mesh, iSection);
+                    //        }
+                    //    }
+                    //}
+                }
+            }
+        }
+    }
 }
 
 } // namespace ln

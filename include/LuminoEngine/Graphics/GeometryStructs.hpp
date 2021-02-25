@@ -433,6 +433,53 @@ public:
     bool operator!=(const CornerRadius& rhs) const { return !operator==(rhs); }
 };
 
+struct AABB
+{
+    Vector3 min;
+    Vector3 max;
+
+    AABB()
+        : min(Vector3::Maximum)
+        , max(Vector3::Minimum)
+    {
+    }
+
+    void attemptInfrate(const Vector3& pos) {
+        min = Vector3::min(min, pos);
+        max = Vector3::max(max, pos);
+    }
+
+    void attemptInfrate(const AABB& aabb) {
+        min = Vector3::min(min, aabb.min);
+        max = Vector3::max(max, aabb.max);
+    }
+
+    /* 
+     * verts[0] : left top near
+     * verts[1] : right top near
+     * verts[2] : right bottom near
+     * verts[3] : left bottom near
+     * verts[4] : left top far
+     * verts[5] : right top far
+     * verts[6] : right bottom far
+     * verts[7] : left bottom far
+     */
+    std::array<Vector3, 8> getCorners() const
+    {
+        return {
+            Vector3(min.x, max.y, min.z),
+            Vector3(max.x, max.y, min.z),
+            Vector3(max.x, min.y, min.z),
+            Vector3(min.x, min.y, min.z),
+            Vector3(min.x, max.y, max.z),
+            Vector3(max.x, max.y, max.z),
+            Vector3(max.x, min.y, max.z),
+            Vector3(min.x, min.y, max.z),
+        };
+    }
+};
+
+
 // Int type (internal)
 struct PointI
 {

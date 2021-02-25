@@ -799,9 +799,11 @@ void MeshPrimitive::calculateTangents()
 
 void MeshPrimitive::calculateBoundingBox()
 {
-	Vertex* vertices = reinterpret_cast<Vertex*>(acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
-
-
+	m_boundingBox = AABB();
+	const Vertex* vertices = static_cast<const Vertex*>(m_mainVertexBuffer.buffer->data());
+	for (int i = 0; i < m_vertexCount; i++) {
+		m_boundingBox.attemptInfrate(vertices[i].position);
+	}
 }
 
 VertexBuffer* MeshPrimitive::vertexBuffer(InterleavedVertexGroup group) const

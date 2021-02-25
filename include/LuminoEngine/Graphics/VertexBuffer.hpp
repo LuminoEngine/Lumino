@@ -38,6 +38,8 @@ public:
     /** 頂点バッファのサイズを変更します。 */
     void resize(int size);
 
+    const void* data() const;
+
     /** 頂点バッファが保持するデータにアクセスします。このバッファが次の描画に使用されるとき、自動的に unmap されます。  */
     void* map(MapMode mode);
 

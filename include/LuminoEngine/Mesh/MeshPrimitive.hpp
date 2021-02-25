@@ -202,6 +202,7 @@ public:
 	/** インデックス値を取得します。 */
 	int index(int index);
 
+	const AABB& boundingBox() const { return m_boundingBox; }
 
 	/** セクションの情報を追加します。 */
 	void addSection(int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology);
@@ -278,6 +279,7 @@ private:
 	int m_indexCount;
 	IndexBufferFormat m_indexFormat;
 	GraphicsResourceUsage m_resourceUsage;
+	AABB m_boundingBox;
 
 
 
