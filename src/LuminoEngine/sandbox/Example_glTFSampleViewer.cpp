@@ -68,9 +68,10 @@ class App_Example_glTFSampleViewer : public Application
         const auto aabb = model->boundingBox();
         float modelRadius = Vector3::distance(aabb.max, aabb.min) * .5f;
         //const Vector3 eye = (aabb.min + aabb.max) * .5f + Vector3(modelRadius, modelRadius, -modelRadius);
-        const Vector3 eye = (aabb.min + aabb.max) * .5f + Vector3(0, 0, -modelRadius * 1.5f);
+        const Vector3 eye = (aabb.min + aabb.max) * .5f + Vector3(0, 0, -modelRadius * 2.0f);
         Engine::mainCamera()->setPosition(eye);
         Engine::mainCamera()->lookAt(Vector3::Zero);
+
 
         std::cout << path << std::endl;
     }

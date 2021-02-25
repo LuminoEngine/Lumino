@@ -444,6 +444,12 @@ struct AABB
     {
     }
 
+    void invalidate()
+    {
+        min = Vector3::Maximum;
+        max = Vector3::Minimum;
+    }
+
     void attemptInfrate(const Vector3& pos) {
         min = Vector3::min(min, pos);
         max = Vector3::max(max, pos);
@@ -477,6 +483,29 @@ struct AABB
             Vector3(min.x, min.y, max.z),
         };
     }
+
+    void transform(const Matrix& m)
+    {
+        const Vector3 b000 = min;
+        const Vector3 b001 = Vector3(min.x, min.y, max.z);
+        const Vector3 b010 = Vector3(min.x, max.y, min.z);
+        const Vector3 b011 = Vector3(min.x, max.y, max.z);
+        const Vector3 b100 = Vector3(max.x, min.y, min.z);
+        const Vector3 b101 = Vector3(max.x, min.y, max.z);
+        const Vector3 b110 = Vector3(max.x, max.y, min.z);
+        const Vector3 b111 = max;
+
+        invalidate();
+        attemptInfrate(Vector3::transformCoord(b000, m));
+        attemptInfrate(Vector3::transformCoord(b001, m));
+        attemptInfrate(Vector3::transformCoord(b010, m));
+        attemptInfrate(Vector3::transformCoord(b011, m));
+        attemptInfrate(Vector3::transformCoord(b100, m));
+        attemptInfrate(Vector3::transformCoord(b101, m));
+        attemptInfrate(Vector3::transformCoord(b110, m));
+        attemptInfrate(Vector3::transformCoord(b111, m));
+    }
+
 };
 
 

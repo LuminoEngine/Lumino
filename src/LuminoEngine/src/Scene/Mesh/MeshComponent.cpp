@@ -141,7 +141,7 @@ void MeshComponent::onRender(RenderingContext* context)
                 commandList->setMaterial(m_model->materials()[materialIndex]);
 
                 if (m_modelInstance && node->skeletonIndex >= 0) {
-                    commandList->drawSkinnedMesh(meshPrimitive, iSection, m_modelInstance->skeletons()[node->skeletonIndex]);
+                    commandList->drawSkinnedMesh(meshPrimitive, iSection, m_modelInstance->skeletons()[node->skeletonIndex], m_modelInstance->morphs()[node->meshContainerIndex()]);
                 }
                 else {
                     commandList->drawMesh(meshPrimitive, iSection);

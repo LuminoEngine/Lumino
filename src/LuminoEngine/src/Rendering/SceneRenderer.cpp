@@ -496,6 +496,12 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				else {
 					elementInfo.boneTexture = nullptr;
 				}
+				if (batch->morph) {
+					batch->morph->getMorphWeights(&elementInfo.morphWeights);
+				}
+				else {
+					std::fill(elementInfo.morphWeights.begin(), elementInfo.morphWeights.end(), 0.0f);
+				}
 
 				ShaderTechniqueRequestClasses requester = {
 					(elementInfo.boneTexture) ? ShaderTechniqueClass_MeshProcess::SkinnedMesh : ShaderTechniqueClass_MeshProcess::StaticMesh,

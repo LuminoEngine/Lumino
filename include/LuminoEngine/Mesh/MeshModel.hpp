@@ -143,7 +143,7 @@ public:
 	MeshNode* findHumanoidBone(HumanoidBones boneKind) const;
 
 
-	AABB boundingBox() const;
+	AABB boundingBox() const { return m_boundingBox; }
 
 
     void addRootNode(int index);
@@ -178,6 +178,7 @@ public:
 	void verifyHumanoidBones();
 	Ref<detail::MeshModelInstance> createMeshModelInstance();
 	bool isStaticMeshModel() const { return m_animationController == nullptr; }
+	void calculateBoundingBox();
 
 protected:
 	void serialize(Serializer2& ar) override;
@@ -206,6 +207,8 @@ public:	// TODO:
     // でも Node は SkinndMesh と共用なので、Node 側に GlobalTransform を持たせるのは
     // データが無駄になったりする。
     List<Matrix> m_nodeGlobalTransforms;
+
+	AABB m_boundingBox;
 
 	List<Ref<MeshBoneIK>> m_iks;
 	Ref<AnimationController> m_animationController;

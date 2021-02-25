@@ -36,8 +36,9 @@ cbuffer LNRenderElementBuffer
     /* [192] */ float4x4 ln_WorldView;
     /* [256] */ float4x4 ln_WorldViewIT;
     /* [320] */ float4 ln_BoneTextureReciprocalSize;
-    /* [336] */ int ln_objectId;
-};  /* [352(alignd:16)] */
+    /* [336] */ float4 ln_MorphWeights;
+    /* [352] */ int ln_objectId;
+};  /* [368(alignd:16)] */
 
 cbuffer LNPBRMaterialParameter
 {

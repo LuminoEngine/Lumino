@@ -135,7 +135,7 @@ public:
 	void drawMesh(MeshResource* meshResource, int sectionIndex);
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
 	void drawMesh(MeshPrimitive* mesh, int sectionIndex);
-	void drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton);
+	void drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph);
 
 	void drawMeshInstanced(InstancedMeshList* list);
 

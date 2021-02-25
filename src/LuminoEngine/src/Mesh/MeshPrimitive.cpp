@@ -461,7 +461,7 @@ void MeshPrimitive::setSection(int sectionIndex, int startIndex, int primitiveCo
 	meshSection.topology = topology;
 }
 
-void MeshPrimitive::commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB)
+void MeshPrimitive::commitRenderData(int sectionIndex, detail::MorphInstance* morph, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB)
 {
 	// unmap
 	{
@@ -491,24 +491,34 @@ void MeshPrimitive::commitRenderData(int sectionIndex, MeshSection2* outSection,
     *outDecl = m_vertexLayout;
     *outIB = m_indexBuffer.buffer;
 
-	int count = 0;
+	int streamIndex = 0;
 
 	if (m_mainVertexBuffer.buffer) {
-		(*outVBs)[count] = m_mainVertexBuffer.buffer;
-		count++;
+		(*outVBs)[streamIndex] = m_mainVertexBuffer.buffer;
+		streamIndex++;
 	}
 
 	if (m_skinningVertexBuffer.buffer) {
-		(*outVBs)[count] = m_skinningVertexBuffer.buffer;
-		count++;
+		(*outVBs)[streamIndex] = m_skinningVertexBuffer.buffer;
+		streamIndex++;
+	}
+
+	if (!m_morphVertexBuffer.isEmpty()) {
+		for (int i = 0; i < MaxRenderMorphTargets; i++) {
+			if (m_morphVertexBuffer.isOutOfRange(i))
+				(*outVBs)[streamIndex] = nullptr;
+			else
+				(*outVBs)[streamIndex] = m_morphVertexBuffer[i].buffer;
+			streamIndex++;
+		}
 	}
 
     for (int i = 0; i < m_extraVertexBuffers.size(); i++) {
-        (*outVBs)[count] = m_extraVertexBuffers[i].entry.buffer;
-		count++;
+        (*outVBs)[streamIndex] = m_extraVertexBuffers[i].entry.buffer;
+		streamIndex++;
     }
 
-	*outVBCount = count;
+	*outVBCount = streamIndex;
 }
 
 InterleavedVertexGroup MeshPrimitive::getStandardElement(VertexElementUsage usage, int usageIndex) const
@@ -827,23 +837,23 @@ IndexBuffer* MeshPrimitive::indexBuffer() const
 	return m_indexBuffer.buffer;
 }
 
-void* MeshPrimitive::acquireMappedMorphVertexBuffer(int morphIndex)
+VertexMorphTarget* MeshPrimitive::acquireMappedMorphVertexBuffer(int morphTargetIndex)
 {
 	// Grow
-	if (morphIndex >= m_morphVertexBuffer.size()) {
-		m_morphVertexBuffer.resize(morphIndex);
+	if (morphTargetIndex >= m_morphVertexBuffer.size()) {
+		m_morphVertexBuffer.resize(morphTargetIndex + 1);
 	}
 
-	VertexBufferEntry& e = m_morphVertexBuffer[morphIndex];
+	VertexBufferEntry& e = m_morphVertexBuffer[morphTargetIndex];
 	if (!e.buffer) {
-		e.buffer = makeObject<VertexBuffer>(sizeof(VertexBlendWeight) * m_vertexCount, m_resourceUsage);
+		e.buffer = makeObject<VertexBuffer>(sizeof(VertexMorphTarget) * m_vertexCount, m_resourceUsage);
 	}
 
 	if (!e.mappedBuffer) {
 		e.mappedBuffer = e.buffer->map(MapMode::Write);
 	}
 
-	return e.mappedBuffer;
+	return static_cast<VertexMorphTarget*>(e.mappedBuffer);
 }
 
 void MeshPrimitive::attemptResetVertexLayout()
@@ -866,6 +876,15 @@ void MeshPrimitive::attemptResetVertexLayout()
 			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::BlendIndices, 0);
 			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::BlendWeight, 0);
 			streamIndex++;
+		}
+
+		if (!m_morphVertexBuffer.isEmpty()) {
+			for (int i = 0; i < MaxRenderMorphTargets; i++) {
+				m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Position, 1 + i);
+				m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Normal, 1 + i);
+				m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Tangent, 1 + i);
+				streamIndex++;
+			}
 		}
 
 		for (int i = 0; i < m_extraVertexBuffers.size(); i++) {
@@ -915,57 +934,57 @@ void MeshContainer::init()
 //	return m_lodResources[0];
 //}
 //
-void MeshContainer::calculateBounds()
-{
-#if 1
-	m_boundingBox = Box();
-#else
-	MeshResource* mesh = meshResource();
-	if (mesh)
-	{
-		VertexBuffer* vertexBuffer;
-		mesh->requestBuffers(MeshResource::VBG_Basic, &vertexBuffer, nullptr);
-		Vertex* data = (Vertex*)vertexBuffer->map(MapMode::Read);
-
-		int count = mesh->vertexCount();
-		if (count > 0)
-		{
-			Vector3 min = data[0].position;
-			Vector3 max = data[0].position;
-			for (int i = 1; i < count; i++)
-			{
-				if (data[i].position.x < min.x)
-					min.x = data[i].position.x;
-
-				if (data[i].position.y < min.y)
-					min.y = data[i].position.y;
-
-				if (data[i].position.z < min.z)
-					min.z = data[i].position.z;
-
-				if (data[i].position.x > max.x)
-					max.x = data[i].position.x;
-
-				if (data[i].position.y > max.y)
-					max.y = data[i].position.y;
-
-				if (data[i].position.z > max.z)
-					max.z = data[i].position.z;
-			}
-
-			m_boundingBox = Box(min, max);
-		}
-		else
-		{
-			m_boundingBox = Box();
-		}
-	}
-	else
-	{
-		m_boundingBox = Box();
-	}
-#endif
-}
+//void MeshContainer::calculateBounds()
+//{
+//#if 1
+//	m_boundingBox = Box();
+//#else
+//	MeshResource* mesh = meshResource();
+//	if (mesh)
+//	{
+//		VertexBuffer* vertexBuffer;
+//		mesh->requestBuffers(MeshResource::VBG_Basic, &vertexBuffer, nullptr);
+//		Vertex* data = (Vertex*)vertexBuffer->map(MapMode::Read);
+//
+//		int count = mesh->vertexCount();
+//		if (count > 0)
+//		{
+//			Vector3 min = data[0].position;
+//			Vector3 max = data[0].position;
+//			for (int i = 1; i < count; i++)
+//			{
+//				if (data[i].position.x < min.x)
+//					min.x = data[i].position.x;
+//
+//				if (data[i].position.y < min.y)
+//					min.y = data[i].position.y;
+//
+//				if (data[i].position.z < min.z)
+//					min.z = data[i].position.z;
+//
+//				if (data[i].position.x > max.x)
+//					max.x = data[i].position.x;
+//
+//				if (data[i].position.y > max.y)
+//					max.y = data[i].position.y;
+//
+//				if (data[i].position.z > max.z)
+//					max.z = data[i].position.z;
+//			}
+//
+//			m_boundingBox = Box(min, max);
+//		}
+//		else
+//		{
+//			m_boundingBox = Box();
+//		}
+//	}
+//	else
+//	{
+//		m_boundingBox = Box();
+//	}
+//#endif
+//}
 
 void MeshContainer::addMeshPrimitive(MeshPrimitive* mesh)
 {

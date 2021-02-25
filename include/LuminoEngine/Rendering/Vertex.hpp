@@ -23,6 +23,13 @@ struct VertexBlendWeight
 	float		weights[4];
 };
 
+struct VertexMorphTarget
+{
+	Vector3 position;
+	Vector3 normal;
+	Vector3 tangent;
+};
+
 // TEXCOORD_1,TEXCOORD_2,TEXCOORD_3
 struct VertexAdditionalUV
 {

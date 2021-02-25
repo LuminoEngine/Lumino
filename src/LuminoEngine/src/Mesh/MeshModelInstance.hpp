@@ -42,6 +42,24 @@ private:
 	Ref<Texture2D> m_skinningMatricesTexture;
 };
 
+class MorphInstance
+	: public RefObject
+{
+public:
+	MorphInstance(MeshModelInstance* owner, int meshContainerIndex);
+	void setWeight(int index, float value);
+	const std::array<int, MaxRenderMorphTargets> priorityTargets() const { return m_priorityTargets; }
+
+	void updatePriorityTargets();
+	void getMorphWeights(std::array<float, MaxRenderMorphTargets>* outMorphWeights) const;
+
+private:
+	MeshModelInstance* m_owner;
+	int m_meshContainerIndex;
+	std::vector<float> m_weights;
+	std::array<int, MaxRenderMorphTargets> m_priorityTargets;
+};
+
 // MeshModel の描画にかかわる動的なデータ
 class MeshModelInstance
 	: public RefObject
@@ -53,12 +71,14 @@ public:
 
 	const Ref<MeshModel>& model() const { return m_model; }
 	const List<Ref<SkeletonInstance>>& skeletons() const { return m_skeletons; }
+	const List<Ref<MorphInstance>>& morphs() const { return m_morphs; }
 
 	void updateSkinningMatrices();
 
 private:
 	Ref<MeshModel> m_model;
 	List<Ref<SkeletonInstance>> m_skeletons;
+	List<Ref<MorphInstance>> m_morphs;
 };
 
 } // namespace detail

@@ -57,6 +57,7 @@ static const std::unordered_map<String, BuiltinShaderParameters> s_BuiltinShader
     {_LT("ln_WorldView"), BuiltinShaderParameters_ln_WorldView},
     {_LT("ln_WorldViewIT"), BuiltinShaderParameters_ln_WorldViewIT},
     {_LT("ln_BoneTextureReciprocalSize"), BuiltinShaderParameters_ln_BoneTextureReciprocalSize},
+    {_LT("ln_MorphWeights"), BuiltinShaderParameters_ln_MorphWeights},
 
     {_LT("ln_ColorScale"), BuiltinShaderParameters_ln_ColorScale},
     {_LT("ln_BlendColor"), BuiltinShaderParameters_ln_BlendColor},
@@ -106,7 +107,7 @@ ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
     assert(208 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraPosition));
     assert(224 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraDirection));
     static_assert(288 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
-    static_assert(352 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    static_assert(368 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(48 == sizeof(LNEffectColorBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(BuiltinShaderParameters__Count < 64, "Invalid BuiltinShaderParameters__Count");
 
@@ -221,6 +222,8 @@ void ShaderTechniqueSemanticsManager::updateElementVariables(ShaderSecondaryDesc
             data.ln_WorldViewIT = Matrix::makeTranspose(Matrix::makeInverse(info.WorldMatrix * cameraInfo.viewMatrix));
         if (hasParameter(BuiltinShaderParameters_ln_BoneTextureReciprocalSize) && info.boneTexture)
             data.ln_BoneTextureReciprocalSize = Vector4(1.0f / info.boneTexture->width(), 1.0f / info.boneTexture->height(), 0, 0);
+        if (hasParameter(BuiltinShaderParameters_ln_MorphWeights))
+            data.ln_MorphWeights.set(info.morphWeights[0], info.morphWeights[1], info.morphWeights[2], info.morphWeights[3]);
 
         data.ln_objectId = info.objectId;
         descriptor->setUniformBufferData(index, &data, sizeof(data));

@@ -33,6 +33,7 @@ struct alignas(16) LNRenderElementBuffer
     alignas(16) Matrix ln_WorldView;
     alignas(16) Matrix ln_WorldViewIT;
     alignas(16) Vector4 ln_BoneTextureReciprocalSize;   // .zw is not use. ([0, 0])
+    alignas(16) Vector4 ln_MorphWeights;
     alignas(4) int32_t ln_objectId;
 };
 
@@ -154,6 +155,8 @@ struct ElementInfo
     Texture2D* boneTexture = nullptr;
     Texture2D* boneLocalQuaternionTexture = nullptr;
 
+    std::array<float, 4> morphWeights;
+
     int objectId = 0;
 };
 
@@ -230,6 +233,7 @@ enum BuiltinShaderParameters
     BuiltinShaderParameters_ln_WorldView,
     BuiltinShaderParameters_ln_WorldViewIT,
     BuiltinShaderParameters_ln_BoneTextureReciprocalSize,
+    BuiltinShaderParameters_ln_MorphWeights,
 
     // LNEffectColorBuffer
     BuiltinShaderParameters_ln_ColorScale,

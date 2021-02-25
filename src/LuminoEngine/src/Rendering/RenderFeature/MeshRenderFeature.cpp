@@ -58,7 +58,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 	return result;
 }
 
-RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton)
+RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph)
 {
     if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
 
@@ -69,7 +69,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
     std::array<VertexBuffer*, MaxVertexStreams> vb = {};
     int vbCount;
     IndexBuffer* ib;
-    mesh->commitRenderData(sectionIndex, &section, &layout, &vb, &vbCount, &ib);
+    mesh->commitRenderData(sectionIndex, morph, &section, &layout, &vb, &vbCount, &ib);
 
     DrawMeshData data;
     data.vertexLayout = layout;
@@ -89,6 +89,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
     m_meshes.push_back(std::move(data));
     m_batchData.count++;
 	m_batchData.skeleton = skeleton;
+	m_batchData.morph = morph;
 
 	return result;
 }
@@ -151,6 +152,7 @@ void MeshRenderFeature::beginRendering()
 	m_batchData.count = 0;
 	m_batchData.instanced = false;
 	m_batchData.skeleton = nullptr;
+	m_batchData.morph = nullptr;
 }
 
 void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
@@ -159,11 +161,13 @@ void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeat
 	batch->data = m_batchData;
 	batch->instancing = m_batchData.instanced;
 	batch->skeleton = m_batchData.skeleton;
+	batch->morph = m_batchData.morph;
 
 	m_batchData.offset = m_batchData.offset + m_batchData.count;
 	m_batchData.count = 0;
 	m_batchData.instanced = false;
 	m_batchData.skeleton = nullptr;
+	m_batchData.morph = nullptr;
 }
 
 void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)

@@ -332,6 +332,8 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 
 		}
 
+		mesh->calculateBoundingBox();
+
 		MeshBoneMapper boneMapper;
 		boneMapper.map(mesh);
 
