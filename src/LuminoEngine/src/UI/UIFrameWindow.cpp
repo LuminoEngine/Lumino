@@ -16,8 +16,7 @@
 #include "../Engine/EngineManager.hpp"
 #include "UIStyleInstance.hpp"
 #include "UIManager.hpp"
-#include <imgui.h>
-#include <imgui_internal.h>
+#include <LuminoEngine/UI/ImGuiIntegration.hpp>
 
 #include "../Effect/EffectManager.hpp"  // TODO: tests
 
@@ -258,6 +257,47 @@ UIElement* UIInputInjector::mouseHoveredElement()
     return m_owner->m_manager->mouseHoverElement();
 }
 
+//==============================================================================
+// MainViewportToolPane
+
+class MainViewportToolPane
+    : public ImGuiDockPane
+{
+public:
+    MainViewportToolPane()
+        : m_graphicsContext(nullptr)
+        , m_renderView(nullptr)
+        , m_mainViewportRenderTarget(nullptr)
+    {}
+
+    void prepare(GraphicsContext* context, const Ref<UIRenderView>& renderView)
+    {
+        m_graphicsContext = context;
+        m_renderView = renderView;
+    }
+
+protected:
+    void onGui() override
+    {
+        ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+        const ImVec2 contentSize = ImGui::GetContentRegionAvail();
+
+        if (m_renderView)
+        {
+            m_mainViewportRenderTarget = RenderTargetTexture::realloc(m_mainViewportRenderTarget, contentSize.x, contentSize.y, TextureFormat::RGBA8, false, SamplerState::pointClamp());
+            m_renderView->render(m_graphicsContext, m_mainViewportRenderTarget);
+        }
+
+        ImGui::Image(m_mainViewportRenderTarget, contentSize);
+    }
+
+private:
+    GraphicsContext* m_graphicsContext;
+    Ref<UIRenderView> m_renderView;
+    Ref<RenderTargetTexture> m_mainViewportRenderTarget;
+};
+
 } //  namespace detail
 
 //==============================================================================
@@ -265,7 +305,7 @@ UIElement* UIInputInjector::mouseHoveredElement()
 
 UIFrameWindow::UIFrameWindow()
 	: m_updateMode(UIFrameWindowUpdateMode::EventDispatches)
-	, m_ImGuiLayerEnabled(true)
+	, m_ImGuiLayerEnabled(false)
     , m_realtimeRenderingEnabled(true)
     , m_layoutContext(makeObject<UILayoutContext>())
 {
@@ -312,6 +352,23 @@ bool UIFrameWindow::isAllowDragDrop() const
     return m_platformWindow->isAllowDragDrop();
 }
 
+//void UIFrameWindow::setSize(float width, float height)
+//{
+//    m_requestedSize.set(width, height);
+//}
+
+void UIFrameWindow::setImGuiLayerEnabled(bool value)
+{
+    m_ImGuiLayerEnabled = value;
+
+    if (m_ImGuiLayerEnabled && !m_imguiContext) {
+        m_imguiContext = std::make_unique<detail::ImGuiIntegration>();
+        if (!m_imguiContext->init()) {
+            return;
+        }
+    }
+}
+
 void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
 {
     m_platformWindow = platformMainWindow;
@@ -322,10 +379,6 @@ void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWind
     SizeI size;
     m_platformWindow->getSize(&size);
     resetSize(size.toFloatSize());
-
-	if (!m_imguiContext.init()) {
-		return;
-	}
 
 }
 
@@ -338,7 +391,10 @@ void UIFrameWindow::resetSize(const Size& size)
 
 void UIFrameWindow::onDispose(bool explicitDisposing)
 {
-	m_imguiContext.dispose();
+    if (m_imguiContext) {
+        m_imguiContext->dispose();
+        m_imguiContext = nullptr;
+    }
 
     if (m_renderView) {
         m_renderView->dispose();
@@ -367,7 +423,7 @@ void UIFrameWindow::renderContents()
 
 	if (m_ImGuiLayerEnabled) {
         // TODO: time
-		m_imguiContext.updateFrame(0.0166f);
+		m_imguiContext->updateFrame(0.0166f);
 	}
 
 }
@@ -377,15 +433,61 @@ void UIFrameWindow::present()
 	m_renderingGraphicsContext = m_swapChain->beginFrame2();
 
 
-
 #if 1
 
     if (m_ImGuiLayerEnabled)
     {
-        m_imguiContext.prepareRender(m_clientSize.width, m_clientSize.height);
+        {
+            static bool init = false;
+            if (!init) {
+
+                if (!m_tools.mainViewportToolPane) {
+                    m_tools.mainViewportToolPane = makeObject<detail::MainViewportToolPane>();
+                    m_tools.mainViewportToolPane->setInitialPlacement(ImGuiDockPlacement::MainView);
+                    m_imguiContext->addDock(m_tools.mainViewportToolPane);
+                }
+
+                {
+                    auto pane = makeObject<ImGuiDockPane>();
+                    pane->setInitialPlacement(ImGuiDockPlacement::Left);
+                    m_imguiContext->addDock(pane);
+                }
+                {
+                    auto pane = makeObject<ImGuiDockPane>();
+                    pane->setInitialPlacement(ImGuiDockPlacement::Right);
+                    m_imguiContext->addDock(pane);
+                }
+                {
+                    auto pane = makeObject<ImGuiDockPane>();
+                    pane->setInitialPlacement(ImGuiDockPlacement::Right);
+                    m_imguiContext->addDock(pane);
+                }
+                {
+                    auto pane = makeObject<ImGuiDockPane>();
+                    pane->setInitialPlacement(ImGuiDockPlacement::Bottom);
+                    m_imguiContext->addDock(pane);
+                }
+                {
+                    auto pane = makeObject<ImGuiDockPane>();
+                    pane->setInitialPlacement(ImGuiDockPlacement::InnerLeft);
+                    m_imguiContext->addDock(pane);
+                }
+                {
+                    auto pane = makeObject<ImGuiDockPane>();
+                    pane->setInitialPlacement(ImGuiDockPlacement::DebugView);
+                    m_imguiContext->addDock(pane);
+                }
+
+                init = true;
+            }
+        }
+
+
+        m_imguiContext->prepareRender(m_clientSize.width, m_clientSize.height);
         ImGui::NewFrame();
 
         // DockArea 用に、ウィンドウ全体に広がる背景用 Window をつくる
+        ImGuiID imguiWindowID;
         {
             const ImGuiWindowFlags flags =
                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoResize |
@@ -395,34 +497,44 @@ void UIFrameWindow::present()
             ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1.0f, 1.0f));
             ImGui::Begin("##LN.FrameWindowPane", nullptr, flags);
-            ImGuiID imguiWindowID = ImGui::GetCurrentWindow()->ID;
+            imguiWindowID = ImGui::GetCurrentWindow()->ID;
             ImGuiDockNodeFlags dockFlags = ImGuiDockNodeFlags_NoCloseButton;
             ImGui::DockSpace(imguiWindowID, ImVec2(0.0f, 0.0f), dockFlags);
             ImGui::End();
             ImGui::PopStyleVar(2);
         }
 
-
-        {
-            ImGui::SetNextWindowSize(ImVec2(320, 240), ImGuiCond_Once);
-            if (ImGui::Begin("Main")) {
-                ImGuiWindow* window = ImGui::GetCurrentWindow();
-
-                const ImVec2 contentSize = ImGui::GetContentRegionAvail();
-
-                if (m_renderView)
-                {
-                    m_tools.mainViewportRenderTarget = RenderTargetTexture::realloc(m_tools.mainViewportRenderTarget, contentSize.x, contentSize.y, TextureFormat::RGBA8, false, SamplerState::pointClamp());
-                    m_renderView->render(m_renderingGraphicsContext, m_tools.mainViewportRenderTarget);
-                }
-                ImGui::Image(m_tools.mainViewportRenderTarget, contentSize);
-            }
-            ImGui::End();
+        if (m_tools.mainViewportToolPane) {
+            m_tools.mainViewportToolPane->prepare(m_renderingGraphicsContext, m_renderView);
         }
 
 
+        //{
+        //    ImGui::SetNextWindowSize(ImVec2(320, 240), ImGuiCond_Once);
+        //    if (ImGui::Begin("Main")) {
+        //        ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+        //        const ImVec2 contentSize = ImGui::GetContentRegionAvail();
+
+        //        if (m_renderView)
+        //        {
+        //            m_tools.mainViewportRenderTarget = RenderTargetTexture::realloc(m_tools.mainViewportRenderTarget, contentSize.x, contentSize.y, TextureFormat::RGBA8, false, SamplerState::pointClamp());
+        //            m_renderView->render(m_renderingGraphicsContext, m_tools.mainViewportRenderTarget);
+        //        }
+        //        ImGui::Image(m_tools.mainViewportRenderTarget, contentSize);
+        //    }
+        //    ImGui::End();
+        //}
+
+        m_imguiContext->updateDocks(imguiWindowID);
+
         ImGui::EndFrame();
-        m_imguiContext.render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
+        m_imguiContext->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
+    }
+    else {
+        if (m_renderView) {
+            m_renderView->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
+        }
     }
 
 #else
@@ -442,7 +554,7 @@ void UIFrameWindow::present()
 
 	if (m_ImGuiLayerEnabled)
 	{
-        m_imguiContext.prepareRender(m_clientSize.width, m_clientSize.height);
+        m_imguiContext->prepareRender(m_clientSize.width, m_clientSize.height);
 
 		ImGui::NewFrame();
 
@@ -452,14 +564,13 @@ void UIFrameWindow::present()
 		ImGui::EndFrame();
 
 
-		m_imguiContext.render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
+		m_imguiContext->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
 	}
  //   auto r = makeObject<RenderPass>(m_swapChain->currentBackbuffer(), nullptr);
  //   m_renderingGraphicsContext->beginRenderPass(r);
  //   m_renderingGraphicsContext->clear(ClearFlags::All, Color::Aqua);
  //   m_renderingGraphicsContext->endRenderPass();
 #endif
-
 
 	m_swapChain->endFrame();
 
@@ -566,7 +677,7 @@ void UIFrameWindow::onRender(UIRenderingContext* context)
 bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 {
 	if (m_ImGuiLayerEnabled) {
-		if (m_imguiContext.handlePlatformEvent(e)) {
+		if (m_imguiContext->handlePlatformEvent(e)) {
 			return true;
 		}
 	}

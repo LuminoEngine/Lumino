@@ -5,13 +5,14 @@
 #include "Common.hpp"
 #include "UIEvents.hpp"
 #include "UIRenderView.hpp"
-#include "ImGuiIntegration.hpp"
 
 namespace ln {
 namespace detail {
 class PlatformWindow;
 class UIManager;
 class DebugInterface;
+class ImGuiIntegration;
+class MainViewportToolPane;
 }
 class RenderPass;
 class GraphicsContext;
@@ -79,6 +80,9 @@ public:
     LN_METHOD(Property)
     bool isAllowDragDrop() const;
 
+    //void setSize(float width, float height);
+
+
 
 	virtual void onDispose(bool explicitDisposing) override;
 
@@ -102,7 +106,7 @@ public:
     //const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
     const Ref<detail::UIInputInjector>& inputInjector() const{ return m_inputInjector; }
 
-	void setImGuiLayerEnabled(bool value) { m_ImGuiLayerEnabled = value; }
+    void setImGuiLayerEnabled(bool value);
 
 protected:
     void setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
@@ -125,6 +129,7 @@ public:  // TODO: internal
 	virtual bool onPlatformEvent(const detail::PlatformEventArgs& e) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
+
 	//detail::UIManager* m_manager;
 	Ref<detail::PlatformWindow>	m_platformWindow;
     Ref<detail::UIInputInjector> m_inputInjector;
@@ -137,7 +142,7 @@ public:  // TODO: internal
 	Ref<UIRenderView> m_renderView;
     Size m_clientSize;
 	UIFrameWindowUpdateMode m_updateMode;
-	detail::ImGuiIntegration m_imguiContext;
+	std::unique_ptr<detail::ImGuiIntegration> m_imguiContext;
 	Ref<detail::DebugInterface> m_debugInterface;
 
 	Event<UIGeneralEventHandler> m_onClosed;
@@ -151,7 +156,7 @@ public:  // TODO: internal
 
     struct DevelopmentTools
     {
-        Ref<RenderTargetTexture> mainViewportRenderTarget;
+        Ref<detail::MainViewportToolPane> mainViewportToolPane;
     };
 
     DevelopmentTools m_tools;

@@ -87,7 +87,13 @@ namespace LuminoBuild
 
                     if (!Directory.Exists("imgui"))
                     {
-                        Utils.CallProcess("git", "clone --depth 1 -b v1.72 https://github.com/ocornut/imgui.git imgui");
+                        //Utils.CallProcess("git", "clone --depth 1 -b v1.72 https://github.com/ocornut/imgui.git imgui");
+                        Utils.CallProcess("git", "clone --depth 1 -b docking https://github.com/ocornut/imgui.git imgui");
+
+                        foreach (string file in System.IO.Directory.GetFiles("imgui", "*.h"))
+                        {
+                            File.Copy(file, Path.Combine(builder.LuminoRootDir, "include", "LuminoEngine", "UI", "imgui", System.IO.Path.GetFileName(file)), true);
+                        }
                     }
 
                     if (!Directory.Exists("Streams"))

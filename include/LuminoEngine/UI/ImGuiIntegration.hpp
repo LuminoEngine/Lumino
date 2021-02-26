@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <imgui.h>
+#include <imgui_internal.h>
 
 struct ImGuiContext;
 
@@ -8,6 +10,19 @@ class VertexBuffer;
 class IndexBuffer;
 class Texture2D;
 class RenderPass;
+class ImGuiDockPane;
+
+enum ImGuiDockPlacement
+{
+	Floating,
+	MainView,
+	Left,
+	Right,
+	//Top,
+	Bottom,
+	InnerLeft,
+	DebugView,
+};
 
 namespace detail {
 struct PlatformEventArgs;
@@ -22,6 +37,9 @@ public:
 	void render(GraphicsContext* graphicsContext, RenderTargetTexture* target);
     bool handlePlatformEvent(const detail::PlatformEventArgs& e);
 
+	void addDock(ImGuiDockPane* pane);
+	void updateDocks(ImGuiID mainWindowId);
+
 private:
 	::ImGuiContext* m_imgui;
 	Ref<Texture2D> m_fontTexture;
@@ -32,9 +50,37 @@ private:
 	Ref<IndexBuffer> m_indexBuffer;
 	Ref<Shader> m_shader;
 	Ref<RenderPass> m_renderPass;
+
+	List<Ref<ImGuiDockPane>> m_dockPanes;
+	bool m_dockLayoutResetRequired = true;
 };
 
 } // namespace detail
+
+
+/** Dock 周りの定型的な処理と、Beta リリースである API のラップを目的とする。 */
+class ImGuiDockPane
+	: public Object
+{
+public:
+	void setInitialPlacement(ImGuiDockPlacement value);
+
+protected:
+	virtual void onGui();
+
+LN_CONSTRUCT_ACCESS:
+	ImGuiDockPane();
+	bool init();
+
+private:
+	void update();
+
+	std::string m_key;
+	ImGuiDockPlacement m_initialPlacement;
+	//Event<UIGeneralEventHandler> m_onGui;
+
+	friend class detail::ImGuiIntegration;
+};
 } // namespace ln
 
 

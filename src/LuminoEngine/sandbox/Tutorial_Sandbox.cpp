@@ -3,6 +3,12 @@
 
 class App : public Application
 {
+public:
+    App()
+    {
+        EngineSettings::setMainWindowResizable(true);
+    }
+
     virtual void onInit() override
     {
         //Engine::renderView()->setGuideGridEnabled(true);

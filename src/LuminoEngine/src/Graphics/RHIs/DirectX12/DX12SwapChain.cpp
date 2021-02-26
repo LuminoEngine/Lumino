@@ -24,6 +24,7 @@ Result DX12SwapChain::init(DX12Device* deviceContext, PlatformWindow* window, co
     LN_DCHECK(deviceContext);
     m_device = deviceContext;
     m_backbufferCount = DX12Device::BackBufferCount;
+    m_backbufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
     HWND hWnd = (HWND)PlatformSupport::getWin32WindowHandle(window);
     HINSTANCE hInstance = ::GetModuleHandle(NULL);
@@ -34,7 +35,7 @@ Result DX12SwapChain::init(DX12Device* deviceContext, PlatformWindow* window, co
     swapChainDesc.BufferDesc.Height = backbufferSize.height;
     swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
     swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-    swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    swapChainDesc.BufferDesc.Format = m_backbufferFormat;
     swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
     swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
     swapChainDesc.SampleDesc.Count = 1;
@@ -60,22 +61,9 @@ Result DX12SwapChain::init(DX12Device* deviceContext, PlatformWindow* window, co
     }
 
     // Create a RTV for each frame.
-    for (int i = 0; i < m_backbufferCount; i++) {
-        ComPtr<ID3D12Resource> dxRenderTarget;
-        if (FAILED(m_dxgiSwapChain->GetBuffer(i, IID_PPV_ARGS(&dxRenderTarget)))) {
-            LN_ERROR("GetBuffer failed.");
-            return false;
-        }
-
-        Ref<DX12RenderTarget> wrapper = makeRef<DX12RenderTarget>();
-        if (!wrapper->init(m_device, dxRenderTarget)) {
-            return false;
-        }
-
-        m_renderTargets.push_back(wrapper);
+    if (!createSwapChainResources()) {
+        return false;
     }
-
-    m_frameIndex = m_dxgiSwapChain->GetCurrentBackBufferIndex();
 
     // Barrior CommandList
     for (int i = 0; i < m_backbufferCount; i++) {
@@ -116,10 +104,7 @@ void DX12SwapChain::dispose()
     for (auto& i : m_presentBarriorCommandLists) {
         i->dispose();
     }
-    for (auto& i : m_renderTargets) {
-        i->dispose();
-    }
-    m_renderTargets.clear();
+    disposeSwapChainResources();
     m_dxgiSwapChain.Reset();
     ISwapChain::dispose();
 }
@@ -141,19 +126,7 @@ void DX12SwapChain::acquireNextImage(int* outIndex)
     // Present用の resourceBarrior で使う CommandAllocator::Reset で
     // ID3D12CommandAllocator Object' is being reset before previous executions associated with the allocator have completed.
     // というデバッグレイヤーのエラーが発生したり、SwapChain の Release で落ちたりしていた。
-    const UINT64 fenceValue = m_fenceValues[m_frameIndex];
-    if (fenceValue > 0) {
-        // If the next frame is not ready to be rendered yet, wait until it is ready.
-        if (m_fence->GetCompletedValue() < fenceValue)
-        {
-            if (FAILED(m_fence->SetEventOnCompletion(fenceValue, m_fenceEvent))) {
-                LN_ERROR("SetEventOnCompletion failed.");
-                return;
-            }
-            WaitForSingleObjectEx(m_fenceEvent, INFINITE, FALSE);
-        }
-    }
-
+    waitForCurrentFrameFence();
 }
 
 ITexture* DX12SwapChain::getRenderTarget(int imageIndex) const
@@ -163,7 +136,24 @@ ITexture* DX12SwapChain::getRenderTarget(int imageIndex) const
 
 Result DX12SwapChain::resizeBackbuffer(uint32_t width, uint32_t height)
 {
-    LN_NOTIMPLEMENTED();
+    // 現在のフレーム、つまり、最後の Present が終了するまで待つ。
+    // (このため、バックバッファのリサイズは present の後、acquireNextImage() の前に行う必要がある)
+    if (!waitForCurrentFrameFence()) {
+        return false;
+    }
+
+    disposeSwapChainResources();
+
+    HRESULT hr = m_dxgiSwapChain->ResizeBuffers(m_backbufferCount, width, height, m_backbufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+    if (FAILED(hr)) {
+        LN_ERROR("ResizeBuffers failed.");
+        return false;
+    }
+
+    if (!createSwapChainResources()) {
+        return false;
+    }
+
 	return true;
 }
 
@@ -201,11 +191,58 @@ void DX12SwapChain::present()
     // Schedule a Signal command in the queue.
     m_fenceValues[m_frameIndex] = m_device->m_fenceValue;
     const UINT64 currentFenceValue = m_fenceValues[m_frameIndex];
-    if (FAILED(dxCommandQueue->Signal(m_fence.Get(), currentFenceValue))) {
+    if (FAILED(dxCommandQueue->Signal(m_fence.Get(), currentFenceValue))) { // GPU 側でこのコマンドが実行されたとき、m_fence の値を currentFenceValue に設定する
         LN_ERROR("Signal failed.");
         return;
     }
     m_device->m_fenceValue++;
+}
+
+bool DX12SwapChain::waitForCurrentFrameFence()
+{
+    const UINT64 fenceValue = m_fenceValues[m_frameIndex];
+    if (fenceValue > 0) {
+        // If the next frame is not ready to be rendered yet, wait until it is ready.
+        if (m_fence->GetCompletedValue() < fenceValue)
+        {
+            if (FAILED(m_fence->SetEventOnCompletion(fenceValue, m_fenceEvent))) {
+                LN_ERROR("SetEventOnCompletion failed.");
+                return false;
+            }
+            WaitForSingleObjectEx(m_fenceEvent, INFINITE, FALSE);
+        }
+    }
+    return true;
+}
+
+bool DX12SwapChain::createSwapChainResources()
+{
+    for (int i = 0; i < m_backbufferCount; i++) {
+        ComPtr<ID3D12Resource> dxRenderTarget;
+        if (FAILED(m_dxgiSwapChain->GetBuffer(i, IID_PPV_ARGS(&dxRenderTarget)))) {
+            LN_ERROR("GetBuffer failed.");
+            return false;
+        }
+
+        Ref<DX12RenderTarget> wrapper = makeRef<DX12RenderTarget>();
+        if (!wrapper->init(m_device, dxRenderTarget)) {
+            return false;
+        }
+
+        m_renderTargets.push_back(wrapper);
+    }
+
+    m_frameIndex = m_dxgiSwapChain->GetCurrentBackBufferIndex();
+
+    return true;
+}
+
+void DX12SwapChain::disposeSwapChainResources()
+{
+    for (auto& i : m_renderTargets) {
+        i->dispose();
+    }
+    m_renderTargets.clear();
 }
 
 } // namespace detail
