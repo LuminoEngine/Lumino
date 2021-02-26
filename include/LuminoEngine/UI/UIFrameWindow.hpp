@@ -148,6 +148,14 @@ public:  // TODO: internal
     // ゲームランタイムでは true, エディタでは false.
     bool m_realtimeRenderingEnabled;
 
+
+    struct DevelopmentTools
+    {
+        Ref<RenderTargetTexture> mainViewportRenderTarget;
+    };
+
+    DevelopmentTools m_tools;
+
 private:
     virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
 };

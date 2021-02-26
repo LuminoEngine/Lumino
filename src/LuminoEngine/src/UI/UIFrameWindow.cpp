@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
+#include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -16,6 +17,7 @@
 #include "UIStyleInstance.hpp"
 #include "UIManager.hpp"
 #include <imgui.h>
+#include <imgui_internal.h>
 
 #include "../Effect/EffectManager.hpp"  // TODO: tests
 
@@ -263,7 +265,7 @@ UIElement* UIInputInjector::mouseHoveredElement()
 
 UIFrameWindow::UIFrameWindow()
 	: m_updateMode(UIFrameWindowUpdateMode::EventDispatches)
-	, m_ImGuiLayerEnabled(false)
+	, m_ImGuiLayerEnabled(true)
     , m_realtimeRenderingEnabled(true)
     , m_layoutContext(makeObject<UILayoutContext>())
 {
@@ -373,6 +375,61 @@ void UIFrameWindow::renderContents()
 void UIFrameWindow::present()
 {
 	m_renderingGraphicsContext = m_swapChain->beginFrame2();
+
+
+
+#if 1
+
+    if (m_ImGuiLayerEnabled)
+    {
+        m_imguiContext.prepareRender(m_clientSize.width, m_clientSize.height);
+        ImGui::NewFrame();
+
+        // DockArea 用に、ウィンドウ全体に広がる背景用 Window をつくる
+        {
+            const ImGuiWindowFlags flags =
+                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoTitleBar;
+            ImGui::SetNextWindowSize(ImVec2(m_clientSize.width, m_clientSize.height));
+            ImGui::SetNextWindowPos(ImVec2(0, 0));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1.0f, 1.0f));
+            ImGui::Begin("##LN.FrameWindowPane", nullptr, flags);
+            ImGuiID imguiWindowID = ImGui::GetCurrentWindow()->ID;
+            ImGuiDockNodeFlags dockFlags = ImGuiDockNodeFlags_NoCloseButton;
+            ImGui::DockSpace(imguiWindowID, ImVec2(0.0f, 0.0f), dockFlags);
+            ImGui::End();
+            ImGui::PopStyleVar(2);
+        }
+
+
+        {
+            ImGui::SetNextWindowSize(ImVec2(320, 240), ImGuiCond_Once);
+            if (ImGui::Begin("Main")) {
+                ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+                const ImVec2 contentSize = ImGui::GetContentRegionAvail();
+
+                if (m_renderView)
+                {
+                    m_tools.mainViewportRenderTarget = RenderTargetTexture::realloc(m_tools.mainViewportRenderTarget, contentSize.x, contentSize.y, TextureFormat::RGBA8, false, SamplerState::pointClamp());
+                    m_renderView->render(m_renderingGraphicsContext, m_tools.mainViewportRenderTarget);
+                }
+                ImGui::Image(m_tools.mainViewportRenderTarget, contentSize);
+            }
+            ImGui::End();
+        }
+
+
+        ImGui::EndFrame();
+        m_imguiContext.render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
+    }
+
+#else
+
+
+
+
     //ElapsedTimer t;
     //t.start();
 
@@ -401,6 +458,9 @@ void UIFrameWindow::present()
  //   m_renderingGraphicsContext->beginRenderPass(r);
  //   m_renderingGraphicsContext->clear(ClearFlags::All, Color::Aqua);
  //   m_renderingGraphicsContext->endRenderPass();
+#endif
+
+
 	m_swapChain->endFrame();
 
 	//detail::SwapChainInternal::present(m_swapChain, m_renderingGraphicsContext);

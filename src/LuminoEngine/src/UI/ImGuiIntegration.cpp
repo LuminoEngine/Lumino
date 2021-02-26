@@ -38,10 +38,11 @@ bool ImGuiIntegration::init()
 	}
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsLight();
+	//ImGui::StyleColorsDark();
+	ImGui::StyleColorsLight();
 	//ImGui::StyleColorsClassic();
 
     ImGuiStyle* style = &ImGui::GetStyle();
@@ -78,6 +79,7 @@ bool ImGuiIntegration::init()
 	m_vertexLayout = detail::EngineDomain::renderingManager()->standardVertexDeclaration();
 	m_shader = detail::EngineDomain::renderingManager()->builtinShader(BuiltinShader::Sprite);
 	m_renderPass = makeObject<RenderPass>();
+	m_renderPass->setClearFlags(ClearFlags::All);
 
 	return true;
 }
