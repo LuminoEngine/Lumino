@@ -17,11 +17,19 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		Vector4 pos;
 		Vector4 color;
 	};
+#ifdef LN_COORD_RH
+	PosColor v1[3] = {
+		{ { -1, 1, 0, 1 },{ 0, 0, 1, 1 } },
+		{ { -1, 0, 0, 1 },{ 0, 0, 1, 1 } },
+		{ { 0, 1, 0, 1 },{ 0, 0, 1, 1 } },
+	};
+#else
 	PosColor v1[3] = {
 		{ { -1, 1, 0, 1 },{ 0, 0, 1, 1 } },
 		{ { 0, 1, 0, 1 },{ 0, 0, 1, 1 } },
 		{ { -1, 0, 0, 1 },{ 0, 0, 1, 1 } },
 	};
+#endif
 	
 	auto vb1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 	auto vd1 = makeObject<VertexLayout>();
@@ -85,11 +93,19 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		Vector4 pos;
 		Vector4 color;
 	};
+#ifdef LN_COORD_RH
+	PosColor v1[3] = {
+		{ { -1, 1, 0, 1 },{ 0, 0, 1, 1 } },
+		{ { -1, 0, 0, 1 },{ 0, 0, 1, 1 } },
+		{ { 0, 1, 0, 1 },{ 0, 0, 1, 1 } },
+	};
+#else
 	PosColor v1[3] = {
 		{ { -1, 1, 0, 1 },{ 0, 0, 1, 1 } },
 		{ { 0, 1, 0, 1 },{ 0, 0, 1, 1 } },
 		{ { -1, 0, 0, 1 },{ 0, 0, 1, 1 } },
 	};
+#endif
 
 	auto vb1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 	auto vd1 = makeObject<VertexLayout>();

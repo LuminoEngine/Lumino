@@ -257,6 +257,7 @@ void RenderingManager::init(const Settings& settings)
 	}
 
 #define ROOT_PATH u"C:/Proj/LN/Lumino/src/LuminoEngine/"
+	m_builtinShaders[(int)BuiltinShader::SSRRayTracing] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SSRRayTracing.fx");
 #if 0	// テスト用
 	m_builtinShaders[(int)BuiltinShader::SSAOOcclusionMap] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SSAOOcclusionMap.fx");
 	m_builtinShaders[(int)BuiltinShader::RadialBlur] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/RadialBlur.fx");
@@ -268,7 +269,6 @@ void RenderingManager::init(const Settings& settings)
 	m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/LuminosityHighPassShader.fx");;
 	m_builtinShaders[(int)BuiltinShader::SeperableBlur] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SeperableBlur.fx");
 	m_builtinShaders[(int)BuiltinShader::BloomComposite] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/BloomComposite.fx");
-	m_builtinShaders[(int)BuiltinShader::SSRRayTracing] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SSRRayTracing.fx");
 	m_builtinShaders[(int)BuiltinShader::SSRComposite] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SSRComposite.fx");
 	m_builtinShaders[(int)BuiltinShader::SSRBlur] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SSRBlur.fx");
 	m_builtinShaders[(int)BuiltinShader::NanoVG] = Shader::create(ROOT_PATH u"src/Rendering/Resource/nanovg.fx");

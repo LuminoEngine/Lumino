@@ -67,16 +67,17 @@ PSOutput PS_WriteLinearDepth(PSInput input)
     // SSR 用。シャドウマップと同じく PS で w 除算で計算する。ViewSpace じゃなくて ClipSpace。
     float clipSpaceZ = input.ClipSpacePos.z / input.ClipSpacePos.w;
 
-    // 左手なので、near:0.0 ~ far:1.0
-    float linearZ = (input.ViewPos.z - ln_NearClip) / (ln_FarClip - ln_NearClip);
+    // 左手系では、near:0.0 ~ far:1.0
+    float clipSpaceLinearZ = (input.ViewPos.z - ln_NearClip) / (ln_FarClip - ln_NearClip);
 
     //float z = input.ClipSpacePos.z;
     PSOutput output;
 
-    // 左手。Z+ が正面(奥)
+    // 左手系の場合、Z+ が正面(奥)
+    // 右手系の場合、Z- が正面(奥)
     output.Normal = float4(LN_PackNormal(normalize(input.viewNormal)), 1.0); // normalize 必須
 
-    output.Depth = float4(clipSpaceZ, linearZ, 0.0, 1.0);
+    output.Depth = float4(clipSpaceZ, clipSpaceLinearZ, 0.0, 1.0);
 
 #ifdef LN_USE_ROUGHNESS_MAP
     // metallic 値は .b からサンプリングする。
@@ -91,7 +92,7 @@ PSOutput PS_WriteLinearDepth(PSInput input)
     const float metallic = ln_MaterialMetallic;
     const float roughness = ln_MaterialRoughness;
 #endif
-    output.Material = float4(metallic, linearZ, roughness, 1);
+    output.Material = float4(metallic, clipSpaceLinearZ, roughness, 1);
 
     output.ObjectId = uint4(ln_objectId, 0, 0, 0);
 

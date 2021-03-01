@@ -1550,6 +1550,20 @@ void BoxElementShapeBuilderCommon::expandConvex(const OutlinePath& path)
     int i2 = path.indexCount - 1;
     for (int iPt = 0; iPt < path.indexCount - 2; iPt++)
     {
+#ifdef LN_COORD_RH
+        if (path.winding == PathWinding::CW)
+        {
+            m_indexCache.add(outlineIndex(ib + i0));
+            m_indexCache.add(outlineIndex(ib + i2));
+            m_indexCache.add(outlineIndex(ib + i1));
+        }
+        else
+        {
+            m_indexCache.add(outlineIndex(ib + i0));
+            m_indexCache.add(outlineIndex(ib + i1));
+            m_indexCache.add(outlineIndex(ib + i2));
+        }
+#else
         if (path.winding == PathWinding::CW)
         {
             m_indexCache.add(outlineIndex(ib + i0));
@@ -1562,6 +1576,7 @@ void BoxElementShapeBuilderCommon::expandConvex(const OutlinePath& path)
             m_indexCache.add(outlineIndex(ib + i2));
             m_indexCache.add(outlineIndex(ib + i1));
         }
+#endif
 
         if (iPt & 1) {	// 奇数回
             i0 = i1;
@@ -1614,7 +1629,24 @@ void BoxElementShapeBuilderCommon::expandStripeStroke(const OutlinePath& path)
         int p1 = outlineIndex(path.indexStart + (i * 2) + 2);
         int p2 = outlineIndex(path.indexStart + (i * 2) + 1);   // x
         int p3 = outlineIndex(path.indexStart + (i * 2) + 3);   // y
-
+#ifdef LN_COORD_RH
+        if (path.winding == PathWinding::CW) {
+            m_indexCache.add(p0);
+            m_indexCache.add(p2);
+            m_indexCache.add(p1);
+            m_indexCache.add(p2);
+            m_indexCache.add(p3);
+            m_indexCache.add(p1);
+        }
+        else {
+            m_indexCache.add(p0);
+            m_indexCache.add(p1);
+            m_indexCache.add(p2);
+            m_indexCache.add(p2);
+            m_indexCache.add(p1);
+            m_indexCache.add(p3);
+        }
+#else
         if (path.winding == PathWinding::CW) {
             m_indexCache.add(p0);
             m_indexCache.add(p1);
@@ -1631,6 +1663,7 @@ void BoxElementShapeBuilderCommon::expandStripeStroke(const OutlinePath& path)
             m_indexCache.add(p3);
             m_indexCache.add(p1);
         }
+#endif
     }
 
     if (path.stripeClosing) {
@@ -1644,7 +1677,24 @@ void BoxElementShapeBuilderCommon::expandStripeStroke(const OutlinePath& path)
         int p1 = outlineIndex(path.indexStart + (path.indexCount - 2));
         int p2 = outlineIndex(path.indexStart + (1));
         int p3 = outlineIndex(path.indexStart + (path.indexCount - 1));
-
+#ifdef LN_COORD_RH
+        if (path.winding == PathWinding::CW) {
+            m_indexCache.add(p0);
+            m_indexCache.add(p1);
+            m_indexCache.add(p2);
+            m_indexCache.add(p2);
+            m_indexCache.add(p1);
+            m_indexCache.add(p3);
+        }
+        else {
+            m_indexCache.add(p0);
+            m_indexCache.add(p2);
+            m_indexCache.add(p1);
+            m_indexCache.add(p2);
+            m_indexCache.add(p3);
+            m_indexCache.add(p1);
+        }
+#else
         if (path.winding == PathWinding::CW) {
             m_indexCache.add(p0);
             m_indexCache.add(p2);
@@ -1661,6 +1711,7 @@ void BoxElementShapeBuilderCommon::expandStripeStroke(const OutlinePath& path)
             m_indexCache.add(p1);
             m_indexCache.add(p3);
         }
+#endif
     }
 }
 
@@ -2472,18 +2523,33 @@ void BoxElementShapeBuilder2::expandConvex(const OutlinePath& path)
 	int i2 = path.pointCount - 1;
 	for (int iPt = 0; iPt < path.pointCount - 2; iPt++)
 	{
-		if (path.winding == PathWinding::CW)
-		{
-			m_indexCache.add(outlineIndex(ib + i0));
-			m_indexCache.add(outlineIndex(ib + i1));
-			m_indexCache.add(outlineIndex(ib + i2));
-		}
-		else
-		{
-			m_indexCache.add(outlineIndex(ib + i0));
-			m_indexCache.add(outlineIndex(ib + i2));
-			m_indexCache.add(outlineIndex(ib + i1));
-		}
+#ifdef LN_COORD_RH
+        if (path.winding == PathWinding::CW)
+        {
+            m_indexCache.add(outlineIndex(ib + i0));
+            m_indexCache.add(outlineIndex(ib + i2));
+            m_indexCache.add(outlineIndex(ib + i1));
+        }
+        else
+        {
+            m_indexCache.add(outlineIndex(ib + i0));
+            m_indexCache.add(outlineIndex(ib + i1));
+            m_indexCache.add(outlineIndex(ib + i2));
+        }
+#else
+        if (path.winding == PathWinding::CW)
+        {
+            m_indexCache.add(outlineIndex(ib + i0));
+            m_indexCache.add(outlineIndex(ib + i1));
+            m_indexCache.add(outlineIndex(ib + i2));
+        }
+        else
+        {
+            m_indexCache.add(outlineIndex(ib + i0));
+            m_indexCache.add(outlineIndex(ib + i2));
+            m_indexCache.add(outlineIndex(ib + i1));
+        }
+#endif
 
 		if (iPt & 1) {	// 奇数回
 			i0 = i1;
@@ -2536,23 +2602,41 @@ void BoxElementShapeBuilder2::expandStripeStroke(const OutlinePath& path)
         int p1 = outlineIndex(path.pointStart + (i * 2) + 2);
         int p2 = outlineIndex(path.pointStart + (i * 2) + 1);   // x
         int p3 = outlineIndex(path.pointStart + (i * 2) + 3);   // y
-
-		if (path.winding == PathWinding::CW) {
-			m_indexCache.add(p0);
-			m_indexCache.add(p1);
-			m_indexCache.add(p2);
-			m_indexCache.add(p2);
-			m_indexCache.add(p1);
-			m_indexCache.add(p3);
-		}
-		else {
+#ifdef LN_COORD_RH
+        if (path.winding == PathWinding::CW) {
             m_indexCache.add(p0);
             m_indexCache.add(p2);
             m_indexCache.add(p1);
             m_indexCache.add(p2);
             m_indexCache.add(p3);
             m_indexCache.add(p1);
-		}
+        }
+        else {
+            m_indexCache.add(p0);
+            m_indexCache.add(p1);
+            m_indexCache.add(p2);
+            m_indexCache.add(p2);
+            m_indexCache.add(p1);
+            m_indexCache.add(p3);
+        }
+#else
+        if (path.winding == PathWinding::CW) {
+            m_indexCache.add(p0);
+            m_indexCache.add(p1);
+            m_indexCache.add(p2);
+            m_indexCache.add(p2);
+            m_indexCache.add(p1);
+            m_indexCache.add(p3);
+        }
+        else {
+            m_indexCache.add(p0);
+            m_indexCache.add(p2);
+            m_indexCache.add(p1);
+            m_indexCache.add(p2);
+            m_indexCache.add(p3);
+            m_indexCache.add(p1);
+        }
+#endif
 	}
 
 	if (path.stripeClosing) {
@@ -2566,23 +2650,41 @@ void BoxElementShapeBuilder2::expandStripeStroke(const OutlinePath& path)
         int p1 = outlineIndex(path.pointStart + (path.pointCount - 2));
 		int p2 = outlineIndex(path.pointStart + (1));
         int p3 = outlineIndex(path.pointStart + (path.pointCount - 1));
-
-		if (path.winding == PathWinding::CW) {
-			m_indexCache.add(p0);
-			m_indexCache.add(p2);
-			m_indexCache.add(p1);
-			m_indexCache.add(p2);
-			m_indexCache.add(p3);
-			m_indexCache.add(p1);
-		}
-		else {
-			m_indexCache.add(p0);
-			m_indexCache.add(p1);
-			m_indexCache.add(p2);
-			m_indexCache.add(p2);
-			m_indexCache.add(p1);
-			m_indexCache.add(p3);
-		}
+#ifdef LN_COORD_RH
+        if (path.winding == PathWinding::CW) {
+            m_indexCache.add(p0);
+            m_indexCache.add(p1);
+            m_indexCache.add(p2);
+            m_indexCache.add(p2);
+            m_indexCache.add(p1);
+            m_indexCache.add(p3);
+        }
+        else {
+            m_indexCache.add(p0);
+            m_indexCache.add(p2);
+            m_indexCache.add(p1);
+            m_indexCache.add(p2);
+            m_indexCache.add(p3);
+            m_indexCache.add(p1);
+        }
+#else
+        if (path.winding == PathWinding::CW) {
+            m_indexCache.add(p0);
+            m_indexCache.add(p2);
+            m_indexCache.add(p1);
+            m_indexCache.add(p2);
+            m_indexCache.add(p3);
+            m_indexCache.add(p1);
+        }
+        else {
+            m_indexCache.add(p0);
+            m_indexCache.add(p1);
+            m_indexCache.add(p2);
+            m_indexCache.add(p2);
+            m_indexCache.add(p1);
+            m_indexCache.add(p3);
+        }
+#endif
 	}
 }
 

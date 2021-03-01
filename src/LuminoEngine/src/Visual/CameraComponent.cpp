@@ -87,6 +87,7 @@ void CameraComponent::updateMatrices()
 		m_viewMatrix = Matrix::makeLookAtLH(worldMatrix.position(), lookAt, m_upDirection);
 #endif
 
+
 		//auto f = Matrix::makeInverse(m_viewMatrix).front();
 
 	    //if (m_reflectionPlane.Normal != Vector3::Zero)
@@ -121,6 +122,9 @@ void CameraComponent::updateMatrices()
 			m_projMatrix = Matrix::makeOrthoLH(orthoSize.width * scaleW, orthoSize.height * scaleH, m_nearClip, m_farClip);
 #endif
 	    }
+
+		const auto pt1 = Vector3::transformCoord(Vector3(0, 0, 0.5), m_viewMatrix);
+		const auto pt2 = Vector3::transformCoord(pt1, m_projMatrix);
 
 	    m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 

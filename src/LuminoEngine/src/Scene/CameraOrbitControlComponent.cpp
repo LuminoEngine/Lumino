@@ -136,7 +136,11 @@ void CameraOrbitControlComponent::handleMouseMoveRotate(const Vector2& mousePos)
 
     Vector2 delta = (m_rotateEnd - m_rotateStart) * m_rotateSpeed;
 
+#ifdef LN_COORD_RH
+    rotateLeft(-2 * Math::PI * delta.x / clientHeight);
+#else
     rotateLeft(2 * Math::PI * delta.x / clientHeight);
+#endif
 
     rotateUp(2 * Math::PI * delta.y / clientHeight);
 

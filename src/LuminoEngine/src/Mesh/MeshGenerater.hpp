@@ -300,10 +300,17 @@ public:
         //buf->setV(1, Vector3(half.x, 0, half.y), Vector2(1.0f, 0.0f), Vector3::UnitY);
         //buf->setV(2, Vector3(-half.x, 0, -half.y), Vector2(0.0f, 1.0f), Vector3::UnitY);
         //buf->setV(3, Vector3(half.x, 0, -half.y), Vector2(1.0f, 1.0f), Vector3::UnitY);
+#ifdef LN_COORD_RH
+        buf->setV(0, Vector3(-half.x, 0, -half.y), Vector2(uv[0].x, uv[0].y), Vector3::UnitY);
+        buf->setV(1, Vector3(-half.x, 0, half.y), Vector2(uv[0].x, uv[1].y), Vector3::UnitY);
+        buf->setV(2, Vector3(half.x, 0, -half.y), Vector2(uv[1].x, uv[0].y), Vector3::UnitY);
+        buf->setV(3, Vector3(half.x, 0, half.y), Vector2(uv[1].x, uv[1].y), Vector3::UnitY);
+#else
         buf->setV(0, Vector3(-half.x, 0, half.y), Vector2(uv[0].x, uv[0].y), Vector3::UnitY);
         buf->setV(1, Vector3(half.x, 0, half.y), Vector2(uv[1].x, uv[0].y), Vector3::UnitY);
         buf->setV(2, Vector3(-half.x, 0, -half.y), Vector2(uv[0].x, uv[1].y), Vector3::UnitY);
         buf->setV(3, Vector3(half.x, 0, -half.y), Vector2(uv[1].x, uv[1].y), Vector3::UnitY);
+#endif
         buf->setI(0, 0);
         buf->setI(1, 1);
         buf->setI(2, 2);
@@ -529,10 +536,17 @@ public:
         {
             for (int iSlice = 0; iSlice < m_slices; ++iSlice)
             {
+#ifdef LN_COORD_RH
+                int p1 = (iSlice + 0) + (iStack + 0) * (m_slices + 1);	// ┏
+                int p2 = (iSlice + 0) + (iStack + 1) * (m_slices + 1);	// ┗
+                int p3 = (iSlice + 1) + (iStack + 0) * (m_slices + 1);	// ┓
+                int p4 = (iSlice + 1) + (iStack + 1) * (m_slices + 1);	// ┛
+#else
                 int p1 = (iSlice + 0) + (iStack + 0) * (m_slices + 1);	// ┏
                 int p2 = (iSlice + 1) + (iStack + 0) * (m_slices + 1);	// ┓
                 int p3 = (iSlice + 0) + (iStack + 1) * (m_slices + 1);	// ┗
                 int p4 = (iSlice + 1) + (iStack + 1) * (m_slices + 1);	// ┛
+#endif
                 buf->setI(iI + 0, p1);
                 buf->setI(iI + 1, p2);
                 buf->setI(iI + 2, p3);
@@ -607,7 +621,49 @@ public:
 		//uint16_t* i = outIndices;
 		uint32_t v = 0;
 		uint32_t i = 0;
+#ifdef LN_COORD_RH
+        // 手前 (Z+)
+        buf->setV(v, Vector3(minPos.x, maxPos.y, maxPos.z), Vector2(0.0f, 0.0f), Vector3::UnitZ); ++v;	// ┏
+        buf->setV(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), Vector3::UnitZ); ++v;	// ┗
+        buf->setV(v, Vector3(maxPos.x, maxPos.y, maxPos.z), Vector2(1.0f, 0.0f), Vector3::UnitZ); ++v;	// ┓
+        buf->setV(v, Vector3(maxPos.x, minPos.y, maxPos.z), Vector2(1.0f, 1.0f), Vector3::UnitZ); ++v;	// ┛
+        setIndices(buf, i, 0); i += 6;
 
+        // 奥 (Z-)
+        buf->setV(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(0.0f, 0.0f), -Vector3::UnitZ); ++v;	// ┏
+        buf->setV(v, Vector3(maxPos.x, minPos.y, minPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitZ); ++v;	// ┗
+        buf->setV(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(1.0f, 0.0f), -Vector3::UnitZ); ++v;	// ┓
+        buf->setV(v, Vector3(minPos.x, minPos.y, minPos.z), Vector2(1.0f, 1.0f), -Vector3::UnitZ); ++v;	// ┛
+        setIndices(buf, i, 4); i += 6;
+
+        // 左 (X-)
+        buf->setV(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(0.0f, 0.0f), -Vector3::UnitX); ++v;	// ┏
+        buf->setV(v, Vector3(minPos.x, minPos.y, minPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitX); ++v;	// ┗
+        buf->setV(v, Vector3(minPos.x, maxPos.y, maxPos.z), Vector2(1.0f, 0.0f), -Vector3::UnitX); ++v;	// ┓
+        buf->setV(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(1.0f, 1.0f), -Vector3::UnitX); ++v;	// ┛
+        setIndices(buf, i, 8); i += 6;
+
+        // 右 (X+)
+        buf->setV(v, Vector3(maxPos.x, maxPos.y, maxPos.z), Vector2(0.0f, 0.0f), Vector3::UnitX); ++v;	// ┏
+        buf->setV(v, Vector3(maxPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), Vector3::UnitX); ++v;	// ┗
+        buf->setV(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(1.0f, 0.0f), Vector3::UnitX); ++v;	// ┓
+        buf->setV(v, Vector3(maxPos.x, minPos.y, minPos.z), Vector2(1.0f, 1.0f), Vector3::UnitX); ++v;	// ┛
+        setIndices(buf, i, 12); i += 6;
+
+        // 下 (Y-)(Z+ がUVの上方向)
+        buf->setV(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(0.0f, 0.0f), -Vector3::UnitY); ++v;	// ┏
+        buf->setV(v, Vector3(minPos.x, minPos.y, minPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitY); ++v;	// ┗
+        buf->setV(v, Vector3(maxPos.x, minPos.y, maxPos.z), Vector2(1.0f, 0.0f), -Vector3::UnitY); ++v;	// ┓
+        buf->setV(v, Vector3(maxPos.x, minPos.y, minPos.z), Vector2(1.0f, 1.0f), -Vector3::UnitY); ++v;	// ┛
+        setIndices(buf, i, 16); i += 6;
+
+        // 上 (Y+)(Z- がUVの上方向)
+        buf->setV(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(0.0f, 0.0f), Vector3::UnitY); ++v;	// ┏
+        buf->setV(v, Vector3(minPos.x, maxPos.y, maxPos.z), Vector2(0.0f, 1.0f), Vector3::UnitY); ++v;	// ┗
+        buf->setV(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(1.0f, 0.0f), Vector3::UnitY); ++v;	// ┓
+        buf->setV(v, Vector3(maxPos.x, maxPos.y, maxPos.z), Vector2(1.0f, 1.0f), Vector3::UnitY); ++v;	// ┛
+        setIndices(buf, i, 20);
+#else
 		// 手前 (Z-)
 		buf->setV(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(0.0f, 0.0f), -Vector3::UnitZ); ++v;	// ┏
 		buf->setV(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(1.0f, 0.0f), -Vector3::UnitZ); ++v;	// ┓
@@ -649,6 +705,7 @@ public:
 		buf->setV(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(0.0f, 1.0f), Vector3::UnitY); ++v;	// ┗
 		buf->setV(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(1.0f, 1.0f), Vector3::UnitY); ++v;	// ┛
 		setIndices(buf, i, 20);
+#endif
 
 		//transform(buf->vertexBuffer(), vertexCount());
 	}

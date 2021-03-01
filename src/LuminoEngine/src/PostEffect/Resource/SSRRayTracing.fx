@@ -5,10 +5,13 @@
 
 #include <Lumino.fxh>
 
+#define LN_COORD_RH 1
+
 // TODO:
 // https://veldrid.dev/articles/backend-differences.html
 //const float ln_ClipSpaceNearZ = 0.0;    // DX,Metal,Vulkan.  OpenGL の場合は -1.0
 //const float ln_ClipSpaceFarZ = 1.0;
+
 
 //==============================================================================
 // Uniforms
@@ -57,12 +60,13 @@ static const float _EdgeExponent = 1.0;
 static const float _FadeDistance = 10.0;
 static const float _FadeExponent = 1.0;
 
-// LH. far=Z+
-float GetViewSpaceLinearZ(float2 uv) {
-    return tex2D(_MetalRoughSampler, uv).y;
-}
+// LH > far=Z+
+// RH > far=Z-
+//float GetViewSpaceLinearZ(float2 uv) {
+//    return tex2D(_MetalRoughSampler, uv).y;
+//}
 
-float3 GetViewPosition(float2 inputUV, float projectedZ, float linearZ) {
+float3 GetViewPosition(float2 inputUV, float projectedZ) {
     // ClipSpace 上の座標を求める
     float4 clipPosition = float4(LN_UVToClipSpacePosition(inputUV), projectedZ, 1.0);
     //float4 pos = (mul(ln_ProjectionI, clipPosition));
@@ -91,14 +95,17 @@ float GetViewSpaceZ(float2 uv)
     return pos.z / pos.w;
 }
 
-bool RayIntersectsDepth(float z, float2 uv)
+bool RayIntersectsDepth(float z, float2 uv) // 衝突している (zが埋まっている) か
 {
     float sceneZ = GetViewSpaceZ(uv);
-
+#ifdef LN_COORD_RH
+    float dist = (-z) - (-sceneZ); 
+#else
     // 遠い方が Z+.
     // サンプリングポイント z が、シーンのZ より手前にあるときは 0 より小さい。
     // サンプリングポイント z が、シーンのZ より奥あるときは 0 より大きい。
     float dist = z - sceneZ; 
+#endif
 
     return dist > 0.0 && dist < _Thickness;
 }
@@ -116,7 +123,12 @@ bool TraceCameraSpaceRay(
 
     // Clip to the near plane.
     // クリップ領域外に飛ばしても意味がないので、無駄な計算をしないようにする
+#ifdef LN_COORD_RH
+    float rayLength = ((rayOrg.z + rayDir.z * rayDist) > -ln_NearClip) ? (-ln_NearClip + rayOrg.z) / rayDir.z : rayDist;
+    //float rayLength = ((rayOrg.z + rayDir.z * rayDist) < ln_NearClip) ? (ln_NearClip + rayOrg.z) / rayDir.z : rayDist;
+#else
     float rayLength = ((rayOrg.z + rayDir.z * rayDist) < ln_NearClip) ? (ln_NearClip + rayOrg.z) / rayDir.z : rayDist;
+#endif
     float3 rayEnd = rayOrg + rayDir * rayLength;
 
     float3 Q0 = rayOrg;
@@ -222,11 +234,11 @@ struct PS_Input
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
     const float projectedZ = tex2D(_ViewDepthSampler, input.UV).r;
-    const float linearZ = GetViewSpaceLinearZ(input.UV);
+    //const float linearZ = GetViewSpaceLinearZ(input.UV);
 
     // URL 先の図の、地面との衝突点と、その法線 (赤矢印)
     // https://qiita.com/mebiusbox2/items/e69ef326b211880d7549#%E8%A1%9D%E7%AA%81%E5%88%A4%E5%AE%9A
-    float3 viewPosition = GetViewPosition(input.UV, projectedZ, linearZ);
+    float3 viewPosition = GetViewPosition(input.UV, projectedZ);
     float3 viewNormal   = GetViewNormal(input.UV);
     
  #if 0   // DEBUG: この2つは同じ値にならないとダメ
@@ -246,7 +258,7 @@ float4 PS_Main(PS_Input input) : SV_TARGET
 
     // 反射の原点と方向ベクトル。
     // rayDir は、視点から飛ばしたベクトルを反射させた方向が入るので、例えば手前向きの垂直の壁を、左斜め前から見ると反射ベクトルは (1, 0, 0) となり、赤く見える
-    float3 rayOrg = viewPosition;
+    float3 rayOrg = viewPosition;       // ViewSpace 上での計算であるため、viewPosition=視点からそこへ向かうレイ と考えられる
     float3 rayDir = reflect(normalize(rayOrg), viewNormal);
 
     float2 hitPixel;
