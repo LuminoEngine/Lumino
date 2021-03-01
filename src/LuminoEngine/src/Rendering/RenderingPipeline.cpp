@@ -134,9 +134,13 @@ void SceneRenderingPipeline::render(
             // ↑のパラメータで指定された範囲を Ortho に収めるような視点情報を作る
             const auto lookAt = camera.viewPosition + camera.viewDirection * (light->shadowCameraZFar / 2);
             const auto lightPos = lookAt - light->m_direction * (light->shadowLightZFar / 2);
+#ifdef LN_COORD_RH
+            const auto view = Matrix::makeLookAtRH(lightPos, lookAt, Vector3::UnitY);
+            const auto proj = Matrix::makeOrthoRH(light->shadowCameraZFar, light->shadowCameraZFar, 0.5, light->shadowLightZFar);
+#else
             const auto view = Matrix::makeLookAtLH(lightPos, lookAt, Vector3::UnitY);
             const auto proj = Matrix::makeOrthoLH(light->shadowCameraZFar, light->shadowCameraZFar, 0.5, light->shadowLightZFar);
-
+#endif
             renderViewInfo.mainLightViewProjection = Matrix::multiply(view, proj);
             renderViewInfo.mainLightShadowMap = m_shadowMap;
             renderViewInfo.mainLightShadowMapPixelSize = Size(renderViewInfo.mainLightShadowMap->width(), renderViewInfo.mainLightShadowMap->height());

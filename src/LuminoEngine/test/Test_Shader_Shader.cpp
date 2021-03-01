@@ -23,12 +23,21 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
         Vector3 pos;
         Vector2 uv;
     };
+#ifdef LN_COORD_RH
+    Vertex v[] = {
+        { { -1, 1, 0 }, { 0, 0 }, },	// 0.5 で中央の face からサンプリングする
+        { { -1, 0, 0 }, { 0, 1 }, },
+        { { 0, 1, 0 }, { 1, 0 }, },
+        { { 0, 0, 0 }, { 1, 1 }, },
+    };
+#else
     Vertex v[] = {
         { { -1, 1, 0 }, { 0, 0 }, },	// 0.5 で中央の face からサンプリングする
         { { 0, 1, 0 }, { 1, 0 }, },
         { { -1, 0, 0 }, { 0, 1 }, },
         { { 0, 0, 0 }, { 1, 1 }, },
     };
+#endif
     auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
     auto tex1 = makeObject<Texture2D>(2, 2, TextureFormat::RGBA8);
@@ -82,12 +91,19 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
 
     auto vertexDecl1 = makeObject<VertexLayout>();
     vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
-
+#ifdef LN_COORD_RH
+    Vector3 v[] = {
+        { 0, 0.5, 0 },
+        { -0.5, -0.25, 0 },
+        { 0.5, -0.25, 0 },
+    };
+#else
     Vector3 v[] = {
         { 0, 0.5, 0 },
         { 0.5, -0.25, 0 },
         { -0.5, -0.25, 0 },
     };
+#endif
     auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	auto ctx = TestEnv::beginFrame();
@@ -124,12 +140,19 @@ TEST_F(Test_Shader_Shader, UniformBuffer_WorldMatrix)
 
     auto vertexDecl1 = makeObject<VertexLayout>();
     vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
-
+#ifdef LN_COORD_RH
+    Vector3 v[] = {
+        { 0, 0.5, 0 },
+        { -0.5, -0.25, 0 },
+        { 0.5, -0.25, 0 },
+    };
+#else
     Vector3 v[] = {
         { 0, 0.5, 0 },
         { 0.5, -0.25, 0 },
         { -0.5, -0.25, 0 },
     };
+#endif
     auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
     auto ctx = TestEnv::beginFrame();
@@ -174,12 +197,19 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 
     auto vertexDecl1 = makeObject<VertexLayout>();
     vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
-
+#ifdef LN_COORD_RH
+    Vector3 v[] = {
+        { 0, 0.5, 0 },
+        { -0.5, -0.25, 0 },
+        { 0.5, -0.25, 0 },
+    };
+#else
     Vector3 v[] = {
         { 0, 0.5, 0 },
         { 0.5, -0.25, 0 },
         { -0.5, -0.25, 0 },
     };
+#endif
     auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
     auto t1 = Texture2D::create(2, 2, TextureFormat::RGBA8);
@@ -267,12 +297,19 @@ TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
 
 	auto vertexDecl1 = makeObject<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
-
-	Vector3 v[] = {
-		{ 0, 0.5, 0 },
-		{ 0.5, -0.25, 0 },
-		{ -0.5, -0.25, 0 },
-	};
+#ifdef LN_COORD_RH
+    Vector3 v[] = {
+        { 0, 0.5, 0 },
+        { -0.5, -0.25, 0 },
+        { 0.5, -0.25, 0 },
+    };
+#else
+    Vector3 v[] = {
+        { 0, 0.5, 0 },
+        { 0.5, -0.25, 0 },
+        { -0.5, -0.25, 0 },
+    };
+#endif
 	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	auto ctx = TestEnv::beginFrame();

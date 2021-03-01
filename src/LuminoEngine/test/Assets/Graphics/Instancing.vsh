@@ -16,7 +16,7 @@ VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
     output.Pos = input.Pos;
-    output.Pos.xyz += input.InstancePos;
+    output.Pos.xyz += input.InstancePos.xyz;
     output.Color = input.InstanceColor;
     return output;
 }

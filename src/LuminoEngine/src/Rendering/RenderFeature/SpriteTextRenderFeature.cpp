@@ -328,15 +328,15 @@ void SpriteTextRenderFeature::putRectangle(Vertex* buffer, const Matrix& transfo
 	buffer[0].normal = Vector3::UnitZ;
 
 	buffer[1].color = color;
-	buffer[1].position.set(rect.getRight(), rect.getTop() * signY, 0);
+	buffer[1].position.set(rect.getLeft(), rect.getBottom() * signY, 0);
 	buffer[1].position.transformCoord(transform);
-	buffer[1].uv.set(ru, tv);	// 右上
+	buffer[1].uv.set(lu, bv);	// 左下
 	buffer[1].normal = Vector3::UnitZ;
 
 	buffer[2].color = color;
-	buffer[2].position.set(rect.getLeft(), rect.getBottom() * signY, 0);
+	buffer[2].position.set(rect.getRight(), rect.getTop() * signY, 0);
 	buffer[2].position.transformCoord(transform);
-	buffer[2].uv.set(lu, bv);	// 左下
+	buffer[2].uv.set(ru, tv);	// 右上
 	buffer[2].normal = Vector3::UnitZ;
 
 	buffer[3].color = color;

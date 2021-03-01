@@ -27,7 +27,11 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 
 	// # 時計回り (左ねじ) で描画できること
 	{
+#ifdef LN_COORD_RH
+		Vector4 v[] = { Vector4(0, 0.5, 0, 1), Vector4(-0.5, -0.25, 0, 1), Vector4(0.5, -0.25, 0, 1), };
+#else
 		Vector4 v[] = { Vector4(0, 0.5, 0, 1), Vector4(0.5, -0.25, 0, 1), Vector4(-0.5, -0.25, 0, 1), };
+#endif
 		auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
         // RenderPass は Swap の数だけ作ってもいいし、1つを使いまわしても良い。
@@ -64,8 +68,11 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 {
 	auto descriptorLayout = m_shader1->descriptorLayout();
 	auto shaderPass = m_shader1->techniques()[0]->passes()[0];
-
-    Vector4 v[] = { Vector4(0, 0.5, 0, 1), Vector4(0.5, -0.25, 0, 1), Vector4(-0.5, -0.25, 0, 1), };
+#ifdef LN_COORD_RH
+	Vector4 v[] = { Vector4(0, 0.5, 0, 1), Vector4(-0.5, -0.25, 0, 1), Vector4(0.5, -0.25, 0, 1), };
+#else
+	Vector4 v[] = { Vector4(0, 0.5, 0, 1), Vector4(0.5, -0.25, 0, 1), Vector4(-0.5, -0.25, 0, 1), };
+#endif
     auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	{
@@ -208,12 +215,19 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setShaderPass(shaderPass);
 			ctx->setShaderDescriptor(shd);
-
+#ifdef LN_COORD_RH
+			Vector4 v1[] = {
+				Vector4(0, 0.5, 0, 1),
+				Vector4(-0.5, -0.25, 0, 1),
+				Vector4(0.5, -0.25, 0, 1),
+			};
+#else
 			Vector4 v1[] = {
 				Vector4(0, 0.5, 0, 1),
 				Vector4(0.5, -0.25, 0, 1),
 				Vector4(-0.5, -0.25, 0, 1),
 			};
+#endif
 			memcpy(vb1->map(MapMode::Write), v1, vb1->size());
 
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -232,12 +246,19 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			auto shd = ctx->allocateShaderDescriptor(shaderPass);
 			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-
+#ifdef LN_COORD_RH
+			Vector4 v2[] = {
+				Vector4(0, 1, 0, 1),
+				Vector4(-1, -1, 0, 1),
+				Vector4(1, -1, 0, 1),
+			};
+#else
 			Vector4 v2[] = {
 				Vector4(0, 1, 0, 1),
 				Vector4(1, -1, 0, 1),
 				Vector4(-1, -1, 0, 1),
 			};
+#endif
 			memcpy(vb1->map(MapMode::Write), v2, vb1->size());
 
 			ctx->beginRenderPass(crp);
@@ -260,13 +281,21 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			auto shd = ctx->allocateShaderDescriptor(shaderPass);
 			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-
+#ifdef LN_COORD_RH
+			Vector4 v2[] = {
+				Vector4(-0.5, 0.5, 0, 1),
+				Vector4(-0.5, -0.5, 0, 1),
+				Vector4(0.5, 0.5, 0, 1),
+				Vector4(0.5, -0.5, 0, 1),
+			};
+#else
 			Vector4 v2[] = {
 				Vector4(-0.5, 0.5, 0, 1),
 				Vector4(0.5, 0.5, 0, 1),
 				Vector4(-0.5, -0.5, 0, 1),
 				Vector4(0.5, -0.5, 0, 1),
 			};
+#endif
 
 			vb2->resize(sizeof(Vector4) * 4);
 			ASSERT_EQ(sizeof(Vector4) * 4, vb2->size());
@@ -295,6 +324,15 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
+#ifdef LN_COORD_RH
+			Vector4 v2[] = {
+				Vector4(-0.5, 0.5, 0, 1),
+				Vector4(-0.5, -0.5, 0, 1),
+				Vector4(0.5, 0.5, 0, 1),
+				Vector4(0.5, -0.5, 0, 1),
+				Vector4(1.0, 0.5, 0, 1),
+			};
+#else
 			Vector4 v2[] = {
 				Vector4(-0.5, 0.5, 0, 1),
 				Vector4(0.5, 0.5, 0, 1),
@@ -302,6 +340,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 				Vector4(0.5, -0.5, 0, 1),
 				Vector4(-0.5, -1, 0, 1),
 			};
+#endif
 
 			vb2->resize(sizeof(Vector4) * 5);
 			ASSERT_EQ(sizeof(Vector4) * 5, vb2->size());
@@ -318,7 +357,11 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 
 			ctx->endRenderPass();
 			TestEnv::endFrame();
+#ifdef LN_COORD_RH
+			ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-5-RH.png"), cbb);
+#else
             ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-5.png"), cbb);
+#endif
 		}
 	}
 
@@ -338,12 +381,12 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 		Vector4 color;
 	};
 	PosColor v1[3] = { 
-		{ { -1, 1, 0 }, { 0.5, 0, 0, 0 } }, 
+		{ { -1, 1, 0 }, { 0.5, 0, 0, 0 } },
+		{ {-1, 0, 0}, { 0, 0, 0.5, 0 } },
 		{ {0, 1, 0}, { 0, 1., 0, 0 } },
-		{ {-1, 0, 0}, { 0, 0, 0.5, 0 } }
 	};
-	Vector3 uv1[3] = { { 0.5, 0, 0 },{ 0, -0.5, 0 }, { 0, 0, 0.5 } };
-	Vector4 uv2[3] = { { 0, 0, 0, 1 },{ 0, 0, 0, 1 },{ 0, 0, 0, 1 } };
+	Vector3 uv1[3] = { { 0.5, 0, 0 }, { 0, 0, 0.5 }, { 0, -0.5, 0 }, };
+	Vector4 uv2[3] = { { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, };
 
 	auto vb1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 	auto vb2 = makeObject<VertexBuffer>(sizeof(uv1), uv1, GraphicsResourceUsage::Static);
@@ -420,7 +463,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(0, 0, 1, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
-			uint16_t indices[] = { 0, 2, 4 };
+			uint16_t indices[] = { 0, 4, 2 };
 			memcpy(ib1->map(MapMode::Write), indices, ib1->bytesSize());
 
 			ctx->beginRenderPass(crp);
@@ -445,7 +488,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(0, 0, 1, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
-			uint16_t indices[] = { 1, 2, 4 };
+			uint16_t indices[] = { 1, 4, 2 };
 			memcpy(ib1->map(MapMode::Write), indices, ib1->bytesSize());
 
 			ctx->beginRenderPass(crp);
@@ -498,11 +541,19 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 	auto descriptorLayout = m_shader1->descriptorLayout();
 	auto shaderPass = m_shader1->techniques()[0]->passes()[0];
 
+#ifdef LN_COORD_RH
+	Vector4 v[] = {
+		Vector4(0, 0.5, 0, 1),
+		Vector4(-0.5, -0.25, 0, 1),
+		Vector4(0.5, -0.25, 0, 1),
+	};
+#else
 	Vector4 v[] = {
 		Vector4(0, 0.5, 0, 1),
 		Vector4(0.5, -0.25, 0, 1),
 		Vector4(-0.5, -0.25, 0, 1),
 	};
+#endif
 	auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	//* [ ] Viewport
@@ -595,11 +646,19 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 	auto descriptorLayout = shader1->descriptorLayout();
 	auto shaderPass = shader1->techniques()[0]->passes()[0];
 
+#ifdef LN_COORD_RH
+	Vector4 v[] = {
+		Vector4(-1, 1, 0, 1),
+		Vector4(-1, 0, 0, 1),
+		Vector4(0, 1, 0, 1),
+	};
+#else
 	Vector4 v[] = {
 		Vector4(-1, 1, 0, 1),
 		Vector4(0, 1, 0, 1),
 		Vector4(-1, 0, 0, 1),
 	};
+#endif
 	auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 
@@ -609,7 +668,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		auto crp = TestEnv::renderPass();
 		auto shd = ctx->allocateShaderDescriptor(shaderPass);
 		setDescriptor(shd);
-		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		crp->setClearValues(ClearFlags::All, Color::Black, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
@@ -869,12 +928,21 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 		Vector2 uv;
 		Vector3 pos;
 	};
+#ifdef LN_COORD_RH
+	Vertex v[] = {
+		{ { 0, 0 }, { -1, 1, 0 }, },
+		{ { 0, 1 }, { -1, 0, 0 }, },
+		{ { 1, 0 }, { 0, 1, 0 }, },
+		{ { 1, 1 }, { 0, 0, 0 }, },
+	};
+#else
 	Vertex v[] = {
 		{ { 0, 0 }, { -1, 1, 0 }, },
 		{ { 1, 0 }, { 0, 1, 0 }, },
 		{ { 0, 1 }, { -1, 0, 0 }, },
 		{ { 1, 1 }, { 0, 0, 0 }, },
 	};
+#endif
 	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	auto tex1 = makeObject<Texture2D>(2, 2);
@@ -975,12 +1043,21 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		Vector2 uv;
 		Vector3 pos;
 	};
+#ifdef LN_COORD_RH
+	Vertex v[] = {
+		{ { 0, 0 },{ -1, 1, 0 }, },
+		{ { 0, 2 },{ -1, 0, 0 }, },
+		{ { 2, 0 },{ 0, 1, 0 }, },
+		{ { 2, 2 },{ 0, 0, 0 }, },
+	};
+#else
 	Vertex v[] = {
 		{ { 0, 0 },{ -1, 1, 0 }, },
 		{ { 2, 0 },{ 0, 1, 0 }, },
 		{ { 0, 2 },{ -1, 0, 0 }, },
 		{ { 2, 2 },{ 0, 0, 0 }, },
 	};
+#endif
 	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	auto tex1 = makeObject<Texture2D>(2, 2);
@@ -1059,28 +1136,55 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		Vector3 pos;
 		Color color;
 	};
+#ifdef LN_COORD_RH
+	Vertex v1[] = {	// 深度テスト用に少し奥に出しておく
+		{ { -1, 1, 0.5 }, Color::Red },
+		{ { -1, 0, 0.5 }, Color::Red },
+		{ { 0, 1, 0.5 }, Color::Red },
+		{ { 0, 0, 0.5 }, Color::Red },
+	};
+#else
 	Vertex v1[] = {	// 深度テスト用に少し奥に出しておく
 		{ { -1, 1, 0.5 }, Color::Red },
 		{ { 0, 1, 0.5 }, Color::Red },
 		{ { -1, 0, 0.5 }, Color::Red },
 		{ { 0, 0, 0.5 }, Color::Red },
 	};
+#endif
 	auto vb1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
+#ifdef LN_COORD_RH
+	Vertex v2[] = {
+		{ { -0.5, 0.5, 0 }, Color::Blue },
+		{ { -0.5, -0.5, 0 }, Color::Blue },
+		{ { 0.5, 0.5, 0 }, Color::Blue },
+		{ { 0.5, -0.5, 0 }, Color::Blue },
+	};
+#else
 	Vertex v2[] = {
 		{ { -0.5, 0.5, 0 }, Color::Blue },
 		{ { 0.5, 0.5, 0 }, Color::Blue },
 		{ { -0.5, -0.5, 0 }, Color::Blue },
 		{ { 0.5, -0.5, 0 }, Color::Blue },
 	};
+#endif
 	auto vb2 = makeObject<VertexBuffer>(sizeof(v2), v2, GraphicsResourceUsage::Static);
 
+#ifdef LN_COORD_RH
+	Vertex v3[] = {	// 裏面テスト用
+		{ { 0, 0, 0 }, Color::Green },
+		{ { 1, 0, 0 }, Color::Green },
+		{ { 0, -1, 0 }, Color::Green },
+		{ { 1, -1, 0 }, Color::Green },
+	};
+#else
 	Vertex v3[] = {	// 裏面テスト用
 		{ { 0, 0, 0 }, Color::Green },
 		{ { 0, -1, 0 }, Color::Green },
 		{ { 1, 0, 0 }, Color::Green },
 		{ { 1, -1, 0 }, Color::Green },
 	};
+#endif
 	auto vb3 = makeObject<VertexBuffer>(sizeof(v3), v3, GraphicsResourceUsage::Static);
 
 	// * [ ] check BlendState (RGB Add blend)
@@ -1333,11 +1437,19 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
 		auto descriptorLayout2 = shader2->descriptorLayout();
 		auto shaderPass2 = shader2->techniques()[0]->passes()[0];
 
-        Vector4 v1[] = {
-            Vector4(0, 0.5, 0, 1),
-            Vector4(0.5, -0.25, 0, 1),
-            Vector4(-0.5, -0.25, 0, 1),
-        };
+#ifdef LN_COORD_RH
+		Vector4 v1[] = {
+			Vector4(0, 0.5, 0, 1),
+			Vector4(-0.5, -0.25, 0, 1),
+			Vector4(0.5, -0.25, 0, 1),
+		};
+#else
+		Vector4 v1[] = {
+			Vector4(0, 0.5, 0, 1),
+			Vector4(0.5, -0.25, 0, 1),
+			Vector4(-0.5, -0.25, 0, 1),
+		};
+#endif
         auto vertexBuffer1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
         struct Vertex
@@ -1345,12 +1457,21 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
             Vector2 uv;
             Vector3 pos;
         };
-        Vertex v[] = {
-            { { 0, 0 }, { -1, 1, 0 }, },
-            { { 1, 0 }, { 1, 1, 0 }, },
-            { { 0, 1 }, { -1, -1, 0 }, },
-            { { 1, 1 }, { 1, -1, 0 }, },
-        };
+#ifdef LN_COORD_RH
+		Vertex v[] = {
+			{ { 0, 0 }, { -1, 1, 0 }, },
+			{ { 0, 1 }, { -1, -1, 0 }, },
+			{ { 1, 0 }, { 1, 1, 0 }, },
+			{ { 1, 1 }, { 1, -1, 0 }, },
+		};
+#else
+		Vertex v[] = {
+			{ { 0, 0 }, { -1, 1, 0 }, },
+			{ { 1, 0 }, { 1, 1, 0 }, },
+			{ { 0, 1 }, { -1, -1, 0 }, },
+			{ { 1, 1 }, { 1, -1, 0 }, },
+		};
+#endif
         auto vertexBuffer2 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
         auto vertexDecl2 = makeObject<VertexLayout>();
         vertexDecl2->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
@@ -1408,7 +1529,11 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiRenderTarget)
 	auto descriptorLayout = shader1->descriptorLayout();
 	auto shaderPass = shader1->techniques()[0]->passes()[0];
 
-	Vector3 v[] = {{ -1, 1, 0 },{ 1, 1, 0 },{ -1, -1, 0 },{ 1, -1, 0 }};
+#ifdef LN_COORD_RH
+	Vector3 v[] = { { -1, 1, 0 },{ -1, -1, 0 },{ 1, 1, 0 },{ 1, -1, 0 } };
+#else
+	Vector3 v[] = { { -1, 1, 0 },{ 1, 1, 0 },{ -1, -1, 0 },{ 1, -1, 0 } };
+#endif
 	auto vertexBuffer1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 	auto vertexDecl1 = makeObject<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
@@ -1451,11 +1576,19 @@ TEST_F(Test_Graphics_LowLevelRendering, Instancing)
 	auto shaderPass = shader1->techniques()[0]->passes()[0];
 
 	// メッシュはひとつだけ
+#ifdef LN_COORD_RH
+	Vector4 v[] = {
+		Vector4(-1, 1, 0, 1),
+		Vector4(-1, 0, 0, 1),
+		Vector4(0, 1, 0, 1),
+	};
+#else
 	Vector4 v[] = {
 		Vector4(-1, 1, 0, 1),
 		Vector4(0, 1, 0, 1),
 		Vector4(-1, 0, 0, 1),
 	};
+#endif
 	auto vertexBuffer1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	// オフセットとカラーをインスタンス分用意
@@ -1509,12 +1642,21 @@ TEST_F(Test_Graphics_LowLevelRendering, MipMap)
 		Vector3 pos;
 		Vector2 uv;
 	};
+#ifdef LN_COORD_RH
+	Vertex v[] = {
+		{ { -0.5, 0, 0 }, { 0, 0 }, },	// far
+		{ { -1, -1, 1 }, { 0, 1 }, },	// near
+		{ {  0.5, 0, 0 }, { 1, 0 }, },	// far
+		{ {  1, -1, 1 }, { 1, 1 }, },	// near
+	};
+#else
 	Vertex v[] = {
 		{ { -0.5, 0, 0 }, { 0, 0 }, },	// far
 		{ {  0.5, 0, 0 }, { 1, 0 }, },	// far
 		{ { -1, -1, 1 }, { 0, 1 }, },	// near
 		{ {  1, -1, 1 }, { 1, 1 }, },	// near
 	};
+#endif
 	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	// 四辺に黒線を引いたテクスチャ

@@ -78,13 +78,28 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
             m_viewPoint->viewPixelSize = Size(renderTarget->width(), renderTarget->height());	// TODO: 必要？
             m_viewPoint->viewPosition = Vector3::Zero;
             m_viewPoint->viewDirection = Vector3::UnitZ;
-            m_viewPoint->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);//Matrix();// 
+#ifdef LN_COORD_RH
+            m_viewPoint->viewMatrix = Matrix::makeLookAtRH(Vector3::Zero, -Vector3::UnitZ, Vector3::UnitY);
+            m_viewPoint->projMatrix = Matrix::makePerspective2DRH(m_viewPoint->viewPixelSize.width, m_viewPoint->viewPixelSize.height, 0, 1000);
+#else
+            m_viewPoint->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
             m_viewPoint->projMatrix = Matrix::makePerspective2DLH(m_viewPoint->viewPixelSize.width, m_viewPoint->viewPixelSize.height, 0, 1000);
+#endif
             m_viewPoint->viewProjMatrix = m_viewPoint->viewMatrix * m_viewPoint->projMatrix;
             m_viewPoint->viewFrustum = ViewFrustum(m_viewPoint->viewProjMatrix);
             m_viewPoint->fovY = 1.0f;
             m_viewPoint->nearClip = 0.0f;
             m_viewPoint->farClip = 1000.0f;
+
+
+
+            //auto p1 = Vector3::transformCoord(Vector3(0, 0, 0), m_viewPoint->viewMatrix);
+            //auto p2 = Vector3::transformCoord(Vector3(0, 100, 0), m_viewPoint->viewMatrix);
+            //auto p3 = Vector3::transformCoord(Vector3(100, 0, 0), m_viewPoint->viewMatrix);
+
+            //auto p11 = Vector3::transformCoord(Vector3(0, 0, 0), m_viewPoint->viewProjMatrix);
+            //auto p22 = Vector3::transformCoord(Vector3(0, 100, 0), m_viewPoint->viewProjMatrix);
+            //auto p33 = Vector3::transformCoord(Vector3(100, 0, 0), m_viewPoint->viewProjMatrix);
 
             detail::CameraInfo camera;
             camera.makePerspective(

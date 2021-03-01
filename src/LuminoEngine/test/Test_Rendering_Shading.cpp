@@ -11,7 +11,11 @@ class Test_Rendering_ClusteredShading : public LuminoSceneTest {};
 TEST_F(Test_Rendering_ClusteredShading, Basic)
 {
 	{
-		Engine::mainCamera()->setPosition(0, 5, -5);
+#ifdef LN_COORD_RH
+		Engine::mainCamera()->setPosition(0, 5, 5);
+#else
+	Engine::mainCamera()->setPosition(0, 5, -5);
+#endif
 		Engine::mainCamera()->lookAt(Vector3(0, 0, 0));
 
 		auto obj1 = makeObject<WorldObject>();
@@ -94,6 +98,8 @@ TEST_F(Test_Rendering_Shading, Fog)
 }
 #endif
 
+#ifdef LN_COORD_RH
+#else
 //------------------------------------------------------------------------------
 TEST_F(Test_Rendering_Shading, EnvironmentLight)
 {
@@ -105,7 +111,11 @@ TEST_F(Test_Rendering_Shading, EnvironmentLight)
 		.material(mat1)
 		.buildInto();
 
+#ifdef LN_COORD_RH
+	Engine::mainCamera()->setPosition(0, 0, 1);
+#else
 	Engine::mainCamera()->setPosition(0, 0, -1);
+#endif
 
 	auto light = Engine::world()->mainLight();
 	light->setIntensity(0.0f);
@@ -119,6 +129,7 @@ TEST_F(Test_Rendering_Shading, EnvironmentLight)
 	light->setSkyColor(Color::Black);
 	light->setGroundColor(Color::Black);
 }
+#endif
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Rendering_Shading, MaterialEmissive)
@@ -132,7 +143,11 @@ TEST_F(Test_Rendering_Shading, MaterialEmissive)
 		.material(mat1)
 		.buildInto();
 
+#ifdef LN_COORD_RH
+	Engine::mainCamera()->setPosition(0, 0, 1);
+#else
 	Engine::mainCamera()->setPosition(0, 0, -1);
+#endif
 
 	auto light = Engine::world()->mainLight();
 	light->setIntensity(0.0f);

@@ -34,7 +34,11 @@ TEST_F(Test_PostEffect, SSR)
 	plane1Material->setMetallic(1.0f);
 	PlaneMesh::Builder()
 		.position(-2, 0, 0)
+#ifdef LN_COORD_RH
+		.rotation(Math::PI / 2, Math::PI / 3, 0)
+#else
 		.rotation(-Math::PI / 2, -Math::PI / 3, 0)
+#endif
 		.material(plane1Material)
 		.buildInto();
 

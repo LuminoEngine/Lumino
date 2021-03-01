@@ -415,18 +415,6 @@ void ShadowCasterPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsConte
 	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
 
 	if (auto param = m_defaultShader->findParameter(u"ln_ViewProjection_Light0")) {
-		//const auto* mainLight = sceneRenderer->mainLightInfo();
-		//const auto pos = Vector3(10, 10, 10);
-		//const auto view = Matrix::makeLookAtLH(
-		//	pos,
-		//	pos + mainLight->m_direction,
-		//	Vector3::UnitY);
-		//const auto proj = Matrix::makePerspectiveFovLH(
-		//	Math::PI / 2.0f,
-		//	1024.0 / 1024.0,	// TODO: LightMapSize
-		//	0.5f, 100.0f);	// TODO: clip range
-
-		//param->setMatrix(Matrix::multiply(view, proj));
 		param->setMatrix(sceneRenderer->mainRenderViewInfo().mainLightViewProjection);
 	}
 

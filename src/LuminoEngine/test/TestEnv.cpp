@@ -65,7 +65,11 @@ void TestEnv::resetScene()
 {
 	Engine::world()->removeAllObjects();
 	Engine::mainUIView()->removeAllChildren();
+#ifdef LN_COORD_RH
+	Engine::mainCamera()->setPosition(0, 0, 10);
+#else
 	Engine::mainCamera()->setPosition(0, 0, -10);
+#endif
 	Engine::mainCamera()->lookAt(Vector3(0, 0, 0));
 	Engine::mainLight()->lookAt(0, -1, 0);
 	Engine::mainLight()->setEnabled(true);

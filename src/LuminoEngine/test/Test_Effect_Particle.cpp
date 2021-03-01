@@ -61,7 +61,11 @@ TEST_F(Test_Effect_Particle, Lifetime)
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, SingleSprite)
 {
+#ifdef LN_COORD_RH
+	Engine::mainCamera()->setPosition(0, 0, 2);
+#else
 	Engine::mainCamera()->setPosition(0, 0, -2);
+#endif
 
 	auto material = Material::create();
 	material->setMainTexture(Texture2D::load("Effect/ColorGrid.png"));
@@ -236,8 +240,11 @@ TEST_F(Test_Effect_Particle, BoxShape)
 TEST_F(Test_Effect_Particle, Trail)
 {
 	// TODO: このテストは、プロトで作った Trail のテスト用。Trail 正式対応後、直した方がいいかも。
-
+#ifdef LN_COORD_RH
+	Engine::mainCamera()->setPosition(0, 0, 5);
+#else
 	Engine::mainCamera()->setPosition(0, 0, -5);
+#endif
 
 	auto material = Material::create();
 	material->setMainTexture(Texture2D::load("Effect/ColorGrid.png"));

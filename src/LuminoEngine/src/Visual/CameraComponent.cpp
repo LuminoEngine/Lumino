@@ -81,7 +81,12 @@ void CameraComponent::updateMatrices()
         Vector3 lookAt = Vector3::transformCoord(Vector3(0, 0, 1), worldMatrix);
 
 	    // ビュー行列
-	    m_viewMatrix = Matrix::makeLookAtLH(worldMatrix.position(), lookAt, m_upDirection);
+#ifdef LN_COORD_RH
+		m_viewMatrix = Matrix::makeLookAtRH(worldMatrix.position(), lookAt, m_upDirection);
+#else
+		m_viewMatrix = Matrix::makeLookAtLH(worldMatrix.position(), lookAt, m_upDirection);
+#endif
+
 
 		//auto f = Matrix::makeInverse(m_viewMatrix).front();
 
@@ -94,10 +99,15 @@ void CameraComponent::updateMatrices()
 	    {
 		    float aspect = m_aspect;
 		    aspect = (m_aspect > 0.0f) ? m_aspect : viewSize.width / viewSize.height;
-
-		    // プロジェクション行列の更新
-		    // https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-		    m_projMatrix = Matrix::makePerspectiveFovLH(m_fovY, aspect, m_nearClip, m_farClip);
+#ifdef LN_COORD_RH
+			// プロジェクション行列の更新
+			// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
+			m_projMatrix = Matrix::makePerspectiveFovRH(m_fovY, aspect, m_nearClip, m_farClip);
+#else
+			// プロジェクション行列の更新
+			// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
+			m_projMatrix = Matrix::makePerspectiveFovLH(m_fovY, aspect, m_nearClip, m_farClip);
+#endif
 	    }
 	    else
 	    {
@@ -106,8 +116,15 @@ void CameraComponent::updateMatrices()
 			//float scaleH = orthoSize.height / viewSize.height / m_zoom;
 			float scaleW = m_zoom;
 			float scaleH = m_zoom;
-            m_projMatrix = Matrix::makeOrthoLH(orthoSize.width * scaleW, orthoSize.height * scaleH, m_nearClip, m_farClip);
+#ifdef LN_COORD_RH
+			m_projMatrix = Matrix::makeOrthoRH(orthoSize.width * scaleW, orthoSize.height * scaleH, m_nearClip, m_farClip);
+#else
+			m_projMatrix = Matrix::makeOrthoLH(orthoSize.width * scaleW, orthoSize.height * scaleH, m_nearClip, m_farClip);
+#endif
 	    }
+
+		const auto pt1 = Vector3::transformCoord(Vector3(0, 0, 0.5), m_viewMatrix);
+		const auto pt2 = Vector3::transformCoord(pt1, m_projMatrix);
 
 	    m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
