@@ -209,8 +209,8 @@ void FrameRectRenderFeature::putRectangleStretch(GraphicsContext* context, const
 	addSprite(
 		context,
 		Vector3(pos_l, pos_t, 0), Vector2(uv_l, uv_t),	// top-left
-		Vector3(pos_r, pos_t, 0), Vector2(uv_r, uv_t),	// top-right
 		Vector3(pos_l, pos_b, 0), Vector2(uv_l, uv_b),	// bottom-left
+		Vector3(pos_r, pos_t, 0), Vector2(uv_r, uv_t),	// top-right
 		Vector3(pos_r, pos_b, 0), Vector2(uv_r, uv_b));	// bottom-right
 }
 
@@ -258,8 +258,8 @@ void FrameRectRenderFeature::putRectangleTiling(GraphicsContext* context, const 
 			addSprite(
 				context,
 				Vector3(rect.x + pos_l, rect.y + pos_t, 0), Vector2(uv_l, uv_t),	// top-left
-				Vector3(rect.x + pos_r, rect.y + pos_t, 0), Vector2(uv_r, uv_t),	// top-right
 				Vector3(rect.x + pos_l, rect.y + pos_b, 0), Vector2(uv_l, uv_b),	// bottom-left
+				Vector3(rect.x + pos_r, rect.y + pos_t, 0), Vector2(uv_r, uv_t),	// top-right
 				Vector3(rect.x + pos_r, rect.y + pos_b, 0), Vector2(uv_r, uv_b));	// bottom-right
 		}
 	}

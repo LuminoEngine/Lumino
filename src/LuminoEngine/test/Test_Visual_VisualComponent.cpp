@@ -139,7 +139,11 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
             .texture(texture1)
             .size(5, 5)
             .position(0, 0, 0)
+#ifdef LN_COORD_RH
+            .rotation(0, Math::PI / 4, 0)
+#else
             .rotation(0, -Math::PI / 4, 0)
+#endif
             .shadingModel(ShadingModel::Unlit)
             .buildInto();
 
@@ -147,7 +151,11 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
             .texture(texture2)
             .size(5, 5)
             .position(0, 0, 0)
+#ifdef LN_COORD_RH
+            .rotation(0, -Math::PI / 4, 0)
+#else
             .rotation(0, Math::PI / 4, 0)
+#endif
             .shadingModel(ShadingModel::Unlit)
             .buildInto();
 
@@ -162,7 +170,11 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
             .texture(texture1)
             .size(4, 4)
             .position(0, 0, 0)
+#ifdef LN_COORD_RH
+            .rotation(0, Math::PI / 4, 0)
+#else
             .rotation(0, -Math::PI / 4, 0)
+#endif
             .shadingModel(ShadingModel::Unlit)
             .buildInto();
 
@@ -170,7 +182,11 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
             .texture(texture2)
             .size(4, 4)
             .position(0, 0, 0)
+#ifdef LN_COORD_RH
+            .rotation(0, -Math::PI / 4, 0)
+#else
             .rotation(0, Math::PI / 4, 0)
+#endif
             .shadingModel(ShadingModel::Unlit)
             .depthTest(false)
             .buildInto();
@@ -186,7 +202,11 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
             .texture(texture1)
             .size(4, 4)
             .position(0, 0, 0)
+#ifdef LN_COORD_RH
+            .rotation(0, Math::PI / 4, 0)
+#else
             .rotation(0, -Math::PI / 4, 0)
+#endif
             .shadingModel(ShadingModel::Unlit)
             .depthWrite(false)
             .buildInto();
@@ -195,7 +215,11 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
             .texture(texture2)
             .size(4, 4)
             .position(0, 0, 0)
+#ifdef LN_COORD_RH
+            .rotation(0, -Math::PI / 4, 0)
+#else
             .rotation(0, Math::PI / 4, 0)
+#endif
             .shadingModel(ShadingModel::Unlit)
             .buildInto();
 
