@@ -93,7 +93,11 @@ void ReflectorComponent::onPrepareRender(RenderingContext* context)
 
         virtualCamera.viewPosition = view;
         virtualCamera.viewDirection = Vector3::normalize(target - view);
+#ifdef LN_COORD_RH
+        virtualCamera.viewMatrix = Matrix::makeLookAtRH(view, target, up);
+#else
         virtualCamera.viewMatrix = Matrix::makeLookAtLH(view, target, up);
+#endif
         //virtualCamera.up.set(0, 1, 0);
         //virtualCamera.up.applyMatrix4(rotationMatrix);
         //virtualCamera.up.reflect(normal);

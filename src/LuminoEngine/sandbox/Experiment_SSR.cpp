@@ -25,8 +25,11 @@ class App_Experiment_SSR : public Application
 
         Engine::mainLight()->setIntensity(3);
 
+#ifdef LN_COORD_RH
+        auto tmp = Vector3::transformCoord(Vector3(0, 0, 10), Matrix::makeLookAtRH(Vector3(0, 0, -1), Vector3::Zero, Vector3::UnitY));
+#else
         auto tmp = Vector3::transformCoord(Vector3(0, 0, 10), Matrix::makeLookAtLH(Vector3(0, 0, -1), Vector3::Zero, Vector3::UnitY));
-
+#endif
 
         m_sprite = Sprite::create(Texture2D::whiteTexture());
         m_sprite->setBlendMode(BlendMode::Normal);

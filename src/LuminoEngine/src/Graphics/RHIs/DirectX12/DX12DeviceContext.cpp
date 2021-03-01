@@ -622,7 +622,11 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
     {
         psoDesc.RasterizerState.FillMode = DX12Helper::LNFillModeToDX12FillMode(state.rasterizerState.fillMode);
         psoDesc.RasterizerState.CullMode = DX12Helper::LNCullModeToDX12CullMode(state.rasterizerState.cullMode);
+#ifdef LN_COORD_RH
+        psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
+#else
         psoDesc.RasterizerState.FrontCounterClockwise = FALSE;
+#endif
         psoDesc.RasterizerState.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
         psoDesc.RasterizerState.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
         psoDesc.RasterizerState.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;

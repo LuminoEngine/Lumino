@@ -307,9 +307,16 @@ void SpriteComponent::onRender(RenderingContext* context)
 		actualSourceRect.y / actualTextureSize.height,
 		actualSourceRect.width / actualTextureSize.width,
 		actualSourceRect.height / actualTextureSize.height);
+
+#ifdef LN_COORD_RH
+    const SpriteBaseDirection frontDir = SpriteBaseDirection::ZPlus;
+#else
+    const SpriteBaseDirection frontDir = SpriteBaseDirection::ZMinus;
+#endif
+
 	context->drawSprite(
 		Matrix(), actualSize, anchorPoint, uvRect, Color::White,
-		SpriteBaseDirection::ZMinus, BillboardType::None, m_flipFlags, m_material);
+        frontDir, BillboardType::None, m_flipFlags, m_material);
 
 #else
     Vector2 anchorPoint = m_anchorPoint;

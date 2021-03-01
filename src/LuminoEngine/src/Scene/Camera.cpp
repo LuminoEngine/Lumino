@@ -34,7 +34,8 @@ void Camera::init()
 
 	// Note: 以前のデフォルトだった -10.0f とかの方が数字的なキリはいいのだが、
 	// チュートリアルや開発の初期段階で利用する XXXXMesh や Sprite のデフォルトサイズは 1.0 であり、-10.0f だとかなり小さく見えてしまう。
-    setPosition(0, 0, -5.0f);
+    setPosition(0, 0, 5.0f);
+	lookAt(0, 0, 0);
 }
 
 const Matrix& Camera::viewMatrix() const

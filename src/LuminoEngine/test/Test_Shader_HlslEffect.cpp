@@ -279,10 +279,13 @@ TEST_F(Test_Graphics_HlslEffect, Sample)
 
 
 		Vector4 cameraPos(0, r, 0, 1);
+#ifdef LN_COORD_RH
+		auto view = Matrix::makeLookAtRH(cameraPos.xyz(), cameraPos.xyz() + Vector3::normalize(-0.2, 0, 1), Vector3::UnitY);
+		auto proj = Matrix::makePerspectiveFovRH(Math::PI / 3, 160.0 / 120.0, 0.1, 1000);
+#else
 		auto view = Matrix::makeLookAtLH(cameraPos.xyz(), cameraPos.xyz() + Vector3::normalize(-0.2, 0, 1), Vector3::UnitY);
 		auto proj = Matrix::makePerspectiveFovLH(Math::PI / 3, 160.0 / 120.0, 0.1, 1000);
-
-
+#endif
 		ctx->clear(ClearFlags::All, Color::Gray, 1.0f, 0);
 
 		DepthStencilStateDesc state1;

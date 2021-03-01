@@ -27,6 +27,15 @@ void BlitRenderFeature::init(RenderingManager* manager)
 
 	m_vertexLayout = m_manager->standardVertexDeclaration();
 
+#ifdef LN_COORD_RH
+	Vertex vertices[4] =
+	{
+		{ Vector3(-1,  1, 0), Vector3::UnitZ, Vector2(0, 0), Color::White, Vector4(1, 0, 0, 1) },
+		{ Vector3(-1, -1, 0), Vector3::UnitZ, Vector2(0, 1), Color::White, Vector4(1, 0, 0, 1) },
+		{ Vector3(1,  1, 0), Vector3::UnitZ, Vector2(1, 0), Color::White, Vector4(1, 0, 0, 1) },
+		{ Vector3(1, -1, 0), Vector3::UnitZ, Vector2(1, 1), Color::White, Vector4(1, 0, 0, 1) },
+	};
+#else
 	Vertex vertices[4] =
 	{
 		{ Vector3(-1,  1, 0), Vector3::UnitZ, Vector2(0, 0), Color::White, Vector4(1, 0, 0, 1) },
@@ -34,6 +43,7 @@ void BlitRenderFeature::init(RenderingManager* manager)
 		{ Vector3(-1, -1, 0), Vector3::UnitZ, Vector2(0, 1), Color::White, Vector4(1, 0, 0, 1) },
 		{ Vector3(1, -1, 0), Vector3::UnitZ, Vector2(1, 1), Color::White, Vector4(1, 0, 0, 1) },
 	};
+#endif
 	m_vertexBuffer = makeObject<VertexBuffer>(sizeof(vertices), vertices, GraphicsResourceUsage::Static);
 }
 

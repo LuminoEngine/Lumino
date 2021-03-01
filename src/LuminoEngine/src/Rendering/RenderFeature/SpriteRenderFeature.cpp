@@ -84,6 +84,51 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 
 		switch (baseDirection)
 		{
+#ifdef LN_COORD_RH
+		case SpriteBaseDirection::XPlus:
+			vertices[0].position.set(LN_WRITE_V3(0, t, l));     // 左上
+			vertices[1].position.set(LN_WRITE_V3(0, b, l));     // 左下
+			vertices[2].position.set(LN_WRITE_V3(0, t, r));     // 右上
+			vertices[3].position.set(LN_WRITE_V3(0, b, r));     // 右下
+			normal = Vector3(1, 0, 0);
+			break;
+		case SpriteBaseDirection::YPlus:
+			vertices[0].position.set(LN_WRITE_V3(l, 0, t));
+			vertices[1].position.set(LN_WRITE_V3(l, 0, b));
+			vertices[2].position.set(LN_WRITE_V3(r, 0, t));
+			vertices[3].position.set(LN_WRITE_V3(r, 0, b));
+			normal = Vector3(0, 1, 0);
+			break;
+		case SpriteBaseDirection::ZPlus:
+			vertices[0].position.set(LN_WRITE_V3(l, t, 0));
+			vertices[1].position.set(LN_WRITE_V3(l, b, 0));
+			vertices[2].position.set(LN_WRITE_V3(r, t, 0));
+			vertices[3].position.set(LN_WRITE_V3(r, b, 0));
+			normal = Vector3(0, 0, 1);
+			break;
+		case SpriteBaseDirection::XMinus:
+			vertices[0].position.set(LN_WRITE_V3(0, t, r));
+			vertices[1].position.set(LN_WRITE_V3(0, b, r));
+			vertices[2].position.set(LN_WRITE_V3(0, t, l));
+			vertices[3].position.set(LN_WRITE_V3(0, b, l));
+			normal = Vector3(-1, 0, 0);
+			break;
+		case SpriteBaseDirection::YMinus:
+			vertices[0].position.set(LN_WRITE_V3(r, 0, t));
+			vertices[1].position.set(LN_WRITE_V3(r, 0, b));
+			vertices[2].position.set(LN_WRITE_V3(l, 0, t));
+			vertices[3].position.set(LN_WRITE_V3(l, 0, b));
+			normal = Vector3(0, -1, 0);
+			break;
+		case SpriteBaseDirection::ZMinus:
+			vertices[0].position.set(LN_WRITE_V3(l, t, 0));
+			vertices[1].position.set(LN_WRITE_V3(l, b, 0));
+			vertices[2].position.set(LN_WRITE_V3(r, t, 0));
+			vertices[3].position.set(LN_WRITE_V3(r, b, 0));
+			normal = Vector3(0, 0, -1);
+			break;
+		}
+#else
 		case SpriteBaseDirection::XPlus:
 			vertices[0].position.set(LN_WRITE_V3(0, t, l));     // 左上
 			vertices[1].position.set(LN_WRITE_V3(0, t, r));     // 右上
@@ -127,16 +172,25 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 			normal = Vector3(0, 0, -1);
 			break;
 		}
+#endif
 #undef LN_WRITE_V3
 	}
 	// 2D の場合の頂点座標
 	else
 	{
+#ifdef LN_COORD_RH
+		Vector2 origin(-center);
+		vertices[0].position.set(origin.x, origin.y, 0);
+		vertices[1].position.set(origin.x, origin.y + size.y, 0);
+		vertices[2].position.set(origin.x + size.x, origin.y, 0);
+		vertices[3].position.set(origin.x + size.x, origin.y + size.y, 0);
+#else
 		Vector2 origin(-center);
 		vertices[0].position.set(origin.x, origin.y, 0);
 		vertices[1].position.set(origin.x + size.x, origin.y, 0);
 		vertices[2].position.set(origin.x, origin.y + size.y, 0);
 		vertices[3].position.set(origin.x + size.x, origin.y + size.y, 0);
+#endif
 		normal = Vector3(0, 0, -1);
 	}
 
@@ -147,7 +201,6 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 
 	Matrix actualTransform;
 	{
-
 		// ビルボード
 		if (billboardType == BillboardType::ToCameraPoint)
 		{
@@ -230,6 +283,16 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 			std::swap(t, b);
 		}
 
+#ifdef LN_COORD_RH
+		vertices[0].uv.x = l;
+		vertices[0].uv.y = t;
+		vertices[1].uv.x = l;
+		vertices[1].uv.y = b;
+		vertices[2].uv.x = r;
+		vertices[2].uv.y = t;
+		vertices[3].uv.x = r;
+		vertices[3].uv.y = b;
+#else
 		vertices[0].uv.x = l;
 		vertices[0].uv.y = t;
 		vertices[1].uv.x = r;
@@ -238,6 +301,7 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 		vertices[2].uv.y = b;
 		vertices[3].uv.x = r;
 		vertices[3].uv.y = b;
+#endif
 	}
 
 	m_batchData.spriteCount++;
@@ -344,7 +408,7 @@ void SpriteRenderFeature2::prepareBuffers(GraphicsContext* context, int spriteCo
 		{
 			i2 = i * 6;
 			idx = i * 4;
-			ib[i2 + 0] = idx;
+			ib[i2 + 0] = idx + 0;
 			ib[i2 + 1] = idx + 1;
 			ib[i2 + 2] = idx + 2;
 			ib[i2 + 3] = idx + 2;

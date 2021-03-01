@@ -61,8 +61,13 @@ void RenderView::makeViewProjections(const detail::CameraInfo& base, float dpiSc
 	info->viewPixelSize = base.viewPixelSize;
 	info->viewPosition = Vector3::Zero;
 	info->viewDirection = Vector3::UnitZ;
+#ifdef LN_COORD_RH
+	info->viewMatrix = Matrix::makeLookAtRH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+	info->projMatrix = Matrix::makePerspective2DRH(base.viewPixelSize.width, base.viewPixelSize.height, 0, 1000);
+#else
 	info->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
 	info->projMatrix = Matrix::makePerspective2DLH(base.viewPixelSize.width, base.viewPixelSize.height, 0, 1000);
+#endif
 	info->viewProjMatrix = info->viewMatrix * info->projMatrix;
 	info->viewFrustum = ViewFrustum(info->viewProjMatrix);
 	info->nearClip = 0;
@@ -72,17 +77,22 @@ void RenderView::makeViewProjections(const detail::CameraInfo& base, float dpiSc
 	info->viewPixelSize = base.viewPixelSize;
 	info->viewPosition = Vector3::Zero;
 	info->viewDirection = Vector3::UnitZ;
+#ifdef LN_COORD_RH
+	info->viewMatrix = Matrix::makeLookAtRH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+	info->projMatrix = Matrix::makePerspective2DRH(base.viewPixelSize.width / dpiScale, base.viewPixelSize.height / dpiScale, 0, 1000);
+#else
 	info->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
 	info->projMatrix = Matrix::makePerspective2DLH(base.viewPixelSize.width / dpiScale, base.viewPixelSize.height / dpiScale, 0, 1000);
+#endif
 	info->viewProjMatrix = info->viewMatrix * info->projMatrix;
 	info->viewFrustum = ViewFrustum(info->viewProjMatrix);
 	info->nearClip = 0;
 	info->farClip = 1000;
 
-	Vector3 pos1 = Vector3::transformCoord(Vector3(0, 0, 0), info->viewProjMatrix);
-	Vector3 pos2 = Vector3::transformCoord(Vector3(0, 0, 1), info->viewProjMatrix);;
-	Vector3 pos3 = Vector3::transformCoord(Vector3(0, 0, -1), info->viewProjMatrix);
-	printf("");
+	//Vector3 pos1 = Vector3::transformCoord(Vector3(0, 0, 0), info->viewProjMatrix);
+	//Vector3 pos2 = Vector3::transformCoord(Vector3(0, 0, 1), info->viewProjMatrix);;
+	//Vector3 pos3 = Vector3::transformCoord(Vector3(0, 0, -1), info->viewProjMatrix);
+	//printf("");
 }
 
 Vector3 RenderView::transformProjection(const Vector3& pos, detail::ProjectionKind from, detail::ProjectionKind to) const

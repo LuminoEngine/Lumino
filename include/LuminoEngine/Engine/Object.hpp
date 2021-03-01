@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <mutex>
 #include <functional>
+#define LN_COORD_RH 1
 
 namespace ln {
 class EngineContext;

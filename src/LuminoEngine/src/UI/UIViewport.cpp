@@ -11,6 +11,7 @@
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include "../Graphics/GraphicsManager.hpp"
+#include "../Rendering/RenderingManager.hpp"
 #include "../PostEffect/PostEffectRenderer.hpp"
 #include "UIManager.hpp"
 
@@ -38,6 +39,7 @@ void UIViewport::init()
     //m_imageEffectRenderer = makeRef<detail::PostEffectRenderer>();
     m_blitMaterial = makeObject<Material>();
 	m_blitMaterial->setBlendMode(BlendMode::Normal);
+	m_blitMaterial->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::CopyScreen));
 
 	//auto shader = makeObject<Shader>(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TonePostEffect.fx");
 	//m_blitMaterial->setShader(shader);

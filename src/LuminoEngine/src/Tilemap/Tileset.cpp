@@ -245,10 +245,15 @@ void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos
 		detail::SpriteRenderFeature2::makeRenderSizeAndSourceRectHelper(
 			texture, tileSize, tile.sourceRect, &renderSize, &renderSourceRect);
 
+#ifdef LN_COORD_RH
+		const SpriteBaseDirection frontDir = SpriteBaseDirection::ZPlus;
+#else
+		const SpriteBaseDirection frontDir = SpriteBaseDirection::ZMinus;
+#endif
 		context->drawSprite(
 			Matrix::makeTranslation(pos), tileSize, Vector2::Zero,
 			renderSourceRect, Color::White,
-			SpriteBaseDirection::ZMinus, BillboardType::None, detail::SpriteFlipFlags::None,
+			frontDir, BillboardType::None, detail::SpriteFlipFlags::None,
 			m_material);
 	}
 }

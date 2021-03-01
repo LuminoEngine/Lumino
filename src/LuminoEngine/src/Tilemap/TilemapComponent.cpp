@@ -95,7 +95,11 @@ void TilemapComponent::onRender(RenderingContext* context)
     Matrix worldInverse = Matrix::makeInverse(worldObject()->worldMatrix());
     Matrix viewLocal = context->viewPoint()->worldMatrix * worldInverse;
 
+#ifdef LN_COORD_RH
+    Matrix viewMatrix = Matrix::makeLookAtRH(viewLocal.position(), viewLocal.position() + viewLocal.front(), viewLocal.up());
+#else
     Matrix viewMatrix = Matrix::makeLookAtLH(viewLocal.position(), viewLocal.position() + viewLocal.front(), viewLocal.up());
+#endif
     ViewFrustum frustum(viewMatrix * context->viewPoint()->projMatrix);
 
     // TODO: ひとまず、 Z- を正面とする

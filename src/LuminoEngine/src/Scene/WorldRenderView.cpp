@@ -61,6 +61,7 @@ void WorldRenderView::init()
 
     createGridPlane();
 
+#if 0
 	{
 		detail::PlaneMeshGenerater2 gen;
 		gen.size = Vector2(2, 2);
@@ -82,7 +83,6 @@ void WorldRenderView::init()
 		buffer.setBuffer((Vertex*)vb, ib, fmt, 0);
 		buffer.generate(&gen);
 
-#if 0
 		auto meshContainer = makeObject<MeshContainer>();
 		meshContainer->setMeshResource(meshResource);
 
@@ -90,8 +90,8 @@ void WorldRenderView::init()
 		m_skyProjectionPlane->addMeshContainer(meshContainer);
 
 		m_skyProjectionPlane->addMaterial(m_clearMaterial);
-#endif
     }
+#endif
 
     // TODO: 遅延作成
 	m_internalSkyBox = makeObject<detail::InternalSkyBox>();
@@ -234,8 +234,11 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 //frustumRayTL = m_camera->screenToWorldRay(Vector2(0, 0)).direction;
                 //frustumRayTR = m_camera->screenToWorldRay(Vector2(viewWidth, 0)).direction;
                 //frustumRayBL = m_camera->screenToWorldRay(Vector2(0, viewHeight)).direction;
-
+#ifdef LN_COORD_RH
+                auto v = Matrix::makeLookAtRH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+#else
                 auto v = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+#endif
                 ViewFrustum vf(v * m_viewPoint->projMatrix);
                 Vector3 points[8];
                 vf.getCornerPoints(points);
@@ -317,7 +320,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 //m_clearMaterial->setFloat(_T("g"), g);
                 //m_clearMaterial->setFloat(_T("exposure"), exposure);
 
-				Matrix rot =Matrix::makeInverse(m_viewPoint->viewMatrix);//m_viewPoint->viewMatrix;//  _viewPoint->worldMatrix;// //// m_viewPoint->worldMatrix;//Matrix::makeLookAtLH
+				Matrix rot =Matrix::makeInverse(m_viewPoint->viewMatrix);
                 rot.m41 = rot.m42 = rot.m43 = 0.0f;
                 Matrix ss = Matrix::makeScaling(frustumRayTR.x, frustumRayTR.y, frustumRayTR.z);
 				Matrix mm = rot * ss;// rot;
