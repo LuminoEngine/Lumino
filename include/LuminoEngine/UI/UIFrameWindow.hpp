@@ -154,14 +154,6 @@ public:  // TODO: internal
     // ゲームランタイムでは true, エディタでは false.
     bool m_realtimeRenderingEnabled;
 
-
-    struct DevelopmentTools
-    {
-        Ref<detail::MainViewportToolPane> mainViewportToolPane;
-    };
-
-    DevelopmentTools m_tools;
-
 private:
     void updateLayoutTreeInternal(const Size& contentSize);
     virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);

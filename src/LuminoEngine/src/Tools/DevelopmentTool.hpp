@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
+#include <LuminoEngine/UI/ImGuiIntegration.hpp>
 
 namespace ln {
 class UIEventArgs;
@@ -8,7 +9,9 @@ class UIMainWindow;
 class UISplitter;
 
 namespace detail {
-
+class EngineManager;
+class MainViewportToolPane;
+class EditorViewportToolPane;
 
 class RuntimeEditor
     : public RefObject
@@ -43,6 +46,15 @@ private:
 
     Size m_gameModeWindowSize;
     Size m_toolModeWindowSize;
+
+
+    Ref<MainViewportToolPane> m_mainViewportToolPane;
+    Ref<ImGuiDockPane> m_pane2;
+    Ref<ImGuiDockPane> m_pane3;
+    Ref<ImGuiDockPane> m_pane4;
+    Ref<ImGuiDockPane> m_pane5;
+    Ref<ImGuiDockPane> m_pane6;
+    Ref<EditorViewportToolPane> m_editorViewportToolPane;
 };
 
 } // namespace detail

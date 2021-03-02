@@ -258,65 +258,6 @@ UIElement* UIInputInjector::mouseHoveredElement()
     return m_owner->m_manager->mouseHoverElement();
 }
 
-//==============================================================================
-// MainViewportToolPane
-
-class MainViewportToolPane
-    : public ImGuiDockPane
-{
-public:
-    MainViewportToolPane()
-        : m_frameWindow(nullptr)
-        , m_graphicsContext(nullptr)
-        , m_renderView(nullptr)
-        , m_mainViewportRenderTarget(nullptr)
-        , m_resetCount(1)
-    {}
-
-    bool isSizeReseting() const { return m_resetCount > 0; }
-
-    void prepare(UIFrameWindow* frameWindow, GraphicsContext* context, const Ref<UIRenderView>& renderView)
-    {
-        m_frameWindow = frameWindow;
-        m_graphicsContext = context;
-        m_renderView = renderView;
-    }
-
-protected:
-    void onGui() override
-    {
-        ImGuiWindow* window = ImGui::GetCurrentWindow();
-
-        const ImVec2 contentSize = ImGui::GetContentRegionAvail();
-        m_contentSize.set(contentSize.x, contentSize.y);
-
-        if (m_renderView)
-        {
-            m_frameWindow->m_contentArea.set(
-                window->ContentRegionRect.Min.x, window->ContentRegionRect.Min.y,
-                m_contentSize.width, m_contentSize.height);
-
-            m_frameWindow->updateLayoutTreeInternal(m_contentSize);
-            m_mainViewportRenderTarget = RenderTargetTexture::realloc(m_mainViewportRenderTarget, contentSize.x, contentSize.y, TextureFormat::RGBA8, false, SamplerState::pointClamp());
-            m_renderView->render(m_graphicsContext, m_mainViewportRenderTarget);
-        }
-
-        ImGui::Image(m_mainViewportRenderTarget, contentSize);
-
-        if (m_resetCount > 0) {
-            m_resetCount--;
-        }
-    }
-
-private:
-    UIFrameWindow* m_frameWindow;
-    GraphicsContext* m_graphicsContext;
-    Ref<UIRenderView> m_renderView;
-    Ref<RenderTargetTexture> m_mainViewportRenderTarget;
-    int m_resetCount;
-    Size m_contentSize;
-};
-
 } //  namespace detail
 
 //==============================================================================
@@ -466,52 +407,6 @@ void UIFrameWindow::present()
 
     if (m_ImGuiLayerEnabled)
     {
-        {
-            static bool init = false;
-            if (!init) {
-
-                if (!m_tools.mainViewportToolPane) {
-                    m_tools.mainViewportToolPane = makeObject<detail::MainViewportToolPane>();
-                    m_tools.mainViewportToolPane->setInitialPlacement(ImGuiDockPlacement::MainView);
-                    m_imguiContext->addDock(m_tools.mainViewportToolPane);
-                }
-
-                {
-                    auto pane = makeObject<ImGuiDockPane>();
-                    pane->setInitialPlacement(ImGuiDockPlacement::Left);
-                    m_imguiContext->addDock(pane);
-                }
-                {
-                    auto pane = makeObject<ImGuiDockPane>();
-                    pane->setInitialPlacement(ImGuiDockPlacement::Right);
-                    m_imguiContext->addDock(pane);
-                }
-                {
-                    auto pane = makeObject<ImGuiDockPane>();
-                    pane->setInitialPlacement(ImGuiDockPlacement::Right);
-                    m_imguiContext->addDock(pane);
-                }
-                {
-                    auto pane = makeObject<ImGuiDockPane>();
-                    pane->setInitialPlacement(ImGuiDockPlacement::Bottom);
-                    m_imguiContext->addDock(pane);
-                }
-                {
-                    auto pane = makeObject<ImGuiDockPane>();
-                    pane->setInitialPlacement(ImGuiDockPlacement::InnerLeft);
-                    m_imguiContext->addDock(pane);
-                }
-                {
-                    auto pane = makeObject<ImGuiDockPane>();
-                    pane->setInitialPlacement(ImGuiDockPlacement::DebugView);
-                    m_imguiContext->addDock(pane);
-                }
-
-                init = true;
-            }
-        }
-
-
         m_imguiContext->prepareRender(m_clientSize.width, m_clientSize.height);
         ImGui::NewFrame();
 
@@ -533,9 +428,9 @@ void UIFrameWindow::present()
             ImGui::PopStyleVar(2);
         }
 
-        if (m_tools.mainViewportToolPane) {
-            m_tools.mainViewportToolPane->prepare(this, m_renderingGraphicsContext, m_renderView);
-        }
+        //if (m_tools.mainViewportToolPane) {
+        //    m_tools.mainViewportToolPane->prepare(this, m_renderingGraphicsContext, m_renderView);
+        //}
 
 
         //{

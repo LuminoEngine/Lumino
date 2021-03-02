@@ -5,11 +5,14 @@
 struct ImGuiContext;
 
 namespace ln {
+class GraphicsContext;
 class VertexLayout;
 class VertexBuffer;
 class IndexBuffer;
 class Texture2D;
+class RenderTargetTexture;
 class RenderPass;
+class Shader;
 class ImGuiDockPane;
 
 enum ImGuiDockPlacement

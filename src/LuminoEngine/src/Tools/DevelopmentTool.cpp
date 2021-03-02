@@ -10,8 +10,10 @@
 #include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
-#include "EngineManager.hpp"
-#include "RuntimeEditor.hpp"
+#include "../Engine/EngineManager.hpp"
+#include "MainViewportToolPane.hpp"
+#include "EditorViewportToolPane.hpp"
+#include "DevelopmentTool.hpp"
 
 namespace ln {
 namespace detail {
@@ -113,6 +115,45 @@ void RuntimeEditor::attach()
 
 	m_window->setSize(m_toolModeWindowSize);
 
+	ImGuiIntegration* imgui = m_window->m_imguiContext.get();
+
+	{
+		m_mainViewportToolPane = makeObject<MainViewportToolPane>();
+		m_mainViewportToolPane->setInitialPlacement(ImGuiDockPlacement::MainView);
+		imgui->addDock(m_mainViewportToolPane);
+	}
+	{
+		m_pane2 = makeObject<ImGuiDockPane>();
+		m_pane2->setInitialPlacement(ImGuiDockPlacement::Left);
+		imgui->addDock(m_pane2);
+	}
+	{
+		m_pane3 = makeObject<ImGuiDockPane>();
+		m_pane3->setInitialPlacement(ImGuiDockPlacement::Right);
+		imgui->addDock(m_pane3);
+	}
+	{
+		m_pane4 = makeObject<ImGuiDockPane>();
+		m_pane4->setInitialPlacement(ImGuiDockPlacement::Right);
+		imgui->addDock(m_pane4);
+	}
+	{
+		m_pane5 = makeObject<ImGuiDockPane>();
+		m_pane5->setInitialPlacement(ImGuiDockPlacement::Bottom);
+		imgui->addDock(m_pane5);
+	}
+	{
+		m_pane6 = makeObject<ImGuiDockPane>();
+		m_pane6->setInitialPlacement(ImGuiDockPlacement::InnerLeft);
+		imgui->addDock(m_pane6);
+	}
+	{
+		m_editorViewportToolPane = makeObject<EditorViewportToolPane>();
+		m_editorViewportToolPane->setInitialPlacement(ImGuiDockPlacement::DebugView);
+		imgui->addDock(m_editorViewportToolPane);
+	}
+
+
 #else
 	// MainWindow の子要素を m_mainContentsPane へ移動する
 	const auto mainChildren = m_window->logicalChildren()->toArray();
@@ -146,6 +187,11 @@ void RuntimeEditor::detach()
 
 void RuntimeEditor::updateFrame()
 {
+	m_mainViewportToolPane->prepare(m_window);
+
+
+
+
 	if (m_mode == Mode::Activated) {
 		m_window->invalidateVisual();
 	}
