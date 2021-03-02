@@ -43,18 +43,17 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window)
 	//m_toolPane->setBorderThickness(1);
 	//m_splitter->addChild(m_toolPane);
 
-	m_toolWindow = makeObject<UIFrameWindow>();
-	m_toolWindow->m_renderView->setClearMode(SceneClearMode::ColorAndDepth);
-	m_toolWindow->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
+	m_window->m_renderView->setClearMode(SceneClearMode::ColorAndDepth);
+	m_window->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
 
 	setMode(Mode::Activated);
 }
 
 void RuntimeEditor::dispose()
 {
-	if (m_toolWindow) {
-		m_toolWindow->dispose();
-		m_toolWindow = nullptr;
+	if (m_window) {
+		m_window->dispose();
+		m_window = nullptr;
 	}
 }
 
@@ -90,9 +89,16 @@ void RuntimeEditor::setMode(Mode mode)
 void RuntimeEditor::attach()
 {
 #if 1
-	m_toolWindow->setImGuiLayerEnabled(true);
-	m_toolWindow->invalidateVisual();
+	m_window->setImGuiLayerEnabled(true);
+	m_window->invalidateVisual();
 	//m_toolWindow->invalidateVisual();
+
+	if (m_gameModeWindowSize.isAnyZero()) {
+		m_gameModeWindowSize = m_window->actualSize();
+		m_toolModeWindowSize.width = m_gameModeWindowSize.width + 400;
+		m_toolModeWindowSize.height = m_gameModeWindowSize.height + 200;
+		m_window->setSize(m_toolModeWindowSize);
+	}
 
 #else
 	// MainWindow の子要素を m_mainContentsPane へ移動する
@@ -111,7 +117,7 @@ void RuntimeEditor::attach()
 void RuntimeEditor::detach()
 {
 #if 1
-	m_toolWindow->setImGuiLayerEnabled(false);
+	m_window->setImGuiLayerEnabled(false);
 #else
 	m_window->setImGuiLayerEnabled(false);
 
@@ -128,7 +134,7 @@ void RuntimeEditor::detach()
 void RuntimeEditor::updateFrame()
 {
 	if (m_mode == Mode::Activated) {
-		m_toolWindow->invalidateVisual();
+		m_window->invalidateVisual();
 	}
 }
 
@@ -137,7 +143,7 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 	//const auto pos = m_toolPane->m_combinedFinalRenderTransform.position();
 	//const auto size = m_toolPane->actualSize();
 	const auto pos = ln::Vector2(0, 0);
-	const auto size = m_toolWindow->actualSize();
+	const auto size = m_window->actualSize();
 
 	ImGui::SetNextWindowPos(ImVec2(pos.x, pos.y));
 	ImGui::SetNextWindowSize(ImVec2(size.width, size.height));

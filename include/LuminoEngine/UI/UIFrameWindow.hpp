@@ -162,7 +162,10 @@ public:  // TODO: internal
     DevelopmentTools m_tools;
 
 private:
+    void updateLayoutTreeInternal(const Size& contentSize);
     virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
+
+    friend class detail::MainViewportToolPane;
 };
 
 class LN_API UIMainWindow

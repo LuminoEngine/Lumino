@@ -36,10 +36,13 @@ private:
     Mode m_mode;
 
     UIMainWindow* m_window;
-    Ref<UISplitter> m_splitter;
-    Ref<UIControl> m_mainContentsPane;
-    Ref<UIElement> m_toolPane;
-    Ref<UIFrameWindow> m_toolWindow;
+    //Ref<UISplitter> m_splitter;
+    //Ref<UIControl> m_mainContentsPane;
+    //Ref<UIElement> m_toolPane;
+    //Ref<UIFrameWindow> m_toolWindow;
+
+    Size m_gameModeWindowSize;
+    Size m_toolModeWindowSize;
 };
 
 } // namespace detail

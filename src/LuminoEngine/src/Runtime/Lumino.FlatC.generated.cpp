@@ -24200,7 +24200,7 @@ LN_FLAT_API LNResult LNEngineSettings_SetPriorityGPUNameA(const char* filePath)
 LN_FLAT_API LNResult LNEngineSettings_SetDeveloperToolEnabled(LNBool enabled)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setDeveloperToolEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    (ln::EngineSettings::setDevelopmentToolsEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
     LNI_FUNC_TRY_END_RETURN;
 }
 

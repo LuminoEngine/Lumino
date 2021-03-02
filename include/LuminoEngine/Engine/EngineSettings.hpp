@@ -128,7 +128,7 @@ public:
 	 * setDeveloperToolEnabled
 	 */
 	LN_METHOD()
-	static void setDeveloperToolEnabled(bool enabled);
+	static void setDevelopmentToolsEnabled(bool enabled);
 
 	/** ユーザー指定のメインウィンドウのウィンドウハンドルを設定します。*/
 	LN_METHOD()

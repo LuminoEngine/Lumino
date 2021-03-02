@@ -276,6 +276,11 @@ void EngineManager::dispose()
     }
 #endif
 
+	if (m_appData) {
+		m_appData->attemptSave();
+		m_appData = nullptr;
+	}
+
 	LN_LOG_DEBUG << "EngineManager finalization ended.";
 }
 
@@ -319,6 +324,9 @@ void EngineManager::initializeCommon()
 					Logger::setLevel(LogLevel::Debug);
 				}
 			}
+
+			m_appData = makeRef<AppDataInternal>();
+			m_appData->attemptLoad();
 		}
 #endif
 
@@ -847,7 +855,8 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
 
 			m_mainUIRenderView = makeObject<UIRenderView>();
 			m_mainViewport->addRenderView(m_mainUIRenderView);
-			m_mainViewport->setViewBoxSize(m_settings.mainWorldViewSize.toFloatSize());
+			const SizeI& viewboxSize = (m_settings.mainWorldViewSize.isAnyZero()) ? m_settings.mainWindowSize : m_settings.mainWorldViewSize;
+			m_mainViewport->setViewBoxSize(viewboxSize.toFloatSize());
 
 			m_mainUIRoot = makeObject<UIDomainProvidor>();
 			m_mainUIRoot->setupNavigator();
@@ -888,7 +897,7 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
 		m_mainWindow->updateLayoutTree();
 	}
 
-	if (m_settings.runtimeEditorEnabled && m_mainWindow) {
+	if (m_settings.developmentToolsEnabled && m_mainWindow) {
 		m_runtimeEditor = makeRef<detail::RuntimeEditor>();
 		m_runtimeEditor->init(this, m_mainWindow);
 	}

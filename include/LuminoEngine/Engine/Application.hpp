@@ -73,6 +73,14 @@ private:
 	friend class detail::ApplicationHelper;
 };
 
+class AppData
+{
+public:
+	static void setValue(const StringRef& key, Ref<Variant> value);
+	static Ref<Variant> getValue(const StringRef& key);	// null = NotFound.
+
+};
+
 namespace detail {
 class LN_API ApplicationHelper
 {
@@ -87,6 +95,23 @@ public:
 
     static void callOnRoutedEvent(Application* app, UIEventArgs* e) { app->onRoutedEvent(e); }
 };
+
+class AppDataInternal : public RefObject
+{
+public:
+	void setValue(const StringRef& key, Ref<Variant> value);
+	Ref<Variant> getValue(const StringRef& key) const;	// null = NotFound.
+	void attemptLoad();
+	void attemptSave();
+
+private:
+	Path makeFilePath() const;
+	void save(const Path& filePath);
+	void load(const Path& filePath);
+
+	std::unordered_map<String, Ref<Variant>> m_values;
+};
+
 } // namespace detail
 } // namespace ln
 

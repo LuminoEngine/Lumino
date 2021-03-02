@@ -44,6 +44,7 @@ class SceneManager;
 class UIManager;
 class DebugInterface;
 class RuntimeEditor;
+class AppDataInternal;
 
 struct EngineSettingsAssetArchiveEntry
 {
@@ -78,7 +79,7 @@ struct EngineSettings
 	bool createMainLights = false;
 	int frameRate = 60;
 	bool debugToolEnabled = false;
-	bool runtimeEditorEnabled = false;
+	bool developmentToolsEnabled = false;
 
 	String defaultUITheme;
 	Path fontFile;
@@ -169,6 +170,7 @@ public:
 	void setupMainWindow(ln::UIMainWindow* window, bool createBasicObjects);
 
 	Application* application() const { return m_settings.application; }
+	const Ref<AppDataInternal>& appData() const { return m_appData; }
     //const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
 	const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
@@ -204,6 +206,7 @@ private:
 	void setDebugToolMode(DebugToolMode mode);
 
 	EngineSettings m_settings;
+	Ref<AppDataInternal> m_appData;
 	GraphicsAPI m_activeGraphicsAPI;
 
 	bool m_commonInitialized = false;

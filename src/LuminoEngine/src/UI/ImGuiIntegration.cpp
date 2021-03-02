@@ -366,10 +366,10 @@ bool ImGuiIntegration::handlePlatformEvent(const detail::PlatformEventArgs& e)
             break;
     }
 
-	return io.WantCaptureMouse;
+	//return io.WantCaptureMouse;
 	//if (!io.WantCaptureMouse)
 	//	return false;
-    //return false;
+    return false;
 }
 
 void ImGuiIntegration::addDock(ImGuiDockPane* pane)

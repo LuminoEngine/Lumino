@@ -18,7 +18,7 @@ public:
 
     App_Example_MeshViewer()
     {
-        EngineSettings::setDeveloperToolEnabled(true);
+        EngineSettings::setDevelopmentToolsEnabled(true);
     }
 
     virtual void onInit() override

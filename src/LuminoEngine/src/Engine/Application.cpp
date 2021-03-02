@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <yaml-cpp/yaml.h>
 #include "EngineManager.hpp"
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
@@ -128,6 +129,20 @@ void Application::run()
 }
 
 //==============================================================================
+// AppData
+
+void AppData::setValue(const StringRef& key, Ref<Variant> value)
+{
+	detail::EngineDomain::engineManager()->appData()->setValue(key, value);
+}
+
+Ref<Variant> AppData::getValue(const StringRef& key)
+{
+	return detail::EngineDomain::engineManager()->appData()->getValue(key);
+}
+
+
+//==============================================================================
 // ApplicationHelper
 
 namespace detail {
@@ -150,6 +165,70 @@ void ApplicationHelper::finalize(Application* app)
 void ApplicationHelper::run(Application* app)
 {
 	app->run();
+}
+
+//==============================================================================
+// AppDataInternal
+
+void AppDataInternal::setValue(const StringRef& key, Ref<Variant> value)
+{
+	m_values[key] = value;
+}
+
+Ref<Variant> AppDataInternal::getValue(const StringRef& key) const
+{
+	auto itr = m_values.find(key);
+	if (itr != m_values.end())
+		return itr->second;
+	else
+		return nullptr;
+}
+
+void AppDataInternal::attemptLoad()
+{
+	const auto path = makeFilePath();
+	if (FileSystem::existsFile(path)) {
+
+	}
+}
+
+void AppDataInternal::attemptSave()
+{
+	if (!m_values.empty()) {
+		save(makeFilePath());
+	}
+}
+
+Path AppDataInternal::makeFilePath() const
+{
+	return Path::combine(Environment::specialFolderPath(SpecialFolder::ApplicationData), u"Lumino", u"CommonAppData.yml");
+}
+
+void AppDataInternal::save(const Path& filePath)
+{
+	YAML::Emitter out;
+	out << YAML::BeginMap;
+	for (const auto& pair : m_values) {
+		out << YAML::Key;
+		out << pair.first.toStdString();
+
+		if (pair.second->type() == VariantType::Int) {
+			out << pair.second->get<int>();
+		}
+		else if (pair.second->type() == VariantType::Float) {
+			out << pair.second->get<float>();
+		}
+		else if (pair.second->type() == VariantType::String) {
+			out << pair.second->get<String>().toStdString();
+		}
+	}
+	out << YAML::EndMap;
+}
+
+void AppDataInternal::load(const Path& filePath)
+{
+	//ifstream fin(ymlpath);
+	//YAML::Parser parser(fin);
 }
 
 } // namespace detail

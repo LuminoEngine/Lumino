@@ -126,9 +126,9 @@ void EngineSettings::setEngineFeatures(Flags<EngineFeature> features)
     detail::EngineManager::s_settings.features = features;
 }
 
-void EngineSettings::setDeveloperToolEnabled(bool enabled)
+void EngineSettings::setDevelopmentToolsEnabled(bool enabled)
 {
-    detail::EngineManager::s_settings.runtimeEditorEnabled = enabled;
+    detail::EngineManager::s_settings.developmentToolsEnabled = enabled;
 }
 
 void EngineSettings::setDefaultObjectsCreation(bool value)

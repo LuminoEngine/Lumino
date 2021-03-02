@@ -22,7 +22,7 @@ namespace ln {
 
 UIViewport::UIViewport()
     : m_manager(detail::EngineDomain::uiManager())
-	, m_placement(UIViewportPlacement::ViewBox)
+	, m_placement(UIViewportPlacement::ResizableViewBox)
 {
 }
 
@@ -120,12 +120,26 @@ void UIViewport::onUpdateStyle(const UIStyleContext* styleContext, const detail:
 
 Size UIViewport::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	if (isViewBoxRenderTargetAutoResize()) {
-		m_actualViewboxSize = finalArea.getSize();
+	// Update m_actualViewboxSize
+	{
+		if (m_placement == UIViewportPlacement::ResizableViewBox) {
+			const Size baseSize = finalArea.getSize();
+			if (baseSize.width > baseSize.height) {
+				const float aspect = (m_viewBoxSize.width > 0.0f) ? m_viewBoxSize.height / m_viewBoxSize.width : 1.0f;
+				m_actualViewboxSize = Size(baseSize.width, baseSize.width * aspect);
+			}
+			else {
+				const float aspect = (m_viewBoxSize.height > 0.0f) ? m_viewBoxSize.width / m_viewBoxSize.height : 1.0f;
+				m_actualViewboxSize = Size(baseSize.height * aspect, baseSize.height);
+			}
+		}
 	}
-	else {
-		m_actualViewboxSize = m_viewBoxSize;
-	}
+	//if (isViewBoxRenderTargetAutoResize()) {
+	//	m_actualViewboxSize = finalArea.getSize();
+	//}
+	//else {
+	//	m_actualViewboxSize = m_viewBoxSize;
+	//}
 
     // TODO: tmp
     for (auto& rv : m_renderViews) {
@@ -134,7 +148,6 @@ Size UIViewport::arrangeOverride(UILayoutContext* layoutContext, const Rect& fin
 
     return UIContainerElement::arrangeOverride(layoutContext, finalArea);
 }
-
 
 void UIViewport::onUpdateLayout(UILayoutContext* layoutContext)
 {
@@ -158,7 +171,7 @@ void UIViewport::onRender(UIRenderingContext* context)
 
     // TODO: dp -> px 変換
     Size viewSize = actualSize();
-	acquirePrimaryTarget(SizeI::fromFloatSize(m_actualViewboxSize));
+	preparePrimaryTarget();
 
 	// このスコープ終端で RenderTargetTexture::releaseTemporary() するわけにはいかない。
 	// この RenderTarget は context->drawImage() に乗ってこのスコープの外側でも使われるため、次回の描画までは再利用されないようにしたい。
@@ -260,10 +273,12 @@ void UIViewport::onRoutedEvent(UIEventArgs* e)
     UIContainerElement::onRoutedEvent(e);
 }
 
-void UIViewport::acquirePrimaryTarget(const SizeI& viewPixelSize)
+void UIViewport::preparePrimaryTarget()
 {
-	if (!m_primaryTarget || m_primaryTarget->width() != viewPixelSize.width || m_primaryTarget->height() != viewPixelSize.height) {
-		m_primaryTarget = makeObject<RenderTargetTexture>(viewPixelSize.width, viewPixelSize.height, TextureFormat::RGBA8, false, false);
+	const SizeI size = SizeI::fromFloatSize(m_actualViewboxSize);
+
+	if (!m_primaryTarget || m_primaryTarget->width() != size.width || m_primaryTarget->height() != size.height) {
+		m_primaryTarget = makeObject<RenderTargetTexture>(size.width, size.height, TextureFormat::RGBA8, false, false);
 		//m_primaryTarget->m_msaa = true;
 	}
 }
