@@ -12,6 +12,7 @@ namespace detail {
 class EngineManager;
 class MainViewportToolPane;
 class EditorViewportToolPane;
+class ProfilerToolPane;
 
 class RuntimeEditor
     : public RefObject
@@ -51,7 +52,7 @@ private:
     Ref<MainViewportToolPane> m_mainViewportToolPane;
     Ref<ImGuiDockPane> m_pane2;
     Ref<ImGuiDockPane> m_pane3;
-    Ref<ImGuiDockPane> m_pane4;
+    Ref<ProfilerToolPane> m_profilerToolPane;
     Ref<ImGuiDockPane> m_pane5;
     Ref<ImGuiDockPane> m_pane6;
     Ref<EditorViewportToolPane> m_editorViewportToolPane;

@@ -3,6 +3,7 @@
 #include "MixHash.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include "RHIObjectCache.hpp"
+#include "RHIProfiler.hpp"
 
 namespace ln {
 namespace detail {
@@ -62,7 +63,9 @@ VertexElementUsage IGraphicsHelper::AttributeUsageToElementUsage(AttributeUsage 
 // IGraphicsDeviceObject
 
 IGraphicsDeviceObject::IGraphicsDeviceObject()
-    : m_disposed(false)
+    : m_device(nullptr)
+	, m_disposed(false)
+	, m_profiling(false)
 {
 }
 
@@ -104,6 +107,11 @@ IGraphicsRHIBuffer::~IGraphicsRHIBuffer()
 IGraphicsDevice::IGraphicsDevice()
 	: m_renderPassCache(std::make_unique<NativeRenderPassCache>(this))
 	, m_pipelineCache(std::make_unique<NativePipelineCache>(this))
+	, m_profiler(std::make_unique<RHIProfiler>())
+{
+}
+
+IGraphicsDevice::~IGraphicsDevice()
 {
 }
 
@@ -131,14 +139,21 @@ Ref<ISwapChain> IGraphicsDevice::createSwapChain(PlatformWindow* window, const S
 {
 	Ref<ISwapChain> ptr = onCreateSwapChain(window, backbufferSize);
 	if (ptr) {
+		ptr->m_device = this;
 		m_aliveObjects.push_back(ptr);
+		m_profiler->addSwapChain(ptr);
 	}
 	return ptr;
 }
 
 Ref<ICommandList> IGraphicsDevice::createCommandList()
 {
-	return onCreateCommandList();
+	Ref<ICommandList> ptr = onCreateCommandList();
+	if (ptr) {
+		ptr->m_device = this;
+		m_profiler->addCommandList(ptr);
+	}
+	return ptr;
 }
 
 Ref<IRenderPass> IGraphicsDevice::createRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
@@ -179,6 +194,7 @@ Ref<IRenderPass> IGraphicsDevice::createRenderPass(const DeviceFramebufferState&
 			ptr->m_isMultisample = true;
 		}
 //#endif
+		m_profiler->addRenderPass(ptr);
 	}
 	return ptr;
 }
@@ -190,6 +206,8 @@ Ref<IPipeline> IGraphicsDevice::createPipeline(const DevicePipelineStateDesc& st
 		ptr->m_sourceVertexLayout = state.vertexDeclaration;
 		ptr->m_sourceRenderPass = state.renderPass;
 		ptr->m_sourceShaderPass = state.shaderPass;
+		ptr->m_device = this;
+		m_profiler->addPipelineState(ptr);
 	}
 	return ptr;
 }
@@ -201,6 +219,7 @@ Ref<IVertexDeclaration> IGraphicsDevice::createVertexDeclaration(const VertexEle
 		ptr->m_device = this;
 		ptr->m_hash = IVertexDeclaration::computeHash(elements, elementsCount);
 		m_aliveObjects.push_back(ptr);
+		m_profiler->addVertexLayout(ptr);
 	}
 	return ptr;
 }
@@ -209,7 +228,9 @@ Ref<IVertexBuffer> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usa
 {
 	Ref<IVertexBuffer> ptr = onCreateVertexBuffer(usage, bufferSize, initialData);
 	if (ptr) {
+		ptr->m_device = this;
 		m_aliveObjects.push_back(ptr);
+		m_profiler->addVertexBuffer(ptr);
 	}
 	return ptr;
 }
@@ -218,7 +239,9 @@ Ref<IIndexBuffer> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage
 {
 	Ref<IIndexBuffer> ptr = onCreateIndexBuffer(usage, format, indexCount, initialData);
 	if (ptr) {
+		ptr->m_device = this;
 		m_aliveObjects.push_back(ptr);
+		m_profiler->addIndexBuffer(ptr);
 	}
 	return ptr;
 }
@@ -228,7 +251,10 @@ Ref<ITexture> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, uint
 	Ref<ITexture> ptr = onCreateTexture2D(usage, width, height, requestFormat, mipmap, initialData);
 	ptr->m_mipmap = mipmap;
 	if (ptr) {
+		ptr->m_device = this;
+		ptr->m_deviceTextureType = DeviceTextureType::Texture2D;
 		m_aliveObjects.push_back(ptr);
+		m_profiler->addTexture2D(ptr);
 	}
 	return ptr;
 }
@@ -249,6 +275,9 @@ Ref<ITexture> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t heigh
 	ptr->m_mipmap = mipmap;
 	if (ptr) {
 		m_aliveObjects.push_back(ptr);
+		ptr->m_device = this;
+		ptr->m_deviceTextureType = DeviceTextureType::RenderTarget;
+		m_profiler->addRenderTarget(ptr);
 	}
 	return ptr;
 }
@@ -258,6 +287,8 @@ Ref<ITexture> IGraphicsDevice::createWrappedRenderTarget(intptr_t nativeObject, 
     Ref<ITexture> ptr = onCreateWrappedRenderTarget(nativeObject, hintWidth, hintHeight);
     if (ptr) {
         m_aliveObjects.push_back(ptr);
+		ptr->m_device = this;
+		m_profiler->addRenderTarget(ptr);
     }
     return ptr;
 }
@@ -267,6 +298,8 @@ Ref<IDepthBuffer> IGraphicsDevice::createDepthBuffer(uint32_t width, uint32_t he
 	Ref<IDepthBuffer> ptr = onCreateDepthBuffer(width, height);
 	if (ptr) {
 		m_aliveObjects.push_back(ptr);
+		ptr->m_device = this;
+		m_profiler->addDepthBuffer(ptr);
 	}
 	return ptr;
 }
@@ -276,6 +309,8 @@ Ref<ISamplerState> IGraphicsDevice::createSamplerState(const SamplerStateData& d
 	Ref<ISamplerState> ptr = onCreateSamplerState(desc);
 	if (ptr) {
 		m_aliveObjects.push_back(ptr);
+		ptr->m_device = this;
+		m_profiler->addSamplerState(ptr);
 	}
 	return ptr;
 }
@@ -301,9 +336,10 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 	}
 
 	if (ptr) {
-		ptr->m_device = this;
 		ptr->m_name = createInfo.name;
 		m_aliveObjects.push_back(ptr);
+		ptr->m_device = this;
+		m_profiler->addShaderPass(ptr);
 	}
 	return ptr;
 }
@@ -313,13 +349,20 @@ Ref<IUniformBuffer> IGraphicsDevice::createUniformBuffer(uint32_t size)
 	Ref<IUniformBuffer> ptr = onCreateUniformBuffer(size);
 	if (ptr) {
 		m_aliveObjects.push_back(ptr);
+		ptr->m_device = this;
+		m_profiler->addUniformBuffer(ptr);
 	}
 	return ptr;
 }
 
 Ref<IDescriptorPool> IGraphicsDevice::createDescriptorPool(IShaderPass* shaderPass)
 {
-	return onCreateDescriptorPool(shaderPass);
+	Ref<IDescriptorPool> ptr = onCreateDescriptorPool(shaderPass);
+	if (ptr) {
+		ptr->m_device = this;
+		m_profiler->addDescriptorPool(ptr);
+	}
+	return ptr;
 }
 
 void IGraphicsDevice::submitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
@@ -391,17 +434,22 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
 // ICommandList
 
 ICommandList::ICommandList()
-	: m_device(nullptr)
-    , m_stateDirtyFlags(GraphicsContextStateDirtyFlags_All)
+	: m_stateDirtyFlags(GraphicsContextStateDirtyFlags_All)
     , m_staging()
     , m_committed()
 	, m_currentRenderPass(nullptr)
 {
 }
 
+ICommandList::~ICommandList()
+{
+	if (IGraphicsDevice* d = device()) {
+		d->profiler()->removeCommandList(this);
+	}
+}
+
 Result ICommandList::init(IGraphicsDevice* owner)
 {
-	m_device = owner;
 	return true;
 }
 
@@ -613,7 +661,7 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
 		state.vertexDeclaration = m_staging.pipelineState.vertexDeclaration;
 		state.shaderPass = m_staging.shaderPass;
 		state.renderPass = m_currentRenderPass;
-		IPipeline* pipeline = m_device->pipelineCache()->findOrCreate(state);
+		IPipeline* pipeline = device()->pipelineCache()->findOrCreate(state);
 
 		onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource, pipeline);
 	}
@@ -644,14 +692,27 @@ ISwapChain::ISwapChain()
 	LN_LOG_VERBOSE << "ISwapChain [0x" << this << "] constructed.";
 }
 
+ISwapChain::~ISwapChain()
+{
+	if (IGraphicsDevice* d = device()) {
+		d->profiler()->removeSwapChain(this);
+	}
+}
+
 //=============================================================================
 // IRenderPass
 
+IRenderPass::~IRenderPass()
+{
+	if (IGraphicsDevice* d = device()) {
+		d->profiler()->removeRenderPass(this);
+	}
+}
+
 void IRenderPass::dispose()
 {
-	if (m_device) {
-		m_device->pipelineCache()->invalidate(this);
-		m_device = nullptr;
+	if (IGraphicsDevice* d = device()) {
+		d->pipelineCache()->invalidate(this);
 	}
 
 	IGraphicsDeviceObject::dispose();
@@ -665,6 +726,13 @@ IVertexDeclaration::IVertexDeclaration()
 	LN_LOG_VERBOSE << "IVertexDeclaration [0x" << this << "] constructed.";
 }
 
+IVertexDeclaration::~IVertexDeclaration()
+{
+	if (IGraphicsDevice* d = device()) {
+		d->profiler()->removeVertexLayout(this);
+	}
+}
+
 bool IVertexDeclaration::init(const VertexElement* elements, int count)
 {
 	//m_elements.resize(count);
@@ -674,9 +742,8 @@ bool IVertexDeclaration::init(const VertexElement* elements, int count)
 
 void IVertexDeclaration::dispose()
 {
-	if (m_device) {
-		m_device->pipelineCache()->invalidate(this);
-		m_device = nullptr;
+	if (IGraphicsDevice* d = device()) {
+		d->pipelineCache()->invalidate(this);
 	}
 
 	IGraphicsDeviceObject::dispose();
@@ -717,6 +784,13 @@ IVertexBuffer::IVertexBuffer()
 	LN_LOG_VERBOSE << "IVertexBuffer [0x" << this << "] constructed.";
 }
 
+IVertexBuffer::~IVertexBuffer()
+{
+	if (IGraphicsDevice* d = device()) {
+		d->profiler()->removeVertexBuffer(this);
+	}
+}
+
 //=============================================================================
 // IIndexBuffer
 
@@ -725,13 +799,46 @@ IIndexBuffer::IIndexBuffer()
 	LN_LOG_VERBOSE << "IIndexBuffer [0x" << this << "] constructed.";
 }
 
+IIndexBuffer::~IIndexBuffer()
+{
+	if (IGraphicsDevice* d = device()) {
+		d->profiler()->removeIndexBuffer(this);
+	}
+}
+
+//=============================================================================
+// IUniformBuffer
+
+IUniformBuffer::~IUniformBuffer()
+{
+	if (IGraphicsDevice* d = device()) {
+		d->profiler()->removeUniformBuffer(this);
+	}
+}
+
 //=============================================================================
 // ITexture
 
 ITexture::ITexture()
-	: m_mipmap(false)
+	: m_deviceTextureType(DeviceTextureType::Texture2D)
+	, m_mipmap(false)
 {
 	LN_LOG_VERBOSE << "ITexture [0x" << this << "] constructed.";
+}
+
+ITexture::~ITexture()
+{
+	if (IGraphicsDevice* d = device()) {
+		if (m_deviceTextureType == DeviceTextureType::Texture2D) {
+			d->profiler()->removeTexture2D(this);
+		}
+		else if (m_deviceTextureType == DeviceTextureType::RenderTarget) {
+			d->profiler()->removeRenderTarget(this);
+		}
+		else {
+			LN_UNREACHABLE();
+		}
+	}
 }
 
 //=============================================================================
@@ -742,12 +849,26 @@ IDepthBuffer::IDepthBuffer()
 	LN_LOG_VERBOSE << "IDepthBuffer [0x" << this << "] constructed.";
 }
 
+IDepthBuffer::~IDepthBuffer()
+{
+	if (IGraphicsDevice* d = device()) {
+		d->profiler()->removeDepthBuffer(this);
+	}
+}
+
 //=============================================================================
 // ISamplerState
 
 ISamplerState::ISamplerState()
 {
 	LN_LOG_VERBOSE << "ISamplerState [0x" << this << "] constructed.";
+}
+
+ISamplerState::~ISamplerState()
+{
+	if (IGraphicsDevice* d = device()) {
+		d->profiler()->removeSamplerState(this);
+	}
 }
 
 //=============================================================================
@@ -758,11 +879,17 @@ IShaderPass::IShaderPass()
 	LN_LOG_VERBOSE << "IShaderPass [0x" << this << "] constructed.";
 }
 
+IShaderPass::~IShaderPass()
+{
+	if (IGraphicsDevice* d = device()) {
+		d->profiler()->removeShaderPass(this);
+	}
+}
+
 void IShaderPass::dispose()
 {
-	if (m_device) {
-		m_device->pipelineCache()->invalidate(this);
-		m_device = nullptr;
+	if (IGraphicsDevice* d = device()) {
+		d->pipelineCache()->invalidate(this);
 	}
 	IGraphicsDeviceObject::dispose();
 }
@@ -813,9 +940,26 @@ const VertexInputAttribute* IShaderPass::findAttribute(VertexElementUsage usage,
 //=============================================================================
 // IPipeline
 
+IPipeline::~IPipeline()
+{
+	if (IGraphicsDevice* d = device()) {
+		d->profiler()->removePipelineState(this);
+	}
+}
+
 void IPipeline::dispose()
 {
-	//IGraphicsDeviceObject::dispose();
+	IGraphicsDeviceObject::dispose();
+}
+
+//=============================================================================
+// IDescriptorPool
+
+IDescriptorPool::~IDescriptorPool()
+{
+	if (IGraphicsDevice* d = device()) {
+		d->profiler()->removeDescriptorPool(this);
+	}
 }
 
 } // namespace detail

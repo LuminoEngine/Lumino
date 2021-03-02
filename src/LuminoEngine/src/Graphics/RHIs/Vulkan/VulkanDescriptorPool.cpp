@@ -53,6 +53,7 @@ void VulkanDescriptorPool2::dispose()
 	m_pages.clear();
 	m_freePages.clear();
 	m_activePage = nullptr;
+    IDescriptorPool::dispose();
 }
 
 void VulkanDescriptorPool2::reset()

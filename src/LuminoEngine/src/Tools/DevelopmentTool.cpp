@@ -13,6 +13,7 @@
 #include "../Engine/EngineManager.hpp"
 #include "MainViewportToolPane.hpp"
 #include "EditorViewportToolPane.hpp"
+#include "ProfilerToolPane.hpp"
 #include "DevelopmentTool.hpp"
 
 namespace ln {
@@ -133,9 +134,9 @@ void RuntimeEditor::attach()
 		imgui->addDock(m_pane3);
 	}
 	{
-		m_pane4 = makeObject<ImGuiDockPane>();
-		m_pane4->setInitialPlacement(ImGuiDockPlacement::Right);
-		imgui->addDock(m_pane4);
+		m_profilerToolPane = makeObject<ProfilerToolPane>();
+		m_profilerToolPane->setInitialPlacement(ImGuiDockPlacement::Right);
+		imgui->addDock(m_profilerToolPane);
 	}
 	{
 		m_pane5 = makeObject<ImGuiDockPane>();
