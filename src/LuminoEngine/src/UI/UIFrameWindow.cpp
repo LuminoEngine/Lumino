@@ -10,6 +10,7 @@
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/UI/UIAdorner.hpp>
+#include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
 #include <LuminoEngine/Engine/Debug.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Platform/PlatformManager.hpp"
@@ -291,6 +292,10 @@ protected:
 
         if (m_renderView)
         {
+            m_frameWindow->m_contentArea.set(
+                window->ContentRegionRect.Min.x, window->ContentRegionRect.Min.y,
+                m_contentSize.width, m_contentSize.height);
+
             m_frameWindow->updateLayoutTreeInternal(m_contentSize);
             m_mainViewportRenderTarget = RenderTargetTexture::realloc(m_mainViewportRenderTarget, contentSize.x, contentSize.y, TextureFormat::RGBA8, false, SamplerState::pointClamp());
             m_renderView->render(m_graphicsContext, m_mainViewportRenderTarget);
@@ -316,6 +321,15 @@ private:
 
 //==============================================================================
 // UIFrameWindow
+
+/*
+    UIFrameWindow はネイティブウィンドウと一致する一番外側の UIElement で、
+    サイズはネイティブウィンドウのクライアントサイズと一致する。
+    こうしておかないと非常にイメージがしづらくなる。
+
+    ImGui 有効時は、MainViewportToolPane の ContentRect が UIFrameWindow の ContentRect となる。
+    これは Padding を設けて UIFrameWindow 以下の UITree を Arrange するのと等しい。
+*/
 
 UIFrameWindow::UIFrameWindow()
 	: m_updateMode(UIFrameWindowUpdateMode::EventDispatches)
@@ -390,14 +404,15 @@ void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWind
 
     m_platformWindow->attachEventListener(this);
 
-    SizeI size;
-    m_platformWindow->getSize(&size);
-    resetSize(size.toFloatSize());
-
+    resetSizeFromPlatformWindow();
 }
 
-void UIFrameWindow::resetSize(const Size& size)
+void UIFrameWindow::resetSizeFromPlatformWindow()
 {
+    SizeI nativeSize;
+    m_platformWindow->getSize(&nativeSize);
+
+    Size size = nativeSize.toFloatSize();
     setWidth(size.width);
     setHeight(size.height);
     m_clientSize = size;
@@ -601,6 +616,12 @@ SwapChain* UIFrameWindow::swapChain() const
 
 void UIFrameWindow::updateStyleTree()
 {
+    if (width() != m_clientSize.width || height() != m_clientSize.height) {
+        // ユーザープログラムから  UIElement としてのサイズが変更された
+        m_clientSize.set(width(), height());
+        m_platformWindow->setSize(SizeI::fromFloatSize(m_clientSize));
+    }
+
     updateStyleHierarchical(m_manager->styleContext(), m_manager->finalDefaultStyle());
     m_dirtyFlags.unset(detail::UIElementDirtyFlags::Style);
 }
@@ -619,7 +640,11 @@ void UIFrameWindow::updateLayoutTreeInternal(const Size& contentSize)
         m_layoutContext->m_styleContext = m_manager->styleContext();
 
         //Rect clientRect(0, 0, m_clientSize);
-        m_renderView->setActualSize(contentSize);
+
+        // ここでは ClientRect を使ってレイアウトする。
+        // ImGui Layer の領域は、arrangeOverride() 時に Padding のように扱うことで、
+        // MainWindow の子要素が Pane 内に表示されているように見せる。
+        m_renderView->setActualSize(m_clientSize);
         m_renderView->updateUILayout(m_layoutContext);
     }
 
@@ -655,7 +680,17 @@ Size UIFrameWindow::measureOverride(UILayoutContext* layoutContext, const Size& 
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	return UIDomainProvidor::arrangeOverride(layoutContext, Rect(0, 0, desiredSize()));
+    Rect rect = (m_ImGuiLayerEnabled) ? m_contentArea : Rect(0, 0, desiredSize());
+
+    UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, rect);
+
+    return finalArea.getSize();
+
+
+    //return UIDomainProvidor::arrangeOverride(layoutContext, Rect(0, 0, desiredSize()));
+    //Rect rect = (m_ImGuiLayerEnabled) ? m_contentArea : Rect(0, 0, desiredSize());
+
+	//return UIDomainProvidor::arrangeOverride(layoutContext, rect);
 	//int childCount = logicalChildren().size();
 	//for (int i = 0; i < childCount; i++)
 	//{
@@ -752,9 +787,7 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 			detail::SwapChainInternal::resizeBackbuffer(m_swapChain, w, h);
 		}
 
-        SizeI size;
-        m_platformWindow->getSize(&size);
-        resetSize(size.toFloatSize());
+        resetSizeFromPlatformWindow();
 		break;
 	}
 

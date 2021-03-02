@@ -101,8 +101,8 @@ class AppDataInternal : public RefObject
 public:
 	void setValue(const StringRef& key, Ref<Variant> value);
 	Ref<Variant> getValue(const StringRef& key) const;	// null = NotFound.
-	void attemptLoad();
 	void attemptSave();
+	void attemptLoad();
 
 private:
 	Path makeFilePath() const;

@@ -12,10 +12,10 @@ class PostEffectRenderer;
 /** Viewport の配置方法 */
 enum class UIViewportPlacement
 {
-	Stretch,		/**< 転送先領域全体に拡大または縮小する */
+	Fill,		/**< 転送先領域全体に拡大または縮小する */
 	//AutoResize,		/**< 転送先領域と同じピクセルサイズになるよう自動的にリサイズする */
 	//FixedViewBox,		/**< 転送元領域のアスペクト比が維持されるように余白を挿入する。バックバッファサイズは変更しない */
-	ResizableViewBox,		/**< 転送元領域のアスペクト比が維持されるように余白を挿入する。バックバッファサイズを変更する。 */
+	//ResizableViewBox,		/**< 転送元領域のアスペクト比が維持されるように余白を挿入する。バックバッファサイズを変更する。 */
 };
 
 // TODO: WPF にならって Viewport にしたけど、ViewBox とかのほうがいいかもしれない。

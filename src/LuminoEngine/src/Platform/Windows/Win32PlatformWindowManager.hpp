@@ -17,6 +17,7 @@ public:
 
     virtual void setWindowTitle(const String& title) override;
     virtual void getSize(SizeI* size) override;
+    virtual void setSize(const SizeI& size) override { LN_NOTIMPLEMENTED(); }
     virtual void getFramebufferSize(int* width, int* height) override;
     virtual void setAllowDragDrop(bool value) override;
     virtual bool isAllowDragDrop() const override;

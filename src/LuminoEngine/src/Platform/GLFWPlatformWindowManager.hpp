@@ -39,15 +39,16 @@ public:
 
     Result init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWContext* sharedContext);
 	void dispose();
-    virtual void setWindowTitle(const String& title) override;
-	virtual void getSize(SizeI* size) override;
-	virtual void getFramebufferSize(int* width, int* height) override;
-	virtual void setAllowDragDrop(bool value) override;
-	virtual bool isAllowDragDrop() const override;
-	virtual PointI pointFromScreen(const PointI& screenPoint) override;
-	virtual PointI pointToScreen(const PointI& clientPoint) override;
-	virtual void grabCursor() override;
-	virtual void releaseCursor() override;
+    void setWindowTitle(const String& title) override;
+	void getSize(SizeI* size) override;
+	void setSize(const SizeI& size) override;
+	void getFramebufferSize(int* width, int* height) override;
+	void setAllowDragDrop(bool value) override;
+	bool isAllowDragDrop() const override;
+	PointI pointFromScreen(const PointI& screenPoint) override;
+	PointI pointToScreen(const PointI& clientPoint) override;
+	void grabCursor() override;
+	void releaseCursor() override;
 
 	GLFWwindow* glfwWindow() const { return m_glfwWindow; }
 

@@ -118,7 +118,7 @@ protected:
     virtual void onRender(UIRenderingContext* context) override;
 
     // TODO: internal
-    void resetSize(const Size& size);
+    void resetSizeFromPlatformWindow();
 
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();
@@ -141,6 +141,7 @@ public:  // TODO: internal
 	//Ref<RenderPass> m_renderPass;
 	Ref<UIRenderView> m_renderView;
     Size m_clientSize;
+    Rect m_contentArea;
 	UIFrameWindowUpdateMode m_updateMode;
 	std::unique_ptr<detail::ImGuiIntegration> m_imguiContext;
 	Ref<detail::DebugInterface> m_debugInterface;
@@ -187,7 +188,7 @@ class LN_API UINativeFrameWindow
     : public UIFrameWindow
 {
 public:
-    void setClientSize(const Size& value) { UIFrameWindow::resetSize(value); }
+    //void setClientSize(const Size& value) { UIFrameWindow::resetSize(value); }
 
     void attachRenderingThread(RenderingType renderingType);
     void detachRenderingThread();

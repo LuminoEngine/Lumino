@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <imgui.h>
+#include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/Controls/UISplitter.hpp>
 #include <LuminoEngine/Scene/World.hpp>
@@ -46,12 +47,22 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window)
 	m_window->m_renderView->setClearMode(SceneClearMode::ColorAndDepth);
 	m_window->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
 
+	if (auto v = AppData::getValue(u"LN.Tools.ToolModeWindowWidth")) {
+		m_toolModeWindowSize.width = v->get<float>();
+	}
+	if (auto v = AppData::getValue(u"LN.Tools.ToolModeWindowHeight")) {
+		m_toolModeWindowSize.height = v->get<float>();
+	}
+
 	setMode(Mode::Activated);
 }
 
 void RuntimeEditor::dispose()
 {
 	if (m_window) {
+		AppData::setValue(u"LN.Tools.ToolModeWindowWidth", makeVariant(m_toolModeWindowSize.width));
+		AppData::setValue(u"LN.Tools.ToolModeWindowHeight", makeVariant(m_toolModeWindowSize.height));
+
 		m_window->dispose();
 		m_window = nullptr;
 	}
@@ -93,12 +104,14 @@ void RuntimeEditor::attach()
 	m_window->invalidateVisual();
 	//m_toolWindow->invalidateVisual();
 
-	if (m_gameModeWindowSize.isAnyZero()) {
+	if (m_toolModeWindowSize.isAnyZero()) {
 		m_gameModeWindowSize = m_window->actualSize();
 		m_toolModeWindowSize.width = m_gameModeWindowSize.width + 400;
 		m_toolModeWindowSize.height = m_gameModeWindowSize.height + 200;
-		m_window->setSize(m_toolModeWindowSize);
 	}
+
+
+	m_window->setSize(m_toolModeWindowSize);
 
 #else
 	// MainWindow の子要素を m_mainContentsPane へ移動する

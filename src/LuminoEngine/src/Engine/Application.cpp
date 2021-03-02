@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <yaml-cpp/yaml.h>
+#include <optional>
 #include "EngineManager.hpp"
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
@@ -184,18 +185,18 @@ Ref<Variant> AppDataInternal::getValue(const StringRef& key) const
 		return nullptr;
 }
 
-void AppDataInternal::attemptLoad()
-{
-	const auto path = makeFilePath();
-	if (FileSystem::existsFile(path)) {
-
-	}
-}
-
 void AppDataInternal::attemptSave()
 {
 	if (!m_values.empty()) {
 		save(makeFilePath());
+	}
+}
+
+void AppDataInternal::attemptLoad()
+{
+	const auto path = makeFilePath();
+	if (FileSystem::existsFile(path)) {
+		load(path);
 	}
 }
 
@@ -223,12 +224,50 @@ void AppDataInternal::save(const Path& filePath)
 		}
 	}
 	out << YAML::EndMap;
+	
+	FileSystem::writeAllBytes(filePath, out.c_str(), strlen(out.c_str()));
 }
 
+// TODO: cpp-yaml は値の型を読み取ることができない。
+// try で頑張る必要があるが、これも暗黙の型変換が働いたりするため float, int, string 以上に増やすと対応できなくなる可能性が高い。
+// JSON にしたほうがよさそう。
 void AppDataInternal::load(const Path& filePath)
 {
-	//ifstream fin(ymlpath);
-	//YAML::Parser parser(fin);
+	const auto buffer = FileSystem::readAllBytes(filePath);
+	const auto text = std::string(reinterpret_cast<const char*>(buffer.data()), buffer.size());
+	YAML::Node doc = YAML::Load(text);
+
+	for (auto itr = doc.begin(); itr != doc.end(); ++itr) {
+		std::string key;
+		key = itr->first.as<std::string>();
+
+		const YAML::Node node = itr->second;
+		Ref<Variant> value;
+		{
+			try {
+				value = makeVariant(node.as<float>());
+			}
+			catch (const YAML::BadConversion& e) {
+			}
+		}
+		if (!value) {
+			try {
+				value = makeVariant(node.as<int>());
+			}
+			catch (const YAML::BadConversion& e) {
+			}
+		}
+		if (!value) {
+			try {
+				value = makeVariant(String::fromStdString(node.as<std::string>()));
+			}
+			catch (const YAML::BadConversion& e) {
+			}
+		}
+
+		m_values[String::fromStdString(key)] = value;
+	}
+
 }
 
 } // namespace detail

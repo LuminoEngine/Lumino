@@ -22,7 +22,7 @@ namespace ln {
 
 UIViewport::UIViewport()
     : m_manager(detail::EngineDomain::uiManager())
-	, m_placement(UIViewportPlacement::ResizableViewBox)
+	, m_placement(UIViewportPlacement::Fill)
 {
 }
 
@@ -122,17 +122,23 @@ Size UIViewport::arrangeOverride(UILayoutContext* layoutContext, const Rect& fin
 {
 	// Update m_actualViewboxSize
 	{
-		if (m_placement == UIViewportPlacement::ResizableViewBox) {
-			const Size baseSize = finalArea.getSize();
-			if (baseSize.width > baseSize.height) {
-				const float aspect = (m_viewBoxSize.width > 0.0f) ? m_viewBoxSize.height / m_viewBoxSize.width : 1.0f;
-				m_actualViewboxSize = Size(baseSize.width, baseSize.width * aspect);
-			}
-			else {
-				const float aspect = (m_viewBoxSize.height > 0.0f) ? m_viewBoxSize.width / m_viewBoxSize.height : 1.0f;
-				m_actualViewboxSize = Size(baseSize.height * aspect, baseSize.height);
-			}
+		if (m_placement == UIViewportPlacement::Fill) {
+			m_actualViewboxSize = finalArea.getSize();
 		}
+		else {
+			LN_NOTIMPLEMENTED();
+		}
+		//if (m_placement == UIViewportPlacement::ResizableViewBox) {
+		//	const Size baseSize = finalArea.getSize();
+		//	if (baseSize.width > baseSize.height) {
+		//		const float aspect = (m_viewBoxSize.width > 0.0f) ? m_viewBoxSize.height / m_viewBoxSize.width : 1.0f;
+		//		m_actualViewboxSize = Size(baseSize.width, baseSize.width * aspect);
+		//	}
+		//	else {
+		//		const float aspect = (m_viewBoxSize.height > 0.0f) ? m_viewBoxSize.width / m_viewBoxSize.height : 1.0f;
+		//		m_actualViewboxSize = Size(baseSize.width * aspect, baseSize.height);
+		//	}
+		//}
 	}
 	//if (isViewBoxRenderTargetAutoResize()) {
 	//	m_actualViewboxSize = finalArea.getSize();
