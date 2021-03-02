@@ -11,6 +11,7 @@ class ParticleEmitterComponent2;
 
 class WorldObject;
 class World;
+class WorldRenderView;
 class Level;
 class Camera;
 class Raycaster;

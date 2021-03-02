@@ -148,7 +148,7 @@ void RuntimeEditor::attach()
 		imgui->addDock(m_pane6);
 	}
 	{
-		m_editorViewportToolPane = makeObject<EditorViewportToolPane>();
+		m_editorViewportToolPane = makeObject<EditorViewportToolPane>(m_window);
 		m_editorViewportToolPane->setInitialPlacement(ImGuiDockPlacement::DebugView);
 		imgui->addDock(m_editorViewportToolPane);
 	}
