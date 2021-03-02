@@ -14,6 +14,7 @@ class RenderTargetTexture;
 class RenderPass;
 class Shader;
 class ImGuiDockPane;
+class UIEventArgs;
 
 enum ImGuiDockPlacement
 {
@@ -42,6 +43,7 @@ public:
 
 	void addDock(ImGuiDockPane* pane);
 	void updateDocks(ImGuiID mainWindowId);
+	bool handleUIEvent(UIEventArgs* e);
 
 private:
 	::ImGuiContext* m_imgui;
@@ -70,6 +72,7 @@ public:
 
 protected:
 	virtual void onGui();
+	virtual bool onUIEvent(UIEventArgs* e);
 
 LN_CONSTRUCT_ACCESS:
 	ImGuiDockPane();

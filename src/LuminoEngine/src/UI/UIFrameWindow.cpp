@@ -709,6 +709,11 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 
 void UIFrameWindow::onRoutedEvent(UIEventArgs* e)
 {
+    if (m_ImGuiLayerEnabled && m_imguiContext) {
+        m_imguiContext->handleUIEvent(e);
+    }
+
+
  //   if (e->type() == UIEvents::RequestVisualUpdateEvent) {
  //       if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style)) {
  //           //UIContext* context = getContext();

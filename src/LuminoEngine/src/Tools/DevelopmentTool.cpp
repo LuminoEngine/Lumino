@@ -108,7 +108,7 @@ void RuntimeEditor::attach()
 
 	if (m_toolModeWindowSize.isAnyZero()) {
 		m_gameModeWindowSize = m_window->actualSize();
-		m_toolModeWindowSize.width = m_gameModeWindowSize.width + 400;
+		m_toolModeWindowSize.width = m_gameModeWindowSize.width + 500;
 		m_toolModeWindowSize.height = m_gameModeWindowSize.height + 200;
 	}
 

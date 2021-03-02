@@ -22,6 +22,8 @@ class OffscreenWorldRenderView;
 class ReflectorComponent;
 class Collision;
 
+class CameraOrbitControlComponent;
+
 
 /** CollisionEventHandler */
 LN_DELEGATE()

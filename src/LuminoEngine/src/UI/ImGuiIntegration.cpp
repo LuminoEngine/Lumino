@@ -469,6 +469,16 @@ void ImGuiIntegration::updateDocks(ImGuiID mainWindowId)
 	}
 }
 
+bool ImGuiIntegration::handleUIEvent(UIEventArgs* e)
+{
+	for (const auto& pane : m_dockPanes) {
+		if (pane->onUIEvent(e)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 } // namespace detail
 
 
@@ -496,6 +506,11 @@ void ImGuiDockPane::setInitialPlacement(ImGuiDockPlacement value)
 
 void ImGuiDockPane::onGui()
 {
+}
+
+bool ImGuiDockPane::onUIEvent(UIEventArgs* e)
+{
+	return false;
 }
 
 void ImGuiDockPane::update()

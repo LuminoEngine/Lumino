@@ -78,29 +78,11 @@ void CameraOrbitControlComponent::handleUIEvent(UIEventArgs* e)
     else if (e->type() == UIEvents::MouseMoveEvent)
     {
         auto me = static_cast<UIMouseEventArgs*>(e);
-        switch (m_state)
-        {
-            case State::Rotate:
-                handleMouseMoveRotate(me->getPosition());
-                e->handled = true;
-                break;
-            case State::Dolly:
-                handleMouseMoveDolly(me->getPosition());
-                e->handled = true;
-                break;
-            case State::Pan:
-                handleMouseMovePan(me->getPosition());
-                e->handled = true;
-                break;
-        }
+        e->handled = handleMouseMove(me->getPosition());
     }
     else if (e->type() == UIEvents::MouseUpEvent)
     {
-        if (m_capturdElement) {
-            m_capturdElement->releaseCapture();
-            m_capturdElement = nullptr;
-        }
-        m_state = State::None;
+        handleMouseUp();
     }
     else if (e->type() == UIEvents::MouseWheelEvent)
     {
@@ -126,6 +108,24 @@ void CameraOrbitControlComponent::startPan(const Vector2& mousePos)
 {
     m_panStart = mousePos;
     m_state = State::Pan;
+}
+
+bool CameraOrbitControlComponent::handleMouseMove(const Vector2& mousePos)
+{
+    switch (m_state)
+    {
+    case State::Rotate:
+        handleMouseMoveRotate(mousePos);
+        return true;
+    case State::Dolly:
+        handleMouseMoveDolly(mousePos);
+        return true;
+    case State::Pan:
+        handleMouseMovePan(mousePos);
+        return true;
+    default:
+        return false;
+    }
 }
 
 void CameraOrbitControlComponent::handleMouseMoveRotate(const Vector2& mousePos)
@@ -173,11 +173,24 @@ void CameraOrbitControlComponent::handleMouseMovePan(const Vector2& mousePos)
 
     m_panDelta = (m_panEnd - m_panStart) * m_panSpeed;
 
+#ifdef LN_COORD_RH
+    pan(-m_panDelta.x, m_panDelta.y);
+#else
     pan(m_panDelta.x, m_panDelta.y);
+#endif
 
     m_panStart = m_panEnd;
 
     update();
+}
+
+void CameraOrbitControlComponent::handleMouseUp()
+{
+    if (m_capturdElement) {
+        m_capturdElement->releaseCapture();
+        m_capturdElement = nullptr;
+    }
+    m_state = State::None;
 }
 
 void CameraOrbitControlComponent::handleMouseWheel(int delta)
