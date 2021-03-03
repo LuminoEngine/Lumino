@@ -1191,7 +1191,9 @@ bool VulkanSwapChain::createNativeSwapchain(const SizeI& backbufferSize)
 	m_swapchainRenderTargets.resize(swapChainImages.size());
 	for (uint32_t i = 0; i < swapChainImages.size(); i++) {
 		auto target = makeRef<VulkanRenderTarget>();
-		target->init(m_deviceContext, m_swapchainExtent.width, m_swapchainExtent.height, m_swapchainImageFormat, swapChainImages[i], m_swapChainImageViews[i]);
+		target->initFromSwapchainImage(m_deviceContext, m_swapchainExtent.width, m_swapchainExtent.height, m_swapchainImageFormat, swapChainImages[i], m_swapChainImageViews[i]);
+        target->m_device = m_deviceContext;
+        target->m_objectId = m_deviceContext->m_objectNextId++;
 		m_swapchainRenderTargets[i] = target;
 	}
 
@@ -1682,6 +1684,10 @@ Result VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRe
 		attachmentsCount++;
 	}
 
+    _sizeBase = m_renderTargets[0];
+    _sizeBaseImg = _sizeBase->image();
+    _baseImg = _sizeBaseImg->vulkanImage();
+    _baseId = _sizeBase->objectId();
 	SizeI imageSize = m_renderTargets[0]->realSize();
 	VkFramebufferCreateInfo framebufferInfo = {};
 	framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -1695,7 +1701,7 @@ Result VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRe
 	framebufferInfo.layers = 1;
 
 	LN_VK_CHECK(vkCreateFramebuffer(m_device->vulkanDevice(), &framebufferInfo, m_device->vulkanAllocator(), &m_framebuffer));
-
+    ff = framebufferInfo;
 	return true;
 }
 

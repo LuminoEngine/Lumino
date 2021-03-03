@@ -406,6 +406,7 @@ bool DX12Texture2D::generateMips()
 DX12RenderTarget::DX12RenderTarget()
     : m_device(nullptr)
 {
+    m_deviceTextureType = DeviceTextureType::RenderTarget;
 }
 
 bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)

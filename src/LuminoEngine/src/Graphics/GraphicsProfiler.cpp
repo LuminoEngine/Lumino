@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/ConstantBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
@@ -12,10 +13,25 @@ namespace detail {
 // GraphicsProfiler
 
 GraphicsProfiler::GraphicsProfiler()
-	: m_renderTargetCount(0)
+	: m_constantBufferCount(0)
+	, m_renderTargetCount(0)
 	, m_depthBufferCount(0)
 	, m_renderPassCount(0)
 {
+}
+
+void GraphicsProfiler::addConstantBuffer(ConstantBuffer* obj)
+{
+	if (LN_REQUIRE(!obj->m_profiling)) return;
+	m_constantBufferCount++;
+	obj->m_profiling = true;
+}
+
+void GraphicsProfiler::removeConstantBuffer(ConstantBuffer* obj)
+{
+	if (LN_REQUIRE(obj->m_profiling)) return;
+	m_constantBufferCount--;
+	obj->m_profiling = false;
 }
 
 void GraphicsProfiler::addRenderTarget(RenderTargetTexture* obj)

@@ -64,6 +64,7 @@ VertexElementUsage IGraphicsHelper::AttributeUsageToElementUsage(AttributeUsage 
 
 IGraphicsDeviceObject::IGraphicsDeviceObject()
     : m_device(nullptr)
+	, m_objectId(0)
 	, m_disposed(false)
 	, m_profiling(false)
 {
@@ -87,6 +88,7 @@ void IGraphicsDeviceObject::finalize()
 #else
     dispose();
 #endif
+	m_objectId = 0;
 }
 
 void IGraphicsDeviceObject::dispose()
@@ -108,6 +110,7 @@ IGraphicsDevice::IGraphicsDevice()
 	: m_renderPassCache(std::make_unique<NativeRenderPassCache>(this))
 	, m_pipelineCache(std::make_unique<NativePipelineCache>(this))
 	, m_profiler(std::make_unique<RHIProfiler>())
+	, m_objectNextId(1)
 {
 }
 
@@ -135,6 +138,7 @@ Ref<ISwapChain> IGraphicsDevice::createSwapChain(PlatformWindow* window, const S
 	Ref<ISwapChain> ptr = onCreateSwapChain(window, backbufferSize);
 	if (ptr) {
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		m_profiler->addSwapChain(ptr);
 	}
 	return ptr;
@@ -145,6 +149,7 @@ Ref<ICommandList> IGraphicsDevice::createCommandList()
 	Ref<ICommandList> ptr = onCreateCommandList();
 	if (ptr) {
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		m_profiler->addCommandList(ptr);
 	}
 	return ptr;
@@ -155,6 +160,7 @@ Ref<IRenderPass> IGraphicsDevice::createRenderPass(const DeviceFramebufferState&
 	Ref<IRenderPass> ptr = onCreateRenderPass(buffers, clearFlags, clearColor, clearDepth, clearStencil);
 	if (ptr) {
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 
 		// Preserve dependent object references
 		for (uint32_t i = 0; i < buffers.renderTargets.size(); i++) {
@@ -200,6 +206,7 @@ Ref<IPipeline> IGraphicsDevice::createPipeline(const DevicePipelineStateDesc& st
 		ptr->m_sourceRenderPass = state.renderPass;
 		ptr->m_sourceShaderPass = state.shaderPass;
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		m_profiler->addPipelineState(ptr);
 	}
 	return ptr;
@@ -210,6 +217,7 @@ Ref<IVertexDeclaration> IGraphicsDevice::createVertexDeclaration(const VertexEle
 	Ref<IVertexDeclaration> ptr = onCreateVertexDeclaration(elements, elementsCount);
 	if (ptr) {
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		ptr->m_hash = IVertexDeclaration::computeHash(elements, elementsCount);
 		m_profiler->addVertexLayout(ptr);
 	}
@@ -221,6 +229,7 @@ Ref<IVertexBuffer> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usa
 	Ref<IVertexBuffer> ptr = onCreateVertexBuffer(usage, bufferSize, initialData);
 	if (ptr) {
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		m_profiler->addVertexBuffer(ptr);
 	}
 	return ptr;
@@ -231,6 +240,7 @@ Ref<IIndexBuffer> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage
 	Ref<IIndexBuffer> ptr = onCreateIndexBuffer(usage, format, indexCount, initialData);
 	if (ptr) {
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		m_profiler->addIndexBuffer(ptr);
 	}
 	return ptr;
@@ -242,6 +252,7 @@ Ref<ITexture> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, uint
 	ptr->m_mipmap = mipmap;
 	if (ptr) {
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		ptr->m_deviceTextureType = DeviceTextureType::Texture2D;
 		m_profiler->addTexture2D(ptr);
 	}
@@ -263,6 +274,7 @@ Ref<ITexture> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t heigh
 	ptr->m_mipmap = mipmap;
 	if (ptr) {
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		ptr->m_deviceTextureType = DeviceTextureType::RenderTarget;
 		m_profiler->addRenderTarget(ptr);
 	}
@@ -274,6 +286,7 @@ Ref<ITexture> IGraphicsDevice::createWrappedRenderTarget(intptr_t nativeObject, 
     Ref<ITexture> ptr = onCreateWrappedRenderTarget(nativeObject, hintWidth, hintHeight);
     if (ptr) {
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		m_profiler->addRenderTarget(ptr);
     }
     return ptr;
@@ -284,6 +297,7 @@ Ref<IDepthBuffer> IGraphicsDevice::createDepthBuffer(uint32_t width, uint32_t he
 	Ref<IDepthBuffer> ptr = onCreateDepthBuffer(width, height);
 	if (ptr) {
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		m_profiler->addDepthBuffer(ptr);
 	}
 	return ptr;
@@ -294,6 +308,7 @@ Ref<ISamplerState> IGraphicsDevice::createSamplerState(const SamplerStateData& d
 	Ref<ISamplerState> ptr = onCreateSamplerState(desc);
 	if (ptr) {
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		m_profiler->addSamplerState(ptr);
 	}
 	return ptr;
@@ -322,6 +337,7 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 	if (ptr) {
 		ptr->m_name = createInfo.name;
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		m_profiler->addShaderPass(ptr);
 	}
 	return ptr;
@@ -332,6 +348,7 @@ Ref<IUniformBuffer> IGraphicsDevice::createUniformBuffer(uint32_t size)
 	Ref<IUniformBuffer> ptr = onCreateUniformBuffer(size);
 	if (ptr) {
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		m_profiler->addUniformBuffer(ptr);
 	}
 	return ptr;
@@ -342,6 +359,7 @@ Ref<IDescriptorPool> IGraphicsDevice::createDescriptorPool(IShaderPass* shaderPa
 	Ref<IDescriptorPool> ptr = onCreateDescriptorPool(shaderPass);
 	if (ptr) {
 		ptr->m_device = this;
+		ptr->m_objectId = m_objectNextId++;
 		m_profiler->addDescriptorPool(ptr);
 	}
 	return ptr;
@@ -424,6 +442,15 @@ Result ICommandList::init(IGraphicsDevice* owner)
 	return true;
 }
 
+void ICommandList::dispose()
+{
+	for (IRenderPass* renderPass : m_renderPasses) {
+		renderPass->releaseObjects();
+	}
+	m_renderPasses.clear();
+	IGraphicsDeviceObject::dispose();
+}
+
 void ICommandList::enterRenderState()
 {
 	onSaveExternalRenderState();
@@ -436,7 +463,11 @@ void ICommandList::leaveRenderState()
 
 void ICommandList::begin()
 {
+	for (IRenderPass* renderPass : m_renderPasses) {
+		renderPass->releaseObjects();
+	}
 	m_renderPasses.clear();
+
     m_stateDirtyFlags = GraphicsContextStateDirtyFlags_All;
     onBeginCommandRecoding();
 }
@@ -451,6 +482,7 @@ void ICommandList::beginRenderPass(IRenderPass* value)
 	if (LN_REQUIRE(!m_currentRenderPass)) return;
 	m_currentRenderPass = value;
 	m_renderPasses.push_back(value);
+	value->retainObjects();
 	onBeginRenderPass(value);
 }
 
@@ -689,6 +721,30 @@ void IRenderPass::dispose()
 	}
 
 	IGraphicsDeviceObject::dispose();
+}
+
+void IRenderPass::retainObjects()
+{
+	for (ITexture* renderTarget : m_renderTargets) {
+		if (renderTarget) {
+			RefObjectHelper::retain(renderTarget);
+		}
+	}
+	if (m_depthBuffer) {
+		RefObjectHelper::retain(m_depthBuffer);
+	}
+}
+
+void IRenderPass::releaseObjects()
+{
+	for (ITexture* renderTarget : m_renderTargets) {
+		if (renderTarget) {
+			RefObjectHelper::release(renderTarget);
+		}
+	}
+	if (m_depthBuffer) {
+		RefObjectHelper::release(m_depthBuffer);
+	}
 }
 
 //=============================================================================

@@ -397,7 +397,7 @@ void ImGuiIntegration::updateDocks(ImGuiID mainWindowId)
 		ImGuiID nodes1[2];
 		ImGui::DockBuilderSplitNode(mainWindowId, ImGuiDir_Left, 0.1f, &nodes1[0], &nodes1[1]);
 		ImGuiID nodes2[2];
-		ImGui::DockBuilderSplitNode(nodes1[1], ImGuiDir_Right, 0.2f, &nodes2[0], &nodes2[1]);
+		ImGui::DockBuilderSplitNode(nodes1[1], ImGuiDir_Right, 0.25f, &nodes2[0], &nodes2[1]);
 		ImGuiID nodes3[2];
 		ImGui::DockBuilderSplitNode(nodes2[1], ImGuiDir_Down, 0.2f, &nodes3[0], &nodes3[1]);
 		ImGuiID nodes4[2];

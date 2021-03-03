@@ -3,6 +3,7 @@
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Graphics/RHIs/RHIProfiler.hpp"
 #include "../Graphics/GraphicsProfiler.hpp"
+#include "../Graphics/RenderTargetTextureCache.hpp"
 #include "ProfilerToolPane.hpp"
 
 namespace ln {
@@ -13,6 +14,15 @@ namespace detail {
 	
 void ProfilerToolPane::onGui()
 {
+	//const ImVec2 p = ImGui::GetCursorScreenPos();
+	//const ImVec2 contentSize = ImGui::GetContentRegionAvail();
+
+	//ImDrawList* draw_list = ImGui::GetWindowDrawList();
+	//const ImU32 col = ImColor(ImVec4(1.0f, 1.0f, 0.4f, 1.0f));
+	//draw_list->AddRectFilled(p, ImVec2(p.x + contentSize.x, p.y + 300), col);
+
+	//return;
+
 	char num[32];
 	const auto addTextValue = [&](const char* label, int32_t number) {
 		sprintf(num, "%d", number);
@@ -69,11 +79,18 @@ void ProfilerToolPane::onGui()
 	}
 
 	if (ImGui::CollapsingHeader("Graphics Objects:", ImGuiTreeNodeFlags_DefaultOpen)) {
-		const GraphicsProfiler* profiler = detail::EngineDomain::graphicsManager()->profiler().get();
+		const GraphicsManager* manager = detail::EngineDomain::graphicsManager();
+		const GraphicsProfiler* profiler = manager->profiler().get();
 		ImGui::Columns(2);
+		addTextValue("ConstantBuffer", profiler->constantBufferCount());
 		addTextValue("RenderTarget", profiler->renderTargetCount());
 		addTextValue("DepthBuffer", profiler->depthBufferCount());
 		addTextValue("RenderPass", profiler->renderPassCount());
+		addTextValue("RenderTarget(Cache)", manager->renderTargetTextureCacheManager()->count());
+		addTextValue("DepthBuffer(Cache)", manager->depthBufferCacheManager()->count());
+
+		
+
 		ImGui::Columns(1);
 	}
 }

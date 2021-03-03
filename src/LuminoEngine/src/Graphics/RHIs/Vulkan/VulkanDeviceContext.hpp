@@ -250,6 +250,12 @@ private:
 	VkFramebuffer m_framebuffer;
 	std::array<VulkanRenderTarget*, MaxMultiRenderTargets> m_renderTargets;
 	VulkanDepthBuffer* m_depthBuffer;
+
+    VkFramebufferCreateInfo ff;
+    VulkanRenderTarget* _sizeBase;
+    const VulkanImage* _sizeBaseImg;
+    VkImage _baseImg;
+    int32_t _baseId = 0; 
 };
 
 // Dynamic としてマークしている state は次の通り。

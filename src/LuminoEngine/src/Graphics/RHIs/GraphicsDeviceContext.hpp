@@ -203,14 +203,16 @@ class IGraphicsDeviceObject
 public:
 	virtual void dispose();	// Prepare for multiple calls
 	IGraphicsDevice* device() const { return m_device; }
+	int32_t objectId() const { return m_objectId; }
 
+	IGraphicsDevice* m_device;
+	int32_t m_objectId;
 protected:
     IGraphicsDeviceObject();
     virtual ~IGraphicsDeviceObject();
     virtual void finalize();
 
 private:
-	IGraphicsDevice* m_device;
     bool m_disposed;
 	bool m_profiling;
 
@@ -299,6 +301,9 @@ public:	// TODO:
 
 private:
 	std::unique_ptr<RHIProfiler> m_profiler;
+
+public:
+	int32_t m_objectNextId;	// TODO: 暫定対策。Hash が使えるとよい
 };
 
 class ICommandList
@@ -348,6 +353,7 @@ public:	// TODO:
 	ICommandList();
 	virtual ~ICommandList();
 	Result init(IGraphicsDevice* owner);
+	void dispose() override;
 
 	virtual void onSaveExternalRenderState() = 0;
 	virtual void onRestoreExternalRenderState() = 0;
@@ -456,6 +462,9 @@ public:
 
 	virtual void dispose();
 
+	void retainObjects();
+	void releaseObjects();
+
 protected:
 	virtual ~IRenderPass();
 
@@ -555,7 +564,7 @@ protected:
 	ITexture();
 	virtual ~ITexture();
 
-private:
+protected:
 	DeviceTextureType m_deviceTextureType;
 	bool m_mipmap;
 

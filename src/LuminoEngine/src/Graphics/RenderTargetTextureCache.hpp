@@ -16,6 +16,7 @@ public:
 	static const int HoldFrameCount = 60;
 
 	void gcObjects();
+	int32_t count() const { return m_renderTargetMap.size(); }
 
 protected:
 	TemporaryGraphicsResourceObjectCacheBase();

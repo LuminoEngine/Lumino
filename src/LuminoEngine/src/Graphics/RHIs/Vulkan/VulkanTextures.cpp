@@ -227,6 +227,7 @@ VulkanRenderTarget::VulkanRenderTarget()
     , m_multisampleColorBuffer(nullptr)
     , m_swapchainImageAvailableSemaphoreRef(nullptr)
 {
+    m_deviceTextureType = DeviceTextureType::RenderTarget;
 }
 
 Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
@@ -273,7 +274,7 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
     return true;
 }
 
-Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
+Result VulkanRenderTarget::initFromSwapchainImage(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
 {
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
@@ -282,7 +283,15 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
     LN_VK_CHECK(vkCreateSemaphore(m_deviceContext->vulkanDevice(), &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_renderFinishedSemaphore));
 
-	return reset(width, height, format, image, imageView);
+    m_size.width = width;
+    m_size.height = height;
+    m_format = VulkanHelper::VkFormatToLNFormat(format);
+
+    m_image = std::make_unique<VulkanImage>();
+    if (!m_image->initWrap(m_deviceContext, width, height, format, image, imageView)) {
+        return false;
+    }
+    return true;
 }
 
 void VulkanRenderTarget::dispose()
@@ -313,19 +322,6 @@ void VulkanRenderTarget::dispose()
         m_deviceContext = nullptr;
     }
     VulkanTexture::dispose();
-}
-
-Result VulkanRenderTarget::reset(uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
-{
-	m_size.width = width;
-	m_size.height = height;
-	m_format = VulkanHelper::VkFormatToLNFormat(format);
-
-	m_image = std::make_unique<VulkanImage>();
-	if (!m_image->init(m_deviceContext, format, image, imageView)) {
-		return false;
-	}
-	return true;
 }
 
 RHIPtr<RHIBitmap> VulkanRenderTarget::readData()
