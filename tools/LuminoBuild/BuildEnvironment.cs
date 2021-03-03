@@ -134,6 +134,14 @@ namespace LuminoBuild
 
                 builder.CommitCache(buildCacheDir);
             }
+            else
+            {
+                Logger.WriteLine("BuildCache found.");
+                foreach(var dir in Directory.GetDirectories(buildCacheDir))
+                {
+                    Logger.WriteLine("- " + Path.GetFileName(dir));
+                }
+            }
 
 
             string externalSourceDir = Path.Combine(builder.LuminoBuildDir, "ExternalSource");

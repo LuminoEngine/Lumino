@@ -28,7 +28,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ./build/MSVC2019-x64-MT/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
             
     - name: Cache (build/MSVC2019-x64-MT/ExternalInstall)
       uses: actions/cache@v1
@@ -63,7 +63,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
             
     - uses: actions/cache@v1.0.3
       with:
@@ -95,7 +95,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
             
     - name: Build
       run: |
@@ -119,7 +119,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
             
     - name: Build
       run: |
@@ -143,7 +143,7 @@ jobs:
 #      uses: actions/cache@v1
 #      with:
 #        path: ./build/BuildCache
-#        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+#        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
             
 #    - name: Build
 #      run: |
