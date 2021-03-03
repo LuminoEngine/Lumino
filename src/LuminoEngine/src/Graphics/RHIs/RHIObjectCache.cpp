@@ -54,21 +54,45 @@ IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
 	}
 }
 
-void NativeRenderPassCache::release(IRenderPass* value)
+void NativeRenderPassCache::invalidate(ITexture* renderTarget)
 {
-	if (value) {
-		auto itr = m_hashMap.find(value->cacheKeyHash);
-		if (itr != m_hashMap.end()) {
-			itr->second.referenceCount--;
-			if (itr->second.referenceCount <= 0) {
-				// TODO: 削除しない。すぐに削除されても、また同じパラメータで使うかもしれない。
-				// 後々最大数の設定は必要だろう。その時も、次回 create するときに空きが無ければ消すようにしたい。
-				//m_hashMap.erase(itr);
-			}
+	for (auto itr = m_hashMap.begin(); itr != m_hashMap.end(); ) {
+		if (itr->second.value->containsRenderTarget(renderTarget)) {
+			itr = m_hashMap.erase(itr);
+		}
+		else {
+			++itr;
 		}
 	}
 }
 
+void NativeRenderPassCache::invalidate(IDepthBuffer* depthBuffer)
+{
+	for (auto itr = m_hashMap.begin(); itr != m_hashMap.end(); ) {
+		if (itr->second.value->containsDepthBuffer(depthBuffer)) {
+			itr = m_hashMap.erase(itr);
+		}
+		else {
+			++itr;
+		}
+	}
+}
+//
+//void NativeRenderPassCache::release(IRenderPass* value)
+//{
+//	if (value) {
+//		auto itr = m_hashMap.find(value->cacheKeyHash);
+//		if (itr != m_hashMap.end()) {
+//			itr->second.referenceCount--;
+//			if (itr->second.referenceCount <= 0) {
+//				// TODO: 削除しない。すぐに削除されても、また同じパラメータで使うかもしれない。
+//				// 後々最大数の設定は必要だろう。その時も、次回 create するときに空きが無ければ消すようにしたい。
+//				//m_hashMap.erase(itr);
+//			}
+//		}
+//	}
+//}
+//
 uint64_t NativeRenderPassCache::computeHash(const FindKey& key)
 {
 	MixHash hash;

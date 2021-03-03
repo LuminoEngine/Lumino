@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/ConstantBuffer.hpp>
 #include "GraphicsManager.hpp"
+#include "GraphicsProfiler.hpp"
 #include "RHIs/GraphicsDeviceContext.hpp"
 
 namespace ln {
@@ -10,9 +11,19 @@ namespace ln {
 // ConstantBuffer
 	
 ConstantBuffer::ConstantBuffer()
-	: m_rhiObject()
+	: m_manager(nullptr)
+	, m_profiling(false)
+	, m_rhiObject()
 	, m_mappedData(nullptr)
 {
+	detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+	detail::GraphicsResourceInternal::manager(this)->profiler()->addConstantBuffer(this);
+}
+
+ConstantBuffer::~ConstantBuffer()
+{
+	detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+	detail::GraphicsResourceInternal::manager(this)->profiler()->removeConstantBuffer(this);
 }
 
 bool ConstantBuffer::init(size_t size)
@@ -41,6 +52,16 @@ void ConstantBuffer::unmap()
 		m_rhiObject->unmap();
 		m_mappedData = nullptr;
 	}
+}
+
+void ConstantBuffer::onManagerFinalizing()
+{
+
+}
+
+void ConstantBuffer::onChangeDevice(detail::IGraphicsDevice* device)
+{
+
 }
 
 } // namespace ln

@@ -340,7 +340,7 @@ class VulkanImage
 public:
 	VulkanImage();
 	Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkSampleCountFlagBits numSamples, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
-    Result init(VulkanDevice* deviceContext/*, uint32_t width, uint32_t height*/, VkFormat format, VkImage image, VkImageView imageView);
+    Result initWrap(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
     void dispose();
     VkFormat vulkanFormat() const { return m_format; }
 	VkImage vulkanImage() const { return m_image; }
@@ -352,8 +352,8 @@ public:
 
 private:
 	VulkanDevice* m_deviceContext;
-    //uint32_t m_width;
-    //uint32_t m_height;
+    uint32_t m_width;
+    uint32_t m_height;
     VkFormat m_format;
 	VkImage m_image;
 	VkDeviceMemory m_imageMemory;

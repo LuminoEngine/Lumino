@@ -14,6 +14,7 @@
 #include "../Font/TextLayoutEngine.hpp"
 #include "../Font/FontManager.hpp"
 #include "RenderTargetTextureCache.hpp"
+#include "GraphicsProfiler.hpp"
 
 namespace ln {
 
@@ -30,21 +31,21 @@ Texture::Texture()
     , m_mipmap(false)
     , m_samplerState(nullptr)
 {
+    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 }
 
 Texture::~Texture()
 {
+    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
 }
 
 void Texture::init()
 {
     AssetObject::init();
-    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 }
 
 void Texture::onDispose(bool explicitDisposing)
 {
-    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
     AssetObject::onDispose(explicitDisposing);
 }
 
@@ -457,10 +458,12 @@ RenderTargetTexture::RenderTargetTexture()
     , m_modified(true)
     , m_hasNativeObject(false)
 {
+    detail::GraphicsResourceInternal::manager(this)->profiler()->addRenderTarget(this);
 }
 
 RenderTargetTexture::~RenderTargetTexture()
 {
+    detail::GraphicsResourceInternal::manager(this)->profiler()->removeRenderTarget(this);
 }
 
 void RenderTargetTexture::init(int width, int height)

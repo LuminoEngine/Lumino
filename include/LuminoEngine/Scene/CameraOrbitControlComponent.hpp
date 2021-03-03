@@ -5,6 +5,7 @@
 namespace ln {
 class UIEventArgs;
 class UIElement;
+namespace detail { class EditorViewportToolPane; }
 
 struct Spherical
 {
@@ -56,9 +57,11 @@ private:
     void startRotate(const Vector2& mousePos);
     void startDolly(const Vector2& mousePos);
     void startPan(const Vector2& mousePos);
+    bool handleMouseMove(const Vector2& mousePos);
     void handleMouseMoveRotate(const Vector2& mousePos);
     void handleMouseMoveDolly(const Vector2& mousePos);
     void handleMouseMovePan(const Vector2& mousePos);
+    void handleMouseUp();
     void handleMouseWheel(int delta);
     void rotateLeft(float angle);
     void rotateUp(float angle);
@@ -118,6 +121,7 @@ private:
 	float m_orthoMinZoom;
 	float m_orthoMaxZoom;
 
+    friend class detail::EditorViewportToolPane;
 };
 
 } // namespace ln

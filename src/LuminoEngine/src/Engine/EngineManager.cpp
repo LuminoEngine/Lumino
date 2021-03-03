@@ -38,9 +38,10 @@
 #include "../Visual/VisualManager.hpp"
 #include "../Scene/SceneManager.hpp"
 #include "../UI/UIManager.hpp"
+#include "../Tools/DevelopmentTool.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
-#include "RuntimeEditor.hpp"
+#include "EngineProfiler.hpp"
 
 #include "../Runtime/BindingValidation.hpp"
 #include <imgui.h>
@@ -89,6 +90,7 @@ EngineManager::EngineManager()
  //   , m_showDebugFpsEnabled(false)
 	//, m_debugToolEnabled(false)
 	, m_debugToolMode(DebugToolMode::Disable)
+	, m_engineProfiler(std::make_unique<EngineProfiler>())
 #if defined(LN_OS_WIN32)
     , m_comInitialized(false)
     , m_oleInitialized(false)
@@ -276,6 +278,11 @@ void EngineManager::dispose()
     }
 #endif
 
+	if (m_appData) {
+		m_appData->attemptSave();
+		m_appData = nullptr;
+	}
+
 	LN_LOG_DEBUG << "EngineManager finalization ended.";
 }
 
@@ -319,6 +326,9 @@ void EngineManager::initializeCommon()
 					Logger::setLevel(LogLevel::Debug);
 				}
 			}
+
+			m_appData = makeRef<AppDataInternal>();
+			m_appData->attemptLoad();
 		}
 #endif
 
@@ -627,6 +637,11 @@ bool EngineManager::updateUnitily()
 
 void EngineManager::updateFrame()
 {
+	if (m_engineProfiler) {
+		m_engineProfiler->beginFrame(m_settings.frameRate);
+		m_engineProfiler->lapBeginUpdate();
+	}
+
 	if (preUpdateCallback) {
 		preUpdateCallback();
 	}
@@ -698,6 +713,9 @@ void EngineManager::updateFrame()
 		m_runtimeEditor->updateFrame();
 	}
 
+	if (m_engineProfiler) {
+		m_engineProfiler->lapEndUpdate();
+	}
 }
 
 void EngineManager::renderFrame()
@@ -725,6 +743,10 @@ void EngineManager::presentFrame()
 {
     //m_effectManager->testDraw();
 
+	if (m_engineProfiler) {
+		m_engineProfiler->lapBeginRendering();
+	}
+
 	if (m_mainWindow) {
 		m_mainWindow->present();
 	}
@@ -733,6 +755,13 @@ void EngineManager::presentFrame()
     //    m_renderingManager->frameBufferCache()->endRenderSection();
     //}
 
+	if (m_engineProfiler) {
+		m_engineProfiler->lapEndRendering();
+		m_engineProfiler->endFrame();
+	}
+
+	// 
+	//--------------------
 
 	if (m_settings.standaloneFpsControl) {
 		m_fpsController.process();
@@ -740,6 +769,7 @@ void EngineManager::presentFrame()
 	else {
 		m_fpsController.processForMeasure();
 	}
+
 
     if (m_debugToolMode == DebugToolMode::Minimalized || m_debugToolMode == DebugToolMode::Activated) {
         m_platformManager->mainWindow()->setWindowTitle(String::format(u"FPS:{0:F1}({1:F1}), F8:Debug tool.", m_fpsController.totalFps(), m_fpsController.externalFps()));
@@ -847,7 +877,8 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
 
 			m_mainUIRenderView = makeObject<UIRenderView>();
 			m_mainViewport->addRenderView(m_mainUIRenderView);
-			m_mainViewport->setViewBoxSize(m_settings.mainWorldViewSize.toFloatSize());
+			const SizeI& viewboxSize = (m_settings.mainWorldViewSize.isAnyZero()) ? m_settings.mainWindowSize : m_settings.mainWorldViewSize;
+			m_mainViewport->setViewBoxSize(viewboxSize.toFloatSize());
 
 			m_mainUIRoot = makeObject<UIDomainProvidor>();
 			m_mainUIRoot->setupNavigator();
@@ -888,7 +919,7 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
 		m_mainWindow->updateLayoutTree();
 	}
 
-	if (m_settings.runtimeEditorEnabled && m_mainWindow) {
+	if (m_settings.developmentToolsEnabled && m_mainWindow) {
 		m_runtimeEditor = makeRef<detail::RuntimeEditor>();
 		m_runtimeEditor->init(this, m_mainWindow);
 	}

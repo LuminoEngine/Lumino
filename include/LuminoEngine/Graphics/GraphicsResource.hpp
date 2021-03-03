@@ -15,8 +15,11 @@ protected:
     virtual void onChangeDevice(detail::IGraphicsDevice* device) = 0;
 
 private:
+    bool m_profiling = false;
+
     friend class detail::GraphicsManager;
     friend class detail::GraphicsResourceInternal;
+    friend class detail::GraphicsProfiler;
 };
 
 namespace detail {

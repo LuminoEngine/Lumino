@@ -309,6 +309,11 @@ void GLFWPlatformWindow::getSize(SizeI* size)
 	glfwGetWindowSize(m_glfwWindow, &size->width, &size->height);
 }
 
+void GLFWPlatformWindow::setSize(const SizeI& size)
+{
+	glfwSetWindowSize(m_glfwWindow, size.width, size.height);
+}
+
 void GLFWPlatformWindow::getFramebufferSize(int* width, int* height)
 {
 	glfwGetFramebufferSize(m_glfwWindow, width, height);

@@ -372,6 +372,7 @@ class ISamplerState;
 class IUniformBuffer;
 class ShaderSecondaryDescriptor;
 class GraphicsCommandList;
+class GraphicsProfiler;
 
 static const int MaxMultiRenderTargets = 4;
 

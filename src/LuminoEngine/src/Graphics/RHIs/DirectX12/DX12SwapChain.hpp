@@ -20,8 +20,13 @@ public:
 	void present() override;
 
 private:
+    bool waitForCurrentFrameFence();
+    bool createSwapChainResources();
+    void disposeSwapChainResources();
+
     DX12Device* m_device;
     ComPtr<IDXGISwapChain3> m_dxgiSwapChain;
+    DXGI_FORMAT m_backbufferFormat;
     uint32_t m_backbufferCount;
     uint32_t m_frameIndex;
     std::vector<Ref<DX12RenderTarget>> m_renderTargets;

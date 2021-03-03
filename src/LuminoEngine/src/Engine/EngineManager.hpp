@@ -44,6 +44,8 @@ class SceneManager;
 class UIManager;
 class DebugInterface;
 class RuntimeEditor;
+class AppDataInternal;
+class EngineProfiler;
 
 struct EngineSettingsAssetArchiveEntry
 {
@@ -78,7 +80,7 @@ struct EngineSettings
 	bool createMainLights = false;
 	int frameRate = 60;
 	bool debugToolEnabled = false;
-	bool runtimeEditorEnabled = false;
+	bool developmentToolsEnabled = false;
 
 	String defaultUITheme;
 	Path fontFile;
@@ -169,6 +171,7 @@ public:
 	void setupMainWindow(ln::UIMainWindow* window, bool createBasicObjects);
 
 	Application* application() const { return m_settings.application; }
+	const Ref<AppDataInternal>& appData() const { return m_appData; }
     //const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
 	const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
@@ -180,6 +183,7 @@ public:
     const Ref<PhysicsWorld2D>& mainPhysicsWorld2D() const { return m_mainPhysicsWorld2D; }
 
 	const Ref<DebugInterface>& debugInterface() const { return m_debugInterface; }
+	const std::unique_ptr<EngineProfiler>& engineProfiler() const { return m_engineProfiler; }
 
 	std::function<void(void)> preUpdateCallback;
 
@@ -204,6 +208,7 @@ private:
 	void setDebugToolMode(DebugToolMode mode);
 
 	EngineSettings m_settings;
+	Ref<AppDataInternal> m_appData;
 	GraphicsAPI m_activeGraphicsAPI;
 
 	bool m_commonInitialized = false;
@@ -244,6 +249,7 @@ private:
 	Ref<DebugInterface> m_debugInterface;
 	Ref<Camera> m_debugCamera;
 	Ref<WorldRenderView> m_debugWorldRenderView;
+	std::unique_ptr<EngineProfiler> m_engineProfiler;
 
     float m_timeScale;
 	bool m_exitRequested;

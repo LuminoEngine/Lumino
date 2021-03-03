@@ -11,6 +11,7 @@ class ParticleEmitterComponent2;
 
 class WorldObject;
 class World;
+class WorldRenderView;
 class Level;
 class Camera;
 class Raycaster;
@@ -20,6 +21,8 @@ class RenderingContext;
 class OffscreenWorldRenderView;
 class ReflectorComponent;
 class Collision;
+
+class CameraOrbitControlComponent;
 
 
 /** CollisionEventHandler */

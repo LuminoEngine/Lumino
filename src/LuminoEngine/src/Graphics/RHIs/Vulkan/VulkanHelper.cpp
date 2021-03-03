@@ -966,8 +966,8 @@ Result VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t h
 	LN_CHECK(mipLevel >= 1);
 	m_deviceContext = deviceContext;
     m_externalManagement = false;
-    //m_width = width;
-    //m_height = height;
+    m_width = width;
+    m_height = height;
     m_format = format;
 
 	VkDevice device = m_deviceContext->vulkanDevice();
@@ -1009,12 +1009,12 @@ Result VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t h
 	return true;
 }
 
-Result VulkanImage::init(VulkanDevice* deviceContext/*, uint32_t width, uint32_t height*/, VkFormat format, VkImage image, VkImageView imageView)
+Result VulkanImage::initWrap(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
 {
     LN_DCHECK(deviceContext);
     m_externalManagement = true;
-    //m_width = width;
-    //m_height = height;
+    m_width = width;
+    m_height = height;
     m_deviceContext = deviceContext;
     m_format = format;
     m_image = image;

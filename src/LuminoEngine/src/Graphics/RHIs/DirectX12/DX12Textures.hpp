@@ -88,7 +88,6 @@ public:
     bool init(DX12Device* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
     bool init(DX12Device* deviceContext, const ComPtr<ID3D12Resource>& dxRenderTarget);
     void dispose() override;
-    DeviceTextureType type() const override { return DeviceTextureType::RenderTarget; }
     SizeI realSize() override { return m_size; }
     TextureFormat getTextureFormat() const { return TextureFormat::RGBA8; }
     GraphicsResourceUsage usage() const override { return GraphicsResourceUsage::Static; }

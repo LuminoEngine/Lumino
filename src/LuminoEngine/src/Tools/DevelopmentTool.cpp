@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <imgui.h>
+#include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/Controls/UISplitter.hpp>
 #include <LuminoEngine/Scene/World.hpp>
@@ -9,8 +10,11 @@
 #include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
-#include "EngineManager.hpp"
-#include "RuntimeEditor.hpp"
+#include "../Engine/EngineManager.hpp"
+#include "MainViewportToolPane.hpp"
+#include "EditorViewportToolPane.hpp"
+#include "ProfilerToolPane.hpp"
+#include "DevelopmentTool.hpp"
 
 namespace ln {
 namespace detail {
@@ -43,18 +47,27 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window)
 	//m_toolPane->setBorderThickness(1);
 	//m_splitter->addChild(m_toolPane);
 
-	m_toolWindow = makeObject<UIFrameWindow>();
-	m_toolWindow->m_renderView->setClearMode(SceneClearMode::ColorAndDepth);
-	m_toolWindow->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
+	m_window->m_renderView->setClearMode(SceneClearMode::ColorAndDepth);
+	m_window->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
+
+	if (auto v = AppData::getValue(u"LN.Tools.ToolModeWindowWidth")) {
+		m_toolModeWindowSize.width = v->get<float>();
+	}
+	if (auto v = AppData::getValue(u"LN.Tools.ToolModeWindowHeight")) {
+		m_toolModeWindowSize.height = v->get<float>();
+	}
 
 	setMode(Mode::Activated);
 }
 
 void RuntimeEditor::dispose()
 {
-	if (m_toolWindow) {
-		m_toolWindow->dispose();
-		m_toolWindow = nullptr;
+	if (m_window) {
+		AppData::setValue(u"LN.Tools.ToolModeWindowWidth", makeVariant(m_toolModeWindowSize.width));
+		AppData::setValue(u"LN.Tools.ToolModeWindowHeight", makeVariant(m_toolModeWindowSize.height));
+
+		m_window->dispose();
+		m_window = nullptr;
 	}
 }
 
@@ -90,9 +103,57 @@ void RuntimeEditor::setMode(Mode mode)
 void RuntimeEditor::attach()
 {
 #if 1
-	m_toolWindow->setImGuiLayerEnabled(true);
-	m_toolWindow->invalidateVisual();
+	m_window->setImGuiLayerEnabled(true);
+	m_window->invalidateVisual();
 	//m_toolWindow->invalidateVisual();
+
+	if (m_toolModeWindowSize.isAnyZero()) {
+		m_gameModeWindowSize = m_window->actualSize();
+		m_toolModeWindowSize.width = m_gameModeWindowSize.width + 500;
+		m_toolModeWindowSize.height = m_gameModeWindowSize.height + 200;
+	}
+
+
+	m_window->setSize(m_toolModeWindowSize);
+
+	ImGuiIntegration* imgui = m_window->m_imguiContext.get();
+
+	{
+		m_mainViewportToolPane = makeObject<MainViewportToolPane>();
+		m_mainViewportToolPane->setInitialPlacement(ImGuiDockPlacement::MainView);
+		imgui->addDock(m_mainViewportToolPane);
+	}
+	{
+		m_pane2 = makeObject<ImGuiDockPane>();
+		m_pane2->setInitialPlacement(ImGuiDockPlacement::Left);
+		imgui->addDock(m_pane2);
+	}
+	{
+		m_pane3 = makeObject<ImGuiDockPane>();
+		m_pane3->setInitialPlacement(ImGuiDockPlacement::Right);
+		imgui->addDock(m_pane3);
+	}
+	{
+		m_profilerToolPane = makeObject<ProfilerToolPane>();
+		m_profilerToolPane->setInitialPlacement(ImGuiDockPlacement::Right);
+		imgui->addDock(m_profilerToolPane);
+	}
+	{
+		m_pane5 = makeObject<ImGuiDockPane>();
+		m_pane5->setInitialPlacement(ImGuiDockPlacement::Bottom);
+		imgui->addDock(m_pane5);
+	}
+	{
+		m_pane6 = makeObject<ImGuiDockPane>();
+		m_pane6->setInitialPlacement(ImGuiDockPlacement::InnerLeft);
+		imgui->addDock(m_pane6);
+	}
+	{
+		m_editorViewportToolPane = makeObject<EditorViewportToolPane>(m_window);
+		m_editorViewportToolPane->setInitialPlacement(ImGuiDockPlacement::DebugView);
+		imgui->addDock(m_editorViewportToolPane);
+	}
+
 
 #else
 	// MainWindow の子要素を m_mainContentsPane へ移動する
@@ -111,7 +172,7 @@ void RuntimeEditor::attach()
 void RuntimeEditor::detach()
 {
 #if 1
-	m_toolWindow->setImGuiLayerEnabled(false);
+	m_window->setImGuiLayerEnabled(false);
 #else
 	m_window->setImGuiLayerEnabled(false);
 
@@ -127,8 +188,13 @@ void RuntimeEditor::detach()
 
 void RuntimeEditor::updateFrame()
 {
+	m_mainViewportToolPane->prepare(m_window);
+
+
+
+
 	if (m_mode == Mode::Activated) {
-		m_toolWindow->invalidateVisual();
+		m_window->invalidateVisual();
 	}
 }
 
@@ -137,7 +203,7 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 	//const auto pos = m_toolPane->m_combinedFinalRenderTransform.position();
 	//const auto size = m_toolPane->actualSize();
 	const auto pos = ln::Vector2(0, 0);
-	const auto size = m_toolWindow->actualSize();
+	const auto size = m_window->actualSize();
 
 	ImGui::SetNextWindowPos(ImVec2(pos.x, pos.y));
 	ImGui::SetNextWindowSize(ImVec2(size.width, size.height));

@@ -55,6 +55,8 @@ public:
     //const Ref<GraphicsContext>& mainWindowGraphicsContext() const { return m_graphicsContext; }
 	const Ref<CommandQueue>& graphicsQueue() const { return m_graphicsQueue; }
 	const Ref<CommandQueue>& computeQueue() const { return m_computeQueue; }
+
+	const std::unique_ptr<GraphicsProfiler>& profiler() const { return m_profiler; }
 	const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
 	const Ref<RenderingQueue>& renderingQueue() const { return m_renderingQueue; }
 	RenderingType renderingType() const { return RenderingType::Immediate; }
@@ -95,6 +97,7 @@ private:
 	Ref<CommandQueue> m_graphicsQueue;
 	Ref<CommandQueue> m_computeQueue;
 
+	std::unique_ptr<GraphicsProfiler> m_profiler;
 	Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
 	Ref<RenderingQueue> m_renderingQueue;
 	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;

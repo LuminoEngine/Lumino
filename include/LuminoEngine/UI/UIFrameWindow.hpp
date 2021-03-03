@@ -5,13 +5,14 @@
 #include "Common.hpp"
 #include "UIEvents.hpp"
 #include "UIRenderView.hpp"
-#include "ImGuiIntegration.hpp"
 
 namespace ln {
 namespace detail {
 class PlatformWindow;
 class UIManager;
 class DebugInterface;
+class ImGuiIntegration;
+class MainViewportToolPane;
 }
 class RenderPass;
 class GraphicsContext;
@@ -79,6 +80,9 @@ public:
     LN_METHOD(Property)
     bool isAllowDragDrop() const;
 
+    //void setSize(float width, float height);
+
+
 
 	virtual void onDispose(bool explicitDisposing) override;
 
@@ -102,7 +106,7 @@ public:
     //const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
     const Ref<detail::UIInputInjector>& inputInjector() const{ return m_inputInjector; }
 
-	void setImGuiLayerEnabled(bool value) { m_ImGuiLayerEnabled = value; }
+    void setImGuiLayerEnabled(bool value);
 
 protected:
     void setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
@@ -114,7 +118,7 @@ protected:
     virtual void onRender(UIRenderingContext* context) override;
 
     // TODO: internal
-    void resetSize(const Size& size);
+    void resetSizeFromPlatformWindow();
 
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();
@@ -124,6 +128,7 @@ LN_CONSTRUCT_ACCESS:
 public:  // TODO: internal
 	virtual bool onPlatformEvent(const detail::PlatformEventArgs& e) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
+
 
 	//detail::UIManager* m_manager;
 	Ref<detail::PlatformWindow>	m_platformWindow;
@@ -136,8 +141,9 @@ public:  // TODO: internal
 	//Ref<RenderPass> m_renderPass;
 	Ref<UIRenderView> m_renderView;
     Size m_clientSize;
+    Rect m_contentArea;
 	UIFrameWindowUpdateMode m_updateMode;
-	detail::ImGuiIntegration m_imguiContext;
+	std::unique_ptr<detail::ImGuiIntegration> m_imguiContext;
 	Ref<detail::DebugInterface> m_debugInterface;
 
 	Event<UIGeneralEventHandler> m_onClosed;
@@ -149,7 +155,10 @@ public:  // TODO: internal
     bool m_realtimeRenderingEnabled;
 
 private:
+    void updateLayoutTreeInternal(const Size& contentSize);
     virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
+
+    friend class detail::MainViewportToolPane;
 };
 
 class LN_API UIMainWindow
@@ -171,7 +180,7 @@ class LN_API UINativeFrameWindow
     : public UIFrameWindow
 {
 public:
-    void setClientSize(const Size& value) { UIFrameWindow::resetSize(value); }
+    //void setClientSize(const Size& value) { UIFrameWindow::resetSize(value); }
 
     void attachRenderingThread(RenderingType renderingType);
     void detachRenderingThread();

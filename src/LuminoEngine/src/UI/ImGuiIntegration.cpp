@@ -17,7 +17,6 @@
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Graphics/RHIs/GraphicsDeviceContext.hpp"
 #include "../Rendering/RenderingManager.hpp"
-#include "../../../build/BuildCache/imgui/imgui.h"
 
 namespace ln {
 namespace detail {
@@ -38,10 +37,11 @@ bool ImGuiIntegration::init()
 	}
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsLight();
+	//ImGui::StyleColorsDark();
+	ImGui::StyleColorsLight();
 	//ImGui::StyleColorsClassic();
 
     ImGuiStyle* style = &ImGui::GetStyle();
@@ -78,6 +78,7 @@ bool ImGuiIntegration::init()
 	m_vertexLayout = detail::EngineDomain::renderingManager()->standardVertexDeclaration();
 	m_shader = detail::EngineDomain::renderingManager()->builtinShader(BuiltinShader::Sprite);
 	m_renderPass = makeObject<RenderPass>();
+	m_renderPass->setClearFlags(ClearFlags::All);
 
 	return true;
 }
@@ -365,13 +366,173 @@ bool ImGuiIntegration::handlePlatformEvent(const detail::PlatformEventArgs& e)
             break;
     }
 
-	return io.WantCaptureMouse;
+	//return io.WantCaptureMouse;
 	//if (!io.WantCaptureMouse)
 	//	return false;
-    //return false;
+    return false;
+}
+
+void ImGuiIntegration::addDock(ImGuiDockPane* pane)
+{
+	pane->m_key = "Pane:" + std::to_string(m_dockPanes.size());
+	m_dockPanes.add(pane);
+}
+
+void ImGuiIntegration::updateDocks(ImGuiID mainWindowId)
+{
+	for (const auto& pane : m_dockPanes) {
+		pane->update();
+	}
+
+
+	if (m_dockLayoutResetRequired) {
+
+		// BeginDockLayout
+		{
+			ImGui::DockBuilderRemoveNode(mainWindowId);
+			ImGui::DockBuilderAddNode(mainWindowId, ImGuiDockNodeFlags_None);
+			ImGui::DockBuilderSetNodeSize(mainWindowId, ImGui::GetMainViewport()->Size);
+		}
+
+		ImGuiID nodes1[2];
+		ImGui::DockBuilderSplitNode(mainWindowId, ImGuiDir_Left, 0.1f, &nodes1[0], &nodes1[1]);
+		ImGuiID nodes2[2];
+		ImGui::DockBuilderSplitNode(nodes1[1], ImGuiDir_Right, 0.25f, &nodes2[0], &nodes2[1]);
+		ImGuiID nodes3[2];
+		ImGui::DockBuilderSplitNode(nodes2[1], ImGuiDir_Down, 0.2f, &nodes3[0], &nodes3[1]);
+		ImGuiID nodes4[2];
+		ImGui::DockBuilderSplitNode(nodes3[1], ImGuiDir_Left, 0.2f, &nodes4[0], &nodes4[1]);
+		ImGuiID nodes5[2];
+		ImGui::DockBuilderSplitNode(nodes4[1], ImGuiDir_Right, 0.5f, &nodes5[0], &nodes5[1]);
+
+
+		ImGuiDockNodeFlags localFlags =
+			//ImGuiDockNodeFlags_NoDockingInCentralNode |
+			//ImGuiDockNodeFlags_NoSplit |
+			//ImGuiDockNodeFlags_NoResize |
+			ImGuiDockNodeFlags_AutoHideTabBar;
+		ImGui::DockBuilderGetNode(nodes5[0])->LocalFlags = localFlags;
+		ImGui::DockBuilderGetNode(nodes5[1])->LocalFlags = localFlags;
+		//	;
+		//ImGui::dockbuildersetnode
+//			ImGuiDockNodeFlags_KeepAliveOnly = 1 << 0,   // Shared       // Don't display the dockspace node but keep it alive. Windows docked into this dockspace node won't be undocked.
+////ImGuiDockNodeFlags_NoCentralNode              = 1 << 1,   // Shared       // Disable Central Node (the node which can stay empty)
+//ImGuiDockNodeFlags_NoDockingInCentralNode = 1 << 2,   // Shared       // Disable docking inside the Central Node, which will be always kept empty.
+//ImGuiDockNodeFlags_PassthruCentralNode = 1 << 3,   // Shared       // Enable passthru dockspace: 1) DockSpace() will render a ImGuiCol_WindowBg background covering everything excepted the Central Node when empty. Meaning the host window should probably use SetNextWindowBgAlpha(0.0f) prior to Begin() when using this. 2) When Central Node is empty: let inputs pass-through + won't display a DockingEmptyBg background. See demo for details.
+//ImGuiDockNodeFlags_NoSplit = 1 << 4,   // Shared/Local // Disable splitting the node into smaller nodes. Useful e.g. when embedding dockspaces into a main root one (the root one may have splitting disabled to reduce confusion). Note: when turned off, existing splits will be preserved.
+//ImGuiDockNodeFlags_NoResize = 1 << 5,   // Shared/Local // Disable resizing node using the splitter/separators. Useful with programatically setup dockspaces.
+//ImGuiDockNodeFlags_AutoHideTabBar = 1 << 6    // Shared/Local // Tab bar will automatically hide when there is a single window in the dock node.
+
+
+		//swig.DockNodeFlags flags = swig.DockNodeFlags.NoTabBar | swig.DockNodeFlags.HiddenTabBar | swig.DockNodeFlags.NoWindowMenuButton | swig.DockNodeFlags.NoCloseButton | swig.DockNodeFlags.NoDocking;
+
+		for (auto& pane : m_dockPanes) {
+			ImGuiID target = 0;
+			switch (pane->m_initialPlacement)
+			{
+			case ImGuiDockPlacement::MainView:
+				target = nodes5[1];
+				break;
+			case ImGuiDockPlacement::Left:
+				target = nodes1[0];
+				break;
+			case ImGuiDockPlacement::Right:
+				target = nodes2[0];
+				break;
+			case ImGuiDockPlacement::Bottom:
+				target = nodes3[0];
+				break;
+			case ImGuiDockPlacement::InnerLeft:
+				target = nodes4[0];
+				break;
+			case ImGuiDockPlacement::DebugView:
+				target = nodes5[0];
+				break;
+			case ImGuiDockPlacement::Floating:
+				break;
+			default:
+				LN_UNREACHABLE();
+				break;
+			}
+
+			if (target) {
+				ImGui::DockBuilderDockWindow(pane->m_key.c_str(), target);
+			}
+		}
+
+		// EndDockLayout
+		{
+			ImGui::DockBuilderFinish(mainWindowId);
+		}
+
+		m_dockLayoutResetRequired = false;
+	}
+}
+
+bool ImGuiIntegration::handleUIEvent(UIEventArgs* e)
+{
+	for (const auto& pane : m_dockPanes) {
+		if (pane->onUIEvent(e)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 } // namespace detail
+
+
+//==============================================================================
+// ImGuiDockPane
+
+ImGuiDockPane::ImGuiDockPane()
+	: m_key()
+	, m_initialPlacement(ImGuiDockPlacement::Floating)
+{}
+
+bool ImGuiDockPane::init()
+{
+	if (!Object::init()) return false;
+
+
+
+	return true;
+}
+
+void ImGuiDockPane::setInitialPlacement(ImGuiDockPlacement value)
+{
+	m_initialPlacement = value;
+}
+
+void ImGuiDockPane::onGui()
+{
+}
+
+bool ImGuiDockPane::onUIEvent(UIEventArgs* e)
+{
+	return false;
+}
+
+void ImGuiDockPane::update()
+{
+	ImGui::SetNextWindowSize(ImVec2(320, 240), ImGuiCond_Once);
+	if (ImGui::Begin(m_key.c_str())) {
+		onGui();
+
+		//ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+		//const ImVec2 contentSize = ImGui::GetContentRegionAvail();
+
+		//if (m_renderView)
+		//{
+		//	m_tools.mainViewportRenderTarget = RenderTargetTexture::realloc(m_tools.mainViewportRenderTarget, contentSize.x, contentSize.y, TextureFormat::RGBA8, false, SamplerState::pointClamp());
+		//	m_renderView->render(m_renderingGraphicsContext, m_tools.mainViewportRenderTarget);
+		//}
+		//ImGui::Image(m_tools.mainViewportRenderTarget, contentSize);
+	}
+	ImGui::End();
+}
+
 } // namespace ln
 
 

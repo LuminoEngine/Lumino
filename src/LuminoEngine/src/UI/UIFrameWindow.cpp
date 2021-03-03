@@ -3,19 +3,21 @@
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
+#include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/UI/UIAdorner.hpp>
+#include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
 #include <LuminoEngine/Engine/Debug.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Platform/PlatformManager.hpp"
 #include "../Engine/EngineManager.hpp"
 #include "UIStyleInstance.hpp"
 #include "UIManager.hpp"
-#include <imgui.h>
+#include <LuminoEngine/UI/ImGuiIntegration.hpp>
 
 #include "../Effect/EffectManager.hpp"  // TODO: tests
 
@@ -261,6 +263,15 @@ UIElement* UIInputInjector::mouseHoveredElement()
 //==============================================================================
 // UIFrameWindow
 
+/*
+    UIFrameWindow はネイティブウィンドウと一致する一番外側の UIElement で、
+    サイズはネイティブウィンドウのクライアントサイズと一致する。
+    こうしておかないと非常にイメージがしづらくなる。
+
+    ImGui 有効時は、MainViewportToolPane の ContentRect が UIFrameWindow の ContentRect となる。
+    これは Padding を設けて UIFrameWindow 以下の UITree を Arrange するのと等しい。
+*/
+
 UIFrameWindow::UIFrameWindow()
 	: m_updateMode(UIFrameWindowUpdateMode::EventDispatches)
 	, m_ImGuiLayerEnabled(false)
@@ -310,6 +321,23 @@ bool UIFrameWindow::isAllowDragDrop() const
     return m_platformWindow->isAllowDragDrop();
 }
 
+//void UIFrameWindow::setSize(float width, float height)
+//{
+//    m_requestedSize.set(width, height);
+//}
+
+void UIFrameWindow::setImGuiLayerEnabled(bool value)
+{
+    m_ImGuiLayerEnabled = value;
+
+    if (m_ImGuiLayerEnabled && !m_imguiContext) {
+        m_imguiContext = std::make_unique<detail::ImGuiIntegration>();
+        if (!m_imguiContext->init()) {
+            return;
+        }
+    }
+}
+
 void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
 {
     m_platformWindow = platformMainWindow;
@@ -317,18 +345,15 @@ void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWind
 
     m_platformWindow->attachEventListener(this);
 
-    SizeI size;
-    m_platformWindow->getSize(&size);
-    resetSize(size.toFloatSize());
-
-	if (!m_imguiContext.init()) {
-		return;
-	}
-
+    resetSizeFromPlatformWindow();
 }
 
-void UIFrameWindow::resetSize(const Size& size)
+void UIFrameWindow::resetSizeFromPlatformWindow()
 {
+    SizeI nativeSize;
+    m_platformWindow->getSize(&nativeSize);
+
+    Size size = nativeSize.toFloatSize();
     setWidth(size.width);
     setHeight(size.height);
     m_clientSize = size;
@@ -336,7 +361,10 @@ void UIFrameWindow::resetSize(const Size& size)
 
 void UIFrameWindow::onDispose(bool explicitDisposing)
 {
-	m_imguiContext.dispose();
+    if (m_imguiContext) {
+        m_imguiContext->dispose();
+        m_imguiContext = nullptr;
+    }
 
     if (m_renderView) {
         m_renderView->dispose();
@@ -365,7 +393,7 @@ void UIFrameWindow::renderContents()
 
 	if (m_ImGuiLayerEnabled) {
         // TODO: time
-		m_imguiContext.updateFrame(0.0166f);
+		m_imguiContext->updateFrame(0.0166f);
 	}
 
 }
@@ -373,6 +401,71 @@ void UIFrameWindow::renderContents()
 void UIFrameWindow::present()
 {
 	m_renderingGraphicsContext = m_swapChain->beginFrame2();
+
+
+#if 1
+
+    if (m_ImGuiLayerEnabled)
+    {
+        m_imguiContext->prepareRender(m_clientSize.width, m_clientSize.height);
+        ImGui::NewFrame();
+
+        // DockArea 用に、ウィンドウ全体に広がる背景用 Window をつくる
+        ImGuiID imguiWindowID;
+        {
+            const ImGuiWindowFlags flags =
+                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoTitleBar;
+            ImGui::SetNextWindowSize(ImVec2(m_clientSize.width, m_clientSize.height));
+            ImGui::SetNextWindowPos(ImVec2(0, 0));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1.0f, 1.0f));
+            ImGui::Begin("##LN.FrameWindowPane", nullptr, flags);
+            imguiWindowID = ImGui::GetCurrentWindow()->ID;
+            ImGuiDockNodeFlags dockFlags = ImGuiDockNodeFlags_NoCloseButton;
+            ImGui::DockSpace(imguiWindowID, ImVec2(0.0f, 0.0f), dockFlags);
+            ImGui::End();
+            ImGui::PopStyleVar(2);
+        }
+
+        //if (m_tools.mainViewportToolPane) {
+        //    m_tools.mainViewportToolPane->prepare(this, m_renderingGraphicsContext, m_renderView);
+        //}
+
+
+        //{
+        //    ImGui::SetNextWindowSize(ImVec2(320, 240), ImGuiCond_Once);
+        //    if (ImGui::Begin("Main")) {
+        //        ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+        //        const ImVec2 contentSize = ImGui::GetContentRegionAvail();
+
+        //        if (m_renderView)
+        //        {
+        //            m_tools.mainViewportRenderTarget = RenderTargetTexture::realloc(m_tools.mainViewportRenderTarget, contentSize.x, contentSize.y, TextureFormat::RGBA8, false, SamplerState::pointClamp());
+        //            m_renderView->render(m_renderingGraphicsContext, m_tools.mainViewportRenderTarget);
+        //        }
+        //        ImGui::Image(m_tools.mainViewportRenderTarget, contentSize);
+        //    }
+        //    ImGui::End();
+        //}
+
+        m_imguiContext->updateDocks(imguiWindowID);
+
+        ImGui::EndFrame();
+        m_imguiContext->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
+    }
+    else {
+        if (m_renderView) {
+            m_renderView->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
+        }
+    }
+
+#else
+
+
+
+
     //ElapsedTimer t;
     //t.start();
 
@@ -385,7 +478,7 @@ void UIFrameWindow::present()
 
 	if (m_ImGuiLayerEnabled)
 	{
-        m_imguiContext.prepareRender(m_clientSize.width, m_clientSize.height);
+        m_imguiContext->prepareRender(m_clientSize.width, m_clientSize.height);
 
 		ImGui::NewFrame();
 
@@ -395,12 +488,14 @@ void UIFrameWindow::present()
 		ImGui::EndFrame();
 
 
-		m_imguiContext.render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
+		m_imguiContext->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
 	}
  //   auto r = makeObject<RenderPass>(m_swapChain->currentBackbuffer(), nullptr);
  //   m_renderingGraphicsContext->beginRenderPass(r);
  //   m_renderingGraphicsContext->clear(ClearFlags::All, Color::Aqua);
  //   m_renderingGraphicsContext->endRenderPass();
+#endif
+
 	m_swapChain->endFrame();
 
 	//detail::SwapChainInternal::present(m_swapChain, m_renderingGraphicsContext);
@@ -416,20 +511,41 @@ SwapChain* UIFrameWindow::swapChain() const
 
 void UIFrameWindow::updateStyleTree()
 {
+    if (width() != m_clientSize.width || height() != m_clientSize.height) {
+        // ユーザープログラムから  UIElement としてのサイズが変更された
+        m_clientSize.set(width(), height());
+        m_platformWindow->setSize(SizeI::fromFloatSize(m_clientSize));
+    }
+
     updateStyleHierarchical(m_manager->styleContext(), m_manager->finalDefaultStyle());
+    m_dirtyFlags.unset(detail::UIElementDirtyFlags::Style);
 }
 
 void UIFrameWindow::updateLayoutTree()
 {
-	if (m_renderView) {
+    if (!m_ImGuiLayerEnabled) {
+        updateLayoutTreeInternal(m_clientSize);
+    }
+}
+
+void UIFrameWindow::updateLayoutTreeInternal(const Size& contentSize)
+{
+    if (m_renderView) {
         m_layoutContext->m_dpiScale = platformWindow()->dpiFactor();
         m_layoutContext->m_styleContext = m_manager->styleContext();
 
-		//Rect clientRect(0, 0, m_clientSize);
-		m_renderView->setActualSize(m_clientSize);
-		m_renderView->updateUILayout(m_layoutContext);
-	}
-	//updateLayout(clientRect);
+        //Rect clientRect(0, 0, m_clientSize);
+
+        // ここでは ClientRect を使ってレイアウトする。
+        // ImGui Layer の領域は、arrangeOverride() 時に Padding のように扱うことで、
+        // MainWindow の子要素が Pane 内に表示されているように見せる。
+        m_renderView->setActualSize(m_clientSize);
+        m_renderView->updateUILayout(m_layoutContext);
+    }
+
+    m_dirtyFlags.unset(detail::UIElementDirtyFlags::Layout);
+
+    //updateLayout(clientRect);
  //   updateFinalLayoutHierarchical(clientRect);
  //   // TODO: ↑のものは↓のm_renderViewのonUpdateUILayout()でおなじことやってる。まとめたいなぁ…
  //   if (m_renderView) {
@@ -459,7 +575,17 @@ Size UIFrameWindow::measureOverride(UILayoutContext* layoutContext, const Size& 
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-	return UIDomainProvidor::arrangeOverride(layoutContext, Rect(0, 0, desiredSize()));
+    Rect rect = (m_ImGuiLayerEnabled) ? m_contentArea : Rect(0, 0, desiredSize());
+
+    UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, rect);
+
+    return finalArea.getSize();
+
+
+    //return UIDomainProvidor::arrangeOverride(layoutContext, Rect(0, 0, desiredSize()));
+    //Rect rect = (m_ImGuiLayerEnabled) ? m_contentArea : Rect(0, 0, desiredSize());
+
+	//return UIDomainProvidor::arrangeOverride(layoutContext, rect);
 	//int childCount = logicalChildren().size();
 	//for (int i = 0; i < childCount; i++)
 	//{
@@ -506,7 +632,7 @@ void UIFrameWindow::onRender(UIRenderingContext* context)
 bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 {
 	if (m_ImGuiLayerEnabled) {
-		if (m_imguiContext.handlePlatformEvent(e)) {
+		if (m_imguiContext->handlePlatformEvent(e)) {
 			return true;
 		}
 	}
@@ -556,9 +682,7 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 			detail::SwapChainInternal::resizeBackbuffer(m_swapChain, w, h);
 		}
 
-        SizeI size;
-        m_platformWindow->getSize(&size);
-        resetSize(size.toFloatSize());
+        resetSizeFromPlatformWindow();
 		break;
 	}
 
@@ -585,25 +709,31 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 
 void UIFrameWindow::onRoutedEvent(UIEventArgs* e)
 {
-    if (e->type() == UIEvents::RequestVisualUpdateEvent) {
-        if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style)) {
-            //UIContext* context = getContext();
-            //updateStyleHierarchical(context->styleContext(), context->finalDefaultStyle());		// TODO: 直接呼ぶのではなく、RenderView 経由で読んでもらう
-            //// TODO: ↑のものは↓のm_renderViewのonUpdateUILayout()でおなじことやってる。まとめたいなぁ…
-            //if (m_renderView) {
-            //    m_renderView->adornerLayer()->updateStyleHierarchical(context->styleContext(), context->finalDefaultStyle());
-            //}
-			if (m_renderView) {
-				m_renderView->updateUIStyle(m_manager->styleContext(), m_manager->finalDefaultStyle());
-			}
-        }
-        if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Layout)) {
-            updateLayoutTree();
-        }
-        e->handled = true;
-        return;
+    if (m_ImGuiLayerEnabled && m_imguiContext) {
+        m_imguiContext->handleUIEvent(e);
     }
-	else if (e->type() == UIEvents::RequestVisualRedrawEvent) {
+
+
+ //   if (e->type() == UIEvents::RequestVisualUpdateEvent) {
+ //       if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style)) {
+ //           //UIContext* context = getContext();
+ //           //updateStyleHierarchical(context->styleContext(), context->finalDefaultStyle());		// TODO: 直接呼ぶのではなく、RenderView 経由で読んでもらう
+ //           //// TODO: ↑のものは↓のm_renderViewのonUpdateUILayout()でおなじことやってる。まとめたいなぁ…
+ //           //if (m_renderView) {
+ //           //    m_renderView->adornerLayer()->updateStyleHierarchical(context->styleContext(), context->finalDefaultStyle());
+ //           //}
+	//		if (m_renderView) {
+	//			m_renderView->updateUIStyle(m_manager->styleContext(), m_manager->finalDefaultStyle());
+	//		}
+ //       }
+ //       if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Layout)) {
+ //           updateLayoutTree();
+ //       }
+ //       e->handled = true;
+ //       return;
+ //   }
+	//else
+     if (e->type() == UIEvents::RequestVisualRedrawEvent) {
 		if (!m_realtimeRenderingEnabled && m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Render)) {
 			renderContents();
 			present();
@@ -619,12 +749,12 @@ void UIFrameWindow::invalidate(detail::UIElementDirtyFlags flags, bool toAncesto
 {
 	if (m_updateMode == UIFrameWindowUpdateMode::EventDispatches)
 	{
-		if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style) && testFlag(flags, detail::UIElementDirtyFlags::Style)) {
-			postEvent(UIEventArgs::create(this, UIEvents::RequestVisualUpdateEvent));
-		}
-		if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Layout) && testFlag(flags, detail::UIElementDirtyFlags::Layout)) {
-			postEvent(UIEventArgs::create(this, UIEvents::RequestVisualUpdateEvent));
-		}
+		//if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style) && testFlag(flags, detail::UIElementDirtyFlags::Style)) {
+		//	postEvent(UIEventArgs::create(this, UIEvents::RequestVisualUpdateEvent));
+		//}
+		//if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Layout) && testFlag(flags, detail::UIElementDirtyFlags::Layout)) {
+		//	postEvent(UIEventArgs::create(this, UIEvents::RequestVisualUpdateEvent));
+		//}
 		if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Render) && testFlag(flags, detail::UIElementDirtyFlags::Render)) {
 			postEvent(UIEventArgs::create(this, UIEvents::RequestVisualRedrawEvent));
 		}

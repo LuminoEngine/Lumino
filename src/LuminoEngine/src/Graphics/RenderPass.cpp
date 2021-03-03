@@ -10,6 +10,7 @@
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include "GraphicsManager.hpp"
+#include "GraphicsProfiler.hpp"
 #include "RHIs/GraphicsDeviceContext.hpp"
 
 namespace ln {
@@ -29,16 +30,19 @@ RenderPass::RenderPass()
 	, m_dirty(true)
 	, m_active(false)
 {
+	detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+	detail::GraphicsResourceInternal::manager(this)->profiler()->addRenderPass(this);
 }
 
 RenderPass::~RenderPass()
 {
+	detail::GraphicsResourceInternal::manager(this)->profiler()->removeRenderPass(this);
+	detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
 }
 
 void RenderPass::init()
 {
 	Object::init();
-	detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 }
 
 void RenderPass::init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
@@ -53,7 +57,6 @@ void RenderPass::onDispose(bool explicitDisposing)
 {
 	releaseRHI();
 
-	detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
 	Object::onDispose(explicitDisposing);
 }
 
@@ -217,8 +220,8 @@ detail::IRenderPass* RenderPass::resolveRHIObjectNoClear(GraphicsContext* contex
 void RenderPass::releaseRHI()
 {
 	if (m_rhiObject) {
-		auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
-		device->renderPassCache()->release(m_rhiObject);
+		//auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
+		//device->renderPassCache()->release(m_rhiObject);
 		m_rhiObject = nullptr;
 	}
 }

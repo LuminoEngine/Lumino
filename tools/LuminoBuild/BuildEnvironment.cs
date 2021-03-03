@@ -87,7 +87,21 @@ namespace LuminoBuild
 
                     if (!Directory.Exists("imgui"))
                     {
-                        Utils.CallProcess("git", "clone --depth 1 -b v1.72 https://github.com/ocornut/imgui.git imgui");
+                        //Utils.CallProcess("git", "clone --depth 1 -b v1.72 https://github.com/ocornut/imgui.git imgui");
+                        //Utils.CallProcess("git", "clone --depth 1 -b docking https://github.com/ocornut/imgui.git imgui");
+                        Utils.CallProcess("git", "clone https://github.com/ocornut/imgui.git imgui");
+
+                        // 現時点の docking ブランチの先頭
+                        using (CurrentDir.Enter("imgui"))
+                        {
+                            Utils.CallProcess("git", "config advice.detachedHead false");
+                            Utils.CallProcess("git", "checkout 732cd837a9ed8ecb2ce4035e7d40a1c9a04ae240");
+                        }
+
+                        foreach (string file in System.IO.Directory.GetFiles("imgui", "*.h"))
+                        {
+                            File.Copy(file, Path.Combine(builder.LuminoRootDir, "include", "LuminoEngine", "UI", "imgui", System.IO.Path.GetFileName(file)), true);
+                        }
                     }
 
                     if (!Directory.Exists("Streams"))
@@ -96,6 +110,7 @@ namespace LuminoBuild
 
                         using (CurrentDir.Enter("Streams"))
                         {
+                            Utils.CallProcess("git", "config advice.detachedHead false");
                             Utils.CallProcess("git", "checkout 8fc0657b977cfd8f075ad0afb4dca3800630b56c");
                         }
                     }
@@ -118,6 +133,14 @@ namespace LuminoBuild
                 }
 
                 builder.CommitCache(buildCacheDir);
+            }
+            else
+            {
+                Logger.WriteLine("BuildCache found.");
+                foreach(var dir in Directory.GetDirectories(buildCacheDir))
+                {
+                    Logger.WriteLine("- " + Path.GetFileName(dir));
+                }
             }
 
 

@@ -17,6 +17,7 @@
 #include "../Engine/LinearAllocator.hpp"
 #include "../Asset/AssetManager.hpp"
 #include "SingleFrameAllocator.hpp"
+#include "GraphicsProfiler.hpp"
 
 namespace ln {
 namespace detail {
@@ -186,6 +187,8 @@ void GraphicsManager::init(const Settings& settings)
 
     m_assetManager = settings.assetManager;
 	m_platformManager = settings.platformManager;
+
+	m_profiler = std::make_unique<GraphicsProfiler>();
 
 	m_texture2DCache.init(64);
 

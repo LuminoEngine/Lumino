@@ -53,7 +53,7 @@ class VulkanRenderTarget
 public:
 	VulkanRenderTarget();
     Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
-	Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
+	Result initFromSwapchainImage(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
     virtual void dispose() override;
 	virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
 	virtual SizeI realSize() { return m_size; }
@@ -73,9 +73,7 @@ public:
     VkSemaphore swapchainImageAvailableSemaphore() const { return (m_swapchainImageAvailableSemaphoreRef) ? *m_swapchainImageAvailableSemaphoreRef : VK_NULL_HANDLE; }
     VkSemaphore renderFinishedSemaphore() const { return m_renderFinishedSemaphore; }
 
-	Result reset(uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
-
-protected:
+private:
     VulkanDevice* m_deviceContext;
 	std::unique_ptr<VulkanImage> m_image;                   // MSAA 有効の時は、Resolve されたテクスチャデータ
     std::unique_ptr<VulkanImage> m_multisampleColorBuffer;  // MSAA 有効の時に使う、マルチサンプル有効なレンダーターゲットバッファ。MSAA 無しのときは nullptr

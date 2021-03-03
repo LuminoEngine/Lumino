@@ -241,15 +241,21 @@ public:
 	void dispose();
 	VulkanRenderPass2* ownerRenderPass() const { return m_ownerRenderPass; }
 	VkFramebuffer nativeFramebuffer() const { return m_framebuffer; }
-	const std::array<Ref<VulkanRenderTarget>, MaxMultiRenderTargets>& renderTargets() const { return m_renderTargets; }
-	const Ref<VulkanDepthBuffer>& depthBuffer() const { return m_depthBuffer; }
+	const std::array<VulkanRenderTarget*, MaxMultiRenderTargets>& renderTargets() const { return m_renderTargets; }
+	const VulkanDepthBuffer* depthBuffer() const { return m_depthBuffer; }
 
 private:
 	VulkanDevice* m_device;
 	VulkanRenderPass2* m_ownerRenderPass;
 	VkFramebuffer m_framebuffer;
-	std::array<Ref<VulkanRenderTarget>, MaxMultiRenderTargets> m_renderTargets;
-	Ref<VulkanDepthBuffer> m_depthBuffer;
+	std::array<VulkanRenderTarget*, MaxMultiRenderTargets> m_renderTargets;
+	VulkanDepthBuffer* m_depthBuffer;
+
+    VkFramebufferCreateInfo ff;
+    VulkanRenderTarget* _sizeBase;
+    const VulkanImage* _sizeBaseImg;
+    VkImage _baseImg;
+    int32_t _baseId = 0; 
 };
 
 // Dynamic としてマークしている state は次の通り。

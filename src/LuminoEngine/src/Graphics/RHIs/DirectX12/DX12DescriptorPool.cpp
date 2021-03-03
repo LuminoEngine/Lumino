@@ -335,6 +335,7 @@ void DX12DescriptorPool::dispose()
         m_descriptorHeapAllocator_SAMPLER->dispose();
         m_descriptorHeapAllocator_SAMPLER = nullptr;
     }
+    IDescriptorPool::dispose();
 }
 
 void DX12DescriptorPool::reset()

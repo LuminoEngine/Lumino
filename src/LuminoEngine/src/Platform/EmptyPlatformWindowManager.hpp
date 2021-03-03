@@ -13,6 +13,7 @@ public:
     Result init(const WindowCreationSettings& settings);
     virtual void setWindowTitle(const String& title) override {}
 	virtual void getSize(SizeI* size) override { *size = SizeI(); }
+	virtual void setSize(const SizeI& size) override { LN_NOTIMPLEMENTED(); }
 	virtual void getFramebufferSize(int* width, int* height) override { *width = 0; *height = 0; }
 	virtual void setAllowDragDrop(bool value) override;
 	virtual bool isAllowDragDrop() const override;

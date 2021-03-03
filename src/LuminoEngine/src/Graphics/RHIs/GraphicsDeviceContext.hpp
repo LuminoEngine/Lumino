@@ -13,6 +13,7 @@ class INativeGraphicsInterface;
 
 namespace detail {
 class PlatformWindow;
+class IGraphicsDevice;
 class ISwapChain;
 class ICommandList;
 class ICommandQueue;
@@ -31,6 +32,7 @@ class IDescriptor;
 class NativeRenderPassCache;
 class NativePipelineCache;
 class RHIBitmap;
+class RHIProfiler;
 
 enum class DeviceResourceType
 {
@@ -198,14 +200,24 @@ inline RHIPtr<T> makeRHIRef(TArgs&&... args)
 class IGraphicsDeviceObject
     : public RefObject
 {
+public:
+	virtual void dispose();	// Prepare for multiple calls
+	IGraphicsDevice* device() const { return m_device; }
+	int32_t objectId() const { return m_objectId; }
+
+	IGraphicsDevice* m_device;
+	int32_t m_objectId;
 protected:
     IGraphicsDeviceObject();
     virtual ~IGraphicsDeviceObject();
     virtual void finalize();
-    virtual void dispose();	// Prepare for multiple calls
 
 private:
     bool m_disposed;
+	bool m_profiling;
+
+	friend class RHIProfiler;
+	friend class IGraphicsDevice;
 };
 
 class IGraphicsRHIBuffer
@@ -223,7 +235,7 @@ class IGraphicsDevice
 {
 public:
 	IGraphicsDevice();
-	virtual ~IGraphicsDevice() = default;
+	virtual ~IGraphicsDevice();
 
 	void init();
 	virtual void dispose();
@@ -260,6 +272,7 @@ public:
 
 	const std::unique_ptr<NativeRenderPassCache>& renderPassCache() const { return m_renderPassCache; }
 	const std::unique_ptr<NativePipelineCache>& pipelineCache() const { return m_pipelineCache; }
+	const std::unique_ptr<RHIProfiler>& profiler() const { return m_profiler; }
 
 protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
@@ -283,9 +296,14 @@ protected:
 
 public:	// TODO:
 	GraphicsDeviceCaps m_caps;
-	std::vector<Ref<IGraphicsDeviceObject>> m_aliveObjects;
 	std::unique_ptr<NativeRenderPassCache> m_renderPassCache;
 	std::unique_ptr<NativePipelineCache> m_pipelineCache;
+
+private:
+	std::unique_ptr<RHIProfiler> m_profiler;
+
+public:
+	int32_t m_objectNextId;	// TODO: 暫定対策。Hash が使えるとよい
 };
 
 class ICommandList
@@ -329,13 +347,13 @@ public:
 
 	virtual void wait() = 0;
 
-    IGraphicsDevice* device() const { return m_device; }
     IRenderPass* currentRenderPass() const { return m_currentRenderPass; }
 
 public:	// TODO:
 	ICommandList();
-    virtual ~ICommandList() = default;
+	virtual ~ICommandList();
 	Result init(IGraphicsDevice* owner);
+	void dispose() override;
 
 	virtual void onSaveExternalRenderState() = 0;
 	virtual void onRestoreExternalRenderState() = 0;
@@ -364,11 +382,11 @@ private:
     void commitStatus(GraphicsContextSubmitSource submitSource);
     void endCommit(GraphicsContextSubmitSource submitSource);
 
-	IGraphicsDevice* m_device;
     uint32_t m_stateDirtyFlags;
     GraphicsContextState m_staging;
     GraphicsContextState m_committed;
 	IRenderPass* m_currentRenderPass;
+	std::vector<Ref<IRenderPass>> m_renderPasses;	// 描画中の delete を防ぐため参照を持っておく
 };
 
 class ISwapChain
@@ -390,7 +408,7 @@ public:
 	virtual void present() = 0;
 
 protected:
-	virtual ~ISwapChain() = default;
+	virtual ~ISwapChain();
 };
 
 // OpenGL の場合は、現在のコンテキストに対してただ glFlush するだけ。Compute は非対応。
@@ -405,6 +423,8 @@ protected:
 };
 
 // Note: Framebuffer も兼ねる。Vulkan では分けることで subpass を実現するが、Metal や DX12 では無いし、そこまで最適化する必要も今はない。
+// 性質上 RenderTarget と DepthBuffer を持つことになるが、派生では参照カウントをインクリメントしないように注意すること。
+// RenderPass をキャッシュから削除できなくなる。
 class IRenderPass
 	: public IGraphicsDeviceObject
 {
@@ -428,17 +448,29 @@ public:
 
 	bool hasDepthBuffer() const { return m_depthBuffer != nullptr; }
 
+	bool containsRenderTarget(ITexture* renderTarget) const
+	{
+		return std::find(m_renderTargets.begin(), m_renderTargets.end(), renderTarget) != m_renderTargets.end();
+	}
+
+	bool containsDepthBuffer(IDepthBuffer* depthBuffer) const
+	{
+		return m_depthBuffer == depthBuffer;
+	}
+
 	bool isMultisample() const { return m_isMultisample; }
 
 	virtual void dispose();
 
-protected:
-	virtual ~IRenderPass() = default;
+	void retainObjects();
+	void releaseObjects();
 
 protected:
-	IGraphicsDevice* m_device = nullptr;
-	std::array<Ref<ITexture>, MaxMultiRenderTargets> m_renderTargets;
-	Ref<IDepthBuffer> m_depthBuffer;
+	virtual ~IRenderPass();
+
+protected:
+	std::array<ITexture*, MaxMultiRenderTargets> m_renderTargets;
+	IDepthBuffer* m_depthBuffer;
 	bool m_isMultisample = false;
 
 	// TODO: init 用意した方がいい気がする
@@ -458,11 +490,10 @@ public:
 
 protected:
 	IVertexDeclaration();
-	virtual ~IVertexDeclaration() = default;
+	virtual ~IVertexDeclaration();
 	bool init(const VertexElement* elements, int count);
 
 private:
-	IGraphicsDevice* m_device = nullptr;
 	friend class IGraphicsDevice;
 };
 
@@ -479,7 +510,7 @@ public:
 
 protected:
 	IVertexBuffer();
-	virtual ~IVertexBuffer() = default;
+	virtual ~IVertexBuffer();
 };
 
 
@@ -495,7 +526,7 @@ public:
 
 protected:
 	IIndexBuffer();
-	virtual ~IIndexBuffer() = default;
+	virtual ~IIndexBuffer();
 };
 
 class IUniformBuffer
@@ -506,14 +537,14 @@ public:
 	virtual void unmap() = 0;
 
 protected:
-	virtual ~IUniformBuffer() = default;
+	virtual ~IUniformBuffer();
 };
 
 class ITexture
 	: public IGraphicsDeviceObject
 {
 public:
-	virtual DeviceTextureType type() const = 0;
+	//virtual DeviceTextureType type() const = 0;
 
 	virtual SizeI realSize() = 0;
 
@@ -531,9 +562,10 @@ public:
 
 protected:
 	ITexture();
-	virtual ~ITexture() = default;
+	virtual ~ITexture();
 
-private:
+protected:
+	DeviceTextureType m_deviceTextureType;
 	bool m_mipmap;
 
 	friend class IGraphicsDevice;
@@ -551,7 +583,7 @@ public:
 
 protected:
 	IDepthBuffer();
-	virtual ~IDepthBuffer() = default;
+	virtual ~IDepthBuffer();
 };
 
 class ISamplerState
@@ -561,7 +593,7 @@ public:
 
 protected:
 	ISamplerState();
-	virtual ~ISamplerState() = default;
+	virtual ~ISamplerState();
 };
 
 class IShaderPass
@@ -574,11 +606,11 @@ public:
 
 protected:
 	IShaderPass();
-	virtual ~IShaderPass() = default;
+	virtual ~IShaderPass();
 	bool init(const ShaderPassCreateInfo& createInfo);
 
 private:
-	IGraphicsDevice* m_device = nullptr;
+	//IGraphicsDevice* m_device = nullptr;
 	std::string m_name;
 	std::vector<VertexInputAttribute> m_attributes;
 
@@ -586,7 +618,7 @@ private:
 };
 
 class IPipeline
-	: public RefObject
+	: public IGraphicsDeviceObject
 {
 public:
 	uint64_t cacheKeyHash = 0;
@@ -597,7 +629,7 @@ public:
 	const IShaderPass* shaderPass() const { return m_sourceShaderPass; }
 
 protected:
-	virtual ~IPipeline() = default;
+	virtual ~IPipeline();
 
 private:
 	const IVertexDeclaration* m_sourceVertexLayout = nullptr;
@@ -619,15 +651,15 @@ private:
 // また OpenGL サポート中はそれとの整合をとるためこの Descriptor 周りを不自然にラップしていたため、メンテが難しくなる事態が発生していた。
 // OpenGL を切ったので、上位レイヤーで共通化できる部分はそのようにして、少しでも下位レイヤーの複雑さを抑える。
 class IDescriptorPool
-	: public RefObject
+	: public IGraphicsDeviceObject
 {
 public:
-	virtual void dispose() = 0;
+	//virtual void dispose() = 0;
 	virtual void reset() = 0;
 	virtual IDescriptor* allocate() = 0;
 
 protected:
-	virtual ~IDescriptorPool() = default;
+	virtual ~IDescriptorPool();
 };
 
 class IDescriptor

@@ -8,6 +8,7 @@
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include "GraphicsManager.hpp"
+#include "RenderTargetTextureCache.hpp"
 #include "RHIs/GraphicsDeviceContext.hpp"
 #include "../Engine/LinearAllocator.hpp"
 #include "SingleFrameAllocator.hpp"
@@ -37,7 +38,17 @@ void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize
 
     m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSwapChain(window, backbufferSize);
 	m_graphicsContext = makeObject<GraphicsContext>(detail::EngineDomain::graphicsManager()->renderingType());
+	
 	resetRHIBackbuffers();
+
+	// CommandList
+	uint32_t count = m_rhiObject->getBackbufferCount();
+	m_commandLists.resize(count);
+	for (uint32_t i = 0; i < count; i++) {
+		auto commandList = makeRef<detail::GraphicsCommandList>();
+		commandList->init(detail::GraphicsResourceInternal::manager(this));
+		m_commandLists[i] = commandList;
+	}
 }
 
 void SwapChain::onDispose(bool explicitDisposing)
@@ -109,7 +120,6 @@ void SwapChain::resetRHIBackbuffers()
 	m_backbuffers.resize(count);
 	m_depthBuffers.resize(count);
 	m_renderPasses.resize(count);
-	m_commandLists.resize(count);
 	for (uint32_t i = 0; i < count; i++) {
 		// backbuffer
 		auto buffer = makeObject<RenderTargetTexture>(this);
@@ -124,18 +134,14 @@ void SwapChain::resetRHIBackbuffers()
 		auto renderPass = makeObject<RenderPass>(buffer, depthBuffer);
 		renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0x00);
 		m_renderPasses[i] = renderPass;
-			
-		// CommandList
-        auto commandList = makeRef<detail::GraphicsCommandList>();
-        commandList->init(detail::GraphicsResourceInternal::manager(this));
-		m_commandLists[i] = commandList;
 	}
 	m_imageIndex = -1;
 }
 
 void SwapChain::present(GraphicsContext* context)
 {
-	auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
+	detail::GraphicsManager* manager = detail::GraphicsResourceInternal::manager(this);
+	auto device = manager->deviceContext();
 
 
     // TODO: threading
@@ -149,6 +155,8 @@ void SwapChain::present(GraphicsContext* context)
 		{
 			rhi->present();
 		});
+
+	manager->frameBufferCache()->gcObjects();
 }
 
 detail::ISwapChain* SwapChain::resolveRHIObject(GraphicsContext* context, bool* outModified) const

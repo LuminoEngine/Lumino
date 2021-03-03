@@ -12,9 +12,10 @@ class PostEffectRenderer;
 /** Viewport の配置方法 */
 enum class UIViewportPlacement
 {
-	Stretch,		/**< 転送先領域全体に拡大または縮小する */
+	Fill,		/**< 転送先領域全体に拡大または縮小する */
 	//AutoResize,		/**< 転送先領域と同じピクセルサイズになるよう自動的にリサイズする */
-	ViewBox,		/**< 転送元領域のアスペクト比が維持されるように余白を挿入する */
+	//FixedViewBox,		/**< 転送元領域のアスペクト比が維持されるように余白を挿入する。バックバッファサイズは変更しない */
+	//ResizableViewBox,		/**< 転送元領域のアスペクト比が維持されるように余白を挿入する。バックバッファサイズを変更する。 */
 };
 
 // TODO: WPF にならって Viewport にしたけど、ViewBox とかのほうがいいかもしれない。
@@ -54,9 +55,9 @@ protected:
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
 private:
-	bool isViewBoxRenderTargetAutoResize() const { return m_viewBoxSize.width <= 0.0f && m_viewBoxSize.height <= 0.0f; }
-	bool isViewBoxAspectScaling() const { return !isViewBoxRenderTargetAutoResize() && m_placement == UIViewportPlacement::ViewBox; }
-	void acquirePrimaryTarget(const SizeI& viewPixelSize);
+	//bool isViewBoxRenderTargetAutoResize() const { return m_viewBoxSize.width <= 0.0f && m_viewBoxSize.height <= 0.0f; }
+	//bool isViewBoxAspectScaling() const { return !isViewBoxRenderTargetAutoResize() && m_placement == UIViewportPlacement::ViewBox; }
+	void preparePrimaryTarget();
 	static void makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
 
     detail::UIManager* m_manager;

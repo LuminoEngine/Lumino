@@ -125,13 +125,13 @@ file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.
 file(GLOB LN_SOURCES_UI_Controls ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Controls/*.hpp src/UI/Controls/*.cpp src/UI/Controls/*.hpp)
 file(GLOB LN_SOURCES_UI_Layout ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Layout/*.hpp src/UI/Layout/*.cpp src/UI/Layout/*.hpp)
 
-set(LN_SOURCES_UI
-    ${LN_SOURCES_UI}
+set(LN_SOURCES_UI_imgui
     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imconfig.h
     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui.cpp
     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui.h
     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_draw.cpp
     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_internal.h
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_tables.cpp
     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_widgets.cpp
     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imstb_rectpack.h
     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imstb_textedit.h
@@ -149,6 +149,8 @@ file(GLOB LN_SOURCES_Runtime
     src/Runtime/*.hpp
     src/Runtime/*.h
 )
+
+file(GLOB LN_SOURCES_Tools ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tools/*.hpp src/Tools/*.cpp src/Tools/*.hpp src/Tools/*.md)
 
 if (LN_USE_VULKAN)
     if (WIN32)
@@ -215,9 +217,11 @@ source_group("Scene\\Effect" FILES ${LN_SOURCES_Scene_Effect})
 source_group("UI" FILES ${LN_SOURCES_UI})
 source_group("UI\\Controls" FILES ${LN_SOURCES_UI_Controls})
 source_group("UI\\Layout" FILES ${LN_SOURCES_UI_Layout})
+source_group("UI\\imgui" FILES ${LN_SOURCES_UI_imgui})
 source_group("Tilemap" FILES ${LN_SOURCES_Tilemap})
 source_group("Scripting" FILES ${LN_SOURCES_Scripting})
 source_group("Runtime" FILES ${LN_SOURCES_Runtime})
+source_group("Tools" FILES ${LN_SOURCES_Tools})
 
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
@@ -261,9 +265,11 @@ set(LN_SOURCES
     ${LN_SOURCES_UI}
     ${LN_SOURCES_UI_Controls}
     ${LN_SOURCES_UI_Layout}
+    ${LN_SOURCES_UI_imgui}
     ${LN_SOURCES_Tilemap}
     ${LN_SOURCES_Scripting}
     ${LN_SOURCES_Runtime}
+    ${LN_SOURCES_Tools}
     ${LN_COMMON_META_FILES}
 )
 
