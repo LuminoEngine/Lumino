@@ -123,11 +123,6 @@ void IGraphicsDevice::dispose()
 {
 	m_pipelineCache->clear();
 	m_renderPassCache->clear();
-
-	//for (auto& obj : m_aliveObjects) {
-	//	obj->dispose();
-	//}
-	m_aliveObjects.clear();
 }
 
 void IGraphicsDevice::refreshCaps()
@@ -140,7 +135,6 @@ Ref<ISwapChain> IGraphicsDevice::createSwapChain(PlatformWindow* window, const S
 	Ref<ISwapChain> ptr = onCreateSwapChain(window, backbufferSize);
 	if (ptr) {
 		ptr->m_device = this;
-		m_aliveObjects.push_back(ptr);
 		m_profiler->addSwapChain(ptr);
 	}
 	return ptr;
@@ -161,7 +155,6 @@ Ref<IRenderPass> IGraphicsDevice::createRenderPass(const DeviceFramebufferState&
 	Ref<IRenderPass> ptr = onCreateRenderPass(buffers, clearFlags, clearColor, clearDepth, clearStencil);
 	if (ptr) {
 		ptr->m_device = this;
-		m_aliveObjects.push_back(ptr);
 
 		// Preserve dependent object references
 		for (uint32_t i = 0; i < buffers.renderTargets.size(); i++) {
@@ -218,7 +211,6 @@ Ref<IVertexDeclaration> IGraphicsDevice::createVertexDeclaration(const VertexEle
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_hash = IVertexDeclaration::computeHash(elements, elementsCount);
-		m_aliveObjects.push_back(ptr);
 		m_profiler->addVertexLayout(ptr);
 	}
 	return ptr;
@@ -229,7 +221,6 @@ Ref<IVertexBuffer> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usa
 	Ref<IVertexBuffer> ptr = onCreateVertexBuffer(usage, bufferSize, initialData);
 	if (ptr) {
 		ptr->m_device = this;
-		m_aliveObjects.push_back(ptr);
 		m_profiler->addVertexBuffer(ptr);
 	}
 	return ptr;
@@ -240,7 +231,6 @@ Ref<IIndexBuffer> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage
 	Ref<IIndexBuffer> ptr = onCreateIndexBuffer(usage, format, indexCount, initialData);
 	if (ptr) {
 		ptr->m_device = this;
-		m_aliveObjects.push_back(ptr);
 		m_profiler->addIndexBuffer(ptr);
 	}
 	return ptr;
@@ -253,7 +243,6 @@ Ref<ITexture> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, uint
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_deviceTextureType = DeviceTextureType::Texture2D;
-		m_aliveObjects.push_back(ptr);
 		m_profiler->addTexture2D(ptr);
 	}
 	return ptr;
@@ -264,7 +253,6 @@ Ref<ITexture> IGraphicsDevice::createTexture3D(GraphicsResourceUsage usage, uint
 	Ref<ITexture> ptr = onCreateTexture3D(usage, width, height, depth, requestFormat, mipmap, initialData);
 	ptr->m_mipmap = mipmap;
 	if (ptr) {
-		m_aliveObjects.push_back(ptr);
 	}
 	return ptr;
 }
@@ -274,7 +262,6 @@ Ref<ITexture> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t heigh
 	Ref<ITexture> ptr = onCreateRenderTarget(width, height, requestFormat, mipmap, msaa);
 	ptr->m_mipmap = mipmap;
 	if (ptr) {
-		m_aliveObjects.push_back(ptr);
 		ptr->m_device = this;
 		ptr->m_deviceTextureType = DeviceTextureType::RenderTarget;
 		m_profiler->addRenderTarget(ptr);
@@ -286,7 +273,6 @@ Ref<ITexture> IGraphicsDevice::createWrappedRenderTarget(intptr_t nativeObject, 
 {
     Ref<ITexture> ptr = onCreateWrappedRenderTarget(nativeObject, hintWidth, hintHeight);
     if (ptr) {
-        m_aliveObjects.push_back(ptr);
 		ptr->m_device = this;
 		m_profiler->addRenderTarget(ptr);
     }
@@ -297,7 +283,6 @@ Ref<IDepthBuffer> IGraphicsDevice::createDepthBuffer(uint32_t width, uint32_t he
 {
 	Ref<IDepthBuffer> ptr = onCreateDepthBuffer(width, height);
 	if (ptr) {
-		m_aliveObjects.push_back(ptr);
 		ptr->m_device = this;
 		m_profiler->addDepthBuffer(ptr);
 	}
@@ -308,7 +293,6 @@ Ref<ISamplerState> IGraphicsDevice::createSamplerState(const SamplerStateData& d
 {
 	Ref<ISamplerState> ptr = onCreateSamplerState(desc);
 	if (ptr) {
-		m_aliveObjects.push_back(ptr);
 		ptr->m_device = this;
 		m_profiler->addSamplerState(ptr);
 	}
@@ -337,7 +321,6 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 
 	if (ptr) {
 		ptr->m_name = createInfo.name;
-		m_aliveObjects.push_back(ptr);
 		ptr->m_device = this;
 		m_profiler->addShaderPass(ptr);
 	}
@@ -348,7 +331,6 @@ Ref<IUniformBuffer> IGraphicsDevice::createUniformBuffer(uint32_t size)
 {
 	Ref<IUniformBuffer> ptr = onCreateUniformBuffer(size);
 	if (ptr) {
-		m_aliveObjects.push_back(ptr);
 		ptr->m_device = this;
 		m_profiler->addUniformBuffer(ptr);
 	}
@@ -418,17 +400,6 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
 
     return pass;
 }
-
-//void IGraphicsDevice::collectGarbageObjects()
-//{
-//	for (int i = m_aliveObjects.size() - 1; i >= 0; i--)
-//	{
-//		if (RefObjectHelper::getReferenceCount(m_aliveObjects[i]) <= 1) {
-//			m_aliveObjects[i]->dispose();
-//			m_aliveObjects.erase(m_aliveObjects.begin() + i);
-//		}
-//	}
-//}
 
 //=============================================================================
 // ICommandList

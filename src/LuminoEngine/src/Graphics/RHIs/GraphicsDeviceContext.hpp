@@ -294,7 +294,6 @@ protected:
 
 public:	// TODO:
 	GraphicsDeviceCaps m_caps;
-	std::vector<Ref<IGraphicsDeviceObject>> m_aliveObjects;
 	std::unique_ptr<NativeRenderPassCache> m_renderPassCache;
 	std::unique_ptr<NativePipelineCache> m_pipelineCache;
 

@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Graphics/RHIs/RHIProfiler.hpp"
+#include "../Graphics/GraphicsProfiler.hpp"
 #include "ProfilerToolPane.hpp"
 
 namespace ln {
@@ -12,11 +13,14 @@ namespace detail {
 	
 void ProfilerToolPane::onGui()
 {
-	const RHIProfiler* profiler = detail::EngineDomain::graphicsManager()->deviceContext()->profiler().get();
+	char num[32];
+	const auto addTextValue = [&](const char* label, int32_t number) {
+		sprintf(num, "%d", number);
+		ImGui::Text(label); ImGui::NextColumn(); ImGui::Text(num); ImGui::NextColumn();
+	};
 
 	if (ImGui::CollapsingHeader("RHI Objects:", ImGuiTreeNodeFlags_DefaultOpen)) {
-		char num[32];
-
+		const RHIProfiler* profiler = detail::EngineDomain::graphicsManager()->deviceContext()->profiler().get();
 		ImGui::Columns(2);
 
 		sprintf(num, "%d", profiler->vertexLayoutCount());
@@ -61,6 +65,15 @@ void ProfilerToolPane::onGui()
 		sprintf(num, "%d", profiler->swapChainCount());
 		ImGui::Text("SwapChain"); ImGui::NextColumn(); ImGui::Text(num); ImGui::NextColumn();
 
+		ImGui::Columns(1);
+	}
+
+	if (ImGui::CollapsingHeader("Graphics Objects:", ImGuiTreeNodeFlags_DefaultOpen)) {
+		const GraphicsProfiler* profiler = detail::EngineDomain::graphicsManager()->profiler().get();
+		ImGui::Columns(2);
+		addTextValue("RenderTarget", profiler->renderTargetCount());
+		addTextValue("DepthBuffer", profiler->depthBufferCount());
+		addTextValue("RenderPass", profiler->renderPassCount());
 		ImGui::Columns(1);
 	}
 }

@@ -8,6 +8,7 @@ class RHIProfiler
 {
 public:
 	RHIProfiler();
+
 	void addVertexLayout(IVertexDeclaration* obj);
 	void removeVertexLayout(IVertexDeclaration* obj);
 	void addVertexBuffer(IVertexBuffer* obj);

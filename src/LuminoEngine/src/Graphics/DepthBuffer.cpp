@@ -4,6 +4,7 @@
 #include "RHIs/GraphicsDeviceContext.hpp"
 #include "RenderTargetTextureCache.hpp"
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
+#include "GraphicsProfiler.hpp"
 
 namespace ln {
 
@@ -30,16 +31,19 @@ DepthBuffer::DepthBuffer()
     , m_rhiObject()
     , m_size()
 {
+    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+    detail::GraphicsResourceInternal::manager(this)->profiler()->addDepthBuffer(this);
 }
 
 DepthBuffer::~DepthBuffer()
 {
+    detail::GraphicsResourceInternal::manager(this)->profiler()->removeDepthBuffer(this);
+    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
 }
 
 void DepthBuffer::init(int width, int height)
 {
     Object::init();
-    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 
     m_size.width = width;
     m_size.height = height;
@@ -50,7 +54,6 @@ void DepthBuffer::onDispose(bool explicitDisposing)
 {
     m_rhiObject = nullptr;
 
-    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
     Object::onDispose(explicitDisposing);
 }
 
