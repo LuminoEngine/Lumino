@@ -220,8 +220,8 @@ detail::IRenderPass* RenderPass::resolveRHIObjectNoClear(GraphicsContext* contex
 void RenderPass::releaseRHI()
 {
 	if (m_rhiObject) {
-		auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
-		device->renderPassCache()->release(m_rhiObject);
+		//auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
+		//device->renderPassCache()->release(m_rhiObject);
 		m_rhiObject = nullptr;
 	}
 }

@@ -436,6 +436,7 @@ void ICommandList::leaveRenderState()
 
 void ICommandList::begin()
 {
+	m_renderPasses.clear();
     m_stateDirtyFlags = GraphicsContextStateDirtyFlags_All;
     onBeginCommandRecoding();
 }
@@ -449,6 +450,7 @@ void ICommandList::beginRenderPass(IRenderPass* value)
 {
 	if (LN_REQUIRE(!m_currentRenderPass)) return;
 	m_currentRenderPass = value;
+	m_renderPasses.push_back(value);
 	onBeginRenderPass(value);
 }
 
@@ -804,6 +806,7 @@ ITexture::~ITexture()
 			d->profiler()->removeTexture2D(this);
 		}
 		else if (m_deviceTextureType == DeviceTextureType::RenderTarget) {
+			d->renderPassCache()->invalidate(this);
 			d->profiler()->removeRenderTarget(this);
 		}
 		else {
@@ -823,6 +826,7 @@ IDepthBuffer::IDepthBuffer()
 IDepthBuffer::~IDepthBuffer()
 {
 	if (IGraphicsDevice* d = device()) {
+		d->renderPassCache()->invalidate(this);
 		d->profiler()->removeDepthBuffer(this);
 	}
 }

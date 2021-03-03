@@ -380,6 +380,7 @@ private:
     GraphicsContextState m_staging;
     GraphicsContextState m_committed;
 	IRenderPass* m_currentRenderPass;
+	std::vector<Ref<IRenderPass>> m_renderPasses;	// 描画中の delete を防ぐため参照を持っておく
 };
 
 class ISwapChain
@@ -416,6 +417,8 @@ protected:
 };
 
 // Note: Framebuffer も兼ねる。Vulkan では分けることで subpass を実現するが、Metal や DX12 では無いし、そこまで最適化する必要も今はない。
+// 性質上 RenderTarget と DepthBuffer を持つことになるが、派生では参照カウントをインクリメントしないように注意すること。
+// RenderPass をキャッシュから削除できなくなる。
 class IRenderPass
 	: public IGraphicsDeviceObject
 {
@@ -439,6 +442,16 @@ public:
 
 	bool hasDepthBuffer() const { return m_depthBuffer != nullptr; }
 
+	bool containsRenderTarget(ITexture* renderTarget) const
+	{
+		return std::find(m_renderTargets.begin(), m_renderTargets.end(), renderTarget) != m_renderTargets.end();
+	}
+
+	bool containsDepthBuffer(IDepthBuffer* depthBuffer) const
+	{
+		return m_depthBuffer == depthBuffer;
+	}
+
 	bool isMultisample() const { return m_isMultisample; }
 
 	virtual void dispose();
@@ -447,8 +460,8 @@ protected:
 	virtual ~IRenderPass();
 
 protected:
-	std::array<Ref<ITexture>, MaxMultiRenderTargets> m_renderTargets;
-	Ref<IDepthBuffer> m_depthBuffer;
+	std::array<ITexture*, MaxMultiRenderTargets> m_renderTargets;
+	IDepthBuffer* m_depthBuffer;
 	bool m_isMultisample = false;
 
 	// TODO: init 用意した方がいい気がする

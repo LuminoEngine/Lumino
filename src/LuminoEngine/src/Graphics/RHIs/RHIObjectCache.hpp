@@ -20,7 +20,9 @@ public:
 	NativeRenderPassCache(IGraphicsDevice* device);
 	void clear();
 	IRenderPass* findOrCreate(const FindKey& key);
-	void release(IRenderPass* value);
+	void invalidate(ITexture* renderTarget);
+	void invalidate(IDepthBuffer* depthBuffer);
+	void release2(IRenderPass* value);
 	static uint64_t computeHash(const FindKey& key);
 
 private:
