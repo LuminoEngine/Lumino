@@ -45,6 +45,7 @@ class UIManager;
 class DebugInterface;
 class RuntimeEditor;
 class AppDataInternal;
+class EngineProfiler;
 
 struct EngineSettingsAssetArchiveEntry
 {
@@ -182,6 +183,7 @@ public:
     const Ref<PhysicsWorld2D>& mainPhysicsWorld2D() const { return m_mainPhysicsWorld2D; }
 
 	const Ref<DebugInterface>& debugInterface() const { return m_debugInterface; }
+	const std::unique_ptr<EngineProfiler>& engineProfiler() const { return m_engineProfiler; }
 
 	std::function<void(void)> preUpdateCallback;
 
@@ -247,6 +249,7 @@ private:
 	Ref<DebugInterface> m_debugInterface;
 	Ref<Camera> m_debugCamera;
 	Ref<WorldRenderView> m_debugWorldRenderView;
+	std::unique_ptr<EngineProfiler> m_engineProfiler;
 
     float m_timeScale;
 	bool m_exitRequested;

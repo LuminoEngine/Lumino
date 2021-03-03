@@ -41,6 +41,7 @@
 #include "../Tools/DevelopmentTool.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
+#include "EngineProfiler.hpp"
 
 #include "../Runtime/BindingValidation.hpp"
 #include <imgui.h>
@@ -89,6 +90,7 @@ EngineManager::EngineManager()
  //   , m_showDebugFpsEnabled(false)
 	//, m_debugToolEnabled(false)
 	, m_debugToolMode(DebugToolMode::Disable)
+	, m_engineProfiler(std::make_unique<EngineProfiler>())
 #if defined(LN_OS_WIN32)
     , m_comInitialized(false)
     , m_oleInitialized(false)
@@ -635,6 +637,11 @@ bool EngineManager::updateUnitily()
 
 void EngineManager::updateFrame()
 {
+	if (m_engineProfiler) {
+		m_engineProfiler->beginFrame(m_settings.frameRate);
+		m_engineProfiler->lapBeginUpdate();
+	}
+
 	if (preUpdateCallback) {
 		preUpdateCallback();
 	}
@@ -706,6 +713,9 @@ void EngineManager::updateFrame()
 		m_runtimeEditor->updateFrame();
 	}
 
+	if (m_engineProfiler) {
+		m_engineProfiler->lapEndUpdate();
+	}
 }
 
 void EngineManager::renderFrame()
@@ -733,6 +743,10 @@ void EngineManager::presentFrame()
 {
     //m_effectManager->testDraw();
 
+	if (m_engineProfiler) {
+		m_engineProfiler->lapBeginRendering();
+	}
+
 	if (m_mainWindow) {
 		m_mainWindow->present();
 	}
@@ -741,6 +755,13 @@ void EngineManager::presentFrame()
     //    m_renderingManager->frameBufferCache()->endRenderSection();
     //}
 
+	if (m_engineProfiler) {
+		m_engineProfiler->lapEndRendering();
+		m_engineProfiler->endFrame();
+	}
+
+	// 
+	//--------------------
 
 	if (m_settings.standaloneFpsControl) {
 		m_fpsController.process();
@@ -748,6 +769,7 @@ void EngineManager::presentFrame()
 	else {
 		m_fpsController.processForMeasure();
 	}
+
 
     if (m_debugToolMode == DebugToolMode::Minimalized || m_debugToolMode == DebugToolMode::Activated) {
         m_platformManager->mainWindow()->setWindowTitle(String::format(u"FPS:{0:F1}({1:F1}), F8:Debug tool.", m_fpsController.totalFps(), m_fpsController.externalFps()));

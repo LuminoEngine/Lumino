@@ -7,7 +7,7 @@ public:
     App()
     {
         EngineSettings::setMainWindowResizable(true);
-        EngineSettings::setDevelopmentToolsEnabled(true);
+        //EngineSettings::setDevelopmentToolsEnabled(true);
     }
 
     virtual void onInit() override
