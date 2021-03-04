@@ -31,6 +31,9 @@ public:
     void setMode(Mode value);
     void updateFrame();
 
+    const Ref<MainViewportToolPane>& mainViewportToolPane() const { return m_mainViewportToolPane; }
+    const Ref<EditorViewportToolPane>& editorViewportToolPane() const { return m_editorViewportToolPane; }
+
 private:
     void attach();
     void detach();

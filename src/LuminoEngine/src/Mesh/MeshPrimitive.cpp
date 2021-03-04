@@ -504,21 +504,23 @@ void MeshPrimitive::commitRenderData(int sectionIndex, detail::MorphInstance* mo
 		streamIndex++;
 	}
 
-	for (int i = 0; i < MaxRenderMorphTargets; i++) {
-		int targetIndex = morph->priorityTargets()[i];
-		if (targetIndex >= 0) {
-			const MorphVertexBuffers& b = m_morphVertexBuffers[targetIndex];
-			if (b.positionVertexBuffer.buffer) {
-				(*outVBs)[streamIndex] = b.positionVertexBuffer.buffer;
-				streamIndex++;
-			}
-			if (b.normalVertexBuffer.buffer) {
-				(*outVBs)[streamIndex] = b.normalVertexBuffer.buffer;
-				streamIndex++;
-			}
-			if (b.tangentVertexBuffer.buffer) {
-				(*outVBs)[streamIndex] = b.tangentVertexBuffer.buffer;
-				streamIndex++;
+	if (morph) {
+		for (int i = 0; i < MaxRenderMorphTargets; i++) {
+			int targetIndex = morph->priorityTargets()[i];
+			if (targetIndex >= 0) {
+				const MorphVertexBuffers& b = m_morphVertexBuffers[targetIndex];
+				if (b.positionVertexBuffer.buffer) {
+					(*outVBs)[streamIndex] = b.positionVertexBuffer.buffer;
+					streamIndex++;
+				}
+				if (b.normalVertexBuffer.buffer) {
+					(*outVBs)[streamIndex] = b.normalVertexBuffer.buffer;
+					streamIndex++;
+				}
+				if (b.tangentVertexBuffer.buffer) {
+					(*outVBs)[streamIndex] = b.tangentVertexBuffer.buffer;
+					streamIndex++;
+				}
 			}
 		}
 	}

@@ -467,6 +467,7 @@ void ICommandList::begin()
 		renderPass->releaseObjects();
 	}
 	m_renderPasses.clear();
+	m_inflightResources.clear();
 
     m_stateDirtyFlags = GraphicsContextStateDirtyFlags_All;
     onBeginCommandRecoding();
@@ -667,6 +668,15 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
 		state.shaderPass = m_staging.shaderPass;
 		state.renderPass = m_currentRenderPass;
 		IPipeline* pipeline = device()->pipelineCache()->findOrCreate(state);
+
+		// CommandList 実行中のリソース削除を防ぐため、参照カウントを増やしておく
+		for (const auto& v : m_staging.primitive.vertexBuffers) {
+			m_inflightResources.push_back(v);
+		}
+		m_inflightResources.push_back(m_staging.primitive.indexBuffer);
+		m_inflightResources.push_back(m_staging.pipelineState.vertexDeclaration);
+		m_inflightResources.push_back(pipeline);
+		
 
 		onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource, pipeline);
 	}

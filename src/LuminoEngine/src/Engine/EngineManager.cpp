@@ -38,13 +38,12 @@
 #include "../Visual/VisualManager.hpp"
 #include "../Scene/SceneManager.hpp"
 #include "../UI/UIManager.hpp"
-#include "../Tools/DevelopmentTool.hpp"
+#include "../Editor/DevelopmentTool.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
 #include "EngineProfiler.hpp"
 
 #include "../Runtime/BindingValidation.hpp"
-#include <imgui.h>
 #include <LuminoEngine/Scene/SceneConductor.hpp>
 
 namespace ln {

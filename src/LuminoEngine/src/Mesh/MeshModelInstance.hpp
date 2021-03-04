@@ -47,7 +47,9 @@ class MorphInstance
 {
 public:
 	MorphInstance(MeshModelInstance* owner, int meshContainerIndex);
+	int meshContainerIndex() const { return m_meshContainerIndex; }
 	void setWeight(int index, float value);
+	float weight(int index) const { return m_weights[index]; }
 	const std::array<int, MaxRenderMorphTargets> priorityTargets() const { return m_priorityTargets; }
 
 	void updatePriorityTargets();

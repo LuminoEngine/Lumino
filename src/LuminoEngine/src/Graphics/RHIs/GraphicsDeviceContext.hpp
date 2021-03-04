@@ -387,6 +387,7 @@ private:
     GraphicsContextState m_committed;
 	IRenderPass* m_currentRenderPass;
 	std::vector<Ref<IRenderPass>> m_renderPasses;	// 描画中の delete を防ぐため参照を持っておく
+	std::vector<Ref<IGraphicsDeviceObject>> m_inflightResources;
 };
 
 class ISwapChain

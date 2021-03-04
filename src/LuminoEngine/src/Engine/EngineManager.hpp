@@ -184,6 +184,7 @@ public:
 
 	const Ref<DebugInterface>& debugInterface() const { return m_debugInterface; }
 	const std::unique_ptr<EngineProfiler>& engineProfiler() const { return m_engineProfiler; }
+	const Ref<detail::RuntimeEditor>& runtimeEditor() const { return m_runtimeEditor; }
 
 	std::function<void(void)> preUpdateCallback;
 

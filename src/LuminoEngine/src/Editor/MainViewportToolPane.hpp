@@ -5,7 +5,7 @@
 namespace ln {
 namespace detail {
 
-    class MainViewportToolPane
+class MainViewportToolPane
     : public ImGuiDockPane
 {
 public:

@@ -106,7 +106,7 @@ AliciaSolid.vrm は、
 
 GLTFImporter::GLTFImporter()
 	: m_flipZ(false)
-	, m_flipX(true)
+	, m_flipX(false)
 	, m_clearBoneRotation(true)
 {
 }
@@ -150,7 +150,7 @@ bool GLTFImporter::onImportAsStaticMesh(MeshModel* model, const AssetPath& asset
 	// TODO: ひとまず HC4 用設定。
 	// ほんとはここから Y90 回転させるべきなのだが、今その処理を入れてる時間がない。
 	//m_flipZ = false;
-	m_flipZ = true;
+	m_flipZ = false;
 
 	//m_flipX = true;
 	//m_faceFlip = false;	// 何もせずインポートするときは R-Hand->L-Hand の変換なので面反転が必要だが、flipX １回やっているので不要。
@@ -176,12 +176,12 @@ bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, 
 		// インポート元モデルは [Y-Up,R-Hand] で、キャラクターは Z+ を正面としている。
 		// そのため Lumino 標準の Z+ 正面に合わせるには、X を反転するだけでよい。
 		m_flipZ = false;
-		m_flipX = true;
-		m_faceFlip = true;	// TODO: onImportAsStaticMesh の理論ならこれも不要なはずなのだが… 後でちゃんと調べる
+		m_flipX = false;
+		m_faceFlip = false;	// TODO: onImportAsStaticMesh の理論ならこれも不要なはずなのだが… 後でちゃんと調べる
 
 	}
 	else {
-		m_flipZ = true;
+		m_flipZ = false;
 		m_flipX = false;
 		m_faceFlip = false;
 	}
@@ -229,8 +229,10 @@ bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, 
 bool GLTFImporter::readCommon(MeshModel* meshModel)
 {
 	// VRM
+	const auto vrmItr = m_model->extensions.find("VRM");
+	if (vrmItr != m_model->extensions.end())
 	{
-		const auto& vrm = m_model->extensions["VRM"];
+		const auto& vrm = vrmItr->second;
 		const auto& blendShapeMaster = vrm.Get("blendShapeMaster");
 		const auto& blendShapeGroups = blendShapeMaster.Get("blendShapeGroups");
 
@@ -376,7 +378,7 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 
 	// MMD, VRM など、多くの人型モデルは両面表示を前提として作られていることの方が多いので、
 	// デフォルトではそのようにしておく。
-	coreMaterial->setCullingMode(CullMode::None);
+	//coreMaterial->setCullingMode(CullMode::None);
 
 
     return coreMaterial;

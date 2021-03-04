@@ -292,6 +292,7 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 
 	graphicsContext->endRenderPass();	// TODO: scoped
 	graphicsContext->setShaderDescriptor(nullptr);
+	graphicsContext->resetState();
 }
 
 bool ImGuiIntegration::handlePlatformEvent(const detail::PlatformEventArgs& e)
@@ -488,6 +489,7 @@ bool ImGuiIntegration::handleUIEvent(UIEventArgs* e)
 ImGuiDockPane::ImGuiDockPane()
 	: m_key()
 	, m_initialPlacement(ImGuiDockPlacement::Floating)
+	, m_open(true)
 {}
 
 bool ImGuiDockPane::init()
@@ -504,6 +506,11 @@ void ImGuiDockPane::setInitialPlacement(ImGuiDockPlacement value)
 	m_initialPlacement = value;
 }
 
+void ImGuiDockPane::close()
+{
+	m_open = false;
+}
+
 void ImGuiDockPane::onGui()
 {
 }
@@ -515,22 +522,24 @@ bool ImGuiDockPane::onUIEvent(UIEventArgs* e)
 
 void ImGuiDockPane::update()
 {
-	ImGui::SetNextWindowSize(ImVec2(320, 240), ImGuiCond_Once);
-	if (ImGui::Begin(m_key.c_str())) {
-		onGui();
+	if (m_open) {
+		ImGui::SetNextWindowSize(ImVec2(320, 240), ImGuiCond_Once);
+		if (ImGui::Begin(m_key.c_str(), &m_open, 0/*ImGuiWindowFlags_NoMove*/)) {
+			onGui();
 
-		//ImGuiWindow* window = ImGui::GetCurrentWindow();
+			//ImGuiWindow* window = ImGui::GetCurrentWindow();
 
-		//const ImVec2 contentSize = ImGui::GetContentRegionAvail();
+			//const ImVec2 contentSize = ImGui::GetContentRegionAvail();
 
-		//if (m_renderView)
-		//{
-		//	m_tools.mainViewportRenderTarget = RenderTargetTexture::realloc(m_tools.mainViewportRenderTarget, contentSize.x, contentSize.y, TextureFormat::RGBA8, false, SamplerState::pointClamp());
-		//	m_renderView->render(m_renderingGraphicsContext, m_tools.mainViewportRenderTarget);
-		//}
-		//ImGui::Image(m_tools.mainViewportRenderTarget, contentSize);
+			//if (m_renderView)
+			//{
+			//	m_tools.mainViewportRenderTarget = RenderTargetTexture::realloc(m_tools.mainViewportRenderTarget, contentSize.x, contentSize.y, TextureFormat::RGBA8, false, SamplerState::pointClamp());
+			//	m_renderView->render(m_renderingGraphicsContext, m_tools.mainViewportRenderTarget);
+			//}
+			//ImGui::Image(m_tools.mainViewportRenderTarget, contentSize);
+		}
+		ImGui::End();
 	}
-	ImGui::End();
 }
 
 } // namespace ln
