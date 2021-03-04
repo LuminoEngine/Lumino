@@ -72,6 +72,7 @@ struct LN_VSInput
 #ifdef LN_USE_SKINNING
     float4    BlendIndices    : BLENDINDICES;
     float4    BlendWeight        : BLENDWEIGHT;
+#endif
 
     float3    MorphTargetPos0    : POSITION1;
     float3    MorphTargetPos1    : POSITION2;
@@ -85,7 +86,6 @@ struct LN_VSInput
     float3    MorphTargetTangent1    : TANGENT2;
     float3    MorphTargetTangent2    : TANGENT3;
     float3    MorphTargetTangent3    : TANGENT4;
-#endif
 };
 
 struct LN_VSOutput_Common
@@ -173,7 +173,13 @@ void _LN_ProcessVertex_StaticMesh(
     LN_VSInput input,
     out float4 outSVPos, out float3 outViewNormal, out float2 outUV, out float4 outColor)
 {
-    outSVPos = mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
+    float3 position = input.Pos +
+        (ln_MorphWeights.x * input.MorphTargetPos0) +
+        (ln_MorphWeights.y * input.MorphTargetPos1) +
+        (ln_MorphWeights.z * input.MorphTargetPos2) +
+        (ln_MorphWeights.w * input.MorphTargetPos3);
+
+    outSVPos = mul(float4(position, 1.0f), ln_WorldViewProjection);
     outViewNormal = mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
     outUV = input.UV;
     outColor = input.Color;
