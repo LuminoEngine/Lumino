@@ -177,7 +177,7 @@ public:
 	void writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion* localQuaternionsBuffer);
 	void verifyHumanoidBones();
 	Ref<detail::MeshModelInstance> createMeshModelInstance();
-	bool isStaticMeshModel() const { return m_animationController == nullptr; }
+	//bool isStaticMeshModel() const { return m_animationController == nullptr; }
 	void calculateBoundingBox();
 
 protected:

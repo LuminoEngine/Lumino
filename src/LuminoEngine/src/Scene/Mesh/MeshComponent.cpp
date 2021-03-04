@@ -55,9 +55,9 @@ void MeshComponent::setModel(MeshModel* model)
         m_modelInstance = nullptr;
         m_model = model;
 
-        if (!m_model->isStaticMeshModel()) {
+        //if (!m_model->isStaticMeshModel()) {
             m_modelInstance = m_model->createMeshModelInstance();
-        }
+        //}
     }
 }
 
@@ -140,8 +140,12 @@ void MeshComponent::onRender(RenderingContext* context)
             if (materialIndex >= 0) {
                 commandList->setMaterial(m_model->materials()[materialIndex]);
 
-                if (m_modelInstance && node->skeletonIndex >= 0) {
-                    commandList->drawSkinnedMesh(meshPrimitive, iSection, m_modelInstance->skeletons()[node->skeletonIndex], m_modelInstance->morphs()[node->meshContainerIndex()]);
+                if (m_modelInstance && (node->skeletonIndex >= 0 || !m_modelInstance->morphs().isEmpty())) {
+
+                    commandList->drawSkinnedMesh(
+                        meshPrimitive, iSection, 
+                        m_modelInstance->hasSkeleton() ? m_modelInstance->skeletons()[node->skeletonIndex] : nullptr,
+                        m_modelInstance->hasMorph() ? m_modelInstance->morphs()[node->meshContainerIndex()] : nullptr);
                 }
                 else {
                     commandList->drawMesh(meshPrimitive, iSection);

@@ -72,10 +72,11 @@ public:
                 const auto& meshPrimitive = meshContainer->meshPrimitive();
                 for (int iMorphTarget = 0; iMorphTarget < meshPrimitive->morphTargetCount(); iMorphTarget++) {
 
-
+                    char label[32];
+                    sprintf(label, "Target[%d]", iMorphTarget);
                     ImGui::Text("Target[%d]", iMorphTarget);
                     float v = morph->weight(iMorphTarget);
-                    ImGui::SliderFloat("a", &v, 0.0f, 1.0f, "%.3f");
+                    ImGui::SliderFloat(label, &v, 0.0f, 1.0f, "%.3f");
                     morph->setWeight(iMorphTarget, v);
                 }
             }
@@ -150,6 +151,7 @@ public:
         const auto model = m_mesh->meshComponent()->model();
         const auto aabb = model->boundingBox();
         float modelRadius = Vector3::distance(aabb.max, aabb.min) * .5f;
+        modelRadius = std::max(modelRadius, 0.5f);  // モデルが小さすぎるときに接近して near clip またがないように
         //const Vector3 eye = (aabb.min + aabb.max) * .5f + Vector3(modelRadius, modelRadius, -modelRadius);
         const Vector3 eye = (aabb.min + aabb.max) * .5f + Vector3(0, 0, modelRadius * 2.0f);
         Engine::mainCamera()->setPosition(eye);

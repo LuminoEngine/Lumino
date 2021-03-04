@@ -72,6 +72,10 @@ public:
 	MeshModelInstance(MeshModel* model);
 
 	const Ref<MeshModel>& model() const { return m_model; }
+
+	bool hasSkeleton() const { return !m_skeletons.isEmpty(); }
+	bool hasMorph() const { return !m_morphs.isEmpty(); }
+
 	const List<Ref<SkeletonInstance>>& skeletons() const { return m_skeletons; }
 	const List<Ref<MorphInstance>>& morphs() const { return m_morphs; }
 
