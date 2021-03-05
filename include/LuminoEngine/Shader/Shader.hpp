@@ -458,6 +458,7 @@ LN_CONSTRUCT_ACCESS:
     void init(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
     void init(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
     void init(const String& name, Stream* stream);
+    void init(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
 
 private:
     ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;

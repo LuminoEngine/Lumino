@@ -61,6 +61,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
     //    m_layoutInfo.cvbSizes[i] = createInfo.descriptorLayout->uniformBufferRegister[i].size;
     //}
 
+    // TODO: IBlob にする必要ないかも
     {
         if (createInfo.vsCodeLen > 0) {
             if (FAILED(D3DCompilerAPI::D3DCreateBlob(createInfo.vsCodeLen, &m_vsCode))) {
@@ -570,60 +571,66 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         {
             std::vector<Descriptor> descriptors;
         };
-        Reflection reflections[ShaderStage2_Count];
+        static const int ShaderStageCount = ShaderStage2_Count;//2;
+        Reflection reflections[ShaderStageCount];
 
         // まず D3DReflect を使って、D3DCompiler が必要としている Descriptor を取得する。
         // この時点で、glslang では最適化で削除された Descriptor が、D3DCompiler では存在していることもある。 
         {
-            std::pair<const void*, size_t> shaderCodes[ShaderStage2_Count] = { { createInfo.vsCode, createInfo.vsCodeLen },  { createInfo.psCode, createInfo.psCodeLen } };
-            for (int iStage = 0; iStage < ShaderStage2_Count; iStage++) {
-                ComPtr<ID3D12ShaderReflection> shaderReflection;
-                if (FAILED(D3DCompilerAPI::D3DReflect(shaderCodes[iStage].first, shaderCodes[iStage].second, IID_PPV_ARGS(&shaderReflection)))) {
-                    LN_ERROR("D3DReflect failed.");
-                    return false;
-                }
+            std::pair<const void*, size_t> shaderCodes[ShaderStageCount] = {
+                { createInfo.vsCode, createInfo.vsCodeLen },
+                { createInfo.psCode, createInfo.psCodeLen },
+                { createInfo.csCode, createInfo.csCodeLen } };
+            for (int iStage = 0; iStage < ShaderStageCount; iStage++) {
+                if (shaderCodes[iStage].first) {
+                    ComPtr<ID3D12ShaderReflection> shaderReflection;
+                    if (FAILED(D3DCompilerAPI::D3DReflect(shaderCodes[iStage].first, shaderCodes[iStage].second, IID_PPV_ARGS(&shaderReflection)))) {
+                        LN_ERROR("D3DReflect failed.");
+                        return false;
+                    }
 
-                D3D12_SHADER_DESC desc;
-                shaderReflection->GetDesc(&desc);
+                    D3D12_SHADER_DESC desc;
+                    shaderReflection->GetDesc(&desc);
 
-                for (UINT i = 0; i < desc.ConstantBuffers; ++i) {
-                    ID3D12ShaderReflectionConstantBuffer* cbuffer = shaderReflection->GetConstantBufferByIndex(i);
-                    D3D12_SHADER_BUFFER_DESC desc;
-                    cbuffer->GetDesc(&desc);
-                    LN_LOG_VERBOSE << "ConstantBuffer '" << desc.Name << "':";
+                    for (UINT i = 0; i < desc.ConstantBuffers; ++i) {
+                        ID3D12ShaderReflectionConstantBuffer* cbuffer = shaderReflection->GetConstantBufferByIndex(i);
+                        D3D12_SHADER_BUFFER_DESC desc;
+                        cbuffer->GetDesc(&desc);
+                        LN_LOG_VERBOSE << "ConstantBuffer '" << desc.Name << "':";
 
-                    for (UINT iVariable = 0; iVariable < desc.Variables; iVariable++) {
-                        D3D12_SHADER_VARIABLE_DESC varDesc;
-                        D3D12_SHADER_TYPE_DESC typeDesc;
-                        ID3D12ShaderReflectionVariable* varRefl = cbuffer->GetVariableByIndex(iVariable);
-                        ID3D12ShaderReflectionType* varTypeRefl = varRefl->GetType();
-                        varRefl->GetDesc(&varDesc);
-                        varTypeRefl->GetDesc(&typeDesc);
-                        if (varDesc.uFlags & D3D_SVF_USED) {
-                            LN_LOG_VERBOSE << "  '" << varDesc.Name << "' used.";
-                        }
-                        else {
-                            LN_LOG_VERBOSE << "  '" << varDesc.Name << "' unused.";
+                        for (UINT iVariable = 0; iVariable < desc.Variables; iVariable++) {
+                            D3D12_SHADER_VARIABLE_DESC varDesc;
+                            D3D12_SHADER_TYPE_DESC typeDesc;
+                            ID3D12ShaderReflectionVariable* varRefl = cbuffer->GetVariableByIndex(iVariable);
+                            ID3D12ShaderReflectionType* varTypeRefl = varRefl->GetType();
+                            varRefl->GetDesc(&varDesc);
+                            varTypeRefl->GetDesc(&typeDesc);
+                            if (varDesc.uFlags & D3D_SVF_USED) {
+                                LN_LOG_VERBOSE << "  '" << varDesc.Name << "' used.";
+                            }
+                            else {
+                                LN_LOG_VERBOSE << "  '" << varDesc.Name << "' unused.";
+                            }
                         }
                     }
-                }
 
-                for (UINT i = 0; i < desc.BoundResources; ++i) {
-                    D3D12_SHADER_INPUT_BIND_DESC desc2;
-                    shaderReflection->GetResourceBindingDesc(i, &desc2);
+                    for (UINT i = 0; i < desc.BoundResources; ++i) {
+                        D3D12_SHADER_INPUT_BIND_DESC desc2;
+                        shaderReflection->GetResourceBindingDesc(i, &desc2);
 
-                    DescriptorType type = DescriptorType_Count;
-                    if (desc2.Type == D3D_SIT_CBUFFER)
-                        type = DescriptorType_UniformBuffer;
-                    else if (desc2.Type == D3D_SIT_TEXTURE)
-                        type = DescriptorType_Texture;
-                    else if (desc2.Type == D3D_SIT_SAMPLER)
-                        type = DescriptorType_SamplerState;
+                        DescriptorType type = DescriptorType_Count;
+                        if (desc2.Type == D3D_SIT_CBUFFER)
+                            type = DescriptorType_UniformBuffer;
+                        else if (desc2.Type == D3D_SIT_TEXTURE)
+                            type = DescriptorType_Texture;
+                        else if (desc2.Type == D3D_SIT_SAMPLER)
+                            type = DescriptorType_SamplerState;
 
-                    if (type != DescriptorType_Count) {
-                        std::string name = desc2.Name;
-                        if (name == "$Globals") name = "$Global";
-                        reflections[iStage].descriptors.push_back({ type, std::move(name), (int32_t)desc2.BindPoint });
+                        if (type != DescriptorType_Count) {
+                            std::string name = desc2.Name;
+                            if (name == "$Globals") name = "$Global";
+                            reflections[iStage].descriptors.push_back({ type, std::move(name), (int32_t)desc2.BindPoint });
+                        }
                     }
                 }
             }

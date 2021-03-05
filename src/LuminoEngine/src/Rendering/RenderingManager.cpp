@@ -5,6 +5,7 @@
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "../Engine/LinearAllocator.hpp"
+#include "../Shader/UnifiedShaderCompiler.hpp"
 #include "DrawElementListBuilder.hpp"
 #include "RenderFeature/BlitRenderFeature.hpp"
 #include "RenderFeature/SpriteRenderFeature.hpp"
@@ -279,6 +280,14 @@ void RenderingManager::init(const Settings& settings)
 	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ShadowCaster.fx");
 #endif
 
+	{
+		const auto code = FileSystem::readAllBytes(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/BlendShape.compute");
+		Ref<DiagnosticsManager> localDiag = makeObject<DiagnosticsManager>();
+		UnifiedShaderCompiler compiler(EngineDomain::shaderManager(), localDiag);
+		compiler.compileCompute((const char*)code.data(), code.size(), "Main", {}, {});
+		UnifiedShader* ush = compiler.unifiedShader();
+		m_builtinShaders[(int)BuiltinShader::BlendShape] = makeObject<Shader>(ush, localDiag);
+	}
 
 
 	m_clearRenderFeature = makeObject<ClearRenderFeature>();

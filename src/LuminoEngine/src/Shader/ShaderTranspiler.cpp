@@ -297,7 +297,8 @@ static EShLanguage LNStageToEShLanguage(ShaderStage2 stage)
         return EShLanguage::EShLangVertex;
     case ShaderStage2_Fragment:
         return EShLanguage::EShLangFragment;
-        break;
+    case ShaderStage2_Compute:
+        return EShLanguage::EShLangCompute;
     default:
         LN_NOTIMPLEMENTED();
         return EShLanguage::EShLangVertex;
@@ -502,6 +503,9 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
         break;
     case ShaderStage2_Fragment:
         stageFlags = ShaderStageFlags_Pixel;
+        break;
+    case ShaderStage2_Compute:
+        stageFlags = ShaderStageFlags_Compute;
         break;
     default:
         LN_UNREACHABLE();
@@ -930,12 +934,23 @@ std::vector<byte_t> ShaderCodeTranspiler::generateHlslByteCode() const
 
     const char targetVS[] = "vs_5_0";
     const char targetPS[] = "ps_5_0";
+    const char targetCS[] = "cs_5_0";
     const char* target = nullptr;
-    if (m_stage == ShaderStage2::ShaderStage2_Vertex)
+    switch (m_stage)
+    {
+    case ShaderStage2_Vertex:
         target = targetVS;
-    else if (m_stage == ShaderStage2::ShaderStage2_Fragment)
+        break;
+    case ShaderStage2_Fragment:
         target = targetPS;
-
+        break;
+    case ShaderStage2_Compute:
+        target = targetCS;
+        break;
+    default:
+        LN_UNREACHABLE();
+        return {};
+    }
 
     // TODO: release
     ID3DBlob* shaderCode = nullptr;

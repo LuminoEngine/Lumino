@@ -201,7 +201,8 @@ enum ShaderStage2
 {
 	ShaderStage2_Vertex = 0,
 	ShaderStage2_Fragment = 1,
-    ShaderStage2_Count = 2,
+    ShaderStage2_Compute = 2,
+    LN_LAST_ELEMENT_MARKER(ShaderStage2_Count) = 3,
 };
 
 enum ShaderStageFlags
@@ -209,6 +210,7 @@ enum ShaderStageFlags
     ShaderStageFlags_None = 0x00,
     ShaderStageFlags_Vertex = 0x01,
     ShaderStageFlags_Pixel = 0x02,
+    ShaderStageFlags_Compute = 0x04,
 };
 
 struct DescriptorLayoutItem

@@ -132,6 +132,7 @@ bool UnifiedShader::save(const Path& filePath)
             writeString(writer, info->name);
             writer->writeUInt32(info->vertexShader);
             writer->writeUInt32(info->pixelShader);
+            writer->writeUInt32(info->computeShader);
 
             // ShaderRenderState
             {
@@ -306,6 +307,11 @@ bool UnifiedShader::load(Stream* stream)
             info.vertexShader = reader->readUInt32();
             info.pixelShader = reader->readUInt32();
 
+            if (fileVersion >= FileVersion_5)
+                info.computeShader = reader->readUInt32();
+            else
+                info.computeShader = 0;
+
             // ShaderRenderState
             {
                 auto renderState = makeRef<ShaderRenderState>();
@@ -442,34 +448,6 @@ void UnifiedShader::setCode(CodeContainerId container, const UnifiedShaderTriple
 	m_codeContainers[idToIndex(container)].codes.push_back({triple, code });
 }
 
-//void UnifiedShader::setCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection)
-//{
-//    int index = findCodeContainerInfoIndex(stage, entryPointName);
-//    if (index < 0) {
-//        CodeContainerId newId;
-//        addCodeContainer(stage, entryPointName, &newId);
-//        index = idToIndex(newId);
-//    }
-//
-//    setCode(indexToId(index), triple, code, refrection);
-//}
-
-//bool UnifiedShader::hasCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple) const
-//{
-//    int index = findCodeContainerInfoIndex(stage, entryPointName);
-//    if (index >= 0) {
-//        return findCode(indexToId(index), triple) != nullptr;
-//    } else {
-//        return false;
-//    }
-//}
-//
-//bool UnifiedShader::findCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId) const
-//{
-//    *outId = indexToId(findCodeContainerInfoIndex(stage, entryPointName));
-//    return (*outId) >= 0;
-//}
-
 const UnifiedShader::CodeInfo* UnifiedShader::findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const
 {
     if (LN_REQUIRE(!triple.target.empty())) {
@@ -537,6 +515,9 @@ bool UnifiedShader::addPass(TechniqueId parentTech, const std::string& name, Pas
 
     PassInfo info;
     info.name = name;
+    info.vertexShader = 0;
+    info.pixelShader = 0;
+    info.computeShader = 0;
     //info.refrection = makeRef<UnifiedShaderRefrectionInfo>();
 
     m_passes.add(std::move(info));
@@ -566,6 +547,11 @@ void UnifiedShader::setPixelShader(PassId pass, CodeContainerId code)
     m_passes[idToIndex(pass)].pixelShader = code;
 }
 
+void UnifiedShader::setComputeShader(PassId pass, CodeContainerId code)
+{
+    m_passes[idToIndex(pass)].computeShader = code;
+}
+
 void UnifiedShader::setRenderState(PassId pass, ShaderRenderState* state)
 {
     m_passes[idToIndex(pass)].renderState = state;
@@ -593,6 +579,11 @@ UnifiedShader::CodeContainerId UnifiedShader::vertexShader(PassId pass) const
 UnifiedShader::CodeContainerId UnifiedShader::pixelShader(PassId pass) const
 {
     return m_passes[idToIndex(pass)].pixelShader;
+}
+
+UnifiedShader::CodeContainerId UnifiedShader::computeShader(PassId pass) const
+{
+    return m_passes[idToIndex(pass)].computeShader;
 }
 
 ShaderRenderState* UnifiedShader::renderState(PassId pass) const

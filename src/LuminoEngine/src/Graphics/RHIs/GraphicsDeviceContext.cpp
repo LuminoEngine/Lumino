@@ -318,10 +318,16 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 {
 	// Verification
 	{
-		if (LN_REQUIRE(createInfo.vsCode)) return nullptr;
-		if (LN_REQUIRE(createInfo.vsCodeLen > 0)) return nullptr;
-		if (LN_REQUIRE(createInfo.psCode)) return nullptr;
-		if (LN_REQUIRE(createInfo.psCodeLen > 0)) return nullptr;
+		if (createInfo.csCode) {
+			if (LN_REQUIRE(createInfo.csCode)) return nullptr;
+			if (LN_REQUIRE(createInfo.csCode > 0)) return nullptr;
+		}
+		else {
+			if (LN_REQUIRE(createInfo.vsCode)) return nullptr;
+			if (LN_REQUIRE(createInfo.vsCodeLen > 0)) return nullptr;
+			if (LN_REQUIRE(createInfo.psCode)) return nullptr;
+			if (LN_REQUIRE(createInfo.psCodeLen > 0)) return nullptr;
+		}
 	}
 
 
@@ -378,13 +384,14 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
 
     detail::UnifiedShader::CodeContainerId vscodeId = unifiedShader->vertexShader(passId);
     detail::UnifiedShader::CodeContainerId pscodeId = unifiedShader->pixelShader(passId);
+	detail::UnifiedShader::CodeContainerId cscodeId = unifiedShader->computeShader(passId);
 
-    //const std::vector<byte_t>* vscode = nullptr;
-    //const std::vector<byte_t>* pscode = nullptr;
     const char* vsEntryPointName = nullptr;
     const char* psEntryPointName = nullptr;
+	const char* csEntryPointName = nullptr;
     const detail::UnifiedShader::CodeInfo* vscode = nullptr;
     const detail::UnifiedShader::CodeInfo* pscode = nullptr;
+	const detail::UnifiedShader::CodeInfo* cscode = nullptr;
     if (vscodeId) {
         vsEntryPointName = unifiedShader->entryPointName(vscodeId).c_str();
         vscode = unifiedShader->findCode(vscodeId, triple);
@@ -393,6 +400,10 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
         psEntryPointName = unifiedShader->entryPointName(pscodeId).c_str();
         pscode = unifiedShader->findCode(pscodeId, triple);
     }
+	if (cscodeId) {
+		csEntryPointName = unifiedShader->entryPointName(cscodeId).c_str();
+		cscode = unifiedShader->findCode(cscodeId, triple);
+	}
 
     detail::ShaderPassCreateInfo createInfo = {
 		name.c_str(),
@@ -400,8 +411,11 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
         (vscode) ? vscode->code.size() : 0,
         (pscode) ? pscode->code.data() : nullptr,
         (pscode) ? pscode->code.size() : 0,
+		(cscode) ? cscode->code.data() : nullptr,
+		(cscode) ? cscode->code.size() : 0,
         vsEntryPointName,
         psEntryPointName,
+		csEntryPointName,
         &unifiedShader->descriptorLayout(passId),
 		&unifiedShader->attributes(passId),
     };

@@ -163,8 +163,11 @@ struct ShaderPassCreateInfo
     size_t vsCodeLen;
     const byte_t* psCode;
     size_t psCodeLen;
+	const byte_t* csCode;
+	size_t csCodeLen;
     const char* vsEntryPointName;
     const char* psEntryPointName;
+	const char* csEntryPointName;
     const DescriptorLayout* descriptorLayout;
 	const std::vector<VertexInputAttribute>* attributes;
 };

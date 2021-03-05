@@ -163,6 +163,12 @@ void Shader::init(const String& name, Stream* stream)
     }
 }
 
+void Shader::init(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag)
+{
+    Shader::init();
+    createFromUnifiedShader(unifiedShader, diag);
+}
+
 bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, ShaderCompilationProperties* properties)
 {
     Ref<DiagnosticsManager> localDiag = nullptr;
