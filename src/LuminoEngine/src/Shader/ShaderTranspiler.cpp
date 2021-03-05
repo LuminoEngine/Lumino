@@ -566,14 +566,32 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 		}
 
         // UniformBlocks
-		for (int i = 0; i < m_program->getNumLiveUniformBlocks(); i++)
-		{
+        //   ComputeShader の RWStructuredBuffer, StructuredBuffer もこれに含まれる。
+		for (int i = 0; i < m_program->getNumLiveUniformBlocks(); i++) {
             DescriptorLayoutItem item;
             item.name = m_program->getUniformBlockName(i);
             item.stageFlags = stageFlags;
             item.binding = -1;
             item.size = m_program->getUniformBlockSize(i);
-            descriptorLayout.uniformBufferRegister.push_back(std::move(item));
+
+            const glslang::TObjectReflection& block = m_program->getUniformBlock(i);
+            const glslang::TType* type = block.getType();
+            const glslang::TQualifier& qualifier = type->getQualifier();
+
+            if (qualifier.declaredBuiltIn == glslang::TBuiltInVariable::EbvStructuredBuffer) {
+                // StructuredBuffer は HLSL では t# 以外に指定するとエラーになるので、t# 前提としてかまわない
+                descriptorLayout.textureRegister.push_back(std::move(item));
+            }
+            else if (qualifier.declaredBuiltIn == glslang::TBuiltInVariable::EbvRWStructuredBuffer) {
+                descriptorLayout.unorderdRegister.push_back(std::move(item));
+            }
+            else if (qualifier.storage == glslang::TStorageQualifier::EvqUniform) {
+                descriptorLayout.uniformBufferRegister.push_back(std::move(item));
+            }
+            else {
+                LN_NOTIMPLEMENTED();
+                return false;
+            }
 		}
 
 
@@ -612,6 +630,7 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 		//
         for (int i = 0; i < m_program->getNumLiveUniformVariables(); i++)
         {
+
 
 			ShaderUniformInfo info;
 			info.name = m_program->getUniformName(i);
@@ -671,15 +690,23 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
                 descriptorLayout.samplerRegister.push_back(std::move(item));
             }
             else {
-
-                int ownerUiformBufferIndex = m_program->getUniformBlockIndex(i);
-                if (ownerUiformBufferIndex >= 0)
-                {
-                    descriptorLayout.uniformBufferRegister[ownerUiformBufferIndex].members.push_back(info);
+                const int blockIndex = m_program->getUniformBlockIndex(i);
+                if (blockIndex >= 0) {
+                    const glslang::TObjectReflection& block = m_program->getUniformBlock(blockIndex);
+                    const glslang::TType* type = block.getType();
+                    const glslang::TQualifier& qualifier = type->getQualifier();
+                    if (qualifier.storage == glslang::TStorageQualifier::EvqUniform) {
+                        // 普通の UniformBuffer のみ取り出す
+                        descriptorLayout.uniformBufferRegister[blockIndex].members.push_back(info);
+                    }
+                    else {
+                        // RWStructuredBuffer 等に指定されている構造体のメンバ
+                    }
                 }
                 else {
                     // TODO: texture など
                 }
+
             }
         }
 	}

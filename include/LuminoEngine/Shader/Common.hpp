@@ -191,10 +191,11 @@ struct ShaderUniformBufferInfo
 enum DescriptorType
 {
     DescriptorType_UniformBuffer = 0,
-    DescriptorType_Texture = 1, // Texture, 兼 CombinedSampler
-    DescriptorType_SamplerState = 2,
+    DescriptorType_UnorderdAccess = 1,
+    DescriptorType_Texture = 2, // Texture, 兼 CombinedSampler
+    DescriptorType_SamplerState = 3,
 
-    DescriptorType_Count,
+    LN_LAST_ELEMENT_MARKER(DescriptorType_Count) = 4,
 };
 
 enum ShaderStage2
@@ -226,8 +227,10 @@ struct DescriptorLayoutItem
 
 struct DescriptorLayout
 {
-    std::vector<DescriptorLayoutItem> uniformBufferRegister;
-    std::vector<DescriptorLayoutItem> textureRegister;
+    // これらの index が binding と一致するわけではないため注意
+    std::vector<DescriptorLayoutItem> uniformBufferRegister;// ConstantBuffer
+    std::vector<DescriptorLayoutItem> unorderdRegister;     // RWStructuredBuffer
+    std::vector<DescriptorLayoutItem> textureRegister;      // Texture or StructuredBuffer
     std::vector<DescriptorLayoutItem> samplerRegister;
 
     void clear();
@@ -236,6 +239,7 @@ struct DescriptorLayout
     bool isReferenceFromVertexStage(DescriptorType registerType) const;
     bool isReferenceFromPixelStage(DescriptorType registerType) const;
     int findUniformBufferRegisterIndex(const std::string& name) const;
+    int findUnorderdRegisterIndex(const std::string& name) const;
     int findTextureRegisterIndex(const std::string& name) const;
     int findSamplerRegisterIndex(const std::string& name) const;
     int findUniformBufferMemberOffset(const std::string& name) const;

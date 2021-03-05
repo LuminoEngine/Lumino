@@ -504,6 +504,7 @@ void MeshPrimitive::commitRenderData(int sectionIndex, detail::MorphInstance* mo
 		streamIndex++;
 	}
 
+#if 0
 	if (morph) {
 		for (int i = 0; i < MaxRenderMorphTargets; i++) {
 			int targetIndex = morph->priorityTargets()[i];
@@ -524,6 +525,7 @@ void MeshPrimitive::commitRenderData(int sectionIndex, detail::MorphInstance* mo
 			}
 		}
 	}
+#endif
 
 	//for (int i = 0; i < m_morphVertexBuffers.size(); i++) {
 	//	const MorphVertexBuffers& b = m_morphVertexBuffers[i];
@@ -920,6 +922,10 @@ void MeshPrimitive::attemptResetVertexLayout()
 			streamIndex++;
 		}
 
+		// NOTE: DX12 は Shader 側で要求されている Attribute の分はかならず VertexBuffer を Stream へセットしなければならない (NULL 禁止) ため、
+		// もし頂点シェーダでモーフィングしたければ、モーフターゲットが 0個, 1個, 2個… というように個別にコンパイルしなければならなくなる。
+		// 管理が非常に大変になるため却下。
+#if 0
 		// MorphTarget は最大 MaxRenderMorphTargets 個までを詰め込む
 		for (int i = 0; i < MaxRenderMorphTargets; i++) {
 			if (m_morphVertexBuffers.isValidRange(i)) {
@@ -938,6 +944,7 @@ void MeshPrimitive::attemptResetVertexLayout()
 				}
 			}
 		}
+#endif
 
 		for (int i = 0; i < m_extraVertexBuffers.size(); i++) {
 			const auto& attr = m_extraVertexBuffers[i];

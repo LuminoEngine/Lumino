@@ -73,19 +73,6 @@ struct LN_VSInput
     float4    BlendIndices    : BLENDINDICES;
     float4    BlendWeight        : BLENDWEIGHT;
 #endif
-
-    float3    MorphTargetPos0    : POSITION1;
-    float3    MorphTargetPos1    : POSITION2;
-    float3    MorphTargetPos2    : POSITION3;
-    float3    MorphTargetPos3    : POSITION4;
-    float3    MorphTargetNormal0    : NORMAL1;
-    float3    MorphTargetNormal1    : NORMAL2;
-    float3    MorphTargetNormal2    : NORMAL3;
-    float3    MorphTargetNormal3    : NORMAL4;
-    float3    MorphTargetTangent0    : TANGENT1;
-    float3    MorphTargetTangent1    : TANGENT2;
-    float3    MorphTargetTangent2    : TANGENT3;
-    float3    MorphTargetTangent3    : TANGENT4;
 };
 
 struct LN_VSOutput_Common
@@ -173,13 +160,7 @@ void _LN_ProcessVertex_StaticMesh(
     LN_VSInput input,
     out float4 outSVPos, out float3 outViewNormal, out float2 outUV, out float4 outColor)
 {
-    float3 position = input.Pos +
-        (ln_MorphWeights.x * input.MorphTargetPos0) +
-        (ln_MorphWeights.y * input.MorphTargetPos1) +
-        (ln_MorphWeights.z * input.MorphTargetPos2) +
-        (ln_MorphWeights.w * input.MorphTargetPos3);
-
-    outSVPos = mul(float4(position, 1.0f), ln_WorldViewProjection);
+    outSVPos = mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
     outViewNormal = mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
     outUV = input.UV;
     outColor = input.Color;
@@ -328,25 +309,6 @@ void _LN_ProcessVertex_Common(
     out float3 outBitangent)
 {
 #ifdef LN_USE_SKINNING
-    float3 position = input.Pos +
-        (ln_MorphWeights.x * input.MorphTargetPos0) +
-        (ln_MorphWeights.y * input.MorphTargetPos1) +
-        (ln_MorphWeights.z * input.MorphTargetPos2) +
-        (ln_MorphWeights.w * input.MorphTargetPos3);
-    float3 normal = input.Normal +
-        (ln_MorphWeights.x * input.MorphTargetNormal0) +
-        (ln_MorphWeights.y * input.MorphTargetNormal1) +
-        (ln_MorphWeights.z * input.MorphTargetNormal2) +
-        (ln_MorphWeights.w * input.MorphTargetNormal3);
-#if 1
-    float3 tangent = input.tangent;
-#else
-    float3 tangent = input.tangent +
-        (ln_MorphWeights.x * input.MorphTargetTangent0) +
-        (ln_MorphWeights.y * input.MorphTargetTangent1) +
-        (ln_MorphWeights.z * input.MorphTargetTangent2) +
-        (ln_MorphWeights.w * input.MorphTargetTangent3);
-#endif
     _LN_ProcessVertex_SkinnedMesh(
         input.Pos, input.Normal, input.BlendIndices, input.BlendWeight,
         outSVPos, outViewNormal);

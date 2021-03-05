@@ -720,6 +720,7 @@ bool UnifiedShader::checkSignature(BinaryReader* r, const char* sig, size_t len,
 void DescriptorLayout::clear()
 {
     uniformBufferRegister.clear();
+    unorderdRegister.clear();
     textureRegister.clear();
     samplerRegister.clear();
 }
@@ -728,11 +729,13 @@ std::vector<DescriptorLayoutItem>& DescriptorLayout::getLayoutItems(DescriptorTy
 {
     switch (registerType)
     {
-    case ln::detail::DescriptorType_UniformBuffer:
+    case DescriptorType_UniformBuffer:
         return uniformBufferRegister;
-    case ln::detail::DescriptorType_Texture:
+    case DescriptorType_UnorderdAccess:
+        return unorderdRegister;
+    case DescriptorType_Texture:
         return textureRegister;
-    case ln::detail::DescriptorType_SamplerState:
+    case DescriptorType_SamplerState:
         return samplerRegister;
     default:
         LN_UNREACHABLE();
@@ -744,11 +747,13 @@ const std::vector<DescriptorLayoutItem>& DescriptorLayout::getLayoutItems(Descri
 {
     switch (registerType)
     {
-    case ln::detail::DescriptorType_UniformBuffer:
+    case DescriptorType_UniformBuffer:
         return uniformBufferRegister;
-    case ln::detail::DescriptorType_Texture:
+    case DescriptorType_UnorderdAccess:
+        return unorderdRegister;
+    case DescriptorType_Texture:
         return textureRegister;
-    case ln::detail::DescriptorType_SamplerState:
+    case DescriptorType_SamplerState:
         return samplerRegister;
     default:
         LN_UNREACHABLE();
@@ -774,6 +779,14 @@ int DescriptorLayout::findUniformBufferRegisterIndex(const std::string& name) co
 {
     for (int i = 0; i < uniformBufferRegister.size(); i++) {
         if (uniformBufferRegister[i].name == name) return i;
+    }
+    return -1;
+}
+
+int DescriptorLayout::findUnorderdRegisterIndex(const std::string& name) const
+{
+    for (int i = 0; i < unorderdRegister.size(); i++) {
+        if (unorderdRegister[i].name == name) return i;
     }
     return -1;
 }
