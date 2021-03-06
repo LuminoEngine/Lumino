@@ -55,6 +55,8 @@ public:
 	void updatePriorityTargets();
 	void getMorphWeights(std::array<float, MaxRenderMorphTargets>* outMorphWeights) const;
 
+	Ref<VertexBuffer> m_blendResult;
+
 private:
 	MeshModelInstance* m_owner;
 	int m_meshContainerIndex;

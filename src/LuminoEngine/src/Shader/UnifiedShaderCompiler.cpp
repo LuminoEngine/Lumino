@@ -188,6 +188,10 @@ bool UnifiedShaderCompiler::compileCompute(
 
 	m_unifiedShader->addMergeDescriptorLayoutItem(passId, transpiler->descriptorLayout);
 
+	if (!transpiler->mapIOAndGenerateSpirv(m_unifiedShader->descriptorLayout(passId), m_diag)) {
+		return false;
+	}
+
 	UnifiedShader::CodeContainerId containerId;
 	if (!m_unifiedShader->addCodeContainer(ShaderStage2_Compute, entryPoint, &containerId)) {
 		return false;

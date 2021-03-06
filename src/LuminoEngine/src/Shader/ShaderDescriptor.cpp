@@ -96,7 +96,7 @@ void ShaderSecondaryDescriptor::setUniformBuffer(int index, const detail::Consta
 	m_uniformBufferViews[index] = value;
 }
 
-void ShaderSecondaryDescriptor::setTexture(int index, Texture* value)
+void ShaderSecondaryDescriptor::setTexture(int index, IGraphicsResource* value)
 {
 	m_textures[index] = value;
 }
@@ -104,6 +104,11 @@ void ShaderSecondaryDescriptor::setTexture(int index, Texture* value)
 void ShaderSecondaryDescriptor::setSamplerState(int index, SamplerState* value)
 {
 	m_samplers[index] = value;
+}
+
+void ShaderSecondaryDescriptor::setStorageData(int index, IGraphicsResource* value)
+{
+	m_storages[index] = value;
 }
 
 void ShaderSecondaryDescriptor::setUniformBufferData(int index, const void* data, size_t size)

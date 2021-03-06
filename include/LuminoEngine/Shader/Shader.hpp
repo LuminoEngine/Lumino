@@ -203,6 +203,7 @@ public:
     int findUniformMemberIndex(const ln::StringRef& name) const;
     int findTextureRegisterIndex(const ln::StringRef& name) const;
     int findSamplerRegisterIndex(const ln::StringRef& name) const;
+    int findStorageRegisterIndex(const ln::StringRef& name) const;
 
 LN_CONSTRUCT_ACCESS:
     ShaderDescriptorLayout();
@@ -233,11 +234,17 @@ public: // TODO:
         String name;
     };
 
+    struct StorageRegisterInfo
+    {
+        String name;
+    };
+
     Ref<Shader> m_ownerShader;
     List<UniformBufferRegisterInfo> m_buffers;
     List<UniformMemberInfo> m_members;
     List<TextureRegisterInfo> m_textures;
     List<SamplerRegisterInfo> m_samplers;
+    List<StorageRegisterInfo> m_storages;
 
     friend class ShaderDefaultDescriptor;
     friend class ShaderPass;
@@ -341,9 +348,17 @@ struct ShaderPassDescriptorLayout
         uint8_t stageFlags; // ShaderStageFlags
     };
 
+    struct StorageRegisterInfo
+    {
+        int8_t dataIndex; // Index of ShaderDescriptorLayout.m_storages
+        int8_t bindingIndex;
+        uint8_t stageFlags; // ShaderStageFlags
+    };
+
     List<UniformBufferRegisterInfo> m_buffers;
     List<TextureRegisterInfo> m_textures;
     List<SamplerRegisterInfo> m_samplers;
+    List<StorageRegisterInfo> m_storages;
 
     void init(const detail::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout);
 };
@@ -541,6 +556,7 @@ public:
     Ref<detail::IDescriptorPool> getDescriptorSetsPool();
     void releaseDescriptorSetsPool(detail::IDescriptorPool* pool);
 
+    bool isComputeShader() const { return !m_descriptorLayout.m_storages.isEmpty(); }
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;

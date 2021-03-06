@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include "MeshModelInstance.hpp"
 
 namespace ln {
@@ -92,6 +93,12 @@ MorphInstance::MorphInstance(MeshModelInstance* owner, int meshContainerIndex)
 	const auto& meshContainer = owner->model()->meshContainers()[m_meshContainerIndex];
 	const auto& meshPrimitive = meshContainer->meshPrimitives()[0];
 	m_weights.resize(meshPrimitive->morphTargetCount(), 0.0f);
+
+	VertexBuffer* baseBuffer = meshPrimitive->vertexBuffer(InterleavedVertexGroup::Main);
+	m_blendResult = makeObject<VertexBuffer>(
+		baseBuffer->size(),
+		baseBuffer->data(),
+		GraphicsResourceUsage::Static);
 
 	// TODO: tmp
 	updatePriorityTargets();

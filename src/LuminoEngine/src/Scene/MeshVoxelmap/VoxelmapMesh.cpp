@@ -41,8 +41,8 @@ void VoxelmapMeshBuilder::endSection()
 {
 	for (int i = m_startVertex; i < m_vertices.size(); i++) {
 		auto& v = m_vertices[i];
-		v.position = Vector3::transformCoord(v.position, RotationTransforms[(int)m_curDir]) + TransformOffsets[(int)m_curDir];
-		v.normal = Vector3::transformCoord(v.normal, RotationTransforms[(int)m_curDir]);
+		v.setPosition(Vector3::transformCoord(v.position.xyz(), RotationTransforms[(int)m_curDir]) + TransformOffsets[(int)m_curDir]);
+		v.setNormal(Vector3::transformCoord(v.normal.xyz(), RotationTransforms[(int)m_curDir]));
 	}
 
 	if (m_offsetIndex > m_startIndex) {
@@ -125,7 +125,7 @@ void VoxelmapMeshBuilder::projectUV(const Rect& uvRect)
 {
 	for (int i = m_subtileStartVertex; i < m_vertices.size(); i++) {
 		auto& v = m_vertices[i];
-		v.uv = uvRect.getPointByRatio(v.uv);
+		v.setUV(uvRect.getPointByRatio(v.uv.xy()));
 	}
 }
 

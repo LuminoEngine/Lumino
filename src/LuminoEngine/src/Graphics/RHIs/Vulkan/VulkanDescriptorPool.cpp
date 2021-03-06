@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "VulkanDeviceContext.hpp"
+#include "VulkanShaderPass.hpp"
 #include "VulkanDescriptorPool.hpp"
 
 namespace ln {
@@ -19,6 +20,20 @@ void VulkanDescriptor2::setData(const ShaderDescriptorTableUpdateInfo& data)
     VulkanDevice* device = m_pool->device();
     VulkanShaderPass* shaderPass = m_pool->shaderPass();
     const std::vector<VkWriteDescriptorSet>& writeInfos = shaderPass->submitDescriptorWriteInfo(nullptr, m_descriptorSets, data);
+
+    m_refarencedResourceCount = 0;
+    for (const auto& i : data.resources) {
+        if (i.object) {
+            m_refarencedResources[m_refarencedResourceCount] = i.object;
+            m_refarencedResourceCount++;
+        }
+    }
+    for (const auto& i : data.storages) {
+        if (i.object) {
+            m_refarencedResources[m_refarencedResourceCount] = i.object;
+            m_refarencedResourceCount++;
+        }
+    }
 
     vkUpdateDescriptorSets(device->vulkanDevice(), static_cast<uint32_t>(writeInfos.size()), writeInfos.data(), 0, nullptr);
 }
@@ -81,16 +96,18 @@ IDescriptor* VulkanDescriptorPool2::allocate()
 
         if (!m_activePage) {
             std::array<VkDescriptorPoolSize, DescriptorType_Count> poolSizes;
-            poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            poolSizes[0].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
-            poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//
-            poolSizes[1].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
-            poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;// 
-            poolSizes[2].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+            poolSizes[DescriptorType_UniformBuffer].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            poolSizes[DescriptorType_UniformBuffer].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+            poolSizes[DescriptorType_Texture].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[DescriptorType_Texture].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+            poolSizes[DescriptorType_SamplerState].type = VK_DESCRIPTOR_TYPE_SAMPLER;
+            poolSizes[DescriptorType_SamplerState].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+            poolSizes[DescriptorType_UnorderdAccess].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            poolSizes[DescriptorType_UnorderdAccess].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
 
             VkDescriptorPoolCreateInfo poolInfo = {};
             poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-            poolInfo.maxSets = MAX_DESCRIPTOR_SET_COUNT * 3;    // 基本3セットなので3倍 // static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
+            poolInfo.maxSets = MAX_DESCRIPTOR_SET_COUNT * DescriptorType_Count;    // 基本4セットなので3倍 // static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
             poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
             poolInfo.pPoolSizes = poolSizes.data();
 

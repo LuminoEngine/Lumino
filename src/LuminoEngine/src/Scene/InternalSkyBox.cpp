@@ -122,11 +122,11 @@ bool InternalSkyDome::init()
 
         auto* vertices = static_cast<Vertex*>(mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
         for (int i = 0; i < vertexCount; i++) {
-            vertices[i].position = s_skyDomeVertices[i].pos;
-            vertices[i].normal = s_skyDomeVertices[i].normal;
-            vertices[i].uv = s_skyDomeVertices[i].uv;
-            vertices[i].color = Color::White;
-            vertices[i].tangent = Vector4(1, 0, 0, 1);
+            vertices[i].set(
+                s_skyDomeVertices[i].pos,
+                s_skyDomeVertices[i].normal,
+                s_skyDomeVertices[i].uv,
+                Color::White);
         }
 
         auto* indices = static_cast<uint16_t*>(mesh->acquireMappedIndexBuffer());

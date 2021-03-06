@@ -160,7 +160,7 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 			vtx_dst->color.a = static_cast<float>((vtx_src->col & 0xFF000000) >> 24) / 255.0f;
 			vtx_dst->uv.x = vtx_src->uv.x;
 			vtx_dst->uv.y = vtx_src->uv.y;
-			vtx_dst->normal = Vector3::UnitZ;
+			vtx_dst->setNormal(Vector3::UnitZ);
 			vtx_dst++;
 			vtx_src++;
 		}

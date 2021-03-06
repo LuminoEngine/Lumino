@@ -131,8 +131,8 @@ public:
     virtual PrimitiveTopology primitiveType() const override { return PrimitiveTopology::LineList; }
     virtual void onGenerate(MeshGeneraterBuffer* buf) override
     {
-        buf->setV(0, Vertex{ point1, Vector3::UnitY, Vector2::Zero, point1Color });
-        buf->setV(1, Vertex{ point2, Vector3::UnitY, Vector2::Zero, point2Color });
+        buf->setV(0, Vertex(point1, Vector3::UnitY, Vector2::Zero, point1Color, Vector3::UnitZ));
+        buf->setV(1, Vertex(point2, Vector3::UnitY, Vector2::Zero, point2Color, Vector3::UnitZ));
         buf->setI(0, 0);
         buf->setI(1, 1);
     }
@@ -163,14 +163,14 @@ public:
     {
         if (colorCount == 1) {
             for (int i = 0; i < pointCount; i++) {
-                buf->setV(i, Vertex{ points[i], Vector3::UnitY, Vector2::Zero, colors[0] });
+                buf->setV(i, Vertex(points[i], Vector3::UnitY, Vector2::Zero, colors[0], Vector3::UnitZ));
                 buf->setI(i, i);
             }
         }
         else {
             LN_CHECK(pointCount == colorCount);
             for (int i = 0; i < pointCount; i++) {
-                buf->setV(i, Vertex{ points[i], Vector3::UnitY, Vector2::Zero, colors[i] });
+                buf->setV(i, Vertex(points[i], Vector3::UnitY, Vector2::Zero, colors[i], Vector3::UnitZ));
                 buf->setI(i, i);
             }
         }
@@ -200,7 +200,7 @@ public:
     virtual void onGenerate(MeshGeneraterBuffer* buf) override
     {
         for (int i = 0; i < pointCount; i++) {
-            buf->setV(i, Vertex{ points[i], Vector3::UnitY, Vector2::Zero, colors[i] });
+            buf->setV(i, Vertex(points[i], Vector3::UnitY, Vector2::Zero, colors[i], Vector3::UnitZ));
             buf->setI(i, i);
         }
     }
@@ -248,13 +248,13 @@ public:
             Math::sinCos(theta, &y, &x);
 
             Vector3 pos = center + radius * Vector3(x, y, 0.0f);
-            buf->setV(i, Vertex{ pos, -Vector3::UnitZ, Vector2::Zero, color });
+            buf->setV(i, Vertex(pos, -Vector3::UnitZ, Vector2::Zero, color, Vector3::UnitZ));
         }
 
         if (fill) {
             // 中心点
             int centerI = vertices;
-            buf->setV(centerI, Vertex{ center, -Vector3::UnitZ, Vector2::Zero, color });
+            buf->setV(centerI, Vertex(center, -Vector3::UnitZ, Vector2::Zero, color, Vector3::UnitZ));
 
             buf->setI(0, centerI);
             buf->setI(1, 0);

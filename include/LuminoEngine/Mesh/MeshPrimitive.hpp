@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../Graphics/Common.hpp"
+#include "../Rendering/Common.hpp"
 #include "../Rendering/Vertex.hpp"
 
 namespace ln {
@@ -210,6 +211,7 @@ public:
 
 	// TODO: internal
 	void commitRenderData(int sectionIndex, detail::MorphInstance* morph, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB);
+	void commitMorphTargets(detail::MorphInstance* morph, std::array<VertexBuffer*, MaxRenderMorphTargets>* outTargets);
     const List<MeshSection2>& sections() const { return m_sections; }
 
 	void resetVertexBuffer(int vertexCount);
@@ -228,7 +230,7 @@ public:
 	IndexBuffer* indexBuffer() const;
 
 
-	void* acquireMappedMorphVertexBuffer(int morphTargetIndex, VertexElementUsage usage);
+	void* acquireMappedMorphVertexBuffer(int morphTargetIndex/*, VertexElementUsage usage*/);
 	int morphTargetCount() const { return m_morphVertexBuffers.size(); }
 
 LN_CONSTRUCT_ACCESS:
@@ -258,12 +260,12 @@ private:
 		void reset();
 	};
 
-	struct MorphVertexBuffers
-	{
-		VertexBufferEntry positionVertexBuffer;
-		VertexBufferEntry normalVertexBuffer;
-		VertexBufferEntry tangentVertexBuffer;
-	};
+	//struct MorphVertexBuffers
+	//{
+	//	VertexBufferEntry positionVertexBuffer;
+	//	VertexBufferEntry normalVertexBuffer;
+	//	VertexBufferEntry tangentVertexBuffer;
+	//};
 
 	struct VertexBufferAttribute
 	{
@@ -277,7 +279,8 @@ private:
 	VertexBufferEntry m_mainVertexBuffer;		// struct Vertex. (Pos0, Normal0, UV0, Color0)
 	VertexBufferEntry m_skinningVertexBuffer;	// BlendWeignt0, BlendIndex0
 	VertexBufferEntry m_additionalUVVertexBuffer;	// TEXCOORD_1, TEXCOORD_2,TEXCOORD_3
-	List<MorphVertexBuffers> m_morphVertexBuffers;
+	//List<MorphVertexBuffers> m_morphVertexBuffers;
+	List<VertexBufferEntry> m_morphVertexBuffers;
 	List<VertexBufferAttribute> m_extraVertexBuffers;
 	IndexBufferEntry m_indexBuffer;
     Ref<VertexLayout> m_vertexLayout;

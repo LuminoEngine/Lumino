@@ -633,6 +633,16 @@ void ICommandList::setSubData3D(ITexture* resource, int x, int y, int z, int wid
     onSetSubData3D(resource, x, y, z, width, height, depth, data, dataSize);
 }
 
+void ICommandList::dispatch(int groupCountX, int groupCountY, int groupCountZ)
+{
+	//commitStatus(GraphicsContextSubmitSource_Dispatch);
+	DevicePipelineStateDesc state;
+	state.shaderPass = m_staging.shaderPass;
+	IPipeline* pipeline = device()->pipelineCache()->findOrCreate(state);
+	onDispatch(m_staging, pipeline, groupCountX, groupCountY, groupCountZ);
+	//endCommit(GraphicsContextSubmitSource_Dispatch);
+}
+
 void ICommandList::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
     commitStatus(GraphicsContextSubmitSource_Clear);
@@ -666,7 +676,11 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
     //if (LN_REQUIRE(m_staging.framebufferState.renderTargets[0])) return;
     //if (LN_REQUIRE(m_staging.pipelineState.vertexDeclaration)) return;
 
+	//if (submitSource == GraphicsContextSubmitSource_Dispatch) {
+	//	IPipeline* pipeline = device()->pipelineCache()->findOrCreate(state);
 
+	//}
+	//else
 	if (m_staging.shaderPass
         && m_staging.pipelineState.vertexDeclaration && m_currentRenderPass // extention 描画時
         ) {

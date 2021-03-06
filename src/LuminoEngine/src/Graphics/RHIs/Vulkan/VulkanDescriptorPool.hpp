@@ -15,6 +15,9 @@ public:
 
     std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets() { return m_descriptorSets; }
 
+    std::array<IGraphicsDeviceObject*, ShaderDescriptorTableUpdateInfo::MaxElements * 2> m_refarencedResources;
+    int32_t m_refarencedResourceCount;
+
 private:
     VulkanDescriptorPool2* m_pool;
     std::array<VkDescriptorSet, DescriptorType_Count> m_descriptorSets;

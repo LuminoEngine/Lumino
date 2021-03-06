@@ -775,6 +775,13 @@ bool DescriptorLayout::isReferenceFromPixelStage(DescriptorType registerType) co
     return itr != items.end();
 }
 
+bool DescriptorLayout::isReferenceFromComputeStage(DescriptorType registerType) const
+{
+    auto& items = getLayoutItems(registerType);
+    auto itr = std::find_if(items.begin(), items.end(), [](const DescriptorLayoutItem& x) { return (x.stageFlags & ShaderStageFlags_Compute) != 0; });
+    return itr != items.end();
+}
+
 int DescriptorLayout::findUniformBufferRegisterIndex(const std::string& name) const
 {
     for (int i = 0; i < uniformBufferRegister.size(); i++) {

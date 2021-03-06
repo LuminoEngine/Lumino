@@ -376,6 +376,20 @@ RenderPass* GraphicsContext::renderPass() const
 	return m_currentRenderPass;
 }
 
+void GraphicsContext::dispatch(int groupCountX, int groupCountY, int groupCountZ)
+{
+    commitState();
+    LN_ENQUEUE_RENDER_COMMAND_4(
+        GraphicsContext_dispatch, this,
+        detail::ICommandList*, m_rhiCommandList,
+        int, groupCountX,
+        int, groupCountY,
+        int, groupCountZ,
+        {
+            m_rhiCommandList->dispatch(groupCountX, groupCountY, groupCountZ);
+        });
+}
+
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	if (LN_REQUIRE(m_recordingBegan)) return;
@@ -398,7 +412,7 @@ void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
 	if (LN_REQUIRE(m_currentRenderPass)) return;
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_3(
-        GraphicsContext_setIndexBuffer, this,
+        GraphicsContext_drawPrimitive, this,
         detail::ICommandList*, m_rhiCommandList,
         int, startVertex,
         int, primitiveCount,
@@ -413,7 +427,7 @@ void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount, i
 	if (LN_REQUIRE(m_currentRenderPass)) return;
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_5(
-        GraphicsContext_setIndexBuffer, this,
+        GraphicsContext_drawPrimitiveIndexed, this,
         detail::ICommandList*, m_rhiCommandList,
         int, startIndex,
         int, primitiveCount,
@@ -429,7 +443,7 @@ void GraphicsContext::drawExtension(INativeGraphicsExtension* extension)
 	if (LN_REQUIRE(m_recordingBegan)) return;
 	commitState();
 	LN_ENQUEUE_RENDER_COMMAND_2(
-		GraphicsContext_setIndexBuffer, this,
+		GraphicsContext_drawExtension, this,
 		detail::ICommandList*, m_rhiCommandList,
 		INativeGraphicsExtension*, extension,
 		{

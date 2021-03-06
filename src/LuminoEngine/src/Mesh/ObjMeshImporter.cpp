@@ -194,20 +194,19 @@ Ref<MeshModel> ObjMeshImporter::import(const Path& filePath, float scale, Diagno
             vertex.color = Color(1, 1, 1, 1);
 
             int v = vertexIndex.vertex_index;
-            vertex.position = Vector3(attrib.vertices[3 * v + 0], attrib.vertices[3 * v + 1], attrib.vertices[3 * v + 2]);
-            vertex.position *= scale;
+            vertex.setPosition(Vector3(attrib.vertices[3 * v + 0], attrib.vertices[3 * v + 1], attrib.vertices[3 * v + 2]) * scale);
 
             int n = vertexIndex.normal_index;
             if (n >= 0) {
-                vertex.normal = Vector3(attrib.normals[3 * n + 0], attrib.normals[3 * n + 1], attrib.normals[3 * n + 2]);
+                vertex.setNormal(Vector3(attrib.normals[3 * n + 0], attrib.normals[3 * n + 1], attrib.normals[3 * n + 2]));
             }
             else {
-                vertex.normal = smoothVertexNormals[v];
+                vertex.setNormal(smoothVertexNormals[v]);
             }
 
             int t = vertexIndex.texcoord_index;
             if (t >= 0) {
-                vertex.uv = Vector2(attrib.texcoords[2 * t + 0], attrib.texcoords[2 * t + 1]);
+                vertex.uv = Vector4(attrib.texcoords[2 * t + 0], attrib.texcoords[2 * t + 1], 0.0f, 0.0f);
 				vertex.uv.y = 1.0 - vertex.uv.y;	// OpenGL Coord -> DX Coord
             }
 

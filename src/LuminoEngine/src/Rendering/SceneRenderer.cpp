@@ -496,12 +496,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				else {
 					elementInfo.boneTexture = nullptr;
 				}
-				if (batch->morph) {
-					batch->morph->getMorphWeights(&elementInfo.morphWeights);
-				}
-				else {
-					std::fill(elementInfo.morphWeights.begin(), elementInfo.morphWeights.end(), 0.0f);
-				}
 
 				ShaderTechniqueRequestClasses requester = {
 					(elementInfo.boneTexture) ? ShaderTechniqueClass_MeshProcess::SkinnedMesh : ShaderTechniqueClass_MeshProcess::StaticMesh,
@@ -546,10 +540,28 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				}
 
 
+
+				const auto& commandList = graphicsContext->commandList();
+
+				//if (batch->morph) {
+				//	const auto& shader = detail::EngineDomain::renderingManager()->blendShapeShader;
+				//	ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(shader.shader);
+
+				//	descriptor->setst
+
+				//	batch->morph->getMorphWeights(&elementInfo.morphWeights);
+
+
+
+				//}
+				//else {
+				//	std::fill(elementInfo.morphWeights.begin(), elementInfo.morphWeights.end(), 0.0f);
+				//}
+
+
 				detail::ShaderTechniqueSemanticsManager* semanticsManager = tech->semanticsManager2();
 
 
-				const auto& commandList = graphicsContext->commandList();
 				ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(tech->shader());
 				descriptor->reallocFromSemanticsManager(commandList, semanticsManager);
 

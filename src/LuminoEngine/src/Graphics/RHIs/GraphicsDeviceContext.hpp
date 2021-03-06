@@ -13,6 +13,7 @@ class INativeGraphicsInterface;
 
 namespace detail {
 class PlatformWindow;
+class IGraphicsDeviceObject;
 class IGraphicsDevice;
 class ISwapChain;
 class ICommandList;
@@ -121,6 +122,7 @@ enum GraphicsContextSubmitSource
 {
     GraphicsContextSubmitSource_Clear,
     GraphicsContextSubmitSource_Draw,
+	GraphicsContextSubmitSource_Dispatch,
 	GraphicsContextSubmitSource_Extension,
 };
 
@@ -146,14 +148,22 @@ struct ShaderDescriptorCombinedSampler
 	ISamplerState* stamplerState;
 };
 
+struct ShaderDescriptorTableUpdateItem
+{
+	IGraphicsDeviceObject* object;	// UniformBuffer, Texture, VertexBuffer, etc.. 
+	ISamplerState* stamplerState;
+	size_t offset;	// UniformBuffer offset;
+};
+
 struct ShaderDescriptorTableUpdateInfo
 {
 	static const int MaxElements = 32;
 
 	// 各要素番号は DataIndex。detail::DescriptorLayout の各メンバと一致する。BindingIndex ではない点に注意。
-	std::array<ShaderDescriptorBufferView, MaxElements> uniforms = {};
-	std::array<ShaderDescriptorCombinedSampler, MaxElements> textures = {};
-	std::array<ShaderDescriptorCombinedSampler, MaxElements> samplers = {};
+	std::array<ShaderDescriptorTableUpdateItem, MaxElements> uniforms = {};
+	std::array<ShaderDescriptorTableUpdateItem, MaxElements> resources = {};
+	std::array<ShaderDescriptorTableUpdateItem, MaxElements> samplers = {};
+	std::array<ShaderDescriptorTableUpdateItem, MaxElements> storages = {};
 };
 
 struct ShaderPassCreateInfo
@@ -341,6 +351,7 @@ public:
     void setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
     void setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize);
 
+	void dispatch(int groupCountX, int groupCountY, int groupCountZ);
     void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
     void drawPrimitive(int startVertex, int primitiveCount);
     void drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount, int vertexOffset);
@@ -372,6 +383,7 @@ public:	// TODO:
 	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
 	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
+	virtual void onDispatch(const GraphicsContextState& state, IPipeline* pipeline, int groupCountX, int groupCountY, int groupCountZ) = 0;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) = 0;

@@ -188,12 +188,14 @@ struct ShaderUniformBufferInfo
         std::vector<ShaderUniformBufferInfo>* out);
 };
 
+// TODO: name: DescriptorRegisterType の方がいいと思う。
+// TextureRegister の中には Texture または StorageBuffer が入る。
 enum DescriptorType
 {
     DescriptorType_UniformBuffer = 0,
-    DescriptorType_UnorderdAccess = 1,
-    DescriptorType_Texture = 2, // Texture, 兼 CombinedSampler
-    DescriptorType_SamplerState = 3,
+    DescriptorType_Texture = 1, // Texture, 兼 CombinedSampler
+    DescriptorType_SamplerState = 2,
+    DescriptorType_UnorderdAccess = 3,
 
     LN_LAST_ELEMENT_MARKER(DescriptorType_Count) = 4,
 };
@@ -238,6 +240,7 @@ struct DescriptorLayout
     const std::vector<DescriptorLayoutItem>& getLayoutItems(DescriptorType registerType) const;
     bool isReferenceFromVertexStage(DescriptorType registerType) const;
     bool isReferenceFromPixelStage(DescriptorType registerType) const;
+    bool isReferenceFromComputeStage(DescriptorType registerType) const;
     int findUniformBufferRegisterIndex(const std::string& name) const;
     int findUnorderdRegisterIndex(const std::string& name) const;
     int findTextureRegisterIndex(const std::string& name) const;

@@ -16,13 +16,7 @@
 
 namespace ln {
 
-const Vertex Vertex::Default = {
-	{ 0, 0, 0 },
-	{ 0, 0, 1 },
-	{ 0, 0 },
-	{ 1, 1, 1, 1 },
-	{ 1, 0, 0, 1 },
-};
+const Vertex Vertex::Default;
 const VertexBlendWeight VertexBlendWeight::Default{ {0, 0, 0, 0}, {0, 0, 0, 0} };
 
 namespace detail {
@@ -51,9 +45,9 @@ void RenderingManager::init(const Settings& settings)
 
     static VertexElement elements[] =
     {
-        { 0, VertexElementType::Float3, VertexElementUsage::Position, 0 },
-        { 0, VertexElementType::Float3, VertexElementUsage::Normal, 0 },
-        { 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
+        { 0, VertexElementType::Float4, VertexElementUsage::Position, 0 },
+        { 0, VertexElementType::Float4, VertexElementUsage::Normal, 0 },
+        { 0, VertexElementType::Float4, VertexElementUsage::TexCoord, 0 },
         { 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
 		{ 0, VertexElementType::Float4, VertexElementUsage::Tangent, 0 },
     };
@@ -286,7 +280,20 @@ void RenderingManager::init(const Settings& settings)
 		UnifiedShaderCompiler compiler(EngineDomain::shaderManager(), localDiag);
 		compiler.compileCompute((const char*)code.data(), code.size(), "Main", {}, {});
 		UnifiedShader* ush = compiler.unifiedShader();
-		m_builtinShaders[(int)BuiltinShader::BlendShape] = makeObject<Shader>(ush, localDiag);
+		auto shader = makeObject<Shader>(ush, localDiag);
+		m_builtinShaders[(int)BuiltinShader::BlendShape] = shader;
+		//shader->descriptorLayout()->
+		blendShapeShader.shader = shader;
+		blendShapeShader.shaderPass = shader->techniques()[0]->passes()[0];
+
+		const auto& layout = shader->descriptorLayout();
+		blendShapeShader.dstVerticesGID = layout->findStorageRegisterIndex(u"dstVertices");
+		blendShapeShader.srcVerticesGID = layout->findTextureRegisterIndex(u"srcVertices");
+		blendShapeShader.target0GID = layout->findTextureRegisterIndex(u"target0");
+		blendShapeShader.target1GID = layout->findTextureRegisterIndex(u"target1");
+		blendShapeShader.target2GID = layout->findTextureRegisterIndex(u"target2");
+		blendShapeShader.target3GID = layout->findTextureRegisterIndex(u"target3");
+		blendShapeShader.blendInfoGID = layout->findUniformBufferRegisterIndex(u"BlendInfo");
 	}
 
 

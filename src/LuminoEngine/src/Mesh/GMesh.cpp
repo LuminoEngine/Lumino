@@ -224,12 +224,11 @@ Ref<MeshResource> GMeshOperations::generateMeshResource(GMesh* mesh)
 	{
 		// vertex buffer
 		face->foreachLoops([&](GLoop* loop, int i) {
-			meshResource->setVertex(iVertex, Vertex{
+			meshResource->setVertex(iVertex, Vertex(
 				loop->vertex->position,
 				loop->normal,
 				loop->uv,
-				loop->color,
-			});
+				loop->color));
 			iVertex++;
 		});
 

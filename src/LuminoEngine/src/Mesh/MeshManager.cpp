@@ -171,9 +171,9 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
 		// BasicVertices
 		if ((flags & PredefinedVertexLayoutFlags_Geometry) != 0)
 		{
-			vertexLayout->addElement(stream, VertexElementType::Float3, VertexElementUsage::Position, 0);
-			vertexLayout->addElement(stream, VertexElementType::Float3, VertexElementUsage::Normal, 0);
-			vertexLayout->addElement(stream, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+			vertexLayout->addElement(stream, VertexElementType::Float4, VertexElementUsage::Position, 0);
+			vertexLayout->addElement(stream, VertexElementType::Float4, VertexElementUsage::Normal, 0);
+			vertexLayout->addElement(stream, VertexElementType::Float4, VertexElementUsage::TexCoord, 0);
 			vertexLayout->addElement(stream, VertexElementType::Float4, VertexElementUsage::Color, 0);
 			vertexLayout->addElement(stream, VertexElementType::Float4, VertexElementUsage::Tangent, 0);
 			++stream;

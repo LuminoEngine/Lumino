@@ -37,6 +37,8 @@ public:
     /** このテクスチャに関連付ける SamplerState を設定します。 */
     void setSamplerState(SamplerState* value);
 
+    detail::DescriptorResourceType descriptorResourceType() const override { return detail::DescriptorResourceType_Texture; }
+
 protected:
     Texture();
     virtual ~Texture();

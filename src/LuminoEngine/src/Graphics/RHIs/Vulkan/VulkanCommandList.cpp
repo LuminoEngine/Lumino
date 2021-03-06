@@ -4,6 +4,7 @@
 #include "VulkanBuffers.hpp"
 #include "VulkanTextures.hpp"
 #include "VulkanDescriptorPool.hpp"
+#include "VulkanShaderPass.hpp"
 #include "VulkanCommandList.hpp"
 
 namespace ln {
@@ -157,7 +158,6 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 			// これらに VK_NULL_HANDLE を Bind することはできない。
 			// 未使用を丁寧にリセットするつもりで VK_NULL_HANDLE を指定しても検証エラーとなるため注意。
 			// https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBindVertexBuffers.html
-			std::array<VkBuffer, MaxVertexStreams> vertexBuffers;
 			int vbCount = 0;
 			for (int i = 0; i < state.primitive.vertexBuffers.size(); i++) {
 				if (state.primitive.vertexBuffers[i]) {
@@ -290,6 +290,96 @@ void VulkanGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int
     m_commandBuffer->endRenderPassInRecordingIfNeeded();
 
 	static_cast<VulkanTexture*>(resource)->setSubData3D(this, x, y, z, width, height, depth, data, dataSize);
+}
+
+void VulkanGraphicsContext::onDispatch(const GraphicsContextState& state, IPipeline* basePipeline, int groupCountX, int groupCountY, int groupCountZ)
+{
+	VkCommandBuffer commandBuffer = m_commandBuffer->vulkanCommandBuffer();
+	auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
+	auto* descriptor = static_cast<VulkanDescriptor2*>(state.descriptor);
+
+	// addGraphicsToComputeBarriers
+	for (int32_t i = 0; i < descriptor->m_refarencedResourceCount; i++) {
+		VkBufferMemoryBarrier bufferBarrier;
+		bufferBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+		bufferBarrier.pNext = nullptr;
+		bufferBarrier.srcAccessMask = VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
+		bufferBarrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_SHADER_READ_BIT;
+		bufferBarrier.srcQueueFamilyIndex = m_device->graphicsQueueFamilyIndex();
+		bufferBarrier.dstQueueFamilyIndex = m_device->graphicsQueueFamilyIndex();
+		bufferBarrier.buffer = static_cast<VulkanVertexBuffer*>(descriptor->m_refarencedResources[i])->vulkanBuffer();
+		bufferBarrier.offset = 0;
+		bufferBarrier.size = VK_WHOLE_SIZE;
+		vkCmdPipelineBarrier(commandBuffer,
+			VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
+			VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+			0,
+			0, nullptr,
+			1, &bufferBarrier,
+			0, nullptr);
+	}
+
+
+	VulkanPipeline2* pipeline = static_cast<VulkanPipeline2*>(basePipeline);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline->nativePipeline());
+
+	VkPipelineLayout pipelineLayout = shaderPass->vulkanPipelineLayout();
+	if (descriptor) {
+		auto& sets = descriptor->descriptorSets();
+		vkCmdBindDescriptorSets(
+			m_commandBuffer->vulkanCommandBuffer(),
+			VK_PIPELINE_BIND_POINT_COMPUTE,
+			pipelineLayout, 0,
+			sets.size(), sets.data(), 0, nullptr);
+	}
+	//vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_COMPUTE, compute.pipelineLayout, 0, 1, &compute.descriptorSets[readSet], 0, 0);
+
+	vkCmdDispatch(commandBuffer, groupCountX, groupCountY, groupCountZ);
+
+
+	// addComputeToGraphicsBarriers
+	for (int32_t i = 0; i < descriptor->m_refarencedResourceCount; i++) {
+		VkBufferMemoryBarrier bufferBarrier;
+		bufferBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+		bufferBarrier.pNext = nullptr;
+		bufferBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_SHADER_READ_BIT;
+		bufferBarrier.dstAccessMask = VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
+		bufferBarrier.srcQueueFamilyIndex = m_device->graphicsQueueFamilyIndex();
+		bufferBarrier.dstQueueFamilyIndex = m_device->graphicsQueueFamilyIndex();
+		bufferBarrier.buffer = static_cast<VulkanVertexBuffer*>(descriptor->m_refarencedResources[i])->vulkanBuffer();
+		bufferBarrier.offset = 0;
+		bufferBarrier.size = VK_WHOLE_SIZE;
+		vkCmdPipelineBarrier(commandBuffer,
+			VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+			VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
+			0,
+			0, nullptr,
+			1, &bufferBarrier,
+			0, nullptr);
+	}
+
+
+	//{
+	//	VkBufferMemoryBarrier bufferBarrier = vks::initializers::bufferMemoryBarrier();
+	//	bufferBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+	//	bufferBarrier.dstAccessMask = VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
+	//	bufferBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
+	//	bufferBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphics;
+	//	bufferBarrier.size = VK_WHOLE_SIZE;
+	//	std::vector<VkBufferMemoryBarrier> bufferBarriers;
+	//	bufferBarrier.buffer = compute.storageBuffers.input.buffer;
+	//	bufferBarriers.push_back(bufferBarrier);
+	//	bufferBarrier.buffer = compute.storageBuffers.output.buffer;
+	//	bufferBarriers.push_back(bufferBarrier);
+	//	vkCmdPipelineBarrier(
+	//		commandBuffer,
+	//		VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+	//		VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
+	//		VK_FLAGS_NONE,
+	//		0, nullptr,
+	//		static_cast<uint32_t>(bufferBarriers.size()), bufferBarriers.data(),
+	//		0, nullptr);
+	//}
 }
 
 void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)

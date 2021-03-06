@@ -730,10 +730,10 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
         virtual void visitSymbol(glslang::TIntermSymbol* symbol)
         {
             auto name1 = symbol->getName();
-            //if (name1 == "ln_WorldViewProjection") {
-            //    printf("");
+            if (name1 == "dstVertices") {
+                printf("");
 
-            //}
+            }
             //std::cout << name1 << std::endl;
 
 
@@ -750,7 +750,31 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
 
             //}
             //else 
-                if (symbol->getBasicType() == glslang::EbtBlock) {
+             if (symbol->getQualifier().declaredBuiltIn == glslang::EbvRWStructuredBuffer) {
+                auto& name = symbol->getType().getTypeName();
+
+                auto itr = std::find_if(
+                    mergedDescriptorLayout->unorderdRegister.begin(), mergedDescriptorLayout->unorderdRegister.end(),
+                    [&](const DescriptorLayoutItem& x) { return strcmp(x.name.c_str(), name.c_str()) == 0; });
+                if (itr != mergedDescriptorLayout->unorderdRegister.end()) {
+                    symbol->getWritableType().getQualifier().layoutSet = DescriptorType_UnorderdAccess;
+                    symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
+                }
+                //symbol->getWritableType().getQualifier().layoutMatrix = glslang::ElmColumnMajor;
+            }
+            else if (symbol->getQualifier().declaredBuiltIn == glslang::EbvStructuredBuffer) {
+                 auto& name = symbol->getType().getTypeName();
+
+                 auto itr = std::find_if(
+                     mergedDescriptorLayout->textureRegister.begin(), mergedDescriptorLayout->textureRegister.end(),
+                     [&](const DescriptorLayoutItem& x) { return strcmp(x.name.c_str(), name.c_str()) == 0; });
+                 if (itr != mergedDescriptorLayout->textureRegister.end()) {
+                     symbol->getWritableType().getQualifier().layoutSet = DescriptorType_Texture;
+                     symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
+                 }
+                 //symbol->getWritableType().getQualifier().layoutMatrix = glslang::ElmColumnMajor;
+            }
+            else if (symbol->getBasicType() == glslang::EbtBlock) {
                 auto& name = symbol->getType().getTypeName();
 
                 auto itr = std::find_if(

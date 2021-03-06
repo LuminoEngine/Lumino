@@ -177,7 +177,7 @@ bool UIColorPickerContent::init()
 	m_mesh = makeObject<MeshPrimitive>(1 + (ColorCircleSplits + 2) * 2, 0, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
 	auto* vb = static_cast<Vertex*>(m_mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
 
-	vb[0].position = Vector3::Zero;
+	vb[0].setPosition(Vector3::Zero);
 	vb[0].color = Color::White;
 
 

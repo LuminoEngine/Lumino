@@ -551,6 +551,24 @@ void MeshPrimitive::commitRenderData(int sectionIndex, detail::MorphInstance* mo
 	*outVBCount = streamIndex;
 }
 
+void MeshPrimitive::commitMorphTargets(detail::MorphInstance* morph, std::array<VertexBuffer*, MaxRenderMorphTargets>* outTargets)
+{
+	//int index = 0;
+	for (int i = 0; i < MaxRenderMorphTargets; i++) {
+		(*outTargets)[i] = nullptr;
+
+		if (i < m_morphVertexBuffers.size()) {
+			int targetIndex = morph->priorityTargets()[i];
+			if (targetIndex >= 0) {
+				const VertexBufferEntry& e = m_morphVertexBuffers[i];
+				if (e.buffer) {
+					(*outTargets)[i] = e.buffer;
+				}
+			}
+		}
+	}
+}
+
 InterleavedVertexGroup MeshPrimitive::getStandardElement(VertexElementUsage usage, int usageIndex) const
 {
 	if (usageIndex == 0) {
@@ -590,7 +608,7 @@ void* MeshPrimitive::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 			// set default
 			auto* buf = static_cast<Vertex*>(m_mainVertexBuffer.buffer->map(MapMode::Write));
 			for (int i = 0; i < m_vertexCount; i++) {
-				buf[i].normal = Vector3(0, 0, 1);
+				buf[i].setNormal(Vector3(0, 0, 1));
 				buf[i].color = Color::White;
 			}
 		}
@@ -740,17 +758,17 @@ static void calculateTangentsInternal(int indexCount, const TIndex* indices, Ver
 #if 1
 		{
 			auto v = v0;
-			v.tangent = Vector4(calculateTangent(v0.position, v0.uv, v1.position, v1.uv, v2.position, v2.uv), 1.0f);
+			v.tangent = Vector4(calculateTangent(v0.position.xyz(), v0.uv.xy(), v1.position.xyz(), v1.uv.xy(), v2.position.xyz(), v2.uv.xy()), 1.0f);
 			vertices[i0] = v;
 		}
 		{
 			auto v = v1;
-			v.tangent = Vector4(calculateTangent(v1.position, v1.uv, v2.position, v2.uv, v0.position, v0.uv), 1.0f);
+			v.tangent = Vector4(calculateTangent(v1.position.xyz(), v1.uv.xy(), v2.position.xyz(), v2.uv.xy(), v0.position.xyz(), v0.uv.xy()), 1.0f);
 			vertices[i1] = v;
 		}
 		{
 			auto v = v2;
-			v.tangent = Vector4(calculateTangent(v2.position, v2.uv, v0.position, v0.uv, v1.position, v1.uv), 1.0f);
+			v.tangent = Vector4(calculateTangent(v2.position.xyz(), v2.uv.xy(), v0.position.xyz(), v0.uv.xy(), v1.position.xyz(), v1.uv.xy()), 1.0f);
 			vertices[i2] = v;
 		}
 #elif 0
@@ -842,7 +860,7 @@ void MeshPrimitive::calculateBoundingBox()
 	m_boundingBox = AABB();
 	const Vertex* vertices = static_cast<const Vertex*>(m_mainVertexBuffer.buffer->data());
 	for (int i = 0; i < m_vertexCount; i++) {
-		m_boundingBox.attemptInfrate(vertices[i].position);
+		m_boundingBox.attemptInfrate(vertices[i].position.xyz());
 	}
 }
 
@@ -869,35 +887,36 @@ IndexBuffer* MeshPrimitive::indexBuffer() const
 
 // NOTE: MorphVertexBuffers で１つのターゲットメッシュを表すイメージ。
 // VRM モデルだと表情の数だけ作られる。
-void* MeshPrimitive::acquireMappedMorphVertexBuffer(int morphTargetIndex, VertexElementUsage usage)
+void* MeshPrimitive::acquireMappedMorphVertexBuffer(int morphTargetIndex/*, VertexElementUsage usage*/)
 {
 	// Grow
 	if (morphTargetIndex >= m_morphVertexBuffers.size()) {
 		m_morphVertexBuffers.resize(morphTargetIndex + 1);
 	}
 
-	MorphVertexBuffers& b = m_morphVertexBuffers[morphTargetIndex];
-	VertexBufferEntry* e;
-	if (usage == VertexElementUsage::Position)
-		e = &b.positionVertexBuffer;
-	else if (usage == VertexElementUsage::Normal)
-		e = &b.normalVertexBuffer;
-	else if (usage == VertexElementUsage::Tangent)
-		e = &b.tangentVertexBuffer;
-	else {
-		LN_ERROR();
-		return nullptr;
-	}
+	//MorphVertexBuffers& b = m_morphVertexBuffers[morphTargetIndex];
+	//VertexBufferEntry* e;
+	//if (usage == VertexElementUsage::Position)
+	//	e = &b.positionVertexBuffer;
+	//else if (usage == VertexElementUsage::Normal)
+	//	e = &b.normalVertexBuffer;
+	//else if (usage == VertexElementUsage::Tangent)
+	//	e = &b.tangentVertexBuffer;
+	//else {
+	//	LN_ERROR();
+	//	return nullptr;
+	//}
 		
+	VertexBufferEntry* e = &m_morphVertexBuffers[morphTargetIndex];
 	if (!e->buffer) {
-		e->buffer = makeObject<VertexBuffer>(sizeof(VertexMorphTarget) * m_vertexCount, m_resourceUsage);
+		e->buffer = makeObject<VertexBuffer>(sizeof(Vertex) * m_vertexCount, m_resourceUsage);
 	}
 
 	if (!e->mappedBuffer) {
 		e->mappedBuffer = e->buffer->map(MapMode::Write);
 	}
 
-	return static_cast<VertexMorphTarget*>(e->mappedBuffer);
+	return static_cast<Vertex*>(e->mappedBuffer);
 }
 
 void MeshPrimitive::attemptResetVertexLayout()
@@ -908,9 +927,9 @@ void MeshPrimitive::attemptResetVertexLayout()
 		int streamIndex = 0;
 
 		if (m_mainVertexBuffer.buffer) {
-			m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Position, 0);
-			m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Normal, 0);
-			m_vertexLayout->addElement(streamIndex, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Position, 0);
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Normal, 0);
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::TexCoord, 0);
 			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Color, 0);
 			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Tangent, 0);
 			streamIndex++;

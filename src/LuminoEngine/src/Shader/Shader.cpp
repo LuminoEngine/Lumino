@@ -3,6 +3,7 @@
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
@@ -472,9 +473,9 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
     for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
         int dataIndex = m_descriptorLayout.m_buffers[i].dataIndex;
         const auto& view = descripter->uniformBuffer(dataIndex);
-        updateInfo.uniforms[i].buffer = view.buffer->rhiObject();
+        updateInfo.uniforms[i].object = view.buffer->rhiObject();
         updateInfo.uniforms[i].offset = view.offset;
-        if (LN_ENSURE(updateInfo.uniforms[i].buffer)) return;
+        if (LN_ENSURE(updateInfo.uniforms[i].object)) return;
     }
 
     // Textures
@@ -483,6 +484,42 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
             LN_NOTIMPLEMENTED();
             break;
         }
+
+#if 1
+        const auto& info = m_descriptorLayout.m_textures[i];
+        IGraphicsResource* resource = descripter->texture(info.dataIndex);
+        if (isComputeShader() && resource == nullptr) {
+
+        }
+        else if (resource == nullptr || resource->descriptorResourceType() == detail::DescriptorResourceType_Texture) {
+            Texture* texture = static_cast<Texture*>(resource);
+            if (!texture) {
+                texture = manager->whiteTexture();
+            }
+
+            SamplerState* sampler = nullptr;
+            if (texture->samplerState())
+                sampler = texture->samplerState();
+            else
+                sampler = manager->defaultSamplerState();
+
+            bool modified = false;
+            updateInfo.resources[i].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
+            updateInfo.resources[i].stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
+            (*outModified) |= modified;
+        }
+        else if (resource->descriptorResourceType() == detail::DescriptorResourceType_Buffer) {
+            VertexBuffer* buffer = dynamic_cast<VertexBuffer*>(resource);
+            bool modified = false;
+            updateInfo.resources[i].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(graphicsContext, buffer, &modified);
+            (*outModified) |= modified;
+            if (LN_ENSURE(updateInfo.resources[i].object)) return;
+        }
+        else {
+            LN_UNREACHABLE();
+        }
+#else
+        
         const auto& info = m_descriptorLayout.m_textures[i];
         Texture* texture = descripter->texture(info.dataIndex);
         if (!texture) {
@@ -500,6 +537,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
         view.texture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
         view.stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
         (*outModified) |= modified;
+#endif
     }
 
     // Samplers
@@ -510,19 +548,30 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
         }
         const auto& info = m_descriptorLayout.m_samplers[i];
         SamplerState* sampler = descripter->samplerState(info.dataIndex);
-        if (!sampler) {
-            if (Texture* texture = descripter->texture(info.dataIndex)) {
-                sampler = texture->samplerState();
-            }
-        }
+        //if (!sampler) {
+        //    if (Texture* texture = descripter->texture(info.dataIndex)) {
+        //        sampler = texture->samplerState();
+        //    }
+        //}
         if (!sampler) {
             sampler = manager->defaultSamplerState();
         }
 
         bool modified = false;
-        auto& view = updateInfo.samplers[i];
-        view.texture = nullptr;
-        view.stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
+        updateInfo.samplers[i].object = nullptr;
+        updateInfo.samplers[i].stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
+        (*outModified) |= modified;
+    }
+
+    // Storages
+    for (int i = 0; i < m_descriptorLayout.m_storages.size(); i++) {
+        int dataIndex = m_descriptorLayout.m_storages[i].dataIndex;
+        IGraphicsResource* resource = descripter->storage(dataIndex);
+        VertexBuffer* buffer = dynamic_cast<VertexBuffer*>(resource);
+        bool modified = false;
+        updateInfo.storages[i].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(graphicsContext, buffer, &modified);
+        updateInfo.storages[i].offset = 0;
+        if (LN_ENSURE(updateInfo.storages[i].object)) return;
         (*outModified) |= modified;
     }
 
@@ -794,6 +843,13 @@ bool ShaderDescriptorLayout::init(const detail::DescriptorLayout& layout)
         m_samplers[i].name = String::fromStdString(item.name);
     }
 
+    // 's'
+    m_storages.resize(layout.unorderdRegister.size());
+    for (int i = 0; i < layout.unorderdRegister.size(); i++) {
+        const auto& item = layout.unorderdRegister[i];
+        m_storages[i].name = String::fromStdString(item.name);
+    }
+
     return true;
 }
 
@@ -815,6 +871,11 @@ int ShaderDescriptorLayout::findTextureRegisterIndex(const ln::StringRef& name) 
 int ShaderDescriptorLayout::findSamplerRegisterIndex(const ln::StringRef& name) const
 {
     return m_samplers.indexOfIf([&](const auto& x) { return x.name == name; });
+}
+
+int ShaderDescriptorLayout::findStorageRegisterIndex(const ln::StringRef& name) const
+{
+    return m_storages.indexOfIf([&](const auto& x) { return x.name == name; });
 }
 
 //=============================================================================
@@ -980,6 +1041,18 @@ void ShaderPassDescriptorLayout::init(const detail::DescriptorLayout& layout, co
         if (LN_ENSURE(m_samplers[i].dataIndex >= 0)) return;
         if (LN_ENSURE(m_samplers[i].bindingIndex >= 0)) return;
         if (LN_ENSURE(m_samplers[i].stageFlags != 0)) return;
+    }
+
+    m_storages.resize(layout.unorderdRegister.size());
+    for (int i = 0; i < layout.unorderdRegister.size(); i++) {
+        const auto& item = layout.unorderdRegister[i];
+        m_storages[i].dataIndex = globalLayout->findStorageRegisterIndex(String::fromStdString(item.name));
+        m_storages[i].bindingIndex = item.binding;
+        m_storages[i].stageFlags = item.stageFlags;
+
+        if (LN_ENSURE(m_storages[i].dataIndex >= 0)) return;
+        if (LN_ENSURE(m_storages[i].bindingIndex >= 0)) return;
+        if (LN_ENSURE(m_storages[i].stageFlags != 0)) return;
     }
 }
 

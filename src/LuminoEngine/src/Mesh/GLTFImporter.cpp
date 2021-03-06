@@ -1052,6 +1052,17 @@ Ref<MeshContainer> GLTFImporter::generateMesh(const MeshView& meshView) const
 		}
 
 		// Morph Targets
+#if 1
+		for (int i = 0; i < primitiveView.morphTargetViews.size(); i++) {
+			const VertexMorphTargetView& morphTargetView = primitiveView.morphTargetViews[i];
+			Vertex* vertices = static_cast<Vertex*>(meshPrimitive->acquireMappedMorphVertexBuffer(i));
+			for (int iVertex = 0; iVertex < vertexCount; iVertex++) {
+				if (morphTargetView.positions) vertices[iVertex].setPosition(morphTargetView.positions[iVertex]);
+				if (morphTargetView.normals) vertices[iVertex].setNormal(morphTargetView.normals[iVertex]);
+				if (morphTargetView.tangents) vertices[iVertex].tangent = Vector4(morphTargetView.tangents[iVertex], 1.0f);
+			}
+		}
+#else
 		for (int i = 0; i < primitiveView.morphTargetViews.size(); i++) {
 			const VertexMorphTargetView& morphTargetView = primitiveView.morphTargetViews[i];
 			if (morphTargetView.positions) {
@@ -1067,6 +1078,7 @@ Ref<MeshContainer> GLTFImporter::generateMesh(const MeshView& meshView) const
 				for (int iVertex = 0; iVertex < vertexCount; iVertex++) vertices[iVertex] = morphTargetView.tangents[iVertex];
 			}
 		}
+#endif
 
 		bool hasNormalMap = meshPrimitive->sections().containsIf([this](const MeshSection2& x) { return (x.materialIndex >= 0) && m_meshModel->materials()[x.materialIndex]->normalMap() != nullptr; });
 		if (hasNormalMap) {

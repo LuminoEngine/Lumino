@@ -86,89 +86,89 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 		{
 #ifdef LN_COORD_RH
 		case SpriteBaseDirection::XPlus:
-			vertices[0].position.set(LN_WRITE_V3(0, t, l));     // 左上
-			vertices[1].position.set(LN_WRITE_V3(0, b, l));     // 左下
-			vertices[2].position.set(LN_WRITE_V3(0, t, r));     // 右上
-			vertices[3].position.set(LN_WRITE_V3(0, b, r));     // 右下
+			vertices[0].setPosition(LN_WRITE_V3(0, t, l));     // 左上
+			vertices[1].setPosition(LN_WRITE_V3(0, b, l));     // 左下
+			vertices[2].setPosition(LN_WRITE_V3(0, t, r));     // 右上
+			vertices[3].setPosition(LN_WRITE_V3(0, b, r));     // 右下
 			normal = Vector3(1, 0, 0);
 			break;
 		case SpriteBaseDirection::YPlus:
-			vertices[0].position.set(LN_WRITE_V3(l, 0, t));
-			vertices[1].position.set(LN_WRITE_V3(l, 0, b));
-			vertices[2].position.set(LN_WRITE_V3(r, 0, t));
-			vertices[3].position.set(LN_WRITE_V3(r, 0, b));
+			vertices[0].setPosition(LN_WRITE_V3(l, 0, t));
+			vertices[1].setPosition(LN_WRITE_V3(l, 0, b));
+			vertices[2].setPosition(LN_WRITE_V3(r, 0, t));
+			vertices[3].setPosition(LN_WRITE_V3(r, 0, b));
 			normal = Vector3(0, 1, 0);
 			break;
 		case SpriteBaseDirection::ZPlus:
-			vertices[0].position.set(LN_WRITE_V3(l, t, 0));
-			vertices[1].position.set(LN_WRITE_V3(l, b, 0));
-			vertices[2].position.set(LN_WRITE_V3(r, t, 0));
-			vertices[3].position.set(LN_WRITE_V3(r, b, 0));
+			vertices[0].setPosition(LN_WRITE_V3(l, t, 0));
+			vertices[1].setPosition(LN_WRITE_V3(l, b, 0));
+			vertices[2].setPosition(LN_WRITE_V3(r, t, 0));
+			vertices[3].setPosition(LN_WRITE_V3(r, b, 0));
 			normal = Vector3(0, 0, 1);
 			break;
 		case SpriteBaseDirection::XMinus:
-			vertices[0].position.set(LN_WRITE_V3(0, t, r));
-			vertices[1].position.set(LN_WRITE_V3(0, b, r));
-			vertices[2].position.set(LN_WRITE_V3(0, t, l));
-			vertices[3].position.set(LN_WRITE_V3(0, b, l));
+			vertices[0].setPosition(LN_WRITE_V3(0, t, r));
+			vertices[1].setPosition(LN_WRITE_V3(0, b, r));
+			vertices[2].setPosition(LN_WRITE_V3(0, t, l));
+			vertices[3].setPosition(LN_WRITE_V3(0, b, l));
 			normal = Vector3(-1, 0, 0);
 			break;
 		case SpriteBaseDirection::YMinus:
-			vertices[0].position.set(LN_WRITE_V3(r, 0, t));
-			vertices[1].position.set(LN_WRITE_V3(r, 0, b));
-			vertices[2].position.set(LN_WRITE_V3(l, 0, t));
-			vertices[3].position.set(LN_WRITE_V3(l, 0, b));
+			vertices[0].setPosition(LN_WRITE_V3(r, 0, t));
+			vertices[1].setPosition(LN_WRITE_V3(r, 0, b));
+			vertices[2].setPosition(LN_WRITE_V3(l, 0, t));
+			vertices[3].setPosition(LN_WRITE_V3(l, 0, b));
 			normal = Vector3(0, -1, 0);
 			break;
 		case SpriteBaseDirection::ZMinus:
-			vertices[0].position.set(LN_WRITE_V3(l, t, 0));
-			vertices[1].position.set(LN_WRITE_V3(l, b, 0));
-			vertices[2].position.set(LN_WRITE_V3(r, t, 0));
-			vertices[3].position.set(LN_WRITE_V3(r, b, 0));
+			vertices[0].setPosition(LN_WRITE_V3(l, t, 0));
+			vertices[1].setPosition(LN_WRITE_V3(l, b, 0));
+			vertices[2].setPosition(LN_WRITE_V3(r, t, 0));
+			vertices[3].setPosition(LN_WRITE_V3(r, b, 0));
 			normal = Vector3(0, 0, -1);
 			break;
 		}
 #else
 		case SpriteBaseDirection::XPlus:
-			vertices[0].position.set(LN_WRITE_V3(0, t, l));     // 左上
-			vertices[1].position.set(LN_WRITE_V3(0, t, r));     // 右上
-			vertices[2].position.set(LN_WRITE_V3(0, b, l));     // 左下
-			vertices[3].position.set(LN_WRITE_V3(0, b, r));     // 右下
+			vertices[0].setPosition(LN_WRITE_V3(0, t, l));     // 左上
+			vertices[1].setPosition(LN_WRITE_V3(0, t, r));     // 右上
+			vertices[2].setPosition(LN_WRITE_V3(0, b, l));     // 左下
+			vertices[3].setPosition(LN_WRITE_V3(0, b, r));     // 右下
 			normal = Vector3(1, 0, 0);
 			break;
 		case SpriteBaseDirection::YPlus:
-			vertices[0].position.set(LN_WRITE_V3(l, 0, t));
-			vertices[1].position.set(LN_WRITE_V3(r, 0, t));
-			vertices[2].position.set(LN_WRITE_V3(l, 0, b));
-			vertices[3].position.set(LN_WRITE_V3(r, 0, b));
+			vertices[0].setPosition(LN_WRITE_V3(l, 0, t));
+			vertices[1].setPosition(LN_WRITE_V3(r, 0, t));
+			vertices[2].setPosition(LN_WRITE_V3(l, 0, b));
+			vertices[3].setPosition(LN_WRITE_V3(r, 0, b));
 			normal = Vector3(0, 1, 0);
 			break;
 		case SpriteBaseDirection::ZPlus:
-			vertices[0].position.set(LN_WRITE_V3(r, t, 0));
-			vertices[1].position.set(LN_WRITE_V3(l, t, 0));
-			vertices[2].position.set(LN_WRITE_V3(r, b, 0));
-			vertices[3].position.set(LN_WRITE_V3(l, b, 0));
+			vertices[0].setPosition(LN_WRITE_V3(r, t, 0));
+			vertices[1].setPosition(LN_WRITE_V3(l, t, 0));
+			vertices[2].setPosition(LN_WRITE_V3(r, b, 0));
+			vertices[3].setPosition(LN_WRITE_V3(l, b, 0));
 			normal = Vector3(0, 0, 1);
 			break;
 		case SpriteBaseDirection::XMinus:
-			vertices[0].position.set(LN_WRITE_V3(0, t, r));
-			vertices[1].position.set(LN_WRITE_V3(0, t, l));
-			vertices[2].position.set(LN_WRITE_V3(0, b, r));
-			vertices[3].position.set(LN_WRITE_V3(0, b, l));
+			vertices[0].setPosition(LN_WRITE_V3(0, t, r));
+			vertices[1].setPosition(LN_WRITE_V3(0, t, l));
+			vertices[2].setPosition(LN_WRITE_V3(0, b, r));
+			vertices[3].setPosition(LN_WRITE_V3(0, b, l));
 			normal = Vector3(-1, 0, 0);
 			break;
 		case SpriteBaseDirection::YMinus:
-			vertices[0].position.set(LN_WRITE_V3(r, 0, t));
-			vertices[1].position.set(LN_WRITE_V3(l, 0, t));
-			vertices[2].position.set(LN_WRITE_V3(r, 0, b));
-			vertices[3].position.set(LN_WRITE_V3(l, 0, b));
+			vertices[0].setPosition(LN_WRITE_V3(r, 0, t));
+			vertices[1].setPosition(LN_WRITE_V3(l, 0, t));
+			vertices[2].setPosition(LN_WRITE_V3(r, 0, b));
+			vertices[3].setPosition(LN_WRITE_V3(l, 0, b));
 			normal = Vector3(0, -1, 0);
 			break;
 		case SpriteBaseDirection::ZMinus:
-			vertices[0].position.set(LN_WRITE_V3(l, t, 0));
-			vertices[1].position.set(LN_WRITE_V3(r, t, 0));
-			vertices[2].position.set(LN_WRITE_V3(l, b, 0));
-			vertices[3].position.set(LN_WRITE_V3(r, b, 0));
+			vertices[0].setPosition(LN_WRITE_V3(l, t, 0));
+			vertices[1].setPosition(LN_WRITE_V3(r, t, 0));
+			vertices[2].setPosition(LN_WRITE_V3(l, b, 0));
+			vertices[3].setPosition(LN_WRITE_V3(r, b, 0));
 			normal = Vector3(0, 0, -1);
 			break;
 		}
@@ -180,22 +180,22 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 	{
 #ifdef LN_COORD_RH
 		Vector2 origin(-center);
-		vertices[0].position.set(origin.x, origin.y, 0);
-		vertices[1].position.set(origin.x, origin.y + size.y, 0);
-		vertices[2].position.set(origin.x + size.x, origin.y, 0);
-		vertices[3].position.set(origin.x + size.x, origin.y + size.y, 0);
+		vertices[0].setPosition(origin.x, origin.y, 0);
+		vertices[1].setPosition(origin.x, origin.y + size.y, 0);
+		vertices[2].setPosition(origin.x + size.x, origin.y, 0);
+		vertices[3].setPosition(origin.x + size.x, origin.y + size.y, 0);
 #else
 		Vector2 origin(-center);
-		vertices[0].position.set(origin.x, origin.y, 0);
-		vertices[1].position.set(origin.x + size.x, origin.y, 0);
-		vertices[2].position.set(origin.x, origin.y + size.y, 0);
-		vertices[3].position.set(origin.x + size.x, origin.y + size.y, 0);
+		vertices[0].setPosition(origin.x, origin.y, 0);
+		vertices[1].setPosition(origin.x + size.x, origin.y, 0);
+		vertices[2].setPosition(origin.x, origin.y + size.y, 0);
+		vertices[3].setPosition(origin.x + size.x, origin.y + size.y, 0);
 #endif
 		normal = Vector3(0, 0, -1);
 	}
 
 	for (int i = 0; i < 4; i++)
-		vertices[i].normal = normal;
+		vertices[i].setNormal(normal);
 
 	const Vector3& worldPoint = transform.position();
 
@@ -258,10 +258,10 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 	}
 
 	// 座標変換
-	vertices[0].position.transformCoord(actualTransform);
-	vertices[1].position.transformCoord(actualTransform);
-	vertices[2].position.transformCoord(actualTransform);
-	vertices[3].position.transformCoord(actualTransform);
+	vertices[0].transformPosition(actualTransform);
+	vertices[1].transformPosition(actualTransform);
+	vertices[2].transformPosition(actualTransform);
+	vertices[3].transformPosition(actualTransform);
 
 	// 色
 	vertices[0].color = color;

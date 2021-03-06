@@ -166,29 +166,16 @@ void FrameRectRenderFeature::addSprite(GraphicsContext* context, const Vector3& 
 
 	m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
 	auto* vertices = m_mappedVertices + ((m_batchData.spriteOffset + m_batchData.spriteCount) * 4);
-
-	vertices[0].position = pos0;
-	vertices[0].uv = uv0;
-	vertices[0].normal = Vector3::UnitZ;
-	vertices[0].color = Color::White;
-	vertices[1].position = pos1;
-	vertices[1].uv = uv1;
-	vertices[1].normal = Vector3::UnitZ;
-	vertices[1].color = Color::White;
-	vertices[2].position = pos2;
-	vertices[2].uv = uv2;
-	vertices[2].normal = Vector3::UnitZ;
-	vertices[2].color = Color::White;
-	vertices[3].position = pos3;
-	vertices[3].uv = uv3;
-	vertices[3].normal = Vector3::UnitZ;
-	vertices[3].color = Color::White;
+	vertices[0].set(pos0, Vector3::UnitZ, uv0, Color::White);
+	vertices[1].set(pos1, Vector3::UnitZ, uv1, Color::White);
+	vertices[2].set(pos2, Vector3::UnitZ, uv2, Color::White);
+	vertices[3].set(pos3, Vector3::UnitZ, uv3, Color::White);
 
     // transform
-    vertices[0].position.transformCoord(*m_worldTransform);
-    vertices[1].position.transformCoord(*m_worldTransform);
-    vertices[2].position.transformCoord(*m_worldTransform);
-    vertices[3].position.transformCoord(*m_worldTransform);
+    vertices[0].transformPosition(*m_worldTransform);
+    vertices[1].transformPosition(*m_worldTransform);
+    vertices[2].transformPosition(*m_worldTransform);
+    vertices[3].transformPosition(*m_worldTransform);
 
 	m_batchData.spriteCount++;
 }
@@ -226,7 +213,7 @@ void FrameRectRenderFeature::putRectangleTiling(GraphicsContext* context, const 
 
 	ln::Vertex v;
 	v.color.set(1, 1, 1, 1);
-	v.normal.set(0, 0, 1);
+	v.normal.set(0, 0, 1, 0);
 
 	float uv_l = srcUVRect.x;
 	float uv_t = srcUVRect.y;
