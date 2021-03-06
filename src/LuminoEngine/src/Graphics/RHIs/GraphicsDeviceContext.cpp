@@ -320,7 +320,7 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 	{
 		if (createInfo.csCode) {
 			if (LN_REQUIRE(createInfo.csCode)) return nullptr;
-			if (LN_REQUIRE(createInfo.csCode > 0)) return nullptr;
+			if (LN_REQUIRE(createInfo.csCodeLen > 0)) return nullptr;
 		}
 		else {
 			if (LN_REQUIRE(createInfo.vsCode)) return nullptr;

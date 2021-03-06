@@ -275,6 +275,7 @@ void RenderingManager::init(const Settings& settings)
 #endif
 
 	{
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 		const auto code = FileSystem::readAllBytes(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/BlendShape.compute");
 		Ref<DiagnosticsManager> localDiag = makeObject<DiagnosticsManager>();
 		UnifiedShaderCompiler compiler(EngineDomain::shaderManager(), localDiag);
@@ -294,6 +295,7 @@ void RenderingManager::init(const Settings& settings)
 		blendShapeShader.target2GID = layout->findTextureRegisterIndex(u"target2");
 		blendShapeShader.target3GID = layout->findTextureRegisterIndex(u"target3");
 		blendShapeShader.blendInfoGID = layout->findUniformBufferRegisterIndex(u"BlendInfo");
+#endif
 	}
 
 

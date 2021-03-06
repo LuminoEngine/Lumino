@@ -103,7 +103,7 @@ public:
     void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
-        Engine::renderView()->setGizmoEnabled(true);
+        //Engine::renderView()->setGizmoEnabled(true);
         Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         //Engine::renderView()->setBackgroundColor(Color::Gray);
         //Scene::setAntialiasEnabled(false);
@@ -146,6 +146,7 @@ public:
         m_mesh = SkinnedMesh::load(path);
         m_mesh->setBlendMode(BlendMode::Alpha);
         m_mesh->addInto();
+        //m_mesh->setScale(10);
 
 
         const auto model = m_mesh->meshComponent()->model();
