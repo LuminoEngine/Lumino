@@ -322,9 +322,9 @@ void SpriteTextRenderFeature::putRectangle(Vertex* buffer, const Matrix& transfo
 	float bv = srcUVRect.getBottom();
 
 	buffer[0].set(Vector3::transformCoord(Vector3(rect.getLeft(), rect.getTop() * signY, 0), transform), Vector3::UnitZ, Vector2(lu, tv), color);	// 左上
-	buffer[1].set(Vector3::transformCoord(Vector3(rect.getLeft(), rect.getBottom() * signY, 0), transform), Vector3::UnitZ, Vector2(lu, tv), color);// 左下
-	buffer[2].set(Vector3::transformCoord(Vector3(rect.getRight(), rect.getTop() * signY, 0), transform), Vector3::UnitZ, Vector2(lu, tv), color);	// 右上
-	buffer[3].set(Vector3::transformCoord(Vector3(rect.getRight(), rect.getBottom() * signY, 0), transform), Vector3::UnitZ, Vector2(lu, tv), color);// 右下
+	buffer[1].set(Vector3::transformCoord(Vector3(rect.getLeft(), rect.getBottom() * signY, 0), transform), Vector3::UnitZ, Vector2(lu, bv), color);// 左下
+	buffer[2].set(Vector3::transformCoord(Vector3(rect.getRight(), rect.getTop() * signY, 0), transform), Vector3::UnitZ, Vector2(ru, tv), color);	// 右上
+	buffer[3].set(Vector3::transformCoord(Vector3(rect.getRight(), rect.getBottom() * signY, 0), transform), Vector3::UnitZ, Vector2(ru, bv), color);// 右下
 
 	// pixel snap
 	if (isPixelSnapEnabled()) {
