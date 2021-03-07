@@ -5,6 +5,8 @@
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Shader/Common.hpp>
 #include "../../Shader/UnifiedShader.hpp"
+#include "RHIObject.hpp"
+#include "RHIBuffer.hpp"
 
 namespace ln {
 struct SizeI;
@@ -34,13 +36,6 @@ class NativeRenderPassCache;
 class NativePipelineCache;
 class RHIBitmap;
 class RHIProfiler;
-
-enum class DeviceResourceType
-{
-    VertexBuffer,
-    IndexBuffer,
-	UniformBuffer,
-};
 
 enum class DeviceTextureType
 {
@@ -190,58 +185,6 @@ public:
 	
 };
 
-
-class RHIObject
-{
-protected:
-	RHIObject() = default;
-
-private:
-	RHIObject(const RHIObject&) = delete;
-	void operator=(const RHIObject&) = delete;
-};
-
-template<class T>
-using RHIPtr = std::shared_ptr<T>;
-
-template<class T, class... TArgs>
-inline RHIPtr<T> makeRHIRef(TArgs&&... args)
-{
-	return std::make_shared<T>(std::forward<TArgs>(args)...);
-}
-
-class IGraphicsDeviceObject
-    : public RefObject
-{
-public:
-	virtual void dispose();	// Prepare for multiple calls
-	IGraphicsDevice* device() const { return m_device; }
-	int32_t objectId() const { return m_objectId; }
-
-	IGraphicsDevice* m_device;
-	int32_t m_objectId;
-protected:
-    IGraphicsDeviceObject();
-    virtual ~IGraphicsDeviceObject();
-    virtual void finalize();
-
-private:
-    bool m_disposed;
-	bool m_profiling;
-
-	friend class RHIProfiler;
-	friend class IGraphicsDevice;
-};
-
-class IGraphicsRHIBuffer
-    : public IGraphicsDeviceObject
-{
-public:
-    virtual DeviceResourceType resourceType() const = 0;
-
-protected:
-    virtual ~IGraphicsRHIBuffer();
-};
 
 class IGraphicsDevice
 	: public RefObject
@@ -511,49 +454,6 @@ protected:
 
 private:
 	friend class IGraphicsDevice;
-};
-
-
-class IVertexBuffer
-	: public IGraphicsRHIBuffer
-{
-public:
-    virtual DeviceResourceType resourceType() const { return DeviceResourceType::VertexBuffer; }
-	virtual size_t getBytesSize() = 0;
-	virtual GraphicsResourceUsage usage() const = 0;
-	//virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
-	//virtual void unmap() = 0;
-
-protected:
-	IVertexBuffer();
-	virtual ~IVertexBuffer();
-};
-
-
-class IIndexBuffer
-	: public IGraphicsRHIBuffer
-{
-public:
-    virtual DeviceResourceType resourceType() const { return DeviceResourceType::IndexBuffer; }
-	virtual size_t getBytesSize() = 0;
-	virtual GraphicsResourceUsage usage() const = 0;
-	//virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
-	//virtual void unmap() = 0;
-
-protected:
-	IIndexBuffer();
-	virtual ~IIndexBuffer();
-};
-
-class IUniformBuffer
-	: public IGraphicsDeviceObject
-{
-public:
-	virtual void* map() = 0;
-	virtual void unmap() = 0;
-
-protected:
-	virtual ~IUniformBuffer();
 };
 
 class ITexture
