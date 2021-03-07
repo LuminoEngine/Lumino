@@ -29,8 +29,8 @@ private:
     List<MeshGenerater*> m_generators;
     PrimitiveTopology m_primitiveType;
     Ref<IVertexDeclaration> m_vertexDeclaration;
-    Ref<IVertexBuffer> m_vertexBuffer;
-    Ref<IIndexBuffer> m_indexBuffer;
+    Ref<RHIResource> m_vertexBuffer;
+    Ref<RHIResource> m_indexBuffer;
 
 };
 

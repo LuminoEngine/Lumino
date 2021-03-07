@@ -5,6 +5,8 @@
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Shader/Common.hpp>
 #include "../../Shader/UnifiedShader.hpp"
+#include "RHIObject.hpp"
+#include "RHIResource.hpp"
 
 namespace ln {
 struct SizeI;
@@ -13,16 +15,13 @@ class INativeGraphicsInterface;
 
 namespace detail {
 class PlatformWindow;
-class IGraphicsDeviceObject;
+class RHIDeviceObject;
 class IGraphicsDevice;
 class ISwapChain;
 class ICommandList;
 class ICommandQueue;
 class IRenderPass;
 class IVertexDeclaration;
-class IVertexBuffer;
-class IIndexBuffer;
-class IUniformBuffer;
 class ITexture;
 class IDepthBuffer;
 class ISamplerState;
@@ -33,21 +32,8 @@ class IDescriptor;
 class NativeRenderPassCache;
 class NativePipelineCache;
 class RHIBitmap;
+class RHIResource;
 class RHIProfiler;
-
-enum class DeviceResourceType
-{
-    VertexBuffer,
-    IndexBuffer,
-	UniformBuffer,
-};
-
-enum class DeviceTextureType
-{
-	Texture2D,
-	Texture3D,
-	RenderTarget,
-};
 
 struct GraphicsDeviceCaps
 {
@@ -92,8 +78,8 @@ struct DeviceRegionRectsState
 
 struct DevicePrimitiveState
 {
-	std::array<IVertexBuffer*, MaxVertexStreams> vertexBuffers = {};
-	IIndexBuffer* indexBuffer = nullptr;
+	std::array<RHIResource*, MaxVertexStreams> vertexBuffers = {};
+	RHIResource* indexBuffer = nullptr;
 };
 
 struct GraphicsContextState
@@ -137,7 +123,7 @@ using ShaderVertexInputAttributeTable = std::vector<ShaderVertexInputAttribute>;
 
 struct ShaderDescriptorBufferView
 {
-	IUniformBuffer* buffer;
+	RHIResource* buffer;
 	size_t offset;
 	//size_t size;
 };
@@ -150,7 +136,7 @@ struct ShaderDescriptorCombinedSampler
 
 struct ShaderDescriptorTableUpdateItem
 {
-	IGraphicsDeviceObject* object;	// UniformBuffer, Texture, VertexBuffer, etc.. 
+	RHIDeviceObject* object;	// UniformBuffer, Texture, VertexBuffer, etc.. 
 	ISamplerState* stamplerState;
 	size_t offset;	// UniformBuffer offset;
 };
@@ -191,58 +177,6 @@ public:
 };
 
 
-class RHIObject
-{
-protected:
-	RHIObject() = default;
-
-private:
-	RHIObject(const RHIObject&) = delete;
-	void operator=(const RHIObject&) = delete;
-};
-
-template<class T>
-using RHIPtr = std::shared_ptr<T>;
-
-template<class T, class... TArgs>
-inline RHIPtr<T> makeRHIRef(TArgs&&... args)
-{
-	return std::make_shared<T>(std::forward<TArgs>(args)...);
-}
-
-class IGraphicsDeviceObject
-    : public RefObject
-{
-public:
-	virtual void dispose();	// Prepare for multiple calls
-	IGraphicsDevice* device() const { return m_device; }
-	int32_t objectId() const { return m_objectId; }
-
-	IGraphicsDevice* m_device;
-	int32_t m_objectId;
-protected:
-    IGraphicsDeviceObject();
-    virtual ~IGraphicsDeviceObject();
-    virtual void finalize();
-
-private:
-    bool m_disposed;
-	bool m_profiling;
-
-	friend class RHIProfiler;
-	friend class IGraphicsDevice;
-};
-
-class IGraphicsRHIBuffer
-    : public IGraphicsDeviceObject
-{
-public:
-    virtual DeviceResourceType resourceType() const = 0;
-
-protected:
-    virtual ~IGraphicsRHIBuffer();
-};
-
 class IGraphicsDevice
 	: public RefObject
 {
@@ -260,8 +194,8 @@ public:
 	Ref<IRenderPass> createRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
 	Ref<IPipeline> createPipeline(const DevicePipelineStateDesc& state);
 	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
-	Ref<IVertexBuffer> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
-	Ref<IIndexBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
+	Ref<RHIResource> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
+	Ref<RHIResource> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
 	Ref<ITexture> createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
 	Ref<ITexture> createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
 	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
@@ -269,9 +203,9 @@ public:
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
-	Ref<IUniformBuffer> createUniformBuffer(uint32_t size);
+	Ref<RHIResource> createUniformBuffer(uint32_t size);
 	Ref<IDescriptorPool> createDescriptorPool(IShaderPass* shaderPass);
-    void releaseObject(IGraphicsDeviceObject* obj) {}
+    void releaseObject(RHIDeviceObject* obj) {}
 
 	void submitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
 
@@ -294,8 +228,8 @@ protected:
 	virtual Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) = 0;
 	virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) = 0;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
-	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
-	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
+	virtual Ref<RHIResource> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
+	virtual Ref<RHIResource> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) = 0;
@@ -303,7 +237,7 @@ protected:
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
-	virtual Ref<IUniformBuffer> onCreateUniformBuffer(uint32_t size) = 0;
+	virtual Ref<RHIResource> onCreateUniformBuffer(uint32_t size) = 0;
 	virtual Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) = 0;
 	virtual void onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) = 0;
 
@@ -320,7 +254,7 @@ public:
 };
 
 class ICommandList
-    : public IGraphicsDeviceObject
+    : public RHIDeviceObject
 {
 public:
 	// LuminoGraphis を他のフレームワークに組み込むときに、バックエンドが DX9 や OpenGL などステートマシンベースである場合に使用する
@@ -338,16 +272,16 @@ public:
     void setViewportRect(const RectI& value);
     void setScissorRect(const RectI& value);
     void setVertexDeclaration(IVertexDeclaration* value);
-    void setVertexBuffer(int streamIndex, IVertexBuffer* value);
-    void setIndexBuffer(IIndexBuffer* value);
+    void setVertexBuffer(int streamIndex, RHIResource* value);
+    void setIndexBuffer(RHIResource* value);
     void setShaderPass(IShaderPass* value);
 	void setDescriptor(IDescriptor* value);
     void setPrimitiveTopology(PrimitiveTopology value);
 
     // write only
-    void* map(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size);
-    void unmap(IGraphicsRHIBuffer* resource);
-    void setSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length);
+    void* map(RHIResource* resource, uint32_t offset, uint32_t size);
+    void unmap(RHIResource* resource);
+    void setSubData(RHIResource* resource, size_t offset, const void* data, size_t length);
     void setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
     void setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize);
 
@@ -377,9 +311,9 @@ public:	// TODO:
 	virtual void onEndRenderPass(IRenderPass* renderPass) = 0;
 	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) = 0;
 
-	virtual void* onMapResource(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size) = 0;
-	virtual void onUnmapResource(IGraphicsRHIBuffer* resource) = 0;
-	virtual void onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length) = 0;
+	virtual void* onMapResource(RHIResource* resource, uint32_t offset, uint32_t size) = 0;
+	virtual void onUnmapResource(RHIResource* resource) = 0;
+	virtual void onSetSubData(RHIResource* resource, size_t offset, const void* data, size_t length) = 0;
 	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
 	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
@@ -402,11 +336,11 @@ private:
     GraphicsContextState m_committed;
 	IRenderPass* m_currentRenderPass;
 	std::vector<Ref<IRenderPass>> m_renderPasses;	// 描画中の delete を防ぐため参照を持っておく
-	std::vector<Ref<IGraphicsDeviceObject>> m_inflightResources;
+	std::vector<Ref<RHIDeviceObject>> m_inflightResources;
 };
 
 class ISwapChain
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	ISwapChain();
@@ -429,7 +363,7 @@ protected:
 
 // OpenGL の場合は、現在のコンテキストに対してただ glFlush するだけ。Compute は非対応。
 class ICommandQueue
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	virtual Result submit(ICommandList* commandList) = 0;
@@ -442,7 +376,7 @@ protected:
 // 性質上 RenderTarget と DepthBuffer を持つことになるが、派生では参照カウントをインクリメントしないように注意すること。
 // RenderPass をキャッシュから削除できなくなる。
 class IRenderPass
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	uint64_t cacheKeyHash = 0;
@@ -494,7 +428,7 @@ protected:
 };
 
 class IVertexDeclaration
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	uint64_t m_hash;
@@ -514,82 +448,8 @@ private:
 };
 
 
-class IVertexBuffer
-	: public IGraphicsRHIBuffer
-{
-public:
-    virtual DeviceResourceType resourceType() const { return DeviceResourceType::VertexBuffer; }
-	virtual size_t getBytesSize() = 0;
-	virtual GraphicsResourceUsage usage() const = 0;
-	//virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
-	//virtual void unmap() = 0;
-
-protected:
-	IVertexBuffer();
-	virtual ~IVertexBuffer();
-};
-
-
-class IIndexBuffer
-	: public IGraphicsRHIBuffer
-{
-public:
-    virtual DeviceResourceType resourceType() const { return DeviceResourceType::IndexBuffer; }
-	virtual size_t getBytesSize() = 0;
-	virtual GraphicsResourceUsage usage() const = 0;
-	//virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
-	//virtual void unmap() = 0;
-
-protected:
-	IIndexBuffer();
-	virtual ~IIndexBuffer();
-};
-
-class IUniformBuffer
-	: public IGraphicsDeviceObject
-{
-public:
-	virtual void* map() = 0;
-	virtual void unmap() = 0;
-
-protected:
-	virtual ~IUniformBuffer();
-};
-
-class ITexture
-	: public IGraphicsDeviceObject
-{
-public:
-	//virtual DeviceTextureType type() const = 0;
-
-	virtual SizeI realSize() = 0;
-
-	virtual TextureFormat getTextureFormat() const = 0;
-
-	virtual GraphicsResourceUsage usage() const = 0;
-
-	// データは up flow (上下反転)
-	virtual RHIPtr<RHIBitmap> readData() = 0;
-
-	bool mipmap() const { return m_mipmap; }
-
-	// RenderTarget のみ
-	virtual bool isMultisample() const = 0;
-
-protected:
-	ITexture();
-	virtual ~ITexture();
-
-protected:
-	DeviceTextureType m_deviceTextureType;
-	bool m_mipmap;
-
-	friend class IGraphicsDevice;
-};
-
-
 class IDepthBuffer
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 
@@ -603,7 +463,7 @@ protected:
 };
 
 class ISamplerState
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 
@@ -613,7 +473,7 @@ protected:
 };
 
 class IShaderPass
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
@@ -634,7 +494,7 @@ private:
 };
 
 class IPipeline
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	uint64_t cacheKeyHash = 0;
@@ -667,7 +527,7 @@ private:
 // また OpenGL サポート中はそれとの整合をとるためこの Descriptor 周りを不自然にラップしていたため、メンテが難しくなる事態が発生していた。
 // OpenGL を切ったので、上位レイヤーで共通化できる部分はそのようにして、少しでも下位レイヤーの複雑さを抑える。
 class IDescriptorPool
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	//virtual void dispose() = 0;

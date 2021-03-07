@@ -186,7 +186,7 @@ Ref<IVertexDeclaration> VulkanDevice::onCreateVertexDeclaration(const VertexElem
     return ptr;
 }
 
-Ref<IVertexBuffer> VulkanDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+Ref<RHIResource> VulkanDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
     auto ptr = makeRef<VulkanVertexBuffer>();
     if (!ptr->init(this, usage, bufferSize, initialData)) {
@@ -195,7 +195,7 @@ Ref<IVertexBuffer> VulkanDevice::onCreateVertexBuffer(GraphicsResourceUsage usag
 	return ptr;
 }
 
-Ref<IIndexBuffer> VulkanDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+Ref<RHIResource> VulkanDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
     auto ptr = makeRef<VulkanIndexBuffer>();
     if (!ptr->init(this, usage, format, indexCount, initialData)) {
@@ -255,7 +255,7 @@ Ref<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
     return ptr;
 }
 
-Ref<IUniformBuffer> VulkanDevice::onCreateUniformBuffer(uint32_t size)
+Ref<RHIResource> VulkanDevice::onCreateUniformBuffer(uint32_t size)
 {
     auto ptr = makeRef<VulkanUniformBuffer>();
     if (!ptr->init(this, size)) {
@@ -1690,7 +1690,7 @@ Result VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRe
     _sizeBaseImg = _sizeBase->image();
     _baseImg = _sizeBaseImg->vulkanImage();
     _baseId = _sizeBase->objectId();
-	SizeI imageSize = m_renderTargets[0]->realSize();
+	const auto imageSize = m_renderTargets[0]->extentSize();
 	VkFramebufferCreateInfo framebufferInfo = {};
 	framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 	framebufferInfo.pNext = nullptr;

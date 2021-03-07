@@ -23,14 +23,11 @@ class VulkanTexture2D
 public:
 	VulkanTexture2D();
 	Result init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
-    virtual void dispose();
-	virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
-	virtual SizeI realSize() { return m_size; }
-    virtual TextureFormat getTextureFormat() const { return m_format; }
-	virtual GraphicsResourceUsage usage() const override { return m_usage; }
-    virtual RHIPtr<RHIBitmap> readData() { LN_UNREACHABLE(); return nullptr;  }
-    virtual void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
-	virtual void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
+    void dispose() override;
+	//virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
+    RHIRef<RHIBitmap> readData() override { LN_UNREACHABLE(); return nullptr;  }
+    void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
+	void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override { LN_UNREACHABLE(); }
     bool isMultisample() const override { return false; }
 
     virtual const VulkanImage* image() const override { return &m_image; }
@@ -40,9 +37,9 @@ private:
 
 	VulkanDevice* m_deviceContext;
     VulkanImage m_image;
-	GraphicsResourceUsage m_usage;
-	SizeI m_size;
-	TextureFormat m_format;
+	//GraphicsResourceUsage m_usage;
+ //   RHISizeI m_size;
+	//TextureFormat m_format;
 	uint32_t m_mipLevels;
     VkFormat m_nativeFormat;
 };
@@ -54,14 +51,11 @@ public:
 	VulkanRenderTarget();
     Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
 	Result initFromSwapchainImage(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
-    virtual void dispose() override;
-	virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
-	virtual SizeI realSize() { return m_size; }
-	virtual TextureFormat getTextureFormat() const {return TextureFormat::RGBA8; }
-	virtual GraphicsResourceUsage usage() const override { return GraphicsResourceUsage::Static; }
-    virtual RHIPtr<RHIBitmap> readData() override;
-	virtual void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) {}
-	virtual void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {}
+    void dispose() override;
+	//virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
+    RHIRef<RHIBitmap> readData() override;
+	void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override {}
+	void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override {}
 
 	virtual const VulkanImage* image() const override { return m_image.get(); }
     const VulkanImage* multisampleColorBuffer() const { return m_multisampleColorBuffer.get(); }
@@ -78,8 +72,8 @@ private:
 	std::unique_ptr<VulkanImage> m_image;                   // MSAA 有効の時は、Resolve されたテクスチャデータ
     std::unique_ptr<VulkanImage> m_multisampleColorBuffer;  // MSAA 有効の時に使う、マルチサンプル有効なレンダーターゲットバッファ。MSAA 無しのときは nullptr
 
-	SizeI m_size;
-	TextureFormat m_format;
+ //   RHISizeI m_size;
+	//TextureFormat m_format;
 
     // vkAcquireNextImageKHR により準備ができたかどうかを待つためのセマフォ。
     // この RenderTarget が Swapchain の Backbuffer である場合、そのポインタがセットされる。

@@ -173,6 +173,7 @@ DX12VertexBuffer::DX12VertexBuffer()
 
 bool DX12VertexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, size_t size, const void* initialData)
 {
+    if (!RHIResource::initAsVertexBuffer(usage, size)) return false;
     m_device = device;
     m_usage = usage;
 
@@ -274,29 +275,8 @@ void DX12VertexBuffer::dispose()
         m_buffer->dispose();
         m_buffer = nullptr;
     }
-    IVertexBuffer::dispose();
+    RHIResource::dispose();
 }
-
-size_t DX12VertexBuffer::getBytesSize()
-{
-    return m_buffer->size();
-}
-
-GraphicsResourceUsage DX12VertexBuffer::usage() const
-{
-    return m_usage;
-}
-
-//void* DX12VertexBuffer::map()
-//{
-//    LN_NOTIMPLEMENTED();
-//    return 0;
-//}
-//
-//void DX12VertexBuffer::unmap()
-//{
-//    LN_NOTIMPLEMENTED();
-//}
 
 //==============================================================================
 // DX12IndexBuffer
@@ -309,20 +289,17 @@ DX12IndexBuffer::DX12IndexBuffer()
 
 Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
+    if (!RHIResource::initAsIndexBuffer(usage, format, indexCount)) return false;
     m_device = device;
     m_usage = usage;
 
     // Buffer Size
-    int stride = 0;
     if (format == IndexBufferFormat::UInt16) {
         m_indexFormat = DXGI_FORMAT_R16_UINT;
-        stride = 2;
     }
     else {
         m_indexFormat = DXGI_FORMAT_R32_UINT;
-        stride = 4;
     }
-    size_t size = stride * indexCount;
 
     // Types
     D3D12_HEAP_TYPE heapType;
@@ -336,6 +313,7 @@ Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, In
         resourceState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
     }
 
+    uint64_t size = memorySize();
     m_buffer = makeRHIRef<DX12Buffer>();
     if (!m_buffer->init(m_device, size, heapType, resourceState)) {
         return false;
@@ -376,17 +354,7 @@ void DX12IndexBuffer::dispose()
         m_buffer->dispose();
         m_buffer = nullptr;
     }
-    IIndexBuffer::dispose();
-}
-
-size_t DX12IndexBuffer::getBytesSize()
-{
-    return m_buffer->size();
-}
-
-GraphicsResourceUsage DX12IndexBuffer::usage() const
-{
-    return m_usage;
+    RHIResource::dispose();
 }
 
 //==============================================================================
@@ -456,7 +424,7 @@ void DX12UniformBuffer::dispose()
         m_mappedBuffer = nullptr;
         m_constantBuffer.Reset();
     }
-    IUniformBuffer::dispose();
+    RHIResource::dispose();
 }
 
 void* DX12UniformBuffer::map()

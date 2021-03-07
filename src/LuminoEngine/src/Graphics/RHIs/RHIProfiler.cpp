@@ -32,57 +32,64 @@ void RHIProfiler::addVertexLayout(IVertexDeclaration* obj)
 	m_vertexLayoutCount++;
 	obj->m_profiling = true;
 }
+
 void RHIProfiler::removeVertexLayout(IVertexDeclaration* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_vertexLayoutCount--;
 	obj->m_profiling = false;
 }
-void RHIProfiler::addVertexBuffer(IVertexBuffer* obj)
+
+void RHIProfiler::addVertexBuffer(RHIResource* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_vertexBufferCount++;
 	obj->m_profiling = true;
 }
-void RHIProfiler::removeVertexBuffer(IVertexBuffer* obj)
+
+void RHIProfiler::removeVertexBuffer(RHIResource* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_vertexBufferCount--;
 	obj->m_profiling = false;
 }
-void RHIProfiler::addIndexBuffer(IIndexBuffer* obj)
+
+void RHIProfiler::addIndexBuffer(RHIResource* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_indexBufferCount++;
 	obj->m_profiling = true;
 }
-void RHIProfiler::removeIndexBuffer(IIndexBuffer* obj)
+
+void RHIProfiler::removeIndexBuffer(RHIResource* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_indexBufferCount--;
 	obj->m_profiling = false;
 }
-void RHIProfiler::addTexture2D(ITexture* obj)
+
+void RHIProfiler::addTexture2D(RHIResource* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_texture2DCount++;
 	obj->m_profiling = true;
 }
-void RHIProfiler::removeTexture2D(ITexture* obj)
+
+void RHIProfiler::removeTexture2D(RHIResource* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_texture2DCount--;
 	obj->m_profiling = false;
 }
 
-void RHIProfiler::addRenderTarget(ITexture* obj)
+void RHIProfiler::addRenderTarget(RHIResource* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_renderTargetCount++;
 	obj->m_profiling = true;
 }
 
-void RHIProfiler::removeRenderTarget(ITexture* obj)
+void RHIProfiler::removeRenderTarget(RHIResource* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_renderTargetCount--;
@@ -131,14 +138,14 @@ void RHIProfiler::removeShaderPass(IShaderPass* obj)
 	obj->m_profiling = false;
 }
 
-void RHIProfiler::addUniformBuffer(IUniformBuffer* obj)
+void RHIProfiler::addUniformBuffer(RHIResource* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_uniformBufferCount++;
 	obj->m_profiling = true;
 }
 
-void RHIProfiler::removeUniformBuffer(IUniformBuffer* obj)
+void RHIProfiler::removeUniformBuffer(RHIResource* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_uniformBufferCount--;

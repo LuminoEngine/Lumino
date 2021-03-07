@@ -5,7 +5,7 @@ namespace ln {
 namespace detail {
 
 class RHIBitmap
-	: public RHIObject
+	: public RHIRefObject
 {
 public:
 	RHIBitmap();
@@ -28,12 +28,6 @@ private:
 	int32_t m_elementSize;
 	int32_t m_width;
 	int32_t m_height;
-};
-
-struct RHISizeI
-{
-	int32_t width;
-	int32_t height;
 };
 
 } // namespace detail

@@ -511,7 +511,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
         else if (resource->descriptorResourceType() == detail::DescriptorResourceType_Buffer) {
             VertexBuffer* buffer = dynamic_cast<VertexBuffer*>(resource);
             bool modified = false;
-            updateInfo.resources[i].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(graphicsContext, buffer, &modified);
+            updateInfo.resources[i].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(graphicsContext, buffer, &modified);
             (*outModified) |= modified;
             if (LN_ENSURE(updateInfo.resources[i].object)) return;
         }
@@ -569,7 +569,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
         IGraphicsResource* resource = descripter->storage(dataIndex);
         VertexBuffer* buffer = dynamic_cast<VertexBuffer*>(resource);
         bool modified = false;
-        updateInfo.storages[i].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(graphicsContext, buffer, &modified);
+        updateInfo.storages[i].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(graphicsContext, buffer, &modified);
         updateInfo.storages[i].offset = 0;
         if (LN_ENSURE(updateInfo.storages[i].object)) return;
         (*outModified) |= modified;

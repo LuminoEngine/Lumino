@@ -18,12 +18,13 @@ VulkanTexture2D::VulkanTexture2D()
 
 Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
+    if (!VulkanTexture::initAsTexture2D(usage, width, height, requestFormat, mipmap)) return false;
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
-	m_usage = usage;
-    m_size.width = width;
-    m_size.height = height;
-    m_format = requestFormat;
+	//m_usage = usage;
+ //   m_size.width = width;
+ //   m_size.height = height;
+ //   m_format = requestFormat;
 
     m_nativeFormat = VulkanHelper::LNFormatToVkFormat(requestFormat);
     VkDeviceSize imageSize = width * height * GraphicsHelper::getPixelSize(requestFormat);
@@ -227,16 +228,16 @@ VulkanRenderTarget::VulkanRenderTarget()
     , m_multisampleColorBuffer(nullptr)
     , m_swapchainImageAvailableSemaphoreRef(nullptr)
 {
-    m_deviceTextureType = DeviceTextureType::RenderTarget;
 }
 
 Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
+    if (!VulkanTexture::initAsRenderTarget(width, height, requestFormat, mipmap, msaa)) return false;
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
-    m_size.width = width;
-    m_size.height = height;
-    m_format = requestFormat;
+    //m_size.width = width;
+    //m_size.height = height;
+    //m_format = requestFormat;
 
     VkSemaphoreCreateInfo semaphoreInfo = {};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -276,6 +277,10 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
 
 Result VulkanRenderTarget::initFromSwapchainImage(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
 {
+    // TODO: SwapChain は BGRA フォーマットであることが多い。
+    // ただ TextureFormat はそれに対応していないが、readData() で Bitmap をとるときにピクセルサイズが知りたい。
+    // ここではダミーとして RGBA8 を与えて初期化してみる。
+    if (!VulkanTexture::initAsRenderTarget(width, height, TextureFormat::RGBA8, false, false)) return false;
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
 
@@ -283,9 +288,9 @@ Result VulkanRenderTarget::initFromSwapchainImage(VulkanDevice* deviceContext, u
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
     LN_VK_CHECK(vkCreateSemaphore(m_deviceContext->vulkanDevice(), &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_renderFinishedSemaphore));
 
-    m_size.width = width;
-    m_size.height = height;
-    m_format = VulkanHelper::VkFormatToLNFormat(format);
+    //m_size.width = width;
+    //m_size.height = height;
+    //m_format = VulkanHelper::VkFormatToLNFormat(format);
 
     m_image = std::make_unique<VulkanImage>();
     if (!m_image->initWrap(m_deviceContext, width, height, format, image, imageView)) {
@@ -324,9 +329,9 @@ void VulkanRenderTarget::dispose()
     VulkanTexture::dispose();
 }
 
-RHIPtr<RHIBitmap> VulkanRenderTarget::readData()
+RHIRef<RHIBitmap> VulkanRenderTarget::readData()
 {
-    RHIPtr<RHIBitmap> bitmap;
+    RHIRef<RHIBitmap> bitmap;
 
     // Flush
     //m_deviceContext->recodingCommandBuffer()->submit(imageAvailableSemaphore(), renderFinishedSemaphore());
@@ -341,8 +346,8 @@ RHIPtr<RHIBitmap> VulkanRenderTarget::readData()
         originalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     }
 
-	uint32_t width = m_size.width;
-    uint32_t height = m_size.height;
+	uint32_t width = extentSize().width;
+    uint32_t height = extentSize().height;
     VkDeviceSize size = width * height * 4; // TODO
 
     // 転送先として作成

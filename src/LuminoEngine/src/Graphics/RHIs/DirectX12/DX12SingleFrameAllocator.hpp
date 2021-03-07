@@ -23,7 +23,7 @@ public:
 	DX12Buffer* buffer() const { return m_buffer.get(); }
 
 private:
-	RHIPtr<DX12Buffer> m_buffer;
+	RHIRef<DX12Buffer> m_buffer;
 };
 
 class DX12SingleFrameAllocatorPageManager

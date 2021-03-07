@@ -13,7 +13,7 @@ class ConstantBuffer
 {
 public:
     // TODO: internal
-    const Ref<detail::IUniformBuffer>& rhiObject() const { return m_rhiObject; }
+    const Ref<detail::RHIResource>& rhiObject() const { return m_rhiObject; }
     void* writableData();
     void unmap();
     
@@ -29,7 +29,7 @@ LN_CONSTRUCT_ACCESS:
 private:
     detail::GraphicsManager* m_manager;
     bool m_profiling;
-    Ref<detail::IUniformBuffer> m_rhiObject;
+    Ref<detail::RHIResource> m_rhiObject;
     void* m_mappedData;
 
     friend class detail::GraphicsResourceInternal;

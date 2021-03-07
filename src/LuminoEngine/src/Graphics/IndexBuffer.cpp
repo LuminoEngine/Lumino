@@ -219,7 +219,7 @@ void IndexBuffer::setResourcePool(GraphicsResourcePool pool)
     m_pool = pool;
 }
 
-detail::IIndexBuffer* IndexBuffer::resolveRHIObject(GraphicsContext* context, bool* outModified)
+detail::RHIResource* IndexBuffer::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
 	*outModified = m_modified;
     m_mappedBuffer = nullptr;
@@ -233,14 +233,14 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject(GraphicsContext* context, bo
         {
 			detail::ICommandList* commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
             size_t requiredSize = bytesSize();
-            if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize/* || m_rhiObject->usage() != m_usage*/) {
+            if (!m_rhiObject || m_rhiObject->memorySize() != requiredSize/* || m_rhiObject->usage() != m_usage*/) {
                 m_rhiObject = device->createIndexBuffer(GraphicsResourceUsage::Static, m_format, size(), m_buffer.data());
             } else {
                 context->interruptCurrentRenderPassFromResolveRHI();
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
-                detail::IIndexBuffer* rhiObject = m_rhiObject;
+                detail::RHIResource* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_3(
-                    IndexBuffer_setSubData, context, detail::ICommandList*, commandList, detail::RenderBulkData, data, Ref<detail::IIndexBuffer>, rhiObject, {
+                    IndexBuffer_setSubData, context, detail::ICommandList*, commandList, detail::RenderBulkData, data, Ref<detail::RHIResource>, rhiObject, {
 						commandList->setSubData(rhiObject, 0, data.data(), data.size());
                     });
             }

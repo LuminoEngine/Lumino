@@ -369,10 +369,10 @@ class IGraphicsDevice;
 class ICommandList;
 class ITexture;
 class ISamplerState;
-class IUniformBuffer;
 class ShaderSecondaryDescriptor;
 class GraphicsCommandList;
 class GraphicsProfiler;
+class RHIResource;
 
 static const int MaxMultiRenderTargets = 4;
 

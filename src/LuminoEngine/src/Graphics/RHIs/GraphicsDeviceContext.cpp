@@ -10,7 +10,7 @@ namespace detail {
 
 
 //=============================================================================
-// IGraphicsDeviceObject
+// RHIDeviceObject
 
 AttributeUsage IGraphicsHelper::ElementUsageToAttributeUsage(VertexElementUsage value)
 {
@@ -57,50 +57,6 @@ VertexElementUsage IGraphicsHelper::AttributeUsageToElementUsage(AttributeUsage 
 	};
 	assert(s_conversionTable[(int)value].v1 == value);
 	return s_conversionTable[(int)value].v2;
-}
-
-//=============================================================================
-// IGraphicsDeviceObject
-
-IGraphicsDeviceObject::IGraphicsDeviceObject()
-    : m_device(nullptr)
-	, m_objectId(0)
-	, m_disposed(false)
-	, m_profiling(false)
-{
-}
-
-IGraphicsDeviceObject::~IGraphicsDeviceObject()
-{
-    if (!m_disposed) {
-        LN_LOG_ERROR << "object [0x" << this << "] is not disposed";
-    }
-}
-
-void IGraphicsDeviceObject::finalize()
-{
-#ifdef LN_DEBUG
-    bool d = m_disposed;
-    dispose();
-    if (!d) {
-        LN_CHECK(m_disposed);
-    }
-#else
-    dispose();
-#endif
-	m_objectId = 0;
-}
-
-void IGraphicsDeviceObject::dispose()
-{
-    m_disposed = true;
-}
-
-//=============================================================================
-// IGraphicsRHIBuffer
-
-IGraphicsRHIBuffer::~IGraphicsRHIBuffer()
-{
 }
 
 //=============================================================================
@@ -224,9 +180,9 @@ Ref<IVertexDeclaration> IGraphicsDevice::createVertexDeclaration(const VertexEle
 	return ptr;
 }
 
-Ref<IVertexBuffer> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+Ref<RHIResource> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
-	Ref<IVertexBuffer> ptr = onCreateVertexBuffer(usage, bufferSize, initialData);
+	Ref<RHIResource> ptr = onCreateVertexBuffer(usage, bufferSize, initialData);
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
@@ -235,9 +191,9 @@ Ref<IVertexBuffer> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usa
 	return ptr;
 }
 
-Ref<IIndexBuffer> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+Ref<RHIResource> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
-	Ref<IIndexBuffer> ptr = onCreateIndexBuffer(usage, format, indexCount, initialData);
+	Ref<RHIResource> ptr = onCreateIndexBuffer(usage, format, indexCount, initialData);
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
@@ -249,11 +205,9 @@ Ref<IIndexBuffer> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage
 Ref<ITexture> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	Ref<ITexture> ptr = onCreateTexture2D(usage, width, height, requestFormat, mipmap, initialData);
-	ptr->m_mipmap = mipmap;
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
-		ptr->m_deviceTextureType = DeviceTextureType::Texture2D;
 		m_profiler->addTexture2D(ptr);
 	}
 	return ptr;
@@ -261,21 +215,16 @@ Ref<ITexture> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, uint
 
 Ref<ITexture> IGraphicsDevice::createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
-	Ref<ITexture> ptr = onCreateTexture3D(usage, width, height, depth, requestFormat, mipmap, initialData);
-	ptr->m_mipmap = mipmap;
-	if (ptr) {
-	}
-	return ptr;
+	LN_NOTIMPLEMENTED();
+	return nullptr;
 }
 
 Ref<ITexture> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
 	Ref<ITexture> ptr = onCreateRenderTarget(width, height, requestFormat, mipmap, msaa);
-	ptr->m_mipmap = mipmap;
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
-		ptr->m_deviceTextureType = DeviceTextureType::RenderTarget;
 		m_profiler->addRenderTarget(ptr);
 	}
 	return ptr;
@@ -349,9 +298,9 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 	return ptr;
 }
 
-Ref<IUniformBuffer> IGraphicsDevice::createUniformBuffer(uint32_t size)
+Ref<RHIResource> IGraphicsDevice::createUniformBuffer(uint32_t size)
 {
-	Ref<IUniformBuffer> ptr = onCreateUniformBuffer(size);
+	Ref<RHIResource> ptr = onCreateUniformBuffer(size);
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
@@ -462,7 +411,7 @@ void ICommandList::dispose()
 		renderPass->releaseObjects();
 	}
 	m_renderPasses.clear();
-	IGraphicsDeviceObject::dispose();
+	RHIDeviceObject::dispose();
 }
 
 void ICommandList::enterRenderState()
@@ -566,7 +515,7 @@ void ICommandList::setVertexDeclaration(IVertexDeclaration* value)
     }
 }
 
-void ICommandList::setVertexBuffer(int streamIndex, IVertexBuffer* value)
+void ICommandList::setVertexBuffer(int streamIndex, RHIResource* value)
 {
     if (m_staging.primitive.vertexBuffers[streamIndex] != value) {
         m_staging.primitive.vertexBuffers[streamIndex] = value;
@@ -574,7 +523,7 @@ void ICommandList::setVertexBuffer(int streamIndex, IVertexBuffer* value)
     }
 }
 
-void ICommandList::setIndexBuffer(IIndexBuffer* value)
+void ICommandList::setIndexBuffer(RHIResource* value)
 {
     if (m_staging.primitive.indexBuffer != value) {
         m_staging.primitive.indexBuffer = value;
@@ -608,17 +557,17 @@ void ICommandList::setPrimitiveTopology(PrimitiveTopology value)
 //	m_staging.renderPass = value;
 //}
 
-void* ICommandList::map(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size)
+void* ICommandList::map(RHIResource* resource, uint32_t offset, uint32_t size)
 {
     return onMapResource(resource, offset, size);
 }
 
-void ICommandList::unmap(IGraphicsRHIBuffer* resource)
+void ICommandList::unmap(RHIResource* resource)
 {
     onUnmapResource(resource);
 }
 
-void ICommandList::setSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length)
+void ICommandList::setSubData(RHIResource* resource, size_t offset, const void* data, size_t length)
 {
     onSetSubData(resource, offset, data, length);
 }
@@ -758,7 +707,7 @@ void IRenderPass::dispose()
 		d->pipelineCache()->invalidate(this);
 	}
 
-	IGraphicsDeviceObject::dispose();
+	RHIDeviceObject::dispose();
 }
 
 void IRenderPass::retainObjects()
@@ -813,7 +762,7 @@ void IVertexDeclaration::dispose()
 		d->pipelineCache()->invalidate(this);
 	}
 
-	IGraphicsDeviceObject::dispose();
+	RHIDeviceObject::dispose();
 }
 
 uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int count)
@@ -844,69 +793,15 @@ uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int coun
 //}
 
 //=============================================================================
-// IVertexBuffer
-
-IVertexBuffer::IVertexBuffer()
-{
-	LN_LOG_VERBOSE << "IVertexBuffer [0x" << this << "] constructed.";
-}
-
-IVertexBuffer::~IVertexBuffer()
-{
-	if (IGraphicsDevice* d = device()) {
-		d->profiler()->removeVertexBuffer(this);
-	}
-}
-
-//=============================================================================
-// IIndexBuffer
-
-IIndexBuffer::IIndexBuffer()
-{
-	LN_LOG_VERBOSE << "IIndexBuffer [0x" << this << "] constructed.";
-}
-
-IIndexBuffer::~IIndexBuffer()
-{
-	if (IGraphicsDevice* d = device()) {
-		d->profiler()->removeIndexBuffer(this);
-	}
-}
-
-//=============================================================================
-// IUniformBuffer
-
-IUniformBuffer::~IUniformBuffer()
-{
-	if (IGraphicsDevice* d = device()) {
-		d->profiler()->removeUniformBuffer(this);
-	}
-}
-
-//=============================================================================
 // ITexture
 
 ITexture::ITexture()
-	: m_deviceTextureType(DeviceTextureType::Texture2D)
-	, m_mipmap(false)
 {
 	LN_LOG_VERBOSE << "ITexture [0x" << this << "] constructed.";
 }
 
 ITexture::~ITexture()
 {
-	if (IGraphicsDevice* d = device()) {
-		if (m_deviceTextureType == DeviceTextureType::Texture2D) {
-			d->profiler()->removeTexture2D(this);
-		}
-		else if (m_deviceTextureType == DeviceTextureType::RenderTarget) {
-			d->renderPassCache()->invalidate(this);
-			d->profiler()->removeRenderTarget(this);
-		}
-		else {
-			LN_UNREACHABLE();
-		}
-	}
 }
 
 //=============================================================================
@@ -960,7 +855,7 @@ void IShaderPass::dispose()
 	if (IGraphicsDevice* d = device()) {
 		d->pipelineCache()->invalidate(this);
 	}
-	IGraphicsDeviceObject::dispose();
+	RHIDeviceObject::dispose();
 }
 
 bool IShaderPass::init(const ShaderPassCreateInfo& createInfo)
@@ -1018,7 +913,7 @@ IPipeline::~IPipeline()
 
 void IPipeline::dispose()
 {
-	IGraphicsDeviceObject::dispose();
+	RHIDeviceObject::dispose();
 }
 
 //=============================================================================
