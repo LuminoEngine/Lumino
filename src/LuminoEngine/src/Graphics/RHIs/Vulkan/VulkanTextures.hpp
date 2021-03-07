@@ -25,9 +25,6 @@ public:
 	Result init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
     void dispose() override;
 	//virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
-	RHISizeI extentSize() override { return m_size; }
-    TextureFormat getTextureFormat() const override { return m_format; }
-	GraphicsResourceUsage usage() const override { return m_usage; }
     RHIRef<RHIBitmap> readData() override { LN_UNREACHABLE(); return nullptr;  }
     void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override { LN_UNREACHABLE(); }
@@ -56,9 +53,6 @@ public:
 	Result initFromSwapchainImage(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
     void dispose() override;
 	//virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
-    RHISizeI extentSize() override { return m_size; }
-	TextureFormat getTextureFormat() const override {return TextureFormat::RGBA8; }
-	GraphicsResourceUsage usage() const override { return GraphicsResourceUsage::Static; }
     RHIRef<RHIBitmap> readData() override;
 	void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override {}
 	void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override {}

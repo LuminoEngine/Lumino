@@ -14,6 +14,10 @@ RHIResource::RHIResource()
 	: m_type(RHIResourceType::Unknown)
 	, m_usage(GraphicsResourceUsage::Static)
 	, m_memorySize(0)
+	, m_extentSize{0, 0}
+	, m_textureFormat(TextureFormat::Unknown)
+	, m_mipmap(false)
+	, m_msaa(false)
 {
 	LN_LOG_VERBOSE << "RHIResource [0x" << this << "] constructed.";
 }
@@ -31,6 +35,13 @@ RHIResource::~RHIResource()
 			break;
 		case RHIResourceType::UniformBuffer:
 			d->profiler()->removeUniformBuffer(this);
+			break;
+		case RHIResourceType::Texture2D:
+			d->profiler()->removeTexture2D(this);
+			break;
+		case RHIResourceType::RenderTarget:
+			d->renderPassCache()->invalidate(static_cast<ITexture*>(this));
+			d->profiler()->removeRenderTarget(this);
 			break;
 		default:
 			break;
@@ -75,6 +86,33 @@ bool RHIResource::initAsUniformBuffer(GraphicsResourceUsage usage, uint64_t memo
 	m_type = RHIResourceType::UniformBuffer;
 	m_usage = usage;
 	m_memorySize = memorySize;
+	return true;
+}
+
+bool RHIResource::initAsTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap)
+{
+	//if (LN_REQUIRE(format == TextureFormat::Unknown)) return false;
+	m_type = RHIResourceType::Texture2D;
+	m_usage = usage;
+	m_extentSize.width = width;
+	m_extentSize.height = height;
+	m_memorySize = width * height * GraphicsHelper::getPixelSize(format);
+	m_textureFormat = format;
+	m_mipmap = mipmap;
+	return true;
+}
+
+bool RHIResource::initAsRenderTarget(uint32_t width, uint32_t height, TextureFormat format, bool mipmap, bool msaa)
+{
+	//if (LN_REQUIRE(format == TextureFormat::Unknown)) return false;
+	m_type = RHIResourceType::RenderTarget;
+	m_usage = GraphicsResourceUsage::Static;
+	m_extentSize.width = width;
+	m_extentSize.height = height;
+	m_memorySize = width * height * GraphicsHelper::getPixelSize(format);
+	m_textureFormat = format;
+	m_mipmap = mipmap;
+	m_msaa = msaa;
 	return true;
 }
 

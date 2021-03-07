@@ -138,6 +138,7 @@ DX12Texture2D::DX12Texture2D()
 
 Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData)
 {
+    if (!DX12Texture::initAsTexture2D(usage, width, height, format, mipmap)) return false;
     m_device = device;
 	m_usage = usage;
     m_size.width = width;
@@ -406,11 +407,11 @@ bool DX12Texture2D::generateMips()
 DX12RenderTarget::DX12RenderTarget()
     : m_device(nullptr)
 {
-    m_deviceTextureType = DeviceTextureType::RenderTarget;
 }
 
 bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
+    if (!DX12Texture::initAsRenderTarget(width, height, requestFormat, mipmap, msaa)) return false;
     m_device = device;
     m_size.width = width;
     m_size.height = height;
@@ -444,6 +445,10 @@ bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height,
 
 bool DX12RenderTarget::init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderTarget)
 {
+    // TODO: SwapChain は BGRA フォーマットであることが多い。
+    // ただ TextureFormat はそれに対応していないが、readData() で Bitmap をとるときにピクセルサイズが知りたい。
+    // ここではダミーとして RGBA8 を与えて初期化してみる。
+    if (!DX12Texture::initAsRenderTarget(m_image->size().width, m_image->size().height, TextureFormat::RGBA8, false, false)) return false;
     m_device = device;
 
     m_image = makeRHIRef<DX12Image>();

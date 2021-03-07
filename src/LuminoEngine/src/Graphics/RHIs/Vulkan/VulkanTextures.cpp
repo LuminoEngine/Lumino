@@ -18,6 +18,7 @@ VulkanTexture2D::VulkanTexture2D()
 
 Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
+    if (!VulkanTexture::initAsTexture2D(usage, width, height, requestFormat, mipmap)) return false;
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
 	m_usage = usage;
@@ -227,11 +228,11 @@ VulkanRenderTarget::VulkanRenderTarget()
     , m_multisampleColorBuffer(nullptr)
     , m_swapchainImageAvailableSemaphoreRef(nullptr)
 {
-    m_deviceTextureType = DeviceTextureType::RenderTarget;
 }
 
 Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
+    if (!VulkanTexture::initAsRenderTarget(width, height, requestFormat, mipmap, msaa)) return false;
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
     m_size.width = width;
@@ -276,6 +277,10 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
 
 Result VulkanRenderTarget::initFromSwapchainImage(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
 {
+    // TODO: SwapChain は BGRA フォーマットであることが多い。
+    // ただ TextureFormat はそれに対応していないが、readData() で Bitmap をとるときにピクセルサイズが知りたい。
+    // ここではダミーとして RGBA8 を与えて初期化してみる。
+    if (!VulkanTexture::initAsRenderTarget(width, height, TextureFormat::RGBA8, false, false)) return false;
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
 

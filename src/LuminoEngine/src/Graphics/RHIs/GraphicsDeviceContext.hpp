@@ -35,19 +35,6 @@ class RHIBitmap;
 class RHIResource;
 class RHIProfiler;
 
-struct RHISizeI
-{
-	int32_t width;
-	int32_t height;
-};
-
-enum class DeviceTextureType
-{
-	Texture2D,
-	Texture3D,
-	RenderTarget,
-};
-
 struct GraphicsDeviceCaps
 {
 	GraphicsAPI graphicsAPI;
@@ -457,37 +444,6 @@ protected:
 	bool init(const VertexElement* elements, int count);
 
 private:
-	friend class IGraphicsDevice;
-};
-
-class ITexture
-	: public RHIDeviceObject
-{
-public:
-	//virtual DeviceTextureType type() const = 0;
-
-	virtual RHISizeI extentSize() = 0;
-
-	virtual TextureFormat getTextureFormat() const = 0;
-
-	virtual GraphicsResourceUsage usage() const = 0;
-
-	// データは up flow (上下反転)
-	virtual RHIRef<RHIBitmap> readData() = 0;
-
-	bool mipmap() const { return m_mipmap; }
-
-	// RenderTarget のみ
-	virtual bool isMultisample() const = 0;
-
-protected:
-	ITexture();
-	virtual ~ITexture();
-
-protected:
-	DeviceTextureType m_deviceTextureType;
-	bool m_mipmap;
-
 	friend class IGraphicsDevice;
 };
 

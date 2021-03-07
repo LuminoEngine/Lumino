@@ -4,6 +4,8 @@ namespace ln {
 namespace detail {
 class IGraphicsDevice;
 class RHIProfiler;
+class RHIBitmap;
+
 	
 class RHIDeviceObject
     : public RefObject
@@ -46,6 +48,12 @@ inline RHIRef<T> makeRHIRef(TArgs&&... args)
 {
 	return std::make_shared<T>(std::forward<TArgs>(args)...);
 }
+
+struct RHISizeI
+{
+	int32_t width;
+	int32_t height;
+};
 
 } // namespace detail
 } // namespace ln

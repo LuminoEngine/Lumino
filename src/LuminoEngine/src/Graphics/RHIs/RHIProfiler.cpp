@@ -68,28 +68,28 @@ void RHIProfiler::removeIndexBuffer(RHIResource* obj)
 	obj->m_profiling = false;
 }
 
-void RHIProfiler::addTexture2D(ITexture* obj)
+void RHIProfiler::addTexture2D(RHIResource* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_texture2DCount++;
 	obj->m_profiling = true;
 }
 
-void RHIProfiler::removeTexture2D(ITexture* obj)
+void RHIProfiler::removeTexture2D(RHIResource* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_texture2DCount--;
 	obj->m_profiling = false;
 }
 
-void RHIProfiler::addRenderTarget(ITexture* obj)
+void RHIProfiler::addRenderTarget(RHIResource* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_renderTargetCount++;
 	obj->m_profiling = true;
 }
 
-void RHIProfiler::removeRenderTarget(ITexture* obj)
+void RHIProfiler::removeRenderTarget(RHIResource* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_renderTargetCount--;

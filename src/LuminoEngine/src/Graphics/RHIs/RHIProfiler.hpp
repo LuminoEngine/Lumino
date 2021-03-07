@@ -15,10 +15,10 @@ public:
 	void removeVertexBuffer(RHIResource* obj);
 	void addIndexBuffer(RHIResource* obj);
 	void removeIndexBuffer(RHIResource* obj);
-	void addTexture2D(ITexture* obj);
-	void removeTexture2D(ITexture* obj);
-	void addRenderTarget(ITexture* obj);
-	void removeRenderTarget(ITexture* obj);
+	void addTexture2D(RHIResource* obj);
+	void removeTexture2D(RHIResource* obj);
+	void addRenderTarget(RHIResource* obj);
+	void removeRenderTarget(RHIResource* obj);
 	void addDepthBuffer(IDepthBuffer* obj);
 	void removeDepthBuffer(IDepthBuffer* obj);
 	void addSamplerState(ISamplerState* obj);

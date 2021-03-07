@@ -205,11 +205,9 @@ Ref<RHIResource> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage,
 Ref<ITexture> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	Ref<ITexture> ptr = onCreateTexture2D(usage, width, height, requestFormat, mipmap, initialData);
-	ptr->m_mipmap = mipmap;
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
-		ptr->m_deviceTextureType = DeviceTextureType::Texture2D;
 		m_profiler->addTexture2D(ptr);
 	}
 	return ptr;
@@ -217,21 +215,16 @@ Ref<ITexture> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, uint
 
 Ref<ITexture> IGraphicsDevice::createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
-	Ref<ITexture> ptr = onCreateTexture3D(usage, width, height, depth, requestFormat, mipmap, initialData);
-	ptr->m_mipmap = mipmap;
-	if (ptr) {
-	}
-	return ptr;
+	LN_NOTIMPLEMENTED();
+	return nullptr;
 }
 
 Ref<ITexture> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
 	Ref<ITexture> ptr = onCreateRenderTarget(width, height, requestFormat, mipmap, msaa);
-	ptr->m_mipmap = mipmap;
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
-		ptr->m_deviceTextureType = DeviceTextureType::RenderTarget;
 		m_profiler->addRenderTarget(ptr);
 	}
 	return ptr;
@@ -803,26 +796,12 @@ uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int coun
 // ITexture
 
 ITexture::ITexture()
-	: m_deviceTextureType(DeviceTextureType::Texture2D)
-	, m_mipmap(false)
 {
 	LN_LOG_VERBOSE << "ITexture [0x" << this << "] constructed.";
 }
 
 ITexture::~ITexture()
 {
-	if (IGraphicsDevice* d = device()) {
-		if (m_deviceTextureType == DeviceTextureType::Texture2D) {
-			d->profiler()->removeTexture2D(this);
-		}
-		else if (m_deviceTextureType == DeviceTextureType::RenderTarget) {
-			d->renderPassCache()->invalidate(this);
-			d->profiler()->removeRenderTarget(this);
-		}
-		else {
-			LN_UNREACHABLE();
-		}
-	}
 }
 
 //=============================================================================
