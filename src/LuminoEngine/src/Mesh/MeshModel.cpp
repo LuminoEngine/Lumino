@@ -192,6 +192,16 @@ MeshNode* MeshModel::findHumanoidBone(HumanoidBones boneKind) const
 		return nullptr;
 }
 
+//AABB MeshModel::boundingBox() const
+//{
+//	AABB result;
+//	for (const auto& meshContainer : m_meshContainers) {
+//		const auto& meshPrimitive = meshContainer->meshPrimitives()[0];
+//		result.attemptInfrate(meshPrimitive->boundingBox());
+//	}
+//	return result;
+//}
+
 void MeshModel::addRootNode(int index)
 {
     m_rootNodes.add(index);
@@ -393,6 +403,22 @@ Ref<detail::MeshModelInstance> MeshModel::createMeshModelInstance()
 	return makeRef<detail::MeshModelInstance>(this);
 }
 
+void MeshModel::calculateBoundingBox()
+{
+	m_boundingBox.invalidate();
+
+	for (const auto& node : m_nodes) {
+		if (node->hasMeshContainer()) {
+			MeshPrimitive* meshPrimitive = m_meshContainers[node->meshContainerIndex()]->meshPrimitive();
+			meshPrimitive->calculateBoundingBox();
+
+			AABB aabb = meshPrimitive->boundingBox();
+			aabb.transform(node->initialLocalTransform());
+			m_boundingBox.attemptInfrate(aabb);
+		}
+	}
+}
+
 // 左手座標系状、Z+を正面としたときの、各ボーンの位置関係を検証する。
 void MeshModel::verifyHumanoidBones()
 {
@@ -505,7 +531,7 @@ void InstancedMeshList::drawMesh()
 
 void InstancedMeshList::commitRenderData(MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB)
 {
-	m_mesh->commitRenderData(m_sectionIndex, outSection, outDecl, outVBs, outVBCount, outIB);
+	m_mesh->commitRenderData(m_sectionIndex, nullptr, outSection, outDecl, outVBs, outVBCount, outIB);
 	
 	if (m_dirty) {
 		if (m_sourceVertexLayout != *outDecl) {

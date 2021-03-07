@@ -643,10 +643,10 @@ void SpriteParticleModel::render(RenderingContext* context, detail::SpritePartic
 					Vector3 r = Vector3::cross(Vector3::normalize(viewPosition - data.position), data.currentDirection);
 
 					Vector3 fd = data.currentDirection * m_lengthScale;
-					vb[(iData * 4) + 0].position = pos - (fd * hs) + r * hs;	// 後方右
-					vb[(iData * 4) + 1].position = pos - (fd * hs) - r * hs;	// 後方左
-					vb[(iData * 4) + 2].position = pos + (fd * hs) + r * hs;	// 前方右
-					vb[(iData * 4) + 3].position = pos + (fd * hs) - r * hs;	// 前方左
+					vb[(iData * 4) + 0].setPosition(pos - (fd * hs) + r * hs);	// 後方右
+					vb[(iData * 4) + 1].setPosition(pos - (fd * hs) - r * hs);	// 後方左
+					vb[(iData * 4) + 2].setPosition(pos + (fd * hs) + r * hs);	// 前方右
+					vb[(iData * 4) + 3].setPosition(pos + (fd * hs) - r * hs);	// 前方左
 				}
 				else if (m_particleDirection == ParticleDirectionType::Horizontal)
 				{
@@ -658,34 +658,34 @@ void SpriteParticleModel::render(RenderingContext* context, detail::SpritePartic
 					Vector3 r = Vector3::cross(Vector3::UnitY, fd);
 
 
-					vb[(iData * 4) + 0].position = pos - (fd * hs) + r * hs;	// 後方右
-					vb[(iData * 4) + 1].position = pos - (fd * hs) - r * hs;	// 後方左
-					vb[(iData * 4) + 2].position = pos + (fd * hs) + r * hs;	// 前方右
-					vb[(iData * 4) + 3].position = pos + (fd * hs) - r * hs;	// 前方左
+					vb[(iData * 4) + 0].setPosition(pos - (fd * hs) + r * hs);	// 後方右
+					vb[(iData * 4) + 1].setPosition(pos - (fd * hs) - r * hs);	// 後方左
+					vb[(iData * 4) + 2].setPosition(pos + (fd * hs) + r * hs);	// 前方右
+					vb[(iData * 4) + 3].setPosition(pos + (fd * hs) - r * hs);	// 前方左
 				}
 				else
 				{
 					// Z- 正面
-					vb[(iData * 4) + 0].position.set(-hs, hs, 0.0f);	// 左上
-					vb[(iData * 4) + 1].position.set(hs, hs, 0.0f);		// 右上
-					vb[(iData * 4) + 2].position.set(-hs, -hs, 0.0f);	// 左下
-					vb[(iData * 4) + 3].position.set(hs, -hs, 0.0f);	// 右下
+					vb[(iData * 4) + 0].setPosition(-hs, hs, 0.0f);	// 左上
+					vb[(iData * 4) + 1].setPosition(hs, hs, 0.0f);	// 右上
+					vb[(iData * 4) + 2].setPosition(-hs, -hs, 0.0f);// 左下
+					vb[(iData * 4) + 3].setPosition(hs, -hs, 0.0f);	// 右下
 					// 視点へ向ける
-					vb[(iData * 4) + 0].position.transformCoord(transform);
-					vb[(iData * 4) + 1].position.transformCoord(transform);
-					vb[(iData * 4) + 2].position.transformCoord(transform);
-					vb[(iData * 4) + 3].position.transformCoord(transform);
+					vb[(iData * 4) + 0].transformPosition(transform);
+					vb[(iData * 4) + 1].transformPosition(transform);
+					vb[(iData * 4) + 2].transformPosition(transform);
+					vb[(iData * 4) + 3].transformPosition(transform);
 
-					vb[(iData * 4) + 0].position += pos;
-					vb[(iData * 4) + 1].position += pos;
-					vb[(iData * 4) + 2].position += pos;
-					vb[(iData * 4) + 3].position += pos;
+					vb[(iData * 4) + 0].position += Vector4(pos, 0.0f);
+					vb[(iData * 4) + 1].position += Vector4(pos, 0.0f);
+					vb[(iData * 4) + 2].position += Vector4(pos, 0.0f);
+					vb[(iData * 4) + 3].position += Vector4(pos, 0.0f);
 				}
 
-				vb[(iData * 4) + 0].uv.set(0, 0);
-				vb[(iData * 4) + 1].uv.set(1, 0);
-				vb[(iData * 4) + 2].uv.set(0, 1);
-				vb[(iData * 4) + 3].uv.set(1, 1);
+				vb[(iData * 4) + 0].setUV(0, 0);
+				vb[(iData * 4) + 1].setUV(1, 0);
+				vb[(iData * 4) + 2].setUV(0, 1);
+				vb[(iData * 4) + 3].setUV(1, 1);
 
 				vb[(iData * 4) + 0].color = data.color;
 				vb[(iData * 4) + 1].color = data.color;

@@ -1,6 +1,5 @@
 ﻿
 #include "Internal.hpp"
-#include <imgui.h>
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/Controls/UISplitter.hpp>

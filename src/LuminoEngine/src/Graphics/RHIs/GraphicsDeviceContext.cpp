@@ -318,10 +318,16 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 {
 	// Verification
 	{
-		if (LN_REQUIRE(createInfo.vsCode)) return nullptr;
-		if (LN_REQUIRE(createInfo.vsCodeLen > 0)) return nullptr;
-		if (LN_REQUIRE(createInfo.psCode)) return nullptr;
-		if (LN_REQUIRE(createInfo.psCodeLen > 0)) return nullptr;
+		if (createInfo.csCode) {
+			if (LN_REQUIRE(createInfo.csCode)) return nullptr;
+			if (LN_REQUIRE(createInfo.csCodeLen > 0)) return nullptr;
+		}
+		else {
+			if (LN_REQUIRE(createInfo.vsCode)) return nullptr;
+			if (LN_REQUIRE(createInfo.vsCodeLen > 0)) return nullptr;
+			if (LN_REQUIRE(createInfo.psCode)) return nullptr;
+			if (LN_REQUIRE(createInfo.psCodeLen > 0)) return nullptr;
+		}
 	}
 
 
@@ -378,13 +384,14 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
 
     detail::UnifiedShader::CodeContainerId vscodeId = unifiedShader->vertexShader(passId);
     detail::UnifiedShader::CodeContainerId pscodeId = unifiedShader->pixelShader(passId);
+	detail::UnifiedShader::CodeContainerId cscodeId = unifiedShader->computeShader(passId);
 
-    //const std::vector<byte_t>* vscode = nullptr;
-    //const std::vector<byte_t>* pscode = nullptr;
     const char* vsEntryPointName = nullptr;
     const char* psEntryPointName = nullptr;
+	const char* csEntryPointName = nullptr;
     const detail::UnifiedShader::CodeInfo* vscode = nullptr;
     const detail::UnifiedShader::CodeInfo* pscode = nullptr;
+	const detail::UnifiedShader::CodeInfo* cscode = nullptr;
     if (vscodeId) {
         vsEntryPointName = unifiedShader->entryPointName(vscodeId).c_str();
         vscode = unifiedShader->findCode(vscodeId, triple);
@@ -393,6 +400,10 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
         psEntryPointName = unifiedShader->entryPointName(pscodeId).c_str();
         pscode = unifiedShader->findCode(pscodeId, triple);
     }
+	if (cscodeId) {
+		csEntryPointName = unifiedShader->entryPointName(cscodeId).c_str();
+		cscode = unifiedShader->findCode(cscodeId, triple);
+	}
 
     detail::ShaderPassCreateInfo createInfo = {
 		name.c_str(),
@@ -400,8 +411,11 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
         (vscode) ? vscode->code.size() : 0,
         (pscode) ? pscode->code.data() : nullptr,
         (pscode) ? pscode->code.size() : 0,
+		(cscode) ? cscode->code.data() : nullptr,
+		(cscode) ? cscode->code.size() : 0,
         vsEntryPointName,
         psEntryPointName,
+		csEntryPointName,
         &unifiedShader->descriptorLayout(passId),
 		&unifiedShader->attributes(passId),
     };
@@ -467,6 +481,7 @@ void ICommandList::begin()
 		renderPass->releaseObjects();
 	}
 	m_renderPasses.clear();
+	m_inflightResources.clear();
 
     m_stateDirtyFlags = GraphicsContextStateDirtyFlags_All;
     onBeginCommandRecoding();
@@ -618,6 +633,16 @@ void ICommandList::setSubData3D(ITexture* resource, int x, int y, int z, int wid
     onSetSubData3D(resource, x, y, z, width, height, depth, data, dataSize);
 }
 
+void ICommandList::dispatch(int groupCountX, int groupCountY, int groupCountZ)
+{
+	//commitStatus(GraphicsContextSubmitSource_Dispatch);
+	DevicePipelineStateDesc state;
+	state.shaderPass = m_staging.shaderPass;
+	IPipeline* pipeline = device()->pipelineCache()->findOrCreate(state);
+	onDispatch(m_staging, pipeline, groupCountX, groupCountY, groupCountZ);
+	//endCommit(GraphicsContextSubmitSource_Dispatch);
+}
+
 void ICommandList::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
     commitStatus(GraphicsContextSubmitSource_Clear);
@@ -651,7 +676,11 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
     //if (LN_REQUIRE(m_staging.framebufferState.renderTargets[0])) return;
     //if (LN_REQUIRE(m_staging.pipelineState.vertexDeclaration)) return;
 
+	//if (submitSource == GraphicsContextSubmitSource_Dispatch) {
+	//	IPipeline* pipeline = device()->pipelineCache()->findOrCreate(state);
 
+	//}
+	//else
 	if (m_staging.shaderPass
         && m_staging.pipelineState.vertexDeclaration && m_currentRenderPass // extention 描画時
         ) {
@@ -667,6 +696,15 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
 		state.shaderPass = m_staging.shaderPass;
 		state.renderPass = m_currentRenderPass;
 		IPipeline* pipeline = device()->pipelineCache()->findOrCreate(state);
+
+		// CommandList 実行中のリソース削除を防ぐため、参照カウントを増やしておく
+		for (const auto& v : m_staging.primitive.vertexBuffers) {
+			m_inflightResources.push_back(v);
+		}
+		m_inflightResources.push_back(m_staging.primitive.indexBuffer);
+		m_inflightResources.push_back(m_staging.pipelineState.vertexDeclaration);
+		m_inflightResources.push_back(pipeline);
+		
 
 		onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource, pipeline);
 	}

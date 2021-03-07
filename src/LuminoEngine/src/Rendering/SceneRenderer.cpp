@@ -510,11 +510,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					finalMaterial->shader(),
 					shadingModel);
 
-				if (subsetInfo.normalMap) {
-					printf("");
-				}
-
-
 				SubsetInfo localSubsetInfo = subsetInfo;
 				if (batch->overrideTexture) {
 					localSubsetInfo.materialTexture = batch->overrideTexture;
@@ -545,10 +540,28 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				}
 
 
+
+				const auto& commandList = graphicsContext->commandList();
+
+				//if (batch->morph) {
+				//	const auto& shader = detail::EngineDomain::renderingManager()->blendShapeShader;
+				//	ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(shader.shader);
+
+				//	descriptor->setst
+
+				//	batch->morph->getMorphWeights(&elementInfo.morphWeights);
+
+
+
+				//}
+				//else {
+				//	std::fill(elementInfo.morphWeights.begin(), elementInfo.morphWeights.end(), 0.0f);
+				//}
+
+
 				detail::ShaderTechniqueSemanticsManager* semanticsManager = tech->semanticsManager2();
 
 
-				const auto& commandList = graphicsContext->commandList();
 				ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(tech->shader());
 				descriptor->reallocFromSemanticsManager(commandList, semanticsManager);
 

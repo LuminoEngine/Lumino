@@ -460,12 +460,11 @@ bool PmxLoader::loadVertices(BinaryReader* reader, MeshPrimitive* mesh)
 		adjustPosition(&baseVertex.Position);
 		adjustPosition(&baseVertex.Normal);
 
-		mainVertices[i] = Vertex{
+		mainVertices[i] = Vertex(
 			baseVertex.Position,
 			baseVertex.Normal,
 			baseVertex.TexUV,
-			Color::White,
-			Vector4(1, 0, 0, 1)};
+			Color::White);
 
 		// TODO: 追加UV
 		//for (int iAddUV = 0; iAddUV < getAdditionalUVCount(); iAddUV++)

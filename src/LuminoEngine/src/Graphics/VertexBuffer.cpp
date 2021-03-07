@@ -105,6 +105,11 @@ void VertexBuffer::resize(int size)
     }
 }
 
+const void* VertexBuffer::data() const
+{
+    return m_buffer.data();
+}
+
 void* VertexBuffer::map(MapMode mode)
 {
     if (m_mappedBuffer) {

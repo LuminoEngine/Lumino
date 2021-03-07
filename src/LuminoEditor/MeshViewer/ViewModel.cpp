@@ -1,5 +1,6 @@
 ﻿
 #include "ViewModel.hpp"
+#include "../src/Mesh/MeshModelInstance.hpp"
 
 ViewModel* ViewModel::instance()
 {
@@ -25,7 +26,9 @@ void ViewModel::load()
 	//m_model = ln::MeshModel::load("C:/Proj/LN/Lumino/build/ExternalSource/glTF-Sample-Models//2.0//Buggy//glTF-Binary//Buggy.glb", settings);
 	//m_model = ln::MeshModel::load("C:/Proj/LN/Lumino/build/ExternalSource/glTF-Sample-Models/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb", settings);
 	//m_model = ln::MeshModel::load("C:/Proj/LN/Lumino/build/ExternalSource/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF-Binary/AlphaBlendModeTest.glb", settings);
-	m_model = ln::MeshModel::load(u"C:/Proj/LN/Lumino/build/ExternalSource/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf", settings);
+	//m_model = ln::MeshModel::load(u"C:/Proj/LN/Lumino/build/ExternalSource/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf", settings);
+	m_model = ln::MeshModel::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.vrm");
+	//m_model = ln::MeshModel::load(u"D:/Materials/VRM/Vita.vrm");
 	
 	
 	m_meshComponent = ln::makeObject<VisualizedMeshComponent>();
@@ -47,4 +50,6 @@ void ViewModel::load()
 	//ln::AnimationClip::loadAsync(u"D:/Materials/Mixamo/Walk.bvh")->thenWith([=](auto clip) {
 	//	ac->addClip(clip);
 	//});
+
+	m_meshComponent->modelInstance()->morphs()[0]->setWeight(1, 0.9);
 }

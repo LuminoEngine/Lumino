@@ -5,11 +5,22 @@
 namespace ln {
 namespace detail {
 class GraphicsResourceInternal;
+
+enum DescriptorResourceType
+{
+    DescriptorResourceType_None,
+    DescriptorResourceType_Buffer,
+    DescriptorResourceType_Texture,
+};
 }
+
 
 /** Graphics 機能に関係するリソースのベースクラスです。*/
 class IGraphicsResource
 {
+public:
+    virtual detail::DescriptorResourceType descriptorResourceType() const { return detail::DescriptorResourceType_None; }
+
 protected:
     virtual void onManagerFinalizing() = 0;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) = 0;

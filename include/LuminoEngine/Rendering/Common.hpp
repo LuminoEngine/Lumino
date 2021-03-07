@@ -25,6 +25,8 @@ class InstancedMeshList;
 class CommandList;
 class CanvasContext;
 
+static const int MaxRenderMorphTargets = 4;
+
 // Note: ShadingModel は組み込みの SurfaceShader を選択するもの。Unlit にしても陰はつく。
 /** ShadingModel */
 LN_ENUM()
@@ -240,6 +242,7 @@ class DrawElementListBuilder;
 class BuiltinEffectData;
 class RenderDrawElement;
 class SkeletonInstance;
+class MorphInstance;
 class CommandListServer;
 class RLIMaterial;
 

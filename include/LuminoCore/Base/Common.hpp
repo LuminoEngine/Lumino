@@ -310,3 +310,6 @@ using byte_t = unsigned char;
 #define LN_METHOD(...)
 #define LN_DELEGATE(...)
 #define LN_PROMISE(...)
+
+#define LN_LAST_ELEMENT_MARKER(x) x
+

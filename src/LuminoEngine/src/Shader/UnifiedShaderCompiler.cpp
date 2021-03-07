@@ -165,6 +165,47 @@ bool UnifiedShaderCompiler::compile(
 	return true;
 }
 
+bool UnifiedShaderCompiler::compileCompute(
+	const char* code, size_t len, const std::string& entryPoint,
+	const List<Path>& includeDirectories, const List<String>& definitions)
+{
+	ShaderTechniqueClass techClass;
+	UnifiedShader::TechniqueId techId;
+	if (!m_unifiedShader->addTechnique("Compute", techClass, &techId)) {
+		return false;
+	}
+
+	UnifiedShader::PassId passId;
+	if (!m_unifiedShader->addPass(techId, "Compute", &passId)) {
+		return false;
+	}
+
+	auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
+	transpiler->compileAndLinkFromHlsl(ShaderStage2_Compute, code, len, entryPoint, includeDirectories, &definitions, m_diag);
+	if (m_diag->hasError()) {
+		return false;
+	}
+
+	m_unifiedShader->addMergeDescriptorLayoutItem(passId, transpiler->descriptorLayout);
+
+	if (!transpiler->mapIOAndGenerateSpirv(m_unifiedShader->descriptorLayout(passId), m_diag)) {
+		return false;
+	}
+
+	UnifiedShader::CodeContainerId containerId;
+	if (!m_unifiedShader->addCodeContainer(ShaderStage2_Compute, entryPoint, &containerId)) {
+		return false;
+	}
+
+	UnifiedShaderTriple triple1 = { "spv", 110, "" };
+	m_unifiedShader->setCode(containerId, triple1, transpiler->spirvCode());
+	UnifiedShaderTriple triple2 = { "hlsl", 5, "" };
+	m_unifiedShader->setCode(containerId, triple2, transpiler->generateHlslByteCode());
+
+	m_unifiedShader->setComputeShader(passId, containerId);
+
+	return true;
+}
 
 bool UnifiedShaderCompiler::compileSingleCodes(
 	const char* vsData, size_t vsLen, const std::string& vsEntryPoint,

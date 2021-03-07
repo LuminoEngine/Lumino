@@ -51,10 +51,7 @@ void PhysicsDebugRenderer::addLineVertex(const Vector3& v, const Color& c)
 	if (m_linesVertexCount < MaxVertexCount)
 	{
 		Vertex* buf = (Vertex*)m_linesBuffer->map(MapMode::Write);
-		buf[m_linesVertexCount].position = v;
-		buf[m_linesVertexCount].color = c;
-		buf[m_linesVertexCount].uv = Vector2::Zero;
-		buf[m_linesVertexCount].normal = -Vector3::UnitZ;
+		buf[m_linesVertexCount].set(v, -Vector3::UnitZ, Vector2::Zero, c);
 		m_linesVertexCount++;
 	}
 }
@@ -64,10 +61,7 @@ void PhysicsDebugRenderer::addTriangleVertex(const Vector3& v, const Color& c)
 	if (m_trianglesVertexCount < MaxVertexCount)
 	{
 		Vertex* buf = (Vertex*)m_trianglesBuffer->map(MapMode::Write);
-		buf[m_trianglesVertexCount].position = v;
-		buf[m_trianglesVertexCount].color = c;
-		buf[m_trianglesVertexCount].uv = Vector2::Zero;
-		buf[m_trianglesVertexCount].normal = -Vector3::UnitZ;
+		buf[m_trianglesVertexCount].set(v, -Vector3::UnitZ, Vector2::Zero, c);
 		m_trianglesVertexCount++;
 	}
 }

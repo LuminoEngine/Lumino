@@ -38,6 +38,8 @@ public:
     /** 頂点バッファのサイズを変更します。 */
     void resize(int size);
 
+    const void* data() const;
+
     /** 頂点バッファが保持するデータにアクセスします。このバッファが次の描画に使用されるとき、自動的に unmap されます。  */
     void* map(MapMode mode);
 
@@ -52,6 +54,9 @@ public:
     /** リソースの管理方法を変更します。(default: Managed) */
     void setResourcePool(GraphicsResourcePool pool);
 
+    detail::DescriptorResourceType descriptorResourceType() const override { return detail::DescriptorResourceType_Buffer; }
+
+    Ref<detail::IVertexBuffer> m_rhiObject;
 protected:
     void onDispose(bool explicitDisposing) override;
     void onManagerFinalizing() override { dispose(); }
@@ -72,7 +77,6 @@ private:
     bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::IVertexBuffer> m_rhiObject;
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;
     size_t m_primarySize;

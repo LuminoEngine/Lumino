@@ -36,8 +36,9 @@ cbuffer LNRenderElementBuffer
     /* [192] */ float4x4 ln_WorldView;
     /* [256] */ float4x4 ln_WorldViewIT;
     /* [320] */ float4 ln_BoneTextureReciprocalSize;
-    /* [336] */ int ln_objectId;
-};  /* [352(alignd:16)] */
+    /* [336] */ float4 ln_MorphWeights;
+    /* [352] */ int ln_objectId;
+};  /* [368(alignd:16)] */
 
 cbuffer LNPBRMaterialParameter
 {
@@ -67,7 +68,7 @@ struct LN_VSInput
     float3    Normal            : NORMAL0;
     float2    UV                : TEXCOORD0;
     float4    Color            : COLOR0;
-    float4  tangent: TANGENT;
+    float4  tangent: TANGENT0;
 #ifdef LN_USE_SKINNING
     float4    BlendIndices    : BLENDINDICES;
     float4    BlendWeight        : BLENDWEIGHT;
@@ -276,6 +277,7 @@ float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
 //==============================================================================
 // Part combination
 
+/*
 //-------------------------------------
 // Mesh Processing
 #ifdef LN_USE_SKINNING
@@ -286,25 +288,48 @@ float3 LN_ApplyEnvironmentLight(float3 color, float3 viewNormal)
         _LN_ProcessVertex_StaticMesh(input, output.svPos, output.viewNormal, output.UV, output.Color)
 #endif
 
+*/
 //-------------------------------------
 // Normal Map
 #ifdef LN_USE_NORMALMAP
-    // Varying fileds.
-    #define _LN_VARYING_DECLARE_NORMAL_MAP ; \
-        float3 vTangent     : TEXCOORD12; \
-        float3 vBitangent   : TEXCOORD13
-
-    #define _LN_VS_PROCESS_PART_NORMALMAP(input, output) \
-        _LN_ProcessVertex_NormalMap(input, output.viewNormal, output.vTangent, output.vBitangent)
-
     #define LN_GetPixelNormal(input) LN_GetPixelNormalFromNormalMap(input.UV, input.vTangent, input.vBitangent, input.viewNormal)
-    
 #else
-    #define _LN_VARYING_DECLARE_NORMAL_MAP
-    #define _LN_VS_PROCESS_PART_NORMALMAP(input, output)
     #define LN_GetPixelNormal(input) input.viewNormal
-
 #endif
+
+
+
+void _LN_ProcessVertex_Common(
+    LN_VSInput input,
+    out float4 outSVPos,
+    out float3 outViewNormal,
+    out float2 outUV,
+    out float4 outColor,
+    out float3 outTangent,
+    out float3 outBitangent)
+{
+#ifdef LN_USE_SKINNING
+    _LN_ProcessVertex_SkinnedMesh(
+        input.Pos, input.Normal, input.BlendIndices, input.BlendWeight,
+        outSVPos, outViewNormal);
+#else
+    _LN_ProcessVertex_StaticMesh(input, outSVPos, outViewNormal, outUV, outColor);
+#endif
+    outUV = input.UV;
+    outColor = input.Color;
+
+    const float3 viewNormal = outViewNormal;
+
+#ifdef LN_USE_NORMALMAP
+    _LN_ProcessVertex_NormalMap(input, outViewNormal, outTangent, outBitangent);
+#else
+    outTangent = input.tangent;
+    outBitangent = normalize(cross(viewNormal, input.tangent) * input.tangent.w);
+#endif
+}
+
+#define _LN_VS_PROCESS_PART_COMMON(input, output) \
+    _LN_ProcessVertex_Common(input, output.svPos, output.viewNormal, output.UV, output.Color, output.vTangent, output.vBitangent);
 
 //-------------------------------------
 // Clustered Lighting
@@ -397,8 +422,9 @@ float4 _LN_ProcessPixel(float3 worldPos, float3 vertexPos, float4 positionInLigh
     float4 svPos        : SV_POSITION; \
     float3 viewNormal   : NORMAL10; \
     float2 UV           : TEXCOORD10; \
-    float4 Color        : COLOR10 \
-    _LN_VARYING_DECLARE_NORMAL_MAP \
+    float4 Color        : COLOR10; \
+    float3 vTangent     : TEXCOORD12; \
+    float3 vBitangent   : TEXCOORD13 \
     _LN_VARYING_DECLARE_LIGHTINGMETHOD
 
 // Standard VS Output members.
@@ -421,9 +447,8 @@ struct LN_PSInput
 
 // LN_ProcessVertex
 #define LN_ProcessVertex(input, output) \
-    _LN_VS_PROCESS_PART_MESHPROCESSING(input, output); \
-    _LN_VS_PROCESS_PART_LIGHTING(input, output); \
-    _LN_VS_PROCESS_PART_NORMALMAP(input, output);
+    _LN_VS_PROCESS_PART_COMMON(input, output); \
+    _LN_VS_PROCESS_PART_LIGHTING(input, output);
 
 // LN_ProcessSurface
 #define LN_ProcessSurface(input, surface) _LN_InitSurfaceOutput(input.UV, input.Color, LN_GetPixelNormal(input), surface);

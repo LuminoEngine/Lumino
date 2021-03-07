@@ -142,6 +142,10 @@ public:
 
 	MeshNode* findHumanoidBone(HumanoidBones boneKind) const;
 
+
+	AABB boundingBox() const { return m_boundingBox; }
+
+
     void addRootNode(int index);
 
 	/** 全ノードの Local Transform をリセットします。(アニメーション適用前の、デフォルトの姿勢に戻します) */
@@ -173,7 +177,8 @@ public:
 	void writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion* localQuaternionsBuffer);
 	void verifyHumanoidBones();
 	Ref<detail::MeshModelInstance> createMeshModelInstance();
-	bool isStaticMeshModel() const { return m_animationController == nullptr; }
+	//bool isStaticMeshModel() const { return m_animationController == nullptr; }
+	void calculateBoundingBox();
 
 protected:
 	void serialize(Serializer2& ar) override;
@@ -187,6 +192,7 @@ public:	// TODO:
     void updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform, bool hierarchical);
 
 	detail::AssetPath m_filePath;
+	String m_name;
 	float m_scale;
 
     detail::InternalMeshModelType m_type;
@@ -201,6 +207,8 @@ public:	// TODO:
     // でも Node は SkinndMesh と共用なので、Node 側に GlobalTransform を持たせるのは
     // データが無駄になったりする。
     List<Matrix> m_nodeGlobalTransforms;
+
+	AABB m_boundingBox;
 
 	List<Ref<MeshBoneIK>> m_iks;
 	Ref<AnimationController> m_animationController;

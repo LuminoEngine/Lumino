@@ -171,9 +171,9 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
 		// BasicVertices
 		if ((flags & PredefinedVertexLayoutFlags_Geometry) != 0)
 		{
-			vertexLayout->addElement(stream, VertexElementType::Float3, VertexElementUsage::Position, 0);
-			vertexLayout->addElement(stream, VertexElementType::Float3, VertexElementUsage::Normal, 0);
-			vertexLayout->addElement(stream, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+			vertexLayout->addElement(stream, VertexElementType::Float4, VertexElementUsage::Position, 0);
+			vertexLayout->addElement(stream, VertexElementType::Float4, VertexElementUsage::Normal, 0);
+			vertexLayout->addElement(stream, VertexElementType::Float4, VertexElementUsage::TexCoord, 0);
 			vertexLayout->addElement(stream, VertexElementType::Float4, VertexElementUsage::Color, 0);
 			vertexLayout->addElement(stream, VertexElementType::Float4, VertexElementUsage::Tangent, 0);
 			++stream;
@@ -293,6 +293,7 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 	if (path) {
 
 		Ref<SkinnedMeshModel> mesh = makeObject<SkinnedMeshModel>();
+		mesh->m_name = filePath.fileNameWithoutExtension();
 		auto diag = makeObject<DiagnosticsManager>();
 
 		if (path->path().hasExtension(u".pmx")) {
@@ -330,6 +331,8 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 			}
 
 		}
+
+		mesh->calculateBoundingBox();
 
 		MeshBoneMapper boneMapper;
 		boneMapper.map(mesh);

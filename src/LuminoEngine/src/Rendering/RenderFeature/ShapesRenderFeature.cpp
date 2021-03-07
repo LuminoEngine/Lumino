@@ -740,12 +740,9 @@ void ShapesRenderFeature::expandVertices(const Path& path)
 	for (int i = 0; i < path.pointCount; i++)
 	{
 		const OutlinePoint& pt = m_outlinePoints.getAt(path.pointStart + i);
-		Vertex v;
-		v.position = Vector3::transformCoord(Vector3(pt.pos + g_finalOffset, 0), *path.transform);
-		v.normal = Vector3::UnitZ;
-		v.uv = Vector2::Zero;
-		v.color = path.color;
-		v.color.a *= pt.alpha;
+        Vertex v(Vector3::transformCoord(
+            Vector3(pt.pos + g_finalOffset, 0), *path.transform), Vector3::UnitZ, Vector2::Zero, 
+            path.color.withAlpha(path.color.a * pt.alpha));
 		m_vertexCache.add(v);
 	}
 }
@@ -923,10 +920,10 @@ void ShapesRenderFeature::expandAntiAliasStroke(const Path& path, int startIndex
 		pt.pos -= extDir * ext;
 
 		// TODO: 普通の頂点作成でも同じように transformCoord しているのでちょっと無駄が多い
-		m_vertexCache.getAt(startIndex + i).position = Vector3::transformCoord(Vector3(pt.pos + g_finalOffset, 0), *path.transform);
+		m_vertexCache.getAt(startIndex + i).setPosition(Vector3::transformCoord(Vector3(pt.pos + g_finalOffset, 0), *path.transform));
 
 		Vertex v;
-		v.position = Vector3::transformCoord(Vector3(pt.pos + extDir * extAA + g_finalOffset, 0), *path.transform);// , *path.transform;
+		v.setPosition(Vector3::transformCoord(Vector3(pt.pos + extDir * extAA + g_finalOffset, 0), *path.transform));// , *path.transform;
 		v.color = path.color;
 		v.color.a = 0;
 		m_vertexCache.add(v);
@@ -1515,11 +1512,9 @@ void BoxElementShapeBuilderCommon::expandPathes()
     for (int i = 0; i < m_outlinePointBuffer.getCount(); i++)
     {
         const OutlinePoint& pt = m_outlinePointBuffer.getAt(i);
-        Vertex v;
-        v.position = Vector3::transformCoord(Vector3(pt.pos + g_finalOffset, 0), m_baseStyle.transform);
-        v.normal = Vector3::UnitZ;
-        v.uv = Vector2::Zero;
-        v.color = pt.color;
+        Vertex v(
+            Vector3::transformCoord(Vector3(pt.pos + g_finalOffset, 0), m_baseStyle.transform),
+            Vector3::UnitZ, Vector2::Zero, pt.color);
         m_vertexCache.add(v);
     }
 
@@ -2488,11 +2483,7 @@ void BoxElementShapeBuilder2::expandPathes()
 	for (int i = 0; i < m_outlinePointBuffer.getCount(); i++)
 	{
 		const OutlinePoint& pt = m_outlinePointBuffer.getAt(i);
-		Vertex v;
-		v.position = Vector3::transformCoord(Vector3(pt.pos + g_finalOffset, 0), m_baseStyle.transform);
-		v.normal = Vector3::UnitZ;
-		v.uv = Vector2::Zero;
-        v.color = pt.color;
+		Vertex v(Vector3::transformCoord(Vector3(pt.pos + g_finalOffset, 0), m_baseStyle.transform), Vector3::UnitZ, Vector2::Zero, pt.color);
 		m_vertexCache.add(v);
 	}
 

@@ -297,7 +297,8 @@ static EShLanguage LNStageToEShLanguage(ShaderStage2 stage)
         return EShLanguage::EShLangVertex;
     case ShaderStage2_Fragment:
         return EShLanguage::EShLangFragment;
-        break;
+    case ShaderStage2_Compute:
+        return EShLanguage::EShLangCompute;
     default:
         LN_NOTIMPLEMENTED();
         return EShLanguage::EShLangVertex;
@@ -503,6 +504,9 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
     case ShaderStage2_Fragment:
         stageFlags = ShaderStageFlags_Pixel;
         break;
+    case ShaderStage2_Compute:
+        stageFlags = ShaderStageFlags_Compute;
+        break;
     default:
         LN_UNREACHABLE();
         break;
@@ -562,14 +566,32 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 		}
 
         // UniformBlocks
-		for (int i = 0; i < m_program->getNumLiveUniformBlocks(); i++)
-		{
+        //   ComputeShader の RWStructuredBuffer, StructuredBuffer もこれに含まれる。
+		for (int i = 0; i < m_program->getNumLiveUniformBlocks(); i++) {
             DescriptorLayoutItem item;
             item.name = m_program->getUniformBlockName(i);
             item.stageFlags = stageFlags;
             item.binding = -1;
             item.size = m_program->getUniformBlockSize(i);
-            descriptorLayout.uniformBufferRegister.push_back(std::move(item));
+
+            const glslang::TObjectReflection& block = m_program->getUniformBlock(i);
+            const glslang::TType* type = block.getType();
+            const glslang::TQualifier& qualifier = type->getQualifier();
+
+            if (qualifier.declaredBuiltIn == glslang::TBuiltInVariable::EbvStructuredBuffer) {
+                // StructuredBuffer は HLSL では t# 以外に指定するとエラーになるので、t# 前提としてかまわない
+                descriptorLayout.textureRegister.push_back(std::move(item));
+            }
+            else if (qualifier.declaredBuiltIn == glslang::TBuiltInVariable::EbvRWStructuredBuffer) {
+                descriptorLayout.unorderdRegister.push_back(std::move(item));
+            }
+            else if (qualifier.storage == glslang::TStorageQualifier::EvqUniform) {
+                descriptorLayout.uniformBufferRegister.push_back(std::move(item));
+            }
+            else {
+                LN_NOTIMPLEMENTED();
+                return false;
+            }
 		}
 
 
@@ -608,6 +630,7 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 		//
         for (int i = 0; i < m_program->getNumLiveUniformVariables(); i++)
         {
+
 
 			ShaderUniformInfo info;
 			info.name = m_program->getUniformName(i);
@@ -667,15 +690,23 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
                 descriptorLayout.samplerRegister.push_back(std::move(item));
             }
             else {
-
-                int ownerUiformBufferIndex = m_program->getUniformBlockIndex(i);
-                if (ownerUiformBufferIndex >= 0)
-                {
-                    descriptorLayout.uniformBufferRegister[ownerUiformBufferIndex].members.push_back(info);
+                const int blockIndex = m_program->getUniformBlockIndex(i);
+                if (blockIndex >= 0) {
+                    const glslang::TObjectReflection& block = m_program->getUniformBlock(blockIndex);
+                    const glslang::TType* type = block.getType();
+                    const glslang::TQualifier& qualifier = type->getQualifier();
+                    if (qualifier.storage == glslang::TStorageQualifier::EvqUniform) {
+                        // 普通の UniformBuffer のみ取り出す
+                        descriptorLayout.uniformBufferRegister[blockIndex].members.push_back(info);
+                    }
+                    else {
+                        // RWStructuredBuffer 等に指定されている構造体のメンバ
+                    }
                 }
                 else {
                     // TODO: texture など
                 }
+
             }
         }
 	}
@@ -699,10 +730,10 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
         virtual void visitSymbol(glslang::TIntermSymbol* symbol)
         {
             auto name1 = symbol->getName();
-            //if (name1 == "ln_WorldViewProjection") {
-            //    printf("");
+            if (name1 == "dstVertices") {
+                printf("");
 
-            //}
+            }
             //std::cout << name1 << std::endl;
 
 
@@ -719,7 +750,31 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
 
             //}
             //else 
-                if (symbol->getBasicType() == glslang::EbtBlock) {
+             if (symbol->getQualifier().declaredBuiltIn == glslang::EbvRWStructuredBuffer) {
+                auto& name = symbol->getType().getTypeName();
+
+                auto itr = std::find_if(
+                    mergedDescriptorLayout->unorderdRegister.begin(), mergedDescriptorLayout->unorderdRegister.end(),
+                    [&](const DescriptorLayoutItem& x) { return strcmp(x.name.c_str(), name.c_str()) == 0; });
+                if (itr != mergedDescriptorLayout->unorderdRegister.end()) {
+                    symbol->getWritableType().getQualifier().layoutSet = DescriptorType_UnorderdAccess;
+                    symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
+                }
+                //symbol->getWritableType().getQualifier().layoutMatrix = glslang::ElmColumnMajor;
+            }
+            else if (symbol->getQualifier().declaredBuiltIn == glslang::EbvStructuredBuffer) {
+                 auto& name = symbol->getType().getTypeName();
+
+                 auto itr = std::find_if(
+                     mergedDescriptorLayout->textureRegister.begin(), mergedDescriptorLayout->textureRegister.end(),
+                     [&](const DescriptorLayoutItem& x) { return strcmp(x.name.c_str(), name.c_str()) == 0; });
+                 if (itr != mergedDescriptorLayout->textureRegister.end()) {
+                     symbol->getWritableType().getQualifier().layoutSet = DescriptorType_Texture;
+                     symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
+                 }
+                 //symbol->getWritableType().getQualifier().layoutMatrix = glslang::ElmColumnMajor;
+            }
+            else if (symbol->getBasicType() == glslang::EbtBlock) {
                 auto& name = symbol->getType().getTypeName();
 
                 auto itr = std::find_if(
@@ -930,12 +985,23 @@ std::vector<byte_t> ShaderCodeTranspiler::generateHlslByteCode() const
 
     const char targetVS[] = "vs_5_0";
     const char targetPS[] = "ps_5_0";
+    const char targetCS[] = "cs_5_0";
     const char* target = nullptr;
-    if (m_stage == ShaderStage2::ShaderStage2_Vertex)
+    switch (m_stage)
+    {
+    case ShaderStage2_Vertex:
         target = targetVS;
-    else if (m_stage == ShaderStage2::ShaderStage2_Fragment)
+        break;
+    case ShaderStage2_Fragment:
         target = targetPS;
-
+        break;
+    case ShaderStage2_Compute:
+        target = targetCS;
+        break;
+    default:
+        LN_UNREACHABLE();
+        return {};
+    }
 
     // TODO: release
     ID3DBlob* shaderCode = nullptr;

@@ -39,6 +39,7 @@ protected:
 	void onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length) override;
 	void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
+	void onDispatch(const GraphicsContextState& state, IPipeline* pipeline, int groupCountX, int groupCountY, int groupCountZ) override;
 	void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
 	void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) override;

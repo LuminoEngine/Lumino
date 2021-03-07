@@ -17,6 +17,10 @@ public:
 		char* inputCode, size_t inputCodeLength,
 		const List<Path>& includeDirectories, const List<String>& definitions);
 
+	bool compileCompute(
+		const char* code, size_t len, const std::string& entryPoint,
+		const List<Path>& includeDirectories, const List<String>& definitions);
+
 	bool compileSingleCodes(
 		const char* vsData, size_t vsLen, const std::string& vsEntryPoint,
 		const char* psData, size_t psLen, const std::string& psEntryPoint,

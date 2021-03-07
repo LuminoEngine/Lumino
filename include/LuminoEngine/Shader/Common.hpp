@@ -188,20 +188,24 @@ struct ShaderUniformBufferInfo
         std::vector<ShaderUniformBufferInfo>* out);
 };
 
+// TODO: name: DescriptorRegisterType の方がいいと思う。
+// TextureRegister の中には Texture または StorageBuffer が入る。
 enum DescriptorType
 {
     DescriptorType_UniformBuffer = 0,
     DescriptorType_Texture = 1, // Texture, 兼 CombinedSampler
     DescriptorType_SamplerState = 2,
+    DescriptorType_UnorderdAccess = 3,
 
-    DescriptorType_Count,
+    LN_LAST_ELEMENT_MARKER(DescriptorType_Count) = 4,
 };
 
 enum ShaderStage2
 {
 	ShaderStage2_Vertex = 0,
 	ShaderStage2_Fragment = 1,
-    ShaderStage2_Count = 2,
+    ShaderStage2_Compute = 2,
+    LN_LAST_ELEMENT_MARKER(ShaderStage2_Count) = 3,
 };
 
 enum ShaderStageFlags
@@ -209,6 +213,7 @@ enum ShaderStageFlags
     ShaderStageFlags_None = 0x00,
     ShaderStageFlags_Vertex = 0x01,
     ShaderStageFlags_Pixel = 0x02,
+    ShaderStageFlags_Compute = 0x04,
 };
 
 struct DescriptorLayoutItem
@@ -224,8 +229,10 @@ struct DescriptorLayoutItem
 
 struct DescriptorLayout
 {
-    std::vector<DescriptorLayoutItem> uniformBufferRegister;
-    std::vector<DescriptorLayoutItem> textureRegister;
+    // これらの index が binding と一致するわけではないため注意
+    std::vector<DescriptorLayoutItem> uniformBufferRegister;// ConstantBuffer
+    std::vector<DescriptorLayoutItem> unorderdRegister;     // RWStructuredBuffer
+    std::vector<DescriptorLayoutItem> textureRegister;      // Texture or StructuredBuffer
     std::vector<DescriptorLayoutItem> samplerRegister;
 
     void clear();
@@ -233,7 +240,9 @@ struct DescriptorLayout
     const std::vector<DescriptorLayoutItem>& getLayoutItems(DescriptorType registerType) const;
     bool isReferenceFromVertexStage(DescriptorType registerType) const;
     bool isReferenceFromPixelStage(DescriptorType registerType) const;
+    bool isReferenceFromComputeStage(DescriptorType registerType) const;
     int findUniformBufferRegisterIndex(const std::string& name) const;
+    int findUnorderdRegisterIndex(const std::string& name) const;
     int findTextureRegisterIndex(const std::string& name) const;
     int findSamplerRegisterIndex(const std::string& name) const;
     int findUniformBufferMemberOffset(const std::string& name) const;

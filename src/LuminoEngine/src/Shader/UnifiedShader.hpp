@@ -43,7 +43,6 @@ public:
     {
         UnifiedShaderTriple triple;
         std::vector<byte_t> code;
-        //Ref<UnifiedShaderRefrectionInfo> refrection;
     };
 
     // 0 is invalid value.
@@ -57,6 +56,7 @@ public:
         FileVersion_2,      // 0.8.0
 		FileVersion_3,      // 0.9.0
         FileVersion_4,      // 0.10.0
+        FileVersion_5,      // 0.11.0
 		FileVersion_Last,
 		FileVersion_Current = FileVersion_Last - 1,
 	};
@@ -71,8 +71,6 @@ public:
 
     bool addCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId);
     void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code);
-    bool hasCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple) const;
-    bool findCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId) const;
     const CodeInfo* findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const;
     const std::string& entryPointName(CodeContainerId conteinreId) const;
     void makeGlobalDescriptorLayout();
@@ -91,11 +89,13 @@ public:
     const std::string& passName(PassId passId) const { return m_passes[idToIndex(passId)].name; }
     void setVertexShader(PassId pass, CodeContainerId code);
     void setPixelShader(PassId pass, CodeContainerId code);
+    void setComputeShader(PassId pass, CodeContainerId code);
     void setRenderState(PassId pass, ShaderRenderState* state);
 	//void setRefrection(PassId pass, UnifiedShaderRefrectionInfo* value);
     void addMergeDescriptorLayoutItem(PassId pass, const DescriptorLayout& layout);
     CodeContainerId vertexShader(PassId pass) const;
     CodeContainerId pixelShader(PassId pass) const;
+    CodeContainerId computeShader(PassId pass) const;
     ShaderRenderState* renderState(PassId pass) const;
 	const DescriptorLayout& descriptorLayout(PassId pass) const;
     //UnifiedShaderRefrectionInfo* refrection(PassId pass) const;
@@ -140,6 +140,7 @@ private:
         std::string name;
         CodeContainerId vertexShader;
         CodeContainerId pixelShader;
+        CodeContainerId computeShader;
         Ref<ShaderRenderState> renderState;
 		DescriptorLayout descriptorLayout;
 		std::vector<VertexInputAttribute> attributes;	// used by vertexShader

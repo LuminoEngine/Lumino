@@ -321,29 +321,10 @@ void SpriteTextRenderFeature::putRectangle(Vertex* buffer, const Matrix& transfo
 	float ru = srcUVRect.getRight();
 	float bv = srcUVRect.getBottom();
 
-	buffer[0].color = color;
-	buffer[0].position.set(rect.getLeft(), rect.getTop() * signY, 0);
-	buffer[0].position.transformCoord(transform);
-	buffer[0].uv.set(lu, tv);	// 左上
-	buffer[0].normal = Vector3::UnitZ;
-
-	buffer[1].color = color;
-	buffer[1].position.set(rect.getLeft(), rect.getBottom() * signY, 0);
-	buffer[1].position.transformCoord(transform);
-	buffer[1].uv.set(lu, bv);	// 左下
-	buffer[1].normal = Vector3::UnitZ;
-
-	buffer[2].color = color;
-	buffer[2].position.set(rect.getRight(), rect.getTop() * signY, 0);
-	buffer[2].position.transformCoord(transform);
-	buffer[2].uv.set(ru, tv);	// 右上
-	buffer[2].normal = Vector3::UnitZ;
-
-	buffer[3].color = color;
-	buffer[3].position.set(rect.getRight(), rect.getBottom() * signY, 0);
-	buffer[3].position.transformCoord(transform);
-	buffer[3].uv.set(ru, bv);	// 右下
-	buffer[3].normal = Vector3::UnitZ;
+	buffer[0].set(Vector3::transformCoord(Vector3(rect.getLeft(), rect.getTop() * signY, 0), transform), Vector3::UnitZ, Vector2(lu, tv), color);	// 左上
+	buffer[1].set(Vector3::transformCoord(Vector3(rect.getLeft(), rect.getBottom() * signY, 0), transform), Vector3::UnitZ, Vector2(lu, tv), color);// 左下
+	buffer[2].set(Vector3::transformCoord(Vector3(rect.getRight(), rect.getTop() * signY, 0), transform), Vector3::UnitZ, Vector2(lu, tv), color);	// 右上
+	buffer[3].set(Vector3::transformCoord(Vector3(rect.getRight(), rect.getBottom() * signY, 0), transform), Vector3::UnitZ, Vector2(lu, tv), color);// 右下
 
 	// pixel snap
 	if (isPixelSnapEnabled()) {

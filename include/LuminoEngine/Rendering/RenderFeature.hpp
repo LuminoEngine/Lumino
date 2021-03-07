@@ -54,6 +54,7 @@ public:
 	Texture* overrideTexture = nullptr;
 	SamplerState* overrideSamplerState = nullptr;	// 共通の FontCache を AA 有無で描画したいときの区別
 	SkeletonInstance* skeleton = nullptr;
+	MorphInstance* morph = nullptr;
 
 	bool instancing = false;
 

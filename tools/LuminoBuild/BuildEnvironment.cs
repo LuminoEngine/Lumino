@@ -97,11 +97,6 @@ namespace LuminoBuild
                             Utils.CallProcess("git", "config advice.detachedHead false");
                             Utils.CallProcess("git", "checkout 732cd837a9ed8ecb2ce4035e7d40a1c9a04ae240");
                         }
-
-                        foreach (string file in System.IO.Directory.GetFiles("imgui", "*.h"))
-                        {
-                            File.Copy(file, Path.Combine(builder.LuminoRootDir, "include", "LuminoEngine", "UI", "imgui", System.IO.Path.GetFileName(file)), true);
-                        }
                     }
 
                     if (!Directory.Exists("Streams"))
@@ -143,6 +138,13 @@ namespace LuminoBuild
                 }
             }
 
+            using (CurrentDir.Enter(buildCacheDir))
+            {
+                foreach (string file in System.IO.Directory.GetFiles("imgui", "*.h"))
+                {
+                    File.Copy(file, Path.Combine(builder.LuminoRootDir, "include", "LuminoEngine", "UI", "imgui", System.IO.Path.GetFileName(file)), true);
+                }
+            }
 
             string externalSourceDir = Path.Combine(builder.LuminoBuildDir, "ExternalSource");
             if (!builder.ExistsCache(externalSourceDir))

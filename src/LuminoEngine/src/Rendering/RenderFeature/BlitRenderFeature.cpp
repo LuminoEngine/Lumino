@@ -30,10 +30,10 @@ void BlitRenderFeature::init(RenderingManager* manager)
 #ifdef LN_COORD_RH
 	Vertex vertices[4] =
 	{
-		{ Vector3(-1,  1, 0), Vector3::UnitZ, Vector2(0, 0), Color::White, Vector4(1, 0, 0, 1) },
-		{ Vector3(-1, -1, 0), Vector3::UnitZ, Vector2(0, 1), Color::White, Vector4(1, 0, 0, 1) },
-		{ Vector3(1,  1, 0), Vector3::UnitZ, Vector2(1, 0), Color::White, Vector4(1, 0, 0, 1) },
-		{ Vector3(1, -1, 0), Vector3::UnitZ, Vector2(1, 1), Color::White, Vector4(1, 0, 0, 1) },
+		Vertex(Vector3(-1,  1, 0), Vector3::UnitZ, Vector2(0, 0), Color::White),
+		Vertex(Vector3(-1, -1, 0), Vector3::UnitZ, Vector2(0, 1), Color::White),
+		Vertex(Vector3(1,  1, 0), Vector3::UnitZ, Vector2(1, 0), Color::White),
+		Vertex(Vector3(1, -1, 0), Vector3::UnitZ, Vector2(1, 1), Color::White),
 	};
 #else
 	Vertex vertices[4] =

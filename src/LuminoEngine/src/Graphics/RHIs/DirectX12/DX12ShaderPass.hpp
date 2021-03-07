@@ -17,11 +17,13 @@ struct DX12ShaderPassLayoutInfo
     struct Descriptors
     {
         std::vector<Descriptor> bufferDescriptors;
+        std::vector<Descriptor> unorderedDescriptors;
         std::vector<Descriptor> textureDescriptors;
         std::vector<Descriptor> samplerDescriptors;
     };
     Descriptors vsDescriptors;
     Descriptors psDescriptors;
+    Descriptors csDescriptors;
 
     // [VertexShader Stage] ConstantBuffer
     int32_t vs_CBV_RootParamIndex;
@@ -42,6 +44,16 @@ struct DX12ShaderPassLayoutInfo
     // [PixelShader Stage] Sampler
     int32_t ps_Sampler_RootParamIndex;
     int32_t ps_Sampler_Count() const { return static_cast<int32_t>(psDescriptors.samplerDescriptors.size()); }
+
+    // [ComputeShader Stage] ConstantBuffer
+    int32_t cs_CBV_RootParamIndex;
+    int32_t cs_CBV_Count() const { return static_cast<int32_t>(csDescriptors.bufferDescriptors.size()); }
+    // [ComputeShader Stage] UnorderdAccess
+    int32_t cs_UAV_RootParamIndex;
+    int32_t cs_UAV_Count() const { return static_cast<int32_t>(csDescriptors.unorderedDescriptors.size()); }
+    // [ComputeShader Stage] Texture
+    int32_t cs_SRV_RootParamIndex;
+    int32_t cs_SRV_Count() const { return static_cast<int32_t>(csDescriptors.textureDescriptors.size()); }
 };
 
 class DX12ShaderPass

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../Graphics/Common.hpp"
+#include "../Rendering/Common.hpp"
 #include "../Rendering/Vertex.hpp"
 
 namespace ln {
@@ -13,7 +14,7 @@ class MeshGeometryBuilder;
 namespace detail {
 class MeshManager;
 class MeshImporter;
-
+class MorphInstance;
 }
 
 
@@ -202,13 +203,15 @@ public:
 	/** インデックス値を取得します。 */
 	int index(int index);
 
+	const AABB& boundingBox() const { return m_boundingBox; }
 
 	/** セクションの情報を追加します。 */
 	void addSection(int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology);
 	void setSection(int sectionIndex, int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology);
 
 	// TODO: internal
-	void commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB);
+	void commitRenderData(int sectionIndex, detail::MorphInstance* morph, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB);
+	void commitMorphTargets(detail::MorphInstance* morph, std::array<VertexBuffer*, MaxRenderMorphTargets>* outTargets);
     const List<MeshSection2>& sections() const { return m_sections; }
 
 	void resetVertexBuffer(int vertexCount);
@@ -227,7 +230,8 @@ public:
 	IndexBuffer* indexBuffer() const;
 
 
-	void* acquireMappedMorphVertexBuffer(int morphIndex);
+	void* acquireMappedMorphVertexBuffer(int morphTargetIndex/*, VertexElementUsage usage*/);
+	int morphTargetCount() const { return m_morphVertexBuffers.size(); }
 
 LN_CONSTRUCT_ACCESS:
 	MeshPrimitive();
@@ -256,6 +260,13 @@ private:
 		void reset();
 	};
 
+	//struct MorphVertexBuffers
+	//{
+	//	VertexBufferEntry positionVertexBuffer;
+	//	VertexBufferEntry normalVertexBuffer;
+	//	VertexBufferEntry tangentVertexBuffer;
+	//};
+
 	struct VertexBufferAttribute
 	{
         VertexElementType type;
@@ -268,7 +279,8 @@ private:
 	VertexBufferEntry m_mainVertexBuffer;		// struct Vertex. (Pos0, Normal0, UV0, Color0)
 	VertexBufferEntry m_skinningVertexBuffer;	// BlendWeignt0, BlendIndex0
 	VertexBufferEntry m_additionalUVVertexBuffer;	// TEXCOORD_1, TEXCOORD_2,TEXCOORD_3
-	List<VertexBufferEntry> m_morphVertexBuffer;
+	//List<MorphVertexBuffers> m_morphVertexBuffers;
+	List<VertexBufferEntry> m_morphVertexBuffers;
 	List<VertexBufferAttribute> m_extraVertexBuffers;
 	IndexBufferEntry m_indexBuffer;
     Ref<VertexLayout> m_vertexLayout;
@@ -278,6 +290,7 @@ private:
 	int m_indexCount;
 	IndexBufferFormat m_indexFormat;
 	GraphicsResourceUsage m_resourceUsage;
+	AABB m_boundingBox;
 
 
 
@@ -290,6 +303,7 @@ private:
 // ひとつのメッシュモデルデータ内にいくつかのメッシュノードが含まれているとき、それを名前検索するために使用する。
 // 例えば、フィールドのモデルに ビジュアル用のメッシュとコリジョン用のメッシュが含まれている場合、名前検索でコリジョンを取り出して Phyiscs モジュールに渡したりする。
 // また、LOD の管理も行う。
+// glTF などリソース効率のため、複数の Node から参照されることがある点に注意。
 /** MeshContainer */
 class MeshContainer
 	: public Object
@@ -310,18 +324,19 @@ public:
  //   void addMeshResource(MeshResource* mesh);
 
 	/** メッシュの境界ボックスを取得します。 */
-	const Box& bounds() const { return m_boundingBox; }
+	//const Box& bounds() const { return m_boundingBox; }
 
 	// TODO: internal
 	//MeshResource* selectLODResource(float distance) const;
 
-	void calculateBounds();
+	//void calculateBounds();
 
 
     //void setMesh(MeshPrimitive* mesh);
     //MeshPrimitive* mesh() const;
 	void addMeshPrimitive(MeshPrimitive* mesh);
 	const List<Ref<MeshPrimitive>>& meshPrimitives() const { return m_lodMesh; }
+	MeshPrimitive* meshPrimitive() const { return m_lodMesh[0]; }
 
 	// TODO: ↓ Node に持たせたので消しておく
 	
@@ -341,10 +356,11 @@ LN_CONSTRUCT_ACCESS:
 private:
 	int m_index = -1;
 	ln::String m_name;
-	Box m_boundingBox;
+	//Box m_boundingBox;
 	//List<Ref<MeshResource>> m_lodResources; // TODO: :obsolete
     List<Ref<MeshPrimitive>> m_lodMesh;
 	bool m_visible;
+	AABB m_boundingBox;
 
 	friend class MeshModel;
 };
@@ -377,6 +393,7 @@ public:
 
     void setMeshContainerIndex(int value);
     int meshContainerIndex() const { return m_meshContainerIndex; }
+	bool hasMeshContainer() const { return m_meshContainerIndex >= 0; }
 
 	int skeletonIndex = -1;
 	bool m_boneNode = false;	// いずれかの Bone から参照されているか

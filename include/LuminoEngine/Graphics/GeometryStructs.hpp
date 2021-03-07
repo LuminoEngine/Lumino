@@ -433,6 +433,82 @@ public:
     bool operator!=(const CornerRadius& rhs) const { return !operator==(rhs); }
 };
 
+struct AABB
+{
+    Vector3 min;
+    Vector3 max;
+
+    AABB()
+        : min(Vector3::Maximum)
+        , max(Vector3::Minimum)
+    {
+    }
+
+    void invalidate()
+    {
+        min = Vector3::Maximum;
+        max = Vector3::Minimum;
+    }
+
+    void attemptInfrate(const Vector3& pos) {
+        min = Vector3::min(min, pos);
+        max = Vector3::max(max, pos);
+    }
+
+    void attemptInfrate(const AABB& aabb) {
+        min = Vector3::min(min, aabb.min);
+        max = Vector3::max(max, aabb.max);
+    }
+
+    /* 
+     * verts[0] : left top near
+     * verts[1] : right top near
+     * verts[2] : right bottom near
+     * verts[3] : left bottom near
+     * verts[4] : left top far
+     * verts[5] : right top far
+     * verts[6] : right bottom far
+     * verts[7] : left bottom far
+     */
+    std::array<Vector3, 8> getCorners() const
+    {
+        return {
+            Vector3(min.x, max.y, min.z),
+            Vector3(max.x, max.y, min.z),
+            Vector3(max.x, min.y, min.z),
+            Vector3(min.x, min.y, min.z),
+            Vector3(min.x, max.y, max.z),
+            Vector3(max.x, max.y, max.z),
+            Vector3(max.x, min.y, max.z),
+            Vector3(min.x, min.y, max.z),
+        };
+    }
+
+    void transform(const Matrix& m)
+    {
+        const Vector3 b000 = min;
+        const Vector3 b001 = Vector3(min.x, min.y, max.z);
+        const Vector3 b010 = Vector3(min.x, max.y, min.z);
+        const Vector3 b011 = Vector3(min.x, max.y, max.z);
+        const Vector3 b100 = Vector3(max.x, min.y, min.z);
+        const Vector3 b101 = Vector3(max.x, min.y, max.z);
+        const Vector3 b110 = Vector3(max.x, max.y, min.z);
+        const Vector3 b111 = max;
+
+        invalidate();
+        attemptInfrate(Vector3::transformCoord(b000, m));
+        attemptInfrate(Vector3::transformCoord(b001, m));
+        attemptInfrate(Vector3::transformCoord(b010, m));
+        attemptInfrate(Vector3::transformCoord(b011, m));
+        attemptInfrate(Vector3::transformCoord(b100, m));
+        attemptInfrate(Vector3::transformCoord(b101, m));
+        attemptInfrate(Vector3::transformCoord(b110, m));
+        attemptInfrate(Vector3::transformCoord(b111, m));
+    }
+
+};
+
+
 // Int type (internal)
 struct PointI
 {

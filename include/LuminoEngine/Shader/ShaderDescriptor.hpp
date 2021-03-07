@@ -18,12 +18,14 @@ public:
 	// 各 index は ShaderDescriptorLayout のフィールドの index と一致する。
 	// BindingIndex ではない点に注意。
 	void setUniformBuffer(int index, const detail::ConstantBufferView& value);
-	void setTexture(int index, Texture* value);
+	void setTexture(int index, IGraphicsResource* value);
 	void setSamplerState(int index, SamplerState* value);
+	void setStorageData(int index, IGraphicsResource* value);
 
 	const detail::ConstantBufferView& uniformBuffer(int index) const { return m_uniformBufferViews[index]; }
-	Texture* texture(int index) const { return m_textures[index]; }
+	IGraphicsResource* texture(int index) const { return m_textures[index]; }
 	SamplerState* samplerState(int index) const { return m_samplers[index]; }
+	IGraphicsResource* storage(int index) const { return m_storages[index]; }
 
 	void setUniformBufferData(int index, const void* data, size_t size);
 
@@ -73,8 +75,9 @@ private:
 
 	Shader* m_shader;
 	std::array<detail::ConstantBufferView, MaxElements> m_uniformBufferViews = {};
-	std::array<Texture*, MaxElements> m_textures = {};
+	std::array<IGraphicsResource*, MaxElements> m_textures = {};
 	std::array<SamplerState*, MaxElements> m_samplers = {};
+	std::array<IGraphicsResource*, MaxElements> m_storages = {};
 };
 } // namespace detail
 

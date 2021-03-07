@@ -568,7 +568,7 @@ void CommandList::drawMesh(MeshPrimitive* mesh, int sectionIndex)
 		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
 			// TODO: boneTexture を送る仕組み
-			return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, mesh, sectionIndex, nullptr);
+			return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, mesh, sectionIndex, nullptr, nullptr);
 		}
 	};
 
@@ -582,7 +582,7 @@ void CommandList::drawMesh(MeshPrimitive* mesh, int sectionIndex)
 	// TODO: bounding
 }
 
-void CommandList::drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton)
+void CommandList::drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph)
 {
 	class DrawSkinnedMesh : public detail::RenderDrawElement
 	{
@@ -592,10 +592,11 @@ void CommandList::drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, detail:
 
 		// SkinnedMesh の場合に、親インスタンスが破棄されないように参照を保持しておく
 		Ref<detail::SkeletonInstance> skeleton;
+		Ref<detail::MorphInstance> morph;
 
 		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
-			return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, mesh, sectionIndex, skeleton);
+			return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, mesh, sectionIndex, skeleton, morph);
 		}
 	};
 
@@ -604,6 +605,7 @@ void CommandList::drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, detail:
 	element->mesh = mesh;
 	element->sectionIndex = sectionIndex;
 	element->skeleton = skeleton;
+	element->morph = morph;
 
 	// TODO: bounding
 }

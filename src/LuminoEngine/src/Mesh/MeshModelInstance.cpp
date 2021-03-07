@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include "MeshModelInstance.hpp"
 
 namespace ln {
@@ -82,6 +83,56 @@ void SkeletonInstance::updateSkinningMatrices()
 }
 
 //==============================================================================
+// MorphInstance
+
+MorphInstance::MorphInstance(MeshModelInstance* owner, int meshContainerIndex)
+	: m_owner(owner)
+	, m_meshContainerIndex(meshContainerIndex)
+	, m_weights()
+{
+	const auto& meshContainer = owner->model()->meshContainers()[m_meshContainerIndex];
+	const auto& meshPrimitive = meshContainer->meshPrimitives()[0];
+	m_weights.resize(meshPrimitive->morphTargetCount(), 0.0f);
+
+	VertexBuffer* baseBuffer = meshPrimitive->vertexBuffer(InterleavedVertexGroup::Main);
+	m_blendResult = makeObject<VertexBuffer>(
+		baseBuffer->size(),
+		baseBuffer->data(),
+		GraphicsResourceUsage::Static);
+
+	// TODO: tmp
+	updatePriorityTargets();
+}
+
+void MorphInstance::setWeight(int index, float value)
+{
+	m_weights[index] = value;
+}
+
+void MorphInstance::updatePriorityTargets()
+{
+	int i = 0;
+	for (; i < std::min(m_weights.size(), m_priorityTargets.size()); i++) {
+		m_priorityTargets[i] = i;
+	}
+	for (; i < m_priorityTargets.size(); i++) {
+		m_priorityTargets[i] = -1;
+	}
+}
+
+void MorphInstance::getMorphWeights(std::array<float, MaxRenderMorphTargets>* outMorphWeights) const
+{
+	for (size_t i = 0; i < outMorphWeights->size(); i++) {
+		if (m_priorityTargets[i] >= 0) {
+			(*outMorphWeights)[i] = m_weights[m_priorityTargets[i]];
+		}
+		else {
+			(*outMorphWeights)[i] = 0.0f;
+		}
+	}
+}
+
+//==============================================================================
 // MeshModelInstance
 
 MeshModelInstance::MeshModelInstance(MeshModel* model)
@@ -91,6 +142,11 @@ MeshModelInstance::MeshModelInstance(MeshModel* model)
 	const auto& skeletons = m_model->skeletons();
 	for (int i = 0; i < skeletons.size(); i++) {
 		m_skeletons.add(makeRef<SkeletonInstance>(this, i));
+	}
+
+	const auto& meshContainers = m_model->meshContainers();
+	for (int i = 0; i < meshContainers.size(); i++) {
+		m_morphs.add(makeRef<MorphInstance>(this, i));
 	}
 }
 

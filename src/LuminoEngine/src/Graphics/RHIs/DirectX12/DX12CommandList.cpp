@@ -456,6 +456,11 @@ void DX12GraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z
     LN_NOTIMPLEMENTED();
 }
 
+void DX12GraphicsContext::onDispatch(const GraphicsContextState& state, IPipeline* basePipeline, int groupCountX, int groupCountY, int groupCountZ)
+{
+    LN_NOTIMPLEMENTED();
+}
+
 void DX12GraphicsContext::onClearBuffers(ClearFlags clearFlags, const Color& color, float z, uint8_t stencil)
 {
     if (clearFlags & ClearFlags::Color) {

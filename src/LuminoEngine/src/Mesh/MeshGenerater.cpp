@@ -28,8 +28,8 @@ void MeshGeneraterBuffer::transform(/*Vertex* begin, int vertexCount*/)
     if (!m_generator->transform().isIdentity()) {
         Vertex* end = m_vertexBuffer + vertexCount;
         for (Vertex* v = m_vertexBuffer; v < end; v++) {
-            v->position.transformCoord(m_generator->transform());
-            v->normal.transformDirection(m_generator->transform());
+            v->position = Vector4(Vector3::transformCoord(v->position.xyz(), m_generator->transform()), 0.0f);
+            v->transformNormalDirection(m_generator->transform());
         }
     }
 }
@@ -41,11 +41,7 @@ void MeshGeneraterBuffer::transform(/*Vertex* begin, int vertexCount*/)
 
 void MeshGeneraterBuffer::setV(int index, const Vector3& position, const Vector2& uv, const Vector3& normal)
 {
-    m_vertexBuffer[index].position = position;
-    m_vertexBuffer[index].uv = uv;
-    m_vertexBuffer[index].normal = normal;
-    m_vertexBuffer[index].color = m_generator->color();
-    m_vertexBuffer[index].tangent = Vector4(1, 0, 0, 1);
+	m_vertexBuffer[index].set(position, normal, uv, m_generator->color());
 }
 
 

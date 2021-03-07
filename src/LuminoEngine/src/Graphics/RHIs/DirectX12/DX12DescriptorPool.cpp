@@ -23,117 +23,131 @@ void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
 
     const DX12ShaderPassLayoutInfo& layout = m_pool->shaderPass()->layoutInfo();
 
-    // Constant buffer (`b` register)
-    for (int i = 0; i < layout.vs_CBV_Count(); i++) {
-        const ShaderDescriptorBufferView& view = data.uniforms[layout.vsDescriptors.bufferDescriptors[i].itemIndex];
-        if (DX12UniformBuffer* buffer = static_cast<DX12UniformBuffer*>(view.buffer)) {
-            D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
-            desc.BufferLocation = buffer->dxResource()->GetGPUVirtualAddress() + view.offset;
-            desc.SizeInBytes = DX12Helper::alignUp(layout.vsDescriptors.bufferDescriptors[i].size);
-            dxDevice->CreateConstantBufferView(&desc, m_descriptorHandles2[DescriptorParamIndex_VS_CBV].cpuHandles[i]);
+    // VertexShader
+    {
+        // Constant buffer (`b` register)
+        for (int i = 0; i < layout.vs_CBV_Count(); i++) {
+            //const ShaderDescriptorBufferView& view = data.uniforms[layout.vsDescriptors.bufferDescriptors[i].itemIndex];
+            const ShaderDescriptorTableUpdateItem& item = data.uniforms[layout.vsDescriptors.bufferDescriptors[i].itemIndex];
+            if (DX12UniformBuffer* buffer = static_cast<DX12UniformBuffer*>(item.object)) {
+                D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
+                desc.BufferLocation = buffer->dxResource()->GetGPUVirtualAddress() + item.offset;
+                desc.SizeInBytes = DX12Helper::alignUp(layout.vsDescriptors.bufferDescriptors[i].size);
+                dxDevice->CreateConstantBufferView(&desc, m_descriptorHandles2[DescriptorParamIndex_VS_CBV].cpuHandles[i]);
+            }
+            else {
+                LN_ERROR();
+            }
         }
-        else {
-            LN_ERROR();
-        }
-    }
 
-    // Texture (`t` register)
-    for (int i = 0; i < layout.vs_SRV_Count(); i++) {
-        const ShaderDescriptorCombinedSampler& view = data.textures[layout.vsDescriptors.textureDescriptors[i].itemIndex];
-        if (DX12Texture* texture = static_cast<DX12Texture*>(view.texture)) {
-            D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
-            desc.Format = texture->dxFormat();
-            desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-            desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-            desc.Texture2D.MostDetailedMip = 0;
-            desc.Texture2D.MipLevels = texture->mipLevels();
-            desc.Texture2D.PlaneSlice = 0;
-            desc.Texture2D.ResourceMinLODClamp = 0.0f;
-            dxDevice->CreateShaderResourceView(texture->dxResource(), &desc, m_descriptorHandles2[DescriptorParamIndex_VS_SRV].cpuHandles[i]);
+        // Texture (`t` register)
+        for (int i = 0; i < layout.vs_SRV_Count(); i++) {
+            //const ShaderDescriptorCombinedSampler& view = data.textures[layout.vsDescriptors.textureDescriptors[i].itemIndex];
+            const ShaderDescriptorTableUpdateItem& item = data.resources[layout.vsDescriptors.bufferDescriptors[i].itemIndex];
+            if (DX12Texture* texture = static_cast<DX12Texture*>(item.object)) {
+                D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
+                desc.Format = texture->dxFormat();
+                desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+                desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+                desc.Texture2D.MostDetailedMip = 0;
+                desc.Texture2D.MipLevels = texture->mipLevels();
+                desc.Texture2D.PlaneSlice = 0;
+                desc.Texture2D.ResourceMinLODClamp = 0.0f;
+                dxDevice->CreateShaderResourceView(texture->dxResource(), &desc, m_descriptorHandles2[DescriptorParamIndex_VS_SRV].cpuHandles[i]);
+            }
+            else {
+                LN_ERROR();
+            }
         }
-        else {
-            LN_ERROR();
-        }
-    }
 
-    // SamplerState (`s` register)
-    for (int i = 0; i < layout.vs_Sampler_Count(); i++) {
-        const ShaderDescriptorCombinedSampler& view = data.samplers[layout.vsDescriptors.samplerDescriptors[i].itemIndex];
-        if (DX12SamplerState* stamplerState = static_cast<DX12SamplerState*>(view.stamplerState)) {
-            dxDevice->CreateSampler(&stamplerState->samplerDesc(), m_descriptorHandles2[DescriptorParamIndex_VS_Sampler].cpuHandles[i]);
-        }
-        else {
-            // シェーダが s を要求しているのに C++ 側から設定が無い場合、
-            // texture が持っている SamplerState を使う。
-            // どうも CombindSampler (sampler2D) があると自動的に s レジスタが要求されるようだ。
-            // TODO: これで本当に CombinedSampler ができるのか調べる
-            const ShaderDescriptorCombinedSampler& view2 = data.textures[i];
-            if (DX12SamplerState* stamplerState = static_cast<DX12SamplerState*>(view2.stamplerState)) {
+        // SamplerState (`s` register)
+        for (int i = 0; i < layout.vs_Sampler_Count(); i++) {
+            //const ShaderDescriptorCombinedSampler& view = data.samplers[layout.vsDescriptors.samplerDescriptors[i].itemIndex];
+            const ShaderDescriptorTableUpdateItem& item = data.samplers[layout.vsDescriptors.bufferDescriptors[i].itemIndex];
+            if (DX12SamplerState* stamplerState = static_cast<DX12SamplerState*>(item.stamplerState)) {
                 dxDevice->CreateSampler(&stamplerState->samplerDesc(), m_descriptorHandles2[DescriptorParamIndex_VS_Sampler].cpuHandles[i]);
             }
             else {
-                LN_ERROR();
+                // シェーダが s を要求しているのに C++ 側から設定が無い場合、
+                // texture が持っている SamplerState を使う。
+                // どうも CombindSampler (sampler2D) があると自動的に s レジスタが要求されるようだ。
+                // TODO: これで本当に CombinedSampler ができるのか調べる
+                //const ShaderDescriptorCombinedSampler& view2 = data.textures[i];
+                const ShaderDescriptorTableUpdateItem& item2 = data.resources[i];
+                if (DX12SamplerState* stamplerState = static_cast<DX12SamplerState*>(item2.stamplerState)) {
+                    dxDevice->CreateSampler(&stamplerState->samplerDesc(), m_descriptorHandles2[DescriptorParamIndex_VS_Sampler].cpuHandles[i]);
+                }
+                else {
+                    LN_ERROR();
+                }
             }
         }
     }
 
 
 
-
-
-    // Constant buffer (`b` register)
-    for (int i = 0; i < layout.ps_CBV_Count(); i++) {
-        const ShaderDescriptorBufferView& view = data.uniforms[layout.psDescriptors.bufferDescriptors[i].itemIndex];
-        if (DX12UniformBuffer* buffer = static_cast<DX12UniformBuffer*>(view.buffer)) {
-            D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
-            desc.BufferLocation = buffer->dxResource()->GetGPUVirtualAddress() + view.offset;
-            desc.SizeInBytes = DX12Helper::alignUp(layout.psDescriptors.bufferDescriptors[i].size);
-            dxDevice->CreateConstantBufferView(&desc, m_descriptorHandles2[DescriptorParamIndex_PS_CBV].cpuHandles[i]);
-        }
-        else {
-            LN_ERROR();
-        }
-    }
-
-    // Texture (`t` register)
-    for (int i = 0; i < layout.ps_SRV_Count(); i++) {
-        const ShaderDescriptorCombinedSampler& view = data.textures[layout.psDescriptors.textureDescriptors[i].itemIndex];
-        if (DX12Texture* texture = static_cast<DX12Texture*>(view.texture)) {
-            D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
-            desc.Format = texture->dxFormat();
-            desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-            desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-            desc.Texture2D.MostDetailedMip = 0;
-            desc.Texture2D.MipLevels = texture->mipLevels();
-            desc.Texture2D.PlaneSlice = 0;
-            desc.Texture2D.ResourceMinLODClamp = 0.0f;
-            dxDevice->CreateShaderResourceView(texture->dxResource(), &desc, m_descriptorHandles2[DescriptorParamIndex_PS_SRV].cpuHandles[i]);
-        }
-        else {
-            LN_ERROR();
-        }
-    }
-
-    // SamplerState (`s` register)
-    for (int i = 0; i < layout.ps_Sampler_Count(); i++) {
-        const ShaderDescriptorCombinedSampler& view = data.samplers[layout.psDescriptors.samplerDescriptors[i].itemIndex];
-        if (DX12SamplerState* stamplerState = static_cast<DX12SamplerState*>(view.stamplerState)) {
-            dxDevice->CreateSampler(&stamplerState->samplerDesc(), m_descriptorHandles2[DescriptorParamIndex_PS_Sampler].cpuHandles[i]);
-        }
-        else {
-            // シェーダが s を要求しているのに C++ 側から設定が無い場合、
-            // texture が持っている SamplerState を使う。
-            // どうも CombindSampler (sampler2D) があると自動的に s レジスタが要求されるようだ。
-            // TODO: これで本当に CombinedSampler ができるのか調べる
-            const ShaderDescriptorCombinedSampler& view2 = data.textures[i];
-            if (DX12SamplerState* stamplerState = static_cast<DX12SamplerState*>(view2.stamplerState)) {
-                dxDevice->CreateSampler(&stamplerState->samplerDesc(), m_descriptorHandles2[DescriptorParamIndex_PS_Sampler].cpuHandles[i]);
+    // PixelShader
+    {
+        // Constant buffer (`b` register)
+        for (int i = 0; i < layout.ps_CBV_Count(); i++) {
+            //const ShaderDescriptorBufferView& view = data.uniforms[layout.psDescriptors.bufferDescriptors[i].itemIndex];
+            const ShaderDescriptorTableUpdateItem& item = data.uniforms[layout.vsDescriptors.bufferDescriptors[i].itemIndex];
+            if (DX12UniformBuffer* buffer = static_cast<DX12UniformBuffer*>(item.object)) {
+                D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
+                desc.BufferLocation = buffer->dxResource()->GetGPUVirtualAddress() + item.offset;
+                desc.SizeInBytes = DX12Helper::alignUp(layout.psDescriptors.bufferDescriptors[i].size);
+                dxDevice->CreateConstantBufferView(&desc, m_descriptorHandles2[DescriptorParamIndex_PS_CBV].cpuHandles[i]);
             }
             else {
                 LN_ERROR();
             }
         }
+
+        // Texture (`t` register)
+        for (int i = 0; i < layout.ps_SRV_Count(); i++) {
+            //const ShaderDescriptorCombinedSampler& view = data.textures[layout.psDescriptors.textureDescriptors[i].itemIndex];
+            const ShaderDescriptorTableUpdateItem& item = data.resources[layout.vsDescriptors.bufferDescriptors[i].itemIndex];
+            if (DX12Texture* texture = static_cast<DX12Texture*>(item.object)) {
+                D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
+                desc.Format = texture->dxFormat();
+                desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+                desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+                desc.Texture2D.MostDetailedMip = 0;
+                desc.Texture2D.MipLevels = texture->mipLevels();
+                desc.Texture2D.PlaneSlice = 0;
+                desc.Texture2D.ResourceMinLODClamp = 0.0f;
+                dxDevice->CreateShaderResourceView(texture->dxResource(), &desc, m_descriptorHandles2[DescriptorParamIndex_PS_SRV].cpuHandles[i]);
+            }
+            else {
+                LN_ERROR();
+            }
+        }
+
+        // SamplerState (`s` register)
+        for (int i = 0; i < layout.ps_Sampler_Count(); i++) {
+            //const ShaderDescriptorCombinedSampler& view = data.samplers[layout.psDescriptors.samplerDescriptors[i].itemIndex];
+            const ShaderDescriptorTableUpdateItem& item = data.samplers[layout.vsDescriptors.bufferDescriptors[i].itemIndex];
+            if (DX12SamplerState* stamplerState = static_cast<DX12SamplerState*>(item.stamplerState)) {
+                dxDevice->CreateSampler(&stamplerState->samplerDesc(), m_descriptorHandles2[DescriptorParamIndex_PS_Sampler].cpuHandles[i]);
+            }
+            else {
+                // シェーダが s を要求しているのに C++ 側から設定が無い場合、
+                // texture が持っている SamplerState を使う。
+                // どうも CombindSampler (sampler2D) があると自動的に s レジスタが要求されるようだ。
+                // TODO: これで本当に CombinedSampler ができるのか調べる
+                //const ShaderDescriptorCombinedSampler& view2 = data.textures[i];
+                const ShaderDescriptorTableUpdateItem& item2 = data.resources[i];
+                if (DX12SamplerState* stamplerState = static_cast<DX12SamplerState*>(item2.stamplerState)) {
+                    dxDevice->CreateSampler(&stamplerState->samplerDesc(), m_descriptorHandles2[DescriptorParamIndex_PS_Sampler].cpuHandles[i]);
+                }
+                else {
+                    LN_ERROR();
+                }
+            }
+        }
     }
+
+
 }
 
 bool DX12Descriptor::allocateInternal()

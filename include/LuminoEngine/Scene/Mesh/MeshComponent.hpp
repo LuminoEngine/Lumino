@@ -42,6 +42,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     void deleteCollisionBody();
+    void forEachVisibleMeshPrimitives(CommandList* context, std::function<void(MeshNode* node, MeshPrimitive* meshPrimitive)> callback);
 
     Ref<MeshModel> m_model;
     Ref<RigidBody> m_body;

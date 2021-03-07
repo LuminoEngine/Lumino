@@ -30,7 +30,7 @@ class VulkanSwapChain;
 class VulkanTexture;
 class VulkanRenderTarget;
 class VulkanDepthBuffer;
-class VulkanShaderDescriptorTable;
+//class VulkanShaderDescriptorTable;
 class VulkanSingleFrameAllocatorPageManager;
 class VulkanNativeGraphicsInterface;
 
@@ -274,6 +274,9 @@ public:
 	VkPipeline nativePipeline() const { return m_pipeline; }
 
 private:
+    bool createGraphicsPipeline(const DevicePipelineStateDesc& state);
+    bool createComputePipeline(const DevicePipelineStateDesc& state);
+
 	VulkanDevice* m_device;
 	VulkanRenderPass2* m_ownerRenderPass;
 	VkPipeline m_pipeline;
@@ -300,6 +303,7 @@ public:
     void dispose() override;
 
     const std::vector<VertexElement>& elements() const { return m_elements; }
+    uint32_t maxStreamCount() const { return m_maxStreamCount; }
     const std::vector<VkVertexInputBindingDescription>& vertexBindingDescriptions() const { return m_bindings; }
     const std::vector<AttributeDescriptionSource>& vertexAttributeDescriptionSources() const { return m_attributeSources; }
     const VulkanVertexDeclaration::AttributeDescriptionSource* findAttributeDescriptionSource(AttributeUsage usage, int usageIndex) const;
@@ -326,86 +330,6 @@ private:
 	VulkanDevice* m_deviceContext;
 	VkSampler m_sampler;
 };
-
-class VulkanShaderPass
-    : public IShaderPass
-    , public IVulkanInFlightResource
-{
-public:
-    VulkanShaderPass();
-    Result init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
-    void dispose();
-    virtual void onBind() override { RefObjectHelper::retain(this); }
-    virtual void onUnBind() override { RefObjectHelper::release(this); }
-
-    VkShaderModule vulkanVertShaderModule() const { return m_vertShaderModule; }
-    VkShaderModule vulkanFragShaderModule() const { return m_fragShaderModule; }
-    const std::string& vertEntryPointName() const { return m_vertEntryPointName; }
-    const std::string& fragEntryPointName() const { return m_fragEntryPointName; }
-    VkPipelineLayout vulkanPipelineLayout() const { return m_pipelineLayout; }
-    const std::array<VkDescriptorSetLayout, 3>& descriptorSetLayouts() const { return m_descriptorSetLayouts; }
-
-    const std::vector<VkWriteDescriptorSet>& submitDescriptorWriteInfo(
-        VulkanCommandBuffer* commandBuffer, 
-        const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets,
-        const ShaderDescriptorTableUpdateInfo& data);
-
-
-    const VkWriteDescriptorSet& witeInfo(int index) const { return m_descriptorWriteInfo[index]; }
-
-private:
-    VulkanDevice* m_deviceContext;
-    VkShaderModule m_vertShaderModule;
-    VkShaderModule m_fragShaderModule;
-    std::string m_vertEntryPointName;
-    std::string m_fragEntryPointName;
-    VkPipelineLayout m_pipelineLayout;
-    std::array<VkDescriptorSetLayout, 3> m_descriptorSetLayouts;
-
-    std::vector<VkWriteDescriptorSet> m_descriptorWriteInfo;
-    std::vector<VkDescriptorBufferInfo> m_bufferDescriptorBufferInfo;
-    std::vector<VkDescriptorImageInfo> m_textureDescripterImageInfo;
-    std::vector<VkDescriptorImageInfo> m_samplerDescripterImageInfo;
-
-    Ref<VulkanShaderDescriptorTable> m_descriptorTable;
-};
-
-class VulkanShaderDescriptorTable
-    : public RefObject
-{
-public:
-    struct UniformBufferInfo
-    {
-        int descriptorWriteInfoIndex = -1;  // index of VulkanShaderPass::m_descriptorWriteInfo
-        int bindingIndex = 0;
-        ShaderDescriptorBufferView bufferView;
-    };
-    struct ImageBufferInfo
-    {
-        int descriptorWriteInfoIndex = -1;  // index of VulkanShaderPass::m_descriptorWriteInfo
-        //int descriptorImageInfoIndex;
-        int bindingIndex = 0;
-        VkDescriptorImageInfo imageInfo;
-        Ref<VulkanTexture> texture;
-        Ref<VulkanSamplerState> samplerState;
-    };
-
-    VulkanShaderDescriptorTable();
-    bool init(VulkanDevice* deviceContext, const VulkanShaderPass* ownerPass, const DescriptorLayout* descriptorLayout);
-    void dispose();
-    void setData(const ShaderDescriptorTableUpdateInfo* data);
-
-    const std::vector<UniformBufferInfo>& uniforms() const { return m_uniforms; }
-    const std::vector<ImageBufferInfo>& textures() const { return m_textures; }
-    const std::vector<ImageBufferInfo>& samplers() const { return m_samplers; }
-
-private:
-
-    std::vector<UniformBufferInfo> m_uniforms;  // 'b' register
-    std::vector<ImageBufferInfo> m_textures;    // 't' register
-    std::vector<ImageBufferInfo> m_samplers;    // 's' register
-};
-
 
 
 

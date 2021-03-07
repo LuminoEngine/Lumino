@@ -128,6 +128,8 @@ public:
 	/** RenderPass を取得します。 */
 	RenderPass* renderPass() const;
 
+    void dispatch(int groupCountX, int groupCountY, int groupCountZ);
+
     /**
      * レンダーターゲット、深度バッファ、ステンシルバッファをクリアします。
      *

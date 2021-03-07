@@ -150,7 +150,7 @@ file(GLOB LN_SOURCES_Runtime
     src/Runtime/*.h
 )
 
-file(GLOB LN_SOURCES_Tools ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tools/*.hpp src/Tools/*.cpp src/Tools/*.hpp src/Tools/*.md)
+file(GLOB LN_SOURCES_Editor ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Editor/*.hpp src/Editor/*.cpp src/Editor/*.hpp src/Editor/*.md)
 
 if (LN_USE_VULKAN)
     if (WIN32)
@@ -221,7 +221,7 @@ source_group("UI\\imgui" FILES ${LN_SOURCES_UI_imgui})
 source_group("Tilemap" FILES ${LN_SOURCES_Tilemap})
 source_group("Scripting" FILES ${LN_SOURCES_Scripting})
 source_group("Runtime" FILES ${LN_SOURCES_Runtime})
-source_group("Tools" FILES ${LN_SOURCES_Tools})
+source_group("Editor" FILES ${LN_SOURCES_Editor})
 
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
@@ -269,7 +269,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Tilemap}
     ${LN_SOURCES_Scripting}
     ${LN_SOURCES_Runtime}
-    ${LN_SOURCES_Tools}
+    ${LN_SOURCES_Editor}
     ${LN_COMMON_META_FILES}
 )
 

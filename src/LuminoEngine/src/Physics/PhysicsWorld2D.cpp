@@ -1081,10 +1081,7 @@ private:
         if (m_linesVertexCount < MaxVertexCount)
         {
             Vertex* buf = (Vertex*)m_linesBuffer->map(MapMode::Write);
-            buf[m_linesVertexCount].position.set(v.x, v.y, 0);
-            buf[m_linesVertexCount].color.set(c.r, c.g, c.b, c.a);
-            buf[m_linesVertexCount].uv = Vector2::Zero;
-            buf[m_linesVertexCount].normal = -Vector3::UnitZ;
+			buf[m_linesVertexCount].set(Vector3(v.x, v.y, 0), -Vector3::UnitZ, Vector2::Zero, Color(c.r, c.g, c.b, c.a));
             m_linesVertexCount++;
         }
     }
@@ -1094,10 +1091,7 @@ private:
         if (m_trianglesVertexCount < MaxVertexCount)
         {
             Vertex* buf = (Vertex*)m_trianglesBuffer->map(MapMode::Write);
-            buf[m_trianglesVertexCount].position.set(v.x, v.y, 0);
-            buf[m_trianglesVertexCount].color.set(c.r, c.g, c.b, c.a);
-            buf[m_trianglesVertexCount].uv = Vector2::Zero;
-            buf[m_trianglesVertexCount].normal = -Vector3::UnitZ;
+			buf[m_trianglesVertexCount].set(Vector3(v.x, v.y, 0), -Vector3::UnitZ, Vector2::Zero, Color(c.r, c.g, c.b, c.a));
             m_trianglesVertexCount++;
         }
     }

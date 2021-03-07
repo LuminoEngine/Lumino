@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <imgui.h>
-#include <imgui_internal.h>
+#include "imgui/imgui.h"
+#include "imgui/imgui_internal.h"
 
 struct ImGuiContext;
 
@@ -69,6 +69,7 @@ class ImGuiDockPane
 {
 public:
 	void setInitialPlacement(ImGuiDockPlacement value);
+	void close();
 
 protected:
 	virtual void onGui();
@@ -84,6 +85,7 @@ private:
 	std::string m_key;
 	ImGuiDockPlacement m_initialPlacement;
 	//Event<UIGeneralEventHandler> m_onGui;
+	bool m_open;
 
 	friend class detail::ImGuiIntegration;
 };
