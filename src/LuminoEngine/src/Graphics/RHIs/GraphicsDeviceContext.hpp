@@ -22,7 +22,6 @@ class ICommandList;
 class ICommandQueue;
 class IRenderPass;
 class IVertexDeclaration;
-class IUniformBuffer;
 class ITexture;
 class IDepthBuffer;
 class ISamplerState;
@@ -131,7 +130,7 @@ using ShaderVertexInputAttributeTable = std::vector<ShaderVertexInputAttribute>;
 
 struct ShaderDescriptorBufferView
 {
-	IUniformBuffer* buffer;
+	RHIBuffer* buffer;
 	size_t offset;
 	//size_t size;
 };
@@ -211,7 +210,7 @@ public:
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
-	Ref<IUniformBuffer> createUniformBuffer(uint32_t size);
+	Ref<RHIBuffer> createUniformBuffer(uint32_t size);
 	Ref<IDescriptorPool> createDescriptorPool(IShaderPass* shaderPass);
     void releaseObject(IGraphicsDeviceObject* obj) {}
 
@@ -245,7 +244,7 @@ protected:
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
-	virtual Ref<IUniformBuffer> onCreateUniformBuffer(uint32_t size) = 0;
+	virtual Ref<RHIBuffer> onCreateUniformBuffer(uint32_t size) = 0;
 	virtual Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) = 0;
 	virtual void onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) = 0;
 

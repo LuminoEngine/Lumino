@@ -76,7 +76,7 @@ protected:
 };
 
 class DX12UniformBuffer
-	: public IUniformBuffer
+	: public RHIBuffer
 {
 public:
 	DX12UniformBuffer();

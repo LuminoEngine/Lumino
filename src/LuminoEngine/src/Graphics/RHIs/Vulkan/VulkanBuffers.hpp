@@ -75,7 +75,7 @@ protected:
 };
 
 class VulkanUniformBuffer
-    : public IUniformBuffer
+    : public RHIBuffer
 {
 public:
     VulkanUniformBuffer();

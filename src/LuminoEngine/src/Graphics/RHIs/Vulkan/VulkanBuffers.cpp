@@ -172,16 +172,6 @@ void VulkanVertexBuffer::dispose()
     RHIBuffer::dispose();
 }
 
-//size_t VulkanVertexBuffer::getBytesSize()
-//{
-//    return m_buffer.size();
-//}
-
-//GraphicsResourceUsage VulkanVertexBuffer::usage() const
-//{
-//    return m_usage;
-//}
-
 //==============================================================================
 // VulkanIndexBuffer
 
@@ -193,21 +183,18 @@ VulkanIndexBuffer::VulkanIndexBuffer()
 
 Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
+    if (!RHIBuffer::initAsIndexBuffer(usage, format, indexCount)) return false;
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
 
     m_usage = usage;
-    int stride = 0;
     if (format == IndexBufferFormat::UInt16) {
         m_indexType = VK_INDEX_TYPE_UINT16;
-        stride = 2;
     }
     else {
         m_indexType = VK_INDEX_TYPE_UINT32;
-        stride = 4;
     }
-    size_t bufferSize = stride * indexCount;
-    if (!RHIBuffer::initAsIndexBuffer(usage, format, indexCount)) return false;
+    VkDeviceSize bufferSize = memorySize();
 
     if (!m_buffer.init(deviceContext, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, nullptr)) {
         return false;
@@ -233,16 +220,6 @@ void VulkanIndexBuffer::dispose()
     RHIBuffer::dispose();
 }
 
-//size_t VulkanIndexBuffer::getBytesSize()
-//{
-//    return m_buffer.size();
-//}
-//
-//GraphicsResourceUsage VulkanIndexBuffer::usage() const
-//{
-//    return m_usage;
-//}
-
 //==============================================================================
 // VulkanUniformBuffer
 
@@ -262,7 +239,7 @@ Result VulkanUniformBuffer::init(VulkanDevice* deviceContext, uint32_t size)
 void VulkanUniformBuffer::dispose()
 {
     m_buffer.dispose();
-    IUniformBuffer::dispose();
+    RHIBuffer::dispose();
 }
 
 void* VulkanUniformBuffer::map()

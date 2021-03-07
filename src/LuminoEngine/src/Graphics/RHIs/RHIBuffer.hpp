@@ -19,6 +19,11 @@ public:
 	RHIBufferType resourceType() const { return m_type; }
 	uint64_t memorySize() const { return m_memorySize; }
 
+	// map/unmap は Usage=Streaming のみ許可。
+	// 今は UniformBuffer が Usage にかかわらずそのような実装になっているのみ。
+	virtual void* map();
+	virtual void unmap();
+
 protected:
 	RHIBuffer();
 	virtual ~RHIBuffer();
@@ -32,16 +37,14 @@ private:
 	uint64_t m_memorySize;
 };
 
-class IUniformBuffer
-	: public IGraphicsDeviceObject
-{
-public:
-	virtual void* map() = 0;
-	virtual void unmap() = 0;
-
-protected:
-	virtual ~IUniformBuffer();
-};
+//class IUniformBuffer
+//	: public IGraphicsDeviceObject
+//{
+//public:
+//
+//protected:
+//	virtual ~IUniformBuffer();
+//};
 
 } // namespace detail
 } // namespace ln

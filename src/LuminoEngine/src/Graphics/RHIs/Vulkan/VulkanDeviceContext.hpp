@@ -77,7 +77,7 @@ protected:
     Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
-    Ref<IUniformBuffer> onCreateUniformBuffer(uint32_t size) override;
+    Ref<RHIBuffer> onCreateUniformBuffer(uint32_t size) override;
     Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) override;
 	void onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override;
 	ICommandQueue* getGraphicsCommandQueue() override;

@@ -305,9 +305,9 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 	return ptr;
 }
 
-Ref<IUniformBuffer> IGraphicsDevice::createUniformBuffer(uint32_t size)
+Ref<RHIBuffer> IGraphicsDevice::createUniformBuffer(uint32_t size)
 {
-	Ref<IUniformBuffer> ptr = onCreateUniformBuffer(size);
+	Ref<RHIBuffer> ptr = onCreateUniformBuffer(size);
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
@@ -798,16 +798,6 @@ uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int coun
 //	}
 //	return nullptr;
 //}
-
-//=============================================================================
-// IUniformBuffer
-
-IUniformBuffer::~IUniformBuffer()
-{
-	if (IGraphicsDevice* d = device()) {
-		d->profiler()->removeUniformBuffer(this);
-	}
-}
 
 //=============================================================================
 // ITexture

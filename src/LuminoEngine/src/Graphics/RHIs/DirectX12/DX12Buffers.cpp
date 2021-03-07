@@ -278,27 +278,6 @@ void DX12VertexBuffer::dispose()
     RHIBuffer::dispose();
 }
 
-//size_t DX12VertexBuffer::getBytesSize()
-//{
-//    return m_buffer->size();
-//}
-//
-//GraphicsResourceUsage DX12VertexBuffer::usage() const
-//{
-//    return m_usage;
-//}
-
-//void* DX12VertexBuffer::map()
-//{
-//    LN_NOTIMPLEMENTED();
-//    return 0;
-//}
-//
-//void DX12VertexBuffer::unmap()
-//{
-//    LN_NOTIMPLEMENTED();
-//}
-
 //==============================================================================
 // DX12IndexBuffer
 
@@ -315,16 +294,12 @@ Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, In
     m_usage = usage;
 
     // Buffer Size
-    int stride = 0;
     if (format == IndexBufferFormat::UInt16) {
         m_indexFormat = DXGI_FORMAT_R16_UINT;
-        stride = 2;
     }
     else {
         m_indexFormat = DXGI_FORMAT_R32_UINT;
-        stride = 4;
     }
-    size_t size = stride * indexCount;
 
     // Types
     D3D12_HEAP_TYPE heapType;
@@ -338,6 +313,7 @@ Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, In
         resourceState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
     }
 
+    uint64_t size = memorySize();
     m_buffer = makeRHIRef<DX12Buffer>();
     if (!m_buffer->init(m_device, size, heapType, resourceState)) {
         return false;
@@ -380,16 +356,6 @@ void DX12IndexBuffer::dispose()
     }
     RHIBuffer::dispose();
 }
-
-//size_t DX12IndexBuffer::getBytesSize()
-//{
-//    return m_buffer->size();
-//}
-//
-//GraphicsResourceUsage DX12IndexBuffer::usage() const
-//{
-//    return m_usage;
-//}
 
 //==============================================================================
 // DX12UniformBuffer
@@ -458,7 +424,7 @@ void DX12UniformBuffer::dispose()
         m_mappedBuffer = nullptr;
         m_constantBuffer.Reset();
     }
-    IUniformBuffer::dispose();
+    RHIBuffer::dispose();
 }
 
 void* DX12UniformBuffer::map()

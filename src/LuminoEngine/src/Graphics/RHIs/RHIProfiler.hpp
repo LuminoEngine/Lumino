@@ -25,8 +25,8 @@ public:
 	void removeSamplerState(ISamplerState* obj);
 	void addShaderPass(IShaderPass* obj);
 	void removeShaderPass(IShaderPass* obj);
-	void addUniformBuffer(IUniformBuffer* obj);
-	void removeUniformBuffer(IUniformBuffer* obj);
+	void addUniformBuffer(RHIBuffer* obj);
+	void removeUniformBuffer(RHIBuffer* obj);
 	void addDescriptorPool(IDescriptorPool* obj);
 	void removeDescriptorPool(IDescriptorPool* obj);
 	void addRenderPass(IRenderPass* obj);

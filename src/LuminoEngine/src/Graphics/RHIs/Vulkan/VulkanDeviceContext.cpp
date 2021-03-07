@@ -255,7 +255,7 @@ Ref<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
     return ptr;
 }
 
-Ref<IUniformBuffer> VulkanDevice::onCreateUniformBuffer(uint32_t size)
+Ref<RHIBuffer> VulkanDevice::onCreateUniformBuffer(uint32_t size)
 {
     auto ptr = makeRef<VulkanUniformBuffer>();
     if (!ptr->init(this, size)) {

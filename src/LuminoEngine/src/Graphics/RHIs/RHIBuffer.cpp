@@ -30,6 +30,7 @@ RHIBuffer::~RHIBuffer()
 			d->profiler()->removeIndexBuffer(this);
 			break;
 		case RHIBufferType::UniformBuffer:
+			d->profiler()->removeUniformBuffer(this);
 			break;
 		default:
 			break;
@@ -50,21 +51,17 @@ bool RHIBuffer::initAsIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat
 	m_type = RHIBufferType::IndexBuffer;
 	m_usage = usage;
 
-	// Buffer Size
 	int stride = 0;
 	if (format == IndexBufferFormat::UInt16) {
-		//m_indexFormat = DXGI_FORMAT_R16_UINT;
 		stride = 2;
 	}
 	else if (format == IndexBufferFormat::UInt32) {
-		//m_indexFormat = DXGI_FORMAT_R32_UINT;
 		stride = 4;
 	}
 	else {
 		LN_UNREACHABLE();
 		return false;
 	}
-
 	m_memorySize = stride * indexCount;
 
 	return true;
@@ -79,6 +76,17 @@ bool RHIBuffer::initAsUniformBuffer(GraphicsResourceUsage usage, uint64_t memory
 	m_usage = usage;
 	m_memorySize = memorySize;
 	return true;
+}
+
+void* RHIBuffer::map()
+{
+	LN_UNREACHABLE();
+	return nullptr;
+}
+
+void RHIBuffer::unmap()
+{
+	LN_UNREACHABLE();
 }
 
 } // namespace detail

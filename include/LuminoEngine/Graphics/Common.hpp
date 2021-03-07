@@ -369,7 +369,6 @@ class IGraphicsDevice;
 class ICommandList;
 class ITexture;
 class ISamplerState;
-class IUniformBuffer;
 class ShaderSecondaryDescriptor;
 class GraphicsCommandList;
 class GraphicsProfiler;

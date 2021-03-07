@@ -511,7 +511,7 @@ Ref<IShaderPass> DX12Device::onCreateShaderPass(const ShaderPassCreateInfo& crea
     return ptr;
 }
 
-Ref<IUniformBuffer> DX12Device::onCreateUniformBuffer(uint32_t size)
+Ref<RHIBuffer> DX12Device::onCreateUniformBuffer(uint32_t size)
 {
     auto ptr = makeRef<DX12UniformBuffer>();
     if (!ptr->init(this, size)) {

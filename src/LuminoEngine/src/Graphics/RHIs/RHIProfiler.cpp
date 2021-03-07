@@ -138,14 +138,14 @@ void RHIProfiler::removeShaderPass(IShaderPass* obj)
 	obj->m_profiling = false;
 }
 
-void RHIProfiler::addUniformBuffer(IUniformBuffer* obj)
+void RHIProfiler::addUniformBuffer(RHIBuffer* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_uniformBufferCount++;
 	obj->m_profiling = true;
 }
 
-void RHIProfiler::removeUniformBuffer(IUniformBuffer* obj)
+void RHIProfiler::removeUniformBuffer(RHIBuffer* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_uniformBufferCount--;
