@@ -109,7 +109,7 @@ VulkanVertexBuffer::VulkanVertexBuffer()
 
 Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
-    if (!RHIBuffer::initAsVertexBuffer(usage, bufferSize)) return false;
+    if (!RHIResource::initAsVertexBuffer(usage, bufferSize)) return false;
 
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -169,7 +169,7 @@ Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsa
 void VulkanVertexBuffer::dispose()
 {
     m_buffer.dispose();
-    RHIBuffer::dispose();
+    RHIResource::dispose();
 }
 
 //==============================================================================
@@ -183,7 +183,7 @@ VulkanIndexBuffer::VulkanIndexBuffer()
 
 Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
-    if (!RHIBuffer::initAsIndexBuffer(usage, format, indexCount)) return false;
+    if (!RHIResource::initAsIndexBuffer(usage, format, indexCount)) return false;
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
 
@@ -217,7 +217,7 @@ Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsag
 void VulkanIndexBuffer::dispose()
 {
     m_buffer.dispose();
-    RHIBuffer::dispose();
+    RHIResource::dispose();
 }
 
 //==============================================================================
@@ -239,7 +239,7 @@ Result VulkanUniformBuffer::init(VulkanDevice* deviceContext, uint32_t size)
 void VulkanUniformBuffer::dispose()
 {
     m_buffer.dispose();
-    RHIBuffer::dispose();
+    RHIResource::dispose();
 }
 
 void* VulkanUniformBuffer::map()

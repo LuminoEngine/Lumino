@@ -6,7 +6,7 @@
 #include <LuminoEngine/Shader/Common.hpp>
 #include "../../Shader/UnifiedShader.hpp"
 #include "RHIObject.hpp"
-#include "RHIBuffer.hpp"
+#include "RHIResource.hpp"
 
 namespace ln {
 struct SizeI;
@@ -32,7 +32,7 @@ class IDescriptor;
 class NativeRenderPassCache;
 class NativePipelineCache;
 class RHIBitmap;
-class RHIBuffer;
+class RHIResource;
 class RHIProfiler;
 
 enum class DeviceTextureType
@@ -85,8 +85,8 @@ struct DeviceRegionRectsState
 
 struct DevicePrimitiveState
 {
-	std::array<RHIBuffer*, MaxVertexStreams> vertexBuffers = {};
-	RHIBuffer* indexBuffer = nullptr;
+	std::array<RHIResource*, MaxVertexStreams> vertexBuffers = {};
+	RHIResource* indexBuffer = nullptr;
 };
 
 struct GraphicsContextState
@@ -130,7 +130,7 @@ using ShaderVertexInputAttributeTable = std::vector<ShaderVertexInputAttribute>;
 
 struct ShaderDescriptorBufferView
 {
-	RHIBuffer* buffer;
+	RHIResource* buffer;
 	size_t offset;
 	//size_t size;
 };
@@ -201,8 +201,8 @@ public:
 	Ref<IRenderPass> createRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
 	Ref<IPipeline> createPipeline(const DevicePipelineStateDesc& state);
 	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
-	Ref<RHIBuffer> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
-	Ref<RHIBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
+	Ref<RHIResource> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
+	Ref<RHIResource> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
 	Ref<ITexture> createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
 	Ref<ITexture> createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
 	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
@@ -210,7 +210,7 @@ public:
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
-	Ref<RHIBuffer> createUniformBuffer(uint32_t size);
+	Ref<RHIResource> createUniformBuffer(uint32_t size);
 	Ref<IDescriptorPool> createDescriptorPool(IShaderPass* shaderPass);
     void releaseObject(RHIDeviceObject* obj) {}
 
@@ -235,8 +235,8 @@ protected:
 	virtual Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) = 0;
 	virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) = 0;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
-	virtual Ref<RHIBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
-	virtual Ref<RHIBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
+	virtual Ref<RHIResource> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
+	virtual Ref<RHIResource> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) = 0;
@@ -244,7 +244,7 @@ protected:
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
-	virtual Ref<RHIBuffer> onCreateUniformBuffer(uint32_t size) = 0;
+	virtual Ref<RHIResource> onCreateUniformBuffer(uint32_t size) = 0;
 	virtual Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) = 0;
 	virtual void onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) = 0;
 
@@ -279,16 +279,16 @@ public:
     void setViewportRect(const RectI& value);
     void setScissorRect(const RectI& value);
     void setVertexDeclaration(IVertexDeclaration* value);
-    void setVertexBuffer(int streamIndex, RHIBuffer* value);
-    void setIndexBuffer(RHIBuffer* value);
+    void setVertexBuffer(int streamIndex, RHIResource* value);
+    void setIndexBuffer(RHIResource* value);
     void setShaderPass(IShaderPass* value);
 	void setDescriptor(IDescriptor* value);
     void setPrimitiveTopology(PrimitiveTopology value);
 
     // write only
-    void* map(RHIBuffer* resource, uint32_t offset, uint32_t size);
-    void unmap(RHIBuffer* resource);
-    void setSubData(RHIBuffer* resource, size_t offset, const void* data, size_t length);
+    void* map(RHIResource* resource, uint32_t offset, uint32_t size);
+    void unmap(RHIResource* resource);
+    void setSubData(RHIResource* resource, size_t offset, const void* data, size_t length);
     void setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
     void setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize);
 
@@ -318,9 +318,9 @@ public:	// TODO:
 	virtual void onEndRenderPass(IRenderPass* renderPass) = 0;
 	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) = 0;
 
-	virtual void* onMapResource(RHIBuffer* resource, uint32_t offset, uint32_t size) = 0;
-	virtual void onUnmapResource(RHIBuffer* resource) = 0;
-	virtual void onSetSubData(RHIBuffer* resource, size_t offset, const void* data, size_t length) = 0;
+	virtual void* onMapResource(RHIResource* resource, uint32_t offset, uint32_t size) = 0;
+	virtual void onUnmapResource(RHIResource* resource) = 0;
+	virtual void onSetSubData(RHIResource* resource, size_t offset, const void* data, size_t length) = 0;
 	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
 	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 

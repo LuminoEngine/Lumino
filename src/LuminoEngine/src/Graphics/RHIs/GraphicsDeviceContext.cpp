@@ -180,9 +180,9 @@ Ref<IVertexDeclaration> IGraphicsDevice::createVertexDeclaration(const VertexEle
 	return ptr;
 }
 
-Ref<RHIBuffer> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+Ref<RHIResource> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
-	Ref<RHIBuffer> ptr = onCreateVertexBuffer(usage, bufferSize, initialData);
+	Ref<RHIResource> ptr = onCreateVertexBuffer(usage, bufferSize, initialData);
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
@@ -191,9 +191,9 @@ Ref<RHIBuffer> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usage, 
 	return ptr;
 }
 
-Ref<RHIBuffer> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+Ref<RHIResource> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
-	Ref<RHIBuffer> ptr = onCreateIndexBuffer(usage, format, indexCount, initialData);
+	Ref<RHIResource> ptr = onCreateIndexBuffer(usage, format, indexCount, initialData);
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
@@ -305,9 +305,9 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 	return ptr;
 }
 
-Ref<RHIBuffer> IGraphicsDevice::createUniformBuffer(uint32_t size)
+Ref<RHIResource> IGraphicsDevice::createUniformBuffer(uint32_t size)
 {
-	Ref<RHIBuffer> ptr = onCreateUniformBuffer(size);
+	Ref<RHIResource> ptr = onCreateUniformBuffer(size);
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
@@ -522,7 +522,7 @@ void ICommandList::setVertexDeclaration(IVertexDeclaration* value)
     }
 }
 
-void ICommandList::setVertexBuffer(int streamIndex, RHIBuffer* value)
+void ICommandList::setVertexBuffer(int streamIndex, RHIResource* value)
 {
     if (m_staging.primitive.vertexBuffers[streamIndex] != value) {
         m_staging.primitive.vertexBuffers[streamIndex] = value;
@@ -530,7 +530,7 @@ void ICommandList::setVertexBuffer(int streamIndex, RHIBuffer* value)
     }
 }
 
-void ICommandList::setIndexBuffer(RHIBuffer* value)
+void ICommandList::setIndexBuffer(RHIResource* value)
 {
     if (m_staging.primitive.indexBuffer != value) {
         m_staging.primitive.indexBuffer = value;
@@ -564,17 +564,17 @@ void ICommandList::setPrimitiveTopology(PrimitiveTopology value)
 //	m_staging.renderPass = value;
 //}
 
-void* ICommandList::map(RHIBuffer* resource, uint32_t offset, uint32_t size)
+void* ICommandList::map(RHIResource* resource, uint32_t offset, uint32_t size)
 {
     return onMapResource(resource, offset, size);
 }
 
-void ICommandList::unmap(RHIBuffer* resource)
+void ICommandList::unmap(RHIResource* resource)
 {
     onUnmapResource(resource);
 }
 
-void ICommandList::setSubData(RHIBuffer* resource, size_t offset, const void* data, size_t length)
+void ICommandList::setSubData(RHIResource* resource, size_t offset, const void* data, size_t length)
 {
     onSetSubData(resource, offset, data, length);
 }

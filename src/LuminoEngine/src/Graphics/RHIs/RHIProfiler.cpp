@@ -40,28 +40,28 @@ void RHIProfiler::removeVertexLayout(IVertexDeclaration* obj)
 	obj->m_profiling = false;
 }
 
-void RHIProfiler::addVertexBuffer(RHIBuffer* obj)
+void RHIProfiler::addVertexBuffer(RHIResource* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_vertexBufferCount++;
 	obj->m_profiling = true;
 }
 
-void RHIProfiler::removeVertexBuffer(RHIBuffer* obj)
+void RHIProfiler::removeVertexBuffer(RHIResource* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_vertexBufferCount--;
 	obj->m_profiling = false;
 }
 
-void RHIProfiler::addIndexBuffer(RHIBuffer* obj)
+void RHIProfiler::addIndexBuffer(RHIResource* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_indexBufferCount++;
 	obj->m_profiling = true;
 }
 
-void RHIProfiler::removeIndexBuffer(RHIBuffer* obj)
+void RHIProfiler::removeIndexBuffer(RHIResource* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_indexBufferCount--;
@@ -138,14 +138,14 @@ void RHIProfiler::removeShaderPass(IShaderPass* obj)
 	obj->m_profiling = false;
 }
 
-void RHIProfiler::addUniformBuffer(RHIBuffer* obj)
+void RHIProfiler::addUniformBuffer(RHIResource* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_uniformBufferCount++;
 	obj->m_profiling = true;
 }
 
-void RHIProfiler::removeUniformBuffer(RHIBuffer* obj)
+void RHIProfiler::removeUniformBuffer(RHIResource* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_uniformBufferCount--;

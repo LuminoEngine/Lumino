@@ -173,7 +173,7 @@ DX12VertexBuffer::DX12VertexBuffer()
 
 bool DX12VertexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, size_t size, const void* initialData)
 {
-    if (!RHIBuffer::initAsVertexBuffer(usage, size)) return false;
+    if (!RHIResource::initAsVertexBuffer(usage, size)) return false;
     m_device = device;
     m_usage = usage;
 
@@ -275,7 +275,7 @@ void DX12VertexBuffer::dispose()
         m_buffer->dispose();
         m_buffer = nullptr;
     }
-    RHIBuffer::dispose();
+    RHIResource::dispose();
 }
 
 //==============================================================================
@@ -289,7 +289,7 @@ DX12IndexBuffer::DX12IndexBuffer()
 
 Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
-    if (!RHIBuffer::initAsIndexBuffer(usage, format, indexCount)) return false;
+    if (!RHIResource::initAsIndexBuffer(usage, format, indexCount)) return false;
     m_device = device;
     m_usage = usage;
 
@@ -354,7 +354,7 @@ void DX12IndexBuffer::dispose()
         m_buffer->dispose();
         m_buffer = nullptr;
     }
-    RHIBuffer::dispose();
+    RHIResource::dispose();
 }
 
 //==============================================================================
@@ -424,7 +424,7 @@ void DX12UniformBuffer::dispose()
         m_mappedBuffer = nullptr;
         m_constantBuffer.Reset();
     }
-    RHIBuffer::dispose();
+    RHIResource::dispose();
 }
 
 void* DX12UniformBuffer::map()

@@ -26,7 +26,7 @@ private:
 };
 
 class DX12VertexBuffer
-	: public RHIBuffer
+	: public RHIResource
 {
 public:
 	DX12VertexBuffer();
@@ -51,7 +51,7 @@ private:
 };
 
 class DX12IndexBuffer
-	: public RHIBuffer
+	: public RHIResource
 {
 public:
 	DX12IndexBuffer();
@@ -76,7 +76,7 @@ protected:
 };
 
 class DX12UniformBuffer
-	: public RHIBuffer
+	: public RHIResource
 {
 public:
 	DX12UniformBuffer();

@@ -314,18 +314,18 @@ void DX12GraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint
     }
 }
 
-void* DX12GraphicsContext::onMapResource(RHIBuffer* resource, uint32_t offset, uint32_t size)
+void* DX12GraphicsContext::onMapResource(RHIResource* resource, uint32_t offset, uint32_t size)
 {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-void DX12GraphicsContext::onUnmapResource(RHIBuffer* resource)
+void DX12GraphicsContext::onUnmapResource(RHIResource* resource)
 {
     LN_NOTIMPLEMENTED();
 }
 
-void DX12GraphicsContext::onSetSubData(RHIBuffer* baseResource, size_t offset, const void* data, size_t length)
+void DX12GraphicsContext::onSetSubData(RHIResource* baseResource, size_t offset, const void* data, size_t length)
 {
     // UPLOAD Buffer を使った動的なリソース更新は D3D12HDR.cpp が参考になる。
 
@@ -334,13 +334,13 @@ void DX12GraphicsContext::onSetSubData(RHIBuffer* baseResource, size_t offset, c
     GraphicsResourceUsage usage;
     switch (baseResource->resourceType())
     {
-    case RHIBufferType::VertexBuffer:
+    case RHIResourceType::VertexBuffer:
         usage = static_cast<DX12VertexBuffer*>(baseResource)->m_usage;
         if (LN_REQUIRE(usage == GraphicsResourceUsage::Static)) return;
         buffer = static_cast<DX12VertexBuffer*>(baseResource)->buffer().get();
         afterStatus = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
         break;
-    case RHIBufferType::IndexBuffer:
+    case RHIResourceType::IndexBuffer:
         usage = static_cast<DX12IndexBuffer*>(baseResource)->m_usage;
         if (LN_REQUIRE(usage == GraphicsResourceUsage::Static)) return;
         buffer = static_cast<DX12IndexBuffer*>(baseResource)->buffer().get();

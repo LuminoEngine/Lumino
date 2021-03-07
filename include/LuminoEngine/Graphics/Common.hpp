@@ -372,7 +372,7 @@ class ISamplerState;
 class ShaderSecondaryDescriptor;
 class GraphicsCommandList;
 class GraphicsProfiler;
-class RHIBuffer;
+class RHIResource;
 
 static const int MaxMultiRenderTargets = 4;
 

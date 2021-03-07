@@ -4,7 +4,7 @@
 namespace ln {
 namespace detail {
 
-enum class RHIBufferType : uint8_t
+enum class RHIResourceType : uint8_t
 {
 	Unknown,
 	VertexBuffer,
@@ -12,11 +12,11 @@ enum class RHIBufferType : uint8_t
 	UniformBuffer,
 };
 
-class RHIBuffer
+class RHIResource
 	: public RHIDeviceObject
 {
 public:
-	RHIBufferType resourceType() const { return m_type; }
+	RHIResourceType resourceType() const { return m_type; }
 	uint64_t memorySize() const { return m_memorySize; }
 
 	// map/unmap は Usage=Streaming のみ許可。
@@ -25,14 +25,14 @@ public:
 	virtual void unmap();
 
 protected:
-	RHIBuffer();
-	virtual ~RHIBuffer();
+	RHIResource();
+	virtual ~RHIResource();
 	bool initAsVertexBuffer(GraphicsResourceUsage usage, uint64_t memorySize);
 	bool initAsIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount);
 	bool initAsUniformBuffer(GraphicsResourceUsage usage, uint64_t memorySize);
 
 private:
-	RHIBufferType m_type;
+	RHIResourceType m_type;
 	GraphicsResourceUsage m_usage;
 	uint64_t m_memorySize;
 };

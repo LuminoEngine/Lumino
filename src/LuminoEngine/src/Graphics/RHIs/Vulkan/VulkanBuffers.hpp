@@ -29,7 +29,7 @@ private:
 };
 
 class VulkanVertexBuffer
-    : public RHIBuffer
+    : public RHIResource
 {
 public:
     VulkanVertexBuffer();
@@ -51,7 +51,7 @@ private:
 };
 
 class VulkanIndexBuffer
-    : public RHIBuffer
+    : public RHIResource
 {
 public:
     VulkanIndexBuffer();
@@ -75,7 +75,7 @@ protected:
 };
 
 class VulkanUniformBuffer
-    : public RHIBuffer
+    : public RHIResource
 {
 public:
     VulkanUniformBuffer();

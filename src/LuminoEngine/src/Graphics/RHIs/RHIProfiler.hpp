@@ -11,10 +11,10 @@ public:
 
 	void addVertexLayout(IVertexDeclaration* obj);
 	void removeVertexLayout(IVertexDeclaration* obj);
-	void addVertexBuffer(RHIBuffer* obj);
-	void removeVertexBuffer(RHIBuffer* obj);
-	void addIndexBuffer(RHIBuffer* obj);
-	void removeIndexBuffer(RHIBuffer* obj);
+	void addVertexBuffer(RHIResource* obj);
+	void removeVertexBuffer(RHIResource* obj);
+	void addIndexBuffer(RHIResource* obj);
+	void removeIndexBuffer(RHIResource* obj);
 	void addTexture2D(ITexture* obj);
 	void removeTexture2D(ITexture* obj);
 	void addRenderTarget(ITexture* obj);
@@ -25,8 +25,8 @@ public:
 	void removeSamplerState(ISamplerState* obj);
 	void addShaderPass(IShaderPass* obj);
 	void removeShaderPass(IShaderPass* obj);
-	void addUniformBuffer(RHIBuffer* obj);
-	void removeUniformBuffer(RHIBuffer* obj);
+	void addUniformBuffer(RHIResource* obj);
+	void removeUniformBuffer(RHIResource* obj);
 	void addDescriptorPool(IDescriptorPool* obj);
 	void removeDescriptorPool(IDescriptorPool* obj);
 	void addRenderPass(IRenderPass* obj);

@@ -186,7 +186,7 @@ Ref<IVertexDeclaration> VulkanDevice::onCreateVertexDeclaration(const VertexElem
     return ptr;
 }
 
-Ref<RHIBuffer> VulkanDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+Ref<RHIResource> VulkanDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
     auto ptr = makeRef<VulkanVertexBuffer>();
     if (!ptr->init(this, usage, bufferSize, initialData)) {
@@ -195,7 +195,7 @@ Ref<RHIBuffer> VulkanDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, s
 	return ptr;
 }
 
-Ref<RHIBuffer> VulkanDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+Ref<RHIResource> VulkanDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
     auto ptr = makeRef<VulkanIndexBuffer>();
     if (!ptr->init(this, usage, format, indexCount, initialData)) {
@@ -255,7 +255,7 @@ Ref<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
     return ptr;
 }
 
-Ref<RHIBuffer> VulkanDevice::onCreateUniformBuffer(uint32_t size)
+Ref<RHIResource> VulkanDevice::onCreateUniformBuffer(uint32_t size)
 {
     auto ptr = makeRef<VulkanUniformBuffer>();
     if (!ptr->init(this, size)) {

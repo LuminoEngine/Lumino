@@ -2,34 +2,34 @@
 #include "Internal.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include "RHIProfiler.hpp"
-#include "RHIBuffer.hpp"
+#include "RHIResource.hpp"
 
 namespace ln {
 namespace detail {
 	
 //=============================================================================
-// RHIBuffer
+// RHIResource
 
-RHIBuffer::RHIBuffer()
-	: m_type(RHIBufferType::Unknown)
+RHIResource::RHIResource()
+	: m_type(RHIResourceType::Unknown)
 	, m_usage(GraphicsResourceUsage::Static)
 	, m_memorySize(0)
 {
-	LN_LOG_VERBOSE << "RHIBuffer [0x" << this << "] constructed.";
+	LN_LOG_VERBOSE << "RHIResource [0x" << this << "] constructed.";
 }
 
-RHIBuffer::~RHIBuffer()
+RHIResource::~RHIResource()
 {
 	if (IGraphicsDevice* d = device()) {
 		switch (m_type)
 		{
-		case RHIBufferType::VertexBuffer:
+		case RHIResourceType::VertexBuffer:
 			d->profiler()->removeVertexBuffer(this);
 			break;
-		case RHIBufferType::IndexBuffer:
+		case RHIResourceType::IndexBuffer:
 			d->profiler()->removeIndexBuffer(this);
 			break;
-		case RHIBufferType::UniformBuffer:
+		case RHIResourceType::UniformBuffer:
 			d->profiler()->removeUniformBuffer(this);
 			break;
 		default:
@@ -38,17 +38,17 @@ RHIBuffer::~RHIBuffer()
 	}
 }
 
-bool RHIBuffer::initAsVertexBuffer(GraphicsResourceUsage usage, uint64_t memorySize)
+bool RHIResource::initAsVertexBuffer(GraphicsResourceUsage usage, uint64_t memorySize)
 {
-	m_type = RHIBufferType::VertexBuffer;
+	m_type = RHIResourceType::VertexBuffer;
 	m_usage = usage;
 	m_memorySize = memorySize;
 	return true;
 }
 
-bool RHIBuffer::initAsIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount)
+bool RHIResource::initAsIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount)
 {
-	m_type = RHIBufferType::IndexBuffer;
+	m_type = RHIResourceType::IndexBuffer;
 	m_usage = usage;
 
 	int stride = 0;
@@ -67,24 +67,24 @@ bool RHIBuffer::initAsIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat
 	return true;
 }
 
-bool RHIBuffer::initAsUniformBuffer(GraphicsResourceUsage usage, uint64_t memorySize)
+bool RHIResource::initAsUniformBuffer(GraphicsResourceUsage usage, uint64_t memorySize)
 {
 	// 今のところ UniformBuffer は Dynamic (複数 DrawCall で共有しない) 前提
 	// TODO: OpenGL の Streaming みたいにもうひとつ用意して区別したほうがいいかも
 	if (LN_REQUIRE(usage == GraphicsResourceUsage::Dynamic)) return false;
-	m_type = RHIBufferType::UniformBuffer;
+	m_type = RHIResourceType::UniformBuffer;
 	m_usage = usage;
 	m_memorySize = memorySize;
 	return true;
 }
 
-void* RHIBuffer::map()
+void* RHIResource::map()
 {
 	LN_UNREACHABLE();
 	return nullptr;
 }
 
-void RHIBuffer::unmap()
+void RHIResource::unmap()
 {
 	LN_UNREACHABLE();
 }

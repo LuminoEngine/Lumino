@@ -442,7 +442,7 @@ Ref<IVertexDeclaration> DX12Device::onCreateVertexDeclaration(const VertexElemen
     return ptr;
 }
 
-Ref<RHIBuffer> DX12Device::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+Ref<RHIResource> DX12Device::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
     auto ptr = makeRef<DX12VertexBuffer>();
     if (!ptr->init(this, usage, bufferSize, initialData)) {
@@ -451,7 +451,7 @@ Ref<RHIBuffer> DX12Device::onCreateVertexBuffer(GraphicsResourceUsage usage, siz
 	return ptr;
 }
 
-Ref<RHIBuffer> DX12Device::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+Ref<RHIResource> DX12Device::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
     auto ptr = makeRef<DX12IndexBuffer>();
     if (!ptr->init(this, usage, format, indexCount, initialData)) {
@@ -511,7 +511,7 @@ Ref<IShaderPass> DX12Device::onCreateShaderPass(const ShaderPassCreateInfo& crea
     return ptr;
 }
 
-Ref<RHIBuffer> DX12Device::onCreateUniformBuffer(uint32_t size)
+Ref<RHIResource> DX12Device::onCreateUniformBuffer(uint32_t size)
 {
     auto ptr = makeRef<DX12UniformBuffer>();
     if (!ptr->init(this, size)) {
