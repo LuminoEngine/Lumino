@@ -6,7 +6,7 @@ namespace ln {
 namespace detail {
 
 class DX12Buffer
-	: public RHIObject
+	: public RHIRefObject
 {
 public:
 	DX12Buffer();
@@ -37,13 +37,13 @@ public:
 	//void* map() override;
 	//void unmap() override;
 
-	const RHIPtr<DX12Buffer>& buffer() const { return m_buffer; }
+	const RHIRef<DX12Buffer>& buffer() const { return m_buffer; }
 	ID3D12Resource* dxResource() const { return m_buffer->dxResource(); }
 
 private:
 	DX12Device* m_device;
 	GraphicsResourceUsage m_usage;
-	RHIPtr<DX12Buffer> m_buffer;
+	RHIRef<DX12Buffer> m_buffer;
 	//size_t m_size;
 	//ComPtr<ID3D12Resource> m_vertexBuffer;
 
@@ -62,14 +62,14 @@ public:
 	//void* map() override;
 	//void unmap() override;
 
-	const RHIPtr<DX12Buffer>& buffer() const { return m_buffer; }
+	const RHIRef<DX12Buffer>& buffer() const { return m_buffer; }
 	ID3D12Resource* dxResource() const { return m_buffer->dxResource(); }
 	DXGI_FORMAT indexFormat() const { return m_indexFormat; }
 
 protected:
 	DX12Device* m_device;
 	GraphicsResourceUsage m_usage;
-	RHIPtr<DX12Buffer> m_buffer;
+	RHIRef<DX12Buffer> m_buffer;
 	DXGI_FORMAT m_indexFormat;
 
 	friend class DX12GraphicsContext;

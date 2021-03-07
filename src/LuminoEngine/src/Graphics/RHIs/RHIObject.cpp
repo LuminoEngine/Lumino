@@ -6,9 +6,9 @@ namespace ln {
 namespace detail {
 	
 //=============================================================================
-// IGraphicsDeviceObject
+// RHIDeviceObject
 
-IGraphicsDeviceObject::IGraphicsDeviceObject()
+RHIDeviceObject::RHIDeviceObject()
     : m_device(nullptr)
 	, m_objectId(0)
 	, m_disposed(false)
@@ -16,14 +16,14 @@ IGraphicsDeviceObject::IGraphicsDeviceObject()
 {
 }
 
-IGraphicsDeviceObject::~IGraphicsDeviceObject()
+RHIDeviceObject::~RHIDeviceObject()
 {
     if (!m_disposed) {
         LN_LOG_ERROR << "object [0x" << this << "] is not disposed";
     }
 }
 
-void IGraphicsDeviceObject::finalize()
+void RHIDeviceObject::finalize()
 {
 #ifdef LN_DEBUG
     bool d = m_disposed;
@@ -37,7 +37,7 @@ void IGraphicsDeviceObject::finalize()
 	m_objectId = 0;
 }
 
-void IGraphicsDeviceObject::dispose()
+void RHIDeviceObject::dispose()
 {
     m_disposed = true;
 }

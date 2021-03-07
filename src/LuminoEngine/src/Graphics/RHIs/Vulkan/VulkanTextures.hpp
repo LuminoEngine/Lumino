@@ -28,7 +28,7 @@ public:
 	virtual SizeI realSize() { return m_size; }
     virtual TextureFormat getTextureFormat() const { return m_format; }
 	virtual GraphicsResourceUsage usage() const override { return m_usage; }
-    virtual RHIPtr<RHIBitmap> readData() { LN_UNREACHABLE(); return nullptr;  }
+    virtual RHIRef<RHIBitmap> readData() { LN_UNREACHABLE(); return nullptr;  }
     virtual void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
     bool isMultisample() const override { return false; }
@@ -59,7 +59,7 @@ public:
 	virtual SizeI realSize() { return m_size; }
 	virtual TextureFormat getTextureFormat() const {return TextureFormat::RGBA8; }
 	virtual GraphicsResourceUsage usage() const override { return GraphicsResourceUsage::Static; }
-    virtual RHIPtr<RHIBitmap> readData() override;
+    virtual RHIRef<RHIBitmap> readData() override;
 	virtual void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) {}
 	virtual void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {}
 

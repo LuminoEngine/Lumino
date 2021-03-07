@@ -6,7 +6,7 @@ namespace ln {
 namespace detail {
 
 class DX12Image
-    : public RHIObject
+    : public RHIRefObject
 {
 public:
     DX12Image();
@@ -48,7 +48,7 @@ public:
     ID3D12Resource* dxResource() const { return m_image->dxResource(); }
 
 protected:
-    RHIPtr<DX12Image> m_image;
+    RHIRef<DX12Image> m_image;
 };
 
 class DX12Texture2D
@@ -62,7 +62,7 @@ public:
 	virtual SizeI realSize() { return m_size; }
     virtual TextureFormat getTextureFormat() const { return DX12Helper::DXFormatToLNTextureFormat(m_image->dxFormat()); }
 	virtual GraphicsResourceUsage usage() const override { return m_usage; }
-    virtual RHIPtr<RHIBitmap> readData() { LN_UNREACHABLE(); return nullptr; }
+    virtual RHIRef<RHIBitmap> readData() { LN_UNREACHABLE(); return nullptr; }
     virtual void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
     bool isMultisample() const override { return false; }
@@ -91,7 +91,7 @@ public:
     SizeI realSize() override { return m_size; }
     TextureFormat getTextureFormat() const { return TextureFormat::RGBA8; }
     GraphicsResourceUsage usage() const override { return GraphicsResourceUsage::Static; }
-    RHIPtr<RHIBitmap> readData() override;
+    RHIRef<RHIBitmap> readData() override;
     void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override {}
     void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override {}
 
@@ -106,7 +106,7 @@ protected:
     DX12Device* m_device;
     SizeI m_size;
     TextureFormat m_format;
-    RHIPtr<DX12Image> m_multisampleBuffer;
+    RHIRef<DX12Image> m_multisampleBuffer;
 };
 
 class DX12DepthBuffer
@@ -128,8 +128,8 @@ public:
 private:
     DX12Device* m_deviceContext;
     SizeI m_size;
-    RHIPtr<DX12Image> m_image;
-    RHIPtr<DX12Image> m_multisampleBuffer;
+    RHIRef<DX12Image> m_image;
+    RHIRef<DX12Image> m_multisampleBuffer;
 };
 
 } // namespace detail

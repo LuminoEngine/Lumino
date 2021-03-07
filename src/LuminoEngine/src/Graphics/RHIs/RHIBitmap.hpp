@@ -5,7 +5,7 @@ namespace ln {
 namespace detail {
 
 class RHIBitmap
-	: public RHIObject
+	: public RHIRefObject
 {
 public:
 	RHIBitmap();

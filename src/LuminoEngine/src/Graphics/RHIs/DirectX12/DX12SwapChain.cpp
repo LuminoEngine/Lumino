@@ -228,7 +228,7 @@ bool DX12SwapChain::createSwapChainResources()
         if (!wrapper->init(m_device, dxRenderTarget)) {
             return false;
         }
-        wrapper->IGraphicsDeviceObject::m_device = m_device;
+        wrapper->RHIDeviceObject::m_device = m_device;
         wrapper->m_objectId = m_device->m_objectNextId++;
 
         m_renderTargets.push_back(wrapper);

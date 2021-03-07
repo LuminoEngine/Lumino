@@ -481,7 +481,7 @@ void DX12RenderTarget::dispose()
     DX12Texture::dispose();
 }
 
-RHIPtr<RHIBitmap> DX12RenderTarget::readData()
+RHIRef<RHIBitmap> DX12RenderTarget::readData()
 {
     D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
     D3D12_RESOURCE_DESC textureDesc = m_image->dxResource()->GetDesc();

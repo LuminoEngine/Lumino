@@ -13,7 +13,7 @@ enum class RHIBufferType : uint8_t
 };
 
 class RHIBuffer
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	RHIBufferType resourceType() const { return m_type; }
@@ -36,15 +36,6 @@ private:
 	GraphicsResourceUsage m_usage;
 	uint64_t m_memorySize;
 };
-
-//class IUniformBuffer
-//	: public IGraphicsDeviceObject
-//{
-//public:
-//
-//protected:
-//	virtual ~IUniformBuffer();
-//};
 
 } // namespace detail
 } // namespace ln

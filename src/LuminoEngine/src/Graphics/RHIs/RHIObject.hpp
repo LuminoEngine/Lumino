@@ -5,7 +5,7 @@ namespace detail {
 class IGraphicsDevice;
 class RHIProfiler;
 	
-class IGraphicsDeviceObject
+class RHIDeviceObject
     : public RefObject
 {
 public:
@@ -16,8 +16,8 @@ public:
 	IGraphicsDevice* m_device;
 	int32_t m_objectId;
 protected:
-    IGraphicsDeviceObject();
-    virtual ~IGraphicsDeviceObject();
+    RHIDeviceObject();
+    virtual ~RHIDeviceObject();
     virtual void finalize();
 
 private:
@@ -28,21 +28,21 @@ private:
 	friend class IGraphicsDevice;
 };
 
-class RHIObject
+class RHIRefObject
 {
 protected:
-	RHIObject() = default;
+	RHIRefObject() = default;
 
 private:
-	RHIObject(const RHIObject&) = delete;
-	void operator=(const RHIObject&) = delete;
+	RHIRefObject(const RHIRefObject&) = delete;
+	void operator=(const RHIRefObject&) = delete;
 };
 
 template<class T>
-using RHIPtr = std::shared_ptr<T>;
+using RHIRef = std::shared_ptr<T>;
 
 template<class T, class... TArgs>
-inline RHIPtr<T> makeRHIRef(TArgs&&... args)
+inline RHIRef<T> makeRHIRef(TArgs&&... args)
 {
 	return std::make_shared<T>(std::forward<TArgs>(args)...);
 }

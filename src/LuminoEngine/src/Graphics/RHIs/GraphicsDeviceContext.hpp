@@ -15,7 +15,7 @@ class INativeGraphicsInterface;
 
 namespace detail {
 class PlatformWindow;
-class IGraphicsDeviceObject;
+class RHIDeviceObject;
 class IGraphicsDevice;
 class ISwapChain;
 class ICommandList;
@@ -143,7 +143,7 @@ struct ShaderDescriptorCombinedSampler
 
 struct ShaderDescriptorTableUpdateItem
 {
-	IGraphicsDeviceObject* object;	// UniformBuffer, Texture, VertexBuffer, etc.. 
+	RHIDeviceObject* object;	// UniformBuffer, Texture, VertexBuffer, etc.. 
 	ISamplerState* stamplerState;
 	size_t offset;	// UniformBuffer offset;
 };
@@ -212,7 +212,7 @@ public:
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
 	Ref<RHIBuffer> createUniformBuffer(uint32_t size);
 	Ref<IDescriptorPool> createDescriptorPool(IShaderPass* shaderPass);
-    void releaseObject(IGraphicsDeviceObject* obj) {}
+    void releaseObject(RHIDeviceObject* obj) {}
 
 	void submitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
 
@@ -261,7 +261,7 @@ public:
 };
 
 class ICommandList
-    : public IGraphicsDeviceObject
+    : public RHIDeviceObject
 {
 public:
 	// LuminoGraphis を他のフレームワークに組み込むときに、バックエンドが DX9 や OpenGL などステートマシンベースである場合に使用する
@@ -343,11 +343,11 @@ private:
     GraphicsContextState m_committed;
 	IRenderPass* m_currentRenderPass;
 	std::vector<Ref<IRenderPass>> m_renderPasses;	// 描画中の delete を防ぐため参照を持っておく
-	std::vector<Ref<IGraphicsDeviceObject>> m_inflightResources;
+	std::vector<Ref<RHIDeviceObject>> m_inflightResources;
 };
 
 class ISwapChain
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	ISwapChain();
@@ -370,7 +370,7 @@ protected:
 
 // OpenGL の場合は、現在のコンテキストに対してただ glFlush するだけ。Compute は非対応。
 class ICommandQueue
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	virtual Result submit(ICommandList* commandList) = 0;
@@ -383,7 +383,7 @@ protected:
 // 性質上 RenderTarget と DepthBuffer を持つことになるが、派生では参照カウントをインクリメントしないように注意すること。
 // RenderPass をキャッシュから削除できなくなる。
 class IRenderPass
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	uint64_t cacheKeyHash = 0;
@@ -435,7 +435,7 @@ protected:
 };
 
 class IVertexDeclaration
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	uint64_t m_hash;
@@ -455,7 +455,7 @@ private:
 };
 
 class ITexture
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	//virtual DeviceTextureType type() const = 0;
@@ -467,7 +467,7 @@ public:
 	virtual GraphicsResourceUsage usage() const = 0;
 
 	// データは up flow (上下反転)
-	virtual RHIPtr<RHIBitmap> readData() = 0;
+	virtual RHIRef<RHIBitmap> readData() = 0;
 
 	bool mipmap() const { return m_mipmap; }
 
@@ -487,7 +487,7 @@ protected:
 
 
 class IDepthBuffer
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 
@@ -501,7 +501,7 @@ protected:
 };
 
 class ISamplerState
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 
@@ -511,7 +511,7 @@ protected:
 };
 
 class IShaderPass
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
@@ -532,7 +532,7 @@ private:
 };
 
 class IPipeline
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	uint64_t cacheKeyHash = 0;
@@ -565,7 +565,7 @@ private:
 // また OpenGL サポート中はそれとの整合をとるためこの Descriptor 周りを不自然にラップしていたため、メンテが難しくなる事態が発生していた。
 // OpenGL を切ったので、上位レイヤーで共通化できる部分はそのようにして、少しでも下位レイヤーの複雑さを抑える。
 class IDescriptorPool
-	: public IGraphicsDeviceObject
+	: public RHIDeviceObject
 {
 public:
 	//virtual void dispose() = 0;

@@ -10,7 +10,7 @@ namespace detail {
 
 
 //=============================================================================
-// IGraphicsDeviceObject
+// RHIDeviceObject
 
 AttributeUsage IGraphicsHelper::ElementUsageToAttributeUsage(VertexElementUsage value)
 {
@@ -418,7 +418,7 @@ void ICommandList::dispose()
 		renderPass->releaseObjects();
 	}
 	m_renderPasses.clear();
-	IGraphicsDeviceObject::dispose();
+	RHIDeviceObject::dispose();
 }
 
 void ICommandList::enterRenderState()
@@ -714,7 +714,7 @@ void IRenderPass::dispose()
 		d->pipelineCache()->invalidate(this);
 	}
 
-	IGraphicsDeviceObject::dispose();
+	RHIDeviceObject::dispose();
 }
 
 void IRenderPass::retainObjects()
@@ -769,7 +769,7 @@ void IVertexDeclaration::dispose()
 		d->pipelineCache()->invalidate(this);
 	}
 
-	IGraphicsDeviceObject::dispose();
+	RHIDeviceObject::dispose();
 }
 
 uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int count)
@@ -876,7 +876,7 @@ void IShaderPass::dispose()
 	if (IGraphicsDevice* d = device()) {
 		d->pipelineCache()->invalidate(this);
 	}
-	IGraphicsDeviceObject::dispose();
+	RHIDeviceObject::dispose();
 }
 
 bool IShaderPass::init(const ShaderPassCreateInfo& createInfo)
@@ -934,7 +934,7 @@ IPipeline::~IPipeline()
 
 void IPipeline::dispose()
 {
-	IGraphicsDeviceObject::dispose();
+	RHIDeviceObject::dispose();
 }
 
 //=============================================================================

@@ -324,9 +324,9 @@ void VulkanRenderTarget::dispose()
     VulkanTexture::dispose();
 }
 
-RHIPtr<RHIBitmap> VulkanRenderTarget::readData()
+RHIRef<RHIBitmap> VulkanRenderTarget::readData()
 {
-    RHIPtr<RHIBitmap> bitmap;
+    RHIRef<RHIBitmap> bitmap;
 
     // Flush
     //m_deviceContext->recodingCommandBuffer()->submit(imageAvailableSemaphore(), renderFinishedSemaphore());
