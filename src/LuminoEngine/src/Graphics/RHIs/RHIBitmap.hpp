@@ -30,12 +30,6 @@ private:
 	int32_t m_height;
 };
 
-struct RHISizeI
-{
-	int32_t width;
-	int32_t height;
-};
-
 } // namespace detail
 } // namespace ln
 

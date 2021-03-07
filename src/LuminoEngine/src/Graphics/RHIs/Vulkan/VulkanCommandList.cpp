@@ -65,7 +65,7 @@ void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
 {
 	auto* renderPass = static_cast<VulkanRenderPass2*>(renderPass_);
 	auto& framebuffer = renderPass->framebuffer();
-	auto viewSize = renderPass->framebuffer()->renderTargets()[0]->realSize();
+	const auto viewSize = renderPass->framebuffer()->renderTargets()[0]->extentSize();
 
 	VkRenderPassBeginInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -386,7 +386,7 @@ void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color,
 {
     auto* renderPass = static_cast<VulkanRenderPass2*>(currentRenderPass());
     auto& framebuffer = renderPass->framebuffer();
-    auto viewSize = framebuffer->renderTargets()[0]->realSize();
+	const auto viewSize = framebuffer->renderTargets()[0]->extentSize();
 
 	//const GraphicsContextState& state = stagingState();
 

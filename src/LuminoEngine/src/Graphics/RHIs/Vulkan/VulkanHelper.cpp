@@ -1630,7 +1630,7 @@ Result VulkanFramebuffer::init(VulkanDevice* deviceContext, VulkanRenderPass* ow
         attachmentsCount++;
     }
 
-    SizeI size = m_renderTargets[0]->realSize();
+    RHISizeI size = m_renderTargets[0]->extentSize();
 
     VkFramebufferCreateInfo framebufferInfo = {};
     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -1695,8 +1695,8 @@ void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, RenderTar
     *outImage = image->vulkanImage();
     *outImageView = image->vulkanImageView();
     *outFormat = image->vulkanFormat();
-    *outWidth = vulkanTexture->realSize().width;
-    *outHeight = vulkanTexture->realSize().height;
+    *outWidth = vulkanTexture->extentSize().width;
+    *outHeight = vulkanTexture->extentSize().height;
 }
 
 void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, DepthBuffer* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat, int* outWidth, int* outHeight)

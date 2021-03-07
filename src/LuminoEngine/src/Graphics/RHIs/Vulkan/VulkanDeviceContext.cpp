@@ -1690,7 +1690,7 @@ Result VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRe
     _sizeBaseImg = _sizeBase->image();
     _baseImg = _sizeBaseImg->vulkanImage();
     _baseId = _sizeBase->objectId();
-	SizeI imageSize = m_renderTargets[0]->realSize();
+	const auto imageSize = m_renderTargets[0]->extentSize();
 	VkFramebufferCreateInfo framebufferInfo = {};
 	framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 	framebufferInfo.pNext = nullptr;

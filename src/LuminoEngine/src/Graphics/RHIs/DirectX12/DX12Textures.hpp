@@ -57,14 +57,14 @@ class DX12Texture2D
 public:
 	DX12Texture2D();
 	Result init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData);
-    virtual void dispose();
-	virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
-	virtual SizeI realSize() { return m_size; }
-    virtual TextureFormat getTextureFormat() const { return DX12Helper::DXFormatToLNTextureFormat(m_image->dxFormat()); }
-	virtual GraphicsResourceUsage usage() const override { return m_usage; }
-    virtual RHIRef<RHIBitmap> readData() { LN_UNREACHABLE(); return nullptr; }
-    virtual void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
-	virtual void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
+    void dispose() override;
+	//DeviceTextureType type() const override { return DeviceTextureType::Texture2D; }
+	RHISizeI extentSize() override { return m_size; }
+    TextureFormat getTextureFormat() const override { return DX12Helper::DXFormatToLNTextureFormat(m_image->dxFormat()); }
+	GraphicsResourceUsage usage() const override { return m_usage; }
+    RHIRef<RHIBitmap> readData() override { LN_UNREACHABLE(); return nullptr; }
+    void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
+	void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override { LN_UNREACHABLE(); }
     bool isMultisample() const override { return false; }
 
     //virtual const DX12Image* image() const override { return &m_image; }
@@ -77,7 +77,7 @@ private:
 
 	DX12Device* m_device;
 	GraphicsResourceUsage m_usage;
-	SizeI m_size;
+    RHISizeI m_size;
 };
 
 class DX12RenderTarget
@@ -88,7 +88,7 @@ public:
     bool init(DX12Device* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
     bool init(DX12Device* deviceContext, const ComPtr<ID3D12Resource>& dxRenderTarget);
     void dispose() override;
-    SizeI realSize() override { return m_size; }
+    RHISizeI extentSize() override { return m_size; }
     TextureFormat getTextureFormat() const { return TextureFormat::RGBA8; }
     GraphicsResourceUsage usage() const override { return GraphicsResourceUsage::Static; }
     RHIRef<RHIBitmap> readData() override;
@@ -104,7 +104,7 @@ public:
 
 protected:
     DX12Device* m_device;
-    SizeI m_size;
+    RHISizeI m_size;
     TextureFormat m_format;
     RHIRef<DX12Image> m_multisampleBuffer;
 };

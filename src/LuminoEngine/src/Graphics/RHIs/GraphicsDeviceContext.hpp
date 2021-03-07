@@ -35,6 +35,12 @@ class RHIBitmap;
 class RHIResource;
 class RHIProfiler;
 
+struct RHISizeI
+{
+	int32_t width;
+	int32_t height;
+};
+
 enum class DeviceTextureType
 {
 	Texture2D,
@@ -460,7 +466,7 @@ class ITexture
 public:
 	//virtual DeviceTextureType type() const = 0;
 
-	virtual SizeI realSize() = 0;
+	virtual RHISizeI extentSize() = 0;
 
 	virtual TextureFormat getTextureFormat() const = 0;
 

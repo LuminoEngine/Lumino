@@ -516,7 +516,7 @@ void RenderTargetTexture::resetRHIObject(detail::ITexture* rhiObject)
 {
 	LN_CHECK(rhiObject);
 	m_rhiObject = rhiObject;
-	auto size = m_rhiObject->realSize();
+	auto size = m_rhiObject->extentSize();
 	detail::TextureInternal::setDesc(this, size.width, size.height, m_rhiObject->getTextureFormat());
 	m_modified = false;
 }
@@ -532,7 +532,7 @@ Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context)
     bool modified = false;
     detail::ITexture* rhiObject = resolveRHIObject(nullptr, &modified);
 
-    SizeI size = rhiObject->realSize();
+    detail::RHISizeI size = rhiObject->extentSize();
 
     auto rhiBitmap = rhiObject->readData();
 
