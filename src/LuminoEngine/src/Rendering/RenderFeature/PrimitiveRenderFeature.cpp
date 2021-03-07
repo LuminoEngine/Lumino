@@ -55,7 +55,7 @@ void InternalPrimitiveRenderer::flush(ICommandList* context)
     prepareBuffers(m_manager->graphicsManager()->deviceContext(), vertexCount, indexCount);
 
     // Create Vertex and Index buffers
-    Vertex* vertexBuffer = (Vertex*)context->map(m_vertexBuffer, 0, m_vertexBuffer->getBytesSize());
+    Vertex* vertexBuffer = (Vertex*)context->map(m_vertexBuffer, 0, m_vertexBuffer->memorySize());
     uint16_t* indexBuffer = (uint16_t*)context->map(m_indexBuffer, 0, m_indexBuffer->getBytesSize());
     MeshGeneraterBuffer buffer(nullptr);
     size_t vertexOffset = 0;
@@ -113,7 +113,7 @@ void InternalPrimitiveRenderer::flush(ICommandList* context)
 void InternalPrimitiveRenderer::prepareBuffers(IGraphicsDevice* context, int vertexCount, int indexCount)
 {
     size_t vertexBufferSize = sizeof(Vertex) * vertexCount;
-    if (!m_vertexBuffer || m_vertexBuffer->getBytesSize() < vertexBufferSize)
+    if (!m_vertexBuffer || m_vertexBuffer->memorySize() < vertexBufferSize)
     {
         m_vertexBuffer = context->createVertexBuffer(GraphicsResourceUsage::Dynamic, vertexBufferSize, nullptr);
     }

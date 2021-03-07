@@ -29,14 +29,14 @@ private:
 };
 
 class VulkanVertexBuffer
-    : public IVertexBuffer
+    : public RHIBuffer
 {
 public:
     VulkanVertexBuffer();
     Result init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
     void dispose() override;
-    size_t getBytesSize() override;
-    GraphicsResourceUsage usage() const override;
+    //size_t getBytesSize() override;
+    //GraphicsResourceUsage usage() const override;
 
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.nativeBuffer(); }
@@ -47,7 +47,7 @@ public:
 private:
     VulkanDevice* m_deviceContext;
     VulkanBuffer m_buffer;
-    GraphicsResourceUsage m_usage;
+    //GraphicsResourceUsage m_usage;
 };
 
 class VulkanIndexBuffer

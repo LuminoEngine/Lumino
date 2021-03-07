@@ -4,9 +4,6 @@
 #include "GraphicsResource.hpp"
 
 namespace ln {
-namespace detail {
-class IVertexBuffer;
-}
 
 /** 頂点バッファのクラスです。 */
 class VertexBuffer
@@ -56,7 +53,7 @@ public:
 
     detail::DescriptorResourceType descriptorResourceType() const override { return detail::DescriptorResourceType_Buffer; }
 
-    Ref<detail::IVertexBuffer> m_rhiObject;
+    Ref<detail::RHIBuffer> m_rhiObject;
 protected:
     void onDispose(bool explicitDisposing) override;
     void onManagerFinalizing() override { dispose(); }
@@ -73,7 +70,7 @@ LN_CONSTRUCT_ACCESS:
     void init(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage);
 
 private:
-    detail::IVertexBuffer* resolveRHIObject(GraphicsContext* context, bool* outModified);
+    detail::RHIBuffer* resolveRHIObject(GraphicsContext* context, bool* outModified);
     bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
     detail::GraphicsManager* m_manager;

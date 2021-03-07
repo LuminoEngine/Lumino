@@ -26,14 +26,14 @@ private:
 };
 
 class DX12VertexBuffer
-	: public IVertexBuffer
+	: public RHIBuffer
 {
 public:
 	DX12VertexBuffer();
 	bool init(DX12Device* device, GraphicsResourceUsage usage, size_t size, const void* initialData);
 	void dispose() override;
-	size_t getBytesSize() override;
-	GraphicsResourceUsage usage() const override;
+	//size_t getBytesSize() override;
+	//GraphicsResourceUsage usage() const override;
 	//void* map() override;
 	//void unmap() override;
 
@@ -46,6 +46,8 @@ private:
 	RHIPtr<DX12Buffer> m_buffer;
 	//size_t m_size;
 	//ComPtr<ID3D12Resource> m_vertexBuffer;
+
+	friend class DX12GraphicsContext;
 };
 
 class DX12IndexBuffer

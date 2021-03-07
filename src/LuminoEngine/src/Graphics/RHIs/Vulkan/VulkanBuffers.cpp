@@ -103,16 +103,18 @@ void VulkanBuffer::setData(size_t offset, const void* data, VkDeviceSize size)
 
 VulkanVertexBuffer::VulkanVertexBuffer()
     : m_buffer()
-    , m_usage(GraphicsResourceUsage::Static)
+    //, m_usage(GraphicsResourceUsage::Static)
 {
 }
 
 Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
+    if (!RHIBuffer::init(RHIBufferType::VertexBuffer, bufferSize)) return false;
+
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
 
-    m_usage = usage;
+    //m_usage = usage;
 
 #if 1   // TODO: Dynamic という特別な状態を持たせる必要があるか、まだわからない。
     // VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT で十分なのか、VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT を使った方がいいのか、
@@ -167,18 +169,18 @@ Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsa
 void VulkanVertexBuffer::dispose()
 {
     m_buffer.dispose();
-    IVertexBuffer::dispose();
+    RHIBuffer::dispose();
 }
 
-size_t VulkanVertexBuffer::getBytesSize()
-{
-    return m_buffer.size();
-}
+//size_t VulkanVertexBuffer::getBytesSize()
+//{
+//    return m_buffer.size();
+//}
 
-GraphicsResourceUsage VulkanVertexBuffer::usage() const
-{
-    return m_usage;
-}
+//GraphicsResourceUsage VulkanVertexBuffer::usage() const
+//{
+//    return m_usage;
+//}
 
 //==============================================================================
 // VulkanIndexBuffer

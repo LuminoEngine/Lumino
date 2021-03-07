@@ -170,7 +170,7 @@ void VertexBuffer::setResourcePool(GraphicsResourcePool pool)
     m_pool = pool;
 }
 
-detail::IVertexBuffer* VertexBuffer::resolveRHIObject(GraphicsContext* context, bool* outModified)
+detail::RHIBuffer* VertexBuffer::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
 	*outModified = m_modified;
     m_mappedBuffer = nullptr;
@@ -184,14 +184,14 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject(GraphicsContext* context, 
         {
 			auto commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
             size_t requiredSize = size();
-            if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize/* || m_rhiObject->usage() != m_usage*/) {
+            if (!m_rhiObject || m_rhiObject->memorySize() != requiredSize/* || m_rhiObject->usage() != m_usage*/) {
                 m_rhiObject = device->createVertexBuffer(GraphicsResourceUsage::Static, m_buffer.size(), m_buffer.data());
             } else {
                 context->interruptCurrentRenderPassFromResolveRHI();
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
-                detail::IVertexBuffer* rhiObject = m_rhiObject;
+                detail::RHIBuffer* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_3(
-                    VertexBuffer_SetSubData, context, detail::ICommandList*, commandList, detail::RenderBulkData, data, Ref<detail::IVertexBuffer>, rhiObject, {
+                    VertexBuffer_SetSubData, context, detail::ICommandList*, commandList, detail::RenderBulkData, data, Ref<detail::RHIBuffer>, rhiObject, {
 						commandList->setSubData(rhiObject, 0, data.data(), data.size());
                     });
             }

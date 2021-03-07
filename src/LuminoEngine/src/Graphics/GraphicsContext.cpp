@@ -537,7 +537,7 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
 // GraphicsContext は変更中のステートをキャッシュするが、それを確実に IGraphicsDevice へ送信した状態にする。
 detail::ICommandList* GraphicsContext::commitState()
 {
-    using VertexBufferArray = std::array<detail::IVertexBuffer*, detail::MaxVertexStreams>;
+    using VertexBufferArray = std::array<detail::RHIBuffer*, detail::MaxVertexStreams>;
 
     // ポインタとしては変わっていなくても、resolve は毎回呼び出す。
     // こうしておかないと、
@@ -566,7 +566,7 @@ detail::ICommandList* GraphicsContext::commitState()
         bool modified = false;
         for (int i = 0; i < m_staging.vertexBuffers.size(); i++) {
             auto& value = m_staging.vertexBuffers[i];
-            vertexBuffersRHI[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(this, value, &modified);
+            vertexBuffersRHI[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIBuffer>(this, value, &modified);
             primitiveBufferModified |= modified;
         }
 
@@ -711,11 +711,11 @@ detail::ICommandList* GraphicsContext::commitState()
         //bool anyModified = false;
         //bool modified = false;
 
-        //using VertexBufferArray = std::array<detail::IVertexBuffer*, detail::MaxVertexStreams>;
+        //using VertexBufferArray = std::array<detail::RHIBuffer*, detail::MaxVertexStreams>;
         //VertexBufferArray vertexBuffers;
         //for (int i = 0; i < m_staging.vertexBuffers.size(); i++) {
         //    auto& value = m_staging.vertexBuffers[i];
-        //    vertexBuffers[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(this, value, &modified);
+        //    vertexBuffers[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIBuffer>(this, value, &modified);
         //    anyModified |= modified;
         //}
 

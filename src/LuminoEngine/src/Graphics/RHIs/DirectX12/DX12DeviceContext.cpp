@@ -442,7 +442,7 @@ Ref<IVertexDeclaration> DX12Device::onCreateVertexDeclaration(const VertexElemen
     return ptr;
 }
 
-Ref<IVertexBuffer> DX12Device::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+Ref<RHIBuffer> DX12Device::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
     auto ptr = makeRef<DX12VertexBuffer>();
     if (!ptr->init(this, usage, bufferSize, initialData)) {

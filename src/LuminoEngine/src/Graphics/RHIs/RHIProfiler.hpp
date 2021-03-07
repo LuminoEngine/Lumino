@@ -11,8 +11,8 @@ public:
 
 	void addVertexLayout(IVertexDeclaration* obj);
 	void removeVertexLayout(IVertexDeclaration* obj);
-	void addVertexBuffer(IVertexBuffer* obj);
-	void removeVertexBuffer(IVertexBuffer* obj);
+	void addVertexBuffer(RHIBuffer* obj);
+	void removeVertexBuffer(RHIBuffer* obj);
 	void addIndexBuffer(IIndexBuffer* obj);
 	void removeIndexBuffer(IIndexBuffer* obj);
 	void addTexture2D(ITexture* obj);

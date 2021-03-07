@@ -186,7 +186,7 @@ Ref<IVertexDeclaration> VulkanDevice::onCreateVertexDeclaration(const VertexElem
     return ptr;
 }
 
-Ref<IVertexBuffer> VulkanDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+Ref<RHIBuffer> VulkanDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
     auto ptr = makeRef<VulkanVertexBuffer>();
     if (!ptr->init(this, usage, bufferSize, initialData)) {

@@ -373,6 +373,7 @@ class IUniformBuffer;
 class ShaderSecondaryDescriptor;
 class GraphicsCommandList;
 class GraphicsProfiler;
+class RHIBuffer;
 
 static const int MaxMultiRenderTargets = 4;
 

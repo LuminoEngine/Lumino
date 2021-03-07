@@ -32,42 +32,49 @@ void RHIProfiler::addVertexLayout(IVertexDeclaration* obj)
 	m_vertexLayoutCount++;
 	obj->m_profiling = true;
 }
+
 void RHIProfiler::removeVertexLayout(IVertexDeclaration* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_vertexLayoutCount--;
 	obj->m_profiling = false;
 }
-void RHIProfiler::addVertexBuffer(IVertexBuffer* obj)
+
+void RHIProfiler::addVertexBuffer(RHIBuffer* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_vertexBufferCount++;
 	obj->m_profiling = true;
 }
-void RHIProfiler::removeVertexBuffer(IVertexBuffer* obj)
+
+void RHIProfiler::removeVertexBuffer(RHIBuffer* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_vertexBufferCount--;
 	obj->m_profiling = false;
 }
+
 void RHIProfiler::addIndexBuffer(IIndexBuffer* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_indexBufferCount++;
 	obj->m_profiling = true;
 }
+
 void RHIProfiler::removeIndexBuffer(IIndexBuffer* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_indexBufferCount--;
 	obj->m_profiling = false;
 }
+
 void RHIProfiler::addTexture2D(ITexture* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_texture2DCount++;
 	obj->m_profiling = true;
 }
+
 void RHIProfiler::removeTexture2D(ITexture* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;

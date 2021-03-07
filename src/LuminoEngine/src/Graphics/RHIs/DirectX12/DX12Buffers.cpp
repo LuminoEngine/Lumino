@@ -173,6 +173,7 @@ DX12VertexBuffer::DX12VertexBuffer()
 
 bool DX12VertexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, size_t size, const void* initialData)
 {
+    if (!RHIBuffer::init(RHIBufferType::VertexBuffer, size)) return false;
     m_device = device;
     m_usage = usage;
 
@@ -274,18 +275,18 @@ void DX12VertexBuffer::dispose()
         m_buffer->dispose();
         m_buffer = nullptr;
     }
-    IVertexBuffer::dispose();
+    RHIBuffer::dispose();
 }
 
-size_t DX12VertexBuffer::getBytesSize()
-{
-    return m_buffer->size();
-}
-
-GraphicsResourceUsage DX12VertexBuffer::usage() const
-{
-    return m_usage;
-}
+//size_t DX12VertexBuffer::getBytesSize()
+//{
+//    return m_buffer->size();
+//}
+//
+//GraphicsResourceUsage DX12VertexBuffer::usage() const
+//{
+//    return m_usage;
+//}
 
 //void* DX12VertexBuffer::map()
 //{

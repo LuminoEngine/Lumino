@@ -289,7 +289,7 @@ void DX12GraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint
                 if (vertexBuffer) {
                     vertexBufferViews[i].BufferLocation = vertexBuffer->dxResource()->GetGPUVirtualAddress();
                     vertexBufferViews[i].StrideInBytes = vertexLayout->stride(i);
-                    vertexBufferViews[i].SizeInBytes = static_cast<UINT>(vertexBuffer->getBytesSize());
+                    vertexBufferViews[i].SizeInBytes = static_cast<UINT>(vertexBuffer->memorySize());
                     vbCount++;
                 }
             }
@@ -335,7 +335,7 @@ void DX12GraphicsContext::onSetSubData(RHIBuffer* baseResource, size_t offset, c
     switch (baseResource->resourceType())
     {
     case RHIBufferType::VertexBuffer:
-        usage = static_cast<DX12VertexBuffer*>(baseResource)->usage();
+        usage = static_cast<DX12VertexBuffer*>(baseResource)->m_usage;
         if (LN_REQUIRE(usage == GraphicsResourceUsage::Static)) return;
         buffer = static_cast<DX12VertexBuffer*>(baseResource)->buffer().get();
         afterStatus = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
