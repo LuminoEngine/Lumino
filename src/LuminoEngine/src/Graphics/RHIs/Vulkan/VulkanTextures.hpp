@@ -37,9 +37,9 @@ private:
 
 	VulkanDevice* m_deviceContext;
     VulkanImage m_image;
-	GraphicsResourceUsage m_usage;
-    RHISizeI m_size;
-	TextureFormat m_format;
+	//GraphicsResourceUsage m_usage;
+ //   RHISizeI m_size;
+	//TextureFormat m_format;
 	uint32_t m_mipLevels;
     VkFormat m_nativeFormat;
 };
@@ -72,8 +72,8 @@ private:
 	std::unique_ptr<VulkanImage> m_image;                   // MSAA 有効の時は、Resolve されたテクスチャデータ
     std::unique_ptr<VulkanImage> m_multisampleColorBuffer;  // MSAA 有効の時に使う、マルチサンプル有効なレンダーターゲットバッファ。MSAA 無しのときは nullptr
 
-    RHISizeI m_size;
-	TextureFormat m_format;
+ //   RHISizeI m_size;
+	//TextureFormat m_format;
 
     // vkAcquireNextImageKHR により準備ができたかどうかを待つためのセマフォ。
     // この RenderTarget が Swapchain の Backbuffer である場合、そのポインタがセットされる。

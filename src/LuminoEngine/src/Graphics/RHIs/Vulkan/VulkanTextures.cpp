@@ -21,10 +21,10 @@ Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage 
     if (!VulkanTexture::initAsTexture2D(usage, width, height, requestFormat, mipmap)) return false;
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
-	m_usage = usage;
-    m_size.width = width;
-    m_size.height = height;
-    m_format = requestFormat;
+	//m_usage = usage;
+ //   m_size.width = width;
+ //   m_size.height = height;
+ //   m_format = requestFormat;
 
     m_nativeFormat = VulkanHelper::LNFormatToVkFormat(requestFormat);
     VkDeviceSize imageSize = width * height * GraphicsHelper::getPixelSize(requestFormat);
@@ -235,9 +235,9 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
     if (!VulkanTexture::initAsRenderTarget(width, height, requestFormat, mipmap, msaa)) return false;
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
-    m_size.width = width;
-    m_size.height = height;
-    m_format = requestFormat;
+    //m_size.width = width;
+    //m_size.height = height;
+    //m_format = requestFormat;
 
     VkSemaphoreCreateInfo semaphoreInfo = {};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -288,9 +288,9 @@ Result VulkanRenderTarget::initFromSwapchainImage(VulkanDevice* deviceContext, u
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
     LN_VK_CHECK(vkCreateSemaphore(m_deviceContext->vulkanDevice(), &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_renderFinishedSemaphore));
 
-    m_size.width = width;
-    m_size.height = height;
-    m_format = VulkanHelper::VkFormatToLNFormat(format);
+    //m_size.width = width;
+    //m_size.height = height;
+    //m_format = VulkanHelper::VkFormatToLNFormat(format);
 
     m_image = std::make_unique<VulkanImage>();
     if (!m_image->initWrap(m_deviceContext, width, height, format, image, imageView)) {
@@ -346,8 +346,8 @@ RHIRef<RHIBitmap> VulkanRenderTarget::readData()
         originalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     }
 
-	uint32_t width = m_size.width;
-    uint32_t height = m_size.height;
+	uint32_t width = extentSize().width;
+    uint32_t height = extentSize().height;
     VkDeviceSize size = width * height * 4; // TODO
 
     // 転送先として作成

@@ -73,8 +73,8 @@ private:
     bool generateMips();
 
 	DX12Device* m_device;
-	GraphicsResourceUsage m_usage;
-    RHISizeI m_size;
+	//GraphicsResourceUsage m_usage;
+ //   RHISizeI m_size;
 };
 
 class DX12RenderTarget
@@ -98,8 +98,8 @@ public:
 
 protected:
     DX12Device* m_device;
-    RHISizeI m_size;
-    TextureFormat m_format;
+    //RHISizeI m_size;
+    //TextureFormat m_format;
     RHIRef<DX12Image> m_multisampleBuffer;
 };
 

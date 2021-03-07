@@ -140,9 +140,9 @@ Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint
 {
     if (!DX12Texture::initAsTexture2D(usage, width, height, format, mipmap)) return false;
     m_device = device;
-	m_usage = usage;
-    m_size.width = width;
-    m_size.height = height;
+	//m_usage = usage;
+ //   m_size.width = width;
+ //   m_size.height = height;
     
     UINT mipLevels = 1;
     if (mipmap) {
@@ -233,8 +233,8 @@ bool DX12Texture2D::generateMips()
 #if 1
     HRESULT hr;
     ID3D12Device* dxDevice = m_device->device();
-    const uint32_t width = m_size.width;
-    const uint32_t height = m_size.height;
+    const uint32_t width = extentSize().width;
+    const uint32_t height = extentSize().height;
     const uint32_t depth = 1;
     const uint32_t mipMaps = m_image->mipLevels();
     const uint32_t requiredHeapSize = mipMaps;
@@ -413,9 +413,9 @@ bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height,
 {
     if (!DX12Texture::initAsRenderTarget(width, height, requestFormat, mipmap, msaa)) return false;
     m_device = device;
-    m_size.width = width;
-    m_size.height = height;
-    m_format = requestFormat;
+    //m_size.width = width;
+    //m_size.height = height;
+    //m_format = requestFormat;
     //m_currentState = D3D12_RESOURCE_STATE_GENERIC_READ;
     //m_dxFormat = DX12Helper::LNTextureFormatToDXFormat(m_format);
     //m_mipLevels = 1;
@@ -423,7 +423,7 @@ bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height,
     m_image = makeRHIRef<DX12Image>();
     if (!m_image->init(
         device, width, height, 1, false,
-        DX12Helper::LNTextureFormatToDXFormat(m_format),
+        DX12Helper::LNTextureFormatToDXFormat(requestFormat),
         D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
         D3D12_RESOURCE_STATE_GENERIC_READ)) {
         return false;
@@ -467,8 +467,8 @@ bool DX12RenderTarget::init(DX12Device* device, const ComPtr<ID3D12Resource>& dx
     }
 #endif
 
-    m_size.width = m_image->size().width;
-    m_size.height = m_image->size().height;
+    //m_size.width = m_image->size().width;
+    //m_size.height = m_image->size().height;
 
     return true;
 }
@@ -496,7 +496,7 @@ RHIRef<RHIBitmap> DX12RenderTarget::readData()
 
     // 読み取り用一時バッファ
     size_t size = totalSize;
-    size_t size2 = m_size.width * m_size.height * DX12Helper::getFormatSize(m_image->dxFormat());
+    size_t size2 = extentSize().width * extentSize().height * DX12Helper::getFormatSize(m_image->dxFormat());
     DX12Buffer buffer;
     if (!buffer.init(m_device, size, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_STATE_COPY_DEST)) {
         return nullptr;
@@ -545,7 +545,7 @@ RHIRef<RHIBitmap> DX12RenderTarget::readData()
         bitmap1->copyRaw(data, totalSize);
 
         auto bitmap2 = makeRHIRef<RHIBitmap>();
-        if (!bitmap2->init(4, m_size.width, m_size.height)) {
+        if (!bitmap2->init(4, extentSize().width, extentSize().height)) {
             return nullptr;
         }
         bitmap2->blit(bitmap1.get());
