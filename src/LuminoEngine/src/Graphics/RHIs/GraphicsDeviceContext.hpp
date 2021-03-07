@@ -288,9 +288,9 @@ public:
     void setPrimitiveTopology(PrimitiveTopology value);
 
     // write only
-    void* map(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size);
-    void unmap(IGraphicsRHIBuffer* resource);
-    void setSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length);
+    void* map(RHIBuffer* resource, uint32_t offset, uint32_t size);
+    void unmap(RHIBuffer* resource);
+    void setSubData(RHIBuffer* resource, size_t offset, const void* data, size_t length);
     void setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
     void setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize);
 
@@ -320,9 +320,9 @@ public:	// TODO:
 	virtual void onEndRenderPass(IRenderPass* renderPass) = 0;
 	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) = 0;
 
-	virtual void* onMapResource(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size) = 0;
-	virtual void onUnmapResource(IGraphicsRHIBuffer* resource) = 0;
-	virtual void onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length) = 0;
+	virtual void* onMapResource(RHIBuffer* resource, uint32_t offset, uint32_t size) = 0;
+	virtual void onUnmapResource(RHIBuffer* resource) = 0;
+	virtual void onSetSubData(RHIBuffer* resource, size_t offset, const void* data, size_t length) = 0;
 	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
 	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 

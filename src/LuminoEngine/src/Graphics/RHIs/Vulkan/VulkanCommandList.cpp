@@ -203,7 +203,7 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 	}
 }
 
-void* VulkanGraphicsContext::onMapResource(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size)
+void* VulkanGraphicsContext::onMapResource(RHIBuffer* resource, uint32_t offset, uint32_t size)
 {
 	if (offset != 0) {
 		LN_NOTIMPLEMENTED();
@@ -215,13 +215,13 @@ void* VulkanGraphicsContext::onMapResource(IGraphicsRHIBuffer* resource, uint32_
 
 	switch (resource->resourceType())
 	{
-	case DeviceResourceType::VertexBuffer:
+	case RHIBufferType::VertexBuffer:
 	{
 		VulkanVertexBuffer* vertexBuffer = static_cast<VulkanVertexBuffer*>(resource);
 		vertexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(vertexBuffer->buffer()->size(), vertexBuffer->buffer());
         return static_cast<uint8_t*>(vertexBuffer->m_mappedResource.buffer->map()) + vertexBuffer->m_mappedResource.offset;
 	}
-	case DeviceResourceType::IndexBuffer:
+	case RHIBufferType::IndexBuffer:
 	{
 		VulkanIndexBuffer* indexBuffer = static_cast<VulkanIndexBuffer*>(resource);
 		indexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(indexBuffer->buffer()->size(), indexBuffer->buffer());
@@ -233,15 +233,15 @@ void* VulkanGraphicsContext::onMapResource(IGraphicsRHIBuffer* resource, uint32_
 	}
 }
 
-void VulkanGraphicsContext::onUnmapResource(IGraphicsRHIBuffer* resource)
+void VulkanGraphicsContext::onUnmapResource(RHIBuffer* resource)
 {
 	switch (resource->resourceType())
 	{
-	case DeviceResourceType::VertexBuffer:
+	case RHIBufferType::VertexBuffer:
         static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource.buffer->unmap();
         static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource.buffer = nullptr;
 		break;
-	case DeviceResourceType::IndexBuffer:
+	case RHIBufferType::IndexBuffer:
         static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource.buffer->unmap();
         static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource.buffer = nullptr;
 		break;
@@ -251,7 +251,7 @@ void VulkanGraphicsContext::onUnmapResource(IGraphicsRHIBuffer* resource)
 	}
 }
 
-void VulkanGraphicsContext::onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length)
+void VulkanGraphicsContext::onSetSubData(RHIBuffer* resource, size_t offset, const void* data, size_t length)
 {
     // データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
     m_commandBuffer->endRenderPassInRecordingIfNeeded();
@@ -259,10 +259,10 @@ void VulkanGraphicsContext::onSetSubData(IGraphicsRHIBuffer* resource, size_t of
 	VulkanBuffer* buffer = nullptr;
 	switch (resource->resourceType())
 	{
-	case DeviceResourceType::VertexBuffer:
+	case RHIBufferType::VertexBuffer:
 		buffer = static_cast<VulkanVertexBuffer*>(resource)->buffer();
 		break;
-	case DeviceResourceType::IndexBuffer:
+	case RHIBufferType::IndexBuffer:
 		buffer = static_cast<VulkanIndexBuffer*>(resource)->buffer();
 		break;
 	default:

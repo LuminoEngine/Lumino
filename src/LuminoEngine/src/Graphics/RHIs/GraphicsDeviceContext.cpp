@@ -564,17 +564,17 @@ void ICommandList::setPrimitiveTopology(PrimitiveTopology value)
 //	m_staging.renderPass = value;
 //}
 
-void* ICommandList::map(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size)
+void* ICommandList::map(RHIBuffer* resource, uint32_t offset, uint32_t size)
 {
     return onMapResource(resource, offset, size);
 }
 
-void ICommandList::unmap(IGraphicsRHIBuffer* resource)
+void ICommandList::unmap(RHIBuffer* resource)
 {
     onUnmapResource(resource);
 }
 
-void ICommandList::setSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length)
+void ICommandList::setSubData(RHIBuffer* resource, size_t offset, const void* data, size_t length)
 {
     onSetSubData(resource, offset, data, length);
 }

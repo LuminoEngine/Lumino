@@ -6,9 +6,9 @@ namespace ln {
 namespace detail {
 	
 //=============================================================================
-// IGraphicsRHIBuffer
+// RHIBuffer
 
-IGraphicsRHIBuffer::~IGraphicsRHIBuffer()
+RHIBuffer::~RHIBuffer()
 {
 }
 

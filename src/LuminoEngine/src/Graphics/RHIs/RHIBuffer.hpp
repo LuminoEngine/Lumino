@@ -4,29 +4,29 @@
 namespace ln {
 namespace detail {
 
-enum class DeviceResourceType
+enum class RHIBufferType
 {
 	VertexBuffer,
 	IndexBuffer,
 	UniformBuffer,
 };
 
-class IGraphicsRHIBuffer
+class RHIBuffer
 	: public IGraphicsDeviceObject
 {
 public:
-	virtual DeviceResourceType resourceType() const = 0;
+	virtual RHIBufferType resourceType() const = 0;
 
 protected:
-	virtual ~IGraphicsRHIBuffer();
+	virtual ~RHIBuffer();
 };
 
 
 class IVertexBuffer
-	: public IGraphicsRHIBuffer
+	: public RHIBuffer
 {
 public:
-	virtual DeviceResourceType resourceType() const { return DeviceResourceType::VertexBuffer; }
+	virtual RHIBufferType resourceType() const { return RHIBufferType::VertexBuffer; }
 	virtual size_t getBytesSize() = 0;
 	virtual GraphicsResourceUsage usage() const = 0;
 	//virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
@@ -38,10 +38,10 @@ protected:
 };
 
 class IIndexBuffer
-	: public IGraphicsRHIBuffer
+	: public RHIBuffer
 {
 public:
-	virtual DeviceResourceType resourceType() const { return DeviceResourceType::IndexBuffer; }
+	virtual RHIBufferType resourceType() const { return RHIBufferType::IndexBuffer; }
 	virtual size_t getBytesSize() = 0;
 	virtual GraphicsResourceUsage usage() const = 0;
 	//virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
@@ -61,15 +61,6 @@ public:
 
 protected:
 	virtual ~IUniformBuffer();
-};
-
-class RHIBuffer
-	: public RHIObject
-{
-public:
-	RHIBuffer();
-
-private:
 };
 
 } // namespace detail
