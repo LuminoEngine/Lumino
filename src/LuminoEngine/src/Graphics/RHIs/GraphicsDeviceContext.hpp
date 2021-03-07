@@ -22,7 +22,6 @@ class ICommandList;
 class ICommandQueue;
 class IRenderPass;
 class IVertexDeclaration;
-class IIndexBuffer;
 class IUniformBuffer;
 class ITexture;
 class IDepthBuffer;
@@ -88,7 +87,7 @@ struct DeviceRegionRectsState
 struct DevicePrimitiveState
 {
 	std::array<RHIBuffer*, MaxVertexStreams> vertexBuffers = {};
-	IIndexBuffer* indexBuffer = nullptr;
+	RHIBuffer* indexBuffer = nullptr;
 };
 
 struct GraphicsContextState
@@ -204,7 +203,7 @@ public:
 	Ref<IPipeline> createPipeline(const DevicePipelineStateDesc& state);
 	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
 	Ref<RHIBuffer> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
-	Ref<IIndexBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
+	Ref<RHIBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
 	Ref<ITexture> createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
 	Ref<ITexture> createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
 	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
@@ -238,7 +237,7 @@ protected:
 	virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) = 0;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 	virtual Ref<RHIBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
-	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
+	virtual Ref<RHIBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) = 0;
@@ -282,7 +281,7 @@ public:
     void setScissorRect(const RectI& value);
     void setVertexDeclaration(IVertexDeclaration* value);
     void setVertexBuffer(int streamIndex, RHIBuffer* value);
-    void setIndexBuffer(IIndexBuffer* value);
+    void setIndexBuffer(RHIBuffer* value);
     void setShaderPass(IShaderPass* value);
 	void setDescriptor(IDescriptor* value);
     void setPrimitiveTopology(PrimitiveTopology value);

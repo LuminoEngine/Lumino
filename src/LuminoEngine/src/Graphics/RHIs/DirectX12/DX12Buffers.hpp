@@ -51,14 +51,14 @@ private:
 };
 
 class DX12IndexBuffer
-	: public IIndexBuffer
+	: public RHIBuffer
 {
 public:
 	DX12IndexBuffer();
 	Result init(DX12Device* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
 	void dispose() override;
-	size_t getBytesSize() override;
-	GraphicsResourceUsage usage() const override;
+	//size_t getBytesSize() override;
+	//GraphicsResourceUsage usage() const override;
 	//void* map() override;
 	//void unmap() override;
 
@@ -71,6 +71,8 @@ protected:
 	GraphicsResourceUsage m_usage;
 	RHIPtr<DX12Buffer> m_buffer;
 	DXGI_FORMAT m_indexFormat;
+
+	friend class DX12GraphicsContext;
 };
 
 class DX12UniformBuffer

@@ -191,9 +191,9 @@ Ref<RHIBuffer> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usage, 
 	return ptr;
 }
 
-Ref<IIndexBuffer> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+Ref<RHIBuffer> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
-	Ref<IIndexBuffer> ptr = onCreateIndexBuffer(usage, format, indexCount, initialData);
+	Ref<RHIBuffer> ptr = onCreateIndexBuffer(usage, format, indexCount, initialData);
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
@@ -530,7 +530,7 @@ void ICommandList::setVertexBuffer(int streamIndex, RHIBuffer* value)
     }
 }
 
-void ICommandList::setIndexBuffer(IIndexBuffer* value)
+void ICommandList::setIndexBuffer(RHIBuffer* value)
 {
     if (m_staging.primitive.indexBuffer != value) {
         m_staging.primitive.indexBuffer = value;
@@ -798,21 +798,6 @@ uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int coun
 //	}
 //	return nullptr;
 //}
-
-//=============================================================================
-// IIndexBuffer
-
-IIndexBuffer::IIndexBuffer()
-{
-	LN_LOG_VERBOSE << "IIndexBuffer [0x" << this << "] constructed.";
-}
-
-IIndexBuffer::~IIndexBuffer()
-{
-	if (IGraphicsDevice* d = device()) {
-		d->profiler()->removeIndexBuffer(this);
-	}
-}
 
 //=============================================================================
 // IUniformBuffer

@@ -451,7 +451,7 @@ Ref<RHIBuffer> DX12Device::onCreateVertexBuffer(GraphicsResourceUsage usage, siz
 	return ptr;
 }
 
-Ref<IIndexBuffer> DX12Device::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+Ref<RHIBuffer> DX12Device::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
     auto ptr = makeRef<DX12IndexBuffer>();
     if (!ptr->init(this, usage, format, indexCount, initialData)) {

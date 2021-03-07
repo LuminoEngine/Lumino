@@ -207,6 +207,7 @@ Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsag
         stride = 4;
     }
     size_t bufferSize = stride * indexCount;
+    if (!RHIBuffer::init(RHIBufferType::IndexBuffer, bufferSize)) return false;
 
     if (!m_buffer.init(deviceContext, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, nullptr)) {
         return false;
@@ -229,18 +230,18 @@ Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsag
 void VulkanIndexBuffer::dispose()
 {
     m_buffer.dispose();
-    IIndexBuffer::dispose();
+    RHIBuffer::dispose();
 }
 
-size_t VulkanIndexBuffer::getBytesSize()
-{
-    return m_buffer.size();
-}
-
-GraphicsResourceUsage VulkanIndexBuffer::usage() const
-{
-    return m_usage;
-}
+//size_t VulkanIndexBuffer::getBytesSize()
+//{
+//    return m_buffer.size();
+//}
+//
+//GraphicsResourceUsage VulkanIndexBuffer::usage() const
+//{
+//    return m_usage;
+//}
 
 //==============================================================================
 // VulkanUniformBuffer

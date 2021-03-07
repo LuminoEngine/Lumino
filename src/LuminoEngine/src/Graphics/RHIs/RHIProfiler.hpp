@@ -13,8 +13,8 @@ public:
 	void removeVertexLayout(IVertexDeclaration* obj);
 	void addVertexBuffer(RHIBuffer* obj);
 	void removeVertexBuffer(RHIBuffer* obj);
-	void addIndexBuffer(IIndexBuffer* obj);
-	void removeIndexBuffer(IIndexBuffer* obj);
+	void addIndexBuffer(RHIBuffer* obj);
+	void removeIndexBuffer(RHIBuffer* obj);
 	void addTexture2D(ITexture* obj);
 	void removeTexture2D(ITexture* obj);
 	void addRenderTarget(ITexture* obj);

@@ -30,7 +30,7 @@ private:
     PrimitiveTopology m_primitiveType;
     Ref<IVertexDeclaration> m_vertexDeclaration;
     Ref<RHIBuffer> m_vertexBuffer;
-    Ref<IIndexBuffer> m_indexBuffer;
+    Ref<RHIBuffer> m_indexBuffer;
 
 };
 

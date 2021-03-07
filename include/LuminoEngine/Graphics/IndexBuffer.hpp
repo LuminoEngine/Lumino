@@ -4,9 +4,6 @@
 #include "GraphicsResource.hpp"
 
 namespace ln {
-namespace detail {
-class IIndexBuffer;
-}
 
 /** インデックスバッファのクラスです。 */
 class IndexBuffer
@@ -91,7 +88,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     int getIndexStride() const;
-    detail::IIndexBuffer* resolveRHIObject(GraphicsContext* context, bool* outModified);
+    detail::RHIBuffer* resolveRHIObject(GraphicsContext* context, bool* outModified);
     bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
     static int getIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat::UInt16) ? 2 : 4; }
@@ -99,7 +96,7 @@ private:
     static bool shortLifeBuffer(GraphicsResourceUsage usage, GraphicsResourcePool pool) { return usage == GraphicsResourceUsage::Static && pool == GraphicsResourcePool::None; }
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::IIndexBuffer> m_rhiObject;
+    Ref<detail::RHIBuffer> m_rhiObject;
     IndexBufferFormat m_format;
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;

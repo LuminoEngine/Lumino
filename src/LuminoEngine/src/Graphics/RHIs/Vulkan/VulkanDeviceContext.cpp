@@ -195,7 +195,7 @@ Ref<RHIBuffer> VulkanDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, s
 	return ptr;
 }
 
-Ref<IIndexBuffer> VulkanDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+Ref<RHIBuffer> VulkanDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
     auto ptr = makeRef<VulkanIndexBuffer>();
     if (!ptr->init(this, usage, format, indexCount, initialData)) {

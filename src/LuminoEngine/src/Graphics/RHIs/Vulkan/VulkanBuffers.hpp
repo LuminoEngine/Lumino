@@ -51,14 +51,14 @@ private:
 };
 
 class VulkanIndexBuffer
-    : public IIndexBuffer
+    : public RHIBuffer
 {
 public:
     VulkanIndexBuffer();
     Result init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
     void dispose() override;
-    size_t getBytesSize() override;
-    GraphicsResourceUsage usage() const override;
+    //size_t getBytesSize() override;
+    //GraphicsResourceUsage usage() const override;
 
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.nativeBuffer(); }

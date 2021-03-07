@@ -44,20 +44,20 @@ private:
 //	virtual ~IVertexBuffer();
 //};
 
-class IIndexBuffer
-	: public RHIBuffer
-{
-public:
-	virtual RHIBufferType resourceType() const { return RHIBufferType::IndexBuffer; }
-	virtual size_t getBytesSize() = 0;
-	virtual GraphicsResourceUsage usage() const = 0;
-	//virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
-	//virtual void unmap() = 0;
-
-protected:
-	IIndexBuffer();
-	virtual ~IIndexBuffer();
-};
+//class IIndexBuffer
+//	: public RHIBuffer
+//{
+//public:
+//	virtual RHIBufferType resourceType() const { return RHIBufferType::IndexBuffer; }
+//	virtual size_t getBytesSize() = 0;
+//	virtual GraphicsResourceUsage usage() const = 0;
+//	//virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
+//	//virtual void unmap() = 0;
+//
+//protected:
+//	IIndexBuffer();
+//	virtual ~IIndexBuffer();
+//};
 
 class IUniformBuffer
 	: public IGraphicsDeviceObject

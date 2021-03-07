@@ -301,7 +301,7 @@ void DX12GraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint
             DX12IndexBuffer* indexBuffer = static_cast<DX12IndexBuffer*>(state.primitive.indexBuffer);
             D3D12_INDEX_BUFFER_VIEW indexView;
             indexView.BufferLocation = indexBuffer->dxResource()->GetGPUVirtualAddress();
-            indexView.SizeInBytes = static_cast<UINT>(indexBuffer->getBytesSize());
+            indexView.SizeInBytes = static_cast<UINT>(indexBuffer->memorySize());
             indexView.Format = indexBuffer->indexFormat();
             m_dxCommandList->IASetIndexBuffer(&indexView);
         }
@@ -341,7 +341,7 @@ void DX12GraphicsContext::onSetSubData(RHIBuffer* baseResource, size_t offset, c
         afterStatus = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
         break;
     case RHIBufferType::IndexBuffer:
-        usage = static_cast<DX12IndexBuffer*>(baseResource)->usage();
+        usage = static_cast<DX12IndexBuffer*>(baseResource)->m_usage;
         if (LN_REQUIRE(usage == GraphicsResourceUsage::Static)) return;
         buffer = static_cast<DX12IndexBuffer*>(baseResource)->buffer().get();
         afterStatus = D3D12_RESOURCE_STATE_INDEX_BUFFER;

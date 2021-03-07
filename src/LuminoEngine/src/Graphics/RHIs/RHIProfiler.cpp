@@ -54,14 +54,14 @@ void RHIProfiler::removeVertexBuffer(RHIBuffer* obj)
 	obj->m_profiling = false;
 }
 
-void RHIProfiler::addIndexBuffer(IIndexBuffer* obj)
+void RHIProfiler::addIndexBuffer(RHIBuffer* obj)
 {
 	if (LN_REQUIRE(!obj->m_profiling)) return;
 	m_indexBufferCount++;
 	obj->m_profiling = true;
 }
 
-void RHIProfiler::removeIndexBuffer(IIndexBuffer* obj)
+void RHIProfiler::removeIndexBuffer(RHIBuffer* obj)
 {
 	if (LN_REQUIRE(obj->m_profiling)) return;
 	m_indexBufferCount--;

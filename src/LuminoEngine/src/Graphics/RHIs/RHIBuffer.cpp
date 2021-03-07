@@ -26,6 +26,7 @@ RHIBuffer::~RHIBuffer()
 			d->profiler()->removeVertexBuffer(this);
 			break;
 		case RHIBufferType::IndexBuffer:
+			d->profiler()->removeIndexBuffer(this);
 			break;
 		case RHIBufferType::UniformBuffer:
 			break;

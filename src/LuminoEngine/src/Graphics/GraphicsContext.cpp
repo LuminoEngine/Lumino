@@ -561,7 +561,7 @@ detail::ICommandList* GraphicsContext::commitState()
 
     bool primitiveBufferModified = false;
     VertexBufferArray vertexBuffersRHI;
-    detail::IIndexBuffer* indexBufferRHI;
+    detail::RHIBuffer* indexBufferRHI;
     {
         bool modified = false;
         for (int i = 0; i < m_staging.vertexBuffers.size(); i++) {
@@ -570,7 +570,7 @@ detail::ICommandList* GraphicsContext::commitState()
             primitiveBufferModified |= modified;
         }
 
-        indexBufferRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(this, m_staging.indexBuffer, &modified);
+        indexBufferRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIBuffer>(this, m_staging.indexBuffer, &modified);
         primitiveBufferModified |= modified;
         resourceModified |= primitiveBufferModified;
     }
@@ -719,7 +719,7 @@ detail::ICommandList* GraphicsContext::commitState()
         //    anyModified |= modified;
         //}
 
-        //detail::IIndexBuffer* indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(this, m_staging.indexBuffer, &modified);
+        //detail::RHIBuffer* indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(this, m_staging.indexBuffer, &modified);
         //anyModified |= modified;
 
         if ((m_dirtyFlags & DirtyFlags_PrimitiveBuffers) != 0 || primitiveBufferModified) {
@@ -727,7 +727,7 @@ detail::ICommandList* GraphicsContext::commitState()
                 GraphicsContext_setPrimitiveBuffers, this,
                 detail::ICommandList*, m_rhiCommandList,
                 VertexBufferArray, vertexBuffersRHI,
-                detail::IIndexBuffer*, indexBufferRHI,
+                detail::RHIBuffer*, indexBufferRHI,
                 {
                     for (int i = 0; i < detail::MaxVertexStreams; i++) {
                         m_rhiCommandList->setVertexBuffer(i, vertexBuffersRHI[i]);
