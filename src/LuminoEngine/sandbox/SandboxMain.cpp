@@ -471,7 +471,7 @@ int main(int argc, char** argv)
     if (1) {
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
-        //Example_glTFSampleViewer();
+        Example_glTFSampleViewer();
         //Example_MainLoop();
 		//Example_MeshViewer();
         //Example_MessageWindow();
@@ -501,7 +501,7 @@ int main(int argc, char** argv)
         //Sandbox_Sky();
         //Sandbox_UIShader();
 		//Sandbox_Voxel();
-		Tutorial_Sandbox();
+		//Tutorial_Sandbox();
 		//UISandboxMain();
         return 0;
     }

@@ -392,7 +392,7 @@ void DX12GraphicsContext::onSetSubData(RHIResource* baseResource, size_t offset,
     buffer->resourceBarrior(m_dxCommandList.Get(), afterStatus);
 }
 
-void DX12GraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
+void DX12GraphicsContext::onSetSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
     ID3D12Device* dxDevice = m_device->device();
     DX12Texture2D* texture = static_cast<DX12Texture2D*>(resource);
@@ -451,7 +451,7 @@ void DX12GraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int w
     texture->image()->resourceBarrior(m_dxCommandList.Get(), D3D12_RESOURCE_STATE_GENERIC_READ);
 }
 
-void DX12GraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+void DX12GraphicsContext::onSetSubData3D(RHIResource* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
 {
     LN_NOTIMPLEMENTED();
 }

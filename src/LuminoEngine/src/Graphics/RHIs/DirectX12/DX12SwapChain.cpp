@@ -129,7 +129,7 @@ void DX12SwapChain::acquireNextImage(int* outIndex)
     waitForCurrentFrameFence();
 }
 
-ITexture* DX12SwapChain::getRenderTarget(int imageIndex) const
+RHIResource* DX12SwapChain::getRenderTarget(int imageIndex) const
 {
 	return m_renderTargets[imageIndex];
 }

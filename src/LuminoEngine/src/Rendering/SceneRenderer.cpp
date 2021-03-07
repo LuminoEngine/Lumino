@@ -257,8 +257,16 @@ void SceneRenderer::render(
 //	m_renderingPassList.add(pass);
 //}
 
+
+//#define LN_PRINT_PROFILE 1
+
 void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext)
 {
+#ifdef LN_PRINT_PROFILE
+	ElapsedTimer pt;
+	pt.start();
+#endif
+
 	m_renderFeatureBatchList.clear();
 
 	// TODO: とりいそぎ
@@ -393,10 +401,19 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext)
 			m_renderFeatureBatchList.lastBatch()->setRenderPass(m_renderFeatureBatchList.lastBatch()->ensureRenderPassOutside ? nullptr : currentRenderPass);
 		}
 	}
+
+#ifdef LN_PRINT_PROFILE
+	std::cout << "buildBatchList: " << pt.elapsed() << std::endl;
+#endif
 }
 
 void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass)
 {
+#ifdef LN_PRINT_PROFILE
+	ElapsedTimer pt;
+	pt.start();
+#endif
+
 	// TODO: とりいそぎ
 	m_renderFeatureBatchList.renderTarget = renderTarget;
 	m_renderFeatureBatchList.depthBuffer = depthBuffer;
@@ -410,6 +427,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 	RenderPass* defaultRenderPass = pass->renderPass();
 	assert(defaultRenderPass);
+
 
 
 	// Render batch-list.
@@ -616,6 +634,10 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
     m_renderPassPoolUsed = 0;
 
 	pass->onEndRender(this);
+
+#ifdef LN_PRINT_PROFILE
+	std::cout << "renderPass: " << pt.elapsed() << std::endl;
+#endif
 }
 
 void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo, RenderPart targetPhase)

@@ -12,6 +12,7 @@
 #include "RenderFeature/MeshRenderFeature.hpp"
 #include "RenderFeature/PathRenderFeature.hpp"
 #include "RenderFeature/ExtensionRenderFeature.hpp"
+#include "RenderingProfiler.hpp"
 #include "RenderingManager.hpp"
 
 namespace ln {
@@ -336,6 +337,7 @@ void RenderingManager::init(const Settings& settings)
 	m_extensionRenderFeature = makeObject<ExtensionRenderFeature>(this);
 	m_renderFeatures.add(m_extensionRenderFeature);
 
+	m_profiler = std::make_unique<RenderingProfiler>();
 
 	m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 

@@ -32,6 +32,7 @@
 #include "../Font/FontManager.hpp"
 #include "../Mesh/MeshManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
+#include "../Rendering/RenderingProfiler.hpp"
 #include "../Effect/EffectManager.hpp"
 #include "../Physics/PhysicsManager.hpp"
 #include "../Asset/AssetManager.hpp"
@@ -757,6 +758,11 @@ void EngineManager::presentFrame()
 	if (m_engineProfiler) {
 		m_engineProfiler->lapEndRendering();
 		m_engineProfiler->endFrame();
+	}
+
+
+	if (m_renderingManager) {
+		m_renderingManager->profiler()->reset();
 	}
 
 	// 

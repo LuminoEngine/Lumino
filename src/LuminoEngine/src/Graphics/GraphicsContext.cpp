@@ -419,6 +419,7 @@ void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
         {
             m_rhiCommandList->drawPrimitive(startVertex, primitiveCount);
         });
+    m_commandList->m_drawCall++;
 }
 
 void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount, int vertexOffset)
@@ -436,6 +437,7 @@ void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount, i
         {
             m_rhiCommandList->drawPrimitiveIndexed(startIndex, primitiveCount, instanceCount, vertexOffset);
         });
+    m_commandList->m_drawCall++;
 }
 
 void GraphicsContext::drawExtension(INativeGraphicsExtension* extension)
@@ -507,12 +509,12 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
         endCommandRecodingIfNeeded();
 
 		auto device = m_manager->deviceContext();
-        detail::ITexture* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(this, affectRendreTarget, nullptr);
+        detail::RHIResource* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(this, affectRendreTarget, nullptr);
         LN_ENQUEUE_RENDER_COMMAND_3(
             GraphicsContext_flushCommandRecoding, this,
 			detail::IGraphicsDevice*, device,
             detail::ICommandList*, m_rhiCommandList,
-            detail::ITexture*, rhiObject,
+            detail::RHIResource*, rhiObject,
             {
 				device->submitCommandBuffer(m_rhiCommandList, rhiObject);
             });
@@ -625,11 +627,11 @@ detail::ICommandList* GraphicsContext::commitState()
     //    bool anyModified = false;
     //    bool modified = false;
 
-    //    using RenderTargetArray = std::array<detail::ITexture*, detail::MaxMultiRenderTargets>;
+    //    using RenderTargetArray = std::array<detail::RHIResource*, detail::MaxMultiRenderTargets>;
     //    RenderTargetArray renderTargets;
     //    for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
     //        auto& value = m_staging.renderTargets[i];
-    //        renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(this, value, &modified);
+    //        renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(this, value, &modified);
     //        anyModified |= modified;
     //    }
 

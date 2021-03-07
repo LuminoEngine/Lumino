@@ -29,6 +29,10 @@ public:
 	virtual void* map();
 	virtual void unmap();
 
+	// RenderTarget のみサポート
+	virtual RHIRef<RHIBitmap> readData();
+	bool isMultisample() const { return m_msaa; }
+
 	bool mipmap() const { return m_mipmap; }
 
 protected:
@@ -48,37 +52,6 @@ private:
 	TextureFormat m_textureFormat;
 	bool m_mipmap;
 	bool m_msaa;
-};
-
-
-
-enum class DeviceTextureType
-{
-	Texture2D,
-	Texture3D,
-	RenderTarget,
-};
-class ITexture
-	: public RHIResource
-{
-public:
-	//virtual RHISizeI extentSize() = 0;
-
-
-	// データは up flow (上下反転)
-	virtual RHIRef<RHIBitmap> readData() = 0;
-
-
-	// RenderTarget のみ
-	virtual bool isMultisample() const = 0;
-
-protected:
-	ITexture();
-	virtual ~ITexture();
-
-protected:
-
-	friend class IGraphicsDevice;
 };
 
 } // namespace detail

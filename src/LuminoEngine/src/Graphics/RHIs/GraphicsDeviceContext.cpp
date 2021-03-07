@@ -202,9 +202,9 @@ Ref<RHIResource> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage,
 	return ptr;
 }
 
-Ref<ITexture> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<RHIResource> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
-	Ref<ITexture> ptr = onCreateTexture2D(usage, width, height, requestFormat, mipmap, initialData);
+	Ref<RHIResource> ptr = onCreateTexture2D(usage, width, height, requestFormat, mipmap, initialData);
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
@@ -213,15 +213,15 @@ Ref<ITexture> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, uint
 	return ptr;
 }
 
-Ref<ITexture> IGraphicsDevice::createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<RHIResource> IGraphicsDevice::createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	LN_NOTIMPLEMENTED();
 	return nullptr;
 }
 
-Ref<ITexture> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
+Ref<RHIResource> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
-	Ref<ITexture> ptr = onCreateRenderTarget(width, height, requestFormat, mipmap, msaa);
+	Ref<RHIResource> ptr = onCreateRenderTarget(width, height, requestFormat, mipmap, msaa);
 	if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
@@ -230,9 +230,9 @@ Ref<ITexture> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t heigh
 	return ptr;
 }
 
-Ref<ITexture> IGraphicsDevice::createWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight)
+Ref<RHIResource> IGraphicsDevice::createWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight)
 {
-    Ref<ITexture> ptr = onCreateWrappedRenderTarget(nativeObject, hintWidth, hintHeight);
+    Ref<RHIResource> ptr = onCreateWrappedRenderTarget(nativeObject, hintWidth, hintHeight);
     if (ptr) {
 		ptr->m_device = this;
 		ptr->m_objectId = m_objectNextId++;
@@ -320,7 +320,7 @@ Ref<IDescriptorPool> IGraphicsDevice::createDescriptorPool(IShaderPass* shaderPa
 	return ptr;
 }
 
-void IGraphicsDevice::submitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
+void IGraphicsDevice::submitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget)
 {
 	onSubmitCommandBuffer(context, affectRendreTarget);
 }
@@ -475,22 +475,6 @@ void ICommandList::setDepthStencilState(const DepthStencilStateDesc& value)
     m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_PipelineState;
 }
 
-//void ICommandList::setColorBuffer(int index, ITexture* value)
-//{
-//    if (m_staging.framebufferState.renderTargets[index] != value) {
-//        m_staging.framebufferState.renderTargets[index] = value;
-//        m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_FrameBuffers;
-//    }
-//}
-//
-//void ICommandList::setDepthBuffer(IDepthBuffer* value)
-//{
-//    if (m_staging.framebufferState.depthBuffer != value) {
-//        m_staging.framebufferState.depthBuffer = value;
-//        m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_FrameBuffers;
-//    }
-//}
-
 void ICommandList::setViewportRect(const RectI& value)
 {
     if (m_staging.regionRects.viewportRect != value) {
@@ -572,12 +556,12 @@ void ICommandList::setSubData(RHIResource* resource, size_t offset, const void* 
     onSetSubData(resource, offset, data, length);
 }
 
-void ICommandList::setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
+void ICommandList::setSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
     onSetSubData2D(resource, x, y, width, height, data, dataSize);
 }
 
-void ICommandList::setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+void ICommandList::setSubData3D(RHIResource* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
 {
     onSetSubData3D(resource, x, y, z, width, height, depth, data, dataSize);
 }
@@ -712,7 +696,7 @@ void IRenderPass::dispose()
 
 void IRenderPass::retainObjects()
 {
-	for (ITexture* renderTarget : m_renderTargets) {
+	for (RHIResource* renderTarget : m_renderTargets) {
 		if (renderTarget) {
 			RefObjectHelper::retain(renderTarget);
 		}
@@ -724,7 +708,7 @@ void IRenderPass::retainObjects()
 
 void IRenderPass::releaseObjects()
 {
-	for (ITexture* renderTarget : m_renderTargets) {
+	for (RHIResource* renderTarget : m_renderTargets) {
 		if (renderTarget) {
 			RefObjectHelper::release(renderTarget);
 		}
@@ -777,31 +761,6 @@ uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int coun
 		hash.add(e.UsageIndex);
 	}
 	return hash.value();
-}
-
-//const VertexElement* IVertexDeclaration::findElement(AttributeUsage usage, int usageIndex) const
-//{
-//	// TODO: これ線形探索じゃなくて、map 作った方がいいかも。
-//	// usage の種類は固定だし、usageIndex も最大 16 あれば十分だし、byte 型 8x16 くらいの Matrix で足りる。
-//	auto u = IGraphicsHelper::AttributeUsageToElementUsage(usage);
-//	for (auto& e : m_elements) {
-//		if (e.Usage == u && e.UsageIndex == usageIndex) {
-//			return &e;
-//		}
-//	}
-//	return nullptr;
-//}
-
-//=============================================================================
-// ITexture
-
-ITexture::ITexture()
-{
-	LN_LOG_VERBOSE << "ITexture [0x" << this << "] constructed.";
-}
-
-ITexture::~ITexture()
-{
 }
 
 //=============================================================================

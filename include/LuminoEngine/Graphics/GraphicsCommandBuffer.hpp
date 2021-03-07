@@ -24,6 +24,8 @@ public:
 
     IDescriptorPool* getDescriptorPool(ShaderPass* shaderPass);
 
+    int32_t m_drawCall;
+
 private:
     struct ShaderPassDescriptorPair
     {

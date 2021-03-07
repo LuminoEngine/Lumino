@@ -270,7 +270,7 @@ static int glnvg__renderCreate(void* uptr)
 // params.renderCreateTexture
 static int glnvg__renderCreateTexture(void* uptr, int type, int w, int h, int imageFlags, const unsigned char* data)
 {
-	// ITexture → NanoVGImage の対応付けは lnnvg__AddImageTexture で行っている。
+	// RHIResource(Texture) → NanoVGImage の対応付けは lnnvg__AddImageTexture で行っている。
 	// このドライバ関数が呼び出されるのは、NanoVG のテキスト描画機能からのみで、
 	// いまは NanoVG 初期化時にしか使われない。ここで作られたイメージも使用されることはない。
 	return INT_MAX;

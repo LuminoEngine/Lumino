@@ -9,7 +9,7 @@ class NativeRenderPassCache
 public:
 	struct FindKey
 	{
-		std::array<ITexture*, MaxMultiRenderTargets> renderTargets = {};
+		std::array<RHIResource*, MaxMultiRenderTargets> renderTargets = {};
 		IDepthBuffer* depthBuffer = nullptr;
 		ClearFlags clearFlags = ClearFlags::All;
 		Color clearColor = Color(0, 0, 0, 0);
@@ -20,7 +20,7 @@ public:
 	NativeRenderPassCache(IGraphicsDevice* device);
 	void clear();
 	IRenderPass* findOrCreate(const FindKey& key);
-	void invalidate(ITexture* renderTarget);
+	void invalidate(RHIResource* renderTarget);
 	void invalidate(IDepthBuffer* depthBuffer);
 	void release2(IRenderPass* value);
 	static uint64_t computeHash(const FindKey& key);

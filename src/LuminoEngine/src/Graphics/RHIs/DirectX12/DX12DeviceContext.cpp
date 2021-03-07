@@ -460,7 +460,7 @@ Ref<RHIResource> DX12Device::onCreateIndexBuffer(GraphicsResourceUsage usage, In
 	return ptr;
 }
 
-Ref<ITexture> DX12Device::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<RHIResource> DX12Device::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
     auto ptr = makeRef<DX12Texture2D>();
     if (!ptr->init(this, usage, width, height, requestFormat, mipmap, initialData)) {
@@ -469,13 +469,13 @@ Ref<ITexture> DX12Device::onCreateTexture2D(GraphicsResourceUsage usage, uint32_
 	return ptr;
 }
 
-Ref<ITexture> DX12Device::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<RHIResource> DX12Device::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	LN_NOTIMPLEMENTED();
 	return nullptr;
 }
 
-Ref<ITexture> DX12Device::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
+Ref<RHIResource> DX12Device::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
     auto ptr = makeRef<DX12RenderTarget>();
     if (!ptr->init(this, width, height, requestFormat, mipmap, msaa)) {
@@ -529,7 +529,7 @@ Ref<IDescriptorPool> DX12Device::onCreateDescriptorPool(IShaderPass* shaderPass)
     return ptr;
 }
 
-void DX12Device::onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
+void DX12Device::onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget)
 {
     DX12GraphicsContext* commandList = static_cast<DX12GraphicsContext*>(context);
     commandList->submit(m_fenceValue);

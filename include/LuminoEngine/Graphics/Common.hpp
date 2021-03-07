@@ -367,7 +367,6 @@ class GraphicsManager;
 class GraphicsContextInternal;
 class IGraphicsDevice;
 class ICommandList;
-class ITexture;
 class ISamplerState;
 class ShaderSecondaryDescriptor;
 class GraphicsCommandList;

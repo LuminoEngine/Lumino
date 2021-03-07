@@ -24,6 +24,8 @@ public:
 	/** 経過時間の取得します。(ナノ秒単位) */
 	uint64_t elapsedNanoseconds() const LN_NOEXCEPT;
 
+	double elapsed() const LN_NOEXCEPT { return static_cast<double>(elapsedNanoseconds()) / 1000000000; }
+
 private:
 	uint64_t m_value1;
 	uint64_t m_value2;

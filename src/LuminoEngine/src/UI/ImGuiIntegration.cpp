@@ -24,8 +24,10 @@ namespace detail {
 //==============================================================================
 // UIContext
 
-bool ImGuiIntegration::init()
+bool ImGuiIntegration::init(UIFrameWindow* frameWindow)
 {
+	m_frameWindow = frameWindow;
+
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	m_imgui = ImGui::CreateContext();
@@ -377,6 +379,7 @@ void ImGuiIntegration::addDock(ImGuiDockPane* pane)
 {
 	pane->m_key = "Pane:" + std::to_string(m_dockPanes.size());
 	m_dockPanes.add(pane);
+	pane->m_imguiIntegration = this;
 }
 
 void ImGuiIntegration::updateDocks(ImGuiID mainWindowId)
@@ -487,7 +490,8 @@ bool ImGuiIntegration::handleUIEvent(UIEventArgs* e)
 // ImGuiDockPane
 
 ImGuiDockPane::ImGuiDockPane()
-	: m_key()
+	: m_imguiIntegration(nullptr)
+	, m_key()
 	, m_initialPlacement(ImGuiDockPlacement::Floating)
 	, m_open(true)
 {}
@@ -499,6 +503,11 @@ bool ImGuiDockPane::init()
 
 
 	return true;
+}
+
+UIFrameWindow* ImGuiDockPane::frameWindow() const
+{
+	return m_imguiIntegration->frameWindow();
 }
 
 void ImGuiDockPane::setInitialPlacement(ImGuiDockPlacement value)

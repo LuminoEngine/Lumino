@@ -332,7 +332,7 @@ void UIFrameWindow::setImGuiLayerEnabled(bool value)
 
     if (m_ImGuiLayerEnabled && !m_imguiContext) {
         m_imguiContext = std::make_unique<detail::ImGuiIntegration>();
-        if (!m_imguiContext->init()) {
+        if (!m_imguiContext->init(this)) {
             return;
         }
     }

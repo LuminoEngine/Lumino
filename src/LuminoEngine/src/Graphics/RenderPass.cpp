@@ -164,7 +164,7 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsContext* context, bool
 				if (LN_REQUIRE(rt->width() == primarySize.width && rt->height() == primarySize.height, u"RenderPass: Invalid render target dimensions.")) return nullptr;
 			}
 
-			key.renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(context, rt, nullptr);
+			key.renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(context, rt, nullptr);
 		}
 		key.depthBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(context, m_depthBuffer, nullptr);
 		key.clearFlags = m_clearFlags;

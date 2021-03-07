@@ -504,7 +504,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
                 sampler = manager->defaultSamplerState();
 
             bool modified = false;
-            updateInfo.resources[i].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
+            updateInfo.resources[i].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(graphicsContext, texture, &modified);
             updateInfo.resources[i].stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
             (*outModified) |= modified;
         }
@@ -534,7 +534,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
 
         bool modified = false;
         auto& view = updateInfo.textures[i];
-        view.texture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
+        view.texture = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(graphicsContext, texture, &modified);
         view.stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
         (*outModified) |= modified;
 #endif

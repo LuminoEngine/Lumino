@@ -14,6 +14,7 @@ namespace detail {
 // GraphicsCommandList
 
 GraphicsCommandList::GraphicsCommandList()
+    : m_drawCall(0)
 {
 }
 
@@ -49,6 +50,8 @@ void GraphicsCommandList::reset()
         pair.shaderPass->releaseDescriptorSetsPool(pair.descriptorPool);
     }
     m_usingDescriptorPools.clear();
+
+    m_drawCall = 0;
 }
 
 detail::ConstantBufferView GraphicsCommandList::allocateUniformBuffer(size_t size)

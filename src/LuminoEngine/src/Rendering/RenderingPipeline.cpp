@@ -9,6 +9,7 @@
 #include "ClusteredShadingSceneRenderer.hpp"
 #include "UnLigitingSceneRenderer.hpp"
 #include "RenderingManager.hpp"
+#include "RenderingProfiler.hpp"
 
 namespace ln {
 namespace detail {
@@ -105,6 +106,9 @@ void SceneRenderingPipeline::render(
     detail::CommandListServer* commandListServer,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
+    RenderingProfiler* profiler = detail::EngineDomain::renderingManager()->profiler().get();
+    profiler->beginSceneRenderer("Standard");
+
     m_elementList = elementList;
     m_commandListServer = commandListServer;
 
@@ -221,6 +225,8 @@ void SceneRenderingPipeline::render(
     m_renderingFrameBufferSize = SizeI();
     m_elementList = nullptr;
     m_commandListServer = nullptr;
+
+    profiler->endSceneRenderer();
 }
 
 
@@ -260,6 +266,9 @@ void FlatRenderingPipeline::render(
     detail::DrawElementList* elementList,
     detail::CommandListServer* commandListServer)
 {
+    RenderingProfiler* profiler = detail::EngineDomain::renderingManager()->profiler().get();
+    profiler->beginSceneRenderer("Flat");
+
     m_elementList = elementList;
     m_commandListServer = commandListServer;
 
@@ -301,6 +310,8 @@ void FlatRenderingPipeline::render(
 	m_renderingFrameBufferSize = SizeI();
     m_elementList = nullptr;
     m_commandListServer = nullptr;
+
+    profiler->endSceneRenderer();
 }
 
 } // namespace detail

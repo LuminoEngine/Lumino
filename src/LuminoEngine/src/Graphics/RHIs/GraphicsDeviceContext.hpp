@@ -22,7 +22,6 @@ class ICommandList;
 class ICommandQueue;
 class IRenderPass;
 class IVertexDeclaration;
-class ITexture;
 class IDepthBuffer;
 class ISamplerState;
 class IShaderPass;
@@ -66,7 +65,7 @@ struct DevicePipelineStateDesc
 
 struct DeviceFramebufferState
 {
-	std::array<ITexture*, MaxMultiRenderTargets> renderTargets = {};
+	std::array<RHIResource*, MaxMultiRenderTargets> renderTargets = {};
 	IDepthBuffer* depthBuffer = nullptr;
 };
 
@@ -130,7 +129,7 @@ struct ShaderDescriptorBufferView
 
 struct ShaderDescriptorCombinedSampler
 {
-	ITexture* texture;
+	RHIResource* texture;
 	ISamplerState* stamplerState;
 };
 
@@ -196,10 +195,10 @@ public:
 	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
 	Ref<RHIResource> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
 	Ref<RHIResource> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
-	Ref<ITexture> createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
-	Ref<ITexture> createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
-	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
-    Ref<ITexture> createWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
+	Ref<RHIResource> createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
+	Ref<RHIResource> createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
+	Ref<RHIResource> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
+    Ref<RHIResource> createWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
@@ -207,7 +206,7 @@ public:
 	Ref<IDescriptorPool> createDescriptorPool(IShaderPass* shaderPass);
     void releaseObject(RHIDeviceObject* obj) {}
 
-	void submitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
+	void submitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget);  // 呼ぶ前に end しておくこと
 
 	virtual INativeGraphicsInterface* getNativeInterface() const = 0;
 	virtual ICommandQueue* getGraphicsCommandQueue() = 0;
@@ -230,16 +229,16 @@ protected:
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 	virtual Ref<RHIResource> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
 	virtual Ref<RHIResource> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
-	virtual Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
-	virtual Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
-	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) = 0;
-    virtual Ref<ITexture> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) = 0;
+	virtual Ref<RHIResource> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
+	virtual Ref<RHIResource> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
+	virtual Ref<RHIResource> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) = 0;
+    virtual Ref<RHIResource> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) = 0;
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
 	virtual Ref<RHIResource> onCreateUniformBuffer(uint32_t size) = 0;
 	virtual Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) = 0;
-	virtual void onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) = 0;
+	virtual void onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) = 0;
 
 public:	// TODO:
 	GraphicsDeviceCaps m_caps;
@@ -282,8 +281,8 @@ public:
     void* map(RHIResource* resource, uint32_t offset, uint32_t size);
     void unmap(RHIResource* resource);
     void setSubData(RHIResource* resource, size_t offset, const void* data, size_t length);
-    void setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
-    void setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize);
+    void setSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
+    void setSubData3D(RHIResource* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize);
 
 	void dispatch(int groupCountX, int groupCountY, int groupCountZ);
     void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
@@ -314,8 +313,8 @@ public:	// TODO:
 	virtual void* onMapResource(RHIResource* resource, uint32_t offset, uint32_t size) = 0;
 	virtual void onUnmapResource(RHIResource* resource) = 0;
 	virtual void onSetSubData(RHIResource* resource, size_t offset, const void* data, size_t length) = 0;
-	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
-	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
+	virtual void onSetSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
+	virtual void onSetSubData3D(RHIResource* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
 	virtual void onDispatch(const GraphicsContextState& state, IPipeline* pipeline, int groupCountX, int groupCountY, int groupCountZ) = 0;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
@@ -350,7 +349,7 @@ public:
     // 次のフレーム描画を開始できるようにデバイスに要求し、描画先となるカラーバッファのインデックスを取得する。
     virtual void acquireNextImage(int* outImageIndex) = 0;
 
-	virtual ITexture* getRenderTarget(int imageIndex) const = 0;
+	virtual RHIResource* getRenderTarget(int imageIndex) const = 0;
 
 
 	virtual Result resizeBackbuffer(uint32_t width, uint32_t height) = 0;
@@ -381,7 +380,7 @@ class IRenderPass
 public:
 	uint64_t cacheKeyHash = 0;
 
-	//const std::array<Ref<ITexture>, MaxMultiRenderTargets>& renderTargets() const { return m_renderTargets; }
+	//const std::array<Ref<RHIResource>, MaxMultiRenderTargets>& renderTargets() const { return m_renderTargets; }
 
 	//const Ref<IDepthBuffer>& depthBuffer() const { return m_depthBuffer; }
 
@@ -398,7 +397,7 @@ public:
 
 	bool hasDepthBuffer() const { return m_depthBuffer != nullptr; }
 
-	bool containsRenderTarget(ITexture* renderTarget) const
+	bool containsRenderTarget(RHIResource* renderTarget) const
 	{
 		return std::find(m_renderTargets.begin(), m_renderTargets.end(), renderTarget) != m_renderTargets.end();
 	}
@@ -419,7 +418,7 @@ protected:
 	virtual ~IRenderPass();
 
 protected:
-	std::array<ITexture*, MaxMultiRenderTargets> m_renderTargets;
+	std::array<RHIResource*, MaxMultiRenderTargets> m_renderTargets;
 	IDepthBuffer* m_depthBuffer;
 	bool m_isMultisample = false;
 

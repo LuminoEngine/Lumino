@@ -22,6 +22,7 @@ class ShapesRenderFeature;
 class ShapesRenderFeature2;
 class PathRenderFeature;
 class ExtensionRenderFeature;
+class RenderingProfiler;
 
 enum class BuiltinShader
 {
@@ -215,6 +216,7 @@ public:
 	const Ref<PathRenderFeature>& pathRenderFeature() const { return m_pathRenderFeature; }
     const Ref<ExtensionRenderFeature>& extensionRenderFeature() const { return m_extensionRenderFeature; }
 	const List<Ref<RenderFeature>>& renderFeatures() const { return m_renderFeatures; }
+	const std::unique_ptr<RenderingProfiler>& profiler() const { return m_profiler; }
 
 	const Ref<LinearAllocatorPageManager>& stageDataPageManager() const { return m_stageDataPageManager; }
 	const Ref<Material>& defaultMaterial() const { return m_defaultMaterial; }
@@ -245,6 +247,7 @@ private:
 	Ref<PathRenderFeature> m_pathRenderFeature;
     Ref<ExtensionRenderFeature> m_extensionRenderFeature;
 	List<Ref<RenderFeature>> m_renderFeatures;
+	std::unique_ptr<RenderingProfiler> m_profiler;
 
 	// RenderStage 関係のデータ (ステートやコマンド) 用の LinearAllocatorPageManager
 	Ref<LinearAllocatorPageManager> m_stageDataPageManager;
