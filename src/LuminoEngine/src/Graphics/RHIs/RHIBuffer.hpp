@@ -4,8 +4,9 @@
 namespace ln {
 namespace detail {
 
-enum class RHIBufferType
+enum class RHIBufferType : uint8_t
 {
+	Unknown,
 	VertexBuffer,
 	IndexBuffer,
 	UniformBuffer,
@@ -21,43 +22,15 @@ public:
 protected:
 	RHIBuffer();
 	virtual ~RHIBuffer();
-	bool init(RHIBufferType type, uint64_t memorySize);
+	bool initAsVertexBuffer(GraphicsResourceUsage usage, uint64_t memorySize);
+	bool initAsIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount);
+	bool initAsUniformBuffer(GraphicsResourceUsage usage, uint64_t memorySize);
 
 private:
 	RHIBufferType m_type;
+	GraphicsResourceUsage m_usage;
 	uint64_t m_memorySize;
 };
-
-
-//class IVertexBuffer
-//	: public RHIBuffer
-//{
-//public:
-//	virtual RHIBufferType resourceType() const { return RHIBufferType::VertexBuffer; }
-//	virtual size_t getBytesSize() = 0;
-//	virtual GraphicsResourceUsage usage() const = 0;
-//	//virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
-//	//virtual void unmap() = 0;
-//
-//protected:
-//	IVertexBuffer();
-//	virtual ~IVertexBuffer();
-//};
-
-//class IIndexBuffer
-//	: public RHIBuffer
-//{
-//public:
-//	virtual RHIBufferType resourceType() const { return RHIBufferType::IndexBuffer; }
-//	virtual size_t getBytesSize() = 0;
-//	virtual GraphicsResourceUsage usage() const = 0;
-//	//virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
-//	//virtual void unmap() = 0;
-//
-//protected:
-//	IIndexBuffer();
-//	virtual ~IIndexBuffer();
-//};
 
 class IUniformBuffer
 	: public IGraphicsDeviceObject

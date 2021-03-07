@@ -109,7 +109,7 @@ VulkanVertexBuffer::VulkanVertexBuffer()
 
 Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
-    if (!RHIBuffer::init(RHIBufferType::VertexBuffer, bufferSize)) return false;
+    if (!RHIBuffer::initAsVertexBuffer(usage, bufferSize)) return false;
 
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -207,7 +207,7 @@ Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsag
         stride = 4;
     }
     size_t bufferSize = stride * indexCount;
-    if (!RHIBuffer::init(RHIBufferType::IndexBuffer, bufferSize)) return false;
+    if (!RHIBuffer::initAsIndexBuffer(usage, format, indexCount)) return false;
 
     if (!m_buffer.init(deviceContext, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, nullptr)) {
         return false;

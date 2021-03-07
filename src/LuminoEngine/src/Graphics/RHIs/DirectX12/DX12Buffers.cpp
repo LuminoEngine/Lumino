@@ -173,7 +173,7 @@ DX12VertexBuffer::DX12VertexBuffer()
 
 bool DX12VertexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, size_t size, const void* initialData)
 {
-    if (!RHIBuffer::init(RHIBufferType::VertexBuffer, size)) return false;
+    if (!RHIBuffer::initAsVertexBuffer(usage, size)) return false;
     m_device = device;
     m_usage = usage;
 
@@ -310,6 +310,7 @@ DX12IndexBuffer::DX12IndexBuffer()
 
 Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
+    if (!RHIBuffer::initAsIndexBuffer(usage, format, indexCount)) return false;
     m_device = device;
     m_usage = usage;
 
@@ -324,7 +325,6 @@ Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, In
         stride = 4;
     }
     size_t size = stride * indexCount;
-    if (!RHIBuffer::init(RHIBufferType::IndexBuffer, size)) return false;
 
     // Types
     D3D12_HEAP_TYPE heapType;
