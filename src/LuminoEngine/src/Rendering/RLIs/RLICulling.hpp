@@ -6,10 +6,10 @@ namespace detail {
 
 // RenderPipeline のうち、カリング部分をモジュール化したもの。
 // Unity の CullResults 相当。
-struct RILCulling
+struct RLICulling
 {
 public:
-	RILCulling();
+	RLICulling();
 	void cull(
 		const RenderView* renderView,
 		RenderingContext* renderingContext,

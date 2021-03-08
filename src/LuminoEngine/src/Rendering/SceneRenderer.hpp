@@ -88,7 +88,7 @@ public:
 		const detail::RenderViewInfo& mainRenderViewInfo,
 		RenderPart targetPhase,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams,
-		const RILCulling* culling);
+		const RLICulling* culling);
 
 	void renderPass(
 		GraphicsContext* graphicsContext,
@@ -131,7 +131,7 @@ public:	// TODO
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
 private:
-	void buildBatchList(GraphicsContext* graphicsContext, const RILCulling* culling);
+	void buildBatchList(GraphicsContext* graphicsContext, const RLICulling* culling);
 
 	detail::RenderingManager* m_manager;
 	//List<Ref<SceneRendererPass>> m_renderingPassList;

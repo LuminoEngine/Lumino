@@ -3,12 +3,12 @@
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include "../CommandListServer.hpp"
-#include "RILCulling.hpp"
+#include "RLICulling.hpp"
 
 namespace ln {
 namespace detail {
 
-RILCulling::RILCulling()
+RLICulling::RLICulling()
 	: m_mainLight(nullptr)
 	, m_visibleLights()
 	, m_parts()
@@ -16,7 +16,7 @@ RILCulling::RILCulling()
 {
 }
 
-void RILCulling::cull(
+void RLICulling::cull(
 	const RenderView* renderView,
 	RenderingContext* renderingContext,
 	CommandListServer* commandListServer)

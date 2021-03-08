@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include "RLIs/RILCulling.hpp"
+#include "RLIs/RLICulling.hpp"
 
 namespace ln {
 class GraphicsContext;
@@ -30,7 +30,7 @@ protected:
     detail::DrawElementList* m_elementList;
     //detail::CommandListServer* m_commandListServer = nullptr;
     Ref<RenderPass> m_clearRenderPass;
-    RILCulling m_cullingResult;
+    RLICulling m_cullingResult;
 };
 
 class SceneRenderingPipeline

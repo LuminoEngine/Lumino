@@ -2,7 +2,7 @@
 
 namespace ln {
 namespace detail {
-class RILCulling;
+class RLICulling;
 class RenderFeatureBatch;
 class RLIBatchMaterial;
 

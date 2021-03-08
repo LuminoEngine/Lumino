@@ -18,7 +18,7 @@
 #include "RenderingManager.hpp"
 #include "SceneRenderer.hpp"
 #include "RLIs/RLIMaterial.hpp"
-#include "RLIs/RILCulling.hpp"
+#include "RLIs/RLICulling.hpp"
 
 namespace ln {
 namespace detail {
@@ -126,7 +126,7 @@ void SceneRenderer::prepare(
 	const detail::RenderViewInfo& mainRenderViewInfo,
 	RenderPart targetPhase,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams,
-	const RILCulling* culling)
+	const RLICulling* culling)
 {
 	m_renderingPipeline = renderingPipeline;
 	m_renderingContext = renderingContext;
@@ -259,7 +259,7 @@ void SceneRenderer::render(
 
 //#define LN_PRINT_PROFILE 1
 
-void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, const RILCulling* culling)
+void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, const RLICulling* culling)
 {
 #ifdef LN_PRINT_PROFILE
 	ElapsedTimer pt;
