@@ -167,8 +167,9 @@ void FrameRectRenderFeature::addSprite(GraphicsContext* context, const Vector3& 
 	//uint64_t lockOffset = m_batchData.spriteOffset * 4;
 	//uint64_t lockSize = (m_batchData.spriteCount + 1) * 4;
 	//m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
-	m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->writableData(m_batchData.spriteOffset * sizeof(Vertex), sizeof(Vertex)));
-	auto* vertices = m_mappedVertices + ((m_batchData.spriteOffset + m_batchData.spriteCount) * 4);
+	uint64_t offset = ((m_batchData.spriteOffset + m_batchData.spriteCount) * 4);
+	m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->writableData(0, offset * sizeof(Vertex)));
+	auto* vertices = m_mappedVertices + offset;
 	vertices[0].set(pos0, Vector3::UnitZ, uv0, Color::White);
 	vertices[1].set(pos1, Vector3::UnitZ, uv1, Color::White);
 	vertices[2].set(pos2, Vector3::UnitZ, uv2, Color::White);

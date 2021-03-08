@@ -10,7 +10,10 @@ struct RILCulling
 {
 public:
 	RILCulling();
-	void cull(RenderingContext* renderingContext, CommandListServer* commandListServer);
+	void cull(
+		const RenderView* renderView,
+		RenderingContext* renderingContext,
+		CommandListServer* commandListServer);
 
 	const DynamicLightInfo* mainLight() const { return m_mainLight; }
 	const std::vector<const DynamicLightInfo*>& visibleLights() const { return m_visibleLights; }
@@ -25,6 +28,7 @@ private:
 	const DynamicLightInfo* m_mainLight;
 	std::vector<const DynamicLightInfo*> m_visibleLights;
 	std::array<Part, (int)RenderPart::_Count> m_parts;
+	ZSortDistanceBase m_zSortDistanceBase;
 };
 
 } // namespace detail

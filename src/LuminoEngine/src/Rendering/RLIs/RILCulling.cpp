@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include "../CommandListServer.hpp"
 #include "RILCulling.hpp"
@@ -11,10 +12,14 @@ RILCulling::RILCulling()
 	: m_mainLight(nullptr)
 	, m_visibleLights()
 	, m_parts()
+	, m_zSortDistanceBase(ZSortDistanceBase::CameraScreenDistance)
 {
 }
 
-void RILCulling::cull(RenderingContext* renderingContext, CommandListServer* commandListServer)
+void RILCulling::cull(
+	const RenderView* renderView,
+	RenderingContext* renderingContext,
+	CommandListServer* commandListServer)
 {
 	m_mainLight = nullptr;
 	m_visibleLights.clear();
@@ -23,6 +28,8 @@ void RILCulling::cull(RenderingContext* renderingContext, CommandListServer* com
 		RenderPart renderPart = (RenderPart)iPart;
 		Part* partInfo = &m_parts[iPart];
 		partInfo->visibleElements.clear();
+
+		const CameraInfo& cameraInfo = renderView->viewProjection(renderPart);
 
 		// Lights
 		for (const DynamicLightInfo& light : renderingContext->dynamicLightInfoList()) {
@@ -33,26 +40,77 @@ void RILCulling::cull(RenderingContext* renderingContext, CommandListServer* com
 		}
 
 		// Elements
-//		commandListServer->enumerateDrawElements(
-//			m_currentPart, m_currentProjection,
-//			[this](RenderDrawElement* element) {
-//
-//#if 0		// TODO: 視錘台カリング
-//			const Matrix& transform = element->getTransform(elementList);
-//
-//			Sphere boundingSphere = element->getLocalBoundingSphere();
-//			boundingSphere.center += transform.getPosition();
-//
-//			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-//				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
-//			{
-//				// このノードは描画できる
-//				m_renderingElementList.add(element);
-//			}
-//#else
-//			m_renderingElementList.add(element);
-//#endif
-//		});
+		commandListServer->enumerateDrawElements(
+			renderPart, [&](RenderDrawElement* element) {
+
+#if 0		// TODO: 視錘台カリング
+			const Matrix& transform = element->getTransform(elementList);
+
+			Sphere boundingSphere = element->getLocalBoundingSphere();
+			boundingSphere.center += transform.getPosition();
+
+			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
+				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
+			{
+				// このノードは描画できる
+				m_renderingElementList.add(element);
+			}
+#else
+			partInfo->visibleElements.push_back(element);
+#endif
+
+			{
+				element->calculateActualPriority();
+
+				auto& position = element->combinedWorldMatrix().position();
+
+				// calculate distance for ZSort
+				switch (m_zSortDistanceBase)
+				{
+				case ZSortDistanceBase::NodeZ:
+					element->zDistance = position.z;
+					break;
+				case ZSortDistanceBase::CameraDistance:
+					element->zDistance = (position - cameraInfo.viewPosition).lengthSquared();
+					break;
+				case ZSortDistanceBase::CameraScreenDistance:
+					element->zDistance = Vector3::dot(
+						position - cameraInfo.viewPosition,
+						cameraInfo.viewDirection);		// 平面と点の距離
+														// TODO: ↑第2引数違くない？要確認
+					break;
+				default:
+					LN_UNREACHABLE();
+					break;
+				}
+			}
+		});
+
+		// ZSort
+		//   TODO: Unity に似せるなら、この処理は SceneRenderer の中でパラメータに応じて行うべき。
+		//   パラメータは次のようなものがある。
+		//   https://docs.unity3d.com/ja/2018.4/ScriptReference/Experimental.Rendering.SortFlags.html
+		//   ただ前から奥等典型的なソートを何回も行うのは無駄なので、キャッシュしたいところ。
+		{
+			// 距離は降順。遠いほうを先に描画する
+			// 優先度は昇順。高いほうを手前に描画する (UE4 ESceneDepthPriorityGroup)
+			// フェンスID は昇順。高いほうを後に描画する
+			std::stable_sort(
+				partInfo->visibleElements.begin(), partInfo->visibleElements.end(),
+				[](const RenderDrawElement* lhs, const RenderDrawElement* rhs)
+			{
+				if (lhs->commandFence == rhs->commandFence)
+				{
+					if (lhs->actualPriority() == rhs->actualPriority())
+						return lhs->zDistance > rhs->zDistance;
+					return lhs->actualPriority() < rhs->actualPriority();
+				}
+				else
+				{
+					return lhs->commandFence < rhs->commandFence;
+				}
+			});
+		}
 	}
 
 

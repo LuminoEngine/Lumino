@@ -18,6 +18,7 @@
 #include "RenderingManager.hpp"
 #include "SceneRenderer.hpp"
 #include "RLIs/RLIMaterial.hpp"
+#include "RLIs/RILCulling.hpp"
 
 namespace ln {
 namespace detail {
@@ -94,7 +95,6 @@ SceneRenderer::SceneRenderer()
 	: m_manager(detail::EngineDomain::renderingManager())
 	, m_renderFeatureBatchList(detail::EngineDomain::renderingManager())
 	, m_renderingPipeline(nullptr)
-	, m_zSortDistanceBase(ZSortDistanceBase::CameraScreenDistance)
 	, m_renderPassPoolUsed(0)
 {
 }
@@ -125,7 +125,8 @@ void SceneRenderer::prepare(
 	//detail::CommandListServer* commandListServer,
 	const detail::RenderViewInfo& mainRenderViewInfo,
 	RenderPart targetPhase,
-	const detail::SceneGlobalRenderParams* sceneGlobalParams)
+	const detail::SceneGlobalRenderParams* sceneGlobalParams,
+	const RILCulling* culling)
 {
 	m_renderingPipeline = renderingPipeline;
 	m_renderingContext = renderingContext;
@@ -133,12 +134,12 @@ void SceneRenderer::prepare(
 	m_sceneGlobalRenderParams = sceneGlobalParams;
 	m_currentPart = targetPhase;
 
-	m_renderingElementList.clear();
+	//m_renderingElementList.clear();
 	collect(renderingPipeline, m_mainRenderViewInfo.cameraInfo, targetPhase);
 	prepare();
 
 
-	buildBatchList(graphicsContext);
+	buildBatchList(graphicsContext, culling);
 }
 
 #if 0
@@ -258,7 +259,7 @@ void SceneRenderer::render(
 
 //#define LN_PRINT_PROFILE 1
 
-void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext)
+void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, const RILCulling* culling)
 {
 #ifdef LN_PRINT_PROFILE
 	ElapsedTimer pt;
@@ -282,7 +283,8 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext)
 		Material* currentFinalMaterial = nullptr;
 		SubsetInfo currentSubsetInfo;
 		//int count = 0;
-		for (RenderDrawElement* element : m_renderingElementList)
+		const std::vector<RenderDrawElement*>& renderingElementList = culling->visibleElements(m_currentPart);
+		for (RenderDrawElement* element : renderingElementList)
 		{
 			//if (pass->filterElement(element))
 			{
@@ -640,121 +642,17 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo, RenderPart targetPhase)
 {
-	//InternalContext* context = m_manager->getInternalContext();
-	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
-
-
-    //for (auto& elementList : renderingPipeline->elementListCollector()->lists(/*RenderPart::Default*/))
+    for (auto& light : m_renderingContext->dynamicLightInfoList())
     {
-        for (auto& light : m_renderingContext->dynamicLightInfoList())
-        {
-			if (light.mainLight) {
-				m_mainLightInfo = &light;
-			}
-            onCollectLight(light);
-        }
+		if (light.mainLight) {
+			m_mainLightInfo = &light;
+		}
+        onCollectLight(light);
     }
-
-
-#if 1
-	m_renderingPipeline->commandListServer()->enumerateDrawElements(
-		m_currentPart,
-		[this](RenderDrawElement* element) {
-
-#if 0		// TODO: 視錘台カリング
-			const Matrix& transform = element->getTransform(elementList);
-
-			Sphere boundingSphere = element->getLocalBoundingSphere();
-			boundingSphere.center += transform.getPosition();
-
-			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
-			{
-				// このノードは描画できる
-				m_renderingElementList.add(element);
-			}
-#else
-			m_renderingElementList.add(element);
-#endif
-		});
-
-#else
-	const auto& classifiedElements = renderingPipeline->elementList()->classifiedElementList(targetPhase);
-	{
-		RenderDrawElement* element = classifiedElements.headElement;
-		while (element) {
-
-#if 0		// TODO: 視錘台カリング
-			const Matrix& transform = element->getTransform(elementList);
-
-			Sphere boundingSphere = element->getLocalBoundingSphere();
-			boundingSphere.center += transform.getPosition();
-
-			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
-			{
-				// このノードは描画できる
-				m_renderingElementList.add(element);
-			}
-#else
-			m_renderingElementList.add(element);
-#endif
-
-			element = element->m_classifiedNext;
-		}
-	}
-#endif
-
-
-
-	for (auto& element : m_renderingElementList)
-	{
-		element->calculateActualPriority();
-
-		auto& position = element->combinedWorldMatrix().position();
-
-		// calculate distance for ZSort
-		switch (m_zSortDistanceBase)
-		{
-		case ZSortDistanceBase::NodeZ:
-			element->zDistance = position.z;
-			break;
-		case ZSortDistanceBase::CameraDistance:
-			element->zDistance = (position - cameraInfo.viewPosition).lengthSquared();
-			break;
-		case ZSortDistanceBase::CameraScreenDistance:
-			element->zDistance = Vector3::dot(
-				position - cameraInfo.viewPosition,
-				cameraInfo.viewDirection);		// 平面と点の距離
-												// TODO: ↑第2引数違くない？要確認
-			break;
-		default:
-			LN_UNREACHABLE();
-			break;
-		}
-	}
 }
 
 void SceneRenderer::prepare()
 {
-	// 距離は降順。遠いほうを先に描画する
-	// 優先度は昇順。高いほうを手前に描画する (UE4 ESceneDepthPriorityGroup)
-	// フェンスID は昇順。高いほうを後に描画する
-	std::stable_sort(
-		m_renderingElementList.begin(), m_renderingElementList.end(),
-		[](const RenderDrawElement* lhs, const RenderDrawElement* rhs)
-		{
-			if (lhs->commandFence == rhs->commandFence)
-			{
-				if (lhs->actualPriority() == rhs->actualPriority())
-					return lhs->zDistance > rhs->zDistance;
-				return lhs->actualPriority() < rhs->actualPriority();
-			}
-			else
-			{
-				return lhs->commandFence < rhs->commandFence;
-			}
-		});
 
 	if (m_mainLightInfo) {
 		m_mainSceneInfo.ambientColor = m_mainLightInfo->m_position;	// position フィールドを代用している
@@ -831,154 +729,6 @@ bool SceneRenderer::equalsFramebuffer(RenderPass* renderPass, const FrameBuffer&
 	}
 	return renderPass->depthBuffer() == fb.depthBuffer;
 }
-
-//void SceneRenderer::applyFrameBufferStatus(GraphicsContext* context, RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass)
-//{
-//	RenderTargetTexture* renderTarget0 = nullptr;
-//
-//	// RenderTarget
-//	{
-//		for (int i = 0; i < MaxMultiRenderTargets; i++)
-//		{
-//			RenderTargetTexture* target = stage->getRenderTargetFinal(i);
-//			if (!target) {
-//				target = defaultFrameBufferInPass.renderTarget[i];
-//			}
-//
-//			//context->setRenderTarget(i, target);
-//			m_renderPass->setRenderTarget(i, target);
-//
-//			if (i == 0) {
-//				renderTarget0 = target;
-//			}
-//		}
-//	}
-//
-//	// DepthBuffer
-//	{
-//		DepthBuffer* depthBuffer = stage->getDepthBufferFinal();
-//		if (depthBuffer) {
-//			//context->setDepthBuffer(depthBuffer);
-//			m_renderPass->setDepthBuffer(depthBuffer);
-//		}
-//		else {
-//			//context->setDepthBuffer(defaultFrameBufferInPass.depthBuffer);
-//			m_renderPass->setDepthBuffer(defaultFrameBufferInPass.depthBuffer);
-//		}
-//	}
-//
-//	// Viewport
-//	{
-//		//const RectI& rect = stage->getViewportRectFinal();//getViewportRect();
-//		//if (rect.width < 0)
-//		//{
-//		//	stateManager->setViewport(RectI(0, 0, renderTarget0->getSize()));
-//		//}
-//		//else
-//		//{
-//		//	stateManager->setViewport(rect);
-//		//}
-//		// TODO:Viewport
-//		// TODO: m_scissorRect
-//	}
-//}
-
-//void SceneRenderer::applyGeometryStatus(GraphicsContext* context, RenderStage* stage, Material* priorityMaterial)
-//{
-//	// BlendState
-//	{
-//        BlendMode mode = stage->getBlendModeFinal(priorityMaterial);
-//		BlendStateDesc state;
-//		state.independentBlendEnable = false;
-//		makeBlendMode(mode, &state.renderTargets[0]);
-//		context->setBlendState(state);
-//	}
-//	// RasterizerState
-//	{
-//		RasterizerStateDesc state;
-//		state.fillMode = FillMode::Solid;
-//		state.cullMode = stage->getCullingModeFinal(priorityMaterial);
-//		context->setRasterizerState(state);
-//	}
-//	// DepthStencilState
-//	{
-//		DepthStencilStateDesc state;
-//		state.depthTestFunc = stage->getDepthTestFuncFinal(priorityMaterial);
-//		state.depthWriteEnabled = stage->isDepthWriteEnabledFinal(priorityMaterial);
-//		context->setDepthStencilState(state);
-//	}
-//}
-//
-//void SceneRenderer::makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state)
-//{
-//	// もっといろいろ http://d.hatena.ne.jp/Ko-Ta/20070618/p1
-//	// TODO: アルファも一緒のブレンド方式にしているので、個別指定で改善できそう
-//	switch (mode)
-//	{
-//	case BlendMode::Normal:
-//		state->blendEnable = false;
-//		state->sourceBlend = BlendFactor::One;
-//		state->destinationBlend = BlendFactor::Zero;
-//		state->blendOp = BlendOp::Add;
-//		state->sourceBlendAlpha = BlendFactor::One;
-//		state->destinationBlendAlpha = BlendFactor::Zero;
-//		state->blendOpAlpha = BlendOp::Add;
-//		break;
-//	case BlendMode::Alpha:
-//		state->blendEnable = true;
-//		state->sourceBlend = BlendFactor::SourceAlpha;
-//		state->destinationBlend = BlendFactor::InverseSourceAlpha;
-//		state->blendOp = BlendOp::Add;
-//		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
-//		state->destinationBlendAlpha = BlendFactor::InverseSourceAlpha;
-//		state->blendOpAlpha = BlendOp::Add;
-//		break;
-//	case BlendMode::Add:
-//		state->blendEnable = true;
-//		state->sourceBlend = BlendFactor::SourceAlpha;
-//		state->destinationBlend = BlendFactor::One;
-//		state->blendOp = BlendOp::Add;
-//		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
-//		state->destinationBlendAlpha = BlendFactor::One;
-//		state->blendOpAlpha = BlendOp::Add;
-//		break;
-//	case BlendMode::Subtract:
-//		state->blendEnable = true;
-//		state->sourceBlend = BlendFactor::SourceAlpha;
-//		state->destinationBlend = BlendFactor::One;
-//		state->blendOp = BlendOp::ReverseSubtract;
-//		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
-//		state->destinationBlendAlpha = BlendFactor::One;
-//		state->blendOpAlpha = BlendOp::Add;
-//		break;
-//	case BlendMode::Multiply:
-//		state->blendEnable = true;
-//		state->sourceBlend = BlendFactor::Zero;	// AlphaDisable (Alpha を別指定できない今の仕様では Alpha を考慮できない)
-//		state->destinationBlend = BlendFactor::SourceColor;
-//		state->blendOp = BlendOp::Add;
-//		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
-//		state->destinationBlendAlpha = BlendFactor::One;
-//		state->blendOpAlpha = BlendOp::Add;
-//		break;
-//	//case BlendMode_Screen:
-//	//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-//	//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-//	//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCALPHASAT);
-//	//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
-//	//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 255);
-//	//	break;
-//	//case BlendMode_Reverse:
-//	//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-//	//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-//	//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-//	//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
-//	//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
-//	//	break;
-//	default:
-//		assert(0);
-//		break;
-//	}
-//}
 
 } // namespace detail
 } // namespace ln
