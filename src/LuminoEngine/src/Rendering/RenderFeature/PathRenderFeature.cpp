@@ -695,9 +695,9 @@ static void glnvg__renderFlush(void* uptr)
 			if (!gl->vertexBuffer || gl->vertexBuffer->size() < size) {
 				gl->vertexBuffer = ln::makeObject<ln::VertexBuffer>(size, ln::GraphicsResourceUsage::Dynamic);
 			}
-			void* data = gl->vertexBuffer->map(ln::MapMode::Write);
+			void* data = gl->vertexBuffer->writableData();
 			memcpy(data, gl->verts, gl->nverts * sizeof(NVGvertex));
-			gl->vertexBuffer->unmap();
+			//gl->vertexBuffer->unmap();
 		}
 
 		// Bind VertexBuffer

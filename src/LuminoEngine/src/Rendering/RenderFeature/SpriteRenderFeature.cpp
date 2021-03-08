@@ -45,7 +45,7 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 {
 	// TODO: buffer おおきくする
 
-	m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
+	m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->writableData());
 	auto* vertices = m_mappedVertices + ((m_batchData.spriteOffset + m_batchData.spriteCount) * 4);
 
 	Vector2 center(size.x * anchorRatio.x, size.y * anchorRatio.y);

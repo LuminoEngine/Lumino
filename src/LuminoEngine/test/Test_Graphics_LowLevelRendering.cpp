@@ -228,7 +228,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 				Vector4(-0.5, -0.25, 0, 1),
 			};
 #endif
-			memcpy(vb1->map(MapMode::Write), v1, vb1->size());
+			memcpy(vb1->writableData(), v1, vb1->size());
 
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 			ctx->drawPrimitive(0, 1);
@@ -259,7 +259,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 				Vector4(-1, -1, 0, 1),
 			};
 #endif
-			memcpy(vb1->map(MapMode::Write), v2, vb1->size());
+			memcpy(vb1->writableData(), v2, vb1->size());
 
 			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
@@ -300,7 +300,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			vb2->resize(sizeof(Vector4) * 4);
 			ASSERT_EQ(sizeof(Vector4) * 4, vb2->size());
 
-			memcpy(vb2->map(MapMode::Write), v2, vb2->size());
+			memcpy(vb2->writableData(), v2, vb2->size());
 
 			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
@@ -345,7 +345,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			vb2->resize(sizeof(Vector4) * 5);
 			ASSERT_EQ(sizeof(Vector4) * 5, vb2->size());
 
-			memcpy(vb2->map(MapMode::Write), v2, vb2->size());
+			memcpy(vb2->writableData(), v2, vb2->size());
 
 			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);

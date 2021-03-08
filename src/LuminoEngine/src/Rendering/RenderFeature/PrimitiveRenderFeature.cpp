@@ -200,7 +200,7 @@ void MeshGeneraterRenderFeature::renderBatch(GraphicsContext* context, RenderFea
         prepareBuffers(vertexCount, indexCount);
 
         // Create Vertex and Index buffers
-        Vertex* vertexBuffer = (Vertex*)m_vertexBuffer->map(MapMode::Write);
+        Vertex* vertexBuffer = (Vertex*)m_vertexBuffer->writableData(0, vertexCount * sizeof(Vertex));
         uint16_t* indexBuffer = (uint16_t*)m_indexBuffer->map(MapMode::Write);
         MeshGeneraterBuffer buffer(m_linearAllocator);
         size_t vertexOffset = 0;

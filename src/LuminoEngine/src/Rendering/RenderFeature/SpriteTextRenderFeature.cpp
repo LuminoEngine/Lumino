@@ -276,7 +276,7 @@ void SpriteTextRenderFeature::endLayout(GraphicsContext* context)
 	size_t dataCount = m_glyphLayoutDataList.size();
 	prepareBuffers(context, spriteCount + dataCount);
 
-	m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
+	m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->writableData());
 
 	Vector2 posOffset;
 	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D) {

@@ -144,7 +144,7 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 		m_indexBuffer = makeObject<IndexBuffer>(m_indexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
 	}
 
-	Vertex* vtx_dst = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
+	Vertex* vtx_dst = static_cast<Vertex*>(m_vertexBuffer->writableData(0, draw_data->TotalVtxCount * sizeof(Vertex)));
 	ImDrawIdx* idx_dst = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));
 	int global_vtx_offset2 = 0;
 	for (int n = 0; n < draw_data->CmdListsCount; n++)

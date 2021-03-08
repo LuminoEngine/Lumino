@@ -91,7 +91,7 @@ void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
         // Constant buffer (`b` register)
         for (int i = 0; i < layout.ps_CBV_Count(); i++) {
             //const ShaderDescriptorBufferView& view = data.uniforms[layout.psDescriptors.bufferDescriptors[i].itemIndex];
-            const ShaderDescriptorTableUpdateItem& item = data.uniforms[layout.vsDescriptors.bufferDescriptors[i].itemIndex];
+            const ShaderDescriptorTableUpdateItem& item = data.uniforms[layout.psDescriptors.bufferDescriptors[i].itemIndex];
             if (DX12UniformBuffer* buffer = static_cast<DX12UniformBuffer*>(item.object)) {
                 D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
                 desc.BufferLocation = buffer->dxResource()->GetGPUVirtualAddress() + item.offset;
@@ -106,7 +106,7 @@ void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
         // Texture (`t` register)
         for (int i = 0; i < layout.ps_SRV_Count(); i++) {
             //const ShaderDescriptorCombinedSampler& view = data.textures[layout.psDescriptors.textureDescriptors[i].itemIndex];
-            const ShaderDescriptorTableUpdateItem& item = data.resources[layout.vsDescriptors.bufferDescriptors[i].itemIndex];
+            const ShaderDescriptorTableUpdateItem& item = data.resources[layout.psDescriptors.textureDescriptors[i].itemIndex];
             if (DX12Texture* texture = static_cast<DX12Texture*>(item.object)) {
                 D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
                 desc.Format = texture->dxFormat();
@@ -126,7 +126,7 @@ void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
         // SamplerState (`s` register)
         for (int i = 0; i < layout.ps_Sampler_Count(); i++) {
             //const ShaderDescriptorCombinedSampler& view = data.samplers[layout.psDescriptors.samplerDescriptors[i].itemIndex];
-            const ShaderDescriptorTableUpdateItem& item = data.samplers[layout.vsDescriptors.bufferDescriptors[i].itemIndex];
+            const ShaderDescriptorTableUpdateItem& item = data.samplers[layout.psDescriptors.samplerDescriptors[i].itemIndex];
             if (DX12SamplerState* stamplerState = static_cast<DX12SamplerState*>(item.stamplerState)) {
                 dxDevice->CreateSampler(&stamplerState->samplerDesc(), m_descriptorHandles2[DescriptorParamIndex_PS_Sampler].cpuHandles[i]);
             }

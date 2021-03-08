@@ -3,6 +3,7 @@
 #include "GraphicsManager.hpp"
 #include "RHIs/GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 
 namespace ln {
@@ -243,6 +244,7 @@ detail::RHIResource* IndexBuffer::resolveRHIObject(GraphicsContext* context, boo
                     IndexBuffer_setSubData, context, detail::ICommandList*, commandList, detail::RenderBulkData, data, Ref<detail::RHIResource>, rhiObject, {
 						commandList->setSubData(rhiObject, 0, data.data(), data.size());
                     });
+                context->commandList()->m_vertexBufferDataTransferredSize += data.size();
             }
         }
     }

@@ -7,6 +7,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
@@ -327,6 +328,7 @@ detail::RHIResource* Texture2D::resolveRHIObject(GraphicsContext* context, bool*
                     {
 						commandList->setSubData2D(rhiObject, 0, 0, bmpSize.width, bmpSize.height, bmpRawData.data(), bmpRawData.size());
                     });
+                context->commandList()->m_vertexBufferDataTransferredSize += bmpRawData.size();
             }
         }
     }

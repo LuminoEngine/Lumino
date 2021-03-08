@@ -52,6 +52,9 @@ void GraphicsCommandList::reset()
     m_usingDescriptorPools.clear();
 
     m_drawCall = 0;
+    m_vertexBufferDataTransferredSize = 0;
+    m_indexBufferDataTransferredSize = 0;
+    m_textureDataTransferredSize = 0;
 }
 
 detail::ConstantBufferView GraphicsCommandList::allocateUniformBuffer(size_t size)

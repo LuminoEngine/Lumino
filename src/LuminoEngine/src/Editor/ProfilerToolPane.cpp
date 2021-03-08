@@ -189,10 +189,17 @@ void ProfilerToolPane::onGui()
 		addTextValue("RenderPass", profiler->renderPassCount());
 		addTextValue("RenderTarget(Cache)", manager->renderTargetTextureCacheManager()->count());
 		addTextValue("DepthBuffer(Cache)", manager->depthBufferCacheManager()->count());
-
-		
-
 		ImGui::Columns(1);
+
+		{
+			GraphicsCommandList* commandList = graphicsContext->commandList();
+			ImGui::Text("Transferred data size:");
+			ImGui::Columns(2);
+			addTextValue("VertexBuffer", commandList->m_vertexBufferDataTransferredSize);
+			addTextValue("IndexBuffer", commandList->m_indexBufferDataTransferredSize);
+			addTextValue("Texture2D", commandList->m_textureDataTransferredSize);
+			ImGui::Columns(1);
+		}
 	}
 }
 

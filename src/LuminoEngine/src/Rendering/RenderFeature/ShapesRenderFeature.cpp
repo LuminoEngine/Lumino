@@ -285,7 +285,7 @@ RequestBatchResult ShapesRenderFeature::requestDrawCommandList(GraphicsContext* 
 			m_indexUsedCount += m_indexCache.getCount();
 
 
-			auto vb = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
+			auto vb = static_cast<Vertex*>(m_vertexBuffer->writableData());
 			memcpy(vb + m_vertexUsedCount, m_vertexCache.getBuffer(), m_vertexCache.getCount() * sizeof(Vertex));
 			m_vertexUsedCount += m_vertexCache.getCount();
 
@@ -3465,7 +3465,7 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(ShapesRendererCo
 			}
 
 
-			auto vb = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
+			auto vb = static_cast<Vertex*>(m_vertexBuffer->writableData());
 			auto ib = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));
 			m_shapeBuilder.writeToBuffer(vb + m_vertexUsedCount, ib + m_indexUsedCount, m_indexUsedCount);
 
@@ -3549,7 +3549,7 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(BoxElementShapeC
                 }
 
 
-                auto vb = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
+                auto vb = static_cast<Vertex*>(m_vertexBuffer->writableData());
                 auto ib = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));
                 m_shapeBuilder.writeToBuffer(vb + m_vertexUsedCount, ib + m_indexUsedCount, m_vertexUsedCount);
 

@@ -123,17 +123,24 @@ enum class SceneClearMode
 // SceneRenderer 内の各 RenderPass は、さらに小項目を RenderDrawElementTypeFlags で識別し、描画するかどうかを決定する。
 enum class RenderPart
 {
+	// シーンのメインコンテンツ。
+	// Projection が 3D か 2D(デバイス非依存ピクセル2D座標系) かは RenderView に依る。
 	// 通常のオブジェクトの他、BackgroundSky, LightDisc もこれに含まれる。
     Geometry = 0,
 
+	// シーンのサブコンテンツ。
+	// Projection が 3D か 2D かは RenderView に依る。
 	// Geometry のライティングに関係せず、前面に描画されるもの。
+	// 主に 3D 空間内のデバッグ描画に使用する。
     Gizmo,
 
 	// スクリーン全体にオーバーレイ描画されるもの。Zソートなど一部の不要な工程が省略される。
+	// Projection は ClipSpace. つまり、座標変換を行わない。
     PostEffect,
 
 
-	// (デバイス非依存ピクセル2D座標系)
+	// デバイス非依存ピクセル2D座標系
+	// 主に3Dオブジェクトにオーバーレイ表示する2Dの描画(ネームプレートなど)に使用する。
 	Gizmo2D,
 
 

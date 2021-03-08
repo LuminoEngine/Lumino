@@ -554,9 +554,8 @@ void InstancedMeshList::commitRenderData(MeshSection2* outSection, VertexLayout*
 			m_instanceBuffer = makeObject<VertexBuffer>(m_instanceCount * sizeof(InstanceData), GraphicsResourceUsage::Dynamic);
 		}
 
-		void* data = m_instanceBuffer->map(MapMode::Write);
+		void* data = m_instanceBuffer->writableData();
 		memcpy(data, m_instanceData.data(), m_instanceCount * sizeof(InstanceData));
-		m_instanceBuffer->unmap();
 
 		m_dirty = false;
 	}
