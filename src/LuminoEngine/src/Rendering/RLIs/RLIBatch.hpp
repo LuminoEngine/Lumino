@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../RenderStage.hpp"
+#include "RLIBatchMaterial.hpp"
 
 namespace ln {
 namespace detail {
@@ -27,8 +28,8 @@ public:
 
 	void setWorldTransformPtr(const Matrix* value) { m_worldTransform = value; }
 	const Matrix* worldTransformPtr() const { return m_worldTransform; }
-	void setFinalMaterial(Material* value) { m_finalMaterial = value; }
-	Material* finalMaterial() const { return m_finalMaterial; }
+	void setFinalMaterial(Material* value);
+	const RLIBatchMaterial* finalMaterial() const { return &m_material; }
 	void setSubsetInfo(const SubsetInfo& value) { m_subsetInfo = value; }
 	const SubsetInfo& subsetInfo() const { return m_subsetInfo; }
 	void setRenderPass(RenderPass* value) { m_renderPass = value; }
@@ -61,7 +62,8 @@ private:
 	// Mesh (サブセット単位) などはこれに値がセットされる。
 	const Matrix* m_worldTransform;
 
-	Material* m_finalMaterial;
+	//Material* m_finalMaterial;
+	RLIBatchMaterial m_material;	// TODO: 直前の Batch と共有できるケースはあるので、ポインタにしておくのもあり
 	SubsetInfo m_subsetInfo;
 	RenderPass* m_renderPass;
 

@@ -464,7 +464,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			}
 
 			const RenderStage* stage = batch->stage();
-			Material* finalMaterial = batch->finalMaterial();
+			const RLIBatchMaterial* finalMaterial = batch->finalMaterial();
 			const SubsetInfo& subsetInfo = batch->subsetInfo();
 
 			// ステートの変わり目チェック
@@ -493,10 +493,11 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				}
 			}
 
-			if (!finalMaterial) {
+			if (!finalMaterial->material) {
 				// Shader 使わない描画 (clear)
-				RLIMaterial rm;
-				rm.mergeFrom(currentStage->geometryStageParameters, nullptr);
+				RLIBatchMaterial m1;
+				m1.mergeFrom(currentStage->geometryStageParameters, nullptr);
+				RLIMaterial rm(m1);
 				rm.applyRenderStates(graphicsContext);
 				batch->render(graphicsContext);
 			}
@@ -522,10 +523,10 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					(subsetInfo.metallicRoughnessTexture) ? ShaderTechniqueClass_Roughness::RoughnessMap : ShaderTechniqueClass_Roughness::Default,
 				};
 
-				const ShadingModel shadingModel = stage->getShadingModelFinal(finalMaterial);
+				const ShadingModel shadingModel = finalMaterial->shadingModel;
 				ShaderTechnique* tech = pass->selectShaderTechnique(
 					requester,
-					finalMaterial->shader(),
+					finalMaterial->material->shader(),
 					shadingModel);
 
 				SubsetInfo localSubsetInfo = subsetInfo;
@@ -597,12 +598,11 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 				// Commit final material
 				{
-					PbrMaterialData pbrMaterialData = finalMaterial->getPbrMaterialData();
+					PbrMaterialData pbrMaterialData = finalMaterial->material->getPbrMaterialData();
 					semanticsManager->updateSubsetVariables_PBR(descriptor, pbrMaterialData);
-					finalMaterial->updateShaderVariables(commandList, descriptor);
+					finalMaterial->material->updateShaderVariables(commandList, descriptor);
 
-					RLIMaterial rm;
-					rm.mergeFrom(currentStage->geometryStageParameters, finalMaterial);
+					RLIMaterial rm(*finalMaterial);
 					pass->overrideFinalMaterial(&rm);
 					rm.applyRenderStates(graphicsContext);
 

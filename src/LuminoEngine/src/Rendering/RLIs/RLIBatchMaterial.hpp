@@ -21,6 +21,9 @@ public:
 	RLIBatchMaterial();
 	void reset();
 	bool equals(const RLIBatchMaterial* other) const;
+
+	// TODO: 移行用一時処理
+	void mergeFrom(const GeometryStageParameters* geometoryParams, Material* finalMaterial);
 };
 
 } // namespace detail

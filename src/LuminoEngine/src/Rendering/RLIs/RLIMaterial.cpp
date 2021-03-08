@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include "RLIBatchMaterial.hpp"
 #include "RLIMaterial.hpp"
 
 namespace ln {
@@ -10,6 +11,17 @@ namespace detail {
 RLIMaterial::RLIMaterial()
 {
 	reset();
+}
+
+RLIMaterial::RLIMaterial(const RLIBatchMaterial& src)
+	: material(src.material)
+	, blendMode(src.blendMode)
+	, cullingMode(src.cullingMode)
+	, depthTestEnabled(src.depthTestEnabled)
+	, depthWriteEnabled(src.depthWriteEnabled)
+	, shadingModel(src.shadingModel)
+	, primitiveTopology(src.primitiveTopology)
+{
 }
 
 void RLIMaterial::reset()
@@ -133,73 +145,6 @@ void RLIMaterial::makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state)
 	default:
 		assert(0);
 		break;
-	}
-}
-
-void RLIMaterial::mergeFrom(const GeometryStageParameters* geometoryParams, Material* finalMaterial)
-{
-	assert(geometoryParams);
-
-	material = finalMaterial;
-
-	// BlendState
-	{
-		if (finalMaterial && finalMaterial->getBlendMode().hasValue())
-			blendMode = finalMaterial->getBlendMode().value();
-		// specified context->setXXXX() or meshObj->setXXXX()
-		else if (geometoryParams->m_blendMode.hasValue())
-			blendMode = geometoryParams->m_blendMode.value();
-		// default
-		else
-			blendMode = BlendMode::Normal;
-	}
-	// RasterizerState
-	{
-		if (finalMaterial && finalMaterial->getCullingMode().hasValue())
-			cullingMode = finalMaterial->getCullingMode().value();
-		// specified context->setXXXX() or meshObj->setXXXX()
-		else if (geometoryParams->m_cullingMode.hasValue())
-			cullingMode = geometoryParams->m_cullingMode.value();
-		// default
-		else
-			cullingMode = CullMode::Back;
-	}
-	// DepthStencilState
-	{
-		if (finalMaterial && finalMaterial->isDepthTestEnabled().hasValue())
-			depthTestEnabled = (finalMaterial->isDepthTestEnabled().value());// ? ComparisonFunc::LessEqual : ComparisonFunc::Always;
-		// specified context->setXXXX() or meshObj->setXXXX()
-		else if (geometoryParams->m_depthTestEnabled.hasValue())
-			depthTestEnabled = (geometoryParams->m_depthTestEnabled.value());// ? ComparisonFunc::LessEqual : ComparisonFunc::Always;
-		// default
-		else
-			depthTestEnabled = true;// ComparisonFunc::LessEqual;
-
-
-	}
-	{
-		if (finalMaterial && finalMaterial->isDepthWriteEnabled().hasValue())
-			depthWriteEnabled = finalMaterial->isDepthWriteEnabled().value();
-		// specified context->setXXXX() or meshObj->setXXXX()
-		else if (geometoryParams->m_depthWriteEnabled.hasValue())
-			depthWriteEnabled = geometoryParams->m_depthWriteEnabled.value();
-		// default
-		else
-			depthWriteEnabled = true;
-	}
-	{
-		// specified meshObj->setXXXX()
-		if (geometoryParams && geometoryParams->shadingModel.hasValue())
-			shadingModel = geometoryParams->shadingModel.value();
-		// specified meshObj->getMaterial(0)->setXXXX() etc...
-		if (finalMaterial)
-			shadingModel = finalMaterial->shadingModel();
-		else
-			shadingModel = ShadingModel::Default;
-	}
-	// Topology
-	{
-		primitiveTopology = geometoryParams->primitiveTopology;
 	}
 }
 

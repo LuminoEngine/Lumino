@@ -27,6 +27,11 @@ void RenderFeatureBatch::render(GraphicsContext* context)
 	m_owner->renderBatch(context, this);
 }
 
+void RenderFeatureBatch::setFinalMaterial(Material* value)
+{
+	assert(m_stage);
+	m_material.mergeFrom(m_stage->geometryStageParameters, value);
+}
 
 } // namespace detail
 } // namespace ln
