@@ -200,7 +200,7 @@ public:
 
 
 
-	CommandList* getCommandList(RenderPart index1, detail::ProjectionKind index2);
+	CommandList* getCommandList(RenderPart index);
 
 
 

@@ -46,7 +46,6 @@ public:
         RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
         const RenderView* renderView,
-        detail::ProjectionKind primaryProjection,
         detail::DrawElementList* elementList,
         detail::CommandListServer* commandListServer,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
@@ -112,7 +111,6 @@ public:
         RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
 		const RenderView* renderView,
-        detail::ProjectionKind primaryProjection,
         detail::DrawElementList* elementList,
         detail::CommandListServer* commandListServer);
 

@@ -32,7 +32,7 @@ TEST_F(Test_Rendering_RenderingContext, RenderTargetCrossDrawing)
 
     element1->render = [&](UIRenderingContext* context)
     {
-        CommandList* commandList = context->getCommandList(RenderPart::PostEffect, detail::ProjectionKind::ClipScreen);
+        CommandList* commandList = context->getCommandList(RenderPart::PostEffect);
         commandList->blit(mat1, tex2);
         commandList->blit(mat2, tex3);	// corss-drawing
         commandList->blit(mat3, tex2);	// corss-drawing

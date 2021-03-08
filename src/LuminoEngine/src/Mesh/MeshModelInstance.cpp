@@ -120,16 +120,32 @@ void MorphInstance::updatePriorityTargets()
 	}
 }
 
-void MorphInstance::getMorphWeights(std::array<float, MaxRenderMorphTargets>* outMorphWeights) const
+bool MorphInstance::getMorphWeights(std::array<float, MaxRenderMorphTargets>* outMorphWeights) const
 {
+	bool hasAnyWeight = false;
+
 	for (size_t i = 0; i < outMorphWeights->size(); i++) {
+		float weight = 0.0f;
 		if (m_priorityTargets[i] >= 0) {
-			(*outMorphWeights)[i] = m_weights[m_priorityTargets[i]];
+			weight = m_weights[m_priorityTargets[i]];
+		}
+
+		if (weight > 0.0f) {
+			hasAnyWeight = true;
+		}
+
+		(*outMorphWeights)[i] = weight;
+
+		
+		if (m_priorityTargets[i] >= 0) {
+			
 		}
 		else {
 			(*outMorphWeights)[i] = 0.0f;
 		}
 	}
+
+	return hasAnyWeight;
 }
 
 //==============================================================================

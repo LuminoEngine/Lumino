@@ -51,29 +51,32 @@ void RenderView::init()
 
 void RenderView::makeViewProjections(const detail::CameraInfo& base, float dpiScale)
 {
-	auto* info = &m_viewProjections[static_cast<int>(detail::ProjectionKind::ViewProjection3D)];
+	auto* info = &m_viewProjections[static_cast<int>(RenderPart::Geometry)];
 	*info = base;
 
-	info = &m_viewProjections[static_cast<int>(detail::ProjectionKind::ClipScreen)];
+	info = &m_viewProjections[static_cast<int>(RenderPart::Gizmo)];
+	*info = base;
+
+	info = &m_viewProjections[static_cast<int>(RenderPart::PostEffect)];
 	info->makeUnproject(base.viewPixelSize);
 
-	info = &m_viewProjections[static_cast<int>(detail::ProjectionKind::Physical2D)];
-	info->viewPixelSize = base.viewPixelSize;
-	info->viewPosition = Vector3::Zero;
-	info->viewDirection = Vector3::UnitZ;
-#ifdef LN_COORD_RH
-	info->viewMatrix = Matrix::makeLookAtRH(Vector3::Zero, -Vector3::UnitZ, Vector3::UnitY);
-	info->projMatrix = Matrix::makePerspective2DRH(base.viewPixelSize.width, base.viewPixelSize.height, 0, 1000);
-#else
-	info->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
-	info->projMatrix = Matrix::makePerspective2DLH(base.viewPixelSize.width, base.viewPixelSize.height, 0, 1000);
-#endif
-	info->viewProjMatrix = info->viewMatrix * info->projMatrix;
-	info->viewFrustum = ViewFrustum(info->viewProjMatrix);
-	info->nearClip = 0;
-	info->farClip = 1000;
+//	info = &m_viewProjections[static_cast<int>(detail::ProjectionKind::Physical2D)];
+//	info->viewPixelSize = base.viewPixelSize;
+//	info->viewPosition = Vector3::Zero;
+//	info->viewDirection = Vector3::UnitZ;
+//#ifdef LN_COORD_RH
+//	info->viewMatrix = Matrix::makeLookAtRH(Vector3::Zero, -Vector3::UnitZ, Vector3::UnitY);
+//	info->projMatrix = Matrix::makePerspective2DRH(base.viewPixelSize.width, base.viewPixelSize.height, 0, 1000);
+//#else
+//	info->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+//	info->projMatrix = Matrix::makePerspective2DLH(base.viewPixelSize.width, base.viewPixelSize.height, 0, 1000);
+//#endif
+//	info->viewProjMatrix = info->viewMatrix * info->projMatrix;
+//	info->viewFrustum = ViewFrustum(info->viewProjMatrix);
+//	info->nearClip = 0;
+//	info->farClip = 1000;
 
-	info = &m_viewProjections[static_cast<int>(detail::ProjectionKind::Independent2D)];
+	info = &m_viewProjections[static_cast<int>(RenderPart::Gizmo2D)];
 	info->viewPixelSize = base.viewPixelSize;
 	info->viewPosition = Vector3::Zero;
 	info->viewDirection = Vector3::UnitZ;
@@ -95,7 +98,7 @@ void RenderView::makeViewProjections(const detail::CameraInfo& base, float dpiSc
 	//printf("");
 }
 
-Vector3 RenderView::transformProjection(const Vector3& pos, detail::ProjectionKind from, detail::ProjectionKind to) const
+Vector3 RenderView::transformProjection(const Vector3& pos, RenderPart from, RenderPart to) const
 {
 	const auto fromView = m_viewProjections[static_cast<int>(from)];
 	const auto clipPos = Vector3::transformCoord(pos, fromView.viewProjMatrix);

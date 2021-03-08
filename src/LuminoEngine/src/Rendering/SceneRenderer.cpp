@@ -125,7 +125,6 @@ void SceneRenderer::prepare(
 	//detail::CommandListServer* commandListServer,
 	const detail::RenderViewInfo& mainRenderViewInfo,
 	RenderPart targetPhase,
-	ProjectionKind targetProjection,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
 	m_renderingPipeline = renderingPipeline;
@@ -133,7 +132,6 @@ void SceneRenderer::prepare(
     m_mainRenderViewInfo = mainRenderViewInfo;
 	m_sceneGlobalRenderParams = sceneGlobalParams;
 	m_currentPart = targetPhase;
-	m_currentProjection = targetProjection;
 
 	m_renderingElementList.clear();
 	collect(renderingPipeline, m_mainRenderViewInfo.cameraInfo, targetPhase);
@@ -660,7 +658,7 @@ void SceneRenderer::collect(RenderingPipeline* renderingPipeline,/*SceneRenderer
 
 #if 1
 	m_renderingPipeline->commandListServer()->enumerateDrawElements(
-		m_currentPart, m_currentProjection,
+		m_currentPart,
 		[this](RenderDrawElement* element) {
 
 #if 0		// TODO: 視錘台カリング

@@ -327,9 +327,9 @@ Size RenderingContext::measureTextSize(Font* font, uint32_t codePoint) const
 	return font->measureRenderSize(codePoint, viewPoint()->dpiScale);
 }
 
-CommandList* RenderingContext::getCommandList(RenderPart index1, detail::ProjectionKind index2)
+CommandList* RenderingContext::getCommandList(RenderPart index1)
 {
-	return m_listServer->acquirePrimaryList(index1, index2);
+	return m_listServer->acquirePrimaryList(index1);
 }
 
 RenderViewPoint* RenderingContext::viewPoint() const

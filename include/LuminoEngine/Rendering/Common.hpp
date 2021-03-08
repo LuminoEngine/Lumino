@@ -277,13 +277,13 @@ enum class SpriteFlipFlags : uint8_t
 };
 LN_FLAGS_OPERATORS(SpriteFlipFlags);
 
-enum class ProjectionKind
-{
-	ViewProjection3D,	// 通常の 3D 空間に配置されたモデルに適用する View-Proj
-	ClipScreen,			// ClipSpace に配置されたモデルに適用する View-Proj。 つまり、変換無し。ポストエフェクト用の Blit で使う。
-	Physical2D,			// レンダーターゲットの px サイズと一致する 2D 空間に配置されたモデルに適用する View-Proj。
-	Independent2D,		// Device-Independent Pixel (dp) で表される 2D 空間に配置されたモデルに適用する View-Proj
-};
+//enum class ProjectionKind
+//{
+//	ViewProjection3D,	// 通常の 3D 空間に配置されたモデルに適用する View-Proj
+//	ClipScreen,			// ClipSpace に配置されたモデルに適用する View-Proj。 つまり、変換無し。ポストエフェクト用の Blit で使う。
+//	Physical2D,			// レンダーターゲットの px サイズと一致する 2D 空間に配置されたモデルに適用する View-Proj。
+//	Independent2D,		// Device-Independent Pixel (dp) で表される 2D 空間に配置されたモデルに適用する View-Proj
+//};
 
 struct DynamicLightInfo
 {

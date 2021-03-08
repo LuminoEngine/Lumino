@@ -412,7 +412,7 @@ namespace detail {
 
 WorldSceneGraphRenderingContext::WorldSceneGraphRenderingContext()
 {
-    m_commandList = m_listServer->acquirePrimaryList(RenderPart::Geometry, detail::ProjectionKind::ViewProjection3D);
+    m_commandList = m_listServer->acquirePrimaryList(RenderPart::Geometry);
 }
 
 void WorldSceneGraphRenderingContext::resetForBeginRendering()

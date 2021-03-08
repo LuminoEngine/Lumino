@@ -93,7 +93,6 @@ public:
 		//detail::CommandListServer* commandListServer,
 		const detail::RenderViewInfo& mainRenderViewInfo,
 		RenderPart targetPhase,
-		ProjectionKind targetProjection,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
 	void renderPass(
@@ -147,7 +146,6 @@ private:
 	RenderingContext* m_renderingContext;
 	const detail::SceneGlobalRenderParams* m_sceneGlobalRenderParams;
 	RenderPart m_currentPart;
-	ProjectionKind m_currentProjection;
 
 	//const FrameBuffer* m_defaultFrameBuffer;
 	ZSortDistanceBase m_zSortDistanceBase;

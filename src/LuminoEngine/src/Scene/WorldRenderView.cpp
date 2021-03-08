@@ -422,7 +422,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         RenderTargetTexture* actualTarget = (m_hdrRenderTarget) ? m_hdrRenderTarget.get() : renderTarget;
         m_sceneRenderingPipeline->render(
             graphicsContext, m_targetWorld->m_renderingContext,
-            actualTarget, clearInfo, this, detail::ProjectionKind::ViewProjection3D,
+            actualTarget, clearInfo, this,
             m_targetWorld->m_renderingContext->commandList()->elementList(),
             m_targetWorld->m_renderingContext->commandListServer(),
             &sceneGlobalRenderParams);
@@ -532,7 +532,7 @@ void WorldRenderView::renderGridPlane(RenderingContext* renderingContext, Render
         //renderingContext->drawLine(Vector3(0, 0, 0), Color::Red, Vector3(-1, 1, 1), Color::Red);
         //renderingContext->popState();
 
-        CommandList* commandList = renderingContext->getCommandList(RenderPart::Gizmo, detail::ProjectionKind::ViewProjection3D);
+        CommandList* commandList = renderingContext->getCommandList(RenderPart::Gizmo);
 
         commandList->pushState();
 
