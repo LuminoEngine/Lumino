@@ -6,7 +6,7 @@
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../../Graphics/RHIs/GraphicsDeviceContext.hpp"
-#include "../RenderStage.hpp"
+#include "../RLIs/RLIBatchList.hpp"
 
 namespace ln {
 class VertexBuffer;

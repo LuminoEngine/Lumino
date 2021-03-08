@@ -3,6 +3,7 @@
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../RenderElement.hpp"
 #include "../RenderingManager.hpp"
+#include "../RLIs/RLIBatchList.hpp"
 
 namespace ln {
 namespace detail {

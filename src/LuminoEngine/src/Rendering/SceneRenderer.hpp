@@ -5,6 +5,7 @@
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include "RLIs/Common.hpp"
+#include "RLIs/RLIBatchList.hpp"
 
 namespace ln {
 class Material;

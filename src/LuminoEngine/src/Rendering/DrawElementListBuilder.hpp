@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "RenderStage.hpp"
 #include "RenderFeature/BlitRenderFeature.hpp"
+#include "RenderFeature/ClearRenderFeature.hpp"
 #include "RenderFeature/SpriteRenderFeature.hpp"
 #include "RenderFeature/MeshRenderFeature.hpp"
 #include "RenderFeature/PrimitiveRenderFeature.hpp"

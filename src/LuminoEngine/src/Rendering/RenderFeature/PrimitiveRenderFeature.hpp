@@ -2,7 +2,7 @@
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../../Graphics/GraphicsManager.hpp"
 #include "../../Mesh/MeshGenerater.hpp"
-#include "../RenderStage.hpp"
+#include "../RLIs/RLIBatchList.hpp"
 #include "../RenderingManager.hpp"
 
 namespace ln {
