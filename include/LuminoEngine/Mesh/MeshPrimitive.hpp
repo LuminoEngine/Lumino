@@ -247,7 +247,7 @@ private:
 	struct VertexBufferEntry
 	{
 		Ref<VertexBuffer> buffer;
-		void* mappedBuffer = nullptr;
+		void* mappedBuffer = nullptr;	// TODO: 不要かも
 
 		void reset();
 	};
@@ -255,7 +255,7 @@ private:
 	struct IndexBufferEntry
 	{
 		Ref<IndexBuffer> buffer;
-		void* mappedBuffer = nullptr;
+		void* mappedBuffer = nullptr;	// TODO: 不要かも
 
 		void reset();
 	};

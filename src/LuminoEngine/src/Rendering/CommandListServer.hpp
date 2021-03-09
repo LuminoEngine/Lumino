@@ -10,31 +10,23 @@ class CommandListServer
 	: public RefObject
 {
 public:
-	struct Layer
-	{
-		Ref<CommandList> primaryList;
-		//std::vector<Ref<DrawElementList>> additionalList;
-	};
-
 	struct Part
 	{
-		std::array<Layer, 4> layers;
+		Ref<CommandList> primaryList;
 	};
 
-	CommandList* acquirePrimaryList(RenderPart index1, ProjectionKind index2);
-	CommandList* getPrimaryList(RenderPart index1, ProjectionKind index2) const;
+	CommandList* acquirePrimaryList(RenderPart index1);
+	CommandList* getPrimaryList(RenderPart index1) const;
 	void clearCommandsAndState();
 
 
-	const Layer* getLayer(RenderPart index1, ProjectionKind index2) const;
 
 	template<class TCallback>
-	inline void enumerateDrawElements(RenderPart index1, ProjectionKind index2, TCallback callback) const
+	inline void enumerateDrawElements(RenderPart index1, TCallback callback) const
 	{
 		const Part& part = m_parts[static_cast<int>(index1)];
-		const Layer& layer = part.layers[static_cast<int>(index2)];
-		if (layer.primaryList) {
-			const auto& list = layer.primaryList->elementList();
+		if (part.primaryList) {
+			const auto& list = part.primaryList->elementList();
 			RenderDrawElement* element = list->headElement();
 			while (element) {
 				callback(element);
@@ -45,7 +37,6 @@ public:
 	}
 
 private:
-
 	std::array<Part, 4> m_parts;
 };
 

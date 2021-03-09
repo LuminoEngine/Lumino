@@ -53,7 +53,7 @@ public:
 	const std::array<int, MaxRenderMorphTargets> priorityTargets() const { return m_priorityTargets; }
 
 	void updatePriorityTargets();
-	void getMorphWeights(std::array<float, MaxRenderMorphTargets>* outMorphWeights) const;
+	bool getMorphWeights(std::array<float, MaxRenderMorphTargets>* outMorphWeights) const;
 
 	Ref<VertexBuffer> m_blendResult;
 

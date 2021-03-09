@@ -4,6 +4,7 @@
 #include <LuminoEngine/Graphics/Common.hpp>
 
 #define LN_BOX_ELEMENT_RENDER_FEATURE_TEST 1
+#define LN_RLI_BATCH 1
 
 namespace ln {
 class Font;
@@ -123,17 +124,24 @@ enum class SceneClearMode
 // SceneRenderer 内の各 RenderPass は、さらに小項目を RenderDrawElementTypeFlags で識別し、描画するかどうかを決定する。
 enum class RenderPart
 {
+	// シーンのメインコンテンツ。
+	// Projection が 3D か 2D(デバイス非依存ピクセル2D座標系) かは RenderView に依る。
 	// 通常のオブジェクトの他、BackgroundSky, LightDisc もこれに含まれる。
     Geometry = 0,
 
+	// シーンのサブコンテンツ。
+	// Projection が 3D か 2D かは RenderView に依る。
 	// Geometry のライティングに関係せず、前面に描画されるもの。
+	// 主に 3D 空間内のデバッグ描画に使用する。
     Gizmo,
 
 	// スクリーン全体にオーバーレイ描画されるもの。Zソートなど一部の不要な工程が省略される。
+	// Projection は ClipSpace. つまり、座標変換を行わない。
     PostEffect,
 
 
-	// (デバイス非依存ピクセル2D座標系)
+	// デバイス非依存ピクセル2D座標系
+	// 主に3Dオブジェクトにオーバーレイ表示する2Dの描画(ネームプレートなど)に使用する。
 	Gizmo2D,
 
 
@@ -245,6 +253,7 @@ class SkeletonInstance;
 class MorphInstance;
 class CommandListServer;
 class RLIMaterial;
+class RLIBatchState;
 
 enum class RenderDrawElementTypeFlags : uint8_t
 {
@@ -270,13 +279,13 @@ enum class SpriteFlipFlags : uint8_t
 };
 LN_FLAGS_OPERATORS(SpriteFlipFlags);
 
-enum class ProjectionKind
-{
-	ViewProjection3D,	// 通常の 3D 空間に配置されたモデルに適用する View-Proj
-	ClipScreen,			// ClipSpace に配置されたモデルに適用する View-Proj。 つまり、変換無し。ポストエフェクト用の Blit で使う。
-	Physical2D,			// レンダーターゲットの px サイズと一致する 2D 空間に配置されたモデルに適用する View-Proj。
-	Independent2D,		// Device-Independent Pixel (dp) で表される 2D 空間に配置されたモデルに適用する View-Proj
-};
+//enum class ProjectionKind
+//{
+//	ViewProjection3D,	// 通常の 3D 空間に配置されたモデルに適用する View-Proj
+//	ClipScreen,			// ClipSpace に配置されたモデルに適用する View-Proj。 つまり、変換無し。ポストエフェクト用の Blit で使う。
+//	Physical2D,			// レンダーターゲットの px サイズと一致する 2D 空間に配置されたモデルに適用する View-Proj。
+//	Independent2D,		// Device-Independent Pixel (dp) で表される 2D 空間に配置されたモデルに適用する View-Proj
+//};
 
 struct DynamicLightInfo
 {
@@ -446,6 +455,14 @@ struct SceneGlobalRenderParams
 
 	}
 };
+
+enum class ZSortDistanceBase
+{
+	NodeZ,					/**< ノードの Z 値を距離として使用する */
+	CameraDistance,			/**< カメラとノードの距離を使用する */
+	CameraScreenDistance,	/**< カメラが映すスクリーン平面とノードの距離を使用する */
+};
+
 
 } // namespace detail
 } // namespace ln

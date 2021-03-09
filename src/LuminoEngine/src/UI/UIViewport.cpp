@@ -213,7 +213,7 @@ void UIViewport::onRender(UIRenderingContext* context)
 	//
 
 #if 1
-	CommandList* commandList = context->getCommandList(RenderPart::Geometry, detail::ProjectionKind::Independent2D);
+	CommandList* commandList = context->getCommandList(RenderPart::Geometry);
 	Matrix t;
 	// -1~1 の rect である blit の Mesh をハックして使おうとしているので、先にスケーリングする必要がある
 	t.scale((viewSize.width * 0.5), -(viewSize.height * 0.5), 0);

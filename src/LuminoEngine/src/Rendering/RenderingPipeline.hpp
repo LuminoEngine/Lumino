@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/RenderView.hpp>
+#include "RLIs/RLICulling.hpp"
 
 namespace ln {
 class GraphicsContext;
@@ -19,7 +20,7 @@ public:
     void init();
     const SizeI& renderingFrameBufferSize() const { return m_renderingFrameBufferSize; }
     const detail::DrawElementList* elementList() const { return m_elementList; }
-    const detail::CommandListServer* commandListServer() const { return m_commandListServer; }
+    //const detail::CommandListServer* commandListServer() const { return m_commandListServer; }
 
 protected:
     //void clear(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo);
@@ -27,8 +28,9 @@ protected:
     //Ref<detail::FrameBufferCache> m_frameBufferCache;
     SizeI m_renderingFrameBufferSize;	// render() の内側だけで使える
     detail::DrawElementList* m_elementList;
-    detail::CommandListServer* m_commandListServer = nullptr;
+    //detail::CommandListServer* m_commandListServer = nullptr;
     Ref<RenderPass> m_clearRenderPass;
+    RLICulling m_cullingResult;
 };
 
 class SceneRenderingPipeline
@@ -46,7 +48,6 @@ public:
         RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
         const RenderView* renderView,
-        detail::ProjectionKind primaryProjection,
         detail::DrawElementList* elementList,
         detail::CommandListServer* commandListServer,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
@@ -112,7 +113,6 @@ public:
         RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
 		const RenderView* renderView,
-        detail::ProjectionKind primaryProjection,
         detail::DrawElementList* elementList,
         detail::CommandListServer* commandListServer);
 

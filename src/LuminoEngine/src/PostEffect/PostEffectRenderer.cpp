@@ -97,7 +97,7 @@ void PostEffectRenderer::render(RenderingContext* context, RenderTargetTexture* 
 		context->blit(m_copyMaterial, inout);
 		context->popState();
 #else
-        CommandList* commandList = context->getCommandList(RenderPart::PostEffect, ProjectionKind::ClipScreen);
+        CommandList* commandList = context->getCommandList(RenderPart::PostEffect);
 
         commandList->pushState(true);
         commandList->setDepthBuffer(nullptr);

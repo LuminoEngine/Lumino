@@ -21,6 +21,7 @@ GraphicsResourcePool::None + GraphicsResourceUsage::Static 以外はどうして
 #include "GraphicsManager.hpp"
 #include "RHIs/GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 
 namespace ln {
@@ -49,6 +50,8 @@ VertexBuffer::VertexBuffer()
     , m_mappedBuffer(nullptr)
     , m_initialUpdate(true)
     , m_modified(false)
+    , m_dirtyOffset(0)
+    , m_dirtySize(0)
 {
 }
 
@@ -110,8 +113,16 @@ const void* VertexBuffer::data() const
     return m_buffer.data();
 }
 
-void* VertexBuffer::map(MapMode mode)
+//void* VertexBuffer::map(MapMode mode)
+void* VertexBuffer::writableData(uint64_t offset, uint64_t size)
 {
+    if (offset == 0 && size == 0) {
+        size = this->size();
+    }
+
+    m_dirtyOffset = std::min(m_dirtyOffset, offset);
+    m_dirtySize = std::max(m_dirtySize, size);
+
     if (m_mappedBuffer) {
         return m_mappedBuffer;
     }
@@ -188,12 +199,20 @@ detail::RHIResource* VertexBuffer::resolveRHIObject(GraphicsContext* context, bo
                 m_rhiObject = device->createVertexBuffer(GraphicsResourceUsage::Static, m_buffer.size(), m_buffer.data());
             } else {
                 context->interruptCurrentRenderPassFromResolveRHI();
-                detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
+                //detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
+                detail::RenderBulkData data(m_buffer.data() + m_dirtyOffset, m_dirtySize);
                 detail::RHIResource* rhiObject = m_rhiObject;
-                LN_ENQUEUE_RENDER_COMMAND_3(
-                    VertexBuffer_SetSubData, context, detail::ICommandList*, commandList, detail::RenderBulkData, data, Ref<detail::RHIResource>, rhiObject, {
+                uint64_t offset = m_dirtyOffset;
+                LN_ENQUEUE_RENDER_COMMAND_4(
+                    VertexBuffer_SetSubData, context,
+                    detail::ICommandList*, commandList,
+                    detail::RenderBulkData, data,
+                    Ref<detail::RHIResource>, rhiObject,
+                    uint64_t, offset,
+                    {
 						commandList->setSubData(rhiObject, 0, data.data(), data.size());
                     });
+                context->commandList()->m_vertexBufferDataTransferredSize += data.size();
             }
         }
     }

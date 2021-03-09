@@ -1,10 +1,14 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/UI/UIColors.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Graphics/RHIs/RHIProfiler.hpp"
 #include "../Graphics/GraphicsProfiler.hpp"
 #include "../Graphics/RenderTargetTextureCache.hpp"
+#include "../Rendering/RenderingManager.hpp"
+#include "../Rendering/RenderingProfiler.hpp"
 #include "../Engine/EngineManager.hpp"
 #include "../Engine/EngineProfiler.hpp"
 #include "ProfilerToolPane.hpp"
@@ -22,6 +26,8 @@ static ImU32 toImU32(const Color& c)
 
 void ProfilerToolPane::onGui()
 {
+	UIFrameWindow* window = frameWindow();
+	GraphicsContext* graphicsContext = window->m_renderingGraphicsContext;
 
 	//
 
@@ -79,7 +85,7 @@ void ProfilerToolPane::onGui()
 		ImGui::Dummy(ImVec2(0, HEIGHT + TOTAL_HEIGHT));
 
 		{
-			ImGui::Columns(3);
+			//ImGui::Columns(3);
 
 			ImGui::PushStyleColor(ImGuiCol_Text, updatingC);
 			ImGui::Bullet();
@@ -90,7 +96,7 @@ void ProfilerToolPane::onGui()
 			ImGui::PushStyleColor(ImGuiCol_Text, renderingC);
 			ImGui::Bullet();
 			ImGui::PopStyleColor();
-			ImGui::Text("Render");
+			ImGui::Text("Render: %.3f", profiler->renderingTime());
 			ImGui::NextColumn();
 
 			ImGui::PushStyleColor(ImGuiCol_Text, totalC);
@@ -99,9 +105,23 @@ void ProfilerToolPane::onGui()
 			ImGui::Text("Total");
 			ImGui::NextColumn();
 
-			ImGui::Columns(1);
+			//ImGui::Columns(1);
+
+
 		}
 
+		{
+			RenderingProfiler* profiler = EngineDomain::renderingManager()->profiler().get();
+			for (int i = 0; i < profiler->sceneRendererSectionCount(); i++) {
+				const auto& section = profiler->sceneRendererSection(i);
+				ImGui::Text("Render[%d:%s]: %.3f", i, section.name, section.time());
+			}
+		}
+
+		{
+
+			ImGui::Text("DrawCall: %d", graphicsContext->commandList()->m_drawCall);
+		}
 	}
 
 	char num[32];
@@ -169,10 +189,17 @@ void ProfilerToolPane::onGui()
 		addTextValue("RenderPass", profiler->renderPassCount());
 		addTextValue("RenderTarget(Cache)", manager->renderTargetTextureCacheManager()->count());
 		addTextValue("DepthBuffer(Cache)", manager->depthBufferCacheManager()->count());
-
-		
-
 		ImGui::Columns(1);
+
+		{
+			GraphicsCommandList* commandList = graphicsContext->commandList();
+			ImGui::Text("Transferred data size:");
+			ImGui::Columns(2);
+			addTextValue("VertexBuffer", commandList->m_vertexBufferDataTransferredSize);
+			addTextValue("IndexBuffer", commandList->m_indexBufferDataTransferredSize);
+			addTextValue("Texture2D", commandList->m_textureDataTransferredSize);
+			ImGui::Columns(1);
+		}
 	}
 }
 

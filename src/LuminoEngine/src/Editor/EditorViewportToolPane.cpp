@@ -6,6 +6,7 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/CameraOrbitControlComponent.hpp>
+#include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include "../Engine/EngineManager.hpp"
 #include "EditorViewportToolPane.hpp"
 
@@ -33,6 +34,7 @@ bool EditorViewportToolPane::init(UIMainWindow* mainWindow)
 
     m_renderView->setGuideGridEnabled(true);
     m_renderView->setGizmoEnabled(true);
+    m_renderView->finishingProcess()->setAntialiasEnabled(false);
 
     m_cameraOrbitControlComponent = makeObject<CameraOrbitControlComponent>();
     m_camera->addComponent(m_cameraOrbitControlComponent);

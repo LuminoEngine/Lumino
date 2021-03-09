@@ -4,7 +4,8 @@
 #include <LuminoEngine/Rendering/Common.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
-
+#include "RLIs/Common.hpp"
+#include "RLIs/RLIBatchList.hpp"
 
 namespace ln {
 class Material;
@@ -12,13 +13,6 @@ namespace detail {
 class RenderStage;
 class RenderDrawElement;
 class RenderingPipeline;
-
-enum class ZSortDistanceBase
-{
-	NodeZ,					/**< ノードの Z 値を距離として使用する */
-	CameraDistance,			/**< カメラとノードの距離を使用する */
-	CameraScreenDistance,	/**< カメラが映すスクリーン平面とノードの距離を使用する */
-};
 
 struct ShaderTechniqueRequestClasses
 {
@@ -93,8 +87,8 @@ public:
 		//detail::CommandListServer* commandListServer,
 		const detail::RenderViewInfo& mainRenderViewInfo,
 		RenderPart targetPhase,
-		ProjectionKind targetProjection,
-		const detail::SceneGlobalRenderParams* sceneGlobalParams);
+		const detail::SceneGlobalRenderParams* sceneGlobalParams,
+		const RLICulling* culling);
 
 	void renderPass(
 		GraphicsContext* graphicsContext,
@@ -137,7 +131,7 @@ public:	// TODO
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
 private:
-	void buildBatchList(GraphicsContext* graphicsContext);
+	void buildBatchList(GraphicsContext* graphicsContext, const RLICulling* culling);
 
 	detail::RenderingManager* m_manager;
 	//List<Ref<SceneRendererPass>> m_renderingPassList;
@@ -147,10 +141,8 @@ private:
 	RenderingContext* m_renderingContext;
 	const detail::SceneGlobalRenderParams* m_sceneGlobalRenderParams;
 	RenderPart m_currentPart;
-	ProjectionKind m_currentProjection;
 
 	//const FrameBuffer* m_defaultFrameBuffer;
-	ZSortDistanceBase m_zSortDistanceBase;
 	//Ref<Material> m_defaultMaterial;
 	//Ref<RenderPass> m_renderPass;
 	List<Ref<RenderPass>> m_renderPassPool;
@@ -165,7 +157,7 @@ private:
     //RenderPart m_targetPhase;
 
 	// build by collect().
-	List<RenderDrawElement*> m_renderingElementList;
+	//List<RenderDrawElement*> m_renderingElementList;
 
 	//List<SceneRendererPass*>	m_renderingActualPassList;
 

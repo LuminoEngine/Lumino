@@ -37,10 +37,12 @@ public:
 
     const void* data() const;
 
-    /** 頂点バッファが保持するデータにアクセスします。このバッファが次の描画に使用されるとき、自動的に unmap されます。  */
-    void* map(MapMode mode);
+ //   /** 頂点バッファが保持するデータにアクセスします。このバッファが次の描画に使用されるとき、自動的に unmap されます。  */
+ //   void* map(MapMode mode);
 
-	void unmap() {}	// TODO: 直接転送
+	//void unmap() {}	// TODO: 直接転送
+
+    void* writableData(uint64_t lockOffset = 0, uint64_t lockSize = 0);
 
     /** 頂点バッファをクリアします。 */
     void clear();
@@ -83,6 +85,9 @@ private:
     void* m_mappedBuffer;
     bool m_initialUpdate;
     bool m_modified;
+
+    uint64_t m_dirtyOffset;
+    uint64_t m_dirtySize;
 
     friend class detail::GraphicsResourceInternal;
 };

@@ -157,7 +157,7 @@ void MeshComponent::onRender(RenderingContext* context)
 
 void MeshComponent::onRenderGizmo(RenderingContext* context)
 {
-    CommandList* commandList = context->getCommandList(ln::RenderPart::Gizmo, ln::detail::ProjectionKind::ViewProjection3D);
+    CommandList* commandList = context->getCommandList(ln::RenderPart::Gizmo);
 
     const auto p = m_model->boundingBox().getCorners();
     Vector3 lines[] = {

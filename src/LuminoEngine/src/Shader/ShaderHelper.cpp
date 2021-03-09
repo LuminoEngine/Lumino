@@ -420,7 +420,7 @@ const void* ShaderValueDeserializer::readValue(size_t* outSize, ShaderVariableTy
     //	}
     //	case ShaderVariableType::DeviceTexture:
     //	case ShaderVariableType::ManagedTexture:
-    //		variable->setTexture((Driver::ITexture*)m_reader.readUInt64());
+    //		variable->setTexture((Driver::RHIResource*)m_reader.readUInt64());
     //		break;
     //	default:
     //		LN_UNREACHABLE();

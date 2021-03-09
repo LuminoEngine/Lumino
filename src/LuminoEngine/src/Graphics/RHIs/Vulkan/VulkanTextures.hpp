@@ -7,7 +7,7 @@ namespace detail {
 class VulkanGraphicsContext;
     
 class VulkanTexture
-    : public ITexture
+    : public RHIResource
 {
 public:
     virtual const VulkanImage* image() const = 0;
@@ -28,7 +28,6 @@ public:
     RHIRef<RHIBitmap> readData() override { LN_UNREACHABLE(); return nullptr;  }
     void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override { LN_UNREACHABLE(); }
-    bool isMultisample() const override { return false; }
 
     virtual const VulkanImage* image() const override { return &m_image; }
 
@@ -61,7 +60,7 @@ public:
     const VulkanImage* multisampleColorBuffer() const { return m_multisampleColorBuffer.get(); }
 
     bool isSwapchainBackbuffer() const { return m_image->IsExternalManagement(); }
-    bool isMultisample() const override { return m_multisampleColorBuffer != nullptr; }
+    //bool isMultisample() const override { return m_multisampleColorBuffer != nullptr; }
     VkSampleCountFlagBits msaaSamples() const { return (isMultisample()) ? m_deviceContext->msaaSamples() : VK_SAMPLE_COUNT_1_BIT; }
     void setSwapchainImageAvailableSemaphoreRef(VkSemaphore* semaphore) { m_swapchainImageAvailableSemaphoreRef = semaphore; }
     VkSemaphore swapchainImageAvailableSemaphore() const { return (m_swapchainImageAvailableSemaphoreRef) ? *m_swapchainImageAvailableSemaphoreRef : VK_NULL_HANDLE; }

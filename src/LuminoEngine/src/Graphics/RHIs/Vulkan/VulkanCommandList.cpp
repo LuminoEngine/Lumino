@@ -276,7 +276,7 @@ void VulkanGraphicsContext::onSetSubData(RHIResource* resource, size_t offset, c
     stagingBuffer.buffer->setData(stagingBuffer.offset + offset, data, length);
 }
 
-void VulkanGraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
+void VulkanGraphicsContext::onSetSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
 	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
     m_commandBuffer->endRenderPassInRecordingIfNeeded();
@@ -284,7 +284,7 @@ void VulkanGraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int
 	static_cast<VulkanTexture*>(resource)->setSubData(this, x, y, width, height, data, dataSize);
 }
 
-void VulkanGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+void VulkanGraphicsContext::onSetSubData3D(RHIResource* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
 {
 	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
     m_commandBuffer->endRenderPassInRecordingIfNeeded();

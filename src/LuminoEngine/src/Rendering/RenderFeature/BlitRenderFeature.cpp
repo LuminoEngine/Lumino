@@ -47,21 +47,17 @@ void BlitRenderFeature::init(RenderingManager* manager)
 	m_vertexBuffer = makeObject<VertexBuffer>(sizeof(vertices), vertices, GraphicsResourceUsage::Static);
 }
 
-RequestBatchResult BlitRenderFeature::blit(detail::RenderFeatureBatchList* batchList, GraphicsContext* context)
+RequestBatchResult BlitRenderFeature::blit(RenderFeatureBatchList* batchList, const RLIBatchState& batchState)
 {
-	// blit は基本的にステート変更ごとに単発である。
-	// 複数回呼ばれるのは全く同じ描画を複数回呼び出して、例えば加算合成を重ねるようなときに使う。
-	m_requestedCount++;
-	return RequestBatchResult::Staging;
+	// blit は基本的にスクリーンコピーで使われるため、毎回 Material が異なる。
+	// 特に Batch する意味は無い。かえってオーバーヘッドが乗ってしまう。
+	batchList->addNewBatch<RenderFeatureBatch>(this, batchState);
+	return RequestBatchResult::Submitted;
 }
 
 void BlitRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
-	if (m_requestedCount > 0) {
-		auto batch = batchList->addNewBatch<Batch>(this);
-		batch->requestedCount = m_requestedCount;
-		m_requestedCount = 0;
-	}
+	LN_UNREACHABLE();
 }
 
 void BlitRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)

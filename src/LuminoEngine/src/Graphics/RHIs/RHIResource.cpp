@@ -40,7 +40,7 @@ RHIResource::~RHIResource()
 			d->profiler()->removeTexture2D(this);
 			break;
 		case RHIResourceType::RenderTarget:
-			d->renderPassCache()->invalidate(static_cast<ITexture*>(this));
+			d->renderPassCache()->invalidate(static_cast<RHIResource*>(this));
 			d->profiler()->removeRenderTarget(this);
 			break;
 		default:
@@ -125,6 +125,12 @@ void* RHIResource::map()
 void RHIResource::unmap()
 {
 	LN_UNREACHABLE();
+}
+
+RHIRef<RHIBitmap> RHIResource::readData()
+{
+	LN_UNREACHABLE();
+	return nullptr;
 }
 
 } // namespace detail

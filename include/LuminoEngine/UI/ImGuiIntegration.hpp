@@ -15,6 +15,7 @@ class RenderPass;
 class Shader;
 class ImGuiDockPane;
 class UIEventArgs;
+class UIFrameWindow;
 
 enum ImGuiDockPlacement
 {
@@ -34,7 +35,7 @@ struct PlatformEventArgs;
 class ImGuiIntegration
 {
 public:
-	bool init();
+	bool init(UIFrameWindow* frameWindow);
 	void dispose();
     void updateFrame(float elapsedSeconds);
 	void prepareRender(float width, float height);
@@ -45,7 +46,10 @@ public:
 	void updateDocks(ImGuiID mainWindowId);
 	bool handleUIEvent(UIEventArgs* e);
 
+	UIFrameWindow* frameWindow() const { return m_frameWindow; }
+
 private:
+	UIFrameWindow* m_frameWindow;
 	::ImGuiContext* m_imgui;
 	Ref<Texture2D> m_fontTexture;
 	int m_vertexBufferSize = 5000;
@@ -68,6 +72,8 @@ class ImGuiDockPane
 	: public Object
 {
 public:
+	UIFrameWindow* frameWindow() const;
+
 	void setInitialPlacement(ImGuiDockPlacement value);
 	void close();
 
@@ -82,6 +88,7 @@ LN_CONSTRUCT_ACCESS:
 private:
 	void update();
 
+	detail::ImGuiIntegration* m_imguiIntegration;
 	std::string m_key;
 	ImGuiDockPlacement m_initialPlacement;
 	//Event<UIGeneralEventHandler> m_onGui;

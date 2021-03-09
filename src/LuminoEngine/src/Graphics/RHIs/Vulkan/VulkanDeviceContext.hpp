@@ -70,16 +70,16 @@ protected:
 	Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	Ref<RHIResource> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
 	Ref<RHIResource> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
-	Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
-	Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
-	Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) override;
-    Ref<ITexture> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) override { LN_NOTIMPLEMENTED(); return nullptr; }
+	Ref<RHIResource> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
+	Ref<RHIResource> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
+	Ref<RHIResource> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) override;
+    Ref<RHIResource> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) override { LN_NOTIMPLEMENTED(); return nullptr; }
     Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
     Ref<RHIResource> onCreateUniformBuffer(uint32_t size) override;
     Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) override;
-	void onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override;
+	void onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) override;
 	ICommandQueue* getGraphicsCommandQueue() override;
 	ICommandQueue* getComputeCommandQueue() override;
 
@@ -157,7 +157,7 @@ public:
     void dispose() override;
     uint32_t getBackbufferCount() override;
     void acquireNextImage(int* outImageIndex) override;
-    ITexture* getRenderTarget(int imageIndex) const override;
+    RHIResource* getRenderTarget(int imageIndex) const override;
     Result resizeBackbuffer(uint32_t width, uint32_t height) override;
     void present() override;
 

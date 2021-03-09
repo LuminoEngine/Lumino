@@ -504,7 +504,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
                 sampler = manager->defaultSamplerState();
 
             bool modified = false;
-            updateInfo.resources[i].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
+            updateInfo.resources[i].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(graphicsContext, texture, &modified);
             updateInfo.resources[i].stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
             (*outModified) |= modified;
         }
@@ -534,7 +534,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
 
         bool modified = false;
         auto& view = updateInfo.textures[i];
-        view.texture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
+        view.texture = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(graphicsContext, texture, &modified);
         view.stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
         (*outModified) |= modified;
 #endif
@@ -548,11 +548,13 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
         }
         const auto& info = m_descriptorLayout.m_samplers[i];
         SamplerState* sampler = descripter->samplerState(info.dataIndex);
-        //if (!sampler) {
-        //    if (Texture* texture = descripter->texture(info.dataIndex)) {
-        //        sampler = texture->samplerState();
-        //    }
-        //}
+        if (!sampler) {
+            //if (Texture* texture = descripter->texture(info.dataIndex)) {
+            IGraphicsResource* texture = descripter->texture(info.dataIndex);
+            if (texture && texture->descriptorResourceType() == detail::DescriptorResourceType_Texture) {
+                sampler = static_cast<Texture*>(texture)->samplerState();
+            }
+        }
         if (!sampler) {
             sampler = manager->defaultSamplerState();
         }

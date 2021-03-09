@@ -264,7 +264,7 @@ bool MeshCollisionShape::initInternal(MeshPrimitive* mesh, const Matrix* transfo
 	VertexBuffer* vertexBuffer = mesh->vertexBuffer(InterleavedVertexGroup::Main);
 	IndexBuffer* indexBuffer = mesh->indexBuffer();
 
-	void* vb = vertexBuffer->map(MapMode::Read);
+	const void* vb = vertexBuffer->data();
 	void* ib = indexBuffer->map(MapMode::Read);
 
 
@@ -301,7 +301,7 @@ bool MeshCollisionShape::initInternal(MeshPrimitive* mesh, const Matrix* transfo
 
 	// TODO: scoped
 	indexBuffer->unmap();
-	vertexBuffer->unmap();
+	//vertexBuffer->unmap();
 
 }
 

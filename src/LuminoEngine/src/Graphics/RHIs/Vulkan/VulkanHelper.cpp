@@ -1661,7 +1661,7 @@ void VulkanFramebuffer::dispose()
     //}
 }
 
-bool VulkanFramebuffer::containsRenderTarget(ITexture* renderTarget) const
+bool VulkanFramebuffer::containsRenderTarget(RHIResource* renderTarget) const
 {
     for (auto& i : m_renderTargets) {
         if (i == renderTarget) {
@@ -1690,7 +1690,7 @@ namespace ln {
 
 void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, RenderTargetTexture* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat, int* outWidth, int* outHeight)
 {
-    auto vulkanTexture = static_cast<detail::VulkanRenderTarget*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, nullptr));
+    auto vulkanTexture = static_cast<detail::VulkanRenderTarget*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(graphicsContext, texture, nullptr));
     auto image = vulkanTexture->image();
     *outImage = image->vulkanImage();
     *outImageView = image->vulkanImageView();

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../../Graphics/RHIs/GraphicsDeviceContext.hpp"
-#include "../RenderStage.hpp"
+#include "../RLIs/RLIBatchList.hpp"
 
 namespace ln {
 class MeshResource;
@@ -17,13 +17,13 @@ public:
 	MeshRenderFeature();
 	void init(RenderingManager* manager);
 
-	RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshResource* mesh, int sectionIndex);
-    RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph);
-	RequestBatchResult drawMeshInstanced(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, InstancedMeshList* list);
+	RequestBatchResult drawMesh(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshResource* mesh, int sectionIndex);
+    RequestBatchResult drawMesh(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph);
+	RequestBatchResult drawMeshInstanced(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, InstancedMeshList* list);
 
-	RequestBatchResult attemptSubmitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, bool instanced);
+	RequestBatchResult attemptSubmitBatch(GraphicsContext* context, RenderFeatureBatchList* batchList, bool instanced);
 	virtual void beginRendering() override;
-	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void submitBatch(GraphicsContext* context, RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
 
 private:
@@ -41,8 +41,8 @@ private:
 
 	struct BatchData
 	{
-		int offset;
-		int count;
+		int offset;	// m_meshDrawList の index
+		int count;	// m_meshDrawList の index から、何個描くか
 		bool instanced;
 		detail::SkeletonInstance* skeleton;
 		detail::MorphInstance* morph;
@@ -54,8 +54,9 @@ private:
 		BatchData data;
 	};
 
-	std::vector<DrawMeshData> m_meshes;
-	BatchData m_batchData;
+	Batch* acquireBatch(RenderFeatureBatchList* batchList, const RLIBatchState& batchState);
+
+	std::vector<DrawMeshData> m_drawList;
 };
 
 } // namespace detail

@@ -24,8 +24,10 @@ namespace detail {
 //==============================================================================
 // UIContext
 
-bool ImGuiIntegration::init()
+bool ImGuiIntegration::init(UIFrameWindow* frameWindow)
 {
+	m_frameWindow = frameWindow;
+
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	m_imgui = ImGui::CreateContext();
@@ -142,7 +144,7 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 		m_indexBuffer = makeObject<IndexBuffer>(m_indexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
 	}
 
-	Vertex* vtx_dst = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
+	Vertex* vtx_dst = static_cast<Vertex*>(m_vertexBuffer->writableData(0, draw_data->TotalVtxCount * sizeof(Vertex)));
 	ImDrawIdx* idx_dst = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));
 	int global_vtx_offset2 = 0;
 	for (int n = 0; n < draw_data->CmdListsCount; n++)
@@ -377,6 +379,7 @@ void ImGuiIntegration::addDock(ImGuiDockPane* pane)
 {
 	pane->m_key = "Pane:" + std::to_string(m_dockPanes.size());
 	m_dockPanes.add(pane);
+	pane->m_imguiIntegration = this;
 }
 
 void ImGuiIntegration::updateDocks(ImGuiID mainWindowId)
@@ -487,7 +490,8 @@ bool ImGuiIntegration::handleUIEvent(UIEventArgs* e)
 // ImGuiDockPane
 
 ImGuiDockPane::ImGuiDockPane()
-	: m_key()
+	: m_imguiIntegration(nullptr)
+	, m_key()
 	, m_initialPlacement(ImGuiDockPlacement::Floating)
 	, m_open(true)
 {}
@@ -499,6 +503,11 @@ bool ImGuiDockPane::init()
 
 
 	return true;
+}
+
+UIFrameWindow* ImGuiDockPane::frameWindow() const
+{
+	return m_imguiIntegration->frameWindow();
 }
 
 void ImGuiDockPane::setInitialPlacement(ImGuiDockPlacement value)

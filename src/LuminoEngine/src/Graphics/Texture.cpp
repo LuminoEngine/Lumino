@@ -7,6 +7,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
@@ -296,7 +297,7 @@ void Texture2D::onChangeDevice(detail::IGraphicsDevice* device)
     }
 }
 
-detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* outModified)
+detail::RHIResource* Texture2D::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
     *outModified = m_modified;
 
@@ -316,17 +317,18 @@ detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* ou
                 m_rhiObject = deviceContext->createTexture2D(m_usage, width(), height(), format(), mipmap(), bmpRawData.data());
             } else {
                 context->interruptCurrentRenderPassFromResolveRHI();
-                detail::ITexture* rhiObject = m_rhiObject;
+                detail::RHIResource* rhiObject = m_rhiObject;
 				auto commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
                 LN_ENQUEUE_RENDER_COMMAND_4(
                     Texture2D_setSubData, context,
                     detail::ICommandList*, commandList,
                     detail::RenderBulkData, bmpRawData,
                     SizeI, bmpSize,
-                    Ref<detail::ITexture>, rhiObject,
+                    Ref<detail::RHIResource>, rhiObject,
                     {
 						commandList->setSubData2D(rhiObject, 0, 0, bmpSize.width, bmpSize.height, bmpRawData.data(), bmpRawData.size());
                     });
+                context->commandList()->m_vertexBufferDataTransferredSize += bmpRawData.size();
             }
         }
     }
@@ -512,7 +514,7 @@ void RenderTargetTexture::resetSize(int width, int height)
     detail::TextureInternal::setDesc(this, width, height, format());
 }
 
-void RenderTargetTexture::resetRHIObject(detail::ITexture* rhiObject)
+void RenderTargetTexture::resetRHIObject(detail::RHIResource* rhiObject)
 {
 	LN_CHECK(rhiObject);
 	m_rhiObject = rhiObject;
@@ -530,7 +532,7 @@ void RenderTargetTexture::onDispose(bool explicitDisposing)
 Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context)
 {
     bool modified = false;
-    detail::ITexture* rhiObject = resolveRHIObject(nullptr, &modified);
+    detail::RHIResource* rhiObject = resolveRHIObject(nullptr, &modified);
 
     detail::RHISizeI size = rhiObject->extentSize();
 
@@ -550,7 +552,7 @@ Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context)
     return bitmap;
 }
 
-detail::ITexture* RenderTargetTexture::resolveRHIObject(GraphicsContext* context, bool* outModified)
+detail::RHIResource* RenderTargetTexture::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
     *outModified = m_modified;
 
@@ -647,7 +649,7 @@ void Texture3D::onChangeDevice(detail::IGraphicsDevice* device)
     }
 }
 
-detail::ITexture* Texture3D::resolveRHIObject(GraphicsContext* context, bool* outModified)
+detail::RHIResource* Texture3D::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
     *outModified = m_modified;
 
@@ -666,14 +668,14 @@ detail::ITexture* Texture3D::resolveRHIObject(GraphicsContext* context, bool* ou
             if (!m_rhiObject || m_usage != m_rhiObject->usage()) {
                 m_rhiObject = deviceContext->createTexture3D(m_usage, width(), height(), depth(), format(), mipmap(), m_bitmap->data());
             } else {
-                detail::ITexture* rhiObject = m_rhiObject;
+                detail::RHIResource* rhiObject = m_rhiObject;
 				auto commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
                 LN_ENQUEUE_RENDER_COMMAND_4(
                     Texture3D_setSubData, context,
                     detail::ICommandList*, commandList,
                     detail::RenderBulkData, bmpRawData,
                     BoxSizeI, bmpSize,
-                    Ref<detail::ITexture>, rhiObject, {
+                    Ref<detail::RHIResource>, rhiObject, {
 						commandList->setSubData3D(rhiObject, 0, 0, 0, bmpSize.width, bmpSize.height, bmpSize.depth, bmpRawData.data(), bmpRawData.size());
                     });
             }

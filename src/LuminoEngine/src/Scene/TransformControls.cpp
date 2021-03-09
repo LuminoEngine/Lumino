@@ -174,7 +174,7 @@ void TransformControls::onRender(RenderingContext* context)
     auto transform = Matrix::multiply(Matrix::makeScaling(m_screenFactor), m_gizmoTransform);
 
     // TODO:
-    CommandList* commandList = context->getCommandList(RenderPart::Gizmo, detail::ProjectionKind::ViewProjection3D);
+    CommandList* commandList = context->getCommandList(RenderPart::Gizmo);
     commandList->pushState();
     commandList->setBaseTransfrom(transform);
     commandList->setDepthTestEnabled(false);

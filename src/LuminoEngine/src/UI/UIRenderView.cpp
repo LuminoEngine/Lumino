@@ -91,7 +91,16 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
             m_viewPoint->nearClip = 0.0f;
             m_viewPoint->farClip = 1000.0f;
 
-
+            detail::CameraInfo camera;
+            camera.viewPixelSize = m_viewPoint->viewPixelSize;
+            camera.viewPosition = m_viewPoint->viewPosition;
+            camera.viewDirection = m_viewPoint->viewDirection;
+            camera.viewMatrix = m_viewPoint->viewMatrix;
+            camera.projMatrix = m_viewPoint->projMatrix;
+            camera.viewProjMatrix = m_viewPoint->viewProjMatrix;
+            camera.viewFrustum = m_viewPoint->viewFrustum;
+            camera.nearClip = m_viewPoint->nearClip;
+            camera.farClip = m_viewPoint->farClip;
 
             //auto p1 = Vector3::transformCoord(Vector3(0, 0, 0), m_viewPoint->viewMatrix);
             //auto p2 = Vector3::transformCoord(Vector3(0, 100, 0), m_viewPoint->viewMatrix);
@@ -101,11 +110,10 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
             //auto p22 = Vector3::transformCoord(Vector3(0, 100, 0), m_viewPoint->viewProjMatrix);
             //auto p33 = Vector3::transformCoord(Vector3(100, 0, 0), m_viewPoint->viewProjMatrix);
 
-            detail::CameraInfo camera;
-            camera.makePerspective(
-                Vector3::Zero, Vector3::UnitZ,
-                Math::PI / 4, m_viewPoint->viewPixelSize,
-                0.0f, 1000.0f);
+            //camera.makePerspective(
+            //    Vector3::Zero, Vector3::UnitZ,
+            //    Math::PI / 4, m_viewPoint->viewPixelSize,
+            //    0.0f, 1000.0f);
             makeViewProjections(camera, 1.0);   // TODO: dpiscale
         }
 
@@ -157,7 +165,7 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
 
         m_sceneRenderingPipeline->render(
             graphicsContext, m_renderingContext,
-            renderTarget, clearInfo, this, detail::ProjectionKind::Independent2D,
+            renderTarget, clearInfo, this,
             m_renderingContext->commandList()->elementList(),
             m_renderingContext->commandListServer());
     }

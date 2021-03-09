@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../../Graphics/RHIs/GraphicsDeviceContext.hpp"
-#include "../RenderStage.hpp"
+#include "../RLIs/RLIBatchList.hpp"
 
 struct NVGcontext;
 struct GLNVGcontext;
@@ -21,10 +21,10 @@ public:
 
 	RenderingManager* manager() const { return m_manager; }
 
-	RequestBatchResult draw(detail::RenderFeatureBatchList* batchList, GraphicsContext* context);
+	RequestBatchResult draw(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context);
 
 	void beginRendering() override;
-	void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	void submitBatch(GraphicsContext* context, RenderFeatureBatchList* batchList) override;
 	void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
 
 private:

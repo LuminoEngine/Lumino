@@ -9,6 +9,11 @@ class RHIProfiler
 public:
 	RHIProfiler();
 
+	//void resetFrame() { m_drawCall = 0; }
+	//void increaseDrawCall() { m_drawCall++; }
+
+	//int32_t drawCall() const { return m_drawCall; }
+
 	void addVertexLayout(IVertexDeclaration* obj);
 	void removeVertexLayout(IVertexDeclaration* obj);
 	void addVertexBuffer(RHIResource* obj);
@@ -68,6 +73,8 @@ private:
 	int32_t m_pipelineStateCount;
 	int32_t m_commandListCount;
 	int32_t m_swapChainCount;
+
+	//int32_t m_drawCall;
 };
 
 } // namespace detail

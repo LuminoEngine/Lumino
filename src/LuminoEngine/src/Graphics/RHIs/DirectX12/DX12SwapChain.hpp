@@ -15,7 +15,7 @@ public:
     void dispose() override;
     uint32_t getBackbufferCount() override;
     void acquireNextImage(int* outImageIndex) override;
-	ITexture* getRenderTarget(int imageIndex) const override;
+    RHIResource* getRenderTarget(int imageIndex) const override;
 	Result resizeBackbuffer(uint32_t width, uint32_t height) override;
 	void present() override;
 

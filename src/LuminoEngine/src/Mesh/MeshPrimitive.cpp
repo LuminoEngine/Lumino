@@ -235,7 +235,7 @@ void* MeshResource::requestVertexData(VertexBufferGroup group)
 	VertexBuffer* vertexBuffer;
 	requestBuffers(group, &vertexBuffer, nullptr);
 
-	return vertexBuffer->map(MapMode::Write);
+	return vertexBuffer->writableData();
 }
 
 void* MeshResource::requestIndexData(IndexBufferFormat* outFormat)
@@ -262,7 +262,7 @@ void* MeshResource::requestVertexDataForAdditional(int additionalVertexCount, Ve
 	VertexBuffer* vertexBuffer;
 	requestBuffers(group, &vertexBuffer, nullptr);
 
-	Vertex* data = (Vertex*)vertexBuffer->map(MapMode::Write);
+	Vertex* data = (Vertex*)vertexBuffer->writableData();
 	return data + begin;
 }
 
@@ -336,18 +336,14 @@ bool MeshResource::isInitialEmpty() const
 
 void MeshPrimitive::VertexBufferEntry::reset()
 {
-	if (mappedBuffer) {
-		buffer->unmap();
-	}
 	buffer = nullptr;
+	mappedBuffer = nullptr;
 }
 
 void MeshPrimitive::IndexBufferEntry::reset()
 {
-	if (mappedBuffer) {
-		buffer->unmap();
-	}
 	buffer = nullptr;
+	mappedBuffer = nullptr;
 }
 
 MeshPrimitive::MeshPrimitive()
@@ -467,16 +463,16 @@ void MeshPrimitive::commitRenderData(int sectionIndex, detail::MorphInstance* mo
 	// unmap
 	{
 		if (m_mainVertexBuffer.mappedBuffer) {
-			m_mainVertexBuffer.buffer->unmap();
+			//m_mainVertexBuffer.buffer->unmap();
 			m_mainVertexBuffer.mappedBuffer = nullptr;
 		}
 		if (m_skinningVertexBuffer.mappedBuffer) {
-			m_skinningVertexBuffer.buffer->unmap();
+			//m_skinningVertexBuffer.buffer->unmap();
 			m_skinningVertexBuffer.mappedBuffer = nullptr;
 		}
 		for (auto& v : m_extraVertexBuffers) {
 			if (v.entry.mappedBuffer) {
-				v.entry.buffer->unmap();
+				//v.entry.buffer->unmap();
 				v.entry.mappedBuffer = nullptr;
 			}
 		}
@@ -606,7 +602,7 @@ void* MeshPrimitive::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 			m_mainVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(Vertex) * m_vertexCount, m_resourceUsage);
 
 			// set default
-			auto* buf = static_cast<Vertex*>(m_mainVertexBuffer.buffer->map(MapMode::Write));
+			auto* buf = static_cast<Vertex*>(m_mainVertexBuffer.buffer->writableData());
 			for (int i = 0; i < m_vertexCount; i++) {
 				buf[i].setNormal(Vector3(0, 0, 1));
 				buf[i].color = Color::White;
@@ -614,7 +610,7 @@ void* MeshPrimitive::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 		}
 
 		if (!m_mainVertexBuffer.mappedBuffer) {
-			m_mainVertexBuffer.mappedBuffer = m_mainVertexBuffer.buffer->map(MapMode::Write);
+			m_mainVertexBuffer.mappedBuffer = m_mainVertexBuffer.buffer->writableData();
 		}
 		return m_mainVertexBuffer.mappedBuffer;
 
@@ -624,7 +620,7 @@ void* MeshPrimitive::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 		}
 
 		if (!m_skinningVertexBuffer.mappedBuffer) {
-			m_skinningVertexBuffer.mappedBuffer = m_skinningVertexBuffer.buffer->map(MapMode::Write);
+			m_skinningVertexBuffer.mappedBuffer = m_skinningVertexBuffer.buffer->writableData();
 		}
 		return m_skinningVertexBuffer.mappedBuffer;
 
@@ -634,7 +630,7 @@ void* MeshPrimitive::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 		}
 
 		if (!m_additionalUVVertexBuffer.mappedBuffer) {
-			m_additionalUVVertexBuffer.mappedBuffer = m_additionalUVVertexBuffer.buffer->map(MapMode::Write);
+			m_additionalUVVertexBuffer.mappedBuffer = m_additionalUVVertexBuffer.buffer->writableData();
 		}
 		return m_additionalUVVertexBuffer.mappedBuffer;
 
@@ -655,7 +651,7 @@ void* MeshPrimitive::acquireMappedVertexBuffer(VertexElementType type, VertexEle
 			
 			VertexBufferEntry entry;
 			entry.buffer = vb;
-			entry.mappedBuffer = vb->map(MapMode::Write);
+			entry.mappedBuffer = vb->writableData();
 
 			m_extraVertexBuffers.add({ type, usage, usageIndex, entry });
 			m_vertexLayout = nullptr;	// dirty layout
@@ -669,7 +665,7 @@ void* MeshPrimitive::acquireMappedVertexBuffer(VertexElementType type, VertexEle
 			}
 
 			if (!r->entry.mappedBuffer) {
-				r->entry.mappedBuffer = r->entry.buffer->map(MapMode::Write);
+				r->entry.mappedBuffer = r->entry.buffer->writableData();
 			}
 			return r->entry.mappedBuffer;
 		}
@@ -913,7 +909,7 @@ void* MeshPrimitive::acquireMappedMorphVertexBuffer(int morphTargetIndex/*, Vert
 	}
 
 	if (!e->mappedBuffer) {
-		e->mappedBuffer = e->buffer->map(MapMode::Write);
+		e->mappedBuffer = e->buffer->writableData();
 	}
 
 	return static_cast<Vertex*>(e->mappedBuffer);

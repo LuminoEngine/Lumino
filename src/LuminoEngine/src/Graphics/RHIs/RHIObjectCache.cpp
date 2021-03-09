@@ -54,7 +54,7 @@ IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
 	}
 }
 
-void NativeRenderPassCache::invalidate(ITexture* renderTarget)
+void NativeRenderPassCache::invalidate(RHIResource* renderTarget)
 {
 	for (auto itr = m_hashMap.begin(); itr != m_hashMap.end(); ) {
 		if (itr->second.value->containsRenderTarget(renderTarget)) {

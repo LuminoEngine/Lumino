@@ -45,7 +45,7 @@ protected:
     void init();
     void onDispose(bool explicitDisposing) override;
     void onManagerFinalizing() override { dispose(); }
-    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) = 0;
+    virtual detail::RHIResource* resolveRHIObject(GraphicsContext* context, bool* outModified) = 0;
 
 private:
     void setDesc(int width, int height, TextureFormat format);
@@ -154,7 +154,7 @@ public:
 protected:
     void onDispose(bool explicitDisposing) override;
     void onChangeDevice(detail::IGraphicsDevice* device) override;
-    detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
+    detail::RHIResource* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
     void serialize(Serializer2& ar) override;
     const std::vector<const Char*>& resourceExtensions() const override;
     void onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath) override;
@@ -178,7 +178,7 @@ LN_CONSTRUCT_ACCESS:
     void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA8);
 
 private:
-    Ref<detail::ITexture> m_rhiObject;
+    Ref<detail::RHIResource> m_rhiObject;
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;
     Ref<Bitmap2D> m_bitmap;
@@ -230,7 +230,7 @@ public:
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
+    virtual detail::RHIResource* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
 
 LN_CONSTRUCT_ACCESS:
     RenderTargetTexture();
@@ -249,10 +249,10 @@ LN_CONSTRUCT_ACCESS:
     void resetSize(int width, int height);
 
 private:
-	void resetRHIObject(detail::ITexture* rhiObject);
+	void resetRHIObject(detail::RHIResource* rhiObject);
     Ref<Bitmap2D> readData(GraphicsContext* context);
 
-    Ref<detail::ITexture> m_rhiObject;
+    Ref<detail::RHIResource> m_rhiObject;
     SwapChain* m_ownerSwapchain;
     intptr_t m_nativeObject;
     bool m_modified;
@@ -271,7 +271,7 @@ public:
     static void setDesc(Texture* texture, int width, int height, TextureFormat format) { texture->setDesc(width, height, format); }
     static void setMipmapEnabled(Texture* texture, bool value) { texture->m_mipmap = value; }
     static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget, GraphicsContext* context) { return renderTarget->readData(context); }
-	static void resetRHIObject(RenderTargetTexture* renderTarget, detail::ITexture* rhiObject) { renderTarget->resetRHIObject(rhiObject); }
+	static void resetRHIObject(RenderTargetTexture* renderTarget, detail::RHIResource* rhiObject) { renderTarget->resetRHIObject(rhiObject); }
     static void resetNativeObject(RenderTargetTexture* renderTarget, intptr_t value) { renderTarget->resetNativeObject(value); }
     static void resetSize(RenderTargetTexture* renderTarget, int width, int height) { renderTarget->resetSize(width, height); }
 };
@@ -292,10 +292,10 @@ LN_CONSTRUCT_ACCESS:
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
+    virtual detail::RHIResource* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
 
 private:
-    Ref<detail::ITexture> m_rhiObject;
+    Ref<detail::RHIResource> m_rhiObject;
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;
 

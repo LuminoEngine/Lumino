@@ -2,7 +2,7 @@
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../../Graphics/RHIs/GraphicsDeviceContext.hpp"
-#include "../RenderStage.hpp"
+#include "../RLIs/RLIBatchList.hpp"
 
 namespace ln {
 namespace detail {

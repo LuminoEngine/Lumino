@@ -22,6 +22,10 @@ void ExtensionRenderFeature::init(RenderingManager* manager)
 
 RequestBatchResult ExtensionRenderFeature::invoke(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, INativeGraphicsExtension* extension)
 {
+#ifdef LN_RLI_BATCH
+    LN_NOTIMPLEMENTED();
+    return RequestBatchResult::Submitted;
+#else
     bool first = (m_batchData.count == 0);
     m_extensions.push_back(extension);
     m_batchData.count++;
@@ -42,6 +46,7 @@ RequestBatchResult ExtensionRenderFeature::invoke(GraphicsContext* context, deta
     else {
         return RequestBatchResult::Staging;
     }
+#endif
 }
 
 void ExtensionRenderFeature::beginRendering()
@@ -53,12 +58,16 @@ void ExtensionRenderFeature::beginRendering()
 
 void ExtensionRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
+#ifdef LN_RLI_BATCH
+    LN_UNREACHABLE();
+#else
     auto batch = batchList->addNewBatch<Batch>(this);
     batch->ensureRenderPassOutside = (m_precondition == NativeGraphicsExtensionRenderPassPreCondition::EnsureOutside);
     batch->data = m_batchData;
 
     m_batchData.offset = m_batchData.offset + m_batchData.count;
     m_batchData.count = 0;
+#endif
 }
 
 void ExtensionRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)

@@ -91,8 +91,8 @@ bool DX12Image::init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderT
     m_dxResource = dxRenderTarget;
 
     D3D12_RESOURCE_DESC desc = m_dxResource->GetDesc();
-    m_size.width = desc.Width;
-    m_size.height = desc.Height;
+    m_size.width = static_cast<int32_t>(desc.Width);
+    m_size.height = static_cast<int32_t>(desc.Height);
     m_dxFormat = desc.Format;
     //m_format = DX12Helper::DXFormatToLNTextureFormat(desc.Format);
     //m_dxFormat = desc.Format;
@@ -166,7 +166,7 @@ Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint
         if (!uploadBuffer.init(m_device, m_image->uploadBufferSize(), D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ)) {
             return false;
         }
-        const int pixelSize = GraphicsHelper::getPixelSize(format);
+        const size_t pixelSize = GraphicsHelper::getPixelSize(format);
         void* data = uploadBuffer.map();
         RHIBitmap bmp1, bmp2;
         bmp1.initWrap(initialData, pixelSize, width, height);
@@ -445,16 +445,17 @@ bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height,
 
 bool DX12RenderTarget::init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderTarget)
 {
-    // TODO: SwapChain は BGRA フォーマットであることが多い。
-    // ただ TextureFormat はそれに対応していないが、readData() で Bitmap をとるときにピクセルサイズが知りたい。
-    // ここではダミーとして RGBA8 を与えて初期化してみる。
-    if (!DX12Texture::initAsRenderTarget(m_image->size().width, m_image->size().height, TextureFormat::RGBA8, false, false)) return false;
     m_device = device;
 
     m_image = makeRHIRef<DX12Image>();
     if (!m_image->init(device, dxRenderTarget, D3D12_RESOURCE_STATE_PRESENT)) {
         return false;
     }
+
+    // TODO: SwapChain は BGRA フォーマットであることが多い。
+    // ただ TextureFormat はそれに対応していないが、readData() で Bitmap をとるときにピクセルサイズが知りたい。
+    // ここではダミーとして RGBA8 を与えて初期化してみる。
+    if (!DX12Texture::initAsRenderTarget(m_image->size().width, m_image->size().height, TextureFormat::RGBA8, false, false)) return false;
 
 #if 0
     m_multisampleBuffer = makeRHIRef<DX12Image>();

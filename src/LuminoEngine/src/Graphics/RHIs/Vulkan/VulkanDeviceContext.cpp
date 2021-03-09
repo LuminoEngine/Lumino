@@ -204,7 +204,7 @@ Ref<RHIResource> VulkanDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, 
 	return ptr;
 }
 
-Ref<ITexture> VulkanDevice::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<RHIResource> VulkanDevice::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
     auto ptr = makeRef<VulkanTexture2D>();
     if (!ptr->init(this, usage, width, height, requestFormat, mipmap, initialData)) {
@@ -213,13 +213,13 @@ Ref<ITexture> VulkanDevice::onCreateTexture2D(GraphicsResourceUsage usage, uint3
 	return ptr;
 }
 
-Ref<ITexture> VulkanDevice::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<RHIResource> VulkanDevice::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	LN_NOTIMPLEMENTED();
 	return nullptr;
 }
 
-Ref<ITexture> VulkanDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
+Ref<RHIResource> VulkanDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
     auto ptr = makeRef<VulkanRenderTarget>();
     if (!ptr->init(this, width, height, requestFormat, mipmap, msaa)) {
@@ -275,7 +275,7 @@ Ref<IDescriptorPool> VulkanDevice::onCreateDescriptorPool(IShaderPass* shaderPas
 
 // TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
 // CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
-void VulkanDevice::onSubmitCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
+void VulkanDevice::onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget)
 {
 	auto vulkanContext = static_cast<VulkanGraphicsContext*>(context);
 	auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
@@ -1242,7 +1242,7 @@ void VulkanSwapChain::acquireNextImage(int* outIndex)
     }
 }
 
-ITexture* VulkanSwapChain::getRenderTarget(int imageIndex) const
+RHIResource* VulkanSwapChain::getRenderTarget(int imageIndex) const
 {
 	return m_swapchainRenderTargets[imageIndex];
 }

@@ -33,7 +33,7 @@ private:
 };
 
 class DX12Texture
-    : public ITexture
+    : public RHIResource
 {
 public:
     DX12Texture();
@@ -62,7 +62,6 @@ public:
     RHIRef<RHIBitmap> readData() override { LN_UNREACHABLE(); return nullptr; }
     void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override { LN_UNREACHABLE(); }
-    bool isMultisample() const override { return false; }
 
     //virtual const DX12Image* image() const override { return &m_image; }
 
@@ -92,7 +91,7 @@ public:
     //virtual const DX12Image* image() const override { return m_image.get(); }
 
     //ID3D12Resource* dxResource() const override { return m_dxRenderTarget.Get(); }
-    bool isMultisample() const override { return m_multisampleBuffer != nullptr; }
+    //bool isMultisample() const override { return m_multisampleBuffer != nullptr; }
     DX12Image* multisampleBuffer() const { return m_multisampleBuffer.get(); }
 
 

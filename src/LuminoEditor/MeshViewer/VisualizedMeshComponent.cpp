@@ -5,7 +5,7 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 {
 	return;
 
-	ln::CommandList* commandList = context->getCommandList(ln::RenderPart::Gizmo2D, ln::detail::ProjectionKind::Independent2D);
+	ln::CommandList* commandList = context->getCommandList(ln::RenderPart::Gizmo2D);
 	commandList->pushState();
 	//commandList->setRenderPhase(RenderPart::Gizmo2D);
 	//commandList->setDepthTestEnabled(false);
@@ -24,7 +24,7 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 
 			const ln::Color c = ln::UIColors::blue();
 
-			auto pos = view->transformProjection(node->globalMatrix().position(), ln::detail::ProjectionKind::ViewProjection3D, ln::detail::ProjectionKind::Independent2D);
+			auto pos = view->transformProjection(node->globalMatrix().position(), ln::RenderPart::Geometry, ln::RenderPart::Gizmo2D);
 			commandList->setTransfrom(ln::Matrix::makeTranslation(pos));
 			commandList->drawRegularPolygonPrimitive(16, 8, c, true, ln::Matrix::makeTranslation(0, 0, 0));
 			commandList->drawRegularPolygonPrimitive(16, 10, c, false);
@@ -34,7 +34,7 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 				const auto& parentNode = nodes[node->parentNodeIndex()];
 				if (parentNode->m_boneNode) {
 					const ln::Vector3& parentWorldPos = parentNode->globalMatrix().position();
-					const ln::Vector3 parentPos = view->transformProjection(parentWorldPos, ln::detail::ProjectionKind::ViewProjection3D, ln::detail::ProjectionKind::Independent2D);
+					const ln::Vector3 parentPos = view->transformProjection(parentWorldPos, ln::RenderPart::Geometry, ln::RenderPart::Gizmo2D);
 					if ((pos - parentPos).length() >= 1.0f) {
 						const ln::Vector3 right = ln::Vector3::cross(
 							ln::Vector3::normalize(pos - parentPos),
@@ -53,7 +53,7 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 
 			if (node->children().isEmpty()) {
 				const auto wpos = ln::Vector3::transformCoord(ln::Vector3::UnitZ, node->globalMatrix());
-				const auto vpos = view->transformProjection(wpos, ln::detail::ProjectionKind::ViewProjection3D, ln::detail::ProjectionKind::Independent2D);
+				const auto vpos = view->transformProjection(wpos, ln::RenderPart::Geometry, ln::RenderPart::Gizmo2D);
 				commandList->setTransfrom(ln::Matrix::makeTranslation(vpos));
 				commandList->drawRegularPolygonPrimitive(16, 10, c, false);
 			}
@@ -68,7 +68,7 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 			const float z = node->index() == 0 ? 100 : 0;
 			const ln::Color c = node->index() == 0 ? ln::UIColors::red() : ln::UIColors::blue();
 
-			auto pos = view->transformProjection(node->globalMatrix().position(), ln::detail::ProjectionKind::ViewProjection3D, ln::detail::ProjectionKind::Independent2D);
+			auto pos = view->transformProjection(node->globalMatrix().position(), ln::RenderPart::Geometry, ln::RenderPart::Gizmo2D);
 			//pos.z = z;
 			commandList->setTransfrom(ln::Matrix::makeTranslation(pos));
 			commandList->drawRegularPolygonPrimitive(16, 8, c, true, ln::Matrix::makeTranslation(0, 0, z));
@@ -79,7 +79,7 @@ void VisualizedMeshComponent::onRenderGizmo(ln::RenderingContext* context)
 
 			if (node->parentNodeIndex() >= 0) {
 				const ln::Vector3& parentWorldPos = nodes[node->parentNodeIndex()]->globalMatrix().position();
-				const ln::Vector3 parentPos = view->transformProjection(parentWorldPos, ln::detail::ProjectionKind::ViewProjection3D, ln::detail::ProjectionKind::Independent2D);
+				const ln::Vector3 parentPos = view->transformProjection(parentWorldPos, ln::RenderPart::Geometry, ln::RenderPart::Gizmo2D);
 				if ((pos - parentPos).length() >= 1.0f) {
 					const ln::Vector3 right = ln::Vector3::cross(
 						ln::Vector3::normalize(pos - parentPos),

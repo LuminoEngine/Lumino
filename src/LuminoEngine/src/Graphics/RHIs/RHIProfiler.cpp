@@ -23,6 +23,7 @@ RHIProfiler::RHIProfiler()
 	, m_pipelineStateCount(0)
 	, m_commandListCount(0)
 	, m_swapChainCount(0)
+	//, m_drawCall(0)
 {
 }
 

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../RenderStage.hpp"
+#include "Common.hpp"
 
 namespace ln {
 namespace detail {
@@ -28,13 +29,12 @@ public:
 	PrimitiveTopology primitiveTopology;
 
 	RLIMaterial();
+	RLIMaterial(const RLIBatchState& src);
 	void reset();
 	bool equals(const RLIMaterial* other) const;
 	void applyRenderStates(GraphicsContext* context) const;
 	static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
 
-	// TODO: 移行用一時処理
-	void mergeFrom(const GeometryStageParameters* geometoryParams, Material* finalMaterial);
 };
 
 } // namespace detail

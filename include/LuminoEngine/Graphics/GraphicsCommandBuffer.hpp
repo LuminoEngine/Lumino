@@ -24,6 +24,13 @@ public:
 
     IDescriptorPool* getDescriptorPool(ShaderPass* shaderPass);
 
+
+    // Profiling
+    int32_t m_drawCall;
+    int64_t m_vertexBufferDataTransferredSize;
+    int64_t m_indexBufferDataTransferredSize;
+    int64_t m_textureDataTransferredSize;
+
 private:
     struct ShaderPassDescriptorPair
     {

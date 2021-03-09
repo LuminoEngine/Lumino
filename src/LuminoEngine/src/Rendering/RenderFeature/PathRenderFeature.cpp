@@ -270,7 +270,7 @@ static int glnvg__renderCreate(void* uptr)
 // params.renderCreateTexture
 static int glnvg__renderCreateTexture(void* uptr, int type, int w, int h, int imageFlags, const unsigned char* data)
 {
-	// ITexture → NanoVGImage の対応付けは lnnvg__AddImageTexture で行っている。
+	// RHIResource(Texture) → NanoVGImage の対応付けは lnnvg__AddImageTexture で行っている。
 	// このドライバ関数が呼び出されるのは、NanoVG のテキスト描画機能からのみで、
 	// いまは NanoVG 初期化時にしか使われない。ここで作られたイメージも使用されることはない。
 	return INT_MAX;
@@ -695,9 +695,9 @@ static void glnvg__renderFlush(void* uptr)
 			if (!gl->vertexBuffer || gl->vertexBuffer->size() < size) {
 				gl->vertexBuffer = ln::makeObject<ln::VertexBuffer>(size, ln::GraphicsResourceUsage::Dynamic);
 			}
-			void* data = gl->vertexBuffer->map(ln::MapMode::Write);
+			void* data = gl->vertexBuffer->writableData();
 			memcpy(data, gl->verts, gl->nverts * sizeof(NVGvertex));
-			gl->vertexBuffer->unmap();
+			//gl->vertexBuffer->unmap();
 		}
 
 		// Bind VertexBuffer
@@ -1101,19 +1101,24 @@ void PathRenderFeature::beginRendering()
 	m_batchData.offset = 0;
 }
 
-RequestBatchResult PathRenderFeature::draw(detail::RenderFeatureBatchList* batchList, GraphicsContext* context)
+RequestBatchResult PathRenderFeature::draw(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context)
 {
+	LN_NOTIMPLEMENTED();
 	//submitBatch(context, batchList);
 	//return RequestBatchResult::Submitted;
 	return RequestBatchResult::Staging;
 }
 
-void PathRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+void PathRenderFeature::submitBatch(GraphicsContext* context, RenderFeatureBatchList* batchList)
 {
+#ifdef LN_RLI_BATCH
+	LN_UNREACHABLE();
+#else
 	auto batch = batchList->addNewBatch<Batch>(this);
 	batch->data = m_batchData;
 
 	m_batchData.offset = 0;
+#endif
 }
 
 void PathRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)

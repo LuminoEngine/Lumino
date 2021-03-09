@@ -27,11 +27,11 @@ void MeshRenderFeature::init(RenderingManager* manager)
 	RenderFeature::init();
 }
 
-RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshResource* mesh, int sectionIndex)
+RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshResource* mesh, int sectionIndex)
 {
 	if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
 
-	auto result = attemptSubmitBatch(context, batchList, true);
+	Batch* batch = acquireBatch(batchList, batchState);
 
 	MeshSection section;
 	VertexLayout* layout;
@@ -55,17 +55,17 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 	if (LN_REQUIRE(data.vertexBuffers[0])) return RequestBatchResult::Staging;
 	if (data.primitiveCount <= 0) return RequestBatchResult::Staging;
 
-	m_meshes.push_back(std::move(data));
-	m_batchData.count++;
+	m_drawList.push_back(std::move(data));
+	batch->data.count++;
 
-	return result;
+	return RequestBatchResult::Submitted;
 }
 
-RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph)
+RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph)
 {
     if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
 
-	auto result = attemptSubmitBatch(context, batchList, true);
+	Batch* batch = acquireBatch(batchList, batchState);
 
     MeshSection2 section;
     VertexLayout* layout;
@@ -92,50 +92,54 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 
 
 	if (morph) {
-		const auto& commandList = context->commandList();
-		const int targetCount = mesh->morphTargetCount();
-
 		std::array<float, MaxRenderMorphTargets> weights;
-		morph->getMorphWeights(&weights);
+		bool hasAnyWeight = morph->getMorphWeights(&weights);
+		if (hasAnyWeight) {
 
-		struct BlendInfo
-		{
-			Vector4 _Weights;
-			int32_t _TargetCount;
-			int32_t _VertexCount;
-		};
-		BlendInfo blendInfo;
-		blendInfo._Weights.x = weights[0];
-		blendInfo._Weights.y = weights[1];
-		blendInfo._Weights.z = weights[2];
-		blendInfo._Weights.w = weights[3];
-		blendInfo._TargetCount = mesh->morphTargetCount();
-		blendInfo._VertexCount = mesh->vertexCount();
-		detail::ConstantBufferView view = commandList->allocateUniformBuffer(sizeof(blendInfo));
+			const auto& commandList = context->commandList();
+			const int targetCount = mesh->morphTargetCount();
 
-		std::array<VertexBuffer*, MaxRenderMorphTargets> targets;
-		mesh->commitMorphTargets(morph, &targets);
 
-		const auto& shader = detail::EngineDomain::renderingManager()->blendShapeShader;
-		ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(shader.shader);
-		descriptor->setStorageData(shader.dstVerticesGID, morph->m_blendResult);
-		descriptor->setTexture(shader.srcVerticesGID, vb[0]);
-		if (targetCount >= 1) descriptor->setTexture(shader.target0GID, targets[0]); else descriptor->setTexture(shader.target0GID, nullptr);
-		if (targetCount >= 2) descriptor->setTexture(shader.target1GID, targets[1]); else descriptor->setTexture(shader.target1GID, targets[0]);
-		if (targetCount >= 3) descriptor->setTexture(shader.target2GID, targets[2]); else descriptor->setTexture(shader.target2GID, targets[0]);
-		if (targetCount >= 4) descriptor->setTexture(shader.target3GID, targets[3]); else descriptor->setTexture(shader.target3GID, targets[0]);
-		descriptor->setUniformBuffer(shader.blendInfoGID, view);
-		descriptor->setUniformBufferData(shader.blendInfoGID, &blendInfo, sizeof(blendInfo));
 
-		context->setShaderPass(shader.shaderPass);
-		context->setShaderDescriptor(descriptor);
-		context->dispatch(std::max(1, mesh->vertexCount() / 64), 1, 1);
+			struct BlendInfo
+			{
+				Vector4 _Weights;
+				int32_t _TargetCount;
+				int32_t _VertexCount;
+			};
+			BlendInfo blendInfo;
+			blendInfo._Weights.x = weights[0];
+			blendInfo._Weights.y = weights[1];
+			blendInfo._Weights.z = weights[2];
+			blendInfo._Weights.w = weights[3];
+			blendInfo._TargetCount = mesh->morphTargetCount();
+			blendInfo._VertexCount = mesh->vertexCount();
+			detail::ConstantBufferView view = commandList->allocateUniformBuffer(sizeof(blendInfo));
 
-		//descriptor->setst
+			std::array<VertexBuffer*, MaxRenderMorphTargets> targets;
+			mesh->commitMorphTargets(morph, &targets);
 
-		//	batch->morph->getMorphWeights(&elementInfo.morphWeights);
+			const auto& shader = detail::EngineDomain::renderingManager()->blendShapeShader;
+			ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(shader.shader);
+			descriptor->setStorageData(shader.dstVerticesGID, morph->m_blendResult);
+			descriptor->setTexture(shader.srcVerticesGID, vb[0]);
+			if (targetCount >= 1) descriptor->setTexture(shader.target0GID, targets[0]); else descriptor->setTexture(shader.target0GID, nullptr);
+			if (targetCount >= 2) descriptor->setTexture(shader.target1GID, targets[1]); else descriptor->setTexture(shader.target1GID, targets[0]);
+			if (targetCount >= 3) descriptor->setTexture(shader.target2GID, targets[2]); else descriptor->setTexture(shader.target2GID, targets[0]);
+			if (targetCount >= 4) descriptor->setTexture(shader.target3GID, targets[3]); else descriptor->setTexture(shader.target3GID, targets[0]);
+			descriptor->setUniformBuffer(shader.blendInfoGID, view);
+			descriptor->setUniformBufferData(shader.blendInfoGID, &blendInfo, sizeof(blendInfo));
 
-		data.vertexBuffers[0] = morph->m_blendResult;
+			context->setShaderPass(shader.shaderPass);
+			context->setShaderDescriptor(descriptor);
+			context->dispatch(std::max(1, mesh->vertexCount() / 64), 1, 1);
+
+			//descriptor->setst
+
+			//	batch->morph->getMorphWeights(&elementInfo.morphWeights);
+
+			data.vertexBuffers[0] = morph->m_blendResult;
+		}
 
 	}
 	//else {
@@ -143,21 +147,19 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 	//}
 
 
-    m_meshes.push_back(std::move(data));
-    m_batchData.count++;
-	m_batchData.skeleton = skeleton;
-	m_batchData.morph = morph;
+	m_drawList.push_back(std::move(data));
+	batch->data.count++;
+	batch->data.skeleton = skeleton;
+	batch->data.morph = morph;
 
-
-	return result;
+	return RequestBatchResult::Submitted;
 }
 
-RequestBatchResult MeshRenderFeature::drawMeshInstanced(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, InstancedMeshList* list)
+RequestBatchResult MeshRenderFeature::drawMeshInstanced(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, InstancedMeshList* list)
 {
 	if (LN_REQUIRE(list != nullptr)) return RequestBatchResult::Staging;
 
-
-	auto result = attemptSubmitBatch(context, batchList, true);
+	Batch* batch = acquireBatch(batchList, batchState);
 
 	MeshSection2 section;
 	VertexLayout* layout;
@@ -181,15 +183,19 @@ RequestBatchResult MeshRenderFeature::drawMeshInstanced(detail::RenderFeatureBat
 	if (LN_REQUIRE(data.vertexBuffers[0])) return RequestBatchResult::Staging;
 	if (data.primitiveCount <= 0) return RequestBatchResult::Staging;
 
-	m_meshes.push_back(std::move(data));
-	m_batchData.count++;
-	m_batchData.instanced = true;
+	m_drawList.push_back(std::move(data));
+	batch->data.count++;
+	batch->data.instanced = true;
 
-	return result;
+	return RequestBatchResult::Submitted;
 }
 
 RequestBatchResult MeshRenderFeature::attemptSubmitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, bool instanced)
 {
+#ifdef LN_RLI_BATCH
+	LN_UNREACHABLE();
+	return RequestBatchResult::Submitted;
+#else
 	if (m_batchData.count == 0) {
 		return RequestBatchResult::Staging;	// 初回なので Submit する必要なし
 	}
@@ -201,20 +207,19 @@ RequestBatchResult MeshRenderFeature::attemptSubmitBatch(GraphicsContext* contex
 	else {
 		return RequestBatchResult::Staging;
 	}
+#endif
 }
 
 void MeshRenderFeature::beginRendering()
 {
-	m_meshes.clear();
-	m_batchData.offset = 0;
-	m_batchData.count = 0;
-	m_batchData.instanced = false;
-	m_batchData.skeleton = nullptr;
-	m_batchData.morph = nullptr;
+	m_drawList.clear();
 }
 
 void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
+#ifdef LN_RLI_BATCH
+	LN_UNREACHABLE();
+#else
 	auto batch = batchList->addNewBatch<Batch>(this);
 	batch->data = m_batchData;
 	batch->instancing = m_batchData.instanced;
@@ -226,6 +231,7 @@ void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeat
 	m_batchData.instanced = false;
 	m_batchData.skeleton = nullptr;
 	m_batchData.morph = nullptr;
+#endif
 }
 
 void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
@@ -233,7 +239,7 @@ void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch
 	auto localBatch = static_cast<Batch*>(batch);
 
 	for (int i = 0; i < localBatch->data.count; i++) {
-		auto& data = m_meshes[localBatch->data.offset + i];
+		auto& data = m_drawList[localBatch->data.offset + i];
 
 		context->setVertexLayout(data.vertexLayout);
 		for (int i = 0; i < data.vertexBuffersCount; ++i) {
@@ -248,6 +254,18 @@ void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch
 			context->drawPrimitive(data.startIndex, data.primitiveCount);
 		}
 	}
+}
+
+MeshRenderFeature::Batch* MeshRenderFeature::acquireBatch(RenderFeatureBatchList* batchList, const RLIBatchState& batchState)
+{
+	// TODO: Batching
+	Batch* batch = batchList->addNewBatch<Batch>(this, batchState);
+	batch->data.offset = m_drawList.size();
+	batch->data.count = 0;
+	batch->data.instanced = false;
+	batch->data.skeleton = nullptr;
+	batch->data.morph = nullptr;
+	return batch;
 }
 
 } // namespace detail
