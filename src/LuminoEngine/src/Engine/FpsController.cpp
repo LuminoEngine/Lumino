@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <float.h>
+#include <chrono>
+#include <thread>
 #include "FpsController.hpp"
 
 namespace ln {
@@ -10,7 +12,8 @@ namespace detail {
 // FpsController
 
 FpsController::FpsController()
-    : m_frameRate(0)
+    : m_timer()
+    , m_frameRate(0)
     , m_frameTime(0)
     //, m_timer()
     //, m_currentGameTime(0)
@@ -30,10 +33,17 @@ FpsController::FpsController()
     , m_minFrameMillisecondsPerSeconds(0)
     , m_maxFrameMillisecondsPerSeconds(0)
 {
+#ifdef _WIN32
+    // これが無いと Sleep() 精度が落ちる。ほとんどの環境では 10ms 単位となり、
+    // 16ms ウェイトしようとすると最低 20ms 待つことになる。
+    // これは STL の sleep でも同様。
+    ::timeBeginPeriod(1);
+#endif
     setFrameRate(60);
     //m_timer.start();
-	m_startTick = Environment::getTickCount();
-	m_frameBeginTick = m_startTick;
+    m_startTick = Environment::getTickCount();
+    //m_frameBeginTick = 0;// m_startTick;
+    m_timer.start();
 }
 
 void FpsController::setFrameRate(int value)
@@ -47,22 +57,29 @@ void FpsController::setFrameRate(int value)
 void FpsController::process()
 {
 #if 1
-	uint64_t externalElapsedTick = Environment::getTickCount() - m_frameBeginTick;
+	uint64_t externalElapsedTick = m_timer.elapsedMilliseconds();
 	m_term = m_frameTime - externalElapsedTick;
 
 	if (m_term > 0) {
 		Thread::sleep(m_term);
+
 	}
 
-	uint64_t currentTick = Environment::getTickCount();
-	uint64_t internalElapsedTick = currentTick - m_frameBeginTick;
+	//
+
+    //printf("%lld %lld %llu\n", m_term, currentTick - headTick, ttt.elapsedMilliseconds());
+
+	uint64_t internalElapsedTick = m_timer.elapsedMilliseconds();
+    m_timer.start();
+
+    //printf("%llu %llu %lld\n", externalElapsedTick, internalElapsedTick, m_term);
 
 	measureTimes(externalElapsedTick, internalElapsedTick);
 
+    uint64_t currentTick = m_timer.elapsedMilliseconds();
 	m_elapsedGameTimeCache = 0.001f * internalElapsedTick;
 	m_totalGameTimeCache = 0.001 * (currentTick - m_startTick);
 	m_frameCount = (++m_frameCount) % m_frameRate;
-	m_frameBeginTick = currentTick;
 #else
     uint64_t externalElapsedTime = m_timer.elapsedMilliseconds();
     m_currentGameTime += externalElapsedTime;
@@ -91,13 +108,15 @@ void FpsController::process()
 void FpsController::processForMeasure()
 {
 #if 1
-	uint64_t externalElapsedTick = Environment::getTickCount() - m_frameBeginTick;
+	uint64_t externalElapsedTick = m_timer.elapsedMilliseconds();
+    uint64_t internalElapsedTick = externalElapsedTick;
 
 	measureTimes(externalElapsedTick, externalElapsedTick);
 
 	uint64_t currentTick = Environment::getTickCount();
+    m_elapsedGameTimeCache = 0.001f * internalElapsedTick;
+    m_totalGameTimeCache = 0.001 * (currentTick - m_startTick);
 	m_frameCount = (++m_frameCount) % m_frameRate;
-	m_frameBeginTick = currentTick;
 #else
     uint64_t externalElapsedTime = m_timer.elapsedMilliseconds();
     m_currentGameTime += externalElapsedTime;
@@ -112,8 +131,7 @@ void FpsController::processForMeasure()
 
 void FpsController::refreshSystemDelay()
 {
-    //m_timer.start();
-	m_frameBeginTick = Environment::getTickCount();
+    m_timer.start();
     m_frameCount = 0;
 }
 

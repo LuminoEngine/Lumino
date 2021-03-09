@@ -76,7 +76,7 @@ public:
     {
         // timeGetTime() は timeBeginPeriod() によって精度が変わるため、
         // GetTickCount() の方が無難かもしれない
-        return ::GetTickCount();
+        return ::GetTickCount64();
     }
 };
 

@@ -58,13 +58,13 @@ public:
 private:
     void measureTimes(uint64_t externalElapsedTime, uint64_t frameElapsedTime);
 
+    ElapsedTimer m_timer;
     int m_frameRate;
     uint64_t m_frameTime;
 
     //ElapsedTimer m_timer;
 	//uint64_t m_currentGameTime;
 	uint64_t m_startTick;
-	uint64_t m_frameBeginTick;
     int m_frameCount;
     float m_elapsedGameTimeCache;
     double m_totalGameTimeCache;
