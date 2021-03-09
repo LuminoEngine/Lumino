@@ -29,7 +29,7 @@ void SpriteTextRenderFeature::init(RenderingManager* manager)
 {
     RenderFeature::init();
 	m_manager = manager;
-	m_currentFont = nullptr;
+	m_lastFont = nullptr;
 	m_vertexLayout = manager->standardVertexDeclaration();
 	prepareBuffers(nullptr, 2048);
 	//m_batchData.spriteOffset = 0;
@@ -53,13 +53,14 @@ RequestBatchResult SpriteTextRenderFeature::drawText(
 	m_drawingBaseDirection = baseDirection;
 	m_drawingSamplerState = samplerState;
 
-	Batch* batch = acquireBatch(batchList, batchState, context, text->font, text->fontRequester, transform);
+	FontCore* fontCore = resolveFontCore(text->font, text->fontRequester, batchList->m_mainCameraInfo, transform);
+	
 
 	// 3D 空間に書く場合
 	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D && text->fontRequester)
 	{
 		FontGlobalMetrics metrix;
-		m_currentFont->getGlobalMetrics(&metrix);
+		fontCore->getGlobalMetrics(&metrix);
 		//float h = std::abs(metrix.descender - metrix.ascender);
 
 		float s = metrix.virutalSpaceFactor * (static_cast<float>(text->fontRequester->size) / Font::DefaultSize);
@@ -71,9 +72,10 @@ RequestBatchResult SpriteTextRenderFeature::drawText(
 	}
 
 	beginLayout();
-	TextLayoutEngine::layout(m_currentFont, text->text.c_str(), text->text.length(), text->area, 0, text->textAlignment);
+	TextLayoutEngine::layout(fontCore, text->text.c_str(), text->text.length(), text->area, 0, text->textAlignment);
 	//auto result2 = resolveCache(batchList, context);
-	endLayout(batch, context);
+	Batch* batch = endLayoutAndAcquireBatch(batchList, batchState, context, fontCore, transform);
+	buildSpriteList(batch, context);
 
 	return RequestBatchResult::Submitted;
 	//assert(!(result == RequestBatchResult::Submitted && result2 == RequestBatchResult::Submitted));
@@ -93,12 +95,13 @@ RequestBatchResult SpriteTextRenderFeature::drawChar(
 	m_drawingBaseDirection = SpriteBaseDirection::Basic2D;
 	m_drawingSamplerState = nullptr;
 
-	Batch* batch = acquireBatch(batchList, batchState, context, font, nullptr, transform);
+	FontCore* fontCore = resolveFontCore(font, nullptr, batchList->m_mainCameraInfo, transform);
 
 	beginLayout();
 	addLayoutedGlyphItem(codePoint, Vector2::Zero, color, transform);
 	//auto result2 = resolveCache(batchList, context);
-	endLayout(batch, context);
+	Batch* batch = endLayoutAndAcquireBatch(batchList, batchState, context, fontCore, transform);
+	buildSpriteList(batch, context);
 
 	return RequestBatchResult::Submitted;
 	//assert(!(result == RequestBatchResult::Submitted && result2 == RequestBatchResult::Submitted));
@@ -119,8 +122,9 @@ RequestBatchResult SpriteTextRenderFeature::drawFlexGlyphRun(
 	m_drawingBaseDirection = baseDirection;
 	m_drawingSamplerState = nullptr;
 
-	Batch* batch = acquireBatch(batchList, batchState, context, font, nullptr, transform);
-
+	// まず最初に要求された Font で Layout を実行してみる。
+	// そうすることで本当に必要な文字と、それがテクスチャに収まるかどうか (Batch を切り替えるべきか) がわかる。
+	FontCore* fontCore = resolveFontCore(font, nullptr, batchList->m_mainCameraInfo, transform);
 	beginLayout();
 	for (int i = 0; i < glyphRun->glyphCount; i++) {
 		auto& glyph = glyphRun->owner->glyphs()[glyphRun->startIndex + i];
@@ -130,8 +134,17 @@ RequestBatchResult SpriteTextRenderFeature::drawFlexGlyphRun(
 			addLayoutedGlyphItem(glyph.codePoint, glyph.pos.xy(), color, transform);
 		}
 	}
-	//auto result2 = resolveCache(batchList, context);
-	endLayout(batch, context);
+
+
+	Batch* batch = endLayoutAndAcquireBatch(batchList, batchState, context, fontCore, transform);
+	buildSpriteList(batch, context);
+
+
+
+
+
+
+
 
 	return RequestBatchResult::Submitted;
 	//assert(!(result == RequestBatchResult::Submitted && result2 == RequestBatchResult::Submitted));
@@ -140,6 +153,7 @@ RequestBatchResult SpriteTextRenderFeature::drawFlexGlyphRun(
 
 void SpriteTextRenderFeature::beginRendering()
 {
+	m_lastFont = nullptr;
 	m_cacheTexture = nullptr;
 
 	for (auto& font : m_renderingFonts) {
@@ -236,20 +250,14 @@ void SpriteTextRenderFeature::prepareBuffers(GraphicsContext* context, int sprit
 	}
 }
 
-SpriteTextRenderFeature::Batch* SpriteTextRenderFeature::acquireBatch(
-	RenderFeatureBatchList* batchList,
-	const RLIBatchState& batchState,
-	GraphicsContext* context,
-	Font* newFont,
-	FontRequester* fontRequester,
-	const Matrix& transform)
+FontCore* SpriteTextRenderFeature::resolveFontCore(Font* font, FontRequester* fontRequester, const CameraInfo* cameraInfo, const Matrix& transform) const
 {
 	float scale = 1.0f;	// TODO: DPI
 
 	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D) {
 		// View との距離からフォントサイズをスケーリングしてみる。
 		// TODO: Ortho だとうまく動かない
-		auto d = (batchList->m_mainCameraInfo->viewPosition - transform.position());
+		auto d = (cameraInfo->viewPosition - transform.position());
 		if (!Vector3::nearEqual(d, Vector3::Zero)) {
 			scale = std::floor(Math::lerp(5.0f, 1.0f, std::min(d.length() / 15.0f, 1.0f)));
 		}
@@ -263,56 +271,10 @@ SpriteTextRenderFeature::Batch* SpriteTextRenderFeature::acquireBatch(
 		newfontCore = fontRequester->resolveFontCore(scale);
 	}
 	else {
-		newfontCore = FontHelper::resolveFontCore(newFont, scale);
+		newfontCore = FontHelper::resolveFontCore(font, scale);
 	}
 
-
-
-	bool newBatch = false;
-	if (batchList->equalsLastBatchState(this, batchState) && newfontCore == m_currentFont) {
-	}
-	else {
-		newBatch = true;
-	}
-
-	m_currentFont = newfontCore;
-
-
-
-	m_currentFont->getFontGlyphTextureCache(&m_cacheRequest);
-	if (m_cacheTexture && m_cacheTexture != m_cacheRequest.texture) {
-		newBatch = true;
-	}
-
-	m_cacheTexture = m_cacheRequest.texture;
-
-
-
-
-
-
-	
-	Batch* batch;
-	if (newBatch) {
-		batch = batchList->addNewBatch<Batch>(this, batchState);
-		batch->finalMaterial()->m_worldTransform = nullptr;	// VertexShade での World 座標変換は不要
-		batch->data.spriteOffset = m_spriteCount;
-		batch->data.spriteCount = 0;
-		batch->overrideTexture = m_cacheTexture;
-		if (m_drawingSamplerState)
-			batch->overrideSamplerState = m_drawingSamplerState;
-		else
-			batch->overrideSamplerState = detail::EngineDomain::graphicsManager()->defaultSamplerState();
-
-		m_renderingFonts.push_back(newfontCore);
-	}
-	else {
-		batch = static_cast<Batch*>(batchList->lastBatch());
-	}
-	
-
-
-	return batch;
+	return newfontCore;
 }
 
 void SpriteTextRenderFeature::beginLayout()
@@ -334,20 +296,86 @@ void SpriteTextRenderFeature::addLayoutedGlyphItem(uint32_t codePoint, const Vec
 	m_glyphLayoutDataList.push_back(data);
 }
 
-RequestBatchResult SpriteTextRenderFeature::resolveCache(RenderFeatureBatchList* batchList, GraphicsContext* context)
+SpriteTextRenderFeature::Batch* SpriteTextRenderFeature::endLayoutAndAcquireBatch(
+	RenderFeatureBatchList* batchList,
+	const RLIBatchState& batchState,
+	GraphicsContext* context,
+	FontCore* newFontCore,
+	const Matrix& transform)
 {
-	m_currentFont->getFontGlyphTextureCache(&m_cacheRequest);
+	bool newBatch = false;
+
+	// EndLayout (Glyph レイアウト結果を元に、テクスチャを生成する)
+	newFontCore->getFontGlyphTextureCache(&m_cacheRequest);
 	if (m_cacheTexture && m_cacheTexture != m_cacheRequest.texture) {
-		submitBatch(context, batchList);
-		return RequestBatchResult::Submitted;
+		newBatch = true;
+	}
+
+	m_cacheTexture = m_cacheRequest.texture;
+
+
+
+
+	if (!newBatch) {
+		if (batchList->equalsLastBatchState(this, batchState) && newFontCore == m_lastFont) {
+		}
+		else {
+			newBatch = true;
+		}
+	}
+
+
+
+
+
+
+	m_lastFont = newFontCore;
+
+
+
+
+	Batch* batch;
+	if (newBatch) {
+		batch = batchList->addNewBatch<Batch>(this, batchState);
+		batch->finalMaterial()->m_worldTransform = nullptr;	// VertexShade での World 座標変換は不要
+		batch->data.spriteOffset = m_spriteCount;
+		batch->data.spriteCount = 0;
+		batch->overrideTexture = m_cacheTexture;
+		if (m_drawingSamplerState)
+			batch->overrideSamplerState = m_drawingSamplerState;
+		else
+			batch->overrideSamplerState = detail::EngineDomain::graphicsManager()->defaultSamplerState();
+
+		m_renderingFonts.push_back(newFontCore);
 	}
 	else {
-        m_cacheTexture = m_cacheRequest.texture;
-		return RequestBatchResult::Staging;
+		batch = static_cast<Batch*>(batchList->lastBatch());
 	}
+
+
+
+	return batch;
 }
 
-void SpriteTextRenderFeature::endLayout(Batch* batch, GraphicsContext* context)
+
+//void SpriteTextRenderFeature::endLayout()
+//{
+//}
+
+//RequestBatchResult SpriteTextRenderFeature::resolveCache(RenderFeatureBatchList* batchList, GraphicsContext* context)
+//{
+//	m_currentFont->getFontGlyphTextureCache(&m_cacheRequest);
+//	if (m_cacheTexture && m_cacheTexture != m_cacheRequest.texture) {
+//		submitBatch(context, batchList);
+//		return RequestBatchResult::Submitted;
+//	}
+//	else {
+//        m_cacheTexture = m_cacheRequest.texture;
+//		return RequestBatchResult::Staging;
+//	}
+//}
+
+void SpriteTextRenderFeature::buildSpriteList(Batch* batch, GraphicsContext* context)
 {
 	//size_t spriteCount = m_batchData.spriteOffset + m_batchData.spriteCount;
 	size_t dataCount = m_glyphLayoutDataList.size();
@@ -365,11 +393,11 @@ void SpriteTextRenderFeature::endLayout(Batch* batch, GraphicsContext* context)
 		//posOffset.y -= area.height * 0.5f;
 	}
 
-	auto* vertices = m_mappedVertices + (m_spriteCount * 4);
 	auto srcTexture = m_cacheRequest.texture;
 	Size texSizeInv(1.0f / srcTexture->width(), 1.0f / srcTexture->height());
 	for (auto i = 0; i < dataCount; i++)
 	{
+		auto* vertices = m_mappedVertices + (m_spriteCount * 4);
 
 		auto& data = m_glyphLayoutDataList[i];
 
@@ -405,8 +433,8 @@ void SpriteTextRenderFeature::addSprite(Batch* batch, Vertex* buffer, const Matr
 	// pixel snap
 	if (isPixelSnapEnabled()) {
 		for (int i = 0; i < 4; i++) {
-			buffer[i].position.x = std::round(buffer[i].position.x) + 0.0000f;
-			buffer[i].position.y = std::round(buffer[i].position.y) + 0.0000f;
+			buffer[i].position.x = std::round(buffer[i].position.x);
+			buffer[i].position.y = std::round(buffer[i].position.y);
 		}
 	}
 

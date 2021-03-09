@@ -56,11 +56,14 @@ private:
 
 	// TODO: バッファの準備周りは spriteRenderer と同じ。共通化した方がいいかも
 	void prepareBuffers(GraphicsContext* context, int spriteCount);
-	Batch* acquireBatch(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, Font* newFont, FontRequester* fontRequester, const Matrix& transform);
+	FontCore* resolveFontCore(Font* font, FontRequester* fontRequester, const CameraInfo* cameraInfo, const Matrix& transform) const;
 	void beginLayout();
 	void addLayoutedGlyphItem(uint32_t codePoint, const Vector2& pos, const Color& color, const Matrix& transform);
-	RequestBatchResult resolveCache(RenderFeatureBatchList* batchList, GraphicsContext* context);
-	void endLayout(Batch* batch, GraphicsContext* context);
+	//RequestBatchResult resolveCache(RenderFeatureBatchList* batchList, GraphicsContext* context);
+	void endLayout();
+	Batch* endLayoutAndAcquireBatch(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, FontCore* newFontCore, const Matrix& transform);
+
+	void buildSpriteList(Batch* batch, GraphicsContext* context);
 	void addSprite(Batch* batch, Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
 	bool isPixelSnapEnabled() const { return m_drawingBaseDirection == SpriteBaseDirection::Basic2D; }
 
@@ -68,7 +71,7 @@ private:
 	//void flushInternal(GraphicsContext* context, FontGlyphTextureCache* cache);
 
 	RenderingManager* m_manager;
-	FontCore* m_currentFont;
+	FontCore* m_lastFont;
 
 	// sprite-batching
 	Ref<VertexLayout> m_vertexLayout;

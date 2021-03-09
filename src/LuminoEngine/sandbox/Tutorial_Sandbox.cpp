@@ -27,7 +27,7 @@ public:
         //auto box = BoxMesh::With().buildInto();
 
 
-        auto text1 = UIText::With(u"Aa!").buildInto();
+        auto text1 = UIText::With(u"Hello ------ Aa!").buildInto();
     }
 
 

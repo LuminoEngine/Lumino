@@ -60,7 +60,8 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 	// TODO: buffer おおきくする
 
 	m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->writableData());
-	auto* vertices = m_mappedVertices + ((batch->data.spriteOffset + batch->data.spriteCount) * 4);
+	//auto* vertices = m_mappedVertices + ((batch->data.spriteOffset + batch->data.spriteCount) * 4);
+	auto* vertices = m_mappedVertices + (m_spriteCount * 4);
 
 	Vector2 center(size.x * anchorRatio.x, size.y * anchorRatio.y);
 	Vector3 normal = Vector3::UnitZ;
@@ -318,6 +319,7 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 #endif
 	}
 
+	m_spriteCount++;
 	batch->data.spriteCount++;
 	return RequestBatchResult::Staging;
 }
