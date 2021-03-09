@@ -4,6 +4,7 @@
 #include <LuminoEngine/Graphics/Common.hpp>
 
 #define LN_BOX_ELEMENT_RENDER_FEATURE_TEST 1
+#define LN_RLI_BATCH 1
 
 namespace ln {
 class Font;
@@ -252,6 +253,7 @@ class SkeletonInstance;
 class MorphInstance;
 class CommandListServer;
 class RLIMaterial;
+class RLIBatchState;
 
 enum class RenderDrawElementTypeFlags : uint8_t
 {

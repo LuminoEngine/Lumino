@@ -55,6 +55,24 @@ void RenderFeatureBatchList::add(RenderFeatureBatch* batch, RenderFeature* owner
 	}
 }
 
+//bool RenderFeatureBatchList::lastBatchRenderFeatureIs(RenderFeature* renderFeature) const
+//{
+//	if (m_tail) {
+//		return m_tail->renderFeature() == renderFeature;
+//	}
+//	else {
+//		return false;
+//	}
+//}
+
+bool RenderFeatureBatchList::equalsLastBatchState(RenderFeature* renderFeature, const RLIBatchState& state)
+{
+	if (!m_tail) return false;
+	if (m_tail->renderFeature() != renderFeature) return false;
+	if (!m_tail->finalMaterial()->equals(&state)) return false;
+	return true;
+}
+
 //void RenderFeatureBatchList::prepareState(const CameraInfo& cameraInfo, RenderStage* stage, RenderDrawElement* element)
 //{
 //	Material* finalMaterial = stage->getMaterialFinal(nullptr, m_manager->builtinMaterials(BuiltinMaterial::Default));

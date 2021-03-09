@@ -27,11 +27,11 @@ void MeshRenderFeature::init(RenderingManager* manager)
 	RenderFeature::init();
 }
 
-RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshResource* mesh, int sectionIndex)
+RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshResource* mesh, int sectionIndex)
 {
 	if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
 
-	auto result = attemptSubmitBatch(context, batchList, true);
+	Batch* batch = acquireBatch(batchList, batchState);
 
 	MeshSection section;
 	VertexLayout* layout;
@@ -55,17 +55,17 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 	if (LN_REQUIRE(data.vertexBuffers[0])) return RequestBatchResult::Staging;
 	if (data.primitiveCount <= 0) return RequestBatchResult::Staging;
 
-	m_meshes.push_back(std::move(data));
-	m_batchData.count++;
+	m_drawList.push_back(std::move(data));
+	batch->data.count++;
 
-	return result;
+	return RequestBatchResult::Submitted;
 }
 
-RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph)
+RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph)
 {
     if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
 
-	auto result = attemptSubmitBatch(context, batchList, true);
+	Batch* batch = acquireBatch(batchList, batchState);
 
     MeshSection2 section;
     VertexLayout* layout;
@@ -147,21 +147,19 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 	//}
 
 
-    m_meshes.push_back(std::move(data));
-    m_batchData.count++;
-	m_batchData.skeleton = skeleton;
-	m_batchData.morph = morph;
+	m_drawList.push_back(std::move(data));
+	batch->data.count++;
+	batch->data.skeleton = skeleton;
+	batch->data.morph = morph;
 
-
-	return result;
+	return RequestBatchResult::Submitted;
 }
 
-RequestBatchResult MeshRenderFeature::drawMeshInstanced(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, InstancedMeshList* list)
+RequestBatchResult MeshRenderFeature::drawMeshInstanced(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, InstancedMeshList* list)
 {
 	if (LN_REQUIRE(list != nullptr)) return RequestBatchResult::Staging;
 
-
-	auto result = attemptSubmitBatch(context, batchList, true);
+	Batch* batch = acquireBatch(batchList, batchState);
 
 	MeshSection2 section;
 	VertexLayout* layout;
@@ -185,15 +183,19 @@ RequestBatchResult MeshRenderFeature::drawMeshInstanced(detail::RenderFeatureBat
 	if (LN_REQUIRE(data.vertexBuffers[0])) return RequestBatchResult::Staging;
 	if (data.primitiveCount <= 0) return RequestBatchResult::Staging;
 
-	m_meshes.push_back(std::move(data));
-	m_batchData.count++;
-	m_batchData.instanced = true;
+	m_drawList.push_back(std::move(data));
+	batch->data.count++;
+	batch->data.instanced = true;
 
-	return result;
+	return RequestBatchResult::Submitted;
 }
 
 RequestBatchResult MeshRenderFeature::attemptSubmitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, bool instanced)
 {
+#ifdef LN_RLI_BATCH
+	LN_UNREACHABLE();
+	return RequestBatchResult::Submitted;
+#else
 	if (m_batchData.count == 0) {
 		return RequestBatchResult::Staging;	// 初回なので Submit する必要なし
 	}
@@ -205,20 +207,19 @@ RequestBatchResult MeshRenderFeature::attemptSubmitBatch(GraphicsContext* contex
 	else {
 		return RequestBatchResult::Staging;
 	}
+#endif
 }
 
 void MeshRenderFeature::beginRendering()
 {
-	m_meshes.clear();
-	m_batchData.offset = 0;
-	m_batchData.count = 0;
-	m_batchData.instanced = false;
-	m_batchData.skeleton = nullptr;
-	m_batchData.morph = nullptr;
+	m_drawList.clear();
 }
 
 void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
+#ifdef LN_RLI_BATCH
+	LN_UNREACHABLE();
+#else
 	auto batch = batchList->addNewBatch<Batch>(this);
 	batch->data = m_batchData;
 	batch->instancing = m_batchData.instanced;
@@ -230,6 +231,7 @@ void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeat
 	m_batchData.instanced = false;
 	m_batchData.skeleton = nullptr;
 	m_batchData.morph = nullptr;
+#endif
 }
 
 void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
@@ -237,7 +239,7 @@ void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch
 	auto localBatch = static_cast<Batch*>(batch);
 
 	for (int i = 0; i < localBatch->data.count; i++) {
-		auto& data = m_meshes[localBatch->data.offset + i];
+		auto& data = m_drawList[localBatch->data.offset + i];
 
 		context->setVertexLayout(data.vertexLayout);
 		for (int i = 0; i < data.vertexBuffersCount; ++i) {
@@ -252,6 +254,18 @@ void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch
 			context->drawPrimitive(data.startIndex, data.primitiveCount);
 		}
 	}
+}
+
+MeshRenderFeature::Batch* MeshRenderFeature::acquireBatch(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState)
+{
+	// TODO: state check
+	Batch* batch = batchList->addNewBatch<Batch>(this);
+	batch->data.offset = m_drawList.size();
+	batch->data.count = 0;
+	batch->data.instanced = false;
+	batch->data.skeleton = nullptr;
+	batch->data.morph = nullptr;
+	return batch;
 }
 
 } // namespace detail

@@ -28,20 +28,39 @@ void FrameRectRenderFeature::init(RenderingManager* manager)
     m_vertexLayout = manager->standardVertexDeclaration();
 }
 
-RequestBatchResult FrameRectRenderFeature::drawRequest(GraphicsContext* context, const Rect& rect, const Matrix& worldTransform, const Thickness& borderThickness, const Rect& srcRect, Sprite9DrawMode wrapMode, const SizeI& srcTextureSize)
+RequestBatchResult FrameRectRenderFeature::drawRequest(
+	RenderFeatureBatchList* batchList,
+	const RLIBatchState& batchState,
+	const Rect& rect,
+	const Matrix& worldTransform,
+	const Thickness& borderThickness,
+	const Rect& srcRect,
+	Sprite9DrawMode wrapMode,
+	const SizeI& srcTextureSize)
 {
+	Batch* batch;
+	if (batchList->equalsLastBatchState(this, batchState)) {
+		batch = static_cast<Batch*>(batchList->lastBatch());
+	}
+	else {
+		batch = batchList->addNewBatch<Batch>(this);
+		batch->data.spriteOffset = 0;
+		batch->data.spriteCount = 0;
+	}
+
+
 	if (rect.isEmpty()) return RequestBatchResult::Staging;
     m_worldTransform = &worldTransform;
 
 	if (wrapMode == Sprite9DrawMode::StretchedSingleImage) {
 		Size rec(1.0f / srcTextureSize.width, 1.0f / srcTextureSize.height);
 		Rect uvRect(srcRect.x * rec.width, srcRect.y * rec.height, srcRect.width * rec.width, srcRect.height * rec.height);
-		putRectangleStretch(context, rect, uvRect);
+		putRectangleStretch(batch, rect, uvRect);
 	}
 	else if (wrapMode == Sprite9DrawMode::RepeatedSingleImage) {
 		Size rec(1.0f / srcTextureSize.width, 1.0f / srcTextureSize.height);
 		Rect uvRect(srcRect.x * rec.width, srcRect.y * rec.height, srcRect.width * rec.width, srcRect.height * rec.height);
-		putRectangleTiling(context, rect, srcRect, uvRect);
+		putRectangleTiling(batch, rect, srcRect, uvRect);
 	}
 	else if (
 		wrapMode == Sprite9DrawMode::StretchedBoxFrame ||
@@ -51,7 +70,7 @@ RequestBatchResult FrameRectRenderFeature::drawRequest(GraphicsContext* context,
 		// 枠
 		{
 			// TODO: thickness が left しか対応できていない
-			putFrameRectangle(context, rect, borderThickness, srcRect, wrapMode, srcTextureSize);
+			putFrameRectangle(batch, rect, borderThickness, srcRect, wrapMode, srcTextureSize);
 		}
 
 		// Inner
@@ -74,7 +93,7 @@ RequestBatchResult FrameRectRenderFeature::drawRequest(GraphicsContext* context,
 			texSize.height = 1.0f / texSize.height;
 			Rect uvSrcRect(innterSrcRect.x * texSize.width, innterSrcRect.y * texSize.height, innterSrcRect.width * texSize.width, innterSrcRect.height * texSize.height);
 
-			putRectangle(context, dstRect, innterSrcRect, uvSrcRect, wrapMode);
+			putRectangle(batch, dstRect, innterSrcRect, uvSrcRect, wrapMode);
 		}
 
 	}
@@ -85,13 +104,13 @@ RequestBatchResult FrameRectRenderFeature::drawRequest(GraphicsContext* context,
 
 void FrameRectRenderFeature::beginRendering()
 {
-    m_batchData.spriteOffset = 0;
-    m_batchData.spriteCount = 0;
 }
 
-// TODO: SpriteRenderer 共通
 void FrameRectRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
+#ifdef LN_RLI_BATCH
+	LN_UNREACHABLE();
+#else
 	if (m_mappedVertices) {
 		// TODO: unmap (今は自動だけど、明示した方が安心かも)
 	}
@@ -101,9 +120,9 @@ void FrameRectRenderFeature::submitBatch(GraphicsContext* context, detail::Rende
 
 	m_batchData.spriteOffset = m_batchData.spriteOffset + m_batchData.spriteCount;
 	m_batchData.spriteCount = 0;
+#endif
 }
 
-// TODO: SpriteRenderer 共通
 void FrameRectRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
 {
 	auto localBatch = static_cast<Batch*>(batch);
@@ -113,13 +132,8 @@ void FrameRectRenderFeature::renderBatch(GraphicsContext* context, RenderFeature
 	context->drawPrimitiveIndexed(localBatch->data.spriteOffset * 6, localBatch->data.spriteCount * 2);
 }
 
-void FrameRectRenderFeature::prepareBuffers(GraphicsContext* context, int spriteCount)
+void FrameRectRenderFeature::prepareBuffers(int spriteCount)
 {
-	// TODO: 実行中の map は context->map 用意した方がいいかも
-//if (context) {
-//	LN_NOTIMPLEMENTED();
-//}
-
 	if (m_buffersReservedSpriteCount < spriteCount)
 	{
 		size_t vertexCount = spriteCount * 4;
@@ -159,15 +173,15 @@ void FrameRectRenderFeature::prepareBuffers(GraphicsContext* context, int sprite
 	}
 }
 
-void FrameRectRenderFeature::addSprite(GraphicsContext* context, const Vector3& pos0, const Vector2& uv0, const Vector3& pos1, const Vector2& uv1, const Vector3& pos2, const Vector2& uv2, const Vector3& pos3, const Vector2& uv3)
+void FrameRectRenderFeature::addSprite(Batch* batch, const Vector3& pos0, const Vector2& uv0, const Vector3& pos1, const Vector2& uv1, const Vector3& pos2, const Vector2& uv2, const Vector3& pos3, const Vector2& uv3)
 {
-	int count = m_batchData.spriteOffset + m_batchData.spriteCount + 1;
-	prepareBuffers(context, count);
+	int count = batch->data.spriteOffset + batch->data.spriteCount + 1;
+	prepareBuffers(count);
 
 	//uint64_t lockOffset = m_batchData.spriteOffset * 4;
 	//uint64_t lockSize = (m_batchData.spriteCount + 1) * 4;
 	//m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
-	uint64_t offset = ((m_batchData.spriteOffset + m_batchData.spriteCount) * 4);
+	uint64_t offset = ((batch->data.spriteOffset + batch->data.spriteCount) * 4);
 	m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->writableData(0, offset * sizeof(Vertex)));
 	auto* vertices = m_mappedVertices + offset;
 	vertices[0].set(pos0, Vector3::UnitZ, uv0, Color::White);
@@ -181,10 +195,10 @@ void FrameRectRenderFeature::addSprite(GraphicsContext* context, const Vector3& 
     vertices[2].transformPosition(*m_worldTransform);
     vertices[3].transformPosition(*m_worldTransform);
 
-	m_batchData.spriteCount++;
+	batch->data.spriteCount++;
 }
 
-void FrameRectRenderFeature::putRectangleStretch(GraphicsContext* context, const Rect& rect, const Rect& srcUVRect)
+void FrameRectRenderFeature::putRectangleStretch(Batch* batch, const Rect& rect, const Rect& srcUVRect)
 {
 	if (rect.isEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
 
@@ -198,14 +212,14 @@ void FrameRectRenderFeature::putRectangleStretch(GraphicsContext* context, const
 	float uv_b = srcUVRect.getBottom();
 
 	addSprite(
-		context,
+		batch,
 		Vector3(pos_l, pos_t, 0), Vector2(uv_l, uv_t),	// top-left
 		Vector3(pos_l, pos_b, 0), Vector2(uv_l, uv_b),	// bottom-left
 		Vector3(pos_r, pos_t, 0), Vector2(uv_r, uv_t),	// top-right
 		Vector3(pos_r, pos_b, 0), Vector2(uv_r, uv_b));	// bottom-right
 }
 
-void FrameRectRenderFeature::putRectangleTiling(GraphicsContext* context, const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect)
+void FrameRectRenderFeature::putRectangleTiling(Batch* batch, const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect)
 {
 	if (rect.isEmpty()) return;		// 矩形がつぶれているので書く必要はない
 
@@ -247,7 +261,7 @@ void FrameRectRenderFeature::putRectangleTiling(GraphicsContext* context, const 
 			}
 
 			addSprite(
-				context,
+				batch,
 				Vector3(rect.x + pos_l, rect.y + pos_t, 0), Vector2(uv_l, uv_t),	// top-left
 				Vector3(rect.x + pos_l, rect.y + pos_b, 0), Vector2(uv_l, uv_b),	// bottom-left
 				Vector3(rect.x + pos_r, rect.y + pos_t, 0), Vector2(uv_r, uv_t),	// top-right
@@ -256,19 +270,19 @@ void FrameRectRenderFeature::putRectangleTiling(GraphicsContext* context, const 
 	}
 }
 
-void FrameRectRenderFeature::putRectangle(GraphicsContext* context, const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect, Sprite9DrawMode wrapMode)
+void FrameRectRenderFeature::putRectangle(Batch* batch, const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect, Sprite9DrawMode wrapMode)
 {
 	if (wrapMode == Sprite9DrawMode::StretchedBorderFrame || wrapMode == Sprite9DrawMode::StretchedBoxFrame)
 	{
-		putRectangleStretch(context, rect, srcUVRect);
+		putRectangleStretch(batch, rect, srcUVRect);
 	}
 	else if (wrapMode == Sprite9DrawMode::RepeatedBorderFrame || wrapMode == Sprite9DrawMode::RepeatedBoxFrame)
 	{
-		putRectangleTiling(context, rect, srcPixelRect, srcUVRect);
+		putRectangleTiling(batch, rect, srcPixelRect, srcUVRect);
 	}
 }
 
-void FrameRectRenderFeature::putFrameRectangle(GraphicsContext* context, const Rect& rect, const Thickness& borderThickness, Rect srcRect, Sprite9DrawMode wrapMode, const SizeI& srcTextureSize)
+void FrameRectRenderFeature::putFrameRectangle(Batch* batch, const Rect& rect, const Thickness& borderThickness, Rect srcRect, Sprite9DrawMode wrapMode, const SizeI& srcTextureSize)
 {
 	if (srcRect.isEmpty()) return;
 	if (srcTextureSize.width == 0) return;
@@ -330,7 +344,7 @@ void FrameRectRenderFeature::putFrameRectangle(GraphicsContext* context, const R
 	//		□　□
 	//		□□□
 	putRectangle(
-		context,
+		batch,
 		Rect(outerRect.getLeft(), outerRect.getTop(), dstFrame.left, dstFrame.top),
 		Rect(outerSrcRect.getLeft(), outerSrcRect.getTop(), srcFrame.left, srcFrame.top),
 		Rect(outerUVRect.getLeft(), outerUVRect.getTop(), uvFrame.left, uvFrame.top),
@@ -340,7 +354,7 @@ void FrameRectRenderFeature::putFrameRectangle(GraphicsContext* context, const R
 	//		□　□
 	//		□□□
 	putRectangle(
-		context,
+		batch,
 		Rect(innerRect.getLeft(), outerRect.getTop(), innerRect.width, dstFrame.top),
 		Rect(innerSrcRect.getLeft(), outerSrcRect.getTop(), innerSrcRect.width, srcFrame.top),
 		Rect(innerUVRect.getLeft(), outerUVRect.getTop(), innerUVRect.width, uvFrame.top),
@@ -350,7 +364,7 @@ void FrameRectRenderFeature::putFrameRectangle(GraphicsContext* context, const R
 	//		□　□
 	//		□□□
 	putRectangle(
-		context,
+		batch,
 		Rect(innerRect.getRight(), outerRect.getTop(), dstFrame.right, dstFrame.top),
 		Rect(innerSrcRect.getRight(), outerSrcRect.getTop(), srcFrame.right, srcFrame.top),
 		Rect(innerUVRect.getRight(), outerUVRect.getTop(), uvFrame.right, uvFrame.top),
@@ -360,7 +374,7 @@ void FrameRectRenderFeature::putFrameRectangle(GraphicsContext* context, const R
 	//		□　■
 	//		□□□
 	putRectangle(
-		context,
+		batch,
 		Rect(innerRect.getRight(), innerRect.getTop(), dstFrame.right, innerRect.height),
 		Rect(innerSrcRect.getRight(), innerSrcRect.getTop(), srcFrame.right, innerSrcRect.height),
 		Rect(innerUVRect.getRight(), innerUVRect.getTop(), uvFrame.right, innerUVRect.height),
@@ -370,7 +384,7 @@ void FrameRectRenderFeature::putFrameRectangle(GraphicsContext* context, const R
 	//		□　□
 	//		□□■
 	putRectangle(
-		context,
+		batch,
 		Rect(innerRect.getRight(), innerRect.getBottom(), dstFrame.right, dstFrame.bottom),
 		Rect(innerSrcRect.getRight(), innerSrcRect.getBottom(), srcFrame.right, srcFrame.bottom),
 		Rect(innerUVRect.getRight(), innerUVRect.getBottom(), uvFrame.right, uvFrame.bottom),
@@ -380,7 +394,7 @@ void FrameRectRenderFeature::putFrameRectangle(GraphicsContext* context, const R
 	//		□　□
 	//		□■□
 	putRectangle(
-		context,
+		batch,
 		Rect(innerRect.getLeft(), innerRect.getBottom(), innerRect.width, dstFrame.bottom),
 		Rect(innerSrcRect.getLeft(), innerSrcRect.getBottom(), innerSrcRect.width, srcFrame.bottom),
 		Rect(innerUVRect.getLeft(), innerUVRect.getBottom(), innerUVRect.width, uvFrame.bottom),
@@ -390,7 +404,7 @@ void FrameRectRenderFeature::putFrameRectangle(GraphicsContext* context, const R
 	//		□　□
 	//		■□□
 	putRectangle(
-		context,
+		batch,
 		Rect(outerRect.getLeft(), innerRect.getBottom(), dstFrame.left, dstFrame.bottom),
 		Rect(outerSrcRect.getLeft(), innerSrcRect.getBottom(), srcFrame.left, srcFrame.bottom),
 		Rect(outerUVRect.getLeft(), innerUVRect.getBottom(), uvFrame.left, uvFrame.bottom),
@@ -400,7 +414,7 @@ void FrameRectRenderFeature::putFrameRectangle(GraphicsContext* context, const R
 	//		■　□
 	//		□□□
 	putRectangle(
-		context,
+		batch,
 		Rect(outerRect.getLeft(), innerRect.getTop(), dstFrame.left, innerRect.height),
 		Rect(outerSrcRect.getLeft(), innerSrcRect.getTop(), srcFrame.left, innerSrcRect.height),
 		Rect(outerUVRect.getLeft(), innerUVRect.getTop(), uvFrame.left, innerUVRect.height),

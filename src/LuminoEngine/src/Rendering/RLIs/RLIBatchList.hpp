@@ -16,14 +16,6 @@ public:
 
 	//void addClearBatch(ClearFlags flags, const Color& color, float depth, uint8_t stencil);
 
-	template<class T>
-	T* addNewBatch(RenderFeature* owner)
-	{
-		void* buffer = m_allocator->allocate(sizeof(T));
-		T* batch = new (buffer)T();
-		add(batch, owner);
-		return batch;
-	}
 
 	RenderFeatureBatch* firstBatch() const { return m_head; }
 	RenderFeatureBatch* lastBatch() const { return m_tail; }
@@ -39,6 +31,23 @@ public:
     DepthBuffer* depthBuffer = nullptr;
 
 	const CameraInfo* m_mainCameraInfo;
+
+
+
+
+	// ↓RenderFeature から使って良いもの
+
+	//bool lastBatchRenderFeatureIs(RenderFeature* renderFeature) const;
+	bool equalsLastBatchState(RenderFeature* renderFeature, const RLIBatchState& state);
+
+	template<class TBatch>
+	TBatch* addNewBatch(RenderFeature* owner)
+	{
+		void* buffer = m_allocator->allocate(sizeof(TBatch));
+		TBatch* batch = new (buffer)TBatch();
+		add(batch, owner);
+		return batch;
+	}
 
 private:
 	void add(RenderFeatureBatch* batch, RenderFeature* owner);

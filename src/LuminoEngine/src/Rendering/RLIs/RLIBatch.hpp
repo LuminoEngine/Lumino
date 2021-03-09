@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "../RenderStage.hpp"
-#include "RLIBatchMaterial.hpp"
+#include "RLIBatchState.hpp"
 
 namespace ln {
 namespace detail {
@@ -26,14 +26,16 @@ public:
 	const detail::RenderStage* stage() const { return m_stage; }
 	//detail::RenderDrawElementTypeFlags type() const { return m_type; }
 
-	void setWorldTransformPtr(const Matrix* value) { m_worldTransform = value; }
-	const Matrix* worldTransformPtr() const { return m_worldTransform; }
-	void setFinalMaterial(Material* value);
-	const RLIBatchMaterial* finalMaterial() const { return &m_material; }
-	void setSubsetInfo(const SubsetInfo& value) { m_subsetInfo = value; }
-	const SubsetInfo& subsetInfo() const { return m_subsetInfo; }
-	void setRenderPass(RenderPass* value) { m_renderPass = value; }
-	RenderPass* renderPass() const { return m_renderPass; }
+	void setup(const Matrix* worldTransformPtr, Material* finalMaterial, const SubsetInfo& subsetInfo, RenderPass* renderPass);
+	//void setWorldTransformPtr(const Matrix* value) { m_worldTransform = value; }
+	const Matrix* worldTransformPtr() const { return m_material.m_worldTransform; }
+	//void setFinalMaterial(Material* value);
+	const RLIBatchState* finalMaterial() const { return &m_material; }
+	//void setSubsetInfo(const SubsetInfo& value) { m_subsetInfo = value; }
+	const SubsetInfo& subsetInfo() const { return m_material.m_subsetInfo; }
+	//void setRenderPass(RenderPass* value) { m_renderPass = value; }
+	RenderPass* renderPass() const { return m_material.m_renderPass; }
+	RenderFeature* renderFeature() const { return m_stage->renderFeature; }
 
 	// SpriteText で使っている。 TODO: これは MaskTexture みたいな位置づけにしてもいいかも。
 	Texture* overrideTexture = nullptr;
@@ -54,18 +56,9 @@ private:
 	detail::RenderStage* m_stage;
 	//detail::RenderDrawElementTypeFlags m_type;
 
-	// DrawElement が持っている CombinedWorldTransform への参照。
-	// null の場合は Matrix::Identity とみなす。
-	// 単純に RenderFeatureBatch のサイズを増やしたくないのでポインタで用意してある。
-	// RenderFeatureBatch の寿命は SceneRenderer の内部だけであり、その間は DrawElement(が持っている CombinedWorldTransform) が消えることはない。
-	// Sprite や SpriteText など DynamicVertexBuffer を作るものたちは、Vertex を作るときに Transform するので、これは null となる。
-	// Mesh (サブセット単位) などはこれに値がセットされる。
-	const Matrix* m_worldTransform;
 
 	//Material* m_finalMaterial;
-	RLIBatchMaterial m_material;	// TODO: 直前の Batch と共有できるケースはあるので、ポインタにしておくのもあり
-	SubsetInfo m_subsetInfo;
-	RenderPass* m_renderPass;
+	RLIBatchState m_material;	// TODO: 直前の Batch と共有できるケースはあるので、ポインタにしておくのもあり
 
 	friend class RenderFeatureBatchList;
 };

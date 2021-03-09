@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include "RLIBatchMaterial.hpp"
+#include "RLIBatchState.hpp"
 #include "RLIMaterial.hpp"
 
 namespace ln {
@@ -13,7 +13,7 @@ RLIMaterial::RLIMaterial()
 	reset();
 }
 
-RLIMaterial::RLIMaterial(const RLIBatchMaterial& src)
+RLIMaterial::RLIMaterial(const RLIBatchState& src)
 	: material(src.material)
 	, blendMode(src.blendMode)
 	, cullingMode(src.cullingMode)

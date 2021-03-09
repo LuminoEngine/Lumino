@@ -4,7 +4,7 @@ namespace ln {
 namespace detail {
 class RLICulling;
 class RenderFeatureBatch;
-class RLIBatchMaterial;
+class RLIBatchState;
 
 } // namespace detail
 } // namespace ln

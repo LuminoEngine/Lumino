@@ -16,17 +16,17 @@ namespace detail {
 
 RequestBatchResult ClearRenderFeature::clear(detail::RenderFeatureBatchList* batchList, ClearFlags flags, const Color& color, float depth, uint8_t stencil)
 {
-	m_data.flags = flags;
-	m_data.color = color;
-	m_data.depth = depth;
-	m_data.stencil = stencil;
-	return RequestBatchResult::Staging;
+	auto* batch = batchList->addNewBatch<ClearBatch>(this);
+	batch->data.flags = flags;
+	batch->data.color = color;
+	batch->data.depth = depth;
+	batch->data.stencil = stencil;
+	return RequestBatchResult::Submitted;
 }
 
 void ClearRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
-	auto batch = batchList->addNewBatch<ClearBatch>(this);
-	batch->data = m_data;
+	LN_UNREACHABLE();
 }
 
 void ClearRenderFeature::renderBatch(GraphicsContext* context, detail::RenderFeatureBatch* batch)

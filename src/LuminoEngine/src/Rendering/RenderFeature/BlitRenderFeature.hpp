@@ -17,17 +17,17 @@ public:
     BlitRenderFeature();
 	void init(RenderingManager* manager);
 
-	RequestBatchResult blit(detail::RenderFeatureBatchList* batchList, GraphicsContext* context);
+	RequestBatchResult blit(RenderFeatureBatchList* batchList, const RLIBatchState& state);
 
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
 
 private:
-	class Batch : public RenderFeatureBatch
-	{
-	public:
-		int requestedCount;
-	};
+	//class Batch : public RenderFeatureBatch
+	//{
+	//public:
+	//	int requestedCount;
+	//};
 
 	RenderingManager* m_manager;
     Ref<VertexLayout> m_vertexLayout;

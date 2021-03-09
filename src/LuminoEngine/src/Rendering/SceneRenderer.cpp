@@ -277,6 +277,65 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, const RLICu
 
 	// Create batch list.
 	{
+#ifdef LN_RLI_BATCH
+		RLIBatchState batchState;
+		RenderPass* currentRenderPass = nullptr;
+		const std::vector<RenderDrawElement*>& renderingElementList = culling->visibleElements(m_currentPart);
+		for (RenderDrawElement* element : renderingElementList)
+		{
+			RenderStage* stage = element->stage();
+			assert(stage);
+			assert(stage->renderFeature);
+
+			RenderPass* renderPass = getOrCreateRenderPass(currentRenderPass, stage);
+			currentRenderPass = renderPass;
+
+			// ShaderDescripter
+			SubsetInfo subsetInfo;
+			const Matrix* worldMatrix = nullptr;
+			Material* finalMaterial = nullptr;
+			if (element->flags().hasFlag(RenderDrawElementTypeFlags::Clear)) {
+				subsetInfo.clear();
+			}
+			else {
+				if (stage->renderFeature->drawElementTransformNegate()) {
+					worldMatrix = nullptr;
+				}
+				else {
+					worldMatrix = &element->combinedWorldMatrix();
+				}
+
+				finalMaterial = stage->getMaterialFinal(nullptr, m_manager->builtinMaterials(BuiltinMaterial::Default));
+
+				if (finalMaterial) {
+					subsetInfo.materialTexture = finalMaterial->mainTexture();
+					subsetInfo.normalMap = finalMaterial->normalMap();
+					subsetInfo.metallicRoughnessTexture = finalMaterial->metallicRoughnessTexture();
+					subsetInfo.occlusionTexture = finalMaterial->occlusionTexture();
+				}
+				else {
+					subsetInfo.materialTexture = nullptr;
+					subsetInfo.normalMap = nullptr;
+					subsetInfo.metallicRoughnessTexture = nullptr;
+					subsetInfo.occlusionTexture = nullptr;
+				}
+				subsetInfo.opacity = stage->getOpacityFinal(element);
+				subsetInfo.colorScale = stage->getColorScaleFinal(element);
+				subsetInfo.blendColor = stage->getBlendColorFinal(element);
+				subsetInfo.tone = stage->getToneFinal(element);
+			}
+
+			// setup()
+			{
+				batchState.m_worldTransform = worldMatrix;
+				batchState.m_subsetInfo = subsetInfo;
+				batchState.m_renderPass = renderPass;
+				batchState.mergeFrom(stage->geometryStageParameters, finalMaterial);
+			}
+
+			element->onRequestBatch(&m_renderFeatureBatchList, graphicsContext, stage->renderFeature, &batchState);
+		}
+#else
 		RenderPass* currentRenderPass = nullptr;
 		RenderStage* currentStage = nullptr;
 		const Matrix* currentWorldMatrix = nullptr;
@@ -376,10 +435,9 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, const RLICu
 				}
 
 				if (submittedBatch) {
-					submittedBatch->setWorldTransformPtr(currentWorldMatrix);
-					submittedBatch->setFinalMaterial(currentFinalMaterial);
-					submittedBatch->setSubsetInfo(currentSubsetInfo);
-					submittedBatch->setRenderPass(submittedBatch->ensureRenderPassOutside ? nullptr : currentRenderPass);
+					submittedBatch->setup(
+						currentWorldMatrix, currentFinalMaterial, currentSubsetInfo,
+						submittedBatch->ensureRenderPassOutside ? nullptr : currentRenderPass);
 				}
 
 				if (submitRequested) {
@@ -395,11 +453,11 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, const RLICu
 
 		if (currentStage) {
 			currentStage->renderFeature->submitBatch(graphicsContext, &m_renderFeatureBatchList);
-			m_renderFeatureBatchList.lastBatch()->setWorldTransformPtr(currentWorldMatrix);
-			m_renderFeatureBatchList.lastBatch()->setFinalMaterial(currentFinalMaterial);
-			m_renderFeatureBatchList.lastBatch()->setSubsetInfo(currentSubsetInfo);
-			m_renderFeatureBatchList.lastBatch()->setRenderPass(m_renderFeatureBatchList.lastBatch()->ensureRenderPassOutside ? nullptr : currentRenderPass);
+			m_renderFeatureBatchList.lastBatch()->setup(
+				currentWorldMatrix, currentFinalMaterial, currentSubsetInfo,
+				m_renderFeatureBatchList.lastBatch()->ensureRenderPassOutside ? nullptr : currentRenderPass);
 		}
+#endif
 	}
 
 #ifdef LN_PRINT_PROFILE
@@ -464,7 +522,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			}
 
 			const RenderStage* stage = batch->stage();
-			const RLIBatchMaterial* finalMaterial = batch->finalMaterial();
+			const RLIBatchState* finalMaterial = batch->finalMaterial();
 			const SubsetInfo& subsetInfo = batch->subsetInfo();
 
 			// ステートの変わり目チェック
@@ -495,7 +553,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 			if (!finalMaterial->material) {
 				// Shader 使わない描画 (clear)
-				RLIBatchMaterial m1;
+				RLIBatchState m1;
 				m1.mergeFrom(currentStage->geometryStageParameters, nullptr);
 				RLIMaterial rm(m1);
 				rm.applyRenderStates(graphicsContext);

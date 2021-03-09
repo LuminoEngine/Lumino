@@ -2,17 +2,17 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include "RLIBatchMaterial.hpp"
+#include "RLIBatchState.hpp"
 
 namespace ln {
 namespace detail {
 
-RLIBatchMaterial::RLIBatchMaterial()
+RLIBatchState::RLIBatchState()
 {
 	reset();
 }
 
-void RLIBatchMaterial::reset()
+void RLIBatchState::reset()
 {
 	material = nullptr;
 	blendMode = BlendMode::Normal;
@@ -23,7 +23,7 @@ void RLIBatchMaterial::reset()
 	primitiveTopology = PrimitiveTopology::TriangleList;
 }
 
-bool RLIBatchMaterial::equals(const RLIBatchMaterial* other) const
+bool RLIBatchState::equals(const RLIBatchState* other) const
 {
 	return
 		material == other->material &&  // TODO: Material が一致することはまずない。ちゃんと中身かhashを見ること。
@@ -35,7 +35,7 @@ bool RLIBatchMaterial::equals(const RLIBatchMaterial* other) const
 		primitiveTopology == other->primitiveTopology;
 }
 
-void RLIBatchMaterial::mergeFrom(const GeometryStageParameters* geometoryParams, Material* finalMaterial)
+void RLIBatchState::mergeFrom(const GeometryStageParameters* geometoryParams, Material* finalMaterial)
 {
 	assert(geometoryParams);
 

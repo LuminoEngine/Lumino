@@ -29,7 +29,7 @@ public:
 	PrimitiveTopology primitiveTopology;
 
 	RLIMaterial();
-	RLIMaterial(const RLIBatchMaterial& src);
+	RLIMaterial(const RLIBatchState& src);
 	void reset();
 	bool equals(const RLIMaterial* other) const;
 	void applyRenderStates(GraphicsContext* context) const;

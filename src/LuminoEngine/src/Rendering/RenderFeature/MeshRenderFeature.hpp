@@ -17,9 +17,9 @@ public:
 	MeshRenderFeature();
 	void init(RenderingManager* manager);
 
-	RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshResource* mesh, int sectionIndex);
-    RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph);
-	RequestBatchResult drawMeshInstanced(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, InstancedMeshList* list);
+	RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshResource* mesh, int sectionIndex);
+    RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph);
+	RequestBatchResult drawMeshInstanced(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, InstancedMeshList* list);
 
 	RequestBatchResult attemptSubmitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, bool instanced);
 	virtual void beginRendering() override;
@@ -41,8 +41,8 @@ private:
 
 	struct BatchData
 	{
-		int offset;
-		int count;
+		int offset;	// m_meshDrawList の index
+		int count;	// m_meshDrawList の index から、何個描くか
 		bool instanced;
 		detail::SkeletonInstance* skeleton;
 		detail::MorphInstance* morph;
@@ -54,8 +54,9 @@ private:
 		BatchData data;
 	};
 
-	std::vector<DrawMeshData> m_meshes;
-	BatchData m_batchData;
+	Batch* acquireBatch(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState);
+
+	std::vector<DrawMeshData> m_drawList;
 };
 
 } // namespace detail
