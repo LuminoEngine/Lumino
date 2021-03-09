@@ -287,6 +287,9 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, const RLICu
 			assert(stage);
 			assert(stage->renderFeature);
 
+			m_renderFeatureBatchList.setCurrentStage(stage);
+
+			// nullptr の場合、render 時の規定値を使う
 			RenderPass* renderPass = getOrCreateRenderPass(currentRenderPass, stage);
 			currentRenderPass = renderPass;
 

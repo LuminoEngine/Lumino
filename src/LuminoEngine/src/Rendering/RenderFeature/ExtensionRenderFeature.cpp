@@ -58,12 +58,16 @@ void ExtensionRenderFeature::beginRendering()
 
 void ExtensionRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
+#ifdef LN_RLI_BATCH
+    LN_UNREACHABLE();
+#else
     auto batch = batchList->addNewBatch<Batch>(this);
     batch->ensureRenderPassOutside = (m_precondition == NativeGraphicsExtensionRenderPassPreCondition::EnsureOutside);
     batch->data = m_batchData;
 
     m_batchData.offset = m_batchData.offset + m_batchData.count;
     m_batchData.count = 0;
+#endif
 }
 
 void ExtensionRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)

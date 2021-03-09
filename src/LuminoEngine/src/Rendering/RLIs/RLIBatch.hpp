@@ -30,7 +30,7 @@ public:
 	//void setWorldTransformPtr(const Matrix* value) { m_worldTransform = value; }
 	const Matrix* worldTransformPtr() const { return m_material.m_worldTransform; }
 	//void setFinalMaterial(Material* value);
-	const RLIBatchState* finalMaterial() const { return &m_material; }
+	RLIBatchState* finalMaterial() { return &m_material; }
 	//void setSubsetInfo(const SubsetInfo& value) { m_subsetInfo = value; }
 	const SubsetInfo& subsetInfo() const { return m_material.m_subsetInfo; }
 	//void setRenderPass(RenderPass* value) { m_renderPass = value; }

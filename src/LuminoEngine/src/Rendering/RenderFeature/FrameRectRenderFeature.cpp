@@ -43,9 +43,10 @@ RequestBatchResult FrameRectRenderFeature::drawRequest(
 		batch = static_cast<Batch*>(batchList->lastBatch());
 	}
 	else {
-		batch = batchList->addNewBatch<Batch>(this);
+		batch = batchList->addNewBatch<Batch>(this, batchState);
 		batch->data.spriteOffset = 0;
 		batch->data.spriteCount = 0;
+		batch->finalMaterial()->m_worldTransform = nullptr;	// VertexShade での World 座標変換は不要
 	}
 
 

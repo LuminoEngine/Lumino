@@ -154,10 +154,13 @@ void ShapesRendererCommandList::addDrawBoxShadow(LinearAllocator* allocator, con
 	cmd->inset = inset;
 }
 
+static const int g_finalOffset = 0.0;
+
+#ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
+#else
 //==============================================================================
 // ShapesRenderFeature
 
-static const int g_finalOffset = 0.0;
 
 ShapesRenderFeature::ShapesRenderFeature()
 	: m_manager(nullptr)
@@ -1003,6 +1006,7 @@ void ShapesRenderFeature::plotCornerBasePointsBezier(const Vector2& first, const
 	pt.exDirect = false;
 	m_basePoints.add(pt);
 }
+#endif
 
 #if 0
 //==============================================================================
@@ -1725,6 +1729,7 @@ bool BoxElementShapeBuilderCommon::GuideArea::verify() const
         (corner.topRight + corner.bottomRight <= rect.height);
 }
 
+#if 0
 //==============================================================================
 // BoxElementShapeBuilder2
 
@@ -2678,6 +2683,7 @@ void BoxElementShapeBuilder2::expandStripeStroke(const OutlinePath& path)
 #endif
 	}
 }
+#endif
 
 
 //==============================================================================
@@ -3345,23 +3351,28 @@ void BoxElementShapeBuilder3::applyColorsAndOffset(const PointIdRange& range, co
 
 ShapesRenderFeature2::ShapesRenderFeature2()
 	: m_manager(nullptr)
-	, m_batchData()
+	//, m_batchData()
 {
 }
 
 void ShapesRenderFeature2::init(RenderingManager* manager)
 {
 	m_manager = manager;
-	m_batchData.indexOffset = 0;
-	m_batchData.indexCount = 0;
+	//m_batchData.indexOffset = 0;
+	//m_batchData.indexCount = 0;
 
 	m_vertexLayout = m_manager->standardVertexDeclaration();
 	m_vertexBuffer = makeObject<VertexBuffer>(4096 * sizeof(Vertex), GraphicsResourceUsage::Dynamic);
 	m_indexBuffer = makeObject<IndexBuffer>(4096, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
 }
 
-RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(ShapesRendererCommandList* commandList)
+RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(
+    RenderFeatureBatchList* batchList,
+    const RLIBatchState& batchState,
+    ShapesRendererCommandList* commandList)
 {
+    Batch* batch = acquireBatch(batchList, batchState);
+
 	ShapesRendererCommandList::ListNode* node = commandList->head;
 	while (node)
 	{
@@ -3473,7 +3484,7 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(ShapesRendererCo
 			m_vertexUsedCount += m_shapeBuilder.vertexCount();
 			m_indexUsedCount += m_shapeBuilder.indexCount();
 
-			m_batchData.indexCount += m_shapeBuilder.indexCount();
+            batch->data.indexCount += m_shapeBuilder.indexCount();
 
 		}
 		node = node->next;
@@ -3485,8 +3496,13 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(ShapesRendererCo
 	return RequestBatchResult::Staging;
 }
 
-RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(BoxElementShapeCommandList* commandList)
+RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(
+    RenderFeatureBatchList* batchList,
+    const RLIBatchState& batchState,
+    BoxElementShapeCommandList* commandList)
 {
+    Batch* batch = acquireBatch(batchList, batchState);
+
     BoxElementShapeCommandList::ListNode* node = commandList->head;
     while (node)
     {
@@ -3557,7 +3573,7 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(BoxElementShapeC
                 m_vertexUsedCount += m_shapeBuilder.vertexCount();
                 m_indexUsedCount += m_shapeBuilder.indexCount();
 
-                m_batchData.indexCount += m_shapeBuilder.indexCount();
+                batch->data.indexCount += m_shapeBuilder.indexCount();
                 break;
             }
             default:
@@ -3573,14 +3589,17 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(BoxElementShapeC
 
 void ShapesRenderFeature2::beginRendering()
 {
-	m_batchData.indexOffset = 0;
-	m_batchData.indexCount = 0;
+	//m_batchData.indexOffset = 0;
+	//m_batchData.indexCount = 0;
 	m_vertexUsedCount = 0;
 	m_indexUsedCount = 0;
 }
 
 void ShapesRenderFeature2::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
+#ifdef LN_RLI_BATCH
+    LN_UNREACHABLE();
+#else
 	//if (m_mappedVertices) {
 	//	// TODO: unmap (今は自動だけど、明示した方が安心かも)
 	//}
@@ -3590,6 +3609,7 @@ void ShapesRenderFeature2::submitBatch(GraphicsContext* context, detail::RenderF
 
 	m_batchData.indexOffset = m_batchData.indexOffset + m_batchData.indexCount;
 	m_batchData.indexCount = 0;
+#endif
 }
 
 void ShapesRenderFeature2::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
@@ -3604,7 +3624,14 @@ void ShapesRenderFeature2::renderBatch(GraphicsContext* context, RenderFeatureBa
 	context->drawPrimitiveIndexed(localBatch->data.indexOffset, localBatch->data.indexCount / 3);
 }
 
-
+ShapesRenderFeature2::Batch* ShapesRenderFeature2::acquireBatch(RenderFeatureBatchList* batchList, const RLIBatchState& batchState)
+{
+    // TODO: Batching
+    Batch* batch = batchList->addNewBatch<Batch>(this, batchState);
+    batch->data.indexOffset = m_indexUsedCount;
+    batch->data.indexCount = 0;
+    return batch;
+}
 
 } // namespace detail
 } // namespace ln

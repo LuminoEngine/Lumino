@@ -14,9 +14,9 @@ namespace detail {
 //==============================================================================
 // ClearRenderFeature
 
-RequestBatchResult ClearRenderFeature::clear(detail::RenderFeatureBatchList* batchList, ClearFlags flags, const Color& color, float depth, uint8_t stencil)
+RequestBatchResult ClearRenderFeature::clear(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, ClearFlags flags, const Color& color, float depth, uint8_t stencil)
 {
-	auto* batch = batchList->addNewBatch<ClearBatch>(this);
+	auto* batch = batchList->addNewBatch<ClearBatch>(this, batchState);
 	batch->data.flags = flags;
 	batch->data.color = color;
 	batch->data.depth = depth;

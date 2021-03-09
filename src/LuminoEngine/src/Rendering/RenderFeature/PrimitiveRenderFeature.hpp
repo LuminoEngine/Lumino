@@ -9,31 +9,6 @@ namespace ln {
 class MeshResource;
 namespace detail {
 
-class InternalPrimitiveRenderer
-    : public RefObject
-{
-public:
-    InternalPrimitiveRenderer();
-    virtual ~InternalPrimitiveRenderer();
-    void init(RenderingManager* manager);
-
-    void drawMeshGenerater(const MeshGenerater* generator);
-
-    void flush(ICommandList* context);
-
-private:
-    void prepareBuffers(IGraphicsDevice* device, int vertexCount, int indexCount);
-
-    RenderingManager* m_manager;
-    Ref<LinearAllocator> m_linearAllocator;
-    List<MeshGenerater*> m_generators;
-    PrimitiveTopology m_primitiveType;
-    Ref<IVertexDeclaration> m_vertexDeclaration;
-    Ref<RHIResource> m_vertexBuffer;
-    Ref<RHIResource> m_indexBuffer;
-
-};
-
 // 単純なメッシュ形状を描画する。
 // MeshRenderFeature が Mesh(VertexBuffer, IndexBuffer) を受け取って描画するのに対し、
 // こちらは形状の情報（球なら中心位置と半径）を受け取って描画する。そのためデータサイズを非常に小さく抑えることができる。
@@ -81,7 +56,10 @@ public:
     //void drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
 
 
-	RequestBatchResult drawMeshGenerater(const MeshGenerater* generator);
+	RequestBatchResult drawMeshGenerater(
+		RenderFeatureBatchList* batchList,
+		const RLIBatchState& batchState,
+		const MeshGenerater* generator);
 
 	virtual void beginRendering() override;
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
@@ -112,12 +90,13 @@ private:
 	Ref<LinearAllocator> m_linearAllocator;
 	List<MeshGenerater*> m_generators;
 	//PrimitiveTopology m_primitiveType;
-	BatchData m_batchData;
+	//BatchData m_batchData;
 
 	// RHI
 	Ref<VertexLayout> m_vertexLayout;
 	Ref<VertexBuffer> m_vertexBuffer;
 	Ref<IndexBuffer> m_indexBuffer;
+	int32_t m_indexCount;
 };
 
 class PrimitiveRenderFeature
@@ -127,7 +106,13 @@ public:
 	PrimitiveRenderFeature();
 	void init();
 
-	RequestBatchResult drawPrimitive(detail::RenderFeatureBatchList* batchList, VertexLayout* vertexLayout, VertexBuffer* vertexBuffer, int startVertex, int primitiveCount);
+	RequestBatchResult drawPrimitive(
+		RenderFeatureBatchList* batchList,
+		const RLIBatchState& batchState,
+		VertexLayout* vertexLayout,
+		VertexBuffer* vertexBuffer,
+		int startVertex,
+		int primitiveCount);
 
 	virtual void beginRendering() override;
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
@@ -155,7 +140,7 @@ private:
 	};
 
 	List<PrimitveData> m_primitives;
-	BatchData m_batchData;
+	//BatchData m_batchData;
 };
 
 } // namespace detail

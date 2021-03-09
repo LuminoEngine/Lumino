@@ -17,13 +17,13 @@ public:
 	MeshRenderFeature();
 	void init(RenderingManager* manager);
 
-	RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshResource* mesh, int sectionIndex);
-    RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph);
-	RequestBatchResult drawMeshInstanced(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, InstancedMeshList* list);
+	RequestBatchResult drawMesh(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshResource* mesh, int sectionIndex);
+    RequestBatchResult drawMesh(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph);
+	RequestBatchResult drawMeshInstanced(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, InstancedMeshList* list);
 
-	RequestBatchResult attemptSubmitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, bool instanced);
+	RequestBatchResult attemptSubmitBatch(GraphicsContext* context, RenderFeatureBatchList* batchList, bool instanced);
 	virtual void beginRendering() override;
-	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void submitBatch(GraphicsContext* context, RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
 
 private:
@@ -54,7 +54,7 @@ private:
 		BatchData data;
 	};
 
-	Batch* acquireBatch(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState);
+	Batch* acquireBatch(RenderFeatureBatchList* batchList, const RLIBatchState& batchState);
 
 	std::vector<DrawMeshData> m_drawList;
 };

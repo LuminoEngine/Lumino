@@ -12,7 +12,7 @@ namespace detail {
 class ClearRenderFeature : public RenderFeature
 {
 public:
-	RequestBatchResult clear(detail::RenderFeatureBatchList* batchList, ClearFlags flags, const Color& color, float depth, uint8_t stencil);
+	RequestBatchResult clear(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, ClearFlags flags, const Color& color, float depth, uint8_t stencil);
 
 protected:
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;

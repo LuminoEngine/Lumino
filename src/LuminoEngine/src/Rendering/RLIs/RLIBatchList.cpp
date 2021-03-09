@@ -38,13 +38,14 @@ void RenderFeatureBatchList::setCurrentStage(detail::RenderStage* stage)
 //	addNewBatch<ClearBatch>(nullptr);
 //}
 
-void RenderFeatureBatchList::add(RenderFeatureBatch* batch, RenderFeature* owner)
+void RenderFeatureBatchList::add(RenderFeatureBatch* batch, RenderFeature* owner, const RLIBatchState& state)
 {
 	if (LN_REQUIRE(batch)) return;
 	if (LN_REQUIRE(m_currentStage)) return;
 
 	batch->m_owner = owner;
 	batch->m_stage = m_currentStage;
+	batch->m_material = state;
 
 	if (!m_head) {
 		m_head = m_tail = batch;

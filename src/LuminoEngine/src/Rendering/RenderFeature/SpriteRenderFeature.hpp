@@ -21,7 +21,8 @@ public:
 	// 以前は 2D メインな Sprite なのでピクセル単位で指定していたが、
 	// 考え方として他の RenderFeature と同様に「最終的な描画に使うメッシュを作る」方針で統一したい。
 	RequestBatchResult drawRequest(
-		detail::RenderFeatureBatchList* batchList,
+		RenderFeatureBatchList* batchList,
+		const RLIBatchState& batchState,
 		GraphicsContext* context,
 		const Matrix& transform,
 		const Vector2& size,
@@ -70,7 +71,8 @@ private:
 	Ref<VertexBuffer> m_vertexBuffer;
 	Ref<IndexBuffer> m_indexBuffer;
 	int m_buffersReservedSpriteCount;
-	BatchData m_batchData;
+	int32_t m_spriteCount;
+	//BatchData m_batchData;
 	Vertex* m_mappedVertices;
 };
 

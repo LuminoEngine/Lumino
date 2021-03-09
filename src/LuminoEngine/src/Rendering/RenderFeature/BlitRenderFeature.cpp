@@ -47,11 +47,11 @@ void BlitRenderFeature::init(RenderingManager* manager)
 	m_vertexBuffer = makeObject<VertexBuffer>(sizeof(vertices), vertices, GraphicsResourceUsage::Static);
 }
 
-RequestBatchResult BlitRenderFeature::blit(detail::RenderFeatureBatchList* batchList, const RLIBatchState& state)
+RequestBatchResult BlitRenderFeature::blit(RenderFeatureBatchList* batchList, const RLIBatchState& batchState)
 {
 	// blit は基本的にスクリーンコピーで使われるため、毎回 Material が異なる。
 	// 特に Batch する意味は無い。かえってオーバーヘッドが乗ってしまう。
-	batchList->addNewBatch<RenderFeatureBatch>(this);
+	batchList->addNewBatch<RenderFeatureBatch>(this, batchState);
 	return RequestBatchResult::Submitted;
 }
 

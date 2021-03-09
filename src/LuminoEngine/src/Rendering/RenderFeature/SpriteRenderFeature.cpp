@@ -27,12 +27,14 @@ void SpriteRenderFeature2::init(RenderingManager* manager)
 	m_manager = manager;
 	m_vertexLayout = manager->standardVertexDeclaration();
 	prepareBuffers(nullptr, 2048);
-	m_batchData.spriteOffset = 0;
-	m_batchData.spriteCount = 0;
+	//m_batchData.spriteOffset = 0;
+	//m_batchData.spriteCount = 0;
+	m_spriteCount = 0;
 }
 
 RequestBatchResult SpriteRenderFeature2::drawRequest(
-	detail::RenderFeatureBatchList* batchList,
+	RenderFeatureBatchList* batchList,
+	const RLIBatchState& batchState,
 	GraphicsContext* context,
 	const Matrix& transform,
 	const Vector2& size,
@@ -43,10 +45,22 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 	BillboardType billboardType,
 	SpriteFlipFlags flipFlags)
 {
+	Batch* batch;
+	if (batchList->equalsLastBatchState(this, batchState)) {
+		batch = static_cast<Batch*>(batchList->lastBatch());
+	}
+	else {
+		batch = batchList->addNewBatch<Batch>(this, batchState);
+		batch->data.spriteOffset = m_spriteCount;
+		batch->data.spriteCount = 0;
+		batch->finalMaterial()->m_worldTransform = nullptr;	// VertexShade での World 座標変換は不要
+	}
+
+
 	// TODO: buffer おおきくする
 
 	m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->writableData());
-	auto* vertices = m_mappedVertices + ((m_batchData.spriteOffset + m_batchData.spriteCount) * 4);
+	auto* vertices = m_mappedVertices + ((batch->data.spriteOffset + batch->data.spriteCount) * 4);
 
 	Vector2 center(size.x * anchorRatio.x, size.y * anchorRatio.y);
 	Vector3 normal = Vector3::UnitZ;
@@ -304,7 +318,7 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 #endif
 	}
 
-	m_batchData.spriteCount++;
+	batch->data.spriteCount++;
 	return RequestBatchResult::Staging;
 }
 
@@ -319,6 +333,9 @@ void SpriteRenderFeature2::onActiveRenderFeatureChanged(const detail::CameraInfo
 
 void SpriteRenderFeature2::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
+#ifdef LN_RLI_BATCH
+	LN_UNREACHABLE();
+#else
 	if (m_mappedVertices) {
 		// TODO: unmap (今は自動だけど、明示した方が安心かも)
 	}
@@ -328,6 +345,7 @@ void SpriteRenderFeature2::submitBatch(GraphicsContext* context, detail::RenderF
 
 	m_batchData.spriteOffset = m_batchData.spriteOffset + m_batchData.spriteCount;
 	m_batchData.spriteCount = 0;
+#endif
 }
 
 void SpriteRenderFeature2::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
@@ -338,8 +356,9 @@ void SpriteRenderFeature2::renderBatch(GraphicsContext* context, RenderFeatureBa
 	context->setIndexBuffer(m_indexBuffer);
 	context->drawPrimitiveIndexed(localBatch->data.spriteOffset * 6, localBatch->data.spriteCount * 2);
 
-	m_batchData.spriteOffset = 0;
-	m_batchData.spriteCount = 0;
+	//m_batchData.spriteOffset = 0;
+	//m_batchData.spriteCount = 0;
+	m_spriteCount = 0;
 }
 
 void SpriteRenderFeature2::makeRenderSizeAndSourceRectHelper(Texture* texture, const Size& size, const Rect& sourceRect, Size* outSize, Rect* outSourceRect)

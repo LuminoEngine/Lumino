@@ -256,10 +256,10 @@ void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch
 	}
 }
 
-MeshRenderFeature::Batch* MeshRenderFeature::acquireBatch(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState)
+MeshRenderFeature::Batch* MeshRenderFeature::acquireBatch(RenderFeatureBatchList* batchList, const RLIBatchState& batchState)
 {
-	// TODO: state check
-	Batch* batch = batchList->addNewBatch<Batch>(this);
+	// TODO: Batching
+	Batch* batch = batchList->addNewBatch<Batch>(this, batchState);
 	batch->data.offset = m_drawList.size();
 	batch->data.count = 0;
 	batch->data.instanced = false;

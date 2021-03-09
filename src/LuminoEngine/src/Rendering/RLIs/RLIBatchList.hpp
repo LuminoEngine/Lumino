@@ -41,16 +41,16 @@ public:
 	bool equalsLastBatchState(RenderFeature* renderFeature, const RLIBatchState& state);
 
 	template<class TBatch>
-	TBatch* addNewBatch(RenderFeature* owner)
+	TBatch* addNewBatch(RenderFeature* owner, const RLIBatchState& state)
 	{
 		void* buffer = m_allocator->allocate(sizeof(TBatch));
 		TBatch* batch = new (buffer)TBatch();
-		add(batch, owner);
+		add(batch, owner, state);
 		return batch;
 	}
 
 private:
-	void add(RenderFeatureBatch* batch, RenderFeature* owner);
+	void add(RenderFeatureBatch* batch, RenderFeature* owner, const RLIBatchState& state);
 
 	detail::RenderingManager* m_manager;
 	Ref<detail::LinearAllocator> m_allocator;

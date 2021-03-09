@@ -20,9 +20,9 @@ public:
 
 	
 
-	RequestBatchResult drawText(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Ref<SamplerState>& samplerState, const Matrix& transform);
-	RequestBatchResult drawChar(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* font, uint32_t codePoint, const Color& color, const Matrix& transform);
-	RequestBatchResult drawFlexGlyphRun(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* font, const FlexGlyphRun* glyphRun, const Vector2& anchor, SpriteBaseDirection baseDirection, const Matrix& transform);
+	RequestBatchResult drawText(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, const FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Ref<SamplerState>& samplerState, const Matrix& transform);
+	RequestBatchResult drawChar(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, Font* font, uint32_t codePoint, const Color& color, const Matrix& transform);
+	RequestBatchResult drawFlexGlyphRun(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, Font* font, const FlexGlyphRun* glyphRun, const Vector2& anchor, SpriteBaseDirection baseDirection, const Matrix& transform);
 
 protected:
 	// RenderFeature interface
@@ -56,12 +56,12 @@ private:
 
 	// TODO: バッファの準備周りは spriteRenderer と同じ。共通化した方がいいかも
 	void prepareBuffers(GraphicsContext* context, int spriteCount);
-	RequestBatchResult updateCurrentFontAndFlushIfNeeded(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* newFont, FontRequester* fontRequester, const Matrix& transform);
+	Batch* acquireBatch(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, Font* newFont, FontRequester* fontRequester, const Matrix& transform);
 	void beginLayout();
 	void addLayoutedGlyphItem(uint32_t codePoint, const Vector2& pos, const Color& color, const Matrix& transform);
-	RequestBatchResult resolveCache(detail::RenderFeatureBatchList* batchList, GraphicsContext* context);
-	void endLayout(GraphicsContext* context);
-	void putRectangle(Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color) const;
+	RequestBatchResult resolveCache(RenderFeatureBatchList* batchList, GraphicsContext* context);
+	void endLayout(Batch* batch, GraphicsContext* context);
+	void addSprite(Batch* batch, Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
 	bool isPixelSnapEnabled() const { return m_drawingBaseDirection == SpriteBaseDirection::Basic2D; }
 
 	//
@@ -75,7 +75,8 @@ private:
 	Ref<VertexBuffer> m_vertexBuffer;
 	Ref<IndexBuffer> m_indexBuffer;
 	int m_buffersReservedSpriteCount;
-	BatchData m_batchData;
+	//BatchData m_batchData;
+	int32_t m_spriteCount;
 	Vertex* m_mappedVertices;
 
 	FontGlyphTextureCacheRequest m_cacheRequest;	// 1フレーム中繰り返し使う可変バッファ
@@ -117,10 +118,10 @@ public:
 	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const RLIBatchState* state) override
 	{
 		if (glyphRun) {
-			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawFlexGlyphRun(batchList, context, glyphRun->font, glyphRun, anchor, baseDirection, combinedWorldMatrix());
+			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawFlexGlyphRun(batchList, *state, context, glyphRun->font, glyphRun, anchor, baseDirection, combinedWorldMatrix());
 		}
 		else {
-			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawText(batchList, context, formattedText, anchor, baseDirection, samplerState, combinedWorldMatrix());
+			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawText(batchList, *state, context, formattedText, anchor, baseDirection, samplerState, combinedWorldMatrix());
 		}
     }
 };
@@ -140,7 +141,7 @@ public:
 
 	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const RLIBatchState* state) override
 	{
-		return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawChar(batchList, context, font, codePoint, color, combinedWorldMatrix() * transform);
+		return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawChar(batchList, *state, context, font, codePoint, color, combinedWorldMatrix() * transform);
 	}
 };
 

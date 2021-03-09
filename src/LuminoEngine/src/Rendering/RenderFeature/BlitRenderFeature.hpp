@@ -17,7 +17,7 @@ public:
     BlitRenderFeature();
 	void init(RenderingManager* manager);
 
-	RequestBatchResult blit(RenderFeatureBatchList* batchList, const RLIBatchState& state);
+	RequestBatchResult blit(RenderFeatureBatchList* batchList, const RLIBatchState& batchState);
 
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;

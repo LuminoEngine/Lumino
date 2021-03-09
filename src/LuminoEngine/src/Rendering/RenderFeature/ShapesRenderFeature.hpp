@@ -153,6 +153,8 @@ private:
 };
 
 
+#ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
+#else
 class ShapesRenderFeature
 	: public RenderFeature
 {
@@ -269,6 +271,7 @@ private:
 	CacheBuffer<Vertex>			m_vertexCache;
 	CacheBuffer<uint16_t>		m_indexCache;
 };
+#endif
 
 class BoxElementShapeCommandList
 {
@@ -451,7 +454,7 @@ protected:
     CacheBuffer<uint16_t> m_indexCache;
 };
 
-
+#if 0
 // Shape ひとつ分の構築を担当する。
 // Shape(Box、Border, Shadow など) は例えば Box と Shadow を分けて考えてもいいし、addXXXX で、ひとつの Shape として扱ってもよい。
 // このクラスでは RHI の VertexBuffer は扱わない。インデックスは生成するが、ひとつの Shape の中で閉じた 0 スタートで生成する。
@@ -568,6 +571,7 @@ private:
 	List<OutlinePath> m_outlinePaths;
 	CacheBuffer<uint16_t> m_outlineIndices;
 };
+#endif
 
 // Shape ひとつ分の構築を担当する。
 // Shape(Box、Border, Shadow など) は例えば Box と Shadow を分けて考えてもいいし、addXXXX で、ひとつの Shape として扱ってもよい。
@@ -647,8 +651,15 @@ public:
 	ShapesRenderFeature2();
 	void init(RenderingManager* manager);
 
-	RequestBatchResult requestDrawCommandList(ShapesRendererCommandList* commandList);
-    RequestBatchResult requestDrawCommandList(BoxElementShapeCommandList* commandList);
+	RequestBatchResult requestDrawCommandList(
+		RenderFeatureBatchList* batchList,
+		const RLIBatchState& batchState,
+		ShapesRendererCommandList* commandList);
+
+    RequestBatchResult requestDrawCommandList(
+		RenderFeatureBatchList* batchList,
+		const RLIBatchState& batchState,
+		BoxElementShapeCommandList* commandList);
 
 protected:
 	virtual void beginRendering() override;
@@ -671,8 +682,10 @@ private:
 		BatchData data;
 	};
 
+	Batch* acquireBatch(RenderFeatureBatchList* batchList, const RLIBatchState& batchState);
+
 	RenderingManager* m_manager;
-	BatchData m_batchData;
+	//BatchData m_batchData;
 	//BoxElementShapeBuilder2 m_shapeBuilder;
     BoxElementShapeBuilder3 m_shapeBuilder;
 	
@@ -695,7 +708,7 @@ public:
 	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const RLIBatchState* state) override
 	{
 #ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
-		return static_cast<detail::ShapesRenderFeature2*>(renderFeature)->requestDrawCommandList(&commandList);
+		return static_cast<detail::ShapesRenderFeature2*>(renderFeature)->requestDrawCommandList(batchList, *state, &commandList);
 #else
 		return static_cast<detail::ShapesRenderFeature*>(renderFeature)->requestDrawCommandList(context, &commandList);
 #endif
@@ -712,7 +725,7 @@ public:
 
     virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const RLIBatchState* state) override
     {
-        return static_cast<detail::ShapesRenderFeature2*>(renderFeature)->requestDrawCommandList(&commandList);
+        return static_cast<detail::ShapesRenderFeature2*>(renderFeature)->requestDrawCommandList(batchList, *state, &commandList);
     }
 };
 

@@ -1101,19 +1101,24 @@ void PathRenderFeature::beginRendering()
 	m_batchData.offset = 0;
 }
 
-RequestBatchResult PathRenderFeature::draw(detail::RenderFeatureBatchList* batchList, GraphicsContext* context)
+RequestBatchResult PathRenderFeature::draw(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context)
 {
+	LN_NOTIMPLEMENTED();
 	//submitBatch(context, batchList);
 	//return RequestBatchResult::Submitted;
 	return RequestBatchResult::Staging;
 }
 
-void PathRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+void PathRenderFeature::submitBatch(GraphicsContext* context, RenderFeatureBatchList* batchList)
 {
+#ifdef LN_RLI_BATCH
+	LN_UNREACHABLE();
+#else
 	auto batch = batchList->addNewBatch<Batch>(this);
 	batch->data = m_batchData;
 
 	m_batchData.offset = 0;
+#endif
 }
 
 void PathRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
