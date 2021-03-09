@@ -261,10 +261,6 @@ void SceneRenderer::render(
 
 void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, const RLICulling* culling)
 {
-#ifdef LN_PRINT_PROFILE
-	ElapsedTimer pt;
-	pt.start();
-#endif
 
 	m_renderFeatureBatchList.clear();
 
@@ -275,6 +271,10 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, const RLICu
 		renderFeature->beginRendering();
 	}
 
+#ifdef LN_PRINT_PROFILE
+	ElapsedTimer pt;
+	pt.start();
+#endif
 	// Create batch list.
 	{
 #ifdef LN_RLI_BATCH
@@ -333,6 +333,7 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, const RLICu
 				batchState.m_worldTransform = worldMatrix;
 				batchState.m_subsetInfo = subsetInfo;
 				batchState.m_renderPass = renderPass;
+				batchState.material= finalMaterial;
 				batchState.mergeFrom(stage->geometryStageParameters, finalMaterial);
 			}
 
@@ -464,7 +465,8 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, const RLICu
 	}
 
 #ifdef LN_PRINT_PROFILE
-	std::cout << "buildBatchList: " << pt.elapsed() << std::endl;
+	double tt = pt.elapsed();
+	std::cout << "buildBatchList: " << tt << std::endl;
 #endif
 }
 
@@ -697,7 +699,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	pass->onEndRender(this);
 
 #ifdef LN_PRINT_PROFILE
-	std::cout << "renderPass: " << pt.elapsed() << std::endl;
+	double tt = pt.elapsed();
+	std::cout << "renderPass: " << tt << std::endl;
 #endif
 }
 
