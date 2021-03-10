@@ -12,13 +12,10 @@
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
-#include <LuminoEngine/Animation/AnimationCurve.hpp>
-#include <LuminoEngine/Animation/AnimationTrack.hpp>
-#include <LuminoEngine/Animation/AnimationClip.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include "../Asset/AssetManager.hpp"
-#include "../Graphics/GraphicsManager.hpp"
-#include "MeshManager.hpp"
+#include "../../Asset/AssetManager.hpp"
+#include "../../Graphics/GraphicsManager.hpp"
+#include "../MeshManager.hpp"
 #include "GLTFImporter.hpp"
 
 namespace ln {
@@ -226,41 +223,14 @@ bool GLTFImporter::GLTFImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, 
 	return true;
 }
 
+bool GLTFImporter::onReadMetadata()
+{
+	return true;
+}
+
 bool GLTFImporter::readCommon(MeshModel* meshModel)
 {
-	// VRM
-	const auto vrmItr = m_model->extensions.find("VRM");
-	if (vrmItr != m_model->extensions.end())
-	{
-		const auto& vrm = vrmItr->second;
-		const auto& blendShapeMaster = vrm.Get("blendShapeMaster");
-		const auto& blendShapeGroups = blendShapeMaster.Get("blendShapeGroups");
-
-		const size_t len = blendShapeGroups.ArrayLen();
-		for (size_t i = 0; i < len; i++) {
-			const auto& group = blendShapeGroups.Get(i);
-
-			for (const auto& key : group.Keys()) {
-				const auto& value = group.Get(key);
-
-				if (value.IsBool())std::cout << key << " : " << value.Get<bool>() << std::endl;
-				if (value.IsInt())std::cout << key << " : " << value.Get<int>() << std::endl;
-				if (value.IsNumber())std::cout << key << " : " << value.Get<double>() << std::endl;
-				if (value.IsString())std::cout << key << " : " << value.Get<std::string>() << std::endl;
-				if (value.IsArray())std::cout << key << " : <Array>" << std::endl;
-				if (value.IsObject())std::cout << key << " : <Object>" << std::endl;
-				if (value.IsBinary())std::cout << key << " : <Binary>" << std::endl;
-
-				
-			}
-
-			printf("");
-		}
-
-		printf("");
-	}
-
-
+	if (!onReadMetadata()) return false;
 
 	for (auto& material : m_model->materials) {
 		meshModel->addMaterial(readMaterial(material));

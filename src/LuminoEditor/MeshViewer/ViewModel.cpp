@@ -51,5 +51,5 @@ void ViewModel::load()
 	//	ac->addClip(clip);
 	//});
 
-	m_meshComponent->modelInstance()->morphs()[0]->setWeight(1, 0.9);
+	//m_meshComponent->modelInstance()->morphs()[7]->setWeight(1, 0.9);
 }
