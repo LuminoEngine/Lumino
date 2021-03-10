@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Common.hpp"
+#include "../Base/Builder.hpp"
 #include "../Graphics/ColorStructs.hpp"
 #include "../Graphics/RenderState.hpp"
 #include "../Shader/Shader.hpp"
@@ -21,6 +22,7 @@ class Material
 	: public Object
 {
 	LN_OBJECT;
+	LN_BUILDER;
 public:
 	static Material* defaultMaterial();
 
@@ -295,6 +297,37 @@ private:
 	friend class detail::SceneRenderer;
 };
 
+
+//==============================================================================
+// Material::Builder
+
+struct Material::BuilderDetails : public AbstractBuilderDetails
+{
+	LN_BUILDER_DETAILS(Material);
+
+	Color color;
+	float roughness;
+	float metallic;
+
+	BuilderDetails();
+	void apply(Material* p) const;
+};
+
+template<class T, class B, class D>
+struct Material::BuilderCore : public AbstractBuilder<T, B, D>
+{
+	LN_BUILDER_CORE(AbstractBuilder);
+
+	B& color(const Color& value) { d()->color = value; return self(); }
+
+	B& color(float r, float g, float b, float a = 1.0f) { d()->color = Color(r, g, b, a); return self(); }
+
+	B& roughness(float value) { d()->roughness = value; return self(); }
+
+	B& metallic(float value) { d()->metallic = value; return self(); }
+};
+
+LN_BUILDER_IMPLEMENT(Material);
 
 } // namespace ln
 

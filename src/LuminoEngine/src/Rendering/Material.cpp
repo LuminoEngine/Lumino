@@ -14,6 +14,17 @@ namespace ln {
 // Material
 // https://docs.unrealengine.com/latest/JPN/Engine/Rendering/Materials/PhysicallyBased/index.html
 // https://threejs.org/docs/#api/en/materials/MeshStandardMaterial
+//
+// フィールド名
+// ----------
+//
+// - glTF > baseColor, Roughness, Metallic
+// - filament > color, roughness, metallic
+// - Three.js > color, roughness, metalness
+// - Unity > Albedo, Metallic, Smoothness
+// - UE4 > BaseColor, Roughness, Metallic, Specular
+
+        
 
 LN_OBJECT_IMPLEMENT(Material, Object) {}
 
@@ -441,6 +452,23 @@ void Material::serialize(Serializer2& ar)
 //	outData->metallic = Material_DefaultMetallic;
 //	//outData->specular = Material_DefaultSpecular;
 //}
+
+//==============================================================================
+// Material::BuilderDetails
+
+Material::BuilderDetails::BuilderDetails()
+    : color(Material_DefaultColor)
+    , roughness(Material_DefaultRoughness)
+    , metallic(Material_DefaultMetallic)
+{
+}
+
+void Material::BuilderDetails::apply(Material* p) const
+{
+    p->setColor(color);
+    p->setRoughness(roughness);
+    p->setMetallic(metallic);
+}
 
 } // namespace ln
 

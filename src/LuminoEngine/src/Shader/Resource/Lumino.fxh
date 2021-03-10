@@ -386,6 +386,8 @@ float4 _LN_PS_ClusteredLighting_PBRShading(
     _LN_InitLocalLightContext(localLightContext, vertexPos, viewPos);
     float3 outgoingLight = _LN_ComputePBRLocalLights(localLightContext, geometry, material);
 
+    return float4(outgoingLight, 1);
+
     // Shadow
     float4 posInLight = positionInLightSpace;
     float shadow = LN_CalculateShadow(posInLight);
