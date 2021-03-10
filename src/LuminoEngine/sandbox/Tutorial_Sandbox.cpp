@@ -27,14 +27,15 @@ public:
         auto box = BoxMesh::With().buildInto();
         box->setMaterial(Material::With()
             .color(Color::White)
-            .roughness(1.0f)
-            .metallic(0.0f)
+            .roughness(0.0f)
+            .metallic(1.0f)
             .build());
 
         auto light = Engine::mainLight();
 
         light->setPosition(0, 0, 10);
         light->lookAt(0, 0, 0);
+        light->setAmbientColor(Color::Red);
 
         //auto text1 = UIText::With(u"Hello ------ Aa!").buildInto();
     }

@@ -419,7 +419,6 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
     
     float3 irradiance = float3(0, 0, 0);
 
-#if 0
     // EnvironmentLight
     {
         // AmbientLight
@@ -432,7 +431,6 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
         tl.groundColor = ln_AmbientGroundColor.rgb;
         irradiance += LN_GetHemisphereLightRadiance(tl, geometry);
     }
-#endif
     
     {
         float count = LN_EPSILON;
@@ -464,11 +462,9 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
                 tl.color = light.color;
                 LN_GetDirectionalDirectLightRadiance(tl, geometry, directLight);
 
-                return float3(1, tl.color.g, tl.color.b);
-                
                 // TODO: Three.js ではここで Shadow の処理を行っていた
                 #ifdef USE_SHADOWMAP
-                //directLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;
+                directLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;
                 #endif
 
                 LN_RE_Direct(directLight, geometry, material, reflectedLight);
