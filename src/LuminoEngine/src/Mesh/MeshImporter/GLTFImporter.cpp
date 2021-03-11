@@ -1136,9 +1136,10 @@ Ref<Texture> GLTFImporter::loadTexture(const tinygltf::Texture& texture)
 		textureName = String::concat(m_meshModel->m_name, u":", String::fromNumber(texture.source));
 	}
 
+	Ref<Texture2D> tex;
 
 	if (1) {
-		return m_meshManager->graphicsManager()->loadTexture2DFromOnMemoryData(&m_basedir, textureName, [&](const AssetRequiredPathSet* x) {
+		tex = m_meshManager->graphicsManager()->loadTexture2DFromOnMemoryData(&m_basedir, textureName, [&](const AssetRequiredPathSet* x) {
 			Ref<Bitmap2D> bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
 			return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
 		});
@@ -1149,6 +1150,14 @@ Ref<Texture> GLTFImporter::loadTexture(const tinygltf::Texture& texture)
 
 		return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
 	}
+
+	int imageIndex = texture.source;
+	if (imageIndex >= m_loadedTextures.size()) {
+		m_loadedTextures.resize(imageIndex + 1);
+	}
+	m_loadedTextures[imageIndex] = tex;
+
+	return tex;
 }
 
 Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animation) const

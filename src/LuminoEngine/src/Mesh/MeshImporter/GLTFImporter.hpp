@@ -14,6 +14,7 @@ class Texture;
 class Skin;
 class Animation;
 class Accessor;
+class Value;
 }
 
 namespace ln {
@@ -39,8 +40,10 @@ public:
 
 protected:
 	tinygltf::Model* gltfModel() const { return m_model.get(); }
+	const Ref<Texture2D>& loadedTextures(int imageIndex) const { return m_loadedTextures[imageIndex]; }
 	virtual bool onReadMetadata();
 
+	Ref<Texture> loadTexture(const tinygltf::Texture& texture);	// TODO: tmp
 private:
 	// ファイルからのデータ読み込み用。以下、ほとんど glTF 用なので importer 側にもっていってもいいかも。必要なデータを前もって集めておいて、バッファをまとめて確保するのに使う。
 	struct VertexBufferView
@@ -90,7 +93,6 @@ private:
 	Ref<MeshContainer> readMesh(const tinygltf::Mesh& mesh);
 	Ref<MeshContainer> generateMesh(const MeshView& meshView) const;
 	Ref<MeshSkeleton> readSkin(const tinygltf::Skin& skin);
-	Ref<Texture> loadTexture(const tinygltf::Texture& texture);
 	Ref<AnimationClip> readAnimation(const tinygltf::Animation& animation) const;
 	const void* getRawData(const tinygltf::Accessor& accessor) const;
 
@@ -102,6 +104,7 @@ private:
     AssetPath m_basedir;
 	std::shared_ptr<tinygltf::Model> m_model;
 	MeshModel* m_meshModel;
+	std::vector<Ref<Texture2D>> m_loadedTextures;	// gltfModel の image の index に対応する。
 
 	List<Ref<AnimationClip>> m_animationClips;
 };

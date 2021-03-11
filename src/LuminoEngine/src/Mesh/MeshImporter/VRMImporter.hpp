@@ -319,7 +319,7 @@ public:
     int renderQueue = -1;
 
     std::unordered_map<String, float> floatProperties;
-    std::unordered_map<String, float[]> vectorProperties;
+    std::unordered_map<String, std::vector<float>> vectorProperties;
     std::unordered_map<String, int> textureProperties;
     std::unordered_map<String, bool> keywordMap;
     std::unordered_map<String, String> tagMap;
@@ -353,6 +353,10 @@ public:
     bool onReadMetadata() override;
 
 private:
+    List<Ref<VRM_Material>> parseMaterialProperties(const tinygltf::Value& value);
+    Ref<VRM_Material> parseMaterial(const tinygltf::Value& value);
+    Shader* getShader(const String& name) const;
+
     Ref<VRM_Extensions> m_vrm;
 };
 

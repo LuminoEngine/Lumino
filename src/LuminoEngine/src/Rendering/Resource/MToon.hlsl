@@ -114,6 +114,8 @@ static const float4 _Time = float4(0,0,0,0);
 #define unity_WorldTransformParams ln_WorldTransformParams
 #define unity_ObjectToWorld ln_World
 #define _WorldSpaceCameraPos ln_CameraPosition
+#define _WorldSpaceLightPos0 _ln_MainLightPos
+#define _LightColor0 _ln_MainLightColor
 #define unity_OrthoParams float4(640.0, 480.0, 0.0, 0.0)
 
 //----------
@@ -335,9 +337,18 @@ float4 frag_forward(v2f i) : SV_TARGET
     half4 lit = _Color * mainTex;
     half3 col = lerp(shade.rgb, lit.rgb, lightIntensity);
 
+
+
+
+
+
+
     // Direct Light
     half3 lighting = lightColor;
     lighting = lerp(lighting, max(EPS_COL, max(lighting.x, max(lighting.y, lighting.z))), _LightColorAttenuation); // color atten
+
+
+
 #ifdef MTOON_FORWARD_ADD
 #ifdef _ALPHABLEND_ON
     lighting *= step(0, dotNL); // darken if transparent. Because Unity's transparent material can't receive shadowAttenuation.
@@ -373,16 +384,20 @@ float4 frag_forward(v2f i) : SV_TARGET
     half3 rim = pow(saturate(1.0 - dot(worldNormal, worldView) + _RimLift), _RimFresnelPower) * _RimColor.rgb * tex2D(_RimTexture, mainUv).rgb;
     col += lerp(rim * rimLighting, half3(0, 0, 0), i.isOutline);
 
+    
     // additive matcap
 #ifdef MTOON_FORWARD_ADD
 #else
-    half3 worldCameraUp = normalize(LN_CameraWorldUpDir());
-    half3 worldViewUp = normalize(worldCameraUp - worldView * dot(worldView, worldCameraUp));
-    half3 worldViewRight = normalize(cross(worldView, worldViewUp));
+    half3 worldCameraUp = normalize(LN_CameraWorldUpDir());     // Green
+    half3 worldViewUp = normalize(worldCameraUp - worldView * dot(worldView, worldCameraUp));     // Green
+    //half3 worldViewRight = normalize(cross(worldView, worldViewUp));  // LH
+    half3 worldViewRight = normalize(cross(worldViewUp, worldView));    // RH
     half2 matcapUv = half2(dot(worldViewRight, worldNormal), dot(worldViewUp, worldNormal)) * 0.5 + 0.5;
     half3 matcapLighting = tex2D(_SphereAdd, matcapUv);
     col += lerp(matcapLighting, half3(0, 0, 0), i.isOutline);
 #endif
+
+
 
     // Emission
 #ifdef MTOON_FORWARD_ADD
@@ -433,6 +448,19 @@ v2f vert_forward_base(appdata_full v)
     return InitializeV2F(v, UnityObjectToClipPos(v.vertex), 0);
 }
 
+#if 0
+v2f vert_forward_base_outline(appdata_full v)
+{
+    v.normal = normalize(v.normal);
+    return InitializeV2F(v, CalculateOutlineVertexClipPosition(v), 1);
+}
+
+v2f vert_forward_add(appdata_full v)
+{
+    v.normal = normalize(v.normal);
+    return InitializeV2F(v, UnityObjectToClipPos(v.vertex), 0);
+}
+#endif
 
 
 
@@ -452,27 +480,22 @@ struct VSOutput
     LN_VS_OUTPUT_DECLARE;
 };
 
-VSOutput VSMain(LN_VSInput vsi)
+v2f VSMain(LN_VSInput vsi)
 {
-    VSOutput output;
-    LN_ProcessVertex(vsi, output);
-    return output;
+    appdata_full v;
+    v.vertex = float4(vsi.Pos, 1);
+    v.tangent = vsi.tangent;
+    v.normal = vsi.Normal;
+    v.texcoord = float4(vsi.UV,0,0);
+    v.texcoord1 = float4(0,0,0,0);
+    v.texcoord2 = float4(0,0,0,0);
+    v.texcoord3 = float4(0,0,0,0);
+    v.color = vsi.Color;
+    return vert_forward_base(v);
 }
 
 //==============================================================================
 // Pixel shader
-
-struct PSInput
-{
-    LN_PS_INPUT_DECLARE;
-};
-
-float4 PSMain(PSInput input) : SV_TARGET0
-{
-    LN_Surface surface;
-    LN_ProcessSurface(input, surface);
-    return LN_ProcessPixel(input, surface);
-}
 
 //==============================================================================
 // Techniques
@@ -483,7 +506,7 @@ technique Forward_Geometry
     pass Pass1
     {
         VertexShader = VSMain;
-        PixelShader  = PSMain;
+        PixelShader  = frag_forward;
     }
 }
 
@@ -493,7 +516,7 @@ technique Forward_Geometry_NormalMap
     pass Pass1
     {
         VertexShader = VSMain;
-        PixelShader  = PSMain;
+        PixelShader  = frag_forward;
     }
 }
 
@@ -504,7 +527,7 @@ technique Forward_Geometry_StaticMesh_UnLighting
     pass Pass1
     {
         VertexShader = VSMain;
-        PixelShader  = PSMain;
+        PixelShader  = frag_forward;
     }
 }
 
@@ -515,7 +538,7 @@ technique Forward_Geometry_SkinnedMesh
     pass Pass1
     {
         VertexShader = VSMain;
-        PixelShader  = PSMain;
+        PixelShader  = frag_forward;
     }
 }
 
@@ -527,6 +550,6 @@ technique Forward_Geometry_SkinnedMesh_UnLighting
     pass Pass1
     {
         VertexShader = VSMain;
-        PixelShader  = PSMain;
+        PixelShader  = frag_forward;
     }
 }

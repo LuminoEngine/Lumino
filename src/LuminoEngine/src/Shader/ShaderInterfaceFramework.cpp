@@ -191,6 +191,9 @@ void ShaderTechniqueSemanticsManager::updateRenderViewVariables(ShaderSecondaryD
         data.ln_AmbientColor = sceneInfo.ambientColor.toVector4();
         data.ln_AmbientSkyColor = sceneInfo.ambientSkyColor.toVector4();
         data.ln_AmbientGroundColor = sceneInfo.ambientGroundColor.toVector4();
+        data._ln_MainLightColor = sceneInfo.mainLightColor.toVector4();
+        data._ln_MainLightPos = sceneInfo.mainLightPos;
+        data._ln_MainLightDir = sceneInfo.mainLightDir;
         descriptor->setUniformBufferData(index, &data, sizeof(data));
     }
 
