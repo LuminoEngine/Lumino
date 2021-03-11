@@ -2,8 +2,8 @@
 #include <Lumino.fxh>
 
 //#define _NORMALMAP
-#define _ALPHATEST_ON
-#define _ALPHABLEND_ON
+#define _ALPHATEST_ON 1
+#define _ALPHABLEND_ON 1
 
 // Outline Pass のみ有効
 //#define MTOON_CLIP_IF_OUTLINE_IS_NONE 1
@@ -78,6 +78,8 @@ inline float3 LN_CameraWorldUpDir()
     return ln_View[1].xyz;
 }
 
+static const float4 _Time = float4(0,0,0,0);
+
 //==============================================================================
 // Unity
 
@@ -111,6 +113,8 @@ inline float3 LN_CameraWorldUpDir()
 
 #define unity_WorldTransformParams ln_WorldTransformParams
 #define unity_ObjectToWorld ln_World
+#define _WorldSpaceCameraPos ln_CameraPosition
+#define unity_OrthoParams float4(640.0, 480.0, 0.0, 0.0)
 
 //----------
 // Functions
