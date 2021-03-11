@@ -38,6 +38,8 @@ public:
         light->setAmbientColor(Color::Red);
 
         //auto text1 = UIText::With(u"Hello ------ Aa!").buildInto();
+
+        auto sh = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/MToon.hlsl");
     }
 
 

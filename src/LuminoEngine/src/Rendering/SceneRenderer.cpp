@@ -722,6 +722,14 @@ void SceneRenderer::prepare()
 		m_mainSceneInfo.ambientColor = m_mainLightInfo->m_position;	// position フィールドを代用している
 		m_mainSceneInfo.ambientSkyColor = m_mainLightInfo->m_color2;
 		m_mainSceneInfo.ambientGroundColor = m_mainLightInfo->m_color3;
+		m_mainSceneInfo.mainLightColor = m_mainLightInfo->m_color;
+		m_mainSceneInfo.mainLightPos = Vector4(0, 1, 0, 1);	// TODO:
+		m_mainSceneInfo.mainLightDir = Vector4(m_mainLightInfo->m_direction, 1.0f);
+		m_mainSceneInfo.mainLightMatrix = mainRenderViewInfo().mainLightViewProjection;
+	}
+	else {
+		// TODO:
+		m_mainSceneInfo = {};
 	}
 }
 

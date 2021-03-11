@@ -1,21 +1,123 @@
 
 #include <Lumino.fxh>
 
+//#define _NORMALMAP
+#define _ALPHATEST_ON
+#define _ALPHABLEND_ON
 
+// Outline Pass のみ有効
+//#define MTOON_CLIP_IF_OUTLINE_IS_NONE 1
+//#define MTOON_OUTLINE_WIDTH_WORLD 1
+//#define MTOON_OUTLINE_WIDTH_SCREEN 1
+//#define MTOON_OUTLINE_COLOR_FIXED 1
+//#define MTOON_OUTLINE_COLOR_MIXED 1
 
+//#define MTOON_FORWARD_ADD
+
+// Debug
+//#define MTOON_DEBUG_NORMAL 1
+
+//==============================================================================
+// 
+
+// https://coposuke.hateblo.jp/entry/2020/12/21/144327#itangentw-%E3%81%A8-unity_WorldTransformParamsw
+#define ln_WorldTransformParams float4(0.0,0.0,0.0,1.0)
+
+/**
+ * Transforms direction from object to world space.
+ *
+ * #define UnityObjectToWorldDir(x) LN_ObjectToWorldDir(x)
+ */
+inline float3 LN_ObjectToWorldDir(in float3 dir)
+{
+    return normalize(mul(dir, (float3x3)ln_World));
+}
+
+inline float3 LN_ObjectToWorldNormal(in float3 norm)
+{
+//#ifdef UNITY_ASSUME_UNIFORM_SCALING
+//    return UnityObjectToWorldDir(norm);
+//#else
+    // mul(IT_M, norm) => mul(norm, I_M) => {dot(norm, I_M.col0), dot(norm, I_M.col1), dot(norm, I_M.col2)}
+    return normalize(mul(norm, (float3x3)ln_World));
+//#endif
+}
+
+/**
+ * Transforms direction from object to world space.
+ *
+ * #define UnityObjectToClipPos(x) LN_ObjectToClipPos(x)
+ */
+inline float4 LN_ObjectToClipPos(in float4 pos)
+{
+    return mul(pos, ln_WorldViewProjection);
+}
+
+inline float4 LN_ObjectToClipPos(in float3 pos)
+{
+    return LN_ObjectToClipPos(float4(pos, 1.0));
+}
+
+/**
+ * World 空間上の視点の正面方向を取得します。
+ *
+ * UNITY_MATRIX_V[2].xyz
+ */
+inline float3 LN_CameraWorldDir()
+{
+    return ln_View[2].xyz;
+}
+
+/**
+ * World 空間上の視点の上方向を取得します。
+ *
+ * UNITY_MATRIX_V[2].xyz
+ */
+inline float3 LN_CameraWorldUpDir()
+{
+    return ln_View[1].xyz;
+}
 
 //==============================================================================
 // Unity
+
+#define fixed4 float4
+
+#define UNITY_FOG_COORDS(x)
+#define UNITY_SHADOW_COORDS(x)
 
 #define UNITY_VERTEX_INPUT_INSTANCE_ID
 
 #define UNITY_INITIALIZE_OUTPUT(type,name) name = (type)0;
 
 #define DEFAULT_UNITY_SETUP_INSTANCE_ID(input)
+#define UNITY_SETUP_INSTANCE_ID(v)
+
 
 #define UNITY_TRANSFER_SHADOW(a, coord)
 
 #define UNITY_TRANSFER_FOG(o,outpos)
+
+// NOTE: タイリングなどの計算で使うらしい
+#define TRANSFORM_TEX(tex,name) tex
+
+// ライト&シャドウによる減衰(Attenuation)の計算
+#define UNITY_LIGHT_ATTENUATION(destName, input, worldPos) float destName = 1
+
+#define UNITY_APPLY_FOG(coord,col)
+
+//----------
+// Variables
+
+#define unity_WorldTransformParams ln_WorldTransformParams
+#define unity_ObjectToWorld ln_World
+
+//----------
+// Functions
+
+#define UnityObjectToClipPos(x) LN_ObjectToClipPos(x)
+#define UnityObjectToWorldDir(x) LN_ObjectToWorldDir(x)
+#define UnityObjectToWorldNormal(x) LN_ObjectToWorldNormal(x)
 
 struct appdata_full {
     float4 vertex : POSITION;
@@ -28,6 +130,12 @@ struct appdata_full {
     fixed4 color : COLOR;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
+
+// 環境光
+half3 ShadeSH9(half4 normal)
+{
+    return half3(0, 0, 0);
+}
 
 //==============================================================================
 // https://github.com/Santarh/MToon.git
@@ -190,7 +298,7 @@ float4 frag_forward(v2f i) : SV_TARGET
 #else
     half3 worldNormal = half3(i.tspace0.z, i.tspace1.z, i.tspace2.z);
 #endif
-    float3 worldView = normalize(lerp(_WorldSpaceCameraPos.xyz - i.posWorld.xyz, UNITY_MATRIX_V[2].xyz, unity_OrthoParams.w));
+    float3 worldView = normalize(lerp(_WorldSpaceCameraPos.xyz - i.posWorld.xyz, LN_CameraWorldDir(), unity_OrthoParams.w));
     worldNormal *= step(0, dot(worldView, worldNormal)) * 2 - 1; // flip if projection matrix is flipped
     worldNormal *= lerp(+1.0, -1.0, i.isOutline);
     worldNormal = normalize(worldNormal);
@@ -264,7 +372,7 @@ float4 frag_forward(v2f i) : SV_TARGET
     // additive matcap
 #ifdef MTOON_FORWARD_ADD
 #else
-    half3 worldCameraUp = normalize(UNITY_MATRIX_V[1].xyz);
+    half3 worldCameraUp = normalize(LN_CameraWorldUpDir());
     half3 worldViewUp = normalize(worldCameraUp - worldView * dot(worldView, worldCameraUp));
     half3 worldViewRight = normalize(cross(worldView, worldViewUp));
     half2 matcapUv = half2(dot(worldViewRight, worldNormal), dot(worldViewUp, worldNormal)) * 0.5 + 0.5;
