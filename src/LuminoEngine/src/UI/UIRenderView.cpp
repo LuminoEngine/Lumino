@@ -79,7 +79,7 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
             m_viewPoint->viewPosition = Vector3::Zero;
             m_viewPoint->viewDirection = Vector3::UnitZ;
 #ifdef LN_COORD_RH
-            m_viewPoint->viewMatrix = Matrix::makeLookAtRH(Vector3::Zero, -Vector3::UnitZ, Vector3::UnitY);
+            m_viewPoint->viewMatrix = Matrix::makeLookAtRH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
             m_viewPoint->projMatrix = Matrix::makePerspective2DRH(m_viewPoint->viewPixelSize.width, m_viewPoint->viewPixelSize.height, 0, 1000);
 #else
             m_viewPoint->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);

@@ -629,6 +629,12 @@ void EngineManager::initializeDefaultObjects()
 
 void EngineManager::resetApp(Application* app)
 {
+	// Reset Scene
+	{
+		m_mainWorld->removeAllObjects();
+		m_mainUIRoot->removeAllChildren();
+	}
+
 	m_uiManager->resetApp(app);
 }
 

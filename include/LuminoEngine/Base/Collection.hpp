@@ -246,7 +246,7 @@ public:
 	bool isEmpty() const LN_NOEXCEPT { return m_data.empty(); }
 
 	/** 格納されている要素の数を取得します。*/
-	int size() const LN_NOEXCEPT { return m_data.size(); }
+	int size() const LN_NOEXCEPT { return static_cast<int>(m_data.size()); }
 
 	/** 指定したインデックスにある要素への参照を取得します。*/
 	const_reference at(int index) const { return m_data.at(index); }
@@ -280,7 +280,7 @@ public:
 
 		const_iterator itr = std::find(m_data.begin(), m_data.end(), item);
 		if (itr != m_data.end()) {
-			return itr - m_data.begin();
+			return static_cast<int>(itr - m_data.begin());
 		}
 		return -1;
 	}

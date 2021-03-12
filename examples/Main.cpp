@@ -6,7 +6,8 @@
 #include "../src/Engine/EngineDomain.hpp"
 using namespace ln;
 
-Ref<ln::Application> CreateApp_App_Tutorial_Sandbox();
+Ref<Application> CreateApp_App_Tutorial_Sandbox();
+Ref<Application> CreateApp_App_Sprite();
 
 int main(int argc, char** argv)
 {
@@ -24,7 +25,7 @@ int main(int argc, char** argv)
 	//EngineSettings::setUITheme(u"Chocotelier");
     EngineSettings::setGraphicsDebugEnabled(true);
     EngineSettings::setDebugToolEnabled(true);
-    EngineSettings::setDevelopmentToolsEnabled(true);
+    //EngineSettings::setDevelopmentToolsEnabled(true);
 	detail::EngineManager::s_settings.standaloneFpsControl = true;
 	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
 
@@ -37,23 +38,28 @@ int main(int argc, char** argv)
         .width(200)
         .backgroundColor(Color::Gray)
         .onSubmit([&]() { /*handleListItemSubmit(m_listbox1->selectedItem()->dataAs<String>()); */})
-        .buildInto();
+        .buildInto(/*Engine::mainWindow()*/);
     m_listbox1->setAlignments(UIHAlignment::Left, UIVAlignment::Stretch);
     m_listbox1->setSubmitMode(UIListSubmitMode::Single);
-    m_listbox1->addChild(u"item1");
+    m_listbox1->addChild(UIListBoxItem::With()
+        .text("Sprite")
+        .onSubmit([]() { detail::EngineDomain::engineManager()->resetApp(CreateApp_App_Sprite()); })
+        .build());
     m_listbox1->addChild(u"item2");
     m_listbox1->addChild(u"item3");
     m_listbox1->addChild(u"item4");
 
+    Engine::renderView()->setBackgroundColor(Color::AliceBlue);
+
     {
-        auto app = CreateApp_App_Tutorial_Sandbox();
-        detail::EngineDomain::engineManager()->resetApp(app);
+        //auto app = CreateApp_App_Tutorial_Sandbox();
+        //detail::EngineDomain::engineManager()->resetApp(app);
 
         while (Engine::update()) {
 
         }
 
-        detail::EngineDomain::engineManager()->resetApp(nullptr);
+        //detail::EngineDomain::engineManager()->resetApp(nullptr);
     }
 
     Engine::terminate();

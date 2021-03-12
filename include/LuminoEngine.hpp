@@ -119,6 +119,7 @@
 #include "LuminoEngine/UI/Controls/UIWindow.hpp"
 #include "LuminoEngine/UI/Controls/UIButton.hpp"
 #include "LuminoEngine/UI/Controls/UIListBox.hpp"
+#include "LuminoEngine/UI/Controls/UIListBoxItem.hpp"
 #include "LuminoEngine/UI/Controls/UIListView.hpp"
 #include "LuminoEngine/UI/UI.hpp"
 

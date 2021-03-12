@@ -19,6 +19,7 @@ source_group("Obsolete" FILES ${LOCAL_SOURCES_Obsolete})
 
 include_directories(
     ${LUMINO_INCLUDE_DIRECTORIES}
+    .
 )
 
 add_executable(${PROJECT_NAME} ${LOCAL_SOURCES})

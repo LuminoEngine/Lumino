@@ -81,7 +81,7 @@ void RenderView::makeViewProjections(const detail::CameraInfo& base, float dpiSc
 	info->viewPosition = Vector3::Zero;
 	info->viewDirection = Vector3::UnitZ;
 #ifdef LN_COORD_RH
-	info->viewMatrix = Matrix::makeLookAtRH(Vector3::Zero, -Vector3::UnitZ, Vector3::UnitY);
+	info->viewMatrix = Matrix::makeLookAtRH(Vector3::Zero, /*-*/Vector3::UnitZ, Vector3::UnitY);
 	info->projMatrix = Matrix::makePerspective2DRH(base.viewPixelSize.width / dpiScale, base.viewPixelSize.height / dpiScale, 0, 1000);
 #else
 	info->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);

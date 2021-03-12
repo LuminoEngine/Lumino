@@ -174,6 +174,7 @@ struct Sprite::Builder : public BuilderCore<Sprite, Builder, BuilderDetails>
 {
     Builder() {}
     Builder(Texture* texture) { d()->texture = texture; }
+    Builder(const StringRef& textureFilepath) { d()->texture = Texture2D::load(textureFilepath); }
 };
 	
 
