@@ -387,16 +387,6 @@ void UIFrameWindow::onDispose(bool explicitDisposing)
     UIDomainProvidor::onDispose(explicitDisposing);
 }
 
-void UIFrameWindow::renderContents()
-{
-	assert(!m_depthBuffer);
-
-	if (m_ImGuiLayerEnabled) {
-        // TODO: time
-		m_imguiContext->updateFrame(0.0166f);
-	}
-
-}
 
 void UIFrameWindow::present()
 {
@@ -407,6 +397,9 @@ void UIFrameWindow::present()
 
     if (m_ImGuiLayerEnabled)
     {
+        // TODO: time
+		m_imguiContext->updateFrame(0.0166f);
+
         m_imguiContext->prepareRender(m_clientSize.width, m_clientSize.height);
         ImGui::NewFrame();
 
@@ -735,7 +728,6 @@ void UIFrameWindow::onRoutedEvent(UIEventArgs* e)
 	//else
      if (e->type() == UIEvents::RequestVisualRedrawEvent) {
 		if (!m_realtimeRenderingEnabled && m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Render)) {
-			renderContents();
 			present();
 		}
 		e->handled = true;

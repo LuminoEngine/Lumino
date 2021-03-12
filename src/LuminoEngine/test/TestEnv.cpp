@@ -57,7 +57,6 @@ void TestEnv::teardown()
 void TestEnv::updateFrame()
 {
     detail::EngineDomain::engineManager()->updateFrame();
-    detail::EngineDomain::engineManager()->renderFrame();
     detail::EngineDomain::engineManager()->presentFrame();
 }
 

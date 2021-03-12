@@ -162,7 +162,6 @@ void EngineSettings::setExternalRenderingManagement(bool value)
 static void beginFrame()
 {
 	detail::EngineDomain::engineManager()->updateFrame();
-	detail::EngineDomain::engineManager()->renderFrame();
 }
 
 static void endFrame()

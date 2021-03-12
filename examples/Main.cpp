@@ -3,43 +3,10 @@
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include "../src/Engine/EngineManager.hpp"
+#include "../src/Engine/EngineDomain.hpp"
 using namespace ln;
 
-
-void Sandbox_EmptyApp();
-void Example_GameAudio();
-void Example_glTFSampleViewer();
-void Example_MainLoop();
-void Example_MeshViewer();
-void Example_MessageWindow();
-void Example_Navigator();
-void Example_Shader();
-void Example_SoundControl();
-void Example_Sprite();
-void Example_UIControls();
-void Example_Tilemap();
-void Experiment_CharacterController();
-void Experiment_Editor();
-void Experiment_MeshCollider();
-void Experiment_Reflector();
-void Experiment_Scripting();
-void Experiment_SelectObject();
-void Experiment_SerializeLevel();
-void Experiment_Shadow();
-void Experiment_SSR();
-void Tutorial_Sandbox();
-void Sandbox_Builder();
-void Sandbox_GridListBox();
-void Sandbox_MeshTilemap();
-void Sandbox_Physics();
-void Sandbox_Physics2();
-void Sandbox_Particle();
-void Sandbox_PathRendering();
-void Sandbox_PostEffect();
-void Sandbox_Sky();
-void Sandbox_Voxel();
-void Sandbox_UIShader();
-void UISandboxMain();
+Ref<ln::Application> CreateApp_App_Tutorial_Sandbox();
 
 int main(int argc, char** argv)
 {
@@ -57,6 +24,7 @@ int main(int argc, char** argv)
 	//EngineSettings::setUITheme(u"Chocotelier");
     EngineSettings::setGraphicsDebugEnabled(true);
     EngineSettings::setDebugToolEnabled(true);
+    EngineSettings::setDevelopmentToolsEnabled(true);
 	detail::EngineManager::s_settings.standaloneFpsControl = true;
 	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
 
@@ -64,49 +32,31 @@ int main(int argc, char** argv)
 
     Engine::initialize();
 
-    while (Engine::update()) {
 
+    auto m_listbox1 = UIListBox::Builder()
+        .width(200)
+        .backgroundColor(Color::Gray)
+        .onSubmit([&]() { /*handleListItemSubmit(m_listbox1->selectedItem()->dataAs<String>()); */})
+        .buildInto();
+    m_listbox1->setAlignments(UIHAlignment::Left, UIVAlignment::Stretch);
+    m_listbox1->setSubmitMode(UIListSubmitMode::Single);
+    m_listbox1->addChild(u"item1");
+    m_listbox1->addChild(u"item2");
+    m_listbox1->addChild(u"item3");
+    m_listbox1->addChild(u"item4");
+
+    {
+        auto app = CreateApp_App_Tutorial_Sandbox();
+        detail::EngineDomain::engineManager()->resetApp(app);
+
+        while (Engine::update()) {
+
+        }
+
+        detail::EngineDomain::engineManager()->resetApp(nullptr);
     }
 
     Engine::terminate();
-
-    if (1) {
-		//Sandbox_EmptyApp();
-		//Example_GameAudio();
-        //Example_glTFSampleViewer();
-        //Example_MainLoop();
-		//Example_MeshViewer();
-        //Example_MessageWindow();
-        //Example_Navigator();
-        //Example_Shader();
-		//Example_SoundControl();
-        //Example_Sprite();
-        //Example_UIControls();
-		//Example_Tilemap();
-        //Experiment_CharacterController();
-        //Experiment_Editor();
-        //Experiment_MeshCollider();
-        //Experiment_Reflector();
-        //Experiment_Scripting();
-        //Experiment_SelectObject();
-        //Experiment_SerializeLevel();
-        //Experiment_Shadow();
-        //Experiment_SSR();
-        //Sandbox_Builder();
-        //Sandbox_GridListBox();
-		//Sandbox_MeshTilemap();
-        //Sandbox_Physics();
-        //Sandbox_Physics2();
-        //Sandbox_Particle();
-        //Sandbox_PathRendering();
-        //Sandbox_PostEffect();
-        //Sandbox_Sky();
-        //Sandbox_UIShader();
-		//Sandbox_Voxel();
-		Tutorial_Sandbox();
-		//UISandboxMain();
-        return 0;
-    }
 
 	return 0;
 }

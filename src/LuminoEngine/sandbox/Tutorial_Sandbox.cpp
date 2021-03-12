@@ -1,10 +1,10 @@
 ﻿
-#include "LuminoExample.hpp"
+#include <Lumino.hpp>
 
-class App_Tutorial_Sandbox : public Application
+class App : public Application
 {
 public:
-    App_Tutorial_Sandbox()
+    App()
     {
         EngineSettings::setMainWindowResizable(true);
         //EngineSettings::setDevelopmentToolsEnabled(true);
@@ -39,7 +39,7 @@ public:
 
         //auto text1 = UIText::With(u"Hello ------ Aa!").buildInto();
 
-        //auto sh = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/MToon.hlsl");
+        auto sh = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/MToon.hlsl");
     }
 
 
@@ -49,7 +49,15 @@ public:
     }
 };
 
-LUMINO_APP(App_Tutorial_Sandbox);
+
+//--------------------------------------------------------------------------------
+
+void Tutorial_Sandbox()
+{
+    App app;
+    detail::ApplicationHelper::run(&app);
+}
+
 
 
 
