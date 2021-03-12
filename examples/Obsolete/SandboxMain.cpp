@@ -424,7 +424,7 @@ void DisplayContent(FbxScene* scene)
 }
 #endif
 
-int main(int argc, char** argv)
+int main_Obsolete(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
 
