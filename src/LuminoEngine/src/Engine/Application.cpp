@@ -127,10 +127,13 @@ void Application::run()
 	LN_UNREACHABLE();
 #endif
 	//initInternal();
+	EngineContext::current()->initializeEngineManager();
+	EngineContext::current()->engineManager()->initializeAllManagers();
 
 	do {
 
 		detail::EngineDomain::engineManager()->updateFrame();
+		detail::EngineDomain::engineManager()->presentFrame();
 		//detail::EngineDomain::engineManager()->renderFrame();
 	} while (!detail::EngineDomain::engineManager()->isExitRequested());
 

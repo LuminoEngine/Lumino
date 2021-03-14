@@ -169,6 +169,10 @@ void RenderView::onRoutedEvent(UIEventArgs* e)
     m_onUIEvent.raise(e);
 }
 
+void RenderView::setActualSize(const Size& size) 
+{
+	m_actualSize = size;
+}
 //void RenderView::render(GraphicsContext* graphicsContext, const FrameBuffer& frameBuffer, detail::SceneRenderer* sceneRenderer)
 //{
 //	m_renderingFrameBufferSize = SizeI(frameBuffer.renderTarget[0]->width(), frameBuffer.renderTarget[0]->height());

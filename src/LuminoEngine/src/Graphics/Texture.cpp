@@ -32,21 +32,22 @@ Texture::Texture()
     , m_mipmap(false)
     , m_samplerState(nullptr)
 {
-    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 }
 
 Texture::~Texture()
 {
-    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
 }
 
-void Texture::init()
+bool Texture::init()
 {
-    AssetObject::init();
+    if (!AssetObject::init()) return false;
+    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+    return true;
 }
 
 void Texture::onDispose(bool explicitDisposing)
 {
+    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
     AssetObject::onDispose(explicitDisposing);
 }
 
@@ -460,12 +461,17 @@ RenderTargetTexture::RenderTargetTexture()
     , m_modified(true)
     , m_hasNativeObject(false)
 {
-    detail::GraphicsResourceInternal::manager(this)->profiler()->addRenderTarget(this);
 }
 
 RenderTargetTexture::~RenderTargetTexture()
 {
-    detail::GraphicsResourceInternal::manager(this)->profiler()->removeRenderTarget(this);
+}
+
+bool RenderTargetTexture::init()
+{
+    if (!Texture::init()) return false;
+    detail::GraphicsResourceInternal::manager(this)->profiler()->addRenderTarget(this);
+    return true;
 }
 
 void RenderTargetTexture::init(int width, int height)
@@ -478,27 +484,32 @@ void RenderTargetTexture::init(int width, int height, TextureFormat format)
     init(width, height, format, true, false);
 }
 
-void RenderTargetTexture::init(int width, int height, TextureFormat format, bool mipmap, bool msaa)
+bool RenderTargetTexture::init(int width, int height, TextureFormat format, bool mipmap, bool msaa)
 {
     width = std::max(1, width);
     height = std::max(1, height);
     m_msaa = msaa;
-    Texture::init();
+    
+    if (!init()) return false;
+
     detail::TextureInternal::setDesc(this, width, height, format);
     detail::TextureInternal::setMipmapEnabled(this, mipmap);
+    return true;
 }
 
-void RenderTargetTexture::init(SwapChain* owner)
+bool RenderTargetTexture::init(SwapChain* owner)
 {
-    Texture::init();
+    if (!init()) return false;
     m_ownerSwapchain = owner;
+    return true;
 }
 
-void RenderTargetTexture::init(intptr_t nativeObject, TextureFormat format)
+bool RenderTargetTexture::init(intptr_t nativeObject, TextureFormat format)
 {
-    Texture::init();
+    if (!init()) return false;
     detail::TextureInternal::setDesc(this, 1, 1, format);
     resetNativeObject(nativeObject);
+    return true;
 }
 
 void RenderTargetTexture::resetNativeObject(intptr_t nativeObject)
@@ -526,6 +537,9 @@ void RenderTargetTexture::resetRHIObject(detail::RHIResource* rhiObject)
 void RenderTargetTexture::onDispose(bool explicitDisposing)
 {
     m_rhiObject.reset();
+    if (detail::GraphicsManager* manager = detail::GraphicsResourceInternal::manager(this)) {
+        manager->profiler()->removeRenderTarget(this);
+    }
     Texture::onDispose(explicitDisposing);
 }
 
