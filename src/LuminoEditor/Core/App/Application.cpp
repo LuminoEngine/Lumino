@@ -100,7 +100,7 @@ void EditorApplication::run()
         ln::detail::EngineDomain::engineManager()->uiManager()->dispatchPostedEvents();
 
 		float elapsedSeconds = static_cast<float>(ln::Environment::getTickCount() - lastTime) / 1000.0f;
-		ln::detail::EngineDomain::engineManager()->uiManager()->tickGlobal(elapsedSeconds);
+		ln::detail::EngineDomain::engineManager()->uiManager()->updateFrame(elapsedSeconds);
 
         ln::Thread::sleep(1);
     }

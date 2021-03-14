@@ -5,6 +5,7 @@
 namespace ln {
 namespace detail {
 class ApplicationHelper;
+class UIManager;
 }
 class UICommand;
 class UIAction;
@@ -62,15 +63,17 @@ protected:
     virtual void onRoutedEvent(UIEventArgs* e);
 
 private:
-	void initInternal();
-	bool updateInertnal();
-	void finalizeInternal();
+	void initInternal2();
+	void updateInertnal2();
+	void finalizeInternal2();
 
 	detail::EngineManager* m_manager;
     List<Ref<UICommand>> m_commands;
     List<Ref<UIAction>> m_actions;
+	bool m_initialized;
 
 	friend class detail::ApplicationHelper;
+	friend class detail::UIManager;
 };
 
 class AppData

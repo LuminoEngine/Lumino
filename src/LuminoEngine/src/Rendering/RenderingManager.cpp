@@ -251,12 +251,20 @@ void RenderingManager::init(const Settings& settings)
 		};
 		createBuiltinShader(BuiltinShader::NanoVG, u"nanovg", data, LN_ARRAY_SIZE_OF(data));
 	}
+	// MToon
+	{
+		const unsigned char data[] = {
+#include "../Rendering/Resource/MToon.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::MToon, u"MToon", data, LN_ARRAY_SIZE_OF(data));
+	}
 
 #define ROOT_PATH u"C:/Proj/LN/Lumino/src/LuminoEngine/"
+#if 0	// テスト用
 	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ClusteredShadingDefault.fx");
 	m_builtinShaders[(int)BuiltinShader::SSRRayTracing] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SSRRayTracing.fx");
 	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(ROOT_PATH u"src/Rendering/Resource/Sprite.fx");
-#if 0	// テスト用
+	m_builtinShaders[(int)BuiltinShader::MToon] = Shader::create(ROOT_PATH u"src/Rendering/Resource/MToon.hlsl");
 	m_builtinShaders[(int)BuiltinShader::SSAOOcclusionMap] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SSAOOcclusionMap.fx");
 	m_builtinShaders[(int)BuiltinShader::RadialBlur] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/RadialBlur.fx");
 	m_builtinShaders[(int)BuiltinShader::FilmicPostEffect] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/FilmicPostEffect.fx");

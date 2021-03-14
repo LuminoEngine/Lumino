@@ -78,7 +78,7 @@ public: // TODO: protected
 
 LN_INTERNAL_ACCESS:
 	//void setActualScreenOffset(const Point& offset) { m_actualScreenOffset = offset; }
-    void setActualSize(const Size& size) { m_actualSize = size; }
+	void setActualSize(const Size& size);
 
 private:
 	detail::RenderingManager* m_manager;

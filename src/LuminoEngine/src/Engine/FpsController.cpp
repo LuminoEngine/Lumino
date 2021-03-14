@@ -3,6 +3,7 @@
 #include <float.h>
 #include <chrono>
 #include <thread>
+#include <LuminoCore/IO/DllLoader.hpp>
 #include "FpsController.hpp"
 
 namespace ln {
@@ -34,10 +35,14 @@ FpsController::FpsController()
     , m_maxFrameMillisecondsPerSeconds(0)
 {
 #ifdef _WIN32
+    typedef HRESULT(WINAPI* PFN_timeBeginPeriod)(UINT uPeriod);
+    m_winmm = DllLoader::load("Winmm");
+    PFN_timeBeginPeriod func = reinterpret_cast<PFN_timeBeginPeriod>(m_winmm->getProcAddress("timeBeginPeriod"));
+  
     // これが無いと Sleep() 精度が落ちる。ほとんどの環境では 10ms 単位となり、
     // 16ms ウェイトしようとすると最低 20ms 待つことになる。
     // これは STL の sleep でも同様。
-    ::timeBeginPeriod(1);
+    func(1);
 #endif
     setFrameRate(60);
     //m_timer.start();

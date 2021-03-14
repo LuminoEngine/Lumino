@@ -15,13 +15,17 @@ cbuffer LNRenderViewBuffer
     /* [0]   */ float4x4 ln_View;
     /* [64]  */ float4x4 ln_Projection;
     /* [128] */ float4x4 ln_ProjectionI;
-    /* [192] */ float4 ln_Resolution;
-    /* [208] */ float4 ln_CameraPosition_;
-    /* [224] */ float4 ln_CameraDirection_;
-    /* [240] */ float4 ln_AmbientColor;
-    /* [256] */ float4 ln_AmbientSkyColor;
-    /* [272] */ float4 ln_AmbientGroundColor;
-};  /* [288(alignd:16)] */
+    /* [192] */ float4x4 _ln_MainLightMatrix;    // ViewProj
+    /* [256] */ float4 ln_Resolution;
+    /* [272] */ float4 ln_CameraPosition_;
+    /* [288] */ float4 ln_CameraDirection_;
+    /* [304] */ float4 ln_AmbientColor;
+    /* [320] */ float4 ln_AmbientSkyColor;
+    /* [336] */ float4 ln_AmbientGroundColor;
+    /* [352] */ float4 _ln_MainLightColor;
+    /* [368] */ float4 _ln_MainLightPos;    // .w=1
+    /* [384] */ float4 _ln_MainLightDir;    // .w=1
+};  /* [400(alignd:16)] */
 
 #define ln_CameraPosition (ln_CameraPosition_.xyz)
 #define ln_CameraDirection (ln_CameraDirection_.xyz)
@@ -61,6 +65,33 @@ sampler2D ln_MaterialTexture;
 // TODO: 以下の SamplerState は ln_MaterialTexture と併せたいので、やっぱり SamplerState は分離したい
 sampler2D ln_MetallicRoughnessTexture;
 sampler2D ln_OcclusionTexture;
+
+
+
+
+//==============================================================================
+// cbuffer accessors
+
+
+inline float3 _LN_MainLightColor() { return _ln_MainLightColor.rgb * _ln_MainLightColor.w; }
+inline float3 _LN_MainLightPos() { return _ln_MainLightPos.xyz; }
+
+
+
+/** */
+#define ln_MainLightColor _LN_MainLightColor()
+
+/** */
+#define ln_MainLightPos _LN_MainLightPos()
+
+/** */
+#define ln_MainLightMatrix _ln_MainLightMatrix
+
+
+
+//==============================================================================
+//
+
 
 struct LN_VSInput
 {

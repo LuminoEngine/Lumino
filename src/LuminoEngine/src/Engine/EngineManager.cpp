@@ -107,6 +107,7 @@ void EngineManager::init(const EngineSettings& settings)
     LN_LOG_DEBUG << "EngineManager Initialization started.";
 
 	m_settings = settings;
+	
 
 	// check settings
 	{
@@ -627,10 +628,20 @@ void EngineManager::initializeDefaultObjects()
 	}
 }
 
+void EngineManager::resetApp(Application* app)
+{
+	// Reset Scene
+	{
+		m_mainWorld->removeAllObjects();
+		m_mainUIRoot->removeAllChildren();
+	}
+
+	m_uiManager->resetApp(app);
+}
+
 bool EngineManager::updateUnitily()
 {
 	updateFrame();
-	renderFrame();
 	presentFrame();
 	return !isExitRequested();
 }
@@ -673,9 +684,6 @@ void EngineManager::updateFrame()
 		m_debugInterface->update(elapsedSeconds);
 	}
 
-    if (m_mainWindow) {
-        m_mainWindow->updateFrame(elapsedSeconds);
-    }
 
 	// いくつかの入力状態は onEvent 経由で Platform モジュールから Input モジュールに伝えられる。
 	// このときはまだ押されているかどうかだけを覚えておく。
@@ -688,6 +696,15 @@ void EngineManager::updateFrame()
 		m_audioManager->update(elapsedSeconds);
 	}
 
+	// Application::onUpdate の呼び出しはここから。
+	if (m_uiManager) {
+		m_uiManager->updateFrame(elapsedSeconds);
+	}
+    if (m_mainWindow) {
+        m_mainWindow->updateFrame(elapsedSeconds);
+    }
+
+
     if (m_mainWorld) {
         m_mainWorld->updateFrame(elapsedSeconds);
     }
@@ -699,48 +716,34 @@ void EngineManager::updateFrame()
     //------------------------------------------------
     // Post update phase
 
-    // 大体他の updateFrame で要素位置の調整が入るので、その後にレイアウトする。
-    /*if (m_mainUIContext)*/ {
-        // onUpdate のユーザー処理として、2D <-> 3D 変換したいことがあるが、それには ViewPixelSize が必要になる。
-        // 初期化直後や、Platform からの SizeChanged イベントの直後に一度レイアウトを更新することで、
-        // ユーザー処理の前に正しい ViewPixelSize を計算しておく。
-		m_mainWindow->updateStyleTree();
-        //m_mainUIContext->updateLayoutTree();
-        m_mainWindow->updateLayoutTree();
-    }
-
-	if (m_runtimeEditor) {
-		m_runtimeEditor->updateFrame();
-	}
-
 	if (m_engineProfiler) {
 		m_engineProfiler->lapEndUpdate();
 	}
 }
 
-void EngineManager::renderFrame()
-{
-    //if (m_renderingManager) {
-    //    m_renderingManager->frameBufferCache()->beginRenderSection();
-    //}
-
-	if (m_mainWindow) {
-		m_mainWindow->renderContents();
-	}
-
-    //// DrawList 構築
-    //if (m_mainWorld) {
-    //    m_mainWorld->render();
-    //}
-
-    //// DrawList を実際に描画
-    //if (m_mainWorldRenderView) {
-    //    m_mainWorldRenderView->render(m_graphicsManager->graphicsContext());
-    //}
-}
-
 void EngineManager::presentFrame()
 {
+	// 大体他の updateFrame で要素位置の調整が入るので、その後にレイアウトする。
+	if (m_mainWindow) {
+		if (m_engineProfiler) m_engineProfiler->lapBeginUIUpdate();
+		
+		// onUpdate のユーザー処理として、2D <-> 3D 変換したいことがあるが、それには ViewPixelSize が必要になる。
+		// 初期化直後や、Platform からの SizeChanged イベントの直後に一度レイアウトを更新することで、
+		// ユーザー処理の前に正しい ViewPixelSize を計算しておく。
+		m_mainWindow->updateStyleTree();
+		m_mainWindow->updateLayoutTree();
+
+		if (m_engineProfiler) m_engineProfiler->lapEndUIUpdate();
+	}
+
+	if (m_runtimeEditor) {
+		m_runtimeEditor->updateFrame();
+	}
+
+
+
+
+
     //m_effectManager->testDraw();
 
 	if (m_engineProfiler) {
@@ -919,7 +922,7 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
 	}
 
 	// init 直後にウィンドウサイズを取得したり、Camera Matrix を計算するため、ViewSize を確定させる
-	if (/*m_mainUIContext && */m_mainWindow) {
+	if (m_mainWindow) {
 		m_mainWindow->updateStyleTree();
 		m_mainWindow->updateLayoutTree();
 	}

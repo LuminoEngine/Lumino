@@ -9,10 +9,11 @@
 #include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Asset/AssetManager.hpp"
-#include "GLTFImporter.hpp"
-#include "FbxImporter.hpp"
-#include "ObjMeshImporter.hpp"
-#include "PmxImporter.hpp"
+#include "MeshImporter/GLTFImporter.hpp"
+#include "MeshImporter/VRMImporter.hpp"
+#include "MeshImporter/FbxImporter.hpp"
+#include "MeshImporter/ObjMeshImporter.hpp"
+#include "MeshImporter/PmxImporter.hpp"
 #include "MeshBoneMapper.hpp"
 #include "MeshManager.hpp"
 
@@ -313,7 +314,8 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		else
 		{
 
-			GLTFImporter importer;
+			//GLTFImporter importer;
+			VRMImporter importer;
 			importer.prepare(this, diag, settings);
 			bool result = importer.onImportAsSkinnedMesh(mesh, *path);
 

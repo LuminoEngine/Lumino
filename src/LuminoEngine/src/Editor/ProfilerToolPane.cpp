@@ -42,6 +42,7 @@ void ProfilerToolPane::onGui()
 
 		const double div = 1.0f / static_cast<double>(profiler->frameRate());
 		const double updatingRatio = profiler->updateTime() / div;
+		const double updatingUIRatio = profiler->updateUITime() / div;
 		const double renderingRatio = profiler->renderingTime() / div;
 		const double totalRatio = profiler->totalFrameTime() / div;
 
@@ -54,9 +55,11 @@ void ProfilerToolPane::onGui()
 		const float TOTAL_HEIGHT = 10.0f;
 		const float totalW = safeW * totalRatio;
 		const float updatingW = safeW * updatingRatio;
+		const float updatingUIW = safeW * updatingUIRatio;
 		const float renderingW = safeW * renderingRatio;
 		const ImU32 totalC = toImU32(UIColors::indigo());
 		const ImU32 updatingC = toImU32(UIColors::green());
+		const ImU32 updatingUIC = toImU32(UIColors::deepPurple());
 		const ImU32 renderingC = toImU32(UIColors::orange());
 		const ImU32 failC = toImU32(UIColors::red());
 		const ImU32 lineC = toImU32(UIColors::grey());
@@ -66,6 +69,7 @@ void ProfilerToolPane::onGui()
 			float x = p.x;
 			float y = p.y;
 			draw_list->AddRectFilled(ImVec2(x, p.y), ImVec2(x + updatingW, p.y + HEIGHT), updatingC); x += updatingW;
+			draw_list->AddRectFilled(ImVec2(x, p.y), ImVec2(x + updatingUIW, p.y + HEIGHT), updatingUIC); x += updatingUIW;
 			draw_list->AddRectFilled(ImVec2(x, p.y), ImVec2(x + renderingW, p.y + HEIGHT), renderingC); x += renderingW;
 		}
 
@@ -90,13 +94,19 @@ void ProfilerToolPane::onGui()
 			ImGui::PushStyleColor(ImGuiCol_Text, updatingC);
 			ImGui::Bullet();
 			ImGui::PopStyleColor();
-			ImGui::Text("Update");
+			ImGui::Text("Update: %.3f[s]", profiler->updateTime());
+			ImGui::NextColumn();
+
+			ImGui::PushStyleColor(ImGuiCol_Text, updatingUIC);
+			ImGui::Bullet();
+			ImGui::PopStyleColor();
+			ImGui::Text("UpdateUI: %.3f[s]", profiler->updateUITime());
 			ImGui::NextColumn();
 
 			ImGui::PushStyleColor(ImGuiCol_Text, renderingC);
 			ImGui::Bullet();
 			ImGui::PopStyleColor();
-			ImGui::Text("Render: %.3f", profiler->renderingTime());
+			ImGui::Text("Render: %.3f[s]", profiler->renderingTime());
 			ImGui::NextColumn();
 
 			ImGui::PushStyleColor(ImGuiCol_Text, totalC);

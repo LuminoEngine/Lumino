@@ -134,9 +134,10 @@ public:
 	void initializeUIManager();
 	void initializeDefaultObjects();
 
+	void resetApp(Application* app);
+
 	bool updateUnitily();
 	void updateFrame();
-	void renderFrame();		// Engine 内部管理のレンダリング
 	void presentFrame();	// swap。renderFrame() と分けているのは、間に コールバック以外の Engine 外部のレンダリングを許可するため
 	void resetFrameDelay();
 	bool isExitRequested() const { return m_exitRequested; }

@@ -1,4 +1,21 @@
 /*
+ * 用語メモ
+ * ----------
+ * ### 放射束
+ * > 光の基本単位は光子（photon）です．放射エネルギー（radiant energy）は，光子が集まったエネルギーです．このエネルギーを単位時間あたりで表したものを放射束（Flux）といいます．
+ *
+ * ### 放射輝度 (Radiance)
+ * > 放射源の表面上の点からある方向へと放出される放射束を表す物理量である。
+ * → このシェーダとしては、光源がピクセルに向かって放出する光量。例えばポイントライトであれば距離で減衰する。
+ *
+ * ### 放射照度 (Irradiance)
+ * > 物体へ時間あたりに照射される、面積あたりの放射エネルギーを表す物理量である。
+ * > 放射照度は単位面積あたりの放射束のことです．
+ * → ピクセルに実際に当たった光量、というイメージ。面法線と光線の角度(コサイン項) によって、量が決定する。垂直ならmax、水平ならmin(光は当たらなかった)
+ */
+
+
+/*
  Note:
  計算は View 空間上で行われる。
  three.js のシェーダを参考にしているためその方式に合わせた…というのが正直なところ。
@@ -68,10 +85,10 @@ struct LN_IncidentLight
 // ピクセルへのライトすべての影響情報
 struct LN_ReflectedLight
 {
-    float3 directDiffuse;
-    float3 directSpecular;
-    float3 indirectDiffuse;
-    float3 indirectSpecular;
+    float3 directDiffuse;       // 拡散反射成分
+    float3 directSpecular;      // 鏡面反射成分
+    float3 indirectDiffuse;     // 間接光による拡散反射成分
+    float3 indirectSpecular;    // 間接光による鏡面反射成分
 };
 
 // PBR 用 形状情報
@@ -154,7 +171,7 @@ float LN_PunctualLightIntensityToIrradianceFactor(const in float lightDistance, 
 }
 
 // アンビエントライトの放射輝度の計算
-float3 LN_GetAmbientLightIrradiance(const in float3 color)
+float3 LN_GetAmbientLightRadiance(const in float3 color)
 {
     float3 irradiance = color;
 
@@ -166,7 +183,7 @@ float3 LN_GetAmbientLightIrradiance(const in float3 color)
 }
 
 // 半球ライトの放射輝度の計算
-float3 LN_GetHemisphereLightIrradiance(const in LN_HemisphereLight hemiLight, const in LN_PBRGeometry geometry)
+float3 LN_GetHemisphereLightRadiance(const in LN_HemisphereLight hemiLight, const in LN_PBRGeometry geometry)
 {
     float dotNL = dot(geometry.normal, hemiLight.upDirection);
     float hemiDiffuseWeight = 0.5 * dotNL + 0.5;
@@ -181,7 +198,7 @@ float3 LN_GetHemisphereLightIrradiance(const in LN_HemisphereLight hemiLight, co
 }
 
 // ディレクショナルライトの放射輝度の計算
-void LN_GetDirectionalDirectLightIrradiance(const LN_DirectionalLight directionalLight, const LN_PBRGeometry geometry, out LN_IncidentLight directLight)
+void LN_GetDirectionalDirectLightRadiance(const LN_DirectionalLight directionalLight, const LN_PBRGeometry geometry, out LN_IncidentLight directLight)
 {
     directLight.color = directionalLight.color;
     directLight.direction = -directionalLight.direction;
@@ -198,8 +215,9 @@ bool LN_IsZeros(float3 v)
 #endif
 }
 
-// ポイントライトの放射輝度の計算
-void LN_GetPointDirectLightIrradiance(const in LN_PointLight pointLight, const in LN_PBRGeometry geometry, out LN_IncidentLight directLight)
+// ポイントライトの放射輝度の計算。
+// あるピクセルにおける geometry.position と、光源 pointLight.position の距離から、
+void LN_GetPointDirectLightRadiance(const in LN_PointLight pointLight, const in LN_PBRGeometry geometry, out LN_IncidentLight directLight)
 {
     float3 lVector = pointLight.position - geometry.position;
     directLight.direction = normalize(lVector);
@@ -229,7 +247,7 @@ directLight.visible =  !LN_IsZeros(directLight.color); //(directLight.color != f
 }
 
 // スポットライトの放射輝度の計算
-void LN_GetSpotDirectLightIrradiance(const in LN_SpotLight spotLight, const in LN_PBRGeometry geometry, out LN_IncidentLight directLight)
+void LN_GetSpotDirectLightRadiance(const in LN_SpotLight spotLight, const in LN_PBRGeometry geometry, out LN_IncidentLight directLight)
 {
     float3 L = spotLight.position - geometry.position;
     directLight.direction = normalize(L);
@@ -309,6 +327,10 @@ void LN_RE_Direct_BlinnPhong(const in LN_IncidentLight directLight, const LN_PBR
     float dotNL = saturate(dot(geometry.normal, directLight.direction));
 
     // 放射照度 = コサイン項 * 放射輝度
+    // https://zenn.dev/mebiusbox/books/619c81d2fbeafd/viewer/239ee2#%F0%9F%93%8C-%E6%94%BE%E5%B0%84%E7%85%A7%E5%BA%A6%E3%81%A8%E6%94%BE%E5%B0%84%E8%BC%9D%E5%BA%A6%E3%81%AE%E9%96%A2%E4%BF%82
+    // > 放射輝度に入射角の余弦（\cos\thetacosθ）を掛けることで放射照度に変換することができます.
+    // https://zenn.dev/mebiusbox/books/619c81d2fbeafd/viewer/7c1069#%E3%83%AC%E3%83%B3%E3%83%80%E3%83%AA%E3%83%B3%E3%82%B0%E6%96%B9%E7%A8%8B%E5%BC%8F
+    // > 放射輝度とコサイン項を掛けて放射照度に変換しています．
     float3 irradiance = dotNL * directLight.color;
 
     // punctual light
@@ -328,9 +350,12 @@ float3 BRDF_Diffuse_Lambert(const float3 diffuseColor)
     return LN_RECIPROCAL_PI * diffuseColor;
 }
 
+// irradiance : AmbientLight や HemisphereLight、(将来的には) グローバルイルミネーション等の間接色
 void LN_RE_IndirectDiffuse_BlinnPhong(const float3 irradiance, const LN_PBRGeometry geometry, const LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
 {
-    reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
+    // material.diffuseColor は metaric 反映済みの色。
+    // 例えば metaric=1.0 の場合 
+    reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);
 }
 
 #define LN_RE_Direct                LN_RE_Direct_BlinnPhong
@@ -338,6 +363,10 @@ void LN_RE_IndirectDiffuse_BlinnPhong(const float3 irradiance, const LN_PBRGeome
 
 
 // lights_fragment_begin.glsl.js
+// 
+// この関数の主な目的は、ピクセルに影響する光の情報を LN_ReflectedLight に集めること。
+// まずライトの種類ごとに定義されている **LightIrradiance() 関数を使って、ピクセルに入ってくる放射輝度を求める。
+// その後 LN_RE_Direct を使って、LN_ReflectedLight へ加算していく。
 float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const LN_PBRGeometry geometry, LN_PBRMaterial material)
 {
     LN_ReflectedLight reflectedLight = {float3(0,0,0),float3(0,0,0),float3(0,0,0),float3(0,0,0)};
@@ -359,7 +388,7 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
                 spotLight.decay = light.attenuation;
                 spotLight.coneCos = light.spotAngles.x;
                 spotLight.penumbraCos = light.spotAngles.y;
-                LN_GetSpotDirectLightIrradiance(spotLight, geometry, directLight);
+                LN_GetSpotDirectLightRadiance(spotLight, geometry, directLight);
         
                 // TODO: Three.js ではここで Shadow の処理を行っていた
                 //#ifdef USE_SHADOWMAP
@@ -376,7 +405,7 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
                 pointLight.color = light.color;
                 pointLight.distance = light.range;
                 pointLight.decay = light.attenuation;
-                LN_GetPointDirectLightIrradiance(pointLight, geometry, directLight);
+                LN_GetPointDirectLightRadiance(pointLight, geometry, directLight);
 
                 // TODO: Three.js ではここで Shadow の処理を行っていた
                 //#ifdef USE_SHADOWMAP
@@ -393,14 +422,14 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
     // EnvironmentLight
     {
         // AmbientLight
-        irradiance += LN_GetAmbientLightIrradiance(ln_AmbientColor.rgb);
+        irradiance += LN_GetAmbientLightRadiance(ln_AmbientColor.rgb);
 
         // HemisphereLight
         LN_HemisphereLight tl;
         tl.upDirection = float3(0, 1, 0);
         tl.skyColor = ln_AmbientSkyColor.rgb;
         tl.groundColor = ln_AmbientGroundColor.rgb;
-        irradiance += LN_GetHemisphereLightIrradiance(tl, geometry);
+        irradiance += LN_GetHemisphereLightRadiance(tl, geometry);
     }
     
     {
@@ -417,13 +446,13 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
                 tl.upDirection = float3(0, 1, 0);
                 tl.skyColor = light.color;
                 tl.groundColor = light.groundColor;
-                irradiance += LN_GetHemisphereLightIrradiance(tl, geometry);
+                irradiance += LN_GetHemisphereLightRadiance(tl, geometry);
             }
             // AmbientLight
             // TODO: deprecated
             else if (light.directionAndType.w >= 2.0)
             {
-                irradiance += LN_GetAmbientLightIrradiance(light.color.rgb);
+                irradiance += LN_GetAmbientLightRadiance(light.color.rgb);
             }
             // DirectionalLight
             else if (light.directionAndType.w >= 1.0)
@@ -431,8 +460,8 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
                 LN_DirectionalLight tl;
                 tl.direction = light.directionAndType.xyz;//mul(float4(light.directionAndType.xyz, 1.0), ln_View).xyz;//light.directionAndType.xyz;
                 tl.color = light.color;
-                LN_GetDirectionalDirectLightIrradiance(tl, geometry, directLight);
-                
+                LN_GetDirectionalDirectLightRadiance(tl, geometry, directLight);
+
                 // TODO: Three.js ではここで Shadow の処理を行っていた
                 #ifdef USE_SHADOWMAP
                 directLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;

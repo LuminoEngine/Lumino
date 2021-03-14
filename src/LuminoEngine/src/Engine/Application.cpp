@@ -18,6 +18,9 @@ LN_OBJECT_IMPLEMENT(Application, Object) {}
 
 Application::Application()
 	: m_manager(nullptr)
+	, m_commands()
+	, m_actions()
+	, m_initialized(false)
 {
     detail::EngineManager::s_settings.application = this;
 }
@@ -92,29 +95,30 @@ void Application::onRoutedEvent(UIEventArgs* e)
     }
 }
 
-void Application::initInternal()
+void Application::initInternal2()
 {
-	EngineContext::current()->initializeEngineManager();
-	EngineContext::current()->engineManager()->initializeAllManagers();
+	//EngineContext::current()->initializeEngineManager();
+	//EngineContext::current()->engineManager()->initializeAllManagers();
 	m_manager = detail::EngineDomain::engineManager();
 	onInit();
 	onStart();
 }
 
-bool Application::updateInertnal()
+void Application::updateInertnal2()
 {
-	detail::EngineDomain::engineManager()->updateFrame();
-	detail::EngineDomain::engineManager()->renderFrame();
+	if (!m_initialized) {
+		initInternal2();
+		m_initialized = true;
+	}
+
 	onUpdate();
-	detail::EngineDomain::engineManager()->presentFrame();
-	return !detail::EngineDomain::engineManager()->isExitRequested();
+	//return !detail::EngineDomain::engineManager()->isExitRequested();
 }
 
-void Application::finalizeInternal()
+void Application::finalizeInternal2()
 {
 	onStop();
 	onDestroy();
-	detail::EngineDomain::release();
 }
 
 void Application::run()
@@ -122,11 +126,19 @@ void Application::run()
 #ifdef __EMSCRIPTEN__
 	LN_UNREACHABLE();
 #endif
-	initInternal();
+	//initInternal();
+	EngineContext::current()->initializeEngineManager();
+	EngineContext::current()->engineManager()->initializeAllManagers();
 
-	while (updateInertnal());
+	do {
 
-	finalizeInternal();
+		detail::EngineDomain::engineManager()->updateFrame();
+		detail::EngineDomain::engineManager()->presentFrame();
+		//detail::EngineDomain::engineManager()->renderFrame();
+	} while (!detail::EngineDomain::engineManager()->isExitRequested());
+
+	detail::EngineDomain::release();
+	//finalizeInternal();
 }
 
 //==============================================================================
@@ -150,17 +162,20 @@ namespace detail {
 
 void ApplicationHelper::init(Application* app)
 {
-	app->initInternal();
+	//app->initInternal();
 }
 
 bool ApplicationHelper::processTick(Application* app)
 {
-	return app->updateInertnal();
+	detail::EngineDomain::engineManager()->updateFrame();
+	return !detail::EngineDomain::engineManager()->isExitRequested();
+	//return app->updateInertnal();
 }
 
 void ApplicationHelper::finalize(Application* app)
 {
-	app->finalizeInternal();
+	detail::EngineDomain::release();
+	//app->finalizeInternal();
 }
 
 void ApplicationHelper::run(Application* app)

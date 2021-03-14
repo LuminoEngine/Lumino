@@ -13,7 +13,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Animation/Animator.hpp>
-#include "../src/Mesh/MqoImporter.hpp"
+#include "../src/Mesh/MeshImporter/MqoImporter.hpp"
 #include "../src/Font/FontManager.hpp"
 #include "../src/Font/FontCore.hpp"
 #include "../src/Asset/AssetArchive.hpp"
@@ -471,7 +471,7 @@ int main(int argc, char** argv)
     if (1) {
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
-        Example_glTFSampleViewer();
+        //Example_glTFSampleViewer();
         //Example_MainLoop();
 		//Example_MeshViewer();
         //Example_MessageWindow();
@@ -501,7 +501,7 @@ int main(int argc, char** argv)
         //Sandbox_Sky();
         //Sandbox_UIShader();
 		//Sandbox_Voxel();
-		//Tutorial_Sandbox();
+		Tutorial_Sandbox();
 		//UISandboxMain();
         return 0;
     }

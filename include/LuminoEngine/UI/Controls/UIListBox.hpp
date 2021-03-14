@@ -1,65 +1,9 @@
 ﻿#pragma once
 #include "../Common.hpp"
 #include "../UIItemsElement.hpp"
+#include "UIListBoxItem.hpp"
 
 namespace ln {
-
-
-enum class UIListSelectionMoveMode
-{
-	EdgeStop,
-	Cyclic,
-};
-
-/** UIListSubmitMode */
-LN_ENUM();
-enum class UIListSubmitMode
-{
-	/** ゲームUI用。Hover で選択状態、シングルクリックで Submit. Hover 状態は使用されない。 */
-	Single,
-
-	/** エディタUI用。シングルクリックで選択状態、ダブルクリックで Submit. */
-	Double,
-};
-	
-/**
- * UIListItemsControl 内の選択可能な項目を表します。
- */
-LN_CLASS()
-class UIListItem
-	: public UIControl
-{
-	LN_OBJECT;
-public:
-	// TODO: group
-
-	/** Submit イベントの通知を受け取るコールバックを登録します。*/
-	LN_METHOD(Event)
-	Ref<EventConnection> connectOnSubmit(Ref<UIGeneralEventHandler> handler);
-
-
-protected:
-	virtual void onSubmit();
-	virtual void onSelected(UIEventArgs* e);
-	virtual void onUnselected(UIEventArgs* e);
-
-	// base interface
-	void onRoutedEvent(UIEventArgs* e) override;
-
-LN_CONSTRUCT_ACCESS:
-	UIListItem();
-	bool init();
-
-private:
-	void setSelectedInternal(bool selected);
-
-	UIListItemsControl* m_ownerListControl;
-	Event<UIGeneralEventHandler> m_onSubmit;
-	bool m_isSelected;
-
-	friend class UIListItemsControl;
-};
-
 
 /**
  * 要素を線形に保持し、選択できるようにするシーケンスコンテナのベースクラスです。
@@ -147,42 +91,6 @@ struct UIListItemsControl::BuilderCore : public UIControl::BuilderCore<T, B, D>
 
 LN_BUILDER_IMPLEMENT(UIListItemsControl);
 
-//--------------------------------------
-
-/**
- * UIListBox 内の選択可能な項目を表します。
- */
-LN_CLASS()
-class UIListBoxItem
-    : public UIListItem
-{
-	LN_OBJECT;
-public:
-	static Ref<UIListBoxItem> create(StringRef text);
-
-
-    // TODO: group
-
-
-	void bind(ObservablePropertyBase* prop);
-
-protected:
-	// base interface
-	virtual const String& elementName() const  override { static String name = u"UIListBoxItem"; return name; }
-
-LN_CONSTRUCT_ACCESS:
-    UIListBoxItem();
-    bool init();
-	bool init(StringRef text);
-
-	/** init */
-	LN_METHOD()
-	bool init(UIElement* content);
-	
-
-private:
-};
-
 
 // 任意サイズの Item をリスト形式で扱う。
 // サイズがばらばらでもいいので、仮想化は非対応。少量のフレキシブルなリストに使う。
@@ -222,6 +130,14 @@ protected:
 	Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 	void onRoutedEvent(UIEventArgs* e) override;
 
+	//virtual void render(UIRenderingContext* context, const Matrix& parentTransform)
+	//{
+	//	UIListItemsControl::render(context, parentTransform);
+	//}
+	//void onRender(UIRenderingContext* context) override
+	//{
+
+	//}
 
 LN_CONSTRUCT_ACCESS:
 	UIListBox();

@@ -42,7 +42,7 @@ public:
 protected:
     Texture();
     virtual ~Texture();
-    void init();
+    bool init();
     void onDispose(bool explicitDisposing) override;
     void onManagerFinalizing() override { dispose(); }
     virtual detail::RHIResource* resolveRHIObject(GraphicsContext* context, bool* outModified) = 0;
@@ -242,13 +242,14 @@ LN_CONSTRUCT_ACCESS:
     /** @copydoc create(int, int, TextureFormat) */
     void init(int width, int height, TextureFormat format);
 
-    void init(int width, int height, TextureFormat format, bool mipmap, bool msaa);
-    void init(SwapChain* owner);
-    void init(intptr_t nativeObject, TextureFormat format);
+    bool init(int width, int height, TextureFormat format, bool mipmap, bool msaa);
+    bool init(SwapChain* owner);
+    bool init(intptr_t nativeObject, TextureFormat format);
     void resetNativeObject(intptr_t nativeObject);
     void resetSize(int width, int height);
 
 private:
+    bool init();
 	void resetRHIObject(detail::RHIResource* rhiObject);
     Ref<Bitmap2D> readData(GraphicsContext* context);
 

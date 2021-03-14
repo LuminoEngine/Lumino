@@ -44,12 +44,16 @@ static const std::unordered_map<String, BuiltinShaderParameters> s_BuiltinShader
     {_LT("ln_View"), BuiltinShaderParameters_ln_View},
     {_LT("ln_Projection"), BuiltinShaderParameters_ln_Projection},
     {_LT("ln_ProjectionI"), BuiltinShaderParameters_ln_ProjectionI},
+    {_LT("_ln_MainLightMatrix"), BuiltinShaderParameters_ln_MainLightMatrix},
     {_LT("ln_Resolution"), BuiltinShaderParameters_ln_Resolution},
-    {_LT("ln_mainLightShadowMapResolution"), BuiltinShaderParameters_ln_mainLightShadowMapResolution},
-    {_LT("ln_CameraPosition"), BuiltinShaderParameters_ln_CameraPosition},
-    {_LT("ln_CameraDirection"), BuiltinShaderParameters_ln_CameraDirection},
-    {_LT("ln_NearClip"), BuiltinShaderParameters_ln_NearClip},
-    {_LT("ln_FarClip"), BuiltinShaderParameters_ln_FarClip},
+    {_LT("ln_CameraPosition_"), BuiltinShaderParameters_ln_CameraPosition},
+    {_LT("ln_CameraDirection_"), BuiltinShaderParameters_ln_CameraDirection},
+    {_LT("ln_AmbientColor"), BuiltinShaderParameters_ln_AmbientColor},
+    {_LT("ln_AmbientSkyColor"), BuiltinShaderParameters_ln_AmbientSkyColor},
+    {_LT("ln_AmbientGroundColor"), BuiltinShaderParameters_ln_AmbientGroundColor},
+    {_LT("_ln_MainLightColor"), BuiltinShaderParameters_ln_MainLightColor},
+    {_LT("_ln_MainLightPos"), BuiltinShaderParameters_ln_MainLightPos},
+    {_LT("_ln_MainLightDir"), BuiltinShaderParameters_ln_MainLightDir},
 
     {_LT("ln_World"), BuiltinShaderParameters_ln_World},
     {_LT("ln_WorldI"), BuiltinShaderParameters_ln_WorldI},
@@ -103,10 +107,10 @@ ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
 {
     //auto a = LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip);
     // メモリレイアウトそのまま ConstantBuffer に転送するため、オフセットを検証しておく
-    assert(192 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_Resolution));
-    assert(208 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraPosition));
-    assert(224 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraDirection));
-    static_assert(288 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    static_assert(256 == offsetof(LNRenderViewBuffer, ln_Resolution), "Invalid offsetof(LNRenderViewBuffer, ln_Resolution)");
+    static_assert(272 == offsetof(LNRenderViewBuffer, ln_CameraPosition), "Invalid offsetof(LNRenderViewBuffer, ln_CameraPosition)");
+    static_assert(288 == offsetof(LNRenderViewBuffer, ln_CameraDirection), "Invalid offsetof(LNRenderViewBuffer, ln_CameraDirection)");
+    static_assert(400 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(368 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(48 == sizeof(LNEffectColorBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(BuiltinShaderParameters__Count < 64, "Invalid BuiltinShaderParameters__Count");
@@ -187,6 +191,9 @@ void ShaderTechniqueSemanticsManager::updateRenderViewVariables(ShaderSecondaryD
         data.ln_AmbientColor = sceneInfo.ambientColor.toVector4();
         data.ln_AmbientSkyColor = sceneInfo.ambientSkyColor.toVector4();
         data.ln_AmbientGroundColor = sceneInfo.ambientGroundColor.toVector4();
+        data._ln_MainLightColor = sceneInfo.mainLightColor.toVector4();
+        data._ln_MainLightPos = sceneInfo.mainLightPos;
+        data._ln_MainLightDir = sceneInfo.mainLightDir;
         descriptor->setUniformBufferData(index, &data, sizeof(data));
     }
 

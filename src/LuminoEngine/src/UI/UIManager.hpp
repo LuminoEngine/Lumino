@@ -46,11 +46,12 @@ public:
 
 	void init(const Settings& settings);
 	void dispose();
+	void resetApp(Application* app);
 
     void onElementDisposing(UIElement* element);
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
-    Application* application() const { return m_application; }
+    const Ref<Application>& application() const { return m_application; }
     const String& defaultThemeName() const { return m_defaultThemeName; }
 
     void setPrimaryElement(UIControl* element);
@@ -84,7 +85,7 @@ public:
 
 	void registerActiveTimer(UIActiveTimer* timer);
 	void unregisterActiveTimer(UIActiveTimer* timer);
-	void tickGlobal(float elapsedSeconds);
+	void updateFrame(float elapsedSeconds);
 
     void clearMouseHover();
     void clearFocus();
@@ -111,7 +112,7 @@ private:
 	void setupDefaultStyle();
 
 	GraphicsManager* m_graphicsManager;
-    Application* m_application;
+    Ref<Application> m_application;
     String m_defaultThemeName;
 	//PlatformManager* platformManager;
     Ref<UIControl> m_primaryElement;

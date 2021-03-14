@@ -150,12 +150,29 @@ void UIManager::dispose()
 {
     LN_LOG_DEBUG << "UIManager dispose started.";
 
+    if (m_application) {
+        m_application->finalizeInternal2();
+        m_application = nullptr;
+    }
+
     m_eventArgsPool = nullptr;
     //m_mainContext = nullptr;
     m_styleContext = nullptr;
     m_finalDefaultStyle = nullptr;
 
     LN_LOG_DEBUG << "UIManager dispose finished.";
+}
+
+void UIManager::resetApp(Application* app)
+{
+    if (m_application == app) return;
+
+    if (m_application) {
+        m_application->finalizeInternal2();
+        m_application = nullptr;
+    }
+
+    m_application = app;
 }
 
 void UIManager::onElementDisposing(UIElement* element)
@@ -404,8 +421,12 @@ void UIManager::unregisterActiveTimer(UIActiveTimer* timer)
 	m_activeTimers.remove(timer);
 }
 
-void UIManager::tickGlobal(float elapsedSeconds)
+void UIManager::updateFrame(float elapsedSeconds)
 {
+    if (m_application) {
+        m_application->updateInertnal2();
+    }
+
 	for (auto& timer : m_activeTimers) {
 		timer->tick(elapsedSeconds);
 	}

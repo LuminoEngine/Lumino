@@ -3,6 +3,7 @@
 namespace ln {
 namespace detail {
 class EngineManager;
+class DllLoader;
 
 class FpsController
 {
@@ -81,6 +82,8 @@ private:
     uint64_t m_maxTime;
     uint64_t m_minFrameMillisecondsPerSeconds;
     uint64_t m_maxFrameMillisecondsPerSeconds;
+
+    Ref<detail::DllLoader> m_winmm;
 };
 
 } // namespace detail

@@ -16,12 +16,16 @@ struct alignas(16) LNRenderViewBuffer
     alignas(16) Matrix ln_View;
     alignas(16) Matrix ln_Projection;
     alignas(16) Matrix ln_ProjectionI;
+    alignas(16) Matrix _ln_MainLightMatrix;
     alignas(16) Vector4 ln_Resolution;
     alignas(16) Vector4 ln_CameraPosition;      // .w = ln_NearClip
     alignas(16) Vector4 ln_CameraDirection;     // .w = ln_FarClip
     alignas(16) Vector4 ln_AmbientColor;
     alignas(16) Vector4 ln_AmbientSkyColor;
     alignas(16) Vector4 ln_AmbientGroundColor;
+    alignas(16) Vector4 _ln_MainLightColor;
+    alignas(16) Vector4 _ln_MainLightPos;
+    alignas(16) Vector4 _ln_MainLightDir;
 };
 
 // cbuffer LNRenderElementBuffer
@@ -101,6 +105,10 @@ struct SceneInfo
     Color ambientColor;
     Color ambientSkyColor;
     Color ambientGroundColor;
+    Color mainLightColor;
+    Vector4 mainLightPos;
+    Vector4 mainLightDir;
+    Matrix mainLightMatrix;
 };
 
 // カメラ単位のデータに関する情報
@@ -220,11 +228,15 @@ enum BuiltinShaderParameters
     BuiltinShaderParameters_ln_Projection,
     BuiltinShaderParameters_ln_ProjectionI,
     BuiltinShaderParameters_ln_Resolution,
-    BuiltinShaderParameters_ln_mainLightShadowMapResolution,
+    BuiltinShaderParameters_ln_MainLightMatrix,
     BuiltinShaderParameters_ln_CameraPosition,
     BuiltinShaderParameters_ln_CameraDirection,
-    BuiltinShaderParameters_ln_NearClip,
-    BuiltinShaderParameters_ln_FarClip,
+    BuiltinShaderParameters_ln_AmbientColor,
+    BuiltinShaderParameters_ln_AmbientSkyColor,
+    BuiltinShaderParameters_ln_AmbientGroundColor,
+    BuiltinShaderParameters_ln_MainLightColor,
+    BuiltinShaderParameters_ln_MainLightPos,
+    BuiltinShaderParameters_ln_MainLightDir,
 
     // LNRenderElementBuffer
     BuiltinShaderParameters_ln_World,

@@ -86,7 +86,6 @@ public:
 
 	virtual void onDispose(bool explicitDisposing) override;
 
-	void renderContents();
 	void present();
 
 

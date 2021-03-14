@@ -1,0 +1,23 @@
+object:
+  class.Level:
+    renderParams:
+      class.Object:
+        fogStartDistance: ~
+        fogColor: [0.5, 0.5, 0.5, 1]
+        fogDensity: ~
+        fogHeightDensity: ~
+        fogLowerHeight: ~
+        fogUpperHeight: ~
+        skydomeSkyColor: ~
+        skydomeHorizonColor: ~
+        skydomeCloudColor: ~
+        skydomeOverlayColor: ~
+    children:
+      - class.StaticMesh:
+          position: [0, 0, 0]
+          angles: [-0, 0, 0]
+          scale: [1, 1, 1]
+          components:
+            - class.StaticMeshComponent:
+                model: ~
+          children: ~
