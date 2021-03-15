@@ -1,8 +1,8 @@
 ﻿Lumino
 ==========
 
-Lumino is a open source library for building interactive applications such as games and digital art.
-It provides an simple API that runs on multiple platforms and is available from multiple programming languages.
+Lumino is an open source library for building interactive applications such as games and digital art.
+It provides a simple API that runs on multiple platforms and is available for multiple programming languages.
 
 Lumino はゲームやデジタルアートなどのインタラクティブアプリケーションを構築するためのオープンソースライブラリです。
 マルチプラットフォームで動作し複数のプログラミング言語から利用できる、シンプルな API を提供します。
