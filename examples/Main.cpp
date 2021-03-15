@@ -2,8 +2,8 @@
 #define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
-#include "../src/LuminoEngine/src/Engine/EngineManager.hpp"
-#include "../src/LuminoEngine/src/Engine/EngineDomain.hpp"
+#include "../src/Engine/src/Engine/EngineManager.hpp"
+#include "../src/Engine/src/Engine/EngineDomain.hpp"
 using namespace ln;
 
 Ref<Application> CreateApp_App_Tutorial_Sandbox();
