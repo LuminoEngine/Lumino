@@ -5,6 +5,14 @@
 #include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
 #include "../SceneManager.hpp"
 
+
+/*
+ * Geometry 設計メモ
+ * ----------
+ * 
+ *
+ */
+
 namespace ln {
     
 //=============================================================================

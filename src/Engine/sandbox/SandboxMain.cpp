@@ -289,6 +289,7 @@ void Sandbox_Physics();
 void Sandbox_Physics2();
 void Sandbox_Particle();
 void Sandbox_PathRendering();
+void Sandbox_PathShape();
 void Sandbox_PostEffect();
 void Sandbox_Sky();
 void Sandbox_Voxel();
@@ -497,11 +498,12 @@ int main(int argc, char** argv)
         //Sandbox_Physics2();
         //Sandbox_Particle();
         //Sandbox_PathRendering();
+        Sandbox_PathShape();
         //Sandbox_PostEffect();
         //Sandbox_Sky();
         //Sandbox_UIShader();
 		//Sandbox_Voxel();
-		Tutorial_Sandbox();
+		//Tutorial_Sandbox();
 		//UISandboxMain();
         return 0;
     }
