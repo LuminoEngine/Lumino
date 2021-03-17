@@ -44,7 +44,7 @@ public:
 	/** 地面の環境光の色を設定します。(default: Black) */
 	void setGroundColor(const Color& value) { m_groundColor = value; }
 
-	/** ライトの明るさを設定します。(default: 0.5) */
+	/** ライトの明るさを設定します。(default: 1.0) */
 	void setIntensity(float value) { m_intensity = value; }
 
 	/** ライトの明るさを取得します。 */

@@ -108,7 +108,7 @@ struct PathShape_NVGcontext : public GLNVGcontextBase {
             else {
                 for (int i = 0; i < gl->nverts; i++) {
                     const NVGvertex* v = &gl->verts[i];
-                    gl->m_vertices[i].set(Vector3(v->x, 0.0f, v->y), Vector3::UnitZ, Vector2(v->u, v->v), Color::White);
+                    gl->m_vertices[i].set(Vector3(v->x, 0.0f, v->y), Vector3::UnitY, Vector2(v->u, v->v), Color::White);
                 }
             }
 

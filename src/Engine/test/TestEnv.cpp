@@ -76,7 +76,7 @@ void TestEnv::resetScene()
 	Engine::mainLight()->setGroundColor(Color::Black);
 	Engine::mainLight()->setAmbientColor(Color(0.5, 0.5, 0.5));
 	Engine::mainLight()->setColor(Color::White);
-	Engine::mainLight()->setIntensity(0.5f);
+	Engine::mainLight()->setIntensity(1.0f);
 }
 
 GraphicsContext* TestEnv::graphicsContext()

@@ -15,7 +15,7 @@ public:
     {
         Engine::renderView()->setGuideGridEnabled(true);
         //Engine::renderView()->setGizmoEnabled(true);
-        Engine::renderView()->setBackgroundColor(Color::Gray);
+        Engine::renderView()->setBackgroundColor(Color::Black);
         Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         //Scene::setAntialiasEnabled(false);
 

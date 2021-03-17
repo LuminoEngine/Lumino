@@ -412,10 +412,12 @@ float4 _LN_PS_ClusteredLighting_PBRShading(
     material.specularRoughness = clamp(surface.Roughness, 0.04, 1.0);
     material.occlusion = surface.Occlusion;
 
+
     // Shading
     _LN_LocalLightContext localLightContext;
     _LN_InitLocalLightContext(localLightContext, vertexPos, viewPos);
     float3 outgoingLight = _LN_ComputePBRLocalLights(localLightContext, geometry, material);
+    return float4(outgoingLight, 1);
 
     // Shadow
     float4 posInLight = positionInLightSpace;

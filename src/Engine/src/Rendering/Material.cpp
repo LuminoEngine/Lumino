@@ -30,7 +30,7 @@ LN_OBJECT_IMPLEMENT(Material, Object) {}
 
 static const Color Material_DefaultColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 static const float Material_DefaultRoughness = 0.5f;
-static const float Material_DefaultMetallic = 0.5f;
+static const float Material_DefaultMetallic = 0.0f;
 //static const float Material_DefaultSpecular = 0.5f;
 static const Color Material_DefaultEmmisive = Color(0, 0, 0, 0);
 
