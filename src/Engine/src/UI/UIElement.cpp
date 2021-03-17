@@ -79,6 +79,8 @@ void UIElement::BuilderDetails::apply(UIElement* p) const
     if (width) p->setWidth(*width);
     if (height) p->setHeight(*height);
     if (backgroundColor) p->setBackgroundColor(*backgroundColor);
+    if (hAlignment) p->setHAlignment(*hAlignment);
+    if (vAlignment) p->setVAlignment(*vAlignment);
 }
 
 //==============================================================================

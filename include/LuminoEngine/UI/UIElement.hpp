@@ -652,6 +652,8 @@ struct UIElement::BuilderDetails : public AbstractBuilderDetails
 	Optional<float> width;
 	Optional<float> height;
 	Optional<Color> backgroundColor;
+	Optional<UIHAlignment> hAlignment;
+	Optional<UIVAlignment> vAlignment;
 
 	void apply(UIElement* p) const;
 };
@@ -669,6 +671,9 @@ struct UIElement::BuilderCore : public AbstractBuilder<T, B, D>
 
 	/** height property */
 	B& backgroundColor(const Color& value) { d()->backgroundColor = value; return self(); }
+
+	/** alignment property */
+	B& alignment(UIHAlignment h, UIVAlignment v) { d()->hAlignment = h; d()->vAlignment = v; return self(); }
 
 	Ref<T> buildInto(UIElement* parent = nullptr) { auto p = AbstractBuilder<T, B, D>::build(); p->addInto(parent); return p; }
 };

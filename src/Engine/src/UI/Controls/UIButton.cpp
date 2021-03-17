@@ -217,5 +217,14 @@ void UIToggleButton::checkChanged()
 	}
 }
 
+//==============================================================================
+// UIButton::BuilderDetails
+
+void UIButton::BuilderDetails::apply(UIButton* p) const
+{
+    UIElement::BuilderDetails::apply(p);
+    p->setText(text);
+}
+
 } // namespace ln
 
