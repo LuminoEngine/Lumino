@@ -30,7 +30,7 @@ LN_OBJECT_IMPLEMENT(Material, Object) {}
 
 static const Color Material_DefaultColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 static const float Material_DefaultRoughness = 0.5f;
-static const float Material_DefaultMetallic = 0.0f;
+static const float Material_DefaultMetallic = 0.0f; // 1.0 に近づくほど、BaseColor は全く反映されなくなる。思った色を出せない原因になりやすいので 0.0 にしておく。Unity もそんな感じ。
 //static const float Material_DefaultSpecular = 0.5f;
 static const Color Material_DefaultEmmisive = Color(0, 0, 0, 0);
 

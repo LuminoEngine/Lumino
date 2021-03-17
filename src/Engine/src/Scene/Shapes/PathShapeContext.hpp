@@ -141,7 +141,7 @@ struct PathShape_NVGcontext : public GLNVGcontextBase {
     {
         PathShape_NVGcontext* gl = (PathShape_NVGcontext*)uptr;
         gl->dispose();
-        delete gl;
+        //delete gl;
     }
 
     static void glnvg__fill(PathShape_NVGcontext* gl, GLNVGcall* call)

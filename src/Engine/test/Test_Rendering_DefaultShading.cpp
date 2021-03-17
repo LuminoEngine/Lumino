@@ -29,7 +29,7 @@ TEST_F(Test_Rendering_DefaultShading, Basic)
         ASSERT_EQ(ColorI(255, 255, 255, 255), bmp->getPixel32(50, 50));
     }
 
-    // Box の側面は、光線と法線が 90度異なるため全く光が当たらない。
+    // Box の側面は、光線と法線が 90度異なるため光は全く当たらない。
     // 環境光も切ってあるので真っ黒になる。
     {
         Engine::mainCamera()->setPosition(0, 0, 2);
@@ -38,7 +38,7 @@ TEST_F(Test_Rendering_DefaultShading, Basic)
         TestEnv::updateFrame();
 
         auto bmp = TestEnv::capture();
-        ASSERT_EQ(ColorI(255, 255, 255, 255), bmp->getPixel32(50, 50));
+        ASSERT_EQ(ColorI(0, 0, 0, 255), bmp->getPixel32(50, 50));
     }
 
 
