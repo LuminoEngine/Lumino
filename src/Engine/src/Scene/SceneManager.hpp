@@ -9,6 +9,7 @@ class World;
 
 namespace detail {
 class SceneConductor;
+struct PathShape_NVGcontext;
 
 class SceneManager
 	: public RefObject
@@ -41,6 +42,7 @@ public:
     World* activeWorld() const { return m_activeWorld; }
     const Ref<Shader>& atmosphereShader() const { return m_atmosphereShader; }
 	const Ref<Raycaster>& raycasterCache() const { return m_raycasterCache; }
+	const std::unique_ptr<PathShape_NVGcontext>& pathContext() const { return m_pathContext; }
 
 	void setDefaultCamera(Camera* value) { m_defaultCamera = value; }
 	Camera* defaultCamera() const { return m_defaultCamera; }
@@ -65,7 +67,7 @@ private:
 	Camera* m_defaultCamera = nullptr;
     Ref<Shader> m_atmosphereShader;
 	Ref<Raycaster> m_raycasterCache;
-
+	std::unique_ptr<PathShape_NVGcontext> m_pathContext;
 
 	Ref<Material> m_primitiveMeshDefaultMaterial;
 

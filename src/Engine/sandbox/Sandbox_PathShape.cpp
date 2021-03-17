@@ -21,6 +21,20 @@ public:
 
         auto shape = makeObject<PathShape>();
         shape->addInto();
+
+        shape->beginCanvas();
+        shape->beginPath();
+        shape->setFillColor(Color::Red);
+        shape->setStrokeColor(Color::White);
+        shape->setStrokeWidth(0.05);
+        shape->moveTo(0, 0);
+        shape->lineTo(1, 1);
+        shape->lineTo(0, 3);
+        shape->lineTo(-1, 1);
+        shape->closePath();
+        shape->fill();
+        shape->stroke();
+        shape->endCanvas(PathPlacementSpace::XZ);
     }
 
 

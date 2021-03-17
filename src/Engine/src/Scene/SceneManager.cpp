@@ -5,6 +5,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Scene/Raycaster.hpp>
 #include "../Rendering/RenderingManager.hpp"
+#include "Shapes/PathShapeContext.hpp"
 
 // for registerType
 #include <LuminoEngine/Asset/Assets.hpp>
@@ -97,6 +98,8 @@ void SceneManager::init()
 	m_primitiveMeshDefaultMaterial->setRoughness(0.5f);
 	m_primitiveMeshDefaultMaterial->setMetallic(0.0f);
 
+	m_pathContext = PathShape_NVGcontext::nvgCreate(0);
+
     EngineDomain::registerType<World>();
     EngineDomain::registerType<Level>();
     EngineDomain::registerType<Sprite>();
@@ -117,7 +120,10 @@ void SceneManager::init()
 
 void SceneManager::dispose()
 {
-	//releaseAndTerminateAllRunningScenes();
+	if (m_pathContext) {
+		PathShape_NVGcontext::nvgDelete(m_pathContext.get());
+		m_pathContext = nullptr;
+	}
 }
 
 Shader* SceneManager::skydomeShader() const
