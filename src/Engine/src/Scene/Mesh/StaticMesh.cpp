@@ -37,25 +37,28 @@ StaticMesh::~StaticMesh()
 {
 }
 
-void StaticMesh::init()
+bool StaticMesh::init()
 {
-    VisualObject::init();
+    if (!VisualObject::init()) return false;
     m_component = makeObject<MeshComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
+    return true;
 }
 
-void StaticMesh::init(MeshModel* model)
+bool StaticMesh::init(MeshModel* model)
 {
-    init();
+    if (!init()) return false;
     m_component->setModel(model);
+    return true;
 }
 
-void StaticMesh::init(const StringRef& filePath, MeshImportSettings* settings)
+bool StaticMesh::init(const StringRef& filePath, MeshImportSettings* settings)
 {
     auto model = detail::EngineDomain::meshManager()->createSkinnedMeshModel(
         filePath, settings ? settings : MeshImportSettings::defaultSettings());
-    init(model);
+    if (!init(model)) return false;
+    return true;
 }
 
 MeshComponent* StaticMesh::staticMeshComponent() const
@@ -85,6 +88,14 @@ void StaticMesh::serialize(Serializer2& ar)
             setMainVisualComponent(m_component);
         }
     }
+}
+
+//==============================================================================
+// StaticMesh::BuilderDetails
+
+void StaticMesh::BuilderDetails::apply(StaticMesh* p) const
+{
+    VisualObject::BuilderDetails::apply(p);
 }
 
 } // namespace ln

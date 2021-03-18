@@ -67,7 +67,7 @@ bool BoxMesh::init()
 
 bool BoxMesh::init(float width, float height, float depth)
 {
-	if (!VisualObject::init()) return false;
+	if (!StaticMesh::init()) return false;
 	m_component = makeObject<BoxMeshComponent>(Vector3(width, height, depth));
 	addComponent(m_component);
 	setMainVisualComponent(m_component);
@@ -190,7 +190,7 @@ BoxMesh::BuilderDetails::BuilderDetails()
 
 void BoxMesh::BuilderDetails::apply(BoxMesh* p) const
 {
-	ShapeObject::BuilderDetails::apply(p);
+	StaticMesh::BuilderDetails::apply(p);
 	p->setSize(size);
 }
 

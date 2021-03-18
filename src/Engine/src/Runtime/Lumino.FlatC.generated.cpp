@@ -11755,7 +11755,7 @@ public:
         if (m_typeInfoOverride)
             return m_typeInfoOverride;
         else
-            return ln::TypeInfo::getTypeInfo<ShapeObject>();
+            return ln::TypeInfo::getTypeInfo<StaticMesh>();
     }
 
 };

@@ -25,11 +25,11 @@ public:
         //sprite->addInto();
 
         auto box = BoxMesh::With().buildInto();
-        box->setMaterial(Material::With()
-            .color(Color::White)
-            .roughness(0.0f)
-            .metallic(1.0f)
-            .build());
+        //box->setMaterial(Material::With()
+        //    .color(Color::White)
+        //    .roughness(0.0f)
+        //    .metallic(1.0f)
+        //    .build());
 
         auto light = Engine::mainLight();
 
