@@ -27,8 +27,14 @@ void EnvironmentLight::init()
 	WorldObject::init();
 	m_component = makeObject<EnvironmentLightComponent>();
 	addComponent(m_component);
-	setPosition(0, 0, 0);
+	setPosition(2.5, 10, 5);
+#ifdef LN_COORD_RH
+	// 右上手前から照らす ((2.5, 10, 5) から原点への向き)
+	setRotation(1.06105709f, -2.67794538f, 0.0f);
+#else
 	setRotation(Math::degreesToRadians(50), Math::degreesToRadians(-30), 0);	// 右上手前から照らす
+#endif
+	// NOTE: ライトのデフォルト向きは、「とりあえずまずはオブジェクトを表示」してみたときに視認しやすい陰影が付くようにしている。
 }
 
 EnvironmentLightComponent* EnvironmentLight::environmentLightComponent() const

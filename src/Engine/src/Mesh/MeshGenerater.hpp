@@ -89,6 +89,7 @@ private:
 class MeshGenerater
 {
 public:
+    MeshGenerater();
     virtual ~MeshGenerater();
 
     void setColor(const Color& color) { m_color = color; }

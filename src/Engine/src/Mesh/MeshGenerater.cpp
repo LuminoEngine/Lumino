@@ -44,6 +44,10 @@ void MeshGeneraterBuffer::setV(int index, const Vector3& position, const Vector2
 	m_vertexBuffer[index].set(position, normal, uv, m_generator->color());
 }
 
+MeshGenerater::MeshGenerater()
+	: m_color(0.0f, 0.0f, 0.0f, 1.0f)
+{
+}
 
 MeshGenerater::~MeshGenerater()
 {

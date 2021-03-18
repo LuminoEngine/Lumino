@@ -2,6 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModelFactory.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
 #include "../SceneManager.hpp"
 
@@ -127,21 +129,25 @@ bool BoxMeshComponent::init()
 bool BoxMeshComponent::init(const Vector3& size)
 {
     if (!init()) return false;
-	m_box = Box(Vector3::Zero, size);
+	//m_box = Box(Vector3::Zero, size);
+    m_model = detail::MeshModelFactory::createBox(size);
+    setMaterial(makeObject<Material>());
     return true;
 }
 
 void BoxMeshComponent::setSize(const Vector3& size)
 {
-    m_box.width = size.x;
-    m_box.height = size.y;
-    m_box.depth = size.y;
+    //m_box.width = size.x;
+    //m_box.height = size.y;
+    //m_box.depth = size.y;
 }
 
 void BoxMeshComponent::onRender(RenderingContext* context)
 {
     context->setMaterial(material());
-	context->drawBox(m_box, Color::White);
+	//context->drawBox(Box(Vector3::Zero, 1, 1, 1), Color::White);
+    //context->setTransfrom(m_model->nodeGlobalTransform(m_model->m_nodes[0]->index()));
+    context->drawMesh(m_model->meshContainers()[0]->meshPrimitive(), 0);
 }
 
 } // namespace ln

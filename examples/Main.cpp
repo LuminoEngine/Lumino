@@ -8,6 +8,18 @@ using namespace ln;
 
 Ref<Application> CreateApp_App_Tutorial_Sandbox();
 Ref<Application> CreateApp_App_Sprite();
+Ref<Application> CreateApp_App_GeometricShapes();
+
+struct ExampleEntry
+{
+    String name;
+    std::function<Ref<Application>()> app;
+};
+
+List<ExampleEntry> s_examples = {
+    { u"Sprite", CreateApp_App_Sprite },
+    { u"GeometricShapes", CreateApp_App_GeometricShapes },
+};
 
 class Navigator
 {
@@ -17,17 +29,16 @@ public:
         m_list = UIListBox::Builder()
             .width(200)
             .backgroundColor(Color::Gray)
-            .onSubmit([&]() { /*handleListItemSubmit(m_listbox1->selectedItem()->dataAs<String>()); */})
             .buildInto(Engine::mainWindow());
         m_list->setAlignments(UIHAlignment::Left, UIVAlignment::Stretch);
         m_list->setSubmitMode(UIListSubmitMode::Single);
-        m_list->addChild(UIListBoxItem::With()
-            .text("Sprite")
-            .onSubmit([this]() { detail::EngineDomain::engineManager()->resetApp(CreateApp_App_Sprite()); startApp(); })
-            .build());
-        m_list->addChild(u"item2");
-        m_list->addChild(u"item3");
-        m_list->addChild(u"item4");
+
+        for (const auto& e : s_examples) {
+            m_list->addChild(UIListBoxItem::With()
+                .text(e.name)
+                .onSubmit([&, this]() { startApp(e.app()); })
+                .build());
+        }
 
         m_button = UIButton::With()
             .text(u"<<")
@@ -52,8 +63,9 @@ public:
         m_button->setOpacity(a);
     }
 
-    void startApp()
+    void startApp(Ref<Application> app)
     {
+        detail::EngineDomain::engineManager()->resetApp(app);
         m_alpha.start(0.0f, 0.5);
     }
 
