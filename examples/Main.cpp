@@ -42,7 +42,7 @@ public:
 
         m_button = UIButton::With()
             .text(u"<<")
-            .width(60)
+            .width(40)
             .alignment(UIHAlignment::Left, UIVAlignment::Top)
             .buildInto(Engine::mainWindow());
         m_button->connectOnClicked([this]() { showList(); });

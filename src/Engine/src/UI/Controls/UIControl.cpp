@@ -297,7 +297,6 @@ void UIControl::activateInternal()
 {
     if (m_visualParent) {
         m_visualParent->moveVisualChildToForeground(this);
-        //m_visualParent->activateInternal();
     }
 
     onActivated();

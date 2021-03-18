@@ -1,7 +1,5 @@
 
-// ln::Vertex
-// float4 にパディングする必要がある。
-// 頂点バッファも合わせないと参照要素がずれてしまう。
+// ln::Vertex (Field is float4 padding required)
 struct Vertex
 {
     float4 position;

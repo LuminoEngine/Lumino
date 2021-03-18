@@ -260,8 +260,8 @@ void RenderingManager::init(const Settings& settings)
 	}
 
 #define ROOT_PATH u"C:/Proj/LN/Lumino/src/Engine/"
-	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ClusteredShadingDefault.fx");
 #if 0	// テスト用
+	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(ROOT_PATH u"src/Rendering/Resource/ClusteredShadingDefault.fx");
 	m_builtinShaders[(int)BuiltinShader::SSRRayTracing] = Shader::create(ROOT_PATH u"src/PostEffect/Resource/SSRRayTracing.fx");
 	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(ROOT_PATH u"src/Rendering/Resource/Sprite.fx");
 	m_builtinShaders[(int)BuiltinShader::MToon] = Shader::create(ROOT_PATH u"src/Rendering/Resource/MToon.hlsl");
@@ -284,7 +284,7 @@ void RenderingManager::init(const Settings& settings)
 #endif
 
 	{
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+#if 0
 		const auto code = FileSystem::readAllBytes(u"C:/Proj/LN/Lumino/src/Engine/src/Rendering/Resource/BlendShape.compute");
 		Ref<DiagnosticsManager> localDiag = makeObject<DiagnosticsManager>();
 		UnifiedShaderCompiler compiler(EngineDomain::shaderManager(), localDiag);
