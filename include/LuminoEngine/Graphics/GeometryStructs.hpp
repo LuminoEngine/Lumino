@@ -17,6 +17,8 @@ public:
         auto t = (this_->y < rect.y) ? rect.y : this_->y;
         auto r = (this_->getRight() > rect.getRight()) ? rect.getRight() : this_->getRight();
         auto b = (this_->getBottom() > rect.getBottom()) ? rect.getBottom() : this_->getBottom();
+        r = std::max(l, r);
+        b = std::max(t, b);
         this_->x = l;
         this_->y = t;
         this_->width = r - l;
