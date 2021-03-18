@@ -19,6 +19,8 @@ Ref<UIWindow> UIWindow::create()
 UIWindow::UIWindow()
     : m_opend(false)
 {
+    specialElementFlags().set(detail::UISpecialElementFlags::FloatingSiblingOrder, true);
+
     auto vsm = getVisualStateManager();
     vsm->registerState(UIVisualStates::DisplayStates, UIVisualStates::Opend);
     vsm->registerState(UIVisualStates::DisplayStates, UIVisualStates::Closed);
