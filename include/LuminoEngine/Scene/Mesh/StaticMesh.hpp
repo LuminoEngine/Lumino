@@ -4,6 +4,7 @@
 
 namespace ln {
 class MeshModel;
+class MeshImportSettings;
 
 /**
  * StaticMesh
@@ -13,6 +14,7 @@ class StaticMesh
 	: public VisualObject
 {
     LN_OBJECT;
+	LN_BUILDER;
 public:
 	/** load */
 	LN_METHOD()
@@ -37,12 +39,30 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	StaticMesh();
 	virtual ~StaticMesh();
-	void init();
-    void init(MeshModel* model);
-    void init(const StringRef& filePath, MeshImportSettings* settings);
+	bool init();
+	bool init(MeshModel* model);
+	bool init(const StringRef& filePath, MeshImportSettings* settings);
 
 private:
     Ref<MeshComponent> m_component;
 };
+
+//==============================================================================
+// StaticMesh::Builder
+
+struct StaticMesh::BuilderDetails : public VisualObject::BuilderDetails
+{
+	LN_BUILDER_DETAILS(StaticMesh);
+
+	void apply(StaticMesh* p) const;
+};
+
+template<class T, class B, class D>
+struct StaticMesh::BuilderCore : public VisualObject::BuilderCore<T, B, D>
+{
+	LN_BUILDER_CORE(VisualObject::BuilderCore);
+};
+
+LN_BUILDER_IMPLEMENT(StaticMesh);
 
 } // namespace ln

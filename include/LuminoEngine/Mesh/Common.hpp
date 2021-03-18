@@ -2,6 +2,7 @@
 
 namespace ln {
 class MeshImportSettings;
+class MeshModel;
 class SkinnedMeshModel;
 
 

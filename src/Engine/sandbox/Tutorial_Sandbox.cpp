@@ -1,10 +1,10 @@
 ﻿
-#include "LuminoExample.hpp"
+#include <Lumino.hpp>
 
-class App_Tutorial_Sandbox : public Application
+class App : public Application
 {
 public:
-    App_Tutorial_Sandbox()
+    App()
     {
         EngineSettings::setMainWindowResizable(true);
         //EngineSettings::setDevelopmentToolsEnabled(true);
@@ -12,9 +12,9 @@ public:
 
     virtual void onInit() override
     {
-        //Engine::renderView()->setGuideGridEnabled(true);
+        Engine::renderView()->setGuideGridEnabled(true);
         //Engine::renderView()->setGizmoEnabled(true);
-        Engine::renderView()->setBackgroundColor(Color::Gray);
+        //Engine::renderView()->setBackgroundColor(Color::Gray);
         Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         //Scene::setAntialiasEnabled(false);
 
@@ -24,6 +24,7 @@ public:
         //auto sprite = UISprite::create(texture);
         //sprite->addInto();
 
+        auto light = Engine::mainLight();
         auto box = BoxMesh::With().buildInto();
         //box->setMaterial(Material::With()
         //    .color(Color::White)
@@ -31,11 +32,10 @@ public:
         //    .metallic(1.0f)
         //    .build());
 
-        auto light = Engine::mainLight();
 
-        light->setPosition(0, 0, 10);
-        light->lookAt(0, 0, 0);
-        light->setAmbientColor(Color::Red);
+        //light->setPosition(0, 0, 10);
+        //light->lookAt(0, 0, 0);
+        //light->setAmbientColor(Color::Red);
 
         //auto text1 = UIText::With(u"Hello ------ Aa!").buildInto();
 
@@ -49,7 +49,15 @@ public:
     }
 };
 
-LUMINO_APP(App_Tutorial_Sandbox);
+
+//--------------------------------------------------------------------------------
+
+void Tutorial_Sandbox()
+{
+    App app;
+    detail::ApplicationHelper::run(&app);
+}
+
 
 
 

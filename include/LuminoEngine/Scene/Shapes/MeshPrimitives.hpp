@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "../VisualObject.hpp"
+#include "../Mesh/StaticMesh.hpp"
 
 namespace ln {
 class BoxMeshComponent;
@@ -62,7 +63,7 @@ private:
  */
 LN_CLASS()
 class BoxMesh
-	: public ShapeObject
+	: public StaticMesh
 {
 	LN_BUILDER;
 public:
@@ -154,7 +155,7 @@ LN_BUILDER_IMPLEMENT(PlaneMesh);
 //==============================================================================
 // BoxMesh::Builder
 
-struct BoxMesh::BuilderDetails : public ShapeObject::BuilderDetails
+struct BoxMesh::BuilderDetails : public StaticMesh::BuilderDetails
 {
 	LN_BUILDER_DETAILS(BoxMesh);
 
@@ -165,9 +166,9 @@ struct BoxMesh::BuilderDetails : public ShapeObject::BuilderDetails
 };
 
 template<class T, class B, class D>
-struct BoxMesh::BuilderCore : public ShapeObject::BuilderCore<T, B, D>
+struct BoxMesh::BuilderCore : public StaticMesh::BuilderCore<T, B, D>
 {
-	LN_BUILDER_CORE(ShapeObject::BuilderCore);
+	LN_BUILDER_CORE(StaticMesh::BuilderCore);
 
 	B& size(float x, float y, float z) { d()->size = Vector3(x, y, z); return self(); }
 };

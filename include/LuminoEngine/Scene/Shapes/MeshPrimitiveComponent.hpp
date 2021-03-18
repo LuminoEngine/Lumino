@@ -80,7 +80,8 @@ LN_CONSTRUCT_ACCESS:
     bool init(const Vector3& size);
 
 private:
-	Box m_box;
+	//Box m_box;
+    Ref<MeshModel> m_model;
 };
 
 } // namespace ln

@@ -65,9 +65,9 @@ include(src/LuminoBuildCommon.cmake)
 
 set(LUMINO_ROOT_PATH "${CMAKE_CURRENT_LIST_DIR}")
 set(LUMINO_INCLUDE_DIRECTORIES
-    "${LUMINO_ROOT_PATH}/src/LuminoCore/include"
-    "${LUMINO_ROOT_PATH}/src/LuminoEngine/include"
-    "${LUMINO_ROOT_PATH}/src/LuminoEditor/Core")
+    "${LUMINO_ROOT_PATH}/src/Core/include"
+    "${LUMINO_ROOT_PATH}/src/Engine/include"
+    "${LUMINO_ROOT_PATH}/src/Editor/Core")
 
 if (LN_FBX_SDK_PATH)
     message("LN_FBX_SDK_PATH: ${LN_FBX_SDK_PATH}")
@@ -133,20 +133,20 @@ set(LN_GLTF_SAMPLE_MODELS_DIR "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/gl
 #------------------------------------------------------------------------------
 
 if (LN_BUILD_CORE_ONLY)
-    add_subdirectory(src/LuminoCore)
+    add_subdirectory(src/Core)
 else()
     set(LN_EXTERNAL_FIND_PATH_MODE "build")
     include(external/ImportExternalLibraries.cmake)
-    add_subdirectory(src/LuminoCore)
-    add_subdirectory(src/LuminoEngine)
+    add_subdirectory(src/Core)
+    add_subdirectory(src/Engine)
     if (LN_BUILD_TESTS)
         add_subdirectory(examples)
     endif()
     if (LN_BUILD_BINDINGS)
-        add_subdirectory(src/LuminoTranscoder)
+        add_subdirectory(src/Transcoder)
     endif()
     if (LN_BUILD_EDITOR)
-        add_subdirectory(src/LuminoEditor)
+        add_subdirectory(src/Editor)
     endif()
     if (${LN_TARGET_ARCH} STREQUAL "MSVC2019-x86-MT")
         add_subdirectory(tools/Bindings/HSP3)

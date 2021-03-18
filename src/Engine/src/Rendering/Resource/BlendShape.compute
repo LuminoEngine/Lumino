@@ -1,0 +1,61 @@
+
+// ln::Vertex (Field is float4 padding required)
+struct Vertex
+{
+    float4 position;
+    float4 normal;
+    float4 uv;
+    float4 color;
+    float4 tangent;
+};
+
+RWStructuredBuffer<Vertex> dstVertices : register(u0);
+StructuredBuffer<Vertex> srcVertices : register(t0);
+StructuredBuffer<Vertex> target0 : register(t1);
+StructuredBuffer<Vertex> target1 : register(t2);
+StructuredBuffer<Vertex> target2 : register(t3);
+StructuredBuffer<Vertex> target3 : register(t4);
+
+cbuffer BlendInfo : register(b0)
+{
+    /*  [0] */ float4 _Weights;
+    /* [16] */ int _TargetCount;
+    /* [20] */ int _VertexCount;
+};
+
+[numthreads(64, 1, 1)]
+void Main(uint3 threadID : SV_DispatchThreadID)
+{
+    const int t = (int)threadID.x;
+    if (t >= _VertexCount) {
+        return;
+    }
+
+    int i = t;
+
+    dstVertices[i] = srcVertices[i];
+
+    if (_TargetCount >= 1) {
+        dstVertices[i].position += target0[i].position * _Weights.x;
+        dstVertices[i].normal += target0[i].normal * _Weights.x;
+        dstVertices[i].tangent.xyz += target0[i].tangent.xyz * _Weights.x;
+    }
+
+    if (_TargetCount >= 2) {
+        dstVertices[i].position += target1[i].position * _Weights.y;
+        dstVertices[i].normal += target1[i].normal * _Weights.y;
+        dstVertices[i].tangent.xyz += target1[i].tangent.xyz * _Weights.y;
+    }
+
+    if (_TargetCount >= 3) {
+        dstVertices[i].position += target2[i].position * _Weights.z;
+        dstVertices[i].normal += target2[i].normal * _Weights.z;
+        dstVertices[i].tangent.xyz += target2[i].tangent.xyz * _Weights.z;
+    }
+
+    if (_TargetCount >= 4) {
+        dstVertices[i].position += target3[i].position * _Weights.w;
+        dstVertices[i].normal += target3[i].normal * _Weights.w;
+        dstVertices[i].tangent.xyz += target3[i].tangent.xyz * _Weights.w;
+    }
+}

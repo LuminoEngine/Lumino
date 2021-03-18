@@ -1,0 +1,4 @@
+object:
+  class.Test_Asset_AssetObject_Test:
+    SourceRect: [0, 0, 0, 0]
+    AnchorPoint: [.nan, .nan]

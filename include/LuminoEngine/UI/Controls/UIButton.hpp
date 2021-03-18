@@ -44,6 +44,7 @@ class UIButton
 	: public UIButtonBase
 {
 	LN_OBJECT;
+	LN_BUILDER;
 public:
     static Ref<UIButton> create();
     static Ref<UIButton> create(const StringRef& text);
@@ -106,6 +107,33 @@ private:
 	UICheckState m_checkState;
 	Event<UIGeneralEventHandler> m_onChecked;
 	Event<UIGeneralEventHandler> m_onUnchecked;
+};
+
+
+//==============================================================================
+// UIButton::Builder
+
+struct UIButton::BuilderDetails : public UIControl::BuilderDetails
+{
+	LN_BUILDER_DETAILS(UIButton);
+
+	String text;
+
+	void apply(UIButton* p) const;
+};
+
+template<class T, class B, class D>
+struct UIButton::BuilderCore : public UIControl::BuilderCore<T, B, D>
+{
+	LN_BUILDER_CORE(UIControl::BuilderCore);
+
+	B& text(StringRef value) { d()->text = value; return self(); }
+};
+
+struct UIButton::Builder : public BuilderCore<UIButton, Builder, BuilderDetails>
+{
+	Builder() {}
+	Builder(StringRef text) { d()->text = text; }
 };
 
 } // namespace ln
