@@ -109,6 +109,8 @@ enum class UISpecialElementFlags : uint32_t
     InternalEnabled = 1 << 8,
 
     ListItem = 1 << 9,
+
+    FloatingSiblingOrder = 1 << 10,
 };
 // TODO: ↑↓統合していいかも
 enum class UIElementDirtyFlags

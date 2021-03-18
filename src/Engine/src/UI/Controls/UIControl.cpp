@@ -295,7 +295,7 @@ Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& fina
 // 実際のところ onActivate/onDeactivate は Control の機能で十分と判断したのでこっちに持ってきている。
 void UIControl::activateInternal()
 {
-    if (m_visualParent) {
+    if (m_visualParent && specialElementFlags().hasFlag(detail::UISpecialElementFlags::FloatingSiblingOrder)) {
         m_visualParent->moveVisualChildToForeground(this);
     }
 
