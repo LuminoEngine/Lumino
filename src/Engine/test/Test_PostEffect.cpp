@@ -28,6 +28,8 @@ TEST_F(Test_PostEffect, Bloom)
 
 TEST_F(Test_PostEffect, SSR)
 {
+
+
 	auto plane1Material = Material::create();
 	plane1Material->setColor(Color::Blue);
 	plane1Material->setRoughness(0.0f);
@@ -42,15 +44,24 @@ TEST_F(Test_PostEffect, SSR)
 		.material(plane1Material)
 		.buildInto();
 
-	auto box1Material = Material::create();
-	box1Material->setColor(Color::Green);
-	box1Material->setRoughness(1.0f);
-	box1Material->setMetallic(0.0f);
-	BoxMesh::Builder()
+	//auto box1Material = Material::create();
+	//box1Material->setColor(Color::Green);
+	//box1Material->setRoughness(1.0f);
+	//box1Material->setMetallic(0.0f);
+	auto box1Material = Material::With()
+		.color(Color::Green)
+		.roughness(1.0f)
+		.metallic(0.0f)
+		.build();
+
+	auto box = BoxMesh::Builder()
 		.position(4, 0, 0)
 		.scale(5)
-		.material(box1Material)
+		//.material(whiteMaterial)
 		.buildInto();
+	//box->model()->addMaterial();
+	box->boxMeshComponent()->setMaterial(box1Material);
+
 
 	auto ssrEffect = makeObject<SSRPostEffect>();
 	Engine::renderView()->addPostEffect(ssrEffect);
