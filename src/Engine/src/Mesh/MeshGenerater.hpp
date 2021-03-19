@@ -723,11 +723,12 @@ public:	// MeshGenerater interface
 	LN_MESHGENERATOR_CLONE_IMPLEMENT(CylinderMeshFactory);
 
 public:
-	bool init(float radius, float height, int slices, int stacks);
+	bool init(float radiusTop, float radiusBottom, float height, int slices, int stacks);
 	void onGenerate(MeshGeneraterBuffer* buf) override;
 
 private:
-	float m_radius;
+    float m_radiusTop;
+	float m_radiusBottom;
 	float m_height;
 	int m_slices;
 	int m_stacks;

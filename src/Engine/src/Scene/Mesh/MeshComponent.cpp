@@ -10,6 +10,7 @@
 #include <LuminoEngine/Physics/RigidBody.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Scene/Mesh/MeshComponent.hpp>
+#include <LuminoEngine/Scene/WorldObject.hpp>
 #include "Engine/EngineManager.hpp"
 #include "../../Mesh/MeshModelInstance.hpp"
 
@@ -157,26 +158,29 @@ void MeshComponent::onRender(RenderingContext* context)
 
 void MeshComponent::onRenderGizmo(RenderingContext* context)
 {
+
     CommandList* commandList = context->getCommandList(ln::RenderPart::Gizmo);
 
-    const auto p = m_model->boundingBox().getCorners();
-    Vector3 lines[] = {
-        p[0], p[1],
-        p[1], p[2],
-        p[2], p[3],
-        p[3], p[0],
-        p[4], p[5],
-        p[5], p[6],
-        p[6], p[7],
-        p[7], p[4],
-        p[0], p[4],
-        p[1], p[5],
-        p[2], p[6],
-        p[3], p[7],
-    };
-    commandList->drawLineList(lines, 24, Color::Red);
+    commandList->setBaseTransfrom(worldObject()->worldMatrix());
 
-    /*
+    //const auto p = m_model->boundingBox().getCorners();
+    //Vector3 lines[] = {
+    //    p[0], p[1],
+    //    p[1], p[2],
+    //    p[2], p[3],
+    //    p[3], p[0],
+    //    p[4], p[5],
+    //    p[5], p[6],
+    //    p[6], p[7],
+    //    p[7], p[4],
+    //    p[0], p[4],
+    //    p[1], p[5],
+    //    p[2], p[6],
+    //    p[3], p[7],
+    //};
+    //commandList->drawLineList(lines, 24, Color::Red);
+
+    
     forEachVisibleMeshPrimitives(commandList, [this, commandList](MeshNode* node, MeshPrimitive* meshPrimitive) {
         const auto p = meshPrimitive->boundingBox().getCorners();
         Vector3 lines[] = {
@@ -195,7 +199,7 @@ void MeshComponent::onRenderGizmo(RenderingContext* context)
         };
         commandList->drawLineList(lines, 24, Color::Red);
     });
-    */
+    
 }
 
 void MeshComponent::forEachVisibleMeshPrimitives(CommandList* commandList, std::function<void(MeshNode* node, MeshPrimitive* meshPrimitive)> callback)

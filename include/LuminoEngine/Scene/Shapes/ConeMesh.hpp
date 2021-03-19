@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-#include "../VisualObject.hpp"
 #include "../Mesh/StaticMesh.hpp"
 
 namespace ln {
@@ -39,7 +38,7 @@ struct ConeMesh::BuilderCore : public StaticMesh::BuilderCore<T, B, D>
 {
 	LN_BUILDER_CORE(StaticMesh::BuilderCore);
 
-	/** Radius of the cone base. (Default: 1.0) */
+	/** Radius of the cone base. (Default: 0.5) */
 	B& radius(float value) { d()->radius = value; return self(); }
 
 	/** Height of the cone. (Default: 1.0) */

@@ -25,7 +25,7 @@ bool ConeMesh::init(float radius, float height, float segments, Material* materi
 // ConeMesh::BuilderDetails
 
 ConeMesh::BuilderDetails::BuilderDetails()
-	: radius(1.0f)
+	: radius(0.5f)
 	, height(1.0f)
 	, segments(16)
 	, material(nullptr)

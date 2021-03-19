@@ -7,12 +7,20 @@ public:
 
     void onInit() override
     {
-        auto box = BoxMesh::With()
-            .size(1, 1, 1)
-            .buildInto();
+        Engine::renderView()->setGuideGridEnabled(true);
+        Engine::renderView()->setGizmoEnabled(true);
+        Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 
-        auto cone = ConeMesh::With()
-            .position(1, 0, 0)
+        //auto box = BoxMesh::With()
+        //    .size(1, 1, 1)
+        //    .buildInto();
+
+        //auto cone = ConeMesh::With()
+        //    .position(1, 0, 0)
+        //    .buildInto();
+
+        auto cylinder = CylinderMesh::With()
+            .position(2, 0, 0)
             .buildInto();
     }
 

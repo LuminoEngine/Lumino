@@ -59,17 +59,19 @@ MeshGenerater::~MeshGenerater()
 void CylinderMeshFactory::copyFrom(const CylinderMeshFactory* other)
 {
 	MeshGenerater::copyFrom(other);
-	m_radius = other->m_radius;
+	m_radiusTop = other->m_radiusTop;
+	m_radiusBottom = other->m_radiusBottom;
 	m_height = other->m_height;
 	m_slices = other->m_slices;
 	m_stacks = other->m_stacks;
 }
 
-bool CylinderMeshFactory::init(float radius, float height, int slices, int stacks)
+bool CylinderMeshFactory::init(float radiusTop, float radiusBottom, float height, int slices, int stacks)
 {
 	if (LN_REQUIRE(slices >= 3)) return false;
 	if (LN_REQUIRE(stacks >= 1)) return false;
-	m_radius = radius;
+	m_radiusTop = radiusTop;
+	m_radiusBottom = radiusBottom;
 	m_height = height;
 	m_slices = slices;
 	m_stacks = stacks;
@@ -78,18 +80,20 @@ bool CylinderMeshFactory::init(float radius, float height, int slices, int stack
 
 void CylinderMeshFactory::onGenerate(MeshGeneraterBuffer* buf)
 {
+	const float yStep = m_height / m_stacks;
+	const float yu = m_height / 2;
+	const float yd = -m_height / 2;
+	const float slope = (m_radiusBottom - m_radiusTop) / m_height;
+
 	uint32_t iV = 0;
 	uint32_t iI = 0;
-
-	float yStep = m_height / m_stacks;
 	float y;
-	float yu = m_height / 2;
-	float yd = -m_height / 2;
-
 	for (int iSlice = m_slices; iSlice >= 0; iSlice--)
 	{
-		Vector3 n = MeshHelper::getXZCirclePoint(iSlice, m_slices);
-		Vector3 xz = n * m_radius;
+		const Vector3 pos = MeshHelper::getXZCirclePoint(iSlice, m_slices);
+		const Vector3 xzTop = pos * m_radiusTop;
+		const Vector3 xzBottom = pos * m_radiusBottom;
+		const Vector3 normal = Vector3::normalize(pos.x, slope, pos.z);
 
 		// upper base
 		{
@@ -100,7 +104,10 @@ void CylinderMeshFactory::onGenerate(MeshGeneraterBuffer* buf)
 		y = yu;
 		for (int iStack = 0; iStack < m_stacks + 1; ++iStack)
 		{
-			buf->setV(iV, Vector3(xz.x, y, xz.z), Vector2(0, 0), n);
+			const float u = static_cast<float>(iStack) / m_stacks + 1;
+			const float radius = u * (m_radiusBottom - m_radiusTop) + m_radiusTop;
+
+			buf->setV(iV, Vector3(pos.x * radius, y, pos.z * radius), Vector2(0, 0), normal);
 			iV++;
 			y -= yStep;
 		}
@@ -154,31 +161,35 @@ bool ConeMeshFactory::init(float radius, float height, int slices)
 
 void ConeMeshFactory::onGenerate(MeshGeneraterBuffer* buf)
 {
+	const float halfHeight = m_height / 2.0f;
+	const float top = halfHeight;
+	const float bottom = -halfHeight;
+	const float slope = m_radius / m_height;
 	uint32_t iV = 0;
 	uint32_t iI = 0;
 
 	for (int iSlice = m_slices; iSlice >= 0; iSlice--)
 	{
-		Vector3 n = MeshHelper::getXZCirclePoint(iSlice, m_slices);
-		Vector3 xz = n * m_radius;
+		const Vector3 pos = MeshHelper::getXZCirclePoint(iSlice, m_slices);
+		const Vector3 xz = pos * m_radius;
+		const Vector3 normal = Vector3::normalize(pos.x, slope, pos.z);
 
 		// top
 		{
-			buf->setV(iV, Vector3(0, m_height, 0), Vector2(0, 0), Vector3::UnitY); iV++;
+			buf->setV(iV, Vector3(0, top, 0), Vector2(0, 0), Vector3::UnitY); iV++;
 		}
 		// side
-		const float y = 0;
 		{
-			buf->setV(iV, Vector3(xz.x, y, xz.z), Vector2(0, 0), n); iV++;
+			buf->setV(iV, Vector3(xz.x, bottom, xz.z), Vector2(0, 0), normal); iV++;
 		}
 		// lower base
 		{
-			buf->setV(iV, Vector3(0, y, 0), Vector2(0, 0), -Vector3::UnitY); iV++;
+			buf->setV(iV, Vector3(0, bottom, 0), Vector2(0, 0), -Vector3::UnitY); iV++;
 		}
 	}
 
 	// faces
-	int stacks = 2;
+	const int stacks = 2;
 	for (int iSlice = 0; iSlice < m_slices; ++iSlice)	// x
 	{
 		for (int iStack = 0; iStack < stacks; ++iStack)	// y

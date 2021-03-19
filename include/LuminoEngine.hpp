@@ -99,6 +99,7 @@
 #include "LuminoEngine/Scene/Shapes/MeshPrimitives.hpp"
 #include "LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp"
 #include "LuminoEngine/Scene/Shapes/ConeMesh.hpp"
+#include "LuminoEngine/Scene/Shapes/CylinderMesh.hpp"
 #include "LuminoEngine/Scene/Effect/ParticleEmitterComponent.hpp"
 #include "LuminoEngine/Scene/Effect/ParticleEmitter.hpp"
 
