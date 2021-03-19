@@ -22,7 +22,7 @@ class App_Experiment_Shadow : public Application
 
 		auto plane1 = PlaneMesh::create();
 
-		auto box1 = BoxMesh::create();
+		auto box1 = BoxMesh::With().build();
 		box1->setPosition(2, 2, 0);
 
 		m_sprite = Sprite::create();

@@ -3,9 +3,12 @@
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModelFactory.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitives.hpp>
 #include "../../Mesh/MeshManager.hpp"
+#include "../SceneManager.hpp"
 
 namespace ln {
 	
@@ -37,21 +40,6 @@ Material* ShapeObject::material() const
 //==============================================================================
 // BoxMesh
 
-Ref<BoxMesh> BoxMesh::create()
-{
-    return makeObject<BoxMesh>();
-}
-
-Ref<BoxMesh> BoxMesh::create(float width, float height, float depth)
-{
-	return makeObject<BoxMesh>(width, height, depth);
-}
-
-//Ref<BoxMesh> BoxMesh::create(const StringRef& filePath, float scale)
-//{
-//    return makeObject<BoxMesh>(filePath, scale);
-//}
-
 BoxMesh::BoxMesh()
 {
 }
@@ -60,29 +48,41 @@ BoxMesh::~BoxMesh()
 {
 }
 
+bool BoxMesh::init(const Vector3& size, Material* material)
+{
+	auto model = detail::MeshModelFactory::createBox(size, material);
+	if (!StaticMesh::init(model)) return false;
+	return true;
+}
+
 bool BoxMesh::init()
 {
 	return init(1.0f, 1.0f, 1.0f);
 }
 
-bool BoxMesh::init(float width, float height, float depth)
+bool BoxMesh::init(const Vector3& size)
 {
-	if (!StaticMesh::init()) return false;
-	m_component = makeObject<BoxMeshComponent>(Vector3(width, height, depth));
-	addComponent(m_component);
-	setMainVisualComponent(m_component);
+	auto model = detail::MeshModelFactory::createBox(size);
+	if (!StaticMesh::init(model)) return false;
+
+
+
+	//m_component = makeObject<BoxMeshComponent>(size);
+	//addComponent(m_component);
+	//setMainVisualComponent(m_component);
 	return true;
 }
 
 void BoxMesh::setSize(const Vector3& size)
 {
-	m_component->setSize(size);
+	LN_NOTIMPLEMENTED();
+	//m_component->setSize(size);
 }
-
-BoxMeshComponent* BoxMesh::boxMeshComponent() const
-{
-    return m_component;
-}
+//
+//BoxMeshComponent* BoxMesh::boxMeshComponent() const
+//{
+//    return m_component;
+//}
 
 //==============================================================================
 // SphereMesh
@@ -185,13 +185,15 @@ void PlaneMesh::BuilderDetails::apply(PlaneMesh* p) const
 
 BoxMesh::BuilderDetails::BuilderDetails()
 	: size(1, 1, 1)
+	, material(nullptr)
 {
 }
 
-void BoxMesh::BuilderDetails::apply(BoxMesh* p) const
+Ref<Object> BoxMesh::BuilderDetails::create() const
 {
-	StaticMesh::BuilderDetails::apply(p);
-	p->setSize(size);
+	auto p = makeObject<BoxMesh>(size, material);
+	apply(p);
+	return p;
 }
 
 //==============================================================================

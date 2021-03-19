@@ -33,8 +33,9 @@ private:
 struct AbstractBuilderDetails
 {
 public:
-    virtual ~AbstractBuilderDetails() = default;
-    virtual Ref<Object> create() const = 0;
+    virtual ~AbstractBuilderDetails();
+    virtual Ref<Object> _create() const = 0;
+    virtual Ref<Object> create() const;
 
     template<class T, class B, class D>
     friend struct AbstractBuilder;
@@ -62,7 +63,7 @@ struct BuilderVariant
         if (v)
             return v;
         else
-            return static_pointer_cast<T>(d->create());
+            return static_pointer_cast<T>(d->_create());
     }
 
     Ref<T> v;
@@ -73,7 +74,7 @@ struct BuilderVariant
 template<class T, class B, class D>
 inline Ref<T> AbstractBuilder<T, B, D>::build() const
 {
-    return ln::static_pointer_cast<T>(m_detail->create());
+    return ln::static_pointer_cast<T>(m_detail->_create());
 }
 
 } // namespace ln
@@ -90,11 +91,16 @@ inline Ref<T> AbstractBuilder<T, B, D>::build() const
 	struct type::Builder : public BuilderCore<type, Builder, BuilderDetails> { };
 
 #define LN_BUILDER_DETAILS(type) \
-    Ref<Object> create() const override \
+    Ref<Object> _create() const override \
     { \
-        auto ptr = makeObject<type>(); \
-        apply(ptr.get()); \
-        return ptr; \
+        if (auto p1 = create()) { \
+            return p1; \
+        } \
+        else { \
+            auto p2 = makeObject<type>(); \
+            apply(p2.get()); \
+            return p2; \
+        } \
     }
 
 #define LN_BUILDER_CORE(basetype) \

@@ -8,7 +8,7 @@ using namespace ln;
 
 Ref<Application> CreateApp_App_Tutorial_Sandbox();
 Ref<Application> CreateApp_App_Sprite();
-Ref<Application> CreateApp_App_GeometricShapes();
+Ref<Application> CreateApp_App_ShapeEntity();
 
 struct ExampleEntry
 {
@@ -18,7 +18,7 @@ struct ExampleEntry
 
 List<ExampleEntry> s_examples = {
     { u"Sprite", CreateApp_App_Sprite },
-    { u"GeometricShapes", CreateApp_App_GeometricShapes },
+    { u"ShapeEntity", CreateApp_App_ShapeEntity },
 };
 
 class Navigator

@@ -152,7 +152,7 @@ public:
         auto state = m_model->animationController()->addClip(clip);
         m_model->animationController()->play(state);
 
-        //auto box = BoxMesh::create();
+        //auto box = BoxMesh::With().build();
         //box->setScale(7.8);
         //box->setPosition(0, 5, 0);
 #endif

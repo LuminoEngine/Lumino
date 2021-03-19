@@ -1,7 +1,7 @@
 ﻿
 #include <LuminoExample.hpp>
 
-class App_GeometricShapes : public Application
+class App_ShapeEntity : public Application
 {
 public:
 
@@ -18,7 +18,7 @@ public:
     }
 };
 
-LUMINO_APP(App_GeometricShapes);
+LUMINO_APP(App_ShapeEntity);
 
 
 

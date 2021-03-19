@@ -4,7 +4,7 @@
 #include "../Mesh/StaticMesh.hpp"
 
 namespace ln {
-class BoxMeshComponent;
+//class BoxMeshComponent;
 class SphereMeshComponent;
 class PlaneMeshComponent;
 
@@ -67,29 +67,33 @@ class BoxMesh
 {
 	LN_BUILDER;
 public:
-	static Ref<BoxMesh> create();
-	static Ref<BoxMesh> create(float width, float height, float depth);
-
+	/** サイズを変更します。(メッシュは再構築されます) */
 	void setSize(const Vector3& size);
 
-	BoxMeshComponent* boxMeshComponent() const;
+	//BoxMeshComponent* boxMeshComponent() const;
 
 protected:
 
 LN_CONSTRUCT_ACCESS:
 	BoxMesh();
 	virtual ~BoxMesh();
+	bool init(const Vector3& size, Material* material);
 
 	/** 各軸のサイズが 1 である BoxMesh を作成します。 */
 	LN_METHOD()
 	bool init();
 	
-	/**  */
+	/** サイズを指定して BoxMesh を作成します。 */
 	LN_METHOD(OverloadPostfix="WithSize")
-	bool init(float width, float height, float depth);
+	bool init(const Vector3& size);
+
+	/** サイズを指定して BoxMesh を作成します。 */
+	LN_METHOD(OverloadPostfix="WithSizeWHD")
+	bool init(float width, float height, float depth) { return init(Vector3(width, height, depth)); }
+
 
 private:
-    Ref<BoxMeshComponent> m_component;
+    //Ref<BoxMeshComponent> m_component;
 };
 
 class SphereMesh
@@ -160,9 +164,10 @@ struct BoxMesh::BuilderDetails : public StaticMesh::BuilderDetails
 	LN_BUILDER_DETAILS(BoxMesh);
 
 	Vector3 size;
+	Ref<Material> material;
 
 	BuilderDetails();
-	void apply(BoxMesh* p) const;
+	Ref<Object> create() const;
 };
 
 template<class T, class B, class D>
@@ -171,6 +176,7 @@ struct BoxMesh::BuilderCore : public StaticMesh::BuilderCore<T, B, D>
 	LN_BUILDER_CORE(StaticMesh::BuilderCore);
 
 	B& size(float x, float y, float z) { d()->size = Vector3(x, y, z); return self(); }
+	B& material(Material* value) { d()->material = value; return self(); }
 };
 
 LN_BUILDER_IMPLEMENT(BoxMesh);

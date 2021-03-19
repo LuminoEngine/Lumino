@@ -11,7 +11,7 @@ class App_Experiment_SelectObject : public Application
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 
-        auto box = BoxMesh::create();
+        auto box = BoxMesh::With().build();
 	}
 
     void onUpdate() override

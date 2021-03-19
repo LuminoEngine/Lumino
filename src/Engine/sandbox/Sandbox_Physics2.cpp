@@ -29,7 +29,7 @@ class App_Sandbox_Physics2 : public Application
         //m_rigidBody->setMass(50.0f);
         //m_rigidBody->setTransform(Matrix::makeTranslation(0, 3, 0));
 
-        m_box = BoxMesh::create();
+        m_box = BoxMesh::With().build();
         m_box->setPosition(0, 5, 0);
         m_box->setScale(1, 1, 0.1);
 

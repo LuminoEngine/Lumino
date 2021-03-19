@@ -57,10 +57,8 @@ TEST_F(Test_PostEffect, SSR)
 	auto box = BoxMesh::Builder()
 		.position(4, 0, 0)
 		.scale(5)
-		//.material(whiteMaterial)
+		.material(box1Material)
 		.buildInto();
-	//box->model()->addMaterial();
-	box->boxMeshComponent()->setMaterial(box1Material);
 
 
 	auto ssrEffect = makeObject<SSRPostEffect>();
