@@ -33,6 +33,29 @@ Ref<MeshModel> MeshModelFactory::createBox(const Vector3& size, Material* materi
 	return model;
 }
 
+Ref<MeshModel> MeshModelFactory::createCone(float radius, float height, float segments, Material* material)
+{
+	ConeMeshFactory factory;
+	factory.init(radius, height, segments);
+	factory.setColor(Color::White);
+
+
+
+	Ref<MeshPrimitive> mesh = makeObject<MeshPrimitive>(factory.vertexCount(), factory.indexCount());
+
+	MeshGeneraterBuffer buffer(nullptr);
+	buffer.setBuffer(static_cast<Vertex*>(mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main)), mesh->acquireMappedIndexBuffer(), mesh->indexBufferFormat(), 0);
+	buffer.generate(&factory);
+
+	mesh->addSection(0, factory.indexCount() / 3, 0, factory.primitiveType());
+
+	Ref<MeshModel> model = makeObject<MeshModel>();
+	MeshNode* node = model->addMeshContainerNode(mesh);
+	model->addMaterial(material ? material : detail::EngineDomain::sceneManager()->primitiveMeshDefaultMaterial());
+
+	return model;
+}
+
 } // namespace detail
 } // namespace ln
 

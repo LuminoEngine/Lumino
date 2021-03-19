@@ -10,6 +10,10 @@ public:
         auto box = BoxMesh::With()
             .size(1, 1, 1)
             .buildInto();
+
+        auto cone = ConeMesh::With()
+            .position(1, 0, 0)
+            .buildInto();
     }
 
     void onUpdate() override

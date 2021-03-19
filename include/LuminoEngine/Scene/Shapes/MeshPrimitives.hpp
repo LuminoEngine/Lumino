@@ -115,7 +115,6 @@ private:
 	Ref<SphereMeshComponent> m_component;
 };
 
-
 //==============================================================================
 // ShapeObject::Builder
 
