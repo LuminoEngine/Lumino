@@ -4,6 +4,12 @@
 namespace ln {
 class InputController;
 
+enum class InputBindingSet
+{
+    Keyboard,
+    WASD,
+};
+
 namespace detail {
 class InputManager;
 

@@ -171,6 +171,8 @@ bool WorldObject::init(/*ObjectInitializeContext* context*/)
     //    }
     //}
 
+    onInit();
+
 	return true;
 }
 
@@ -275,6 +277,10 @@ void WorldObject::addInto(World* world)
     if (activeWorld) {
         activeWorld->add(this);
     }
+}
+
+void WorldObject::onInit()
+{
 }
 
 void WorldObject::onPreUpdate()

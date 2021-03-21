@@ -116,6 +116,11 @@ void EngineSettings::setUserMainWindow(intptr_t value)
     detail::EngineManager::s_settings.userMainWindow = value;
 }
 
+void EngineSettings::setInputBindingSet(InputBindingSet value)
+{
+    detail::EngineManager::s_settings.inputConfig = value;
+}
+
 void EngineSettings::setStandaloneFpsControl(bool enabled)
 {
     detail::EngineManager::s_settings.standaloneFpsControl = enabled;

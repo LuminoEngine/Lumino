@@ -437,6 +437,7 @@ void EngineManager::initializeInputManager()
 
 		InputManager::Settings settings;
 		settings.mainWindow = m_platformManager->mainWindow();
+		settings.inputConfig = m_settings.inputConfig;
 		m_inputManager = ln::makeRef<InputManager>();
 		m_inputManager->init(settings);
 	}

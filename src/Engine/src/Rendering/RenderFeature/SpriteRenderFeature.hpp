@@ -62,9 +62,9 @@ private:
 	RenderingManager* m_manager;
 	Matrix m_viewMatrix;
 	Matrix m_projMatrix;
-	Matrix m_viewInverseMatrix;
-	Vector3 m_viewDirection;
-	Vector3 m_viewPosition;
+	//Matrix m_viewInverseMatrix;
+	//Vector3 m_viewDirection;
+	//Vector3 m_viewPosition;
 
 	// sprite-batching
 	Ref<VertexLayout> m_vertexLayout;

@@ -2,6 +2,7 @@
 #pragma once
 #include "Common.hpp"
 #include "../Asset/Common.hpp"
+#include "../Input/Common.hpp"
 #include "../Graphics/Common.hpp"
 
 namespace ln {
@@ -133,6 +134,9 @@ public:
 	/** ユーザー指定のメインウィンドウのウィンドウハンドルを設定します。*/
 	LN_METHOD()
 	static void setUserMainWindow(intptr_t value);
+
+
+	static void setInputBindingSet(InputBindingSet value);
 
 
     static void setStandaloneFpsControl(bool enabled);

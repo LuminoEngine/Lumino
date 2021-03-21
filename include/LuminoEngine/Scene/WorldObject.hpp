@@ -241,6 +241,8 @@ public:
 	void addInto(World* world = nullptr);
 
 protected:
+	virtual void onInit();
+
 	/** 物理演算・衝突判定の前 (onCollisionStay() などはこの後) */
 	LN_METHOD()
     virtual void onPreUpdate();
