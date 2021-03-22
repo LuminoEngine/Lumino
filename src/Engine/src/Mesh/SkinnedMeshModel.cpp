@@ -6,7 +6,7 @@
 #include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "MeshModelInstance.hpp"
-#include "MeshImporter/PmxImporter.hpp"	// TODO: 依存したくない
+#include "MeshImporters/PmxImporter.hpp"	// TODO: 依存したくない
 #include "MeshManager.hpp"
 #include "CCDIKSolver.hpp"
 

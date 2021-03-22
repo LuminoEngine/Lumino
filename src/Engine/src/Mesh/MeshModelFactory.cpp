@@ -32,7 +32,7 @@ Ref<MeshModel> MeshModelFactory::createCone(float radius, float height, float se
 
 Ref<MeshModel> MeshModelFactory::createCylinder(float radiusTop, float radiusBottom, float height, float segments, Material* material)
 {
-	CylinderMeshFactory g;
+	RegularCylinderMeshGenerater g;
 	g.init(radiusTop, radiusBottom, height, segments, 1);
 	g.setColor(Color::White);
 	return createMesh(&g, material);
