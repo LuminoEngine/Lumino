@@ -5,6 +5,7 @@
 #include <LuminoEngine/Mesh/MeshModelFactory.hpp>
 #include "../Scene/SceneManager.hpp"
 #include "MeshGeneraters/MeshGenerater.hpp"
+#include "MeshGeneraters/CylinderMeshGenerater.hpp"
 #include "MeshGeneraters/TeapotMeshGenerater.hpp"
 
 namespace ln {

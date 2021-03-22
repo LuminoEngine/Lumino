@@ -9,6 +9,7 @@
 #include <LuminoEngine/Mesh/MeshProcessing.hpp>
 #include "MeshManager.hpp"
 #include "MeshGeneraters/MeshGenerater.hpp"
+#include "MeshGeneraters/CylinderMeshGenerater.hpp"
 
 namespace ln {
 
