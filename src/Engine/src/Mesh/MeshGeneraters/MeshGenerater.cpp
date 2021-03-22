@@ -38,12 +38,12 @@ void MeshGeneraterBuffer::transform(/*Vertex* begin, int vertexCount*/)
 //{
 //    generator->transform(m_vertexBuffer, vertexCount);
 //}
-
-void MeshGeneraterBuffer::setV(int index, const Vector3& position, const Vector2& uv, const Vector3& normal)
-{
-	m_vertexBuffer[index].set(position, normal, uv, m_generator->color());
-}
-
+//
+//void MeshGeneraterBuffer::setV(int index, const Vector3& position, const Vector2& uv, const Vector3& normal)
+//{
+//	m_vertexBuffer[index].set(position, normal, uv, m_generator->color());
+//}
+//
 MeshGenerater::MeshGenerater()
 	: m_color(0.0f, 0.0f, 0.0f, 1.0f)
 {

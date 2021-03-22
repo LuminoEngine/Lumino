@@ -82,7 +82,8 @@ set(LN_SOURCES_Font
 )
 
 file(GLOB LN_SOURCES_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/*.hpp src/Mesh/*.cpp src/Mesh/*.hpp)
-file(GLOB LN_SOURCES_Mesh_MeshImporter ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/MeshImporter/*.hpp src/Mesh/MeshImporter/*.cpp src/Mesh/MeshImporter/*.hpp)
+file(GLOB LN_SOURCES_Mesh_MeshImporters ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/MeshImporters/*.hpp src/Mesh/MeshImporters/*.cpp src/Mesh/MeshImporters/*.hpp)
+file(GLOB LN_SOURCES_Mesh_MeshGeneraters ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/MeshGeneraters/*.hpp src/Mesh/MeshGeneraters/*.cpp src/Mesh/MeshGeneraters/*.hpp)
 
 file(GLOB LN_SOURCES_Rendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/*.hpp src/Rendering/*.cpp src/Rendering/*.hpp src/Rendering/*.md)
 file(GLOB LN_SOURCES_Rendering_RLIs src/Rendering/RLIs/*.cpp src/Rendering/RLIs/*.hpp)
@@ -198,7 +199,8 @@ source_group("Graphics\\RHIs\\Vulkan" FILES ${LN_SOURCES_Graphics_RHIs_Vulkan})
 source_group("Graphics\\RHIs\\DirectX12" FILES ${LN_SOURCES_Graphics_RHIs_DirectX12})
 source_group("Font" FILES ${LN_SOURCES_Font})
 source_group("Mesh" FILES ${LN_SOURCES_Mesh})
-source_group("Mesh\\MeshImporter" FILES ${LN_SOURCES_Mesh_MeshImporter})
+source_group("Mesh\\MeshImporters" FILES ${LN_SOURCES_Mesh_MeshImporters})
+source_group("Mesh\\MeshGeneraters" FILES ${LN_SOURCES_Mesh_MeshGeneraters})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
 source_group("Rendering\\RLIs" FILES ${LN_SOURCES_Rendering_RLIs})
 source_group("Rendering\\RenderFeature" FILES ${LN_SOURCES_Rendering_RenderFeature})
@@ -247,7 +249,8 @@ set(LN_SOURCES
     ${LN_SOURCES_Graphics_RHIs_DirectX12}
     ${LN_SOURCES_Font}
     ${LN_SOURCES_Mesh}
-    ${LN_SOURCES_Mesh_MeshImporter}
+    ${LN_SOURCES_Mesh_MeshImporters}
+    ${LN_SOURCES_Mesh_MeshGeneraters}
     ${LN_SOURCES_Rendering}
     ${LN_SOURCES_Rendering_RLIs}
     ${LN_SOURCES_Rendering_RenderFeature}

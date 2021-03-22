@@ -8,7 +8,7 @@
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/MeshProcessing.hpp>
 #include "MeshManager.hpp"
-#include "MeshGenerater.hpp"
+#include "MeshGeneraters/MeshGenerater.hpp"
 
 namespace ln {
 

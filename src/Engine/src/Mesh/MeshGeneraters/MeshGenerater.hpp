@@ -1,10 +1,12 @@
 ﻿#pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
+#include <LuminoEngine/Rendering/Vertex.hpp>
 
 namespace ln {
 namespace detail {
 class MeshGenerater;
+class MeshGeneraterBuffer;
 
 class MeshHelper
 {
@@ -28,53 +30,6 @@ public:
 	}
 };
 
-class MeshGeneraterBuffer
-{
-public:
-	MeshGeneraterBuffer(LinearAllocator* allocator)
-		: m_allocator(allocator)
-	{
-	}
-
-    void setBuffer(Vertex* vertexBuffer/*, uint32_t vertexCount*/, void* indexBuffer, IndexBufferFormat indexFormat, uint32_t indexNumberOffset);
-
-    void generate(MeshGenerater* generator);
-
-
-    Vertex* vertexBuffer() const { return m_vertexBuffer; }
-
-    void setV(int index, const Vertex& v)
-    {
-        m_vertexBuffer[index] = v;
-    }
-
-    void setV(int index, const Vector3&	position, const Vector2& uv, const Vector3& normal);
-
-    void setI(int index, uint32_t i)
-    {
-        if (m_indexFormat == IndexBufferFormat::UInt16)
-            ((uint16_t*)m_indexBuffer)[index] = m_indexNumberOffset + i;
-        else
-            ((uint32_t*)m_indexBuffer)[index] = m_indexNumberOffset + i;
-    }
-
-	void* newShortTimeData(size_t size)
-	{
-		LN_CHECK(m_allocator);
-		return m_allocator->allocate(size);
-	}
-
-private:
-    void transform(/*MeshGenerater* generator, int vertexCount*/);
-
-	LinearAllocator* m_allocator;
-    Vertex* m_vertexBuffer;
-    //uint32_t m_vertexCount;
-    void* m_indexBuffer;
-    IndexBufferFormat m_indexFormat;
-    uint32_t m_indexNumberOffset;
-    MeshGenerater* m_generator;
-};
 
 #define LN_MESHGENERATOR_CLONE_IMPLEMENT(type) \
     virtual MeshGenerater* clone(LinearAllocator* allocator) const override \
@@ -117,6 +72,59 @@ protected:
     Color m_color;
     Matrix m_transform;
 };
+
+class MeshGeneraterBuffer
+{
+public:
+	MeshGeneraterBuffer(LinearAllocator* allocator)
+		: m_allocator(allocator)
+	{
+	}
+
+    void setBuffer(Vertex* vertexBuffer/*, uint32_t vertexCount*/, void* indexBuffer, IndexBufferFormat indexFormat, uint32_t indexNumberOffset);
+
+    void generate(MeshGenerater* generator);
+
+
+    Vertex* vertexBuffer() const { return m_vertexBuffer; }
+
+    inline void setV(int index, const Vertex& v)
+    {
+        m_vertexBuffer[index] = v;
+    }
+
+    inline void setV(int index, const Vector3&	position, const Vector2& uv, const Vector3& normal)
+    {
+         m_vertexBuffer[index].set(position, normal, uv, m_generator->color());
+    }
+
+    inline void setI(int index, uint32_t i)
+    {
+        if (m_indexFormat == IndexBufferFormat::UInt16)
+            ((uint16_t*)m_indexBuffer)[index] = m_indexNumberOffset + i;
+        else
+            ((uint32_t*)m_indexBuffer)[index] = m_indexNumberOffset + i;
+    }
+
+	void* newShortTimeData(size_t size)
+	{
+		LN_CHECK(m_allocator);
+		return m_allocator->allocate(size);
+	}
+
+private:
+    void transform(/*MeshGenerater* generator, int vertexCount*/);
+    void computeTeapot(float size, size_t tessellation, bool rhcoords);
+
+	LinearAllocator* m_allocator;
+    Vertex* m_vertexBuffer;
+    //uint32_t m_vertexCount;
+    void* m_indexBuffer;
+    IndexBufferFormat m_indexFormat;
+    uint32_t m_indexNumberOffset;
+    MeshGenerater* m_generator;
+};
+
 
 class SingleLineGenerater
     : public MeshGenerater

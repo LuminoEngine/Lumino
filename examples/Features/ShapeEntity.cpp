@@ -11,16 +11,20 @@ public:
         Engine::renderView()->setGizmoEnabled(true);
         Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 
-        //auto box = BoxMesh::With()
-        //    .size(1, 1, 1)
-        //    .buildInto();
+        auto box = BoxMesh::With()
+            .size(1, 1, 1)
+            .buildInto();
 
-        //auto cone = ConeMesh::With()
-        //    .position(1, 0, 0)
-        //    .buildInto();
+        auto cone = ConeMesh::With()
+            .position(1, 0, 0)
+            .buildInto();
 
         auto cylinder = CylinderMesh::With()
             .position(2, 0, 0)
+            .buildInto();
+
+        auto teapot = TeapotMesh::With()
+            .position(3, 0, 0)
             .buildInto();
     }
 

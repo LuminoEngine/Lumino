@@ -13,7 +13,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Animation/Animator.hpp>
-#include "../src/Mesh/MeshImporter/MqoImporter.hpp"
+#include "../src/Mesh/MeshImporters/MqoImporter.hpp"
 #include "../src/Font/FontManager.hpp"
 #include "../src/Font/FontCore.hpp"
 #include "../src/Asset/AssetArchive.hpp"
