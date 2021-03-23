@@ -34,7 +34,7 @@ private:
 		Vector4 transform1;
 		Vector4 transform2;
 		Vector4 transform3;
-		Vector4 uvOffset;
+		Vector4 uvOffset;	// .xy=pos, .zw=scale
 		Vector4 colorScale;
 	};
 

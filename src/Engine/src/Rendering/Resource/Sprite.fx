@@ -92,7 +92,7 @@ LN_PSIInput VSI_Main(LN_VSIInput input)
     o.svPos            = mul(o.svPos, ln_View);
     o.svPos            = mul(o.svPos, ln_Projection);
     //o.Normal        = mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
-    o.UV            = input.UV + input.InstanceUVOffset.xy;
+    o.UV            = (input.UV * input.InstanceUVOffset.zw) + input.InstanceUVOffset.xy;
     o.Color            = input.Color * input.InstanceColorScale;
     return o;
 }
