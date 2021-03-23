@@ -7,6 +7,7 @@
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Shader/ShaderDescriptor.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
+#include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
 #include "../../Graphics/GraphicsManager.hpp"
 #include "../../Mesh/MeshModelInstance.hpp"
 #include "../RenderingManager.hpp"
@@ -185,7 +186,7 @@ RequestBatchResult MeshRenderFeature::drawMeshInstanced(detail::RenderFeatureBat
 
 	m_drawList.push_back(std::move(data));
 	batch->data.count++;
-	batch->data.instanced = true;
+	batch->instancing = true;
 
 	return RequestBatchResult::Submitted;
 }
@@ -262,7 +263,6 @@ MeshRenderFeature::Batch* MeshRenderFeature::acquireBatch(RenderFeatureBatchList
 	Batch* batch = batchList->addNewBatch<Batch>(this, batchState);
 	batch->data.offset = m_drawList.size();
 	batch->data.count = 0;
-	batch->data.instanced = false;
 	batch->data.skeleton = nullptr;
 	batch->data.morph = nullptr;
 	return batch;

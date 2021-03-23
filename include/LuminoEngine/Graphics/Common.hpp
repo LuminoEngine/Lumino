@@ -16,6 +16,9 @@ class Texture2D;
 class RenderTargetTexture;
 class DepthBuffer;
 class ConstantBuffer;
+class VertexLayout;
+class VertexBuffer;
+class IndexBuffer;
 class INativeGraphicsExtension;
 
 /**

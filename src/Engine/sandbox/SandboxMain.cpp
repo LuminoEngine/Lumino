@@ -284,6 +284,7 @@ void Experiment_SSR();
 void Tutorial_Sandbox();
 void Sandbox_Builder();
 void Sandbox_GridListBox();
+void Sandbox_InstancedMesh();
 void Sandbox_MeshTilemap();
 void Sandbox_Physics();
 void Sandbox_Physics2();
@@ -493,6 +494,7 @@ int main(int argc, char** argv)
         //Experiment_SSR();
         //Sandbox_Builder();
         //Sandbox_GridListBox();
+        Sandbox_InstancedMesh();
 		//Sandbox_MeshTilemap();
         //Sandbox_Physics();
         //Sandbox_Physics2();
@@ -503,7 +505,7 @@ int main(int argc, char** argv)
         //Sandbox_Sky();
         //Sandbox_UIShader();
 		//Sandbox_Voxel();
-		Tutorial_Sandbox();
+		//Tutorial_Sandbox();
 		//UISandboxMain();
         return 0;
     }
