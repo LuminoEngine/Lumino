@@ -79,8 +79,9 @@ class App_Experiment_SSR : public Application
 
         auto boxMaterial = Material::create();
         boxMaterial->setColor(Color::Green);
-        m_box = BoxMesh::create();
-        m_box->boxMeshComponent()->setMaterial(boxMaterial);
+        m_box = BoxMesh::With()
+            .material(boxMaterial)
+            .build();
         m_box->setScale(5, 10, 5);
         m_box->addInto();
 

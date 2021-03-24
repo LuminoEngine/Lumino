@@ -2,7 +2,7 @@
 
 class HelloApp : public Application
 {
-    void onStart() override
+    void onInit() override
     {
         auto text = UIText::With(u"Hello, Lumino!").buildInto();
     }

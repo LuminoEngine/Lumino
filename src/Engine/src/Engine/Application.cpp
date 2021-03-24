@@ -43,17 +43,17 @@ void Application::onInit()
 {
 }
 
-void Application::onStart()
-{
-}
+//void Application::onStart()
+//{
+//}
 
 void Application::onUpdate()
 {
 }
 
-void Application::onStop()
-{
-}
+//void Application::onStop()
+//{
+//}
 
 void Application::onDestroy()
 {
@@ -101,7 +101,7 @@ void Application::initInternal2()
 	//EngineContext::current()->engineManager()->initializeAllManagers();
 	m_manager = detail::EngineDomain::engineManager();
 	onInit();
-	onStart();
+	//onStart();
 }
 
 void Application::updateInertnal2()
@@ -117,7 +117,7 @@ void Application::updateInertnal2()
 
 void Application::finalizeInternal2()
 {
-	onStop();
+	//onStop();
 	onDestroy();
 }
 

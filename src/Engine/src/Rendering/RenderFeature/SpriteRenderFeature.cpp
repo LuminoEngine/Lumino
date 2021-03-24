@@ -219,7 +219,7 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 		// ビルボード
 		if (billboardType == BillboardType::ToCameraPoint)
 		{
-			Vector3 f = Vector3::normalize(m_viewPosition - worldPoint);
+			Vector3 f = Vector3::normalize(batchList->m_mainCameraInfo->viewPosition - worldPoint);
 			Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
 			Vector3 u = Vector3::cross(f, r);
 			actualTransform = Matrix(
@@ -233,10 +233,10 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 			// ↑がカメラ位置を基準にするのに対し、こちらはビュー平面に垂直に交差する点を基準とする。
 
 			// ビュー平面との距離
-			float d = Vector3::dot(worldPoint - m_viewPosition, m_viewDirection);
+			float d = Vector3::dot(worldPoint - batchList->m_mainCameraInfo->viewPosition, batchList->m_mainCameraInfo->viewDirection);
 
 			// left-hand coord
-			Vector3 f = Vector3::normalize(m_viewDirection * d);
+			Vector3 f = Vector3::normalize(batchList->m_mainCameraInfo->viewDirection * d);
 			Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
 			Vector3 u = Vector3::cross(f, r);
 			actualTransform = Matrix(
@@ -248,11 +248,28 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 		// ビルボード・Y 軸のみに適用
 		else if (billboardType == BillboardType::RotY)
 		{
-			LN_NOTIMPLEMENTED();
+			auto posDiff = Vector3(worldPoint - batchList->m_mainCameraInfo->viewPosition);
+			auto dir = batchList->m_mainCameraInfo->viewDirection;
+			posDiff.y = 0.0f;
+			dir.y = 0.0f;
+
+			// ビュー平面との距離
+			float d = Vector3::dot(posDiff, dir);
+
+			// left-hand coord
+			Vector3 f = Vector3::normalize(dir * d);
+			Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
+			Vector3 u = Vector3::cross(f, r);
+			actualTransform = Matrix(
+				r.x, r.y, r.z, 0.0f,
+				u.x, u.y, u.z, 0.0f,
+				f.x, f.y, f.z, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f);
+			//LN_NOTIMPLEMENTED();
 
 			//if (m_viewDirection.x > 0.0f)
 			//{
-			//	rotMat.rotateY(-atanf(m_viewDirection.z / m_viewDirection.x) + Math::PI / 2);
+			//	actualTransform.rotateY(-atanf(m_viewDirection.z / m_viewDirection.x) + Math::PI / 2);
 			//}
 			//else if (m_viewDirection.x == 0.0f)
 			//{
@@ -260,7 +277,7 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 			//}
 			//else
 			//{
-			//	rotMat.rotateY(-atanf(m_viewDirection.z / m_viewDirection.x) - Math::PI / 2);
+			//	actualTransform.rotateY(-atanf(m_viewDirection.z / m_viewDirection.x) - Math::PI / 2);
 			//}
 		}
 		// ビルボードではない
@@ -328,9 +345,9 @@ void SpriteRenderFeature2::onActiveRenderFeatureChanged(const detail::CameraInfo
 {
 	m_viewMatrix = mainCameraInfo.viewMatrix;
 	m_projMatrix = mainCameraInfo.projMatrix;
-	m_viewDirection.set(m_viewMatrix.m[0][2], m_viewMatrix.m[1][2], m_viewMatrix.m[2][2]);
-	m_viewInverseMatrix = Matrix::makeInverse(m_viewMatrix);
-	m_viewPosition = m_viewInverseMatrix.position();
+	//m_viewDirection.set(m_viewMatrix.m[0][2], m_viewMatrix.m[1][2], m_viewMatrix.m[2][2]);
+	//m_viewInverseMatrix = Matrix::makeInverse(m_viewMatrix);
+	//m_viewPosition = m_viewInverseMatrix.position();
 }
 
 void SpriteRenderFeature2::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)

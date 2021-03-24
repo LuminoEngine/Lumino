@@ -13,6 +13,7 @@ class Texture;
 class World;
 class WorldObject;
 class RenderingContext;
+class Level;
 namespace detail {
 	class SceneManager; class SceneConductor;
 }
@@ -41,6 +42,22 @@ enum class LevelUpdateMode
 {
 	PauseWhenInactive,
 	Always,
+};
+
+class System
+	: public Object
+{
+public:
+
+protected:
+	virtual void onUpdate();
+	
+LN_CONSTRUCT_ACCESS:
+	System();
+	virtual ~System();
+	bool init();
+
+	friend class Level;
 };
 
 /**
@@ -77,6 +94,9 @@ public:
 
 	void setUpdateMode(LevelUpdateMode value) { m_updateMode = value; }
 	LevelUpdateMode updateMode() const { return m_updateMode; }
+
+	void addSystem(System* system);
+	void removeSystem(System* system);
 
 protected:
 	/** 開始処理 */
@@ -168,6 +188,7 @@ public: // TODO: internal
     //List<WorldObject*> m_destroyList;
 	std::unique_ptr<SubLevelManager> m_subLevelManager;
 	//List<Ref<Level>> m_subLevels;
+	List<Ref<System>> m_systems;
 
 	// TODO: Master-scene と Sub-scene の値を統合したうえで、SceneRenderer に流したい。
 	//detail::SceneGlobalRenderParams m_sceneGlobalRenderParams;

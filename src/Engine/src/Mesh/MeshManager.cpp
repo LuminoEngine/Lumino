@@ -9,11 +9,11 @@
 #include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Asset/AssetManager.hpp"
-#include "MeshImporter/GLTFImporter.hpp"
-#include "MeshImporter/VRMImporter.hpp"
-#include "MeshImporter/FbxImporter.hpp"
-#include "MeshImporter/ObjMeshImporter.hpp"
-#include "MeshImporter/PmxImporter.hpp"
+#include "MeshImporters/GLTFImporter.hpp"
+#include "MeshImporters/VRMImporter.hpp"
+#include "MeshImporters/FbxImporter.hpp"
+#include "MeshImporters/ObjMeshImporter.hpp"
+#include "MeshImporters/PmxImporter.hpp"
 #include "MeshBoneMapper.hpp"
 #include "MeshManager.hpp"
 

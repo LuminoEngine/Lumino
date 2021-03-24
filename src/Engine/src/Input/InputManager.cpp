@@ -75,20 +75,35 @@ void InputManager::init(const Settings& settings)
 	auto pad = makeRef<InputController>(this);
 	m_defaultVirtualPads[0] = pad;
 
-	pad->addBinding(InputButtons::Left,		KeyGesture::create(Keys::Left));
-	pad->addBinding(InputButtons::Right,	KeyGesture::create(Keys::Right));
-	pad->addBinding(InputButtons::Up,		KeyGesture::create(Keys::Up));
-	pad->addBinding(InputButtons::Down,		KeyGesture::create(Keys::Down));
-	pad->addBinding(InputButtons::Submit,	KeyGesture::create(Keys::Z));
-	pad->addBinding(InputButtons::Submit,	KeyGesture::create(Keys::Enter));
-	pad->addBinding(InputButtons::Cancel,	KeyGesture::create(Keys::X));
-	pad->addBinding(InputButtons::Cancel,	KeyGesture::create(Keys::Escape));
-	pad->addBinding(InputButtons::Menu,		KeyGesture::create(Keys::X));
-	pad->addBinding(InputButtons::Menu,		KeyGesture::create(Keys::Escape));
-	pad->addBinding(InputButtons::Shift,	KeyGesture::create(Keys::LShift));
-	pad->addBinding(InputButtons::Shift,	KeyGesture::create(Keys::RShift));
-	pad->addBinding(InputButtons::PageUp,	KeyGesture::create(Keys::Q));
-	pad->addBinding(InputButtons::PageDown,	KeyGesture::create(Keys::W));
+	if (settings.inputConfig == InputBindingSet::Keyboard) {
+		pad->addBinding(InputButtons::Left, KeyGesture::create(Keys::Left));
+		pad->addBinding(InputButtons::Right, KeyGesture::create(Keys::Right));
+		pad->addBinding(InputButtons::Up, KeyGesture::create(Keys::Up));
+		pad->addBinding(InputButtons::Down, KeyGesture::create(Keys::Down));
+		pad->addBinding(InputButtons::Submit, KeyGesture::create(Keys::Z));
+		pad->addBinding(InputButtons::Submit, KeyGesture::create(Keys::Enter));
+		pad->addBinding(InputButtons::Cancel, KeyGesture::create(Keys::X));
+		pad->addBinding(InputButtons::Cancel, KeyGesture::create(Keys::Escape));
+		pad->addBinding(InputButtons::Menu, KeyGesture::create(Keys::X));
+		pad->addBinding(InputButtons::Menu, KeyGesture::create(Keys::Escape));
+		pad->addBinding(InputButtons::Shift, KeyGesture::create(Keys::LShift));
+		pad->addBinding(InputButtons::Shift, KeyGesture::create(Keys::RShift));
+		pad->addBinding(InputButtons::PageUp, KeyGesture::create(Keys::Q));
+		pad->addBinding(InputButtons::PageDown, KeyGesture::create(Keys::W));
+	}
+	else if (settings.inputConfig == InputBindingSet::WASD) {
+		pad->addBinding(InputButtons::Left, KeyGesture::create(Keys::A));
+		pad->addBinding(InputButtons::Right, KeyGesture::create(Keys::D));
+		pad->addBinding(InputButtons::Up, KeyGesture::create(Keys::W));
+		pad->addBinding(InputButtons::Down, KeyGesture::create(Keys::S));
+		pad->addBinding(InputButtons::Submit, KeyGesture::create(Keys::Space));
+		pad->addBinding(InputButtons::Cancel, KeyGesture::create(Keys::Escape));
+		pad->addBinding(InputButtons::Menu, KeyGesture::create(Keys::Tab));
+		pad->addBinding(InputButtons::Shift, KeyGesture::create(Keys::LShift));
+		pad->addBinding(InputButtons::Shift, KeyGesture::create(Keys::RShift));
+		pad->addBinding(InputButtons::PageUp, KeyGesture::create(Keys::Q));
+		pad->addBinding(InputButtons::PageDown, KeyGesture::create(Keys::E));
+	}
 
 	pad->addBinding(InputButtons::Left,		GamepadGesture::create(GamepadElement::PovLeft));
 	pad->addBinding(InputButtons::Right,	GamepadGesture::create(GamepadElement::PovRight));

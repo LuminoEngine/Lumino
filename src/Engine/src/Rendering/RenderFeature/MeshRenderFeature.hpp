@@ -43,7 +43,7 @@ private:
 	{
 		int offset;	// m_meshDrawList の index
 		int count;	// m_meshDrawList の index から、何個描くか
-		bool instanced;
+		//bool instanced;
 		detail::SkeletonInstance* skeleton;
 		detail::MorphInstance* morph;
 	};

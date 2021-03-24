@@ -18,6 +18,14 @@ void Editor::addPane(ImGuiDockPane* pane)
 	imgui->addDock(pane);
 }
 
+void Editor::closeAllPanes()
+{
+	const auto& imgui = detail::EngineDomain::engineManager()->mainWindow()->m_imguiContext;
+	for (auto& dock : imgui->dockPanes()) {
+		dock->close();
+	}
+}
+
 ImGuiDockPane* Editor::editorViewportToolPane()
 {
 	return detail::EngineDomain::engineManager()->runtimeEditor()->editorViewportToolPane();

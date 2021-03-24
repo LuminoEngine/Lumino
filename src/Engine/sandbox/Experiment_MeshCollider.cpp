@@ -30,7 +30,7 @@ class App_Experiment_MeshCollider : public Application
         }
 
         auto shape = CapsuleCollisionShape::create(0.5, 2);
-        auto box = BoxMesh::create();
+        auto box = BoxMesh::With().build();
         m_boxBody = RigidBodyComponent::create();
         m_boxBody->setMass(10);
         m_boxBody->addCollisionShape(shape);

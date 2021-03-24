@@ -655,22 +655,28 @@ detail::ICommandList* GraphicsContext::commitState()
 
     // Viewport, Scissor
     if ((m_dirtyFlags & DirtyFlags_RegionRects) != 0) {
-        SizeI viewSize = SizeI(0, 0);
+        RectI viewRect = RectI(0, 0, 0, 0);
         if (m_currentRenderPass) {
-            viewSize.width = m_currentRenderPass->renderTarget(0)->width();
-            viewSize.height = m_currentRenderPass->renderTarget(0)->height();
+            viewRect.width = m_currentRenderPass->renderTarget(0)->width();
+            viewRect.height = m_currentRenderPass->renderTarget(0)->height();
         }
         RectI viewportRect = RectI::fromFloatRect(m_staging.viewportRect);
         RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
 
 		if (viewportRect.width < 0 || viewportRect.height < 0) {
-			viewportRect.width = viewSize.width;
-			viewportRect.height = viewSize.height;
+			viewportRect.width = viewRect.width;
+			viewportRect.height = viewRect.height;
 		}
 		if (scissorRect.width < 0 || scissorRect.height < 0) {
-			scissorRect.width = viewSize.width;
-			scissorRect.height = viewSize.height;
+			scissorRect.width = viewRect.width;
+			scissorRect.height = viewRect.height;
 		}
+
+        viewportRect.clip(viewRect);
+        scissorRect.clip(viewRect);
+
+        // TODO: Size 0 なら描画不要
+
 
         LN_ENQUEUE_RENDER_COMMAND_3(
             GraphicsContext_setDepthBuffer, this,

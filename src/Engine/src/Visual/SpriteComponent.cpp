@@ -185,6 +185,7 @@ SpriteComponent::SpriteComponent()
 	, m_frameIndex(0)
     , m_flipFlags(detail::SpriteFlipFlags::None)
     , m_pixelsParUnit(0.0f)
+    , m_billboardType(BillboardType::None)
 {
 }
 
@@ -192,9 +193,9 @@ SpriteComponent::~SpriteComponent()
 {
 }
 
-void SpriteComponent::init()
+bool SpriteComponent::init()
 {
-    VisualComponent::init();
+    if (!VisualComponent::init()) return false;
     m_sourceRect.set(0, 0, -1, -1);
     //setSize(Size(1, 1));
 
@@ -203,6 +204,7 @@ void SpriteComponent::init()
     setBlendMode(BlendMode::Alpha);
     setCullMode(CullMode::None);
 	setShadingModel(ShadingModel::Unlit);
+    return true;
 }
 
 void SpriteComponent::setTexture(Texture* texture)
@@ -316,7 +318,7 @@ void SpriteComponent::onRender(RenderingContext* context)
 
 	context->drawSprite(
 		Matrix(), actualSize, anchorPoint, uvRect, Color::White,
-        frontDir, BillboardType::None, m_flipFlags, m_material);
+        frontDir, m_billboardType, m_flipFlags, m_material);
 
 #else
     Vector2 anchorPoint = m_anchorPoint;

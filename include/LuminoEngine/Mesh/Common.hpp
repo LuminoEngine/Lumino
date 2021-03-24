@@ -2,9 +2,10 @@
 
 namespace ln {
 class MeshImportSettings;
+class MeshPrimitive;
 class MeshModel;
 class SkinnedMeshModel;
-
+struct MeshSection2;
 
 // 標準ボーン
 enum class HumanoidBones

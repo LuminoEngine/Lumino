@@ -13,7 +13,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Animation/Animator.hpp>
-#include "../src/Mesh/MeshImporter/MqoImporter.hpp"
+#include "../src/Mesh/MeshImporters/MqoImporter.hpp"
 #include "../src/Font/FontManager.hpp"
 #include "../src/Font/FontCore.hpp"
 #include "../src/Asset/AssetArchive.hpp"
@@ -284,6 +284,7 @@ void Experiment_SSR();
 void Tutorial_Sandbox();
 void Sandbox_Builder();
 void Sandbox_GridListBox();
+void Sandbox_InstancedMesh();
 void Sandbox_MeshTilemap();
 void Sandbox_Physics();
 void Sandbox_Physics2();
@@ -493,6 +494,7 @@ int main(int argc, char** argv)
         //Experiment_SSR();
         //Sandbox_Builder();
         //Sandbox_GridListBox();
+        //Sandbox_InstancedMesh();
 		//Sandbox_MeshTilemap();
         //Sandbox_Physics();
         //Sandbox_Physics2();

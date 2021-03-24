@@ -24,6 +24,7 @@ CharacterController::CharacterController()
     : m_inputController(nullptr)
 	, m_inputControlEnabled(true)
 	, m_cameraControlEnabled(true)
+	, m_cameraTransformSync(true)
 {
 }
 
@@ -116,7 +117,7 @@ void CharacterController::onPreUpdate(float elapsedSeconds)
 		const auto characterCurrentFront = Vector3::transform(Vector3::UnitZ, camera->rotation());
 
 
-		if (m_cameraControlEnabled && m_resetCameraPosition) {
+		if (m_cameraTransformSync && m_resetCameraPosition) {
 			// Character を真後ろから見るようにカメラを移動する。
 			// この後の計算で、カメラ正面方向を使い、位置と注視点は再設定されるため、オフセットは気にしなくてよい。
 			camera->setPosition(character->position() - characterCurrentFront);
@@ -135,7 +136,11 @@ void CharacterController::onPreUpdate(float elapsedSeconds)
 		if (m_inputControlEnabled) {
 			const auto cameraCurrentFront = Vector3::transform(Vector3::UnitZ, camera->rotation());
 			const auto cameraCurrentFrontXZ = Vector3::safeNormalize(Vector3(cameraCurrentFront.x, 0, cameraCurrentFront.z), Vector3::UnitZ);
+#ifdef LN_COORD_RH
+			const auto cameraCurrentRightDirXZ = Vector3::cross(cameraCurrentFrontXZ, Vector3::UnitY);
+#else
 			const auto cameraCurrentRightDirXZ = Vector3::cross(Vector3::UnitY, cameraCurrentFrontXZ);
+#endif
 			const auto moveVector = (cameraCurrentRightDirXZ * m_inputState.turnVelocity) + (cameraCurrentFrontXZ * m_inputState.forwardVelocity);
 			moveOffset = moveVector * (m_walkVelocity/* * elapsedSeconds*/);
 		}
@@ -215,7 +220,7 @@ void CharacterController::onUpdate(float elapsedSeconds)
 		Vector3(0, m_lookAtOffset.y, 0) +
 		cameraCurrentFrontXZ * m_lookAtOffset.z;
 
-	if (m_cameraControlEnabled) {
+	if (m_cameraTransformSync) {
 
 
 
@@ -314,7 +319,7 @@ void CharacterController::onUpdate(float elapsedSeconds)
 
 
 	// カメラの地形との接触判定。めり込まないようにする
-	if (m_cameraControlEnabled) {
+	if (m_cameraTransformSync) {
 	
 		const auto cameraOuterDir = -camera->front();
 		

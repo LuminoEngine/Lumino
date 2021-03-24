@@ -2,7 +2,7 @@
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 #include "Internal.hpp"
 #include <yaml-cpp/yaml.h>
-#include "../Grammar/CppLexer.hpp"
+#include "Lexer/CppLexer.hpp"
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
 #include "ShaderManager.hpp"
 #include "HLSLMetadataParser.hpp"
@@ -494,6 +494,10 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
             m_diag->reportError(u"Roughness: Invalid value: " + String::fromStdString(value));
             return false;
         }
+    }
+    else if (equalString(name, "Instancing", 10)) {
+        // とりあえず値は不問。フィールドがあればONにしてみる。
+        tech->techniqueClass.drawMode = ShaderTechniqueClass_DrawMode::Instancing;
     }
     else {
         m_diag->reportError(u"Invalid technique parameter: " + String::fromStdString(getString(name)));

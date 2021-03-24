@@ -100,6 +100,7 @@ public:
 
     /** アンカーポイント (原点) を設定します。デフォルトは中心 (0.5, 0.5) です。 */
     void setAnchorPoint(const Vector2& value) { m_anchorPoint = value; }
+	void setAnchorPoint(float u, float v) { setAnchorPoint(Vector2(u, v)); }
 
     /** アンカーポイント (原点) を取得します。 */
     const Vector2& anchorPoint() const { return m_anchorPoint; }
@@ -139,6 +140,8 @@ public:
 	// TODO: internal
 	//static void registerType(EngineContext* context);
 
+	void setBillboardType(BillboardType value) { m_billboardType = value; }
+
 protected:
     void onRender(RenderingContext* context) override;
 
@@ -147,7 +150,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     SpriteComponent();
 	virtual ~SpriteComponent();
-	void init();
+	bool init();
 
 
 private:
@@ -159,6 +162,7 @@ private:
 	int m_frameIndex;
     Flags<detail::SpriteFlipFlags> m_flipFlags;
     float m_pixelsParUnit;
+	BillboardType m_billboardType;
 };
 
 } // namespace ln

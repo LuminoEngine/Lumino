@@ -21,7 +21,7 @@
 #include "../Rendering/RenderElement.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 #include "../Rendering/RenderingManager.hpp"
-#include "../Mesh/MeshGenerater.hpp"
+#include "../Mesh/MeshGeneraters/MeshGenerater.hpp"
 #include "../PostEffect/PostEffectRenderer.hpp"
 #include "SceneManager.hpp"
 #include "InternalSkyBox.hpp"

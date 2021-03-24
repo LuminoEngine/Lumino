@@ -94,7 +94,7 @@ void SceneManager::init()
 	}
 
 	m_primitiveMeshDefaultMaterial = makeObject<Material>();
-	m_primitiveMeshDefaultMaterial->setColor(Color(0.8f, 0.8f, 0.8f, 1.0));
+	m_primitiveMeshDefaultMaterial->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
 	m_primitiveMeshDefaultMaterial->setRoughness(0.5f);
 	m_primitiveMeshDefaultMaterial->setMetallic(0.0f);
 

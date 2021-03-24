@@ -8,7 +8,8 @@
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/MeshProcessing.hpp>
 #include "MeshManager.hpp"
-#include "MeshGenerater.hpp"
+#include "MeshGeneraters/MeshGenerater.hpp"
+#include "MeshGeneraters/CylinderMeshGenerater.hpp"
 
 namespace ln {
 
@@ -103,7 +104,7 @@ void MeshGeometryBuilder::addSphere(float radius, int sliceH, int sliceV)
 void MeshGeometryBuilder::addCylinder(float radius, float height, int slices, int stacks)
 {
 	auto* g = newMeshGenerater<detail::CylinderMeshFactory>();
-	g->init(radius, height, slices, stacks);
+	g->init(radius, radius, height, slices, stacks);
 }
 
 void MeshGeometryBuilder::addCone(float radius, float height, int slices)

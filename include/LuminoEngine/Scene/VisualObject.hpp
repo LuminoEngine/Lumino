@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "../Rendering/Common.hpp"
+#include "../Graphics/RenderState.hpp"
 #include "WorldObject.hpp"
 
 namespace ln {

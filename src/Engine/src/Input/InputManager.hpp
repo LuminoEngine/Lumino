@@ -19,6 +19,7 @@ class InputManager
 	struct Settings
 	{
 		PlatformWindow*	mainWindow;
+		InputBindingSet inputConfig;
 	};
 	
 

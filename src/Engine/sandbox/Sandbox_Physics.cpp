@@ -29,7 +29,7 @@ class App_Sandbox_Physics : public Application
         m_rigidBody->setMass(50.0f);
         m_rigidBody->setTransform(Matrix::makeTranslation(0, 3, 0));
 
-        m_box = BoxMesh::create();
+        m_box = BoxMesh::With().build();
     }
 
     void onUpdate() override

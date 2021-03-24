@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Engine/Common.hpp>
 #include <LuminoEngine/Asset/Common.hpp>
+#include <LuminoEngine/Input/Common.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Graphics/GeometryStructs.hpp>
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
@@ -76,6 +77,9 @@ struct EngineSettings
 	String priorityGPUName;
 
     intptr_t userMainWindow = 0;
+
+	InputBindingSet inputConfig = InputBindingSet::Keyboard;
+
 	bool standaloneFpsControl = true;
 	bool createMainLights = false;
 	int frameRate = 60;

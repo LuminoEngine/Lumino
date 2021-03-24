@@ -52,6 +52,8 @@ public:
      */
 	constexpr Vector4(const Vector2& vec, float z, float w) noexcept;
 
+    constexpr Vector4(const Vector2& vec1, const Vector2& vec2) noexcept;
+
     /**
      * Vector3 と w 値を指定してインスタンスを初期化します。
      */
@@ -215,6 +217,14 @@ inline constexpr Vector4::Vector4(const Vector2& vec, float z_, float w_) noexce
     , y(vec.y)
     , z(z_)
     , w(w_)
+{
+}
+
+constexpr Vector4::Vector4(const Vector2& vec1, const Vector2& vec2) noexcept
+    : x(vec1.x)
+    , y(vec1.y)
+    , z(vec2.x)
+    , w(vec2.y)
 {
 }
 

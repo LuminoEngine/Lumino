@@ -64,24 +64,25 @@ LN_CONSTRUCT_ACCESS:
 private:
 };
 
-class BoxMeshComponent
-	: public ShapeComponent
-{
-public:
-    void setSize(const Vector3& size);
-
-protected:
-	void onRender(RenderingContext* context);
-
-LN_CONSTRUCT_ACCESS:
-	BoxMeshComponent();
-	virtual ~BoxMeshComponent();
-    bool init();
-    bool init(const Vector3& size);
-
-private:
-	//Box m_box;
-    Ref<MeshModel> m_model;
-};
+//class BoxMeshComponent
+//	: public ShapeComponent
+//{
+//public:
+//    /** @copydoc BoxMesh::setSize */
+//    void setSize(const Vector3& size);
+//
+//protected:
+//	void onRender(RenderingContext* context);
+//
+//LN_CONSTRUCT_ACCESS:
+//	BoxMeshComponent();
+//	virtual ~BoxMeshComponent();
+//    bool init();
+//    bool init(const Vector3& size);
+//
+//private:
+//	//Box m_box;
+//    Ref<MeshModel> m_model;
+//};
 
 } // namespace ln

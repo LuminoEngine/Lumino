@@ -11,7 +11,7 @@
 #include <glslang/Include/ResourceLimits.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
 #include <spirv_cross/spirv_glsl.hpp>
-#include "../Grammar/CppLexer.hpp"
+#include "Lexer/CppLexer.hpp"
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
 #include "ShaderManager.hpp"
 #include "ShaderTranspiler.hpp"

@@ -20,15 +20,6 @@ set(LN_SOURCES_Engine
 
 file(GLOB LN_SOURCES_Platform ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/*.hpp src/Platform/*.cpp src/Platform/*.hpp)
 
-set(LN_SOURCES_Grammar
-    src/Grammar/Internal.hpp
-    src/Grammar/AbstractLexer.cpp
-    src/Grammar/AbstractLexer.hpp
-    src/Grammar/CppLexer.cpp
-    src/Grammar/CppLexer.hpp
-    src/Grammar/Token.hpp
-)
-
 file(GLOB LN_SOURCES_Animation ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/*.hpp src/Animation/*.cpp src/Animation/*.hpp)
 
 set(LN_SOURCES_Input
@@ -60,6 +51,7 @@ file(GLOB LN_SOURCES_Audio_ARIs src/Audio/ARIs/*.cpp src/Audio/ARIs/*.hpp src/Au
 file(GLOB LN_SOURCES_Audio_Backend src/Audio/Backend/*.cpp src/Audio/Backend/*.hpp)
 
 file(GLOB LN_SOURCES_Shader ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/*.hpp src/Shader/*.cpp src/Shader/*.hpp src/Shader/*.md)
+file(GLOB LN_SOURCES_Shader_Lexer ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Lexer/*.hpp src/Shader/Lexer/*.cpp src/Shader/Lexer/*.hpp src/Shader/Lexer/*.md)
 
 file(GLOB LN_SOURCES_Graphics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
 file(GLOB LN_SOURCES_Graphics_RHIs ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/RHIs/*.hpp src/Graphics/RHIs/*.cpp src/Graphics/RHIs/*.hpp)
@@ -82,7 +74,8 @@ set(LN_SOURCES_Font
 )
 
 file(GLOB LN_SOURCES_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/*.hpp src/Mesh/*.cpp src/Mesh/*.hpp)
-file(GLOB LN_SOURCES_Mesh_MeshImporter ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/MeshImporter/*.hpp src/Mesh/MeshImporter/*.cpp src/Mesh/MeshImporter/*.hpp)
+file(GLOB LN_SOURCES_Mesh_MeshImporters ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/MeshImporters/*.hpp src/Mesh/MeshImporters/*.cpp src/Mesh/MeshImporters/*.hpp)
+file(GLOB LN_SOURCES_Mesh_MeshGeneraters ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/MeshGeneraters/*.hpp src/Mesh/MeshGeneraters/*.cpp src/Mesh/MeshGeneraters/*.hpp)
 
 file(GLOB LN_SOURCES_Rendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/*.hpp src/Rendering/*.cpp src/Rendering/*.hpp src/Rendering/*.md)
 file(GLOB LN_SOURCES_Rendering_RLIs src/Rendering/RLIs/*.cpp src/Rendering/RLIs/*.hpp)
@@ -120,7 +113,7 @@ file(GLOB LN_SOURCES_Scene_MeshVoxelmap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Sc
 file(GLOB LN_SOURCES_Scene_Reflection ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Reflection/*.hpp src/Scene/Reflection/*.cpp src/Scene/Reflection/*.hpp)
 file(GLOB LN_SOURCES_Scene_Physics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Physics/*.hpp src/Scene/Physics/*.cpp src/Scene/Physics/*.hpp)
 file(GLOB LN_SOURCES_Scene_Effect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Effect/*.hpp src/Scene/Effect/*.cpp src/Scene/Effect/*.hpp)
-
+file(GLOB LN_SOURCES_Scene_Sprite ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Sprite/*.hpp src/Scene/Sprite/*.cpp src/Scene/Sprite/*.hpp)
 
 file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
 file(GLOB LN_SOURCES_UI_Controls ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Controls/*.hpp src/UI/Controls/*.cpp src/UI/Controls/*.hpp)
@@ -192,13 +185,15 @@ source_group("Audio\\Decoder" FILES ${LN_SOURCES_Audio_Decoder})
 source_group("Audio\\Backend" FILES ${LN_SOURCES_Audio_Backend})
 source_group("Audio\\ARIs" FILES ${LN_SOURCES_Audio_ARIs})
 source_group("Shader" FILES ${LN_SOURCES_Shader})
+source_group("Shader\\Lexer" FILES ${LN_SOURCES_Shader_Lexer})
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 source_group("Graphics\\RHIs" FILES ${LN_SOURCES_Graphics_RHIs})
 source_group("Graphics\\RHIs\\Vulkan" FILES ${LN_SOURCES_Graphics_RHIs_Vulkan})
 source_group("Graphics\\RHIs\\DirectX12" FILES ${LN_SOURCES_Graphics_RHIs_DirectX12})
 source_group("Font" FILES ${LN_SOURCES_Font})
 source_group("Mesh" FILES ${LN_SOURCES_Mesh})
-source_group("Mesh\\MeshImporter" FILES ${LN_SOURCES_Mesh_MeshImporter})
+source_group("Mesh\\MeshImporters" FILES ${LN_SOURCES_Mesh_MeshImporters})
+source_group("Mesh\\MeshGeneraters" FILES ${LN_SOURCES_Mesh_MeshGeneraters})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
 source_group("Rendering\\RLIs" FILES ${LN_SOURCES_Rendering_RLIs})
 source_group("Rendering\\RenderFeature" FILES ${LN_SOURCES_Rendering_RenderFeature})
@@ -216,6 +211,7 @@ source_group("Scene\\MeshVoxelmap" FILES ${LN_SOURCES_Scene_MeshVoxelmap})
 source_group("Scene\\Reflection" FILES ${LN_SOURCES_Scene_Reflection})
 source_group("Scene\\Physics" FILES ${LN_SOURCES_Scene_Physics})
 source_group("Scene\\Effect" FILES ${LN_SOURCES_Scene_Effect})
+source_group("Scene\\Sprite" FILES ${LN_SOURCES_Scene_Sprite})
 source_group("UI" FILES ${LN_SOURCES_UI})
 source_group("UI\\Controls" FILES ${LN_SOURCES_UI_Controls})
 source_group("UI\\Layout" FILES ${LN_SOURCES_UI_Layout})
@@ -241,13 +237,15 @@ set(LN_SOURCES
     ${LN_SOURCES_Audio_Backend}
     ${LN_SOURCES_Audio_ARIs}
     ${LN_SOURCES_Shader}
+    ${LN_SOURCES_Shader_Lexer}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Graphics_RHIs}
     ${LN_SOURCES_Graphics_RHIs_Vulkan}
     ${LN_SOURCES_Graphics_RHIs_DirectX12}
     ${LN_SOURCES_Font}
     ${LN_SOURCES_Mesh}
-    ${LN_SOURCES_Mesh_MeshImporter}
+    ${LN_SOURCES_Mesh_MeshImporters}
+    ${LN_SOURCES_Mesh_MeshGeneraters}
     ${LN_SOURCES_Rendering}
     ${LN_SOURCES_Rendering_RLIs}
     ${LN_SOURCES_Rendering_RenderFeature}
@@ -265,6 +263,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Scene_Reflection}
     ${LN_SOURCES_Scene_Physics}
     ${LN_SOURCES_Scene_Effect}
+    ${LN_SOURCES_Scene_Sprite}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_UI_Controls}
     ${LN_SOURCES_UI_Layout}

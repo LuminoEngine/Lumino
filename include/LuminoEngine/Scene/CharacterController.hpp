@@ -164,7 +164,7 @@ private:
 	float m_cameraMaxTilt = 0.8f;
 
 	// Character の EyePoint からの、カメラ注視点のオフセット
-	Vector3 m_lookAtOffset = Vector3(0.25, 0, 0);
+	Vector3 m_lookAtOffset = Vector3(0, 0, 0);//Vector3(0.25, 0, 0);
 
 
 	// キャラクター位置から前方向にどれだけ移動したところを注視点とするか
@@ -202,6 +202,7 @@ private:
 
 	bool m_inputControlEnabled;
 	bool m_cameraControlEnabled;
+	bool m_cameraTransformSync;
 };
 
 } // namespace ln

@@ -42,6 +42,22 @@ void LevelRenderParameters::mergeToRenderParams(detail::SceneGlobalRenderParams*
 }
 
 //==============================================================================
+// System
+
+System::System() = default;
+
+System::~System() = default;
+
+bool System::init()
+{
+    return Object::init();
+}
+
+void System::onUpdate()
+{
+}
+
+//==============================================================================
 // Level
 
 LN_OBJECT_IMPLEMENT(Level, AssetObject) {}
@@ -89,6 +105,16 @@ void Level::removeAllSubLevels()
     manager->removeAllSubLevels();
 }
 
+void Level::addSystem(System* system)
+{
+    m_systems.add(system);
+}
+
+void Level::removeSystem(System* system)
+{
+    m_systems.remove(system);
+}
+
 // Note: このあたりの命名規則は Tkool からとっている。
 
 void Level::onStart()
@@ -117,6 +143,12 @@ void Level::onPostUpdate(float elapsedSeconds)
 
 void Level::update(float elapsedSeconds)
 {
+    // 状況に応じてプレイヤーの移動などを行う。
+    // Component 側では通常、現在の状態に応じて見た目を更新したりするので、System を先に更新してみる。
+    for (auto& system : m_systems) {
+        system->onUpdate();
+    }
+
     if (m_subLevelManager) {
         for (auto& level : m_subLevelManager->subLevels()) {
             level->update(elapsedSeconds);

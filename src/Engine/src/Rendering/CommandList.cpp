@@ -4,6 +4,7 @@
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
+#include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
 #include "../Font/FontManager.hpp"
 #include "../Mesh/MeshModelInstance.hpp"
 #include "RenderElement.hpp"
