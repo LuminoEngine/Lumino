@@ -11,6 +11,10 @@ class InstancedMeshList;
 class InstancedSpritesModel : public Object
 {
 public:
+    /** @copydoc InstancedSprites::setMaterial */
+    void setMaterial(Material* value);
+    /** @copydoc InstancedSprites::material */
+    Material* material() const;
     /** @copydoc InstancedSprites::clearSprites */
     void clearSprites();
     /** @copydoc InstancedSprites::setSize */
@@ -75,6 +79,10 @@ class InstancedSpritesComponent
     : public VisualComponent
 {
 public:
+    /** @copydoc InstancedSprites::setMaterial */
+    void setMaterial(Material* value) { m_model->setMaterial(value); }
+    /** @copydoc InstancedSprites::material */
+    Material* material() const { m_model->material(); }
     /** @copydoc InstancedSprites::clearSprites */
     void clearSprites() { m_model->clearSprites(); }
     /** @copydoc InstancedSprites::setSize */
@@ -119,7 +127,14 @@ private:
 class InstancedSprites
 	: public VisualObject
 {
+    LN_BUILDER;
 public:
+    /** マテリアルを設定します。 */
+    void setMaterial(Material* value) { m_component->setMaterial(value); }
+
+    /** マテリアルを取得します。 */
+    Material* material() const { m_component->material(); }
+
     /** 追加されているスプライトをすべて削除し、ステートをリセットします。 */
     void clearSprites() { m_component->clearSprites(); }
 
@@ -163,5 +178,28 @@ LN_CONSTRUCT_ACCESS:
 private:
     Ref<InstancedSpritesComponent> m_component;
 };
+
+//==============================================================================
+// InstancedSprites::Builder
+
+struct InstancedSprites::BuilderDetails : public VisualObject::BuilderDetails
+{
+    LN_BUILDER_DETAILS(InstancedSprites);
+
+    Ref<Material> material;
+
+    BuilderDetails();
+    void apply(InstancedSprites* p) const;
+};
+
+template<class T, class B, class D>
+struct InstancedSprites::BuilderCore : public VisualObject::BuilderCore<T, B, D>
+{
+    LN_BUILDER_CORE(VisualObject::BuilderCore);
+
+    B& material(Material* value) { d()->material = value; return self(); }
+};
+
+LN_BUILDER_IMPLEMENT(InstancedSprites);
 
 } // namespace ln

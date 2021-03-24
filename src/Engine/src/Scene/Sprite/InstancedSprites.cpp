@@ -46,6 +46,16 @@ bool InstancedSpritesModel::init()
     return true;
 }
 
+void InstancedSpritesModel::setMaterial(Material* value)
+{
+    m_material = value;
+}
+
+Material* InstancedSpritesModel::material() const
+{
+    return m_material;
+}
+
 void InstancedSpritesModel::clearSprites()
 {
     m_state.size = Size(1.0f, 1.0f);
@@ -223,6 +233,20 @@ bool InstancedSprites::init()
 InstancedSpritesComponent* InstancedSprites::instancedSpritesComponent() const
 {
     return m_component;
+}
+
+//==============================================================================
+// InstancedSprites::Builder
+
+InstancedSprites::BuilderDetails::BuilderDetails()
+    : material(nullptr)
+{
+}
+
+void InstancedSprites::BuilderDetails::apply(InstancedSprites* p) const
+{
+    VisualObject::BuilderDetails::apply(p);
+    p->setMaterial(material);
 }
 
 } // namespace ln
