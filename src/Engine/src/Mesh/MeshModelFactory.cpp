@@ -59,7 +59,7 @@ Ref<MeshModel> MeshModelFactory::createMesh(MeshGenerater* factory, Material* ma
 
 	Ref<MeshModel> model = makeObject<MeshModel>();
 	MeshNode* node = model->addMeshContainerNode(mesh);
-	model->addMaterial(material ? material : detail::EngineDomain::sceneManager()->primitiveMeshDefaultMaterial());
+	model->addMaterial(material ? material : detail::EngineDomain::sceneManager()->primitiveMeshDefaultMaterial().get());
 
 	model->calculateBoundingBox();
 
