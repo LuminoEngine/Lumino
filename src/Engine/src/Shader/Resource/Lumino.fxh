@@ -104,6 +104,15 @@ struct LN_VSInput
     float4    BlendIndices    : BLENDINDICES;
     float4    BlendWeight        : BLENDWEIGHT;
 #endif
+#ifdef LN_USE_INSTANCING
+    float4 InstanceTransform0 : POSITION1;
+    float4 InstanceTransform1 : POSITION2;
+    float4 InstanceTransform2 : POSITION3;
+    float4 InstanceTransform3 : POSITION4;
+    float4 InstanceUVOffset: TEXCOORD2;
+    float4 InstanceColorScale: COLOR1;
+    uint instanceID : SV_InstanceID;
+#endif
 };
 
 struct LN_VSOutput_Common
@@ -189,12 +198,21 @@ LN_VSOutput_Common LN_ProcessVertex_Common(LN_VSInput input)
 
 void _LN_ProcessVertex_StaticMesh(
     LN_VSInput input,
-    out float4 outSVPos, out float3 outViewNormal, out float2 outUV, out float4 outColor)
+    out float4 outSVPos, out float3 outViewNormal)
 {
+#ifdef LN_USE_INSTANCING
+    const float4x4 worldMatrix = float4x4(
+        input.InstanceTransform0.x, input.InstanceTransform0.y, input.InstanceTransform0.z, input.InstanceTransform0.w,
+        input.InstanceTransform1.x, input.InstanceTransform1.y, input.InstanceTransform1.z, input.InstanceTransform1.w,
+        input.InstanceTransform2.x, input.InstanceTransform2.y, input.InstanceTransform2.z, input.InstanceTransform2.w,
+        input.InstanceTransform3.x, input.InstanceTransform3.y, input.InstanceTransform3.z, input.InstanceTransform3.w);
+    float4 pos = mul(float4(input.Pos, 1.0f), worldMatrix);
+    outSVPos = mul(pos, ln_WorldViewProjection);
+#else
     outSVPos = mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
+#endif
+
     outViewNormal = mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
-    outUV = input.UV;
-    outColor = input.Color;
 }
 
 float LN_Square(float x)
@@ -344,10 +362,16 @@ void _LN_ProcessVertex_Common(
         input.Pos, input.Normal, input.BlendIndices, input.BlendWeight,
         outSVPos, outViewNormal);
 #else
-    _LN_ProcessVertex_StaticMesh(input, outSVPos, outViewNormal, outUV, outColor);
+    _LN_ProcessVertex_StaticMesh(input, outSVPos, outViewNormal);
 #endif
+
+#ifdef LN_USE_INSTANCING
+    outUV = (input.UV * input.InstanceUVOffset.zw) + input.InstanceUVOffset.xy;
+    outColor = input.Color * input.InstanceColorScale;
+#else
     outUV = input.UV;
     outColor = input.Color;
+#endif
 
     const float3 viewNormal = outViewNormal;
 

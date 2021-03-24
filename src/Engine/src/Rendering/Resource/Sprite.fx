@@ -30,24 +30,42 @@ float4 PS_Main(PSInput input) : SV_TARGET0
 
 
 //------------------------------------------------------------------------------
+#ifdef LN_USE_INSTANCING
+
+/*
 struct LN_VSIInput
 {
+    //float3    Pos                : POSITION;
+    //float3    Normal            : NORMAL0;
+    //float2    UV                : TEXCOORD0;
+    //float4    Color            : COLOR0;
+    //float4  tangent: TANGENT;
+    
     float3    Pos                : POSITION;
     float3    Normal            : NORMAL0;
     float2    UV                : TEXCOORD0;
     float4    Color            : COLOR0;
-    float4  tangent: TANGENT;
+    float4  tangent: TANGENT0;
+#ifdef LN_USE_SKINNING
+    float4    BlendIndices    : BLENDINDICES;
+    float4    BlendWeight        : BLENDWEIGHT;
+#endif
 
-    float4 InstanceTransform0 : POSITION1;
-    float4 InstanceTransform1 : POSITION2;
-    float4 InstanceTransform2 : POSITION3;
-    float4 InstanceTransform3 : POSITION4;
-    float4 InstanceUVOffset: TEXCOORD2;
-    float4 InstanceColorScale: COLOR1;
+};
+*/
+
+struct VSIOutput
+{
+    LN_VS_OUTPUT_DECLARE;
+};
+
+struct PSIInput
+{
+    LN_PS_INPUT_DECLARE;
 };
 
 /*
-struct LN_VSIOutput
+struct LN_PSIInput
 {
     //float3    Normal        : NORMAL0;
     float2    UV            : TEXCOORD0;
@@ -56,34 +74,21 @@ struct LN_VSIOutput
 };
 */
 
-struct LN_PSIInput
+VSIOutput VSI_Main(LN_VSInput input)//LN_VSIInput input)
 {
-    //float3    Normal        : NORMAL0;
-    float2    UV            : TEXCOORD0;
-    float4    Color        : COLOR0;
-    float4    svPos        : SV_POSITION;
-};
-
-LN_PSIInput VSI_Main(LN_VSIInput input)
-{
-    //float4x4 worldMatrix = float4x4(
-    //    input.InstanceTransform1.x, input.InstanceTransform2.x, input.InstanceTransform3.x, 0.0,
-    //    input.InstanceTransform1.y, input.InstanceTransform2.y, input.InstanceTransform3.y, 0.0,
-    //    input.InstanceTransform1.z, input.InstanceTransform2.z, input.InstanceTransform3.z, 0.0,
-    //    input.InstanceTransform1.w, input.InstanceTransform2.w, input.InstanceTransform3.w, 0.0);
-#if 1
+    VSIOutput output;
+    LN_ProcessVertex(input, output);
+    return output;
+#if 0
     float4x4 worldMatrix = float4x4(
         input.InstanceTransform0.x, input.InstanceTransform0.y, input.InstanceTransform0.z, input.InstanceTransform0.w,
         input.InstanceTransform1.x, input.InstanceTransform1.y, input.InstanceTransform1.z, input.InstanceTransform1.w,
         input.InstanceTransform2.x, input.InstanceTransform2.y, input.InstanceTransform2.z, input.InstanceTransform2.w,
         input.InstanceTransform3.x, input.InstanceTransform3.y, input.InstanceTransform3.z, input.InstanceTransform3.w);
     float4 worldPos = mul(float4(input.Pos, 1.0f), worldMatrix);
-#else
-    float4 worldPos = float4(input.Pos, 1.0f);
-    worldPos.xyz += input.InstanceTransform3.xyz;
-#endif
 
-    LN_PSIInput o;
+
+    VSIOutput o;
     //o.svPos            = mul(worldPos, ln_View);
     //o.svPos            = mul(o.svPos, ln_Projection);
     //o.svPos            = mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
@@ -95,9 +100,10 @@ LN_PSIInput VSI_Main(LN_VSIInput input)
     o.UV            = (input.UV * input.InstanceUVOffset.zw) + input.InstanceUVOffset.xy;
     o.Color            = input.Color * input.InstanceColorScale;
     return o;
+#endif
 }
 
-float4 PSI_Main2(LN_PSIInput input) : SV_TARGET
+float4 PSI_Main2(PSIInput input) : SV_TARGET
 {
     //return float4(1, 0, 0, 1);
     float4 color = tex2D(ln_MaterialTexture, input.UV) * input.Color;
@@ -106,18 +112,24 @@ float4 PSI_Main2(LN_PSIInput input) : SV_TARGET
     return LN_GetBuiltinEffectColor(color);
 }
 
-//------------------------------------------------------------------------------
-@module
-techniques:
-    Forward_Geometry_UnLighting:
-        passes:
-        -   Pass0:
-                vertexShader: VS_ClusteredForward_Geometry
-                pixelShader: PS_Main
+#endif
 
-    Forward_Geometry_UnLighting_Instancing:
-        passes:
-        -   Pass0:
-                vertexShader: VSI_Main
-                pixelShader: PSI_Main2
-@end
+//------------------------------------------------------------------------------
+technique Forward_Geometry_UnLighting
+{
+    pass Pass0
+    {
+        VertexShader = VS_ClusteredForward_Geometry;
+        PixelShader  = PS_Main;
+    }
+}
+
+technique Forward_Geometry_UnLighting_Instancing
+{
+    Instancing = true;
+    pass Pass0
+    {
+        VertexShader = VSI_Main;
+        PixelShader  = PSI_Main2;
+    }
+}

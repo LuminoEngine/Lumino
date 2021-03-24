@@ -3,7 +3,7 @@
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include "../Grammar/Token.hpp"
+#include "Lexer/Token.hpp"
 
 namespace YAML {
     class Node;

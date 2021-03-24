@@ -4,7 +4,7 @@
 
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Shader/Common.hpp>
-#include "../Grammar/Token.hpp"
+#include "Lexer/Token.hpp"
 
 namespace glslang {
 class TShader;

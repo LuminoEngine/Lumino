@@ -71,6 +71,8 @@ bool UnifiedShaderCompiler::compile(
 				actualDefinitions.add(u"LN_USE_NORMALMAP=1");
 			if (tech.techniqueClass.roughnessClass == ShaderTechniqueClass_Roughness::RoughnessMap)
 				actualDefinitions.add(u"LN_USE_ROUGHNESS_MAP=1");
+			if (tech.techniqueClass.drawMode == ShaderTechniqueClass_DrawMode::Instancing)
+				actualDefinitions.add(u"LN_USE_INSTANCING=1");
 		}
 
 

@@ -20,15 +20,6 @@ set(LN_SOURCES_Engine
 
 file(GLOB LN_SOURCES_Platform ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/*.hpp src/Platform/*.cpp src/Platform/*.hpp)
 
-set(LN_SOURCES_Grammar
-    src/Grammar/Internal.hpp
-    src/Grammar/AbstractLexer.cpp
-    src/Grammar/AbstractLexer.hpp
-    src/Grammar/CppLexer.cpp
-    src/Grammar/CppLexer.hpp
-    src/Grammar/Token.hpp
-)
-
 file(GLOB LN_SOURCES_Animation ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/*.hpp src/Animation/*.cpp src/Animation/*.hpp)
 
 set(LN_SOURCES_Input
@@ -60,6 +51,7 @@ file(GLOB LN_SOURCES_Audio_ARIs src/Audio/ARIs/*.cpp src/Audio/ARIs/*.hpp src/Au
 file(GLOB LN_SOURCES_Audio_Backend src/Audio/Backend/*.cpp src/Audio/Backend/*.hpp)
 
 file(GLOB LN_SOURCES_Shader ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/*.hpp src/Shader/*.cpp src/Shader/*.hpp src/Shader/*.md)
+file(GLOB LN_SOURCES_Shader_Lexer ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Lexer/*.hpp src/Shader/Lexer/*.cpp src/Shader/Lexer/*.hpp src/Shader/Lexer/*.md)
 
 file(GLOB LN_SOURCES_Graphics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
 file(GLOB LN_SOURCES_Graphics_RHIs ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/RHIs/*.hpp src/Graphics/RHIs/*.cpp src/Graphics/RHIs/*.hpp)
@@ -193,6 +185,7 @@ source_group("Audio\\Decoder" FILES ${LN_SOURCES_Audio_Decoder})
 source_group("Audio\\Backend" FILES ${LN_SOURCES_Audio_Backend})
 source_group("Audio\\ARIs" FILES ${LN_SOURCES_Audio_ARIs})
 source_group("Shader" FILES ${LN_SOURCES_Shader})
+source_group("Shader\\Lexer" FILES ${LN_SOURCES_Shader_Lexer})
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 source_group("Graphics\\RHIs" FILES ${LN_SOURCES_Graphics_RHIs})
 source_group("Graphics\\RHIs\\Vulkan" FILES ${LN_SOURCES_Graphics_RHIs_Vulkan})
@@ -244,6 +237,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Audio_Backend}
     ${LN_SOURCES_Audio_ARIs}
     ${LN_SOURCES_Shader}
+    ${LN_SOURCES_Shader_Lexer}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Graphics_RHIs}
     ${LN_SOURCES_Graphics_RHIs_Vulkan}
