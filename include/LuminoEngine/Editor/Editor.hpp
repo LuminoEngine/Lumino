@@ -7,6 +7,7 @@ class Editor
 {
 public:
 	static void addPane(ImGuiDockPane* pane);
+	static void closeAllPanes();
 
 	static ImGuiDockPane* editorViewportToolPane();
 };

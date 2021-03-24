@@ -1,6 +1,6 @@
 ﻿#include <Lumino.hpp>
 
-class HelloApp : public Application
+class HelloExample : public Application
 {
     void onInit() override
     {
@@ -12,4 +12,4 @@ class HelloApp : public Application
     }
 };
 
-LUMINO_APP(HelloApp);
+LUMINO_APP(HelloExample);

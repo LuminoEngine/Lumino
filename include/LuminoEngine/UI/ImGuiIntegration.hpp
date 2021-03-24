@@ -42,6 +42,7 @@ public:
 	void render(GraphicsContext* graphicsContext, RenderTargetTexture* target);
     bool handlePlatformEvent(const detail::PlatformEventArgs& e);
 
+	const List<Ref<ImGuiDockPane>>& dockPanes() const { return m_dockPanes; }
 	void addDock(ImGuiDockPane* pane);
 	void updateDocks(ImGuiID mainWindowId);
 	bool handleUIEvent(UIEventArgs* e);

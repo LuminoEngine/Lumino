@@ -24,8 +24,8 @@ public:
         //auto sprite = UISprite::create(texture);
         //sprite->addInto();
 
-        auto light = Engine::mainLight();
-        auto box = BoxMesh::With().buildInto();
+        //auto light = Engine::mainLight();
+        //auto box = BoxMesh::With().buildInto();
         //box->setMaterial(Material::With()
         //    .color(Color::White)
         //    .roughness(0.0f)
@@ -37,7 +37,7 @@ public:
         //light->lookAt(0, 0, 0);
         //light->setAmbientColor(Color::Red);
 
-        //auto text1 = UIText::With(u"Hello ------ Aa!").buildInto();
+        auto text1 = UIText::With(u"Hello ------ Aa!").buildInto();
 
         //auto sh = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/MToon.hlsl");
     }

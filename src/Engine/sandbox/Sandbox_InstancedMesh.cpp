@@ -14,7 +14,7 @@ class App_Sandbox_InstancedMesh : public Application
 
 
         auto sprites = makeObject<InstancedSprites>();
-        sprites->addInto();
+        //sprites->addInto();
         sprites->clearSprites();
         sprites->addSprite(Vector3(0, 0, 0));
         sprites->addSprite(Vector3(1, 1, 0));

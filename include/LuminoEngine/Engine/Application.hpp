@@ -24,13 +24,13 @@ public:
     LN_METHOD()
 	virtual void onInit();
 
-	virtual void onStart();
+	//virtual void onStart();
 
     /** 毎フレーム呼び出されます。 */
     LN_METHOD()
 	virtual void onUpdate();
 
-	virtual void onStop();
+	//virtual void onStop();
 
 	virtual void onDestroy();
 

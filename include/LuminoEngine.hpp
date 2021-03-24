@@ -64,6 +64,7 @@
 #include "LuminoEngine/Rendering/RenderView.hpp"
 #include "LuminoEngine/Rendering/RenderFeature.hpp"
 #include "LuminoEngine/Rendering/RenderingContext.hpp"
+#include "LuminoEngine/Rendering/Shaders.hpp"
 
 #include "LuminoEngine/PostEffect/PostEffect.hpp"
 #include "LuminoEngine/PostEffect/TonePostEffect.hpp"

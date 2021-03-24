@@ -38,10 +38,10 @@ bool InstancedSpritesModel::init()
 
     m_meshList = makeObject<InstancedMeshList>(m_mesh, 0);
 
-    m_material = makeObject<Material>();
-    m_material->setMainTexture(Texture2D::load(u"C:/Proj/LN/Lumino/src/Engine/sandbox/Assets/Window1.png"));
-    m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::Sprite));
-    m_material->setShadingModel(ShadingModel::Unlit);
+    //m_material = makeObject<Material>();
+    //m_material->setMainTexture(Texture2D::load(u"C:/Proj/LN/Lumino/src/Engine/sandbox/Assets/Window1.png"));
+    //m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::Sprite));
+    //m_material->setShadingModel(ShadingModel::Unlit);
 
     return true;
 }
@@ -136,7 +136,7 @@ void InstancedSpritesModel::addSprite(const Vector3& pos)
     sprite.transform(3, 1) += pos.y;
 
 
-    const Texture* texture = m_material->mainTexture();
+    const Texture* texture = (m_material) ? m_material->mainTexture() : nullptr;
     const float width = texture ? static_cast<float>(texture->width()) : 1.0f;
     const float height = texture ? static_cast<float>(texture->height()) : 1.0f;
 

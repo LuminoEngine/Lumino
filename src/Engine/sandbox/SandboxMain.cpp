@@ -494,7 +494,7 @@ int main(int argc, char** argv)
         //Experiment_SSR();
         //Sandbox_Builder();
         //Sandbox_GridListBox();
-        Sandbox_InstancedMesh();
+        //Sandbox_InstancedMesh();
 		//Sandbox_MeshTilemap();
         //Sandbox_Physics();
         //Sandbox_Physics2();
@@ -505,7 +505,7 @@ int main(int argc, char** argv)
         //Sandbox_Sky();
         //Sandbox_UIShader();
 		//Sandbox_Voxel();
-		//Tutorial_Sandbox();
+		Tutorial_Sandbox();
 		//UISandboxMain();
         return 0;
     }
