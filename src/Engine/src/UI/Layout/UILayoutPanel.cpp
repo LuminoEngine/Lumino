@@ -1067,11 +1067,12 @@ bool UIStackLayout::init(UILayoutOrientation orientation)
     return true;
 }
 
-Size UIStackLayout::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+
+Size UIStackLayout::measureOverrideImpl(UILayoutContext* layoutContext, const Size& constraint, int itemCount, const std::function<UIElement*(int i)>& getItem, UILayoutOrientation orientation)
 {
     Size size = constraint;
 
-    if (m_orientation == UILayoutOrientation::Horizontal) {
+    if (orientation == UILayoutOrientation::Horizontal) {
         // 横に並べる場合、幅の制限を設けない
         size.width = std::numeric_limits<float>::infinity();
     }
@@ -1081,15 +1082,14 @@ Size UIStackLayout::measureOverride(UILayoutContext* layoutContext, const Size& 
     }
 
     Size desiredSize;
-    int childCount = getVisualChildrenCount();
-    for (int i = 0; i < childCount; i++)
+    for (int i = 0; i < itemCount; i++)
     {
-        UIElement* child = getVisualChild(i);
+        UIElement* child = getItem(i);
         if (layoutContext->testLayoutEnabled(child)) {
             child->measureLayout(layoutContext, size);
 
             const Size& childDesiredSize = child->getLayoutDesiredSize();
-            if (m_orientation == UILayoutOrientation::Horizontal || m_orientation == UILayoutOrientation::ReverseHorizontal) {
+            if (orientation == UILayoutOrientation::Horizontal || orientation == UILayoutOrientation::ReverseHorizontal) {
                 desiredSize.width += childDesiredSize.width;
                 desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
             }
@@ -1103,10 +1103,18 @@ Size UIStackLayout::measureOverride(UILayoutContext* layoutContext, const Size& 
     return desiredSize;
 }
 
-Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
+Size UIStackLayout::arrangeOverrideImpl(
+    UILayoutContext* layoutContext,
+    const Rect& finalArea,
+    int itemCount,
+    const std::function<UIElement*(int i)>& getItem,
+    UILayoutOrientation orientation,
+    detail::UIStyleInstance* style,
+    bool lastStretch,
+    const Vector2& scrollOffset)
 {
     const auto finalSize = finalArea.getSize();
-    const Thickness& padding = finalStyle()->padding;
+    const Thickness& padding = style->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
     //int actualCellCount = m_logicalChildren.size();
     Rect finalSlotRect(padding.left, padding.top, childrenBoundSize.width, childrenBoundSize.height);
@@ -1120,14 +1128,13 @@ Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const Rect& 
     float prevChildSize = 0;
     float rPos = 0;
     Rect childRect(0, 0, 0, 0);
-    int childCount = getVisualChildrenCount();
-    for (int i = 0; i < childCount; i++)
+    for (int i = 0; i < itemCount; i++)
     {
-        UIElement* child = getVisualChild(i);
+        UIElement* child = getItem(i);
         if (layoutContext->testLayoutEnabled(child)) {
             const Size& childDesiredSize = child->getLayoutDesiredSize();
 
-            switch (m_orientation)
+            switch (orientation)
             {
             case UILayoutOrientation::Horizontal:
                 childRect.x += prevChildSize;
@@ -1161,18 +1168,41 @@ Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const Rect& 
             }
 
             Rect actual(finalSlotRect.x + childRect.x, finalSlotRect.y + childRect.y, childRect.width, childRect.height);
-            if (lastStretch && i == childCount - 1) {
+            if (lastStretch && i == itemCount - 1) {
                 actual.width = finalSlotRect.width - actual.x;
                 actual.height = finalSlotRect.height - actual.y;
             }
 
-            actual.x -= m_scrollOffset.x;
-            actual.y -= m_scrollOffset.y;
+            actual.x -= scrollOffset.x;
+            actual.y -= scrollOffset.y;
             child->arrangeLayout(layoutContext, actual);
         }
     }
 
     return finalSlotRect.getSize();
+}
+
+Size UIStackLayout::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+{
+    return measureOverrideImpl(
+        layoutContext,
+        constraint,
+        getVisualChildrenCount(),
+        [this](int i) { return getVisualChild(i); },
+        m_orientation);
+}
+
+Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
+{
+    return arrangeOverrideImpl(
+        layoutContext,
+        finalArea,
+        getVisualChildrenCount(),
+        [this](int i) { return getVisualChild(i); },
+        m_orientation,
+        finalStyle(),
+        lastStretch,
+        m_scrollOffset);
 }
 
 } // namespace ln

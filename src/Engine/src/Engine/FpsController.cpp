@@ -83,7 +83,7 @@ void FpsController::process()
 
     uint64_t currentTick = m_timer.elapsedMilliseconds();
 	m_elapsedGameTimeCache = 0.001f * internalElapsedTick;
-	m_totalGameTimeCache = 0.001 * (currentTick - m_startTick);
+	m_totalGameTimeCache = 0.001 * (Environment::getTickCount() - m_startTick);
 	m_frameCount = (++m_frameCount) % m_frameRate;
 #else
     uint64_t externalElapsedTime = m_timer.elapsedMilliseconds();

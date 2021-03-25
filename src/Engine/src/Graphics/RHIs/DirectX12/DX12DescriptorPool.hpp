@@ -59,10 +59,12 @@ public:
 	};
 
 	DX12Descriptor(DX12DescriptorPool* pool);
-	void setData(const ShaderDescriptorTableUpdateInfo& data) override;
-	//std::array<DX12DescriptorHandles, DescriptorParamIndex_Count>& descriptorHandles2() { return m_descriptorHandles2; }
+	void reset() { IDescriptor::reset(); }
 	bool allocateInternal();
 	void bind(DX12GraphicsContext* commandList);
+
+protected:
+	void onUpdateData(const ShaderDescriptorTableUpdateInfo& data) override;
 
 private:
 	enum HeapIndex

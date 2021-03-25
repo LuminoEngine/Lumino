@@ -63,6 +63,13 @@ struct GridLayoutInfo
 
 } // namespace detail
 
+
+// [2021/3/25] 本当に ViewModel なんてものが必要なの？
+// ----------
+// RetaindMode な GUI フレームワークなので、imgui のように毎フレーム UIElement の作成・削除が行われるのは避けたい。
+// ただリアルタイムアプリという特徴から、要素の再描画は毎フレームの onRender でやってしまって構わない、というか、やらざるを得ない。
+// そのためプロパティ単位で変更通知を出すことのメリットはかなり薄い。
+// 一方 TreeView など Item(UIElement) を再構築するタイミングは通知してほしい。
 class UIViewModel
 	: public Object
 {
@@ -626,6 +633,8 @@ public: // TODO: internal
 	UIElement* m_focusedVisualChild = nullptr;
 	bool m_focusable;			// TODO: flags
     bool m_clipToBounds;			// TODO: flags
+
+	detail::BuiltinEffectData m_actuialBuiltinEffectData;
 
     //friend class UIContext;
     friend class UIFrameRenderView;

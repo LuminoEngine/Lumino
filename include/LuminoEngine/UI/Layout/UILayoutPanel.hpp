@@ -526,6 +526,14 @@ public:
 
     bool lastStretch = false;
 
+    // TODO: intenal
+    static Size measureOverrideImpl(UILayoutContext* layoutContext, const Size& constraint, int itemCount, const std::function<UIElement*(int i)>& getItem, UILayoutOrientation orientation);
+    static Size arrangeOverrideImpl(
+        UILayoutContext* layoutContext, const Rect& finalArea,
+        int itemCount, const std::function<UIElement*(int i)>& getItem,
+        UILayoutOrientation orientation, detail::UIStyleInstance* style,
+        bool lastStretch, const Vector2& scrollOffset);
+
 LN_CONSTRUCT_ACCESS:
     UIStackLayout();
 

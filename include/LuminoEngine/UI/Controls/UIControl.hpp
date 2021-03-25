@@ -208,6 +208,10 @@ protected:
 
     Ref<detail::UIAligned3x3GridLayoutArea> m_aligned3x3GridLayoutArea;
     List<Ref<UIElement>> m_inlineElements;
+
+    void removeAllLogicalChildren();
+    void addLogicalChild(UIElement* element);
+
 private:
     void activateInternal();
     void deactivateInternal();

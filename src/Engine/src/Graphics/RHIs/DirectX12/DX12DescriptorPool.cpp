@@ -17,7 +17,7 @@ DX12Descriptor::DX12Descriptor(DX12DescriptorPool* pool)
 {
 }
 
-void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
+void DX12Descriptor::onUpdateData(const ShaderDescriptorTableUpdateInfo& data)
 {
     ID3D12Device* dxDevice = m_pool->device()->device();
 
@@ -146,8 +146,6 @@ void DX12Descriptor::setData(const ShaderDescriptorTableUpdateInfo& data)
             }
         }
     }
-
-
 }
 
 bool DX12Descriptor::allocateInternal()
@@ -360,6 +358,11 @@ void DX12DescriptorPool::reset()
     if (m_descriptorHeapAllocator_SAMPLER) {
         m_descriptorHeapAllocator_SAMPLER->reset();
     }
+
+    for (size_t i = 0; i < m_descriptors.size(); i++) {
+        m_descriptors[i]->reset();
+    }
+
     m_usedDescriptorCount = 0;
 }
 

@@ -8,9 +8,14 @@ LN_CLASS(Static)
 class Time
 {
 public:
-	/** 最後のフレームからの秒単位の完了時間を取得します。 */
+	/** 最後のフレームからの秒単位の完了時間 (秒) を取得します。 */
 	LN_METHOD()
 	static float deltaTime();
+
+	/**
+	 * アプリケーション起動からの経過時間 (秒) を取得します。 */
+	LN_METHOD()
+	static double totalTime();
 };
 
 } // namespace ln

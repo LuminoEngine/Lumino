@@ -1,8 +1,18 @@
-﻿
+﻿/**
+ * Example プロジェクトは、ユーザーにプログラムを見せる、というよりは
+ * 常にソリューションに含めビルドできる状態にしておくことで、
+ * ドキュメントに記載したプログラムのビルドが通らなくなるような変更に備えるのが主な目的。
+ * 
+ * またリリース前のテストでサンプルをひとつずつ素早く実行確認できるように、
+ * すべてひとつのプロセス内で切り替えができるようにしておく。
+ */
+
 #define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
+#include <LuminoEngine/UI/Controls/UITreeView.hpp>
+#include <LuminoEngine/UI/Controls/UITreeBox.hpp>
 #include <LuminoEngine/Editor/Editor.hpp>
 #include "../src/Engine/src/Engine/EngineManager.hpp"
 #include "../src/Engine/src/Engine/EngineDomain.hpp"
@@ -10,6 +20,7 @@ using namespace ln;
 
 Example CreateApp_App_Tutorial_Sandbox();
 Example CreateApp_HelloExample();
+Example CreateApp_GraphicsBasicExample();
 Example CreateApp_ObjectClassBasicExample();
 Example CreateApp_App_Sprite();
 Example CreateApp_App_ShapeEntity();
@@ -33,6 +44,7 @@ std::vector<ExampleGroup> s_examples = {
         "Basic",
         {
             { "Hello", CreateApp_HelloExample },
+            { "Graphics", CreateApp_GraphicsBasicExample },
             { "ObjectClass", CreateApp_ObjectClassBasicExample },
         }
     },
@@ -47,24 +59,33 @@ std::vector<ExampleGroup> s_examples = {
 
 String g_appName;
 
-#if 0
+#if 1
 class Navigator
 {
 public:
     Navigator()
     {
-        m_list = UIListBox::Builder()
-            .width(200)
-            .backgroundColor(Color::Gray)
-            .buildInto(Engine::mainWindow());
-        m_list->setAlignments(UIHAlignment::Left, UIVAlignment::Stretch);
-        m_list->setSubmitMode(UIListSubmitMode::Single);
+        m_tree = makeObject<UITreeBox>();
+        m_tree->setWidth(200);
+        m_tree->setBackgroundColor(Color::Gray);
+        //m_list = UIListBox::Builder()
+        //    .width(200)
+        //    .backgroundColor(Color::Gray)
+        //    .buildInto(Engine::mainWindow());
+        m_tree->setAlignments(UIHAlignment::Left, UIVAlignment::Stretch);
+        //m_tree->setSubmitMode(UIListSubmitMode::Single);
+        m_tree->addInto(Engine::mainWindow());
 
-        for (const auto& e : s_examples) {
-            m_list->addChild(UIListBoxItem::With()
-                .text(e.name)
-                .onSubmit([&, this]() { startApp(e.app().app); })
-                .build());
+        for (const auto& group : s_examples) {
+            UITreeBoxItem* treeItem = m_tree->addItem(String::fromStdString(group.name));
+            for (const auto& item : group.items) {
+                UITreeBoxItem* treeItem2 = treeItem->addItem(String::fromStdString(item.name));
+                treeItem2->connectOnSubmit([&, this]() { startApp(item.app().app()); });
+            }
+            //m_list->addChild(UIListBoxItem::With()
+            //    .text(e.name)
+            //    .onSubmit([&, this]() { startApp(e.app().app); })
+            //    .build());
         }
 
         m_button = UIButton::With()
@@ -81,12 +102,12 @@ public:
     void update()
     {
         m_alpha.advanceTime(0.016f);
-        m_list->setOpacity(m_alpha.value());
+        m_tree->setOpacity(m_alpha.value());
 
-        m_list->setPosition(m_alpha.value() * 220 - 220, 0.0f);
+        m_tree->setPosition(m_alpha.value() * 20 - 20, 0.0f);
 
         float a = 1.0f - m_alpha.value();
-        m_button->setPosition(a * 100 - 100, 0.0f);
+        m_button->setPosition(a * 20 - 20, 0.0f);
         m_button->setOpacity(a);
     }
 
@@ -102,13 +123,14 @@ public:
     }
 
 private:
-    Ref<UIListBox> m_list;
+    //Ref<UIListBox> m_list;
+    Ref<UITreeBox> m_tree;
     Ref<UIButton> m_button;
     EasingValue<float> m_alpha;
 };
 #endif
 
-
+#if 0
 class ExampleListPane
     : public ImGuiDockPane
 {
@@ -226,6 +248,7 @@ protected:
 
 private:
 };
+#endif
 
 int main(int argc, char** argv)
 {
@@ -266,8 +289,8 @@ int main(int argc, char** argv)
         }
     }
     else {
-        EngineSettings::setDebugToolEnabled(true);
-        EngineSettings::setDevelopmentToolsEnabled(true);
+        //EngineSettings::setDebugToolEnabled(true);
+        //EngineSettings::setDevelopmentToolsEnabled(true);
         detail::EngineManager::s_settings.standaloneFpsControl = true;
         //detail::EngineDomain::engineManager()->settings().createMainLights = true;
 
@@ -275,23 +298,23 @@ int main(int argc, char** argv)
 
         Engine::initialize();
 
-        Editor::closeAllPanes();
+        //Editor::closeAllPanes();
 
-        auto pane = makeObject<ExampleListPane>();
-        pane->setInitialPlacement(ImGuiDockPlacement::MainView);
-        Editor::addPane(pane);
+        //auto pane = makeObject<ExampleListPane>();
+        //pane->setInitialPlacement(ImGuiDockPlacement::MainView);
+        //Editor::addPane(pane);
 
-        //Navigator navigator;
+        Navigator navigator;
 
         {
             //auto app = CreateApp_App_Tutorial_Sandbox();
             //detail::EngineDomain::engineManager()->resetApp(app);
 
             while (Engine::update()) {
-                //navigator.update();
+                navigator.update();
             }
 
-            //detail::EngineDomain::engineManager()->resetApp(nullptr);
+            detail::EngineDomain::engineManager()->resetApp(nullptr);
         }
 
         Engine::terminate();

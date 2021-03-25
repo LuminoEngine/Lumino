@@ -980,10 +980,28 @@ void UIElement::render(UIRenderingContext* context, const Matrix& parentTransfor
 
     if (enable && isRenderVisible())
     {
-		Matrix combinedTransform = parentTransform * m_localTransform;
+        m_actuialBuiltinEffectData.opacity = m_finalStyle->opacity;
+        m_actuialBuiltinEffectData.colorScale = m_finalStyle->colorScale;
+        m_actuialBuiltinEffectData.blendColor = m_finalStyle->blendColor;
+        m_actuialBuiltinEffectData.tone = m_finalStyle->tone;
 
-		context->m_theme = m_finalStyle->theme;
-		renderClient(context, m_combinedFinalRenderTransform);
+        if (m_visualParent) {
+            m_actuialBuiltinEffectData.inherit(m_visualParent->m_actuialBuiltinEffectData);
+        }
+
+        if (!isEnabled()) {
+            // Grayscale
+            m_actuialBuiltinEffectData.tone.s = 1.0f;
+        }
+
+        if (m_actuialBuiltinEffectData.opacity < 0.0001f ||
+            m_actuialBuiltinEffectData.colorScale.a < 0.0001f) {
+            // Alpha test
+        }
+        else {
+            context->m_theme = m_finalStyle->theme;
+            renderClient(context, m_combinedFinalRenderTransform);
+        }
 
     }
 
@@ -1018,16 +1036,9 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 		//m.translate(Vector3(m_finalGlobalRect.x, m_finalGlobalRect.y, 0));
 		context->setBaseTransfrom(combinedTransform);
 	}
-	detail::BuiltinEffectData data;
-    data.opacity = m_finalStyle->opacity;//opacity();
-    data.colorScale = m_finalStyle->colorScale;//colorScale();
-    data.blendColor = m_finalStyle->blendColor;//blendColor();
-    data.tone = m_finalStyle->tone; //tone();
-    if (!isEnabled()) {
-        // Grayscale
-        data.tone.s = 1.0f;
-    }
-	context->setBaseBuiltinEffectData(data);
+
+
+	context->setBaseBuiltinEffectData(m_actuialBuiltinEffectData);
     //context->setBaseBuiltinEffectData(m_finalStyle->builtinEffect);
 	context->setBlendMode(blendMode());
 	context->setRenderPriority(m_renderPriority);

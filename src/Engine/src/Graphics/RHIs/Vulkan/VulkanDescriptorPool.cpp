@@ -15,7 +15,7 @@ VulkanDescriptor2::VulkanDescriptor2(VulkanDescriptorPool2* pool)
     , m_descriptorSets()
 {
 }
-void VulkanDescriptor2::setData(const ShaderDescriptorTableUpdateInfo& data)
+void VulkanDescriptor2::onUpdateData(const ShaderDescriptorTableUpdateInfo& data)
 {
     VulkanDevice* device = m_pool->device();
     VulkanShaderPass* shaderPass = m_pool->shaderPass();
@@ -74,6 +74,9 @@ void VulkanDescriptorPool2::dispose()
 void VulkanDescriptorPool2::reset()
 {
 	for (const auto& page : m_pages) {
+        for (auto& d : page->descriptors) {
+            d->reset();
+        }
 		vkResetDescriptorPool(m_device->vulkanDevice(), page->pool, 0);
 		m_freePages.push_back(page.get());
 	}

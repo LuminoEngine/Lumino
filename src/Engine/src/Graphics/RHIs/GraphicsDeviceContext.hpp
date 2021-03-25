@@ -541,18 +541,25 @@ class IDescriptor
 	: public RefObject
 {
 public:
-	virtual void setData(const ShaderDescriptorTableUpdateInfo& data) = 0;
-	//void setUniformBuffer(int index, const ShaderDescriptorBufferView& value) { uniforms[index] = value; }
-	//void setTexture(int index, const ShaderDescriptorCombinedSampler& value) { textures[index] = value; }
-	//void setSampler(int index, const ShaderDescriptorCombinedSampler& value) { samplers[index] = value; }
+	void setData(const ShaderDescriptorTableUpdateInfo& data);
 
 protected:
-	virtual ~IDescriptor() = default;
+	virtual ~IDescriptor();
+	virtual void onUpdateData(const ShaderDescriptorTableUpdateInfo & data) = 0;
+	void reset();
 
-	//static const int MaxElements = 32;
-	//std::array<ShaderDescriptorBufferView, MaxElements> uniforms = {};
-	//std::array<ShaderDescriptorCombinedSampler, MaxElements> textures = {};
-	//std::array<ShaderDescriptorCombinedSampler, MaxElements> samplers = {};
+private:
+	struct Reference
+	{
+		Ref<RHIDeviceObject> object;
+		Ref<ISamplerState> samplerState;
+	};
+
+	// CommandList 実行中の解放を防ぐため、参照を保持する
+	std::array<Reference, ShaderDescriptorTableUpdateInfo::MaxElements> m_buffers = {};
+	std::array<Reference, ShaderDescriptorTableUpdateInfo::MaxElements> m_resources = {};
+	std::array<Reference, ShaderDescriptorTableUpdateInfo::MaxElements> m_samplers = {};
+	std::array<Reference, ShaderDescriptorTableUpdateInfo::MaxElements> m_storages = {};
 };
 
 } // namespace detail

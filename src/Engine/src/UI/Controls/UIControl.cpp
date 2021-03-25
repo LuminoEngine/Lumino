@@ -289,6 +289,24 @@ Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& fina
     }
 }
 
+// fix: 
+void UIControl::removeAllLogicalChildren()
+{
+    for (auto& e : *m_logicalChildren) {
+        e->setLogicalParent(nullptr);
+    }
+    m_logicalChildren->clear();
+}
+
+// fix:
+void UIControl::addLogicalChild(UIElement* element)
+{
+    if (LN_REQUIRE(element)) return;
+    if (LN_REQUIRE(!element->logicalParent())) return;
+    m_logicalChildren->add(element);
+    element->setLogicalParent(this);
+}
+
 // activateInternal と deactivateInternal は、以前は UIElement が持っていた。しかし、
 // - 見た目だけを表現したい Shape をクリックしたときに前後関係が変わってほしくない。
 // - onActivate/onDeactivate を Event にしたいが、UIElement に Event を持たせるとまたメモリサイズが増える

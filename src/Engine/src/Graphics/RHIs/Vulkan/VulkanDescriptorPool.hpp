@@ -11,12 +11,15 @@ class VulkanDescriptor2
 {
 public:
     VulkanDescriptor2(VulkanDescriptorPool2* pool);
-    void setData(const ShaderDescriptorTableUpdateInfo& data) override;
+    void reset() { IDescriptor::reset(); }
 
     std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets() { return m_descriptorSets; }
 
     std::array<RHIDeviceObject*, ShaderDescriptorTableUpdateInfo::MaxElements * 2> m_refarencedResources;
     int32_t m_refarencedResourceCount;
+
+protected:
+    void onUpdateData(const ShaderDescriptorTableUpdateInfo& data) override;
 
 private:
     VulkanDescriptorPool2* m_pool;

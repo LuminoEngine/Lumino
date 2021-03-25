@@ -276,6 +276,9 @@ public:
     detail::UIStyleAttribute<Color> colorScale;
     detail::UIStyleAttribute<Color> blendColor;
     detail::UIStyleAttribute<ColorTone> tone;
+    // NOTE: BlendMode と BuiltinEffect、特に opacity は頻繁な変更が想定される。
+    // そのためこれらが変更されても、style の invalidate は行わない。
+    // onRender で親 UIElement のプロパティを継承しながら描画を行う。
 
 	static const UIVisibility DefaultVisible;
 	static const BlendMode DefaultBlendMode;
