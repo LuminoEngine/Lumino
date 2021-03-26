@@ -21,7 +21,9 @@ using namespace ln;
 Example CreateApp_App_Tutorial_Sandbox();
 Example CreateApp_HelloExample();
 Example CreateApp_GraphicsBasicExample();
+Example CreateApp_EntityBasicExample();
 Example CreateApp_ObjectClassBasicExample();
+Example CreateApp_Features_EntityTransform();
 Example CreateApp_App_Sprite();
 Example CreateApp_App_ShapeEntity();
 
@@ -45,12 +47,14 @@ std::vector<ExampleGroup> s_examples = {
         {
             { "Hello", CreateApp_HelloExample },
             { "Graphics", CreateApp_GraphicsBasicExample },
+            { "Entity", CreateApp_EntityBasicExample },
             { "ObjectClass", CreateApp_ObjectClassBasicExample },
         }
     },
     {
         "Features",
         {
+            { "EntityTransform", CreateApp_Features_EntityTransform },
             { "Sprite", CreateApp_App_Sprite },
             { "ShapeEntity", CreateApp_App_ShapeEntity },
         }
@@ -80,7 +84,7 @@ public:
             UITreeBoxItem* treeItem = m_tree->addItem(String::fromStdString(group.name));
             for (const auto& item : group.items) {
                 UITreeBoxItem* treeItem2 = treeItem->addItem(String::fromStdString(item.name));
-                treeItem2->connectOnSubmit([&, this]() { startApp(item.app().app()); });
+                treeItem2->connectOnSubmit([&, this]() { startApp(&item); });
             }
             //m_list->addChild(UIListBoxItem::With()
             //    .text(e.name)
@@ -88,11 +92,31 @@ public:
             //    .build());
         }
 
+        m_buttonsLayout = makeObject<UIStackLayout>();
+        m_buttonsLayout->setAlignments(UIHAlignment::Left, UIVAlignment::Bottom);
+        m_buttonsLayout->addInto(Engine::mainWindow());
+
+        m_button_ruby = UIButton::With()
+            .text(u"Ruby")
+            .width(40)
+            //.height(25)
+            //.alignment(UIHAlignment::Left, UIVAlignment::Bottom)
+            .buildInto(m_buttonsLayout);
+        m_button_ruby->connectOnClicked([this]() { runRuby(); });
+
+        m_button_hsp3 = UIButton::With()
+            .text(u"HSP3")
+            .width(40)
+            //.height(25)
+            //.alignment(UIHAlignment::Left, UIVAlignment::Bottom)
+            .buildInto(m_buttonsLayout);
+
         m_button = UIButton::With()
             .text(u"<<")
             .width(40)
-            .alignment(UIHAlignment::Left, UIVAlignment::Top)
-            .buildInto(Engine::mainWindow());
+            //.height(25)
+            //.alignment(UIHAlignment::Left, UIVAlignment::Bottom)
+            .buildInto(m_buttonsLayout);
         m_button->connectOnClicked([this]() { showList(); });
 
         m_alpha.setEasingFunction(EasingFunctions::easeOutExpo);
@@ -107,13 +131,14 @@ public:
         m_tree->setPosition(m_alpha.value() * 20 - 20, 0.0f);
 
         float a = 1.0f - m_alpha.value();
-        m_button->setPosition(a * 20 - 20, 0.0f);
-        m_button->setOpacity(a);
+        m_buttonsLayout->setPosition(a * 20 - 20, 0.0f);
+        m_buttonsLayout->setOpacity(a);
     }
 
-    void startApp(Ref<Application> app)
+    void startApp(const ExampleEntry* example)
     {
-        detail::EngineDomain::engineManager()->resetApp(app);
+        m_current = example;
+        detail::EngineDomain::engineManager()->resetApp(example->app().app());
         m_alpha.start(0.0f, 0.5);
     }
 
@@ -122,11 +147,27 @@ public:
         m_alpha.start(1.0f, 0.5);
     }
 
+    void runRuby()
+    {
+        if (m_current) {
+            const auto file = m_current->app().filePath.replaceExtension(u"rb");
+            Process proc;
+            proc.setUseShellExecute(true);
+            proc.setProgram(u"ruby");
+            proc.setArguments({ file });
+            proc.start();
+        }
+    }
+
 private:
     //Ref<UIListBox> m_list;
     Ref<UITreeBox> m_tree;
+    Ref<UIStackLayout> m_buttonsLayout;
     Ref<UIButton> m_button;
+    Ref<UIButton> m_button_ruby;
+    Ref<UIButton> m_button_hsp3;
     EasingValue<float> m_alpha;
+    const ExampleEntry* m_current = nullptr;
 };
 #endif
 
