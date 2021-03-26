@@ -104,6 +104,8 @@ struct EngineSettings
 		debugToolEnabled = true;
 #endif
 	}
+
+	bool tryLoad();
 };
 
 class EngineManager

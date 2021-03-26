@@ -125,6 +125,11 @@ namespace LuminoBuild
                     {
                         Utils.CallProcess("git", "clone --depth 1 -b v2.2.0 https://github.com/syoyo/tinygltf.git tinygltf");
                     }
+
+                    if (!Directory.Exists("toml11"))
+                    {
+                        Utils.CallProcess("git", "clone --depth 1 -b v3.6.1 https://github.com/ToruNiina/toml11.git toml11");
+                    }
                 }
 
                 builder.CommitCache(buildCacheDir);

@@ -106,8 +106,10 @@ void EngineManager::init(const EngineSettings& settings)
 {
     LN_LOG_DEBUG << "EngineManager Initialization started.";
 
+
 	m_settings = settings;
 	
+	m_settings.tryLoad();
 
 	// check settings
 	{

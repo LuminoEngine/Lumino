@@ -34,14 +34,14 @@ Rake::ExtensionTask.new "Lumino_RubyExt" do |ext|
   # for development
 
   # copy dll
-  lib = File.expand_path("../../../../../build/MSVC2019-x64-MT/EngineBuild/src/LuminoEngine/Release/LuminoEngine.dll", __FILE__)
+  lib = File.expand_path("../../../../../build/MSVC2019-x64-MT/EngineBuild/src/Engine/Release/LuminoEngine.dll", __FILE__)
   if File.exist?(lib)
     to = "ext/LuminoEngine.dll"
     FileUtils.cp(lib, to)
     p "Lib copy (" + lib + ", " + to + ")"
   end
 
-  lumino_cmd = File.expand_path("../../../../../build/MSVC2019-x64-MT/EngineBuild/src/LuminoEditor/CLI/Release/lumino.exe", __FILE__)
+  lumino_cmd = File.expand_path("../../../../../build/MSVC2019-x64-MT/EngineBuild/src/Editor/CLI/Release/lumino.exe", __FILE__)
   if File.exist?(lumino_cmd)
     to = "Tools/lumino-rb.exe"
     FileUtils.cp(lumino_cmd, to)
