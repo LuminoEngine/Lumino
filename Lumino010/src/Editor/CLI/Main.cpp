@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 	}
 	catch (ln::Exception& e)
 	{
-		ln::String m = e.getMessage();
+		ln::String m = e.message();
 		std::cout << m << std::endl;
 		exitCode = 1;
 	}

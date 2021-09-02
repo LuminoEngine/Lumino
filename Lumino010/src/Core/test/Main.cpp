@@ -180,19 +180,11 @@ bool testProcess(int argc, char** argv, int* outExitCode)
 	return false;
 }
 
-
-bool myErrorHandler(Exception& e) {
-	ln::detail::printError(e);
-	return true;
-}
-
 #include "../src/IO/Internal.hpp"
 #include <filesystem>
 
-
 int main(int argc, char** argv)
 {
-	ln::Exception::setNotificationHandler(myErrorHandler);
 
 #if 0
 	{

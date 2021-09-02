@@ -7,7 +7,7 @@ static String g_lastMessage;
 
 static bool TestHandler(Exception& e)
 {
-	g_lastMessage = e.getMessage();
+	g_lastMessage = e.message();
 	return true;
 }
 

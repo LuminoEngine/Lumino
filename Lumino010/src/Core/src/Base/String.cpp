@@ -789,7 +789,7 @@ void String::move(String&& str) LN_NOEXCEPT
 // 今は自己代入回避のための細工に使っている。必ず unlockBuffer() に渡すこと。
 // unlock するまでは \0 終端を保障しない。
 // また、lock 前後でサイズが変わらなくても変更であるとみなし、COW 共有は解除され独立したバッファになる。
-Char* String::lockBuffer(size_t requestSize, detail::StringLockContext* context)
+Char* String::lockBuffer(size_t requestSize, detail::StringLockContext* context) noexcept
 {
     context->newCore = nullptr;
     context->oldCore = nullptr;
@@ -849,7 +849,7 @@ Char* String::lockBuffer(size_t requestSize, detail::StringLockContext* context)
 }
 
 // 実際のサイズを確定する
-void String::unlockBuffer(int confirmedSize, detail::StringLockContext* context)
+void String::unlockBuffer(int confirmedSize, detail::StringLockContext* context) noexcept
 {
     if (context->oldCore) {
         context->oldCore->release();

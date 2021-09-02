@@ -406,8 +406,8 @@ private:
     void release() LN_NOEXCEPT;
     void copy(const String& str);
     void move(String&& str) LN_NOEXCEPT;
-    Char* lockBuffer(size_t requestSize, detail::StringLockContext* context);
-    void unlockBuffer(int confirmedSize, detail::StringLockContext* context);
+    Char* lockBuffer(size_t requestSize, detail::StringLockContext* context) noexcept;
+    void unlockBuffer(int confirmedSize, detail::StringLockContext* context) noexcept;
     Char* getBuffer();
     const Char* getBuffer() const LN_NOEXCEPT;
 

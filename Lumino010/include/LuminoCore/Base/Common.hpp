@@ -99,7 +99,8 @@
 #define LN_STRING_WITH_PATH
 
 #define LN_USTRING
-#define LN_USTRING16
+#define LN_USTRING16 1
+//#define LN_USTRING32 1
 
 #ifndef LN_STRING_STRICT_CONVERSION
 #define LN_STRING_FUZZY_CONVERSION
@@ -107,7 +108,17 @@
 
 #ifdef LN_USTRING
 
-#ifdef LN_USTRING16
+#if LN_USTRING32
+#define __LT(x) U##x
+#define _TT(x) U##x
+#define _LT(x) __LT(x)
+#define TTCHAR char32_t
+//#define _U(x) (u##x)
+namespace ln {
+	using Char = char32_t;
+}
+
+#elif LN_USTRING16
 #define __LT(x) u##x
 #define _TT(x) u##x
 #define _LT(x) __LT(x)
@@ -179,7 +190,7 @@ void notifyAbort(const char* file, int line, const char* message);
 
 #ifndef LN_CHECK_ABORT
 #	include <stdlib.h>
-#	define LN_CHECK_ABORT ::ln::detail::notifyAbort(__FILE__, __LINE__, "abort.");
+#	define LN_CHECK_ABORT ::ln::detail::notifyFatalError(__FILE__, __LINE__, "abort.");
 #endif
 
 #ifndef LN_CHECK

@@ -367,7 +367,7 @@ void AudioManager::processThread()
 	catch (Exception& e)
 	{
 		m_audioThreadException.reset(e.copy());
-        LN_LOG_ERROR << m_audioThreadException->getMessage();
+        LN_LOG_ERROR << m_audioThreadException->message();
 	}
 	LN_LOG_DEBUG << "Audio thread ended.";
 }
@@ -385,7 +385,7 @@ void AudioManager::dispatheThread()
 	catch (Exception& e)
 	{
 		m_audioThreadException.reset(e.copy());
-		LN_LOG_ERROR << m_audioThreadException->getMessage();
+		LN_LOG_ERROR << m_audioThreadException->message();
 	}
 }
 

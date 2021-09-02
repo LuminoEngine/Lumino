@@ -13,10 +13,6 @@ namespace ln {
 
 namespace detail
 {
-void notifyAbort(const char* file, int line, const char* message)
-{
-    ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Fatal, file, line, message);
-}
 
 void convertCharToWChar(const char* inStr, size_t inStrLen, wchar_t* outStr, size_t outStrLen)
 {
@@ -150,12 +146,12 @@ void printError(const Exception& e)
 		ExceptionHelper::getSourceFileLine(e),
 		(ExceptionHelper::getAssertionMessage(e)) ? ExceptionHelper::getAssertionMessage(e) : "");
 
-	if (!StringHelper::isNullOrEmpty(e.getMessage())) {
+	if (!StringHelper::isNullOrEmpty(e.message())) {
 		buf[len] = '\n';
 		len++;
-        size_t messageLen = StringHelper::strlen(e.getMessage());
+        size_t messageLen = StringHelper::strlen(e.message());
         size_t bufferLen = BUFFER_SIZE - len;
-        convertChar16ToLocalChar(e.getMessage(), messageLen, buf + len, bufferLen);
+        convertChar16ToLocalChar(e.message(), messageLen, buf + len, bufferLen);
         if (messageLen >= bufferLen) {
             buf[BUFFER_SIZE - 4] = '.';
             buf[BUFFER_SIZE - 3] = '.';
@@ -172,9 +168,20 @@ void printError(const Exception& e)
 	}
 }
 
-void Exception_setSourceLocationInfo(Exception& e, ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage)
+void notifyFatalError(const char* file, int line, const char* message)
 {
-	e.setSourceLocationInfo(level, filePath, fileLine, assertionMessage);
+	printf("%s(%d): Fatal: %s", file, line, message);
+	*reinterpret_cast<int*>(0) = 0;	// crash
+}
+
+void ExceptionHelper::setSourceLocationInfo(Exception& e, ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage)
+{
+	e.m_level = level;
+	StringHelper::strcpy(e.m_sourceFilePath, Exception::MaxPathSize - 1, filePath);
+	e.m_sourceFileLine = fileLine;
+	if (assertionMessage) {
+		StringHelper::strcpy(e.m_assertionMessage, Exception::MaxAssertionMessageSize - 1, assertionMessage);
+	}
 }
 
 } // namespace detail
@@ -183,7 +190,7 @@ void Exception_setSourceLocationInfo(Exception& e, ExceptionLevel level, const c
 //==============================================================================
 // Exception
 
-static Exception::NotificationHandler	g_notifyVerificationHandler = nullptr;
+static Exception::NotificationHandler g_notifyVerificationHandler = nullptr;
 
 void Exception::setNotificationHandler(NotificationHandler handler)
 {
@@ -217,21 +224,9 @@ static void safeWCharToUChar(const wchar_t* src, Char* dst, int dstSize) LN_NOEX
 	dst[i] = '\0';
 }
 
-// LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(Exception);
-Exception::Exception(const char* message)
-	: Exception()
-{
-	setMessage(message);
-} 
-Exception::Exception(const wchar_t* message)
-	: Exception()
-{
-	setMessage(message);
-}
 Exception::Exception(const Char* message)
 	: Exception()
 {
-	setMessageU(message);
 }
 
 Exception::Exception()
@@ -239,9 +234,6 @@ Exception::Exception()
 	, m_sourceFilePath{}
 	, m_sourceFileLine(0)
 	, m_assertionMessage{}
-	, m_stackBuffer{}
-	, m_stackBufferSize(0)
-	, m_caption()
 	, m_message()
 {
 }
@@ -250,175 +242,79 @@ Exception::~Exception()
 {
 }
 
-const Char* Exception::getMessage() const
-{
-	return m_message.c_str();
-}
 Exception* Exception::copy() const
 {
 	return LN_NEW Exception(*this);
 }
 
-std::basic_string<Char> Exception::getCaption()
-{
-	return m_caption;
-}
 
-void Exception::setMessage()
-{
-	m_message.clear();
-}
-
-void Exception::setCaption(const Char* caption)
-{
-	m_caption = caption;
-}
-
-void Exception::setMessage(const char* format, va_list args)
-{
-	// caption
-	m_message = getCaption();
-
-	// format char
-	static const int BUFFER_SIZE = 512;
-	char buf[BUFFER_SIZE];
-	int len = StringHelper::vsprintf(buf, BUFFER_SIZE, format, args);
-
-	// char to Char
-	Char ucharBuf[BUFFER_SIZE];
-	safeCharToUChar(buf, ucharBuf, BUFFER_SIZE);
-	appendMessage(ucharBuf, len);
-}
-
-void Exception::setMessage(const wchar_t* format, va_list args)
-{
-	// caption
-	m_message = getCaption();
-
-	// format char
-	static const int BUFFER_SIZE = 512;
-	wchar_t buf[BUFFER_SIZE];
-	int len = StringHelper::vsprintf(buf, BUFFER_SIZE, format, args);
-
-	// char to Char
-	Char ucharBuf[BUFFER_SIZE];
-	safeWCharToUChar(buf, ucharBuf, BUFFER_SIZE);
-	appendMessage(ucharBuf, len);
-}
-
-void Exception::setMessage(const char* format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	setMessage(format, args);
-	va_end(args);
-}
-
-void Exception::setMessage(const wchar_t* format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	setMessage(format, args);
-	va_end(args);
-}
-
-void Exception::setMessageU(const Char* message)
-{
-	appendMessage(message, StringHelper::strlen(message));
-}
-
-void Exception::appendMessage(const Char* message, size_t len)
-{
-	m_message.append(message, len);
-}
-
-void Exception::setSourceLocationInfo(ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage)
-{
-	m_level = level;
-	StringHelper::strcpy(m_sourceFilePath, MaxPathSize - 1, filePath);
-	m_sourceFileLine = fileLine;
-	if (assertionMessage) {
-		StringHelper::strcpy(m_assertionMessage, MaxAssertionMessageSize - 1, assertionMessage);
-	}
-}
-
-//==============================================================================
-// LogicException
-//==============================================================================
-LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(LogicException);
-
-LogicException::LogicException()
-{
-	setCaption(_LT("ln::LogicException"));	// TODO
-}
-
-Exception* LogicException::copy() const
-{
-	return LN_NEW LogicException(*this);
-}
-
-//==============================================================================
-// RuntimeException
-//==============================================================================
-LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(RuntimeException);
-
-RuntimeException::RuntimeException()
-{
-	setCaption(_LT("ln::RuntimeException"));	// TODO
-}
-
-Exception* RuntimeException::copy() const
-{
-	return LN_NEW RuntimeException(*this);
-}
-
-//==============================================================================
-// FatalException
-//==============================================================================
-LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(FatalException);
-
-FatalException::FatalException()
-{
-	setCaption(_LT("ln::FatalException"));
-}
-
-Exception* FatalException::copy() const
-{
-	return LN_NEW FatalException(*this);
-}
-
-//==============================================================================
-// NotImplementedException
-//==============================================================================
-NotImplementedException::NotImplementedException()
-{
-	setCaption(_LT("ln::NotImplementedException"));
-}
-
-NotImplementedException::NotImplementedException(const Char* message)
-	: NotImplementedException()
-{
-}
-
-Exception* NotImplementedException::copy() const
-{
-	return LN_NEW NotImplementedException(*this);
-}
-
-//==============================================================================
-// IOException
-//==============================================================================
-LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(IOException);
-
-IOException::IOException()
-{
-	setCaption(_LT("ln::IOException"));
-}
-
-Exception* IOException::copy() const
-{
-	return LN_NEW IOException(*this);
-}
+//void Exception::setMessage()
+//{
+//	m_message.clear();
+//}
+//
+//void Exception::setCaption(const Char* caption)
+//{
+//	m_caption = caption;
+//}
+//
+//void Exception::setMessage(const char* format, va_list args)
+//{
+//	// caption
+//	m_message = getCaption();
+//
+//	// format char
+//	static const int BUFFER_SIZE = 512;
+//	char buf[BUFFER_SIZE];
+//	int len = StringHelper::vsprintf(buf, BUFFER_SIZE, format, args);
+//
+//	// char to Char
+//	Char ucharBuf[BUFFER_SIZE];
+//	safeCharToUChar(buf, ucharBuf, BUFFER_SIZE);
+//	appendMessage(ucharBuf, len);
+//}
+//
+//void Exception::setMessage(const wchar_t* format, va_list args)
+//{
+//	// caption
+//	m_message = getCaption();
+//
+//	// format char
+//	static const int BUFFER_SIZE = 512;
+//	wchar_t buf[BUFFER_SIZE];
+//	int len = StringHelper::vsprintf(buf, BUFFER_SIZE, format, args);
+//
+//	// char to Char
+//	Char ucharBuf[BUFFER_SIZE];
+//	safeWCharToUChar(buf, ucharBuf, BUFFER_SIZE);
+//	appendMessage(ucharBuf, len);
+//}
+//
+//void Exception::setMessage(const char* format, ...)
+//{
+//	va_list args;
+//	va_start(args, format);
+//	setMessage(format, args);
+//	va_end(args);
+//}
+//
+//void Exception::setMessage(const wchar_t* format, ...)
+//{
+//	va_list args;
+//	va_start(args, format);
+//	setMessage(format, args);
+//	va_end(args);
+//}
+//
+//void Exception::setMessageU(const Char* message)
+//{
+//	appendMessage(message, StringHelper::strlen(message));
+//}
+//
+//void Exception::appendMessage(const Char* message, size_t len)
+//{
+//	m_message.append(message, len);
+//}
 
 } // namespace ln
 
