@@ -25,7 +25,7 @@ set(LOCAL_SOURCES
 
 
 add_executable(${PROJECT_NAME} ${LOCAL_SOURCES})
-target_link_libraries(${PROJECT_NAME} LuminoCore)
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore GTest::gtest)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 
 if (DEFINED EMSCRIPTEN)

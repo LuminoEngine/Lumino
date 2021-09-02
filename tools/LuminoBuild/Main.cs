@@ -43,7 +43,8 @@ namespace LuminoBuild
             }
 
             var b = new Build();
-            (new BuildExternals()).Run(b);
+            //(new BuildExternals()).Run(b);
+            (new BuildEngine_Win32()).Run(b);
 
             //Assembly thisAssembly = Assembly.GetEntryAssembly();
             //string exeDir = Path.GetDirectoryName(thisAssembly.Location);

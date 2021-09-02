@@ -25,6 +25,9 @@ namespace LuminoBuild
         public readonly string RootDir;
         public readonly string BuildDir;
         public readonly string VcpkgDir;
+        public readonly string EngineBuildDir;
+        public readonly string EngineInstallDir;
+
         ////public string LuminoBuildCacheDir;
         //public string LuminoBindingsDir;
         //public string LuminoLibDir;
@@ -43,18 +46,26 @@ namespace LuminoBuild
 
         public string Triplet;
 
+        public bool IsDebug = true;
+        public bool IsRelease = true;
+        public bool FromCI = false;
+
 
         public Build()
         {
+            Triplet = "x64-windows";
+
             var thisAssembly = Assembly.GetEntryAssembly();
             var exeDir = Path.GetDirectoryName(thisAssembly.Location);
             RootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../../")) + "/";
             BuildDir = Path.GetFullPath(Path.Combine(RootDir, "_build"));
             VcpkgDir = Path.GetFullPath(Path.Combine(BuildDir, "vcpkg"));
+            EngineBuildDir = Path.GetFullPath(Path.Combine(BuildDir, Triplet, "EngineBuild"));
+            EngineInstallDir = Path.GetFullPath(Path.Combine(BuildDir, Triplet, "EngineInstall"));
 
             Directory.CreateDirectory(BuildDir);
-
-            Triplet = "x64-windows";
+            Directory.CreateDirectory(EngineBuildDir);
+            Directory.CreateDirectory(EngineInstallDir);
         }
 
         public void Call(string program, string args = "")

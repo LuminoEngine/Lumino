@@ -18,7 +18,7 @@ namespace LuminoBuild.Tasks
 
                 using (b.CurrentDir(b.VcpkgDir))
                 {
-                    if (File.Exists("vcpkg.exe") || File.Exists("vcpkg"))
+                    if (!File.Exists("vcpkg.exe") && !File.Exists("vcpkg"))
                     {
                         Utils.CallProcessShell("bootstrap-vcpkg");
                     }
