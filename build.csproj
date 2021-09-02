@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    
+    <!-- disable auto blob https://docs.microsoft.com/ja-jp/dotnet/core/tools/csproj -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    
+    <!-- obj path -->
+    <IntermediateOutputPath>build/LuminoBuild/obj/$(Configuration)</IntermediateOutputPath>
+    <BaseIntermediateOutputPath>build/LuminoBuild/obj</BaseIntermediateOutputPath>
+    
+    <!-- bin path -->
+    <OutputPath>build/LuminoBuild/bin/$(Configuration)/netcoreapp2.0/</OutputPath>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Include="tools/LuminoBuild/Main.cs" />
+    <Compile Include="tools/LuminoBuild/LuminoBuildTool.cs" />
+    <Compile Include="tools\LuminoBuild\Tasks\BuildExternals.cs" />
+  </ItemGroup>
+  
+</Project>
