@@ -273,15 +273,15 @@ inline bool operator!=(const Path& lhs, const Path& rhs) { return !operator==(lh
 
 class StringRef;
 
-namespace fmt {
-
-template<typename Formatter>
-void formatArg(Formatter& f, const ln::Path& value)
-{
-	f.getSB().appendString(value.str());
-}
-
-}
+//namespace fmt {
+//
+//template<typename Formatter>
+//void formatArg(Formatter& f, const ln::Path& value)
+//{
+//	f.getSB().appendString(value.str());
+//}
+//
+//}
 
 } // namespace ln
 

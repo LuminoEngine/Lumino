@@ -50,6 +50,7 @@ set(LOCAL_SOURCES
 if (WIN32)
     list(APPEND LOCAL_LIBS "imagehlp.lib")
     list(APPEND LOCAL_LIBS "Shlwapi.lib")
+    list(APPEND LOCAL_LIBS "Userenv.lib")
 
 elseif (APPLE)
     set(APPEND LOCAL_LIBS pthread)
