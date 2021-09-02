@@ -9,16 +9,38 @@ include(${CMAKE_CURRENT_LIST_DIR}/cmake/LuminoCommon.cmake)
 
 file(GLOB LOCAL_SOURCES "src/*.hpp" "src/*.cpp")
 file(GLOB LOCAL_SOURCES_Base "include/LuminoCore/Base/*.hpp" "src/Base/*.cpp" "src/Base/*.hpp")
-file(GLOB LOCAL_SOURCES_Base_TextEncoding "include/LuminoCore/Base/TextEncoding/*.hpp" "src/Base/TextEncoding/*.cpp" "src/Base/TextEncoding/*.hpp")
+file(GLOB LOCAL_SOURCES_IO "include/LuminoCore/IO/*.hpp" "src/IO/*.cpp" "src/IO/*.hpp")
+file(GLOB LOCAL_SOURCES_Json "include/LuminoCore/Json/*.hpp" "src/Json/*.cpp" "src/Json/*.hpp")
+file(GLOB LOCAL_SOURCES_Math "include/LuminoCore/Math/*.hpp" "src/Math/*.cpp" "src/Math/*.hpp")
+file(GLOB LOCAL_SOURCES_Serialization "include/LuminoCore/Serialization/*.hpp" "src/Serialization/*.cpp" "src/Serialization/*.hpp")
+file(GLOB LOCAL_SOURCES_Testing "include/LuminoCore/Testing/*.hpp" "src/Testing/*.cpp" "src/Testing/*.hpp")
+file(GLOB LOCAL_SOURCES_Text "include/LuminoCore/Text/*.hpp" "src/Text/*.cpp" "src/Text/*.hpp")
+file(GLOB LOCAL_SOURCES_Threading "include/LuminoCore/Threading/*.hpp" "src/Threading/*.cpp" "src/Threading/*.hpp")
+file(GLOB LOCAL_SOURCES_Xml "include/LuminoCore/Xml/*.hpp" "src/Xml/*.cpp" "src/Xml/*.hpp")
 
 source_group("" FILES ${LOCAL_SOURCES})
 source_group("Base" FILES ${LOCAL_SOURCES_Base})
-source_group("Base/TextEncoding" FILES ${LOCAL_SOURCES_Base_TextEncoding})
+source_group("IO" FILES ${LOCAL_SOURCES_IO})
+source_group("Json" FILES ${LOCAL_SOURCES_Json})
+source_group("Math" FILES ${LOCAL_SOURCES_Math})
+source_group("Serialization" FILES ${LOCAL_SOURCES_Serialization})
+source_group("Testing" FILES ${LOCAL_SOURCES_Testing})
+source_group("Text" FILES ${LOCAL_SOURCES_Text})
+source_group("Threading" FILES ${LOCAL_SOURCES_Threading})
+source_group("Xml" FILES ${LOCAL_SOURCES_Xml})
 
 set(LOCAL_SOURCES
     ${LOCAL_SOURCES}
     ${LOCAL_SOURCES_Base}
     ${LOCAL_SOURCES_Base_TextEncoding}
+    ${LOCAL_SOURCES_IO}
+    ${LOCAL_SOURCES_Json}
+    ${LOCAL_SOURCES_Math}
+    ${LOCAL_SOURCES_Serialization}
+    ${LOCAL_SOURCES_Testing}
+    ${LOCAL_SOURCES_Text}
+    ${LOCAL_SOURCES_Threading}
+    ${LOCAL_SOURCES_Xml}
 )
 
 #-------------------------------------------------------------------------------

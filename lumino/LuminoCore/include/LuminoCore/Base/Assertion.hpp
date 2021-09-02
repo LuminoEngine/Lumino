@@ -6,13 +6,14 @@
 #include <iostream>
 #include <fmt/format.h>
 #include "Common.hpp"
+#include "UnicodeUtils.hpp"
 
 namespace ln {
 class Exception;
 class String;
 namespace detail { struct ExceptionHelper; }
 
-#define _LN_CHECK(expr, level, ...) (!(expr)) && ln::detail::notifyException(level, __FILE__, __LINE__, #expr, fmt::format(##__VA_ARGS__))
+#define _LN_CHECK(expr, level, ...) (!(expr)) && ln::detail::notifyException(level, __FILE__, __LINE__, #expr, ##__VA_ARGS__)
 
 /**
  * アプリケーション実行中に発生した軽微な問題を通知するためのマクロです。
@@ -22,7 +23,7 @@ namespace detail { struct ExceptionHelper; }
  *
  * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを続行します。
  */
-#define LN_WARNING(...) ln::detail::notifyException(::ln::ExceptionLevel::Warning, __FILE__, __LINE__, nullptr, fmt::format(##__VA_ARGS__))
+#define LN_WARNING(...) ln::detail::notifyException(::ln::ExceptionLevel::Warning, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
 
 /**
  * アプリケーションが不正な状態になる可能性がある問題を通知するためのマクロです。
@@ -33,7 +34,7 @@ namespace detail { struct ExceptionHelper; }
  *
  * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを停止します。
  */
-#define LN_ERROR(...) ln::detail::notifyException(::ln::ExceptionLevel::Error, __FILE__, __LINE__, nullptr, fmt::format(##__VA_ARGS__))
+#define LN_ERROR(...) ln::detail::notifyException(::ln::ExceptionLevel::Error, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
 
  /**
   * アプリケーションの継続が難しい致命的なエラーを通知するためのマクロです。
@@ -43,7 +44,7 @@ namespace detail { struct ExceptionHelper; }
   *
   * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを停止します。
   */
-#define LN_FATAL(...) ln::detail::notifyException(::ln::ExceptionLevel::Fatal, __FILE__, __LINE__, nullptr, fmt::format(##__VA_ARGS__))B
+#define LN_FATAL(...) ln::detail::notifyException(::ln::ExceptionLevel::Fatal, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
 
 /**
  * コードを実行する前の前提条件を検証するためのマクロです。
@@ -91,7 +92,7 @@ namespace detail { struct ExceptionHelper; }
 
 #define LN_REQUIRE_RANGE(value, begin, end)		_LN_CHECK(begin <= value && value < end, ::ln::ExceptionLevel::Warning)
 #define LN_REQUIRE_KEY(expr, ...)				_LN_CHECK(expr, ::ln::ExceptionLevel::Warning, ##__VA_ARGS__)
-#define LN_ENSURE_IO(expr, ...)					_LN_CHECK(expr, ::ln::ExceptionLevel::Error, ##__VA_ARGS__)
+#define LN_ENSURE_IO(expr, ...)					_LN_CHECK(expr, ::ln::ExceptionLevel::Error, u"IO Error", ##__VA_ARGS__)
 
 // internal
 #ifdef LN_USTRING16
@@ -197,19 +198,33 @@ struct ExceptionHelper
 	static void setMessage(Exception& e, const std::u16string& str);
 };
 
-//void errorPrintf(Char* buf, size_t bufSize, const char* format, ...);
-//void errorPrintf(Char* buf, size_t bufSize, const wchar_t* format, ...);
-//void errorPrintf(Char* buf, size_t bufSize, const char16_t* format);
-//void errorPrintf(Char* buf, size_t bufSize, const String& format);
-//void errorPrintf(Char* buf, size_t bufSize);
+template<class... TArgs> inline std::u16string formatMessage(const char* format, TArgs&&... args) noexcept
+{
+	const auto str = ::fmt::format(format, std::forward<TArgs>(args)...);
+	return UnicodeStringUtils::NarrowToU16(str.c_str(), str.length());
+}
+template<class... TArgs> inline std::u16string formatMessage(const wchar_t* format, TArgs&&... args) noexcept
+{
+	const auto str = ::fmt::format(format, std::forward<TArgs>(args)...);
+	return UnicodeStringUtils::WideToU16(str.c_str(), str.length());
+}
+template<class... TArgs> inline std::u16string formatMessage(const char16_t* format, TArgs&&... args) noexcept
+{
+	return ::fmt::format(format, std::forward<TArgs>(args)...);
+}
+template<class T, class... TArgs> inline std::u16string formatMessage(const T& format, TArgs&&... args) noexcept
+{
+	return ::fmt::format(format.c_str(), std::forward<TArgs>(args)...);
+}
+inline std::u16string formatMessage() noexcept { return {}; }
 void printError(const Exception& e);
 void notifyFatalError(const char* file, int line, const char* message);
 
-template<class T>
-inline bool notifyException(ExceptionLevel level, const char* file, int line, const char* exprString, T message)
+template<class... TArgs>
+inline bool notifyException(ExceptionLevel level, const char* file, int line, const char* exprString, TArgs&&... args)
 {
 	Exception e;
-	ExceptionHelper::setMessage(e, message);
+	ExceptionHelper::setMessage(e, formatMessage(std::forward<TArgs>(args)...));
 	ExceptionHelper::setSourceLocationInfo(e, level, file, line, exprString);
 
 	auto h = Exception::notificationHandler();

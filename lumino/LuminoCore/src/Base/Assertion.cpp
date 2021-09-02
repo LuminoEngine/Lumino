@@ -4,7 +4,7 @@
 #include <stdarg.h>
 #include <algorithm>
 #include <LuminoCore/Base/Assertion.hpp>
-#include "TextEncoding/UnicodeUtils.hpp"
+#include <LuminoCore/Base/UnicodeUtils.hpp>
 
 namespace ln {
 
