@@ -18,8 +18,12 @@ namespace LuminoBuild.Tasks
 
                 using (b.CurrentDir(b.VcpkgDir))
                 {
-                    //b.Call("bootstrap-vcpkg");
-                    Utils.CallProcessShell("bootstrap-vcpkg");
+                    if (File.Exists("vcpkg.exe") || File.Exists("vcpkg"))
+                    {
+                        Utils.CallProcessShell("bootstrap-vcpkg");
+                    }
+
+                    b.Call("vcpkg", "install gtest:" + b.Triplet);
                 }
             }
         }

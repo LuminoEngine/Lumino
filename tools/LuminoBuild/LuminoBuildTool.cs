@@ -41,6 +41,8 @@ namespace LuminoBuild
         //public string[] Args;
         //public bool DirectTaskExecution { get { return Args.Contains("--direct-task-execution"); } }
 
+        public string Triplet;
+
 
         public Build()
         {
@@ -51,6 +53,8 @@ namespace LuminoBuild
             VcpkgDir = Path.GetFullPath(Path.Combine(BuildDir, "vcpkg"));
 
             Directory.CreateDirectory(BuildDir);
+
+            Triplet = "x64-windows";
         }
 
         public void Call(string program, string args = "")
