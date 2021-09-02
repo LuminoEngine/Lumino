@@ -44,11 +44,11 @@ endif()
 add_library(${PROJECT_NAME} STATIC ${LOCAL_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC 
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>  
     $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${LOCAL_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LOCAL_LIBS} fmt::fmt)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 
@@ -69,7 +69,7 @@ install(TARGETS ${PROJECT_NAME}
     INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
     )
 
-install(DIRECTORY include DESTINATION include)
+install(DIRECTORY include DESTINATION .)
 #install(FILES include/LuminoCore.hpp DESTINATION include)
 
 install(

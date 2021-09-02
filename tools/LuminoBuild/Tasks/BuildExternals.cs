@@ -24,6 +24,7 @@ namespace LuminoBuild.Tasks
                     }
 
                     b.Call("vcpkg", "install gtest:" + b.Triplet);
+                    b.Call("vcpkg", "install fmt:" + b.Triplet);
                 }
             }
         }

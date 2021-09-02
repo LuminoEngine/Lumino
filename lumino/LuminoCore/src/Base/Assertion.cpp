@@ -10,14 +10,6 @@ namespace ln {
 
 namespace detail {
 
-template<typename TChar>
-inline static size_t strlen(const TChar* str) noexcept
-{
-	assert(str);
-	const TChar* s;
-	for (s = str; *s; ++s);
-	return (s - str);
-}
 
 template<class TChar>
 inline static void strcpy(TChar* dst, size_t dstLen, const TChar* src) noexcept
@@ -171,7 +163,7 @@ void printError(const Exception& e)
 	{
 		buf[len] = '\n';
 		len++;
-        size_t messageLen = detail::strlen(e.message());
+        size_t messageLen = UnicodeStringUtils::strlen(e.message());
         size_t bufferLen = BUFFER_SIZE - len;
         convertChar16ToLocalChar(e.message(), messageLen, buf + len, bufferLen);
         if (messageLen >= bufferLen) {
@@ -204,6 +196,21 @@ void ExceptionHelper::setSourceLocationInfo(Exception& e, ExceptionLevel level, 
 	if (assertionMessage) {
 		detail::strcpy(e.m_assertionMessage, Exception::MaxAssertionMessageSize - 1, assertionMessage);
 	}
+}
+
+void ExceptionHelper::setMessage(Exception& e, const std::string& str)
+{
+	e.m_message = UnicodeStringUtils::NarrowToU16(str.c_str(), str.length());
+}
+
+void ExceptionHelper::setMessage(Exception& e, const std::wstring& str)
+{
+	e.m_message = UnicodeStringUtils::WideToU16(str.c_str(), str.length());
+}
+
+void ExceptionHelper::setMessage(Exception& e, const std::u16string& str)
+{
+	e.m_message = str;
 }
 
 } // namespace detail

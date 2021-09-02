@@ -60,8 +60,8 @@ namespace LuminoBuild
             RootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../../")) + "/";
             BuildDir = Path.GetFullPath(Path.Combine(RootDir, "_build"));
             VcpkgDir = Path.GetFullPath(Path.Combine(BuildDir, "vcpkg"));
-            EngineBuildDir = Path.GetFullPath(Path.Combine(BuildDir, Triplet, "EngineBuild"));
-            EngineInstallDir = Path.GetFullPath(Path.Combine(BuildDir, Triplet, "EngineInstall"));
+            EngineBuildDir = Path.GetFullPath(Path.Combine(BuildDir, "buildtrees", Triplet));
+            EngineInstallDir = Path.GetFullPath(Path.Combine(BuildDir, "installed", Triplet));
 
             Directory.CreateDirectory(BuildDir);
             Directory.CreateDirectory(EngineBuildDir);

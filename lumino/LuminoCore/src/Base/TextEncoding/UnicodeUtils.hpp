@@ -1,8 +1,17 @@
 ﻿#pragma once
+#include <string>
 #include <LuminoCore/Base/Common.hpp>
 
 #ifndef _WIN32
 #include <stdint.h>
+#endif
+
+#if WCHAR_MAX <= 0xffff
+#define LN_UU_WCHAR_16 1
+#elif WCHAR_MAX <= 0xffffffff
+#define LN_UU_WCHAR_32 1
+#else
+#error "size of wchar_t is too large."
 #endif
 
 namespace ln {
@@ -227,6 +236,60 @@ private:
 
     /// 不正文字を許容するか？
     static bool isStrictConversion(const UTFConversionOptions* options) { return (options->ReplacementChar == 0); }
+};
+
+class UnicodeStringUtils
+{
+public:
+    template<typename TChar>
+    inline static size_t strlen(const TChar* str) noexcept
+    {
+        assert(str);
+        const TChar* s;
+        for (s = str; *s; ++s);
+        return (s - str);
+    }
+
+    static inline std::wstring NarrowToWide(const char* str, size_t len) noexcept
+    {
+        std::wstring result;
+        result.reserve(len);
+
+        const size_t BUF_SIZE = 50;
+        char bufC[BUF_SIZE];
+        wchar_t bufW[BUF_SIZE];
+
+        const char* p = str;
+        while (*p != '\0') {
+            int L = mblen(p, BUF_SIZE);
+            if (L <= 0)
+                break;
+
+            strncpy(bufC, p, L);
+            bufC[L] = '\0';
+            mbstowcs(bufW, bufC, BUF_SIZE);
+            result += bufW;
+
+            p += L;
+        }
+
+        return result;
+    }
+
+    static inline std::u16string WideToU16(const wchar_t* str, size_t len) noexcept
+    {
+#ifdef LN_UU_WCHAR_16
+        return std::u16string(reinterpret_cast<const char16_t*>(str), len);
+#else
+#error "Not implemented."
+#endif
+    }
+
+    static inline std::u16string NarrowToU16(const char* str, size_t len) noexcept
+    {
+        const auto s = NarrowToWide(str, len);
+        return WideToU16(s.c_str(), s.length());
+    }
 };
 
 } // namespace ln

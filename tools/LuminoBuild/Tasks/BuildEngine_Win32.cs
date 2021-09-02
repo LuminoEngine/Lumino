@@ -32,8 +32,10 @@ namespace LuminoBuild.Tasks
                     var args = new string[]
                     {
                         $"-G\"{targetInfo.Generator}\"",
+                        $"-DCMAKE_TOOLCHAIN_FILE=\"{b.VcpkgDir}/scripts/buildsystems/vcpkg.cmake\"",
                         $"-DCMAKE_INSTALL_PREFIX=\"{b.EngineInstallDir}\"",
                         $"-DCMAKE_DEBUG_POSTFIX=d",
+                        $"-DX_VCPKG_APPLOCAL_DEPS_INSTALL=ON",
                         $"-DLN_MSVC_STATIC_RUNTIME={targetInfo.StaticRuntime}",
                         $"-DLN_BUILD_TESTS=ON",
                         $"-DLN_BUILD_EDITOR=ON",

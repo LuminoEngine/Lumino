@@ -4,6 +4,7 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include <fmt/format.h>
 #include "Common.hpp"
 
 namespace ln {
@@ -11,7 +12,7 @@ class Exception;
 class String;
 namespace detail { struct ExceptionHelper; }
 
-#define _LN_CHECK(expr, level, ...) (!(expr)) && ln::detail::notifyException(level, __FILE__, __LINE__, #expr, ##__VA_ARGS__)
+#define _LN_CHECK(expr, level, ...) (!(expr)) && ln::detail::notifyException(level, __FILE__, __LINE__, #expr, fmt::format(##__VA_ARGS__))
 
 /**
  * アプリケーション実行中に発生した軽微な問題を通知するためのマクロです。
@@ -21,7 +22,7 @@ namespace detail { struct ExceptionHelper; }
  *
  * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを続行します。
  */
-#define LN_WARNING(...) ln::detail::notifyException(::ln::ExceptionLevel::Warning, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+#define LN_WARNING(...) ln::detail::notifyException(::ln::ExceptionLevel::Warning, __FILE__, __LINE__, nullptr, fmt::format(##__VA_ARGS__))
 
 /**
  * アプリケーションが不正な状態になる可能性がある問題を通知するためのマクロです。
@@ -32,7 +33,7 @@ namespace detail { struct ExceptionHelper; }
  *
  * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを停止します。
  */
-#define LN_ERROR(...) ln::detail::notifyException(::ln::ExceptionLevel::Error, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+#define LN_ERROR(...) ln::detail::notifyException(::ln::ExceptionLevel::Error, __FILE__, __LINE__, nullptr, fmt::format(##__VA_ARGS__))
 
  /**
   * アプリケーションの継続が難しい致命的なエラーを通知するためのマクロです。
@@ -42,7 +43,7 @@ namespace detail { struct ExceptionHelper; }
   *
   * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを停止します。
   */
-#define LN_FATAL(...) ln::detail::notifyException(::ln::ExceptionLevel::Fatal, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+#define LN_FATAL(...) ln::detail::notifyException(::ln::ExceptionLevel::Fatal, __FILE__, __LINE__, nullptr, fmt::format(##__VA_ARGS__))B
 
 /**
  * コードを実行する前の前提条件を検証するためのマクロです。
@@ -191,6 +192,9 @@ struct ExceptionHelper
 	static const int getSourceFileLine(const Exception& e) { return e.m_sourceFileLine; }
 	static const char* getAssertionMessage(const Exception& e) { return e.m_assertionMessage; }
 	static void setSourceLocationInfo(Exception& e, ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage);
+	static void setMessage(Exception& e, const std::string& str);
+	static void setMessage(Exception& e, const std::wstring& str);
+	static void setMessage(Exception& e, const std::u16string& str);
 };
 
 //void errorPrintf(Char* buf, size_t bufSize, const char* format, ...);
@@ -201,14 +205,11 @@ struct ExceptionHelper
 void printError(const Exception& e);
 void notifyFatalError(const char* file, int line, const char* message);
 
-template<typename... TArgs>
-inline bool notifyException(ExceptionLevel level, const char* file, int line, const char* exprString, TArgs... args)
+template<class T>
+inline bool notifyException(ExceptionLevel level, const char* file, int line, const char* exprString, T message)
 {
-	const size_t BUFFER_SIZE = 512;
-	Char str[BUFFER_SIZE] = {};
-	//errorPrintf(str, BUFFER_SIZE, args...);
-
-	Exception e(str);
+	Exception e;
+	ExceptionHelper::setMessage(e, message);
 	ExceptionHelper::setSourceLocationInfo(e, level, file, line, exprString);
 
 	auto h = Exception::notificationHandler();
