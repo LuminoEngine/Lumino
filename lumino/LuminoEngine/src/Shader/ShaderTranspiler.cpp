@@ -3,7 +3,7 @@
 #define ENABLE_HLSL
 #include "Internal.hpp"
 #include <sstream>
-//#include <glad/glad.h>
+#include <glad/glad.h>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/Include/Types.h>
 #include <glslang/Include/BaseTypes.h>

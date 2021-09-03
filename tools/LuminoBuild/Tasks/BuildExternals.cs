@@ -26,6 +26,7 @@ namespace LuminoBuild.Tasks
 
 
                     
+                    b.Call("vcpkg", "install glad:" + b.Triplet);
                     b.Call("vcpkg", "install glslang:" + b.Triplet);
                     b.Call("vcpkg", "install spirv-cross:" + b.Triplet);
                     
