@@ -248,6 +248,9 @@ void AppDataInternal::save(const Path& filePath)
 // JSON にしたほうがよさそう。
 void AppDataInternal::load(const Path& filePath)
 {
+#if 1
+	// NOTE: /MDd でクラッシュ
+#else
 	const auto buffer = FileSystem::readAllBytes(filePath);
 	const auto text = std::string(reinterpret_cast<const char*>(buffer.data()), buffer.size());
 	YAML::Node doc = YAML::Load(text);
@@ -282,7 +285,7 @@ void AppDataInternal::load(const Path& filePath)
 
 		m_values[String::fromStdString(key)] = value;
 	}
-
+#endif
 }
 
 } // namespace detail
