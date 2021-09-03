@@ -80,6 +80,7 @@ ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 
 if (LN_EMSCRIPTEN)
     set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-pthread")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "--shared-memory")
 endif()
 
 

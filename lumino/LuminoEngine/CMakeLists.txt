@@ -356,7 +356,6 @@ set(
     nanovg::nanovg
     tinyobjloader::tinyobjloader
 
-    png
     ZLIB::ZLIB
     toml11::toml11
     yaml-cpp
@@ -397,9 +396,11 @@ target_link_libraries(LuminoEngine-static PRIVATE imgui::imgui)
 if (LN_EMSCRIPTEN)
     set_target_properties(LuminoEngine-static PROPERTIES COMPILE_FLAGS "-pthread")
     set_target_properties(LuminoEngine-static PROPERTIES LINK_FLAGS "-s USE_SDL=2")
+    target_link_libraries(LuminoEngine-static PRIVATE png_static)
 endif()
 
 if (LN_DESKTOP)
+    target_link_libraries(LuminoEngine-static PRIVATE png)
 endif()
 
 if (LN_BUILD_XCODE_FRAMEWORK)

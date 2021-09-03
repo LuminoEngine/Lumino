@@ -108,4 +108,5 @@ enable_testing()
 
 add_subdirectory(lumino/LuminoCore)
 add_subdirectory(lumino/LuminoEngine)
+add_subdirectory(examples)
 
