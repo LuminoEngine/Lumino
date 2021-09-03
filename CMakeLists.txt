@@ -26,7 +26,7 @@ set(LN_VCPKG_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
 find_package(GTest CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 
-find_package(yaml-cpp CONFIG REQUIRED)
+#find_package(yaml-cpp CONFIG REQUIRED)
 find_package(toml11 CONFIG REQUIRED)
 find_package(OpenAL CONFIG REQUIRED)
 find_package(Vorbis CONFIG REQUIRED)
@@ -71,6 +71,22 @@ set_target_properties(pcre2_16 PROPERTIES IMPORTED_LOCATION_RELEASE ${pcre2_16_L
 set_target_properties(pcre2_16 PROPERTIES IMPORTED_LOCATION_DEBUG ${pcre2_16_LIBRARY_DEBUG})
 set_target_properties(pcre2_16 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${pcre2_ROOT}/include)
 #list(APPEND LN_EXTERNAL_LIBS pcre2_16)
+
+#--------------------------------------
+# yaml-cpp
+# v0.7.0 は動的リンクするとクラッシュするため、静的リンクにする。
+
+set(yamlcpp_ROOT "${VCPKG_INSTALLED_DIR}/x64-windows-static-md")
+
+find_library(yamlcpp_LIBRARY_RELEASE NAMES yaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES "lib" NO_CMAKE_SYSTEM_PATH)
+find_library(yamlcpp_LIBRARY_DEBUG NAMES yaml-cppd yaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES "debug/lib" NO_CMAKE_SYSTEM_PATH)
+
+add_library(yaml-cpp STATIC IMPORTED)
+set_target_properties(yaml-cpp PROPERTIES IMPORTED_LOCATION_RELEASE "${yamlcpp_LIBRARY_RELEASE}")
+set_target_properties(yaml-cpp PROPERTIES IMPORTED_LOCATION_DEBUG "${yamlcpp_LIBRARY_DEBUG}")
+set_target_properties(yaml-cpp PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${yamlcpp_ROOT}/include)
+list(APPEND LN_EXTERNAL_LIBS yaml-cpp)
+
 
 
 

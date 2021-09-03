@@ -27,7 +27,7 @@ void TestEnv::setup()
 
     if (feature == EngineFeature::Experimental)  // Experimental
     {
-        Font::registerFontFromFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
+        Font::registerFontFromFile(LN_LOCALFILE("Assets/Font/VL-Gothic-Regular.ttf"));
         Engine::mainCamera()->setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0));
 
         //Engine::mainAmbientLight()->setColor(Color::White);
