@@ -7,7 +7,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/cmake/LuminoCommon.cmake)
 # Files
 #-------------------------------------------------------------------------------
 
-file(GLOB LOCAL_SOURCES "src/*.hpp" "src/*.cpp")
+file(GLOB LOCAL_SOURCES "include/*.hpp" "src/*.hpp" "src/*.cpp")
 file(GLOB LOCAL_SOURCES_Base "include/LuminoCore/Base/*.hpp" "src/Base/*.cpp" "src/Base/*.hpp")
 file(GLOB LOCAL_SOURCES_IO "include/LuminoCore/IO/*.hpp" "src/IO/*.cpp" "src/IO/*.hpp")
 file(GLOB LOCAL_SOURCES_Json "include/LuminoCore/Json/*.hpp" "src/Json/*.cpp" "src/Json/*.hpp")
@@ -71,7 +71,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${LOCAL_LIBS} fmt::fmt)
+target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LOCAL_LIBS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 
