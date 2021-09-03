@@ -5,9 +5,9 @@ using System.Linq;
 
 namespace LuminoBuild.Tasks
 {
-    class BuildExternals
+    class BuildExternals : BuildTask
     {
-        public void Run(Build b)
+        public override void Run(Build b)
         {
             using (b.CurrentDir(b.BuildDir))
             {

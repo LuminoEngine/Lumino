@@ -1030,9 +1030,15 @@ namespace ln {
 template<typename... TArgs>
 inline String String::format(const StringRef& format, TArgs&&... args)
 {
-    std::u16string_view view(format.data(), format.length());
-    auto str = ::fmt::format(view, std::forward<TArgs>(args)...);
-    return String(str.c_str(), str.length());
+    try {
+        std::u16string_view view(format.data(), format.length());
+        auto str = ::fmt::format(view, std::forward<TArgs>(args)...);
+        return String(str.c_str(), str.length());
+    }
+    catch (fmt::v7::format_error& e) {
+        LN_ERROR("String::format errro: {}", e.what());
+        return String::Empty;
+    }
 }
 
 template<typename... TArgs>

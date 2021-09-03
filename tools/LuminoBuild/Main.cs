@@ -42,8 +42,14 @@ namespace LuminoBuild
                 //args = new string[] { "MakeInstaller_Win32" };
             }
 
+            var tasks = new List<(string name, BuildTask task)>
+            {
+                ("BuildExternals", new BuildExternals()),
+                ("BuildEngine_Win32", new BuildEngine_Win32()),
+            };
+
             var b = new Build();
-            //(new BuildExternals()).Run(b);
+            (new BuildExternals()).Run(b);
             (new BuildEngine_Win32()).Run(b);
 
             //Assembly thisAssembly = Assembly.GetEntryAssembly();

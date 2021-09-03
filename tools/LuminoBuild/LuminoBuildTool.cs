@@ -299,6 +299,10 @@ namespace LuminoBuild
         //}
     }
 
+    abstract class BuildTask
+    {
+        public abstract void Run(Build b);
+    }
 
     static class Logger
     {

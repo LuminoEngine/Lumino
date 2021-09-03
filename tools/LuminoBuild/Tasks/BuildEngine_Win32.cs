@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace LuminoBuild.Tasks
 {
-    class BuildEngine_Win32
+    class BuildEngine_Win32 : BuildTask
     {
         public class MSVCTargetInfo
         {
@@ -21,7 +21,7 @@ namespace LuminoBuild.Tasks
         };
 
 
-        public void Run(Build b)
+        public override void Run(Build b)
         {
             var targetInfo = TargetInfoMap[b.Triplet];
 

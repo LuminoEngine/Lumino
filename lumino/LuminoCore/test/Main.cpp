@@ -62,13 +62,13 @@ int main(int argc, char** argv)
 	}
 
 	return 0;
+#endif
 	{
 		int exitCode;
 		if (testProcess(argc, argv, &exitCode)) {
 			return exitCode;
 		}
 	}
-#endif
 
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -85,8 +85,8 @@ int main(int argc, char** argv)
 	}
 #endif
 
-	//TestHelper::setAssetsDirPath(LN_LOCALFILE("TestData"));
-	//TestHelper::setTempDirPath(_T("TestTemp"));
+	TestHelper::setAssetsDirPath(LN_LOCALFILE("TestData"));
+	TestHelper::setTempDirPath(_T("_tmp"));
 	//Logger::addStdErrAdapter();
 	//LN_LOG_INFO << "Running test.";
  //   LN_LOG_INFO << "SystemMultiByteEncoding: " << TextEncoding::systemMultiByteEncoding()->name();
