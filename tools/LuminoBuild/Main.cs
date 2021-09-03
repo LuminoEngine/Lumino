@@ -42,6 +42,7 @@ namespace LuminoBuild
                 //args = new string[] { "MakeInstaller_Win32" };
             }
 
+
             var tasks = new List<(string name, BuildTask task)>
             {
                 ("BuildExternals", new BuildExternals()),
@@ -49,8 +50,10 @@ namespace LuminoBuild
             };
 
             var b = new Build();
-            (new BuildExternals()).Run(b);
-            (new BuildEngine_Win32()).Run(b);
+            EmscriptenEnv.Setup(b);
+            //(new BuildExternals()).Run(b);
+            //(new BuildEngine_Win32()).Run(b);
+            (new BuildEngine_Emscripten()).Run(b);
 
             //Assembly thisAssembly = Assembly.GetEntryAssembly();
             //string exeDir = Path.GetDirectoryName(thisAssembly.Location);

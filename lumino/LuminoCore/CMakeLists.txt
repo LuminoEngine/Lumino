@@ -111,4 +111,6 @@ install(
 # Sub-projects
 #-------------------------------------------------------------------------------
 
-add_subdirectory(test)
+if (LN_BUILD_TESTS)
+    add_subdirectory(test)
+endif()

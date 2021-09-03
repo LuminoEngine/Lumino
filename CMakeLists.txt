@@ -13,6 +13,17 @@ option(LN_BUILD_TESTS "build unit test projects." ON)
 # build embedded shader transcompiler.
 option(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER "build tool projects.build embedded shader transcompiler." OFF)
 
+
+if (DEFINED EMSCRIPTEN)
+    message("DEFINED EMSCRIPTEN")
+endif()
+
+if (VCPKG_TARGET_TRIPLET MATCHES "emscripten")
+    message("DEFINED emscripten")
+    set(LN_EMSCRIPTEN ON)
+    set(LN_DESKTOP OFF)
+endif()
+
 #-------------------------------------------------------------------------------
 # Configuration
 #-------------------------------------------------------------------------------
@@ -23,38 +34,39 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(LN_VCPKG_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
 
 #set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/_build/vcpkg/installed/x64-windows")
-find_package(GTest CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 
 #find_package(yaml-cpp CONFIG REQUIRED)
 find_package(toml11 CONFIG REQUIRED)
-find_package(OpenAL CONFIG REQUIRED)
 find_package(Vorbis CONFIG REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(libpng CONFIG REQUIRED)
 find_package(freetype CONFIG REQUIRED)
 find_package(nanovg CONFIG REQUIRED)
-find_package(imgui CONFIG REQUIRED)
 find_package(tinyobjloader CONFIG REQUIRED)
 find_package(Bullet CONFIG REQUIRED)
 find_package(box2d CONFIG REQUIRED)
-find_package(glfw3 CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 find_path(STB_INCLUDE_DIRS "stb_image.h")
 find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
-find_path(VULKAN_HEADERS_INCLUDE_DIRS "vk_video/vulkan_video_codec_h264std.h")
 
+if (LN_DESKTOP)
+    find_package(glslang CONFIG REQUIRED)
+    #find_package(spirv_cross_c CONFIG REQUIRED)
+    find_package(spirv_cross_core CONFIG REQUIRED)
+    #find_package(spirv_cross_cpp CONFIG REQUIRED)
+    find_package(spirv_cross_glsl CONFIG REQUIRED)
+    find_package(spirv_cross_hlsl CONFIG REQUIRED)
+    find_package(spirv_cross_msl CONFIG REQUIRED)
+    find_package(spirv_cross_reflect CONFIG REQUIRED)
+    find_package(spirv_cross_util CONFIG REQUIRED)
+    find_package(glad CONFIG REQUIRED)
 
-find_package(glslang CONFIG REQUIRED)
-#find_package(spirv_cross_c CONFIG REQUIRED)
-find_package(spirv_cross_core CONFIG REQUIRED)
-#find_package(spirv_cross_cpp CONFIG REQUIRED)
-find_package(spirv_cross_glsl CONFIG REQUIRED)
-find_package(spirv_cross_hlsl CONFIG REQUIRED)
-find_package(spirv_cross_msl CONFIG REQUIRED)
-find_package(spirv_cross_reflect CONFIG REQUIRED)
-find_package(spirv_cross_util CONFIG REQUIRED)
-
-find_package(glad CONFIG REQUIRED)
+    find_package(GTest CONFIG REQUIRED)
+    find_package(OpenAL CONFIG REQUIRED)
+    find_package(glfw3 CONFIG REQUIRED)
+    find_path(VULKAN_HEADERS_INCLUDE_DIRS "vk_video/vulkan_video_codec_h264std.h")
+endif()
 
 
 

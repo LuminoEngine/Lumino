@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
@@ -24,6 +24,7 @@ namespace LuminoBuild
 
         public readonly string RootDir;
         public readonly string BuildDir;
+        public readonly string BuildToolsDir;
         public readonly string VcpkgDir;
         public readonly string EngineBuildDir;
         public readonly string EngineInstallDir;
@@ -45,6 +46,7 @@ namespace LuminoBuild
         //public bool DirectTaskExecution { get { return Args.Contains("--direct-task-execution"); } }
 
         public string Triplet;
+        public string System;
 
         public bool IsDebug = true;
         public bool IsRelease = true;
@@ -53,24 +55,70 @@ namespace LuminoBuild
 
         public Build()
         {
-            Triplet = "x64-windows";
+            //Triplet = "x64-windows";
+            //System = "windows";
+            Triplet = "wasm32-emscripten";
+            System = "emscripten";
 
             var thisAssembly = Assembly.GetEntryAssembly();
             var exeDir = Path.GetDirectoryName(thisAssembly.Location);
             RootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../../")) + "/";
             BuildDir = Path.GetFullPath(Path.Combine(RootDir, "_build"));
+            BuildToolsDir = Path.GetFullPath(Path.Combine(BuildDir, "tools"));
             VcpkgDir = Path.GetFullPath(Path.Combine(BuildDir, "vcpkg"));
             EngineBuildDir = Path.GetFullPath(Path.Combine(BuildDir, "buildtrees", Triplet));
             EngineInstallDir = Path.GetFullPath(Path.Combine(BuildDir, "installed", Triplet));
 
             Directory.CreateDirectory(BuildDir);
+            Directory.CreateDirectory(BuildToolsDir);
             Directory.CreateDirectory(EngineBuildDir);
             Directory.CreateDirectory(EngineInstallDir);
         }
 
         public void Call(string program, string args = "")
         {
-            Utils.CallProcess(program, args);
+            if (Utils.IsWin32)
+            {
+                try
+                {
+                    Utils.CallProcess(program, args);
+                    return;
+                }
+                catch (Win32Exception e)
+                {
+                    if (e.NativeErrorCode == 2)
+                    {
+                        // retry
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                Utils.CallProcessShell(program, args);
+
+                //if (Path.GetExtension(program) == ".exe")
+                //{
+                //    Utils.CallProcess(program, args);
+                //}
+                //else
+                //{
+                //    var exe = program + ".exe";
+                //    if (File.Exists(exe))
+                //    {
+                //        Utils.CallProcess(exe, args);
+                //    }
+                //    else
+                //    {
+                //        Utils.CallProcessShell(exe, args);
+                //    }
+                //}
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public LuminoBuild.CurrentDir CurrentDir(string dir)

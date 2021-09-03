@@ -970,21 +970,25 @@ struct hash<ln::String>
 
 namespace fmt {
 
-template<typename TChar> struct formatter<::ln::String, TChar> {
-
-    template<typename ParseContext>
-    auto parse(ParseContext& ctx) ->  decltype(ctx.begin()) {
-        return ctx.begin();
-    }
-
-    template<typename FormatContext>
-    auto format(const ln::String& v, FormatContext& ctx) -> decltype(ctx.out()) {
-        std::u16string ss = v.c_str();
-        return fmt::formatter<std::string>::format(ss, ctx);
-        //std::basic_string_view<::ln::Char> view(v.c_str(), v.length());
-        //return formatter<std::basic_string_view<::ln::Char>>::format(view, ctx);
-    }
-};
+//template<typename TChar> struct formatter<::ln::String, TChar> {
+//
+//    template<typename ParseContext>
+//    auto parse(ParseContext& ctx) ->  decltype(ctx.begin()) {
+//        return ctx.begin();
+//    }
+//
+//    template<typename FormatContext>
+//    auto format(const ln::String& v, FormatContext& ctx) -> decltype(ctx.out()) {
+//        std::u16string_view view(v.c_str(), v.length());
+//        formatter<std::u16string_view, char16_t> fff;
+//        return fff.format(view, ctx);
+//
+//        ///std::u16string ss = v.c_str();
+//        //return fmt::formatter<std::string>::format(ss, ctx);
+//        //std::basic_string_view<::ln::Char> view(v.c_str(), v.length());
+//        //return formatter<std::basic_string_view<::ln::Char>>::format(view, ctx);
+//    }
+//};
 
 template<> struct formatter<::ln::String, ln::Char> {
 
@@ -1044,7 +1048,7 @@ inline String String::format(const StringRef& format, TArgs&&... args)
 template<typename... TArgs>
 inline String String::format(const Locale& locale, const StringRef& format, TArgs&&... args)
 {
-    throw new "Not implemented";
+    throw "Not implemented";
     //auto argList = fmt::detail::makeArgList<Char>(std::forward<TArgs>(args)...);
     //fmt::GenericFormatStringBuilder<Char> sb;
     //if (fmt::detail::formatInternal<Char>(locale, &sb, format.data(), format.length(), argList)) {

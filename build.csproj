@@ -19,6 +19,8 @@
   <ItemGroup>
     <Compile Include="tools/LuminoBuild/Main.cs" />
     <Compile Include="tools/LuminoBuild/LuminoBuildTool.cs" />
+    <Compile Include="tools\LuminoBuild\Env\EmscriptenEnv.cs" />
+    <Compile Include="tools\LuminoBuild\Tasks\BuildEngine_Emscripten.cs" />
     <Compile Include="tools\LuminoBuild\Tasks\BuildEngine_Win32.cs" />
     <Compile Include="tools\LuminoBuild\Tasks\BuildExternals.cs" />
   </ItemGroup>

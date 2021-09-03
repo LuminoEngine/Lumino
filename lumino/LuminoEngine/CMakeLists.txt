@@ -330,8 +330,9 @@ if (LN_USE_OPENAL)
 endif()
 
 # VisualC++ C1128
-add_definitions(/bigobj)
-
+if (MSVC)
+    add_definitions(/bigobj)
+endif()
 
 #-------------------------------------------------------------------------------
 # Targets
@@ -353,7 +354,6 @@ set(
     
     freetype
     nanovg::nanovg
-    imgui::imgui
     tinyobjloader::tinyobjloader
 
     png
@@ -391,9 +391,15 @@ target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
 set_target_properties(LuminoEngine-static PROPERTIES FOLDER "Lumino")
 ln_add_pch(LuminoEngine-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
+
+target_link_libraries(LuminoEngine-static PRIVATE imgui::imgui)
+
 if (LN_EMSCRIPTEN)
     set_target_properties(LuminoEngine-static PROPERTIES COMPILE_FLAGS "-pthread")
     set_target_properties(LuminoEngine-static PROPERTIES LINK_FLAGS "-s USE_SDL=2")
+endif()
+
+if (LN_DESKTOP)
 endif()
 
 if (LN_BUILD_XCODE_FRAMEWORK)

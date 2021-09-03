@@ -23,39 +23,48 @@ namespace LuminoBuild.Tasks
                         Utils.CallProcessShell("bootstrap-vcpkg");
                     }
 
-
-
-                    
-                    b.Call("vcpkg", "install glad:" + b.Triplet);
-                    b.Call("vcpkg", "install glslang:" + b.Triplet);
-                    b.Call("vcpkg", "install spirv-cross:" + b.Triplet);
-                    
+                    //b.Call("vcpkg", "install fmt:" + b.Triplet);
+                    //b.Call("vcpkg", "install yaml-cpp:" + b.Triplet);
+                    //b.Call("vcpkg", "install toml11:" + b.Triplet);
+                    //b.Call("vcpkg", "install zlib:" + b.Triplet);
+                    //b.Call("vcpkg", "install libpng:" + b.Triplet);
+                    //b.Call("vcpkg", "install freetype[core,png,zlib]:" + b.Triplet);    // emsdk では brotli がビルドエラーになるため機能を制限する
+                    //b.Call("vcpkg", "install libvorbis:" + b.Triplet);
+                    //b.Call("vcpkg", "install pcre2:" + b.Triplet);
+                    //b.Call("vcpkg", "install box2d:" + b.Triplet);
+                    //b.Call("vcpkg", "install bullet3:" + b.Triplet);
+                    //b.Call("vcpkg", "install nanovg:" + b.Triplet);
+                    //b.Call("vcpkg", "install stb:" + b.Triplet);
+                    //b.Call("vcpkg", "install tinyobjloader:" + b.Triplet);
+                    //b.Call("vcpkg", "install tinygltf:" + b.Triplet);
                     b.Call("vcpkg", "install imgui[docking-experimental]:" + b.Triplet);
 
-                    b.Call("vcpkg", "install openal-soft:" + b.Triplet);
-                    b.Call("vcpkg", "install glfw3:" + b.Triplet);
-                    b.Call("vcpkg", "install vulkan-headers:" + b.Triplet);
-                    //b.Call("vcpkg", "install tmxlite:" + b.Triplet);
-                    b.Call("vcpkg", "install zlib:" + b.Triplet);
-                    b.Call("vcpkg", "install libpng:" + b.Triplet);
-                    b.Call("vcpkg", "install nanovg:" + b.Triplet);
-                    b.Call("vcpkg", "install stb:" + b.Triplet);
-                    b.Call("vcpkg", "install toml11:" + b.Triplet);
-                    b.Call("vcpkg", "install box2d:" + b.Triplet);
-                    b.Call("vcpkg", "install bullet3:" + b.Triplet);
-                    b.Call("vcpkg", "install tinyobjloader:" + b.Triplet);
-                    b.Call("vcpkg", "install tinygltf:" + b.Triplet);
-                    b.Call("vcpkg", "install freetype:" + b.Triplet);
-                    b.Call("vcpkg", "install yaml-cpp:" + b.Triplet);
-                    b.Call("vcpkg", "install pcre2:" + b.Triplet);
+                    if (b.System == "emscripten")
+                    {
+
+                    }
+                    else
+                    {
+
+                        b.Call("vcpkg", "install glfw3:" + b.Triplet);
+                        b.Call("vcpkg", "install vulkan-headers:" + b.Triplet);
+                        b.Call("vcpkg", "install glad:" + b.Triplet);
+                        b.Call("vcpkg", "install glslang:" + b.Triplet);
+                        b.Call("vcpkg", "install spirv-cross:" + b.Triplet);
+
+                        //b.Call("vcpkg", "install tmxlite:" + b.Triplet);
+                        b.Call("vcpkg", "install gtest:" + b.Triplet);
                     
 
-                    b.Call("vcpkg", "install gtest:" + b.Triplet);
-                    b.Call("vcpkg", "install fmt:" + b.Triplet);
 
                     
-                    b.Call("vcpkg", "install libvorbis:" + b.Triplet);
-                    //b.Call("vcpkg", "install imgui:" + b.Triplet);
+                        //b.Call("vcpkg", "install imgui:" + b.Triplet);
+
+                        b.Call("vcpkg", "install openal-soft:" + b.Triplet);
+                    }
+                    
+                    
+                    
                 }
             }
         }

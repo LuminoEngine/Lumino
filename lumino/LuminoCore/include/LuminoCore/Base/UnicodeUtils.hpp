@@ -304,7 +304,11 @@ public:
 #ifdef LN_UU_WCHAR_16
         return std::u16string(reinterpret_cast<const char16_t*>(str), len);
 #else
-#error "Not implemented."
+        std::u16string result(len * 2, u'\0');
+        UTFConversionOptions options;
+        options.ReplacementChar = '?';
+        UnicodeUtils::convertUTF32toUTF16(reinterpret_cast<const UTF32*>(str), len, reinterpret_cast<UTF16*>(result.data()), result.length(), &options);
+        return result;
 #endif
     }
 
