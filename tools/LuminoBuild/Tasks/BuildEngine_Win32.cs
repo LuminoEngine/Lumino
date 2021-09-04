@@ -18,6 +18,8 @@ namespace LuminoBuild.Tasks
         {
             { "x64-windows", new MSVCTargetInfo { Generator = "Visual Studio 16 2019", Arch="x64", StaticRuntime = "OFF" } },
             { "x86-windows", new MSVCTargetInfo { Generator = "Visual Studio 16 2019", Arch="Win32", StaticRuntime = "OFF" } },
+            { "x64-windows-static", new MSVCTargetInfo { Generator = "Visual Studio 16 2019", Arch="x64", StaticRuntime = "ON" } },
+            { "x86-windows-static", new MSVCTargetInfo { Generator = "Visual Studio 16 2019", Arch="Win32", StaticRuntime = "ON" } },
         };
 
 

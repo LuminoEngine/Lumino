@@ -1,5 +1,7 @@
 ﻿
 #include <Lumino.hpp>
+//#include "C:/Proj/LN/Lumino/_build/tools/Optick_1.3.1/include/optick.h"
+//#pragma comment(lib, "C:/Proj/LN/Lumino/_build/tools/Optick_1.3.1/lib/x64/debug/OptickCore.lib")
 
 class App : public Application
 {
@@ -45,6 +47,7 @@ public:
 
     void onUpdate() override
     {
+        //OPTICK_FRAME("MainThread");
 
     }
 };

@@ -38,10 +38,16 @@ namespace LuminoBuild
                 //args = new string[] { "BuildLLVM" };
                 //args = new string[] { "BuildEmbeddedResources" };
 
-                args = new string[] { "MakeNativePackage" };
-                //args = new string[] { "MakeInstaller_Win32" };
+                //args = new string[] { "BuildExternals" };
+                args = new string[] { "BuildEngine_Win32" };
             }
 
+            var taskName = args[0];
+            var triplet = (args.Length >= 2) ? args[1] : "x64-windows-static";
+
+            var b = new Build(triplet);
+
+            if (b.System == "emscripten") EmscriptenEnv.Setup(b);
 
             var tasks = new List<(string name, BuildTask task)>
             {
@@ -49,11 +55,12 @@ namespace LuminoBuild
                 ("BuildEngine_Win32", new BuildEngine_Win32()),
             };
 
-            var b = new Build();
-            EmscriptenEnv.Setup(b);
+            var task = tasks.Find(x => x.name == taskName);
+            task.task.Run(b);
+
             //(new BuildExternals()).Run(b);
             //(new BuildEngine_Win32()).Run(b);
-            (new BuildEngine_Emscripten()).Run(b);
+            //(new BuildEngine_Emscripten()).Run(b);
 
             //Assembly thisAssembly = Assembly.GetEntryAssembly();
             //string exeDir = Path.GetDirectoryName(thisAssembly.Location);

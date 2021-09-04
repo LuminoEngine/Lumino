@@ -4,7 +4,7 @@ project (Lumino)
 
 
 #-------------------------------------------------------------------------------
-# Targets
+# Options
 #-------------------------------------------------------------------------------
 
 # build unit test projects
@@ -14,15 +14,7 @@ option(LN_BUILD_TESTS "build unit test projects." ON)
 option(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER "build tool projects.build embedded shader transcompiler." OFF)
 
 
-if (DEFINED EMSCRIPTEN)
-    message("DEFINED EMSCRIPTEN")
-endif()
 
-if (VCPKG_TARGET_TRIPLET MATCHES "emscripten")
-    message("DEFINED emscripten")
-    set(LN_EMSCRIPTEN ON)
-    set(LN_DESKTOP OFF)
-endif()
 
 #-------------------------------------------------------------------------------
 # Configuration
@@ -32,11 +24,19 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON) 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(LN_VCPKG_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
+set(LN_TRIPLET ${VCPKG_TARGET_TRIPLET})
+
+if (DEFINED EMSCRIPTEN)
+    message("DEFINED EMSCRIPTEN")
+    set(LN_EMSCRIPTEN ON)
+    set(LN_DESKTOP OFF)
+elseif(WIN32 OR APPLE OR UNIX)
+    set(LN_DESKTOP ON)
+endif()
 
 #set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/_build/vcpkg/installed/x64-windows")
 find_package(fmt CONFIG REQUIRED)
 
-#find_package(yaml-cpp CONFIG REQUIRED)
 find_package(toml11 CONFIG REQUIRED)
 find_package(Vorbis CONFIG REQUIRED)
 find_package(ZLIB REQUIRED)
@@ -71,7 +71,7 @@ endif()
 
 
 
-#--------------------------------------
+
 # pcre2
 set(pcre2_ROOT ${LN_VCPKG_INCLUDE_DIR})
 
@@ -84,21 +84,20 @@ set_target_properties(pcre2_16 PROPERTIES IMPORTED_LOCATION_DEBUG ${pcre2_16_LIB
 set_target_properties(pcre2_16 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${pcre2_ROOT}/include)
 #list(APPEND LN_EXTERNAL_LIBS pcre2_16)
 
-#--------------------------------------
 # yaml-cpp
 # v0.7.0 は動的リンクするとクラッシュするため、静的リンクにする。
-
-set(yamlcpp_ROOT "${VCPKG_INSTALLED_DIR}/x64-windows-static-md")
-
-find_library(yamlcpp_LIBRARY_RELEASE NAMES yaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES "lib" NO_CMAKE_SYSTEM_PATH)
-find_library(yamlcpp_LIBRARY_DEBUG NAMES yaml-cppd yaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES "debug/lib" NO_CMAKE_SYSTEM_PATH)
-
-add_library(yaml-cpp STATIC IMPORTED)
-set_target_properties(yaml-cpp PROPERTIES IMPORTED_LOCATION_RELEASE "${yamlcpp_LIBRARY_RELEASE}")
-set_target_properties(yaml-cpp PROPERTIES IMPORTED_LOCATION_DEBUG "${yamlcpp_LIBRARY_DEBUG}")
-set_target_properties(yaml-cpp PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${yamlcpp_ROOT}/include)
-list(APPEND LN_EXTERNAL_LIBS yaml-cpp)
-
+if (${LN_TRIPLET} STREQUAL "x64-windows")
+    set(yamlcpp_ROOT "${VCPKG_INSTALLED_DIR}/x64-windows-static-md")
+    find_library(yamlcpp_LIBRARY_RELEASE NAMES yaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES "lib" NO_CMAKE_SYSTEM_PATH)
+    find_library(yamlcpp_LIBRARY_DEBUG NAMES yaml-cppd yaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES "debug/lib" NO_CMAKE_SYSTEM_PATH)
+    add_library(yaml-cpp STATIC IMPORTED)
+    set_target_properties(yaml-cpp PROPERTIES IMPORTED_LOCATION_RELEASE "${yamlcpp_LIBRARY_RELEASE}")
+    set_target_properties(yaml-cpp PROPERTIES IMPORTED_LOCATION_DEBUG "${yamlcpp_LIBRARY_DEBUG}")
+    set_target_properties(yaml-cpp PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${yamlcpp_ROOT}/include)
+    list(APPEND LN_EXTERNAL_LIBS yaml-cpp)
+else()
+    find_package(yaml-cpp CONFIG REQUIRED)
+endif()
 
 
 
@@ -108,5 +107,8 @@ enable_testing()
 
 add_subdirectory(lumino/LuminoCore)
 add_subdirectory(lumino/LuminoEngine)
-add_subdirectory(examples)
+
+if (LN_EMSCRIPTEN)
+    add_subdirectory(examples)
+endif()
 

@@ -23,20 +23,20 @@ namespace LuminoBuild.Tasks
                         Utils.CallProcessShell("bootstrap-vcpkg");
                     }
 
-                    //b.Call("vcpkg", "install fmt:" + b.Triplet);
-                    //b.Call("vcpkg", "install yaml-cpp:" + b.Triplet);
-                    //b.Call("vcpkg", "install toml11:" + b.Triplet);
-                    //b.Call("vcpkg", "install zlib:" + b.Triplet);
-                    //b.Call("vcpkg", "install libpng:" + b.Triplet);
-                    //b.Call("vcpkg", "install freetype[core,png,zlib]:" + b.Triplet);    // emsdk では brotli がビルドエラーになるため機能を制限する
-                    //b.Call("vcpkg", "install libvorbis:" + b.Triplet);
-                    //b.Call("vcpkg", "install pcre2:" + b.Triplet);
-                    //b.Call("vcpkg", "install box2d:" + b.Triplet);
-                    //b.Call("vcpkg", "install bullet3:" + b.Triplet);
-                    //b.Call("vcpkg", "install nanovg:" + b.Triplet);
-                    //b.Call("vcpkg", "install stb:" + b.Triplet);
-                    //b.Call("vcpkg", "install tinyobjloader:" + b.Triplet);
-                    //b.Call("vcpkg", "install tinygltf:" + b.Triplet);
+                    b.Call("vcpkg", "install fmt:" + b.Triplet);
+                    b.Call("vcpkg", "install yaml-cpp:" + b.Triplet);
+                    b.Call("vcpkg", "install toml11:" + b.Triplet);
+                    b.Call("vcpkg", "install zlib:" + b.Triplet);
+                    b.Call("vcpkg", "install libpng:" + b.Triplet);
+                    b.Call("vcpkg", "install freetype[core,png,zlib]:" + b.Triplet);    // emsdk では brotli がビルドエラーになるため機能を制限する
+                    b.Call("vcpkg", "install libvorbis:" + b.Triplet);
+                    b.Call("vcpkg", "install pcre2:" + b.Triplet);
+                    b.Call("vcpkg", "install box2d:" + b.Triplet);
+                    b.Call("vcpkg", "install bullet3:" + b.Triplet);
+                    b.Call("vcpkg", "install nanovg:" + b.Triplet);
+                    b.Call("vcpkg", "install stb:" + b.Triplet);
+                    b.Call("vcpkg", "install tinyobjloader:" + b.Triplet);
+                    b.Call("vcpkg", "install tinygltf:" + b.Triplet);
                     b.Call("vcpkg", "install imgui[docking-experimental]:" + b.Triplet);
 
                     if (b.System == "emscripten")

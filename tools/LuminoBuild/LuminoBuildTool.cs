@@ -46,6 +46,7 @@ namespace LuminoBuild
         //public bool DirectTaskExecution { get { return Args.Contains("--direct-task-execution"); } }
 
         public string Triplet;
+        public string Arch;
         public string System;
 
         public bool IsDebug = true;
@@ -53,17 +54,19 @@ namespace LuminoBuild
         public bool FromCI = false;
 
 
-        public Build()
+        public Build(string triplet)
         {
             //Triplet = "x64-windows";
             //System = "windows";
-            Triplet = "wasm32-emscripten";
-            System = "emscripten";
+            Triplet = triplet;//"wasm32-emscripten";
+            var tokens = triplet.Split("-");
+            Arch = tokens[0];
+            System = tokens[1];//"emscripten";
 
             var thisAssembly = Assembly.GetEntryAssembly();
             var exeDir = Path.GetDirectoryName(thisAssembly.Location);
             RootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../../")) + "/";
-            BuildDir = Path.GetFullPath(Path.Combine(RootDir, "_build"));
+            BuildDir = Path.GetFullPath(Path.Combine(RootDir, "build"));
             BuildToolsDir = Path.GetFullPath(Path.Combine(BuildDir, "tools"));
             VcpkgDir = Path.GetFullPath(Path.Combine(BuildDir, "vcpkg"));
             EngineBuildDir = Path.GetFullPath(Path.Combine(BuildDir, "buildtrees", Triplet));
@@ -597,7 +600,7 @@ namespace LuminoBuild
                 if (!p.StartInfo.UseShellExecute)
                 {
                     p.StartInfo.RedirectStandardOutput = true;
-                    p.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); sb.Append(e.Data); };
+                    p.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { /*Console.WriteLine(e.Data);*/ sb.Append(e.Data); };
                     p.StartInfo.RedirectStandardError = true;
                     p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); };
                 }
@@ -637,7 +640,10 @@ namespace LuminoBuild
 				p.WaitForExit();
 
 				if (p.ExitCode != 0)
+                {
+                    Console.WriteLine(sb.ToString());
 					throw new InvalidOperationException($"Failed Process. ExitCode: {p.ExitCode}");
+                }
                 return sb.ToString();
 			}
 		}
@@ -660,7 +666,7 @@ namespace LuminoBuild
                 p.StartInfo.UseShellExecute = false;
                 p.StartInfo.FileName = program;
                 p.StartInfo.RedirectStandardOutput = true;
-                p.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); };
+                p.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { /*Console.WriteLine(e.Data);*/ };
                 p.StartInfo.RedirectStandardError = true;
                 p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); sb.Append(e.Data); };
 
