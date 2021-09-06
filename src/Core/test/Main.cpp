@@ -217,13 +217,13 @@ int main(int argc, char** argv)
 	}
 
 	return 0;
+#endif
 	{
 		int exitCode;
 		if (testProcess(argc, argv, &exitCode)) {
 			return exitCode;
 		}
 	}
-#endif
 
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);

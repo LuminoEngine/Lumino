@@ -1,8 +1,8 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/Runtime/Runtime.hpp>
-#include "../../../src/LuminoEngine/src/Engine/EngineManager.hpp"
-#include "../../../src/LuminoEngine/src/Engine/EngineDomain.hpp"
+#include "../../../src/Engine/src/Engine/EngineManager.hpp"
+#include "../../../src/Engine/src/Engine/EngineDomain.hpp"
 #include "LuminoHSP.h"
 
 extern bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr);

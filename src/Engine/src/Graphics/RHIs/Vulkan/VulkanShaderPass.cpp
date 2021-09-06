@@ -12,9 +12,9 @@ namespace detail {
 // VulkanShaderPass
 
 VulkanShaderPass::VulkanShaderPass()
-    : m_vertShaderModule(nullptr)
-    , m_fragShaderModule(nullptr)
-    , m_compShaderModule(nullptr)
+    : m_vertShaderModule(VK_NULL_HANDLE)
+    , m_fragShaderModule(VK_NULL_HANDLE)
+    , m_compShaderModule(VK_NULL_HANDLE)
 {
 }
 
