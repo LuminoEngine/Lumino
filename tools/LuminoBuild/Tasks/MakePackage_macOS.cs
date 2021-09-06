@@ -9,10 +9,10 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "MakePackage_macOS";
 
-        public override void Build(Builder builder)
+        public override void Build(Build builder)
         {
-            var orgName = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName);
-            var tmpName = Path.Combine(builder.LuminoBuildDir, builder.ReleasePackageName);
+            var orgName = Path.Combine(builder.BuildDir, builder.LocalPackageName);
+            var tmpName = Path.Combine(builder.BuildDir, builder.ReleasePackageName);
             Directory.Move(orgName, tmpName);
             if (!BuildEnvironment.FromCI)
             {

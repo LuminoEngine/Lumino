@@ -53,9 +53,9 @@ namespace LuminoBuild
             new TargetInfo(){ Name = "iOS-OS", LibraryExt = "*.a" },
         };
 
-        public static void Initialize(Builder builder)
+        public static void Initialize(Build builder)
         {
-            BuildToolsDir = Path.Combine(builder.LuminoRootDir, "build", "BuildTools");
+            BuildToolsDir = Path.Combine(builder.RootDir, "build", "BuildTools");
 
             FromCI = Environment.GetEnvironmentVariable("LN_BUILD_FROM_CI") != null;
 
@@ -65,15 +65,15 @@ namespace LuminoBuild
 
             Console.WriteLine("BuildEnv initialization succeeded");
             Console.WriteLine("  FromCI: {0}", FromCI);
-            Console.WriteLine("  RootDir: {0}", builder.LuminoRootDir);
+            Console.WriteLine("  RootDir: {0}", builder.RootDir);
         }
 
-        private static void InstallTools(Builder builder)
+        private static void InstallTools(Build builder)
         {
             // BuildExternalProjects のものたちは cmake install などで、各 Target ごとの ExternalInstall に入り、このフォルダは CI によりキャッシュされる。
             // しかし一部の、主に Header-only-library はリポジトリ内のファイルを直接参照するため、キャッシュされる別のフォルダに clone する。
             // (ExternalSource フォルダは全体で 5GB を超えるため、GitHub Actions の cache size に引っかかる。そのため必要なものだけ別フォルダに逃がす)
-            string buildCacheDir = Path.Combine(builder.LuminoBuildDir, "BuildCache");
+            string buildCacheDir = Path.Combine(builder.BuildDir, "BuildCache");
             if (!builder.ExistsCache(buildCacheDir))
             {
                 Directory.CreateDirectory(buildCacheDir);
@@ -147,11 +147,11 @@ namespace LuminoBuild
             {
                 foreach (string file in System.IO.Directory.GetFiles("imgui", "*.h"))
                 {
-                    File.Copy(file, Path.Combine(builder.LuminoRootDir, "include", "LuminoEngine", "UI", "imgui", System.IO.Path.GetFileName(file)), true);
+                    File.Copy(file, Path.Combine(builder.RootDir, "include", "LuminoEngine", "UI", "imgui", System.IO.Path.GetFileName(file)), true);
                 }
             }
 
-            string externalSourceDir = Path.Combine(builder.LuminoBuildDir, "ExternalSource");
+            string externalSourceDir = Path.Combine(builder.BuildDir, "ExternalSource");
             if (!builder.ExistsCache(externalSourceDir))
             {
                 Directory.CreateDirectory(externalSourceDir);

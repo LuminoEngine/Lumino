@@ -10,7 +10,7 @@ namespace LuminoBuild.Rules
     {
         public override string Name => "BuildPackage";
 
-        public override void Build(Builder builder)
+        public override void Build(Build builder)
         {
             var local = new BuildLocalPackage();
             local.Build(builder);

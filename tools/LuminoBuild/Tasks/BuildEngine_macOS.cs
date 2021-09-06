@@ -8,22 +8,22 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildEngine_macOS";
 
-        public override void Build(Builder builder)
+        public override void Build(Build builder)
         {
             BuildProject(builder);
         }
 
-        public void BuildProject(Builder builder)
+        public void BuildProject(Build builder)
         {
-            string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, $"macOS", BuildEnvironment.EngineInstallDirName);
+            string cmakeOutputDir = Path.Combine(builder.BuildDir, $"macOS", BuildEnvironment.EngineInstallDirName);
 
-            string buildDir = Path.Combine(builder.LuminoBuildDir, $"macOS", "EngineBuild");
+            string buildDir = Path.Combine(builder.BuildDir, $"macOS", "EngineBuild");
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);
 
             var args = new string[]
             {
-                $"{builder.LuminoRootDir}",
+                $"{builder.RootDir}",
                 $"-DCMAKE_INSTALL_PREFIX={cmakeOutputDir}",
                 $"-DLN_TARGET_ARCH:STRING=macOS",
                 $"-DLN_BUILD_TESTS=ON",

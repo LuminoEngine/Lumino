@@ -11,7 +11,7 @@ namespace LuminoBuild.Rules
     {
         public override string Name => "BuildLocalPackage";
 
-        public override void Build(Builder builder)
+        public override void Build(Build builder)
         {
             builder.DoTask("BuildExternalProjects");
 

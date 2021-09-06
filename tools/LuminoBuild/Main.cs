@@ -29,6 +29,7 @@ namespace LuminoBuild
                 //args = new string[] { "BuildExternalProjects", "Emscripten" };
                 //args = new string[] { "BuildExternalProjects", "Android-x86_64" };
                 //args = new string[] { "BuildExternalProjects", "MSVC2019-x86-MT" };
+                //args = new string[] { "BuildExternalProjects", "MSVC2019-x64-MD" };
                 //args = new string[] { "BuildEngine_MSVC", "MSVC2019-x64-MT" };
                 //args = new string[] { "BuildEngine_MSVC", "MSVC2019-x86-MT" };
                 //args = new string[] { "BuildEngine_Emscripten" };
@@ -37,28 +38,28 @@ namespace LuminoBuild
                 //args = new string[] { "BuildLLVM" };
                 //args = new string[] { "BuildEmbeddedResources" };
 
-                args = new string[] { "MakeNativePackage" };
+                //args = new string[] { "MakeNativePackage" };
                 //args = new string[] { "MakeInstaller_Win32" };
+
+                //args = new string[] { "BuildExternals" };
+                args = new string[] { "BuildEngine_MSVC" };
+
             }
 
-            Assembly thisAssembly = Assembly.GetEntryAssembly();
-            string exeDir = Path.GetDirectoryName(thisAssembly.Location);
-
-            var builder = new LuminoBuild.Builder();
+            var triplet = /*(args.Length >= 2) ? args[1] :*/ "x64-windows";
+            var builder = new Build(triplet);
             builder.Args = args;
 
-            builder.LuminoRootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../../")) + "/";
-            builder.LuminoBuildDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "build"));
             //builder.LuminoBuildCacheDir = Path.GetFullPath(Path.Combine(builder.LuminoBuildDir, "BuildCache"));
-            builder.LuminoBindingsDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "bindings"));
-            builder.LuminoLibDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "lib"));
-            builder.LuminoToolsDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "tools"));
-            builder.LuminoDocDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "docs"));
-            builder.LuminoSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "src"));
-            builder.LuminoPackageDir = Path.GetFullPath(Path.Combine(builder.LuminoBuildDir, "Package"));
+            builder.LuminoBindingsDir = Path.GetFullPath(Path.Combine(builder.RootDir, "bindings"));
+            builder.LuminoLibDir = Path.GetFullPath(Path.Combine(builder.RootDir, "lib"));
+            builder.LuminoToolsDir = Path.GetFullPath(Path.Combine(builder.RootDir, "tools"));
+            builder.LuminoDocDir = Path.GetFullPath(Path.Combine(builder.RootDir, "docs"));
+            builder.LuminoSourceDir = Path.GetFullPath(Path.Combine(builder.RootDir, "src"));
+            builder.LuminoPackageDir = Path.GetFullPath(Path.Combine(builder.BuildDir, "Package"));
             builder.LuminoPackageLibDir = Path.GetFullPath(Path.Combine(builder.LuminoPackageDir, "lib"));
-            builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "tools/PackageSource"));
-            builder.LuminoExternalDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "external"));
+            builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.RootDir, "tools/PackageSource"));
+            builder.LuminoExternalDir = Path.GetFullPath(Path.Combine(builder.RootDir, "external"));
 
             var positionalArgs = args.Where(x => !x.Contains("--")).ToList();
 
@@ -70,6 +71,7 @@ namespace LuminoBuild
             builder.Tasks = new List<LuminoBuild.BuildTask>();
             builder.Tasks.Add(new Tasks.SetupTools());
             builder.Tasks.Add(new Tasks.BuildExternalProjects());
+            builder.Tasks.Add(new Tasks.BuildExternals());
             builder.Tasks.Add(new Tasks.BuildLLVM());
             builder.Tasks.Add(new Tasks.BuildEngine_Linux());
             builder.Tasks.Add(new Tasks.BuildEngine_macOS());

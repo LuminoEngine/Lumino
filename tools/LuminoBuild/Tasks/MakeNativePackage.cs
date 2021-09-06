@@ -11,16 +11,16 @@ namespace LuminoBuild.Tasks
 
         public bool fileMoving = false;
 
-        public override void Build(Builder builder)
+        public override void Build(Build builder)
         {
-            string destinationRootDir = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName);
+            string destinationRootDir = Path.Combine(builder.BuildDir, builder.LocalPackageName);
             string destinationToolDir = Path.Combine(destinationRootDir, "Tools");
             Directory.CreateDirectory(destinationRootDir);
             Directory.CreateDirectory(destinationToolDir);
 
             foreach (var target in BuildEnvironment.Targets.Where(x => x.Package))
             {
-                string sourceBuildDir = Path.Combine(builder.LuminoBuildDir, target.Name);
+                string sourceBuildDir = Path.Combine(builder.BuildDir, target.Name);
                 if (Directory.Exists(sourceBuildDir))
                 {
                     Console.WriteLine($"{target.Name}...");
@@ -33,7 +33,7 @@ namespace LuminoBuild.Tasks
                     Directory.CreateDirectory(destinationEngineIncludeDir);
                     Directory.CreateDirectory(destinationEngineLibDir);
 
-                    string engineInstallDir = Path.Combine(builder.LuminoBuildDir, target.Name, BuildEnvironment.EngineInstallDirName);
+                    string engineInstallDir = Path.Combine(builder.BuildDir, target.Name, BuildEnvironment.EngineInstallDirName);
 
                     // Engine include
                     {
@@ -62,7 +62,7 @@ namespace LuminoBuild.Tasks
                     }
 
                     // External libs
-                    var externalInstallDir = Path.Combine(builder.LuminoBuildDir, target.Name, "ExternalInstall");
+                    var externalInstallDir = Path.Combine(builder.BuildDir, target.Name, "ExternalInstall");
                     foreach (var dir in Directory.EnumerateDirectories(externalInstallDir))
                     {
                         var srcDir = Path.Combine(dir, "lib");
@@ -83,13 +83,13 @@ namespace LuminoBuild.Tasks
                     // cmake
                     {
                         Utils.CopyFile2(
-                            Path.Combine(builder.LuminoRootDir, "src", "LuminoConfig.cmake"),
+                            Path.Combine(builder.RootDir, "src", "LuminoConfig.cmake"),
                             Path.Combine(destinationEngineRoot, "LuminoConfig.cmake"));
                         Utils.CopyFile2(
-                            Path.Combine(builder.LuminoRootDir, "src", "LuminoCommon.cmake"),
+                            Path.Combine(builder.RootDir, "src", "LuminoCommon.cmake"),
                             Path.Combine(destinationEngineRoot, "LuminoCommon.cmake"));
                         Utils.CopyFile2(
-                            Path.Combine(builder.LuminoRootDir, "external", "ImportExternalLibraries.cmake"),
+                            Path.Combine(builder.RootDir, "external", "ImportExternalLibraries.cmake"),
                             Path.Combine(destinationEngineRoot, "ImportExternalLibraries.cmake"));
                     }
                 }
@@ -101,7 +101,7 @@ namespace LuminoBuild.Tasks
 
                 if (Utils.IsWin32)
                 {
-                    var engineInstallDir = Path.Combine(builder.LuminoBuildDir, "MSVC2019-x64-MT", BuildEnvironment.EngineInstallDirName);
+                    var engineInstallDir = Path.Combine(builder.BuildDir, "MSVC2019-x64-MT", BuildEnvironment.EngineInstallDirName);
                     var sourceBinDir = Path.Combine(engineInstallDir, "bin");
                     if (Directory.Exists(sourceBinDir))
                     {
@@ -112,7 +112,7 @@ namespace LuminoBuild.Tasks
                 }
                 else if (Utils.IsMac)
                 {
-                    var engineInstallDir = Path.Combine(builder.LuminoBuildDir, "macOS", BuildEnvironment.EngineInstallDirName);
+                    var engineInstallDir = Path.Combine(builder.BuildDir, "macOS", BuildEnvironment.EngineInstallDirName);
                     var sourceBinDir = Path.Combine(engineInstallDir, "bin");
 
                     if (Directory.Exists(sourceBinDir))
@@ -120,7 +120,7 @@ namespace LuminoBuild.Tasks
                         Utils.CopyDirectory(sourceBinDir, destinationToolDir);
 
                         var setupFile = Path.Combine(destinationToolDir, "setup.sh");
-                        File.Copy(Path.Combine(builder.LuminoRootDir, "Tools", "PackageSource", "macOS", "setup.sh"), setupFile, true);
+                        File.Copy(Path.Combine(builder.RootDir, "Tools", "PackageSource", "macOS", "setup.sh"), setupFile, true);
                         Utils.chmod(setupFile, Utils.S_0755);
                     }
                 }
@@ -141,7 +141,7 @@ namespace LuminoBuild.Tasks
 
             // Engine assets
             {
-                var reposDir = Path.Combine(builder.LuminoBuildDir, "ExternalSource");
+                var reposDir = Path.Combine(builder.BuildDir, "ExternalSource");
                 using (var cd = CurrentDir.Enter(reposDir))
                 {
                     if (!Directory.Exists("noto-emoji"))
@@ -157,7 +157,7 @@ namespace LuminoBuild.Tasks
             }
         }
 
-        public static void GenerateReadme(Builder builder, string dstDir)
+        public static void GenerateReadme(Build builder, string dstDir)
         {
             // Readme
             Utils.GenerateFile(
@@ -166,7 +166,7 @@ namespace LuminoBuild.Tasks
                 new Dictionary<string, string> { { "%%LuminoVersion%%", builder.VersionString } });
         }
 
-        public static void CopyEngineLibs(Builder builder, string tempInstallDir, string nativeEngineRoot, bool fileMoving)
+        public static void CopyEngineLibs(Build builder, string tempInstallDir, string nativeEngineRoot, bool fileMoving)
         {
 #if false
             foreach (var arch in BuildEnvironment.TargetArchs)

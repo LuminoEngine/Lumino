@@ -10,7 +10,7 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildDocuments";
 
-        public override void Build(Builder builder)
+        public override void Build(Build builder)
         {
             Directory.SetCurrentDirectory(Path.Combine(builder.LuminoDocDir, "Doxygen"));
             Utils.TryCallProcess("doxygen", "Doxyfile");

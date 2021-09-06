@@ -15,9 +15,9 @@ namespace LuminoBuild
         public static string AndroidCMakeToolchain { get; set; }
 
 
-        public static void Initialize(Builder builder)
+        public static void Initialize(Build builder)
         {
-            string buildCacheDir = Path.Combine(builder.LuminoBuildDir, "BuildCache");
+            string buildCacheDir = Path.Combine(builder.BuildDir, "BuildCache");
 
 
             if (Utils.IsWin32)
@@ -35,7 +35,7 @@ namespace LuminoBuild
             // Install Android SDK
             if (BuildEnvironment.IsAndroidTarget && Utils.IsWin32)
             {
-                var javaHome = Path.Combine(builder.LuminoBuildDir, "Emscripten", "emsdk", "java", "8.152_64bit");
+                var javaHome = Path.Combine(builder.BuildDir, "Emscripten", "emsdk", "java", "8.152_64bit");
                 var javaPath = Path.Combine(javaHome, "bin");
                 var skdmanager = Path.Combine(AndroidSdkRootDir, "tools", "bin", (Utils.IsWin32) ? "sdkmanager.bat" : "sdkmanager");
                 var env = new Dictionary<string, string>()

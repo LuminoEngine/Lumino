@@ -8,7 +8,7 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildEngine_iOS";
 
-        public override void Build(Builder builder)
+        public override void Build(Build builder)
         {
             // framework 作成時は CMAKE_DEBUG_POSTFIX が効かないようなので個別に作る
             BuildProject(builder, "iOS-OS64", "OS64");
@@ -17,16 +17,16 @@ namespace LuminoBuild.Tasks
             //BuildProject(builder, "iOS-SIMULATOR64-Release", "Release", "SIMULATOR64");
         }
 
-        private void BuildProject(Builder builder, string buildDirName, string platform)
+        private void BuildProject(Build builder, string buildDirName, string platform)
         {
-            string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, buildDirName, BuildEnvironment.EngineInstallDirName);
+            string cmakeInstallDir = Path.Combine(builder.BuildDir, buildDirName, BuildEnvironment.EngineInstallDirName);
 
-            var iOSToolchainFile = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "ExternalSource", "ios-cmake", "ios.toolchain.cmake"));
-            var buildDir = Path.Combine(builder.LuminoBuildDir, buildDirName, "EngineBuild");
+            var iOSToolchainFile = Utils.ToUnixPath(Path.Combine(builder.BuildDir, "ExternalSource", "ios-cmake", "ios.toolchain.cmake"));
+            var buildDir = Path.Combine(builder.BuildDir, buildDirName, "EngineBuild");
             var generator = "Xcode";
             var args = new string[]
             {
-                $"{builder.LuminoRootDir}",
+                $"{builder.RootDir}",
                 $"-DCMAKE_INSTALL_PREFIX={cmakeInstallDir}",
                 $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\"",
                 $"-DPLATFORM={platform}",

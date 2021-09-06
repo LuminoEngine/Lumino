@@ -23,11 +23,11 @@ namespace LuminoBuild
         /// </summary>
         public static string EmscriptenSysRootLocal { get; set; }
 
-        public static void Initialize(Builder builder)
+        public static void Initialize(Build builder)
         {
             //var cloneParentDir = Path.Combine(builder.LuminoBuildCacheDir, "Tools");
-            var cloneParentDir = Path.Combine(builder.LuminoBuildDir, "Emscripten");
-            EmsdkDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "emsdk");
+            var cloneParentDir = Path.Combine(builder.BuildDir, "Emscripten");
+            EmsdkDir = Path.Combine(builder.BuildDir, "Emscripten", "emsdk");
             //EmsdkDir = Path.Combine(builder.LuminoBuildCacheDir, "Tools", "emsdk");
             EmscriptenRoot = Path.Combine(EmsdkDir, "upstream", "emscripten");
             EmscriptenSysRootLocal = Path.Combine(EmscriptenRoot, "system", "local");

@@ -8,7 +8,7 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildEmbeddedResources";
 
-        public override void Build(Builder builder)
+        public override void Build(Build builder)
         {
             var searchDirs = new string[]
             {
@@ -25,9 +25,9 @@ namespace LuminoBuild.Tasks
             }
         }
 
-        private void BuildFX(Builder builder, string searchDir)
+        private void BuildFX(Build builder, string searchDir)
         {
-            var compiler = Path.Combine(builder.LuminoRootDir, "build/MSVC2019-x64-MT/EngineBuild/src/LuminoEditor/CLI/Debug/lumino.exe");
+            var compiler = Path.Combine(builder.RootDir, "build/MSVC2019-x64-MT/EngineBuild/src/LuminoEditor/CLI/Debug/lumino.exe");
 
             foreach (var file in Directory.EnumerateFiles(searchDir, "*.fx", SearchOption.AllDirectories))
             {
@@ -41,7 +41,7 @@ namespace LuminoBuild.Tasks
             }
         }
 
-        private void BuildFXH(Builder builder, string searchDir)
+        private void BuildFXH(Build builder, string searchDir)
         {
             foreach (var file in Directory.EnumerateFiles(searchDir, "*.fxh", SearchOption.AllDirectories))
             {
@@ -53,9 +53,9 @@ namespace LuminoBuild.Tasks
             }
         }
 
-        private void BinaryToHexCSVHeader(Builder builder, string file)
+        private void BinaryToHexCSVHeader(Build builder, string file)
         {
-            var csv = Path.Combine(builder.LuminoRootDir, "tools/BinaryToIntArray/BinaryToIntArray.rb");
+            var csv = Path.Combine(builder.RootDir, "tools/BinaryToIntArray/BinaryToIntArray.rb");
             Utils.CallProcess("ruby", $"{csv} {file}");
         }
     }
