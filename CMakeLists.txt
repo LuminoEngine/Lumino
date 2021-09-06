@@ -13,6 +13,8 @@ option(LN_BUILD_TESTS "build unit test projects." ON)
 # build embedded shader transcompiler.
 option(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER "build tool projects.build embedded shader transcompiler." OFF)
 
+# MSVC Runtime library.
+option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." OFF)
 
 
 
@@ -100,6 +102,7 @@ else()
 endif()
 
 
+include(${CMAKE_CURRENT_LIST_DIR}/lumino/LuminoCore/cmake/LuminoCommon.cmake)
 
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
