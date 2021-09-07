@@ -41,8 +41,8 @@ namespace LuminoBuild
                 //args = new string[] { "MakeNativePackage" };
                 //args = new string[] { "MakeInstaller_Win32" };
 
-                //args = new string[] { "BuildExternals" };
-                args = new string[] { "BuildEngine_MSVC" };
+                args = new string[] { "BuildExternals" };
+                //args = new string[] { "BuildEngine_MSVC" };
 
             }
 

@@ -1,9 +1,11 @@
 ﻿#include "Common.hpp"
+
+#if 0
 //#include <Lumino/Base/Serialization.h>
-#include <Lumino/Json/JsonDocument.h>
+#include <LuminoCore/Json/JsonDocument.h>
 //#include <Lumino/Reflection/ReflectionObject.h>
 //#include <Lumino/Base/Uuid.h>
-#include <Lumino/Serialization/Serialization2.h>
+#include <LuminoCore/Serialization/Serialization2.h>
 
 //------------------------------------------------------------------------------
 //## Ref<> を通した Object の serialize をしてほしい
@@ -306,4 +308,6 @@ TEST_F(Test_Serialization2, DefaultValue)
 		ASSERT_EQ(55, t.z);
 	}
 }
+
+#endif
 

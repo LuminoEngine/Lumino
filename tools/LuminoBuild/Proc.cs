@@ -118,7 +118,8 @@ namespace LuminoBuild
 
                     if (p.ExitCode != 0)
                     {
-                        Console.WriteLine(sbAll.ToString());
+                        Console.Error.WriteLine(sbAll.ToString());
+                        Logger.WriteLineError($"Error: {Program} {Args}");
                         throw new InvalidOperationException($"Failed Process. ExitCode: {p.ExitCode}");
                     }
                     return sb.ToString();

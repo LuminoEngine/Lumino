@@ -7,7 +7,7 @@
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include "../Platform/TextInputMethodSystem.hpp"
-#include "../../../Core/src/Text/UnicodeUtils.hpp"
+#include <LuminoCore/Base/UnicodeUtils.hpp>
 #include "../Font/FontCore.hpp"
 #include "UIStyleInstance.hpp"
 #include "UIEditableTextArea.hpp"

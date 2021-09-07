@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoCore/Base/String.hpp>
-#include "UnicodeUtils.hpp"
+#include <LuminoCore/Base/UnicodeUtils.hpp>
 #include "DBCSEncoding.hpp"
 
 // SJIS

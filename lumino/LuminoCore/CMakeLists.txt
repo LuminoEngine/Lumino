@@ -7,8 +7,10 @@ project (LuminoCore)
 
 #include(${PROJECT_SOURCE_DIR}/../LuminoCommon.cmake NO_POLICY_SCOPE)
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Files
+#-------------------------------------------------------------------------------
+
 include(LuminoCoreSources.cmake)
 
 set(LN_SOURCES
@@ -16,8 +18,9 @@ set(LN_SOURCES
     src/LuminoCore.PCH.cpp
     src/LuminoCore.PCH.h)
 
-#------------------------------------------------------------------------------
-# Apply options
+#-------------------------------------------------------------------------------
+# Configuration
+#-------------------------------------------------------------------------------
 
 if (WIN32)
     list(APPEND LN_LINK_LIBS "imagehlp.lib")
@@ -32,8 +35,9 @@ elseif (UNIX)
 
 endif()
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Targets
+#-------------------------------------------------------------------------------
 
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC  
@@ -41,7 +45,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     #$<INSTALL_INTERFACE:../../include>  # <prefix>/include
 )
 target_include_directories(${PROJECT_NAME} PRIVATE src)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LN_LINK_LIBS})
+
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
 
@@ -66,13 +73,9 @@ if (LN_BUILD_XCODE_FRAMEWORK)
     install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoCore.hpp DESTINATION "LuminoCore.framework/Headers")
 endif()
 
-# Unit test.
-if (LN_BUILD_TESTS)
-    add_subdirectory(test)
-endif()
-
-#------------------------------------------------------------------------------
-# Install
+#-------------------------------------------------------------------------------
+# Installation
+#-------------------------------------------------------------------------------
 
 install(TARGETS ${PROJECT_NAME}
     EXPORT LuminoCoreTargets
@@ -95,3 +98,11 @@ install(
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH})
+
+#-------------------------------------------------------------------------------
+# Sub-projects
+#-------------------------------------------------------------------------------
+
+if (LN_BUILD_TESTS)
+    add_subdirectory(test)
+endif()

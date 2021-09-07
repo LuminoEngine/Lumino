@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "UnicodeUtils.hpp"
+#include <LuminoCore/Base/UnicodeUtils.hpp>
 #include "UTF8Encoding.hpp"
 
 namespace ln {

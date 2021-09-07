@@ -4,7 +4,7 @@
 #include "Internal.hpp"
 #include <Windows.h>
 #include <vector>
-#include "UnicodeUtils.hpp"
+#include <LuminoCore/Base/UnicodeUtils.hpp>
 #include "Win32CodePageEncoding.hpp"
 
 namespace ln {

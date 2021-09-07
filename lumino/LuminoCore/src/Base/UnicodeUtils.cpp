@@ -1,6 +1,6 @@
 ﻿
 #include <stdio.h>
-#include "UnicodeUtils.hpp"
+#include <LuminoCore/Base/UnicodeUtils.hpp>
 
 namespace ln {
 

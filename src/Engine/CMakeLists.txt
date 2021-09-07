@@ -2,8 +2,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(LuminoEngine)
 
-include(../Core/LuminoCoreSources.cmake)
-
 set(LN_ENGINE_INCLUDE_DIR ${LUMINO_ROOT_PATH}/include)
 
 #------------------------------------------------------------------------------

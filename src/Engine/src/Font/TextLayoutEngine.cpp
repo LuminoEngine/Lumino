@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Font/Font.hpp>
-#include "../../Core/src/Text/UnicodeUtils.hpp"
+#include <LuminoCore/Base/UnicodeUtils.hpp>
 #include "TextLayoutEngine.hpp"
 
 namespace ln {

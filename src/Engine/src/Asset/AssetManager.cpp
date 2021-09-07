@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "../../Core/src/IO/PathHelper.hpp"
+#include "../../../../lumino/LuminoCore/src/IO/PathHelper.hpp"
 //#include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>

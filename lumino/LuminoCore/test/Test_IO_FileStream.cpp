@@ -28,17 +28,6 @@ TEST_F(Test_IO_FileStream, getFileSize)
 }
 
 //------------------------------------------------------------------------------
-//## FileNotFound test
-TEST_F(Test_IO_FileStream, FileNotFound)
-{
-	auto f1 = FileStream::create(_T("aaa"), FileOpenMode::Read);
-	ASSERT_EQ(false, valid(f1));
-
-	//auto f2 = FileStream(_T("bbb"), FileOpenMode::read);
-	//ASSERT_EQ(false, valid(f1));
-}
-
-//------------------------------------------------------------------------------
 //## open mode test
 TEST_F(Test_IO_FileStream, open)
 {

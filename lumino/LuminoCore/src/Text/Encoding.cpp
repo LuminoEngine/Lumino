@@ -5,7 +5,7 @@
 #include <LuminoCore/Base/Buffer.hpp>
 #include <LuminoCore/Base/String.hpp>
 #include <LuminoCore/Text/Encoding.hpp>
-#include "UnicodeUtils.hpp"
+#include <LuminoCore/Base/UnicodeUtils.hpp>
 #include "ASCIIEncoding.hpp"
 #include "UTF8Encoding.hpp"
 #include "UTF16Encoding.hpp"

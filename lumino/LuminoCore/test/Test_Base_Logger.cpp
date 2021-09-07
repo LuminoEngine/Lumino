@@ -1,6 +1,7 @@
 ﻿#include "Common.hpp"
 #include <LuminoCore/Base/String.hpp>
 #include <LuminoCore/Base/Logger.hpp>
+#include <LuminoCore/IO/Path.hpp>
 
 //==============================================================================
 //# Logger
