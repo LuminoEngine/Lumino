@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 	}
 	catch (ln::Exception& e)
 	{
-		ln::String m = e.getMessage();
+		ln::String m = e.message();
 		std::cout << m << std::endl;
 		exitCode = 1;
 	}
@@ -119,11 +119,11 @@ static int commnad_localInitialSetup(const char* packageDir_)
 
 			for (int i = beginLine; i < endLine; i++) {
 				if (lines[i].indexOf("export LUMINO_PATH") == 0) {
-					lines[i] = ln::String::format(u"export LUMINO_PATH={0}", packageDir);
+					lines[i] = ln::String::format(u"export LUMINO_PATH={0}", packageDir.str());
 					CLI::info(u"LUMINO_PATH updating.");
 				}
 				if (lines[i].indexOf("export PATH") == 0) {
-					lines[i] = ln::String::format(u"export PATH=$PATH:{0}", toolsDir);
+					lines[i] = ln::String::format(u"export PATH=$PATH:{0}", toolsDir.str());
 					CLI::info(u"PATH updating.");
 				}
 			}
@@ -135,8 +135,8 @@ static int commnad_localInitialSetup(const char* packageDir_)
 	if (!added) {
 		lines.add(u"");
 		lines.add(u"# [Lumino begin]");
-		lines.add(ln::String::format(u"export LUMINO_PATH={0}", packageDir));
-		lines.add(ln::String::format(u"export PATH=$PATH:{0}", toolsDir));
+		lines.add(ln::String::format(u"export LUMINO_PATH={0}", packageDir.str()));
+		lines.add(ln::String::format(u"export PATH=$PATH:{0}", toolsDir.str()));
 		lines.add(u"# [Lumino end]");
 	}
 
@@ -146,7 +146,7 @@ static int commnad_localInitialSetup(const char* packageDir_)
 		w.writeLine(line);
 	}
 
-	CLI::info(ln::String::format(u"Lumino environment variable added to {0}.", profile));
+	CLI::info(ln::String::format(u"Lumino environment variable added to {0}.", profile.str()));
 	return 0;
 }
 

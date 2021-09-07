@@ -160,7 +160,7 @@ ln::Result CppLanguageContext::build_NativeCMakeTarget() const
 	// for tool development and debuging.
 	auto& envSettings = project()->workspace()->buildEnvironment();
 	if (lna::Workspace::developMode) {
-		args.add(ln::String::format(u"-DLUMINO_REPO_ROOT=\"{0}\"", envSettings->engineDevelopmentRepoRootDir()));
+		args.add(ln::String::format(u"-DLUMINO_REPO_ROOT=\"{0}\"", envSettings->engineDevelopmentRepoRootDir().str()));
 	}
 
 	auto buildDir = ln::Path(project()->acquireBuildDir(), arch);
@@ -209,10 +209,10 @@ ln::Result CppLanguageContext::build_WebTarget() const
 		};
 
 		ln::StreamWriter sw(script);
-		sw.writeLineFormat(u"cd /d \"{0}\"", workspace->buildEnvironment()->emsdkDirPath());
+		sw.writeLineFormat(u"cd /d \"{0}\"", workspace->buildEnvironment()->emsdkDirPath().str());
 		sw.writeLineFormat(u"call emsdk activate " + workspace->buildEnvironment()->emsdkName());
 		sw.writeLineFormat(u"call emsdk_env.bat");
-		sw.writeLineFormat(u"cd /d \"{0}\"", buildDir);
+		sw.writeLineFormat(u"cd /d \"{0}\"", buildDir.str());
 		sw.writeLineFormat(u"call emcmake cmake " + ln::String::join(emcmakeArgs, u" "));
 		sw.writeLineFormat(u"call cmake --build .");
 	}

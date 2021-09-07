@@ -71,8 +71,8 @@ void BuildEnvironment::setupPathes(bool developMode)
 			}
 		}
 
-		CLI::verbose(ln::String::format(u"PackageRootDir: {0}", m_luminoPackageRootDir));
-		CLI::verbose(ln::String::format(u"ProjectTemplatesDir: {0}", m_projectTemplatesDirPath));
+		CLI::verbose(ln::String::format(u"PackageRootDir: {0}", m_luminoPackageRootDir.str()));
+		CLI::verbose(ln::String::format(u"ProjectTemplatesDir: {0}", m_projectTemplatesDirPath.str()));
 	}
 
 
@@ -241,9 +241,9 @@ ln::Result BuildEnvironment::prepareEmscriptenSdk()
 			}
 		}
 
-		CLI::verbose(ln::String::format(u"EmsdkRootDir: {0}", m_emsdkRootDir));
-		CLI::verbose(ln::String::format(u"EmscriptenRootDir: {0}", m_emscriptenRootDir));
-		CLI::verbose(ln::String::format(u"EmscriptenSysLocal: {0}", m_emscriptenSysRootLocal));
+		CLI::verbose(ln::String::format(u"EmsdkRootDir: {0}", m_emsdkRootDir.str()));
+		CLI::verbose(ln::String::format(u"EmscriptenRootDir: {0}", m_emscriptenRootDir.str()));
+		CLI::verbose(ln::String::format(u"EmscriptenSysLocal: {0}", m_emscriptenSysRootLocal.str()));
 
 		if (!ln::FileSystem::existsDirectory(m_emscriptenSysRootLocal)) {
 			CLI::fatal(u"Not found 'EmscriptenSysLocal' directory.");
@@ -255,7 +255,7 @@ ln::Result BuildEnvironment::prepareEmscriptenSdk()
 		auto engineRoot = ln::Path::combine(m_emscriptenSysRootLocal, u"LuminoEngine");
 		if (!ln::FileSystem::existsDirectory(engineRoot)) {
 			auto src = ln::Path::combine(m_luminoPackageEngineDir, u"Emscripten");
-			CLI::info(ln::String::format(u"Copy Engine '{0}' to '{1}'", src, engineRoot));
+			CLI::info(ln::String::format(u"Copy Engine '{0}' to '{1}'", src.str(), engineRoot.str()));
 			ln::FileSystem::copyDirectory(src, engineRoot, true, true);
 		}
 	}

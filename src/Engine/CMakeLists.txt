@@ -296,7 +296,9 @@ elseif (WIN32)
         list(APPEND LN_PLATFORM_LIBS LN::FBX)
     endif()
     
-    
+    # TODO: lib 分割したい
+    add_definitions(/bigobj)
+
     #if (LN_USE_VULKAN)
     #    list(APPEND LN_PLATFORM_LIBS VulkanImported)
     #endif()

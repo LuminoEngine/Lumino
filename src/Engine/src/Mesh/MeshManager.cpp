@@ -370,7 +370,7 @@ Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& 
 	Path path(parentDir, filePath);
 
 	if (!m_assetManager->existsFile(path)) {
-		diag->reportWarning(String::format(u"Texture file not found: {0}", path));
+		diag->reportWarning(String::format(u"Texture file not found: {0}", path.str()));
 		return nullptr;
 	}
 
