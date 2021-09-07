@@ -35,19 +35,19 @@ public:
 
 	/// 文字がディレクトリセパレータ (DirectorySeparatorChar or AltDirectorySeparatorChar) であるかを判定する
 	template<typename TChar>
-	static bool isSeparatorChar(TChar ch);
+	static bool isSeparatorChar(TChar ch) noexcept;
 
 	/// ボリュームセパレータであるかを判定する
 	template<typename TChar>
-	static bool isVolumeSeparatorChar(TChar ch);
+	static bool isVolumeSeparatorChar(TChar ch) noexcept;
 
 	/// path がルートパスであるかを判定する ("C:/", "C:", "/" 等)
 	template<typename TChar>
-	static bool isRootPath(const TChar* path, int len);
+	static bool isRootPath(const TChar* path, int len) noexcept;
 
 	/// path が絶対パスであるかを判定する ("C:/AAA"、"/AAA" 両方判定)
 	template<typename TChar>
-	static bool isAbsolutePath(const TChar* path, int len = -1);
+	static bool isAbsolutePath(const TChar* path, int len = -1) noexcept;
 
 	/** 文字列の末尾がディレクトリセパレータであるかを確認します。*/
 	template<typename TChar>
@@ -147,19 +147,6 @@ public:
 	//template<typename TChar>
 	//static void canonicalizePath(const TChar* srcPath, TChar* outPath);
 
-	/**
-		@brief		パスを単純化する
-		@return		-1 を返した場合は失敗。
-		@details	このオーバーロードは現在内部処理用です。
-	*/
-	template<typename TChar>
-	static int canonicalizePath(const TChar* srcPath, size_t srcLen, TChar* outPath, size_t outPathSize);
-
-	/**
-		@brief		パスに含まれるディレクトリセパレータを統一する。
-	*/
-	template<typename TChar>
-	static void normalizeSeparator(TChar* srcPath);
 
 	/**
 		@brief		2つのパス文字列を比較する
@@ -169,7 +156,21 @@ public:
 		@details	DirectorySeparatorChar と AltDirectorySeparatorChar は等価とみなします。
 	*/
 	template<typename TChar>
-	static int comparePathString(const TChar* path1, int len1, const TChar* path2, int len);
+	static int comparePathString(const TChar* path1, int len1, const TChar* path2, int len) noexcept;
+
+	/**
+		@brief		パスを単純化する
+		@return		-1 を返した場合は失敗。
+		@details	このオーバーロードは現在内部処理用です。
+	*/
+	template<typename TChar>
+	static int canonicalizePath(const TChar* srcPath, size_t srcLen, TChar* outPath, size_t outPathSize) noexcept;
+
+	/**
+		@brief		パスに含まれるディレクトリセパレータを統一する。
+	*/
+	template<typename TChar>
+	static void normalizeSeparator(TChar* srcPath);
 
 
 
@@ -195,3 +196,5 @@ public:
 
 } // namespace ln
 } // namespace detail
+
+#include "PathHelper.ipp"

@@ -51,17 +51,17 @@ public:
 #endif
 
 	template<typename TChar>
-	static int indexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
+	static int indexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) noexcept;
 
 	template<typename TChar>
-	static int lastIndexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex, int count, CaseSensitivity cs);
+	static int lastIndexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex, int count, CaseSensitivity cs) noexcept;
 
 	template<typename TChar>
-	static int compare(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int count, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
+	static int compare(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int count, CaseSensitivity cs = CaseSensitivity::CaseSensitive) noexcept;
 	template<typename TChar>
-	static int compare(const TChar* str1, const TChar* str2, int count, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
+	static int compare(const TChar* str1, const TChar* str2, int count, CaseSensitivity cs = CaseSensitivity::CaseSensitive) noexcept;
 	template<typename TChar>
-	static int compare(TChar ch1, TChar ch2, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
+	static int compare(TChar ch1, TChar ch2, CaseSensitivity cs = CaseSensitivity::CaseSensitive) noexcept;
 
 	template<typename TChar>
 	static void trim(const TChar* begin, int length, const TChar** outBegin, int* outLength);
@@ -84,18 +84,18 @@ public:
 
 	// not affected locale
 	template<typename TChar>
-	static TChar toUpper(TChar ch);
+	static TChar toUpper(TChar ch) noexcept;
 
 	// not affected locale
 	template<typename TChar>
-	static TChar toLower(TChar ch);
+	static TChar toLower(TChar ch) noexcept;
 
 	// not affected locale
 	template<typename TChar>
-	static bool isSpace(TChar ch) { return (0 < ch && ch <= 255) ? (isspace(ch) != 0) : false; }
+	static bool isSpace(TChar ch) noexcept { return (0 < ch && ch <= 255) ? (isspace(ch) != 0) : false; }
 
 	template<typename TChar>
-	static bool isNullOrEmpty(const TChar* str) { return !str || str[0] == '\0'; }
+	static bool isNullOrEmpty(const TChar* str) noexcept { return !str || str[0] == '\0'; }
 
 	template<typename TChar, typename TLookuped>
 	static void SplitHelper(const TChar* begin, const TChar* end, const TChar* delim, int delimLen, StringSplitOptions option, CaseSensitivity cs, TLookuped callback)
@@ -301,3 +301,4 @@ public:
 
 } // namespace ln
 
+#include "StringHelper.ipp"

@@ -234,7 +234,7 @@ void ExceptionHelper::setMessage(Exception& e, const UStdString& str)
 //#if LN_USTRING32
 //	e.m_message = UnicodeStringUtils::U16ToU32(str.c_str(), str.length());
 //#else
-//	e.m_message = str;
+	e.m_message = str;
 //#endif
 }
 

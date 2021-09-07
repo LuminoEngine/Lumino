@@ -18,34 +18,6 @@
 
 namespace ln {
 
-template<typename TChar>
-static int my_strncmp(const TChar* str1, const TChar* str2, size_t count) LN_NOEXCEPT
-{
-	for (; 0 < count; --count, ++str1, ++str2)
-	{
-		if (*str1 != *str2)
-		{
-			return (*str1 < *str2) ? -1 : 1;
-		}
-	}
-	return 0;
-}
-
-template<typename TChar>
-static int my_strnicmp(const TChar* str1, const TChar* str2, size_t count) LN_NOEXCEPT
-{
-	for (; 0 < count; --count, ++str1, ++str2)
-	{
-		TChar c1 = StringHelper::toUpper(*str1);
-		TChar c2 = StringHelper::toUpper(*str2);
-		if (c1 != c2)
-		{
-			return (c1 < c2) ? -1 : 1;
-		}
-	}
-	return 0;
-}
-
 //==============================================================================
 // StringHelper
 
@@ -79,33 +51,6 @@ int StringHelper::vsprintf2(wchar_t* out, int charCount, const wchar_t* format, 
 	return r;
 }
 
-template<typename TChar>
-TChar StringHelper::toUpper(TChar ch)
-{
-	if ('a' <= ch && ch <= 'z')
-		return 'A' + (ch - 'a');
-	return ch;
-}
-template char StringHelper::toUpper<char>(char ch);
-template wchar_t StringHelper::toUpper<wchar_t>(wchar_t ch);
-//template UTF8 StringHelper::toUpper<UTF8>(UTF8 ch);
-//template UTF16 StringHelper::toUpper<UTF16>(UTF16 ch);
-//template UTF32 StringHelper::toUpper<UTF32>(UTF32 ch);
-template char16_t StringHelper::toUpper<char16_t>(char16_t ch);
-
-template<typename TChar>
-TChar StringHelper::toLower(TChar ch)
-{
-	if ('A' <= ch && ch <= 'Z')
-		return 'a' + (ch - 'A');
-	return ch;
-}
-template char StringHelper::toLower<char>(char ch);
-template wchar_t StringHelper::toLower<wchar_t>(wchar_t ch);
-//template UTF8 StringHelper::toLower<UTF8>(UTF8 ch);
-//template UTF16 StringHelper::toLower<UTF16>(UTF16 ch);
-//template UTF32 StringHelper::toLower<UTF32>(UTF32 ch);
-template char16_t StringHelper::toLower<char16_t>(char16_t ch);
 
 //template<typename TChar>
 //bool StringHelper::isSpace(TChar ch)
@@ -117,215 +62,7 @@ template char16_t StringHelper::toLower<char16_t>(char16_t ch);
 //template bool StringHelper::isSpace(UTF32 ch);
 
 
-template<typename TChar>
-int StringHelper::indexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex, CaseSensitivity cs)
-{
-	if (LN_ENSURE(str1 && str2)) return -1;
 
-	if (*str1 == 0) {
-		return -1;
-	}
-
-	str1Len = (str1Len < 0) ? ((int)strlen(str1)) : str1Len;
-	if (str1Len <= startIndex) { return -1; }
-
-	str2Len = (str2Len < 0) ? ((int)strlen(str2)) : str2Len;
-	if (str2Len <= 0) { return -1; }
-
-	const TChar* pos = str1 + startIndex;
-
-	// 大文字小文字を区別する
-	if (cs == CaseSensitivity::CaseSensitive)
-	{
-		for (; *pos; ++pos)
-		{
-			if (*pos == *str2)
-			{
-				if (my_strncmp(pos, str2, str2Len) == 0)
-				{
-					return (int)(pos - str1);
-				}
-			}
-		}
-	}
-	// 大文字小文字を区別しない
-	else
-	{
-		for (; *pos; ++pos)
-		{
-			if (my_strnicmp(pos, str2, str2Len) == 0)
-			{
-				return (int)(pos - str1);
-			}
-		}
-	}
-
-	return -1;
-}
-template int StringHelper::indexOf<char>(const char* str1, int str1Len, const char* str2, int str2Len, int startIndex, CaseSensitivity cs);
-template int StringHelper::indexOf<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, int startIndex, CaseSensitivity cs);
-template int StringHelper::indexOf<char16_t>(const char16_t* str1, int str1Len, const char16_t* str2, int str2Len, int startIndex, CaseSensitivity cs);
-
-template<typename TChar>
-int StringHelper::lastIndexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex, int count, CaseSensitivity cs)
-{
-	const TChar nullStr[] = { '\0' };
-
-	str1 = (str1 == nullptr) ? nullStr : str1;
-	str2 = (str2 == nullptr) ? nullStr : str2;
-	str1Len = static_cast<int>((str1Len < 0) ? strlen(str1) : str1Len);
-	str2Len = static_cast<int>((str2Len < 0) ? strlen(str2) : str2Len);
-	startIndex = (startIndex < 0) ? (str1Len - 1) : startIndex;
-
-	// 検索対象文字列の長さが 0 の場合は特別な前提処理
-	if (str1Len == 0 && (startIndex == -1 || startIndex == 0)) {
-		return (str2Len == 0) ? 0 : -1;
-	}
-
-	if (LN_ENSURE(startIndex >= 0)) return -1;			// startIndex は 0 以上でなければならない。
-	if (LN_ENSURE(startIndex < str1Len)) return -1;		// startIndex は str1 の長さを超えてはならない。
-
-														// 検索文字数が 0 の場合は必ず検索開始位置でヒットする (strstr と同じ動作)
-	if (str2Len == 0 && count >= 0 && startIndex - count + 1 >= 0) {
-		return startIndex;
-	}
-
-	const TChar* pos = str1 + startIndex;							// 検索範囲の末尾の文字を指す。
-	const TChar* end = (count < 0) ? str1 : pos - (count - 1);		// 検索範囲の先頭の文字を指す。
-	if (LN_ENSURE(end <= pos)) return -1;						// 末尾と先頭が逆転してないこと。
-
-	if (pos - end < (str2Len - 1)) {
-		return -1;	// 検索範囲が検索文字数よりも少ない場合は見つかるはずがない
-	}
-
-	pos -= (str2Len - 1);
-
-	// 大文字小文字を区別する
-	if (cs == CaseSensitivity::CaseSensitive)
-	{
-		// 後ろから前へ見ていく
-		while (pos >= end)
-		{
-			if (my_strncmp(pos, str2, str2Len) == 0) {
-				return (int)(pos - str1);
-			}
-			--pos;
-		}
-	}
-	// 大文字小文字を区別しない
-	else
-	{
-		// 後ろから前へ見ていく
-		while (pos >= end)
-		{
-			if (my_strnicmp(pos, str2, str2Len) == 0) {
-				return (int)(pos - str1);
-			}
-			--pos;
-		}
-	}
-	return -1;
-}
-template int StringHelper::lastIndexOf<char>(const char* str1, int str1Len, const char* str2, int str2Len, int startIndex, int count, CaseSensitivity cs);
-template int StringHelper::lastIndexOf<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, int startIndex, int count, CaseSensitivity cs);
-template int StringHelper::lastIndexOf<char16_t>(const char16_t* str1, int str1Len, const char16_t* str2, int str2Len, int startIndex, int count, CaseSensitivity cs);
-
-template<typename TChar>
-int StringHelper::compare(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int count, CaseSensitivity cs)
-{
-	if (str1 == nullptr || str2 == nullptr)
-	{
-		if (str1 == nullptr && str2 == nullptr) {
-			return 0;
-		}
-		else if (str1 == nullptr) {
-			return -1;		// NULL < ""
-		}
-		else {
-			return 1;		// "" > NULL
-		}
-	}
-
-	// 必要があれば文字数カウント
-	str1Len = (str1Len < 0) ? static_cast<int>(strlen(str1)) : str1Len;
-	str2Len = (str2Len < 0) ? static_cast<int>(strlen(str2)) : str2Len;
-	int minCount = std::min(str1Len, str2Len);
-	int maxCount = std::max(str1Len, str2Len);
-
-	// チェックする文字数
-	if (count < 0)
-	{
-		count = maxCount;
-	}
-	else
-	{
-		maxCount = count;
-		count = LN_MIN(minCount, count);
-	}
-
-	if (cs == CaseSensitivity::CaseSensitive)
-	{
-		while (count > 0)
-		{
-			if (*str1 != *str2) {
-				return ((unsigned int)(*str1)) - ((unsigned int)(*str2));
-			}
-			//if (*str1 == 0) {
-			//	break;
-			//}
-			++str1;
-			++str2;
-			--count;
-		}
-	}
-	else
-	{
-		while (count > 0)
-		{
-			if (toUpper(*str1) != toUpper(*str2)) {
-				return ((unsigned int)(toUpper(*str1))) - ((unsigned int)(toUpper(*str2)));
-			}
-			//if (*str1 == 0) {
-			//	break;
-			//}
-			++str1;
-			++str2;
-			--count;
-		}
-	}
-
-	if (minCount < maxCount)
-	{
-		return str1Len - str2Len;
-	}
-	return 0;
-}
-template int StringHelper::compare<char>(const char* str1, int str1Len, const char* str2, int str2Len, int count, CaseSensitivity cs);
-template int StringHelper::compare<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, int count, CaseSensitivity cs);
-template int StringHelper::compare<char16_t>(const char16_t* str1, int str1Len, const char16_t* str2, int str2Len, int count, CaseSensitivity cs);
-
-template<typename TChar>
-int StringHelper::compare(const TChar* str1, const TChar* str2, int count, CaseSensitivity cs)
-{
-	return compare(str1, -1, str2, -1, count, cs);
-}
-template int StringHelper::compare<char>(const char* str1, const char* str2, int count, CaseSensitivity cs);
-template int StringHelper::compare<wchar_t>(const wchar_t* str1, const wchar_t* str2, int count, CaseSensitivity cs);
-template int StringHelper::compare<char16_t>(const char16_t* str1, const char16_t* str2, int count, CaseSensitivity cs);
-
-template<typename TChar>
-int StringHelper::compare(TChar ch1, TChar ch2, CaseSensitivity cs)
-{
-	if (cs == CaseSensitivity::CaseSensitive) {
-		return ((unsigned int)(ch1)) - ((unsigned int)(ch2));
-	}
-	else {
-		return ((unsigned int)(toUpper(ch1))) - ((unsigned int)(toUpper(ch2)));
-	}
-}
-template int StringHelper::compare<char>(char ch1, char ch2, CaseSensitivity cs);
-template int StringHelper::compare<wchar_t>(wchar_t ch1, wchar_t ch2, CaseSensitivity cs);
-template int StringHelper::compare<char16_t>(char16_t ch1, char16_t ch2, CaseSensitivity cs);
 
 template<typename TChar>
 void StringHelper::trim(const TChar* begin, int length, const TChar** outBegin, int* outLength)
@@ -366,7 +103,7 @@ void StringHelper::trim(const TChar* begin, int length, const TChar** outBegin, 
 }
 template void StringHelper::trim<char>(const char* begin, int length, const char** outBegin, int* outLength);
 template void StringHelper::trim<wchar_t>(const wchar_t* begin, int length, const wchar_t** outBegin, int* outLength);
-template void StringHelper::trim<char16_t>(const char16_t* begin, int length, const char16_t** outBegin, int* outLength);
+template void StringHelper::trim<Char>(const Char* begin, int length, const Char** outBegin, int* outLength);
 
 template<typename TChar>
 bool StringHelper::startsWith(const TChar* str1, int len1, const TChar* str2, int len2, CaseSensitivity cs)
@@ -375,7 +112,7 @@ bool StringHelper::startsWith(const TChar* str1, int len1, const TChar* str2, in
 }
 template bool StringHelper::startsWith<char>(const char* str1, int len1, const char* str2, int len2, CaseSensitivity cs);
 template bool StringHelper::startsWith<wchar_t>(const wchar_t* str1, int len1, const wchar_t* str2, int len2, CaseSensitivity cs);
-template bool StringHelper::startsWith<char16_t>(const char16_t* str1, int len1, const char16_t* str2, int len2, CaseSensitivity cs);
+template bool StringHelper::startsWith<Char>(const Char* str1, int len1, const Char* str2, int len2, CaseSensitivity cs);
 
 template<typename TChar>
 bool StringHelper::endsWith(const TChar* str1, int len1, const TChar* str2, int len2, CaseSensitivity cs)
@@ -418,7 +155,7 @@ bool StringHelper::endsWith(const TChar* str1, int len1, const TChar* str2, int 
 }
 template bool StringHelper::endsWith<char>(const char* str1, int len1, const char* str2, int len2, CaseSensitivity cs);
 template bool StringHelper::endsWith<wchar_t>(const wchar_t* str1, int len1, const wchar_t* str2, int len2, CaseSensitivity cs);
-template bool StringHelper::endsWith<char16_t>(const char16_t* str1, int len1, const char16_t* str2, int len2, CaseSensitivity cs);
+template bool StringHelper::endsWith<Char>(const Char* str1, int len1, const Char* str2, int len2, CaseSensitivity cs);
 
 template<typename TChar>
 void StringHelper::substr(const TChar* str, int len, int start, int count, const TChar** outBegin, const TChar** outEnd)
@@ -453,7 +190,7 @@ void StringHelper::substr(const TChar* str, int len, int start, int count, const
 }
 template void StringHelper::substr<char>(const char* str, int len, int start, int count, const char** outBegin, const char** outEnd);
 template void StringHelper::substr<wchar_t>(const wchar_t* str, int len, int start, int count, const wchar_t** outBegin, const wchar_t** outEnd);
-template void StringHelper::substr<char16_t>(const char16_t* str, int len, int start, int count, const char16_t** outBegin, const char16_t** outEnd);
+template void StringHelper::substr<Char>(const Char* str, int len, int start, int count, const Char** outBegin, const Char** outEnd);
 
 template<typename TChar>
 void StringHelper::left(const TChar* str, int count, const TChar** outBegin, const TChar** outEnd)
@@ -470,7 +207,7 @@ void StringHelper::left(const TChar* str, int count, const TChar** outBegin, con
 }
 template void StringHelper::left<char>(const char* str, int count, const char** outBegin, const char** outEnd);
 template void StringHelper::left<wchar_t>(const wchar_t* str, int count, const wchar_t** outBegin, const wchar_t** outEnd);
-template void StringHelper::left<char16_t>(const char16_t* str, int count, const char16_t** outBegin, const char16_t** outEnd);
+template void StringHelper::left<Char>(const Char* str, int count, const Char** outBegin, const Char** outEnd);
 
 template<typename TChar>
 void StringHelper::right(const TChar* str, int count, const TChar** outBegin, const TChar** outEnd)
@@ -486,7 +223,7 @@ void StringHelper::right(const TChar* str, int count, const TChar** outBegin, co
 }
 template void StringHelper::right<char>(const char* str, int count, const char** outBegin, const char** outEnd);
 template void StringHelper::right<wchar_t>(const wchar_t* str, int count, const wchar_t** outBegin, const wchar_t** outEnd);
-template void StringHelper::right<char16_t>(const char16_t* str, int count, const char16_t** outBegin, const char16_t** outEnd);
+template void StringHelper::right<Char>(const Char* str, int count, const Char** outBegin, const Char** outEnd);
 
 //------------------------------------------------------------------------------
 // Note:C言語標準では uint64_t 用の 変換関数が無いため自作した。
@@ -657,7 +394,7 @@ bool StringHelper::match(const TChar* pattern, const TChar* str)
 }
 template bool StringHelper::match<char>(const char* pattern, const char* str);
 template bool StringHelper::match<wchar_t>(const wchar_t* pattern, const wchar_t* str);
-template bool StringHelper::match<char16_t>(const char16_t* pattern, const char16_t* str);
+template bool StringHelper::match<Char>(const Char* pattern, const Char* str);
 
 template<typename TChar>
 int8_t StringHelper::toInt8(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
@@ -669,7 +406,7 @@ int8_t StringHelper::toInt8(const TChar* str, int len, int base, const TChar** o
 }
 template int8_t StringHelper::toInt8<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template int8_t StringHelper::toInt8<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
-template int8_t StringHelper::toInt8<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
+template int8_t StringHelper::toInt8<Char>(const Char* str, int len, int base, const Char** outEndPtr, NumberConversionResult* outResult);
 
 template<typename TChar>
 uint8_t StringHelper::toUInt8(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
@@ -681,7 +418,7 @@ uint8_t StringHelper::toUInt8(const TChar* str, int len, int base, const TChar**
 }
 template uint8_t StringHelper::toUInt8<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template uint8_t StringHelper::toUInt8<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
-template uint8_t StringHelper::toUInt8<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
+template uint8_t StringHelper::toUInt8<Char>(const Char* str, int len, int base, const Char** outEndPtr, NumberConversionResult* outResult);
 
 template<typename TChar>
 int16_t StringHelper::toInt16(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
@@ -693,7 +430,7 @@ int16_t StringHelper::toInt16(const TChar* str, int len, int base, const TChar**
 }
 template int16_t StringHelper::toInt16<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template int16_t StringHelper::toInt16<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
-template int16_t StringHelper::toInt16<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
+template int16_t StringHelper::toInt16<Char>(const Char* str, int len, int base, const Char** outEndPtr, NumberConversionResult* outResult);
 
 template<typename TChar>
 uint16_t StringHelper::toUInt16(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
@@ -705,7 +442,7 @@ uint16_t StringHelper::toUInt16(const TChar* str, int len, int base, const TChar
 }
 template uint16_t StringHelper::toUInt16<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template uint16_t StringHelper::toUInt16<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
-template uint16_t StringHelper::toUInt16<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
+template uint16_t StringHelper::toUInt16<Char>(const Char* str, int len, int base, const Char** outEndPtr, NumberConversionResult* outResult);
 
 template<typename TChar>
 int32_t StringHelper::toInt32(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
@@ -717,7 +454,7 @@ int32_t StringHelper::toInt32(const TChar* str, int len, int base, const TChar**
 }
 template int32_t StringHelper::toInt32<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template int32_t StringHelper::toInt32<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
-template int32_t StringHelper::toInt32<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
+template int32_t StringHelper::toInt32<Char>(const Char* str, int len, int base, const Char** outEndPtr, NumberConversionResult* outResult);
 
 template<typename TChar>
 uint32_t StringHelper::toUInt32(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
@@ -729,7 +466,7 @@ uint32_t StringHelper::toUInt32(const TChar* str, int len, int base, const TChar
 }
 template uint32_t StringHelper::toUInt32<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template uint32_t StringHelper::toUInt32<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
-template uint32_t StringHelper::toUInt32<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
+template uint32_t StringHelper::toUInt32<Char>(const Char* str, int len, int base, const Char** outEndPtr, NumberConversionResult* outResult);
 
 template<typename TChar>
 int64_t StringHelper::toInt64(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
@@ -741,7 +478,7 @@ int64_t StringHelper::toInt64(const TChar* str, int len, int base, const TChar**
 }
 template int64_t StringHelper::toInt64<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template int64_t StringHelper::toInt64<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
-template int64_t StringHelper::toInt64<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
+template int64_t StringHelper::toInt64<Char>(const Char* str, int len, int base, const Char** outEndPtr, NumberConversionResult* outResult);
 
 template<typename TChar>
 uint64_t StringHelper::toUInt64(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
@@ -753,7 +490,7 @@ uint64_t StringHelper::toUInt64(const TChar* str, int len, int base, const TChar
 }
 template uint64_t StringHelper::toUInt64<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template uint64_t StringHelper::toUInt64<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
-template uint64_t StringHelper::toUInt64<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
+template uint64_t StringHelper::toUInt64<Char>(const Char* str, int len, int base, const Char** outEndPtr, NumberConversionResult* outResult);
 
 #ifdef _WIN32
 static bool g_localeInitialized = false;
@@ -842,7 +579,7 @@ double StringHelper::toDouble(const TChar* str, int len, const TChar** outEndPtr
 }
 template double StringHelper::toDouble<char>(const char* str, int len, const char** outEndPtr, NumberConversionResult* outResult);
 template double StringHelper::toDouble<wchar_t>(const wchar_t* str, int len, const wchar_t** outEndPtr, NumberConversionResult* outResult);
-template double StringHelper::toDouble<char16_t>(const char16_t* str, int len, const char16_t** outEndPtr, NumberConversionResult* outResult);
+template double StringHelper::toDouble<Char>(const Char* str, int len, const Char** outEndPtr, NumberConversionResult* outResult);
 
 template<typename TChar>
 float StringHelper::toFloat(const TChar* str, int len, const TChar** outEndPtr, NumberConversionResult* outResult)
@@ -861,7 +598,7 @@ float StringHelper::toFloat(const TChar* str, int len, const TChar** outEndPtr, 
 }
 template float StringHelper::toFloat<char>(const char* str, int len, const char** outEndPtr, NumberConversionResult* outResult);
 template float StringHelper::toFloat<wchar_t>(const wchar_t* str, int len, const wchar_t** outEndPtr, NumberConversionResult* outResult);
-template float StringHelper::toFloat<char16_t>(const char16_t* str, int len, const char16_t** outEndPtr, NumberConversionResult* outResult);
+template float StringHelper::toFloat<Char>(const Char* str, int len, const Char** outEndPtr, NumberConversionResult* outResult);
 
 int StringHelper::int64ToString(int64_t value, char format, char* outStr, int bufSize)
 {
@@ -979,7 +716,7 @@ void UStringHelper::toStringInt8(int8_t v, TChar* outStr, int size)
 }
 template void UStringHelper::toStringInt8<char>(int8_t v, char* outStr, int size);
 template void UStringHelper::toStringInt8<wchar_t>(int8_t v, wchar_t* outStr, int size);
-template void UStringHelper::toStringInt8<char16_t>(int8_t v, char16_t* outStr, int size);
+template void UStringHelper::toStringInt8<Char>(int8_t v, Char* outStr, int size);
 
 
 } // namespace detail
