@@ -285,6 +285,7 @@ UTFConversionResult UnicodeUtils::convertUTF32toUTF16(
     const UTF32* sourceEnd = source + sourceLength;
     UTF16* target = targetStart;
     UTF16* targetEnd = target + targetLength;
+    options->CharCount = 0;
 
     while (source < sourceEnd) {
         // 出力バッファのサイズチェック

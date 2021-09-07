@@ -1003,8 +1003,11 @@ void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultCha
         Char* buf = lockBuffer(bufSize, &context);
 
         TextDecodeResult result;
+#if LN_USTRING32
+        actualEncoding->convertToUTF32Stateless((const byte_t*)str, len, (UTF32*)buf, bufSize, &result);
+#else
         actualEncoding->convertToUTF16Stateless((const byte_t*)str, len, (UTF16*)buf, bufSize, &result);
-
+#endif
         unlockBuffer(result.outputByteCount / sizeof(Char), &context);
     }
 }
@@ -1041,8 +1044,11 @@ void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefault
         Char* buf = lockBuffer(bufSize, &context);
 
         TextDecodeResult result;
+#if LN_USTRING32
+        actualEncoding->convertToUTF32Stateless((const byte_t*)str, len * sizeof(wchar_t), (UTF32*)buf, bufSize, &result);
+#else
         actualEncoding->convertToUTF16Stateless((const byte_t*)str, len * sizeof(wchar_t), (UTF16*)buf, bufSize, &result);
-
+#endif
         unlockBuffer(result.outputByteCount / sizeof(Char), &context);
     }
 }

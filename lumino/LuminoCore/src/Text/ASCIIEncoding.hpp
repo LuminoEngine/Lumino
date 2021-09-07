@@ -33,7 +33,11 @@ public:
             reset();
         }
         virtual bool canRemain() override { return true; }
+#if LN_USTRING32
+        virtual bool convertToUTF32(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#else
         virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#endif
         virtual int usedDefaultCharCount() override { return mUsedDefaultCharCount; }
         virtual bool completed() override { return true; }
         virtual void reset() override { mUsedDefaultCharCount = 0; }
@@ -52,7 +56,11 @@ public:
             reset();
         }
         virtual bool canRemain() override { return true; }
+#if LN_USTRING32
+        virtual bool convertFromUTF32(const UTF32* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
+#else
         virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
+#endif
         virtual int usedDefaultCharCount() override { return mUsedDefaultCharCount; }
         virtual bool completed() override { return true; }
         virtual void reset() override { mUsedDefaultCharCount = 0; }

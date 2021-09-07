@@ -104,8 +104,8 @@ public:
         bool mCompleted;           // 最後の convertFromUTF16() で、バッファ末尾でマルチバイト文字が途切れていなければ true
         bool m_byteOrderMark;
         bool m_bomWrited;
-        //UTF16 m_lastBuffer[2];
-        //int m_lastBufferCount;
+        UTF16 m_lastBuffer[2];
+        int m_lastBufferCount;
     };
 };
 

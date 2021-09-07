@@ -36,7 +36,75 @@ int UTF32Encoding::getCharacterCount(const void* buffer, size_t bufferSize) cons
 {
     return bufferSize / sizeof(UTF32);
 }
+#if LN_USTRING32
+bool UTF32Encoding::convertToUTF32Stateless(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult)
+{
+    UTF32Decoder decoder(this);
+    return decoder.convertToUTF32(input, inputByteSize, output, outputElementSize, outResult);
+}
 
+//==============================================================================
+// UTF32Decoder
+
+bool UTF32Encoding::UTF32Decoder::convertToUTF32(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult)
+{
+    outResult->usedByteCount = 0;
+    outResult->outputByteCount = 0;
+    outResult->outputCharCount = 0;
+
+    //UTFConversionOptions options;
+    //memset(&options, 0, sizeof(options));
+    //options.ReplacementChar = encoding()->fallbackReplacementChar();
+
+    const byte_t* iItr = input;
+    const byte_t* iEnd = iItr + inputByteSize;
+    UTF32* oItr = (UTF32*)output;
+    UTF32* oEnd = oItr + outputElementSize;
+    while (iItr < iEnd) {
+        if (m_lastLeadBytesCount < 4) {
+            m_lastLeadBytes[m_lastLeadBytesCount] = *iItr;
+            m_lastLeadBytesCount++;
+        }
+        if (m_lastLeadBytesCount == 4) {
+            //UTF16* local = outputItr;
+            //UTFConversionResult result = UnicodeUtils::convertCharUTF32toUTF16(
+            //    *((UTF32*)m_lastLeadBytes),
+            //    &outputItr, // advance itr position
+            //    outputEnd,
+            //    &options);
+            //if (result != UTFConversionResult_Success)
+            //    return false;
+
+            *oItr = *((UTF32*)m_lastLeadBytes);
+            oItr++;
+
+            m_lastLeadBytesCount = 0;
+
+            outResult->outputByteCount += sizeof(UTF32);
+            outResult->outputCharCount += 1;
+        }
+
+        iItr++;
+        outResult->usedByteCount++;
+    }
+
+    return true;
+}
+
+//==============================================================================
+// UTF32Encoder
+
+bool UTF32Encoding::UTF32Encoder::convertFromUTF32(const UTF32* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult)
+{
+    memcpy(output, input, inputElementSize * sizeof(UTF32));
+
+    outResult->usedElementCount = inputElementSize;
+    outResult->outputByteCount = inputElementSize * sizeof(UTF32);
+    outResult->outputCharCount = inputElementSize;
+
+    return true;
+}
+#else
 bool UTF32Encoding::convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult)
 {
 	UTF32Decoder decoder(this);
@@ -146,5 +214,6 @@ bool UTF32Encoding::UTF32Encoder::convertFromUTF16(const UTF16* input, size_t in
 
     return true;
 }
+#endif
 
 } // namespace ln

@@ -34,6 +34,17 @@ struct UTFConversionOptions
     int ConvertedTargetLength; ///< [out] 変換されたターゲットバッファの要素数が格納される (バイト数や文字数ではない)
     int CharCount;             ///< [out] 文字数が格納される (マルチバイト文字を1文字とみなした文字数)
     int IllegalCharCount;      ///< [out] 見つけた不正文字の数
+
+    static UTFConversionOptions make(unsigned long replacementChar)
+    {
+        UTFConversionOptions v;
+        v.ReplacementChar = replacementChar;
+        v.ConvertedSourceLength = 0;
+        v.ConvertedTargetLength = 0;
+        v.CharCount = 0;
+        v.IllegalCharCount = 0;
+        return v;
+    }
 };
 
 /**

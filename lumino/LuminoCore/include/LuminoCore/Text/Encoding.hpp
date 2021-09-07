@@ -9,7 +9,7 @@ class TextEncoder;
 class String;
 
 #if LN_USTRING32
-using TEIMChar = UTF32;
+using TEIMChar = Char;
 #else
 using TEIMChar = UTF16;
 #endif
@@ -310,7 +310,7 @@ public:
      * @param[in]   input               : このエンコーディングで表現される文字列バッファ
      * @param[in]   inputElementSize    : input のサイズ (要素数単位。NULL 文字は含まない)
      * @param[out]  output              : 変換結果の格納先バッファ
-     * @param[in]   outputByteSize      : output のバイト数
+     * @param[in]   outputByteSize      : output のバイト数 (input をすべて変換したときに十分収まるサイズ)
      * @param[out]  outResult           : 変換結果を格納する変数
      */
 #if LN_USTRING32

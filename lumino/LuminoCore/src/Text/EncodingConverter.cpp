@@ -91,6 +91,20 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
         size_t totalByteCount = TextEncoding::getConversionRequiredByteCount(m_srcEncoding, m_dstEncoding, byteCount);
         m_tmpBuffer.resize(totalByteCount);
 
+#if LN_USTRING32
+        // 後のコードがキャストだらけにならないように
+        UTF32* utf32Buf = (UTF32*)m_tmpBuffer.data();
+        int utf32ElementCount = m_tmpBuffer.size() / sizeof(UTF32);
+
+        // Char を中間コード(UTF16) へ
+        TextDecodeResult decodeResult;
+        m_srcDecoder->convertToUTF32((const byte_t*)data, byteCount, utf32Buf, utf32ElementCount, &decodeResult);
+
+        // 中間コード(UTF16)を出力コードへ
+        TextEncodeResult encodeResult;
+        m_dstEncoder->convertFromUTF32(utf32Buf, decodeResult.outputByteCount / sizeof(UTF16), m_outputBuffer.data(), m_outputBuffer.size(), &encodeResult);
+
+#else
         // 後のコードがキャストだらけにならないように
         UTF16* utf16Buf = (UTF16*)m_tmpBuffer.data();
         int utf16ElementCount = m_tmpBuffer.size() / sizeof(UTF16);
@@ -102,6 +116,7 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
         // 中間コード(UTF16)を出力コードへ
         TextEncodeResult encodeResult;
         m_dstEncoder->convertFromUTF16(utf16Buf, decodeResult.outputByteCount / sizeof(UTF16), m_outputBuffer.data(), m_outputBuffer.size(), &encodeResult);
+#endif
 
         // 余分に確保されているので、見かけ上のサイズを実際に文字のあるサイズに減らす
         m_outputBuffer.resize(encodeResult.outputByteCount);
@@ -157,7 +172,11 @@ void EncodingConverter::convertDecoderRemain(
     if (LN_REQUIRE(destEncoder != nullptr)) return;
 
     const size_t BufferingElements = 512;
+#if LN_USTRING32
+    UTF32 utf32[BufferingElements];
+#else
     UTF16 utf16[BufferingElements];
+#endif
     size_t totalBytesUsed = 0;
     size_t totalCharsUsed = 0;
     const byte_t* src = (const byte_t*)src_;
@@ -169,7 +188,28 @@ void EncodingConverter::convertDecoderRemain(
         if (srcPos >= srcByteCount || destPos >= destByteCount) {
             break;
         }
+#if LN_USTRING32
+        // UTF32 へ
+        size_t srcBytes = LN_MIN(srcByteCount - srcPos, BufferingElements);
+        TextDecodeResult decodeResult;
+        srcDecoder->convertToUTF32(
+            &src[srcPos],
+            srcBytes,
+            utf32,
+            BufferingElements,
+            &decodeResult);
+        srcPos += srcBytes;
 
+        // UTF16 文字をターゲットへ
+        TextEncodeResult encodeResult;
+        destEncoder->convertFromUTF32(
+            utf32,
+            decodeResult.outputByteCount / sizeof(UTF32),
+            &dest[destPos],
+            destByteCount - destPos,
+            &encodeResult);
+        destPos += encodeResult.outputByteCount;
+#else
         // UTF16 へ
         size_t srcBytes = LN_MIN(srcByteCount - srcPos, BufferingElements);
         TextDecodeResult decodeResult;
@@ -190,6 +230,7 @@ void EncodingConverter::convertDecoderRemain(
             destByteCount - destPos,
             &encodeResult);
         destPos += encodeResult.outputByteCount;
+#endif
 
         totalBytesUsed += encodeResult.outputByteCount;
         totalCharsUsed += encodeResult.outputCharCount;

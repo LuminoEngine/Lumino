@@ -239,11 +239,28 @@ String TextEncoding::decode(const byte_t* bytes, int length, int* outUsedDefault
     srcMaxCharCount += 1; // Decoder・Encoder の状態保存により前回の余り文字が1つ追加されるかもしれない
     srcMaxCharCount += 1; // \0 の分
 
+#if LN_USTRING32
+    // 出力バッファに必要な最大バイト数
+    size_t utf32MaxByteCount = srcMaxCharCount * sizeof(UTF32); // UTF32 は1文字最大4バイト
+
+    // 出力バッファ作成
+    std::vector<byte_t> output(utf32MaxByteCount + sizeof(Char));
+
+    // convert
+    std::unique_ptr<TextDecoder> decoder(createDecoder());
+    TextDecodeResult result;
+    decoder->convertToUTF32(
+        bytes,
+        length,
+        (UTF32*)output.data(),
+        utf32MaxByteCount / sizeof(UTF32), // \0 強制格納に備え、1文字分余裕のあるサイズを指定する
+        &result);
+#else
     // 出力バッファに必要な最大バイト数
     size_t utf16MaxByteCount = srcMaxCharCount * 4; // UTF16 は1文字最大4バイト
 
     // 出力バッファ作成
-    std::vector<byte_t> output(utf16MaxByteCount + sizeof(uint16_t));
+    std::vector<byte_t> output(utf16MaxByteCount + sizeof(Char));
 
     // convert
     std::unique_ptr<TextDecoder> decoder(createDecoder());
@@ -254,6 +271,7 @@ String TextEncoding::decode(const byte_t* bytes, int length, int* outUsedDefault
         (UTF16*)output.data(),
         utf16MaxByteCount / sizeof(UTF16), // \0 強制格納に備え、1文字分余裕のあるサイズを指定する
         &result);
+#endif
 
     if (outUsedDefaultCharCount) {
         *outUsedDefaultCharCount = decoder->usedDefaultCharCount();
@@ -285,7 +303,17 @@ std::vector<byte_t> TextEncoding::encode(const TEIMChar* str, int length, int* o
 
     // 出力バッファ作成
     std::vector<byte_t> output(preambleLen + outputMaxByteCount + maxByteCount()); // \0 強制格納に備え、1文字分余裕のあるサイズを指定する
-
+#if LN_USTRING32
+    // convert
+    std::unique_ptr<TextEncoder> encoder(createEncoder());
+    TextEncodeResult result;
+    encoder->convertFromUTF32(
+        reinterpret_cast<const UTF32*>(str),
+        length,
+        output.data(),
+        output.size(),
+        &result);
+#else
     // convert
     std::unique_ptr<TextEncoder> encoder(createEncoder());
     TextEncodeResult result;
@@ -295,6 +323,7 @@ std::vector<byte_t> TextEncoding::encode(const TEIMChar* str, int length, int* o
         output.data(),
         output.size(),
         &result);
+#endif
 
     if (outUsedDefaultCharCount) {
         *outUsedDefaultCharCount = encoder->usedDefaultCharCount();
@@ -304,7 +333,7 @@ std::vector<byte_t> TextEncoding::encode(const TEIMChar* str, int length, int* o
     return output;
 }
 
-bool TextEncoding::convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult)
+bool TextEncoding::convertToUTF32Stateless(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult)
 {
     return false;
 }

@@ -91,12 +91,17 @@ bool UTF16Encoding::UTF16Decoder::convertToUTF32(const byte_t* input, size_t inp
         outResult->usedByteCount++;
     }
 
+    // 変換設定
+    UTFConversionOptions options;
+    memset(&options, 0, sizeof(options));
+    options.ReplacementChar = encoding()->fallbackReplacementChar();
+
     // 変換 (もし前回のバッファ終端が上位サロゲートだったら、m_lastLeadWord に先行バイトが入っている)
 #ifndef SIZE_T_MAX
     const size_t SIZE_T_MAX = (size_t)-1;
 #endif
     size_t inWordPos = (curLead != 0x0000) ? SIZE_T_MAX : 0; // MBCS
-    size_t outWordPos = 0;                                   // UTF16
+    size_t outWordPos = 0;                                   // UTF32
     size_t inWordCount = inputByteSize / 2;
     uint16_t* inWords = (uint16_t*)input;
     for (; inWordPos == SIZE_T_MAX || (inWordPos < inWordCount && outWordPos < outputElementSize);) {
@@ -111,17 +116,24 @@ bool UTF16Encoding::UTF16Decoder::convertToUTF32(const byte_t* input, size_t inp
                 // 普通のUTF16文字。普通に格納。
                 output[outWordPos++] = ch;
                 outResult->outputCharCount++;
-                outResult->outputByteCount += 2;
+                outResult->outputByteCount += sizeof(UTF32);
             }
         }
         // 直前の文字が先行バイトの場合
         else {
             // 下位サロゲートが見つかれば格納
             if (UnicodeUtils::checkUTF16LowSurrogate(ch)) {
-                output[outWordPos++] = m_lastLeadWord;
-                output[outWordPos++] = ch;
+
+                UTF16 buf[2] = { m_lastLeadWord, ch };
+                const UTF16* s = buf;
+                UTFConversionResult result = UnicodeUtils::convertCharUTF16toUTF32(
+                    &s, s + 2, &options, output);
+                if (result != UTFConversionResult_Success)
+                    return false;
+
+                outWordPos++;
                 outResult->outputCharCount++;
-                outResult->outputByteCount += 4;
+                outResult->outputByteCount += sizeof(UTF32);
                 m_lastLeadWord = 0x0000;
             }
             else {
@@ -152,38 +164,28 @@ bool UTF16Encoding::UTF16Encoder::convertFromUTF32(const UTF32* input, size_t in
     outResult->outputByteCount = 0;
     outResult->outputCharCount = 0;
 
-    const UTF32* itr = input;
-    const UTF32* end = itr + inputElementSize;
-    UTF16* outputUTF16 = (UTF16*)output;
-    while (itr < end) {
-        if (m_hiSurrogate == 0) {
-            if (UnicodeUtils::checkUTF16HighSurrogate(*itr)) {
-                m_hiSurrogate = *itr;
-            }
-            else if (UnicodeUtils::checkUTF16LowSurrogate(*itr)) {
-                return false;
-            }
-            else {
-                outputUTF16[outResult->outputCharCount] = *itr;
-                outResult->outputCharCount += 1;
-                outResult->outputByteCount += 2;
-            }
-        }
-        else
-        {
-            if (UnicodeUtils::checkUTF16LowSurrogate(*itr)) {
-                outputUTF16[outResult->outputCharCount] = m_hiSurrogate;
-                outputUTF16[outResult->outputCharCount + 1] = *itr;
-                outResult->outputCharCount += 2;
-                outResult->outputByteCount += 4;
-            }
-            else {
-                return false;
-            }
-        }
+    UTFConversionOptions options;
+    memset(&options, 0, sizeof(options));
+    options.ReplacementChar = encoding()->fallbackReplacementChar();
 
-        itr++;
+    const UTF32* itr = input;
+    const UTF32* end = input + inputElementSize;
+    UTF16* outputItr = (UTF16*)output;
+    UTF16* outputEnd = outputItr + (outputByteSize) / sizeof(UTF16);
+    while (itr < end) {
+        UTF16* local = outputItr;
+        UTFConversionResult result = UnicodeUtils::convertCharUTF32toUTF16(
+            *itr,
+            &outputItr, // advance itr position
+            outputEnd,
+            &options);
+        if (result != UTFConversionResult_Success)
+            return false;
+
+        outResult->outputByteCount += (outputItr - local) * sizeof(UTF16);
+        outResult->outputCharCount += 1;
         outResult->usedElementCount++;
+        itr++;
     }
 
     return true;

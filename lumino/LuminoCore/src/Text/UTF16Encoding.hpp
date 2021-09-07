@@ -74,10 +74,19 @@ private:
 #endif
         virtual int usedDefaultCharCount() override { return 0; }
         virtual bool completed() override { return true; }
+#if LN_USTRING32
+        virtual void reset() override {/* m_lastLeadBytesCount = 0;*/ }
+#else
         virtual void reset() override { m_hiSurrogate = 0; }
+#endif
 
     private:
+#if LN_USTRING32
+        //byte_t m_lastLeadBytes[4];
+        //int m_lastLeadBytesCount;
+#else
         UTF16 m_hiSurrogate;
+#endif
     };
 };
 

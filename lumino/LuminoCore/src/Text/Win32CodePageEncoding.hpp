@@ -17,12 +17,16 @@ public:
     virtual const String& name() const override { return m_name; }
     virtual int minByteCount() const override { return 1; }
     virtual int maxByteCount() const override { return m_cpInfo.MaxCharSize; }
-    virtual TextDecoder* createDecoder() override { return LN_NEW Win32CodePageDecoder(this, m_cpInfo); }
+    virtual TextDecoder* createDecoder() override { return LN_NEW Win32CodePageDecoder(this, &m_cpInfo); }
     virtual TextEncoder* createEncoder() override { return LN_NEW Win32CodePageEncoder(this, m_cpInfo); }
     virtual byte_t* preamble() const override { return nullptr; }
     virtual int getCharacterCount(const void* buffer, size_t bufferSize) const override;
     virtual int getLeadExtraLength(const void* buffer, size_t bufferSize) const override;
-	virtual bool convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#if LN_USTRING32
+    virtual bool convertToUTF32Stateless(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#else
+    virtual bool convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#endif
 
 private:
     CPINFOEX m_cpInfo;
@@ -33,9 +37,13 @@ public:
     class Win32CodePageDecoder : public TextDecoder
     {
     public:
-        Win32CodePageDecoder(TextEncoding* encoding, const CPINFOEX& cpInfo);
+        Win32CodePageDecoder(TextEncoding* encoding, const CPINFOEX* cpInfo);
         virtual bool canRemain() override { return m_canRemain; }
+#if LN_USTRING32
+        virtual bool convertToUTF32(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#else
         virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#endif
         virtual int usedDefaultCharCount() override { return m_usedDefaultCharCount; }
         virtual bool completed() override { return m_lastLeadByte == 0; }
         virtual void reset() override
@@ -45,7 +53,7 @@ public:
         }
 
     private:
-        int m_codePage;        // コードページ
+        const CPINFOEX* m_cpInfo;
         byte_t m_lastLeadByte; // 前回の convert で末尾に見つかった先行バイトを保存する
         int m_usedDefaultCharCount;
         bool m_canRemain;
@@ -57,7 +65,11 @@ public:
     public:
         Win32CodePageEncoder(TextEncoding* encoding, const CPINFOEX& cpInfo);
         virtual bool canRemain() override { return m_canRemain; }
+#if LN_USTRING32
+        virtual bool convertFromUTF32(const UTF32* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
+#else
         virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
+#endif
         virtual int usedDefaultCharCount() override { return m_usedDefaultCharCount; }
         virtual bool completed() override { return true; }
         virtual void reset() override { m_usedDefaultCharCount = 0; }
