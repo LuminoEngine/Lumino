@@ -24,17 +24,18 @@ TEST_F(Test_Base_Formatter, Basic)
 
 	// <Test> インデント
 	{
-		ASSERT_EQ(_TT("   a"), String::format(_TT("{0,4}"), _TT("a")));
-		ASSERT_EQ(_TT("  ab"), String::format(_TT("{0,4}"), _TT("ab")));
-		ASSERT_EQ(_TT("a   "), String::format(_TT("{0,-4}"), _TT("a")));
-		ASSERT_EQ(_TT("ab  "), String::format(_TT("{0,-4}"), _TT("ab")));
-		ASSERT_EQ(_TT("   aa   ab  "), String::format(_TT("{0,4}{0,-4}{1,-4}"), _TT("a"), _TT("ab")));
-		ASSERT_EQ(_TT("abcd"), String::format(_TT("{0,3}"), _TT("abcd")));
-		ASSERT_EQ(_TT("abcd"), String::format(_TT("{0,4}"), _TT("abcd")));
-		ASSERT_EQ(_TT(" abcd"), String::format(_TT("{0,5}"), _TT("abcd")));
-		ASSERT_EQ(_TT("abcd"), String::format(_TT("{0,-3}"), _TT("abcd")));
-		ASSERT_EQ(_TT("abcd"), String::format(_TT("{0,-4}"), _TT("abcd")));
-		ASSERT_EQ(_TT("abcd "), String::format(_TT("{0,-5}"), _TT("abcd")));
+		ASSERT_EQ(_TT("   1"), String::format(_TT("{0:4}"), 1));
+		ASSERT_EQ(_TT("a   "), String::format(_TT("{0:4}"), _TT("a")));
+		ASSERT_EQ(_TT("  ab"), String::format(_TT("{0:>4}"), _TT("ab")));
+		ASSERT_EQ(_TT("a   "), String::format(_TT("{0:<4}"), _TT("a")));
+		ASSERT_EQ(_TT("ab  "), String::format(_TT("{0:<4}"), _TT("ab")));
+		ASSERT_EQ(_TT("   aa   ab  "), String::format(_TT("{0:>4}{0:<4}{1:<4}"), _TT("a"), _TT("ab")));
+		ASSERT_EQ(_TT("abcd"), String::format(_TT("{0:3}"), _TT("abcd")));
+		ASSERT_EQ(_TT("abcd"), String::format(_TT("{0:4}"), _TT("abcd")));
+		ASSERT_EQ(_TT(" abcd"), String::format(_TT("{0:>5}"), _TT("abcd")));
+		ASSERT_EQ(_TT("abcd"), String::format(_TT("{0:>3}"), _TT("abcd")));
+		ASSERT_EQ(_TT("abcd"), String::format(_TT("{0:>4}"), _TT("abcd")));
+		ASSERT_EQ(_TT("abcd "), String::format(_TT("{0:<5}"), _TT("abcd")));
 	}
 	// <Test> ロケール
 	{
@@ -91,8 +92,8 @@ TEST_F(Test_Base_Formatter, Basic)
 	// <Test> bool
 	{
 		bool a = true;
-		ASSERT_EQ(_TT("True"), String::format(_TT("{0}"), a));
-		ASSERT_EQ(_TT("False"), String::format(_TT("{0}"), false));
+		ASSERT_EQ(_TT("true"), String::format(_TT("{0}"), a));
+		ASSERT_EQ(_TT("false"), String::format(_TT("{0}"), false));
 	}
 	// <Test> char[]/wchar_t[]
 	{
@@ -129,21 +130,20 @@ TEST_F(Test_Base_Formatter, Basic)
 
 	// <Test> D
 	{
-		ASSERT_EQ(_TT("15"), String::format(_TT("{0:D}"), 15));
 		ASSERT_EQ(_TT("15"), String::format(_TT("{0:d}"), 15));
-		ASSERT_EQ(_TT("0015"), String::format(_TT("{0:D4}"), 15));
+		ASSERT_EQ(_TT("0015"), String::format(_TT("{0:04d}"), 15));
 	}
 	// <Test> X
 	{
 		ASSERT_EQ(_TT("F"), String::format(_TT("{0:X}"), 15));
 		ASSERT_EQ(_TT("f"), String::format(_TT("{0:x}"), 15));
-		ASSERT_EQ(_TT("000f"), String::format(_TT("{0:x4}"), 15));
+		ASSERT_EQ(_TT("000f"), String::format(_TT("{0:04x}"), 15));
 	}
 	// <Test> F
 	{
 		ASSERT_EQ(_TT("25.187900"), String::format(_TT("{0:F}"), 25.1879));
 		ASSERT_EQ(_TT("25.187900"), String::format(_TT("{0:f}"), 25.1879));
-		ASSERT_EQ(_TT("25.19"), String::format(_TT("{0:F2}"), 25.1879));
+		ASSERT_EQ(_TT("25.19"), String::format(_TT("{0:.2F}"), 25.1879));
 #ifdef LN_WIN32
 		ASSERT_EQ(_TT("25,187900"), String::format(Locale(_TT("fr")), _TT("{0:F}"), 25.1879));
 #endif
@@ -182,6 +182,9 @@ TEST_F(Test_Base_Formatter, AutomaticFieldNumbering)
 //---------------------------------------------------------------------
 TEST_F(Test_Base_Formatter, Illigal)
 {
+	auto oldHandler = Exception::notificationHandler();
+	Exception::setNotificationHandler([](Exception& e) { return true; });
+
 	String s1;
 	// <Test> 引数不足の確認
 	{
@@ -201,6 +204,8 @@ TEST_F(Test_Base_Formatter, Illigal)
 		s1 = String::format(_TT("{0:D"), _TT("a")); ASSERT_EQ(true, s1.isEmpty());
 		s1 = String::format(_TT("{0:D "), _TT("a")); ASSERT_EQ(true, s1.isEmpty());
 	}
+
+	Exception::setNotificationHandler(oldHandler);
 }
 
 //---------------------------------------------------------------------
@@ -213,9 +218,9 @@ TEST_F(Test_Base_Formatter, Examples)
 		ASSERT_EQ(_TT("file_5.txt"), fileName);
 	}
 	{
-		ASSERT_EQ(_TT("12345"), String::format(_TT("{0:D}"), 12345));
+		ASSERT_EQ(_TT("12345"), String::format(_TT("{0:d}"), 12345));
 		ASSERT_EQ(_TT("-12345"), String::format(_TT("{0:d}"), -12345));
-		ASSERT_EQ(_TT("00012345"), String::format(_TT("{0:D8}"), 12345));
+		ASSERT_EQ(_TT("00012345"), String::format(_TT("{0:08d}"), 12345));
 	}
 //	{
 //#if _MSC_VER >= 1900	// VS2015 でちょっと変わった？
@@ -232,32 +237,7 @@ TEST_F(Test_Base_Formatter, Examples)
 	{
 		ASSERT_EQ(_TT("2045e"), String::format(_TT("{0:x}"), 0x2045e));
 		ASSERT_EQ(_TT("2045E"), String::format(_TT("{0:X}"), 0x2045e));
-		ASSERT_EQ(_TT("0002045E"), String::format(_TT("{0:X8}"), 0x2045e));
+		ASSERT_EQ(_TT("0002045E"), String::format(_TT("{0:08X}"), 0x2045e));
 		ASSERT_EQ(_TT("0xFF"), String::format(_TT("0x{0:X}"), 255));
 	}
 }
-
-//---------------------------------------------------------------------
-TEST_F(Test_Base_Formatter, FixedBuffer)
-{
-	int r;
-	Char buf[8];
-	// <Test>
-	{
-		r = ln::fmt::detail::formatFixed(buf, 8, Locale::getC(), _LT("AB{0}"), 100);
-		ASSERT_EQ(5, r);
-		ASSERT_EQ(String(_TT("AB100")), buf);
-		r = ln::fmt::detail::formatFixed(buf, 8, Locale::getC(), _LT("{0}"), 1234567);
-		ASSERT_EQ(7, r);
-		ASSERT_EQ(String(_TT("1234567")), buf);
-		r = ln::fmt::detail::formatFixed(buf, 8, Locale::getC(), _LT(""), 1234567);
-		ASSERT_EQ(0, r);
-		ASSERT_EQ(String(_TT("")), buf);
-	}
-	// <Test>
-	{
-		r = ln::fmt::detail::formatFixed(buf, 8, Locale::getC(), _LT("{0}"), 12345678);
-		ASSERT_EQ(-1, r);
-	}
-}
-

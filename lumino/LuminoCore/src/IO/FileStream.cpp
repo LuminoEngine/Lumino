@@ -177,7 +177,7 @@ void FileStream::open() const
     if (LN_REQUIRE(mode)) return;
 
     m_stream = detail::FileSystemInternal::fopen(m_filePath.c_str(), m_filePath.length(), mode, StringHelper::strlen(mode));
-    LN_ENSURE_IO(m_stream != nullptr, m_filePath.c_str());
+    LN_ENSURE_IO(m_stream != nullptr, u"{}", m_filePath.c_str());
 }
 
 } // namespace ln

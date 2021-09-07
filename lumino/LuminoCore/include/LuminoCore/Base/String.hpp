@@ -406,8 +406,8 @@ private:
     void release() LN_NOEXCEPT;
     void copy(const String& str);
     void move(String&& str) LN_NOEXCEPT;
-    Char* lockBuffer(size_t requestSize, detail::StringLockContext* context);
-    void unlockBuffer(int confirmedSize, detail::StringLockContext* context);
+    Char* lockBuffer(size_t requestSize, detail::StringLockContext* context) noexcept;
+    void unlockBuffer(int confirmedSize, detail::StringLockContext* context) noexcept;
     Char* getBuffer();
     const Char* getBuffer() const LN_NOEXCEPT;
 
@@ -548,102 +548,102 @@ private:
     bool m_localAlloc;
 };
 
-namespace fmt {
-
-template<typename TChar>
-class GenericFormatStringRef
-{
-public:
-    GenericFormatStringRef();
-    GenericFormatStringRef(const TChar* begin, const TChar* end);
-    GenericFormatStringRef(const GenericFormatStringRef& str);
-
-    bool isEmpty() const { return m_length == 0; }
-    size_t length() const { return m_length; }
-    const TChar* begin() const { return m_str; }
-    const TChar* end() const { return m_str + m_length; }
-
-    const TChar& operator[](int index) const { return *(m_str + index); }
-
-private:
-    const TChar* m_str;
-    size_t m_length;
-};
-
-template<typename TChar>
-class GenericFormatStringBuilder
-{
-public:
-    GenericFormatStringBuilder();
-    GenericFormatStringBuilder(TChar* buffer, size_t bufferSize);
-
-    void clear();
-    void appendChar(TChar ch);
-    void appendChar(TChar ch, int count);
-    void appendString(const TChar* str);
-    void appendString(const TChar* str, size_t length);
-    void appendString(const String& str);
-    const TChar* c_str() const;
-    size_t length() const;
-    bool isFixedBufferOver() const { return m_fixedBufferOver; }
-
-private:
-    void appendIntenal(const TChar* str, size_t length);
-
-    ByteBuffer m_buffer;
-    size_t m_bufferUsed;
-    byte_t* m_fixedBuffer;
-    size_t m_fixedBufferSize;
-    bool m_fixedBufferOver;
-};
-
-template<typename TChar>
-class GenericStringFormatter
-{
-public:
-    GenericStringFormatter()
-        : m_error()
-        , m_errorPos(0)
-    {
-    }
-    ~GenericStringFormatter() {}
-
-    void reportError(const char* message, int pos)
-    {
-        m_error = message;
-        m_errorPos = pos;
-    }
-    bool hasError() const { return !m_error.empty(); }
-
-    void setLocale(const std::locale* locale) { m_locale = locale; }
-    const std::locale* locale() const { return m_locale; }
-
-    void setFormatString(const GenericFormatStringRef<TChar>& str) { m_formatString = str; }
-    const GenericFormatStringRef<TChar>& formatString() const { return m_formatString; }
-
-    void setPrecision(const GenericFormatStringRef<TChar>& str) { m_precision = str; }
-    const GenericFormatStringRef<TChar>& precision() const { return m_precision; }
-
-    GenericFormatStringBuilder<TChar>& getSB() { return m_sb; }
-
-private:
-    const std::locale* m_locale;
-    GenericFormatStringBuilder<TChar> m_sb;
-    GenericFormatStringRef<TChar> m_formatString;
-    GenericFormatStringRef<TChar> m_precision;
-
-    std::string m_error;
-    int m_errorPos;
-};
-
-//template<typename T, typename Formatter>
-//void formatArg(Formatter&, ...)
+//namespace fmt {
+//
+//template<typename TChar>
+//class GenericFormatStringRef
 //{
-//    assert(0);
-//    //static_assert(false, "[Lumino format string error] Cannot format argument. Please overload formatArg.");
-//}
-
-} // namespace fmt
+//public:
+//    GenericFormatStringRef();
+//    GenericFormatStringRef(const TChar* begin, const TChar* end);
+//    GenericFormatStringRef(const GenericFormatStringRef& str);
+//
+//    bool isEmpty() const { return m_length == 0; }
+//    size_t length() const { return m_length; }
+//    const TChar* begin() const { return m_str; }
+//    const TChar* end() const { return m_str + m_length; }
+//
+//    const TChar& operator[](int index) const { return *(m_str + index); }
+//
+//private:
+//    const TChar* m_str;
+//    size_t m_length;
+//};
+//
+//template<typename TChar>
+//class GenericFormatStringBuilder
+//{
+//public:
+//    GenericFormatStringBuilder();
+//    GenericFormatStringBuilder(TChar* buffer, size_t bufferSize);
+//
+//    void clear();
+//    void appendChar(TChar ch);
+//    void appendChar(TChar ch, int count);
+//    void appendString(const TChar* str);
+//    void appendString(const TChar* str, size_t length);
+//    void appendString(const String& str);
+//    const TChar* c_str() const;
+//    size_t length() const;
+//    bool isFixedBufferOver() const { return m_fixedBufferOver; }
+//
+//private:
+//    void appendIntenal(const TChar* str, size_t length);
+//
+//    ByteBuffer m_buffer;
+//    size_t m_bufferUsed;
+//    byte_t* m_fixedBuffer;
+//    size_t m_fixedBufferSize;
+//    bool m_fixedBufferOver;
+//};
+//
+//template<typename TChar>
+//class GenericStringFormatter
+//{
+//public:
+//    GenericStringFormatter()
+//        : m_error()
+//        , m_errorPos(0)
+//    {
+//    }
+//    ~GenericStringFormatter() {}
+//
+//    void reportError(const char* message, int pos)
+//    {
+//        m_error = message;
+//        m_errorPos = pos;
+//    }
+//    bool hasError() const { return !m_error.empty(); }
+//
+//    void setLocale(const std::locale* locale) { m_locale = locale; }
+//    const std::locale* locale() const { return m_locale; }
+//
+//    void setFormatString(const GenericFormatStringRef<TChar>& str) { m_formatString = str; }
+//    const GenericFormatStringRef<TChar>& formatString() const { return m_formatString; }
+//
+//    void setPrecision(const GenericFormatStringRef<TChar>& str) { m_precision = str; }
+//    const GenericFormatStringRef<TChar>& precision() const { return m_precision; }
+//
+//    GenericFormatStringBuilder<TChar>& getSB() { return m_sb; }
+//
+//private:
+//    const std::locale* m_locale;
+//    GenericFormatStringBuilder<TChar> m_sb;
+//    GenericFormatStringRef<TChar> m_formatString;
+//    GenericFormatStringRef<TChar> m_precision;
+//
+//    std::string m_error;
+//    int m_errorPos;
+//};
+//
+////template<typename T, typename Formatter>
+////void formatArg(Formatter&, ...)
+////{
+////    assert(0);
+////    //static_assert(false, "[Lumino format string error] Cannot format argument. Please overload formatArg.");
+////}
+//
+//} // namespace fmt
 
 namespace detail {
 
@@ -965,4 +965,98 @@ struct hash<ln::String>
 };
 } // namespace std
 
-#include "StringFormat.inl"
+//#include "StringFormat.inl"
+
+
+namespace fmt {
+
+//template<typename TChar> struct formatter<::ln::String, TChar> {
+//
+//    template<typename ParseContext>
+//    auto parse(ParseContext& ctx) ->  decltype(ctx.begin()) {
+//        return ctx.begin();
+//    }
+//
+//    template<typename FormatContext>
+//    auto format(const ln::String& v, FormatContext& ctx) -> decltype(ctx.out()) {
+//        std::u16string_view view(v.c_str(), v.length());
+//        formatter<std::u16string_view, char16_t> fff;
+//        return fff.format(view, ctx);
+//
+//        ///std::u16string ss = v.c_str();
+//        //return fmt::formatter<std::string>::format(ss, ctx);
+//        //std::basic_string_view<::ln::Char> view(v.c_str(), v.length());
+//        //return formatter<std::basic_string_view<::ln::Char>>::format(view, ctx);
+//    }
+//};
+
+template<> struct formatter<::ln::String, ln::Char> {
+
+    template<typename ParseContext>
+    auto parse(ParseContext& ctx) ->  decltype(ctx.begin()) {
+        return ctx.begin();
+    }
+
+    template<typename FormatContext>
+    auto format(const ln::String& v, FormatContext& ctx) -> decltype(ctx.out()) {
+        //std::u16string ss = v.c_str();
+        //return fmt::formatter<std::string>::format(ss, ctx);
+        //std::basic_string_view<::ln::Char> view(v.c_str(), v.length());
+       // return formatter<std::basic_string_view<::ln::Char>>::format(view, ctx);
+        
+        std::u16string_view view(v.c_str(), v.length());
+        formatter<std::u16string_view, char16_t> fff;
+        return fff.format(view, ctx);
+    }
+};
+
+template<> struct formatter<::ln::StringRef, ln::Char> {
+    template<typename ParseContext>
+    auto parse(ParseContext& ctx) ->  decltype(ctx.begin()) {
+        return ctx.begin();
+    }
+
+    template<typename FormatContext>
+    auto format(const ln::StringRef& v, FormatContext& ctx) -> decltype(ctx.out()) {
+        std::u16string_view view(v.data(), v.length());
+        formatter<std::u16string_view, char16_t> fff;
+        return fff.format(view, ctx);
+    }
+};
+} // namespace fmt
+
+
+//==============================================================================
+// String
+
+namespace ln {
+
+template<typename... TArgs>
+inline String String::format(const StringRef& format, TArgs&&... args)
+{
+    try {
+        std::u16string_view view(format.data(), format.length());
+        auto str = ::fmt::format(view, std::forward<TArgs>(args)...);
+        return String(str.c_str(), str.length());
+    }
+    catch (fmt::v7::format_error& e) {
+        LN_ERROR("String::format errro: {}", e.what());
+        return String::Empty;
+    }
+}
+
+template<typename... TArgs>
+inline String String::format(const Locale& locale, const StringRef& format, TArgs&&... args)
+{
+    throw "Not implemented";
+    //auto argList = fmt::detail::makeArgList<Char>(std::forward<TArgs>(args)...);
+    //fmt::GenericFormatStringBuilder<Char> sb;
+    //if (fmt::detail::formatInternal<Char>(locale, &sb, format.data(), format.length(), argList)) {
+    //    return String(sb.c_str(), sb.length());
+    //}
+    //else {
+    //    return String();
+    //}
+}
+
+} // namespace ln

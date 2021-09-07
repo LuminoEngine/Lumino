@@ -158,7 +158,7 @@ enum class StringSplitOptions
 };
 
 namespace detail {
-void notifyAbort(const char* file, int line, const char* message);
+void notifyFatalError(const char* file, int line, const char* message);
 } // namespace detail
 } // namespace ln
 
@@ -179,7 +179,7 @@ void notifyAbort(const char* file, int line, const char* message);
 
 #ifndef LN_CHECK_ABORT
 #	include <stdlib.h>
-#	define LN_CHECK_ABORT ::ln::detail::notifyAbort(__FILE__, __LINE__, "abort.");
+#	define LN_CHECK_ABORT ::ln::detail::notifyFatalError(__FILE__, __LINE__, "abort.");
 #endif
 
 #ifndef LN_CHECK

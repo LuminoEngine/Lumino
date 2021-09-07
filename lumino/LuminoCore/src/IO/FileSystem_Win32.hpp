@@ -149,7 +149,7 @@ public:
         pattern.append(L"*");
 
         m_fh = ::FindFirstFileW(pattern.c_str(), &m_fd);
-        LN_ENSURE_IO(m_fh != INVALID_HANDLE_VALUE, path);
+        LN_ENSURE_IO(m_fh != INVALID_HANDLE_VALUE, String::fromStdString(path));
     }
 
     const std::wstring& getCurrentFileName() const

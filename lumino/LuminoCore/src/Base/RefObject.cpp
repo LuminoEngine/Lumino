@@ -18,7 +18,7 @@ RefObject::RefObject()
 RefObject::~RefObject()
 {
     if (m_referenceCount > 1) {
-        LN_ERROR("Forcibly delete the instance with the remaining reference. (0x%p, refCount:%d)", this, m_referenceCount.load());
+        LN_ERROR("Forcibly delete the instance with the remaining reference. (0x{}, refCount:{})", fmt::ptr(this), m_referenceCount.load());
         LN_CHECK(m_referenceCount <= 1);
     }
 }

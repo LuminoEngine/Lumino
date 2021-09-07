@@ -1,7 +1,7 @@
 ﻿
 #include <LuminoCore/Base/StlHelper.hpp>
 #include <LuminoCore/Base/String.hpp>
-#include "../Text/UnicodeUtils.hpp"
+#include <LuminoCore/Base/UnicodeUtils.hpp>
 
 namespace ln {
 namespace detail {
