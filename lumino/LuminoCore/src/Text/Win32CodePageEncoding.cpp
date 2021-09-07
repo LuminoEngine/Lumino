@@ -385,7 +385,7 @@ bool Win32CodePageEncoding::Win32CodePageEncoder::convertFromUTF32(const UTF32* 
     while (iItr < iEnd)
     {
         // 
-        const size_t csize = std::min(inputElementSize, WORD_COUNT / 2);  // 一度に変換できる UTF32 文字数
+        const size_t csize = std::min((size_t)(iEnd - iItr), WORD_COUNT / 2);  // 一度に変換できる UTF32 文字数
         if (UnicodeUtils::convertUTF32toUTF16(iItr, csize, words, WORD_COUNT, &options) != UTFConversionResult_Success) {
             return false;
         }
