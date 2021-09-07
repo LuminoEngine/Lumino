@@ -26,7 +26,11 @@ public:
 	virtual byte_t* preamble() const override { return nullptr; }
 	virtual int getCharacterCount(const void* buffer, size_t bufferSize) const override;
 	virtual int getLeadExtraLength(const void* buffer, size_t bufferSize) const override;
+#if LN_USTRING32
+	virtual bool convertToUTF32Stateless(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#else
 	virtual bool convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#endif
 
 private:
 	const TableInfo* m_tableInfo;
@@ -37,7 +41,11 @@ private:
 	public:
 		DBCSDecoder(TextEncoding* encoding, const TableInfo* info) : TextDecoder(encoding), m_tableInfo(info) { reset(); }
 		virtual bool canRemain() override { return true; }
+#if LN_USTRING32
+		virtual bool convertToUTF32(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#else
 		virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#endif
 		virtual int usedDefaultCharCount() override { return m_usedDefaultCharCount; }
 		virtual bool completed() override { return m_lastLeadByte == 0; }
 		virtual void reset() override { m_usedDefaultCharCount = 0; m_lastLeadByte = 0; }
@@ -54,7 +62,11 @@ private:
 	public:
 		DBCSEncoder(TextEncoding* encoding, const TableInfo* info) : TextEncoder(encoding), m_tableInfo(info) { reset(); }
 		virtual bool canRemain() override { return true; }
+#if LN_USTRING32
+		virtual bool convertFromUTF32(const UTF32* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
+#else
 		virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
+#endif
 		virtual int usedDefaultCharCount() override { return m_usedDefaultCharCount; }
 		virtual bool completed() override { return true; }
 		virtual void reset() override { m_usedDefaultCharCount = 0; }

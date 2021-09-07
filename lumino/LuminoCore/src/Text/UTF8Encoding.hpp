@@ -25,7 +25,11 @@ public:
     virtual byte_t* preamble() const override;
     virtual int getCharacterCount(const void* buffer, size_t bufferSize) const override;
     virtual int getLeadExtraLength(const void* buffer, size_t bufferSize) const override;
-	virtual bool convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#if LN_USTRING32
+    virtual bool convertToUTF32Stateless(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#else
+    virtual bool convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#endif
 
 private:
     bool m_byteOrderMark;
@@ -42,7 +46,11 @@ public:
             reset();
         }
         virtual bool canRemain() override { return true; }
+#if LN_USTRING32
+        virtual bool convertToUTF32(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#else
         virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#endif
         virtual int usedDefaultCharCount() override { return mUsedDefaultCharCount; }
         virtual bool completed() override { return mCompleted; }
         virtual void reset() override
@@ -76,7 +84,11 @@ public:
             reset();
         }
         virtual bool canRemain() override { return true; }
+#if LN_USTRING32
+        virtual bool convertFromUTF32(const UTF32* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
+#else
         virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
+#endif
         virtual int usedDefaultCharCount() override { return mUsedDefaultCharCount; }
         virtual bool completed() override { return mCompleted; }
         virtual void reset() override
@@ -92,8 +104,8 @@ public:
         bool mCompleted;           // 最後の convertFromUTF16() で、バッファ末尾でマルチバイト文字が途切れていなければ true
         bool m_byteOrderMark;
         bool m_bomWrited;
-        UTF16 m_lastBuffer[2];
-        int m_lastBufferCount;
+        //UTF16 m_lastBuffer[2];
+        //int m_lastBufferCount;
     };
 };
 

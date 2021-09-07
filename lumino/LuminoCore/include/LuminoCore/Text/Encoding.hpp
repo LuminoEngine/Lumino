@@ -8,6 +8,12 @@ class TextDecoder;
 class TextEncoder;
 class String;
 
+#if LN_USTRING32
+using TEIMChar = UTF32;
+#else
+using TEIMChar = UTF16;
+#endif
+
 /** エンコーディングの種類 */
 LN_ENUM()
 enum class EncodingType
@@ -149,7 +155,7 @@ public:
     std::vector<byte_t> encode(const String& str, int* outUsedDefaultCharCount = nullptr);
 
     /** Char 配列をバイトシーケンスへ変換します。 */
-    std::vector<byte_t> encode(const Char* str, int length, int* outUsedDefaultCharCount = nullptr);
+    std::vector<byte_t> encode(const TEIMChar* str, int length, int* outUsedDefaultCharCount = nullptr);
 
     /**
      * このエンコーディングの名前を取得します。
@@ -213,7 +219,11 @@ public:
     /** デコードまたはエンコード先にマッピングできない文字が見つかった時に置換する文字を取得します。 */
     uint32_t fallbackReplacementChar() const { return m_fallbackReplacementChar; }
 
+#if LN_USTRING32
+    virtual bool convertToUTF32Stateless(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult);
+#else
     virtual bool convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult);
+#endif
 
 protected:
     TextEncoding();
@@ -255,7 +265,11 @@ public:
      * @param[in]   outputElementSize   : output バッファのサイズ (文字数単位)
      * @param[out]  outResult           : 変換結果を格納する変数
      */
+#if LN_USTRING32
+    virtual bool convertToUTF32(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult) = 0;
+#else
     virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) = 0;
+#endif
 
     /** 一連の convertToUTF16() の呼び出しの中で、変換できない文字を規定文字に変換した文字数を取得します。 */
     virtual int usedDefaultCharCount() = 0;
@@ -299,7 +313,11 @@ public:
      * @param[in]   outputByteSize      : output のバイト数
      * @param[out]  outResult           : 変換結果を格納する変数
      */
+#if LN_USTRING32
+    virtual bool convertFromUTF32(const UTF32* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) = 0;
+#else
     virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) = 0;
+#endif
 
     /** 一連の convertToUTF16() の呼び出しの中で、変換できない文字を規定文字に変換した文字数を取得します。 */
     virtual int usedDefaultCharCount() = 0;

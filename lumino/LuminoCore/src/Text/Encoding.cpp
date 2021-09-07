@@ -267,10 +267,10 @@ String TextEncoding::decode(const byte_t* bytes, int length, int* outUsedDefault
 
 std::vector<byte_t> TextEncoding::encode(const String& str, int* outUsedDefaultCharCount)
 {
-    return encode(str.c_str(), str.length(), outUsedDefaultCharCount);
+    return encode(reinterpret_cast<const TEIMChar*>(str.c_str()), str.length(), outUsedDefaultCharCount);
 }
 
-std::vector<byte_t> TextEncoding::encode(const Char* str, int length, int* outUsedDefaultCharCount)
+std::vector<byte_t> TextEncoding::encode(const TEIMChar* str, int length, int* outUsedDefaultCharCount)
 {
     // TODO: this が UTF16 なら memcpy でよい
 
@@ -290,7 +290,7 @@ std::vector<byte_t> TextEncoding::encode(const Char* str, int length, int* outUs
     std::unique_ptr<TextEncoder> encoder(createEncoder());
     TextEncodeResult result;
     encoder->convertFromUTF16(
-        (const UTF16*)str,
+        reinterpret_cast<const TEIMChar*>(str),
         length,
         output.data(),
         output.size(),

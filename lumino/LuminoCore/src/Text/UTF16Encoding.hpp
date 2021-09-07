@@ -24,7 +24,11 @@ public:
     virtual byte_t* preamble() const override;
     virtual int getCharacterCount(const void* buffer, size_t bufferSize) const override;
     virtual int getLeadExtraLength(const void* buffer, size_t bufferSize) const override;
-	virtual bool convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#if LN_USTRING32
+    virtual bool convertToUTF32Stateless(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#else
+    virtual bool convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#endif
 
 private:
     bool m_bigEndian;
@@ -37,7 +41,11 @@ private:
     public:
         UTF16Decoder(TextEncoding* encoding) : TextDecoder(encoding) { reset(); }
         virtual bool canRemain() override { return true; }
+#if LN_USTRING32
+        virtual bool convertToUTF32(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#else
         virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
+#endif
         virtual int usedDefaultCharCount() override { return mUsedDefaultCharCount; }
         virtual bool completed() override { return m_lastLeadWord == 0x0000 && m_lastLeadWord == 0x0000; }
         virtual void reset() override
@@ -59,7 +67,11 @@ private:
     public:
         UTF16Encoder(TextEncoding* encoding) : TextEncoder(encoding) { reset(); }
         virtual bool canRemain() override { return true; }
+#if LN_USTRING32
+        virtual bool convertFromUTF32(const UTF32* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
+#else
         virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
+#endif
         virtual int usedDefaultCharCount() override { return 0; }
         virtual bool completed() override { return true; }
         virtual void reset() override { m_hiSurrogate = 0; }
