@@ -178,7 +178,7 @@ void Archive::makeTypeInfo(String* value)
 
 const String& Archive::readTypeInfo()
 {
-    m_store->moveToNamedMember(u"_type");
+    m_store->moveToNamedMember(_TT("_type"));
     ln::String type;
     if (m_store->readValue(&type)) {
         m_nodeInfoStack.back().typeInfo = type;

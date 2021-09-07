@@ -25,7 +25,7 @@ struct TableInfo
 
 const TableInfo* DBCSEncoding::getTableInfo(EncodingType type)
 {
-	static TableInfo sjisInfo = { u"Shift_JIS", g_SJISLeadBytePairs, g_SJISToUTF16Table, g_UTF16ToSJISTable };
+	static TableInfo sjisInfo = { _LT("Shift_JIS"), g_SJISLeadBytePairs, g_SJISToUTF16Table, g_UTF16ToSJISTable };
 
 	switch (type)
 	{

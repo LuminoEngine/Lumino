@@ -26,7 +26,7 @@ Win32CodePageEncoding::Win32CodePageEncoding(UINT codePage)
     for (int i = 0; i < 32; i++) {
         buf2[i] = buf[i];
     }
-    m_name = buf2;
+    m_name = String::fromCString(buf2);
 }
 
 int Win32CodePageEncoding::getCharacterCount(const void* buffer, size_t bufferSize) const

@@ -199,7 +199,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 //## check file update.
 TEST_F(Test_IO_FileSystem, LastModifiedTime)
 {
-	FileSystem::writeAllText(LN_TEMPFILE("test"), u"test1");
+	FileSystem::writeAllText(LN_TEMPFILE("test"), _TT("test1"));
 	DateTime t1 = FileInfo(LN_TEMPFILE("test")).lastModifiedTime();
 
 	Thread::sleep(2000);
@@ -208,7 +208,7 @@ TEST_F(Test_IO_FileSystem, LastModifiedTime)
 
 	Thread::sleep(2000);
 
-	FileSystem::writeAllText(LN_TEMPFILE("test"), u"test2");
+	FileSystem::writeAllText(LN_TEMPFILE("test"), _TT("test2"));
 	DateTime t3 = FileInfo(LN_TEMPFILE("test")).lastModifiedTime();
 
 	ASSERT_EQ(true, t1 == t2);

@@ -85,6 +85,15 @@ void convertChar16ToLocalChar(const char16_t* inStr, size_t inStrLen, char* outS
 #endif
 }
 
+void convertChar32ToLocalChar(const char32_t* inStr, size_t inStrLen, char* outStr, size_t outStrLen)
+{
+	// TODO: 今のところ ASCII のみのエラーメッセージしか想定していないためこれでもOK.
+	// 後々 SJIS 対応するか、wchar_t で出力してしまってもいいだろう。
+	UTFConversionOptions options;
+	options.ReplacementChar = '?';
+	UnicodeUtils::convertUTF32toUTF8(reinterpret_cast<const UTF32*>(inStr), inStrLen, reinterpret_cast<UTF8*>(outStr), outStrLen, &options);
+}
+
 //void errorPrintf(Char* buf, size_t bufSize, const char* format, ...)
 //{
 //	va_list args;
@@ -165,7 +174,11 @@ void printError(const Exception& e)
 		len++;
         size_t messageLen = UnicodeStringUtils::strlen(e.message());
         size_t bufferLen = BUFFER_SIZE - len;
+#if LN_USTRING32
+		convertChar32ToLocalChar(e.message(), messageLen, buf + len, bufferLen);
+#else
         convertChar16ToLocalChar(e.message(), messageLen, buf + len, bufferLen);
+#endif
         if (messageLen >= bufferLen) {
             buf[BUFFER_SIZE - 4] = '.';
             buf[BUFFER_SIZE - 3] = '.';
@@ -200,17 +213,29 @@ void ExceptionHelper::setSourceLocationInfo(Exception& e, ExceptionLevel level, 
 
 void ExceptionHelper::setMessage(Exception& e, const std::string& str)
 {
+#if LN_USTRING32
+	e.m_message = UnicodeStringUtils::NarrowToU32(str.c_str(), str.length());
+#else
 	e.m_message = UnicodeStringUtils::NarrowToU16(str.c_str(), str.length());
+#endif
 }
 
 void ExceptionHelper::setMessage(Exception& e, const std::wstring& str)
 {
+#if LN_USTRING32
+	e.m_message = UnicodeStringUtils::WideToU32(str.c_str(), str.length());
+#else
 	e.m_message = UnicodeStringUtils::WideToU16(str.c_str(), str.length());
+#endif
 }
 
-void ExceptionHelper::setMessage(Exception& e, const std::u16string& str)
+void ExceptionHelper::setMessage(Exception& e, const UStdString& str)
 {
-	e.m_message = str;
+//#if LN_USTRING32
+//	e.m_message = UnicodeStringUtils::U16ToU32(str.c_str(), str.length());
+//#else
+//	e.m_message = str;
+//#endif
 }
 
 } // namespace detail

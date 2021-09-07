@@ -678,6 +678,18 @@ GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char16_t* pa
     }
 }
 
+template<typename TChar>
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char32_t* path, int len)
+{
+    m_static[0] = '\0';
+    m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
+    if (m_length < 0 || m_length >= LocalPathBaseLength) {
+        // long path
+        UStringConvert::convertToStdString(path, len, &m_path);
+        m_length = m_path.length();
+    }
+}
+
 template class GenericStaticallyLocalPath<char>;
 template class GenericStaticallyLocalPath<wchar_t>;
 

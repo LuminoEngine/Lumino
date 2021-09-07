@@ -1004,8 +1004,8 @@ template<> struct formatter<::ln::String, ln::Char> {
         //std::basic_string_view<::ln::Char> view(v.c_str(), v.length());
        // return formatter<std::basic_string_view<::ln::Char>>::format(view, ctx);
         
-        std::u16string_view view(v.c_str(), v.length());
-        formatter<std::u16string_view, char16_t> fff;
+        std::basic_string_view<ln::Char> view(v.c_str(), v.length());
+        formatter<std::basic_string_view<ln::Char>, ln::Char> fff;
         return fff.format(view, ctx);
     }
 };
@@ -1018,8 +1018,8 @@ template<> struct formatter<::ln::StringRef, ln::Char> {
 
     template<typename FormatContext>
     auto format(const ln::StringRef& v, FormatContext& ctx) -> decltype(ctx.out()) {
-        std::u16string_view view(v.data(), v.length());
-        formatter<std::u16string_view, char16_t> fff;
+        std::basic_string_view<ln::Char> view(v.data(), v.length());
+        formatter<std::basic_string_view<ln::Char>, ln::Char> fff;
         return fff.format(view, ctx);
     }
 };
@@ -1035,7 +1035,8 @@ template<typename... TArgs>
 inline String String::format(const StringRef& format, TArgs&&... args)
 {
     try {
-        std::u16string_view view(format.data(), format.length());
+        //std::u16string_view view(format.data(), format.length());
+        std::basic_string_view<Char> view(format.data(), format.length());
         auto str = ::fmt::format(view, std::forward<TArgs>(args)...);
         return String(str.c_str(), str.length());
     }

@@ -35,7 +35,7 @@ String TestHelper::getFilePath(const char* baseSourceFilePath, const char* fileN
 //------------------------------------------------------------------------------
 Path TestHelper::getDirPath(const char* baseFilePath)
 {
-	Path base(baseFilePath);
+	Path base(String::fromCString(baseFilePath));
 	return base.parent();
 }
 
@@ -53,7 +53,7 @@ std::wstring TestHelper::getFilePathW(const char* baseFilePath, const wchar_t* f
 
 Path TestHelper::getFilePathU(const char* baseFilePath, const Char* fileName)
 {
-	Path base(baseFilePath);
+	Path base(String::fromCString(baseFilePath));
 	Path path(base.parent(), fileName);
 	return path;
 }

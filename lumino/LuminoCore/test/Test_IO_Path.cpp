@@ -17,7 +17,7 @@ TEST_F(Test_IO_Path, Construct)
 {
 	//* [ ] can convert from String
 	{
-		Path path = String("dir");
+		Path path = String(_TT("dir"));
 		ASSERT_EQ(_TT("dir"), path.str());
 	}
 	/*
@@ -55,9 +55,9 @@ TEST_F(Test_IO_Path, Concat)
 	}
 	//* [ ] with empty path
 	{
-		ASSERT_EQ(u"a/b.txt", Path(Path(), u"a/b.txt").str());
-		ASSERT_EQ(u"a", Path(Path(u"a"), u"").str());
-		ASSERT_EQ(u"", Path(Path(), u"").str());
+		ASSERT_EQ(_TT("a/b.txt"), Path(Path(), _TT("a/b.txt")).str());
+		ASSERT_EQ(_TT("a"), Path(Path(_TT("a")), _TT("")).str());
+		ASSERT_EQ(_TT(""), Path(Path(), _TT("")).str());
 	}
 
 	//* [ ] combine

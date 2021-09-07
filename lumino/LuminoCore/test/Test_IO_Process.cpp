@@ -30,7 +30,7 @@ TEST_F(Test_IO_Process, Redirect)
 		StreamReader* r1 = proc1.openStdout();
 		StreamReader* r2 = proc1.openStderr();
 		proc1.start();
-		w1->writeLine("test");	// 改行が必要
+		w1->writeLine(_TT("test"));	// 改行が必要
 		String sr1 = r1->readToEnd();
 		String sr2 = r2->readToEnd();
 		ASSERT_EQ(_LT("[test]"), sr1);

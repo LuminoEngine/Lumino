@@ -15,10 +15,12 @@ public:
 	GenericStaticallyLocalPath(const char* path, int len);
 	GenericStaticallyLocalPath(const wchar_t* path, int len);
 	GenericStaticallyLocalPath(const char16_t* path, int len);
+	GenericStaticallyLocalPath(const char32_t* path, int len);
 	
 	const TChar* c_str() const { return m_path.empty() ? m_static : m_path.c_str(); }
 	const std::basic_string<TChar>& getPath() const { return m_path; }
 	int getLength() const { return m_length; }
+	int length() const { return m_length; }
 	bool isEmpty() const { return m_length == 0; }
 
 	bool isStatic() const { return m_path.empty(); }

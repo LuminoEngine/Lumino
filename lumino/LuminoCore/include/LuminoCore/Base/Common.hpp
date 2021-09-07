@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license.
 
 #pragma once
+#include <string>
 
 //------------------------------------------------------------------------------
 // flags
@@ -99,13 +100,25 @@
 #define LN_STRING_WITH_PATH
 
 #define LN_USTRING
-#define LN_USTRING16
+//#define LN_USTRING16
+#define LN_USTRING32 1
 
-#ifndef LN_STRING_STRICT_CONVERSION
-#define LN_STRING_FUZZY_CONVERSION
-#endif
+//#ifndef LN_STRING_STRICT_CONVERSION
+//#define LN_STRING_FUZZY_CONVERSION
+//#endif
 
-#ifdef LN_USTRING
+#if LN_USTRING32
+#define __LT(x) U##x
+#define _TT(x) U##x
+#define _LT(x) __LT(x)
+#define TTCHAR char32_t
+//#define _U(x) (u##x)
+namespace ln {
+using Char = char32_t;
+using UStdString = std::u32string;
+}
+
+#elif LN_USTRING16
 
 #ifdef LN_USTRING16
 #define __LT(x) u##x
@@ -115,6 +128,7 @@
 //#define _U(x) (u##x)
 namespace ln {
 using Char = char16_t;
+using UStdString = std::u16string;
 }
 
 #else
@@ -131,11 +145,20 @@ using Char = wchar_t;
 #else
 #endif
 
+
+namespace ln {
+	
 #if !defined(_T)
 #define _T(x) _TT(x) 
 #endif
 
-namespace ln {
+#ifdef _WIN32
+#define _CT(x) L##x
+#define CChar wchar_t
+#else
+#define _CT(x) x
+#define CChar char
+#endif
 
 /** 大文字と小文字の区別指定 */
 enum class CaseSensitivity

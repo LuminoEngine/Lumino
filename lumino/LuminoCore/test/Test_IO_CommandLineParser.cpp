@@ -12,8 +12,8 @@ TEST_F(Test_IO_CommandLineParser, RequestedDefaults)
 	//# CommandLineOption is Optional
 	{
 		ln::CommandLineParser parser;
-		auto* forceOption = parser.addFlagOption(u"f", u"force", u"force operation.");
-		auto* sizeOption = parser.addValueOption(u"", u"size", u"buffer size.");
+		auto* forceOption = parser.addFlagOption(_TT("f"), _TT("force"), _TT("force operation."));
+		auto* sizeOption = parser.addValueOption(_TT(""), _TT("size"), _TT("buffer size."));
 		ASSERT_EQ(true, testFlag(forceOption->flags(), CommandLineOptionFlags::Optional));
 		ASSERT_EQ(true, testFlag(sizeOption->flags(), CommandLineOptionFlags::Optional));
 	}
@@ -23,10 +23,10 @@ TEST_F(Test_IO_CommandLineParser, RequestedDefaults)
 TEST_F(Test_IO_CommandLineParser, SimpleOptions)
 {
 	ln::CommandLineParser parser;
-	auto* forceOption = parser.addFlagOption(u"f", u"force", u"force operation.");
-	auto* sizeOption = parser.addValueOption(u"", u"size", u"buffer size.");
-	auto* depthOption = parser.addValueOption(u"d", u"depth", u"depth level.", u"0");
-	auto* langOption = parser.addNamedValueOption(u"", u"lang", u"language.", {u"cpp", u"cs", u"py"}, u"cpp");
+	auto* forceOption = parser.addFlagOption(_TT("f"), _TT("force"), _TT("force operation."));
+	auto* sizeOption = parser.addValueOption(_TT(""), _TT("size"), _TT("buffer size."));
+	auto* depthOption = parser.addValueOption(_TT("d"), _TT("depth"), _TT("depth level."), _TT("0"));
+	auto* langOption = parser.addNamedValueOption(_TT(""), _TT("lang"), _TT("language."), {_TT("cpp"), _TT("cs"), _TT("py")}, _TT("cpp"));
 
 	char* argv[] =
 	{
@@ -79,9 +79,9 @@ TEST_F(Test_IO_CommandLineParser, Options)
 	//* [ ] without default values (short names)
 	{
 		ln::CommandLineParser parser;
-		auto* flagOption = parser.addFlagOption(u"f", u"flag", u"description.");
-		auto* valueOption = parser.addValueOption(u"v", u"value", u"description.");
-		auto* namedValueOption = parser.addNamedValueOption(u"n", u"named-value", u"description.", { u"abc", u"def", u"ghi" });
+		auto* flagOption = parser.addFlagOption(_TT("f"), _TT("flag"), _TT("description."));
+		auto* valueOption = parser.addValueOption(_TT("v"), _TT("value"), _TT("description."));
+		auto* namedValueOption = parser.addNamedValueOption(_TT("n"), _TT("named-value"), _TT("description."), { _TT("abc"), _TT("def"), _TT("ghi") });
 
 		char* argv[] =
 		{
@@ -96,15 +96,15 @@ TEST_F(Test_IO_CommandLineParser, Options)
 		ASSERT_EQ(true, parser.has(flagOption));
 		ASSERT_EQ(true, parser.has(valueOption));
 		ASSERT_EQ(true, parser.has(namedValueOption));
-		ASSERT_EQ(u"100", valueOption->value());
-		ASSERT_EQ(u"ghi", namedValueOption->value());
+		ASSERT_EQ(_TT("100"), valueOption->value());
+		ASSERT_EQ(_TT("ghi"), namedValueOption->value());
 	}
 	//* [ ] without default values (long names)
 	{
 		ln::CommandLineParser parser;
-		auto* flagOption = parser.addFlagOption(u"f", u"flag", u"description.");
-		auto* valueOption = parser.addValueOption(u"v", u"value", u"description.");
-		auto* namedValueOption = parser.addNamedValueOption(u"n", u"named-value", u"description.", { u"abc", u"def", u"ghi" });
+		auto* flagOption = parser.addFlagOption(_TT("f"), _TT("flag"), _TT("description."));
+		auto* valueOption = parser.addValueOption(_TT("v"), _TT("value"), _TT("description."));
+		auto* namedValueOption = parser.addNamedValueOption(_TT("n"), _TT("named-value"), _TT("description."), { _TT("abc"), _TT("def"), _TT("ghi") });
 
 		char* argv[] =
 		{
@@ -125,9 +125,9 @@ TEST_F(Test_IO_CommandLineParser, Options)
 	//* [ ] with default values
 	{
 		ln::CommandLineParser parser;
-		auto* flagOption = parser.addFlagOption("f", "flag", "description.");
-		auto* valueOption = parser.addValueOption("v", "value", "description.", "5");
-		auto* namedValueOption = parser.addNamedValueOption("n", "named-value", "description.", { "abc", "def", "ghi" }, "def");
+		auto* flagOption = parser.addFlagOption(_TT("f"), _TT("flag"), _TT("description."));
+		auto* valueOption = parser.addValueOption(_TT("v"), _TT("value"), _TT("description."), _TT("5"));
+		auto* namedValueOption = parser.addNamedValueOption(_TT("n"), _TT("named-value"), _TT("description."), { _TT("abc"), _TT("def"), _TT("ghi") }, _TT("def"));
 
 		char* argv[] =
 		{
@@ -151,8 +151,8 @@ TEST_F(Test_IO_CommandLineParser, PositionalArgument)
 	//* [ ] get value from PositionalArgument
 	{
 		ln::CommandLineParser parser;
-		auto* srcArg = parser.addPositionalArgument("source", "description.");
-		auto* dstArg = parser.addPositionalArgument("destination", "description.");
+		auto* srcArg = parser.addPositionalArgument(_TT("source"), _TT("description."));
+		auto* dstArg = parser.addPositionalArgument(_TT("destination"), _TT("description."));
 
 		char* argv[] =
 		{
@@ -170,7 +170,7 @@ TEST_F(Test_IO_CommandLineParser, PositionalArgument)
 	//* [ ] PositionalArgument list
 	{
 		ln::CommandLineParser parser;
-		auto* inputsArg = parser.addListPositionalArgument("inputs", "description.");
+		auto* inputsArg = parser.addListPositionalArgument(_TT("inputs"), _TT("description."));
 
 		char* argv[] =
 		{
@@ -191,9 +191,9 @@ TEST_F(Test_IO_CommandLineParser, PositionalArgument)
 	//* [ ] mixied PositionalArgument list
 	{
 		ln::CommandLineParser parser;
-		auto* analyzeCommand = parser.addCommand("analyze", "description.");
-		auto* settingsArg = parser.addPositionalArgument("settings", "description.");
-		auto* inputsArg = parser.addListPositionalArgument("inputs", "description.");
+		auto* analyzeCommand = parser.addCommand(_TT("analyze"), _TT("description."));
+		auto* settingsArg = parser.addPositionalArgument(_TT("settings"), _TT("description."));
+		auto* inputsArg = parser.addListPositionalArgument(_TT("inputs"), _TT("description."));
 
 		char* argv[] =
 		{
@@ -223,19 +223,19 @@ TEST_F(Test_IO_CommandLineParser, Help)
 	*/
 
 	ln::CommandLineParser parser;
-	auto* forceOption = parser.addFlagOption("f", "force", "force operation.");
-	auto* sizeOption = parser.addValueOption("", "size", "buffer size.");
-	auto* depthOption = parser.addValueOption("d", "depth", "depth level.", "0");
-	auto* langOption = parser.addNamedValueOption("", "lang", "language.", { "cpp", "cs", "py" }, "cpp");
-	auto* settingArg = parser.addPositionalArgument("setting-file", "setting file path.");
+	auto* forceOption = parser.addFlagOption(_TT("f"), _TT("force"), _TT("force operation."));
+	auto* sizeOption = parser.addValueOption(_TT(""), _TT("size"), _TT("buffer size."));
+	auto* depthOption = parser.addValueOption(_TT("d"), _TT("depth"), _TT("depth level."), _TT("0"));
+	auto* langOption = parser.addNamedValueOption(_TT(""), _TT("lang"), _TT("language."), { _TT("cpp"), _TT("cs"), _TT("py") }, _TT("cpp"));
+	auto* settingArg = parser.addPositionalArgument(_TT("setting-file"), _TT("setting file path."));
 
 	auto* initCommand = parser.addCommand(_T("init"), _T("create new database."));
-	auto* sharedOption = initCommand->addFlagOption("s", "shared", "add shared attribute.");
-	auto* filesOption = initCommand->addListPositionalArgument("files", "input file list.");
+	auto* sharedOption = initCommand->addFlagOption(_TT("s"), _TT("shared"), _TT("add shared attribute."));
+	auto* filesOption = initCommand->addListPositionalArgument(_TT("files"), _TT("input file list."));
 
 	auto* analyzeCommand = parser.addCommand(_T("analyze"), _T("analyze database."));
-	auto* modeOption = analyzeCommand->addNamedValueOption("", "mode", "analyze mode.", { "normal", "fast" });
-	auto* reportOption = analyzeCommand->addListPositionalArgument("report", "report list.", CommandLinePositionalArgumentFlags::Optional);
+	auto* modeOption = analyzeCommand->addNamedValueOption(_TT(""), _TT("mode"), _TT("analyze mode."), { _TT("normal"), _TT("fast") });
+	auto* reportOption = analyzeCommand->addListPositionalArgument(_TT("report"), _TT("report list."), CommandLinePositionalArgumentFlags::Optional);
 
 	char* argv[] =
 	{
@@ -269,9 +269,9 @@ TEST_F(Test_IO_CommandLineParser, DocExample)
 	parser.addVersionOption(_T("1.0.0"));
 	parser.setApplicationDescription(_T("This is open-source software under MIT License."));
 
-	auto* forceOpt = parser.addFlagOption("f", "force", "Overwrite file.");
-	auto* sourceArg = parser.addPositionalArgument("SOURCE", "source filename.");
-	auto* destArg = parser.addPositionalArgument("DEST", "destination filename.");
+	auto* forceOpt = parser.addFlagOption(_TT("f"), _TT("force"), _TT("Overwrite file."));
+	auto* sourceArg = parser.addPositionalArgument(_TT("SOURCE"), _TT("source filename."));
+	auto* destArg = parser.addPositionalArgument(_TT("DEST"), _TT("destination filename."));
 
 	ASSERT_EQ(true, parser.process(argc, argv));
 	ASSERT_EQ(true, parser.has(forceOpt));

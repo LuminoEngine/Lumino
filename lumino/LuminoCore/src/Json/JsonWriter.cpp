@@ -126,11 +126,11 @@ void JsonWriter::writeInt64(int64_t value)
 void JsonWriter::writeFloat(float value)
 {
     if (Math::isNaN(value)) {
-        writeString(u"NaN");    // like Json.NET
+        writeString(_TT("NaN"));    // like Json.NET
         return;
     }
     if (Math::isInf(value)) {
-        writeString(u"Inf");    // like Json.NET
+        writeString(_TT("Inf"));    // like Json.NET
         return;
     }
 
@@ -144,11 +144,11 @@ void JsonWriter::writeFloat(float value)
 void JsonWriter::writeDouble(double value)
 {
     if (Math::isNaN(value)) {
-        writeString(u"NaN");    // like Json.NET
+        writeString(_TT("NaN"));    // like Json.NET
         return;
     }
     if (Math::isInf(value)) {
-        writeString(u"Inf");    // like Json.NET
+        writeString(_TT("Inf"));    // like Json.NET
         return;
     }
 

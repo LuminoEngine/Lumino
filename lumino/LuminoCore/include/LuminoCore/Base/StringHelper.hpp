@@ -276,6 +276,8 @@ public:
 	static int convertNativeString(const wchar_t* src, int srcLen, wchar_t* dst, int dstSize);
 	static int convertNativeString(const char16_t* src, int srcLen, char* dst, int dstSize);
 	static int convertNativeString(const char16_t* src, int srcLen, wchar_t* dst, int dstSize);
+	static int convertNativeString(const char32_t* src, int srcLen, char* dst, int dstSize);
+	static int convertNativeString(const char32_t* src, int srcLen, wchar_t* dst, int dstSize);
 
 	static void convertToStdString(const char* src, int srcLen, std::string* outString);
 	static void convertToStdString(const char* src, int srcLen, std::wstring* outString);
@@ -283,6 +285,8 @@ public:
 	static void convertToStdString(const wchar_t* src, int srcLen, std::wstring* outString);
 	static void convertToStdString(const char16_t* src, int srcLen, std::string* outString);
 	static void convertToStdString(const char16_t* src, int srcLen, std::wstring* outString);
+	static void convertToStdString(const char32_t* src, int srcLen, std::string* outString);
+	static void convertToStdString(const char32_t* src, int srcLen, std::wstring* outString);
 	/*
 	static int getMaxNativeStringConverLength(const char* src, int srcLen, const char* dst);
 	static int getMaxNativeStringConverLength(const char* src, int srcLen, const wchar_t* dst);

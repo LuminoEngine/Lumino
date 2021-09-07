@@ -36,7 +36,7 @@ TEST_F(Test_Serialization2, Minimal)
 
 		MyData data1;
 		String json = JsonSerializer::serialize(data1, JsonFormatting::None);
-		ASSERT_EQ(json, u"{}");
+		ASSERT_EQ(json, _TT("{}"));
 
 		JsonSerializer::deserialize(json, data1);
 
@@ -59,13 +59,13 @@ TEST_F(Test_Serialization2, String)
     };
 
     MyData data1;
-    data1.value = u"test";
+    data1.value = _TT("test");
     String json = JsonSerializer::serialize(data1, JsonFormatting::None);
-    ASSERT_EQ(json, u"{\"value\":\"test\"}");
+    ASSERT_EQ(json, _TT("{\"value\":\"test\"}"));
 
     MyData data2;
     JsonSerializer::deserialize(json, data2);
-    ASSERT_EQ(u"test", data2.value);
+    ASSERT_EQ(_TT("test"), data2.value);
 }
 
 //------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ TEST_F(Test_Serialization2, List)
 {
 	List<int> list1 = { 1, 2, 3 };
 	String json = JsonSerializer::serialize(list1, JsonFormatting::None);
-	ASSERT_EQ(json, u"[1,2,3]");
+	ASSERT_EQ(json, _TT("[1,2,3]"));
 
 	List<int> list2;
 	JsonSerializer::deserialize(json, list2);
@@ -86,7 +86,7 @@ TEST_F(Test_Serialization2, List)
     // empty list
     List<int> list3;
     json = JsonSerializer::serialize(list3, JsonFormatting::None);
-    ASSERT_EQ(json, u"[]");
+    ASSERT_EQ(json, _TT("[]"));
 
     JsonSerializer::deserialize(json, list2);
     ASSERT_EQ(0, list2.size());
@@ -110,7 +110,7 @@ TEST_F(Test_Serialization2, ValueObject)
 	MyData data1;
 	data1.value = 100;
 	String json = JsonSerializer::serialize(data1, JsonFormatting::None);
-	ASSERT_EQ(json, u"{\"value\":100}");
+	ASSERT_EQ(json, _TT("{\"value\":100}"));
 
 	MyData data2;
 	JsonSerializer::deserialize(json, data2);
@@ -146,7 +146,7 @@ TEST_F(Test_Serialization2, RefObject)
         MyData data1;
         data1.ref = nullptr;
         String json = JsonSerializer::serialize(data1, JsonFormatting::None);
-        ASSERT_EQ(json, u"{\"ref\":null}");
+        ASSERT_EQ(json, _TT("{\"ref\":null}"));
 
         MyData data2;
         data2.ref = makeRef<Class1>();
@@ -160,7 +160,7 @@ TEST_F(Test_Serialization2, RefObject)
         data1.ref = makeRef<Class1>();
         data1.ref->value = 100;
         String json = JsonSerializer::serialize(data1, JsonFormatting::None);
-        ASSERT_EQ(json, u"{\"ref\":{\"value\":100}}");
+        ASSERT_EQ(json, _TT("{\"ref\":{\"value\":100}}"));
 
         MyData data2;
         JsonSerializer::deserialize(json, data2);
@@ -390,7 +390,7 @@ TEST_F(Test_Serialization2, Optional)
 		MyData data1;
 		data1.value1 = 10;
 		String json = JsonSerializer::serialize(data1, JsonFormatting::None);
-		ASSERT_EQ(u"{\"value1\":10}", json);
+		ASSERT_EQ(_TT("{\"value1\":10}"), json);
 
 		MyData data2;
 		JsonSerializer::deserialize(json, data2);
@@ -402,7 +402,7 @@ TEST_F(Test_Serialization2, Optional)
 		MyData data1;
 		data1.value1 = nullptr;
 		String json = JsonSerializer::serialize(data1, JsonFormatting::None);
-		ASSERT_EQ(u"{\"value1\":null}", json);
+		ASSERT_EQ(_TT("{\"value1\":null}"), json);
 
 		MyData data2;
 		JsonSerializer::deserialize(json, data2);
@@ -425,7 +425,7 @@ TEST_F(Test_Serialization2, Optional)
         DataA data1;
         data1.value2 = DataB{100};
         String json = JsonSerializer::serialize(data1, JsonFormatting::None);
-        ASSERT_EQ(u"{\"value2\":{\"value1\":100}}", json);
+        ASSERT_EQ(_TT("{\"value2\":{\"value1\":100}}"), json);
 
         DataA data2;
         JsonSerializer::deserialize(json, data2);
@@ -452,9 +452,9 @@ TEST_F(Test_Serialization2, Optional)
     Test t2;
     ln::String json;
 
-    t1.includePaths = ln::List<ln::String>({ u"dir1", u"dir2" });
+    t1.includePaths = ln::List<ln::String>({ _TT("dir1"), _TT("dir2") });
     t1.defines = nullptr;
-    t1.precompiledHeaderFile = ln::String(u"pch.h");
+    t1.precompiledHeaderFile = ln::String(_TT("pch.h"));
     t1.mscFullVer = nullptr;
 
     // Save
@@ -462,19 +462,19 @@ TEST_F(Test_Serialization2, Optional)
         JsonTextOutputArchive ar;
         ar.process(t1);
         json = ar.toString(JsonFormatting::None);
-        ASSERT_EQ(u"{\"includePaths\":[\"dir1\",\"dir2\"],\"defines\":null,\"precompiledHeaderFile\":\"pch.h\",\"mscFullVer\":null}", json);
+        ASSERT_EQ(_TT("{\"includePaths\":[\"dir1\",\"dir2\"],\"defines\":null,\"precompiledHeaderFile\":\"pch.h\",\"mscFullVer\":null}"), json);
     }
 
     // Load
-    t2.mscFullVer = ln::String(u"123");
+    t2.mscFullVer = ln::String(_TT("123"));
     {
         JsonTextInputArchive ar(json);
         ar.process(t2);
         ASSERT_EQ(2, t2.includePaths.value().size());
-        ASSERT_EQ(u"dir1", t2.includePaths.value().at(0));
-        ASSERT_EQ(u"dir2", t2.includePaths.value().at(1));
+        ASSERT_EQ(_TT("dir1"), t2.includePaths.value().at(0));
+        ASSERT_EQ(_TT("dir2"), t2.includePaths.value().at(1));
         ASSERT_EQ(false, t2.defines.hasValue());
-        ASSERT_EQ(u"pch.h", t2.precompiledHeaderFile.value());
+        ASSERT_EQ(_TT("pch.h"), t2.precompiledHeaderFile.value());
         ASSERT_EQ(false, t2.mscFullVer.hasValue());
     }
 
@@ -494,14 +494,14 @@ TEST_F(Test_Serialization2, Optional)
         };
 
         TestV2 tv2;
-        tv2.compilerVer = ln::String(u"567");
+        tv2.compilerVer = ln::String(_TT("567"));
 
         JsonTextInputArchive ar(json);
         ar.process(tv2);
         ASSERT_EQ(2, tv2.includePaths.value().size());
-        ASSERT_EQ(u"dir1", tv2.includePaths.value().at(0)); // 同じ名前は引き継ぐ
-        ASSERT_EQ(u"dir2", tv2.includePaths.value().at(1));
-        ASSERT_EQ(u"567", tv2.compilerVer.value());      // 新しい名前は serialize からは設定されない
+        ASSERT_EQ(_TT("dir1"), tv2.includePaths.value().at(0)); // 同じ名前は引き継ぐ
+        ASSERT_EQ(_TT("dir2"), tv2.includePaths.value().at(1));
+        ASSERT_EQ(_TT("567"), tv2.compilerVer.value());      // 新しい名前は serialize からは設定されない
     }
 }
 
@@ -522,17 +522,17 @@ TEST_F(Test_Serialization2, unordered_map)
 	};
 
 	Test t1;
-	t1.name = u"test";
-	t1.values = { {u"f1", u"s1"}, {u"f2", u"s2"} };
+	t1.name = _TT("test");
+	t1.values = { {_TT("f1"), _TT("s1")}, {_TT("f2"), _TT("s2")} };
 	String json = JsonSerializer::serialize(t1, JsonFormatting::None);
-	ASSERT_EQ(u"{\"name\":\"test\",\"values\":{\"f1\":\"s1\",\"f2\":\"s2\"}}", json);
+	ASSERT_EQ(_TT("{\"name\":\"test\",\"values\":{\"f1\":\"s1\",\"f2\":\"s2\"}}"), json);
 
 	Test t2;
 	JsonSerializer::deserialize(json, t2);
-	ASSERT_EQ(u"test", t2.name);
+	ASSERT_EQ(_TT("test"), t2.name);
 	ASSERT_EQ(2, t2.values.size());
-	ASSERT_EQ(u"s1", t2.values[u"f1"]);
-	ASSERT_EQ(u"s2", t2.values[u"f2"]);
+	ASSERT_EQ(_TT("s1"), t2.values[_TT("f1")]);
+	ASSERT_EQ(_TT("s2"), t2.values[_TT("f2")]);
 }
 
 //------------------------------------------------------------------------------
@@ -554,7 +554,7 @@ TEST_F(Test_Serialization2, Examples)
 		};
 
 		MyData data1;
-		data1.name = "example";
+		data1.name = _TT("example");
 		data1.value = 100;
 		String json = JsonSerializer::serialize(data1);
 
@@ -579,21 +579,21 @@ TEST_F(Test_Serialization2, Examples)
 		};
 
 		Documents docs1;
-		docs1.caption = u"note";
-		docs1.fileList.add(u"file1.md");
-		docs1.fileList.add(u"file2.md");
+		docs1.caption = _TT("note");
+		docs1.fileList.add(_TT("file1.md"));
+		docs1.fileList.add(_TT("file2.md"));
 
 		String json = JsonSerializer::serialize(docs1, JsonFormatting::None);
-		ASSERT_EQ(u"{\"caption\":\"note\",\"fileList\":[\"file1.md\",\"file2.md\"]}", json);
+		ASSERT_EQ(_TT("{\"caption\":\"note\",\"fileList\":[\"file1.md\",\"file2.md\"]}"), json);
 
 
 		//------ check
 		Documents data2;
 		JsonSerializer::deserialize(json, data2);
-		ASSERT_EQ(u"note", data2.caption.str());
+		ASSERT_EQ(_TT("note"), data2.caption.str());
 		ASSERT_EQ(2, data2.fileList.size());
-		ASSERT_EQ(u"file1.md", data2.fileList[0].str());
-		ASSERT_EQ(u"file2.md", data2.fileList[1].str());
+		ASSERT_EQ(_TT("file1.md"), data2.fileList[0].str());
+		ASSERT_EQ(_TT("file2.md"), data2.fileList[1].str());
 	}
 }
 
@@ -983,7 +983,7 @@ TEST_F(Test_Serialization2, ManyData)
 	}
 
 	String json = JsonSerializer::serialize(t1, JsonFormatting::None);
-	ASSERT_EQ(true, json.contains(u"\"x\":99"));	// 最後の値が出ていればOKとする
+	ASSERT_EQ(true, json.contains(_TT("\"x\":99")));	// 最後の値が出ていればOKとする
 }
 
 

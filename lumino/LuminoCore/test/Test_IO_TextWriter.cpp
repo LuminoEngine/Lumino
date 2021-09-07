@@ -22,7 +22,7 @@ TEST_F(Test_IO_TextWriter, write)
 
 		StringWriter writer;
 		writer.write(_LT("ab"));
-		writer.write(String("def"));
+		writer.write(String(_TT("def")));
 		writer.write(_LT('g'));
 		writer.write(v_int16_t);
 		writer.write(v_int32_t);
@@ -50,7 +50,7 @@ TEST_F(Test_IO_TextWriter, write)
 		StringWriter writer;
 		writer.setNewLine(_LT("\n"));
 		writer.writeLine(StringRef(_LT("abc"), 2));
-		writer.writeLine(String("def"));
+		writer.writeLine(String(_TT("def")));
 		writer.writeLine(_LT('g'));
 		writer.writeLine(v_int16_t);
 		writer.writeLine(v_int32_t);

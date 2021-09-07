@@ -15,7 +15,8 @@ FileInfo::FileInfo(const ln::StringRef& path)
 
 DateTime FileInfo::lastModifiedTime()
 {
-	return DateTime::fromEpochTime(detail::FileSystemInternal::getLastModifiedTime(m_path.c_str(), m_path.length()));
+	detail::GenericStaticallyLocalPath<CChar> localPath(m_path.c_str(), m_path.length());
+	return DateTime::fromEpochTime(detail::FileSystemInternal::getLastModifiedTime(localPath.c_str(), localPath.length()));
 }
 
 } // namespace ln

@@ -5,6 +5,7 @@ class Test_Base_StringRef : public ::testing::Test {};
 
 TEST_F(Test_Base_StringRef, Issues)
 {
+#ifdef LN_STRING_FUZZY_CONVERSION
 	{
 		const char astr0[] = "abc";
 		const wchar_t wstr0[] = L"abc";
@@ -59,5 +60,6 @@ TEST_F(Test_Base_StringRef, Issues)
 			ASSERT_EQ(_T("abc"), String(wstr2));
 		}
 	}
+#endif
 }
 

@@ -484,10 +484,10 @@ protected:
 		else if (v->type() == JsonElementType::Double)
 			*outValue = v->doubleValue();
         else if (v->type() == JsonElementType::String)
-            if (String::compare(v->stringValue(), u"NaN", CaseSensitivity::CaseInsensitive) == 0) {
+            if (String::compare(v->stringValue(), _TT("NaN"), CaseSensitivity::CaseInsensitive) == 0) {
                 *outValue = Math::NaN;
             }
-            else if (String::compare(v->stringValue(), u"Inf", CaseSensitivity::CaseInsensitive) == 0) {
+            else if (String::compare(v->stringValue(), _TT("Inf"), CaseSensitivity::CaseInsensitive) == 0) {
                 *outValue = Math::Inf;
             }
             else {

@@ -233,53 +233,55 @@ namespace detail {
 class FileSystemInternal
 {
 public:
+    // TODO: ↓ StringView でいい気が
+
     static bool existsFile(const char* filePath, int len);
     static bool existsFile(const wchar_t* filePath, int len);
-    static bool existsFile(const char16_t* filePath, int len);
+    static bool existsFile(const Char* filePath, int len);
 
     static FileAttribute getAttribute(const char* filePath, int len);
     static FileAttribute getAttribute(const wchar_t* filePath, int len);
-    static FileAttribute getAttribute(const char16_t* filePath, int len);
+    static FileAttribute getAttribute(const Char* filePath, int len);
 
     static void setAttribute(const char* filePath, int len, FileAttribute attr);
     static void setAttribute(const wchar_t* filePath, int len, FileAttribute attr);
-    static void setAttribute(const char16_t* filePath, int len, FileAttribute attr);
+    static void setAttribute(const Char* filePath, int len, FileAttribute attr);
 
     static time_t getLastModifiedTime(const char* filePath, int len);
     static time_t getLastModifiedTime(const wchar_t* filePath, int len);
-    static time_t getLastModifiedTime(const char16_t* filePath, int len);
+    static time_t getLastModifiedTime(const Char* filePath, int len);
 
     static void copyFile(const char* sourceFileName, int sourceFileNameLen, const char* destFileName, int destFileNameLen, FileCopyOption option);
     static void copyFile(const wchar_t* sourceFileName, int sourceFileNameLen, const wchar_t* destFileName, int destFileNameLen, FileCopyOption option);
-    static void copyFile(const char16_t* sourceFileName, int sourceFileNameLen, const char16_t* destFileName, int destFileNameLen, FileCopyOption option);
+    static void copyFile(const Char* sourceFileName, int sourceFileNameLen, const Char* destFileName, int destFileNameLen, FileCopyOption option);
 
     static void removeFile(const char* filePath, int len);
     static void removeFile(const wchar_t* filePath, int len);
-    static void removeFile(const char16_t* filePath, int len);
+    static void removeFile(const Char* filePath, int len);
 
     static bool existsDirectory(const char* path, int len);
     static bool existsDirectory(const wchar_t* path, int len);
-    static bool existsDirectory(const char16_t* path, int len);
+    static bool existsDirectory(const Char* path, int len);
 
     static void createDirectory(const char* path, int len);
     static void createDirectory(const wchar_t* path, int len);
-    static void createDirectory(const char16_t* path, int len);
+    static void createDirectory(const Char* path, int len);
 
     static void removeDirectory(const char* path, int len, bool recursive);
     static void removeDirectory(const wchar_t* path, int len, bool recursive);
-    static void removeDirectory(const char16_t* path, int len, bool recursive);
+    static void removeDirectory(const Char* path, int len, bool recursive);
 
     static void copyDirectory(const char* srcPath, int srcPathLen, const char* dstPath, int dstPathLen, bool overwrite, bool recursive);
     static void copyDirectory(const wchar_t* srcPath, int srcPathLen, const wchar_t* dstPath, int dstPathLen, bool overwrite, bool recursive);
-    static void copyDirectory(const char16_t* srcPath, int srcPathLen, const char16_t* dstPath, int dstPathLen, bool overwrite, bool recursive);
+    static void copyDirectory(const Char* srcPath, int srcPathLen, const Char* dstPath, int dstPathLen, bool overwrite, bool recursive);
 
     static bool matchPath(const char* path, int pathLen, const char* pattern, int patternLen);
     static bool matchPath(const wchar_t* path, int pathLen, const wchar_t* pattern, int patternLen);
-    static bool matchPath(const char16_t* path, int pathLen, const char16_t* pattern, int patternLen);
+    static bool matchPath(const Char* path, int pathLen, const Char* pattern, int patternLen);
 
     static FILE* fopen(const char* path, int pathLen, const char* mode, int modeLen);
     static FILE* fopen(const wchar_t* path, int pathLen, const wchar_t* mode, int modeLen);
-    static FILE* fopen(const char16_t* path, int pathLen, const char16_t* mode, int modeLen);
+    static FILE* fopen(const Char* path, int pathLen, const Char* mode, int modeLen);
 
     static uint64_t getFileSize(FILE* stream);
     static int64_t calcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin);

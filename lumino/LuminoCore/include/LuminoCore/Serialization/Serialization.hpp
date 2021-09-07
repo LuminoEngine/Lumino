@@ -563,7 +563,7 @@ private:
 		NodeInfo* parentNode = (m_nodeInfoStack.size() >= 2) ? &m_nodeInfoStack[m_nodeInfoStack.size() - 2] : nullptr;
 		if (parentNode && !parentNode->typeInfo.isEmpty())
 		{
-			m_store->setNextName(u"_type");
+			m_store->setNextName(_TT("_type"));
 			writeValue(parentNode->typeInfo);
 		}
 	}

@@ -48,7 +48,8 @@ bool FileStream::open(const StringRef& filePath, FileOpenMode openMode)
     m_openModeFlags = openMode;
 
     if (m_openModeFlags.hasFlag(FileOpenMode::Deferring)) {
-        if (!detail::FileSystemInternal::existsFile(m_filePath.c_str(), m_filePath.length())) {
+        detail::GenericStaticallyLocalPath<TCHAR> localPath(m_filePath.c_str(), m_filePath.length());
+        if (!detail::FileSystemInternal::existsFile(localPath.c_str(), localPath.getLength())) {
             LN_ENSURE_IO(0, filePath);
             return false;
         }
@@ -148,22 +149,22 @@ void FileStream::open() const
 {
     if (LN_REQUIRE(m_stream == NULL)) return;
 
-    const Char* mode = NULL;
+    const CChar* mode = NULL;
     if (m_openModeFlags.hasFlag(FileOpenMode::ReadWrite)) {
         if (m_openModeFlags.hasFlag(FileOpenMode::Append)) {
-            mode = _TT("a+b"); // 読み取りと書き込み (末尾に追加する)
+            mode = _CT("a+b"); // 読み取りと書き込み (末尾に追加する)
         } else if (m_openModeFlags.hasFlag(FileOpenMode::Truncate)) {
-            mode = _TT("w+b"); // 読み取りと書き込み (ファイルを空にする)
+            mode = _CT("w+b"); // 読み取りと書き込み (ファイルを空にする)
         } else {
-            mode = _TT("r+b"); // 読み取りと書き込み (ファイルが存在しない場合はエラー)
+            mode = _CT("r+b"); // 読み取りと書き込み (ファイルが存在しない場合はエラー)
         }
     } else if (m_openModeFlags.hasFlag(FileOpenMode::Write)) {
         if (m_openModeFlags.hasFlag(FileOpenMode::Append)) {
-            mode = _TT("ab"); // 書き込み (末尾に追加する。ファイルが無ければ新規作成)
+            mode = _CT("ab"); // 書き込み (末尾に追加する。ファイルが無ければ新規作成)
         } else if (m_openModeFlags.hasFlag(FileOpenMode::Truncate)) {
-            mode = _TT("wb"); // 書き込み (ファイルを空にする)
+            mode = _CT("wb"); // 書き込み (ファイルを空にする)
         } else {
-            mode = _TT("wb"); // 書き込み (モード省略。Truncate)
+            mode = _CT("wb"); // 書き込み (モード省略。Truncate)
         }
     } else if (m_openModeFlags.hasFlag(FileOpenMode::Read)) {
         if (m_openModeFlags.hasFlag(FileOpenMode::Append)) {
@@ -171,13 +172,14 @@ void FileStream::open() const
         } else if (m_openModeFlags.hasFlag(FileOpenMode::Truncate)) {
             mode = NULL; // 読み込みなのにファイルを空にはできない
         } else {
-            mode = _TT("rb"); // 読み込み
+            mode = _CT("rb"); // 読み込み
         }
     }
     if (LN_REQUIRE(mode)) return;
 
-    m_stream = detail::FileSystemInternal::fopen(m_filePath.c_str(), m_filePath.length(), mode, StringHelper::strlen(mode));
-    LN_ENSURE_IO(m_stream != nullptr, u"{}", m_filePath.c_str());
+    detail::GenericStaticallyLocalPath<TCHAR> localPath(m_filePath.c_str(), m_filePath.length());
+    m_stream = detail::FileSystemInternal::fopen(localPath.c_str(), localPath.getLength(), mode, StringHelper::strlen(mode));
+    LN_ENSURE_IO(m_stream != nullptr, _TT("{}"), m_filePath.c_str());
 }
 
 } // namespace ln

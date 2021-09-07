@@ -17,6 +17,9 @@ public:
 
 	/** 指定した文字列のハッシュ値を求めます。 */
 	static uint32_t compute(const char16_t* str, int len = -1);
+
+	/** 指定した文字列のハッシュ値を求めます。 */
+	static uint32_t compute(const char32_t* str, int len = -1);
 };
 
 namespace detail {

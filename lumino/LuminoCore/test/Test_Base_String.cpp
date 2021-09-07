@@ -211,7 +211,7 @@ TEST_F(Test_Base_String, Operators)
 		ASSERT_EQ(_TT("1"), str);
 
 		// Char*
-		str = "a";
+		str = _TT("a");
 		ASSERT_EQ(_TT("a"), str);
 		str = NSSO_STR;
 		ASSERT_EQ(NSSO_STR, str);
@@ -243,7 +243,9 @@ TEST_F(Test_Base_String, Operators)
 
 		// Char*
 		ASSERT_EQ(true, s1 == _TT("a"));
+#ifdef LN_STRING_FUZZY_CONVERSION
 		ASSERT_EQ(true, s1 == "a");
+#endif
 
 		// self
 		ASSERT_EQ(true, s1 == s1);
@@ -262,7 +264,9 @@ TEST_F(Test_Base_String, Operators)
 
 		// Char*
 		ASSERT_EQ(true, s1 != _TT("c"));
+#ifdef LN_STRING_FUZZY_CONVERSION
 		ASSERT_EQ(true, s1 != "c");
+#endif
 
 		// self
 		ASSERT_EQ(false, s1 != s1);
@@ -360,6 +364,7 @@ TEST_F(Test_Base_String, Operators)
 	}
 }
 
+#ifdef LN_STRING_FUZZY_CONVERSION
 TEST_F(Test_Base_String, assignFromCStr)
 {
 	// <Test> コンストラクタへ const char*, char 指定
@@ -377,6 +382,7 @@ TEST_F(Test_Base_String, assignFromCStr)
 		ASSERT_EQ(1, s1.indexOf('b'));
 	}
 }
+#endif
 
 TEST_F(Test_Base_String, clear)
 {
@@ -619,11 +625,11 @@ TEST_F(Test_Base_String, replace)
 
 TEST_F(Test_Base_String, insert)
 {
-    ASSERT_EQ(u"123abc", String(u"abc").insert(0, u"123"));
-    ASSERT_EQ(u"a123bc", String(u"abc").insert(1, u"123"));
-    ASSERT_EQ(u"ab123c", String(u"abc").insert(2, u"123"));
-    ASSERT_EQ(u"abc123", String(u"abc").insert(3, u"123"));
-    ASSERT_EQ(u"123", String(u"").insert(0, u"123"));
+    ASSERT_EQ(_TT("123abc"), String(_TT("abc")).insert(0, _TT("123")));
+    ASSERT_EQ(_TT("a123bc"), String(_TT("abc")).insert(1, _TT("123")));
+    ASSERT_EQ(_TT("ab123c"), String(_TT("abc")).insert(2, _TT("123")));
+    ASSERT_EQ(_TT("abc123"), String(_TT("abc")).insert(3, _TT("123")));
+    ASSERT_EQ(_TT("123"), String(_TT("")).insert(0, _TT("123")));
 }
 
 TEST_F(Test_Base_String, compare)
@@ -886,13 +892,13 @@ TEST_F(Test_Base_String, convertNativeCharString)
 	{
 		Char str1[] = { 0x3042, 0x0000 };	// "あ"
 
-		if (TextEncoding::systemMultiByteEncoding()->name() == u"UTF-8") {
+		if (TextEncoding::systemMultiByteEncoding()->name() == _TT("UTF-8")) {
 			uint8_t s[] = { 0xE3, 0x81, 0x82, 0x00 };	// "あ"
 			ASSERT_EQ(str1, String::fromCString((char*)s));
 		}
 #ifdef LN_OS_WIN32
 		// CI 環境では英語版の Windows が使われることがあるので、ひとまず逃げる
-		else if (TextEncoding::systemMultiByteEncoding()->name() == u"cp932") {
+		else if (TextEncoding::systemMultiByteEncoding()->name() == _TT("cp932")) {
 			uint8_t s[] = { 0x82, 0xA0, 0x00 };	// "あ" (SJIS)
 			ASSERT_EQ(str1, String::fromCString((char*)s));
 		}
@@ -985,6 +991,7 @@ TEST_F(Test_Base_String, MemoryAllocation)
 	}
 }
 
+#ifdef LN_STRING_FUZZY_CONVERSION
 TEST_F(Test_Base_String, Issue)
 {
 	{
@@ -992,6 +999,7 @@ TEST_F(Test_Base_String, Issue)
 		StringRef s2 = s1;
 	}
 }
+#endif
 
 //## 自己代入のテスト (this ではなく c_str() 等で取れる char* 経由)
 TEST_F(Test_Base_String, SelfAssign)
@@ -1001,28 +1009,28 @@ TEST_F(Test_Base_String, SelfAssign)
 		String str = _LT("1234567890abcdefg");
 		StringRef r1 = str.substr(1);
 		str = r1;
-		ASSERT_EQ("234567890abcdefg", str);
+		ASSERT_EQ(_TT("234567890abcdefg"), str);
 	}
 	//- [ ] SSO -> SSO 
 	{
 		String str = _LT("123");
 		StringRef r1 = str.substr(1);
 		str = r1;
-		ASSERT_EQ("23", str);
+		ASSERT_EQ(_TT("23"), str);
 	}
 	//- [ ] NonSSO -> SSO 
 	{
 		String str = _LT("1234567890abcdefg");
 		StringRef r1 = str.substr(10);
 		str = r1;
-		ASSERT_EQ("abcdefg", str);
+		ASSERT_EQ(_TT("abcdefg"), str);
 	}
 	//- [ ] SSO ->  NonSSO
 	{
 		String str = _LT("1234567890");
 		StringRef r1 = str;
 		str += r1;
-		ASSERT_EQ("12345678901234567890", str);
+		ASSERT_EQ(_TT("12345678901234567890"), str);
 	}
 }
 
@@ -1034,8 +1042,8 @@ TEST_F(Test_Base_String, SetAt)
 		String str1 = _LT("12345");
 		String str2 = str1;
 		str1[2] = '_';
-		ASSERT_EQ("12_45", str1);
-		ASSERT_EQ("12345", str2);	// 共有解除。変更されない。
+		ASSERT_EQ(_TT("12_45"), str1);
+		ASSERT_EQ(_TT("12345"), str2);	// 共有解除。変更されない。
 	}
 }
 

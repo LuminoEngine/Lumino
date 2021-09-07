@@ -82,9 +82,9 @@ TEST_F(Test_Json_JsonWriter, NaN_Inf)
     JsonWriter writer(&s);
     writer.setFormatting(JsonFormatting::None);
     writer.writeStartObject();
-    writer.writePropertyName(u"v1");
+    writer.writePropertyName(_TT("v1"));
     writer.writeFloat(Math::NaN);
-    writer.writePropertyName(u"v2");
+    writer.writePropertyName(_TT("v2"));
     writer.writeFloat(Math::Inf);
     writer.writeEndObject();
     auto json = s.toString();

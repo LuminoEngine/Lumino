@@ -81,6 +81,12 @@ uint32_t CRCHash::compute(const char16_t* str, int len)
 	return calcCrcHash((const byte_t*)str, len);
 }
 
+uint32_t CRCHash::compute(const char32_t* str, int len)
+{
+	len = static_cast<int>(((len < 0) ? std::char_traits<char32_t>::length(str) : len) * sizeof(char32_t));
+	return calcCrcHash((const byte_t*)str, len);
+}
+
 namespace detail {
 const unsigned* CRCHashInternal::getCRCTable()
 {

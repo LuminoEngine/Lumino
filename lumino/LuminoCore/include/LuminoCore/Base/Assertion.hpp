@@ -92,7 +92,7 @@ namespace detail { struct ExceptionHelper; }
 
 #define LN_REQUIRE_RANGE(value, begin, end)		_LN_CHECK(begin <= value && value < end, ::ln::ExceptionLevel::Warning)
 #define LN_REQUIRE_KEY(expr, ...)				_LN_CHECK(expr, ::ln::ExceptionLevel::Warning, ##__VA_ARGS__)
-#define LN_ENSURE_IO(expr, ...)					_LN_CHECK(expr, ::ln::ExceptionLevel::Error, u"IO Error", ##__VA_ARGS__)
+#define LN_ENSURE_IO(expr, ...)					_LN_CHECK(expr, ::ln::ExceptionLevel::Error, _TT("IO Error"), ##__VA_ARGS__)
 
 // internal
 #ifdef LN_USTRING16
@@ -195,28 +195,28 @@ struct ExceptionHelper
 	static void setSourceLocationInfo(Exception& e, ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage);
 	static void setMessage(Exception& e, const std::string& str);
 	static void setMessage(Exception& e, const std::wstring& str);
-	static void setMessage(Exception& e, const std::u16string& str);
+	static void setMessage(Exception& e, const UStdString& str);
 };
 
-template<class... TArgs> inline std::u16string formatMessage(const char* format, TArgs&&... args) noexcept
+template<class... TArgs> inline UStdString formatMessage(const char* format, TArgs&&... args) noexcept
 {
 	const auto str = ::fmt::format(format, std::forward<TArgs>(args)...);
-	return UnicodeStringUtils::NarrowToU16(str.c_str(), str.length());
+	return UnicodeStringUtils::NarrowToUString(str.c_str(), str.length());
 }
-template<class... TArgs> inline std::u16string formatMessage(const wchar_t* format, TArgs&&... args) noexcept
+template<class... TArgs> inline UStdString formatMessage(const wchar_t* format, TArgs&&... args) noexcept
 {
 	const auto str = ::fmt::format(format, std::forward<TArgs>(args)...);
-	return UnicodeStringUtils::WideToU16(str.c_str(), str.length());
+	return UnicodeStringUtils::WideToUString(str.c_str(), str.length());
 }
-template<class... TArgs> inline std::u16string formatMessage(const char16_t* format, TArgs&&... args) noexcept
+template<class... TArgs> inline UStdString formatMessage(const Char* format, TArgs&&... args) noexcept
 {
 	return ::fmt::format(format, std::forward<TArgs>(args)...);
 }
-template<class T, class... TArgs> inline std::u16string formatMessage(const T& format, TArgs&&... args) noexcept
+template<class T, class... TArgs> inline UStdString formatMessage(const T& format, TArgs&&... args) noexcept
 {
 	return ::fmt::format(format.c_str(), std::forward<TArgs>(args)...);
 }
-inline std::u16string formatMessage() noexcept { return {}; }
+inline UStdString formatMessage() noexcept { return {}; }
 void printError(const Exception& e);
 void notifyFatalError(const char* file, int line, const char* message);
 

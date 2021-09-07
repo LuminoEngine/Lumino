@@ -1,4 +1,22 @@
-﻿
+﻿/**
+ * @private
+ * 
+ * String の内部エンコーディング
+ * ----------
+ * 
+ * ### UTF-32
+ * - https://ja.wikipedia.org/wiki/UTF-32
+ *   - システムのメモリ上での管理や、データベースに保存するエンコーディングとして使用されることが多い。データ交換 (ファイル等) に使われることはほとんどない。
+ *   - バイト数が固定であるため、最適なメモリ確保ができる。
+ *   - メモリ消費が大きい。
+ * - ゲームエンジンとしては
+ *   - テキストレンダリング時に文字コードの変換が必要なくなるため高速。
+ *   - C# や JS 等ほかの言語から呼び出すときにはエンコーディングの変換が必要になる。
+ *     - これを毎フレーム行うのは直接描画で頑張るとき。
+ *       しかしそれと比較しても、内部のテキストレンダリングは複数パスで行われることがありグリフの取得のため変換が都度行われる。
+ *       UTF-32 の方が変換回数は少なくなるだろう。
+ *
+ */
 #include "Internal.hpp"
 #include <limits.h>
 #include <iostream>
@@ -1207,6 +1225,36 @@ int UStringConvert::convertNativeString(const char16_t* src, int srcSize, wchar_
 #endif
 }
 
+int UStringConvert::convertNativeString(const char32_t* src, int srcLen, char* dst, int dstSize)
+{
+#ifdef LN_WCHAR_16
+    LN_NOTIMPLEMENTED();
+    return -1;
+#else
+    LN_NOTIMPLEMENTED();
+    return -1;
+#endif
+}
+
+int UStringConvert::convertNativeString(const char32_t* src, int srcLen, wchar_t* dst, int dstSize)
+{
+#ifdef LN_WCHAR_16
+    UTFConversionOptions options;
+    options.ReplacementChar = '?';
+    auto result = UnicodeUtils::convertUTF32toUTF16(reinterpret_cast<const UTF32*>(src), srcLen, reinterpret_cast<UTF16*>(dst), dstSize, &options);
+    if (result == UTFConversionResult_Success) {
+        dst[options.ConvertedTargetLength] = '\0';
+        return options.ConvertedTargetLength;
+    }
+    else {
+        return 0;
+    }
+#else
+    LN_NOTIMPLEMENTED();
+    return -1;
+#endif
+}
+
 //int UStringConvert::getMaxNativeStringConverLength(const char* src, int srcLen, const char* dst)
 //{
 //	return srcLen;
@@ -1261,8 +1309,22 @@ void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::ws
 #endif
 }
 
-} // namespace detail
+void UStringConvert::convertToStdString(const char32_t* src, int srcLen, std::string* outString)
+{
+#ifdef LN_OS_WIN32
+    // SJIS へは変換したくない
+    LN_NOTIMPLEMENTED();
+#else
+    *outString = UnicodeStringUtils::U32ToU8(src, srcLen);
+#endif
+}
 
+void UStringConvert::convertToStdString(const char32_t* src, int srcLen, std::wstring* outString)
+{
+    *outString = UnicodeStringUtils::U32ToWide(src, srcLen);
+}
+
+} // namespace detail
 } // namespace ln
 
 //==============================================================================

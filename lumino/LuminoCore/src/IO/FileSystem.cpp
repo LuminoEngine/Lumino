@@ -214,7 +214,7 @@ ByteBuffer FileSystem::readAllBytes(const StringRef& filePath)
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath.data(), filePath.length());
     const PlatformFileSystem::PathChar mode[] = {'r', 'b', '\0'};
     FILE* fp = PlatformFileSystem::fopen(localPath.c_str(), mode);
-    if (LN_ENSURE_IO(fp, String::format(u"Access failed: {0}", filePath))) return ByteBuffer();
+    if (LN_ENSURE_IO(fp, String::format(_TT("Access failed: {0}"), filePath))) return ByteBuffer();
 
     size_t size = (size_t)detail::FileSystemInternal::getFileSize(fp);
     ByteBuffer buffer(size);
@@ -289,7 +289,7 @@ bool FileSystemInternal::existsFile(const wchar_t* filePath, int len)
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
     return PlatformFileSystem::existsFile(localPath.c_str());
 }
-bool FileSystemInternal::existsFile(const char16_t* filePath, int len)
+bool FileSystemInternal::existsFile(const Char* filePath, int len)
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
     return PlatformFileSystem::existsFile(localPath.c_str());
@@ -309,7 +309,7 @@ FileAttribute FileSystemInternal::getAttribute(const wchar_t* filePath, int len)
     if (!PlatformFileSystem::getAttribute(localPath.c_str(), &attr)) return FileAttribute::None;
     return attr;
 }
-FileAttribute FileSystemInternal::getAttribute(const char16_t* filePath, int len)
+FileAttribute FileSystemInternal::getAttribute(const Char* filePath, int len)
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
     FileAttribute attr;
@@ -327,7 +327,7 @@ void FileSystemInternal::setAttribute(const wchar_t* filePath, int len, FileAttr
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
     PlatformFileSystem::setAttribute(localPath.c_str(), attr);
 }
-void FileSystemInternal::setAttribute(const char16_t* filePath, int len, FileAttribute attr)
+void FileSystemInternal::setAttribute(const Char* filePath, int len, FileAttribute attr)
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
     PlatformFileSystem::setAttribute(localPath.c_str(), attr);
@@ -347,7 +347,7 @@ time_t FileSystemInternal::getLastModifiedTime(const wchar_t* filePath, int len)
 	PlatformFileSystem::getLastModifiedTime(localPath.c_str(), &time);
 	return time;
 }
-time_t FileSystemInternal::getLastModifiedTime(const char16_t* filePath, int len)
+time_t FileSystemInternal::getLastModifiedTime(const Char* filePath, int len)
 {
 	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
 	time_t time;
@@ -367,7 +367,7 @@ void FileSystemInternal::copyFile(const wchar_t* sourceFileName, int sourceFileN
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath2(destFileName, destFileNameLen);
     PlatformFileSystem::copyFile(localPath1.c_str(), localPath2.c_str(), (option == FileCopyOption::Overwrite));
 }
-void FileSystemInternal::copyFile(const char16_t* sourceFileName, int sourceFileNameLen, const char16_t* destFileName, int destFileNameLen, FileCopyOption option)
+void FileSystemInternal::copyFile(const Char* sourceFileName, int sourceFileNameLen, const Char* destFileName, int destFileNameLen, FileCopyOption option)
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath1(sourceFileName, sourceFileNameLen);
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath2(destFileName, destFileNameLen);
@@ -388,7 +388,7 @@ void FileSystemInternal::removeFile(const wchar_t* filePath, int len)
         PlatformFileSystem::removeFile(localPath.c_str());
     }
 }
-void FileSystemInternal::removeFile(const char16_t* filePath, int len)
+void FileSystemInternal::removeFile(const Char* filePath, int len)
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
     if (PlatformFileSystem::existsFile(localPath.c_str())) {
@@ -406,7 +406,7 @@ bool FileSystemInternal::existsDirectory(const wchar_t* filePath, int len)
     Flags<FileAttribute> attr = detail::FileSystemInternal::getAttribute(filePath, len);
     return attr.hasFlag(FileAttribute::Directory);
 }
-bool FileSystemInternal::existsDirectory(const char16_t* filePath, int len)
+bool FileSystemInternal::existsDirectory(const Char* filePath, int len)
 {
     Flags<FileAttribute> attr = detail::FileSystemInternal::getAttribute(filePath, len);
     return attr.hasFlag(FileAttribute::Directory);
@@ -455,7 +455,7 @@ void FileSystemInternal::createDirectory(const wchar_t* path, int len)
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, len);
     createDirectoryInternal2(localPath.c_str(), localPath.c_str() + localPath.getLength());
 }
-void FileSystemInternal::createDirectory(const char16_t* path, int len)
+void FileSystemInternal::createDirectory(const Char* path, int len)
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, len);
     createDirectoryInternal2(localPath.c_str(), localPath.c_str() + localPath.getLength());
@@ -488,7 +488,7 @@ void FileSystemInternal::removeDirectory(const wchar_t* path, int len, bool recu
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, len);
     deleteDirectoryInternal(localPath.c_str(), localPath.getLength(), recursive);
 }
-void FileSystemInternal::removeDirectory(const char16_t* path, int len, bool recursive)
+void FileSystemInternal::removeDirectory(const Char* path, int len, bool recursive)
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, len);
     deleteDirectoryInternal(localPath.c_str(), localPath.getLength(), recursive);
@@ -565,7 +565,7 @@ void FileSystemInternal::copyDirectory(const wchar_t* srcPath, int srcPathLen, c
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localDstPath(dstPath, dstPathLen);
     copyDirectoryInternal(localSrcPath.c_str(), localDstPath.c_str(), overwrite, recursive);
 }
-void FileSystemInternal::copyDirectory(const char16_t* srcPath, int srcPathLen, const char16_t* dstPath, int dstPathLen, bool overwrite, bool recursive)
+void FileSystemInternal::copyDirectory(const Char* srcPath, int srcPathLen, const Char* dstPath, int dstPathLen, bool overwrite, bool recursive)
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localSrcPath(srcPath, srcPathLen);
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localDstPath(dstPath, dstPathLen);
@@ -583,7 +583,7 @@ bool FileSystemInternal::matchPath(const wchar_t* path, int pathLen, const wchar
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPattern(pattern, patternLen);
     return PlatformFileSystem::matchPath(localPath.c_str(), localPattern.c_str());
 }
-bool FileSystemInternal::matchPath(const char16_t* path, int pathLen, const char16_t* pattern, int patternLen)
+bool FileSystemInternal::matchPath(const Char* path, int pathLen, const Char* pattern, int patternLen)
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, pathLen);
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPattern(pattern, patternLen);
@@ -602,7 +602,7 @@ FILE* FileSystemInternal::fopen(const wchar_t* path, int pathLen, const wchar_t*
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localMode(mode, modeLen);
     return PlatformFileSystem::fopen(localPath.c_str(), localMode.c_str());
 }
-FILE* FileSystemInternal::fopen(const char16_t* path, int pathLen, const char16_t* mode, int modeLen)
+FILE* FileSystemInternal::fopen(const Char* path, int pathLen, const Char* mode, int modeLen)
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, pathLen);
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localMode(mode, modeLen);

@@ -63,6 +63,7 @@ public:
     static const UTF32 MaxLegalUTF32 = 0x0010FFFF;         ///< この値以下が UTF32として有効
     static const UTF32 ReplacementChar = 0x0000FFFD;       ///< 不正文字が見つかった時、これに置換する
     static const UTF32 MaxBMP = 0x0000FFFF;                ///< Basic Multilingual Plane
+    static const int UTF8MaxBytes = 4;                      
 
 public:
     /**
@@ -242,6 +243,7 @@ class UnicodeStringUtils
 {
 public:
     template<typename TChar>
+    [[deprecated("use std::char_traits<char32_t>::length")]]
     inline static size_t strlen(const TChar* str) noexcept
     {
         assert(str);
@@ -312,10 +314,74 @@ public:
 #endif
     }
 
+    static inline std::string U32ToU8(const char32_t* str, size_t len) noexcept
+    {
+        std::string result(len * UnicodeUtils::UTF8MaxBytes, '\0');
+        UTFConversionOptions options;
+        options.ReplacementChar = '?';
+        UnicodeUtils::convertUTF32toUTF8(reinterpret_cast<const UTF32*>(str), len, reinterpret_cast<UTF8*>(result.data()), result.length(), &options);
+        return result;
+    }
+
+    static inline std::u32string U16ToU32(const char16_t* str, size_t len) noexcept
+    {
+        std::u32string result(len * 2, U'\0');
+        UTFConversionOptions options;
+        options.ReplacementChar = '?';
+        UnicodeUtils::convertUTF16toUTF32(reinterpret_cast<const UTF16*>(str), len, reinterpret_cast<UTF32*>(result.data()), result.length(), &options);
+        return result;
+    }
+
+    static inline std::u32string WideToU32(const wchar_t* str, size_t len) noexcept
+    {
+#ifdef LN_UU_WCHAR_32
+        return std::u32string(reinterpret_cast<const char32_t*>(str), len);
+#else
+        return U16ToU32(reinterpret_cast<const char16_t*>(str), len);
+#endif
+    }
+
+    static inline std::wstring U32ToWide(const char32_t* str, size_t len) noexcept
+    {
+#ifdef LN_UU_WCHAR_32
+        return std::wstring(reinterpret_cast<const wchar_t*>(str), len);
+#else
+        std::wstring result(len * 2, U'\0');
+        UTFConversionOptions options;
+        options.ReplacementChar = '?';
+        UnicodeUtils::convertUTF32toUTF16(reinterpret_cast<const UTF32*>(str), len, reinterpret_cast<UTF16*>(result.data()), result.length(), &options);
+        return result;
+#endif
+    }
+
     static inline std::u16string NarrowToU16(const char* str, size_t len) noexcept
     {
         const auto s = NarrowToWide(str, len);
         return WideToU16(s.c_str(), s.length());
+    }
+
+    static inline std::u32string NarrowToU32(const char* str, size_t len) noexcept
+    {
+        const auto s = NarrowToWide(str, len);
+        return WideToU32(s.c_str(), s.length());
+    }
+
+    static inline UStdString NarrowToUString(const char* str, size_t len) noexcept
+    {
+#if LN_USTRING32
+        return NarrowToU32(str, len);
+#else
+        return NarrowToU16(str, len);
+#endif
+    }
+
+    static inline UStdString WideToUString(const wchar_t* str, size_t len) noexcept
+    {
+#if LN_USTRING32
+        return WideToU32(str, len);
+#else
+        return WideToU16(str, len);
+#endif
     }
 };
 
