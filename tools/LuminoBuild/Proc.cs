@@ -73,12 +73,12 @@ namespace LuminoBuild
                         p.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { 
                             if (!Silent) Console.WriteLine(e.Data);
                             sb.Append(e.Data);
-                            sbAll.Append(e.Data);
+                            sbAll.Append(e.Data + Environment.NewLine);
                         };
                         p.StartInfo.RedirectStandardError = true;
                         p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => {
                             if (!Silent) Console.Error.WriteLine(e.Data);
-                            sbAll.Append(e.Data);
+                            sbAll.Append(e.Data + Environment.NewLine);
                         };
                     }
                     if (stdinWrite != null)

@@ -128,6 +128,9 @@ endif()
 find_package(GTest CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 
+find_package(ZLIB REQUIRED)
+find_package(libpng CONFIG REQUIRED)
+
 # pcre2
 set(pcre2_ROOT ${LN_VCPKG_INSTALLED_DIR})
 find_library(pcre2_32_LIBRARY_RELEASE NAMES pcre2-32 PATHS ${pcre_ROOT} PATH_SUFFIXES "lib" NO_CMAKE_SYSTEM_PATH)
@@ -141,8 +144,6 @@ if (LN_EXTERNAL2)
     find_package(yaml-cpp CONFIG REQUIRED)
     find_package(toml11 CONFIG REQUIRED)
     find_package(Vorbis CONFIG REQUIRED)
-    find_package(ZLIB REQUIRED)
-    find_package(libpng CONFIG REQUIRED)
     find_package(freetype CONFIG REQUIRED)
     find_package(nanovg CONFIG REQUIRED)
     find_package(tinyobjloader CONFIG REQUIRED)

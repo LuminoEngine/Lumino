@@ -70,6 +70,8 @@ namespace LuminoBuild
             }
         }
 
+        public bool IsDesktopSystem { get => System == "windows" || System == "osx" || System == "linux"; }
+
         public Build(string triplet)
         {
             Triplet = triplet;

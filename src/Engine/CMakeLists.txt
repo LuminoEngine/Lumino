@@ -347,8 +347,8 @@ set(
     LuminoCore
     #pcre
     pcre2_32
-    PNG
-    ZLIB
+    png
+    ZLIB::ZLIB
     FreeType
     vorbisfile
     vorbis

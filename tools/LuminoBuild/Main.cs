@@ -41,60 +41,63 @@ namespace LuminoBuild
                 //args = new string[] { "MakeNativePackage" };
                 //args = new string[] { "MakeInstaller_Win32" };
 
-                args = new string[] { "BuildExternals" };
+                args = new string[] { "BuildExternals", "wasm32-emscripten" };
                 //args = new string[] { "BuildEngine_MSVC" };
 
             }
 
-            var triplet = /*(args.Length >= 2) ? args[1] :*/ "x64-windows";
-            var builder = new Build(triplet);
-            builder.Args = args;
+            var triplet = (args.Length >= 2) ? args[1] : "x64-windows";
+            var b = new Build(triplet);
+            b.Args = args;
 
             //builder.LuminoBuildCacheDir = Path.GetFullPath(Path.Combine(builder.LuminoBuildDir, "BuildCache"));
-            builder.LuminoBindingsDir = Path.GetFullPath(Path.Combine(builder.RootDir, "bindings"));
-            builder.LuminoLibDir = Path.GetFullPath(Path.Combine(builder.RootDir, "lib"));
-            builder.LuminoToolsDir = Path.GetFullPath(Path.Combine(builder.RootDir, "tools"));
-            builder.LuminoDocDir = Path.GetFullPath(Path.Combine(builder.RootDir, "docs"));
-            builder.LuminoSourceDir = Path.GetFullPath(Path.Combine(builder.RootDir, "src"));
-            builder.LuminoPackageDir = Path.GetFullPath(Path.Combine(builder.BuildDir, "Package"));
-            builder.LuminoPackageLibDir = Path.GetFullPath(Path.Combine(builder.LuminoPackageDir, "lib"));
-            builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.RootDir, "tools/PackageSource"));
-            builder.LuminoExternalDir = Path.GetFullPath(Path.Combine(builder.RootDir, "external"));
+            b.LuminoBindingsDir = Path.GetFullPath(Path.Combine(b.RootDir, "bindings"));
+            b.LuminoLibDir = Path.GetFullPath(Path.Combine(b.RootDir, "lib"));
+            b.LuminoToolsDir = Path.GetFullPath(Path.Combine(b.RootDir, "tools"));
+            b.LuminoDocDir = Path.GetFullPath(Path.Combine(b.RootDir, "docs"));
+            b.LuminoSourceDir = Path.GetFullPath(Path.Combine(b.RootDir, "src"));
+            b.LuminoPackageDir = Path.GetFullPath(Path.Combine(b.BuildDir, "Package"));
+            b.LuminoPackageLibDir = Path.GetFullPath(Path.Combine(b.LuminoPackageDir, "lib"));
+            b.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(b.RootDir, "tools/PackageSource"));
+            b.LuminoExternalDir = Path.GetFullPath(Path.Combine(b.RootDir, "external"));
 
             var positionalArgs = args.Where(x => !x.Contains("--")).ToList();
 
             BuildEnvironment.Target = (positionalArgs.Count > 1) ? args[1] : "";
             BuildEnvironment.Configuration = (positionalArgs.Count > 2) ? args[2] : "";
-            BuildEnvironment.Initialize(builder);
+            BuildEnvironment.Initialize(b);
 
 
-            builder.Tasks = new List<LuminoBuild.BuildTask>();
-            builder.Tasks.Add(new Tasks.SetupTools());
-            builder.Tasks.Add(new Tasks.BuildExternalProjects());
-            builder.Tasks.Add(new Tasks.BuildExternals());
-            builder.Tasks.Add(new Tasks.BuildLLVM());
-            builder.Tasks.Add(new Tasks.BuildEngine_Linux());
-            builder.Tasks.Add(new Tasks.BuildEngine_macOS());
-            builder.Tasks.Add(new Tasks.BuildEngine_iOS());
-            builder.Tasks.Add(new Tasks.BuildDocuments());
-            builder.Tasks.Add(new Tasks.BuildEmbeddedResources());
-            builder.Tasks.Add(new Tasks.BuildEngine_MSVC());
-            builder.Tasks.Add(new Tasks.CompressPackage());
-            builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
-            builder.Tasks.Add(new Tasks.BuildEngine_Android());
-            builder.Tasks.Add(new Tasks.BuildEngine_Emscripten());
-            builder.Tasks.Add(new Tasks.MakeNativePackage());
-            builder.Tasks.Add(new Tasks.MakeInstaller_Win32());
-            builder.Tasks.Add(new Tasks.MakePackage_HSP3());
-            builder.Tasks.Add(new Tasks.MakePackage_macOS());
-            builder.Tasks.Add(new Tasks.MakePackage_Ruby());
-            builder.Rules.Add(new Rules.BuildPackage());
-            builder.Rules.Add(new Rules.BuildLocalPackage());
+            if (b.System == "emscripten") EmscriptenEnv.Setup(b);
+
+
+            b.Tasks = new List<LuminoBuild.BuildTask>();
+            b.Tasks.Add(new Tasks.SetupTools());
+            b.Tasks.Add(new Tasks.BuildExternalProjects());
+            b.Tasks.Add(new Tasks.BuildExternals());
+            b.Tasks.Add(new Tasks.BuildLLVM());
+            b.Tasks.Add(new Tasks.BuildEngine_Linux());
+            b.Tasks.Add(new Tasks.BuildEngine_macOS());
+            b.Tasks.Add(new Tasks.BuildEngine_iOS());
+            b.Tasks.Add(new Tasks.BuildDocuments());
+            b.Tasks.Add(new Tasks.BuildEmbeddedResources());
+            b.Tasks.Add(new Tasks.BuildEngine_MSVC());
+            b.Tasks.Add(new Tasks.CompressPackage());
+            b.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
+            b.Tasks.Add(new Tasks.BuildEngine_Android());
+            b.Tasks.Add(new Tasks.BuildEngine_Emscripten());
+            b.Tasks.Add(new Tasks.MakeNativePackage());
+            b.Tasks.Add(new Tasks.MakeInstaller_Win32());
+            b.Tasks.Add(new Tasks.MakePackage_HSP3());
+            b.Tasks.Add(new Tasks.MakePackage_macOS());
+            b.Tasks.Add(new Tasks.MakePackage_Ruby());
+            b.Rules.Add(new Rules.BuildPackage());
+            b.Rules.Add(new Rules.BuildLocalPackage());
             
             
             if (args.Length >= 1)
             {
-                builder.DoTaskOrRule(args[0]);
+                b.DoTaskOrRule(args[0]);
             }
             else
             {
@@ -102,7 +105,7 @@ namespace LuminoBuild
                 {
                     Console.WriteLine("----------------------------------------");
                     Console.WriteLine("{0,-8}   {1}", "Command", "Description");
-                    foreach (var rule in builder.Tasks)
+                    foreach (var rule in b.Tasks)
                     {
                         Console.WriteLine("{0,-8}", rule.CommandName);
                     }
@@ -114,7 +117,7 @@ namespace LuminoBuild
 
                     if (commands == "exit") break;
 
-                    builder.DoTaskOrRule(commands);
+                    b.DoTaskOrRule(commands);
                 }
             }
         }
