@@ -213,48 +213,6 @@ namespace LuminoBuild.Tasks
             {
                 Utils.CallProcess("git", "clone --depth 1 -b 3.0.1 https://github.com/leetal/ios-cmake.git ios-cmake");
             }
-            if (!Directory.Exists("glslang"))
-            {
-                Utils.CallProcess("git", "clone --depth 1 -b SDK-candidate-26-Jul-2020 https://github.com/KhronosGroup/glslang.git glslang");
-            }
-            if (!Directory.Exists("SPIRV-Cross"))
-            {
-                Utils.CallProcess("git", "clone --depth 1 -b 2020-06-29 https://github.com/KhronosGroup/SPIRV-Cross.git SPIRV-Cross");
-                //Utils.CallProcess("git", "clone https://github.com/KhronosGroup/SPIRV-Cross.git SPIRV-Cross");
-                //Directory.SetCurrentDirectory("SPIRV-Cross");
-                //Utils.CallProcess("git", "checkout be7425ef70231ab82930331959ab487d605d0482");
-                //Directory.SetCurrentDirectory(reposDir);
-            }
-            if (!Directory.Exists("glfw"))
-            {
-                // TODO: #glfw 816 の対策が現時点の最新 3.2.1 には入っていないので、開発中の master を取ってくる
-                // 3.3 リリース後、そのタグで clone するようにしておく。
-                if (Utils.IsMac)
-                {
-                    Utils.CallProcess("git", "clone https://github.com/glfw/glfw.git glfw");
-                    Directory.SetCurrentDirectory("glfw");
-                    Utils.CallProcess("git", "checkout 5afcd0981bf2fe9b9550f24ba298857aac6c35c2");
-                    Directory.SetCurrentDirectory(reposDir);
-                }
-                else
-                {
-                    Utils.CallProcess("git", "clone --depth 1 -b 3.2.1 https://github.com/glfw/glfw.git glfw");
-                }
-            }
-            if (!Directory.Exists("glad"))
-            {
-                Utils.CopyDirectory(Path.Combine(builder.LuminoExternalDir, "glad"), "glad");
-                //Utils.CallProcess("git", "clone --depth 1 -b v0.1.26 https://github.com/Dav1dde/glad.git glad");
-            }
-            if (!Directory.Exists("openal-soft"))
-            {
-                Utils.CallProcess("git", "clone --depth 1 -b openal-soft-1.20.1 https://github.com/kcat/openal-soft.git");
-                //// https://github.com/kcat/openal-soft/issues/183 の問題の修正後、まだタグが降られていない。そのため latest を取得
-                //Utils.CallProcess("git", "clone https://github.com/kcat/openal-soft.git openal-soft");
-                //Directory.SetCurrentDirectory("openal-soft");
-                //Utils.CallProcess("git", "checkout 7d76cbddd6fbdb52eaa917845435b95ae89efced");
-                //Directory.SetCurrentDirectory(reposDir);
-            }
             if (!Directory.Exists("SDL2"))
             {
                 var zip = Path.Combine(reposDir, "SDL2-2.0.12.zip");
@@ -273,20 +231,6 @@ namespace LuminoBuild.Tasks
                 //dir.Attributes = dir.Attributes & ~FileAttributes.ReadOnly;
                 //Directory.Move(dst, Path.Combine(reposDir, "SDL2"));
             }
-            if (!Directory.Exists("ogg"))
-            {
-                Utils.CallProcess("git", "clone --depth 1 -b v1.3.3 https://github.com/xiph/ogg.git ogg");
-            }
-            if (!Directory.Exists("vorbis"))
-            {
-                Utils.CallProcess("git", "clone --depth 1 -b v1.3.6-lumino https://github.com/lriki/vorbis.git vorbis");
-            }
-            if (!Directory.Exists("pcre"))
-            {
-                Utils.DownloadFile("ftp://ftp.pcre.org/pub/pcre/pcre2-10.31.zip", "pcre2-10.31.zip");
-                Utils.ExtractZipFile("pcre2-10.31.zip", reposDir, true);
-                Directory.Move("pcre2-10.31", "pcre");
-            }
             if (!Directory.Exists("tmxlite"))
             {
                 Utils.CallProcess("git", "clone https://github.com/fallahn/tmxlite.git tmxlite");
@@ -294,24 +238,11 @@ namespace LuminoBuild.Tasks
                 Utils.CallProcess("git", "checkout 8ed41071fe0774947fc7f7c6ece77de3061a5239");
                 Directory.SetCurrentDirectory(reposDir);
             }
-            if (!Directory.Exists("Vulkan-Headers"))
-            {
-                Utils.CallProcess("git", "clone --depth 1 -b v1.1.105 https://github.com/KhronosGroup/Vulkan-Headers.git Vulkan-Headers");
-            }
             if (!Directory.Exists("Effekseer"))
             {
                 Utils.CallProcess("git", "clone https://github.com/effekseer/Effekseer Effekseer");
                 Directory.SetCurrentDirectory("Effekseer");
                 Utils.CallProcess("git", "submodule update --init");
-                Directory.SetCurrentDirectory(reposDir);
-            }
-            if (!Directory.Exists("yaml-cpp"))
-            {
-                //Utils.CallProcess("git", "clone --depth 1 -b yaml-cpp-0.6.3 https://github.com/jbeder/yaml-cpp.git yaml-cpp");
-                // まだタグの振られていない #824 の修正がほしい
-                Utils.CallProcess("git", "clone https://github.com/jbeder/yaml-cpp.git yaml-cpp");
-                Directory.SetCurrentDirectory("yaml-cpp");
-                Utils.CallProcess("git", "checkout 4edff1fa5dbfca16fc72d89870841bee89f8ef89");
                 Directory.SetCurrentDirectory(reposDir);
             }
             if (!Directory.Exists("lua"))
@@ -352,18 +283,8 @@ namespace LuminoBuild.Tasks
                     var cppyamlRuntime = "-DYAML_MSVC_SHARED_RT=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
 
                     BuildProjectMSVC(builder, "nanovg", reposDir, targetName, targetFullName, configuration);
-                    BuildProjectMSVC(builder, "yaml-cpp", reposDir, targetName, targetFullName, configuration, $"{cppyamlRuntime} -DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF");
-                    BuildProjectMSVC(builder, "glslang", reposDir, targetName, targetFullName, configuration);
-                    BuildProjectMSVC(builder, "SPIRV-Cross", reposDir, targetName, targetFullName, configuration);
-                    BuildProjectMSVC(builder, "glfw", reposDir, targetName, targetFullName, configuration, $"-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
-                    BuildProjectMSVC(builder, "glad", reposDir, targetName, targetFullName, configuration, $"-DGLAD_INSTALL=ON");
-                    BuildProjectMSVC(builder, "openal-soft", reposDir, targetName, targetFullName, configuration, $"-DALSOFT_BACKEND_DSOUND=OFF");  // find_package(DSound) で古い WindowsSDK の include パスが登録されてしまい、Windows.h など他の include が古い方に引っ張られてしまう
                     BuildProjectMSVC(builder, "SDL2", reposDir, targetName, targetFullName, configuration, $"-DSDL_SHARED=OFF -DSDL_STATIC=ON -DSSE=OFF ");
-                    BuildProjectMSVC(builder, "ogg", reposDir, targetName, targetFullName, configuration);
-                    BuildProjectMSVC(builder, "vorbis", reposDir, targetName, targetFullName, configuration, $"-DOGG_ROOT={oggInstallDir}");
-                    BuildProjectMSVC(builder, "pcre", reposDir, targetName, targetFullName, configuration, $"-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                     BuildProjectMSVC(builder, "tmxlite/tmxlite", reposDir, targetName, targetFullName, configuration, $"-DTMXLITE_STATIC_LIB=ON");
-                    BuildProjectMSVC(builder, "Vulkan-Headers", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "lua", reposDir, targetName, targetFullName, configuration);
 
                     if (builder.Args.Contains("--enable-Effekseer"))
@@ -380,12 +301,7 @@ namespace LuminoBuild.Tasks
                         var targetName = BuildEnvironment.Target;
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, $"{targetName}", "ExternalInstall", "ogg"));
 
-                        BuildProjectAndroid(builder, "ogg", reposDir,targetName);
-                        BuildProjectAndroid(builder, "vorbis", reposDir,targetName, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
-                        BuildProjectAndroid(builder, "pcre", reposDir,targetName, "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                         BuildProjectAndroid(builder, "tmxlite/tmxlite", reposDir,targetName, "-DTMXLITE_STATIC_LIB=ON");
-                        BuildProjectAndroid(builder, "Vulkan-Headers", reposDir,targetName);
-                        BuildProjectAndroid(builder, "yaml-cpp", reposDir, targetName, $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF");
                         BuildProjectAndroid(builder, "nanovg", reposDir, targetName);
                     }
                 }
@@ -396,12 +312,7 @@ namespace LuminoBuild.Tasks
                     var externalInstallDir = Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, "ExternalInstall");
                     var oggInstallDir = Utils.ToUnixPath(Path.Combine(externalInstallDir, "ogg"));
 
-                    BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
-                    BuildProjectEm(builder, "ogg", reposDir, "Emscripten");
-                    BuildProjectEm(builder, "vorbis", reposDir, "Emscripten", $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
-                    BuildProjectEm(builder, "pcre", reposDir, "Emscripten", "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                     BuildProjectEm(builder, "tmxlite/tmxlite", reposDir, "Emscripten", "-DTMXLITE_STATIC_LIB=ON");
-                    BuildProjectEm(builder, "yaml-cpp", reposDir, "Emscripten", $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF");
                     BuildProjectEm(builder, "nanovg", reposDir, "Emscripten");
                 }
 
@@ -431,14 +342,7 @@ namespace LuminoBuild.Tasks
                         
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, dirName, "ExternalInstall", "ogg"));
 
-                        BuildProject(builder, "ogg", "", reposDir, dirName, generator, args);
-                        BuildProject(builder, "vorbis", "", reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_DEVELOPER_ROOT={builder.BuildDir} " + args);
-                        BuildProject(builder, "bullet3", "", reposDir, dirName, generator, $"{bulletOptions} " + args);
-                        BuildProject(builder, "pcre", "", reposDir, dirName, generator, $"-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF -DPCRE2_BUILD_TESTS=OFF " + args);
                         BuildProject(builder, "tmxlite/tmxlite", "", reposDir, dirName, generator, $"-DTMXLITE_STATIC_LIB=ON " + args);
-                        BuildProject(builder, "Box2D/Box2D", "", reposDir, dirName, generator, $"-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON " + args);
-                        BuildProject(builder, "Vulkan-Headers", "", reposDir, dirName, generator, args);
-                        BuildProject(builder, "yaml-cpp", "", reposDir, dirName, generator, $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF " + args);
                         BuildProject(builder, "nanovg", "", reposDir, dirName, generator, args);
                     }
                 }
@@ -459,18 +363,7 @@ namespace LuminoBuild.Tasks
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, dirName, "ExternalInstall", "ogg"));
 
                         var generator = "Xcode";
-                        BuildProject(builder, "glslang", t.Config, reposDir, dirName, generator, args);
-                        BuildProject(builder, "SPIRV-Cross", t.Config, reposDir, dirName, generator, args);
-                        BuildProject(builder, "glfw", t.Config, reposDir, dirName, generator, $"-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
-                        BuildProject(builder, "glad", t.Config, reposDir, dirName, generator, $"-DGLAD_INSTALL=ON " + args);
-                        BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
-                        BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} " + args);
-                        BuildProject(builder, "bullet3", t.Config, reposDir, dirName, generator, $"{bulletOptions} " + args);
-                        BuildProject(builder, "pcre", t.Config, reposDir, dirName, generator, $"-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF " + args);
                         BuildProject(builder, "tmxlite/tmxlite", t.Config, reposDir, dirName, generator, $"-DTMXLITE_STATIC_LIB=ON " + args);
-                        BuildProject(builder, "Box2D/Box2D", t.Config, reposDir, dirName, generator, $"-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON " + args);
-                        BuildProject(builder, "Vulkan-Headers", t.Config, reposDir, dirName, generator, args);
-                        BuildProject(builder, "yaml-cpp", t.Config, reposDir, dirName, generator, $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF " + args);
                         BuildProject(builder, "nanovg", t.Config, reposDir, dirName, generator, args);
                     }
                 }

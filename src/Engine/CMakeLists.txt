@@ -350,9 +350,9 @@ set(
     png
     ZLIB::ZLIB
     freetype
-    vorbisfile
-    vorbis
-    ogg
+    Vorbis::vorbis
+    Vorbis::vorbisenc
+    Vorbis::vorbisfile
     box2d::box2d
     LinearMath
     Bullet3Common
@@ -360,7 +360,8 @@ set(
     BulletDynamics
     BulletSoftBody
     tmxlite
-    yamlcpp
+    toml11::toml11
+    yaml-cpp
     nanovg
     ${LN_PLATFORM_LIBS}
 )

@@ -126,11 +126,12 @@ endif()
 
 #set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/_build/vcpkg/installed/x64-windows")
 find_package(fmt CONFIG REQUIRED)
-
+find_package(yaml-cpp CONFIG REQUIRED)
+find_package(toml11 CONFIG REQUIRED)
+find_package(Vorbis CONFIG REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(libpng CONFIG REQUIRED)
 find_package(freetype CONFIG REQUIRED)
-
 find_package(Bullet CONFIG REQUIRED)
 find_package(box2d CONFIG REQUIRED)
 
@@ -165,9 +166,6 @@ set_target_properties(pcre2_32 PROPERTIES IMPORTED_LOCATION_DEBUG ${pcre2_32_LIB
 set_target_properties(pcre2_32 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${pcre2_ROOT}/include)
 
 if (LN_EXTERNAL2)
-    find_package(yaml-cpp CONFIG REQUIRED)
-    find_package(toml11 CONFIG REQUIRED)
-    find_package(Vorbis CONFIG REQUIRED)
     find_package(nanovg CONFIG REQUIRED)
     find_package(tinyobjloader CONFIG REQUIRED)
     find_package(imgui CONFIG REQUIRED)

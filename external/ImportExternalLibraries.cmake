@@ -305,38 +305,38 @@ endif()
 # set_target_properties(FreeType PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${FreeType_ROOT}/include/freetype2)
 # list(APPEND LN_EXTERNAL_LIBS FreeType)
 
-#--------------------------------------
-# ogg
-ln_make_external_find_path(ogg_ROOT "ogg")
+# #--------------------------------------
+# # ogg
+# ln_make_external_find_path(ogg_ROOT "ogg")
 
-find_library(ogg_LIBRARY_RELEASE NAMES ogg libogg PATHS ${ogg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(ogg_LIBRARY_DEBUG NAMES oggd liboggd ogg libogg PATHS ${ogg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(ogg_LIBRARY_RELEASE NAMES ogg libogg PATHS ${ogg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(ogg_LIBRARY_DEBUG NAMES oggd liboggd ogg libogg PATHS ${ogg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
-add_library(ogg STATIC IMPORTED)
-set_target_properties(ogg PROPERTIES IMPORTED_LOCATION_RELEASE "${ogg_LIBRARY_RELEASE}")
-set_target_properties(ogg PROPERTIES IMPORTED_LOCATION_DEBUG "${ogg_LIBRARY_DEBUG}")
-set_target_properties(ogg PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ogg_ROOT}/include)
-list(APPEND LN_EXTERNAL_LIBS ogg)
+# add_library(ogg STATIC IMPORTED)
+# set_target_properties(ogg PROPERTIES IMPORTED_LOCATION_RELEASE "${ogg_LIBRARY_RELEASE}")
+# set_target_properties(ogg PROPERTIES IMPORTED_LOCATION_DEBUG "${ogg_LIBRARY_DEBUG}")
+# set_target_properties(ogg PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ogg_ROOT}/include)
+# list(APPEND LN_EXTERNAL_LIBS ogg)
 
-#--------------------------------------
-# vorbis
-ln_make_external_find_path(vorbis_ROOT "vorbis")
+# #--------------------------------------
+# # vorbis
+# ln_make_external_find_path(vorbis_ROOT "vorbis")
 
-find_library(vorbis_LIBRARY_RELEASE NAMES vorbis libvorbis PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(vorbis_LIBRARY_DEBUG NAMES vorbisd libvorbisd vorbis libvorbis PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(vorbisfile_LIBRARY_RELEASE NAMES vorbisfile libvorbisfile PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(vorbisfile_LIBRARY_DEBUG NAMES vorbisfiled libvorbisfiled vorbisfile libvorbisfile PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(vorbis_LIBRARY_RELEASE NAMES vorbis libvorbis PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(vorbis_LIBRARY_DEBUG NAMES vorbisd libvorbisd vorbis libvorbis PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(vorbisfile_LIBRARY_RELEASE NAMES vorbisfile libvorbisfile PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(vorbisfile_LIBRARY_DEBUG NAMES vorbisfiled libvorbisfiled vorbisfile libvorbisfile PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
-add_library(vorbis STATIC IMPORTED)
-set_target_properties(vorbis PROPERTIES IMPORTED_LOCATION_RELEASE "${vorbis_LIBRARY_RELEASE}")
-set_target_properties(vorbis PROPERTIES IMPORTED_LOCATION_DEBUG "${vorbis_LIBRARY_DEBUG}")
-set_target_properties(vorbis PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${vorbis_ROOT}/include)
-list(APPEND LN_EXTERNAL_LIBS vorbis)
+# add_library(vorbis STATIC IMPORTED)
+# set_target_properties(vorbis PROPERTIES IMPORTED_LOCATION_RELEASE "${vorbis_LIBRARY_RELEASE}")
+# set_target_properties(vorbis PROPERTIES IMPORTED_LOCATION_DEBUG "${vorbis_LIBRARY_DEBUG}")
+# set_target_properties(vorbis PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${vorbis_ROOT}/include)
+# list(APPEND LN_EXTERNAL_LIBS vorbis)
 
-add_library(vorbisfile STATIC IMPORTED)
-set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_RELEASE "${vorbisfile_LIBRARY_RELEASE}")
-set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_DEBUG "${vorbisfile_LIBRARY_DEBUG}")
-list(APPEND LN_EXTERNAL_LIBS vorbisfile)
+# add_library(vorbisfile STATIC IMPORTED)
+# set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_RELEASE "${vorbisfile_LIBRARY_RELEASE}")
+# set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_DEBUG "${vorbisfile_LIBRARY_DEBUG}")
+# list(APPEND LN_EXTERNAL_LIBS vorbisfile)
 
 # #--------------------------------------
 # # bullet

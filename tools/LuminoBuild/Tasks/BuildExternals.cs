@@ -31,13 +31,13 @@ namespace LuminoBuild.Tasks
                     }
 
                     Proc.Make("vcpkg", "install fmt:" + b.Triplet).WithSilent().Call();
-                    //Proc.Make("vcpkg", "install yaml-cpp:" + b.Triplet).WithSilent().Call();
-                    //Proc.Make("vcpkg", "install toml11:" + b.Triplet).WithSilent().Call();
+                    Proc.Make("vcpkg", "install yaml-cpp:" + b.Triplet).WithSilent().Call();
+                    Proc.Make("vcpkg", "install toml11:" + b.Triplet).WithSilent().Call();
 
                     Proc.Make("vcpkg", "install zlib:" + b.Triplet).WithSilent().Call();
                     Proc.Make("vcpkg", "install libpng:" + b.Triplet).WithSilent().Call();
                     Proc.Make("vcpkg", "install freetype[core,png,zlib]:" + b.Triplet).WithSilent().Call();    // emsdk では brotli がビルドエラーになるため機能を制限する
-                    //Proc.Make("vcpkg", "install libvorbis:" + b.Triplet).WithSilent().Call();
+                    Proc.Make("vcpkg", "install libvorbis:" + b.Triplet).WithSilent().Call();
                     Proc.Make("vcpkg", "install pcre2:" + b.Triplet).WithSilent().Call();
 
                     Proc.Make("vcpkg", "install box2d:" + b.Triplet).WithSilent().Call();
