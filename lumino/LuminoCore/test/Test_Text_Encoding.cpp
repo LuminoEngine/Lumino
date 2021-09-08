@@ -20,15 +20,15 @@ class Test_Text_TextEncoding : public ::testing::Test
 {
 };
 
-//## simple conversion
+// simple conversion
 TEST_F(Test_Text_TextEncoding, SimpleConversion)
 {
-	//### - [ ] bytes -> String
+	// bytes -> String
 	String str = TextEncoding::utf8Encoding()->decode(g_utf8Buf, sizeof(g_utf8Buf));
 	ASSERT_EQ(3, str.length());
-	ASSERT_EQ(0, memcmp(g_utf16Buf, str.c_str(), 6));
+	ASSERT_EQ(0, memcmp(g_utf32Buf, str.c_str(), 6));
 
-	//### - [ ] String -> bytes
+	// String -> bytes
 	std::vector<byte_t> bytes = TextEncoding::utf8Encoding()->encode(str);
 	ASSERT_EQ(9, bytes.size());
 	ASSERT_EQ(0, memcmp(g_utf8Buf, bytes.data(), 9));
@@ -78,6 +78,15 @@ TEST_F(Test_Text_Win32CodePageEncoding, convertFromUTF32)
 		ASSERT_EQ(6, result.outputByteCount);
 		ASSERT_EQ(3, result.outputCharCount);
 	}
+
+	// Big string
+	{
+		const Char* utf32Str = U"123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
+		const char* narrowStr = "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
+		char narrowBuf[1024] = {};
+		ASSERT_EQ(true, encoder->convertFromUTF32((const UTF32*)utf32Str, UnicodeStringUtils::strlen(utf32Str), (byte_t*)narrowBuf, 1024, &result));
+		ASSERT_EQ(0, strncmp(narrowStr, narrowBuf, strlen(narrowStr)));
+	}
 }
 
 TEST_F(Test_Text_Win32CodePageEncoding, convertToUTF32)
@@ -126,6 +135,16 @@ TEST_F(Test_Text_Win32CodePageEncoding, convertToUTF32)
 		ASSERT_EQ(12, result.outputByteCount);
 		ASSERT_EQ(3, result.outputCharCount);
 	}
+
+	// Big string
+	{
+		const Char* utf32Str = U"123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
+		const char* narrowStr = "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
+		Char strBuf[1024] = {};
+		ASSERT_EQ(true, decoder->convertToUTF32((const byte_t*)narrowStr, UnicodeStringUtils::strlen(narrowStr), (UTF32*)strBuf, 1024, &result));
+		ASSERT_EQ(0, StringHelper::compare(strBuf, utf32Str, (int)StringHelper::strlen(utf32Str)));
+		
+	}
 }
 
 #endif
@@ -133,13 +152,13 @@ TEST_F(Test_Text_Win32CodePageEncoding, convertToUTF32)
 
 
 //==============================================================================
-//# UTF8 TextEncoding
+// UTF8 TextEncoding
 class Test_Text_UTF8Encoding : public ::testing::Test
 {
 };
 
 #if LN_USTRING32
-//## bytes(UTF8) -> IStr(UTF32) conversion
+// bytes(UTF8) -> IStr(UTF32) conversion
 TEST_F(Test_Text_UTF8Encoding, convertToUTF32)
 {
 	std::unique_ptr<TextDecoder> decoder(TextEncoding::utf8Encoding()->createDecoder());
@@ -168,12 +187,12 @@ TEST_F(Test_Text_UTF8Encoding, convertToUTF32)
 	ASSERT_EQ(true, decoder->convertToUTF32(&utf8Buf[2], 1, &strBuf[0], 1, &result));
 	ASSERT_EQ(0x65E5, strBuf[0]);				// '日'
 	ASSERT_EQ(1, result.usedByteCount);			// 1byte消費した
-	ASSERT_EQ(2, result.outputByteCount);		// 2バイト書き込まれた
+	ASSERT_EQ(4, result.outputByteCount);		// 2バイト書き込まれた
 	ASSERT_EQ(1, result.outputCharCount);		// 1文字出てきた
 
 	// 1文字変換 (サロゲート)
 	ASSERT_EQ(true, decoder->convertToUTF32(&g_utf8Hokke[0], 4, &strBuf[0], 2, &result));
-	ASSERT_EQ(0, memcmp(g_utf16Hokke, strBuf, 4));	// ほっけ
+	ASSERT_EQ(g_utf32Hokke[0], strBuf[0]);		// ほっけ
 	ASSERT_EQ(4, result.usedByteCount);			// 4byte消費した
 	ASSERT_EQ(4, result.outputByteCount);		// 4バイト書き込まれた
 	ASSERT_EQ(1, result.outputCharCount);		// 1文字出てきた
@@ -182,7 +201,7 @@ TEST_F(Test_Text_UTF8Encoding, convertToUTF32)
 	ASSERT_EQ(true, decoder->convertToUTF32(&utf8Buf[3], 3, &strBuf[1], 1, &result));
 	ASSERT_EQ(0x672C, strBuf[1]);				// '本'
 	ASSERT_EQ(3, result.usedByteCount);			// 3byte消費した
-	ASSERT_EQ(2, result.outputByteCount);		// 2バイト書き込まれた
+	ASSERT_EQ(4, result.outputByteCount);		// 2バイト書き込まれた
 	ASSERT_EQ(1, result.outputCharCount);		// 1文字出てきた
 
 	// '語' を 2, 1byte に分けて変換
@@ -194,19 +213,32 @@ TEST_F(Test_Text_UTF8Encoding, convertToUTF32)
 	decoder->convertToUTF32(&utf8Buf[8], 1, &strBuf[2], 1, &result);
 	ASSERT_EQ(0x8A9E, strBuf[2]);				// '語'
 	ASSERT_EQ(1, result.usedByteCount);			// 1byte消費した
-	ASSERT_EQ(2, result.outputByteCount);		// 2バイト書き込まれた
+	ASSERT_EQ(4, result.outputByteCount);		// 2バイト書き込まれた
 	ASSERT_EQ(1, result.outputCharCount);		// 1文字出てきた
 
+	// ASCII をまとめて変換
+	{
+		const UTF8* utf8str = (const UTF8*)"abcd";
+		UTF32 strBuf[] = { 0, 0, 0, 0 };
+		ASSERT_EQ(true, decoder->convertToUTF32(utf8str, 4, strBuf, 4, &result));
+		ASSERT_EQ('a', strBuf[0]);
+		ASSERT_EQ('b', strBuf[1]);
+		ASSERT_EQ('c', strBuf[2]);
+		ASSERT_EQ('d', strBuf[3]);
+	}
+
 	// "日本語" をまとめて変換
-	memset(strBuf, 0, sizeof(strBuf));
-	ASSERT_EQ(true, decoder->convertToUTF32(&utf8Buf[0], 9, &strBuf[0], 3, &result));
-	ASSERT_EQ(9, result.usedByteCount);
-	ASSERT_EQ(6, result.outputByteCount);
-	ASSERT_EQ(3, result.outputCharCount);
-	ASSERT_EQ(0, memcmp(strBuf, g_utf32Buf, sizeof(strBuf)));
+	{
+		memset(strBuf, 0, sizeof(strBuf));
+		ASSERT_EQ(true, decoder->convertToUTF32(&utf8Buf[0], 9, &strBuf[0], 3, &result));
+		ASSERT_EQ(9, result.usedByteCount);
+		ASSERT_EQ(12, result.outputByteCount);
+		ASSERT_EQ(3, result.outputCharCount);
+		ASSERT_EQ(0, memcmp(strBuf, g_utf32Buf, sizeof(strBuf)));
+	}
 }
 
-//## IStr(UTF32) -> bytes(UTF8) conversion
+// IStr(UTF32) -> bytes(UTF8) conversion
 TEST_F(Test_Text_UTF8Encoding, convertFromUTF32)
 {
 	std::unique_ptr<TextEncoder> encoder(TextEncoding::utf8Encoding()->createEncoder());

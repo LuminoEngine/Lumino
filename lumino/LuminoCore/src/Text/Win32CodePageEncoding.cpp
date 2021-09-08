@@ -91,6 +91,7 @@ static bool checkLeadByte(const CPINFOEX* cpInfo, char ch)
 
 bool Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF32(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult)
 {
+    auto options = UTFConversionOptions::make(encoding()->fallbackReplacementChar());
     outResult->usedByteCount = 0;
     outResult->outputByteCount = 0;
     outResult->outputCharCount = 0;
@@ -105,8 +106,6 @@ bool Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF32(const byte_t* i
         return true;
     }
 
-    auto options = UTFConversionOptions::make(encoding()->fallbackReplacementChar());
-
     if (m_canRemain) {
         const size_t CHAR_COUNT = 256;
         const size_t WORDS_COUNT = 256;
@@ -114,15 +113,15 @@ bool Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF32(const byte_t* i
         wchar_t words[WORDS_COUNT + 1];
 
         const byte_t* iItr = input;
-        const byte_t* iEnd = input + inputByteSize;
+        const byte_t* iEnd = iItr + inputByteSize;
         UTF32* oItr = output;
-        UTF32* oEnd = output + outputElementSize;
+        UTF32* oEnd = oItr + outputElementSize;
 
         while (iItr < iEnd) {
             char* bItr = buffer;
             char* bEnd = buffer + CHAR_COUNT;
 
-            // 前回の先行バイト
+            // 前回の先行バイトを詰める
             if (m_lastLeadByte != '\0') {
                 *bItr = m_lastLeadByte;
                 bItr++;

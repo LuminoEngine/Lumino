@@ -40,6 +40,12 @@ void TextWriter::write(char16_t value)
     writeInternal(&ch, 1);
 }
 
+void TextWriter::write(char32_t value)
+{
+    Char ch = value;
+    writeInternal(&ch, 1);
+}
+
 void TextWriter::write(int16_t value)
 {
     char buf1[64];
@@ -138,6 +144,12 @@ void TextWriter::writeLine(wchar_t value)
 }
 
 void TextWriter::writeLine(char16_t value)
+{
+    write(value);
+    writeLine();
+}
+
+void TextWriter::writeLine(char32_t value)
 {
     write(value);
     writeLine();

@@ -57,17 +57,13 @@ bool UTF8Encoding::convertToUTF32Stateless(const byte_t* input, size_t inputByte
 
 bool UTF8Encoding::UTF8Decoder::convertToUTF32(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult)
 {
+    auto options = UTFConversionOptions::make(encoding()->fallbackReplacementChar());
     outResult->usedByteCount = 0;
     outResult->outputByteCount = 0;
     outResult->outputCharCount = 0;
     int charsUsed = 0;
 
-    // 変換設定
-    UTFConversionOptions options;
-    memset(&options, 0, sizeof(options));
-    options.ReplacementChar = encoding()->fallbackReplacementChar();
-
-    // BOM 付きの場合は取り除く (バッファ縮小)
+    // BOM Process
     if (m_byteOrderMark) {
         if (m_bomPhase == 0) {
             if (input[0] == 0xEF) {
@@ -109,6 +105,66 @@ bool UTF8Encoding::UTF8Decoder::convertToUTF32(const byte_t* input, size_t input
         outResult->usedByteCount += 3;
     }
 
+
+#if 0
+    const size_t BYTE_BUFFER_SIZE = 256;
+    byte_t byteBuffer[BYTE_BUFFER_SIZE + 1];
+
+    //const byte_t* iBegin = input;
+    const byte_t* iItr = input;
+    const byte_t* iEnd = iItr + inputByteSize;
+    UTF32* oItr = output;
+    UTF32* oEnd = oItr + outputElementSize;
+
+    while (iItr < iEnd) {
+        byte_t* bItr = byteBuffer;
+        byte_t* bEnd = byteBuffer + BYTE_BUFFER_SIZE;
+
+        // 前回の先行バイトを詰める
+        for (int i = 0; i < m_lastLeadBytesCount; i++) {
+            *bItr = m_lastLeadBytes[i];
+            bItr++;
+            iItr++;
+        }
+
+        // 一度に変換できる分を詰める
+        const size_t count = std::min((size_t)(iEnd - iItr), BYTE_BUFFER_SIZE);
+        memcpy(bItr, iItr, count);
+        bItr += count;
+
+        const UTF8* source = byteBuffer;
+        const UTF8* end = byteBuffer + (bItr - byteBuffer);
+
+        if (UnicodeUtils::convertCharUTF8toUTF32(&start, end, NULL, &ch)) {
+            return false;
+        }
+
+
+        //if (UnicodeUtils::convertUTF8toUTF32(source, (end - source), oItr, (oEnd - oItr), &options) != UTFConversionResult_Success) {
+        //    return false;
+        //}
+        //    //if (UnicodeUtils::convertCharUTF8toUTF32(&source, end, &options, oItr) != UTFConversionResult_Success) {
+        //    //    return false;
+        //    //}
+
+        oItr += options.ConvertedTargetLength;
+
+        source += options.ConvertedSourceLength;
+        m_lastLeadBytesCount = 0;
+        for (; source < end; source++) {
+            m_lastLeadBytes[m_lastLeadBytesCount] = *source;
+            source++;
+            m_lastLeadBytesCount++;
+        }
+
+        outResult->outputByteCount += options.ConvertedSourceLength * sizeof(UTF32);
+        outResult->outputCharCount += options.CharCount;
+    }
+
+    outResult->outputCharCount = inputByteSize;
+#endif
+
+#if 1
     const byte_t* srcPos = input;
     const byte_t* srcEnd = input + inputByteSize;
     UTF32* dstPos = reinterpret_cast<UTF32*>(output);
@@ -148,6 +204,7 @@ bool UTF8Encoding::UTF8Decoder::convertToUTF32(const byte_t* input, size_t input
             //if (result != UTFConversionResult_Success)
             //    return false;
             *dstPos = ch;
+            dstPos++;
 
             outResult->outputByteCount += sizeof(UTF32);
             ++outResult->outputCharCount;
@@ -157,6 +214,7 @@ bool UTF8Encoding::UTF8Decoder::convertToUTF32(const byte_t* input, size_t input
         ++srcPos;
         ++outResult->usedByteCount;
     }
+#endif
 
     return true;
 }

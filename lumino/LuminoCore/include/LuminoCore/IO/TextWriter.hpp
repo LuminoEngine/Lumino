@@ -17,6 +17,7 @@ public:
     void write(char ch);
     void write(wchar_t ch);
     void write(char16_t ch);
+    void write(char32_t ch);
 
     /** 整数値を文字列に変換して書き込みます。 */
     void write(int16_t value);
@@ -44,6 +45,7 @@ public:
     void writeLine(char value);
     void writeLine(wchar_t value);
     void writeLine(char16_t value);
+    void writeLine(char32_t value);
 
     /**　整数値を文字列に変換して書き込み、続けて改行を書き込みます。　*/
     void writeLine(int16_t value);

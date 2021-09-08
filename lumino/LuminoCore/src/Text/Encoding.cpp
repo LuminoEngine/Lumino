@@ -55,7 +55,11 @@ const Ref<TextEncoding>& TextEncoding::wideCharEncoding()
 
 const Ref<TextEncoding>& TextEncoding::tcharEncoding()
 {
+#if LN_USTRING32
+    return utf32Encoding();
+#else
     return utf16Encoding();
+#endif
 }
 
 const Ref<TextEncoding>& TextEncoding::utf8Encoding()
