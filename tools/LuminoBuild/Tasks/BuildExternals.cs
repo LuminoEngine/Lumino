@@ -49,20 +49,16 @@ namespace LuminoBuild.Tasks
                     //Proc.Make("vcpkg", "install tinygltf:" + b.Triplet).WithSilent().Call();
                     //Proc.Make("vcpkg", "install imgui[docking-experimental]:" + b.Triplet).WithSilent().Call();
 
-                    //if (b.System == "emscripten")
-                    //{
-
-                    //}
-                    //else
-                    //{
-                    //    Proc.Make("vcpkg", "install glfw3:" + b.Triplet).WithSilent().Call();
-                    //    Proc.Make("vcpkg", "install vulkan-headers:" + b.Triplet).WithSilent().Call();
-                    //    Proc.Make("vcpkg", "install glad:" + b.Triplet).WithSilent().Call();
-                    //    Proc.Make("vcpkg", "install glslang:" + b.Triplet).WithSilent().Call();
-                    //    Proc.Make("vcpkg", "install spirv-cross:" + b.Triplet).WithSilent().Call();
-                    //    Proc.Make("vcpkg", "install gtest:" + b.Triplet).WithSilent().Call();
-                    //    Proc.Make("vcpkg", "install openal-soft:" + b.Triplet).WithSilent().Call();
-                    //}
+                    if (b.IsDesktopSystem)
+                    {
+                        Proc.Make("vcpkg", "install glfw3:" + b.Triplet).WithSilent().Call();
+                        Proc.Make("vcpkg", "install vulkan-headers:" + b.Triplet).WithSilent().Call();
+                        Proc.Make("vcpkg", "install glad:" + b.Triplet).WithSilent().Call();
+                        Proc.Make("vcpkg", "install glslang:" + b.Triplet).WithSilent().Call();
+                        Proc.Make("vcpkg", "install spirv-cross:" + b.Triplet).WithSilent().Call();
+                        Proc.Make("vcpkg", "install gtest:" + b.Triplet).WithSilent().Call();
+                        Proc.Make("vcpkg", "install openal-soft:" + b.Triplet).WithSilent().Call();
+                    }
                 }
             }
         }

@@ -8,8 +8,9 @@
 #include <glslang/Include/Types.h>
 #include <glslang/Include/BaseTypes.h>
 #include <glslang/Include/intermediate.h>
+#include <glslang/MachineIndependent/localintermediate.h>
 #include <glslang/Include/ResourceLimits.h>
-#include <glslang/SPIRV/GlslangToSpv.h>
+#include <SPIRV/GlslangToSpv.h>
 #include <spirv_cross/spirv_glsl.hpp>
 #include "Lexer/CppLexer.hpp"
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
@@ -24,7 +25,7 @@ namespace ln {
 namespace detail {
 
 // from glslang: StanAalone/ResourceLimits.cpp
-
+    
 const TBuiltInResource DefaultTBuiltInResource = {
     /* .MaxLights = */ 32,
     /* .MaxClipPlanes = */ 6,
@@ -118,7 +119,6 @@ const TBuiltInResource DefaultTBuiltInResource = {
     /* .maxTaskWorkGroupSizeY_NV = */ 1,
     /* .maxTaskWorkGroupSizeZ_NV = */ 1,
     /* .maxMeshViewCountNV = */ 4,
-    /* .maxDualSourceDrawBuffersEXT = */ 1,
 
     /* .limits = */ {
         /* .nonInductiveForLoops = */ 1,

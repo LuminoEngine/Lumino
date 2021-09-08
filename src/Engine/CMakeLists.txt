@@ -288,10 +288,10 @@ if (LN_EMSCRIPTEN)
 elseif (LN_IOS)
 
 elseif (WIN32)
-    list(APPEND LN_PLATFORM_LIBS glfw GLAD)
+    #list(APPEND LN_PLATFORM_LIBS glfw GLAD)
     #list(APPEND LN_PLATFORM_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid)
     list(APPEND LN_PLATFORM_LIBS winmm imm32 version)
-    list(APPEND LN_PLATFORM_LIBS OpenAL)
+    #list(APPEND LN_PLATFORM_LIBS OpenAL)
     if (LN_USE_FBX_IMPORTER)
         list(APPEND LN_PLATFORM_LIBS LN::FBX)
     endif()
@@ -304,7 +304,7 @@ elseif (WIN32)
     #endif()
 
 elseif (APPLE)
-    list(APPEND LN_PLATFORM_LIBS glfw GLAD)
+    #list(APPEND LN_PLATFORM_LIBS glfw GLAD)
     find_library(COCOA_LIBRARY Cocoa)
     find_library(CoreVideo_LIBRARY CoreVideo)
     find_library(IOKit_LIBRARY IOKit)
@@ -326,7 +326,7 @@ elseif (APPLE)
 elseif (UNIX)
     if (LN_ANDROID)
     else()
-        list(APPEND LN_PLATFORM_LIBS glfw GLAD OpenAL)
+        #list(APPEND LN_PLATFORM_LIBS glfw GLAD OpenAL)
     endif()
 endif()
 
@@ -361,7 +361,6 @@ set(
     BulletSoftBody
     tmxlite
     yamlcpp
-    VulkanHeaders
     nanovg
     ${LN_PLATFORM_LIBS}
 )
@@ -380,6 +379,25 @@ target_include_directories(LuminoEngine-static PRIVATE ${LN_ENGINE_INCLUDE_DIR} 
 target_compile_definitions(LuminoEngine-static PRIVATE ${LN_PLATFORM_DEFINITIONS})
 target_link_libraries(LuminoEngine-static INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
+
+if (LN_OS_DESKTOP)
+    target_include_directories(LuminoEngine-static PRIVATE ${VULKAN_HEADERS_INCLUDE_DIRS})
+    target_link_libraries(LuminoEngine-static PRIVATE glfw glad::glad)
+    target_link_libraries(LuminoEngine-static PRIVATE OpenAL::OpenAL)
+endif()
+
+if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
+    target_compile_definitions(LuminoEngine-static PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+    target_link_libraries(LuminoEngine-static PRIVATE glslang::HLSL glslang::SPIRV glslang::glslang glslang::OGLCompiler)
+    #target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-c)
+    target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-core)
+    #target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-cpp)
+    target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-glsl)
+    target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-hlsl)
+    target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-msl)
+    target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-reflect)
+    target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-util)
+endif()
 
 #target_link_libraries(LuminoEngine-static PRIVATE glslang)
 set_target_properties(LuminoEngine-static PROPERTIES FOLDER "Lumino")
@@ -405,10 +423,6 @@ if (LN_BUILD_XCODE_FRAMEWORK)
     # install the header file with the install command.
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Lumino DESTINATION "LuminoEngine.framework/Headers")
     install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoEngine.hpp DESTINATION "LuminoEngine.framework/Headers")
-endif()
-
-if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
-    target_compile_definitions(LuminoEngine-static PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
 endif()
 
 # Unit test.

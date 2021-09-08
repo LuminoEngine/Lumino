@@ -125,7 +125,6 @@ endif()
 #-------------------------------------------------------------------------------
 
 #set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/_build/vcpkg/installed/x64-windows")
-find_package(GTest CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 
 find_package(ZLIB REQUIRED)
@@ -138,6 +137,23 @@ find_package(box2d CONFIG REQUIRED)
 # デフォルトでは不足している include path を追加しておく
 set_target_properties(Bullet3Common PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${LN_VCPKG_INSTALLED_DIR}/include/bullet")
 
+if (LN_OS_DESKTOP)
+    find_package(glslang CONFIG REQUIRED)
+    #find_package(spirv_cross_c CONFIG REQUIRED)
+    find_package(spirv_cross_core CONFIG REQUIRED)
+    #find_package(spirv_cross_cpp CONFIG REQUIRED)
+    find_package(spirv_cross_glsl CONFIG REQUIRED)
+    find_package(spirv_cross_hlsl CONFIG REQUIRED)
+    find_package(spirv_cross_msl CONFIG REQUIRED)
+    find_package(spirv_cross_reflect CONFIG REQUIRED)
+    find_package(spirv_cross_util CONFIG REQUIRED)
+
+    find_package(GTest CONFIG REQUIRED)
+    find_package(OpenAL CONFIG REQUIRED)
+    find_package(glfw3 CONFIG REQUIRED)
+    find_package(glad CONFIG REQUIRED)
+    find_path(VULKAN_HEADERS_INCLUDE_DIRS "vulkan/vk_icd.h")
+endif()
 
 # pcre2
 set(pcre2_ROOT ${LN_VCPKG_INSTALLED_DIR})
@@ -158,23 +174,6 @@ if (LN_EXTERNAL2)
     find_path(STB_INCLUDE_DIRS "stb_image.h")
     find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
 
-    if (LN_DESKTOP)
-        find_package(glslang CONFIG REQUIRED)
-        #find_package(spirv_cross_c CONFIG REQUIRED)
-        find_package(spirv_cross_core CONFIG REQUIRED)
-        #find_package(spirv_cross_cpp CONFIG REQUIRED)
-        find_package(spirv_cross_glsl CONFIG REQUIRED)
-        find_package(spirv_cross_hlsl CONFIG REQUIRED)
-        find_package(spirv_cross_msl CONFIG REQUIRED)
-        find_package(spirv_cross_reflect CONFIG REQUIRED)
-        find_package(spirv_cross_util CONFIG REQUIRED)
-        find_package(glad CONFIG REQUIRED)
-
-        find_package(GTest CONFIG REQUIRED)
-        find_package(OpenAL CONFIG REQUIRED)
-        find_package(glfw3 CONFIG REQUIRED)
-        find_path(VULKAN_HEADERS_INCLUDE_DIRS "vk_video/vulkan_video_codec_h264std.h")
-    endif()
 
 
 

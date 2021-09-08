@@ -17,6 +17,9 @@
 #include "../MixHash.hpp"
 #include <LuminoCore/Base/LinearAllocator.hpp>
 
+// vcpkg からインストールした VulkanHeaders だとこれが定義されていなかった
+static const int VK_SYSTEM_ALLOCATION_SCOPE_RANGE_SIZE = 5;
+
 // VK_core
 extern PFN_vkCreateInstance vkCreateInstance;
 extern PFN_vkDestroyInstance vkDestroyInstance;
