@@ -345,7 +345,8 @@ endif()
 set(
     _LN_ENGINE_LINK_LIBS
     LuminoCore
-    pcre
+    #pcre
+    pcre2_32
     PNG
     ZLIB
     FreeType

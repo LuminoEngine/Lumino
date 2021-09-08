@@ -56,6 +56,8 @@ option(LN_BUILD_BINDING_HSP "HSP Binding" "")
 
 option(LN_EXTERNAL2 "" OFF)
 
+set(LN_VCPKG_INSTALLED_DIR "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
+
 #-------------------------------------------------------------------------------
 # Configuration
 #-------------------------------------------------------------------------------
@@ -122,9 +124,17 @@ endif()
 # Externals
 #-------------------------------------------------------------------------------
 
-
 #set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/_build/vcpkg/installed/x64-windows")
 find_package(fmt CONFIG REQUIRED)
+
+# pcre2
+set(pcre2_ROOT ${LN_VCPKG_INSTALLED_DIR})
+find_library(pcre2_32_LIBRARY_RELEASE NAMES pcre2-32 PATHS ${pcre_ROOT} PATH_SUFFIXES "lib" NO_CMAKE_SYSTEM_PATH)
+find_library(pcre2_32_LIBRARY_DEBUG NAMES pcre2-32d pcre2-32 PATHS ${pcre_ROOT} PATH_SUFFIXES "debug/lib" NO_CMAKE_SYSTEM_PATH)
+add_library(pcre2_32 STATIC IMPORTED)
+set_target_properties(pcre2_32 PROPERTIES IMPORTED_LOCATION_RELEASE ${pcre2_32_LIBRARY_RELEASE})
+set_target_properties(pcre2_32 PROPERTIES IMPORTED_LOCATION_DEBUG ${pcre2_32_LIBRARY_DEBUG})
+set_target_properties(pcre2_32 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${pcre2_ROOT}/include)
 
 if (LN_EXTERNAL2)
     find_package(yaml-cpp CONFIG REQUIRED)
@@ -161,19 +171,6 @@ if (LN_EXTERNAL2)
 
 
 
-
-
-    # pcre2
-    set(pcre2_ROOT ${LN_VCPKG_INCLUDE_DIR})
-
-    find_library(pcre2_16_LIBRARY_RELEASE NAMES pcre2-16 PATHS ${pcre_ROOT} PATH_SUFFIXES "lib" NO_CMAKE_SYSTEM_PATH)
-    find_library(pcre2_16_LIBRARY_DEBUG NAMES pcre2-16d pcre2-16 PATHS ${pcre_ROOT} PATH_SUFFIXES "debug/lib" NO_CMAKE_SYSTEM_PATH)
-
-    add_library(pcre2_16 STATIC IMPORTED)
-    set_target_properties(pcre2_16 PROPERTIES IMPORTED_LOCATION_RELEASE ${pcre2_16_LIBRARY_RELEASE})
-    set_target_properties(pcre2_16 PROPERTIES IMPORTED_LOCATION_DEBUG ${pcre2_16_LIBRARY_DEBUG})
-    set_target_properties(pcre2_16 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${pcre2_ROOT}/include)
-    #list(APPEND LN_EXTERNAL_LIBS pcre2_16)
 
     # yaml-cpp
     # v0.7.0 は動的リンクするとクラッシュするため、静的リンクにする。

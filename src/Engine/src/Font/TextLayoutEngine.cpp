@@ -52,7 +52,20 @@ UTF32 TextLayoutEngine::readChar()
         return 0;   // EOF
     }
 
-    auto str = (const UTF16*)m_text;
+#if LN_USTRING32
+    auto str = reinterpret_cast<const UTF32*>(m_text);
+    const UTF32* begin = str + m_pos;
+    const UTF32* end = str + m_length;
+
+    if (begin[0] == '\r' && (begin < end - 1 && begin[1] == '\n')) {
+        m_pos += 2;
+        return '\n';
+    }
+    
+    m_pos++;
+    return *begin;
+#else
+    auto str = static_cast<const UTF16*>(m_text);
     const UTF16* begin = str + m_pos;
     const UTF16* end = str + m_length;
 
@@ -68,6 +81,7 @@ UTF32 TextLayoutEngine::readChar()
     UnicodeUtils::convertCharUTF16toUTF32(&ps, end, &options, &ch);
     m_pos += (ps - begin);
     return ch;
+#endif
 }
 
 void TextLayoutEngine::resetStream()

@@ -18,9 +18,9 @@ TEST_F(Test_Base_Variant, SetAndGet)
     }
     //* [ ] Char
     {
-		Ref<Variant> var = makeVariant(u'A');
+		Ref<Variant> var = makeVariant(_TT('A'));
         ASSERT_EQ(VariantType::Char, var->type());
-        ASSERT_EQ(u'A', var->get<Char>());
+        ASSERT_EQ(_TT('A'), var->get<Char>());
     }
     //* [ ] Int8
     {

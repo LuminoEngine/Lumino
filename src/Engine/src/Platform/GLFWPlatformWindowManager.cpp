@@ -269,9 +269,9 @@ Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const 
 		setDPIFactor(AbstractWin32PlatformWindow::getDpiFactor((HWND)getWin32Window()));
 #endif
 
-		//SetWindowLongPtr((HWND)getWin32Window(), GWL_STYLE, GetWindowLongPtrA((HWND)getWin32Window(), GWL_STYLE) & ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX));
-		//glfwSetWindowSizeLimits(m_glfwWindow, 100, 100, GLFW_DONT_CARE, GLFW_DONT_CARE);
-		//glfwSetWindowSize(m_glfwWindow, settings.clientSize.width, settings.clientSize.height);
+		SetWindowLongPtr((HWND)getWin32Window(), GWL_STYLE, GetWindowLongPtrA((HWND)getWin32Window(), GWL_STYLE) & ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX));
+		glfwSetWindowSizeLimits(m_glfwWindow, 100, 100, GLFW_DONT_CARE, GLFW_DONT_CARE);
+		glfwSetWindowSize(m_glfwWindow, settings.clientSize.width, settings.clientSize.height);
 	}
 
 	glfwSetWindowUserPointer(m_glfwWindow, this);

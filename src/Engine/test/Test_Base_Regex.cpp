@@ -32,6 +32,7 @@ TEST_F(Test_Base_Regex, Integrate)
 		ASSERT_EQ(_T("456"), mr.groupValue(2));
 		ASSERT_EQ(_T("789"), mr.groupValue(3));
 	}
+#if LN_USTRING16
 	// * [ ] Issues (. がサロゲートペアの片方にマッチしてしまう)
 	{
 		Char utf16Buf[] = {
@@ -44,5 +45,6 @@ TEST_F(Test_Base_Regex, Integrate)
 		ASSERT_EQ(true, Regex::match(utf16Buf, _T("A.A"), &mr));
 		ASSERT_EQ(false, Regex::match(utf16Buf, _T("A..A"), &mr));
 	}
+#endif
 }
 
