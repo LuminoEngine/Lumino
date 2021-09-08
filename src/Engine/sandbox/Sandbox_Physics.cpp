@@ -36,8 +36,8 @@ class App_Sandbox_Physics : public Application
     {
 
         Vector3 dir;
-        dir.x = -Input::getAxisValue(u"left") + Input::getAxisValue(u"right");
-        dir.z = -Input::getAxisValue(u"down") + Input::getAxisValue(u"up");
+        dir.x = -Input::getAxisValue(_TT("left")) + Input::getAxisValue(_TT("right"));
+        dir.z = -Input::getAxisValue(_TT("down")) + Input::getAxisValue(_TT("up"));
 
         Camera* camera = Engine::mainCamera();
 

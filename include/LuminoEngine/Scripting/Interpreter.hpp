@@ -19,8 +19,8 @@ public:
 
 	void serialize(Serializer2& ar) override
 	{
-		ar & makeNVP(u"code", m_code);
-		ar & makeNVP(u"params", m_params);
+		ar & makeNVP(_TT("code"), m_code);
+		ar & makeNVP(_TT("params"), m_params);
 	}
 
 	/** コマンドの実行コードを取得します。 */
@@ -57,7 +57,7 @@ public:
 
 	void serialize(Serializer2& ar) override
 	{
-		ar & makeNVP(u"commands", commands);
+		ar & makeNVP(_TT("commands"), commands);
 	}
 
 	/** コマンドを追加します。 */

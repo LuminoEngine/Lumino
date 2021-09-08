@@ -53,7 +53,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
     samplerState->setFilterMode(TextureFilterMode::Linear);
     tex1->setSamplerState(samplerState);
 
-    shader1->findParameter("_Texture")->setTexture(tex1);
+    shader1->findParameter(_TT("_Texture"))->setTexture(tex1);
 
 
     // * [ ] default
@@ -62,7 +62,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
         auto crp = TestEnv::renderPass();
         auto shd = ctx->allocateShaderDescriptor(shaderPass1);
-        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(u"_Texture"), tex1);
+        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture")), tex1);
         crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
@@ -112,9 +112,9 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
     auto shd = ctx->allocateShaderDescriptor(shaderPass1);
 
     // VertexShader からのみ参照されるパラメータ
-    shd->setVector(descriptorLayout1->findUniformMemberIndex(u"_Color1"), Vector4(1, 0, 0, 1));
+    shd->setVector(descriptorLayout1->findUniformMemberIndex(_TT("_Color1")), Vector4(1, 0, 0, 1));
     // PixelShader からのみ参照されるパラメータ
-    shd->setVector(descriptorLayout1->findUniformMemberIndex(u"_Color2"), Vector4(0, 0, 1, 1));
+    shd->setVector(descriptorLayout1->findUniformMemberIndex(_TT("_Color2")), Vector4(0, 0, 1, 1));
 
     crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 	ctx->beginRenderPass(crp);
@@ -169,7 +169,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer_WorldMatrix)
     bufferData._World = Matrix::makeTranslation(0.5, 0, 0);
     //bufferData._World.transpose();
 
-    auto ubIndex = descriptorLayout1->findUniformBufferRegisterIndex(u"Element");
+    auto ubIndex = descriptorLayout1->findUniformBufferRegisterIndex(_TT("Element"));
     shd->setUniformBufferData(ubIndex, &bufferData, sizeof(bufferData));
 
     crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
@@ -224,8 +224,8 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
         auto crp = TestEnv::renderPass();
         auto shd = ctx->allocateShaderDescriptor(shaderPass1);
-        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(u"_Texture1"), t1);
-        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(u"_Texture2"), t2);
+        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture1")), t1);
+        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture2")), t2);
         crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
@@ -246,8 +246,8 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
         auto crp = TestEnv::renderPass();
         auto shd = ctx->allocateShaderDescriptor(shaderPass2);
-        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(u"_Texture1"), t1);
-        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(u"_Texture2"), t2);
+        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture1")), t1);
+        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture2")), t2);
         crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
@@ -268,8 +268,8 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
         auto crp = TestEnv::renderPass();
         auto shd = ctx->allocateShaderDescriptor(shaderPass3);
-        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(u"_Texture1"), t1);
-        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(u"_Texture2"), t2);
+        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture1")), t1);
+        shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture2")), t2);
         crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);

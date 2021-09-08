@@ -44,7 +44,7 @@ public:
 	void setupDialogButtons(UIDialogButtons buttons);
 
 protected:
-    virtual const String& elementName() const  override { static String name = u"UIDialog"; return name; }
+    virtual const String& elementName() const  override { static String name = _TT("UIDialog"); return name; }
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 

@@ -13,7 +13,7 @@ public:
 
 protected:
     // base interface
-    virtual const String& elementName() const  override { static String name = u"UIListViewItem"; return name; }
+    virtual const String& elementName() const  override { static String name = _TT("UIListViewItem"); return name; }
     virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -38,7 +38,7 @@ protected:
     virtual Ref<UIListViewItem> onGenerateItem(UICollectionItemViewModel* viewModel);
 
     // base interface
-    virtual const String& elementName() const  override { static String name = u"UIListView"; return name; }
+    virtual const String& elementName() const  override { static String name = _TT("UIListView"); return name; }
     virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
     virtual void onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e) override;
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
@@ -80,7 +80,7 @@ public:
 
 protected:
     // base interface
-    const String& elementName() const override { static String name = u"UIListBoxItem"; return name; }
+    const String& elementName() const override { static String name = _TT("UIListBoxItem"); return name; }
     Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
     void onLogicalChildRemoved(UIElement* removedElement) override;
 
@@ -106,7 +106,7 @@ protected:
     virtual void onRefreshItemContent(int index, UIListViewItem2* item);
 
     // base interface
-    const String& elementName() const override { static String name = u"UIListBox"; return name; }
+    const String& elementName() const override { static String name = _TT("UIListBox"); return name; }
     void onAddChild(UIElement* child) override;
     void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
     void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;

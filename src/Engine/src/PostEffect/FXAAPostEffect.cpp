@@ -43,7 +43,7 @@ bool FXAAPostEffectInstance::init(FXAAPostEffect* owner)
 {
     if (!PostEffectInstance::init()) return false;
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FXAA.fx");
+    auto shader1 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FXAA.fx"));
     m_material = makeObject<Material>();
     m_material->setShader(shader1);
 

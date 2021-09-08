@@ -259,7 +259,7 @@ bool Interpreter::updateWait()
 
 	bool waiting = onUpdateWait();
 	if (!waiting) {
-		m_waitMode = u"";
+		m_waitMode = _TT("");
 	}
 	return waiting;
 }

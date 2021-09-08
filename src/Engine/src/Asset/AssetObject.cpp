@@ -48,7 +48,7 @@ void AssetObject::serialize(Serializer2& ar)
 
 	String file = (m_data) ? m_data->resourceFilePath.str() : String::Empty;
 
-	ar & makeNVP(u"file", file);
+	ar & makeNVP(_TT("file"), file);
 
 	if (ar.isLoading()) {
 		LN_NOTIMPLEMENTED();
@@ -154,7 +154,7 @@ void AssetObject::reload()
 			stream = manager->openStreamFromAssetPath(m_data->finalResourceAssetFilePath);
 		}
 		else {
-			LN_WARNING(u"Asset not found: " + m_data->resourceFilePath.str());    // TODO: operator
+			LN_WARNING(_TT("Asset not found: ") + m_data->resourceFilePath.str());    // TODO: operator
 		}
 
 		// Load Resource
@@ -162,7 +162,7 @@ void AssetObject::reload()
 			onLoadResourceFile(stream, m_data->finalResourceAssetFilePath);
 		}
 		else {
-			LN_WARNING(u"Asset access denied: " + m_data->resourceFilePath.str());    // TODO: operator
+			LN_WARNING(_TT("Asset access denied: ") + m_data->resourceFilePath.str());    // TODO: operator
 		}
 	}
 }

@@ -15,10 +15,10 @@ void TestEnv::setup()
 	EngineSettings::setMainWindowSize(160, 120);
 	//EngineSettings::setMainBackBufferSize(160, 120);
 	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::DirectX12);//GraphicsAPI::OpenGL);//
-    EngineSettings::setPriorityGPUName(u"Microsoft Basic Render Driver");
+    EngineSettings::setPriorityGPUName(_TT("Microsoft Basic Render Driver"));
 	EngineSettings::setGraphicsDebugEnabled(true);
     EngineSettings::setEngineFeatures(feature);
-	EngineSettings::addAssetDirectory(LN_LOCALFILE(u"Assets"));
+	EngineSettings::addAssetDirectory(LN_LOCALFILE(_TT("Assets")));
     //EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority::AllowLocalDirectory);
 	EngineContext::current()->initializeEngineManager();
 	detail::EngineDomain::engineManager()->initializeAllManagers();
@@ -42,7 +42,7 @@ void TestEnv::setup()
 	depthBuffer = DepthBuffer::create(backbufferSize.width, backbufferSize.height);
 
 #ifdef LN_OS_WIN32
-	LuminoCLI = Path::combine(Path(ln::Environment::executablePath()).parent().parent().parent().parent(), u"tools", u"LuminoCLI", u"Debug", u"lumino-cli.exe");
+	LuminoCLI = Path::combine(Path(ln::Environment::executablePath()).parent().parent().parent().parent(), _TT("tools"), _TT("LuminoCLI"), _TT("Debug"), _TT("lumino-cli.exe"));
 #else
 #endif
 	LN_TEST_CLEAN_SCENE;

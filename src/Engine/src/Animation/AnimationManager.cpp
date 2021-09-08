@@ -100,7 +100,7 @@ void VMDBezierTransformAnimationTrack::evaluate(float time, AnimationValue* outR
 		result.translation = Vector3::Zero;
 	}
 
-	//if (targetName() == u"左腕") {
+	//if (targetName() == _TT("左腕") {
 	//	Matrix m = Matrix::makeRotationQuaternion(result.rotation);
 	//	auto v = Vector3::transformCoord(Vector3::UnitZ, m);
 	//	printf("%f\t%f\t%f\n", v.x, v.y, v.z);
@@ -113,68 +113,68 @@ void VMDBezierTransformAnimationTrack::evaluate(float time, AnimationValue* outR
 HumanoidBones VMDBezierTransformAnimationTrack::mapHumanoidBone(const String& boneName)
 {
 	static const std::unordered_map<String, HumanoidBones> table = {
-		{ u"下半身", HumanoidBones::Hips },
-		{ u"上半身", HumanoidBones::Spine },
-		{ u"上半身2", HumanoidBones::Chest },
-		//{ u"", HumanoidBones::UpperChest },
+		{ _TT("下半身"), HumanoidBones::Hips },
+		{ _TT("上半身"), HumanoidBones::Spine },
+		{ _TT("上半身2"), HumanoidBones::Chest },
+		//{ _TT("", HumanoidBones::UpperChest },
 
-		{ u"左肩", HumanoidBones::LeftShoulder },
-		{ u"左腕", HumanoidBones::LeftUpperArm },
-		{ u"左ひじ", HumanoidBones::LeftLowerArm },
-		{ u"左手首", HumanoidBones::LeftHand },
+		{ _TT("左肩"), HumanoidBones::LeftShoulder },
+		{ _TT("左腕"), HumanoidBones::LeftUpperArm },
+		{ _TT("左ひじ"), HumanoidBones::LeftLowerArm },
+		{ _TT("左手首"), HumanoidBones::LeftHand },
 
-		{ u"右肩", HumanoidBones::RightShoulder },
-		{ u"右腕", HumanoidBones::RightUpperArm },
-		{ u"右ひじ", HumanoidBones::RightLowerArm },
-		{ u"右手首", HumanoidBones::RightHand },
+		{ _TT("右肩"), HumanoidBones::RightShoulder },
+		{ _TT("右腕"), HumanoidBones::RightUpperArm },
+		{ _TT("右ひじ"), HumanoidBones::RightLowerArm },
+		{ _TT("右手首"), HumanoidBones::RightHand },
 
-		{ u"左足", HumanoidBones::LeftUpperLeg },
-		{ u"左ひざ", HumanoidBones::LeftLowerLeg },
-		{ u"左足首", HumanoidBones::LeftFoot },
-		{ u"左つま先ＩＫ", HumanoidBones::LeftToes },
+		{ _TT("左足"), HumanoidBones::LeftUpperLeg },
+		{ _TT("左ひざ"), HumanoidBones::LeftLowerLeg },
+		{ _TT("左足首"), HumanoidBones::LeftFoot },
+		{ _TT("左つま先ＩＫ"), HumanoidBones::LeftToes },
 
-		{ u"右足", HumanoidBones::RightUpperLeg },
-		{ u"右ひざ", HumanoidBones::RightLowerLeg },
-		{ u"右足首", HumanoidBones::RightFoot },	// FIXME: "右足ＩＫ" にしたほうがいいかも。
-		{ u"右つま先ＩＫ", HumanoidBones::RightToes },
+		{ _TT("右足"), HumanoidBones::RightUpperLeg },
+		{ _TT("右ひざ"), HumanoidBones::RightLowerLeg },
+		{ _TT("右足首"), HumanoidBones::RightFoot },	// FIXME: "右足ＩＫ" にしたほうがいいかも。
+		{ _TT("右つま先ＩＫ"), HumanoidBones::RightToes },
 
-		{ u"首", HumanoidBones::Neck },
-		{ u"頭", HumanoidBones::Head },
-		{ u"左目", HumanoidBones::LeftEye },
-		{ u"右目", HumanoidBones::RightEye },
-		{ u"あご", HumanoidBones::Jaw },
+		{ _TT("首"), HumanoidBones::Neck },
+		{ _TT("頭"), HumanoidBones::Head },
+		{ _TT("左目"), HumanoidBones::LeftEye },
+		{ _TT("右目"), HumanoidBones::RightEye },
+		{ _TT("あご"), HumanoidBones::Jaw },
 
-		{ u"左親指０", HumanoidBones::LeftThumbProximal },
-		{ u"左親指１", HumanoidBones::LeftThumbIntermediate },
-		{ u"左親指２", HumanoidBones::LeftThumbDistal },
-		{ u"左人指１", HumanoidBones::LeftIndexProximal },
-		{ u"左人指２", HumanoidBones::LeftIndexIntermediate },
-		{ u"左人指３", HumanoidBones::LeftIndexDistal },
-		{ u"左中指１", HumanoidBones::LeftMiddleProximal },
-		{ u"左中指２", HumanoidBones::LeftMiddleIntermediate },
-		{ u"左中指３", HumanoidBones::LeftMiddleDistal },
-		{ u"左薬指１", HumanoidBones::LeftRingProximal },
-		{ u"左薬指２", HumanoidBones::LeftRingIntermediate },
-		{ u"左薬指３", HumanoidBones::LeftRingDistal },
-		{ u"左小指１", HumanoidBones::LeftLittleProximal },
-		{ u"左小指２", HumanoidBones::LeftLittleIntermediate },
-		{ u"左小指３", HumanoidBones::LeftLittleDistal },
+		{ _TT("左親指０"), HumanoidBones::LeftThumbProximal },
+		{ _TT("左親指１"), HumanoidBones::LeftThumbIntermediate },
+		{ _TT("左親指２"), HumanoidBones::LeftThumbDistal },
+		{ _TT("左人指１"), HumanoidBones::LeftIndexProximal },
+		{ _TT("左人指２"), HumanoidBones::LeftIndexIntermediate },
+		{ _TT("左人指３"), HumanoidBones::LeftIndexDistal },
+		{ _TT("左中指１"), HumanoidBones::LeftMiddleProximal },
+		{ _TT("左中指２"), HumanoidBones::LeftMiddleIntermediate },
+		{ _TT("左中指３"), HumanoidBones::LeftMiddleDistal },
+		{ _TT("左薬指１"), HumanoidBones::LeftRingProximal },
+		{ _TT("左薬指２"), HumanoidBones::LeftRingIntermediate },
+		{ _TT("左薬指３"), HumanoidBones::LeftRingDistal },
+		{ _TT("左小指１"), HumanoidBones::LeftLittleProximal },
+		{ _TT("左小指２"), HumanoidBones::LeftLittleIntermediate },
+		{ _TT("左小指３"), HumanoidBones::LeftLittleDistal },
 
-		{ u"右親指０", HumanoidBones::RightThumbProximal },
-		{ u"右親指１", HumanoidBones::RightThumbIntermediate },
-		{ u"右親指２", HumanoidBones::RightThumbDistal },
-		{ u"右人指１", HumanoidBones::RightIndexProximal },
-		{ u"右人指２", HumanoidBones::RightIndexIntermediate },
-		{ u"右人指３", HumanoidBones::RightIndexDistal },
-		{ u"右中指１", HumanoidBones::RightMiddleProximal },
-		{ u"右中指２", HumanoidBones::RightMiddleIntermediate },
-		{ u"右中指３", HumanoidBones::RightMiddleDistal },
-		{ u"右薬指１", HumanoidBones::RightRingProximal },
-		{ u"右薬指２", HumanoidBones::RightRingIntermediate },
-		{ u"右薬指３", HumanoidBones::RightRingDistal },
-		{ u"右小指１", HumanoidBones::RightLittleProximal },
-		{ u"右小指２", HumanoidBones::RightLittleIntermediate },
-		{ u"右小指３", HumanoidBones::RightLittleDistal },
+		{ _TT("右親指０"), HumanoidBones::RightThumbProximal },
+		{ _TT("右親指１"), HumanoidBones::RightThumbIntermediate },
+		{ _TT("右親指２"), HumanoidBones::RightThumbDistal },
+		{ _TT("右人指１"), HumanoidBones::RightIndexProximal },
+		{ _TT("右人指２"), HumanoidBones::RightIndexIntermediate },
+		{ _TT("右人指３"), HumanoidBones::RightIndexDistal },
+		{ _TT("右中指１"), HumanoidBones::RightMiddleProximal },
+		{ _TT("右中指２"), HumanoidBones::RightMiddleIntermediate },
+		{ _TT("右中指３"), HumanoidBones::RightMiddleDistal },
+		{ _TT("右薬指１"), HumanoidBones::RightRingProximal },
+		{ _TT("右薬指２"), HumanoidBones::RightRingIntermediate },
+		{ _TT("右薬指３"), HumanoidBones::RightRingDistal },
+		{ _TT("右小指１"), HumanoidBones::RightLittleProximal },
+		{ _TT("右小指２"), HumanoidBones::RightLittleIntermediate },
+		{ _TT("右小指３"), HumanoidBones::RightLittleDistal },
 	};
 
 	const auto itr = table.find(boneName);
@@ -232,7 +232,7 @@ void AnimationManager::addClockToAffiliation(AnimationClock* clock, AnimationClo
 
 Ref<GenericTask<Ref<AnimationClip>>> AnimationManager::loadAnimationClip(const StringRef& filePath)
 {
-	static const std::vector<const Char*> exts = { u".bvh", u".vmd" };
+	static const std::vector<const Char*> exts = { _TT(".bvh"), _TT(".vmd") };
 	return AssetManager::loadObjectWithCacheHelperAsync<AnimationClip>(&m_animationClipCache, nullptr, exts, filePath);
 	//return task->result();
 	
@@ -244,7 +244,7 @@ Ref<GenericTask<Ref<AnimationClip>>> AnimationManager::loadAnimationClip(const S
 	//// TODO: やっぱり拡張子は本当のリロード時に解決したい。
 	//// なので、AssetPath 自体の仕様として、拡張子無し（未解決）を許可するようにしたい。
 	//// → でもそれなら Path で持っておけばいいだけか。ちゃんとドキュメントに書いておこう
-	//const Char* exts[] = { u".bvh", u".vmd" };
+	//const Char* exts[] = { _TT(".bvh", _TT(".vmd" };
 	//auto assetPath = detail::AssetPath::resolveAssetPath(filePath, exts);
 
 	//auto obj = makeObject<AnimationClip>(assetPath);

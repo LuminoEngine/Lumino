@@ -53,7 +53,8 @@ typedef uint32_t LNHandle;
 
 typedef void* LNUserData;
 
-typedef char16_t LNChar;
+//typedef char16_t LNChar;
+typedef char32_t LNChar;
 
 #define LN_NULL_HANDLE 0
 

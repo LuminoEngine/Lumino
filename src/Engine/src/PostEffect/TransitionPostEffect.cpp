@@ -139,7 +139,7 @@ bool TransitionPostEffectInstance::onRender(RenderView* renderView, CommandList*
     else {
         if (m_maskTexture != m_owner->m_maskTexture) {
             m_maskTexture = m_owner->m_maskTexture;
-            m_withMaskMaterial->setTexture(u"_MaskTexture", m_maskTexture);
+            m_withMaskMaterial->setTexture(_TT("_MaskTexture"), m_maskTexture);
         }
 
         if (m_owner->m_mode == TransitionPostEffect::Mode::FadeIn || m_owner->m_mode == TransitionPostEffect::Mode::FadeOut) {
@@ -191,18 +191,18 @@ void TransitionPostEffectInstance::renderFadeInOut(CommandList* context, RenderT
     Material* material = nullptr;
     if (m_owner->m_maskTexture)
     {
-        m_withMaskMaterial->setFloat(u"_Factor", m_owner->m_factor.value());
-        m_withMaskMaterial->setVector(u"_ColorScale", m_owner->m_fadeColor.toVector4());
-        m_withMaskMaterial->setFloat(u"_Vague", m_owner->m_vague);
-        m_withMaskMaterial->setTexture(u"_OverrayTexture", Texture2D::whiteTexture());
+        m_withMaskMaterial->setFloat(_TT("_Factor"), m_owner->m_factor.value());
+        m_withMaskMaterial->setVector(_TT("_ColorScale"), m_owner->m_fadeColor.toVector4());
+        m_withMaskMaterial->setFloat(_TT("_Vague"), m_owner->m_vague);
+        m_withMaskMaterial->setTexture(_TT("_OverrayTexture"), Texture2D::whiteTexture());
         material = m_withMaskMaterial;
     }
     else
     {
-        m_withoutMaskMaterial->setFloat(u"_Factor", factor);
-        m_withoutMaskMaterial->setVector(u"_ColorScale", m_owner->m_fadeColor.toVector4());
-        m_withoutMaskMaterial->setFloat(u"_Vague", m_owner->m_vague);
-        m_withoutMaskMaterial->setTexture(u"_OverrayTexture", Texture2D::whiteTexture());
+        m_withoutMaskMaterial->setFloat(_TT("_Factor"), factor);
+        m_withoutMaskMaterial->setVector(_TT("_ColorScale"), m_owner->m_fadeColor.toVector4());
+        m_withoutMaskMaterial->setFloat(_TT("_Vague"), m_owner->m_vague);
+        m_withoutMaskMaterial->setTexture(_TT("_OverrayTexture"), Texture2D::whiteTexture());
         material = m_withoutMaskMaterial;
     }
 
@@ -230,18 +230,18 @@ void TransitionPostEffectInstance::renderCrossFade(CommandList* context, RenderT
     Material* material = nullptr;
     if (m_owner->m_maskTexture)
     {
-        m_withMaskMaterial->setFloat(u"_Factor", m_owner->m_factor.value());
-        m_withMaskMaterial->setVector(u"_ColorScale", Vector4(1, 1, 1, 1));
-        m_withMaskMaterial->setFloat(u"_Vague", m_owner->m_vague);
-        m_withMaskMaterial->setTexture(u"_OverrayTexture", m_overrayTarget);
+        m_withMaskMaterial->setFloat(_TT("_Factor"), m_owner->m_factor.value());
+        m_withMaskMaterial->setVector(_TT("_ColorScale"), Vector4(1, 1, 1, 1));
+        m_withMaskMaterial->setFloat(_TT("_Vague"), m_owner->m_vague);
+        m_withMaskMaterial->setTexture(_TT("_OverrayTexture"), m_overrayTarget);
         material = m_withMaskMaterial;
     }
     else
     {
-        m_withoutMaskMaterial->setFloat(u"_Factor", m_owner->m_factor.value());
-        m_withoutMaskMaterial->setVector(u"_ColorScale", Vector4(1, 1, 1, 1));
-        m_withoutMaskMaterial->setFloat(u"_Vague", m_owner->m_vague);
-        m_withoutMaskMaterial->setTexture(u"_OverrayTexture", m_overrayTarget);
+        m_withoutMaskMaterial->setFloat(_TT("_Factor"), m_owner->m_factor.value());
+        m_withoutMaskMaterial->setVector(_TT("_ColorScale"), Vector4(1, 1, 1, 1));
+        m_withoutMaskMaterial->setFloat(_TT("_Vague"), m_owner->m_vague);
+        m_withoutMaskMaterial->setTexture(_TT("_OverrayTexture"), m_overrayTarget);
         material = m_withoutMaskMaterial;
     }
 

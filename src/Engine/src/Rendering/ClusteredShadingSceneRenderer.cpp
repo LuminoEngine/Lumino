@@ -141,7 +141,7 @@ void LightOcclusionPass::init()
 {
 	SceneRendererPass::init();
 	m_blackShader = detail::EngineDomain::renderingManager()->builtinShader(BuiltinShader::BlackShader);
-	m_blackShaderTechnique = m_blackShader->findTechnique(u"Default");
+	m_blackShaderTechnique = m_blackShader->findTechnique(_TT("Default");
 	m_renderPass = makeObject<RenderPass>();
 }
 
@@ -414,7 +414,7 @@ void ShadowCasterPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsConte
 	m_renderPass->setDepthBuffer(renderingPipeline->shadowMapDepthBuffer());
 	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
 
-	if (auto param = m_defaultShader->findParameter(u"ln_ViewProjection_Light0")) {
+	if (auto param = m_defaultShader->findParameter(_TT("ln_ViewProjection_Light0"))) {
 		param->setMatrix(sceneRenderer->mainRenderViewInfo().mainLightViewProjection);
 	}
 
@@ -600,13 +600,13 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderSec
 	ssm->updateClusteredShadingVariables(descriptor, info);
 
 	//// TODO: Test
-	//v = shader->findParameter(u"_LensflareOcclusionMap");
+	//v = shader->findParameter(_TT("_LensflareOcclusionMap");
 	//if (v) {
 	//	v->setTexture(m_lightOcclusionPass->m_lensflareOcclusionMap);
 	//}
 
 	// TODO: Test
-	if (auto param = shader->findParameter(u"ln_ViewProjection_Light0")) {
+	if (auto param = shader->findParameter(_TT("ln_ViewProjection_Light0"))) {
 		if (const auto* mainLight = mainLightInfo()) {
 
 			//const auto pos = Vector3(10, 10, 10);

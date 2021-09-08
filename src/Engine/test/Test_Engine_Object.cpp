@@ -96,22 +96,22 @@ TEST_F(Test_Engine_Object, TypeInfo)
     //* [ ] can get by object pointer
     TypeInfo* type1 = TypeInfo::getTypeInfo(obj1);
     ASSERT_EQ(true, type1 != nullptr);
-    ASSERT_EQ(u"TestObjectA", type1->name());
+    ASSERT_EQ(_TT("TestObjectA"), type1->name());
 
     //* [ ] can get by template
     TypeInfo* type2 = TypeInfo::getTypeInfo<TestObjectB>();
     ASSERT_EQ(true, type2 != nullptr);
-    ASSERT_EQ(u"TestObjectB", type2->name());
+    ASSERT_EQ(_TT("TestObjectB"), type2->name());
 
     //* [ ] can get by object pointer (get as top level)
     Object* base1 = obj1;
     type1 = TypeInfo::getTypeInfo(base1);
     ASSERT_EQ(true, type1 != nullptr);
-    ASSERT_EQ(u"TestObjectA", type1->name());
+    ASSERT_EQ(_TT("TestObjectA"), type1->name());
 
     //* [ ] can get base type
     TypeInfo* type1Base = type1->baseType();
-    ASSERT_EQ(u"Object", type1Base->name());
+    ASSERT_EQ(_TT("Object"), type1Base->name());
 
     //* [ ] base type of Object is null
     ASSERT_EQ(nullptr, type1Base->baseType());
@@ -148,7 +148,7 @@ TEST_F(Test_Engine_Object, CreateFromTypeInfo)
 	Test1 t1;
 	t1.obj = obj1;
 	String json = JsonSerializer::serialize(t1, JsonFormatting::None);
-    ASSERT_EQ(u"{\"obj\":{\"_type\":\"CreateFromTypeInfo_ClassA\",\"value1\":100}}", json);
+    ASSERT_EQ(_TT("{\"obj\":{\"_type\":\"CreateFromTypeInfo_ClassA\",\"value1\":100}}", json);
 
 	//EngineContext::current()->registerType<CreateFromTypeInfo_ClassA>();
 

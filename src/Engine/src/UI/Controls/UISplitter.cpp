@@ -84,7 +84,7 @@ void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail:
         auto thumb = makeObject<UIThumb>();
 
 		// TODO: style (-H, -V とかで分ける。)
-		thumb->addClass(u"SplitterBar");
+		thumb->addClass(_TT("SplitterBar"));
 		if (isHorizontal()) {
 			thumb->setHAlignment(UIHAlignment::Stretch);
 			thumb->setVAlignment(UIVAlignment::Stretch);

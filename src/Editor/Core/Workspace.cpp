@@ -39,10 +39,10 @@ Workspace::Workspace()
     s_instance = this;
 
 	ln::String name = ln::Path(ln::Environment::executablePath()).fileNameWithoutExtension();
-	if (name.endsWith(u"-rb"))
-		m_primaryLang = u"ruby";
+	if (name.endsWith(_TT("-rb")))
+		m_primaryLang = _TT("ruby");
 	else
-		m_primaryLang = u"cpp";
+		m_primaryLang = _TT("cpp");
 
 //#ifdef LN_DEBUG
 //	m_buildEnvironment->setupPathes(EnvironmentPathBase::Repository);
@@ -65,7 +65,7 @@ ln::Result Workspace::newMainProject(const ln::Path& projectDir, const ln::Strin
 {
 	if (LN_REQUIRE(!m_mainProject)) return false;
     m_mainProject = ln::makeRef<Project>(this);
-    if (!m_mainProject->newProject(projectDir, projectName, u"", u"NativeProject")) {
+    if (!m_mainProject->newProject(projectDir, projectName, _TT(""), _TT("NativeProject"))) {
         m_mainProject = nullptr;
         return false;
     }
@@ -101,17 +101,17 @@ ln::Result Workspace::closeMainProject()
 ln::Result Workspace::runProject(const ln::String& target)
 {
 	// Windows
-	if (ln::String::compare(target, u"Windows", ln::CaseSensitivity::CaseInsensitive) == 0)
+	if (ln::String::compare(target, _TT("Windows"), ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
-		auto exe = ln::FileSystem::getFile(ln::Path::combine(m_mainProject->windowsProjectDir(), u"bin", u"x64", u"Debug"), u"*.exe");
+		auto exe = ln::FileSystem::getFile(ln::Path::combine(m_mainProject->windowsProjectDir(), _TT("bin"), _TT("x64"), _TT("Debug"), _TT("*.exe")));
 		ln::Process::execute(exe);
 	}
 	// Web
-	else if (ln::String::compare(target, u"Web", ln::CaseSensitivity::CaseInsensitive) == 0)
+	else if (ln::String::compare(target, _TT("Web"), ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
-		auto buildDir = ln::Path::combine(m_mainProject->acquireBuildDir(), u"Web").canonicalize();
+		auto buildDir = ln::Path::combine(m_mainProject->acquireBuildDir(), _TT("Web")).canonicalize();
 
-		ln::String text = uR"(# -*- coding: utf-8 -*-
+		ln::String text = _TT(R"(# -*- coding: utf-8 -*-
 import http.server
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import socketserver
@@ -134,8 +134,8 @@ httpd = socketserver.TCPServer(("", PORT), Handler)
 
 print("serving at port", PORT)
 httpd.serve_forever()
-)";
-		auto scriptName = ln::Path(buildDir, u"serve.py");
+)");
+		auto scriptName = ln::Path(buildDir, _TT("serve.py"));
 		ln::FileSystem::writeAllText(scriptName, text);
 
 		ln::Process proc;
@@ -146,15 +146,15 @@ httpd.serve_forever()
 		proc.start();
 
 		{
-			auto files = ln::FileSystem::getFiles(buildDir, u"*.html");
+			auto files = ln::FileSystem::getFiles(buildDir, _TT("*.html"));
 			if (files.isEmpty()) {
-				CLI::error("Not found *.html file.");
+				CLI::error(_TT("Not found *.html file."));
 				return false;
 			}
 
 			ln::Process proc2;
             proc2.setUseShellExecute(true);
-			proc2.setProgram(u"http://localhost:8000/" + (*files.begin()).fileName());
+			proc2.setProgram(_TT("http://localhost:8000/") + (*files.begin()).fileName());
 			proc2.start();
 		}
 
@@ -162,7 +162,7 @@ httpd.serve_forever()
 	}
 	else
 	{
-		CLI::error(ln::String::format(u"{0} is invalid target.", target));
+		CLI::error(ln::String::format(_TT("{0} is invalid target."), target));
 		return false;
 	}
 
@@ -184,7 +184,7 @@ ln::Result Workspace::dev_installTools() const
 void Workspace::dev_openIde(const ln::String& target) const
 {
 #if defined(_WIN32)
-	if (ln::String::compare(target, u"Android", ln::CaseSensitivity::CaseInsensitive) == 0)
+	if (ln::String::compare(target, _TT("Android"), ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
 		HKEY hKey = NULL;
 		LONG lRet = RegOpenKeyExW(HKEY_LOCAL_MACHINE,
@@ -193,7 +193,7 @@ void Workspace::dev_openIde(const ln::String& target) const
 			KEY_READ | KEY_WOW64_64KEY,	// https://stackoverflow.com/questions/252297/why-is-regopenkeyex-returning-error-code-2-on-vista-64bit
 			&hKey);
 		if (lRet != ERROR_SUCCESS) {
-			LN_LOG_ERROR << u"Android Studio not installed.";
+			LN_LOG_ERROR << _TT("Android Studio not installed.");
 			return;
 		}
 
@@ -201,22 +201,22 @@ void Workspace::dev_openIde(const ln::String& target) const
 		WCHAR path[MAX_PATH];
 		RegQueryValueExW(hKey, L"Path", NULL, &type, (LPBYTE)path, &size);
 
-		ln::Environment::setEnvironmentVariable(u"LUMINO", buildEnvironment()->luminoPackageRootDir());
+		ln::Environment::setEnvironmentVariable(_TT("LUMINO"), buildEnvironment()->luminoPackageRootDir());
 
 		ln::Process proc;
-		proc.setProgram(ln::Path::combine(ln::String::fromCString(path), u"bin", u"studio"));
+		proc.setProgram(ln::Path::combine(ln::String::fromCString(path), _TT("bin"), _TT("studio")));
 		proc.setArguments({ m_mainProject->androidProjectDir() });
 		proc.start();
 	}
 	else
 	{
-		auto files = ln::FileSystem::getFiles(ln::Environment::currentDirectory(), u"*.sln");
+		auto files = ln::FileSystem::getFiles(ln::Environment::currentDirectory(), _TT("*.sln"));
 		if (files.isEmpty()) {
-			CLI::error("Not found *.sln file.");
+			CLI::error(_TT("Not found *.sln file."));
 			return;
 		}
 
-		ln::Environment::setEnvironmentVariable(u"LUMINO", buildEnvironment()->luminoPackageRootDir());
+		ln::Environment::setEnvironmentVariable(_TT("LUMINO"), buildEnvironment()->luminoPackageRootDir());
 
 		ln::Process proc;
 		proc.setProgram(*files.begin());
@@ -224,8 +224,8 @@ void Workspace::dev_openIde(const ln::String& target) const
 	}
 #elif defined(__APPLE__)
 	ln::Process proc;
-	proc.setProgram(u"/usr/bin/open");
-	proc.setArguments({ u"/Applications/Xcode.app/", ln::Path(m_project->macOSProjectDir(), u"LuminoApp.macOS.xcodeproj") });
+	proc.setProgram(_TT("/usr/bin/open");
+	proc.setArguments({ _TT("/Applications/Xcode.app/", ln::Path(m_project->macOSProjectDir(), _TT("LuminoApp.macOS.xcodeproj") });
 	proc.start();
 #else
 	LN_NOTIMPLEMENTED();	// TODO: putenv は書き込み可能なポインタを渡さないとならないみたい？
@@ -234,7 +234,7 @@ void Workspace::dev_openIde(const ln::String& target) const
 
 ln::Path Workspace::findProejctFile(const ln::Path& dir)
 {
-    auto files = ln::FileSystem::getFiles(dir, u"*" + Project::ProjectFileExt);
+    auto files = ln::FileSystem::getFiles(dir, _TT("*") + Project::ProjectFileExt);
     if (!files.isEmpty()) {
     	return *files.begin();
     }

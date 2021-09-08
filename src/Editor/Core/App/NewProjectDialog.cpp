@@ -14,14 +14,14 @@ NewProjectDialog::NewProjectDialog()
 	setBackgroundColor(ln::Color::White);
 
 	auto layout = ln::makeObject<ln::UIBoxLayout>();
-	layout->addChild(ln::UIText::create(u"Project name:"));
+	layout->addChild(ln::UIText::create(_TT("Project name:")));
 
 	m_projectName = ln::makeObject<ln::UITextField>();
 	m_projectName->setWidth(200);
 	m_projectName->setHeight(20);
 	layout->addChild(m_projectName);
 
-	layout->addChild(ln::UIText::create(u"Project folder:"));
+	layout->addChild(ln::UIText::create(_TT("Project folder:")));
 
 	m_projectFolder = ln::makeObject<ln::UITextField>();
 	m_projectFolder->setWidth(200);
@@ -29,12 +29,12 @@ NewProjectDialog::NewProjectDialog()
 	layout->addChild(m_projectFolder);
 
 	auto selectFolderButton = ln::makeObject<ln::UIButton>();
-	selectFolderButton->setText(u"...");
+	selectFolderButton->setText(_TT("..."));
 	selectFolderButton->connectOnClicked(ln::bind(this, &NewProjectDialog::handleSelectFolder));
 	layout->addChild(selectFolderButton);
 
 	auto createButton = ln::makeObject<ln::UIButton>();
-	createButton->setText(u"Create");
+	createButton->setText(_TT("Create"));
 	createButton->connectOnClicked(ln::bind(this, &NewProjectDialog::handleCreate));
 	layout->addChild(createButton);
 
@@ -46,7 +46,7 @@ NewProjectDialog::NewProjectDialog()
 void NewProjectDialog::updateDefaultProjectName()
 {
 	// TODO: unique
-	m_projectName->setText(u"Project1");
+	m_projectName->setText(_TT("Project1"));
 }
 
 void NewProjectDialog::handleSelectFolder()

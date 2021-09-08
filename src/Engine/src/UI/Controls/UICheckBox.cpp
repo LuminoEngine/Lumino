@@ -28,12 +28,12 @@ bool UICheckBox::init()
 
 	m_checkMark = makeObject<UIElement>();
 	m_checkMark->setVAlignment(UIVAlignment::Center);
-	m_checkMark->addClass(u"UICheckBox-CheckMark");
+	m_checkMark->addClass(_TT("UICheckBox-CheckMark"));
 	m_checkMark->setPartParent(this);
 	addVisualChild(m_checkMark);
 
 
-    m_checkMarkFont = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(u"Solid", 20);
+    m_checkMarkFont = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(_TT("Solid"), 20);
 	m_checkMarkCodePoint = 0xF00C;
 
 	m_squareCodePoint = 0xF0C8;

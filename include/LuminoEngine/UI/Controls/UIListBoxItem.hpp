@@ -81,7 +81,7 @@ public:
 
 protected:
 	// base interface
-	virtual const String& elementName() const  override { static String name = u"UIListBoxItem"; return name; }
+	virtual const String& elementName() const  override { static String name = _TT("UIListBoxItem"); return name; }
 
 LN_CONSTRUCT_ACCESS:
     UIListBoxItem();

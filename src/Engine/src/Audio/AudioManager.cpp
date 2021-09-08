@@ -144,12 +144,12 @@ Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef& filePath)
 	{
 		auto stream = m_assetManager->openFileStream(path);
 
-		if (filePath.endsWith(u".wav", CaseSensitivity::CaseInsensitive)) {
+		if (filePath.endsWith(_TT(".wav"), CaseSensitivity::CaseInsensitive)) {
 			auto d = makeRef<WaveDecoder>();
 			d->init(stream, diag);
 			decoder = d;
 		}
-		else if (filePath.endsWith(u".ogg", CaseSensitivity::CaseInsensitive)) {
+		else if (filePath.endsWith(_TT(".ogg"), CaseSensitivity::CaseInsensitive)) {
 			auto d = makeRef<OggAudioDecoder>();
 			d->init(stream, diag);
 			decoder = d;

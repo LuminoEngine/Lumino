@@ -32,7 +32,7 @@ GTEST_API_ int main(int argc, char **argv)
 	Logger::setLevel(LogLevel::Debug);
 	Logger::addStdErrAdapter();
 
-	auto tempPath = Path(Environment::specialFolderPath(SpecialFolder::Temporary), u"Lumino");
+	auto tempPath = Path(Environment::specialFolderPath(SpecialFolder::Temporary), _TT("Lumino"));
 
 	TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
 	TestHelper::setTempDirPath(tempPath);

@@ -341,26 +341,26 @@ void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTe
     outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
     outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Default;
     outClassSet->drawMode = ShaderTechniqueClass_DrawMode::Primitive;
-    if (String::compare(str, u"Default", CaseSensitivity::CaseInsensitive) == 0)
+    if (String::compare(str, _TT("Default"), CaseSensitivity::CaseInsensitive) == 0)
     {
         outClassSet->defaultTechnique = true;
     }
-	else if (String::compare(str, u"LightDisc", CaseSensitivity::CaseInsensitive) == 0)
+	else if (String::compare(str, _TT("LightDisc"), CaseSensitivity::CaseInsensitive) == 0)
 	{
         outClassSet->phase = ShaderTechniqueClass_Phase::LightDisc;
 	}
     else
     {
         // TODO: splitRef
-        auto tokens = str.split(u"_", StringSplitOptions::RemoveEmptyEntries);
+        auto tokens = str.split(_TT("_"), StringSplitOptions::RemoveEmptyEntries);
         for (auto& token : tokens) {
-            if (String::compare(token, u"SkinnedMesh", CaseSensitivity::CaseInsensitive) == 0) {
+            if (String::compare(token, _TT("SkinnedMesh"), CaseSensitivity::CaseInsensitive) == 0) {
                 outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::SkinnedMesh;
             }
-            else if (String::compare(token, u"UnLighting", CaseSensitivity::CaseInsensitive) == 0) {
+            else if (String::compare(token, _TT("UnLighting"), CaseSensitivity::CaseInsensitive) == 0) {
                 outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Unlit;
             }
-            else if (String::compare(token, u"Instancing", CaseSensitivity::CaseInsensitive) == 0) {
+            else if (String::compare(token, _TT("Instancing"), CaseSensitivity::CaseInsensitive) == 0) {
                 outClassSet->drawMode = ShaderTechniqueClass_DrawMode::Instancing;
             }
         }

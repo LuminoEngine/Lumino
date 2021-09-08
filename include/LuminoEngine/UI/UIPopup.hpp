@@ -29,7 +29,7 @@ public:
     void close();
 
 protected:
-    virtual const String& elementName() const override { static String name = u"UIPopup"; return name; }
+    virtual const String& elementName() const override { static String name = _TT("UIPopup"); return name; }
     virtual void onRoutedEvent(UIEventArgs* e) override;
 	//virtual bool onHitTest(const Point& frameClientPosition) override;
 	//virtual void deactivateInternal()

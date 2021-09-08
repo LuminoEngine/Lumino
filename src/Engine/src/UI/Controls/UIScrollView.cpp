@@ -234,9 +234,9 @@ void UITrack::init()
 	m_thumb = makeObject<UIThumb>();
 	//m_increaseButton = makeObject<UIButton>();
 
-	//m_decreaseButton->addClass(u"UITrack-DecreaseButton");
-	m_thumb->addClass(u"UITrack-Thumb");
-	//m_increaseButton->addClass(u"UITrack-IncreaseButton");
+	//m_decreaseButton->addClass(_TT("UITrack-DecreaseButton");
+	m_thumb->addClass(_TT("UITrack-Thumb"));
+	//m_increaseButton->addClass(_TT("UITrack-IncreaseButton");
 
 	//addVisualChild(m_decreaseButton);
 	addVisualChild(m_thumb);

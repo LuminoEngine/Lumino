@@ -84,15 +84,15 @@ TEST_F(Test_Base_Variant, SetAndGet)
     }
     //* [ ] String (Char*)
     {
-		Ref<Variant> var = makeVariant(u"str");
+		Ref<Variant> var = makeVariant(_TT("str"));
         ASSERT_EQ(VariantType::String, var->type());
-        ASSERT_EQ(u"str", var->get<String>());
+        ASSERT_EQ(_TT("str"), var->get<String>());
     }
     //* [ ] String (String)
     {
-		Ref<Variant> var = makeVariant(String(u"str"));
+		Ref<Variant> var = makeVariant(String(_TT("str")));
         ASSERT_EQ(VariantType::String, var->type());
-        ASSERT_EQ(u"str", var->get<String>());
+        ASSERT_EQ(_TT("str"), var->get<String>());
     }
     //* [ ] RefObject (RefObject*)
     {
@@ -242,16 +242,16 @@ TEST_F(Test_Base_Variant, UseCase1)
 	//- [ ]  Save
 	{
 		auto script1 = makeObject<Script>();
-		script1->name = u"script1";
+		script1->name = _TT("script1");
 		script1->commandList = makeList<Ref<Command>>();
 
 		auto c1 = makeObject<Command>();
-		c1->code = u"c1";
-		c1->params = makeList<Ref<Variant>>({ makeVariant(1), makeVariant(u"test1") });
+		c1->code = _TT("c1");
+		c1->params = makeList<Ref<Variant>>({ makeVariant(1), makeVariant(_TT("test1")) });
 		script1->commandList->add(c1);
 		auto c2 = makeObject<Command>();
-		c2->code = u"c2";
-		c2->params = makeList<Ref<Variant>>({ makeVariant(2), makeVariant(u"test2") });
+		c2->code = _TT("c2");
+		c2->params = makeList<Ref<Variant>>({ makeVariant(2), makeVariant(_TT("test2")) });
 		script1->commandList->add(c2);
 
 		JsonTextOutputArchive ar;
@@ -266,16 +266,16 @@ TEST_F(Test_Base_Variant, UseCase1)
 		JsonTextInputArchive ar(json);
 		ar.process(*script2);
 
-		ASSERT_EQ(u"script1", script2->name);
+		ASSERT_EQ(_TT("script1"), script2->name);
 		ASSERT_EQ(2, script2->commandList->size());
 
-		ASSERT_EQ(u"c1", script2->commandList[0]->code);
+		ASSERT_EQ(_TT("c1"), script2->commandList[0]->code);
 		ASSERT_EQ(1, script2->commandList[0]->params[0]->get<int>());
-		ASSERT_EQ(u"test1", script2->commandList[0]->params[1]->get<String>());
+		ASSERT_EQ(_TT("test1"), script2->commandList[0]->params[1]->get<String>());
 
-		ASSERT_EQ(u"c2", script2->commandList[1]->code);
+		ASSERT_EQ(_TT("c2"), script2->commandList[1]->code);
 		ASSERT_EQ(2, script2->commandList[1]->params[0]->get<int>());
-		ASSERT_EQ(u"test2", script2->commandList[1]->params[1]->get<String>());
+		ASSERT_EQ(_TT("test2"), script2->commandList[1]->params[1]->get<String>());
 	}
 }
 

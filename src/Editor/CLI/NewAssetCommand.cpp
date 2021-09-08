@@ -8,7 +8,7 @@ int NewAssetCommand::execute(lna::Workspace* workspace, ln::String name)
 {
     ln::Ref<ln::Object> obj = ln::TypeInfo::createInstance(name);
     if (!obj) {
-        CLI::error(u"Invalid type name.");
+        CLI::error(_TT("Invalid type name."));
         return 1;
     }
 

@@ -124,7 +124,7 @@ public:
 
 protected:
 	// base interface
-	const String& elementName() const  override { static String name = u"UIListBox"; return name; }
+	const String& elementName() const  override { static String name = _TT("UIListBox"); return name; }
     void onAddChild(UIElement* child) override;
 	Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;

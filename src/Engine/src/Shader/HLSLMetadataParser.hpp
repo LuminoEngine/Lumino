@@ -87,7 +87,7 @@ private:
             *outValue = v;
             return true;
         } else {
-            m_diag->reportError(u"Parser error: " + String::fromStdString(token));
+            m_diag->reportError(_TT("Parser error: ") + String::fromStdString(token));
             return false;
         }
     }

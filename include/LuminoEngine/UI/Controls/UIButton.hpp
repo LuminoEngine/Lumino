@@ -69,7 +69,7 @@ public:
 	
 
 protected:
-    virtual const String& elementName() const override { static String name = u"UIButton"; return name; }
+    virtual const String& elementName() const override { static String name = _TT("UIButton"); return name; }
     virtual void onClick(UIEventArgs* e) override;
 
 private:
@@ -98,7 +98,7 @@ LN_CONSTRUCT_ACCESS:
 	bool init();
 
 protected:
-	virtual const String& elementName() const  override { static String name = u"UIToggleButton"; return name; }
+	virtual const String& elementName() const  override { static String name = _TT("UIToggleButton"); return name; }
 	virtual void onClick(UIEventArgs* e) override;
 
 private:

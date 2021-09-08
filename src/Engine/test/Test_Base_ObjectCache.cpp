@@ -15,9 +15,9 @@ TEST_F(Test_Base_ObjectCache, ObjectCounting)
 	detail::ObjectCache<String, TestObj> cache1;
 	cache1.init(2);
 
-	auto obj1 = makeRef<TestObj>(u"obj1");
-	auto obj2 = makeRef<TestObj>(u"obj2");
-	auto obj3 = makeRef<TestObj>(u"obj3");
+	auto obj1 = makeRef<TestObj>(_TT("obj1"));
+	auto obj2 = makeRef<TestObj>(_TT("obj2"));
+	auto obj3 = makeRef<TestObj>(_TT("obj3"));
 	cache1.registerObject(obj1->name, obj1);
 	cache1.registerObject(obj2->name, obj2);
 	cache1.registerObject(obj3->name, obj3);
@@ -26,9 +26,9 @@ TEST_F(Test_Base_ObjectCache, ObjectCounting)
 	{
 		auto aliveObjects = cache1.aliveObjects();
 		ASSERT_EQ(3, aliveObjects.size());
-		ASSERT_EQ(u"obj1", aliveObjects[0]->name);
-		ASSERT_EQ(u"obj2", aliveObjects[1]->name);
-		ASSERT_EQ(u"obj3", aliveObjects[2]->name);
+		ASSERT_EQ(_TT("obj1"), aliveObjects[0]->name);
+		ASSERT_EQ(_TT("obj2"), aliveObjects[1]->name);
+		ASSERT_EQ(_TT("obj3"), aliveObjects[2]->name);
 		ASSERT_EQ(0, cache1.freeObjects().size());
 	}
 
@@ -39,20 +39,20 @@ TEST_F(Test_Base_ObjectCache, ObjectCounting)
 
 		auto aliveObjects = cache1.aliveObjects();
 		ASSERT_EQ(1, aliveObjects.size());
-		ASSERT_EQ(u"obj3", aliveObjects[0]->name);
+		ASSERT_EQ(_TT("obj3"), aliveObjects[0]->name);
 
 		auto freeObjects = cache1.freeObjects();
 		ASSERT_EQ(2, freeObjects.size());
-		ASSERT_EQ(u"obj1", freeObjects[0]->name);
-		ASSERT_EQ(u"obj2", freeObjects[1]->name);
+		ASSERT_EQ(_TT("obj1"), freeObjects[0]->name);
+		ASSERT_EQ(_TT("obj2"), freeObjects[1]->name);
 	}
 
 	// alive object を find。参照カウントや aliveList, freeList に変化なし。
 	{
 		ASSERT_EQ(2, RefObjectHelper::getReferenceCount(obj3));
 
-		TestObj* obj = cache1.findObject(u"obj3");
-		ASSERT_EQ(u"obj3", obj->name);
+		TestObj* obj = cache1.findObject(_TT("obj3"));
+		ASSERT_EQ(_TT("obj3"), obj->name);
 		ASSERT_EQ(2, RefObjectHelper::getReferenceCount(obj));
 
 		auto aliveObjects = cache1.aliveObjects();
@@ -64,17 +64,17 @@ TEST_F(Test_Base_ObjectCache, ObjectCounting)
 
 	// free object を find。freeList から aliveList に移る。
 	{
-		TestObj* obj = cache1.findObject(u"obj1");
-		ASSERT_EQ(u"obj1", obj->name);
+		TestObj* obj = cache1.findObject(_TT("obj1"));
+		ASSERT_EQ(_TT("obj1"), obj->name);
 
 		auto aliveObjects = cache1.aliveObjects();
 		ASSERT_EQ(2, aliveObjects.size());
-		ASSERT_EQ(u"obj3", aliveObjects[0]->name);
-		ASSERT_EQ(u"obj1", aliveObjects[1]->name);
+		ASSERT_EQ(_TT("obj3"), aliveObjects[0]->name);
+		ASSERT_EQ(_TT("obj1"), aliveObjects[1]->name);
 
 		auto freeObjects = cache1.freeObjects();
 		ASSERT_EQ(1, freeObjects.size());
-		ASSERT_EQ(u"obj2", freeObjects[0]->name);
+		ASSERT_EQ(_TT("obj2"), freeObjects[0]->name);
 	}
 
 	// すべて release。freeList に入る。最も古い obj2 は削除。
@@ -87,10 +87,10 @@ TEST_F(Test_Base_ObjectCache, ObjectCounting)
 
 		auto freeObjects = cache1.freeObjects();
 		ASSERT_EQ(2, freeObjects.size());
-		ASSERT_EQ(u"obj1", freeObjects[0]->name);
-		ASSERT_EQ(u"obj3", freeObjects[1]->name);
+		ASSERT_EQ(_TT("obj1"), freeObjects[0]->name);
+		ASSERT_EQ(_TT("obj3"), freeObjects[1]->name);
 
-		ASSERT_EQ(nullptr, cache1.findObject(u"obj2"));	// オブジェクトなし
+		ASSERT_EQ(nullptr, cache1.findObject(_TT("obj2")));	// オブジェクトなし
 
 		ASSERT_EQ(2, RefObjectHelper::getReferenceCount(obj1));
 		ASSERT_EQ(1, RefObjectHelper::getReferenceCount(obj2));	// ローカル変数からの参照のみ
@@ -119,10 +119,10 @@ TEST_F(Test_Base_ObjectCache, MemoryCounting)
 	detail::ObjectCache<String, TestObj> cache1;
 	cache1.init(0, 1500);
 
-	auto obj1 = makeRef<TestObj>(u"obj1");
-	auto obj2 = makeRef<TestObj>(u"obj2");
-	auto obj3 = makeRef<TestObj>(u"obj3");
-	auto obj4 = makeRef<TestObj>(u"obj4");
+	auto obj1 = makeRef<TestObj>(_TT("obj1"));
+	auto obj2 = makeRef<TestObj>(_TT("obj2"));
+	auto obj3 = makeRef<TestObj>(_TT("obj3"));
+	auto obj4 = makeRef<TestObj>(_TT("obj4"));
 	cache1.registerObject(obj1->name, obj1, 500);
 	cache1.registerObject(obj2->name, obj2, 1000);
 	cache1.registerObject(obj3->name, obj3, 1500);
@@ -130,10 +130,10 @@ TEST_F(Test_Base_ObjectCache, MemoryCounting)
 
 	// release していないので、すべてのオブジェクトは aliveList に入っている
 	{
-		ASSERT_EQ(obj1, cache1.findObject(u"obj1"));
-		ASSERT_EQ(obj2, cache1.findObject(u"obj2"));
-		ASSERT_EQ(obj3, cache1.findObject(u"obj3"));
-		ASSERT_EQ(obj4, cache1.findObject(u"obj4"));
+		ASSERT_EQ(obj1, cache1.findObject(_TT("obj1")));
+		ASSERT_EQ(obj2, cache1.findObject(_TT("obj2")));
+		ASSERT_EQ(obj3, cache1.findObject(_TT("obj3")));
+		ASSERT_EQ(obj4, cache1.findObject(_TT("obj4")));
 	}
 
 	// 2個 release。キャッシュいっぱい。ちょうど freeList に入る
@@ -143,29 +143,29 @@ TEST_F(Test_Base_ObjectCache, MemoryCounting)
 
 		auto aliveObjects = cache1.aliveObjects();
 		ASSERT_EQ(2, aliveObjects.size());
-		ASSERT_EQ(u"obj3", aliveObjects[0]->name);
-		ASSERT_EQ(u"obj4", aliveObjects[1]->name);
+		ASSERT_EQ(_TT("obj3"), aliveObjects[0]->name);
+		ASSERT_EQ(_TT("obj4"), aliveObjects[1]->name);
 
 		auto freeObjects = cache1.freeObjects();
 		ASSERT_EQ(2, freeObjects.size());
-		ASSERT_EQ(u"obj1", freeObjects[0]->name);
-		ASSERT_EQ(u"obj2", freeObjects[1]->name);
+		ASSERT_EQ(_TT("obj1"), freeObjects[0]->name);
+		ASSERT_EQ(_TT("obj2"), freeObjects[1]->name);
 	}
 
 	// free object を find。freeList から aliveList に移る。
 	{
-		TestObj* obj = cache1.findObject(u"obj1");
-		ASSERT_EQ(u"obj1", obj->name);
+		TestObj* obj = cache1.findObject(_TT("obj1"));
+		ASSERT_EQ(_TT("obj1"), obj->name);
 
 		auto aliveObjects = cache1.aliveObjects();
 		ASSERT_EQ(3, aliveObjects.size());
-		ASSERT_EQ(u"obj3", aliveObjects[0]->name);
-		ASSERT_EQ(u"obj4", aliveObjects[1]->name);
-		ASSERT_EQ(u"obj1", aliveObjects[2]->name);
+		ASSERT_EQ(_TT("obj3"), aliveObjects[0]->name);
+		ASSERT_EQ(_TT("obj4"), aliveObjects[1]->name);
+		ASSERT_EQ(_TT("obj1"), aliveObjects[2]->name);
 
 		auto freeObjects = cache1.freeObjects();
 		ASSERT_EQ(1, freeObjects.size());
-		ASSERT_EQ(u"obj2", freeObjects[0]->name);
+		ASSERT_EQ(_TT("obj2"), freeObjects[0]->name);
 	}
 
 	// obj1 を release。キャッシュいっぱい。ちょうど freeList に入る
@@ -174,13 +174,13 @@ TEST_F(Test_Base_ObjectCache, MemoryCounting)
 
 		auto aliveObjects = cache1.aliveObjects();
 		ASSERT_EQ(2, aliveObjects.size());
-		ASSERT_EQ(u"obj3", aliveObjects[0]->name);
-		ASSERT_EQ(u"obj4", aliveObjects[1]->name);
+		ASSERT_EQ(_TT("obj3"), aliveObjects[0]->name);
+		ASSERT_EQ(_TT("obj4"), aliveObjects[1]->name);
 
 		auto freeObjects = cache1.freeObjects();
 		ASSERT_EQ(2, freeObjects.size());
-		ASSERT_EQ(u"obj2", freeObjects[0]->name);
-		ASSERT_EQ(u"obj1", freeObjects[1]->name);
+		ASSERT_EQ(_TT("obj2"), freeObjects[0]->name);
+		ASSERT_EQ(_TT("obj1"), freeObjects[1]->name);
 	}
 
 	// obj4 を release。そもそもキャッシュに入らないので即削除。
@@ -189,12 +189,12 @@ TEST_F(Test_Base_ObjectCache, MemoryCounting)
 
 		auto aliveObjects = cache1.aliveObjects();
 		ASSERT_EQ(1, aliveObjects.size());
-		ASSERT_EQ(u"obj3", aliveObjects[0]->name);
+		ASSERT_EQ(_TT("obj3"), aliveObjects[0]->name);
 
 		auto freeObjects = cache1.freeObjects();
 		ASSERT_EQ(2, freeObjects.size());
-		ASSERT_EQ(u"obj2", freeObjects[0]->name);
-		ASSERT_EQ(u"obj1", freeObjects[1]->name);
+		ASSERT_EQ(_TT("obj2"), freeObjects[0]->name);
+		ASSERT_EQ(_TT("obj1"), freeObjects[1]->name);
 	}
 
 	// obj3 を release。キャッシュいっぱいなので、obj1 と obj2 は削除。
@@ -206,7 +206,7 @@ TEST_F(Test_Base_ObjectCache, MemoryCounting)
 
 		auto freeObjects = cache1.freeObjects();
 		ASSERT_EQ(1, freeObjects.size());
-		ASSERT_EQ(u"obj3", freeObjects[0]->name);
+		ASSERT_EQ(_TT("obj3"), freeObjects[0]->name);
 
 		ASSERT_EQ(1, RefObjectHelper::getReferenceCount(obj1));
 		ASSERT_EQ(1, RefObjectHelper::getReferenceCount(obj2));
@@ -237,15 +237,15 @@ TEST_F(Test_Base_ObjectCache, GCObjects)
 	detail::ObjectCache<String, TestObj> cache1;
 	cache1.init(2);
 
-	auto obj1 = makeRef<TestObj>(u"obj1");
-	auto obj2 = makeRef<TestObj>(u"obj2");
+	auto obj1 = makeRef<TestObj>(_TT("obj1"));
+	auto obj2 = makeRef<TestObj>(_TT("obj2"));
 	cache1.registerObject(obj1->name, obj1);
 	cache1.registerObject(obj2->name, obj2);
 
 	// release していないので、すべてのオブジェクトは aliveList に入っている
 	{
-		ASSERT_EQ(obj1, cache1.findObject(u"obj1"));
-		ASSERT_EQ(obj2, cache1.findObject(u"obj2"));
+		ASSERT_EQ(obj1, cache1.findObject(_TT("obj1")));
+		ASSERT_EQ(obj2, cache1.findObject(_TT("obj2")));
 	}
 
 	// obj1 の参照を切って GC. obj1 は freeList に入っている
@@ -255,11 +255,11 @@ TEST_F(Test_Base_ObjectCache, GCObjects)
 
 		auto aliveObjects = cache1.aliveObjects();
 		ASSERT_EQ(1, aliveObjects.size());
-		ASSERT_EQ(u"obj2", aliveObjects[0]->name);
+		ASSERT_EQ(_TT("obj2"), aliveObjects[0]->name);
 
 		auto freeObjects = cache1.freeObjects();
 		ASSERT_EQ(1, freeObjects.size());
-		ASSERT_EQ(u"obj1", freeObjects[0]->name);
+		ASSERT_EQ(_TT("obj1"), freeObjects[0]->name);
 	}
 }
 
@@ -275,15 +275,15 @@ TEST_F(Test_Base_ObjectCache, GCObjects_Ones)
 	detail::ObjectCache<String, TestObj> cache1;
 	cache1.init(2);
 
-	auto obj1 = makeRef<TestObj>(u"obj1");
-	auto obj2 = makeRef<TestObj>(u"obj2");
+	auto obj1 = makeRef<TestObj>(_TT("obj1"));
+	auto obj2 = makeRef<TestObj>(_TT("obj2"));
 	cache1.registerObject(obj1->name, obj1);
 	cache1.registerObject(obj2->name, obj2);
 
 	// release していないので、すべてのオブジェクトは aliveList に入っている
 	{
-		ASSERT_EQ(obj1, cache1.findObject(u"obj1"));
-		ASSERT_EQ(obj2, cache1.findObject(u"obj2"));
+		ASSERT_EQ(obj1, cache1.findObject(_TT("obj1")));
+		ASSERT_EQ(obj2, cache1.findObject(_TT("obj2")));
 	}
 
 	// 両方の参照を切って GC. ひとつずつ回収される。
@@ -294,11 +294,11 @@ TEST_F(Test_Base_ObjectCache, GCObjects_Ones)
 
 		auto aliveObjects = cache1.aliveObjects();
 		ASSERT_EQ(1, aliveObjects.size());
-		ASSERT_EQ(u"obj2", aliveObjects[0]->name);	// obj2 はまだ生きてる
+		ASSERT_EQ(_TT("obj2"), aliveObjects[0]->name);	// obj2 はまだ生きてる
 
 		auto freeObjects = cache1.freeObjects();
 		ASSERT_EQ(1, freeObjects.size());
-		ASSERT_EQ(u"obj1", freeObjects[0]->name);
+		ASSERT_EQ(_TT("obj1"), freeObjects[0]->name);
 
 		cache1.collectUnreferenceObjects(false);
 
@@ -307,8 +307,8 @@ TEST_F(Test_Base_ObjectCache, GCObjects_Ones)
 
 		freeObjects = cache1.freeObjects();
 		ASSERT_EQ(2, freeObjects.size());
-		ASSERT_EQ(u"obj1", freeObjects[0]->name);
-		ASSERT_EQ(u"obj2", freeObjects[1]->name);
+		ASSERT_EQ(_TT("obj1"), freeObjects[0]->name);
+		ASSERT_EQ(_TT("obj2"), freeObjects[1]->name);
 	}
 }
 

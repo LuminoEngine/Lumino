@@ -30,7 +30,7 @@ void AssetBrowserTreeView::init(AssetBrowserNavigatorExtension* owner)
 
 
     m_model = ln::makeObject<AssetBrowserTreeViewModel>();
-    //m_model->setExcludeFilters(ln::makeList<ln::String>({u"*.lnasset"}));
+    //m_model->setExcludeFilters(ln::makeList<ln::String>({_TT("*.lnasset"}));
     setViewModel(m_model);
 }
 
@@ -112,7 +112,7 @@ void AssetBrowserNavigatorExtension::init()
 {
     Object::init();
     m_navbarItemContent = ln::makeObject<ln::NavigationMenuItem>();
-    m_navbarItemContent->setIconName(u"file");
+    m_navbarItemContent->setIconName(_TT("file");
 
     m_splitter = ln::makeObject<ln::UISplitter>();
     m_splitter->setOrientation(ln::UILayoutOrientation::Vertical);
@@ -129,7 +129,7 @@ void AssetBrowserNavigatorExtension::init()
     m_splitter->addElement(m_layout2);
 
     m_importButton = ln::makeObject<ln::UIButton>();
-    m_importButton->setText(u"Import");
+    m_importButton->setText(_TT("Import");
     m_importButton->connectOnClicked(ln::bind(this, &AssetBrowserNavigatorExtension::onImport));
     m_layout2->addChild(m_importButton);
 
@@ -185,7 +185,7 @@ void AssetBrowserNavigatorExtension::onImport()
 //ln::UIElement* AssetBrowserNavigator::createNavigationBarItem()
 //{
 //    m_navbarItem = ln::makeObject<ln::UIIcon>();
-//    m_navbarItem->setIconName(u"file");
+//    m_navbarItem->setIconName(_TT("file");
 //    return m_navbarItem;
 //}
 //
@@ -229,7 +229,7 @@ bool AssetBrowserPane::init(lna::EditorContext* context)
     treeview1->setGenerateTreeItemHandler([documentManager, model1](ln::UITreeItem2* item) {
 
         // TODO: とりいそぎ LevelEditor に追加したい臨時ボタン
-        auto button = ln::UIButton::create(u">");
+        auto button = ln::UIButton::create(_TT(">"));
         button->setAlignments(ln::UIHAlignment::Right, ln::UIVAlignment::Center);
         button->setMargin(1);
         item->addChild(button);
@@ -256,7 +256,7 @@ bool AssetBrowserNavigator::init(lna::EditorContext* context)
     if (!Navigator::init()) return false;
 
     m_navigationItem = ln::makeObject<ln::UIIcon>();
-    m_navigationItem->setIconName(u"file");
+    m_navigationItem->setIconName(_TT("file"));
     m_navigationItem->setHAlignment(ln::UIHAlignment::Center);
     m_navigationItem->setVAlignment(ln::UIVAlignment::Center);
     m_navigationItem->setFontSize(24);

@@ -59,7 +59,7 @@ ln::Result EditorApplication::init()
     lna::AppData::current()->load();
 
 	ln::EngineSettings::setMainWindowSize(1600, 800);
-    ln::EngineSettings::setUITheme(u"Chocotelier");
+    ln::EngineSettings::setUITheme(_TT("Chocotelier"));
 	//ln::EngineSettings::setMainBackBufferSize(1600, 800);
     //ln::EngineSettings::setAssetStorageAccessPriority(ln::AssetStorageAccessPriority::AllowLocalDirectory);
     ln::EngineSettings::setGraphicsAPI(ln::GraphicsAPI::Vulkan);
@@ -69,7 +69,7 @@ ln::Result EditorApplication::init()
     ln::detail::EngineDomain::sceneManager()->m_editorMode = true;
 
 	auto root = ln::detail::EngineManager::findRepositoryRootForTesting();
-    ln::Font::registerFontFromFile(ln::Path(root, u"tools/mplus-font/mplus-1c-regular.ttf"));
+    ln::Font::registerFontFromFile(ln::Path(root, _TT("tools/mplus-font/mplus-1c-regular.ttf")));
 
     m_workspace = ln::makeObject<lna::Workspace>();
     onInit();
@@ -79,7 +79,7 @@ ln::Result EditorApplication::init()
     m_editorContext->m_mainWindow = mainWindow();
 
     // TODO: test
-    //openProject(u"C:/Proj/LN/PrivateProjects/HC4/HC4.lnproj");
+    //openProject(_TT("C:/Proj/LN/PrivateProjects/HC4/HC4.lnproj");
 
     return true;
 }
@@ -157,15 +157,15 @@ void EditorApplication::onInit()
 	setupMainWindow(ln::makeObject<MainWindow>(), false);
 
     auto sheet = ln::makeObject<ln::UIStyleSheet>();
-	if (auto s = sheet->obtainStyle(u"NavigationBarItem")) {
+	if (auto s = sheet->obtainStyle(_TT("NavigationBarItem"))) {
 		s->borderThickness = ln::Thickness(4, 0, 0, 0);
 		s->borderInset = true;
 	}
-    if (auto s = sheet->obtainStyle(u"NavigationBarItem:Unselected")) {
+    if (auto s = sheet->obtainStyle(_TT("NavigationBarItem:Unselected"))) {
         s->setBorderColor(ln::Color::Transparency);
         s->textColor = ln::UIColors::get(ln::UIColorHues::Grey, 4);
     }
-    if (auto s = sheet->obtainStyle(u"NavigationBarItem:Selected")) {
+    if (auto s = sheet->obtainStyle(_TT("NavigationBarItem:Selected"))) {
         s->setBorderColor(ln::UIColors::get(ln::UIColorHues::LightGreen));
         s->textColor = ln::Color::White;
     }
@@ -214,7 +214,7 @@ void EditorApplication::openProject(const ln::Path& filePath)
     ////m_contentsViewManager->addContentsViewProvider(m_spritesetContentsViewProvider);
 
     //m_audioContentsViewProvider->view()->setRootDir(
-    //    LnToQt(ln::Path(m_workspace->project()->assetsDir(), u"Audio")));
+    //    LnToQt(ln::Path(m_workspace->project()->assetsDir(), _TT("Audio")));
 }
 
 bool EditorApplication::closeProject()
@@ -246,7 +246,7 @@ void EditorApplication::handleNewProject(ln::UICommandEventArgs* e)
 
 #if 0
 	auto popupContent = ln::makeObject<ln::UIText>();
-	popupContent->setText(u"POP");
+	popupContent->setText(_TT("POP");
 
     m_dialog = ln::makeObject<ln::UIDialog>();
 	m_dialog->addElement(popupContent);

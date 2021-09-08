@@ -12,7 +12,7 @@ namespace detail {
 
 bool EngineSettings::tryLoad()
 {
-    if (FileSystem::existsFile(u"lumino.ini")) {
+    if (FileSystem::existsFile(_TT("lumino.ini"))) {
         const auto data = toml::parse("lumino.ini");
         const auto asset_directory = toml::find<std::string>(data, "assetDirectory");
         assetDirectories.add(String::fromStdString(asset_directory));

@@ -20,14 +20,14 @@ public:
 
     App_Example_MessageWindow()
     {
-        ln::EngineSettings::setFontFile("C:/Proj/LN/PrivateProjects/HC4/assets/Font/mplus-1c-regular.ttf");
+        ln::EngineSettings::setFontFile(_TT("C:/Proj/LN/PrivateProjects/HC4/assets/Font/mplus-1c-regular.ttf"));
     }
 
     virtual void onInit() override
     {
         Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
-        auto windowSkin = Texture2D::load(u"Window1");
+        auto windowSkin = Texture2D::load(_TT("Window1"));
 
         //m_window1 = UIMessageTextWindow::create();
         //m_window1->setHAlignment(UIHAlignment::Left);
@@ -42,11 +42,11 @@ public:
         //m_window1->setBackgroundColor(Color::Transparency);
         //m_window1->setBorderThickness(0);
         ////Engine::mainUIView()->addElement(window1);
-        //m_window1->setText(u"Hello, Lumino!");
+        //m_window1->setText(_TT("Hello, Lumino!"));
 
         //m_message1 = UIMessageTextArea::create();
         //m_message1->setMargin(16);
-        //m_message1->setText(u"Hello, Lumino!");
+        //m_message1->setText(_TT("Hello, Lumino!"));
         //window1->addElement(m_message1);
 
         auto window2 = UIWindow::create();
@@ -67,16 +67,16 @@ public:
         //m_message2->setHeight(50);
         m_message2->setBackgroundColor(Color::DarkCyan);
         m_message2->setText(
-            u"window2->setPosition(10, 10);\n"
-            u"window2->setHAlignment(UIHAlignment::Left);\n"
-            u"window2->setVAlignment(UIVAlignment::Top);\n"
-            u"window2->setWidth(200);\n"
-            u"window2->setHeight(100);\n"
-            u"window2->setBackgroundImage(windowSkin);\n"
-            u"window2->setBackgroundImageRect(Rect(0, 0, 48, 48));\n"
-            u"window2->setBackgroundImageBorder(Thickness(8));\n"
-            u"window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);");
-        //m_message2->setText(u"日本語表示\n\nbbbbb\nccccc");
+            _TT("window2->setPosition(10, 10);\n")
+            _TT("window2->setHAlignment(UIHAlignment::Left);\n")
+            _TT("window2->setVAlignment(UIVAlignment::Top);\n")
+            _TT("window2->setWidth(200);\n")
+            _TT("window2->setHeight(100);\n")
+            _TT("window2->setBackgroundImage(windowSkin);\n")
+            _TT("window2->setBackgroundImageRect(Rect(0, 0, 48, 48));\n")
+            _TT("window2->setBackgroundImageBorder(Thickness(8));\n")
+            _TT("window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);"));
+        //m_message2->setText(_TT("日本語表示\n\nbbbbb\nccccc");
         //m_message2->setViewportLineCount(2);
         //m_message2->setClipToBounds(true);
         window2->addChild(m_message2);
@@ -89,22 +89,22 @@ public:
             switch (m_step)
             {
             case 0:
-                m_window1->setText(u"All in the golden afternoon");
+                m_window1->setText(_TT("All in the golden afternoon"));
                 break;
             case 1:
-                m_window1->setText(u"Full leisurely we glide;");
+                m_window1->setText(_TT("Full leisurely we glide;"));
                 break;
             case 2:
-                m_window1->setText(u"For both our oars, with little skill,");
+                m_window1->setText(_TT("For both our oars, with little skill,"));
                 break;
             case 3:
-                m_window1->setText(u"By little arms are plied,");
+                m_window1->setText(_TT("By little arms are plied,"));
                 break;
             case 4:
-                m_window1->setText(u"While little hands make vain pretence");
+                m_window1->setText(_TT("While little hands make vain pretence"));
                 break;
             case 5:
-                m_window1->setText(u"Our wanderings to guide.");
+                m_window1->setText(_TT("Our wanderings to guide."));
                 break;
             default:
                 break;

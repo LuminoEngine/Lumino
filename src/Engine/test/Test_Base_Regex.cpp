@@ -6,17 +6,17 @@ TEST_F(Test_Base_Regex, Integrate)
 {
 	// * [ ] full match
 	{
-		ASSERT_EQ(true, Regex::match(u"123456", u"[0-9]+"));
-		ASSERT_EQ(false, Regex::match(u"123456xxx", u"[0-9]+"));
-		ASSERT_EQ(false, Regex::match(u"xxx123456", u"[0-9]+"));
-		ASSERT_EQ(false, Regex::match(u"xxx123456xxxx", u"[0-9]+"));
+		ASSERT_EQ(true, Regex::match(_TT("123456"), _TT("[0-9]+")));
+		ASSERT_EQ(false, Regex::match(_TT("123456xxx"), _TT("[0-9]+")));
+		ASSERT_EQ(false, Regex::match(_TT("xxx123456"), _TT("[0-9]+")));
+		ASSERT_EQ(false, Regex::match(_TT("xxx123456xxxx"), _TT("[0-9]+")));
 	}
 	// * [ ] partial match
 	{
-		ASSERT_EQ(true, Regex::search(u"123456", u"[0-9]+"));
-		ASSERT_EQ(true, Regex::search(u"123456xxx", u"[0-9]+"));
-		ASSERT_EQ(true, Regex::search(u"xxx123456", u"[0-9]+"));
-		ASSERT_EQ(true, Regex::search(u"xxx123456xxxx", u"[0-9]+"));
+		ASSERT_EQ(true, Regex::search(_TT("123456"), _TT("[0-9]+")));
+		ASSERT_EQ(true, Regex::search(_TT("123456xxx"), _TT("[0-9]+")));
+		ASSERT_EQ(true, Regex::search(_TT("xxx123456"), _TT("[0-9]+")));
+		ASSERT_EQ(true, Regex::search(_TT("xxx123456xxxx"), _TT("[0-9]+")));
 	}
 	// * [ ] group
 	{

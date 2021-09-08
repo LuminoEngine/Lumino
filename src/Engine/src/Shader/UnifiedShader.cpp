@@ -48,7 +48,7 @@ static void readOptionalBool(BinaryReader* r, Optional<bool>* outValue)
 //=============================================================================
 // UnifiedShader
 
-const String UnifiedShader::FileExt = u"lcfx";
+const String UnifiedShader::FileExt = _TT("lcfx");
 
 UnifiedShader::UnifiedShader(DiagnosticsManager* diag)
     : m_diag(diag)
@@ -621,7 +621,7 @@ void UnifiedShader::saveCodes(const StringRef& perfix) const
 				auto& container = m_codeContainers[idToIndex(containerId)];
 				for (auto& code : container.codes) {
 					auto file = String::format(
-						u"{0}.{1}.{2}.{3}.{4}-{5}-{6}",
+						_TT("{0}.{1}.{2}.{3}.{4}-{5}-{6}"),
 						perfix, String::fromStdString(techniqueName(techId)), String::fromStdString(passName(passId)), String::fromStdString(container.entryPointName),
 						String::fromStdString(code.triple.target), code.triple.version, String::fromStdString(code.triple.option));
 					FileSystem::writeAllBytes(file, code.code.data(), code.code.size());
@@ -632,7 +632,7 @@ void UnifiedShader::saveCodes(const StringRef& perfix) const
 
     //for (auto& container : m_codeContainers) {
     //    for (auto& code : container.codes) {
-    //        auto file = String::format(u"{0}-{1}-{2}-{3}-{4}", perfix, String::fromStdString(container.entryPointName), String::fromStdString(code.triple.target), code.triple.version, String::fromStdString(code.triple.option));
+    //        auto file = String::format(_TT("{0}-{1}-{2}-{3}-{4}", perfix, String::fromStdString(container.entryPointName), String::fromStdString(code.triple.target), code.triple.version, String::fromStdString(code.triple.option));
     //        FileSystem::writeAllBytes(file, code.code.data(), code.code.size());
     //    }
     //}
@@ -708,7 +708,7 @@ bool UnifiedShader::checkSignature(BinaryReader* r, const char* sig, size_t len,
     char buf[8];
     size_t size = r->read(buf, len);
     if (size != len || strncmp(buf, sig, len) != 0) {
-        diag->reportError(u"Invalid code container signature. (" + String::fromCString(sig) + u")");
+        diag->reportError(_TT("Invalid code container signature. (") + String::fromCString(sig) + _TT(")"));
         return false;
     }
     return true;

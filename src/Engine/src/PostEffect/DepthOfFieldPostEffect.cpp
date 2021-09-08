@@ -70,11 +70,11 @@ void DepthOfFieldPostEffectCore::prepare(RenderView* renderView, CommandList* co
     }
 
     Texture* viewDepthMap = renderView->gbuffer(GBuffer::ViewDepthMap);
-    m_compositeMaterial->setTexture(u"_depthTexture", viewDepthMap);
-    m_compositeMaterial->setTexture(u"_dofTexture0", m_mipTargets[0]);
-    m_compositeMaterial->setTexture(u"_dofTexture1", m_mipTargets[1]);
-    m_compositeMaterial->setTexture(u"_dofTexture2", m_mipTargets[2]);
-    m_compositeMaterial->setTexture(u"_dofTexture3", m_mipTargets[3]);
+    m_compositeMaterial->setTexture(_TT("_depthTexture"), viewDepthMap);
+    m_compositeMaterial->setTexture(_TT("_dofTexture0"), m_mipTargets[0]);
+    m_compositeMaterial->setTexture(_TT("_dofTexture1"), m_mipTargets[1]);
+    m_compositeMaterial->setTexture(_TT("_dofTexture2"), m_mipTargets[2]);
+    m_compositeMaterial->setTexture(_TT("_dofTexture3"), m_mipTargets[3]);
 }
 
 void DepthOfFieldPostEffectCore::resetResources(int resx, int resy)
@@ -109,11 +109,11 @@ bool DepthOfFieldPostEffectInstance::init(DepthOfFieldPostEffect* owner)
 {
     if (!PostEffectInstance::init()) return false;
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/Copy.fx");
+    auto shader1 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/Copy.fx"));
     m_copyMaterial = makeObject<Material>();
     m_copyMaterial->setShader(shader1);
 
-    auto shader2 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/DepthOfField.fx");
+    auto shader2 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/DepthOfField.fx"));
     m_dofMaterial = makeObject<Material>();
     m_dofMaterial->setShader(shader2);
 
@@ -147,8 +147,8 @@ bool DepthOfFieldPostEffectInstance::onRender(RenderView* renderView, CommandLis
     viewDepthMap->setSamplerState(m_samplerState);
 
     m_dofMaterial->setMainTexture(source);
-    m_dofMaterial->setTexture(u"_depthTex", viewDepthMap);
-    m_dofMaterial->setTexture(u"_dofTex", dofTexture);
+    m_dofMaterial->setTexture(_TT("_depthTex"), viewDepthMap);
+    m_dofMaterial->setTexture(_TT("_dofTex"), dofTexture);
     context->blit(m_dofMaterial, destination);
 
     RenderTargetTexture::releaseTemporary(dofTexture);

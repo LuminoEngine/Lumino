@@ -92,17 +92,17 @@ bool BloomPostEffectCore::init(Material* compositeMaterial)
         auto materialH = makeObject<Material>();
         materialH->setShader(separableBlurShader);
         materialH->setBlendMode(BlendMode::Normal);
-        materialH->setInt(u"KERNEL_RADIUS", kernelSizeArray[i]);
-        materialH->setFloat(u"SIGMA", (float)kernelSizeArray[i]);
-        materialH->setVector(u"_Direction", Vector4(BlurDirectionX, 0.0f, 0.0f));
+        materialH->setInt(_TT("KERNEL_RADIUS"), kernelSizeArray[i]);
+        materialH->setFloat(_TT("SIGMA"), (float)kernelSizeArray[i]);
+        materialH->setVector(_TT("_Direction"), Vector4(BlurDirectionX, 0.0f, 0.0f));
         m_separableBlurMaterialsH.add(materialH);
 
         auto materialV = makeObject<Material>();
         materialV->setShader(separableBlurShader);
         materialV->setBlendMode(BlendMode::Normal);
-        materialV->setInt(u"KERNEL_RADIUS", kernelSizeArray[i]);
-        materialV->setFloat(u"SIGMA", (float)kernelSizeArray[i]);
-        materialV->setVector(u"_Direction", Vector4(BlurDirectionY, 0.0f, 0.0f));
+        materialV->setInt(_TT("KERNEL_RADIUS"), kernelSizeArray[i]);
+        materialV->setFloat(_TT("SIGMA"), (float)kernelSizeArray[i]);
+        materialV->setVector(_TT("_Direction"), Vector4(BlurDirectionY, 0.0f, 0.0f));
         m_separableBlurMaterialsV.add(materialV);
     }
 
@@ -130,16 +130,16 @@ void BloomPostEffectCore::prepare(CommandList* context, RenderTargetTexture* sou
     }
 
     for (int i = 0; i < MIPS; i++) {
-        m_separableBlurMaterialsH[i]->setVector(u"_TexSize", Vector4(resx, resy, 0.0f, 0.0f));
-        m_separableBlurMaterialsV[i]->setVector(u"_TexSize", Vector4(resx, resy, 0.0f, 0.0f));
+        m_separableBlurMaterialsH[i]->setVector(_TT("_TexSize"), Vector4(resx, resy, 0.0f, 0.0f));
+        m_separableBlurMaterialsV[i]->setVector(_TT("_TexSize"), Vector4(resx, resy, 0.0f, 0.0f));
     }
 
     // Extract Bright Areas
     {
-        m_materialHighPassFilter->setVector(u"_Color", Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-        m_materialHighPassFilter->setFloat(u"_Opacity", 0.0f);
-        m_materialHighPassFilter->setFloat(u"_LuminosityThreshold", m_luminosityThreshold);
-        m_materialHighPassFilter->setFloat(u"_SmoothWidth", 0.01);
+        m_materialHighPassFilter->setVector(_TT("_Color"), Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+        m_materialHighPassFilter->setFloat(_TT("_Opacity"), 0.0f);
+        m_materialHighPassFilter->setFloat(_TT("_LuminosityThreshold"), m_luminosityThreshold);
+        m_materialHighPassFilter->setFloat(_TT("_SmoothWidth"), 0.01);
 
         m_materialHighPassFilter->setMainTexture(source);
         context->blit(m_materialHighPassFilter, m_renderTargetBright);
@@ -160,7 +160,7 @@ void BloomPostEffectCore::prepare(CommandList* context, RenderTargetTexture* sou
     // Composite params
     m_bloomCompositeParams._BloomStrength = m_bloomStrength;
     m_bloomCompositeParams._BloomRadius = m_bloomRadius;
-    m_compositeMaterial->setBufferData(u"BloomCompositeParams", &m_bloomCompositeParams, sizeof(m_bloomCompositeParams));
+    m_compositeMaterial->setBufferData(_TT("BloomCompositeParams"), &m_bloomCompositeParams, sizeof(m_bloomCompositeParams));
 }
 
 void BloomPostEffectCore::render(CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
@@ -202,11 +202,11 @@ void BloomPostEffectCore::resetResources(int resx, int resy)
     m_bloomCompositeParams._BloomTintColorsAndFactors[4] = Vector4(1.0, 1.0, 1.0, 0.2);
 
     // Composite material
-    m_compositeMaterial->setTexture(u"_BlurTexture1", m_renderTargetsVertical[0]);
-    m_compositeMaterial->setTexture(u"_BlurTexture2", m_renderTargetsVertical[1]);
-    m_compositeMaterial->setTexture(u"_BlurTexture3", m_renderTargetsVertical[2]);
-    m_compositeMaterial->setTexture(u"_BlurTexture4", m_renderTargetsVertical[3]);
-    m_compositeMaterial->setTexture(u"_BlurTexture5", m_renderTargetsVertical[4]);
+    m_compositeMaterial->setTexture(_TT("_BlurTexture1"), m_renderTargetsVertical[0]);
+    m_compositeMaterial->setTexture(_TT("_BlurTexture2"), m_renderTargetsVertical[1]);
+    m_compositeMaterial->setTexture(_TT("_BlurTexture3"), m_renderTargetsVertical[2]);
+    m_compositeMaterial->setTexture(_TT("_BlurTexture4"), m_renderTargetsVertical[3]);
+    m_compositeMaterial->setTexture(_TT("_BlurTexture5"), m_renderTargetsVertical[4]);
 
     m_viewWidth = resx;
     m_viewHeight = resy;

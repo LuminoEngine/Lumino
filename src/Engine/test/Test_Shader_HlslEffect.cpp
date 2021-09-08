@@ -46,7 +46,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
 		auto shd = ctx->allocateShaderDescriptor(shaderPass1);
-		shd->setVector(descriptorLayout1->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+		shd->setVector(descriptorLayout1->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vd1);
@@ -70,7 +70,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
 		auto shd = ctx->allocateShaderDescriptor(shaderPass2);
-		shd->setVector(descriptorLayout2->findUniformMemberIndex(u"g_color"), Vector4(0, 1, 0, 1));
+		shd->setVector(descriptorLayout2->findUniformMemberIndex(_TT("g_color")), Vector4(0, 1, 0, 1));
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vd1);
@@ -116,7 +116,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 	//* [ ] #if
 	{
 		auto props = makeObject<ShaderCompilationProperties>();
-		props->addDefinition(u"GREEN=1");
+		props->addDefinition(_TT("GREEN=1"));
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest2.fx"), props);
 		auto shaderPass2 = shader2->techniques()[0]->passes()[0];
 
@@ -138,7 +138,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 	//* [ ] #ifdef
 	{
 		auto props = makeObject<ShaderCompilationProperties>();
-		props->addDefinition(u"BLUE");
+		props->addDefinition(_TT("BLUE"));
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest2.fx"), props);
 		auto shaderPass2 = shader2->techniques()[0]->passes()[0];
 
@@ -169,7 +169,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
 		auto shd = ctx->allocateShaderDescriptor(shaderPass2);
-		shd->setVector(descriptorLayout2->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+		shd->setVector(descriptorLayout2->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexBuffer(0, vb1);

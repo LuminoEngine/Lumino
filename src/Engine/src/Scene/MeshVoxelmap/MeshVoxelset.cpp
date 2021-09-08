@@ -37,7 +37,7 @@ void MeshAutoVoxelset::setMaterial(Material* value)
 
 void MeshAutoVoxelset::buildQubeFloorAndWall()
 {
-	//auto tex = Texture2D::load(u"autotile1");
+	//auto tex = Texture2D::load(_TT("autotile1");
 	//detail::MeshAutoTilesetUVMapper uvMapper(
 	//	Size(tex->width(), tex->height()), Rect(0, 0, tex->width(), tex->height()), detail::MeshAutoTilesetUVMapper::Format::XP);
 
@@ -634,10 +634,10 @@ void MeshVoxelset::init()
 
 	//}
 
-	auto tex = Texture2D::load(u"autotile4");
+	auto tex = Texture2D::load(_TT("autotile4"));
 	m_material = Material::create(tex);
 	m_material->setShadingModel(ShadingModel::Unlit);
-	m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+	m_material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx")));
 
 	//m_autotileSet[0] = makeObject<MeshAutoVoxelset>();
 	//m_autotileSet[0]->setMaterial(m_material);
@@ -645,10 +645,10 @@ void MeshVoxelset::init()
 
 	{
 
-		auto tex = Texture2D::load(u"D:/Materials/Tilemap/ねくらファンタジーマップチップ素材集/マップ素材/オートタイル規格2/b_06海岸_at01.png");
+		auto tex = Texture2D::load(_TT("D:/Materials/Tilemap/ねくらファンタジーマップチップ素材集/マップ素材/オートタイル規格2/b_06海岸_at01.png"));
 		auto material = Material::create(tex);
 		material->setShadingModel(ShadingModel::Unlit);
-		material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+		material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx")));
 
 		m_autotileSet[1] = makeObject<MeshAutoVoxelset>();
 		m_autotileSet[1]->setMaterial(material);
@@ -659,10 +659,10 @@ void MeshVoxelset::init()
 	//{
 
 
-	//	auto tex = Texture2D::load(u"D:/Materials/Tilemap/ねくらファンタジーマップチップ素材集/マップ素材/オートタイル規格2/b_06海岸_at02.png");
+	//	auto tex = Texture2D::load(_TT("D:/Materials/Tilemap/ねくらファンタジーマップチップ素材集/マップ素材/オートタイル規格2/b_06海岸_at02.png");
 	//	auto material = Material::create(tex);
 	//	material->shadingModel = ShadingModel::Unlit;
-	//	material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+	//	material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
 	//	m_autotileSet[2] = makeObject<MeshAutoVoxelset>();
 	//	m_autotileSet[2]->setMaterial(material);

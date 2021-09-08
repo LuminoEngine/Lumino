@@ -22,7 +22,7 @@ class UIPropertyField
 	: public UIControl
 {
 public:
-	virtual const String& elementName() const override { static String name = u"UIPropertyField"; return name; }
+	virtual const String& elementName() const override { static String name = _TT("UIPropertyField"); return name; }
 };
 
 class UISliderField

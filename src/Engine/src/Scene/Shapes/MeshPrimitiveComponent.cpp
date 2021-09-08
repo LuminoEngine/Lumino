@@ -47,7 +47,7 @@ Material* ShapeComponent::material() const
 void ShapeComponent::serialize(Serializer2& ar)
 {
     VisualComponent::serialize(ar);
-    ar& makeNVP(u"material", m_material);
+    ar& makeNVP(_TT("material"), m_material);
 }
 
 //=============================================================================
@@ -73,8 +73,8 @@ void PlaneMeshComponent::init()
 void PlaneMeshComponent::serialize(Serializer2& ar)
 {
     ShapeComponent::serialize(ar);
-    ar & makeNVP(u"size", m_size);
-    ar & makeNVP(u"uvParUnit", m_uvParUnit);
+    ar & makeNVP(_TT("size"), m_size);
+    ar & makeNVP(_TT("uvParUnit"), m_uvParUnit);
 }
 
 void PlaneMeshComponent::onRender(RenderingContext* context)

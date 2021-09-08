@@ -63,13 +63,13 @@ ln::String DiagnosticsManager::toString() const
 		switch (item->level())
 		{
 		case DiagnosticsLevel::Error:
-			str += u"[Error] " + item->message();
+			str += _TT("[Error] ") + item->message();
 			break;
 		case DiagnosticsLevel::Warning:
-			str += u"[Warning] " + item->message();
+			str += _TT("[Warning] ") + item->message();
 			break;
 		case DiagnosticsLevel::Info:
-			str += u"[Info] " + item->message();
+			str += _TT("[Info] ") + item->message();
 			break;
 		default:
 			LN_UNREACHABLE();

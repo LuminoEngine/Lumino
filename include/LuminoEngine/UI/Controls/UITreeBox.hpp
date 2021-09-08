@@ -25,7 +25,7 @@ public:
 	Ref<EventConnection> connectOnSubmit(Ref<UIGeneralEventHandler> handler);
 
 protected:
-	const String& elementName() const override { static String name = u"UITreeBoxItem"; return name; }
+	const String& elementName() const override { static String name = _TT("UITreeBoxItem"); return name; }
 	Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 	void onRoutedEvent(UIEventArgs* e) override;
@@ -74,7 +74,7 @@ public:
 
 protected:
 	// base interface
-	const String& elementName() const  override { static String name = u"UITreeBox"; return name; }
+	const String& elementName() const  override { static String name = _TT("UITreeBox"); return name; }
 	Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 	//void onRoutedEvent(UIEventArgs* e) override;

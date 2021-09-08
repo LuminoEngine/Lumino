@@ -136,7 +136,7 @@ bool UIListBoxItem::init(UIElement* content)
 void UIListBoxItem::bind(ObservablePropertyBase* prop)
 {
 	auto textblock = makeObject<UIText>();
-	auto viewProp = textblock->getViewProperty(u"text");
+	auto viewProp = textblock->getViewProperty(_TT("text"));
 	viewProp->bind(prop);
 	addChild(textblock);
 }

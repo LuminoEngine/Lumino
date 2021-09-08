@@ -33,7 +33,7 @@ bool VRMImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath
 
 
 		for (const auto& pair : vrmMaterial->floatProperties) {
-			if (pair.first == u"_BlendMode") {
+			if (pair.first == _TT("_BlendMode")) {
 				switch ((int)pair.second)
 				{
 				case 0:// RenderMode::Opaque:
@@ -49,7 +49,7 @@ bool VRMImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath
 					break;
 				}
 			}
-			else if (pair.first == u"_CullMode") {
+			else if (pair.first == _TT("_CullMode")) {
 				switch ((int)pair.second)
 				{
 				case 0:// CullMode::Off:
@@ -63,7 +63,7 @@ bool VRMImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath
 					break;
 				}
 			}
-			else if (pair.first == u"_DebugMode") {
+			else if (pair.first == _TT("_DebugMode")) {
 				switch ((int)pair.second)
 				{
 				case 0:// DebugMode::None:
@@ -77,7 +77,7 @@ bool VRMImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath
 					break;
 				}
 			}
-			else if (pair.first == u"_DstBlend") {
+			else if (pair.first == _TT("_DstBlend")) {
 				switch ((int)pair.second)
 				{
 				case 0:// UnityEngine.Rendering.BlendMode.Zero
@@ -107,7 +107,7 @@ bool VRMImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath
 					break;
 				}
 			}
-			else if (pair.first == u"_SrcBlend") {
+			else if (pair.first == _TT("_SrcBlend")) {
 				switch ((int)pair.second)
 				{
 				case 0:// UnityEngine.Rendering.BlendMode.Zero
@@ -137,7 +137,7 @@ bool VRMImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath
 					break;
 				}
 			}
-			else if (pair.first == u"_OutlineColorMode") {
+			else if (pair.first == _TT("_OutlineColorMode")) {
 				// _OutlineLightingMix に影響する
 				switch ((int)pair.second)
 				{
@@ -150,7 +150,7 @@ bool VRMImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath
 					break;
 				}
 			}
-			else if (pair.first == u"_OutlineCullMode") {
+			else if (pair.first == _TT("_OutlineCullMode")) {
 				// Outline 描画パスでの Cull に影響する
 				switch ((int)pair.second)
 				{
@@ -165,7 +165,7 @@ bool VRMImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath
 					break;
 				}
 			}
-			else if (pair.first == u"_OutlineWidthMode") {
+			else if (pair.first == _TT("_OutlineWidthMode")) {
 				switch ((int)pair.second)
 				{
 				case 0:// OutlineWidthMode::None:
@@ -179,7 +179,7 @@ bool VRMImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath
 					break;
 				}
 			}
-			else if (pair.first == u"_ZWrite") {
+			else if (pair.first == _TT("_ZWrite")) {
 				material->setDepthWriteEnabled(pair.second != 0.0f);
 			}
 			else {
@@ -189,16 +189,16 @@ bool VRMImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath
 
 		for (const auto& pair : vrmMaterial->vectorProperties) {
 			if (
-				pair.first == u"_EmissionMap" ||
-				pair.first == u"_BumpMap" ||
-				pair.first == u"_OutlineWidthTexture" ||
-				pair.first == u"_MainTex" ||
-				pair.first == u"_ReceiveShadowTexture" ||
-				pair.first == u"_ShadeTexture" ||
-				pair.first == u"_ShadingGradeTexture" ||
-				pair.first == u"_SphereAdd" ||
-				pair.first == u"_RimTexture" ||
-				pair.first == u"_UvAnimMaskTexture") {
+				pair.first == _TT("_EmissionMap") ||
+				pair.first == _TT("_BumpMap") ||
+				pair.first == _TT("_OutlineWidthTexture") ||
+				pair.first == _TT("_MainTex") ||
+				pair.first == _TT("_ReceiveShadowTexture") ||
+				pair.first == _TT("_ShadeTexture") ||
+				pair.first == _TT("_ShadingGradeTexture") ||
+				pair.first == _TT("_SphereAdd") ||
+				pair.first == _TT("_RimTexture") ||
+				pair.first == _TT("_UvAnimMaskTexture")) {
 				// これらは MToon が要求しているテクスチャで、Vector プロパティはそれぞれ Unity の
 				// - Material.SetTextureOffset();
 				// - Material.SetTextureScale();
@@ -223,9 +223,9 @@ bool VRMImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath
 
 		for (const auto& pair : vrmMaterial->textureProperties) {
 			if (
-				pair.first == u"_BumpMap" ||
-				pair.first == u"_MetallicGlossMap" ||
-				pair.first == u"_OcclusionMap") {
+				pair.first == _TT("_BumpMap") ||
+				pair.first == _TT("_MetallicGlossMap") ||
+				pair.first == _TT("_OcclusionMap")) {
 				// これらは検索方法が特殊
 				// see: UniVRM/Assets/UniGLTF/Runtime/UniGLTF/IO/TextureLoader/GetTextureParam.cs
 				LN_NOTIMPLEMENTED();
@@ -404,7 +404,7 @@ Ref<VRM_Material> VRMImporter::parseMaterial(const tinygltf::Value& value)
 
 Shader* VRMImporter::getShader(const String& name) const
 {
-	if (name == u"VRM/MToon") {
+	if (name == _TT("VRM/MToon")) {
 		return EngineDomain::renderingManager()->builtinShader(BuiltinShader::MToon);
 	}
 	else {

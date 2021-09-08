@@ -44,17 +44,17 @@ void InternalSkyBox::render(RenderingContext* context, const RenderViewPoint* vi
 	const float sunDistance = 400000;
 
     
-    //m_material->setVector(u"_RayleighColorScale", Vector4(0.1, 0.2, 0.6, 0.0));
-    m_material->setVector(u"_RayleighColorScale", Color(0.5, 0.2, 0.5).toVector4());
-	//m_material->setFloat(u"turbidity", 10.0f);
-    m_material->setFloat(u"turbidity", 1.0f);
-    //m_material->setFloat(u"rayleigh", 2.0f);
-	m_material->setFloat(u"rayleigh", 0.5f);
-	m_material->setFloat(u"mieCoefficient", 0.005f);
-	m_material->setFloat(u"mieDirectionalG", 0.8f);
-	m_material->setFloat(u"luminance", 1.0f);
-	m_material->setVector(u"up", Vector4(0, 1, 0, 0));
-	m_material->setVector(u"sunPosition", Vector4(m_lightDirection * sunDistance, 0));
+    //m_material->setVector(_TT("_RayleighColorScale"), Vector4(0.1, 0.2, 0.6, 0.0));
+    m_material->setVector(_TT("_RayleighColorScale"), Color(0.5, 0.2, 0.5).toVector4());
+	//m_material->setFloat(_TT("turbidity"), 10.0f);
+    m_material->setFloat(_TT("turbidity"), 1.0f);
+    //m_material->setFloat(_TT("rayleigh"), 2.0f);
+	m_material->setFloat(_TT("rayleigh"), 0.5f);
+	m_material->setFloat(_TT("mieCoefficient"), 0.005f);
+	m_material->setFloat(_TT("mieDirectionalG"), 0.8f);
+	m_material->setFloat(_TT("luminance"), 1.0f);
+	m_material->setVector(_TT("up"), Vector4(0, 1, 0, 0));
+	m_material->setVector(_TT("sunPosition"), Vector4(m_lightDirection * sunDistance, 0));
 
 	context->pushState();
 	context->setBlendMode(BlendMode::Normal);
@@ -81,7 +81,7 @@ InternalSkyDome::InternalSkyDome()
 bool InternalSkyDome::init()
 {
 #if 0 // Dump
-    m_model = MeshModel::load(u"Sphere.glb");
+    m_model = MeshModel::load(_TT("Sphere.glb");
     auto mesh = m_model->meshContainers()[0]->mesh();
     {
         Vector3 m;
@@ -93,20 +93,20 @@ bool InternalSkyDome::init()
         }
         float maxLen = std::max(m.x, std::max(m.y, m.z));
 
-        StreamWriter writer(u"vertices.txt");
+        StreamWriter writer(_TT("vertices.txt");
         for (int i = 0; i < mesh->vertexCount(); i++) {
             auto& v = mesh->vertex(i);
-            writer.writeLineFormat(u"{{{{{0}, {1}, {2}}}, {{{3}, {4}, {5}}}, {{{6}, {7}}}}},",
+            writer.writeLineFormat(_TT("{{{{{0}, {1}, {2}}}, {{{3}, {4}, {5}}}, {{{6}, {7}}}}},",
                 v.position.x / maxLen, v.position.y / maxLen, v.position.z / maxLen,
                 v.normal.x, v.normal.y, v.normal.z,
                 v.uv.x, v.uv.y);
         }
 
-        StreamWriter writer2(u"indices.txt");
+        StreamWriter writer2(_TT("indices.txt");
         for (int i = 0; i < mesh->indexCount() / 3; i++) {
             int index = i * 3;
             writer2.writeLineFormat(
-                u"{0}, {1}, {2},",
+                _TT("{0}, {1}, {2},",
                 mesh->index(index + 0),
                 mesh->index(index + 1),
                 mesh->index(index + 2));
@@ -154,10 +154,10 @@ bool InternalSkyDome::init()
     auto _detailCloudTexture = manager->SkydomeCloudC;
     auto _secondCloudPowerMap = manager->SkydomeCloudR;
 #else
-    auto _mainCloudsTexture = ln::Texture2D::load(Path(Assets::engineAssetsDirectory(), u"SkydomeCloudA.png"));
-    auto _secondCloudsTexture = ln::Texture2D::load(Path(Assets::engineAssetsDirectory(), u"SkydomeCloudB.png"));
-    auto _detailCloudTexture = ln::Texture2D::load(Path(Assets::engineAssetsDirectory(), u"SkydomeCloudC.png"));
-    auto _secondCloudPowerMap = ln::Texture2D::load(Path(Assets::engineAssetsDirectory(), u"SkydomeCloudR.png"));
+    auto _mainCloudsTexture = ln::Texture2D::load(Path(Assets::engineAssetsDirectory(), _TT("SkydomeCloudA.png")));
+    auto _secondCloudsTexture = ln::Texture2D::load(Path(Assets::engineAssetsDirectory(), _TT("SkydomeCloudB.png")));
+    auto _detailCloudTexture = ln::Texture2D::load(Path(Assets::engineAssetsDirectory(), _TT("SkydomeCloudC.png")));
+    auto _secondCloudPowerMap = ln::Texture2D::load(Path(Assets::engineAssetsDirectory(), _TT("SkydomeCloudR.png")));
 #endif
     _mainCloudsTexture->setSamplerState(samperState);
     _secondCloudsTexture->setSamplerState(samperState);
@@ -165,11 +165,11 @@ bool InternalSkyDome::init()
     _secondCloudPowerMap->setSamplerState(samperState);
 
     m_material->setShader(manager->skydomeShader());
-    m_material->setTexture(u"_thirdCloudTexture", _mainCloudsTexture);
-    m_material->setTexture(u"_detailCloudTexture", _detailCloudTexture);
-    m_material->setTexture(u"_secondCloudPowerMap", _secondCloudPowerMap);
-    m_material->setTexture(u"_mainCloudsTexture", _mainCloudsTexture);
-    m_material->setTexture(u"_secondCloudsTexture", _secondCloudsTexture);
+    m_material->setTexture(_TT("_thirdCloudTexture"), _mainCloudsTexture);
+    m_material->setTexture(_TT("_detailCloudTexture"), _detailCloudTexture);
+    m_material->setTexture(_TT("_secondCloudPowerMap"), _secondCloudPowerMap);
+    m_material->setTexture(_TT("_mainCloudsTexture"), _mainCloudsTexture);
+    m_material->setTexture(_TT("_secondCloudsTexture"), _secondCloudsTexture);
     m_material->setMainTexture(_secondCloudsTexture);
 
     {
@@ -419,35 +419,35 @@ void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* v
         ////AllOverlayColor = Color::Gray;
         //BaseCloudColorAndIntensity = Color::Gray;
 
-        m_material->setColor(u"_Curve_BackGroundSkyDomeColor", m_fixedBackGroundSkyDomeColor);
-        m_material->setColor(u"_Curve_BackGroundHorizonColor", m_fixedBackGroundHorizonColor);
-        m_material->setColor(u"_Curve_AllOverlayColor", m_fixedAllOverlayColor);
-        m_material->setColor(u"_Curve_BaseCloudColorAndIntensity", m_fixedBaseCloudColorAndIntensity);
+        m_material->setColor(_TT("_Curve_BackGroundSkyDomeColor"), m_fixedBackGroundSkyDomeColor);
+        m_material->setColor(_TT("_Curve_BackGroundHorizonColor"), m_fixedBackGroundHorizonColor);
+        m_material->setColor(_TT("_Curve_AllOverlayColor"), m_fixedAllOverlayColor);
+        m_material->setColor(_TT("_Curve_BaseCloudColorAndIntensity"), m_fixedBaseCloudColorAndIntensity);
 
 
-        m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 0.8);
-        m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 0.8);
-        m_material->setFloat(u"_ThirdCloudsIntensity", 0.25);
-        m_material->setFloat(u"_AllCloudsFalloffIntensity", 0.95);
-        m_material->setFloat(u"_AllCloudsIntensity", 1.1);
+        m_material->setFloat(_TT("_Main_Clouds_Falloff_Intensity"), 0.8);
+        m_material->setFloat(_TT("_Second_Clouds_Falloff_Intensity"), 0.8);
+        m_material->setFloat(_TT("_ThirdCloudsIntensity"), 0.25);
+        m_material->setFloat(_TT("_AllCloudsFalloffIntensity"), 0.95);
+        m_material->setFloat(_TT("_AllCloudsIntensity"), 1.1);
 
-        //m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 4.0);
-        //m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 4.0);
-        //m_material->setFloat(u"_ThirdCloudsIntensity", 0.0);
-        //m_material->setFloat(u"_AllCloudsFalloffIntensity", 1.4);
-        //m_material->setFloat(u"_AllCloudsIntensity", 0.6);
+        //m_material->setFloat(_TT("_Main_Clouds_Falloff_Intensity", 4.0);
+        //m_material->setFloat(_TT("_Second_Clouds_Falloff_Intensity", 4.0);
+        //m_material->setFloat(_TT("_ThirdCloudsIntensity", 0.0);
+        //m_material->setFloat(_TT("_AllCloudsFalloffIntensity", 1.4);
+        //m_material->setFloat(_TT("_AllCloudsIntensity", 0.6);
 
 
-        //m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 0.0);
-        //m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 0.0);
-        //m_material->setFloat(u"_ThirdCloudsIntensity", 0.0);
-        //m_material->setFloat(u"_AllCloudsFalloffIntensity", 0.0);
-        //m_material->setFloat(u"_AllCloudsIntensity", 0.0);
+        //m_material->setFloat(_TT("_Main_Clouds_Falloff_Intensity", 0.0);
+        //m_material->setFloat(_TT("_Second_Clouds_Falloff_Intensity", 0.0);
+        //m_material->setFloat(_TT("_ThirdCloudsIntensity", 0.0);
+        //m_material->setFloat(_TT("_AllCloudsFalloffIntensity", 0.0);
+        //m_material->setFloat(_TT("_AllCloudsIntensity", 0.0);
 
-        //m_material->setFloat(u"_Main_Clouds_Falloff_Intensity", 3.0);
-        //m_material->setFloat(u"_Second_Clouds_Falloff_Intensity", 4.0);
-        //m_material->setFloat(u"_AllCloudsFalloffIntensity", 1.15);
-        //m_material->setFloat(u"_AllCloudsIntensity", 0.85);
+        //m_material->setFloat(_TT("_Main_Clouds_Falloff_Intensity", 3.0);
+        //m_material->setFloat(_TT("_Second_Clouds_Falloff_Intensity", 4.0);
+        //m_material->setFloat(_TT("_AllCloudsFalloffIntensity", 1.15);
+        //m_material->setFloat(_TT("_AllCloudsIntensity", 0.85);
 
         /*
             Super Heavy:

@@ -37,8 +37,8 @@ void SpriteFrame::init()
 void SpriteFrame::serialize(Serializer2& ar)
 {
     Object::serialize(ar);
-    ar & makeNVP(u"SourceRect", m_sourceRect);
-    ar & makeNVP(u"AnchorPoint", m_anchorPoint);
+    ar & makeNVP(_TT("SourceRect"), m_sourceRect);
+    ar & makeNVP(_TT("AnchorPoint"), m_anchorPoint);
 }
 
 //=============================================================================
@@ -140,27 +140,27 @@ void SpriteSheet::serialize(Serializer2& ar)
 {
     Object::serialize(ar);
     if (ar.isSaving()) {
-        ar & makeNVP(u"texture", m_texture);
+        ar & makeNVP(_TT("texture"), m_texture);
         if (m_frameWidth != 0 && m_frameHeight != 0) {
-            ar & makeNVP(u"frameWidth", m_frameWidth);
-            ar & makeNVP(u"frameHeight", m_frameHeight);
-            ar & makeNVP(u"anchorPoint", m_anchorPoint);
+            ar & makeNVP(_TT("frameWidth"), m_frameWidth);
+            ar & makeNVP(_TT("frameHeight"), m_frameHeight);
+            ar & makeNVP(_TT("anchorPoint"), m_anchorPoint);
         }
         else {
-            ar & makeNVP(u"frames", m_frames);
+            ar & makeNVP(_TT("frames"), m_frames);
         }
     }
     else {
         clear();
-        ar & makeNVP(u"texture", m_texture);
-        ar & makeNVP(u"frameWidth", m_frameWidth);
-        ar & makeNVP(u"frameHeight", m_frameHeight);
-        ar & makeNVP(u"anchorPoint", m_anchorPoint);
+        ar & makeNVP(_TT("texture"), m_texture);
+        ar & makeNVP(_TT("frameWidth"), m_frameWidth);
+        ar & makeNVP(_TT("frameHeight"), m_frameHeight);
+        ar & makeNVP(_TT("anchorPoint"), m_anchorPoint);
         if (m_frameWidth != 0 && m_frameHeight != 0) {
             splitFrames();
         }
         else {
-            ar & makeNVP(u"frames", m_frames);
+            ar & makeNVP(_TT("frames"), m_frames);
         }
     }
 }
@@ -358,13 +358,13 @@ void SpriteComponent::onRender(RenderingContext* context)
 //void SpriteComponent::serialize(Archive& ar)
 //{
 //    VisualComponent::serialize(ar);
-//    ar & makeNVP(u"material", m_material);
+//    ar & makeNVP(_TT("material", m_material);
 //}
 
 void SpriteComponent::serialize(Serializer2& ar)
 {
     VisualComponent::serialize(ar);
-    ar & makeNVP(u"material", m_material);
+    ar & makeNVP(_TT("material"), m_material);
 }
 
 } // namespace ln

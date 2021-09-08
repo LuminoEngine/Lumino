@@ -10,8 +10,8 @@
 void RecentProjectListView::init()
 {
     UIListBox::init();
-    ////ln::u"test"
-    //auto t = ln::UIText::create(u"test");
+    ////ln::_TT("test"
+    //auto t = ln::UIText::create(_TT("test");
     //addElement(t);
 }
 
@@ -34,7 +34,7 @@ ln::Result StartupView::init()
 
     m_newProjectButton = ln::makeObject<ln::UIButton>();
     m_newProjectButton->setWidth(200);
-    m_newProjectButton->setText(u"New project...");
+    m_newProjectButton->setText(_TT("New project..."));
     m_newProjectButton->setCommand(EditorApplication::NewCommand);
     m_newProjectButton->setHorizontalContentAlignment(ln::UIHAlignment::Center);
     m_newProjectButton->setVerticalContentAlignment(ln::UIVAlignment::Center);
@@ -42,7 +42,7 @@ ln::Result StartupView::init()
 
     m_openProjectButton = ln::makeObject<ln::UIButton>();
     m_openProjectButton->setWidth(200);
-    m_openProjectButton->setText(u"Open project...");
+    m_openProjectButton->setText(_TT("Open project..."));
     m_openProjectButton->setCommand(EditorApplication::OpenCommand);
     m_openProjectButton->setHorizontalContentAlignment(ln::UIHAlignment::Center);
     m_openProjectButton->setVerticalContentAlignment(ln::UIVAlignment::Center);
@@ -58,7 +58,7 @@ ln::Result StartupView::init()
 
 
     auto icon = ln::makeObject<ln::UIIcon>();
-    icon->setIconName(u"file");
+    icon->setIconName(_TT("file"));
     icon->setHAlignment(ln::UIHAlignment::Center);
     icon->setMargin(ln::Thickness(0, 0, 0, 4));
     m_openProjectButton->addInlineVisual(icon, ln::UIInlinePlacement::Top);
@@ -68,7 +68,7 @@ ln::Result StartupView::init()
 
 
     auto popupContent = ln::makeObject<ln::UIText>();
-    popupContent->setText(u"POP");
+    popupContent->setText(_TT("POP"));
     auto popup = ln::makeObject<ln::UIDialog>();
     popup->addElement(popupContent);
     //popup->setPlacementTarget(m_openProjectButton);
@@ -78,7 +78,7 @@ ln::Result StartupView::init()
 
     auto popupButton = ln::makeObject<ln::UIButton>();
     popupButton->setWidth(200);
-    popupButton->setText(u"Popup");
+    popupButton->setText(_TT("Popup"));
     popupButton->setHorizontalContentAlignment(ln::UIHAlignment::Center);
     popupButton->setVerticalContentAlignment(ln::UIVAlignment::Center);
     popupButton->connectOnClicked([popup]() { if (!popup->isOpend()) popup->open(); else popup->close(); });
@@ -88,7 +88,7 @@ ln::Result StartupView::init()
 	auto text = ln::makeObject<ln::UITextField>();
 	text->setWidth(200);
 	text->setHeight(30);
-	text->setText(u"Hello\nLumino");
+	text->setText(_TT("Hello\nLumino"));
 	layout->addChild(text);
 
     auto ap = ln::makeObject<ln::AssetPicker>();
@@ -110,7 +110,7 @@ ln::Result StartupView::init()
 
 	//m_mainCamera->addComponent(ln::makeObject<ln::CameraOrbitControlComponent>());
 
- //   auto sprite = ln::Sprite::create(ln::Texture2D::create(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/player.png"), 4,4);
+ //   auto sprite = ln::Sprite::create(ln::Texture2D::create(_TT("D:/Documents/LuminoProjects/RinoTutorial/Assets/player.png"), 4,4);
  //   sprite->setSourceRect(0, 0, 16, 16);
  //   sprite->setPosition(0, 2, 0);
  //   m_mainWorld->addObject(sprite);

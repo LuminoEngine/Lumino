@@ -89,7 +89,7 @@ public:
         // > CacheKey はどの Archive に入っているファイルであるかまで区別できるものでなければダメ。
         // > Archive 名と、それを基準とした相対パス(または絶対パス) で表す必要がある。
         // > 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
-        const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
+        const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(_TT(""));
 
         // キャッシュに見つかったらそれを返す
         if (auto obj = cache->findObject(cacheKey)) {
@@ -129,7 +129,7 @@ public:
         // > CacheKey はどの Archive に入っているファイルであるかまで区別できるものでなければダメ。
         // > Archive 名と、それを基準とした相対パス(または絶対パス) で表す必要がある。
         // > 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
-        const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
+        const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(_TT(""));
 
         if (auto obj = cache->findObject(cacheKey)) {
             auto task = GenericTask<Ref<TObject>>::create([obj]() {

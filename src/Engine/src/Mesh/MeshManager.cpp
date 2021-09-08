@@ -223,13 +223,13 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
 
 Ref<MeshModel> MeshManager::acquireStaticMeshModel(const Path& filePath, float scale)
 {
-	static const Char* candidateExts[] = { u".gltf", u".glb", u".pmx" };
+	static const Char* candidateExts[] = { _TT(".gltf"), _TT(".glb"), _TT(".pmx") };
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
 	if (path) {
 		return acquireStaticMeshModel(*path, scale);
 	}
 	else {
-		LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+		LN_WARNING(_TT("Asset not found: ") + String(filePath));    // TODO: operator
 		return nullptr;
 	}
 }
@@ -252,13 +252,13 @@ Ref<MeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetPath, f
 // TODO: deprecaed
 //void MeshManager::loadStaticMeshModel(MeshModel* model, const Path& filePath, float scale)
 //{
-//	static const Char* candidateExts[] = { u".gltf", u".glb" };
+//	static const Char* candidateExts[] = { _TT(".gltf", _TT(".glb" };
 //	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
 //	if (path) {
 //		loadStaticMeshModel(model, *path, scale);
 //	}
 //	else {
-//		LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+//		LN_WARNING(_TT("Asset not found: " + String(filePath));    // TODO: operator
 //	}
 //}
 
@@ -289,7 +289,7 @@ void MeshManager::loadStaticMeshModel(MeshModel* model, const AssetPath& assetPa
 
 Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, MeshImportSettings* settings)
 {
-	static const Char* candidateExts[] = { u".gltf", u".glb", u".fbx" };
+	static const Char* candidateExts[] = { _TT(".gltf"), _TT(".glb"), _TT(".fbx") };
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
 	if (path) {
 
@@ -297,17 +297,17 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		mesh->m_name = filePath.fileNameWithoutExtension();
 		auto diag = makeObject<DiagnosticsManager>();
 
-		if (path->path().hasExtension(u".pmx")) {
+		if (path->path().hasExtension(_TT(".pmx"))) {
 			PmxLoader importer(this, diag);
 			bool result = importer.load(mesh, *path, false);
 			mesh->m_animationController = makeObject<AnimationController>(mesh);
 		}
-		else if (path->path().hasExtension(u".fbx")) {
+		else if (path->path().hasExtension(_TT(".fbx"))) {
 #ifdef LN_USE_FBX_IMPORTER
 			FbxImporter importer;
 			mesh = importer.importSkinnedMesh(m_assetManager, *path, diag);
 #else
-			LN_ERROR(u"FBX not supported.");
+			LN_ERROR(_TT("FBX not supported."));
 			return nullptr;
 #endif
 		}
@@ -351,7 +351,7 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		return mesh;
 	}
 	else {
-		LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+		LN_WARNING(_TT("Asset not found: ") + String(filePath));    // TODO: operator
 		return nullptr;
 		// TODO: deprecated
 
@@ -370,7 +370,7 @@ Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& 
 	Path path(parentDir, filePath);
 
 	if (!m_assetManager->existsFile(path)) {
-		diag->reportWarning(String::format(u"Texture file not found: {0}", path.str()));
+		diag->reportWarning(String::format(_TT("Texture file not found: {0}"), path.str()));
 		return nullptr;
 	}
 

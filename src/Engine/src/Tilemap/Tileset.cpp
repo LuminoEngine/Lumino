@@ -261,11 +261,11 @@ void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos
 //void Tileset::serialize(Archive& ar)
 //{
 //    Object::serialize(ar);
-//    ar & makeNVP(u"tilePixelWidth", m_tilePixelWidth);
-//    ar & makeNVP(u"tilePixelHeight", m_tilePixelHeight);
-//    ar & makeNVP(u"tileScale", m_tileScale);
-//    ar & makeNVP(u"material", m_material);
-//    ar & makeNVP(u"tiles", m_tiles);
+//    ar & makeNVP(_TT("tilePixelWidth", m_tilePixelWidth);
+//    ar & makeNVP(_TT("tilePixelHeight", m_tilePixelHeight);
+//    ar & makeNVP(_TT("tileScale", m_tileScale);
+//    ar & makeNVP(_TT("material", m_material);
+//    ar & makeNVP(_TT("tiles", m_tiles);
 //}
 //
 void Tileset::resetInfo()
@@ -281,8 +281,8 @@ void Tileset::resetInfo()
 
 void Tileset::Tile::serialize(Archive& ar)
 {
-	ar & makeNVP(u"passageFlags", passageFlags);
-    ar & makeNVP(u"sourceRect", sourceRect);
+	ar & makeNVP(_TT("passageFlags"), passageFlags);
+    ar & makeNVP(_TT("sourceRect"), sourceRect);
 }
 
 } // namespace ln

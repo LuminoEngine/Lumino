@@ -14,7 +14,7 @@ int NewCommand::execute(lna::Workspace* workspace)
 	}
 
     if (lna::Project::existsProjectFile(projectDirectory)) {
-        CLI::error("Project file already exists.");
+        CLI::error(_TT("Project file already exists."));
         return 1;
     }
     else {

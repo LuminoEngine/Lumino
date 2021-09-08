@@ -32,7 +32,7 @@ void UITreeItem::init()
     //m_expanderButton->m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
     //m_expanderButton->init();
 
-	m_expanderButton->addClass(u"UITreeItem-Expander");
+	m_expanderButton->addClass(_TT("UITreeItem-Expander"));
     m_expanderButton->connectOnChecked(bind(this, &UITreeItem::expander_Checked));
     m_expanderButton->connectOnUnchecked(bind(this, &UITreeItem::expander_Unchecked));
 
@@ -103,7 +103,7 @@ void UITreeItem::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldV
         m_expanderButton->m_internalVisibility = UIVisibility::Hidden;
     }
 
-    UIElement::setContent(m_model->getValue(u""));
+    UIElement::setContent(m_model->getValue(_TT("")));
 }
 
 Size UITreeItem::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
@@ -247,7 +247,7 @@ void UITreeView::init()
 //    //int count = m_model->getRowCount(nullptr);
 //    //for (int i = 0; i < count; i++) {
 //    //    auto itemModel = m_model->getIndex(i, 0, nullptr);
-//    //    auto itemData = m_model->getData(itemModel, u"");
+//    //    auto itemData = m_model->getData(itemModel, _TT("");
 //
 //    //    auto text = makeObject<UIText>();
 //    //    text->setText(itemData);
@@ -379,7 +379,7 @@ void UITreeView::makeChildItems(UITreeItem* item)
 
             for (int i = 0; i < count; i++) {
                 auto childModel = itemModel->getItem(i);
-                //auto itemData = m_model->getData(childModel, u"");
+                //auto itemData = m_model->getData(childModel, _TT("");
 
                 //auto text = makeObject<UIText>();
                 //text->setText(itemData);
@@ -435,7 +435,7 @@ bool UITreeItem2::init()
 
     // TODO: CreationContext とか用意したほうがいいかも。init を public にしないとダメだし。
     m_expanderButton = makeObject<UIToggleButton>();
-    m_expanderButton->addClass(u"UITreeItem-Expander");
+    m_expanderButton->addClass(_TT("UITreeItem-Expander"));
     m_expanderButton->connectOnChecked(bind(this, &UITreeItem2::expander_Checked));
     m_expanderButton->connectOnUnchecked(bind(this, &UITreeItem2::expander_Unchecked));
 
@@ -488,7 +488,7 @@ void UITreeItem2::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* old
         m_expanderButton->m_internalVisibility = UIVisibility::Hidden;
     }
 
-    UIElement::setContent(m_model->getValue(u""));
+    UIElement::setContent(m_model->getValue(_TT("")));
 }
 
 void UITreeItem2::onRoutedEvent(UIEventArgs* e)

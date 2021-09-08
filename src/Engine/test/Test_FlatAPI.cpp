@@ -100,7 +100,7 @@ TEST_F(Test_FlatAPI, Promise)
 
 	// Create objects asynchronously.
 	LNHandle promise1;
-	LN_ZV_CHECK(LNZVTestClass1_LoadAsync(u"test", &promise1));
+	LN_ZV_CHECK(LNZVTestClass1_LoadAsync(_TT("test"), &promise1));
 
 	// Wait creation ending.
 	g_otherObject = LN_NULL_HANDLE;
@@ -110,7 +110,7 @@ TEST_F(Test_FlatAPI, Promise)
 
 	const Char* filePath;
 	LN_ZV_CHECK(LNZVTestClass1_GetFilePath(obj1, &filePath));
-	ASSERT_EQ(u"test", String(filePath));
+	ASSERT_EQ(_TT("test"), String(filePath));
 
 	LNObject_Release(obj1);
 	LNObject_Release(promise1);

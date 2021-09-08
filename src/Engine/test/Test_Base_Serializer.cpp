@@ -13,11 +13,11 @@ public:
 	void onSerialize(Serializer2* sr) override
 	{
 		if (sr->isSaving()) {
-			sr->writeName(u"value1");
+			sr->writeName(_TT("value1"));
 			sr->writeInt(m_value);
 		}
 		else {
-			if (sr->readName(u"value1")) m_value = sr->readInt();
+			if (sr->readName(_TT("value1"))) m_value = sr->readInt();
 		}
 	}
 };
@@ -47,13 +47,13 @@ public:
 	void onSerialize(Serializer2* sr) override
 	{
 		if (sr->isSaving()) {
-			sr->writeName(u"list");
+			sr->writeName(_TT("list"));
 			sr->beginWriteList();
 			for (auto& v : m_list) sr->writeInt(v);
 			sr->endWriteList();
 		}
 		else {
-			if (sr->readName(u"list")) {
+			if (sr->readName(_TT("list"))) {
 				int count = 0;
 				if (sr->beginReadList(&count)) {
 					m_list.reserve(count);
@@ -93,13 +93,13 @@ public:
 	void onSerialize(Serializer2* sr) override
 	{
 		if (sr->isSaving()) {
-			sr->writeName(u"list");
+			sr->writeName(_TT("list"));
 			sr->beginWriteList();
 			for (auto& v : m_list) sr->writeObject(v);
 			sr->endWriteList();
 		}
 		else {
-			if (sr->readName(u"list")) {
+			if (sr->readName(_TT("list"))) {
 				int count = 0;
 				if (sr->beginReadList(&count)) {
 					m_list.reserve(count);
@@ -155,32 +155,32 @@ public:
 	void onSerialize(Serializer2* sr) override
 	{
 		if (sr->isSaving()) {
-			sr->writeName(u"m_bool"); sr->writeBool(m_bool);
-			sr->writeName(u"m_int8"); sr->writeInt8(m_int8);
-			sr->writeName(u"m_int16"); sr->writeInt16(m_int16);
-			sr->writeName(u"m_int32"); sr->writeInt32(m_int32);
-			sr->writeName(u"m_int64"); sr->writeInt64(m_int64);
-			sr->writeName(u"m_uint8"); sr->writeUInt8(m_uint8);
-			//sr->writeName(u"m_uint16"); sr->writeUInt16(m_uint16);
-			//sr->writeName(u"m_uint32"); sr->writeUInt32(m_uint32);
-			//sr->writeName(u"m_uint64"); sr->writeUInt64(m_uint64);
-			sr->writeName(u"m_float"); sr->writeFloat(m_float);
-			sr->writeName(u"m_double"); sr->writeDouble(m_double);
-			sr->writeName(u"m_string"); sr->writeString(m_string);
+			sr->writeName(_TT("m_bool")); sr->writeBool(m_bool);
+			sr->writeName(_TT("m_int8")); sr->writeInt8(m_int8);
+			sr->writeName(_TT("m_int16")); sr->writeInt16(m_int16);
+			sr->writeName(_TT("m_int32")); sr->writeInt32(m_int32);
+			sr->writeName(_TT("m_int64")); sr->writeInt64(m_int64);
+			sr->writeName(_TT("m_uint8")); sr->writeUInt8(m_uint8);
+			//sr->writeName(_TT("m_uint16")); sr->writeUInt16(m_uint16);
+			//sr->writeName(_TT("m_uint32")); sr->writeUInt32(m_uint32);
+			//sr->writeName(_TT("m_uint64")); sr->writeUInt64(m_uint64);
+			sr->writeName(_TT("m_float")); sr->writeFloat(m_float);
+			sr->writeName(_TT("m_double")); sr->writeDouble(m_double);
+			sr->writeName(_TT("m_string")); sr->writeString(m_string);
 		}
 		else {
-			if (sr->readName(u"m_bool")) m_bool = sr->readBool();
-			if (sr->readName(u"m_int8")) m_int8 = sr->readInt8();
-			if (sr->readName(u"m_int16")) m_int16 = sr->readInt16();
-			if (sr->readName(u"m_int32")) m_int32 = sr->readInt32();
-			if (sr->readName(u"m_int64")) m_int64 = sr->readInt64();
-			if (sr->readName(u"m_uint8")) m_uint8 = sr->readUInt8();
-			//if (sr->readName(u"m_uint16")) m_uint16 = sr->readUInt16();
-			//if (sr->readName(u"m_uint32")) m_uint32 = sr->readUInt32();
-			//if (sr->readName(u"m_uint64")) m_uint64 = sr->readUInt64();
-			if (sr->readName(u"m_float")) m_float = sr->readFloat();
-			if (sr->readName(u"m_double")) m_double = sr->readDouble();
-			if (sr->readName(u"m_string")) m_string = sr->readString();
+			if (sr->readName(_TT("m_bool"))) m_bool = sr->readBool();
+			if (sr->readName(_TT("m_int8"))) m_int8 = sr->readInt8();
+			if (sr->readName(_TT("m_int16"))) m_int16 = sr->readInt16();
+			if (sr->readName(_TT("m_int32"))) m_int32 = sr->readInt32();
+			if (sr->readName(_TT("m_int64"))) m_int64 = sr->readInt64();
+			if (sr->readName(_TT("m_uint8"))) m_uint8 = sr->readUInt8();
+			//if (sr->readName(_TT("m_uint16"))) m_uint16 = sr->readUInt16();
+			//if (sr->readName(_TT("m_uint32"))) m_uint32 = sr->readUInt32();
+			//if (sr->readName(_TT("m_uint64"))) m_uint64 = sr->readUInt64();
+			if (sr->readName(_TT("m_float"))) m_float = sr->readFloat();
+			if (sr->readName(_TT("m_double"))) m_double = sr->readDouble();
+			if (sr->readName(_TT("m_string"))) m_string = sr->readString();
 		}
 	}
 };
@@ -200,7 +200,7 @@ TEST_F(Test_Base_Serializer, Values)
 	obj1->m_uint64 = 1064;
 	obj1->m_float = 500;
 	obj1->m_double = 1000;
-	obj1->m_string = u"test";
+	obj1->m_string = _TT("test");
 	auto asset1 = makeObject<AssetModel>(obj1);
 	String text = Serializer2::serialize(asset1, detail::AssetPath::Null);
 
@@ -219,7 +219,7 @@ TEST_F(Test_Base_Serializer, Values)
 	//ASSERT_EQ(1064, obj2->m_uint64);
 	ASSERT_EQ(true, Math::nearEqual(obj2->m_float, 500));
 	ASSERT_EQ(true, Math::nearEqual(obj2->m_double, 1000));
-	ASSERT_EQ(u"test", obj2->m_string);
+	ASSERT_EQ(_TT("test"), obj2->m_string);
 }
 
 //-----------------------------------------------------------------------------
@@ -235,11 +235,11 @@ public:
 
 	void serialize(Serializer2& sr) override
 	{
-		sr & makeNVP(u"m_int", m_int);
-		sr & makeNVP(u"m_string", m_string);
-		sr & makeNVP(u"m_obj1", m_obj1);
-		sr & makeNVP(u"m_list1", m_list1);
-		sr & makeNVP(u"m_list2", m_list2);
+		sr & makeNVP(_TT("m_int"), m_int);
+		sr & makeNVP(_TT("m_string"), m_string);
+		sr & makeNVP(_TT("m_obj1"), m_obj1);
+		sr & makeNVP(_TT("m_list1"), m_list1);
+		sr & makeNVP(_TT("m_list2"), m_list2);
 	}
 };
 LN_OBJECT_IMPLEMENT(Test_Base_Serializer_CppUtils_TestObject1, Object) {}
@@ -248,7 +248,7 @@ TEST_F(Test_Base_Serializer, CppUtils)
 {
 	auto obj1 = makeObject<Test_Base_Serializer_CppUtils_TestObject1>();
 	obj1->m_int = 8;
-	obj1->m_string = u"test";
+	obj1->m_string = _TT("test");
 	obj1->m_obj1 = makeObject<TestObject1>();
 	obj1->m_obj1->m_value = 256;
 	obj1->m_list1 = { 1, 2, 3 };
@@ -264,7 +264,7 @@ TEST_F(Test_Base_Serializer, CppUtils)
 
 	ASSERT_EQ(true, obj2 != nullptr);
 	ASSERT_EQ(8, obj2->m_int);
-	ASSERT_EQ(u"test", obj2->m_string);
+	ASSERT_EQ(_TT("test"), obj2->m_string);
 	ASSERT_EQ(256, obj2->m_obj1->m_value);
 	ASSERT_EQ(3, obj2->m_list1.size());
 	ASSERT_EQ(1, obj2->m_list1[0]);

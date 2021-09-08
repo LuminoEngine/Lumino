@@ -55,7 +55,7 @@ void UIButtonBase::onRoutedEvent(UIEventArgs* e)
         m_isPressed = true;
         //focus();
 		retainCapture();
-        getVisualStateManager()->gotoState(u"Pressed");
+        getVisualStateManager()->gotoState(_TT("Pressed"));
         e->handled = true;
 
         return;
@@ -67,7 +67,7 @@ void UIButtonBase::onRoutedEvent(UIEventArgs* e)
         {
             m_isPressed = false;
 			releaseCapture();
-            getVisualStateManager()->gotoState(u"MouseOver");
+            getVisualStateManager()->gotoState(_TT("MouseOver"));
             onClick(e);
             e->handled = true;
         }
@@ -76,12 +76,12 @@ void UIButtonBase::onRoutedEvent(UIEventArgs* e)
     }
     //else if (e->type() == UIEvents::MouseEnterEvent) {
     //    if (!m_isPressed) {
-    //        getVisualStateManager()->gotoState(u"MouseOver");
+    //        getVisualStateManager()->gotoState(_TT("MouseOver");
     //    }
     //}
     //else if (e->type() == UIEvents::MouseLeaveEvent) {
     //    if (!m_isPressed) {
-    //        getVisualStateManager()->gotoState(u"Normal");
+    //        getVisualStateManager()->gotoState(_TT("Normal");
     //    }
     //}
 

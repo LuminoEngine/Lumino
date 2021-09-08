@@ -39,10 +39,10 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
 {
     m_assetModel = asset;
     m_mainLayout = ln::makeObject<ln::UIVBoxLayout3>();
-    m_mainLayout->setName(u"---");
+    m_mainLayout->setName(_TT("---"));
     frame->addElement(m_mainLayout);
     {
-        auto t = ln::UIText::create(u"test");
+        auto t = ln::UIText::create(_TT("test"));
 		t->getGridLayoutInfo()->layoutWeight = 0;
 		//t->setVAlignment(ln::UIVAlignment::Center);
         m_mainLayout->addChild(t);
@@ -95,7 +95,7 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
     }));
 
 
-    //auto a = ln::Mesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Models/WARZONE/2-OverpassBroken_grp.gltf");
+    //auto a = ln::Mesh::create(_TT("C:/Proj/LN/PrivateProjects/HC4/assets/Models/WARZONE/2-OverpassBroken_grp.gltf");
     //m_editingLevel->addObject(a);
 }
 

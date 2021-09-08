@@ -213,19 +213,19 @@ bool WaveDecoder::init(Stream* stream, DiagnosticsManager* diag)
 		// detail error, little
 		if (memcmp(&rh.riff, "RIFX", 4) == 0 || memcmp(&rh.riff, "FFIR", 4) != 0)
 		{
-			diag->reportError("big endian file is not supported.");
+			diag->reportError(_TT("big endian file is not supported."));
 			return false;
 		}
 		else
 		{
-			diag->reportError("bad RIFF header.");
+			diag->reportError(_TT("bad RIFF header."));
 			return false;
 		}
 	}
 
 	if (memcmp(&rh.waveHeader, "WAVE", 4) != 0)
 	{
-		diag->reportError("bad WAVE header.");
+		diag->reportError(_TT("bad WAVE header."));
 		return false;
 	}
 
@@ -241,7 +241,7 @@ bool WaveDecoder::init(Stream* stream, DiagnosticsManager* diag)
 			if (chunkSize == 16 || chunkSize == 18 || chunkSize == 20 || chunkSize == 40) {
 			}
 			else {
-				diag->reportError("Invalid fmt chunk.");
+				diag->reportError(_TT("Invalid fmt chunk."));
 				return false;
 			}
 
@@ -267,7 +267,7 @@ bool WaveDecoder::init(Stream* stream, DiagnosticsManager* diag)
 
 			}
 			else {
-				diag->reportError("Invalid format.");
+				diag->reportError(_TT("Invalid format."));
 				return false;
 			}
 			

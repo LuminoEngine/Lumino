@@ -25,17 +25,17 @@ public:
 	void onInit() override
     {
 		//auto vm = makeObject<UIFileSystemCollectionModel>();
-		//auto root = vm->setRootPath(u"C:/Proj/LN/Lumino");
+		//auto root = vm->setRootPath(_TT("C:/Proj/LN/Lumino");
 		//int count = vm->getRowCount(root);
 		//for (int i = 0; i < count; i++) {
 		//	auto index = vm->getIndex(i, 0, root);
-		//	auto data = vm->getData(index, u"");
+		//	auto data = vm->getData(index, _TT("");
 		//	std::cout << data << std::endl;
 
 		//	int count2 = vm->getRowCount(index);
 		//	for (int i2 = 0; i2 < count2; i2++) {
 		//		auto index2 = vm->getIndex(i2, 0, index);
-		//		auto data2 = vm->getData(index2, u"");
+		//		auto data2 = vm->getData(index2, _TT("");
 		//		std::cout << "  " << data2 << std::endl;
 		//	}
 		//}
@@ -55,28 +55,28 @@ public:
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UIText>(u"Button"));
+			layout1->addChild(makeObject<UIText>(_TT("Button")));
 
 			auto button1 = makeObject<UIButton>();
-			button1->setText(u"Button");
+			button1->setText(_TT("Button"));
 			layout1->addChild(button1);
 
 
 			auto button2 = makeObject<UIButton>();
-			button2->setText(u"IconButton");
+			button2->setText(_TT("IconButton"));
 			layout1->addChild(button2);
 			auto icon2 = ln::makeObject<ln::UIIcon>();
-			icon2->setIconName(u"file");
+			icon2->setIconName(_TT("file"));
 			//icon->setMargin(ln::Thickness(0, 0, 0, 4));
 			button2->addInlineVisual(icon2, ln::UIInlinePlacement::Top);
 
 
 			auto button3 = makeObject<UIButton>();
-			button3->setText(u"Disabled");
+			button3->setText(_TT("Disabled"));
 			button3->setEnabled(false);
 			layout1->addChild(button3);
 			auto icon3 = ln::makeObject<ln::UIIcon>();
-			icon3->setIconName(u"file");
+			icon3->setIconName(_TT("file"));
 			//icon->setMargin(ln::Thickness(0, 0, 0, 4));
 			button3->addInlineVisual(icon3, ln::UIInlinePlacement::Top);
 		}
@@ -86,9 +86,9 @@ public:
 		//	layout1->setMargin(margin);
 		//	mainLauout->addChild(layout1);
 
-		//	layout1->addChild(makeObject<UIText>(u"RadioButton"));
+		//	layout1->addChild(makeObject<UIText>(_TT("RadioButton"));
 
-		//	layout1->addChild(makeObject<UIButton>(u"dummy"));
+		//	layout1->addChild(makeObject<UIButton>(_TT("dummy"));
 		//}
 		// CheckBox
 		{
@@ -96,18 +96,18 @@ public:
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UIText>(u"CheckBox"));
+			layout1->addChild(makeObject<UIText>(_TT("CheckBox")));
 
 			auto checkbox1 = makeObject<UICheckBox>();
-			checkbox1->addChild(u"CheckBox1");
+			checkbox1->addChild(_TT("CheckBox1"));
 			layout1->addChild(checkbox1);
 
 			auto checkbox2 = makeObject<UICheckBox>();
-			checkbox2->addChild(u"CheckBox2");
+			checkbox2->addChild(_TT("CheckBox2"));
 			layout1->addChild(checkbox2);
 
 			auto checkbox3 = makeObject<UICheckBox>();
-			checkbox3->addChild(u"CheckBox3");
+			checkbox3->addChild(_TT("CheckBox3"));
 			layout1->addChild(checkbox3);
 		}
 		//// ComboBox
@@ -116,9 +116,9 @@ public:
 		//	layout1->setMargin(margin);
 		//	mainLauout->addChild(layout1);
 
-		//	layout1->addChild(makeObject<UIText>(u"ComboBox"));
+		//	layout1->addChild(makeObject<UIText>(_TT("ComboBox"));
 
-		//	layout1->addChild(makeObject<UIButton>(u"dummy"));
+		//	layout1->addChild(makeObject<UIButton>(_TT("dummy"));
 		//}
 		// ListBox (Direct)
 		{
@@ -126,18 +126,18 @@ public:
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UIText>(u"ListBox (Direct)"));
+			layout1->addChild(makeObject<UIText>(_TT("ListBox (Direct)")));
 
 			auto listbox1 = UIListBox::create();
-			listbox1->addChild(u"item1");
-			listbox1->addChild(u"item2");
-			listbox1->addChild(u"item3");
-			listbox1->addChild(u"item4");
-			//listbox1->addChild(u"item4");
-			//listbox1->addChild(u"item4");
-			//listbox1->addChild(u"item4");
-			//listbox1->addChild(u"item4");
-			//listbox1->addChild(u"item4");
+			listbox1->addChild(_TT("item1"));
+			listbox1->addChild(_TT("item2"));
+			listbox1->addChild(_TT("item3"));
+			listbox1->addChild(_TT("item4"));
+			//listbox1->addChild(_TT("item4");
+			//listbox1->addChild(_TT("item4");
+			//listbox1->addChild(_TT("item4");
+			//listbox1->addChild(_TT("item4");
+			//listbox1->addChild(_TT("item4");
 			//listbox1->setHeight(200);
 			layout1->addChild(listbox1);
 		}
@@ -148,7 +148,7 @@ public:
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UIText>(u"TreeView (Model)"));
+			layout1->addChild(makeObject<UIText>(_TT("TreeView (Model)")));
 
 			auto model1 = ln::makeObject<ln::UIFileSystemCollectionModel>();
 			model1->setRootPath(LN_LOCALFILE("Assets"));
@@ -160,7 +160,7 @@ public:
 			treeview1->connectOnChecked([model1](UIEventArgs* e) {
 				auto* item = static_cast<UITreeItem2*>(e->sender());
 				auto path = model1->filePath(static_pointer_cast<UICollectionItemViewModel>(item->m_viewModel));
-				Debug::print(u"Item clicked. " + path);
+				Debug::print(_TT("Item clicked. ") + path);
 			});
 			layout1->addChild(treeview1);
 		}
@@ -171,7 +171,7 @@ public:
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UIText>(u"Splitter"));
+			layout1->addChild(makeObject<UIText>(_TT("Splitter")));
 
 			auto splitter1 = makeObject<UISplitter>();
 			splitter1->setOrientation(UILayoutOrientation::Horizontal);
@@ -199,7 +199,7 @@ public:
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UIText>(u"Font icon"));
+			layout1->addChild(makeObject<UIText>(_TT("Font icon")));
 
 			{
 				auto layout2 = makeObject<UIStackLayout>();
@@ -207,17 +207,17 @@ public:
 				layout2->setHAlignment(UIHAlignment::Center);
 
 				auto icon1 = makeObject<UIIcon>();
-				icon1->setIconName(u"file");
+				icon1->setIconName(_TT("file"));
 				icon1->setFontSize(30);
 				layout2->addChild(icon1);
 
 				auto icon2 = makeObject<UIIcon>();
-				icon2->setIconName(u"file");
+				icon2->setIconName(_TT("file"));
 				icon2->setFontSize(20);
 				layout2->addChild(icon2);
 
 				auto icon3 = makeObject<UIIcon>();
-				icon3->setIconName(u"file");
+				icon3->setIconName(_TT("file"));
 				icon3->setFontSize(10);
 				layout2->addChild(icon3);
 
@@ -233,11 +233,11 @@ public:
 				layout2->setOrientation(UILayoutOrientation::Horizontal);
 				layout2->setHAlignment(UIHAlignment::Center);
 
-				layout2->addChild(UIIcon::loadFontIcon(u"align-justify", 20));
-				layout2->addChild(UIIcon::loadFontIcon(u"arrow-alt-circle-up", 20));
-				layout2->addChild(UIIcon::loadFontIcon(u"book-medical", 20));
-				layout2->addChild(UIIcon::loadFontIcon(u"check-circle", 20, UIColors::get(UIColorHues::Green)));
-				layout2->addChild(UIIcon::loadFontIcon(u"times-circle", 20, UIColors::get(UIColorHues::Red)));
+				layout2->addChild(UIIcon::loadFontIcon(_TT("align-justify"), 20));
+				layout2->addChild(UIIcon::loadFontIcon(_TT("arrow-alt-circle-up)"), 20));
+				layout2->addChild(UIIcon::loadFontIcon(_TT("book-medical"), 20));
+				layout2->addChild(UIIcon::loadFontIcon(_TT("check-circle"), 20, UIColors::get(UIColorHues::Green)));
+				layout2->addChild(UIIcon::loadFontIcon(_TT("times-circle"), 20, UIColors::get(UIColorHues::Red)));
 
 				layout1->addChild(layout2);
 			}
@@ -249,18 +249,18 @@ public:
 			auto layout1 = makeObject<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
-			layout1->addChild(makeObject<UIText>(u"TabBar"));
+			layout1->addChild(makeObject<UIText>(_TT("TabBar")));
 
 
 			auto tabbar1 = makeObject<UITabBar2>();
 			layout1->addChild(tabbar1);
 
 			auto tab1 = makeObject<UITabBarItem2>();
-			tab1->addChild(u"Tab1");
+			tab1->addChild(_TT("Tab1"));
 			tabbar1->addChild(tab1);
 
 			auto tab2 = makeObject<UITabBarItem2>();
-			tab2->addChild(u"Tab2");
+			tab2->addChild(_TT("Tab2"));
 			tabbar1->addChild(tab2);
 
 			auto switch1 = makeObject<UISwitchLayout>();
@@ -290,7 +290,7 @@ public:
 			auto layout1 = makeObject<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
-			layout1->addChild(makeObject<UIText>(u"PropertyFields"));
+			layout1->addChild(makeObject<UIText>(_TT("PropertyFields")));
 
 			auto field1 = makeObject<UISliderField>();
 			field1->setChanged([](float v) { ln::Debug::print(String::fromNumber(v)); });
@@ -307,12 +307,12 @@ public:
 			auto layout1 = makeObject<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
-			layout1->addChild(makeObject<UIText>(u"ComboBox"));
+			layout1->addChild(makeObject<UIText>(_TT("ComboBox")));
 
 			auto comboBox1 = makeObject<UIComboBox>();
 			comboBox1->setHAlignment(UIHAlignment::Left);
-			comboBox1->addChild(u"CItem1");
-			comboBox1->addChild(u"CItem2");
+			comboBox1->addChild(_TT("CItem1"));
+			comboBox1->addChild(_TT("CItem2"));
 			layout1->addChild(comboBox1);
 		}
     }

@@ -135,7 +135,7 @@ protected:
 				m_failAction->call();
 			}
 			else {
-				LN_ERROR(u"Promise rejected. (unhandling error)");
+				LN_ERROR(_TT("Promise rejected. (unhandling error)"));
 			}
 		}
 		else if (m_thenAction) {

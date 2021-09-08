@@ -66,7 +66,7 @@ bool TonemapPostEffectInstance::init(TonemapPostEffect* owner)
 {
     if (!PostEffectInstance::init()) return false;
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TonemapEffect.fx");
+    auto shader1 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TonemapEffect.fx"));
     m_material = makeObject<Material>();
     m_material->setShader(shader1);
 
@@ -90,14 +90,14 @@ bool TonemapPostEffectInstance::onRender(RenderView* renderView, CommandList* co
         linearWhite, shoulderStrength, linearStrength, linearAngle,
         toeStrength, toeNumerator, toeDenominator, Exposure);
 
-    m_material->setFloat(u"paramA", d._paramA);
-    m_material->setFloat(u"paramB", d._paramB);
-    m_material->setFloat(u"paramCB", d._paramCB);
-    m_material->setFloat(u"paramDE", d._paramDE);
-    m_material->setFloat(u"paramDF", d._paramDF);
-    m_material->setFloat(u"paramEperF", d._paramEperF);
-    m_material->setFloat(u"paramF_White", d._paramF_White);
-    m_material->setFloat(u"Exposure", d._exposure);
+    m_material->setFloat(_TT("paramA"), d._paramA);
+    m_material->setFloat(_TT("paramB"), d._paramB);
+    m_material->setFloat(_TT("paramCB"), d._paramCB);
+    m_material->setFloat(_TT("paramDE"), d._paramDE);
+    m_material->setFloat(_TT("paramDF"), d._paramDF);
+    m_material->setFloat(_TT("paramEperF"), d._paramEperF);
+    m_material->setFloat(_TT("paramF_White"), d._paramF_White);
+    m_material->setFloat(_TT("Exposure"), d._exposure);
 
     m_material->setMainTexture(source);
     context->blit(m_material, destination);

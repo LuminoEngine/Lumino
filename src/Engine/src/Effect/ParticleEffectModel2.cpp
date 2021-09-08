@@ -137,9 +137,9 @@ bool SpriteParticleGeometry::init()
     if (!Object::init()) return false;
 
     //m_material = makeObject<Material>();
-    //m_material->setMainTexture(Texture2D::load(u"Sprite1"));
+    //m_material->setMainTexture(Texture2D::load(_TT("Sprite1"));
     //m_material->shadingModel = ShadingModel::Unlit;
-    //m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+    //m_material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
     return true;
 }
@@ -180,9 +180,9 @@ bool ParticleEmitterModel::init()
 void ParticleEmitterModel::serialize(Serializer2& ar)
 {
     Object::serialize(ar);
-    ar & makeNVP(u"maxParticles", m_spawnRate);
-    ar & makeNVP(u"spawnRate", m_maxParticles);
-    ar & makeNVP(u"burstCount", m_burstCount);
+    ar & makeNVP(_TT("maxParticles"), m_spawnRate);
+    ar & makeNVP(_TT("spawnRate"), m_maxParticles);
+    ar & makeNVP(_TT("burstCount"), m_burstCount);
 }
 
 void ParticleEmitterModel::setupSpriteModule(Material* material)
@@ -223,7 +223,7 @@ void ParticleModel::addEmitter(ParticleEmitterModel* emitter)
 void ParticleModel::serialize(Serializer2& ar)
 {
     EffectResource::serialize(ar);
-    ar & makeNVP(u"emitters", m_emitters);
+    ar & makeNVP(_TT("emitters"), m_emitters);
 
 }
 

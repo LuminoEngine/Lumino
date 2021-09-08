@@ -11,7 +11,7 @@ class Test_UI_UIStyle_Element : public UIElement
 public:
 
 protected:
-	virtual const String& elementName() const  override { static String name = u"TestElement"; return name; }
+	virtual const String& elementName() const  override { static String name = _TT("TestElement"); return name; }
 };
 
 //------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ TEST_F(Test_UI_UIStyle, BackgroundImage)
 	element1->setSize(80, 60);
 	Engine::ui()->addElement(element1);
 
-	element1->setBackgroundImage(Texture2D::load(u"Sprite1.png"));
+	element1->setBackgroundImage(Texture2D::load(_TT("Sprite1.png")));
 	{
 		element1->setBackgroundDrawMode(Sprite9DrawMode::StretchedSingleImage);
 		TestEnv::updateFrame();
@@ -52,7 +52,7 @@ TEST_F(Test_UI_UIStyle, BackgroundImage)
 		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UIStyle-BackgroundImage-2.png"));
 	}
 
-	element1->setBackgroundImage(Texture2D::load(u"UI/Window2.png"));
+	element1->setBackgroundImage(Texture2D::load(_TT("UI/Window2.png")));
 	element1->setBackgroundImageRect(Rect(0, 32, 32, 32));
 	element1->setBackgroundImageBorder(Thickness(8));
 	{

@@ -11,7 +11,7 @@ class App_Example_Tilemap : public Application
 		Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
 
 
-		auto tilesetTexture = ln::Texture2D::load(u"C:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/Tileset-1.png");
+		auto tilesetTexture = ln::Texture2D::load(_TT("C:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/Tileset-1.png"));
 		auto tilesetMaterial = ln::makeObject<ln::Material>();
 		tilesetMaterial->setMainTexture(tilesetTexture);
 
@@ -19,7 +19,7 @@ class App_Example_Tilemap : public Application
 		tileset->reset(tilesetMaterial, 16, 16);
 
 		auto autotileset = ln::makeObject<ln::AutoTileset>();
-		auto autotilesetTexture = ln::Texture2D::load(u"C:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/AutoTileTest-1.png");
+		auto autotilesetTexture = ln::Texture2D::load(_TT("C:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/AutoTileTest-1.png"));
 		auto autotilesetMaterial = ln::Material::create(autotilesetTexture);
 		autotileset->material = autotilesetMaterial;
 		tileset->addAutoTileset(autotileset);

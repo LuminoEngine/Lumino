@@ -71,7 +71,7 @@ void MeshComponent::makeCollisionBody(StringRef meshContainerName)
 {
     if (LN_REQUIRE(m_model)) return;
 
-    if (auto node = m_model->findNode(u"Lumino.Collider")) {
+    if (auto node = m_model->findNode(_TT("Lumino.Collider"))) {
         int index = node->meshContainerIndex();
         if (index >= 0) {
             auto meshContainer = m_model->meshContainers()[index];
@@ -89,7 +89,7 @@ void MeshComponent::makeCollisionBody(StringRef meshContainerName)
 void MeshComponent::serialize(Serializer2& ar)
 {
     VisualComponent::serialize(ar);
-    ar & makeNVP(u"model", m_model);
+    ar & makeNVP(_TT("model"), m_model);
 }
 
 void MeshComponent::onUpdate(float elapsedSeconds)

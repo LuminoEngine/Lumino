@@ -437,9 +437,9 @@ int main(int argc, char** argv)
     Logger::setLevel(LogLevel::Debug);
 	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
 	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::DirectX12);//(GraphicsAPI::OpenGL);//
-    EngineSettings::setPriorityGPUName(u"Microsoft Basic Render Driver");
+    EngineSettings::setPriorityGPUName(_TT("Microsoft Basic Render Driver"));
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
-	//EngineSettings::setUITheme(u"Chocotelier");
+	//EngineSettings::setUITheme(_TT("Chocotelier");
     EngineSettings::setGraphicsDebugEnabled(true);
     EngineSettings::setDebugToolEnabled(true);
 	detail::EngineManager::s_settings.standaloneFpsControl = true;
@@ -581,7 +581,7 @@ int main(int argc, char** argv)
     //LnLog_PrintA(LN_LOG_LEVEL_INFO, "RubyRuntime", "Usesr type registering. (class: 20, typeInfoId: 16, baseTypeInfoId: 10)");
 
     
-    //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
+    //GameAudio::playBGM(_TT("D:/Music/momentum/02 - momentum.wav");
 
 	Camera* camera = Engine::mainCamera();
 	camera->addComponent(makeObject<CameraOrbitControlComponent>());
@@ -592,26 +592,26 @@ int main(int argc, char** argv)
 	//camera->setOrthographicSize(16, 12);
 
     auto ft = Texture2D::create(512, 256);
-    //Font::registerFontFromFile(u"meiryo.ttc");
-    //auto font1 = Font::create(u"Meiryo", 20);
-    Font::registerFontFromFile(u"C:/Windows/Fonts/Arial.ttf");
-    auto font1 = Font::create(u"Arial", 20);
-    //Font::registerFontFromFile(u"times.ttf");
-    //auto font1 = Font::create(u"Times New Roman", 20);
+    //Font::registerFontFromFile(_TT("meiryo.ttc");
+    //auto font1 = Font::create(_TT("Meiryo", 20);
+    Font::registerFontFromFile(_TT("C:/Windows/Fonts/Arial.ttf"));
+    auto font1 = Font::create(_TT("Arial"), 20);
+    //Font::registerFontFromFile(_TT("times.ttf");
+    //auto font1 = Font::create(_TT("Times New Roman", 20);
     //auto font1 = Font::create();
     //font1->setSize(26);
-    //Font::registerFontFromFile(u"mplus-1c-regular.ttf");
-    //auto font1 = Font::create(u"M+ 1c", 20);
-    //Font::registerFontFromFile(u"mplus-1m-regular.ttf");
-    //auto font1 = Font::create(u"M+ 1m", 20);
+    //Font::registerFontFromFile(_TT("mplus-1c-regular.ttf");
+    //auto font1 = Font::create(_TT("M+ 1c", 20);
+    //Font::registerFontFromFile(_TT("mplus-1m-regular.ttf");
+    //auto font1 = Font::create(_TT("M+ 1m", 20);
 
 
     
     //ft->clear(Color::White);
-    //ft->drawText(u"ABCDEFGHIJKabcdefghijk", Rect(0, 0, 512, 256), font1, Color::Black);
-    //ft->map(MapMode::Read)->save(u"test.png");
+    //ft->drawText(_TT("ABCDEFGHIJKabcdefghijk", Rect(0, 0, 512, 256), font1, Color::Black);
+    //ft->map(MapMode::Read)->save(_TT("test.png");
 
-    //auto sprite1 = Sprite::create(Texture2D::load(u"Sprite1"), 3, 3);
+    //auto sprite1 = Sprite::create(Texture2D::load(_TT("Sprite1"), 3, 3);
 
 	//auto m_rigidBody = ln::RigidBody2DComponent::create();
 	//m_rigidBody->addCollisionShape(ln::BoxCollisionShape2D::create(5, 2));
@@ -622,7 +622,7 @@ int main(int argc, char** argv)
 	//sprite1->addComponent(m_rigidBody);
 	//Engine::mainRenderView()->setPhysicsDebugDrawEnabled(true);
 
-	//auto sprite2 = UISprite::create(Texture2D::load(u"Sprite1"));
+	//auto sprite2 = UISprite::create(Texture2D::load(_TT("Sprite1"));
 	//Engine::mainUIView()->addElement(sprite2);
 
  //   auto message1 = UIMessageTextArea::create();
@@ -648,23 +648,23 @@ int main(int argc, char** argv)
 	//navi1->addElement(window2);
 
 
-    //Effect::emit(u"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk", Matrix::makeTranslation(Vector3(1, 0, 0)));
+    //Effect::emit(_TT("D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk", Matrix::makeTranslation(Vector3(1, 0, 0)));
 
 
-	auto mesh1 = StaticMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
-    //auto mesh1 = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf");
-    //auto mesh1 = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
-    //auto mesh1 = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
-    //auto mesh1 = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
-	//auto mesh1 = Mesh::create(u"D:/Tech/Graphics/three.js/examples/models/gltf/PrimaryIonDrive.glb");
+	auto mesh1 = StaticMesh::load(_TT("D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf"));
+    //auto mesh1 = Mesh::create(_TT("D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf");
+    //auto mesh1 = Mesh::create(_TT("D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
+    //auto mesh1 = Mesh::create(_TT("D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
+    //auto mesh1 = Mesh::create(_TT("D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
+	//auto mesh1 = Mesh::create(_TT("D:/Tech/Graphics/three.js/examples/models/gltf/PrimaryIonDrive.glb");
 
- //   auto mesh1 = Mesh::create(u"D:/Programs/MagicaVoxel-0.99.4.2-alpha-win64/export/monu10.glb");
+ //   auto mesh1 = Mesh::create(_TT("D:/Programs/MagicaVoxel-0.99.4.2-alpha-win64/export/monu10.glb");
 	//mesh1->setEulerAngles(Math::PI / 2, 0, 0);
  //   mesh1->setScale(10);
 	mesh1->setPosition(0, 5, 0);
     //Engine::world()->add(mesh1);
     
-	//auto skymesh1 = Mesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
+	//auto skymesh1 = Mesh::create(_TT("D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
  //   skymesh1->setBlendMode(BlendMode::Add);
  //   skymesh1->setScale(100);
  //   skymesh1->setShadingModel(ShadingModel::Unlit);
@@ -689,7 +689,7 @@ int main(int argc, char** argv)
     //Engine::world()->add(mainDirectionalLight);
     
     // MeshContainer 複数
-    //auto mesh1 = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf");
+    //auto mesh1 = Mesh::create(_TT("D:/Tech/Graphics/glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf");
 
     //auto voxelmap1 = makeObject<VisualObject>();
     //auto voxelmapComponent1 = makeObject<VoxelmapComponent>();
@@ -701,7 +701,7 @@ int main(int argc, char** argv)
 	//Engine::mainRenderView()->transformControls()->setTarget(Engine::world()->mainDirectionalLight());
 
 	auto field1 = makeObject<UISliderField>();
-	field1->setName(u"test_field");
+	field1->setName(_TT("test_field"));
 	field1->setWidth(200);
 	field1->setHeight(30);
 	//Engine::mainUIView()->addElement(field1);
@@ -723,7 +723,7 @@ int main(int argc, char** argv)
 
 		//auto s = u'🐈';
 		//auto t = Texture2D::loadEmoji(U'🐈');
-		auto t = Texture2D::loadEmoji(u"🌱");
+		auto t = Texture2D::loadEmoji(_TT("🌱"));
 
 		auto s2 = SamplerState::create(TextureFilterMode::Linear);
 		t->setSamplerState(s2);
@@ -743,7 +743,7 @@ int main(int argc, char** argv)
 		//Engine::world()->add(obj);
 
 		auto text1 = makeObject<Text>();
-		text1->setText(u"Hello, Lumino!");
+		text1->setText(_TT("Hello, Lumino!"));
 		text1->setColor(Color::Gray);
 		//text1->setPosition(0, -0.5, 0);
 		text1->setAnchorPoint(Vector2(0.5, 1));
@@ -754,8 +754,8 @@ int main(int argc, char** argv)
 		
 		//field1->setWidth(200);
 		//field1->setHeight(30);
-		//text1->setText(u"Hello, Lumino!");
-		text2->setText(u"Hello");
+		//text1->setText(_TT("Hello, Lumino!");
+		text2->setText(_TT("Hello"));
 		text2->setPosition(0, 50, 0);
 		text2->setHAlignment(UIHAlignment::Center);
 		text2->setVAlignment(UIVAlignment::Center);
@@ -771,7 +771,7 @@ int main(int argc, char** argv)
     window1->setWidth(200);
     window1->setHeight(100);
     window1->setBackgroundColor(Color::White);
-    window1->setBackgroundImage(Assets::loadTexture(u"window"));
+    window1->setBackgroundImage(Assets::loadTexture(_TT("window"));
     window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
     window1->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
     window1->setBackgroundImageBorder(Thickness(16));
@@ -785,24 +785,24 @@ int main(int argc, char** argv)
  //   window1->setLayoutPanel(UIStackLayout_Obsolete::create());
 
  //   auto text1 = UIText::create();
- //   text1->setText(u"ABCDEFGabcdefg");
- //   //text1->setFontFamily(u"M+ 1c");
+ //   text1->setText(_TT("ABCDEFGabcdefg");
+ //   //text1->setFontFamily(_TT("M+ 1c");
  //   //text1->setFontSize(20);
  //   //text1->setTextColor(Color::White);
  //   //window1->addElement(text1);
 	//Engine::mainWindow()->addElement(text1);
 
  //   auto text2 = UIText::create();
- //   text2->setText(u"sc");
+ //   text2->setText(_TT("sc");
  //   //text2->setTextColor(Color::White);
  //   window1->addElement(text2);
 
 	////auto text2 = UIText::create();
-	////text2->setText(u"Test");
+	////text2->setText(_TT("Test");
 	////text2->setTextColor(Color::Gray);
 
 	////auto text3 = UIText::create();
-	////text3->setText(u"Test3");
+	////text3->setText(_TT("Test3");
 	////text3->setTextColor(Color::Gray);
 	////text3->setPosition(Vector3(0, 400, 0));
 
@@ -950,14 +950,14 @@ int main(int argc, char** argv)
 	//printf("");
 
 #if 1
-    //auto font = Font::create(u"VL PGothic", 20);
+    //auto font = Font::create(_TT("VL PGothic", 20);
 
 	//auto light1 = AmbientLight::create();
  //   auto light2 = DirectionalLight::create();
 
-    //auto tex = makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
-    //auto tex = Assets::loadTexture(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Sprite1.png");
-    //tex->drawText(u"Hello!", Rect(0, 0, 100, 100), font, Color::White);
+    //auto tex = makeObject<Texture2D>(_TT("D:/tmp/110220c_as019.png");
+    //auto tex = Assets::loadTexture(_TT("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Sprite1.png");
+    //tex->drawText(_TT("Hello!", Rect(0, 0, 100, 100), font, Color::White);
     //auto tex = makeObject<Texture2D>(2, 2);
     //auto bmp1 = tex->map(MapMode::Write);
     //bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
@@ -992,35 +992,35 @@ int main(int argc, char** argv)
     //auto texture2 = Texture2D::create(100, 100);
     //texture2->clear(Color::Gray);
     ////font->setAntiAlias(false);
-    //texture2->drawText(u"Left", Rect(0, 0, 0, 0), font, Color::Black);
+    //texture2->drawText(_TT("Left", Rect(0, 0, 0, 0), font, Color::Black);
     //auto sprite2 = ln::UISprite::create(texture2);
     ////sprite2->setPosition(200, 100);
     //sprite2->setCenterPoint(50, 50);
 
-    //auto mesh1 = makeObject<Mesh>(u"D:/tmp/cube.obj");
-    //auto mesh1 = makeObject<Mesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
-    //auto mesh1 = makeObject<Mesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/usemtl-issue-68.obj");
+    //auto mesh1 = makeObject<Mesh>(_TT("D:/tmp/cube.obj");
+    //auto mesh1 = makeObject<Mesh>(_TT("D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    //auto mesh1 = makeObject<Mesh>(_TT("D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/usemtl-issue-68.obj");
     //mesh1->setPosition(0, -1, 0);
     //
 
-    //auto mesh2 = makeObject<Mesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    //auto mesh2 = makeObject<Mesh>(_TT("D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
     //mesh2->setPosition(2, 0, 0);
 
-    //auto mesh3 = makeObject<Mesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
+    //auto mesh3 = makeObject<Mesh>(_TT("D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
     //mesh3->setVisible(false);
 
-    //auto clip1 = VmdAnimationClip::create(u"D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd");
+    //auto clip1 = VmdAnimationClip::create(_TT("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd");
 
-    //auto smesh1 = SkinnedMesh::create(u"D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
+    //auto smesh1 = SkinnedMesh::create(_TT("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
     ////smesh1->setBlendMode(BlendMode::Alpha);
     ////smesh1->setEulerAngles(0, Math::PI, 0);
     ////smesh1->setShadingModel(ShadingModel::Unlit);
 
-    //smesh1->skinnedMeshComponent()->model()->animationController()->addClip(u"anim1", clip1);
-    //smesh1->skinnedMeshComponent()->model()->animationController()->play(u"anim1");
+    //smesh1->skinnedMeshComponent()->model()->animationController()->addClip(_TT("anim1", clip1);
+    //smesh1->skinnedMeshComponent()->model()->animationController()->play(_TT("anim1");
 
 
-    //auto sprite = UISprite::create(Assets::loadTexture(u"D:/MMD/Materials/モデル/Appearance Miku/A4.bmp"));
+    //auto sprite = UISprite::create(Assets::loadTexture(_TT("D:/MMD/Materials/モデル/Appearance Miku/A4.bmp"));
 
     //Engine::update();
     //Engine::update();
@@ -1034,7 +1034,7 @@ int main(int argc, char** argv)
     //    ofs->setCamera(camera);
     //    ofs->render();
     //    auto bitmap = rt1->readData();
-    //    bitmap->save(u"test1.png");
+    //    bitmap->save(_TT("test1.png");
     //}
 
 
@@ -1059,7 +1059,7 @@ int main(int argc, char** argv)
     //auto body3 = makeObject<SoftBody>();
     //body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
 
-    auto tex2 = Assets::loadTexture(u"D:/Documents/Modeling/grid_uv_2.png");
+    auto tex2 = Assets::loadTexture(_TT("D:/Documents/Modeling/grid_uv_2.png");
     List<Ref<WorldObject>> spheres;
     for (int y = 0; y < 5; y++)
     {
@@ -1125,17 +1125,17 @@ int main(int argc, char** argv)
 #endif
 
 #if 0
-    //auto sound = makeObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
-    auto sound = makeObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
-    //auto sound = makeObject<Sound>(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
+    //auto sound = makeObject<Sound>(_TT("D:\\tmp\\4_Battle_win.wav");
+    auto sound = makeObject<Sound>(_TT("D:/Music/momentum/02 - momentum.wav");
+    //auto sound = makeObject<Sound>(_TT("D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
     sound->play();
     //sound->setPitch(1.2);
 
-    //GameAudio::playBGM(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
+    //GameAudio::playBGM(_TT("D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
 #endif
 #if 0
-    //auto source = makeObject<AudioSourceNode>(u"D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
-    auto source = makeObject<AudioSourceNode>(u"D:/Music/momentum/02 - momentum.wav");
+    //auto source = makeObject<AudioSourceNode>(_TT("D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
+    auto source = makeObject<AudioSourceNode>(_TT("D:/Music/momentum/02 - momentum.wav");
     //auto source = makeObject<TestProcessorNode>();
     //AudioNode::connect(source, AudioContext::primary()->destination());
     
@@ -1151,7 +1151,7 @@ int main(int argc, char** argv)
 
     //auto filedata = d.readAllSamples();
 #endif
-    //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
+    //GameAudio::playBGM(_TT("D:/Music/momentum/02 - momentum.wav");
 
 
 
@@ -1174,7 +1174,7 @@ int main(int argc, char** argv)
     //return 0;
 
     auto uitext = UIText::create();
-    uitext->setText(u"text");
+    uitext->setText(_TT("text"));
 
 
     float time = 0;
@@ -1182,10 +1182,10 @@ int main(int argc, char** argv)
     while (Engine::update())
     {
         if (Input::isTriggered(InputButtons::Submit)) {
-            GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/coin04_16bit_mono.wav");
-            //GameAudio::playSE(u"D:/Proj/Volkoff/Assets/Data/Sound/SE/coin04.wav");
-            //GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/sin_440_3s_48000_2ch.wav");
-            //GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/coin04.wav");
+            GameAudio::playSE(_TT("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/coin04_16bit_mono.wav"));
+            //GameAudio::playSE(_TT("D:/Proj/Volkoff/Assets/Data/Sound/SE/coin04.wav");
+            //GameAudio::playSE(_TT("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/sin_440_3s_48000_2ch.wav");
+            //GameAudio::playSE(_TT("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/coin04.wav");
         }
 
         //BlurLayer->play(0.7f, Vector2(0, 0.0), 1.05);

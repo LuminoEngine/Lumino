@@ -379,7 +379,7 @@ void Engine::setActiveWorld(World* world)
 ln::Path Engine::findProjectLocalRoot()
 {
     // TODO: proj.ext定数化
-    return detail::EngineDomain::engineManager()->findParentDirectoryContainingSpecifiedFile(u"*.lnproj");
+    return detail::EngineDomain::engineManager()->findParentDirectoryContainingSpecifiedFile(_TT("*.lnproj"));
 }
 
 // TODO: time

@@ -59,7 +59,7 @@ bool TonePostEffectInstance::init(TonePostEffect* owner)
 
     m_owner = owner;
 
-    auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/ToneEffect.fx");
+    auto shader = makeObject<Shader>(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/ToneEffect.fx"));
     m_material = makeObject<Material>();
     m_material->setShader(shader);
 
@@ -70,7 +70,7 @@ bool TonePostEffectInstance::onRender(RenderView* renderView, CommandList* conte
 {
     m_material->setMainTexture(source);
     //m_material->setMainTexture(Texture2D::whiteTexture());
-    m_material->setVector(u"_Tone", m_owner->m_toneValue.value());
+    m_material->setVector(_TT("_Tone"), m_owner->m_toneValue.value());
     context->blit(m_material, destination);
     return true;
 }

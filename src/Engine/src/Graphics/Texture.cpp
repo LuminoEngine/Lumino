@@ -131,7 +131,7 @@ Ref<Texture2D> Texture2D::loadEmoji(uint32_t codePoint)
 		return texture;
 	}
 	else {
-		LN_WARNING(u"Emoji font not loaded.\n");
+		LN_WARNING(_TT("Emoji font not loaded.\n"));
 		return nullptr;
 	}
 }
@@ -358,7 +358,7 @@ void Texture2D::serialize(Serializer2& ar)
     //    path = detail::AssetPath::makeRelativePath(ar.basePath(), m_sourceFilePath);
     //}
 
-    //ar & makeNVP(u"file", path);
+    //ar & makeNVP(_TT("file", path);
 
     //if (ar.isLoading()) {
     //    if (!path.isEmpty()) {
@@ -372,7 +372,7 @@ void Texture2D::serialize(Serializer2& ar)
 
 const std::vector<const Char*>& Texture2D::resourceExtensions() const
 {
-    static const std::vector<const Char*> exts = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
+    static const std::vector<const Char*> exts = { _TT(".png"), _TT(".jpg"), _TT(".tga"), _TT(".bmp"), _TT(".gif") };
     return exts;
 }
 
@@ -411,7 +411,7 @@ void Texture2D::onLoadResourceFile(Stream* stream, const detail::AssetPath& asse
 //        m_modified = true;
 //    }
 //    else {
-//        LN_WARNING(u"Asset not found: " + m_sourceFilePath.toString());    // TODO: operator
+//        LN_WARNING(_TT("Asset not found: " + m_sourceFilePath.toString());    // TODO: operator
 //    }
 //}
 

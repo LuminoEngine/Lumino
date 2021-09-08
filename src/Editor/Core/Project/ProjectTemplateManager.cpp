@@ -20,11 +20,11 @@ void ProjectTemplateManager::search()
 	for (auto dir : ln::FileSystem::getDirectories(Workspace::instance()->buildEnvironment()->projectTemplatesDirPath())) {
 		auto t = ln::makeObject2<ProjectTemplate>();
 		t->fullName = dir.fileName();
-		if (t->fullName.indexOf(u"cpp-", 0, ln::CaseSensitivity::CaseInsensitive) == 0) {
-			t->lang = u"cpp";
+		if (t->fullName.indexOf(_TT("cpp-"), 0, ln::CaseSensitivity::CaseInsensitive) == 0) {
+			t->lang = _TT("cpp");
 		}
-		else if (t->fullName.indexOf(u"ruby-", 0, ln::CaseSensitivity::CaseInsensitive) == 0) {
-			t->lang = u"ruby";
+		else if (t->fullName.indexOf(_TT("ruby-"), 0, ln::CaseSensitivity::CaseInsensitive) == 0) {
+			t->lang = _TT("ruby");
 		}
 		else {
 			// invalid proj dir.
@@ -50,7 +50,7 @@ ProjectTemplate* ProjectTemplateManager::findTemplate(const ln::String& primaryL
 
 	// When language is specified in templateName.
 	// e.g.) lumino new -t=cpp
-	auto defaultName = ln::String::concat(templateName, u"-default");
+	auto defaultName = ln::String::concat(templateName, _TT("-default"));
 	for (auto& t : m_templates) {
 		if (ln::String::compare(t->fullName, defaultName, ln::CaseSensitivity::CaseInsensitive) == 0) {
 			return t;
@@ -61,7 +61,7 @@ ProjectTemplate* ProjectTemplateManager::findTemplate(const ln::String& primaryL
 	// e.g.) lumino new
 	// e.g.) lumino --lang=ruby new
 	if (templateName.isEmpty()) {
-		auto name = ln::String::concat(primaryLang, u"-default");
+		auto name = ln::String::concat(primaryLang, _TT("-default"));
 		for (auto& t : m_templates) {
 			if (ln::String::compare(t->fullName, name, ln::CaseSensitivity::CaseInsensitive) == 0) {
 				return t;
@@ -69,7 +69,7 @@ ProjectTemplate* ProjectTemplateManager::findTemplate(const ln::String& primaryL
 		}
 	}
 	else {
-		auto name = ln::String::concat(primaryLang, u"-", templateName);
+		auto name = ln::String::concat(primaryLang, _TT("-"), templateName);
 		for (auto& t : m_templates) {
 			if (ln::String::compare(t->fullName, name, ln::CaseSensitivity::CaseInsensitive) == 0) {
 				return t;
@@ -84,7 +84,7 @@ ln::Result ProjectTemplateManager::applyTemplates(const Project* project, const 
 {
 	auto templateProject = findTemplate(project->workspace()->primaryLang(), templateName);
 	if (!templateProject) {
-		CLI::error(u"Invalid project template.");
+		CLI::error(_TT("Invalid project template."));
 		return false;
 	}
 
@@ -92,7 +92,7 @@ ln::Result ProjectTemplateManager::applyTemplates(const Project* project, const 
 	auto dstRoot = project->rootDirPath();
 	auto srcRoot = templateProject->directoryPath;
 
-	CLI::info(u"Template: " + templateName);
+	CLI::info(_TT("Template: ") + templateName);
 
 	// 先にフォルダを作っておく
 	for (auto dir : ln::FileSystem::getDirectories(srcRoot, ln::StringRef(), ln::SearchOption::Recursive)) {
@@ -106,7 +106,7 @@ ln::Result ProjectTemplateManager::applyTemplates(const Project* project, const 
 		ln::FileSystem::copyFile(file, ln::Path(dstRoot, rel));
 	}
 
-	CLI::info("Copied template.");
+	CLI::info(_TT("Copied template."));
 	return true;
 }
 

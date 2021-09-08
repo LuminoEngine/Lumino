@@ -15,7 +15,7 @@ AppData::AppData()
 
 void AppData::load()
 {
-    auto filePath = ln::Path::combine(ln::Environment::specialFolderPath(ln::SpecialFolder::ApplicationData), u"Lumino", u"EditorData.json");
+    auto filePath = ln::Path::combine(ln::Environment::specialFolderPath(ln::SpecialFolder::ApplicationData), _TT("Lumino"), _TT("EditorData.json"));
     if (ln::FileSystem::existsFile(filePath)) {
         auto text = ln::FileSystem::readAllText(filePath);
         ln::JsonSerializer::deserialize(text, *this);
@@ -24,8 +24,8 @@ void AppData::load()
 
 void AppData::save()
 {
-    auto dirPath = ln::Path(ln::Environment::specialFolderPath(ln::SpecialFolder::ApplicationData), u"Lumino");
-    auto filePath = ln::Path(dirPath, u"EditorData.json");
+    auto dirPath = ln::Path(ln::Environment::specialFolderPath(ln::SpecialFolder::ApplicationData), _TT("Lumino"));
+    auto filePath = ln::Path(dirPath, _TT("EditorData.json"));
     ln::FileSystem::createDirectory(dirPath);
 
     auto text = ln::JsonSerializer::serialize(*this);
@@ -34,7 +34,7 @@ void AppData::save()
 
 void AppData::serialize(ln::Archive& ar)
 {
-    ar & ln::makeNVP(u"RecentProjectFiles", recentProjectFiles);
+    ar & ln::makeNVP(_TT("RecentProjectFiles"), recentProjectFiles);
 }
 
 void AppData::addRecentProjectFile(const ln::Path& filePath)

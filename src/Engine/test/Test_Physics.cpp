@@ -8,7 +8,7 @@ TEST_F(Test_Physics, Basic)
 {
 	//* [ ] static body 上へ落下
 	{
-		auto texture1 = Assets::loadTexture(u"Sprite1");
+		auto texture1 = Assets::loadTexture(_TT("Sprite1");
 
 		// ground
 		auto sprite1 = Sprite::create(texture1, 10, 1);
@@ -67,7 +67,7 @@ TEST_F(Test_Physics, TriggerBody)
 {
 	// box1
 	auto box1 = ln::makeObject<ln::BoxMesh>();
-	box1->addTag(u"box1");
+	box1->addTag(_TT("box1"));
 	auto shape1 = BoxCollisionShape::create(1, 1, 1);
 	auto body1 = TriggerBodyComponent::create();
 	body1->addCollisionShape(shape1);
@@ -75,7 +75,7 @@ TEST_F(Test_Physics, TriggerBody)
 
 	// box2
 	auto box2 = ln::makeObject<ln::BoxMesh>();
-	box2->addTag(u"box2");
+	box2->addTag(_TT("box2"));
 	auto shape2 = BoxCollisionShape::create(2, 2, 2);
 	auto body2 = TriggerBodyComponent::create();
 	body2->addCollisionShape(shape2);

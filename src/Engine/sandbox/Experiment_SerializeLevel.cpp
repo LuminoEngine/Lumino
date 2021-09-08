@@ -22,8 +22,8 @@ class App_Experiment_SerializeLevel : public Application
 
             auto level1 = makeObject<Level>();
 
-            auto model1 = MeshModel::load(u"Models/Box1.gltf");
-            //Assets::saveAsset(model1, u"Models/Box1");
+            auto model1 = MeshModel::load(_TT("Models/Box1.gltf"));
+            //Assets::saveAsset(model1, _TT("Models/Box1"));
 
 
             auto mesh1 = StaticMesh::create(model1);
@@ -32,12 +32,12 @@ class App_Experiment_SerializeLevel : public Application
             level1->addObject(mesh1);
             level1->acquireRenderParameters()->m_fogColor = Color::Gray;
 
-            Assets::saveAsset(level1, u"Level1");
+            Assets::saveAsset(level1, _TT("Level1"));
         }
         else
         {
             auto level1 = makeObject<TestLevel>();
-            Assets::reloadAsset(u"Level1", level1);
+            Assets::reloadAsset(_TT("Level1"), level1);
 
             Scene::gotoLevel(level1);
         }

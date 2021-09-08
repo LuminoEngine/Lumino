@@ -141,7 +141,7 @@ void FontManager::init(const Settings& settings)
 #endif
 
     FontDesc desc;
-    desc.Family = u"mplus-1c-regular-ascii-subset";
+    desc.Family = _TT("mplus-1c-regular-ascii-subset");
     m_defaultFont = makeObject<Font>(desc);
 
     if (!settings.fontFile.isEmpty()) {
@@ -157,11 +157,11 @@ void FontManager::init(const Settings& settings)
 		return;
 	}
 
-	auto emojiFontPath = ln::Path(settings.engineAssetPath, u"NotoColorEmoji.ttf");
+	auto emojiFontPath = ln::Path(settings.engineAssetPath, _TT("NotoColorEmoji.ttf"));
 	if (FileSystem::existsFile(emojiFontPath)) {
 		registerFontFromFile(emojiFontPath, false);
 		FontDesc desc;
-		desc.Family = u"Noto Color Emoji";
+		desc.Family = _TT("Noto Color Emoji");
 		m_emojiFont = makeObject<Font>(desc);
 	}
 
@@ -522,12 +522,12 @@ Font* GlyphIconFontManager::getFontAwesomeFont(const StringRef& style, int size)
 {
 	const Char* familyName;
 	std::unordered_map<int, Ref<Font>>* fontMap;
-	if (String::compare(style, u"Solid", CaseSensitivity::CaseInsensitive) == 0) {
-		familyName = u"Font Awesome 5 Free";	// TODO: style Solid
+	if (String::compare(style, _TT("Solid"), CaseSensitivity::CaseInsensitive) == 0) {
+		familyName = _TT("Font Awesome 5 Free");	// TODO: style Solid
 		fontMap = &m_fontAwesomeFontMap_Solid;
 	}
 	else {
-		familyName = u"Font Awesome 5 Free";
+		familyName = _TT("Font Awesome 5 Free");
 		fontMap = &m_fontAwesomeFontMap_Regular;
 	}
 

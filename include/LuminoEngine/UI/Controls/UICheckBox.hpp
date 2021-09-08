@@ -14,7 +14,7 @@ LN_CONSTRUCT_ACCESS:
 	bool init();
 
 protected:
-	const String& elementName() const override { static String name = u"UICheckBox"; return name; }
+	const String& elementName() const override { static String name = _TT("UICheckBox"); return name; }
 	Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 	void onRender(UIRenderingContext* context) override;

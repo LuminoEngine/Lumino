@@ -166,10 +166,10 @@ UIScreenRange UIPhysicalLine::getLocalScreenRange(const UITextRange& range) cons
 // UITextLayout
 
 UITextLayout::UITextLayout()
-	: m_lineTerminator(u"\n")
+	: m_lineTerminator(_TT("\n"))
 {
 	m_cursorCaretHighlighter = makeRef<UICursorCaretHighlighter>();
-	setText(u"");
+	setText(_TT(""));
 }
 
 void UITextLayout::setBaseTextStyle(Font* font, const Color& textColor)

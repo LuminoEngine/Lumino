@@ -7,7 +7,7 @@ public:
 
     void onInit() override
     {
-        auto sprite = Sprite::With(u"picture1.jpg").buildInto();
+        auto sprite = Sprite::With(_TT("picture1.jpg")).buildInto();
     }
 
     void onUpdate() override

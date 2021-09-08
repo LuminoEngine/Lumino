@@ -62,17 +62,17 @@ bool UnifiedShaderCompiler::compile(
 		List<String> actualDefinitions = definitions;
 		{
 			if (tech.techniqueClass.shadingModel == ShaderTechniqueClass_ShadingModel::Default)
-				actualDefinitions.add(u"LN_SHADINGMODEL_DEFAULT=1");
+				actualDefinitions.add(_TT("LN_SHADINGMODEL_DEFAULT=1"));
 			if (tech.techniqueClass.shadingModel == ShaderTechniqueClass_ShadingModel::Unlit)
-				actualDefinitions.add(u"LN_SHADINGMODEL_UNLIT=1");
+				actualDefinitions.add(_TT("LN_SHADINGMODEL_UNLIT=1"));
 			if (tech.techniqueClass.meshProcess == ShaderTechniqueClass_MeshProcess::SkinnedMesh)
-				actualDefinitions.add(u"LN_USE_SKINNING=1");
+				actualDefinitions.add(_TT("LN_USE_SKINNING=1"));
 			if (tech.techniqueClass.normalClass == ShaderTechniqueClass_Normal::NormalMap)
-				actualDefinitions.add(u"LN_USE_NORMALMAP=1");
+				actualDefinitions.add(_TT("LN_USE_NORMALMAP=1"));
 			if (tech.techniqueClass.roughnessClass == ShaderTechniqueClass_Roughness::RoughnessMap)
-				actualDefinitions.add(u"LN_USE_ROUGHNESS_MAP=1");
+				actualDefinitions.add(_TT("LN_USE_ROUGHNESS_MAP=1"));
 			if (tech.techniqueClass.drawMode == ShaderTechniqueClass_DrawMode::Instancing)
-				actualDefinitions.add(u"LN_USE_INSTANCING=1");
+				actualDefinitions.add(_TT("LN_USE_INSTANCING=1"));
 		}
 
 

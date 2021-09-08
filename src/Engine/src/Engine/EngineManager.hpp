@@ -58,10 +58,10 @@ struct EngineSettings
 {
     Application* application = nullptr;
     Flags<EngineFeature> features = EngineFeature::Experimental;
-	String bundleIdentifier = u"lumino";
+	String bundleIdentifier = _TT("lumino");
 	SizeI mainWindowSize = SizeI(640, 480);
 	SizeI mainWorldViewSize = SizeI(0, 0);
-	String mainWindowTitle = u"Lumino";
+	String mainWindowTitle = _TT("Lumino");
 	bool mainWindowResizable = false;
 	AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
     List<EngineSettingsAssetArchiveEntry> assetArchives;

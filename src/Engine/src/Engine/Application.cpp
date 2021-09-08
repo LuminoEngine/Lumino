@@ -217,7 +217,7 @@ void AppDataInternal::attemptLoad()
 
 Path AppDataInternal::makeFilePath() const
 {
-	return Path::combine(Environment::specialFolderPath(SpecialFolder::ApplicationData), u"Lumino", u"CommonAppData.yml");
+	return Path::combine(Environment::specialFolderPath(SpecialFolder::ApplicationData), _TT("Lumino"), _TT("CommonAppData.yml"));
 }
 
 void AppDataInternal::save(const Path& filePath)

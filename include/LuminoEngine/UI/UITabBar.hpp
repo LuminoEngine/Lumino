@@ -7,7 +7,7 @@ class UITabItem
 	: public UICollectionItem
 {
 protected:
-	virtual const String& elementName() const  override { static String name = u"UITabItem"; return name; }
+	virtual const String& elementName() const  override { static String name = _TT("UITabItem"); return name; }
 
 LN_CONSTRUCT_ACCESS:
 	UITabItem();
@@ -29,7 +29,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 protected:
-    virtual const String& elementName() const  override { static String name = u"UITabBar"; return name; }
+    virtual const String& elementName() const  override { static String name = _TT("UITabBar"); return name; }
     //virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
     //virtual Size measureOverride(const Size& constraint) override;
     //virtual Size arrangeOverride(const Size& finalSize) override;
@@ -47,7 +47,7 @@ class UITabBarItem2
 protected:
 	virtual void onSelectedChanged(UIEventArgs* e);
 
-	const String& elementName() const override { static String name = u"UITabBarItem"; return name; }
+	const String& elementName() const override { static String name = _TT("UITabBarItem"); return name; }
 	void onRoutedEvent(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -81,7 +81,7 @@ protected:
 	/** selectedTab が変更された時に呼び出されます。 */
 	virtual void onSelectedTabChanged(UIEventArgs* e);
 
-	const String& elementName() const override { static String name = u"UITabBar"; return name; }
+	const String& elementName() const override { static String name = _TT("UITabBar"); return name; }
 	void onAddChild(UIElement* child) override;
 	Size measureOverride(UILayoutContext* context, const Size& constraint) override;
 	Size arrangeOverride(UILayoutContext* context, const Rect& finalArea) override;

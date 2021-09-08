@@ -65,20 +65,20 @@ void UIDialog::setupDialogButtons(UIDialogButtons buttons)
 	switch (buttons)
 	{
 	case UIDialogButtons::OK:
-		addDialogButton(UIDialogButtonRole::Accept, u"OK");
+		addDialogButton(UIDialogButtonRole::Accept, _TT("OK"));
 		break;
 	case UIDialogButtons::OKCancel:
-		addDialogButton(UIDialogButtonRole::Accept, u"OK");
-		addDialogButton(UIDialogButtonRole::Reject, u"Cancel");
+		addDialogButton(UIDialogButtonRole::Accept, _TT("OK"));
+		addDialogButton(UIDialogButtonRole::Reject, _TT("Cancel"));
 		break;
 	case UIDialogButtons::YesNo:
-		addDialogButton(UIDialogButtonRole::Accept, u"Yes");
-		addDialogButton(UIDialogButtonRole::Discard, u"No");
+		addDialogButton(UIDialogButtonRole::Accept, _TT("Yes"));
+		addDialogButton(UIDialogButtonRole::Discard, _TT("No"));
 		break;
 	case UIDialogButtons::YesNoCancel:
-		addDialogButton(UIDialogButtonRole::Accept, u"Yes");
-		addDialogButton(UIDialogButtonRole::Discard, u"No");
-		addDialogButton(UIDialogButtonRole::Reject, u"Cancel");
+		addDialogButton(UIDialogButtonRole::Accept, _TT("Yes"));
+		addDialogButton(UIDialogButtonRole::Discard, _TT("No"));
+		addDialogButton(UIDialogButtonRole::Reject, _TT("Cancel"));
 		break;
 	default:
 		LN_UNREACHABLE();

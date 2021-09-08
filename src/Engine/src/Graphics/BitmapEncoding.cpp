@@ -121,7 +121,7 @@ public:
 
 		// サイズチェック
 		if (dataSize < PNG_BYTES_TO_CHECK) {
-			diag->reportError("invalid data size.");
+			diag->reportError(_TT("invalid data size."));
 			return false;
 		}
 
@@ -130,7 +130,7 @@ public:
 		stream->seek(0, SeekOrigin::Begin);
 		res = png_check_sig(sig, PNG_BYTES_TO_CHECK);
 		if (!res) {
-			diag->reportError("invalid png signature.");
+			diag->reportError(_TT("invalid png signature."));
 			return false;
 		}
 

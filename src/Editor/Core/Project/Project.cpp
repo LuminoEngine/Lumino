@@ -32,16 +32,16 @@ ln::Result Project::newProject(const ln::Path& projectDir, const ln::String& pro
 
 	m_projectFilePath = ln::Path(m_rootDir, m_projectName + ProjectFileExt);
 	if (ln::FileSystem::existsFile(m_projectFilePath)) {
-		CLI::error("Lumino project already exists.");
+		CLI::error(_TT("Lumino project already exists."));
 		return false;
 	}
 
-	CLI::info(u"\nCreating a new Lumino app in " + m_rootDir + u"\n");
+	CLI::info(_TT("\nCreating a new Lumino app in ") + m_rootDir + _TT("\n"));
 
-	m_properties->language = u"cpp";
+	m_properties->language = _TT("cpp");
     m_properties->engine = engineSource;
     if (m_properties->engine.isEmpty()) {
-        m_properties->engine = u"system";
+        m_properties->engine = _TT("system");
     }
 
 	//ln::FileSystem::createDirectory(m_engineDir);
@@ -61,7 +61,7 @@ ln::Result Project::newProject(const ln::Path& projectDir, const ln::String& pro
     //}
 	
     ln::Result result = saveProject();
-	CLI::info(u"\nSuccess! Created " + m_projectName + u" at " + m_rootDir + u"\n");
+	CLI::info(_TT("\nSuccess! Created ") + m_projectName + _TT(" at ") + m_rootDir + _TT("\n"));
 
     //if (!postInitialize()) {
     //    return false;
@@ -103,7 +103,7 @@ ln::Result Project::openProject2(const ln::Path& projectFile)
 
 	setupPathes();
 	if (m_projectFilePath.isEmpty()) {
-		CLI::error("Lumino project file not found in current directory.");
+		CLI::error(_TT("Lumino project file not found in current directory."));
 		return false;
 	}
 
@@ -111,7 +111,7 @@ ln::Result Project::openProject2(const ln::Path& projectFile)
 		return false;
 	}
 
-	if (m_properties->language == "cpp") {
+	if (m_properties->language == _TT("cpp")) {
 		m_context = ln::makeRef<CppLanguageContext>(this);
 	}
 	else {
@@ -158,7 +158,7 @@ const ln::Path& Project::acquireBuildDir() const
 bool Project::existsProjectFile(const ln::Path& dir)
 {
     if (ln::FileSystem::existsDirectory(dir)) {
-        auto files = ln::FileSystem::getFiles(dir, u"*" + ProjectFileExt);
+        auto files = ln::FileSystem::getFiles(dir, _TT("*") + ProjectFileExt);
         return !files.isEmpty();
     }
     else {
@@ -168,16 +168,16 @@ bool Project::existsProjectFile(const ln::Path& dir)
 
 void Project::setupPathes()
 {
-	m_engineDir = ln::Path(m_rootDir, u"engine");
-	m_sourcesDir = ln::Path(m_rootDir, u"src");
-	m_assetsDir = ln::Path(m_rootDir, u"assets");
-	m_buildDir = ln::Path(m_rootDir, u".ln");
-	m_releaseDir = ln::Path(m_rootDir, u"release");
+	m_engineDir = ln::Path(m_rootDir, _TT("engine"));
+	m_sourcesDir = ln::Path(m_rootDir, _TT("src"));
+	m_assetsDir = ln::Path(m_rootDir, _TT("assets"));
+	m_buildDir = ln::Path(m_rootDir, _TT(".ln"));
+	m_releaseDir = ln::Path(m_rootDir, _TT("release"));
 	
-	m_intermediateAssetsDir = ln::Path(m_buildDir, u"assets");
-    m_localPluginDir = ln::Path(m_buildDir, u"plugins");
+	m_intermediateAssetsDir = ln::Path(m_buildDir, _TT("assets"));
+    m_localPluginDir = ln::Path(m_buildDir, _TT("plugins"));
 
-	//auto files = ln::FileSystem::getFiles(m_rootDir, u"*" + ProjectFileExt);
+	//auto files = ln::FileSystem::getFiles(m_rootDir, _TT("*" + ProjectFileExt);
 	//if (!files.isEmpty()) {
 	//	m_projectFilePath = *files.begin();
 	//}
@@ -259,21 +259,21 @@ void Project::restore()
 
 bool Project::existsProjectFile(const ln::Path& dir)
 {
-	auto files = ln::FileSystem::getFiles(dir, u"*" + ProjectFileExt);
+	auto files = ln::FileSystem::getFiles(dir, _TT("*" + ProjectFileExt);
 	return !files.isEmpty();
 }
 
 void Project::setupPathes()
 {
-	m_engineDir = ln::Path(m_rootDir, u"Engine");
-	m_sourcesDir = ln::Path(m_rootDir, u"Sources");
-	m_assetsDir = ln::Path(m_rootDir, u"Assets");
-	m_buildDir = ln::Path(m_rootDir, u".ln");
-	m_releaseDir = ln::Path(m_rootDir, u"Release");
+	m_engineDir = ln::Path(m_rootDir, _TT("Engine");
+	m_sourcesDir = ln::Path(m_rootDir, _TT("Sources");
+	m_assetsDir = ln::Path(m_rootDir, _TT("Assets");
+	m_buildDir = ln::Path(m_rootDir, _TT(".ln");
+	m_releaseDir = ln::Path(m_rootDir, _TT("Release");
 	
-	m_intermediateAssetsDir = ln::Path(m_buildDir, u"Assets");
+	m_intermediateAssetsDir = ln::Path(m_buildDir, _TT("Assets");
 
-	auto files = ln::FileSystem::getFiles(m_rootDir, u"*" + ProjectFileExt);
+	auto files = ln::FileSystem::getFiles(m_rootDir, _TT("*" + ProjectFileExt);
 	if (!files.isEmpty()) {
 		m_projectFilePath = *files.begin();
 	}

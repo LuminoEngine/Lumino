@@ -27,7 +27,7 @@ class App_Experiment_Shadow : public Application
 
 		m_sprite = Sprite::create();
 		m_sprite->setPosition(3, 3, 0);
-		m_sprite->setTexture(Texture2D::load(u"Sprite1"));
+		m_sprite->setTexture(Texture2D::load(_TT("Sprite1")));
 	}
 
     void onUpdate() override

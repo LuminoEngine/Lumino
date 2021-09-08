@@ -246,9 +246,9 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
 
 
-                //m_clearMaterial->setVector(u"frustumRayTL", Vector4(frustumRayTL, 0));
-                //m_clearMaterial->setVector(u"frustumRayTR", Vector4(frustumRayTR, 0));
-                //m_clearMaterial->setVector(u"frustumRayBL", Vector4(frustumRayBL, 0));
+                //m_clearMaterial->setVector(_TT("frustumRayTL", Vector4(frustumRayTL, 0));
+                //m_clearMaterial->setVector(_TT("frustumRayTR", Vector4(frustumRayTR, 0));
+                //m_clearMaterial->setVector(_TT("frustumRayBL", Vector4(frustumRayBL, 0));
 
 
                 static const float EARTH_RADIUS = 6370997.0f;
@@ -332,8 +332,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 auto p1 = Vector3::normalize(p1r);
                 auto p2 = Vector3::normalize(p2r);
 				auto p3 = Vector3::normalize(p3r);
-                m_clearMaterial->setMatrix(u"_localWorld", rot);
-                m_clearMaterial->setMatrix(u"_scaleMatrix", ss);
+                m_clearMaterial->setMatrix(_TT("_localWorld"), rot);
+                m_clearMaterial->setMatrix(_TT("_scaleMatrix"), ss);
 
                 renderingContext->pushState();
                 renderingContext->setTransfrom(mm);
@@ -386,7 +386,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             // test
             //renderingContext->pushState();
             //renderingContext->setBlendMode(BlendMode::Alpha);
-            //renderingContext->drawText(u"Lumino", Font::create(), Color::Blue);
+            //renderingContext->drawText(_TT("Lumino", Font::create(), Color::Blue);
             //renderingContext->popState();
 
 
@@ -485,9 +485,9 @@ void WorldRenderView::createGridPlane()
 //	};
 //	static const size_t size = LN_ARRAY_SIZE_OF(data);
 //	MemoryStream stream(data, size);
-//	auto shader = makeObject<Shader>(u"InfinitePlaneGrid", &stream);
+//	auto shader = makeObject<Shader>(_TT("InfinitePlaneGrid", &stream);
 //#else
-//    auto shader = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
+//    auto shader = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
 //#endif
     auto shader = detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::InfinitePlaneGrid);
 

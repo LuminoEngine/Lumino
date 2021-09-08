@@ -30,7 +30,7 @@ public:
 	Navigator* navigator() const { return m_navigator; }
 
 protected:
-    virtual const ln::String& elementName() const  override { static ln::String name = u"NavigationBarItem"; return name; }
+    virtual const ln::String& elementName() const  override { static ln::String name = _TT("NavigationBarItem"); return name; }
 	virtual void onSelected(ln::UIEventArgs* e) override;
 	virtual void onUnselected(ln::UIEventArgs* e) override;
 

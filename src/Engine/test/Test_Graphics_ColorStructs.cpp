@@ -29,25 +29,25 @@ TEST_F(Test_Graphics_Color, Operators)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Color, parse)
 {
-	auto c1 = Color::parse(u"#FF0000");
+	auto c1 = Color::parse(_TT("#FF0000"));
 	ASSERT_EQ(true, c1.r >= 1.0f);
 	ASSERT_EQ(true, c1.g == 0.0f);
 	ASSERT_EQ(true, c1.b == 0.0f);
 	ASSERT_EQ(true, c1.a >= 1.0f);
 
-	auto c2 = Color::parse(u"#FF0000FF");
+	auto c2 = Color::parse(_TT("#FF0000FF"));
 	ASSERT_EQ(true, c2.r == 0.0f);
 	ASSERT_EQ(true, c2.g == 0.0f);
 	ASSERT_EQ(true, c2.b >= 1.0f);
 	ASSERT_EQ(true, c2.a >= 1.0f);
 
-	auto c3 = Color::parse(u"#0F0");
+	auto c3 = Color::parse(_TT("#0F0"));
 	ASSERT_EQ(true, c3.r == 0.0f);
 	ASSERT_EQ(true, c3.g >= 1.0f);
 	ASSERT_EQ(true, c3.b == 0.0f);
 	ASSERT_EQ(true, c3.a >= 1.0f);
 
-	auto c4 = Color::parse(u"#0F00");
+	auto c4 = Color::parse(_TT("#0F00"));
 	ASSERT_EQ(true, c4.r >= 1.0f);
 	ASSERT_EQ(true, c4.g == 0.0f);
 	ASSERT_EQ(true, c4.b == 0.0f);

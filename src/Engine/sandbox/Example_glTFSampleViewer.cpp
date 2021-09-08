@@ -26,7 +26,7 @@ public:
                 for (const auto& y : fs::directory_iterator(glbdir)) {
                     std::cout << y.path() << std::endl;
 
-                    m_files.add(String(y.path().u16string().c_str()));
+                    m_files.add(String(y.path().u32string().c_str()));
                 }
             }
         }
