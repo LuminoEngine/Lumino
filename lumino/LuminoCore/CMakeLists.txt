@@ -83,8 +83,8 @@ install(TARGETS ${PROJECT_NAME}
     INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
     FRAMEWORK DESTINATION .)
 
-install(DIRECTORY ../../include/LuminoCore DESTINATION ./include)
-install(FILES ../../include/LuminoCore.hpp DESTINATION include)
+install(DIRECTORY include/LuminoCore DESTINATION ./include)
+install(FILES include/LuminoCore.hpp DESTINATION include)
 
 install(
     EXPORT LuminoCoreTargets
