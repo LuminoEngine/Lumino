@@ -213,29 +213,6 @@ namespace LuminoBuild.Tasks
             {
                 Utils.CallProcess("git", "clone --depth 1 -b 3.0.1 https://github.com/leetal/ios-cmake.git ios-cmake");
             }
-            if (!Directory.Exists("zlib"))
-            {
-                Utils.CallProcess("git", "clone --depth 1 -b v1.2.11 https://github.com/madler/zlib.git zlib");
-                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "zlib", "CMakeLists.txt"), "zlib");
-            }
-            if (!Directory.Exists("libpng"))
-            {
-                //Utils.CallProcess("git", "clone --depth 1 -b v1.6.9 git://git.code.sf.net/p/libpng/code libpng");
-                Utils.CallProcess("git", "clone --depth 1 -b libpng17 https://github.com/glennrp/libpng.git libpng");
-
-#if false
-                var zip = Path.Combine(reposDir, "lpng1635.zip");
-                Utils.DownloadFile("https://download.sourceforge.net/libpng/lpng1635.zip", zip);
-
-                var dir = Path.Combine(reposDir, "lpng1635");
-                Utils.ExtractZipFile(zip, dir);
-                Directory.Move(Path.Combine(dir, "lpng1635"), Path.Combine(reposDir, "libpng"));
-                //Directory.Move(dir, Path.Combine(reposDir, "libpng"));
-
-                //Utils.CallProcess("git", "clone --depth 1 -b libpng17 https://github.com/glennrp/libpng.git libpng");
-#endif
-                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "libpng", "CMakeLists.txt"), "libpng");
-            }
             if (!Directory.Exists("glslang"))
             {
                 Utils.CallProcess("git", "clone --depth 1 -b SDK-candidate-26-Jul-2020 https://github.com/KhronosGroup/glslang.git glslang");
@@ -296,15 +273,6 @@ namespace LuminoBuild.Tasks
                 //dir.Attributes = dir.Attributes & ~FileAttributes.ReadOnly;
                 //Directory.Move(dst, Path.Combine(reposDir, "SDL2"));
             }
-            if (!Directory.Exists("freetype2"))
-            {
-                Utils.CallProcess("git", "clone --depth 1 -b VER-2-7-1 git://git.sv.nongnu.org/freetype/freetype2.git freetype2");
-                
-                // freetype2 の CMakeList.txt は iOS ツールチェインを独自で持っているが、
-                // 2018/11/19 時点では master のサポートでもビルドを通すことができない。
-                // そのため ↑のほうにある ios-cmake を有効にするため、PLATFORM に関する設定を削除した CMakeLists.txt を使用する。
-                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "freetype2", "CMakeLists.txt"), "freetype2");
-            }
             if (!Directory.Exists("ogg"))
             {
                 Utils.CallProcess("git", "clone --depth 1 -b v1.3.3 https://github.com/xiph/ogg.git ogg");
@@ -312,18 +280,6 @@ namespace LuminoBuild.Tasks
             if (!Directory.Exists("vorbis"))
             {
                 Utils.CallProcess("git", "clone --depth 1 -b v1.3.6-lumino https://github.com/lriki/vorbis.git vorbis");
-            }
-            if (!Directory.Exists("bullet3"))
-            {
-                Utils.CallProcess("git", "clone --depth 1 -b 2.89 https://github.com/bulletphysics/bullet3.git bullet3");
-
-                // 2.87 時点では Android ターゲットのビルドができない。
-                // - ルートの CMakeLists.txt が python を探しに行く、{} 初期化リストで暗黙変換を使っている。など。
-                // 2018/12/29 時点の master では対策されていたのでこれを使用する。
-                //Utils.CallProcess("git", "clone https://github.com/bulletphysics/bullet3.git bullet3");
-                //Directory.SetCurrentDirectory("bullet3");
-                //Utils.CallProcess("git", "checkout 8bc1c8e01b1b2b9284df08385da0e03241f4e6aa");
-                //Directory.SetCurrentDirectory(reposDir);
             }
             if (!Directory.Exists("pcre"))
             {
@@ -337,10 +293,6 @@ namespace LuminoBuild.Tasks
                 Directory.SetCurrentDirectory("tmxlite");
                 Utils.CallProcess("git", "checkout 8ed41071fe0774947fc7f7c6ece77de3061a5239");
                 Directory.SetCurrentDirectory(reposDir);
-            }
-            if (!Directory.Exists("Box2D"))
-            {
-                Utils.CallProcess("git", "clone --depth 1 -b v2.3.1 https://github.com/erincatto/Box2D.git Box2D");
             }
             if (!Directory.Exists("Vulkan-Headers"))
             {
@@ -394,8 +346,6 @@ namespace LuminoBuild.Tasks
                     var targetName = BuildEnvironment.Target;
                     var targetFullName = BuildEnvironment.TargetFullName;
                     var configuration = BuildEnvironment.Configuration;
-                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "zlib"));
-                    var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "libpng", "include"));
                     var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "ogg"));
                     var targetInfo = BuildEngine_MSVC.TargetInfoMap[builder.Triplet];
                     var altRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
@@ -403,21 +353,16 @@ namespace LuminoBuild.Tasks
 
                     BuildProjectMSVC(builder, "nanovg", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "yaml-cpp", reposDir, targetName, targetFullName, configuration, $"{cppyamlRuntime} -DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF");
-                    BuildProjectMSVC(builder, "zlib", reposDir, targetName, targetFullName, configuration);
-                    BuildProjectMSVC(builder, "libpng", reposDir, targetName, targetFullName, configuration, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProjectMSVC(builder, "glslang", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "SPIRV-Cross", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "glfw", reposDir, targetName, targetFullName, configuration, $"-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
                     BuildProjectMSVC(builder, "glad", reposDir, targetName, targetFullName, configuration, $"-DGLAD_INSTALL=ON");
                     BuildProjectMSVC(builder, "openal-soft", reposDir, targetName, targetFullName, configuration, $"-DALSOFT_BACKEND_DSOUND=OFF");  // find_package(DSound) で古い WindowsSDK の include パスが登録されてしまい、Windows.h など他の include が古い方に引っ張られてしまう
                     BuildProjectMSVC(builder, "SDL2", reposDir, targetName, targetFullName, configuration, $"-DSDL_SHARED=OFF -DSDL_STATIC=ON -DSSE=OFF ");
-                    BuildProjectMSVC(builder, "freetype2", reposDir, targetName, targetFullName, configuration, $"-DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir}");
                     BuildProjectMSVC(builder, "ogg", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "vorbis", reposDir, targetName, targetFullName, configuration, $"-DOGG_ROOT={oggInstallDir}");
-                    BuildProjectMSVC(builder, "bullet3", reposDir, targetName, targetFullName, configuration, $"{altRuntime} {bulletOptions}");
                     BuildProjectMSVC(builder, "pcre", reposDir, targetName, targetFullName, configuration, $"-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                     BuildProjectMSVC(builder, "tmxlite/tmxlite", reposDir, targetName, targetFullName, configuration, $"-DTMXLITE_STATIC_LIB=ON");
-                    BuildProjectMSVC(builder, "Box2D/Box2D", reposDir, targetName, targetFullName, configuration, $"-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
                     BuildProjectMSVC(builder, "Vulkan-Headers", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "lua", reposDir, targetName, targetFullName, configuration);
 
@@ -433,20 +378,12 @@ namespace LuminoBuild.Tasks
                     //foreach (var target in BuildEngine_AndroidJNI.Targets)
                     {
                         var targetName = BuildEnvironment.Target;
-
-                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, $"{targetName}", "ExternalInstall", "zlib"));
-                        var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "libpng", "include"));
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, $"{targetName}", "ExternalInstall", "ogg"));
 
-                        //BuildProjectAndroid(builder, "zlib", reposDir,targetName);
-                        BuildProjectAndroid(builder, "libpng", reposDir, targetName);//, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                        BuildProjectAndroid(builder, "freetype2", reposDir,targetName, $"-DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir}");
                         BuildProjectAndroid(builder, "ogg", reposDir,targetName);
                         BuildProjectAndroid(builder, "vorbis", reposDir,targetName, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
-                        BuildProjectAndroid(builder, "bullet3", reposDir,targetName, bulletOptions);
                         BuildProjectAndroid(builder, "pcre", reposDir,targetName, "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                         BuildProjectAndroid(builder, "tmxlite/tmxlite", reposDir,targetName, "-DTMXLITE_STATIC_LIB=ON");
-                        BuildProjectAndroid(builder, "Box2D/Box2D", reposDir,targetName, "-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
                         BuildProjectAndroid(builder, "Vulkan-Headers", reposDir,targetName);
                         BuildProjectAndroid(builder, "yaml-cpp", reposDir, targetName, $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF");
                         BuildProjectAndroid(builder, "nanovg", reposDir, targetName);
@@ -457,20 +394,13 @@ namespace LuminoBuild.Tasks
                 if (BuildEnvironment.IsWebTarget)
                 {
                     var externalInstallDir = Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, "ExternalInstall");
-                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(externalInstallDir, "zlib"));
-                    var pngIncludeDir = Utils.ToUnixPath(Path.Combine(externalInstallDir, "libpng", "include"));
                     var oggInstallDir = Utils.ToUnixPath(Path.Combine(externalInstallDir, "ogg"));
 
-                    BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
-                    BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
-                    BuildProjectEm(builder, "freetype2", reposDir, "Emscripten", $"-DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir}");
                     BuildProjectEm(builder, "ogg", reposDir, "Emscripten");
                     BuildProjectEm(builder, "vorbis", reposDir, "Emscripten", $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
-                    BuildProjectEm(builder, "bullet3", reposDir, "Emscripten", bulletOptions);
                     BuildProjectEm(builder, "pcre", reposDir, "Emscripten", "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                     BuildProjectEm(builder, "tmxlite/tmxlite", reposDir, "Emscripten", "-DTMXLITE_STATIC_LIB=ON");
-                    BuildProjectEm(builder, "Box2D/Box2D", reposDir, "Emscripten", "-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
                     BuildProjectEm(builder, "yaml-cpp", reposDir, "Emscripten", $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF");
                     BuildProjectEm(builder, "nanovg", reposDir, "Emscripten");
                 }
@@ -499,13 +429,8 @@ namespace LuminoBuild.Tasks
                         var args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DPLATFORM={platform}";
                         var generator = "Xcode";
                         
-                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, dirName, "ExternalInstall", "zlib"));
-                        var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, dirName, "ExternalInstall", "libpng", "include"));
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, dirName, "ExternalInstall", "ogg"));
 
-                        BuildProject(builder, "zlib", "", reposDir, dirName, generator, args);
-                        BuildProject(builder, "libpng", "", reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
-                        BuildProject(builder, "freetype2", "", reposDir, dirName, generator, $"-DWITH_ZLIB=OFF -DWITH_BZip2=OFF  -DWITH_PNG=OFF -DWITH_HarfBuzz=OFF -DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir} " + args);
                         BuildProject(builder, "ogg", "", reposDir, dirName, generator, args);
                         BuildProject(builder, "vorbis", "", reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_DEVELOPER_ROOT={builder.BuildDir} " + args);
                         BuildProject(builder, "bullet3", "", reposDir, dirName, generator, $"{bulletOptions} " + args);
@@ -531,18 +456,13 @@ namespace LuminoBuild.Tasks
                     {
                         var dirName = t.DirName;
                         var args = t.Args;
-                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, dirName, "ExternalInstall", "zlib"));
-                        var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, dirName, "ExternalInstall", "libpng", "include"));
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, dirName, "ExternalInstall", "ogg"));
 
                         var generator = "Xcode";
-                        BuildProject(builder, "zlib", t.Config, reposDir, dirName, generator, args);
-                        BuildProject(builder, "libpng", t.Config, reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
                         BuildProject(builder, "glslang", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "SPIRV-Cross", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "glfw", t.Config, reposDir, dirName, generator, $"-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
                         BuildProject(builder, "glad", t.Config, reposDir, dirName, generator, $"-DGLAD_INSTALL=ON " + args);
-                        BuildProject(builder, "freetype2", t.Config, reposDir, dirName, generator, $"-DWITH_ZLIB=OFF -DWITH_BZip2=OFF  -DWITH_PNG=OFF -DWITH_HarfBuzz=OFF -DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir} " + args);
                         BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} " + args);
                         BuildProject(builder, "bullet3", t.Config, reposDir, dirName, generator, $"{bulletOptions} " + args);

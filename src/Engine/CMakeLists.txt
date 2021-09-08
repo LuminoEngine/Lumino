@@ -349,15 +349,16 @@ set(
     pcre2_32
     png
     ZLIB::ZLIB
-    FreeType
+    freetype
     vorbisfile
     vorbis
     ogg
-    Box2D
-    BulletSoftBody
-    BulletDynamics
-    BulletCollision
+    box2d::box2d
     LinearMath
+    Bullet3Common
+    BulletCollision
+    BulletDynamics
+    BulletSoftBody
     tmxlite
     yamlcpp
     VulkanHeaders

@@ -292,18 +292,18 @@ if (LN_USE_SDL)
     list(APPEND LN_EXTERNAL_LIBS SDL2)
 endif()
 
-#--------------------------------------
-# freetype
-ln_make_external_find_path(FreeType_ROOT "freetype2")
+# #--------------------------------------
+# # freetype
+# ln_make_external_find_path(FreeType_ROOT "freetype2")
 
-find_library(FreeType_LIBRARY_RELEASE NAMES freetype libfreetype PATHS ${FreeType_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(FreeType_LIBRARY_DEBUG NAMES freetyped libfreetyped freetype libfreetype PATHS ${FreeType_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(FreeType_LIBRARY_RELEASE NAMES freetype libfreetype PATHS ${FreeType_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(FreeType_LIBRARY_DEBUG NAMES freetyped libfreetyped freetype libfreetype PATHS ${FreeType_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
-add_library(FreeType STATIC IMPORTED)
-set_target_properties(FreeType PROPERTIES IMPORTED_LOCATION_RELEASE "${FreeType_LIBRARY_RELEASE}")
-set_target_properties(FreeType PROPERTIES IMPORTED_LOCATION_DEBUG "${FreeType_LIBRARY_DEBUG}")
-set_target_properties(FreeType PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${FreeType_ROOT}/include/freetype2)
-list(APPEND LN_EXTERNAL_LIBS FreeType)
+# add_library(FreeType STATIC IMPORTED)
+# set_target_properties(FreeType PROPERTIES IMPORTED_LOCATION_RELEASE "${FreeType_LIBRARY_RELEASE}")
+# set_target_properties(FreeType PROPERTIES IMPORTED_LOCATION_DEBUG "${FreeType_LIBRARY_DEBUG}")
+# set_target_properties(FreeType PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${FreeType_ROOT}/include/freetype2)
+# list(APPEND LN_EXTERNAL_LIBS FreeType)
 
 #--------------------------------------
 # ogg
@@ -338,52 +338,52 @@ set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_RELEASE "${vorbisf
 set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_DEBUG "${vorbisfile_LIBRARY_DEBUG}")
 list(APPEND LN_EXTERNAL_LIBS vorbisfile)
 
-#--------------------------------------
-# bullet
-ln_make_external_find_path(bullet3_ROOT "bullet3")
+# #--------------------------------------
+# # bullet
+# ln_make_external_find_path(bullet3_ROOT "bullet3")
 
-find_library(LinearMath_LIBRARY_RELEASE NAMES LinearMath PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(LinearMath_LIBRARY_DEBUG NAMES LinearMathd LinearMath PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(BulletCollision_LIBRARY_RELEASE NAMES BulletCollision PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(BulletCollision_LIBRARY_DEBUG NAMES BulletCollisiond BulletCollision PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(BulletDynamics_LIBRARY_RELEASE NAMES BulletDynamics PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(BulletDynamics_LIBRARY_DEBUG NAMES BulletDynamicsd BulletDynamics PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(BulletSoftBody_LIBRARY_RELEASE NAMES BulletSoftBody PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(BulletSoftBody_LIBRARY_DEBUG NAMES BulletSoftBodyd BulletSoftBody PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(LinearMath_LIBRARY_RELEASE NAMES LinearMath PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(LinearMath_LIBRARY_DEBUG NAMES LinearMathd LinearMath PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(BulletCollision_LIBRARY_RELEASE NAMES BulletCollision PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(BulletCollision_LIBRARY_DEBUG NAMES BulletCollisiond BulletCollision PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(BulletDynamics_LIBRARY_RELEASE NAMES BulletDynamics PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(BulletDynamics_LIBRARY_DEBUG NAMES BulletDynamicsd BulletDynamics PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(BulletSoftBody_LIBRARY_RELEASE NAMES BulletSoftBody PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(BulletSoftBody_LIBRARY_DEBUG NAMES BulletSoftBodyd BulletSoftBody PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
-add_library(LinearMath STATIC IMPORTED)
-set_target_properties(LinearMath PROPERTIES IMPORTED_LOCATION_RELEASE "${LinearMath_LIBRARY_RELEASE}")
-set_target_properties(LinearMath PROPERTIES IMPORTED_LOCATION_DEBUG "${LinearMath_LIBRARY_DEBUG}")
-set_target_properties(LinearMath PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${bullet3_ROOT}/include/bullet)
-list(APPEND LN_EXTERNAL_LIBS LinearMath)
+# add_library(LinearMath STATIC IMPORTED)
+# set_target_properties(LinearMath PROPERTIES IMPORTED_LOCATION_RELEASE "${LinearMath_LIBRARY_RELEASE}")
+# set_target_properties(LinearMath PROPERTIES IMPORTED_LOCATION_DEBUG "${LinearMath_LIBRARY_DEBUG}")
+# set_target_properties(LinearMath PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${bullet3_ROOT}/include/bullet)
+# list(APPEND LN_EXTERNAL_LIBS LinearMath)
 
-add_library(BulletCollision STATIC IMPORTED)
-set_target_properties(BulletCollision PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletCollision_LIBRARY_RELEASE}")
-set_target_properties(BulletCollision PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletCollision_LIBRARY_DEBUG}")
-list(APPEND LN_EXTERNAL_LIBS BulletCollision)
+# add_library(BulletCollision STATIC IMPORTED)
+# set_target_properties(BulletCollision PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletCollision_LIBRARY_RELEASE}")
+# set_target_properties(BulletCollision PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletCollision_LIBRARY_DEBUG}")
+# list(APPEND LN_EXTERNAL_LIBS BulletCollision)
 
-add_library(BulletDynamics STATIC IMPORTED)
-set_target_properties(BulletDynamics PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletDynamics_LIBRARY_RELEASE}")
-set_target_properties(BulletDynamics PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletDynamics_LIBRARY_DEBUG}")
-list(APPEND LN_EXTERNAL_LIBS BulletDynamics)
+# add_library(BulletDynamics STATIC IMPORTED)
+# set_target_properties(BulletDynamics PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletDynamics_LIBRARY_RELEASE}")
+# set_target_properties(BulletDynamics PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletDynamics_LIBRARY_DEBUG}")
+# list(APPEND LN_EXTERNAL_LIBS BulletDynamics)
 
-add_library(BulletSoftBody STATIC IMPORTED)
-set_target_properties(BulletSoftBody PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletSoftBody_LIBRARY_RELEASE}")
-set_target_properties(BulletSoftBody PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletSoftBody_LIBRARY_DEBUG}")
-list(APPEND LN_EXTERNAL_LIBS BulletSoftBody)
+# add_library(BulletSoftBody STATIC IMPORTED)
+# set_target_properties(BulletSoftBody PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletSoftBody_LIBRARY_RELEASE}")
+# set_target_properties(BulletSoftBody PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletSoftBody_LIBRARY_DEBUG}")
+# list(APPEND LN_EXTERNAL_LIBS BulletSoftBody)
 
-#--------------------------------------
-# pcre
-ln_make_external_find_path(pcre_ROOT "pcre")
+# #--------------------------------------
+# # pcre
+# ln_make_external_find_path(pcre_ROOT "pcre")
 
-find_library(pcre_LIBRARY_RELEASE NAMES pcre2-16 PATHS ${pcre_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(pcre_LIBRARY_DEBUG NAMES pcre2-16d pcre2-16 PATHS ${pcre_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(pcre_LIBRARY_RELEASE NAMES pcre2-16 PATHS ${pcre_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(pcre_LIBRARY_DEBUG NAMES pcre2-16d pcre2-16 PATHS ${pcre_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
-add_library(pcre STATIC IMPORTED)
-set_target_properties(pcre PROPERTIES IMPORTED_LOCATION_RELEASE "${pcre_LIBRARY_RELEASE}")
-set_target_properties(pcre PROPERTIES IMPORTED_LOCATION_DEBUG "${pcre_LIBRARY_DEBUG}")
-set_target_properties(pcre PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${pcre_ROOT}/include)
-list(APPEND LN_EXTERNAL_LIBS pcre)
+# add_library(pcre STATIC IMPORTED)
+# set_target_properties(pcre PROPERTIES IMPORTED_LOCATION_RELEASE "${pcre_LIBRARY_RELEASE}")
+# set_target_properties(pcre PROPERTIES IMPORTED_LOCATION_DEBUG "${pcre_LIBRARY_DEBUG}")
+# set_target_properties(pcre PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${pcre_ROOT}/include)
+# list(APPEND LN_EXTERNAL_LIBS pcre)
 
 #--------------------------------------
 # tmxlite
@@ -398,18 +398,18 @@ set_target_properties(tmxlite PROPERTIES IMPORTED_LOCATION_DEBUG "${tmxlite_LIBR
 set_target_properties(tmxlite PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${tmxlite_ROOT}/include)
 #list(APPEND LN_EXTERNAL_LIBS tmxlite)
 
-#--------------------------------------
-# Box2D
-ln_make_external_find_path(Box2D_ROOT "Box2D")
+# #--------------------------------------
+# # Box2D
+# ln_make_external_find_path(Box2D_ROOT "Box2D")
 
-find_library(Box2D_LIBRARY_RELEASE NAMES Box2D PATHS ${Box2D_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(Box2D_LIBRARY_DEBUG NAMES Box2Dd Box2D PATHS ${Box2D_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(Box2D_LIBRARY_RELEASE NAMES Box2D PATHS ${Box2D_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(Box2D_LIBRARY_DEBUG NAMES Box2Dd Box2D PATHS ${Box2D_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
-add_library(Box2D STATIC IMPORTED)
-set_target_properties(Box2D PROPERTIES IMPORTED_LOCATION_RELEASE "${Box2D_LIBRARY_RELEASE}")
-set_target_properties(Box2D PROPERTIES IMPORTED_LOCATION_DEBUG "${Box2D_LIBRARY_DEBUG}")
-set_target_properties(Box2D PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${Box2D_ROOT}/include)
-list(APPEND LN_EXTERNAL_LIBS Box2D)
+# add_library(Box2D STATIC IMPORTED)
+# set_target_properties(Box2D PROPERTIES IMPORTED_LOCATION_RELEASE "${Box2D_LIBRARY_RELEASE}")
+# set_target_properties(Box2D PROPERTIES IMPORTED_LOCATION_DEBUG "${Box2D_LIBRARY_DEBUG}")
+# set_target_properties(Box2D PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${Box2D_ROOT}/include)
+# list(APPEND LN_EXTERNAL_LIBS Box2D)
 
 #--------------------------------------
 # Vulkan

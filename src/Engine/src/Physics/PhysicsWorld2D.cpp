@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <Box2D/Box2D.h>
+#include <box2d/box2d.h>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
@@ -144,7 +144,8 @@ void EdgeCollisionShape2D::resolveBox2DShape(b2Body* targetBody, const b2Fixture
             m_shape->CreateLoop(reinterpret_cast<const b2Vec2*>(m_points.data()), m_points.size());
         }
         else {
-            m_shape->CreateChain(reinterpret_cast<const b2Vec2*>(m_points.data()), m_points.size());
+            //m_shape->CreateChain(reinterpret_cast<const b2Vec2*>(m_points.data()), m_points.size());
+			LN_NOTIMPLEMENTED();
         }
         clearDirty();
     }
@@ -180,7 +181,7 @@ void EdgeListCollisionShape2D::resolveBox2DShape(b2Body* targetBody, const b2Fix
 		m_shapes.clear();
 		for (auto& pt : m_points) {
 			auto shape = std::make_unique<b2EdgeShape>();
-			shape->Set(LnToB2(pt.first), LnToB2(pt.second));
+			shape->SetTwoSided(LnToB2(pt.first), LnToB2(pt.second));
 			m_shapes.push_back(std::move(shape));
 		}
 		clearDirty();
@@ -371,7 +372,7 @@ void TriggerBody2D::onBeforeStepSimulation()
         // また、通常は kinematic としてふるまいたいので 質量0, 重力影響0 で作成している。
 		b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
-		bodyDef.userData = this;
+		bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(this);
         bodyDef.gravityScale = 0.0f;
 		m_body = world->CreateBody(&bodyDef);
 
@@ -612,8 +613,8 @@ void RigidBody2D::onBeforeStepSimulation()
 		bodyDef.awake = true;
 		bodyDef.fixedRotation = m_fixedRotation;
 		bodyDef.bullet = false;
-		bodyDef.active = true;
-		bodyDef.userData = this;
+		bodyDef.enabled = true;
+		bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(this);
 		bodyDef.gravityScale = 1.0f;
 		m_body = world->CreateBody(&bodyDef);
 
@@ -621,7 +622,7 @@ void RigidBody2D::onBeforeStepSimulation()
 		{
 			b2FixtureDef fixtureDef;
 			//fixtureDef.shape = shape;
-			fixtureDef.userData = this;
+			fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(this);
 			fixtureDef.friction = m_friction;
 			fixtureDef.restitution = m_restitution;
 			fixtureDef.isSensor = false;
@@ -684,7 +685,7 @@ void RigidBody2D::onRemoveFromPhysicsWorld()
 	if (m_body) {
 		b2JointEdge* j = m_body->GetJointList();
 		while (j) {
-			Joint2D* joint = reinterpret_cast<Joint2D*>(j->joint->GetUserData());
+			Joint2D* joint = reinterpret_cast<Joint2D*>(j->joint->GetUserData().pointer);
 			j = j->next;
 			if (joint) {
 				joint->destroyJoint();
@@ -735,7 +736,7 @@ void Joint2D::setJoint(b2Joint* joint)
 {
 	LN_DCHECK(!m_joint);
 	m_joint = joint;
-	joint->SetUserData(this);
+	joint->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
 }
 
 void Joint2D::destroyJoint()
@@ -843,12 +844,17 @@ bool SpringJoint2D::createJoint()
 	jointDef.Initialize(m_bodyA->m_body, m_bodyB->m_body, LnToB2(m_bodyA->position() + m_anchorA), LnToB2(m_bodyB->position() + m_anchorB));
 	jointDef.collideConnected = true;
 	if (m_length > 0.0) jointDef.length = m_length;
+#if 1
+	// ver up 検証まだ
+	LN_NOTIMPLEMENTED();
+#else
 	// 0.1, 1.0 すごくのびる 0.0 まったくのびない
 	// 0.1, 0.0 すごくのびる
 	// 1.0, 0.0 それなりに伸びて戻ってくる。ほとんど制止しない。
 	// 1.0, 1.0 それなりに伸びて戻ってくる。振れ幅は少しずつ小さくなり、しばらくすると制止する。
 	jointDef.frequencyHz = 1.0;	
 	jointDef.dampingRatio = 0.0;	// 元に戻ろうとする力
+#endif
 	b2Joint* joint = m_world->box2DWorld()->CreateJoint(&jointDef);
 	setJoint(joint);
 	return true;
@@ -894,6 +900,9 @@ bool RopeJoint2D::init(PhysicsObject2D* bodyA, const Vector2& anchorA, PhysicsOb
 
 bool RopeJoint2D::createJoint()
 {
+#if 1
+	LN_NOTIMPLEMENTED();
+#else
 	b2RopeJointDef jointDef;
 
 
@@ -906,6 +915,7 @@ bool RopeJoint2D::createJoint()
 
 	b2Joint* joint = m_world->box2DWorld()->CreateJoint(&jointDef);
 	setJoint(joint);
+#endif
 	return true;
 }
 
@@ -948,7 +958,7 @@ public:
 	}
 
 	/// Draw a closed polygon provided in CCW order.
-	virtual void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+	void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override
 	{
 		b2Vec2 p1 = vertices[vertexCount - 1];
 		for (int32 i = 0; i < vertexCount; ++i)
@@ -961,7 +971,7 @@ public:
 	}
 
 	/// Draw a solid closed polygon provided in CCW order.
-	virtual void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+	void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override
 	{
 		b2Color fillColor(0.5f * color.r, 0.5f * color.g, 0.5f * color.b, 0.5f);
 
@@ -983,12 +993,12 @@ public:
 	}
 
 	/// Draw a circle.
-	virtual void DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
+	void DrawCircle(const b2Vec2& center, float radius, const b2Color& color) override
 	{
-		const float32 k_segments = 16.0f;
-		const float32 k_increment = 2.0f * b2_pi / k_segments;
-		float32 sinInc = sinf(k_increment);
-		float32 cosInc = cosf(k_increment);
+		const float k_segments = 16.0f;
+		const float k_increment = 2.0f * b2_pi / k_segments;
+		float sinInc = sinf(k_increment);
+		float cosInc = cosf(k_increment);
 		b2Vec2 r1(1.0f, 0.0f);
 		b2Vec2 v1 = center + radius * r1;
 		for (int32 i = 0; i < k_segments; ++i)
@@ -1006,12 +1016,12 @@ public:
 	}
 
 	/// Draw a solid circle.
-	virtual void DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
+	void DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color) override
 	{
-		const float32 k_segments = 16.0f;
-		const float32 k_increment = 2.0f * b2_pi / k_segments;
-		float32 sinInc = sinf(k_increment);
-		float32 cosInc = cosf(k_increment);
+		const float k_segments = 16.0f;
+		const float k_increment = 2.0f * b2_pi / k_segments;
+		float sinInc = sinf(k_increment);
+		float cosInc = cosf(k_increment);
 		b2Vec2 v0 = center;
 		b2Vec2 r1(cosInc, sinInc);
 		b2Vec2 v1 = center + radius * r1;
@@ -1051,7 +1061,7 @@ public:
 	}
 
 	/// Draw a line segment.
-	virtual void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
+	void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) override
 	{
 		addLineVertex(p1, color);
 		addLineVertex(p2, color);
@@ -1059,9 +1069,9 @@ public:
 
 	/// Draw a transform. Choose your own length scale.
 	/// @param xf a transform.
-	virtual void DrawTransform(const b2Transform& xf)
+	void DrawTransform(const b2Transform& xf) override
 	{
-		const float32 k_axisScale = 0.4f;
+		const float k_axisScale = 0.4f;
 		b2Color red(1.0f, 0.0f, 0.0f);
 		b2Color green(0.0f, 1.0f, 0.0f);
 		b2Vec2 p1 = xf.p, p2;
@@ -1073,6 +1083,11 @@ public:
 		addLineVertex(p1, green);
 		p2 = p1 + k_axisScale * xf.q.GetYAxis();
 		addLineVertex(p2, green);
+	}
+
+	void DrawPoint(const b2Vec2& p, float size, const b2Color& color) override
+	{
+		LN_NOTIMPLEMENTED();
 	}
 
 private:
@@ -1110,18 +1125,18 @@ class LocalContactListener
 {
 public:
     // 新しく接触を開始したときのコールバック。接触中は呼ばれない。
-    virtual void BeginContact(b2Contact* contact) override
+    void BeginContact(b2Contact* contact) override
     {
-        auto* bodyA = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureA()->GetBody()->GetUserData());
-        auto* bodyB = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureB()->GetBody()->GetUserData());
+        auto* bodyA = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureA()->GetBody()->GetUserData().pointer);
+        auto* bodyB = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureB()->GetBody()->GetUserData().pointer);
         bodyA->beginContact(bodyB);
         bodyB->beginContact(bodyA);
     }
 
-    virtual void EndContact(b2Contact* contact) override
+    void EndContact(b2Contact* contact) override
     {
-        auto* bodyA = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureA()->GetBody()->GetUserData());
-        auto* bodyB = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureB()->GetBody()->GetUserData());
+        auto* bodyA = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureA()->GetBody()->GetUserData().pointer);
+        auto* bodyB = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureB()->GetBody()->GetUserData().pointer);
         bodyA->endContact(bodyB);
         bodyB->endContact(bodyA);
     }
@@ -1184,7 +1199,7 @@ bool PhysicsWorld2D::raycast(const Vector3& origin, const Vector2& direction, fl
         bool queryTrigger;
         bool hit;
 
-        virtual float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction) override
+        float ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float fraction) override
         {
             if (!queryTrigger && fixture->IsSensor()) {
                 return -1;  // continue
@@ -1193,7 +1208,7 @@ bool PhysicsWorld2D::raycast(const Vector3& origin, const Vector2& direction, fl
             if ((fixture->GetFilterData().categoryBits & layerMask) != 0) {
                 hit = true;
                 if (result) {
-                    result->physicsObject = reinterpret_cast<PhysicsObject2D*>(fixture->GetBody()->GetUserData());
+                    result->physicsObject = reinterpret_cast<PhysicsObject2D*>(fixture->GetBody()->GetUserData().pointer);
                     result->point = B2ToLn(point);
                     result->normal = B2ToLn(normal);
                     result->distance = (result->point - origin.xy()).length();
@@ -1311,7 +1326,7 @@ void PhysicsWorld2D::stepSimulation(float elapsedSeconds)
 
 void PhysicsWorld2D::renderDebug(RenderingContext* context)
 {
-	m_world->DrawDebugData();
+	m_world->DebugDraw();
 	m_debugDraw->render(context);
 }
 

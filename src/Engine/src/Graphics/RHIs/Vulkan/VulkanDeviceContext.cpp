@@ -4,6 +4,7 @@
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
+#include "../RHIProfiler.hpp"
 #include "VulkanDeviceContext.hpp"
 #include "VulkanBuffers.hpp"
 #include "VulkanTextures.hpp"
@@ -1196,6 +1197,7 @@ bool VulkanSwapChain::createNativeSwapchain(const SizeI& backbufferSize)
 		target->initFromSwapchainImage(m_deviceContext, m_swapchainExtent.width, m_swapchainExtent.height, m_swapchainImageFormat, swapChainImages[i], m_swapChainImageViews[i]);
         target->m_device = m_deviceContext;
         target->m_objectId = m_deviceContext->m_objectNextId++;
+        m_deviceContext->profiler()->addRenderTarget(target);
 		m_swapchainRenderTargets[i] = target;
 	}
 

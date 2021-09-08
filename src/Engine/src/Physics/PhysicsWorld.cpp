@@ -1,23 +1,23 @@
 ﻿
 #include "Internal.hpp"
 #pragma warning(disable: 5033)	// disable warning in bullet headers
-#include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
-#include <BulletCollision/CollisionDispatch/btManifoldResult.h>
-#include <BulletSoftBody/btSoftRigidDynamicsWorld.h>
-#include <BulletSoftBody/btSoftBodyHelpers.h>
-#include <BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h>
-#include <BulletCollision/CollisionDispatch/btSimulationIslandManager.h>
-#include <BulletCollision/CollisionDispatch/btGhostObject.h>
+#include <bullet/BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
+#include <bullet/BulletCollision/CollisionDispatch/btManifoldResult.h>
+#include <bullet/BulletSoftBody/btSoftRigidDynamicsWorld.h>
+#include <bullet/BulletSoftBody/btSoftBodyHelpers.h>
+#include <bullet/BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h>
+#include <bullet/BulletCollision/CollisionDispatch/btSimulationIslandManager.h>
+#include <bullet/BulletCollision/CollisionDispatch/btGhostObject.h>
 
-#include <BulletCollision/BroadphaseCollision/btDbvtBroadphase.h>
-#include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
+#include <bullet/BulletCollision/BroadphaseCollision/btDbvtBroadphase.h>
+#include <bullet/BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
 
 
-#include <BulletDynamics/ConstraintSolver/btGeneric6DofSpringConstraint.h>
+#include <bullet/BulletDynamics/ConstraintSolver/btGeneric6DofSpringConstraint.h>
 
 // test
-#include <BulletCollision/CollisionShapes/btBoxShape.h>
-#include <LinearMath/btDefaultMotionState.h>
+#include <bullet/BulletCollision/CollisionShapes/btBoxShape.h>
+#include <bullet/LinearMath/btDefaultMotionState.h>
 
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Physics/PhysicsObject.hpp>

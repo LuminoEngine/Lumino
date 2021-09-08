@@ -5,10 +5,10 @@
  */
 #include "Internal.hpp"
 #pragma warning(disable: 5033)	// disable warning in bullet headers
-#include <BulletCollision/CollisionShapes/btCollisionShape.h>
-#include <btBulletDynamicsCommon.h>
-#include <BulletSoftBody/btSoftRigidDynamicsWorld.h>
-#include <LinearMath/btMotionState.h>
+#include <bullet/BulletCollision/CollisionShapes/btCollisionShape.h>
+#include <bullet/btBulletDynamicsCommon.h>
+#include <bullet/BulletSoftBody/btSoftRigidDynamicsWorld.h>
+#include <bullet/LinearMath/btMotionState.h>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
 #include "PhysicsManager.hpp"

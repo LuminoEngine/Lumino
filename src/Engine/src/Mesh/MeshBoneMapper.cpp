@@ -329,6 +329,7 @@ const List<StringRef>& MeshBoneMapper::splitWords(const String& name)
 void MeshBoneMapper::resolveBodyBones()
 {
 	auto& bones = m_majorGroups[static_cast<int>(MajorKind::Body)];
+	if (bones.isEmpty()) return;
 
 	// 深さの順に並び変える
 	std::sort(bones.begin(), bones.end(), [this](const NodeInfo* a, const NodeInfo* b) { return a->depth < b->depth; });

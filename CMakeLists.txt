@@ -130,6 +130,14 @@ find_package(fmt CONFIG REQUIRED)
 
 find_package(ZLIB REQUIRED)
 find_package(libpng CONFIG REQUIRED)
+find_package(freetype CONFIG REQUIRED)
+
+find_package(Bullet CONFIG REQUIRED)
+find_package(box2d CONFIG REQUIRED)
+
+# デフォルトでは不足している include path を追加しておく
+set_target_properties(Bullet3Common PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${LN_VCPKG_INSTALLED_DIR}/include/bullet")
+
 
 # pcre2
 set(pcre2_ROOT ${LN_VCPKG_INSTALLED_DIR})
@@ -144,11 +152,8 @@ if (LN_EXTERNAL2)
     find_package(yaml-cpp CONFIG REQUIRED)
     find_package(toml11 CONFIG REQUIRED)
     find_package(Vorbis CONFIG REQUIRED)
-    find_package(freetype CONFIG REQUIRED)
     find_package(nanovg CONFIG REQUIRED)
     find_package(tinyobjloader CONFIG REQUIRED)
-    find_package(Bullet CONFIG REQUIRED)
-    find_package(box2d CONFIG REQUIRED)
     find_package(imgui CONFIG REQUIRED)
     find_path(STB_INCLUDE_DIRS "stb_image.h")
     find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
