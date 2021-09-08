@@ -19,8 +19,8 @@ class StandardPluginModule
 {
 public:
     StandardPluginModule();
-    const ln::Char* moduleId() const override { return u"1A07666A-50E3-4972-BF7E-7418CCA118F2"; }
-    const ln::Char* moduleDisplayName() const override { return u"StandardPluginModule"; }
+    const ln::Char* moduleId() const override { return _TT("1A07666A-50E3-4972-BF7E-7418CCA118F2"); }
+    const ln::Char* moduleDisplayName() const override { return _TT("StandardPluginModule"); }
     void onActivate(lna::EditorContext* context) override;
     void onDeactivate(lna::EditorContext* context) override;
 

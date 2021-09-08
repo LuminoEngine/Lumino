@@ -4,7 +4,7 @@
 #include "TestEnv.hpp"
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 
-GTEST_API_ int main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -32,7 +32,7 @@ GTEST_API_ int main(int argc, char **argv)
 	Logger::setLevel(LogLevel::Debug);
 	Logger::addStdErrAdapter();
 
-	auto tempPath = Path(Environment::specialFolderPath(SpecialFolder::Temporary), u"Lumino");
+	auto tempPath = Path(Environment::specialFolderPath(SpecialFolder::Temporary), _TT("Lumino"));
 
 	TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
 	TestHelper::setTempDirPath(tempPath);

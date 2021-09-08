@@ -7,7 +7,7 @@ class App_Example_Sprite : public Application
 {
     virtual void onInit() override
     {
-		auto texture = Texture2D::load(u"picture1.jpg");
+		auto texture = Texture2D::load(_TT("picture1.jpg"));
         auto sprite = Sprite::create(texture);
         sprite->addInto();
 

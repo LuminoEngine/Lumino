@@ -13,17 +13,17 @@ namespace ln {
 
 void LevelRenderParameters::serialize(Serializer2& ar)
 {
-    ar & ln::makeNVP(u"fogStartDistance", m_fogStartDistance);
-    ar & ln::makeNVP(u"fogColor", m_fogColor);
-    ar & ln::makeNVP(u"fogDensity", m_fogDensity);
-    ar & ln::makeNVP(u"fogHeightDensity", m_fogHeightDensity);
-    ar & ln::makeNVP(u"fogLowerHeight", m_fogLowerHeight);
-    ar & ln::makeNVP(u"fogUpperHeight", m_fogUpperHeight);
+    ar & ln::makeNVP(_TT("fogStartDistance"), m_fogStartDistance);
+    ar & ln::makeNVP(_TT("fogColor"), m_fogColor);
+    ar & ln::makeNVP(_TT("fogDensity"), m_fogDensity);
+    ar & ln::makeNVP(_TT("fogHeightDensity"), m_fogHeightDensity);
+    ar & ln::makeNVP(_TT("fogLowerHeight"), m_fogLowerHeight);
+    ar & ln::makeNVP(_TT("fogUpperHeight"), m_fogUpperHeight);
     
-    ar & ln::makeNVP(u"skydomeSkyColor", m_skydomeSkyColor);
-    ar & ln::makeNVP(u"skydomeHorizonColor", m_skydomeHorizonColor);
-    ar & ln::makeNVP(u"skydomeCloudColor", m_skydomeCloudColor);
-    ar & ln::makeNVP(u"skydomeOverlayColor", m_skydomeOverlayColor);
+    ar & ln::makeNVP(_TT("skydomeSkyColor"), m_skydomeSkyColor);
+    ar & ln::makeNVP(_TT("skydomeHorizonColor"), m_skydomeHorizonColor);
+    ar & ln::makeNVP(_TT("skydomeCloudColor"), m_skydomeCloudColor);
+    ar & ln::makeNVP(_TT("skydomeOverlayColor"), m_skydomeOverlayColor);
 }
 
 void LevelRenderParameters::mergeToRenderParams(detail::SceneGlobalRenderParams* params) const
@@ -361,9 +361,9 @@ void Level::serialize(Serializer2& ar)
         removeAllObjects();
     }
 
-    ar & ln::makeNVP(u"renderParams", m_levelRenderParameters);
+    ar & ln::makeNVP(_TT("renderParams"), m_levelRenderParameters);
 
-    ar & ln::makeNVP(u"children", *m_rootWorldObjectList);
+    ar & ln::makeNVP(_TT("children"), *m_rootWorldObjectList);
 
     //if (ar.isLoading()) {
     //    for (auto& obj : m_rootWorldObjectList) {

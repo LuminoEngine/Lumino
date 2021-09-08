@@ -433,8 +433,8 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
             preprocessor.setStringsWithLengthsAndNames(shaderCode, shaderLenght, shaderName, 1);
 
             if (!preprocessor.preprocess(&DefaultTBuiltInResource, defaultVersion, EProfile::ENoProfile, false, forwardCompatible, messages, &preprocessedCode, includer)) {
-                if (!StringHelper::isNullOrEmpty(preprocessor.getInfoLog())) diag->reportError(preprocessor.getInfoLog());
-                if (!StringHelper::isNullOrEmpty(preprocessor.getInfoDebugLog())) diag->reportError(preprocessor.getInfoDebugLog());
+                if (!StringHelper::isNullOrEmpty(preprocessor.getInfoLog())) diag->reportError(String::fromCString(preprocessor.getInfoLog()));
+                if (!StringHelper::isNullOrEmpty(preprocessor.getInfoDebugLog())) diag->reportError(String::fromCString(preprocessor.getInfoDebugLog()));
                 return false;
             }
         }
@@ -450,13 +450,13 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
                 Data: <k       > 6B 0F 00 00 FF FF FF FF
         */
         if (!m_shader->parse(&DefaultTBuiltInResource, defaultVersion, forwardCompatible, messages, includer)) {
-            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportError(m_shader->getInfoLog());
-            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportError(m_shader->getInfoDebugLog());
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportError(String::fromCString(m_shader->getInfoLog()));
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportError(String::fromCString(m_shader->getInfoDebugLog()));
             return false;
         }
         else if (m_shader->getInfoLog()) {
-            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportWarning(m_shader->getInfoLog());
-            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportWarning(m_shader->getInfoDebugLog());
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportWarning(String::fromCString(m_shader->getInfoLog()));
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportWarning(String::fromCString(m_shader->getInfoDebugLog()));
         }
     }
     else {
@@ -471,13 +471,13 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
                 Data: <k       > 6B 0F 00 00 FF FF FF FF
         */
         if (!m_shader->parse(&DefaultTBuiltInResource, defaultVersion, forwardCompatible, messages, includer)) {
-            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportError(m_shader->getInfoLog());
-            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportError(m_shader->getInfoDebugLog());
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportError(String::fromCString(m_shader->getInfoLog()));
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportError(String::fromCString(m_shader->getInfoDebugLog()));
             return false;
         }
         else if (m_shader->getInfoLog()) {
-            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportWarning(m_shader->getInfoLog());
-            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportWarning(m_shader->getInfoDebugLog());
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportWarning(String::fromCString(m_shader->getInfoLog()));
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportWarning(String::fromCString(m_shader->getInfoDebugLog()));
         }
     }
 
@@ -486,12 +486,12 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
         m_program->addShader(m_shader.get());
 
         if (!m_program->link(messages)) {
-            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportError(m_shader->getInfoLog());
-            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportError(m_shader->getInfoDebugLog());
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportError(String::fromCString(m_shader->getInfoLog()));
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportError(String::fromCString(m_shader->getInfoDebugLog()));
             return false;
         } else if (m_shader->getInfoLog()) {
-            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportWarning(m_shader->getInfoLog());
-            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportWarning(m_shader->getInfoDebugLog());
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportWarning(String::fromCString(m_shader->getInfoLog()));
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportWarning(String::fromCString(m_shader->getInfoDebugLog()));
         }
     }
 
@@ -638,7 +638,7 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 			const glslang::TType* type = m_program->getUniformTType(i);
 			GLenum gltype = m_program->getUniformType(i);
 			if (!GLTypeToLNUniformType(gltype, type, &info.type)) {
-				diag->reportError("Invalid type.");
+				diag->reportError(_TT("Invalid type."));
 				return false;
 			}
 
@@ -831,7 +831,7 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
     root->traverse(&localIntermTraverser);
 
     if (!m_program->mapIO()) {
-        diag->reportError(m_program->getInfoLog());
+        diag->reportError(String::fromCString(m_program->getInfoLog()));
         LN_ERROR();
         return false;
     }
@@ -1022,7 +1022,7 @@ std::vector<byte_t> ShaderCodeTranspiler::generateHlslByteCode() const
             m_diag->reportError(String::fromCString(message));
         }
         else {
-            m_diag->reportError("Unknown compilation error.");
+            m_diag->reportError(_TT("Unknown compilation error."));
         }
         return {};
     }

@@ -24,7 +24,7 @@ class App_Example_Navigator : public Application
     {
   //      Engine::camera()->setBackgroundColor(Color::Gray);
 
-  //      //auto windowSkin = Texture2D::load(u"Window1");
+  //      //auto windowSkin = Texture2D::load(_TT("Window1");
 
   //      m_navigator = makeObject<UIFocusNavigator>();
   //      m_navigator->setBackgroundColor(Color(1., 1., 1., 0.5));    //Color::Green);
@@ -46,13 +46,13 @@ class App_Example_Navigator : public Application
 		m_listbox1 = UIListBox::create();
 		//m_listbox1->setHAlignment(UIHAlignment::Left);
 		//m_listbox1->setVAlignment(UIVAlignment::Top);
-		auto item1 = UIListBoxItem::create(u"Item");
+		auto item1 = UIListBoxItem::create(_TT("Item"));
 		m_listbox1->addChild(item1);
-		m_listbox1->addChild(u"Skill");
-		m_listbox1->addChild(u"Status");
-		m_listbox1->addChild(u"Save");
-		m_listbox1->addChild(u"Load");
-		//m_listbox1->addChild(u"item4");
+		m_listbox1->addChild(_TT("Skill"));
+		m_listbox1->addChild(_TT("Status"));
+		m_listbox1->addChild(_TT("Save"));
+		m_listbox1->addChild(_TT("Load"));
+		//m_listbox1->addChild(_TT("item4");
 		m_window1->addChild(m_listbox1);
 		//// m_navigator->addElement(m_listbox1);
 
@@ -71,15 +71,15 @@ class App_Example_Navigator : public Application
 		//layout1->addChild(m_window2);
 
 		//auto items = makeCollection<Ref<ModelProperty<String>>>();
-		//items->add(makeProperty<String>(u"item1"));
-		//items->add(makeProperty<String>(u"item2"));
-		//items->add(makeProperty<String>(u"item3"));
+		//items->add(makeProperty<String>(_TT("item1"));
+		//items->add(makeProperty<String>(_TT("item2"));
+		//items->add(makeProperty<String>(_TT("item3"));
 		//m_items.set(items);
 		m_listbox2 = UIListBox::create();
-		auto item2_1 = UIListBoxItem::create(u"item1");
+		auto item2_1 = UIListBoxItem::create(_TT("item1"));
 		m_listbox2->addChild(item2_1);
-		m_listbox2->addChild(u"item2");
-		m_listbox2->addChild(u"item3");
+		m_listbox2->addChild(_TT("item2"));
+		m_listbox2->addChild(_TT("item3"));
 		m_window2->addChild(m_listbox2);
 		//// m_navigator->addElement(m_listbox1);
 
@@ -88,19 +88,19 @@ class App_Example_Navigator : public Application
 
 		item1->connectOnSubmit([this, item2_1](auto x) {
 			static_cast<UIDomainProvidor*>(Engine::mainUIView())->focusNavigator()->pushFocus(m_window2);
-			Debug::print(u"Item clicked. ");
+			Debug::print(_TT("Item clicked. "));
 			m_listbox2->selectItem(item2_1);
 			item2_1->focus();
 		});
 
 
-		//auto text = UIText::create(u"Test");
-		//auto viewProp = text->getViewProperty(u"text");
-		////viewProp->bind(&m_actorName, ln::makeObject2<FunctionalPropertyValueConverter>([](Variant* v) { return u"aaa"; }));
-		//viewProp->bind(&m_itemId, ln::makeObject2<FunctionalPropertyValueConverter>([](Variant* v) { return makeVariant(u"aaa"); }));
+		//auto text = UIText::create(_TT("Test");
+		//auto viewProp = text->getViewProperty(_TT("text");
+		////viewProp->bind(&m_actorName, ln::makeObject2<FunctionalPropertyValueConverter>([](Variant* v) { return _TT("aaa"; }));
+		//viewProp->bind(&m_itemId, ln::makeObject2<FunctionalPropertyValueConverter>([](Variant* v) { return makeVariant(_TT("aaa"); }));
 		//m_window2->addChild(text);
 
-		////m_actorName.set(u"Lumino");
+		////m_actorName.set(_TT("Lumino");
 		//m_itemId.set(1);
 
   //      m_navigator->pushFocus(m_window1);

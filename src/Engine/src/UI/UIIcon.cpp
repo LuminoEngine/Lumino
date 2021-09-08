@@ -79,7 +79,7 @@ Size UIIcon::measureOverride(UILayoutContext* layoutContext, const Size& constra
 	float fontSize = finalStyle()->font->size();
 
 	if (!m_font) {
-		m_font = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(u"Reguler", fontSize);
+		m_font = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(_TT("Reguler"), fontSize);
 	}
 	if (m_font->size() != fontSize) {
 		m_font->setSize(fontSize);

@@ -15,70 +15,70 @@ struct HumanoidBoneNamePair
 };
 
 static const HumanoidBoneNamePair s_humanoidBoneNames[] = {
-	{ HumanoidBones::None, u"None" },
+	{ HumanoidBones::None, _TT("None") },
 
-	{ HumanoidBones::Hips, u"Hips" },
-	{ HumanoidBones::Spine, u"Spine" },
-	{ HumanoidBones::Chest, u"Chest" },
-	{ HumanoidBones::UpperChest, u"UpperChest" },
+	{ HumanoidBones::Hips, _TT("Hips") },
+	{ HumanoidBones::Spine, _TT("Spine") },
+	{ HumanoidBones::Chest, _TT("Chest") },
+	{ HumanoidBones::UpperChest, _TT("UpperChest") },
 
-	{ HumanoidBones::LeftShoulder, u"LeftShoulder" },
-	{ HumanoidBones::LeftUpperArm, u"LeftUpperArm" },
-	{ HumanoidBones::LeftLowerArm, u"LeftLowerArm" },
-	{ HumanoidBones::LeftHand, u"LeftHand" },
+	{ HumanoidBones::LeftShoulder, _TT("LeftShoulder") },
+	{ HumanoidBones::LeftUpperArm, _TT("LeftUpperArm") },
+	{ HumanoidBones::LeftLowerArm, _TT("LeftLowerArm") },
+	{ HumanoidBones::LeftHand, _TT("LeftHand") },
 
-	{ HumanoidBones::RightShoulder, u"RightShoulder" },
-	{ HumanoidBones::RightUpperArm, u"RightUpperArm" },
-	{ HumanoidBones::RightLowerArm, u"RightLowerArm" },
-	{ HumanoidBones::RightHand, u"RightHand" },
+	{ HumanoidBones::RightShoulder, _TT("RightShoulder") },
+	{ HumanoidBones::RightUpperArm, _TT("RightUpperArm") },
+	{ HumanoidBones::RightLowerArm, _TT("RightLowerArm") },
+	{ HumanoidBones::RightHand, _TT("RightHand") },
 
-	{ HumanoidBones::LeftUpperLeg, u"LeftUpperLeg" },
-	{ HumanoidBones::LeftLowerLeg, u"LeftLowerLeg" },
-	{ HumanoidBones::LeftFoot, u"LeftFoot" },
-	{ HumanoidBones::LeftToes, u"LeftToes" },
+	{ HumanoidBones::LeftUpperLeg, _TT("LeftUpperLeg") },
+	{ HumanoidBones::LeftLowerLeg, _TT("LeftLowerLeg") },
+	{ HumanoidBones::LeftFoot, _TT("LeftFoot") },
+	{ HumanoidBones::LeftToes, _TT("LeftToes") },
 
-	{ HumanoidBones::RightUpperLeg, u"RightUpperLeg" },
-	{ HumanoidBones::RightLowerLeg, u"RightLowerLeg" },
-	{ HumanoidBones::RightFoot, u"RightFoot" },
-	{ HumanoidBones::RightToes, u"RightToes" },
+	{ HumanoidBones::RightUpperLeg, _TT("RightUpperLeg") },
+	{ HumanoidBones::RightLowerLeg, _TT("RightLowerLeg") },
+	{ HumanoidBones::RightFoot, _TT("RightFoot") },
+	{ HumanoidBones::RightToes, _TT("RightToes") },
 
-	{ HumanoidBones::Neck, u"Neck" },
-	{ HumanoidBones::Head, u"Head" },
-	{ HumanoidBones::LeftEye, u"LeftEye" },
-	{ HumanoidBones::RightEye, u"RightEye" },
-	{ HumanoidBones::Jaw, u"Jaw" },
+	{ HumanoidBones::Neck, _TT("Neck") },
+	{ HumanoidBones::Head, _TT("Head") },
+	{ HumanoidBones::LeftEye, _TT("LeftEye") },
+	{ HumanoidBones::RightEye, _TT("RightEye") },
+	{ HumanoidBones::Jaw, _TT("Jaw") },
 
-	{ HumanoidBones::LeftThumbProximal, u"LeftThumbProximal" },
-	{ HumanoidBones::LeftThumbIntermediate, u"LeftThumbIntermediate" },
-	{ HumanoidBones::LeftThumbDistal, u"LeftThumbDistal" },
-	{ HumanoidBones::LeftIndexProximal, u"LeftIndexProximal" },
-	{ HumanoidBones::LeftIndexIntermediate, u"LeftIndexIntermediate" },
-	{ HumanoidBones::LeftIndexDistal, u"LeftIndexDistal" },
-	{ HumanoidBones::LeftMiddleProximal, u"LeftMiddleProximal" },
-	{ HumanoidBones::LeftMiddleIntermediate, u"LeftMiddleIntermediate" },
-	{ HumanoidBones::LeftMiddleDistal, u"LeftMiddleDistal" },
-	{ HumanoidBones::LeftRingProximal, u"LeftRingProximal" },
-	{ HumanoidBones::LeftRingIntermediate, u"LeftRingIntermediate" },
-	{ HumanoidBones::LeftRingDistal, u"LeftRingDistal" },
-	{ HumanoidBones::LeftLittleProximal, u"LeftLittleProximal" },
-	{ HumanoidBones::LeftLittleIntermediate, u"LeftLittleIntermediate" },
-	{ HumanoidBones::LeftLittleDistal, u"LeftLittleDistal" },
+	{ HumanoidBones::LeftThumbProximal, _TT("LeftThumbProximal") },
+	{ HumanoidBones::LeftThumbIntermediate, _TT("LeftThumbIntermediate") },
+	{ HumanoidBones::LeftThumbDistal, _TT("LeftThumbDistal") },
+	{ HumanoidBones::LeftIndexProximal, _TT("LeftIndexProximal") },
+	{ HumanoidBones::LeftIndexIntermediate, _TT("LeftIndexIntermediate") },
+	{ HumanoidBones::LeftIndexDistal, _TT("LeftIndexDistal") },
+	{ HumanoidBones::LeftMiddleProximal, _TT("LeftMiddleProximal") },
+	{ HumanoidBones::LeftMiddleIntermediate, _TT("LeftMiddleIntermediate") },
+	{ HumanoidBones::LeftMiddleDistal, _TT("LeftMiddleDistal") },
+	{ HumanoidBones::LeftRingProximal, _TT("LeftRingProximal") },
+	{ HumanoidBones::LeftRingIntermediate, _TT("LeftRingIntermediate") },
+	{ HumanoidBones::LeftRingDistal, _TT("LeftRingDistal") },
+	{ HumanoidBones::LeftLittleProximal, _TT("LeftLittleProximal") },
+	{ HumanoidBones::LeftLittleIntermediate, _TT("LeftLittleIntermediate") },
+	{ HumanoidBones::LeftLittleDistal, _TT("LeftLittleDistal") },
 
-	{ HumanoidBones::RightThumbProximal, u"RightThumbProximal" },
-	{ HumanoidBones::RightThumbIntermediate, u"RightThumbIntermediate" },
-	{ HumanoidBones::RightThumbDistal, u"RightThumbDistal" },
-	{ HumanoidBones::RightIndexProximal, u"RightIndexProximal" },
-	{ HumanoidBones::RightIndexIntermediate, u"RightIndexIntermediate" },
-	{ HumanoidBones::RightIndexDistal, u"RightIndexDistal" },
-	{ HumanoidBones::RightMiddleProximal, u"RightMiddleProximal" },
-	{ HumanoidBones::RightMiddleIntermediate, u"RightMiddleIntermediate" },
-	{ HumanoidBones::RightMiddleDistal, u"RightMiddleDistal" },
-	{ HumanoidBones::RightRingProximal, u"RightRingProximal" },
-	{ HumanoidBones::RightRingIntermediate, u"RightRingIntermediate" },
-	{ HumanoidBones::RightRingDistal, u"RightRingDistal" },
-	{ HumanoidBones::RightLittleProximal, u"RightLittleProximal" },
-	{ HumanoidBones::RightLittleIntermediate, u"RightLittleIntermediate" },
-	{ HumanoidBones::RightLittleDistal, u"RightLittleDistal" },
+	{ HumanoidBones::RightThumbProximal, _TT("RightThumbProximal") },
+	{ HumanoidBones::RightThumbIntermediate, _TT("RightThumbIntermediate") },
+	{ HumanoidBones::RightThumbDistal, _TT("RightThumbDistal") },
+	{ HumanoidBones::RightIndexProximal, _TT("RightIndexProximal") },
+	{ HumanoidBones::RightIndexIntermediate, _TT("RightIndexIntermediate") },
+	{ HumanoidBones::RightIndexDistal, _TT("RightIndexDistal") },
+	{ HumanoidBones::RightMiddleProximal, _TT("RightMiddleProximal") },
+	{ HumanoidBones::RightMiddleIntermediate, _TT("RightMiddleIntermediate") },
+	{ HumanoidBones::RightMiddleDistal, _TT("RightMiddleDistal") },
+	{ HumanoidBones::RightRingProximal, _TT("RightRingProximal") },
+	{ HumanoidBones::RightRingIntermediate, _TT("RightRingIntermediate") },
+	{ HumanoidBones::RightRingDistal, _TT("RightRingDistal") },
+	{ HumanoidBones::RightLittleProximal, _TT("RightLittleProximal") },
+	{ HumanoidBones::RightLittleIntermediate, _TT("RightLittleIntermediate") },
+	{ HumanoidBones::RightLittleDistal, _TT("RightLittleDistal") },
 };
 
 MeshBoneMapper::MeshBoneMapper()
@@ -170,36 +170,36 @@ void MeshBoneMapper::makeMajorKindByName(NodeInfo* info, const String& name)
 	};
 
 	static const NamePair nameMap[] = {
-		{ 0, u"Hips", MajorKind::Body, HumanoidBones::Hips },
-		{ 0, u"Spine", MajorKind::Body, HumanoidBones::Spine },	// Spine,Spine1,Spine3
-		{ 0, u"Chest", MajorKind::Body, HumanoidBones::Chest },	// Chest,UpperChest
-		{ 0, u"Center", MajorKind::Body, HumanoidBones::None },	// (PronamaChan)
+		{ 0, _TT("Hips"), MajorKind::Body, HumanoidBones::Hips },
+		{ 0, _TT("Spine"), MajorKind::Body, HumanoidBones::Spine },	// Spine,Spine1,Spine3
+		{ 0, _TT("Chest"), MajorKind::Body, HumanoidBones::Chest },	// Chest,UpperChest
+		{ 0, _TT("Center"), MajorKind::Body, HumanoidBones::None },	// (PronamaChan)
 
-		{ 0, u"Neck", MajorKind::Head, HumanoidBones::Neck },
-		{ 0, u"Head", MajorKind::Head, HumanoidBones::Head },
-		{ 0, u"Eye", MajorKind::LeftEye, HumanoidBones::LeftEye },	// LeftEye,RightEye
-		{ 0, u"Jaw", MajorKind::Jaw, HumanoidBones::Jaw },
-		{ 0, u"Mouth", MajorKind::Jaw, HumanoidBones::Jaw },	// (AliciaSolid)
+		{ 0, _TT("Neck"), MajorKind::Head, HumanoidBones::Neck },
+		{ 0, _TT("Head"), MajorKind::Head, HumanoidBones::Head },
+		{ 0, _TT("Eye"), MajorKind::LeftEye, HumanoidBones::LeftEye },	// LeftEye,RightEye
+		{ 0, _TT("Jaw"), MajorKind::Jaw, HumanoidBones::Jaw },
+		{ 0, _TT("Mouth"), MajorKind::Jaw, HumanoidBones::Jaw },	// (AliciaSolid)
 
-		{ 0, u"Shoulder", MajorKind::LeftArm, HumanoidBones::LeftShoulder },	// 左右を伴うものは一度 Left に集める
-		{ 0, u"Arm", MajorKind::LeftArm, HumanoidBones::None },	// UpperArm,LowerArm,ForeArm
-		{ 0, u"Hand", MajorKind::LeftArm, HumanoidBones::LeftHand },
-		{ 0, u"Elbow", MajorKind::LeftArm, HumanoidBones::LeftLowerArm },	// (PronamaChan)
-		{ 0, u"Wrist", MajorKind::LeftArm, HumanoidBones::LeftHand },	// (PronamaChan)
+		{ 0, _TT("Shoulder"), MajorKind::LeftArm, HumanoidBones::LeftShoulder },	// 左右を伴うものは一度 Left に集める
+		{ 0, _TT("Arm"), MajorKind::LeftArm, HumanoidBones::None },	// UpperArm,LowerArm,ForeArm
+		{ 0, _TT("Hand"), MajorKind::LeftArm, HumanoidBones::LeftHand },
+		{ 0, _TT("Elbow"), MajorKind::LeftArm, HumanoidBones::LeftLowerArm },	// (PronamaChan)
+		{ 0, _TT("Wrist"), MajorKind::LeftArm, HumanoidBones::LeftHand },	// (PronamaChan)
 
 		// "LeftHandThumb" というように、大体 "Hand" を含むため、Hand よりは優先度高くする
-		{ 1, u"Thumb", MajorKind::LeftThumb, HumanoidBones::None },	// Thumb1,ThumbProximal,ThumbIntermediate,ThumbDistal
-		{ 1, u"Index", MajorKind::LeftIndex, HumanoidBones::None },	// Index1,IndexProximal,IndexIntermediate,IndexDistal
-		{ 1, u"Middle", MajorKind::LeftMiddle, HumanoidBones::None },	// Middle1,MiddleProximal,MiddleIntermediate,MiddleDistal
-		{ 1, u"Ring", MajorKind::LeftRing, HumanoidBones::None },	// Ring1,RingProximal,RingIntermediate,RingDistal
-		{ 1, u"Little", MajorKind::LeftLittle, HumanoidBones::None },	// Little1,LittleProximal,LittleIntermediate,LittleDistal
-		{ 1, u"Pinky", MajorKind::LeftLittle, HumanoidBones::None },	// (AliciaSolid) 
+		{ 1, _TT("Thumb"), MajorKind::LeftThumb, HumanoidBones::None },	// Thumb1,ThumbProximal,ThumbIntermediate,ThumbDistal
+		{ 1, _TT("Index"), MajorKind::LeftIndex, HumanoidBones::None },	// Index1,IndexProximal,IndexIntermediate,IndexDistal
+		{ 1, _TT("Middle"), MajorKind::LeftMiddle, HumanoidBones::None },	// Middle1,MiddleProximal,MiddleIntermediate,MiddleDistal
+		{ 1, _TT("Ring"), MajorKind::LeftRing, HumanoidBones::None },	// Ring1,RingProximal,RingIntermediate,RingDistal
+		{ 1, _TT("Little"), MajorKind::LeftLittle, HumanoidBones::None },	// Little1,LittleProximal,LittleIntermediate,LittleDistal
+		{ 1, _TT("Pinky"), MajorKind::LeftLittle, HumanoidBones::None },	// (AliciaSolid) 
 
-		{ 0, u"Leg", MajorKind::LeftLeg, HumanoidBones::None },	// UpperLeg,LowerLeg,Leg
-		{ 0, u"Foot", MajorKind::LeftLeg, HumanoidBones::None },
-		{ 0, u"Knee", MajorKind::LeftLeg, HumanoidBones::None },	// (PronamaChan)
-		{ 0, u"Ankle", MajorKind::LeftLeg, HumanoidBones::None },	// (PronamaChan)
-		{ 0, u"Toe", MajorKind::LeftLeg, HumanoidBones::None },
+		{ 0, _TT("Leg"), MajorKind::LeftLeg, HumanoidBones::None },	// UpperLeg,LowerLeg,Leg
+		{ 0, _TT("Foot"), MajorKind::LeftLeg, HumanoidBones::None },
+		{ 0, _TT("Knee"), MajorKind::LeftLeg, HumanoidBones::None },	// (PronamaChan)
+		{ 0, _TT("Ankle"), MajorKind::LeftLeg, HumanoidBones::None },	// (PronamaChan)
+		{ 0, _TT("Toe"), MajorKind::LeftLeg, HumanoidBones::None },
 
 
 
@@ -242,7 +242,7 @@ void MeshBoneMapper::makeMajorKindByName(NodeInfo* info, const String& name)
 	bool isRight = false;
 	const auto& words = splitWords(name);
 	for (const auto& word : words) {
-		if (StringHelper::indexOf(word.data(), word.length(), u"right", 5, 0, CaseSensitivity::CaseInsensitive) == 0) {
+		if (StringHelper::indexOf(word.data(), word.length(), _TT("right"), 5, 0, CaseSensitivity::CaseInsensitive) == 0) {
 			isRight = true;
 		}
 		else if (word.length() == 1 && (word[0] == 'R' || word[0] == 'r')) {
@@ -669,68 +669,68 @@ HumanoidBones SkinnedMeshModel::mapToHumanoidBones(const MeshBone* bone)
 	};
 
 	static const NamePair standardNameMap[] = {
-		{ HumanoidBones::Hips, u"Hips" },
-		{ HumanoidBones::Spine, u"Spine" },
-		{ HumanoidBones::Chest, u"Chest" },
-		{ HumanoidBones::UpperChest, u"UpperChest" },
+		{ HumanoidBones::Hips, _TT("Hips" },
+		{ HumanoidBones::Spine, _TT("Spine" },
+		{ HumanoidBones::Chest, _TT("Chest" },
+		{ HumanoidBones::UpperChest, _TT("UpperChest" },
 
-		{ HumanoidBones::LeftShoulder, u"LeftShoulder" },
-		{ HumanoidBones::LeftUpperArm, u"LeftUpperArm" },
-		{ HumanoidBones::LeftLowerArm, u"LeftLowerArm" },
-		{ HumanoidBones::LeftHand, u"LeftHand" },
+		{ HumanoidBones::LeftShoulder, _TT("LeftShoulder" },
+		{ HumanoidBones::LeftUpperArm, _TT("LeftUpperArm" },
+		{ HumanoidBones::LeftLowerArm, _TT("LeftLowerArm" },
+		{ HumanoidBones::LeftHand, _TT("LeftHand" },
 
-		{ HumanoidBones::RightShoulder, u"RightShoulder" },
-		{ HumanoidBones::RightUpperArm, u"RightUpperArm" },
-		{ HumanoidBones::RightLowerArm, u"RightLowerArm" },
-		{ HumanoidBones::RightHand, u"RightHand" },
+		{ HumanoidBones::RightShoulder, _TT("RightShoulder" },
+		{ HumanoidBones::RightUpperArm, _TT("RightUpperArm" },
+		{ HumanoidBones::RightLowerArm, _TT("RightLowerArm" },
+		{ HumanoidBones::RightHand, _TT("RightHand" },
 
-		{ HumanoidBones::LeftUpperLeg, u"LeftUpperLeg" },
-		{ HumanoidBones::LeftLowerLeg, u"LeftLowerLeg" },
-		{ HumanoidBones::LeftFoot, u"LeftFoot" },
-		{ HumanoidBones::LeftToes, u"LeftToes" },
+		{ HumanoidBones::LeftUpperLeg, _TT("LeftUpperLeg" },
+		{ HumanoidBones::LeftLowerLeg, _TT("LeftLowerLeg" },
+		{ HumanoidBones::LeftFoot, _TT("LeftFoot" },
+		{ HumanoidBones::LeftToes, _TT("LeftToes" },
 
-		{ HumanoidBones::RightUpperLeg, u"RightUpperLeg" },
-		{ HumanoidBones::RightLowerLeg, u"RightLowerLeg" },
-		{ HumanoidBones::RightFoot, u"RightFoot" },
-		{ HumanoidBones::RightToes, u"RightToes" },
+		{ HumanoidBones::RightUpperLeg, _TT("RightUpperLeg" },
+		{ HumanoidBones::RightLowerLeg, _TT("RightLowerLeg" },
+		{ HumanoidBones::RightFoot, _TT("RightFoot" },
+		{ HumanoidBones::RightToes, _TT("RightToes" },
 
-		{ HumanoidBones::Neck, u"Neck" },
-		{ HumanoidBones::Head, u"Head" },
-		{ HumanoidBones::LeftEye, u"LeftEye" },
-		{ HumanoidBones::RightEye, u"RightEye" },
-		{ HumanoidBones::Jaw, u"Jaw" },
+		{ HumanoidBones::Neck, _TT("Neck" },
+		{ HumanoidBones::Head, _TT("Head" },
+		{ HumanoidBones::LeftEye, _TT("LeftEye" },
+		{ HumanoidBones::RightEye, _TT("RightEye" },
+		{ HumanoidBones::Jaw, _TT("Jaw" },
 
-		{ HumanoidBones::LeftThumbProximal, u"LeftThumbProximal" },
-		{ HumanoidBones::LeftThumbIntermediate, u"LeftThumbIntermediate" },
-		{ HumanoidBones::LeftThumbDistal, u"" },
-		{ HumanoidBones::LeftIndexProximal, u"" },
-		{ HumanoidBones::LeftIndexIntermediate, u"" },
-		{ HumanoidBones::LeftIndexDistal, u"" },
-		{ HumanoidBones::LeftMiddleProximal, u"" },
-		{ HumanoidBones::LeftMiddleIntermediate, u"" },
-		{ HumanoidBones::LeftMiddleDistal, u"" },
-		{ HumanoidBones::LeftRingProximal, u"" },
-		{ HumanoidBones::LeftRingIntermediate, u"" },
-		{ HumanoidBones::LeftRingDistal, u"" },
-		{ HumanoidBones::LeftLittleProximal, u"" },
-		{ HumanoidBones::LeftLittleIntermediate, u"" },
-		{ HumanoidBones::LeftLittleDistal, u"" },
+		{ HumanoidBones::LeftThumbProximal, _TT("LeftThumbProximal" },
+		{ HumanoidBones::LeftThumbIntermediate, _TT("LeftThumbIntermediate" },
+		{ HumanoidBones::LeftThumbDistal, _TT("" },
+		{ HumanoidBones::LeftIndexProximal, _TT("" },
+		{ HumanoidBones::LeftIndexIntermediate, _TT("" },
+		{ HumanoidBones::LeftIndexDistal, _TT("" },
+		{ HumanoidBones::LeftMiddleProximal, _TT("" },
+		{ HumanoidBones::LeftMiddleIntermediate, _TT("" },
+		{ HumanoidBones::LeftMiddleDistal, _TT("" },
+		{ HumanoidBones::LeftRingProximal, _TT("" },
+		{ HumanoidBones::LeftRingIntermediate, _TT("" },
+		{ HumanoidBones::LeftRingDistal, _TT("" },
+		{ HumanoidBones::LeftLittleProximal, _TT("" },
+		{ HumanoidBones::LeftLittleIntermediate, _TT("" },
+		{ HumanoidBones::LeftLittleDistal, _TT("" },
 
-		{ HumanoidBones::RightThumbProximal, u"" },
-		{ HumanoidBones::RightThumbIntermediate, u"" },
-		{ HumanoidBones::RightThumbDistal, u"" },
-		{ HumanoidBones::RightIndexProximal, u"" },
-		{ HumanoidBones::RightIndexIntermediate, u"" },
-		{ HumanoidBones::RightIndexDistal, u"" },
-		{ HumanoidBones::RightMiddleProximal, u"" },
-		{ HumanoidBones::RightMiddleIntermediate, u"" },
-		{ HumanoidBones::RightMiddleDistal, u"" },
-		{ HumanoidBones::RightRingProximal, u"" },
-		{ HumanoidBones::RightRingIntermediate, u"" },
-		{ HumanoidBones::RightRingDistal, u"" },
-		{ HumanoidBones::RightLittleProximal, u"" },
-		{ HumanoidBones::RightLittleIntermediate, u"" },
-		{ HumanoidBones::RightLittleDistal,	u"" },
+		{ HumanoidBones::RightThumbProximal, _TT("" },
+		{ HumanoidBones::RightThumbIntermediate, _TT("" },
+		{ HumanoidBones::RightThumbDistal, _TT("" },
+		{ HumanoidBones::RightIndexProximal, _TT("" },
+		{ HumanoidBones::RightIndexIntermediate, _TT("" },
+		{ HumanoidBones::RightIndexDistal, _TT("" },
+		{ HumanoidBones::RightMiddleProximal, _TT("" },
+		{ HumanoidBones::RightMiddleIntermediate, _TT("" },
+		{ HumanoidBones::RightMiddleDistal, _TT("" },
+		{ HumanoidBones::RightRingProximal, _TT("" },
+		{ HumanoidBones::RightRingIntermediate, _TT("" },
+		{ HumanoidBones::RightRingDistal, _TT("" },
+		{ HumanoidBones::RightLittleProximal, _TT("" },
+		{ HumanoidBones::RightLittleIntermediate, _TT("" },
+		{ HumanoidBones::RightLittleDistal,	_TT("" },
 	};
 
 	/*

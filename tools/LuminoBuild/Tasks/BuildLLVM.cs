@@ -10,9 +10,9 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildLLVM";
 
-        public override void Build(Builder builder)
+        public override void Build(Build builder)
         {
-            var reposDir = Path.Combine(builder.LuminoBuildDir, "BuildTools");
+            var reposDir = Path.Combine(builder.BuildDir, "BuildTools");
             Directory.SetCurrentDirectory(reposDir);
 
             if (!Directory.Exists("llvm-project"))
@@ -31,8 +31,8 @@ namespace LuminoBuild.Tasks
             Directory.SetCurrentDirectory(reposDir);
             */
             var repoRoot = Path.Combine(reposDir, "llvm-project", "llvm");
-            var buildDir = Path.Combine(builder.LuminoBuildDir, "MSVC2019-x64-MT", "llvm-build");
-            var installDir = Path.Combine(builder.LuminoBuildDir, "MSVC2019-x64-MT", "BuildToolsInstall", "llvm");
+            var buildDir = Path.Combine(builder.BuildDir, "MSVC2019-x64-MT", "llvm-build");
+            var installDir = Path.Combine(builder.BuildDir, "MSVC2019-x64-MT", "BuildToolsInstall", "llvm");
             BuildProject(repoRoot, buildDir, installDir);
         }
 

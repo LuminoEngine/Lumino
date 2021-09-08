@@ -101,8 +101,8 @@ void CharacterController::onPreUpdate(float elapsedSeconds)
 
 		if (m_inputControlEnabled) {
 			const auto axis = Vector2::safeNormalize(Vector2(
-				-m_inputController->getAxisValue(u"left") + m_inputController->getAxisValue(u"right"),
-				-m_inputController->getAxisValue(u"down") + m_inputController->getAxisValue(u"up")),
+				-m_inputController->getAxisValue(_TT("left")) + m_inputController->getAxisValue(_TT("right")),
+				-m_inputController->getAxisValue(_TT("down")) + m_inputController->getAxisValue(_TT("up"))),
 				Vector2::Zero);
 			m_inputState.turnVelocity = axis.x;
 			m_inputState.forwardVelocity = axis.y;

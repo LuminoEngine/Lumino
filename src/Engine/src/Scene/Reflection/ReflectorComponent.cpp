@@ -28,7 +28,7 @@ bool ReflectorComponent::init()
     m_offscreenRenderView = makeObject<OffscreenWorldRenderView>();
     m_offscreenRenderView->setRenderTarget(m_renderTarget);
 
-    auto shader = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Reflector.fx");
+    auto shader = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Reflector.fx"));
     m_material = makeObject<Material>();
     m_material->setShader(shader);
     //m_material->setColor(Color::Red);
@@ -176,7 +176,7 @@ void ReflectorComponent::onPrepareRender(RenderingContext* context)
         Matrix textureMatrix = scope->worldMatrix() * virtualCamera.viewMatrix * virtualCamera.projMatrix;
 #endif
 
-        m_material->setMatrix(u"_TextureMatrix", textureMatrix);
+        m_material->setMatrix(_TT("_TextureMatrix"), textureMatrix);
     }
 
     context->world->enqueueOffscreenRenderView(m_offscreenRenderView);

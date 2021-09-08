@@ -289,7 +289,7 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const 
             //printf("  pos: %f %f %f\n", posOrg.x, posOrg.y, posOrg.z);
             //printf("  rot: %f %f %f\n", rotOrg.x, rotOrg.y, rotOrg.z);
 
-            //if (name == u"Arm_R") {
+            //if (name == _TT("Arm_R") {
             //    printf("");
             //}
             if (m_flipZ) {
@@ -347,7 +347,7 @@ bool BvhImporter::readHierarchy()
             bool isRoot = m_reader.token().is("ROOT", 4);
 
             if (!m_reader.readToken()) {
-                m_diag->reportError(u"Expected joint name.");
+                m_diag->reportError(_TT("Expected joint name."));
                 return false;
             }
 
@@ -363,7 +363,7 @@ bool BvhImporter::readHierarchy()
                 m_rootJointIndex = m_joints.size() - 1;
             }
             else {
-                LN_WARNING(u"Multiple root joints found.");
+                LN_WARNING(_TT("Multiple root joints found."));
             }
         }
         else if (m_reader.token().is("End", 3)) {
@@ -371,19 +371,19 @@ bool BvhImporter::readHierarchy()
         }
         else if (m_reader.token().is("OFFSET", 6)) {
             if (!m_reader.readToken()) {
-                m_diag->reportError(u"Expected offset value x.");
+                m_diag->reportError(_TT("Expected offset value x."));
                 return false;
             }
             float x = m_reader.token().toFloat();
 
             if (!m_reader.readToken()) {
-                m_diag->reportError(u"Expected offset value y.");
+                m_diag->reportError(_TT("Expected offset value y."));
                 return false;
             }
             float y = m_reader.token().toFloat();
 
             if (!m_reader.readToken()) {
-                m_diag->reportError(u"Expected offset value z.");
+                m_diag->reportError(_TT("Expected offset value z."));
                 return false;
             }
             float z = m_reader.token().toFloat();
@@ -404,7 +404,7 @@ bool BvhImporter::readHierarchy()
         }
         else if (m_reader.token().is("CHANNELS", 8)) {
             if (!m_reader.readToken()) {
-                m_diag->reportError(u"Expected channels count.");
+                m_diag->reportError(_TT("Expected channels count."));
                 return false;
             }
 
@@ -416,7 +416,7 @@ bool BvhImporter::readHierarchy()
                 m_channels.push_back(channel);
 
                 if (!m_reader.readToken()) {
-                    m_diag->reportError(u"Expected channel.");
+                    m_diag->reportError(_TT("Expected channel."));
                     return false;
                 }
 
@@ -449,7 +449,7 @@ bool BvhImporter::readHierarchy()
     }
 
     if (!blockClosed) {
-        m_diag->reportError(u"HIERARCHY block is not closed.");
+        m_diag->reportError(_TT("HIERARCHY block is not closed."));
         return false;
     }
 
@@ -467,30 +467,30 @@ bool BvhImporter::readMotion()
 {
     // Frames:
     if (!m_reader.readLine()) {
-        m_diag->reportError(u"Expected Frames line.");
+        m_diag->reportError(_TT("Expected Frames line."));
         return false;
     }
     if (m_reader.tokenCount() != 2) {
-        m_diag->reportError(u"Expected Frames token.");
+        m_diag->reportError(_TT("Expected Frames token."));
         return false;
     }
     if (!m_reader.token(0).is("Frames:", 7)) {
-        m_diag->reportError(u"Expected Frames.");
+        m_diag->reportError(_TT("Expected Frames."));
         return false;
     }
     m_frames = m_reader.token(1).toInt();
 
     // Frame Time:
     if (!m_reader.readLine()) {
-        m_diag->reportError(u"Expected Frame Time line.");
+        m_diag->reportError(_TT("Expected Frame Time line."));
         return false;
     }
     if (m_reader.tokenCount() != 3) {
-        m_diag->reportError(u"Expected Frame Time token.");
+        m_diag->reportError(_TT("Expected Frame Time token."));
         return false;
     }
     if (!m_reader.startWith("Frame Time:", 11)) {
-        m_diag->reportError(u"Expected Frame Time.");
+        m_diag->reportError(_TT("Expected Frame Time."));
         return false;
     }
     m_frameTime = m_reader.token(2).toFloat();
@@ -498,12 +498,12 @@ bool BvhImporter::readMotion()
     m_frameData.resize(m_frames * m_channels.size());
     for (int iFrame = 0; iFrame < m_frames; iFrame++) {
         if (!m_reader.readLine()) {
-            m_diag->reportError(u"Expected frame data line.");
+            m_diag->reportError(_TT("Expected frame data line."));
             return false;
         }
 
         if (m_reader.tokenCount() != m_channels.size()) {
-            m_diag->reportError(u"Insufficient frame data.");
+            m_diag->reportError(_TT("Insufficient frame data."));
             return false;
         }
 
@@ -518,69 +518,69 @@ bool BvhImporter::readMotion()
 HumanoidBones BvhImporter::mapHumanoidBonesMixamoUnity(const String& name)
 {
     static const std::unordered_map<String, HumanoidBones> table = {
-        { u"Hips", HumanoidBones::Hips },
-        { u"Spine", HumanoidBones::Spine },
-        { u"Spine1", HumanoidBones::Chest },
-        { u"Spine2", HumanoidBones::UpperChest },
+        { _TT("Hips"), HumanoidBones::Hips },
+        { _TT("Spine"), HumanoidBones::Spine },
+        { _TT("Spine1"), HumanoidBones::Chest },
+        { _TT("Spine2"), HumanoidBones::UpperChest },
 
-        { u"LeftShoulder", HumanoidBones::LeftShoulder },
-        { u"LeftArm", HumanoidBones::LeftUpperArm },
-        { u"LeftForeArm", HumanoidBones::LeftLowerArm },
-        { u"LeftHand", HumanoidBones::LeftHand },
+        { _TT("LeftShoulder"), HumanoidBones::LeftShoulder },
+        { _TT("LeftArm"), HumanoidBones::LeftUpperArm },
+        { _TT("LeftForeArm"), HumanoidBones::LeftLowerArm },
+        { _TT("LeftHand"), HumanoidBones::LeftHand },
 
-        { u"RightShoulder", HumanoidBones::RightShoulder },
-        { u"RightArm", HumanoidBones::RightUpperArm },
-        { u"RightForeArm", HumanoidBones::RightLowerArm },
-        { u"RightHand", HumanoidBones::RightHand },
-        //{ u"LeftShoulder", HumanoidBones::RightShoulder },
-        //{ u"LeftArm", HumanoidBones::RightUpperArm },
-        //{ u"LeftForeArm", HumanoidBones::RightLowerArm },
-        //{ u"LeftHand", HumanoidBones::RightHand },
+        { _TT("RightShoulder"), HumanoidBones::RightShoulder },
+        { _TT("RightArm"), HumanoidBones::RightUpperArm },
+        { _TT("RightForeArm"), HumanoidBones::RightLowerArm },
+        { _TT("RightHand"), HumanoidBones::RightHand },
+        //{ _TT("LeftShoulder", HumanoidBones::RightShoulder },
+        //{ _TT("LeftArm", HumanoidBones::RightUpperArm },
+        //{ _TT("LeftForeArm", HumanoidBones::RightLowerArm },
+        //{ _TT("LeftHand", HumanoidBones::RightHand },
 
-        //{ u"RightShoulder", HumanoidBones::LeftShoulder },
-        //{ u"RightArm", HumanoidBones::LeftUpperArm },
-        //{ u"RightForeArm", HumanoidBones::LeftLowerArm },
-        //{ u"RightHand", HumanoidBones::LeftHand },
+        //{ _TT("RightShoulder", HumanoidBones::LeftShoulder },
+        //{ _TT("RightArm", HumanoidBones::LeftUpperArm },
+        //{ _TT("RightForeArm", HumanoidBones::LeftLowerArm },
+        //{ _TT("RightHand", HumanoidBones::LeftHand },
 
-        { u"LeftUpLeg", HumanoidBones::LeftUpperLeg },
-        { u"LeftLeg", HumanoidBones::LeftLowerLeg },
-        { u"LeftFoot", HumanoidBones::LeftFoot },
-        { u"LeftToeBase", HumanoidBones::LeftToes },
+        { _TT("LeftUpLeg"), HumanoidBones::LeftUpperLeg },
+        { _TT("LeftLeg"), HumanoidBones::LeftLowerLeg },
+        { _TT("LeftFoot"), HumanoidBones::LeftFoot },
+        { _TT("LeftToeBase"), HumanoidBones::LeftToes },
 
-        { u"RightUpLeg", HumanoidBones::RightUpperLeg },
-        { u"RightLeg", HumanoidBones::RightLowerLeg },
-        { u"RightFoot", HumanoidBones::RightFoot },
-        { u"RightToeBase", HumanoidBones::RightToes },
-        //{ u"LeftUpLeg", HumanoidBones::RightUpperLeg },
-        //{ u"LeftLeg", HumanoidBones::RightLowerLeg },
-        //{ u"LeftFoot", HumanoidBones::RightFoot },
-        //{ u"LeftToeBase", HumanoidBones::RightToes },
+        { _TT("RightUpLeg"), HumanoidBones::RightUpperLeg },
+        { _TT("RightLeg"), HumanoidBones::RightLowerLeg },
+        { _TT("RightFoot"), HumanoidBones::RightFoot },
+        { _TT("RightToeBase"), HumanoidBones::RightToes },
+        //{ _TT("LeftUpLeg", HumanoidBones::RightUpperLeg },
+        //{ _TT("LeftLeg", HumanoidBones::RightLowerLeg },
+        //{ _TT("LeftFoot", HumanoidBones::RightFoot },
+        //{ _TT("LeftToeBase", HumanoidBones::RightToes },
 
-        //{ u"RightUpLeg", HumanoidBones::LeftUpperLeg },
-        //{ u"RightLeg", HumanoidBones::LeftLowerLeg },
-        //{ u"RightFoot", HumanoidBones::LeftFoot },
-        //{ u"RightToeBase", HumanoidBones::LeftToes },
+        //{ _TT("RightUpLeg", HumanoidBones::LeftUpperLeg },
+        //{ _TT("RightLeg", HumanoidBones::LeftLowerLeg },
+        //{ _TT("RightFoot", HumanoidBones::LeftFoot },
+        //{ _TT("RightToeBase", HumanoidBones::LeftToes },
 
 
 
-        { u"Neck", HumanoidBones::Neck },
-        { u"Head", HumanoidBones::Head },
-        { u"LeftEye", HumanoidBones::LeftEye },
-        { u"RightEye", HumanoidBones::RightEye },
+        { _TT("Neck"), HumanoidBones::Neck },
+        { _TT("Head"), HumanoidBones::Head },
+        { _TT("LeftEye"), HumanoidBones::LeftEye },
+        { _TT("RightEye"), HumanoidBones::RightEye },
 
 
         // VRM Bone
-        { u"shoulder_L", HumanoidBones::LeftShoulder },
-        { u"Arm_L", HumanoidBones::LeftUpperArm },
-        { u"forearm_L", HumanoidBones::LeftLowerArm },
-        { u"hand_L", HumanoidBones::LeftHand },
-        { u"shoulder_R", HumanoidBones::RightShoulder },
-        { u"Arm_R", HumanoidBones::RightUpperArm },
-        { u"forearm_R", HumanoidBones::RightLowerArm },
-        { u"hand_R", HumanoidBones::RightHand },
+        { _TT("shoulder_L"), HumanoidBones::LeftShoulder },
+        { _TT("Arm_L"), HumanoidBones::LeftUpperArm },
+        { _TT("forearm_L"), HumanoidBones::LeftLowerArm },
+        { _TT("hand_L"), HumanoidBones::LeftHand },
+        { _TT("shoulder_R"), HumanoidBones::RightShoulder },
+        { _TT("Arm_R"), HumanoidBones::RightUpperArm },
+        { _TT("forearm_R"), HumanoidBones::RightLowerArm },
+        { _TT("hand_R"), HumanoidBones::RightHand },
     };
 
-    int index = name.indexOf(u"mixamorig:");
+    int index = name.indexOf(_TT("mixamorig:"));
     if (index < 0) return HumanoidBones::None;
 
     const auto n = name.substr(10);

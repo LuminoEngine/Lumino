@@ -36,7 +36,7 @@ void UIListViewItem::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* 
         LN_NOTIMPLEMENTED();
     }
 
-    UIElement::setContent(m_model->getValue(u""));
+    UIElement::setContent(m_model->getValue(_TT("")));
 }
 
 //==============================================================================

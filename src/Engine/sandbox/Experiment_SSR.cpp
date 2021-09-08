@@ -35,16 +35,16 @@ class App_Experiment_SSR : public Application
         m_sprite->setBlendMode(BlendMode::Normal);
         //m_sprite->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 
-        auto groundMaterial = Material::create(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-albedo.jpg"));
-        groundMaterial->setMetallicRoughnessTexture(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-roughness.jpg"));
-        //groundMaterial->setNormalMap(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-normal-dx.jpg"));
+        auto groundMaterial = Material::create(Texture2D::load(_TT("D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-albedo.jpg")));
+        groundMaterial->setMetallicRoughnessTexture(Texture2D::load(_TT("D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-roughness.jpg")));
+        //groundMaterial->setNormalMap(Texture2D::load(_TT("D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-normal-dx.jpg")));
         m_ground = PlaneMesh::create(groundMaterial);
         m_ground->setScale(4);
         m_ground->addInto();
 
         auto wallMaterial = Material::create();
         //wallMaterial.bumpMap = textureLoader.load('assets/textures/brick_bump.jpg');
-        wallMaterial->setMainTexture(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/brick_diffuse.jpg"));
+        wallMaterial->setMainTexture(Texture2D::load(_TT("D:/Tech/Graphics/ssr/assets/textures/brick_diffuse.jpg")));
         //wallMaterial.metallicRoughnessTexture = textureLoader.load('assets/textures/brick_roughness.jpg');
         //wallMaterial.bumpScale = 0.1;
         //wallMaterial->shadingModel = ShadingModel::Unlit;
@@ -107,24 +107,24 @@ class App_Experiment_SSR : public Application
 
         //m_plane = PlaneMesh::create();
         //m_plane->planeMeshComponent()->setSize(10000, 10000);
-        //auto texture = Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg");
+        //auto texture = Texture2D::load(_TT("D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg");
         //texture->setMipmapEnabled(true);
         //auto planeMaterial = Material::create(texture);
-        //auto normalMap = Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Normal.jpg");
+        //auto normalMap = Texture2D::load(_TT("D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Normal.jpg");
         //normalMap->setMipmapEnabled(true);
         ////planeMaterial->setNormalMap(normalMap);
         //m_plane->planeMeshComponent()->setMaterial(planeMaterial);
         ////m_plane->planeMeshComponent()->setUVParUnit(Vector2(0.5f, 0.5f));
         //m_plane->planeMeshComponent()->setUVParUnit(Vector2(5, 5));
 
-        //auto mesh = Mesh::create(u"D:/Materials/KitBash3D/WARZONE/Blender/untitled4.glb");
+        //auto mesh = Mesh::create(_TT("D:/Materials/KitBash3D/WARZONE/Blender/untitled4.glb");
 
 
-        //auto mesh = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb");
+        //auto mesh = Mesh::create(_TT("D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb");
         
-		//auto mesh = Mesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/autotile-regions.glb");
-        //auto mesh = SkinnedMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/SkinnedMesh2.glb");
-        //auto mesh = SkinnedMesh::load(u"D:/LocalProj/UnityChanSD/Misaki_sum_humanoid.fbx");
+		//auto mesh = Mesh::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/autotile-regions.glb");
+        //auto mesh = SkinnedMesh::load(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/SkinnedMesh2.glb");
+        //auto mesh = SkinnedMesh::load(_TT("D:/LocalProj/UnityChanSD/Misaki_sum_humanoid.fbx");
         //mesh->setShadingModel(ShadingModel::Unlit);
 
         //auto model = mesh->skinnedMeshComponent()->model();
@@ -159,7 +159,7 @@ class App_Experiment_SSR : public Application
         auto material = Material::create();
         material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
         material->shadingModel = ShadingModel::Unlit;
-        material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+        material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
         m1->setSpriteModule(material);
 
         auto particle1 = makeObject<ParticleEmitterComponent2>(particleModel);

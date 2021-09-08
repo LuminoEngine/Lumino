@@ -41,8 +41,8 @@ public:
 		// Promise や Delegate のテンプレートインスタンスは alias で定義したいが、そうすると型名を簡単に指定する方法が無い。
 		// ただこれらはシリアライズのように型名からインスタンスを作るようなことは無く、Binding の Managed 側のオブジェクトを new するときなど
 		// Managed 側の TypeInfo とマッピングさせるために異なるインスタンスを生成する必要がある。
-		if (localName == u"__Promise") {
-			auto typeInfo = makeRef<TypeInfo>(className, baseType);
+		if (localName == _TT("__Promise")) {
+			auto typeInfo = makeRef<TypeInfo>(String::fromCString(className), baseType);
 			typeInfo->m_id = static_cast<int>(m_typeInfos.size());
 			m_typeInfos.push_back(typeInfo);
 			return typeInfo;
@@ -51,7 +51,7 @@ public:
 		auto itr = m_typeInfoSet.find(localName);
 		if (itr == m_typeInfoSet.end())
 		{
-			auto typeInfo = makeRef<TypeInfo>(className, baseType);
+			auto typeInfo = makeRef<TypeInfo>(String::fromCString(className), baseType);
 
             typeInfo->m_id = static_cast<int>(m_typeInfos.size());
             m_typeInfos.push_back(typeInfo);

@@ -28,7 +28,7 @@ LN_CONSTRUCT_ACCESS:
 	bool init();
 
 protected:
-	virtual const String& elementName() const override { static String name = u"UIWindow"; return name; }
+	virtual const String& elementName() const override { static String name = _TT("UIWindow"); return name; }
 
 private:
     bool m_opend;

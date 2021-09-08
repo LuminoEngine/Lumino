@@ -47,8 +47,8 @@ ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Pa
 	manager->dispose();
 
 	if (result && !diag->hasError()) {
-		CLI::info(u"");
-		CLI::info(u"Compilation succeeded; see " + outputFile);
+		CLI::info(_TT(""));
+		CLI::info(_TT("Compilation succeeded; see ") + outputFile);
 	}
 
 	return result;

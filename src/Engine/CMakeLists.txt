@@ -2,8 +2,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(LuminoEngine)
 
-include(../Core/LuminoCoreSources.cmake)
-
 set(LN_ENGINE_INCLUDE_DIR ${LUMINO_ROOT_PATH}/include)
 
 #------------------------------------------------------------------------------
@@ -298,7 +296,9 @@ elseif (WIN32)
         list(APPEND LN_PLATFORM_LIBS LN::FBX)
     endif()
     
-    
+    # TODO: lib 分割したい
+    add_definitions(/bigobj)
+
     #if (LN_USE_VULKAN)
     #    list(APPEND LN_PLATFORM_LIBS VulkanImported)
     #endif()
@@ -345,7 +345,8 @@ endif()
 set(
     _LN_ENGINE_LINK_LIBS
     LuminoCore
-    pcre
+    #pcre
+    pcre2_32
     PNG
     ZLIB
     FreeType

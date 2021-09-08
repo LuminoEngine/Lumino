@@ -14,18 +14,18 @@ class TitleScene : public Level
 {
 	void onStart() override
 	{
-		//auto sprite = Sprite::create(Texture2D::load(u"picture1"));
+		//auto sprite = Sprite::create(Texture2D::load(_TT("picture1")));
 
-		Debug::print(u"TitleScene");
+		Debug::print(_TT("TitleScene"));
 		Engine::renderView()->setBackgroundColor(Color::White);
 		//g_TransitionPostEffect->start(5);
 		Scene::setTransitionEffectMode(LevelTransitionEffectMode::CrossFade);
 		Scene::setTransitionEffectColor(Color::Red);
-		Scene::setTransitionEffectMaskTexture(Texture2D::load(u"Transition1"));
+		Scene::setTransitionEffectMaskTexture(Texture2D::load(_TT("Transition1")));
 		//Scene::setTransitionEffectVague(0);
-		//Scene::setTransitionEffectMaskTexture(Texture2D::load(u"Transition2"));
+		//Scene::setTransitionEffectMaskTexture(Texture2D::load(_TT("Transition2"));
 
-		//auto button = UIButton::create(u"button");
+		//auto button = UIButton::create(_TT("button");
 	}
 
 	void onUpdate() override;
@@ -35,14 +35,14 @@ class GameScene : public Level
 {
 	void onStart() override
 	{
-		Debug::print(u"GameScene");
+		Debug::print(_TT("GameScene"));
 		Engine::renderView()->setBackgroundColor(Color::Gray);
 		//g_TransitionPostEffect->startFadeOut(5);
 	}
 
 	void onUpdate() override
 	{
-		if (!Scene::isTransitionEffectRunning() && Input::isTriggered(u"submit")) {
+		if (!Scene::isTransitionEffectRunning() && Input::isTriggered(_TT("submit"))) {
 			Scene::gotoLevel(makeObject<TitleScene>());
 		}
 	}
@@ -50,13 +50,13 @@ class GameScene : public Level
 
 void TitleScene::onUpdate()
 {
-	if (!Scene::isTransitionEffectRunning() && Input::isTriggered(u"submit")) {
+	if (!Scene::isTransitionEffectRunning() && Input::isTriggered(_TT("submit"))) {
 		Scene::gotoLevel(makeObject<GameScene>());
 	}
-	if (Input::isTriggered(u"left")) {
+	if (Input::isTriggered(_TT("left"))) {
 		Scene::startFadeOut();
 	}
-	if (Input::isTriggered(u"right")) {
+	if (Input::isTriggered(_TT("right"))) {
 		Scene::startFadeIn();
 	}
 }

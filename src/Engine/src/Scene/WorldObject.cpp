@@ -329,15 +329,15 @@ bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
 void WorldObject::serialize(Serializer2& ar)
 {
 	Object::serialize(ar);
-    ar& ln::makeNVP(u"name", m_name);
+    ar& ln::makeNVP(_TT("name"), m_name);
 
     Vector3 eularAngles = m_transform->m_rotation.toEulerAngles();
-	ar & ln::makeNVP(u"position", m_transform->m_position);
-	ar & ln::makeNVP(u"angles", eularAngles);   // Unity は Quaternion だけど、こっちは手打ち想定なので人が見やすい表現にする
-	ar & ln::makeNVP(u"scale", m_transform->m_scale);
+	ar & ln::makeNVP(_TT("position"), m_transform->m_position);
+	ar & ln::makeNVP(_TT("angles"), eularAngles);   // Unity は Quaternion だけど、こっちは手打ち想定なので人が見やすい表現にする
+	ar & ln::makeNVP(_TT("scale"), m_transform->m_scale);
 
-	ar & ln::makeNVP(u"components", *m_components);
-	ar & ln::makeNVP(u"children", *m_children);
+	ar & ln::makeNVP(_TT("components"), *m_components);
+	ar & ln::makeNVP(_TT("children"), *m_children);
 
     if (ar.isLoading()) {
         m_transform->m_rotation = Quaternion::makeFromEulerAngles(eularAngles);

@@ -101,7 +101,7 @@ void MeshModel::clear()
 void MeshModel::serialize(Serializer2& ar)
 {
 	Object::serialize(ar);
-	ar & makeNVP(u"filePath", m_filePath);
+	ar & makeNVP(_TT("filePath"), m_filePath);
 
 	if (ar.isLoading()) {
 		clear();
@@ -231,7 +231,7 @@ void MeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matrix& pa
 {
     auto node = m_nodes[nodeIndex];
 
-	//if (node->name() == u"右腕") {
+	//if (node->name() == _TT("右腕") {
 	//	std::cout << node->name() << std::endl;
 	//}
 	//std::cout << nodeIndex << std::endl;
@@ -491,7 +491,7 @@ Box MeshHelper::makeAABB(const Vertex* vertices, uint32_t vertexCount)
 	return Box(aabbMin, aabbMax);
 }
 
-std::array<const Char*, 1> MeshHelper::CandidateExtensions_MeshModel = { u".gltf" };
+std::array<const Char*, 1> MeshHelper::CandidateExtensions_MeshModel = { _TT(".gltf") };
 
 //==============================================================================
 // MeshImportSettings

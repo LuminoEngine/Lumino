@@ -164,11 +164,11 @@ Ref<MeshModel> ObjMeshImporter::import(const Path& filePath, float scale, Diagno
     for (tinyobj::shape_t& shape : shapes)
     {
         if (shape.mesh.num_face_vertices.size() != shape.mesh.material_ids.size()) {
-            diag->reportWarning(u"[wavefront .obj] Invalid or unknown format.");
+            diag->reportWarning(_TT("[wavefront .obj] Invalid or unknown format."));
             return nullptr;
         }
         if (!shape.mesh.tags.empty()) {
-            diag->reportWarning(u"[wavefront .obj] 'tag' is unsupported.");
+            diag->reportWarning(_TT("[wavefront .obj] 'tag' is unsupported."));
         }
 
         if (hasSmoothingGroup(shape)) {
@@ -270,7 +270,7 @@ Ref<MeshModel> ObjMeshImporter::import(const Path& filePath, float scale, Diagno
         materialData.emissive.a = 1.0f;
         materialData.power = material.shininess;
 
-        Ref<Texture2D> texture = nullptr;//makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
+        Ref<Texture2D> texture = nullptr;//makeObject<Texture2D>(_TT("D:/tmp/110220c_as019.png");
         if (!material.diffuse_texname.empty())
             texture = Texture2D::load(Path(parentDirPath, String::fromStdString(material.diffuse_texname)));
         auto m = makeObject<Material>(texture, materialData);

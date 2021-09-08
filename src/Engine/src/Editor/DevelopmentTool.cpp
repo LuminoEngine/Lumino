@@ -49,10 +49,10 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window)
 	m_window->m_renderView->setClearMode(SceneClearMode::ColorAndDepth);
 	m_window->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
 
-	if (auto v = AppData::getValue(u"LN.Tools.ToolModeWindowWidth")) {
+	if (auto v = AppData::getValue(_TT("LN.Tools.ToolModeWindowWidth"))) {
 		m_toolModeWindowSize.width = v->get<float>();
 	}
-	if (auto v = AppData::getValue(u"LN.Tools.ToolModeWindowHeight")) {
+	if (auto v = AppData::getValue(_TT("LN.Tools.ToolModeWindowHeight"))) {
 		m_toolModeWindowSize.height = v->get<float>();
 	}
 
@@ -62,8 +62,8 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window)
 void RuntimeEditor::dispose()
 {
 	if (m_window) {
-		AppData::setValue(u"LN.Tools.ToolModeWindowWidth", makeVariant(m_toolModeWindowSize.width));
-		AppData::setValue(u"LN.Tools.ToolModeWindowHeight", makeVariant(m_toolModeWindowSize.height));
+		AppData::setValue(_TT("LN.Tools.ToolModeWindowWidth"), makeVariant(m_toolModeWindowSize.width));
+		AppData::setValue(_TT("LN.Tools.ToolModeWindowHeight"), makeVariant(m_toolModeWindowSize.height));
 
 		m_window->dispose();
 		m_window = nullptr;

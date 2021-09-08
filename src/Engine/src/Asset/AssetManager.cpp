@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "../../Core/src/IO/PathHelper.hpp"
+#include "../../../../lumino/LuminoCore/src/IO/PathHelper.hpp"
 //#include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
@@ -14,8 +14,8 @@ namespace detail {
 //==============================================================================
 // AssetManager
 
-const String AssetManager::AssetPathPrefix = u"asset://";
-const String AssetManager::LocalhostPrefix = u"local";
+const String AssetManager::AssetPathPrefix = _TT("asset://");
+const String AssetManager::LocalhostPrefix = _TT("local");
 
 AssetManager::AssetManager()
 	: m_storageAccessPriority(AssetStorageAccessPriority::DirectoryFirst)
@@ -117,7 +117,7 @@ Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath, const
         //if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
         //    auto localPath = path.canonicalize();
         //    if (FileSystem::existsFile(localPath)) {
-        //        result = localPath;// String::concat(LocalhostPrefix, u"/", localPath.unify().str());
+        //        result = localPath;// String::concat(LocalhostPrefix, _TT("/", localPath.unify().str());
         //    }
         //}
         //else
@@ -146,7 +146,7 @@ bool AssetManager::existsAsset(const AssetPath& assetPath) const
 	//String archiveName;
 	//Path path;
 	//if (tryParseAssetPath(assetPath, &archiveName, &path)) {
-		//if (String::compare(assetPath.scheme(), u"file", CaseSensitivity::CaseInsensitive) == 0) {
+		//if (String::compare(assetPath.scheme(), _TT("file", CaseSensitivity::CaseInsensitive) == 0) {
 		//	if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
 		//		return FileSystem::existsFile(assetPath.path());
 		//	}
@@ -170,7 +170,7 @@ Ref<Stream> AssetManager::openStreamFromAssetPath(const AssetPath& assetPath) co
     //Path path;
     //if (tryParseAssetPath(assetPath, &archiveName, &path)) {
         //if (String::compare(archiveName, LocalhostPrefix, CaseSensitivity::CaseInsensitive) == 0) {
-		//if (String::compare(assetPath.scheme(), u"file", CaseSensitivity::CaseInsensitive) == 0) {
+		//if (String::compare(assetPath.scheme(), _TT("file", CaseSensitivity::CaseInsensitive) == 0) {
   //          if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
   //              return FileStream::create(assetPath.path(), FileOpenMode::Read);
   //          }
@@ -239,7 +239,7 @@ Ref<AssetModel> AssetManager::loadAssetModelFromLocalFile(const String& filePath
         return loadAssetModelFromAssetPath(*assetPath);
     }
     else {
-        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+        LN_WARNING(_TT("Asset not found: ") + String(filePath));    // TODO: operator
         return nullptr;
     }
 }
@@ -335,7 +335,7 @@ String AssetManager::assetPathToLocalFullPath(const AssetPath& assetPath) const
 //String AssetManager::localFullPathToAssetPath(const String& localFullPath) const
 //{
 //    // TODO: ちょっと手抜き
-//    return AssetPathPrefix + u"/" + localFullPath;
+//    return AssetPathPrefix + _TT("/" + localFullPath;
 //}
 
 //String AssetManager::getParentAssetPath(const String& assetPath)
@@ -347,9 +347,9 @@ String AssetManager::assetPathToLocalFullPath(const AssetPath& assetPath) const
 //    if (localPath.str().contains('/'))
 //        localPath = localPath.parent();
 //    else
-//        localPath = u"";
+//        localPath = _TT("";
 //
-//    return AssetPathPrefix + archiveName + u"/" + localPath.str();
+//    return AssetPathPrefix + archiveName + _TT("/" + localPath.str();
 //}
 
 //String AssetManager::combineAssetPath(const String& assetFullBasePath, const String& localAssetPath)
@@ -363,7 +363,7 @@ String AssetManager::assetPathToLocalFullPath(const AssetPath& assetPath) const
 //        tryParseAssetPath(assetFullBasePath, &archiveName, &localPath);
 //
 //
-//        return AssetPathPrefix + archiveName + canonicalizeAssetPath(u"/" + localPath.str() + u"/" + localAssetPath);
+//        return AssetPathPrefix + archiveName + canonicalizeAssetPath(_TT("/" + localPath.str() + _TT("/" + localAssetPath);
 //    }
 //}
 
@@ -377,8 +377,8 @@ String AssetManager::assetPathToLocalFullPath(const AssetPath& assetPath) const
 //    tryParseAssetPath(assetFullBasePath, &archiveName1, &localPath1);
 //    tryParseAssetPath(assetFullPath, &archiveName2, &localPath2);
 //
-//    localPath1 = Path(u"/", localPath1);
-//    localPath2 = Path(u"/", localPath2);
+//    localPath1 = Path(_TT("/", localPath1);
+//    localPath2 = Path(_TT("/", localPath2);
 //    return localPath1.makeRelative(localPath2);
 //}
 
@@ -431,7 +431,7 @@ void AssetManager::buildAssetIndexFromLocalFiles(const ln::Path& assetDir)
     m_assetIndex.clear();
 
     // TODO: 量が多くなると重くなるのでインデックス作成スレッド建てたい
-    auto assetFiles = ln::FileSystem::getFiles(assetDir, u"*.lnasset", ln::SearchOption::Recursive);
+    auto assetFiles = ln::FileSystem::getFiles(assetDir, _TT("*.lnasset"), ln::SearchOption::Recursive);
     for (auto asset : assetFiles) {
         auto id = AssetModel::readAssetId(asset);
         if (!id.isEmpty()) {

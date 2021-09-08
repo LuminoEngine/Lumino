@@ -20,7 +20,7 @@ void AssetPicker::init()
     m_hbox->addChild(m_vbox);
 
     m_button = makeObject<UIToggleButton>();
-    m_button->setText(u"test");
+    m_button->setText(_TT("test"));
     m_button->connectOnChecked([this](UIEventArgs* e) { m_popup->open(); });
     m_button->connectOnUnchecked([this](UIEventArgs* e) { m_popup->close(); });
     m_hbox->addChild(m_button);
@@ -36,7 +36,7 @@ void AssetPicker::init()
 
 
         auto project = lna::Workspace::instance()->mainProject();
-        auto assetRootDir = u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets";//ln::Path(project->assetsDir(), u"Tilesets");
+        auto assetRootDir = _TT("D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets");//ln::Path(project->assetsDir(), _TT("Tilesets");
 
         m_model = ln::makeObject<ln::UIFileSystemCollectionModel>();
         m_model->setRootPath(assetRootDir);
@@ -45,7 +45,7 @@ void AssetPicker::init()
 
 
     //auto popupContent = ln::makeObject<ln::UIText>();
-    //popupContent->setText(u"POP");
+    //popupContent->setText(_TT("POP");
     //layout->addChild(popup);
 }
 

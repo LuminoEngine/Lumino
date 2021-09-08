@@ -18,7 +18,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 protected:
-    virtual const String& elementName() const  override { static String name = u"UITextField"; return name; }
+    virtual const String& elementName() const  override { static String name = _TT("UITextField"); return name; }
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
     virtual void onRender(UIRenderingContext* context) override;

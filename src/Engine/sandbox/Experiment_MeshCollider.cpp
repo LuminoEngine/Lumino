@@ -14,10 +14,10 @@ class App_Experiment_MeshCollider : public Application
         //Engine::renderView()->setPhysicsDebugDrawEnabled(true);
         Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 
-        auto staticMesh = StaticMesh::load(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Map-1.glb");
+        auto staticMesh = StaticMesh::load(_TT("C:/Proj/LN/PrivateProjects/HC4/assets/Map/Map-1.glb"));
         auto model = staticMesh->staticMeshComponent()->model();
 
-        if (auto node = model->findNode(u"Lumino.MeshCollider")) {
+        if (auto node = model->findNode(_TT("Lumino.MeshCollider"))) {
             int index = node->meshContainerIndex();
             if (index >= 0) {
                 auto meshContainer = model->meshContainers()[index];
@@ -42,8 +42,8 @@ class App_Experiment_MeshCollider : public Application
     void onUpdate() override
     {
         auto v = m_boxBody->velocity();
-        v.x = -Input::getAxisValue(u"left") + Input::getAxisValue(u"right");
-        v.z = -Input::getAxisValue(u"down") + Input::getAxisValue(u"up");
+        v.x = -Input::getAxisValue(_TT("left")) + Input::getAxisValue(_TT("right"));
+        v.z = -Input::getAxisValue(_TT("down")) + Input::getAxisValue(_TT("up"));
         m_boxBody->setVelocity(v);
     }
 };

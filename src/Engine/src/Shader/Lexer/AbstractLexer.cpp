@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "../../Core/src/Text/UnicodeUtils.hpp"
+#include <LuminoCore/Base/UnicodeUtils.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include "AbstractLexer.hpp"
 

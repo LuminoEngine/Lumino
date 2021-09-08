@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 	}
 	catch (ln::Exception& e)
 	{
-		ln::String m = e.getMessage();
+		ln::String m = e.message();
 		std::cout << m << std::endl;
 		exitCode = 1;
 	}
@@ -94,11 +94,11 @@ int main(int argc, char** argv)
 // .profile
 static int commnad_localInitialSetup(const char* packageDir_)
 {
-	ln::Path packageDir = packageDir_;
-	ln::Path toolsDir = ln::Path(packageDir, u"tools");
+	ln::Path packageDir = ln::String::fromCString(packageDir_);
+	ln::Path toolsDir = ln::Path(packageDir, _TT("tools"));
 	ln::List<ln::String> lines;
 
-	ln::Path profile = ln::Path(ln::Environment::specialFolderPath(ln::SpecialFolder::Home), u".profile");
+	ln::Path profile = ln::Path(ln::Environment::specialFolderPath(ln::SpecialFolder::Home), _TT(".profile"));
 
 	bool added = false;
 	if (ln::FileSystem::existsFile(profile)) {
@@ -107,9 +107,9 @@ static int commnad_localInitialSetup(const char* packageDir_)
 		ln::StreamReader r(profile);
 		ln::String line;
 		while (r.readLine(&line)) {
-			if (line.indexOf(u"# [Lumino begin]") == 0)
+			if (line.indexOf(_TT("# [Lumino begin]")) == 0)
 				beginLine = lines.size();
-			if (line.indexOf(u"# [Lumino end]") == 0)
+			if (line.indexOf(_TT("# [Lumino end]")) == 0)
 				endLine = lines.size();
 			lines.add(line);
 		}
@@ -118,13 +118,13 @@ static int commnad_localInitialSetup(const char* packageDir_)
 			// already exists.
 
 			for (int i = beginLine; i < endLine; i++) {
-				if (lines[i].indexOf("export LUMINO_PATH") == 0) {
-					lines[i] = ln::String::format(u"export LUMINO_PATH={0}", packageDir);
-					CLI::info(u"LUMINO_PATH updating.");
+				if (lines[i].indexOf(_TT("export LUMINO_PATH")) == 0) {
+					lines[i] = ln::String::format(_TT("export LUMINO_PATH={0}"), packageDir.str());
+					CLI::info(_TT("LUMINO_PATH updating."));
 				}
-				if (lines[i].indexOf("export PATH") == 0) {
-					lines[i] = ln::String::format(u"export PATH=$PATH:{0}", toolsDir);
-					CLI::info(u"PATH updating.");
+				if (lines[i].indexOf(_TT("export PATH")) == 0) {
+					lines[i] = ln::String::format(_TT("export PATH=$PATH:{0}"), toolsDir.str());
+					CLI::info(_TT("PATH updating."));
 				}
 			}
 
@@ -133,20 +133,20 @@ static int commnad_localInitialSetup(const char* packageDir_)
 	}
 
 	if (!added) {
-		lines.add(u"");
-		lines.add(u"# [Lumino begin]");
-		lines.add(ln::String::format(u"export LUMINO_PATH={0}", packageDir));
-		lines.add(ln::String::format(u"export PATH=$PATH:{0}", toolsDir));
-		lines.add(u"# [Lumino end]");
+		lines.add(_TT(""));
+		lines.add(_TT("# [Lumino begin]"));
+		lines.add(ln::String::format(_TT("export LUMINO_PATH={0}"), packageDir.str()));
+		lines.add(ln::String::format(_TT("export PATH=$PATH:{0}"), toolsDir.str()));
+		lines.add(_TT("# [Lumino end]"));
 	}
 
 	ln::StreamWriter w(profile);
-	w.setNewLine(u"\n");	// for macOS (\r is invalid)
+	w.setNewLine(_TT("\n"));	// for macOS (\r is invalid)
 	for (auto& line : lines) {
 		w.writeLine(line);
 	}
 
-	CLI::info(ln::String::format(u"Lumino environment variable added to {0}.", profile));
+	CLI::info(ln::String::format(_TT("Lumino environment variable added to {0}."), profile.str()));
 	return 0;
 }
 
@@ -156,64 +156,64 @@ static int processCommands(int argc, char** argv)
 	ln::CommandLineParser parser;
 	parser.addHelpOption();
 
-	//auto langOption = parser.addNamedValueOption(u"l", u"lang", u"language.", { u"cpp", u"rb" });
-	auto devOption = parser.addFlagOption(u"d", u"dev", u"Development mode.");
+	//auto langOption = parser.addNamedValueOption(_TT("l", _TT("lang", _TT("language.", { _TT("cpp", _TT("rb" });
+	auto devOption = parser.addFlagOption(_TT("d"), _TT("dev"), _TT("Development mode."));
 
 	//--------------------------------------------------------------------------------
 	// new command
-	auto newCommand = parser.addCommand(u"new", u"Create a new project.");
-	auto newCommand_pathArg = newCommand->addPositionalArgument(u"path", u"Project directory path.", ln::CommandLinePositionalArgumentFlags::Optional);
-	auto newCommand_nameOption = newCommand->addValueOption(u"n", u"name", u" Set the resulting project name, defaults to the directory name.");
-	auto newCommand_templateOption = newCommand->addValueOption(u"t", u"template", u"Project template.");
-	auto newCommand_engineOption = newCommand->addValueOption(u"e", u"engine", u"Engine source.");
+	auto newCommand = parser.addCommand(_TT("new"), _TT("Create a new project."));
+	auto newCommand_pathArg = newCommand->addPositionalArgument(_TT("path"), _TT("Project directory path."), ln::CommandLinePositionalArgumentFlags::Optional);
+	auto newCommand_nameOption = newCommand->addValueOption(_TT("n"), _TT("name"), _TT(" Set the resulting project name, defaults to the directory name."));
+	auto newCommand_templateOption = newCommand->addValueOption(_TT("t"), _TT("template"), _TT("Project template."));
+	auto newCommand_engineOption = newCommand->addValueOption(_TT("e"), _TT("engine"), _TT("Engine source."));
 
 	//--------------------------------------------------------------------------------
 	// build command
-	auto buildCommand = parser.addCommand(u"build", u"Build the project.");
-	auto buildCommand_packageOption = buildCommand->addFlagOption(u"p", u"package", u"Build release package.");
-	auto burildTargetArg = buildCommand->addPositionalArgument(u"target", u"Specify the target to build.", ln::CommandLinePositionalArgumentFlags::Optional);
+	auto buildCommand = parser.addCommand(_TT("build"), _TT("Build the project."));
+	auto buildCommand_packageOption = buildCommand->addFlagOption(_TT("p"), _TT("package"), _TT("Build release package."));
+	auto burildTargetArg = buildCommand->addPositionalArgument(_TT("target"), _TT("Specify the target to build."), ln::CommandLinePositionalArgumentFlags::Optional);
 
 	//--------------------------------------------------------------------------------
 	// run command
-	auto runCommand = parser.addCommand(u"run", u"Run the project.");
-	auto runCommand_targetArg = runCommand->addPositionalArgument(u"target", u"Specify the target to run.", ln::CommandLinePositionalArgumentFlags::Optional);
+	auto runCommand = parser.addCommand(_TT("run"), _TT("Run the project."));
+	auto runCommand_targetArg = runCommand->addPositionalArgument(_TT("target"), _TT("Specify the target to run."), ln::CommandLinePositionalArgumentFlags::Optional);
 
 	//--------------------------------------------------------------------------------
 	// restore command
-	auto restoreCommand = parser.addCommand(u"restore", u"Restore engines included in the project.");
+	auto restoreCommand = parser.addCommand(_TT("restore"), _TT("Restore engines included in the project."));
 
 	//--------------------------------------------------------------------------------
 	// fxc command
-	auto fxcCommand = parser.addCommand(u"fxc", u"Compile shader.");
-	auto fxcCommand_inputArg = fxcCommand->addPositionalArgument(u"input", u"Input file.");
-	auto fxcCommand_outputArg = fxcCommand->addPositionalArgument(u"output", u"Output file.", ln::CommandLinePositionalArgumentFlags::Optional);
-	auto fxcCommand_exportArg = fxcCommand->addValueOption(u"e", u"export", u"Export folder of output code.");
+	auto fxcCommand = parser.addCommand(_TT("fxc"), _TT("Compile shader."));
+	auto fxcCommand_inputArg = fxcCommand->addPositionalArgument(_TT("input"), _TT("Input file."));
+	auto fxcCommand_outputArg = fxcCommand->addPositionalArgument(_TT("output"), _TT("Output file."), ln::CommandLinePositionalArgumentFlags::Optional);
+	auto fxcCommand_exportArg = fxcCommand->addValueOption(_TT("e"), _TT("export"), _TT("Export folder of output code."));
 
 
 	//--------------------------------------------------------------------------------
 	// new-asset command
-	auto newAssetCommand = parser.addCommand(u"new-asset", u"Create a new asset file.");
-	auto newAssetCommand_nameArg = newAssetCommand->addPositionalArgument(u"name", u"Asset type name.");
-	auto newAssetCommand_outputArg = newAssetCommand->addValueOption(u"o", u"output", u"Output file path.");
+	auto newAssetCommand = parser.addCommand(_TT("new-asset"), _TT("Create a new asset file."));
+	auto newAssetCommand_nameArg = newAssetCommand->addPositionalArgument(_TT("name"), _TT("Asset type name."));
+	auto newAssetCommand_outputArg = newAssetCommand->addValueOption(_TT("o"), _TT("output"), _TT("Output file path."));
 
 	//--------------------------------------------------------------------------------
 	// build-assets command
-	//auto buildAssetsCommand = parser.addCommand(u"build-assets", u"Make assets archive.");
+	//auto buildAssetsCommand = parser.addCommand(_TT("build-assets", _TT("Make assets archive.");
 
 
 	//--------------------------------------------------------------------------------
-	auto dev_installTools = parser.addCommand(u"dev-install-tools", u"internal.");
+	auto dev_installTools = parser.addCommand(_TT("dev-install-tools"), _TT("internal."));
 
 
-	auto dev_openide = parser.addCommand(u"dev-openide", u"internal.");
-	auto dev_openide_targetArg = dev_openide->addPositionalArgument(u"target", u"target.");
+	auto dev_openide = parser.addCommand(_TT("dev-openide"), _TT("internal."));
+	auto dev_openide_targetArg = dev_openide->addPositionalArgument(_TT("target"), _TT("target."));
 
 
 	if (parser.process(argc, argv))
 	{
 		if (devOption->isSet()) {
 			lna::Workspace::developMode = true;
-			CLI::info(u"Running on develop-mode.");
+			CLI::info(_TT("Running on develop-mode."));
 		}
 
 		//--------------------------------------------------------------------------------

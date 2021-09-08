@@ -163,7 +163,7 @@ public:
 
     // lookat
     // Eye controller mode.
-    String lookAtTypeName = "Bone";
+    String lookAtTypeName = _TT("Bone");
 
     // Eye controller setting.
     Ref<VRM_DegreeMap> lookAtHorizontalInner = makeRef<VRM_DegreeMap>();

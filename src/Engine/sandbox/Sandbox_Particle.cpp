@@ -15,7 +15,7 @@ class App_Sandbox_Particle : public Application
         auto material = Material::create();
         material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/ColorGrid.png"));
         material->shadingModel = ShadingModel::Unlit;
-        material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+        material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx")));
         
 
         auto particleModel = makeObject<ParticleModel>();
@@ -46,7 +46,7 @@ class App_Sandbox_Particle : public Application
         auto material = Material::create();
         material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/ColorGrid.png"));
         material->shadingModel = ShadingModel::Unlit;
-        material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+        material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx")));
 
 
         auto particleModel = makeObject<ParticleModel>();
@@ -76,7 +76,7 @@ class App_Sandbox_Particle : public Application
 #endif
 #if 0
         auto material = Material::create();
-        material->setMainTexture(Texture2D::load(u"Sprite1"));
+        material->setMainTexture(Texture2D::load(_TT("Sprite1")));
 
         auto m1 = SpriteParticleModel::create();
         m1->setMaterial(material);
@@ -125,10 +125,10 @@ class App_Sandbox_Particle : public Application
         material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
         //material->setMainTexture(Texture2D::load("C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/WaterDrop-1.png"));
         material->setShadingModel(ShadingModel::Unlit);
-        material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+        material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx")));
         m1->setupSpriteModule(material);
 
-        //detail::AssetObjectInternal::setAssetPath(particleModel, u"Particle.yml");
+        //detail::AssetObjectInternal::setAssetPath(particleModel, _TT("Particle.yml");
         //Assets::save(particleModel);
 
         m_particleObj = makeObject<ParticleEmitter>(particleModel);
@@ -149,10 +149,10 @@ class App_Sandbox_Particle : public Application
 
         auto material2 = Material::create();
         //material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
-        material2->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
+        material2->setMainTexture(Texture2D::load(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png")));
         //material->setMainTexture(Texture2D::load("C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/WaterDrop-1.png"));
         material2->setShadingModel(ShadingModel::Unlit);
-        material2->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+        material2->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx")));
 
 
         // 波紋

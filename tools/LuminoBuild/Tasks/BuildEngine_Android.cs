@@ -29,9 +29,9 @@ namespace LuminoBuild.Tasks
         };
 
 
-        public override void Build(Builder builder)
+        public override void Build(Build builder)
         {
-            string cmakeHomeDir = builder.LuminoRootDir;
+            string cmakeHomeDir = builder.RootDir;
             string platform = AndoridBuildEnv.AndroidTargetPlatform;
 
             foreach (var abi in TargetABIs)
@@ -39,7 +39,7 @@ namespace LuminoBuild.Tasks
                 foreach (var config in Configurations)
                 {
                     var targetName = $"Android-{abi}";
-                    var targetDir = Path.Combine(builder.LuminoBuildDir, targetName);
+                    var targetDir = Path.Combine(builder.BuildDir, targetName);
                     if (Directory.Exists(targetDir))
                     {
                         var cmakeBuildDir = Path.Combine(targetDir, "EngineBuild", config);

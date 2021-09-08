@@ -78,7 +78,7 @@ bool ScreenBlurPostEffectInstance::init(ScreenBlurPostEffect* owner)
     m_material = makeObject<Material>();
     //m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::ScreenBlurPostEffect));
     //m_material->setBlendMode(BlendMode::Alpha);
-    auto shader = makeObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/PostEffect/Resource/ScreenBlur.fx");
+    auto shader = makeObject<Shader>(_TT("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/PostEffect/Resource/ScreenBlur.fx"));
     m_material->setShader(shader);
 
     m_materialForCopySourceTo = makeObject<Material>();
@@ -112,8 +112,8 @@ bool ScreenBlurPostEffectInstance::onRender(RenderView* renderView, CommandList*
         blurMatrix.scale(scale);
         blurMatrix.translate(center.x, center.y, 0);
 
-        m_material->setVector(u"_BlurColor", Vector4(1, 1, 1, amount));
-        m_material->setMatrix(u"_BlurMatrix", blurMatrix);
+        m_material->setVector(_TT("_BlurColor"), Vector4(1, 1, 1, amount));
+        m_material->setMatrix(_TT("_BlurMatrix"), blurMatrix);
 
         //// m_accumTexture > source
         //context->blit(m_accumTexture, destination, m_material);

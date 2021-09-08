@@ -39,7 +39,7 @@ protected:
     virtual void onClick(UIMouseEventArgs* e) override;
 
     // UIElement interface
-    virtual const String& elementName() const  override { static String name = u"UITreeItem"; return name; }
+    virtual const String& elementName() const  override { static String name = _TT("UITreeItem"); return name; }
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
@@ -139,7 +139,7 @@ Lumino の場合は
 カスタマイズ容易性については、例えば Item の右側に Button をつけたい場合は次のようにしたい。
 ```
 treeview1->setGenerateTreeItemHandler([](ln::UITreeItem2* item) {
-    auto button = ln::UIButton::create(u">");
+    auto button = ln::UIButton::create(_TT(">");
     button->setSize(20, 20);
     button->setAlignments(ln::UIHAlignment::Right, ln::UIVAlignment::Center);
     item->addChild(button);     // UIElement デフォルトの addChild フレームワークで追加する場合
@@ -178,7 +178,7 @@ protected:
     //virtual void onClick(UIMouseEventArgs* e) override;
 
     //// UIElement interface
-    virtual const String& elementName() const  override { static String name = u"UITreeItem"; return name; }
+    virtual const String& elementName() const  override { static String name = _TT("UITreeItem"); return name; }
     virtual void onRoutedEvent(UIEventArgs* e) override;
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
@@ -249,7 +249,7 @@ protected:
     //virtual Ref<UITreeItem> onRenderItem(UICollectionItemModel* viewModel);
     
     // base interface
-    const String& elementName() const override { static String name = u"UITreeView"; return name; }
+    const String& elementName() const override { static String name = _TT("UITreeView"); return name; }
     void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
     void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
     Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;

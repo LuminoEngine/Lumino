@@ -41,7 +41,7 @@ void* ConstantBufferView::writableData()
 //==============================================================================
 // GraphicsHelper
 
-const Char* GraphicsHelper::CandidateExts_Texture2D[5] = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
+const Char* GraphicsHelper::CandidateExts_Texture2D[5] = { _TT(".png"), _TT(".jpg"), _TT(".tga"), _TT(".bmp"), _TT(".gif") };
 
 size_t GraphicsHelper::getVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex)
 {
@@ -376,7 +376,7 @@ Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
 {
 	m_texture2DCache.collectUnreferenceObjects(false);
 
-	static const std::vector<const Char*> exts = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
+	static const std::vector<const Char*> exts = { _TT(".png"), _TT(".jpg"), _TT(".tga"), _TT(".bmp"), _TT(".gif") };
 
 #if 1
 	return AssetManager::loadObjectWithCacheHelper<Texture2D>(&m_texture2DCache, nullptr, exts, filePath, nullptr);
@@ -390,7 +390,7 @@ Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
 	// > CacheKey はどの Archive に入っているファイルであるかまで区別できるものでなければダメ。
 	// > Archive 名と、それを基準とした相対パス(または絶対パス) で表す必要がある。
 	// > 拡張子は無くてもOK。.yml でも .png でも、出来上がる Texture2D は同じもの。
-	const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(u"");
+	const auto cacheKey = Path(pathSet->finalResourceAssetFilePath.toString()).replaceExtension(_TT("");
 
 	if (auto obj = m_texture2DCache.findObject(cacheKey)) {
 		return obj;
@@ -408,7 +408,7 @@ Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
 
 Ref<Texture2D> GraphicsManager::loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringRef& filePath, std::function<Ref<Texture2D>(const AssetRequiredPathSet*)> factory)
 {
-	static const std::vector<const Char*> exts = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
+	static const std::vector<const Char*> exts = { _TT(".png"), _TT(".jpg"), _TT(".tga"), _TT(".bmp"), _TT(".gif") };
 	return AssetManager::loadObjectWithCacheHelper<Texture2D>(texture2DCache(), baseDir, exts, filePath, factory);
 }
 

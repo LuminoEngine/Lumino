@@ -9,7 +9,7 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "MakePackage_Ruby";
 
-        public override void Build(Builder builder)
+        public override void Build(Build builder)
         {
             if (Utils.IsWin32)
             {

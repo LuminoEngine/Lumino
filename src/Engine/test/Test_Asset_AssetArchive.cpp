@@ -26,18 +26,18 @@ TEST_F(Test_Asset_AssetArchive, CryptedAssetArchive)
 	FileSystem::writeAllBytes(LN_TEMPFILE("data5"), data5, LN_ARRAY_SIZE_OF(data5));
 
 	detail::CryptedAssetArchiveWriter aw;
-	aw.open(LN_TEMPFILE("test.lca"), u"pass");
-	aw.addFile(LN_TEMPFILE("data0"), u"data0");
-	aw.addFile(LN_TEMPFILE("data1"), u"data1");
-	aw.addFile(LN_TEMPFILE("data2"), u"data2");
-	aw.addFile(LN_TEMPFILE("data3"), u"data3");
-	aw.addFile(LN_TEMPFILE("data4"), u"data4");
-	aw.addFile(LN_TEMPFILE("data5"), u"data5");
+	aw.open(LN_TEMPFILE("test.lca"), _TT("pass"));
+	aw.addFile(LN_TEMPFILE("data0"), _TT("data0"));
+	aw.addFile(LN_TEMPFILE("data1"), _TT("data1"));
+	aw.addFile(LN_TEMPFILE("data2"), _TT("data2"));
+	aw.addFile(LN_TEMPFILE("data3"), _TT("data3"));
+	aw.addFile(LN_TEMPFILE("data4"), _TT("data4"));
+	aw.addFile(LN_TEMPFILE("data5"), _TT("data5"));
 	aw.close();
 
 	{
 		detail::CryptedAssetArchiveReader ar;
-		ASSERT_EQ(true, ar.open(LN_TEMPFILE("test.lca"), u"pass", false));
+		ASSERT_EQ(true, ar.open(LN_TEMPFILE("test.lca"), _TT("pass"), false));
 		
 		byte_t buf[512];
 
@@ -135,11 +135,11 @@ TEST_F(Test_Asset_AssetArchive, CryptedAssetArchive)
 TEST_F(Test_Asset_AssetArchive, AddAssetArchive)
 {
 #if 0   // TODO: 
-    detail::EngineDomain::assetManager()->addAssetArchive(LN_ASSETFILE("test.lca"), u"pass");
-	ASSERT_EQ(false, Assets::existsFile(u"dataX"));
-	ASSERT_EQ(true, Assets::existsFile(u"data1"));
+    detail::EngineDomain::assetManager()->addAssetArchive(LN_ASSETFILE("test.lca"), _TT("pass");
+	ASSERT_EQ(false, Assets::existsFile(_TT("dataX"));
+	ASSERT_EQ(true, Assets::existsFile(_TT("data1"));
 
-	auto buf = Assets::readAllBytes(u"data1");
+	auto buf = Assets::readAllBytes(_TT("data1");
 	ASSERT_EQ(1, buf->size());
 	ASSERT_EQ(0, buf->data()[0]);
 #endif

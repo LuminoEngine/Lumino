@@ -342,7 +342,7 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 			coreMaterial->setOcclusionTexture(loadTexture(texture));
 		}
 		else {
-			m_diag->reportWarning(String::format(u"Material field '{}' is not supported.", String::fromStdString(value.first)));
+			m_diag->reportWarning(String::format(_TT("Material field '{}' is not supported."), String::fromStdString(value.first)));
 		}
 	}
 
@@ -496,7 +496,7 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 					vbView.type = VertexElementType::Float3;
 				}
 				else {
-					m_diag->reportError(u"Invalid vertex data type.");
+					m_diag->reportError(_TT("Invalid vertex data type."));
 					return nullptr;
 				}
 			}
@@ -507,7 +507,7 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 					vbView.type = VertexElementType::Float3;
 				}
 				else {
-					m_diag->reportError(u"Invalid vertex data type.");
+					m_diag->reportError(_TT("Invalid vertex data type."));
 					return nullptr;
 				}
 			}
@@ -518,7 +518,7 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 					vbView.type = VertexElementType::Float4;
 				}
 				else {
-					m_diag->reportError(u"Invalid vertex data type.");
+					m_diag->reportError(_TT("Invalid vertex data type."));
 					return nullptr;
 				}
 			}
@@ -549,7 +549,7 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 					return nullptr;
 				}
 				else {
-					m_diag->reportError(u"Invalid vertex data type.");
+					m_diag->reportError(_TT("Invalid vertex data type."));
 					return nullptr;
 				}
 			}
@@ -590,7 +590,7 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 					return nullptr;
 				}
 				else {
-					m_diag->reportError(u"Invalid vertex data type.");
+					m_diag->reportError(_TT("Invalid vertex data type."));
 					return nullptr;
 				}
 			}
@@ -605,7 +605,7 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 					vbView.type = VertexElementType::Short4;
 				}
 				else {
-					m_diag->reportError(u"Invalid vertex data type.");
+					m_diag->reportError(_TT("Invalid vertex data type."));
 					return nullptr;
 				}
 			}
@@ -624,7 +624,7 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 					return nullptr;
 				}
 				else {
-					m_diag->reportError(u"Invalid vertex data type.");
+					m_diag->reportError(_TT("Invalid vertex data type."));
 					return nullptr;
 				}
 			}
@@ -1133,7 +1133,7 @@ Ref<Texture> GLTFImporter::loadTexture(const tinygltf::Texture& texture)
 	}
 	else {
 		if (LN_REQUIRE(!m_meshModel->m_name.isEmpty())) return nullptr;
-		textureName = String::concat(m_meshModel->m_name, u":", String::fromNumber(texture.source));
+		textureName = String::concat(m_meshModel->m_name, _TT(":"), String::fromNumber(texture.source));
 	}
 
 	Ref<Texture2D> tex;
@@ -1393,7 +1393,7 @@ std::string GLTFImporter::ExpandFilePath(const std::string &filepath, void *user
 {
     return filepath;
 	//auto self = reinterpret_cast<GLTFImporter*>(user_data);
-	//auto assetPath = String::concat(self->m_basedir, u"/", String::fromStdString(filepath));
+	//auto assetPath = String::concat(self->m_basedir, _TT("/", String::fromStdString(filepath));
 	//return assetPath.toStdString();	// TODO: UTF-8
 }
 

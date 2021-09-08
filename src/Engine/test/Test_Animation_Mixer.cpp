@@ -7,10 +7,10 @@ TEST_F(Test_Animation_Mixer, Basic)
 	auto clip1 = makeObject<AnimationClip>();
 	auto curve1 = EasingAnimationCurve::create(0, 10, 1, EasingMode::Linear);
 	auto track1 = makeObject<ScalarAnimationTrack>();
-	track1->setTargetName(u"Bone.1");
+	track1->setTargetName(_TT("Bone.1"));
 	track1->setCurve(curve1);
 	auto track2 = makeObject<ScalarAnimationTrack>();
-	track2->setTargetName(u"Bone.2");
+	track2->setTargetName(_TT("Bone.2"));
 	track2->setCurve(curve1);
 	clip1->addTrack(track1);
 	clip1->addTrack(track2);
@@ -24,7 +24,7 @@ TEST_F(Test_Animation_Mixer, Basic)
 
 		detail::AnimationTargetElementBlendLink* onRequireBinidng(const AnimationTrackTargetKey& key) override
 		{
-			if (key.name == u"Bone.1") {
+			if (key.name == _TT("Bone.1")) {
 				m_bone1Binding = makeRef<detail::AnimationTargetElementBlendLink>(AnimationValueType::Float);
 				return m_bone1Binding;
 			}
@@ -42,8 +42,8 @@ TEST_F(Test_Animation_Mixer, Basic)
 
 	auto mixer1 = makeObject<AnimationMixerCore>(&ctrl);
 	mixer1->addLayer(makeObject<AnimationLayer>(mixer1));
-	mixer1->addClip(u"Idle", clip1);
-	mixer1->play(u"Idle", 0.0f);
+	mixer1->addClip(_TT("Idle"), clip1);
+	mixer1->play(_TT("Idle"), 0.0f);
 
 	mixer1->advanceTime(0.0f);
 	ASSERT_EQ(AnimationValueType::Float, ctrl.m_bone1Binding->rootValue.type());

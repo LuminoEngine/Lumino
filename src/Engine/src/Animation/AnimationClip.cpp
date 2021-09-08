@@ -25,7 +25,7 @@ Ref<AnimationClip> AnimationClip::load(const StringRef& filePath)
 
 	return detail::EngineDomain::animationManager()->loadAnimationClip(filePath)->result();
 
-	//const Char* candidateExts[] = { u".vmd" };
+	//const Char* candidateExts[] = { _TT(".vmd") };
 	//if (const auto assetPath = detail::AssetPath::resolveAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts)))
 	//	return detail::EngineDomain::animationManager()->acquireAnimationClip(assetPath);
 	//else
@@ -102,7 +102,7 @@ void AnimationClip::addTrack(AnimationTrack* track)
 
 const std::vector<const Char*>& AnimationClip::resourceExtensions() const
 {
-	static const std::vector<const Char*> exts = { u".bvh", u".vmd" };
+	static const std::vector<const Char*> exts = { _TT(".bvh"), _TT(".vmd") };
 	return exts;
 }
 
@@ -124,13 +124,13 @@ void AnimationClip::onLoadResourceFile(Stream* stream, const detail::AssetPath& 
 //
 //	auto assetManager = detail::EngineDomain::assetManager();
 //
-//	if (m_assetSourcePath.path().hasExtension(u".bvh")) {
+//	if (m_assetSourcePath.path().hasExtension(_TT(".bvh"))) {
 //		auto diag = makeObject<DiagnosticsManager>();
 //		detail::BvhImporter importer(assetManager, diag);
 //		importer.import(this, m_assetSourcePath);
 //		diag->dumpToLog();
 //	}
-//	else if (m_assetSourcePath.path().hasExtension(u".vmd")) {
+//	else if (m_assetSourcePath.path().hasExtension(_TT(".vmd"))) {
 //		LN_NOTIMPLEMENTED();
 //	}
 //	else {

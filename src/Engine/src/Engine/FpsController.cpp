@@ -36,7 +36,7 @@ FpsController::FpsController()
 {
 #ifdef _WIN32
     typedef HRESULT(WINAPI* PFN_timeBeginPeriod)(UINT uPeriod);
-    m_winmm = DllLoader::load("Winmm");
+    m_winmm = DllLoader::load(_TT("Winmm"));
     PFN_timeBeginPeriod func = reinterpret_cast<PFN_timeBeginPeriod>(m_winmm->getProcAddress("timeBeginPeriod"));
   
     // これが無いと Sleep() 精度が落ちる。ほとんどの環境では 10ms 単位となり、

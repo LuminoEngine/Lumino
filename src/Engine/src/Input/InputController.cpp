@@ -236,7 +236,7 @@ int InputController::getJoyNumber() const
 //------------------------------------------------------------------------------
 const detail::InputDeviceElement* InputController::LockupState(const StringRef& bindingName) const
 {
-	if (bindingName.isEmpty() || String::compare(u"any", bindingName, CaseSensitivity::CaseInsensitive) == 0)
+	if (bindingName.isEmpty() || String::compare(_TT("any"), bindingName, CaseSensitivity::CaseInsensitive) == 0)
 	{
 		return m_inputStateForAny;
 	}

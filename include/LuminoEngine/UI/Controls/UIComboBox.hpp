@@ -10,7 +10,7 @@ class UIComboBoxItem
     : public UIControl
 {
 public:
-    virtual const String& elementName() const  override { static String name = u"UIComboBoxItem"; return name; }
+    virtual const String& elementName() const  override { static String name = _TT("UIComboBoxItem"); return name; }
     // TODO: group
 
 
@@ -52,7 +52,7 @@ public:
     UIComboBoxItem* selectedItem() const { return (m_selectedItems.isEmpty()) ? nullptr :  m_selectedItems[0]; }
 
 protected:
-    virtual const String& elementName() const  override { static String name = u"UIComboBox"; return name; }
+    virtual const String& elementName() const  override { static String name = _TT("UIComboBox"); return name; }
     virtual void onAddChild(UIElement* child) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
     //virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;

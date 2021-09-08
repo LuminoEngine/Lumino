@@ -40,12 +40,12 @@ public:
 	const ln::Path& releaseDir() const { return m_releaseDir; }
 	const ln::Path& intermediateAssetsDir() const { return m_intermediateAssetsDir; }
     const ln::Path& localPluginDir() const { return m_localPluginDir; } // プロジェクト固有のプラグインと、プロジェクトごとのエディタ拡張の保存場所
-	ln::Path projectsDir() const { return ln::Path(rootDirPath(), u"projects"); }
-	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Web"); }
-	ln::Path androidProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Android"); }
-	ln::Path macOSProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.macOS");  }
-	ln::Path iOSProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.iOS");  }
-	ln::Path windowsProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Windows"); }
+	ln::Path projectsDir() const { return ln::Path(rootDirPath(), _TT("projects")); }
+	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), _TT("LuminoApp.Web")); }
+	ln::Path androidProjectDir() const { return ln::Path(projectsDir(), _TT("LuminoApp.Android")); }
+	ln::Path macOSProjectDir() const { return ln::Path(projectsDir(), _TT("LuminoApp.macOS"));  }
+	ln::Path iOSProjectDir() const { return ln::Path(projectsDir(), _TT("LuminoApp.iOS"));  }
+	ln::Path windowsProjectDir() const { return ln::Path(projectsDir(), _TT("LuminoApp.Windows")); }
 
 	/** 指定フォルダにプロジェクトファイルが含まれているかを確認する */
 	static bool existsProjectFile(const ln::Path& dir);
@@ -77,7 +77,7 @@ class ProjectProperties
 {
 public:
 	ln::String language;	// "cpp", "cs" ...
-	ln::String engine = u"";	// "x.y.z" or "" or "repo:master"
+	ln::String engine = _TT("");	// "x.y.z" or "" or "repo:master"
 
 	LN_SERIALIZE_CLASS_VERSION(1)
 	void serialize(ln::Archive& ar)
@@ -115,12 +115,12 @@ public:
 	const ln::Path& releaseDir() const { return m_releaseDir; }
 	const ln::Path& intermediateAssetsDir() const { return m_intermediateAssetsDir; }
 
-	ln::Path projectsDir() const { return ln::Path(rootDirPath(), u"Projects"); }
-	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Web"); }
-	ln::Path androidProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Android"); }
-	ln::Path macOSProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.macOS");  }
-	ln::Path iOSProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.iOS");  }
-	ln::Path windowsProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Windows"); }
+	ln::Path projectsDir() const { return ln::Path(rootDirPath(), _TT("Projects"); }
+	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), _TT("LuminoApp.Web"); }
+	ln::Path androidProjectDir() const { return ln::Path(projectsDir(), _TT("LuminoApp.Android"); }
+	ln::Path macOSProjectDir() const { return ln::Path(projectsDir(), _TT("LuminoApp.macOS");  }
+	ln::Path iOSProjectDir() const { return ln::Path(projectsDir(), _TT("LuminoApp.iOS");  }
+	ln::Path windowsProjectDir() const { return ln::Path(projectsDir(), _TT("LuminoApp.Windows"); }
 
     const ln::Ref<AssetDatabase>& assetDatabase() const { return m_assetDatabase; }
 
@@ -158,7 +158,7 @@ class ProjectProperties
 {
 public:
 	ln::String language;	// "cpp", "cs" ...
-	ln::String engine = u"";	// "x.y.z" or "" or "repo:master"
+	ln::String engine = _TT("";	// "x.y.z" or "" or "repo:master"
 
 	LN_SERIALIZE_CLASS_VERSION(1)
 	void serialize(ln::Archive& ar)

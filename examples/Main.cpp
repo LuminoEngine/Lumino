@@ -97,7 +97,7 @@ public:
         m_buttonsLayout->addInto(Engine::mainWindow());
 
         m_button_ruby = UIButton::With()
-            .text(u"Ruby")
+            .text(_TT("Ruby"))
             .width(40)
             //.height(25)
             //.alignment(UIHAlignment::Left, UIVAlignment::Bottom)
@@ -105,14 +105,14 @@ public:
         m_button_ruby->connectOnClicked([this]() { runRuby(); });
 
         m_button_hsp3 = UIButton::With()
-            .text(u"HSP3")
+            .text(_TT("HSP3"))
             .width(40)
             //.height(25)
             //.alignment(UIHAlignment::Left, UIVAlignment::Bottom)
             .buildInto(m_buttonsLayout);
 
         m_button = UIButton::With()
-            .text(u"<<")
+            .text(_TT("<<"))
             .width(40)
             //.height(25)
             //.alignment(UIHAlignment::Left, UIVAlignment::Bottom)
@@ -150,10 +150,10 @@ public:
     void runRuby()
     {
         if (m_current) {
-            const auto file = m_current->app().filePath.replaceExtension(u"rb");
+            const auto file = m_current->app().filePath.replaceExtension(_TT("rb"));
             Process proc;
             proc.setUseShellExecute(true);
-            proc.setProgram(u"ruby");
+            proc.setProgram(_TT("ruby"));
             proc.setArguments({ file });
             proc.start();
         }
@@ -303,9 +303,9 @@ int main(int argc, char** argv)
     Logger::setLevel(LogLevel::Debug);
 	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
 	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::DirectX12);//(GraphicsAPI::OpenGL);//
-    EngineSettings::setPriorityGPUName(u"Microsoft Basic Render Driver");
+    EngineSettings::setPriorityGPUName(_TT("Microsoft Basic Render Driver"));
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
-	//EngineSettings::setUITheme(u"Chocotelier");
+	//EngineSettings::setUITheme(_TT("Chocotelier");
     EngineSettings::setGraphicsDebugEnabled(true);
 
 

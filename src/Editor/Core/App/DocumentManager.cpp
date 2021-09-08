@@ -195,7 +195,7 @@ DocumentTab::DocumentTab(Document* document)
 {
 	//auto tab = ln::makeObject<ln::UITabItem>();
 	auto text = ln::makeObject<ln::UIText>();
-	text->setText(u"Tab");  // TODO: AssetEditor から、Document 経由で設定したい。プロパティ変更を scribe する必要があるかも。
+	text->setText(_TT("Tab"));  // TODO: AssetEditor から、Document 経由で設定したい。プロパティ変更を scribe する必要があるかも。
 	/*tab->*/addElement(text);
 	/*tab->*/setData(ln::makeVariant(document));
 }

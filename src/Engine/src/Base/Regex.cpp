@@ -3,7 +3,11 @@
 #include <LuminoEngine/Base/Regex.hpp>
 
 #define PCRE2_STATIC
+#if LN_USTRING32
+#define PCRE2_CODE_UNIT_WIDTH 32
+#else
 #define PCRE2_CODE_UNIT_WIDTH 16
+#endif
 #include <pcre2.h>
 
 // https://www.pcre.org/current/doc/html/pcre2demo.html

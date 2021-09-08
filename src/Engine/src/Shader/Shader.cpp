@@ -133,7 +133,7 @@ void Shader::init(const StringRef& vertexShaderFilePath, const StringRef& pixelS
     //    reinterpret_cast<const char*>(vsData.data()), vsData.size(), reinterpret_cast<const char*>(psData.data()), psData.size(), localDiag, properties);
 
     m_name = Path(vertexShaderFilePath).fileNameWithoutExtension();
-    m_name += u",";
+    m_name += _TT(",");
     m_name += Path(pixelShaderFilePath).fileNameWithoutExtension();
 
     if (!properties || !properties->m_diag) {

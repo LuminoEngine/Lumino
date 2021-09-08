@@ -114,12 +114,12 @@ void EngineManager::init(const EngineSettings& settings)
 	// check settings
 	{
 		if (m_settings.bundleIdentifier.isEmpty()) {
-			m_settings.bundleIdentifier = u"lumino";
+			m_settings.bundleIdentifier = _TT("lumino");
 		}
 
 #if defined(LN_OS_IOS)
-		if (m_settings.bundleIdentifier.contains(u"lumino", CaseSensitivity::CaseInsensitive)) {
-			LN_WARNING("Bundle Identifier It may not be set.");
+		if (m_settings.bundleIdentifier.contains(_TT("lumino"), CaseSensitivity::CaseInsensitive)) {
+			LN_WARNING(_TT("Bundle Identifier It may not be set."));
 		}
 #endif
 	}
@@ -129,7 +129,7 @@ void EngineManager::init(const EngineSettings& settings)
 #if defined(LN_OS_WIN32)
         m_persistentDataPath = Path(Environment::specialFolderPath(SpecialFolder::ApplicationData), m_settings.bundleIdentifier);
 #else
-        m_persistentDataPath = u""; // TODO:
+        m_persistentDataPath = _TT(""); // TODO:
 #endif
 		if (!m_settings.engineResourcesPath.isEmpty()) {
 			m_engineResourcesPath = Path(m_settings.engineResourcesPath).canonicalize();
@@ -137,8 +137,8 @@ void EngineManager::init(const EngineSettings& settings)
 
 		// Find folder in install.
 		if (m_settings.engineResourcesPath.isEmpty()) {
-			if (auto path = ln::Environment::getEnvironmentVariable(u"LUMINO_PATH")) {
-				auto dir = Path::combine(*path, u"Tools", u"EngineResources");
+			if (auto path = ln::Environment::getEnvironmentVariable(_TT("LUMINO_PATH"))) {
+				auto dir = Path::combine(*path, _TT("Tools", _TT("EngineResources")));
 				if (FileSystem::existsDirectory(dir)) {
 					m_engineResourcesPath = dir;
 				}
@@ -148,7 +148,7 @@ void EngineManager::init(const EngineSettings& settings)
 		// Find folder in repository.
 		if (m_engineResourcesPath.isEmpty()) {
 			auto repo = ln::detail::EngineManager::findRepositoryRootForTesting();
-			m_engineResourcesPath = Path::combine(repo, u"tools", u"EngineResources");
+			m_engineResourcesPath = Path::combine(repo, _TT("tools"), _TT("EngineResources"));
 		}
 
 		LN_LOG_INFO << "EngineResourcesPath: " << m_engineResourcesPath;
@@ -157,7 +157,7 @@ void EngineManager::init(const EngineSettings& settings)
 
 	{
 		m_activeDiagnostics = makeObject<DiagnosticsManager>();
-		ProfilingItem::Graphics_RenderPassCount = makeObject<ProfilingItem>(ProfilingItemType::Counter, u"RenderPass count");
+		ProfilingItem::Graphics_RenderPassCount = makeObject<ProfilingItem>(ProfilingItemType::Counter, _TT("RenderPass count"));
 		m_activeDiagnostics->registerProfilingItem(ProfilingItem::Graphics_RenderPassCount);
 	}
 
@@ -320,7 +320,7 @@ void EngineManager::initializeCommon()
 		{
 			if (m_settings.debugMode) {
 				// engineLogFilePath 未指定の場合、スクリプト系言語だとそのランタイム実行ファイルを指してしまうので、カレントディレクトリに出力するようにする。
-				auto logfile = (m_settings.engineLogFilePath.isEmpty()) ? Path(u"lumino.log") : Path(m_settings.engineLogFilePath);
+				auto logfile = (m_settings.engineLogFilePath.isEmpty()) ? Path(_TT("lumino.log")) : Path(m_settings.engineLogFilePath);
 				Logger::addFileAdapter(logfile.str().toStdString());
 				ln::Console::allocate();
 				ln::Logger::addStdErrAdapter();
@@ -783,7 +783,7 @@ void EngineManager::presentFrame()
 
 
     if (m_debugToolMode == DebugToolMode::Minimalized || m_debugToolMode == DebugToolMode::Activated) {
-        m_platformManager->mainWindow()->setWindowTitle(String::format(u"FPS:{0:F1}({1:F1}), F8:Debug tool.", m_fpsController.totalFps(), m_fpsController.externalFps()));
+        m_platformManager->mainWindow()->setWindowTitle(String::format(_TT("FPS:{0:.1f}({1:.1f}), F8:Debug tool."), m_fpsController.totalFps(), m_fpsController.externalFps()));
     }
 
 	// TODO: Editor モードの時にも呼び出せるようにしないとだめそう
@@ -804,7 +804,7 @@ void EngineManager::quit()
 
 ln::Path EngineManager::findRepositoryRootForTesting()
 {
-	return findParentDirectoryContainingSpecifiedFile(u"build.csproj");
+	return findParentDirectoryContainingSpecifiedFile(_TT("build.csproj"));
 }
 
 ln::Path EngineManager::findParentDirectoryContainingSpecifiedFile(StringRef file)

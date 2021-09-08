@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "../../Core/src/IO/PathHelper.hpp"
+#include "../../../../lumino/LuminoCore/src/IO/PathHelper.hpp"
 #include "AssetManager.hpp"
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
@@ -61,7 +61,7 @@ void Assets::reloadAsset(const StringRef& filePath, Object* obj)
         detail::EngineDomain::assetManager()->loadAssetModelFromAssetPathToInstance(obj, *assetPath);
     }
     else {
-        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+        LN_WARNING(_TT("Asset not found: ") + String(filePath));    // TODO: operator
     }
 }
 
@@ -78,7 +78,7 @@ void Assets::deserializeInstance(Object* obj, const StringRef& filePath)
         detail::EngineDomain::assetManager()->loadAssetModelFromAssetPathToInstance(obj, *assetPath);
     }
     else {
-        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+        LN_WARNING(_TT("Asset not found: ") + String(filePath));    // TODO: operator
     }
 }
 
@@ -96,7 +96,7 @@ String Assets::readAllText(const StringRef& filePath, EncodingType encoding)
 {
     auto stream = detail::EngineDomain::assetManager()->openFileStream(filePath);
     if (!stream) {
-        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+        LN_WARNING(_TT("Asset not found: ") + String(filePath));    // TODO: operator
         return String::Empty;
     }
 
@@ -173,7 +173,7 @@ Ref<AssetModel> AssetImporter::import(const ln::Path& sourceFilePath)
 //
 //void TextureImporter::onGetSupportedExtensions(List<String>* outExtensions)
 //{
-//    *outExtensions = { u"png" };
+//    *outExtensions = { _TT("png") };
 //}
 //
 //Ref<AssetModel> TextureImporter::onImport(const ln::Path& sourceFilePath)
@@ -186,22 +186,22 @@ Ref<AssetModel> AssetImporter::import(const ln::Path& sourceFilePath)
 
 namespace detail {
 
-const String AssetPath::FileSchemeName = u"file";
-const String AssetPath::AssetSchemeName = u"asset";
+const String AssetPath::FileSchemeName = _TT("file");
+const String AssetPath::AssetSchemeName = _TT("asset");
 const AssetPath AssetPath::Null;
 
 AssetPath AssetPath::makeFromLocalFilePath(const Path& filePath)
 {
     AssetPath assetPath = makeEmpty();
-    assetPath.m_components->scheme = u"file";
-    assetPath.m_components->host = u"";
+    assetPath.m_components->scheme = _TT("file");
+    assetPath.m_components->host = _TT("");
     assetPath.m_components->path = filePath.canonicalize().unify();
     return assetPath;
 }
 
 bool AssetPath::tryParseAssetPath(const String& str, AssetPath* outPath)
 {
-    int separate0 = str.indexOf(u"://");
+    int separate0 = str.indexOf(_TT("://"));
     if (separate0 < 0) return false;
     //int schemeEnd = separate0 + 3;
 
@@ -271,7 +271,7 @@ AssetPath AssetPath::resolveAssetPath(const Path& filePath, const Char** exts, s
         return *path;
     }
     else {
-        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+        LN_WARNING(_TT("Asset not found: ") + String(filePath));    // TODO: operator
         return AssetPath::makeEmpty();
     }
 }
@@ -308,11 +308,11 @@ String AssetPath::toString() const
 {
     if (LN_REQUIRE(!isNull())) return String::Empty;
 
-    const Char* pathPrefix = u"";
+    const Char* pathPrefix = _TT("");
     if (path().length() > 0 && path().str()[0] != u'/')
-        pathPrefix = u"/";
+        pathPrefix = _TT("/");
 
-    auto result = String::concat(scheme(), u"://", host());
+    auto result = String::concat(scheme(), _TT("://"), host());
     return  String::concat(result, pathPrefix, path().str());
 }
 
@@ -334,7 +334,7 @@ AssetPath::AssetPath(const String& scheme, const String& host, const Path& path)
     m_components->host = host;
     m_components->path = path;
 
-    //if (m_components->path.str()[0] != u'/') m_components->path = Path(u"/" + path.str());
+    //if (m_components->path.str()[0] != u'/') m_components->path = Path(_TT("/" + path.str());
 }
 
 void AssetPath::clear()

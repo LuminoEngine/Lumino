@@ -32,49 +32,49 @@ public:
         //m_sprite->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 
         //m_plane = PlaneMesh::create();
-        //auto planeMaterial = Material::create(Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg"));
+        //auto planeMaterial = Material::create(Texture2D::load(_TT("D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg"));
         //m_plane->planeMeshComponent()->setMaterial(planeMaterial);
 
         //auto sprite2 = Sprite::create(Texture2D::whiteTexture());
 
         //m_plane = PlaneMesh::create();
         //m_plane->planeMeshComponent()->setSize(10000, 10000);
-        //auto texture = Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg");
+        //auto texture = Texture2D::load(_TT("D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg");
         //texture->setMipmapEnabled(true);
         //auto planeMaterial = Material::create(texture);
-        //auto normalMap = Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Normal.jpg");
+        //auto normalMap = Texture2D::load(_TT("D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Normal.jpg");
         //normalMap->setMipmapEnabled(true);
         ////planeMaterial->setNormalMap(normalMap);
         //m_plane->planeMeshComponent()->setMaterial(planeMaterial);
         ////m_plane->planeMeshComponent()->setUVParUnit(Vector2(0.5f, 0.5f));
         //m_plane->planeMeshComponent()->setUVParUnit(Vector2(5, 5));
 
-        //auto mesh = Mesh::create(u"D:/Materials/KitBash3D/WARZONE/Blender/untitled4.glb");
+        //auto mesh = Mesh::create(_TT("D:/Materials/KitBash3D/WARZONE/Blender/untitled4.glb");
 
 
-        //auto mesh = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb");
+        //auto mesh = Mesh::create(_TT("D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb");
         
-		//auto mesh = Mesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/autotile-regions.glb");
-        //auto mesh = SkinnedMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/SkinnedMesh2.glb");
-        //auto mesh = SkinnedMesh::load(u"D:/LocalProj/UnityChanSD/Misaki_sum_humanoid.fbx");
-        //auto mesh = Mesh::create(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
-        //auto mesh = Mesh::create(u"D:/Materials/VRM/PronamaChan/PronamaChan.glb");
+		//auto mesh = Mesh::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/autotile-regions.glb");
+        //auto mesh = SkinnedMesh::load(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/SkinnedMesh2.glb");
+        //auto mesh = SkinnedMesh::load(_TT("D:/LocalProj/UnityChanSD/Misaki_sum_humanoid.fbx");
+        //auto mesh = Mesh::create(_TT("D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
+        //auto mesh = Mesh::create(_TT("D:/Materials/VRM/PronamaChan/PronamaChan.glb");
 
-        //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedCube/glTF/AnimatedCube.gltf");
-        //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedMorphCube/glTF/AnimatedMorphCube.gltf");
-        //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Monster/glTF/Monster.gltf");
+        //auto mesh = SkinnedMesh::load(_TT("D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedCube/glTF/AnimatedCube.gltf");
+        //auto mesh = SkinnedMesh::load(_TT("D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedMorphCube/glTF/AnimatedMorphCube.gltf");
+        //auto mesh = SkinnedMesh::load(_TT("D:/Tech/Graphics/glTF-Sample-Models/2.0/Monster/glTF/Monster.gltf");
         
         
-        //mesh->skinnedMeshComponent()->model()->animationController()->play(u"animation_AnimatedCube");
+        //mesh->skinnedMeshComponent()->model()->animationController()->play(_TT("animation_AnimatedCube");
         //auto mesh = Mesh::create("D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/BldgMedTallC_grp.gltf");
         //auto mesh = Mesh::create("D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/2-OverpassBroken_grp.gltf");
-        //auto mesh = Mesh::create(u"D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/27-BldgRubbleB_grp.gltf");
+        //auto mesh = Mesh::create(_TT("D:/Materials/KitBash3D/WARZONE/ResolvedTextureReference/Exports/27-BldgRubbleB_grp.gltf");
         
         //mesh->setPosition(0, 10, 0);
-		//auto mesh = Mesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Models/Axis.glb");
-		//auto mesh = Mesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Map/Exported/MainMap1-Start.gltf");
-		//auto mesh = Mesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/Axis1.glb");
-        //auto mesh = Mesh::create(u"C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/Spear1.gltf");
+		//auto mesh = Mesh::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Models/Axis.glb");
+		//auto mesh = Mesh::create(_TT("C:/Proj/LN/PrivateProjects/HC4/assets/Map/Exported/MainMap1-Start.gltf");
+		//auto mesh = Mesh::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Mesh/Axis1.glb");
+        //auto mesh = Mesh::create(_TT("C:/Proj/LN/PrivateProjects/HC4/assets/Graphics/Spear1.gltf");
         //mesh->model()->material(1)->setColor(Color(0, 1, 0));
         //mesh->model()->material(1)->setEmissive(Color(0.5, 2, 0.5));
         Engine::renderView()->setHDREnabled(true);
@@ -90,12 +90,12 @@ public:
         Engine::mainLight()->setShadowEffectiveDistance(100);
 
 
-        //m_mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
-        //m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
-        //m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid_BlenderGLTFExported.glb");
-        //m_mesh = SkinnedMesh::load(u"D:/Materials/VRM/Sendagaya_Shibu.vrm");
-        //m_mesh = SkinnedMesh::load(u"D:/Documents/Modeling/HC4-1.glb");
-        m_mesh = SkinnedMesh::load(u"D:/Documents/Modeling/HC5-6-export.glb");
+        //m_mesh = SkinnedMesh::load(_TT("D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
+        //m_mesh = SkinnedMesh::load(_TT("D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
+        //m_mesh = SkinnedMesh::load(_TT("D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid_BlenderGLTFExported.glb");
+        //m_mesh = SkinnedMesh::load(_TT("D:/Materials/VRM/Sendagaya_Shibu.vrm");
+        //m_mesh = SkinnedMesh::load(_TT("D:/Documents/Modeling/HC4-1.glb");
+        m_mesh = SkinnedMesh::load(_TT("D:/Documents/Modeling/HC5-6-export.glb"));
 
 
 
@@ -105,14 +105,14 @@ public:
         //MeshDiag::printNodes(m_model);
         m_model->verifyHumanoidBones();
 
-        if (auto node = m_model->findNode(u"Icosphere.001")) {
+        if (auto node = m_model->findNode(_TT("Icosphere.001"))) {
             node->setVisible(false);
         }
-        if (auto material = m_model->findMaterial(u"Stone")) {
+        if (auto material = m_model->findMaterial(_TT("Stone"))) {
             material->setEmissive(Color(0.5, 2, 0.5));
         }
 
-        //m_node = m_model->findNode(u"左腕");
+        //m_node = m_model->findNode(_TT("左腕");
         m_node = m_model->findHumanoidBone(HumanoidBones::Hips);
         m_node = m_model->findHumanoidBone(HumanoidBones::LeftUpperArm);
         m_node = m_model->findHumanoidBone(HumanoidBones::LeftLowerArm);
@@ -127,23 +127,23 @@ public:
         m_mesh->setCullMode(CullMode::None);
 
 
-        //auto clip = AnimationClip::load(u"D:/Materials/VRM/walk2.bvh");
-        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleStandingPose5.bvh");
-        //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/XYZ-Test.bvh");
-        //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/XYZ-Test2.bvh");
-        //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/RightArm.bvh");
-        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleStandingPose7.bvh");
-        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/FemaleSittingPose.bvh");
-        //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/Arm_R-Test1-BoneVert.bvh");
-        auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Idle.bvh");
-        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Walk.bvh");
-        //auto clip = AnimationClip::load(u"D:/Materials/Mixamo/Standing2.bvh");
-        //auto clip = AnimationClip::load(u"D:/Documents/Modeling/BVH/HC5-3.bvh");
+        //auto clip = AnimationClip::load(_TT("D:/Materials/VRM/walk2.bvh");
+        //auto clip = AnimationClip::load(_TT("D:/Materials/Mixamo/FemaleStandingPose5.bvh");
+        //auto clip = AnimationClip::load(_TT("D:/Documents/Modeling/BVH/XYZ-Test.bvh");
+        //auto clip = AnimationClip::load(_TT("D:/Documents/Modeling/BVH/XYZ-Test2.bvh");
+        //auto clip = AnimationClip::load(_TT("D:/Documents/Modeling/BVH/RightArm.bvh");
+        //auto clip = AnimationClip::load(_TT("D:/Materials/Mixamo/FemaleStandingPose7.bvh");
+        //auto clip = AnimationClip::load(_TT("D:/Materials/Mixamo/FemaleSittingPose.bvh");
+        //auto clip = AnimationClip::load(_TT("D:/Documents/Modeling/BVH/Arm_R-Test1-BoneVert.bvh");
+        auto clip = AnimationClip::load(_TT("D:/Materials/Mixamo/Idle.bvh"));
+        //auto clip = AnimationClip::load(_TT("D:/Materials/Mixamo/Walk.bvh");
+        //auto clip = AnimationClip::load(_TT("D:/Materials/Mixamo/Standing2.bvh");
+        //auto clip = AnimationClip::load(_TT("D:/Documents/Modeling/BVH/HC5-3.bvh");
         //clip->setHierarchicalAnimationMode(HierarchicalAnimationMode::AllowTranslationOnlyRootY);
         
-        //auto clip = AnimationClip::load(u"D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");
-        //auto clip1 = AnimationClip::load(u"D:/Materials/MMD/Motion/MMO用stand/stand2.vmd");
-        //auto clip2 = AnimationClip::load(u"D:/Materials/MMD/Motion/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd");
+        //auto clip = AnimationClip::load(_TT("D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");
+        //auto clip1 = AnimationClip::load(_TT("D:/Materials/MMD/Motion/MMO用stand/stand2.vmd");
+        //auto clip2 = AnimationClip::load(_TT("D:/Materials/MMD/Motion/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd");
         //
         //m_idle = m_model->animationController()->addClip(clip1);
         //m_walk = m_model->animationController()->addClip(clip2);
@@ -162,7 +162,7 @@ public:
         //label->setBackgroundColor(Color::Blue);
         label->setAlignments(UIHAlignment::Center, UIVAlignment::Center);
 
-        auto textblock = UIText::create("E");
+        auto textblock = UIText::create(_T("E"));
         textblock->setBackgroundColor(Color::Gray);
         textblock->setBorderThickness(1);
         textblock->setBorderColor(Color::Red);
@@ -171,7 +171,7 @@ public:
         //textblock->setSize(20, 20);
         label->addInlineVisual(textblock, UIInlinePlacement::Left);
 
-        auto text2 = UIText::create("Examine");
+        auto text2 = UIText::create(_T("Examine"));
         text2->setAlignments(UIHAlignment::Center, UIVAlignment::Center);
         text2->setMargin(Thickness(8, 0, 0, 0));
         label->addChild(text2);
@@ -211,15 +211,15 @@ public:
 
         auto pos = m_mesh->position();
 
-        //if (Input::pressed(u"left")) {
+        //if (Input::pressed(_TT("left")) {
         //    pos.x -= 0.01;
         //}
 
         const float cameraFocusDistance = 2;    // 10
         const float cameraDistance = 3;
 
-        float h = -Input::getAxisValue(u"left") + Input::getAxisValue(u"right");
-        float v = -Input::getAxisValue(u"up") + Input::getAxisValue(u"down");
+        float h = -Input::getAxisValue(_TT("left") + Input::getAxisValue(_TT("right");
+        float v = -Input::getAxisValue(_TT("up") + Input::getAxisValue(_TT("down");
         pos.x += h * velocity;
         pos.z += v * velocity;
 

@@ -42,11 +42,11 @@ bool SSAOPostEffectInstance::init(SSAOPostEffect* owner)
 {
     if (!PostEffectInstance::init()) return false;
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSAOOcclusionMap.fx");
+    auto shader1 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSAOOcclusionMap.fx"));
     m_occlusionMaterial = makeObject<Material>();
     m_occlusionMaterial->setShader(shader1);
 
-    auto shader2 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSAOBlurAndComposite.fx");
+    auto shader2 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSAOBlurAndComposite.fx"));
     m_blurAndCompositeMaterial = makeObject<Material>();
     m_blurAndCompositeMaterial->setShader(shader2);
 
@@ -70,12 +70,12 @@ bool SSAOPostEffectInstance::onRender(RenderView* renderView, CommandList* conte
     Texture* viewNormalMap = context->gbuffer(GBuffer::ViewNormalMap);
     Texture* viewDepthMap = context->gbuffer(GBuffer::ViewDepthMap);
 
-    m_occlusionMaterial->setTexture(u"_viewSpaceNormalMap", viewNormalMap);
-    m_occlusionMaterial->setTexture(u"_viewDepthMap", viewDepthMap);
+    m_occlusionMaterial->setTexture(_TT("_viewSpaceNormalMap"), viewNormalMap);
+    m_occlusionMaterial->setTexture(_TT("_viewDepthMap"), viewDepthMap);
     m_occlusionMaterial->setMainTexture(source);
     context->blit(m_occlusionMaterial, occlusionMap);
 
-    m_blurAndCompositeMaterial->setTexture(u"_occlusionMap", occlusionMap);
+    m_blurAndCompositeMaterial->setTexture(_TT("_occlusionMap"), occlusionMap);
     m_blurAndCompositeMaterial->setMainTexture(source);
     context->blit(m_blurAndCompositeMaterial, destination);
 

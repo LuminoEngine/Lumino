@@ -10,16 +10,16 @@ class App_Example_SoundControl : public Application
 
     virtual void onInit() override
     {
-		sound = makeObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
+		sound = makeObject<Sound>(_TT("D:/Music/momentum/02 - momentum.wav"));
 		//sound->setVolume(0.05);
 		sound->play();
 		//sound = nullptr;
 
-		se = makeObject<Sound>(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Audio/ln_cursor_1.wav");
+		se = makeObject<Sound>(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Audio/ln_cursor_1.wav"));
 		
 
 
-		auto addButton = ln::UIButton::create(u"Add");
+		auto addButton = ln::UIButton::create(_TT("Add"));
 		addButton->connectOnClicked([this]() {
 			se->play();
 		});

@@ -13,14 +13,14 @@ LN_OBJECT_IMPLEMENT(AssetModel, Object) {}
 
 // 現在はエディタサポートが十分ではない。Asset は手書きも頻発する。
 // 独自拡張子だとテキストエディタのサポートが受けづらいので今は使わない。
-const String AssetModel::AssetFileExtension = u".yml";//u".lnasset";
+const String AssetModel::AssetFileExtension = _TT(".yml");//_TT(".lnasset";
 
 //Ref<AssetModel> AssetModel::create(Object* target)
 //{
 //	return makeObject<AssetModel>(target);
 //}
 
-const String AssetModel::EngineAssetsDirectory = u"Engine";
+const String AssetModel::EngineAssetsDirectory = _TT("Engine");
 
 AssetModel::AssetModel()
     : m_target(nullptr)
@@ -67,11 +67,11 @@ const ln::TypeInfo* AssetModel::assetType() const
 //    //if (ar.isSaving()) {
 //    //    assetId = m_target->assetPath();
 //    //}
-//    //ar & makeNVP(u"AssetId", assetId);
+//    //ar & makeNVP(_TT("AssetId", assetId);
 //
-//    ar & makeNVP(u"AssetType", m_assetType);
-//    ar & makeNVP(u"Object", m_target);
-//    //ar & makeNVP(u"Children", m_children);
+//    ar & makeNVP(_TT("AssetType", m_assetType);
+//    ar & makeNVP(_TT("Object", m_target);
+//    //ar & makeNVP(_TT("Children", m_children);
 //
 //    //if (ar.isLoading()) {
 //    //    m_target->setAssetPath(assetId);
@@ -81,16 +81,16 @@ const ln::TypeInfo* AssetModel::assetType() const
 void AssetModel::onSerialize(Serializer2* sr)
 {
     if (sr->isSaving()) {
-        sr->writeName(u"object");
+        sr->writeName(_TT("object"));
         sr->writeObject(m_target);
     }
     else {
         if (m_externalObjectDeserialization) {
             if (LN_REQUIRE(m_target)) return;
-            if (sr->readName(u"object")) sr->readObject(m_target);
+            if (sr->readName(_TT("object"))) sr->readObject(m_target);
         }
         else {
-            if (sr->readName(u"object")) m_target = sr->readObject();
+            if (sr->readName(_TT("object"))) m_target = sr->readObject();
         }
     }
 }
@@ -102,7 +102,7 @@ ln::Uuid AssetModel::readAssetId(const ln::Path& filePath)
         ln::Uuid id;
         void serialize(Archive& ar)
         {
-            ar & makeNVP(u"AssetId", id);
+            ar & makeNVP(_TT("AssetId"), id);
         }
     } d;
     String json = FileSystem::readAllText(filePath);

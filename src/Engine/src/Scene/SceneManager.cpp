@@ -53,7 +53,7 @@ void SceneManager::init()
 		};
 		static const size_t size = LN_ARRAY_SIZE_OF(data);
 		MemoryStream stream(data, size);
-		m_atmosphereShader = makeObject<Shader>(u"SkyFromAtmosphere", &stream);
+		m_atmosphereShader = makeObject<Shader>(_TT("SkyFromAtmosphere"), &stream);
 	}
 
 

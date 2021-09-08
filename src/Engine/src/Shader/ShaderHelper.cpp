@@ -556,7 +556,7 @@ bool ShaderHelper::generateShader(ln::detail::ShaderManager* manager, const ln::
     // dump intermediate codes.
     if (!exportDir.isEmpty()) {
         ln::FileSystem::createDirectory(exportDir);
-        compiler.unifiedShader()->saveCodes(exportDir.str() + u"/");
+        compiler.unifiedShader()->saveCodes(exportDir.str() + _TT("/"));
     }
 
     return true;

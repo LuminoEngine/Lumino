@@ -30,7 +30,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 protected:
-	virtual const String& elementName() const  override { static String name = u"UIThumb"; return name; }
+	virtual const String& elementName() const  override { static String name = _TT("UIThumb"); return name; }
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 
 	virtual void onDragStarted(UIDragDeltaEventArgs* e);
@@ -155,7 +155,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 protected:
-	virtual const String& elementName() const  override { static String name = u"UITrack"; return name; }
+	virtual const String& elementName() const  override { static String name = _TT("UITrack"); return name; }
 
 	// UIElement interface
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
@@ -249,7 +249,7 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
     // UIElement interface
-	virtual const String& elementName() const  override { static String name = u"UIScrollBar"; return name; }
+	virtual const String& elementName() const  override { static String name = _TT("UIScrollBar"); return name; }
     virtual void onRoutedEvent(UIEventArgs* e) override;
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;

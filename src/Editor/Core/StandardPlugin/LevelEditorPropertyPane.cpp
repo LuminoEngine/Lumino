@@ -22,14 +22,14 @@ bool LevelEditorPropertyPane::init(LevelEditor* model)
 
 
 	auto mainLauout = ln::makeObject<ln::UIGridLayout>();
-	mainLauout->setName(u"PropertyPane.mainLauout");
+	mainLauout->setName(_TT("PropertyPane.mainLauout"));
 	mainLauout->setColumnCount(2);
 	mainLauout->setVAlignment(ln::UIVAlignment::Top);
 	addChild(mainLauout);
 
 	// FogStartDistance
 	{
-		auto text1 = ln::UIText::create(u"FogStartDistance");
+		auto text1 = ln::UIText::create(_TT("FogStartDistance"));
 		mainLauout->addChild(text1);
 
 		auto field1 = ln::makeObject<ln::UISliderField>();
@@ -40,7 +40,7 @@ bool LevelEditorPropertyPane::init(LevelEditor* model)
 
 	// FogStartDistance
 	{
-		auto text1 = ln::UIText::create(u"FogDensity");
+		auto text1 = ln::UIText::create(_TT("FogDensity"));
 		mainLauout->addChild(text1);
 
 		auto field1 = ln::makeObject<ln::UISliderField>();

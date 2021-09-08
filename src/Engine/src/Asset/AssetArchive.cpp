@@ -9,7 +9,7 @@ namespace detail {
 //=============================================================================
 // CryptedArchiveHelper
 
-const String CryptedArchiveHelper::DefaultPassword = u"n7OeL8Hh";
+const String CryptedArchiveHelper::DefaultPassword = _TT("n7OeL8Hh");
 const char CryptedArchiveHelper::FileSignature[4] = { 'l', 'c', 'a', 'c' };
 const uint16_t CryptedArchiveHelper::FileVersion = 1;
 const char CryptedArchiveHelper::FileEntrySignature[4] = { 'l', 'c', '3', '4' };
@@ -186,7 +186,7 @@ bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef&
 
 	CryptedArchiveHelper::initKeys(actualPassword.toStdString().c_str(), m_keys);
 
-	ln::Path virtualDirFullPath = ln::Path(filePath).canonicalize().replaceExtension(u"");
+	ln::Path virtualDirFullPath = ln::Path(filePath).canonicalize().replaceExtension(_TT(""));
 
     m_name = virtualDirFullPath.fileName();
 	m_file = FileStream::create(filePath, FileOpenMode::Read);

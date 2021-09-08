@@ -92,16 +92,16 @@ void UIManager::init(const Settings& settings)
 
 	//m_defaultLayout = makeObject<UIFrameLayout>();
 
-    m_commonInputCommands.left = makeObject<UICommand>(u"left");
-    m_commonInputCommands.right = makeObject<UICommand>(u"right");
-    m_commonInputCommands.up = makeObject<UICommand>(u"up");
-    m_commonInputCommands.down = makeObject<UICommand>(u"down");
-    m_commonInputCommands.submit = makeObject<UICommand>(u"submit");
-    m_commonInputCommands.cancel = makeObject<UICommand>(u"cancel");
-    m_commonInputCommands.menu = makeObject<UICommand>(u"menu");
-    m_commonInputCommands.shift = makeObject<UICommand>(u"shift");
-    m_commonInputCommands.pageUp = makeObject<UICommand>(u"pageUp");
-    m_commonInputCommands.pageDown = makeObject<UICommand>(u"pageDown");
+    m_commonInputCommands.left = makeObject<UICommand>(_TT("left"));
+    m_commonInputCommands.right = makeObject<UICommand>(_TT("right"));
+    m_commonInputCommands.up = makeObject<UICommand>(_TT("up"));
+    m_commonInputCommands.down = makeObject<UICommand>(_TT("down"));
+    m_commonInputCommands.submit = makeObject<UICommand>(_TT("submit"));
+    m_commonInputCommands.cancel = makeObject<UICommand>(_TT("cancel"));
+    m_commonInputCommands.menu = makeObject<UICommand>(_TT("men_TT("));
+    m_commonInputCommands.shift = makeObject<UICommand>(_TT("shift"));
+    m_commonInputCommands.pageUp = makeObject<UICommand>(_TT("pageUp"));
+    m_commonInputCommands.pageDown = makeObject<UICommand>(_TT("pageDown"));
     m_inputCommands.add(m_commonInputCommands.left);
     m_inputCommands.add(m_commonInputCommands.right);
     m_inputCommands.add(m_commonInputCommands.up);
@@ -127,7 +127,7 @@ void UIManager::init(const Settings& settings)
         //m_finalDefaultStyle->setupDefault();
 
 
-        if (String::compare(detail::EngineDomain::uiManager()->defaultThemeName(), u"Chocotelier", CaseSensitivity::CaseInsensitive) == 0) {
+        if (String::compare(detail::EngineDomain::uiManager()->defaultThemeName(), _TT("Chocotelier"), CaseSensitivity::CaseInsensitive) == 0) {
             auto theme = makeObject<UITheme>();
             theme->buildLumitelier();
             m_styleContext->addStyleSheet(theme->styleSheet());
@@ -498,11 +498,11 @@ void UIManager::setupDefaultStyle()
     theme->setDefaultStyle(defaultStyle);
 
     theme->setSpacing(8); // MUI default
-    theme->add(u"control.background", UIColors::get(UIColorHues::Grey, 2));
-    theme->add(u"collection.hoverBackground", UIColors::get(UIColorHues::LightGreen, 0));
-    theme->add(u"collection.selectedBackground", UIColors::get(UIColorHues::LightGreen, 2));
-    theme->add(u"tab.activeBackground", UIColors::get(UIColorHues::White));
-    theme->add(u"tab.inactiveBackground", UIColors::get(UIColorHues::Grey, 3));
+    theme->add(_TT("control.background"), UIColors::get(UIColorHues::Grey, 2));
+    theme->add(_TT("collection.hoverBackground"), UIColors::get(UIColorHues::LightGreen, 0));
+    theme->add(_TT("collection.selectedBackground"), UIColors::get(UIColorHues::LightGreen, 2));
+    theme->add(_TT("tab.activeBackground"), UIColors::get(UIColorHues::White));
+    theme->add(_TT("tab.inactiveBackground"), UIColors::get(UIColorHues::Grey, 3));
 
     Color activeControlBackground = UIColors::get(UIColorHues::Grey, 0);
 
@@ -531,7 +531,7 @@ void UIManager::setupDefaultStyle()
         //--------------------------------
         // UIButton
         {
-            auto e = sheet->addStyleSet(u"UIButton");
+            auto e = sheet->addStyleSet(_TT("UIButton"));
             {
                 auto s = e->mainStyleClass()->mainStyle();
                 s->minWidth = 64;//
@@ -553,18 +553,18 @@ void UIManager::setupDefaultStyle()
             //{
             //	auto s = makeObject<UIStyle>();
             //	s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
-            //	c->addClassStyle(u"test", s);
+            //	c->addClassStyle(_TT("test", s);
             //}
             // UIButton:MouseOver
             {
                 auto s = makeObject<UIStyle>();
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
-                e->mainStyleClass()->addStateStyle(u"MouseOver", s);
+                e->mainStyleClass()->addStateStyle(_TT("MouseOver"), s);
             }
             // 
-            if (auto s = sheet->obtainStyle(u"UIButton:Pressed")) {
+            if (auto s = sheet->obtainStyle(_TT("UIButton:Pressed"))) {
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 5);
-                e->mainStyleClass()->addStateStyle(u"Pressed", s);
+                e->mainStyleClass()->addStateStyle(_TT("Pressed"), s);
                 s->shadowBlurRadius = 0;
                 s->shadowOffsetY = 0;
             }
@@ -572,22 +572,22 @@ void UIManager::setupDefaultStyle()
         //--------------------------------
         // UIToggleButton
         {
-            if (auto s = sheet->obtainStyle(u"UIToggleButton")) {
+            if (auto s = sheet->obtainStyle(_TT("UIToggleButton"))) {
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 2);
             }
-            if (auto s = sheet->obtainStyle(u"UIToggleButton:MouseOver")) {
+            if (auto s = sheet->obtainStyle(_TT("UIToggleButton:MouseOver"))) {
             }
-            if (auto s = sheet->obtainStyle(u"UIToggleButton:Pressed")) {
+            if (auto s = sheet->obtainStyle(_TT("UIToggleButton:Pressed"))) {
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 6);
             }
-            if (auto s = sheet->obtainStyle(u"UIToggleButton:Checked")) {
+            if (auto s = sheet->obtainStyle(_TT("UIToggleButton:Checked"))) {
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 5);
             }
         }
         //--------------------------------
         // UIThumb
         {
-            auto e = sheet->addStyleSet(u"UIThumb");
+            auto e = sheet->addStyleSet(_TT("UIThumb"));
             // UIThumb
             {
                 auto s = e->mainStyleClass()->mainStyle();
@@ -603,9 +603,9 @@ void UIManager::setupDefaultStyle()
                 s->vAlignment = UIVAlignment::Stretch;
 
                 s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
-                e->mainStyleClass()->addStateStyle(u"UITrack-Thumb", s);
+                e->mainStyleClass()->addStateStyle(_TT("UITrack-Thumb"), s);
             }
-            if (auto s = sheet->obtainStyle(u"UIThumb.SplitterBar"))
+            if (auto s = sheet->obtainStyle(_TT("UIThumb.SplitterBar")))
             {
                 s->backgroundColor = Color(0, 1, 0, 0.2); // debug
                 s->margin = Thickness(-2, -2, -2, -2);
@@ -614,10 +614,10 @@ void UIManager::setupDefaultStyle()
         //--------------------------------
         // UITrack
         {
-            if (auto s = sheet->obtainStyle(u"UITrack")) {
+            if (auto s = sheet->obtainStyle(_TT("UITrack"))) {
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 2);
             }
-            if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton")) {
+            if (auto s = sheet->obtainStyle(_TT("UIButton.UITrack-DecreaseButton"))) {
                 s->backgroundColor = Color(1, 1, 1, 0);
                 s->cornerRadius = CornerRadius(0);
                 s->shadowBlurRadius = 0;
@@ -625,13 +625,13 @@ void UIManager::setupDefaultStyle()
                 s->hAlignment = UIHAlignment::Stretch;
                 s->vAlignment = UIVAlignment::Stretch;
             }
-            if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton:MouseOver")) {	// ベース要素である UIButton の VisualState を全て上書きする必要がある。CSS と同じ動作。
+            if (auto s = sheet->obtainStyle(_TT("UIButton.UITrack-DecreaseButton:MouseOver"))) {	// ベース要素である UIButton の VisualState を全て上書きする必要がある。CSS と同じ動作。
                 s->backgroundColor = Color::Transparency;
             }
-            if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton:Pressed")) {
+            if (auto s = sheet->obtainStyle(_TT("UIButton.UITrack-DecreaseButton:Pressed"))) {
                 s->backgroundColor = Color::Transparency;
             }
-            if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton")) {
+            if (auto s = sheet->obtainStyle(_TT("UIButton.UITrack-IncreaseButton"))) {
                 s->backgroundColor = Color(1, 1, 1, 0);
                 s->cornerRadius = CornerRadius(0);
                 s->shadowBlurRadius = 0;
@@ -639,10 +639,10 @@ void UIManager::setupDefaultStyle()
                 s->hAlignment = UIHAlignment::Stretch;
                 s->vAlignment = UIVAlignment::Stretch;
             }
-            if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:MouseOver")) {
+            if (auto s = sheet->obtainStyle(_TT("UIButton.UITrack-IncreaseButton:MouseOver"))) {
                 s->backgroundColor = Color::Transparency;
             }
-            if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:Pressed")) {
+            if (auto s = sheet->obtainStyle(_TT("UIButton.UITrack-IncreaseButton:Pressed"))) {
                 s->backgroundColor = Color::Transparency;
             }
 
@@ -650,39 +650,39 @@ void UIManager::setupDefaultStyle()
         //--------------------------------
         // UIListView
         {
-            if (auto s = sheet->obtainStyle(u"UIListView")) {
-                s->backgroundColor = theme->get(u"control.background");
+            if (auto s = sheet->obtainStyle(_TT("UIListView"))) {
+                s->backgroundColor = theme->get(_TT("control.background"));
                 s->padding = Thickness(0, theme->spacing(1));
             }
         }
         //--------------------------------
         // UIListViewItem
         {
-            if (auto s = sheet->obtainStyle(u"UIListViewItem")) {
+            if (auto s = sheet->obtainStyle(_TT("UIListViewItem"))) {
                 s->minHeight = 30;
                 s->padding = theme->spacing(1);
             }
-            if (auto s = sheet->obtainStyle(u"UIListViewItem:Selected")) {
-                s->backgroundColor = theme->get(u"collection.selectedBackground");
+            if (auto s = sheet->obtainStyle(_TT("UIListViewItem:Selected"))) {
+                s->backgroundColor = theme->get(_TT("collection.selectedBackground"));
             }
         }
         //--------------------------------
         // UIListBoxItem
         {
-            if (auto s = sheet->obtainStyle(u"UIListBoxItem")) {
+            if (auto s = sheet->obtainStyle(_TT("UIListBoxItem"))) {
                 //s->backgroundColor = Color::Green;
             }
-            if (auto s = sheet->obtainStyle(u"UIListBoxItem:MouseOver")) {
-                s->backgroundColor = theme->get(u"collection.hoverBackground");
+            if (auto s = sheet->obtainStyle(_TT("UIListBoxItem:MouseOver"))) {
+                s->backgroundColor = theme->get(_TT("collection.hoverBackground"));
             }
-            if (auto s = sheet->obtainStyle(u"UIListBoxItem:Selected")) {
-                s->backgroundColor = theme->get(u"collection.selectedBackground");
+            if (auto s = sheet->obtainStyle(_TT("UIListBoxItem:Selected"))) {
+                s->backgroundColor = theme->get(_TT("collection.selectedBackground"));
             }
         }
         //--------------------------------
         // UIComboBox
         {
-            if (auto s = sheet->obtainStyle(u"UIComboBox")) {
+            if (auto s = sheet->obtainStyle(_TT("UIComboBox"))) {
                 s->minHeight = theme->lineContentHeight();
                 s->setBorderColor(Color::Gray);
                 s->borderThickness = 1;
@@ -691,7 +691,7 @@ void UIManager::setupDefaultStyle()
                 s->vAlignment = UIVAlignment::Center;
 
                 auto icon = makeObject<UIStyleDecorator>();
-                icon->setIconName(u"angle-down", 15);
+                icon->setIconName(_TT("angle-down"), 15);
                 icon->m_hAlignment = UIHAlignment::Right;
                 icon->m_margin = Thickness(0, 0, theme->spacing(1), 0);
                 icon->m_color = Color::Gray;
@@ -701,79 +701,79 @@ void UIManager::setupDefaultStyle()
         //--------------------------------
         // UIComboBoxItem
         {
-            if (auto s = sheet->obtainStyle(u"UIComboBoxItem")) {
+            if (auto s = sheet->obtainStyle(_TT("UIComboBoxItem"))) {
             }
-            if (auto s = sheet->obtainStyle(u"UIComboBoxItem:MouseOver")) {
-                s->backgroundColor = theme->get(u"collection.hoverBackground");
+            if (auto s = sheet->obtainStyle(_TT("UIComboBoxItem:MouseOver"))) {
+                s->backgroundColor = theme->get(_TT("collection.hoverBackground"));
             }
-            if (auto s = sheet->obtainStyle(u"UIComboBoxItem:Selected")) {
-                s->backgroundColor = theme->get(u"collection.selectedBackground");
+            if (auto s = sheet->obtainStyle(_TT("UIComboBoxItem:Selected"))) {
+                s->backgroundColor = theme->get(_TT("collection.selectedBackground"));
             }
         }
         //--------------------------------
         // UITreeItem
         {
-            if (auto s = sheet->obtainStyle(u"UITreeItem")) {
+            if (auto s = sheet->obtainStyle(_TT("UITreeItem"))) {
                 s->minHeight = 30;
                 s->hAlignment = UIHAlignment::Stretch;
                 s->vAlignment = UIVAlignment::Top;
                 //s->borderThickness = 1;
                 //s->setBorderColor(Color::Gray);
             }
-            if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander")) {   // VisualState によらず常に有効。個別にしたければ:Normalを付ける。
+            if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander"))) {   // VisualState によらず常に有効。個別にしたければ:Normalを付ける。
                 s->width = 16;
                 s->height = 16;
                 s->hAlignment = UIHAlignment::Center;
                 s->vAlignment = UIVAlignment::Center;
                 s->backgroundColor = Color::Transparency;
             }
-            //if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:MouseOver")) {
+            //if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:MouseOver")) {
             //}
-            //if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Pressed")) {
+            //if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:Pressed")) {
             //}
-            if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Checked")) {
+            if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:Checked"))) {
                 auto icon = makeObject<UIStyleDecorator>();
-                icon->setIconName(u"angle-down", 15);
+                icon->setIconName(_TT("angle-down"), 15);
                 s->decorators.add(icon);
             }
-            if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Unchecked")) {
+            if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:Unchecked"))) {
                 auto icon = makeObject<UIStyleDecorator>();
-                icon->setIconName(u"angle-right", 15);
+                icon->setIconName(_TT("angle-right"), 15);
                 s->decorators.add(icon);
             }
         }
         //--------------------------------
         // UITabBar
         {
-            if (auto s = sheet->obtainStyle(u"UITabBar")) {
-                s->backgroundColor = theme->get(u"control.background");
+            if (auto s = sheet->obtainStyle(_TT("UITabBar"))) {
+                s->backgroundColor = theme->get(_TT("control.background"));
             }
         }
         //--------------------------------
         // UITabItem
         {
-            if (auto s = sheet->obtainStyle(u"UITabItem")) {
+            if (auto s = sheet->obtainStyle(_TT("UITabItem"))) {
                 s->padding = theme->spacing(1);
-                s->backgroundColor = theme->get(u"tab.inactiveBackground");
+                s->backgroundColor = theme->get(_TT("tab.inactiveBackground"));
             }
-            if (auto s = sheet->obtainStyle(u"UITabItem:Selected")) {
-                s->backgroundColor = theme->get(u"tab.activeBackground");
+            if (auto s = sheet->obtainStyle(_TT("UITabItem:Selected"))) {
+                s->backgroundColor = theme->get(_TT("tab.activeBackground"));
             }
         }
         //--------------------------------
         // UITextField
         {
-            if (auto s = sheet->obtainStyle(u"UITextField")) {
+            if (auto s = sheet->obtainStyle(_TT("UITextField"))) {
                 s->padding = Thickness(4);
                 s->borderThickness = Thickness(1);
                 s->setBorderColor(Color::Gray);
-                //s->backgroundColor = theme->get(u"tab.inactiveBackground");
+                //s->backgroundColor = theme->get(_TT("tab.inactiveBackground");
             }
         }
         //--------------------------------
         // UIPopup
         {
-            if (auto s = sheet->obtainStyle(u"UIPopup")) {
+            if (auto s = sheet->obtainStyle(_TT("UIPopup"))) {
                 s->minWidth = 8;
                 s->minHeight = 8;
                 s->padding = theme->spacing(1);
@@ -786,7 +786,7 @@ void UIManager::setupDefaultStyle()
         //--------------------------------
         // UIDialog
         {
-            if (auto s = sheet->obtainStyle(u"UIDialog")) {
+            if (auto s = sheet->obtainStyle(_TT("UIDialog"))) {
                 s->minWidth = 200;
                 s->minHeight = 200;
                 s->padding = theme->spacing(1);

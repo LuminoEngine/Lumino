@@ -48,7 +48,7 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
             renderPass->setRenderTarget(0, target);
             renderPass->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 			auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
-			descriptor->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+			descriptor->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 			ctx->beginRenderPass(renderPass);
             ctx->setVertexLayout(m_vertexDecl1);
             ctx->setVertexBuffer(0, vertexBuffer);
@@ -79,7 +79,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
-		descriptor->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+		descriptor->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 		ctx->beginRenderPass(TestEnv::renderPass());
         ctx->setVertexLayout(m_vertexDecl1);
         ctx->setVertexBuffer(0, vertexBuffer);
@@ -98,7 +98,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
-		descriptor->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+		descriptor->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setViewportRect(Rect(0, 0, 10, 10));
 		ctx->setScissorRect(Rect(0, 0, 10, 10));
@@ -208,7 +208,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
 			auto shd = ctx->allocateShaderDescriptor(shaderPass);
-			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
@@ -244,7 +244,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
 			auto shd = ctx->allocateShaderDescriptor(shaderPass);
-			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 #ifdef LN_COORD_RH
 			Vector4 v2[] = {
@@ -279,7 +279,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
 			auto shd = ctx->allocateShaderDescriptor(shaderPass);
-			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 #ifdef LN_COORD_RH
 			Vector4 v2[] = {
@@ -321,7 +321,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
 			auto shd = ctx->allocateShaderDescriptor(shaderPass);
-			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 #ifdef LN_COORD_RH
@@ -422,7 +422,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 	auto descriptorLayout = m_shader1->descriptorLayout();
 	auto shaderPass = m_shader1->techniques()[0]->passes()[0];
 	//auto descriptor = m_shader1->descriptor();
-	//descriptor->setVector(descriptor->descriptorLayout()->findUniformMemberIndex(u"g_color"), Vector4(0, 0, 1, 1));
+	//descriptor->setVector(descriptor->descriptorLayout()->findUniformMemberIndex(_TT("g_color"), Vector4(0, 0, 1, 1));
 
 	struct Param
 	{
@@ -460,7 +460,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
 			auto shd = ctx->allocateShaderDescriptor(shaderPass);
-			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(0, 0, 1, 1));
+			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(0, 0, 1, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 			uint16_t indices[] = { 0, 4, 2 };
@@ -485,7 +485,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
 			auto shd = ctx->allocateShaderDescriptor(shaderPass);
-			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(0, 0, 1, 1));
+			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(0, 0, 1, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 			uint16_t indices[] = { 1, 4, 2 };
@@ -515,7 +515,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
                 auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 				auto crp = TestEnv::renderPass();
 				auto shd = ctx->allocateShaderDescriptor(shaderPass);
-				shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(0, 0, 1, 1));
+				shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(0, 0, 1, 1));
 				crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 				ib1->setFormat(IndexBufferFormat::UInt32);
 
@@ -562,7 +562,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
 		auto shd = ctx->allocateShaderDescriptor(shaderPass);
-		shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+		shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(m_vertexDecl1);
@@ -591,7 +591,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
 		auto shd = ctx->allocateShaderDescriptor(shaderPass);
-		shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+		shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(m_vertexDecl1);
@@ -620,7 +620,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
 		auto shd = ctx->allocateShaderDescriptor(shaderPass);
-		shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+		shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(m_vertexDecl1);
@@ -684,32 +684,32 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 	// * [ ] float
 	{
 		auto color = renderAndCapture([&](detail::ShaderSecondaryDescriptor* shd) {
-			shd->setInt(descriptorLayout->findUniformMemberIndex(u"g_type"), 1);
-			shd->setFloat(descriptorLayout->findUniformMemberIndex(u"g_color1"), 0.5);	// 赤っぽくする
+			shd->setInt(descriptorLayout->findUniformMemberIndex(_TT("g_type")), 1);
+			shd->setFloat(descriptorLayout->findUniformMemberIndex(_TT("g_color1")), 0.5);	// 赤っぽくする
 		});
 		ASSERT_EQ(true, color.r > 100);		// 赤っぽくなっているはず
 	}
 	// * [ ] float2
 	{
 		auto color = renderAndCapture([&](detail::ShaderSecondaryDescriptor* shd) {
-			shd->setInt(descriptorLayout->findUniformMemberIndex(u"g_type"), 2);
-			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color2"), Vector4(1, 0, 0, 1));
+			shd->setInt(descriptorLayout->findUniformMemberIndex(_TT("g_type")), 2);
+			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color2")), Vector4(1, 0, 0, 1));
 		});
 		ASSERT_EQ(true, color.r > 200);
 	}
 	// * [ ] float3
 	{
 		auto color = renderAndCapture([&](detail::ShaderSecondaryDescriptor* shd) {
-			shd->setInt(descriptorLayout->findUniformMemberIndex(u"g_type"), 3);
-			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color3"), Vector4(0, 1, 0, 1));
+			shd->setInt(descriptorLayout->findUniformMemberIndex(_TT("g_type")), 3);
+			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color3")), Vector4(0, 1, 0, 1));
 		});
 		ASSERT_EQ(true, color.g > 200);
 	}
 	// * [ ] float4
 	{
 		auto color = renderAndCapture([&](detail::ShaderSecondaryDescriptor* shd) {
-			shd->setInt(descriptorLayout->findUniformMemberIndex(u"g_type"), 4);
-			shd->setVector(descriptorLayout->findUniformMemberIndex(u"g_color4"), Vector4(0, 0, 1, 1));
+			shd->setInt(descriptorLayout->findUniformMemberIndex(_TT("g_type")), 4);
+			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color4")), Vector4(0, 0, 1, 1));
 		});
 		ASSERT_EQ(true, color.b > 200);
 	}
@@ -720,8 +720,8 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 	// * [ ] float[]
 	{
 		auto color = renderAndCapture([&](detail::ShaderSecondaryDescriptor* shd) {
-			shd->setInt(descriptorLayout->findUniformMemberIndex(u"g_type"), 11);
-			shd->setFloatArray(descriptorLayout->findUniformMemberIndex(u"g_float1ary3"), ary1, 3);
+			shd->setInt(descriptorLayout->findUniformMemberIndex(_TT("g_type")), 11);
+			shd->setFloatArray(descriptorLayout->findUniformMemberIndex(_TT("g_float1ary3")), ary1, 3);
 		});
 		ASSERT_EQ(true, color.r > 100);
 
@@ -736,24 +736,24 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 	// * [ ] float2[]
 	{
 		auto color = renderAndCapture([&](detail::ShaderSecondaryDescriptor* shd) {
-			shd->setInt(descriptorLayout->findUniformMemberIndex(u"g_type"), 12);
-			shd->setVectorArray(descriptorLayout->findUniformMemberIndex(u"g_float2ary3"), ary2, 3);
+			shd->setInt(descriptorLayout->findUniformMemberIndex(_TT("g_type")), 12);
+			shd->setVectorArray(descriptorLayout->findUniformMemberIndex(_TT("g_float2ary3")), ary2, 3);
 		});
 		ASSERT_EQ(true, color.g > 200);
 	}
 	// * [ ] float3[]
 	{
 		auto color = renderAndCapture([&](detail::ShaderSecondaryDescriptor* shd) {
-			shd->setInt(descriptorLayout->findUniformMemberIndex(u"g_type"), 13);
-			shd->setVectorArray(descriptorLayout->findUniformMemberIndex(u"g_float3ary3"), ary2, 3);
+			shd->setInt(descriptorLayout->findUniformMemberIndex(_TT("g_type")), 13);
+			shd->setVectorArray(descriptorLayout->findUniformMemberIndex(_TT("g_float3ary3")), ary2, 3);
 		});
 		ASSERT_EQ(true, color.b > 200);
 	}
 	// * [ ] float4[]
 	{
 		auto color = renderAndCapture([&](detail::ShaderSecondaryDescriptor* shd) {
-			shd->setInt(descriptorLayout->findUniformMemberIndex(u"g_type"), 14);
-			shd->setVectorArray(descriptorLayout->findUniformMemberIndex(u"g_float4ary3"), ary2, 3);
+			shd->setInt(descriptorLayout->findUniformMemberIndex(_TT("g_type")), 14);
+			shd->setVectorArray(descriptorLayout->findUniformMemberIndex(_TT("g_float4ary3")), ary2, 3);
 		});
 		ASSERT_EQ(true, color.g > 200);
 	}
@@ -959,7 +959,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
 		auto shd = ctx->allocateShaderDescriptor(shaderPass);
-		shd->setTexture(descriptorLayout->findTextureRegisterIndex(u"g_texture1"), tex1);
+		shd->setTexture(descriptorLayout->findTextureRegisterIndex(_TT("g_texture1")), tex1);
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
@@ -1074,7 +1074,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
 		auto shd = ctx->allocateShaderDescriptor(shaderPass);
-		shd->setTexture(descriptorLayout->findTextureRegisterIndex(u"g_texture1"), tex1);
+		shd->setTexture(descriptorLayout->findTextureRegisterIndex(_TT("g_texture1")), tex1);
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
@@ -1097,7 +1097,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
 		auto shd = ctx->allocateShaderDescriptor(shaderPass);
-		shd->setTexture(descriptorLayout->findTextureRegisterIndex(u"g_texture1"), tex1);
+		shd->setTexture(descriptorLayout->findTextureRegisterIndex(_TT("g_texture1")), tex1);
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
@@ -1487,7 +1487,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
         // まず renderTarget1 へ緑色の三角形を描く
         {
 			auto shd = ctx->allocateShaderDescriptor(shaderPass1);
-			shd->setVector(descriptorLayout1->findUniformMemberIndex(u"g_color"), Vector4(0, 1, 0, 1));
+			shd->setVector(descriptorLayout1->findUniformMemberIndex(_TT("g_color")), Vector4(0, 1, 0, 1));
 			renderPass->setRenderTarget(0, renderTarget1);
 			ctx->beginRenderPass(renderPass);
             ctx->setVertexLayout(m_vertexDecl1);
@@ -1504,7 +1504,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
         {
 			auto crp = TestEnv::renderPass();
 			auto shd = ctx->allocateShaderDescriptor(shaderPass2);
-			shd->setTexture(descriptorLayout2->findTextureRegisterIndex(u"g_texture1"), renderTarget1);
+			shd->setTexture(descriptorLayout2->findTextureRegisterIndex(_TT("g_texture1")), renderTarget1);
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->beginRenderPass(crp);
             ctx->setVertexLayout(vertexDecl2);
@@ -1695,7 +1695,7 @@ TEST_F(Test_Graphics_LowLevelRendering, MipMap)
 		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
 		auto shd = ctx->allocateShaderDescriptor(shaderPass);
-		shd->setTexture(descriptorLayout->findTextureRegisterIndex(u"g_texture1"), gridTex);
+		shd->setTexture(descriptorLayout->findTextureRegisterIndex(_TT("g_texture1")), gridTex);
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);

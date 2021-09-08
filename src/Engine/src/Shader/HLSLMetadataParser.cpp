@@ -331,7 +331,7 @@ bool HLSLMetadataParser::nextTo(const char* word, int len)
     } while (isSpaceToken(current()));
 
     if (!equalString(current(), word, len) || isEof()) {
-        m_diag->reportError(u"Expected " + String::fromCString(word, len));
+        m_diag->reportError(_TT("Expected ") + String::fromCString(word, len));
         return false;
     }
 
@@ -449,7 +449,7 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
             {"Unlit", 5, ShaderTechniqueClass_ShadingModel::Unlit},
         };
         if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.shadingModel)) {
-            m_diag->reportError(u"Normal: Invalid value: " + String::fromStdString(value));
+            m_diag->reportError(_TT("Normal: Invalid value: ") + String::fromStdString(value));
             return false;
         }
     }
@@ -461,7 +461,7 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
             {"ForwardGBufferPrepass", 21, ShaderTechniqueClass_Phase::ForwardGBufferPrepass},
         };
         if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.phase)) {
-            m_diag->reportError(u"Phase: Invalid value: " + String::fromStdString(value));
+            m_diag->reportError(_TT("Phase: Invalid value: ") + String::fromStdString(value));
             return false;
         }
     }
@@ -471,7 +471,7 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
             {"Skinned", 7, ShaderTechniqueClass_MeshProcess::SkinnedMesh},
         };
         if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.meshProcess)) {
-            m_diag->reportError(u"Normal: Invalid value: " + String::fromStdString(value));
+            m_diag->reportError(_TT("Normal: Invalid value: ") + String::fromStdString(value));
             return false;
         }
     }
@@ -481,7 +481,7 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
             {"NormalMap", 9, ShaderTechniqueClass_Normal::NormalMap},
         };
         if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.normalClass)) {
-            m_diag->reportError(u"Normal: Invalid value: " + String::fromStdString(value));
+            m_diag->reportError(_TT("Normal: Invalid value: ") + String::fromStdString(value));
             return false;
         }
     }
@@ -491,7 +491,7 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
             {"RoughnessMap", 12, ShaderTechniqueClass_Roughness::RoughnessMap},
         };
         if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.roughnessClass)) {
-            m_diag->reportError(u"Roughness: Invalid value: " + String::fromStdString(value));
+            m_diag->reportError(_TT("Roughness: Invalid value: ") + String::fromStdString(value));
             return false;
         }
     }
@@ -500,7 +500,7 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
         tech->techniqueClass.drawMode = ShaderTechniqueClass_DrawMode::Instancing;
     }
     else {
-        m_diag->reportError(u"Invalid technique parameter: " + String::fromStdString(getString(name)));
+        m_diag->reportError(_TT("Invalid technique parameter: ") + String::fromStdString(getString(name)));
         return false;
     }
 
@@ -643,7 +643,7 @@ bool ShaderModuleParser::parse(const char* code, size_t length, DiagnosticsManag
         doc = YAML::Load(moduleText);
     }
     catch (YAML::ParserException& e) {
-        m_diag->reportError(String::format(u"YAML: {0}:{1}:{2}", e.mark.line, e.mark.column, String::fromStdString(e.msg)));
+        m_diag->reportError(String::format(_TT("YAML: {0}:{1}:{2}"), e.mark.line, e.mark.column, String::fromStdString(e.msg)));
         return false;
     }
 
@@ -656,7 +656,7 @@ bool ShaderModuleParser::parse(const char* code, size_t length, DiagnosticsManag
         }
     }
     else {
-        diag->reportError(u"Undefiend 'techniques'.");
+        diag->reportError(_TT("Undefiend 'techniques'."));
         return false;
     }
 
@@ -690,7 +690,7 @@ bool ShaderModuleParser::readTechniques(const YAML::Node& techniques)
 bool ShaderModuleParser::readTechnique(const std::string& name, const YAML::Node& technique)
 {
     if (!technique.IsMap()) {
-        m_diag->reportError(String::format(u"{0} is not map.", String::fromStdString(name)));
+        m_diag->reportError(String::format(_TT("{0} is not map."), String::fromStdString(name)));
         return false;
     }
 
@@ -700,11 +700,11 @@ bool ShaderModuleParser::readTechnique(const std::string& name, const YAML::Node
 
     auto passes = technique["passes"];
     if (!passes.IsDefined()) {
-        m_diag->reportError(String::format(u"{0} is don't have `passes`.", String::fromStdString(name)));
+        m_diag->reportError(String::format(_TT("{0} is don't have `passes`."), String::fromStdString(name)));
         return false;
     }
     if (!passes.IsSequence()) {
-        m_diag->reportError(String::format(u"{0}:passes is not sequence.", String::fromStdString(name)));
+        m_diag->reportError(String::format(_TT("{0}:passes is not sequence."), String::fromStdString(name)));
         return false;
     }
 
@@ -718,7 +718,7 @@ bool ShaderModuleParser::readTechnique(const std::string& name, const YAML::Node
 
         auto itr = std::find_if(tech.passes.begin(), tech.passes.end(), [&](const auto& x) { return x.name == passInfo.name; });
         if (itr != tech.passes.end()) {
-            m_diag->reportError(String::format(u"{0} is duplicated name", String::fromStdString(passInfo.name)));
+            m_diag->reportError(String::format(_TT("{0} is duplicated name"), String::fromStdString(passInfo.name)));
             return false;
         }
 
@@ -733,7 +733,7 @@ bool ShaderModuleParser::readTechnique(const std::string& name, const YAML::Node
 bool ShaderModuleParser::readPass(const std::string& techName, int passIndex, const YAML::Node& passItemNode, HLSLPass* outPass)
 {
     if (passItemNode.size() != 1) {
-        m_diag->reportError(String::format(u"Pass ({0}[{1}] is invalid pass item.", String::fromStdString(techName), passIndex));
+        m_diag->reportError(String::format(_TT("Pass ({0}[{1}] is invalid pass item."), String::fromStdString(techName), passIndex));
         return false;
     }
 
@@ -742,12 +742,12 @@ bool ShaderModuleParser::readPass(const std::string& techName, int passIndex, co
 
     auto vertexShader = passNode["vertexShader"];
     if (!vertexShader.IsDefined()) {
-        m_diag->reportError(String::format(u"Pass ({0}[{1}] is don't have `vertexShader`.", String::fromStdString(techName), passIndex));
+        m_diag->reportError(String::format(_TT("Pass ({0}[{1}] is don't have `vertexShader`."), String::fromStdString(techName), passIndex));
         return false;
     }
     auto pixelShader = passNode["pixelShader"];
     if (!pixelShader.IsDefined()) {
-        m_diag->reportError(String::format(u"Pass ({0}[{1}] is don't have `pixelShader`.", String::fromStdString(techName), passIndex));
+        m_diag->reportError(String::format(_TT("Pass ({0}[{1}] is don't have `pixelShader`."), String::fromStdString(techName), passIndex));
         return false;
     }
 

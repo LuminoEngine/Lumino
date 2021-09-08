@@ -7,10 +7,11 @@ using System.Linq;
 using System.ComponentModel;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace LuminoBuild
 {
-    class Builder
+    class Build
     {
         // リリースのたびに変更する必要がある情報
         public string InstallerProductGUID = "f36ad49a-f86a-4196-aa55-07d8a61e02f3";
@@ -20,9 +21,18 @@ namespace LuminoBuild
         public int BuildVersion = 0;
         public string VersionString => string.Format("{0}.{1}.{2}", MajorVersion, MinorVersion, RevisionVersion);
 
-        public string LuminoRootDir;
-        public string LuminoBuildDir;
+        public string Triplet;
+        public string Arch;
+        public string System;
+
+        public string RootDir;
+        public string BuildDir;
         //public string LuminoBuildCacheDir;
+        public string BuildToolsDir;
+        public string VcpkgDir;
+        public string EngineBuildDir;
+        public string EngineInstallDir;
+
         public string LuminoBindingsDir;
         public string LuminoLibDir;
         public string LuminoToolsDir;
@@ -60,24 +70,51 @@ namespace LuminoBuild
             }
         }
 
+        public Build(string triplet)
+        {
+            Triplet = triplet;
+            var tokens = triplet.Split("-");
+            Arch = tokens[0];
+            System = tokens[1];
+
+            var thisAssembly = Assembly.GetEntryAssembly();
+            var exeDir = Path.GetDirectoryName(thisAssembly.Location);
+            RootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../../")) + "/";
+            BuildDir = Path.GetFullPath(Path.Combine(RootDir, "build"));
+            BuildToolsDir = Path.GetFullPath(Path.Combine(BuildDir, "tools"));
+            VcpkgDir = Path.GetFullPath(Path.Combine(BuildToolsDir, "vcpkg"));
+            EngineBuildDir = Path.GetFullPath(Path.Combine(BuildDir, "buildtrees", Triplet, "lumino"));
+            EngineInstallDir = Path.GetFullPath(Path.Combine(BuildDir, "installed", Triplet));
+
+            Directory.CreateDirectory(BuildDir);
+            Directory.CreateDirectory(BuildToolsDir);
+            Directory.CreateDirectory(EngineBuildDir);
+            Directory.CreateDirectory(EngineInstallDir);
+        }
+
+
+
+
+
+
         public string GetExternalProjectBuildDir(string targetName)
         {
-            return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalBuild"));
+            return Utils.ToUnixPath(Path.Combine(BuildDir, targetName, "ExternalBuild"));
         }
 
         public string GetExternalProjectBuildDir(string targetName, string externalProjectName)
         {
-            return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalBuild", externalProjectName));
+            return Utils.ToUnixPath(Path.Combine(BuildDir, targetName, "ExternalBuild", externalProjectName));
         }
 
         public string GetExternalProjectInstallDir(string targetName, string externalProjectName)
         {
-            return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalInstall", externalProjectName));
+            return Utils.ToUnixPath(Path.Combine(BuildDir, targetName, "ExternalInstall", externalProjectName));
         }
 
         public string GetExternalInstallDir(string targetName)
         {
-            return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalInstall"));
+            return Utils.ToUnixPath(Path.Combine(BuildDir, targetName, "ExternalInstall"));
         }
 
         /// <summary>
@@ -282,7 +319,7 @@ namespace LuminoBuild
         /// このルールをビルドする
         /// </summary>
         /// <param name="builder">Builder.</param>
-		public abstract void Build(Builder builder);
+		public abstract void Build(Build b);
 	}
 
     /// <summary>
@@ -299,7 +336,7 @@ namespace LuminoBuild
         /// 実行
         /// </summary>
         /// <param name="builder"></param>
-        public abstract void Build(Builder builder);
+        public abstract void Build(Build builder);
     }
 
     static class Logger
@@ -516,7 +553,7 @@ namespace LuminoBuild
         /// <param name="program">Program.</param>
         public static bool ExistsProgram(string program)
         {
-            using (Process p = new Process())
+            using (var p = new Process())
             {
                 if (IsWin32)
                     p.StartInfo.FileName = "where";
@@ -536,7 +573,7 @@ namespace LuminoBuild
 		{
             Logger.WriteLine($"{program} {args}");
             
-            using (Process p = new Process())
+            using (var p = new Process())
 			{
                 var sb = new StringBuilder();
 				p.StartInfo.Arguments = args;
@@ -602,7 +639,7 @@ namespace LuminoBuild
         {
             Logger.WriteLine($"{program} {args}");
 
-            using (Process p = new Process())
+            using (var p = new Process())
             {
                 var sb = new StringBuilder();
                 p.StartInfo.Arguments = args;

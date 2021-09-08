@@ -337,12 +337,12 @@ bool PmxLoader::load(SkinnedMeshModel* model, const AssetPath& assetPath, bool i
 		m_pmxHeader.Magic[2] != 'X' ||
 		m_pmxHeader.Magic[3] != ' ')
 	{
-		m_diag->reportError(u"Invalid file signature.");
+		m_diag->reportError(_TT("Invalid file signature."));
 		return false;
 	}
 
 	if (m_pmxHeader.Version < 2.0f) {
-		m_diag->reportError(u"Invalid file version.");
+		m_diag->reportError(_TT("Invalid file version."));
 		return false;
 	}
 
@@ -557,7 +557,7 @@ bool PmxLoader::loadVertices(BinaryReader* reader, MeshPrimitive* mesh)
 
 	if (m_hasSDEF) {
 		// TODO:
-		LN_WARNING(u"PMX SDEF is not implemented.");
+		LN_WARNING(_TT("PMX SDEF is not implemented."));
 	}
 
 	// TODO: BoundingBox
@@ -579,7 +579,7 @@ bool PmxLoader::loadIndices(BinaryReader* reader, MeshPrimitive* mesh)
 		indexFormat = IndexBufferFormat::UInt32;
 	}
 	else {
-		m_diag->reportError(u"Invalid index format.");
+		m_diag->reportError(_TT("Invalid index format."));
 		return false;
 	}
 
@@ -636,7 +636,7 @@ bool PmxLoader::loadTextureTable(BinaryReader* reader)
 			m_textureTable.add(texture);
 		}
 		else {
-			m_diag->reportWarning(u"Texture not found: " + name);
+			m_diag->reportWarning(_TT("Texture not found: ") + name);
 		}
 	}
 
@@ -1240,16 +1240,16 @@ Ref<Material> PmxLoader::makeMaterial(const PmxMaterial* pmxMaterial) const
 	material->setMetallic(pmxMaterial->Power);
 	material->setRoughness(1.0 - pmxMaterial->Power);
 
-	material->setColor(u"_mmdAmbient", pmxMaterial->Ambient);
-	material->setColor(u"_mmdSpecular", pmxMaterial->Specular);
-	material->setTexture(u"_mmdToonTexture", pmxMaterial->ToonTexture);
-	material->setTexture(u"_mmdSphereTexture", pmxMaterial->SphereTexture);
-	material->setColor(u"_mmdToonColor", pmxMaterial->ToonColor);
-	material->setColor(u"_mmdEdgeColor", pmxMaterial->EdgeColor);
-	material->setFloat(u"_mmdEdgeSize", pmxMaterial->EdgeSize);
-	material->setColor(u"_mmdTextureCoe", pmxMaterial->TextureCoe);
-	material->setColor(u"_mmdSphereTextureCoe", pmxMaterial->SphereTextureCoe);
-	material->setColor(u"_mmdToonTextureCoe", pmxMaterial->ToonTextureCoe);
+	material->setColor(_TT("_mmdAmbient"), pmxMaterial->Ambient);
+	material->setColor(_TT("_mmdSpecular"), pmxMaterial->Specular);
+	material->setTexture(_TT("_mmdToonTexture"), pmxMaterial->ToonTexture);
+	material->setTexture(_TT("_mmdSphereTexture"), pmxMaterial->SphereTexture);
+	material->setColor(_TT("_mmdToonColor"), pmxMaterial->ToonColor);
+	material->setColor(_TT("_mmdEdgeColor"), pmxMaterial->EdgeColor);
+	material->setFloat(_TT("_mmdEdgeSize"), pmxMaterial->EdgeSize);
+	material->setColor(_TT("_mmdTextureCoe"), pmxMaterial->TextureCoe);
+	material->setColor(_TT("_mmdSphereTextureCoe"), pmxMaterial->SphereTextureCoe);
+	material->setColor(_TT("_mmdToonTextureCoe"), pmxMaterial->ToonTextureCoe);
 
 	// TODO: DrawingFlags
 	// TODO: SphereMode

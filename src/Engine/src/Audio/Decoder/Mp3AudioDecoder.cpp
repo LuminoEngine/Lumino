@@ -71,14 +71,14 @@ uint32_t Mp3AudioDecoder::read(size_t seekFrameNumber, float* buffer, uint32_t r
 
 	//// コンバート実行
 	//MMRESULT mmr = acmStreamPrepareHeader(m_hACMStream, &ash, 0);
-	//if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
+	//if (LN_ENSURE(mmr == 0, _T("MMRESULT:%_TT("), mmr)) return;
 
 	//DWORD acm_flag = (m_resetFlag == true) ? ACM_STREAMCONVERTF_START : ACM_STREAMCONVERTF_BLOCKALIGN;
 	//mmr = acmStreamConvert(m_hACMStream, &ash, acm_flag);
-	//if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
+	//if (LN_ENSURE(mmr == 0, _T("MMRESULT:%_TT("), mmr)) return;
 
 	//mmr = acmStreamUnprepareHeader(m_hACMStream, &ash, 0);
-	//if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
+	//if (LN_ENSURE(mmr == 0, _T("MMRESULT:%_TT("), mmr)) return;
 
 	//// コンバートした結果、実際に使った領域を返す
 	//*out_read_size = ash.cbSrcLengthUsed;
@@ -111,7 +111,7 @@ bool Mp3AudioDecoder::checkId3v()
 	ID3v2Header header;
 	int read_size = m_stream->read(&header, sizeof(ID3v2Header));
 	if (read_size != sizeof(ID3v2Header)) {
-		m_diag->reportError(u"mp3 file size is invalid.");
+		m_diag->reportError(_TT("mp3 file size is invalid."));
 		return false;
 	}
 
@@ -132,7 +132,7 @@ bool Mp3AudioDecoder::checkId3v()
 	{
 		// 終端のタグ情報がない
 		if (m_sourceDataSize < 128) {
-			m_diag->reportError(u"not found mp3 tag. (file ending)");
+			m_diag->reportError(_TT("not found mp3 tag. (file ending)"));
 			return false;
 		}
 
@@ -145,7 +145,7 @@ bool Mp3AudioDecoder::checkId3v()
 		m_stream->seek(-128, SeekOrigin::End);
 		read_size = m_stream->read(data, 3);
 		if (read_size != 3) {
-			m_diag->reportError(u"not found mp3 tag.");
+			m_diag->reportError(_TT("not found mp3 tag."));
 			return false;
 		}
 
@@ -196,7 +196,7 @@ bool Mp3AudioDecoder::getPCMFormat()
 		{
 			rs = m_stream->read(data, 4);
 			if (rs != 4) {
-				m_diag->reportError(u"not found mp3 frame header.");
+				m_diag->reportError(_TT("not found mp3 frame header."));
 				return false;
 			}
 
@@ -218,14 +218,14 @@ bool Mp3AudioDecoder::getPCMFormat()
 		version = 2;
 		break;
 	default:
-		m_diag->reportError(u"invalid mp3 version.");
+		m_diag->reportError(_TT("invalid mp3 version."));
 		return false;
 	}
 
 	// レイヤー 3 ？
 	if ((data[1] >> 1 & 0x03) != 1)
 	{
-		m_diag->reportError(u"invalid mp3 layer.");
+		m_diag->reportError(_TT("invalid mp3 layer."));
 		return false;
 	}
 

@@ -19,7 +19,7 @@ class ObjectClassBasicExample : public Application
 
         // "0-Hello" のプログラムは、Builder を使わずに書くと次のようになります。
         auto text1 = makeObject<UIText>();
-        text1->setText(u"Hello, Lumino!");
+        text1->setText(_TT("Hello, Lumino!"));
         text1->addInto();           // デフォルトのビューへ追加する
 
 
@@ -27,7 +27,7 @@ class ObjectClassBasicExample : public Application
         // Builder パターンを使う場合、インスタンスの作成とシーンへの追加を同時に行うことができます。
         // World や Window については Graphcis や GUI のサンプルを参照してください。
         auto text2 = UIText::With()
-            .text(u"Hello, Lumino!")
+            .text(_TT("Hello, Lumino!"))
             .buildInto();
     }
 };

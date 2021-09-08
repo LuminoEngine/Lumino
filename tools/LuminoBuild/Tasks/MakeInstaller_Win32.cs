@@ -13,19 +13,19 @@ namespace LuminoBuild.Tasks
 
         //public override List<string> Dependencies => new List<string>() { "BuildDocuments", "BuildEngine_MSVC" };
 
-        public override void Build(Builder builder)
+        public override void Build(Build builder)
         {
             string heat = Path.Combine(Environment.GetEnvironmentVariable("WIX"), "bin", "heat");
             string candle = Path.Combine(Environment.GetEnvironmentVariable("WIX"), "bin", "candle");
             string light = Path.Combine(Environment.GetEnvironmentVariable("WIX"), "bin", "light");
-            string tmpDir = Path.Combine(builder.LuminoBuildDir, "InstallerTemp");
+            string tmpDir = Path.Combine(builder.BuildDir, "InstallerTemp");
             string pkgSrcInstallerDir = Path.Combine(builder.LuminoToolsDir, "PackageSource", "Installer");
 
             var targets = new[]
             {
                 new
                 {
-                    ContentFilesDir = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName),
+                    ContentFilesDir = Path.Combine(builder.BuildDir, builder.LocalPackageName),
                     WXSFileTemplate = Path.Combine(pkgSrcInstallerDir, "LuminoInstaller.wxs.template"),
                     TargetDirId = "ID_LUMINO_DIR",
                     ProductGUID = builder.InstallerProductGUID,
@@ -76,14 +76,14 @@ namespace LuminoBuild.Tasks
                 Utils.CallProcess(candle, args);
 
                 // .msi を作る
-                args = string.Format("-nologo -v -ext WixUIExtension -cultures:ja-jp {0}.wixobj {1}.wixobj -pdbout {0}.wixpdb -out {2}", installerWXS, contentFilesWXS, Path.Combine(builder.LuminoBuildDir, t.Output));
+                args = string.Format("-nologo -v -ext WixUIExtension -cultures:ja-jp {0}.wixobj {1}.wixobj -pdbout {0}.wixpdb -out {2}", installerWXS, contentFilesWXS, Path.Combine(builder.BuildDir, t.Output));
                 Utils.CallProcess(light, args);
             }
 
             // Create zip package
             {
-                var orgName = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName);
-                var tmpName = Path.Combine(builder.LuminoBuildDir, builder.ReleasePackageName);
+                var orgName = Path.Combine(builder.BuildDir, builder.LocalPackageName);
+                var tmpName = Path.Combine(builder.BuildDir, builder.ReleasePackageName);
                 Directory.Move(orgName, tmpName);
                 if (!BuildEnvironment.FromCI)
                 {

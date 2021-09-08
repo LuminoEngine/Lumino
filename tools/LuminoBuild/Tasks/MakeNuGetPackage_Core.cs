@@ -8,7 +8,7 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "MakeNuGetPackage_Core";
 
-        public override void Build(Builder builder)
+        public override void Build(Build builder)
         {
 #if false
             var nugetroot = Path.Combine(builder.LuminoBuildDir, "NuGetPackage-LuminoCore");

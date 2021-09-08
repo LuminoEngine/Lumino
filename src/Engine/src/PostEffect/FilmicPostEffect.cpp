@@ -63,7 +63,7 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
     m_ssaoMaterial->setShader(shader2);
 
     auto shader1 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::FilmicPostEffect);
-    //auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.fx");
+    //auto shader1 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.fx");
     m_integrationMaterial = makeObject<Material>();
     m_integrationMaterial->setShader(shader1);
 
@@ -104,7 +104,7 @@ bool FilmicPostEffectInstance::onRender(RenderView* renderView, CommandList* con
     bool actualSSREnabled = false;
     if (m_owner->m_ssrEnabled) {
         actualSSREnabled = m_ssrEffect.prepare(renderView, context, source);
-        m_integrationMaterial->setTexture(u"_SSRSampler", m_ssrEffect.ssrResultTexture());
+        m_integrationMaterial->setTexture(_TT("_SSRSampler"), m_ssrEffect.ssrResultTexture());
     }
 
     if (m_owner->m_bloomEnabled) {
@@ -140,7 +140,7 @@ bool FilmicPostEffectInstance::onRender(RenderView* renderView, CommandList* con
             linearWhite, shoulderStrength, linearStrength, linearAngle,
             toeStrength, toeNumerator, toeDenominator, Exposure);
 #endif
-        m_integrationMaterial->setBufferData(u"TonemapPostEffectParams", &params, sizeof(params));
+        m_integrationMaterial->setBufferData(_TT("TonemapPostEffectParams"), &params, sizeof(params));
     }
 
     // cbuffer EffectSettings
@@ -196,19 +196,19 @@ bool FilmicPostEffectInstance::onRender(RenderView* renderView, CommandList* con
     LocalBuffer buf;
     buf.density = 0.8;
     buf.scaling = 0.7;
-    m_ssaoMaterial->setBufferData(u"LocalBuffer", &buf, sizeof(buf));
+    m_ssaoMaterial->setBufferData(_TT("LocalBuffer"), &buf, sizeof(buf));
 
-    m_ssaoMaterial->setTexture(u"_viewSpaceNormalMap", viewNormalMap);
-    m_ssaoMaterial->setTexture(u"_viewDepthMap", viewDepthMap);
-    m_ssaoMaterial->setTexture(u"_randomSampler", randomTexture);
+    m_ssaoMaterial->setTexture(_TT("_viewSpaceNormalMap"), viewNormalMap);
+    m_ssaoMaterial->setTexture(_TT("_viewDepthMap"), viewDepthMap);
+    m_ssaoMaterial->setTexture(_TT("_randomSampler"), randomTexture);
     m_ssaoMaterial->setMainTexture(source);
     context->blit(m_ssaoMaterial, occlusionMap);
     //context->blit(m_ssaoMaterial, destination);
 
 
     source->setSamplerState(SamplerState::linearClamp());
-    m_integrationMaterial->setBufferData(u"EffectSettings", &settings, sizeof(settings));
-    m_integrationMaterial->setTexture(u"_occlusionMap", occlusionMap);
+    m_integrationMaterial->setBufferData(_TT("EffectSettings"), &settings, sizeof(settings));
+    m_integrationMaterial->setTexture(_TT("_occlusionMap"), occlusionMap);
     m_integrationMaterial->setMainTexture(source);
     context->blit(m_integrationMaterial, destination);
 

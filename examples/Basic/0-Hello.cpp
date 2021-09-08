@@ -4,7 +4,7 @@ class HelloExample : public Application
 {
     void onInit() override
     {
-        auto text = UIText::With(u"Hello, Lumino!").buildInto();
+        auto text = UIText::With(_TT("Hello, Lumino!")).buildInto();
     }
 
     void onUpdate() override
