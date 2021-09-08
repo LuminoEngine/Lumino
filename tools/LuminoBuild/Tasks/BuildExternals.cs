@@ -25,6 +25,7 @@ namespace LuminoBuild.Tasks
                         Proc.Make("bootstrap-vcpkg").WithShell().WithSilent().Call();
                     }
 
+                    Proc.Make("vcpkg", "install gtest:" + b.Triplet).WithSilent().Call();
                     Proc.Make("vcpkg", "install fmt:" + b.Triplet).WithSilent().Call();
                     //Proc.Make("vcpkg", "install yaml-cpp:" + b.Triplet).WithSilent().Call();
                     //Proc.Make("vcpkg", "install toml11:" + b.Triplet).WithSilent().Call();

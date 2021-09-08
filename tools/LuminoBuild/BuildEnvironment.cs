@@ -151,19 +151,6 @@ namespace LuminoBuild
                 }
             }
 
-            string externalSourceDir = Path.Combine(builder.BuildDir, "ExternalSource");
-            if (!builder.ExistsCache(externalSourceDir))
-            {
-                Directory.CreateDirectory(externalSourceDir);
-                using (CurrentDir.Enter(externalSourceDir))
-                {
-                    if (!Directory.Exists("googletest"))
-                    {
-                        Utils.CallProcess("git", "clone --depth 1 -b release-1.8.1 https://github.com/google/googletest.git googletest");
-                    }
-                }
-            }
-
             AndoridBuildEnv.Initialize(builder);
 
             Directory.CreateDirectory(BuildToolsDir);

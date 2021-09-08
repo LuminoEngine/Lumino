@@ -1,8 +1,10 @@
 cmake_minimum_required (VERSION 3.0.0)
 project(LuminoCore-test)
 
+#-------------------------------------------------------------------------------
+# Files
+#-------------------------------------------------------------------------------
 set(LN_SOURCES
-	${LN_SOURCES_gtest}
 	Common.hpp
 	Main.cpp
 	Test_Base_Assertion.cpp
@@ -41,20 +43,16 @@ set(LN_SOURCES
 	Test_Text_EncodingConverter.cpp
 )
 
-include_directories(
-	${LN_INCLUDES_gtest}
-	#${LUMINO_INCLUDE_DIRECTORIES}
-)
-
-
+#-------------------------------------------------------------------------------
+# Targets
+#-------------------------------------------------------------------------------
 add_executable(${PROJECT_NAME} ${LN_SOURCES})
-target_link_libraries(${PROJECT_NAME} LuminoCore "-framework Foundation")
+
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore GTest::gtest GTest::gtest_main "-framework Foundation")
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 
 if (DEFINED EMSCRIPTEN)
 	em_link_pre_js(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/pre.js)
 endif()
 
-#------------------------------------------------------------------------------
-# ctest
 add_test(NAME LuminoCore-test-all COMMAND $<TARGET_FILE:LuminoCore-test>)

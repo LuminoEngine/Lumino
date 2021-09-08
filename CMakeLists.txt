@@ -125,6 +125,7 @@ endif()
 #-------------------------------------------------------------------------------
 
 #set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/_build/vcpkg/installed/x64-windows")
+find_package(GTest CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 
 # pcre2
