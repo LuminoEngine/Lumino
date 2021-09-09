@@ -13,7 +13,6 @@
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UIIcon.hpp>
 #include <LuminoEngine/UI/Controls/UITreeView.hpp>
-#include <LuminoEngine/Platform/PlatformDialogs.hpp>
 #include <LuminoEngine/Tilemap/TilemapComponent.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>

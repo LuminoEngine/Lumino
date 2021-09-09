@@ -1,9 +1,10 @@
 ﻿
-#include "../../Engine/src/Engine/EngineManager.hpp"
-#include "../../Engine/src/Engine/EngineDomain.hpp"
-#include "../../Engine/src/Platform/PlatformManager.hpp"
-#include "../../Engine/src/UI/UIManager.hpp"
-#include "../../Engine/src/Scene/SceneManager.hpp"
+#include "../../../lumino/LuminoEngine/src/Engine/EngineManager.hpp"
+#include "../../../lumino/LuminoEngine/src/Engine/EngineDomain.hpp"
+#include "../../../lumino/Platform/src/Platform/PlatformManager.hpp"
+#include "../../../lumino/LuminoEngine/src/UI/UIManager.hpp"
+#include "../../../lumino/LuminoEngine/src/Scene/SceneManager.hpp"
+#include <LuminoPlatform/PlatformDialogs.hpp>
 #include <AppData.hpp>
 #include <EnvironmentSettings.hpp>
 #include <Workspace.hpp>

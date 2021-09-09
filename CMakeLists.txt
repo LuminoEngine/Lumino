@@ -134,6 +134,10 @@ find_package(libpng CONFIG REQUIRED)
 find_package(freetype CONFIG REQUIRED)
 find_package(Bullet CONFIG REQUIRED)
 find_package(box2d CONFIG REQUIRED)
+find_package(nanovg CONFIG REQUIRED)
+find_package(tinyobjloader CONFIG REQUIRED)
+find_path(STB_INCLUDE_DIRS "stb_image.h")
+find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
 
 # デフォルトでは不足している include path を追加しておく
 set_target_properties(Bullet3Common PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${LN_VCPKG_INSTALLED_DIR}/include/bullet")
@@ -154,6 +158,7 @@ if (LN_OS_DESKTOP)
     find_package(glfw3 CONFIG REQUIRED)
     find_package(glad CONFIG REQUIRED)
     find_path(VULKAN_HEADERS_INCLUDE_DIRS "vulkan/vk_icd.h")
+    find_package(imgui CONFIG REQUIRED)
 endif()
 
 # pcre2
@@ -165,32 +170,6 @@ set_target_properties(pcre2_32 PROPERTIES IMPORTED_LOCATION_RELEASE ${pcre2_32_L
 set_target_properties(pcre2_32 PROPERTIES IMPORTED_LOCATION_DEBUG ${pcre2_32_LIBRARY_DEBUG})
 set_target_properties(pcre2_32 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${pcre2_ROOT}/include)
 
-if (LN_EXTERNAL2)
-    find_package(nanovg CONFIG REQUIRED)
-    find_package(tinyobjloader CONFIG REQUIRED)
-    find_package(imgui CONFIG REQUIRED)
-    find_path(STB_INCLUDE_DIRS "stb_image.h")
-    find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
-
-
-
-
-
-    # yaml-cpp
-    # v0.7.0 は動的リンクするとクラッシュするため、静的リンクにする。
-    #if (${LN_TRIPLET} STREQUAL "x64-windows")
-    #    set(yamlcpp_ROOT "${VCPKG_INSTALLED_DIR}/x64-windows-static-md")
-    #    find_library(yamlcpp_LIBRARY_RELEASE NAMES yaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES "lib" NO_CMAKE_SYSTEM_PATH)
-    #    find_library(yamlcpp_LIBRARY_DEBUG NAMES yaml-cppd yaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES "debug/lib" NO_CMAKE_SYSTEM_PATH)
-    #    add_library(yaml-cpp STATIC IMPORTED)
-    #    set_target_properties(yaml-cpp PROPERTIES IMPORTED_LOCATION_RELEASE "${yamlcpp_LIBRARY_RELEASE}")
-    #    set_target_properties(yaml-cpp PROPERTIES IMPORTED_LOCATION_DEBUG "${yamlcpp_LIBRARY_DEBUG}")
-    #    set_target_properties(yaml-cpp PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${yamlcpp_ROOT}/include)
-    #    list(APPEND LN_EXTERNAL_LIBS yaml-cpp)
-    #else()
-    #    find_package(yaml-cpp CONFIG REQUIRED)
-    #endif()
-endif()
 
 
 #------------------------------------------------------------------------------
@@ -214,7 +193,9 @@ else()
     set(LN_EXTERNAL_FIND_PATH_MODE "build")
     include(external/ImportExternalLibraries.cmake)
     add_subdirectory(lumino/LuminoCore)
-    add_subdirectory(src/Engine)
+    add_subdirectory(lumino/Platform)
+    add_subdirectory(lumino/LuminoEngine)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT LuminoEngine-sandbox)
     if (LN_BUILD_TESTS)
         add_subdirectory(examples)
     endif()
@@ -229,4 +210,3 @@ else()
     endif()
 endif()
 
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT LuminoEngine-sandbox)

@@ -1,8 +1,8 @@
 ﻿
 #include <Project/Project.hpp>
 #include "NewAssetCommand.hpp"
-#include "../../Engine/src/Engine/EngineDomain.hpp"
-#include "../../Engine/src/Asset/AssetManager.hpp"
+#include "../../../lumino/LuminoEngine/src/Engine/EngineDomain.hpp"
+#include "../../../lumino/LuminoEngine/src/Asset/AssetManager.hpp"
 
 int NewAssetCommand::execute(lna::Workspace* workspace, ln::String name)
 {

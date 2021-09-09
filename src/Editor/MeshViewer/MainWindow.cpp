@@ -2,8 +2,8 @@
 #include "ViewModel.hpp"
 #include "Application.hpp"
 #include "MainWindow.hpp"
-#include "../../../build/BuildCache/imgui/imgui.h"
-#include "../../Engine/src/Mesh/MeshModelInstance.hpp"
+#include <imgui.h>
+#include "../../../lumino/LuminoEngine/src/Mesh/MeshModelInstance.hpp"
 
 
 MainWindow::MainWindow()

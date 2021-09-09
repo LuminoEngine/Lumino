@@ -1,5 +1,6 @@
 ﻿
-#include <LuminoEngine/Platform/PlatformWindow.hpp>	// TODO: remove platformWindow
+#include <LuminoPlatform/PlatformWindow.hpp>	// TODO: remove platformWindow
+#include <LuminoPlatform/PlatformDialogs.hpp>
 #include "Application.hpp"
 #include "MainWindow.hpp"	// TODO: remove platformWindow
 #include "NewProjectDialog.hpp"

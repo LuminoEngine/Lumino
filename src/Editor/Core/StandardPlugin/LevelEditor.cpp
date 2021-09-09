@@ -10,8 +10,8 @@
 #include "LevelEditorPropertyPane.hpp"
 #include "LevelEditor.hpp"
 
-#include "../src/Engine/src/Engine/EngineDomain.hpp"   // TODO:
-#include "../src/Engine/src/Scene/SceneManager.hpp"   // TODO:
+#include "../../../../lumino/LuminoEngine/src/Engine/EngineDomain.hpp"   // TODO:
+#include "../../../../lumino/LuminoEngine/src/Scene/SceneManager.hpp"   // TODO:
 
 namespace lna {
    

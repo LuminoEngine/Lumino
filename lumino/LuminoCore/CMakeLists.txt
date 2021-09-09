@@ -13,8 +13,13 @@ project (LuminoCore)
 
 include(LuminoCoreSources.cmake)
 
+file(GLOB LN_LOCAL_SOURCES_Geometries include/LuminoCore/Geometries/*.hpp src/Geometries/*.cpp src/Geometries/*.hpp)
+
+source_group("Geometries" FILES ${LN_LOCAL_SOURCES_Geometries})
+
 set(LN_SOURCES
     ${LN_SOURCES_LuminoCore}
+    ${LN_LOCAL_SOURCES_Geometries}
     src/LuminoCore.PCH.cpp
     src/LuminoCore.PCH.h)
 
@@ -40,11 +45,12 @@ endif()
 #-------------------------------------------------------------------------------
 
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
-target_include_directories(${PROJECT_NAME} PUBLIC  
-    $<BUILD_INTERFACE:${LN_CORE_INCLUDE_DIR}>  
-    #$<INSTALL_INTERFACE:../../include>  # <prefix>/include
+target_include_directories(
+    ${PROJECT_NAME} INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
-target_include_directories(${PROJECT_NAME} PRIVATE src)
+target_include_directories(${PROJECT_NAME} PRIVATE include src)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LN_LINK_LIBS})
