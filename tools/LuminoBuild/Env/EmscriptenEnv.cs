@@ -16,6 +16,7 @@ namespace LuminoBuild
         public const string emsdkVer = "1.40.1";
         public const string emVer = "1.40.1";
         public static string EmsdkDir;
+        public static string Ninja;
 
 
         static public void Setup(Build b)
@@ -43,6 +44,8 @@ namespace LuminoBuild
             Environment.SetEnvironmentVariable("PATH", path);
             Environment.SetEnvironmentVariable("EMSDK", EmsdkDir);
             Environment.SetEnvironmentVariable("EM_CONFIG", Path.Combine(EmsdkDir, ".emscripten"));
+
+            Ninja = b.VcpkgDir + "/downloads/tools/ninja/1.10.1-windows/ninja.exe";
 
             //                    EM_CONFIG = C:\Proj\LN\Lumino\_build\tools\emsdk\.emscripten
             //EMSDK_NODE = C:\Proj\LN\Lumino\_build\tools\emsdk\node\14.15.5_64bit\bin\node.exe

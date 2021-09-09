@@ -5,6 +5,14 @@
 
 namespace ln {
 
+#if defined(LN_OS_WIN32)
+using PathChar = wchar_t;
+using PathString = std::wstring;
+#else
+using PathChar = char;
+using PathString = std::string;
+#endif
+
 /** ファイルとディレクトリの属性 */
 enum class FileAttribute : ln::FlagsType
 {

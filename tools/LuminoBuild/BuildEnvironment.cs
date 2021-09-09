@@ -143,14 +143,6 @@ namespace LuminoBuild
                 }
             }
 
-            using (CurrentDir.Enter(buildCacheDir))
-            {
-                foreach (string file in System.IO.Directory.GetFiles("imgui", "*.h"))
-                {
-                    File.Copy(file, Path.Combine(builder.RootDir, "include", "LuminoEngine", "UI", "imgui", System.IO.Path.GetFileName(file)), true);
-                }
-            }
-
             AndoridBuildEnv.Initialize(builder);
 
             Directory.CreateDirectory(BuildToolsDir);

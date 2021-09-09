@@ -189,6 +189,9 @@ set(LN_GLTF_SAMPLE_MODELS_DIR "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/gl
 
 if (LN_BUILD_CORE_ONLY)
     add_subdirectory(lumino/LuminoCore)
+elseif (LN_EMSCRIPTEN)
+    add_subdirectory(lumino/LuminoCore)
+    add_subdirectory(lumino/Platform)
 else()
     set(LN_EXTERNAL_FIND_PATH_MODE "build")
     include(external/ImportExternalLibraries.cmake)

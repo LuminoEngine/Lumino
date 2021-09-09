@@ -42,7 +42,9 @@ namespace LuminoBuild
                 //args = new string[] { "MakeInstaller_Win32" };
 
                 //args = new string[] { "BuildExternals", "wasm32-emscripten" };
-                args = new string[] { "BuildExternals", "x64-windows" };
+                args = new string[] { "BuildEngine_Emscripten", "wasm32-emscripten" };
+
+                //args = new string[] { "BuildExternals", "x64-windows" };
                 //args = new string[] { "BuildEngine_MSVC" };
 
             }

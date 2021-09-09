@@ -30,7 +30,7 @@ public:
 
 	static void setEnvironmentVariable(const StringRef& variableName, const StringRef& value)
 	{
-		std::string str = ln::String::format(u"{0}={1}", variableName, value).toStdString();
+		std::string str = ln::String::format(_TT("{0}={1}"), variableName, value).toStdString();
 		std::vector<char> buf(str.c_str(), str.c_str() + str.length());
 		putenv(buf.data());
 	}

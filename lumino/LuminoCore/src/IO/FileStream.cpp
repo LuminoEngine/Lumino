@@ -48,7 +48,7 @@ bool FileStream::open(const StringRef& filePath, FileOpenMode openMode)
     m_openModeFlags = openMode;
 
     if (m_openModeFlags.hasFlag(FileOpenMode::Deferring)) {
-        detail::GenericStaticallyLocalPath<TCHAR> localPath(m_filePath.c_str(), m_filePath.length());
+        detail::GenericStaticallyLocalPath<PathChar> localPath(m_filePath.c_str(), m_filePath.length());
         if (!detail::FileSystemInternal::existsFile(localPath.c_str(), localPath.getLength())) {
             LN_ENSURE_IO(0, filePath);
             return false;
@@ -177,7 +177,7 @@ void FileStream::open() const
     }
     if (LN_REQUIRE(mode)) return;
 
-    detail::GenericStaticallyLocalPath<TCHAR> localPath(m_filePath.c_str(), m_filePath.length());
+    detail::GenericStaticallyLocalPath<PathChar> localPath(m_filePath.c_str(), m_filePath.length());
     m_stream = detail::FileSystemInternal::fopen(localPath.c_str(), localPath.getLength(), mode, StringHelper::strlen(mode));
     LN_ENSURE_IO(m_stream != nullptr, _TT("{}"), m_filePath.c_str());
 }

@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <LuminoCore/Base/StringHelper.hpp>
+#include <LuminoCore/Base/Environment.hpp>
 #include "../Base/CRTHelper.h"
 
 namespace ln {

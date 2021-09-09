@@ -30,9 +30,6 @@ static bool is_stat_writable(struct stat* st, const char* path)
 class PlatformFileSystem
 {
 public:
-    using PathChar = char;
-    using PathString = std::string;
-
     static bool existsFile(const char* filePath)
     {
         // ※fopen によるチェックはNG。ファイルが排他ロックで開かれていた時に失敗する。

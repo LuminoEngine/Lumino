@@ -13,8 +13,6 @@ namespace ln {
 class PlatformFileSystem
 {
 public:
-    using PathChar = wchar_t;
-    using PathString = std::wstring;
 
     static bool existsFile(const wchar_t* filePath)
     {
