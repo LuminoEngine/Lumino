@@ -1,7 +1,7 @@
 ﻿
 
 #include "Internal.hpp"
-#include "../../../build/BuildCache/tinygltf/tiny_gltf.h"
+#include <tiny_gltf.h>
 //#include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>

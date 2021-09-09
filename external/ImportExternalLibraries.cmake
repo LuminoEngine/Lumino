@@ -438,18 +438,18 @@ set_target_properties(tmxlite PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${tmxlite
 #     #endif()
 # endif()
 
-#--------------------------------------
-# yaml-cpp
-ln_make_external_find_path(yamlcpp_ROOT "yaml-cpp")
+# #--------------------------------------
+# # yaml-cpp
+# ln_make_external_find_path(yamlcpp_ROOT "yaml-cpp")
 
-find_library(yamlcpp_LIBRARY_RELEASE NAMES yaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(yamlcpp_LIBRARY_DEBUG NAMES yaml-cppd yaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(yamlcpp_LIBRARY_RELEASE NAMES yaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(yamlcpp_LIBRARY_DEBUG NAMES yaml-cppd yaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
-add_library(yamlcpp STATIC IMPORTED)
-set_target_properties(yamlcpp PROPERTIES IMPORTED_LOCATION_RELEASE "${yamlcpp_LIBRARY_RELEASE}")
-set_target_properties(yamlcpp PROPERTIES IMPORTED_LOCATION_DEBUG "${yamlcpp_LIBRARY_DEBUG}")
-set_target_properties(yamlcpp PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${yamlcpp_ROOT}/include)
-list(APPEND LN_EXTERNAL_LIBS yamlcpp)
+# add_library(yamlcpp STATIC IMPORTED)
+# set_target_properties(yamlcpp PROPERTIES IMPORTED_LOCATION_RELEASE "${yamlcpp_LIBRARY_RELEASE}")
+# set_target_properties(yamlcpp PROPERTIES IMPORTED_LOCATION_DEBUG "${yamlcpp_LIBRARY_DEBUG}")
+# set_target_properties(yamlcpp PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${yamlcpp_ROOT}/include)
+# list(APPEND LN_EXTERNAL_LIBS yamlcpp)
 
 #--------------------------------------
 # lua
@@ -464,18 +464,18 @@ set_target_properties(lua PROPERTIES IMPORTED_LOCATION_DEBUG "${lua_LIBRARY_DEBU
 set_target_properties(lua PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${lua_ROOT}/include)
 list(APPEND LN_EXTERNAL_LIBS lua)
 
-#--------------------------------------
-# nanovg
-ln_make_external_find_path(nanovg_ROOT "nanovg")
+# #--------------------------------------
+# # nanovg
+# ln_make_external_find_path(nanovg_ROOT "nanovg")
 
-find_library(nanovg_LIBRARY_RELEASE NAMES nanovg PATHS ${nanovg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(nanovg_LIBRARY_DEBUG NAMES nanovgd nanovg PATHS ${nanovg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(nanovg_LIBRARY_RELEASE NAMES nanovg PATHS ${nanovg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+# find_library(nanovg_LIBRARY_DEBUG NAMES nanovgd nanovg PATHS ${nanovg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
-add_library(nanovg STATIC IMPORTED)
-set_target_properties(nanovg PROPERTIES IMPORTED_LOCATION_RELEASE "${nanovg_LIBRARY_RELEASE}")
-set_target_properties(nanovg PROPERTIES IMPORTED_LOCATION_DEBUG "${nanovg_LIBRARY_DEBUG}")
-set_target_properties(nanovg PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${nanovg_ROOT}/include)
-list(APPEND LN_EXTERNAL_LIBS nanovg)
+# add_library(nanovg STATIC IMPORTED)
+# set_target_properties(nanovg PROPERTIES IMPORTED_LOCATION_RELEASE "${nanovg_LIBRARY_RELEASE}")
+# set_target_properties(nanovg PROPERTIES IMPORTED_LOCATION_DEBUG "${nanovg_LIBRARY_DEBUG}")
+# set_target_properties(nanovg PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${nanovg_ROOT}/include)
+# list(APPEND LN_EXTERNAL_LIBS nanovg)
 
 #--------------------------------------
 # FBX SDK

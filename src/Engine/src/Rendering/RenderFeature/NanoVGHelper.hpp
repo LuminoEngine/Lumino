@@ -3,8 +3,7 @@
 typedef unsigned int GLenum;
 typedef unsigned int GLuint;
 
-#include <nanovg/nanovg.h>
-
+#include <nanovg.h>
 #include <LuminoEngine/Graphics/RenderState.hpp>
 
 //==============================================================================

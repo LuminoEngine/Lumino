@@ -43,11 +43,11 @@ namespace LuminoBuild.Tasks
                     Proc.Make("vcpkg", "install box2d:" + b.Triplet).WithSilent().Call();
                     Proc.Make("vcpkg", "install bullet3:" + b.Triplet).WithSilent().Call();
 
-                    //Proc.Make("vcpkg", "install nanovg:" + b.Triplet).WithSilent().Call();
-                    //Proc.Make("vcpkg", "install stb:" + b.Triplet).WithSilent().Call();
-                    //Proc.Make("vcpkg", "install tinyobjloader:" + b.Triplet).WithSilent().Call();
-                    //Proc.Make("vcpkg", "install tinygltf:" + b.Triplet).WithSilent().Call();
-                    //Proc.Make("vcpkg", "install imgui[docking-experimental]:" + b.Triplet).WithSilent().Call();
+                    Proc.Make("vcpkg", "install nanovg:" + b.Triplet).WithSilent().Call();
+                    Proc.Make("vcpkg", "install stb:" + b.Triplet).WithSilent().Call();
+                    Proc.Make("vcpkg", "install tinyobjloader:" + b.Triplet).WithSilent().Call();
+                    Proc.Make("vcpkg", "install tinygltf:" + b.Triplet).WithSilent().Call();
+                    Proc.Make("vcpkg", "install imgui[docking-experimental]:" + b.Triplet).WithSilent().Call();
 
                     if (b.IsDesktopSystem)
                     {

@@ -396,8 +396,9 @@ error:
 }
 
 static void glnvg__renderTriangles(void* uptr, NVGpaint* paint, NVGcompositeOperationState compositeOperation, NVGscissor* scissor,
-	const NVGvertex* verts, int nverts, float fringe)
+	const NVGvertex* verts, int nverts/*, float fringe*/)
 {
+	const float fringe = 1.0f;
 	GLNVGcontextBase* gl = (GLNVGcontextBase*)uptr;
 	GLNVGcall* call = glnvg__allocCall(gl);
 	GLNVGfragUniforms* frag;

@@ -79,25 +79,25 @@ namespace LuminoBuild
                 Directory.CreateDirectory(buildCacheDir);
                 using (CurrentDir.Enter(buildCacheDir))
                 {
-                    if (!Directory.Exists("stb"))
-                    {
-                        Utils.CallProcess("git", "clone https://github.com/nothings/stb.git stb");
-                        Utils.CallProcess("git", "-C stb checkout e6afb9cbae4064da8c3e69af3ff5c4629579c1d2");
-                    }
+                    // if (!Directory.Exists("stb"))
+                    // {
+                    //     Utils.CallProcess("git", "clone https://github.com/nothings/stb.git stb");
+                    //     Utils.CallProcess("git", "-C stb checkout e6afb9cbae4064da8c3e69af3ff5c4629579c1d2");
+                    // }
 
-                    if (!Directory.Exists("imgui"))
-                    {
-                        //Utils.CallProcess("git", "clone --depth 1 -b v1.72 https://github.com/ocornut/imgui.git imgui");
-                        //Utils.CallProcess("git", "clone --depth 1 -b docking https://github.com/ocornut/imgui.git imgui");
-                        Utils.CallProcess("git", "clone https://github.com/ocornut/imgui.git imgui");
+                    // if (!Directory.Exists("imgui"))
+                    // {
+                    //     //Utils.CallProcess("git", "clone --depth 1 -b v1.72 https://github.com/ocornut/imgui.git imgui");
+                    //     //Utils.CallProcess("git", "clone --depth 1 -b docking https://github.com/ocornut/imgui.git imgui");
+                    //     Utils.CallProcess("git", "clone https://github.com/ocornut/imgui.git imgui");
 
-                        // 現時点の docking ブランチの先頭
-                        using (CurrentDir.Enter("imgui"))
-                        {
-                            Utils.CallProcess("git", "config advice.detachedHead false");
-                            Utils.CallProcess("git", "checkout 732cd837a9ed8ecb2ce4035e7d40a1c9a04ae240");
-                        }
-                    }
+                    //     // 現時点の docking ブランチの先頭
+                    //     using (CurrentDir.Enter("imgui"))
+                    //     {
+                    //         Utils.CallProcess("git", "config advice.detachedHead false");
+                    //         Utils.CallProcess("git", "checkout 732cd837a9ed8ecb2ce4035e7d40a1c9a04ae240");
+                    //     }
+                    // }
 
                     if (!Directory.Exists("Streams"))
                     {
@@ -110,26 +110,26 @@ namespace LuminoBuild
                         }
                     }
 
-                    if (!Directory.Exists("tinyobjloader"))
-                    {
-                        // v1.0.6 より後はタグが降られていないが、頂点カラーなどの対応が入っている。それを持ってくる。
-                        Utils.CallProcess("git", "clone https://github.com/syoyo/tinyobjloader.git tinyobjloader");
+                    // if (!Directory.Exists("tinyobjloader"))
+                    // {
+                    //     // v1.0.6 より後はタグが降られていないが、頂点カラーなどの対応が入っている。それを持ってくる。
+                    //     Utils.CallProcess("git", "clone https://github.com/syoyo/tinyobjloader.git tinyobjloader");
 
-                        using (CurrentDir.Enter("tinyobjloader"))
-                        {
-                            Utils.CallProcess("git", "checkout f37fed32f3eb0912cc10a970f78774cd98598ef6");
-                        }
-                    }
+                    //     using (CurrentDir.Enter("tinyobjloader"))
+                    //     {
+                    //         Utils.CallProcess("git", "checkout f37fed32f3eb0912cc10a970f78774cd98598ef6");
+                    //     }
+                    // }
 
-                    if (!Directory.Exists("tinygltf"))
-                    {
-                        Utils.CallProcess("git", "clone --depth 1 -b v2.2.0 https://github.com/syoyo/tinygltf.git tinygltf");
-                    }
+                    // if (!Directory.Exists("tinygltf"))
+                    // {
+                    //     Utils.CallProcess("git", "clone --depth 1 -b v2.2.0 https://github.com/syoyo/tinygltf.git tinygltf");
+                    // }
 
-                    if (!Directory.Exists("toml11"))
-                    {
-                        Utils.CallProcess("git", "clone --depth 1 -b v3.6.1 https://github.com/ToruNiina/toml11.git toml11");
-                    }
+                    // if (!Directory.Exists("toml11"))
+                    // {
+                    //     Utils.CallProcess("git", "clone --depth 1 -b v3.6.1 https://github.com/ToruNiina/toml11.git toml11");
+                    // }
                 }
 
                 builder.CommitCache(buildCacheDir);
