@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <LuminoCore/Base/EnumFlags.hpp>
-#include <LuminoEngine/Graphics/GeometryStructs.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>

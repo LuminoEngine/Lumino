@@ -7,7 +7,6 @@
 #pragma once
 #include <memory>
 #include "Common.hpp"
-#include <LuminoEngine/Graphics/GeometryStructs.hpp>
 
 class b2Shape;
 class b2PolygonShape;

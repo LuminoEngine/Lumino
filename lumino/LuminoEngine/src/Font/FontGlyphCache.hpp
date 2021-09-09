@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <LuminoEngine/Graphics/GeometryStructs.hpp>
 
 namespace ln {
 class Texture2D;

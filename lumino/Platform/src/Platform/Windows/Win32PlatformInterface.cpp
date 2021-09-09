@@ -1,7 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <Windows.h>
-#include <LuminoEngine/Engine/Application.hpp>
+//#include <LuminoEngine/Engine/Application.hpp>
+#include "../../LuminoEngine/include/LuminoEngine/Engine/Application.hpp"
 #include <LuminoPlatform/Win32PlatformInterface.hpp>
 #include "../GLFWPlatformWindowManager.hpp"
 

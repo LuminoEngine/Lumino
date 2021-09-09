@@ -1,9 +1,9 @@
 ﻿
-#include "Internal.hpp"
+//#include "Internal.hpp"
 #include <limits>
 #include <algorithm>
-#include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Graphics/GeometryStructs.hpp>
+//#include <LuminoEngine/Base/Serializer.hpp>
+#include <LuminoCore/Geometries/GeometryStructs.hpp>
 
 namespace ln {
 
@@ -19,24 +19,24 @@ const Size Size::Zero(0, 0);
 const Size Size::MinValue(std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
 const Size Size::MaxValue(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
 
-void Size::serialize(Serializer2& ar)
-{
-    int size = 0;
-    if (ar.isSaving())
-        ar.beginWriteList();
-    else {
-        ar.beginReadList(&size);
-        assert(size == 2);	// TODO: error handling
-    }
-
-    ar.process(width);
-    ar.process(height);
-
-    if (ar.isSaving())
-        ar.endWriteList();
-    else
-        ar.endReadList();
-}
+//void Size::serialize(Serializer2& ar)
+//{
+//    int size = 0;
+//    if (ar.isSaving())
+//        ar.beginWriteList();
+//    else {
+//        ar.beginReadList(&size);
+//        assert(size == 2);	// TODO: error handling
+//    }
+//
+//    ar.process(width);
+//    ar.process(height);
+//
+//    if (ar.isSaving())
+//        ar.endWriteList();
+//    else
+//        ar.endReadList();
+//}
 
 //==============================================================================
 // PointI
@@ -83,39 +83,39 @@ Rect Rect::makeDeflate(const Thickness& thickness) const
         std::max(height - thickness.height(), 0.0f));
 }
 
-void Rect::serialize(Archive& ar)
-{
-    int size = 0;
-    ar.makeArrayTag(&size);
-    if (ar.isLoading()) {
-        assert(size == 4);	// TODO: error handling
-    }
-    ar.process(x);
-    ar.process(y);
-    ar.process(width);
-    ar.process(height);
-}
-
-void Rect::serialize(Serializer2& ar)
-{
-    int size = 0;
-    if (ar.isSaving())
-        ar.beginWriteList();
-    else {
-        ar.beginReadList(&size);
-        assert(size == 4);	// TODO: error handling
-    }
-
-    ar.process(x);
-    ar.process(y);
-    ar.process(width);
-    ar.process(height);
-
-    if (ar.isSaving())
-        ar.endWriteList();
-    else
-        ar.endReadList();
-}
+//void Rect::serialize(Archive& ar)
+//{
+//    int size = 0;
+//    ar.makeArrayTag(&size);
+//    if (ar.isLoading()) {
+//        assert(size == 4);	// TODO: error handling
+//    }
+//    ar.process(x);
+//    ar.process(y);
+//    ar.process(width);
+//    ar.process(height);
+//}
+//
+//void Rect::serialize(Serializer2& ar)
+//{
+//    int size = 0;
+//    if (ar.isSaving())
+//        ar.beginWriteList();
+//    else {
+//        ar.beginReadList(&size);
+//        assert(size == 4);	// TODO: error handling
+//    }
+//
+//    ar.process(x);
+//    ar.process(y);
+//    ar.process(width);
+//    ar.process(height);
+//
+//    if (ar.isSaving())
+//        ar.endWriteList();
+//    else
+//        ar.endReadList();
+//}
 
 //==============================================================================
 // BoxI

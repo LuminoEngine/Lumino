@@ -1,6 +1,7 @@
 // Copyright (c) 2018+ lriki. Distributed under the MIT license.
 #pragma once
 
+#include "LuminoCore/Common.hpp"
 #include "LuminoCore/Base/Common.hpp"
 #include "LuminoCore/Base/Assertion.hpp"
 #include "LuminoCore/Base/Buffer.hpp"
@@ -51,6 +52,8 @@
 #include "LuminoCore/Math/Vector3.hpp"
 #include "LuminoCore/Math/Vector4.hpp"
 #include "LuminoCore/Math/ViewFrustum.hpp"
+
+#include "LuminoCore/Geometries/GeometryStructs.hpp"
 
 #include "LuminoCore/Text/Common.hpp"
 #include "LuminoCore/Text/Encoding.hpp"

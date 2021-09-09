@@ -13,8 +13,13 @@ project (LuminoCore)
 
 include(LuminoCoreSources.cmake)
 
+file(GLOB LN_LOCAL_SOURCES_Geometries include/LuminoCore/Geometries/*.hpp src/Geometries/*.cpp src/Geometries/*.hpp)
+
+source_group("Geometries" FILES ${LN_LOCAL_SOURCES_Geometries})
+
 set(LN_SOURCES
     ${LN_SOURCES_LuminoCore}
+    ${LN_LOCAL_SOURCES_Geometries}
     src/LuminoCore.PCH.cpp
     src/LuminoCore.PCH.h)
 

@@ -2,7 +2,6 @@
 #pragma once
 #include <array>
 #include <LuminoPlatform/PlatformEvent.hpp>
-#include <LuminoEngine/Graphics/GeometryStructs.hpp>
 #include "Common.hpp"
 
 namespace ln {

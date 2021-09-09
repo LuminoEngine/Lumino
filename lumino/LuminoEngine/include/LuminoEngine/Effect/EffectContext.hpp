@@ -1,7 +1,6 @@
 ﻿
 #pragma once
 #include "../Base/Builder.hpp"
-#include "../Graphics/GeometryStructs.hpp"
 #include "Common.hpp"
 #include "EffectModel.hpp"
 

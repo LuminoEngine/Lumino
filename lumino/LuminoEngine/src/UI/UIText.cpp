@@ -3,7 +3,7 @@
 #include <LuminoEngine/Engine/VMProperty.hpp>
 
 #include <LuminoEngine/Font/Font.hpp>
-#include <LuminoEngine/Platform/PlatformWindow.hpp>
+#include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>

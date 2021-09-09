@@ -2,7 +2,6 @@
 #pragma once
 #include "../Base/Delegate.hpp"
 #include "../Graphics/ColorStructs.hpp"
-#include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
 class MeshModel;

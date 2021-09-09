@@ -2,7 +2,6 @@
 
 #include "../Base/Event.hpp"
 #include "../Graphics/ColorStructs.hpp"
-#include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
 class Material;

@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "PlatformEvent.hpp"
-#include "../Graphics/GeometryStructs.hpp"
+#include <LuminoCore/Geometries/GeometryStructs.hpp>
 
 namespace ln {
 namespace detail {	// TODO: remove

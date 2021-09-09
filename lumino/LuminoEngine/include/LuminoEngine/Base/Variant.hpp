@@ -6,7 +6,7 @@
 #include "Common.hpp"
 #include "../Engine/Object.hpp"
 #include "../Engine/TypeInfo.hpp"
-#include "../Graphics/GeometryStructs.hpp"
+#include <LuminoCore/Geometries/GeometryStructs.hpp>
 
 namespace ln {
 namespace detail { class VariantHelper; }

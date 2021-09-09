@@ -1,11 +1,13 @@
 ﻿#pragma once
 #include "Common.hpp"
 #include "Object.hpp"
+#include "../Base/Variant.hpp"
 
 namespace ln {
 namespace detail {
 class ApplicationHelper;
 class UIManager;
+class EngineManager;
 }
 class UICommand;
 class UIAction;

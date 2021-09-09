@@ -380,4 +380,44 @@ inline void serialize(Serializer2& ar, Vector3& value)
 	ar.endList();
 }
 
+inline void serialize(Serializer2& ar, Size& value)
+{
+    int size = 0;
+    if (ar.isSaving())
+        ar.beginWriteList();
+    else {
+        ar.beginReadList(&size);
+        assert(size == 2);	// TODO: error handling
+    }
+
+    ar.process(value.width);
+    ar.process(value.height);
+
+    if (ar.isSaving())
+        ar.endWriteList();
+    else
+        ar.endReadList();
+}
+
+inline void serialize(Serializer2& ar, Rect& value)
+{
+    int size = 0;
+    if (ar.isSaving())
+        ar.beginWriteList();
+    else {
+        ar.beginReadList(&size);
+        assert(size == 4);	// TODO: error handling
+    }
+
+    ar.process(value.x);
+    ar.process(value.y);
+    ar.process(value.width);
+    ar.process(value.height);
+
+    if (ar.isSaving())
+        ar.endWriteList();
+    else
+        ar.endReadList();
+}
+
 } // namespace ln

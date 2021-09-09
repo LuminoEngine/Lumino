@@ -12,7 +12,7 @@
 #	define GLFW_EXPOSE_NATIVE_COCOA
 #	include <GLFW/glfw3native.h>
 #endif
-#include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include <LuminoPlatform/PlatformSupport.hpp>
 #include "PlatformManager.hpp"
 #include "GLFWPlatformWindowManager.hpp"
 

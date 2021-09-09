@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <LuminoEngine/Graphics/GeometryStructs.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
 

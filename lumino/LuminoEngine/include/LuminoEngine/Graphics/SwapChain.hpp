@@ -2,7 +2,6 @@
 #pragma once
 
 #include "Common.hpp"
-#include "GeometryStructs.hpp"
 #include "GraphicsResource.hpp"
 
 namespace ln {

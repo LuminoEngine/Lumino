@@ -2,7 +2,6 @@
 #include "Common.hpp"
 #include "../Font/Common.hpp"
 #include "../Graphics/ColorStructs.hpp"
-#include "../Graphics/GeometryStructs.hpp"
 #include "../Graphics/RenderState.hpp"
 
 namespace ln {

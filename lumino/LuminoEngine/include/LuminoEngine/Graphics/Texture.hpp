@@ -4,7 +4,6 @@
 #include "Common.hpp"
 #include "GraphicsResource.hpp"
 #include "ColorStructs.hpp"
-#include "GeometryStructs.hpp"
 
 namespace ln {
 namespace detail {

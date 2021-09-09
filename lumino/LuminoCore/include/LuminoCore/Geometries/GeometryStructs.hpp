@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
-#include <LuminoCore/Math/Vector2.hpp>
-#include <LuminoCore/Math/Vector3.hpp>
+#include "../Math/Vector2.hpp"
+#include "../Math/Vector3.hpp"
 
 namespace ln {
 struct Thickness;
@@ -141,7 +141,7 @@ public:
             (size1.height > size2.height) ? size1.height : size2.height);
     }
 
-    void serialize(Serializer2& ar);
+    //void serialize(Serializer2& ar);
 
 public:
     Size& operator+=(const Size& v) noexcept { width += v.width; height += v.height; return *this; }
@@ -318,8 +318,8 @@ public:
             y + height * uv.y);
     }
 
-    void serialize(Archive& ar);
-    void serialize(Serializer2& ar);
+    //void serialize(Archive& ar);
+    //void serialize(Serializer2& ar);
 
 public:
     bool operator==(const Rect& obj) const { return (x == obj.x && y == obj.y && width == obj.width && height == obj.height); }

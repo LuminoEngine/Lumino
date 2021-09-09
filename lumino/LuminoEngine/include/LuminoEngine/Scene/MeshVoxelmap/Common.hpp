@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-#include "../../Graphics/GeometryStructs.hpp"
 
 namespace ln {
 class Texture;

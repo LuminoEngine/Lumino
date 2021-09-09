@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-#include "../Graphics/GeometryStructs.hpp"
 #include "Common.hpp"
 
 namespace ln {

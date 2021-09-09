@@ -13,7 +13,7 @@ namespace ln {
 Ref<PlatformOpenFileDialog> PlatformOpenFileDialog::create()
 {
 #ifdef LN_OS_WIN32
-    return makeObject<Win32PlatformOpenFileDialog>();
+    return makeRef<Win32PlatformOpenFileDialog>();
 #else
     LN_NOTIMPLEMENTED();
     return nullptr;
@@ -30,7 +30,7 @@ PlatformOpenFileDialog::~PlatformOpenFileDialog()
 Ref<PlatformSelectFolderDialog> PlatformSelectFolderDialog::create()
 {
 #ifdef LN_OS_WIN32
-    return makeObject<Win32PlatformSelectFolderDialog>();
+    return makeRef<Win32PlatformSelectFolderDialog>();
 #else
     LN_NOTIMPLEMENTED();
     return nullptr;

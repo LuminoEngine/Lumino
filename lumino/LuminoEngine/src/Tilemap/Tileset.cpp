@@ -281,8 +281,9 @@ void Tileset::resetInfo()
 
 void Tileset::Tile::serialize(Archive& ar)
 {
-	ar & makeNVP(_TT("passageFlags"), passageFlags);
-    ar & makeNVP(_TT("sourceRect"), sourceRect);
+	LN_NOTIMPLEMENTED();
+	//ar & makeNVP(_TT("passageFlags"), passageFlags);
+ //   ar & makeNVP(_TT("sourceRect"), sourceRect);
 }
 
 } // namespace ln

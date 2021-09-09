@@ -109,8 +109,8 @@ class Win32PlatformOpenFileDialog
 	: public PlatformOpenFileDialog
 {
 public:
+    virtual ~Win32PlatformOpenFileDialog() { m_dialog.dispose(); }
     void init() { m_dialog.init(Win32PlatformFileSystemDialog::Type::OpenFile); }
-    virtual void onDispose(bool explicitDisposing) override { m_dialog.dispose(); }
     virtual bool showDialog(detail::PlatformWindow* parent) override { return m_dialog.showDialog(parent); }
     virtual Path getPath() override { return m_dialog.getPath(); }
 
@@ -122,8 +122,8 @@ class Win32PlatformSelectFolderDialog
     : public PlatformSelectFolderDialog
 {
 public:
+    virtual ~Win32PlatformSelectFolderDialog() { m_dialog.dispose(); }
     void init() { m_dialog.init(Win32PlatformFileSystemDialog::Type::SelectFolder); }
-    virtual void onDispose(bool explicitDisposing) override { m_dialog.dispose(); }
     virtual bool showDialog(detail::PlatformWindow* parent) override { return m_dialog.showDialog(parent); }
     virtual Path getPath() override { return m_dialog.getPath(); }
 

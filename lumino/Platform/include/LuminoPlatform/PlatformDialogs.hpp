@@ -6,7 +6,7 @@ namespace detail { class PlatformWindow; }
 
 
 class PlatformOpenFileDialog
-	: public Object
+	: public RefObject
 {
 public:
 	static Ref<PlatformOpenFileDialog> create();
@@ -19,7 +19,7 @@ protected:
 };
 
 class PlatformSelectFolderDialog
-    : public Object
+    : public RefObject
 {
 public:
     static Ref<PlatformSelectFolderDialog> create();

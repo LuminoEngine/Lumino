@@ -23,7 +23,7 @@
 #include "../Graphics/RenderTargetTextureCache.hpp"
 
 #include "../Runtime/RuntimeManager.hpp"
-#include "../Platform/PlatformManager.hpp"
+#include "../../../Platform/src/Platform/PlatformManager.hpp"
 #include "../Animation/AnimationManager.hpp"
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"

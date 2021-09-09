@@ -1,8 +1,8 @@
 ﻿
 #include <stdio.h>
+#include <LuminoPlatform/PlatformSupport.hpp>
 #include "Common.hpp"
 #include "TestEnv.hpp"
-#include <LuminoEngine/Platform/PlatformSupport.hpp>
 
 int main(int argc, char **argv)
 {
