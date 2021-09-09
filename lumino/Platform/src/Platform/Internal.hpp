@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../Internal.hpp"
 
 #ifdef LN_OS_WIN32

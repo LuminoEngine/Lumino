@@ -17,6 +17,11 @@ public:
 		WindowCreationSettings	mainWindowSettings;
 	};
 
+	static bool initialize();
+	static void terminate();
+	static inline PlatformManager* instance() { return s_instance; }
+
+
 	PlatformManager();
 	virtual ~PlatformManager() = default;
 
@@ -30,6 +35,8 @@ public:
 	void processSystemEventQueue();
 
 private:
+	static Ref<PlatformManager> s_instance;
+
 	Ref<PlatformWindowManager> m_windowManager;
 	Ref<PlatformWindow> m_mainWindow;	// v0.5.0 で持たないことを検討したが、Graphics, UI との初期化順の関係や、Android, Emscripten など既に出来上がっている View にアタッチしたいときなどに欲しい
 	bool m_glfwWithOpenGLAPI;

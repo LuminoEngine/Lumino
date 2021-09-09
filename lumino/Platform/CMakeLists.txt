@@ -9,7 +9,7 @@ set(PUBLIC_HDR_DIR include)
 # Files
 #-------------------------------------------------------------------------------
 
-file(GLOB LN_SOURCES_Platform include/LuminoPlatform/Platform/*.hpp src/Platform/*.cpp src/Platform/*.hpp)
+file(GLOB LN_SOURCES_Platform include/LuminoPlatform/*.hpp src/Platform/*.cpp src/Platform/*.hpp)
 
 if (LN_EMSCRIPTEN)
 elseif (WIN32)
@@ -57,9 +57,9 @@ add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 #target_include_directories(${PROJECT_NAME} PUBLIC include)
 #set_target_properties(${PROJECT_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_LIST_DIR}/include)
 target_include_directories(
-    ${PROJECT_NAME} INTERFACE  
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
-    $<INSTALL_INTERFACE:include>  # <prefix>/include
+    ${PROJECT_NAME} INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore)
@@ -103,5 +103,5 @@ install(
 #-------------------------------------------------------------------------------
 
 if (LN_BUILD_TESTS)
-#    add_subdirectory(examples)
+    add_subdirectory(examples/Windows)
 endif()

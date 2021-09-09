@@ -8,6 +8,25 @@
 namespace ln {
 namespace detail {
 
+Ref<PlatformManager> PlatformManager::s_instance;
+
+bool PlatformManager::initialize()
+{
+    if (LN_REQUIRE(!s_instance)) return false;
+    s_instance = makeRef<PlatformManager>();
+    Settings s;
+    s_instance->init(s);
+    return true;
+}
+
+void PlatformManager::terminate()
+{
+    if (s_instance) {
+        s_instance->dispose();
+        s_instance = nullptr;
+    }
+}
+
 PlatformManager::PlatformManager()
 	: m_windowManager()
     , m_glfwWithOpenGLAPI(true)
