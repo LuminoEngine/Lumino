@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Platform/PlatformDialogs.hpp>
+#include <LuminoPlatform/PlatformDialogs.hpp>
 #ifdef LN_OS_WIN32
 #include "Windows/Win32PlatformDialogs.hpp"
 #endif

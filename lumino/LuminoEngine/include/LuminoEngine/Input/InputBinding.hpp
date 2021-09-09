@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "../Platform/PlatformEvent.hpp"
+#include <LuminoPlatform/PlatformEvent.hpp>
 #include "Common.hpp"
 
 namespace ln {

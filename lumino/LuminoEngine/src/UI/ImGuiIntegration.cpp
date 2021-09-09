@@ -1,6 +1,6 @@
 ﻿#include "Internal.hpp"
-#include <LuminoEngine/Platform/PlatformEvent.hpp>
-#include <LuminoEngine/Platform/PlatformWindow.hpp>
+#include <LuminoPlatform/PlatformEvent.hpp>
+#include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>

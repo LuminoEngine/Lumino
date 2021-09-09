@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <array>
-#include <LuminoEngine/Platform/PlatformEvent.hpp>
+#include <LuminoPlatform/PlatformEvent.hpp>
 #include <LuminoEngine/Input/Common.hpp>
 
 namespace ln {

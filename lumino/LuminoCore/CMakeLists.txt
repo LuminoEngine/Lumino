@@ -44,7 +44,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${LN_CORE_INCLUDE_DIR}>  
     #$<INSTALL_INTERFACE:../../include>  # <prefix>/include
 )
-target_include_directories(${PROJECT_NAME} PRIVATE src)
+target_include_directories(${PROJECT_NAME} PRIVATE src) # for PCH
 
 target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LN_LINK_LIBS})

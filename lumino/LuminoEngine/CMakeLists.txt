@@ -17,8 +17,6 @@ set(LN_SOURCES_Engine
     src/EngineContext.cpp
 )
 
-file(GLOB LN_SOURCES_Platform ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/*.hpp src/Platform/*.cpp src/Platform/*.hpp)
-
 file(GLOB LN_SOURCES_Animation ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/*.hpp src/Animation/*.cpp src/Animation/*.hpp)
 
 set(LN_SOURCES_Input
@@ -156,26 +154,12 @@ endif()
 if (LN_EMSCRIPTEN)
 elseif (WIN32)
     file(GLOB LN_SOURCES_Graphics_RHIs_DirectX12 src/Graphics/RHIs/DirectX12/*.cpp src/Graphics/RHIs/DirectX12/*.hpp)
-    set(LN_SOURCES_Platform
-        ${LN_SOURCES_Platform}
-        ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
-        src/Platform/Windows/Win32PlatformInterface.cpp
-        src/Platform/Windows/Win32PlatformWindowManager.hpp
-        src/Platform/Windows/Win32PlatformWindowManager.cpp
-    )
 elseif (APPLE)
-    set(LN_SOURCES_Platform
-        ${LN_SOURCES_Platform}
-        src/Platform/iOS/iOSPlatformInterface.mm
-        src/Platform/macOS/CocoaPlatformInterface.mm
-        src/Platform/macOS/PlatformSupport.mm
-    )
 endif()
 
 # Grouping.
 source_group("Base" FILES ${LN_SOURCES_Base})
 source_group("Engine" FILES ${LN_SOURCES_Engine})
-source_group("Platform" FILES ${LN_SOURCES_Platform})
 source_group("Input" FILES ${LN_SOURCES_Input})
 source_group("Grammar" FILES ${LN_SOURCES_Grammar})
 source_group("Animation" FILES ${LN_SOURCES_Animation})
@@ -227,7 +211,6 @@ set(LN_SOURCES
     ${LN_ENGINE_INCLUDE_DIR}/Lumino.hpp
     ${LN_SOURCES_Base}
     ${LN_SOURCES_Engine}
-    ${LN_SOURCES_Platform}
     ${LN_SOURCES_Grammar}
     ${LN_SOURCES_Animation}
     ${LN_SOURCES_Input}
@@ -349,6 +332,7 @@ endif()
 set(
     _LN_ENGINE_LINK_LIBS
     LuminoCore
+    LuminoPlatform
     #pcre
     pcre2_32
     png
@@ -385,6 +369,7 @@ target_include_directories(LuminoEngine-static PRIVATE ${LN_ENGINE_INCLUDE_DIR} 
 target_compile_definitions(LuminoEngine-static PRIVATE ${LN_PLATFORM_DEFINITIONS})
 target_link_libraries(LuminoEngine-static INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
+target_link_libraries(LuminoEngine-static INTERFACE LuminoPlatform)
 
 if (LN_OS_DESKTOP)
     target_include_directories(LuminoEngine-static PRIVATE ${VULKAN_HEADERS_INCLUDE_DIRS})

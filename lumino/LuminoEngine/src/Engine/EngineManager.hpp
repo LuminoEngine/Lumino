@@ -4,7 +4,7 @@
 #include <LuminoEngine/Input/Common.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Graphics/GeometryStructs.hpp>
-#include <LuminoEngine/Platform/PlatformEvent.hpp>
+#include <LuminoPlatform/PlatformEvent.hpp>
 #include "FpsController.hpp"
 
 namespace ln {

@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <Shobjidl.h>
-#include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include <LuminoPlatform/PlatformSupport.hpp>
 #include "Win32PlatformWindowManager.hpp"
 
 namespace ln {

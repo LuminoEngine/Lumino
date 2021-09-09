@@ -2,7 +2,7 @@
 #pragma once
 #include <array>
 #include <LuminoEngine/Graphics/GeometryStructs.hpp>
-#include <LuminoEngine/Platform/PlatformEvent.hpp>
+#include <LuminoPlatform/PlatformEvent.hpp>
 #include <LuminoEngine/Input/Common.hpp>
 #include <LuminoEngine/Input/InputBinding.hpp>
 

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoEngine/Platform/Common.hpp>
+#include <LuminoPlatform/Common.hpp>
 
 namespace ln {
 namespace detail {

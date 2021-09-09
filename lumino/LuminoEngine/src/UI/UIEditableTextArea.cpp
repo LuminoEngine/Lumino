@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Platform/PlatformWindow.hpp>
-#include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include <LuminoPlatform/PlatformWindow.hpp>
+#include <LuminoPlatform/PlatformSupport.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>

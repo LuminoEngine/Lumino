@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Platform/PlatformWindow.hpp>
-#include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include <LuminoPlatform/PlatformWindow.hpp>
+#include <LuminoPlatform/PlatformSupport.hpp>
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "../RHIProfiler.hpp"

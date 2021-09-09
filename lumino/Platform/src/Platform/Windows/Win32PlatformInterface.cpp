@@ -2,8 +2,7 @@
 #include "Internal.hpp"
 #include <Windows.h>
 #include <LuminoEngine/Engine/Application.hpp>
-#include <LuminoEngine/Platform/Win32PlatformInterface.hpp>
-#include "../../Engine/EngineManager.hpp"
+#include <LuminoPlatform/Win32PlatformInterface.hpp>
 #include "../GLFWPlatformWindowManager.hpp"
 
 #if defined(_WIN32) && !defined(LUMINO_BUILD_DLL)
@@ -32,9 +31,6 @@ int Win32PlatformInterface::WinMain(Application* app)
 {
     g_app = app;
 
-    detail::EngineSettings& settings = detail::EngineManager::s_settings;
-    settings.standaloneFpsControl = true;
-
 	detail::ApplicationHelper::run(g_app);
 	detail::ApplicationHelper::finalize(g_app);
 	RefObjectHelper::release(g_app);
@@ -43,10 +39,10 @@ int Win32PlatformInterface::WinMain(Application* app)
 	return 0;
 }
 
-ln::Path Win32PlatformInterface::findParentDirectoryContainingSpecifiedFile(StringRef file)
-{
-	return detail::EngineManager::findParentDirectoryContainingSpecifiedFile(file);
-}
+//ln::Path Win32PlatformInterface::findParentDirectoryContainingSpecifiedFile(StringRef file)
+//{
+//	return detail::EngineManager::findParentDirectoryContainingSpecifiedFile(file);
+//}
 
 } // namespace ln
 

@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Platform/PlatformWindow.hpp>
+#include <LuminoPlatform/PlatformWindow.hpp>
 
 namespace ln {
 namespace detail {
