@@ -14,8 +14,8 @@
 #include <LuminoEngine/UI/Controls/UITreeView.hpp>
 #include <LuminoEngine/UI/Controls/UITreeBox.hpp>
 #include <LuminoEngine/Editor/Editor.hpp>
-#include "../src/Engine/src/Engine/EngineManager.hpp"
-#include "../src/Engine/src/Engine/EngineDomain.hpp"
+#include "../../../lumino/LuminoEngine/src/Engine/EngineManager.hpp"
+#include "../../../lumino/LuminoEngine/src/Engine/EngineDomain.hpp"
 using namespace ln;
 
 Example CreateApp_App_Tutorial_Sandbox();

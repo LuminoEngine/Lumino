@@ -1,6 +1,6 @@
 ﻿
 #include "ViewModel.hpp"
-#include "../../Engine/src/Mesh/MeshModelInstance.hpp"
+#include "../../../lumino/LuminoEngine/src/Mesh/MeshModelInstance.hpp"
 
 ViewModel* ViewModel::instance()
 {

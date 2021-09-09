@@ -7,4 +7,4 @@
 #include <LuminoCore/Testing/TestHelper.hpp>
 using namespace ln;
 
-#include "../../Engine/src/Engine/EngineDomain.hpp"
+#include "../../../lumino/LuminoEngine/src/Engine/EngineDomain.hpp"

@@ -1,8 +1,8 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/Tilemap/Voxel.hpp>
-#include "../../Engine/src/Engine/EngineDomain.hpp"
-#include "../../Engine/src/Scene/SceneManager.hpp"
+#include "../../../lumino/LuminoEngine/src/Engine/EngineDomain.hpp"
+#include "../../../lumino/LuminoEngine/src/Scene/SceneManager.hpp"
 using namespace ln;
 
 class App_Experiment_Editor : public Application

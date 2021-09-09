@@ -2,10 +2,11 @@
 cmake_minimum_required(VERSION 3.0)
 project(LuminoEngine)
 
-set(LN_ENGINE_INCLUDE_DIR ${LUMINO_ROOT_PATH}/include)
+set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Files
+#-------------------------------------------------------------------------------
 
 file(GLOB LN_SOURCES_Base ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/*.hpp src/Base/*.cpp src/Base/*.hpp)
 
@@ -277,6 +278,9 @@ set(LN_SOURCES_SharedLib
     src/SharedLibraryMain.cpp
 )
 
+#-------------------------------------------------------------------------------
+# Configuration
+#-------------------------------------------------------------------------------
 
 if (LN_USE_FBX_IMPORTER)
     list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_FBX_IMPORTER=1)

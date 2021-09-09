@@ -1,8 +1,8 @@
 ﻿
 #include "Workspace.hpp"
 #include "EnvironmentSettings.hpp"
-#include "../../Engine/src/Engine/EngineDomain.hpp"
-#include "../../Engine/src/Engine/EngineManager.hpp"
+#include "../../../lumino/LuminoEngine/src/Engine/EngineDomain.hpp"
+#include "../../../lumino/LuminoEngine/src/Engine/EngineManager.hpp"
 
 namespace lna {
 

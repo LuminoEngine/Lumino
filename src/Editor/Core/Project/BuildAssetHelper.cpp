@@ -1,11 +1,11 @@
 ﻿
 #define LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-#include "../../Engine/src/Asset/AssetArchive.hpp"
-#include "../../Engine/src/Shader/ShaderManager.hpp"
-#include "../../Engine/src/Shader/ShaderTranspiler.hpp"
-#include "../../Engine/src/Shader/HLSLMetadataParser.hpp"
-#include "../../Engine/src/Shader/UnifiedShader.hpp"
-#include "../../Engine/src/Shader/UnifiedShaderCompiler.hpp"
+#include "../../../lumino/LuminoEngine/src/Asset/AssetArchive.hpp"
+#include "../../../lumino/LuminoEngine/src/Shader/ShaderManager.hpp"
+#include "../../../lumino/LuminoEngine/src/Shader/ShaderTranspiler.hpp"
+#include "../../../lumino/LuminoEngine/src/Shader/HLSLMetadataParser.hpp"
+#include "../../../lumino/LuminoEngine/src/Shader/UnifiedShader.hpp"
+#include "../../../lumino/LuminoEngine/src/Shader/UnifiedShaderCompiler.hpp"
 #include "EnvironmentSettings.hpp"
 #include "Workspace.hpp"
 #include "Project.hpp"
