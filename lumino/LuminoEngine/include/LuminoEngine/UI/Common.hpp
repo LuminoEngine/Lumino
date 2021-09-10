@@ -1,6 +1,5 @@
 ﻿#pragma once
-
-#include "../Base/Event.hpp"
+#include <LuminoEngine/Base/Event.hpp>
 #include "../Graphics/ColorStructs.hpp"
 
 namespace ln {

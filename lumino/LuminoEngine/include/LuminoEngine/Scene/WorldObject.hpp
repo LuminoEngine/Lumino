@@ -2,8 +2,8 @@
 #pragma once
 #include "Common.hpp"
 #include "../Asset/AssetModel.hpp"
-#include "../Base/Builder.hpp"
-#include "../Base/Collection.hpp"
+#include <LuminoEngine/Base/Builder.hpp>
+#include <LuminoEngine/Base/Collection.hpp>
 #include "Component.hpp"
 
 namespace ln {

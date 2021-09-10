@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../../Base/Collection.hpp"
+#include <LuminoEngine/Base/Collection.hpp>
 #include "../UIElement.hpp"
 #include "../UILayoutElement.hpp"
 

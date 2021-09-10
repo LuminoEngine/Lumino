@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "VisualObject.hpp"
-#include "../Base/Delegate.hpp"	// TODO: test
+#include <LuminoEngine/Base/Delegate.hpp>    	// TODO: test
 
 namespace ln {
 class Texture;

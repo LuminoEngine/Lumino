@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Common.hpp"
-#include "../Base/Builder.hpp"
+#include <LuminoEngine/Base/Builder.hpp>
 #include "../Graphics/ColorStructs.hpp"
 #include "../Graphics/RenderState.hpp"
 #include "../Shader/Shader.hpp"

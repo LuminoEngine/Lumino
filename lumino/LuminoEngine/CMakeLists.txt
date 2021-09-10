@@ -332,6 +332,7 @@ endif()
 set(
     _LN_ENGINE_LINK_LIBS
     LuminoCore
+    LuminoEngineCore
     LuminoPlatform
     #pcre
     pcre2_32
@@ -369,7 +370,7 @@ target_include_directories(LuminoEngine-static PRIVATE ${LN_ENGINE_INCLUDE_DIR} 
 target_compile_definitions(LuminoEngine-static PRIVATE ${LN_PLATFORM_DEFINITIONS})
 target_link_libraries(LuminoEngine-static INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
-target_link_libraries(LuminoEngine-static INTERFACE LuminoPlatform)
+target_link_libraries(LuminoEngine-static INTERFACE LuminoPlatform LuminoEngineCore)
 
 if (LN_OS_DESKTOP)
     target_include_directories(LuminoEngine-static PRIVATE ${VULKAN_HEADERS_INCLUDE_DIRS})

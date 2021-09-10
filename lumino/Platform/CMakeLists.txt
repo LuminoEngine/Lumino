@@ -2,9 +2,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(LuminoPlatform)
 
-
-set(PUBLIC_HDR_DIR include)
-
 #-------------------------------------------------------------------------------
 # Files
 #-------------------------------------------------------------------------------
@@ -48,8 +45,6 @@ set(LN_SOURCES
 # Targets
 #-------------------------------------------------------------------------------
 
-#include_directories(${PUBLIC_HDR_DIR})
-
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 #target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>)
 #target_include_directories(${PROJECT_NAME} PUBLIC ${PUBLIC_HDR_DIR})
@@ -82,10 +77,10 @@ set(LN_TARGETS_NAME "${PROJECT_NAME}Targets")
 set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
 
 install(
-    TARGETS     ${PROJECT_NAME}
-    EXPORT      ${LN_TARGETS_NAME}
-    ARCHIVE     DESTINATION lib
-    INCLUDES    DESTINATION include
+    TARGETS ${PROJECT_NAME}
+    EXPORT ${LN_TARGETS_NAME}
+    ARCHIVE DESTINATION lib
+    INCLUDES DESTINATION include
 )
 
 install(DIRECTORY include DESTINATION .)

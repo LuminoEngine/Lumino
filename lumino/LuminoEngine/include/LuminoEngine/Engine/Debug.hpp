@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Object.hpp"
+#include <LuminoEngine/Reflection/Object.hpp>
 #include "../Animation/EasingFunctions.hpp"
 #include "../Graphics/ColorStructs.hpp"
 

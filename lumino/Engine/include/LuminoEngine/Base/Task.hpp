@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include <functional>
+#include "Common.hpp"
 
 namespace ln {
 class TaskScheduler;

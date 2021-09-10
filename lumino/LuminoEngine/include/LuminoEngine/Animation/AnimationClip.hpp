@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "../Base/Promise.hpp"
+#include <LuminoEngine/Base/Promise.hpp>
 #include "../Asset/AssetObject.hpp"
 #include "Common.hpp"
 

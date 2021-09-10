@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Engine/TypeInfo.hpp>
+#include <LuminoEngine/Reflection/TypeInfo.hpp>
+#include "../../LuminoEngine/include/LuminoEngine/EngineContext.hpp"
 
 namespace ln {
 

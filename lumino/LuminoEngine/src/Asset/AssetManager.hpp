@@ -3,7 +3,7 @@
 #include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Asset/Common.hpp>
 #include <LuminoEngine/Asset/AssetObject.hpp>
-#include "../Base/RefObjectCache.hpp"
+#include "../../../Engine/src/Base/RefObjectCache.hpp"
 
 namespace ln {
 //class Texture2D;

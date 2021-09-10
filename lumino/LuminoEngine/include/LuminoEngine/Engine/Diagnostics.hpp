@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Object.hpp"
+#include <LuminoEngine/Reflection/Object.hpp>
 
 namespace ln {
 class DiagnosticsItem;

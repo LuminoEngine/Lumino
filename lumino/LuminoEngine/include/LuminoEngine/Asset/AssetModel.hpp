@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "../Engine/Property.hpp"
+#include <LuminoEngine/Reflection/Property.hpp>
 #include "Common.hpp"
 
 namespace ln {

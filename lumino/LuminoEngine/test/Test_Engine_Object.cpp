@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <LuminoEngine/Engine/Property.hpp>
+#include <LuminoEngine/Reflection/Property.hpp>
 
 class Test_Engine_Object : public ::testing::Test {};
 

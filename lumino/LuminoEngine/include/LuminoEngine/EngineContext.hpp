@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include "Engine/Property.hpp"
+//#include <LuminoEngine/Reflection/Property.hpp>
+#include "../../../Engine/include/LuminoEngine/Reflection/Property.hpp"
 
 namespace ln {
 namespace detail {

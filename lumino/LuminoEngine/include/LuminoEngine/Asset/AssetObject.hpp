@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "Common.hpp"
-#include "../Engine/Object.hpp"
+#include <LuminoEngine/Reflection/Object.hpp>
 
 namespace ln {
 namespace detail { class AssetObjectInternal; }

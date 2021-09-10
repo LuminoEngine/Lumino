@@ -3,7 +3,7 @@
 #include "Common.hpp"
 #include "AnimationTrack.hpp"
 #include "AnimationClip.hpp"
-#include "../Engine/Property.hpp"
+#include <LuminoEngine/Reflection/Property.hpp>
 
 namespace ln {
 namespace detail { class AnimationTargetElementBlendLink; }

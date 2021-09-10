@@ -1,7 +1,7 @@
 ﻿#pragma once
+#include <LuminoEngine/Reflection/Object.hpp>
+#include <LuminoEngine/Base/Variant.hpp>
 #include "Common.hpp"
-#include "Object.hpp"
-#include "../Base/Variant.hpp"
 
 namespace ln {
 namespace detail {

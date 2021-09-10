@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Engine/VMProperty.hpp>
+#include <LuminoEngine/Reflection/VMProperty.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
 //#include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>

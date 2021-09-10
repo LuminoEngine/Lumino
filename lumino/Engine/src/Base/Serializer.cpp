@@ -3,7 +3,8 @@
 //#include <nlohmann/json.hpp>
 #include <yaml-cpp/yaml.h>
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Asset/AssetModel.hpp>
+#include "../../LuminoEngine/include/LuminoEngine/EngineContext.hpp"
+#include "../../LuminoEngine/include/LuminoEngine/Asset/AssetModel.hpp"
 
 
 namespace ln {

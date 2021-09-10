@@ -2,17 +2,17 @@
 #include "Internal.hpp"
 #include <Windows.h>
 //#include <LuminoEngine/Engine/Application.hpp>
-#include "../../LuminoEngine/include/LuminoEngine/Engine/Application.hpp"
+//#include "../../LuminoEngine/include/LuminoEngine/Engine/Application.hpp"
 #include <LuminoPlatform/Win32PlatformInterface.hpp>
 #include "../GLFWPlatformWindowManager.hpp"
 
-#if defined(_WIN32) && !defined(LUMINO_BUILD_DLL)
-extern "C" ::ln::Application* LuminoCreateApplicationInstance();
-#endif
+//#if defined(_WIN32) && !defined(LUMINO_BUILD_DLL)
+//extern "C" ::ln::Application* LuminoCreateApplicationInstance();
+//#endif
 
 namespace ln {
 
-static ln::Application* g_app = nullptr;
+//static ln::Application* g_app = nullptr;
 
 //void Win32PlatformInterface::init(Application* app)
 //{
@@ -30,12 +30,13 @@ static ln::Application* g_app = nullptr;
 //
 int Win32PlatformInterface::WinMain(Application* app)
 {
-    g_app = app;
+	LN_NOTIMPLEMENTED();
+   //g_app = app;
 
-	detail::ApplicationHelper::run(g_app);
-	detail::ApplicationHelper::finalize(g_app);
-	RefObjectHelper::release(g_app);
-	g_app = nullptr;
+	//detail::ApplicationHelper::run(g_app);
+	//detail::ApplicationHelper::finalize(g_app);
+	//RefObjectHelper::release(g_app);
+	//g_app = nullptr;
 
 	return 0;
 }

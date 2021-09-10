@@ -4,7 +4,7 @@
 #include <d3dcompiler.h>
 #endif
 #include <LuminoEngine/Shader/Common.hpp>
-#include "../Base/RefObjectCache.hpp"
+#include "../../../Engine/src/Base/RefObjectCache.hpp"
 
 namespace ln {
 namespace detail {

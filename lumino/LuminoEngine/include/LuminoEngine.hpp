@@ -1,15 +1,15 @@
 #pragma once
 
 #include <LuminoCore.hpp>
+#include <LuminoEngine/Base/Regex.hpp>
+#include <LuminoEngine/Base/Variant.hpp>
+#include <LuminoEngine/Base/Serializer.hpp>
+#include <LuminoEngine/Base/Task.hpp>
+#include <LuminoEngine/Reflection/Object.hpp>
 
 #include "LuminoEngine/Common.hpp"
 #include "LuminoEngine/EngineContext.hpp"
-#include "LuminoEngine/Base/Regex.hpp"
-#include "LuminoEngine/Base/Variant.hpp"
-#include "LuminoEngine/Base/Serializer.hpp"
-#include "LuminoEngine/Base/Task.hpp"
 
-#include "LuminoEngine/Engine/Object.hpp"
 #include "LuminoEngine/Engine/EngineSettings.hpp"
 #include "LuminoEngine/Engine/Engine.hpp"
 #include "LuminoEngine/Engine/Time.hpp"

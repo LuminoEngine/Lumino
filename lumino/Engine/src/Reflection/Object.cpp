@@ -1,10 +1,12 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Engine/Object.hpp>
-#include <LuminoEngine/Engine/Property.hpp>
-#include <LuminoEngine/Engine/VMProperty.hpp>
-#include "../Runtime/RuntimeManager.hpp"
-#include "../Asset/AssetManager.hpp"
+#include <LuminoEngine/Reflection/Object.hpp>
+#include <LuminoEngine/Reflection/Property.hpp>
+#include <LuminoEngine/Reflection/VMProperty.hpp>
+#include "../../../LuminoEngine/src/Engine/EngineDomain.hpp"
+#include "../../../LuminoEngine/src/Runtime/RuntimeManager.hpp"
+#include "../../../LuminoEngine/src/Asset/AssetManager.hpp"
+#include "../../LuminoEngine/include/LuminoEngine/EngineContext.hpp"
 
 namespace ln {
 

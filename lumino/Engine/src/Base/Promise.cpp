@@ -2,7 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Base/Promise.hpp>
-#include "../Engine/EngineManager.hpp"
+#include "../../LuminoEngine/src/Engine/EngineManager.hpp"
+#include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
 
 
 namespace ln {

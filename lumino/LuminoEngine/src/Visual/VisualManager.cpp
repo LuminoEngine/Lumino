@@ -3,7 +3,7 @@
 #include "VisualManager.hpp"
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
-#include <LuminoEngine/Engine/Property.hpp>	// TODO:
+#include <LuminoEngine/Reflection/Property.hpp>// TODO:
 
 namespace ln {
 namespace detail {

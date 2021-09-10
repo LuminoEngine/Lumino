@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include "Runtime/RuntimeManager.hpp"
 #include "Engine/EngineManager.hpp"
-#include <LuminoEngine/Engine/VMProperty.hpp>
+#include <LuminoEngine/Reflection/VMProperty.hpp>
 #include <LuminoEngine/EngineContext.hpp>
 
 namespace ln {

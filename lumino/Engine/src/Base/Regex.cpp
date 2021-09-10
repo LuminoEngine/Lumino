@@ -139,7 +139,7 @@ int MatchResult::position() const
 
 	pcre2_match_data* matchData = reinterpret_cast<pcre2_match_data*>(m_matchData);
 	size_t* ovector = pcre2_get_ovector_pointer(matchData);
-	return ovector[0];
+	return static_cast<int>(ovector[0]);
 }
 
 int MatchResult::length() const
@@ -149,7 +149,7 @@ int MatchResult::length() const
 
 	pcre2_match_data* matchData = reinterpret_cast<pcre2_match_data*>(m_matchData);
 	size_t* ovector = pcre2_get_ovector_pointer(matchData);
-	return ovector[1] - ovector[0];
+	return static_cast<int>(ovector[1] - ovector[0]);
 }
 
 StringRef MatchResult::value() const

@@ -4,8 +4,8 @@
 #include <typeinfo>
 #include <type_traits>
 #include "Common.hpp"
-#include "../Engine/Object.hpp"
-#include "../Engine/TypeInfo.hpp"
+#include "../Reflection/Object.hpp"
+#include "../Reflection/TypeInfo.hpp"
 #include <LuminoCore/Geometries/GeometryStructs.hpp>
 
 namespace ln {

@@ -1,5 +1,5 @@
-﻿#include <LuminoEngine/Engine/Object.hpp>
-#include <LuminoEngine/Engine/TypeInfo.hpp>
+﻿#include <LuminoEngine/Reflection/Object.hpp>
+#include <LuminoEngine/Reflection/TypeInfo.hpp>
 #include "RuntimeManager.hpp"
 
 namespace ln {

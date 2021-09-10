@@ -19,9 +19,9 @@
 	プロパティバインディングはパフォーマンス的にちょっとオーバーヘッド乗るけど、解決策としてはベターかなと。
 */
 #include "Internal.hpp"
-#include <LuminoEngine/Engine/Property.hpp>
-#include <LuminoEngine/Engine/VMProperty.hpp>
-#include "EngineManager.hpp"
+#include <LuminoEngine/Reflection/Property.hpp>
+#include <LuminoEngine/Reflection/VMProperty.hpp>
+#include "../../LuminoEngine/include/LuminoEngine/EngineContext.hpp"
 
 namespace ln {
 

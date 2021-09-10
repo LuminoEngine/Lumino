@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Engine/Property.hpp>
+#include <LuminoEngine/Reflection/Property.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
