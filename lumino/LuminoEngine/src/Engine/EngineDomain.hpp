@@ -42,7 +42,7 @@ public:
 	static EngineContext* engineContext();
 	static RuntimeManager* runtimeManager();
 	static EngineManager* engineManager();
-	static PlatformManager* platformManager();
+	//static PlatformManager* platformManager();
     static AnimationManager* animationManager();
 	static InputManager* inputManager();
 	static AudioManager* audioManager();

@@ -19,16 +19,11 @@ public:
 		WindowCreationSettings	mainWindowSettings;
 	};
 
-	//static bool initialize();
-	//static void terminate();
+	static PlatformManager* initialize(const Settings& settings);
+	static void terminate();
 	static inline PlatformManager* instance() { return static_cast<PlatformManager*>(EngineContext2::instance()->platformManager); }
 
 
-	PlatformManager();
-	virtual ~PlatformManager() = default;
-
-	Result init(const Settings& settings);
-	void dispose();
 
 	const Ref<PlatformWindowManager>& windowManager() const { return m_windowManager; }
 	const Ref<PlatformWindow>& mainWindow() const { return m_mainWindow; }
@@ -36,8 +31,12 @@ public:
 	OpenGLContext* openGLContext() const;
 	void processSystemEventQueue();
 
+	virtual ~PlatformManager();
+
 private:
-	//static Ref<PlatformManager> s_instance;
+	PlatformManager();
+	Result init(const Settings& settings);
+	void dispose();
 
 	Ref<PlatformWindowManager> m_windowManager;
 	Ref<PlatformWindow> m_mainWindow;	// v0.5.0 で持たないことを検討したが、Graphics, UI との初期化順の関係や、Android, Emscripten など既に出来上がっている View にアタッチしたいときなどに欲しい

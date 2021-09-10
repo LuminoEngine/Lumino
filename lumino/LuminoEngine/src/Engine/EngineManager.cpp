@@ -76,7 +76,7 @@ EngineSettings EngineManager::s_settings;
 EngineManager::EngineManager()
 	: m_settings()
     , m_assetManager(nullptr)
-	, m_platformManager(nullptr)
+	//, m_platformManager(nullptr)
 	//, m_animationManager(nullptr)
 	//, m_inputManager(nullptr)
 	, m_audioManager(nullptr)
@@ -105,7 +105,7 @@ EngineManager::~EngineManager()
 void EngineManager::init(const EngineSettings& settings)
 {
     LN_LOG_DEBUG << "EngineManager Initialization started.";
-
+	if (!EngineContext2::initialize()) return;
 
 	m_settings = settings;
 	
@@ -193,8 +193,8 @@ void EngineManager::dispose()
         //m_uiManager->setMainContext(nullptr);
     }
 
-	if (m_platformManager) {
-		m_platformManager->mainWindow()->detachEventListener(this);
+	if (PlatformManager::instance()) {
+		PlatformManager::instance()->mainWindow()->detachEventListener(this);
 	}
 
     m_mainPhysicsWorld = nullptr;
@@ -260,14 +260,8 @@ void EngineManager::dispose()
 	if (m_audioManager) m_audioManager->dispose();
 	if (m_inputManager) m_inputManager->dispose();
     if (m_animationManager) m_animationManager->dispose();
-	if (m_platformManager) m_platformManager->dispose();
+	PlatformManager::terminate();
     if (m_assetManager) m_assetManager->dispose();
-
-	if (m_mainThreadTaskDispatcher) {
-		m_mainThreadTaskDispatcher->dispose();
-		m_mainThreadTaskDispatcher = nullptr;
-	}
-	TaskScheduler::finalizeInternal();
 
 #if defined(LN_OS_WIN32)
     if (m_oleInitialized) {
@@ -286,6 +280,7 @@ void EngineManager::dispose()
 		m_appData = nullptr;
 	}
 
+	EngineContext2::terminate();
 	LN_LOG_DEBUG << "EngineManager finalization ended.";
 }
 
@@ -361,9 +356,6 @@ void EngineManager::initializeCommon()
 
 		resolveActiveGraphicsAPI();
 
-		TaskScheduler::init();
-		m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
-
 		m_commonInitialized = true;
 
 		LN_LOG_DEBUG << "EngineManager common initialization ended.";
@@ -391,7 +383,7 @@ void EngineManager::initializeAssetManager()
 
 void EngineManager::initializePlatformManager()
 {
-	if (!m_platformManager && m_settings.features.hasFlag(EngineFeature::Application))
+	if (!PlatformManager::instance() && m_settings.features.hasFlag(EngineFeature::Application))
 	{
 		initializeCommon();
 
@@ -411,10 +403,11 @@ void EngineManager::initializePlatformManager()
 			settings.glfwWithOpenGLAPI = true;
 		}
 
-		m_platformManager = ln::makeRef<PlatformManager>();
-		m_platformManager->init(settings);
+		//m_platformManager = ln::makeRef<PlatformManager>();
+		//m_platformManager->init(settings);
+		PlatformManager::initialize(settings);
 
-		m_platformManager->mainWindow()->attachEventListener(this);
+		PlatformManager::instance()->mainWindow()->attachEventListener(this);
 	}
 }
 
@@ -438,7 +431,7 @@ void EngineManager::initializeInputManager()
 		initializePlatformManager();
 
 		InputManager::Settings settings;
-		settings.mainWindow = m_platformManager->mainWindow();
+		settings.mainWindow = PlatformManager::instance()->mainWindow();
 		settings.inputConfig = m_settings.inputConfig;
 		m_inputManager = ln::makeRef<InputManager>();
 		m_inputManager->init(settings);
@@ -499,8 +492,8 @@ void EngineManager::initializeGraphicsManager()
 
 		GraphicsManager::Settings settings;
         settings.assetManager = m_assetManager;
-		settings.platformManager = m_platformManager;
-		settings.mainWindow = (m_settings.graphicsContextManagement) ? m_platformManager->mainWindow() : nullptr;
+		settings.platformManager = PlatformManager::instance();
+		settings.mainWindow = (m_settings.graphicsContextManagement) ? PlatformManager::instance()->mainWindow() : nullptr;
 		settings.graphicsAPI = m_activeGraphicsAPI;
 		settings.priorityGPUName = m_settings.priorityGPUName;
 		settings.debugMode = m_settings.graphicsDebugEnabled;
@@ -669,15 +662,16 @@ void EngineManager::updateFrame()
 		m_inputManager->preUpdateFrame();
 	}
 
-	if (m_platformManager) {
-		m_platformManager->processSystemEventQueue();
+	if (PlatformManager::instance()) {
+		PlatformManager::instance()->processSystemEventQueue();
 	}
 	if (m_uiManager) {
 		m_uiManager->dispatchPostedEvents();
 	}
 
-	if (m_mainThreadTaskDispatcher) {
-		m_mainThreadTaskDispatcher->executeTasks(1);
+	const auto& mainThreadTaskDispatcher = EngineContext2::instance()->mainThreadTaskDispatcher();
+	if (mainThreadTaskDispatcher) {
+		mainThreadTaskDispatcher->executeTasks(1);
 	}
 
     //------------------------------------------------
@@ -783,7 +777,7 @@ void EngineManager::presentFrame()
 
 
     if (m_debugToolMode == DebugToolMode::Minimalized || m_debugToolMode == DebugToolMode::Activated) {
-        m_platformManager->mainWindow()->setWindowTitle(String::format(_TT("FPS:{0:.1f}({1:.1f}), F8:Debug tool."), m_fpsController.totalFps(), m_fpsController.externalFps()));
+		PlatformManager::instance()->mainWindow()->setWindowTitle(String::format(_TT("FPS:{0:.1f}({1:.1f}), F8:Debug tool."), m_fpsController.totalFps(), m_fpsController.externalFps()));
     }
 
 	// TODO: Editor モードの時にも呼び出せるようにしないとだめそう
@@ -1129,10 +1123,10 @@ EngineManager* EngineDomain::engineManager()
 	return engineContext()->engineManager();
 }
 
-PlatformManager* EngineDomain::platformManager()
-{
-	return engineManager()->platformManager();
-}
+//PlatformManager* EngineDomain::platformManager()
+//{
+//	return engineManager()->PlatformManager::instance()();
+//}
 
 AnimationManager* EngineDomain::animationManager()
 {

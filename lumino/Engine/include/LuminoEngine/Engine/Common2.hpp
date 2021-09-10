@@ -4,4 +4,5 @@
 namespace ln {
 class EngineContext2;
 class Module;
+class Dispatcher;
 } // namespace ln;

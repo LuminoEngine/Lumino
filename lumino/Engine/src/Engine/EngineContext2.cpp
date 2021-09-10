@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 
@@ -33,11 +34,19 @@ EngineContext2::EngineContext2()
 
 bool EngineContext2::init()
 {
+    TaskScheduler::init();
+    m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
+
     return true;
 }
 
 void EngineContext2::dispose()
 {
+    if (m_mainThreadTaskDispatcher) {
+        m_mainThreadTaskDispatcher->dispose();
+        m_mainThreadTaskDispatcher = nullptr;
+    }
+    TaskScheduler::finalizeInternal();
 }
 
 void EngineContext2::registerModule(Module* mod)

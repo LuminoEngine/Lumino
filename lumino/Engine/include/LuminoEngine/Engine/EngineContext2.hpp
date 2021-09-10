@@ -32,6 +32,8 @@ public:
 	/** Unregister module from this context. */
 	void unregisterModule(Module* mod);
 
+	const Ref<Dispatcher>& mainThreadTaskDispatcher() const { return m_mainThreadTaskDispatcher; }
+
 	// TODO:
 	RefObject* platformManager = nullptr;
 
@@ -43,6 +45,7 @@ private:
 	static std::unique_ptr<EngineContext2> s_instance;
 	
 	List<Ref<Module>> m_modules;
+	Ref<Dispatcher> m_mainThreadTaskDispatcher;
 };
 
 } // namespace ln

@@ -301,7 +301,7 @@ void UIFrameWindow::init(bool mainWindow)
 
     if (!mainWindow) {
         detail::WindowCreationSettings settings;
-        auto* platformManager = detail::EngineDomain::platformManager();
+        auto* platformManager = detail::PlatformManager::instance();
         setupPlatformWindow(
             platformManager->windowManager()->createSubWindow(settings),
             settings.clientSize);
@@ -379,7 +379,7 @@ void UIFrameWindow::onDispose(bool explicitDisposing)
 		m_platformWindow->detachEventListener(this);
 		if (!specialElementFlags().hasFlag(detail::UISpecialElementFlags::MainWindow)) {
             // TODO: platformManager とるよりも m_platformWindow->dispose() で消せるようにした方がいいかも
-			detail::EngineDomain::platformManager()->windowManager()->destroyWindow(m_platformWindow);
+			detail::PlatformManager::instance()->windowManager()->destroyWindow(m_platformWindow);
 		}
         m_platformWindow = nullptr;
 	}
@@ -776,7 +776,7 @@ void UIMainWindow::init()
     // サブクラスの init 等で、AllowDragDrop や WindowSize など PlatformWindow が実態をもつプロパティにアクセス試合ことがある。
     // そのためこの時点で PlatformWindow をアタッチしておきたい。
     setupPlatformWindow(
-        detail::EngineDomain::engineManager()->platformManager()->mainWindow(),
+        detail::PlatformManager::instance()->mainWindow(),
         detail::EngineDomain::engineManager()->settings().mainWindowSize);
 
 	// TODO: ここでいい？
