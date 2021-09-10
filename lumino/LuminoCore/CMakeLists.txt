@@ -83,11 +83,12 @@ endif()
 # Installation
 #-------------------------------------------------------------------------------
 
-install(TARGETS ${PROJECT_NAME}
-    EXPORT LuminoCoreTargets
-    ARCHIVE     DESTINATION ./lib       # Library installation location (Copied at "INSTALL" build time)
-    INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
-    FRAMEWORK DESTINATION .)
+install(
+    TARGETS     ${PROJECT_NAME}
+    EXPORT      LuminoCoreTargets
+    ARCHIVE     DESTINATION ./lib
+    INCLUDES    DESTINATION ./include
+)
 
 install(DIRECTORY include/LuminoCore DESTINATION ./include)
 install(FILES include/LuminoCore.hpp DESTINATION include)

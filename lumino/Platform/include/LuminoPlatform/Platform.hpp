@@ -15,7 +15,7 @@ public:
 	/**
 	 * Get MainWindow.
 	 */
-	static detail::PlatformWindow* mainWindow();
+	static PlatformWindow* mainWindow();
 };
 
 } // namespace ln

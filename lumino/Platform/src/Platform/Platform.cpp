@@ -10,7 +10,7 @@ void Platform::processEvents()
     detail::PlatformManager::instance()->processSystemEventQueue();
 }
 
-detail::PlatformWindow* Platform::mainWindow()
+PlatformWindow* Platform::mainWindow()
 {
     return detail::PlatformManager::instance()->mainWindow();
 }

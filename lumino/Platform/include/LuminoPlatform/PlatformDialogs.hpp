@@ -1,9 +1,8 @@
 ﻿
 #pragma once
+#include "Common.hpp"
 
 namespace ln {
-namespace detail { class PlatformWindow; }
-
 
 class PlatformOpenFileDialog
 	: public RefObject
@@ -11,7 +10,7 @@ class PlatformOpenFileDialog
 public:
 	static Ref<PlatformOpenFileDialog> create();
 
-	virtual bool showDialog(detail::PlatformWindow* parent) = 0;
+	virtual bool showDialog(PlatformWindow* parent) = 0;
 	virtual Path getPath() = 0;
 
 protected:
@@ -24,7 +23,7 @@ class PlatformSelectFolderDialog
 public:
     static Ref<PlatformSelectFolderDialog> create();
 
-    virtual bool showDialog(detail::PlatformWindow* parent) = 0;
+    virtual bool showDialog(PlatformWindow* parent) = 0;
     virtual Path getPath() = 0;
 
 protected:

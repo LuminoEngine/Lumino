@@ -12,9 +12,9 @@ namespace ln {
 struct SizeI;
 struct Color;
 class INativeGraphicsInterface;
+class PlatformWindow;
 
 namespace detail {
-class PlatformWindow;
 class RHIDeviceObject;
 class IGraphicsDevice;
 class ISwapChain;

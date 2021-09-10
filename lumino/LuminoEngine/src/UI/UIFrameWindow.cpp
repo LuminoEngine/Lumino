@@ -338,7 +338,7 @@ void UIFrameWindow::setImGuiLayerEnabled(bool value)
     }
 }
 
-void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
+void UIFrameWindow::setupPlatformWindow(PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
 {
     m_platformWindow = platformMainWindow;
 	m_swapChain = makeObject<SwapChain>(platformMainWindow, backbufferSize);
@@ -622,7 +622,7 @@ void UIFrameWindow::onRender(UIRenderingContext* context)
 //	UIContainerElement::onUpdateLayout(finalGlobalRect);
 //}
 
-bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
+bool UIFrameWindow::onPlatformEvent(const PlatformEventArgs& e)
 {
 	if (m_ImGuiLayerEnabled) {
 		if (m_imguiContext->handlePlatformEvent(e)) {

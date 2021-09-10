@@ -458,9 +458,9 @@ install(TARGETS LuminoEngine-static
     RUNTIME     DESTINATION bin
     FRAMEWORK   DESTINATION .)
     
-install(DIRECTORY ../../include/LuminoEngine DESTINATION ./include)
-install(FILES ../../include/Lumino.hpp DESTINATION include)
-install(FILES ../../include/LuminoEngine.hpp DESTINATION include)
+install(DIRECTORY include DESTINATION include)
+install(FILES include/Lumino.hpp DESTINATION include)
+install(FILES include/LuminoEngine.hpp DESTINATION include)
 
 install(
     EXPORT LuminoEngineTargets
@@ -468,9 +468,9 @@ install(
     DESTINATION lib/cmake/LuminoEngine
     EXPORT_LINK_INTERFACE_LIBRARIES)
 
-install(
-    FILES LuminoEngineConfig.cmake
-    DESTINATION lib/cmake/LuminoEngine)
+#install(
+#    FILES LuminoEngineConfig.cmake
+#    DESTINATION lib/cmake/LuminoEngine)
 
 #add_custom_command(TARGET LuminoEngine-static POST_BUILD
 #    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LuminoEngine-static> ../../../../lib/${LN_TARGET_ARCH})

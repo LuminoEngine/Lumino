@@ -41,6 +41,7 @@ namespace LuminoBuild
             // $ emsdk activate xxxx
             var path = Environment.GetEnvironmentVariable("PATH");
             path = EmsdkDir + ";" + path;
+            path = Path.Combine(EmsdkDir, "upstream", "emscripten") + ";" + path;
             Environment.SetEnvironmentVariable("PATH", path);
             Environment.SetEnvironmentVariable("EMSDK", EmsdkDir);
             Environment.SetEnvironmentVariable("EM_CONFIG", Path.Combine(EmsdkDir, ".emscripten"));

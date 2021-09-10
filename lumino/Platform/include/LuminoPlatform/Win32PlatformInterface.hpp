@@ -4,9 +4,6 @@
 
 namespace ln {
 class Application;
-namespace detail {
-class PlatformWindow;
-}
 
 class Win32PlatformInterface
 {

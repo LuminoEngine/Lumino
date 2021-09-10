@@ -16,6 +16,7 @@ class Shader;
 class ImGuiDockPane;
 class UIEventArgs;
 class UIFrameWindow;
+struct PlatformEventArgs;
 
 enum ImGuiDockPlacement
 {
@@ -30,7 +31,6 @@ enum ImGuiDockPlacement
 };
 
 namespace detail {
-struct PlatformEventArgs;
 
 class ImGuiIntegration
 {
@@ -40,7 +40,7 @@ public:
     void updateFrame(float elapsedSeconds);
 	void prepareRender(float width, float height);
 	void render(GraphicsContext* graphicsContext, RenderTargetTexture* target);
-    bool handlePlatformEvent(const detail::PlatformEventArgs& e);
+    bool handlePlatformEvent(const PlatformEventArgs& e);
 
 	const List<Ref<ImGuiDockPane>>& dockPanes() const { return m_dockPanes; }
 	void addDock(ImGuiDockPane* pane);

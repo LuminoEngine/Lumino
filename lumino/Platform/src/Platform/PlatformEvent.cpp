@@ -4,19 +4,23 @@
 #include "PlatformManager.hpp"
 
 namespace ln {
-namespace detail {
 
 //==============================================================================
 // PlatformEventArgs
 
 PlatformEventArgs PlatformEventArgs::makeClosingEvent(PlatformWindow* sender)
 {
-	return PlatformEventArgs(PlatformEventType::close, sender);
+	PlatformEventArgs e;
+	e.type = PlatformEventType::close;
+	e.sender = sender;
+	return e;
 }
 
 PlatformEventArgs PlatformEventArgs::makeWindowSizeChangedEvent(PlatformWindow* sender, int width, int height)
 {
-	PlatformEventArgs e(PlatformEventType::WindowSizeChanged, sender);
+	PlatformEventArgs e;
+	e.type = PlatformEventType::WindowSizeChanged;
+	e.sender = sender;
 	e.size.width = width;
 	e.size.height = height;
 	return e;
@@ -25,16 +29,16 @@ PlatformEventArgs PlatformEventArgs::makeWindowSizeChangedEvent(PlatformWindow* 
 PlatformEventArgs PlatformEventArgs::makeActivateChangedEvent(PlatformWindow* sender, bool active)
 {
 	PlatformEventArgs e;
-	e.sender = sender;
 	e.type = (active) ? PlatformEventType::WindowActivate : PlatformEventType::WindowDeactivate;
+	e.sender = sender;
 	return e;
 }
 
 PlatformEventArgs PlatformEventArgs::makeMouseButtonEvent(PlatformWindow* sender, PlatformEventType type, MouseButtons button/*, short screenX, short screenY*/, ModifierKeys modifierKeys)
 {
 	PlatformEventArgs e;
-	e.sender = sender;
 	e.type = type;
+	e.sender = sender;
 	e.mouse.button = button;
 	//e.mouse.screenX = screenX;
 	//e.mouse.screenY = screenY;
@@ -45,8 +49,8 @@ PlatformEventArgs PlatformEventArgs::makeMouseButtonEvent(PlatformWindow* sender
 PlatformEventArgs PlatformEventArgs::makeMouseMoveEvent(PlatformWindow* sender, PlatformEventType type, short screenX, short screenY, short grabOffsetX, short grabOffsetY)
 {
 	PlatformEventArgs e;
-	e.sender = sender;
 	e.type = type;
+	e.sender = sender;
 	e.mouseMove.screenX = screenX;
 	e.mouseMove.screenY = screenY;
 	e.mouseMove.grabOffsetX = grabOffsetX;
@@ -84,6 +88,5 @@ PlatformEventArgs PlatformEventArgs::makeDragDropEvent(PlatformWindow* sender, P
 	return e;
 }
 
-} // namespace detail
 } // namespace ln
 

@@ -7,12 +7,12 @@
 
 namespace ln {
 namespace detail {
-class PlatformWindow;
 class UIManager;
 class DebugInterface;
 class ImGuiIntegration;
 class MainViewportToolPane;
 }
+class PlatformWindow;
 class RenderPass;
 class GraphicsContext;
 class SwapChain;
@@ -68,7 +68,7 @@ private:
 
 class LN_API UIFrameWindow
 	: public UIDomainProvidor
-	, public detail::IPlatforEventListener
+	, public IPlatforEventListener
 {
 public:
     /** ウィンドウ上へのファイルのドラッグ＆ドロップを許可するかどうかを設定します。 */
@@ -99,7 +99,7 @@ public:
 	const Ref<DepthBuffer>& depthBuffer() const { return m_depthBuffer; }
     void updateStyleTree();
 	void updateLayoutTree();
-	const Ref<detail::PlatformWindow>& platformWindow() const { return m_platformWindow; }
+	const Ref<PlatformWindow>& platformWindow() const { return m_platformWindow; }
     const Ref<UIRenderView>& renderView() const { return m_renderView; }
     //const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
     const Ref<detail::UIInputInjector>& inputInjector() const{ return m_inputInjector; }
@@ -107,7 +107,7 @@ public:
     void setImGuiLayerEnabled(bool value);
 
 protected:
-    void setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
+    void setupPlatformWindow(PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
     virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
@@ -124,12 +124,12 @@ LN_CONSTRUCT_ACCESS:
     void init(bool mainWindow = false);    // Swapchain 無し。外部制御用
 
 public:  // TODO: internal
-	virtual bool onPlatformEvent(const detail::PlatformEventArgs& e) override;
-    virtual void onRoutedEvent(UIEventArgs* e) override;
+	bool onPlatformEvent(const PlatformEventArgs& e) override;
+    void onRoutedEvent(UIEventArgs* e) override;
 
 
 	//detail::UIManager* m_manager;
-	Ref<detail::PlatformWindow>	m_platformWindow;
+	Ref<PlatformWindow>	m_platformWindow;
     Ref<detail::UIInputInjector> m_inputInjector;
     Ref<UILayoutContext> m_layoutContext;
     //Ref<GraphicsContext> m_graphicsContext;

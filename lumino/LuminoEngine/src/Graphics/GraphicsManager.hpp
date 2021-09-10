@@ -7,9 +7,9 @@ namespace ln {
 class GraphicsContext; 
 class CommandQueue;
 class SamplerState;
+class PlatformWindow;
 
 namespace detail {
-class PlatformWindow;
 class IGraphicsDevice;
 class ICommandList;
 class RenderTargetTextureCacheManager;

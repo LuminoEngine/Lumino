@@ -12,7 +12,7 @@ public:
 
 
     /** WindowsAPI の機能にアクセスするためのウィンドウハンドルを取得します。取得できない場合は nullptr を返します。 */
-    static void* getWin32WindowHandle(detail::PlatformWindow* window);	// TODO: remove detail
+    static void* getWin32WindowHandle(PlatformWindow* window);	// TODO: remove detail
 };
 
 

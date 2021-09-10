@@ -297,7 +297,7 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 	graphicsContext->resetState();
 }
 
-bool ImGuiIntegration::handlePlatformEvent(const detail::PlatformEventArgs& e)
+bool ImGuiIntegration::handlePlatformEvent(const PlatformEventArgs& e)
 {
 	if (!m_imgui) return false;
 

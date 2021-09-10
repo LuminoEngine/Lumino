@@ -3,7 +3,6 @@
 #include <LuminoPlatform/PlatformWindow.hpp>
 
 namespace ln {
-namespace detail {
 
 //==============================================================================
 // PlatformWindow
@@ -34,6 +33,5 @@ bool PlatformWindow::sendEventToAllListener(const PlatformEventArgs& e)
 	return false;
 }
 
-} // namespace detail
 } // namespace ln
 

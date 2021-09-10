@@ -7,9 +7,9 @@ using namespace ln;
 
 bool g_closed = false;;
 
-struct EventListener : detail::IPlatforEventListener
+struct EventListener : IPlatforEventListener
 {
-    bool onPlatformEvent(const detail::PlatformEventArgs& e) override
+    bool onPlatformEvent(const PlatformEventArgs& e) override
     {
         switch (e.type) {
         case PlatformEventType::close:

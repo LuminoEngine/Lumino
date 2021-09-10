@@ -4,7 +4,6 @@
 #include <LuminoCore/Geometries/GeometryStructs.hpp>
 
 namespace ln {
-namespace detail {	// TODO: remove
 
 class PlatformWindow
 	: public RefObject
@@ -41,5 +40,4 @@ private:
 	float m_dpiFactor;
 };
 
-} // namespace detail
 } // namespace ln
