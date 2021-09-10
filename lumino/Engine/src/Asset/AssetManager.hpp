@@ -1,6 +1,8 @@
 ﻿
 #pragma once
 #include <LuminoEngine/Base/Task.hpp>
+#include <LuminoEngine/Engine/Module.hpp>
+#include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Asset/Common.hpp>
 #include <LuminoEngine/Asset/AssetObject.hpp>
 #include "../../../Engine/src/Base/RefObjectCache.hpp"
@@ -15,7 +17,7 @@ class FileSystemReader;
 struct AssetRequiredPathSet;
 
 class AssetManager
-	: public RefObject
+	: public Module
 {
 public:
     static const String AssetPathPrefix;
@@ -25,11 +27,10 @@ public:
 	{
         AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
 	};
+    static AssetManager* initialize(const Settings& settings);
+    static void terminate();
+    static inline AssetManager* instance() { return static_cast<AssetManager*>(EngineContext2::instance()->assetManager); }
 
-	AssetManager();
-	virtual ~AssetManager();
-	void init(const Settings& settings);
-	void dispose();
 
 	void addAssetDirectory(const StringRef& path);
     void addAssetArchive(const StringRef& filePath, const StringRef& password);
@@ -156,7 +157,13 @@ public:
     }
 
 
+    virtual ~AssetManager();
+
 private:
+    AssetManager();
+    bool init(const Settings& settings);
+    void dispose();
+
 	void refreshActualArchives();
 	bool existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const;
     Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount, Path* outPath);

@@ -149,8 +149,6 @@ public:
 	void quit();
 
 	const EngineSettings& settings() { return m_settings; }
-    const Ref<AssetManager>& assetManager() const { return m_assetManager; }
-	//const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
     const Ref<AnimationManager>& animationManager() const { return m_animationManager; }
 	const Ref<InputManager>& inputManager() const { return m_inputManager; }
 	const Ref<AudioManager>& audioManager() const { return m_audioManager; }
@@ -218,8 +216,6 @@ private:
 	GraphicsAPI m_activeGraphicsAPI;
 
 	bool m_commonInitialized = false;
-    Ref<AssetManager> m_assetManager;
-	//Ref<PlatformManager>				m_platformManager;
 	Ref<AnimationManager>			m_animationManager;
 	Ref<InputManager>				m_inputManager;
 	Ref<AudioManager>				m_audioManager;

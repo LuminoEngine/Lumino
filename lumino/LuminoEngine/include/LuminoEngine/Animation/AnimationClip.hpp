@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <LuminoEngine/Base/Promise.hpp>
-#include "../Asset/AssetObject.hpp"
+#include <LuminoEngine/Asset/AssetObject.hpp>
 #include "Common.hpp"
 
 namespace ln {

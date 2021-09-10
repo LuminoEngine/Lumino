@@ -15,7 +15,7 @@
 #include "RHIs/DirectX12/DX12DeviceContext.hpp"
 #endif
 #include "../Engine/LinearAllocator.hpp"
-#include "../Asset/AssetManager.hpp"
+#include "../../../Engine/src/Asset/AssetManager.hpp"
 #include "SingleFrameAllocator.hpp"
 #include "GraphicsProfiler.hpp"
 

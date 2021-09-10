@@ -2,7 +2,7 @@
 #include <Project/Project.hpp>
 #include "NewAssetCommand.hpp"
 #include "../../../lumino/LuminoEngine/src/Engine/EngineDomain.hpp"
-#include "../../../lumino/LuminoEngine/src/Asset/AssetManager.hpp"
+#include "../../../lumino/Engine/src/Asset/AssetManager.hpp"
 
 int NewAssetCommand::execute(lna::Workspace* workspace, ln::String name)
 {
@@ -17,7 +17,7 @@ int NewAssetCommand::execute(lna::Workspace* workspace, ln::String name)
     }
 
     auto model = ln::makeObject<ln::AssetModel>(obj);
-    ln::detail::EngineDomain::assetManager()->saveAssetModelToLocalFile(model, filePath);
+    ln::detail::AssetManager::instance()->saveAssetModelToLocalFile(model, filePath);
 
     return 0;
 }

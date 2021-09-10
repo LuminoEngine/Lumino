@@ -15,6 +15,7 @@ typedef struct FT_FaceRec_*  FT_Face;
 namespace ln {
 class Font;
 namespace detail {
+	class AssetManager;
 class FontCore;
 class GlyphIconFontManager;
 

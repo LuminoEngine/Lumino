@@ -5,8 +5,6 @@
 
 namespace ln {
 
-//typedef void(*EngineContext2_onRetainedObject)(EngineContext2* context, Object* obj);
-//typedef void(*EngineContext2_onReleasedObject)(EngineContext2* context, Object* obj);
 namespace detail {
 class IObjectEventListener
 {
@@ -138,9 +136,8 @@ public:
 
 	// TODO:
 	RefObject* platformManager = nullptr;
+	RefObject* assetManager = nullptr;
 	detail::IObjectEventListener* objectEventListener = nullptr;
-	//EngineContext2_onRetainedObject m_onRetainedObject = nullptr;
-	//EngineContext2_onReleasedObject m_onReleasedObject = nullptr;
 
 private:
 	EngineContext2();

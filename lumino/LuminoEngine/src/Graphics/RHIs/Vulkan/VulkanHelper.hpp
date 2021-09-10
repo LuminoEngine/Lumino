@@ -14,8 +14,8 @@
 //#endif
 
 #include "../GraphicsDeviceContext.hpp"
-#include "../MixHash.hpp"
 #include <LuminoCore/Base/LinearAllocator.hpp>
+#include <LuminoEngine/Base/MixHash.hpp>
 
 // vcpkg からインストールした VulkanHeaders だとこれが定義されていなかった
 static const int VK_SYSTEM_ALLOCATION_SCOPE_RANGE_SIZE = 5;

@@ -4,10 +4,7 @@
 #include "AssetManager.hpp"
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
-#include "../Graphics/RHIs/MixHash.hpp"
-
-// TODO: for importer
-#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Base/MixHash.hpp>
 
 namespace ln {
 
@@ -37,17 +34,17 @@ void Assets::reload(AssetObject* obj)
 
 void Assets::saveAssetToLocalFile(AssetModel* asset, const String& filePath)
 {
-    detail::EngineDomain::assetManager()->saveAssetModelToLocalFile(asset, filePath);
+    detail::AssetManager::instance()->saveAssetModelToLocalFile(asset, filePath);
 }
 
 Ref<AssetModel> Assets::loadAssetFromLocalFile(const String& filePath)
 {
-    return detail::EngineDomain::assetManager()->loadAssetModelFromLocalFile(filePath);
+    return detail::AssetManager::instance()->loadAssetModelFromLocalFile(filePath);
 }
 
 Ref<Object> Assets::loadAsset(const StringRef& filePath)
 {
-    auto assetModel = detail::EngineDomain::assetManager()->loadAssetModelFromLocalFile(filePath);
+    auto assetModel = detail::AssetManager::instance()->loadAssetModelFromLocalFile(filePath);
     if (assetModel)
         return assetModel->target();
     else
@@ -56,9 +53,9 @@ Ref<Object> Assets::loadAsset(const StringRef& filePath)
 
 void Assets::reloadAsset(const StringRef& filePath, Object* obj)
 {
-    auto assetPath = detail::EngineDomain::assetManager()->findAssetPath(filePath);
+    auto assetPath = detail::AssetManager::instance()->findAssetPath(filePath);
     if (assetPath) {
-        detail::EngineDomain::assetManager()->loadAssetModelFromAssetPathToInstance(obj, *assetPath);
+        detail::AssetManager::instance()->loadAssetModelFromAssetPathToInstance(obj, *assetPath);
     }
     else {
         LN_WARNING(_TT("Asset not found: ") + String(filePath));    // TODO: operator
@@ -68,14 +65,14 @@ void Assets::reloadAsset(const StringRef& filePath, Object* obj)
 void Assets::saveAsset(Object* obj, const StringRef& filePath)
 {
     auto model = makeObject<AssetModel>(obj);
-    detail::EngineDomain::assetManager()->saveAssetModelToLocalFile(model, filePath);
+    detail::AssetManager::instance()->saveAssetModelToLocalFile(model, filePath);
 }
 
 void Assets::deserializeInstance(Object* obj, const StringRef& filePath)
 {
-    auto assetPath = detail::EngineDomain::assetManager()->findAssetPath(filePath);
+    auto assetPath = detail::AssetManager::instance()->findAssetPath(filePath);
     if (assetPath) {
-        detail::EngineDomain::assetManager()->loadAssetModelFromAssetPathToInstance(obj, *assetPath);
+        detail::AssetManager::instance()->loadAssetModelFromAssetPathToInstance(obj, *assetPath);
     }
     else {
         LN_WARNING(_TT("Asset not found: ") + String(filePath));    // TODO: operator
@@ -84,17 +81,17 @@ void Assets::deserializeInstance(Object* obj, const StringRef& filePath)
 
 bool Assets::existsFile(const StringRef& filePath)
 {
-    return detail::EngineDomain::assetManager()->existsFile(filePath);
+    return detail::AssetManager::instance()->existsFile(filePath);
 }
 
 Ref<ByteBuffer> Assets::readAllBytes(const StringRef& filePath)
 {
-	return detail::EngineDomain::assetManager()->readAllBytes(filePath);
+	return detail::AssetManager::instance()->readAllBytes(filePath);
 }
 
 String Assets::readAllText(const StringRef& filePath, EncodingType encoding)
 {
-    auto stream = detail::EngineDomain::assetManager()->openFileStream(filePath);
+    auto stream = detail::AssetManager::instance()->openFileStream(filePath);
     if (!stream) {
         LN_WARNING(_TT("Asset not found: ") + String(filePath));    // TODO: operator
         return String::Empty;
@@ -106,7 +103,7 @@ String Assets::readAllText(const StringRef& filePath, EncodingType encoding)
 
 Ref<Stream> Assets::openFileStream(const StringRef& filePath)
 {
-    return detail::EngineDomain::assetManager()->openFileStream(filePath);
+    return detail::AssetManager::instance()->openFileStream(filePath);
 }
 //
 //void Assets::serializeAssetObjectInternal(Archive& ar, const StringRef& name, Ref<Object>& value)
@@ -122,7 +119,7 @@ Ref<Stream> Assets::openFileStream(const StringRef& filePath)
 //    if (ar.isLoading()) {
 //        auto assetPath = detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), localPath);
 //        //value = dynamic_pointer_cast<Tileset>(Assets::loadAsset(assetPath));
-//        auto assetModel = detail::EngineDomain::assetManager()->loadAssetModelFromAssetPath(assetPath);
+//        auto assetModel = detail::AssetManager::instance()->loadAssetModelFromAssetPath(assetPath);
 //        value = assetModel->target();
 //        if (value) {
 //            value->setAssetPath(assetPath);
@@ -266,7 +263,7 @@ Path AssetPath::makeRelativePath(const AssetPath& basePath, const AssetPath& ass
 
 AssetPath AssetPath::resolveAssetPath(const Path& filePath, const Char** exts, size_t extsCount)
 {
-    auto path = detail::EngineDomain::assetManager()->findAssetPath(filePath, exts, extsCount);
+    auto path = detail::AssetManager::instance()->findAssetPath(filePath, exts, extsCount);
     if (path) {
         return *path;
     }
@@ -278,7 +275,7 @@ AssetPath AssetPath::resolveAssetPath(const Path& filePath, const Char** exts, s
 
 AssetPath AssetPath::resolveAssetPath(const AssetPath& assetPath, const Char** exts, size_t extsCount)
 {
-    return detail::EngineDomain::assetManager()->resolveAssetPath(assetPath, exts, extsCount);
+    return detail::AssetManager::instance()->resolveAssetPath(assetPath, exts, extsCount);
 }
 
 bool AssetPath::isAssetFilePath() const

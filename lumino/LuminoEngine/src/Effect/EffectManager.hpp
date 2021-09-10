@@ -21,6 +21,7 @@ LN_PROMISE()
 using ParticleModelPromise = Promise<Ref<ParticleModel>>;
 
 namespace detail {
+class AssetManager;
 class GraphicsManager;
 class RenderingManager;
 class LLGINativeGraphicsExtension;

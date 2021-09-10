@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "AssetManager.hpp"
+#include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
@@ -59,7 +60,7 @@ void AssetObject::serialize(Serializer2& ar)
 
 bool AssetObject::_resolveAssetRequiredPathSet(const detail::AssetPath* baseDir, const Path& requiredLoadPath, const std::vector<const Char*> candidateExts, detail::AssetRequiredPathSet* outPathSet)
 {
-	auto* manager = detail::EngineDomain::assetManager();
+	auto* manager = detail::AssetManager::instance();
 
 	outPathSet->requiredLoadPath = requiredLoadPath;
 	outPathSet->assetFilePath.clear();
@@ -137,7 +138,7 @@ void AssetObject::reload()
 {
 	if (LN_REQUIRE(m_data)) return;
 
-	auto* manager = detail::EngineDomain::assetManager();
+	auto* manager = detail::AssetManager::instance();
 
 	// .yml が要求されていれば、deserialize を試してみる
 	if (m_data->assetFilePath.hasValue()) {

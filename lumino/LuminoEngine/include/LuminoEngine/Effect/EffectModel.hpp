@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Common.hpp"
-#include "../Asset/AssetObject.hpp"
+#include <LuminoEngine/Asset/AssetObject.hpp>
 
 namespace ln {
 class RenderingContext;

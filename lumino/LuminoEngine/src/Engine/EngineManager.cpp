@@ -35,7 +35,7 @@
 #include "../Rendering/RenderingProfiler.hpp"
 #include "../Effect/EffectManager.hpp"
 #include "../Physics/PhysicsManager.hpp"
-#include "../Asset/AssetManager.hpp"
+#include "../../../Engine/src/Asset/AssetManager.hpp"
 #include "../Visual/VisualManager.hpp"
 #include "../Scene/SceneManager.hpp"
 #include "../UI/UIManager.hpp"
@@ -75,8 +75,6 @@ EngineSettings EngineManager::s_settings;
 
 EngineManager::EngineManager()
 	: m_settings()
-    , m_assetManager(nullptr)
-	//, m_platformManager(nullptr)
 	//, m_animationManager(nullptr)
 	//, m_inputManager(nullptr)
 	, m_audioManager(nullptr)
@@ -261,7 +259,7 @@ void EngineManager::dispose()
 	if (m_inputManager) m_inputManager->dispose();
     if (m_animationManager) m_animationManager->dispose();
 	PlatformManager::terminate();
-    if (m_assetManager) m_assetManager->dispose();
+	AssetManager::terminate();
 
 #if defined(LN_OS_WIN32)
     if (m_oleInitialized) {
@@ -364,19 +362,18 @@ void EngineManager::initializeCommon()
 
 void EngineManager::initializeAssetManager()
 {
-    if (!m_assetManager && m_settings.features.hasFlag(EngineFeature::Application))
+    if (!AssetManager::instance() && m_settings.features.hasFlag(EngineFeature::Application))
     {
         AssetManager::Settings settings;
         settings.assetStorageAccessPriority = m_settings.assetStorageAccessPriority;
 
-        m_assetManager = ln::makeRef<AssetManager>();
-        m_assetManager->init(settings);
+		AssetManager::initialize(settings);
 
         for (auto& e : m_settings.assetArchives) {
-            m_assetManager->addAssetArchive(e.filePath, e.password);
+			AssetManager::instance()->addAssetArchive(e.filePath, e.password);
         }
         for (auto& e : m_settings.assetDirectories) {
-            m_assetManager->addAssetDirectory(e);
+			AssetManager::instance()->addAssetDirectory(e);
         }
     }
 }
@@ -418,7 +415,7 @@ void EngineManager::initializeAnimationManager()
 		initializeAssetManager();
 
         AnimationManager::Settings settings;
-		settings.assetManager = m_assetManager;
+		settings.assetManager = AssetManager::instance();
         m_animationManager = ln::makeRef<AnimationManager>();
         m_animationManager->init(settings);
     }
@@ -446,7 +443,7 @@ void EngineManager::initializeAudioManager()
         initializeAssetManager();
 
 		AudioManager::Settings settings;
-        settings.assetManager = m_assetManager;
+        settings.assetManager = AssetManager::instance();
 
 		m_audioManager = ln::makeRef<AudioManager>();
 		m_audioManager->init(settings);
@@ -474,7 +471,7 @@ void EngineManager::initializeFontManager()
 		initializeAssetManager();
 
 		FontManager::Settings settings;
-		settings.assetManager = m_assetManager;
+		settings.assetManager = AssetManager::instance();
 		settings.engineAssetPath = m_engineResourcesPath;
 		settings.fontFile = m_settings.fontFile;
 
@@ -491,7 +488,7 @@ void EngineManager::initializeGraphicsManager()
         initializePlatformManager();
 
 		GraphicsManager::Settings settings;
-        settings.assetManager = m_assetManager;
+        settings.assetManager = AssetManager::instance();
 		settings.platformManager = PlatformManager::instance();
 		settings.mainWindow = (m_settings.graphicsContextManagement) ? PlatformManager::instance()->mainWindow() : nullptr;
 		settings.graphicsAPI = m_activeGraphicsAPI;
@@ -512,7 +509,7 @@ void EngineManager::initializeMeshManager()
 
 		MeshManager::Settings settings;
 		settings.graphicsManager = m_graphicsManager;
-		settings.assetManager = m_assetManager;
+		settings.assetManager = AssetManager::instance();
 
 		m_meshManager = ln::makeRef<MeshManager>();
 		m_meshManager->init(settings);
@@ -544,7 +541,7 @@ void EngineManager::initializeEffectManager()
 
         EffectManager::Settings settings;
         settings.graphicsManager = m_graphicsManager;
-        settings.assetManager = m_assetManager;
+        settings.assetManager = AssetManager::instance();
 		settings.renderingManager = m_renderingManager;
 
         m_effectManager = ln::makeRef<EffectManager>();
@@ -1176,11 +1173,6 @@ EffectManager* EngineDomain::effectManager()
 PhysicsManager* EngineDomain::physicsManager()
 {
     return engineManager()->physicsManager();
-}
-
-AssetManager* EngineDomain::assetManager()
-{
-    return engineManager()->assetManager();
 }
 
 VisualManager* EngineDomain::visualManager()

@@ -1,9 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include "../../../../lumino/LuminoCore/src/IO/PathHelper.hpp"
-//#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include "AssetArchive.hpp"
 #include "AssetManager.hpp"
@@ -17,6 +16,27 @@ namespace detail {
 const String AssetManager::AssetPathPrefix = _TT("asset://");
 const String AssetManager::LocalhostPrefix = _TT("local");
 
+AssetManager* AssetManager::initialize(const Settings& settings)
+{
+    if (instance()) return instance();
+
+    auto m = Ref<AssetManager>(LN_NEW detail::AssetManager(), false);
+    if (!m->init(settings)) return nullptr;
+
+    EngineContext2::instance()->registerModule(m);
+    EngineContext2::instance()->assetManager = m;
+    return m;
+}
+
+void AssetManager::terminate()
+{
+    if (instance()) {
+        instance()->dispose();
+        EngineContext2::instance()->unregisterModule(instance());
+        EngineContext2::instance()->assetManager = nullptr;
+    }
+}
+
 AssetManager::AssetManager()
 	: m_storageAccessPriority(AssetStorageAccessPriority::DirectoryFirst)
 {
@@ -26,7 +46,7 @@ AssetManager::~AssetManager()
 {
 }
 
-void AssetManager::init(const Settings& settings)
+bool AssetManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "AssetManager Initialization started.";
 
@@ -40,6 +60,7 @@ void AssetManager::init(const Settings& settings)
     }
 
     LN_LOG_DEBUG << "AssetManager Initialization ended.";
+    return true;
 }
 
 void AssetManager::dispose()

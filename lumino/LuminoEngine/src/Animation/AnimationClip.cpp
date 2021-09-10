@@ -4,7 +4,7 @@
 #include <LuminoEngine/Animation/AnimationCurve.hpp>
 #include <LuminoEngine/Animation/AnimationTrack.hpp>
 #include <LuminoEngine/Animation/AnimationClip.hpp>
-#include "../Asset/AssetManager.hpp"
+#include "../../../Engine/src/Asset/AssetManager.hpp"
 #include "AnimationManager.hpp"
 #include "VmdLoader.hpp"
 #include "BvhImporter.hpp"
@@ -109,7 +109,7 @@ const std::vector<const Char*>& AnimationClip::resourceExtensions() const
 void AnimationClip::onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath)
 {
 	// TODO: ちゃんと stream から読みたい
-	auto assetManager = detail::EngineDomain::assetManager();
+	auto assetManager = detail::AssetManager::instance();
 	auto diag = makeObject<DiagnosticsManager>();
 	detail::BvhImporter importer(assetManager, diag);
 	importer.import(this, assetPath, detail::EngineDomain::animationManager()->defaultAnimationClipImportSettings());

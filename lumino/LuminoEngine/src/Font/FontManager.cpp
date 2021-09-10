@@ -7,7 +7,7 @@
 #include FT_TRUETYPE_TABLES_H /* <freetype/tttables.h> */
 #include FT_SFNT_NAMES_H
 #include <LuminoEngine/Font/Font.hpp>
-#include "../Asset/AssetManager.hpp"
+#include "../../../Engine/src/Asset/AssetManager.hpp"
 #include "FontCore.hpp"
 #include "FreeTypeFont.hpp"
 #include "FontManager.hpp"
