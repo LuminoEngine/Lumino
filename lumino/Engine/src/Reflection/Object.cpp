@@ -4,9 +4,6 @@
 #include <LuminoEngine/Reflection/Property.hpp>
 #include <LuminoEngine/Reflection/VMProperty.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
-#include "../../../LuminoEngine/src/Engine/EngineDomain.hpp"
-#include "../../../LuminoEngine/src/Runtime/RuntimeManager.hpp"
-#include "../../../LuminoEngine/src/Asset/AssetManager.hpp"
 
 namespace ln {
 
@@ -36,7 +33,10 @@ Object::~Object()
 	}
 
 	if (m_runtimeData) {
-		detail::EngineDomain::runtimeManager()->onDestructObject(this);
+		auto c = EngineContext2::instance();
+		if (c->objectEventListener) {
+			c->objectEventListener->onDestructObject(this);
+		}
 	}
 }
 
@@ -85,12 +85,12 @@ void Object::setTypeInfoOverride(TypeInfo* value)
     LN_UNREACHABLE();
 }
 
-void Object::reloadAsset()
-{
-	if (!m_assetPath.isNull()) {
-		detail::EngineDomain::assetManager()->loadAssetModelFromAssetPathToInstance(this, m_assetPath);
-	}
-}
+//void Object::reloadAsset()
+//{
+//	if (!m_assetPath.isNull()) {
+//		detail::EngineDomain::assetManager()->loadAssetModelFromAssetPathToInstance(this, m_assetPath);
+//	}
+//}
 
 //void Object::onSetAssetFilePath(const Path& filePath)
 //{
@@ -99,14 +99,20 @@ void Object::reloadAsset()
 void Object::onRetained()
 {
 	if (m_runtimeData) {
-		detail::EngineDomain::runtimeManager()->onRetainedObject(this);
+		auto c = EngineContext2::instance();
+		if (c->objectEventListener) {
+			c->objectEventListener->onRetainedObject(this);
+		}
 	}
 }
 
 void Object::onReleased()
 {
 	if (m_runtimeData) {
-		detail::EngineDomain::runtimeManager()->onReleasedObject(this);
+		auto c = EngineContext2::instance();
+		if (c->objectEventListener) {
+			c->objectEventListener->onReleasedObject(this);
+		}
 	}
 }
 

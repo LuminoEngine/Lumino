@@ -73,7 +73,7 @@ public:
         return resolveAssetPath(filePath, candidateExts, N);
     }
 
-    AssetPath();
+    AssetPath() {}
     AssetPath(const String& scheme, const String& host, const Path& path);
     void clear();
 
@@ -249,7 +249,7 @@ public:
 
     virtual void setTypeInfoOverride(TypeInfo* value);
 
-    void reloadAsset();
+    //void reloadAsset();
 
 
 #if defined(LUMINO_TRANSCODER)

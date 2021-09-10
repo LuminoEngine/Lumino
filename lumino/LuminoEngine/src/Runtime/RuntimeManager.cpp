@@ -54,6 +54,16 @@ void RuntimeManager::init(const Settings& settings)
 
 	m_systemAliving = true;
 
+	//EngineContext2::instance()->m_onRetainedObject = [](EngineContext2* context, Object* obj) {
+	//	static_cast<RuntimeManager*>(context->runtimeManager)->onRetainedObject(obj);
+	//};
+	//EngineContext2::instance()->m_onReleasedObject = [](EngineContext2* context, Object* obj) {
+	//	static_cast<RuntimeManager*>(context->runtimeManager)->onReleasedObject(obj);
+	//};
+	EngineContext2::initialize();
+	assert(!EngineContext2::instance()->objectEventListener);
+	EngineContext2::instance()->objectEventListener = this;
+
 	LN_LOG_DEBUG << "RuntimeManager Initialization finished.";
 }
 

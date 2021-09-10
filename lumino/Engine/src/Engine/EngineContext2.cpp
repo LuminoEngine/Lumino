@@ -15,7 +15,7 @@ bool EngineContext2::initialize(EngineContext2* sharedContext)
         return false;
     }
 
-    if (LN_REQUIRE(!s_instance)) return false;
+    if (s_instance) return true;
     s_instance = std::unique_ptr<EngineContext2>(LN_NEW EngineContext2());
     return s_instance->init();
 }

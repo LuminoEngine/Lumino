@@ -323,9 +323,6 @@ uint64_t AssetPath::calculateHash() const
     return detail::hash_combine(hash, std::hash<String>()(m_components->path.str()));
 }
 
-AssetPath::AssetPath()
-{
-}
 
 AssetPath::AssetPath(const String& scheme, const String& host, const Path& path)
     : m_components(std::make_shared<Components>())

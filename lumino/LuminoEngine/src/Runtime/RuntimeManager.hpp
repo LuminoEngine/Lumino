@@ -26,6 +26,7 @@ struct ObjectEntry
 
 class RuntimeManager
 	: public RefObject
+	, public IObjectEventListener
 {
 public:
 	struct Settings
@@ -48,7 +49,7 @@ public:
 
 	void retainObjectExplicitly(LNHandle handle);
 	void releaseObjectExplicitly(LNHandle handle);
-	void onDestructObject(Object* obj);
+	void onDestructObject(Object* obj) override;
 
 	ObjectEntry* getObjectEntry(LNHandle handle);
     Object* getObjectFromHandle(LNHandle handle);
@@ -59,8 +60,8 @@ public:
 	
 	//static void setReferenceCountTracker(LNReferenceCountTrackerCallback callback);
 	void setReferenceTrackEnabled(LNHandle handle);
-	void onRetainedObject(Object* obj);
-	void onReleasedObject(Object* obj);
+	void onRetainedObject(Object* obj) override;
+	void onReleasedObject(Object* obj) override;
 
     //static void setRuntimeFinalizedCallback(LNRuntimeFinalizedCallback callback);
     //static void setRuntimeCreateInstanceCallback(LNRuntimeCreateInstanceCallback callback);

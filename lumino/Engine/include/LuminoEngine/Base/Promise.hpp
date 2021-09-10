@@ -47,7 +47,7 @@ public:
 	static ::ln::TypeInfo* _lnref_getTypeInfo()
 	{
 		//static ::ln::TypeInfo* _lnref_typeInfo = _lnref_registerTypeInfo();
-		return _lnref_typeInfo;
+		return nullptr;//_lnref_typeInfo;
 	}
 	::ln::TypeInfo* _lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
 
@@ -57,7 +57,7 @@ public:
 		return context->registerType<Promise<TResult>>("__Promise", ::ln::TypeInfo::getTypeInfo<PromiseBase>() , {});
 	}
 	
-	static ::ln::TypeInfo* const _lnref_typeInfo LN_ATTRIBUTE_UNUSED_;
+	//static ::ln::TypeInfo* const _lnref_typeInfo LN_ATTRIBUTE_UNUSED_;
 
 
 
@@ -173,7 +173,7 @@ public:
 	std::mutex m_mutex;
 };
 
-template<class TResult>
-::ln::TypeInfo* const Promise<TResult>::_lnref_typeInfo = Promise<TResult>::_lnref_registerTypeInfo();
+//template<class TResult>
+//::ln::TypeInfo* const Promise<TResult>::_lnref_typeInfo = Promise<TResult>::_lnref_registerTypeInfo();
 
 } // namespace ln

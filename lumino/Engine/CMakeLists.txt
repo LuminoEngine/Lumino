@@ -40,8 +40,6 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include srce)
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../LuminoEngine/include)   # TODO: 消したい
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../Platform/include)   # TODO: 消したい
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
