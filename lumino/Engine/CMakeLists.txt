@@ -8,10 +8,12 @@ project(LuminoEngineCore)
 
 file(GLOB LN_SOURCES_Base include/LuminoEngine/Base/*.hpp src/Base/*.cpp src/Base/*.hpp)
 file(GLOB LN_SOURCES_Reflection include/LuminoEngine/Reflection/*.hpp src/Reflection/*.cpp src/Reflection/*.hpp)
+file(GLOB LN_SOURCES_Engine include/LuminoEngine/Engine/*.hpp src/Engine/*.cpp src/Engine/*.hpp)
 
 # Grouping.
 source_group("Base" FILES ${LN_SOURCES_Base})
 source_group("Reflection" FILES ${LN_SOURCES_Reflection})
+source_group("Engine" FILES ${LN_SOURCES_Engine})
 
 set(LN_SOURCES
     src/pch.cpp
@@ -19,6 +21,7 @@ set(LN_SOURCES
     src/Internal.hpp
     ${LN_SOURCES_Base}
     ${LN_SOURCES_Reflection}
+    ${LN_SOURCES_Engine}
 )
 
 #-------------------------------------------------------------------------------
