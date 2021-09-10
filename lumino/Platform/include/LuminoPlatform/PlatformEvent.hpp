@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <LuminoCore/Base/EnumFlags.hpp>
+#include "Common.hpp"
 
 namespace ln {
 class DataObject;
@@ -176,9 +177,6 @@ enum class MouseButtons
 	X2,
 };
 
-namespace detail {
-
-class PlatformWindow;
 
 /** イベント引数 */
 struct PlatformEventArgs
@@ -244,10 +242,10 @@ struct PlatformEventArgs
 		} dragDrop;
 	};
 
-public:
-	/** 種類と送信元ウィンドウを指定して初期化する */
-	PlatformEventArgs(PlatformEventType type_, PlatformWindow* sender_) { type = type_; sender = sender_; }
-	PlatformEventArgs() {}
+//public:
+//	/** 種類と送信元ウィンドウを指定して初期化する */
+//	PlatformEventArgs(PlatformEventType type_, PlatformWindow* sender_) { type = type_; sender = sender_; }
+//	PlatformEventArgs() {}
 
 	static PlatformEventArgs makeClosingEvent(PlatformWindow* sender);
 	static PlatformEventArgs makeWindowSizeChangedEvent(PlatformWindow* sender, int width, int height);
@@ -265,6 +263,5 @@ public:
 	virtual bool onPlatformEvent(const PlatformEventArgs& e) = 0;
 };
 
-} // namespace detail
 } // namespace ln
 

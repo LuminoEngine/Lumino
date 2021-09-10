@@ -2,8 +2,8 @@
 #pragma once
 
 namespace ln {
-namespace detail {
 class PlatformWindow;
+namespace detail {
 class OpenGLContext;
 class PlatformManager;
 } // namespace detail

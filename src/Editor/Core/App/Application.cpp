@@ -97,7 +97,7 @@ void EditorApplication::run()
 
     while (!ln::detail::EngineDomain::engineManager()->isExitRequested())
     {
-        ln::detail::EngineDomain::engineManager()->platformManager()->windowManager()->processSystemEventQueue(ln::detail::EventProcessingMode::Polling);
+        ln::detail::PlatformManager::instance()->windowManager()->processSystemEventQueue(ln::detail::EventProcessingMode::Polling);
         ln::detail::EngineDomain::engineManager()->uiManager()->dispatchPostedEvents();
 
 		float elapsedSeconds = static_cast<float>(ln::Environment::getTickCount() - lastTime) / 1000.0f;

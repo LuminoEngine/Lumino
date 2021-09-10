@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2019 lriki. Distributed under the MIT license.
 #pragma once
 #include "Common.hpp"
-#include "../Asset/AssetObject.hpp"
+#include <LuminoEngine/Asset/AssetObject.hpp>
 #include "../Graphics/GraphicsResource.hpp"
 #include "ShaderInterfaceFramework.hpp"
 #include "ShaderHelper.hpp"

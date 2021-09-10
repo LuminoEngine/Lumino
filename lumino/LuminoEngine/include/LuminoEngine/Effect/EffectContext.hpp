@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "../Base/Builder.hpp"
+#include <LuminoEngine/Base/Builder.hpp>
 #include "Common.hpp"
 #include "EffectModel.hpp"
 

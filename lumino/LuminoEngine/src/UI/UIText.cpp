@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Engine/VMProperty.hpp>
+#include <LuminoEngine/Reflection/VMProperty.hpp>
 
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>

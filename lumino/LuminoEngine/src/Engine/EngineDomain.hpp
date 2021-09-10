@@ -28,7 +28,6 @@ class MeshManager;
 class RenderingManager;
 class EffectManager;
 class PhysicsManager;
-class AssetManager;
 class VisualManager;
 class SceneManager;
 class UIManager;
@@ -42,7 +41,6 @@ public:
 	static EngineContext* engineContext();
 	static RuntimeManager* runtimeManager();
 	static EngineManager* engineManager();
-	static PlatformManager* platformManager();
     static AnimationManager* animationManager();
 	static InputManager* inputManager();
 	static AudioManager* audioManager();
@@ -53,7 +51,6 @@ public:
 	static RenderingManager* renderingManager();
     static EffectManager* effectManager();
     static PhysicsManager* physicsManager();
-    static AssetManager* assetManager();
     static VisualManager* visualManager();
     static SceneManager* sceneManager();
 	static UIManager* uiManager();

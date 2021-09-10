@@ -1,4 +1,5 @@
 ﻿
+#if 0
 #ifdef __EMSCRIPTEN__
 
 #include <stdio.h>
@@ -36,4 +37,5 @@ int main(int argc, char** argv)
 	return 0;
 }
 
+#endif
 #endif

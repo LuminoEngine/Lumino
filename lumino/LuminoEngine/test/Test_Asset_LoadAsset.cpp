@@ -26,7 +26,7 @@ TEST_F(Test_Asset_LoadAsset, Basic)
 		archive.close();
 	}
 
-	detail::EngineDomain::assetManager()->addAssetArchive(assetFile, _TT("pass"));
+	detail::AssetManager::instance()->addAssetArchive(assetFile, _TT("pass"));
 
 	
 	// 絶対パスで読み込み
@@ -110,8 +110,8 @@ TEST_F(Test_Asset_LoadAsset, MultiArchive)
 		hash2 = CRCHash::compute((const char*)data.data(), data.size());
 	}
 
-	detail::EngineDomain::assetManager()->addAssetArchive(assetFile1, _TT("pass1"));
-	detail::EngineDomain::assetManager()->addAssetArchive(assetFile2, _TT("pass2"));
+	detail::AssetManager::instance()->addAssetArchive(assetFile1, _TT("pass1"));
+	detail::AssetManager::instance()->addAssetArchive(assetFile2, _TT("pass2"));
 
 	auto stream1 = Assets::openFileStream(_TT("Audio/sin_440_3s_S16L_96000_2ch.wav"));
 	auto stream2 = Assets::openFileStream(_TT("Audio/sin_440_3s_S16L_88200_2ch.wav"));

@@ -30,7 +30,7 @@ SwapChain::~SwapChain()
 {
 }
 
-void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize)
+void SwapChain::init(PlatformWindow* window, const SizeI& backbufferSize)
 {
     // TODO: onChangeDevice でバックバッファをアタッチ
     Object::init();

@@ -97,7 +97,7 @@ void InputDriver::getJoystickState(int joystickNumber, JoystickDeviceState* stat
 }
 
 //------------------------------------------------------------------------------
-void InputDriver::onEvent(const detail::PlatformEventArgs& e)
+void InputDriver::onEvent(const PlatformEventArgs& e)
 {
 	switch (e.type)
 	{

@@ -7,7 +7,7 @@
 namespace ln {
 
 
-void* PlatformSupport::getWin32WindowHandle(detail::PlatformWindow* window)
+void* PlatformSupport::getWin32WindowHandle(PlatformWindow* window)
 {
 #ifdef LN_OS_WIN32
     if (auto* w = dynamic_cast<detail::AbstractWin32PlatformWindow*>(window)) {

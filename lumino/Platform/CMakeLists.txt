@@ -2,9 +2,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(LuminoPlatform)
 
-
-set(PUBLIC_HDR_DIR include)
-
 #-------------------------------------------------------------------------------
 # Files
 #-------------------------------------------------------------------------------
@@ -48,8 +45,6 @@ set(LN_SOURCES
 # Targets
 #-------------------------------------------------------------------------------
 
-#include_directories(${PUBLIC_HDR_DIR})
-
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 #target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>)
 #target_include_directories(${PROJECT_NAME} PUBLIC ${PUBLIC_HDR_DIR})
@@ -63,9 +58,13 @@ target_include_directories(
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore)
+target_link_libraries(${PROJECT_NAME} PUBLIC LuminoEngineCore)
 
 if (LN_OS_DESKTOP)
     target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad)
+endif()
+if (LN_EMSCRIPTEN)
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-pthread")
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
@@ -78,13 +77,14 @@ ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 set(LN_TARGETS_NAME "${PROJECT_NAME}Targets")
 set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
 
-install(TARGETS ${PROJECT_NAME}
+install(
+    TARGETS ${PROJECT_NAME}
     EXPORT ${LN_TARGETS_NAME}
-    ARCHIVE     DESTINATION ./lib       # Library installation location (Copied at "INSTALL" build time)
-#    INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
+    ARCHIVE DESTINATION lib
+    INCLUDES DESTINATION include
 )
 
-#install(DIRECTORY include/${PROJECT_NAME} DESTINATION ./include)
+install(DIRECTORY include DESTINATION .)
 
 install(
     EXPORT ${LN_TARGETS_NAME}
@@ -93,15 +93,14 @@ install(
     EXPORT_LINK_INTERFACE_LIBRARIES
 )
 
-install(
-    FILES ${LN_CONFIG_NAME}.cmake
-    DESTINATION lib/cmake/${PROJECT_NAME}
-)
-
 #-------------------------------------------------------------------------------
 # Sub-projects
 #-------------------------------------------------------------------------------
 
 if (LN_BUILD_TESTS)
     add_subdirectory(examples/Windows)
+endif()
+
+if (LN_EMSCRIPTEN)
+    add_subdirectory(examples/Web)
 endif()

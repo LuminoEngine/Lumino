@@ -5,9 +5,10 @@
 
 namespace ln {
     
-bool PlatformModule::initialize()
+PlatformModule* PlatformModule::initialize()
 {
-    return detail::PlatformManager::initialize();
+    detail::PlatformManager::Settings s;
+    return detail::PlatformManager::initialize(s);
 }
 
 void PlatformModule::terminate()

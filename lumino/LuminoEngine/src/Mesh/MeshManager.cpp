@@ -8,7 +8,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include "../Asset/AssetManager.hpp"
+#include "../../../Engine/src/Asset/AssetManager.hpp"
 #include "MeshImporters/GLTFImporter.hpp"
 #include "MeshImporters/VRMImporter.hpp"
 #include "MeshImporters/FbxImporter.hpp"

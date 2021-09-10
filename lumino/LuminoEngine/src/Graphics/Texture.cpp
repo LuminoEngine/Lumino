@@ -11,7 +11,7 @@
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
-#include "../Asset/AssetManager.hpp"
+//#include "../Asset/AssetManager.hpp"
 #include "../Font/TextLayoutEngine.hpp"
 #include "../Font/FontManager.hpp"
 #include "RenderTargetTextureCache.hpp"

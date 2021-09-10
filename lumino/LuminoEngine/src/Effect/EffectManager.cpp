@@ -8,7 +8,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Effect/ParticleEffectModel2.hpp>
 #include "../Graphics/GraphicsManager.hpp"
-#include "../Asset/AssetManager.hpp"
+//#include "../../../Engine/src/Asset/AssetManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "EffekseerEffect.hpp"
 #include "EffectManager.hpp"

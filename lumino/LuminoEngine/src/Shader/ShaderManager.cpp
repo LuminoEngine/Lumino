@@ -3,7 +3,7 @@
 #include <LuminoEngine/Shader/Shader.hpp>
 #include "ShaderManager.hpp"
 #include "ShaderTranspiler.hpp"
-#include "../Asset/AssetManager.hpp"
+#include "../../../Engine/src/Asset/AssetManager.hpp"
 
 #ifdef _WIN32
 #include "../Graphics/RHIs/DirectX12/DX12Helper.hpp"

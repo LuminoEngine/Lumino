@@ -1,15 +1,15 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Engine/RenderingCommandList.hpp>
-#include "../Base/RefObjectCache.hpp"
+#include "../../../Engine/src/Base/RefObjectCache.hpp"
 
 namespace ln {
 class GraphicsContext; 
 class CommandQueue;
 class SamplerState;
+class PlatformWindow;
 
 namespace detail {
-class PlatformWindow;
 class IGraphicsDevice;
 class ICommandList;
 class RenderTargetTextureCacheManager;

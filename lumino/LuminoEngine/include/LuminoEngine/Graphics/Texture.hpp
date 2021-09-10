@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Asset/AssetObject.hpp"
+#include <LuminoEngine/Asset/AssetObject.hpp>
 #include "../Font/Common.hpp"
 #include "Common.hpp"
 #include "GraphicsResource.hpp"

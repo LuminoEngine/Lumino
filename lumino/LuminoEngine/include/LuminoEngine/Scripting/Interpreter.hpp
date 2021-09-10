@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "../Base/Delegate.hpp"
-#include "../Base/Serializer.hpp"
+#include <LuminoEngine/Base/Delegate.hpp>
+#include <LuminoEngine/Base/Serializer.hpp>
 
 
 namespace ln {

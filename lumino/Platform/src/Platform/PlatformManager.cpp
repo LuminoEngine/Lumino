@@ -8,22 +8,25 @@
 namespace ln {
 namespace detail {
 
-Ref<PlatformManager> PlatformManager::s_instance;
 
-bool PlatformManager::initialize()
+PlatformManager* PlatformManager::initialize(const Settings& settings)
 {
-    if (LN_REQUIRE(!s_instance)) return false;
-    s_instance = makeRef<PlatformManager>();
-    Settings s;
-    s_instance->init(s);
-    return true;
+    if (instance()) return instance();
+
+    auto m = Ref<PlatformManager>(LN_NEW detail::PlatformManager(), false);
+    if (!m->init(settings)) return nullptr;
+
+    EngineContext2::instance()->registerModule(m);
+    EngineContext2::instance()->platformManager = m;
+    return m;
 }
 
 void PlatformManager::terminate()
 {
-    if (s_instance) {
-        s_instance->dispose();
-        s_instance = nullptr;
+    if (instance()) {
+        instance()->dispose();
+        EngineContext2::instance()->unregisterModule(instance());
+        EngineContext2::instance()->platformManager = nullptr;
     }
 }
 
@@ -31,6 +34,10 @@ PlatformManager::PlatformManager()
 	: m_windowManager()
     , m_glfwWithOpenGLAPI(true)
     , m_messageLoopProcessing(true)
+{
+}
+
+PlatformManager::~PlatformManager()
 {
 }
 

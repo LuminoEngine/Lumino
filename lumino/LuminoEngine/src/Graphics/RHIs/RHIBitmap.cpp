@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "MixHash.hpp"
+#include <LuminoEngine/Base/MixHash.hpp>
 #include "RHIBitmap.hpp"
 
 namespace ln {

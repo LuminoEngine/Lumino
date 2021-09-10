@@ -12,10 +12,10 @@ class RenderTargetTexture;
 class DepthBuffer;
 class Shader;
 class ShaderPass;
+class PlatformWindow;
 
 namespace detail {
 class GraphicsManager;
-class PlatformWindow;
 class ISwapChain;
 class SwapChainInternal;
 class SingleFrameUniformBufferAllocator;
@@ -53,7 +53,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     SwapChain();
     virtual ~SwapChain();
-    void init(detail::PlatformWindow* window, const SizeI& backbufferSize);
+    void init(PlatformWindow* window, const SizeI& backbufferSize);
 
 private:
 	const Ref<detail::GraphicsCommandList>& currentCommandList() const { return m_commandLists[m_imageIndex]; }

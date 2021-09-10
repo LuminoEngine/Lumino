@@ -1,12 +1,12 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Engine/Property.hpp>
+#include <LuminoEngine/Reflection/Property.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
-#include "../Asset/AssetManager.hpp"
+#include "../../../Engine/src/Asset/AssetManager.hpp"
 #include "../Rendering/RenderFeature/SpriteRenderFeature.hpp"
 
 namespace ln {
@@ -57,7 +57,7 @@ LN_OBJECT_IMPLEMENT(SpriteSheet, Object) {}
 
 Ref<SpriteSheet> SpriteSheet::load(StringRef path)
 {
-    auto assetModel = detail::EngineDomain::assetManager()->loadAssetModelFromLocalFile(path);
+    auto assetModel = detail::AssetManager::instance()->loadAssetModelFromLocalFile(path);
     if (auto obj = (assetModel) ? assetModel->targetAs<SpriteSheet>() : nullptr)
         return obj;
     else

@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Base/Task.hpp>
-#include <LuminoEngine/Engine/Property.hpp>
+#include <LuminoEngine/Reflection/Property.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Engine/Debug.hpp>
@@ -35,7 +35,7 @@
 #include "../Rendering/RenderingProfiler.hpp"
 #include "../Effect/EffectManager.hpp"
 #include "../Physics/PhysicsManager.hpp"
-#include "../Asset/AssetManager.hpp"
+#include "../../../Engine/src/Asset/AssetManager.hpp"
 #include "../Visual/VisualManager.hpp"
 #include "../Scene/SceneManager.hpp"
 #include "../UI/UIManager.hpp"
@@ -75,8 +75,6 @@ EngineSettings EngineManager::s_settings;
 
 EngineManager::EngineManager()
 	: m_settings()
-    , m_assetManager(nullptr)
-	, m_platformManager(nullptr)
 	//, m_animationManager(nullptr)
 	//, m_inputManager(nullptr)
 	, m_audioManager(nullptr)
@@ -105,7 +103,7 @@ EngineManager::~EngineManager()
 void EngineManager::init(const EngineSettings& settings)
 {
     LN_LOG_DEBUG << "EngineManager Initialization started.";
-
+	if (!EngineContext2::initialize()) return;
 
 	m_settings = settings;
 	
@@ -193,8 +191,8 @@ void EngineManager::dispose()
         //m_uiManager->setMainContext(nullptr);
     }
 
-	if (m_platformManager) {
-		m_platformManager->mainWindow()->detachEventListener(this);
+	if (PlatformManager::instance()) {
+		PlatformManager::instance()->mainWindow()->detachEventListener(this);
 	}
 
     m_mainPhysicsWorld = nullptr;
@@ -260,14 +258,8 @@ void EngineManager::dispose()
 	if (m_audioManager) m_audioManager->dispose();
 	if (m_inputManager) m_inputManager->dispose();
     if (m_animationManager) m_animationManager->dispose();
-	if (m_platformManager) m_platformManager->dispose();
-    if (m_assetManager) m_assetManager->dispose();
-
-	if (m_mainThreadTaskDispatcher) {
-		m_mainThreadTaskDispatcher->dispose();
-		m_mainThreadTaskDispatcher = nullptr;
-	}
-	TaskScheduler::finalizeInternal();
+	PlatformManager::terminate();
+	AssetManager::terminate();
 
 #if defined(LN_OS_WIN32)
     if (m_oleInitialized) {
@@ -286,6 +278,7 @@ void EngineManager::dispose()
 		m_appData = nullptr;
 	}
 
+	EngineContext2::terminate();
 	LN_LOG_DEBUG << "EngineManager finalization ended.";
 }
 
@@ -361,9 +354,6 @@ void EngineManager::initializeCommon()
 
 		resolveActiveGraphicsAPI();
 
-		TaskScheduler::init();
-		m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
-
 		m_commonInitialized = true;
 
 		LN_LOG_DEBUG << "EngineManager common initialization ended.";
@@ -372,26 +362,25 @@ void EngineManager::initializeCommon()
 
 void EngineManager::initializeAssetManager()
 {
-    if (!m_assetManager && m_settings.features.hasFlag(EngineFeature::Application))
+    if (!AssetManager::instance() && m_settings.features.hasFlag(EngineFeature::Application))
     {
         AssetManager::Settings settings;
         settings.assetStorageAccessPriority = m_settings.assetStorageAccessPriority;
 
-        m_assetManager = ln::makeRef<AssetManager>();
-        m_assetManager->init(settings);
+		AssetManager::initialize(settings);
 
         for (auto& e : m_settings.assetArchives) {
-            m_assetManager->addAssetArchive(e.filePath, e.password);
+			AssetManager::instance()->addAssetArchive(e.filePath, e.password);
         }
         for (auto& e : m_settings.assetDirectories) {
-            m_assetManager->addAssetDirectory(e);
+			AssetManager::instance()->addAssetDirectory(e);
         }
     }
 }
 
 void EngineManager::initializePlatformManager()
 {
-	if (!m_platformManager && m_settings.features.hasFlag(EngineFeature::Application))
+	if (!PlatformManager::instance() && m_settings.features.hasFlag(EngineFeature::Application))
 	{
 		initializeCommon();
 
@@ -411,10 +400,11 @@ void EngineManager::initializePlatformManager()
 			settings.glfwWithOpenGLAPI = true;
 		}
 
-		m_platformManager = ln::makeRef<PlatformManager>();
-		m_platformManager->init(settings);
+		//m_platformManager = ln::makeRef<PlatformManager>();
+		//m_platformManager->init(settings);
+		PlatformManager::initialize(settings);
 
-		m_platformManager->mainWindow()->attachEventListener(this);
+		PlatformManager::instance()->mainWindow()->attachEventListener(this);
 	}
 }
 
@@ -425,7 +415,7 @@ void EngineManager::initializeAnimationManager()
 		initializeAssetManager();
 
         AnimationManager::Settings settings;
-		settings.assetManager = m_assetManager;
+		settings.assetManager = AssetManager::instance();
         m_animationManager = ln::makeRef<AnimationManager>();
         m_animationManager->init(settings);
     }
@@ -438,7 +428,7 @@ void EngineManager::initializeInputManager()
 		initializePlatformManager();
 
 		InputManager::Settings settings;
-		settings.mainWindow = m_platformManager->mainWindow();
+		settings.mainWindow = PlatformManager::instance()->mainWindow();
 		settings.inputConfig = m_settings.inputConfig;
 		m_inputManager = ln::makeRef<InputManager>();
 		m_inputManager->init(settings);
@@ -453,7 +443,7 @@ void EngineManager::initializeAudioManager()
         initializeAssetManager();
 
 		AudioManager::Settings settings;
-        settings.assetManager = m_assetManager;
+        settings.assetManager = AssetManager::instance();
 
 		m_audioManager = ln::makeRef<AudioManager>();
 		m_audioManager->init(settings);
@@ -481,7 +471,7 @@ void EngineManager::initializeFontManager()
 		initializeAssetManager();
 
 		FontManager::Settings settings;
-		settings.assetManager = m_assetManager;
+		settings.assetManager = AssetManager::instance();
 		settings.engineAssetPath = m_engineResourcesPath;
 		settings.fontFile = m_settings.fontFile;
 
@@ -498,9 +488,9 @@ void EngineManager::initializeGraphicsManager()
         initializePlatformManager();
 
 		GraphicsManager::Settings settings;
-        settings.assetManager = m_assetManager;
-		settings.platformManager = m_platformManager;
-		settings.mainWindow = (m_settings.graphicsContextManagement) ? m_platformManager->mainWindow() : nullptr;
+        settings.assetManager = AssetManager::instance();
+		settings.platformManager = PlatformManager::instance();
+		settings.mainWindow = (m_settings.graphicsContextManagement) ? PlatformManager::instance()->mainWindow() : nullptr;
 		settings.graphicsAPI = m_activeGraphicsAPI;
 		settings.priorityGPUName = m_settings.priorityGPUName;
 		settings.debugMode = m_settings.graphicsDebugEnabled;
@@ -519,7 +509,7 @@ void EngineManager::initializeMeshManager()
 
 		MeshManager::Settings settings;
 		settings.graphicsManager = m_graphicsManager;
-		settings.assetManager = m_assetManager;
+		settings.assetManager = AssetManager::instance();
 
 		m_meshManager = ln::makeRef<MeshManager>();
 		m_meshManager->init(settings);
@@ -551,7 +541,7 @@ void EngineManager::initializeEffectManager()
 
         EffectManager::Settings settings;
         settings.graphicsManager = m_graphicsManager;
-        settings.assetManager = m_assetManager;
+        settings.assetManager = AssetManager::instance();
 		settings.renderingManager = m_renderingManager;
 
         m_effectManager = ln::makeRef<EffectManager>();
@@ -669,15 +659,16 @@ void EngineManager::updateFrame()
 		m_inputManager->preUpdateFrame();
 	}
 
-	if (m_platformManager) {
-		m_platformManager->processSystemEventQueue();
+	if (PlatformManager::instance()) {
+		PlatformManager::instance()->processSystemEventQueue();
 	}
 	if (m_uiManager) {
 		m_uiManager->dispatchPostedEvents();
 	}
 
-	if (m_mainThreadTaskDispatcher) {
-		m_mainThreadTaskDispatcher->executeTasks(1);
+	const auto& mainThreadTaskDispatcher = EngineContext2::instance()->mainThreadTaskDispatcher();
+	if (mainThreadTaskDispatcher) {
+		mainThreadTaskDispatcher->executeTasks(1);
 	}
 
     //------------------------------------------------
@@ -783,7 +774,7 @@ void EngineManager::presentFrame()
 
 
     if (m_debugToolMode == DebugToolMode::Minimalized || m_debugToolMode == DebugToolMode::Activated) {
-        m_platformManager->mainWindow()->setWindowTitle(String::format(_TT("FPS:{0:.1f}({1:.1f}), F8:Debug tool."), m_fpsController.totalFps(), m_fpsController.externalFps()));
+		PlatformManager::instance()->mainWindow()->setWindowTitle(String::format(_TT("FPS:{0:.1f}({1:.1f}), F8:Debug tool."), m_fpsController.totalFps(), m_fpsController.externalFps()));
     }
 
 	// TODO: Editor モードの時にも呼び出せるようにしないとだめそう
@@ -1129,10 +1120,10 @@ EngineManager* EngineDomain::engineManager()
 	return engineContext()->engineManager();
 }
 
-PlatformManager* EngineDomain::platformManager()
-{
-	return engineManager()->platformManager();
-}
+//PlatformManager* EngineDomain::platformManager()
+//{
+//	return engineManager()->PlatformManager::instance()();
+//}
 
 AnimationManager* EngineDomain::animationManager()
 {
@@ -1182,11 +1173,6 @@ EffectManager* EngineDomain::effectManager()
 PhysicsManager* EngineDomain::physicsManager()
 {
     return engineManager()->physicsManager();
-}
-
-AssetManager* EngineDomain::assetManager()
-{
-    return engineManager()->assetManager();
 }
 
 VisualManager* EngineDomain::visualManager()

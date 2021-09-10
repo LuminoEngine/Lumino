@@ -61,7 +61,7 @@ public:
 	virtual int getJoystickCount();
 	virtual void getJoystickState(int joystickNumber, JoystickDeviceState* state);
 
-	virtual void onEvent(const detail::PlatformEventArgs& e);
+	virtual void onEvent(const PlatformEventArgs& e);
 
 
 

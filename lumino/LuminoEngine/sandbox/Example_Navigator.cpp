@@ -5,7 +5,7 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include <LuminoEngine/UI/Controls/UIListBox.hpp>
-#include <LuminoEngine/Engine/VMProperty.hpp>
+#include <LuminoEngine/Reflection/VMProperty.hpp>
 using namespace ln;
 
 class App_Example_Navigator : public Application

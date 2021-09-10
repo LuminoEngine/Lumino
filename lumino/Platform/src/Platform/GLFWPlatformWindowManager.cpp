@@ -78,7 +78,7 @@ static void glfwSetWindowCenter(GLFWwindow* window) {
 
     if (owner != NULL) {
         // Set the window position to the center of the owner monitor
-        glfwSetWindowPos(window, owner_x + (owner_width * 0.5) - window_width, owner_y + (owner_height * 0.5) - window_height);
+        glfwSetWindowPos(window, owner_x + (owner_width / 2) - window_width, owner_y + (owner_height / 2) - window_height);
     }
 }
 
@@ -267,11 +267,12 @@ Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const 
 
 #if defined(LN_OS_WIN32)
 		setDPIFactor(AbstractWin32PlatformWindow::getDpiFactor((HWND)getWin32Window()));
-#endif
-
+		
 		SetWindowLongPtr((HWND)getWin32Window(), GWL_STYLE, GetWindowLongPtrA((HWND)getWin32Window(), GWL_STYLE) & ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX));
 		glfwSetWindowSizeLimits(m_glfwWindow, 100, 100, GLFW_DONT_CARE, GLFW_DONT_CARE);
 		glfwSetWindowSize(m_glfwWindow, settings.clientSize.width, settings.clientSize.height);
+#endif
+
 	}
 
 	glfwSetWindowUserPointer(m_glfwWindow, this);

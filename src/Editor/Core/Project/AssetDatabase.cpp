@@ -1,6 +1,6 @@
 ﻿
 #include "../../../lumino/LuminoEngine/src/Engine/EngineDomain.hpp"
-#include "../../../lumino/LuminoEngine/src/Asset/AssetManager.hpp"
+#include "../../../lumino/Engine/src/Asset/AssetManager.hpp"
 #include "Project.hpp"
 #include "AssetDatabase.hpp"
 
@@ -16,20 +16,20 @@ AssetDatabase::AssetDatabase()
 
 ln::Result AssetDatabase::init(Project* owner)
 {
-    ln::detail::EngineDomain::assetManager()->buildAssetIndexFromLocalFiles(owner->assetsDir());
-    ln::detail::EngineDomain::assetManager()->addAssetDirectory(owner->assetsDir());
+    ln::detail::AssetManager::instance()->buildAssetIndexFromLocalFiles(owner->assetsDir());
+    ln::detail::AssetManager::instance()->addAssetDirectory(owner->assetsDir());
     return true;
 }
 
 
 void AssetDatabase::close()
 {
-    ln::detail::EngineDomain::assetManager()->removeAllAssetDirectory();
+    ln::detail::AssetManager::instance()->removeAllAssetDirectory();
 }
 
 Ref<ln::AssetModel> AssetDatabase::openAsset(const ln::Path& filePath)
 {
-    return ln::detail::EngineDomain::assetManager()->loadAssetModelFromLocalFile(filePath);
+    return ln::detail::AssetManager::instance()->loadAssetModelFromLocalFile(filePath);
 
     //auto assetFile = filePath.str();
     //if (!filePath.hasExtension(ln::AssetModel::AssetFileExtension)) {
@@ -69,7 +69,7 @@ ln::Result AssetDatabase::importAsset(const ln::Path& sourceFilePath, const ln::
 ln::Result AssetDatabase::createAsset(ln::Object* asset, const ln::Path& filePath)
 {
     auto t = ln::makeObject<ln::AssetModel>(asset);//ln::AssetModel::create(asset);
-    ln::detail::EngineDomain::assetManager()->saveAssetModelToLocalFile(t, filePath);
+    ln::detail::AssetManager::instance()->saveAssetModelToLocalFile(t, filePath);
     //asset->setAssetId(ln::Uuid::generate());
     //ln::String json = ln::JsonSerializer::serialize(*t, filePath.parent(), ln::JsonFormatting::Indented);
     //ln::FileSystem::writeAllText(filePath, json);
@@ -81,7 +81,7 @@ ln::Result AssetDatabase::saveAsset(ln::AssetModel* asset)
     //if (LN_REQUIRE(asset)) return false;
     //if (LN_REQUIRE(!asset->assetFilePath().isEmpty())) return false;
     //return asset->saveInternal(asset->assetFilePath());
-    ln::detail::EngineDomain::assetManager()->saveAssetModelToLocalFile(asset);
+    ln::detail::AssetManager::instance()->saveAssetModelToLocalFile(asset);
     return true;
 }
 

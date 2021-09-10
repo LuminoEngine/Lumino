@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <list>
 #include <LuminoEngine/Font/Common.hpp>
-#include "../Base/RefObjectCache.hpp"
+#include "../../../Engine/src/Base/RefObjectCache.hpp"
 
 typedef int FT_Error;
 typedef void*  FT_Pointer;
@@ -15,6 +15,7 @@ typedef struct FT_FaceRec_*  FT_Face;
 namespace ln {
 class Font;
 namespace detail {
+	class AssetManager;
 class FontCore;
 class GlyphIconFontManager;
 

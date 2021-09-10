@@ -73,7 +73,7 @@ public:
         CoUninitialize();
     }
 
-    bool showDialog(detail::PlatformWindow* parent)
+    bool showDialog(PlatformWindow* parent)
     {
         if (LN_REQUIRE(parent != nullptr)) return false;
         HWND hParent = (HWND)PlatformSupport::getWin32WindowHandle(parent);
@@ -111,7 +111,7 @@ class Win32PlatformOpenFileDialog
 public:
     virtual ~Win32PlatformOpenFileDialog() { m_dialog.dispose(); }
     void init() { m_dialog.init(Win32PlatformFileSystemDialog::Type::OpenFile); }
-    virtual bool showDialog(detail::PlatformWindow* parent) override { return m_dialog.showDialog(parent); }
+    virtual bool showDialog(PlatformWindow* parent) override { return m_dialog.showDialog(parent); }
     virtual Path getPath() override { return m_dialog.getPath(); }
 
 private:
@@ -124,7 +124,7 @@ class Win32PlatformSelectFolderDialog
 public:
     virtual ~Win32PlatformSelectFolderDialog() { m_dialog.dispose(); }
     void init() { m_dialog.init(Win32PlatformFileSystemDialog::Type::SelectFolder); }
-    virtual bool showDialog(detail::PlatformWindow* parent) override { return m_dialog.showDialog(parent); }
+    virtual bool showDialog(PlatformWindow* parent) override { return m_dialog.showDialog(parent); }
     virtual Path getPath() override { return m_dialog.getPath(); }
 
 private:

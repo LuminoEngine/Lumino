@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "Common.hpp"
-#include "../Asset/Common.hpp"
+#include <LuminoEngine/Asset/Common.hpp>
 #include "../Input/Common.hpp"
 #include "../Graphics/Common.hpp"
 

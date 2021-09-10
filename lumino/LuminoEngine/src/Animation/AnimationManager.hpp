@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Animation/Common.hpp>
 #include <LuminoEngine/Animation/AnimationClip.hpp>
-#include "../Base/RefObjectCache.hpp"
+#include "../../../Engine/src/Base/RefObjectCache.hpp"
 
 namespace ln {
 class AnimationClock;
