@@ -58,6 +58,7 @@ target_include_directories(
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore)
+target_link_libraries(${PROJECT_NAME} PUBLIC LuminoEngineCore)
 
 if (LN_OS_DESKTOP)
     target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad)

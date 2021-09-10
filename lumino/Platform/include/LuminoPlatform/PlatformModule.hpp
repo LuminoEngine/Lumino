@@ -1,15 +1,15 @@
-﻿
-#pragma once
+﻿#pragma once
+#include <LuminoEngine/Engine/Module.hpp>
 
 namespace ln {
 
-class PlatformModule
+class PlatformModule : public Module
 {
 public:
 	/**
 	 * Initialize PlatformModule.
 	 */
-	static bool initialize();
+	static PlatformModule* initialize();
 
 	/**
 	 * Terminate PlatformModule.
