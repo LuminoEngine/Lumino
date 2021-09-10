@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Engine/EngineContext2.hpp"
 #include "Delegate.hpp"
 #include "Task.hpp"
 
@@ -42,7 +43,7 @@ public:
 	//LN_OBJECT;
 	friend class ::ln::TypeInfo;
 	friend class ::ln::detail::EngineDomain;
-	friend class ::ln::EngineContext;
+	friend class ::ln::EngineContext2;
 	static ::ln::TypeInfo* _lnref_getTypeInfo()
 	{
 		//static ::ln::TypeInfo* _lnref_typeInfo = _lnref_registerTypeInfo();
@@ -52,7 +53,7 @@ public:
 
 	static ::ln::TypeInfo* _lnref_registerTypeInfo()
 	{
-		auto* context = ::ln::EngineContext::current();
+		auto* context = ::ln::EngineContext2::instance();
 		return context->registerType<Promise<TResult>>("__Promise", ::ln::TypeInfo::getTypeInfo<PromiseBase>() , {});
 	}
 	

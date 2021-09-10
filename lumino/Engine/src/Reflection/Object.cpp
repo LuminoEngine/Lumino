@@ -3,10 +3,10 @@
 #include <LuminoEngine/Reflection/Object.hpp>
 #include <LuminoEngine/Reflection/Property.hpp>
 #include <LuminoEngine/Reflection/VMProperty.hpp>
+#include <LuminoEngine/Engine/EngineContext2.hpp>
 #include "../../../LuminoEngine/src/Engine/EngineDomain.hpp"
 #include "../../../LuminoEngine/src/Runtime/RuntimeManager.hpp"
 #include "../../../LuminoEngine/src/Asset/AssetManager.hpp"
-#include "../../LuminoEngine/include/LuminoEngine/EngineContext.hpp"
 
 namespace ln {
 
@@ -123,9 +123,7 @@ detail::WeakRefInfo* Object::requestWeakRefInfo()
 
 TypeInfo* Object::_lnref_getTypeInfo()
 {
-	return EngineContext::current()->objectTypeInfo();
-    //static TypeInfo typeInfo();
-    //return &typeInfo;
+	return EngineContext2::instance()->objectTypeInfo();
 }
 
 TypeInfo* Object::_lnref_getThisTypeInfo() const

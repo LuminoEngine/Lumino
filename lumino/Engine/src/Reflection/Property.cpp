@@ -21,7 +21,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Reflection/Property.hpp>
 #include <LuminoEngine/Reflection/VMProperty.hpp>
-#include "../../LuminoEngine/include/LuminoEngine/EngineContext.hpp"
+#include <LuminoEngine/Engine/EngineContext2.hpp>
 
 namespace ln {
 
@@ -60,7 +60,7 @@ Ref<Object> TypeInfo::createInstance() const
 
 Ref<Object> TypeInfo::createInstance(const String& typeName)
 {
-	if (TypeInfo* info = EngineContext::current()->findTypeInfo(typeName)) {
+	if (TypeInfo* info = EngineContext2::instance()->findTypeInfo(typeName)) {
 		return info->createInstance();
 	}
 	else {

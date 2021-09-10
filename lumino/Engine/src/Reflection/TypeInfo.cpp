@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Reflection/TypeInfo.hpp>
-#include "../../LuminoEngine/include/LuminoEngine/EngineContext.hpp"
+#include <LuminoEngine/Engine/EngineContext2.hpp>
 
 namespace ln {
 
@@ -33,7 +33,7 @@ TypeInfo* PredefinedTypes::List;
 
 TypeInfo* TypeInfo::registerType(const String& typeName, TypeInfo* baseClass, Ref<ObjectCreationHandler> factoryCallback)
 {
-	EngineContext* context = EngineContext::current();
+	EngineContext2* context = EngineContext2::instance();
 	TypeInfo* typeInfo = context->registerType(typeName, baseClass, TypeInfoClass::Object);
 
 	// 値としてキャプチャ

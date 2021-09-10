@@ -34,6 +34,25 @@ EngineContext2::EngineContext2()
 
 bool EngineContext2::init()
 {
+    m_typeInfos.push_back(nullptr); // [0] is dummy
+
+    PredefinedTypes::Char = registerType(_TT("Char"), nullptr, TypeInfoClass::Primitive);
+    PredefinedTypes::Int8 = registerType(_TT("Int8"), nullptr, TypeInfoClass::Primitive);
+    PredefinedTypes::Int16 = registerType(_TT("Int16"), nullptr, TypeInfoClass::Primitive);
+    PredefinedTypes::Int32 = registerType(_TT("Int32"), nullptr, TypeInfoClass::Primitive);
+    PredefinedTypes::Int64 = registerType(_TT("Int64"), nullptr, TypeInfoClass::Primitive);
+    PredefinedTypes::UInt8 = registerType(_TT("UInt8"), nullptr, TypeInfoClass::Primitive);
+    PredefinedTypes::UInt16 = registerType(_TT("UInt16"), nullptr, TypeInfoClass::Primitive);
+    PredefinedTypes::UInt32 = registerType(_TT("UInt32"), nullptr, TypeInfoClass::Primitive);
+    PredefinedTypes::UInt64 = registerType(_TT("UInt64"), nullptr, TypeInfoClass::Primitive);
+    PredefinedTypes::Float = registerType(_TT("Float"), nullptr, TypeInfoClass::Primitive);
+    PredefinedTypes::Double = registerType(_TT("Double"), nullptr, TypeInfoClass::Primitive);
+    PredefinedTypes::String = registerType(_TT("String"), nullptr, TypeInfoClass::Primitive);
+    PredefinedTypes::Object = registerType<Object>("Object", nullptr, {});
+    PredefinedTypes::List = registerType<Object>("List", nullptr, {});
+
+    m_objectTypeInfo = PredefinedTypes::Object;
+
     TaskScheduler::init();
     m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
 
@@ -47,6 +66,9 @@ void EngineContext2::dispose()
         m_mainThreadTaskDispatcher = nullptr;
     }
     TaskScheduler::finalizeInternal();
+
+    m_typeInfos.clear();
+    m_typeInfoSet.clear();
 }
 
 void EngineContext2::registerModule(Module* mod)
@@ -59,6 +81,22 @@ void EngineContext2::registerModule(Module* mod)
 void EngineContext2::unregisterModule(Module* mod)
 {
     m_modules.removeIf([&](const auto& x) { return x == mod; });
+}
+
+TypeInfo* EngineContext2::acquireTypeInfo(const StringRef& name/*, TypeInfo* baseType, const std::function<Ref<Object>()>& factory*/)
+{
+    auto* r = findTypeInfo(name);
+    if (r) {
+        return r;
+    }
+    else {
+        auto typeInfo = makeRef<TypeInfo>(name);
+        //typeInfo->m_factory = factory;
+        typeInfo->m_id = m_typeInfos.size();
+        m_typeInfos.push_back(typeInfo);
+        m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
+        return typeInfo;
+    }
 }
 
 } // namespace ln

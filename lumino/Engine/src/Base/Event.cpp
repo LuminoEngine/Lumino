@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Event.hpp>
-#include "../../LuminoEngine/include/LuminoEngine/EngineContext.hpp"
+#include <LuminoEngine/Engine/EngineContext2.hpp>
 
 namespace ln {
 	

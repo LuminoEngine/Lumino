@@ -4,7 +4,7 @@
 #define LN_COORD_RH 1
 
 namespace ln {
-class EngineContext;
+class EngineContext2;
 class TypeInfo;
 class PropertyInfo;
 class ReflectionObjectVisitor;
@@ -140,13 +140,13 @@ enum class ObjectFlags
 #define LN_OBJECT \
     friend class ::ln::TypeInfo; \
     friend class ::ln::detail::EngineDomain; \
-    friend class ::ln::EngineContext; \
+    friend class ::ln::EngineContext2; \
 	template<class T> friend class TypeInfoTraits; \
     static ::ln::TypeInfo* _lnref_getTypeInfo(); \
     virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override; \
 	static ::ln::TypeInfo* _lnref_typeInfo; \
 	static ::ln::TypeInfo* _lnref_registerTypeInfo(); \
-	static void _lnref_registerTypeInfoInitializer(::ln::EngineContext* context, ::ln::TypeInfo* typeInfo);
+	static void _lnref_registerTypeInfoInitializer(::ln::EngineContext2* context, ::ln::TypeInfo* typeInfo);
 
 #define LN_OBJECT_IMPLEMENT(classType, baseclassType) \
     ::ln::TypeInfo* classType::_lnref_getTypeInfo() \
@@ -158,13 +158,13 @@ enum class ObjectFlags
 	::ln::TypeInfo* classType::_lnref_typeInfo = nullptr; \
 	::ln::TypeInfo* classType::_lnref_registerTypeInfo() \
 	{ \
-		::ln::EngineContext* context = ::ln::EngineContext::current(); \
+		::ln::EngineContext2* context = ::ln::EngineContext2::instance(); \
 		::ln::TypeInfo* typeInfo = context->registerType<classType>(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>(), {}); \
 		_lnref_registerTypeInfoInitializer(context, typeInfo); \
         _lnref_typeInfo = typeInfo; \
 		return typeInfo; \
 	} \
-	void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext* context, ::ln::TypeInfo* typeInfo)
+	void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext2* context, ::ln::TypeInfo* typeInfo)
 
 // [2021/1/20] main の外側で _lnref_typeInfo が初期化されることがあるが、以前は通っていた処理が、このコメント時点の VS2019 最新では _lnref_typeInfo の参照先のインスタンスが死んでいたりした。
 // コンパイラによっていろいろ変わりそうなので、自動初期化はやめたほうがよさそう。

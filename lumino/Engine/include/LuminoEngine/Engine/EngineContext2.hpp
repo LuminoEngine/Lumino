@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "Common2.hpp"
+#include "../Reflection/TypeInfo.hpp"
+#include "../Reflection/Property.hpp"
 
 namespace ln {
 
@@ -34,6 +36,94 @@ public:
 
 	const Ref<Dispatcher>& mainThreadTaskDispatcher() const { return m_mainThreadTaskDispatcher; }
 
+
+
+	// TODO: 外部用。
+	template<class T>
+	void registerType() {
+		T::_lnref_registerTypeInfo();
+	}
+
+
+
+	// TODO: 内部用。コールバックから呼び出す
+	template<class TClassType>
+	TypeInfo* registerType(const char* className, TypeInfo* baseType, std::initializer_list<Ref<PropertyInfo>> propInfos)//(std::initializer_list<Ref<PropertyAccessor>> accessors)
+	{
+		auto localName = String::fromCString(className);
+		//TypeInfo* typeInfo = TypeInfo::getTypeInfo<TClassType>();
+
+		// Promise や Delegate のテンプレートインスタンスは alias で定義したいが、そうすると型名を簡単に指定する方法が無い。
+		// ただこれらはシリアライズのように型名からインスタンスを作るようなことは無く、Binding の Managed 側のオブジェクトを new するときなど
+		// Managed 側の TypeInfo とマッピングさせるために異なるインスタンスを生成する必要がある。
+		if (localName == _TT("__Promise")) {
+			auto typeInfo = makeRef<TypeInfo>(String::fromCString(className), baseType);
+			typeInfo->m_id = static_cast<int>(m_typeInfos.size());
+			m_typeInfos.push_back(typeInfo);
+			return typeInfo;
+		}
+
+		auto itr = m_typeInfoSet.find(localName);
+		if (itr == m_typeInfoSet.end())
+		{
+			auto typeInfo = makeRef<TypeInfo>(String::fromCString(className), baseType);
+
+			typeInfo->m_id = static_cast<int>(m_typeInfos.size());
+			m_typeInfos.push_back(typeInfo);
+
+			typeInfo->m_factory = [](const TypeInfo*) { return detail::makeObjectHelper<TClassType>(); };
+
+			m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
+
+			for (auto& p : propInfos) {
+				typeInfo->registerProperty(p);
+				//typeInfo->registerProperty(makeRef<PropertyInfo>(a));
+			}
+
+
+			return typeInfo;
+		}
+		else {
+			return itr->second;
+		}
+	}
+
+	TypeInfo* registerType(const String& className, TypeInfo* baseType, TypeInfoClass typeClass)
+	{
+		auto typeInfo = makeRef<TypeInfo>(className, baseType, typeClass);
+		typeInfo->m_id = static_cast<int>(m_typeInfos.size());
+		m_typeInfos.push_back(typeInfo);
+		m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
+		return typeInfo;
+	}
+
+	TypeInfo* findTypeInfo(const StringRef& name) const
+	{
+		auto itr = m_typeInfoSet.find(name);
+		if (itr != m_typeInfoSet.end()) {
+			return itr->second;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
+	TypeInfo* findTypeInfo(int id) const
+	{
+		if (0 <= id && id < static_cast<int>(m_typeInfos.size())) {
+			return m_typeInfos[id];
+		}
+		else {
+			return nullptr;
+		}
+	}
+
+	TypeInfo* acquireTypeInfo(const StringRef& name);
+
+	TypeInfo* objectTypeInfo() const { return m_objectTypeInfo; }
+
+
+
 	// TODO:
 	RefObject* platformManager = nullptr;
 
@@ -46,6 +136,10 @@ private:
 	
 	List<Ref<Module>> m_modules;
 	Ref<Dispatcher> m_mainThreadTaskDispatcher;
+
+	std::unordered_map<String, TypeInfo*> m_typeInfoSet;
+	std::vector<Ref<TypeInfo>> m_typeInfos;
+	TypeInfo* m_objectTypeInfo;
 };
 
 } // namespace ln
