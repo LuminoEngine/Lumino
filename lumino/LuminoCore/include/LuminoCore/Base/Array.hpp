@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license.
 #pragma once
-
 #include <vector>
 #include <algorithm>
 #include "Assertion.hpp"
@@ -12,8 +11,9 @@ namespace ln {
 /**
  * 動的配列
  * 
+ * std::vector と同様、メモリの連続性が保証されています。
  * std::vector と似ていますが、いくつかの便利なメンバ関数やエラーを記録する機能が追加されています。
- * また std::vector と同様、メモリの連続性が保証されています。
+ * インデックスは冗長なコンパイル警告や逆順ループの記述ミスを防止するため、size_t ではなく int となっています。
  */
 template<typename T>
 class Array
@@ -29,7 +29,7 @@ public:
     using const_iterator = typename container_type::const_iterator;
     using reverse_iterator = typename container_type::reverse_iterator;
     using const_reverse_iterator = typename container_type::const_reverse_iterator;
-    using size_type = int;// typename container_type::size_type;
+    using size_type = int;
     using difference_type = typename container_type::difference_type;
     using allocator_type = typename container_type::allocator_type;
 
@@ -125,6 +125,10 @@ public:
 
     /** Test whether vector is empty. */
     [[nodiscard]]
+    bool empty() const noexcept;
+
+    /** Test whether vector is empty. */
+    [[nodiscard]]
     bool isEmpty() const noexcept;
 
     /** Test whether vector is empty. */
@@ -151,21 +155,27 @@ public:
     [[nodiscard]]
     const T& operator[](int index) const;
 
+    /** Access first element. */
     [[nodiscard]]
     reference front();
 
+    /** Access first element. */
     [[nodiscard]]
     const_reference front() const;
 
+    /** Access last element. */
     [[nodiscard]]
     reference back();
 
+    /** Access last element. */
     [[nodiscard]]
     const_reference back() const;
 
+    /** Access raw-data. */
     [[nodiscard]]
     T* data() noexcept;
 
+    /** Access raw-data. */
     [[nodiscard]]
     const T* data() const noexcept;
 

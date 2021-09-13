@@ -115,6 +115,7 @@ TEST_F(Test_Base_Array, Capacity)
 {
 	Array<int> list1;
 	ASSERT_EQ(std::numeric_limits<int>::max(), list1.max_size());
+	ASSERT_EQ(true, list1.empty());
 	ASSERT_EQ(true, list1.isEmpty());
 	ASSERT_EQ(false, static_cast<bool>(list1));
 
@@ -132,19 +133,28 @@ TEST_F(Test_Base_Array, Capacity)
 
 	list1.shrink_to_fit();
 	ASSERT_EQ(2, list1.capacity());
+	ASSERT_EQ(false, list1.empty());
 	ASSERT_EQ(false, list1.isEmpty());
 	ASSERT_EQ(true, static_cast<bool>(list1));
 }
-
-#if 0
-
-
 
 TEST_F(Test_Base_Array, Iterator)
 {
 	Array<int> list1 = { 1, 2, 3 };
 	const Array<int> list2 = { 1, 2, 3 };
 	int s = 0;
+
+	s = 0;
+	for (auto it = list1.begin(); it != list1.end(); it++) s += *it;
+	ASSERT_EQ(6, s);
+
+	s = 0;
+	for (auto it = list2.begin(); it != list2.end(); it++) s += *it;
+	ASSERT_EQ(6, s);
+
+	s = 0;
+	for (auto it = list1.cbegin(); it != list1.cend(); it++) s += *it;
+	ASSERT_EQ(6, s);
 
 	s = 0;
 	for (auto i : list1) s += i;
@@ -154,6 +164,10 @@ TEST_F(Test_Base_Array, Iterator)
 	for (auto i : list2) s += i;
 	ASSERT_EQ(6, s);
 }
+
+#if 0
+
+
 
 TEST_F(Test_Base_Array, Modifiers)
 {

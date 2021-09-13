@@ -129,6 +129,12 @@ inline void Array<T>::shrink_to_fit()
 }
 
 template<class T>
+inline bool Array<T>::empty() const noexcept
+{
+    return m_data.empty();
+}
+
+template<class T>
 inline bool Array<T>::isEmpty() const noexcept
 {
     return m_data.empty();
