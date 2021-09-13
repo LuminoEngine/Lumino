@@ -136,7 +136,7 @@ public:
     explicit operator bool() const noexcept;
 
     /** @} */
-    /** @defgroup  Element acces: */
+    /** @defgroup Element acces */
     /** @{ */
 
     /** Access the element at the specified index. */
@@ -180,6 +180,52 @@ public:
     const T* data() const noexcept;
 
     /** @} */
+    /** @defgroup Modifiers */
+    /** @{ */
+
+    /** Assign array content. */
+    void assign(int count, const T& value);
+
+    /** Assign array content. */
+    template <class TIterator>
+    void assign(TIterator first, TIterator last);
+
+    /** Assign array content. */
+    void assign(std::initializer_list<T> ilist);
+
+    /** Add element to the end. */
+    void push_back(const T& value);
+
+    /** Add element to the end. */
+    void push_back(T&& value);
+
+    /** Remove the last element. */
+    void pop_back();
+
+    /** Insert a new element at specified position. */
+    iterator insert(const_iterator pos, const T& value);
+
+    /** Insert a new element at specified position. */
+    iterator insert(const_iterator pos, T&& value);
+
+    /** Insert a new element at specified position. */
+    iterator insert(const_iterator pos, int count, const T& value);
+
+    /** Insert a new element at specified position. */
+    template <class Iterator>
+    iterator insert(const_iterator pos, Iterator first, Iterator last);
+
+    /** Insert a new element at specified position. */
+    iterator insert(const_iterator pos, std::initializer_list<T> list);
+
+    /** Remove an element at the specified position. */
+    iterator erase(const_iterator pos);
+
+    /** Remove an element at the specified position. */
+    iterator erase(const_iterator first, const_iterator last);
+
+    /** @} */
+
 
 private:
     container_type m_data;

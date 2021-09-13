@@ -165,6 +165,113 @@ TEST_F(Test_Base_Array, Iterator)
 	ASSERT_EQ(6, s);
 }
 
+TEST_F(Test_Base_Array, Modifiers)
+{
+	Array<int> list1;
+	Array<int> list2 = { 1, 2 };
+
+	list1.assign(list2.begin(), list2.end());
+	ASSERT_EQ(2, list1.size());
+	ASSERT_EQ(1, list1[0]);
+	ASSERT_EQ(2, list1[1]);
+
+	list1.assign(2, 1);
+	ASSERT_EQ(2, list1.size());
+	ASSERT_EQ(1, list1[0]);
+	ASSERT_EQ(1, list1[1]);
+
+	list1.assign({ 5, 6 });
+	ASSERT_EQ(2, list1.size());
+	ASSERT_EQ(5, list1[0]);
+	ASSERT_EQ(6, list1[1]);
+
+	Array<int> list3;
+	list3.push_back(1);
+	ASSERT_EQ(1, list3.size());
+	ASSERT_EQ(1, list3[0]);
+
+	list3.assign(list1.begin(), list1.end());
+	ASSERT_EQ(2, list3.size());
+	ASSERT_EQ(5, list3[0]);
+	ASSERT_EQ(6, list3[1]);
+
+	list3.pop_back();
+	ASSERT_EQ(1, list3.size());
+	ASSERT_EQ(5, list3[0]);
+
+	list2.insert(list2.begin() + 1, 10);
+	ASSERT_EQ(3, list2.size());
+	ASSERT_EQ(1, list2[0]);
+	ASSERT_EQ(10, list2[1]);
+	ASSERT_EQ(2, list2[2]);
+
+	list2.insert(list2.begin() + 1, 2, 20);
+	ASSERT_EQ(5, list2.size());
+	ASSERT_EQ(1, list2[0]);
+	ASSERT_EQ(20, list2[1]);
+	ASSERT_EQ(20, list2[2]);
+	ASSERT_EQ(10, list2[3]);
+	ASSERT_EQ(2, list2[4]);
+
+	list1 = { 1, 2 };
+	list2 = { 3, 4 };
+	list1.insert(list1.begin() + 1, list2.begin(), list2.end());
+	ASSERT_EQ(4, list1.size());
+	ASSERT_EQ(1, list1[0]);
+	ASSERT_EQ(3, list1[1]);
+	ASSERT_EQ(4, list1[2]);
+	ASSERT_EQ(2, list1[3]);
+
+	list1 = { 1, 2 };
+	list1.insert(list1.begin() + 1, { 5, 6 });
+	ASSERT_EQ(4, list1.size());
+	ASSERT_EQ(1, list1[0]);
+	ASSERT_EQ(5, list1[1]);
+	ASSERT_EQ(6, list1[2]);
+	ASSERT_EQ(2, list1[3]);
+
+	//list1.add(4);
+	//ASSERT_EQ(4, list1.size());
+	//ASSERT_EQ(4, list1[3]);
+
+	//list1.addRange(list2);
+	//ASSERT_EQ(7, list1.size());
+	//ASSERT_EQ(1, list1[4]);
+	//ASSERT_EQ(2, list1[5]);
+	//ASSERT_EQ(3, list1[6]);
+
+	//list1.insert(1, 10);
+	//ASSERT_EQ(8, list1.size());
+	//ASSERT_EQ(10, list1[1]);
+
+	//list1.insertRange(1, list2);
+	//ASSERT_EQ(11, list1.size());
+	//ASSERT_EQ(1, list1[1]);
+	//ASSERT_EQ(2, list1[2]);
+	//ASSERT_EQ(3, list1[3]);
+
+	//list1.clear();
+	//ASSERT_EQ(0, list1.size());
+
+	// erase
+	{
+		list1 = { 1, 2, 3 };
+		auto itr1 = list1.erase(list1.begin());
+		ASSERT_EQ(2, list1.size());
+		ASSERT_EQ(2, list1[0]);
+		ASSERT_EQ(3, list1[1]);
+
+		list1.erase(itr1);
+		ASSERT_EQ(1, list1.size());
+		ASSERT_EQ(3, list1[0]);
+
+		list1 = { 1, 2, 3 };
+		list1.erase(list1.begin() + 1, list1.end());
+		ASSERT_EQ(1, list1.size());
+		ASSERT_EQ(1, list1[0]);
+	}
+}
+
 #if 0
 
 
@@ -204,18 +311,6 @@ TEST_F(Test_Base_Array, Modifiers)
 	ASSERT_EQ(0, list1.size());
 
 
-	//* [ ] erase
-	{
-		list1 = list2;
-		auto itr1 = list1.erase(list1.begin());
-		ASSERT_EQ(2, list1.size());
-		ASSERT_EQ(2, list1[0]);
-		ASSERT_EQ(3, list1[1]);
-
-		list1.erase(itr1);
-		ASSERT_EQ(1, list1.size());
-		ASSERT_EQ(3, list1[0]);
-	}
 
 	//* [ ] remove
 	{

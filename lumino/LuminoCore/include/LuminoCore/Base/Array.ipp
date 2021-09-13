@@ -209,6 +209,86 @@ inline const T* Array<T>::data() const noexcept
     return m_data.data();
 }
 
+template<class T>
+inline void Array<T>::assign(const int count, const T& value)
+{
+    m_data.assign(count, value);
+}
+
+template<class T>
+template<class TIterator>
+inline void Array<T>::assign(TIterator first, TIterator last)
+{
+    m_data.assign(first, last);
+}
+
+template<class T>
+inline void Array<T>::assign(std::initializer_list<T> ilist)
+{
+    m_data.assign(ilist);
+}
+
+template<class T>
+inline void Array<T>::push_back(const T& value)
+{
+    m_data.push_back(value);
+}
+
+template<class T>
+inline void Array<T>::push_back(T&& value)
+{
+    m_data.push_back(std::move(value));
+}
+
+template<class T>
+inline void Array<T>::pop_back()
+{
+    m_data.pop_back();
+}
+
+template<class T>
+inline typename Array<T>::iterator Array<T>::insert(const_iterator pos, const T& value)
+{
+    return m_data.insert(pos, value);
+}
+
+template<class T>
+inline typename Array<T>::iterator Array<T>::insert(const_iterator pos, T&& value)
+{
+    return m_data.insert(pos, std::move(value));
+}
+
+template<class T>
+inline typename Array<T>::iterator Array<T>::insert(const_iterator pos, int count, const T& value)
+{
+    return m_data.insert(pos, count, value);
+}
+
+template<class T>
+template <class Iterator>
+inline typename Array<T>::iterator Array<T>::insert(const_iterator pos, Iterator first, Iterator last)
+{
+    return m_data.insert(pos, first, last);
+}
+
+template<class T>
+inline typename Array<T>::iterator Array<T>::insert(const_iterator pos, std::initializer_list<T> ilist)
+{
+    return m_data.insert(pos, ilist);
+}
+
+template<class T>
+inline typename Array<T>::iterator Array<T>::erase(const_iterator pos)
+{
+    return m_data.erase(pos);
+}
+
+template<class T>
+inline typename Array<T>::iterator Array<T>::erase(const_iterator first, const_iterator last)
+{
+    return m_data.erase(first, last);
+}
+
 } // namespace ln
 
 #include "Array.ipp"
