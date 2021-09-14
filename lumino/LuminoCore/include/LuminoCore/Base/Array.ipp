@@ -289,6 +289,74 @@ inline typename Array<T>::iterator Array<T>::erase(const_iterator first, const_i
     return m_data.erase(first, last);
 }
 
+template<class T>
+inline void Array<T>::swap(Array& other) noexcept
+{
+    m_data.swap(other.m_data);
+}
+
+template<class T>
+inline void Array<T>::clear() noexcept
+{
+    return m_data.clear();
+}
+
+template<class T>
+template<class... Args>
+inline typename Array<T>::iterator Array<T>::emplace(const_iterator pos, Args&&... args)
+{
+    return m_data.emplace(pos, std::forward<Args>(args)...);
+}
+
+template<class T>
+template<class... Args>
+inline typename Array<T>::reference Array<T>::emplace_back(Args&&... args)
+{
+    return m_data.emplace_back(std::forward<Args>(args)...);
+}
+
+template<class T>
+inline bool operator ==(const Array<T>& a, const Array<T>& b)
+{
+    return ((a.size() == b.size()) && std::equal(a.begin(), a.end(), b.begin()));
+}
+
+template<class T>
+inline bool operator !=(const Array<T>& a, const Array<T>& b)
+{
+    return ((a.size() != b.size()) || !std::equal(a.begin(), a.end(), b.begin()));
+}
+
+template<class T>
+inline bool operator <(const Array<T>& a, const Array<T>& b)
+{
+    return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
+}
+
+template<class T>
+inline bool operator >(const Array<T>& a, const Array<T>& b)
+{
+    return (b < a);
+}
+
+template<class T>
+inline bool operator <=(const Array<T>& a, const Array<T>& b)
+{
+    return !(b < a);
+}
+
+template<class T>
+inline bool operator >=(const Array<T>& a, const Array<T>& b)
+{
+    return !(a < b);
+}
+
+template<class T>
+inline void swap(Array<T>& a, Array<T>& b) noexcept
+{
+    a.swap(b);
+}
+
 } // namespace ln
 
 #include "Array.ipp"

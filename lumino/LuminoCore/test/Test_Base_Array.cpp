@@ -230,28 +230,8 @@ TEST_F(Test_Base_Array, Modifiers)
 	ASSERT_EQ(6, list1[2]);
 	ASSERT_EQ(2, list1[3]);
 
-	//list1.add(4);
-	//ASSERT_EQ(4, list1.size());
-	//ASSERT_EQ(4, list1[3]);
-
-	//list1.addRange(list2);
-	//ASSERT_EQ(7, list1.size());
-	//ASSERT_EQ(1, list1[4]);
-	//ASSERT_EQ(2, list1[5]);
-	//ASSERT_EQ(3, list1[6]);
-
-	//list1.insert(1, 10);
-	//ASSERT_EQ(8, list1.size());
-	//ASSERT_EQ(10, list1[1]);
-
-	//list1.insertRange(1, list2);
-	//ASSERT_EQ(11, list1.size());
-	//ASSERT_EQ(1, list1[1]);
-	//ASSERT_EQ(2, list1[2]);
-	//ASSERT_EQ(3, list1[3]);
-
-	//list1.clear();
-	//ASSERT_EQ(0, list1.size());
+	list1.clear();
+	ASSERT_EQ(0, list1.size());
 
 	// erase
 	{
@@ -270,6 +250,92 @@ TEST_F(Test_Base_Array, Modifiers)
 		ASSERT_EQ(1, list1.size());
 		ASSERT_EQ(1, list1[0]);
 	}
+
+	// swap
+	{
+		list1 = { 1, 2 };
+		list2 = { 3, 4 };
+
+		list1.swap(list2);
+		ASSERT_EQ(2, list1.size());
+		ASSERT_EQ(3, list1[0]);
+		ASSERT_EQ(4, list1[1]);
+		ASSERT_EQ(2, list2.size());
+		ASSERT_EQ(1, list2[0]);
+		ASSERT_EQ(2, list2[1]);
+
+		swap(list1, list2);
+		ASSERT_EQ(2, list1.size());
+		ASSERT_EQ(1, list1[0]);
+		ASSERT_EQ(2, list1[1]);
+		ASSERT_EQ(2, list2.size());
+		ASSERT_EQ(3, list2[0]);
+		ASSERT_EQ(4, list2[1]);
+	}
+
+	// emplace
+	{
+		struct Test1 {
+			std::string str;
+			Test1(int n, char c) : str(n, c) {}
+		};
+		Array<Test1> list5;
+		list5.emplace_back(2, 'a');
+		list5.emplace(list5.begin(), 3, 'b');
+		ASSERT_EQ(2, list5.size());
+		ASSERT_EQ("bbb", list5[0].str);
+		ASSERT_EQ("aa", list5[1].str);
+	}
+}
+
+TEST_F(Test_Base_Array, Operators)
+{
+	Array<int> list0 = { 0 };
+	Array<int> list1 = { 1 };
+	Array<int> list2 = { 1 };
+	Array<int> list3 = { 2 };
+
+
+	ASSERT_EQ(true, list1 == list2);
+	ASSERT_EQ(false, list1 == list3);
+
+	ASSERT_EQ(false, list1 != list2);
+	ASSERT_EQ(true, list1 != list3);
+
+	ASSERT_EQ(false, list1 < list2);
+	ASSERT_EQ(true, list1 < list3);
+
+	ASSERT_EQ(false, list1 <= list0);
+	ASSERT_EQ(true, list1 <= list2);
+	ASSERT_EQ(true, list1 <= list3);
+
+	ASSERT_EQ(true, list1 > list0);
+	ASSERT_EQ(false, list1 > list2);
+
+	ASSERT_EQ(true, list1 >= list0);
+	ASSERT_EQ(true, list1 >= list2);
+	ASSERT_EQ(false, list1 >= list3);
+}
+
+TEST_F(Test_Base_Array, findIf)
+{
+	class Test2
+	{
+	public:
+		int v;
+	//private:
+	//	LN_DISALLOW_COPY_AND_ASSIGN(Test2);
+	};
+
+
+	Array<Test2> list2 = { Test2{1}, Test2{2} };
+	auto r = list2.findIf([](const Test2& x) { return x.v == 2; });
+	ASSERT_EQ(true, r.hasValue());
+	ASSERT_EQ(2, r.value().v);
+	r.value().v = 10;
+	ASSERT_EQ(10, list2[1].v);
+
+	std::optional<int> a;
 }
 
 #if 0
@@ -310,6 +376,29 @@ TEST_F(Test_Base_Array, Modifiers)
 	list1.clear();
 	ASSERT_EQ(0, list1.size());
 
+
+	//list1.add(4);
+	//ASSERT_EQ(4, list1.size());
+	//ASSERT_EQ(4, list1[3]);
+
+	//list1.addRange(list2);
+	//ASSERT_EQ(7, list1.size());
+	//ASSERT_EQ(1, list1[4]);
+	//ASSERT_EQ(2, list1[5]);
+	//ASSERT_EQ(3, list1[6]);
+
+	//list1.insert(1, 10);
+	//ASSERT_EQ(8, list1.size());
+	//ASSERT_EQ(10, list1[1]);
+
+	//list1.insertRange(1, list2);
+	//ASSERT_EQ(11, list1.size());
+	//ASSERT_EQ(1, list1[1]);
+	//ASSERT_EQ(2, list1[2]);
+	//ASSERT_EQ(3, list1[3]);
+
+	//list1.clear();
+	//ASSERT_EQ(0, list1.size());
 
 
 	//* [ ] remove

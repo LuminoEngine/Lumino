@@ -1,18 +1,32 @@
 ﻿#include "Common.hpp"
-#include <LuminoCore/Base/Optional.hpp>
+#include <LuminoCore/Base/Optional2.hpp>
+#include <optional>
 
 class Test_Base_Optional : public ::testing::Test {};
 
 TEST_F(Test_Base_Optional, Construct)
 {
+	struct AAA {
+		bool a;
+		std::string str;
+	};
+	AAA a;
+	a.a = true;
+	a.str = "aaa";
+	//AAA b = std::move(a);
+
+	std::optional<AAA> oa = a;
+	std::optional<AAA> ob = std::move(oa);
+
+
 	//* [ ] constructors
 	{
 		String test1 = _T("test");
 
-		Optional<String> opt1;
-		Optional<String> opt2 = nullptr;
-		Optional<String> opt3 = String(_T("test"));
-		Optional<String> opt4 = std::move(test1);
+		Optional2<String> opt1;
+		Optional2<String> opt2 = nullptr;
+		Optional2<String> opt3 = String(_T("test"));
+		Optional2<String> opt4 = std::move(test1);
 
 		ASSERT_EQ(false, opt1.hasValue());
 		ASSERT_EQ(false, opt2.hasValue());
@@ -20,11 +34,11 @@ TEST_F(Test_Base_Optional, Construct)
 		ASSERT_EQ(true, opt4.hasValue());
 		ASSERT_EQ(true, test1.isEmpty());
 
-		Optional<String> opt5 = std::move(opt3);
+		Optional2<String> opt5 = std::move(opt3);
 		ASSERT_EQ(false, opt3.hasValue());
 		ASSERT_EQ(true, opt5.hasValue());
 
-		Optional<String> opt6 = opt5;
+		Optional2<String> opt6 = opt5;
 		ASSERT_EQ(true, opt5.hasValue());
 		ASSERT_EQ(true, opt6.hasValue());
 	}
@@ -33,9 +47,9 @@ TEST_F(Test_Base_Optional, Construct)
 	{
 		String test1 = _T("test");
 
-		Optional<String> opt1;
-		Optional<String> opt2;
-		Optional<String> opt3;
+		Optional2<String> opt1;
+		Optional2<String> opt2;
+		Optional2<String> opt3;
 
 		opt1 = std::move(test1);
 		ASSERT_EQ(true, opt1.hasValue());
@@ -60,7 +74,7 @@ TEST_F(Test_Base_Optional, Construct)
 
 	//* [ ] reset
 	{
-		Optional<String> opt1 = _T("test");
+		Optional2<String> opt1 = _T("test");
 		opt1.reset();
 		ASSERT_EQ(false, opt1.hasValue());
 	}
@@ -70,8 +84,8 @@ TEST_F(Test_Base_Optional, Access)
 {
 	//* [ ] operator bool
 	{
-		Optional<String> opt1;
-		Optional<String> opt2 = _T("test");
+		Optional2<String> opt1;
+		Optional2<String> opt2 = _T("test");
 		bool r1 = (opt1) ? true : false;
 		bool r2 = !opt2;
 		ASSERT_EQ(false, r1);
@@ -80,8 +94,8 @@ TEST_F(Test_Base_Optional, Access)
 
 	//* [ ] operator*
 	{
-		Optional<String> opt1 = _T("test");
-		const Optional<String> opt2 = _T("test");
+		Optional2<String> opt1 = _T("test");
+		const Optional2<String> opt2 = _T("test");
 
 		String& s1 = *opt1;
 		String&& s2 = *std::move(opt1);
@@ -91,14 +105,14 @@ TEST_F(Test_Base_Optional, Access)
 		ASSERT_EQ(_T("test"), s1);
 		ASSERT_EQ(_T("test"), s3);
 
-		//Optional<String> opt3;
+		//Optional2<String> opt3;
 		//String s = *opt3;
 	}
 
 	//* [ ] operator->
 	{
-		Optional<String> opt1 = _T("test");
-		const Optional<String> opt2 = _T("test");
+		Optional2<String> opt1 = _T("test");
+		const Optional2<String> opt2 = _T("test");
 
 		ASSERT_EQ(4, opt1->length());
 		ASSERT_EQ(4, opt2->length());
@@ -106,8 +120,8 @@ TEST_F(Test_Base_Optional, Access)
 
 	//* [ ] value
 	{
-		Optional<String> opt1 = _T("test");
-		const Optional<String> opt2 = _T("test");
+		Optional2<String> opt1 = _T("test");
+		const Optional2<String> opt2 = _T("test");
 
 		String& s1 = opt1.value();
 		String&& s2 = std::move(opt1).value();
@@ -120,10 +134,10 @@ TEST_F(Test_Base_Optional, Access)
 
 	//* [ ] valueOr
 	{
-		Optional<String> opt1 = _T("test");
-		Optional<String> opt2 = _T("test");
-		Optional<String> opt3;
-		Optional<String> opt4;
+		Optional2<String> opt1 = _T("test");
+		Optional2<String> opt2 = _T("test");
+		Optional2<String> opt3;
+		Optional2<String> opt4;
 
 		ASSERT_EQ(_T("test"), opt1.valueOr(_T("a")));
 		ASSERT_EQ(_T("test"), std::move(opt2).valueOr(_T("a")));
@@ -137,10 +151,10 @@ TEST_F(Test_Base_Optional, Operators)
 	//* [ ] operator==
 	{
 		String test = _T("test");
-		Optional<String> opt1;
-		Optional<String> opt2;
-		Optional<String> opt3 = test;
-		Optional<String> opt4 = test;
+		Optional2<String> opt1;
+		Optional2<String> opt2;
+		Optional2<String> opt3 = test;
+		Optional2<String> opt4 = test;
 
 		ASSERT_EQ(true, opt1 == opt2);
 		ASSERT_EQ(false, opt1 == opt3);
@@ -153,8 +167,8 @@ TEST_F(Test_Base_Optional, Operators)
 	//* [ ] operator!=
 	{
 		String test = _T("test");
-		Optional<String> opt1;
-		Optional<String> opt2;
+		Optional2<String> opt1;
+		Optional2<String> opt2;
 
 		ASSERT_EQ(false, opt1 != opt2);
 		ASSERT_EQ(false, opt1 != nullptr);
