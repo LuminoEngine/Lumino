@@ -1,24 +1,11 @@
 ﻿#include "Common.hpp"
 #include <LuminoCore/Base/Optional2.hpp>
-#include <optional>
+#include <LuminoCore/Base/OptionalRef.ipp>
 
 class Test_Base_Optional : public ::testing::Test {};
 
 TEST_F(Test_Base_Optional, Construct)
 {
-	struct AAA {
-		bool a;
-		std::string str;
-	};
-	AAA a;
-	a.a = true;
-	a.str = "aaa";
-	//AAA b = std::move(a);
-
-	std::optional<AAA> oa = a;
-	std::optional<AAA> ob = std::move(oa);
-
-
 	//* [ ] constructors
 	{
 		String test1 = _T("test");
@@ -174,4 +161,47 @@ TEST_F(Test_Base_Optional, Operators)
 		ASSERT_EQ(false, opt1 != nullptr);
 		ASSERT_EQ(true, opt1 != test);
 	}
+}
+
+TEST_F(Test_Base_Optional, Ref)
+{
+	struct Test1 {
+		bool a;
+		std::string str;
+		bool operator==(const Test1& other) const { return a == other.a; }
+	};
+	struct Test2 : public Test1 {
+		int b;
+	};
+	Test1 a;
+	a.a = true;
+	a.str = "aaa";
+
+	Optional<Test1&> refopt1;
+	Optional<Test1&> refopt2(a);
+	Optional<const Test1&> refopt3(a);
+
+	ASSERT_EQ(false, refopt1.hasValue());
+	ASSERT_EQ(true, refopt2.hasValue());
+	ASSERT_EQ(true, refopt3.hasValue());
+
+	Test2 t2;
+	t2.a = true;
+	t2.str = "t2";
+	t2.b = 200;
+	Optional<Test2&> refopt4(t2);
+	Optional<Test1&> refopt5(t2);		// upcast
+	Optional<Test1&> refopt6(refopt4);	// upcast
+
+	Test2 t3;
+	t3.a = true;
+	t3.str = "t3";
+	t3.b = 300;
+	Optional<Test2&> refopt7;
+	ASSERT_EQ("t3", refopt7.valueOr(t3).str);
+	ASSERT_EQ("t3", refopt1.valueOr(t3).str);	// upcast
+
+	Optional<Test1&> refopt8(t2);
+	ASSERT_EQ(true, refopt2.equals(refopt5));
+	ASSERT_EQ(false, refopt1.equals(refopt8));
 }

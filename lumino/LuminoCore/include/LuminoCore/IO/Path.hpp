@@ -17,6 +17,10 @@ namespace ln {
  * セパレータをネイティブの文字に変換する場合は native() を使用します。
  * 
  * このクラスに含まれる比較機能は、動作中のファイルシステムによって大文字小文字の区別を決定します。
+ * 
+ * 
+ * std::filesystem::path と似ていますが、内部エンコーディングは String と同一です。
+ * プラットフォーム依存ではありません。
  */
 class Path
 {
@@ -42,6 +46,8 @@ public:
     Path(const Path& basePath, const String& relativePath);
     Path(const Path& basePath, const StringRef& relativePath);
     Path(const Path& basePath, const Path& relativePath);
+    
+
 
     // operators
     Path& operator=(const String& str)
@@ -63,6 +69,10 @@ public:
     {
     }
 #endif
+
+    static Path fromStdPath(const std::filesystem::path& path);
+    std::filesystem::path toStdPath() const;
+
 
 public:
     /** パスが空であるかを確認します。*/

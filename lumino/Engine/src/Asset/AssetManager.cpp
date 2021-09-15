@@ -159,7 +159,7 @@ Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath, const
         //return AssetPath::makeFromLocalFilePath(result);
         //return AssetPathPrefix + result;
     else
-        return nullptr;
+        return std::nullopt;
 }
 
 bool AssetManager::existsAsset(const AssetPath& assetPath) const

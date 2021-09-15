@@ -591,7 +591,7 @@ Optional<T> List<T>::find(const value_type& item) const
     if (itr != end()) {
         return *itr;
     }
-    return nullptr;
+    return std::nullopt;
 }
 
 template<typename T>
@@ -602,7 +602,7 @@ Optional<T> List<T>::findIf(TPred pred) const
     if (itr != end()) {
         return *itr;
     }
-    return nullptr;
+    return std::nullopt;
 }
 
 template<typename T>
