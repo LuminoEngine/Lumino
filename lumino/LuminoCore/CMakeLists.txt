@@ -85,7 +85,7 @@ endif()
 
 install(
     TARGETS     ${PROJECT_NAME}
-    EXPORT      LuminoCoreTargets
+    EXPORT      LuminoCore-Export
     ARCHIVE     DESTINATION ./lib
     INCLUDES    DESTINATION ./include
 )
@@ -94,14 +94,14 @@ install(DIRECTORY include/LuminoCore DESTINATION ./include)
 install(FILES include/LuminoCore.hpp DESTINATION include)
 
 install(
-    EXPORT LuminoCoreTargets
-    FILE LuminoCoreTargets.cmake
+    EXPORT LuminoCore-Export
+    FILE LuminoCoreConfig.cmake
     DESTINATION lib/cmake/LuminoCore
     EXPORT_LINK_INTERFACE_LIBRARIES)
 
-install(
-    FILES LuminoCoreConfig.cmake
-    DESTINATION lib/cmake/LuminoCore)
+#install(
+#    FILES LuminoCoreConfig.cmake
+#    DESTINATION lib/cmake/LuminoCore)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH})
