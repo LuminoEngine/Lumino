@@ -1,7 +1,7 @@
 ﻿#include "Common.hpp"
 #define LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-#include "../src/Shader/UnifiedShader.hpp"
-#include "../src/Shader/UnifiedShaderCompiler.hpp"
+#include "../src/UnifiedShader.hpp"
+#include "../src/UnifiedShaderCompiler.hpp"
 
 class Test_Shader_UnifiedShader : public LuminoSceneTest {};
 

@@ -12,10 +12,10 @@
 #include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
 #include "../Graphics/RHIs/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
-#include "../Shader/UnifiedShaderCompiler.hpp"
-#include "../Shader/ShaderManager.hpp"
-#include "../Shader/ShaderTranspiler.hpp"
-#include "../Shader/HLSLMetadataParser.hpp"
+#include "../../../ShaderCompiler/src/UnifiedShaderCompiler.hpp"
+#include "../../../ShaderCompiler/src/ShaderManager.hpp"
+#include "../../../ShaderCompiler/src/ShaderTranspiler.hpp"
+#include "../../../ShaderCompiler/src/HLSLMetadataParser.hpp"
 
 namespace ln {
 

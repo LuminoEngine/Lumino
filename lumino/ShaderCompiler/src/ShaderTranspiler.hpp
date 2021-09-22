@@ -3,7 +3,7 @@
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoEngine/Shader/Common.hpp>
+#include <LuminoShaderCompiler/Common.hpp>
 #include "Lexer/Token.hpp"
 
 namespace glslang {

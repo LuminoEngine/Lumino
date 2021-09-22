@@ -1,4 +1,4 @@
-﻿project(LuminoFFI-test)
+﻿project(LuminoShaderCompiler-test)
 
 #-------------------------------------------------------------------------------
 # Files

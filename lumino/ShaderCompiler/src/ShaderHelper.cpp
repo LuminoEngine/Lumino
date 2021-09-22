@@ -1,8 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Shader/ShaderHelper.hpp>
-#include "../Shader/UnifiedShader.hpp"
-#include "../Shader/UnifiedShaderCompiler.hpp"
+#include <LuminoShaderCompiler/ShaderHelper.hpp>
+#include "UnifiedShader.hpp"
+#include "UnifiedShaderCompiler.hpp"
+#include "ShaderManager.hpp"
 
 namespace ln {
 namespace detail {
@@ -123,7 +124,7 @@ bool ShaderHelper::buildShader(const ln::Path& inputFile, const ln::Path& output
 {
     auto diag = ln::makeObject<ln::DiagnosticsManager>();
 
-    auto result = ln::detail::ShaderHelper::generateShader(EngineDomain::shaderManager(), inputFile, outputFile, exportDir, diag);
+    auto result = ln::detail::ShaderHelper::generateShader(ShaderManager::instance(), inputFile, outputFile, exportDir, diag);
 
     diag->dumpToLog();
 

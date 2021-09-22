@@ -26,7 +26,7 @@
 #include "../Animation/AnimationManager.hpp"
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"
-#include "../Shader/ShaderManager.hpp"
+#include "../../../ShaderCompiler/src/ShaderManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Font/FontManager.hpp"
 #include "../Mesh/MeshManager.hpp"
@@ -243,7 +243,7 @@ void EngineManager::dispose()
     if (m_effectManager) m_effectManager->dispose();
 	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_meshManager) m_meshManager->dispose();
-	if (m_shaderManager) m_shaderManager->dispose();
+	ShaderManager::terminate();
 	if (m_graphicsManager) m_graphicsManager->dispose();
 	if (m_fontManager) m_fontManager->dispose();
 	if (m_audioManager) m_audioManager->dispose();
@@ -450,8 +450,7 @@ void EngineManager::initializeShaderManager()
 		ShaderManager::Settings settings;
 		settings.graphicsManager = m_graphicsManager;
 
-		m_shaderManager = ln::makeRef<ShaderManager>();
-		m_shaderManager->init(settings);
+		ShaderManager::initialize(settings);
 	}
 }
 

@@ -139,6 +139,7 @@ public:
 	RefObject* platformManager = nullptr;
 	RefObject* assetManager = nullptr;
 	RefObject* runtimeManager = nullptr;
+	RefObject* shaderManager = nullptr;
 	detail::IObjectEventListener* objectEventListener = nullptr;
 
 private:

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
 #include <LuminoEngine/Base/Promise.hpp>
-#include "../Shader/Common.hpp"
+#include <LuminoShaderCompiler/Common.hpp>
 
 namespace ln {
 class IGraphicsResource;

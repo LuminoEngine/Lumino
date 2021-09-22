@@ -1,12 +1,11 @@
 
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/Shader.hpp>
 #include "ShaderManager.hpp"
 #include "ShaderTranspiler.hpp"
-#include "../../../RuntimeCore/src/Asset/AssetManager.hpp"
+#include "../../RuntimeCore/src/Asset/AssetManager.hpp"
 
 #ifdef _WIN32
-#include "../Graphics/RHIs/DirectX12/DX12Helper.hpp"
+#include <LuminoShaderCompiler/detail/D3DCompilerAPI.hpp>
 #endif
 
 namespace ln {
@@ -14,6 +13,27 @@ namespace detail {
 
 //=============================================================================
 // ShaderManager
+
+ShaderManager* ShaderManager::initialize(const Settings& settings)
+{
+    if (instance()) return instance();
+
+    auto m = Ref<ShaderManager>(LN_NEW detail::ShaderManager(), false);
+    if (!m->init(settings)) return nullptr;
+
+    EngineContext2::instance()->registerModule(m);
+    EngineContext2::instance()->runtimeManager = m;
+    return m;
+}
+
+void ShaderManager::terminate()
+{
+    if (instance()) {
+        instance()->dispose();
+        EngineContext2::instance()->unregisterModule(instance());
+        EngineContext2::instance()->runtimeManager = nullptr;
+    }
+}
 
 ShaderManager::ShaderManager()
     : m_graphicsManager(nullptr)
@@ -28,7 +48,7 @@ ShaderManager::~ShaderManager()
 {
 }
 
-void ShaderManager::init(const Settings& settings)
+bool ShaderManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "ShaderManager Initialization started.";
 
@@ -110,6 +130,7 @@ void ShaderManager::init(const Settings& settings)
 #endif
 
     LN_LOG_DEBUG << "ShaderManager Initialization ended.";
+    return true;
 }
 
 void ShaderManager::dispose()

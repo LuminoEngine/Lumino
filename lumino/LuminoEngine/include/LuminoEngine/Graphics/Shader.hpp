@@ -2,7 +2,7 @@
 #pragma once
 #include "Common.hpp"
 #include <LuminoEngine/Asset/AssetObject.hpp>
-#include <LuminoEngine/Shader/ShaderHelper.hpp>
+#include <LuminoShaderCompiler/ShaderHelper.hpp>
 #include "../Graphics/GraphicsResource.hpp"
 #include "ShaderInterfaceFramework.hpp"
 

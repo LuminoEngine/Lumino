@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoPlatform/PlatformSupport.hpp>
-#include <LuminoEngine/Shader/ShaderHelper.hpp>
+#include <LuminoShaderCompiler/ShaderHelper.hpp>
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "../RHIProfiler.hpp"
 #include "VulkanDeviceContext.hpp"

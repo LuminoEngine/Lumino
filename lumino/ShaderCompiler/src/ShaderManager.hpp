@@ -3,8 +3,10 @@
 #ifdef _WIN32
 #include <d3dcompiler.h>
 #endif
-#include <LuminoEngine/Shader/Common.hpp>
-#include "../../../RuntimeCore/src/Base/RefObjectCache.hpp"
+#include <LuminoEngine/Engine/EngineContext2.hpp>
+#include <LuminoEngine/Engine/Module.hpp>
+#include <LuminoShaderCompiler/Common.hpp>
+#include "../../RuntimeCore/src/Base/RefObjectCache.hpp"
 
 namespace ln {
 namespace detail {
@@ -30,18 +32,16 @@ typedef HRESULT(WINAPI* PFN_D3DCompile2)(
 #endif
 
 class ShaderManager
-    : public RefObject
+    : public Module
 {
 public:
     struct Settings
     {
         GraphicsManager* graphicsManager = nullptr;
     };
-
-    ShaderManager();
-    virtual ~ShaderManager();
-    void init(const Settings& settings);
-    void dispose();
+    static ShaderManager* initialize(const Settings& settings);
+    static void terminate();
+    static inline ShaderManager* instance() { return static_cast<ShaderManager*>(EngineContext2::instance()->shaderManager); }
 
     GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     const std::vector<std::pair<std::string, std::string>>& builtinShaderList() const { return m_builtinShaderList; }
@@ -50,7 +50,13 @@ public:
     PFN_D3DCompile2 D3DCompile2 = nullptr;
 #endif
 
+    virtual ~ShaderManager();
+
 private:
+    ShaderManager();
+    bool init(const Settings& settings);
+    void dispose();
+
     GraphicsManager* m_graphicsManager;
     std::vector<std::pair<std::string, std::string>> m_builtinShaderList;
 

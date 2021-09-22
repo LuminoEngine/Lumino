@@ -13,12 +13,12 @@
 #include <SPIRV/GlslangToSpv.h>
 #include <spirv_cross/spirv_glsl.hpp>
 #include "Lexer/CppLexer.hpp"
-#include <LuminoEngine/Shader/ShaderHelper.hpp>
+#include <LuminoShaderCompiler/ShaderHelper.hpp>
 #include "ShaderManager.hpp"
 #include "ShaderTranspiler.hpp"
 
 #ifdef _WIN32
-#include "../Graphics/RHIs/DirectX12/DX12Helper.hpp"
+#include <LuminoShaderCompiler/detail/D3DCompilerAPI.hpp>
 #endif
 
 namespace ln {

@@ -1,11 +1,11 @@
 ﻿
 #define LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 #include "../../../lumino/RuntimeCore/src/Asset/AssetArchive.hpp"
-#include "../../../lumino/LuminoEngine/src/Shader/ShaderManager.hpp"
-#include "../../../lumino/LuminoEngine/src/Shader/ShaderTranspiler.hpp"
-#include "../../../lumino/LuminoEngine/src/Shader/HLSLMetadataParser.hpp"
-#include "../../../lumino/LuminoEngine/src/Shader/UnifiedShader.hpp"
-#include "../../../lumino/LuminoEngine/src/Shader/UnifiedShaderCompiler.hpp"
+#include "../../../lumino/ShaderCompiler/src/ShaderManager.hpp"
+#include "../../../lumino/ShaderCompiler/src/ShaderTranspiler.hpp"
+#include "../../../lumino/ShaderCompiler/src/HLSLMetadataParser.hpp"
+#include "../../../lumino/ShaderCompiler/src/UnifiedShader.hpp"
+#include "../../../lumino/ShaderCompiler/src/UnifiedShaderCompiler.hpp"
 #include "EnvironmentSettings.hpp"
 #include "Workspace.hpp"
 #include "Project.hpp"
@@ -35,16 +35,15 @@ ln::Result BuildAssetHelper::buildShaderFromAutoBuild(const Project* project, co
 ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir)
 {
 	ln::detail::ShaderManager::Settings settings;
-	auto manager = ln::makeRef<ln::detail::ShaderManager>();
-	manager->init(settings);
+	ln::detail::ShaderManager::initialize(settings);
 
 	auto diag = ln::makeObject<ln::DiagnosticsManager>();
 
-	auto result = ln::detail::ShaderHelper::generateShader(manager, inputFile, outputFile, exportDir, diag);
+	auto result = ln::detail::ShaderHelper::generateShader(ln::detail::ShaderManager::instance(), inputFile, outputFile, exportDir, diag);
 
 	diag->dumpToLog();
 
-	manager->dispose();
+	ln::detail::ShaderManager::terminate();
 
 	if (result && !diag->hasError()) {
 		CLI::info(_TT(""));

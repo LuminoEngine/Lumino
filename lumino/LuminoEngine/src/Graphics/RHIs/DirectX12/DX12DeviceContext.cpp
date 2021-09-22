@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoShaderCompiler/detail/D3DCompilerAPI.hpp>
 #include "DX12Helper.hpp"
 #include "DX12Textures.hpp"
 #include "DX12ShaderPass.hpp"

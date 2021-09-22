@@ -3,8 +3,8 @@
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
-#include <LuminoEngine/Shader/Common.hpp>
-#include "../../Shader/UnifiedShader.hpp"
+#include <LuminoShaderCompiler/Common.hpp>
+#include "../../../../ShaderCompiler/src/UnifiedShader.hpp"
 #include "RHIObject.hpp"
 #include "RHIResource.hpp"
 

@@ -4,7 +4,7 @@
 #include <yaml-cpp/yaml.h>
 #include "Lexer/CppLexer.hpp"
 #include <LuminoEngine/Graphics/RenderState.hpp>
-#include <LuminoEngine/Shader/ShaderHelper.hpp>
+#include <LuminoShaderCompiler/ShaderHelper.hpp>
 #include "ShaderManager.hpp"
 #include "HLSLMetadataParser.hpp"
 
