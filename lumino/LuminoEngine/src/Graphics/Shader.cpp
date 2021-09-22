@@ -59,7 +59,7 @@ Ref<Shader> Shader::create(const StringRef& filePath, ShaderCompilationPropertie
 
 Ref<Shader> Shader::load(const StringRef& filePath, AssetImportSettings* settings)
 {
-    return detail::EngineDomain::shaderManager()->loadShader(filePath);
+    return detail::EngineDomain::graphicsManager ()->loadShader(filePath);
 }
 
 Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties)
@@ -68,8 +68,7 @@ Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRe
 }
 
 Shader::Shader()
-    : m_manager(detail::EngineDomain::shaderManager())
-    , m_graphicsManager(nullptr)
+    : m_graphicsManager(nullptr)
     , m_name()
     , m_techniques(makeList<Ref<ShaderTechnique>>())
 {
@@ -110,7 +109,7 @@ void Shader::init(const StringRef& vertexShaderFilePath, const StringRef& pixelS
 				includeDirs.add(path);
 		}
 
-		detail::UnifiedShaderCompiler compiler(m_manager, localDiag);
+		detail::UnifiedShaderCompiler compiler(detail::EngineDomain::shaderManager(), localDiag);
 		if (!compiler.compileSingleCodes(
 			reinterpret_cast<const char*>(vsData.data()), vsData.size(), "main",
 			reinterpret_cast<const char*>(psData.data()), psData.size(), "main",
@@ -199,7 +198,7 @@ bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, Shade
             for (auto& def : properties->m_definitions) definitions.add(def);
         }
 
-        detail::UnifiedShaderCompiler compiler(m_manager, localDiag);
+        detail::UnifiedShaderCompiler compiler(detail::EngineDomain::shaderManager(), localDiag);
         if (!compiler.compile(reinterpret_cast<char*>(buffer.data()), buffer.size(), includeDirs, definitions)) {
             LN_ERROR(localDiag->toString());
             return false;

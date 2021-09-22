@@ -4,6 +4,7 @@
 #include <LuminoEngine/Graphics/GraphicsResource.hpp>
 #include <LuminoEngine/Graphics/CommandQueue.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/Shader.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "GraphicsManager.hpp"
@@ -191,6 +192,8 @@ void GraphicsManager::init(const Settings& settings)
 	m_profiler = std::make_unique<GraphicsProfiler>();
 
 	m_texture2DCache.init(64);
+	m_shaderCache.init(64);
+
 
 	// Create device context
 	{
@@ -283,6 +286,7 @@ void GraphicsManager::dispose()
 		m_renderingQueue = nullptr;
 	}
 
+	m_shaderCache.dispose();
 	m_texture2DCache.dispose();
 
 	// default objects
@@ -419,6 +423,18 @@ bool GraphicsManager::checkVulkanSupported()
 #else
 	return false;
 #endif
+}
+
+Ref<Shader> GraphicsManager::loadShader(const StringRef& filePath)
+{
+	m_shaderCache.collectUnreferenceObjects(false);
+
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+	static const std::vector<const Char*> exts = { _TT(".fx"), _TT(".lcfx") };
+#else
+	static const std::vector<const Char*> exts = { _TT(".lcfx") };
+#endif
+	return AssetManager::loadObjectWithCacheHelper<Shader>(&m_shaderCache, nullptr, exts, filePath, nullptr);
 }
 
 void GraphicsManager::createVulkanContext(const Settings& settings)

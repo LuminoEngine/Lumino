@@ -18,14 +18,13 @@ class ShaderDescriptorLayout;
 class ShaderCompilationProperties;
 class GraphicsContext;
 namespace detail {
-class ShaderManager;
 class UnifiedShader;
 class IShaderPass;
 class IDescriptorPool;
 class ShaderTechniqueSemanticsManager;
 class GraphicsCommandList;
 class ShaderValueSerializer;
-struct ShaderInternal;
+class ShaderInternal;
 }
 
 // UniformBuffer, sampler など、Shader の Data を保持する。
@@ -482,7 +481,6 @@ private:
     void createFromStream(Stream* stream, DiagnosticsManager* diag);
 	void createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
 
-    detail::ShaderManager* m_manager;
     detail::GraphicsManager* m_graphicsManager;
     String m_name;
     Ref<ShaderDescriptorLayout> m_descriptorLayout;
@@ -611,8 +609,9 @@ private:
 };
 
 namespace detail {
-struct ShaderInternal
+class ShaderInternal
 {
+public:
     static ShaderRenderState* getShaderRenderState(ShaderPass* pass);
     static ShaderTechnique* findTechniqueByClass(const Shader* shader, const detail::ShaderTechniqueClass& techniqueClass);
     static const detail::ShaderTechniqueClass& techniqueClass(ShaderTechnique* technique);

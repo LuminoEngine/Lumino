@@ -34,8 +34,6 @@ void ShaderManager::init(const Settings& settings)
 
     m_graphicsManager = settings.graphicsManager;
 
-    m_shaderCache.init(64);
-
     // Lumino.fxh.h
     {
         static const unsigned char data[] =
@@ -128,19 +126,6 @@ void ShaderManager::dispose()
     ShaderCodeTranspiler::finalizeGlobals();
 #endif
 
-    m_shaderCache.dispose();
-}
-
-Ref<Shader> ShaderManager::loadShader(const StringRef& filePath)
-{
-    m_shaderCache.collectUnreferenceObjects(false);
-
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-    static const std::vector<const Char*> exts = { _TT(".fx"), _TT(".lcfx") };
-#else
-    static const std::vector<const Char*> exts = { _TT(".lcfx") };
-#endif
-    return AssetManager::loadObjectWithCacheHelper<Shader>(&m_shaderCache, nullptr, exts, filePath, nullptr);
 }
 
 } // namespace detail
