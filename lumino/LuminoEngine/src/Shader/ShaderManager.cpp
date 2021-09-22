@@ -1,6 +1,6 @@
 
 #include "Internal.hpp"
-#include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Graphics/Shader.hpp>
 #include "ShaderManager.hpp"
 #include "ShaderTranspiler.hpp"
 #include "../../../RuntimeCore/src/Asset/AssetManager.hpp"

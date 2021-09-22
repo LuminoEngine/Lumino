@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/RenderState.hpp>
-#include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Graphics/Shader.hpp>
 #include <LuminoEngine/Rendering/Common.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>

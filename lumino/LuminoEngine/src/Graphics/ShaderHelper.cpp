@@ -1,10 +1,10 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
-#include <LuminoEngine/Shader/ShaderHelper.hpp>
-#include <LuminoEngine/Shader/Shader.hpp>
-#include "UnifiedShader.hpp"
-#include "UnifiedShaderCompiler.hpp"
+#include <LuminoEngine/Graphics/ShaderHelper.hpp>
+#include <LuminoEngine/Graphics/Shader.hpp>
+#include "../Shader/UnifiedShader.hpp"
+#include "../Shader/UnifiedShaderCompiler.hpp"
 
 namespace ln {
 namespace detail {

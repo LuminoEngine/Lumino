@@ -3,7 +3,7 @@
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Animation/AnimationCurve.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
-#include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Graphics/Shader.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>

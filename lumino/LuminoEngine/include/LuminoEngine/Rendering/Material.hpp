@@ -3,8 +3,8 @@
 #include <LuminoEngine/Base/Builder.hpp>
 #include "../Graphics/ColorStructs.hpp"
 #include "../Graphics/RenderState.hpp"
-#include "../Shader/Shader.hpp"
-#include "../Shader/ShaderInterfaceFramework.hpp"
+#include "../Graphics/Shader.hpp"
+#include "../Graphics/ShaderInterfaceFramework.hpp"
 
 namespace ln {
 

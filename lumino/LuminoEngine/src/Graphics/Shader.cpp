@@ -8,14 +8,14 @@
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Graphics/ConstantBuffer.hpp>
-#include <LuminoEngine/Shader/Shader.hpp>
-#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
+#include <LuminoEngine/Graphics/Shader.hpp>
+#include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
 #include "../Graphics/RHIs/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
-#include "UnifiedShaderCompiler.hpp"
-#include "ShaderManager.hpp"
-#include "ShaderTranspiler.hpp"
-#include "HLSLMetadataParser.hpp"
+#include "../Shader/UnifiedShaderCompiler.hpp"
+#include "../Shader/ShaderManager.hpp"
+#include "../Shader/ShaderTranspiler.hpp"
+#include "../Shader/HLSLMetadataParser.hpp"
 
 namespace ln {
 

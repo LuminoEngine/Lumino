@@ -4,7 +4,7 @@
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/ConstantBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
-#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
+#include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
 
 namespace ln {
 namespace detail {

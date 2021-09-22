@@ -6,7 +6,7 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
 
-#include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Graphics/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "../Rendering/RenderStage.hpp"
 

@@ -5,7 +5,7 @@
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
-#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
+#include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
 #include "../../Graphics/GraphicsManager.hpp"

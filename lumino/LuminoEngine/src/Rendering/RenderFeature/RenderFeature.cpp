@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Shader/Shader.hpp>
-#include <LuminoEngine/Shader/ShaderInterfaceFramework.hpp>
+#include <LuminoEngine/Graphics/Shader.hpp>
+#include <LuminoEngine/Graphics/ShaderInterfaceFramework.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>

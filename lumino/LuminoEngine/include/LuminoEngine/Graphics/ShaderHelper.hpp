@@ -3,7 +3,7 @@
 #include "Common.hpp"
 #include "../Graphics/GraphicsResource.hpp"
 #include "../Graphics/RenderState.hpp"
-#include "ShaderInterfaceFramework.hpp"
+#include "../Graphics/ShaderInterfaceFramework.hpp"
 
 namespace ln {
 class Texture;

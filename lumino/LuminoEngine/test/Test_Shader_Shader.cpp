@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
+#include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 
 //==============================================================================

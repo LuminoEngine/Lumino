@@ -38,7 +38,7 @@
 #include "LuminoEngine/Audio/GameAudio.hpp"
 #include "LuminoEngine/Audio/Audio.hpp"
 
-#include "LuminoEngine/Shader/Shader.hpp"
+#include "LuminoEngine/Graphics/Shader.hpp"
 
 #include "LuminoEngine/Graphics/RenderState.hpp"
 #include "LuminoEngine/Graphics/SamplerState.hpp"

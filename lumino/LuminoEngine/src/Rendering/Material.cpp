@@ -3,7 +3,7 @@
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
-#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
+#include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "RenderingManager.hpp"

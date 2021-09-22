@@ -6,7 +6,7 @@
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
-#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
+#include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
 #include "GraphicsManager.hpp"
 #include "RenderTargetTextureCache.hpp"
 #include "RHIs/GraphicsDeviceContext.hpp"

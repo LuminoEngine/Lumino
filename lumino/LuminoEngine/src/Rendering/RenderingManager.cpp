@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
-#include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Graphics/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "../Engine/LinearAllocator.hpp"
 #include "../Shader/UnifiedShaderCompiler.hpp"

@@ -10,8 +10,8 @@
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
-#include <LuminoEngine/Shader/Shader.hpp>
-#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
+#include <LuminoEngine/Graphics/Shader.hpp>
+#include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
 #include "GraphicsManager.hpp"
 #include "RHIs/GraphicsDeviceContext.hpp"
 

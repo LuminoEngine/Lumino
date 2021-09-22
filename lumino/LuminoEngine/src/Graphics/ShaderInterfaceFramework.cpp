@@ -2,9 +2,9 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
-#include <LuminoEngine/Shader/Shader.hpp>
-#include <LuminoEngine/Shader/ShaderDescriptor.hpp>
-#include <LuminoEngine/Shader/ShaderInterfaceFramework.hpp>
+#include <LuminoEngine/Graphics/Shader.hpp>
+#include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
+#include <LuminoEngine/Graphics/ShaderInterfaceFramework.hpp>
 
 namespace ln {
 namespace detail {
