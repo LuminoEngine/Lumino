@@ -5,7 +5,7 @@
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../../Font/FontCore.hpp"
 #include "../../Graphics/RHIs/GraphicsDeviceContext.hpp"

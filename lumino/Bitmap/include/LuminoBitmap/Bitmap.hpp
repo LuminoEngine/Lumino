@@ -1,7 +1,7 @@
 ﻿
 #pragma once
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include "Common.hpp"
-#include "ColorStructs.hpp"
 
 namespace ln {
 class Bitmap2D;
@@ -171,6 +171,8 @@ public:
         Bitmap2D* dest, const RectI& destRect,
         const Bitmap2D* src, const RectI& srcRect,
         ClColor mulColorRGBA, bool alphaBlend);
+
+	static size_t getPixelSize(PixelFormat format);
 };
 
 

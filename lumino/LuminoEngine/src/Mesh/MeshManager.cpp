@@ -3,7 +3,7 @@
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
-#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/AnimationController.hpp>

@@ -6,6 +6,7 @@
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Reflection/Object.hpp>
+#include <LuminoBitmap/Bitmap.hpp>
 
 #include "LuminoEngine/Common.hpp"
 #include "LuminoEngine/EngineContext.hpp"
@@ -38,8 +39,8 @@
 #include "LuminoEngine/Audio/GameAudio.hpp"
 #include "LuminoEngine/Audio/Audio.hpp"
 
-#include "LuminoEngine/Graphics/Shader.hpp"
 
+#include "LuminoEngine/Graphics/Shader.hpp"
 #include "LuminoEngine/Graphics/RenderState.hpp"
 #include "LuminoEngine/Graphics/SamplerState.hpp"
 #include "LuminoEngine/Graphics/VertexLayout.hpp"
@@ -49,7 +50,6 @@
 #include "LuminoEngine/Graphics/RenderPass.hpp"
 #include "LuminoEngine/Graphics/SwapChain.hpp"
 #include "LuminoEngine/Graphics/GraphicsContext.hpp"
-#include "LuminoEngine/Graphics/Bitmap.hpp"
 #include "LuminoEngine/Graphics/Graphics.hpp"
 
 #include "LuminoEngine/Font/Font.hpp"

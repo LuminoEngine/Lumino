@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <LuminoCore/Base/Result.hpp>
+#include <LuminoBitmap/Common.hpp>
 
 namespace ln {
 class DiagnosticsManager;

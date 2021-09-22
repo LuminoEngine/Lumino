@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>

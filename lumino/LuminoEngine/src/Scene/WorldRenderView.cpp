@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>

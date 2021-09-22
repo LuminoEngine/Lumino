@@ -8,7 +8,7 @@
 #include FT_SFNT_NAMES_H
 #include FT_STROKER_H
 #include FT_SYNTHESIS_H
-#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include "FontManager.hpp"
 #include "FreeTypeFont.hpp"

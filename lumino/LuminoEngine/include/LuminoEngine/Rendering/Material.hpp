@@ -2,7 +2,7 @@
 #include "Common.hpp"
 #include <LuminoEngine/Base/Builder.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
-#include "../Graphics/ColorStructs.hpp"
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include "../Graphics/Shader.hpp"
 #include "../Graphics/ShaderInterfaceFramework.hpp"
 #include "../Graphics/ShaderParameterValue.hpp"

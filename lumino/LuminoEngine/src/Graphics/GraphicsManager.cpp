@@ -145,29 +145,6 @@ size_t GraphicsHelper::getPixelSize(TextureFormat format)
     }
 }
 
-size_t GraphicsHelper::getPixelSize(PixelFormat format)
-{
-	switch (format)
-	{
-	case PixelFormat::Unknown:
-		return 0;
-	case PixelFormat::A8:
-		return 1;
-	case PixelFormat::RGBA8:
-		return 4;
-	case PixelFormat::RGB8:
-		return 3;
-	case PixelFormat::RGBA32F:
-		return 16;
-	case PixelFormat::R32S:
-		return 4;
-	default:
-		LN_UNREACHABLE();
-		return 0;
-	}
-}
-
-
 namespace detail {
 
 //==============================================================================

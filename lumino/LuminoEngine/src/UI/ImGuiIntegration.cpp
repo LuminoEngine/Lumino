@@ -8,7 +8,7 @@
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
-#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Shader.hpp>
 #include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>

@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Base/Event.hpp>
-#include "../Graphics/ColorStructs.hpp"
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
 
 namespace ln {
 class Material;

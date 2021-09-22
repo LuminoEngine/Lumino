@@ -2,6 +2,7 @@
 #pragma once
 #include <LuminoEngine/Base/Promise.hpp>
 #include <LuminoShaderCompiler/Common.hpp>
+#include <LuminoBitmap/Common.hpp>
 
 namespace ln {
 class IGraphicsResource;
@@ -211,28 +212,6 @@ enum class IndexBufferFormat
     UInt32,
 };
 
-/** ピクセルフォーマット */
-LN_ENUM()
-enum class PixelFormat : uint8_t
-{
-    /** Unknown */
-    Unknown,
-
-    /** 8bit アルファ値のみのフォーマット */
-    A8,
-
-    /** RGBA オーダーの各要素 8bit フォーマット */
-    RGBA8,
-
-    /** RGB オーダーの各要素 8bit フォーマット */
-    RGB8,
-
-    /** RGBA オーダーの各要素 32bit 浮動小数点フォーマット */
-    RGBA32F,
-
-    R32S,
-};
-
 /** テクスチャのピクセルフォーマット */
 LN_ENUM()
 enum class TextureFormat : uint8_t
@@ -354,7 +333,6 @@ public:
     static PixelFormat translateToPixelFormat(TextureFormat format);
     static TextureFormat translateToTextureFormat(PixelFormat format);
     static size_t getPixelSize(TextureFormat format);
-    static size_t getPixelSize(PixelFormat format);
     static IndexBufferFormat selectIndexBufferFormat(int vertexCount) { return (vertexCount > 0xFFFF) ? IndexBufferFormat::UInt32 : IndexBufferFormat::UInt16; }
     static size_t getIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat::UInt16) ? 2 : 4; }
 

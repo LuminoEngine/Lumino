@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoBitmap/Bitmap.hpp>
 #include "BitmapEncoding.hpp"
 
 namespace ln {
@@ -224,6 +224,28 @@ void BlitHelper::bitBltInternal(
     }
 }
 
+size_t BlitHelper::getPixelSize(PixelFormat format)
+{
+    switch (format)
+    {
+    case PixelFormat::Unknown:
+        return 0;
+    case PixelFormat::A8:
+        return 1;
+    case PixelFormat::RGBA8:
+        return 4;
+    case PixelFormat::RGB8:
+        return 3;
+    case PixelFormat::RGBA32F:
+        return 16;
+    case PixelFormat::R32S:
+        return 4;
+    default:
+        LN_UNREACHABLE();
+        return 0;
+    }
+}
+
 
 
 } // namespace detail
@@ -363,7 +385,7 @@ void Bitmap2D::flipVerticalFlow()
 	if (LN_REQUIRE(m_format != PixelFormat::Unknown)) return;
 	//if (LN_REQUIRE(m_format != PixelFormat::A1)) return;
 
-	int pixelSize = GraphicsHelper::getPixelSize(m_format);
+	int pixelSize = detail::BlitHelper::getPixelSize(m_format);
 	if (pixelSize == 1)
 	{
 		// XOR で工夫すると演算回数が少なくなるとか最適化の余地はあるけど、
@@ -480,7 +502,7 @@ void Bitmap2D::blit(const RectI& destRect, const Bitmap2D* srcBitmap, const Rect
 
 int Bitmap2D::getBitmapByteSize(int width, int height, int depth, PixelFormat format)
 {
-	return GraphicsHelper::getPixelSize(format) * width * height * depth;
+	return detail::BlitHelper::getPixelSize(format) * width * height * depth;
 }
 
 //==============================================================================
