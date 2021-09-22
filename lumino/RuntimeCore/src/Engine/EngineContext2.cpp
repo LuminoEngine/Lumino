@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
+#include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 
 namespace ln {
@@ -55,6 +56,12 @@ bool EngineContext2::init()
 
     TaskScheduler::init();
     m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
+
+    {
+        m_activeDiagnostics = makeObject<DiagnosticsManager>();
+        ProfilingItem::Graphics_RenderPassCount = makeObject<ProfilingItem>(ProfilingItemType::Counter, _TT("RenderPass count"));
+        m_activeDiagnostics->registerProfilingItem(ProfilingItem::Graphics_RenderPassCount);
+    }
 
     return true;
 }

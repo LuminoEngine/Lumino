@@ -46,6 +46,7 @@ public:
 
 	const Ref<Dispatcher>& mainThreadTaskDispatcher() const { return m_mainThreadTaskDispatcher; }
 
+	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
 
 	// TODO: 外部用。
@@ -149,6 +150,7 @@ private:
 	
 	List<Ref<Module>> m_modules;
 	Ref<Dispatcher> m_mainThreadTaskDispatcher;
+	Ref<DiagnosticsManager> m_activeDiagnostics;
 
 	std::unordered_map<String, TypeInfo*> m_typeInfoSet;
 	std::vector<Ref<TypeInfo>> m_typeInfos;

@@ -164,7 +164,6 @@ public:
     const Ref<UIManager>& uiManager() const { return m_uiManager; }
 
     const FpsController& fpsController() const { return m_fpsController; }
-	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
 	static ln::Path findRepositoryRootForTesting();
 	static ln::Path findParentDirectoryContainingSpecifiedFile(StringRef file);
@@ -231,7 +230,6 @@ private:
 	Ref<UIManager>					m_uiManager;
     FpsController m_fpsController;
 
-	Ref<DiagnosticsManager> m_activeDiagnostics;
 
 	Path m_persistentDataPath;
 	Path m_engineResourcesPath;

@@ -151,12 +151,6 @@ void EngineManager::init(const EngineSettings& settings)
     }
 	
 
-	{
-		m_activeDiagnostics = makeObject<DiagnosticsManager>();
-		ProfilingItem::Graphics_RenderPassCount = makeObject<ProfilingItem>(ProfilingItemType::Counter, _TT("RenderPass count"));
-		m_activeDiagnostics->registerProfilingItem(ProfilingItem::Graphics_RenderPassCount);
-	}
-
     // register types
     {
         EngineDomain::registerType<Application>();
