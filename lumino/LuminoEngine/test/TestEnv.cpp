@@ -24,7 +24,7 @@ void TestEnv::setup()
 	EngineContext::current()->initializeEngineManager();
 	detail::EngineDomain::engineManager()->initializeAllManagers();
     detail::EngineDomain::engineManager()->sceneManager()->autoAddingToActiveWorld = true;
-	detail::RuntimeManager::initialize(detail::RuntimeManager::s_globalSettings);
+	//detail::RuntimeManager::initialize(detail::RuntimeManager::s_globalSettings);
 
 
     if (feature == EngineFeature::Experimental)  // Experimental
@@ -53,7 +53,7 @@ void TestEnv::setup()
 void TestEnv::teardown()
 {
 	depthBuffer = nullptr;
-	detail::RuntimeManager::terminate();
+	//detail::RuntimeManager::terminate();
     detail::EngineDomain::release();
 }
 
