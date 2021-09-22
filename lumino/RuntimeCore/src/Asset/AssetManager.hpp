@@ -5,7 +5,7 @@
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Asset/Common.hpp>
 #include <LuminoEngine/Asset/AssetObject.hpp>
-#include "../../../Engine/src/Base/RefObjectCache.hpp"
+#include "../../../RuntimeCore/src/Base/RefObjectCache.hpp"
 
 namespace ln {
 //class Texture2D;

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Engine/RenderingCommandList.hpp>
-#include "../../../Engine/src/Base/RefObjectCache.hpp"
+#include "../../../RuntimeCore/src/Base/RefObjectCache.hpp"
 
 namespace ln {
 class GraphicsContext; 

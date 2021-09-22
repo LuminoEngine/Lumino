@@ -1,6 +1,6 @@
 ﻿
 #include "../../../lumino/LuminoEngine/src/Engine/EngineDomain.hpp"
-#include "../../../lumino/Engine/src/Asset/AssetManager.hpp"
+#include "../../../lumino/RuntimeCore/src/Asset/AssetManager.hpp"
 #include "Project.hpp"
 #include "AssetDatabase.hpp"
 

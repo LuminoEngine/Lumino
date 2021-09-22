@@ -34,7 +34,7 @@
 #include "../Rendering/RenderingProfiler.hpp"
 #include "../Effect/EffectManager.hpp"
 #include "../Physics/PhysicsManager.hpp"
-#include "../../../Engine/src/Asset/AssetManager.hpp"
+#include "../../../RuntimeCore/src/Asset/AssetManager.hpp"
 #include "../Visual/VisualManager.hpp"
 #include "../Scene/SceneManager.hpp"
 #include "../UI/UIManager.hpp"
