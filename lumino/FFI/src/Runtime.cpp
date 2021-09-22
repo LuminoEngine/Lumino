@@ -1,9 +1,9 @@
 ﻿#include "Internal.hpp"
 #include <cstdarg>
 #include <LuminoEngine/Engine/Application.hpp>
-#include <LuminoEngine/Runtime/Runtime.hpp>
-#include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
-#include "../Engine/EngineManager.hpp"
+#include <LuminoFFI/Runtime.hpp>
+#include <LuminoFFI/Lumino.FlatC.generated.h>
+#include "../../LuminoEngine/src/Engine/EngineManager.hpp"
 #include "RuntimeManager.hpp"
 
 
@@ -11,27 +11,27 @@ namespace ln {
 
 LNHandle Runtime::makeObjectWrap(Object* obj, bool fromCreate)
 {
-	return detail::EngineDomain::runtimeManager()->makeObjectWrap(obj, fromCreate);
+    return detail::RuntimeManager::instance()->makeObjectWrap(obj, fromCreate);
 }
 
 Object* Runtime::getObject(LNHandle handle)
 {
-	return detail::EngineDomain::runtimeManager()->getObjectEntry(handle)->object;
+	return detail::RuntimeManager::instance()->getObjectEntry(handle)->object;
 }
 
 void Runtime::setManagedObjectId(LNHandle handle, int64_t id)
 {
-	detail::EngineDomain::runtimeManager()->setManagedObjectId(handle, id);
+	detail::RuntimeManager::instance()->setManagedObjectId(handle, id);
 }
 
 int64_t Runtime::getManagedObjectId(LNHandle handle)
 {
-	return detail::EngineDomain::runtimeManager()->getManagedObjectId(handle);
+	return detail::RuntimeManager::instance()->getManagedObjectId(handle);
 }
 
 LNResult Runtime::processException(Exception* e)
 {
-	return detail::EngineDomain::runtimeManager()->processException(e);
+	return detail::RuntimeManager::instance()->processException(e);
 }
 
 //const Char* Runtime::getUTF16StringPtr(String str)
@@ -43,7 +43,7 @@ const Char* Runtime::getUTF16StringPtr(const String& str)
 {
     // TODO: Assets::readAllText() のように、String の実態を返す関数の対策のため、必ず reset している。
     // 参照で返してくるものはふつうに return str.c_str(); すればよいだけなので、そのように最適化したい。
-    auto* sb = detail::EngineDomain::runtimeManager()->requestCommonStringBuffer();
+    auto* sb = detail::RuntimeManager::instance()->requestCommonStringBuffer();
     sb->reset(str);
     return sb->getUtf16();
 
@@ -52,19 +52,19 @@ const Char* Runtime::getUTF16StringPtr(const String& str)
 
 const char* Runtime::getAStringPtr(const String& str)
 {
-    auto* sb = detail::EngineDomain::runtimeManager()->requestCommonStringBuffer();
+    auto* sb = detail::RuntimeManager::instance()->requestCommonStringBuffer();
     sb->reset(str);
     return sb->getAscii();
 }
 
 void Runtime::setAStringEncoding(TextEncoding* value)
 {
-    detail::EngineDomain::runtimeManager()->setAStringEncoding(value);
+    detail::RuntimeManager::instance()->setAStringEncoding(value);
 }
 
 TextEncoding* Runtime::getAStringEncoding()
 {
-    return detail::EngineDomain::runtimeManager()->getAStringEncoding();
+    return detail::RuntimeManager::instance()->getAStringEncoding();
 }
 
 //==============================================================================
@@ -134,27 +134,27 @@ void LNRuntime_Initialize(const tagLNRuntimeSettings* settings)
         s.runtimeGetTypeInfoIdCallback = settings->runtimeGetTypeInfoIdCallback;
     }
 
-	ln::EngineContext::current()->initializeRuntimeManager();
+	ln::detail::RuntimeManager::initialize(ln::detail::RuntimeManager::s_globalSettings);
 }
 
 void LNRuntime_Finalize()
 {
-	ln::EngineContext::current()->disposeRuntimeManager();
+    ln::detail::RuntimeManager::terminate();
 }
 
 void LNRuntime_SetManagedObjectId(LNHandle handle, int64_t id)
 {
-	ln::detail::EngineDomain::runtimeManager()->setManagedObjectId(handle, id);
+	ln::detail::RuntimeManager::instance()->setManagedObjectId(handle, id);
 }
 
 int64_t LNRuntime_GetManagedObjectId(LNHandle handle)
 {
-	return ln::detail::EngineDomain::runtimeManager()->getManagedObjectId(handle);
+	return ln::detail::RuntimeManager::instance()->getManagedObjectId(handle);
 }
 
 int64_t LNRuntime_GetManagedTypeInfoId(LNHandle handle)
 {
-	return ln::detail::EngineDomain::runtimeManager()->getManagedTypeInfoId(handle);
+	return ln::detail::RuntimeManager::instance()->getManagedTypeInfoId(handle);
 }
 
 //void LNRuntime_SetReferenceCountTracker(LNReferenceCountTrackerCallback callback)
@@ -164,7 +164,7 @@ int64_t LNRuntime_GetManagedTypeInfoId(LNHandle handle)
 
 void LNRuntime_SetReferenceTrackEnabled(LNHandle handle)
 {
-	return ln::detail::EngineDomain::runtimeManager()->setReferenceTrackEnabled(handle);
+	return ln::detail::RuntimeManager::instance()->setReferenceTrackEnabled(handle);
 }
 
 //void LNRuntime_SetRuntimeFinalizedCallback(LNRuntimeFinalizedCallback callback)
@@ -185,12 +185,12 @@ void LNRuntime_SetReferenceTrackEnabled(LNHandle handle)
 void LNRuntime_RunAppInternal(LNHandle app)
 {
     ln::detail::ApplicationHelper::run(
-        static_cast<ln::Application*>(ln::detail::EngineDomain::runtimeManager()->getObjectFromHandle(app)));
+        static_cast<ln::Application*>(ln::detail::RuntimeManager::instance()->getObjectFromHandle(app)));
 }
 
 void LNRuntime_DumpInfo()
 {
-    ln::detail::EngineDomain::runtimeManager()->dumpInfo();
+    ln::detail::RuntimeManager::instance()->dumpInfo();
 }
 
 void LNInternalEngineSettings_SetEngineResourcesPathA(const char* path)
@@ -266,7 +266,7 @@ LNResult LNTypeInfo_SetCreateInstanceCallback(int32_t typeInfoId, LNTypeInfoCrea
                 return nullptr;
             }
             // TODO: 参照カウントこれでよい？
-            auto ref = ln::detail::EngineDomain::runtimeManager()->getObjectFromHandle(handle);
+            auto ref = ln::detail::RuntimeManager::instance()->getObjectFromHandle(handle);
             printf("[Engine] [%p] RefCount: %d\n", ref, ln::RefObjectHelper::getReferenceCount(ref));
             return ref;
         };
@@ -309,7 +309,7 @@ LNResult LNTypeInfo_GetManagedTypeInfoId(int32_t typeInfoId, int32_t* outManaged
 
 LNResult LNObject_Release(LNHandle obj)
 {
-    if (auto m = ln::detail::EngineDomain::runtimeManager()) {
+    if (auto m = ln::detail::RuntimeManager::instance()) {
         m->releaseObjectExplicitly(obj);
 		return LN_OK;
     }
@@ -320,7 +320,7 @@ LNResult LNObject_Release(LNHandle obj)
 
 LNResult LNObject_Retain(LNHandle obj)
 {
-	if (auto m = ln::detail::EngineDomain::runtimeManager()) {
+	if (auto m = ln::detail::RuntimeManager::instance()) {
 		m->retainObjectExplicitly(obj);
 		return LN_OK;
 	}

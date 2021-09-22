@@ -46,8 +46,8 @@ public:
 	friend class ::ln::EngineContext2;
 	static ::ln::TypeInfo* _lnref_getTypeInfo()
 	{
-		//static ::ln::TypeInfo* _lnref_typeInfo = _lnref_registerTypeInfo();
-		return nullptr;//_lnref_typeInfo;
+		static ::ln::TypeInfo* _lnref_typeInfo = _lnref_registerTypeInfo();
+		return _lnref_typeInfo;
 	}
 	::ln::TypeInfo* _lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
 

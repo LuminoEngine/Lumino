@@ -1,5 +1,7 @@
 ﻿#include <LuminoEngine/Reflection/Object.hpp>
 #include <LuminoEngine/Reflection/TypeInfo.hpp>
+#include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
+#include "BindingValidation.hpp"
 #include "RuntimeManager.hpp"
 
 namespace ln {
@@ -9,6 +11,28 @@ namespace detail {
 // RuntimeManager
 
 RuntimeManager::Settings RuntimeManager::s_globalSettings;
+
+RuntimeManager* RuntimeManager::initialize(const Settings& settings)
+{
+	if (instance()) return instance();
+
+	auto m = Ref<RuntimeManager>(LN_NEW detail::RuntimeManager(), false);
+	if (!m->init(settings)) return nullptr;
+
+	EngineContext2::instance()->registerModule(m);
+	EngineContext2::instance()->runtimeManager = m;
+	return m;
+}
+
+void RuntimeManager::terminate()
+{
+	if (instance()) {
+		instance()->dispose();
+		EngineContext2::instance()->unregisterModule(instance());
+		EngineContext2::instance()->runtimeManager = nullptr;
+	}
+}
+
 
 //LNReferenceCountTrackerCallback RuntimeManager::m_referenceCountTracker = nullptr;
 //LNRuntimeFinalizedCallback RuntimeManager::m_runtimeFinalizedCallback = nullptr;
@@ -31,7 +55,7 @@ RuntimeManager::~RuntimeManager()
 {
 }
 
-void RuntimeManager::init(const Settings& settings)
+bool RuntimeManager::init(const Settings& settings)
 {
 	LN_LOG_DEBUG << "RuntimeManager Initialization started.";
 
@@ -64,12 +88,19 @@ void RuntimeManager::init(const Settings& settings)
 	assert(!EngineContext2::instance()->objectEventListener);
 	EngineContext2::instance()->objectEventListener = this;
 
+
+	// TODO: test
+	EngineDomain::registerType<ZVTestClass1>();
+
 	LN_LOG_DEBUG << "RuntimeManager Initialization finished.";
+	return true;
 }
 
 void RuntimeManager::dispose()
 {
 	LN_LOG_DEBUG << "RuntimeManager finalization started.";
+
+	EngineContext2::instance()->objectEventListener = nullptr;
 
 	for (auto& e : m_objectEntryList) {
 		if (e.object) {

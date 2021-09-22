@@ -26,17 +26,13 @@ public:
 
    
 
-	const Ref<detail::RuntimeManager>& runtimeManager() const { return m_runtimeManager; }
 	const Ref<detail::EngineManager>& engineManager() const { return m_engineManager; }
 
 // TODO: internal
-	void initializeRuntimeManager();
 	void initializeEngineManager();
-	void disposeRuntimeManager();
 	void disposeEngineManager();
 
 private:
-	Ref<detail::RuntimeManager> m_runtimeManager;
 	Ref<detail::EngineManager> m_engineManager;
 
 	bool m_init = false;

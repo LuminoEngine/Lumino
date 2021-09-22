@@ -137,6 +137,7 @@ public:
 	// TODO:
 	RefObject* platformManager = nullptr;
 	RefObject* assetManager = nullptr;
+	RefObject* runtimeManager = nullptr;
 	detail::IObjectEventListener* objectEventListener = nullptr;
 
 private:

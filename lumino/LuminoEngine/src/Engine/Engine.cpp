@@ -223,7 +223,7 @@ void Engine::terminate()
 			endFrame();
 		}
 		detail::EngineDomain::engineContext()->disposeEngineManager();
-		detail::EngineDomain::engineContext()->disposeRuntimeManager();
+		//detail::EngineDomain::engineContext()->disposeRuntimeManager();
 	}
 }
 

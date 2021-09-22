@@ -1,6 +1,8 @@
 ﻿#pragma once
-#include <LuminoEngine/Runtime/Common.hpp>
-#include <LuminoEngine/Runtime/Runtime.hpp>
+#include <LuminoEngine/Engine/EngineContext2.hpp>
+#include <LuminoEngine/Engine/Module.hpp>
+#include <LuminoFFI/Common.hpp>
+#include <LuminoFFI/Runtime.hpp>
 
 namespace ln {
 namespace detail {
@@ -25,7 +27,7 @@ struct ObjectEntry
 };
 
 class RuntimeManager
-	: public RefObject
+	: public Module
 	, public IObjectEventListener
 {
 public:
@@ -37,10 +39,10 @@ public:
 	};
 	static Settings s_globalSettings;
 
-	RuntimeManager();
-	virtual ~RuntimeManager();
-	void init(const Settings& settings);
-	void dispose();
+	static RuntimeManager* initialize(const Settings& settings);
+	static void terminate();
+	static inline RuntimeManager* instance() { return static_cast<RuntimeManager*>(EngineContext2::instance()->runtimeManager); }
+
 
 	// create の時は想定通りの動作。externalRefCount=1 の状態で作られる。
 	// get の場合も同様に作られる。基本方針は COM と同じく、Get したものは Release で解放するべきだが、
@@ -76,15 +78,17 @@ public:
 	TextEncoding* getAStringEncoding() const;
 
 private:
+	RuntimeManager();
+	virtual ~RuntimeManager();
+	bool init(const Settings& settings);
+	void dispose();
+
     Settings m_settings;
 	List<ObjectEntry> m_objectEntryList;
 	std::stack<int> m_objectIndexStack;
 	bool m_systemAliving;
 	std::mutex m_mutex;
     RuntimeStringBuffer m_commonStringBuffer;
-
-	//static LNReferenceCountTrackerCallback m_referenceCountTracker;
- //   static LNRuntimeFinalizedCallback m_runtimeFinalizedCallback;
 };
 
 } // namespace detail

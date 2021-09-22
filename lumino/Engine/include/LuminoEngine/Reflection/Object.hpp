@@ -159,10 +159,11 @@ enum class ObjectFlags
 	::ln::TypeInfo* classType::_lnref_registerTypeInfo() \
 	{ \
 		::ln::EngineContext2* context = ::ln::EngineContext2::instance(); \
-		::ln::TypeInfo* typeInfo = context->registerType<classType>(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>(), {}); \
+		/*::ln::TypeInfo* typeInfo = context->registerType<classType>(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>(), {}); \
 		_lnref_registerTypeInfoInitializer(context, typeInfo); \
         _lnref_typeInfo = typeInfo; \
-		return typeInfo; \
+		return typeInfo;*/ \
+        return nullptr; \
 	} \
 	void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext2* context, ::ln::TypeInfo* typeInfo)
 

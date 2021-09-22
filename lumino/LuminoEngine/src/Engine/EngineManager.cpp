@@ -22,7 +22,6 @@
 #include <LuminoEngine/Scene/CameraOrbitControlComponent.hpp>
 #include "../Graphics/RenderTargetTextureCache.hpp"
 
-#include "../Runtime/RuntimeManager.hpp"
 #include "../../../Platform/src/Platform/PlatformManager.hpp"
 #include "../Animation/AnimationManager.hpp"
 #include "../Input/InputManager.hpp"
@@ -44,7 +43,6 @@
 #include "EngineDomain.hpp"
 #include "EngineProfiler.hpp"
 
-#include "../Runtime/BindingValidation.hpp"
 #include <LuminoEngine/Scene/SceneConductor.hpp>
 
 namespace ln {
@@ -162,7 +160,6 @@ void EngineManager::init(const EngineSettings& settings)
     // register types
     {
         EngineDomain::registerType<Application>();
-		EngineDomain::registerType<ZVTestClass1>();
     }
 
 	m_fpsController.setFrameRate(m_settings.frameRate);
@@ -1079,7 +1076,7 @@ public:
 void EngineDomain::release()
 {
 	EngineContextWrap::getInstance()->disposeEngineManager();
-	EngineContextWrap::getInstance()->disposeRuntimeManager();
+	//EngineContextWrap::getInstance()->disposeRuntimeManager();
 
 	//if (g_engineManager) {
 	//	g_engineManager->dispose();
@@ -1102,11 +1099,6 @@ EngineContext* EngineDomain::engineContext()
 	//}
 	//return g_engineContext.get();
 	return EngineContextWrap::getInstance();
-}
-
-RuntimeManager* EngineDomain::runtimeManager()
-{
-    return engineContext()->runtimeManager();
 }
 
 EngineManager* EngineDomain::engineManager()

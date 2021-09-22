@@ -1,7 +1,9 @@
 ﻿#include "Common.hpp"
-#include <LuminoEngine/Runtime/Runtime.hpp>
-#include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
-#include "../src/Runtime/BindingValidation.hpp"
+//#include <LuminoFFI/Runtime.hpp>
+//#include <LuminoFFI/Lumino.FlatC.generated.h>
+#include "../../FFI/include/LuminoFFI/Runtime.hpp"
+#include "../../FFI/include/LuminoFFI/Lumino.FlatC.generated.h"
+#include "../../FFI/src/BindingValidation.hpp"
 
 #define LN_ZV_CHECK(f) \
 { \
@@ -13,6 +15,10 @@
 class Test_FlatAPI : public LuminoSceneTest
 {
 public:
+	void SetUp() override {
+		//EngineContext2::instance()->registerType<ZVTestPromise1>("ZVTestPromise1", ::ln::TypeInfo::getTypeInfo<baseclassType>(), {});
+		//EngineContext2::instance()->registerType<ZVTestPromise2>();
+	}
 };
 
 static volatile int g_value = 0;
