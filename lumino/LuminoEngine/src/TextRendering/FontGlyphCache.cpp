@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
-#include "FontCore.hpp"
+#include "../Font/FontCore.hpp"
 #include "FontGlyphCache.hpp"
 
 namespace ln {

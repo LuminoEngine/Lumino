@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
-#include "../../Font/FontGlyphCache.hpp"
+#include "../../TextRendering/FontGlyphCache.hpp"
 #include "../../Font/TextLayoutEngine.hpp"
 #include "../RenderElement.hpp"
 #include "../RenderingManager.hpp"
