@@ -36,10 +36,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoRuntimeCore)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 
-if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
-endif()
-
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------

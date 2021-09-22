@@ -443,7 +443,7 @@ void EngineManager::initializeAudioManager()
 
 void EngineManager::initializeShaderManager()
 {
-	if (!m_shaderManager && m_settings.features.hasFlag(EngineFeature::Graphics))
+	if (!ShaderManager::instance() && m_settings.features.hasFlag(EngineFeature::Graphics))
 	{
 		initializeGraphicsManager();
 
@@ -1123,11 +1123,6 @@ InputManager* EngineDomain::inputManager()
 AudioManager * EngineDomain::audioManager()
 {
 	return engineManager()->audioManager();
-}
-
-ShaderManager* EngineDomain::shaderManager()
-{
-	return engineManager()->shaderManager();
 }
 
 GraphicsManager* EngineDomain::graphicsManager()

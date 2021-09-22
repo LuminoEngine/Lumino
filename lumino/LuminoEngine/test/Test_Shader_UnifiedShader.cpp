@@ -2,6 +2,7 @@
 #define LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 #include "../src/UnifiedShader.hpp"
 #include "../src/UnifiedShaderCompiler.hpp"
+#include "../src/ShaderManager.hpp"
 
 class Test_Shader_UnifiedShader : public LuminoSceneTest {};
 
@@ -9,7 +10,7 @@ TEST_F(Test_Shader_UnifiedShader, Basic)
 {
     {
         auto diag = makeObject<DiagnosticsManager>();
-        detail::UnifiedShaderCompiler compiler(detail::EngineDomain::shaderManager(), diag);
+        detail::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
 
         ByteBuffer buffer = FileSystem::readAllBytes(LN_ASSETFILE("Shader/LayoutTest-1.fx"));
 
@@ -75,7 +76,7 @@ TEST_F(Test_Shader_UnifiedShader, LayoutTest2)
 {
     {
         auto diag = makeObject<DiagnosticsManager>();
-        detail::UnifiedShaderCompiler compiler(detail::EngineDomain::shaderManager(), diag);
+        detail::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
         ByteBuffer buffer = FileSystem::readAllBytes(LN_ASSETFILE("Shader/LayoutTest-2.fx"));
 
         List<Path> includeDirs;

@@ -43,7 +43,6 @@ public:
     static AnimationManager* animationManager();
 	static InputManager* inputManager();
 	static AudioManager* audioManager();
-	static ShaderManager* shaderManager();
 	static GraphicsManager* graphicsManager();
 	static FontManager* fontManager();
 	static MeshManager* meshManager();

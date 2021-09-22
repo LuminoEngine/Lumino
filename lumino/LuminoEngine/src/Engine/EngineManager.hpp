@@ -31,7 +31,6 @@ class PlatformManager;
 class AnimationManager;
 class InputManager;
 class AudioManager;
-class ShaderManager;
 class GraphicsManager;
 class FontManager;
 class MeshManager;
@@ -152,7 +151,6 @@ public:
     const Ref<AnimationManager>& animationManager() const { return m_animationManager; }
 	const Ref<InputManager>& inputManager() const { return m_inputManager; }
 	const Ref<AudioManager>& audioManager() const { return m_audioManager; }
-	const Ref<ShaderManager>& shaderManager() const { return m_shaderManager; }
 	const Ref<FontManager>& fontManager() const { return m_fontManager; }
 	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
 	const Ref<MeshManager>& meshManager() const { return m_meshManager; }
@@ -218,7 +216,6 @@ private:
 	Ref<AnimationManager>			m_animationManager;
 	Ref<InputManager>				m_inputManager;
 	Ref<AudioManager>				m_audioManager;
-	Ref<ShaderManager> m_shaderManager;
 	Ref<FontManager> m_fontManager;
 	Ref<GraphicsManager>			m_graphicsManager;
 	Ref<MeshManager>				m_meshManager;

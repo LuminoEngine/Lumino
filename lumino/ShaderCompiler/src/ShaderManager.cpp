@@ -22,7 +22,7 @@ ShaderManager* ShaderManager::initialize(const Settings& settings)
     if (!m->init(settings)) return nullptr;
 
     EngineContext2::instance()->registerModule(m);
-    EngineContext2::instance()->runtimeManager = m;
+    EngineContext2::instance()->shaderManager = m;
     return m;
 }
 
@@ -31,7 +31,7 @@ void ShaderManager::terminate()
     if (instance()) {
         instance()->dispose();
         EngineContext2::instance()->unregisterModule(instance());
-        EngineContext2::instance()->runtimeManager = nullptr;
+        EngineContext2::instance()->shaderManager = nullptr;
     }
 }
 
