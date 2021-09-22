@@ -3,6 +3,7 @@
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoEngine/Shader/ShaderHelper.hpp>
 #include "Lexer/Token.hpp"
 
 namespace YAML {

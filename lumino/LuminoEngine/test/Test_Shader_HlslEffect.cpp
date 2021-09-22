@@ -194,7 +194,7 @@ TEST_F(Test_Graphics_HlslEffect, ShaderPassRenderState)
     for (int i = 0; i < 2; i++)
     {
         auto pass = shader->techniques()[0]->passes()[i];
-        auto state = detail::ShaderHelper::getShaderRenderState(pass);
+        auto state = detail::ShaderInternal::getShaderRenderState(pass);
         bool expect = (i == 0) ? false : true;
         ASSERT_EQ(expect, state->blendEnable.hasValue());
         ASSERT_EQ(expect, state->sourceBlend.hasValue());

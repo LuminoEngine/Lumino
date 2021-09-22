@@ -331,51 +331,5 @@ void ShaderTechniqueSemanticsManager::updateClusteredShadingVariables(ShaderSeco
     }
 }
 
-//=============================================================================
-// ShaderTechniqueClass
-
-void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTechniqueClass* outClassSet)
-{
-    outClassSet->defaultTechnique = false;
-    //outClassSet->phase = ShaderTechniqueClass_Phase::Forward;
-    outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
-    outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Default;
-    outClassSet->drawMode = ShaderTechniqueClass_DrawMode::Primitive;
-    if (String::compare(str, _TT("Default"), CaseSensitivity::CaseInsensitive) == 0)
-    {
-        outClassSet->defaultTechnique = true;
-    }
-	else if (String::compare(str, _TT("LightDisc"), CaseSensitivity::CaseInsensitive) == 0)
-	{
-        outClassSet->phase = ShaderTechniqueClass_Phase::LightDisc;
-	}
-    else
-    {
-        // TODO: splitRef
-        auto tokens = str.split(_TT("_"), StringSplitOptions::RemoveEmptyEntries);
-        for (auto& token : tokens) {
-            if (String::compare(token, _TT("SkinnedMesh"), CaseSensitivity::CaseInsensitive) == 0) {
-                outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::SkinnedMesh;
-            }
-            else if (String::compare(token, _TT("UnLighting"), CaseSensitivity::CaseInsensitive) == 0) {
-                outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Unlit;
-            }
-            else if (String::compare(token, _TT("Instancing"), CaseSensitivity::CaseInsensitive) == 0) {
-                outClassSet->drawMode = ShaderTechniqueClass_DrawMode::Instancing;
-            }
-        }
-    }
-}
-
-bool ShaderTechniqueClass::equals(const ShaderTechniqueClass& a, const ShaderTechniqueClass& b)
-{
-    return a.phase == b.phase &&
-           a.meshProcess == b.meshProcess &&
-           a.shadingModel == b.shadingModel &&
-           a.drawMode == b.drawMode &&
-           a.normalClass == b.normalClass&&
-           a.roughnessClass == b.roughnessClass;
-}
-
 } // namespace detail
 } // namespace ln

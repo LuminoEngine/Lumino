@@ -18,13 +18,14 @@ class ShaderDescriptorLayout;
 class ShaderCompilationProperties;
 class GraphicsContext;
 namespace detail {
-class ShaderHelper;
 class ShaderManager;
 class UnifiedShader;
 class IShaderPass;
 class IDescriptorPool;
 class ShaderTechniqueSemanticsManager;
 class GraphicsCommandList;
+class ShaderValueSerializer;
+struct ShaderInternal;
 }
 
 // UniformBuffer, sampler など、Shader の Data を保持する。
@@ -490,7 +491,7 @@ private:
     Ref<List<Ref<ShaderTechnique>>> m_techniques;
 
     friend class ShaderPass;
-    friend class detail::ShaderHelper;
+    friend class detail::ShaderInternal;
     friend class ShaderDefaultDescriptor;
     friend class detail::GraphicsResourceInternal;
 };
@@ -531,7 +532,7 @@ private:
 
     friend class Shader;
     friend class ShaderPass;
-    friend class detail::ShaderHelper;
+    friend class detail::ShaderInternal;
     friend class detail::ShaderTechniqueSemanticsManager;
 };
 
@@ -586,7 +587,7 @@ private:
     friend class ShaderTechnique;
     friend class detail::ShaderValueSerializer;
     friend class GraphicsContext;
-    friend class detail::ShaderHelper;
+    friend class detail::ShaderInternal;
 };
 
 class ShaderCompilationProperties
@@ -609,4 +610,12 @@ private:
     friend class Shader;
 };
 
+namespace detail {
+struct ShaderInternal
+{
+    static ShaderRenderState* getShaderRenderState(ShaderPass* pass);
+    static ShaderTechnique* findTechniqueByClass(const Shader* shader, const detail::ShaderTechniqueClass& techniqueClass);
+    static const detail::ShaderTechniqueClass& techniqueClass(ShaderTechnique* technique);
+};
+} // namespace detail
 } // namespace ln

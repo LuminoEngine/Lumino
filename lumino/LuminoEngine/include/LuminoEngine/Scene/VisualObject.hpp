@@ -1,7 +1,7 @@
 ﻿
 #pragma once
+#include <LuminoEngine/Graphics/RenderState.hpp>
 #include "../Rendering/Common.hpp"
-#include "../Graphics/RenderState.hpp"
 #include "WorldObject.hpp"
 
 namespace ln {

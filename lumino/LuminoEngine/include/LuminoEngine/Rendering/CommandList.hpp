@@ -1,8 +1,8 @@
 ﻿#pragma once
+#include <LuminoEngine/Graphics/RenderState.hpp>
 #include "Common.hpp"
 #include "../Font/Common.hpp"
 #include "../Graphics/ColorStructs.hpp"
-#include "../Graphics/RenderState.hpp"
 
 namespace ln {
 

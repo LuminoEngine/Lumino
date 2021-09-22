@@ -10,12 +10,14 @@ file(GLOB LN_SOURCES_Base include/LuminoEngine/Base/*.hpp src/Base/*.cpp src/Bas
 file(GLOB LN_SOURCES_Reflection include/LuminoEngine/Reflection/*.hpp src/Reflection/*.cpp src/Reflection/*.hpp)
 file(GLOB LN_SOURCES_Engine include/LuminoEngine/Engine/*.hpp src/Engine/*.cpp src/Engine/*.hpp)
 file(GLOB LN_SOURCES_Asset include/LuminoEngine/Asset/*.hpp src/Asset/*.cpp src/Asset/*.hpp)
+file(GLOB LN_SOURCES_Graphics include/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
 
 # Grouping.
 source_group("Base" FILES ${LN_SOURCES_Base})
 source_group("Reflection" FILES ${LN_SOURCES_Reflection})
 source_group("Engine" FILES ${LN_SOURCES_Engine})
 source_group("Asset" FILES ${LN_SOURCES_Asset})
+source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 
 set(LN_SOURCES
     src/pch.cpp
@@ -25,6 +27,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Reflection}
     ${LN_SOURCES_Engine}
     ${LN_SOURCES_Asset}
+    ${LN_SOURCES_Graphics}
 )
 
 #-------------------------------------------------------------------------------

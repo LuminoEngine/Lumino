@@ -1,7 +1,6 @@
 ﻿
 #pragma once
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoEngine/Graphics/ShaderInterfaceFramework.hpp>
 #include "HLSLMetadataParser.hpp"
 #include "ShaderTranspiler.hpp"
 

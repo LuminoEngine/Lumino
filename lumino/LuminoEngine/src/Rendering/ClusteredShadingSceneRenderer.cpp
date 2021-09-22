@@ -123,7 +123,7 @@ ShaderTechnique* ForwardGBufferPrepass::selectShaderTechnique(
 	classSet.shadingModel = ShaderTechniqueClass_ShadingModel::Default;
 	classSet.normalClass = requester.normal;		// Normal を出力したいので考慮する
 	classSet.roughnessClass = requester.roughness;  // Roughness を出力したいので考慮する
-	ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(actualShader, classSet);
+	ShaderTechnique* technique = ShaderInternal::findTechniqueByClass(actualShader, classSet);
 	if (technique)
 		return technique;
 	else
@@ -317,7 +317,7 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
 	classSet.drawMode = requester.drawMode;
 	classSet.normalClass = requester.normal;
-    ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(shader, classSet);
+    ShaderTechnique* technique = ShaderInternal::findTechniqueByClass(shader, classSet);
 	if (technique)
 		return technique;
 	else

@@ -356,10 +356,10 @@ ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass
 {
     ShaderTechnique* defaultTech = nullptr;
     for (auto& tech : m_techniques) {
-        if (detail::ShaderTechniqueClass::equals(detail::ShaderHelper::techniqueClass(tech), techniqueClass)) {
+        if (detail::ShaderTechniqueClass::equals(detail::ShaderInternal::techniqueClass(tech), techniqueClass)) {
             return tech;
         }
-        if (detail::ShaderHelper::techniqueClass(tech).defaultTechnique) {
+        if (detail::ShaderInternal::techniqueClass(tech).defaultTechnique) {
             defaultTech = tech;
         }
     }
@@ -1058,4 +1058,20 @@ void ShaderPassDescriptorLayout::init(const detail::DescriptorLayout& layout, co
     }
 }
 
+namespace detail {
+ShaderRenderState* ShaderInternal::getShaderRenderState(ShaderPass* pass)
+{
+    return pass->m_renderState;
+}
+
+ShaderTechnique* ShaderInternal::findTechniqueByClass(const Shader* shader, const detail::ShaderTechniqueClass& techniqueClass)
+{
+    return shader->findTechniqueByClass(techniqueClass);
+}
+
+const detail::ShaderTechniqueClass& ShaderInternal::techniqueClass(ShaderTechnique* technique)
+{
+    return technique->m_techniqueClass;
+}
+} // namespace detail
 } // namespace ln
