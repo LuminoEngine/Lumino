@@ -4,7 +4,7 @@
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
-#include <LuminoEngine/Font/Font.hpp>
+#include <LuminoFont/Font.hpp>
 #include <LuminoEngine/Graphics/Shader.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>

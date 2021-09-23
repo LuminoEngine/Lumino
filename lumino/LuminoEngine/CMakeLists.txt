@@ -53,20 +53,6 @@ file(GLOB LN_SOURCES_Shader_Lexer ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/L
 file(GLOB LN_SOURCES_Graphics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
 file(GLOB LN_SOURCES_Graphics_RHIs ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/RHIs/*.hpp src/Graphics/RHIs/*.cpp src/Graphics/RHIs/*.hpp)
 
-set(LN_SOURCES_Font
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Font/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Font/Font.hpp
-    src/Font/Internal.hpp
-    src/Font/Font.cpp
-    src/Font/FontCore.cpp
-    src/Font/FontCore.hpp
-    src/Font/FontManager.cpp
-    src/Font/FontManager.hpp
-    src/Font/FreeTypeFont.cpp
-    src/Font/FreeTypeFont.hpp
-    src/Font/TextLayoutEngine.cpp
-    src/Font/TextLayoutEngine.hpp
-)
 file(GLOB LN_SOURCES_TextRendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/TextRendering/*.hpp src/TextRendering/*.cpp src/TextRendering/*.hpp)
 
 file(GLOB LN_SOURCES_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/*.hpp src/Mesh/*.cpp src/Mesh/*.hpp)
@@ -172,7 +158,6 @@ source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 source_group("Graphics\\RHIs" FILES ${LN_SOURCES_Graphics_RHIs})
 source_group("Graphics\\RHIs\\Vulkan" FILES ${LN_SOURCES_Graphics_RHIs_Vulkan})
 source_group("Graphics\\RHIs\\DirectX12" FILES ${LN_SOURCES_Graphics_RHIs_DirectX12})
-source_group("Font" FILES ${LN_SOURCES_Font})
 source_group("TextRendering" FILES ${LN_SOURCES_TextRendering})
 source_group("Mesh" FILES ${LN_SOURCES_Mesh})
 source_group("Mesh\\MeshImporters" FILES ${LN_SOURCES_Mesh_MeshImporters})
@@ -224,7 +209,6 @@ set(LN_SOURCES
     ${LN_SOURCES_Graphics_RHIs}
     ${LN_SOURCES_Graphics_RHIs_Vulkan}
     ${LN_SOURCES_Graphics_RHIs_DirectX12}
-    ${LN_SOURCES_Font}
     ${LN_SOURCES_TextRendering}
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Mesh_MeshImporters}
@@ -335,6 +319,7 @@ set(
     LuminoPlatform
     LuminoShaderCompiler
     LuminoBitmap
+    LuminoFont
     #pcre
     pcre2_32
     png
@@ -371,7 +356,7 @@ target_include_directories(LuminoEngine-static PRIVATE ${LN_ENGINE_INCLUDE_DIR} 
 target_compile_definitions(LuminoEngine-static PRIVATE ${LN_PLATFORM_DEFINITIONS})
 target_link_libraries(LuminoEngine-static INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
-target_link_libraries(LuminoEngine-static INTERFACE LuminoPlatform LuminoRuntimeCore LuminoShaderCompiler LuminoBitmap)
+target_link_libraries(LuminoEngine-static INTERFACE LuminoPlatform LuminoRuntimeCore LuminoShaderCompiler LuminoBitmap LuminoFont)
 
 if (LN_OS_DESKTOP)
     target_include_directories(LuminoEngine-static PRIVATE ${VULKAN_HEADERS_INCLUDE_DIRS})

@@ -140,6 +140,7 @@ public:
 	RefObject* assetManager = nullptr;
 	RefObject* runtimeManager = nullptr;
 	RefObject* shaderManager = nullptr;
+	RefObject* fontManager = nullptr;
 	detail::IObjectEventListener* objectEventListener = nullptr;
 
 private:

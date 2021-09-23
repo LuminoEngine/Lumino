@@ -71,14 +71,14 @@
     
 */
 #include "Internal.hpp"
+#include <LuminoFont/Font.hpp>
 #include <LuminoEngine/Graphics/Shader.hpp>
-#include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIColors.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
-#include "../Font/FontManager.hpp"
+#include "../../Font/src/FontManager.hpp"
 #include "UIStyleInstance.hpp"
 
 namespace ln {
@@ -97,8 +97,8 @@ void UIStyleDecorator::init()
 
 void UIStyleDecorator::setIconName(const StringRef& value, int size)
 {
-	m_font = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(_TT("Reguler"), size);
-	m_codePoint = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeCodePoint(value);
+	m_font = detail::FontManager::instance()->glyphIconFontManager()->getFontAwesomeFont(_TT("Reguler"), size);
+	m_codePoint = detail::FontManager::instance()->glyphIconFontManager()->getFontAwesomeCodePoint(value);
 }
 
 void UIStyleDecorator::render(UIRenderingContext* context, const Size& slotRect)

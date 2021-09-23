@@ -7,6 +7,7 @@
 #include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Reflection/Object.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
+#include <LuminoFont/Font.hpp>
 
 #include "LuminoEngine/Common.hpp"
 #include "LuminoEngine/EngineContext.hpp"
@@ -52,7 +53,6 @@
 #include "LuminoEngine/Graphics/GraphicsContext.hpp"
 #include "LuminoEngine/Graphics/Graphics.hpp"
 
-#include "LuminoEngine/Font/Font.hpp"
 
 #include "LuminoEngine/Mesh/MeshPrimitive.hpp"
 #include "LuminoEngine/Mesh/MeshModel.hpp"

@@ -7,7 +7,7 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
-#include "../../Font/FontCore.hpp"
+#include "../../Font/src/FontCore.hpp"
 #include "../../TextRendering/TextRenderingCache.hpp"
 #include "../../Graphics/RHIs/GraphicsDeviceContext.hpp"
 #include "../../Graphics/GraphicsManager.hpp"

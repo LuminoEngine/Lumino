@@ -13,7 +13,7 @@
 #include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
-#include "../Font/FontManager.hpp"
+#include "../../Font/src/FontManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Graphics/RHIs/GraphicsDeviceContext.hpp"
 #include "../Rendering/RenderingManager.hpp"
@@ -51,7 +51,7 @@ bool ImGuiIntegration::init(UIFrameWindow* frameWindow)
     //colors[ImGuiCol_WindowBg] = ImVec4(0.94f, 0.94f, 0.94f, 0.70f);
 
 	// Load Fonts
-	if (ByteBuffer* data = EngineDomain::fontManager()->getDefaultFontData()) {
+	if (ByteBuffer* data = FontManager::instance()->getDefaultFontData()) {
 		void* file_data = IM_ALLOC(data->size());
 		memcpy(file_data, data->data(), data->size());
 		io.Fonts->AddFontFromMemoryTTF(file_data, data->size(), 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());

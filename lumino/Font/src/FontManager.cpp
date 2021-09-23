@@ -6,8 +6,8 @@
 #include FT_TRUETYPE_TAGS_H /* <freetype/tttags.h> */
 #include FT_TRUETYPE_TABLES_H /* <freetype/tttables.h> */
 #include FT_SFNT_NAMES_H
-#include <LuminoEngine/Font/Font.hpp>
-#include "../../../RuntimeCore/src/Asset/AssetManager.hpp"
+#include <LuminoFont/Font.hpp>
+#include "../../RuntimeCore/src/Asset/AssetManager.hpp"
 #include "FontCore.hpp"
 #include "FreeTypeFont.hpp"
 #include "FontManager.hpp"
@@ -81,12 +81,33 @@ bool FontDesc::equals(const FontDesc& other) const
 
 //==============================================================================
 // FontManager
-	
+
+FontManager* FontManager::initialize(const Settings& settings)
+{
+    if (instance()) return instance();
+
+    auto m = Ref<FontManager>(LN_NEW detail::FontManager(), false);
+    if (!m->init(settings)) return nullptr;
+
+    EngineContext2::instance()->registerModule(m);
+    EngineContext2::instance()->fontManager = m;
+    return m;
+}
+
+void FontManager::terminate()
+{
+    if (instance()) {
+        instance()->dispose();
+        EngineContext2::instance()->unregisterModule(instance());
+        EngineContext2::instance()->fontManager = nullptr;
+    }
+}
+
 FontManager::FontManager()
 {
 }
 
-void FontManager::init(const Settings& settings)
+bool FontManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "FontManager Initialization started.";
 
@@ -105,16 +126,16 @@ void FontManager::init(const Settings& settings)
     // FreeType
     {
         FT_Error err = FT_Init_FreeType(&m_ftLibrary);
-        if (LN_ENSURE(err == 0, "failed init font library : %d\n", err)) return;
+        if (LN_ENSURE(err == 0, "failed init font library : %d\n", err)) return false;
 
         err = FTC_Manager_New(m_ftLibrary, 0, 0, 0, callbackFaceRequester, this, &m_ftCacheManager);
-        if (LN_ENSURE(err == 0, "failed init font cache manager : %d\n", err)) return;
+        if (LN_ENSURE(err == 0, "failed init font cache manager : %d\n", err)) return false;
 
         err = FTC_CMapCache_New(m_ftCacheManager, &m_ftCMapCache);
-        if (LN_ENSURE(err == 0, "failed init font cache map : %d\n", err)) return;
+        if (LN_ENSURE(err == 0, "failed init font cache map : %d\n", err)) return false;
 
         err = FTC_ImageCache_New(m_ftCacheManager, &m_ftImageCache);
-        if (LN_ENSURE(err == 0, "failed init font image cache : %d\n", err)) return;
+        if (LN_ENSURE(err == 0, "failed init font image cache : %d\n", err)) return false;
     }
 
     // Default font
@@ -154,7 +175,7 @@ void FontManager::init(const Settings& settings)
 
 	m_glyphIconFontManager = makeRef<GlyphIconFontManager>();
 	if (!m_glyphIconFontManager->init(this)) {
-		return;
+		return false;
 	}
 
 	auto emojiFontPath = ln::Path(settings.engineAssetPath, _TT("NotoColorEmoji.ttf"));
@@ -167,6 +188,7 @@ void FontManager::init(const Settings& settings)
 
 
     LN_LOG_DEBUG << "FontManager Initialization ended.";
+    return true;
 }
 
 void FontManager::dispose()

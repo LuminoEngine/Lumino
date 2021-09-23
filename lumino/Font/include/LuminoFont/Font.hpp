@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <LuminoEngine/Reflection/Object.hpp>
 #include "Common.hpp"
 
 namespace ln {

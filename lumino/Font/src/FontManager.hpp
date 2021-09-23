@@ -1,7 +1,9 @@
 ﻿#pragma once
 #include <list>
-#include <LuminoEngine/Font/Common.hpp>
-#include "../../../RuntimeCore/src/Base/RefObjectCache.hpp"
+#include <LuminoEngine/Engine/EngineContext2.hpp>
+#include <LuminoEngine/Engine/Module.hpp>
+#include <LuminoFont/Common.hpp>
+#include "../../RuntimeCore/src/Base/RefObjectCache.hpp"
 
 typedef int FT_Error;
 typedef void*  FT_Pointer;
@@ -30,7 +32,7 @@ struct FontFaceSource
 };
 
 class FontManager
-	: public RefObject
+	: public Module
 {
 public:
 	struct Settings
@@ -40,9 +42,10 @@ public:
 		Path fontFile;
 	};
 
-    FontManager();
-	void init(const Settings& settings);
-	void dispose();
+	static FontManager* initialize(const Settings& settings);
+	static void terminate();
+	static inline FontManager* instance() { return static_cast<FontManager*>(EngineContext2::instance()->fontManager); }
+
 	void registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily);
     void registerFontFromStream(Stream* stream, bool defaultFamily);
 	Ref<FontCore> lookupFontCore(const FontDesc& keyDesc, float dpiScale);
@@ -66,6 +69,10 @@ public:
 	const FontFaceSource* lookupFontFaceSourceFromFamilyName(const String& name);
 
 private:
+	FontManager();
+	bool init(const Settings& settings);
+	void dispose();
+
     static FT_Error callbackFaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
     FT_Error faceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
 

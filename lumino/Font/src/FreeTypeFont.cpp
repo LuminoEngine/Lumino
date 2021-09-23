@@ -9,7 +9,7 @@
 #include FT_STROKER_H
 #include FT_SYNTHESIS_H
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoEngine/Font/Font.hpp>
+#include <LuminoFont/Font.hpp>
 #include "FontManager.hpp"
 #include "FreeTypeFont.hpp"
 

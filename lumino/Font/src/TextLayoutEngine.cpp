@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoEngine/Font/Font.hpp>
+#include <LuminoFont/Font.hpp>
 #include <LuminoCore/Base/UnicodeUtils.hpp>
 #include "TextLayoutEngine.hpp"
 

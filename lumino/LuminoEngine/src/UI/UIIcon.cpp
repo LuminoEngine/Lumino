@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include "../Font/FontCore.hpp"
-#include "../Font/FontManager.hpp"
-#include <LuminoEngine/Font/Font.hpp>
+#include "../../Font/src/FontCore.hpp"
+#include "../../Font/src/FontManager.hpp"
+#include <LuminoFont/Font.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIIcon.hpp>
@@ -70,7 +70,7 @@ bool UIIcon::init(const StringRef& iconName, int size, const Color& color)
 void UIIcon::setIconName(const StringRef& value)
 {
     // TODO: size
-	m_codePoint = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeCodePoint(value);
+	m_codePoint = detail::FontManager::instance()->glyphIconFontManager()->getFontAwesomeCodePoint(value);
 }
 
 Size UIIcon::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
@@ -79,7 +79,7 @@ Size UIIcon::measureOverride(UILayoutContext* layoutContext, const Size& constra
 	float fontSize = finalStyle()->font->size();
 
 	if (!m_font) {
-		m_font = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(_TT("Reguler"), fontSize);
+		m_font = detail::FontManager::instance()->glyphIconFontManager()->getFontAwesomeFont(_TT("Reguler"), fontSize);
 	}
 	if (m_font->size() != fontSize) {
 		m_font->setSize(fontSize);

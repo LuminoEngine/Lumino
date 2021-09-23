@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Font/Font.hpp>
+#include <LuminoFont/Font.hpp>
 #include "FontManager.hpp"
 #include "TextLayoutEngine.hpp"
 
@@ -24,17 +24,16 @@ Ref<Font> Font::create(const String& family, float size)
 void Font::setDefaultFont(Font* font)
 {
     if (LN_REQUIRE(font)) return;
-    //detail::EngineDomain::fontManager()->setDefaultFontDesc(font->m_desc);
-    detail::EngineDomain::fontManager()->setDefaultFont(font);
+    detail::FontManager::instance()->setDefaultFont(font);
 }
 
 void Font::registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily)
 {
-	detail::EngineDomain::fontManager()->registerFontFromFile(fontFilePath, defaultFamily);
+	detail::FontManager::instance()->registerFontFromFile(fontFilePath, defaultFamily);
 }
 
 Font::Font()
-    : m_manager(detail::EngineDomain::fontManager())
+    : m_manager(detail::FontManager::instance())
     , m_desc()
     , m_rawFont(nullptr)
     , m_builtin(false)
@@ -170,7 +169,7 @@ detail::FontCore* Font::resolveFontCore(float dpiScale)
 namespace detail {
 
 FontRequester::FontRequester()
-	: m_manager(EngineDomain::fontManager())
+	: m_manager(detail::FontManager::instance())
 	, size(Font::DefaultSize)
 {
 }

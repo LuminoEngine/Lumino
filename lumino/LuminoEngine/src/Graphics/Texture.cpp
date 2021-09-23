@@ -9,11 +9,11 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
-#include <LuminoEngine/Font/Font.hpp>
+#include <LuminoFont/Font.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 //#include "../Asset/AssetManager.hpp"
-#include "../Font/TextLayoutEngine.hpp"
-#include "../Font/FontManager.hpp"
+#include "../../Font/src/TextLayoutEngine.hpp"
+#include "../../Font/src/FontManager.hpp"
 #include "RenderTargetTextureCache.hpp"
 #include "GraphicsProfiler.hpp"
 
@@ -117,7 +117,7 @@ Ref<Texture2D> Texture2D::loadEmoji(StringRef code)
 // Bitmap として取得する場合は常に同じサイズとなる。
 Ref<Texture2D> Texture2D::loadEmoji(uint32_t codePoint)
 {
-	Font* font = detail::EngineDomain::fontManager()->emojiFont();
+	Font* font = detail::FontManager::instance()->emojiFont();
 	if (font) {
 		detail::FontCore* core = detail::FontHelper::resolveFontCore(font, 1.0f);
 

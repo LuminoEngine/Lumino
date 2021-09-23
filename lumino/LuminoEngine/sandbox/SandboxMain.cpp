@@ -14,8 +14,8 @@
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Animation/Animator.hpp>
 #include "../src/Mesh/MeshImporters/MqoImporter.hpp"
-#include "../src/Font/FontManager.hpp"
-#include "../src/Font/FontCore.hpp"
+#include "../../Font/src/FontManager.hpp"
+#include "../../Font/src/FontCore.hpp"
 #include "../src/Asset/AssetArchive.hpp"
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/UI/Controls/UIButton.hpp>

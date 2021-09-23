@@ -28,7 +28,7 @@
 #include "../Audio/AudioManager.hpp"
 #include "../../../ShaderCompiler/src/ShaderManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
-#include "../Font/FontManager.hpp"
+#include "../../Font/src/FontManager.hpp"
 #include "../Mesh/MeshManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "../Rendering/RenderingProfiler.hpp"
@@ -244,8 +244,8 @@ void EngineManager::dispose()
 	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_meshManager) m_meshManager->dispose();
 	ShaderManager::terminate();
+	FontManager::terminate();
 	if (m_graphicsManager) m_graphicsManager->dispose();
-	if (m_fontManager) m_fontManager->dispose();
 	if (m_audioManager) m_audioManager->dispose();
 	if (m_inputManager) m_inputManager->dispose();
     if (m_animationManager) m_animationManager->dispose();
@@ -456,7 +456,7 @@ void EngineManager::initializeShaderManager()
 
 void EngineManager::initializeFontManager()
 {
-	if (!m_fontManager && m_settings.features.hasFlag(EngineFeature::Graphics))
+	if (!FontManager::instance() && m_settings.features.hasFlag(EngineFeature::Graphics))
 	{
 		initializeAssetManager();
 
@@ -465,8 +465,7 @@ void EngineManager::initializeFontManager()
 		settings.engineAssetPath = m_engineResourcesPath;
 		settings.fontFile = m_settings.fontFile;
 
-		m_fontManager = ln::makeRef<FontManager>();
-		m_fontManager->init(settings);
+		FontManager::initialize(settings);
 	}
 }
 
@@ -514,7 +513,7 @@ void EngineManager::initializeRenderingManager()
 
 		RenderingManager::Settings settings;
 		settings.graphicsManager = m_graphicsManager;
-        settings.fontManager = m_fontManager;
+        settings.fontManager = FontManager::instance();
 
 		m_renderingManager = ln::makeRef<RenderingManager>();
 		m_renderingManager->init(settings);
@@ -1128,11 +1127,6 @@ AudioManager * EngineDomain::audioManager()
 GraphicsManager* EngineDomain::graphicsManager()
 {
 	return engineManager()->graphicsManager();
-}
-
-FontManager* EngineDomain::fontManager()
-{
-	return engineManager()->fontManager();
 }
 
 MeshManager* EngineDomain::meshManager()
