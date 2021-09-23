@@ -55,4 +55,4 @@ if (DEFINED EMSCRIPTEN)
 	em_link_pre_js(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/pre.js)
 endif()
 
-add_test(NAME LuminoCore-test-all COMMAND $<TARGET_FILE:LuminoCore-test>)
+add_test(NAME ${PROJECT_NAME}-runtest COMMAND ${PROJECT_NAME})

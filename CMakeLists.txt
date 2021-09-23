@@ -117,6 +117,9 @@ if (MSVC)
     endif()
     add_definitions("/MP")
 
+    # TODO: lib 分割したい
+    add_definitions("/bigobj")
+
     set(LN_COMMON_META_FILES "${CMAKE_CURRENT_LIST_DIR}/tools/VisualStudio/Lumino.natvis")
 endif()
 
