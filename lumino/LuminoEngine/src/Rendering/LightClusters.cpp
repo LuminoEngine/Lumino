@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <float.h>
-#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include "LightClusters.hpp"
 

@@ -1,7 +1,7 @@
 ﻿
 #pragma once
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include "Common.hpp"
-#include "../Graphics/ColorStructs.hpp"
 
 namespace ln {
 class Texture;

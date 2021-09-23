@@ -60,8 +60,6 @@ set(LN_SOURCES_Font
     src/Font/Font.cpp
     src/Font/FontCore.cpp
     src/Font/FontCore.hpp
-    src/Font/FontGlyphCache.cpp
-    src/Font/FontGlyphCache.hpp
     src/Font/FontManager.cpp
     src/Font/FontManager.hpp
     src/Font/FreeTypeFont.cpp
@@ -69,6 +67,7 @@ set(LN_SOURCES_Font
     src/Font/TextLayoutEngine.cpp
     src/Font/TextLayoutEngine.hpp
 )
+file(GLOB LN_SOURCES_TextRendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/TextRendering/*.hpp src/TextRendering/*.cpp src/TextRendering/*.hpp)
 
 file(GLOB LN_SOURCES_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/*.hpp src/Mesh/*.cpp src/Mesh/*.hpp)
 file(GLOB LN_SOURCES_Mesh_MeshImporters ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/MeshImporters/*.hpp src/Mesh/MeshImporters/*.cpp src/Mesh/MeshImporters/*.hpp)
@@ -174,6 +173,7 @@ source_group("Graphics\\RHIs" FILES ${LN_SOURCES_Graphics_RHIs})
 source_group("Graphics\\RHIs\\Vulkan" FILES ${LN_SOURCES_Graphics_RHIs_Vulkan})
 source_group("Graphics\\RHIs\\DirectX12" FILES ${LN_SOURCES_Graphics_RHIs_DirectX12})
 source_group("Font" FILES ${LN_SOURCES_Font})
+source_group("TextRendering" FILES ${LN_SOURCES_TextRendering})
 source_group("Mesh" FILES ${LN_SOURCES_Mesh})
 source_group("Mesh\\MeshImporters" FILES ${LN_SOURCES_Mesh_MeshImporters})
 source_group("Mesh\\MeshGeneraters" FILES ${LN_SOURCES_Mesh_MeshGeneraters})
@@ -225,6 +225,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Graphics_RHIs_Vulkan}
     ${LN_SOURCES_Graphics_RHIs_DirectX12}
     ${LN_SOURCES_Font}
+    ${LN_SOURCES_TextRendering}
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Mesh_MeshImporters}
     ${LN_SOURCES_Mesh_MeshGeneraters}
@@ -332,8 +333,10 @@ endif()
 set(
     _LN_ENGINE_LINK_LIBS
     LuminoCore
-    LuminoEngineCore
+    LuminoRuntimeCore
     LuminoPlatform
+    LuminoShaderCompiler
+    LuminoBitmap
     #pcre
     pcre2_32
     png
@@ -370,7 +373,7 @@ target_include_directories(LuminoEngine-static PRIVATE ${LN_ENGINE_INCLUDE_DIR} 
 target_compile_definitions(LuminoEngine-static PRIVATE ${LN_PLATFORM_DEFINITIONS})
 target_link_libraries(LuminoEngine-static INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
-target_link_libraries(LuminoEngine-static INTERFACE LuminoPlatform LuminoEngineCore)
+target_link_libraries(LuminoEngine-static INTERFACE LuminoPlatform LuminoRuntimeCore LuminoShaderCompiler LuminoBitmap)
 
 if (LN_OS_DESKTOP)
     target_include_directories(LuminoEngine-static PRIVATE ${VULKAN_HEADERS_INCLUDE_DIRS})

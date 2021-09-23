@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoCore/Base/UnicodeUtils.hpp>
 #include "TextLayoutEngine.hpp"

@@ -4,7 +4,7 @@
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Shader/ShaderInterfaceFramework.hpp>
+#include <LuminoEngine/Graphics/ShaderInterfaceFramework.hpp>
 #include "../../Graphics/GraphicsManager.hpp"
 #include "../RenderingManager.hpp"
 #include "SpriteRenderFeature.hpp"

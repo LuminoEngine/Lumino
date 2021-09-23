@@ -86,7 +86,7 @@ int main(int argc, char** argv)
 	}
 
 	ln::EngineContext::current()->disposeEngineManager();
-	ln::EngineContext::current()->disposeRuntimeManager();
+	//ln::EngineContext::current()->disposeRuntimeManager();
 
 	return exitCode;
 }

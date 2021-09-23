@@ -4,6 +4,7 @@
 #include <LuminoEngine/Graphics/GraphicsResource.hpp>
 #include <LuminoEngine/Graphics/CommandQueue.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/Shader.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "GraphicsManager.hpp"
@@ -15,7 +16,7 @@
 #include "RHIs/DirectX12/DX12DeviceContext.hpp"
 #endif
 #include "../Engine/LinearAllocator.hpp"
-#include "../../../Engine/src/Asset/AssetManager.hpp"
+#include "../../../RuntimeCore/src/Asset/AssetManager.hpp"
 #include "SingleFrameAllocator.hpp"
 #include "GraphicsProfiler.hpp"
 
@@ -144,29 +145,6 @@ size_t GraphicsHelper::getPixelSize(TextureFormat format)
     }
 }
 
-size_t GraphicsHelper::getPixelSize(PixelFormat format)
-{
-	switch (format)
-	{
-	case PixelFormat::Unknown:
-		return 0;
-	case PixelFormat::A8:
-		return 1;
-	case PixelFormat::RGBA8:
-		return 4;
-	case PixelFormat::RGB8:
-		return 3;
-	case PixelFormat::RGBA32F:
-		return 16;
-	case PixelFormat::R32S:
-		return 4;
-	default:
-		LN_UNREACHABLE();
-		return 0;
-	}
-}
-
-
 namespace detail {
 
 //==============================================================================
@@ -191,6 +169,8 @@ void GraphicsManager::init(const Settings& settings)
 	m_profiler = std::make_unique<GraphicsProfiler>();
 
 	m_texture2DCache.init(64);
+	m_shaderCache.init(64);
+
 
 	// Create device context
 	{
@@ -283,6 +263,7 @@ void GraphicsManager::dispose()
 		m_renderingQueue = nullptr;
 	}
 
+	m_shaderCache.dispose();
 	m_texture2DCache.dispose();
 
 	// default objects
@@ -419,6 +400,18 @@ bool GraphicsManager::checkVulkanSupported()
 #else
 	return false;
 #endif
+}
+
+Ref<Shader> GraphicsManager::loadShader(const StringRef& filePath)
+{
+	m_shaderCache.collectUnreferenceObjects(false);
+
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+	static const std::vector<const Char*> exts = { _TT(".fx"), _TT(".lcfx") };
+#else
+	static const std::vector<const Char*> exts = { _TT(".lcfx") };
+#endif
+	return AssetManager::loadObjectWithCacheHelper<Shader>(&m_shaderCache, nullptr, exts, filePath, nullptr);
 }
 
 void GraphicsManager::createVulkanContext(const Settings& settings)

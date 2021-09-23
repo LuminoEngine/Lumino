@@ -24,7 +24,7 @@
 #include <LuminoEngine/Tilemap/Voxel.hpp>
 #include <LuminoEngine/Scene/TransformControls.hpp>
 #include <LuminoEngine/PostEffect/LightShaftPostEffect.hpp>
-#include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
+#include <LuminoFFI/Lumino.FlatC.generated.h>
 #include <LuminoEngine/Visual/EmojiComponent.hpp>
 using namespace ln;
 

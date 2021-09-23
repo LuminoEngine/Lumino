@@ -1,10 +1,11 @@
 ﻿#pragma once
 #include "Common.hpp"
 #include <LuminoEngine/Base/Builder.hpp>
-#include "../Graphics/ColorStructs.hpp"
-#include "../Graphics/RenderState.hpp"
-#include "../Shader/Shader.hpp"
-#include "../Shader/ShaderInterfaceFramework.hpp"
+#include <LuminoEngine/Graphics/RenderState.hpp>
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
+#include "../Graphics/Shader.hpp"
+#include "../Graphics/ShaderInterfaceFramework.hpp"
+#include "../Graphics/ShaderParameterValue.hpp"
 
 namespace ln {
 

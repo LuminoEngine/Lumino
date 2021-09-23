@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
+#include <LuminoEngine/Graphics/RenderState.hpp>
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include "Common.hpp"
-#include "ColorStructs.hpp"
-#include "RenderState.hpp"
 
 namespace ln {
 class VertexLayout;

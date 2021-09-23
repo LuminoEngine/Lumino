@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "../Engine/LinearAllocator.hpp"
-#include "../../../Engine/src/Asset/AssetManager.hpp"
+#include "../../../RuntimeCore/src/Asset/AssetManager.hpp"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/AudioNode.hpp>

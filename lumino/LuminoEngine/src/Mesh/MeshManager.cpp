@@ -3,12 +3,12 @@
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
-#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include "../../../Engine/src/Asset/AssetManager.hpp"
+#include "../../../RuntimeCore/src/Asset/AssetManager.hpp"
 #include "MeshImporters/GLTFImporter.hpp"
 #include "MeshImporters/VRMImporter.hpp"
 #include "MeshImporters/FbxImporter.hpp"

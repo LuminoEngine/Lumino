@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Engine/RenderingCommandList.hpp>
-#include "../../../Engine/src/Base/RefObjectCache.hpp"
+#include "../../../RuntimeCore/src/Base/RefObjectCache.hpp"
 
 namespace ln {
 class GraphicsContext; 
@@ -75,6 +75,7 @@ public:
 
 	Ref<Texture2D> loadTexture2D(const StringRef& filePath);
 	Ref<Texture2D> loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringRef& filePath, std::function<Ref<Texture2D>(const AssetRequiredPathSet*)> factory);
+	Ref<Shader> loadShader(const StringRef& filePath);
 
     const Ref<Texture2D>& blackTexture() const { return m_blackTexture; }
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }
@@ -104,6 +105,7 @@ private:
 	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
 	Ref<FrameBufferCache> m_frameBufferCache;
 	ObjectCache<String, Texture2D> m_texture2DCache;
+	ObjectCache<String, Shader> m_shaderCache;
 	Ref<SingleFrameUniformBufferAllocatorPageManager> m_singleFrameUniformBufferAllocatorPageManager;
 	List<IGraphicsResource*> m_graphicsResources;
 	List<INativeGraphicsExtension*> m_extensions;

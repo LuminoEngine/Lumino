@@ -5,15 +5,15 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <tiny_gltf.h>
 //#include "D:\Tech\Graphics\tinygltf\tiny_gltf.h"
+#include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
-#include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include "../../../../Engine/src/Asset/AssetManager.hpp"
+#include "../../../../RuntimeCore/src/Asset/AssetManager.hpp"
 #include "../../Graphics/GraphicsManager.hpp"
 #include "../MeshManager.hpp"
 #include "GLTFImporter.hpp"

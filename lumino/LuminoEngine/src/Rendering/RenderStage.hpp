@@ -3,7 +3,7 @@
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
-#include <LuminoEngine/Shader/ShaderInterfaceFramework.hpp>
+#include <LuminoEngine/Graphics/ShaderInterfaceFramework.hpp>
 #include <LuminoEngine/Rendering/Common.hpp>
 #include <LuminoCore/Base/LinearAllocator.hpp>
 

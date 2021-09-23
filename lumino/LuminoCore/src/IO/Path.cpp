@@ -65,6 +65,16 @@ Path::Path(const Path& basePath, const Path& relativePath)
     assignUnderBasePath(basePath, relativePath);
 }
 
+Path Path::fromStdPath(const std::filesystem::path& path)
+{
+    return Path(String::fromCString(path.c_str()));
+}
+
+std::filesystem::path Path::toStdPath() const
+{
+    return std::filesystem::path(m_path.toStdWString());
+}
+
 void Path::assign(const StringRef& path)
 {
     m_path = path;

@@ -1,6 +1,8 @@
 ﻿#include "Common.hpp"
 #include <LuminoEngine/Reflection/Property.hpp>
 
+#if 0
+
 class Test_Engine_Object : public ::testing::Test {};
 
 class TestObjectA
@@ -486,3 +488,4 @@ TEST_F(Test_Engine_PropertySystem, Basic)
 
 }
 
+#endif

@@ -2,9 +2,11 @@
 #pragma once
 #include <vector>
 #include <algorithm>
+#include <optional>
 #include "Assertion.hpp"
 #include "StlHelper.hpp"
 #include "Optional.hpp"
+#include "Optional2.hpp"
 
 namespace ln {
 
@@ -13,7 +15,7 @@ namespace ln {
  * 
  * std::vector と同様、メモリの連続性が保証されています。
  * std::vector と似ていますが、いくつかの便利なメンバ関数やエラーを記録する機能が追加されています。
- * インデックスは冗長なコンパイル警告や逆順ループの記述ミスを防止するため、size_t ではなく int となっています。
+ * インデックスは冗長なコンパイル警告や逆順ループの記述ミスの対策のため、size_t ではなく int となっています。
  */
 template<typename T>
 class Array
@@ -136,7 +138,7 @@ public:
     explicit operator bool() const noexcept;
 
     /** @} */
-    /** @defgroup Element acces */
+    /** @defgroup Element access */
     /** @{ */
 
     /** Access the element at the specified index. */
@@ -224,12 +226,68 @@ public:
     /** Remove an element at the specified position. */
     iterator erase(const_iterator first, const_iterator last);
 
+    /** Swap containers. */
+    void swap(Array& other) noexcept;
+
+    /** Removes all elements. */
+    void clear() noexcept;
+
+    /** Construct and insert element. */
+    template<class... Args>
+    iterator emplace(const_iterator pos, Args&&... args);
+
+    /** Construct and insert element at the end. */
+    template <class... Args>
+    reference emplace_back(Args&&... args);
+
+    /** @} */
+    /** @defgroup Extensions */
+    /** @{ */
+
+    /** 指定した条件と一致する最初の要素を検索し、その要素を指す Optional を返します。見つからなければ値を保持していません。 */
+    template<typename TPred>
+    Optional2<T&> findIf(TPred pred)
+    {
+        auto itr = std::find_if(m_data.begin(), m_data.end(), pred);
+        if (itr != end()) {
+            return Optional2<T&>(*itr);
+        }
+        return Optional2<T&>();
+    }
+
     /** @} */
 
 
 private:
     container_type m_data;
 };
+
+template<class T>
+[[nodiscard]]
+inline bool operator==(const Array<T>& a, const Array<T>& b);
+
+template<class T>
+[[nodiscard]]
+inline bool operator!=(const Array<T>& a, const Array<T>& b);
+
+template<class T>
+[[nodiscard]]
+inline bool operator<(const Array<T>& a, const Array<T>& b);
+
+template<class T>
+[[nodiscard]]
+inline bool operator<=(const Array<T>& a, const Array<T>& b);
+
+template<class T>
+[[nodiscard]]
+inline bool operator>(const Array<T>& a, const Array<T>& b);
+
+template<class T>
+[[nodiscard]]
+inline bool operator>=(const Array<T>& a, const Array<T>& b);
+
+template<class T>
+inline void swap(Array<T>& a, Array<T>& b) noexcept;
 
 } // namespace ln
 

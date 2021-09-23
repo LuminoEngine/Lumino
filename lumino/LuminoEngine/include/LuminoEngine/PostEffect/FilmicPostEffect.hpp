@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Graphics/ColorStructs.hpp"
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include "SSRPostEffect.hpp"
 #include "BloomPostEffect.hpp"
 #include "DepthOfFieldPostEffect.hpp"

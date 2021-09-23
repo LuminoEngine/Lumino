@@ -39,12 +39,10 @@ public:
 	static void release();
 
 	static EngineContext* engineContext();
-	static RuntimeManager* runtimeManager();
 	static EngineManager* engineManager();
     static AnimationManager* animationManager();
 	static InputManager* inputManager();
 	static AudioManager* audioManager();
-	static ShaderManager* shaderManager();
 	static GraphicsManager* graphicsManager();
 	static FontManager* fontManager();
 	static MeshManager* meshManager();

@@ -1,6 +1,11 @@
 ﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license..
 #pragma once
 
+#define LN_USE_STD_FILESYSTEM 1
+#ifdef LN_USE_STD_FILESYSTEM
+#include <filesystem>
+#endif
+
 #include "../Base/EnumFlags.hpp"
 
 namespace ln {

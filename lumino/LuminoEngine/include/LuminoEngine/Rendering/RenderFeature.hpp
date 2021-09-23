@@ -2,7 +2,7 @@
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include "../Graphics/Common.hpp"
 #include "Common.hpp"
-#include "../Shader/ShaderInterfaceFramework.hpp"
+#include "../Graphics/ShaderInterfaceFramework.hpp"
 
 namespace ln {
 class GraphicsContext;

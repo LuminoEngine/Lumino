@@ -31,7 +31,6 @@ class PlatformManager;
 class AnimationManager;
 class InputManager;
 class AudioManager;
-class ShaderManager;
 class GraphicsManager;
 class FontManager;
 class MeshManager;
@@ -152,7 +151,6 @@ public:
     const Ref<AnimationManager>& animationManager() const { return m_animationManager; }
 	const Ref<InputManager>& inputManager() const { return m_inputManager; }
 	const Ref<AudioManager>& audioManager() const { return m_audioManager; }
-	const Ref<ShaderManager>& shaderManager() const { return m_shaderManager; }
 	const Ref<FontManager>& fontManager() const { return m_fontManager; }
 	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
 	const Ref<MeshManager>& meshManager() const { return m_meshManager; }
@@ -164,7 +162,6 @@ public:
     const Ref<UIManager>& uiManager() const { return m_uiManager; }
 
     const FpsController& fpsController() const { return m_fpsController; }
-	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
 	static ln::Path findRepositoryRootForTesting();
 	static ln::Path findParentDirectoryContainingSpecifiedFile(StringRef file);
@@ -219,7 +216,6 @@ private:
 	Ref<AnimationManager>			m_animationManager;
 	Ref<InputManager>				m_inputManager;
 	Ref<AudioManager>				m_audioManager;
-	Ref<ShaderManager> m_shaderManager;
 	Ref<FontManager> m_fontManager;
 	Ref<GraphicsManager>			m_graphicsManager;
 	Ref<MeshManager>				m_meshManager;
@@ -231,7 +227,6 @@ private:
 	Ref<UIManager>					m_uiManager;
     FpsController m_fpsController;
 
-	Ref<DiagnosticsManager> m_activeDiagnostics;
 
 	Path m_persistentDataPath;
 	Path m_engineResourcesPath;

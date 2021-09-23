@@ -3,7 +3,7 @@
 #include "DX12Buffers.hpp"
 #include "DX12Textures.hpp"
 
-#include <LuminoEngine/Graphics/Bitmap.hpp> // TODO: test
+#include <LuminoBitmap/Bitmap.hpp> // TODO: test
 
 namespace ln {
 namespace detail {

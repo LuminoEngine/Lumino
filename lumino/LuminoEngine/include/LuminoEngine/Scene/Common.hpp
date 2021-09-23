@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <LuminoEngine/Base/Delegate.hpp>
-#include "../Graphics/ColorStructs.hpp"
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
 
 namespace ln {
 class MeshModel;

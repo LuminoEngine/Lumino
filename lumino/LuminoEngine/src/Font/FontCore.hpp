@@ -4,8 +4,6 @@ namespace ln {
 class Bitmap2D;
 namespace detail {
 class FontManager;
-class FontGlyphTextureCache;
-class FontGlyphTextureCacheRequest;
 
 // https://www.freetype.org/freetype2/docs/tutorial/step2.html
 struct FontGlobalMetrics
@@ -73,6 +71,11 @@ struct VectorGlyphInfo
 };
 
 
+class AbstractTextRenderingCache : public RefObject
+{
+};
+
+
 class FontCore
 	: public RefObject
 {
@@ -99,9 +102,11 @@ public:
 	virtual void decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo) = 0;
 
 	//FontGlyphTextureCache* getFontGlyphTextureCache();
-	void beginCacheUsing();
-	void endCacheUsing();
-	void getFontGlyphTextureCache(FontGlyphTextureCacheRequest* inout);
+	//void beginCacheUsing();
+	//void endCacheUsing();
+	//void getFontGlyphTextureCache(FontGlyphTextureCacheRequest* inout);
+	const Ref<AbstractTextRenderingCache>& textRenderingCache() const { return m_textRenderingCache; }
+	void setTextRenderingCache(const Ref<AbstractTextRenderingCache>& value) { m_textRenderingCache = value; }
 
 protected:
     FontCore();
@@ -110,8 +115,9 @@ protected:
 
 private:
 	FontManager* m_manager;
-	std::array<Ref<FontGlyphTextureCache>, 4> m_fontGlyphTextureCacheList;
-	int m_activeCacheIndex;
+	Ref<AbstractTextRenderingCache> m_textRenderingCache;
+	//std::array<Ref<FontGlyphTextureCache>, 4> m_fontGlyphTextureCacheList;
+	//int m_activeCacheIndex;
 	//Ref<FontGlyphTextureCache> m_fontGlyphTextureCache;
 };
 

@@ -2,7 +2,7 @@
 #include <Project/Project.hpp>
 #include "NewAssetCommand.hpp"
 #include "../../../lumino/LuminoEngine/src/Engine/EngineDomain.hpp"
-#include "../../../lumino/Engine/src/Asset/AssetManager.hpp"
+#include "../../../lumino/RuntimeCore/src/Asset/AssetManager.hpp"
 
 int NewAssetCommand::execute(lna::Workspace* workspace, ln::String name)
 {

@@ -22,12 +22,11 @@
 #include <LuminoEngine/Scene/CameraOrbitControlComponent.hpp>
 #include "../Graphics/RenderTargetTextureCache.hpp"
 
-#include "../Runtime/RuntimeManager.hpp"
 #include "../../../Platform/src/Platform/PlatformManager.hpp"
 #include "../Animation/AnimationManager.hpp"
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"
-#include "../Shader/ShaderManager.hpp"
+#include "../../../ShaderCompiler/src/ShaderManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Font/FontManager.hpp"
 #include "../Mesh/MeshManager.hpp"
@@ -35,7 +34,7 @@
 #include "../Rendering/RenderingProfiler.hpp"
 #include "../Effect/EffectManager.hpp"
 #include "../Physics/PhysicsManager.hpp"
-#include "../../../Engine/src/Asset/AssetManager.hpp"
+#include "../../../RuntimeCore/src/Asset/AssetManager.hpp"
 #include "../Visual/VisualManager.hpp"
 #include "../Scene/SceneManager.hpp"
 #include "../UI/UIManager.hpp"
@@ -44,7 +43,6 @@
 #include "EngineDomain.hpp"
 #include "EngineProfiler.hpp"
 
-#include "../Runtime/BindingValidation.hpp"
 #include <LuminoEngine/Scene/SceneConductor.hpp>
 
 namespace ln {
@@ -153,16 +151,9 @@ void EngineManager::init(const EngineSettings& settings)
     }
 	
 
-	{
-		m_activeDiagnostics = makeObject<DiagnosticsManager>();
-		ProfilingItem::Graphics_RenderPassCount = makeObject<ProfilingItem>(ProfilingItemType::Counter, _TT("RenderPass count"));
-		m_activeDiagnostics->registerProfilingItem(ProfilingItem::Graphics_RenderPassCount);
-	}
-
     // register types
     {
         EngineDomain::registerType<Application>();
-		EngineDomain::registerType<ZVTestClass1>();
     }
 
 	m_fpsController.setFrameRate(m_settings.frameRate);
@@ -252,7 +243,7 @@ void EngineManager::dispose()
     if (m_effectManager) m_effectManager->dispose();
 	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_meshManager) m_meshManager->dispose();
-	if (m_shaderManager) m_shaderManager->dispose();
+	ShaderManager::terminate();
 	if (m_graphicsManager) m_graphicsManager->dispose();
 	if (m_fontManager) m_fontManager->dispose();
 	if (m_audioManager) m_audioManager->dispose();
@@ -452,15 +443,14 @@ void EngineManager::initializeAudioManager()
 
 void EngineManager::initializeShaderManager()
 {
-	if (!m_shaderManager && m_settings.features.hasFlag(EngineFeature::Graphics))
+	if (!ShaderManager::instance() && m_settings.features.hasFlag(EngineFeature::Graphics))
 	{
 		initializeGraphicsManager();
 
 		ShaderManager::Settings settings;
 		settings.graphicsManager = m_graphicsManager;
 
-		m_shaderManager = ln::makeRef<ShaderManager>();
-		m_shaderManager->init(settings);
+		ShaderManager::initialize(settings);
 	}
 }
 
@@ -1079,7 +1069,7 @@ public:
 void EngineDomain::release()
 {
 	EngineContextWrap::getInstance()->disposeEngineManager();
-	EngineContextWrap::getInstance()->disposeRuntimeManager();
+	//EngineContextWrap::getInstance()->disposeRuntimeManager();
 
 	//if (g_engineManager) {
 	//	g_engineManager->dispose();
@@ -1102,11 +1092,6 @@ EngineContext* EngineDomain::engineContext()
 	//}
 	//return g_engineContext.get();
 	return EngineContextWrap::getInstance();
-}
-
-RuntimeManager* EngineDomain::runtimeManager()
-{
-    return engineContext()->runtimeManager();
 }
 
 EngineManager* EngineDomain::engineManager()
@@ -1138,11 +1123,6 @@ InputManager* EngineDomain::inputManager()
 AudioManager * EngineDomain::audioManager()
 {
 	return engineManager()->audioManager();
-}
-
-ShaderManager* EngineDomain::shaderManager()
-{
-	return engineManager()->shaderManager();
 }
 
 GraphicsManager* EngineDomain::graphicsManager()

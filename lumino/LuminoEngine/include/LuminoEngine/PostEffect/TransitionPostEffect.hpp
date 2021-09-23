@@ -1,6 +1,6 @@
 ﻿#pragma once
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include "../Animation/EasingFunctions.hpp"
-#include "../Graphics/ColorStructs.hpp"
 #include "PostEffect.hpp"
 
 namespace ln {

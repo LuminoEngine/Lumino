@@ -5,9 +5,10 @@
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../../Font/FontCore.hpp"
+#include "../../TextRendering/TextRenderingCache.hpp"
 #include "../../Graphics/RHIs/GraphicsDeviceContext.hpp"
 #include "../../Graphics/GraphicsManager.hpp"
 #include "../../Rendering/RenderingManager.hpp"
@@ -157,7 +158,10 @@ void SpriteTextRenderFeature::beginRendering()
 	m_cacheTexture = nullptr;
 
 	for (auto& font : m_renderingFonts) {
-		font->endCacheUsing();
+		const auto& cache = font->textRenderingCache();
+		if (cache) {
+			static_cast<TextRenderingCache*>(cache.get())->endCacheUsing();
+		}
 	}
 	m_renderingFonts.clear();
 	//m_batchData.spriteOffset = 0;
@@ -306,7 +310,20 @@ SpriteTextRenderFeature::Batch* SpriteTextRenderFeature::endLayoutAndAcquireBatc
 	bool newBatch = false;
 
 	// EndLayout (Glyph レイアウト結果を元に、テクスチャを生成する)
-	newFontCore->getFontGlyphTextureCache(&m_cacheRequest);
+	{
+		const auto& abstractCache = newFontCore->textRenderingCache();
+		TextRenderingCache* cache;
+		if (abstractCache) {
+			cache = static_cast<TextRenderingCache*>(abstractCache.get());
+		}
+		else {
+			auto c = makeRef<TextRenderingCache>(newFontCore);
+			newFontCore->setTextRenderingCache(c);
+			cache = c;
+		}
+		cache->getFontGlyphTextureCache(&m_cacheRequest);
+	}
+
 	if (m_cacheTexture && m_cacheTexture != m_cacheRequest.texture) {
 		newBatch = true;
 	}

@@ -1,6 +1,5 @@
 ﻿
 #include "Internal.hpp"
-#include "Runtime/RuntimeManager.hpp"
 #include "Engine/EngineManager.hpp"
 #include <LuminoEngine/Reflection/VMProperty.hpp>
 #include <LuminoEngine/EngineContext.hpp>
@@ -16,8 +15,7 @@ EngineContext* EngineContext::current()
 }
 
 EngineContext::EngineContext()
-	: m_runtimeManager(nullptr)
-	, m_engineManager(nullptr)
+	: m_engineManager(nullptr)
 {
 	internalInit();
 }
@@ -33,18 +31,8 @@ void EngineContext::internalInit()
 	}
 }
 
-void EngineContext::initializeRuntimeManager()
-{
-	if (!m_runtimeManager) {
-		m_runtimeManager = makeRef<detail::RuntimeManager>();
-		m_runtimeManager->init(detail::RuntimeManager::s_globalSettings);
-	}
-}
-
 void EngineContext::initializeEngineManager()
 {
-	initializeRuntimeManager();
-
 	if (!m_engineManager) {
 		if (engineManagerPreInit) {
 			engineManagerPreInit();
@@ -56,16 +44,6 @@ void EngineContext::initializeEngineManager()
 		if (engineManagerPostInit) {
 			engineManagerPostInit();
 		}
-	}
-}
-
-void EngineContext::disposeRuntimeManager()
-{
-	disposeEngineManager();
-
-	if (m_runtimeManager) {
-		m_runtimeManager->dispose();
-		m_runtimeManager = nullptr;
 	}
 }
 

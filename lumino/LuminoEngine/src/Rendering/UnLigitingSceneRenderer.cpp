@@ -53,7 +53,7 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 			ShaderTechniqueClass_Normal::Default,
 			ShaderTechniqueClass_Roughness::Default,
 		};
-		tech = ShaderHelper::findTechniqueByClass(requestedShader, key);
+		tech = ShaderInternal::findTechniqueByClass(requestedShader, key);
 	}
 
 	if (tech) {

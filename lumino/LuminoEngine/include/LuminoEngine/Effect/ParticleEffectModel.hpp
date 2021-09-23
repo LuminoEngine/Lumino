@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Graphics/ColorStructs.hpp"
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include "Common.hpp"
 #include "EffectModel.hpp"
 

@@ -2,7 +2,7 @@
 #include "../Graphics/Common.hpp"
 #include "../Graphics/Texture.hpp"
 #include "../Graphics/DepthBuffer.hpp"
-#include "../Shader/ShaderInterfaceFramework.hpp"
+#include "../Graphics/ShaderInterfaceFramework.hpp"
 #include "../UI/UIEvents.hpp"
 #include "Common.hpp"
 
