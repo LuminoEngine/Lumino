@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
-#include "../Graphics/Common.hpp"
+#include <LuminoGraphics/Common.hpp>
 #include "../Mesh/Common.hpp"
 
 namespace ln {

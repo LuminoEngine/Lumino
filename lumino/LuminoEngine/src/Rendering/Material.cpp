@@ -2,9 +2,9 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
-#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
-#include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
-#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/ShaderDescriptor.hpp>
+#include <LuminoGraphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "RenderingManager.hpp"
 

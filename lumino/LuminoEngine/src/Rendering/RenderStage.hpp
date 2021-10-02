@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
-#include <LuminoEngine/Graphics/Texture.hpp>
-#include <LuminoEngine/Graphics/DepthBuffer.hpp>
-#include <LuminoEngine/Graphics/ShaderInterfaceFramework.hpp>
+#include <LuminoGraphics/Texture.hpp>
+#include <LuminoGraphics/DepthBuffer.hpp>
+#include <LuminoGraphics/ShaderInterfaceFramework.hpp>
 #include <LuminoEngine/Rendering/Common.hpp>
 #include <LuminoCore/Base/LinearAllocator.hpp>
 

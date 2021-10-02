@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include <LuminoCore/Base/EnumFlags.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
-#include <LuminoEngine/Graphics/VertexLayout.hpp>
+#include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
-#include "../../Graphics/RHIs/GraphicsDeviceContext.hpp"
+#include "../../../../Graphics/src/RHIs/GraphicsDeviceContext.hpp"
 #include "../RLIs/RLIBatchList.hpp"
 
 namespace ln {

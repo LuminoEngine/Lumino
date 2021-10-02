@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/Shader.hpp>
-#include <LuminoEngine/Graphics/ShaderInterfaceFramework.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoGraphics/Shader.hpp>
+#include <LuminoGraphics/ShaderInterfaceFramework.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
-#include "../../Graphics/GraphicsManager.hpp"
+#include "../../../../Graphics/src/GraphicsManager.hpp"
 #include "../RenderStage.hpp"
 #include "../RenderingManager.hpp"
 #include "../SceneRenderer.hpp"

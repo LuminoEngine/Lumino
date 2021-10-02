@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoFont/Font.hpp>
-#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoGraphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "UIStyleInstance.hpp"
 

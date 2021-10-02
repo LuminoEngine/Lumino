@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <LuminoPlatform/PlatformEvent.hpp>
-#include "../Graphics/Common.hpp"
+#include <LuminoGraphics/Common.hpp>
 #include "Common.hpp"
 #include "UIEvents.hpp"
 #include "UIRenderView.hpp"

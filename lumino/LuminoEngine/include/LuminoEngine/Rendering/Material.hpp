@@ -3,9 +3,9 @@
 #include <LuminoEngine/Base/Builder.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
-#include "../Graphics/Shader.hpp"
-#include "../Graphics/ShaderInterfaceFramework.hpp"
-#include "../Graphics/ShaderParameterValue.hpp"
+#include <LuminoGraphics/Shader.hpp>
+#include <LuminoGraphics/ShaderInterfaceFramework.hpp>
+#include <LuminoGraphics/ShaderParameterValue.hpp>
 
 namespace ln {
 

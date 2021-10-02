@@ -11,6 +11,7 @@ class SpriteParticleModel;
 
 namespace detail {
 struct SpriteParticleModelInstance;
+class GraphicsManager;
 
 struct ParticleData
 {

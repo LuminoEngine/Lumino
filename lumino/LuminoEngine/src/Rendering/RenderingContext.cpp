@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Graphics/VertexLayout.hpp>
-#include <LuminoEngine/Graphics/VertexBuffer.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/VertexLayout.hpp>
+#include <LuminoGraphics/VertexBuffer.hpp>
 #include <LuminoFont/Font.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/CanvasContext.hpp>

@@ -4,6 +4,7 @@
 #include <LuminoEngine/Input/Common.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoPlatform/PlatformEvent.hpp>
+#include <LuminoGraphics/Common.hpp>
 #include "FpsController.hpp"
 
 namespace ln {
@@ -150,7 +151,6 @@ public:
     const Ref<AnimationManager>& animationManager() const { return m_animationManager; }
 	const Ref<InputManager>& inputManager() const { return m_inputManager; }
 	const Ref<AudioManager>& audioManager() const { return m_audioManager; }
-	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
 	const Ref<MeshManager>& meshManager() const { return m_meshManager; }
 	const Ref<RenderingManager>& renderingManager() const { return m_renderingManager; }
     const Ref<EffectManager>& effectManager() const { return m_effectManager; }
@@ -214,7 +214,6 @@ private:
 	Ref<AnimationManager>			m_animationManager;
 	Ref<InputManager>				m_inputManager;
 	Ref<AudioManager>				m_audioManager;
-	Ref<GraphicsManager>			m_graphicsManager;
 	Ref<MeshManager>				m_meshManager;
 	Ref<RenderingManager>			m_renderingManager;
 	Ref<EffectManager>				m_effectManager;

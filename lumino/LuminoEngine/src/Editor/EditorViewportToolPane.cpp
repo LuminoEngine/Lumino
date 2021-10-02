@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/SamplerState.hpp>
+#include <LuminoGraphics/SamplerState.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/World.hpp>

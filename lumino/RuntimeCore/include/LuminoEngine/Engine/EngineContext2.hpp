@@ -141,6 +141,7 @@ public:
 	RefObject* runtimeManager = nullptr;
 	RefObject* shaderManager = nullptr;
 	RefObject* fontManager = nullptr;
+	RefObject* graphicsManager = nullptr;
 	detail::IObjectEventListener* objectEventListener = nullptr;
 
 private:

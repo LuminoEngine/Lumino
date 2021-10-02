@@ -5,14 +5,14 @@
 #include <float.h>
 #include <LuminoCore/IO/BinaryReader.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoEngine/Graphics/IndexBuffer.hpp>
-#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoGraphics/IndexBuffer.hpp>
+#include <LuminoGraphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Animation/AnimationMixer.hpp>	// TODO: これは Importer の中で利用する必要はないはず
 #include "../../../../RuntimeCore/src/Asset/AssetManager.hpp"
-#include "../../Graphics/GraphicsManager.hpp"
+#include "../../../../Graphics/src/GraphicsManager.hpp"
 #include "../MeshManager.hpp"
 #include "PmxImporter.hpp"
 

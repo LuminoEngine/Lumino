@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/VertexBuffer.hpp>
+#include <LuminoGraphics/VertexBuffer.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
@@ -656,7 +656,7 @@ void CommandList::drawTextSprite(const StringRef& text, const Color& color, cons
 
 	if (baseDirection != SpriteBaseDirection::Basic2D) {
 		// is 3D.
-		element->samplerState = detail::EngineDomain::graphicsManager()->linearSamplerState();
+		element->samplerState = detail::GraphicsManager::instance()->linearSamplerState();
 	}
 }
 

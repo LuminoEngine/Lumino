@@ -6,7 +6,7 @@
 #include <iostream>
 #include <LuminoCore/Text/Encoding.hpp>
 #include <LuminoCore/IO/StreamReader.hpp>
-#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoGraphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include "../MeshManager.hpp"

@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/RenderPass.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Graphics/SwapChain.hpp>
-#include <LuminoEngine/Graphics/SamplerState.hpp>
+#include <LuminoGraphics/RenderPass.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/SwapChain.hpp>
+#include <LuminoGraphics/SamplerState.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -12,7 +12,7 @@
 #include <LuminoEngine/UI/UIAdorner.hpp>
 #include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
 #include <LuminoEngine/Engine/Debug.hpp>
-#include "../Graphics/GraphicsManager.hpp"
+#include "../../../Graphics/src/GraphicsManager.hpp"
 #include "../../../Platform/src/Platform/PlatformManager.hpp"
 #include "../Engine/EngineManager.hpp"
 #include "UIStyleInstance.hpp"

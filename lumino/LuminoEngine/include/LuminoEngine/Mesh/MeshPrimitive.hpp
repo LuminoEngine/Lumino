@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Graphics/Common.hpp"
+#include <LuminoGraphics/Common.hpp>
 #include "../Rendering/Common.hpp"
 #include "../Rendering/Vertex.hpp"
 

@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoEngine/Graphics/RenderPass.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoFont/Font.hpp>
-#include <LuminoEngine/Graphics/Shader.hpp>
+#include <LuminoGraphics/RenderPass.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/SamplerState.hpp>
+#include <LuminoGraphics/Shader.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>

@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "RLIBatchState.hpp"
 

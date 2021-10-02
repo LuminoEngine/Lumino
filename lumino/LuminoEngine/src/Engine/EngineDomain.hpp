@@ -22,7 +22,6 @@ class AnimationManager;
 class InputManager;
 class AudioManager;
 class ShaderManager;
-class GraphicsManager;
 class MeshManager;
 class RenderingManager;
 class EffectManager;
@@ -42,7 +41,6 @@ public:
     static AnimationManager* animationManager();
 	static InputManager* inputManager();
 	static AudioManager* audioManager();
-	static GraphicsManager* graphicsManager();
 	static MeshManager* meshManager();
 	static RenderingManager* renderingManager();
     static EffectManager* effectManager();

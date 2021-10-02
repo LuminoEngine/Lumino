@@ -14,7 +14,7 @@
 #include "UIStyleInstance.hpp"
 
 // TODO: Test
-#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoGraphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 
 

@@ -2,6 +2,7 @@
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
+#include <LuminoGraphics/Common.hpp>
 
 namespace ln {
 namespace detail {

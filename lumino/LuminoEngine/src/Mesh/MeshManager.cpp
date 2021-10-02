@@ -2,9 +2,9 @@
 #include "Internal.hpp"
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoEngine/Graphics/VertexLayout.hpp>
+#include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoGraphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>

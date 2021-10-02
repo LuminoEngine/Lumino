@@ -34,6 +34,7 @@
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Effect/ParticleEffectModel.hpp>
+#include "../../../Graphics/src/GraphicsManager.hpp"
 
 namespace ln {
     
@@ -213,7 +214,7 @@ SpriteParticleModel::~SpriteParticleModel()
 void SpriteParticleModel::init()
 {
     EffectResource::init();
-    m_manager = detail::EngineDomain::graphicsManager();    // TODO: ひつよう？
+    m_manager = detail::GraphicsManager::instance();    // TODO: ひつよう？
 }
 
 //------------------------------------------------------------------------------

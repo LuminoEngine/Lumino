@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoGraphics/Common.hpp>
 
 namespace ln {
 class MeshImportSettings;

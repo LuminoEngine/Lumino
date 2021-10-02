@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoCore/Base/LinearAllocator.hpp>
-#include <LuminoEngine/Graphics/VertexBuffer.hpp>
-#include <LuminoEngine/Graphics/IndexBuffer.hpp>
-#include <LuminoEngine/Graphics/VertexLayout.hpp>
+#include <LuminoGraphics/VertexBuffer.hpp>
+#include <LuminoGraphics/IndexBuffer.hpp>
+#include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/MeshProcessing.hpp>

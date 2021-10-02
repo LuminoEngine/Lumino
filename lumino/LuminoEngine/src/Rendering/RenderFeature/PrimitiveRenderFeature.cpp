@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/VertexLayout.hpp>
-#include <LuminoEngine/Graphics/VertexBuffer.hpp>
-#include <LuminoEngine/Graphics/IndexBuffer.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoGraphics/VertexLayout.hpp>
+#include <LuminoGraphics/VertexBuffer.hpp>
+#include <LuminoGraphics/IndexBuffer.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
-#include "../../Graphics/RHIs/GraphicsDeviceContext.hpp"
+#include "../../../../Graphics/src/RHIs/GraphicsDeviceContext.hpp"
 #include "PrimitiveRenderFeature.hpp"
 
 namespace ln {

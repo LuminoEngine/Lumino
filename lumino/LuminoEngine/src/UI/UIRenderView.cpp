@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/RenderPass.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoGraphics/RenderPass.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
