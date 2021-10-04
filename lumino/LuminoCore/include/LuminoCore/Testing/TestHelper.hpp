@@ -31,6 +31,11 @@ public:
 
 	// 2 つのファイル内容が一致するか確認する
 	static bool equalFiles(const Path& filePath1, const Path& filePath2);
+
+	template<class T>
+	static T rand() {
+
+	}
 };
 
 } // namespace ln

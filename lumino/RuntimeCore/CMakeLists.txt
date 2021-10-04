@@ -45,7 +45,7 @@ target_include_directories(
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
-target_include_directories(${PROJECT_NAME} PRIVATE include srce)
+target_include_directories(${PROJECT_NAME} PRIVATE include src)
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")

@@ -15,8 +15,9 @@ endif()
 
 option(LN_TARGET_ARCH "arch." "Unknown")
 
-# build unit test projects
 option(LN_BUILD_TESTS "build unit test projects." ON)
+
+option(LN_BUILD_EXAMPLES "build example projects." ON)
 
 # build tool projects
 #option(LN_BUILD_TOOLS "build tool projects." ON)
@@ -199,7 +200,9 @@ if (LN_BUILD_CORE_ONLY)
     add_subdirectory(lumino/LuminoCore)
 elseif (LN_EMSCRIPTEN)
     add_subdirectory(lumino/LuminoCore)
+    add_subdirectory(lumino/Engine)
     add_subdirectory(lumino/Platform)
+    add_subdirectory(examples/Example-WebLibrary)
 else()
     set(LN_EXTERNAL_FIND_PATH_MODE "build")
     include(external/ImportExternalLibraries.cmake)
@@ -213,8 +216,8 @@ else()
     add_subdirectory(lumino/LuminoEngine)
     add_subdirectory(lumino/FFI)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT LuminoEngine-sandbox)
-    if (LN_BUILD_TESTS)
-        add_subdirectory(examples)
+    if (LN_BUILD_EXAMPLES)
+        #add_subdirectory(examples)
     endif()
     if (LN_BUILD_BINDINGS)
         add_subdirectory(src/Transcoder)
