@@ -1,8 +1,4 @@
-﻿#
-# Required variables:
-#
-
-cmake_minimum_required (VERSION 3.0.0)
+﻿cmake_minimum_required (VERSION 3.0.0)
 project (LuminoCore)
 
 #include(${PROJECT_SOURCE_DIR}/../LuminoCommon.cmake NO_POLICY_SCOPE)
@@ -79,6 +75,18 @@ if (LN_BUILD_XCODE_FRAMEWORK)
     install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoCore.hpp DESTINATION "LuminoCore.framework/Headers")
 endif()
 
+# add debug view definition file for msvc (natvis)
+if (MSVC)
+    set(LN_ADD_NATVIS TRUE)
+    set(LN_NATVIS_FILE "LuminoCore.natvis")
+    target_sources(
+        ${PROJECT_NAME}
+        INTERFACE
+            $<INSTALL_INTERFACE:${LN_NATVIS_FILE}>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${LN_NATVIS_FILE}>
+    )
+endif()
+
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------
@@ -105,6 +113,13 @@ install(
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH})
+    
+if (LN_ADD_NATVIS)
+    install(
+        FILES ${LN_NATVIS_FILE}
+        DESTINATION .
+    )
+endif()
 
 #-------------------------------------------------------------------------------
 # Sub-projects
