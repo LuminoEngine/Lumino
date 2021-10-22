@@ -713,6 +713,25 @@ String String::fromStdString(const std::wstring& str)
     return fromCString(str.c_str(), static_cast<int>(str.length()));
 }
 
+
+std::string String::toUtf8() const
+{
+    return toStdString(TextEncoding::utf8Encoding());
+}
+
+String String::fromUtf8(const std::string& s)
+{
+    return fromStdString(s, TextEncoding::utf8Encoding());
+}
+
+//std::u16string String::toUtf16() const
+//{
+//}
+//
+//static String String::fromUtf16(const std::u16string& s)
+//{
+//}
+
 String String::fromNumber(int32_t value, Char format)
 {
     return fromNumber((int64_t)value, format);

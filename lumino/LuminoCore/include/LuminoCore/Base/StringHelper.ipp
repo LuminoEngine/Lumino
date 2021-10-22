@@ -48,11 +48,12 @@ inline int StringHelper::indexOf(const TChar* str1, int str1Len, const TChar* st
 	if (str2Len <= 0) { return -1; }
 
 	const TChar* pos = str1 + startIndex;
+	const TChar* end = str1 + str1Len;
 
 	// 大文字小文字を区別する
 	if (cs == CaseSensitivity::CaseSensitive)
 	{
-		for (; *pos; ++pos)
+		for (; pos < end && *pos; ++pos)
 		{
 			if (*pos == *str2)
 			{
@@ -66,7 +67,7 @@ inline int StringHelper::indexOf(const TChar* str1, int str1Len, const TChar* st
 	// 大文字小文字を区別しない
 	else
 	{
-		for (; *pos; ++pos)
+		for (; pos < end && *pos; ++pos)
 		{
 			if (my_strnicmp(pos, str2, str2Len) == 0)
 			{

@@ -241,6 +241,18 @@ inline void Array<T>::push_back(T&& value)
 }
 
 template<class T>
+inline void Array<T>::push(const T& value)
+{
+    m_data.push_back(value);
+}
+
+template<class T>
+inline void Array<T>::push(T&& value)
+{
+    m_data.push_back(std::move(value));
+}
+
+template<class T>
 inline void Array<T>::pop_back()
 {
     m_data.pop_back();
@@ -313,6 +325,54 @@ template<class... Args>
 inline typename Array<T>::reference Array<T>::emplace_back(Args&&... args)
 {
     return m_data.emplace_back(std::forward<Args>(args)...);
+}
+
+template<typename T>
+template<typename TPred>
+int Array<T>::indexOfIf(TPred pred, int startIndex) const
+{
+    if (m_data.empty())
+        return -1;
+
+    // index based loop, for std::unique_ptr
+    const int count = m_data.size();
+    for (int i = startIndex; i < count; i++) {
+        if (pred(m_data[i])) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+template<class T>
+inline typename Array<T>::iterator Array<T>::insert(int pos, const T& value)
+{
+    return m_data.insert(begin() + pos, value);
+}
+
+template<class T>
+inline typename Array<T>::iterator Array<T>::insert(int pos, T&& value)
+{
+    return m_data.insert(begin() + pos, std::move(value));
+}
+
+template<class T>
+inline typename Array<T>::iterator Array<T>::insert(int pos, int count, const T& value)
+{
+    return m_data.insert(begin() + pos, count, value);
+}
+
+template<class T>
+template <class Iterator>
+inline typename Array<T>::iterator Array<T>::insert(int pos, Iterator first, Iterator last)
+{
+    return m_data.insert(begin() + pos, first, last);
+}
+
+template<class T>
+inline typename Array<T>::iterator Array<T>::insert(int pos, std::initializer_list<T> ilist)
+{
+    return m_data.insert(begin() + pos, ilist);
 }
 
 template<class T>

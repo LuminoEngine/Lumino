@@ -21,6 +21,18 @@ namespace ln {
  * 
  * std::filesystem::path と似ていますが、内部エンコーディングは String と同一です。
  * プラットフォーム依存ではありません。
+ * 
+ * 
+ * VS std::filesystem::path
+ * ----------
+ * ### 処理速度
+ * - ln::String と頻繁に連携する場合は ln::Path のほうが処理速度的に有利です。
+ *   std::filesystem::path の内部エンコーディングはプラットフォーム依存であるため、ln::String のエンコーディングと一致しない場合はオーバーヘッドが発生します。
+ * - パスが変更されず、頻繁にネイティブの API をコールする (std::filesystem::exists 等) 場合、std::filesystem::path のほうが処理速度的に有利です。
+ *   ln::FileSystem::exists() 等 Lumino のファイルシステム API は、ネイティブの API をコールする前にエンコーディングの変換が発生します。
+ *   変換自体は文字数が 256 以下である場合 std::filesystem::path よりも 1.5 倍ほど高速ですが、頻繁に実行される場合は変換の発生しない std::filesystem::path が有利です。
+ * 
+ *   
  */
 class Path
 {
@@ -280,6 +292,16 @@ inline Path Path::combine(TArgs&&... args)
 
 inline bool operator==(const Path& lhs, const Path& rhs) { return Path::compare(lhs, rhs) == 0; }
 inline bool operator!=(const Path& lhs, const Path& rhs) { return !operator==(lhs, rhs); }
+
+inline Path operator/(const Path& x, const Path& y)
+{
+    return Path::combine(x, y);
+}
+
+inline Path operator/(const Path& x, const Char* y)
+{
+    return Path::combine(x, Path(y));
+}
 
 class StringRef;
 

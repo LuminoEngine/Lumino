@@ -407,6 +407,44 @@ public:
 
     T& value()& { return *m_value; }
 
+    constexpr const T* operator->() const
+    {
+        LN_CHECK(m_value);
+        return m_value;
+    }
+
+    constexpr T* operator->()
+    {
+        LN_CHECK(m_value);
+        return m_value;
+    }
+
+    constexpr const T& operator*() const&
+    {
+        LN_CHECK(m_value);
+        return *m_value;
+    }
+
+    constexpr T& operator*()&
+    {
+        LN_CHECK(m_value);
+        return *m_value;
+    }
+
+    constexpr const T&& operator*() const&&
+    {
+        LN_CHECK(m_value);
+        return *m_value;
+    }
+
+    constexpr T&& operator*()&&
+    {
+        LN_CHECK(m_value);
+        return *m_value;
+    }
+
+    constexpr explicit operator bool() const noexcept { return m_value != nullptr; }
+
 
 private:
     T* m_value;
